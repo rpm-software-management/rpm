@@ -2,8 +2,8 @@
 	- don't fail, and do report, if -K can't find a PGP key
 	- handle file names with quotes and spaces when passed to ldd
 	  (still can't have spaces in %files)
+	- do not allow Buildprefix: in sub packages
 	- removed require_group from rpmrc -- groups are always required
-	- do not allow Prefix: or Buildprefix: in sub packages
 	- removed arch_sensitive from rpmrc -- always on
 	- removed docdir from rpmrc -- always /usr/doc
 	- fixed nasty bug in installing packages with large filelists
@@ -17,6 +17,14 @@
 					(%prep, %build, %install, %clean)
 	  sorry :-)
 	- allow Prefix: for sub-packages
+	- allow packager: in rpmrc
+	- --arch and --os are now --buildarch and --buildos
+	- magic arch/os handling through arch_data and os_data
+	  see /usr/lib/rpmrc (in short: uname short_name num)
+	- removed build_arch: from rpmrc
+	  Replacing it is buildarchtranslate: and buildostranslate:
+	  to allow building with arch/os other than what uname() returns.
+	  Can still be overriden with --buildarch and --buildos
 
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
