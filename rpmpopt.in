@@ -63,8 +63,8 @@ rpm	alias --triggerscripts --qf '\
 %{TRIGGERSCRIPTS}\n]'
 rpm	alias --triggers --triggerscripts
 
-rpm	alias --last --qf ''%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
-	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-35s %-s\n\", $1, substr($0,length($1)+2))}' "
+rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
+	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' "
 
 rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]'
 
@@ -245,8 +245,8 @@ rpmq	alias --triggerscripts --qf '\
 %{TRIGGERSCRIPTS}\n]'
 rpmq	alias --triggers --triggerscripts
 
-rpmq	alias --last --qf ''%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
-	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-35s %-s\n\", $1, substr($0,length($1)+2))}' "
+rpmq	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
+	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' "
 
 rpmq	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]'
 #==============================================================================

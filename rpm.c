@@ -342,7 +342,7 @@ static void printHelp(void) {
     printHelpLine(_("        --whatrequires <cap>"),
 		  _("query packages which require <cap> capability"));
     puts(         _("      Information selection options:"));
-    printHelpLine(  "        -i, --info         ",
+    printHelpLine(  "        -i, --info        ",
 		  _("display package information"));
     printHelpLine(  "        --changelog       ",
 		  _("display the package's change log"));

@@ -256,15 +256,15 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 			if (queryFlags & QUERY_FOR_STATE) {
 			    if (fileStatesList) {
 				switch (fileStatesList[i]) {
-				  case RPMFILE_STATE_NORMAL:
+				case RPMFILE_STATE_NORMAL:
 				    fputs(_("normal        "), fp); break;
-				  case RPMFILE_STATE_REPLACED:
+				case RPMFILE_STATE_REPLACED:
 				    fputs(_("replaced      "), fp); break;
-				  case RPMFILE_STATE_NOTINSTALLED:
+				case RPMFILE_STATE_NOTINSTALLED:
 				    fputs(_("not installed "), fp); break;
-				  case RPMFILE_STATE_NETSHARED:
+				case RPMFILE_STATE_NETSHARED:
 				    fputs(_("net shared    "), fp); break;
-				  default:
+				default:
 				    fprintf(fp, _("(unknown %3d) "), 
 					  (int)fileStatesList[i]);
 				}
@@ -627,24 +627,39 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	/*@fallthrough@*/
     case RPMQV_PATH:
-	mi = rpmdbInitIterator(rpmdb, RPMTAG_BASENAMES, arg, 0);
+    {   const char * s;
+	char * fn;
+
+	for (s = arg; *s; s++)
+	    if (!(*s == '.' || *s == '/')) break;
+
+	if (*s == '\0') {
+	    char fnbuf[PATH_MAX];
+	    fn = /*@-unrecog@*/ realpath(arg, fnbuf) /*@=unrecog@*/;
+	    fn = xstrdup( (fn ? fn : arg) );
+	} else
+	    fn = xstrdup(arg);
+	rpmCleanPath(fn);
+
+	mi = rpmdbInitIterator(rpmdb, RPMTAG_BASENAMES, fn, 0);
 	if (mi == NULL) {
 	    int myerrno = 0;
-	    if (access(arg, F_OK) != 0)
+	    if (access(fn, F_OK) != 0)
 		myerrno = errno;
 	    switch (myerrno) {
 	    default:
-		fprintf(stderr, _("file %s: %s\n"), arg, strerror(myerrno));
+		fprintf(stderr, _("file %s: %s\n"), fn, strerror(myerrno));
 		break;
 	    case 0:
-		fprintf(stderr, _("file %s is not owned by any package\n"), arg);
+		fprintf(stderr, _("file %s is not owned by any package\n"), fn);
 		break;
 	    }
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
 	}
-	break;
+	xfree(fn);
+    }	break;
 
     case RPMQV_DBOFFSET:
     {	int mybase = 10;

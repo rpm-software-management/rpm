@@ -23,7 +23,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	versiontag = RPMTAG_PROVIDEVERSION;
 	flagtag = RPMTAG_PROVIDEFLAGS;
     } else if (flag & RPMSENSE_OBSOLETES) {
-	nametag = RPMTAG_OBSOLETES;
+	nametag = RPMTAG_OBSOLETENAME;
 	versiontag = RPMTAG_OBSOLETEVERSION;
 	flagtag = RPMTAG_OBSOLETEFLAGS;
     } else if (flag & RPMSENSE_CONFLICTS) {
@@ -63,9 +63,9 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	    headerGetEntry(h, versiontag, NULL, (void **) &versions, NULL);
 	    headerGetEntry(h, flagtag, NULL, (void **) &flags, NULL);
 	}
-	if (indextag) {
+	if (indextag)
 	    headerGetEntry(h, indextag, NULL, (void **) &indexes, NULL);
-	}
+
 	while (len > 0) {
 	    len--;
 	    if (strcmp(names[len], name))
@@ -100,10 +100,8 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	headerAddOrAppendEntry(h, flagtag,
 			       RPM_INT32_TYPE, &flag, 1);
     }
-    if (indextag) {
-	headerAddOrAppendEntry(h, indextag,
-			       RPM_INT32_TYPE, &index, 1);
-    }
+    if (indextag)
+	headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);
 
     return 0;
 }

@@ -821,7 +821,11 @@ static void genCpioListAndHeader(struct FileList *fl,
 	/* Make the cpio list */
 	if (! (flp->flags & RPMFILE_GHOST)) {
 	    clp->fsPath = xstrdup(flp->diskURL);
-	    clp->archivePath = xstrdup(flp->fileURL + skipLen);
+	    {	char * t = buf;
+		t = stpcpy(t, "./");
+		t = stpcpy(t, (flp->fileURL + skipLen));
+		clp->archivePath = xstrdup(buf);
+	    }
 	    clp->finalMode = flp->fl_mode;
 	    clp->finalUid = flp->fl_uid;
 	    clp->finalGid = flp->fl_gid;
@@ -984,6 +988,10 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
 	    fileURL += strlen(fl->buildRootURL);
     }
 
+    /* XXX make sure '/' can be packaged also */
+    if (*fileURL == '\0')
+	fileURL = "/";
+
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
 	const char *prefixTest;
@@ -1054,12 +1062,10 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
     }
 #else
     /* Default user/group to builder's user/group */
-    if (fileUname == NULL) {
+    if (fileUname == NULL)
 	fileUname = getUname(getuid());
-    }
-    if (fileGname == NULL) {
+    if (fileGname == NULL)
 	fileGname = getGname(getgid());
-    }
 #endif
     
     rpmMessage(RPMMESS_DEBUG, _("File %4d: %07o %s.%s\t %s\n"), fl->fileCount,

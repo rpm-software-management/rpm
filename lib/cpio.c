@@ -220,10 +220,13 @@ static int getNextHeader(FD_t cfd, struct cpioHeader * hdr)
 /** */
 int cpioFileMapCmp(const void * a, const void * b)
 {
-    const struct cpioFileMapping * first = a;
-    const struct cpioFileMapping * second = b;
+    const char * afn = ((const struct cpioFileMapping *)a)->archivePath;
+    const char * bfn = ((const struct cpioFileMapping *)b)->archivePath;
 
-    return (strcmp(first->archivePath, second->archivePath));
+    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
+    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
+
+    return strcmp(afn, bfn);
 }
 
 /* This could trash files in the path! I'm not sure that's a good thing */
@@ -338,7 +341,7 @@ static int inline checkDirectory(const char * filename)
 }
 
 /** */
-static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
+static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
 			 cpioCallback cb, void * cbData)
 {
     FD_t ofd;
@@ -404,7 +407,7 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
 }
 
 /** */
-static int expandSymlink(FD_t cfd, struct cpioHeader * hdr)
+static int expandSymlink(FD_t cfd, const struct cpioHeader * hdr)
 {
     char buf[2048], buf2[2048];
     struct stat sb;
@@ -439,7 +442,7 @@ static int expandSymlink(FD_t cfd, struct cpioHeader * hdr)
 }
 
 /** */
-static int expandFifo( /*@unused@*/ FD_t cfd, struct cpioHeader * hdr)
+static int expandFifo( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
 {
     struct stat sb;
 
@@ -457,7 +460,7 @@ static int expandFifo( /*@unused@*/ FD_t cfd, struct cpioHeader * hdr)
 }
 
 /** */
-static int expandDevice( /*@unused@*/ FD_t cfd, struct cpioHeader * hdr)
+static int expandDevice( /*@unused@*/ FD_t cfd, const struct cpioHeader * hdr)
 {
     const struct stat * st = &hdr->sb;
     struct stat sb;

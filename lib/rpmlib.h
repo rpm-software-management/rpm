@@ -55,7 +55,7 @@ extern const int rpmTagTableSize;
 /* this chains to headerDefaultFormats[] */
 extern const struct headerSprintfExtension rpmHeaderFormats[];
 
-/* these pseudo-tags are used in the dbi interface */
+/* these pseudo-tags are used by the dbi iterator interface */
 #define	RPMDBI_PACKAGES		0
 #define	RPMDBI_DEPENDS		1
 #define	RPMDBI_LABEL		2	/* XXX remove rpmdbFindByLabel from API */
@@ -71,7 +71,6 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_VERSION			1001
 #define	RPMTAG_RELEASE			1002
 #define	RPMTAG_EPOCH	   		1003
-#define	RPMTAG_SERIAL		RPMTAG_EPOCH	/* backward comaptibility */
 #define	RPMTAG_SUMMARY			1004
 #define	RPMTAG_DESCRIPTION		1005
 #define	RPMTAG_BUILDTIME		1006
@@ -83,7 +82,6 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_GIF			1012
 #define	RPMTAG_XPM			1013
 #define	RPMTAG_LICENSE			1014
-#define	RPMTAG_COPYRIGHT	RPMTAG_LICENSE	/* backward comaptibility */
 #define	RPMTAG_PACKAGER			1015
 #define	RPMTAG_GROUP			1016
 #define	RPMTAG_CHANGELOG		1017 /* internal */
@@ -117,7 +115,6 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_FILEVERIFYFLAGS		1045
 #define	RPMTAG_ARCHIVESIZE		1046
 #define	RPMTAG_PROVIDENAME		1047
-#define	RPMTAG_PROVIDES	RPMTAG_PROVIDENAME	/* backward comaptibility */
 #define	RPMTAG_REQUIREFLAGS		1048
 #define	RPMTAG_REQUIRENAME		1049
 #define	RPMTAG_REQUIREVERSION		1050
@@ -152,7 +149,6 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_POSTUNPROG		1088
 #define	RPMTAG_BUILDARCHS		1089
 #define	RPMTAG_OBSOLETENAME		1090
-#define	RPMTAG_OBSOLETES RPMTAG_OBSOLETENAME	/* backward comaptibility */
 #define	RPMTAG_VERIFYSCRIPTPROG		1091
 #define	RPMTAG_TRIGGERSCRIPTPROG	1092
 #define	RPMTAG_DOCDIR			1093 /* internal */
@@ -167,7 +163,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_TRIGGERPOSTUN		1102 /* internal */
 #define	RPMTAG_AUTOREQ			1103 /* internal */
 #define	RPMTAG_AUTOPROV			1104 /* internal */
-#define	RPMTAG_CAPABILITY		1105 /* unused */
+#define	RPMTAG_CAPABILITY		1105 /* unused internal */
 #define	RPMTAG_SOURCEPACKAGE		1106 /* internal */
 #define	RPMTAG_OLDORIGFILENAMES		1107 /* obsolete */
 #define	RPMTAG_BUILDPREREQ		1108 /* internal */
@@ -191,7 +187,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_PAYLOADFLAGS		1126
 #define	RPMTAG_MULTILIBS		1127
 #define	RPMTAG_PRETRANSACTION		1128
-#define	RPMTAG_POSTTRANSACTION		1129
+#define	RPMTAG_POSTTRANSACTION		1129 /*unused */
 
 #define	RPMTAG_FIRSTFREE_TAG		1130 /* internal */
 #define	RPMTAG_EXTERNAL_TAG		1000000

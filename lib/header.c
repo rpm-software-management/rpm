@@ -171,14 +171,14 @@ static void copyEntry(struct indexEntry * entry, /*@out@*/ int_32 * type,
 
     /* Now look it up */
     switch (entry->info.type) {
-      case RPM_STRING_TYPE:
+    case RPM_STRING_TYPE:
 	if (entry->info.count == 1) {
 	    *p = entry->data;
 	    break;
 	}
 	/*@fallthrough@*/
-      case RPM_STRING_ARRAY_TYPE:
-      case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    case RPM_I18NSTRING_TYPE:
 	i = entry->info.count;
 	tableSize = i * sizeof(char *);
 	if (minimizeMemory) {
@@ -196,7 +196,7 @@ static void copyEntry(struct indexEntry * entry, /*@out@*/ int_32 * type,
 	}
 	break;
 
-      default:
+    default:
 	*p = entry->data;
 	break;
     }
@@ -209,7 +209,7 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 
     length = 0;
     switch (type) {
-      case RPM_STRING_TYPE:
+    case RPM_STRING_TYPE:
 	if (count == 1) {
 	    /* Special case -- p is just the string */
 	    length = strlen(p) + 1;
@@ -220,8 +220,8 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 	exit(EXIT_FAILURE);
 	/*@notreached@*/ break;
 
-      case RPM_STRING_ARRAY_TYPE:
-      case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    case RPM_I18NSTRING_TYPE:
 	/* This is like RPM_STRING_TYPE, except it's *always* an array */
 	/* Compute sum of length of all strings, including null terminators */
 	i = count;
@@ -243,7 +243,7 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 	}
 	break;
 
-      default:
+    default:
 	if (typeSizes[type] != -1)
 	    length = typeSizes[type] * count;
 	else {
@@ -291,14 +291,13 @@ int headerNextIterator(HeaderIterator iter,
     Header h = iter->h;
     int slot = iter->next_index;
 
-    if (slot == h->indexUsed) {
+    if (slot == h->indexUsed)
 	return 0;
-    }
     iter->next_index++;
 
-    if (tag) {
+    if (tag)
 	*tag = h->index[slot].info.tag;
-    }
+
     copyEntry(h->index + slot, type, p, c, 0);
 
     return 1;
@@ -306,18 +305,10 @@ int headerNextIterator(HeaderIterator iter,
 
 static int indexCmp(const void *ap, const void *bp)
 {
-    int_32 a, b;
+    int_32 a = ((const struct indexEntry *)ap)->info.tag;
+    int_32 b = ((const struct indexEntry *)bp)->info.tag;
 
-    a = ((struct indexEntry *)ap)->info.tag;
-    b = ((struct indexEntry *)bp)->info.tag;
-    
-    if (a > b) {
-	return 1;
-    } else if (a < b) {
-	return -1;
-    } else {
-	return 0;
-    }
+    return (a - b);
 }
 
 void headerSort(Header h)
@@ -408,7 +399,7 @@ Header headerLoad(void *pv)
 
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
-	  case RPM_INT32_TYPE:
+	case RPM_INT32_TYPE:
 	    count = entry->info.count;
 	    while (count--) {
 		*((int_32 *)dst) = htonl(*((int_32 *)src));
@@ -417,7 +408,7 @@ Header headerLoad(void *pv)
 	    }
 	    break;
 
-	  case RPM_INT16_TYPE:
+	case RPM_INT16_TYPE:
 	    count = entry->info.count;
 	    while (count--) {
 		*((int_16 *)dst) = htons(*((int_16 *)src));
@@ -426,7 +417,7 @@ Header headerLoad(void *pv)
 	    }
 	    break;
 
-	  default:
+	default:
 	    memcpy(dst, src, entry->length);
 	    break;
 	}
@@ -479,7 +470,7 @@ static void *doHeaderUnload(Header h, /*@out@*/int * lengthPtr)
 
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
-	  case RPM_INT32_TYPE:
+	case RPM_INT32_TYPE:
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
@@ -489,7 +480,7 @@ static void *doHeaderUnload(Header h, /*@out@*/int * lengthPtr)
 	    }
 	    break;
 
-	  case RPM_INT16_TYPE:
+	case RPM_INT16_TYPE:
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
@@ -499,7 +490,7 @@ static void *doHeaderUnload(Header h, /*@out@*/int * lengthPtr)
 	    }
 	    break;
 
-	  default:
+	default:
 	    memcpy(chptr, entry->data, entry->length);
 	    chptr += entry->length;
 	    break;
@@ -579,9 +570,8 @@ Header headerRead(FD_t fd, int magicp)
 
     if (magicp == HEADER_MAGIC_YES) {
 	magic = block[i++];
-	if (memcmp(&magic, header_magic, sizeof(magic))) {
+	if (memcmp(&magic, header_magic, sizeof(magic)))
 	    return NULL;
-	}
 
 	reserved = block[i++];
     }
@@ -613,90 +603,6 @@ Header headerRead(FD_t fd, int magicp)
     return h;
 }
 
-int headerGzWrite(FD_t fd, Header h, int magicp)
-{
-    void * p;
-    int length;
-    int_32 l;
-    ssize_t nb;
-
-    p = doHeaderUnload(h, &length);
-
-    if (magicp) {
-	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
-	if (nb != sizeof(header_magic)) {
-	    free(p);
-	    return 1;
-	}
-	l = htonl(0);
-	nb = Fwrite(&l, sizeof(char), sizeof(l), fd);
-	if (nb != sizeof(l)) {
-	    free(p);
-	    return 1;
-	}
-    }
-    
-    nb = Fwrite(p, sizeof(char), length, fd);
-    if (nb != length) {
-	free(p);
-	return 1;
-    }
-
-    free(p);
-    return 0;
-}
-
-Header headerGzRead(FD_t fd, int magicp)
-{
-    int_32 reserved;
-    int_32 * p;
-    int_32 il, dl;
-    int_32 magic;
-    Header h;
-    void * block;
-    int totalSize;
-
-    if (magicp == HEADER_MAGIC_YES) {
-	if (Fread(&magic, sizeof(char), sizeof(magic), fd) != sizeof(magic))
-	    return NULL;
-	if (memcmp(&magic, header_magic, sizeof(magic))) {
-	    return NULL;
-	}
-
-	if (Fread(&reserved, sizeof(char), sizeof(reserved), fd) != sizeof(reserved))
-	    return NULL;
-    }
-    
-    /* First read the index length (count of index entries) */
-    if (Fread(&il, sizeof(char), sizeof(il), fd) != sizeof(il)) 
-	return NULL;
-
-    il = ntohl(il);
-
-    /* Then read the data length (number of bytes) */
-    if (Fread(&dl, sizeof(char), sizeof(dl), fd) != sizeof(dl)) 
-	return NULL;
-
-    dl = ntohl(dl);
-
-    totalSize = sizeof(int_32) + sizeof(int_32) + 
-		(il * sizeof(struct entryInfo)) + dl;
-
-    block = p = xmalloc(totalSize);
-    *p++ = htonl(il);
-    *p++ = htonl(dl);
-
-    totalSize -= sizeof(int_32) + sizeof(int_32);
-    if (Fread(p, sizeof(char), totalSize, fd) != totalSize)
-	return NULL;
-    
-    h = headerLoad(block);
-
-    free(block);
-
-    return h;
-}
-
 /********************************************************************/
 /*                                                                  */
 /* Header dumping                                                   */
@@ -721,17 +627,17 @@ void headerDump(Header h, FILE *f, int flags,
 		"      OFSET      COUNT\n");
     for (i = 0; i < h->indexUsed; i++) {
 	switch (p->info.type) {
-	    case RPM_NULL_TYPE:   		type = "NULL_TYPE"; 	break;
-	    case RPM_CHAR_TYPE:   		type = "CHAR_TYPE"; 	break;
-	    case RPM_BIN_TYPE:   		type = "BIN_TYPE"; 	break;
-	    case RPM_INT8_TYPE:   		type = "INT8_TYPE"; 	break;
-	    case RPM_INT16_TYPE:  		type = "INT16_TYPE"; 	break;
-	    case RPM_INT32_TYPE:  		type = "INT32_TYPE"; 	break;
-	    /*case RPM_INT64_TYPE:  		type = "INT64_TYPE"; 	break;*/
-	    case RPM_STRING_TYPE: 	    	type = "STRING_TYPE"; 	break;
-	    case RPM_STRING_ARRAY_TYPE: 	type = "STRING_ARRAY_TYPE"; break;
-	    case RPM_I18NSTRING_TYPE:	 	type = "I18N_STRING_TYPE"; break;
-	    default:		    	type = "(unknown)";	break;
+	case RPM_NULL_TYPE:   		type = "NULL_TYPE"; 	break;
+	case RPM_CHAR_TYPE:   		type = "CHAR_TYPE"; 	break;
+	case RPM_BIN_TYPE:   		type = "BIN_TYPE"; 	break;
+	case RPM_INT8_TYPE:   		type = "INT8_TYPE"; 	break;
+	case RPM_INT16_TYPE:  		type = "INT16_TYPE"; 	break;
+	case RPM_INT32_TYPE:  		type = "INT32_TYPE"; 	break;
+	/*case RPM_INT64_TYPE:  	type = "INT64_TYPE"; 	break;*/
+	case RPM_STRING_TYPE: 	    	type = "STRING_TYPE"; 	break;
+	case RPM_STRING_ARRAY_TYPE: 	type = "STRING_ARRAY_TYPE"; break;
+	case RPM_I18NSTRING_TYPE: 	type = "I18N_STRING_TYPE"; break;
+	default:		    	type = "(unknown)";	break;
 	}
 
 	tage = tags;
@@ -1096,18 +1002,16 @@ unsigned int headerSizeof(Header h, int magicp)
     size = sizeof(int_32);	/* count of index entries */
     size += sizeof(int_32);	/* length of data */
     size += sizeof(struct entryInfo) * h->indexUsed;
-    if (magicp) {
+    if (magicp)
 	size += 8;
-    }
 
     for (i = 0; i < h->indexUsed; i++) {
 	/* Alignment */
 	type = h->index[i].info.type;
 	if (typeSizes[type] > 1) {
 	    diff = typeSizes[type] - (size % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
+	    if (diff != typeSizes[type])
 		size += diff;
-	    }
 	}
 
 	size += h->index[i].length;
@@ -1124,8 +1028,8 @@ static void copyData(int_32 type, /*@out@*/void * dstPtr, const void * srcPtr, i
     int i, len;
 
     switch (type) {
-      case RPM_STRING_ARRAY_TYPE:
-      case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    case RPM_I18NSTRING_TYPE:
 	/* Otherwise, p is char** */
 	i = c;
 	src = (const char **) srcPtr;
@@ -1138,7 +1042,7 @@ static void copyData(int_32 type, /*@out@*/void * dstPtr, const void * srcPtr, i
 	}
 	break;
 
-      default:
+    default:
 	memcpy(dstPtr, srcPtr, dataLength);
 	break;
     }
@@ -1230,9 +1134,8 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
     table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
     entry = findEntry(h, tag, RPM_I18NSTRING_TYPE);
 
-    if (!table && entry) {
+    if (!table && entry)
 	return 0;		/* this shouldn't ever happen!! */
-    }
 
     if (!table && !entry) {
 	const char * charArray[2];
@@ -1330,9 +1233,8 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 
     /* First find the tag */
     entry = findEntry(h, tag, type);
-    if (!entry) {
+    if (!entry)
 	return 0;
-    }
 
     /* make sure entry points to the first occurence of this tag */
     while (entry > h->index && (entry - 1)->info.tag == tag)  
@@ -1368,9 +1270,8 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
 
     /* First find the tag */
     entry = findEntry(h, tag, type);
-    if (!entry) {
+    if (!entry)
 	return 0;
-    }
 
     if (type == RPM_STRING_TYPE || type == RPM_I18NSTRING_TYPE) {
 	/* we can't do this */
@@ -1424,15 +1325,14 @@ int headerRemoveEntry(Header h, int_32 tag)
 static char escapedChar(const char ch)
 {
     switch (ch) {
-      case 'a': 	return '\a';
-      case 'b': 	return '\b';
-      case 'f': 	return '\f';
-      case 'n': 	return '\n';
-      case 'r': 	return '\r';
-      case 't': 	return '\t';
-      case 'v': 	return '\v';
-
-      default:		return ch;
+    case 'a': 	return '\a';
+    case 'b': 	return '\b';
+    case 'f': 	return '\f';
+    case 'n': 	return '\n';
+    case 'r': 	return '\r';
+    case 't': 	return '\t';
+    case 'v': 	return '\v';
+    default:	return ch;
     }
 }
 
@@ -1541,7 +1441,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
     currToken = -1;
     while (*start && !done) {
 	switch (*start) {
-	  case '%':
+	case '%':
 	    /* handle %% */
 	    if (*(start + 1) == '%') {
 		if (currToken < 0 || format[currToken].type != PTOK_STRING) {
@@ -1571,93 +1471,94 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		    return 1;
 		}
 		start = newEnd;
-	    } else {
-		format[currToken].u.tag.format = start;
-		format[currToken].u.tag.pad = 0;
-		format[currToken].u.tag.justOne = 0;
-		format[currToken].u.tag.arrayCount = 0;
-
-		chptr = start;
-		while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
-		if (!*chptr || *chptr == '%') {
-		    *error = _("missing { after %");
-		    freeFormat(format, numTokens);
-		    return 1;
-		}
-
-		*chptr++ = '\0';
-
-		while (start < chptr) {
-		    if (isdigit(*start)) {
-			i = strtoul(start, &start, 10);
-			format[currToken].u.tag.pad += i;
-		    } else {
-			start++;
-		    }
-		}
-
-		if (*start == '=') {
-		    format[currToken].u.tag.justOne = 1;
-		    start++;
-		} else if (*start == '#') {
-		    format[currToken].u.tag.justOne = 1;
-		    format[currToken].u.tag.arrayCount = 1;
-		    start++;
-		}
-
-		next = start;
-		while (*next && *next != '}') next++;
-		if (!*next) {
-		    *error = _("missing } after %{");
-		    freeFormat(format, numTokens);
-		    return 1;
-		}
-		*next++ = '\0';
-
-		chptr = start;
-		while (*chptr && *chptr != ':') chptr++;
-
-		if (*chptr) {
-		    *chptr++ = '\0';
-		    if (!*chptr) {
-			*error = _("empty tag format");
-			freeFormat(format, numTokens);
-			return 1;
-		    }
-		    format[currToken].u.tag.type = chptr;
-		} else {
-		    format[currToken].u.tag.type = NULL;
-		}
-	    
-		if (!*start) {
-		    *error = _("empty tag name");
-		    freeFormat(format, numTokens);
-		    return 1;
-		}
-
-		i = 0;
-		findTag(start, tags, extensions, &tag, &ext);
-
-		if (tag) {
-		    format[currToken].u.tag.ext = NULL;
-		    format[currToken].u.tag.tag = tag->val;
-		} else if (ext) {
-		    format[currToken].u.tag.ext = ext->u.tagFunction;
-		    format[currToken].u.tag.extNum = ext - extensions;
-		} else {
-		    *error = _("unknown tag");
-		    freeFormat(format, numTokens);
-		    return 1;
-		}
-
-		format[currToken].type = PTOK_TAG;
-
-		start = next;
+		break; /* out of switch */
 	    }
+
+	    format[currToken].u.tag.format = start;
+	    format[currToken].u.tag.pad = 0;
+	    format[currToken].u.tag.justOne = 0;
+	    format[currToken].u.tag.arrayCount = 0;
+
+	    chptr = start;
+	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
+	    if (!*chptr || *chptr == '%') {
+		*error = _("missing { after %");
+		freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    *chptr++ = '\0';
+
+	    while (start < chptr) {
+		if (isdigit(*start)) {
+		    i = strtoul(start, &start, 10);
+		    format[currToken].u.tag.pad += i;
+		} else {
+		    start++;
+		}
+	    }
+
+	    if (*start == '=') {
+		format[currToken].u.tag.justOne = 1;
+		start++;
+	    } else if (*start == '#') {
+		format[currToken].u.tag.justOne = 1;
+		format[currToken].u.tag.arrayCount = 1;
+		start++;
+	    }
+
+	    next = start;
+	    while (*next && *next != '}') next++;
+	    if (!*next) {
+		*error = _("missing } after %{");
+		freeFormat(format, numTokens);
+		return 1;
+	    }
+	    *next++ = '\0';
+
+	    chptr = start;
+	    while (*chptr && *chptr != ':') chptr++;
+
+	    if (*chptr) {
+		*chptr++ = '\0';
+		if (!*chptr) {
+		    *error = _("empty tag format");
+		    freeFormat(format, numTokens);
+		    return 1;
+		}
+		format[currToken].u.tag.type = chptr;
+	    } else {
+		format[currToken].u.tag.type = NULL;
+	    }
+	    
+	    if (!*start) {
+		*error = _("empty tag name");
+		freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    i = 0;
+	    findTag(start, tags, extensions, &tag, &ext);
+
+	    if (tag) {
+		format[currToken].u.tag.ext = NULL;
+		format[currToken].u.tag.tag = tag->val;
+	    } else if (ext) {
+		format[currToken].u.tag.ext = ext->u.tagFunction;
+		format[currToken].u.tag.extNum = ext - extensions;
+	    } else {
+		*error = _("unknown tag");
+		freeFormat(format, numTokens);
+		return 1;
+	    }
+
+	    format[currToken].type = PTOK_TAG;
+
+	    start = next;
 
 	    break;
 
-	  case '[':
+	case '[':
 	    *dst++ = '\0';
 	    *start++ = '\0';
 	    currToken++;
@@ -1682,8 +1583,8 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 
 	    break;
 
-	  case ']':
-	  case '}':
+	case ']':
+	case '}':
 	    if ((*start == ']' && state != PARSER_IN_ARRAY) ||
 	        (*start == '}' && state != PARSER_IN_EXPR)) {
 		if (*start == ']')
@@ -1698,7 +1599,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    done = 1;
 	    break;
 
-	  default:
+	default:
 	    if (currToken < 0 || format[currToken].type != PTOK_STRING) {
 		currToken++;
 		format[currToken].type = PTOK_STRING;
@@ -1734,9 +1635,10 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	const struct headerSprintfExtension * extensions,
 	/*@out@*/ char ** endPtr, /*@out@*/ const char ** error)
 {
-    char * chptr, * end;
     const struct headerTagTableEntry * tag;
     const struct headerSprintfExtension * ext;
+    char * chptr;
+    char * end;
 
     *error = NULL;
     chptr = str;
@@ -1759,6 +1661,7 @@ static int parseExpression(struct sprintfToken * token, char * str,
     if (parseFormat(chptr, tags, extensions, &token->u.cond.ifFormat, 
 		    &token->u.cond.numIfTokens, &end, PARSER_IN_EXPR, error)) 
 	return 1;
+
     if (!*end) {
 	*error = _("} expected in expression");
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
@@ -1913,12 +1816,11 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     }
     
     switch (type) {
-      case RPM_STRING_ARRAY_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
 	strarray = (const char **)data;
 
-	if (tagtype) {
+	if (tagtype)
 	    val = tagtype(RPM_STRING_TYPE, strarray[element], buf, tag->pad, 0);
-	}
 
 	if (!val) {
 	    strcat(buf, "s");
@@ -1932,10 +1834,9 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 
 	break;
 
-      case RPM_STRING_TYPE:
-	if (tagtype) {
+    case RPM_STRING_TYPE:
+	if (tagtype)
 	    val = tagtype(RPM_STRING_ARRAY_TYPE, data, buf, tag->pad,  0);
-	}
 
 	if (!val) {
 	    strcat(buf, "s");
@@ -1946,21 +1847,20 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	}
 	break;
 
-      case RPM_CHAR_TYPE:
-      case RPM_INT8_TYPE:
-      case RPM_INT16_TYPE:
-      case RPM_INT32_TYPE:
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+    case RPM_INT16_TYPE:
+    case RPM_INT32_TYPE:
 	switch (type) {
-	  case RPM_CHAR_TYPE:	
-	  case RPM_INT8_TYPE:	intVal = *(((int_8 *) data) + element); break;
-	  case RPM_INT16_TYPE:	intVal = *(((uint_16 *) data) + element); break;
-	  default:		/* keep -Wall quiet */
-	  case RPM_INT32_TYPE:	intVal = *(((int_32 *) data) + element);
+	case RPM_CHAR_TYPE:	
+	case RPM_INT8_TYPE:	intVal = *(((int_8 *) data) + element); break;
+	case RPM_INT16_TYPE:	intVal = *(((uint_16 *) data) + element); break;
+	default:		/* keep -Wall quiet */
+	case RPM_INT32_TYPE:	intVal = *(((int_32 *) data) + element);
 	}
 
-	if (tagtype) {
+	if (tagtype)
 	    val = tagtype(RPM_INT32_TYPE, &intVal, buf, tag->pad,  element);
-	}
 
 	if (!val) {
 	    strcat(buf, "d");
@@ -1970,7 +1870,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	}
 	break;
 
-      default:
+    default:
 	val = xstrdup(_("(unknown type)"));
 	break;
     }
@@ -1978,11 +1878,12 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     return val;
 }
 
-static char * singleSprintf(Header h, struct sprintfToken * token,
+static const char * singleSprintf(Header h, struct sprintfToken * token,
 			    const struct headerSprintfExtension * extensions,
 			    struct extensionCache * extCache, int element)
 {
-    char * val, * thisItem;
+    char * val;
+    const char * thisItem;
     int thisItemLen;
     int len, alloced;
     int i, j;
@@ -1994,20 +1895,20 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
     /* we assume the token and header have been validated already! */
 
     switch (token->type) {
-      case PTOK_NONE:
+    case PTOK_NONE:
 	break;
 
-      case PTOK_STRING:
+    case PTOK_STRING:
 	val = xmalloc(token->u.string.len + 1);
 	strcpy(val, token->u.string.string);
 	break;
 
-      case PTOK_TAG:
+    case PTOK_TAG:
 	val = formatValue(&token->u.tag, h, extensions, extCache,
 			  token->u.tag.justOne ? 0 : element);
 	break;
 
-      case PTOK_COND:
+    case PTOK_COND:
 	if (token->u.cond.tag.ext ||
 	    headerIsEntry(h, token->u.cond.tag.tag)) {
 	    condFormat = token->u.cond.ifFormat;
@@ -2032,12 +1933,12 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	    }
 	    strcat(val, thisItem);
 	    len += thisItemLen;
-	    free(thisItem);
+	    free((void *)thisItem);
 	}
 
 	break;
 
-      case PTOK_ARRAY:
+    case PTOK_ARRAY:
 	numElements = -1;
 	for (i = 0; i < token->u.array.numTokens; i++) {
 	    if (token->u.array.format[i].type != PTOK_TAG ||
@@ -2079,7 +1980,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 		    }
 		    strcat(val, thisItem);
 		    len += thisItemLen;
-		    free(thisItem);
+		    free((void *)thisItem);
 		}
 	    }
 	}
@@ -2135,10 +2036,8 @@ char * headerSprintf(Header h, const char * origFmt,
     struct sprintfToken * format;
     int numTokens;
     char * answer;
-    const char * piece;
     int answerLength;
     int answerAlloced;
-    int pieceLength;
     int i;
     struct extensionCache * extCache;
  
@@ -2159,6 +2058,9 @@ char * headerSprintf(Header h, const char * origFmt,
     *answer = '\0';
 
     for (i = 0; i < numTokens; i++) {
+	const char * piece;
+	int pieceLength;
+
 	piece = singleSprintf(h, format + i, extensions, extCache, 0);
 	if (piece) {
 	    pieceLength = strlen(piece);

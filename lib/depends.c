@@ -651,18 +651,10 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     int count;
     const char ** obsoletes;
     int alNum;
-    int * caps;
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
 	return 1;
-
-    /* Make sure we've implemented all of the capabilities we need */
-    if (headerGetEntry(h, RPMTAG_CAPABILITY, NULL, (void **)&caps, &count)) {
-	if (count != 1 || *caps) {
-	    return 2;
-	}
-    }
 
     /* FIXME: handling upgrades like this is *almost* okay. It doesn't
        check to make sure we're upgrading to a newer version, and it
@@ -1127,8 +1119,8 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	case 0:		/* requirements are satisfied. */
 	    break;
 	case 1:		/* requirements are not satisfied. */
-	    rpmMessage(RPMMESS_DEBUG, _("package %s require not satisfied: %s\n"),
-		    name, keyDepend+2);
+	    rpmMessage(RPMMESS_DEBUG, _("package %s-%s-%s require not satisfied: %s\n"),
+		    name, version, release, keyDepend+2);
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
@@ -1300,25 +1292,24 @@ static int addOrderedPack(rpmTransactionSet rpmdep,
     int packageNum = package - rpmdep->addedPackages.list;
     int i;
     struct availablePackage * match;
-    char * errorString;
-    const char ** stack;
     int rc = 0;
 
     *errorStack++ = package->name;
 
     if (selected[packageNum] > 0) {
+	const char * errorString;
+	const char ** stack;
+	char * t;
+
 	i = 0;
 	stack = errorStack - 1;
-	while (*(--stack)) {
+	while (*(--stack))
 	    i += strlen(*stack) + 1;
-	}
 
-	errorString = alloca(i + 2);
-	*errorString = '\0';
-
+	errorString = t = alloca(i + 2);
 	while ((++stack) < errorStack) {
-	    strcat(errorString, *stack);
-	    strcat(errorString, " ");
+	    t = stpcpy(t, *stack);
+	    *t++ = ' ';
 	}
 
 	rpmError(RPMMESS_PREREQLOOP, _("loop in prerequisite chain: %s"),
@@ -1375,15 +1366,9 @@ static int addOrderedPack(rpmTransactionSet rpmdep,
 
 static int orderListIndexCmp(const void * one, const void * two)
 {
-    const struct orderListIndex * a = one;
-    const struct orderListIndex * b = two;
-
-    if (a->alIndex < b->alIndex)
-	return -1;
-    if (a->alIndex > b->alIndex)
-	return 1;
-
-    return 0;
+    int a = ((const struct orderListIndex *)one)->alIndex;
+    int b = ((const struct orderListIndex *)two)->alIndex;
+    return (a - b);
 }
 
 int rpmdepOrder(rpmTransactionSet rpmdep)

@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.46
+Release: 0.47
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -257,6 +257,13 @@ fi
 * Sun Jul  9 2000 Jeff Johnson <jbj@redhat.com>
 - add pre-transaction syscall's to handle /etc/init.d change.
 - don't bother saving '/' as fingerprint subdir.
+- eliminate legacy RPMTAG_{OBSOLETES,PROVIDES,CAPABILITY}.
+- eliminate unused headerGz{Read,Write}.
+- fix: payload compression tag not nul terminated.
+- prefix payload paths with "./", otherwise "/" can't be represented.
+- fix: compressFilelist broke when fed '/'.
+- fix: typo in --last popt alias (#12690).
+- fix: clean file paths before performing -qf (#12493).
 
 * Wed Jul  5 2000 Jeff Johnson <jbj@redhat.com>
 - change optflags for i386.

@@ -41,7 +41,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	tagflags |= RPMSENSE_PROVIDES;
 	h = pkg->header;
 	break;
-    case RPMTAG_OBSOLETES:
+    case RPMTAG_OBSOLETEFLAGS:
 	tagflags |= RPMSENSE_OBSOLETES;
 	h = pkg->header;
 	break;
@@ -101,7 +101,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 
 	/* Don't permit file names as args for certain tags */
 	switch (tag) {
-	case RPMTAG_OBSOLETES:
+	case RPMTAG_OBSOLETEFLAGS:
 	case RPMTAG_CONFLICTFLAGS:
 	case RPMTAG_BUILDCONFLICTS:
 	    if (r[0] == '/') {
@@ -145,8 +145,8 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	    switch(tag) {
 	    case RPMTAG_BUILDPREREQ:
 	    case RPMTAG_PREREQ:
-	    case RPMTAG_PROVIDES:
-	    case RPMTAG_OBSOLETES:
+	    case RPMTAG_PROVIDEFLAGS:
+	    case RPMTAG_OBSOLETEFLAGS:
 		/* Add prereq on rpm version that implements versioning */
 		addReqProv(spec, h,
 			RPMSENSE_PREREQ|(RPMSENSE_GREATER|RPMSENSE_EQUAL),
