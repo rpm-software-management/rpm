@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-26 17:29-0500\n"
+"POT-Creation-Date: 1999-11-30 12:53-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -2180,7 +2180,7 @@ msgstr "polo¾ka 'vy¾aduje' balíèku %s není splnìna: %s\n"
 msgid "package %s conflicts: %s\n"
 msgstr "balíèek %s koliduje: %s\n"
 
-#: lib/depends.c:1111 lib/depends.c:1419
+#: lib/depends.c:1111 lib/depends.c:1410
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "nelze èíst hlavièku u %d pro kontrolu závislostí"
@@ -2340,76 +2340,76 @@ msgstr ""
 msgid "installing a source package\n"
 msgstr "probíhá instalace binárních balíèkù\n"
 
-#: lib/install.c:417
+#: lib/install.c:426
 #, fuzzy, c-format
-msgid "cannot create %s: %s"
+msgid "cannot create sourcedir %s"
 msgstr "nelze otevøít soubor %s: "
 
-#: lib/install.c:425 lib/install.c:447
+#: lib/install.c:432 lib/install.c:462
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "nelze otevøít soubor %s: "
 
-#: lib/install.c:429
+#: lib/install.c:436
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:440
+#: lib/install.c:456
 #, fuzzy, c-format
-msgid "cannot create %s"
+msgid "cannot create specdir %s"
 msgstr "nelze otevøít soubor %s: "
 
-#: lib/install.c:451
+#: lib/install.c:466
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: lib/install.c:485 lib/install.c:513
+#: lib/install.c:500 lib/install.c:528
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "balíèek %s neobsahuje soubory"
 
-#: lib/install.c:535
+#: lib/install.c:550
 #, fuzzy, c-format
 msgid "renaming %s to %s\n"
 msgstr "Probíhá získávání %s jako %s\n"
 
-#: lib/install.c:537 lib/install.c:816 lib/uninstall.c:27
+#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:27
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s nelze pøejmenovat na %s: %s"
 
-#: lib/install.c:628
+#: lib/install.c:643
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:685
+#: lib/install.c:700
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "balíèek %s-%s-%s obsahuje sdílení soubory\n"
 
-#: lib/install.c:746
+#: lib/install.c:761
 #, fuzzy
 msgid "stopping install as we're running --test\n"
 msgstr "probíhá zastavení zdrojové instalace, nebo» jde jen o testování\n"
 
-#: lib/install.c:751
+#: lib/install.c:766
 #, fuzzy
 msgid "running preinstall script (if any)\n"
 msgstr "spou¹tí se pøípadný poinstalaèní skript\n"
 
-#: lib/install.c:776
+#: lib/install.c:791
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:812
+#: lib/install.c:827
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:886
+#: lib/install.c:901
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "spou¹tí se pøípadný poinstalaèní skript\n"
@@ -2660,157 +2660,157 @@ msgstr "chyba: nelze naèíst databázový záznam\n"
 msgid "open of %s failed: %s\n"
 msgstr "nelze otevøít %s: %s\n"
 
-#: lib/query.c:486
+#: lib/query.c:487
 msgid "old format source packages cannot be queried\n"
 msgstr "na zdrojové balíèky starého formátu se nelze dotazovat\n"
 
-#: lib/query.c:495 lib/rpminstall.c:227
+#: lib/query.c:496 lib/rpminstall.c:227
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
 
-#: lib/query.c:498
+#: lib/query.c:499
 #, c-format
 msgid "query of %s failed\n"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:526
+#: lib/query.c:527
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:551
+#: lib/query.c:552
 msgid "could not read database record!\n"
 msgstr "nelze naèíst databázový záznam!\n"
 
-#: lib/query.c:562
+#: lib/query.c:563
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
-#: lib/query.c:572
+#: lib/query.c:573
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾ádný balíèek neposkytuje %s\n"
 
-#: lib/query.c:582
+#: lib/query.c:583
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:592
+#: lib/query.c:593
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: lib/query.c:607
+#: lib/query.c:608
 #, c-format
 msgid "file %s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: lib/query.c:610
+#: lib/query.c:611
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "¾ádný balíèek nevlastní soubor %s\n"
 
-#: lib/query.c:623
+#: lib/query.c:624
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/query.c:626
+#: lib/query.c:627
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "probíhá dotaz na záznam èíslo %d\n"
 
-#: lib/query.c:629
+#: lib/query.c:630
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "záznam %d nelze naèíst\n"
 
-#: lib/query.c:641 lib/rpminstall.c:417
+#: lib/query.c:642 lib/rpminstall.c:417
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: lib/query.c:644
+#: lib/query.c:645
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
 
-#: lib/query.c:666
+#: lib/query.c:667
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Chybné otevøení\n"
 
-#: lib/query.c:725
+#: lib/query.c:726
 #, fuzzy
 msgid "query package owning file"
 msgstr "dotazy na balíèek vlastnící <soubor>"
 
-#: lib/query.c:727
+#: lib/query.c:728
 #, fuzzy
 msgid "query packages in group"
 msgstr "balíèek nemá skupinu\n"
 
-#: lib/query.c:729
+#: lib/query.c:730
 #, fuzzy
 msgid "query a package file"
 msgstr "dotazovat v¹echny balíèky"
 
-#: lib/query.c:733
+#: lib/query.c:734
 #, fuzzy
 msgid "query a spec file"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:735
+#: lib/query.c:736
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "dotazy na balíèky aktivované <balíkem>"
 
-#: lib/query.c:737
+#: lib/query.c:738
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "dotazovat balíèky vy¾adující schopnost <sch>"
 
-#: lib/query.c:739
+#: lib/query.c:740
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "dotazovat balíèky poskytující schopnost <sch>"
 
-#: lib/query.c:778
+#: lib/query.c:779
 #, fuzzy
 msgid "list all configuration files"
 msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
 
-#: lib/query.c:780
+#: lib/query.c:781
 #, fuzzy
 msgid "list all documentation files"
 msgstr "nainstalovat dokumentaci"
 
-#: lib/query.c:782
+#: lib/query.c:783
 #, fuzzy
 msgid "dump basic file information"
 msgstr "zobrazit informace o balíèku"
 
-#: lib/query.c:784
+#: lib/query.c:785
 #, fuzzy
 msgid "list files in package"
 msgstr "binární balíèek starého typu\n"
 
-#: lib/query.c:788
+#: lib/query.c:789
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:790
+#: lib/query.c:791
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:793
+#: lib/query.c:794
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:795
+#: lib/query.c:796
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "zobrazit seznam souborù balíèkù"
@@ -2989,76 +2989,76 @@ msgid ""
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:467
+#: lib/rpmdb.c:469
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "balíèek %s není uveden v %s"
 
-#: lib/rpmdb.c:478
+#: lib/rpmdb.c:480
 #, c-format
 msgid "package %s not found in %s"
 msgstr "balíèek %s nenalezen v %s"
 
-#: lib/rpmdb.c:502 lib/uninstall.c:86
+#: lib/rpmdb.c:504 lib/uninstall.c:86
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "nelze èíst hlavièku u %d pro deinstalaci"
 
-#: lib/rpmdb.c:510
+#: lib/rpmdb.c:512
 msgid "package has no name"
 msgstr "balíèek nemá název"
 
-#: lib/rpmdb.c:512
+#: lib/rpmdb.c:514
 msgid "removing name index\n"
 msgstr "odstraòuje se rejstøík názvù\n"
 
-#: lib/rpmdb.c:517
+#: lib/rpmdb.c:519
 msgid "package has no group\n"
 msgstr "balíèek nemá skupinu\n"
 
-#: lib/rpmdb.c:519
+#: lib/rpmdb.c:521
 msgid "removing group index\n"
 msgstr "odstraòuje se rejstøík skupin\n"
 
-#: lib/rpmdb.c:526
+#: lib/rpmdb.c:528
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr "odstraòuje se rejstøík 'poskytuje' pro %s\n"
 
-#: lib/rpmdb.c:541
+#: lib/rpmdb.c:543
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr "odstraòuje se rejstøík 'vy¾aduje' pro %s\n"
 
-#: lib/rpmdb.c:553
+#: lib/rpmdb.c:555
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr "odstraòuje se rejstøík aktivací pro %s\n"
 
-#: lib/rpmdb.c:564
+#: lib/rpmdb.c:566
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr "odstraòuje se rejstøík konfliktù pro %s\n"
 
-#: lib/rpmdb.c:575
+#: lib/rpmdb.c:577
 #, c-format
 msgid "removing file index for %s\n"
 msgstr "odstraòuje se rejstøík souborù pro %s\n"
 
-#: lib/rpmdb.c:584
+#: lib/rpmdb.c:586
 msgid "package has no files\n"
 msgstr "balíèek neobsahuje soubory\n"
 
-#: lib/rpmdb.c:686
+#: lib/rpmdb.c:688
 msgid "cannot allocate space for database"
 msgstr "nelze alokovat prostor pro databázi"
 
-#: lib/rpmdb.c:745
+#: lib/rpmdb.c:747
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nelze èíst hlavièku u %d pro inovaci"
 
-#: lib/rpmdb.c:757
+#: lib/rpmdb.c:759
 msgid "header changed size!"
 msgstr "hlavièka zmìnila velikost!"
 
@@ -3159,67 +3159,67 @@ msgstr "chyba: nelze otevøít %s\n"
 msgid "Installing %s\n"
 msgstr "Probíhá instalace %s\n"
 
-#: lib/rpmio.c:679
+#: lib/rpmio.c:750
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:682
+#: lib/rpmio.c:753
 #, fuzzy
 msgid "Bad server response"
 msgstr "Chybná odezva serveru FTP"
 
-#: lib/rpmio.c:685
+#: lib/rpmio.c:756
 #, fuzzy
 msgid "Server IO error"
 msgstr "V/V chyba FTP"
 
-#: lib/rpmio.c:688
+#: lib/rpmio.c:759
 #, fuzzy
 msgid "Server timeout"
 msgstr "Promlka serveru FTP"
 
-#: lib/rpmio.c:691
+#: lib/rpmio.c:762
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Nelze vyhledat adresu hostitelského serveru FTP"
 
-#: lib/rpmio.c:694
+#: lib/rpmio.c:765
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Nelze vyhledat název hostitelského serveru FTP"
 
-#: lib/rpmio.c:697
+#: lib/rpmio.c:768
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "K serveru FTP se nelze pøipojit"
 
-#: lib/rpmio.c:700
+#: lib/rpmio.c:771
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Se serverem FTP nelze navázat datové spojení"
 
-#: lib/rpmio.c:703
+#: lib/rpmio.c:774
 msgid "IO error to local file"
 msgstr "V/V chyba na místní soubor"
 
-#: lib/rpmio.c:706
+#: lib/rpmio.c:777
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pøi nastavení vzdáleného serveru na pasivní re¾im"
 
-#: lib/rpmio.c:709
+#: lib/rpmio.c:780
 msgid "File not found on server"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: lib/rpmio.c:712
+#: lib/rpmio.c:783
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:716
+#: lib/rpmio.c:787
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neznámá nebo neèekaná chyba FTP"
 
-#: lib/rpmio.c:1237
+#: lib/rpmio.c:1308
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "probíhá pøihla¹ování na %s jako %s, h. %s\n"
@@ -3589,6 +3589,10 @@ msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "%s: Chybné otevøení\n"
+
+#, fuzzy
+#~ msgid "cannot create %s"
+#~ msgstr "nelze otevøít soubor %s: "
 
 #, fuzzy
 #~ msgid "Unable to stat icon: %s"
