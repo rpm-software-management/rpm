@@ -90,6 +90,7 @@ extern const int rpmTagTableSize;
 #define RPMTAG_EXCLUDEOS                1060
 #define RPMTAG_EXCLUSIVEARCH            1061
 #define RPMTAG_EXCLUSIVEOS              1062
+#define RPMTAG_AUTOREQDEP               1063 /* used internally by builds */
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
