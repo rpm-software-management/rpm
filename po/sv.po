@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
 "POT-Creation-Date: 2000-07-31 08:48-0400\n"
-"PO-Revision-Date: 2000-08-02 18:34+0200\n"
+"PO-Revision-Date: 2000-08-02 19:41+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3105,19 +3105,19 @@ msgstr ""
 "\n"
 "--> Denna version av rpm kompilerades inte med stöd för \"%%_dbapi %d\".\n"
 "    Verifiera inställningen av makrot %%_dbapi med \"rpm --showrc\" och\n"
-"    konfigurera \"%%_dbapi 3\" (d.v.s. skapa och/eller editera "
+"    konfigurera \"%%_dbapi 3\" (d.v.s. skapa och/eller ändra "
 "/etc/rpm/macros).\n"
 "\n"
 
 #: lib/rpmdb.c:273
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)"
-msgstr "kan inte öppna %s-index med db%d - %s (%d)"
+msgstr "kan inte öppna %s-indexet med db%d - %s (%d)"
 
 #: lib/rpmdb.c:293
 #, c-format
 msgid "cannot open %s index"
-msgstr "kan inte öppna %s-index"
+msgstr "kan inte öppna %s-indexet"
 
 #: lib/rpmdb.c:308
 #, c-format
@@ -3146,7 +3146,7 @@ msgstr ""
 "\n"
 "--> Den konfigurerade %%_dbapi var db%d, men rpmdatabasen är i db%d-format.\n"
 "    Verifiera inställningen av makrot %%_dbapi med \"rpm --showrc\" och\n"
-"    konfigurera \"%%_dbapi %d\" (d.v.s. skapa och/eller editera "
+"    konfigurera \"%%_dbapi %d\" (d.v.s. skapa och/eller ändra "
 "/etc/rpm/macros).\n"
 "\n"
 
@@ -3171,7 +3171,7 @@ msgstr ""
 #: lib/rpmdb.c:404
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index"
-msgstr "fel(%d) när \"%s\"-poster hämtades från %s-index"
+msgstr "fel(%d) när \"%s\"-poster hämtades från %s-indexet"
 
 #: lib/rpmdb.c:522
 #, c-format
@@ -3214,12 +3214,12 @@ msgstr "tar bort 0 %s-poster.\n"
 #: lib/rpmdb.c:1719
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
-msgstr "tar bort \"%s\" från %s-index.\n"
+msgstr "tar bort \"%s\" från %s-indexet.\n"
 
 #: lib/rpmdb.c:1728
 #, c-format
 msgid "removing %d entries from %s index.\n"
-msgstr "tar bort %d poster från %s-index.\n"
+msgstr "tar bort %d poster från %s-indexet.\n"
 
 #: lib/rpmdb.c:1870
 #, c-format
@@ -3234,12 +3234,12 @@ msgstr "lägger till 0 %s-poster.\n"
 #: lib/rpmdb.c:1943
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
-msgstr "lägger till \"%s\" till %s-index.\n"
+msgstr "lägger till \"%s\" till %s-indexet.\n"
 
 #: lib/rpmdb.c:1952
 #, c-format
 msgid "adding %d entries to %s index.\n"
-msgstr "lägger till %d poster till %s-index.\n"
+msgstr "lägger till %d poster till %s-indexet.\n"
 
 #: lib/rpmdb.c:2310
 #, c-format
