@@ -395,6 +395,20 @@ static int createLinks(struct hardLink * li, char ** failedFile) {
     return 0;
 }
 
+static int eatBytes(struct ourfd * fd, int amount) {
+    char buf[4096];
+    int bite;
+   
+    while (amount) {
+	bite = (amount > sizeof(buf)) ? sizeof(buf) : amount;
+	if (ourread(fd, buf, bite) != bite)
+	    return CPIO_READ_FAILED;
+	amount -= bite;
+    }
+
+    return 0;
+}
+
 int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings, 
 		       int numMappings, cpioCallback cb, void * cbData,
 		       char ** failedFile) {
@@ -432,7 +446,9 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 			  cpioFileMapCmp);
 	}
 
-	if (!mappings || map) {
+	if (mappings && !map) {
+	    eatBytes(&fd, ch.size);
+	} else {
 	    cpioMode = ch.mode;
 
 	    if (map) {

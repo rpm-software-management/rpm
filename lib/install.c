@@ -600,6 +600,7 @@ static int installArchive(int fd, struct fileInfo * files,
     gzFile stream;
     int rc, i;
     struct cpioFileMapping * map = NULL;
+    int mappedFiles;
     char * failedFile;
     struct callbackInfo info;
 
@@ -619,24 +620,27 @@ static int installArchive(int fd, struct fileInfo * files,
 
     if (files) {
 	map = alloca(sizeof(*map) * fileCount);
-	for (i = 0; i < fileCount; i++) {
-	    map[i].archivePath = files[i].cpioPath;
-	    map[i].finalPath = files[i].rootedPath;
-	    map[i].finalMode = files[i].mode;
-	    map[i].finalUid = files[i].uid;
-	    map[i].finalGid = files[i].gid;
-	    map[i].mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID |
-			      CPIO_MAP_GID;
+	for (i = 0, mappedFiles = 0; i < fileCount; i++) {
+	    if (!files[i].install) continue;
+
+	    map[mappedFiles].archivePath = files[i].cpioPath;
+	    map[mappedFiles].finalPath = files[i].rootedPath;
+	    map[mappedFiles].finalMode = files[i].mode;
+	    map[mappedFiles].finalUid = files[i].uid;
+	    map[mappedFiles].finalGid = files[i].gid;
+	    map[mappedFiles].mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | 
+					CPIO_MAP_UID | CPIO_MAP_GID;
+	    mappedFiles++;
 	}
 
-	qsort(map, fileCount, sizeof(*map), cpioFileMapCmp);
+	qsort(map, mappedFiles, sizeof(*map), cpioFileMapCmp);
     }
 
     if (notify)
 	notify(0, archiveSize);
 
     stream = gzdopen(fd, "r");
-    rc = cpioInstallArchive(stream, map, fileCount, 
+    rc = cpioInstallArchive(stream, map, mappedFiles, 
 			    ((notify && archiveSize) || specFile) ? 
 				callback : NULL, 
 			    &info, &failedFile);
