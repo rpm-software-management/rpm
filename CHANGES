@@ -1,5 +1,7 @@
 2.2.3 -> 2.2.4:
 	- allow -R to %patch
+	- moved to use GNU autoconf, though it probably isn't perfect yet
+	  (thanks Kristof Depraetere)
 
 2.2.2 -> 2.2.3:
 	- fixed script file md5 checking when files are in a root
