@@ -387,7 +387,7 @@ char * oldrpmdbGetPackageGroup(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel 
 static char * getScript(char * which, struct oldrpmdb *oldrpmdb, 
 		        struct oldrpmdbLabel label) {
     datum key, rec;
-    char * labelstr;
+    char * labelstr, * l;
 
     labelstr = oldrpmdbLabelToLabelstr(label, 0);
     labelstr = realloc(labelstr, strlen(labelstr) + 10);
@@ -399,11 +399,16 @@ static char * getScript(char * which, struct oldrpmdb *oldrpmdb,
     
     rec = gdbm_fetch(oldrpmdb->postIndex, key);
     free(labelstr);
-    if (!rec.dptr) {
-	return NULL;
-    }
 
-    return rec.dptr;
+    if (!rec.dptr) return NULL;
+
+    l = malloc(rec.dsize + 1);
+    strncpy(l, rec.dptr, rec.dsize);
+    l[rec.dsize] = '\0';
+
+    free(rec.dptr);
+
+    return l;
 }
 
 char *oldrpmdbGetPackagePostun (struct oldrpmdb *oldrpmdb, 
