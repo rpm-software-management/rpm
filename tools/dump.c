@@ -11,18 +11,18 @@ void main(int argc, char ** argv)
     Header h;
     int fd;
 
-    if (argc != 2) {
-	fprintf(stderr, "dump <filespec>\n");
-	exit(1);
+    if (argc == 1) {
+	fd = 0;
+    } else {
+	fd = open(argv[1], O_RDONLY, 0644);
     }
 
-    fd = open(argv[1], O_RDONLY);
     if (fd < 0) {
 	fprintf(stderr, "cannot open %s: %s\n", argv[1], strerror(errno));
 	exit(1);
     }
 
-    h = readHeader(fd);
+    h = readHeader(fd, HEADER_MAGIC);
     if (!h) {
 	fprintf(stderr, "readHeader error: %s\n", strerror(errno));
 	exit(1);
