@@ -6,7 +6,7 @@ OPTS = -O2
 CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib -Ibuild -I../lib -I../build
 LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
 LIBEFENCE = -lefence
-LOADLIBES = -lbuild -lrpm -lgdbm -ldb $(LIBEFENCE)
+LOADLIBES = -lbuild -lrpm -lgdbm -ldb -lgz $(LIBEFENCE)
 AR = ar r
 RANLIB = ranlib
 
