@@ -51,15 +51,13 @@ int readSignature(int fd, short sig_type, void **sig)
 int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
 {
     switch (sig_type) {
-    case RPMSIG_NONE:
-	/* Do nothing */
-	break;
     case RPMSIG_PGP262_1024:
-	makePGPSignature(file, ofd, passPhrase);
+        return makePGPSignature(file, ofd, passPhrase);
 	break;
+    case RPMSIG_NONE:
     }
 
-    return 1;
+    return 0;
 }
 
 #if 0
