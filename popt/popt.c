@@ -2,25 +2,8 @@
    file accompanying popt source distributions, available from
    ftp://ftp.redhat.com/pub/code/popt */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <errno.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
+#include "system.h"
 #include "findme.h"
-#include "popt.h"
 #include "poptint.h"
 
 #ifndef HAVE_STRERROR
@@ -37,7 +20,7 @@ static char * strerror(int errno) {
 
 void poptSetExecPath(poptContext con, const char * path, int allowAbsolute) {
     if (con->execPath) xfree(con->execPath);
-    con->execPath = strdup(path);
+    con->execPath = xstrdup(path);
     con->execAbsolute = allowAbsolute;
 }
 
@@ -69,6 +52,7 @@ poptContext poptGetContext(const char * name, int argc, char ** argv,
     con->os = con->optionStack;
     con->os->argc = argc;
     con->os->argv = (const char **)argv;	/* XXX don't change the API */
+    con->os->argb = PBM_ALLOC(argc);
 
     if (!(flags & POPT_CONTEXT_KEEP_FIRST))
 	con->os->next = 1;			/* skip argv[0] */
@@ -91,10 +75,32 @@ poptContext poptGetContext(const char * name, int argc, char ** argv,
     return con;
 }
 
+static void cleanOSE(struct optionStackEntry *os)
+{
+    if (os->nextArg) {
+	xfree(os->nextArg);
+	os->nextArg = NULL;
+    }
+    if (os->argv) {
+	xfree(os->argv);
+	os->argv = NULL;
+    }
+    if (os->argb) {
+	PBM_FREE(os->argb);
+	os->argb = NULL;
+    }
+}
+
 void poptResetContext(poptContext con) {
     int i;
 
-    con->os = con->optionStack;
+    while (con->os > con->optionStack) {
+	cleanOSE(con->os--);
+    }
+    if (con->os->argb) {
+	PBM_FREE(con->os->argb);
+	con->os->argb = PBM_ALLOC(con->os->argc);
+    }
     con->os->currAlias = NULL;
     con->os->nextCharArg = NULL;
     con->os->nextArg = NULL;
@@ -177,8 +183,7 @@ static int handleAlias(poptContext con, const char * longName, char shortName,
 
     if (i < 0) return 0;
 
-    if ((con->os - con->optionStack + 1)
-	    == POPT_OPTION_DEPTH)
+    if ((con->os - con->optionStack + 1) == POPT_OPTION_DEPTH)
 	return POPT_ERROR_OPTSTOODEEP;
 
     if (nextCharArg && *nextCharArg)
@@ -190,8 +195,9 @@ static int handleAlias(poptContext con, const char * longName, char shortName,
     con->os->nextArg = NULL;
     con->os->nextCharArg = NULL;
     con->os->currAlias = con->aliases + i;
-    con->os->argc = con->os->currAlias->argc;
-    con->os->argv = con->os->currAlias->argv;
+    poptDupArgv(con->os->currAlias->argc, con->os->currAlias->argv,
+		&con->os->argc, &con->os->argv);
+    con->os->argb = PBM_ALLOC(con->os->argc);
 
     return 1;
 }
@@ -297,6 +303,71 @@ findOption(const struct poptOption * table, const char * longName,
     return opt;
 }
 
+static const char *findNextArg(poptContext con, unsigned argx, int delete)
+{
+    struct optionStackEntry * os = con->os;
+    const char * arg;
+
+    do {
+	int i;
+	arg = NULL;
+	while (os->next == os->argc && os > con->optionStack) os--;
+	if (os->next == os->argc && os == con->optionStack) break;
+	for (i = os->next; i < os->argc; i++) {
+	    if (os->argb && PBM_ISSET(i, os->argb)) continue;
+	    if (*os->argv[i] == '-') continue;
+	    if (--argx > 0) continue;
+	    arg = os->argv[i];
+	    if (delete) {
+		if (os->argb == NULL) os->argb = PBM_ALLOC(os->argc);
+		PBM_SET(i, os->argb);
+	    }
+	    break;
+	}
+	if (os > con->optionStack) os--;
+    } while (arg == NULL);
+    return arg;
+}
+
+static const char * expandNextArg(poptContext con, const char * s)
+{
+    const char *a;
+    size_t alen;
+    char *t, *te;
+    size_t tn = strlen(s) + 1;
+    char c;
+
+    te = t = malloc(tn);;
+    while ((c = *s++) != '\0') {
+	switch (c) {
+	case '\\':	/* escape */
+	    c = *s++;
+	    break;
+	case '!':
+	    if (!(s[0] == '#' && s[1] == ':' && s[2] == '+'))
+		break;
+	    if ((a = findNextArg(con, 1, 1)) == NULL)
+		break;
+	    s += 3;
+
+	    alen = strlen(a);
+	    tn += alen;
+	    *te = '\0';
+	    t = realloc(t, tn);
+	    te = t + strlen(t);
+	    strncpy(te, a, alen); te += alen;
+	    continue;
+	    /*@notreached@*/ break;
+	default:
+	    break;
+	}
+	*te++ = c;
+    }
+    *te = '\0';
+    t = realloc(t, strlen(t));
+    return t;
+}
+
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
 int poptGetNextOpt(poptContext con)
 {
@@ -310,17 +381,23 @@ int poptGetNextOpt(poptContext con)
 	const char * longArg = NULL;
 
 	while (!con->os->nextCharArg && con->os->next == con->os->argc
-		&& con->os > con->optionStack)
-	    con->os--;
+		&& con->os > con->optionStack) {
+	    cleanOSE(con->os--);
+	}
 	if (!con->os->nextCharArg && con->os->next == con->os->argc) {
 	    invokeCallbacks(con, con->options, 1);
 	    if (con->doExec) execCommand(con);
 	    return -1;
 	}
 
+	/* Process next long option */
 	if (!con->os->nextCharArg) {
 	    char * localOptString, * optString;
 
+	    if (con->os->argb && PBM_ISSET(con->os->next, con->os->argb)) {
+		con->os->next++;
+		continue;
+	    }
 	    origOptString = con->os->argv[con->os->next++];
 
 	    if (con->restLeftover || *origOptString != '-') {
@@ -351,6 +428,7 @@ int poptGetNextOpt(poptContext con)
 		else
 		    singleDash = 1;
 
+		/* XXX aliases with arg substitution need "--alias=arg" */
 		if (handleAlias(con, optString, '\0', NULL))
 		    continue;
 		if (handleExec(con, optString, '\0'))
@@ -375,6 +453,7 @@ int poptGetNextOpt(poptContext con)
 		con->os->nextCharArg = origOptString + 1;
 	}
 
+	/* Process next short option */
 	if (con->os->nextCharArg) {
 	    origOptString = con->os->nextCharArg;
 
@@ -404,19 +483,24 @@ int poptGetNextOpt(poptContext con)
 	    if (opt->arg)
 		*((int *) opt->arg) = opt->val;
 	} else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
+	    if (con->os->nextArg) {
+		xfree(con->os->nextArg);
+		con->os->nextArg = NULL;
+	    }
 	    if (longArg) {
-		con->os->nextArg = longArg;
+		con->os->nextArg = expandNextArg(con, longArg);
 	    } else if (con->os->nextCharArg) {
-		con->os->nextArg = con->os->nextCharArg;
+		con->os->nextArg = expandNextArg(con, con->os->nextCharArg);
 		con->os->nextCharArg = NULL;
 	    } else {
 		while (con->os->next == con->os->argc &&
-		       con->os > con->optionStack)
-		    con->os--;
+		       con->os > con->optionStack) {
+		    cleanOSE(con->os--);
+		}
 		if (con->os->next == con->os->argc)
 		    return POPT_ERROR_NOARG;
 
-		con->os->nextArg = con->os->argv[con->os->next++];
+		con->os->nextArg = expandNextArg(con, con->os->argv[con->os->next++]);
 	    }
 
 	    if (opt->arg) {
@@ -425,7 +509,7 @@ int poptGetNextOpt(poptContext con)
 
 		switch (opt->argInfo & POPT_ARG_MASK) {
 		  case POPT_ARG_STRING:
-		    *((const char **) opt->arg) = con->os->nextArg;
+		    *((const char **) opt->arg) = xstrdup(con->os->nextArg);
 		    break;
 
 		  case POPT_ARG_INT:
@@ -473,8 +557,9 @@ int poptGetNextOpt(poptContext con)
 	}
 
 	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE
-		     && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL)
-	    con->finalArgv[con->finalArgvCount++] = strdup(con->os->nextArg);
+		     && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL) {
+	    con->finalArgv[con->finalArgvCount++] = xstrdup(con->os->nextArg);
+	}
     }
 
     return opt->val;
@@ -508,6 +593,9 @@ const char ** poptGetArgs(poptContext con) {
 void poptFreeContext(poptContext con) {
     int i;
 
+    poptResetContext(con);
+    if (con->os->argb) free(con->os->argb);
+
     for (i = 0; i < con->numAliases; i++) {
 	if (con->aliases[i].longName) xfree(con->aliases[i].longName);
 	free(con->aliases[i].argv);
@@ -517,9 +605,7 @@ void poptFreeContext(poptContext con) {
 	if (con->execs[i].longName) xfree(con->execs[i].longName);
 	xfree(con->execs[i].script);
     }
-
-    for (i = 0; i < con->finalArgvCount; i++)
-	xfree(con->finalArgv[i]);
+    xfree(con->execs);
 
     free(con->leftovers);
     free(con->finalArgv);
@@ -593,12 +679,12 @@ const char *const poptStrerror(const int error) {
 }
 
 int poptStuffArgs(poptContext con, const char ** argv) {
-    int i;
+    int argc;
 
     if ((con->os - con->optionStack) == POPT_OPTION_DEPTH)
 	return POPT_ERROR_OPTSTOODEEP;
 
-    for (i = 0; argv[i]; i++)
+    for (argc = 0; argv[argc]; argc++)
 	;
 
     con->os++;
@@ -606,8 +692,8 @@ int poptStuffArgs(poptContext con, const char ** argv) {
     con->os->nextArg = NULL;
     con->os->nextCharArg = NULL;
     con->os->currAlias = NULL;
-    con->os->argc = i;
-    con->os->argv = argv;
+    poptDupArgv(argc, argv, &con->os->argc, &con->os->argv);
+    con->os->argb = PBM_ALLOC(argc);
     con->os->stuffed = 1;
 
     return 0;

@@ -5,9 +5,26 @@
 #ifndef H_POPTINT
 #define H_POPTINT
 
+/* Bit mask macros. */
+typedef	unsigned int __pbm_bits;
+#define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
+#define	__PBM_IX(d)		((d) / __PBM_NBITS)
+#define __PBM_MASK(d)		((__pbm_bits) 1 << ((d) % __PBM_NBITS))
+typedef struct {
+    __pbm_bits bits[1];
+} pbm_set;
+#define	__PBM_BITS(set)	((set)->bits)
+
+#define	PBM_ALLOC(d)	calloc(__PBM_IX (d) + 1, sizeof(__pbm_bits))
+#define	PBM_FREE(s)	free(s);
+#define PBM_SET(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] |= __PBM_MASK (d))
+#define PBM_CLR(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] &= ~__PBM_MASK (d))
+#define PBM_ISSET(d, s) ((__PBM_BITS (s)[__PBM_IX (d)] & __PBM_MASK (d)) != 0)
+
 struct optionStackEntry {
     int argc;
     /*@keep@*/ const char ** argv;
+    /*@only@*/ pbm_set * argb;
     int next;
     /*@keep@*/ const char * nextArg;
     /*@keep@*/ const char * nextCharArg;

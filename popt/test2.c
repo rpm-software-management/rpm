@@ -9,11 +9,7 @@
     whim as long as this Copyright remains attached.  
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <popt.h>
-
-#define TEST2
+#include "system.h"
 
 char *PathnameOfKeyFile		= NULL;
 char *PathnameOfOfferFile	= NULL;
@@ -122,6 +118,10 @@ main(int argc, char**argv ) {
         POPT_AUTOHELP
         { NULL, 0, 0, NULL, 0, NULL, NULL }
     };
+
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+#endif
 
     optCon = poptGetContext("createuser", argc, argv, optionsTable, 0);
     poptReadConfigFile(optCon, rcfile );

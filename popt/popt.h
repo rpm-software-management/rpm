@@ -109,8 +109,10 @@ int poptReadConfigFile(poptContext con, const char * fn);
 int poptReadDefaultConfig(poptContext con, int useEnv);
 /* argv should be freed -- this allows ', ", and \ quoting, but ' is treated
    the same as " and both may include \ quotes */
+int poptDupArgv(int argc, const char **argv,
+		/*@out@*/ int * argcPtr, /*@out@*/ const char *** argvPtr);
 int poptParseArgvString(const char * s,
-		/*@out@*/ int * argcPtr, /*@out@*/ char *** argvPtr);
+		/*@out@*/ int * argcPtr, /*@out@*/ const char *** argvPtr);
 /*@observer@*/ const char *const poptStrerror(const int error);
 void poptSetExecPath(poptContext con, const char * path, int allowAbsolute);
 void poptPrintHelp(poptContext con, FILE * f, int flags);

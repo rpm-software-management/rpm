@@ -2,25 +2,27 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = CHANGES autogen.sh findme.h $(man_MANS) popt.spec poptint.h \
+EXTRA_DIST = CHANGES autogen.sh $(man_MANS) popt.spec \
 	testit.sh po/Makefile.in.in po/POTFILES.in po/*.po po/popt.pot popt.ps
 
 SUBDIRS = intl po
 
 INCLUDES = -I$(top_srcdir)
 
-noinst_INCLUDES = findme.h poptint.h
+noinst_HEADERS = findme.h poptint.h system.h
 
 noinst_PROGRAMS = test1 test2
 test1_SOURCES = test1.c
+test1_LDFLAGS = -all-static
 test1_LDADD = $(lib_LTLIBRARIES)
 test2_SOURCES = test2.c
+test2_LDFLAGS = -all-static
 test2_LDADD = $(lib_LTLIBRARIES)
 
 noinst_SCRIPTS = testit.sh
 
 TESTS_ENVIRONMENT = \
-test1="`pwd`/.libs/lt-test1"
+test1="./test1"
 
 TESTS = testit.sh
 

@@ -2,10 +2,7 @@
    file accompanying popt source distributions, available from
    ftp://ftp.redhat.com/pub/code/popt */
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "popt.h"
+#include "system.h"
 
 static int pass2 = 0;
 static void option_callback(poptContext con, enum poptCallbackReason reason,
@@ -71,35 +68,44 @@ static void resetVars(void)
 
 int main(int argc, char ** argv) {
     int rc;
+    int ec = 0;
     poptContext optCon;
     const char ** rest;
     int help = 0;
     int usage = 0;
 
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+#endif
+
     resetVars();
     optCon = poptGetContext("test1", argc, argv, options, 0);
     poptReadConfigFile(optCon, "./test-poptrc");
 
+#if 1
     while ((rc = poptGetNextOpt(optCon)) > 0)	/* Read all the options ... */
 	;
 
     poptResetContext(optCon);			/* ... and then start over. */
     resetVars();
+#endif
 
     pass2 = 1;
     if ((rc = poptGetNextOpt(optCon)) < -1) {
 	fprintf(stderr, "test1: bad argument %s: %s\n",
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
 		poptStrerror(rc));
-	return 2;
+	ec = 2;
+	goto exit;
     }
 
     if (help) {
 	poptPrintHelp(optCon, stdout, 0);
-	return 0;
-    } if (usage) {
+	goto exit;
+    }
+    if (usage) {
 	poptPrintUsage(optCon, stdout, 0);
-	return 0;
+	goto exit;
     }
 
     fprintf(stdout, "arg1: %d arg2: %s", arg1, arg2);
@@ -124,5 +130,10 @@ int main(int argc, char ** argv) {
 
     fprintf(stdout, "\n");
 
-    return 0;
+exit:
+    poptFreeContext(optCon);
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+#endif
+    return ec;
 }

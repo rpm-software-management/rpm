@@ -4,7 +4,8 @@ test1 alias --takerest --
 test1 alias -T --arg2
 test1 alias -O --arg1
 
-test1 alias --wc --arg2 @@1 --arg1 @@2
+test1 alias --grab --arg2 "'foo !#:+'"
+test1 alias --grabbar --grab bar
 
 test1 exec --echo-args echo
 test1 alias -e --echo-args

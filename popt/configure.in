@@ -45,7 +45,7 @@ else
 fi
 AC_SUBST(TARGET)
 
-AC_CHECK_HEADERS(unistd.h alloca.h libintl.h)
+AC_CHECK_HEADERS(alloca.h libintl.h mcheck.h unistd.h)
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then
 	if test "$build" = "mips-sni-sysv4" ; then
@@ -59,9 +59,9 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-AC_CHECK_FUNCS(strerror)
-AC_CHECK_FUNCS(gettext)
-AC_CHECK_FUNCS(dgettext)
+AC_CHECK_FUNCS(strerror mtrace)
+dnl AC_CHECK_FUNCS(gettext)
+dnl AC_CHECK_FUNCS(dgettext)
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])
