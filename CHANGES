@@ -6,6 +6,7 @@
 	  stale after some realloc()s in addEntry()
 	- ignore OS tag for v2 packages -- it was wrong anyway
 	- match shared libs on ".so" rather than ".so."
+	- skip blanks and _end from objdump for auto-provide
 	- fix ExcludeOs: and ExclusiveOs:
 
 2.2 -> 2.2.1:
