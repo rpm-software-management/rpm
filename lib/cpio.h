@@ -1,11 +1,6 @@
 #ifndef H_CPIO
 #define H_CPIO
 
-#include <zlib.h>
-#include <sys/types.h>
-
-#include <rpmio.h>
-
 /** \file lib/cpio.h
  *  Structures used to handle cpio payloads within rpm packages.
  *
@@ -17,9 +12,15 @@
  *
  */
 
-/* Note the CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
-   be positive numbers or this setting the high bit stuff is a bad idea. */
+#include <zlib.h>
+#include <sys/types.h>
 
+#include <rpmio.h>
+
+/**
+ * Note:  CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to
+ * be positive numbers or this setting the high bit stuff is a bad idea.
+ */
 #define CPIOERR_CHECK_ERRNO	0x00008000
 
 #define CPIOERR_BAD_MAGIC	(2			)
@@ -51,14 +52,16 @@
 #define CPIO_MAP_GID		(1 << 3)
 #define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
 
-/*! The structure used to define a cpio payload file. */
+/** The structure used to define a cpio payload file. */
 struct cpioFileMapping {
+/*@{*/
     /*@owned@*/ const char * archivePath; /*!< Path to store in cpio archive. */
     /*@owned@*/ const char * fsPath;	/*!< Location of payload file. */
     mode_t finalMode;		/*!< Mode of payload file (from header). */
     uid_t finalUid;		/*!< Uid of payload file (from header). */
     gid_t finalGid;		/*!< Gid of payload file (from header). */
     int mapFlags;
+/*@}*/
 };
 
 /** The structure passed as first argument during a cpio progress callback.
@@ -66,35 +69,44 @@ struct cpioFileMapping {
  * Note: When building the cpio payload, only "file" is filled in.
  */
 struct cpioCallbackInfo {
+/*@{*/
     /*@dependent@*/ const char * file;	/*!< File name being installed. */
     long fileSize;			/*!< Total file size. */
     long fileComplete;			/*!< Amount of file unpacked. */
     long bytesProcessed;		/*!< No. bytes in archive read. */
+/*@}*/
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef void (*cpioCallback)(struct cpioCallbackInfo * filespec, void * data);
+typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
 
-/* If no mappings are passed, this installs everything! If one is passed
-   it should be sorted according to cpioFileMapCmp() and only files included
-   in the map are installed. Files are installed relative to the current
-   directory unless a mapping is given which specifies an absolute
-   directory. The mode mapping is only used for the permission bits, not
-   for the file type. The owner/group mappings are ignored for the nonroot
-   user. If *failedFile is non-NULL on return, it should be free()d. */
+/**
+ * The RPM internal equivalent of the command line "cpio -i".
+ * If no mappings are passed, this installs everything! If one is passed
+ * it should be sorted according to cpioFileMapCmp() and only files included
+ * in the map are installed. Files are installed relative to the current
+ * directory unless a mapping is given which specifies an absolute
+ * directory. The mode mapping is only used for the permission bits, not
+ * for the file type. The owner/group mappings are ignored for the nonroot
+ * user. If *failedFile is non-NULL on return, it should be free()d.
+ */
 int cpioInstallArchive(FD_t cfd, struct cpioFileMapping * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
 		       /*@out@*/const char ** failedFile);
+/**
+ * The RPM internal equivalent of the command line "cpio -o".
+ */
 int cpioBuildArchive(FD_t cfd, struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, /*@out@*/const char ** failedFile);
 
-/* This is designed to be qsort/bsearch compatible */
+/** This is designed to be qsort/bsearch compatible */
 int cpioFileMapCmp(const void * a, const void * b);
 
+/** */
 /*@observer@*/ const char *cpioStrerror(int rc);
 
 #ifdef __cplusplus
