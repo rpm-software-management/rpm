@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 13:45-0500\n"
+"POT-Creation-Date: 2005-02-03 17:51-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1497,7 +1497,7 @@ msgstr "mntctl() kunde inte returnera storlek: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() kunde inte returnera monteringspunkter: %s\n"
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "kunde inte ta status på %s: %s\n"
@@ -1507,12 +1507,12 @@ msgstr "kunde inte ta status på %s: %s\n"
 msgid "failed to open %s: %s\n"
 msgstr "kunde inte öppna %s: %s\n"
 
-#: lib/fs.c:216
+#: lib/fs.c:230
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%5d 0x%04x %s %s\n"
 
-#: lib/fs.c:341
+#: lib/fs.c:355
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "filen %s är på en okänd enhet\n"

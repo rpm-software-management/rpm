@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 13:45-0500\n"
+"POT-Creation-Date: 2005-02-03 17:51-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -1531,7 +1531,7 @@ msgstr "%s:n luonti epäonnistui\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr ""
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -1541,12 +1541,12 @@ msgstr "en voinut avata %s: %s"
 msgid "failed to open %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fs.c:216
+#: lib/fs.c:230
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/fs.c:341
+#: lib/fs.c:355
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr ""

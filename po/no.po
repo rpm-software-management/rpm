@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 13:45-0500\n"
+"POT-Creation-Date: 2005-02-03 17:51-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1496,7 +1496,7 @@ msgstr "mntctl() feilet å returnere størrelse: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr ""
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "feil under kjøring av stat på %s: %s\n"
@@ -1506,12 +1506,12 @@ msgstr "feil under kjøring av stat på %s: %s\n"
 msgid "failed to open %s: %s\n"
 msgstr "klarte ikke å åpne %s: %s\n"
 
-#: lib/fs.c:216
+#: lib/fs.c:230
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Fil %s: %s\n"
 
-#: lib/fs.c:341
+#: lib/fs.c:355
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "fil %s er på en ukjent enhet\n"

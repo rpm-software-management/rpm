@@ -652,7 +652,7 @@ extern void unsetenv(const char *name);
 #define lchown chown
 #endif
 
-#if HAVE_GETMNTINFO_R || HAVE_MNTCTL
+#if HAVE_GETMNTINFO || HAVE_GETMNTINFO_R || HAVE_MNTCTL
 # define GETMNTENT_ONE 0
 # define GETMNTENT_TWO 0
 # if HAVE_SYS_MNTCTL_H

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 13:45-0500\n"
+"POT-Creation-Date: 2005-02-03 17:51-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1501,7 +1501,7 @@ msgstr "mntctl()에서 크기를 반환하는데 실패함: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl()에서 마운트할 지점을 반환하는데 실패함: %s\n"
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "%s의 상태(stat)를 표시하는데 실패함: %s\n"
@@ -1511,12 +1511,12 @@ msgstr "%s의 상태(stat)를 표시하는데 실패함: %s\n"
 msgid "failed to open %s: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
 
-#: lib/fs.c:216
+#: lib/fs.c:230
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "파일%5d: %07o %s.%s\t %s\n"
 
-#: lib/fs.c:341
+#: lib/fs.c:355
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "%s 파일은 알 수 없는 장치 상에 있습니다\n"

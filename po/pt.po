@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 13:45-0500\n"
+"POT-Creation-Date: 2005-02-03 17:51-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1515,7 +1515,7 @@ msgstr "o mntctl() falhou ao devolver o tamanho: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "o mntctl() falhou ao devolver o número de pontos de montagem: %s\n"
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "Não consegui analisar o %s: %s\n"
@@ -1525,12 +1525,12 @@ msgstr "Não consegui analisar o %s: %s\n"
 msgid "failed to open %s: %s\n"
 msgstr "falhei ao aceder ao %s: %s\n"
 
-#: lib/fs.c:216
+#: lib/fs.c:230
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Ficheiro%5d: %07o %s.%s\t %s\n"
 
-#: lib/fs.c:341
+#: lib/fs.c:355
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "o ficheiro %s está num dispositivo desconhecido\n"

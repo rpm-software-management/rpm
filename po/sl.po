@@ -1,13 +1,13 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.389.2.12 2005/02/02 18:47:47 jbj Exp $
+# $Id: sl.po,v 1.389.2.13 2005/02/03 23:06:01 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 13:45-0500\n"
+"POT-Creation-Date: 2005-02-03 17:51-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1539,7 +1539,7 @@ msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "status %s ni na voljo: %s"
@@ -1549,12 +1549,12 @@ msgstr "status %s ni na voljo: %s"
 msgid "failed to open %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
-#: lib/fs.c:216
+#: lib/fs.c:230
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Datoteka: %4d: %07o %s.%s\t %s\n"
 
-#: lib/fs.c:341
+#: lib/fs.c:355
 #, fuzzy, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "datoteka %s se nahaja na neznani napravi"

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 13:45-0500\n"
+"POT-Creation-Date: 2005-02-03 17:51-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -1504,7 +1504,7 @@ msgstr "mntctl() nie zwróci³o rozmiaru: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() nie zwróci³o punktów montowania: %s\n"
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s nie powiod³o siê: %s\n"
@@ -1514,12 +1514,12 @@ msgstr "stat %s nie powiod³o siê: %s\n"
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s\n"
 
-#: lib/fs.c:216
+#: lib/fs.c:230
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%6d 0x%04x %s %s\n"
 
-#: lib/fs.c:341
+#: lib/fs.c:355
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "plik %s jest na nieznanym urz±dzeniu\n"

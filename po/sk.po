@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-02 13:45-0500\n"
+"POT-Creation-Date: 2005-02-03 17:51-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1536,7 +1536,7 @@ msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 
-#: lib/fs.c:112 lib/fs.c:199 lib/fs.c:318
+#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "nepodarilo sa zisti» stav %s: %s"
@@ -1546,12 +1546,12 @@ msgstr "nepodarilo sa zisti» stav %s: %s"
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/fs.c:216
+#: lib/fs.c:230
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 
-#: lib/fs.c:341
+#: lib/fs.c:355
 #, fuzzy, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "súbor %s sa nachádza na neznámom zariadení"

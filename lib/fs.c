@@ -159,11 +159,20 @@ static int getFilesystemList(void)
 	    return 1;
 	}
 #   elif HAVE_GETMNTINFO_R
+    /* This is OSF */
     struct statfs * mounts = NULL;
     int mntCount = 0, bufSize = 0, flags = MNT_NOWAIT;
     int nextMount = 0;
 
 	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
+#   elif HAVE_GETMNTINFO
+    /* This is Mac OS X */
+    struct statfs * mounts = NULL;
+    int mntCount = 0, flags = MNT_NOWAIT;
+    int nextMount = 0;
+
+	/* XXX 0 on error, errno set */
+	mntCount = getmntinfo(&mounts, flags);
 #   endif
 
     filesystems = xcalloc((numAlloced + 1), sizeof(*filesystems));	/* XXX memory leak */
@@ -191,6 +200,11 @@ static int getFilesystemList(void)
 	    if (getmntent(mtab, &item)) break;
 	    mntdir = item.our_mntdir;
 #	elif HAVE_GETMNTINFO_R
+	    /* This is OSF */
+	    if (nextMount == mntCount) break;
+	    mntdir = mounts[nextMount++].f_mntonname;
+#	elif HAVE_GETMNTINFO
+	    /* This is Mac OS X */
 	    if (nextMount == mntCount) break;
 	    mntdir = mounts[nextMount++].f_mntonname;
 #	endif
