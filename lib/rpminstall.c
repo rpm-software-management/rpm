@@ -9,6 +9,7 @@
 #include "rpmdb.h"
 #include "rpmds.h"
 
+#include "rpmte.h"	/* XXX: rpmts.h needs this for rpmtsScoreEntries */
 #define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
 #include "rpmts.h"
 
@@ -1119,6 +1120,11 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     (void) rpmtsSetFlags(ts, transFlags);
+
+    /*  Make the transaction a rollback transaction.  In a rollback
+     *  a best effort is what we want 
+     */
+    rpmtsSetType(ts, RPMTRANS_TYPE_ROLLBACK);
 
     itids = IDTXload(ts, RPMTAG_INSTALLTID);
     if (itids != NULL) {

@@ -1,10 +1,6 @@
 #ifndef H_RPMTS
 #define H_RPMTS
 
-/** \ingroup rpmts
- * \file lib/rpmts.h
- * Structures and prototypes used for an "rpmts" transaction set.
- */
 
 #include "rpmps.h"
 #include "rpmsw.h"
@@ -38,6 +34,15 @@ typedef enum rpmVSFlags_e {
     RPMVSF_NORSA	= (1 << 19)
     /* bit(s) 16-31 unused */
 } rpmVSFlags;
+
+/**
+ * Transaction Types
+ */
+typedef enum rpmtsType_e {
+	RPMTRANS_TYPE_NORMAL       = 0,
+	RPMTRANS_TYPE_ROLLBACK     = (1 << 0),
+	RPMTRANS_TYPE_AUTOROLLBACK = (1 << 1)
+} rpmtsType;
 
 #define	_RPMVSF_NODIGESTS	\
   ( RPMVSF_NOSHA1HEADER |	\
@@ -92,6 +97,84 @@ typedef	enum rpmtsOpX_e {
 #include "rpmhash.h"	/* XXX hashTable */
 #include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
 
+/**********************
+ * Transaction Scores *
+ **********************
+ * 
+ * In order to allow instance counts to be adjusted properly when an
+ * autorollback transaction is ran, we keep a list that is indexed
+ * by rpm name of whether the rpm has been installed or erased.  This listed
+ * is only updated:
+ *
+ *	iif autorollbacks are enabled.
+ *	iif this is not a rollback or autorollback transaction.
+ *
+ * When creating an autorollback transaction, its rpmts points to the same
+ * rpmtsScore object as the running transaction.  So when the autorollback
+ * transaction runs it can see where each package was in the running transaction
+ * at the point the running transaction failed, and thus on a per package
+ * basis make adjustments to the instance counts.
+ *
+ * XXX: Jeff, I am not convinced that this does not need to be in its own file 
+ *      (i.e. rpmtsScore.{h,c}), but I first wanted to get it working.  
+ */
+struct rpmtsScoreEntry_s {
+	char *         N;		/*!<Name of package                */
+	rpmElementType te_types;	/*!<te types this entry represents */
+	int            installed;	/*!<Was the new header installed   */
+	int            erased;		/*!<Was the old header removed     */
+};
+
+typedef struct rpmtsScoreEntry_s * rpmtsScoreEntry;
+
+struct rpmtsScore_s {
+	int entries;			/*!< Number of scores       */
+	rpmtsScoreEntry * scores;	/*!< Array of score entries */
+    	int nrefs;			/*!< Reference count.       */
+};
+
+typedef struct rpmtsScore_s * rpmtsScore;
+
+
+/** \ingroup rpmts
+ * initialize rpmtsScore for running transaction and autorollback 
+ * transaction.
+ * @param runningTS	Running Transaction.
+ * @param rollbackTS	Rollback Transaction.
+ * @return		RPMRC_OK
+ */
+rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS); 
+
+/** \ingroup rpmts
+ * Free rpmtsScore provided no more references exist against it.
+ * @param score		rpmtsScore to free
+ * @return		RPMRC_OK
+ */
+rpmRC rpmtsScoreFree(rpmtsScore score);
+
+/** \ingroup rpmts
+ * Get rpmtsScore from transaction.
+ * @param ts	RPM Transaction.
+ * @return	rpmtsScore or NULL.
+ */
+rpmtsScore rpmtsGetScore(rpmts ts);
+
+/** \ingroup rpmts
+ * Get rpmtsScoreEntry from rpmtsScore.
+ * @param score   RPM Transaction Score.
+ * @return	  rpmtsScoreEntry or NULL.
+ */
+rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N);
+
+/** \ingroup rpmts
+ * \file lib/rpmts.h
+ * Structures and prototypes used for an "rpmts" transaction set.
+ */
+
+/**************************
+ * END Transaction Scores *
+ **************************/
+
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _cacheDependsRC;
@@ -135,6 +218,7 @@ typedef enum tsStage_e {
 struct rpmts_s {
     rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
+    rpmtsType type;             /*!< default, rollback, autorollback */
 
 /*@refcounted@*/ /*@null@*/
     rpmdb sdb;			/*!< Solve database handle. */
@@ -233,9 +317,9 @@ struct rpmts_s {
 /*@null@*/
     Spec spec;			/*!< Spec file control structure. */
 
+    rpmtsScore score;		/*!< Transaction Score (autorollback). */
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
-
 };
 #endif	/* _RPMTS_INTERNAL */
 
@@ -450,6 +534,26 @@ int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds ds, const void * data),
 		const void * solveData)
 	/*@modifies ts @*/;
+
+/**
+ * Set transaction type.   Allowed types are:
+ * 
+ * 	RPMTRANS_TYPE_NORMAL
+ *	RPMTRANS_TYPE_ROLLBACK
+ * 	RPMTRANS_TYPE_AUTOROLLBACK
+ * 
+ * @param ts		transaction set
+ * @param rollback	rpmtsType
+ * @return		void
+ */
+void rpmtsSetType(rpmts ts, rpmtsType type);
+
+/**
+ * Return the type of a transaction.
+ * @param ts		transaction set
+ * @return		0 it is not, 1 it is.
+ */
+rpmtsType rpmtsGetType(rpmts ts);
 
 /**
  * Return current transaction set problems.
@@ -958,5 +1062,6 @@ uint_32 hGetColor(Header h)
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif	/* H_RPMTS */

@@ -32,6 +32,13 @@
 
 #include "debug.h"
 
+/*
+ * This is needed for the IDTX definitions.  I think probably those need
+ * to be moved into a different source file (idtx.{c,h}), but that is up
+ * Jeff Johnson.
+ */
+#include "rpmcli.h"
+
 /*@access Header @*/		/* XXX ts->notify arg1 is void ptr */
 /*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
 /*@access dbiIndexSet @*/
@@ -46,6 +53,35 @@
 /*@access rpmte @*/
 /*@access rpmtsi @*/
 /*@access rpmts @*/
+
+/* Internal function to rollback a transaction
+ * This is not declared in the header because we not
+ * want others calling this directly (or at all).
+ */
+rpmRC _rpmtsRollback(rpmts rollbackTransaction);
+
+/* Internal function to add an element to a rollback transaction
+ * This is not declared in the header because we not want others 
+ * calling this directly (or at all).
+ */
+rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction, rpmts runningTransaction, rpmte te);
+
+/* You might want to move this into the header Jeff (or even 
+ * to a different file altogether (i.e. the prototype and the 
+ * the function).
+ */
+rpmRC getRepackageHeaderFromTE(rpmte te, rpmts ts, Header *hdrp, char **fn); 
+ 
+/* XXX: This is a hack.  I needed a to setup a notify callback
+ * for the rollback transaction, but I did not want to create
+ * a header for rpminstall.c.
+ */
+extern void * rpmShowProgress(/*@null@*/ const void * arg,
+                        const rpmCallbackType what,
+                        const unsigned long amount,
+                        const unsigned long total,
+                        /*@null@*/ fnpyKey key,
+                        /*@null@*/ void * data);
 
 /**
  */
@@ -953,12 +989,27 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpmtsi qi;	rpmte q;
     int numAdded;
     int numRemoved;
+    rpmts rollbackTransaction = NULL;
+    int rollbackOnFailure = 0;
     void * lock;
     int xx;
+
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0)
 	return -1;
+
+    /* See if we need to rollback on failure */
+    rollbackOnFailure = rpmExpandNumeric(
+	"%{?_rollback_transaction_on_failure}");
+    if(rpmtsGetType(ts) & (RPMTRANS_TYPE_ROLLBACK 
+	| RPMTRANS_TYPE_AUTOROLLBACK)) {
+	rollbackOnFailure = 0;
+    }
+    /* If we are in test mode, there is no need to rollback on 
+     * failure (-;
+     */
+    if(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) rollbackOnFailure = 0;
 
     lock = rpmtsAcquireLock(ts);
     if (lock == NULL)
@@ -1346,6 +1397,56 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     }
 
     /* ===============================================
+     * If we were requested to rollback this transaction
+     * if an error occurs, then we need to create a 
+     * a rollback transaction.
+     */
+     if(rollbackOnFailure) {
+	rpmtransFlags xx;
+	rpmVSFlags ovsflags;
+	rpmVSFlags vsflags;
+
+	rpmMessage(RPMMESS_DEBUG, 
+	    _("Creating auto-rollback transaction\n"));
+
+	rollbackTransaction = rpmtsCreate();
+
+	/* Set the verify signature flags:
+	 * 	- can't verify digests on repackaged packages.  Other than 
+	 *	  they are wrong, this will cause segfaults down stream.
+	 *	- signatures are out too.
+	 * 	- header check are out.
+	 */ 	
+	vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
+	vsflags |= _RPMVSF_NODIGESTS;	    
+	vsflags |= _RPMVSF_NOSIGNATURES;
+	vsflags |= RPMVSF_NOHDRCHK;
+	vsflags |= RPMVSF_NEEDPAYLOAD;      /* XXX no legacy signatures */
+	ovsflags = rpmtsSetVSFlags(ts, vsflags);
+
+	/* 
+	 *  If we run this thing its imperitive that it be known that it
+	 *  is an autorollback transaction.  This will affect the instance
+	 *  counts passed to the scriptlets in the psm.
+	 */
+	rpmtsSetType(rollbackTransaction, RPMTRANS_TYPE_AUTOROLLBACK);
+
+	/* Set transaction flags to be the same as the running transaction */
+	xx = rpmtsSetFlags(rollbackTransaction, rpmtsFlags(ts)); 
+
+	/* Set root dir to be the same as the running transaction */
+	rpmtsSetRootDir(rollbackTransaction, rpmtsRootDir(ts));
+    
+	/* Setup the notify of the call back to be the same as the running
+	 * transaction 
+	 */ 
+	xx = rpmtsSetNotifyCallback(rollbackTransaction, ts->notify, ts->notifyData);
+
+	/* Create rpmtsScore for running transaction and rollback transaction */
+	xx = rpmtsScoreInit(ts, rollbackTransaction);
+     }
+
+    /* ===============================================
      * Save removed files before erasing.
      */
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
@@ -1454,6 +1555,23 @@ assert(psm != NULL);
 			/*@=noeffectuncon@*/
 			p->fd = NULL;
 			ourrc++;
+
+			/* If we should rollback this transaction 
+			   on failure, lets do it.                 */
+			if(rollbackOnFailure) {
+			    rpmMessage(RPMMESS_ERROR, 
+				_("Add failed.  Could not read package header.\n"));
+			    /* Clean up the current transaction */
+			    p->h = headerFree(p->h);
+			    xx = rpmdbSync(rpmtsGetRdb(ts));
+			    psm = rpmpsmFree(psm);
+			    p->fi = rpmfiFree(p->fi);
+			    pi = rpmtsiFree(pi);
+
+			    /* Run the rollback transaction */
+			    xx = _rpmtsRollback(rollbackTransaction);
+			    return -1;
+			}
 			/*@innerbreak@*/ break;
 		    case RPMRC_NOTTRUSTED:
 		    case RPMRC_NOKEY:
@@ -1501,11 +1619,67 @@ assert(psm != NULL);
 		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;
 		    lastFailKey = pkgKey;
+		    
+		    /* If we should rollback this transaction 
+		       on failure, lets do it.                 */
+		    if(rollbackOnFailure) {
+			rpmMessage(RPMMESS_ERROR, 
+			    _("Add failed in rpmpsmStage().\n"));
+			/* Clean up the current transaction */
+			p->h = headerFree(p->h);
+			xx = rpmdbSync(rpmtsGetRdb(ts));
+			psm = rpmpsmFree(psm);
+			p->fi = rpmfiFree(p->fi);
+			pi = rpmtsiFree(pi);
+
+			/* Run the rollback transaction */
+			xx = _rpmtsRollback(rollbackTransaction);
+			return -1;
+		    }
+		}
+		
+		/* If we should rollback on failure lets add
+		 * this element to the rollback transaction
+		 * as an erase element as it has installed succesfully.
+		 */
+		if(rollbackOnFailure) {
+		    int rc;
+ 
+		    rc = _rpmtsAddRollbackElement(rollbackTransaction, ts, p);
+		    if(rc != RPMRC_OK) {
+			/* Clean up the current transaction */
+			p->h = headerFree(p->h);
+			xx = rpmdbSync(rpmtsGetRdb(ts));
+			psm = rpmpsmFree(psm);
+			p->fi = rpmfiFree(p->fi);
+			pi = rpmtsiFree(pi);
+			
+			/* Clean up rollback transaction */
+			rpmtsFree(rollbackTransaction);
+			return -1;
+		    }
 		}
 /*@=nullstate@*/
 	    } else {
 		ourrc++;
 		lastFailKey = pkgKey;
+		
+		/* If we should rollback this transaction 
+		 * on failure, lets do it.                 
+		 */
+		if(rollbackOnFailure) {
+		    rpmMessage(RPMMESS_ERROR, _("Add failed.  Could not get file list.\n"));
+		    /* Clean up the current transaction */
+	    	    p->h = headerFree(p->h);
+		    xx = rpmdbSync(rpmtsGetRdb(ts));
+		    psm = rpmpsmFree(psm);
+		    p->fi = rpmfiFree(p->fi);
+		    pi = rpmtsiFree(pi);
+
+		    /* Run the rollback transaction */
+		    xx = _rpmtsRollback(rollbackTransaction);
+		    return -1;
+		}
 	    }
 
 	    if (gotfd) {
@@ -1535,8 +1709,48 @@ assert(psm != NULL);
 	     * If install failed, then we shouldn't erase.
 	     */
 	    if (rpmteDependsOnKey(p) != lastFailKey) {
-		if (rpmpsmStage(psm, PSM_PKGERASE))
+		if (rpmpsmStage(psm, PSM_PKGERASE)) {
 		    ourrc++;
+		    
+		    /* If we should rollback this transaction 
+		     * on failure, lets do it.                
+		     */ 
+		    if(rollbackOnFailure) {
+			rpmMessage(RPMMESS_ERROR, 
+			    _("Erase failed failed in rpmpsmStage().\n"));
+			/* Clean up the current transaction */
+			xx = rpmdbSync(rpmtsGetRdb(ts));
+			psm = rpmpsmFree(psm);
+			p->fi = rpmfiFree(p->fi);
+			pi = rpmtsiFree(pi);
+
+			/* Run the rollback transaction */
+			xx = _rpmtsRollback(rollbackTransaction);
+			return -1;
+		    }
+		}
+
+		/* If we should rollback on failure lets add
+		 * this element to the rollback transaction
+		 * as an install element as it has erased succesfully.
+		 */
+		if(rollbackOnFailure) {
+		    int rc;
+
+		    rc = _rpmtsAddRollbackElement(rollbackTransaction, ts, p);
+
+		    if(rc != RPMRC_OK) {
+			/* Clean up the current transaction */
+			xx = rpmdbSync(rpmtsGetRdb(ts));
+			psm = rpmpsmFree(psm);
+			p->fi = rpmfiFree(p->fi);
+			pi = rpmtsiFree(pi);
+		
+			/* Clean up rollback transaction */
+			rpmtsFree(rollbackTransaction);
+			return -1;
+		    }
+		}
 	    }
 
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
@@ -1557,6 +1771,11 @@ assert(psm != NULL);
     /*@=branchstate@*/
     pi = rpmtsiFree(pi);
 
+    /* If we created a rollback transaction lets get rid of it */
+    if(rollbackOnFailure && rollbackTransaction != NULL) {
+	rpmtsFree(rollbackTransaction);
+    }
+
     rpmtsFreeLock(lock);
 
     /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
@@ -1565,4 +1784,370 @@ assert(psm != NULL);
     else
 	return 0;
     /*@=nullstate@*/
+}
+
+/**
+ * Get the repackaged header and filename from the repackage directory.
+ * @todo Find a suitable home for this function.
+ * @todo This function creates an IDTX everytime it is called.  Needs to 
+ *       be made more efficient (only create on per running transaction).
+ * @param te		transaction element
+ * @param rpmts		rpm transaction
+ * @return hdrp		Repackaged header
+ * @return fn		Repackaged package's path (transaction key)
+ * @return 		RPMRC_NOTFOUND or RPMRC_OK
+ */
+rpmRC getRepackageHeaderFromTE(rpmte te, rpmts ts, Header *hdrp, char **fn) 
+{
+    int_32 tid;
+    const char * name; 
+    const char * rpname = NULL;
+    const char * _repackage_dir = NULL;
+    const char * globStr = "-*.rpm";
+    char * rp = NULL;		/* Rollback package name */
+    IDTX rtids = NULL;
+    IDT rpIDT;
+    int nrids = 0;
+    int nb;			/* Number of bytes */
+    Header h = NULL;
+    int rc   = RPMRC_NOTFOUND;	/* Assume we do not find it*/
+  
+    rpmMessage(RPMMESS_DEBUG, 
+	_("Getting repackaged header from transaction element\n"));
+
+    /* Set header pointer to null if its not already */
+    if(hdrp)
+	*hdrp = NULL;
+    if(fn)
+	*fn = NULL;
+
+    /* Get the TID of the current transaction */
+    tid = rpmtsGetTid(ts);
+    /* Need the repackage dir if the user want to
+     * rollback on a failure.
+     */
+    _repackage_dir = rpmExpand("%{?_repackage_dir}", NULL);
+    if(_repackage_dir == NULL) goto exit;
+
+    /* Build the glob string to find the possible repackaged 
+     * packages for this package.
+     */
+    name = rpmteN(te);	
+    nb = strlen(_repackage_dir) + strlen(name) + strlen(globStr) + 2;
+    rp = memset((char *) malloc(nb), 0, nb);
+    snprintf(rp, nb, "%s/%s%s.rpm", _repackage_dir, name, globStr);
+
+    /* Get the index of possible repackaged packages */
+    rpmMessage(RPMMESS_DEBUG, _("\tLooking for %s...\n"), rp);
+    rtids = IDTXglob(ts, rp, RPMTAG_REMOVETID);
+    rp = _free(rp);
+    if (rtids != NULL) {
+    	rpmMessage(RPMMESS_DEBUG, _("\tMatches found.\n"));
+	rpIDT = rtids->idt;
+	nrids = rtids->nidt;
+    } else {
+    	rpmMessage(RPMMESS_DEBUG, _("\tNo matches found.\n"));
+	goto exit;
+    }
+
+    /* Now walk through index until we find the package (or we have
+     * exhausted the index.
+     */
+    do {
+	/* If index is null we have exhausted the list and need to 
+	 * get out of here...the repackaged package was not found.
+	 */
+	if(rpIDT == NULL) {
+    	    rpmMessage(RPMMESS_DEBUG, _("\tRepackaged package not found!.\n"));
+	    break;
+	}
+
+	/* Is this the same tid.  If not decrement the list and continue */
+	if(rpIDT->val.u32 != tid) {
+	    nrids--;
+	    if(nrids > 0)
+		rpIDT++;
+	    else
+		rpIDT = NULL;
+	    continue;
+	}
+
+	/* OK, the tid matches.  Now lets see if the name is the same.
+	 * If I could not get the name from the package, I will go onto
+	 * the next one.  Perhaps I should return an error at this
+	 * point, but if this was not the correct one, at least the correct one
+	 * would be found.
+	 * XXX:  Should I be matching name and arch?
+	 */
+    	rpmMessage(RPMMESS_DEBUG, _("\tREMOVETID matched INSTALLTID.\n"));
+	if(headerGetEntry(rpIDT->h, RPMTAG_NAME, NULL, (void **) &rpname, NULL)) {
+    	    rpmMessage(RPMMESS_DEBUG, _("\t\tName:  %s.\n"), rpname);
+	    if(!strcmp(name,rpname)) {
+		/* It matched we have a canidate */
+		h  = headerLink(rpIDT->h);
+		nb = strlen(rpIDT->key) + 1;
+		rp = memset((char *) malloc(nb), 0, nb);
+		rp = strncat(rp, rpIDT->key, nb);
+		rc = RPMRC_OK;
+		break;
+	    }
+	}
+
+	/* Decrement list */	
+	nrids--;
+	if(nrids > 0)
+	    rpIDT++;
+	else
+	    rpIDT = NULL;
+    } while(1);
+ 
+exit:
+    if(rc != RPMRC_NOTFOUND && h != NULL && hdrp != NULL) {
+    	rpmMessage(RPMMESS_DEBUG, _("\tRepackaged Package was %s...\n"), rp); 
+	*hdrp = headerLink(h);
+	*fn   = rp;
+    }
+    if(h != NULL) {
+	h = headerFree(h);
+    }
+    rtids = IDTXfree(rtids); 
+    return rc;	
+}
+
+/**
+ * This is not a generalized function to be called from outside 
+ * librpm.  It is called internally by rpmtsRun() to add elements
+ * to its rollback transaction.
+ * @param rollbackTransaction		rollback transaction
+ * @param runningTransaction		running transaction (the one you want to rollback)
+ * @param te 				Transaction element.
+ * @return 				RPMRC_OK, or RPMRC_FAIL
+ */
+rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction, rpmts runningTransaction, rpmte te)
+{
+    Header h   = NULL;
+    Header rph = NULL;
+    char * rpn;	
+    unsigned int db_instance = 0;
+    rpmtsi pi;  	
+    rpmte p;
+    int rc  = RPMRC_FAIL;	/* Assume Failure */
+ 
+    switch(rpmteType(te)) {
+    case TR_ADDED:
+	rpmMessage(RPMMESS_DEBUG, 
+	    _("Adding install element to auto-rollback transaction.\n"));
+    
+	/* Get the header for this package from the database 
+	 * First get the database instance (the key).
+	 */
+	db_instance = rpmteDBInstance(te);
+	if(db_instance <= 0) {
+	    /* Could not get the db instance: WTD! */
+    	    rpmMessage(RPMMESS_FATALERROR, 
+		_("Could not get install element database instance!\n"));
+	    break;
+	}
+
+	/* Now suck the header out of the database */
+	rpmdbMatchIterator mi = rpmtsInitIterator(rollbackTransaction, 
+	    RPMDBI_PACKAGES, &db_instance, sizeof(db_instance));
+	h = rpmdbNextIterator(mi);
+	if(h != NULL) h = headerLink(h); 
+	mi = rpmdbFreeIterator(mi);
+	if(h == NULL) {
+	    /* Header was not there??? */
+    	    rpmMessage(RPMMESS_FATALERROR, 
+		_("Could not get header for auto-rollback transaction!\n"));
+	    break;
+	}
+		   
+	/* Now see if there is a repackaged package for this */
+	rc = getRepackageHeaderFromTE(te, runningTransaction, &rph, &rpn);
+	switch(rc) {
+	case RPMRC_OK:
+	    /* Add the install element, as we had a repackaged package */
+	    rpmMessage(RPMMESS_DEBUG, 
+		_("\tAdded repackaged package header: %s.\n"), rpn);
+	    rc = rpmtsAddInstallElement(rollbackTransaction, headerLink(rph), 
+		(fnpyKey) rpn, 1, te->relocs);
+	    break;
+
+	case RPMRC_NOTFOUND:
+	    /* Add the header as an erase element, we did not
+	     * have a repackaged package
+	     */
+	    rpmMessage(RPMMESS_DEBUG, _("\tAdded erase element.\n"));
+	    rc = rpmtsAddEraseElement(rollbackTransaction, h, db_instance);    
+	    break;
+			
+	default:
+	    /* Not sure what to do on failure...just give up */ 
+   	    rpmMessage(RPMMESS_FATALERROR, 
+		_("Could not get repackaged header for auto-rollback transaction!\n"));
+	    break;
+	}
+	break;
+
+   case TR_REMOVED:
+	rpmMessage(RPMMESS_DEBUG, 
+	    _("Add erase element to auto-rollback transaction.\n"));
+
+	/* See if this element has already been added as an upgrade.
+ 	 * If so we want to do nothing.
+	 */
+	pi = rpmtsiInit(rollbackTransaction);
+	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+	    if(rpmteType(p) == TR_ADDED) continue;
+	    if(!strcmp(rpmteN(p), rpmteN(te))) {
+	    	rpmMessage(RPMMESS_DEBUG, _("\tFound existing upgrade element.\n"));
+	    	rpmMessage(RPMMESS_DEBUG, _("\tNot adding erase element for %s.\n"),
+			rpmteN(te));
+		rc = RPMRC_OK;	
+		pi = rpmtsiFree(pi);
+		break;
+	    }
+	}
+	pi = rpmtsiFree(pi);
+
+
+	/* Get the repackage header from the current transaction
+	* element.
+	*/
+	rc = getRepackageHeaderFromTE(te, runningTransaction, &rph, &rpn); 
+	switch(rc) {
+	case RPMRC_OK:
+	    /* Add the install element */
+	    rpmMessage(RPMMESS_DEBUG, 
+		_("\tAdded repackaged package %s.\n"), rpn);
+	    rc = rpmtsAddInstallElement(rollbackTransaction, rph, 
+		(fnpyKey) rpn, 1, te->relocs);    
+	    if(rc != RPMRC_OK) 
+	        rpmMessage(RPMMESS_FATALERROR, 
+		    _("Could not add erase element to auto-rollback transaction.\n"));
+	    break;
+
+	case RPMRC_NOTFOUND:
+	    /* Just did not have a repackaged package */
+	    rpmMessage(RPMMESS_DEBUG, 
+		_("\tNo repackaged package...nothing to do.\n"));
+	    rc = RPMRC_OK;
+	    break;
+
+	default:
+	    rpmMessage(RPMMESS_FATALERROR, 
+		_("Failure reading repackaged package!\n"));
+	    break;
+	}
+	break;
+
+    default:
+	break;
+    }
+
+/* XXX:  I want to free this, but if I do then the consumers of
+ *       are hosed.  Just leaving you a little note Jeff, so you
+ *       know that this does introduce a memory leak.  I wanted
+ *       keep the patch as simple as possible so I am not fixxing
+ *       the leak.
+ *   if(rpn != NULL) 
+ *	free(rpn); 
+ */
+
+    /* Clean up */
+    if(h != NULL)   
+	h = headerFree(h);
+    if(rph != NULL) 
+	rph = headerFree(rph);
+    return rc;
+}
+
+/**
+ * This is not a generalized function to be called from outside 
+ * librpm.  It is called internally by rpmtsRun() to rollback
+ * a failed transaction.
+ * @param rollbackTransaction		rollback transaction
+ * @return 				RPMRC_OK, or RPMRC_FAIL
+ */
+rpmRC _rpmtsRollback(rpmts rollbackTransaction)
+{
+    int    rc         = 0;
+    int    numAdded   = 0;
+    int    numRemoved = 0;
+    int_32 tid;
+    rpmtsi tsi;
+    rpmte  te;
+    rpmps  ps;
+
+    /* 
+     * Gather information about this rollback transaction for reporting.
+     *    1) Get tid
+     */
+    tid = rpmtsGetTid(rollbackTransaction);
+    /*    
+     *    2) Get number of install elments and erase elements 
+     */
+    tsi = rpmtsiInit(rollbackTransaction);
+    while((te = rpmtsiNext(tsi, 0)) != NULL) {
+	switch (rpmteType(te)) {
+	case TR_ADDED:
+	   numAdded++;
+	   break;
+	case TR_REMOVED:
+	   numRemoved++;
+	   break;
+	default:
+	   break;
+	}	
+    }
+    tsi = rpmtsiFree(tsi);
+
+    rpmMessage(RPMMESS_NORMAL, _("Transaction failed...rolling back\n"));
+    rpmMessage(RPMMESS_NORMAL, 
+	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
+                        numAdded, numRemoved, ctime(&tid), tid);
+
+    /* Check the transaction to see if it is doable */
+    rc = rpmtsCheck(rollbackTransaction);
+    ps = rpmtsProblems(rollbackTransaction);
+    if (rc != 0 && rpmpsNumProblems(ps) > 0) {
+	rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	rpmpsPrint(NULL, ps);
+	ps = rpmpsFree(ps);
+	return -1;
+    }
+    ps = rpmpsFree(ps);
+
+    /* Order the transaction */
+    rc = rpmtsOrder(rollbackTransaction);
+    if (rc != 0) {
+	rpmMessage(RPMMESS_ERROR, 
+	    _("Could not order auto-rollback transaction!\n"));
+       return -1;
+    }
+
+		   
+
+    /* Run the transaction and print any problems 
+     * We want to stay with the original transactions flags except
+     * that we want to add what is essentially a force.
+     * This handles two things in particular:
+     *	
+     *	1.  We we want to upgrade over a newer package.
+     * 	2.  If a header for the old package is there we
+     *      we want to replace it.  No questions asked.
+     */
+    rc = rpmtsRun(rollbackTransaction, NULL, 
+	  RPMPROB_FILTER_REPLACEPKG
+	| RPMPROB_FILTER_REPLACEOLDFILES
+	| RPMPROB_FILTER_REPLACENEWFILES
+	| RPMPROB_FILTER_OLDPACKAGE 
+    );
+    ps = rpmtsProblems(rollbackTransaction);
+    if (rc > 0 && rpmpsNumProblems(ps) > 0)
+	rpmpsPrint(stderr, ps);
+    ps = rpmpsFree(ps);
+    rollbackTransaction = rpmtsFree(rollbackTransaction);
+
+    return rc;
 }

@@ -38,6 +38,11 @@ int _psm_debug = _PSM_DEBUG;
 /*@unchecked@*/
 int _psm_threads = 0;
 
+/* Give access to the rpmte global tracking the last instance added
+ * to the database.
+ */
+extern unsigned int myinstall_instance;
+
 /*@access FD_t @*/		/* XXX void ptr args */
 /*@access rpmpsm @*/
 
@@ -1048,6 +1053,7 @@ static rpmRC runTriggers(rpmpsm psm)
 
     if (psm->te) 	/* XXX can't happen */
 	N = rpmteN(psm->te);
+/* ADJUST */
     if (N) 		/* XXX can't happen */
 	numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), N)
 				+ psm->countCorrection;
@@ -1298,6 +1304,48 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->npkgs_installed < 0) {
 	    rc = RPMRC_FAIL;
 	    break;
+	}
+
+	/* If we have a score then autorollback is enabled.  If autorollback is
+ 	 * enabled, and this is an autorollback transaction, then we may need to 
+	 * adjust the pkgs installed count.
+	 * 
+	 * If all this is true, this adjustment should only be made if the PSM goal
+	 * is an install.  No need to make this adjustment on the erase 
+	 * component of the upgrade, or even more absurd to do this when doing a 
+	 * PKGSAVE.
+	 */
+	if(rpmtsGetScore(ts) != NULL &&
+	    rpmtsGetType(ts) == RPMTRANS_TYPE_AUTOROLLBACK &&
+	    (psm->goal & ~(PSM_PKGSAVE|PSM_PKGERASE))) {
+	    /* Get the score, if its not NULL, get the appropriate 
+ 	     * score entry.
+	     */
+	    rpmtsScore score = rpmtsGetScore(ts);
+	    if(score != NULL) {
+		/* OK, we got a real score so lets get the appropriate
+		 * score entry.
+		 */
+		rpmtsScoreEntry se;
+		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
+
+		/* IF the header for the install element has been installed, 
+		 * but the header for the erase element has not been erased,
+		 * then decrement the instance count.  This is because in an 
+		 * autorollback, if the header was added in the initial transaction
+		 * then in the case of an upgrade the instance count will be 
+		 * 2 instead of one when re-installing the old package, and 3 when
+		 * erasing the new package.
+		 * 
+		 * Another wrinkle is we only want to make this adjustement
+		 * if the thing we are rollback was an upgrade of package.  A pure
+		 * install or erase does not need the adjustment
+		 */
+		if(se && se->installed && 
+	 	    !se->erased &&
+		    (se->te_types & (TR_ADDED|TR_REMOVED)))
+		    psm->npkgs_installed--;
+	   }
 	}
 
 	if (psm->goal == PSM_PKGINSTALL) {
@@ -1956,6 +2004,36 @@ assert(psm->mi == NULL);
 	else
 	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
 				NULL, NULL);
+
+	/* Set the database instance so consumers (i.e. rpmtsRun())
+	 * can add this to a rollback transaction.
+	 */
+	rpmteSetDBInstance(psm->te, myinstall_instance);
+
+	/*
+	 * If the score exists and this is not a rollback or autorollback
+	 * then lets check off installed for this package.
+	 */
+	if(rpmtsGetScore(ts) != NULL &&
+	     rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
+	     rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK) {
+	     /* Get the score, if its not NULL, get the appropriate
+ 	      * score entry.
+	      */
+	     rpmtsScore score = rpmtsGetScore(ts);
+	     if(score != NULL) {
+		/* OK, we got a real score so lets get the appropriate
+		 * score entry.
+		 */
+		rpmMessage(RPMMESS_DEBUG,
+		    _("Attempting to mark %s as installed in score board(0x%x).\n"),
+		    rpmteN(psm->te), score);
+		rpmtsScoreEntry se;
+		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
+		if(se) se->installed = 1;
+	    }
+	}
+
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	break;
     case PSM_RPMDB_REMOVE:
@@ -1963,6 +2041,31 @@ assert(psm->mi == NULL);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
 				NULL, NULL);
+
+	/*
+	 * If the score exists and this is not a rollback or autorollback
+	 * then lets check off erased for this package.
+	 */
+	if(rpmtsGetScore(ts) != NULL &&
+	    rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
+	    rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK) {
+	    /* Get the score, if its not NULL, get the appropriate
+	     * score entry.
+	     */
+	    rpmtsScore score = rpmtsGetScore(ts);
+	    if(score != NULL) { /* XXX: Can't happen */
+		/* OK, we got a real score so lets get the appropriate
+		 * score entry.
+		 */
+		rpmMessage(RPMMESS_DEBUG,
+		    _("Attempting to mark %s as erased in score board(0x%x).\n"),
+		    rpmteN(psm->te), score);
+		rpmtsScoreEntry se;
+		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
+		if(se) se->erased = 1;
+	    }
+	}
+
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	break;
 

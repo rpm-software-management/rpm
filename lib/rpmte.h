@@ -85,6 +85,7 @@ struct rpmte_s {
     int depth;			/*!< Max. depth in dependency tree. */
     int npreds;			/*!< No. of predecessors. */
     int tree;			/*!< Tree index. */
+    unsigned int db_instance;   /*!< Database Instance after add */
 /*@owned@*/
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
@@ -252,6 +253,21 @@ uint_32 rpmteColor(rpmte te)
  */
 uint_32 rpmteSetColor(rpmte te, uint_32 color)
 	/*@modifies te @*/;
+
+/**
+ * Retrieve last instance installed to the database.
+ * @param te		transaction element
+ * @return		last install instance.
+ */
+unsigned int rpmteDBInstance(rpmte te);
+
+/**
+ * Set last instance installed to the database.
+ * @param te		transaction element
+ * @param instance	Database instance of last install element.
+ * @return		last install instance.
+ */
+void rpmteSetDBInstance(rpmte te, unsigned int instance);
 
 /**
  * Retrieve size in bytes of package file.

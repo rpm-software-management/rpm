@@ -833,6 +833,9 @@ rpmts rpmtsFree(rpmts ts)
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
 
+    /* Free up the memory used by the rpmtsScore */
+    rpmtsScoreFree(ts->score);
+
     (void) rpmtsUnlink(ts, "tsCreate");
 
     /*@-refcounttrans -usereleased @*/
@@ -858,6 +861,36 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
 	ts->vsflags = vsflags;
     }
     return ovsflags;
+}
+
+/* 
+ * This allows us to mark transactions as being of a certain type.
+ * The three types are:
+ * 
+ *     RPM_TRANS_NORMAL 	
+ *     RPM_TRANS_ROLLBACK
+ *     RPM_TRANS_AUTOROLLBACK
+ * 
+ * ROLLBACK and AUTOROLLBACK transactions should always be ran as
+ * a best effort.  In particular this important to the autorollback 
+ * feature to avoid rolling back a rollback (otherwise known as 
+ * dueling rollbacks (-;).  AUTOROLLBACK's additionally need instance 
+ * counts passed to scriptlets to be altered.
+ */
+void rpmtsSetType(rpmts ts, rpmtsType type)
+{
+    if(ts != NULL) {
+	ts->type = type;
+    }	 
+}
+
+/* Let them know what type of transaction we are */
+rpmtsType rpmtsGetType(rpmts ts) 
+{
+    if(ts != NULL) 
+	return ts->type;
+    else
+	return 0;
 }
 
 int rpmtsUnorderedSuccessors(rpmts ts, int first)
@@ -1419,6 +1452,7 @@ rpmts rpmtsCreate(void)
     ts = xcalloc(1, sizeof(*ts));
     memset(&ts->ops, 0, sizeof(ts->ops));
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_TOTAL), -1);
+	ts->type = RPMTRANS_TYPE_NORMAL;
     ts->goal = TSM_UNKNOWN;
     ts->filesystemCount = 0;
     ts->filesystems = NULL;
@@ -1469,7 +1503,187 @@ rpmts rpmtsCreate(void)
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
     ts->dig = NULL;
 
+    /* 
+       We only use the score in an autorollback.  So set this to
+       NULL by default.
+     */
+    ts->score = NULL;
+
     ts->nrefs = 0;
 
     return rpmtsLink(ts, "tsCreate");
+}
+
+/**********************
+ * Transaction Scores *
+ **********************/
+
+
+rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS) 
+{
+    rpmtsScore score;
+    rpmtsi     pi;
+    rpmte      p;
+    int        i;
+    int        tranElements;  /* Number of transaction elements in runningTS */
+    int        found = 0;
+    rpmRC      rc = RPMRC_OK; /* Assume success */
+    rpmtsScoreEntry se;
+
+    rpmMessage(RPMMESS_DEBUG, _("Creating transaction score board(0x%x, 0x%x)\n"),
+	runningTS, rollbackTS); 
+
+    /* Allocate space for score board */
+    score = xcalloc(1, sizeof(*score));
+    rpmMessage(RPMMESS_DEBUG, _("\tScore board address:  0x%x\n"), score);
+
+    /* 
+     * Determine the maximum size needed for the entry list.
+     * XXX: Today, I just get the count of rpmts elements, and allocate
+     *      an array that big.  Yes this is guaranteed to waste memory.
+     *      Future updates will hopefully make this more efficient,
+     *      but for now it will work.
+     */
+    tranElements  = rpmtsNElements(runningTS);
+    rpmMessage(RPMMESS_DEBUG, _("\tAllocating space for %d entries\n"), tranElements);
+    score->scores = xcalloc(tranElements, sizeof(score->scores));
+
+    /* Initialize score entry count */
+    score->entries = 0;
+    score->nrefs   = 0;
+
+    /*
+     * Increment through transaction elements and make sure for every 
+     * N there is an rpmtsScoreEntry.
+     */
+    pi = rpmtsiInit(runningTS); 
+    while ((p = rpmtsiNext(pi, TR_ADDED|TR_REMOVED)) != NULL) {
+	found  = 0;
+
+	/* Try to find the entry in the score list */
+	for(i = 0; i < score->entries; i++) {
+	    se = score->scores[i]; 
+  	    if(strcmp(rpmteN(p), se->N) == 0) {
+		found = 1;
+	 	break;
+	    }
+	}
+
+	/* If we did not find the entry then allocate space for it */
+	if(!found) {
+    	    rpmMessage(RPMMESS_DEBUG, _("\tAdding entry for %s to score board.\n"),
+		rpmteN(p));
+    	    se = xcalloc(1, sizeof(*(*(score->scores))));
+    	    rpmMessage(RPMMESS_DEBUG, _("\t\tEntry address:  0x%x\n"), se);
+	    se->N         = xstrdup(rpmteN(p));
+	    se->te_types  = rpmteType(p); 
+	    se->installed = 0;
+	    se->erased    = 0; 
+	    score->scores[score->entries] = se;
+	    score->entries++;
+	} else {
+	    /* We found this one, so just add the element type to the one 
+	     * already there.
+	     */
+    	    rpmMessage(RPMMESS_DEBUG, _("\tUpdating entry for %s in score board.\n"),
+		rpmteN(p));
+	    score->scores[i]->te_types |= rpmteType(p);
+	}
+	 
+    }
+    pi = rpmtsiFree(pi);
+ 
+    /* 
+     * Attach the score to the running transaction and the autorollback
+     * transaction.
+     */
+    runningTS->score  = score;
+    score->nrefs++;
+    rollbackTS->score = score;
+    score->nrefs++;
+
+    return rc;
+}
+
+rpmRC rpmtsScoreFree(rpmtsScore score) 
+{
+    int i;
+    rpmtsScoreEntry se = NULL;
+
+    rpmMessage(RPMMESS_DEBUG, _("May free Score board(0x%x)\n"), score);
+
+    /* If score is not initialized, then just return.
+     * This is likely the case if autorollbacks are not enabled.
+     */
+    if(score == NULL) return RPMRC_OK;
+
+    /* Decrement the reference count */
+    score->nrefs--;
+
+    /* Do we have any more references?  If so
+     * just return.
+     */
+    if(score->nrefs > 0) return RPMRC_OK;
+
+    rpmMessage(RPMMESS_DEBUG, _("\tRefcount is zero...will free\n"), score);
+    /* No more references, lets clean up  */
+    /* First deallocate the score entries */
+    for(i = 0; i < score->entries; i++) {
+	/* Get the score for the ith entry */
+	se = score->scores[i]; 
+	
+	/* Deallocate the score entries name */
+	_free(se->N);
+
+	/* Deallocate the score entry itself */
+	_free(se);
+    }
+
+    /* Next deallocate the score entry table */
+    _free(score->scores);
+
+    /* Finally deallocate the score itself */
+    _free(score);
+
+    return RPMRC_OK;
+}
+
+/* 
+ * XXX: Do not get the score and then store it aside for later use.
+ *      we will delete it out from under you.  There is not rpmtsScoreLink()
+ *      as this may be a very temporary fix for autorollbacks.
+ */
+rpmtsScore rpmtsGetScore(rpmts ts) 
+{
+    if(ts == NULL) return NULL;
+    return ts->score;
+}
+
+/* 
+ * XXX: Do not get the score entry and then store it aside for later use.
+ *      we will delete it out from under you.  There is not an 
+ *      rpmtsScoreEntryLink() as this may be a very temporary fix 
+ *      for autorollbacks.
+ * XXX: The scores are not sorted.  This should be fixed at earliest
+ *      opportunity (i.e. when we have the whole autorollback working).
+ */
+rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N) 
+{
+    int i;
+    rpmtsScoreEntry se;
+    rpmtsScoreEntry ret = NULL; /* Assume we don't find it */
+
+    rpmMessage(RPMMESS_DEBUG, _("Looking in score board(0x%x) for %s\n"), score, N);
+
+    /* Try to find the entry in the score list */
+    for(i = 0; i < score->entries; i++) {
+	se = score->scores[i]; 
+ 	if(strcmp(N, se->N) == 0) {
+    	    rpmMessage(RPMMESS_DEBUG, _("\tFound entry at address:  0x%x\n"), se);
+	    ret = se;
+	    break;
+	}
+    }
+	
+    return ret;	
 }

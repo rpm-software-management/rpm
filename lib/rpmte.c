@@ -104,6 +104,11 @@ static void addTE(rpmts ts, rpmte p, Header h,
     if ((p->version = strrchr(p->name, '-')) != NULL)
 	*p->version++ = '\0';
 
+    /* Set db_instance to 0 as it has not been installed
+     * necessarily yet.
+     */
+    p->db_instance = 0;
+
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
     if (arch != NULL) {
@@ -223,6 +228,19 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	break;
     }
     return p;
+}
+
+/* Get the DB Instance value */
+unsigned int rpmteDBInstance(rpmte te) 
+{
+    return (te != NULL ? te->db_instance : 0);
+}
+
+/* Set the DB Instance value */
+void rpmteSetDBInstance(rpmte te, unsigned int instance) 
+{
+    if(te != NULL) 
+	te->db_instance = instance;
 }
 
 rpmElementType rpmteType(rpmte te)
