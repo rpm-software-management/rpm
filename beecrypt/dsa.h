@@ -28,7 +28,7 @@
 #ifndef _DSA_H
 #define _DSA_H
 
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 
 #ifdef __cplusplus
 extern "C" {

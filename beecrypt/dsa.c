@@ -44,7 +44,7 @@
 #include "system.h"
 #include "dsa.h"
 #include "dldp.h"
-#include "mp32.h"
+#include "mp.h"
 #include "debug.h"
 
 /*@-boundswrite@*/

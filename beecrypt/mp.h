@@ -1,5 +1,5 @@
 /** \ingroup MP_m
- * \file mp32.h
+ * \file mp.h
  *
  * Multiprecision 2's complement integer routines for 32 bit cpu, header/
  */
@@ -35,7 +35,7 @@
 #endif
 #include <stdio.h>
 
-#include "mp32opt.h"
+#include "mpopt.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,5 +1,5 @@
 /** \ingroup MP_m
- * \file mp32barrett.h
+ * \file mpbarrett.h
  *
  * Barrett modular reduction, header.
  */
@@ -29,7 +29,7 @@
 #define _MP32BARRETT_H
 
 #include "beecrypt.h"
-#include "mp32number.h"
+#include "mpnumber.h"
 
 typedef struct
 {

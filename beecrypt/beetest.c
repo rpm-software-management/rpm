@@ -27,7 +27,7 @@
 #include "beecrypt.h"
 #include "blockmode.h"
 #include "blowfish.h"
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 #include "dhaes.h"
 #include "dlkp.h"
 #include "elgamal.h"

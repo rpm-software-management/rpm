@@ -1,5 +1,5 @@
 /** \ingroup MP_m
- * \file mp32prime.c
+ * \file mpprime.c
  *
  * Multi-precision primes, code.
  */
@@ -26,9 +26,9 @@
  */
 
 #include "system.h"
-#include "mp32prime.h"
-#include "mp32.h"
-#include "mp32barrett.h"
+#include "mpprime.h"
+#include "mp.h"
+#include "mpbarrett.h"
 #include "debug.h"
 
 /**

@@ -1,6 +1,6 @@
 /*@-sizeoftype -type@*/
 /** \ingroup MP_m
- * \file mp32barrett.c
+ * \file mpbarrett.c
  *
  * Barrett modular reduction, code.
  *
@@ -32,9 +32,9 @@
  */
 
 #include "system.h"
-#include "mp32.h"
-#include "mp32prime.h"
-#include "mp32barrett.h"
+#include "mp.h"
+#include "mpprime.h"
+#include "mpbarrett.h"
 #include "debug.h"
 
 /**

@@ -357,15 +357,15 @@ INPUT                  = \
 	@top_srcdir@/md5.h \
 	@top_srcdir@/memchunk.c \
 	@top_srcdir@/memchunk.h \
-	@top_srcdir@/mp32barrett.c \
-	@top_srcdir@/mp32barrett.h \
-	@top_srcdir@/mp32.c \
-	@top_srcdir@/mp32.h \
-	@top_srcdir@/mp32number.c \
-	@top_srcdir@/mp32number.h \
-	@top_srcdir@/mp32opt.h \
-	@top_srcdir@/mp32prime.c \
-	@top_srcdir@/mp32prime.h \
+	@top_srcdir@/mpbarrett.c \
+	@top_srcdir@/mpbarrett.h \
+	@top_srcdir@/mp.c \
+	@top_srcdir@/mp.h \
+	@top_srcdir@/mpnumber.c \
+	@top_srcdir@/mpnumber.h \
+	@top_srcdir@/mpopt.h \
+	@top_srcdir@/mpprime.c \
+	@top_srcdir@/mpprime.h \
 	@top_srcdir@/mtprng.c \
 	@top_srcdir@/mtprng.h \
 	@top_srcdir@/rsa.c \

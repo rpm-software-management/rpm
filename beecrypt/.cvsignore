@@ -27,7 +27,7 @@ ltconfig
 ltmain.sh
 aesopt.c
 blowfishopt.c
-mp32opt.c
+mpopt.c
 sha1opt.c
 *.la
 *.lcd

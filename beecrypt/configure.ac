@@ -830,17 +830,17 @@ fi
 # Generate the assembler optimizations, or empty stub files.
 rm -f $srcdir/aesopt.c $srcdir/aesopt.S
 rm -f $srcdir/blowfishopt.c $srcdir/blowfishopt.S
-rm -f $srcdir/mp32opt.c $srcdir/mp32opt.S
+rm -f $srcdir/mpopt.c $srcdir/mpopt.S
 rm -f $srcdir/sha1opt.c $srcdir/sha1opt.S
 if test "$ac_enable_optimized" = yes; then
   case $target_cpu in
     arm*)
-      cat > $srcdir/mp32opt.S << EOF
+      cat > $srcdir/mpopt.S << EOF
 #include "gas/mp32opt.arm.S"
 EOF
       ;;
     i[[34]]86)
-      cat > $srcdir/mp32opt.S << EOF
+      cat > $srcdir/mpopt.S << EOF
 #include "gas/mp32opt.i386.S"
 EOF
       ;;
@@ -851,7 +851,7 @@ EOF
       cat > $srcdir/blowfishopt.S << EOF
 #include "gas/blowfishopt.i586.S"
 EOF
-      cat > $srcdir/mp32opt.S << EOF
+      cat > $srcdir/mpopt.S << EOF
 #include "gas/mp32opt.i386.S"
 EOF
       cat > $srcdir/sha1opt.S << EOF
@@ -859,7 +859,7 @@ EOF
 EOF
       ;;
     ia64)
-      cat > $srcdir/mp32opt.S << EOF
+      cat > $srcdir/mpopt.S << EOF
 #include "gas/mp32opt.ia64.S"
 EOF
       ;;
@@ -870,17 +870,17 @@ EOF
       cat > $srcdir/blowfishopt.S << EOF
 #include "gas/blowfishopt.powerpc.S"
 EOF
-      cat > $srcdir/mp32opt.S << EOF
+      cat > $srcdir/mpopt.S << EOF
 #include "gas/mp32opt.powerpc.S"
 EOF
       ;;
     sparcv8)
-      cat > $srcdir/mp32opt.S << EOF
+      cat > $srcdir/mpopt.S << EOF
 #include "gas/mp32opt.sparcv8.S"
 EOF
       ;;
     sparcv8plus* | sparcv9*)
-      cat > $srcdir/mp32opt.S << EOF
+      cat > $srcdir/mpopt.S << EOF
 #include "gas/mp32opt.sparcv9.S"
 EOF
       ;;
@@ -894,8 +894,8 @@ if test ! -r $srcdir/blowfishopt.S; then
   cat > $srcdir/blowfishopt.c << EOF
 EOF
 fi
-if test ! -r $srcdir/mp32opt.S; then
-  cat > $srcdir/mp32opt.c << EOF
+if test ! -r $srcdir/mpopt.S; then
+  cat > $srcdir/mpopt.c << EOF
 EOF
 fi
 if test ! -r $srcdir/sha1opt.S; then

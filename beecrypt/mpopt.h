@@ -1,5 +1,5 @@
 /** \ingroup MP_m
- * \file mp32opt.h
+ * \file mpopt.h
  *
  * Multiprecision integer assembler-optimized routined for 32 bit cpu, header.
  */

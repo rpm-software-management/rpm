@@ -1,5 +1,5 @@
 /** \ingroup MP_m
- * \file mp32.c
+ * \file mp.c
  *
  * Multiprecision 2's complement integer routines for 32 bit cpu, code.
  */
@@ -27,8 +27,8 @@
 
 #include "system.h"
 #include "beecrypt.h"
-#include "mp32opt.h"
-#include "mp32.h"
+#include "mpopt.h"
+#include "mp.h"
 #include "debug.h"
 
 #ifndef ASM_MP32ZERO

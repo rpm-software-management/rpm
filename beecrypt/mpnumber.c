@@ -1,6 +1,6 @@
 /*@-sizeoftype@*/
 /** \ingroup MP_m
- * \file mp32number.c
+ * \file mpnumber.c
  *
  * Multiple precision numbers, code.
  */
@@ -28,8 +28,8 @@
  */
 
 #include "system.h"
-#include "mp32number.h"
-#include "mp32.h"
+#include "mpnumber.h"
+#include "mp.h"
 #include "debug.h"
 
 void mp32nzero(mp32number* n)

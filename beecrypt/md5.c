@@ -27,7 +27,7 @@
 
 #include "system.h"
 #include "md5.h"
-#include "mp32.h"
+#include "mp.h"
 #include "endianness.h"
 #include "debug.h"
 

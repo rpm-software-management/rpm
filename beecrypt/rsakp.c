@@ -29,8 +29,8 @@
 
 #include "system.h"
 #include "rsakp.h"
-#include "mp32prime.h"
-#include "mp32.h"
+#include "mpprime.h"
+#include "mp.h"
 #include "debug.h"
 
 /*@-boundswrite@*/

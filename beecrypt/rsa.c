@@ -27,7 +27,7 @@
 
 #include "system.h"
 #include "rsa.h"
-#include "mp32.h"
+#include "mp.h"
 #include "debug.h"
 
 int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)

@@ -1,5 +1,5 @@
 /** \ingroup MP_m
- * \file mp32prime.h
+ * \file mpprime.h
  *
  * Multi-precision primes, header.
  */
@@ -28,7 +28,7 @@
 #ifndef _MP32PRIME_H
 #define _MP32PRIME_H
 
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 
 #define SMALL_PRIMES_PRODUCT_MAX	64
 

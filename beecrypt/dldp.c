@@ -29,8 +29,8 @@
 
 #include "system.h"
 #include "dldp.h"
-#include "mp32.h"
-#include "mp32prime.h"
+#include "mp.h"
+#include "mpprime.h"
 #include "debug.h"
 
 /**

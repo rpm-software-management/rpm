@@ -31,7 +31,7 @@
 #define _DLDP_H
 
 #include "beecrypt.h"
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 
 /**
  * Discrete Logarithm Domain Parameters - Prime

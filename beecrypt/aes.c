@@ -29,7 +29,7 @@
 #include "aesopt.h"
 #include "aes.h"
 #include "endianness.h"
-#include "mp32.h"
+#include "mp.h"
 #include "debug.h"
 
 /*@-exportheadervar -exportlocal@*/ /* FIX: tables needed by aes asm */

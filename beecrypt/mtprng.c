@@ -38,8 +38,8 @@
 #include "system.h"
 #include "beecrypt.h"
 #include "mtprng.h"
-#include "mp32opt.h"
-#include "mp32.h"
+#include "mpopt.h"
+#include "mp.h"
 #include "debug.h"
 
 #define hiBit(a)		((a) & 0x80000000)

@@ -1,5 +1,5 @@
 /** \ingroup MP_m
- * \file mp32number.h
+ * \file mpnumber.h
  *
  * Multiprecision numbers, header.
  */

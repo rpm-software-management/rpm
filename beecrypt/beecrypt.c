@@ -45,7 +45,7 @@ typedef struct
 #include "hmacsha1.h"
 #include "hmacsha256.h"
 #include "md5.h"
-#include "mp32.h"
+#include "mp.h"
 #include "mtprng.h"
 #include "sha1.h"
 #include "sha256.h"

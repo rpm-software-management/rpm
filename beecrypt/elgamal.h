@@ -28,7 +28,7 @@
 #ifndef _ELGAMAL_H
 #define _ELGAMAL_H
 
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -28,7 +28,7 @@
 #ifndef _RSAPK_H
 #define _RSAPK_H
 
-#include "mp32barrett.h"
+#include "mpbarrett.h"
 
 /**
  */

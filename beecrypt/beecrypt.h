@@ -29,7 +29,7 @@
 #include "types.h"
 
 #include "memchunk.h"
-#include "mp32number.h"
+#include "mpnumber.h"
 
 /** \name Entropy sources */
 /*@{*/

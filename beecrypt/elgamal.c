@@ -57,7 +57,7 @@
 #include "system.h"
 #include "elgamal.h"
 #include "dldp.h"
-#include "mp32.h"
+#include "mp.h"
 #include "debug.h"
 
 int elgv1sign(const mp32barrett* p, const mp32barrett* n, const mp32number* g, randomGeneratorContext* rgc, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
