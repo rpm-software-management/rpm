@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.3\n"
-"POT-Creation-Date: 2000-02-15 11:21-0500\n"
+"POT-Creation-Date: 2000-02-16 14:03-0500\n"
 "PO-Revision-Date: 2000-01-09 22:47+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2601,160 +2601,160 @@ msgstr "(ej tillstnd) "
 msgid "package has neither file owner or id lists"
 msgstr "paketet har varken filägare eller id-listor"
 
-#: lib/query.c:422
+#: lib/query.c:428
 #, c-format
 msgid "record number %u\n"
 msgstr "post nummer %u\n"
 
-#: lib/query.c:426
+#: lib/query.c:432
 msgid "error: could not read database record\n"
 msgstr "fel: kunde inte lästa databaspost\n"
 
 #. XXX Fstrerror
-#: lib/query.c:472
+#: lib/query.c:478
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades öppna %s: %s\n"
 
-#: lib/query.c:490
+#: lib/query.c:496
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går ej att fråga om\n"
 
-#: lib/query.c:499 lib/rpminstall.c:231
+#: lib/query.c:505 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s tycks inte vara ett RPM-paket\n"
 
-#: lib/query.c:503
+#: lib/query.c:509
 #, c-format
 msgid "query of %s failed\n"
 msgstr "fråga om %s misslyckades\n"
 
-#: lib/query.c:536
+#: lib/query.c:542
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga om spec-fil %s misslyckades, kan inte parsa\n"
 
-#: lib/query.c:561
+#: lib/query.c:567
 msgid "could not read database record!\n"
 msgstr "kunde inte lästa databaspost!\n"
 
-#: lib/query.c:572
+#: lib/query.c:578
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:582
+#: lib/query.c:588
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:592
+#: lib/query.c:598
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:603
+#: lib/query.c:609
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:619
+#: lib/query.c:625
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:622
+#: lib/query.c:628
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "fil %s ägs inte av något paket\n"
 
-#: lib/query.c:635
+#: lib/query.c:641
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:638
+#: lib/query.c:644
 #, c-format
 msgid "package record number: %d\n"
 msgstr "paketpost nummer: %d\n"
 
-#: lib/query.c:641
+#: lib/query.c:647
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:653 lib/rpminstall.c:435
+#: lib/query.c:659 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
 
-#: lib/query.c:656
+#: lib/query.c:662
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "fel vid sökning efter paket %s\n"
 
-#: lib/query.c:678
+#: lib/query.c:684
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() misslyckades\n"
 
-#: lib/query.c:737
+#: lib/query.c:743
 msgid "query package owning file"
 msgstr "undersök paket som äger fil"
 
-#: lib/query.c:739
+#: lib/query.c:745
 msgid "query packages in group"
 msgstr "undersök paket i grupp"
 
-#: lib/query.c:741
+#: lib/query.c:747
 msgid "query a package file"
 msgstr "undersök en paketfil"
 
-#: lib/query.c:745
+#: lib/query.c:751
 msgid "query a spec file"
 msgstr "fråga om en spec-fil"
 
-#: lib/query.c:747
+#: lib/query.c:753
 msgid "query the pacakges triggered by the package"
 msgstr "undersök paket utlösta av paketet"
 
-#: lib/query.c:749
+#: lib/query.c:755
 msgid "query the packages which require a capability"
 msgstr "fråga om paket som behöver en egenskap"
 
-#: lib/query.c:751
+#: lib/query.c:757
 msgid "query the packages which provide a capability"
 msgstr "fråga om paket som tillhandahåller en egenskap"
 
-#: lib/query.c:790
+#: lib/query.c:796
 msgid "list all configuration files"
 msgstr "lista alla konfigurationsfiler"
 
-#: lib/query.c:792
+#: lib/query.c:798
 msgid "list all documentation files"
 msgstr "lista alla dokumentationsfiler"
 
-#: lib/query.c:794
+#: lib/query.c:800
 msgid "dump basic file information"
 msgstr "visa filinformation"
 
-#: lib/query.c:796
+#: lib/query.c:802
 msgid "list files in package"
 msgstr "lista filer i paketet"
 
-#: lib/query.c:800
+#: lib/query.c:806
 msgid "use the following query format"
 msgstr "använd följande frågeformat"
 
-#: lib/query.c:802
+#: lib/query.c:808
 msgid "substitute i18n sections from the following catalogue"
 msgstr "ersätt i18n-sektioner från följande katalog"
 
-#: lib/query.c:805
+#: lib/query.c:811
 msgid "display the states of the listed files"
 msgstr "visa tillstånd för de listade filerna"
 
-#: lib/query.c:807
+#: lib/query.c:813
 msgid "display a verbose file listing"
 msgstr "visa en utförlig fillistning"
 

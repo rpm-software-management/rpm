@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-02-15 11:21-0500\n"
+msgstr "POT-Creation-Date: 2000-02-16 14:03-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -2762,171 +2762,171 @@ msgstr ""
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:422
+#: lib/query.c:428
 #, c-format
 msgid "record number %u\n"
 msgstr ""
 
-#: lib/query.c:426
+#: lib/query.c:432
 msgid "error: could not read database record\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/query.c:472
+#: lib/query.c:478
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "Construção falhou.\n"
 
-#: lib/query.c:490
+#: lib/query.c:496
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:499 lib/rpminstall.c:231
+#: lib/query.c:505 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:503
+#: lib/query.c:509
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:536
+#: lib/query.c:542
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:561
+#: lib/query.c:567
 msgid "could not read database record!\n"
 msgstr ""
 
-#: lib/query.c:572
+#: lib/query.c:578
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:582
+#: lib/query.c:588
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "não foram passados pacotes para assinatura"
 
-#: lib/query.c:592
+#: lib/query.c:598
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:603
+#: lib/query.c:609
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:619
+#: lib/query.c:625
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:622
+#: lib/query.c:628
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:635
+#: lib/query.c:641
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:638
+#: lib/query.c:644
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: lib/query.c:641
+#: lib/query.c:647
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:653 lib/rpminstall.c:435
+#: lib/query.c:659 lib/rpminstall.c:435
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "não foi passado pacote para instalação"
 
-#: lib/query.c:656
+#: lib/query.c:662
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:678
+#: lib/query.c:684
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:737
+#: lib/query.c:743
 #, fuzzy
 msgid "query package owning file"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: lib/query.c:739
+#: lib/query.c:745
 #, fuzzy
 msgid "query packages in group"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/query.c:741
+#: lib/query.c:747
 #, fuzzy
 msgid "query a package file"
 msgstr "pesquise todos os pacotes"
 
-#: lib/query.c:745
+#: lib/query.c:751
 #, fuzzy
 msgid "query a spec file"
 msgstr "pesquise todos os pacotes"
 
-#: lib/query.c:747
+#: lib/query.c:753
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "pesquise o pacote ao qual <arquivo> pertence"
 
-#: lib/query.c:749
+#: lib/query.c:755
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "pesquise pacotes que requerem capacidade <i>"
 
-#: lib/query.c:751
+#: lib/query.c:757
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "pesquise pacotes que fornecem a capacidade <i>"
 
-#: lib/query.c:790
+#: lib/query.c:796
 #, fuzzy
 msgid "list all configuration files"
 msgstr "liste somente os arquivos de configuração (implica -l)"
 
-#: lib/query.c:792
+#: lib/query.c:798
 #, fuzzy
 msgid "list all documentation files"
 msgstr "instale documentação"
 
-#: lib/query.c:794
+#: lib/query.c:800
 #, fuzzy
 msgid "dump basic file information"
 msgstr "mostre informação do pacote"
 
-#: lib/query.c:796
+#: lib/query.c:802
 #, fuzzy
 msgid "list files in package"
 msgstr "instale pacote"
 
-#: lib/query.c:800
+#: lib/query.c:806
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:802
+#: lib/query.c:808
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:805
+#: lib/query.c:811
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:807
+#: lib/query.c:813
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "mostre a lista de arquivos do pacote"

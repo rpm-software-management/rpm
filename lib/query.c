@@ -399,12 +399,18 @@ void rpmDisplayQueryTags(FILE * f)
     }
 
     while (ext->name) {
-	if (ext->type == HEADER_EXT_TAG)
-	    fprintf(f, "%s\n", ext->name + 7), ext++;
-	else if (ext->type == HEADER_EXT_MORE)
+	if (ext->type == HEADER_EXT_MORE) {
 	    ext = ext->u.more;
-	else
-	    ext++;
+	    continue;
+	}
+	/* XXX don't print query tags twice. */
+	for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
+	    if (!strcmp(t->name, ext->name))
+	    	break;
+	}
+	if (i >= rpmTagTableSize && ext->type == HEADER_EXT_TAG)
+	    fprintf(f, "%s\n", ext->name + 7);
+	ext++;
     }
 }
 

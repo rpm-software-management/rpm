@@ -574,7 +574,7 @@ exit:
 
 int rpmVersionCompare(Header first, Header second)
 {
-    char * one, * two;
+    const char * one, * two;
     int_32 * epochOne, * epochTwo;
     int rc;
 

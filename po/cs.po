@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-15 11:21-0500\n"
+"POT-Creation-Date: 2000-02-16 14:03-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -2655,172 +2655,172 @@ msgstr "(chybí stav)  "
 msgid "package has neither file owner or id lists"
 msgstr "balíèek nemá vlastníka souboru ani id-seznamy"
 
-#: lib/query.c:422
+#: lib/query.c:428
 #, fuzzy, c-format
 msgid "record number %u\n"
 msgstr "probíhá ovìøování záznamu èíslo %d\n"
 
-#: lib/query.c:426
+#: lib/query.c:432
 msgid "error: could not read database record\n"
 msgstr "chyba: nelze naèíst databázový záznam\n"
 
 #. XXX Fstrerror
-#: lib/query.c:472
+#: lib/query.c:478
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "nelze otevøít %s: %s\n"
 
-#: lib/query.c:490
+#: lib/query.c:496
 msgid "old format source packages cannot be queried\n"
 msgstr "na zdrojové balíèky starého formátu se nelze dotazovat\n"
 
-#: lib/query.c:499 lib/rpminstall.c:231
+#: lib/query.c:505 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
 
-#: lib/query.c:503
+#: lib/query.c:509
 #, c-format
 msgid "query of %s failed\n"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:536
+#: lib/query.c:542
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:561
+#: lib/query.c:567
 msgid "could not read database record!\n"
 msgstr "nelze naèíst databázový záznam!\n"
 
-#: lib/query.c:572
+#: lib/query.c:578
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
-#: lib/query.c:582
+#: lib/query.c:588
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:592
+#: lib/query.c:598
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: lib/query.c:603
+#: lib/query.c:609
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾ádný balíèek neposkytuje %s\n"
 
-#: lib/query.c:619
+#: lib/query.c:625
 #, c-format
 msgid "file %s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: lib/query.c:622
+#: lib/query.c:628
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "¾ádný balíèek nevlastní soubor %s\n"
 
-#: lib/query.c:635
+#: lib/query.c:641
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/query.c:638
+#: lib/query.c:644
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "probíhá dotaz na záznam èíslo %d\n"
 
-#: lib/query.c:641
+#: lib/query.c:647
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "záznam %d nelze naèíst\n"
 
-#: lib/query.c:653 lib/rpminstall.c:435
+#: lib/query.c:659 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: lib/query.c:656
+#: lib/query.c:662
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
 
-#: lib/query.c:678
+#: lib/query.c:684
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Chybné otevøení\n"
 
-#: lib/query.c:737
+#: lib/query.c:743
 #, fuzzy
 msgid "query package owning file"
 msgstr "dotazy na balíèek vlastnící <soubor>"
 
-#: lib/query.c:739
+#: lib/query.c:745
 #, fuzzy
 msgid "query packages in group"
 msgstr "balíèek nemá skupinu\n"
 
-#: lib/query.c:741
+#: lib/query.c:747
 #, fuzzy
 msgid "query a package file"
 msgstr "dotazovat v¹echny balíèky"
 
-#: lib/query.c:745
+#: lib/query.c:751
 #, fuzzy
 msgid "query a spec file"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:747
+#: lib/query.c:753
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "dotazy na balíèky aktivované <balíkem>"
 
-#: lib/query.c:749
+#: lib/query.c:755
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "dotazovat balíèky vy¾adující schopnost <sch>"
 
-#: lib/query.c:751
+#: lib/query.c:757
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "dotazovat balíèky poskytující schopnost <sch>"
 
-#: lib/query.c:790
+#: lib/query.c:796
 #, fuzzy
 msgid "list all configuration files"
 msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
 
-#: lib/query.c:792
+#: lib/query.c:798
 #, fuzzy
 msgid "list all documentation files"
 msgstr "nainstalovat dokumentaci"
 
-#: lib/query.c:794
+#: lib/query.c:800
 #, fuzzy
 msgid "dump basic file information"
 msgstr "zobrazit informace o balíèku"
 
-#: lib/query.c:796
+#: lib/query.c:802
 #, fuzzy
 msgid "list files in package"
 msgstr "binární balíèek starého typu\n"
 
-#: lib/query.c:800
+#: lib/query.c:806
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:802
+#: lib/query.c:808
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:805
+#: lib/query.c:811
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:807
+#: lib/query.c:813
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "zobrazit seznam souborù balíèkù"

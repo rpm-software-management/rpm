@@ -346,6 +346,7 @@ static int filenamesTag(Header h, int_32 * type, /*@out@*/void ** data,
 
 /* I18N look aside diversions */
 
+#ifdef	ENABLE_I18N_LOOKASIDE
 static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
@@ -419,11 +420,14 @@ static int groupTag(Header h, /*@out@*/ int_32 * type,
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
+#endif	/* ENABLE_I18N_LOOKASIDE */
 
 const struct headerSprintfExtension rpmHeaderFormats[] = {
+#ifdef	ENABLE_I18N_LOOKASIDE
     { HEADER_EXT_TAG, "RPMTAG_GROUP", { groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION", { descriptionTag } },
     { HEADER_EXT_TAG, "RPMTAG_SUMMARY", { summaryTag } },
+#endif	/* ENABLE_I18N_LOOKASIDE */
     { HEADER_EXT_TAG, "RPMTAG_FILENAMES", { filenamesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
