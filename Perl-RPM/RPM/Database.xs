@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.5 2000/06/14 09:27:01 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.6 2000/08/06 08:57:09 rjray Exp $";
 
 /*
   Use this define for deriving the saved rpmdb struct, rather than coding
@@ -206,7 +206,6 @@ int rpmdb_FIRSTKEY(pTHX_ RPM__Database self, SV** key, RPM__Header* value)
 {
     RPM_Database* dbstruct;
     SV** svp;
-    AV* tmpav;
 
     dbstruct_from_object_ret(svp, dbstruct, self, 0);
     /* This more or less resets our "iterator" */
@@ -216,9 +215,7 @@ int rpmdb_FIRSTKEY(pTHX_ RPM__Database self, SV** key, RPM__Header* value)
         return 0;
 
     *value = rpmdb_FETCH(aTHX_ self, newSViv(dbstruct->current_rec));
-    tmpav = rpmhdr_FETCH(aTHX_ *value, newSVpv("name", 4), Nullch, 0, 0);
-    svp = av_fetch(tmpav, 0, FALSE);
-    *key = newSVsv(*svp);
+    *key = rpmhdr_FETCH(aTHX_ *value, newSVpv("name", 4), Nullch, 0, 0);
 
     return 1;
 }
@@ -228,7 +225,6 @@ int rpmdb_NEXTKEY(pTHX_ RPM__Database self, SV* key,
 {
     RPM_Database* dbstruct;
     SV** svp;
-    AV* tmpav;
 
     dbstruct_from_object_ret(svp, dbstruct, self, 0);
 
@@ -237,9 +233,8 @@ int rpmdb_NEXTKEY(pTHX_ RPM__Database self, SV* key,
         return 0;
 
     *nextvalue = rpmdb_FETCH(aTHX_ self, newSViv(dbstruct->current_rec));
-    tmpav = rpmhdr_FETCH(aTHX_ *nextvalue, newSVpv("name", 4), Nullch, 0, 0);
-    svp = av_fetch(tmpav, 0, FALSE);
-    *nextkey = newSVsv(*svp);
+    *nextkey = rpmhdr_FETCH(aTHX_ *nextvalue, newSVpv("name", 4),
+                            Nullch, 0, 0);
 
     return 1;
 }
