@@ -196,6 +196,9 @@ fi
 %ifarch powerpc ppc
 %{__prefix}/lib/rpm/ppc*
 %endif
+%ifarch armv3l armv4l
+%{__prefix}/lib/rpm/armv[34][lb]*
+%endif
 
 %dir %{__prefix}/src/redhat
 %dir %{__prefix}/src/redhat/BUILD
