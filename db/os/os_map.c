@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_map.c,v 11.34 2001/04/10 20:44:34 bostic Exp ";
+static const char revid[] = "Id: os_map.c,v 11.37 2001/10/04 21:27:57 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -160,7 +160,7 @@ __os_r_sysattach(dbenv, infop, rp)
 	 */
 	if (ret == 0 && F_ISSET(infop, REGION_CREATE))
 		ret = __os_finit(dbenv,
-		    &fh, rp->size, DB_GLOBAL(db_region_init));
+		    &fh, rp->size, F_ISSET(dbenv, DB_ENV_REGION_INIT) ? 1 : 0);
 
 	/* Map the file in. */
 	if (ret == 0)
@@ -299,11 +299,19 @@ __os_unmapfile(dbenv, addr, len)
 #ifdef HAVE_MMAP
 #ifdef HAVE_MUNLOCK
 	if (F_ISSET(dbenv, DB_ENV_LOCKDOWN))
-		(void)munlock(addr, len);
+		while (munlock(addr, len) != 0 && __os_get_errno() == EINTR)
+			;
 #else
 	COMPQUIET(dbenv, NULL);
 #endif
-	return (munmap(addr, len) ? __os_get_errno() : 0);
+	{
+		int ret;
+
+		while ((ret = munmap(addr, len)) != 0 &&
+		    __os_get_errno() == EINTR)
+			;
+		return (ret ? __os_get_errno() : 0);
+	}
 #else
 	COMPQUIET(dbenv, NULL);
 

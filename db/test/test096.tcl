@@ -3,10 +3,10 @@
 # Copyright (c) 1999-2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: test096.tcl,v 11.8 2001/07/09 14:49:16 dda Exp 
+# Id: test096.tcl,v 11.9 2001/08/03 16:39:49 bostic Exp 
 #
-# Access Method Test 96
-# Test of db->truncate method.
+# TEST	test096
+# TEST	Db->truncate test.
 proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	global fixed_len
 	source ./include.tcl

@@ -3,7 +3,7 @@
 # Copyright (c) 1996-2003
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: rpc003.tcl,v 11.4 2001/07/02 01:08:46 bostic Exp 
+# Id: rpc003.tcl,v 11.5 2001/08/29 19:07:42 sue Exp 
 #
 # Test RPC and secondary indices.
 proc rpc003 { } {
@@ -133,7 +133,7 @@ proc rpc003 { } {
 		    [eval {$pdb associate} "" $sdb] 0
 		lappend sdbs $sdb
 	}
-	check_secondaries $pdb $sdbs $nentries keys data "Rpc003.f"
+	check_secondaries $pdb $sdbs $nentries keys data "Rpc003.h"
 
 	foreach sdb $sdbs {
 		error_check_good secondary_close [$sdb close] 0

@@ -1,4 +1,4 @@
-<!--Id: faq.so,v 10.2 2001/07/06 13:15:47 bostic Exp -->
+<!--Id: faq.so,v 10.3 2001/10/13 19:56:25 bostic Exp -->
 <!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <html>
@@ -11,7 +11,7 @@
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
-<td align=right><a href="../../ref/transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/xa/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../../ref/transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h1 align=center>Transaction FAQ</h1>
@@ -28,11 +28,11 @@ errors are errors like <a href="../../ref/program/errorret.html#DB_NOTFOUND">DB_
 searched-for key item is not present in the database.  Applications may
 want to explicitly test for and handle this error, or, in the case where
 the absence of a key implies the enclosing transaction should fail,
-simply call <a href="../../api_c/txn_abort.html">txn_abort</a>.  Unexpected but recoverable errors are
+simply call <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a>.  Unexpected but recoverable errors are
 errors like <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>, which indicates that an operation
 has been selected to resolve a deadlock, or a system error such as EIO,
 which likely indicates that the filesystem has no available disk space.
-Applications must immediately call <a href="../../api_c/txn_abort.html">txn_abort</a> when these returns
+Applications must immediately call <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a> when these returns
 occur, as it is not possible to proceed otherwise.  The only
 unrecoverable error is <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, which indicates that the
 system must stop and recovery must be run.
@@ -79,7 +79,7 @@ unlikely failure scenario, but a possible one.
 <p>See <a href="../../ref/transapp/reclimit.html">Berkeley DB recoverability</a>
 for more detailed information.
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/xa/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
 </body>

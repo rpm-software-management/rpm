@@ -3,11 +3,10 @@
 # Copyright (c) 2000-2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: test095.tcl,v 11.6 2001/05/21 17:09:10 krinsky Exp 
+# Id: test095.tcl,v 11.13 2001/10/11 18:08:40 sandstro Exp 
 #
-# DB Test 95 {access method}
-# Bulk get test.
-#
+# TEST	test095
+# TEST	Bulk get test. [#2934]
 proc test095 { method {nsets 1000} {noverflows 25} {tnum 95} args } {
 	source ./include.tcl
 	set args [convert_args $method $args]
@@ -63,24 +62,32 @@ proc test095 { method {nsets 1000} {noverflows 25} {tnum 95} args } {
 		t95_cgettest $db $tnum d [expr 100] 1
 		t95_cgettest $db $tnum e [expr 10 * 8192] 0
 
-		set m [expr 4000 * $noverflows]
-		puts "\tTest0$tnum.f: Growing\
-		    database with $noverflows overflow sets (max item size $m)"
+		# Run invalid flag combination tests
+		# Sync and reopen test file so errors won't be sent to stderr
+		error_check_good db_sync [$db sync] 0
+		set noerrdb [eval berkdb_open_noerr $dargs $testfile]
+		t95_flagtest $noerrdb $tnum f [expr 8192]
+		t95_cflagtest $noerrdb $tnum g [expr 100]
+		error_check_good noerrdb_close [$noerrdb close] 0
+
+		# Set up for overflow tests
+		set max [expr 4000 * $noverflows]
+		puts "\tTest0$tnum.h: Growing\
+	    database with $noverflows overflow sets (max item size $max)"
 		t95_populate $db $did $noverflows 4000
 
 		# Run overflow get tests.
-		t95_gettest $db $tnum g [expr 10 * 8192] 1
-		t95_gettest $db $tnum h [expr $m * 2] 1
-		t95_gettest $db $tnum i [expr $m * $noverflows * 2] 0
+		t95_gettest $db $tnum i [expr 10 * 8192] 1
+		t95_gettest $db $tnum j [expr $max * 2] 1
+		t95_gettest $db $tnum k [expr $max * $noverflows * 2] 0
 
-		# Run cursor get tests.
-		t95_cgettest $db $tnum j [expr 10 * 8192] 1
-		t95_cgettest $db $tnum k [expr $m * 2] 0
+		# Run overflow cursor get tests.
+		t95_cgettest $db $tnum l [expr 10 * 8192] 1
+		t95_cgettest $db $tnum m [expr $max * 2] 0
 
 		error_check_good db_close [$db close] 0
 		close $did
 	}
-
 }
 
 proc t95_gettest { db tnum letter bufsize expectfail } {
@@ -89,7 +96,14 @@ proc t95_gettest { db tnum letter bufsize expectfail } {
 proc t95_cgettest { db tnum letter bufsize expectfail } {
 	t95_gettest_body $db $tnum $letter $bufsize $expectfail 1
 }
+proc t95_flagtest { db tnum letter bufsize } {
+	t95_flagtest_body $db $tnum $letter $bufsize 0
+}
+proc t95_cflagtest { db tnum letter bufsize } {
+	t95_flagtest_body $db $tnum $letter $bufsize 1
+}
 
+# Basic get test
 proc t95_gettest_body { db tnum letter bufsize expectfail usecursor } {
 	global errorCode
 
@@ -157,6 +171,52 @@ proc t95_gettest_body { db tnum letter bufsize expectfail usecursor } {
 	if { $usecursor != 0 } {
 		error_check_good getcurs_close [$getcurs close] 0
 	}
+}
+
+# Test of invalid flag combinations for -multi
+proc t95_flagtest_body { db tnum letter bufsize usecursor } {
+	global errorCode
+
+	if { $usecursor == 0 } {
+		set action "db get -multi "
+	} else {
+		set action "dbc get -multi "
+	}
+	puts "\tTest0$tnum.$letter: $action with invalid flag combinations"
+
+	# Cursor for $usecursor.
+	if { $usecursor != 0 } {
+		set getcurs [$db cursor]
+		error_check_good getcurs [is_valid_cursor $getcurs $db] TRUE
+	}
+
+	if { $usecursor == 0 } {
+		# Disallowed flags for basic -multi get
+		set badflags [list consume consume_wait {rmw some_key}]
+
+		foreach flag $badflags {
+			catch {eval $db get -multi $bufsize -$flag} ret
+			error_check_good \
+			    db:get:multi:$flag [is_substr $errorCode EINVAL] 1
+		}
+       } else {
+		# Disallowed flags for cursor -multi get
+		set cbadflags [list last get_recno join_item \
+		    {multi_key 1000} prev prevnodup]
+
+		set dbc [$db cursor]
+		$dbc get -first
+		foreach flag $cbadflags {
+			catch {eval $dbc get -multi $bufsize -$flag} ret
+			error_check_good dbc:get:multi:$flag \
+				[is_substr $errorCode EINVAL] 1
+		}
+		error_check_good dbc_close [$dbc close] 0
+	}
+	if { $usecursor != 0 } {
+		error_check_good getcurs_close [$getcurs close] 0
+	}
+	puts "\t\tTest0$tnum.$letter completed"
 }
 
 # Verify that a passed-in list of key/data pairs all match the predicted

@@ -1,4 +1,4 @@
-# Id: configure.ac,v 11.100 2001/07/10 15:13:48 bostic Exp 
+# Id: configure.ac,v 11.116 2001/10/11 20:29:35 bostic Exp 
 # Process this file with autoconf to produce a configure script.
 
 PACKAGE=db
@@ -19,7 +19,6 @@ AC_MSG_RESULT(no)
 # Substitution variables.
 AC_SUBST(ADDITIONAL_INCS)
 AC_SUBST(ADDITIONAL_LANG)
-AC_SUBST(ADDITIONAL_LIBS)
 AC_SUBST(ADDITIONAL_OBJS)
 AC_SUBST(ADDITIONAL_PROGS)
 AC_SUBST(BUILD_TARGET)
@@ -39,7 +38,6 @@ AC_SUBST(INSTALLER)
 AC_SUBST(INSTALL_LIBS)
 AC_SUBST(INSTALL_TARGET)
 AC_SUBST(JAR)
-AC_SUBST(JAVAC)
 AC_SUBST(JAVACFLAGS)
 AC_SUBST(LDFLAGS)
 AC_SUBST(LIBJSO_LIBS)
@@ -50,14 +48,15 @@ AC_SUBST(LIBTSO_LIBS)
 AC_SUBST(LIBXSO_LIBS)
 AC_SUBST(MAKEFILE_CC)
 AC_SUBST(MAKEFILE_CCLINK)
+AC_SUBST(MAKEFILE_SOLINK)
 AC_SUBST(MAKEFILE_CXX)
 AC_SUBST(MAKEFILE_CXXLINK)
+AC_SUBST(MAKEFILE_XSOLINK)
 AC_SUBST(POSTLINK)
 AC_SUBST(RPC_CLIENT_OBJS)
 AC_SUBST(RPM_POST_INSTALL)
 AC_SUBST(RPM_POST_UNINSTALL)
 AC_SUBST(SOFLAGS)
-AC_SUBST(SOLINK)
 AC_SUBST(SOSUFFIX)
 AC_SUBST(TEST_LIBS)
 AC_SUBST(db_cv_path_embedix_install)
@@ -147,32 +146,43 @@ fi
 # Don't override anything if it's already set from the environment.
 optimize_def="-O"
 case "$host_os" in
-aix4.*)	   optimize_def="-O2"
-	   CC=${CC-"xlc_r"}
-	   CPPFLAGS="-D_THREAD_SAFE $CPPFLAGS"
-	   LIBTSO_LIBS="\$(LIBS)";;
-bsdi3*)	   CC=${CC-"shlicc2"}
-	   optimize_def="-O2"
-	   LIBS="-lipc $LIBS";;
-bsdi*)	   optimize_def="-O2";;
-freebsd*)  optimize_def="-O2"
-	   CPPFLAGS="-D_THREAD_SAFE $CPPFLAGS"
-           LIBS="-pthread";;
-hpux*)	   CPPFLAGS="-D_REENTRANT $CPPFLAGS";;
-irix*)	   optimize_def="-O2"
-	   CPPFLAGS="-D_SGI_MP_SOURCE $CPPFLAGS";;
-linux*)	   optimize_def="-O2"
-	   CPPFLAGS="-D_GNU_SOURCE -D_REENTRANT $CPPFLAGS";;
-mpeix*)	   CPPFLAGS="-D_POSIX_SOURCE -D_SOCKET_SOURCE $CPPFLAGS"
-	   LIBS="-lsocket -lsvipc $LIBS";;
-osf*)	   CPPFLAGS="-D_REENTRANT $CPPFLAGS";;
-*qnx)	   AC_DEFINE(HAVE_QNX)
-	   AH_TEMPLATE(HAVE_QNX, [Define if building on QNX.]);;
-sco3.2v4*) CC=${CC-"cc -belf"}
-	   LIBS="-lsocket -lnsl_s $LIBS";;
-sco*)	   CC=${CC-"cc -belf"}
-	   LIBS="-lsocket -lnsl $LIBS";;
-solaris*)  CPPFLAGS="-D_REENTRANT $CPPFLAGS";;
+aix4.3.[12])
+	optimize_def="-O2"
+	CC=${CC-"xlc_r"}
+	CPPFLAGS="$CPPFLAGS -D_THREAD_SAFE"
+	LIBTSO_LIBS="\$(LIBS)";;
+aix4.3.3)
+	optimize_def="-O2"
+	CC=${CC-"xlc_r"}
+	CPPFLAGS="$CPPFLAGS -D_THREAD_SAFE"
+	LDFLAGS="$LDFLAGS -pthread"
+	LIBTSO_LIBS="\$(LIBS)";;
+bsdi3*)	optimize_def="-O2"
+	CC=${CC-"shlicc2"}
+	LIBS="$LIBS -lipc";;
+bsdi*)	optimize_def="-O2";;
+freebsd*)
+	optimize_def="-O2"
+	CPPFLAGS="$CPPFLAGS -D_THREAD_SAFE"
+	LDFLAGS="$LDFLAGS -pthread";;
+hpux*)	CPPFLAGS="$CPPFLAGS -D_REENTRANT";;
+irix*)	optimize_def="-O2"
+	CPPFLAGS="$CPPFLAGS -D_SGI_MP_SOURCE";;
+linux*)	optimize_def="-O2"
+	CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE -D_REENTRANT";;
+mpeix*)	CPPFLAGS="$CPPFLAGS -D_POSIX_SOURCE -D_SOCKET_SOURCE"
+	LIBS="$LIBS -lsocket -lsvipc";;
+osf*)	CPPFLAGS="$CPPFLAGS -D_REENTRANT"
+	LDFLAGS="$LDFLAGS -pthread";;
+*qnx)	AC_DEFINE(HAVE_QNX)
+	AH_TEMPLATE(HAVE_QNX, [Define if building on QNX.]);;
+sco3.2v4*)
+	CC=${CC-"cc -belf"}
+	LIBS="$LIBS -lsocket -lnsl_s";;
+sco*)	CC=${CC-"cc -belf"}
+	LIBS="$LIBS -lsocket -lnsl";;
+solaris*)
+	CPPFLAGS="$CPPFLAGS -D_REENTRANT";;
 esac
 
 # Set CFLAGS/CXXFLAGS.  We MUST set the flags before we call autoconf
@@ -204,8 +214,8 @@ AC_PROG_CC
 # Because of shared library building, the ${CC} used for config tests
 # may be different than the ${CC} we want to put in the Makefile.
 # The latter is known as ${MAKEFILE_CC} in this script.
-MAKEFILE_CC=${CC}
-MAKEFILE_CCLINK="\$(CC)"
+MAKEFILE_CC="${CC}"
+MAKEFILE_CCLINK="${CC}"
 MAKEFILE_CXX="nocxx"
 MAKEFILE_CXXLINK="nocxx"
 
@@ -219,15 +229,17 @@ MAKEFILE_CXXLINK="nocxx"
 if test "$db_cv_cxx" = "yes"; then
 	if test "$GCC" != "yes"; then
 		case "$host_os" in
-		aix*)		AC_CHECK_TOOL(CCC, xlC_r);;
+		aix*)		AC_CHECK_TOOL(CCC, xlC_r)
+				LIBXSO_LIBS="-lC_r $LIBXSO_LIBS"
+				LIBS="-lC_r $LIBS";;
 		hpux*)		AC_CHECK_TOOL(CCC, aCC);;
 		osf*)		AC_CHECK_TOOL(CCC, cxx);;
 		solaris*)	AC_CHECK_TOOL(CCC, CC);;
 		esac
 	fi
 	AC_PROG_CXX
-	MAKEFILE_CXX=${CXX}
-	MAKEFILE_CXXLINK="\$(CXX)"
+	MAKEFILE_CXX="${CXX}"
+	MAKEFILE_CXXLINK="${CXX}"
 fi
 
 # Do some gcc specific configuration.
@@ -242,18 +254,36 @@ CCC=CXX
 AC_PROG_LIBTOOL
 
 LIBTOOL="\$(SHELL) ./libtool"
-SOSUFFIX=`sed -e '/^library_names_spec=/!d' -e 's/.*\.\([[a-zA-Z0-9_]]*\).*/\1/' ./libtool`
 SOFLAGS="-rpath \$(libdir)"
 
-SAVE_CC="${MAKEFILE_CC}"
-SAVE_CXX="${MAKEFILE_CXX}"
-MAKEFILE_CC="\$(LIBTOOL) --mode=compile ${SAVE_CC}"
-MAKEFILE_CXX="\$(LIBTOOL) --mode=compile ${SAVE_CXX}"
-MAKEFILE_CCLINK="\$(LIBTOOL) --mode=link ${SAVE_CC}"
-MAKEFILE_CXXLINK="\$(LIBTOOL) --mode=link ${SAVE_CXX}"
+AC_MSG_CHECKING([SOSUFFIX from libtool])
+# $library_names_spec is a snippet of shell that may
+# defined in terms of $versuffix, $release, $libname.
+# All we want is to eval it and grab the suffix used
+# for shared objects.
+versuffix=""
+release=""
+libname=libfoo
+eval library_names=\"$library_names_spec\"
+SOSUFFIX=`echo "$library_names" | sed -e 's/.*\.\([[a-zA-Z0-9_]]*\).*/\1/'`
+AC_MSG_RESULT($SOSUFFIX)
 
-SOLINK="\$(LIBTOOL) --mode=link ${SAVE_CC} -avoid-version"
+if test "$SOSUFFIX" = '' ; then
+	SOSUFFIX=so
+	if test "$enable_shared" = "yes"; then
+		AC_MSG_WARN([libtool may not know about this architecture.])
+		AC_MSG_WARN([assuming .$SOSUFFIX suffix for dynamic libraries.])
+	fi
+fi
+
 INSTALLER="\$(LIBTOOL) --mode=install cp"
+
+MAKEFILE_CC="\$(LIBTOOL) --mode=compile ${MAKEFILE_CC}"
+MAKEFILE_SOLINK="\$(LIBTOOL) --mode=link ${MAKEFILE_CCLINK} -avoid-version"
+MAKEFILE_CCLINK="\$(LIBTOOL) --mode=link ${MAKEFILE_CCLINK}"
+MAKEFILE_CXX="\$(LIBTOOL) --mode=compile ${MAKEFILE_CXX}"
+MAKEFILE_XSOLINK="\$(LIBTOOL) --mode=link ${MAKEFILE_CXXLINK} -avoid-version"
+MAKEFILE_CXXLINK="\$(LIBTOOL) --mode=link ${MAKEFILE_CXXLINK}"
 
 # Configure for shared libraries, static libraries, or both.  If both are
 # configured, build the utilities and example programs with shared versions.
@@ -262,28 +292,25 @@ INSTALLER="\$(LIBTOOL) --mode=install cp"
 # instead of .o
 if test "$enable_shared" = "no"; then
 	DEFAULT_LIB="\$(libdb)"
-	DEFAULT_LIB_CXX="\$(libcxx)"
-	DEFAULT_INSTALL="install_static"
 	POSTLINK="@true"
 	o=".o"
 fi
 if test "$enable_shared" = "yes"; then
 	DEFAULT_LIB="\$(libso_target)"
-	DEFAULT_LIB_CXX="\$(libxso_target)"
-	DEFAULT_INSTALL="${DEFAULT_INSTALL} install_shared"
 	POSTLINK="\$(LIBTOOL) --mode=execute true"
 	o=".lo"
 fi
+INSTALL_LIBS="$DEFAULT_LIB"
 
 # Optional C++ API.
 if test "$db_cv_cxx" = "yes"; then
 	if test "$enable_shared" = "no"; then
-		DEFAULT_INSTALL="${DEFAULT_INSTALL} install_static_cxx"
+		DEFAULT_LIB_CXX="\$(libcxx)"
 	fi
 	if test "$enable_shared" = "yes"; then
-		ADDITIONAL_LIBS="$ADDITIONAL_LIBS \$(libxso_target)"
-		DEFAULT_INSTALL="${DEFAULT_INSTALL} install_shared_cxx"
+		DEFAULT_LIB_CXX="\$(libxso_target)"
 	fi
+	INSTALL_LIBS="$INSTALL_LIBS $DEFAULT_LIB_CXX"
 
 	# Fill in C++ library for Embedix.
 	EMBEDIX_ECD_CXX='<OPTION db-extra>\
@@ -314,60 +341,17 @@ if test "$db_cv_java" = "yes"; then
 		AC_MSG_ERROR([Java requires shared libraries])
 	fi
 
-	AC_CHECK_TOOL(JAVAC, javac, nojavac)
-	if test "$JAVAC" = "nojavac"; then
-		AC_MSG_ERROR([no javac compiler in PATH])
-	fi
-	AC_CHECK_TOOL(JAR, jar, nojar)
-	if test "$JAR" = "nojar"; then
-		AC_MSG_ERROR([no jar utility in PATH])
-	fi
-	AC_PATH_PROG(JAVACABS, javac, nojavac)
-	ADDITIONAL_LIBS="$ADDITIONAL_LIBS \$(libjso_target)"
-	ADDITIONAL_LANG="$ADDITIONAL_LANG java"
-	DEFAULT_INSTALL="${DEFAULT_INSTALL} install_java"
+	AC_PROG_JAVAC
+	AC_PROG_JAR
+        AC_JNI_INCLUDE_DIR
 
-# find the include directory relative to the javac executable
-	while ls -ld "$JAVACABS" 2>/dev/null | grep " -> " >/dev/null; do
-		AC_MSG_CHECKING(symlink for $JAVACABS)
-		JAVACLINK=`ls -ld $JAVACABS | sed 's/.* -> //'`
-		case "$JAVACLINK" in
-		/*) JAVACABS="$JAVACLINK";;
-# 'X' avoids triggering unwanted echo options.
-		*) JAVACABS=`echo "X$JAVACABS" | sed -e 's/^X//' -e 's:[[^/]]*$::'`"$JAVACLINK";;
-		esac
-		AC_MSG_RESULT($JAVACABS)
-	done
-	JTOPDIR=`echo "$JAVACABS" | sed -e 's://*:/:g' -e 's:/[[^/]]*$::'`
-	case "$host_os" in
-		darwin*)	JTOPDIR=`echo "$JTOPDIR" | sed -e s:/[[^/]]*$::'`
-				JNIHEADERDIR="$JTOPDIR/Headers";;
-		*)		JNIHEADERDIR="$JTOPDIR/include";;
-	esac
-	if test -f "$JNIHEADERDIR/jni.h"; then
-		CPPFLAGS="$CPPFLAGSS -I$JNIHEADERDIR"
-	else
-		JTOPDIR=`echo "$JTOPDIR" | sed -e 's:/[[^/]]*$::'`
-		if test -f "$JTOPDIR/include/jni.h"; then
-			CPPFLAGS="$CPPFLAGS -I$JTOPDIR/include"
-		else
-			AC_MSG_ERROR([cannot find java include files])
-		fi
-	fi
-
-# get the likely subdirectories for system specific java includes
-	case "$host_os" in
-	solaris*)	JINCSUBDIRS="solaris";;
-	linux*)		JINCSUBDIRS="linux genunix";;
-	*)		JINCSUBDIRS="genunix";;
-	esac
-
-	for JINCSUBDIR in $JINCSUBDIRS
+	for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
 	do
-		if test -d "$JTOPDIR/include/$JINCSUBDIR"; then
-			CPPFLAGS="$CPPFLAGS -I$JTOPDIR/include/$JINCSUBDIR"
-		fi
+		CPPFLAGS="$CPPFLAGS -I$JNI_INCLUDE_DIR"
 	done
+
+	ADDITIONAL_LANG="$ADDITIONAL_LANG java"
+	INSTALL_LIBS="$INSTALL_LIBS \$(libjso_target)"
 else
 	JAVAC=nojavac
 fi
@@ -405,11 +389,6 @@ if test "$db_cv_dump185" = "yes"; then
 	ADDITIONAL_PROGS="db_dump185 $ADDITIONAL_PROGS"
 fi
 
-# test servers, example programs.
-# Include -lpthread if the library exists.
-AC_CHECK_LIB(rt, sched_yield, TEST_LIBS="-lrt $TEST_LIBS")
-AC_CHECK_LIB(pthread, pthread_create, TEST_LIBS="-lpthread $TEST_LIBS")
-
 # Checks for system/compiler characteristics.
 AC_C_BIGENDIAN
 AC_C_CONST
@@ -425,17 +404,40 @@ AC_CHECK_MEMBERS([struct stat.st_blksize])
 # Check for C types.
 AM_TYPES
 
-# Check for ANSI C exit success/failure values.
-AC_EGREP_CPP(yes, [
-    #include <stdlib.h>
-    #ifdef EXIT_SUCCESS
-    yes
-    #endif], [
-    AC_DEFINE(HAVE_EXIT_SUCCESS)
-    AH_TEMPLATE(HAVE_EXIT_SUCCESS, [
-        Define if you have EXIT_SUCCESS/EXIT_FAILURE #defines.])])
+AC_CACHE_CHECK([for ANSI C exit success/failure values], db_cv_exit_defines, [
+AC_TRY_COMPILE([#include <stdlib.h>], return (EXIT_SUCCESS);,
+    [db_cv_exit_defines=yes], [db_cv_exit_defines=no])])
+if test "$db_cv_exit_defines" = yes; then
+	AC_DEFINE(HAVE_EXIT_SUCCESS)
+	AH_TEMPLATE(HAVE_EXIT_SUCCESS, [
+	    Define if you have EXIT_SUCCESS/EXIT_FAILURE #defines.])
+fi
 
-# Check for mutexes.  We do this here because it changes $LIBS.
+# Test for sched_yield, the test programs use it.
+# We do this here because it changes $LIBS.
+AC_MSG_CHECKING([for sched_yield in current configuration])
+AC_TRY_LINK([#include <sched.h>],(void)sched_yield();,
+    AC_MSG_RESULT(yes), [
+	AC_MSG_RESULT(no)
+	AC_MSG_CHECKING([for sched_yield in -lrt])
+	saved_libs=$LIBS
+	LIBS="$LIBS -lrt"
+	AC_TRY_LINK([#include <sched.h>],(void)sched_yield();,
+	    AC_MSG_RESULT(yes), LIBS="$saved_libs"; AC_MSG_RESULT(no))])
+
+# Test for a pthreads library, the test programs use it.
+# We do this here because it changes $LIBS.
+#
+# XXX
+# We can't do checking similar to the above because the Solaris C library
+# includes pthread interfaces which are not thread-safe.  For that reason
+# we always add -lpthread if we can find a pthread library.  Also we can't
+# depend on any specific call existing (pthread_create, for example), as
+# it may be #defined in an include file -- OSF/1 (Tru64) has this problem.
+AC_CHECK_LIB(pthread, main, TEST_LIBS="$TEST_LIBS -lpthread")
+
+# Check for mutexes.
+# We do this here because it changes $LIBS.
 AM_DEFINE_MUTEXES
 
 # Checks for system functions for which we have replacements.
@@ -456,7 +458,7 @@ LIBOBJS="$tmp"
 
 # Check for system functions we optionally use.
 AC_CHECK_FUNCS(_fstati64 getuid pstat_getdynamic sched_yield select strtoul)
-AC_CHECK_FUNCS(sysconf yield)
+AC_CHECK_FUNCS(gettimeofday clock_gettime sysconf yield)
 
 # Pread/pwrite.
 #
@@ -569,17 +571,17 @@ CREATE_LIST="Makefile
 # file.  If the user has requested unique names, use the file that does
 # DB_VERSION_UNIQUE_NAME substitution.
 if test "$db_cv_uniquename" = "yes"; then
-    CREATE_LIST="${CREATE_LIST}
+    CREATE_LIST="$CREATE_LIST
     db.h:$srcdir/../include/db.in:$srcdir/../include_auto/rpc_defs.in:$srcdir/../include_auto/global_uext.in"
 else
-    CREATE_LIST="${CREATE_LIST}
+    CREATE_LIST="$CREATE_LIST
     db.h:$srcdir/../include/db.in:$srcdir/../include_auto/rpc_defs.in:$srcdir/../include_auto/global_ext.in"
 fi
 
 # Create the function prototype include files.  If the user has requested
 # unique names, use the files that do DB_VERSION_UNIQUE_NAME substitution.
 if test "$db_cv_uniquename" = "yes"; then
-    CREATE_LIST="${CREATE_LIST}
+    CREATE_LIST="$CREATE_LIST
     db_ext.h:$srcdir/../include_auto/db_ext.in
     btree_ext.h:$srcdir/../include_auto/btree_ext.in
     clib_ext.h:$srcdir/../include_auto/clib_ext.in
@@ -593,6 +595,7 @@ if test "$db_cv_uniquename" = "yes"; then
     mutex_ext.h:$srcdir/../include_auto/mutex_ext.in
     os_ext.h:$srcdir/../include_auto/os_ext.in
     qam_ext.h:$srcdir/../include_auto/qam_ext.in
+    rep_ext.h:$srcdir/../include_auto/rep_ext.in
     rpc_client_ext.h:$srcdir/../include_auto/rpc_client_ext.in
     rpc_server_ext.h:$srcdir/../include_auto/rpc_server_ext.in
     tcl_ext.h:$srcdir/../include_auto/tcl_ext.in
@@ -601,21 +604,21 @@ if test "$db_cv_uniquename" = "yes"; then
 fi
 if test "$db_cv_compat185" = "yes"; then
 	if test "$db_cv_uniquename" = "yes"; then
-		CREATE_LIST="${CREATE_LIST}
+		CREATE_LIST="$CREATE_LIST
 db_185.h:$srcdir/../include/db_185.in:$srcdir/../include_auto/db185_uext.in
 db185_int.h:$srcdir/../db185/db185_int.in:$srcdir/../include_auto/db185_uext.in"
 	else
-		CREATE_LIST="${CREATE_LIST}
+		CREATE_LIST="$CREATE_LIST
 db_185.h:$srcdir/../include/db_185.in:$srcdir/../include_auto/db185_ext.in
 db185_int.h:$srcdir/../db185/db185_int.in:$srcdir/../include_auto/db185_ext.in"
 	fi
 fi
 if test "$db_cv_embedix" = "yes"; then
-	CREATE_LIST="${CREATE_LIST} db.ecd:../dist/db.ecd.in"
+	CREATE_LIST="$CREATE_LIST db.ecd:../dist/db.ecd.in"
 fi
 if test "$db_cv_rpm" = "yes"; then
-	CREATE_LIST="${CREATE_LIST} db.spec:../dist/db.spec.in"
+	CREATE_LIST="$CREATE_LIST db.spec:../dist/db.spec.in"
 fi
 
-AC_CONFIG_FILES(${CREATE_LIST})
+AC_CONFIG_FILES($CREATE_LIST)
 AC_OUTPUT

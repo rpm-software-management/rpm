@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: log.h,v 11.26 2001/07/05 18:41:03 bostic Exp 
+ * Id: log.h,v 11.35 2001/10/09 18:13:26 ubell Exp 
  */
 
 #ifndef _LOG_H_
@@ -28,7 +28,7 @@ struct __log_persist;	typedef struct __log_persist LOGP;
  * The per-process table that maps log file-id's to DB structures.
  */
 typedef	struct __db_entry {
-	TAILQ_HEAD(dblist, __db) dblist; /* Associated DB structures. */
+	TAILQ_HEAD(dblist, __db) dblist;/* Associated DB structures. */
 	u_int32_t refcount;		/* Reference counted. */
 	u_int32_t count;		/* Number of ops on a deleted db. */
 	int	  deleted;		/* File was not found during open. */
@@ -47,7 +47,7 @@ struct __db_log {
  * to be stored elsewhere on architectures unable to support mutexes in heap
  * memory, e.g., HP/UX 9.
  */
-	MUTEX	  *mutexp;		/* Mutex for thread protection. */
+	DB_MUTEX  *mutexp;		/* Mutex for thread protection. */
 
 	DB_ENTRY *dbentry;		/* Recovery file-id mapping. */
 #define	DB_GROW_SIZE	64
@@ -62,25 +62,15 @@ struct __db_log {
 	u_int32_t lfname;		/* Log file "name". */
 	DB_FH	  lfh;			/* Log file handle. */
 
-	DB_LSN	  c_lsn;		/* Cursor: current LSN. */
-	DBT	  c_dbt;		/* Cursor: return DBT structure. */
-	DB_FH	  c_fh;			/* Cursor: file handle. */
-	u_int32_t c_off;		/* Cursor: previous record offset. */
-	u_int32_t c_len;		/* Cursor: current record length. */
-	u_int32_t r_file;		/* Cursor: current read file */
-	u_int32_t r_off;		/* Cursor: offset of read buffer. */
-	u_int32_t r_size;		/* Cursor: size of data in read buf. */
-
 	u_int8_t *bufp;			/* Region buffer. */
-	u_int8_t *readbufp;		/* Read buffer. */
 
 /* These fields are not protected. */
 	DB_ENV	 *dbenv;		/* Reference to error information. */
 	REGINFO	  reginfo;		/* Region information. */
 
 #define	DBLOG_RECOVER		0x01	/* We are in recovery. */
-#define	DBLOG_FORCE_OPEN	0x02	/* Force the db open even
-					 * if it appears to be deleted.
+#define	DBLOG_FORCE_OPEN	0x02	/* Force the DB open even if it appears
+					 * to be deleted.
 					 */
 	u_int32_t flags;
 };
@@ -120,21 +110,6 @@ struct __log {
 	DB_LSN	  lsn;			/* LSN at current file offset. */
 
 	/*
-	 * The s_lsn LSN is the last LSN that we know is on disk, not just
-	 * written, but synced.
-	 */
-	DB_LSN	  s_lsn;		/* LSN of the last sync. */
-
-	u_int32_t len;			/* Length of the last record. */
-
-	u_int32_t w_off;		/* Current write offset in the file. */
-
-	DB_LSN	  chkpt_lsn;		/* LSN of the last checkpoint. */
-	time_t	  chkpt;		/* Time of the last checkpoint. */
-
-	DB_LOG_STAT stat;		/* Log statistics. */
-
-	/*
 	 * The f_lsn LSN is the LSN (returned to the user) that "owns" the
 	 * first byte of the buffer.  If the record associated with the LSN
 	 * spans buffers, it may not reflect the physical file location of
@@ -142,15 +117,68 @@ struct __log {
 	 */
 	DB_LSN	  f_lsn;		/* LSN of first byte in the buffer. */
 	size_t	  b_off;		/* Current offset in the buffer. */
+	u_int32_t w_off;		/* Current write offset in the file. */
+	u_int32_t len;			/* Length of the last record. */
 
-	roff_t	  buffer_off;		/* Log buffer offset. */
+	/*
+	 * The s_lsn LSN is the last LSN that we know is on disk, not just
+	 * written, but synced.  This field only is protected by the
+	 * flush mutex rather than by the region mutex.
+	 */
+	int	  in_flush;		/* Log flush in progress. */
+	DB_MUTEX  flush;		/* Mutex for flushing. */
+	DB_LSN	  s_lsn;		/* LSN of the last sync. */
+
+	DB_LSN	  chkpt_lsn;		/* LSN of the last checkpoint. */
+	time_t	  chkpt;		/* Time of the last checkpoint. */
+
+	DB_LOG_STAT stat;		/* Log statistics. */
+
+	/*
+	 * The waiting_lsn is used by the replication system.  It is the
+	 * first LSN that we are holding without putting in the log, because
+	 * we received one or more log records out of order.
+	 */
+	DB_LSN	waiting_lsn;		/* First log record after a gap. */
+
+	/*
+	 * The ready_lsn is also used by the replication system.  It is the
+	 * next LSN we expect to receive.  It's normally equal to "lsn",
+	 * except at the beginning of a log file, at which point it's set
+	 * to the LSN of the first record of the new file (after the
+	 * header), rather than to 0.
+	 */
+	DB_LSN	ready_lsn;
+
+
+	roff_t	  buffer_off;		/* Log buffer offset in the region. */
 	u_int32_t buffer_size;		/* Log buffer size. */
+
+	u_int32_t  ncommit;		/* Number of txns waiting to commit. */
+
+	DB_LSN	  t_lsn;		/* LSN of first commit */
+	SH_TAILQ_HEAD(__commit) commits;/* list of txns waiting to commit. */
+	SH_TAILQ_HEAD(__free) free_commits;/* free list of commit structs. */
 
 #ifdef MUTEX_SYSTEM_RESOURCES
 #define	LG_MAINT_SIZE	(sizeof(roff_t) * DB_MAX_HANDLES)
 
 	roff_t	  maint_off;		/* offset of region maintenance info */
 #endif
+};
+
+/*
+ * __db_commit structure --
+ *	One of these is allocated for each transaction waiting
+ * to commit.
+ */
+struct __db_commit {
+	DB_MUTEX	mutex;		/* Mutex for txn to wait on. */
+	DB_LSN		lsn;		/* LSN of commit record. */
+	SH_TAILQ_ENTRY	links;		/* Either on free or waiting list. */
+
+#define	DB_COMMIT_FLUSH		0x0001	/* Flush the log when you wake up. */
+	u_int32_t	flags;
 };
 
 /*
@@ -198,6 +226,13 @@ typedef enum {
 	DB_LV_OLD_READABLE,
 	DB_LV_OLD_UNREADABLE
 } logfile_validity;
+
+/*
+ * Boolean macro that returns whether or not a specified log_put flags
+ * value indicates that the log should be sync'ed to disk.
+ */
+#define	FLUSH_ON_FLAG(flags)						\
+    ((flags) == DB_COMMIT || (flags) == DB_FLUSH || (flags) == DB_CHECKPOINT)
 
 #include "log_auto.h"
 #include "log_ext.h"

@@ -36,7 +36,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: log_rec.c,v 11.60 2001/06/12 01:49:05 bostic Exp ";
+static const char revid[] = "Id: log_rec.c,v 11.67 2001/10/10 02:57:41 margo Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -52,8 +52,9 @@ static const char revid[] = "Id: log_rec.c,v 11.60 2001/06/12 01:49:05 bostic Ex
 
 static int __log_check_master __P((DB_ENV *, u_int8_t *, char *));
 static int __log_do_open __P((DB_ENV *, DB_LOG *,
-    u_int8_t *, char *, DBTYPE, int32_t, db_pgno_t));
-static int __log_open_file __P((DB_ENV *, DB_LOG *, __log_register_args *));
+    u_int8_t *, char *, DBTYPE, int32_t, db_pgno_t, u_int32_t));
+static int __log_open_file __P((DB_ENV *,
+    DB_LOG *, __log_register_args *, u_int32_t));
 
 /*
  * PUBLIC: int __log_register_recover
@@ -72,6 +73,7 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 	DB *dbp;
 	__log_register_args *argp;
 	int do_rem, ret, t_ret;
+	u_int32_t flags;
 
 	logp = dbenv->lg_handle;
 	dbp = NULL;
@@ -80,6 +82,8 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 	REC_PRINT(__log_register_print);
 #endif
 	COMPQUIET(lsnp, NULL);
+
+	flags = 0;
 
 	if ((ret = __log_register_read(dbenv, dbtp->data, &argp)) != 0)
 		goto out;
@@ -95,7 +99,17 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 		 */
 		if (op == DB_TXN_OPENFILES)
 			F_SET(logp, DBLOG_FORCE_OPEN);
-		ret = __log_open_file(dbenv, logp, argp);
+		/*
+		 * If we are applying a log_register record in replication,
+		 * we may be doing so out-of-order with respect to
+		 * a crdel_fileopen record that came before us in the log
+		 * but were in a still-uncommitted transaction.  Let the
+		 * underlying log_register know, so that it can postpone
+		 * opening the file until it actually exists.
+		 */
+		if (op == DB_TXN_APPLY)
+			flags = DB_APPLY_LOGREG;
+		ret = __log_open_file(dbenv, logp, argp, flags);
 		F_CLR(logp, DBLOG_FORCE_OPEN);
 		if (ret == ENOENT || ret == EINVAL) {
 			if ((op == DB_TXN_OPENFILES || op == DB_TXN_POPENFILES)
@@ -124,8 +138,7 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 			if (dbe->refcount != 1) {
 				__db_err(dbenv,
 				    "Improper file close. LSN: %lu/%lu.",
-				    (u_long)logp->c_lsn.file,
-				    (u_long)logp->c_lsn.offset);
+				    (u_long)lsnp->file, (u_long)lsnp->offset);
 				ret = EINVAL;
 				goto out;
 			}
@@ -133,7 +146,7 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 			ret = __db_txnlist_close(info,
 			    argp->fileid, dbe->count);
 			if ((dbp = TAILQ_FIRST(&dbe->dblist)) != NULL)
-				(void)log_unregister(dbenv, dbp);
+				(void)dbenv->log_unregister(dbenv, dbp);
 			do_rem = 1;
 		}
 		MUTEX_THREAD_UNLOCK(dbenv, logp->mutexp);
@@ -158,7 +171,7 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 		 * closed and has therefore not been reopened yet.  If
 		 * so, we need to try to open it.
 		 */
-		ret = __log_open_file(dbenv, logp, argp);
+		ret = __log_open_file(dbenv, logp, argp, 0);
 		if (ret == ENOENT || ret == EINVAL) {
 			if (argp->name.size != 0 && (ret =
 			    __db_txnlist_delete(dbenv, info,
@@ -180,10 +193,11 @@ out:	if (argp != NULL)
  *	non-zero on error.
  */
 static int
-__log_open_file(dbenv, lp, argp)
+__log_open_file(dbenv, lp, argp, flags)
 	DB_ENV *dbenv;
 	DB_LOG *lp;
 	__log_register_args *argp;
+	u_int32_t flags;
 {
 	DB_ENTRY *dbe;
 	DB *dbp;
@@ -231,14 +245,14 @@ __log_open_file(dbenv, lp, argp)
 
 	MUTEX_THREAD_UNLOCK(dbenv, lp->mutexp);
 	if (0) {
-reopen:		(void)log_unregister(dbp->dbenv, dbp);
+reopen:		(void)dbenv->log_unregister(dbenv, dbp);
 		(void)__log_rem_logid(lp, dbp, argp->fileid);
 		dbp->close(dbp, 0);
 	}
 
 	return (__log_do_open(dbenv, lp,
 	    argp->uid.data, argp->name.data,
-	    argp->ftype, argp->fileid, argp->meta_pgno));
+	    argp->ftype, argp->fileid, argp->meta_pgno, flags));
 }
 
 /*
@@ -246,16 +260,17 @@ reopen:		(void)log_unregister(dbp->dbenv, dbp);
  *	Must be called when a metadata page changes.
  *
  * PUBLIC: int __log_reopen_file __P((DB_ENV *,
- * PUBLIC:     char *, int32_t, u_int8_t *, db_pgno_t));
+ * PUBLIC:     char *, int32_t, u_int8_t *, db_pgno_t, u_int32_t));
  *
  */
 int
-__log_reopen_file(dbenv, name, ndx, fileid, meta_pgno)
+__log_reopen_file(dbenv, name, ndx, fileid, meta_pgno, flags)
 	DB_ENV *dbenv;
 	char *name;
 	int32_t ndx;
 	u_int8_t *fileid;
 	db_pgno_t meta_pgno;
+	u_int32_t flags;
 {
 	DB *dbp;
 	DB_LOG *logp;
@@ -298,11 +313,12 @@ __log_reopen_file(dbenv, name, ndx, fileid, meta_pgno)
 	if ((ret = __db_fileid_to_db(dbenv, &dbp, ndx, 0)) != 0)
 		goto out;
 	ftype = dbp->type;
-	(void)log_unregister(dbenv, dbp);
+	(void)dbenv->log_unregister(dbenv, dbp);
 	(void)__log_rem_logid(logp, dbp, ndx);
 	(void)dbp->close(dbp, 0);
 
-	ret = __log_do_open(dbenv, logp, fileid, name, ftype, ndx, meta_pgno);
+	ret = __log_do_open(dbenv,
+	    logp, fileid, name, ftype, ndx, meta_pgno, flags);
 
 	if (tmp_name != NULL)
 		__os_free(dbenv, tmp_name, 0);
@@ -316,7 +332,7 @@ out:	return (ret);
  * is not protected by the thread mutex.
  */
 static int
-__log_do_open(dbenv, lp, uid, name, ftype, ndx, meta_pgno)
+__log_do_open(dbenv, lp, uid, name, ftype, ndx, meta_pgno, flags)
 	DB_ENV *dbenv;
 	DB_LOG *lp;
 	u_int8_t *uid;
@@ -324,6 +340,7 @@ __log_do_open(dbenv, lp, uid, name, ftype, ndx, meta_pgno)
 	DBTYPE ftype;
 	int32_t ndx;
 	db_pgno_t meta_pgno;
+	u_int32_t flags;
 {
 	DB *dbp;
 	int ret;
@@ -348,8 +365,8 @@ __log_do_open(dbenv, lp, uid, name, ftype, ndx, meta_pgno)
 	if (meta_pgno != PGNO_BASE_MD)
 		memcpy(dbp->fileid, uid, DB_FILE_ID_LEN);
 	dbp->type = ftype;
-	if ((ret = __db_dbopen(dbp,
-	     name, DB_ODDFILESIZE, __db_omode("rw----"), meta_pgno)) == 0) {
+	if ((ret = __db_dbopen(dbp, name,
+	     flags | DB_ODDFILESIZE, __db_omode("rw----"), meta_pgno)) == 0) {
 		/*
 		 * Verify that we are opening the same file that we were
 		 * referring to when we wrote this log record.
@@ -361,14 +378,21 @@ __log_do_open(dbenv, lp, uid, name, ftype, ndx, meta_pgno)
 			memset(zeroid, 0, DB_FILE_ID_LEN);
 			if (memcmp(dbp->fileid, zeroid, DB_FILE_ID_LEN) != 0)
 				goto not_right;
-			memcpy(dbp->fileid, uid, DB_FILE_ID_LEN);
+skipopen:		memcpy(dbp->fileid, uid, DB_FILE_ID_LEN);
 		}
-		if (IS_RECOVERING(dbenv)) {
-			(void)log_register(dbp->dbenv, dbp, name);
+		if (IS_RECOVERING(dbenv) || LF_ISSET(DB_APPLY_LOGREG)) {
+			/*
+			 * If DB_APPLY_LOGREG is set, we want to register this
+			 * log file with a specific fileid, but we don't want
+			 * to log anything.  Pass the flag down into
+			 * the log_register code.
+			 */
+			(void)__log_register_int(dbp->dbenv, dbp, name, flags);
 			(void)__log_add_logid(dbenv, lp, dbp, ndx);
 		}
 		return (0);
-	}
+	} else if (ret == ENOENT && LF_ISSET(DB_APPLY_LOGREG))
+		goto skipopen;
 
 not_right:
 	(void)dbp->close(dbp, 0);
@@ -534,7 +558,7 @@ __db_fileid_to_db(dbenv, dbpp, ndx, inc)
 		 */
 		if ((ret = __log_do_open(dbenv, logp,
 		    fname->ufid, name, fname->s_type,
-		    ndx, fname->meta_pgno)) != 0)
+		    ndx, fname->meta_pgno, 0)) != 0)
 			return (ret);
 
 		*dbpp = TAILQ_FIRST(&logp->dbentry[ndx].dblist);
@@ -589,7 +613,7 @@ __log_close_files(dbenv)
 	for (i = 0; i < logp->dbentry_cnt; i++) {
 		dbe = &logp->dbentry[i];
 		while ((dbp = TAILQ_FIRST(&dbe->dblist)) != NULL) {
-			(void)log_unregister(dbenv, dbp);
+			(void)dbenv->log_unregister(dbenv, dbp);
 			TAILQ_REMOVE(&dbe->dblist, dbp, links);
 			(void)dbp->close(dbp, dbp->mpf == NULL ? DB_NOSYNC : 0);
 		}
@@ -617,6 +641,9 @@ __log_rem_logid(logp, dbp, ndx)
 
 	MUTEX_THREAD_LOCK(logp->dbenv, logp->mutexp);
 	if (--logp->dbentry[ndx].refcount == 0) {
+		if (dbp == NULL &&
+		    (xdbp = TAILQ_FIRST(&logp->dbentry[ndx].dblist)) != NULL)
+			(void)xdbp->close(xdbp, 0);
 		TAILQ_INIT(&logp->dbentry[ndx].dblist);
 		logp->dbentry[ndx].deleted = 0;
 	} else if (dbp != NULL)

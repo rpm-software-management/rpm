@@ -3,12 +3,13 @@
 # Copyright (c) 2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: bigfile001.tcl,v 11.3 2001/05/22 16:20:40 krinsky Exp 
+# Id: bigfile001.tcl,v 11.5 2001/08/03 18:02:53 sandstro Exp 
 #
-# Big file test.
-# Create a database greater than 4 GB in size.  Close, verify.  Grow
-# the database somewhat.  Close, reverify.  Lather, rinse, repeat.
-# Since it will not work on all systems, this test is not run by default.
+# TEST	bigfile001
+# TEST	Create a database greater than 4 GB in size.  Close, verify.
+#	Grow the database somewhat.  Close, reverify.  Lather, rinse,
+#	repeat.  Since it will not work on all systems, this test is
+#	not run by default.
 proc bigfile001 { method \
     { itemsize 4096 } { nitems 1048576 } { growby 5000 } { growtms 2 } args } {
 	source ./include.tcl
@@ -24,7 +25,7 @@ proc bigfile001 { method \
 	# factor, and page size doesn't matter much.  Use a 50MB
 	# cache;  that should be manageable, and will help
 	# performance.
-	set dbname TESTDIR/big.db
+	set dbname $testdir/big.db
 
 	set db [eval {berkdb_open -create} {-pagesize 65536 \
 	    -cachesize {0 50000000 0}} $omethod $args $dbname]

@@ -3,12 +3,12 @@
 # Copyright (c) 1999-2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: env009.tcl,v 11.1 2001/05/23 16:47:32 sue Exp 
+# Id: env009.tcl,v 11.2 2001/08/03 16:39:24 bostic Exp 
 #
-# Env Test 9
-# Test calls to all the various stat functions.
-# We have several sprinkled throughout the test suite, but
-# this will ensure that we run all of them at least once.
+# TEST	env009
+# TEST	Test calls to all the various stat functions.  We have several
+# TEST	sprinkled throughout the test suite, but this will ensure that
+# TEST	we run all of them at least once.
 proc env009 { } {
 	source ./include.tcl
 
