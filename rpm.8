@@ -56,8 +56,6 @@ man pages and texinfo documents).
 .IP "\fB\-\-includedocs\fP"
 Install documentation files. This is only needed if \fIexcludedocs: 1\fP
 is specified in an rpmrc file.
-.IP "\fB\-S, \-\-search\fP"
-Search the locations listed in /etc/rpmrc for the rpm.
 .IP "\fB\-\-test\fP"
 Do not install the package, simply check for and report potential
 conflicts.
@@ -77,9 +75,9 @@ designed primarily for testing and should normally be used with the
 .SH BUILD OPTIONS
 The general form of a rpm build command is
 .PP
-    \fBrpm \-b\fIO\fB [build\-options] <package_spec>+\fP
+    \fBrpm \-b\fIO\fP [build\-options] <package_spec>+\fP
 .PP
-where \fB\-b\fIO\fP specifies the stages of building and
+where \fB\-bO\fP specifies the stages of building and
 packaging to be done and is one of:
 
 .IP "\fB\-bp\fP"
@@ -235,21 +233,10 @@ This option generates and inserts new signatures for the listed packages.
 Any existing signatures are removed.
 
 
-.SH WHERE OPTION
-
-There is one more option that can be used to invoke rpm:
-
-.IP "\fB\-w, \-\-where\fP"
-This causes rpm to search the locations listed in /etc/rpmrc for any rpm
-matching those listed as arguments on the command line.
-
 .SH GENERAL OPTIONS
 These options can be used in all the different modes.
 .IP "\fB\-vv\fP"
 Print lots of ugly debugging information.
-.IP "\fB\-\-keep\-temps\fP"
-Do not remove temporary files (/tmp/rpm\-*).  Primarily only useful
-for debugging rpm.
 .IP "\fB\-\-quiet\fP"
 Print as little as possible \- normally only error messages will be
 displayed.
@@ -257,6 +244,8 @@ displayed.
 Print a longer usage message then normal.
 .IP "\fB\-\-version\fP"
 Print a single line containing the version number of rpm being used.
+.IP "\fB\-\-rcfile <file>\fP"
+Use \fB<file>\fP instead of \fB/etc/rpmrc\fP and \fB$HOME/.rpmrc\fP.
 .IP "\fB\-\-root <dir>\fP"
 Use the directory given as top level directory for all operations.
 
