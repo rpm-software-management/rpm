@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.code,v 1.8 2001/10/12 17:55:31 bostic Exp 
+# Id: chk.code,v 1.9 2001/10/17 16:15:22 bostic Exp 
 #
 # Check to make sure that the code samples in the documents build.
 
@@ -10,7 +10,7 @@ d=../..
 	echo 'FAIL: cannot find source distribution directory.'
 	exit 1
 }
-[ -f ../libdb.a ] || make libdb.a || {
+[ -f ../libdb.a ] || (cd .. && make libdb.a) || {
 	echo 'FAIL: unable to find or build libdb.a'
 	exit 1
 }

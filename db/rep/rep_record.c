@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_record.c,v 1.43 2001/10/10 02:57:42 margo Exp ";
+static const char revid[] = "Id: rep_record.c,v 1.64 2001/11/16 16:29:10 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -32,25 +32,33 @@ static int __rep_process_txn __P((DB_ENV *, DBT *));
 	((R) != DB_txn_regop && (R) != DB_txn_ckp && (R) != DB_log_register)
 
 /*
- * This is a bit of a hack.  If we set the offset to
- * be the sizeof the persistent log structure, then
- * we'll match the correct LSN on the next log write
- * and the guts of the log system will take care of
- * actually writing the persistent header.
+ * This is a bit of a hack.  If we set the offset to be the sizeof the
+ * persistent log structure, then we'll match the correct LSN on the
+ * next log write.
  *
- * And now it's even more of a hack.  If lp->ready_lsn is [1][0], we need
- * to "change" to the first log file (we currently have none).
- * However, in this situation, we don't want to wind up at LSN
- * [2][whatever], we want to wind up at LSN [1][whatever],
- * so don't increment lsn.file.
+ * If lp->ready_lsn is [1][0], we need to "change" to the first log
+ * file (we currently have none).  However, in this situation, we
+ * don't want to wind up at LSN [2][whatever], we want to wind up at
+ * LSN [1][whatever], so don't set LOG_NEWFILE.  The guts of the log
+ * system will take care of actually writing the persistent header,
+ * since we're doing a log_put to an empty log.
+ *
+ * If lp->ready_lsn is [m-1][n] for some m > 1, n > 0, we really do need to
+ * change to the first log file.  Not only do we need to jump to lsn
+ * [m][0], we need to write out a persistent header there, so set
+ * LOG_NEWFILE so the right stuff happens in the bowels of log_put.
+ * Note that we could dispense with LOG_NEWFILE by simply relying upon
+ * the log system to decide to switch files at the same time the
+ * master did--lg_max should be the same in both places--but this is
+ * scary.
  */
 #define	CHANGE_FILES do {						\
-	if (!(lp->ready_lsn.file == 1 && lp->ready_lsn.offset == 0))	\
-		lp->ready_lsn.file = rp->lsn.file + 1;			\
+	if (!(lp->ready_lsn.file == 1 && lp->ready_lsn.offset == 0)) {	\
+		lp->ready_lsn.file++;					\
+		F_SET(lp, LOG_NEWFILE);					\
+	}								\
 	lp->ready_lsn.offset = sizeof(struct __log_persist) +		\
 	    sizeof(struct __hdr);					\
-	if ((ret = __log_newfh(dblp)) != 0)				\
-		goto err;						\
 	/* Make this evaluate to a simple rectype. */			\
 	rectype = 0;							\
 } while (0)
@@ -69,24 +77,31 @@ static int __rep_process_txn __P((DB_ENV *, DBT *));
  * PUBLIC: int __rep_process_message __P((DB_ENV *, DBT *, DBT *, int *));
  */
 int
-__rep_process_message(dbenv, rec, control, eidp)
+__rep_process_message(dbenv, control, rec, eidp)
 	DB_ENV *dbenv;
-	DBT *rec, *control;
+	DBT *control, *rec;
 	int *eidp;
 {
-	DBT *d, data_dbt, mylog;
+	DBT *d, data_dbt, lsndbt, mylog;
 	DB_LOG *dblp;
 	DB_LOGC *logc;
-	DB_LSN lsn;
+	DB_LSN lsn, newfilelsn, oldfilelsn;
 	DB_REP *db_rep;
 	LOG *lp;
 	REP *rep;
 	REP_CONTROL *rp;
 	REP_VOTE_INFO *vi;
 	u_int32_t gen, type;
-	int done, i, master, eid, old, recovering, ret, t_ret, *tally;
+	int done, i, master, old, recovering, ret, t_ret, *tally;
 
 	PANIC_CHECK(dbenv);
+
+	/* Control argument must be non-Null. */
+	if (control == NULL || control->size == 0) {
+		__db_err(dbenv,
+	"DB_ENV->rep_process_message: control argument must be specified");
+		return (EINVAL);
+	}
 
 	ret = 0;
 	db_rep = dbenv->rep_handle;
@@ -96,7 +111,6 @@ __rep_process_message(dbenv, rec, control, eidp)
 
 	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
 	gen = rep->gen;
-	eid = rep->eid;
 	recovering = F_ISSET(rep, REP_F_RECOVER);
 	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 
@@ -105,6 +119,20 @@ __rep_process_message(dbenv, rec, control, eidp)
 	 * records.
 	 */
 	rp = (REP_CONTROL *)control->data;
+
+	/* Complain if we see an improper version number. */
+	if (rp->rep_version != DB_REPVERSION) {
+		__db_err(dbenv,
+		    "unexpected replication message version %d, expected %d",
+		    rp->rep_version, DB_REPVERSION);
+		return (EINVAL);
+	}
+	if (rp->log_version != DB_LOGVERSION) {
+		__db_err(dbenv,
+		    "unexpected log record version %d, expected %d",
+		    rp->log_version, DB_LOGVERSION);
+		return (EINVAL);
+	}
 
 	/*
 	 * Check for generation number matching.  Ignore any old messages
@@ -118,7 +146,7 @@ __rep_process_message(dbenv, rec, control, eidp)
 	if (rp->gen > gen && rp->rectype != REP_ALIVE &&
 	    rp->rectype != REP_NEWMASTER)
 		return (__rep_send_message(dbenv,
-		    DB_BROADCAST_EID, REP_MASTER_REQ, NULL, NULL, 0));
+		    DB_EID_BROADCAST, REP_MASTER_REQ, NULL, NULL, 0));
 
 	/*
 	 * We need to check if we're in recovery and if we are
@@ -162,25 +190,51 @@ __rep_process_message(dbenv, rec, control, eidp)
 		if ((ret = dbenv->log_cursor(dbenv, &logc, 0)) != 0)
 			goto err;
 		memset(&data_dbt, 0, sizeof(data_dbt));
-		lsn = rp->lsn;
+		oldfilelsn = lsn = rp->lsn;
 		for (ret = logc->get(logc, &rp->lsn, &data_dbt, DB_SET);
 		    ret == 0;
 		    ret = logc->get(logc, &lsn, &data_dbt, DB_NEXT)) {
+			/*
+			 * lsn.offset will only be 0 if this is the
+			 * beginning of the log;  DB_SET, but not DB_NEXT,
+			 * can set the log cursor to [n][0].
+			 */
 			if (lsn.offset == 0)
+				ret = __rep_send_message(dbenv, *eidp,
+				    REP_NEWFILE, &lsn, NULL, 0);
+			else {
 				/*
-				 * We are starting a new file; we have to
-				 * do that with a NEWFILE message, not a
-				 * regular log message, else we end up with
-				 * two persist structures in the log.
+				 * DB_NEXT will never run into offsets
+				 * of 0;  thus, when a log file changes,
+				 * we'll have a real log record with
+				 * some lsn [n][m], and we'll also want to send
+				 * a NEWFILE message with lsn [n][0].
+				 * So that the client can detect gaps,
+				 * send in the rec parameter the
+				 * last LSN in the old file.
 				 */
-				ret = __rep_send_message(dbenv,
-				    DB_BROADCAST_EID, REP_NEWFILE,
-				    &lsn, NULL, 0);
-			else
+				if (lsn.file != oldfilelsn.file) {
+					newfilelsn.file = lsn.file;
+					newfilelsn.offset = 0;
+
+					memset(&lsndbt, 0, sizeof(DBT));
+					lsndbt.size = sizeof(DB_LSN);
+					lsndbt.data = &oldfilelsn;
+
+					if ((ret = __rep_send_message(dbenv,
+					    *eidp, REP_NEWFILE, &newfilelsn,
+					    &lsndbt, 0)) != 0)
+						break;
+				}
 				ret = __rep_send_message(dbenv, *eidp,
 				    REP_LOG, &lsn, &data_dbt, 0);
-			if (ret != 0)
-				break;
+			}
+
+			/*
+			 * In case we're about to change files and need it
+			 * for a NEWFILE message, save the current LSN.
+			 */
+			oldfilelsn = lsn;
 		}
 
 		if (ret == DB_NOTFOUND)
@@ -217,14 +271,36 @@ __rep_process_message(dbenv, rec, control, eidp)
 		if ((ret = dbenv->log_cursor(dbenv, &logc, 0)) != 0)
 			goto err;
 		memset(&data_dbt, 0, sizeof(data_dbt));
-		if ((ret = logc->get(logc, &rp->lsn, &data_dbt, DB_SET)) == 0)
-			ret = __rep_send_message(
-			    dbenv, *eidp, REP_LOG, &rp->lsn, &data_dbt, 0);
+		lsn = rp->lsn;
+		if ((ret = logc->get(logc, &rp->lsn, &data_dbt, DB_SET)) == 0) {
+			/*
+			 * If the log file has changed, we may get back a
+			 * log record with a later LSN than we requested.
+			 * This most likely means that the log file
+			 * changed, so we need to send a NEWFILE message.
+			 */
+			if (log_compare(&lsn, &rp->lsn) < 0 &&
+			    rp->lsn.offset == 0)
+				ret = __rep_send_message(dbenv, *eidp,
+				    REP_NEWFILE, &lsn, NULL, 0);
+			else
+				ret = __rep_send_message(dbenv, *eidp,
+				    REP_LOG, &rp->lsn, &data_dbt, 0);
+		}
 		if ((t_ret = logc->close(logc, 0)) != 0 && ret == 0)
 			ret = t_ret;
 		return (ret);
 	case REP_NEWSITE:
 		/* This is a rebroadcast; simply tell the application. */
+		if (F_ISSET(dbenv, DB_ENV_REP_MASTER)) {
+			dblp = dbenv->lg_handle;
+			lp = dblp->reginfo.primary;
+			R_LOCK(dbenv, &dblp->reginfo);
+			lsn = lp->lsn;
+			R_UNLOCK(dbenv, &dblp->reginfo);
+			(void)__rep_send_message(dbenv,
+			    *eidp, REP_NEWMASTER, &lsn, NULL, 0);
+		}
 		return (DB_REP_NEWSITE);
 	case REP_NEWCLIENT:
 		/*
@@ -235,7 +311,7 @@ __rep_process_message(dbenv, rec, control, eidp)
 		 * record to all the clients.
 		 */
 		if ((ret = __rep_send_message(dbenv,
-		    DB_BROADCAST_EID, REP_NEWSITE, &rp->lsn, rec, 0)) != 0)
+		    DB_EID_BROADCAST, REP_NEWSITE, &rp->lsn, rec, 0)) != 0)
 			goto err;
 
 		if (F_ISSET(dbenv, DB_ENV_REP_CLIENT))
@@ -251,18 +327,15 @@ __rep_process_message(dbenv, rec, control, eidp)
 		R_UNLOCK(dbenv, &dblp->reginfo);
 		return (__rep_send_message(dbenv,
 		    *eidp, REP_NEWMASTER, &lsn, NULL, 0));
-		break;
 	case REP_NEWFILE:
 		CLIENT_ONLY(dbenv);
 		return (__rep_apply(dbenv, rp, rec));
-
 	case REP_NEWMASTER:
 		ANYSITE(dbenv);
 		if (F_ISSET(dbenv, DB_ENV_REP_MASTER) &&
 		    *eidp != dbenv->rep_eid)
 			return (DB_REP_DUPMASTER);
 		return (__rep_new_master(dbenv, rp, *eidp));
-		break;
 	case REP_PAGE: /* TODO */
 		CLIENT_ONLY(dbenv);
 		break;
@@ -330,8 +403,9 @@ rep_verify_err:	if ((t_ret = logc->close(logc, 0)) != 0 && ret == 0)
 		goto err;
 	case REP_VOTE1:
 		if (F_ISSET(dbenv, DB_ENV_REP_MASTER)) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Master received vote\n", (long)pthread_self());
+#ifdef DIAGNOSTIC
+			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+				__db_err(dbenv, "Master received vote");
 #endif
 			R_LOCK(dbenv, &dblp->reginfo);
 			lsn = lp->lsn;
@@ -349,8 +423,10 @@ fprintf(stderr, "%lx Master received vote\n", (long)pthread_self());
 		 * this site to send its vote again.
 		 */
 		if (!IN_ELECTION(rep)) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Not in election, but received vote1\n", (long)pthread_self());
+#ifdef DIAGNOSTIC
+			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+				__db_err(dbenv,
+				    "Not in election, but received vote1");
 #endif
 			ret = DB_REP_HOLDELECTION;
 			goto unlock;
@@ -388,15 +464,24 @@ fprintf(stderr, "%lx Not in election, but received vote1\n", (long)pthread_self(
 		 * Change winners if the incoming record has a higher
 		 * priority, or an equal priority but a larger LSN.
 		 */
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Existing vote: (eid)%d (pri)%d (gen)%d [%d,%d]\n", (long)pthread_self(), rep->winner, rep->w_priority, rep->w_gen, rep->w_lsn.file, rep->w_lsn.offset);
-fprintf(stderr, "%lx Incoming vote: (eid)%d (pri)%d (gen)%d [%d,%d]\n", (long)pthread_self(), *eidp, vi->priority, rp->gen, rp->lsn.file, rp->lsn.offset);
+#ifdef DIAGNOSTIC
+		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION)) {
+			__db_err(dbenv,
+			    "Existing vote: (eid)%d (pri)%d (gen)%d [%d,%d]",
+			    rep->winner, rep->w_priority, rep->w_gen,
+			    rep->w_lsn.file, rep->w_lsn.offset);
+			__db_err(dbenv,
+			    "Incoming vote: (eid)%d (pri)%d (gen)%d [%d,%d]",
+			    *eidp, vi->priority, rp->gen, rp->lsn.file,
+			    rp->lsn.offset);
+		}
 #endif
 		if (vi->priority > rep->w_priority ||
-		    (vi->priority == rep->w_priority &&
+		    (vi->priority != 0 && vi->priority == rep->w_priority &&
 		    log_compare(&rp->lsn, &rep->w_lsn) > 0)) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Taking new vote\n", (long)pthread_self());
+#ifdef DIABNOSTIC
+			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+				__db_err(dbenv, "Accepting new vote");
 #endif
 			rep->winner = *eidp;
 			rep->w_priority = vi->priority;
@@ -405,54 +490,57 @@ fprintf(stderr, "%lx Taking new vote\n", (long)pthread_self());
 		}
 		master = rep->winner;
 		lsn = rep->w_lsn;
-		done = rep->sites == rep->nsites;
+		done = rep->sites == rep->nsites && rep->w_priority != 0;
 		if (done) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Consider election phase1 done\n", (long)pthread_self());
+#ifdef DIAGNOSTIC
+			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION)) {
+				__db_err(dbenv, "Phase1 election done");
+				__db_err(dbenv, "Voting for %d%s",
+				    master, master == rep->eid ? "(self)" : "");
+			}
 #endif
 			F_CLR(rep, REP_F_EPHASE1);
 			F_SET(rep, REP_F_EPHASE2);
 		}
+
 		if (done && master == rep->eid) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Entering phase 2 casting vote for ourselves.\n",
-(long)pthread_self());
-#endif
 			rep->votes++;
 			MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 			return (0);
 		}
 		MUTEX_UNLOCK(dbenv, db_rep->mutexp);
-		if (done) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Entering phase 2 with voting for %d\n",
-(long)pthread_self(), master);
-#endif
-			/* Someone else gets the vote. */
-			return (__rep_send_message(dbenv, master, REP_VOTE2,
-			    NULL, NULL, 0));
-		}
+
+		/* Vote for someone else. */
+		if (done)
+			return (__rep_send_message(dbenv,
+			    master, REP_VOTE2, NULL, NULL, 0));
+
 		/* Election is still going on. */
 		break;
 	case REP_VOTE2:
-		if (F_ISSET(dbenv, DB_ENV_REP_MASTER)) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Master received vote\n", (long)pthread_self());
+#ifdef DIAGNOSTIC
+		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+			__db_err(dbenv, "We received a vote%s",
+			    F_ISSET(dbenv, DB_ENV_REP_MASTER) ?
+			    " (master)" : "");
 #endif
+		if (F_ISSET(dbenv, DB_ENV_REP_MASTER)) {
 			R_LOCK(dbenv, &dblp->reginfo);
 			lsn = lp->lsn;
 			R_UNLOCK(dbenv, &dblp->reginfo);
 			return (__rep_send_message(dbenv,
 			    *eidp, REP_NEWMASTER, &lsn, NULL, 0));
 		}
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Got a vote\n", (long)pthread_self());
-#endif
 
 		MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
-		if (!IN_ELECTION(rep) && rep->master_id != DB_INVALID_EID) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Not in election, but received vote2\n", (long)pthread_self());
+
+		/* If we have priority 0, we should never get a vote. */
+		DB_ASSERT(rep->priority != 0);
+
+		if (!IN_ELECTION(rep) && rep->master_id != DB_EID_INVALID) {
+#ifdef DIAGNOSTIC
+			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+				__db_err(dbenv, "Not in election, got vote");
 #endif
 			MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 			return (DB_REP_HOLDELECTION);
@@ -461,17 +549,17 @@ fprintf(stderr, "%lx Not in election, but received vote2\n", (long)pthread_self(
 		rep->votes++;
 		done = rep->votes > rep->nsites / 2;
 		if (done) {
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Got enough votes to win\n", (long)pthread_self());
-#endif
 			rep->master_id = rep->eid;
 			rep->gen = rep->w_gen + 1;
 			ELECTION_DONE(rep);
 			F_CLR(rep, REP_F_UPGRADE);
 			F_SET(rep, REP_F_MASTER);
 			*eidp = rep->master_id;
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Election done; winner is %d\n", (long)pthread_self(), rep->master_id);
+#ifdef DIAGNOSTIC
+			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+				__db_err(dbenv,
+			"Got enough votes to win; election done; winner is %d",
+				    rep->master_id);
 #endif
 		}
 		MUTEX_UNLOCK(dbenv, db_rep->mutexp);
@@ -479,17 +567,22 @@ fprintf(stderr, "%lx Election done; winner is %d\n", (long)pthread_self(), rep->
 			R_LOCK(dbenv, &dblp->reginfo);
 			lsn = lp->lsn;
 			R_UNLOCK(dbenv, &dblp->reginfo);
+
 			/* Declare me the winner. */
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx I won, sending NEWMASTER\n", (long)pthread_self());
+#ifdef DIAGNOSTIC
+			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+				__db_err(dbenv, "I won, sending NEWMASTER");
 #endif
-			if ((ret = __rep_send_message(dbenv, DB_BROADCAST_EID,
+			if ((ret = __rep_send_message(dbenv, DB_EID_BROADCAST,
 			    REP_NEWMASTER, &lsn, NULL, 0)) != 0)
 				break;
 			return (DB_REP_NEWMASTER);
 		}
 		break;
 	default:
+		__db_err(dbenv,
+	"DB_ENV->rep_process_message: unknown replication message: type %lu",
+		   (u_long)rp->rectype);
 		return (EINVAL);
 	}
 
@@ -559,7 +652,7 @@ __rep_apply(dbenv, rp, rec)
 	 */
 	if (cmp == 0) {
 		if (rp->rectype == REP_NEWFILE) {
-			CHANGE_FILES;
+newfile:		CHANGE_FILES;
 		} else {
 			ret = __log_put_int(dbenv, &rp->lsn, rec, rp->flags);
 			lp->ready_lsn = lp->lsn;
@@ -587,7 +680,7 @@ gap_check:		R_UNLOCK(dbenv, &dblp->reginfo);
 			 * or removed that record from the database.
 			 */
 			if (log_compare(&lp->ready_lsn, &rp->lsn) == 0) {
-				if (rp->rectype == REP_NEWFILE) {
+				if (rp->rectype != REP_NEWFILE) {
 					ret = __log_put_int(dbenv,
 					    &rp->lsn, &data_dbt, rp->flags);
 					lp->ready_lsn = lp->lsn;
@@ -596,22 +689,62 @@ gap_check:		R_UNLOCK(dbenv, &dblp->reginfo);
 				R_UNLOCK(dbenv, &dblp->reginfo);
 				if ((ret = dbc->c_del(dbc, 0)) != 0)
 					goto err;
-				ret = dbc->c_get(dbc,
-				    &key_dbt, &data_dbt, DB_NEXT);
-				if (ret != DB_NOTFOUND && ret != 0)
-					goto err;
-				lsn = ((REP_CONTROL *)key_dbt.data)->lsn;
-				if ((ret = dbc->c_close(dbc)) != 0)
-					goto err;
-				R_LOCK(dbenv, &dblp->reginfo);
-				if (ret == DB_NOTFOUND) {
-					ZERO_LSN(lp->waiting_lsn);
+
+				/*
+				 * If the current rectype is simple, we're
+				 * ready for another record;  otherwise,
+				 * don't get one, because we need to
+				 * process the current one now.
+				 */
+				if (IS_SIMPLE(rectype)) {
+					ret = dbc->c_get(dbc,
+					    &key_dbt, &data_dbt, DB_NEXT);
+					if (ret != DB_NOTFOUND && ret != 0)
+						goto err;
+					lsn =
+					    ((REP_CONTROL *)key_dbt.data)->lsn;
+					if ((ret = dbc->c_close(dbc)) != 0)
+						goto err;
+					R_LOCK(dbenv, &dblp->reginfo);
+					if (ret == DB_NOTFOUND) {
+						ZERO_LSN(lp->waiting_lsn);
+						break;
+					} else
+						lp->waiting_lsn = lsn;
+				} else {
+					R_LOCK(dbenv, &dblp->reginfo);
+					lp->waiting_lsn = lp->ready_lsn;
 					break;
-				} else
-					lp->waiting_lsn = lsn;
+				}
 			}
 		}
 	} else if (cmp > 0) {
+		/*
+		 * The LSN is higher than the one we were waiting for.
+		 * If it is a NEWFILE message, this may not mean that
+		 * there's a gap;  in some cases, NEWFILE messages contain
+		 * the LSN of the beginning of the new file instead
+		 * of the end of the old.
+		 *
+		 * In these cases, the rec DBT will contain the last LSN
+		 * of the old file, so we can tell whether there's a gap.
+		 */
+		if (rp->rectype == REP_NEWFILE &&
+		    rp->lsn.file == lp->ready_lsn.file + 1 &&
+		    rp->lsn.offset == 0) {
+			DB_ASSERT(rec != NULL && rec->data != NULL &&
+			    rec->size == sizeof(DB_LSN));
+			memcpy(&lsn, rec->data, sizeof(DB_LSN));
+			if (log_compare(&lp->ready_lsn, &lsn) > 0)
+				/*
+				 * The last LSN in the old file is smaller
+				 * than the one we're expecting, so there's
+				 * no gap--the one we're expecting just
+				 * doesn't exist.
+				 */
+				goto newfile;
+		}
+
 		/*
 		 * This record isn't in sequence; add it to the table and
 		 * update waiting_lsn if necessary.
@@ -630,8 +763,11 @@ gap_check:		R_UNLOCK(dbenv, &dblp->reginfo);
 		    &next_lsn, NULL, 0);
 		R_LOCK(dbenv, &dblp->reginfo);
 		if (ret == 0)
-			if (log_compare(&rp->lsn, &lp->waiting_lsn) < 0)
+			if (IS_ZERO_LSN(lp->waiting_lsn) ||
+			    log_compare(&rp->lsn, &lp->waiting_lsn) < 0)
 				lp->waiting_lsn = rp->lsn;
+		R_UNLOCK(dbenv, &dblp->reginfo);
+		return (ret);
 	}
 	R_UNLOCK(dbenv, &dblp->reginfo);
 	if (ret != 0 || cmp < 0 || (cmp == 0 &&  IS_SIMPLE(rectype)))
@@ -728,6 +864,7 @@ __rep_process_txn(dbenv, commit_rec)
 	if (op != TXN_COMMIT)
 		return (0);
 
+	memset(&recs, 0, sizeof(recs));
 	recs.txnid = txn_args->txnid->txnid;
 	if ((ret = dbenv->lock_id(dbenv, &recs.lockid)) != 0)
 		return (ret);
@@ -760,7 +897,9 @@ err:	if (recs.nalloc != 0) {
 		    DB_LOCK_FREE_LOCKER, &req, 1, &lvp)) != 0 && ret == 0)
 			ret = t_ret;
 		__os_free(dbenv, recs.array, recs.nalloc * sizeof(LSN_PAGE));
-	} else if ((t_ret =
+	}
+
+	if ((t_ret =
 	    dbenv->lock_id_free(dbenv, recs.lockid)) != 0 && ret == 0)
 		ret = t_ret;
 
@@ -822,7 +961,8 @@ __rep_client_dbinit(dbenv, startup)
 	if ((ret = rep_db->set_bt_compare(rep_db, __rep_bt_cmp)) != 0)
 		goto err;
 
-	flags = DB_THREAD | (startup ? DB_CREATE : 0);
+	flags = (F_ISSET(dbenv, DB_ENV_THREAD) ? DB_THREAD : 0) |
+	    (startup ? DB_CREATE : 0);
 	if ((ret = rep_db->open(rep_db,
 	    "__db.rep.db", NULL, DB_BTREE, flags, 0)) != 0)
 		goto err;
@@ -855,6 +995,7 @@ __rep_bt_cmp(dbp, dbt1, dbt2)
 	DB *dbp;
 	const DBT *dbt1, *dbt2;
 {
+	DB_LSN lsn1, lsn2;
 	REP_CONTROL *rp1, *rp2;
 
 	COMPQUIET(dbp, NULL);
@@ -862,149 +1003,21 @@ __rep_bt_cmp(dbp, dbt1, dbt2)
 	rp1 = dbt1->data;
 	rp2 = dbt2->data;
 
-	if (rp1->lsn.file > rp2->lsn.file)
+	__ua_memcpy(&lsn1, &rp1->lsn, sizeof(DB_LSN));
+	__ua_memcpy(&lsn2, &rp2->lsn, sizeof(DB_LSN));
+
+	if (lsn1.file > lsn2.file)
 		return (1);
 
-	if (rp1->lsn.file < rp2->lsn.file)
+	if (lsn1.file < lsn2.file)
 		return (-1);
 
-	if (rp1->lsn.offset > rp2->lsn.offset)
+	if (lsn1.offset > lsn2.offset)
 		return (1);
 
-	if (rp1->lsn.offset < rp2->lsn.offset)
+	if (lsn1.offset < lsn2.offset)
 		return (-1);
 
 	return (0);
 }
 
-/*
- * __rep_send_message --
- *	This is a wrapper for sending a message.  It takes care of constructing
- * the REP_CONTROL structure and calling the user's specified send function.
- *
- * PUBLIC: int __rep_send_message __P((DB_ENV *, int,
- * PUBLIC:     u_int32_t, DB_LSN *, const DBT *, u_int32_t));
- */
-int
-__rep_send_message(dbenv, eid, rtype, lsnp, dbtp, flags)
-	DB_ENV *dbenv;
-	int eid;
-	u_int32_t rtype;
-	DB_LSN *lsnp;
-	const DBT *dbtp;
-	u_int32_t flags;
-{
-	DB_REP *db_rep;
-	REP *rep;
-	DBT cdbt, scrap_dbt;
-	REP_CONTROL cntrl;
-	u_int32_t send_flags;
-
-	db_rep = dbenv->rep_handle;
-	rep = db_rep->region;
-
-	/* Set up control structure. */
-	memset(&cntrl, 0, sizeof(cntrl));
-	if (lsnp == NULL)
-		ZERO_LSN(cntrl.lsn);
-	else
-		cntrl.lsn = *lsnp;
-	cntrl.rectype = rtype;
-	cntrl.flags = flags;
-	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
-	cntrl.gen = rep->gen;
-	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
-
-	memset(&cdbt, 0, sizeof(cdbt));
-	cdbt.data = &cntrl;
-	cdbt.size = sizeof(cntrl);
-
-	/* Don't assume the send function will be tolerant of NULL records. */
-	if (dbtp == NULL) {
-		memset(&scrap_dbt, 0, sizeof(DBT));
-		dbtp = &scrap_dbt;
-	}
-
-	send_flags = (FLUSH_ON_FLAG(flags) ? DB_REP_PERMANENT : 0);
-
-	return (db_rep->rep_send(dbenv, db_rep->rep_send_data, dbtp, &cdbt,
-	    send_flags, eid));
-}
-
-#ifdef NOTYET
-static int __rep_send_file __P((DB_ENV *, DBT *, u_int32_t));
-/*
- * __rep_send_file --
- *	Send an entire file, one block at a time.
- */
-static int
-__rep_send_file(dbenv, rec, eid)
-	DB_ENV *dbenv;
-	DBT *rec;
-	u_int32_t eid;
-{
-	DB *dbp;
-	DB_LOCK lk;
-	DB_MPOOLFILE *mpf;
-	DBC *dbc;
-	DBT rec_dbt;
-	PAGE *pagep;
-	db_pgno_t last_pgno, pgno;
-	int ret, t_ret;
-
-	dbp = NULL;
-	dbc = NULL;
-	pagep = NULL;
-	mpf = NULL;
-	LOCK_INIT(lk);
-
-	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
-		goto err;
-
-	if ((ret = dbp->open(dbp, rec->data, NULL, DB_UNKNOWN, 0, 0)) != 0)
-		goto err;
-
-	if ((ret = dbp->cursor(dbp, NULL, &dbc, 0)) != 0)
-		goto err;
-	/*
-	 * Force last_pgno to some value that will let us read the meta-dat
-	 * page in the following loop.
-	 */
-	memset(&rec_dbt, 0, sizeof(rec_dbt));
-	last_pgno = 1;
-	for (pgno = 0; pgno <= last_pgno; pgno++) {
-		if ((ret = __db_lget(dbc, 0, pgno, DB_LOCK_READ, 0, &lk)) != 0)
-			goto err;
-
-		if ((ret = mpf->get(mpf, &pgno, 0, &pagep)) != 0)
-			goto err;
-
-		if (pgno == 0)
-			last_pgno = ((DBMETA *)pagep)->last_pgno;
-
-		rec_dbt.data = pagep;
-		rec_dbt.size = dbp->pgsize;
-		if ((ret = __rep_send_message(dbenv, eid,
-		    REP_FILE, NULL, &rec_dbt, pgno == last_pgno)) != 0)
-			goto err;
-		ret = mpf->put(mpf, pagep, 0);
-		pagep = NULL;
-		if (ret != 0)
-			goto err;
-		ret = __LPUT(dbc, lk);
-		LOCK_INIT(lk);
-		if (ret != 0)
-			goto err;
-	}
-
-err:	if (LOCK_ISSET(lk) && (t_ret = __LPUT(dbc, lk)) != 0 && ret == 0)
-		ret = t_ret;
-	if (dbc != NULL && (t_ret = dbc->c_close(dbc)) != 0 && ret == 0)
-		ret = t_ret;
-	if (pagep != NULL && (t_ret = mpf->put(mpf, pagep, 0)) != 0 && ret == 0)
-		ret = t_ret;
-	if (dbp != NULL && (t_ret = dbp->close(dbp, 0)) != 0 && ret == 0)
-		ret = t_ret;
-	return (ret);
-}
-#endif

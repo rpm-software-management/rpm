@@ -3,7 +3,7 @@
 # Copyright (c) 1996-2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: dead007.tcl,v 1.1 2001/10/10 16:23:48 ubell Exp 
+# Id: dead007.tcl,v 1.2 2001/10/20 14:21:08 bostic Exp 
 #
 # TEST	dead007
 # TEST	use timeouts rather than the normal dd algorithm.
@@ -31,5 +31,4 @@ proc dead007 { } {
 
 	set lock_curid $save_curid
 	set lock_maxid $save_maxid
-	puts "Dead007 -- complete"
 }

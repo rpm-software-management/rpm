@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-01-11 17:48-0500\n"
+"POT-Creation-Date: 2002-01-17 14:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1592,7 +1592,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:520
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:522
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
@@ -1602,12 +1602,12 @@ msgstr ""
 msgid "%s: bad magic\n"
 msgstr ""
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:536
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:538
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:541
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:543
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
@@ -1617,7 +1617,7 @@ msgstr ""
 msgid "%s: headerRead failed\n"
 msgstr ""
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:464
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:466
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
@@ -2315,42 +2315,42 @@ msgstr ""
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:227
+#: lib/rpmchecksig.c:229
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:233
+#: lib/rpmchecksig.c:235
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:526
+#: lib/rpmchecksig.c:528
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:721
+#: lib/rpmchecksig.c:725
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:722 lib/rpmchecksig.c:736
+#: lib/rpmchecksig.c:726 lib/rpmchecksig.c:740
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:724 lib/rpmchecksig.c:738
+#: lib/rpmchecksig.c:728 lib/rpmchecksig.c:742
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:725 lib/rpmchecksig.c:739
+#: lib/rpmchecksig.c:729 lib/rpmchecksig.c:743
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:727 lib/rpmchecksig.c:741
+#: lib/rpmchecksig.c:731 lib/rpmchecksig.c:745
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:735
+#: lib/rpmchecksig.c:739
 msgid "OK"
 msgstr ""
 
@@ -2587,7 +2587,7 @@ msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
 #: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
-#: lib/signature.c:570
+#: lib/signature.c:569
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr ""
@@ -2646,46 +2646,46 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:575 lib/signature.c:628
+#: lib/signature.c:574 lib/signature.c:627
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:608
+#: lib/signature.c:607
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:620
+#: lib/signature.c:619
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:664
+#: lib/signature.c:663
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:693
+#: lib/signature.c:692
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:733
+#: lib/signature.c:732
 msgid "V3 RSA/MD5 signature: "
 msgstr ""
 
-#: lib/signature.c:823
+#: lib/signature.c:822
 msgid "V3 DSA signature: "
 msgstr ""
 
-#: lib/signature.c:887
+#: lib/signature.c:886
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:907
+#: lib/signature.c:906
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:911
+#: lib/signature.c:910
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""

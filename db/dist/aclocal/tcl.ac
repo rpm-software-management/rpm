@@ -1,4 +1,4 @@
-# Id: tcl.ac,v 11.8 2001/06/07 21:23:36 bostic Exp 
+# Id: tcl.ac,v 11.12 2001/11/10 16:40:37 bostic Exp 
 
 # The SC_* macros in this file are from the unix/tcl.m4 files in the Tcl
 # 8.3.0 distribution, with some minor changes.  For this reason, license
@@ -9,7 +9,7 @@
 # California, Sun Microsystems, Inc., Scriptics Corporation,
 # and other parties.  The following terms apply to all files associated
 # with the software unless explicitly disclaimed in individual files.
-# 
+#
 # The authors hereby grant permission to use, copy, modify, distribute,
 # and license this software and its documentation for any purpose, provided
 # that existing copyright notices are retained in all copies and that this
@@ -19,23 +19,23 @@
 # and need not follow the licensing terms described here, provided that
 # the new terms are clearly indicated on the first page of each file where
 # they apply.
-# 
+#
 # IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY
 # FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES
 # ARISING OUT OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY
 # DERIVATIVES THEREOF, EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 # THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE
 # IS PROVIDED ON AN "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE
 # NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
 # MODIFICATIONS.
-# 
+#
 # GOVERNMENT USE: If you are acquiring this software on behalf of the
 # U.S. government, the Government shall have only "Restricted Rights"
-# in the software and related documentation as defined in the Federal 
+# in the software and related documentation as defined in the Federal
 # Acquisition Regulations (FARs) in Clause 52.227.19 (c) (2).  If you
 # are acquiring the software on behalf of the Department of Defense, the
 # software shall be classified as "Commercial Computer Software" and the
@@ -43,7 +43,7 @@
 # 252.227-7013 (c) (1) of DFARs.  Notwithstanding the foregoing, the
 # authors grant the U.S. Government and others acting in its behalf
 # permission to use and distribute the software in accordance with the
-# terms specified in this license. 
+# terms specified in this license.
 
 AC_DEFUN(SC_PATH_TCLCONFIG, [
 	AC_CACHE_VAL(ac_cv_c_tclconfig,[
@@ -95,6 +95,16 @@ AC_DEFUN(SC_LOAD_TCLCONFIG, [
 	eval TCL_LIB_FLAG="${TCL_LIB_FLAG}"
 	eval "TCL_LIB_SPEC=\"${TCL_LIB_SPEC}\""
 
+	#
+	# If the DB Tcl library isn't loaded with the Tcl spec and library
+	# flags on AIX, the resulting libdb_tcl-X.Y.so.0 will drop core at
+	# load time. [#4843]
+	#
+	case "$host_os" in
+	aix*)
+		LIBTSO_LIBS="$LIBTSO_LIBS $TCL_LIB_SPEC $TCL_LIB_FLAG";;
+	esac
+
 	AC_SUBST(TCL_BIN_DIR)
 	AC_SUBST(TCL_SRC_DIR)
 	AC_SUBST(TCL_LIB_FILE)
@@ -119,8 +129,5 @@ if test "$db_cv_tcl" = "yes"; then
 		TCFLAGS="-I$TCL_PREFIX/include"
 	fi
 
-	LIBS="$LIBS $TCL_LIB_SPEC $TCL_LIBS"
-
-	ADDITIONAL_LIBS="$ADDITIONAL_LIBS \$(libtso_target)"
-	DEFAULT_INSTALL="${DEFAULT_INSTALL} install_tcl"
+	INSTALL_LIBS="${INSTALL_LIBS} \$(libtso_target)"
 fi])

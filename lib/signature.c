@@ -540,7 +540,6 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	case RPMSIGTAG_PGP5:	/* XXX legacy */
 	case RPMSIGTAG_PGP:
 	{   const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
-	    const char *name = rpmExpand("+myname=\"%{_pgp_name}\"", NULL);
 	    const char *path;
 	    pgpVersion pgpVer;
 

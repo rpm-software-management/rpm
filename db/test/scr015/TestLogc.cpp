@@ -4,7 +4,7 @@
  * Copyright (c) 2000
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestLogc.cpp,v 1.3 2001/10/12 13:02:31 dda Exp 
+ * Id: TestLogc.cpp,v 1.4 2001/10/16 15:40:53 dda Exp 
  */
 
 /*
@@ -66,27 +66,36 @@ int main(int argc, char *argv[])
 
 		int count = 0;
 		while ((ret = logc->get(&lsn, dbt, flags)) == 0) {
-			cout << "logc.get: " << count;
 
 			// We ignore the contents of the log record,
-			// it's not portable.
+			// it's not portable.  Even the exact count
+			// is may change when the underlying implementation
+			// changes, we'll just make sure at the end we saw
+			// 'enough'.
 			//
+			//     cout << "logc.get: " << count;
 			//     show_dbt(cout, dbt);
+			//	cout << "\n";
 			//
-
-			cout << "\n";
 			count++;
 			flags = DB_NEXT;
 		}
 		if (ret != DB_NOTFOUND) {
-			cerr << "*** Failed to get log record, returned: "
+			cerr << "*** FAIL: logc.get returned: "
 			     << DbEnv::strerror(ret) << "\n";
 		}
 		logc->close(0);
+
+		// There has to be at *least* four log records,
+		// since we did four separate database operations.
+		//
+		if (count < 4)
+			cerr << "*** FAIL: not enough log records\n";
+
 		cout << "TestLogc done.\n";
 	}
 	catch (DbException &dbe) {
-		cerr << "Db Exception: " << dbe.what();
+		cerr << "*** FAIL: " << dbe.what() <<"\n";
 	}
 	return 0;
 }

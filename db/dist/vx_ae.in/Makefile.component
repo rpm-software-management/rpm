@@ -16,7 +16,7 @@ defaultTarget:        $(COMPONENT_NAME).cm
 # default definition for CPU and TOOL (needed by defs.project)
 #
 
-CPU              = SIMSPARCSOLARIS
+CPU              = PENTIUM2
 TOOL             = gnu
 
 
@@ -56,22 +56,6 @@ endif
 
 ifeq ($(BUILD_SPEC),PENTIUMgnu.debug)
 CPU              = PENTIUM
-TOOL             = gnu
-SYS_OBJ_DIR   =  $(WIND_BASE)/target/lib/obj$(CPU)$(TOOL)vx
-USER_OBJ_DIR   =  $(WIND_BASE)/target/user/objs/obj$(CPU)$(TOOL)
-PRJ_OBJS    = __DB_APPLICATION_NAME__.o \
-		compConfig.o
-COMPONENT_OBJS    = __DB_APPLICATION_NAME__.o
-DEPENDENCY_FILES    = __DB_APPLICATION_NAME__.d \
-		compConfig.d
-NUMBER_OF_COMPONENT_OBJS = $(words $(COMPONENT_OBJS))
-endif
-
-
-## CPU and TOOL info for build specification 'SIMSPARCSOLARISgnu.debug'
-
-ifeq ($(BUILD_SPEC),SIMSPARCSOLARISgnu.debug)
-CPU              = SIMSPARCSOLARIS
 TOOL             = gnu
 SYS_OBJ_DIR   =  $(WIND_BASE)/target/lib/obj$(CPU)$(TOOL)vx
 USER_OBJ_DIR   =  $(WIND_BASE)/target/user/objs/obj$(CPU)$(TOOL)
@@ -176,36 +160,6 @@ POST_BUILD_RULE  =
 
 endif
 
-
-## build-configuration info for build specification 'SIMSPARCSOLARISgnu.debug'
-
-ifeq ($(BUILD_SPEC),SIMSPARCSOLARISgnu.debug)
-
-## macros
-
-AR               = arsparc
-AS               = ccsparc
-CC               = ccsparc
-CFLAGS           = -ansi -DRW_MULTI_THREAD -D_REENTRANT -g -fno-builtin -MD -Wall -I. -I$(WIND_BASE)/target/h -I$(PRJ_DIR)/../.. -I$(PRJ_DIR)/../../../include -I$(PRJ_DIR)/../../../include_auto -DCPU=SIMSPARCSOLARIS
-CFLAGS_AS        = -ansi -g -fno-builtin -P -x assembler-with-cpp -Wall -I. -I$(WIND_BASE)/target/h -DCPU=SIMSPARCSOLARIS
-CPP              = ccsparc -E -P
-CPPFILT          = c++filtsparc --strip-underscores
-LD               = ldsparc
-LDFLAGS          = -T $(WIND_BASE)/target/config/solaris/linker-script
-LDPARTIAL        = ccsparc -B$(WIND_BASE)/host/$(WIND_HOST_TYPE)/lib/gcc-lib/ -nostdlib -r -Wl,-X
-LD_PARTIAL_FLAGS = -nostdlib -r
-NM               = nmsparc
-OPTION_DEFINE_MACRO = -D
-OPTION_GENERATE_DEPENDENCY_FILE = -MD
-OPTION_INCLUDE_DIR = -I
-RELEASE          = 0
-SIZE             = sizesparc
-POST_BUILD_RULE  = 
-
-## end build-configuration info for build specification 'SIMSPARCSOLARISgnu.debug'
-
-endif
-
 # override make definitions only below this line
 
 
@@ -294,27 +248,6 @@ ifeq ($(BUILD_SPEC),PENTIUMgnu.debug)
 
 endif
 
-
-## build rules for build specification 'SIMSPARCSOLARISgnu.debug'
-
-ifeq ($(BUILD_SPEC),SIMSPARCSOLARISgnu.debug)
-
-%.o : $(PRJ_DIR)/%.c
-	$(CC) -ansi -DRW_MULTI_THREAD -D_REENTRANT -g -fno-builtin -MD -Wall -I. -I$(WIND_BASE)/target/h -I$(PRJ_DIR)/../.. -I$(PRJ_DIR)/../../../include -I$(PRJ_DIR)/../../../include_auto -DCPU=SIMSPARCSOLARIS -c $<
-
-%.d : $(PRJ_DIR)/%.c
-	ccsparc -E -P -M -ansi -DRW_MULTI_THREAD -D_REENTRANT -g -fno-builtin -Wall -I. -I$(WIND_BASE)/target/h -I$(PRJ_DIR)/../.. -I$(PRJ_DIR)/../../../include -I$(PRJ_DIR)/../../../include_auto -DCPU=SIMSPARCSOLARIS $< > $@
-
-%.o : $(PRJ_DIR)/../%.c
-	$(CC) -ansi -DRW_MULTI_THREAD -D_REENTRANT -g -fno-builtin -MD -Wall -I. -I$(WIND_BASE)/target/h -I$(PRJ_DIR)/../.. -I$(PRJ_DIR)/../../../include -I$(PRJ_DIR)/../../../include_auto -DCPU=SIMSPARCSOLARIS -c $<
-
-%.d : $(PRJ_DIR)/../%.c
-	ccsparc -E -P -M -ansi -DRW_MULTI_THREAD -D_REENTRANT -g -fno-builtin -Wall -I. -I$(WIND_BASE)/target/h -I$(PRJ_DIR)/../.. -I$(PRJ_DIR)/../../../include -I$(PRJ_DIR)/../../../include_auto -DCPU=SIMSPARCSOLARIS $< > $@
-
-
-## end build rules for build specification 'SIMSPARCSOLARISgnu.debug'
-
-endif
 
 #
 # Rule for configurable, binary component
@@ -412,15 +345,6 @@ endif
 ifeq ($(BUILD_SPEC),PENTIUMgnu.debug)
 
 ## end user-defined rules for build specification 'PENTIUMgnu.debug'
-
-endif
-
-
-## user-defined rules for build specification 'SIMSPARCSOLARISgnu.debug'
-
-ifeq ($(BUILD_SPEC),SIMSPARCSOLARISgnu.debug)
-
-## end user-defined rules for build specification 'SIMSPARCSOLARISgnu.debug'
 
 endif
 

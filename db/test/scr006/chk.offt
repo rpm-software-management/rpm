@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.offt,v 1.8 2001/10/12 17:55:34 bostic Exp 
+# Id: chk.offt,v 1.9 2001/10/26 13:40:15 bostic Exp 
 #
 # Make sure that no off_t's have snuck into the release.
 
@@ -23,6 +23,7 @@ sed -e "/#undef off_t/d" \
     -e "/os_rw.c:.*(off_t)db_iop->pgno/d" \
     -e "/os_seek.c:.*off_t offset;/d" \
     -e "/os_seek.c:.*offset = /d" \
+    -e "/test_perf\/perf_misc.c:/d" \
     -e "/test_server\/dbs.c:/d" \
     -e "/test_vxworks\/vx_mutex.c:/d" > $t
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-#	Id: vx_buildcd,v 1.5 2001/09/11 17:09:02 sue Exp 
+#	Id: vx_buildcd,v 1.6 2001/11/05 21:05:58 sue Exp 
 #
 # Build the Setup SDK CD image on the VxWorks host machine.
 
@@ -14,9 +14,9 @@ S=$Q/resource/mfg/setup
 W=sun4-solaris2
 
 symdoc=$D/docs/BerkeleyDB.$DB_VERSION_MAJOR.$DB_VERSION_MINOR.$DB_VERSION_PATCH
-symdb=$D/target/src/BerkeleyDB.$DB_VERSION_MAJOR.$DB_VERSION_MINOR.$DB_VERSION_PATCH
-rm -rf $D/docs $D/target
-mkdir $D/docs $D/target $D/target/src
+symdb=$D/windlink/sleepycat/BerkeleyDB.$DB_VERSION_MAJOR.$DB_VERSION_MINOR.$DB_VERSION_PATCH
+rm -rf $D/docs $D/windlink
+mkdir $D/docs $D/windlink $D/windlink/sleepycat
 ln -s $B/docs $symdoc
 ln -s $B $symdb
 
@@ -100,17 +100,17 @@ f=$D/filelist.all
 # files; we cannot have all the directories listed too.
 #
 # NOTE:  This find is overly aggressive in getting files, particularly
-# for the 'target/src' files.  We actually end up with 3 sets of the
+# for the 'windlink/sleepycat' files.  We actually end up with 3 sets of the
 # documentation, the "real" ones in 'docs/BerkeleyDB*', the set found
-# via 'target/src/Berk*/docs' and the one found via our symlink in
-# 'target/src/Berk*/dist/vx_setup/docs/Berk*'.
+# via 'windlink/sleepycat/Berk*/docs' and the one found via our symlink in
+# 'windlink/sleepycat/Berk*/dist/vx_setup/docs/Berk*'.
 #
 # However, we waste a little disk space so that the expression below
 # is trivial and we don't have to maintain it as new files/directories
 # are added to DB.
 #
 (cd $D && find docs/BerkeleyDB.$DB_VERSION_MAJOR.$DB_VERSION_MINOR.$DB_VERSION_PATCH/ -follow -name \* -type f -print) > $t
-(cd $D && find target/src/BerkeleyDB.$DB_VERSION_MAJOR.$DB_VERSION_MINOR.$DB_VERSION_PATCH/ -follow -name docs -prune -o -type f -print) >> $t
+(cd $D && find windlink/sleepycat/BerkeleyDB.$DB_VERSION_MAJOR.$DB_VERSION_MINOR.$DB_VERSION_PATCH/ -follow -name docs -prune -o -type f -print) >> $t
 (echo "Building $f" && rm -f $f && cp $t $f)
 #
 # Finally build the CD image!

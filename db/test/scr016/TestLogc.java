@@ -4,7 +4,7 @@
  * Copyright (c) 1997, 1998, 1999, 2000
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestLogc.java,v 1.4 2001/10/12 13:02:33 dda Exp 
+ * Id: TestLogc.java,v 1.5 2001/10/16 15:40:54 dda Exp 
  */
 
 /*
@@ -47,28 +47,38 @@ public class TestLogc
 
             int count = 0;
             while ((ret = logc.get(lsn, dbt, flags)) == 0) {
-                System.out.println("logc.get: " + count);
 
                 // We ignore the contents of the log record,
-                // it's not portable.
+                // it's not portable.  Even the exact count
+                // is may change when the underlying implementation
+                // changes, we'll just make sure at the end we saw
+                // 'enough'.
                 //
+                //     System.out.println("logc.get: " + count);
                 //     System.out.println(showDbt(dbt));
                 //
                 count++;
                 flags = Db.DB_NEXT;
             }
             if (ret != Db.DB_NOTFOUND) {
-                System.err.println("*** Failed to get log record, returned: " +
+                System.err.println("*** FAIL: logc.get returned: " +
                                    DbEnv.strerror(ret));
             }
             logc.close(0);
+
+            // There has to be at *least* four log records,
+            // since we did four separate database operations.
+            //
+            if (count < 4)
+                System.out.println("*** FAIL: not enough log records");
+
             System.out.println("TestLogc done.");
         }
         catch (DbException dbe) {
-            System.err.println("Db Exception: " + dbe);
+            System.err.println("*** FAIL: Db Exception: " + dbe);
         }
         catch (FileNotFoundException fnfe) {
-            System.err.println("FileNotFoundException: " + fnfe);
+            System.err.println("*** FAIL: FileNotFoundException: " + fnfe);
         }
 
     }

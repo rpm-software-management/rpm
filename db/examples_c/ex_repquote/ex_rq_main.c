@@ -4,7 +4,7 @@
  * Copyright (c) 2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_main.c,v 1.11 2001/10/09 14:45:43 margo Exp 
+ * Id: ex_rq_main.c,v 1.18 2001/11/18 01:29:07 margo Exp 
  */
 
 #include <sys/types.h>
@@ -26,7 +26,7 @@
 int master_eid;
 char *myaddr;
 
-int env_init __P((char *, char *, DB_ENV **, machtab_t *, u_int32_t));
+static int env_init __P((char *, char *, DB_ENV **, machtab_t *, u_int32_t));
 static void usage __P((char *));
 
 int
@@ -40,25 +40,25 @@ main(argc, argv)
 	DBT local;
 	enum { MASTER, CLIENT, UNKNOWN } whoami;
 	all_args aa;
-	char *c, ch, *home, *progname;
 	connect_args ca;
-	int maxsites, nsites, ret, priority, totalsites;
 	machtab_t *machtab;
 	pthread_t all_thr, conn_thr;
 	site_t site, *sitep, self, *selfp;
 	struct sigaction sigact;
+	int maxsites, nsites, ret, priority, totalsites;
+	char *c, ch, *home, *progname;
 	void *astatus, *cstatus;
 
-	home = "TESTDIR";
+	master_eid = DB_EID_INVALID;
+
+	dbenv = NULL;
+	whoami = UNKNOWN;
 	machtab = NULL;
 	selfp = sitep = NULL;
-	maxsites = nsites = totalsites = 0;
-	progname = "ex_repquote";
-	ret = 0;
-	whoami = UNKNOWN;
+	maxsites = nsites = ret = totalsites = 0;
 	priority = 100;
-
-	master_eid = DB_INVALID_EID;
+	home = "TESTDIR";
+	progname = "ex_repquote";
 
 	while ((ch = getopt(argc, argv, "Ch:Mm:n:o:p:")) != EOF)
 		switch (ch) {
@@ -145,10 +145,6 @@ main(argc, argv)
 	 * We are hardcoding priorities here that all clients have the
 	 * same priority except for a designated master who gets a higher
 	 * priority.
-	 * XXX If we add a logsonly site to this app, we can give it
-	 * priority 0; I say we should document that priority=0 sites should
-	 * never become masters; they still need to vote, they just can't
-	 * be masters.
 	 */
 	if ((ret =
 	    machtab_init(&machtab, priority, totalsites)) != 0)
@@ -159,9 +155,9 @@ main(argc, argv)
 	 * begin replicating.  However, we want to have a dbenv around
 	 * so that we can send it into any of our message handlers.
 	 */
-	if ((ret = env_init(progname,
-	    home, &dbenv, machtab, DB_THREAD | DB_RECOVER)) != 0)
+	if ((ret = env_init(progname, home, &dbenv, machtab, DB_RECOVER)) != 0)
 		goto err;
+
 	/*
 	 * Now sets up comm infrastructure.  There are two phases.  First,
 	 * we open our port for listening for incoming connections.  Then
@@ -188,17 +184,14 @@ main(argc, argv)
 	/*
 	 * We have now got the entire communication infrastructure set up.
 	 * It's time to declare ourselves to be a client or master.
-	 * XXX How do I decide that I have to switch from doing the read
-	 * loop to the write loop or vica versa?
 	 */
 	if (whoami == MASTER) {
 		if ((ret = dbenv->rep_start(dbenv, NULL, DB_REP_MASTER)) != 0) {
-			fprintf(stderr,
-			    "dbenv->rep_start failed %s\n", db_strerror(ret));
+			dbenv->err(dbenv, ret, "dbenv->rep_start failed");
 			goto err;
 		}
 		if ((ret = domaster(dbenv, progname)) != 0) {
-			fprintf(stderr, "Master failed %s\n", db_strerror(ret));
+			dbenv->err(dbenv, ret, "Master failed");
 			goto err;
 		}
 	} else {
@@ -207,12 +200,13 @@ main(argc, argv)
 		local.size = strlen(myaddr) + 1;
 		if ((ret =
 		    dbenv->rep_start(dbenv, &local, DB_REP_CLIENT)) != 0) {
-			fprintf(stderr,
-			    "dbenv->rep_start failed %s\n", db_strerror(ret));
+			dbenv->err(dbenv, ret, "dbenv->rep_start failed");
 			goto err;
 		}
+		/* Sleep to give ourselves a minute to find a master. */
+		sleep(5);
 		if ((ret = doclient(dbenv, progname, machtab)) != 0) {
-			fprintf(stderr, "Client failed %s\n", db_strerror(ret));
+			dbenv->err(dbenv, ret, "Client failed");
 			goto err;
 		}
 
@@ -250,8 +244,9 @@ err:	if (machtab != NULL)
  * -[MC] M for master/C for client
  * -h home directory
  * -n nsites (optional; number of sites in replication group; defaults to 0
- *	in which case we try to dynamically computer the number of sites in
+ *	in which case we try to dynamically compute the number of sites in
  *	the replication group.)
+ * -p priority (optional: defaults to 100)
  */
 static void
 usage(progname)
@@ -289,17 +284,14 @@ env_init(progname, home, dbenvp, machtab, flags)
 	}
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, prefix);
+	(void)dbenv->set_verbose(dbenv, DB_VERB_REPLICATION, 1);
 	(void)dbenv->set_cachesize(dbenv, 0, CACHESIZE, 0);
 	/* (void)dbenv->set_flags(dbenv, DB_TXN_NOSYNC, 1); */
 
-	(void)dbenv->set_rep_transport(dbenv,
-	    SELF_EID, (void *)machtab, quote_send);
+	dbenv->app_private = machtab;
+	(void)dbenv->set_rep_transport(dbenv, SELF_EID, quote_send);
 
-	/*
-	 * When we have log cursors, we can open this threaded and then
-	 * not create a new environment for each thread.
-	 */
-	flags |= DB_CREATE |
+	flags |= DB_CREATE | DB_THREAD |
 	    DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | DB_INIT_TXN;
 
 	ret = dbenv->open(dbenv, home, flags, 0);

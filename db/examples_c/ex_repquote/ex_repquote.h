@@ -4,7 +4,7 @@
  * Copyright (c) 2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_repquote.h,v 1.19 2001/10/13 13:13:16 bostic Exp 
+ * Id: ex_repquote.h,v 1.24 2001/10/28 15:45:39 bostic Exp 
  */
 
 #ifndef _EX_REPQUOTE_H_
@@ -19,7 +19,7 @@ typedef struct {
 
 /* Globals */
 extern int master_eid;
-extern char *myaddr;;
+extern char *myaddr;
 
 struct __member;	typedef struct __member member_t;
 struct __machtab;	typedef struct __machtab machtab_t;
@@ -58,10 +58,12 @@ int listen_socket_init __P((char *, int));
 int listen_socket_accept __P((machtab_t *, char *, int, int *));
 int machtab_getinfo __P((machtab_t *, int, u_int32_t *, int *));
 int machtab_init __P((machtab_t **, int, int));
-void machtab_parm __P((machtab_t *, int *, int *, u_int32_t *, u_int32_t *));
+void machtab_parm __P((machtab_t *, int *, int *, u_int32_t *));
 int machtab_rem __P((machtab_t *, int, int));
-int quote_send __P((DB_ENV *, void *, const DBT *, DBT *, u_int32_t, int));
+int quote_send __P((DB_ENV *, const DBT *, const DBT *, int, u_int32_t));
 
+#ifndef COMPQUIET
 #define	COMPQUIET(x,y)	x = (y)
+#endif
 
 #endif /* !_EX_REPQUOTE_H_ */

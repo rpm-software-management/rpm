@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_util.c,v 1.25 2001/10/11 01:07:16 bostic Exp ";
+static const char revid[] = "Id: rep_util.c,v 1.29 2001/11/16 10:57:51 krinsky Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -66,6 +66,61 @@ __rep_check_alloc(dbenv, r, n)
 	}
 
 	return (0);
+}
+
+/*
+ * __rep_send_message --
+ *	This is a wrapper for sending a message.  It takes care of constructing
+ * the REP_CONTROL structure and calling the user's specified send function.
+ *
+ * PUBLIC: int __rep_send_message __P((DB_ENV *, int,
+ * PUBLIC:     u_int32_t, DB_LSN *, const DBT *, u_int32_t));
+ */
+int
+__rep_send_message(dbenv, eid, rtype, lsnp, dbtp, flags)
+	DB_ENV *dbenv;
+	int eid;
+	u_int32_t rtype;
+	DB_LSN *lsnp;
+	const DBT *dbtp;
+	u_int32_t flags;
+{
+	DB_REP *db_rep;
+	REP *rep;
+	DBT cdbt, scrap_dbt;
+	REP_CONTROL cntrl;
+	u_int32_t send_flags;
+
+	db_rep = dbenv->rep_handle;
+	rep = db_rep->region;
+
+	/* Set up control structure. */
+	memset(&cntrl, 0, sizeof(cntrl));
+	if (lsnp == NULL)
+		ZERO_LSN(cntrl.lsn);
+	else
+		cntrl.lsn = *lsnp;
+	cntrl.rectype = rtype;
+	cntrl.flags = flags;
+	cntrl.rep_version = DB_REPVERSION;
+	cntrl.log_version = DB_LOGVERSION;
+	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
+	cntrl.gen = rep->gen;
+	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
+
+	memset(&cdbt, 0, sizeof(cdbt));
+	cdbt.data = &cntrl;
+	cdbt.size = sizeof(cntrl);
+
+	/* Don't assume the send function will be tolerant of NULL records. */
+	if (dbtp == NULL) {
+		memset(&scrap_dbt, 0, sizeof(DBT));
+		dbtp = &scrap_dbt;
+	}
+
+	send_flags = (LF_ISSET(DB_FLUSH) ? DB_REP_PERMANENT : 0);
+
+	return (db_rep->rep_send(dbenv, &cdbt, dbtp, eid, send_flags));
 }
 
 /*
@@ -284,17 +339,18 @@ __rep_lockpages(dbenv, dtab, key_lsn, max_lsn, recs, lid)
 		if ((ret = dbenv->log_cursor(dbenv, &logc, 0)) != 0)
 			goto err;
 		ret = logc->get(logc, key_lsn, &data_dbt, DB_SET);
+
+		/* Save lsn values, since dispatch functions can change them. */
+		tmp_lsn = *key_lsn;
+		ret = __db_dispatch(dbenv,
+		    dtab, &data_dbt, &tmp_lsn, DB_TXN_APPLY, t);
+
 		if ((t_ret = logc->close(logc, 0)) != 0 && ret == 0)
 			ret = t_ret;
 		if (ret != 0)
 			goto err;
-
-		/* Save lsn values, since dispatch functions can change them. */
-		tmp_lsn = *key_lsn;
-		if ((ret = __db_dispatch(dbenv, dtab,
-		    &data_dbt, &tmp_lsn, DB_TXN_APPLY, t)) != 0)
-			goto err;
 	}
+
 	if (t->npages == 0)
 		goto out;
 
@@ -573,7 +629,7 @@ __rep_send_vote(dbenv, lsnp, nsites, pri)
 	vote_dbt.size = sizeof(vi);
 
 	return (__rep_send_message(dbenv,
-	    DB_BROADCAST_EID, REP_VOTE1, lsnp, &vote_dbt, 0));
+	    DB_EID_BROADCAST, REP_VOTE1, lsnp, &vote_dbt, 0));
 }
 
 /*
@@ -605,7 +661,7 @@ __rep_grow_sites(dbenv, nsites)
 	nalloc = 2 * rep->asites;
 	if (nalloc < nsites)
 		nalloc = nsites;
-		
+
 	infop = dbenv->reginfo;
 	renv = infop->primary;
 	MUTEX_LOCK(dbenv, &renv->mutex, dbenv->lockfhp);
@@ -621,3 +677,81 @@ __rep_grow_sites(dbenv, nsites)
 	MUTEX_UNLOCK(dbenv, &renv->mutex);
 	return (ret);
 }
+
+#ifdef NOTYET
+static int __rep_send_file __P((DB_ENV *, DBT *, u_int32_t));
+/*
+ * __rep_send_file --
+ *	Send an entire file, one block at a time.
+ */
+static int
+__rep_send_file(dbenv, rec, eid)
+	DB_ENV *dbenv;
+	DBT *rec;
+	u_int32_t eid;
+{
+	DB *dbp;
+	DB_LOCK lk;
+	DB_MPOOLFILE *mpf;
+	DBC *dbc;
+	DBT rec_dbt;
+	PAGE *pagep;
+	db_pgno_t last_pgno, pgno;
+	int ret, t_ret;
+
+	dbp = NULL;
+	dbc = NULL;
+	pagep = NULL;
+	mpf = NULL;
+	LOCK_INIT(lk);
+
+	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+		goto err;
+
+	if ((ret = dbp->open(dbp, rec->data, NULL, DB_UNKNOWN, 0, 0)) != 0)
+		goto err;
+
+	if ((ret = dbp->cursor(dbp, NULL, &dbc, 0)) != 0)
+		goto err;
+	/*
+	 * Force last_pgno to some value that will let us read the meta-dat
+	 * page in the following loop.
+	 */
+	memset(&rec_dbt, 0, sizeof(rec_dbt));
+	last_pgno = 1;
+	for (pgno = 0; pgno <= last_pgno; pgno++) {
+		if ((ret = __db_lget(dbc, 0, pgno, DB_LOCK_READ, 0, &lk)) != 0)
+			goto err;
+
+		if ((ret = mpf->get(mpf, &pgno, 0, &pagep)) != 0)
+			goto err;
+
+		if (pgno == 0)
+			last_pgno = ((DBMETA *)pagep)->last_pgno;
+
+		rec_dbt.data = pagep;
+		rec_dbt.size = dbp->pgsize;
+		if ((ret = __rep_send_message(dbenv, eid,
+		    REP_FILE, NULL, &rec_dbt, pgno == last_pgno)) != 0)
+			goto err;
+		ret = mpf->put(mpf, pagep, 0);
+		pagep = NULL;
+		if (ret != 0)
+			goto err;
+		ret = __LPUT(dbc, lk);
+		LOCK_INIT(lk);
+		if (ret != 0)
+			goto err;
+	}
+
+err:	if (LOCK_ISSET(lk) && (t_ret = __LPUT(dbc, lk)) != 0 && ret == 0)
+		ret = t_ret;
+	if (dbc != NULL && (t_ret = dbc->c_close(dbc)) != 0 && ret == 0)
+		ret = t_ret;
+	if (pagep != NULL && (t_ret = mpf->put(mpf, pagep, 0)) != 0 && ret == 0)
+		ret = t_ret;
+	if (dbp != NULL && (t_ret = dbp->close(dbp, 0)) != 0 && ret == 0)
+		ret = t_ret;
+	return (ret);
+}
+#endif

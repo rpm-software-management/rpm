@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	Id: buildrel,v 1.30 2001/08/07 18:19:37 bostic Exp 
+#	Id: buildrel,v 1.31 2001/10/14 15:31:11 bostic Exp 
 #
 # Build the distribution archives.
 #
@@ -22,7 +22,7 @@ cd $D/dist && sh s_all
 cd $D && cvs -q commit
 
 # Copy a development tree into a release tree.
-setenv R /a/db-$VERSION
+setenv R /var/tmp/db-$VERSION
 rm -rf $R && mkdir -p $R
 cd $D && tar cf - \
 `cvs -q status | sed -n -e "/Repository/s;.*/CVSROOT/db/;;" -e "s/,v//p"` | \
@@ -46,10 +46,9 @@ cd $R/build_run && ~bostic/bin/dbconf && make >& mklog
 make prefix=`pwd`/BDB install
 
 # Clean up the tree.
-cd $R && rm -rf build_run docs_src java/src/com/sleepycat/test
+cd $R && rm -rf build_run docs_src
 cd $R && rm -rf test/TODO test/upgrade
-cd $R && rm -rf test_cxx test_perf test_purify test_server test_thread
-cd $R && rm -rf test_vxworks
+cd $R && rm -rf test_perf test_purify test_server test_thread test_vxworks
 
 # ACQUIRE ROOT PRIVILEGES
 cd $R && find . -type d | xargs chmod 775

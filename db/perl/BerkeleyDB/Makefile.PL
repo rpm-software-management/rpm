@@ -63,8 +63,14 @@ sub MY::postamble {
 $(NAME).pod:	$(NAME).pod.P t/examples.t.T t/examples3.t.T mkpod
 	perl ./mkpod
 
-$(NAME).xs:	typemap
-	@$(TOUCH) $(NAME).xs
+$(NAME).xs:	constants.h constants.xs typemap
+	$(TOUCH) $(NAME).xs
+
+constants.h constants.xs:	mkconsts
+	bleedperl mkconsts xs 
+
+$(NAME).pm:	mkconsts
+	bleedperl mkconsts pm $(NAME).pm > $(NAME).pm.tmp && mv $(NAME).pm.tmp $(NAME).pm
 
 Makefile:	config.in 
 

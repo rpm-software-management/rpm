@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_logc.cpp,v 11.2 2001/10/02 01:33:37 bostic Exp ";
+static const char revid[] = "Id: cxx_logc.cpp,v 11.3 2001/11/08 06:18:08 mjc Exp ";
 #endif /* not lint */
 
 #include <errno.h>
@@ -31,24 +31,26 @@ DbLogc::~DbLogc()
 {
 }
 
-int DbLogc::close(u_int32_t flags)
+// The name _flags prevents a name clash with __db_log_cursor::flags
+int DbLogc::close(u_int32_t _flags)
 {
 	DB_LOGC *cursor = this;
 	int err;
 
-	if ((err = cursor->close(cursor, flags)) != 0) {
+	if ((err = cursor->close(cursor, _flags)) != 0) {
 		DB_ERROR("DbLogc::close", err, ON_ERROR_UNKNOWN);
 		return (err);
 	}
 	return (0);
 }
 
-int DbLogc::get(DbLsn *lsn, Dbt *data, u_int32_t flags)
+// The name _flags prevents a name clash with __db_log_cursor::flags
+int DbLogc::get(DbLsn *lsn, Dbt *data, u_int32_t _flags)
 {
 	DB_LOGC *cursor = this;
 	int err;
 
-	if ((err = cursor->get(cursor, lsn, data, flags)) != 0) {
+	if ((err = cursor->get(cursor, lsn, data, _flags)) != 0) {
 
 		// DB_NOTFOUND is a "normal" returns,
 		// so should not be thrown as an error

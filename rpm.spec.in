@@ -613,3 +613,5 @@ fi
 - fix: signing multiple times dinna work, discard immutable region.
 - remove poptmodule.so for separate packaging.
 - permit subset installs for %lang colored hardlink file sets.
+- missing key(s) on keyring when verifying a signature is now an error.
+- remove dependency whiteout.

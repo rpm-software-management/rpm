@@ -3,7 +3,7 @@
 # Copyright (c) 1996-2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: lock004.tcl,v 11.1 2001/10/10 16:22:10 ubell Exp 
+# Id: lock004.tcl,v 11.2 2001/10/20 14:24:34 bostic Exp 
 #
 # TEST	lock004
 # TEST	Test locker ids wraping around.
@@ -27,7 +27,7 @@ proc lock004 {} {
 	error_check_good locker1 [is_valid_locker $locker1] TRUE
 	error_check_good lock_id_set \
 	    [$e lock_id_set [expr $lock_maxid - 1] $lock_maxid] 0
-	
+
 	catch { $e lock_id } locker2
 	error_check_good locker2 [is_valid_locker $locker2] TRUE
 	catch { $e lock_id } locker3

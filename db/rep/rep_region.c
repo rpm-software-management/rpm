@@ -7,7 +7,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_region.c,v 1.13 2001/10/10 18:32:56 krinsky Exp ";
+static const char revid[] = "Id: rep_region.c,v 1.14 2001/10/25 14:08:49 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -54,8 +54,8 @@ __rep_region_init(dbenv)
 			goto err;
 
 		/* We have the region; fill in the values. */
-		rep->eid = DB_INVALID_EID;
-		rep->master_id = DB_INVALID_EID;
+		rep->eid = DB_EID_INVALID;
+		rep->master_id = DB_EID_INVALID;
 		rep->gen = 0;
 	} else
 		rep = R_ADDR(infop, renv->rep_off);

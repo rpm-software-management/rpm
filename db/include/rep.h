@@ -49,7 +49,7 @@
 /* Shared replication structure. */
 
 typedef struct __rep {
-	DB_MUTEX 	mutex;		/* Region lock. */
+	DB_MUTEX	mutex;		/* Region lock. */
 	u_int32_t	tally_off;	/* Offset of the tally region. */
 	int		eid;		/* Environment id. */
 	int		master_id;	/* ID of the master site. */
@@ -87,13 +87,23 @@ struct __db_rep {
 	DB		*rep_db;	/* Bookkeeping database. */
 	REP		*region;	/* In memory structure. */
 	int		(*rep_send)	/* Send function. */
-			    __P((DB_ENV *, void *,
-			    const DBT *, DBT *, u_int32_t, int));
-	void		*rep_send_data;	/* User data passed to every send. */
+			    __P((DB_ENV *,
+			    const DBT *, const DBT *, int, u_int32_t));
 };
 
-/* Control structure for replication communication infrastructure.  */
+/*
+ * Control structure for replication communication infrastructure.
+ *
+ * Note that the version information should be at the beginning of the
+ * structure, so that we can rearrange the rest of it while letting the
+ * version checks continue to work.  DB_REPVERSION should be revved any time
+ * the rest of the structure changes.
+ */
 typedef struct __rep_control {
+#define	DB_REPVERSION	1
+	u_int32_t	rep_version;	/* Replication version number. */
+	u_int32_t	log_version;	/* Log version number. */
+
 	DB_LSN		lsn;		/* Log sequence number. */
 	u_int32_t	rectype;	/* Message type. */
 	u_int32_t	gen;		/* Generation number. */

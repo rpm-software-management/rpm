@@ -1,4 +1,4 @@
-<!--Id: logonly.so,v 1.1 2001/10/13 19:56:24 bostic Exp -->
+<!--Id: logonly.so,v 1.4 2001/11/06 22:20:11 bostic Exp -->
 <!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <html>
@@ -14,7 +14,32 @@
 </td></tr></table>
 <p>
 <h1 align=center>Log file only clients</h1>
-<p><font color=red>Needs to be written.</font>
+<p>Applications wanting to use replication to support recovery after
+catastrophic failure of the master may want to configure a site as a
+logs-file-only replica.  Such clients cannot respond to read (or write)
+queries but still receive a complete copy the log files, so that in the
+event of master failure, catastrophic recovery can be run.
+<p>Log file only clients are configured like other client sites, except
+they should specify the <a href="../../api_c/rep_start.html#DB_REP_LOGSONLY">DB_REP_LOGSONLY</a> flag to the
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function and should specify a priority of 0 to the
+<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function.
+<p>To recover using a log-file-only replica, recovery must be run on the
+log files accumulated by the replica.  If the log files are entirely
+self-contained, that is, they start with log file number 1, then a log
+replica can simply run catastrophic recovery.  Obviously, if there are
+a large number of log files in this case, recovery may take a long time.
+If the log files are not self-contained, an archival copy of the
+databases must first be restored onto the replica before running
+catastrophic recovery.
+<p>More specifically, the log files accumulating on the log-file-only
+replica can take the place of the log files described in
+<i>catastrophic recovery</i> section of the
+<a href="../../ref/transapp/recovery.html">Recovery procedures</a> Berkeley DB
+Reference Guide.
+<p>In all other ways, a log-file-only site behaves as other replication
+clients do.  It should have a thread or process receiving messages and
+passing them to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> and must respond to all returns
+described for that interface.
 <table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/elect.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/trans.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>

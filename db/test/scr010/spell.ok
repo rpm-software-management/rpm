@@ -24,6 +24,7 @@ CONFIG
 CdFILTvX
 DBC
 DBENV
+DBS
 DBSDIR
 DBT
 DBTYPE
@@ -32,6 +33,7 @@ DONOTINDEX
 DS
 DUP
 DUPMASTER
+DUPSORT
 Db
 DbAppendRecno
 DbBtreeCompare
@@ -107,6 +109,7 @@ Ll
 LockExample
 LogRegister
 LpRsS
+LprRsS
 MEM
 MMDDhhmm
 MPOOL
@@ -186,12 +189,14 @@ VM
 VX
 Vv
 VvW
+VvXxZ
 Vvw
 Vx
 VxWorks
 Waitsfor
 XA
 XxZ
+YIELDCPU
 YY
 abcdef
 abs
@@ -295,11 +300,13 @@ dirfno
 dist
 dists
 dlen
+ds
 dsize
 dup
 dup'ed
 dupcompare
 dups
+dupset
 dupsort
 efh
 eid
@@ -385,6 +392,7 @@ keylast
 keyrange
 killinterval
 killiteration
+killtest
 klNprRV
 klNprRs
 krinsky
@@ -453,6 +461,7 @@ minlocks
 minwrite
 minwrites
 mis
+mjc
 mkdir
 mlock
 mmap
@@ -560,6 +569,7 @@ panic'ing
 paniccall
 panicstate
 parentid
+perf
 perfdb
 pflag
 pg
@@ -600,6 +610,7 @@ qtest
 rand
 rcuradj
 rdonly
+readd
 readonly
 realloc
 rec

@@ -6,6 +6,8 @@ BerkeleyDB/Btree.pm
 BerkeleyDB/Hash.pm
 Changes
 config.in
+constants.h
+constants.xs
 dbinfo
 hints/solaris.pl
 hints/irix_6_5.pl

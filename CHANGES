@@ -94,6 +94,9 @@
 	- fix: signing multiple times dinna work, discard immutable region.
 	- remove poptmodule.so for separate packaging.
 	- permit subset installs for %lang colored hardlink file sets.
+	- missing key(s) on keyring when verifying a signature is now an error.
+	- remove dependency whiteout.
+	- calculate rpm-4.1 ordering/orientation metrics in rpmdepOrder().
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

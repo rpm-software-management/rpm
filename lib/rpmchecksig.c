@@ -194,9 +194,11 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	    /* Dump the immutable region (if present). */
 	    if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
 		Header nh = headerCopyLoad(uh);
-		headerFree(sig, NULL);
+		if (nh == NULL)
+		    goto exit;
+		sig = headerFree(sig, NULL);
 		sig = headerLink(nh, NULL);
-		headerFree(nh, NULL);
+		nh = headerFree(nh, NULL);
 	    }
 
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
@@ -633,8 +635,9 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			switch (res3) {
-			/* Do not consider these a failure */
 			case RPMSIG_NOKEY:
+			    res2 = 1;
+			    /*@fallthrough@*/
 			case RPMSIG_NOTTRUSTED:
 			{   int offset = 6;
 			    b = stpcpy(b, "(PGP) ");
@@ -668,6 +671,7 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 			    tempKey = strstr(result, "ey ID");
 			    if (tempKey)
 				m = stpncpy(m, tempKey+6, 8);
+			    res2 = 1;
 			    /*@innerbreak@*/ break;
 			default:
 			    b = stpcpy(b, "GPG ");

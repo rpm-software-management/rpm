@@ -3,7 +3,7 @@
 # Copyright (c) 2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: reputils.tcl,v 11.2 2001/10/05 02:38:09 bostic Exp 
+# Id: reputils.tcl,v 11.3 2001/11/16 00:36:20 krinsky Exp 
 #
 # Replication testing utilities
 
@@ -91,8 +91,12 @@ proc replprocessqueue { dbenv machid } {
 	    { set dbt [$dbc get -next] } {
 		set data [lindex [lindex $dbt 0] 1]
 
-		error_check_good process_message [$dbenv rep_process_message \
-		    [lindex $data 2] [lindex $data 0] [lindex $data 1]] 0
+		# XXX
+		# It would be nice to make sure that NEWMASTER messages
+		# indicate the right master.  We don't have the necessary
+		# info in here, though.
+		$dbenv rep_process_message \
+		    [lindex $data 2] [lindex $data 0] [lindex $data 1]
 
 		incr nproced
 

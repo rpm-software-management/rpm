@@ -1,8 +1,8 @@
                                      DB_File
 
-                                  Version 1.78
+                                  Version 1.801
 
-                                 30th July 2001
+                                  26th Nov 2001
 
  	Copyright (c) 1995-2001 Paul Marquess. All rights reserved. This
 	program is free software; you can redistribute it and/or modify
@@ -22,11 +22,11 @@ DESCRIPTION
 
 DB_File is a module which allows Perl programs to make use of the
 facilities provided by Berkeley DB version 1. (DB_File can be built
-version 2 or 3 of Berkeley DB, but it will only support the 1.x
+version 2,i 3 or 4 of Berkeley DB, but it will only support the 1.x
 features),
 
 If you want to make use of the new features available in Berkeley DB
-2.x or 3.x, use the Perl module BerkeleyDB instead.
+2.x, 3.x or 4.x, use the Perl module BerkeleyDB instead.
 
 Berkeley DB is a C library which provides a consistent interface to a
 number of database formats. DB_File provides an interface to all three
@@ -42,7 +42,7 @@ PREREQUISITES
 Before you can build DB_File you must have the following installed on
 your system:
 
-    * Perl 5.004 or greater.
+    * Perl 5.004_05 or greater.
 
     * Berkeley DB.
 
@@ -57,8 +57,8 @@ your system:
       compatible version of Berkeley DB.
 
       If you want to use Berkeley DB 2.x, you must have version 2.3.4
-      or greater.  If you want to use Berkeley DB 3.x, any version will
-      do. For Berkeley DB 1.x, use either version 1.85 or 1.86.
+      or greater.  If you want to use Berkeley DB 3.x or 4.x, any version
+      will do. For Berkeley DB 1.x, use either version 1.85 or 1.86.
 
 
 BUILDING THE MODULE
@@ -68,7 +68,7 @@ Assuming you have met all the prerequisites, building the module should
 be relatively straightforward.
 
 Step 1 : If you are running either Solaris 2.5 or HP-UX 10 and want
-         to use Berkeley DB version 2 or 3, read either the Solaris Notes
+         to use Berkeley DB version 2, 3 or 4, read either the Solaris Notes
          or HP-UX Notes sections below.  If you are running Linux please
          read the Linux Notes section before proceeding.
 

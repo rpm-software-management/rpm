@@ -16,7 +16,7 @@ use strict;
 use Carp;
 use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
 
-$VERSION = '0.16';
+$VERSION = '0.17';
 
 require Exporter;
 require DynaLoader;
@@ -27,41 +27,83 @@ use IO ;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw(
 
+# NOTE -- Do not add to @EXPORT directly. It is written by mkconsts
+@EXPORT = qw(
 	DB_AFTER
+	DB_AGGRESSIVE
+	DB_ALREADY_ABORTED
 	DB_APPEND
+	DB_APPLY_LOGREG
+	DB_APP_INIT
 	DB_ARCH_ABS
 	DB_ARCH_DATA
 	DB_ARCH_LOG
 	DB_BEFORE
+	DB_BROADCAST_EID
 	DB_BTREE
 	DB_BTREEMAGIC
 	DB_BTREEOLDVER
 	DB_BTREEVERSION
+	DB_CACHED_COUNTS
+	DB_CDB_ALLDB
 	DB_CHECKPOINT
+	DB_CLIENT
+	DB_CL_WRITER
+	DB_COMMIT
 	DB_CONSUME
 	DB_CONSUME_WAIT
 	DB_CREATE
 	DB_CURLSN
 	DB_CURRENT
-	DB_DBT_MALLOC
-	DB_DBT_PARTIAL
-	DB_DBT_USERMEM
+	DB_CXX_NO_EXCEPTIONS
 	DB_DELETED
 	DB_DELIMITER
+	DB_DIRTY_READ
+	DB_DONOTINDEX
 	DB_DUP
+	DB_DUPCURSOR
 	DB_DUPSORT
 	DB_ENV_APPINIT
+	DB_ENV_CDB
+	DB_ENV_CDB_ALLDB
+	DB_ENV_CREATE
+	DB_ENV_DBLOCAL
+	DB_ENV_LOCKDOWN
+	DB_ENV_LOCKING
+	DB_ENV_LOGGING
+	DB_ENV_NOLOCKING
+	DB_ENV_NOMMAP
+	DB_ENV_NOPANIC
+	DB_ENV_OPEN_CALLED
+	DB_ENV_PANIC_OK
+	DB_ENV_PRIVATE
+	DB_ENV_REGION_INIT
+	DB_ENV_REP_CLIENT
+	DB_ENV_REP_LOGSONLY
+	DB_ENV_REP_MASTER
+	DB_ENV_RPCCLIENT
+	DB_ENV_RPCCLIENT_GIVEN
 	DB_ENV_STANDALONE
+	DB_ENV_SYSTEM_MEM
 	DB_ENV_THREAD
+	DB_ENV_TXN
+	DB_ENV_TXN_NOSYNC
+	DB_ENV_USER_ALLOC
+	DB_ENV_YIELDCPU
 	DB_EXCL
+	DB_EXTENT
+	DB_FAST_STAT
+	DB_FCNTL_LOCKING
 	DB_FILE_ID_LEN
 	DB_FIRST
 	DB_FIXEDLEN
 	DB_FLUSH
 	DB_FORCE
+	DB_GETREC
 	DB_GET_BOTH
+	DB_GET_BOTHC
+	DB_GET_BOTH_RANGE
 	DB_GET_RECNO
 	DB_HASH
 	DB_HASHMAGIC
@@ -73,75 +115,181 @@ use IO ;
 	DB_INIT_LOG
 	DB_INIT_MPOOL
 	DB_INIT_TXN
-	DB_JOIN_ITEM
+	DB_INVALID_EID
+	DB_JAVA_CALLBACK
 	DB_JOINENV
+	DB_JOIN_ITEM
+	DB_JOIN_NOSORT
 	DB_KEYEMPTY
 	DB_KEYEXIST
 	DB_KEYFIRST
 	DB_KEYLAST
 	DB_LAST
+	DB_LOCKDOWN
 	DB_LOCKMAGIC
 	DB_LOCKVERSION
 	DB_LOCK_CONFLICT
 	DB_LOCK_DEADLOCK
 	DB_LOCK_DEFAULT
+	DB_LOCK_DUMP
+	DB_LOCK_EXPIRE
+	DB_LOCK_FREE_LOCKER
 	DB_LOCK_GET
+	DB_LOCK_GET_TIMEOUT
+	DB_LOCK_INHERIT
+	DB_LOCK_MAXLOCKS
+	DB_LOCK_MINLOCKS
+	DB_LOCK_MINWRITE
 	DB_LOCK_NORUN
 	DB_LOCK_NOTGRANTED
 	DB_LOCK_NOTHELD
 	DB_LOCK_NOWAIT
 	DB_LOCK_OLDEST
+	DB_LOCK_PUT
+	DB_LOCK_PUT_ALL
+	DB_LOCK_PUT_OBJ
+	DB_LOCK_PUT_READ
 	DB_LOCK_RANDOM
+	DB_LOCK_RECORD
 	DB_LOCK_RIW_N
 	DB_LOCK_RW_N
+	DB_LOCK_SET_TIMEOUT
+	DB_LOCK_SWITCH
+	DB_LOCK_TIMEOUT
+	DB_LOCK_UPGRADE
+	DB_LOCK_UPGRADE_WRITE
 	DB_LOCK_YOUNGEST
+	DB_LOGC_BUF_SIZE
+	DB_LOGFILEID_INVALID
 	DB_LOGMAGIC
 	DB_LOGOLDVER
+	DB_LOGVERSION
+	DB_LOG_DISK
+	DB_LOG_LOCKED
+	DB_LOG_SILENT_ERR
 	DB_MAX_PAGES
 	DB_MAX_RECORDS
 	DB_MPOOL_CLEAN
 	DB_MPOOL_CREATE
 	DB_MPOOL_DIRTY
 	DB_MPOOL_DISCARD
+	DB_MPOOL_EXTENT
 	DB_MPOOL_LAST
 	DB_MPOOL_NEW
+	DB_MPOOL_NEW_GROUP
 	DB_MPOOL_PRIVATE
+	DB_MULTIPLE
+	DB_MULTIPLE_KEY
 	DB_MUTEXDEBUG
 	DB_MUTEXLOCKS
 	DB_NEEDSPLIT
 	DB_NEXT
 	DB_NEXT_DUP
+	DB_NEXT_NODUP
+	DB_NODUPDATA
+	DB_NOLOCKING
 	DB_NOMMAP
+	DB_NOORDERCHK
 	DB_NOOVERWRITE
+	DB_NOPANIC
+	DB_NORECURSE
+	DB_NOSERVER
+	DB_NOSERVER_HOME
+	DB_NOSERVER_ID
 	DB_NOSYNC
 	DB_NOTFOUND
+	DB_ODDFILESIZE
+	DB_OK_BTREE
+	DB_OK_HASH
+	DB_OK_QUEUE
+	DB_OK_RECNO
+	DB_OLD_VERSION
+	DB_OPEN_CALLED
+	DB_OPFLAGS_MASK
+	DB_ORDERCHKONLY
 	DB_PAD
 	DB_PAGEYIELD
+	DB_PAGE_LOCK
+	DB_PAGE_NOTFOUND
+	DB_PANIC_ENVIRONMENT
 	DB_POSITION
+	DB_POSITIONI
 	DB_PREV
+	DB_PREV_NODUP
 	DB_PRIVATE
+	DB_PR_HEADERS
+	DB_PR_PAGE
+	DB_PR_RECOVERYTEST
+	DB_QAMMAGIC
+	DB_QAMOLDVER
+	DB_QAMVERSION
 	DB_QUEUE
 	DB_RDONLY
+	DB_RDWRMASTER
 	DB_RECNO
 	DB_RECNUM
 	DB_RECORDCOUNT
+	DB_RECORD_LOCK
 	DB_RECOVER
 	DB_RECOVER_FATAL
+	DB_REGION_ANON
+	DB_REGION_INIT
+	DB_REGION_MAGIC
+	DB_REGION_NAME
 	DB_REGISTERED
 	DB_RENUMBER
+	DB_REP_CLIENT
+	DB_REP_DUPMASTER
+	DB_REP_HOLDELECTION
+	DB_REP_LOGSONLY
+	DB_REP_MASTER
+	DB_REP_NEWMASTER
+	DB_REP_NEWSITE
+	DB_REP_OUTDATED
+	DB_REP_PERMANENT
+	DB_REP_UNAVAIL
+	DB_REVSPLITOFF
 	DB_RMW
+	DB_RPC_SERVERPROG
+	DB_RPC_SERVERVERS
 	DB_RUNRECOVERY
+	DB_SALVAGE
+	DB_SECONDARY_BAD
 	DB_SEQUENTIAL
 	DB_SET
+	DB_SET_LOCK_TIMEOUT
 	DB_SET_RANGE
 	DB_SET_RECNO
+	DB_SET_TXN_NOW
+	DB_SET_TXN_TIMEOUT
 	DB_SNAPSHOT
+	DB_STAT_CLEAR
+	DB_SURPRISE_KID
 	DB_SWAPBYTES
+	DB_SYSTEM_MEM
 	DB_TEMPORARY
+	DB_TEST_POSTDESTROY
+	DB_TEST_POSTEXTDELETE
+	DB_TEST_POSTEXTOPEN
+	DB_TEST_POSTEXTUNLINK
+	DB_TEST_POSTLOG
+	DB_TEST_POSTLOGMETA
+	DB_TEST_POSTOPEN
+	DB_TEST_POSTRENAME
+	DB_TEST_POSTSYNC
+	DB_TEST_PREDESTROY
+	DB_TEST_PREEXTDELETE
+	DB_TEST_PREEXTOPEN
+	DB_TEST_PREEXTUNLINK
+	DB_TEST_PREOPEN
+	DB_TEST_PRERENAME
 	DB_THREAD
+	DB_TIMEOUT
 	DB_TRUNCATE
 	DB_TXNMAGIC
 	DB_TXNVERSION
+	DB_TXN_ABORT
+	DB_TXN_APPLY
 	DB_TXN_BACKWARD_ROLL
 	DB_TXN_CKP
 	DB_TXN_FORWARD_ROLL
@@ -156,37 +304,44 @@ use IO ;
 	DB_TXN_NOSYNC
 	DB_TXN_NOWAIT
 	DB_TXN_OPENFILES
+	DB_TXN_POPENFILES
 	DB_TXN_REDO
 	DB_TXN_SYNC
 	DB_TXN_UNDO
+	DB_UNKNOWN
+	DB_UNRESOLVED_CHILD
+	DB_UPDATE_SECONDARY
+	DB_UPGRADE
 	DB_USE_ENVIRON
 	DB_USE_ENVIRON_ROOT
+	DB_VERB_CHKPOINT
+	DB_VERB_DEADLOCK
+	DB_VERB_RECOVERY
+	DB_VERB_WAITSFOR
+	DB_VERIFY
+	DB_VERIFY_BAD
+	DB_VERIFY_FATAL
 	DB_VERSION_MAJOR
 	DB_VERSION_MINOR
 	DB_VERSION_PATCH
+	DB_VERSION_STRING
+	DB_VRFY_FLAGMASK
 	DB_WRITECURSOR
+	DB_WRITELOCK
+	DB_XA_CREATE
+	DB_XIDDATASIZE
+	DB_YIELDCPU
 	);
 
 sub AUTOLOAD {
-    # This AUTOLOAD is used to 'autoload' constants from the constant()
-    # XS function.  If a constant is not found then control is passed
-    # to the AUTOLOAD in AutoLoader.
-
-    my $constname;
+    my($constname);
     ($constname = $AUTOLOAD) =~ s/.*:://;
-    my $val = constant($constname, @_ ? $_[0] : 0);
-    if ($! != 0) {
-	if ($! =~ /Invalid/) {
-	    $AutoLoader::AUTOLOAD = $AUTOLOAD;
-	    goto &AutoLoader::AUTOLOAD;
-	}
-	else {
-		croak "Your vendor has not defined BerkeleyDB macro $constname";
-	}
-    }
-    eval "sub $AUTOLOAD { $val }";
-    goto &$AUTOLOAD;
-}
+    my ($error, $val) = constant($constname);
+    Carp::croak $error if $error;
+    no strict 'refs';
+    *{$AUTOLOAD} = sub { $val };
+    goto &{$AUTOLOAD};
+}         
 
 bootstrap BerkeleyDB $VERSION;
 
@@ -656,6 +811,12 @@ sub new
 
 *BerkeleyDB::Queue::TIEARRAY = \&BerkeleyDB::Queue::new ;
 
+sub UNSHIFT
+{
+    my $self = shift;
+    croak "unshift is unsupported with Queue databases";
+}
+
 ## package BerkeleyDB::Text ;
 ## 
 ## use vars qw(@ISA) ;
@@ -938,18 +1099,25 @@ sub SHIFT
 sub UNSHIFT
 {
     my $self = shift;
-    croak "unshift is unsupported with Queue databases"
-        if $self->type == BerkeleyDB::DB_QUEUE() ;
     if (@_)
     {
         my ($key, $value) = (0, 0) ;
         my $cursor = $self->db_cursor() ;
-        if ($cursor->c_get($key, $value, BerkeleyDB::DB_FIRST()) == 0) 
+        my $status = $cursor->c_get($key, $value, BerkeleyDB::DB_FIRST()) ;
+        if ($status == 0)
         {
             foreach $value (reverse @_)
             {
 	        $key = 0 ;
 	        $cursor->c_put($key, $value, BerkeleyDB::DB_BEFORE()) ;
+            }
+        }
+        elsif ($status == BerkeleyDB::DB_NOTFOUND())
+        {
+	    $key = 0 ;
+            foreach $value (@_)
+            {
+	        $self->db_put($key++, $value) ;
             }
         }
     }
@@ -960,14 +1128,16 @@ sub PUSH
     my $self = shift;
     if (@_)
     {
-        my ($key, $value) = (0, 0) ;
+        my ($key, $value) = (-1, 0) ;
         my $cursor = $self->db_cursor() ;
-        if ($cursor->c_get($key, $value, BerkeleyDB::DB_LAST()) == 0)
+        my $status = $cursor->c_get($key, $value, BerkeleyDB::DB_LAST()) ;
+        if ($status == 0 || $status == BerkeleyDB::DB_NOTFOUND())
 	{
+            $key = -1 if $status != 0 and $self->type != BerkeleyDB::DB_RECNO() ;
             foreach $value (@_)
 	    {
 	        ++ $key ;
-	        $self->db_put($key, $value) ;
+	        $status = $self->db_put($key, $value) ;
 	    }
 	}
 

@@ -885,7 +885,7 @@ static int checkDependentConflicts(rpmTransactionSet ts, const char * key)
  * XXX Hack to remove known Red Hat dependency loops, will be removed
  * as soon as rpm's legacy permits.
  */
-#define	DEPENDENCY_WHITEOUT
+#undef	DEPENDENCY_WHITEOUT
 
 #if defined(DEPENDENCY_WHITEOUT)
 /*@observer@*/ /*@unchecked@*/

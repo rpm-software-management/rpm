@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_db.cpp,v 11.49 2001/07/28 20:01:18 dda Exp ";
+static const char revid[] = "Id: cxx_db.cpp,v 11.50 2001/11/10 04:59:06 mjc Exp ";
 #endif /* not lint */
 
 #include <errno.h>
@@ -694,10 +694,10 @@ extern "C"
 int _verify_callback_c(void *handle, const void *str_arg)
 {
 	char *str;
-	ostream *out;
+	OSTREAMCLASS *out;
 
 	str = (char *)str_arg;
-	out = (ostream *)handle;
+	out = (OSTREAMCLASS *)handle;
 
 	(*out) << str;
 	if (out->fail())
@@ -707,7 +707,7 @@ int _verify_callback_c(void *handle, const void *str_arg)
 }
 
 int Db::verify(const char *name, const char *subdb,
-	       ostream *ostr, u_int32_t flags)
+	       OSTREAMCLASS *ostr, u_int32_t flags)
 {
 	int err;
 	DB *db = unwrap(this);
@@ -816,7 +816,7 @@ int Db::set_paniccall(void (*callback)(DbEnv *, int))
 	return (env_->set_paniccall(callback));
 }
 
-void Db::set_error_stream(ostream *error_stream)
+void Db::set_error_stream(OSTREAMCLASS *error_stream)
 {
 	env_->set_error_stream(error_stream);
 }

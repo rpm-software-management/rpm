@@ -4,7 +4,7 @@
  * Copyright (c) 2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_util.c,v 1.10 2001/10/13 13:13:16 bostic Exp 
+ * Id: ex_rq_util.c,v 1.14 2001/10/28 15:45:39 bostic Exp 
  */
 
 #include <sys/types.h>
@@ -50,14 +50,14 @@ hm_loop(args)
 	DB_ENV *dbenv;
 	DBT rec, control;
 	char *c, *home, *progname;
-	int fd, is_me, eid, n, newm;
+	int fd, eid, n, newm;
 	int open, pri, r, ret, t_ret, tmpid;
 	elect_args *ea;
 	hm_loop_args *ha;
 	machtab_t *tab;
 	pthread_t elect_thr;
 	site_t self;
-	u_int32_t check, elect;
+	u_int32_t timeout;
 	void *status;
 
 	ea = NULL;
@@ -76,9 +76,6 @@ hm_loop(args)
 
 	for (ret = 0; ret == 0;) {
 		if ((ret = get_next_message(fd, &rec, &control)) != 0) {
-#ifdef APP_DEBUG
-printf("%lx get_next_message for eid = %d failed\n", (long)pthread_self(), eid);
-#endif
 			/*
 			 * Close this connection; if it's the master call
 			 * for an election.
@@ -102,29 +99,25 @@ printf("%lx get_next_message for eid = %d failed\n", (long)pthread_self(), eid);
 			if (master_eid != eid)
 				break;
 
-			master_eid = DB_INVALID_EID;
-			machtab_parm(tab, &n, &pri, &check, &elect);
+			master_eid = DB_EID_INVALID;
+			machtab_parm(tab, &n, &pri, &timeout);
 			if ((ret = dbenv->rep_elect(dbenv,
-			    n, pri, check, elect, &newm, &is_me)) != 0)
+			    n, pri, timeout, &newm)) != 0)
 				continue;
-#ifdef APP_DEBUG
-			printf("%lx Election returned new master %d%s\n",
-			    (long)pthread_self(),
-			    newm, is_me ? "(me)" : "");
-#endif
+
 			/*
 			 * Regardless of the results, the site I was talking
 			 * to is gone, so I have nothing to do but exit.
 			 */
-			if (is_me && (ret = dbenv->rep_start(dbenv,
-			    NULL, DB_REP_MASTER)) == 0)
+			if (newm == SELF_EID && (ret =
+			    dbenv->rep_start(dbenv, NULL, DB_REP_MASTER)) == 0)
 				ret = domaster(dbenv, progname);
 			break;
 		}
 
 		tmpid = eid;
 		switch(r = dbenv->rep_process_message(dbenv,
-		    &rec, &control, &tmpid)) {
+		    &control, &rec, &tmpid)) {
 		case DB_REP_NEWSITE:
 			/*
 			 * Check if we got sent connect information and if we
@@ -132,25 +125,19 @@ printf("%lx get_next_message for eid = %d failed\n", (long)pthread_self(), eid);
 			 * connection to this new site.  If we don't,
 			 * establish a new one.
 			 */
-#ifdef APP_DEBUG
-printf("Received NEWSITE return for %s\n", rec.size == 0 ? "" : (char *)rec.data);
-#endif
+
 			/* No connect info. */
 			if (rec.size == 0)
 				break;
 
 			/* It's me, do nothing. */
-			if (strncmp(myaddr, rec.data, rec.size) == 0) {
-#ifdef APP_DEBUG
-printf("New site was me\n");
-#endif
+			if (strncmp(myaddr, rec.data, rec.size) == 0)
 				break;
-			}
 
 			self.host = (char *)rec.data;
 			self.host = strtok(self.host, ":");
 			if ((c = strtok(NULL, ":")) == NULL) {
-				fprintf(stderr, "Bad host specification.\n");
+				dbenv->errx(dbenv, "Bad host specification");
 				goto out;
 			}
 			self.port = atoi(c);
@@ -161,12 +148,8 @@ printf("New site was me\n");
 			 * should be up if we got a message from it (even
 			 * indirectly).
 			 */
-			ret = connect_site(dbenv,
-			    tab, progname, &self, &open, &eid);
-#ifdef APP_DEBUG
-printf("Forked thread for new site: %d\n", eid);
-#endif
-			if (ret != 0)
+			if ((ret = connect_site(dbenv,
+			    tab, progname, &self, &open, &eid)) != 0)
 				goto out;
 			break;
 		case DB_REP_HOLDELECTION:
@@ -183,17 +166,11 @@ printf("Forked thread for new site: %d\n", eid);
 			}
 			ea->dbenv = dbenv;
 			ea->machtab = tab;
-#ifdef APP_DEBUG
-printf("%lx Forking off election thread\n", (long)pthread_self());
-#endif
 			ret = pthread_create(&elect_thr,
 			    NULL, elect_thread, (void *)ea);
 			break;
 		case DB_REP_NEWMASTER:
 			/* Check if it's us. */
-#ifdef APP_DEBUG
-printf("%lx Got new master message %d\n", (long)pthread_self(), tmpid);
-#endif
 			master_eid = tmpid;
 			if (tmpid == SELF_EID) {
 				if ((ret = dbenv->rep_start(dbenv,
@@ -205,14 +182,10 @@ printf("%lx Got new master message %d\n", (long)pthread_self(), tmpid);
 		case 0:
 			break;
 		default:
-			fprintf(stderr, "%s: %s", progname, db_strerror(r));
+			dbenv->err(dbenv, r, "DBENV->rep_process_message");
 			break;
 		}
 	}
-#ifdef APP_DEBUG
-printf("%lx Breaking out of loop in hm_loop: %s\n",
-(long)pthread_self(), db_strerror(ret));
-#endif
 
 out:	if ((t_ret = machtab_rem(tab, eid, 1)) != 0 && ret == 0)
 		ret = t_ret;
@@ -289,7 +262,7 @@ connect_thread(args)
 	}
 
 	/* If we fell out, we ended up with too many threads. */
-	fprintf(stderr, "Too many threads!\n");
+	dbenv->errx(dbenv, "Too many threads");
 	ret = ENOMEM;
 
 err:	pthread_attr_destroy(&attr);
@@ -323,7 +296,7 @@ connect_all(args)
 
 	ret = 0;
 	if ((success = calloc(nsites, sizeof(int))) == NULL) {
-		fprintf(stderr, "%s: %s\n", progname, strerror(errno));
+		dbenv->err(dbenv, errno, "connect_all");
 		ret = 1;
 		goto err;
 	}
@@ -395,8 +368,7 @@ connect_site(dbenv, machtab, progname, site, is_open, eidp)
 
 	if ((ret = pthread_create(&hm_thr, NULL,
 	    hm_loop, (void *)ha)) != 0) {
-		fprintf(stderr,"%s: System error %s\n",
-		    progname, strerror(ret));
+		dbenv->err(dbenv, ret, "connect site");
 		goto err1;
 	}
 
@@ -417,22 +389,22 @@ elect_thread(args)
 {
 	DB_ENV *dbenv;
 	elect_args *eargs;
-	int is_me, n, ret, pri;
+	int n, ret, pri;
 	machtab_t *machtab;
-	u_int32_t check, elect;
+	u_int32_t timeout;
 
 	eargs = (elect_args *)args;
 	dbenv = eargs->dbenv;
 	machtab = eargs->machtab;
 	free(eargs);
 
-	machtab_parm(machtab, &n, &pri, &check, &elect);
-	while ((ret = dbenv->rep_elect(dbenv,
-	    n, pri, check, elect, &master_eid, &is_me)) != 0)
+	machtab_parm(machtab, &n, &pri, &timeout);
+	while ((ret =
+	    dbenv->rep_elect(dbenv, n, pri, timeout, &master_eid)) != 0)
 		sleep(2);
 
 	/* Check if it's us. */
-	if (is_me)
+	if (master_eid == SELF_EID)
 		ret = dbenv->rep_start(dbenv, NULL, DB_REP_MASTER);
 
 	return ((void *)(ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE));

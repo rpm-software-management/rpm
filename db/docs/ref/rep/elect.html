@@ -1,4 +1,4 @@
-<!--Id: elect.so,v 1.1 2001/10/13 19:56:23 bostic Exp -->
+<!--Id: elect.so,v 1.5 2001/10/25 21:20:01 bostic Exp -->
 <!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <html>
@@ -18,22 +18,29 @@
 application.  It is not dangerous to hold an election, as the Berkeley DB
 election process ensures there is never more than a single master
 environment.  Clients should initiate an election whenever they lose
-contact with the master environment, whenever see a return of
+contact with the master environment, whenever they see a return of
 <a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a> from the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function, or when, for
-whatever reason, they do not know who the master is.
+whatever reason, they do not know who the master is.  It is not
+necessary for applications to immediately hold elections when they
+start, as any existing master will be quickly discovered after calling
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.  If no master has been found after a short wait
+period, then the application should call for an election.
 <p>For a client to become the master, the client must win an election.  To
-win an election, the replication group must currently have no master
-and the client must have the highest priority of the database
-environments participating in the election.  It is dangerous to
-configure more than one master environment using the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function,
-and applications should be careful not to do so.  Applications should
-only configure themselves as the master environment if they are the only
-possible master, or if they have won an election.  An application can
-only know it has won an election if the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function returns
-success and the local database environment's ID as the new master
-environment ID, or if the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function returns
-<a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a> and the local database environment's ID as the
-new master environment ID.
+win an election, the replication group must currently have no master,
+the client must have the highest priority of the database environments
+participating in the election, and at least (N / 2 + 1) of the members
+of the replication group must participate in the election.  In the case
+of multiple database environments with equal priorities, the environment
+with the most recent log records will win.
+<p>It is dangerous to configure more than one master environment using the
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function, and applications should be careful not to do so.
+Applications should only configure themselves as the master environment
+if they are the only possible master, or if they have won an election.
+An application can only know it has won an election if the
+<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function returns success and the local database environment's
+ID as the new master environment ID, or if the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function
+returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a> and the local database environment's
+ID as the new master environment ID.
 <p>To add a database environment to the replication group with the intent
 of it becoming the master, first add it as a client.  Since it may be
 out-of-date with respect to the current master, allow it to update
@@ -44,15 +51,17 @@ sufficient time to update itself with respect to the current master.
 <p>If a client is unable to find a master or win an election, it means that
 the network has been partitioned and there are not enough environments
 participating in the election for one of the participants to win.  In
-this case, the application should periodically hold an election until
-a master is found or an election is won.  In desperate circumstances,
-an application could simply declare itself the master by calling
-<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>, or by reducing the number of participants required
-to win an election until the election is won.  Neither of these
-solutions is recommended: in the case of a network partition, either of
-these choices can result in there being two masters in one replication
-group, and the databases in the environment might irretrievably diverge
-as they are modified in different ways by the masters.
+this case, the application should repeatedly call <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> and
+<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, alternating between attempting to discover an
+existing master, and holding an election to declare a new one.  In
+desperate circumstances, an application could simply declare itself the
+master by calling <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>, or by reducing the number of
+participants required to win an election until the election is won.
+Neither of these solutions is recommended: in the case of a network
+partition, either of these choices can result in there being two masters
+in one replication group, and the databases in the environment might
+irretrievably diverge as they are modified in different ways by the
+masters.
 <p>Finally, it is possible for the wrong database environment to win an
 election if a number of systems crash at the same time.  Because an
 election winner is declared as soon as enough environments participate

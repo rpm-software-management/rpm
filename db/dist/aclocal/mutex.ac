@@ -1,4 +1,4 @@
-# Id: mutex.ac,v 11.24 2001/05/22 01:00:30 bostic Exp 
+# Id: mutex.ac,v 11.25 2001/08/28 13:09:19 krinsky Exp 
 
 # Figure out mutexes for this compiler/architecture.
 AC_DEFUN(AM_DEFINE_MUTEXES, [
@@ -172,7 +172,7 @@ fi
 if test "$db_cv_mutex" = no; then
 AC_TRY_RUN([
 #include <sys/types.h>
-#include <sys/mman.h>;
+#include <sys/mman.h>
 main(){
 	typedef msemaphore tsl_t;
 	msemaphore x;

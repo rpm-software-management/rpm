@@ -4,7 +4,7 @@
  * Copyright (c) 2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_client.c,v 1.21 2001/10/09 14:45:43 margo Exp 
+ * Id: ex_rq_client.c,v 1.25 2001/11/18 01:29:07 margo Exp 
  */
 
 #include <sys/types.h>
@@ -57,22 +57,19 @@ doclient(dbenv, progname, machtab)
 	dargs.progname = progname;
 	dargs.dbenv = dbenv;
 	if (pthread_create(&disp_thr, NULL, display_loop, (void *)&dargs)) {
-		fprintf(stderr, "%s: display_loop pthread_create failed: %s\n",
-		    progname, strerror(errno));
+		dbenv->err(dbenv, errno, "display_loop pthread_create failed");
 		goto err;
 	}
 
 	cargs.dbenv = dbenv;
 	cargs.machtab = machtab;
 	if (pthread_create(&check_thr, NULL, check_loop, (void *)&cargs)) {
-		fprintf(stderr, "%s: check_thread pthread_create failed: %s\n",
-		    progname, strerror(errno));
+		dbenv->err(dbenv, errno, "check_thread pthread_create failed");
 		goto err;
 	}
 	if (pthread_join(disp_thr, &dstatus) ||
 	    pthread_join(check_thr, &cstatus)) {
-		fprintf(stderr, "%s: pthread_join failed: %s\n",
-		    progname, strerror(errno));
+		dbenv->err(dbenv, errno, "pthread_join failed");
 		goto err;
 	}
 
@@ -96,9 +93,9 @@ check_loop(args)
 	DB_ENV *dbenv;
 	DBT dbt;
 	checkloop_args *cargs;
-	int count, n, is_me, pri;
+	int count, n, pri;
 	machtab_t *machtab;
-	u_int32_t check, elect;
+	u_int32_t timeout;
 
 	cargs = (checkloop_args *)args;
 	dbenv = cargs->dbenv;
@@ -107,48 +104,25 @@ check_loop(args)
 #define	IDLE_INTERVAL	1
 
 	count = 0;
-	while (1) {
-		sleep(IDLE_INTERVAL);
-
-		/* If we become master, shut this loop off. */
-		if (master_eid == SELF_EID)
-			break;
-
-		if (master_eid == DB_INVALID_EID)
-			count++;
-		else
-			count = 0;
-
-		if (count <= 1)
-			continue;
-
+	while (master_eid == DB_EID_INVALID) {
 		/*
-		 * First, call rep_start (possibly again) to see if we can
-		 * find a master.
+		 * Call either rep_start or rep_elect depending on if
+		 * count is 0 or 1.
 		 */
 
-		memset(&dbt, 0, sizeof(dbt));
-		dbt.data = myaddr;
-		dbt.size = strlen(myaddr) + 1;
-		(void)dbenv->rep_start(dbenv, &dbt, DB_REP_CLIENT);
-		sleep(IDLE_INTERVAL);
-
-		if (master_eid != DB_INVALID_EID) {
+		if (count == 0) {
+			memset(&dbt, 0, sizeof(dbt));
+			dbt.data = myaddr;
+			dbt.size = strlen(myaddr) + 1;
+			(void)dbenv->rep_start(dbenv, &dbt, DB_REP_CLIENT);
+			count = 1;
+		} else {
+			machtab_parm(machtab, &n, &pri, &timeout);
+			(void)dbenv->rep_elect(dbenv,
+			    n, pri, timeout, &master_eid);
 			count = 0;
-			continue;
 		}
-
-		/* Now call for an election */
-		machtab_parm(machtab, &n, &pri, &check, &elect);
-		if (dbenv->rep_elect(dbenv,
-		    n, pri, check, elect, &master_eid, &is_me) != 0)
-			continue;
-
-		/* If I'm the new master, I can stop checking for masters. */
-		if (is_me) {
-			master_eid = SELF_EID;
-			break;
-		}
+		sleep(IDLE_INTERVAL);
 	}
 
 	return ((void *)EXIT_SUCCESS);
@@ -179,8 +153,7 @@ display_loop(args)
 
 		if (dbp == NULL) {
 			if ((ret = db_create(&dbp, dbenv, 0)) != 0) {
-				fprintf(stderr, "%s: db_create: %s\n", progname,
-				    db_strerror(ret));
+				dbenv->err(dbenv, ret, "db_create");
 				return ((void *)EXIT_FAILURE);
 			}
 
@@ -190,37 +163,31 @@ display_loop(args)
 					printf(
 				    "No stock database yet available.\n");
 					if ((ret = dbp->close(dbp, 0)) != 0) {
-						fprintf(stderr,
-						    "%s: DB->close: %s",
-						    progname,
-						    db_strerror(ret));
+						dbenv->err(dbenv,
+						    ret, "DB->close");
 						goto err;
 					}
 					dbp = NULL;
 					sleep(SLEEPTIME);
 					continue;
 				}
-				fprintf(stderr, "%s: DB->open: %s\n", progname,
-				    db_strerror(ret));
+				dbenv->err(dbenv, ret, "DB->open");
 				goto err;
 			}
 		}
 
 		if ((ret = dbp->cursor(dbp, NULL, &dbc, 0)) != 0) {
-			fprintf(stderr, "%s: DB->cursor: %s\n", progname,
-			    db_strerror(ret));
+			dbenv->err(dbenv, ret, "DB->cursor");
 			goto err;
 		}
 
 		if ((ret = print_stocks(dbc)) != 0) {
-			fprintf(stderr, "%s: database traversal failed: %s\n",
-			    progname, db_strerror(ret));
+			dbenv->err(dbenv, ret, "database traversal failed");
 			goto err;
 		}
 
 		if ((ret = dbc->c_close(dbc)) != 0) {
-			fprintf(stderr, "%s: DB->close: %s\n", progname,
-			    db_strerror(ret));
+			dbenv->err(dbenv, ret, "DB->close");
 			goto err;
 		}
 
@@ -236,14 +203,12 @@ err:		rval = EXIT_FAILURE;
 	}
 
 	if (dbc != NULL && (ret = dbc->c_close(dbc)) != 0) {
-		fprintf(stderr, "%s: DB->close: %s\n", progname,
-		    db_strerror(ret));
+		dbenv->err(dbenv, ret, "DB->close");
 		rval = EXIT_FAILURE;
 	}
 
 	if (dbp != NULL && (ret = dbp->close(dbp, 0)) != 0) {
-		fprintf(stderr, "%s: DB->close: %s\n", progname,
-		    db_strerror(ret));
+		dbenv->err(dbenv, ret, "DB->close");
 		return ((void *)EXIT_FAILURE);
 	}
 

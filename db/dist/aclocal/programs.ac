@@ -1,4 +1,4 @@
-# Id: programs.ac,v 11.18 2001/06/13 14:57:50 bostic Exp 
+# Id: programs.ac,v 11.20 2001/09/24 02:09:25 bostic Exp 
 
 # Check for programs used in building/installation.
 AC_DEFUN(AM_PROGRAMS_SET, [
@@ -62,12 +62,12 @@ if test "$db_cv_path_sh" = missing_sh; then
 	AC_MSG_ERROR([No sh utility found.])
 fi
 
-# We need a complete path for ranlib, because it doesn't exist on some
-# architectures because the ar utility packages the library itself.
-AC_CHECK_TOOL(path_strip, strip, missing_strip)
-AC_PATH_PROG(db_cv_path_strip, $path_strip, missing_strip)
-if test "$db_cv_path_strip" = missing_strip; then
-	AC_MSG_ERROR([No strip utility found.])
+# Don't strip the binaries if --enable-debug was specified.
+if test "$db_cv_debug" = yes; then
+	db_cv_path_strip=debug_build_no_strip
+else
+	AC_CHECK_TOOL(path_strip, strip, missing_strip)
+	AC_PATH_PROG(db_cv_path_strip, $path_strip, missing_strip)
 fi
 
 if test "$db_cv_test" = "yes"; then

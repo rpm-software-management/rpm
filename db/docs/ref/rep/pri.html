@@ -1,4 +1,4 @@
-<!--Id: pri.so,v 1.1 2001/10/13 19:56:24 bostic Exp -->
+<!--Id: pri.so,v 1.3 2001/11/05 17:24:27 bostic Exp -->
 <!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <html>
@@ -19,12 +19,14 @@ priority, which specifies a relative ordering among the different
 environments in a replication group.  This ordering determines which
 environment will be selected as a new master in case the existing master
 fails.
-<p>Priorities may be any integer.  Larger valued priorities indicate a more
-desirable master.  For example, if a replication group consists of three
-database environments, two of which are connected by an OC3 and the
-third of which is connected by a T1, the third database environment
-should be assigned a priority value which is lower than either of the
-other two.
+<p>Priorities must be a non-negative integer, but do not need to be unique
+throughout the replication group.  A priority of 0 means the system can
+never become a master, regardless.  Otherwise, larger valued priorities
+indicate a more desirable master.  For example, if a replication group
+consists of three database environments, two of which are connected by
+an OC3 and the third of which is connected by a T1, the third database
+environment should be assigned a priority value which is lower than
+either of the other two.
 <table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/id.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/app.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>

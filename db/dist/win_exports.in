@@ -1,4 +1,4 @@
-# Id: win_exports.in,v 1.9 2001/10/11 17:05:51 dda Exp 
+# Id: win_exports.in,v 1.10 2001/11/05 18:24:58 bostic Exp 
 
 # Standard interfaces.
 	db_create
@@ -31,6 +31,10 @@
 	db_env_set_func_unmap
 	db_env_set_func_write
 	db_env_set_func_yield
+
+# Needed for application-specific logging and recovery routines.
+	__db_add_recovery
+	__txn_activekids
 
 # These are only for testing.
 	__db_dbm_close

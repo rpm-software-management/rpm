@@ -4,7 +4,7 @@
  * Copyright (c) 2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_net.c,v 1.20 2001/10/13 13:13:16 bostic Exp 
+ * Id: ex_rq_net.c,v 1.30 2001/11/18 01:29:07 margo Exp 
  */
 
 #include <sys/types.h>
@@ -26,6 +26,8 @@
 
 #include <db.h>
 
+#include "mutex.h"
+#include "rep.h"
 #include "ex_repquote.h"
 
 int machtab_add __P((machtab_t *, int, u_int32_t, int, int *));
@@ -67,8 +69,7 @@ struct __machtab {
 	LIST_HEAD(__machlist, __member) machlist;
 	int nextid;
 	pthread_mutex_t mtmutex;
-	u_int32_t check_time;
-	u_int32_t elect_time;
+	u_int32_t timeout_time;
 	int current;
 	int max;
 	int nsites;
@@ -85,14 +86,14 @@ struct __member {
 				/* For linked list of all members we know of. */
 };
 
-static int quote_send_broadcast __P((DB_ENV *,
-    machtab_t *, const DBT *, DBT *, u_int32_t));
-static int quote_send_one __P((DB_ENV *, const DBT *, DBT *, int, int, u_int32_t));
+static int quote_send_broadcast __P((machtab_t *,
+    const DBT *, const DBT *, u_int32_t));
+static int quote_send_one __P((const DBT *, const DBT *, int, u_int32_t));
 
 /*
  * machtab_init --
  *	Initialize the machine ID table.
- * XXX Right now I treat the number of sites as the maximum
+ * XXX Right now we treat the number of sites as the maximum
  * number we've ever had on the list at one time.  We probably
  * want to make that smarter.
  */
@@ -111,10 +112,7 @@ machtab_init(machtabp, pri, nsites)
 
 	/* Reserve eid's 0 and 1. */
 	machtab->nextid = 2;
-/* microseconds in millisecond */
-#define	MS	1000
-	machtab->check_time = 500 * MS;
-	machtab->elect_time = 2 * 1000 * MS;
+	machtab->timeout_time = 2 * 1000000;		/* 2 seconds. */
 	machtab->current = machtab->max = 0;
 	machtab->priority = pri;
 	machtab->nsites = nsites;
@@ -170,15 +168,7 @@ machtab_add(machtab, fd, hostaddr, port, idp)
 	if (m == NULL) {
 		if (++machtab->current > machtab->max)
 			machtab->max = machtab->current;
-#ifdef APP_DEBUG
-printf("%lx Adding to machtab: %lx:%d at eid %d\n",
-(long)pthread_self(), (long)hostaddr, port, member->eid);
-#endif
 	} else {
-#ifdef APP_DEBUG
-printf("%lx Found in machtab: %lx:%d at eid %d\n",
-(long)pthread_self(), (long)hostaddr, port, member->eid);
-#endif
 		free(member);
 		ret = EEXIST;
 	}
@@ -240,10 +230,6 @@ machtab_rem(machtab, eid, lock)
 	    member != NULL;
 	    member = LIST_NEXT(member, links))
 		if (member->eid == eid) {
-#ifdef APP_DEBUG
-printf("%lx Removing eid %d %lx:%d\n", (long)pthread_self, member->eid,
-(long)member->hostaddr, member->port);
-#endif
 			found = 1;
 			LIST_REMOVE(member, links);
 			(void)close(member->fd);
@@ -262,18 +248,17 @@ printf("%lx Removing eid %d %lx:%d\n", (long)pthread_self, member->eid,
 }
 
 void
-machtab_parm(machtab, nump, prip, checkp, electp)
+machtab_parm(machtab, nump, prip, timeoutp)
 	machtab_t *machtab;
 	int *nump, *prip;
-	u_int32_t *checkp, *electp;
+	u_int32_t *timeoutp;
 {
 	if (machtab->nsites == 0)
 		*nump = machtab->max;
 	else
 		*nump = machtab->nsites;
 	*prip = machtab->priority;
-	*checkp = machtab->check_time;
-	*electp = machtab->elect_time;
+	*timeoutp = machtab->timeout_time;
 }
 
 /*
@@ -326,9 +311,9 @@ listen_socket_accept(machtab, progname, s, eidp)
 	char *progname;
 	int s, *eidp;
 {
-	int host, ns, port, ret;
-	size_t si_len;
 	struct sockaddr_in si;
+	socklen_t si_len;
+	int host, ns, port, ret;
 
 	COMPQUIET(progname, NULL);
 
@@ -360,10 +345,10 @@ get_accepted_socket(progname, port)
 	char *progname;
 	int port;
 {
-	int s, ns;
-	size_t si_len;
 	struct protoent *proto;
 	struct sockaddr_in si;
+	socklen_t si_len;
+	int s, ns;
 
 	if ((proto = getprotobyname("tcp")) == NULL)
 		return (-1);
@@ -386,10 +371,6 @@ get_accepted_socket(progname, port)
 	si_len = sizeof(si);
 	ns = accept(s, (struct sockaddr *)&si, &si_len);
 
-	/* XXX I think we may want to pass up the identify of the
-	 * connecting host so we can check for duplicates.  For
-	 * debugging, let's just display it for now.
-	 */
 	return (ns);
 
 err:	fprintf(stderr, "%s: %s", progname, strerror(errno));
@@ -460,9 +441,8 @@ get_connected_socket(machtab, progname, remotehost, port, is_open, eidp)
  *	Read a single message from the specified file descriptor, and
  * return it in the format used by rep functions (two DBTs and a type).
  *
- * This function will become the guts of f_receive, but is also used
- * directly by code that plans to do the equivalent outside a callback,
- * and manually dispatch to DB_ENV->rep_process_message()
+ * This function is called in a loop by both clients and masters, and 
+ * the resulting DBTs are manually dispatched to DB_ENV->rep_process_message().
  */
 int
 get_next_message(fd, rec, control)
@@ -528,20 +508,8 @@ get_next_message(fd, rec, control)
 	control->data = controlbuf;
 	control->size = csize;
 
-#ifdef APP_DEBUG_MSG
-	{
-		REP_CONTROL *rp;
-
-		rp = (REP_CONTROL *)control->data;
-		fprintf(stderr,
-		    "%lx Received message type %d gen %d lsn[%d,%d] flags %lx\n",
-		    (long)pthread_self(),
-		    rp->rectype, rp->gen, rp->lsn.file, rp->lsn.offset,
-		    (unsigned long)rp->flags);
-		if (rp->rectype == REP_LOG)
-			__db_loadme();
-	}
-#endif
+fprintf(stderr, "%lx Received %d\n", (long)pthread_self(),
+((REP_CONTROL *)controlbuf)->rectype );
 
 	return (0);
 }
@@ -551,27 +519,25 @@ get_next_message(fd, rec, control)
  * The f_send function for DB_ENV->set_rep_transport.
  */
 int
-quote_send(dbenv, cookie, rec, control, flags, eid)
+quote_send(dbenv, control, rec, eid, flags)
 	DB_ENV *dbenv;
-	void *cookie;
-	const DBT *rec;
-	DBT *control;
-	u_int32_t flags;
+	const DBT *control, *rec;
 	int eid;
+	u_int32_t flags;
 {
 	int fd, n, ret, t_ret;
 	machtab_t *machtab;
 	member_t *m;
 
-	machtab = (machtab_t *)cookie;
+	machtab = (machtab_t *)dbenv->app_private;
 
-	if (eid == DB_BROADCAST_EID) {
+	if (eid == DB_EID_BROADCAST) {
 		/*
 		 * Right now, we do not require successful transmission.
 		 * I'd like to move this requiring at least one successful
 		 * transmission on PERMANENT requests.
 		 */
-		n = quote_send_broadcast(dbenv, machtab, rec, control, flags);
+		n = quote_send_broadcast(machtab, rec, control, flags);
 		if (n < 0 /*|| (n == 0 && LF_ISSET(DB_REP_PERMANENT))*/)
 			return (DB_REP_UNAVAIL);
 		return (0);
@@ -595,7 +561,7 @@ quote_send(dbenv, cookie, rec, control, flags, eid)
 		return (DB_REP_UNAVAIL);
 	}
 
-	ret = quote_send_one(dbenv, rec, control, eid, fd, flags);
+	ret = quote_send_one(rec, control, fd, flags);
 
 	if ((t_ret = (pthread_mutex_unlock(&machtab->mtmutex))) != 0 &&
 	    ret == 0)
@@ -611,11 +577,9 @@ quote_send(dbenv, cookie, rec, control, flags, eid)
  * communicated.  A -1 indicates a fatal error.
  */
 static int
-quote_send_broadcast(dbenv, machtab, rec, control, flags)
-	DB_ENV *dbenv;
+quote_send_broadcast(machtab, rec, control, flags)
 	machtab_t *machtab;
-	const DBT *rec;
-	DBT *control;
+	const DBT *rec, *control;
 	u_int32_t flags;
 {
 	int ret, sent;
@@ -627,8 +591,7 @@ quote_send_broadcast(dbenv, machtab, rec, control, flags)
 	sent = 0;
 	for (m = LIST_FIRST(&machtab->machlist); m != NULL; m = next) {
 		next = LIST_NEXT(m, links);
-		if ((ret =
-		    quote_send_one(dbenv, rec, control, m->eid, m->fd, flags)) != 0) {
+		if ((ret = quote_send_one(rec, control, m->fd, flags)) != 0) {
 			(void)machtab_rem(machtab, m->eid, 0);
 		} else
 			sent++;
@@ -651,11 +614,9 @@ quote_send_broadcast(dbenv, machtab, rec, control, flags)
  * intersperse writes that are part of two single messages.
  */
 static int
-quote_send_one(dbenv, rec, control, eid, fd, flags)
-	DB_ENV *dbenv;
-	const DBT *rec;
-	DBT *control;
-	int eid, fd;
+quote_send_one(rec, control, fd, flags)
+	const DBT *rec, *control;
+	int fd;
 	u_int32_t flags;
 
 {
@@ -701,24 +662,7 @@ quote_send_one(dbenv, rec, control, eid, fd, flags)
 		if (nw != (ssize_t)control->size)
 			return (DB_REP_UNAVAIL);
 	}
-
-#ifdef APP_DEBUG_MSG
-	{
-		REP_CONTROL *rp;
-
-		rp = (REP_CONTROL *)control->data;
-		fprintf(stderr,
-		    "%lx Sent to %d message type %d, gen %d lsn [%d,%d] flags %lx\n",
-		    (long)pthread_self(), eid,
-		    rp->rectype, rp->gen, rp->lsn.file, rp->lsn.offset,
-		    (unsigned long)rp->flags);
-		if (rp->rectype == REP_LOG)
-			__db_loadme();
-	}
-#else
-	COMPQUIET(eid, 0);
-	COMPQUIET(dbenv, NULL);
-#endif
-
+fprintf(stderr, "%lx Sent %d\n", (long)pthread_self(),
+((REP_CONTROL *)control->data)->rectype );
 	return (0);
 }

@@ -1,4 +1,4 @@
-<!--Id: app.so,v 1.1 2001/10/13 19:56:23 bostic Exp -->
+<!--Id: app.so,v 1.3 2001/10/25 21:17:51 bostic Exp -->
 <!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <html>
@@ -21,10 +21,10 @@ applications use the following additional four Berkeley DB methods:
 <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>, <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> and
 <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>:
 <p><dl compact>
+<p><dt><a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a><dd>The <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function configures the replication system's
+communications infrastructure.
 <p><dt><a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a><dd>The <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function configures (or reconfigures) an existing database
 environment to be a replication master or client.
-<p><dt><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a><dd>The <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function causes the replication group to elect a new
-master; it is called whenever contact with the master is lost.
 <p><dt><a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a><dd>The <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function is used to process incoming messages from other
 environments in the replication group.  For clients, it is responsible
 for accepting log records and updating the local databases based on
@@ -32,8 +32,8 @@ messages from the master.  For both the master and the clients, it is
 responsible for handling administrative functions (for example, the
 protocol for dealing with lost messages), and permitting new clients to
 join an active replication group.
-<p><dt><a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a><dd>The <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function configures the replication system's
-communications infrastructure.
+<p><dt><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a><dd>The <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function causes the replication group to elect a new
+master; it is called whenever contact with the master is lost.
 </dl>
 <p>To add replication to a Berkeley DB application, application initialization
 must be changed, and some new code, the application's communications
@@ -54,6 +54,10 @@ group, or, alternatively, configure all group members as clients and
 then call an election, letting the clients select the master from among
 themselves.  Either is correct, and the choice is entirely up to the
 application.
+<p>The result of calling <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> is usually the discovery of a
+master, or the declaration of the local environment as the master.  If
+a master has not been discovered after a reasonable amount of time,
+the application should call <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> to call for an election.
 <p>Databases are generally opened read-write on both clients and masters
 in order to simplify upgrading replication clients to be masters.  (If
 databases are opened read-only on clients, and the client is then

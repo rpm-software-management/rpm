@@ -1,12 +1,20 @@
-# Id: types.ac,v 11.6 2001/05/22 01:00:31 bostic Exp 
+# Id: types.ac,v 11.8 2001/09/27 13:18:19 bostic Exp 
 
 # Check for the standard system types.
 AC_DEFUN(AM_TYPES, [
 
-AC_TYPE_MODE_T
 AC_TYPE_OFF_T
+if test "$ac_cv_type_off_t" = no; then
+	AC_MSG_ERROR([No off_t type.])
+fi
 AC_TYPE_PID_T
+if test "$ac_cv_type_pid_t" = no; then
+	AC_MSG_ERROR([No pid_t type.])
+fi
 AC_TYPE_SIZE_T
+if test "$ac_cv_type_size_t" = no; then
+	AC_MSG_ERROR([No size_t type.])
+fi
 
 AC_SUBST(u_char_decl)
 AC_CACHE_CHECK([for u_char], db_cv_uchar, [
@@ -48,7 +56,7 @@ AC_TRY_COMPILE([#include <sys/types.h>], u_int8_t foo;,
 AC_TRY_RUN([main(){exit(sizeof(unsigned char) != 1);}],
 	[db_cv_uint8="unsigned char"], [db_cv_uint8=no]))])
 if test "$db_cv_uint8" = no; then
-	AC_MSG_ERROR(No unsigned 8-bit integral type.)
+	AC_MSG_ERROR([No unsigned 8-bit integral type.])
 fi
 if test "$db_cv_uint8" != yes; then
 	u_int8_decl="typedef $db_cv_uint8 u_int8_t;"
@@ -115,8 +123,8 @@ if test "$db_cv_int32" != yes; then
 fi
 
 # Check for ssize_t -- if none exists, find a signed integral type that's
-# the same size as a size_t.  Prefer int over long, because it read/write
-# and others historically returned an int.
+# the same size as a size_t.  Prefer int over anything else, because read,
+# write and others historically returned an int.
 AC_SUBST(ssize_t_decl)
 AC_CACHE_CHECK([for ssize_t], db_cv_ssize_t, [
 AC_TRY_COMPILE([#include <sys/types.h>], ssize_t foo;,

@@ -1,5 +1,11 @@
 Revision history for Perl extension BerkeleyDB.
 
+0.17 26 23 September 2001
+        * Fixed a bug in BerkeleyDB::Recno - reported by Niklas Paulsson. 
+        * Added log_archive - patch supplied by Benjamin Holzman
+        * Added txn_discard
+        * Builds with Berkeley DB 4.0.x
+
 0.16 26 1 August 2001
         * added support for Berkeley DB 3.3.x (but no support for any of the
           new features just yet)

@@ -68,6 +68,7 @@ BerkeleyDB - Perl extension for Berkeley DB version 2 or 3
   $status = $txn->txn_commit()
   $status = $txn->txn_abort()
   $status = $txn->txn_id()
+  $status = $txn->txn_discard()
 
   $status = $env->set_lg_dir();
   $status = $env->set_lg_bsize();

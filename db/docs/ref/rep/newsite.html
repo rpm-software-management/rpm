@@ -1,4 +1,4 @@
-<!--Id: newsite.so,v 1.1 2001/10/13 19:56:24 bostic Exp -->
+<!--Id: newsite.so,v 1.2 2001/10/25 14:58:49 bostic Exp -->
 <!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <html>
@@ -20,8 +20,8 @@ should assign the new site a local environment ID number, and all future
 messages from the site passed to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> should include that
 environment ID number.  It is possible, of course, for the application
 to be aware of a new site before the return of <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> (for
-example, applications using a connection-oriented protocols are likely
-to detect new sites immediately, while applications using broadcast
+example, applications using connection-oriented protocols are likely to
+detect new sites immediately, while applications using broadcast
 protocols may not).
 <p>Regardless, in applications supporting the dynamic addition of database
 environments to replication groups, environments joining an existing

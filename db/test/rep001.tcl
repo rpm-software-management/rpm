@@ -3,7 +3,7 @@
 # Copyright (c) 2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: rep001.tcl,v 11.2 2001/10/05 02:38:09 bostic Exp 
+# Id: rep001.tcl,v 11.3 2001/11/16 10:50:12 krinsky Exp 
 #
 # TEST  rep001
 # TEST	Replication smoke test.
@@ -30,7 +30,7 @@ proc rep001 { method args } {
 
 	# Open a master.
 	repladd 1
-	set masterenv [berkdb env -create \
+	set masterenv [berkdb env -create -log_max 1000000 \
 	    -home $masterdir -txn -rep_master -rep_transport [list 1 replsend]]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 
@@ -42,7 +42,7 @@ proc rep001 { method args } {
 
 	# Run a modified test001 in the master.
 	puts "\tRep001.a: Running test001 in replicated env."
-	eval rep_test001 $method 1000 "01" -env $masterenv $args
+	eval rep_test001 $method 10000 "01" -env $masterenv $args
 
 	# Loop, processing first the master's messages, then the client's,
 	# until both queues are empty.

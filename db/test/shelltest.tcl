@@ -3,7 +3,7 @@
 # Copyright (c) 2001
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: shelltest.tcl,v 1.13 2001/10/12 15:54:53 bostic Exp 
+# Id: shelltest.tcl,v 1.15 2001/11/03 18:43:48 bostic Exp 
 #
 # TEST	scr###
 # TEST	The scr### directories are shell scripts that test a variety of
@@ -55,7 +55,7 @@ proc shelltest_copy { fromdir todir } {
 }
 
 proc shelltest_run { sh srcdir test testdir } {
-	puts "Running shell script $test..."
+	puts "Running shell script $srcdir ($test)..."
 
 	set ret [catch {exec $sh -c "cd $testdir && sh $test" >&@ stdout} res]
 
@@ -81,3 +81,4 @@ proc scr014 {} { shelltest 14 }
 proc scr015 {} { shelltest 15 }
 proc scr016 {} { shelltest 16 }
 proc scr017 {} { shelltest 17 }
+proc scr018 {} { shelltest 18 }

@@ -9,7 +9,7 @@ AE1.1
 <END>
 
 <BEGIN> BUILD__CURRENT
-SIMSPARCSOLARISgnu.debug
+PENTIUM2gnu.debug
 <END>
 
 <BEGIN> BUILD_PENTIUM2gnu.debug_CURRENT_TARGET
@@ -447,145 +447,8 @@ $(WIND_BASE)/target/h/
 ::tc_PENTIUMgnu.debug
 <END>
 
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_CURRENT_TARGET
-default
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_DEFAULTFORCPU
-1
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_FILE_$(PRJ_DIR)/../__DB_APPLICATION_NAME__.c_infoTags
-toolMacro objects
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_FILE_$(PRJ_DIR)/../__DB_APPLICATION_NAME__.c_objects
-__DB_APPLICATION_NAME__.o
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_FILE_$(PRJ_DIR)/../__DB_APPLICATION_NAME___DB_APPLICATION_NAME__.c_toolMacro
-CC
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_FILE_$(PRJ_DIR)/compConfig.c_infoTags
-toolMacro objects
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_FILE_$(PRJ_DIR)/compConfig.c_objects
-compConfig.o
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_FILE_$(PRJ_DIR)/compConfig.c_toolMacro
-CC
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_AR
-arsparc
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_AS
-ccsparc
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_CC
-ccsparc
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_CFLAGS
--ansi \
-	-DRW_MULTI_THREAD \
-	-D_REENTRANT \
-	-g \
-	-fno-builtin \
-	-MD \
-	-Wall \
-	-I. \
-	-I$(WIND_BASE)/target/h \
-	-I$(PRJ_DIR)/../.. \
-	-I$(PRJ_DIR)/../../../include \
-	-I$(PRJ_DIR)/../../../include_auto \
-	-DCPU=SIMSPARCSOLARIS
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_CFLAGS_AS
--ansi \
-	-g \
-	-fno-builtin \
-	-P \
-	-x \
-	assembler-with-cpp \
-	-Wall \
-	-I. \
-	-I$(WIND_BASE)/target/h \
-	-DCPU=SIMSPARCSOLARIS
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_CPP
-ccsparc -E -P
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_CPPFILT
-c++filtsparc --strip-underscores
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_LD
-ldsparc
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_LDFLAGS
--T $(WIND_BASE)/target/config/solaris/linker-script
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_LDPARTIAL
-ccsparc \
-	-B$(WIND_BASE)/host/$(WIND_HOST_TYPE)/lib/gcc-lib/ \
-	-nostdlib \
-	-r \
-	-Wl,-X
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_LD_PARTIAL_FLAGS
--nostdlib -r
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_NM
-nmsparc
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_OPTION_DEFINE_MACRO
--D
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_OPTION_GENERATE_DEPENDENCY_FILE
--MD
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_OPTION_INCLUDE_DIR
--I
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_RELEASE
-0
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_MACRO_SIZE
-sizesparc
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_RELEASE
-0
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_RO_DEPEND_PATH
-$(WIND_BASE)/target/h/
-<END>
-
-<BEGIN> BUILD_SIMSPARCSOLARISgnu.debug_TC
-::tc_SIMSPARCSOLARISgnu.debug
-<END>
-
 <BEGIN> BUILD__LIST
-PENTIUM2gnu.debug PENTIUM2gnu.release PENTIUMgnu.debug SIMSPARCSOLARISgnu.debug
+PENTIUM2gnu.debug PENTIUM2gnu.release PENTIUMgnu.debug
 <END>
 
 <BEGIN> PROJECT_FILES

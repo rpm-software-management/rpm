@@ -5,7 +5,7 @@
  * Copyright (c) 2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: ex_rq_master.c,v 1.15 2001/10/13 13:13:16 bostic Exp 
+ * Id: ex_rq_master.c,v 1.16 2001/10/26 19:19:43 margo Exp 
  */
 
 #include <sys/types.h>
@@ -120,7 +120,7 @@ master_loop(dbenvv)
 			if (strncmp(buf, "exit", 4) == 0 ||
 			    strncmp(buf, "quit", 4) == 0)
 				break;
-			fprintf(stderr, "Format: TICKER VALUE\n");
+			dbenv->errx(dbenv, "Format: TICKER VALUE");
 			continue;
 		}
 

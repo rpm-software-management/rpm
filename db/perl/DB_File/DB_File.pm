@@ -1,8 +1,8 @@
 # DB_File.pm -- Perl 5 interface to Berkeley DB 
 #
 # written by Paul Marquess (Paul.Marquess@btinternet.com)
-# last modified 30th July 2001
-# version 1.78
+# last modified 26th Nov 2001
+# version 1.801
 #
 #     Copyright (c) 1995-2001 Paul Marquess. All rights reserved.
 #     This program is free software; you can redistribute it and/or
@@ -11,7 +11,7 @@
 
 package DB_File::HASHINFO ;
 
-require 5.003 ;
+require 5.00404;
 
 use warnings;
 use strict;
@@ -145,13 +145,12 @@ package DB_File ;
 
 use warnings;
 use strict;
-use vars qw($VERSION @ISA @EXPORT $AUTOLOAD $DB_BTREE $DB_HASH $DB_RECNO 
-            $db_version $use_XSLoader
-           ) ;
+our ($VERSION, @ISA, @EXPORT, $AUTOLOAD, $DB_BTREE, $DB_HASH, $DB_RECNO);
+our ($db_version, $use_XSLoader);
 use Carp;
 
 
-$VERSION = "1.78" ;
+$VERSION = "1.801" ;
 
 #typedef enum { DB_BTREE, DB_HASH, DB_RECNO } DBTYPE;
 $DB_BTREE = new DB_File::BTREEINFO ;
@@ -163,7 +162,7 @@ require Exporter;
 use AutoLoader;
 BEGIN {
     $use_XSLoader = 1 ;
-    eval { require XSLoader } ;
+    { local $SIG{__DIE__} ; eval { require XSLoader } ; }
 
     if ($@) {
         $use_XSLoader = 0 ;
@@ -210,21 +209,12 @@ push @ISA, qw(Tie::Hash Exporter);
 sub AUTOLOAD {
     my($constname);
     ($constname = $AUTOLOAD) =~ s/.*:://;
-    my $val = constant($constname, @_ ? $_[0] : 0);
-    if ($! != 0) {
-	if ($! =~ /Invalid/ || $!{EINVAL}) {
-	    $AutoLoader::AUTOLOAD = $AUTOLOAD;
-	    goto &AutoLoader::AUTOLOAD;
-	}
-	else {
-	    my($pack,$file,$line) = caller;
-	    croak "Your vendor has not defined DB macro $constname, used at $file line $line.
-";
-	}
-    }
-    eval "sub $AUTOLOAD { $val }";
-    goto &$AUTOLOAD;
-}
+    my ($error, $val) = constant($constname);
+    Carp::croak $error if $error;
+    no strict 'refs';
+    *{$AUTOLOAD} = sub { $val };
+    goto &{$AUTOLOAD};
+}           
 
 
 eval {
@@ -594,7 +584,7 @@ DB_File - Perl5 access to Berkeley DB version 1.x
 
 B<DB_File> is a module which allows Perl programs to make use of the
 facilities provided by Berkeley DB version 1.x (if you have a newer
-version of DB, see L<Using DB_File with Berkeley DB version 2 or 3>).
+version of DB, see L<Using DB_File with Berkeley DB version 2 or greater>).
 It is assumed that you have a copy of the Berkeley DB manual pages at
 hand when reading this documentation. The interface defined here
 mirrors the Berkeley DB interface closely.
@@ -638,27 +628,27 @@ number.
 
 =back
 
-=head2 Using DB_File with Berkeley DB version 2 or 3
+=head2 Using DB_File with Berkeley DB version 2 or greater
 
 Although B<DB_File> is intended to be used with Berkeley DB version 1,
-it can also be used with version 2 or 3. In this case the interface is
+it can also be used with version 2, 3 or 4. In this case the interface is
 limited to the functionality provided by Berkeley DB 1.x. Anywhere the
-version 2 or 3 interface differs, B<DB_File> arranges for it to work
+version 2 or greater interface differs, B<DB_File> arranges for it to work
 like version 1. This feature allows B<DB_File> scripts that were built
-with version 1 to be migrated to version 2 or 3 without any changes.
+with version 1 to be migrated to version 2 or greater without any changes.
 
 If you want to make use of the new features available in Berkeley DB
 2.x or greater, use the Perl module B<BerkeleyDB> instead.
 
-B<Note:> The database file format has changed in both Berkeley DB
-version 2 and 3. If you cannot recreate your databases, you must dump
-any existing databases with either the C<db_dump> or the C<db_dump185>
-utility that comes with Berkeley DB.
-Once you have rebuilt DB_File to use Berkeley DB version 2 or 3, your
-databases can be recreated using C<db_load>. Refer to the Berkeley DB
+B<Note:> The database file format has changed multiple times in Berkeley
+DB version 2, 3 and 4. If you cannot recreate your databases, you
+must dump any existing databases with either the C<db_dump> or the
+C<db_dump185> utility that comes with Berkeley DB.
+Once you have rebuilt DB_File to use Berkeley DB version 2 or greater,
+your databases can be recreated using C<db_load>. Refer to the Berkeley DB
 documentation for further details.
 
-Please read L<"COPYRIGHT"> before using version 2.x or 3.x of Berkeley
+Please read L<"COPYRIGHT"> before using version 2.x or greater of Berkeley
 DB with DB_File.
 
 =head2 Interface to Berkeley DB
@@ -838,7 +828,7 @@ contents of the database.
     use warnings ;
     use strict ;
     use DB_File ;
-    use vars qw( %h $k $v ) ;
+    our (%h, $k, $v) ;
 
     unlink "fruit" ;
     tie %h, "DB_File", "fruit", O_RDWR|O_CREAT, 0666, $DB_HASH 
@@ -948,7 +938,7 @@ database.
 Duplicate keys are entirely defined by the comparison function.
 In the case-insensitive example above, the keys: 'KEY' and 'key'
 would be considered duplicates, and assigning to the second one
-would overwirte the first. If duplicates are allowed for (with the
+would overwrite the first. If duplicates are allowed for (with the
 R_DUPS flag discussed below), only a single copy of duplicate keys
 is stored in the database --- so (again with example above) assigning
 three values to the keys: 'KEY', 'Key', and 'key' would leave just
@@ -988,7 +978,7 @@ code:
     use strict ;
     use DB_File ;
 
-    use vars qw($filename %h ) ;
+    our ($filename, %h) ;
 
     $filename = "tree" ;
     unlink $filename ;
@@ -1043,7 +1033,7 @@ Here is the script above rewritten using the C<seq> API method.
     use strict ;
     use DB_File ;
 
-    use vars qw($filename $x %h $status $key $value) ;
+    our ($filename, $x, %h, $status, $key, $value) ;
 
     $filename = "tree" ;
     unlink $filename ;
@@ -1115,7 +1105,7 @@ this:
     use strict ;
     use DB_File ;
 
-    use vars qw($filename $x %h ) ;
+    our ($filename, $x, %h) ;
 
     $filename = "tree" ;
 
@@ -1165,9 +1155,9 @@ Assuming the database from the previous example:
     use strict ;
     use DB_File ;
 
-    use vars qw($filename $x %h $found) ;
+    our ($filename, $x, %h, $found) ;
 
-    my $filename = "tree" ;
+    $filename = "tree" ;
 
     # Enable duplicate records
     $DB_BTREE->{'flags'} = R_DUP ;
@@ -1204,9 +1194,9 @@ Again assuming the existence of the C<tree> database
     use strict ;
     use DB_File ;
 
-    use vars qw($filename $x %h $found) ;
+    our ($filename, $x, %h, $found) ;
 
-    my $filename = "tree" ;
+    $filename = "tree" ;
 
     # Enable duplicate records
     $DB_BTREE->{'flags'} = R_DUP ;
@@ -1250,7 +1240,7 @@ and print the first matching key/value pair given a partial key.
     use DB_File ;
     use Fcntl ;
 
-    use vars qw($filename $x %h $st $key $value) ;
+    our ($filename, $x, %h, $st, $key, $value) ;
 
     sub match
     {
@@ -1449,7 +1439,7 @@ L<THE API INTERFACE>).
 
     use warnings ;
     use strict ;
-    use vars qw(@h $H $file $i) ;
+    our (@h, $H, $file, $i) ;
     use DB_File ;
     use Fcntl ;
 
@@ -2014,7 +2004,7 @@ F<authors/id/TOMC/scripts/nshist.gz>).
     use DB_File ;
     use Fcntl ;
 
-    use vars qw( $dotdir $HISTORY %hist_db $href $binary_time $date ) ;
+    our ($dotdir, $HISTORY, %hist_db, $href, $binary_time, $date) ;
     $dotdir = $ENV{HOME} || $ENV{LOGNAME};
 
     $HISTORY = "$dotdir/.netscape/history.db";
@@ -2169,7 +2159,7 @@ Consider this script:
     use warnings ;
     use strict ;
     use DB_File ;
-    use vars qw(%x) ;
+    my %x ;
     tie %x, DB_File, "filename" ;
 
 Running it produces the error in question:

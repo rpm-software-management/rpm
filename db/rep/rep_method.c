@@ -7,16 +7,12 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_method.c,v 1.23 2001/10/10 02:57:41 margo Exp ";
+static const char revid[] = "Id: rep_method.c,v 1.37 2001/11/16 16:29:10 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 
-/* XXX */
-#ifdef REP_DEBUG
-#include <pthread.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -34,14 +30,12 @@ static const char revid[] = "Id: rep_method.c,v 1.23 2001/10/10 02:57:41 margo E
 #include "rpc_client_ext.h"
 #endif
 
-static int __rep_elect __P((DB_ENV *,
-    int, int, u_int32_t, u_int32_t, int *, int *));
+static int __rep_elect __P((DB_ENV *, int, int, u_int32_t, int *));
 static int __rep_elect_init __P((DB_ENV *, DB_LSN *, int, int, int *));
-static int __rep_set_rep_transport __P((DB_ENV *, int, void *, 
-    int (*)(DB_ENV *, void *, const DBT *, DBT *, db_reptype_t, int)));
+static int __rep_set_rep_transport __P((DB_ENV *, int,
+    int (*)(DB_ENV *, const DBT *, const DBT *, int, u_int32_t)));
 static int __rep_start __P((DB_ENV *, DBT *, u_int32_t));
-static int __rep_wait __P((DB_ENV *,
-   u_int32_t, u_int32_t, int *, int *, u_int32_t));
+static int __rep_wait __P((DB_ENV *, u_int32_t, int *, u_int32_t));
 
 /*
  * __rep_dbenv_create --
@@ -100,6 +94,8 @@ __rep_start(dbenv, dbt, flags)
 	DBT *dbt;
 	u_int32_t flags;
 {
+	DB_LOG *dblp;
+	DB_LSN lsn;
 	DB_REP *db_rep;
 	REP *rep;
 	int announce, init_db, ret;
@@ -115,24 +111,29 @@ __rep_start(dbenv, dbt, flags)
 		return (ret);
 
 	/* Exactly one of CLIENT and MASTER must be specified. */
-	if ((!LF_ISSET(DB_REP_CLIENT) && (!LF_ISSET(DB_REP_MASTER))) ||
-	    (LF_ISSET(DB_REP_CLIENT) && LF_ISSET(DB_REP_MASTER)))
-		return (__db_ferr(dbenv, "DB_ENV->rep_start", 1));
+	if ((ret = __db_fcchk(dbenv,
+	    "DB_ENV->rep_start", flags, DB_REP_CLIENT, DB_REP_MASTER)) != 0)
+		return (ret);
+	if (!LF_ISSET(DB_REP_CLIENT | DB_REP_MASTER)) {
+		__db_err(dbenv,
+	"DB_ENV->rep_start: either DB_CLIENT or DB_MASTER must be specified.");
+		return (EINVAL);
+	}
 
 	/* Masters can't be logs-only. */
-	if (LF_ISSET(DB_REP_MASTER) && LF_ISSET(DB_REP_LOGSONLY))
-		return (__db_ferr(dbenv, "DB_ENV->rep_start", 1));
+	if ((ret = __db_fcchk(dbenv,
+	    "DB_ENV->rep_start", flags, DB_REP_LOGSONLY, DB_REP_MASTER)) != 0)
+		return (ret);
 
 	/* We need a transport function. */
 	if (db_rep->rep_send == NULL) {
 		__db_err(dbenv,
-		    "DB_ENV->set_rep_transport must be called before %s",
-		    "DB_ENV->rep_start");
+    "DB_ENV->set_rep_transport must be called before DB_ENV->rep_start");
 		return (EINVAL);
 	}
 
 	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
-	if (rep->eid == DB_INVALID_EID)
+	if (rep->eid == DB_EID_INVALID)
 		rep->eid = dbenv->rep_eid;
 
 	if (LF_ISSET(DB_REP_MASTER)) {
@@ -153,21 +154,23 @@ __rep_start(dbenv, dbt, flags)
 		F_SET(rep, REP_F_MASTER);
 		F_SET(dbenv, DB_ENV_REP_MASTER);
 		MUTEX_UNLOCK(dbenv, db_rep->mutexp);
+		dblp = (DB_LOG *)dbenv->lg_handle;
+		R_LOCK(dbenv, &dblp->reginfo);
+		lsn = ((LOG *)dblp->reginfo.primary)->lsn;
+		R_UNLOCK(dbenv, &dblp->reginfo);
+		ret = __rep_send_message(dbenv,
+		    DB_EID_BROADCAST, REP_NEWMASTER, &lsn, NULL, 0);
 	} else {
-		if (F_ISSET(dbenv, DB_ENV_REP_MASTER) ||
-		    F_ISSET(rep, REP_F_MASTER)) {
-			MUTEX_UNLOCK(dbenv, db_rep->mutexp);
-			return (DB_REP_NEWMASTER);
-		}
-
+		F_CLR(dbenv, DB_ENV_REP_MASTER);
 		F_SET(dbenv, DB_ENV_REP_CLIENT);
 		if (LF_ISSET(DB_REP_LOGSONLY))
 			F_SET(dbenv, DB_ENV_REP_LOGSONLY);
 
 		announce = !F_ISSET(rep, REP_ISCLIENT) ||
-		    rep->master_id == DB_INVALID_EID;
+		    rep->master_id == DB_EID_INVALID;
 		init_db = 0;
 		if (!F_ISSET(rep, REP_ISCLIENT)) {
+			F_CLR(rep, REP_F_MASTER);
 			if (LF_ISSET(DB_REP_LOGSONLY))
 				F_SET(rep, REP_F_LOGSONLY);
 			else
@@ -180,7 +183,7 @@ __rep_start(dbenv, dbt, flags)
 			 * during normal operation and a master failure.
 			 */
 			rep->gen = 0;
-			rep->master_id = DB_INVALID_EID;
+			rep->master_id = DB_EID_INVALID;
 			init_db = 1;
 		}
 		MUTEX_UNLOCK(dbenv, db_rep->mutexp);
@@ -198,7 +201,7 @@ __rep_start(dbenv, dbt, flags)
 		 */
 		if (announce)
 			ret = __rep_send_message(dbenv,
-			    DB_BROADCAST_EID, REP_NEWCLIENT, NULL, dbt, 0);
+			    DB_EID_BROADCAST, REP_NEWCLIENT, NULL, dbt, 0);
 	}
 	return (ret);
 }
@@ -208,26 +211,35 @@ __rep_start(dbenv, dbt, flags)
  *	Set the transport function for replication.
  */
 static int
-__rep_set_rep_transport(dbenv, eid, send_cookie, f_send)
+__rep_set_rep_transport(dbenv, eid, f_send)
 	DB_ENV *dbenv;
 	int eid;
-	void *send_cookie;
-	int (*f_send)(DB_ENV *,
-	    void *, const DBT *, DBT *, u_int32_t, int);
+	int (*f_send) __P((DB_ENV *, const DBT *, const DBT *, int, u_int32_t));
 {
 	DB_REP *db_rep;
-	int ret;
 
-	ret = 0;
-	db_rep = dbenv->rep_handle;
-	if (db_rep == NULL)
+	if ((db_rep = dbenv->rep_handle) == NULL) {
+		__db_err(dbenv,
+    "DB_ENV->set_rep_transport: database environment not properly initialized");
+		return (DB_RUNRECOVERY);
+	}
+
+	if (f_send == NULL) {
+		__db_err(dbenv,
+	"DB_ENV->set_rep_transport: no send function specified");
 		return (EINVAL);
+	}
+
+	if (eid < 0) {
+		__db_err(dbenv,
+	"DB_ENV->set_rep_transport: eid must be greater than or equal to 0");
+		return (EINVAL);
+	}
 
 	db_rep->rep_send = f_send;
-	db_rep->rep_send_data = send_cookie;
 
 	dbenv->rep_eid = eid;
-	return (ret);
+	return (0);
 }
 
 /*
@@ -236,11 +248,11 @@ __rep_set_rep_transport(dbenv, eid, send_cookie, f_send)
  *	a new master.
  */
 static int
-__rep_elect(dbenv, nsites, pri, wait, sleep, eidp, selfp)
+__rep_elect(dbenv, nsites, priority, timeout, eidp)
 	DB_ENV *dbenv;
-	int nsites, pri;
-	u_int32_t wait, sleep;
-	int *eidp, *selfp;
+	int nsites, priority;
+	u_int32_t timeout;
+	int *eidp;
 {
 	DB_LOG *dblp;
 	DB_LSN lsn;
@@ -248,7 +260,17 @@ __rep_elect(dbenv, nsites, pri, wait, sleep, eidp, selfp)
 	REP *rep;
 	int in_progress, ret, send_vote;
 
-	*selfp = 0;
+	/* Error checking. */
+	if (nsites <= 0) {
+		__db_err(dbenv,
+		    "DB_ENV->rep_elect: nsites must be greater than 0");
+		return (EINVAL);
+	}
+	if (priority < 0) {
+		__db_err(dbenv,
+		    "DB_ENV->rep_elect: priority may not be negative");
+		return (EINVAL);
+	}
 
 	dblp = dbenv->lg_handle;
 	R_LOCK(dbenv, &dblp->reginfo);
@@ -258,26 +280,33 @@ __rep_elect(dbenv, nsites, pri, wait, sleep, eidp, selfp)
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
 	if ((ret = __rep_elect_init(dbenv,
-	    &lsn, nsites, pri, &in_progress)) != 0)
+	    &lsn, nsites, priority, &in_progress)) != 0) {
+		if (ret == DB_REP_NEWMASTER) {
+			ret = 0;
+			*eidp = dbenv->rep_eid;
+		}
 		return (ret);
+	}
 
-#ifdef REP_DEBUG
-if (!in_progress)
-	fprintf(stderr, "%lx Beginning an election\n", (long)pthread_self());
+	if (!in_progress) {
+#ifdef DIAGNOSTIC
+		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+			__db_err(dbenv, "Beginning an election");
 #endif
-	if (!in_progress && (ret = __rep_send_message(dbenv,
-	    DB_BROADCAST_EID, REP_ELECT, NULL, NULL, 0)) != 0)
-		goto err;
+		if ((ret = __rep_send_message(dbenv,
+		    DB_EID_BROADCAST, REP_ELECT, NULL, NULL, 0)) != 0)
+			goto err;
+	}
 
 	/* Now send vote */
-	if ((ret = __rep_send_vote(dbenv, &lsn, nsites, pri)) != 0)
+	if ((ret = __rep_send_vote(dbenv, &lsn, nsites, priority)) != 0)
 		goto err;
 
-	ret = __rep_wait(dbenv, wait, sleep, selfp, eidp, REP_F_EPHASE1);
+	ret = __rep_wait(dbenv, timeout, eidp, REP_F_EPHASE1);
 	switch (ret) {
 		case 0:
 			/* Check if election complete or phase complete. */
-			if (*eidp != DB_INVALID_EID)
+			if (*eidp != DB_EID_INVALID)
 				return (0);
 			goto phase2;
 		case DB_TIMEOUT:
@@ -292,7 +321,7 @@ if (!in_progress)
 	 * the winner.
 	 */
 	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
-	send_vote = DB_INVALID_EID;
+	send_vote = DB_EID_INVALID;
 	if (rep->sites > rep->nsites / 2) {
 		/* We think we've seen enough to cast a vote. */
 		send_vote = rep->winner;
@@ -302,26 +331,29 @@ if (!in_progress)
 		F_SET(rep, REP_F_EPHASE2);
 	}
 	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
-	if (send_vote == DB_INVALID_EID) {
+	if (send_vote == DB_EID_INVALID) {
 		/* We do not have enough votes to elect. */
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Not enough votes to elect: received %d of %d\n",
-(long)pthread_self(), rep->sites, rep->nsites);
+#ifdef DIAGNOSTIC
+		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+			__db_err(dbenv,
+			    "Not enough votes to elect: received %d of %d",
+			    rep->sites, rep->nsites);
 #endif
 		ret = DB_REP_UNAVAIL;
 		goto err;
 
 	}
-#ifdef REP_DEBUG
-if (send_vote != rep->eid)
-	fprintf(stderr, "%lx Sending vote\n", (long)pthread_self());
+#ifdef DIAGNOSTIC
+	if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION) &&
+	    send_vote != rep->eid)
+		__db_err(dbenv, "Sending vote");
 #endif
 
 	if (send_vote != rep->eid && (ret = __rep_send_message(dbenv,
 	    send_vote, REP_VOTE2, NULL, NULL, 0)) != 0)
 		goto err;
 
-phase2:	ret = __rep_wait(dbenv, wait, sleep, selfp, eidp, REP_F_EPHASE2);
+phase2:	ret = __rep_wait(dbenv, timeout, eidp, REP_F_EPHASE2);
 	switch (ret) {
 		case 0:
 			return (0);
@@ -335,8 +367,10 @@ phase2:	ret = __rep_wait(dbenv, wait, sleep, selfp, eidp, REP_F_EPHASE2);
 err:	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
 	ELECTION_DONE(rep);
 	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
-#ifdef REP_DEBUG
-fprintf(stderr, "%lx Ended election with %d\n", (long)pthread_self(), ret);
+
+#ifdef DIAGNOSTIC
+	if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
+		__db_err(dbenv, "Ended election with %d", ret);
 #endif
 	return (ret);
 }
@@ -346,11 +380,11 @@ fprintf(stderr, "%lx Ended election with %d\n", (long)pthread_self(), ret);
  *	Initialize an election.  Sets beginp non-zero if the election is
  * already in progress; makes it 0 otherwise.
  */
-int
-__rep_elect_init(dbenv, lsnp, nsites, pri, beginp)
+static int
+__rep_elect_init(dbenv, lsnp, nsites, priority, beginp)
 	DB_ENV *dbenv;
 	DB_LSN *lsnp;
-	int nsites, pri, *beginp;
+	int nsites, priority, *beginp;
 {
 	DB_REP *db_rep;
 	REP *rep;
@@ -360,16 +394,24 @@ __rep_elect_init(dbenv, lsnp, nsites, pri, beginp)
 	rep = db_rep->region;
 
 	ret = 0;
+
+	/* If we are already a master; simply broadcast that fact and return. */
+	if (F_ISSET(dbenv, DB_ENV_REP_MASTER)) {
+		ret = __rep_send_message(dbenv,
+		    DB_EID_BROADCAST, REP_NEWMASTER, lsnp, NULL, 0);
+		return (DB_REP_NEWMASTER);
+	}
+
 	MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
 	*beginp = IN_ELECTION(rep);
 	if (!*beginp) {
 		F_SET(rep, REP_F_EPHASE1);
-		rep->master_id = DB_INVALID_EID;
+		rep->master_id = DB_EID_INVALID;
 		if (nsites > rep->asites &&
 		    (ret = __rep_grow_sites(dbenv, nsites)) != 0)
 			goto err;
 		rep->nsites = nsites;
-		rep->priority = pri;
+		rep->priority = priority;
 		rep->votes = 0;
 
 		/* We have always heard from ourselves. */
@@ -377,14 +419,14 @@ __rep_elect_init(dbenv, lsnp, nsites, pri, beginp)
 		tally = R_ADDR((REGINFO *)dbenv->reginfo, rep->tally_off);
 		tally[0] = rep->eid;
 
-		if (pri != 0) {
+		if (priority != 0) {
 			/* Make ourselves the winner to start. */
 			rep->winner = rep->eid;
-			rep->w_priority = pri;
+			rep->w_priority = priority;
 			rep->w_gen = rep->gen;
 			rep->w_lsn = *lsnp;
 		} else {
-			rep->winner = DB_INVALID_EID;
+			rep->winner = DB_EID_INVALID;
 			rep->w_priority = 0;
 			rep->w_gen = 0;
 			ZERO_LSN(rep->w_lsn);
@@ -395,38 +437,43 @@ err:	MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 }
 
 static int
-__rep_wait(dbenv, wait, sleep, selfp, eidp, flags)
+__rep_wait(dbenv, timeout, eidp, flags)
 	DB_ENV *dbenv;
-	u_int32_t wait, sleep;
-	int *selfp, *eidp;
+	u_int32_t timeout;
+	int *eidp;
 	u_int32_t flags;
 {
 	DB_REP *db_rep;
 	REP *rep;
 	int done, ret;
+	u_int32_t sleeptime;
 
 	done = 0;
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
 
-	while (wait > 0) {
-		if ((ret = __os_sleep(dbenv, 0, sleep)) != 0)
+	/*
+	 * The user specifies an overall timeout function, but checking
+	 * is cheap and the timeout may be a generous upper bound.
+	 * Sleep repeatedly for the smaller of .5s and timeout/10.
+	 */
+	sleeptime = (timeout > 5000000) ? 500000 : timeout / 10;
+	while (timeout > 0) {
+		if ((ret = __os_sleep(dbenv, 0, sleeptime)) != 0)
 			return (ret);
 		MUTEX_LOCK(dbenv, db_rep->mutexp, dbenv->lockfhp);
-		done = !F_ISSET(rep, flags) && rep->master_id != DB_INVALID_EID;
+		done = !F_ISSET(rep, flags) && rep->master_id != DB_EID_INVALID;
 
 		*eidp = rep->master_id;
-		if (rep->eid == rep->master_id)
-			*selfp = 1;
 		MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 
 		if (done)
 			return (0);
 
-		if (wait > sleep)
-			wait -= sleep;
+		if (timeout > sleeptime)
+			timeout -= sleeptime;
 		else
-			wait = 0;
+			timeout = 0;
 	}
 	return (DB_TIMEOUT);
 }

@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_env.cpp,v 11.58 2001/10/04 21:13:59 bostic Exp ";
+static const char revid[] = "Id: cxx_env.cpp,v 11.62 2001/11/10 04:59:06 mjc Exp ";
 #endif /* not lint */
 
 #include <errno.h>
@@ -20,6 +20,10 @@ static const char revid[] = "Id: cxx_env.cpp,v 11.58 2001/10/04 21:13:59 bostic 
 
 #include "db_int.h"
 #include "common_ext.h"
+
+#ifdef HAVE_CXX_STDHEADERS
+using std::cerr;
+#endif
 
 // This datatype is needed for picky compilers.
 //
@@ -39,7 +43,7 @@ extern "C" {
 //
 static int last_known_error_policy = ON_ERROR_UNKNOWN;
 
-ostream *DbEnv::error_stream_ = 0;
+OSTREAMCLASS *DbEnv::error_stream_ = 0;
 
 // These 'glue' function are declared as extern "C" so they will
 // be compatible with picky compilers that do not allow mixing
@@ -78,11 +82,11 @@ int _tx_recover_intercept_c(DB_ENV *env, DBT *dbt,
 }
 
 extern "C"
-int _rep_send_intercept_c(DB_ENV *env, void *cookie, const DBT *cntrl,
-			  DBT *data, u_int32_t flags, int id)
+int _rep_send_intercept_c(DB_ENV *env, const DBT *cntrl,
+			  const DBT *data, int id, u_int32_t flags)
 {
 	return (DbEnv::_rep_send_intercept(env,
-	    cookie, cntrl, data, flags, id));
+	    cntrl, data, id, flags));
 }
 
 // _destroy_check is called when there is a user error in a
@@ -93,7 +97,7 @@ int _rep_send_intercept_c(DB_ENV *env, void *cookie, const DBT *cntrl,
 //
 void DbEnv::_destroy_check(const char *str, int isDbEnv)
 {
-	ostream *out;
+	OSTREAMCLASS *out;
 
 	out = error_stream_;
 	if (out == NULL || isDbEnv == 1)
@@ -175,8 +179,8 @@ int DbEnv::_tx_recover_intercept(DB_ENV *env, DBT *dbt,
 	return ((*cxxenv->tx_recover_callback_)(cxxenv, cxxdbt, cxxlsn, op));
 }
 
-int DbEnv::_rep_send_intercept(DB_ENV *env, void *cookie, const DBT *cntrl,
-			       DBT *data, u_int32_t flags, int id)
+int DbEnv::_rep_send_intercept(DB_ENV *env, const DBT *cntrl,
+			       const DBT *data, int id, u_int32_t flags)
 {
 
 	if (env == 0) {
@@ -191,7 +195,7 @@ int DbEnv::_rep_send_intercept(DB_ENV *env, void *cookie, const DBT *cntrl,
 	const Dbt *cxxcntrl = (const Dbt *)cntrl;
 	Dbt *cxxdata = (Dbt *)data;
 	return ((*cxxenv->rep_send_callback_)(cxxenv,
-	    cookie, cxxcntrl, cxxdata, flags, id));
+	    cxxcntrl, cxxdata, flags, id));
 }
 
 // A truism for the DbEnv object is that there is a valid
@@ -798,7 +802,7 @@ void DbEnv::set_errcall(void (*arg)(const char *, char *))
 // db_env triggered the call.  A user that has multiple DB_ENVs
 // will simply not be able to have different streams for each one.
 //
-void DbEnv::set_error_stream(ostream *stream)
+void DbEnv::set_error_stream(OSTREAMCLASS *stream)
 {
 	DB_ENV *dbenv = unwrap(this);
 
@@ -978,27 +982,26 @@ int DbEnv::txn_stat(DB_TXN_STAT **statp, u_int32_t flags)
 	return (err);
 }
 
-int DbEnv::set_rep_transport(u_int32_t myid, void *cookie,
-    int (*f_send)(DbEnv *, void *, const Dbt *, Dbt *, u_int32_t, int))
+int DbEnv::set_rep_transport(u_int32_t myid,
+    int (*f_send)(DbEnv *, const Dbt *, const Dbt *, int, u_int32_t))
 {
 	int ret;
 	DB_ENV *dbenv = unwrap(this);
 
 	rep_send_callback_ = f_send;
 	if ((ret = dbenv->set_rep_transport(dbenv,
-	    myid, cookie, _rep_send_intercept_c)) != 0)
+	    myid, _rep_send_intercept_c)) != 0)
 		DB_ERROR("DbEnv::set_rep_transport", ret, error_policy());
 
 	return (ret);
 }
 
-int DbEnv::rep_elect(int nsites,
-    int pri, u_int32_t wait, u_int32_t sleep, int *idp, int *selfp)
+int DbEnv::rep_elect(int nsites, int pri, u_int32_t timeout, int *idp)
 {
 	int ret;
 	DB_ENV *dbenv = unwrap(this);
 	if ((ret = dbenv->rep_elect(dbenv,
-	    nsites, pri, wait, sleep, idp, selfp)) != 0)
+	    nsites, pri, timeout, idp)) != 0)
 		DB_ERROR("DbEnv::rep_elect", ret, error_policy());
 
 	return (ret);
