@@ -82,6 +82,8 @@
 #  endif
 #endif
 
+/*@access z_streamp @*/
+
 /* function prototypes */
 local void fixedtables OF((struct inflate_state FAR *state))
 	/*@modifies state @*/;
@@ -91,7 +93,7 @@ local int updatewindow OF((z_streamp strm, unsigned out))
    void makefixed OF((void))
 	/*@*/;
 #endif
-local unsigned syncsearch OF((unsigned *have, unsigned char FAR *buf,
+local unsigned syncsearch OF((unsigned *have, /*@out@*/ unsigned char FAR *buf,
                               unsigned len))
 	/*@modifies *have @*/;
 

@@ -14,39 +14,37 @@
 
 # --- in progress
 -abstract		# 4
--aliasunique
+-aliasunique		# 2
 -assignexpose
 -branchstate
 -bufferoverflowhigh
--castfcnptr
--compdef
--compmempass
+-castfcnptr		# 6
+-compdef		# 16
+-compmempass		# 37
 -evalorder		# 2
--globstate
--modfilesys
+-globstate		# 1
 -mods			# 13
--mustmod
 -noeffectuncon		# 10
 -nullderef		# 9
 -nullpass		# 24
--nullptrarith
+-nullptrarith		# 4
 -nullret		# 13
 -protoparammatch	# 22
 -redef			# 4
 -retalias		# 4
 -retvalint		# painful
 -sizeoftype		# 106
--type
+-type			# 3
 -usereleased		# 38
 
--dependenttrans	# 2
+-dependenttrans		# 2
 -immediatetrans
--kepttrans
+-kepttrans		# 8
 -observertrans
 -readonlytrans
 -statictrans
--temptrans
--unqualifiedtrans
+-temptrans		# 7
+-unqualifiedtrans	# 10
 
 -casebreak
 -looploopbreak

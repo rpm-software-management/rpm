@@ -1079,6 +1079,7 @@ ZEXTERN int ZEXPORT inflateBackInit_ OF((z_stream FAR *strm, int windowBits,
     struct internal_state {int dummy;}; /* hack for buggy compilers */
 #endif
 
+/*@observer@*/
 ZEXTERN const char   * ZEXPORT zError           OF((int err))
 	/*@*/;
 ZEXTERN int            ZEXPORT inflateSyncPoint OF((z_streamp z))

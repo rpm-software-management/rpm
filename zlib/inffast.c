@@ -8,6 +8,8 @@
 #include "inflate.h"
 #include "inffast.h"
 
+/*@access z_streamp @*/
+
 /* Allow machine dependent optimization for post-increment or pre-increment.
    Based on testing to date,
    Pre-increment preferred for:
