@@ -86,6 +86,15 @@ struct transactionElement_s {
     uint_32 multiLib;	/* (TR_ADDED) MULTILIB */
     int_32 filesCount;	/* (TR_ADDED) No. files in package. */
 
+/*@kept@*//*@null@*/
+    const void * key;
+		/*!< (TR_ADDED) Retrieval key (CLI uses file name, e.g.). */
+/*@owned@*/ /*@null@*/
+    rpmRelocation * relocs;
+		/*!< (TR_ADDED) Payload file relocations. */
+/*@refcounted@*/ /*@null@*/
+    FD_t fd;	/*!< (TR_ADDED) Payload file descriptor (usually NULL). */
+
 /*@-fielduse@*/	/* LCL: confused by union? */
     union { 
 /*@unused@*/ alKey addedKey;
@@ -225,7 +234,7 @@ teIterator teInitIterator(rpmTransactionSet ts)
  * @param tei		transaction element iterator
  * @return		transaction element, NULL on termination
  */
-/*@unused@*/ static inline /*@dependent@*/
+/*@unused@*/ static inline /*@dependent@*/ /*@null@*/
 transactionElement teNextIterator(teIterator tei)
 	/*@modifies tei @*/
 {
@@ -243,6 +252,24 @@ transactionElement teNextIterator(teIterator tei)
     /*@-compdef -usereleased@*/ /* FIX: ts->order may be released */
     return te;
     /*@=compdef =usereleased@*/
+}
+
+/**
+ * Return next transaction element of type.
+ * @param tei		transaction element iterator
+ * @return		next transaction element of type, NULL on termination
+ */
+/*@unused@*/ static inline /*@dependent@*/ /*@null@*/
+transactionElement teNext(teIterator tei, enum rpmTransactionType type)
+        /*@modifies tei @*/
+{
+    transactionElement p;
+
+    while ((p = teNextIterator(tei)) != NULL) {
+	if (p->type == type)
+	    break;
+    }
+    return p;
 }
 #endif	/* defined(_NEED_TEITERATOR) */
 

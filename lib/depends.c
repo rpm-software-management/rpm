@@ -2,6 +2,8 @@
  * \file lib/depends.c
  */
 
+#define	_DS_SCAREMEM	0
+
 #include "system.h"
 
 #include <rpmlib.h>
@@ -269,28 +271,10 @@ char * hGetNVR(Header h, const char ** np )
     return NVR;
 }
 
-/**
- * Return next transaction element of type.
- * @param tei		transaction element iterator
- * @return		next transaction element of type, NULL on termination
- */
-static /*@dependent@*/ /*@null@*/
-transactionElement teNext(teIterator tei, enum rpmTransactionType type)
-        /*@modifies tei @*/
-{
-    transactionElement p;
-
-    while ((p = teNextIterator(tei)) != NULL) {
-	if (p->type == type)
-	    break;
-    }
-    return p;
-}
-
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 			const void * key, int upgrade, rpmRelocation * relocs)
 {
-    int scareMem = 1;
+    int scareMem = _DS_SCAREMEM;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * name = NULL;
     const char * addNVR = hGetNVR(h, &name);
@@ -369,13 +353,14 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
     /* XXX cast assumes that available keys are indices, not pointers */
-    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, h, key, fd, relocs);
+    pkgKey = alAddPackage(ts->addedPackages, (alKey)apx, h);
     if (pkgKey == RPMAL_NOMATCH) {
 	ec = 1;
 	goto exit;
     }
     p = ts->order + i;
     memset(p, 0, sizeof(*p));
+    
     p->u.addedKey = pkgKey;
 
     p->type = TR_ADDED;
@@ -403,6 +388,30 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     }
   }
 #endif
+
+    /*@-assignexpose -ownedtrans @*/
+    p->key = key;
+    /*@=assignexpose =ownedtrans @*/
+    /*@-type@*/ /* FIX: cast? */
+    p->fd = (fd != NULL ? fdLink(fd, "rpmtransAddPackage") : NULL);
+    /*@=type@*/
+
+    if (relocs) {
+	rpmRelocation * r;
+
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
+	    {};
+	p->relocs = xmalloc((i + 1) * sizeof(*p->relocs));
+
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
+	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
+	    p->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
+	}
+	p->relocs[i].oldPath = NULL;
+	p->relocs[i].newPath = NULL;
+    } else {
+	p->relocs = NULL;
+    }
 
     if (!duplicate) {
 assert(apx == ts->numAddedPackages);
@@ -495,10 +504,13 @@ exit:
     return ec;
 }
 
-void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, const void * key)
+void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
+		/*@unused@*/ const void * key)
 {
+    alKey pkgKey;
+
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
-   (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, h, key, NULL, NULL);
+    pkgKey = alAddPackage(ts->availablePackages, RPMAL_NOMATCH, h);
 }
 
 int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
@@ -521,12 +533,30 @@ void rpmtransClean(rpmTransactionSet ts)
 rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 {
     if (ts) {
+	teIterator pi; transactionElement p;
 
 	(void) rpmtsUnlink(ts, "tsCreate");
 
 	/*@-usereleased@*/
 	if (ts->nrefs > 0)
 	    return NULL;
+
+	pi = teInitIterator(ts);
+	while ((p = teNext(pi, TR_ADDED)) != NULL) {
+	    rpmRelocation * r;
+	    if (p->relocs) {
+		for (r = p->relocs; (r->oldPath || r->newPath); r++) {
+		    r->oldPath = _free(r->oldPath);
+		    r->newPath = _free(r->newPath);
+		}
+		p->relocs = _free(p->relocs);
+	    }
+	    /*@-type@*/ /* FIX: cast? */
+	    if (p->fd != NULL)
+	        p->fd = fdFree(p->fd, "alAddPackage (alFree)");
+	    /*@=type@*/
+	}
+	pi = teFreeIterator(pi);
 
 	ts->addedPackages = alFree(ts->addedPackages);
 	ts->availablePackages = alFree(ts->availablePackages);
@@ -751,7 +781,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	/*@modifies ts, h, psp, fileSystem */
 {
     const char * name, * version, * release;
-    int scareMem = 1;
+    int scareMem = _DS_SCAREMEM;
     rpmDepSet requires;
     rpmDepSet conflicts;
     const char * Name;
@@ -789,15 +819,23 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 
 	    suggestedPkgs = NULL;
 
+#ifdef DYING
 	    /*@-branchstate -mods -type@*/ /* FIX: hack to disable noise */
+#endif
 	    if (ts->availablePackages != NULL) {
+#ifdef	DYING
 		const char * Type = requires->Type;
 		requires->Type = NULL;
+#endif
 		suggestedPkgs =
 			alAllSatisfiesDepend(ts->availablePackages, requires);
+#ifdef	DYING
 		requires->Type = Type;
+#endif
 	    }
+#ifdef	DYING
 	    /*@=branchstate =mods =type@*/
+#endif
 
 	    dsProblem(psp, h, requires, suggestedPkgs);
 
@@ -1125,17 +1163,29 @@ static inline int addRelation(rpmTransactionSet ts,
     alKey pkgKey;
     int i = 0;
 
+    if ((Name = dsiGetN(requires)) == NULL)
+	return 0;	/* XXX can't happen */
+
+    /* Avoid rpmlib feature dependencies. */
+    if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
+	return 0;
+
+#ifdef	DYING
     /*@-mods -type@*/	/* FIX: hack to disable noise */
     {	const char * Type = requires->Type;
 	requires->Type = NULL;
+#endif
+
 	pkgKey = alSatisfiesDepend(ts->addedPackages, requires);
+
+#ifdef	DYING
 	requires->Type = Type;
     }
     /*@=mods =type@*/
-/*@-nullpass@*/
+#endif
+
 if (_te_debug)
 fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
-/*@=nullpass@*/
 
     /* Ordering depends only on added package relations. */
     if (pkgKey == RPMAL_NOMATCH)
@@ -1149,18 +1199,6 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 	    break;
     }
     qi = teFreeIterator(qi);
-/*@-nullpass -nullderef@*/
-if (_te_debug)
-fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, q->name, ts->order, i, ts->orderCount);
-/*@=nullpass =nullderef@*/
-    assert(i < ts->orderCount);
-
-    if ((Name = dsiGetN(requires)) == NULL)
-	return 0;	/* XXX can't happen */
-
-    /* Avoid rpmlib feature dependencies. */
-    if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
-	return 0;
 
 #if defined(DEPENDENCY_WHITEOUT)
     /* Avoid certain dependency relations. */
@@ -1168,10 +1206,15 @@ fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, q->name, ts->order,
 	return 0;
 #endif
 
+    i = (q ? q - ts->order : -1);
+
+/*@-nullpass -nullderef@*/
+if (_te_debug)
+fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, q->name, ts->order, i, ts->orderCount);
+/*@=nullpass =nullderef@*/
+
     /* Avoid redundant relations. */
     /* XXX TODO: add control bit. */
-    i = q - ts->order;
-
     if (selected[i] != 0)
 	return 0;
     selected[i] = 1;
@@ -1203,7 +1246,7 @@ prtTSI(NULL, &p->tsi);
 /*@-nullpass -compmempass@*/
 prtTSI("addRelation: new", tsi);
 if (_te_debug)
-fprintf(stderr, "addRelation: BEFORE q %p(%s)\n", q, q->name);
+fprintf(stderr, "addRelation: BEFORE q %p(%s)", q, q->name);
 prtTSI(NULL, &q->tsi);
 /*@=nullpass =compmempass@*/
 /*@-mods@*/
@@ -1212,7 +1255,7 @@ prtTSI(NULL, &q->tsi);
 /*@=mods@*/
 /*@-nullpass -compmempass@*/
 if (_te_debug)
-fprintf(stderr, "addRelation:  AFTER q %p(%s)\n", q, q->name);
+fprintf(stderr, "addRelation:  AFTER q %p(%s)", q, q->name);
 prtTSI(NULL, &q->tsi);
 /*@=nullpass =compmempass@*/
     return 0;
@@ -1622,14 +1665,14 @@ prtTSI(" p", &p->tsi);
 	j = needle->orIndex;
 	/*@-assignexpose@*/
 	q = ts->order + j;
-	newOrder[newOrderCount++] = *q;		/* structure assignment */
+/*@i@*/	newOrder[newOrderCount++] = *q;		/* structure assignment */
 	/*@=assignexpose@*/
 	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
 	    q = ts->order + j;
 	    if (q->type == TR_REMOVED &&
 		q->u.removed.dependsOnKey == needle->pkgKey) {
 		/*@-assignexpose@*/
-		newOrder[newOrderCount++] = *q;	/* structure assignment */
+/*@i@*/		newOrder[newOrderCount++] = *q;	/* structure assignment */
 		/*@=assignexpose@*/
 	    } else
 		/*@innerbreak@*/ break;
@@ -1643,7 +1686,7 @@ prtTSI(" p", &p->tsi);
     while ((p = teNext(pi, TR_REMOVED)) != NULL) {
 	if (p->u.removed.dependsOnKey == RPMAL_NOMATCH) {
 	    /*@-assignexpose@*/
-	    newOrder[newOrderCount] = *p;	/* structure assignment */
+/*@i@*/	    newOrder[newOrderCount] = *p;	/* structure assignment */
 	    /*@=assignexpose@*/
 	    newOrderCount++;
 	}
@@ -1694,7 +1737,7 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 int rpmdepCheck(rpmTransactionSet ts,
 		rpmDependencyConflict * conflicts, int * numConflicts)
 {
-    int scareMem = 1;
+    int scareMem = _DS_SCAREMEM;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi = NULL;

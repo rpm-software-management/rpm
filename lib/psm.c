@@ -1200,7 +1200,8 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 	goto exit;
     }
 
-    (void) rpmtransAddPackage(ts, h, fd, NULL, 0, NULL);
+    /* XXX don't bother with fd, linked directly into fi below. */
+    (void) rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
 
     fi->type = TR_ADDED;
 
@@ -1212,11 +1213,19 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     }
 
     fi->multiLib = 0;	/* MULTILIB for src.rpm's? */
+
+#ifdef	DYING
     /*@-kepttrans@*/
     fi->key = alGetKey(ts->addedPackages, pkgKey);
     /*@=kepttrans@*/
     fi->relocs = alGetRelocs(ts->addedPackages, pkgKey);
     fi->fd = alGetFd(ts->addedPackages, pkgKey);
+#else
+    fi->key = NULL;
+    /* XXX don't bother with fd, linked directly into fi below. */
+/*@i@*/ fi->fd = fd;
+    fi->relocs = NULL;
+#endif
 
     /* XXX header arg unused. */
     loadFi(ts, fi, fi->h, 1);

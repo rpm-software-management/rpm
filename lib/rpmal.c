@@ -45,6 +45,7 @@ struct availablePackage_s {
     const char * version;	/*!< Header version. */
 /*@dependent@*/
     const char * release;	/*!< Header release. */
+
 /*@owned@*/ /*@null@*/
     rpmDepSet provides;		/*!< Provides: dependencies. */
 /*@owned@*/ /*@null@*/
@@ -54,13 +55,11 @@ struct availablePackage_s {
 /*@dependent@*//*@null@*/
     int_32 * epoch;		/*!< Header epoch (if any). */
     int filesCount;		/*!< No. of files in header. */
+
 #ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
 #endif
-/*@kept@*//*@null@*/
-    const void * key;		/*!< Private data associated with a package (e.g. file name of package). */
-/*@null@*/ rpmRelocation * relocs;
-/*@null@*/ FD_t fd;
+
 };
 
 /** \ingroup rpmdep
@@ -153,7 +152,6 @@ static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const availableList al,
     /*@=nullret =temptrans =retalias @*/
 }
 
-/*@unused@*/
 static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const availableList al,
 		/*@null@*/ alNum pkgNum)
 	/*@*/
@@ -177,15 +175,6 @@ if (_al_debug)
 fprintf(stderr, "*** alp[%d] %p\n", pkgNum, alp);
 /*@=modfilesys@*/
     return alp;
-}
-
-const void * alGetKey(const availableList al, alKey pkgKey)
-{
-    availablePackage alp = alGetPkg(al, pkgKey);
-
-    /*@-retexpose@*/
-    return (alp != NULL ? alp->key : NULL);
-    /*@=retexpose@*/
 }
 
 #ifdef	DYING
@@ -233,51 +222,6 @@ Header alGetHeader(availableList al, alKey pkgKey, int unlink)
     return h;
 }
 
-rpmRelocation * alGetRelocs(const availableList al, alKey pkgKey)
-{
-    availablePackage alp = alGetPkg(al, pkgKey);
-    rpmRelocation * relocs = NULL;
-
-    if (alp != NULL) {
-	relocs = alp->relocs;
-	alp->relocs = NULL;
-    }
-    return relocs;
-}
-
-FD_t alGetFd(availableList al, alKey pkgKey)
-{
-    availablePackage alp = alGetPkg(al, pkgKey);
-    FD_t fd = NULL;
-
-    if (alp != NULL) {
-	/*@-refcounttrans@*/
-	fd = alp->fd;
-	alp->fd = NULL;
-	/*@=refcounttrans@*/
-    }
-    /*@-refcounttrans@*/
-/*@i@*/ return fd;
-    /*@=refcounttrans@*/
-}
-
-#ifdef	DYING
-alNum alGetPkgIndex(const availableList al, const availablePackage alp)
-{
-    alNum pkgNum = alKey2Num(al, RPMAL_NOMATCH);
-    if (al != NULL) {
-	if (al->list != NULL)
-	    if (alp != NULL && alp >= al->list && alp < (al->list + al->size))
-		pkgNum = ((alNum)(alp - al->list));
-    }
-/*@-modfilesys@*/
-if (_al_debug)
-fprintf(stderr, "*** alp %p[%d]\n", alp, (int)pkgNum);
-/*@=modfilesys@*/
-    return pkgNum;
-}
-#endif	/* DYING */
-
 char * alGetNVR(const availableList al, alKey pkgKey)
 {
     availablePackage alp = alGetPkg(al, pkgKey);
@@ -297,17 +241,6 @@ char * alGetNVR(const availableList al, alKey pkgKey)
     }
     return pkgNVR;
 }
-
-#ifdef	DYING
-void alProblemSetAppend(const availableList al, const availablePackage alp,
-		rpmProblemSet tsprobs, rpmProblemType type,
-		const char * dn, const char * bn,
-		const char * altNEVR, unsigned long ulong1)
-{
-    rpmProblemSetAppend(tsprobs, type, alGetNVR(al, alp),
-		alp->key, dn, bn, altNEVR, ulong1);
-}
-#endif
 
 availableList alCreate(int delta)
 {
@@ -330,7 +263,6 @@ availableList alFree(availableList al)
 {
     HFD_t hfd = headerFreeData;
     availablePackage p;
-    rpmRelocation * r;
     int i;
 
     if (al == NULL)
@@ -345,17 +277,6 @@ availableList alFree(availableList al)
 	p->baseNames = hfd(p->baseNames, -1);
 	p->h = headerFree(p->h, "alFree");
 
-	if (p->relocs) {
-	    for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-		r->oldPath = _free(r->oldPath);
-		r->newPath = _free(r->newPath);
-	    }
-	    p->relocs = _free(p->relocs);
-	}
-	/*@-type@*/ /* FIX: cast? */
-	if (p->fd != NULL)
-	    p->fd = fdFree(p->fd, "alAddPackage (alFree)");
-	/*@=type@*/
     }
 
     if (al->dirs != NULL)
@@ -408,21 +329,6 @@ void alDelPackage(availableList al, alKey pkgKey)
 if (_al_debug)
 fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->version, alp->release);
 /*@=modfilesys@*/
-
-    if (alp->relocs) {
-	rpmRelocation * r;
-	for (r = alp->relocs; r->oldPath || r->newPath; r++) {
-	    r->oldPath = _free(r->oldPath);
-	    r->newPath = _free(r->newPath);
-	}
-	alp->relocs = _free(alp->relocs);
-    }
-    if (alp->fd) {
-	/*@-type@*/ /* FIX: cast? */
-	(void) fdFree(alp->fd, "alDelPackage");
-	/*@=type@*/
-	alp->fd = NULL;
-    }
 
     if (alp->baseNames != NULL && alp->filesCount > 0) {
 	int origNumDirs = al->numDirs;
@@ -488,9 +394,7 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
     /*@=nullstate@*/
 }
 
-alKey alAddPackage(availableList al, alKey pkgKey,
-		Header h, /*@null@*/ /*@dependent@*/ const void * key,
-		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
+alKey alAddPackage(availableList al, alKey pkgKey, Header h)
 	/*@modifies al, h @*/
 {
     int scareMem = 1;
@@ -499,7 +403,7 @@ alKey alAddPackage(availableList al, alKey pkgKey,
     rpmTagType dnt, bnt;
     availablePackage alp;
     alNum pkgNum = alKey2Num(al, pkgKey);
-    int i, xx;
+    int xx;
 #ifdef	DYING
     uint_32 multiLibMask = 0;
     uint_32 * pp = NULL;
@@ -638,30 +542,6 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 
     }
 
-    /*@-assignexpose@*/
-    alp->key = key;
-    /*@=assignexpose@*/
-    /*@-type@*/ /* FIX: cast? */
-    alp->fd = (fd != NULL ? fdLink(fd, "alAddPackage") : NULL);
-    /*@=type@*/
-
-    if (relocs) {
-	rpmRelocation * r;
-
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
-	    {};
-	alp->relocs = xmalloc((i + 1) * sizeof(*alp->relocs));
-
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
-	    alp->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
-	    alp->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
-	}
-	alp->relocs[i].oldPath = NULL;
-	alp->relocs[i].newPath = NULL;
-    } else {
-	alp->relocs = NULL;
-    }
-
     /*@-compdef@*/ /* FIX: al->list->relocs-?{oldPath,newPath} undefined */
     alFreeIndex(al);
     /*@=compdef@*/
@@ -794,18 +674,11 @@ alKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds)
 	        /*@innercontinue@*/ continue;
 #endif
 
-#ifdef	DYING
-	    /* XXX FIXME: use dsiNotify */
-	    if (keyType)
-		rpmMessage(RPMMESS_DEBUG, _("%9s: %-45s YES (added files)\n"),
-			keyType, fileName);
-#else
 	    dsiNotify(ds, _("(added files)"), 0);
-#endif
 
 	    ret = xrealloc(ret, (found+2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
-		ret[found++] = al->list + dirMatch->files[i].pkgNum;
+		ret[found++] = alNum2Key(al, dirMatch->files[i].pkgNum);
 	    /*@innerbreak@*/ break;
 	}
     }

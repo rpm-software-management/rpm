@@ -52,9 +52,10 @@ struct transactionFileInfo_s {
     uint_32 multiLib;		/* MULTILIB */
 /*@null@*/
     const void * key;		/*!< Package notify key. */
-/*@null@*/
+/*@null@*/ /*@dependent@*/
     rpmRelocation * relocs;	/*!< Package file relocations. */
-/*@null@*/ FD_t fd;		/*!< Package file handle */
+/*@null@*/
+    FD_t fd;			/*!< Package file handle */
 
 /*=============================*/
 

@@ -24,11 +24,9 @@ rpmDepSet dsFree(rpmDepSet ds)
 
 /*@-modfilesystem@*/
 if (_ds_debug)
-fprintf(stderr, "*** ds %p --\n", ds);
+fprintf(stderr, "*** ds %p -- %s[%d]\n", ds, ds->Type, ds->Count);
 /*@=modfilesystem@*/
 
-    if (ds == NULL)
-	return ds;
 
     if (ds->tagN == RPMTAG_PROVIDENAME) {
 	tagEVR = RPMTAG_PROVIDEVERSION;
@@ -248,7 +246,8 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
 	    ds->DNEVR = dsDNEVR(t, ds);
 	    /*@=nullstate@*/
 
-	}
+	} else
+	    ds->i = -1;
     }
 
 /*@-modfilesystem -nullderef -nullpass @*/

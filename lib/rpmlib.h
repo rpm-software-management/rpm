@@ -1426,6 +1426,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, /*@null@*/ FD_t fd,
 
 /** \ingroup rpmtrans
  * Add package to universe of possible packages to install in transaction set.
+ * @warning The key parameter is non-functional.
  * @param ts		transaction set
  * @param h		header
  * @param key		package private data

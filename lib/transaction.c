@@ -123,7 +123,11 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 	for (oc = 0; oc < ts->orderCount; oc++, e++) {
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
+#ifdef	DYING
 		*e = alGetKey(ts->addedPackages, ts->order[oc].u.addedKey);
+#else
+		*e = ts->order[oc].key;
+#endif
 		/*@switchbreak@*/ break;
 	    default:
 	    case TR_REMOVED:
@@ -927,11 +931,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     int nexti;
     alKey pkgKey, lastKey;
     int oc;
+    transactionElement p;
     fingerPrintCache fpc;
     struct psm_s psmbuf;
     PSM_t psm = &psmbuf;
     teIterator tei;
     int xx;
+
 int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 
     /* FIXME: what if the same package is included in ts twice? */
@@ -1027,21 +1033,30 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * - count files.
      */
     /* The ordering doesn't matter here */
-    for (i = 0; i < alGetSize(ts->addedPackages); i++) {
+#ifdef	DYING
+    for (i = 0; i < alGetSize(ts->addedPackages); i++)
+#else
+    tei = teInitIterator(ts);
+    while ((p = teNext(tei, TR_ADDED)) != NULL)
+#endif
+    {
 	const char * n, * v, * r;
 	const void * key;
 	rpmdbMatchIterator mi;
 	Header h;
 
-	/* XXX cast assumes that available keys are indices, not pointers */
-	pkgKey = (alKey)i;
+	pkgKey = p->u.addedKey;
 
 	h = alGetHeader(ts->addedPackages, pkgKey, 0);
 	if (h == NULL)	/* XXX can't happen */
 	    continue;
 
 	(void) headerNVR(h, &n, &v, &r);
+#ifdef	DYING
 	key = alGetKey(ts->addedPackages, pkgKey);
+#else
+	key = p->key;
+#endif
 
 	if (!archOkay(h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
@@ -1085,6 +1100,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	h = headerFree(h, "alGetHeader (rpmtsRun sanity)");
 
     }
+    tei = teFreeIterator(tei);
 
     /* FIXME: it seems a bit silly to read in all of these headers twice */
     /* The ordering doesn't matter here */
@@ -1134,11 +1150,18 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 #else
 	    fi->multiLib = ts->order[oc].multiLib;
 #endif
+
+#ifdef	DYING
 	    /*@-kepttrans@*/
 	    fi->key = alGetKey(ts->addedPackages, pkgKey);
 	    /*@=kepttrans@*/
 	    fi->relocs = alGetRelocs(ts->addedPackages, pkgKey);
 	    fi->fd = alGetFd(ts->addedPackages, pkgKey);
+#else
+/*@i@*/	    fi->key = ts->order[oc].key;
+	    fi->relocs = ts->order[oc].relocs;
+/*@i@*/	    fi->fd = ts->order[oc].fd;
+#endif
 
 	    /* XXX availablePackage can be dumped here XXX */
 
