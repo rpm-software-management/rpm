@@ -1181,8 +1181,11 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->
 	}
 	break;
     case 'P':
-	mpnpow_w(&z->n, x->n.size, x->n.data, m->n.size, m->n.data);
-	break;
+    {	size_t bnorm = m->n.size - (mpbitcnt(m->n.size, m->n.data) + 31)/32;
+	size_t bsize = m->n.size - bnorm;
+	mpw* bdata = m->n.data + bnorm;
+	mpnpow_w(&z->n, x->n.size, x->n.data, bsize, bdata);
+    }	break;
     case 'G':
 	wksp = alloca((x->n.size) * sizeof(*wksp));
 	mpnsize(&z->n, m->n.size);

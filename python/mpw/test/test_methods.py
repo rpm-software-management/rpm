@@ -47,6 +47,13 @@ class BasicTestCase(unittest.TestCase):
 	zb = mpz.mpz(0x0000000000000010)
 	zc = mpz.mpz(0x0fedcba000000000)
 
+	print "__hex__:\t", hex(wa), "\t",  hex(za)
+	print "__oct__:\t", oct(wa), "\t",  oct(za)
+
+	print "__int__:\t", mpw.__int__(wb), "\t",  mpz.MPZType.__int__(zb)
+	print "__long__:\t", mpw.__long__(wb), "\t",  mpz.MPZType.__long__(zb)
+	print "__float__:\t", mpw.__float__(wb), "\t",  mpz.MPZType.__float__(zb)
+
 	print "__neg__:\t", hex(mpw.__neg__(wa)), "\t",  hex(mpz.MPZType.__neg__(za))
 	print "__pos__:\t", hex(mpw.__pos__(wa)), "\t",  hex(mpz.MPZType.__pos__(za))
 	print "__abs__:\t", hex(mpw.__abs__(wa)), "\t",  hex(mpz.MPZType.__abs__(za))
@@ -61,7 +68,8 @@ class BasicTestCase(unittest.TestCase):
 	zq, zr = mpz.MPZType.__divmod__(za, zb)
 	print "__divmod__ q:\t", hex(wq), "\t",  hex(zq)
 	print "__divmod__ r:\t", hex(wr), "\t",  hex(zr)
-	print "__pow__:\t", hex(mpw.__pow__(mpw(16), wb)), "\t",  hex(mpz.MPZType.__pow__(mpz.mpz(16), zb))
+
+	print "__pow__:\t", hex(mpw.__pow__(wb, wb)), "\t",  hex(mpz.MPZType.__pow__(zb, zb))
 
 	print "__lshift__:\t", hex(mpw.__lshift__(wa, wb)), "\t",  hex(mpz.MPZType.__lshift__(za, zb))
 	print "__rshift__:\t", hex(mpw.__rshift__(wa, wb)), "\t",  hex(mpz.MPZType.__rshift__(za, zb))
@@ -69,9 +77,6 @@ class BasicTestCase(unittest.TestCase):
 	print "__xor__:\t", hex(mpw.__xor__(wa, wa)), "\t",  hex(mpz.MPZType.__xor__(za, za))
 	print "__or__:\t", hex(mpw.__or__(wa, wc)), "\t",  hex(mpz.MPZType.__or__(za, zc))
 
-#	print mpw.__int__(b)
-#	print mpw.__long__(b)
-#	print mpw.__float__(a)
 #	print mpw.__complex__(b)
 #	print mpw.__oct__(a*b)
 #	print mpw.__hex__(a*b)
