@@ -8,7 +8,7 @@ struct availablePackage {
     const char ** provides;
     const char ** providesEVR;
     /*@dependent@*/ int * provideFlags;
-    const char ** files;
+    const char ** baseFileNames;
     /*@dependent@*/ const char * name;
     /*@dependent@*/ const char * version;
     /*@dependent@*/ const char * release;
@@ -19,12 +19,24 @@ struct availablePackage {
     /*@dependent@*/ FD_t fd;
 } ;
 
-enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
+enum indexEntryType { IET_NAME, IET_PROVIDES };
 
 struct availableIndexEntry {
     /*@dependent@*/ struct availablePackage * package;
     /*@dependent@*/ const char * entry;
     enum indexEntryType type;
+} ;
+
+struct fileIndexEntry {
+    struct availablePackage * package;
+    const char * basename;
+} ;
+
+struct dirInfo {
+    char * dirName;			/* strdup'd */
+    int dirNum;
+    struct fileIndexEntry * files;	/* malloc'd */
+    int numFiles;
 } ;
 
 struct availableIndex {
@@ -36,6 +48,8 @@ struct availableList {
     /*@owned@*/ /*@null@*/ struct availablePackage * list;
     struct availableIndex index;
     int size, alloced;
+    int numDirs;
+    struct dirInfo * dirs;		/* malloc'd */
 };
 
 struct transactionElement {
