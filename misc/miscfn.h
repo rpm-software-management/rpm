@@ -79,6 +79,7 @@ extern void *myrealloc(void *, size_t);
        char * our_mntdir;
    };
    struct our_mntent *getmntent(FILE *filep);
+#  define our_mntent struct our_mntent
 # else
    #include <stdio.h>
    struct our_mntent {
