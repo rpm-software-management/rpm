@@ -178,7 +178,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh size(%d): BAD, read returned %d\n"), sizeof(block), xx);
+		_("sigh size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, header_magic, sizeof(header_magic))) {
@@ -215,7 +215,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     dataStart = (unsigned char *) (pe + il);
     if ((xx = timedRead(fd, (char *)pe, nb)) != nb) {
 	(void) snprintf(buf, sizeof(buf),
-		_("sigh blob(%d): BAD, read returned %d\n"), nb, xx);
+		_("sigh blob(%d): BAD, read returned %d\n"), (int)nb, xx);
 	goto exit;
     }
     
@@ -985,11 +985,11 @@ verifySizeSignature(const rpmts ts, /*@out@*/ char * t)
     if (size != dig->nbytes) {
 	res = RPMRC_FAIL;
 	t = stpcpy(t, rpmSigString(res));
-	sprintf(t, " Expected(%d) != (%d)\n", size, dig->nbytes);
+	sprintf(t, " Expected(%d) != (%d)\n", (int)size, (int)dig->nbytes);
     } else {
 	res = RPMRC_OK;
 	t = stpcpy(t, rpmSigString(res));
-	sprintf(t, " (%d)", dig->nbytes);
+	sprintf(t, " (%d)", (int)dig->nbytes);
     }
 
 exit:

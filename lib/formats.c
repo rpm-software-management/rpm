@@ -145,7 +145,8 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     char * t;
     char * val;
     int atype;
-    int lc, ns, nt;
+    size_t ns, nt;
+    int lc;
 
     switch (type) {
     case RPM_BIN_TYPE:
@@ -238,7 +239,7 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	const char * enc;
 	char * t;
 	int lc;
-	int nt = ((element + 2) / 3) * 4;
+	size_t nt = ((element + 2) / 3) * 4;
 
 /*@-boundswrite@*/
 	/*@-globs@*/

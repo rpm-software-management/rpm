@@ -6,7 +6,7 @@
 
 #include "debug.h"
 
-char *
+static char *
 my_stpcpy (char       *dest,
 	   const char *src)
 {
@@ -146,7 +146,7 @@ static const unsigned int crc32_table[256] =
   0x2d02ef8d
 };
 
-unsigned int crc32 (unsigned int crc, unsigned char *buf, size_t len)
+static unsigned int crc32 (unsigned int crc, unsigned char *buf, size_t len)
 {
   unsigned char *end;
 

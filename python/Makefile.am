@@ -54,11 +54,11 @@ librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c header-py.c \
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
 
-_rpmdb.so$(EXEEXT): $(_rpmdb_so_OBJECTS)
-	$(CC) -o $@ $(_rpmdb_so_OBJECTS) $(_rpmdb_so_LDFLAGS)
+_rpmdb.so$(EXEEXT): _rpmdb.lo
+	$(CC) -o $@ _rpmdb.lo $(_rpmdb_so_LDFLAGS)
 
-poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
-	$(CC) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
+poptmodule.so$(EXEEXT): poptmodule.lo
+	$(CC) -o $@ poptmodule.lo $(poptmodule_so_LDFLAGS)
 
 # rpmmodule.c hash.c upgrade.c header-py.c \
 # 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \

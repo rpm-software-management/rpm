@@ -68,17 +68,17 @@ extern "C" {
  * @return		(malloc'd) base64 string
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-char * b64encode (const void * data, int ns)
+char * b64encode (const void * data, size_t ns)
 	/*@*/;
 
 /**
  * Encode crc of binary input data into 5 bytes of base64 output.
  * @param data		binary data
- * @param ns		crc of data
+ * @param len		no. bytes of binary data
  * @return		(malloc'd) base64 string
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-char * b64crc (const unsigned char * data, int ns)
+char * b64crc (const unsigned char * data, size_t ns)
 	/*@*/;
 
 /**
@@ -89,7 +89,7 @@ char * b64crc (const unsigned char * data, int ns)
  * @return		0 on success, 1: s == NULL, 2: bad length, 3: bad char
  */
 BEECRYPTAPI /*@unused@*/
-int b64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ int *lenp)
+int b64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ size_t *lenp)
 	/*@modifies *datap, *lenp @*/;
 
 /**

@@ -266,7 +266,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 /*@=boundswrite@*/
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
-	    sprintf(te, "%s %d %d %s 0%o ", fn, fsize, fmtime, fmd5, fmode);
+	    sprintf(te, "%s %d %d %s 0%o ", fn, (int)fsize, fmtime, fmd5, fmode);
 	    te += strlen(te);
 
 	    if (fuser && fgroup) {

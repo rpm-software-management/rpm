@@ -15,7 +15,8 @@ int keep_strtab = 0;
 int keep_all_section_headers = 1;
 int add_unstrip_info = 0;
 
-void
+#if defined(NhUNUSED)
+static void
 copy_to_file(Elf *elf, Elf *out_elf)
 {
   GElf_Ehdr ehdr;
@@ -67,8 +68,9 @@ copy_to_file(Elf *elf, Elf *out_elf)
 	}
     }
 }
+#endif
 
-void
+static void
 strip_to_file(Elf *elf, Elf *out_elf, DebugLink *debuglink)
 {
   GElf_Ehdr ehdr;
@@ -82,7 +84,8 @@ strip_to_file(Elf *elf, Elf *out_elf, DebugLink *debuglink)
   int keep_section;
   int changed_offsets;
   GElf_Off last_offset;
-  int i, debuglink_name;
+  int i;
+  int debuglink_name = 0;
 
   elf_flagelf (out_elf, ELF_C_SET, ELF_F_LAYOUT);
   
@@ -220,7 +223,7 @@ strip_to_file(Elf *elf, Elf *out_elf, DebugLink *debuglink)
     }
 }
 
-void
+static void
 copy_debuginfo_to_file(Elf *elf, Elf *out_elf)
 {
   GElf_Ehdr ehdr;
@@ -231,7 +234,7 @@ copy_debuginfo_to_file(Elf *elf, Elf *out_elf)
   unsigned char *section_strtab;
   int keep_section;
   UnstripInfo *info;
-  int unstripinfo_name;
+  int unstripinfo_name = 0;
 
   info = malloc (sizeof (UnstripInfo));
   

@@ -723,8 +723,7 @@ exit:
 }
 /*@=bounds@*/
 
-int rpmErase(rpmts ts,
-		const struct rpmInstallArguments_s * ia,
+int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 		const char ** argv)
 {
     int count;

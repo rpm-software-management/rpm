@@ -360,7 +360,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     if (uc > 0 && pvlen != uc) {
 	(void) snprintf(buf, sizeof(buf),
 		_("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
-		uc, il, dl);
+		(int)uc, (int)il, (int)dl);
 	goto exit;
     }
 
@@ -652,7 +652,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
-		_("hdr size(%d): BAD, read returned %d\n"), sizeof(block), xx);
+		_("hdr size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, header_magic, sizeof(header_magic))) {

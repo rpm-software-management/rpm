@@ -557,7 +557,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmErase(rpmts ts, const struct rpmInstallArguments_s * ia,
+int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 		/*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, ia, rpmGlobalMacroContext,

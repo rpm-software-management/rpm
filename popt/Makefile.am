@@ -3,7 +3,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = autogen.sh CHANGES $(man_MANS) popt.spec \
-	testit.sh test-poptrc \
+	testit.sh test-poptrc test3-data/0* \
 	po/*.in po/*.po po/popt.pot \
 	popt.ps
 

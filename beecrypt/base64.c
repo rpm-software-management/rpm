@@ -246,7 +246,7 @@ const char * b64encode_eolstr = B64ENCODE_EOLSTR;
 
 /*@-boundswrite@*/
 /*@-internalglobs -modfilesys @*/
-char * b64encode (const void * data, int ns)
+char * b64encode (const void * data, size_t ns)
 {
     static char b64enc[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -275,7 +275,7 @@ char * b64encode (const void * data, int ns)
 
     lc = 0;
     if (te)
-    while (ns) {
+    while (ns > 0) {
 
 if (_debug)
 fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
@@ -335,7 +335,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 #define CRC24_POLY 0x1864cfbL
 
 /*@-boundsread@*/
-char * b64crc (const unsigned char * data, int ns)
+char * b64crc (const unsigned char * data, size_t ns)
 {
     const unsigned char *s = data;
     uint32 crc = CRC24_INIT;
@@ -367,7 +367,7 @@ const char * b64decode_whitespace = B64DECODE_WHITESPACE;
 
 /*@-internalglobs -modfilesys @*/
 /*@-boundswrite@*/
-int b64decode (const char * s, void ** datap, int *lenp)
+int b64decode (const char * s, void ** datap, size_t *lenp)
 {
     unsigned char b64dec[256];
     const unsigned char *t;
