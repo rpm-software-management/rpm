@@ -6,6 +6,7 @@
 	- handle %files -f with no %setup (no build directory)
 	- fixed ugly i18n header bug
 	- deal with lang paths sanely when entries are missing languages
+	- fix bug packing /usr/doc when last file was %dir
 	
 2.5 -> 2.5.1:
 	- fail if sources are not regular files

@@ -471,6 +471,10 @@ static int processPackageFiles(Spec spec, Package pkg,
 	/* fl.current now takes on "ownership" of the specialDocAttrRec */
 	/* allocated string data.                                       */
 	fl.current = specialDocAttrRec;
+	fl.isDir = 0;
+	fl.inFtw = 0;
+	fl.currentFlags = 0;
+	fl.currentVerifyFlags = 0;
 	processBinaryFile(pkg, &fl, specialDoc);
 	FREE(specialDoc);
     }
