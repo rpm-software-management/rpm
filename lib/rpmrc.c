@@ -29,8 +29,6 @@ struct option optionTable[] = {
     { "optflags",		RPMVAR_OPTFLAGS,		1 },
     { "pgp_name",               RPMVAR_PGP_NAME,                0 },
     { "pgp_path",               RPMVAR_PGP_PATH,                0 },
-    { "pgp_pubring",            RPMVAR_PGP_PUBRING,             0 },
-    { "pgp_secring",            RPMVAR_PGP_SECRING,             0 },
     { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0 },
     { "require_group",		RPMVAR_REQUIREGROUP,		0 },
     { "require_icon",		RPMVAR_REQUIREICON,		0 },
@@ -169,9 +167,8 @@ static void setDefaults(void) {
     setVar(RPMVAR_DOCDIR, "/usr/doc");
     setVar(RPMVAR_OPTFLAGS, "-O2");
     setVar(RPMVAR_SIGTYPE, "none");
-    setVar(RPMVAR_PGP_PATH, "/usr/lib/rpm");
-    setVar(RPMVAR_PGP_PUBRING, "/usr/lib/rpm/pubring.pgp");
-    setVar(RPMVAR_PGP_SECRING, "/usr/lib/rpm/secring.pgp");
+    setVar(RPMVAR_PGP_PATH, NULL);
+    setVar(RPMVAR_PGP_NAME, NULL);
 }
 
 int readConfigFiles(char * file) {
