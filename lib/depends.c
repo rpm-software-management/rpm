@@ -1728,7 +1728,7 @@ int rpmdepOrder(rpmTransactionSet ts)
     }
 
     /* T4. Scan for zeroes. */
-    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages\n"));
+    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, depth)\n"));
 
 rescan:
     q = r = NULL;
@@ -1943,6 +1943,8 @@ int rpmdepCheck(rpmTransactionSet ts,
     for (i = 0, p = ts->addedPackages.list; i < npkgs; i++, p++)
     {
 
+        rpmMessage(RPMMESS_DEBUG, ("========== +++ %s-%s-%s\n"),
+		p->name, p->version, p->release);
 	rc = checkPackageDeps(ts, &ps, p->h, NULL, p->multiLib);
 	if (rc)
 	    goto exit;
@@ -1975,8 +1977,10 @@ int rpmdepCheck(rpmTransactionSet ts,
       rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
       while ((h = rpmdbNextIterator(mi)) != NULL) {
 
-	{   const char * name;
-	    headerNVR(h, &name, NULL, NULL);
+	{   const char * name, * version, * release;
+	    headerNVR(h, &name, &version, &release);
+	    rpmMessage(RPMMESS_DEBUG, ("========== --- %s-%s-%s\n"),
+		name, version, release);
 
 	    /* Erasing: check name against requiredby matches. */
 	    rc = checkDependentPackages(ts, &ps, name);

@@ -331,8 +331,9 @@ restart:
 	    continue;
 	}
 	if ((rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) && isSource) {
-	    rpmMessage(RPMMESS_DEBUG, "\tadded source rpm[%d]\n", numSRPMS);
-		sourceURL = (sourceURL == NULL)
+	    rpmMessage(RPMMESS_DEBUG, "\tadded source package [%d]\n",
+		numSRPMS);
+	    sourceURL = (sourceURL == NULL)
 		    ? xmalloc( (numSRPMS + 2) * sizeof(*sourceURL))
 		    : xrealloc(sourceURL, (numSRPMS + 2) * sizeof(*sourceURL));
 	    sourceURL[numSRPMS++] = *fnp;
@@ -413,7 +414,8 @@ restart:
 
 	    switch(rc) {
 	    case 0:
-		rpmMessage(RPMMESS_DEBUG, "\tadded binary rpm[%d]\n", numRPMS);
+		rpmMessage(RPMMESS_DEBUG, "\tadded binary package [%d]\n",
+			numRPMS);
 		break;
 	    case 1:
 		rpmMessage(RPMMESS_ERROR,

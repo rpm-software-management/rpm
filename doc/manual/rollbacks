@@ -1,0 +1,49 @@
+The term "transaction rollback" is jargon for a method of maintaining
+sets of packages that are applied to boxen sequentially. In a nutshell,
+packages that are to be installed/removed are aggregated into something
+called a "transaction set". Each transaction set is then assigned a unique
+identifier so that the packages in the set can be distinguished, Finally,
+since the transaction set identifier (TID) can be ordered, transaction sets
+can be managed just like packages, since each TID will identify the sets
+of packages to be installed/removed at each stage in a software life
+maintenance cycle. The approach is very similar to what rpm already does
+when encapsulating sets of files in packages which are then ordered
+according to the package epoch, version and release.
+
+The current release of rpm (rpm-4.0.2) has added TID's to every package
+installed.  In addition, an image of the header is preserved in the rpm
+database that is identical to what was in the original package file.
+This permits rpm to reconstruct the original package from the installed
+components at any time.
+
+The next version of rpm (rpm-4.0.3, now in a release cycle now) has added the
+ability to repackage all the components to construct a copy of the original
+package as part of a software upgrade. The reconstituted package as well
+as the newly installed packages in the transaction set are all marked with
+a TID that identifies the software upgrade uniquely. Thus software
+replaced on a boxen is repackaged, and the packages can be archived
+(or otherwise saved) as part of normal software management.
+
+What remains to be done is to use the ordering property of TID's so that
+transactions can be "rolled back" to any point in the past for which
+the old packages are available. This will require a B-tree database
+index for the currently installed transaction sets, and saving the names
+of the packages that were removed. For the commonest case, a software
+upgrade, each installed package can carry the names of replaced
+(and repackaged) packages that were performed as a side effect of the
+package upgrade. Other means will be needed to keep track of transaction
+sets that only removed packages, however. Finally, a "transaction rollback"
+loop still needs to be written that will walk backwards through the ordered
+TID's, reconstructing the transaction set but reversing what packages
+are removed and/or installed.
+
+In addition to "transaction rollbacks", rpm will soon have the ability
+to apply/commit/undo software transactions atomically. The next version of
+rpm (rpm-4.0.3) already has the ability to apply/commit/undo file changes.
+The term "apply" means that the file is installed with a temporary name
+(currently just the original file name with the TID appended), "commit"
+is the operation of renaming the file and setting it's mode and ownership,
+while an "undo" is just a removal of the temporary file. The concepts
+of apply/commit/undo are being extended to packages as a set of
+file operations, and will need to be extended yet further to transaction
+sets as well.

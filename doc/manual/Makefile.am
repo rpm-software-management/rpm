@@ -11,6 +11,7 @@ EXTRA_DIST	= \
 	multiplebuilds \
 	queryformat \
 	relocatable \
+	rollbacks \
 	signatures \
 	spec \
 	triggers \
