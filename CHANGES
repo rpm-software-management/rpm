@@ -128,6 +128,9 @@
 	- fix: rpm -qlv link count for directories dinna include '..'.
 	- fix: rpm -qlv size for directories should be zero.
 	- add --noghost to filter non-payload files from rpm -qlv output.
+	- add %{_gnu} macro to append "-gnu" to %{_target_platform} to
+	  support --target/--host flavored %configure. Legacy behavior
+	  available by undefining %{_gnu}.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
