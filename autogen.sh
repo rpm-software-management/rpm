@@ -1,9 +1,9 @@
 #!/bin/sh
 
+(cd popt; ./autogen.sh "$@")
+libtoolize --copy
 autoheader
 autoconf
-#echo timestamp > stamp-h.in
-#(cd popt; autoconf; echo timestamp > stamp-h.in)
 
 if [ "$1" = "--noconfigure" ]; then 
     exit 0;
