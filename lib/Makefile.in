@@ -1,0 +1,31 @@
+LIBS = -lefence
+
+LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o
+LIBRPM = librpm.a
+
+WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
+DEBUG = -g
+OPTS = -O2
+
+all: test dump
+
+# -----------------------------------------------------------------------
+
+AR = ar r
+RANLIB = ranlib
+
+CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS)
+LDFLAGS = $(DEBUG) $(LIBS)
+
+test: librpm.a
+	$(CC) -o $@ test.c librpm.a $(LIBS)
+
+dump: librpm.a
+	$(CC) -o $@ dump.c librpm.a $(LIBS)
+
+$(LIBRPM): $(LIBOBJECTS) 
+	$(AR) $@ $(LIBOBJECTS)
+	$(RANLIB) $@
+
+clean:
+	rm -f *.a *.o *~ test dump test.out

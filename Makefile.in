@@ -1,0 +1,25 @@
+SUBDIRS = lib
+OBJS = spec.o
+PROGS = build
+
+WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
+DEBUG = -g
+OPTS = -O2
+CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib
+LDFLAGS = $(DEBUG) -Llib
+LOADLIBES = -lrpm
+
+all: make-subdirs $(OBJS) $(PROGS)
+	
+make-subdirs:
+	for d in $(SUBDIRS); do \
+		(cd $$d; $(MAKE)) ;\
+	done
+
+build: build.o spec.o
+
+clean:
+	for d in $(SUBDIRS); do \
+		(cd $$d; $(MAKE) $@) ;\
+	done
+	rm -f *.o *~ $(PROGS)
