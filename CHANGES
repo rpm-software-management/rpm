@@ -12,6 +12,7 @@
 	- fix: cut-n-paste error setting nopromote for Conflicts: (#81965).
 	- don't use error string after gzclose (Dmitry V. Levin).
 	- fix: nested %if handling, optind initialization posix vs. glibc.
+	- add version check for package with provides and obsoletes.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

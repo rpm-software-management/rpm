@@ -305,7 +305,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
-		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+		if (rpmVersionCompare(h, oh))
+		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
 	}
 	mi = rpmdbFreeIterator(mi);
     }
