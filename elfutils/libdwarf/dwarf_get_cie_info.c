@@ -2,18 +2,15 @@
    Copyright (C) 2000, 2002 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2000.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/license/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -23,14 +20,20 @@
 
 
 int
-dwarf_get_cie_info (Dwarf_Cie cie, Dwarf_Unsigned *bytes_in_cie,
-		Dwarf_Small *version, char **augmenter,
-		Dwarf_Unsigned *code_alignment_factor,
-		Dwarf_Signed *data_alignment_factor,
-		Dwarf_Half *return_address_register,
-		Dwarf_Ptr *initial_instructions,
-		Dwarf_Unsigned *initial_instructions_length,
-		Dwarf_Error *error)
+dwarf_get_cie_info (cie, bytes_in_cie, version, augmenter,
+		    code_alignment_factor, data_alignment_factor,
+		    return_address_register, initial_instructions,
+		    initial_instructions_length, error)
+     Dwarf_Cie cie;
+     Dwarf_Unsigned *bytes_in_cie;
+     Dwarf_Small *version;
+     char **augmenter;
+     Dwarf_Unsigned *code_alignment_factor;
+     Dwarf_Signed *data_alignment_factor;
+     Dwarf_Half *return_address_register;
+     Dwarf_Ptr *initial_instructions;
+     Dwarf_Unsigned *initial_instructions_length;
+     Dwarf_Error *error;
 {
   *bytes_in_cie = cie->length;
 

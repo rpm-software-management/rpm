@@ -2,18 +2,15 @@
    Copyright (C) 2000, 2002 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2000.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/license/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -27,10 +24,8 @@
 
 /* XXX This function will have to be optimized.  The search is too linear
    to be performed too often -> O(n²).  */
-/*@null@*/
 static Dwarf_CU_Info
 find_cu (Dwarf_Debug dbg, Dwarf_Off offset, Dwarf_Error *error)
-	/*@modifies dbg, *error @*/
 {
   Dwarf_CU_Info cu;
   Dwarf_Word cu_offset;
@@ -67,8 +62,11 @@ find_cu (Dwarf_Debug dbg, Dwarf_Off offset, Dwarf_Error *error)
 
 
 int
-dwarf_offdie (Dwarf_Debug dbg, Dwarf_Off offset, Dwarf_Die *return_die,
-		Dwarf_Error *error)
+dwarf_offdie (dbg, offset, return_die, error)
+     Dwarf_Debug dbg;
+     Dwarf_Off offset;
+     Dwarf_Die *return_die;
+     Dwarf_Error *error;
 {
   Dwarf_CU_Info cu;
   Dwarf_Die new_die;

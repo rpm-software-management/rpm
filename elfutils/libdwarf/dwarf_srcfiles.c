@@ -2,18 +2,15 @@
    Copyright (C) 2000, 2002 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2000.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/license/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -43,10 +40,8 @@ struct filelist
 
 
 static int
-read_file_names (Dwarf_Debug dbg, /*@null@*/ char *comp_dir,
-		 Dwarf_Small **linepp, char ***result, Dwarf_Signed *nresult,
-		 Dwarf_Error *error)
-	/*@modifies *linepp, *result, *nresult, *error @*/
+read_file_names (Dwarf_Debug dbg, char *comp_dir, Dwarf_Small **linepp,
+		 char ***result, Dwarf_Signed *nresult, Dwarf_Error *error)
 {
   Dwarf_Small *linep = *linepp;
   struct dirlist comp_dir_elem;
@@ -171,8 +166,11 @@ read_file_names (Dwarf_Debug dbg, /*@null@*/ char *comp_dir,
 
 
 int
-dwarf_srcfiles (Dwarf_Die die, char ***srcfiles, Dwarf_Signed *srcfilecount,
-		Dwarf_Error *error)
+dwarf_srcfiles (die, srcfiles, srcfilecount, error)
+     Dwarf_Die die;
+     char ***srcfiles;
+     Dwarf_Signed *srcfilecount;
+     Dwarf_Error *error;
 {
   Dwarf_CU_Info cu = die->cu;
   Dwarf_Debug dbg = cu->dbg;
