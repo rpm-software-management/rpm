@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-03-28 15:31-0500\n"
+"POT-Creation-Date: 2000-04-03 10:01-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2198,12 +2198,12 @@ msgid " failed - "
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: lib/dbindex.c:91
+#: lib/dbindex.c:93
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/dbindex.c:134
+#: lib/dbindex.c:136
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2211,23 +2211,23 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:147
+#: lib/dbindex.c:149
 #, fuzzy, c-format
 msgid "cannot open file %s: %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/dbindex.c:187
+#: lib/dbindex.c:189
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "Fehler beim Eintrag %s von %s"
 
-#: lib/dbindex.c:201
+#: lib/dbindex.c:203
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 
 # FIXME
-#: lib/dbindex.c:206
+#: lib/dbindex.c:208
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
@@ -2960,77 +2960,77 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "Dateiliste des Pakets anzeigen"
 
-#: lib/rebuilddb.c:33 lib/rpmdb.c:292
+#: lib/rebuilddb.c:34 lib/rpmdb.c:349
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: lib/rebuilddb.c:58
+#: lib/rebuilddb.c:59
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rebuilddb.c:70
+#: lib/rebuilddb.c:71
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rebuilddb.c:81
+#: lib/rebuilddb.c:82
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rebuilddb.c:90
+#: lib/rebuilddb.c:91
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rebuilddb.c:101
+#: lib/rebuilddb.c:102
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: lib/rebuilddb.c:119
+#: lib/rebuilddb.c:120
 #, c-format
 msgid "duplicated database entry: %s-%s-%s -- skipping."
 msgstr ""
 
-#: lib/rebuilddb.c:131
+#: lib/rebuilddb.c:132
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: lib/rebuilddb.c:137
+#: lib/rebuilddb.c:138
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: lib/rebuilddb.c:150
+#: lib/rebuilddb.c:152
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:158
+#: lib/rebuilddb.c:160
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:162
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
 # , c-format
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:168
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -3120,112 +3120,112 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:188
+#: lib/rpmdb.c:201
 #, fuzzy, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
 # , c-format
-#: lib/rpmdb.c:200 lib/url.c:445
+#: lib/rpmdb.c:213 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/rpmdb.c:214 lib/rpmdb.c:222
+#: lib/rpmdb.c:227 lib/rpmdb.c:235
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:228
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:236
 msgid "shared"
 msgstr "geteilt"
 
-#: lib/rpmdb.c:254
+#: lib/rpmdb.c:268 lib/rpmdb.c:321
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:523
+#: lib/rpmdb.c:594
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/rpmdb.c:532
+#: lib/rpmdb.c:603
 #, c-format
 msgid "package %s not found in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:558 lib/uninstall.c:91
+#: lib/rpmdb.c:629 lib/uninstall.c:91
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
-#: lib/rpmdb.c:568
+#: lib/rpmdb.c:639
 msgid "package has no name"
 msgstr "Paket hat keinen Namen"
 
-#: lib/rpmdb.c:570
+#: lib/rpmdb.c:641
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:575
+#: lib/rpmdb.c:646
 #, fuzzy
 msgid "package has no group\n"
 msgstr "Paket hat keinen Namen"
 
-#: lib/rpmdb.c:577
+#: lib/rpmdb.c:648
 msgid "removing group index\n"
 msgstr ""
 
 # FIXME
-#: lib/rpmdb.c:584
+#: lib/rpmdb.c:655
 #, fuzzy, c-format
 msgid "removing provides index for %s\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:599
+#: lib/rpmdb.c:670
 #, fuzzy, c-format
 msgid "removing requiredby index for %s\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:611
+#: lib/rpmdb.c:682
 #, fuzzy, c-format
 msgid "removing trigger index for %s\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:693
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:633
+#: lib/rpmdb.c:704
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:642
+#: lib/rpmdb.c:713
 #, fuzzy
 msgid "package has no files\n"
 msgstr "Paket hat keinen Namen"
 
 # reservieren???
-#: lib/rpmdb.c:760
+#: lib/rpmdb.c:831
 msgid "cannot allocate space for database"
 msgstr "kann keinen Platz für die Datenbank bekommen"
 
-#: lib/rpmdb.c:819
+#: lib/rpmdb.c:890
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
 
-#: lib/rpmdb.c:832
+#: lib/rpmdb.c:903
 msgid "header changed size!"
 msgstr ""
 

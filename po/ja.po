@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-03-28 15:31-0500\n"
+"POT-Creation-Date: 2000-04-03 10:01-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.34 2000/03/31 14:55:24 jbj Exp $
+# $Id: ja.po,v 1.35 2000/04/03 14:36:39 jbj Exp $
 #: rpm.c:200
 #, c-format
 msgid "rpm: %s\n"
@@ -2102,12 +2102,12 @@ msgstr "内部エラー"
 msgid " failed - "
 msgstr "失敗 - "
 
-#: lib/dbindex.c:91
+#: lib/dbindex.c:93
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/dbindex.c:134
+#: lib/dbindex.c:136
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2115,22 +2115,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:147
+#: lib/dbindex.c:149
 #, fuzzy, c-format
 msgid "cannot open file %s: %s"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/dbindex.c:187
+#: lib/dbindex.c:189
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "レコード %s の取得のエラー (%s から)"
 
-#: lib/dbindex.c:201
+#: lib/dbindex.c:203
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "レコード %s を %s にストアでエラー "
 
-#: lib/dbindex.c:206
+#: lib/dbindex.c:208
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "レコード %s を %s に削除でエラー"
@@ -2866,75 +2866,75 @@ msgstr "列挙したファイルの状態を表示します"
 msgid "display a verbose file listing"
 msgstr "ファイルリストを冗長に表示します"
 
-#: lib/rebuilddb.c:33 lib/rpmdb.c:292
+#: lib/rebuilddb.c:34 lib/rpmdb.c:349
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
-#: lib/rebuilddb.c:58
+#: lib/rebuilddb.c:59
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rebuilddb.c:70
+#: lib/rebuilddb.c:71
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ディレクトリ %s の作成エラー: %s"
 
-#: lib/rebuilddb.c:81
+#: lib/rebuilddb.c:82
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: lib/rebuilddb.c:90
+#: lib/rebuilddb.c:91
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rebuilddb.c:101
+#: lib/rebuilddb.c:102
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rebuilddb.c:119
+#: lib/rebuilddb.c:120
 #, c-format
 msgid "duplicated database entry: %s-%s-%s -- skipping."
 msgstr ""
 
-#: lib/rebuilddb.c:131
+#: lib/rebuilddb.c:132
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rebuilddb.c:137
+#: lib/rebuilddb.c:138
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rebuilddb.c:150
+#: lib/rebuilddb.c:152
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rebuilddb.c:158
+#: lib/rebuilddb.c:160
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:162
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:168
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -3024,105 +3024,105 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:188
+#: lib/rpmdb.c:201
 #, fuzzy, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: lib/rpmdb.c:200 lib/url.c:445
+#: lib/rpmdb.c:213 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/rpmdb.c:214 lib/rpmdb.c:222
+#: lib/rpmdb.c:227 lib/rpmdb.c:235
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "データベースの %s をロックできません"
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:228
 msgid "exclusive"
 msgstr "除外"
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:236
 msgid "shared"
 msgstr "共有"
 
-#: lib/rpmdb.c:254
+#: lib/rpmdb.c:268 lib/rpmdb.c:321
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:523
+#: lib/rpmdb.c:594
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "パッケージ %s は %s 中にリストされていません"
 
-#: lib/rpmdb.c:532
+#: lib/rpmdb.c:603
 #, c-format
 msgid "package %s not found in %s"
 msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:558 lib/uninstall.c:91
+#: lib/rpmdb.c:629 lib/uninstall.c:91
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "アンインストールのために %d でヘッダを読むことができません"
 
-#: lib/rpmdb.c:568
+#: lib/rpmdb.c:639
 msgid "package has no name"
 msgstr "パッケージに名前がありません"
 
-#: lib/rpmdb.c:570
+#: lib/rpmdb.c:641
 msgid "removing name index\n"
 msgstr "name インデックス削除します\n"
 
-#: lib/rpmdb.c:575
+#: lib/rpmdb.c:646
 msgid "package has no group\n"
 msgstr "パッケージにグループがありません\n"
 
-#: lib/rpmdb.c:577
+#: lib/rpmdb.c:648
 msgid "removing group index\n"
 msgstr "group インデックスを削除します\n"
 
-#: lib/rpmdb.c:584
+#: lib/rpmdb.c:655
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr "%s 用の provides インデックスを削除します\n"
 
-#: lib/rpmdb.c:599
+#: lib/rpmdb.c:670
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr "%s 用の requiredby インデックスを削除します\n"
 
-#: lib/rpmdb.c:611
+#: lib/rpmdb.c:682
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr "%s 用の tigger インデックスを削除します\n"
 
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:693
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr "%s 用の confilict インデックスを削除します\n"
 
-#: lib/rpmdb.c:633
+#: lib/rpmdb.c:704
 #, c-format
 msgid "removing file index for %s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: lib/rpmdb.c:642
+#: lib/rpmdb.c:713
 msgid "package has no files\n"
 msgstr "パッケージにファイルが有りません\n"
 
-#: lib/rpmdb.c:760
+#: lib/rpmdb.c:831
 msgid "cannot allocate space for database"
 msgstr "データベース用の空き容量が足りません"
 
-#: lib/rpmdb.c:819
+#: lib/rpmdb.c:890
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "アップデート用の %d でヘッダを読めません"
 
-#: lib/rpmdb.c:832
+#: lib/rpmdb.c:903
 msgid "header changed size!"
 msgstr "ヘッダのサイズが変更されました"
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-03-28 15:31-0500\n"
+"POT-Creation-Date: 2000-04-03 10:01-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2133,12 +2133,12 @@ msgstr "ölümcül hata: "
 msgid " failed - "
 msgstr "PGP hata verdi"
 
-#: lib/dbindex.c:91
+#: lib/dbindex.c:93
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "%s açýlamadý: %s"
 
-#: lib/dbindex.c:134
+#: lib/dbindex.c:136
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2146,22 +2146,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:147
+#: lib/dbindex.c:149
 #, fuzzy, c-format
 msgid "cannot open file %s: %s"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/dbindex.c:187
+#: lib/dbindex.c:189
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
-#: lib/dbindex.c:201
+#: lib/dbindex.c:203
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "%s kaydý %s dosyasýna yazýlamýyor"
 
-#: lib/dbindex.c:206
+#: lib/dbindex.c:208
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
@@ -2882,74 +2882,74 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "Paketin içerdiði dosyalarý gösterme"
 
-#: lib/rebuilddb.c:33 lib/rpmdb.c:292
+#: lib/rebuilddb.c:34 lib/rpmdb.c:349
 msgid "no dbpath has been set"
 msgstr "dbpath deðeri girilmemiþ"
 
-#: lib/rebuilddb.c:58
+#: lib/rebuilddb.c:59
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "geçici veritabaný %s mevcut"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rebuilddb.c:70
+#: lib/rebuilddb.c:71
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rebuilddb.c:81
+#: lib/rebuilddb.c:82
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rebuilddb.c:90
+#: lib/rebuilddb.c:91
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rebuilddb.c:101
+#: lib/rebuilddb.c:102
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: lib/rebuilddb.c:119
+#: lib/rebuilddb.c:120
 #, c-format
 msgid "duplicated database entry: %s-%s-%s -- skipping."
 msgstr ""
 
-#: lib/rebuilddb.c:131
+#: lib/rebuilddb.c:132
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d de yer alan kayýt saklayamýyor"
 
-#: lib/rebuilddb.c:137
+#: lib/rebuilddb.c:138
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: lib/rebuilddb.c:150
+#: lib/rebuilddb.c:152
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:158
+#: lib/rebuilddb.c:160
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:162
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:168
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s açýlamadý: %s"
@@ -3039,108 +3039,108 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:188
+#: lib/rpmdb.c:201
 #, fuzzy, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:200 lib/url.c:445
+#: lib/rpmdb.c:213 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/rpmdb.c:214 lib/rpmdb.c:222
+#: lib/rpmdb.c:227 lib/rpmdb.c:235
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "Veritabaný için %s kilit (lock) alýnamadý"
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:228
 msgid "exclusive"
 msgstr "özel"
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:236
 msgid "shared"
 msgstr "paylaþýlan (shared)"
 
-#: lib/rpmdb.c:254
+#: lib/rpmdb.c:268 lib/rpmdb.c:321
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:523
+#: lib/rpmdb.c:594
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: lib/rpmdb.c:532
+#: lib/rpmdb.c:603
 #, c-format
 msgid "package %s not found in %s"
 msgstr "%s pakedi %s içerisinde bulunamadý"
 
-#: lib/rpmdb.c:558 lib/uninstall.c:91
+#: lib/rpmdb.c:629 lib/uninstall.c:91
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "%d numaralý paketin silmek için gereken 'header' kýsmý okunamadý"
 
-#: lib/rpmdb.c:568
+#: lib/rpmdb.c:639
 msgid "package has no name"
 msgstr "pakedin adý yok :-)"
 
-#: lib/rpmdb.c:570
+#: lib/rpmdb.c:641
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:575
+#: lib/rpmdb.c:646
 #, fuzzy
 msgid "package has no group\n"
 msgstr "pakedin adý yok :-)"
 
-#: lib/rpmdb.c:577
+#: lib/rpmdb.c:648
 msgid "removing group index\n"
 msgstr ""
 
-#: lib/rpmdb.c:584
+#: lib/rpmdb.c:655
 #, fuzzy, c-format
 msgid "removing provides index for %s\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:599
+#: lib/rpmdb.c:670
 #, fuzzy, c-format
 msgid "removing requiredby index for %s\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:611
+#: lib/rpmdb.c:682
 #, fuzzy, c-format
 msgid "removing trigger index for %s\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:693
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:633
+#: lib/rpmdb.c:704
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:642
+#: lib/rpmdb.c:713
 #, fuzzy
 msgid "package has no files\n"
 msgstr "pakedin adý yok :-)"
 
 # reservieren???
-#: lib/rpmdb.c:760
+#: lib/rpmdb.c:831
 msgid "cannot allocate space for database"
 msgstr "Veritabaný için yer bulunamadý"
 
-#: lib/rpmdb.c:819
+#: lib/rpmdb.c:890
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "%d numaralý paketin güncelleme için gereken 'header' kýsmý okunamadý"
 
-#: lib/rpmdb.c:832
+#: lib/rpmdb.c:903
 msgid "header changed size!"
 msgstr ""
 

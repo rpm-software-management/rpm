@@ -6,6 +6,8 @@
 	- convert db1 -> db2 on-disk format using --rebuilddb.
 	- add db3 to the pile, isolate all with incremental link and vectors.
 	- try for db3 DB_INIT_CDB model.
+	- prefer db3 as default.
+	- permit db3 configuration using macros.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

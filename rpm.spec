@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,6 +219,10 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Mon Apr  3 2000 Jeff Johnson <jbj@redhat.com>
+- prefer db3 as default.
+- permit db3 configuration using macros.
+
 * Fri Mar 31 2000 Jeff Johnson <jbj@redhat.com>
 - try for db3 DB_INIT_CDB model.
 
