@@ -509,7 +509,7 @@ static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 	    int_32 uht, uhc;
 	
 	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
-	    ||   uh == NULL)
+	     ||  uh == NULL)
 	    {
 		h = headerFree(h, NULL);
 		goto exit;
@@ -542,7 +542,7 @@ static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makeGPGSignature(fn, &pkt, &pktlen, passPhrase)
-	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    goto exit;
 	ret = 0;
 	break;
@@ -560,7 +560,7 @@ static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makePGPSignature(fn, &pkt, &pktlen, passPhrase)
-	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    goto exit;
 	ret = 0;
 	break;
@@ -597,15 +597,15 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
     case RPMSIGTAG_MD5:
 	pktlen = 16;
 	pkt = xcalloc(1, pktlen);
-	if (mdbinfile(file, pkt)
-	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	if (domd5(file, pkt, 1, NULL)
+	 || !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	ret = 0;
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	if (makePGPSignature(file, &pkt, &pktlen, passPhrase)
-	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 #ifdef	NOTYET	/* XXX needs hdrmd5ctx, like hdrsha1ctx. */
 	/* XXX Piggyback a header-only RSA signature as well. */
@@ -615,7 +615,7 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
 	break;
     case RPMSIGTAG_GPG:
 	if (makeGPGSignature(file, &pkt, &pktlen, passPhrase)
-	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	/* XXX Piggyback a header-only DSA signature as well. */
 	ret = makeHDRSignature(sig, file, RPMSIGTAG_DSA, passPhrase);
@@ -960,7 +960,7 @@ rpmtsFindPubkey(rpmts ts)
 		continue;
 	    ix = rpmdbGetIteratorFileNum(mi);
 	    if (ix >= pc
-	    || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
+	     || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
 		ix = -1;
 	    pubkeys = headerFreeData(pubkeys, pt);
 	    break;

@@ -358,6 +358,31 @@ dnl
 
 dnl Checks for libraries.
 
+WITH_LIBELF_SUBDIR=
+WITH_LIBELF_INCLUDE=
+WITH_LIBELF_LIB=
+AC_CHECK_HEADER([libelf/gelf.h], [
+	AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
+	WITH_LIBELF_INCLUDE="-I/usr/include/libelf"
+	INCPATH="$INCPATH -I/usr/include/libelf"
+	AC_CHECK_FUNC(gelf_getdyn, [],
+	    AC_CHECK_LIB(elf, gelf_getdyn)
+	)
+    ], [
+	if test -d libelf ; then
+	    AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
+	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
+	    WITH_LIBELF_SUBDIR=libelf
+	    addlib \${top_builddir}/libelf
+	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_LIBELF_SUBDIR}/lib"
+	    INCPATH="$INCPATH -I\${top_srcdir}/${WITH_LIBELF_SUBDIR}/lib"
+	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/libelf.la"
+	fi
+])
+AC_SUBST(WITH_LIBELF_SUBDIR)
+AC_SUBST(WITH_LIBELF_INCLUDE)
+AC_SUBST(WITH_LIBELF_LIB)
+
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])
@@ -1158,7 +1183,7 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt beecrypt zlib db3)
+AC_CONFIG_SUBDIRS(popt beecrypt zlib libelf db3)
 
 AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile

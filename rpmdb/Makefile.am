@@ -8,6 +8,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
+	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
 EXTRA_DIST = db3.c
@@ -27,7 +28,7 @@ mylibpaths = \
 	-L$(top_builddir)/rpmio \
 	-L$(top_builddir)/popt
 
-mylibs = -lrpm -lrpmio -lpopt @LIBS@ @INTLLIBS@ @LIBMISC@
+mylibs = -lrpm -lrpmio -lpopt @WITH_LIBELF_LIB@ @LIBS@ @INTLLIBS@ @LIBMISC@
 LIBS =
 
 DB3LOBJS = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)

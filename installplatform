@@ -103,15 +103,15 @@ done
   [ -L noarch-${OS} ] && rm -f noarch-${OS} 2>/dev/null
   mkdir -p noarch-${OS}
   sed -e "/^%_arch/s,${arch},noarch," ${arch}-${OS}/macros | grep -v '^%optflags' > noarch-${OS}/macros
-  [ -d ${VENDOR} ] || mkdir ${VENDOR}
-  for i in brp-* find-lang.sh find-provides find-requires perl.prov perl.req
-  do
-    sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < $i > ${VENDOR}/$i
-    chmod +x ${VENDOR}/$i
-  done
-#  chmod -x ${VENDOR}/perl.req
-  echo "macrofiles:     /usr/lib/rpm/macros:/usr/lib/rpm/${VENDOR}/macros:/etc/rpm/macros.specspo:/etc/rpm/macros.cdb" > ${VENDOR}/rpmrc
-  sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < ${arch}-${OS}/macros | grep -v '^%(_arch|optflags)' > ${VENDOR}/macros
+#  [ -d ${VENDOR} ] || mkdir ${VENDOR}
+#  for i in brp-* find-lang.sh find-provides find-requires perl.prov perl.req
+#  do
+#    sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < $i > ${VENDOR}/$i
+#    chmod +x ${VENDOR}/$i
+#  done
+##  chmod -x ${VENDOR}/perl.req
+#  echo "macrofiles:     /usr/lib/rpm/macros:/usr/lib/rpm/${VENDOR}/macros:/etc/rpm/macros.specspo:/etc/rpm/macros.cdb" > ${VENDOR}/rpmrc
+#  sed -e "s,/usr/lib/rpm,/usr/lib/rpm/${VENDOR},g" < ${arch}-${OS}/macros | grep -v '^%(_arch|optflags)' > ${VENDOR}/macros
 }
 
 rm $TEMPRC

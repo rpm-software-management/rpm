@@ -1271,7 +1271,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    (void) domd5(flp->diskURL, buf, 1);
+	    (void) domd5(flp->diskURL, buf, 1, NULL);
 	s = buf;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);

@@ -230,7 +230,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args)
 		     &count);
 	}
 
-	if (domd5(s->fileList[fileNumber], buf, 1)) {
+	if (domd5(s->fileList[fileNumber], buf, 1, NULL)) {
 	    strcpy(buf, "00000000000000000000000000000000");
 	}
 

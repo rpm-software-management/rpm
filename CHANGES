@@ -136,6 +136,8 @@
 	- beecrypt: merge changes from beecrypt-2.3.0.
 	- beecrypt: merge doxygen markup with rpmapi doco.
 	- beecrypt: revert cpu/arch compile option mixup (#66752).
+	- make sure that rpm can verify prelinked shared libraries.
+	- don't install /usr/lib/rpm/redhat per-vendor configuration anymore.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

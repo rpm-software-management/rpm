@@ -23,6 +23,7 @@ LDADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la \
+	@WITH_LIBELF_LIB@ \
 	@INTLLIBS@
 
 noinst_PROGRAMS = \

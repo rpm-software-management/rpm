@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.257 2002/06/15 19:44:15 jbj Exp $
+# $Id: sl.po,v 1.258 2002/06/20 02:19:56 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-15 10:10-0400\n"
+"POT-Creation-Date: 2002-06-19 19:58-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -120,7 +120,7 @@ msgstr ""
 msgid "use <dir> as the top level directory"
 msgstr "uporabi <imenik> za korenski imenik"
 
-#: rpmqv.c:129 lib/poptI.c:215
+#: rpmqv.c:129 lib/poptI.c:217
 msgid "<dir>"
 msgstr ""
 
@@ -849,7 +849,7 @@ msgstr "Ikone %s ni mo¾no prebrati: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/pack.c:627 lib/psm.c:1463
+#: build/pack.c:627 lib/psm.c:1465
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ni mo¾no zapisati paketa: %s"
@@ -879,7 +879,7 @@ msgstr "Ikone %s ni mo¾no prebrati: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:708 lib/psm.c:1753
+#: build/pack.c:708 lib/psm.c:1755
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -1541,7 +1541,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:30 lib/formats.c:55 lib/formats.c:87 lib/formats.c:291
-#: rpmdb/header.c:2990 rpmdb/header.c:3011 rpmdb/header.c:3033
+#: rpmdb/header.c:3000 rpmdb/header.c:3021 rpmdb/header.c:3043
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -1574,7 +1574,7 @@ msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
 msgid "failed to stat %s: %s\n"
 msgstr "status %s ni na voljo: %s"
 
-#: lib/fs.c:153 rpmio/url.c:508
+#: lib/fs.c:153 rpmio/url.c:512
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
@@ -1628,7 +1628,7 @@ msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 msgid "%s created as %s\n"
 msgstr "opozorilo: %s ustvarjen kot %s"
 
-#: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
+#: lib/misc.c:208 lib/misc.c:213 lib/misc.c:219
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "napaka pri ustvarjanju zaèasne datoteke %s"
@@ -1674,36 +1674,36 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 
-#: lib/poptI.c:49
+#: lib/poptI.c:50
 msgid "exclude paths must begin with a /"
 msgstr "poti, ki niso obdelane, se morajo zaèeti z /"
 
-#: lib/poptI.c:61
+#: lib/poptI.c:62
 msgid "relocations must begin with a /"
 msgstr "premikanja se morajo zaèeti z /"
 
-#: lib/poptI.c:63
+#: lib/poptI.c:64
 msgid "relocations must contain a ="
 msgstr "premikanja morajo vsebovati ="
 
-#: lib/poptI.c:66
+#: lib/poptI.c:67
 msgid "relocations must have a / following the ="
 msgstr "premikanja morajo imeti /, ki mu sledi ="
 
-#: lib/poptI.c:80
+#: lib/poptI.c:81
 msgid "rollback takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:87
+#: lib/poptI.c:88
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:106
+#: lib/poptI.c:108
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "namestitev vseh datotek, vkljuèno z nastavitvenimi, ki so sicer izpu¹èene"
 
-#: lib/poptI.c:110
+#: lib/poptI.c:112
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1711,153 +1711,153 @@ msgstr ""
 "odstrani vse pakete, ki vsebujejo vzorec <paket> (sicer program izide z "
 "napako, èe paket <paket> doloèa veè paketov)"
 
-#: lib/poptI.c:116 lib/poptI.c:171
+#: lib/poptI.c:118 lib/poptI.c:173
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "brez izvajanja skriptov paketa"
 
-#: lib/poptI.c:120
+#: lib/poptI.c:122
 msgid "relocate files in non-relocateable package"
 msgstr ""
 
-#: lib/poptI.c:123
+#: lib/poptI.c:125
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:126
+#: lib/poptI.c:128
 msgid "erase (uninstall) package"
 msgstr "izbri¹i (odstrani) paket"
 
-#: lib/poptI.c:126
+#: lib/poptI.c:128
 #, fuzzy
 msgid "<package>+"
 msgstr "ni paketov\n"
 
-#: lib/poptI.c:129
+#: lib/poptI.c:131
 msgid "do not install documentation"
 msgstr "brez namestitve dokumentacije"
 
-#: lib/poptI.c:131
+#: lib/poptI.c:133
 #, fuzzy
 msgid "skip files with leading component <path> "
 msgstr "preskok datotek v navedeni poti"
 
-#: lib/poptI.c:132
+#: lib/poptI.c:134
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:135
+#: lib/poptI.c:137
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "okraj¹ava za --replacepkgs --replacefiles"
 
-#: lib/poptI.c:138
+#: lib/poptI.c:140
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/poptI.c:139 lib/poptI.c:155 lib/poptI.c:236
+#: lib/poptI.c:141 lib/poptI.c:157 lib/poptI.c:238
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "        -p <paket>+       "
 
-#: lib/poptI.c:141
+#: lib/poptI.c:143
 msgid "print hash marks as package installs (good with -v)"
 msgstr "z izpisom znakov # ob namestitvi (uporabno z -v)"
 
-#: lib/poptI.c:144
+#: lib/poptI.c:146
 msgid "don't verify package architecture"
 msgstr "brez preverjanja arhitekture paketa"
 
-#: lib/poptI.c:147
+#: lib/poptI.c:149
 msgid "don't verify package operating system"
 msgstr "brez preverjanja operacijskega sistema paketa"
 
-#: lib/poptI.c:150
+#: lib/poptI.c:152
 msgid "don't check disk space before installing"
 msgstr "brez preverjanja prostora na disku pred name¹èanjem"
 
-#: lib/poptI.c:152
+#: lib/poptI.c:154
 msgid "install documentation"
 msgstr "namesti dokumentacijo"
 
-#: lib/poptI.c:155
+#: lib/poptI.c:157
 #, fuzzy
 msgid "install package(s)"
 msgstr "name¹èanje paketa"
 
-#: lib/poptI.c:157
+#: lib/poptI.c:159
 msgid "update the database, but do not modify the filesystem"
 msgstr "obnovi podatkovno zbirko, a ne spreminjaj datoteènega sistema"
 
-#: lib/poptI.c:159
+#: lib/poptI.c:161
 msgid "do not verify package dependencies"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: lib/poptI.c:162
+#: lib/poptI.c:164
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "brez spreminjanja vrstnega reda paketov z namenom zadovoljevanja soodvisnosti"
 
-#: lib/poptI.c:167
+#: lib/poptI.c:169
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:174
+#: lib/poptI.c:176
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "brez izvajanja katerekoli stopen izgradnje"
 
-#: lib/poptI.c:177
+#: lib/poptI.c:179
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "brez izvajanja katerekoli stopen izgradnje"
 
-#: lib/poptI.c:180
+#: lib/poptI.c:182
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "brez izvajanja katerekoli stopen izgradnje"
 
-#: lib/poptI.c:183
+#: lib/poptI.c:185
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "brez izvajanja katerekoli stopen izgradnje"
 
-#: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
+#: lib/poptI.c:188 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "brez preverjanja soodvisnosti paketa"
 
-#: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
+#: lib/poptI.c:190 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "preveri podpis paketa(-ov)"
 
-#: lib/poptI.c:192
+#: lib/poptI.c:194
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "brez izvajanja katerihkoli skriptov, ki jih po¾ene ta paket"
 
-#: lib/poptI.c:195
+#: lib/poptI.c:197
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "brez izvajanja skriptov paketa"
 
-#: lib/poptI.c:198
+#: lib/poptI.c:200
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "brez izvajanja namestitvenih skriptov"
 
-#: lib/poptI.c:201
+#: lib/poptI.c:203
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "brez izvajanja namestitvenih skriptov"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:206
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "brez izvajanja namestitvenih skriptov"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:210
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1865,49 +1865,49 @@ msgstr ""
 "nadgraditev na starej¹o razlièico paketa (--force pri nadgradnjah "
 "avtomatièno vkljuèi to izbiro)"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:214
 msgid "print percentages as package installs"
 msgstr "izpis odstotkov med namestitvijo"
 
-#: lib/poptI.c:214
+#: lib/poptI.c:216
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "èe je mogoèe, bo paket prestavljen v imenik <imenik>"
 
-#: lib/poptI.c:217
+#: lib/poptI.c:219
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "prestavljanje datoteke iz stare poti v novo"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:220
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "      --relocate <starapot>=<novapot>"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:223
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:224
+#: lib/poptI.c:226
 msgid "install even if the package replaces installed files"
 msgstr "namesti, èetudi paket pi¹e prek ¾e name¹èene datoteke"
 
-#: lib/poptI.c:227
+#: lib/poptI.c:229
 msgid "reinstall if the package is already present"
 msgstr "ponovno namesti, èe paket ¾e obstaja"
 
-#: lib/poptI.c:229
+#: lib/poptI.c:231
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:230
+#: lib/poptI.c:232
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:232
+#: lib/poptI.c:234
 msgid "don't install, but tell if it would work or not"
 msgstr "ne namesti, a ugotovi, èe bi delovalo"
 
-#: lib/poptI.c:235
+#: lib/poptI.c:237
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "    --upgrade <paket>      "
@@ -2135,81 +2135,81 @@ msgstr "izdelava podpisa PGP/GPG"
 msgid "Data type %d not supported\n"
 msgstr "Tip podatkov %d ni podprt\n"
 
-#: lib/psm.c:455
+#: lib/psm.c:457
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "ni mo¾no ustvariti %s: %s\n"
 
-#: lib/psm.c:461
+#: lib/psm.c:463
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "pisanje na %s ni mo¾no"
 
-#: lib/psm.c:492
+#: lib/psm.c:494
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "prièakovan je bil izvorni paket, najden binarni"
 
-#: lib/psm.c:611
+#: lib/psm.c:613
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "izvorni paket ne vsebuje datoteke .spec"
 
-#: lib/psm.c:731
+#: lib/psm.c:733
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "poganjanje ponamestitvenih skript (èe obstajajo)\n"
 
-#: lib/psm.c:901
+#: lib/psm.c:903
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "skript se ni uspe¹no izvedel"
 
-#: lib/psm.c:908
+#: lib/psm.c:910
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "skript se ni uspe¹no izvedel"
 
-#: lib/psm.c:1248
+#: lib/psm.c:1250
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "paket: %s-%s-%s datoteke test = %d\n"
 
-#: lib/psm.c:1370
+#: lib/psm.c:1372
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1514
+#: lib/psm.c:1516
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "uporabnik %s ne obstaja - uporabljam root"
 
-#: lib/psm.c:1523
+#: lib/psm.c:1525
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s ne obstaja - uporabljam root"
 
-#: lib/psm.c:1565
+#: lib/psm.c:1567
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "raz¹iritev arhiva je bilo neuspe¹no%s%s: %s"
 
-#: lib/psm.c:1566
+#: lib/psm.c:1568
 msgid " on file "
 msgstr " za datoteko "
 
-#: lib/psm.c:1761
+#: lib/psm.c:1763
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
-#: lib/psm.c:1764
+#: lib/psm.c:1766
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s neuspe¹en"
 
-#: lib/query.c:127 lib/rpmts.c:264
+#: lib/query.c:127 lib/rpmts.c:265
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "napaka v obliki: %s\n"
@@ -2253,8 +2253,8 @@ msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 msgid "can't query %s: %s\n"
 msgstr "ni mo¾no poizvedeti o %s: %s\n"
 
-#: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:363 lib/rpminstall.c:500
-#: lib/rpminstall.c:884
+#: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:364 lib/rpminstall.c:501
+#: lib/rpminstall.c:886
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
@@ -2268,7 +2268,7 @@ msgstr "poizvedba po %s je bila neuspe¹na\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:664 lib/rpminstall.c:513
+#: lib/query.c:664 lib/rpminstall.c:514
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "noben paket ne pro¾i %s\n"
@@ -2338,17 +2338,17 @@ msgstr "¹tevilka zapisa paketa: %d\n"
 msgid "record %u could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:962 lib/rpminstall.c:672
+#: lib/query.c:962 lib/rpminstall.c:674
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
 
-#: lib/rpmal.c:688
+#: lib/rpmal.c:690
 #, fuzzy
 msgid "(added files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/rpmal.c:765
+#: lib/rpmal.c:767
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
@@ -2460,86 +2460,86 @@ msgstr ""
 msgid "Preparing packages for installation..."
 msgstr "paketi za namestitev niso navedeni"
 
-#: lib/rpminstall.c:310
+#: lib/rpminstall.c:311
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prena¹anje %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:323
+#: lib/rpminstall.c:324
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... kot %s\n"
 
-#: lib/rpminstall.c:327
+#: lib/rpminstall.c:328
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "preskoèeno - %s - prenos neuspe¹en - %s\n"
 
-#: lib/rpminstall.c:424
+#: lib/rpminstall.c:425
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:475
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "napaka pri branju iz datoteke %s\n"
 
-#: lib/rpminstall.c:480
+#: lib/rpminstall.c:481
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:492 lib/rpminstall.c:740
+#: lib/rpminstall.c:493 lib/rpminstall.c:742
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
-#: lib/rpminstall.c:528
+#: lib/rpminstall.c:529
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "najdeno %d izvornih in %d binarnih paketov\n"
 
-#: lib/rpminstall.c:542 lib/rpminstall.c:1071
+#: lib/rpminstall.c:543 lib/rpminstall.c:1073
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpminstall.c:549
+#: lib/rpminstall.c:550
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:580
 msgid "installing binary packages\n"
 msgstr "name¹èanje binarnih paketov\n"
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:601
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:675
+#: lib/rpminstall.c:677
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:700
+#: lib/rpminstall.c:702
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranitev teh paketov bi podrla soodvisnosti:\n"
 
-#: lib/rpminstall.c:727
+#: lib/rpminstall.c:729
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:733
+#: lib/rpminstall.c:735
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpminstall.c:1065
+#: lib/rpminstall.c:1067
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2701,26 +2701,26 @@ msgstr "manjkajoèa arhitektura za %s v %s:%d"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "nepravilna izbira ,%s` v %s:%d"
 
-#: lib/rpmrc.c:1521
+#: lib/rpmrc.c:1523
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznan sistem: %s\n"
 
-#: lib/rpmrc.c:1522
+#: lib/rpmrc.c:1524
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Prosimo, pi¹ite na rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1747
+#: lib/rpmrc.c:1749
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Ni mo¾no raz¹iriti %s"
 
-#: lib/rpmrc.c:1752
+#: lib/rpmrc.c:1754
 #, fuzzy, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Ni mo¾no prebrati %s, HOME je prevelik."
 
-#: lib/rpmrc.c:1769
+#: lib/rpmrc.c:1771
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s ni mo¾no odpreti za branje: %s."
@@ -2731,7 +2731,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:561
+#: lib/rpmts.c:563
 msgid "getting list of mounted filesystems\n"
 msgstr "zbiranje seznama priklopljenih datoteènih sistemov.\n"
 
@@ -2886,17 +2886,17 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
 
 #. @innercontinue@
-#: lib/transaction.c:894
+#: lib/transaction.c:895
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "izkljuèevanje imenika %s\n"
 
-#: lib/verify.c:285
+#: lib/verify.c:288
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "manjka     %s\n"
 
-#: lib/verify.c:383
+#: lib/verify.c:386
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
@@ -3419,37 +3419,37 @@ msgstr "opozorilo: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "alokacija pomnilnika (%u bajtov) vrnjeno NIÈ.\n"
 
-#: rpmio/url.c:118
+#: rpmio/url.c:122
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "opozorilo: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:138
+#: rpmio/url.c:142
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "opozorilo: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:166
+#: rpmio/url.c:170
 #, fuzzy, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "opozorilo: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:262
+#: rpmio/url.c:266
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Geslo za %s@%s: "
 
-#: rpmio/url.c:287 rpmio/url.c:313
+#: rpmio/url.c:291 rpmio/url.c:317
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "napaka: vrata %s morajo biti ¹tevilka\n"
 
-#: rpmio/url.c:462
+#: rpmio/url.c:466
 msgid "url port must be a number\n"
 msgstr "vrata URL morajo biti ¹tevilka\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:528
+#: rpmio/url.c:532
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"

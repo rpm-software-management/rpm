@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-15 10:10-0400\n"
+"POT-Creation-Date: 2002-06-19 19:58-0400\n"
 "PO-Revision-Date: 2002-04-09 16:44-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -116,7 +116,7 @@ msgstr "<команда>"
 msgid "use <dir> as the top level directory"
 msgstr "использовать <каталог> как корневой каталог"
 
-#: rpmqv.c:129 lib/poptI.c:215
+#: rpmqv.c:129 lib/poptI.c:217
 msgid "<dir>"
 msgstr "<каталог>"
 
@@ -835,7 +835,7 @@ msgstr "Невозможно перезагрузить заголовок подписи.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:627 lib/psm.c:1463
+#: build/pack.c:627 lib/psm.c:1465
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -865,7 +865,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:708 lib/psm.c:1753
+#: build/pack.c:708 lib/psm.c:1755
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -1519,7 +1519,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:30 lib/formats.c:55 lib/formats.c:87 lib/formats.c:291
-#: rpmdb/header.c:2990 rpmdb/header.c:3011 rpmdb/header.c:3033
+#: rpmdb/header.c:3000 rpmdb/header.c:3021 rpmdb/header.c:3043
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -1550,7 +1550,7 @@ msgstr "mntctl() не возвратил значение размера fugger: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "невозможно получить информацию о %s: %s\n"
 
-#: lib/fs.c:153 rpmio/url.c:508
+#: lib/fs.c:153 rpmio/url.c:512
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
@@ -1605,7 +1605,7 @@ msgstr "%s невозможно удалить %s: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s создан как %s\n"
 
-#: lib/misc.c:206 lib/misc.c:211 lib/misc.c:217
+#: lib/misc.c:208 lib/misc.c:213 lib/misc.c:219
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "ошибка создания временного файла %s\n"
@@ -1649,37 +1649,37 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
 
-#: lib/poptI.c:49
+#: lib/poptI.c:50
 msgid "exclude paths must begin with a /"
 msgstr "исключения должны начинаться с /"
 
-#: lib/poptI.c:61
+#: lib/poptI.c:62
 msgid "relocations must begin with a /"
 msgstr "перемещения должны начинаться с /"
 
-#: lib/poptI.c:63
+#: lib/poptI.c:64
 msgid "relocations must contain a ="
 msgstr "перемещения должны содержать ="
 
-#: lib/poptI.c:66
+#: lib/poptI.c:67
 msgid "relocations must have a / following the ="
 msgstr "перемещения должны иметь / после ="
 
-#: lib/poptI.c:80
+#: lib/poptI.c:81
 msgid "rollback takes a time/date stamp argument"
 msgstr "откат требует аргумент времени"
 
-#: lib/poptI.c:87
+#: lib/poptI.c:88
 msgid "malformed rollback time/date stamp argument"
 msgstr "неправильный формат времени отката"
 
-#: lib/poptI.c:106
+#: lib/poptI.c:108
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "устанавливать все файлы, даже конфигурационные, которые могли бы быть "
 "пропущены"
 
-#: lib/poptI.c:110
+#: lib/poptI.c:112
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1687,146 +1687,146 @@ msgstr ""
 "удалить все пакеты, совпадающие с <пакет> (обычно, если <пакет> "
 "соответствует нескольким пакетам, генерируется ошибка)"
 
-#: lib/poptI.c:116 lib/poptI.c:171
+#: lib/poptI.c:118 lib/poptI.c:173
 msgid "do not execute package scriptlet(s)"
 msgstr "не исполнять никаких сценариев пакета(ов)"
 
-#: lib/poptI.c:120
+#: lib/poptI.c:122
 msgid "relocate files in non-relocateable package"
 msgstr "переместить файлы в неперемещаемом пакете"
 
-#: lib/poptI.c:123
+#: lib/poptI.c:125
 msgid "save erased package files by renaming into sub-directory"
 msgstr "сохранить в подкаталоге подлежащие удалению файлы пакета"
 
-#: lib/poptI.c:126
+#: lib/poptI.c:128
 msgid "erase (uninstall) package"
 msgstr "удалить (деинсталлировать) пакет"
 
-#: lib/poptI.c:126
+#: lib/poptI.c:128
 msgid "<package>+"
 msgstr "<пакет>+"
 
-#: lib/poptI.c:129
+#: lib/poptI.c:131
 msgid "do not install documentation"
 msgstr "не устанавливать документацию"
 
-#: lib/poptI.c:131
+#: lib/poptI.c:133
 msgid "skip files with leading component <path> "
 msgstr "пропустить файлы в пути <путь>"
 
-#: lib/poptI.c:132
+#: lib/poptI.c:134
 msgid "<path>"
 msgstr "<путь>"
 
-#: lib/poptI.c:135
+#: lib/poptI.c:137
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "сокращение для --replacepkgs --replacefiles"
 
-#: lib/poptI.c:138
+#: lib/poptI.c:140
 msgid "upgrade package(s) if already installed"
 msgstr "обновить пакет(ы) если уже установлен"
 
-#: lib/poptI.c:139 lib/poptI.c:155 lib/poptI.c:236
+#: lib/poptI.c:141 lib/poptI.c:157 lib/poptI.c:238
 msgid "<packagefile>+"
 msgstr "<файл пакета>+"
 
-#: lib/poptI.c:141
+#: lib/poptI.c:143
 msgid "print hash marks as package installs (good with -v)"
 msgstr "выводить \"#\" по мере установки пакета (хорошо с -v)"
 
-#: lib/poptI.c:144
+#: lib/poptI.c:146
 msgid "don't verify package architecture"
 msgstr "не проверять архитектуру пакета"
 
-#: lib/poptI.c:147
+#: lib/poptI.c:149
 msgid "don't verify package operating system"
 msgstr "не проверять операционную систему пакета"
 
-#: lib/poptI.c:150
+#: lib/poptI.c:152
 msgid "don't check disk space before installing"
 msgstr "не проверять дисковое пространство перед установкой"
 
-#: lib/poptI.c:152
+#: lib/poptI.c:154
 msgid "install documentation"
 msgstr "установить документацию"
 
-#: lib/poptI.c:155
+#: lib/poptI.c:157
 #, fuzzy
 msgid "install package(s)"
 msgstr "установить пакет"
 
-#: lib/poptI.c:157
+#: lib/poptI.c:159
 msgid "update the database, but do not modify the filesystem"
 msgstr "обновить базу данных, но не модифицировать файловую систему"
 
-#: lib/poptI.c:159
+#: lib/poptI.c:161
 msgid "do not verify package dependencies"
 msgstr "не проверять зависимости пакета"
 
-#: lib/poptI.c:162
+#: lib/poptI.c:164
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "не менять порядок установки пакетов для удовлетворения зависимостей"
 
-#: lib/poptI.c:167
+#: lib/poptI.c:169
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:174
+#: lib/poptI.c:176
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "не исполнять  %%pre сценариев (если есть)"
 
-#: lib/poptI.c:177
+#: lib/poptI.c:179
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "не исполнять %%post сценариев (если есть)"
 
-#: lib/poptI.c:180
+#: lib/poptI.c:182
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "не исполнять %%preun сценариев (если есть)"
 
-#: lib/poptI.c:183
+#: lib/poptI.c:185
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "не исполнять %%postun сценариев (если есть)"
 
-#: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
+#: lib/poptI.c:188 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "не проверять зависимости пакета"
 
-#: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
+#: lib/poptI.c:190 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "проверить подпись в пакете"
 
-#: lib/poptI.c:192
+#: lib/poptI.c:194
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "не исполнять триггер-сценариев, взведенных этим пакетом"
 
-#: lib/poptI.c:195
+#: lib/poptI.c:197
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "не исполнять %%triggerprein сценариев"
 
-#: lib/poptI.c:198
+#: lib/poptI.c:200
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "не исполнять %%triggerin сценариев"
 
-#: lib/poptI.c:201
+#: lib/poptI.c:203
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "не исполнять %%triggerun сценариев"
 
-#: lib/poptI.c:204
+#: lib/poptI.c:206
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "не исполнять %%triggerpostun сценариев"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:210
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1834,49 +1834,49 @@ msgstr ""
 "откат на более старую версию пакета (--force при обновлении делает это "
 "автоматически)"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:214
 msgid "print percentages as package installs"
 msgstr "выводить процент готовности по мере установки пакета"
 
-#: lib/poptI.c:214
+#: lib/poptI.c:216
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "переместить пакет в <каталог>, если пакет это позволяет"
 
-#: lib/poptI.c:217
+#: lib/poptI.c:219
 msgid "relocate files from path <old> to <new>"
 msgstr "переместить файлы из пути <old> в <new>"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:220
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:223
 msgid "save erased package files by repackaging"
 msgstr "сохранить подлежащие удалению файлы в новом пакете"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:226
 msgid "install even if the package replaces installed files"
 msgstr "устанавливать, даже если пакет перепишет уже установленные файлы"
 
-#: lib/poptI.c:227
+#: lib/poptI.c:229
 msgid "reinstall if the package is already present"
 msgstr "переустановить, если пакет уже установлен"
 
-#: lib/poptI.c:229
+#: lib/poptI.c:231
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 "удалить новый(е) пакет(ы), переустановить старый(е) пакет(ы), обратно на "
 "указанную дату"
 
-#: lib/poptI.c:230
+#: lib/poptI.c:232
 msgid "<date>"
 msgstr "<дата>"
 
-#: lib/poptI.c:232
+#: lib/poptI.c:234
 msgid "don't install, but tell if it would work or not"
 msgstr "не устанавливать, а только сообщить, удастся ли установка"
 
-#: lib/poptI.c:235
+#: lib/poptI.c:237
 msgid "upgrade package(s)"
 msgstr "обновить пакет(ы)"
 
@@ -2081,79 +2081,79 @@ msgstr "генерировать подпись"
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
 
-#: lib/psm.c:455
+#: lib/psm.c:457
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "невозможно создать %%%s %s\n"
 
-#: lib/psm.c:461
+#: lib/psm.c:463
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "невозможно писать в %%%s %s\n"
 
-#: lib/psm.c:492
+#: lib/psm.c:494
 msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 
-#: lib/psm.c:611
+#: lib/psm.c:613
 msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
-#: lib/psm.c:731
+#: lib/psm.c:733
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "%s: выполняется сценарий %s (если есть)\n"
 
-#: lib/psm.c:901
+#: lib/psm.c:903
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, waitpid() возвратил %s\n"
 
-#: lib/psm.c:908
+#: lib/psm.c:910
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
-#: lib/psm.c:1248
+#: lib/psm.c:1250
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s содержит %d файлов, test = %d\n"
 
-#: lib/psm.c:1370
+#: lib/psm.c:1372
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: ошибка сценария %s (%d), %s-%s-%s пропускается\n"
 
-#: lib/psm.c:1514
+#: lib/psm.c:1516
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "пользователь %s не существует - используется root\n"
 
-#: lib/psm.c:1523
+#: lib/psm.c:1525
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "группа %s не существует - используется root\n"
 
-#: lib/psm.c:1565
+#: lib/psm.c:1567
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:1566
+#: lib/psm.c:1568
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:1761
+#: lib/psm.c:1763
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s ошибка на файле %s: %s\n"
 
-#: lib/psm.c:1764
+#: lib/psm.c:1766
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: lib/query.c:127 lib/rpmts.c:264
+#: lib/query.c:127 lib/rpmts.c:265
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ошибка в формате: %s\n"
@@ -2196,8 +2196,8 @@ msgstr "пакет не содержит списков ни хозяев файлов, ни их ID\n"
 msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
-#: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:363 lib/rpminstall.c:500
-#: lib/rpminstall.c:884
+#: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:364 lib/rpminstall.c:501
+#: lib/rpminstall.c:886
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
@@ -2211,7 +2211,7 @@ msgstr "ошибка запроса %s\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
-#: lib/query.c:664 lib/rpminstall.c:513
+#: lib/query.c:664 lib/rpminstall.c:514
 #, fuzzy, c-format
 msgid "%s: not a package manifest: %s\n"
 msgstr "ни один пакет не подходит к %s: %s\n"
@@ -2280,17 +2280,17 @@ msgstr "номер записи пакета: %u\n"
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:962 lib/rpminstall.c:672
+#: lib/query.c:962 lib/rpminstall.c:674
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: lib/rpmal.c:688
+#: lib/rpmal.c:690
 #, fuzzy
 msgid "(added files)"
 msgstr "неверный файл базы данных %s\n"
 
-#: lib/rpmal.c:765
+#: lib/rpmal.c:767
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s YES (added provide)\n"
@@ -2400,86 +2400,86 @@ msgstr "Подготовка..."
 msgid "Preparing packages for installation..."
 msgstr "Подготовка пакетов для установки..."
 
-#: lib/rpminstall.c:310
+#: lib/rpminstall.c:311
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Загружается %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:323
+#: lib/rpminstall.c:324
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... как %s\n"
 
-#: lib/rpminstall.c:327
+#: lib/rpminstall.c:328
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s пропускается - ошибка передачи - %s\n"
 
-#: lib/rpminstall.c:424
+#: lib/rpminstall.c:425
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "пакет %s - не перемещаемый\n"
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:475
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ошибка чтения из файла %s\n"
 
-#: lib/rpminstall.c:480
+#: lib/rpminstall.c:481
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "для файла %s необходима более новая версия RPM\n"
 
-#: lib/rpminstall.c:492 lib/rpminstall.c:740
+#: lib/rpminstall.c:493 lib/rpminstall.c:742
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
 
-#: lib/rpminstall.c:528
+#: lib/rpminstall.c:529
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:542 lib/rpminstall.c:1071
+#: lib/rpminstall.c:543 lib/rpminstall.c:1073
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
 
-#: lib/rpminstall.c:549
+#: lib/rpminstall.c:550
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:580
 msgid "installing binary packages\n"
 msgstr "устанавливаю бинарные пакеты\n"
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:601
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "невозможно открыть файл %s: %s\n"
 
-#: lib/rpminstall.c:675
+#: lib/rpminstall.c:677
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:700
+#: lib/rpminstall.c:702
 msgid "removing these packages would break dependencies:\n"
 msgstr "удаление этих пакетов нарушит зависимости:\n"
 
-#: lib/rpminstall.c:727
+#: lib/rpminstall.c:729
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:733
+#: lib/rpminstall.c:735
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
 
-#: lib/rpminstall.c:1065
+#: lib/rpminstall.c:1067
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "откатить (+%d,-%d) пакеты к %s"
@@ -2641,26 +2641,26 @@ msgstr "отсутствует архитектура для %s в %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "неверный параметр '%s' в %s:%d\n"
 
-#: lib/rpmrc.c:1521
+#: lib/rpmrc.c:1523
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1522
+#: lib/rpmrc.c:1524
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1747
+#: lib/rpmrc.c:1749
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Невозможно раскрыть %s\n"
 
-#: lib/rpmrc.c:1752
+#: lib/rpmrc.c:1754
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Невозможно прочитать %s, значение HOME слишком велико.\n"
 
-#: lib/rpmrc.c:1769
+#: lib/rpmrc.c:1771
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
@@ -2671,7 +2671,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:561
+#: lib/rpmts.c:563
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2821,17 +2821,17 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:894
+#: lib/transaction.c:895
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
 
-#: lib/verify.c:285
+#: lib/verify.c:288
 #, c-format
 msgid "missing    %s"
 msgstr "отсутствует %s"
 
-#: lib/verify.c:383
+#: lib/verify.c:386
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
@@ -3345,37 +3345,37 @@ msgstr "предупреждение: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "memory alloc (%u bytes) returned NULL.\n"
 
-#: rpmio/url.c:118
+#: rpmio/url.c:122
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "внимание: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:138
+#: rpmio/url.c:142
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "внимание: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:166
+#: rpmio/url.c:170
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "предупреждение: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:262
+#: rpmio/url.c:266
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Пароль для %s@%s: "
 
-#: rpmio/url.c:287 rpmio/url.c:313
+#: rpmio/url.c:291 rpmio/url.c:317
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "ошибка: %s порт должен быть числом\n"
 
-#: rpmio/url.c:462
+#: rpmio/url.c:466
 msgid "url port must be a number\n"
 msgstr "url порт должен быть числом\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:528
+#: rpmio/url.c:532
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"

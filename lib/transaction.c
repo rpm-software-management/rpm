@@ -140,7 +140,7 @@ static fileAction decideFileFate(const rpmts ts,
 #endif
 	    const unsigned char * omd5 = ofi->md5s + (16 * ofi->i);
 	    const unsigned char * nmd5 = nfi->md5s + (16 * nfi->i);
-	    if (domd5(fn, buffer, 0))
+	    if (domd5(fn, buffer, 0, NULL))
 		return FA_CREATE;	/* assume file has been removed */
 	    if (!memcmp(omd5, buffer, 16))
 		return FA_CREATE;	/* unmodified config file, replace. */
@@ -150,7 +150,7 @@ static fileAction decideFileFate(const rpmts ts,
 	} else {
 	    const char * omd5 = ofi->fmd5s[ofi->i];
 	    const char * nmd5 = nfi->fmd5s[nfi->i];
-	    if (domd5(fn, buffer, 1))
+	    if (domd5(fn, buffer, 1, NULL))
 		return FA_CREATE;	/* assume file has been removed */
 	    if (!strcmp(omd5, buffer))
 		return FA_CREATE;	/* unmodified config file, replace. */
@@ -641,7 +641,7 @@ assert(otherFi != NULL);
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char md5sum[50];
 		const unsigned char * md5 = fi->md5s + (16 * i);
-		if (!domd5(fn, md5sum, 0) && memcmp(md5, md5sum, 16)) {
+		if (!domd5(fn, md5sum, 0, NULL) && memcmp(md5, md5sum, 16)) {
 		    fi->actions[i] = FA_BACKUP;
 		    /*@switchbreak@*/ break;
 		}

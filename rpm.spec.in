@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.27
+Release: 0.28
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -519,6 +519,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jun 19 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.28
+- make sure that rpm can verify prelinked shared libraries.
+- don't install /usr/lib/rpm/redhat per-vendor configuration anymore.
+
 * Sat Jun 15 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.27
 - beecrypt: merge changes from beecrypt-2.3.0.
 - beecrypt: merge doxygen markup with rpmapi doco.

@@ -18,48 +18,17 @@ extern "C" {
 #endif
 
 /**
- * Calculate MD5 sum for file.
- * @todo Eliminate, use beecrypt instead.
+ * Return MD5 sum and size of a file.
  * @param fn		file name
  * @retval digest	address of md5sum
  * @param asAscii	return md5sum as ascii string?
+ * @retval *fsizep	file size pointer (or NULL)
  * @return		0 on success, 1 on error
  */
-/*@-exportlocal@*/
-int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii)
+int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
+		/*@null@*/ /*@out@*/ size_t *fsizep)
 	/*@globals fileSystem@*/
 	/*@modifies digest, fileSystem @*/;
-/*@=exportlocal@*/
-
-/**
- * Return MD5 sum of file as ASCII string.
- * @todo Eliminate, use beecrypt instead.
- * @param fn		file name
- * @retval digest	MD5 digest
- * @return		0 on success, 1 on error
- */
-/*@unused@*/ static inline
-int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
-	/*@globals fileSystem@*/
-	/*@modifies digest, fileSystem @*/
-{
-    return domd5(fn, digest, 1);
-}
-
-/**
- * Return MD5 sum of file as binary data.
- * @todo Eliminate, use beecrypt instead.
- * @param fn		file name
- * @retval bindigest	MD5 digest
- * @return		0 on success, 1 on error
- */
-/*@unused@*/ static inline
-int mdbinfile(const char * fn, /*@out@*/ unsigned char * bindigest)
-	/*@globals fileSystem@*/
-	/*@modifies bindigest, fileSystem @*/
-{
-    return domd5(fn, bindigest, 0);
-}
 
 /**
  * Convert absolute path tag to (dirname,basename,dirindex) tags.
