@@ -16,6 +16,7 @@
 
 #include <rpmlib.h>
 #include <rpmmacro.h>
+#include <rpmlua.h>
 
 #include "misc.h"
 #include "debug.h"
@@ -1873,6 +1874,9 @@ int rpmReadConfigFiles(const char * file, const char * target)
 	cpu = _free(cpu);
 	os = _free(os);
     }
+
+    /* Force Lua state initialization */
+    (void)rpmluaGetPrintBuffer(NULL);
 
     return 0;
 }
