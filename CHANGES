@@ -5,6 +5,7 @@
 	- Use "cp -pr" instead of "cp -ar" for %doc expansion
 	- use <string.h> instead of (non standard) <strings.h> in some places
 	- look for non-POSIX (broken) chmod
+	- include local copies of glob/fnmatch
 
 2.3.1 -> 2.3.2:
 	- fixed bug in new rpmVersionCompare() which made it worse then
