@@ -51,7 +51,9 @@
 %_srcrpmdir		%{_topdir}/SRPMS
 %_tmppath		%{_var}/tmp
 %_topdir		%{_usrsrc}/redhat
-%optflags		-O2
+#
+# XXX use the rpmrc instantiated macro for now
+#%optflags		-O2
 
 #==============================================================================
 # ---- script environment macros.
