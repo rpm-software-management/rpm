@@ -124,5 +124,6 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
+int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
 
 #endif
