@@ -30,6 +30,7 @@
 	- don't set owner/group if binaries installed by "make install"
 	- include <strings.h> on SCO
 	- don't use cpio when installing packages <gulp>
+	- fixed bug which affected dependencies on the Alpha
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output
