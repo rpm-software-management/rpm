@@ -281,6 +281,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
 	/* Ignore colored obsoletes not in our rainbow. */
 	dscolor = rpmdsColor(obsoletes);
+	/* XXX obsoletes are never colored, so this is for future devel. */
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
@@ -296,6 +297,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
 	    ohcolor = hGetColor(oh);
+	    /* XXX provides *are* colored, effectively limiting Obsoletes:
+		to matching only colored Provides: based on pkg coloring. */
 	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
 		/*@innercontinue@*/ continue;
 
@@ -305,7 +308,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
-		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+#ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
+		if (rpmVersionCompare(h, oh))
+#endif
+		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
 	}
 	mi = rpmdbFreeIterator(mi);
     }
@@ -566,7 +572,7 @@ exit:
 /**
  * Check added requires/conflicts against against installed+added packages.
  * @param ts		transaction set
- * @param pkgNEVR	package name-version-release
+ * @param pkgNEVRA	package name-version-release.arch
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
  * @param depName	dependency name to filter (or NULL)
@@ -574,7 +580,7 @@ exit:
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
-static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
+static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
 		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext, h_errno,
@@ -618,7 +624,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	    }
 	    /*@=branchstate@*/
 
-	    rpmdsProblem(ts->probs, pkgNEVR, requires, suggestedKeys, adding);
+	    rpmdsProblem(ts->probs, pkgNEVRA, requires, suggestedKeys, adding);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -650,7 +656,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
 	case 0:		/* conflicts exist. */
-	    rpmdsProblem(ts->probs, pkgNEVR, conflicts, NULL, adding);
+	    rpmdsProblem(ts->probs, pkgNEVRA, conflicts, NULL, adding);
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
 	    /*@switchbreak@*/ break;
@@ -686,19 +692,19 @@ static int checkPackageSet(rpmts ts, const char * dep,
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	const char * pkgNEVR;
+	const char * pkgNEVRA;
 	rpmds requires, conflicts;
 	int rc;
 
-	pkgNEVR = hGetNEVR(h, NULL);
+	pkgNEVRA = hGetNEVRA(h, NULL);
 	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
-	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, dep, 0, adding);
+	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
-	pkgNEVR = _free(pkgNEVR);
+	pkgNEVRA = _free(pkgNEVRA);
 
 	if (rc) {
 	    ec = 1;
@@ -810,12 +816,13 @@ static void freeBadDeps(void)
 /**
  * Check for dependency relations to be ignored.
  *
- * @param p	successor element (i.e. with Requires: )
- * @param q	predecessor element (i.e. with Provides: )
- * @return	1 if dependency is to be ignored.
+ * @param ts		transaction set
+ * @param p		successor element (i.e. with Requires: )
+ * @param q		predecessor element (i.e. with Provides: )
+ * @return		1 if dependency is to be ignored.
  */
 /*@-boundsread@*/
-static int ignoreDep(const rpmte p, const rpmte q)
+static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	/*@globals badDeps, badDepsInitialized,
 		rpmGlobalMacroContext, h_errno @*/
 	/*@modifies badDeps, badDepsInitialized,
@@ -826,6 +833,9 @@ static int ignoreDep(const rpmte p, const rpmte q)
     if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
+	int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
+	int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+			? RPMMESS_WARNING : RPMMESS_DEBUG;
 	int ac = 0;
 	int i;
 
@@ -846,7 +856,7 @@ static int ignoreDep(const rpmte p, const rpmte q)
 		/*@-usereleased@*/
 		bdp->qname = qname;
 		/*@=usereleased@*/
-		rpmMessage(RPMMESS_DEBUG,
+		rpmMessage(msglvl,
 			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
 			i, bdp->pname, (bdp->qname ? bdp->qname : "???"));
 	    }
@@ -933,7 +943,7 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(rpmte q, rpmte p,
 		/*@null@*/ rpmds requires,
-		int zap, /*@in@*/ /*@out@*/ int * nzaps)
+		int zap, /*@in@*/ /*@out@*/ int * nzaps, int msglvl)
 	/*@modifies q, p, requires, *nzaps @*/
 {
     tsortInfo tsi_prev;
@@ -967,7 +977,7 @@ zapRelation(rpmte q, rpmte p,
 	 */
 	/*@-branchstate@*/
 	if (zap && !(Flags & RPMSENSE_PREREQ)) {
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmMessage(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(rpmteNEVR(p) ?  rpmteNEVR(p) : "???"), dp);
 	    rpmteTSI(p)->tsi_count--;
@@ -1047,7 +1057,7 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
     /* Avoid certain dependency relations. */
-    if (ignoreDep(p, q))
+    if (ignoreDep(ts, p, q))
 	return 0;
 
     /* Avoid redundant relations. */
@@ -1442,12 +1452,15 @@ rescan:
 	    while ((p = q) != NULL && (q = rpmteTSI(p)->tsi_chain) != NULL) {
 		const char * dp;
 		char buf[4096];
+		int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+			? RPMMESS_WARNING : RPMMESS_DEBUG;
+;
 
 		/* Unchain predecessor loop. */
 		rpmteTSI(p)->tsi_chain = NULL;
 
 		if (!printed) {
-		    rpmMessage(RPMMESS_DEBUG, _("LOOP:\n"));
+		    rpmMessage(msglvl, _("LOOP:\n"));
 		    printed = 1;
 		}
 
@@ -1456,13 +1469,13 @@ rescan:
 		requires = rpmdsInit(requires);
 		if (requires == NULL)
 		    /*@innercontinue@*/ continue;	/* XXX can't happen */
-		dp = zapRelation(q, p, requires, 1, &nzaps);
+		dp = zapRelation(q, p, requires, 1, &nzaps, msglvl);
 
 		/* Print next member of loop. */
 		buf[0] = '\0';
 		if (rpmteNEVR(p) != NULL)
 		    (void) stpcpy(buf, rpmteNEVR(p));
-		rpmMessage(RPMMESS_DEBUG, "    %-40s %s\n", buf,
+		rpmMessage(msglvl, "    %-40s %s\n", buf,
 			(dp ? dp : "not found!?!"));
 
 		dp = _free(dp);
@@ -1622,7 +1635,7 @@ int rpmtsCheck(rpmts ts)
 	rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
-	rc = checkPackageDeps(ts, rpmteNEVR(p),
+	rc = checkPackageDeps(ts, rpmteNEVRA(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			NULL,

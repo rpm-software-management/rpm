@@ -87,6 +87,29 @@ char * hGetNEVR(Header h, const char ** np)
     return NVR;
 }
 
+char * hGetNEVRA(Header h, const char ** np)
+{
+    const char * n, * v, * r, * a;
+    char * NVRA, * t;
+    int xx;
+
+    (void) headerNVR(h, &n, &v, &r);
+    xx = headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
+    NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
+/*@-boundswrite@*/
+    t = stpcpy(t, n);
+    t = stpcpy(t, "-");
+    t = stpcpy(t, v);
+    t = stpcpy(t, "-");
+    t = stpcpy(t, r);
+    t = stpcpy(t, ".");
+    t = stpcpy(t, a);
+    if (np)
+	*np = n;
+/*@=boundswrite@*/
+    return NVRA;
+}
+
 uint_32 hGetColor(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;

@@ -813,6 +813,8 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	mi = rpmdbFreeIterator(mi);
     }
 
+    if (numFailed) goto exit;
+
     if (!(ia->eraseInterfaceFlags & UNINSTALL_NODEPS)) {
 
 	if (rpmtsCheck(ts)) {
@@ -854,6 +856,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	ps = rpmpsFree(ps);
     }
 
+exit:
     rpmtsEmpty(ts);
 
     return numFailed;

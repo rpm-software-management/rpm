@@ -633,7 +633,7 @@ verifyinfo_exit:
 
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1)
-    rpmtsCleanDig(ts);
+	rpmtsCleanDig(ts);
     if (info->tag == RPMTAG_SHA1HEADER)
 	sig = _free(sig);
     hclvl--;

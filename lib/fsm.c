@@ -2260,16 +2260,20 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)
+	if (rc < 0) {
 	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_LSTAT_FAILED);
+	    memset(ost, 0, sizeof(*ost));	/* XXX s390x hackery */
+	}
 	break;
     case FSM_STAT:
 	rc = Stat(fsm->path, ost);
 	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)
+	if (rc < 0) {
 	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_STAT_FAILED);
+	    memset(ost, 0, sizeof(*ost));	/* XXX s390x hackery */
+	}
 	break;
     case FSM_READLINK:
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */

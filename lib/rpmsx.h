@@ -134,8 +134,8 @@ rpmsx rpmsxFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmsx sx)
  */
 /*@-exportlocal@*/
 int rpmsxParse(rpmsx sx, /*@null@*/ const char *fn)
-	/*@globals fileSystem @*/
-	/*@modifies sx, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies sx, rpmGlobalMacroContext, h_errno, fileSystem @*/;
 /*@=exportlocal@*/
 
 /**
@@ -145,8 +145,8 @@ int rpmsxParse(rpmsx sx, /*@null@*/ const char *fn)
  */
 /*@null@*/
 rpmsx rpmsxNew(const char * fn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, h_errno, fileSystem @*/;
 
 /**
  * Return security context patterns count.

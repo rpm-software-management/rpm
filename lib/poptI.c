@@ -178,7 +178,7 @@ struct poptOption rpmInstallPoptTable[] = {
 	NULL},
 
  { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
- 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ANACONDA,
+ 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ANACONDA|RPMTRANS_FLAG_DEPLOOPS,
 	N_("use anaconda \"presentation order\""), NULL},
 
  { "apply", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
@@ -189,6 +189,11 @@ struct poptOption rpmInstallPoptTable[] = {
  { "badreloc", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_FORCERELOCATE,
 	N_("relocate files in non-relocatable package"), NULL},
+
+ { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&rpmIArgs.transFlags, RPMTRANS_FLAG_DEPLOOPS,
+	N_("print dependency loops as warning"), NULL},
+
  { "dirstash", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_DIRSTASH,
 	N_("save erased package files by renaming into sub-directory"), NULL},

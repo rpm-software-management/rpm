@@ -4,6 +4,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmmacro.h>	/* for rpmGetPath() */
 
 #define	_RPMSX_INTERNAL
 #include "rpmsx.h"
@@ -17,16 +18,16 @@ int _rpmsx_debug = 0;
 
 /**
  * Stable sort for policy specifications, patterns before paths.
- * @param sx		security context patterns
+ * @param sx           security context patterns
  */
 static void rpmsxSort(rpmsx sx)
-	/*@modifies sx @*/
+       /*@modifies sx @*/
 {
     rpmsxp sxp;
     int i, j;
 
     /* Stable sort for policy regex's and paths. */
-    sxp = xcalloc(sx->Count, sizeof(*sxp));
+    sxp = xmalloc(sizeof(*sxp) * sx->Count);
 
     /* Regex patterns first ... */
     j = 0;
@@ -47,6 +48,9 @@ static void rpmsxSort(rpmsx sx)
 
     sx->sxp = _free(sx->sxp);
     sx->sxp = sxp;
+/*@-compdef@*/	/* XXX *(sx->sxp) annotation */
+    return;
+/*@=compdef@*/
 }
 
 /* Determine if the regular expression specification has any meta characters. */
@@ -310,8 +314,7 @@ static int rpmsxpCheckNoDupes(const rpmsx sx)
 int rpmsxParse(rpmsx sx, const char * fn)
 {
     FILE * fp;
-    char errbuf[255 + 1];
-    char buf[255 + 1];
+    char buf[BUFSIZ + 1];
     char * bp;
     char * regex;
     char * type;
@@ -328,12 +331,18 @@ int rpmsxParse(rpmsx sx, const char * fn)
 
 /*@-branchstate@*/
     if (fn == NULL)
-	fn = "/etc/security/selinux/file_contexts";
+	fn = "%{?__file_context_path}";
 /*@=branchstate@*/
 
-    if ((fp = fopen(fn, "r")) == NULL) {
-	perror(fn);
-	return -1;
+    {	const char * myfn = rpmGetPath(fn, NULL);
+
+	if (myfn == NULL || *myfn == '\0'
+	 || (fp = fopen(myfn, "r")) == NULL)
+	{
+	    myfn = _free(myfn);
+	    return -1;
+	}
+	myfn = _free(myfn);
     }
 
     /* 
@@ -351,7 +360,8 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	lineno = 0;
 	sx->Count = 0;
 	sxp = sx->sxp;
-	while (fgets(buf, sizeof buf, fp)) {
+	while (fgets(buf, sizeof(buf)-1, fp)) {
+	    buf[sizeof(buf)-1] = '\0';
 	    lineno++;
 	    len = strlen(buf);
 	    if (buf[len - 1] != '\n') {
@@ -402,7 +412,9 @@ int rpmsxParse(rpmsx sx, const char * fn)
 		regerr = regcomp(sxp->preg, anchored_regex,
 			    REG_EXTENDED | REG_NOSUB);
 		if (regerr < 0) {
-		    (void) regerror(regerr, sxp->preg, errbuf, sizeof errbuf);
+		    char errbuf[BUFSIZ + 1];
+		    (void) regerror(regerr, sxp->preg, errbuf, sizeof(errbuf)-1);
+		    errbuf[sizeof(errbuf)-1] = '\0';
 		    fprintf(stderr,
 			_("%s:  unable to compile regular expression %s on line number %d:  %s\n"),
 			fn, regex, lineno,
@@ -470,12 +482,16 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	    }
 	}
 
-	if (nerr)
+	if (nerr) {
+	    (void) fclose(fp);
 	    return -1;
+	}
 
 	if (pass == 0) {
-	    if (sx->Count == 0)
+	    if (sx->Count == 0) {
+		(void) fclose(fp);
 		return 0;
+	    }
 	    sx->sxp = xcalloc(sx->Count, sizeof(*sx->sxp));
 	    rewind(fp);
 	}
@@ -491,6 +507,7 @@ int rpmsxParse(rpmsx sx, const char * fn)
 	return -1;
 
     return 0;
+
 }
 
 rpmsx rpmsxNew(const char * fn)
@@ -671,9 +688,10 @@ const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 	    fcontext = rpmsxContext(sx);
 	    /*@switchbreak@*/ break;
 	default:
-	  { static char errbuf[255 + 1];
-	    (void) regerror(ret, preg, errbuf, sizeof errbuf);
+	  { static char errbuf[BUFSIZ + 1];
+	    (void) regerror(ret, preg, errbuf, sizeof(errbuf)-1);
 /*@-modfilesys -nullpass @*/
+	    errbuf[sizeof(errbuf)-1] = '\0';
 	    fprintf(stderr, "unable to match %s against %s:  %s\n",
                 fn, rpmsxPattern(sx), errbuf);
 /*@=modfilesys =nullpass @*/

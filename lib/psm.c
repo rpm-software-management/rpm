@@ -705,15 +705,15 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t scriptFd;
     FD_t out;
     rpmRC rc = RPMRC_OK;
-    const char *n, *v, *r;
-#if __ia64__
-    const char *a;
-#endif
+    const char *n, *v, *r, *a;
 
     if (progArgv == NULL && script == NULL)
 	return rc;
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
+	rpmMessage(RPMMESS_DEBUG,
+		_("%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"),
+		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a);
 	return runLuaScript(psm, h, sln, progArgc, progArgv,
 			    script, arg1, arg2);
     }
@@ -722,9 +722,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
-#if __ia64__
     xx = hge(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
-#endif
 
     /* XXX bash must have functional libtermcap.so.2 */
     if (!strcmp(n, "libtermcap"))
@@ -736,16 +734,16 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
 	    rpmMessage(RPMMESS_DEBUG,
-		_("%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"),
-		psm->stepName, tag2sln(psm->scriptTag), n, v, r,
+		_("%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"),
+		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
 		progArgv[0]);
 	    return rc;
 	}
     }
 
     rpmMessage(RPMMESS_DEBUG,
-		_("%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"),
-		psm->stepName, tag2sln(psm->scriptTag), n, v, r,
+		_("%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"),
+		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
 		(psm->unorderedSuccessor ? "a" : ""));
 
     if (!progArgv) {
@@ -788,7 +786,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
 	t = alloca(strlen(newPath) + strlen(argv[0]) + 1);
 	*t = '\0';
-	(void) stpcpy( stpcpy( stpcpy(t, newPath), "/"), argv[0]);
+	(void) stpcpy( stpcpy(t, newPath), argv[0]);
 	newPath = _free(newPath);
 	argv[0] = t;
     }
@@ -956,8 +954,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		/*@=superuser =noeffect @*/
 	    }
 	    xx = chdir("/");
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"),
-			psm->stepName, sln, n, v, r,
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"),
+			psm->stepName, sln, n, v, r, a,
 			argv[0], (unsigned)getpid());
 
 	    /* XXX Don't mtrace into children. */
@@ -966,8 +964,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    /* Set "rpm_script_t" identity for scriptlets under selinux. */
 	    if (rpmtsSELinuxEnabled(ts) == 1) {	
 		/* Set rpm_script_t for /bin/sh, default /sbin/ldconfig et al */
-		xx = switchExecType(psm,
-			(!strcmp(argv[0], "/bin/sh") ? "rpm_script_t" : NULL));
+		xx = switchExecType(psm, "rpm_script_t");
 		if (xx != 0)
 		    break;
 	    }
@@ -991,14 +988,14 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
   if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
     if (psm->sq.reaped < 0) {
 	rpmError(RPMERR_SCRIPT,
-		_("%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sln, n, v, r, psm->sq.child, psm->sq.reaped, strerror(errno));
+		_("%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
+		 sln, n, v, r, a, psm->sq.child, psm->sq.reaped, strerror(errno));
 	rc = RPMRC_FAIL;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
 	rpmError(RPMERR_SCRIPT,
-		_("%s(%s-%s-%s) scriptlet failed, exit status %d\n"),
-		sln, n, v, r, WEXITSTATUS(psm->sq.status));
+		_("%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"),
+		sln, n, v, r, a, WEXITSTATUS(psm->sq.status));
 	rc = RPMRC_FAIL;
     }
   }

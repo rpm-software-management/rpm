@@ -986,11 +986,12 @@ typedef enum rpmtransFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
-    RPMTRANS_FLAG_ANACONDA	= (1 << 26),
+    RPMTRANS_FLAG_ANACONDA	= (1 << 26),	/*!< from --anaconda */
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< from --nosuggest */
     RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */
-    RPMTRANS_FLAG_NOCONFIGS	= (1 << 30)	/*!< from --noconfigs */
+    RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
+    RPMTRANS_FLAG_DEPLOOPS	= (1 << 31)	/*!< from --deploops */
 } rpmtransFlags;
 
 #define	_noTransScripts		\

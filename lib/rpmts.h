@@ -1,6 +1,10 @@
 #ifndef H_RPMTS
 #define H_RPMTS
 
+/** \ingroup rpmts
+ * \file lib/rpmts.h
+ * Structures and prototypes used for an "rpmts" transaction set.
+ */
 
 #include "rpmps.h"
 #include "rpmsw.h"
@@ -1072,6 +1076,15 @@ int rpmtsGetKeys(rpmts ts,
  * @return		name-version-release string
  */
 /*@only@*/ char * hGetNEVR(Header h, /*@null@*/ /*@out@*/ const char ** np )
+	/*@modifies *np @*/;
+
+/**
+ * Return (malloc'd) header name-version-release.arch string.
+ * @param h		header
+ * @retval np		name tag value
+ * @return		name-version-release string
+ */
+/*@only@*/ char * hGetNEVRA(Header h, /*@null@*/ /*@out@*/ const char ** np )
 	/*@modifies *np @*/;
 
 /**

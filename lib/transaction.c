@@ -195,7 +195,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    if (tscolor != 0 && FColor != 0 && FColor != oFColor)
 	    {
 		if (oFColor & 0x2) {
-		    fi->actions[fileNum] = FA_SKIP;
+		    fi->actions[fileNum] = FA_SKIPCOLOR;
 		    rConflicts = 0;
 		} else
 		if (FColor & 0x2) {
@@ -567,8 +567,12 @@ assert(otherFi != NULL);
 		if (tscolor != 0) {
 		    if (FColor & 0x2) {
 			/* ... last Elf64 file is installed ... */
-			if (!XFA_SKIPPING(fi->actions[i]))
-			    otherFi->actions[otherFileNum] = FA_SKIP;
+			if (!XFA_SKIPPING(fi->actions[i])) {
+			    /* XXX static helpers are order dependent. Ick. */
+			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
+			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
+				otherFi->actions[otherFileNum] = FA_SKIP;
+			}
 			fi->actions[i] = FA_CREATE;
 			rConflicts = 0;
 		    } else
@@ -576,7 +580,7 @@ assert(otherFi != NULL);
 			/* ... first Elf64 file is installed ... */
 			if (XFA_SKIPPING(fi->actions[i]))
 			    otherFi->actions[otherFileNum] = FA_CREATE;
-			fi->actions[i] = FA_SKIP;
+			fi->actions[i] = FA_SKIPCOLOR;
 			rConflicts = 0;
 		    } else
 		    if (FColor == 0 && oFColor == 0) {
@@ -1420,6 +1424,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * failure, nor acquire the transaction lock.
      */
 /*@-branchstate@*/
+    /* If we are in test mode, then there's no need for transaction lock. */
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) {
 	rollbackOnFailure = 0;
     } else {
@@ -1501,7 +1506,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 			rpmteO(p), NULL,
 			NULL, 0);
 
-	 if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL)
