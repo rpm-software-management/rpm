@@ -7,7 +7,7 @@ dnl it, why check it?
 AC_INIT(rpm.c)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(rpm, 3.0.3)
+AM_INIT_AUTOMAKE(rpm, 3.0.4)
 AM_CONFIG_HEADER(config.h)
 
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
@@ -23,7 +23,7 @@ dnl Checks for programs.
 AC_ARG_PROGRAM
 AC_PROG_CC
 if test "$ac_cv_prog_gcc" = yes; then
-    CFLAGS="$CFLAGS -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    CFLAGS="$CFLAGS -D_GNU_SOURCE -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
 fi
 
 AC_PROG_CPP
