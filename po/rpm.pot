@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-27 17:40-0400\n"
+"POT-Creation-Date: 2004-11-08 13:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,7 +124,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr ""
 
-#: rpmqv.c:137 lib/poptALL.c:123
+#: rpmqv.c:137 lib/poptALL.c:130
 #, c-format
 msgid "RPM version %s\n"
 msgstr ""
@@ -351,23 +351,23 @@ msgstr ""
 msgid "Unable to open temp file.\n"
 msgstr ""
 
-#: build/build.c:220
+#: build/build.c:221
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr ""
 
 #. @=boundsread@
-#: build/build.c:230
+#: build/build.c:231
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr ""
 
-#: build/build.c:239
+#: build/build.c:240
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:345
+#: build/build.c:347
 msgid ""
 "\n"
 "\n"
@@ -731,7 +731,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:646 lib/psm.c:1703
+#: build/pack.c:646 lib/psm.c:1706
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -761,7 +761,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:739 lib/psm.c:1972
+#: build/pack.c:739 lib/psm.c:1975
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -981,61 +981,61 @@ msgstr ""
 msgid "No patch number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:181
+#: build/parsePrep.c:182
 #, c-format
 msgid "No source number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:203
+#: build/parsePrep.c:204
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:307
+#: build/parsePrep.c:309
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:322
+#: build/parsePrep.c:324
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:340
+#: build/parsePrep.c:342
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:482
+#: build/parsePrep.c:484
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:491
+#: build/parsePrep.c:493
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:503
+#: build/parsePrep.c:505
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:510
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:517
+#: build/parsePrep.c:519
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:523
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:557
+#: build/parsePrep.c:559
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -1251,17 +1251,17 @@ msgstr ""
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:268 lib/poptI.c:283 lib/poptQV.c:362
+#: build/poptBT.c:229 lib/poptALL.c:275 lib/poptI.c:283 lib/poptQV.c:362
 #: lib/poptQV.c:371 lib/poptQV.c:410
 msgid "don't verify package digest(s)"
 msgstr ""
 
-#: build/poptBT.c:231 lib/poptALL.c:270 lib/poptI.c:285 lib/poptQV.c:365
+#: build/poptBT.c:231 lib/poptALL.c:277 lib/poptI.c:285 lib/poptQV.c:365
 #: lib/poptQV.c:373 lib/poptQV.c:413
 msgid "don't verify database header(s) when retrieved"
 msgstr ""
 
-#: build/poptBT.c:233 lib/poptALL.c:276 lib/poptI.c:287 lib/poptQV.c:368
+#: build/poptBT.c:233 lib/poptALL.c:285 lib/poptI.c:287 lib/poptQV.c:368
 #: lib/poptQV.c:375 lib/poptQV.c:415
 msgid "don't verify package signature(s)"
 msgstr ""
@@ -1411,37 +1411,37 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1264
+#: lib/depends.c:1269
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1356
+#: lib/depends.c:1363
 msgid ""
-"========== tsorting packages (order, #predecessors, #succesors, tree, "
-"depth)\n"
+"========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
+"breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1441
+#: lib/depends.c:1452
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1514
+#: lib/depends.c:1525
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1549
+#: lib/depends.c:1560
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1554
+#: lib/depends.c:1565
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:507
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
 #: rpmdb/header.c:3546 rpmdb/header.c:3575 rpmdb/header.c:3599
 msgid "(not a number)"
 msgstr ""
@@ -1481,7 +1481,7 @@ msgstr ""
 msgid "failed to stat %s: %s\n"
 msgstr ""
 
-#: lib/fs.c:157 rpmio/url.c:519
+#: lib/fs.c:157 rpmio/url.c:539
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
@@ -1560,17 +1560,17 @@ msgstr ""
 msgid "adding %d args from manifest.\n"
 msgstr ""
 
-#: lib/misc.c:39
+#: lib/misc.c:40
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/misc.c:44
+#: lib/misc.c:45
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/misc.c:186 lib/misc.c:191 lib/misc.c:197
+#: lib/misc.c:189 lib/misc.c:194 lib/misc.c:200
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr ""
@@ -1580,22 +1580,22 @@ msgstr ""
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:372 lib/package.c:436 lib/package.c:504 lib/signature.c:226
+#: lib/package.c:372 lib/package.c:436 lib/package.c:504 lib/signature.c:231
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:392 lib/signature.c:242
+#: lib/package.c:392 lib/signature.c:247
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:413 lib/signature.c:263
+#: lib/package.c:413 lib/signature.c:268
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:427 lib/signature.c:277
+#: lib/package.c:427 lib/signature.c:282
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
@@ -1675,140 +1675,152 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:232
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:227
+#: lib/poptALL.c:234
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:229
+#: lib/poptALL.c:236
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr ""
 
-#: lib/poptALL.c:231
+#: lib/poptALL.c:238
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:233
+#: lib/poptALL.c:240
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:235
+#: lib/poptALL.c:242
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:244
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:239
+#: lib/poptALL.c:246
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:255
+#: lib/poptALL.c:262
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:256 lib/poptALL.c:259
+#: lib/poptALL.c:263 lib/poptALL.c:266
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:258
+#: lib/poptALL.c:265
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:261
+#: lib/poptALL.c:268
 msgid "print macro expansion of EXPR"
 msgstr ""
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:269
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:264 lib/poptALL.c:283 lib/poptALL.c:287
+#: lib/poptALL.c:271 lib/poptALL.c:292 lib/poptALL.c:296
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:265 lib/poptALL.c:284 lib/poptALL.c:288
+#: lib/poptALL.c:272 lib/poptALL.c:293 lib/poptALL.c:297
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:273 lib/poptALL.c:307
+#: lib/poptALL.c:280 lib/poptALL.c:316
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:279
+#: lib/poptALL.c:283
+msgid "disable use of libneon for HTTP"
+msgstr ""
+
+#: lib/poptALL.c:288
 msgid "send stdout to CMD"
 msgstr ""
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:289
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:291
+#: lib/poptALL.c:300
 msgid "use ROOT as top level directory"
 msgstr ""
 
-#: lib/poptALL.c:292
+#: lib/poptALL.c:301
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:295
+#: lib/poptALL.c:304
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:297
+#: lib/poptALL.c:306
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: lib/poptALL.c:299
+#: lib/poptALL.c:308
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:301
+#: lib/poptALL.c:310
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:303
+#: lib/poptALL.c:312
 msgid "print the version of rpm being used"
 msgstr ""
 
-#: lib/poptALL.c:316
+#: lib/poptALL.c:325
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:318
+#: lib/poptALL.c:327
 msgid "use threads for file state machine"
 msgstr ""
 
-#: lib/poptALL.c:320
-msgid "debug protocol data stream"
+#: lib/poptALL.c:329
+msgid "debug FTP/HTTP data stream"
 msgstr ""
 
-#: lib/poptALL.c:325
+#: lib/poptALL.c:331
+msgid "debug argv collections"
+msgstr ""
+
+#: lib/poptALL.c:333
+msgid "debug WebDAV data stream"
+msgstr ""
+
+#: lib/poptALL.c:338
 msgid "debug option/argument processing"
 msgstr ""
 
-#: lib/poptALL.c:330
+#: lib/poptALL.c:343
 msgid "debug package state machine"
 msgstr ""
 
-#: lib/poptALL.c:332
+#: lib/poptALL.c:345
 msgid "use threads for package state machine"
 msgstr ""
 
-#: lib/poptALL.c:346
+#: lib/poptALL.c:359
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:360
+#: lib/poptALL.c:373
 msgid "debug URL cache handling"
 msgstr ""
 
 #. @-nullpass@
-#: lib/poptALL.c:430
+#: lib/poptALL.c:443
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -2309,55 +2321,55 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:990
+#: lib/psm.c:993
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/psm.c:996
+#: lib/psm.c:999
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1429
+#: lib/psm.c:1432
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1606
+#: lib/psm.c:1609
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1715
+#: lib/psm.c:1718
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:1793
+#: lib/psm.c:1796
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1794
+#: lib/psm.c:1797
 msgid " on file "
-msgstr ""
-
-#: lib/psm.c:1980
-#, c-format
-msgid "%s failed on file %s: %s\n"
 msgstr ""
 
 #: lib/psm.c:1983
 #, c-format
+msgid "%s failed on file %s: %s\n"
+msgstr ""
+
+#: lib/psm.c:1986
+#, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/psm.c:2168
+#: lib/psm.c:2171
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 
-#: lib/psm.c:2201
+#: lib/psm.c:2204
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -2464,7 +2476,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:669 lib/rpminstall.c:793
+#: lib/query.c:669 lib/rpminstall.c:794
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2630,8 +2642,8 @@ msgstr ""
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:477
-#: lib/rpminstall.c:608 lib/rpminstall.c:1036 lib/rpmts.c:609
+#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:478
+#: lib/rpminstall.c:609 lib/rpminstall.c:1037 lib/rpmts.c:609
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2643,12 +2655,12 @@ msgid "unknown tag: \"%s\"\n"
 msgstr ""
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:652 lib/rpminstall.c:827
-#: lib/rpminstall.c:1262 lib/transaction.c:1019 tools/rpmgraph.c:195
+#: lib/rpmgi.c:625 lib/rpminstall.c:653 lib/rpminstall.c:828
+#: lib/rpminstall.c:1263 lib/transaction.c:1019 tools/rpmgraph.c:195
 msgid "Failed dependencies:\n"
 msgstr ""
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:659 tools/rpmgraph.c:201
+#: lib/rpmgi.c:631 lib/rpminstall.c:660 tools/rpmgraph.c:201
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -2681,99 +2693,99 @@ msgstr ""
 msgid "Adding goal: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:424
+#: lib/rpminstall.c:425
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:437
+#: lib/rpminstall.c:438
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:441
+#: lib/rpminstall.c:442
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:496 lib/rpminstall.c:890 tools/rpmgraph.c:140
+#: lib/rpminstall.c:497 lib/rpminstall.c:891 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:513
+#: lib/rpminstall.c:514
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr ""
 
-#: lib/rpminstall.c:538
+#: lib/rpminstall.c:539
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr ""
 
-#: lib/rpminstall.c:583
+#: lib/rpminstall.c:584
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr ""
 
-#: lib/rpminstall.c:588
+#: lib/rpminstall.c:589
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:594
+#: lib/rpminstall.c:595
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:623
+#: lib/rpminstall.c:624
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:638
+#: lib/rpminstall.c:639
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:689
+#: lib/rpminstall.c:690
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:713
+#: lib/rpminstall.c:714
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:802
+#: lib/rpminstall.c:803
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:874
+#: lib/rpminstall.c:875
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:880
+#: lib/rpminstall.c:881
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1256 lib/transaction.c:1012
+#: lib/rpminstall.c:1257 lib/transaction.c:1012
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1287 lib/transaction.c:1063
+#: lib/rpminstall.c:1288 lib/transaction.c:1063
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1294 lib/transaction.c:1069
+#: lib/rpminstall.c:1295 lib/transaction.c:1069
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr ""
@@ -3052,42 +3064,42 @@ msgstr ""
 msgid "Suggesting: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1165
+#: lib/rpmts.c:1167
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1167
+#: lib/rpmts.c:1169
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1223
+#: lib/rpmts.c:1225
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1558
+#: lib/rpmts.c:1562
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1563
+#: lib/rpmts.c:1567
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1573
+#: lib/rpmts.c:1577
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr ""
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1600
+#: lib/rpmts.c:1604
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1604
+#: lib/rpmts.c:1608
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr ""
@@ -3095,134 +3107,139 @@ msgstr ""
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1615
+#: lib/rpmts.c:1619
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1640
+#: lib/rpmts.c:1644
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1655
+#: lib/rpmts.c:1659
 msgid "\tRefcount is zero...will free\n"
 msgstr ""
 
 #. Assume we don't find it
-#: lib/rpmts.c:1705
+#: lib/rpmts.c:1709
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1711
+#: lib/rpmts.c:1715
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr ""
 
-#: lib/signature.c:133
+#: lib/signature.c:138
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:138
+#: lib/signature.c:143
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:181
+#: lib/signature.c:186
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:186
+#: lib/signature.c:191
 #, c-format
 msgid "sigh magic: BAD\n"
 msgstr ""
 
-#: lib/signature.c:194
+#: lib/signature.c:199
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/signature.c:202
+#: lib/signature.c:207
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/signature.c:218
+#: lib/signature.c:223
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:290
+#: lib/signature.c:295
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/signature.c:300
+#: lib/signature.c:305
 #, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
-#: lib/signature.c:312
+#: lib/signature.c:317
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr ""
 
-#: lib/signature.c:354
+#: lib/signature.c:326
+#, c-format
+msgid "sigh sigSize(%d): BAD, fstat(2) failed\n"
+msgstr ""
+
+#: lib/signature.c:363
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
 #. @=boundsread@
-#: lib/signature.c:446 lib/signature.c:560 lib/signature.c:835
-#: lib/signature.c:874
+#: lib/signature.c:455 lib/signature.c:569 lib/signature.c:844
+#: lib/signature.c:883
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr ""
 
-#: lib/signature.c:462
+#: lib/signature.c:471
 msgid "pgp failed\n"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:469
+#: lib/signature.c:478
 msgid "pgp failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:475
+#: lib/signature.c:484
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
 #. @=boundswrite@
-#: lib/signature.c:493 lib/signature.c:608
+#: lib/signature.c:502 lib/signature.c:617
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: lib/signature.c:498
+#: lib/signature.c:507
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:577
+#: lib/signature.c:586
 msgid "gpg failed\n"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:584
+#: lib/signature.c:593
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:590
+#: lib/signature.c:599
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:613
+#: lib/signature.c:622
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
@@ -3232,56 +3249,56 @@ msgstr ""
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: lib/signature.c:879 lib/signature.c:934
+#: lib/signature.c:888 lib/signature.c:943
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:911
+#: lib/signature.c:920
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:926
+#: lib/signature.c:935
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:975
+#: lib/signature.c:984
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:1016
+#: lib/signature.c:1025
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1076
+#: lib/signature.c:1085
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1153
+#: lib/signature.c:1162
 msgid "V3 RSA/MD5 signature: "
 msgstr ""
 
-#: lib/signature.c:1280
+#: lib/signature.c:1289
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1281
+#: lib/signature.c:1290
 msgid "V3 DSA signature: "
 msgstr ""
 
-#: lib/signature.c:1365
+#: lib/signature.c:1374
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1392
+#: lib/signature.c:1401
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1396
+#: lib/signature.c:1405
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
@@ -3762,74 +3779,74 @@ msgstr ""
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3659
+#: rpmdb/rpmdb.c:3660
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3697
+#: rpmdb/rpmdb.c:3698
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3729
+#: rpmdb/rpmdb.c:3730
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3733
+#: rpmdb/rpmdb.c:3734
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3739
+#: rpmdb/rpmdb.c:3740
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3741
+#: rpmdb/rpmdb.c:3742
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3748
+#: rpmdb/rpmdb.c:3749
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3761
+#: rpmdb/rpmdb.c:3762
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3789
+#: rpmdb/rpmdb.c:3790
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3829
+#: rpmdb/rpmdb.c:3830
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3843
+#: rpmdb/rpmdb.c:3844
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3851
+#: rpmdb/rpmdb.c:3852
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3853
+#: rpmdb/rpmdb.c:3854
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3863
+#: rpmdb/rpmdb.c:3864
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3865
+#: rpmdb/rpmdb.c:3866
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3910,74 +3927,74 @@ msgstr ""
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr ""
 
-#: rpmio/macro.c:1843
+#: rpmio/macro.c:1844
 msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2049 rpmio/macro.c:2055
+#: rpmio/macro.c:2050 rpmio/macro.c:2056
 #, c-format
 msgid "File %s: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:2058
+#: rpmio/macro.c:2059
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:652
+#: rpmio/rpmio.c:683
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:655
+#: rpmio/rpmio.c:686
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:658
+#: rpmio/rpmio.c:689
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:661
+#: rpmio/rpmio.c:692
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:695
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:667
+#: rpmio/rpmio.c:698
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:701
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:673
+#: rpmio/rpmio.c:704
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:707
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:679
+#: rpmio/rpmio.c:710
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:713
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:685
+#: rpmio/rpmio.c:716
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:689
+#: rpmio/rpmio.c:720
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1382
+#: rpmio/rpmio.c:1414
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -4007,37 +4024,37 @@ msgstr ""
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:118
+#: rpmio/url.c:121
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:138
+#: rpmio/url.c:141
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:167
+#: rpmio/url.c:175
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:263
+#: rpmio/url.c:271
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: rpmio/url.c:291 rpmio/url.c:317
+#: rpmio/url.c:299 rpmio/url.c:325
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:472
+#: rpmio/url.c:490
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/url.c:539
+#: rpmio/url.c:559
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""
