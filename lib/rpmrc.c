@@ -545,7 +545,7 @@ int rpmReadRC(const char * rcfiles)
     /* Read each file in rcfiles. */
     rc = 0;
     for (r = myrcfiles = strdup(rcfiles); *r != '\0'; r = re) {
-	char fn[FILENAME_MAX+1];
+	char fn[4096];
 	FD_t fd;
 
 	/* Get pointer to rest of files */
