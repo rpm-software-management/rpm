@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.3 2000/05/30 01:03:13 rjray Exp $
+ * $Id: RPM.h,v 1.4 2000/06/02 07:51:01 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -24,12 +24,13 @@
 #  undef Fflush
 #endif
 
-// Borrowed from DB_File.xs
+/* Borrowed from DB_File.xs */
 #ifndef pTHX
 #    define pTHX
 #    define pTHX_
 #    define aTHX
 #    define aTHX_
+#    define dTHX dTHR
 #endif
 
 #ifndef newSVpvn
@@ -40,12 +41,12 @@
 #include <rpm/header.h>
 #include <rpm/dbindex.h>
 
-//
-// This is the underlying struct that implements the interface to the RPM
-// database. Since we need the actual object to be a hash, the struct will
-// be stored as an SV (actually, a pointer to a struct) on a special key
-// defined below.
-//
+/*
+  This is the underlying struct that implements the interface to the RPM
+  database. Since we need the actual object to be a hash, the struct will
+  be stored as an SV (actually, a pointer to a struct) on a special key
+  defined below.
+*/
 
 typedef struct {
     rpmdb dbp;
@@ -57,24 +58,24 @@ typedef HV* RPM__Database;
 
 #define new_RPM__Database(x) x = newHV()
 
-//
-// This is the underlying struct that implements the interface to the RPM
-// headers. As above, we need the actual object to be a hash, so the struct
-// will be stored as an SV on the same sort of special key as RPM__Database
-// uses.
-//
+/*
+  This is the underlying struct that implements the interface to the RPM
+  headers. As above, we need the actual object to be a hash, so the struct
+  will be stored as an SV on the same sort of special key as RPM__Database
+  uses.
+*/
 
 typedef struct {
     Header hdr;
-    // These three tags will probably cover at leas 80% of data requests
+    /* These three tags will probably cover at least 80% of data requests */
     const char* name;
     const char* version;
     const char* release;
-    // These are set by rpmReadPackageHeader when applicable
-    int isSource;   // If this header is for a source RPM (SRPM)
-    int major;      // Major and minor rev numbers of package's format
+    /* These are set by rpmReadPackageHeader when applicable */
+    int isSource;   /* If this header is for a source RPM (SRPM) */
+    int major;      /* Major and minor rev numbers of package's format */
     int minor;
-    // Keep a per-header iterator for things like FIRSTKEY and NEXTKEY
+    /* Keep a per-header iterator for things like FIRSTKEY and NEXTKEY */
     HeaderIterator iterator;
     int read_only;
 } RPM_Header;
@@ -86,8 +87,10 @@ typedef HV* RPM__Header;
 #define RPM_HEADER_READONLY 1
 #define RPM_HEADER_FROM_REF 2
 
-// Because the HV* are going to be set magical, the following is needed for
-// explicit fetch and store calls that are done within the tied FETCH/STORE
+/*
+  Because the HV* are going to be set magical, the following is needed for
+  explicit fetch and store calls that are done within the tied FETCH/STORE
+*/
 #define hv_fetch_nomg(SVP, h, k, kl, f) \
         SvMAGICAL_off((SV *)(h)); \
         (SVP) = hv_fetch((h), (k), (kl), (f)); \
@@ -97,42 +100,26 @@ typedef HV* RPM__Header;
         hv_store((h), (k), (kl), (v), (f)); \
         SvMAGICAL_on((SV *)(h))
 
-//
-// This silly-looking key is what will be used on the RPM::Header and
-// RPM::Database objects to stash the underlying struct.
-//
+/*
+  This silly-looking key is what will be used on the RPM::Header and
+  RPM::Database objects to stash the underlying struct.
+*/
 #define STRUCT_KEY "<<<struct>>>"
-// This must match!
+/* This must match! */
 #define STRUCT_KEY_LEN 13
 
-//
-// This struct will be used for RPM data type coming out of an RPM::Header
-// object. It will be implemented as a tied scalar, so we shouldn't need any
-// weird private-key voodoo like for the two previous.
-//
-
-typedef struct {
-    SV* value;    // May be an SV* or a ptr to an AV*
-    int size;     // Number of items
-    int type;     // Will match one of the RPM_*_TYPE values.
-} RPM_Header_datum;
-
-typedef RPM_Header_datum* RPM__Header__datum;
-
-#define new_RPM__Header__datum(x) Newz(TRUE, (x), 1, RPM_Header_datum)
-
-//
-// These represent the various interfaces that are allowed for use outside
-// their native modules.
-//
-// RPM.xs:
+/*
+  These represent the various interfaces that are allowed for use outside
+  their native modules.
+*/
+/* RPM.xs: */
 extern int tag2num(pTHX_ const char *);
 extern const char* num2tag(pTHX_ int);
 extern void clear_errors(pTHX);
 extern SV* set_error_callback(pTHX_ SV *);
 extern void rpm_error(pTHX_ int, const char *);
 
-// RPM/Header.xs:
+/* RPM/Header.xs: */
 extern const char* sv2key(pTHX_ SV *);
 extern RPM__Header rpmhdr_TIEHASH(pTHX_ SV *, SV *, int);
 extern AV* rpmhdr_FETCH(pTHX_ RPM__Header, SV *, const char *, int, int);
@@ -143,7 +130,7 @@ extern unsigned int rpmhdr_size(pTHX_ RPM__Header);
 extern int rpmhdr_tagtype(pTHX_ RPM__Header, SV *);
 extern int rpmhdr_write(pTHX_ RPM__Header, SV *, int);
 
-// RPM/Database.xs:
+/* RPM/Database.xs: */
 extern RPM__Database rpmdb_TIEHASH(pTHX_ char *, SV *);
 extern RPM__Header rpmdb_FETCH(pTHX_ RPM__Database, SV *);
 extern int rpmdb_EXISTS(pTHX_ RPM__Database, SV *);
