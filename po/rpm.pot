@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-05-14 14:40-0400\n"
+"POT-Creation-Date: 1999-05-17 11:58-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1171,323 +1171,323 @@ msgstr ""
 msgid "rebuild database from existing database"
 msgstr ""
 
-#: ../rpm.c:631 ../rpm.c:637 ../rpm.c:644 ../rpm.c:650 ../rpm.c:659
-#: ../rpm.c:666 ../rpm.c:713 ../rpm.c:719 ../rpm.c:779 ../rpm.c:787
-#: ../rpm.c:794 ../rpm.c:803 ../rpm.c:810 ../rpm.c:818 ../rpm.c:854
-#: ../rpm.c:909 ../rpm.c:916
+#: ../rpm.c:632 ../rpm.c:638 ../rpm.c:645 ../rpm.c:651 ../rpm.c:660
+#: ../rpm.c:667 ../rpm.c:714 ../rpm.c:720 ../rpm.c:780 ../rpm.c:788
+#: ../rpm.c:795 ../rpm.c:804 ../rpm.c:811 ../rpm.c:819 ../rpm.c:855
+#: ../rpm.c:910 ../rpm.c:917
 msgid "only one major mode may be specified"
 msgstr ""
 
-#: ../rpm.c:652
+#: ../rpm.c:653
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr ""
 
-#: ../rpm.c:654
+#: ../rpm.c:655
 msgid "Use -e or --erase instead.\n"
 msgstr ""
 
-#: ../rpm.c:670
+#: ../rpm.c:671
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 
-#: ../rpm.c:674
+#: ../rpm.c:675
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 
-#: ../rpm.c:726 ../rpm.c:732 ../rpm.c:739 ../rpm.c:746 ../rpm.c:755
-#: ../rpm.c:763 ../rpm.c:771 ../rpm.c:923
+#: ../rpm.c:727 ../rpm.c:733 ../rpm.c:740 ../rpm.c:747 ../rpm.c:756
+#: ../rpm.c:764 ../rpm.c:772 ../rpm.c:924
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 
-#: ../rpm.c:826
+#: ../rpm.c:827
 msgid "arguments to --dbpath must begin with a /"
 msgstr ""
 
-#: ../rpm.c:860
+#: ../rpm.c:861
 msgid "relocations must begin with a /"
 msgstr ""
 
-#: ../rpm.c:862
+#: ../rpm.c:863
 msgid "relocations must contain a ="
 msgstr ""
 
-#: ../rpm.c:865
+#: ../rpm.c:866
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: ../rpm.c:874
+#: ../rpm.c:875
 msgid "exclude paths must begin with a /"
 msgstr ""
 
-#: ../rpm.c:883
+#: ../rpm.c:884
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: ../rpm.c:936
+#: ../rpm.c:937
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: ../rpm.c:941
+#: ../rpm.c:942
 msgid "--timecheck may only be used during package builds"
 msgstr ""
 
-#: ../rpm.c:944 ../rpm.c:947
+#: ../rpm.c:945 ../rpm.c:948
 msgid "unexpected query specifiers"
 msgstr ""
 
-#: ../rpm.c:951
+#: ../rpm.c:952
 msgid "unexpected query source"
 msgstr ""
 
-#: ../rpm.c:957
+#: ../rpm.c:958
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 
-#: ../rpm.c:960
+#: ../rpm.c:961
 msgid "files may only be relocated during package installation"
 msgstr ""
 
-#: ../rpm.c:963
+#: ../rpm.c:964
 msgid "only one of --prefix or --relocate may be used"
 msgstr ""
 
-#: ../rpm.c:966
+#: ../rpm.c:967
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 
-#: ../rpm.c:969
+#: ../rpm.c:970
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 
-#: ../rpm.c:972
+#: ../rpm.c:973
 msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
-#: ../rpm.c:975
+#: ../rpm.c:976
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:979
+#: ../rpm.c:980
 msgid "--percent may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:983
+#: ../rpm.c:984
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:987
+#: ../rpm.c:988
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:991
+#: ../rpm.c:992
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:995
+#: ../rpm.c:996
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:999
+#: ../rpm.c:1000
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: ../rpm.c:1003
+#: ../rpm.c:1004
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:1007
+#: ../rpm.c:1008
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:1011
+#: ../rpm.c:1012
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:1015
+#: ../rpm.c:1016
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: ../rpm.c:1019
+#: ../rpm.c:1020
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: ../rpm.c:1023
+#: ../rpm.c:1024
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
-#: ../rpm.c:1028
+#: ../rpm.c:1029
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
 
-#: ../rpm.c:1032
+#: ../rpm.c:1033
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
 msgstr ""
 
-#: ../rpm.c:1038
+#: ../rpm.c:1039
 msgid ""
 "--nodeps may only be specified during package building, installation, "
 "erasure, and verification"
 msgstr ""
 
-#: ../rpm.c:1043
+#: ../rpm.c:1044
 msgid "--nofiles may only be specified during package verification"
 msgstr ""
 
-#: ../rpm.c:1049
+#: ../rpm.c:1050
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: ../rpm.c:1054
+#: ../rpm.c:1055
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: ../rpm.c:1059
+#: ../rpm.c:1060
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: ../rpm.c:1063
+#: ../rpm.c:1064
 msgid "--clean may only be used with -b and -t"
 msgstr ""
 
-#: ../rpm.c:1066
+#: ../rpm.c:1067
 msgid "--rmsource may only be used with -b and -t"
 msgstr ""
 
-#: ../rpm.c:1069
+#: ../rpm.c:1070
 msgid "--short-circuit may only be used during package building"
 msgstr ""
 
-#: ../rpm.c:1073
+#: ../rpm.c:1074
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 
-#: ../rpm.c:1079
+#: ../rpm.c:1080
 msgid "--oldpackage may only be used during upgrades"
 msgstr ""
 
-#: ../rpm.c:1084
+#: ../rpm.c:1085
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 
-#: ../rpm.c:1090
+#: ../rpm.c:1091
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr ""
 
-#: ../rpm.c:1094
+#: ../rpm.c:1095
 msgid "--nopgp may only be used during signature checking"
 msgstr ""
 
-#: ../rpm.c:1097
+#: ../rpm.c:1098
 msgid "--nogpg may only be used during signature checking"
 msgstr ""
 
-#: ../rpm.c:1100
+#: ../rpm.c:1101
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 
-#: ../rpm.c:1126
+#: ../rpm.c:1127
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: ../rpm.c:1143
+#: ../rpm.c:1144
 msgid "pgp not found: "
 msgstr ""
 
-#: ../rpm.c:1146
+#: ../rpm.c:1147
 msgid "Use `%%_signature pgp5' instead of `%%_signature pgp' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1153
+#: ../rpm.c:1154
 msgid "pgp version 5 not found: "
 msgstr ""
 
-#: ../rpm.c:1156
+#: ../rpm.c:1157
 msgid "Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1162
+#: ../rpm.c:1163
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: ../rpm.c:1163
+#: ../rpm.c:1164
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: ../rpm.c:1166
+#: ../rpm.c:1167
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: ../rpm.c:1173
+#: ../rpm.c:1174
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: ../rpm.c:1178
+#: ../rpm.c:1179
 msgid "--sign may only be used during package building"
 msgstr ""
 
-#: ../rpm.c:1195
+#: ../rpm.c:1196
 msgid "exec failed\n"
 msgstr ""
 
-#: ../rpm.c:1214
+#: ../rpm.c:1215
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: ../rpm.c:1225
+#: ../rpm.c:1226
 msgid "no packages given for signature check"
 msgstr ""
 
-#: ../rpm.c:1233
+#: ../rpm.c:1238
 msgid "no packages given for signing"
 msgstr ""
 
-#: ../rpm.c:1242
+#: ../rpm.c:1251
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: ../rpm.c:1299
+#: ../rpm.c:1308
 msgid "no spec files given for build"
 msgstr ""
 
-#: ../rpm.c:1301
+#: ../rpm.c:1310
 msgid "no tar files given for build"
 msgstr ""
 
-#: ../rpm.c:1313
+#: ../rpm.c:1322
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: ../rpm.c:1362
+#: ../rpm.c:1371
 msgid "no packages given for install"
 msgstr ""
 
-#: ../rpm.c:1385
+#: ../rpm.c:1394
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: ../rpm.c:1390
+#: ../rpm.c:1399
 msgid "no arguments given for query"
 msgstr ""
 
-#: ../rpm.c:1411
+#: ../rpm.c:1420
 msgid "extra arguments given for verify of all packages"
 msgstr ""
 
-#: ../rpm.c:1415
+#: ../rpm.c:1424
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -1593,172 +1593,172 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr ""
 
-#: ../build/files.c:220
+#: ../build/files.c:222
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: ../build/files.c:265 ../build/files.c:277 ../build/files.c:346
-#: ../build/files.c:358 ../build/files.c:389
+#: ../build/files.c:267 ../build/files.c:279 ../build/files.c:348
+#: ../build/files.c:360 ../build/files.c:391
 #, c-format
 msgid "Bad %s() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:307
+#: ../build/files.c:309
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: ../build/files.c:369
+#: ../build/files.c:371
 msgid "No files after %%defattr(): %s"
 msgstr ""
 
-#: ../build/files.c:399
+#: ../build/files.c:401
 #, c-format
 msgid "Bad %s() mode spec: %s"
 msgstr ""
 
-#: ../build/files.c:411
+#: ../build/files.c:413
 #, c-format
 msgid "Bad %s() dirmode spec: %s"
 msgstr ""
 
-#: ../build/files.c:462
+#: ../build/files.c:464
 msgid "Bad %%config() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:480
+#: ../build/files.c:482
 msgid "Invalid %%config token: %s"
 msgstr ""
 
-#: ../build/files.c:503 ../build/files.c:515 ../build/files.c:528
+#: ../build/files.c:505 ../build/files.c:517 ../build/files.c:530
 msgid "Bad %%lang() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:534
+#: ../build/files.c:536
 msgid "%%lang() entries are 2 characters: %s"
 msgstr ""
 
-#: ../build/files.c:540
+#: ../build/files.c:542
 msgid "Only one entry in %%lang(): %s"
 msgstr ""
 
-#: ../build/files.c:620
+#: ../build/files.c:626
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: ../build/files.c:626
+#: ../build/files.c:632
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: ../build/files.c:651
+#: ../build/files.c:657
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: ../build/files.c:664
+#: ../build/files.c:670
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:676
+#: ../build/files.c:682
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: ../build/files.c:764
+#: ../build/files.c:770
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:916
+#: ../build/files.c:925
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:926 ../build/files.c:1049
+#: ../build/files.c:935 ../build/files.c:1068
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:969
+#: ../build/files.c:978
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:983
+#: ../build/files.c:992
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr ""
 
-#: ../build/files.c:1033
+#: ../build/files.c:1052
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1090
+#: ../build/files.c:1109
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1097 ../build/pack.c:433
+#: ../build/files.c:1116 ../build/pack.c:433
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1394 ../build/parsePrep.c:31
+#: ../build/files.c:1437 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1448
+#: ../build/files.c:1491
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1452
+#: ../build/files.c:1495
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1502
+#: ../build/files.c:1545
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1506
+#: ../build/files.c:1549
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1540
+#: ../build/files.c:1583
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1547
+#: ../build/files.c:1590
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1566
+#: ../build/files.c:1609
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1573
+#: ../build/files.c:1616
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1607
+#: ../build/files.c:1650
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1622
+#: ../build/files.c:1665
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1634
+#: ../build/files.c:1677
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1658
+#: ../build/files.c:1701
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""

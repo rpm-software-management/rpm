@@ -20,6 +20,7 @@
 	- fix: conversion script left off leading underscores.
 	- another strtok bites the dust.
 	- fix: prevent return code wrap during packagage checking/resigning.
+	- permit multiple %lang(xx) markers on elements in %files.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.

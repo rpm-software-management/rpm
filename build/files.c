@@ -32,7 +32,8 @@ typedef struct {
     const char *gname;
     int		flags;
     int		verifyFlags;
-    const char *lang;
+    int		nlangs;
+    void **	langs;	/* XXX usually (but not always) char ** */
 } FileListRec;
 
 typedef struct {
@@ -64,7 +65,8 @@ struct FileList {
     AttrRec cur_ar;
     AttrRec def_ar;
     int defVerifyFlags;
-    const char *currentLang;
+    int nLangs;
+    const char **currentLangs;
 
     /* Hard coded limit of MAXDOCDIR docdirs.         */
     /* If you break it you are doing something wrong. */
@@ -541,7 +543,11 @@ static int parseForLang(char *buf, struct FileList *fl)
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
-    fl->currentLang = strdup(p);
+
+    fl->currentLangs = (const char **) ((fl->currentLangs == NULL)
+	? malloc(sizeof(*fl->currentLangs))
+	: realloc(fl->currentLangs, (fl->nLangs+1)*sizeof(*fl->currentLangs)) );
+    fl->currentLangs[fl->nLangs++] = strdup(p);
     
     return 0;
 }
@@ -819,7 +825,7 @@ static void genCpioListAndHeader(struct FileList *fl,
 	headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 			       &(flp->fl_ino), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
-			       &(flp->lang), 1);
+			       &(flp->langs), flp->nlangs);
 	
 	/* We used to add these, but they should not be needed */
 	/* headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
@@ -864,9 +870,12 @@ static void genCpioListAndHeader(struct FileList *fl,
 static void freeFileList(FileListRec *fileList, int count)
 {
     while (count--) {
+	int i;
 	FREE(fileList[count].diskName);
 	FREE(fileList[count].fileName);
-	FREE(fileList[count].lang);
+	for (i = 0; i < fileList[count].nlangs; i++)
+	    FREE(fileList[count].langs[i]);
+	FREE(fileList[count].langs);
     }
     FREE(fileList);
 }
@@ -1002,12 +1011,22 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
-	if (fl->currentLang) {
-	    flp->lang = strdup(fl->currentLang);
+	if (fl->currentLangs && fl->nLangs > 0) {
+	    char **cLangs = malloc(fl->nLangs * sizeof(*cLangs));
+	    int i;
+	    
+	    for (i = 0; i < fl->nLangs; i++)
+		cLangs[i] = strdup(fl->currentLangs[i]);
+	    flp->langs = (void **)cLangs;
+	    flp->nlangs = fl->nLangs;
 	} else if (! parseForRegexLang(fileName, &lang)) {
-	    flp->lang = strdup(lang);
+	    /* XXX not an array! */
+	    flp->langs = (void **)strdup(lang);
+	    flp->nlangs = 1;
 	} else {
-	    flp->lang = strdup("");
+	    /* XXX not an array! */
+	    flp->langs = (void **)strdup("");
+	    flp->nlangs = 0;
 	}
 
 	flp->flags = fl->currentFlags;
@@ -1124,7 +1143,8 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.cur_ar = empty_ar;	/* structure assignment */
     fl.def_ar = empty_ar;	/* structure assignment */
 
-    fl.currentLang = NULL;
+    fl.nLangs = 0;
+    fl.currentLangs = NULL;
 
     fl.defVerifyFlags = RPMVERIFY_ALL;
 
@@ -1156,7 +1176,15 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.currentVerifyFlags = fl.defVerifyFlags;
 	fl.currentFlags = 0;
 	fl.isSpecialDoc = 0;
-	FREE(fl.currentLang);	/* XXX should reset to %deflang value */
+
+	/* XXX should reset to %deflang value */
+	if (fl.currentLangs) {
+	    int i;
+	    for (i = 0; i < fl.nLangs; i++)
+		xfree(fl.currentLangs[i]);
+	    FREE(fl.currentLangs);
+	}
+  	fl.nLangs = 0;
 
 	dupAttrRec(&fl.def_ar, &fl.cur_ar);
 
@@ -1194,7 +1222,15 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
 	fl.currentVerifyFlags = 0;
-	FREE(fl.currentLang);	/* XXX should reset to %deflang value */
+
+	/* XXX should reset to %deflang value */
+	if (fl.currentLangs) {
+	    int i;
+	    for (i = 0; i < fl.nLangs; i++)
+		xfree(fl.currentLangs[i]);
+	    FREE(fl.currentLangs);
+	}
+  	fl.nLangs = 0;
 
 	dupAttrRec(&specialDocAttrRec, &fl.cur_ar);
 	freeAttrRec(&specialDocAttrRec);
@@ -1222,7 +1258,13 @@ static int processPackageFiles(Spec spec, Package pkg,
     freeAttrRec(&fl.cur_ar);
     freeAttrRec(&fl.def_ar);
 
-    FREE(fl.currentLang);
+    if (fl.currentLangs) {
+	int i;
+	for (i = 0; i < fl.nLangs; i++)
+	    xfree(fl.currentLangs[i]);
+	FREE(fl.currentLangs);
+    }
+
     freeFileList(fl.fileList, fl.fileListRecsUsed);
     while (fl.docDirCount--) {
         FREE(fl.docDirs[fl.docDirCount]);
@@ -1386,7 +1428,8 @@ int processSourceFiles(Spec spec)
 
 	flp->uname = getUname(flp->fl_uid);
 	flp->gname = getGname(flp->fl_gid);
-	flp->lang = strdup("");
+	flp->langs = (void **)strdup("");
+	flp->nlangs = 0;
 	
 	fl.totalFileSize += flp->fl_size;
 	
