@@ -289,16 +289,16 @@ void dumpHeader(Header h, FILE * f, int flags)
 		"OFSET     COUNT\n");
     for (i = 0; i < h->entries_used; i++) {
 	switch (ntohl(p->type)) {
-	    case NULL_TYPE:   	type = "NULL_TYPE"; 	break;
-	    case CHAR_TYPE:   	type = "CHAR_TYPE"; 	break;
-	    case BIN_TYPE:   	type = "BIN_TYPE"; 	break;
-	    case INT8_TYPE:   	type = "INT8_TYPE"; 	break;
-	    case INT16_TYPE:  	type = "INT16_TYPE"; 	break;
-	    case INT32_TYPE:  	type = "INT32_TYPE"; 	break;
-	    case INT64_TYPE:  	type = "INT64_TYPE"; 	break;
-	    case STRING_TYPE: 	type = "STRING_TYPE"; 	break;
-	    case STRING_ARRAY_TYPE: type = "STRING_ARRAY_TYPE"; break;
-	    default:		type = "(unknown)";	break;
+	    case NULL_TYPE:   		type = "NULL_TYPE"; 	break;
+	    case CHAR_TYPE:   		type = "CHAR_TYPE"; 	break;
+	    case BIN_TYPE:   		type = "BIN_TYPE"; 	break;
+	    case INT8_TYPE:   		type = "INT8_TYPE"; 	break;
+	    case INT16_TYPE:  		type = "INT16_TYPE"; 	break;
+	    case INT32_TYPE:  		type = "INT32_TYPE"; 	break;
+	    case INT64_TYPE:  		type = "INT64_TYPE"; 	break;
+	    case STRING_TYPE: 	    	type = "STRING_TYPE"; 	break;
+	    case STRING_ARRAY_TYPE: 	type = "STRING_ARRAY_TYPE"; break;
+	    default:		    	type = "(unknown)";	break;
 	}
 
 	switch (ntohl(p->tag)) {
@@ -343,7 +343,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 	    default:			tag = "(unknown)";		break;
 	}
 
-	fprintf(f, "Entry      : %.3d %-20s %-12s 0x%.8x %.8d\n", i, tag, type,
+	fprintf(f, "Entry      : %.3d %-20s %-18s 0x%.8x %.8d\n", i, tag, type,
 		(uint_32) ntohl(p->offset), (uint_32) ntohl(p->count));
 
 	if (flags & DUMP_INLINE) {
