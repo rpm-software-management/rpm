@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
 EXTRA_DIST	= \
-	dependencies macros queryformat spec buildroot format \
-	multiplebuilds relocatable signatures triggers
+	builddependencies buildroot dependencies format macros \
+	multiplebuilds queryformat spec relocatable signatures triggers
 
