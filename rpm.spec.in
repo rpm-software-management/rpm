@@ -514,8 +514,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Tue Jul  9 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.44
+* Thu Jul 11 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.44
 - placeholders for manifest constants for SuSE patch packages.
+- fix: repair 2ndary match criteria with rpmdb iterators.
 
 * Sat Jul  6 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.43
 - fix: permit deletions of added packages (#67108).

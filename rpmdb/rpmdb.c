@@ -1761,8 +1761,8 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	return 0;
 
     /*
-     * Apply tag tests, implictly "||" for multiple patterns/values of a
-     * single tag, implictly "&&" between multiple tag patterns.
+     * Apply tag tests, implicitly "||" for multiple patterns/values of a
+     * single tag, implicitly "&&" between multiple tag patterns.
      */
     if ((mire = mi->mi_re) != NULL)
     for (i = 0; i < mi->mi_nre; i++, mire++) {
@@ -1856,8 +1856,8 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) {
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;
-    void * uh = NULL;
-    size_t uhlen = 0;
+    void * uh;
+    size_t uhlen;
     DBT * key;
     DBT * data;
     void * keyp;
@@ -1887,6 +1887,8 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     memset(data, 0, sizeof(*data));
 
 top:
+    uh = NULL;
+    uhlen = 0;
 
     /* XXX skip over instances with 0 join key */
     do {
