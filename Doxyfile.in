@@ -363,8 +363,8 @@ INPUT                  = \
 	@top_srcdir@/beecrypt/hmacsha1.h \
 	@top_srcdir@/beecrypt/hmacsha256.c \
 	@top_srcdir@/beecrypt/hmacsha256.h \
-	@top_srcdir@/beecrypt/javaglue.c \
-	@top_srcdir@/beecrypt/javaglue.h \
+	@top_srcdir@/beecrypt/java/javaglue.c \
+	@top_srcdir@/beecrypt/java/javaglue.h \
 	@top_srcdir@/beecrypt/md5.c \
 	@top_srcdir@/beecrypt/md5.h \
 	@top_srcdir@/beecrypt/memchunk.c \

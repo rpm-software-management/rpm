@@ -452,7 +452,7 @@ DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned l
     return rc;
 }
 
-/*@null@*/ static FD_t fdOpen(const char *path, int flags, mode_t mode)
+static /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/
 {

@@ -693,7 +693,7 @@ static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 		    /* Get the keyid */
 		    if (_digp) {
 			uint32_t* np = _dig->rsa_pk.n.modl;
-			uint32_t  nsize = _dig->rsa_pk.n.size;
+			size_t nsize = _dig->rsa_pk.n.size;
 			uint32_t keyid[2];
 			#if WORDS_BIGENDIAN
 			keyid[0] = np[nsize-2];

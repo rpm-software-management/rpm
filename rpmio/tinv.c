@@ -1,71 +1,71 @@
 #include "system.h"
 #include "mpbarrett.h"
-#include "mp32.h"
+#include "mp.h"
 #include "popt.h"
 #include "debug.h"
 
 static int _debug = 0;
 
-static int Zmpbinv_w(const mpbarrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
+static int Zmpbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mpw* wksp)
 {
-	uint32  ysize = b->size+1;
-	int ubits, vbits;
+	size_t ysize = b->size+1;
+	size_t ubits, vbits;
 	int k = 0;
 
-	uint32* u = wksp;
-	uint32* v = u+ysize;
-	uint32* A = v+ysize;
-	uint32* B = A+ysize;
-	uint32* C = B+ysize;
-	uint32* D = C+ysize;
+	mpw* u = wksp;
+	mpw* v = u+ysize;
+	mpw* A = v+ysize;
+	mpw* B = A+ysize;
+	mpw* C = B+ysize;
+	mpw* D = C+ysize;
 
-	mp32setx(ysize, u, xsize, xdata);
-	mp32setx(ysize, v, b->size, b->modl);
-	mp32setw(ysize, A, 1);
-	mp32zero(ysize, B);
-	mp32zero(ysize, C);
-	mp32setw(ysize, D, 1);
+	mpsetx(ysize, u, xsize, xdata);
+	mpsetx(ysize, v, b->size, b->modl);
+	mpsetw(ysize, A, 1);
+	mpzero(ysize, B);
+	mpzero(ysize, C);
+	mpsetw(ysize, D, 1);
 
-	for (k = 0; mp32even(ysize, u) && mp32even(ysize, v); k++) {
-		mp32divtwo(ysize, u);
-		mp32divtwo(ysize, v);
+	for (k = 0; mpeven(ysize, u) && mpeven(ysize, v); k++) {
+		mpdivtwo(ysize, u);
+		mpdivtwo(ysize, v);
 	}
 
-	if (mp32even(ysize, u))
-		(void) mp32add(ysize, u, v);
+	if (mpeven(ysize, u))
+		(void) mpadd(ysize, u, v);
 
 if (_debug < 0)
-fprintf(stderr, "       u: "), mp32println(stderr, ysize, u);
+fprintf(stderr, "       u: "), mpfprintln(stderr, ysize, u);
 if (_debug < 0)
-fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
+fprintf(stderr, "       v: "), mpfprintln(stderr, ysize, v);
 if (_debug < 0)
-fprintf(stderr, "       A: "), mp32println(stderr, ysize, A);
+fprintf(stderr, "       A: "), mpfprintln(stderr, ysize, A);
 if (_debug < 0)
-fprintf(stderr, "       B: "), mp32println(stderr, ysize, B);
+fprintf(stderr, "       B: "), mpfprintln(stderr, ysize, B);
 if (_debug < 0)
-fprintf(stderr, "       C: "), mp32println(stderr, ysize, C);
+fprintf(stderr, "       C: "), mpfprintln(stderr, ysize, C);
 if (_debug < 0)
-fprintf(stderr, "       D: "), mp32println(stderr, ysize, D);
+fprintf(stderr, "       D: "), mpfprintln(stderr, ysize, D);
 
-	ubits = vbits = 32 * (ysize);
+	ubits = vbits = MP_WORDS_TO_BITS(ysize);
 
 	do {
-		while (mp32even(ysize, v)) {
-			mp32sdivtwo(ysize, v);
+		while (mpeven(ysize, v)) {
+			mpsdivtwo(ysize, v);
 			vbits -= 1;
-			if (mp32odd(ysize, C)) {
-				(void) mp32addx(ysize, C, b->size, b->modl);
-				(void) mp32subx(ysize, D, xsize, xdata);
+			if (mpodd(ysize, C)) {
+				(void) mpaddx(ysize, C, b->size, b->modl);
+				(void) mpsubx(ysize, D, xsize, xdata);
 			}
-			mp32sdivtwo(ysize, C);
-			mp32sdivtwo(ysize, D);
+			mpsdivtwo(ysize, C);
+			mpsdivtwo(ysize, D);
 if (_debug < 0)
-fprintf(stderr, "-->>   v: "), mp32println(stderr, ysize, v);
+fprintf(stderr, "-->>   v: "), mpfprintln(stderr, ysize, v);
 		}
 
 		if (ubits >= vbits) {
-			uint32* swapu;
-			uint32  swapi;
+			mpw* swapu;
+			size_t  swapi;
 
 if (_debug < 0)
 fprintf(stderr, "--> (swap u <-> v)\n");
@@ -78,214 +78,214 @@ fprintf(stderr, "--> (swap u <-> v)\n");
 		if (!((u[ysize-1] + v[ysize-1]) & 0x3)) {
 if (_debug < 0)
 fprintf(stderr, "--> (even parity)\n");
-			mp32add(ysize, v, u);
-			mp32add(ysize, C, A);
-			mp32add(ysize, D, B);
+			mpadd(ysize, v, u);
+			mpadd(ysize, C, A);
+			mpadd(ysize, D, B);
 		} else {
 if (_debug < 0)
 fprintf(stderr, "--> (odd parity)\n");
-			mp32sub(ysize, v, u);
-			mp32sub(ysize, C, A);
-			mp32sub(ysize, D, B);
+			mpsub(ysize, v, u);
+			mpsub(ysize, C, A);
+			mpsub(ysize, D, B);
 		}
 if (_debug < 0)
-fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
+fprintf(stderr, "       v: "), mpfprintln(stderr, ysize, v);
 if (_debug < 0)
-fprintf(stderr, "       C: "), mp32println(stderr, ysize, C);
+fprintf(stderr, "       C: "), mpfprintln(stderr, ysize, C);
 if (_debug < 0)
-fprintf(stderr, "       D: "), mp32println(stderr, ysize, D);
+fprintf(stderr, "       D: "), mpfprintln(stderr, ysize, D);
 		vbits++;
-	} while (mp32nz(ysize, v));
+	} while (mpnz(ysize, v));
 
 #ifdef	NOTYET
-	if (!mp32isone(ysize, u))
+	if (!mpisone(ysize, u))
 		return 0;
 #endif
 
 	if (result) {
-		mp32setx(b->size, result, ysize, A);
+		mpsetx(b->size, result, ysize, A);
 		/*@-usedef@*/
 		if (*A & 0x80000000)
-			(void) mp32neg(b->size, result);
+			(void) mpneg(b->size, result);
 		/*@=usedef@*/
 		while (--k > 0)
-			mp32add(b->size, result, result);
+			mpadd(b->size, result, result);
 	}
 
-fprintf(stderr, "=== EXIT: "), mp32println(stderr, b->size, result);
-fprintf(stderr, "       u: "), mp32println(stderr, ysize, u);
-fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
-fprintf(stderr, "       A: "), mp32println(stderr, ysize, A);
-fprintf(stderr, "       B: "), mp32println(stderr, ysize, B);
-fprintf(stderr, "       C: "), mp32println(stderr, ysize, C);
-fprintf(stderr, "       D: "), mp32println(stderr, ysize, D);
+fprintf(stderr, "=== EXIT: "), mpfprintln(stderr, b->size, result);
+fprintf(stderr, "       u: "), mpfprintln(stderr, ysize, u);
+fprintf(stderr, "       v: "), mpfprintln(stderr, ysize, v);
+fprintf(stderr, "       A: "), mpfprintln(stderr, ysize, A);
+fprintf(stderr, "       B: "), mpfprintln(stderr, ysize, B);
+fprintf(stderr, "       C: "), mpfprintln(stderr, ysize, C);
+fprintf(stderr, "       D: "), mpfprintln(stderr, ysize, D);
 
 	return 1;
 }
 
-static int Ympbinv_w(const mpbarrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
+static int Ympbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mpw* wksp)
 {
-	uint32  ysize = b->size+1;
+	size_t  ysize = b->size+1;
  	int k;
-	uint32* u1 = wksp;
-	uint32* u2 = u1+ysize;
-	uint32* u3 = u2+ysize;
-	uint32* v1 = u3+ysize;
-	uint32* v2 = v1+ysize;
-	uint32* v3 = v2+ysize;
-	uint32* t1 = v3+ysize;
-	uint32* t2 = t1+ysize;
-	uint32* t3 = t2+ysize;
-	uint32* u  = t3+ysize;
-	uint32* v  =  u+ysize;
+	mpw* u1 = wksp;
+	mpw* u2 = u1+ysize;
+	mpw* u3 = u2+ysize;
+	mpw* v1 = u3+ysize;
+	mpw* v2 = v1+ysize;
+	mpw* v3 = v2+ysize;
+	mpw* t1 = v3+ysize;
+	mpw* t2 = t1+ysize;
+	mpw* t3 = t2+ysize;
+	mpw* u  = t3+ysize;
+	mpw* v  =  u+ysize;
 
-	mp32setx(ysize, u, xsize, xdata);
-	mp32setx(ysize, v, b->size, b->modl);
+	mpsetx(ysize, u, xsize, xdata);
+	mpsetx(ysize, v, b->size, b->modl);
 
 	/* Y1. Find power of 2. */
-	for (k = 0; mp32even(ysize, u) && mp32even(ysize, v); k++) {
-		mp32divtwo(ysize, u);
-		mp32divtwo(ysize, v);
+	for (k = 0; mpeven(ysize, u) && mpeven(ysize, v); k++) {
+		mpdivtwo(ysize, u);
+		mpdivtwo(ysize, v);
 	}
 
 if (_debug < 0)
-fprintf(stderr, "       u: "), mp32println(stderr, ysize, u);
+fprintf(stderr, "       u: "), mpfprintln(stderr, ysize, u);
 if (_debug < 0)
-fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
+fprintf(stderr, "       v: "), mpfprintln(stderr, ysize, v);
 
 	/* Y2. Initialize. */
-	mp32setw(ysize, u1, 1);
+	mpsetw(ysize, u1, 1);
 if (_debug < 0)
-fprintf(stderr, "      u1: "), mp32println(stderr, ysize, u1);
-	mp32zero(ysize, u2);
+fprintf(stderr, "      u1: "), mpfprintln(stderr, ysize, u1);
+	mpzero(ysize, u2);
 if (_debug < 0)
-fprintf(stderr, "      u2: "), mp32println(stderr, ysize, u2);
-	mp32setx(ysize, u3, ysize, u);
+fprintf(stderr, "      u2: "), mpfprintln(stderr, ysize, u2);
+	mpsetx(ysize, u3, ysize, u);
 if (_debug < 0)
-fprintf(stderr, "      u3: "), mp32println(stderr, ysize, u3);
+fprintf(stderr, "      u3: "), mpfprintln(stderr, ysize, u3);
 
-	mp32setx(ysize, v1, ysize, v);
+	mpsetx(ysize, v1, ysize, v);
 if (_debug < 0)
-fprintf(stderr, "      v1: "), mp32println(stderr, ysize, v1);
-	mp32setw(ysize, v2, 1);
-	(void) mp32sub(ysize, v2, u);
+fprintf(stderr, "      v1: "), mpfprintln(stderr, ysize, v1);
+	mpsetw(ysize, v2, 1);
+	(void) mpsub(ysize, v2, u);
 if (_debug < 0)
-fprintf(stderr, "      v2: "), mp32println(stderr, ysize, v2);
-	mp32setx(ysize, v3, ysize, v);
+fprintf(stderr, "      v2: "), mpfprintln(stderr, ysize, v2);
+	mpsetx(ysize, v3, ysize, v);
 if (_debug < 0)
-fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
+fprintf(stderr, "      v3: "), mpfprintln(stderr, ysize, v3);
 
-	if (mp32odd(ysize, u)) {
-		mp32zero(ysize, t1);
+	if (mpodd(ysize, u)) {
+		mpzero(ysize, t1);
 if (_debug < 0)
-fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
-		mp32zero(ysize, t2);
-		mp32subw(ysize, t2, 1);
+fprintf(stderr, "      t1: "), mpfprintln(stderr, ysize, t1);
+		mpzero(ysize, t2);
+		mpsubw(ysize, t2, 1);
 if (_debug < 0)
-fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
-		mp32zero(ysize, t3);
-		mp32sub(ysize, t3, v);
+fprintf(stderr, "      t2: "), mpfprintln(stderr, ysize, t2);
+		mpzero(ysize, t3);
+		mpsub(ysize, t3, v);
 if (_debug < 0)
-fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+fprintf(stderr, "      t3: "), mpfprintln(stderr, ysize, t3);
 		goto Y4;
 	} else {
-		mp32setw(ysize, t1, 1);
+		mpsetw(ysize, t1, 1);
 if (_debug < 0)
-fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
-		mp32zero(ysize, t2);
+fprintf(stderr, "      t1: "), mpfprintln(stderr, ysize, t1);
+		mpzero(ysize, t2);
 if (_debug < 0)
-fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
-		mp32setx(ysize, t3, ysize, u);
+fprintf(stderr, "      t2: "), mpfprintln(stderr, ysize, t2);
+		mpsetx(ysize, t3, ysize, u);
 if (_debug < 0)
-fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+fprintf(stderr, "      t3: "), mpfprintln(stderr, ysize, t3);
 	}
 
 	do {
 	    do {
-		if (mp32odd(ysize, t1) || mp32odd(ysize, t2)) {
-			mp32add(ysize, t1, v);
-			mp32sub(ysize, t2, u);
+		if (mpodd(ysize, t1) || mpodd(ysize, t2)) {
+			mpadd(ysize, t1, v);
+			mpsub(ysize, t2, u);
 		}
-		mp32sdivtwo(ysize, t1);
-		mp32sdivtwo(ysize, t2);
-		mp32sdivtwo(ysize, t3);
+		mpsdivtwo(ysize, t1);
+		mpsdivtwo(ysize, t2);
+		mpsdivtwo(ysize, t3);
 Y4:
 if (_debug < 0)
-fprintf(stderr, "   Y4 t3: "), mp32println(stderr, ysize, t3);
-	    } while (mp32even(ysize, t3));
+fprintf(stderr, "   Y4 t3: "), mpfprintln(stderr, ysize, t3);
+	    } while (mpeven(ysize, t3));
 
 	    /* Y5. Reset max(u3,v3). */
 	    if (!(*t3 & 0x80000000)) {
 if (_debug < 0)
 fprintf(stderr, "--> Y5 (t3 > 0)\n");
-		mp32setx(ysize, u1, ysize, t1);
+		mpsetx(ysize, u1, ysize, t1);
 if (_debug < 0)
-fprintf(stderr, "      u1: "), mp32println(stderr, ysize, u1);
-		mp32setx(ysize, u2, ysize, t2);
+fprintf(stderr, "      u1: "), mpfprintln(stderr, ysize, u1);
+		mpsetx(ysize, u2, ysize, t2);
 if (_debug < 0)
-fprintf(stderr, "      u2: "), mp32println(stderr, ysize, u2);
-		mp32setx(ysize, u3, ysize, t3);
+fprintf(stderr, "      u2: "), mpfprintln(stderr, ysize, u2);
+		mpsetx(ysize, u3, ysize, t3);
 if (_debug < 0)
-fprintf(stderr, "      u3: "), mp32println(stderr, ysize, u3);
+fprintf(stderr, "      u3: "), mpfprintln(stderr, ysize, u3);
 	    } else {
 if (_debug < 0)
 fprintf(stderr, "--> Y5 (t3 <= 0)\n");
-		mp32setx(ysize, v1, ysize, v);
-		mp32sub(ysize, v1, t1);
+		mpsetx(ysize, v1, ysize, v);
+		mpsub(ysize, v1, t1);
 if (_debug < 0)
-fprintf(stderr, "      v1: "), mp32println(stderr, ysize, v1);
-		mp32setx(ysize, v2, ysize, u);
-		mp32neg(ysize, v2);
-		mp32sub(ysize, v2, t2);
+fprintf(stderr, "      v1: "), mpfprintln(stderr, ysize, v1);
+		mpsetx(ysize, v2, ysize, u);
+		mpneg(ysize, v2);
+		mpsub(ysize, v2, t2);
 if (_debug < 0)
-fprintf(stderr, "      v2: "), mp32println(stderr, ysize, v2);
-		mp32zero(ysize, v3);
-		mp32sub(ysize, v3, t3);
+fprintf(stderr, "      v2: "), mpfprintln(stderr, ysize, v2);
+		mpzero(ysize, v3);
+		mpsub(ysize, v3, t3);
 if (_debug < 0)
-fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
+fprintf(stderr, "      v3: "), mpfprintln(stderr, ysize, v3);
 	    }
 
 	    /* Y6. Subtract. */
-	    mp32setx(ysize, t1, ysize, u1);
-	    mp32sub(ysize, t1, v1);
-	    mp32setx(ysize, t2, ysize, u2);
-	    mp32sub(ysize, t2, v2);
-	    mp32setx(ysize, t3, ysize, u3);
-	    mp32sub(ysize, t3, v3);
+	    mpsetx(ysize, t1, ysize, u1);
+	    mpsub(ysize, t1, v1);
+	    mpsetx(ysize, t2, ysize, u2);
+	    mpsub(ysize, t2, v2);
+	    mpsetx(ysize, t3, ysize, u3);
+	    mpsub(ysize, t3, v3);
 
 	    if (*t1 & 0x80000000) {
-		mp32add(ysize, t1, v);
-		mp32sub(ysize, t2, u);
+		mpadd(ysize, t1, v);
+		mpsub(ysize, t2, u);
 	    }
 
 if (_debug < 0)
-fprintf(stderr, "-->Y6 t1: "), mp32println(stderr, ysize, t1);
+fprintf(stderr, "-->Y6 t1: "), mpfprintln(stderr, ysize, t1);
 if (_debug < 0)
-fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
+fprintf(stderr, "      t2: "), mpfprintln(stderr, ysize, t2);
 if (_debug < 0)
-fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+fprintf(stderr, "      t3: "), mpfprintln(stderr, ysize, t3);
 
-	} while (mp32nz(ysize, t3));
+	} while (mpnz(ysize, t3));
 
-	if (!(mp32isone(ysize, u3) && mp32isone(ysize, v3)))
+	if (!(mpisone(ysize, u3) && mpisone(ysize, v3)))
 		return 0;
 
 	if (result) {
 		while (--k > 0)
-			mp32add(ysize, u1, u1);
-		mp32setx(b->size, result, ysize, u1);
+			mpadd(ysize, u1, u1);
+		mpsetx(b->size, result, ysize, u1);
 	}
 
-fprintf(stderr, "=== EXIT: "), mp32println(stderr, b->size, result);
-fprintf(stderr, "      u1: "), mp32println(stderr, ysize, u1);
-fprintf(stderr, "      u2: "), mp32println(stderr, ysize, u2);
-fprintf(stderr, "      u3: "), mp32println(stderr, ysize, u3);
-fprintf(stderr, "      v1: "), mp32println(stderr, ysize, v1);
-fprintf(stderr, "      v2: "), mp32println(stderr, ysize, v2);
-fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
-fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
-fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
-fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+fprintf(stderr, "=== EXIT: "), mpfprintln(stderr, b->size, result);
+fprintf(stderr, "      u1: "), mpfprintln(stderr, ysize, u1);
+fprintf(stderr, "      u2: "), mpfprintln(stderr, ysize, u2);
+fprintf(stderr, "      u3: "), mpfprintln(stderr, ysize, u3);
+fprintf(stderr, "      v1: "), mpfprintln(stderr, ysize, v1);
+fprintf(stderr, "      v2: "), mpfprintln(stderr, ysize, v2);
+fprintf(stderr, "      v3: "), mpfprintln(stderr, ysize, v3);
+fprintf(stderr, "      t1: "), mpfprintln(stderr, ysize, t1);
+fprintf(stderr, "      t2: "), mpfprintln(stderr, ysize, t2);
+fprintf(stderr, "      t3: "), mpfprintln(stderr, ysize, t3);
 
 	return 1;
 }
@@ -295,7 +295,7 @@ fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
  *  needs workspace of (6*size+6) words
  *  @note xdata and result cannot point to the same area
  */
-static int Xmpbinv_w(const mpbarrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
+static int Xmpbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mpw* wksp)
 {
 	/*
 	 * Fact: if a element of Zn, then a is invertible if and only if gcd(a,n) = 1
@@ -304,112 +304,112 @@ static int Xmpbinv_w(const mpbarrett* b, uint32 xsize, const uint32* xdata, uint
 	 * The calling routine must guarantee this condition.
 	 */
 
-	uint32 ysize = b->size+1;
+	size_t ysize = b->size+1;
 
-	uint32* u = wksp;
-	uint32* v = u+ysize;
-	uint32* A = v+ysize;
-	uint32* B = A+ysize;
-	uint32* C = B+ysize;
-	uint32* D = C+ysize;
+	mpw* u = wksp;
+	mpw* v = u+ysize;
+	mpw* A = v+ysize;
+	mpw* B = A+ysize;
+	mpw* C = B+ysize;
+	mpw* D = C+ysize;
 
-	mp32setx(ysize, u, b->size, b->modl);
-	mp32setx(ysize, v, xsize, xdata);
-	mp32setw(ysize, A, 1);
-	mp32zero(ysize, B);
-	mp32zero(ysize, C);
-	mp32setw(ysize, D, 1);
+	mpsetx(ysize, u, b->size, b->modl);
+	mpsetx(ysize, v, xsize, xdata);
+	mpsetw(ysize, A, 1);
+	mpzero(ysize, B);
+	mpzero(ysize, C);
+	mpsetw(ysize, D, 1);
 
 if (_debug < 0)
-fprintf(stderr, "       u: "), mp32println(stderr, ysize, u);
+fprintf(stderr, "       u: "), mpfprintln(stderr, ysize, u);
 if (_debug < 0)
-fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
+fprintf(stderr, "       v: "), mpfprintln(stderr, ysize, v);
 if (_debug < 0)
-fprintf(stderr, "       A: "), mp32println(stderr, ysize, A);
+fprintf(stderr, "       A: "), mpfprintln(stderr, ysize, A);
 if (_debug < 0)
-fprintf(stderr, "       B: "), mp32println(stderr, ysize, B);
+fprintf(stderr, "       B: "), mpfprintln(stderr, ysize, B);
 if (_debug < 0)
-fprintf(stderr, "       C: "), mp32println(stderr, ysize, C);
+fprintf(stderr, "       C: "), mpfprintln(stderr, ysize, C);
 if (_debug < 0)
-fprintf(stderr, "       D: "), mp32println(stderr, ysize, D);
+fprintf(stderr, "       D: "), mpfprintln(stderr, ysize, D);
 
 	do {
-		while (mp32even(ysize, u))
+		while (mpeven(ysize, u))
 		{
-			mp32divtwo(ysize, u);
+			mpdivtwo(ysize, u);
 
-			if (mp32odd(ysize, A) || mp32odd(ysize, B))
+			if (mpodd(ysize, A) || mpodd(ysize, B))
 			{
-				(void) mp32addx(ysize, A, xsize, xdata);
-				(void) mp32subx(ysize, B, b->size, b->modl);
+				(void) mpaddx(ysize, A, xsize, xdata);
+				(void) mpsubx(ysize, B, b->size, b->modl);
 			}
 
-			mp32sdivtwo(ysize, A);
-			mp32sdivtwo(ysize, B);
+			mpsdivtwo(ysize, A);
+			mpsdivtwo(ysize, B);
 		}
-		while (mp32even(ysize, v))
+		while (mpeven(ysize, v))
 		{
-			mp32divtwo(ysize, v);
+			mpdivtwo(ysize, v);
 
-			if (mp32odd(ysize, C) || mp32odd(ysize, D))
+			if (mpodd(ysize, C) || mpodd(ysize, D))
 			{
-				(void) mp32addx(ysize, C, xsize, xdata);
-				(void) mp32subx(ysize, D, b->size, b->modl);
+				(void) mpaddx(ysize, C, xsize, xdata);
+				(void) mpsubx(ysize, D, b->size, b->modl);
 			}
 
-			mp32sdivtwo(ysize, C);
-			mp32sdivtwo(ysize, D);
+			mpsdivtwo(ysize, C);
+			mpsdivtwo(ysize, D);
 		}
-		if (mp32ge(ysize, u, v))
+		if (mpge(ysize, u, v))
 		{
 if (_debug < 0)
 fprintf(stderr, "--> 5 (u >= v)\n");
-			(void) mp32sub(ysize, u, v);
-			(void) mp32sub(ysize, A, C);
-			(void) mp32sub(ysize, B, D);
+			(void) mpsub(ysize, u, v);
+			(void) mpsub(ysize, A, C);
+			(void) mpsub(ysize, B, D);
 if (_debug < 0)
-fprintf(stderr, "       u: "), mp32println(stderr, ysize, u);
+fprintf(stderr, "       u: "), mpfprintln(stderr, ysize, u);
 if (_debug < 0)
-fprintf(stderr, "       A: "), mp32println(stderr, ysize, A);
+fprintf(stderr, "       A: "), mpfprintln(stderr, ysize, A);
 if (_debug < 0)
-fprintf(stderr, "       B: "), mp32println(stderr, ysize, B);
+fprintf(stderr, "       B: "), mpfprintln(stderr, ysize, B);
 		}
 		else
 		{
 if (_debug < 0)
 fprintf(stderr, "--> 5 (u < v)\n");
-			(void) mp32sub(ysize, v, u);
-			(void) mp32sub(ysize, C, A);
-			(void) mp32sub(ysize, D, B);
+			(void) mpsub(ysize, v, u);
+			(void) mpsub(ysize, C, A);
+			(void) mpsub(ysize, D, B);
 if (_debug < 0)
-fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
+fprintf(stderr, "       v: "), mpfprintln(stderr, ysize, v);
 if (_debug < 0)
-fprintf(stderr, "       C: "), mp32println(stderr, ysize, C);
+fprintf(stderr, "       C: "), mpfprintln(stderr, ysize, C);
 if (_debug < 0)
-fprintf(stderr, "       D: "), mp32println(stderr, ysize, D);
+fprintf(stderr, "       D: "), mpfprintln(stderr, ysize, D);
 		}
 
-	} while (mp32nz(ysize, u));
+	} while (mpnz(ysize, u));
 
-	if (!mp32isone(ysize, v))
+	if (!mpisone(ysize, v))
 		return 0;
 
 	if (result)
 	{
-		mp32setx(b->size, result, ysize, D);
+		mpsetx(b->size, result, ysize, D);
 		/*@-usedef@*/
 		if (*D & 0x80000000)
-			(void) mp32add(b->size, result, b->modl);
+			(void) mpadd(b->size, result, b->modl);
 		/*@=usedef@*/
 	}
 
-fprintf(stderr, "=== EXIT: "), mp32println(stderr, b->size, result);
-fprintf(stderr, "       u: "), mp32println(stderr, ysize, u);
-fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
-fprintf(stderr, "       A: "), mp32println(stderr, ysize, A);
-fprintf(stderr, "       B: "), mp32println(stderr, ysize, B);
-fprintf(stderr, "       C: "), mp32println(stderr, ysize, C);
-fprintf(stderr, "       D: "), mp32println(stderr, ysize, D);
+fprintf(stderr, "=== EXIT: "), mpfprintln(stderr, b->size, result);
+fprintf(stderr, "       u: "), mpfprintln(stderr, ysize, u);
+fprintf(stderr, "       v: "), mpfprintln(stderr, ysize, v);
+fprintf(stderr, "       A: "), mpfprintln(stderr, ysize, A);
+fprintf(stderr, "       B: "), mpfprintln(stderr, ysize, B);
+fprintf(stderr, "       C: "), mpfprintln(stderr, ysize, C);
+fprintf(stderr, "       D: "), mpfprintln(stderr, ysize, D);
 	return 1;
 }
 
@@ -468,9 +468,9 @@ main(int argc, const char * argv[])
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     mpbarrett q;
     mpnumber s;
-    uint32 qsize;
-    uint32* qtemp;
-    uint32* qwksp;
+    size_t qsize;
+    mpw* qtemp;
+    mpw* qwksp;
     int rc;
     int i;
 
@@ -494,15 +494,15 @@ fprintf(stderr, "================================================== %d\n", i);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
 	rc = Xmpbinv_w(&q, s.size, s.data, qtemp, qwksp);
-	fprintf(stderr, "beecrypt: "); mp32println(stderr, qsize, qtemp);
+	fprintf(stderr, "beecrypt: "); mpfprintln(stderr, qsize, qtemp);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
 	rc = Ympbinv_w(&q, s.size, s.data, qtemp, qwksp);
-	fprintf(stderr, "   Knuth: "); mp32println(stderr, qsize, qtemp);
+	fprintf(stderr, "   Knuth: "); mpfprintln(stderr, qsize, qtemp);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
 	rc = Zmpbinv_w(&q, s.size, s.data, qtemp, qwksp);
-	fprintf(stderr, "   Brent: "); mp32println(stderr, qsize, qtemp);
+	fprintf(stderr, "   Brent: "); mpfprintln(stderr, qsize, qtemp);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
 	fprintf(stderr, "       q: %s\n", dsa_q);

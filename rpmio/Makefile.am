@@ -21,7 +21,7 @@ pkginc_HEADERS = \
 	rpmsq.h rpmsw.h ugid.h
 noinst_HEADERS = rpmio_internal.h
 
-BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
+BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
@@ -39,13 +39,13 @@ librpmio_la_LDFLAGS = -release @VERSION@ $(LDFLAGS) \
 librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = # .created
 
-$(top_builddir)/beecrypt/listobjs:
-	${MAKE} -C $(top_builddir)/beecrypt listobjs
-
-.created: $(top_builddir)/beecrypt/listobjs
+.created:
+	if test X"@WITH_BEECRYPT_SUBDIR@" != X; then \
+	${MAKE} -C $(top_builddir)/@WITH_BEECRYPT_SUBDIR@ listobjs ; \
 	for lo in $(BEECRYPTLOBJS); do \
-	  [ -f $$lo ] || $(LN_S) $(top_builddir)/beecrypt/$$lo $$lo ; \
-	done
+	  [ -f $$lo ] || $(LN_S) $(top_builddir)/@WITH_BEECRYPT_SUBDIR@/$$lo $$lo ; \
+	done \
+	fi
 	touch $@
 
 clean-local:
