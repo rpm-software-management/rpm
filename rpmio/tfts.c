@@ -164,10 +164,12 @@ _av_debug = -1;
 _ftp_debug = -1;
 _dav_debug = -1;
     ftsWalk(dirpath);
-#if 1
+#if 0
     ftsWalk(ftppath);
 #endif
     ftsWalk(httppath);
+
+/*@i@*/ urlFreeCache();
 
     return 0;
 }

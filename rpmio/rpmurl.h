@@ -50,6 +50,8 @@ struct urlinfo_s {
     int urltype;
     FD_t ctrl;			/*!< control channel */
     FD_t data;			/*!< per-xfer data channel */
+    void * sess;
+    void * lock_store;
     int bufAlloced;		/*!< sizeof I/O buffer */
 /*@owned@*/
     char * buf;			/*!< I/O buffer */

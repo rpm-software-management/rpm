@@ -49,25 +49,17 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 }
 
 /* =============================================================== */
-/*@unchecked@*/ /*@null@*/ /*@only@*/
-static ne_uri * server;
-/*@unchecked@*/ /*@null@*/ /*@only@*/
-static ne_session * sess;
-/*@unchecked@*/ /*@null@*/ /*@only@*/
-static ne_lock_store * lock_store;
 /*@unchecked@*/
 static ne_server_capabilities caps;
 
-static int davFree(void)
-	/*@globals sess, server, internalState @*/
-	/*@modifies sess, server, internalState @*/
+static int davFree(urlinfo u)
+	/*@globals internalState @*/
+	/*@modifies u, internalState @*/
 {
-    if (sess != NULL)
-	ne_session_destroy(sess);
-    sess = NULL;
-    if (server != NULL)
-	ne_uri_free(server);
-    server = _free(server);
+    if (u != NULL && u->sess != NULL) {
+	ne_session_destroy(u->sess);
+	u->sess = NULL;
+    }
     return 0;
 }
 
@@ -82,56 +74,61 @@ trust_all_server_certs(/*@unused@*/ void *userdata, /*@unused@*/ int failures,
     return 0;	/* HACK: trust all server certificates. */
 }
 
-static int davInit(const char * url)
-	/*@globals sess, server, lock_store, internalState @*/
-	/*@modifies sess, server, lock_store, internalState @*/
+static int davInit(const char * url, urlinfo * uret)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
+    urlinfo u = NULL;
     int xx;
 
-    server = xcalloc(1, sizeof(*server));
-/*@-noeffect@*/
-    ne_debug_init(stderr, 0);
-/*@=noeffect@*/
-    xx = ne_sock_init();
-    lock_store = ne_lockstore_create();
-    (void) ne_uri_parse(url, server);
-    if (server->scheme == NULL)
-        server->scheme = ne_strdup("http");
-    if (!server->port)
-        server->port = ne_uri_defaultport(server->scheme);
+    if (urlSplit(url, &u))
+	return -1;	/* XXX error returns needed. */
 
-    sess = ne_session_create(server->scheme, server->host, server->port);
-    if (!strcasecmp(server->scheme, "https"))
-	ne_ssl_set_verify(sess, trust_all_server_certs, server->host);
+   if (u->urltype == URL_IS_HTTPS && u->sess == NULL) {
+
+/*@-noeffect@*/
+	ne_debug_init(stderr, 0);
+/*@=noeffect@*/
+	xx = ne_sock_init();
+	u->lock_store = ne_lockstore_create();
+
+	u->sess = ne_session_create(u->service, u->host, u->port);
+	if (!strcasecmp(u->service, "https"))
+	    ne_ssl_set_verify(u->sess, trust_all_server_certs, (char *)u->host);
                                                                                 
-    ne_lockstore_register(lock_store, sess);
-    ne_set_useragent(sess, PACKAGE "/" PACKAGE_VERSION);
+	ne_lockstore_register(u->lock_store, u->sess);
+	ne_set_useragent(u->sess, PACKAGE "/" PACKAGE_VERSION);
+    }
+
+    if (uret != NULL)
+	*uret = urlLink(u, __FUNCTION__);
+    u = urlFree(u, "urlSplit (davInit)");
 
     return 0;
 }
 
-static int davConnect(void)
+static int davConnect(urlinfo u)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/
 {
+    const char * path = NULL;
     int rc;
 
-assert(sess != NULL);
-assert(server != NULL);
-    rc = ne_options(sess, server->path, &caps);
+    (void) urlPath(u->url, &path);
+    rc = ne_options(u->sess, path, &caps);
     switch (rc) {
     case NE_OK:
 	break;
     case NE_ERROR:
 	/* HACK: "301 Moved Permanently" on empty subdir. */
-	if (!strncmp("301 ", ne_get_error(sess), sizeof("301 ")-1))
+	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
 	    break;
 	/*@fallthrough@*/
     case NE_CONNECT:
     case NE_LOOKUP:
     default:
 fprintf(stderr, "Connect to %s:%d failed(%d):\n%s\n",
-		   server->host, server->port, rc, ne_get_error(sess));
+		   u->host, u->port, rc, ne_get_error(u->sess));
 	break;
     }
     return rc;
@@ -487,10 +484,11 @@ static void display_ls_line(struct fetch_resource_s *res)
 }
 #endif
 
-static int davFetch(struct fetch_context_s * ctx)
+static int davFetch(urlinfo u, struct fetch_context_s * ctx)
 	/*@globals internalState @*/
 	/*@modifies *avp, internalState @*/
 {
+    const char * path = NULL;
     int depth = 1;					/* XXX passed arg? */
     unsigned int include_target = 0;			/* XXX passed arg? */
     struct fetch_resource_s * resitem = NULL;
@@ -501,10 +499,8 @@ static int davFetch(struct fetch_context_s * ctx)
     int rc = 0;
     int xx;
 
-assert(sess != NULL);
-assert(server != NULL);
-
-    pfh = ne_propfind_create(sess, ctx->uri, depth);
+    (void) urlPath(u->url, &path);
+    pfh = ne_propfind_create(u->sess, ctx->uri, depth);
 
     ctx->resrock = resrock;
     ctx->include_target = include_target;
@@ -528,7 +524,7 @@ assert(server != NULL);
 	/* The top level collection is returned as well. */
 	se = current->uri + strlen(current->uri);
 	if (se[-1] == '/') {
-	    if (strlen(current->uri) <= strlen(server->path)) {
+	    if (strlen(current->uri) <= strlen(path)) {
 		current = fetch_destroy_item(current);
 		continue;
 	    }
@@ -589,33 +585,36 @@ static int davNLST(struct fetch_context_s * ctx)
 	/*@globals internalState @*/
 	/*@modifies *avp, internalState @*/
 {
+    urlinfo u = NULL;
     int rc;
     int xx;
 
-    rc = davInit(ctx->uri);
+    rc = davInit(ctx->uri, &u);
     if (rc)
 	goto exit;
 
-    rc = davConnect();
+    rc = davConnect(u);
     if (rc)
 	goto exit;
 
-assert(sess != NULL);
-assert(server != NULL);
-
-    rc = davFetch(ctx);
+    rc = davFetch(u, ctx);
     switch (rc) {
     case NE_OK:
         break;
+    case NE_ERROR:
+	/* HACK: "301 Moved Permanently" on empty subdir. */
+	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
+	    break;
+	/*@fallthrough@*/
     default:
 fprintf(stderr, "Fetch from %s:%d failed:\n%s\n",
-		   server->host, server->port, ne_get_error(sess));
+		   u->host, u->port, ne_get_error(u->sess));
         break;
     }
 
 exit:
     if (rc)
-	xx = davFree();
+	xx = davFree(u);
     return rc;
 }
 

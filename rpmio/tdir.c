@@ -78,5 +78,7 @@ _dav_debug = -1;
     printDir(ftppath);
     printDir(httppath);
 
+/*@i@*/ urlFreeCache();
+
     return 0;
 }
