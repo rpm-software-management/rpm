@@ -1007,11 +1007,11 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
 			  &e1, &v1, &r1,
 			  &e2, &v2, &r2)) return NULL;
 
-    rc = compare_values(e1, e2)
+    rc = compare_values(e1, e2);
     if (rc)
 	return Py_BuildValue("i", rc);
 
-    rc = compare_values(v1, v2)
+    rc = compare_values(v1, v2);
     if (rc)
 	return Py_BuildValue("i", rc);
 
