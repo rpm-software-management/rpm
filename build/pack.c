@@ -421,7 +421,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
     version = strdup(version);
     release = strdup(release);
 
-    sprintf(sourcerpm, "%s-%s-%s.%sprc.rpm", s->name, version, release,
+    sprintf(sourcerpm, "%s-%s-%s.%ssrc.rpm", s->name, version, release,
 	    (s->numNoPatch + s->numNoSource) ? "no" : "");
 
     vendor = NULL;
