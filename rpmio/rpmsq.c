@@ -398,7 +398,7 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
     } else if (pid == (pid_t) 0) {	/* Child. */
 	int yy;
 
-	/* Block to permit parent to wait. */
+	/* Block to permit parent time to wait. */
 /*@-bounds@*/
 	xx = close(sq->pipes[1]);
 	xx = read(sq->pipes[0], &yy, sizeof(yy));
@@ -429,6 +429,7 @@ out:
 
 /**
  * Wait for child process to be reaped, and unregister SIGCHLD handler.
+ * @todo Rewrite to use waitpid on helper thread.
  * @param sq		scriptlet queue element
  * @return		0 on success
  */
@@ -436,15 +437,18 @@ static int rpmsqWaitUnregister(rpmsq sq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sq, fileSystem, internalState @*/
 {
-    int same_thread = 0;
+    int nothreads = 0;
     int ret = 0;
     int xx;
 
+    /* Protect sq->reaped from handler changes. */
     ret = sighold(SIGCHLD);
-    if (!same_thread)
+
+    /* Initialize the cond var mutex. */
+    if (!nothreads)
 	ret = pthread_mutex_lock(&sq->mutex);
 
-    /* Start the child. */
+    /* Start the child, linux often runs child before parent. */
 /*@-bounds@*/
     if (sq->pipes[0] >= 0)
 	xx = close(sq->pipes[0]);
@@ -453,23 +457,28 @@ static int rpmsqWaitUnregister(rpmsq sq)
     sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/
 
+    /* Put a stopwatch on the time spent waiting to measure performance gain. */
     (void) rpmswEnter(&sq->op, -1);
 
+    /* Wait for handler to receive SIGCHLD. */
     /*@-infloops@*/
-    do {
-	if (same_thread)
+    while (ret == 0 && sq->reaped != sq->child) {
+	if (nothreads)
+	    /* Note that sigpause re-enables SIGCHLD. */
 	    ret = sigpause(SIGCHLD);
 	else {
 	    xx = sigrelse(SIGCHLD);
 	    ret = pthread_cond_wait(&sq->cond, &sq->mutex);
 	    xx = sighold(SIGCHLD);
 	}
-    } while (ret == 0 && sq->reaped != sq->child);
+    }
     /*@=infloops@*/
 
+    /* Accumulate stopwatch time spent waiting, potential performance gain. */
     sq->ms_scriptlets += rpmswExit(&sq->op, -1)/1000;
 
-    if (!same_thread)
+    /* Tear down cond var mutex, our child has been reaped. */
+    if (!nothreads)
 	xx = pthread_mutex_unlock(&sq->mutex);
     xx = sigrelse(SIGCHLD);
 
@@ -478,7 +487,10 @@ if (_rpmsq_debug)
 fprintf(stderr, "      Wake(%p): %p child %d reaper %d ret %d\n", ME(), sq, sq->child, sq->reaper, ret);
 #endif
 
+    /* Remove processed SIGCHLD item from queue. */
     xx = rpmsqRemove(sq);
+
+    /* Disable SIGCHLD handler on refcount == 0. */
     xx = rpmsqEnable(-SIGCHLD, NULL);
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
