@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mode,
+int openDatabase(const char * prefix, const char * dbpath, /*@out@*/rpmdb *rpmdbp, int mode,
 		 int perms, int flags);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);

@@ -12,6 +12,9 @@
 #include "misc.h"
 #include "rpmdb.h"
 
+/*@access dbiIndexSet@*/
+/*@access dbiIndexRecord@*/
+
 const char *rpmdb_filenames[] = {
     "packages.rpm",
     "nameindex.rpm",
@@ -59,6 +62,7 @@ static void unblockSignals(void)
 int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
 {
     const char * dbpath;
+    int rc = 0;
 
     dbpath = rpmGetPath("%{_dbpath}", NULL);
     if (dbpath == NULL || dbpath[0] == '%') {
@@ -68,10 +72,10 @@ int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
 
     if (openDatabase(prefix, dbpath, rpmdbp, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
-	return 1;
+	rc = 1;
     }
     xfree(dbpath);
-    return 0;
+    return rc;
 }
 
 int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms)
@@ -109,7 +113,7 @@ int rpmdbInit (const char * prefix, int perms)
 }
 
 static int openDbFile(const char * prefix, const char * dbpath, const char * shortName, 
-		      int justCheck, int perms, dbiIndex ** db, DBTYPE type)
+	 int justCheck, int mode, int perms, dbiIndex ** db, DBTYPE type)
 {
     int len = (prefix ? strlen(prefix) : 0) + strlen(dbpath) + strlen(shortName) + 1;
     char * filename = alloca(len);
@@ -120,7 +124,7 @@ static int openDbFile(const char * prefix, const char * dbpath, const char * sho
     strcat(filename, shortName);
 
     if (!justCheck || !rpmfileexists(filename)) {
-	*db = dbiOpenIndex(filename, perms, 0644, type);
+	*db = dbiOpenIndex(filename, mode, perms, type);
 	if (!*db) {
 	    return 1;
 	}
@@ -129,11 +133,25 @@ static int openDbFile(const char * prefix, const char * dbpath, const char * sho
     return 0;
 }
 
+static /*@only@*/ rpmdb newRpmdb(void)
+{
+    rpmdb db = malloc(sizeof(*db));
+    db->pkgs = NULL;
+    db->nameIndex = NULL;
+    db->fileIndex = NULL;
+    db->groupIndex = NULL;
+    db->providesIndex = NULL;
+    db->requiredbyIndex = NULL;
+    db->conflictsIndex = NULL;
+    db->triggerIndex = NULL;
+    return db;
+}
+
 int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mode, 
 		 int perms, int flags)
 {
     char * filename;
-    struct rpmdb_s db;
+    rpmdb db;
     int i, rc;
     struct flock lockinfo;
     int justcheck = flags & RPMDB_FLAG_JUSTCHECK;
@@ -165,11 +183,10 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 
     strcat(filename, "packages.rpm");
 
-    memset(&db, 0, sizeof(db));
+    db = newRpmdb();
 
     if (!justcheck || !rpmfileexists(filename)) {
-	db.pkgs = faOpen(filename, mode, 0644);
-	if (db.pkgs == NULL) {
+	if ((db->pkgs = faOpen(filename, mode, perms)) == NULL) {
 	    rpmError(RPMERR_DBOPEN, _("failed to open %s\n"), filename);
 	    return 1;
 	}
@@ -182,41 +199,46 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	
 	if (mode & O_RDWR) {
 	    lockinfo.l_type = F_WRLCK;
-	    if (faFcntl(db.pkgs, F_SETLK, (void *) &lockinfo)) {
+	    if (faFcntl(db->pkgs, F_SETLK, (void *) &lockinfo)) {
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
 			 _("exclusive"));
+		rpmdbClose(db);
 		return 1;
 	    } 
 	} else {
 	    lockinfo.l_type = F_RDLCK;
-	    if (faFcntl(db.pkgs, F_SETLK, (void *) &lockinfo)) {
+	    if (faFcntl(db->pkgs, F_SETLK, (void *) &lockinfo)) {
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
 			 _("shared"));
+		rpmdbClose(db);
 		return 1;
 	    } 
 	}
     }
 
-    rc = openDbFile(prefix, dbpath, "nameindex.rpm", justcheck, mode,
-		    &db.nameIndex, DB_HASH);
+    rc = openDbFile(prefix, dbpath, "nameindex.rpm", justcheck, mode, perms,
+		    &db->nameIndex, DB_HASH);
 
     if (minimal) {
 	*rpmdbp = malloc(sizeof(struct rpmdb_s));
-	**rpmdbp = db;
+	if (rpmdbp)
+	    *rpmdbp = db;
+	else
+	    rpmdbClose(db);
 	return 0;
     }
 
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode,
-			&db.fileIndex, DB_HASH);
+	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode, perms,
+			&db->fileIndex, DB_HASH);
 
     /* We used to store the fileindexes as complete paths, rather then
        plain basenames. Let's see which version we are... */
     /*
-     * XXX FIXME: db.fileindex can be NULL under pathological (e.g. mixed
+     * XXX FIXME: db->fileindex can be NULL under pathological (e.g. mixed
      * XXX db1/db2 linkage) conditions.
      */
-    if (!justcheck && !dbiGetFirstKey(db.fileIndex, &akey)) {
+    if (!justcheck && !dbiGetFirstKey(db->fileIndex, &akey)) {
 	if (strchr(akey, '/')) {
 	    rpmError(RPMERR_OLDDB, _("old format database is present; "
 			"use --rebuilddb to generate a new format database"));
@@ -226,41 +248,27 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     }
 
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "providesindex.rpm", justcheck, mode,
-			&db.providesIndex, DB_HASH);
+	rc = openDbFile(prefix, dbpath, "providesindex.rpm", justcheck, mode, perms,
+			&db->providesIndex, DB_HASH);
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "requiredby.rpm", justcheck, mode,
-			&db.requiredbyIndex, DB_HASH);
+	rc = openDbFile(prefix, dbpath, "requiredby.rpm", justcheck, mode, perms,
+			&db->requiredbyIndex, DB_HASH);
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "conflictsindex.rpm", justcheck, mode,
-			&db.conflictsIndex, DB_HASH);
+	rc = openDbFile(prefix, dbpath, "conflictsindex.rpm", justcheck, mode, perms,
+			&db->conflictsIndex, DB_HASH);
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "groupindex.rpm", justcheck, mode,
-			&db.groupIndex, DB_HASH);
+	rc = openDbFile(prefix, dbpath, "groupindex.rpm", justcheck, mode, perms,
+			&db->groupIndex, DB_HASH);
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "triggerindex.rpm", justcheck, mode,
-			&db.triggerIndex, DB_HASH);
+	rc = openDbFile(prefix, dbpath, "triggerindex.rpm", justcheck, mode, perms,
+			&db->triggerIndex, DB_HASH);
 
-    if (rc) {
-	if (db.pkgs) faClose(db.pkgs);
-	if (db.nameIndex) dbiCloseIndex(db.nameIndex);
-	if (db.fileIndex) dbiCloseIndex(db.fileIndex);
-	if (db.providesIndex) dbiCloseIndex(db.providesIndex);
-	if (db.requiredbyIndex) dbiCloseIndex(db.requiredbyIndex);
-	if (db.conflictsIndex) dbiCloseIndex(db.conflictsIndex);
-	if (db.groupIndex) dbiCloseIndex(db.groupIndex);
-	if (db.triggerIndex) dbiCloseIndex(db.triggerIndex);
-	return 1;
-    }
+    if (rc || justcheck || rpmdbp == NULL)
+	rpmdbClose(db);
+     else
+	*rpmdbp = db;
 
-    *rpmdbp = malloc(sizeof(struct rpmdb_s));
-    **rpmdbp = db;
-
-    if (justcheck) {
-	rpmdbClose(*rpmdbp);
-    }
-
-    return 0;
+     return rc;
 }
 
 void rpmdbClose (rpmdb db)
@@ -315,7 +323,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     *matches = dbiCreateIndexRecord();
     i = 0;
     while (i < allMatches.count) {
-	if (!(h = rpmdbGetRecord(db, allMatches.recs[i].recOffset))) {
+	if ((h = rpmdbGetRecord(db, allMatches.recs[i].recOffset)) == NULL) {
 	    i++;
 	    continue;
 	}
@@ -538,7 +546,7 @@ static int addIndexEntry(dbiIndex *idx, const char *index, unsigned int offset,
 	set = dbiCreateIndexRecord();
     dbiAppendIndexRecord(&set, irec);
     if (dbiUpdateIndex(idx, index, &set))
-	exit(1);
+	exit(EXIT_FAILURE);
     dbiFreeIndexRecord(set);
     return 0;
 }
@@ -777,6 +785,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
        basenames are quite unique as it is */
 
     intMatches = malloc(sizeof(*intMatches) * intMatchesAlloced);
+    memset(intMatches, 0, sizeof(*intMatches) * intMatchesAlloced);
 
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
@@ -787,16 +796,17 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	case 2:
 	    free(intMatches);
 	    return 1;
-	    break;
+	    /*@notreached@*/ break;
 	case 0:
-	    if ((numIntMatches + matches.count) >= intMatchesAlloced) {
-		intMatchesAlloced += matches.count;
+	    if ((numIntMatches + dbiIndexSetCount(matches)) >= intMatchesAlloced) {
+		intMatchesAlloced += dbiIndexSetCount(matches);
 		intMatchesAlloced += intMatchesAlloced / 5;
 		intMatches = realloc(intMatches, 
 				     sizeof(*intMatches) * intMatchesAlloced);
 	    }
 
-	    for (j = 0; j < matches.count; j++) {
+	    for (j = 0; j < dbiIndexSetCount(matches); j++) {
+		/* structure assignment */
 		intMatches[numIntMatches].rec = matches.recs[j];
 		intMatches[numIntMatches++].fpNum = i;
 	    }
@@ -829,7 +839,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
 	/* Compute fingerprints for each file match in this package. */
 	h = rpmdbGetRecord(db, im->rec.recOffset);
-	if (!h) {
+	if (h == NULL) {
 	    free(intMatches);
 	    return 1;
 	}
@@ -841,10 +851,12 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 				(void **) &fullfl, &fc);
 
 	    fl = malloc(sizeof(*fl) * num);
+	    memset(fl, 0, sizeof(*fl) * num);
 	    for (i = 0; i < num; i++)
 		fl[i] = fullfl[im[i].rec.fileNumber];
 	    free(fullfl);
 	    fps = malloc(sizeof(*fps) * num);
+	    memset(fps, 0, sizeof(*fps) * num);
 	    fpLookupList(fl, fps, num, 1);
 	    free(fl);
 	}
