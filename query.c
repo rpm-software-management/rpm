@@ -270,6 +270,15 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	    tstruct = localtime(&dateint);
 	    strftime(buf, sizeof(buf) - 1, "%c", tstruct);
 	    printf(format, buf);
+	} else if (!strcmp(how, "fflags")) {
+	    strcat(format, "s");
+	    buf[0] = '\0';
+	    anint = *(((int_32 *) p) + arrayNum);
+	    if (anint & RPMFILE_DOC)
+		strcat(buf, "d");
+	    if (anint & RPMFILE_CONFIG)
+		strcat(buf, "c");
+	    printf(format, buf);
 	} else if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
 	    strcat(format, "s");
 	    printf(format, permsString(*(((int_32 *) p) + arrayNum)));
