@@ -56,6 +56,7 @@ static int allMatches;
 static int badReloc;
 static int excldocs;
 static int force;
+extern int _ftp_debug;
 static char * ftpPort;
 static char * ftpProxy;
 static char * httpPort;
@@ -78,7 +79,6 @@ static int noScripts;
 static int noTriggers;
 static int noUsageMsg;
 static int oldPackage;
-static int showPercents;
 static char * pipeOutput;
 static char * prefix;
 static int queryTags;
@@ -87,9 +87,12 @@ static char * rcfile;
 static int replaceFiles;
 static int replacePackages;
 static char * rootdir;
+extern int _rpmio_debug;
+static int showPercents;
 static int showrc;
 static int signIt;
 static int test;
+extern int _url_debug;
 
 static int showVersion;
 extern const char * rpmNAME;
@@ -116,6 +119,7 @@ static struct poptOption optionsTable[] = {
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
+ { "ftpdebug", '\0', POPT_ARG_VAL, &_ftp_debug, -1,		NULL, NULL},
  { "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0,	NULL, NULL},
  { "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0,	NULL, NULL},
  { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
@@ -155,12 +159,14 @@ static struct poptOption optionsTable[] = {
  { "replacepkgs", '\0', 0, &replacePackages, 0,	NULL, NULL},
  { "resign", '\0', 0, 0, GETOPT_RESIGN,		NULL, NULL},
  { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
+ { "rpmiodebug", '\0', POPT_ARG_VAL, &_rpmio_debug, -1,		NULL, NULL},
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
  { "tarball", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
  { "test", '\0', 0, &test, 0,			NULL, NULL},
  { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK,	NULL, NULL},
  { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
+ { "urldebug", '\0', POPT_ARG_VAL, &_url_debug, -1,		NULL, NULL},
  { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
  { "verify", 'V', 0, 0, 'V',			NULL, NULL},
@@ -569,6 +575,7 @@ int main(int argc, const char ** argv)
     badReloc = 0;
     excldocs = 0;
     force = 0;
+    _ftp_debug = 0;
     ftpProxy = NULL;
     ftpPort = NULL;
     httpProxy = NULL;
@@ -596,13 +603,15 @@ int main(int argc, const char ** argv)
     prefix = NULL;
     queryTags = 0;
     quiet = 0;
+    _rpmio_debug = 0;
     replaceFiles = 0;
     replacePackages = 0;
     rootdir = "/";
     showrc = 0;
     signIt = 0;
-    test = 0;
     showVersion = 0;
+    test = 0;
+    _url_debug = 0;
 
     /* XXX Eliminate query linkage loop */
     parseSpecVec = parseSpec;

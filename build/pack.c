@@ -60,13 +60,12 @@ int packageSources(Spec spec)
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = fdNew("init (packageSources)");
-	csa->cpioFdIn = fdLink(csa->cpioFdIn, "persist (packageSources)");
 	csa->cpioList = spec->sourceCpioList;
 	csa->cpioCount = spec->sourceCpioCount;
 
 	rc = writeRPM(spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
-	csa->cpioFdIn = fdFree(csa->cpioFdIn, "persist (packageSources)");
+	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 	xfree(fn);
     }
     return rc;
@@ -158,13 +157,12 @@ int packageBinaries(Spec spec)
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
-	csa->cpioFdIn = fdLink(csa->cpioFdIn, "persist (packageBinaries)");
 	csa->cpioList = pkg->cpioList;
 	csa->cpioCount = pkg->cpioCount;
 
 	rc = writeRPM(pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
-	csa->cpioFdIn = fdFree(csa->cpioFdIn, "persist (packageBinaries)");
+	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 	xfree(fn);
 	if (rc)
 	    return rc;

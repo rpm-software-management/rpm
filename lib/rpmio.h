@@ -39,26 +39,26 @@ typedef int fdio_lstat_function_t (const char * path, struct stat * st);
 typedef int fdio_access_function_t (const char * path, int amode);
 
 struct FDIO_s {
-  cookie_read_function_t *read;
-  cookie_write_function_t *write;
-  cookie_seek_function_t *seek;
-  cookie_close_function_t *close;
+  cookie_read_function_t *	read;
+  cookie_write_function_t *	write;
+  cookie_seek_function_t *	seek;
+  cookie_close_function_t *	close;
 
-  fdio_ref_function_t *ref;
-  fdio_deref_function_t *deref;
-  fdio_new_function_t *new;
-  fdio_fileno_function_t *fileno;
+  fdio_ref_function_t *		ref;
+  fdio_deref_function_t *	deref;
+  fdio_new_function_t *		new;
+  fdio_fileno_function_t *	fileno;
 
-  fdio_open_function_t *open;
-  fdio_fopen_function_t *fopen;
-  fdio_ffileno_function_t *ffileno;
-  fdio_fflush_function_t *fflush;
+  fdio_open_function_t *	open;
+  fdio_fopen_function_t *	fopen;
+  fdio_ffileno_function_t *	ffileno;
+  fdio_fflush_function_t *	fflush;
 
-  fdio_mkdir_function_t *mkdir;
-  fdio_chdir_function_t *chdir;
-  fdio_rmdir_function_t *rmdir;
-  fdio_rename_function_t *rename;
-  fdio_unlink_function_t *unlink;
+  fdio_mkdir_function_t *	mkdir;
+  fdio_chdir_function_t *	chdir;
+  fdio_rmdir_function_t *	rmdir;
+  fdio_rename_function_t *	rename;
+  fdio_unlink_function_t *	unlink;
 };
 
 /*@observer@*/ const char * Fstrerror(FD_t fd);
@@ -89,23 +89,24 @@ int	Access	(const char * path, int amode);
 
 /*@observer@*/ extern FDIO_t gzdio;
 
-void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno);
-void fdPop(FD_t fd);
+void	fdPush	(FD_t fd, FDIO_t io, void * fp, int fdno);
+void	fdPop	(FD_t fd);
 
-void fdSetFdno(FD_t fd, int fdno);
-off_t fdSize(FD_t fd);
-void fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie);
+void *	fdGetFp	(FD_t fd);
+void	fdSetFdno(FD_t fd, int fdno);
+off_t	fdSize	(FD_t fd);
+void	fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie);
 
 /*@null@*/ const FDIO_t fdGetIo(FD_t fd);
-void fdSetIo(FD_t fd, FDIO_t io);
+void	fdSetIo	(FD_t fd, FDIO_t io);
 
-int fdGetRdTimeoutSecs(FD_t fd);
+int	fdGetRdTimeoutSecs(FD_t fd);
 
-int fdGetFtpFileDoneNeeded(FD_t fd);
-void fdSetFtpFileDoneNeeded(FD_t fd, int ftpFileDoneNeeded);
+int	fdGetFtpFileDoneNeeded(FD_t fd);
+void	fdSetFtpFileDoneNeeded(FD_t fd, int ftpFileDoneNeeded);
 
 long int fdGetCpioPos(FD_t fd);
-void fdSetCpioPos(FD_t fd, long int cpioPos);
+void	fdSetCpioPos(FD_t fd, long int cpioPos);
 
 extern /*@null@*/ FD_t fdDup(int fdno);
 #ifdef UNUSED
@@ -137,8 +138,8 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 /*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
 /*@observer@*/ const char * urlStrerror(const char * url);
 
-int ufdCopy(FD_t sfd, FD_t tfd);
-int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
+int	ufdCopy(FD_t sfd, FD_t tfd);
+int	ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 const char *const ftpStrerror(int errorNumber);
 
 #if 0
@@ -161,23 +162,23 @@ const char *const ftpStrerror(int errorNumber);
 #define	ufdUnlink	ufdio->unlink
 #endif
 
-int fdWritable(FD_t fd, int secs);
-int fdReadable(FD_t fd, int secs);
-int fdRdline(FD_t fd, /*@out@*/ char * buf, size_t len);
+int	fdWritable(FD_t fd, int secs);
+int	fdReadable(FD_t fd, int secs);
+int	fdRdline(FD_t fd, /*@out@*/ char * buf, size_t len);
 
-int timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
+int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
+#define	timedRead	ufdio->read
 
 /*@observer@*/ extern FDIO_t ufdio;
-#define	timedRead	ufdio->read
 
 /*
  * Support for first fit File Allocation I/O.
  */
 
 long int fadGetFileSize(FD_t fd);
-void fadSetFileSize(FD_t fd, long int fileSize);
+void	fadSetFileSize(FD_t fd, long int fileSize);
 unsigned int fadGetFirstFree(FD_t fd);
-void fadSetFirstFree(FD_t fd, unsigned int firstFree);
+void	fadSetFirstFree(FD_t fd, unsigned int firstFree);
 
 /*@observer@*/ extern FDIO_t fadio;
 
