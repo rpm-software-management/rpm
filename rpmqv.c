@@ -14,6 +14,7 @@
 #include <rpmbuild.h>
 
 #include "rpmdb.h"
+#include "rpmps.h"
 #include "rpmts.h"
 
 #define	POPT_NODEPS		1025
@@ -292,7 +293,7 @@ int main(int argc, const char ** argv)
 	/*@modifies __assert_program_name,
 		fileSystem, internalState@*/
 {
-    rpmTransactionSet ts = NULL;
+    rpmts ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
 
 #ifdef	IAM_RPMQV

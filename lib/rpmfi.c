@@ -8,6 +8,8 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
+#include "rpmps.h"
+
 #include "cpio.h"	/* XXX CPIO_FOO */
 #include "fsm.h"	/* XXX newFSM() */
 
@@ -19,14 +21,14 @@
 
 #include "debug.h"
 
-/*@access TFI_t @*/
-/*@access transactionElement @*/
-/*@access rpmTransactionSet @*/	/* XXX for ts->ignoreSet */
+/*@access rpmfi @*/
+/*@access rpmte @*/
+/*@access rpmts @*/	/* XXX for ts->ignoreSet */
 
 /*@unchecked@*/
 static int _fi_debug = 0;
 
-TFI_t XrpmfiUnlink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
+rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
 /*@-modfilesystem@*/
@@ -37,7 +39,7 @@ fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
     return NULL;
 }
 
-TFI_t XrpmfiLink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
+rpmfi XrpmfiLink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
     fi->nrefs++;
@@ -48,33 +50,33 @@ fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
 }
 
-fnpyKey rpmfiGetKey(TFI_t fi)
+fnpyKey rpmfiKey(rpmfi fi)
 {
-    return (fi != NULL ? teGetKey(fi->te) : NULL);
+    return (fi != NULL ? rpmteKey(fi->te) : NULL);
 }
 
-int tfiGetFC(TFI_t fi)
+int rpmfiFC(rpmfi fi)
 {
     return (fi != NULL ? fi->fc : 0);
 }
 
-int tfiGetDC(TFI_t fi)
+int rpmfiDC(rpmfi fi)
 {
     return (fi != NULL ? fi->dc : 0);
 }
 
 #ifdef	NOTYET
-int tfiGetDI(TFI_t fi)
+int rpmfiDI(rpmfi fi)
 {
 }
 #endif
 
-int tfiGetFX(TFI_t fi)
+int rpmfiFX(rpmfi fi)
 {
     return (fi != NULL ? fi->i : -1);
 }
 
-int tfiSetFX(TFI_t fi, int fx)
+int rpmfiSetFX(rpmfi fi, int fx)
 {
     int i = -1;
 
@@ -86,12 +88,12 @@ int tfiSetFX(TFI_t fi, int fx)
     return i;
 }
 
-int tfiGetDX(TFI_t fi)
+int rpmfiDX(rpmfi fi)
 {
     return (fi != NULL ? fi->j : -1);
 }
 
-int tfiSetDX(TFI_t fi, int dx)
+int rpmfiSetDX(rpmfi fi, int dx)
 {
     int j = -1;
 
@@ -102,7 +104,7 @@ int tfiSetDX(TFI_t fi, int dx)
     return j;
 }
 
-const char * tfiGetBN(TFI_t fi)
+const char * rpmfiBN(rpmfi fi)
 {
     const char * BN = NULL;
 
@@ -113,7 +115,7 @@ const char * tfiGetBN(TFI_t fi)
     return BN;
 }
 
-const char * tfiGetDN(TFI_t fi)
+const char * rpmfiDN(rpmfi fi)
 {
     const char * DN = NULL;
 
@@ -124,7 +126,7 @@ const char * tfiGetDN(TFI_t fi)
     return DN;
 }
 
-const char * tfiGetFN(TFI_t fi)
+const char * rpmfiFN(rpmfi fi)
 {
     const char * FN = "";
 
@@ -142,7 +144,7 @@ const char * tfiGetFN(TFI_t fi)
     return FN;
 }
 
-int_32 tfiGetFFlags(TFI_t fi)
+int_32 rpmfiFFlags(rpmfi fi)
 {
     int_32 FFlags = 0;
 
@@ -153,7 +155,7 @@ int_32 tfiGetFFlags(TFI_t fi)
     return FFlags;
 }
 
-int_32 tfiGetVFlags(TFI_t fi)
+int_32 rpmfiVFlags(rpmfi fi)
 {
     int_32 VFlags = 0;
 
@@ -164,7 +166,7 @@ int_32 tfiGetVFlags(TFI_t fi)
     return VFlags;
 }
 
-int_16 tfiGetFMode(TFI_t fi)
+int_16 rpmfiFMode(rpmfi fi)
 {
     int_16 fmode = 0;
 
@@ -175,7 +177,7 @@ int_16 tfiGetFMode(TFI_t fi)
     return fmode;
 }
 
-rpmfileState tfiGetFState(TFI_t fi)
+rpmfileState rpmfiFState(rpmfi fi)
 {
     char fstate = 0;
 
@@ -186,7 +188,7 @@ rpmfileState tfiGetFState(TFI_t fi)
     return fstate;
 }
 
-const unsigned char * tfiGetMD5(TFI_t fi)
+const unsigned char * rpmfiMD5(rpmfi fi)
 {
     unsigned char * md5 = NULL;
 
@@ -197,7 +199,7 @@ const unsigned char * tfiGetMD5(TFI_t fi)
     return md5;
 }
 
-const char * tfiGetFLink(TFI_t fi)
+const char * rpmfiFLink(rpmfi fi)
 {
     const char * flink = NULL;
 
@@ -208,7 +210,7 @@ const char * tfiGetFLink(TFI_t fi)
     return flink;
 }
 
-int_32 tfiGetFSize(TFI_t fi)
+int_32 rpmfiFSize(rpmfi fi)
 {
     int_32 fsize = 0;
 
@@ -219,7 +221,7 @@ int_32 tfiGetFSize(TFI_t fi)
     return fsize;
 }
 
-int_16 tfiGetFRdev(TFI_t fi)
+int_16 rpmfiFRdev(rpmfi fi)
 {
     int_16 frdev = 0;
 
@@ -230,7 +232,7 @@ int_16 tfiGetFRdev(TFI_t fi)
     return frdev;
 }
 
-int_32 tfiGetFMtime(TFI_t fi)
+int_32 rpmfiFMtime(rpmfi fi)
 {
     int_32 fmtime = 0;
 
@@ -241,7 +243,7 @@ int_32 tfiGetFMtime(TFI_t fi)
     return fmtime;
 }
 
-const char * tfiGetFUser(TFI_t fi)
+const char * rpmfiFUser(rpmfi fi)
 {
     const char * fuser = NULL;
 
@@ -252,7 +254,7 @@ const char * tfiGetFUser(TFI_t fi)
     return fuser;
 }
 
-const char * tfiGetFGroup(TFI_t fi)
+const char * rpmfiFGroup(rpmfi fi)
 {
     const char * fgroup = NULL;
 
@@ -263,7 +265,7 @@ const char * tfiGetFGroup(TFI_t fi)
     return fgroup;
 }
 
-int tfiNext(TFI_t fi)
+int rpmfiNext(rpmfi fi)
 {
     int i = -1;
 
@@ -285,7 +287,7 @@ fprintf(stderr, "*** fi %p\t%s[%d] %s%s\n", fi, (fi->Type ? fi->Type : "?Type?")
     return i;
 }
 
-TFI_t tfiInit(TFI_t fi, int fx)
+rpmfi rpmfiInit(rpmfi fi, int fx)
 {
     if (fi != NULL) {
 	if (fx >= 0 && fx < fi->fc) {
@@ -303,7 +305,7 @@ TFI_t tfiInit(TFI_t fi, int fx)
     /*@=refcounttrans@*/
 }
 
-int tdiNext(TFI_t fi)
+int rpmfiNextD(rpmfi fi)
 {
     int j = -1;
 
@@ -323,7 +325,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), j);
     return j;
 }
 
-TFI_t tdiInit(TFI_t fi, int dx)
+rpmfi rpmfiInitD(rpmfi fi, int dx)
 {
     if (fi != NULL) {
 	if (dx >= 0 && dx < fi->fc)
@@ -382,11 +384,11 @@ fileTypes whatis(uint_16 mode)
  * @return		header with relocated files
  */
 static
-Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
+Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, fileAction * actions)
 	/*@modifies ts, fi, origH, actions @*/
 {
-    transactionElement p = fi->te;
+    rpmte p = fi->te;
     HGE_t hge = fi->hge;
     HAE_t hae = fi->hae;
     HME_t hme = fi->hme;
@@ -486,11 +488,11 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions) {
-		rpmProblemSet ps = rpmtsGetProblems(ts);
-		rpmProblemSetAppend(ps, RPMPROB_BADRELOCATE,
+		rpmps ps = rpmtsGetProblems(ts);
+		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
 			p->NEVR, p->key,
 			relocations[i].oldPath, NULL, NULL, 0);
-		ps = rpmProblemSetFree(ps);
+		ps = rpmpsFree(ps);
 	    }
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
@@ -807,7 +809,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     return h;
 }
 
-TFI_t fiFree(TFI_t fi, int freefimem)
+rpmfi rpmfiFree(rpmfi fi, int freefimem)
 {
     HFD_t hfd = headerFreeData;
 
@@ -902,7 +904,7 @@ static inline unsigned char nibble(char c)
 	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
 			(_fi)->_data, (_fi)->fc * sizeof(*(_fi)->_data))
 
-TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
+rpmfi rpmfiNew(rpmts ts, rpmfi fi,
 		Header h, rpmTag tagN, int scareMem)
 {
     HGE_t hge =
@@ -931,7 +933,7 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     }
     /*@=branchstate@*/
 
-    fi->magic = TFIMAGIC;
+    fi->magic = RPMFIMAGIC;
     fi->Type = Type;
     fi->i = -1;
     fi->tagN = tagN;
@@ -1034,9 +1036,9 @@ if (fi->actions == NULL)
 	/*@-compdef@*/ /* FIX: fi-md5s undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
 	/*@=compdef@*/
-	fi->h = headerFree(fi->h, "fiNew fi->h");
-	fi->h = headerLink(foo, "fiNew fi->h = foo");
-	foo = headerFree(foo, "fiNew foo");
+	fi->h = headerFree(fi->h, "rpmfiNew fi->h");
+	fi->h = headerLink(foo, "rpmfiNew fi->h = foo");
+	foo = headerFree(foo, "rpmfiNew foo");
     }
 
     if (!scareMem) {
@@ -1072,7 +1074,7 @@ if (_fi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
 /*@=modfilesystem@*/
 
-    /*@-compdef -nullstate@*/ /* FIX: TFI null annotations */
+    /*@-compdef -nullstate@*/ /* FIX: rpmfi null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
     /*@=compdef =nullstate@*/
 }

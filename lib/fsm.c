@@ -8,6 +8,8 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
+#include "rpmps.h"
+
 #include "cpio.h"
 #include "fsm.h"
 #include "psm.h"	/* XXX fiTypeString */
@@ -23,9 +25,9 @@
 /*@access FSMI_t @*/
 /*@access FSM_t @*/
 
-/*@access TFI_t @*/
-/*@access transactionElement @*/
-/*@access rpmTransactionSet @*/
+/*@access rpmfi @*/
+/*@access rpmte @*/
+/*@access rpmts @*/
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
@@ -38,14 +40,14 @@ int _fsm_debug = 0;
 int strict_erasures = 0;
 /*@=exportlocal =exportheadervar@*/
 
-rpmTransactionSet fsmGetTs(const FSM_t fsm) {
+rpmts fsmGetTs(const FSM_t fsm) {
     const FSMI_t iter = fsm->iter;
     /*@-compdef -refcounttrans -retexpose -usereleased @*/
     return (iter ? iter->ts : NULL);
     /*@=compdef =refcounttrans =retexpose =usereleased @*/
 }
 
-TFI_t fsmGetFi(const FSM_t fsm)
+rpmfi fsmGetFi(const FSM_t fsm)
 {
     const FSMI_t iter = fsm->iter;
     /*@-compdef -refcounttrans -retexpose -usereleased @*/
@@ -116,7 +118,7 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
  * @return		file info iterator
  */
 static void *
-mapInitIterator(rpmTransactionSet ts, TFI_t fi)
+mapInitIterator(rpmts ts, rpmfi fi)
 	/*@modifies ts, fi @*/
 {
     FSMI_t iter = NULL;
@@ -142,7 +144,7 @@ static int mapNextIterator(/*@null@*/ void * a)
     int i = -1;
 
     if (iter) {
-	const TFI_t fi = iter->fi;
+	const rpmfi fi = iter->fi;
 	if (iter->reverse) {
 	    if (iter->i >= 0)	i = iter->i--;
 	} else {
@@ -184,7 +186,7 @@ static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
     int ix = -1;
 
     if (iter) {
-	const TFI_t fi = iter->fi;
+	const rpmfi fi = iter->fi;
 	if (fi && fi->fc > 0 && fi->apath && fsmPath && *fsmPath) {
 	    const char ** p = NULL;
 
@@ -204,7 +206,7 @@ static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
  * Directory name iterator.
  */
 typedef struct dnli_s {
-    TFI_t fi;
+    rpmfi fi;
 /*@only@*/ /*@null@*/ char * active;
     int reverse;
     int isave;
@@ -254,7 +256,7 @@ static /*@only@*/ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 	/*@uses fsm->iter @*/ 
 	/*@*/
 {
-    TFI_t fi = fsmGetFi(fsm);
+    rpmfi fi = fsmGetFi(fsm);
     DNLI_t dnli;
     int i, j;
 
@@ -338,7 +340,7 @@ static /*@observer@*/ const char * dnlNextIterator(/*@null@*/ DNLI_t dnli)
     const char * dn = NULL;
 
     if (dnli) {
-	TFI_t fi = dnli->fi;
+	rpmfi fi = dnli->fi;
 	int i = -1;
 
 	if (dnli->active)
@@ -423,7 +425,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	return 1;
 
     /* Here come the bits, time to choose a non-skipped file name. */
-    {	TFI_t fi = fsmGetFi(fsm);
+    {	rpmfi fi = fsmGetFi(fsm);
 
 	for (j = fsm->li->linksLeft - 1; j >= 0; j--) {
 	    ix = fsm->li->filex[j];
@@ -484,7 +486,7 @@ FSM_t freeFSM(FSM_t fsm)
 }
 
 int fsmSetup(FSM_t fsm, fileStage goal,
-		const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
+		const rpmts ts, const rpmfi fi, FD_t cfd,
 		unsigned int * archiveSize, const char ** failedFile)
 {
     size_t pos = 0;
@@ -505,7 +507,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	    /*@-type@*/ /* FIX: cast? */
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
-			rpmfiGetKey(fi), ts->notifyData);
+			rpmfiKey(fi), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	    /*@=type@*/
 	}
@@ -559,7 +561,7 @@ int fsmTeardown(FSM_t fsm)
 
 int fsmMapPath(FSM_t fsm)
 {
-    TFI_t fi = fsmGetFi(fsm);	/* XXX const except for fstates */
+    rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
     int rc = 0;
     int i;
 
@@ -653,7 +655,7 @@ assert(fi->te->type == TR_ADDED);
 int fsmMapAttrs(FSM_t fsm)
 {
     struct stat * st = &fsm->sb;
-    TFI_t fi = fsmGetFi(fsm);
+    rpmfi fi = fsmGetFi(fsm);
     int i = fsm->ix;
 
     if (fi && i >= 0 && i < fi->fc) {
@@ -685,7 +687,7 @@ int fsmMapAttrs(FSM_t fsm)
 	if (fsm->mapFlags & CPIO_MAP_GID)
 	    st->st_gid = finalGid;
 
-	{   rpmTransactionSet ts = fsmGetTs(fsm);
+	{   rpmts ts = fsmGetTs(fsm);
 
 	    if (ts != NULL && !(ts->transFlags & RPMTRANS_FLAG_NOMD5)) {
 		fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
@@ -816,7 +818,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	t = stpcpy( stpcpy(t, fsm->dirName), fsm->baseName);
 /*@=compdef@*/
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
-	TFI_t fi = fsmGetFi(fsm);
+	rpmfi fi = fsmGetFi(fsm);
 	fsm->path =
 	    (fi->apath ? fi->apath[fsm->ix] + fi->striplen : fi->bnl[fsm->ix]);
     }
@@ -892,14 +894,14 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
     rc = fsmStage(fsm, FSM_PAD);
     if (rc) goto exit;
 
-    {	const rpmTransactionSet ts = fsmGetTs(fsm);
-	TFI_t fi = fsmGetFi(fsm);
+    {	const rpmts ts = fsmGetTs(fsm);
+	rpmfi fi = fsmGetFi(fsm);
 	if (ts && ts->notify && fi) {
 	    size_t size = (fdGetCpioPos(fsm->cfd) - pos);
 	    /*@-type@*/ /* FIX: cast? */
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS, size, size,
-			rpmfiGetKey(fi), ts->notifyData);
+			rpmfiKey(fi), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	    /*@=type@*/
 	}
@@ -1197,7 +1199,7 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 		/* Move pre-existing path marker forward. */
 		fsm->dnlx[dc] = (te - dn);
 	    } else if (rc == CPIOERR_LSTAT_FAILED) {
-		TFI_t fi = fsmGetFi(fsm);
+		rpmfi fi = fsmGetFi(fsm);
 		*te = '\0';
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
 		rc = fsmStage(fsm, FSM_MKDIR);
@@ -1431,7 +1433,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	break;
     case FSM_CREATE:
-	{   rpmTransactionSet ts = fsmGetTs(fsm);
+	{   rpmts ts = fsmGetTs(fsm);
 #define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
 	    fsm->commit = ((ts && (ts->transFlags & _tsmask) &&
 			fsm->goal != FSM_PKGCOMMIT) ? 0 : 1);
@@ -1508,7 +1510,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	/* On non-install, mode must be known so that dirs don't get suffix. */
 	if (fsm->goal != FSM_PKGINSTALL) {
-	    TFI_t fi = fsmGetFi(fsm);
+	    rpmfi fi = fsmGetFi(fsm);
 	    st->st_mode = fi->fmodes[fsm->ix];
 	}
 
@@ -1692,14 +1694,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
 	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
-	    rpmTransactionSet ts = fsmGetTs(fsm);
-	    TFI_t fi = fsmGetFi(fsm);
+	    rpmts ts = fsmGetTs(fsm);
+	    rpmfi fi = fsmGetFi(fsm);
 	    if (ts && ts->notify && fi) {
 		/*@-type@*/ /* FIX: cast? */
 		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
 			fdGetCpioPos(fsm->cfd), fi->archiveSize,
-			rpmfiGetKey(fi), ts->notifyData);
+			rpmfiKey(fi), ts->notifyData);
 		/*@=noeffectuncon @*/
 		/*@=type@*/
 	    }
@@ -1761,7 +1763,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* Remove erased files. */
 	if (fsm->goal == FSM_PKGERASE) {
 	    if (fsm->action == FA_ERASE) {
-		TFI_t fi = fsmGetFi(fsm);
+		rpmfi fi = fsmGetFi(fsm);
 		if (S_ISDIR(st->st_mode)) {
 		    rc = fsmStage(fsm, FSM_RMDIR);
 		    if (!rc) break;
@@ -1827,7 +1829,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    rc = fsmStage(fsm, FSM_CHMOD);
 		if (!rc) {
 		    time_t mtime = st->st_mtime;
-		    TFI_t fi = fsmGetFi(fsm);
+		    rpmfi fi = fsmGetFi(fsm);
 		    if (fi->fmtimes)
 			st->st_mtime = fi->fmtimes[fsm->ix];
 		    rc = fsmStage(fsm, FSM_UTIME);

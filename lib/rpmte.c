@@ -1,11 +1,13 @@
 /** \ingroup rpmdep
  * \file lib/rpmte.c
- * Routine(s) to handle a transactionElement.
+ * Routine(s) to handle an "rpmte"  transaction element.
  */
 #include "system.h"
 #include <rpmlib.h>
 
 #include "psm.h"
+
+#include "rpmps.h"
 
 #include "rpmds.h"
 #include "rpmfi.h"
@@ -18,13 +20,22 @@
 int _te_debug = 0;
 
 /*@access alKey @*/
-/*@access teIterator @*/
-/*@access transactionElement @*/
-/*@access rpmTransactionSet @*/
+/*@access rpmtei @*/
+/*@access rpmte @*/
+/*@access rpmts @*/
+
+void rpmteCleanDS(rpmte te)
+{
+    te->this = rpmdsFree(te->this);
+    te->provides = rpmdsFree(te->provides);
+    te->requires = rpmdsFree(te->requires);
+    te->conflicts = rpmdsFree(te->conflicts);
+    te->obsoletes = rpmdsFree(te->obsoletes);
+}
 
 /**
  */
-static void delTE(transactionElement p)
+static void delTE(rpmte p)
 	/*@modifies p @*/
 {
     rpmRelocation * r;
@@ -37,12 +48,9 @@ static void delTE(transactionElement p)
 	p->relocs = _free(p->relocs);
     }
 
-    p->this = dsFree(p->this);
-    p->provides = dsFree(p->provides);
-    p->requires = dsFree(p->requires);
-    p->conflicts = dsFree(p->conflicts);
-    p->obsoletes = dsFree(p->obsoletes);
-    p->fi = fiFree(p->fi, 1);
+    rpmteCleanDS(p);
+
+    p->fi = rpmfiFree(p->fi, 1);
 
     /*@-noeffectuncon@*/
     if (p->fd != NULL)
@@ -67,7 +75,7 @@ static void delTE(transactionElement p)
 
 /**
  */
-static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
+static void addTE(rpmts ts, rpmte p, Header h,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
 	/*@modifies ts, p, h @*/
@@ -102,12 +110,12 @@ static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
 	p->epoch = NULL;
     /*@=branchstate@*/
 
-    p->this = dsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
-    p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
-    p->conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-    p->obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+    p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+    p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
+    p->fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+    p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+    p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
 
     p->key = key;
 
@@ -134,7 +142,7 @@ static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
     }
 }
 
-transactionElement teFree(transactionElement te)
+rpmte rpmteFree(rpmte te)
 {
     if (te != NULL) {
 	delTE(te);
@@ -144,14 +152,14 @@ transactionElement teFree(transactionElement te)
     return NULL;
 }
 
-transactionElement teNew(const rpmTransactionSet ts, Header h,
+rpmte rpmteNew(const rpmts ts, Header h,
 		rpmTransactionType type,
 		fnpyKey key,
 		rpmRelocation * relocs,
 		int dboffset,
 		alKey pkgKey)
 {
-    transactionElement te = xcalloc(1, sizeof(*te));
+    rpmte te = xcalloc(1, sizeof(*te));
 
     addTE(ts, te, h, key, relocs);
     switch (type) {
@@ -168,48 +176,47 @@ transactionElement teNew(const rpmTransactionSet ts, Header h,
     return te;
 }
 
-rpmTransactionType teGetType(transactionElement te)
+rpmTransactionType rpmteType(rpmte te)
 {
-    return te->type;
+    return (te != NULL ? te->type : -1);
 }
 
-const char * teGetN(transactionElement te)
-	/*@*/
+const char * rpmteN(rpmte te)
 {
     return (te != NULL ? te->name : NULL);
 }
 
-const char * teGetE(transactionElement te)
+const char * rpmteE(rpmte te)
 {
     return (te != NULL ? te->epoch : NULL);
 }
 
-const char * teGetV(transactionElement te)
+const char * rpmteV(rpmte te)
 {
     return (te != NULL ? te->version : NULL);
 }
 
-const char * teGetR(transactionElement te)
+const char * rpmteR(rpmte te)
 {
     return (te != NULL ? te->release : NULL);
 }
 
-const char * teGetA(transactionElement te)
+const char * rpmteA(rpmte te)
 {
     return (te != NULL ? te->arch : NULL);
 }
 
-const char * teGetO(transactionElement te)
+const char * rpmteO(rpmte te)
 {
     return (te != NULL ? te->os : NULL);
 }
 
-int teGetMultiLib(transactionElement te)
+int rpmteMultiLib(rpmte te)
 {
     return (te != NULL ? te->multiLib : 0);
 }
 
-int teSetMultiLib(transactionElement te, int nmultiLib)
+int rpmteSetMultiLib(rpmte te, int nmultiLib)
 {
     int omultiLib = 0;
     if (te != NULL) {
@@ -219,12 +226,12 @@ int teSetMultiLib(transactionElement te, int nmultiLib)
     return omultiLib;
 }
 
-int teGetDepth(transactionElement te)
+int rpmteDepth(rpmte te)
 {
     return (te != NULL ? te->depth : 0);
 }
 
-int teSetDepth(transactionElement te, int ndepth)
+int rpmteSetDepth(rpmte te, int ndepth)
 {
     int odepth = 0;
     if (te != NULL) {
@@ -234,12 +241,12 @@ int teSetDepth(transactionElement te, int ndepth)
     return odepth;
 }
 
-int teGetNpreds(transactionElement te)
+int rpmteNpreds(rpmte te)
 {
     return (te != NULL ? te->npreds : 0);
 }
 
-int teSetNpreds(transactionElement te, int npreds)
+int rpmteSetNpreds(rpmte te, int npreds)
 {
     int opreds = 0;
     if (te != NULL) {
@@ -249,12 +256,12 @@ int teSetNpreds(transactionElement te, int npreds)
     return opreds;
 }
 
-int teGetTree(transactionElement te)
+int rpmteTree(rpmte te)
 {
     return (te != NULL ? te->tree : 0);
 }
 
-int teSetTree(transactionElement te, int ntree)
+int rpmteSetTree(rpmte te, int ntree)
 {
     int otree = 0;
     if (te != NULL) {
@@ -264,14 +271,14 @@ int teSetTree(transactionElement te, int ntree)
     return otree;
 }
 
-transactionElement teGetParent(transactionElement te)
+rpmte rpmteParent(rpmte te)
 {
     return (te != NULL ? te->parent : NULL);
 }
 
-transactionElement teSetParent(transactionElement te, transactionElement pte)
+rpmte rpmteSetParent(rpmte te, rpmte pte)
 {
-    transactionElement opte = NULL;
+    rpmte opte = NULL;
     /*@-branchstate@*/
     if (te != NULL) {
 	opte = te->parent;
@@ -283,12 +290,12 @@ transactionElement teSetParent(transactionElement te, transactionElement pte)
     return opte;
 }
 
-int teGetDegree(transactionElement te)
+int rpmteDegree(rpmte te)
 {
     return (te != NULL ? te->degree : 0);
 }
 
-int teSetDegree(transactionElement te, int ndegree)
+int rpmteSetDegree(rpmte te, int ndegree)
 {
     int odegree = 0;
     if (te != NULL) {
@@ -298,21 +305,21 @@ int teSetDegree(transactionElement te, int ndegree)
     return odegree;
 }
 
-tsortInfo teGetTSI(transactionElement te)
+tsortInfo rpmteTSI(rpmte te)
 {
     /*@-compdef -retalias -retexpose -usereleased @*/
     return te->tsi;
     /*@=compdef =retalias =retexpose =usereleased @*/
 }
 
-void teFreeTSI(transactionElement te)
+void rpmteFreeTSI(rpmte te)
 {
-    if (te != NULL && teGetTSI(te) != NULL) {
+    if (te != NULL && rpmteTSI(te) != NULL) {
 	tsortInfo tsi;
 
 	/* Clean up tsort remnants (if any). */
-	while ((tsi = teGetTSI(te)->tsi_next) != NULL) {
-	    teGetTSI(te)->tsi_next = tsi->tsi_next;
+	while ((tsi = rpmteTSI(te)->tsi_next) != NULL) {
+	    rpmteTSI(te)->tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
 	    tsi = _free(tsi);
 	}
@@ -323,29 +330,20 @@ void teFreeTSI(transactionElement te)
     /*@=nullstate@*/
 }
 
-void teNewTSI(transactionElement te)
+void rpmteNewTSI(rpmte te)
 {
     if (te != NULL) {
-	teFreeTSI(te);
+	rpmteFreeTSI(te);
 	te->tsi = xcalloc(1, sizeof(*te->tsi));
     }
 }
 
-void teCleanDS(transactionElement te)
-{
-    te->this = dsFree(te->this);
-    te->provides = dsFree(te->provides);
-    te->requires = dsFree(te->requires);
-    te->conflicts = dsFree(te->conflicts);
-    te->obsoletes = dsFree(te->obsoletes);
-}
-
-alKey teGetAddedKey(transactionElement te)
+alKey rpmteAddedKey(rpmte te)
 {
     return (te != NULL ? te->u.addedKey : RPMAL_NOMATCH);
 }
 
-alKey teSetAddedKey(transactionElement te, alKey npkgKey)
+alKey rpmteSetAddedKey(rpmte te, alKey npkgKey)
 {
     alKey opkgKey = RPMAL_NOMATCH;
     if (te != NULL) {
@@ -356,34 +354,34 @@ alKey teSetAddedKey(transactionElement te, alKey npkgKey)
 }
 
 
-alKey teGetDependsOnKey(transactionElement te)
+alKey rpmteDependsOnKey(rpmte te)
 {
     return (te != NULL ? te->u.removed.dependsOnKey : RPMAL_NOMATCH);
 }
 
-int teGetDBOffset(transactionElement te)
+int rpmteDBOffset(rpmte te)
 {
     return (te != NULL ? te->u.removed.dboffset : 0);
 }
 
-const char * teGetNEVR(transactionElement te)
+const char * rpmteNEVR(rpmte te)
 {
     return (te != NULL ? te->NEVR : NULL);
 }
 
-FD_t teGetFd(transactionElement te)
+FD_t rpmteFd(rpmte te)
 {
     /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     return (te != NULL ? te->fd : NULL);
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
-fnpyKey teGetKey(transactionElement te)
+fnpyKey rpmteKey(rpmte te)
 {
     return (te != NULL ? te->key : NULL);
 }
 
-rpmDepSet teGetDS(transactionElement te, rpmTag tag)
+rpmds rpmteDS(rpmte te, rpmTag tag)
 {
     /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     if (te == NULL)
@@ -408,7 +406,7 @@ rpmDepSet teGetDS(transactionElement te, rpmTag tag)
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
-TFI_t teGetFI(transactionElement te, rpmTag tag)
+rpmfi rpmteFI(rpmte te, rpmTag tag)
 {
     /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     if (te == NULL)
@@ -421,12 +419,12 @@ TFI_t teGetFI(transactionElement te, rpmTag tag)
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
-int teiGetOc(teIterator tei)
+int rpmteiGetOc(rpmtei tei)
 {
     return tei->ocsave;
 }
 
-teIterator XteFreeIterator(/*@only@*//*@null@*/ teIterator tei,
+rpmtei XrpmteiFree(/*@only@*//*@null@*/ rpmtei tei,
 		const char * fn, unsigned int ln)
 {
     if (tei)
@@ -438,13 +436,12 @@ fprintf(stderr, "*** tei %p -- %s:%d\n", tei, fn, ln);
     return _free(tei);
 }
 
-teIterator XteInitIterator(rpmTransactionSet ts,
-		const char * fn, unsigned int ln)
+rpmtei XrpmteiInit(rpmts ts, const char * fn, unsigned int ln)
 {
-    teIterator tei = NULL;
+    rpmtei tei = NULL;
 
     tei = xcalloc(1, sizeof(*tei));
-    tei->ts = rpmtsLink(ts, "teIterator");
+    tei->ts = rpmtsLink(ts, "rpmtei");
     tei->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
     tei->oc = (tei->reverse ? (ts->orderCount - 1) : 0);
     tei->ocsave = tei->oc;
@@ -455,9 +452,16 @@ fprintf(stderr, "*** tei %p ++ %s:%d\n", tei, fn, ln);
     return tei;
 }
 
-transactionElement teNextIterator(teIterator tei)
+/**
+ * Return next transaction element.
+ * @param tei		transaction element iterator
+ * @return		transaction element, NULL on termination
+ */
+static /*@dependent@*/ /*@null@*/
+rpmte teNextIterator(rpmtei tei)
+	/*@modifies tei @*/
 {
-    transactionElement te = NULL;
+    rpmte te = NULL;
     int oc = -1;
 
     if (tei == NULL || tei->ts == NULL || tei->ts->order == NULL)
@@ -478,9 +482,9 @@ transactionElement teNextIterator(teIterator tei)
     /*@=compdef =usereleased@*/
 }
 
-transactionElement teNext(teIterator tei, rpmTransactionType type)
+rpmte rpmteiNext(rpmtei tei, rpmTransactionType type)
 {
-    transactionElement p;
+    rpmte p;
 
     while ((p = teNextIterator(tei)) != NULL) {
 	if (type == 0 || (p->type & type) != 0)

@@ -6,6 +6,8 @@
 
 #include <rpmlib.h>
 
+#include "rpmps.h"
+
 #include "rpmal.h"
 #include "rpmds.h"
 #include "rpmfi.h"
@@ -29,9 +31,9 @@ static int _al_debug = 0;
  */
 struct availablePackage_s {
 /*@refcounted@*/ /*@null@*/
-    rpmDepSet provides;		/*!< Provides: dependencies. */
+    rpmds provides;		/*!< Provides: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    TFI_t fi;			/*!< File info set. */
+    rpmfi fi;			/*!< File info set. */
 
 #ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
@@ -214,8 +216,8 @@ availableList alFree(availableList al)
 
     if ((alp = al->list) != NULL)
     for (i = 0; i < al->size; i++, alp++) {
-	alp->provides = dsFree(alp->provides);
-	alp->fi = fiFree(alp->fi, 1);
+	alp->provides = rpmdsFree(alp->provides);
+	alp->fi = rpmfiFree(alp->fi, 1);
     }
 
     if ((die = al->dirs) != NULL)
@@ -287,7 +289,7 @@ void alDelPackage(availableList al, alKey pkgKey)
 {
     alNum pkgNum = alKey2Num(al, pkgKey);
     availablePackage alp;
-    TFI_t fi;
+    rpmfi fi;
 
     if (al == NULL || al->list == NULL)
 	return;		/* XXX can't happen */
@@ -301,7 +303,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 
     /* Delete directory/file info entries from added package list. */
     if ((fi = alp->fi) != NULL)
-    if (tfiGetFC(fi) > 0) {
+    if (rpmfiFC(fi) > 0) {
 	int origNumDirs = al->numDirs;
 	int dx;
 	dirInfo dieNeedle =
@@ -313,14 +315,14 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	/* XXX FIXME: We ought to relocate the directory list here */
 
 	if (al->dirs != NULL)
-	for (dx = tfiGetDC(fi) - 1; dx >= 0; dx--)
+	for (dx = rpmfiDC(fi) - 1; dx >= 0; dx--)
 	{
 	    fileIndexEntry fie;
 
-	    (void) tfiSetDX(fi, dx);
+	    (void) rpmfiSetDX(fi, dx);
 
 	    /*@-assignexpose -dependenttrans -observertrans@*/
-	    dieNeedle->dirName = (char *) tfiGetDN(fi);
+	    dieNeedle->dirName = (char *) rpmfiDN(fi);
 	    /*@=assignexpose =dependenttrans =observertrans@*/
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
@@ -361,15 +363,15 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	}
     }
 
-    alp->provides = dsFree(alp->provides);
-    alp->fi = fiFree(alp->fi, 1);
+    alp->provides = rpmdsFree(alp->provides);
+    alp->fi = rpmfiFree(alp->fi, 1);
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
     return;
 }
 
 alKey alAddPackage(availableList * alistp, alKey pkgKey, fnpyKey key,
-		rpmDepSet provides, TFI_t fi)
+		rpmds provides, rpmfi fi)
 {
     alNum pkgNum;
     availableList al;
@@ -407,8 +409,8 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
     alp->fi = rpmfiLink(fi, "Files (alAddPackage)");
 
     fi = rpmfiLink(alp->fi, "Files index (alAddPackage)");
-    fi = tfiInit(fi, 0);
-    if (tfiGetFC(fi) > 0) {
+    fi = rpmfiInit(fi, 0);
+    if (rpmfiFC(fi) > 0) {
 	int * dirMapping;
 	dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
@@ -418,7 +420,7 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 	int dx;
 	int dc;
 
-	dc = tfiGetDC(fi);
+	dc = rpmfiDC(fi);
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
@@ -433,10 +435,10 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 
 	for (dx = 0; dx < dc; dx++) {
 
-	    (void) tfiSetDX(fi, dx);
+	    (void) rpmfiSetDX(fi, dx);
 
 	    /*@-assignexpose -dependenttrans -observertrans@*/
-	    dieNeedle->dirName = (char *) tfiGetDN(fi);
+	    dieNeedle->dirName = (char *) rpmfiDN(fi);
 	    /*@=assignexpose =dependenttrans =observertrans@*/
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
@@ -461,17 +463,17 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 	    }
 	}
 
-	for (first = tfiNext(fi); first >= 0;) {
+	for (first = rpmfiNext(fi); first >= 0;) {
 	    fileIndexEntry fie;
 	    int next;
 
 	    /* Find the first file of the next directory. */
-	    dx = tfiGetDX(fi);
-	    while ((next = tfiNext(fi)) >= 0) {
-		if (dx != tfiGetDX(fi))
+	    dx = rpmfiDX(fi);
+	    while ((next = rpmfiNext(fi)) >= 0) {
+		if (dx != rpmfiDX(fi))
 		    /*@innerbreak@*/ break;
 	    }
-	    if (next < 0) next = tfiGetFC(fi);	/* XXX reset end-of-list */
+	    if (next < 0) next = rpmfiFC(fi);	/* XXX reset end-of-list */
 
 	    die = al->dirs + dirMapping[dx];
 	    die->files = xrealloc(die->files,
@@ -479,14 +481,14 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 	    fie = die->files + die->numFiles;
 
 	    /* Rewind to first file, generate file index entry for each file. */
-	    fi = tfiInit(fi, first);
-	    while ((first = tfiNext(fi)) >= 0 && first < next) {
+	    fi = rpmfiInit(fi, first);
+	    while ((first = rpmfiNext(fi)) >= 0 && first < next) {
 		/*@-assignexpose -dependenttrans -observertrans @*/
-		fie->baseName = tfiGetBN(fi);
+		fie->baseName = rpmfiBN(fi);
 		/*@=assignexpose =dependenttrans =observertrans @*/
 		fie->baseNameLen = (fie->baseName ? strlen(fie->baseName) : 0);
 		fie->pkgNum = pkgNum;
-		fie->fileFlags = tfiGetFFlags(fi);
+		fie->fileFlags = rpmfiFFlags(fi);
 		die->numFiles++;
 		fie++;
 	    }
@@ -528,7 +530,7 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
-void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
+void alAddProvides(availableList al, alKey pkgKey, rpmds provides)
 {
     alNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
@@ -540,12 +542,12 @@ void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
     if (ai->index == NULL || ai->k < 0 || ai->k >= ai->size)
 	return;
 
-    if (dsiInit(provides) != NULL)
-    while (dsiNext(provides) >= 0) {
+    if (rpmdsInit(provides) != NULL)
+    while (rpmdsNext(provides) >= 0) {
 	const char * Name;
 
 #ifdef	DYING	/* XXX FIXME: multilib colored dependency search */
-	const int_32 Flags = dsiGetFlags(provides);
+	const int_32 Flags = rpmdsFlags(provides);
 
 	/* If multilib install, skip non-multilib provides. */
 	if (al->list[i].multiLib && !isDependsMULTILIB(Flags)) {
@@ -554,7 +556,7 @@ void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
 	}
 #endif
 
-	if ((Name = dsiGetN(provides)) == NULL)
+	if ((Name = rpmdsN(provides)) == NULL)
 	    continue;	/* XXX can't happen */
 
 	aie = ai->index + ai->k;
@@ -563,7 +565,7 @@ void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
 	aie->pkgKey = pkgKey;
 	aie->entry = Name;
 	aie->entryLen = strlen(Name);
-	ix = dsiGetIx(provides);
+	ix = rpmdsIx(provides);
 
 /* XXX make sure that element index fits in unsigned short */
 assert(ix < 0x10000);
@@ -586,7 +588,7 @@ void alMakeIndex(availableList al)
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
 	if (alp->provides != NULL)
-	    ai->size += dsiGetCount(alp->provides);
+	    ai->size += rpmdsCount(alp->provides);
     }
 
     if (ai->size) {
@@ -603,7 +605,7 @@ void alMakeIndex(availableList al)
 }
 
 fnpyKey *
-alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
+alAllFileSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
 {
     int found = 0;
     const char * dirName;
@@ -619,7 +621,7 @@ alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * key
     const char * fileName;
 
     if (keyp) *keyp = RPMAL_NOMATCH;
-    if (al == NULL || (fileName = dsiGetN(ds)) == NULL || *fileName != '/')
+    if (al == NULL || (fileName = rpmdsN(ds)) == NULL || *fileName != '/')
 	return NULL;
 
     /* Solaris 2.6 bsearch sucks down on this. */
@@ -683,7 +685,7 @@ fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"
 	    continue;
 #endif
 
-	dsiNotify(ds, _("(added files)"), 0);
+	rpmdsNotify(ds, _("(added files)"), 0);
 
 	alp = al->list + fie->pkgNum;
 	ret = xrealloc(ret, (found+2) * sizeof(*ret));
@@ -702,7 +704,7 @@ exit:
 }
 
 fnpyKey *
-alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
+alAllSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
 {
     availableIndex ai;
     availableIndexEntry needle;
@@ -715,7 +717,7 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 
     if (keyp) *keyp = RPMAL_NOMATCH;
 
-    if (al == NULL || ds == NULL || (KName = dsiGetN(ds)) == NULL)
+    if (al == NULL || ds == NULL || (KName = rpmdsN(ds)) == NULL)
 	return ret;
 
     if (*KName == '/') {
@@ -754,13 +756,13 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 	if (alp->provides != NULL)	/* XXX can't happen */
 	switch (match->type) {
 	case IET_PROVIDES:
-	    /* XXX single step on dsiNext to regenerate DNEVR string */
-	    (void) dsiSetIx(alp->provides, match->entryIx - 1);
-	    if (dsiNext(alp->provides) >= 0)
-		rc = dsCompare(alp->provides, ds);
+	    /* XXX single step on rpmdsNext to regenerate DNEVR string */
+	    (void) rpmdsSetIx(alp->provides, match->entryIx - 1);
+	    if (rpmdsNext(alp->provides) >= 0)
+		rc = rpmdsCompare(alp->provides, ds);
 
 	    if (rc)
-		dsiNotify(ds, _("(added provide)"), 0);
+		rpmdsNotify(ds, _("(added provide)"), 0);
 
 	    /*@switchbreak@*/ break;
 	}
@@ -783,7 +785,7 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 }
 
 fnpyKey
-alSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
+alSatisfiesDepend(const availableList al, const rpmds ds, alKey * keyp)
 {
     fnpyKey * tmp = alAllSatisfiesDepend(al, ds, keyp);
 

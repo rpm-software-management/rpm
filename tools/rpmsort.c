@@ -5,6 +5,7 @@
 #include <rpmurl.h>
 
 #include "rpmdb.h"
+#include "rpmps.h"
 #include "rpmte.h"
 #include "rpmts.h"
 
@@ -45,7 +46,7 @@ static int
 do_tsort(const char *fileArgv[])
 {
     const char * rootdir = "/";
-    rpmTransactionSet ts = NULL;
+    rpmts ts = NULL;
     const char ** pkgURL = NULL;
     char * pkgState = NULL;
     const char ** fnp;
@@ -210,7 +211,7 @@ restart:
     if (numFailed) goto exit;
 
     if (!noDeps) {
-	rpmProblemSet ps;
+	rpmps ps;
 
 	rc = rpmtsCheck(ts);
 
@@ -218,20 +219,20 @@ restart:
 	if (ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    printDepProblems(stderr, ps);
-	    ps = rpmProblemSetFree(ps);
+	    ps = rpmpsFree(ps);
 	    rc = -1;
 	    goto exit;
 	}
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
     }
 
     rc = rpmtsOrder(ts);
     if (rc)
 	goto exit;
 
-    {	rpmDepSet requires;
-	teIterator pi; transactionElement p;
-	teIterator qi; transactionElement q;
+    {	rpmds requires;
+	rpmtei pi; rpmte p;
+	rpmtei qi; rpmte q;
 	unsigned char * selected =
 			alloca(sizeof(*selected) * (ts->orderCount + 1));
 	int oType = TR_ADDED;
@@ -241,43 +242,43 @@ fprintf(stdout, "digraph XXX {\n");
 fprintf(stdout, "  rankdir=LR\n");
 
 fprintf(stdout, "//===== Packages:\n");
-	pi = teInitIterator(ts);
-	while ((p = teNext(pi, oType)) != NULL) {
-fprintf(stdout, "//%5d%5d %s\n", teGetTree(p), teGetDepth(p), teGetN(p));
-	    q = teGetParent(p);
+	pi = rpmteiInit(ts);
+	while ((p = rpmteiNext(pi, oType)) != NULL) {
+fprintf(stdout, "//%5d%5d %s\n", rpmteTree(p), rpmteDepth(p), rpmteN(p));
+	    q = rpmteParent(p);
 	    if (q != NULL)
-fprintf(stdout, "  \"%s\" -> \"%s\"\n", teGetN(p), teGetN(q));
+fprintf(stdout, "  \"%s\" -> \"%s\"\n", rpmteN(p), rpmteN(q));
 	    else {
-fprintf(stdout, "  \"%s\"\n", teGetN(p));
-fprintf(stdout, "  { rank=max ; \"%s\" }\n", teGetN(p));
+fprintf(stdout, "  \"%s\"\n", rpmteN(p));
+fprintf(stdout, "  { rank=max ; \"%s\" }\n", rpmteN(p));
 	    }
 	}
-	pi = teFreeIterator(pi);
+	pi = rpmteiFree(pi);
 
 #ifdef	NOTNOW
 fprintf(stdout, "//===== Relations:\n");
-	pi = teInitIterator(ts);
-	while ((p = teNext(pi, oType)) != NULL) {
+	pi = rpmteiInit(ts);
+	while ((p = rpmteiNext(pi, oType)) != NULL) {
 	    int printed;
 
-	    if ((requires = teGetDS(p, RPMTAG_REQUIRENAME)) == NULL)
+	    if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) == NULL)
 		continue;
 
 	    memset(selected, 0, sizeof(*selected) * ts->orderCount);
-	    selected[teiGetOc(pi)] = 1;
+	    selected[rpmteiGetOc(pi)] = 1;
 	    printed = 0;
 
-	    requires = dsiInit(requires);
-	    while (dsiNext(requires) >= 0) {
+	    requires = rpmdsInit(requires);
+	    while (rpmdsNext(requires) >= 0) {
 		int_32 Flags;
 		const char * qName;
 		fnpyKey key;
 		alKey pkgKey;
 		int i;
 
-		Flags = dsiGetFlags(requires);
+		Flags = rpmdsFlags(requires);
 
-		switch (teGetType(p)) {
+		switch (rpmteType(p)) {
 		case TR_REMOVED:
 		    /* Skip if not %preun/%postun requires or legacy prereq. */
 		    if (isInstallPreReq(Flags)
@@ -300,7 +301,7 @@ fprintf(stdout, "//===== Relations:\n");
 		    /*@switchbreak@*/ break;
 		}
 
-		if ((qName = dsiGetN(requires)) == NULL)
+		if ((qName = rpmdsN(requires)) == NULL)
 		    continue;	/* XXX can't happen */
 		if (!strncmp(qName, "rpmlib(", sizeof("rpmlib(")-1))
 		    continue;
@@ -310,15 +311,15 @@ fprintf(stdout, "//===== Relations:\n");
 		if (pkgKey == RPMAL_NOMATCH)
 		    continue;
 
-		for (qi = teInitIterator(ts), i = 0;
-		     (q = teNextIterator(qi)) != NULL; i++)
+		for (qi = rpmteiInit(ts), i = 0;
+		     (q = rpmteiNext(qi, 0)) != NULL; i++)
 		{
-		    if (teGetType(q) == TR_REMOVED)
+		    if (rpmteType(q) == TR_REMOVED)
 			continue;
-		    if (pkgKey == teGetAddedKey(q))
+		    if (pkgKey == rpmteAddedKey(q))
 			break;
 		}
-		qi = teFreeIterator(qi);
+		qi = rpmteiFree(qi);
 
 		if (q == NULL || i == ts->orderCount)
 		    continue;
@@ -326,38 +327,38 @@ fprintf(stdout, "//===== Relations:\n");
 		    continue;
 		selected[i] = 1;
 
-		if (teGetTree(p) == teGetTree(q)) {
-		    int pdepth = teGetDepth(p);
-		    int qdepth = teGetDepth(q);
+		if (rpmteTree(p) == rpmteTree(q)) {
+		    int pdepth = rpmteDepth(p);
+		    int qdepth = rpmteDepth(q);
 
 #if 0
 		    if (pdepth == qdepth)
 			continue;
 		    if (pdepth < qdepth) {
 			if ((qdepth - pdepth) > 1)	continue;
-			if (!strcmp(teGetN(q), "glibc"))	continue;
-			if (!strcmp(teGetN(q), "bash"))	continue;
+			if (!strcmp(rpmteN(q), "glibc"))	continue;
+			if (!strcmp(rpmteN(q), "bash"))	continue;
 		    }
 #endif
 		    if (pdepth > qdepth) {
-			if (!strcmp(teGetN(q), "glibc"))	continue;
-			if (!strcmp(teGetN(q), "bash"))		continue;
-			if (!strcmp(teGetN(q), "info"))		continue;
-			if (!strcmp(teGetN(q), "mktemp"))	continue;
+			if (!strcmp(rpmteN(q), "glibc"))	continue;
+			if (!strcmp(rpmteN(q), "bash"))		continue;
+			if (!strcmp(rpmteN(q), "info"))		continue;
+			if (!strcmp(rpmteN(q), "mktemp"))	continue;
 		    }
 		}
 
 if (!printed) {
-fprintf(stdout, "// %s\n", teGetN(p));
+fprintf(stdout, "// %s\n", rpmteN(p));
 printed = 1;
 }
-fprintf(stdout, "//\t%s (0x%x)\n", dsDNEVR(identifyDepend(Flags), requires), Flags);
-fprintf(stdout, "\t\"%s\" -> \"%s\"\n", teGetN(p), teGetN(q));
+fprintf(stdout, "//\t%s (0x%x)\n", rpmdsNewDNEVR(identifyDepend(Flags), requires), Flags);
+fprintf(stdout, "\t\"%s\" -> \"%s\"\n", rpmteN(p), rpmteN(q));
 
 	    }
 
 	}
-	pi = teFreeIterator(pi);
+	pi = rpmteiFree(pi);
 #endif	/* NOTNOW */
 
 fprintf(stdout, "}\n");

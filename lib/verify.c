@@ -7,6 +7,7 @@
 
 #include <rpmio_internal.h>	/* XXX PGPHASHALGO and RPMDIGEST_NONE */
 #include <rpmlib.h>
+#include "rpmps.h"
 
 #include "psm.h"
 #include "rpmfi.h"
@@ -19,20 +20,20 @@
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
-/*@access rpmProblemSet @*/
+/*@access rpmps @*/
 /*@access rpmProblem @*/
 /*@access PSM_t @*/	/* XXX for %verifyscript through psmStage() */
 /*@access FD_t @*/	/* XXX compared with NULL */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
-int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
+int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 		rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
 {
-    unsigned short fmode = tfiGetFMode(fi);
-    rpmfileAttrs fileAttrs = tfiGetFFlags(fi);
-    rpmVerifyAttrs flags = tfiGetVFlags(fi);
-    const char * filespec = tfiGetFN(fi);
+    unsigned short fmode = rpmfiFMode(fi);
+    rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
+    rpmVerifyAttrs flags = rpmfiVFlags(fi);
+    const char * filespec = rpmfiFN(fi);
     const char * rootDir;
     int rc;
     struct stat sb;
@@ -62,7 +63,7 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
     /*
      * Check to see if the file was installed - if not pretend all is OK.
      */
-    switch (tfiGetFState(fi)) {
+    switch (rpmfiFState(fi)) {
     case RPMFILE_STATE_NETSHARED:
     case RPMFILE_STATE_REPLACED:
     case RPMFILE_STATE_NOTINSTALLED:
@@ -121,7 +122,7 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
 	if (rc)
 	    *result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	else {
-	    const unsigned char * md5 = tfiGetMD5(fi);
+	    const unsigned char * md5 = rpmfiMD5(fi);
 	    if (md5 == NULL || memcmp(md5sum, md5, sizeof(md5sum)))
 		*result |= RPMVERIFY_MD5;
 	}
@@ -134,7 +135,7 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
 	if ((size = Readlink(filespec, linkto, sizeof(linkto)-1)) == -1)
 	    *result |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
-	    const char * flink = tfiGetFLink(fi);
+	    const char * flink = rpmfiFLink(fi);
 	    linkto[size] = '\0';
 	    if (flink == NULL || strcmp(linkto, flink))
 		*result |= RPMVERIFY_LINKTO;
@@ -142,7 +143,7 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
     } 
 
     if (flags & RPMVERIFY_FILESIZE) {
-	if (sb.st_size != tfiGetFSize(fi))
+	if (sb.st_size != rpmfiFSize(fi))
 	    *result |= RPMVERIFY_FILESIZE;
     } 
 
@@ -174,26 +175,26 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
 	{
 	    *result |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
-	    if (sb.st_rdev != tfiGetFRdev(fi))
+	    if (sb.st_rdev != rpmfiFRdev(fi))
 		*result |= RPMVERIFY_RDEV;
 	} 
     }
 
     if (flags & RPMVERIFY_MTIME) {
-	if (sb.st_mtime != tfiGetFMtime(fi))
+	if (sb.st_mtime != rpmfiFMtime(fi))
 	    *result |= RPMVERIFY_MTIME;
     }
 
     if (flags & RPMVERIFY_USER) {
 	const char * name = uidToUname(sb.st_uid);
-	const char * fuser = tfiGetFUser(fi);
+	const char * fuser = rpmfiFUser(fi);
 	if (name == NULL || fuser == NULL || strcmp(name, fuser))
 	    *result |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
 	const char * name = uidToUname(sb.st_gid);
-	const char * fgroup = tfiGetFGroup(fi);
+	const char * fgroup = rpmfiFGroup(fi);
 	if (name == NULL || fgroup == NULL || strcmp(name, fgroup))
 	    *result |= RPMVERIFY_GROUP;
     }
@@ -210,8 +211,8 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
  * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
-static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
-		TFI_t fi, /*@null@*/ FD_t scriptFd)
+static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
+		rpmfi fi, /*@null@*/ FD_t scriptFd)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, fi, scriptFd, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -247,7 +248,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
  * @param fi		file info set
  * @return		0 no problems, 1 problems found
  */
-static int verifyHeader(QVA_t qva, const rpmTransactionSet ts, TFI_t fi)
+static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fi, fileSystem, internalState  @*/
 {
@@ -264,13 +265,13 @@ static int verifyHeader(QVA_t qva, const rpmTransactionSet ts, TFI_t fi)
     *te = '\0';
 
     fi = rpmfiLink(fi, "verifyHeader");
-    fi = tfiInit(fi, 0);
+    fi = rpmfiInit(fi, 0);
     if (fi != NULL)	/* XXX lclint */
-    while ((i = tfiNext(fi)) >= 0) {
+    while ((i = rpmfiNext(fi)) >= 0) {
 	rpmfileAttrs fileAttrs;
 	int rc;
 
-	fileAttrs = tfiGetFFlags(fi);
+	fileAttrs = rpmfiFFlags(fi);
 
 	/* If not verifying %ghost, skip ghost files. */
 	if (!(qva->qva_fflags & RPMFILE_GHOST)
@@ -280,7 +281,7 @@ static int verifyHeader(QVA_t qva, const rpmTransactionSet ts, TFI_t fi)
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
 	if (rc) {
 	    if (!(fileAttrs & RPMFILE_MISSINGOK) || rpmIsVerbose()) {
-		sprintf(te, _("missing    %s"), tfiGetFN(fi));
+		sprintf(te, _("missing    %s"), rpmfiFN(fi));
 		te += strlen(te);
 		ec = rc;
 	    }
@@ -321,7 +322,7 @@ static int verifyHeader(QVA_t qva, const rpmTransactionSet ts, TFI_t fi)
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
 			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
-			tfiGetFN(fi));
+			rpmfiFN(fi));
 	    te += strlen(te);
 	}
 
@@ -345,12 +346,12 @@ static int verifyHeader(QVA_t qva, const rpmTransactionSet ts, TFI_t fi)
  * @param h		header
  * @return		0 no problems, 1 problems found
  */
-static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
+static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 		Header h)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, h, fileSystem, internalState @*/
 {
-    rpmProblemSet ps;
+    rpmps ps;
     int rc = 0;		/* assume no problems */
     int xx;
     int i;
@@ -385,7 +386,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	    /* XXX FIXME: should probably supply the "[R|C] " type prefix */
 	    te = stpcpy(te, altNEVR+2);
 	}
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
 
 	if (te > t) {
 	    *te++ = '\n';
@@ -403,14 +404,14 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     return rc;
 }
 
-int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
+int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
     int scareMem = 1;	/* XXX only rpmVerifyScript needs now */
-    TFI_t fi;
+    rpmfi fi;
     int ec = 0;
     int rc;
 
-    fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
     if (fi != NULL) {
 
 	if (qva->qva_flags & VERIFY_DEPS) {
@@ -431,13 +432,13 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 		rc = Fclose(fdo);
 	}
 
-	fi = fiFree(fi, 1);
+	fi = rpmfiFree(fi, 1);
     }
 
     return ec;
 }
 
-int rpmcliVerify(rpmTransactionSet ts, QVA_t qva, const char ** argv)
+int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 {
     const char * arg;
     int vsflags;

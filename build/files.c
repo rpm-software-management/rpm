@@ -25,7 +25,7 @@
 #include "debug.h"
 
 /*@access Header @*/
-/*@access TFI_t @*/
+/*@access rpmfi @*/
 /*@access FD_t @*/
 /*@access StringBuf @*/		/* compared with NULL */
 
@@ -1097,7 +1097,7 @@ static int checkHardLinks(FileList fl)
  * @param isSrc
  */
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
-		TFI_t * cpioList, Header h, int isSrc)
+		rpmfi * cpioList, Header h, int isSrc)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
 	/*@modifies h, *cpioList, fl->processingFailed, fl->fileList,
@@ -1331,15 +1331,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
 
-  { TFI_t fi = xcalloc(1, sizeof(*fi));
+  { rpmfi fi = xcalloc(1, sizeof(*fi));
     int scareMem = 1;
     char * a, * d;
 
-    /* XXX FIXME drill rpmTransactionSet ts all the way down here */
+    /* XXX FIXME drill rpmts ts all the way down here */
 /*@i@*/ fi->te = xcalloc(1, sizeof(*fi->te));
 /*@i@*/ fi->te->type = TR_ADDED;
 
-    fi = fiNew(NULL, fi, h, RPMTAG_BASENAMES, scareMem);
+    fi = rpmfiNew(NULL, fi, h, RPMTAG_BASENAMES, scareMem);
     if (fi == NULL) return;		/* XXX can't happen */
 
     fi->dnl = _free(fi->dnl);
@@ -2006,7 +2006,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	(void) rpmlibNeedsFeature(pkg->header,
 			"PartialHardlinkSets", "4.0.4-1");
 
-    genCpioListAndHeader(&fl, (TFI_t *)&pkg->cpioList, pkg->header, 0);
+    genCpioListAndHeader(&fl, (rpmfi *)&pkg->cpioList, pkg->header, 0);
 
     if (spec->timeCheck)
 	timeCheck(spec->timeCheck, pkg->header);
@@ -2222,7 +2222,7 @@ int processSourceFiles(Spec spec)
 
     if (! fl.processingFailed) {
 	if (spec->sourceHeader != NULL)
-	    genCpioListAndHeader(&fl, (TFI_t *)&spec->sourceCpioList,
+	    genCpioListAndHeader(&fl, (rpmfi *)&spec->sourceCpioList,
 			spec->sourceHeader, 1);
     }
 
@@ -2430,13 +2430,13 @@ DepMsg_t depMsgs[] = {
 
 /**
  */
-static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
+static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies cpioList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    TFI_t fi = cpioList;
+    rpmfi fi = cpioList;
     StringBuf writeBuf;
     int writeBytes;
     StringBuf readBuf;

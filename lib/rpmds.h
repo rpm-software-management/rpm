@@ -9,7 +9,7 @@
 /**
  * A package dependency set.
  */
-struct rpmDepSet_s {
+struct rpmds_s {
     int i;			/*!< Element index. */
 
 /*@observer@*/
@@ -43,14 +43,14 @@ extern "C" {
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
-rpmDepSet rpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
+rpmds rpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
 		/*@null@*/ const char * msg)
 	/*@modifies ds @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@-exportlocal@*/
 /*@null@*/
-rpmDepSet XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
+rpmds XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
 		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies ds @*/;
 /*@=exportlocal@*/
@@ -63,11 +63,11 @@ rpmDepSet XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
  * @return		new dependency set reference
  */
 /*@unused@*/
-rpmDepSet rpmdsLink (/*@null@*/ rpmDepSet ds, /*@null@*/ const char * msg)
+rpmds rpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg)
 	/*@modifies ds @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-rpmDepSet XrpmdsLink (/*@null@*/ rpmDepSet ds, /*@null@*/ const char * msg,
+rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies ds @*/;
 #define	rpmdsLink(_ds, _msg)	XrpmdsLink(_ds, _msg, __FILE__, __LINE__)
@@ -78,7 +78,7 @@ rpmDepSet XrpmdsLink (/*@null@*/ rpmDepSet ds, /*@null@*/ const char * msg,
  * @return		NULL always
  */
 /*@null@*/
-rpmDepSet dsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds)
+rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
 	/*@modifies ds@*/;
 /**
  * Create and load a dependency set.
@@ -88,7 +88,7 @@ rpmDepSet dsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds)
  * @return		new dependency set
  */
 /*@null@*/
-rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
+rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 	/*@modifies h @*/;
 
 /**
@@ -98,7 +98,7 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
  * @return		new formatted dependency (malloc'ed)
  */
 /*@only@*/
-char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
+char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 	/*@*/;
 
 /**
@@ -109,7 +109,7 @@ char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
  * @return		new dependency set
  */
 /*@null@*/
-rpmDepSet dsThis(Header h, rpmTag tagN, int_32 Flags)
+rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 	/*@*/;
 
 /**
@@ -121,7 +121,7 @@ rpmDepSet dsThis(Header h, rpmTag tagN, int_32 Flags)
  * @return		new dependency set
  */
 /*@null@*/
-rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
 	/*@*/;
 
 /**
@@ -129,7 +129,7 @@ rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
  * @param ds		dependency set
  * @return		current count
  */
-int dsiGetCount(/*@null@*/ const rpmDepSet ds)
+int rpmdsCount(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -137,7 +137,7 @@ int dsiGetCount(/*@null@*/ const rpmDepSet ds)
  * @param ds		dependency set
  * @return		current index
  */
-int dsiGetIx(/*@null@*/ const rpmDepSet ds)
+int rpmdsIx(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -146,7 +146,7 @@ int dsiGetIx(/*@null@*/ const rpmDepSet ds)
  * @param ix		new index
  * @return		current index
  */
-int dsiSetIx(/*@null@*/ rpmDepSet ds, int ix)
+int rpmdsSetIx(/*@null@*/ rpmds ds, int ix)
 	/*@modifies ds @*/;
 
 /**
@@ -155,7 +155,7 @@ int dsiSetIx(/*@null@*/ rpmDepSet ds, int ix)
  * @return		current dependency DNEVR, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * dsiGetDNEVR(/*@null@*/ const rpmDepSet ds)
+const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -164,7 +164,7 @@ const char * dsiGetDNEVR(/*@null@*/ const rpmDepSet ds)
  * @return		current dependency name, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * dsiGetN(/*@null@*/ const rpmDepSet ds)
+const char * rpmdsN(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -173,7 +173,7 @@ const char * dsiGetN(/*@null@*/ const rpmDepSet ds)
  * @return		current dependency EVR, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * dsiGetEVR(/*@null@*/ const rpmDepSet ds)
+const char * rpmdsEVR(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -181,7 +181,7 @@ const char * dsiGetEVR(/*@null@*/ const rpmDepSet ds)
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
  */
-int_32 dsiGetFlags(/*@null@*/ const rpmDepSet ds)
+int_32 rpmdsFlags(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -189,7 +189,7 @@ int_32 dsiGetFlags(/*@null@*/ const rpmDepSet ds)
  * @param ds		dependency set
  * @return		current dependency type, 0 on invalid
  */
-rpmTag dsiGetTagN(/*@null@*/ const rpmDepSet ds)
+rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -199,7 +199,7 @@ rpmTag dsiGetTagN(/*@null@*/ const rpmDepSet ds)
  * @param rc		0 == YES, otherwise NO
  */
 /*@-globuse@*/ /* FIX: rpmMessage annotation is a lie */
-void dsiNotify(/*@null@*/ rpmDepSet ds, /*@null@*/ const char * where, int rc)
+void rpmdsNotify(/*@null@*/ rpmds ds, /*@null@*/ const char * where, int rc)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=globuse@*/
@@ -209,7 +209,7 @@ void dsiNotify(/*@null@*/ rpmDepSet ds, /*@null@*/ const char * where, int rc)
  * @param ds		dependency set
  * @return		dependency set iterator index, -1 on termination
  */
-int dsiNext(/*@null@*/ rpmDepSet ds)
+int rpmdsNext(/*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
 
 /**
@@ -218,7 +218,7 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
  * @return		dependency set
  */
 /*@null@*/
-rpmDepSet dsiInit(/*@null@*/ rpmDepSet ds)
+rpmds rpmdsInit(/*@null@*/ rpmds ds)
 	/*@modifies ds @*/;
 
 /**
@@ -227,23 +227,26 @@ rpmDepSet dsiInit(/*@null@*/ rpmDepSet ds)
  * @param B		2nd dependency
  * @return		1 if dependencies overlap, 0 otherwise
  */
-int dsCompare(const rpmDepSet A, const rpmDepSet B)
+int rpmdsCompare(const rpmds A, const rpmds B)
 	/*@*/;
 
 /**
  * Report a Requires: or Conflicts: dependency problem.
+ * @param ps		transaction set problems
+ * @param pkgNEVR	package name/epoch/version/release
+ * @param ds		dependency set
+ * @param suggestedKeys
  */
-void dsProblem(/*@null@*/ rpmProblemSet tsprobs,
-		const char * pkgNEVR, const rpmDepSet ds,
+void rpmdsProblem(/*@null@*/ rpmps ps, const char * pkgNEVR, const rpmds ds,
 		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys)
-	/*@modifies tsprobs @*/;
+	/*@modifies ps @*/;
 
 /**
  * Compare package provides dependencies from header with a single dependency.
  * @param h		header
  * @param req		dependency set
  */
-int rangeMatchesDepFlags (Header h, const rpmDepSet req)
+int rangeMatchesDepFlags (Header h, const rpmds req)
         /*@modifies h @*/;
 
 /**
@@ -253,7 +256,7 @@ int rangeMatchesDepFlags (Header h, const rpmDepSet req)
  * @param req		dependency
  * @return		1 if dependency overlaps, 0 otherwise
  */
-int headerMatchesDepFlags(const Header h, const rpmDepSet req)
+int headerMatchesDepFlags(const Header h, const rpmds req)
 	/*@*/;
 
 #ifdef __cplusplus

@@ -34,7 +34,6 @@ lib/misc.c
 lib/package.c
 lib/poptI.c
 lib/poptQV.c
-lib/problems.c
 lib/psm.c
 lib/query.c
 lib/rpmal.c
@@ -42,6 +41,7 @@ lib/rpmchecksig.c
 lib/rpmds.c
 lib/rpminstall.c
 lib/rpmlead.c
+lib/rpmps.c
 lib/rpmrc.c
 lib/rpmte.c
 lib/rpmts.c

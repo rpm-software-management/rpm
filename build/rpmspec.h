@@ -129,7 +129,7 @@ struct SpecStruct {
 
 /*@refcounted@*/
     Header sourceHeader;
-    TFI_t sourceCpioList;
+    rpmfi sourceCpioList;
 
 /*@dependent@*/ /*@null@*/ MacroContext macros;
 
@@ -147,7 +147,7 @@ struct SpecStruct {
 struct PackageStruct {
 /*@refcounted@*/
     Header header;
-    TFI_t cpioList;
+    rpmfi cpioList;
 
 /*@owned@*/ struct Source * icon;
 

@@ -40,7 +40,7 @@ static int indent = 2;
 
 typedef struct Item_s {
     const char * path;
-    rpmDepSet this;
+    rpmds this;
     Header h;
 } * Item;
 
@@ -50,7 +50,7 @@ static int nitems = 0;
 static inline Item freeItem(Item item) {
     if (item != NULL) {
 	item->path = _free(item->path);
-	item->this = dsFree(item->this);
+	item->this = rpmdsFree(item->this);
 	item->h = headerFree(item->h, NULL);
 	item = _free(item);
     }
@@ -65,7 +65,7 @@ static inline Item newItem(void) {
 static int cmpItem(const void * a, const void * b) {
     Item aitem = *(Item *)a;
     Item bitem = *(Item *)b;
-    int rc = strcmp(dsiGetN(aitem->this), dsiGetN(bitem->this));
+    int rc = strcmp(rpmdsN(aitem->this), rpmdsN(bitem->this));
     return rc;
 }
 
@@ -83,10 +83,10 @@ static void ftsPrintPaths(FILE * fp) {
 	fprintf(fp, "%s\n", items[i]->path);
 }
 
-static int ftsStashLatest(FTSENT * fts, rpmTransactionSet ts)
+static int ftsStashLatest(FTSENT * fts, rpmts ts)
 {
     Header h = NULL;
-    rpmDepSet add;
+    rpmds add;
     int ec = -1;	/* assume not found */
     int i = 0;
 
@@ -108,7 +108,7 @@ static int ftsStashLatest(FTSENT * fts, rpmTransactionSet ts)
 	    return ec;	/* XXX -1 */
     }
 
-    add = dsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
+    add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
 
     if (items != NULL && nitems > 0) {
 	Item needle = memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
@@ -126,7 +126,7 @@ static int ftsStashLatest(FTSENT * fts, rpmTransactionSet ts)
 	/* Check that all saved items are newer than this item. */
 	if (found != NULL)
 	while (found < (items + nitems) && cmpItem(found, fneedle) == 0) {
-	    ec = dsCompare(needle->this, (*found)->this);
+	    ec = rpmdsCompare(needle->this, (*found)->this);
 	    if (ec == 0) {
 		found++;
 		continue;
@@ -153,7 +153,7 @@ static int ftsStashLatest(FTSENT * fts, rpmTransactionSet ts)
 
     items[i] = newItem();
     items[i]->path = xstrdup(fts->fts_path);
-    items[i]->this = dsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+    items[i]->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     items[i]->h = headerLink(h, NULL);
 
     if (nitems > 1)
@@ -167,7 +167,7 @@ static int ftsStashLatest(FTSENT * fts, rpmTransactionSet ts)
 
 exit:
     h = headerFree(h, NULL);
-    add = dsFree(add);
+    add = rpmdsFree(add);
     return ec;
 }
 
@@ -195,7 +195,7 @@ static const char * ftsInfoStr(int fts_info) {
     return ftsInfoStrings[ fts_info ];
 }
 
-static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
+static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmts ts)
 {
     struct ftsglob_s * bhg;
     const char ** patterns;
@@ -419,7 +419,7 @@ main(int argc, const char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     const char * rootDir = "";
-    rpmTransactionSet ts = NULL;
+    rpmts ts = NULL;
     FTS * ftsp;
     FTSENT * fts;
     const char ** av;

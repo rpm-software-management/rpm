@@ -19,6 +19,7 @@
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
 #include "rpmdb.h"
+#include "rpmps.h"
 #include "rpmts.h"	/* XXX for ts->rpmdb */
 
 #include "legacy.h"
@@ -159,7 +160,7 @@ typedef struct rpmtsObject_s rpmtsObject;
 struct rpmtsObject_s {
     PyObject_HEAD;
     rpmdbObject * dbo;
-    rpmTransactionSet ts;
+    rpmts ts;
     PyObject * keyList;			/* keeps reference counts correct */
     FD_t scriptFd;
 } ;
@@ -235,7 +236,7 @@ static PyObject * py_rpmtsRemove(rpmtsObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject * py_rpmtsDepCheck(rpmtsObject * s, PyObject * args) {
-    rpmProblemSet ps;
+    rpmps ps;
     rpmProblem p;
     PyObject * list, * cf;
     int i;
@@ -306,7 +307,7 @@ static PyObject * py_rpmtsDepCheck(rpmtsObject * s, PyObject * args) {
 	    Py_DECREF(cf);
 	}
 
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
 
 	return list;
     }
@@ -420,7 +421,7 @@ static PyObject * py_rpmtsRun(rpmtsObject * s, PyObject * args)
     int flags, ignoreSet;
     int rc, i;
     PyObject * list;
-    rpmProblemSet ps;
+    rpmps ps;
     struct tsCallbackType cbInfo;
 
     if (!PyArg_ParseTuple(args, "iiOO", &flags, &ignoreSet, &cbInfo.cb,
@@ -436,7 +437,7 @@ static PyObject * py_rpmtsRun(rpmtsObject * s, PyObject * args)
     ps = rpmtsGetProblems(s->ts);
 
     if (cbInfo.pythonError) {
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
 	return NULL;
     }
 
@@ -459,7 +460,7 @@ static PyObject * py_rpmtsRun(rpmtsObject * s, PyObject * args)
 	Py_DECREF(prob);
     }
 
-    ps = rpmProblemSetFree(ps);
+    ps = rpmpsFree(ps);
 
     return list;
 }
@@ -837,7 +838,7 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
     int rc = 255;
 
     if (PyArg_ParseTuple(args, "si", &filename, &flags)) {
-	rpmTransactionSet ts;
+	rpmts ts;
 	const char * av[2];
 	QVA_t ka = memset(alloca(sizeof(*ka)), 0, sizeof(*ka));
 

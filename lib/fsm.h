@@ -107,8 +107,8 @@ struct hardLink_s {
  * Iterator across package file info, forward on install, backward on erase.
  */
 struct fsmIterator_s {
-    rpmTransactionSet ts;	/*!< transaction set. */
-    TFI_t fi;			/*!< transaction element file info. */
+    rpmts ts;			/*!< transaction set. */
+    rpmfi fi;			/*!< transaction element file info. */
     int reverse;		/*!< reversed traversal? */
     int isave;			/*!< last returned iterator index. */
     int i;			/*!< iterator index. */
@@ -239,8 +239,8 @@ extern "C" {
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
-		const rpmTransactionSet ts,
-		const TFI_t fi,
+		const rpmts ts,
+		const rpmfi fi,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
@@ -262,7 +262,7 @@ int fsmTeardown(FSM_t fsm)
  * @param fsm		file state machine data
  * @return		transaction set
  */
-rpmTransactionSet fsmGetTs(const FSM_t fsm)
+rpmts fsmGetTs(const FSM_t fsm)
 	/*@*/;
 
 /**
@@ -270,7 +270,7 @@ rpmTransactionSet fsmGetTs(const FSM_t fsm)
  * @param fsm		file state machine data
  * @return		transaction element file info
  */
-TFI_t fsmGetFi(/*@partial@*/ const FSM_t fsm)
+rpmfi fsmGetFi(/*@partial@*/ const FSM_t fsm)
 	/*@*/;
 
 /**

@@ -3,15 +3,15 @@
 
 /** \ingroup rpmdep rpmtrans
  * \file lib/rpmte.h
- * Structures used for a transactionElement.
+ * Structures used for an "rpmte" transaction element.
  */
 
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 
-typedef /*@abstract@*/ struct teIterator_s *		teIterator;
+typedef /*@abstract@*/ struct rpmtei_s *		rpmtei;
 
-/*@unchecked@*/
 /*@-exportlocal@*/
+/*@unchecked@*/
 extern int _te_debug;
 /*@=exportlocal@*/
 
@@ -23,14 +23,14 @@ struct tsortInfo_s {
     union {
 	int	count;
 	/*@exposed@*/ /*@dependent@*/ /*@null@*/
-	transactionElement suc;
+	rpmte	suc;
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
 /*@owned@*/ /*@null@*/
     struct tsortInfo_s * tsi_next;
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
-    transactionElement tsi_chain;
+    rpmte tsi_chain;
     int		tsi_reqx;
     int		tsi_qcnt;
 };
@@ -46,7 +46,7 @@ typedef enum rpmTransactionType_e {
 /** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.
  */
-struct transactionElement_s {
+struct rpmte_s {
     rpmTransactionType type;	/*!< Package disposition (installed/removed). */
 
 /*@refcounted@*/ /*@null@*/
@@ -66,7 +66,7 @@ struct transactionElement_s {
 /*@only@*/ /*@null@*/
     const char * os;		/*!< Operating system hint. */
 
-    transactionElement parent;	/*!< Parent transaction element. */
+    rpmte parent;		/*!< Parent transaction element. */
     int degree;			/*!< No. of immediate children. */
     int depth;			/*!< Max. depth in dependency tree. */
     int npreds;			/*!< No. of predecessors. */
@@ -75,17 +75,17 @@ struct transactionElement_s {
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
 /*@refcounted@*/ /*@null@*/
-    rpmDepSet this;		/*!< This package's provided NEVR. */
+    rpmds this;			/*!< This package's provided NEVR. */
 /*@refcounted@*/ /*@null@*/
-    rpmDepSet provides;		/*!< Provides: dependencies. */
+    rpmds provides;		/*!< Provides: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    rpmDepSet requires;		/*!< Requires: dependencies. */
+    rpmds requires;		/*!< Requires: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    rpmDepSet conflicts;	/*!< Conflicts: dependencies. */
+    rpmds conflicts;		/*!< Conflicts: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    rpmDepSet obsoletes;	/*!< Obsoletes: dependencies. */
+    rpmds obsoletes;		/*!< Obsoletes: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    TFI_t fi;			/*!< File information. */
+    rpmfi fi;			/*!< File information. */
 
     uint_32 multiLib;		/*!< (TR_ADDED) MULTILIB */
 
@@ -113,12 +113,12 @@ struct transactionElement_s {
 /**
  * Iterator across transaction elements, forward on install, backward on erase.
  */
-struct teIterator_s {
+struct rpmtei_s {
 /*@refcounted@*/
-    rpmTransactionSet ts;	/*!< transaction set. */
-    int reverse;		/*!< reversed traversal? */
-    int ocsave;			/*!< last returned iterator index. */
-    int oc;			/*!< iterator index. */
+    rpmts ts;		/*!< transaction set. */
+    int reverse;	/*!< reversed traversal? */
+    int ocsave;		/*!< last returned iterator index. */
+    int oc;		/*!< iterator index. */
 };
 
 #ifdef __cplusplus
@@ -131,8 +131,9 @@ extern "C" {
  * @return		NULL always
  */
 /*@null@*/
-transactionElement teFree(/*@only@*/ /*@null@*/ transactionElement te)
+rpmte rpmteFree(/*@only@*/ /*@null@*/ rpmte te)
 	/*@modifies te@*/;
+
 /**
  * Create a transaction element.
  * @param ts		transaction set
@@ -145,8 +146,7 @@ transactionElement teFree(/*@only@*/ /*@null@*/ transactionElement te)
  * @return		new transaction element
  */
 /*@only@*/ /*@null@*/
-transactionElement teNew(const rpmTransactionSet ts, Header h,
-		rpmTransactionType type,
+rpmte rpmteNew(const rpmts ts, Header h, rpmTransactionType type,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs,
 		int dboffset,
@@ -158,7 +158,7 @@ transactionElement teNew(const rpmTransactionSet ts, Header h,
  * @param te		transaction element
  * @return		type
  */
-rpmTransactionType teGetType(transactionElement te)
+rpmTransactionType rpmteType(rpmte te)
 	/*@*/;
 
 /**
@@ -167,7 +167,7 @@ rpmTransactionType teGetType(transactionElement te)
  * @return		name string
  */
 /*@observer@*/
-const char * teGetN(transactionElement te)
+const char * rpmteN(rpmte te)
 	/*@*/;
 
 /**
@@ -176,7 +176,7 @@ const char * teGetN(transactionElement te)
  * @return		epoch string
  */
 /*@observer@*/ /*@null@*/
-const char * teGetE(transactionElement te)
+const char * rpmteE(rpmte te)
 	/*@*/;
 
 /**
@@ -185,7 +185,7 @@ const char * teGetE(transactionElement te)
  * @return		version string
  */
 /*@observer@*/ /*@null@*/
-const char * teGetV(transactionElement te)
+const char * rpmteV(rpmte te)
 	/*@*/;
 
 /**
@@ -194,7 +194,7 @@ const char * teGetV(transactionElement te)
  * @return		release string
  */
 /*@observer@*/ /*@null@*/
-const char * teGetR(transactionElement te)
+const char * rpmteR(rpmte te)
 	/*@*/;
 
 /**
@@ -203,7 +203,7 @@ const char * teGetR(transactionElement te)
  * @return		arch string
  */
 /*@observer@*/ /*@null@*/
-const char * teGetA(transactionElement te)
+const char * rpmteA(rpmte te)
 	/*@*/;
 
 /**
@@ -212,7 +212,7 @@ const char * teGetA(transactionElement te)
  * @return		os string
  */
 /*@observer@*/ /*@null@*/
-const char * teGetO(transactionElement te)
+const char * rpmteO(rpmte te)
 	/*@*/;
 
 /**
@@ -220,7 +220,7 @@ const char * teGetO(transactionElement te)
  * @param te		transaction element
  * @return		multilib flags
  */
-int teGetMultiLib(transactionElement te)
+int rpmteMultiLib(rpmte te)
 	/*@*/;
 
 /**
@@ -229,7 +229,7 @@ int teGetMultiLib(transactionElement te)
  * @param nmultiLib	new multilib flags
  * @return		previous multilib flags
  */
-int teSetMultiLib(transactionElement te, int nmultiLib)
+int rpmteSetMultiLib(rpmte te, int nmultiLib)
 	/*@modifies te @*/;
 
 /**
@@ -237,7 +237,7 @@ int teSetMultiLib(transactionElement te, int nmultiLib)
  * @param te		transaction element
  * @return		depth
  */
-int teGetDepth(transactionElement te)
+int rpmteDepth(rpmte te)
 	/*@*/;
 
 /**
@@ -246,7 +246,7 @@ int teGetDepth(transactionElement te)
  * @param ndepth	new depth
  * @return		previous depth
  */
-int teSetDepth(transactionElement te, int ndepth)
+int rpmteSetDepth(rpmte te, int ndepth)
 	/*@modifies te @*/;
 
 /**
@@ -254,7 +254,7 @@ int teSetDepth(transactionElement te, int ndepth)
  * @param te		transaction element
  * @return		no. of predecessors
  */
-int teGetNpreds(transactionElement te)
+int rpmteNpreds(rpmte te)
 	/*@*/;
 
 /**
@@ -263,7 +263,7 @@ int teGetNpreds(transactionElement te)
  * @param npreds	new no. of predecessors
  * @return		previous no. of predecessors
  */
-int teSetNpreds(transactionElement te, int npreds)
+int rpmteSetNpreds(rpmte te, int npreds)
 	/*@modifies te @*/;
 
 /**
@@ -271,7 +271,7 @@ int teSetNpreds(transactionElement te, int npreds)
  * @param te		transaction element
  * @return		tree index
  */
-int teGetTree(transactionElement te)
+int rpmteTree(rpmte te)
 	/*@*/;
 
 /**
@@ -280,7 +280,7 @@ int teGetTree(transactionElement te)
  * @param ntree		new tree index
  * @return		previous tree index
  */
-int teSetTree(transactionElement te, int ntree)
+int rpmteSetTree(rpmte te, int ntree)
 	/*@modifies te @*/;
 
 /**
@@ -289,7 +289,7 @@ int teSetTree(transactionElement te, int ntree)
  * @return		parent transaction element
  */
 /*@observer@*/ /*@unused@*/
-transactionElement teGetParent(transactionElement te)
+rpmte rpmteParent(rpmte te)
 	/*@*/;
 
 /**
@@ -298,7 +298,7 @@ transactionElement teGetParent(transactionElement te)
  * @param pte		new parent transaction element
  * @return		previous parent transaction element
  */
-transactionElement teSetParent(transactionElement te, transactionElement pte)
+rpmte rpmteSetParent(rpmte te, rpmte pte)
 	/*@modifies te @*/;
 
 /**
@@ -306,7 +306,7 @@ transactionElement teSetParent(transactionElement te, transactionElement pte)
  * @param te		transaction element
  * @return		tree index
  */
-int teGetDegree(transactionElement te)
+int rpmteDegree(rpmte te)
 	/*@*/;
 
 /**
@@ -315,7 +315,7 @@ int teGetDegree(transactionElement te)
  * @param ndegree	new number of children
  * @return		previous number of children
  */
-int teSetDegree(transactionElement te, int ndegree)
+int rpmteSetDegree(rpmte te, int ndegree)
 	/*@modifies te @*/;
 
 /**
@@ -323,21 +323,21 @@ int teSetDegree(transactionElement te, int ndegree)
  * @param te		transaction element
  * @return		tsort info
  */
-tsortInfo teGetTSI(transactionElement te)
+tsortInfo rpmteTSI(rpmte te)
 	/*@*/;
 
 /**
  * Destroy tsort info of transaction element.
  * @param te		transaction element
  */
-void teFreeTSI(transactionElement te)
+void rpmteFreeTSI(rpmte te)
 	/*@modifies te @*/;
 
 /**
  * Initialize tsort info of transaction element.
  * @param te		transaction element
  */
-void teNewTSI(transactionElement te)
+void rpmteNewTSI(rpmte te)
 	/*@modifies te @*/;
 
 /**
@@ -345,7 +345,7 @@ void teNewTSI(transactionElement te)
  * @param te		transaction element
  */
 /*@unused@*/
-void teCleanDS(transactionElement te)
+void rpmteCleanDS(rpmte te)
 	/*@modifies te @*/;
 
 /**
@@ -354,7 +354,7 @@ void teCleanDS(transactionElement te)
  * @return		pkgKey
  */
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
-alKey teGetAddedKey(transactionElement te)
+alKey rpmteAddedKey(rpmte te)
 	/*@*/;
 
 /**
@@ -364,7 +364,7 @@ alKey teGetAddedKey(transactionElement te)
  * @return		previous pkgKey
  */
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
-alKey teSetAddedKey(transactionElement te,
+alKey rpmteSetAddedKey(rpmte te,
 		/*@exposed@*/ /*@dependent@*/ /*@null@*/ alKey npkgKey)
 	/*@modifies te @*/;
 
@@ -374,7 +374,7 @@ alKey teSetAddedKey(transactionElement te,
  * @return		dependent pkgKey
  */
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
-alKey teGetDependsOnKey(transactionElement te)
+alKey rpmteDependsOnKey(rpmte te)
 	/*@*/;
 
 /**
@@ -382,7 +382,7 @@ alKey teGetDependsOnKey(transactionElement te)
  * @param te		transaction element
  * @return		rpmdb instance
  */
-int teGetDBOffset(transactionElement te)
+int rpmteDBOffset(rpmte te)
 	/*@*/;
 
 /**
@@ -391,7 +391,7 @@ int teGetDBOffset(transactionElement te)
  * @return		name-version-release string
  */
 /*@observer@*/
-const char * teGetNEVR(transactionElement te)
+const char * rpmteNEVR(rpmte te)
 	/*@*/;
 
 /**
@@ -399,7 +399,7 @@ const char * teGetNEVR(transactionElement te)
  * @param te		transaction element
  * @return		file handle
  */
-FD_t teGetFd(transactionElement te)
+FD_t rpmteFd(rpmte te)
 	/*@*/;
 
 /**
@@ -408,7 +408,7 @@ FD_t teGetFd(transactionElement te)
  * @return		key
  */
 /*@exposed@*/
-fnpyKey teGetKey(transactionElement te)
+fnpyKey rpmteKey(rpmte te)
 	/*@*/;
 
 /**
@@ -417,7 +417,7 @@ fnpyKey teGetKey(transactionElement te)
  * @param tag		dependency tag
  * @return		dependency tag set
  */
-rpmDepSet teGetDS(transactionElement te, rpmTag tag)
+rpmds rpmteDS(rpmte te, rpmTag tag)
 	/*@*/;
 
 /**
@@ -426,7 +426,7 @@ rpmDepSet teGetDS(transactionElement te, rpmTag tag)
  * @param tag		file info tag
  * @return		file info tag set
  */
-TFI_t teGetFI(transactionElement te, rpmTag tag)
+rpmfi rpmteFI(rpmte te, rpmTag tag)
 	/*@*/;
 
 /**
@@ -434,7 +434,7 @@ TFI_t teGetFI(transactionElement te, rpmTag tag)
  * @param tei		transaction element iterator
  * @return		transaction element index
  */
-int teiGetOc(teIterator tei)
+int rpmteiGetOc(rpmtei tei)
 	/*@*/;
 
 /**
@@ -443,7 +443,7 @@ int teiGetOc(teIterator tei)
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
-teIterator teFreeIterator(/*@only@*//*@null@*/ teIterator tei)
+rpmtei rpmteiFree(/*@only@*//*@null@*/ rpmtei tei)
 	/*@*/;
 
 /**
@@ -454,10 +454,10 @@ teIterator teFreeIterator(/*@only@*//*@null@*/ teIterator tei)
  * @return		NULL always
  */
 /*@null@*/
-teIterator XteFreeIterator(/*@only@*//*@null@*/ teIterator tei,
+rpmtei XrpmteiFree(/*@only@*//*@null@*/ rpmtei tei,
 		const char * fn, unsigned int ln)
 	/*@*/;
-#define	teFreeIterator(_tei)	XteFreeIterator(_tei, __FILE__, __LINE__)
+#define	rpmteiFree(_tei)	XrpmteiFree(_tei, __FILE__, __LINE__)
 
 /**
  * Create transaction element iterator.
@@ -465,7 +465,7 @@ teIterator XteFreeIterator(/*@only@*//*@null@*/ teIterator tei,
  * @return		transaction element iterator
  */
 /*@unused@*/ /*@only@*/
-teIterator teInitIterator(rpmTransactionSet ts)
+rpmtei rpmteiInit(rpmts ts)
 	/*@modifies ts @*/;
 
 /**
@@ -476,28 +476,19 @@ teIterator teInitIterator(rpmTransactionSet ts)
  * @return		transaction element iterator
  */
 /*@unused@*/ /*@only@*/
-teIterator XteInitIterator(rpmTransactionSet ts,
+rpmtei XrpmteiInit(rpmts ts,
 		const char * fn, unsigned int ln)
 	/*@modifies ts @*/;
-#define	teInitIterator(_ts)	XteInitIterator(_ts, __FILE__, __LINE__)
-
-/**
- * Return next transaction element
- * @param tei		transaction element iterator
- * @return		transaction element, NULL on termination
- */
-/*@dependent@*/ /*@null@*/
-transactionElement teNextIterator(teIterator tei)
-	/*@modifies tei @*/;
+#define	rpmteiInit(_ts)		XrpmteiInit(_ts, __FILE__, __LINE__)
 
 /**
  * Return next transaction element of type.
  * @param tei		transaction element iterator
- * @param type		transaction element type selector
+ * @param type		transaction element type selector (0 for any)
  * @return		next transaction element of type, NULL on termination
  */
 /*@dependent@*/ /*@null@*/
-transactionElement teNext(teIterator tei, rpmTransactionType type)
+rpmte rpmteiNext(rpmtei tei, rpmTransactionType type)
         /*@modifies tei @*/;
 
 #ifdef __cplusplus

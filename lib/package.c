@@ -9,6 +9,7 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
+#include "rpmps.h"
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
@@ -20,7 +21,7 @@
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
-/*@access rpmTransactionSet@*/
+/*@access rpmts @*/
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX stealing digests */
 
@@ -142,7 +143,7 @@ static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
-int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
+int rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, Header * hdrp)
 {
     byte buf[8*BUFSIZ];

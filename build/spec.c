@@ -18,7 +18,7 @@ extern int specedit;
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
 /*@access Header @*/	/* compared with NULL */
-/*@access TFI_t @*/	/* compared with NULL */
+/*@access rpmfi @*/	/* compared with NULL */
 
 /**
  * @param p		trigger entry chain
@@ -163,9 +163,9 @@ Package freePackage(Package pkg)
     pkg->fileList = freeStringBuf(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList) {
-	TFI_t fi = pkg->cpioList;
+	rpmfi fi = pkg->cpioList;
 	pkg->cpioList = NULL;
-	fi = fiFree(fi, 1);
+	fi = rpmfiFree(fi, 1);
 #ifdef	DYING
 	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
 	fi = _free(fi);
@@ -513,9 +513,9 @@ Spec freeSpec(Spec spec)
     spec->sourceHeader = headerFree(spec->sourceHeader, "spec->sourceHeader");
 
     if (spec->sourceCpioList) {
-	TFI_t fi = spec->sourceCpioList;
+	rpmfi fi = spec->sourceCpioList;
 	spec->sourceCpioList = NULL;
-	fi = fiFree(fi, 1);
+	fi = rpmfiFree(fi, 1);
 #ifdef	DYING
 	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
 	fi = _free(fi);

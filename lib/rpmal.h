@@ -50,7 +50,7 @@ void alDelPackage(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
 alKey alAddPackage(availableList * alistp,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ rpmDepSet provides, /*@null@*/ TFI_t fi)
+		/*@null@*/ rpmds provides, /*@null@*/ rpmfi fi)
 	/*@modifies *alistp, provides, fi @*/;
 
 /**
@@ -62,7 +62,7 @@ alKey alAddPackage(availableList * alistp,
 /*@-exportlocal@*/
 void alAddProvides(availableList al,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
-		/*@null@*/ rpmDepSet provides)
+		/*@null@*/ rpmds provides)
 	/*@modifies al, provides @*/;
 /*@=exportlocal@*/
 
@@ -83,7 +83,7 @@ void alMakeIndex(/*@null@*/ availableList al)
 /*@-exportlocal@*/
 /*@only@*/ /*@null@*/
 fnpyKey * alAllFileSatisfiesDepend(/*@null@*/ const availableList al,
-		/*@null@*/ const rpmDepSet ds, /*@null@*/ alKey * keyp)
+		/*@null@*/ const rpmds ds, /*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
 	/*@modifies al, *keyp, fileSystem @*/;
 /*@=exportlocal@*/
@@ -96,7 +96,7 @@ fnpyKey * alAllFileSatisfiesDepend(/*@null@*/ const availableList al,
  * @return		associated package key(s), NULL if none
  */
 /*@only@*/ /*@null@*/
-fnpyKey * alAllSatisfiesDepend(const availableList al, const rpmDepSet ds,
+fnpyKey * alAllSatisfiesDepend(const availableList al, const rpmds ds,
 		/*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
 	/*@modifies al, *keyp, fileSystem @*/;
@@ -109,7 +109,7 @@ fnpyKey * alAllSatisfiesDepend(const availableList al, const rpmDepSet ds,
  * @retval keyp		added package key pointer (or NULL)
  * @return		associated package key, NULL if none
  */
-fnpyKey alSatisfiesDepend(const availableList al, const rpmDepSet ds,
+fnpyKey alSatisfiesDepend(const availableList al, const rpmds ds,
 		/*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
 	/*@modifies al, *keyp, fileSystem @*/;

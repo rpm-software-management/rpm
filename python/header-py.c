@@ -8,6 +8,7 @@
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
+#include "rpmps.h"
 #include "rpmfi.h"
 #include "rpmts.h"	/* XXX for ts->rpmdb */
 
@@ -178,21 +179,21 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 
     fileNumber = (int) PyInt_AsLong(args);
 
-    {	rpmTransactionSet ts;
+    {	rpmts ts;
 	int scareMem = 1;
-	TFI_t fi;
+	rpmfi fi;
 	int rc;
 
 	ts = rpmtsCreate();
-	fi = fiNew(ts, NULL, s->h, RPMTAG_BASENAMES, scareMem);
-	fi = tfiInit(fi, fileNumber);
-	if (fi != NULL && tfiNext(fi) >= 0) {
+	fi = rpmfiNew(ts, NULL, s->h, RPMTAG_BASENAMES, scareMem);
+	fi = rpmfiInit(fi, fileNumber);
+	if (fi != NULL && rpmfiNext(fi) >= 0) {
 	    /* XXX this routine might use callbacks intelligently. */
 	    rc = rpmVerifyFile(ts, fi, &verifyResult, RPMVERIFY_NONE);
 	} else
 	    rc = 1;
 
-	fi = fiFree(fi, 1);
+	fi = rpmfiFree(fi, 1);
 	rpmtsFree(ts);
 
 	if (rc) {
@@ -781,7 +782,7 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
 
     fd = fdDup(rawFd);
-    {	rpmTransactionSet ts;
+    {	rpmts ts;
 	ts = rpmtsCreate();
 	rc = rpmReadPackageFile(ts, fd, "rpmHeaderFromPackage", &header);
 	rpmtsFree(ts);

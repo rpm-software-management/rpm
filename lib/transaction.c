@@ -9,6 +9,8 @@
 
 #include "psm.h"
 
+#include "rpmps.h"
+
 #include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmte.h"
@@ -19,38 +21,11 @@
 #include "legacy.h"	/* XXX domd5 */
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 
-/* XXX FIXME: merge with existing (broken?) tests in system.h */
-/* portability fiddles */
-#if STATFS_IN_SYS_STATVFS
-/*@-incondefs@*/
-# include <sys/statvfs.h>
-#if defined(__LCLINT__)
-/*@-declundef -exportheader -protoparammatch @*/ /* LCL: missing annotation */
-extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
-	/*@globals fileSystem @*/
-	/*@modifies *buf, fileSystem @*/;
-/*@=declundef =exportheader =protoparammatch @*/
-/*@=incondefs@*/
-#endif
-#else
-# if STATFS_IN_SYS_VFS
-#  include <sys/vfs.h>
-# else
-#  if STATFS_IN_SYS_MOUNT
-#   include <sys/mount.h>
-#  else
-#   if STATFS_IN_SYS_STATFS
-#    include <sys/statfs.h>
-#   endif
-#  endif
-# endif
-#endif
-
 #include "debug.h"
 
 /*@access FD_t @*/		/* XXX compared with NULL */
 /*@access Header @*/		/* XXX compared with NULL */
-/*@access rpmProblemSet @*/	/* XXX need rpmProblemSetOK() */
+/*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
 /*@access dbiIndexSet @*/
 /*@access rpmdb @*/
 
@@ -59,30 +34,10 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access alKey @*/
 /*@access fnpyKey @*/
 
-/*@access TFI_t @*/
+/*@access rpmfi @*/
 
-/*@access teIterator @*/
-/*@access rpmTransactionSet @*/
-
-/**
- */
-struct diskspaceInfo {
-    dev_t dev;			/*!< File system device number. */
-    signed long bneeded;	/*!< No. of blocks needed. */
-    signed long ineeded;	/*!< No. of inodes needed. */
-    int bsize;			/*!< File system block size. */
-    signed long bavail;		/*!< No. of blocks available. */
-    signed long iavail;		/*!< No. of inodes available. */
-};
-
-/**
- * Adjust for root only reserved space. On linux e2fs, this is 5%.
- */
-#define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
-
-/* argon thought a shift optimization here was a waste of time...  he's
-   probably right :-( */
-#define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
+/*@access rpmtei @*/
+/*@access rpmts @*/
 
 /**
  */
@@ -120,13 +75,13 @@ static int sharedCmp(const void * one, const void * two)
 
 /**
  */
-static fileAction decideFileFate(const rpmTransactionSet ts,
-		const TFI_t ofi, TFI_t nfi)
+static fileAction decideFileFate(const rpmts ts,
+		const rpmfi ofi, rpmfi nfi)
 	/*@globals fileSystem @*/
 	/*@modifies nfi, fileSystem @*/
 {
-    const char * fn = tfiGetFN(nfi);
-    int newFlags = tfiGetFFlags(nfi);
+    const char * fn = rpmfiFN(nfi);
+    int newFlags = rpmfiFFlags(nfi);
     char buffer[1024];
     fileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
@@ -217,7 +172,7 @@ static fileAction decideFileFate(const rpmTransactionSet ts,
 
 /**
  */
-static int filecmp(TFI_t afi, TFI_t bfi)
+static int filecmp(rpmfi afi, rpmfi bfi)
 	/*@*/
 {
     fileTypes awhat = whatis(afi->fmodes[afi->i]);
@@ -251,17 +206,17 @@ static int filecmp(TFI_t afi, TFI_t bfi)
 /**
  */
 /* XXX only ts->{probs,rpmdb} modified */
-static int handleInstInstalledFiles(const rpmTransactionSet ts,
-		transactionElement p, TFI_t fi,
+static int handleInstInstalledFiles(const rpmts ts,
+		rpmte p, rpmfi fi,
 		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fi, fileSystem @*/
 {
     const char * altNEVR = NULL;
-    TFI_t otherFi = NULL;
+    rpmfi otherFi = NULL;
     int numReplaced = 0;
-    rpmProblemSet ps;
+    rpmps ps;
     int i;
 
     {	rpmdbMatchIterator mi;
@@ -272,7 +227,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    altNEVR = hGetNEVR(h, NULL);
-	    otherFi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+	    otherFi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
@@ -288,10 +243,10 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 	int otherFileNum, fileNum;
 
 	otherFileNum = shared->otherFileNum;
-	(void) tfiSetFX(otherFi, otherFileNum);
+	(void) rpmfiSetFX(otherFi, otherFileNum);
 
 	fileNum = shared->pkgFileNum;
-	(void) tfiSetFX(fi, fileNum);
+	(void) rpmfiSetFX(fi, fileNum);
 
 #ifdef	DYING
 	/* XXX another tedious segfault, assume file state normal. */
@@ -304,13 +259,13 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 
 	if (filecmp(otherFi, fi)) {
 	    if (reportConflicts) {
-		rpmProblemSetAppend(ps, RPMPROB_FILE_CONFLICT,
-			teGetNEVR(p), teGetKey(p),
-			tfiGetDN(fi), tfiGetBN(fi),
+		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
+			rpmteNEVR(p), rpmteKey(p),
+			rpmfiDN(fi), rpmfiBN(fi),
 			altNEVR,
 			0);
 	    }
-	    if (!(tfiGetFFlags(otherFi) | tfiGetFFlags(fi)) & RPMFILE_CONFIG) {
+	    if (!(rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG) {
 		/*@-assignexpose@*/ /* FIX: p->replaced, not fi */
 		if (!shared->isRemoved)
 		    fi->replaced[numReplaced++] = *shared;
@@ -318,7 +273,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 	    }
 	}
 
-	if ((tfiGetFFlags(otherFi) | tfiGetFFlags(fi)) & RPMFILE_CONFIG) {
+	if ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG) {
 	    fileAction action;
 	    action = decideFileFate(ts, otherFi, fi);
 	    fi->actions[fileNum] = action;
@@ -326,10 +281,10 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 	fi->replacedSizes[fileNum] = otherFi->fsizes[otherFi->i];
 
     }
-    ps = rpmProblemSetFree(ps);
+    ps = rpmpsFree(ps);
 
     altNEVR = _free(altNEVR);
-    otherFi = fiFree(otherFi, 1);
+    otherFi = rpmfiFree(otherFi, 1);
 
     fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
 			   sizeof(*fi->replaced) * (numReplaced + 1));
@@ -341,7 +296,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 /**
  */
 /* XXX only ts->rpmdb modified */
-static int handleRmvdInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
+static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 		sharedFileInfo shared, int sharedCount)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fi, fileSystem @*/
@@ -385,6 +340,7 @@ static int handleRmvdInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 static int _fps_debug = 0;
 
 static int fpsCompare (const void * one, const void * two)
+	/*@*/
 {
     const struct fingerPrint_s * a = (const struct fingerPrint_s *)one;
     const struct fingerPrint_s * b = (const struct fingerPrint_s *)two;
@@ -522,42 +478,36 @@ bingoFps->baseName);
 }
 
 /**
- * Update disk space needs on each partition for this package.
+ * Update disk space needs on each partition for this package's files.
  */
 /* XXX only ts->{probs,di} modified */
-static void handleOverlappedFiles(const rpmTransactionSet ts,
-		const transactionElement p, TFI_t fi)
+static void handleOverlappedFiles(const rpmts ts,
+		const rpmte p, rpmfi fi)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fi, fileSystem @*/
 {
-    struct diskspaceInfo * ds = NULL;
     uint_32 fixupSize = 0;
-    rpmProblemSet ps;
+    rpmps ps;
     const char * fn;
     int i, j;
   
     ps = rpmtsGetProblems(ts);
-    fi = tfiInit(fi, 0);
-    if (fi != NULL)	/* XXX lclint */
-    while ((i = tfiNext(fi)) >= 0) {
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while ((i = rpmfiNext(fi)) >= 0) {
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
-	TFI_t otherFi;
-	const TFI_t * recs;
+	rpmfi otherFi;
+	const rpmfi * recs;
 	int numRecs;
 
 	if (XFA_SKIPPING(fi->actions[i]))
 	    continue;
 
-	fn = tfiGetFN(fi);
+	fn = rpmfiFN(fi);
 	fiFps = fi->fps + i;
 
-	if (ts->di) {
-	    ds = ts->di;
-	    while (ds->bsize && ds->dev != fi->fps[i].entry->dev) ds++;
-	    if (!ds->bsize) ds = NULL;
-	    fixupSize = 0;
-	}
+	fixupSize = 0;
 
 	/*
 	 * Retrieve all records that apply to this file. Note that the
@@ -571,6 +521,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	/*
 	 * If this package is being added, look only at other packages
 	 * being added -- removed packages dance to a different tune.
+	 *
 	 * If both this and the other package are being added, overlapped
 	 * files must be identical (or marked as a conflict). The
 	 * disposition of already installed config files leads to
@@ -602,31 +553,32 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	    otherFi = recs[otherPkgNum];
 
 	    /* Added packages need only look at other added packages. */
-	    if (teGetType(p) == TR_ADDED && teGetType(otherFi->te) != TR_ADDED)
+	    if (rpmteType(p) == TR_ADDED && rpmteType(otherFi->te) != TR_ADDED)
 		/*@innercontinue@*/ continue;
 
 	    otherFps = otherFi->fps;
-	    otherFc = tfiGetFC(otherFi);
+	    otherFc = rpmfiFC(otherFi);
 
 	    otherFileNum = findFps(fiFps, otherFps, otherFc);
-	    (void) tfiSetFX(otherFi, otherFileNum);
+	    (void) rpmfiSetFX(otherFi, otherFileNum);
 
 	    /* XXX is this test still necessary? */
+assert(otherFi->actions[otherFileNum] != FA_UNKNOWN);
 	    if (otherFi->actions[otherFileNum] != FA_UNKNOWN)
 		/*@innerbreak@*/ break;
 	}
 
-	switch (teGetType(p)) {
+	switch (rpmteType(p)) {
 	case TR_ADDED:
 	  { struct stat sb;
 	    if (otherPkgNum < 0) {
 		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
 		    /*@switchbreak@*/ break;
-		if ((tfiGetFFlags(fi) & RPMFILE_CONFIG) && 
+		if ((rpmfiFFlags(fi) & RPMFILE_CONFIG) && 
 			!lstat(fn, &sb)) {
 		    /* Here is a non-overlapped pre-existing config file. */
-		    fi->actions[i] = (tfiGetFFlags(fi) & RPMFILE_NOREPLACE)
+		    fi->actions[i] = (rpmfiFFlags(fi) & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
 		} else {
 		    fi->actions[i] = FA_CREATE;
@@ -639,19 +591,19 @@ assert(otherFi != NULL);
 	    if ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
 	     && filecmp(otherFi, fi))
 	    {
-		rpmProblemSetAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
-			teGetNEVR(p), teGetKey(p),
+		rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
+			rpmteNEVR(p), rpmteKey(p),
 			fn, NULL,
-			teGetNEVR(otherFi->te),
+			rpmteNEVR(otherFi->te),
 			0);
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = otherFi->fsizes[otherFileNum];
 
-	    if ((tfiGetFFlags(fi) & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
+	    if ((rpmfiFFlags(fi) & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
 		/* Here is an overlapped  pre-existing config file. */
-		fi->actions[i] = (tfiGetFFlags(fi) & RPMFILE_NOREPLACE)
+		fi->actions[i] = (rpmfiFFlags(fi) & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
 	    } else {
 		fi->actions[i] = FA_CREATE;
@@ -674,69 +626,29 @@ assert(otherFi != NULL);
 		/*@switchbreak@*/ break;
 	    if (fi->fstates && fi->fstates[i] != RPMFILE_STATE_NORMAL)
 		/*@switchbreak@*/ break;
-	    if (!(S_ISREG(fi->fmodes[i]) && (tfiGetFFlags(fi) & RPMFILE_CONFIG))) {
+	    if (!(S_ISREG(fi->fmodes[i]) && (rpmfiFFlags(fi) & RPMFILE_CONFIG))) {
 		fi->actions[i] = FA_ERASE;
 		/*@switchbreak@*/ break;
 	    }
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char md5sum[50];
-#ifdef	DYING
-		if (fi->md5s != NULL) {
-#endif
-		    const unsigned char * md5 = fi->md5s + (16 * i);
-		    if (!domd5(fn, md5sum, 0) && memcmp(md5, md5sum, 16)) {
-			fi->actions[i] = FA_BACKUP;
-			/*@switchbreak@*/ break;
-		    }
-#ifdef	DYING
-		} else {
-		    const char * fmd5 = fi->fmd5s[i];
-		    if (!domd5(fn, md5sum, 1) && strcmp(fmd5, md5sum)) {
-			fi->actions[i] = FA_BACKUP;
-			/*@switchbreak@*/ break;
-		    }
+		const unsigned char * md5 = fi->md5s + (16 * i);
+		if (!domd5(fn, md5sum, 0) && memcmp(md5, md5sum, 16)) {
+		    fi->actions[i] = FA_BACKUP;
+		    /*@switchbreak@*/ break;
 		}
-#endif
 	    }
 	    fi->actions[i] = FA_ERASE;
 	    /*@switchbreak@*/ break;
 	}
 
-	if (ds) {
-	    uint_32 s = BLOCK_ROUND(fi->fsizes[i], ds->bsize);
+	/* Update disk space info for a file. */
+	rpmtsUpdateDSI(ts, fi->fps[i].entry->dev,
+                fi->fsizes[i], fi->replacedSizes[i], fixupSize, fi->actions[i]);
 
-	    switch (fi->actions[i]) {
-	      case FA_BACKUP:
-	      case FA_SAVE:
-	      case FA_ALTNAME:
-		ds->ineeded++;
-		ds->bneeded += s;
-		/*@switchbreak@*/ break;
-
-	    /*
-	     * FIXME: If two packages share a file (same md5sum), and
-	     * that file is being replaced on disk, will ds->bneeded get
-	     * decremented twice? Quite probably!
-	     */
-	      case FA_CREATE:
-		ds->bneeded += s;
-		ds->bneeded -= BLOCK_ROUND(fi->replacedSizes[i], ds->bsize);
-		/*@switchbreak@*/ break;
-
-	      case FA_ERASE:
-		ds->ineeded--;
-		ds->bneeded -= s;
-		/*@switchbreak@*/ break;
-
-	      default:
-		/*@switchbreak@*/ break;
-	    }
-
-	    ds->bneeded -= BLOCK_ROUND(fixupSize, ds->bsize);
-	}
     }
-    ps = rpmProblemSetFree(ps);
+    ps = rpmpsFree(ps);
 }
 
 /**
@@ -746,13 +658,13 @@ assert(otherFi != NULL);
  * @param h		installed header
  * @return		0 if not newer, 1 if okay
  */
-static int ensureOlder(rpmTransactionSet ts,
-		const transactionElement p, const Header h)
+static int ensureOlder(rpmts ts,
+		const rpmte p, const Header h)
 	/*@modifies ts @*/
 {
     int_32 reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;
-    rpmDepSet req;
+    rpmds req;
     char * t;
     int nb;
     int rc;
@@ -760,29 +672,29 @@ static int ensureOlder(rpmTransactionSet ts,
     if (p == NULL || h == NULL)
 	return 1;
 
-    nb = strlen(teGetNEVR(p)) + (teGetE(p) != NULL ? strlen(teGetE(p)) : 0) + 1;
+    nb = strlen(rpmteNEVR(p)) + (rpmteE(p) != NULL ? strlen(rpmteE(p)) : 0) + 1;
     t = alloca(nb);
     *t = '\0';
     reqEVR = t;
-    if (teGetE(p) != NULL)	t = stpcpy( stpcpy(t, teGetE(p)), ":");
-    if (teGetV(p) != NULL)	t = stpcpy(t, teGetV(p));
+    if (rpmteE(p) != NULL)	t = stpcpy( stpcpy(t, rpmteE(p)), ":");
+    if (rpmteV(p) != NULL)	t = stpcpy(t, rpmteV(p));
     *t++ = '-';
-    if (teGetR(p) != NULL)	t = stpcpy(t, teGetR(p));
+    if (rpmteR(p) != NULL)	t = stpcpy(t, rpmteR(p));
     
-    req = dsSingle(RPMTAG_REQUIRENAME, teGetN(p), reqEVR, reqFlags);
+    req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), reqEVR, reqFlags);
     rc = headerMatchesDepFlags(h, req);
-    req = dsFree(req);
+    req = rpmdsFree(req);
 
     if (rc == 0) {
-	rpmProblemSet ps = rpmtsGetProblems(ts);
+	rpmps ps = rpmtsGetProblems(ts);
 	const char * altNEVR = hGetNEVR(h, NULL);
-	rpmProblemSetAppend(ps, RPMPROB_OLDPACKAGE,
-		teGetNEVR(p), teGetKey(p),
+	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
+		rpmteNEVR(p), rpmteKey(p),
 		NULL, NULL,
 		altNEVR,
 		0);
 	altNEVR = _free(altNEVR);
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
 	rc = 1;
     } else
 	rc = 0;
@@ -793,7 +705,7 @@ static int ensureOlder(rpmTransactionSet ts,
 /**
  */
 /*@-mustmod@*/ /* FIX: fi->actions is modified. */
-static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
+static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
 {
@@ -831,22 +743,22 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     /*@=branchstate@*/
 
     /* Compute directory refcount, skip directory if now empty. */
-    dc = tfiGetDC(fi);
+    dc = rpmfiDC(fi);
     drc = alloca(dc * sizeof(*drc));
     memset(drc, 0, dc * sizeof(*drc));
     dff = alloca(dc * sizeof(*dff));
     memset(dff, 0, dc * sizeof(*dff));
 
-    fi = tfiInit(fi, 0);
+    fi = rpmfiInit(fi, 0);
     if (fi != NULL)	/* XXX lclint */
-    while ((i = tfiNext(fi)) >= 0)
+    while ((i = rpmfiNext(fi)) >= 0)
     {
 	char **nsp;
 
-	bn = tfiGetBN(fi);
+	bn = rpmfiBN(fi);
 	bnlen = strlen(bn);
-	ix = tfiGetDX(fi);
-	dn = tfiGetDN(fi);
+	ix = rpmfiDX(fi);
+	dn = rpmfiDN(fi);
 	dnlen = strlen(dn);
 	if (dn == NULL)
 	    continue;	/* XXX can't happen */
@@ -924,7 +836,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	/*
 	 * Skip documentation if requested.
 	 */
-	if (noDocs && (tfiGetFFlags(fi) & RPMFILE_DOC)) {
+	if (noDocs && (rpmfiFFlags(fi) & RPMFILE_DOC)) {
 	    drc[ix]--;	dff[ix] = 1;
 	    fi->actions[i] = FA_SKIPNSTATE;
 	    continue;
@@ -936,8 +848,8 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     if (fi != NULL)	/* XXX can't happen */
     for (j = 0; j < dc; j++)
 #else
-    if ((fi = tdiInit(fi)) != NULL)
-    while (j = tdiNext(fi) >= 0)
+    if ((fi = rpmfiInitD(fi)) != NULL)
+    while (j = rpmfiNextD(fi) >= 0)
 #endif
     {
 
@@ -954,9 +866,9 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	}
 
 	/* If explicitly included in the package, skip the directory. */
-	fi = tfiInit(fi, 0);
+	fi = rpmfiInit(fi, 0);
 	if (fi != NULL)		/* XXX lclint */
-	while ((i = tfiNext(fi)) >= 0) {
+	while ((i = rpmfiNext(fi)) >= 0) {
 	    const char * dir;
 
 	    if (XFA_SKIPPING(fi->actions[i]))
@@ -988,19 +900,19 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 
 /**
  * Return transaction element's file info.
- * @todo Take a TFI_t refcount here.
+ * @todo Take a rpmfi refcount here.
  * @param tei		transaction element iterator
  * @return		transaction element file info
  */
 static /*@null@*/
-TFI_t teiGetFi(const teIterator tei)
+rpmfi rpmteiGetFi(const rpmtei tei)
 	/*@*/
 {
-    TFI_t fi = NULL;
+    rpmfi fi = NULL;
 
     if (tei != NULL && tei->ocsave != -1) {
-	/*@-type -abstract@*/ /* FIX: transactionElement not opaque */
-	transactionElement te = tei->ts->order[tei->ocsave];
+	/*@-type -abstract@*/ /* FIX: rpmte not opaque */
+	rpmte te = tei->ts->order[tei->ocsave];
 	/*@-assignexpose@*/
 	if ((fi = te->fi) != NULL)
 	    fi->te = te;
@@ -1012,25 +924,23 @@ TFI_t teiGetFi(const teIterator tei)
     /*@=compdef =refcounttrans =usereleased @*/
 }
 
-#define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
+#define	NOTIFY(_ts, _al) /*@i@*/ if ((_ts)->notify) (void) (_ts)->notify _al
 
-int rpmtsRun(rpmTransactionSet ts,
-		rpmProblemSet okProbs, rpmprobFilterFlags ignoreSet)
+int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int i, j;
     int ourrc = 0;
     int totalFileCount = 0;
-    TFI_t fi;
-    struct diskspaceInfo * dip;
+    rpmfi fi;
     sharedFileInfo shared, sharedList;
     int numShared;
     int nexti;
     alKey lastKey;
     fingerPrintCache fpc;
-    rpmProblemSet ps;
+    rpmps ps;
     PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
-    teIterator pi;	transactionElement p;
-    teIterator qi;	transactionElement q;
+    rpmtei pi;	rpmte p;
+    rpmtei qi;	rpmte q;
     int xx;
 
     /* FIXME: what if the same package is included in ts twice? */
@@ -1044,8 +954,8 @@ int rpmtsRun(rpmTransactionSet ts,
     if (rpmtsGetFlags(ts) & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
 	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | _noTransScripts | _noTransTriggers));
 
-    ts->probs = rpmProblemSetFree(ts->probs);
-    ts->probs = rpmProblemSetCreate();
+    ts->probs = rpmpsFree(ts->probs);
+    ts->probs = rpmpsCreate();
 
     ts->ignoreSet = ignoreSet;
     {	const char * currDir = currentDirectory();
@@ -1063,62 +973,7 @@ int rpmtsRun(rpmTransactionSet ts,
     psm->ts = rpmtsLink(ts, "tsRun");
 
     /* Get available space on mounted file systems. */
-    if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
-		!rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount))
-    {
-	struct stat sb;
-
-	rpmMessage(RPMMESS_DEBUG, _("getting list of mounted filesystems\n"));
-
-	ts->di = _free(ts->di);
-	dip = ts->di = xcalloc((ts->filesystemCount + 1), sizeof(*ts->di));
-
-	for (i = 0; (i < ts->filesystemCount) && dip; i++) {
-#if STATFS_IN_SYS_STATVFS
-	    struct statvfs sfb;
-	    memset(&sfb, 0, sizeof(sfb));
-	    if (statvfs(ts->filesystems[i], &sfb))
-#else
-	    struct statfs sfb;
-#  if STAT_STATFS4
-/* This platform has the 4-argument version of the statfs call.  The last two
- * should be the size of struct statfs and 0, respectively.  The 0 is the
- * filesystem type, and is always 0 when statfs is called on a mounted
- * filesystem, as we're doing.
- */
-	    memset(&sfb, 0, sizeof(sfb));
-	    if (statfs(ts->filesystems[i], &sfb, sizeof(sfb), 0))
-#  else
-	    memset(&sfb, 0, sizeof(sfb));
-	    if (statfs(ts->filesystems[i], &sfb))
-#  endif
-#endif
-	    {
-		dip = NULL;
-	    } else {
-		ts->di[i].bsize = sfb.f_bsize;
-		ts->di[i].bneeded = 0;
-		ts->di[i].ineeded = 0;
-#ifdef STATFS_HAS_F_BAVAIL
-		ts->di[i].bavail = sfb.f_bavail;
-#else
-/* FIXME: the statfs struct doesn't have a member to tell how many blocks are
- * available for non-superusers.  f_blocks - f_bfree is probably too big, but
- * it's about all we can do.
- */
-		ts->di[i].bavail = sfb.f_blocks - sfb.f_bfree;
-#endif
-		/* XXX Avoid FAT and other file systems that have not inodes. */
-		ts->di[i].iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
-				? sfb.f_ffree : -1;
-
-		xx = stat(ts->filesystems[i], &sb);
-		ts->di[i].dev = sb.st_dev;
-	    }
-	}
-
-	if (dip) ts->di[i].bsize = 0;
-    }
+    xx = rpmtsInitDSI(ts);
 
     /* ===============================================
      * For packages being installed:
@@ -1130,48 +985,48 @@ int rpmtsRun(rpmTransactionSet ts,
      */
     ps = rpmtsGetProblems(ts);
     /* The ordering doesn't matter here */
-    pi = teInitIterator(ts);
-    while ((p = teNext(pi, TR_ADDED)) != NULL) {
+    pi = rpmteiInit(ts);
+    while ((p = rpmteiNext(pi, TR_ADDED)) != NULL) {
 	rpmdbMatchIterator mi;
 	int fc;
 
-	if ((fi = teiGetFi(pi)) == NULL)
+	if ((fi = rpmteiGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
-	fc = tfiGetFC(fi);
+	fc = rpmfiFC(fi);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
-	    if (!archOkay(teGetA(p)))
-		rpmProblemSetAppend(ps, RPMPROB_BADARCH,
-			teGetNEVR(p), teGetKey(p),
-			teGetA(p), NULL,
+	    if (!archOkay(rpmteA(p)))
+		rpmpsAppend(ps, RPMPROB_BADARCH,
+			rpmteNEVR(p), rpmteKey(p),
+			rpmteA(p), NULL,
 			NULL, 0);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
-	    if (!osOkay(teGetO(p)))
-		rpmProblemSetAppend(ps, RPMPROB_BADOS,
-			teGetNEVR(p), teGetKey(p),
-			teGetO(p), NULL,
+	    if (!osOkay(rpmteO(p)))
+		rpmpsAppend(ps, RPMPROB_BADOS,
+			rpmteNEVR(p), rpmteKey(p),
+			rpmteO(p), NULL,
 			NULL, 0);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, teGetN(p), 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL)
 		xx = ensureOlder(ts, p, h);
 	    mi = rpmdbFreeIterator(mi);
 	}
 
 	/* XXX multilib should not display "already installed" problems */
-	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !teGetMultiLib(p)) {
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, teGetN(p), 0);
+	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !rpmteMultiLib(p)) {
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT,
-				teGetV(p));
+				rpmteV(p));
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
-				teGetR(p));
+				rpmteR(p));
 
 	    while (rpmdbNextIterator(mi) != NULL) {
-		rpmProblemSetAppend(ps, RPMPROB_PKG_INSTALLED,
-			teGetNEVR(p), teGetKey(p),
+		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
+			rpmteNEVR(p), rpmteKey(p),
 			NULL, NULL,
 			NULL, 0);
 		/*@innerbreak@*/ break;
@@ -1183,21 +1038,21 @@ int rpmtsRun(rpmTransactionSet ts,
 	totalFileCount += fc;
 
     }
-    pi = teFreeIterator(pi);
-    ps = rpmProblemSetFree(ps);
+    pi = rpmteiFree(pi);
+    ps = rpmpsFree(ps);
 
     /* The ordering doesn't matter here */
-    pi = teInitIterator(ts);
-    while ((p = teNext(pi, TR_REMOVED)) != NULL) {
+    pi = rpmteiInit(ts);
+    while ((p = rpmteiNext(pi, TR_REMOVED)) != NULL) {
 	int fc;
 
-	if ((fi = teiGetFi(pi)) == NULL)
+	if ((fi = rpmteiGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
-	fc = tfiGetFC(fi);
+	fc = rpmfiFC(fi);
 
 	totalFileCount += fc;
     }
-    pi = teFreeIterator(pi);
+    pi = rpmteiFree(pi);
 
     /* ===============================================
      * Initialize transaction element file info for package:
@@ -1208,21 +1063,21 @@ int rpmtsRun(rpmTransactionSet ts,
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-    pi = teInitIterator(ts);
-    while ((p = teNextIterator(pi)) != NULL) {
+    pi = rpmteiInit(ts);
+    while ((p = rpmteiNext(pi, 0)) != NULL) {
 	int fc;
 
-	if ((fi = teiGetFi(pi)) == NULL)
+	if ((fi = rpmteiGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
-	fc = tfiGetFC(fi);
+	fc = rpmfiFC(fi);
 
-#ifdef	DYING	/* XXX W2DO? this is now done in teiGetFi, okay ??? */
-	fi->magic = TFIMAGIC;
+#ifdef	DYING	/* XXX W2DO? this is now done in rpmteiGetFi, okay ??? */
+	fi->magic = RPMFIMAGIC;
 	fi->te = p;
 #endif
 
 	/*@-branchstate@*/
-	switch (teGetType(p)) {
+	switch (rpmteType(p)) {
 	case TR_ADDED:
 	    fi->record = 0;
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
@@ -1230,14 +1085,14 @@ int rpmtsRun(rpmTransactionSet ts,
 		skipFiles(ts, fi);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
-	    fi->record = teGetDBOffset(p);
+	    fi->record = rpmteDBOffset(p);
 	    /*@switchbreak@*/ break;
 	}
 	/*@=branchstate@*/
 
 	fi->fps = (fc > 0 ? xmalloc(fc * sizeof(*fi->fps)) : NULL);
     }
-    pi = teFreeIterator(pi);
+    pi = rpmteiFree(pi);
 
     if (!rpmtsGetChrootDone(ts)) {
 	const char * rootDir = rpmtsGetRootDir(ts);
@@ -1255,19 +1110,19 @@ int rpmtsRun(rpmTransactionSet ts,
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
-    pi = teInitIterator(ts);
-    while ((p = teNextIterator(pi)) != NULL) {
+    pi = rpmteiInit(ts);
+    while ((p = rpmteiNext(pi, 0)) != NULL) {
 	int fc;
 
-	if ((fi = teiGetFi(pi)) == NULL)
+	if ((fi = rpmteiGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
-	fc = tfiGetFC(fi);
+	fc = rpmfiFC(fi);
 
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
 	/*@-branchstate@*/
- 	fi = tfiInit(fi, 0);
+ 	fi = rpmfiInit(fi, 0);
  	if (fi != NULL)		/* XXX lclint */
-	while ((i = tfiNext(fi)) >= 0) {
+	while ((i = rpmfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@innercontinue@*/ continue;
 	    /*@-dependenttrans@*/
@@ -1276,31 +1131,27 @@ int rpmtsRun(rpmTransactionSet ts,
 	}
 	/*@=branchstate@*/
     }
-    pi = teFreeIterator(pi);
+    pi = rpmteiFree(pi);
 
-    /*@-noeffectuncon @*/ /* FIX: check rc */
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount,
 	NULL, ts->notifyData));
-    /*@=noeffectuncon@*/
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
     ps = rpmtsGetProblems(ts);
-    pi = teInitIterator(ts);
-    while ((p = teNextIterator(pi)) != NULL) {
+    pi = rpmteiInit(ts);
+    while ((p = rpmteiNext(pi, 0)) != NULL) {
 	dbiIndexSet * matches;
 	int knownBad;
 	int fc;
 
-	if ((fi = teiGetFi(pi)) == NULL)
+	if ((fi = rpmteiGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
-	fc = tfiGetFC(fi);
+	fc = rpmfiFC(fi);
 
-	/*@-noeffectuncon @*/ /* FIX: check rc */
-	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, teiGetOc(pi),
+	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, rpmteiGetOc(pi),
 			ts->orderCount, NULL, ts->notifyData));
-	/*@=noeffectuncon@*/
 
 	if (fc == 0) continue;
 
@@ -1308,20 +1159,20 @@ int rpmtsRun(rpmTransactionSet ts,
 	matches = xcalloc(fc, sizeof(*matches));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
 	    psm->ts = rpmtsUnlink(ts, "tsRun (rpmFindFpList fail)");
-	    ps = rpmProblemSetFree(ps);
+	    ps = rpmpsFree(ps);
 	    return 1;	/* XXX WTFO? */
 	}
 
 	numShared = 0;
- 	fi = tfiInit(fi, 0);
-	while ((i = tfiNext(fi)) >= 0)
+ 	fi = rpmfiInit(fi, 0);
+	while ((i = rpmfiNext(fi)) >= 0)
 	    numShared += dbiIndexSetCount(matches[i]);
 
 	/* Build sorted file info list for this package. */
 	shared = sharedList = xcalloc((numShared + 1), sizeof(*sharedList));
 
- 	fi = tfiInit(fi, 0);
-	while ((i = tfiNext(fi)) >= 0) {
+ 	fi = rpmfiInit(fi, 0);
+	while ((i = rpmfiNext(fi)) >= 0) {
 	    /*
 	     * Take care not to mark files as replaced in packages that will
 	     * have been removed before we will get here.
@@ -1330,14 +1181,14 @@ int rpmtsRun(rpmTransactionSet ts,
 		int ro;
 		ro = dbiIndexRecordOffset(matches[i], j);
 		knownBad = 0;
-		qi = teInitIterator(ts);
-		while ((q = teNext(qi, TR_REMOVED)) != NULL) {
+		qi = rpmteiInit(ts);
+		while ((q = rpmteiNext(qi, TR_REMOVED)) != NULL) {
 		    if (ro == knownBad)
 			/*@innerbreak@*/ break;
-		    if (teGetDBOffset(q) == ro)
+		    if (rpmteDBOffset(q) == ro)
 			knownBad = ro;
 		}
-		qi = teFreeIterator(qi);
+		qi = rpmteiFree(qi);
 
 		shared->pkgFileNum = i;
 		shared->otherPkg = dbiIndexRecordOffset(matches[i], j);
@@ -1378,7 +1229,7 @@ int rpmtsRun(rpmTransactionSet ts,
 	    }
 
 	    /* Determine the fate of each file. */
-	    switch (teGetType(p)) {
+	    switch (rpmteType(p)) {
 	    case TR_ADDED:
 		xx = handleInstInstalledFiles(ts, p, fi, shared, nexti - i,
 	!(beingRemoved || (ts->ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)));
@@ -1397,39 +1248,16 @@ int rpmtsRun(rpmTransactionSet ts,
 	handleOverlappedFiles(ts, p, fi);
 
 	/* Check added package has sufficient space on each partition used. */
-	switch (teGetType(p)) {
+	switch (rpmteType(p)) {
 	case TR_ADDED:
-	    if (!(ts->di && tfiGetFC(fi) > 0))
-		/*@switchbreak@*/ break;
-	    for (i = 0; i < ts->filesystemCount; i++) {
-
-		dip = ts->di + i;
-
-		/* XXX Avoid FAT and other file systems that have not inodes. */
-		if (dip->iavail <= 0)
-		    /*@innercontinue@*/ continue;
-
-		if (adj_fs_blocks(dip->bneeded) > dip->bavail) {
-		    rpmProblemSetAppend(ps, RPMPROB_DISKSPACE,
-				teGetNEVR(p), teGetKey(p),
-				ts->filesystems[i], NULL, NULL,
-	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
-		}
-
-		if (adj_fs_blocks(dip->ineeded) > dip->iavail) {
-		    rpmProblemSetAppend(ps, RPMPROB_DISKNODES,
-				teGetNEVR(p), teGetKey(p),
-				ts->filesystems[i], NULL, NULL,
-	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
-		}
-	    }
+	    rpmtsCheckDSIProblems(ts, p);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    /*@switchbreak@*/ break;
 	}
     }
-    pi = teFreeIterator(pi);
-    ps = rpmProblemSetFree(ps);
+    pi = rpmteiFree(pi);
+    ps = rpmpsFree(ps);
 
     if (rpmtsGetChrootDone(ts)) {
 	const char * currDir = rpmtsGetCurrDir(ts);
@@ -1441,23 +1269,21 @@ int rpmtsRun(rpmTransactionSet ts,
 	    xx = chdir(currDir);
     }
 
-    /*@-noeffectuncon @*/ /* FIX: check rc */
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
 	NULL, ts->notifyData));
-    /*@=noeffectuncon @*/
 
     /* ===============================================
      * Free unused memory as soon as possible.
      */
-    pi = teInitIterator(ts);
-    while ((p = teNextIterator(pi)) != NULL) {
-	if ((fi = teiGetFi(pi)) == NULL)
+    pi = rpmteiInit(ts);
+    while ((p = rpmteiNext(pi, 0)) != NULL) {
+	if ((fi = rpmteiGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
-	if (tfiGetFC(fi) == 0)
+	if (rpmfiFC(fi) == 0)
 	    continue;
 	fi->fps = _free(fi->fps);
     }
-    pi = teFreeIterator(pi);
+    pi = rpmteiFree(pi);
 
     fpc = fpCacheFree(fpc);
     ts->ht = htFree(ts->ht);
@@ -1467,7 +1293,7 @@ int rpmtsRun(rpmTransactionSet ts,
      */
     if ((rpmtsGetFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS)
      || (ts->probs->numProblems &&
-		(okProbs != NULL || rpmProblemSetTrim(ts->probs, okProbs)))
+		(okProbs != NULL || rpmpsTrim(ts->probs, okProbs)))
        )
     {
 	if (psm->ts != NULL)
@@ -1479,10 +1305,10 @@ int rpmtsRun(rpmTransactionSet ts,
      * Save removed files before erasing.
      */
     if (rpmtsGetFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
-	pi = teInitIterator(ts);
-	while ((p = teNextIterator(pi)) != NULL) {
-	    fi = teiGetFi(pi);
-	    switch (teGetType(p)) {
+	pi = rpmteiInit(ts);
+	while ((p = rpmteiNext(pi, 0)) != NULL) {
+	    fi = rpmteiGetFi(pi);
+	    switch (rpmteType(p)) {
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
@@ -1497,73 +1323,73 @@ int rpmtsRun(rpmTransactionSet ts,
 		/*@switchbreak@*/ break;
 	    }
 	}
-	pi = teFreeIterator(pi);
+	pi = rpmteiFree(pi);
     }
 
     /* ===============================================
      * Install and remove packages.
      */
     lastKey = (alKey)-2;	/* erased packages have -1 */
-    pi = teInitIterator(ts);
+    pi = rpmteiInit(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */
-    while ((p = teNextIterator(pi)) != NULL) {
+    while ((p = rpmteiNext(pi, 0)) != NULL) {
 	alKey pkgKey;
 	Header h;
 	int gotfd;
 
 	gotfd = 0;
-	if ((fi = teiGetFi(pi)) == NULL)
+	if ((fi = rpmteiGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
 	psm->te = p;
 	psm->fi = rpmfiLink(fi, "tsInstall");
-	switch (teGetType(p)) {
+	switch (rpmteType(p)) {
 	case TR_ADDED:
 
-	    pkgKey = teGetAddedKey(p);
+	    pkgKey = rpmteAddedKey(p);
 
-	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s\n", teGetNEVR(p));
+	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s\n", rpmteNEVR(p));
 	    h = NULL;
-	    /*@-type@*/ /* FIX: transactionElement not opaque */
+	    /*@-type@*/ /* FIX: rpmte not opaque */
 	    {
 		/*@-noeffectuncon@*/ /* FIX: notify annotations */
 		p->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-				teGetKey(p), ts->notifyData);
+				rpmteKey(p), ts->notifyData);
 		/*@=noeffectuncon@*/
-		if (teGetFd(p) != NULL) {
+		if (rpmteFd(p) != NULL) {
 		    rpmRC rpmrc;
 
-		    rpmrc = rpmReadPackageFile(ts, teGetFd(p),
+		    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
 				"rpmtsRun", &h);
 
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon@*/ /* FIX: notify annotations */
 			p->fd = ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
 					0, 0,
-					teGetKey(p), ts->notifyData);
+					rpmteKey(p), ts->notifyData);
 			/*@=noeffectuncon@*/
 			p->fd = NULL;
 			ourrc++;
 		    }
-		    if (teGetFd(p) != NULL) gotfd = 1;
+		    if (rpmteFd(p) != NULL) gotfd = 1;
 		}
 	    }
 	    /*@=type@*/
 
-	    if (teGetFd(p) != NULL) {
+	    if (rpmteFd(p) != NULL) {
 		{
 char * fstates = fi->fstates;
 fileAction * actions = fi->actions;
 
 fi->fstates = NULL;
 fi->actions = NULL;
-		    psm->fi = fiFree(psm->fi, 1);
-		    (void) fiFree(fi, 0);
+		    psm->fi = rpmfiFree(psm->fi, 1);
+		    (void) rpmfiFree(fi, 0);
 /*@-usereleased@*/
-fi->magic = TFIMAGIC;
+fi->magic = RPMFIMAGIC;
 fi->te = p;
 fi->record = 0;
-		    (void) fiNew(ts, fi, h, RPMTAG_BASENAMES, 1);
+		    (void) rpmfiNew(ts, fi, h, RPMTAG_BASENAMES, 1);
 		    psm->fi = rpmfiLink(fi, "tsInstall");
 fi->fstates = _free(fi->fstates);
 fi->fstates = fstates;
@@ -1572,7 +1398,7 @@ fi->actions = actions;
 /*@=usereleased@*/
 
 		}
-		if (teGetMultiLib(p))
+		if (rpmteMultiLib(p))
 		    (void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | RPMTRANS_FLAG_MULTILIB));
 		else
 		    (void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) & ~RPMTRANS_FLAG_MULTILIB));
@@ -1592,7 +1418,7 @@ fi->actions = actions;
 	    if (gotfd) {
 		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void) ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-			teGetKey(p), ts->notifyData);
+			rpmteKey(p), ts->notifyData);
 		/*@=noeffectuncon @*/
 		/*@-type@*/
 		p->fd = NULL;
@@ -1600,9 +1426,9 @@ fi->actions = actions;
 	    }
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
-	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", teGetNEVR(p));
+	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", rpmteNEVR(p));
 	    /* If install failed, then we shouldn't erase. */
-	    if (teGetDependsOnKey(p) != lastKey) {
+	    if (rpmteDependsOnKey(p) != lastKey) {
 		if (psmStage(psm, PSM_PKGERASE))
 		    ourrc++;
 	    }
@@ -1613,11 +1439,11 @@ fi->actions = actions;
 	psm->fi = NULL;
 	psm->te = NULL;
 /*@-type@*/ /* FIX: p is almost opaque */
-	p->fi = fiFree(fi, 1);
+	p->fi = rpmfiFree(fi, 1);
 /*@=type@*/
     }
     /*@=branchstate@*/
-    pi = teFreeIterator(pi);
+    pi = rpmteiFree(pi);
 
     psm->ts = rpmtsUnlink(psm->ts, "tsRun");
 

@@ -4,11 +4,12 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include "rpmps.h"
 #include "rpmds.h"
 
 #include "debug.h"
 
-/*@access rpmDepSet @*/
+/*@access rpmds @*/
 
 /**
  * Enable noisy range comparison debugging message?
@@ -19,7 +20,7 @@ static int _noisy_range_comparison_debug_message = 0;
 /*@unchecked@*/
 static int _ds_debug = 0;
 
-rpmDepSet XrpmdsUnlink(rpmDepSet ds, const char * msg, const char * fn, unsigned ln)
+rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
 /*@-modfilesystem@*/
@@ -30,7 +31,7 @@ fprintf(stderr, "--> ds %p -- %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
     return NULL;
 }
 
-rpmDepSet XrpmdsLink(rpmDepSet ds, const char * msg, const char * fn, unsigned ln)
+rpmds XrpmdsLink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
     ds->nrefs++;
@@ -43,7 +44,7 @@ fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
     /*@-refcounttrans@*/ return ds; /*@=refcounttrans@*/
 }
 
-rpmDepSet dsFree(rpmDepSet ds)
+rpmds rpmdsFree(rpmds ds)
 {
     HFD_t hfd = headerFreeData;
     rpmTag tagEVR, tagF;
@@ -102,12 +103,12 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     return NULL;
 }
 
-rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
+rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 {
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpmTag tagEVR, tagF;
-    rpmDepSet ds = NULL;
+    rpmds ds = NULL;
     const char * Type;
     const char ** N;
     rpmTagType Nt;
@@ -176,7 +177,7 @@ exit:
     /*@=nullstate@*/
 }
 
-char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
+char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 {
     char * tbuf, * t;
     size_t nb;
@@ -216,10 +217,10 @@ char * dsDNEVR(const char * dspfx, const rpmDepSet ds)
     return tbuf;
 }
 
-rpmDepSet dsThis(Header h, rpmTag tagN, int_32 Flags)
+rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 {
     HGE_t hge = (HGE_t) headerGetEntryMinMemory;
-    rpmDepSet ds = NULL;
+    rpmds ds = NULL;
     const char * Type;
     const char * n, * v, * r;
     int_32 * ep;
@@ -280,7 +281,7 @@ rpmDepSet dsThis(Header h, rpmTag tagN, int_32 Flags)
 	pre[0] = ds->Type[0];
 	pre[1] = '\0';
 	/*@-nullstate@*/ /* LCL: ds->Type may be NULL ??? */
-	ds->DNEVR = dsDNEVR(pre, ds);
+	ds->DNEVR = rpmdsNewDNEVR(pre, ds);
 	/*@=nullstate@*/
     }
 
@@ -288,9 +289,9 @@ exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
-rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
 {
-    rpmDepSet ds = NULL;
+    rpmds ds = NULL;
     const char * Type;
 
     if (tagN == RPMTAG_PROVIDENAME) {
@@ -326,24 +327,24 @@ rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     {	char t[2];
 	t[0] = ds->Type[0];
 	t[1] = '\0';
-	ds->DNEVR = dsDNEVR(t, ds);
+	ds->DNEVR = rpmdsNewDNEVR(t, ds);
     }
 
 exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
-int dsiGetCount(const rpmDepSet ds)
+int rpmdsCount(const rpmds ds)
 {
     return (ds != NULL ? ds->Count : 0);
 }
 
-int dsiGetIx(const rpmDepSet ds)
+int rpmdsIx(const rpmds ds)
 {
     return (ds != NULL ? ds->i : -1);
 }
 
-int dsiSetIx(rpmDepSet ds, int ix)
+int rpmdsSetIx(rpmds ds, int ix)
 {
     int i = -1;
 
@@ -354,7 +355,7 @@ int dsiSetIx(rpmDepSet ds, int ix)
     return i;
 }
 
-const char * dsiGetDNEVR(const rpmDepSet ds)
+const char * rpmdsDNEVR(const rpmds ds)
 {
     const char * DNEVR = NULL;
 
@@ -365,7 +366,7 @@ const char * dsiGetDNEVR(const rpmDepSet ds)
     return DNEVR;
 }
 
-const char * dsiGetN(const rpmDepSet ds)
+const char * rpmdsN(const rpmds ds)
 {
     const char * N = NULL;
 
@@ -376,7 +377,7 @@ const char * dsiGetN(const rpmDepSet ds)
     return N;
 }
 
-const char * dsiGetEVR(const rpmDepSet ds)
+const char * rpmdsEVR(const rpmds ds)
 {
     const char * EVR = NULL;
 
@@ -387,7 +388,7 @@ const char * dsiGetEVR(const rpmDepSet ds)
     return EVR;
 }
 
-int_32 dsiGetFlags(const rpmDepSet ds)
+int_32 rpmdsFlags(const rpmds ds)
 {
     int_32 Flags = 0;
 
@@ -398,7 +399,7 @@ int_32 dsiGetFlags(const rpmDepSet ds)
     return Flags;
 }
 
-rpmTag dsiGetTagN(const rpmDepSet ds)
+rpmTag rpmdsTagN(const rpmds ds)
 {
     rpmTag tagN = 0;
 
@@ -408,7 +409,7 @@ rpmTag dsiGetTagN(const rpmDepSet ds)
     return tagN;
 }
 
-void dsiNotify(rpmDepSet ds, const char * where, int rc)
+void rpmdsNotify(rpmds ds, const char * where, int rc)
 {
     if (!(ds != NULL && ds->i >= 0 && ds->i < ds->Count))
 	return;
@@ -421,7 +422,7 @@ void dsiNotify(rpmDepSet ds, const char * where, int rc)
 		(where != NULL ? where : ""));
 }
 
-int dsiNext(/*@null@*/ rpmDepSet ds)
+int rpmdsNext(/*@null@*/ rpmds ds)
 	/*@modifies ds @*/
 {
     int i = -1;
@@ -434,7 +435,7 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
 	    t[0] = ((ds->Type != NULL) ? ds->Type[0] : '\0');
 	    t[1] = '\0';
 	    /*@-nullstate@*/
-	    ds->DNEVR = dsDNEVR(t, ds);
+	    ds->DNEVR = rpmdsNewDNEVR(t, ds);
 	    /*@=nullstate@*/
 
 	} else
@@ -450,7 +451,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds->Type ? ds->Type : "?Type?"),
     return i;
 }
 
-rpmDepSet dsiInit(/*@returned@*/ /*@null@*/ rpmDepSet ds)
+rpmds rpmdsInit(/*@returned@*/ /*@null@*/ rpmds ds)
 	/*@modifies ds @*/
 {
     if (ds != NULL)
@@ -506,7 +507,7 @@ void parseEVR(char * evr,
     if (rp) *rp = release;
 }
 
-int dsCompare(const rpmDepSet A, const rpmDepSet B)
+int rpmdsCompare(const rpmds A, const rpmds B)
 {
     const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
     const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
@@ -582,16 +583,16 @@ exit:
     return result;
 }
 
-void dsProblem(rpmProblemSet tsprobs, const char * pkgNEVR, const rpmDepSet ds,
-		const fnpyKey * suggestedKeys)
+void rpmdsProblem(rpmps ps, const char * pkgNEVR,
+		const rpmds ds, const fnpyKey * suggestedKeys)
 {
-    const char * Name =  dsiGetN(ds);
-    const char * DNEVR = dsiGetDNEVR(ds);
-    const char * EVR = dsiGetEVR(ds);
+    const char * Name =  rpmdsN(ds);
+    const char * DNEVR = rpmdsDNEVR(ds);
+    const char * EVR = rpmdsEVR(ds);
     rpmProblemType type;
     fnpyKey key;
 
-    if (tsprobs == NULL) return;
+    if (ps == NULL) return;
 
     /*@-branchstate@*/
     if (Name == NULL) Name = "?N?";
@@ -605,21 +606,20 @@ void dsProblem(rpmProblemSet tsprobs, const char * pkgNEVR, const rpmDepSet ds,
     type = (DNEVR[0] == 'C' && DNEVR[1] == ' ')
 		? RPMPROB_CONFLICT : RPMPROB_REQUIRES;
     key = (suggestedKeys ? suggestedKeys[0] : NULL);
-    rpmProblemSetAppend(tsprobs, type, pkgNEVR, key,
-			NULL, NULL, DNEVR, 0);
+    rpmpsAppend(ps, type, pkgNEVR, key, NULL, NULL, DNEVR, 0);
 }
 
-int rangeMatchesDepFlags (Header h, const rpmDepSet req)
+int rangeMatchesDepFlags (Header h, const rpmds req)
 {
     int scareMem = 1;
-    rpmDepSet provides = NULL;
+    rpmds provides = NULL;
     int result = 0;
 
     if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
 	return 1;
 
     /* Get provides information from header */
-    provides = dsiInit(dsNew(h, RPMTAG_PROVIDENAME, scareMem));
+    provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem));
     if (provides == NULL)
 	goto exit;	/* XXX should never happen */
 
@@ -635,13 +635,13 @@ int rangeMatchesDepFlags (Header h, const rpmDepSet req)
 
     result = 0;
     if (provides != NULL)
-    while (dsiNext(provides) >= 0) {
+    while (rpmdsNext(provides) >= 0) {
 
 	/* Filter out provides that came along for the ride. */
 	if (strcmp(provides->N[provides->i], req->N[req->i]))
 	    continue;
 
-	result = dsCompare(provides, req);
+	result = rpmdsCompare(provides, req);
 
 	/* If this provide matches the require, we're done. */
 	if (result)
@@ -649,12 +649,12 @@ int rangeMatchesDepFlags (Header h, const rpmDepSet req)
     }
 
 exit:
-    provides = dsFree(provides);
+    provides = rpmdsFree(provides);
 
     return result;
 }
 
-int headerMatchesDepFlags(const Header h, const rpmDepSet req)
+int headerMatchesDepFlags(const Header h, const rpmds req)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * pkgN, * v, * r;
@@ -662,8 +662,8 @@ int headerMatchesDepFlags(const Header h, const rpmDepSet req)
     const char * pkgEVR;
     char * t;
     int_32 pkgFlags = RPMSENSE_EQUAL;
-    rpmDepSet pkg;
-    int rc = 1;	/* XXX assume match as names should be the same already here */
+    rpmds pkg;
+    int rc = 1;	/* XXX assume match, names already match here */
 
     if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))
 	return rc;
@@ -681,9 +681,9 @@ int headerMatchesDepFlags(const Header h, const rpmDepSet req)
     }
     (void) stpcpy( stpcpy( stpcpy(t, v) , "-") , r);
 
-    if ((pkg = dsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
-	rc = dsCompare(pkg, req);
-	pkg = dsFree(pkg);
+    if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
+	rc = rpmdsCompare(pkg, req);
+	pkg = rpmdsFree(pkg);
     }
 
     return rc;

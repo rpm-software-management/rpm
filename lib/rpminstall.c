@@ -7,14 +7,15 @@
 #include <rpmcli.h>
 
 #include "rpmdb.h"
+#include "rpmps.h"
 #include "rpmts.h"
 
 #include "manifest.h"
 #include "misc.h"	/* XXX for rpmGlob() */
 #include "debug.h"
 
-/*@access rpmTransactionSet @*/	/* XXX ts->goal, ts->dbmode */
-/*@access rpmProblemSet @*/	/* XXX compared with NULL */
+/*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
+/*@access rpmps @*/	/* XXX compared with NULL */
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access rpmdb @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX compared with NULL */
@@ -213,12 +214,12 @@ struct rpmEIU {
 };
 
 /** @todo Generalize --freshen policies. */
-int rpmInstall(rpmTransactionSet ts,
+int rpmInstall(rpmts ts,
 		struct rpmInstallArguments_s * ia,
 		const char ** fileArgv)
 {
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
-    rpmProblemSet ps;
+    rpmps ps;
     rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
@@ -559,7 +560,7 @@ restart:
 	    }
 	    /*@=branchstate@*/
 	}
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
     }
 
     if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
@@ -582,9 +583,9 @@ restart:
 	    eiu->numFailed += eiu->numRPMS;
 	} else if (rc > 0) {
 	    eiu->numFailed += rc;
-	    rpmProblemSetPrint(stderr, ps);
+	    rpmpsPrint(stderr, ps);
 	}
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
     }
 
     if (eiu->numSRPMS && !stopInstall) {
@@ -627,7 +628,7 @@ exit:
     return eiu->numFailed;
 }
 
-int rpmErase(rpmTransactionSet ts,
+int rpmErase(rpmts ts,
 		const struct rpmInstallArguments_s * ia,
 		const char ** argv)
 {
@@ -636,7 +637,7 @@ int rpmErase(rpmTransactionSet ts,
     int numFailed = 0;
     int stopUninstall = 0;
     int numPackages = 0;
-    rpmProblemSet ps;
+    rpmps ps;
 
     if (argv == NULL) return 0;
 
@@ -699,20 +700,20 @@ int rpmErase(rpmTransactionSet ts,
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
     }
 
     if (!stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | RPMTRANS_FLAG_REVERSE));
 	numFailed += rpmtsRun(ts, NULL, 0);
 	ps = rpmtsGetProblems(ts);
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
     }
 
     return numFailed;
 }
 
-int rpmInstallSource(rpmTransactionSet ts, const char * arg,
+int rpmInstallSource(rpmts ts, const char * arg,
 		const char ** specFilePtr, const char ** cookie)
 {
     FD_t fd;
@@ -808,7 +809,7 @@ IDTX IDTXsort(IDTX idtx)
     return idtx;
 }
 
-IDTX IDTXload(rpmTransactionSet ts, rpmTag tag)
+IDTX IDTXload(rpmts ts, rpmTag tag)
 {
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
@@ -852,7 +853,7 @@ IDTX IDTXload(rpmTransactionSet ts, rpmTag tag)
     return IDTXsort(idtx);
 }
 
-IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 {
     IDTX idtx = NULL;
     HGE_t hge = (HGE_t) headerGetEntry;
@@ -926,14 +927,14 @@ IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
 }
 
 /** @todo Transaction handling, more, needs work. */
-int rpmRollback(rpmTransactionSet ts,
+int rpmRollback(rpmts ts,
 		/*@unused@*/ struct rpmInstallArguments_s * ia,
 		const char ** argv)
 {
 #ifdef	NOTYET
     rpmdb db = NULL;
-    rpmTransactionSet ts = NULL;
-    rpmProblemSet ps;
+    rpmts ts = NULL;
+    rpmps ps;
     int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
     unsigned thistid = 0xffffffff;
     unsigned prevtid;
@@ -1066,10 +1067,10 @@ int rpmRollback(rpmTransactionSet ts,
 	if (rc != 0 && ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    printDepProblems(stderr, ps);
-	    ps = rpmProblemSetFree(ps);
+	    ps = rpmpsFree(ps);
 	    goto exit;
 	}
-	ps = rpmProblemSetFree(ps);
+	ps = rpmpsFree(ps);
 
 	rc = rpmtsOrder(ts);
 	if (rc != 0)
@@ -1078,8 +1079,8 @@ int rpmRollback(rpmTransactionSet ts,
 	rc = rpmtsRun(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
 	ps = rpmtsGetProblems(ts);
 	if (rc > 0)
-	    rpmProblemSetPrint(stderr, ps);
-	ps = rpmProblemSetFree(ps);
+	    rpmpsPrint(stderr, ps);
+	ps = rpmpsFree(ps);
 	if (rc)
 	    goto exit;
 

@@ -6,6 +6,7 @@
 
 #include <rpmlib.h>
 
+#include "rpmps.h"
 #include "rpmds.h"
 
 #include "debug.h"
@@ -65,18 +66,18 @@ void rpmShowRpmlibProvides(FILE * fp)
     }
 }
 
-int rpmCheckRpmlibProvides(const rpmDepSet key)
+int rpmCheckRpmlibProvides(const rpmds key)
 {
     const struct rpmlibProvides_s * rlp;
     int rc = 0;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
 	if (rlp->featureEVR && rlp->featureFlags) {
-	    rpmDepSet pro;
-	    pro = dsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
+	    rpmds pro;
+	    pro = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
-	    rc = dsCompare(pro, key);
-	    pro = dsFree(pro);
+	    rc = rpmdsCompare(pro, key);
+	    pro = rpmdsFree(pro);
 	}
 	if (rc)
 	    break;

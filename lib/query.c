@@ -16,6 +16,7 @@
 #include <rpmbuild.h>
 
 #include "rpmdb.h"
+#include "rpmps.h"
 #include "rpmts.h"
 
 #include "manifest.h"
@@ -154,7 +155,7 @@ static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
     return nlink;
 }
 
-int showQueryPackage(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
+int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -538,7 +539,7 @@ void rpmDisplayQueryTags(FILE * fp)
     }
 }
 
-int showMatches(QVA_t qva, rpmTransactionSet ts)
+int showMatches(QVA_t qva, rpmts ts)
 {
     Header h;
     int ec = 0;
@@ -582,7 +583,7 @@ int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 /*@null@*/ Spec	(*freeSpecVec) (Spec spec) = NULL;
 /*@=redecl@*/
 
-int rpmQueryVerify(QVA_t qva, rpmTransactionSet ts, const char * arg)
+int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     const char ** av = NULL;
     int res = 0;
@@ -970,7 +971,7 @@ restart:
     return res;
 }
 
-int rpmcliQuery(rpmTransactionSet ts, QVA_t qva, const char ** argv)
+int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 {
     const char * arg;
     int vsflags;

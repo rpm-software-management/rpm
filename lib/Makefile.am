@@ -14,10 +14,10 @@ EXTRA_DIST = getdate.y
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	misc.h rpmcli.h rpmlib.h stringbuf.h
+	misc.h rpmcli.h rpmlib.h \
+	rpmds.h rpmfi.h rpmps.h rpmte.h rpmts.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h fsm.h manifest.h psm.h \
-	rpmal.h rpmds.h rpmfi.h rpmlead.h rpmte.h rpmts.h signature.h
+	cpio.h fsm.h manifest.h psm.h rpmal.h rpmlead.h signature.h
 
 mylibpaths = \
 	-L$(top_builddir)/lib \
@@ -32,9 +32,9 @@ lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	manifest.c misc.c package.c \
-	problems.c poptI.c poptQV.c psm.c query.c \
+	poptI.c poptQV.c psm.c query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpminstall.c \
-	rpmlead.c rpmlibprov.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
+	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c
 librpm_la_LDFLAGS = -release @VERSION@

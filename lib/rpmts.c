@@ -1,6 +1,6 @@
 /** \ingroup rpmdep
  * \file lib/rpmts.c
- * Routine(s) to handle an rpmTransactionSet.
+ * Routine(s) to handle a "rpmts" transaction sets.
  */
 #include "system.h"
 
@@ -9,6 +9,7 @@
 #include <rpmpgp.h>		/* XXX rpmtsFree() needs pgpFreeDig */
 
 #include "rpmdb.h"		/* XXX stealing db->db_mode. */
+#include "rpmps.h"
 
 #include "rpmds.h"
 #include "rpmfi.h"
@@ -16,13 +17,41 @@
 #include "rpmte.h"
 #include "rpmts.h"
 
+/* XXX FIXME: merge with existing (broken?) tests in system.h */
+/* portability fiddles */
+#if STATFS_IN_SYS_STATVFS
+/*@-incondefs@*/
+# include <sys/statvfs.h>
+#if defined(__LCLINT__)
+/*@-declundef -exportheader -protoparammatch @*/ /* LCL: missing annotation */
+extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
+	/*@globals fileSystem @*/
+	/*@modifies *buf, fileSystem @*/;
+/*@=declundef =exportheader =protoparammatch @*/
+/*@=incondefs@*/
+#endif
+#else
+# if STATFS_IN_SYS_VFS
+#  include <sys/vfs.h>
+# else
+#  if STATFS_IN_SYS_MOUNT
+#   include <sys/mount.h>
+#  else
+#   if STATFS_IN_SYS_STATFS
+#    include <sys/statfs.h>
+#   endif
+#  endif
+# endif
+#endif
+
 #include "debug.h"
 
 /*@access rpmdb @*/		/* XXX db->db_chrootDone, NULL */
 
 /*@access FD_t @*/		/* XXX compared with NULL */
-/*@access rpmProblemSet @*/
-/*@access rpmTransactionSet @*/
+/*@access rpmps @*/
+/*@access rpmDiskSpaceInfo @*/
+/*@access rpmts @*/
 /*@access fnpyKey @*/
 
 /*@unchecked@*/
@@ -45,7 +74,7 @@ char * hGetNEVR(Header h, const char ** np)
     return NVR;
 }
 
-rpmTransactionSet XrpmtsUnlink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
+rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
 /*@-modfilesystem@*/
 if (_ts_debug)
@@ -55,7 +84,7 @@ fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
     return NULL;
 }
 
-rpmTransactionSet XrpmtsLink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
+rpmts XrpmtsLink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
     ts->nrefs++;
 /*@-modfilesystem@*/
@@ -65,7 +94,7 @@ fprintf(stderr, "--> ts %p ++ %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
     /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
 }
 
-int rpmtsCloseDB(rpmTransactionSet ts)
+int rpmtsCloseDB(rpmts ts)
 {
     int rc = 0;
 
@@ -76,7 +105,7 @@ int rpmtsCloseDB(rpmTransactionSet ts)
     return rc;
 }
 
-int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
+int rpmtsOpenDB(rpmts ts, int dbmode)
 {
     int rc = 0;
 
@@ -101,13 +130,13 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
     return rc;
 }
 
-rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, int rpmtag,
 			const void * keyp, size_t keylen)
 {
     return rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
 }
 
-static int rpmtsCloseSDB(rpmTransactionSet ts)
+static int rpmtsCloseSDB(rpmts ts)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/
 {
@@ -120,7 +149,7 @@ static int rpmtsCloseSDB(rpmTransactionSet ts)
     return rc;
 }
 
-static int rpmtsOpenSDB(rpmTransactionSet ts)
+static int rpmtsOpenSDB(rpmts ts)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
@@ -157,7 +186,7 @@ static int sugcmp(const void * a, const void * b)       /*@*/
     return strcmp(astr, bstr);
 }
 
-int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
+int rpmtsSolve(rpmts ts, rpmds ds)
 {
     const char * errstr;
     const char * str;
@@ -176,10 +205,10 @@ int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
     if (ts->goal != TSM_INSTALL)
 	return rc;
 
-    if (dsiGetTagN(ds) != RPMTAG_REQUIRENAME)
+    if (rpmdsTagN(ds) != RPMTAG_REQUIRENAME)
 	return rc;
 
-    keyp = dsiGetN(ds);
+    keyp = rpmdsN(ds);
     if (keyp == NULL)
 	return rc;
 
@@ -253,7 +282,7 @@ exit:
 /*@=nullstate@*/
 }
 
-int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
+int rpmtsAvailable(rpmts ts, const rpmds ds)
 {
     fnpyKey * sugkey;
     int rc = 1;	/* assume not found */
@@ -278,9 +307,9 @@ int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
 /*@=nullstate@*/
 }
 
-rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
+rpmps rpmtsGetProblems(rpmts ts)
 {
-    rpmProblemSet ps = NULL;
+    rpmps ps = NULL;
     if (ts) {
 	if (ts->probs) {
 	    if (ts->probs->numProblems > 0)
@@ -290,16 +319,16 @@ rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
     return ps;
 }
 
-void rpmtsClean(rpmTransactionSet ts)
+void rpmtsClean(rpmts ts)
 {
     if (ts) {
-	teIterator pi; transactionElement p;
+	rpmtei pi; rpmte p;
 
 	/* Clean up after dependency checks. */
-	pi = teInitIterator(ts);
-	while ((p = teNextIterator(pi)) != NULL)
-	    teCleanDS(p);
-	pi = teFreeIterator(pi);
+	pi = rpmteiInit(ts);
+	while ((p = rpmteiNext(pi, 0)) != NULL)
+	    rpmteCleanDS(p);
+	pi = rpmteiFree(pi);
 
 	ts->addedPackages = alFree(ts->addedPackages);
 	ts->numAddedPackages = 0;
@@ -307,7 +336,7 @@ void rpmtsClean(rpmTransactionSet ts)
 	ts->suggests = _free(ts->suggests);
 	ts->nsuggests = 0;
 
-	ts->probs = rpmProblemSetFree(ts->probs);
+	ts->probs = rpmpsFree(ts->probs);
 
 	if (ts->sig != NULL)
 	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
@@ -317,10 +346,10 @@ void rpmtsClean(rpmTransactionSet ts)
     }
 }
 
-rpmTransactionSet rpmtsFree(rpmTransactionSet ts)
+rpmts rpmtsFree(rpmts ts)
 {
     if (ts) {
-	teIterator pi; transactionElement p;
+	rpmtei pi; rpmte p;
 	int oc;
 
 	(void) rpmtsUnlink(ts, "tsCreate");
@@ -336,7 +365,7 @@ rpmTransactionSet rpmtsFree(rpmTransactionSet ts)
 	ts->availablePackages = alFree(ts->availablePackages);
 	ts->numAvailablePackages = 0;
 
-	ts->di = _free(ts->di);
+	ts->dsi = _free(ts->dsi);
 	ts->removedPackages = _free(ts->removedPackages);
 	if (ts->scriptFd != NULL) {
 	    ts->scriptFd =
@@ -346,12 +375,12 @@ rpmTransactionSet rpmtsFree(rpmTransactionSet ts)
 	ts->rootDir = _free(ts->rootDir);
 	ts->currDir = _free(ts->currDir);
 
-	for (pi = teInitIterator(ts), oc = 0; (p = teNextIterator(pi)) != NULL; oc++) {
+	for (pi = rpmteiInit(ts), oc = 0; (p = rpmteiNext(pi, 0)) != NULL; oc++) {
 /*@-type -unqualifiedtrans @*/
-	    ts->order[oc] = teFree(ts->order[oc]);
+	    ts->order[oc] = rpmteFree(ts->order[oc]);
 /*@=type =unqualifiedtrans @*/
 	}
-	pi = teFreeIterator(pi);
+	pi = rpmteiFree(pi);
 /*@-type +voidabstract @*/	/* FIX: double indirection */
 	ts->order = _free(ts->order);
 /*@=type =voidabstract @*/
@@ -371,7 +400,7 @@ rpmTransactionSet rpmtsFree(rpmTransactionSet ts)
     return NULL;
 }
 
-int rpmtsSetVerifySigFlags(rpmTransactionSet ts, int vsflags)
+int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
 	/*@modifies ts @*/
 {
     int ret = 0;
@@ -382,7 +411,7 @@ int rpmtsSetVerifySigFlags(rpmTransactionSet ts, int vsflags)
     return ret;
 }
 
-const char * rpmtsGetRootDir(rpmTransactionSet ts)
+const char * rpmtsGetRootDir(rpmts ts)
 {
     const char * rootDir = NULL;
     if (ts != NULL) {
@@ -391,7 +420,7 @@ const char * rpmtsGetRootDir(rpmTransactionSet ts)
     return rootDir;
 }
 
-void rpmtsSetRootDir(rpmTransactionSet ts, const char * rootDir)
+void rpmtsSetRootDir(rpmts ts, const char * rootDir)
 {
     if (ts != NULL) {
 	size_t rootLen;
@@ -419,7 +448,7 @@ void rpmtsSetRootDir(rpmTransactionSet ts, const char * rootDir)
     }
 }
 
-const char * rpmtsGetCurrDir(rpmTransactionSet ts)
+const char * rpmtsGetCurrDir(rpmts ts)
 {
     const char * currDir = NULL;
     if (ts != NULL) {
@@ -428,7 +457,7 @@ const char * rpmtsGetCurrDir(rpmTransactionSet ts)
     return currDir;
 }
 
-void rpmtsSetCurrDir(rpmTransactionSet ts, const char * currDir)
+void rpmtsSetCurrDir(rpmts ts, const char * currDir)
 {
     if (ts != NULL) {
 	ts->currDir = _free(ts->currDir);
@@ -437,7 +466,7 @@ void rpmtsSetCurrDir(rpmTransactionSet ts, const char * currDir)
     }
 }
 
-FD_t rpmtsGetScriptFd(rpmTransactionSet ts)
+FD_t rpmtsGetScriptFd(rpmts ts)
 {
     FD_t scriptFd = NULL;
     if (ts != NULL) {
@@ -448,7 +477,7 @@ FD_t rpmtsGetScriptFd(rpmTransactionSet ts)
 /*@=compdef =refcounttrans =usereleased@*/
 }
 
-void rpmtsSetScriptFd(rpmTransactionSet ts, FD_t scriptFd)
+void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 {
 
     if (ts != NULL) {
@@ -461,7 +490,7 @@ void rpmtsSetScriptFd(rpmTransactionSet ts, FD_t scriptFd)
     }
 }
 
-int rpmtsGetChrootDone(rpmTransactionSet ts)
+int rpmtsGetChrootDone(rpmts ts)
 {
     int chrootDone = 0;
     if (ts != NULL) {
@@ -470,7 +499,7 @@ int rpmtsGetChrootDone(rpmTransactionSet ts)
     return chrootDone;
 }
 
-int rpmtsSetChrootDone(rpmTransactionSet ts, int chrootDone)
+int rpmtsSetChrootDone(rpmts ts, int chrootDone)
 {
     int ochrootDone = 0;
     if (ts != NULL) {
@@ -482,7 +511,7 @@ int rpmtsSetChrootDone(rpmTransactionSet ts, int chrootDone)
     return ochrootDone;
 }
 
-int_32 rpmtsGetTid(rpmTransactionSet ts)
+int_32 rpmtsGetTid(rpmts ts)
 {
     int_32 tid = 0;
     if (ts != NULL) {
@@ -491,7 +520,7 @@ int_32 rpmtsGetTid(rpmTransactionSet ts)
     return tid;
 }
 
-int_32 rpmtsSetTid(rpmTransactionSet ts, int_32 tid)
+int_32 rpmtsSetTid(rpmts ts, int_32 tid)
 {
     int_32 otid = 0;
     if (ts != NULL) {
@@ -501,7 +530,7 @@ int_32 rpmtsSetTid(rpmTransactionSet ts, int_32 tid)
     return otid;
 }
 
-rpmdb rpmtsGetRdb(rpmTransactionSet ts)
+rpmdb rpmtsGetRdb(rpmts ts)
 {
     rpmdb rdb = NULL;
     if (ts != NULL) {
@@ -512,7 +541,168 @@ rpmdb rpmtsGetRdb(rpmTransactionSet ts)
 /*@=compdef =refcounttrans =usereleased @*/
 }
 
-rpmtsFlags rpmtsGetFlags(rpmTransactionSet ts)
+int rpmtsInitDSI(const rpmts ts)
+{
+    rpmDiskSpaceInfo dsi;
+    struct stat sb;
+    int rc;
+    int i;
+
+    if (ts->ignoreSet & RPMPROB_FILTER_DISKSPACE)
+	return 0;
+
+    rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
+    if (rc || ts->filesystems == NULL || ts->filesystemCount <= 0)
+	return rc;
+
+    /* Get available space on mounted file systems. */
+
+    rpmMessage(RPMMESS_DEBUG, _("getting list of mounted filesystems\n"));
+
+    ts->dsi = _free(ts->dsi);
+    ts->dsi = xcalloc((ts->filesystemCount + 1), sizeof(*ts->dsi));
+
+    dsi = ts->dsi;
+
+    if (dsi != NULL)
+    for (i = 0; (i < ts->filesystemCount) && dsi; i++, dsi++) {
+#if STATFS_IN_SYS_STATVFS
+	struct statvfs sfb;
+	memset(&sfb, 0, sizeof(sfb));
+	rc = statvfs(ts->filesystems[i], &sfb);
+#else
+	struct statfs sfb;
+	memset(&sfb, 0, sizeof(sfb));
+#  if STAT_STATFS4
+/* This platform has the 4-argument version of the statfs call.  The last two
+ * should be the size of struct statfs and 0, respectively.  The 0 is the
+ * filesystem type, and is always 0 when statfs is called on a mounted
+ * filesystem, as we're doing.
+ */
+	rc = statfs(ts->filesystems[i], &sfb, sizeof(sfb), 0);
+#  else
+	rc = statfs(ts->filesystems[i], &sfb);
+#  endif
+#endif
+	if (rc)
+	    break;
+
+	rc = stat(ts->filesystems[i], &sb);
+	if (rc)
+	    break;
+	dsi->dev = sb.st_dev;
+
+	dsi->bsize = sfb.f_bsize;
+	dsi->bneeded = 0;
+	dsi->ineeded = 0;
+#ifdef STATFS_HAS_F_BAVAIL
+	dsi->bavail = sfb.f_bavail;
+#else
+/* FIXME: the statfs struct doesn't have a member to tell how many blocks are
+ * available for non-superusers.  f_blocks - f_bfree is probably too big, but
+ * it's about all we can do.
+ */
+	dsi->bavail = sfb.f_blocks - sfb.f_bfree;
+#endif
+	/* XXX Avoid FAT and other file systems that have not inodes. */
+	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
+				? sfb.f_ffree : -1;
+    }
+    return rc;
+}
+
+void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
+		uint_32 fileSize, uint_32 prevSize, uint_32 fixupSize,
+		fileAction action)
+{
+    rpmDiskSpaceInfo dsi;
+    uint_32 bneeded;
+
+    dsi = ts->dsi;
+    if (dsi) {
+	while (dsi->bsize && dsi->dev != dev)
+	    dsi++;
+	if (dsi->bsize == 0)
+	    dsi = NULL;
+    }
+    if (dsi == NULL)
+	return;
+
+    bneeded = BLOCK_ROUND(fileSize, dsi->bsize);
+
+    switch (action) {
+    case FA_BACKUP:
+    case FA_SAVE:
+    case FA_ALTNAME:
+	dsi->ineeded++;
+	dsi->bneeded += bneeded;
+	/*@switchbreak@*/ break;
+
+    /*
+     * FIXME: If two packages share a file (same md5sum), and
+     * that file is being replaced on disk, will dsi->bneeded get
+     * adjusted twice? Quite probably!
+     */
+    case FA_CREATE:
+	dsi->bneeded += bneeded;
+	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->bsize);
+	/*@switchbreak@*/ break;
+
+    case FA_ERASE:
+	dsi->ineeded--;
+	dsi->bneeded -= bneeded;
+	/*@switchbreak@*/ break;
+
+    default:
+	/*@switchbreak@*/ break;
+    }
+
+    if (fixupSize)
+	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->bsize);
+}
+
+void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
+{
+    rpmDiskSpaceInfo dsi;
+    rpmps ps;
+    int fc;
+    int i;
+
+    if (ts->filesystems == NULL || ts->filesystemCount <= 0)
+	return;
+
+    dsi = ts->dsi;
+    if (dsi == NULL)
+	return;
+    fc = rpmfiFC( rpmteFI(te, RPMTAG_BASENAMES) );
+    if (fc <= 0)
+	return;
+
+    ps = rpmtsGetProblems(ts);
+    for (i = 0; i < ts->filesystemCount; i++, dsi++) {
+
+	/* XXX Avoid FAT and other file systems that have not inodes. */
+	if (dsi->iavail <= 0)
+	     continue;
+
+	if (adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
+	    rpmpsAppend(ps, RPMPROB_DISKSPACE,
+			rpmteNEVR(te), rpmteKey(te),
+			ts->filesystems[i], NULL, NULL,
+ 	   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
+	}
+
+	if (adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
+	    rpmpsAppend(ps, RPMPROB_DISKNODES,
+			rpmteNEVR(te), rpmteKey(te),
+			ts->filesystems[i], NULL, NULL,
+ 	    (adj_fs_blocks(dsi->ineeded) - dsi->iavail));
+	}
+    }
+    ps = rpmpsFree(ps);
+}
+
+rpmtsFlags rpmtsGetFlags(rpmts ts)
 {
     rpmtsFlags otransFlags = 0;
     if (ts != NULL) {
@@ -521,7 +711,7 @@ rpmtsFlags rpmtsGetFlags(rpmTransactionSet ts)
     return otransFlags;
 }
 
-rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags transFlags)
+rpmtsFlags rpmtsSetFlags(rpmts ts, rpmtsFlags transFlags)
 {
     rpmtsFlags otransFlags = 0;
     if (ts != NULL) {
@@ -531,7 +721,7 @@ rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags transFlags)
     return otransFlags;
 }
 
-int rpmtsSetNotifyCallback(rpmTransactionSet ts,
+int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {
     if (ts != NULL) {
@@ -541,22 +731,22 @@ int rpmtsSetNotifyCallback(rpmTransactionSet ts,
     return 0;
 }
 
-int rpmtsGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
+int rpmtsGetKeys(const rpmts ts, fnpyKey ** ep, int * nep)
 {
     int rc = 0;
 
     if (nep) *nep = ts->orderCount;
     if (ep) {
-	teIterator pi;	transactionElement p;
+	rpmtei pi;	rpmte p;
 	fnpyKey * e;
 
 	*ep = e = xmalloc(ts->orderCount * sizeof(*e));
-	pi = teInitIterator(ts);
-	while ((p = teNextIterator(pi)) != NULL) {
-	    switch (teGetType(p)) {
+	pi = rpmteiInit(ts);
+	while ((p = rpmteiNext(pi, 0)) != NULL) {
+	    switch (rpmteType(p)) {
 	    case TR_ADDED:
 		/*@-dependenttrans@*/
-		*e = teGetKey(p);
+		*e = rpmteKey(p);
 		/*@=dependenttrans@*/
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
@@ -566,20 +756,20 @@ int rpmtsGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
 	    }
 	    e++;
 	}
-	pi = teFreeIterator(pi);
+	pi = rpmteiFree(pi);
     }
     return rc;
 }
 
-rpmTransactionSet rpmtsCreate(void)
+rpmts rpmtsCreate(void)
 {
-    rpmTransactionSet ts;
+    rpmts ts;
 
     ts = xcalloc(1, sizeof(*ts));
     ts->goal = TSM_UNKNOWN;
     ts->filesystemCount = 0;
     ts->filesystems = NULL;
-    ts->di = NULL;
+    ts->dsi = NULL;
 
     ts->rdb = NULL;
     ts->dbmode = O_RDONLY;

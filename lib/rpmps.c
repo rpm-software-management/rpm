@@ -1,11 +1,12 @@
 /**
- * \file lib/problems.c
+ * \file lib/rpmps.c
  */
 
 #include "system.h"
 
 #include <rpmlib.h>
 
+#include "rpmps.h"
 #include "rpmts.h"
 
 #include "misc.h"
@@ -18,7 +19,7 @@
 /*@unchecked@*/
 static int _ps_debug = 0;
 
-rpmProblemSet XrpmpsUnlink(rpmProblemSet ps, const char * msg,
+rpmps XrpmpsUnlink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
 /*@-modfilesystem@*/
@@ -31,7 +32,7 @@ fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=refcounttrans@*/
 }
 
-rpmProblemSet XrpmpsLink(rpmProblemSet ps, const char * msg,
+rpmps XrpmpsLink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
     ps->nrefs++;
@@ -44,13 +45,13 @@ fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=refcounttrans@*/
 }
 
-rpmProblemSet rpmProblemSetCreate(void)
+rpmps rpmpsCreate(void)
 {
-    rpmProblemSet ps = xcalloc(1, sizeof(*ps));
+    rpmps ps = xcalloc(1, sizeof(*ps));
     return rpmpsLink(ps, "create");
 }
 
-rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
+rpmps rpmpsFree(rpmps ps)
 {
     if (ps == NULL) return NULL;
     ps = rpmpsUnlink(ps, "dereference");
@@ -71,7 +72,7 @@ rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
     return NULL;
 }
 
-void rpmProblemSetAppend(rpmProblemSet ps, rpmProblemType type,
+void rpmpsAppend(rpmps ps, rpmProblemType type,
 		const char * pkgNEVR, fnpyKey key,
 		const char * dn, const char * bn,
 		const char * altNEVR, unsigned long ulong1)
@@ -114,7 +115,7 @@ void rpmProblemSetAppend(rpmProblemSet ps, rpmProblemType type,
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
-int rpmProblemSetTrim(rpmProblemSet ps, rpmProblemSet filter)
+int rpmpsTrim(rpmps ps, rpmps filter)
 {
     rpmProblem t;
     rpmProblem f;
@@ -291,7 +292,7 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
     msg = _free(msg);
 }
 
-void rpmProblemSetPrint(FILE *fp, rpmProblemSet ps)
+void rpmpsPrint(FILE *fp, rpmps ps)
 {
     int i;
 
@@ -329,8 +330,8 @@ static int sameProblem(const rpmProblem ap, const rpmProblem bp)
     return 0;
 }
 
-/* XXX FIXME: merge into rpmProblemSetPrint */
-void printDepProblems(FILE * fp, rpmProblemSet ps)
+/* XXX FIXME: merge into rpmpsPrint */
+void printDepProblems(FILE * fp, rpmps ps)
 {
     int i;
 

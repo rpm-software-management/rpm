@@ -3,7 +3,7 @@
 
 /** \ingroup rpmts
  * \file lib/rpmts.h
- * Structures and prototypes used for an rpmTransactionSet
+ * Structures and prototypes used for an "rpmts" transaction set.
  */
 
 #include <rpmhash.h>	/* XXX hashTable */
@@ -19,6 +19,32 @@ extern int _ts_debug;
 extern int _cacheDependsRC;
 /*@=exportlocal@*/
 
+/** \ingroup rpmts
+ */
+typedef	/*@abstract@*/ struct diskspaceInfo_s * rpmDiskSpaceInfo;
+
+/** \ingroup rpmts
+ */
+struct diskspaceInfo_s {
+    dev_t dev;			/*!< File system device number. */
+    signed long bneeded;	/*!< No. of blocks needed. */
+    signed long ineeded;	/*!< No. of inodes needed. */
+    int bsize;			/*!< File system block size. */
+    signed long bavail;		/*!< No. of blocks available. */
+    signed long iavail;		/*!< No. of inodes available. */
+};
+
+/** \ingroup rpmts
+ * Adjust for root only reserved space. On linux e2fs, this is 5%.
+ */
+#define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
+
+/* argon thought a shift optimization here was a waste of time...  he's
+   probably right :-( */
+#define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
+
+/** \ingroup rpmts
+ */
 typedef enum tsStage_e {
     TSM_UNKNOWN		=  0,
     TSM_INSTALL		=  7,
@@ -28,12 +54,12 @@ typedef enum tsStage_e {
 /** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
  */
-struct rpmTransactionSet_s {
+struct rpmts_s {
     rpmtsFlags transFlags;	/*!< Bit(s) to control operation. */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
 
 /*@null@*/
-    int (*solve) (rpmTransactionSet ts, const rpmDepSet key)
+    int (*solve) (rpmts ts, const rpmds key)
 	/*@modifies ts @*/;	/*!< Search for NEVRA key. */
     int nsuggests;		/*!< No. of depCheck suggestions. */
 /*@only@*/ /*@null@*/
@@ -47,7 +73,7 @@ struct rpmTransactionSet_s {
     rpmCallbackData notifyData;	/*!< Callback private data. */
 
 /*@refcounted@*/ /*@null@*/
-    rpmProblemSet probs;	/*!< Current problems in transaction. */
+    rpmps probs;		/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
 
@@ -55,7 +81,7 @@ struct rpmTransactionSet_s {
 /*@dependent@*/ /*@null@*/
     const char ** filesystems;	/*!< Mounted filesystem names. */
 /*@only@*/ /*@null@*/
-    struct diskspaceInfo * di;	/*!< Per filesystem disk/inode usage. */
+    rpmDiskSpaceInfo dsi;	/*!< Per filesystem disk/inode usage. */
 
     int dbmode;			/*!< Database open mode. */
 /*@refcounted@*/ /*@null@*/
@@ -78,7 +104,7 @@ struct rpmTransactionSet_s {
     int numAvailablePackages;	/*!< No. available package instances. */
 
 /*@owned@*/
-    transactionElement * order;	/*!< Packages sorted by dependencies. */
+    rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
 
@@ -128,7 +154,7 @@ extern "C" {
  * @param ts		transaction set
  * @return		0 on success
  */
-int rpmtsCheck(rpmTransactionSet ts)
+int rpmtsCheck(rpmts ts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, fileSystem, internalState @*/;
 
@@ -151,7 +177,7 @@ int rpmtsCheck(rpmTransactionSet ts)
  * @param ts		transaction set
  * @return		no. of (added) packages that could not be ordered
  */
-int rpmtsOrder(rpmTransactionSet ts)
+int rpmtsOrder(rpmts ts)
 	/*@globals fileSystem, internalState@*/
 	/*@modifies ts, fileSystem, internalState @*/;
 
@@ -163,9 +189,7 @@ int rpmtsOrder(rpmTransactionSet ts)
  * @param ignoreSet	bits to filter problem types
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
-int rpmtsRun(rpmTransactionSet ts,
-			rpmProblemSet okProbs,
-			rpmprobFilterFlags ignoreSet)
+int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
 	/*@modifies ts, rpmGlobalMacroContext,
@@ -178,13 +202,13 @@ int rpmtsRun(rpmTransactionSet ts,
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
-rpmTransactionSet rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
+rpmts rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmts ts,
 		const char * msg)
 	/*@modifies ts @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@null@*/
-rpmTransactionSet XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
+rpmts XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmts ts,
 		const char * msg, const char * fn, unsigned ln)
 	/*@modifies ts @*/;
 #define	rpmtsUnlink(_ts, _msg)	XrpmtsUnlink(_ts, _msg, __FILE__, __LINE__)
@@ -196,11 +220,11 @@ rpmTransactionSet XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
  * @return		new transaction set reference
  */
 /*@unused@*/
-rpmTransactionSet rpmtsLink (rpmTransactionSet ts, const char * msg)
+rpmts rpmtsLink (rpmts ts, const char * msg)
 	/*@modifies ts @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-rpmTransactionSet XrpmtsLink (rpmTransactionSet ts,
+rpmts XrpmtsLink (rpmts ts,
 		const char * msg, const char * fn, unsigned ln)
         /*@modifies ts @*/;
 #define	rpmtsLink(_ts, _msg)	XrpmtsLink(_ts, _msg, __FILE__, __LINE__)
@@ -210,7 +234,7 @@ rpmTransactionSet XrpmtsLink (rpmTransactionSet ts,
  * @param ts		transaction set
  * @return		0 on success
  */
-int rpmtsCloseDB(rpmTransactionSet ts)
+int rpmtsCloseDB(rpmts ts)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/;
 
@@ -220,7 +244,7 @@ int rpmtsCloseDB(rpmTransactionSet ts)
  * @param dbmode	O_RDONLY or O_RDWR
  * @return		0 on success
  */
-int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
+int rpmtsOpenDB(rpmts ts, int dbmode)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, fileSystem, internalState @*/;
 
@@ -233,7 +257,7 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/
-rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, int rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/;
@@ -245,7 +269,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
  * @return		0 if resolved (and added to ts), 1 not found
  */
 /*@-exportlocal@*/
-int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
+int rpmtsSolve(rpmts ts, rpmds ds)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 /*@=exportlocal@*/
@@ -257,7 +281,7 @@ int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
  * @return		0 if resolved (and added to ts), 1 not found
  */
 /*@unused@*/
-int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
+int rpmtsAvailable(rpmts ts, const rpmds ds)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/;
 
@@ -267,14 +291,14 @@ int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
  * @return		current problem set (or NULL)
  */
 /*@null@*/
-rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
+rpmps rpmtsGetProblems(rpmts ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
  * Re-create an empty transaction set.
  * @param ts		transaction set
  */
-void rpmtsClean(rpmTransactionSet ts)
+void rpmtsClean(rpmts ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -283,8 +307,7 @@ void rpmtsClean(rpmTransactionSet ts)
  * @return		NULL always
  */
 /*@null@*/
-rpmTransactionSet
-rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmTransactionSet ts)
+rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/;
 
@@ -294,7 +317,7 @@ rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmTransactionSet ts)
  * @param vsflags	new verify signatures flags
  * @retrun		previous value
  */
-int rpmtsSetVerifySigFlags(rpmTransactionSet ts, int vsflags)
+int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -303,7 +326,7 @@ int rpmtsSetVerifySigFlags(rpmTransactionSet ts, int vsflags)
  * @return		transaction rootDir
  */
 /*@observer@*/ /*@null@*/
-const char * rpmtsGetRootDir(rpmTransactionSet ts)
+const char * rpmtsGetRootDir(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -311,7 +334,7 @@ const char * rpmtsGetRootDir(rpmTransactionSet ts)
  * @param ts		transaction set
  * @param rootDir	new transaction rootDir (or NULL)
  */
-void rpmtsSetRootDir(rpmTransactionSet ts, /*@null@*/ const char * rootDir)
+void rpmtsSetRootDir(rpmts ts, /*@null@*/ const char * rootDir)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -320,7 +343,7 @@ void rpmtsSetRootDir(rpmTransactionSet ts, /*@null@*/ const char * rootDir)
  * @return		transaction currDir
  */
 /*@observer@*/ /*@null@*/
-const char * rpmtsGetCurrDir(rpmTransactionSet ts)
+const char * rpmtsGetCurrDir(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -328,7 +351,7 @@ const char * rpmtsGetCurrDir(rpmTransactionSet ts)
  * @param ts		transaction set
  * @param currDir	new transaction currDir (or NULL)
  */
-void rpmtsSetCurrDir(rpmTransactionSet ts, /*@null@*/ const char * currDir)
+void rpmtsSetCurrDir(rpmts ts, /*@null@*/ const char * currDir)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -337,7 +360,7 @@ void rpmtsSetCurrDir(rpmTransactionSet ts, /*@null@*/ const char * currDir)
  * @return		transaction script file handle
  */
 /*@null@*/
-FD_t rpmtsGetScriptFd(rpmTransactionSet ts)
+FD_t rpmtsGetScriptFd(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -345,7 +368,7 @@ FD_t rpmtsGetScriptFd(rpmTransactionSet ts)
  * @param ts		transaction set
  * @param scriptFd	new script file handle (or NULL)
  */
-void rpmtsSetScriptFd(rpmTransactionSet ts, /*@null@*/ FD_t scriptFd)
+void rpmtsSetScriptFd(rpmts ts, /*@null@*/ FD_t scriptFd)
 	/*@modifies ts, scriptFd @*/;
 
 /** \ingroup rpmts
@@ -353,7 +376,7 @@ void rpmtsSetScriptFd(rpmTransactionSet ts, /*@null@*/ FD_t scriptFd)
  * @param ts		transaction set
  * @return		chrootDone flag
  */
-int rpmtsGetChrootDone(rpmTransactionSet ts)
+int rpmtsGetChrootDone(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -362,7 +385,7 @@ int rpmtsGetChrootDone(rpmTransactionSet ts)
  * @param chrootDone	new chrootDone flag
  * @return		previous chrootDone flag
  */
-int rpmtsSetChrootDone(rpmTransactionSet ts, int chrootDone)
+int rpmtsSetChrootDone(rpmts ts, int chrootDone)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -370,7 +393,7 @@ int rpmtsSetChrootDone(rpmTransactionSet ts, int chrootDone)
  * @param ts		transaction set
  * @return		chrootDone flag
  */
-int_32 rpmtsGetTid(rpmTransactionSet ts)
+int_32 rpmtsGetTid(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -379,7 +402,7 @@ int_32 rpmtsGetTid(rpmTransactionSet ts)
  * @param tid		new transaction id
  * @return		previous transaction id
  */
-int_32 rpmtsSetTid(rpmTransactionSet ts, int_32 tid)
+int_32 rpmtsSetTid(rpmts ts, int_32 tid)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -388,24 +411,55 @@ int_32 rpmtsSetTid(rpmTransactionSet ts, int_32 tid)
  * @return		transaction database handle
  */
 /*@null@*/
-rpmdb rpmtsGetRdb(rpmTransactionSet ts)
+rpmdb rpmtsGetRdb(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
- * Get transaction flags, i.e. bits to control rpmtsRun().
+ * Initialize disk space info for each and every mounted file systems.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+int rpmtsInitDSI(const rpmts ts)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Update disk space info for a file.
+ * @param ts		transaction set
+ * @param dev		mount point device
+ * @param fileSize	file size
+ * @param prevSize	previous file size (if upgrading)
+ * @param fixupSize	size difference (if
+ * @param action	file disposition
+ */
+void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
+		uint_32 fileSize, uint_32 prevSize, uint_32 fixupSize,
+		fileAction action)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Check a transaction element for disk space problems.
+ * @param ts		transaction set
+ * @param te		current transaction element
+ */
+void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get transaction flags, i.e. bits that control rpmtsRun().
  * @param ts		transaction set
  * @return		transaction flags
  */
-rpmtsFlags rpmtsGetFlags(rpmTransactionSet ts)
+rpmtsFlags rpmtsGetFlags(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
- * Set transaction flags, i.e. bits to control rpmtsRun().
+ * Set transaction flags, i.e. bits that control rpmtsRun().
  * @param ts		transaction set
  * @param transFlags	new transaction flags
  * @return		previous transaction flags
  */
-rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags transFlags)
+rpmtsFlags rpmtsSetFlags(rpmts ts, rpmtsFlags transFlags)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -419,7 +473,7 @@ rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags transFlags)
  * @param notifyData	progress callback private data
  * @return		0 on success
  */
-int rpmtsSetNotifyCallback(rpmTransactionSet ts,
+int rpmtsSetNotifyCallback(rpmts ts,
 		/*@observer@*/ rpmCallbackFunction notify,
 		/*@observer@*/ rpmCallbackData notifyData)
 	/*@modifies ts @*/;
@@ -429,7 +483,7 @@ int rpmtsSetNotifyCallback(rpmTransactionSet ts,
  * @return		new transaction set
  */
 /*@only@*/
-rpmTransactionSet rpmtsCreate(void)
+rpmts rpmtsCreate(void)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -449,7 +503,7 @@ rpmTransactionSet rpmtsCreate(void)
  * @param relocs	package file relocations
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
  */
-int rpmtsAddPackage(rpmTransactionSet ts, Header h,
+int rpmtsAddPackage(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
 	/*@globals fileSystem, internalState @*/
@@ -463,7 +517,7 @@ int rpmtsAddPackage(rpmTransactionSet ts, Header h,
  * @param key		package private data
  */
 /*@unused@*/
-void rpmtsAvailablePackage(rpmTransactionSet ts, Header h,
+void rpmtsAvailablePackage(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ fnpyKey key)
 	/*@modifies h, ts @*/;
 
@@ -474,7 +528,7 @@ void rpmtsAvailablePackage(rpmTransactionSet ts, Header h,
  * @param dboffset	rpm database instance
  * @return		0 on success
  */
-int rpmtsRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
+int rpmtsRemovePackage(rpmts ts, Header h, int dboffset)
 	/*@modifies ts, h @*/;
 
 /** \ingroup rpmts
@@ -486,7 +540,7 @@ int rpmtsRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
  * @return		0 always
  */
 /*@unused@*/
-int rpmtsGetKeys(rpmTransactionSet ts,
+int rpmtsGetKeys(rpmts ts,
 		/*@null@*/ /*@out@*/ fnpyKey ** ep,
 		/*@null@*/ /*@out@*/ int * nep)
 	/*@modifies ts, ep, nep @*/;

@@ -7,23 +7,24 @@
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
+#include "rpmps.h"
 #include "rpmte.h"
 #include "rpmts.h"
 
 #include "build.h"
 #include "debug.h"
 
-/*@access rpmTransactionSet @*/	/* XXX compared with NULL @*/
+/*@access rpmts @*/	/* XXX compared with NULL @*/
 /*@access rpmdb @*/		/* XXX compared with NULL @*/
 /*@access FD_t @*/		/* XXX compared with NULL @*/
 
 /**
  */
-static int checkSpec(rpmTransactionSet ts, Header h)
+static int checkSpec(rpmts ts, Header h)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, h, fileSystem, internalState @*/
 {
-    rpmProblemSet ps;
+    rpmps ps;
     int rc;
 
     if (!headerIsEntry(h, RPMTAG_REQUIRENAME)
@@ -40,7 +41,7 @@ static int checkSpec(rpmTransactionSet ts, Header h)
 	printDepProblems(stderr, ps);
 	rc = 1;
     }
-    ps = rpmProblemSetFree(ps);
+    ps = rpmpsFree(ps);
 
     /* XXX nuke the added package. */
     rpmtsClean(ts);
@@ -94,7 +95,7 @@ static int isSpecFile(const char * specfile)
 
 /**
  */
-static int buildForTarget(rpmTransactionSet ts, const char * arg, BTA_t ba)
+static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext,
@@ -288,7 +289,7 @@ exit:
     return rc;
 }
 
-int build(rpmTransactionSet ts, const char * arg, BTA_t ba, const char * rcfile)
+int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 {
     char *t, *te;
     int rc = 0;

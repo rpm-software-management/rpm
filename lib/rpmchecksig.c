@@ -10,6 +10,7 @@
 #include "rpmpgp.h"
 
 #include "rpmdb.h"
+#include "rpmps.h"
 #include "rpmts.h"
 
 #include "rpmlead.h"
@@ -17,7 +18,7 @@
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
-/*@access rpmTransactionSet @*/	/* ts->dig et al */
+/*@access rpmts @*/	/* ts->dig et al */
 /*?access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX stealing digests */
 /*@access pgpDig @*/
@@ -130,7 +131,7 @@ exit:
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
+static int rpmReSign(/*@unused@*/ rpmts ts,
 		QVA_t qva, const char ** argv)
         /*@globals rpmGlobalMacroContext,
                 fileSystem, internalState @*/
@@ -328,7 +329,7 @@ exit:
  * @param argv		array of pubkey file names (NULL terminated)
  * @return		0 on success
  */
-static int rpmImportPubkey(const rpmTransactionSet ts,
+static int rpmImportPubkey(const rpmts ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
 	/*@globals RPMVERSION, fileSystem, internalState @*/
@@ -550,7 +551,7 @@ exit:
     return rc;
 }
 
-int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
+int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
     int res2, res3;
@@ -853,7 +854,7 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
     return res;
 }
 
-int rpmcliSign(rpmTransactionSet ts, QVA_t qva, const char ** argv)
+int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 {
     const char * arg;
     int dbmode = (qva->qva_mode != RPMSIGN_IMPORT_PUBKEY)

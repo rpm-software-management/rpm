@@ -86,7 +86,7 @@ static const char * ftsInfoStr(int fts_info) {
     return ftsInfoStrings[ fts_info ];
 }
 
-static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
+static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmts ts)
 {
     struct ftsglob_s * bhg;
     const char ** patterns;
@@ -290,7 +290,7 @@ main(int argc, const char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     const char * rootDir = "";
-    rpmTransactionSet ts = NULL;
+    rpmts ts = NULL;
     FTS * ftsp;
     int ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
     FTSENT * fts;
@@ -370,7 +370,7 @@ if (!_debug) {
 
 #ifdef	NOTYET
 if (!_debug) {
-    {	rpmProblemSet ps;
+    {	rpmps ps;
 
 	xx = rpmtsCheck(ts);
 
@@ -379,7 +379,7 @@ if (!_debug) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    printDepProblems(stderr, ps);
 	}
-	ps = rpmProblemSetFree(ts);
+	ps = rpmpsFree(ts);
     }
 
     (void) rpmtsOrder(ts);

@@ -371,7 +371,6 @@ INPUT                  = \
 	@top_srcdir@/lib/package.c \
 	@top_srcdir@/lib/poptI.c \
 	@top_srcdir@/lib/poptQV.c \
-	@top_srcdir@/lib/problems.c \
 	@top_srcdir@/lib/psm.c \
 	@top_srcdir@/lib/psm.h \
 	@top_srcdir@/lib/query.c \
@@ -386,6 +385,8 @@ INPUT                  = \
 	@top_srcdir@/lib/rpmlead.h \
 	@top_srcdir@/lib/rpmlib.h \
 	@top_srcdir@/lib/rpmlibprov.c \
+	@top_srcdir@/lib/rpmps.c \
+	@top_srcdir@/lib/rpmps.h \
 	@top_srcdir@/lib/rpmrc.c \
 	@top_srcdir@/lib/rpmte.c \
 	@top_srcdir@/lib/rpmte.h \

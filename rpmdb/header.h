@@ -58,7 +58,7 @@
  * will be added to headers.
  *
  * - Private header methods.
- *	- Private methods for the transaction element file info TFI_t may
+ *	- Private methods for the transaction element file info rpmfi may
  *	  be used as proof-of-concept, binary XML may be implemented
  *	  as a header format representation soon thereafter.
  * - DSA signature for header metadata.

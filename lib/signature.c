@@ -8,6 +8,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
+#include "rpmps.h"
 
 #include "rpmts.h"
 
@@ -17,7 +18,7 @@
 #include "signature.h"
 #include "debug.h"
 
-/*@access rpmTransactionSet@*/
+/*@access rpmts @*/
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access DIGEST_CTX@*/		/* XXX compared with NULL */
@@ -790,7 +791,7 @@ static /*@observer@*/ const char * rpmSigString(rpmVerifySignatureReturn res)
 }
 
 static rpmVerifySignatureReturn
-verifySizeSignature(const rpmTransactionSet ts, /*@out@*/ char * t)
+verifySizeSignature(const rpmts ts, /*@out@*/ char * t)
 	/*@modifies *t @*/
 {
     rpmVerifySignatureReturn res;
@@ -824,7 +825,7 @@ exit:
 }
 
 static rpmVerifySignatureReturn
-verifyMD5Signature(const rpmTransactionSet ts, /*@out@*/ char * t,
+verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
 	/*@modifies *t @*/
 {
@@ -874,7 +875,7 @@ exit:
  * @return 		RPMSIG_OK on success
  */
 static rpmVerifySignatureReturn
-verifySHA1Signature(const rpmTransactionSet ts, /*@out@*/ char * t,
+verifySHA1Signature(const rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
 	/*@modifies *t @*/
 {
@@ -920,7 +921,7 @@ exit:
  * @return		RPMSIG_OK on success, RPMSIG_NOKEY if not found
  */
 static rpmVerifySignatureReturn
-rpmtsFindPubkey(rpmTransactionSet ts)
+rpmtsFindPubkey(rpmts ts)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, fileSystem, internalState */
 {
@@ -1058,7 +1059,7 @@ static inline unsigned char nibble(char c)
  * @return 		RPMSIG_OK on success
  */
 static rpmVerifySignatureReturn
-verifyPGPSignature(rpmTransactionSet ts, /*@out@*/ char * t,
+verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, *t, fileSystem, internalState */
@@ -1167,7 +1168,7 @@ exit:
  * @return 		RPMSIG_OK on success
  */
 static rpmVerifySignatureReturn
-verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t,
+verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, *t, fileSystem, internalState */
@@ -1249,7 +1250,7 @@ exit:
 }
 
 rpmVerifySignatureReturn
-rpmVerifySignature(const rpmTransactionSet ts, char * result)
+rpmVerifySignature(const rpmts ts, char * result)
 {
     rpmVerifySignatureReturn res;
 

@@ -22,7 +22,7 @@ struct sharedFileInfo_s {
 /**
  * A package filename set.
  */
-struct TFI_s {
+struct rpmfi_s {
     int i;			/*!< Current file index. */
     int j;			/*!< Current directory index. */
 
@@ -78,7 +78,7 @@ struct TFI_s {
 
 /*=============================*/
 /*@dependent@*/
-    transactionElement te;
+    rpmte te;
 
     HGE_t hge;			/*!< Vector to headerGetEntry() */
     HAE_t hae;			/*!< Vector to headerAddEntry() */
@@ -127,7 +127,7 @@ struct TFI_s {
     uint_32 * replacedSizes;	/*!< (TR_ADDED) */
     unsigned int record;	/*!< (TR_REMOVED) */
     int magic;
-#define	TFIMAGIC	0x09697923
+#define	RPMFIMAGIC	0x09697923
 /*=============================*/
 
 /*@refs@*/ int nrefs;		/*!< Reference count. */
@@ -143,14 +143,14 @@ extern "C" {
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
-TFI_t rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi,
+rpmfi rpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 		/*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@-exportlocal@*/
 /*@null@*/
-TFI_t XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi,
+rpmfi XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi,
 		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies fi @*/;
 /*@=exportlocal@*/
@@ -162,11 +162,11 @@ TFI_t XrpmfiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi,
  * @return		new file info set reference
  */
 /*@unused@*/
-TFI_t rpmfiLink (/*@null@*/ TFI_t fi, /*@null@*/ const char * msg)
+rpmfi rpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg)
 	/*@modifies fi @*/;
 
 /** @todo Remove debugging entry from the ABI. */
-TFI_t XrpmfiLink (/*@null@*/ TFI_t fi, /*@null@*/ const char * msg,
+rpmfi XrpmfiLink (/*@null@*/ rpmfi fi, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
         /*@modifies fi @*/;
 #define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
@@ -177,7 +177,7 @@ TFI_t XrpmfiLink (/*@null@*/ TFI_t fi, /*@null@*/ const char * msg,
  * @return		transaction element file info key
  */
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
-fnpyKey rpmfiGetKey(TFI_t fi)
+fnpyKey rpmfiKey(rpmfi fi)
 	/*@*/;
 
 /**
@@ -185,7 +185,7 @@ fnpyKey rpmfiGetKey(TFI_t fi)
  * @param fi		file info set
  * @return		current file count
  */
-int tfiGetFC(/*@null@*/ TFI_t fi)
+int rpmfiFC(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -194,7 +194,7 @@ int tfiGetFC(/*@null@*/ TFI_t fi)
  * @return		current file index
  */
 /*@unused@*/
-int tfiGetFX(/*@null@*/ TFI_t fi)
+int rpmfiFX(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -204,7 +204,7 @@ int tfiGetFX(/*@null@*/ TFI_t fi)
  * @return		current file index
  */
 /*@unused@*/
-int tfiSetFX(/*@null@*/ TFI_t fi, int fx)
+int rpmfiSetFX(/*@null@*/ rpmfi fi, int fx)
 	/*@modifies fi @*/;
 
 /**
@@ -212,7 +212,7 @@ int tfiSetFX(/*@null@*/ TFI_t fi, int fx)
  * @param fi		file info set
  * @return		current directory count
  */
-int tfiGetDC(/*@null@*/ TFI_t fi)
+int rpmfiDC(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -220,7 +220,7 @@ int tfiGetDC(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current directory index
  */
-int tfiGetDX(/*@null@*/ TFI_t fi)
+int rpmfiDX(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -229,7 +229,7 @@ int tfiGetDX(/*@null@*/ TFI_t fi)
  * @param fx		new directory index
  * @return		current directory index
  */
-int tfiSetDX(/*@null@*/ TFI_t fi, int dx)
+int rpmfiSetDX(/*@null@*/ rpmfi fi, int dx)
 	/*@modifies fi @*/;
 
 /**
@@ -238,7 +238,7 @@ int tfiSetDX(/*@null@*/ TFI_t fi, int dx)
  * @return		current base name, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * tfiGetBN(/*@null@*/ TFI_t fi)
+const char * rpmfiBN(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -247,7 +247,7 @@ const char * tfiGetBN(/*@null@*/ TFI_t fi)
  * @return		current directory, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * tfiGetDN(/*@null@*/ TFI_t fi)
+const char * rpmfiDN(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -256,7 +256,7 @@ const char * tfiGetDN(/*@null@*/ TFI_t fi)
  * @return		current file name
  */
 /*@observer@*/
-const char * tfiGetFN(/*@null@*/ TFI_t fi)
+const char * rpmfiFN(/*@null@*/ rpmfi fi)
 	/*@modifies fi @*/;
 
 /**
@@ -264,7 +264,7 @@ const char * tfiGetFN(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
  */
-int_32 tfiGetFFlags(/*@null@*/ TFI_t fi)
+int_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -272,7 +272,7 @@ int_32 tfiGetFFlags(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current file verify flags, 0 on invalid
  */
-int_32 tfiGetVFlags(/*@null@*/ TFI_t fi)
+int_32 rpmfiVFlags(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -280,7 +280,7 @@ int_32 tfiGetVFlags(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current file mode, 0 on invalid
  */
-int_16 tfiGetFMode(/*@null@*/ TFI_t fi)
+int_16 rpmfiFMode(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -288,7 +288,7 @@ int_16 tfiGetFMode(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current file state, 0 on invalid
  */
-rpmfileState tfiGetFState(/*@null@*/ TFI_t fi)
+rpmfileState rpmfiFState(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -297,7 +297,7 @@ rpmfileState tfiGetFState(/*@null@*/ TFI_t fi)
  * @return		current file md5 digest, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const unsigned char * tfiGetMD5(/*@null@*/ TFI_t fi)
+const unsigned char * rpmfiMD5(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -306,7 +306,7 @@ const unsigned char * tfiGetMD5(/*@null@*/ TFI_t fi)
  * @return		current file linkto, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * tfiGetFLink(/*@null@*/ TFI_t fi)
+const char * rpmfiFLink(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -314,7 +314,7 @@ const char * tfiGetFLink(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current file size, 0 on invalid
  */
-int_32 tfiGetFSize(/*@null@*/ TFI_t fi)
+int_32 rpmfiFSize(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -322,7 +322,7 @@ int_32 tfiGetFSize(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current file rdev, 0 on invalid
  */
-int_16 tfiGetFRdev(/*@null@*/ TFI_t fi)
+int_16 rpmfiFRdev(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -330,7 +330,7 @@ int_16 tfiGetFRdev(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current file modify time, 0 on invalid
  */
-int_32 tfiGetFMtime(/*@null@*/ TFI_t fi)
+int_32 rpmfiFMtime(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -339,7 +339,7 @@ int_32 tfiGetFMtime(/*@null@*/ TFI_t fi)
  * @return		current file owner, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * tfiGetFUser(/*@null@*/ TFI_t fi)
+const char * rpmfiFUser(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -348,7 +348,7 @@ const char * tfiGetFUser(/*@null@*/ TFI_t fi)
  * @return		current file group, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * tfiGetFGroup(/*@null@*/ TFI_t fi)
+const char * rpmfiFGroup(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -356,7 +356,7 @@ const char * tfiGetFGroup(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		file iterator index, -1 on termination
  */
-int tfiNext(/*@null@*/ TFI_t fi)
+int rpmfiNext(/*@null@*/ rpmfi fi)
 	/*@modifies fi @*/;
 
 /**
@@ -366,7 +366,7 @@ int tfiNext(/*@null@*/ TFI_t fi)
  * @return		file info set
  */
 /*@null@*/
-TFI_t tfiInit(/*@null@*/ TFI_t fi, int fx)
+rpmfi rpmfiInit(/*@null@*/ rpmfi fi, int fx)
 	/*@modifies fi @*/;
 
 /**
@@ -375,7 +375,7 @@ TFI_t tfiInit(/*@null@*/ TFI_t fi, int fx)
  * @return		directory iterator index, -1 on termination
  */
 /*@unused@*/
-int tdiNext(/*@null@*/ TFI_t fi)
+int rpmfiNextD(/*@null@*/ rpmfi fi)
 	/*@modifies fi @*/;
 
 /**
@@ -385,7 +385,7 @@ int tdiNext(/*@null@*/ TFI_t fi)
  * @return		file info set, NULL if dx is out of range
  */
 /*@unused@*/ /*@null@*/
-TFI_t tdiInit(/*@null@*/ TFI_t fi, int dx)
+rpmfi rpmfiInitD(/*@null@*/ rpmfi fi, int dx)
 	/*@modifies fi @*/;
 
 /**
@@ -395,7 +395,7 @@ TFI_t tdiInit(/*@null@*/ TFI_t fi, int dx)
  * @return		NULL always
  */
 /*@null@*/
-TFI_t fiFree(/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi, int freefimem)
+rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi, int freefimem)
 	/*@modifies fi@*/;
 
 /**
@@ -408,7 +408,7 @@ TFI_t fiFree(/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi, int freefimem)
  * @return		new file set
  */
 /*@null@*/
-TFI_t fiNew(rpmTransactionSet ts, /*@null@*/ TFI_t fi,
+rpmfi rpmfiNew(rpmts ts, /*@null@*/ rpmfi fi,
 		Header h, rpmTag tagN, int scareMem)
 	/*@modifies ts, fi, h @*/;
 

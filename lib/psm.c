@@ -8,6 +8,8 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
+#include "rpmps.h"
+
 #include "cpio.h"
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "psm.h"
@@ -28,19 +30,19 @@
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
 
-/*@access Header@*/		/* compared with NULL */
-/*@access rpmdbMatchIterator@*/ /* compared with NULL */
-/*@access FD_t@*/		/* compared with NULL */
-/*@access rpmdb@*/		/* compared with NULL */
+/*@access Header @*/		/* compared with NULL */
+/*@access rpmdbMatchIterator @*//* compared with NULL */
+/*@access FD_t @*/		/* compared with NULL */
+/*@access rpmdb @*/		/* compared with NULL */
 
-/*@access FSM_t@*/		/* compared with NULL */
-/*@access PSM_t@*/
+/*@access FSM_t @*/		/* compared with NULL */
+/*@access PSM_t @*/
 
-/*@access TFI_t@*/
-/*@access transactionElement@*/	/* XXX rpmInstallSourcePackage */
+/*@access rpmfi @*/
+/*@access rpmte @*/	/* XXX rpmInstallSourcePackage */
 
-/*@access alKey@*/
-/*@access rpmDepSet@*/
+/*@access alKey @*/
+/*@access rpmds @*/
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -78,9 +80,9 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-/*@observer@*/ const char *const fiTypeString(TFI_t fi)
+/*@observer@*/ const char *const fiTypeString(rpmfi fi)
 {
-    switch(teGetType(fi->te)) {
+    switch(rpmteType(fi->te)) {
     case TR_ADDED:	return " install";
     case TR_REMOVED:	return "   erase";
     default:		return "???";
@@ -110,7 +112,7 @@ static struct tagMacro {
  * @param h		header
  * @return		0 always
  */
-static int rpmInstallLoadMacros(TFI_t fi, Header h)
+static int rpmInstallLoadMacros(rpmfi fi, Header h)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
 {
@@ -157,7 +159,7 @@ static int rpmInstallLoadMacros(TFI_t fi, Header h)
  * @param newH		header to
  * @return		0 on success, 1 on failure
  */
-static int mergeFiles(TFI_t fi, Header h, Header newH)
+static int mergeFiles(rpmfi fi, Header h, Header newH)
 	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)fi->hge;
@@ -344,8 +346,8 @@ static int markReplacedFiles(const PSM_t psm)
 	/*@globals fileSystem@*/
 	/*@modifies psm, fileSystem @*/
 {
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
+    const rpmts ts = psm->ts;
+    rpmfi fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
     sharedFileInfo replaced = fi->replaced;
     sharedFileInfo sfi;
@@ -355,7 +357,7 @@ static int markReplacedFiles(const PSM_t psm)
     unsigned int prev;
     int num, xx;
 
-    if (!(tfiGetFC(fi) > 0 && fi->replaced))
+    if (!(rpmfiFC(fi) > 0 && fi->replaced))
 	return 0;
 
     num = prev = 0;
@@ -456,11 +458,11 @@ static rpmRC chkdir (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
-rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
+rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		const char ** specFilePtr, const char ** cookie)
 {
     int scareMem = 1;
-    TFI_t fi = NULL;
+    rpmfi fi = NULL;
     const char * _sourcedir = NULL;
     const char * _specdir = NULL;
     const char * specFile = NULL;
@@ -488,7 +490,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 
      (void) rpmtsAddPackage(ts, h, NULL, 0, NULL);
 
-    fi = fiNew(ts, fi, h, RPMTAG_BASENAMES, scareMem);
+    fi = rpmfiNew(ts, fi, h, RPMTAG_BASENAMES, scareMem);
     h = headerFree(h, "InstallSourcePackage");
 
     if (fi == NULL) {	/* XXX can't happen */
@@ -629,7 +631,7 @@ exit:
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
 	fi->te = NULL;
-	fi = fiFree(fi, 1);
+	fi = rpmfiFree(fi, 1);
     }
     /*@=branchstate@*/
 
@@ -690,8 +692,8 @@ static int runScript(PSM_t psm, Header h,
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState@*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
+    const rpmts ts = psm->ts;
+    rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     const char ** argv = NULL;
@@ -923,7 +925,7 @@ static rpmRC runInstScript(PSM_t psm)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    TFI_t fi = psm->fi;
+    rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     void ** progArgv;
@@ -978,11 +980,11 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
 		fileSystem, internalState @*/
 {
     int scareMem = 1;
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
+    const rpmts ts = psm->ts;
+    rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    rpmDepSet trigger = NULL;
+    rpmds trigger = NULL;
     const char ** triggerScripts;
     const char ** triggerProgs;
     int_32 * triggerIndices;
@@ -992,17 +994,17 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
 
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
 
-    trigger = dsiInit(dsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
+    trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
     if (trigger != NULL)
-    while (dsiNext(trigger) >= 0) {
+    while (rpmdsNext(trigger) >= 0) {
 	rpmTagType tit, tst, tpt;
 	const char * Name;
-	int_32 Flags = dsiGetFlags(trigger);
+	int_32 Flags = rpmdsFlags(trigger);
 #ifdef	LEGACY
 	int skip;
 #endif
 
-	if ((Name = dsiGetN(trigger)) == NULL)
+	if ((Name = rpmdsN(trigger)) == NULL)
 	    continue;   /* XXX can't happen */
 
 	if (strcmp(Name, sourceName))
@@ -1070,7 +1072,7 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
 	break;
     }
 
-    trigger = dsFree(trigger);
+    trigger = rpmdsFree(trigger);
 
     return rc;
 }
@@ -1086,12 +1088,12 @@ static int runTriggers(PSM_t psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
+    const rpmts ts = psm->ts;
+    rpmfi fi = psm->fi;
     int numPackage;
     rpmRC rc = RPMRC_OK;
 
-    numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), teGetN(psm->te)) + psm->countCorrection;
+    numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), rpmteN(psm->te)) + psm->countCorrection;
     if (numPackage < 0)
 	return 1;
 
@@ -1101,7 +1103,7 @@ static int runTriggers(PSM_t psm)
 	int countCorrection = psm->countCorrection;
 
 	psm->countCorrection = 0;
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, teGetN(psm->te), 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, rpmteN(psm->te), 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
 	}
@@ -1124,8 +1126,8 @@ static int runImmedTriggers(PSM_t psm)
 	/*@modifies psm, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
+    const rpmts ts = psm->ts;
+    rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     const char ** triggerNames;
@@ -1219,8 +1221,8 @@ static int runImmedTriggers(PSM_t psm)
 /*@-nullpass@*/ /* FIX: testing null annotation for fi->h */
 int psmStage(PSM_t psm, pkgStage stage)
 {
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
+    const rpmts ts = psm->ts;
+    rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HME_t hme = fi->hme;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -1234,31 +1236,31 @@ int psmStage(PSM_t psm, pkgStage stage)
 	break;
     case PSM_INIT:
 	rpmMessage(RPMMESS_DEBUG, _("%s: %s has %d files, test = %d\n"),
-		psm->stepName, teGetNEVR(psm->te),
-		tfiGetFC(fi), (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST));
+		psm->stepName, rpmteNEVR(psm->te),
+		rpmfiFC(fi), (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST));
 
 	/*
 	 * When we run scripts, we pass an argument which is the number of 
 	 * versions of this package that will be installed when we are
 	 * finished.
 	 */
-	psm->npkgs_installed = rpmdbCountPackages(rpmtsGetRdb(ts), teGetN(psm->te));
+	psm->npkgs_installed = rpmdbCountPackages(rpmtsGetRdb(ts), rpmteN(psm->te));
 	if (psm->npkgs_installed < 0) {
 	    rc = RPMRC_FAIL;
 	    break;
 	}
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    int fc = tfiGetFC(fi);
+	    int fc = rpmfiFC(fi);
 
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
 assert(psm->mi == NULL);
-	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, teGetN(psm->te), 0);
+	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te), 0);
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION,
-			RPMMIRE_DEFAULT, teGetV(psm->te));
+			RPMMIRE_DEFAULT, rpmteV(psm->te));
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE,
-			RPMMIRE_DEFAULT, teGetR(psm->te));
+			RPMMIRE_DEFAULT, rpmteR(psm->te));
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
@@ -1355,7 +1357,7 @@ assert(psm->mi == NULL);
 		    rpmError(RPMERR_SCRIPT,
 			_("%s: %s scriptlet failed (%d), skipping %s\n"),
 			psm->stepName, tag2sln(psm->scriptTag), rc,
-			teGetNEVR(psm->te));
+			rpmteNEVR(psm->te));
 		    break;
 		}
 	    }
@@ -1442,7 +1444,7 @@ assert(psm->mi == NULL);
 		lead.osnum = osnum;
 		lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
-		strncpy(lead.name, teGetNEVR(psm->te), sizeof(lead.name));
+		strncpy(lead.name, rpmteNEVR(psm->te), sizeof(lead.name));
 
 		rc = writeLead(psm->fd, &lead);
 		if (rc) {
@@ -1483,9 +1485,9 @@ assert(psm->mi == NULL);
 	    if (fi->fc <= 0)				break;
 	    for (i = 0; i < fi->fc; i++)
 #else
-	    if (tfiGetFC(fi) <= 0)			break;
-	    (void) tfiInit(fi, 0);
-	    while ((i = tfiNext(fi)) >= 0)
+	    if (rpmfiFC(fi) <= 0)			break;
+	    (void) rpmfiInit(fi, 0);
+	    while ((i = rpmfiNext(fi)) >= 0)
 #endif
 	    {
 		uid_t uid;
@@ -1517,13 +1519,13 @@ assert(psm->mi == NULL);
 	    /* Retrieve type of payload compression. */
 	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
 
-	    if (teGetFd(fi->te) == NULL) {	/* XXX can't happen */
+	    if (rpmteFd(fi->te) == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
 		break;
 	    }
 
 	    /*@-nullpass@*/	/* LCL: fi->fd != NULL here. */
-	    psm->cfd = Fdopen(fdDup(Fileno(teGetFd(fi->te))), psm->rpmio_flags);
+	    psm->cfd = Fdopen(fdDup(Fileno(rpmteFd(fi->te))), psm->rpmio_flags);
 	    /*@=nullpass@*/
 	    if (psm->cfd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
@@ -1566,7 +1568,7 @@ assert(psm->mi == NULL);
 	    xx = psmStage(psm, PSM_NOTIFY);
 	}
 	if (psm->goal == PSM_PKGERASE) {
-	    int fc = tfiGetFC(fi);
+	    int fc = rpmfiFC(fi);
 
 	    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 	    if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_APPLYONLY)	break;
@@ -1627,7 +1629,7 @@ assert(psm->mi == NULL);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = (int_32) time(NULL);
-	    int fc = tfiGetFC(fi);
+	    int fc = rpmfiFC(fi);
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */
 	    if (fi->fstates != NULL && fc > 0)
@@ -1795,7 +1797,7 @@ assert(psm->mi == NULL);
 	if (ts && ts->notify) {
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void) ts->notify(fi->h, psm->what, psm->amount, psm->total,
-				teGetKey(psm->te), ts->notifyData);
+				rpmteKey(psm->te), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	}
 /*@=type@*/

@@ -66,7 +66,7 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
  * strict removals, and prerequisite ordering is done on installs/upgrades.
  */
 typedef /*@abstract@*/ /*@refcounted@*/
-struct rpmTransactionSet_s * rpmTransactionSet;
+struct rpmts_s * rpmts;
 
 /** \ingroup rpmtrans
  * An added/available package retrieval key.
@@ -84,17 +84,17 @@ typedef /*@abstract@*/ int alNum;
 /** \ingroup rpmtrans
  * Dependency tag sets from a header, so that a header can be discarded early.
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmDepSet_s * rpmDepSet;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmds_s * rpmds;
 
 /** \ingroup rpmtrans
  * File info tag sets from a header, so that a header can be discarded early.
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct TFI_s * TFI_t;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmfi_s * rpmfi;
 
 /** \ingroup rpmtrans
  * An element of a transaction set, i.e. a TR_ADDED or TR_REMOVED package.
  */
-typedef /*@abstract@*/ struct transactionElement_s * transactionElement;
+typedef /*@abstract@*/ struct rpmte_s * rpmte;
 
 /** \ingroup rpmdb
  * Database of headers and tag value indices.
@@ -655,188 +655,6 @@ void rpmFreeRpmrc(void)
 
 /*@}*/
 /* ==================================================================== */
-/** \name RPMPROBS */
-/*@{*/
-
-/**
- * Raw data for an element of a problem set.
- */
-typedef /*@abstract@*/ struct rpmProblem_s * rpmProblem;
-
-/**
- * Transaction problems found by rpmtsRun().
- */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmProblemSet_s * rpmProblemSet;
-
-/**
- * Enumerate transaction set problem types.
- */
-typedef enum rpmProblemType_e {
-    RPMPROB_BADARCH,	/*!< package ... is for a different architecture */
-    RPMPROB_BADOS,	/*!< package ... is for a different operating system */
-    RPMPROB_PKG_INSTALLED, /*!< package ... is already installed */
-    RPMPROB_BADRELOCATE,/*!< path ... is not relocateable for package ... */
-    RPMPROB_REQUIRES,	/*!< package ... has unsatisfied Requires: ... */
-    RPMPROB_CONFLICT,	/*!< package ... has unsatisfied Conflicts: ... */
-    RPMPROB_NEW_FILE_CONFLICT, /*!< file ... conflicts between attemped installs of ... */
-    RPMPROB_FILE_CONFLICT,/*!< file ... from install of ... conflicts with file from package ... */
-    RPMPROB_OLDPACKAGE,	/*!< package ... (which is newer than ...) is already installed */
-    RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ... filesystem */
-    RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ... filesystem */
-    RPMPROB_BADPRETRANS	/*!< (unimplemented) */
- } rpmProblemType;
-
-/**
- */
-struct rpmProblem_s {
-/*@only@*/ /*@null@*/
-    char * pkgNEVR;
-/*@only@*/ /*@null@*/
-    char * altNEVR;
-/*@exposed@*/ /*@null@*/
-    fnpyKey key;
-    rpmProblemType type;
-    int ignoreProblem;
-/*@only@*/ /*@null@*/
-    char * str1;
-    unsigned long ulong1;
-};
-
-/**
- */
-struct rpmProblemSet_s {
-    int numProblems;		/*!< Current probs array size. */
-    int numProblemsAlloced;	/*!< Allocated probs array size. */
-    rpmProblem probs;		/*!< Array of specific problems. */
-/*@refs@*/
-    int nrefs;			/*!< Reference count. */
-};
-
-/**
- */
-void printDepFlags(FILE *fp, const char *version, int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
-
-/**
- * Print a problem array.
- * @param fp		output file
- * @param ps		dependency problems
- */
-void printDepProblems(FILE * fp, /*@null@*/ const rpmProblemSet ps)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
-
-/**
- * Return formatted string representation of a problem.
- * @param prob		rpm problem
- * @return		formatted string (malloc'd)
- */
-/*@-redecl@*/	/* LCL: is confused. */
-/*@only@*/ extern const char * rpmProblemString(const rpmProblem prob)
-	/*@*/;
-/*@=redecl@*/
-
-/**
- * Unreference a problem set instance.
- * @param ps		problem set
- * @param msg
- * @return		problem set
- */
-/*@unused@*/
-rpmProblemSet rpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmProblemSet ps,
-		const char * msg)
-	/*@modifies ps @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@null@*/
-rpmProblemSet XrpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmProblemSet ps,
-		const char * msg, const char * fn, unsigned ln)
-	/*@modifies ps @*/;
-#define	rpmpsUnlink(_ps, _msg)	XrpmpsUnlink(_ps, _msg, __FILE__, __LINE__)
-
-/**
- * Reference a problem set instance.
- * @param ps		transaction set
- * @param msg
- * @return		new transaction set reference
- */
-/*@unused@*/
-rpmProblemSet rpmpsLink (rpmProblemSet ps, const char * msg)
-	/*@modifies ps @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-rpmProblemSet XrpmpsLink (rpmProblemSet ps,
-		const char * msg, const char * fn, unsigned ln)
-        /*@modifies ps @*/;
-#define	rpmpsLink(_ps, _msg)	XrpmpsLink(_ps, _msg, __FILE__, __LINE__)
-
-/**
- * Create a problem set.
- */
-rpmProblemSet rpmProblemSetCreate(void)
-	/*@*/;
-
-/**
- * Destroy a problem array.
- * @param ps		problem set
- * @return		NULL always
- */
-/*@null@*/
-rpmProblemSet rpmProblemSetFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmProblemSet ps)
-	/*@modifies ps @*/;
-
-/**
- * Output formatted string representation of a problem to file handle.
- * @deprecated API: prob used to be passed by value, now passed by reference.
- * @param fp		file handle
- * @param prob		rpm problem
- */
-void rpmProblemPrint(FILE *fp, rpmProblem prob)
-	/*@globals fileSystem @*/
-	/*@modifies prob, *fp, fileSystem @*/;
-
-/**
- * Print problems to file handle.
- * @param fp		file handle
- * @param ps		problem set
- */
-void rpmProblemSetPrint(FILE *fp, /*@null@*/ rpmProblemSet ps)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, ps, fileSystem @*/;
-
-/**
- * Append a problem to set.
- */
-void rpmProblemSetAppend(/*@null@*/ rpmProblemSet ps, rpmProblemType type,
-		/*@null@*/ const char * pkgNEVR,
-		/*@exposed@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ const char * dn, /*@null@*/ const char * bn,
-		/*@null@*/ const char * altNEVR,
-		unsigned long ulong1)
-	/*@modifies ps @*/;
-
-/**
- * Filter a problem set.
- *
- * As the problem sets are generated in an order solely dependent
- * on the ordering of the packages in the transaction, and that
- * ordering can't be changed, the problem sets must be parallel to
- * one another. Additionally, the filter set must be a subset of the
- * target set, given the operations available on transaction set.
- * This is good, as it lets us perform this trim in linear time, rather
- * then logarithmic or quadratic.
- *
- * @param ps		problem set
- * @param filter	problem filter (or NULL)
- * @return		0 no problems, 1 if problems remain
- */
-int rpmProblemSetTrim(/*@null@*/ rpmProblemSet ps,
-		/*@null@*/ rpmProblemSet filter)
-	/*@modifies ps @*/;
-
-/*@}*/
-/* ==================================================================== */
 /** \name RPMTS */
 /*@{*/
 /**
@@ -1013,7 +831,7 @@ typedef /*@abstract@*/ struct psm_s * PSM_t;
  * @retval hdrp		address of header (or NULL)
  * @return		0 on success
  */
-int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
+int rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, fd, *hdrp, fileSystem, internalState @*/;
@@ -1026,7 +844,7 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
  * @retval cookie	address of cookie pointer (or NULL)
  * @return		rpmRC return code
  */
-rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
+rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
 			/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext,
@@ -1125,7 +943,7 @@ int rpmvercmp(const char * a, const char * b)
  * @param key		dependency
  * @return		1 if dependency overlaps, 0 otherwise
  */
-int rpmCheckRpmlibProvides(const rpmDepSet key)
+int rpmCheckRpmlibProvides(const rpmds key)
 	/*@*/;
 
 /** \ingroup rpmcli
@@ -1299,7 +1117,7 @@ typedef enum rpmVerifySignatureReturn_e {
  * @retval result	detailed text result of signature verification
  * @return		result of signature verification
  */
-rpmVerifySignatureReturn rpmVerifySignature(const rpmTransactionSet ts,
+rpmVerifySignatureReturn rpmVerifySignature(const rpmts ts,
 		/*@out@*/ char * result)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, *result, fileSystem, internalState @*/;

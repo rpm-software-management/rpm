@@ -56,11 +56,11 @@ typedef enum pkgStage_e {
  */
 struct psm_s {
 /*@refcounted@*/
-    rpmTransactionSet ts;	/*!< transaction set */
+    rpmts ts;			/*!< transaction set */
 /*@dependent@*/
-    transactionElement te;	/*!< transaction element */
+    rpmte te;			/*!< current transaction element */
 /*@refcounted@*/
-    TFI_t fi;			/*!< transaction element file info */
+    rpmfi fi;			/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage/multilib header. */
@@ -101,7 +101,7 @@ extern "C" {
  * @param fi
  * @return		formatted string
  */
-/*@observer@*/ const char *const fiTypeString(/*@partial@*/TFI_t fi)
+/*@observer@*/ const char *const fiTypeString(/*@partial@*/rpmfi fi)
 	/*@*/;
 
 /**

@@ -8,6 +8,8 @@
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
 
+#include "rpmps.h"
+
 #include "cpio.h"
 #include "fsm.h"
 #include "psm.h"
@@ -22,8 +24,8 @@
 #include "rpmlead.h"
 #include "debug.h"
 
-/*@access rpmTransactionSet @*/
-/*@access TFI_t @*/	/* compared with NULL */
+/*@access rpmts @*/
+/*@access rpmfi @*/	/* compared with NULL */
 /*@access Header @*/	/* compared with NULL */
 /*@access FD_t @*/	/* compared with NULL */
 /*@access StringBuf @*/	/* compared with NULL */
@@ -56,8 +58,8 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		fileSystem@*/
 	/*@modifies fdo, csa, rpmGlobalMacroContext, fileSystem @*/
 {
-    rpmTransactionSet ts = rpmtsCreate();
-    TFI_t fi = csa->cpioList;
+    rpmts ts = rpmtsCreate();
+    rpmfi fi = csa->cpioList;
     const char *failedFile = NULL;
     FD_t cfd;
     int rc, ec;
@@ -321,7 +323,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     spec->packages->header = headerFree(spec->packages->header, "spec->packages");
 
     /* Read the rpm lead, signatures, and header */
-    {	rpmTransactionSet ts = rpmtsCreate();
+    {	rpmts ts = rpmtsCreate();
 
 	/* XXX W2DO? pass fileName? */
 	/*@-mustmod@*/      /* LCL: segfault */
