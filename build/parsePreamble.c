@@ -329,9 +329,9 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
       case RPMTAG_NAME:
       case RPMTAG_VERSION:
       case RPMTAG_RELEASE:
-      case RPMTAG_GROUP:
       case RPMTAG_URL:
 	SINGLE_TOKEN_ONLY;
+      case RPMTAG_GROUP:
 	/* These are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
 	    addMacro(&spec->macros, "PACKAGE_VERSION", field);
