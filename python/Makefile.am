@@ -17,19 +17,21 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
+	-I$(top_srcdir)/build \
 	-I$(pyincdir) \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
 noinst_HEADERS = header-py.h \
 	rpmal-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfts-py.h \
-	rpmfi-py.h rpmmi-py.h rpmrc-py.h rpmte-py.h rpmts-py.h
+	rpmfi-py.h rpmmi-py.h rpmrc-py.h rpmte-py.h rpmts-py.h spec-py.h
 
 mylibs= \
 	$(top_builddir)/lib/.libs/librpm.so \
 	$(top_builddir)/rpmdb/.libs/librpmdb.so \
 	$(top_builddir)/rpmio/.libs/librpmio.so \
 	$(top_builddir)/popt/.libs/libpopt.so \
+	$(top_builddir)/build/.libs/librpmbuild.so \
 	@WITH_LIBELF_LIB@
 
 LDADD =
@@ -55,7 +57,7 @@ poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c header-py.c \
 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
-	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c
+	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c spec-py.c
 librpmmodule_OBJECTS = $(subst .c,.o,$(librpmmodule_la_SOURCES))
 
 rpmmodule.so$(EXEEXT): librpmmodule.la

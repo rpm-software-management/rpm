@@ -22,6 +22,7 @@
 #include "rpmrc-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
+#include "spec-py.h"
 
 #include "debug.h"
 
@@ -189,6 +190,7 @@ void initrpm(void)
 
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
+    if (PyType_Ready(&spec_Type) < 0) return;
 #endif
 
     m = Py_InitModule3("rpm", rpmModuleMethods, rpm__doc__);
@@ -239,6 +241,9 @@ void initrpm(void)
 
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
+
+    Py_INCREF(&spec_Type);
+    PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
 #else
     hdr_Type.ob_type = &PyType_Type;
     rpmal_Type.ob_type = &PyType_Type;
@@ -249,6 +254,7 @@ void initrpm(void)
     rpmmi_Type.ob_type = &PyType_Type;
     rpmte_Type.ob_type = &PyType_Type;
     rpmts_Type.ob_type = &PyType_Type;
+    spec_Type.ob_type =  &PyType_Type;
 #endif
 
     dict = PyDict_New();

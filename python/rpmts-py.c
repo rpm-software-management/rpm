@@ -7,12 +7,14 @@
 #include <rpmcli.h>
 #include <rpmpgp.h>
 #include <rpmdb.h>
+#include <rpmbuild.h>
 
 #include "header-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */
 #include "rpmfi-py.h"	/* XXX for rpmfiNew */
 #include "rpmmi-py.h"
 #include "rpmte-py.h"
+#include "spec-py.h"
 
 #define	_RPMTS_INTERNAL	/* XXX for ts->rdb, ts->availablePackage */
 #include "rpmts-py.h"
@@ -1261,6 +1263,35 @@ fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
 /**
  */
 /*@null@*/
+static specObject *
+spec_Parse(rpmtsObject * s, PyObject * args)
+{
+    const char * specfile;
+    Spec spec;
+    char * buildRoot = NULL;
+    int recursing = 0;
+    char * passPhrase = "";
+    char *cookie = NULL;
+    int anyarch = 1;
+    int force = 1;
+
+    if (!PyArg_ParseTuple(args, "s:parseSpec", &specfile)) {
+                    return NULL;
+    }
+                        
+    if (parseSpec(s->ts, specfile,"/", buildRoot,recursing, passPhrase,
+             cookie, anyarch, force)!=0) {
+             PyErr_SetString(pyrpmError, "can't parse specfile\n");
+                     return NULL;
+   }
+
+    spec = rpmtsSpec(s->ts);
+    return spec_Wrap(spec);
+}
+
+/**
+ */
+/*@null@*/
 static rpmmiObject *
 rpmts_Match(rpmtsObject * s, PyObject * args)
 	/*@globals rpmGlobalMacroContext @*/
@@ -1375,6 +1406,8 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
  {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
 	NULL },
+ {"parseSpec",	(PyCFunction) spec_Parse,	METH_VARARGS,
+	"ts.parseSpec(\"/path/to/foo.spec\")\n" },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
