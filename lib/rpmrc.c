@@ -592,7 +592,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
     int fdno = Fileno(fd);
     size_t nb;
     fstat(fdno, &sb);
-    nb = (sb.st_size > 0 ?  sb.st_size : 8*BUFSIZ);
+    nb = (sb.st_size > 0 ?  sb.st_size : (8*BUFSIZ - 2));
     next = alloca(nb + 2);
     next[0] = '\0';
     rc = Fread(next, sizeof(*next), nb, fd);
@@ -612,15 +612,19 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 	linenum++;
 
 	s = se = next;
+
+	/* Find end-of-line. */
 	while (*se && *se != '\n') se++;
 	if (*se) *se++ = '\0';
 	next = se;
 
+	/* Trim leading spaces */
 	while (*s && isspace(*s)) s++;
 
-	/* we used to allow comments to begin anywhere, but not anymore */
+	/* We used to allow comments to begin anywhere, but not anymore. */
 	if (*s == '#' || *s == '\0') continue;
 
+	/* Find end-of-keyword. */
 	se = (char *)s;
 	while (*se && !isspace(*se) && *se != ':') se++;
 
@@ -630,11 +634,11 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 	}
 
 	if (*se != ':') {
-	    rpmError(RPMERR_RPMRC, _("missing ':' at %s:%d"),
-		     filename, linenum);
+	    rpmError(RPMERR_RPMRC, _("missing ':' (found 0x%02x) at %s:%d"),
+		     (0xff & *se), filename, linenum);
 	    return 1;
 	}
-	*se++ = '\0';
+	*se++ = '\0';	/* terminate keyword or option, point to value */
 	while (*se && isspace(*se)) se++;
 
 	/* Find keyword in table */

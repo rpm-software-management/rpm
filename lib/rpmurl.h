@@ -66,10 +66,10 @@ extern "C" {
 int	ftpCheckResponse(urlinfo u, /*@out@*/ char ** str);
 int	ftpCommand(urlinfo u, ...);
 
-int	httpOpen(urlinfo u, const char * httpcmd);
+int	httpOpen(urlinfo u, FD_t ctrl, const char * httpcmd);
 int	ftpOpen(urlinfo u);
-int	ftpFileDone(urlinfo u, FD_t fd);
-int	ftpFileDesc(urlinfo u, const char * cmd, FD_t fd);
+int	ftpFileDone(urlinfo u, FD_t data);
+int	ftpFileDesc(urlinfo u, const char * cmd, FD_t data);
 
 urlinfo	urlLink(urlinfo u, const char * msg);
 urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line);
@@ -86,6 +86,7 @@ urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg, const char * file, 
 void	urlFreeCache(void);
 
 urltype	urlIsURL(const char * url);
+int	urlPath(const char * url, /*@out@*/ const char ** pathp);
 int 	urlSplit(const char * url, /*@out@*/ urlinfo * u);
 
 int	urlGetFile(const char * url, const char * dest);

@@ -87,6 +87,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 #ifdef HAVE_FCHMOD
     (void)fchmod(Fileno(fd), 0600);	/* XXX fubar on ufdio */
 #endif
+/* XXX FIXME: build/build.c Fdopen assertion failure, makeTempFile uses fdio */
     xfd = Fdopen(fd, "w.fdio");
     
     strcpy(buf, _preScriptEnvironment);

@@ -23,23 +23,11 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
     return set.recs[recno].fileNumber;
 }
 
-dbiIndex * dbiOpenIndex(const char * filename, int flags, int perms, DBTYPE type) {
+dbiIndex * dbiOpenIndex(const char * urlfn, int flags, int perms, DBTYPE type) {
     dbiIndex * dbi;
+    const char * filename;
+    int urltype = urlPath(urlfn, &filename);
         
-    switch (urlIsURL(filename)) {
-    case URL_IS_PATH:
-	filename += sizeof("file://") - 1;
-	filename = strchr(filename, '/');
-	/*@fallthrough@*/
-    case URL_IS_UNKNOWN:
-	break;
-    case URL_IS_DASH:
-    case URL_IS_FTP:
-    case URL_IS_HTTP:
-    default:
-	return NULL;
-	/*@notreached@*/ break;
-    }
     dbi = xmalloc(sizeof(*dbi));
     dbi->db = dbopen(filename, flags, perms, type, NULL);
     if (!dbi->db) {

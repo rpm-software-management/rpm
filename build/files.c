@@ -1161,7 +1161,6 @@ static int processPackageFiles(Spec spec, Package pkg,
     char *s, **files, **fp;
     const char *fileName;
     char buf[BUFSIZ];
-    FILE *f;
     AttrRec specialDocAttrRec;
     char *specialDoc = NULL;
     
@@ -1171,20 +1170,22 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     if (pkg->fileFile) {
 	const char *ffn;
+	FD_t fd;
 
 	/* XXX FIXME: add %{_buildsubdir} */
 	ffn = rpmGetPath("%{_builddir}/",
 	    (spec->buildSubdir ? spec->buildSubdir : "") ,
 	    "/", pkg->fileFile, NULL);
-	f = fopen(ffn, "r");
+	fd = Fopen(ffn, "r.ufdio");
 	xfree(ffn);
 
-	if (f == NULL) {
+	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_BADFILENAME,
-		     _("Could not open %%files file: %s"), pkg->fileFile);
+		_("Could not open %%files file %s: %s"),
+		pkg->fileFile, Fstrerror(fd));
 	    return RPMERR_BADFILENAME;
 	}
-	while (fgets(buf, sizeof(buf), f)) {
+	while (fgets(buf, sizeof(buf), fpio->ffileno(fd))) {
 	    handleComments(buf);
 	    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 		rpmError(RPMERR_BADSPEC, _("line: %s"), buf);
@@ -1192,7 +1193,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    }
 	    appendStringBuf(pkg->fileList, buf);
 	}
-	fclose(f);
+	Fclose(fd);
     }
     
     /* Init the file list structure */
@@ -1506,7 +1507,7 @@ int processSourceFiles(Spec spec)
 	case URL_IS_DASH:	/* stdin */
 	case URL_IS_FTP:	/* ftp://... */
 	case URL_IS_HTTP:	/* http://... */
-	    continue;		/* XXX just skip for now */
+	    continue;		/* XXX WRONG WRONG WRONG */
 	}
 
 	flp->diskName = xstrdup(s);

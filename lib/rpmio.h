@@ -13,23 +13,30 @@ typedef /*@observer@*/ struct FDIO_s * FDIO_t;
 extern "C" {
 #endif
 
-typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie, const char *msg, const char *file, unsigned line);
-typedef /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd, const char *msg, const char *file, unsigned line);
+typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
+		const char * msg, const char * file, unsigned line);
+typedef /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd,
+		const char * msg, const char * file, unsigned line);
 
-typedef /*@null@*/ FD_t fdio_new_function_t (FDIO_t iop, const char *msg, const char *file, unsigned line);
+typedef /*@null@*/ FD_t fdio_new_function_t (FDIO_t iop, const char * msg,
+		const char * file, unsigned line);
 
 typedef int fdio_fileno_function_t (void * cookie);
 
-typedef FD_t fdio_open_function_t (const char *path, int flags, mode_t mode);
-typedef FD_t fdio_fopen_function_t (const char *path, const char *fmode);
+typedef FD_t fdio_open_function_t (const char * path, int flags, mode_t mode);
+typedef FD_t fdio_fopen_function_t (const char * path, const char * fmode);
 typedef void * fdio_ffileno_function_t (FD_t fd);
 typedef int fdio_fflush_function_t (FD_t fd);
 
-typedef int fdio_mkdir_function_t (const char *path, mode_t mode);
-typedef int fdio_chdir_function_t (const char *path);
-typedef int fdio_rmdir_function_t (const char *path);
-typedef int fdio_rename_function_t (const char *oldpath, const char *newpath);
-typedef int fdio_unlink_function_t (const char *path);
+typedef int fdio_mkdir_function_t (const char * path, mode_t mode);
+typedef int fdio_chdir_function_t (const char * path);
+typedef int fdio_rmdir_function_t (const char * path);
+typedef int fdio_rename_function_t (const char * oldpath, const char * newpath);
+typedef int fdio_unlink_function_t (const char * path);
+
+typedef int fdio_stat_function_t (const char * path, struct stat * st);
+typedef int fdio_lstat_function_t (const char * path, struct stat * st);
+typedef int fdio_access_function_t (const char * path, int amode);
 
 struct FDIO_s {
   cookie_read_function_t *read;
@@ -76,6 +83,10 @@ int	Rename	(const char * oldpath, const char * newpath);
 int	Chroot	(const char * path);
 int	Unlink	(const char * path);
 
+int	Stat	(const char * path, struct stat * st);
+int	Lstat	(const char * path, struct stat * st);
+int	Access	(const char * path, int amode);
+
 /*@observer@*/ extern FDIO_t gzdio;
 
 void fdSetFdno(FD_t fd, int fdno);
@@ -120,8 +131,7 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 /*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
 /*@observer@*/ const char * urlStrerror(const char * url);
 
-int httpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
-int ftpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd, const char * ftpcmd);
+int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 const char *const ftpStrerror(int errorNumber);
 
 #if 0

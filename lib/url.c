@@ -172,7 +172,6 @@ static void urlFind(urlinfo *uret, int mustAsk)
 		uCache = xmalloc(sizeof(*uCache));
 	}
 	uCache[i] = urlLink(u, "uCache (miss)");
-	u->ctrl = fdNew(fdio, "persist ctrl");
 	u->bufAlloced = URL_IOBUF_SIZE;
 	u->buf = xcalloc(u->bufAlloced, sizeof(char));
 	u = urlFree(u, "urlSplit (urlFind miss)");
@@ -280,17 +279,46 @@ static struct urlstring {
     { NULL,		URL_IS_UNKNOWN }
 };
 
-urltype urlIsURL(const char * url)
-{
+urltype urlIsURL(const char * url) {
     struct urlstring *us;
 
-    for (us = urlstrings; us->leadin != NULL; us++) {
-	if (strncmp(url, us->leadin, strlen(us->leadin)))
-	    continue;
-	return us->ret;
+    if (url && *url) {
+	for (us = urlstrings; us->leadin != NULL; us++) {
+	    if (strncmp(url, us->leadin, strlen(us->leadin)))
+		continue;
+	    return us->ret;
+	}
     }
 
     return URL_IS_UNKNOWN;
+}
+
+int urlPath(const char * url, const char ** pathp)
+{
+    const char *path = url;
+    int urltype = urlIsURL(url);
+
+    switch (urltype) {
+    case URL_IS_FTP:
+	path += sizeof("ftp://") - 1;
+	path = strchr(path, '/');
+	break;
+    case URL_IS_HTTP:
+    case URL_IS_PATH:
+	path += sizeof("file://") - 1;
+	path = strchr(path, '/');
+	break;
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+	path = "";
+	break;
+    }
+    if (path == NULL)
+	path = "/";
+    if (pathp)
+	*pathp = path;
+    return urltype;
 }
 
 /*
@@ -433,25 +461,16 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
 
     switch (urlIsURL(url)) {
     case URL_IS_FTP:
-#ifdef	DYING
-	if ((rc = ftpGetFile(sfd, tfd, "RETR"))) {
-	    unlink(dest);
-	    /* XXX FIXME: sfd possibly closed by copyData */
-	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
-	}
-	/* XXX Fclose(sfd) done by copyData */
-	break;
-#endif
     case URL_IS_HTTP:
     case URL_IS_PATH:
     case URL_IS_DASH:
     case URL_IS_UNKNOWN:
-	if ((rc = httpGetFile(sfd, tfd))) {
-	    unlink(dest);
+	if ((rc = ufdGetFile(sfd, tfd))) {
+	    Unlink(dest);
 	    /* XXX FIXME: sfd possibly closed by copyData */
 	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}
-	/* XXX Fclose(sfd) done by copyData */
+	/* XXX Fclose(sfd) done by ufdCopy */
 	break;
     default:
 	rc = FTPERR_UNKNOWN;

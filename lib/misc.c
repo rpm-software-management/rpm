@@ -48,16 +48,17 @@ void freeSplitString(char ** list) {
     free(list);
 }
 
-int rpmfileexists(const char * filespec) {
+int rpmfileexists(const char * urlfn) {
+    const char *fn;
+    int urltype = urlPath(urlfn, &fn);
     struct stat buf;
 
-    switch (urlIsURL(filespec)) {
+    switch (urltype) {
+    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
-	filespec += sizeof("file://") - 1;
-	filespec = strchr(filespec, '/');
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
-	if (Stat(filespec, &buf)) {
+	if (Stat(fn, &buf)) {
 	    switch(errno) {
 	    case ENOENT:
 	    case EINVAL:
@@ -65,9 +66,7 @@ int rpmfileexists(const char * filespec) {
 	    }
 	}
 	break;
-    case URL_IS_FTP:
     case URL_IS_DASH:
-    case URL_IS_HTTP:
     default:
 	return 0;
 	break;
@@ -403,11 +402,12 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	    return 1;
 	    /*@notreached@*/
 	}
-#ifdef	DYING
-	fd = fdio->open(tfn, O_CREAT | O_RDWR | O_EXCL, 0700);
+
+/* XXX FIXME: build/build.c Fdopen assertion failure, makeTempFile uses fdio */
+#ifndef	NOTYET
+	fd = fdio->open(tfn, (O_CREAT|O_RDWR|O_EXCL), 0700);
 #else
 	fd = Fopen(tfn, "w+x.ufdio");
-fprintf(stderr, "*** mktemp %s fd %p: %s\n", tfnbuf, fd, strerror(errno));
 #endif
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 

@@ -26,13 +26,8 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 
     /* open a file and set *fdp */
     if (*fdp == NULL && fnp && *fnp) {
-#ifdef DYING
-	mode_t mode = (flags & O_CREAT) ? 0644 : 0;
-	fd = fdio->open(*fnp, flags, mode);
-#else
-	fd = Fopen(*fnp, ((flags & O_RDONLY) ? "r.fdio" : "w.fdio"));
-#endif
-	if (Ferror(fd)) {
+	fd = Fopen(*fnp, ((flags & O_RDONLY) ? "r.ufdio" : "w.ufdio"));
+	if (fd == NULL || Ferror(fd)) {
 	    fprintf(stderr, _("%s: open failed: %s\n"), *fnp,
 		Fstrerror(fd));
 	    return 1;

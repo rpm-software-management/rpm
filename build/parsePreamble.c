@@ -231,12 +231,13 @@ static int readIcon(Header h, const char *file)
     char *icon;
     struct stat statbuf;
     FD_t fd;
-    int rc;
+    int rc = 0;
     int nb;
 
+    /* XXX use rpmGenPath(rootdir, "%{_sourcedir}/", file) for icon path. */
     fn = rpmGetPath("%{_sourcedir}/", file, NULL);
 
-    if (stat(fn, &statbuf)) {
+    if (Stat(fn, &statbuf)) {
 	rpmError(RPMERR_BADSPEC, _("Unable to stat icon: %s"), fn);
 	rc = RPMERR_BADSPEC;
 	goto exit;
@@ -244,16 +245,23 @@ static int readIcon(Header h, const char *file)
 
     icon = xmalloc(statbuf.st_size);
     *icon = '\0';
-    fd = Fopen(fn, "r.fdio");
-    /* XXX Fstrerror */
-    /* XXX Ferror check */
-    nb = Fread(icon, sizeof(char), statbuf.st_size, fd);
-    Fclose(fd);
-    if (nb != statbuf.st_size) {
-	rpmError(RPMERR_BADSPEC, _("Unable to read icon: %s"), fn);
+
+    fd = Fopen(fn, "r.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rpmError(RPMERR_BADSPEC, _("Unable to open icon %s: %s"),
+		fn, Fstrerror(fd));
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
+    nb = Fread(icon, sizeof(char), statbuf.st_size, fd);
+    if (nb != statbuf.st_size) {
+	rpmError(RPMERR_BADSPEC, _("Unable to read icon %s: %s"),
+		fn, Fstrerror(fd));
+	rc = RPMERR_BADSPEC;
+    }
+    Fclose(fd);
+    if (rc)
+	goto exit;
 
     if (! strncmp(icon, "GIF", sizeof("GIF")-1)) {
 	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, statbuf.st_size);
@@ -264,8 +272,7 @@ static int readIcon(Header h, const char *file)
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
-    free(icon);
-    rc = 0;
+    xfree(icon);
     
 exit:
     FREE(fn);
@@ -387,7 +394,9 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
       case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
 	if (spec->buildRoot == NULL) {
+    /* XXX use rpmGenPath(rootdir, "%{buildroot}/", file) for buildroot path. */
 	    const char *buildroot = rpmGetPath("%{buildroot}", NULL);
+	    /* XXX FIXME make sure that buildroot has path, add urlbuildroot. */
 	    if (buildroot && *buildroot != '%') {
 		spec->buildRoot = xstrdup(cleanFileName(buildroot));
 		macro = NULL;

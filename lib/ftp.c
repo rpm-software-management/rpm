@@ -344,7 +344,7 @@ errxit:
     return rc;
 }
 
-int httpOpen(urlinfo u, const char *httpcmd)
+int httpOpen(urlinfo u, FD_t ctrl, const char *httpcmd)
 {
     const char *host;
     const char *path;
@@ -355,7 +355,7 @@ int httpOpen(urlinfo u, const char *httpcmd)
     int retrying = 0;
 
     URLSANE(u);
-    assert(u->ctrl != NULL);
+    assert(ctrl != NULL);
 
     if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
 	return FTPERR_BAD_HOSTNAME;
@@ -364,16 +364,16 @@ int httpOpen(urlinfo u, const char *httpcmd)
     path = (u->proxyh || u->proxyp > 0) ? u->url : u->path;
 
 reopen:
-    if (fdio->fileno(u->ctrl) >= 0 && fdWritable(u->ctrl, 0) < 1)
-	fdio->close(u->ctrl);
+    if (fdio->fileno(ctrl) >= 0 && fdWritable(ctrl, 0) < 1)
+	fdio->close(ctrl);
 
-    if (fdio->fileno(u->ctrl) < 0) {
+    if (fdio->fileno(ctrl) < 0) {
 	rc = tcpConnect(host, port);
-	fdSetFdno(u->ctrl, (rc >= 0 ? rc : -1));
+	fdSetFdno(ctrl, (rc >= 0 ? rc : -1));
 	if (rc < 0)
 	    goto errxit;
 
-	u->ctrl = fdLink(u->ctrl, "open ctrl (httpOpen)");
+	ctrl = fdLink(ctrl, "open ctrl (httpOpen)");
     }
 
     len = sizeof("\
@@ -397,7 +397,7 @@ Accept: text/plain\r\n\
 
     DBG(0, (stderr, "-> %s", req));
 
-    if (fdio->write(u->ctrl, req, len) != len) {
+    if (fdio->write(ctrl, req, len) != len) {
 	rc = FTPERR_SERVER_IO_ERROR;
 	goto errxit;
     }
@@ -415,8 +415,10 @@ fprintf(stderr, "*** httpOpen: rc %d ec %d\n", rc, ec);
 	/*@fallthrough@*/
     default:
 	if (!retrying) {	/* not HTTP_OK */
+if (_ftp_debug)
+fprintf(stderr, "*** httpOpen ctrl %p reopening ...\n", ctrl);
 	    retrying = 1;
-	    fdio->close(u->ctrl);
+	    fdio->close(ctrl);
 	    goto reopen;
 	}
 	rc = FTPERR_FILE_NOT_FOUND;
@@ -425,12 +427,12 @@ fprintf(stderr, "*** httpOpen: rc %d ec %d\n", rc, ec);
     }
   }
 
-    u->ctrl = fdLink(u->ctrl, "open data (httpOpen)");
-    return fdio->fileno(u->ctrl);
+    ctrl = fdLink(ctrl, "open data (httpOpen)");
+    return fdio->fileno(ctrl);
 
 errxit:
-    if (fdio->fileno(u->ctrl) >= 0)
-	fdio->close(u->ctrl);
+    if (fdio->fileno(ctrl) >= 0)
+	fdio->close(ctrl);
     return rc;
 }
 
@@ -494,17 +496,17 @@ errxit:
     return rc;
 }
 
-int ftpFileDone(urlinfo u, FD_t fd)
+int ftpFileDone(urlinfo u, FD_t data)
 {
     int rc = 0;
     int ftpFileDoneNeeded;
 
     URLSANE(u);
-    ftpFileDoneNeeded = fdGetFtpFileDoneNeeded(fd);
+    ftpFileDoneNeeded = fdGetFtpFileDoneNeeded(data);
     assert(ftpFileDoneNeeded);
 
     if (ftpFileDoneNeeded) {
-	fdSetFtpFileDoneNeeded(fd, 0);
+	fdSetFtpFileDoneNeeded(data, 0);
 	u->ctrl = fdFree(u->ctrl, "open data (ftpFileDone)");
 	u->ctrl = fdFree(u->ctrl, "grab data (ftpFileDone)");
 	rc = ftpCheckResponse(u, NULL);
@@ -512,7 +514,7 @@ int ftpFileDone(urlinfo u, FD_t fd)
     return rc;
 }
 
-int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
+int ftpFileDesc(urlinfo u, const char *cmd, FD_t data)
 {
     struct sockaddr_in dataAddress;
     int cmdlen;
@@ -532,7 +534,7 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
  * XXX transfer complete message (if ftpFileDone() was not
  * XXX called to clear that message). Detect that condition now.
  */
-    ftpFileDoneNeeded = fdGetFtpFileDoneNeeded(fd);
+    ftpFileDoneNeeded = fdGetFtpFileDoneNeeded(data);
     assert(ftpFileDoneNeeded == 0);
 
 /*
@@ -608,39 +610,39 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
     }
 
     rc = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    fdSetFdno(fd, (rc >= 0 ? rc : -1));
+    fdSetFdno(data, (rc >= 0 ? rc : -1));
     if (rc < 0) {
 	rc = FTPERR_FAILED_CONNECT;
 	goto errxit;
     }
-    fd = fdLink(fd, "open data (ftpFileDesc)");
+    data = fdLink(data, "open data (ftpFileDesc)");
 
     /* XXX setsockopt SO_LINGER */
     /* XXX setsockopt SO_KEEPALIVE */
     /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
 
-    while (connect(fdio->fileno(fd), (struct sockaddr *) &dataAddress, 
+    while (connect(fdio->fileno(data), (struct sockaddr *) &dataAddress, 
 	        sizeof(dataAddress)) < 0) {
 	if (errno == EINTR)
 	    continue;
-	fdio->close(fd);
+	fdio->close(data);
 	rc = FTPERR_FAILED_DATA_CONNECT;
 	goto errxit;
     }
 
     DBG(0, (stderr, "-> %s", cmd));
     if (fdio->write(u->ctrl, cmd, cmdlen) != cmdlen) {
-	fdio->close(fd);
+	fdio->close(data);
 	rc = FTPERR_SERVER_IO_ERROR;
 	goto errxit;
     }
 
     if ((rc = ftpCheckResponse(u, NULL))) {
-	fdio->close(fd);
+	fdio->close(data);
 	goto errxit;
     }
 
-    fdSetFtpFileDoneNeeded(fd, 1);
+    fdSetFtpFileDoneNeeded(data, 1);
     u->ctrl = fdLink(u->ctrl, "grab data (ftpFileDesc)");
     u->ctrl = fdLink(u->ctrl, "open data (ftpFileDesc)");
     return 0;

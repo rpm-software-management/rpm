@@ -23,16 +23,24 @@
 #define RPMERR_BADSPEC stderr
 #undef	_
 #define	_(x)	x
+
+#define	vmefail()		(exit(1), NULL)
 #define	xfree(_p)		free((void *)_p)
-typedef	int FD_t;
-#define	Ferror(_x)		(_x)
-#define	fdOpen			open
-#define	Fread(_b, _s, _n, _fd)	read(_fd, _b, _s)
-#define	Fclose(_fd)		close(_fd)
+#define	urlPath(_xr, _r)	*(_r) = (_xr)
+
+typedef	FILE * FD_t;
+#define Fopen(_path, _fmode)	fopen(_path, "_r");
+#define	Ferror			ferror
+#define Fstrerror(_fd)		strerror(errno)
+#define	Fread			fread
+#define	Fclose			fclose
+
 #else
+
 #include <rpmlib.h>
 #include <rpmio.h>
-#define	fdOpen			fdio->open
+#include <rpmurl.h>
+
 #endif
 
 #include <rpmmacro.h>
@@ -185,7 +193,7 @@ findEntry(MacroContext *mc, const char *name, size_t namelen)
 /* fgets analogue that reads \ continuations. Last newline always trimmed. */
 
 static char *
-rdcl(char *buf, size_t size, FILE *fp, int escapes)
+rdcl(char *buf, size_t size, FD_t fd, int escapes)
 {
 	char *q = buf;
 	size_t nb = 0;
@@ -193,7 +201,7 @@ rdcl(char *buf, size_t size, FILE *fp, int escapes)
 
 	*q = '\0';
 	do {
-		if (fgets(q, size, fp) == NULL)	/* read next line */
+		if (fgets(q, size, fpio->ffileno(fd)) == NULL)	/* read next line */
 			break;
 		nb = strlen(q);
 		nread += nb;
@@ -1266,10 +1274,15 @@ initMacros(MacroContext *mc, const char *macrofiles)
 		mc = &globalMacroContext;
 
 	for (mfile = m = xstrdup(macrofiles); *mfile; mfile = me) {
-		FILE *fp;
+		FD_t fd;
 		char buf[BUFSIZ];
 
-		if ((me = strchr(mfile, ':')) != NULL)
+		for (me = mfile; (me = strchr(me, ':')) != NULL; me++) {
+			if (!(me[1] == '/' && me[2] == '/'))
+				break;
+		}
+
+		if (me && *me == ':')
 			*me++ = '\0';
 		else
 			me = mfile + strlen(mfile);
@@ -1287,13 +1300,14 @@ initMacros(MacroContext *mc, const char *macrofiles)
 		strncat(buf, mfile, sizeof(buf) - strlen(buf));
 		buf[sizeof(buf)-1] = '\0';
 
-		if ((fp=fopen(buf, "r")) == NULL)
+		fd = Fopen(buf, "r.ufdio");
+		if (fd == NULL || Ferror(fd))
 			continue;
 
 		/* XXX Assume new fangled macro expansion */
 		max_macro_depth = 16;
 
-		while(rdcl(buf, sizeof(buf), fp, 1) != NULL) {
+		while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
 			char c, *n;
 
 			n = buf;
@@ -1304,7 +1318,7 @@ initMacros(MacroContext *mc, const char *macrofiles)
 			n++;	/* skip % */
 			(void)rpmDefineMacro(NULL, n, RMIL_MACROFILES);
 		}
-		fclose(fp);
+		Fclose(fd);
 	}
 	if (m)
 		free(m);
@@ -1338,29 +1352,35 @@ int isCompressed(const char *file, int *compressed)
 {
     FD_t fd;
     ssize_t nb;
-    int rderrno;
+    int rc = -1;
     unsigned char magic[4];
 
     *compressed = COMPRESSED_NOT;
 
+#ifdef	DYING
     fd = fdOpen(file, O_RDONLY, 0);
-    if (Ferror(fd)) {
+#else
+    fd = Fopen(file, "r.ufdio");
+#endif
+    if (fd == NULL || Ferror(fd)) {
 	/* XXX Fstrerror */
-	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(errno));
+	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, Fstrerror(fd));
 	return 1;
     }
     nb = Fread(magic, sizeof(char), sizeof(magic), fd);
-    rderrno = errno;
-    Fclose(fd);
-
     if (nb < 0) {
-	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(rderrno));
-	return 1;
+	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, Fstrerror(fd));
+	rc = 1;
     } else if (nb < sizeof(magic)) {
 	rpmError(RPMERR_BADSPEC, _("File %s is smaller than %d bytes"),
 		file, sizeof(magic));
-	return 0;
+	rc = 0;
     }
+    Fclose(fd);
+    if (rc >= 0)
+	return rc;
+
+    rc = 0;
 
     if (((magic[0] == 0037) && (magic[1] == 0213)) ||  /* gzip */
 	((magic[0] == 0037) && (magic[1] == 0236)) ||  /* old gzip */
@@ -1375,7 +1395,7 @@ int isCompressed(const char *file, int *compressed)
 	*compressed = COMPRESSED_BZIP2;
     }
 
-    return 0;
+    return rc;
 }
 
 /* =============================================================== */
@@ -1471,6 +1491,50 @@ rpmGetPath(const char *path, ...)
     *p = '\0';
 
     return xstrdup(buf);
+}
+
+/* Merge 3 args into path, any or all of which may be a url. */
+const char * rpmGenPath(const char * urlroot, const char * urlmdir,
+		const char *urlfile)
+{
+    const char * xroot = rpmGetPath(urlroot, NULL), * root = xroot;
+    const char * xmdir = rpmGetPath(urlmdir, NULL), * mdir = xmdir;
+    const char * xfile = rpmGetPath(urlfile, NULL), * file = xfile;
+    const char * result;
+    const char * url = NULL;
+    int nurl = 0;
+
+    (void) urlPath(xroot, &root);
+    if (url == NULL && *root != '\0') {
+	url = xroot;
+	nurl = root - xroot;
+    }
+
+    (void) urlPath(xmdir, &mdir);
+    if (url == NULL && *mdir != '\0') {
+	url = xmdir;
+	nurl = mdir - xmdir;
+    }
+
+    (void) urlPath(xfile, &file);
+    if (url == NULL && *file != '\0') {
+	url = xfile;
+	nurl = file - xfile;
+    }
+
+    if (url && nurl > 0) {
+	char *t = strncpy(alloca(nurl+1), url, nurl);
+	t[nurl] = '\0';
+	url = t;
+    } else
+	url = "";
+
+    result = rpmGetPath(url, root, mdir, file, NULL);
+
+    xfree(xroot);
+    xfree(xmdir);
+    xfree(xfile);
+    return result;
 }
 
 /* =============================================================== */

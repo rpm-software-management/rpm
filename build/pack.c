@@ -10,7 +10,7 @@
 #define RPM_MAJOR_NUMBER 3
 
 static int processScriptFiles(Spec spec, Package pkg);
-static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb);
+static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb);
 static int addFileToTag(Spec spec, char *file, Header h, int tag);
 static int addFileToArrayTag(Spec spec, char *file, Header h, int tag);
 
@@ -179,8 +179,8 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     int rc;
 
     if (fileName != NULL) {
-	fdi = Fopen(fileName, "r.fdio");
-	if (Ferror(fdi)) {
+	fdi = Fopen(fileName, "r.ufdio");
+	if (fdi == NULL || Ferror(fdi)) {
 	    rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
 		Fstrerror(fdi));
 	    return RPMERR_BADMAGIC;
@@ -307,9 +307,10 @@ int writeRPM(Header h, const char *fileName, int type,
     }
 
     /* Open the output file */
-    fd = Fopen(fileName, "w.fdio");
-    if (Ferror(fd)) {
-	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"), fileName, Fstrerror(fd));
+    fd = Fopen(fileName, "w.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
+		fileName, Fstrerror(fd));
 	unlink(sigtarget);
 	xfree(sigtarget);
 	return RPMERR_CREATE;
@@ -370,11 +371,20 @@ int writeRPM(Header h, const char *fileName, int type,
     rpmFreeSignature(sig);
 	
     /* Append the header and archive */
-    ifd = Fopen(sigtarget, "r.fdio");
+    ifd = Fopen(sigtarget, "r.ufdio");
+    if (ifd == NULL || Ferror(ifd)) {
+	rpmError(RPMERR_READERROR, _("Unable to open sigtarget %s: %s"),
+		sigtarget, Fstrerror(ifd));
+	Fclose(fd);
+	Unlink(sigtarget);
+	xfree(sigtarget);
+	Unlink(fileName);
+	return RPMERR_READERROR;
+    }
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
-	    rpmError(RPMERR_READERROR, _("Unable to read sigtarget: %s"),
-		     Fstrerror(ifd));
+	    rpmError(RPMERR_READERROR, _("Unable to read sigtarget %s: %s"),
+		     sigtarget, Fstrerror(ifd));
 	    Fclose(ifd);
 	    Fclose(fd);
 	    unlink(sigtarget);
@@ -383,8 +393,8 @@ int writeRPM(Header h, const char *fileName, int type,
 	    return RPMERR_READERROR;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) < 0) {
-	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
-		     Fstrerror(fd));
+	    rpmError(RPMERR_NOSPACE, _("Unable to write package %s: %s"),
+		     fileName, Fstrerror(fd));
 	    Fclose(ifd);
 	    Fclose(fd);
 	    unlink(sigtarget);
@@ -446,29 +456,37 @@ static int cpio_copy(FD_t fdo, CSA_t *csa)
     return 0;
 }
 
-static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb)
+static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
 {
     char buf[BUFSIZ];
-    FILE *f;
+    const char *fn = buf;
+    FD_t fd;
 
-    strcpy(buf, "%{_builddir}/");
-    expandMacros(spec, spec->macros, buf, sizeof(buf));
-    strcat(buf, spec->buildSubdir);
-    strcat(buf, "/");
-    strcat(buf, file);
+#ifdef	DYING
+    strcpy(fn, "%{_builddir}/");
+    expandMacros(spec, spec->macros, fn, sizeof(fn));
+    strcat(fn, spec->buildSubdir);
+    strcat(fn, "/");
+    strcat(fn, file);
+#else
+    fn = rpmGetPath("%{_builddir}/", spec->buildSubdir, "/", file, NULL);
+#endif
 
-    if ((f = fopen(buf, "r")) == NULL) {
+    fd = Fopen(fn, "r.ufdio");
+    if (fn != buf) xfree(fn);
+    if (fd == NULL || Ferror(fd)) {
 	freeStringBuf(sb);
 	return NULL;
     }
-    while (fgets(buf, sizeof(buf), f)) {
+    while (fgets(buf, sizeof(buf), fpio->ffileno(fd))) {
+	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmError(RPMERR_BADSPEC, _("line: %s"), buf);
 	    return NULL;
 	}
 	appendStringBuf(sb, buf);
     }
-    fclose(f);
+    Fclose(fd);
 
     return sb;
 }

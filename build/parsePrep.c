@@ -1,6 +1,7 @@
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
+#include <rpmurl.h>
 
 /* These have to be global to make up for stupid compilers */
     static int leaveDirs, skipDefaultAction;
@@ -21,7 +22,7 @@ static int checkOwners(const char *file)
 {
     struct stat sb;
 
-    if (lstat(file, &sb)) {
+    if (Lstat(file, &sb)) {
 	rpmError(RPMERR_BADSPEC, _("Bad source: %s: %s"), file, strerror(errno));
 	return RPMERR_BADSPEC;
     }
@@ -36,11 +37,12 @@ static int checkOwners(const char *file)
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
 {
-    const char *fn = NULL;
+    const char *fn, *urlfn;
     static char buf[BUFSIZ];
     char args[BUFSIZ];
     struct Source *sp;
     int compressed = 0;
+    int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
@@ -52,7 +54,7 @@ static int checkOwners(const char *file)
 	return NULL;
     }
 
-    fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    fn = urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     args[0] = '\0';
     if (db) {
@@ -70,43 +72,58 @@ static int checkOwners(const char *file)
     }
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(fn, &compressed) || checkOwners(fn))) {
-	xfree(fn);
+    if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
+	xfree(urlfn);
 	return NULL;
+    }
+
+    urltype = urlPath(urlfn, &fn);
+    switch (urltype) {
+    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+	xfree(urlfn);
+	return NULL;
+	/*@notreached@*/ break;
     }
 
     if (compressed) {
 	const char *zipper = rpmGetPath(
 	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
 	    NULL);
+
 	sprintf(buf,
-		"echo \"Patch #%d:\"\n"
+		"echo \"Patch #%d (%s):\"\n"
 		"%s -d < %s | patch -p%d %s -s\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
-		c,
+		c, basename(fn),
 		zipper,
 		fn, strip, args);
 	xfree(zipper);
     } else {
 	sprintf(buf,
-		"echo \"Patch #%d:\"\n"
-		"patch -p%d %s -s < %s", c, strip, args, fn);
+		"echo \"Patch #%d (%s):\"\n"
+		"patch -p%d %s -s < %s", c, basename(fn), strip, args, fn);
     }
 
-    xfree(fn);
+    xfree(urlfn);
     return buf;
 }
 
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
 {
-    const char *fn;
+    const char *fn, *urlfn;
     static char buf[BUFSIZ];
     char *taropts;
     struct Source *sp;
     int compressed = 0;
+    int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISSOURCE) && (sp->num == c)) {
@@ -118,7 +135,7 @@ static int checkOwners(const char *file)
 	return NULL;
     }
 
-    fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    fn = urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
 
@@ -130,9 +147,9 @@ static int checkOwners(const char *file)
     if (sp->flags & RPMTAG_NOSOURCE && autofetchnosource) {
 	struct stat st;
 	int rc;
-	if (lstat(fn, &st) != 0 && errno == ENOENT &&
+	if (Lstat(urlfn, &st) != 0 && errno == ENOENT &&
 	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
-	    if ((rc = urlGetFile(sp->fullSource, fn)) != 0) {
+	    if ((rc = urlGetFile(sp->fullSource, urlfn)) != 0) {
 		rpmError(RPMERR_BADFILENAME, _("Couldn't download nosource %s: %s"),
 		    sp->fullSource, ftpStrerror(rc));
 		return NULL;
@@ -142,9 +159,22 @@ static int checkOwners(const char *file)
 #endif
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(fn, &compressed) || checkOwners(fn))) {
-	xfree(fn);
+    if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
+	xfree(urlfn);
 	return NULL;
+    }
+
+    urltype = urlPath(urlfn, &fn);
+    switch (urltype) {
+    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+	xfree(urlfn);
+	return NULL;
+	/*@notreached@*/ break;
     }
 
     if (compressed) {
@@ -164,7 +194,7 @@ static int checkOwners(const char *file)
 	sprintf(buf, "tar %s %s", taropts, fn);
     }
 
-    xfree(fn);
+    xfree(urlfn);
     return buf;
 }
 

@@ -1,12 +1,13 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmmacro.h>
+#include <rpmurl.h>
 
 #include "cpio.h"
 #include "install.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include <rpmmacro.h>
 
 struct callbackInfo {
     unsigned long archiveSize;
@@ -302,6 +303,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     const char * failedFile = NULL;
     struct callbackInfo info;
     FD_t cfd;
+    int urltype;
 
     if (!files) {
 	/* install all files */
@@ -326,7 +328,11 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 	    if (!files[i].install) continue;
 
 	    map[mappedFiles].archivePath = files[i].cpioPath;
+#ifdef DYING
 	    map[mappedFiles].fsPath = files[i].relativePath;
+#else
+	    urltype = urlPath(files[i].relativePath, &map[mappedFiles].fsPath);
+#endif
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;
@@ -398,12 +404,12 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 
     rpmMessage(RPMMESS_DEBUG, _("installing a source package\n"));
 
-    realSourceDir = rpmGetPath(rootdir, "/%{_sourcedir}", NULL);
-    if (stat(realSourceDir, &st) < 0) {
+    realSourceDir = rpmGenPath(rootdir, "%{_sourcedir}", "");
+    if ((rc = Stat(realSourceDir, &st)) < 0) {
 	switch (errno) {
 	case ENOENT:
 	    /* XXX this will only create last component of directory path */
-	    if (mkdir(realSourceDir, 0755) == 0)
+	    if (Mkdir(realSourceDir, 0755) == 0)
 		break;
 	    /*@fallthrough@*/
 	default:
@@ -414,15 +420,15 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	    /*@notreached@*/ break;
 	}
     }
-    if (access(realSourceDir, W_OK)) {
+    if ((rc = Access(realSourceDir, W_OK))) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSourceDir);
 	rc = 2;
 	goto exit;
     }
     rpmMessage(RPMMESS_DEBUG, _("sources in: %s\n"), realSourceDir);
 
-    realSpecDir = rpmGetPath(rootdir, "/%{_specdir}", NULL);
-    if (stat(realSpecDir, &st) < 0) {
+    realSpecDir = rpmGenPath(rootdir, "%{_specdir}", "");
+    if ((rc = Stat(realSpecDir, &st)) < 0) {
 	switch (errno) {
 	case ENOENT:
 	    /* XXX this will only create last component of directory path */
@@ -436,7 +442,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	    /*@notreached@*/ break;
 	}
     }
-    if (access(realSpecDir, W_OK)) {
+    if ((rc = Access(realSpecDir, W_OK))) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSpecDir);
 	rc = 2;
 	goto exit;
@@ -523,13 +529,15 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 
 	xfree(specFile);
 
-	rpmMessage(RPMMESS_DEBUG, 
+	if (strcmp(instSpecFile, correctSpecFile)) {
+	    rpmMessage(RPMMESS_DEBUG, 
 		    _("renaming %s to %s\n"), instSpecFile, correctSpecFile);
-	if (rename(instSpecFile, correctSpecFile)) {
-	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
-		     instSpecFile, correctSpecFile, strerror(errno));
-	    rc = 2;
-	    goto exit;
+	    if ((rc = Rename(instSpecFile, correctSpecFile))) {
+		rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
+			instSpecFile, correctSpecFile, strerror(errno));
+		rc = 2;
+		goto exit;
+	    }
 	}
 
 	if (specFilePtr)

@@ -164,6 +164,8 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		}
 	    }
 
+	    /* XXX undefined %{name}/%{version}/%{release} here */
+	    /* XXX %{_tmpdir} does not exist */
 	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
 	    myrc = urlGetFile(*filename, tfn);
 	    if (myrc < 0) {
