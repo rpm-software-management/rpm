@@ -1,6 +1,11 @@
 /* The very final packaging steps */
 
+#include "config.h"
 #include "miscfn.h"
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -17,6 +22,7 @@
 
 #include <sys/time.h>  /* For 'select()' interfaces */
 
+#include "cpio.h"
 #include "pack.h"
 #include "header.h"
 #include "spec.h"
@@ -177,88 +183,47 @@ static int writeMagic(int fd, char *name,
 static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 		     int *archiveSize, char *prefix)
 {
-    int cpioPID, gzipPID;
-    int cpioDead, gzipDead;
-    int toCpio[2];
-    int fromCpio[2];
+    int gzipPID;
     int toGzip[2];
-    char * cpiobin;
+    int rc;
     char * gzipbin;
-
-    int writeBytesLeft, bytesWritten;
-
-    int bytes;
-    unsigned char buf[8192];
-    fd_set read_fds, read_ok, write_fds, write_ok;
-    int num_fds, max_fd;
-    struct stat fd_info;
-
+    char * writebuf;
+    char * chptr;
+    int numMappings;
+    struct cpioFileMapping * cpioList;
     int status;
     void *oldhandler;
 
-    cpiobin = rpmGetVar(RPMVAR_CPIOBIN);
     gzipbin = rpmGetVar(RPMVAR_GZIPBIN);
+
+    numMappings = 0;
+    chptr = writePtr;
+    while (chptr && *chptr) {
+	numMappings++;
+	chptr = strchr(chptr, '\n');
+	if (chptr) *chptr++ = '\n';
+    }
+
+    writebuf = alloca(strlen(writePtr) + 1);
+    strcpy(writebuf, writePtr);
+
+    cpioList = alloca(sizeof(*cpioList) * numMappings);
+    chptr = writebuf;
+    numMappings = 0;
+    while (chptr && *chptr) {
+	cpioList[numMappings].fsPath = chptr;
+	cpioList[numMappings++].mapFlags = 0;
+	chptr = strchr(chptr, '\n');
+	if (chptr) *chptr++ = '\0';
+    }
  
-    *archiveSize = 0;
-    
-    pipe(toCpio);
-    pipe(fromCpio);
-    
     oldhandler = signal(SIGPIPE, SIG_IGN);
-
-    /* CPIO */
-    if (!(cpioPID = fork())) {
-	close(0);
-	close(1);
-	close(toCpio[1]);
-	close(fromCpio[0]);
-	close(fd);
-	
-	dup2(toCpio[0], 0);   /* Make stdin the in pipe */
-	dup2(fromCpio[1], 1); /* Make stdout the out pipe */
-
-	if (tempdir) {
-	    chdir(tempdir);
-	} else if (rpmGetVar(RPMVAR_ROOT)) {
-	    if (chdir(rpmGetVar(RPMVAR_ROOT))) {
-		rpmError(RPMERR_EXEC, "Couldn't chdir to %s",
-		      rpmGetVar(RPMVAR_ROOT));
-		exit(RPMERR_EXEC);
-	    }
-	} else {
-	    /* This is important! */
-	    chdir("/");
-	}
-	if (prefix) {
-	    if (chdir(prefix)) {
-		rpmError(RPMERR_EXEC, "Couldn't chdir to %s", prefix);
-		_exit(RPMERR_EXEC);
-	    }
-	}
-
-	execlp(cpiobin, cpiobin,
-	       (rpmIsVerbose()) ? "-ov" : "-o",
-	       (tempdir) ? "-LH" : "-H",
-	       "crc", NULL);
-	rpmError(RPMERR_EXEC, "Couldn't exec cpio");
-	_exit(RPMERR_EXEC);
-    }
-    if (cpioPID < 0) {
-	rpmError(RPMERR_FORK, "Couldn't fork cpio");
-	return RPMERR_FORK;
-    }
 
     pipe(toGzip);
     
     /* GZIP */
     if (!(gzipPID = fork())) {
-	close(0);
-	close(1);
 	close(toGzip[1]);
-	close(toCpio[0]);
-	close(toCpio[1]);
-	close(fromCpio[0]);
-	close(fromCpio[1]);
 	
 	dup2(toGzip[0], 0);  /* Make stdin the in pipe       */
 	dup2(fd, 1);         /* Make stdout the passed-in fd */
@@ -272,108 +237,41 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	return RPMERR_FORK;
     }
 
-    close(toCpio[0]);
-    close(fromCpio[1]);
     close(toGzip[0]);
 
-    /* It is OK to block writing to gzip.  But it is not OK */
-    /* to block reading or writing from/to cpio.            */
-    fcntl(fromCpio[0], F_SETFL, O_NONBLOCK);
-    fcntl(toCpio[1], F_SETFL, O_NONBLOCK);
-    writeBytesLeft = strlen(writePtr);
-
-    /* Set up to use 'select()' to multiplex this I/O stream */
-    FD_ZERO(&read_fds);
-    FD_SET(fromCpio[0], &read_fds);
-    max_fd = fromCpio[0];
-    FD_ZERO(&write_fds);
-    FD_SET(toCpio[1], &write_fds);
-    if (toCpio[1] > max_fd) max_fd = toCpio[1];
-    
-    cpioDead = 0;
-    gzipDead = 0;
-    bytes = 0;
-    do {
-	if (waitpid(cpioPID, &status, WNOHANG)) {
-	    cpioDead = 1;
+    if (tempdir) {
+	chdir(tempdir);
+    } else if (rpmGetVar(RPMVAR_ROOT)) {
+	if (chdir(rpmGetVar(RPMVAR_ROOT))) {
+	    rpmError(RPMERR_EXEC, "Couldn't chdir to %s",
+		  rpmGetVar(RPMVAR_ROOT));
+	    exit(RPMERR_EXEC);
 	}
-	if (waitpid(gzipPID, &status, WNOHANG)) {
-	    gzipDead = 1;
-	}
-
-	/* Pause here until we could perform some I/O */
-	read_ok = read_fds;
-	write_ok = write_fds;
-	if ((num_fds = select(max_fd+1, &read_ok, &write_ok, 
-			      (fd_set *)NULL, (struct timeval *)NULL)) < 0) {
-		/* One or more file connections has broken */
-		if (fstat(fromCpio[0], &fd_info) < 0) {
-			FD_CLR(fromCpio[0], &read_fds);
-		}
-		if (fstat(toCpio[1], &fd_info) < 0) {
-			FD_CLR(toCpio[1], &write_fds);
-		}
-		continue;
-	}
-
-	/* Write some stuff to the cpio process if possible */
-        if (FD_ISSET(toCpio[1], &write_ok)) {
-		if (writeBytesLeft) {
-			if ((bytesWritten =
-			     write(toCpio[1], writePtr,
-				   (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
-				if (errno != EAGAIN) {
-					perror("Build failed.  Damn!");
-					exit(1);
-				}
-				bytesWritten = 0;
-			}
-			writeBytesLeft -= bytesWritten;
-			writePtr += bytesWritten;
-		} else {
-			close(toCpio[1]);
-			FD_CLR(toCpio[1], &write_fds);
-		}
-	}
-	
-	/* Read any data from cpio, write it to gzip */
-	bytes = 0;  /* So end condition works OK */
-	if (FD_ISSET(fromCpio[0], &read_ok)) {
-		bytes = read(fromCpio[0], buf, sizeof(buf));
-		while (bytes > 0) {
-			*archiveSize += bytes;
-			write(toGzip[1], buf, bytes);
-			bytes = read(fromCpio[0], buf, sizeof(buf));
-		}
-	}
-
-	/* while cpio is running, or we are writing to gzip */
-	/* terminate if gzip dies on us in the middle       */
-    } while (((!cpioDead) || bytes) && (!gzipDead));
-
-    if (gzipDead) {
-	rpmError(RPMERR_GZIP, "gzip died");
-	return 1;
+    } else {
+	/* This is important! */
+	chdir("/");
     }
-    
+    if (prefix) {
+	if (chdir(prefix)) {
+	    rpmError(RPMERR_EXEC, "Couldn't chdir to %s", prefix);
+	    _exit(RPMERR_EXEC);
+	}
+    }
+
+    rc = cpioBuildArchive(toGzip[1], cpioList, numMappings, NULL, NULL, NULL);
+
     close(toGzip[1]); /* Terminates the gzip process */
-    close(toCpio[1]);
-    close(fromCpio[0]);
     
     signal(SIGPIPE, oldhandler);
 
-    if (writeBytesLeft) {
-	rpmError(RPMERR_CPIO, "failed to write all data to cpio");
-	return 1;
-    }
-    waitpid(cpioPID, &status, 0);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_CPIO, "cpio failed");
-	return 1;
-    }
     waitpid(gzipPID, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_GZIP, "gzip failed");
+	return 1;
+    }
+
+    if (rc) {
+	rpmError(RPMERR_CPIO, "cpio failed");
 	return 1;
     }
 
@@ -508,7 +406,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	headerFreeIterator(headerIter);
 
 	rpmGetArchInfo(&arch, NULL);
-	rpmGetArchInfo(&os, NULL);
+	rpmGetOsInfo(&os, NULL);
 	
 	/* Add some final entries to the header */
 	headerAddEntry(outHeader, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
@@ -752,7 +650,7 @@ int packageSource(Spec s, char *passPhrase)
     }
 
     rpmGetArchInfo(&arch, NULL);
-    rpmGetArchInfo(&os, NULL);
+    rpmGetOsInfo(&os, NULL);
 
     outHeader = headerCopy(s->packages->header);
     headerAddEntry(outHeader, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
