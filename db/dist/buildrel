@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	Id: buildrel,v 1.31 2001/10/14 15:31:11 bostic Exp 
+#	Id: buildrel,v 1.34 2002/06/24 17:48:25 bostic Exp 
 #
 # Build the distribution archives.
 #
@@ -32,18 +32,19 @@ cd $D && tar cf - \
 cd $R/dist && sh s_perm
 cd $R/dist && sh s_symlink
 
-# Build the documentation.
-cd $R/docs_src && make
-
 # Build a version.
 cd $R && rm -rf build_run && mkdir build_run
 cd $R/build_run && ~bostic/bin/dbconf && make >& mklog
 
 # Smoke test.
-./ex_access
+cd $R/build_run && ./ex_access
+
+# Build the documentation.
+cd $R/docs_src && sh build clean
+cd $R/docs_src && sh build |& sed '/.html$/d'
 
 # Check the install
-make prefix=`pwd`/BDB install
+cd $R/build_run && make prefix=`pwd`/BDB install
 
 # Clean up the tree.
 cd $R && rm -rf build_run docs_src
@@ -65,19 +66,36 @@ cd $R/../db-${LR} && find . | sort > /tmp/__OLD
 cd $R && find . | sort > /tmp/__NEW
 diff -c /tmp/__OLD /tmp/__NEW
 
-# Create the tar archive release.
+# Create the crypto tar archive release.
 setenv T "$R/../db-$VERSION.tar.gz"
 cd $R/.. && tar cf - db-$VERSION | gzip --best > $T
 chmod 444 $T
 
-# Create the zip archive release.
-#
-# Remove symbolic links to tags files.  They're large and we don't want to
-# store real symbolic links in the archive for portability reasons.
+# Create the non-crypto tree.
+setenv RNC "$R/../db-$VERSION.NC"
+rm -rf $R/../__TMP && mkdir $R/../__TMP
+cd $R/../__TMP && gzcat $T | tar xpf - && mv -i db-$VERSION $RNC
+cd $R && rm -rf $R/../__TMP
+cd $RNC/dist && sh s_crypto
+
+# Create the non-crypto tar archive release.
+setenv T "$R/../db-$VERSION.NC.tar.gz"
+cd $RNC/.. && tar cf - db-$VERSION.NC | gzip --best > $T
+chmod 444 $T
+
+# Remove symbolic links to tags files.  They're large and we don't want
+# to store real symbolic links in the zip archive for portability reasons.
 # ACQUIRE ROOT PRIVILEGES
 cd $R && rm -f `find . -type l -name 'tags'`
+cd $RNC && rm -f `find . -type l -name 'tags'`
 # DISCARD ROOT PRIVILEGES
 
+# Create the crypto zip archive release.
 setenv T "$R/../db-$VERSION.zip"
 cd $R/.. && zip -r - db-$VERSION > $T
+chmod 444 $T
+
+# Create the non-crypto zip archive release.
+setenv T "$R/../db-$VERSION.NC.zip"
+cd $RNC/.. && zip -r - db-$VERSION.NC > $T
 chmod 444 $T

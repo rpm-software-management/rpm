@@ -1,9 +1,12 @@
 # Features we don't test for, but want the #defines to exist for
 # other ports.
-AH_TEMPLATE(HAVE_VXWORKS, [Define if building VxWorks.])
+AH_TEMPLATE(HAVE_VXWORKS, [Define to 1 if building VxWorks.])
 
 AH_TEMPLATE(HAVE_FILESYSTEM_NOTZERO,
-    [Define if allocated filesystem blocks are not zeroed.])
+    [Define to 1 if allocated filesystem blocks are not zeroed.])
+
+AH_TEMPLATE(HAVE_UNLINK_WITH_OPEN_FAILURE,
+    [Define to 1 if unlink of file with open file descriptors will fail.])
 
 AH_BOTTOM([/*
  * Exit success/failure macros.
@@ -38,6 +41,7 @@ AH_BOTTOM([/*
 #endif
 #ifndef	HAVE_STRCASECMP
 #define	strcasecmp	__db_Cstrcasecmp
+#define	strncasecmp	__db_Cstrncasecmp
 #endif
 #ifndef	HAVE_STRERROR
 #define	strerror	__db_Cstrerror

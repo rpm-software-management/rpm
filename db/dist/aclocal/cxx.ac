@@ -8,7 +8,7 @@ db_cv_cxx_have_stdheaders,
 [AC_LANG_SAVE
  AC_LANG_CPLUSPLUS
  AC_TRY_COMPILE([#include <iostream>
-],[return 0;],
+],[std::ostream *o; return 0;],
  db_cv_cxx_have_stdheaders=yes, db_cv_cxx_have_stdheaders=no)
  AC_LANG_RESTORE
 ])

@@ -1,28 +1,81 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2001
+ * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_db.cpp,v 11.50 2001/11/10 04:59:06 mjc Exp ";
+static const char revid[] = "Id: cxx_db.cpp,v 11.69 2002/07/20 13:50:10 dda Exp ";
 #endif /* not lint */
 
 #include <errno.h>
 #include <string.h>
 
 #include "db_cxx.h"
-#include "cxx_int.h"
+#include "dbinc/cxx_int.h"
 
 #include "db_int.h"
-#include "db_page.h"
-#include "db_auto.h"
-#include "crdel_auto.h"
-#include "db_ext.h"
-#include "common_ext.h"
+#include "dbinc/db_page.h"
+#include "dbinc_auto/db_auto.h"
+#include "dbinc_auto/crdel_auto.h"
+#include "dbinc/db_dispatch.h"
+#include "dbinc_auto/db_ext.h"
+#include "dbinc_auto/common_ext.h"
+
+// Helper macros for simple methods that pass through to the
+// underlying C method. It may return an error or raise an exception.
+// Note this macro expects that input _argspec is an argument
+// list element (e.g., "char *arg") and that _arglist is the arguments
+// that should be passed through to the C method (e.g., "(db, arg)")
+//
+#define	DB_METHOD(_name, _argspec, _arglist, _retok)			\
+int Db::_name _argspec							\
+{									\
+	int ret;							\
+	DB *db = unwrap(this);						\
+									\
+	ret = db->_name _arglist;					\
+	if (!_retok(ret))						\
+		DB_ERROR("Db::" # _name, ret, error_policy());		\
+	return (ret);							\
+}
+
+#define	DB_METHOD_CHECKED(_name, _cleanup, _argspec, _arglist, _retok)	\
+int Db::_name _argspec							\
+{									\
+	int ret;							\
+	DB *db = unwrap(this);						\
+									\
+	if (!db) {							\
+		DB_ERROR("Db::" # _name, EINVAL, error_policy());	\
+		return (EINVAL);					\
+	}								\
+	if (_cleanup)							\
+		cleanup();						\
+	ret = db->_name _arglist;					\
+	if (!_retok(ret))						\
+		DB_ERROR("Db::" # _name, ret, error_policy());		\
+	return (ret);							\
+}
+
+#define	DB_METHOD_QUIET(_name, _argspec, _arglist)			\
+int Db::_name _argspec							\
+{									\
+	DB *db = unwrap(this);						\
+									\
+	return (db->_name _arglist);					\
+}
+
+#define	DB_METHOD_VOID(_name, _argspec, _arglist)			\
+void Db::_name _argspec							\
+{									\
+	DB *db = unwrap(this);						\
+									\
+	db->_name _arglist;						\
+}
 
 // A truism for the Db object is that there is a valid
 // DB handle from the constructor until close().
@@ -42,6 +95,13 @@ Db::Db(DbEnv *env, u_int32_t flags)
 ,	construct_error_(0)
 ,	flags_(0)
 ,	construct_flags_(flags)
+,	append_recno_callback_(0)
+,	associate_callback_(0)
+,	bt_compare_callback_(0)
+,	bt_prefix_callback_(0)
+,	dup_compare_callback_(0)
+,	feedback_callback_(0)
+,	h_hash_callback_(0)
 {
 	if (env_ == 0)
 		flags_ |= DB_CXX_PRIVATE_ENV;
@@ -72,10 +132,10 @@ Db::~Db()
 //
 int Db::initialize()
 {
-	u_int32_t cxx_flags;
 	DB *db;
-	int err;
 	DB_ENV *cenv = unwrap(env_);
+	int ret;
+	u_int32_t cxx_flags;
 
 	cxx_flags = construct_flags_ & DB_CXX_NO_EXCEPTIONS;
 
@@ -83,15 +143,15 @@ int Db::initialize()
 	// We rely on the fact that if a NULL DB_ENV* is given,
 	// one is allocated by DB.
 	//
-	if ((err = db_create(&db, cenv,
+	if ((ret = db_create(&db, cenv,
 			     construct_flags_ & ~cxx_flags)) != 0) {
-		construct_error_ = err;
-		return (err);
+		construct_error_ = ret;
+		return (ret);
 	}
 
 	// Associate the DB with this object
 	imp_ = wrap(db);
-	db->cj_internal = this;
+	db->api_internal = this;
 
 	// Create a new DbEnv from a DB_ENV* if it was created locally.
 	// It is deleted in Db::close().
@@ -113,7 +173,7 @@ void Db::cleanup()
 
 	if (db != NULL) {
 		// extra safety
-		db->cj_internal = 0;
+		db->api_internal = 0;
 		imp_ = 0;
 
 		// we must dispose of the DbEnv object if
@@ -159,7 +219,7 @@ int Db::error_policy()
 int Db::close(u_int32_t flags)
 {
 	DB *db = unwrap(this);
-	int err;
+	int ret;
 
 	// after a DB->close (no matter if success or failure),
 	// the underlying DB object must not be accessed,
@@ -171,96 +231,54 @@ int Db::close(u_int32_t flags)
 	// since our error mechanism does not peer into
 	// the DB* structures.
 	//
-	if ((err = db->close(db, flags)) != 0 && err != DB_INCOMPLETE)
-		DB_ERROR("Db::close", err, error_policy());
+	if ((ret = db->close(db, flags)) != 0)
+		DB_ERROR("Db::close", ret, error_policy());
 
-	return (err);
+	return (ret);
 }
 
-int Db::cursor(DbTxn *txnid, Dbc **cursorp, u_int32_t flags)
-{
-	DB *db = unwrap(this);
-	DBC *dbc = 0;
-	int err;
+// The following cast implies that Dbc can be no larger than DBC
+DB_METHOD(cursor, (DbTxn *txnid, Dbc **cursorp, u_int32_t flags),
+    (db, unwrap(txnid), (DBC **)cursorp, flags),
+    DB_RETOK_STD)
 
-	if ((err = db->cursor(db, unwrap(txnid), &dbc, flags)) != 0) {
-		DB_ERROR("Db::cursor", err, error_policy());
-		return (err);
-	}
-
-	// The following cast implies that Dbc can be no larger than DBC
-	*cursorp = (Dbc*)dbc;
-	return (0);
-}
-
-int Db::del(DbTxn *txnid, Dbt *key, u_int32_t flags)
-{
-	DB *db = unwrap(this);
-	int err;
-
-	if ((err = db->del(db, unwrap(txnid), key, flags)) != 0) {
-		// DB_NOTFOUND is a "normal" return, so should not be
-		// thrown as an error
-		//
-		if (err != DB_NOTFOUND) {
-			DB_ERROR("Db::del", err, error_policy());
-			return (err);
-		}
-	}
-	return (err);
-}
+DB_METHOD(del, (DbTxn *txnid, Dbt *key, u_int32_t flags),
+    (db, unwrap(txnid), key, flags),
+    DB_RETOK_DBDEL)
 
 void Db::err(int error, const char *format, ...)
 {
-	va_list args;
 	DB *db = unwrap(this);
 
-	va_start(args, format);
-	__db_real_err(db->dbenv, error, 1, 1, format, args);
-	va_end(args);
+	DB_REAL_ERR(db->dbenv, error, 1, 1, format);
 }
 
 void Db::errx(const char *format, ...)
 {
-	va_list args;
 	DB *db = unwrap(this);
 
-	va_start(args, format);
-	__db_real_err(db->dbenv, 0, 0, 1, format, args);
-	va_end(args);
+	DB_REAL_ERR(db->dbenv, 0, 0, 1, format);
 }
 
-int Db::fd(int *fdp)
-{
-	DB *db = unwrap(this);
-	int err;
-
-	if ((err = db->fd(db, fdp)) != 0) {
-		DB_ERROR("Db::fd", err, error_policy());
-		return (err);
-	}
-	return (0);
-}
+DB_METHOD(fd, (int *fdp),
+    (db, fdp),
+    DB_RETOK_STD)
 
 int Db::get(DbTxn *txnid, Dbt *key, Dbt *value, u_int32_t flags)
 {
 	DB *db = unwrap(this);
-	int err;
+	int ret;
 
-	if ((err = db->get(db, unwrap(txnid), key, value, flags)) != 0) {
-		// DB_NOTFOUND and DB_KEYEMPTY are "normal" returns,
-		// so should not be thrown as an error
-		//
-		if (err != DB_NOTFOUND && err != DB_KEYEMPTY) {
-			const char *name = "Db::get";
-			if (err == ENOMEM && DB_OVERFLOWED_DBT(value))
-				DB_ERROR_DBT(name, value, error_policy());
-			else
-				DB_ERROR(name, err, error_policy());
-			return (err);
-		}
+	ret = db->get(db, unwrap(txnid), key, value, flags);
+
+	if (!DB_RETOK_DBGET(ret)) {
+		if (ret == ENOMEM && DB_OVERFLOWED_DBT(value))
+			DB_ERROR_DBT("Db::get", value, error_policy());
+		else
+			DB_ERROR("Db::get", ret, error_policy());
 	}
-	return (err);
+
+	return (ret);
 }
 
 int Db::get_byteswapped(int *isswapped)
@@ -275,206 +293,84 @@ int Db::get_type(DBTYPE *dbtype)
 	return (db->get_type(db, dbtype));
 }
 
-int Db::join(Dbc **curslist, Dbc **cursorp, u_int32_t flags)
-{
-	// Dbc is a "compatible" subclass of DBC -
-	// that is, no virtual functions or even extra data members,
-	// so this cast, although technically non-portable,
-	// "should" always be okay.
-	//
-	DBC **list = (DBC **)(curslist);
-	DB *db = unwrap(this);
-	DBC *dbc = 0;
-	int err;
+// Dbc is a "compatible" subclass of DBC - that is, no virtual functions
+// or even extra data members, so these casts, although technically
+// non-portable, "should" always be okay.
+DB_METHOD(join, (Dbc **curslist, Dbc **cursorp, u_int32_t flags),
+    (db, (DBC **)curslist, (DBC **)cursorp, flags),
+    DB_RETOK_STD)
 
-	if ((err = db->join(db, list, &dbc, flags)) != 0) {
-		DB_ERROR("Db::join_cursor", err, error_policy());
-		return (err);
-	}
-	*cursorp = (Dbc*)dbc;
-	return (0);
-}
-
-int Db::key_range(DbTxn *txnid, Dbt *key,
-		  DB_KEY_RANGE *results, u_int32_t flags)
-{
-	DB *db = unwrap(this);
-	int err;
-
-	if ((err = db->key_range(db, unwrap(txnid), key,
-				 results, flags)) != 0) {
-		DB_ERROR("Db::key_range", err, error_policy());
-		return (err);
-	}
-	return (0);
-}
+DB_METHOD(key_range,
+    (DbTxn *txnid, Dbt *key, DB_KEY_RANGE *results, u_int32_t flags),
+    (db, unwrap(txnid), key, results, flags),
+    DB_RETOK_STD)
 
 // If an error occurred during the constructor, report it now.
 // Otherwise, call the underlying DB->open method.
 //
-int Db::open(const char *file, const char *database,
+int Db::open(DbTxn *txnid, const char *file, const char *database,
 	     DBTYPE type, u_int32_t flags, int mode)
 {
-	int err;
+	int ret;
 	DB *db = unwrap(this);
 
-	if ((err = construct_error_) != 0)
-		DB_ERROR("Db::open", construct_error_, error_policy());
-	else if ((err = db->open(db, file, database, type, flags, mode)) != 0)
-		DB_ERROR("Db::open", err, error_policy());
+	if (construct_error_ != 0)
+		ret = construct_error_;
+	else
+		ret = db->open(db, unwrap(txnid), file, database, type, flags,
+		    mode);
 
-	return (err);
+	if (!DB_RETOK_STD(ret))
+		DB_ERROR("Db::open", ret, error_policy());
+
+	return (ret);
 }
 
 int Db::pget(DbTxn *txnid, Dbt *key, Dbt *pkey, Dbt *value, u_int32_t flags)
 {
 	DB *db = unwrap(this);
-	int err;
+	int ret;
 
-	if ((err = db->pget(db, unwrap(txnid), key, pkey,
-			    value, flags)) != 0) {
-		// DB_NOTFOUND and DB_KEYEMPTY are "normal" returns,
-		// so should not be thrown as an error
-		//
-		if (err != DB_NOTFOUND && err != DB_KEYEMPTY) {
-			const char *name = "Db::pget";
-			if (err == ENOMEM && DB_OVERFLOWED_DBT(value))
-				DB_ERROR_DBT(name, value, error_policy());
-			else
-				DB_ERROR(name, err, error_policy());
-			return (err);
-		}
+	ret = db->pget(db, unwrap(txnid), key, pkey, value, flags);
+
+	/* The logic here is identical to Db::get - reuse the macro. */
+	if (!DB_RETOK_DBGET(ret)) {
+		if (ret == ENOMEM && DB_OVERFLOWED_DBT(value))
+			DB_ERROR_DBT("Db::pget", value, error_policy());
+		else
+			DB_ERROR("Db::pget", ret, error_policy());
 	}
-	return (err);
+
+	return (ret);
 }
 
-int Db::put(DbTxn *txnid, Dbt *key, Dbt *value, u_int32_t flags)
-{
-	int err;
-	DB *db = unwrap(this);
+DB_METHOD(put,
+    (DbTxn *txnid, Dbt *key, Dbt *value, u_int32_t flags),
+    (db, unwrap(txnid), key, value, flags),
+    DB_RETOK_DBPUT)
 
-	if ((err = db->put(db, unwrap(txnid), key, value, flags)) != 0) {
+DB_METHOD_CHECKED(rename, 1,
+    (const char *file, const char *database, const char *newname,
+    u_int32_t flags),
+    (db, file, database, newname, flags), DB_RETOK_STD)
 
-		// DB_KEYEXIST is a "normal" return, so should not be
-		// thrown as an error
-		//
-		if (err != DB_KEYEXIST) {
-			DB_ERROR("Db::put", err, error_policy());
-			return (err);
-		}
-	}
-	return (err);
-}
+DB_METHOD_CHECKED(remove, 1,
+    (const char *file, const char *database, u_int32_t flags),
+    (db, file, database, flags), DB_RETOK_STD)
 
-int Db::rename(const char *file, const char *database,
-	       const char *newname, u_int32_t flags)
-{
-	int err = 0;
-	DB *db = unwrap(this);
+DB_METHOD_CHECKED(truncate, 0,
+    (DbTxn *txnid, u_int32_t *countp, u_int32_t flags),
+    (db, unwrap(txnid), countp, flags), DB_RETOK_STD)
 
-	if (!db) {
-		DB_ERROR("Db::rename", EINVAL, error_policy());
-		return (EINVAL);
-	}
+DB_METHOD_CHECKED(stat, 0,
+    (void *sp, u_int32_t flags), (db, sp, flags), DB_RETOK_STD)
 
-	// after a DB->rename (no matter if success or failure),
-	// the underlying DB object must not be accessed,
-	// so we clean up in advance.
-	//
-	cleanup();
+DB_METHOD_CHECKED(sync, 0,
+    (u_int32_t flags), (db, flags), DB_RETOK_STD)
 
-	if ((err = db->rename(db, file, database, newname, flags)) != 0) {
-		DB_ERROR("Db::rename", err, error_policy());
-		return (err);
-	}
-	return (0);
-}
+DB_METHOD_CHECKED(upgrade, 0,
+    (const char *name, u_int32_t flags), (db, name, flags), DB_RETOK_STD)
 
-int Db::remove(const char *file, const char *database, u_int32_t flags)
-{
-	int err = 0;
-	DB *db = unwrap(this);
-
-	if (!db) {
-		DB_ERROR("Db::remove", EINVAL, error_policy());
-		return (EINVAL);
-	}
-
-	// after a DB->remove (no matter if success or failure),
-	// the underlying DB object must not be accessed,
-	// so we clean up in advance.
-	//
-	cleanup();
-
-	if ((err = db->remove(db, file, database, flags)) != 0)
-		DB_ERROR("Db::remove", err, error_policy());
-
-	return (err);
-}
-
-int Db::truncate(DbTxn *txnid, u_int32_t *countp, u_int32_t flags)
-{
-	int err = 0;
-	DB *db = unwrap(this);
-
-	if (!db) {
-		DB_ERROR("Db::truncate", EINVAL, error_policy());
-		return (EINVAL);
-	}
-	if ((err = db->truncate(db, unwrap(txnid), countp, flags)) != 0) {
-		DB_ERROR("Db::truncate", err, error_policy());
-		return (err);
-	}
-	return (0);
-}
-
-int Db::stat(void *sp, u_int32_t flags)
-{
-	int err;
-	DB *db = unwrap(this);
-
-	if (!db) {
-		DB_ERROR("Db::stat", EINVAL, error_policy());
-		return (EINVAL);
-	}
-	if ((err = db->stat(db, sp, flags)) != 0) {
-		DB_ERROR("Db::stat", err, error_policy());
-		return (err);
-	}
-	return (0);
-}
-
-int Db::sync(u_int32_t flags)
-{
-	int err;
-	DB *db = unwrap(this);
-
-	if (!db) {
-		DB_ERROR("Db::sync", EINVAL, error_policy());
-		return (EINVAL);
-	}
-	if ((err = db->sync(db, flags)) != 0 && err != DB_INCOMPLETE) {
-		DB_ERROR("Db::sync", err, error_policy());
-		return (err);
-	}
-	return (err);
-}
-
-int Db::upgrade(const char *name, u_int32_t flags)
-{
-	int err;
-	DB *db = unwrap(this);
-
-	if (!db) {
-		DB_ERROR("Db::upgrade", EINVAL, error_policy());
-		return (EINVAL);
-	}
-	if ((err = db->upgrade(db, name, flags)) != 0) {
-		DB_ERROR("Db::upgrade", err, error_policy());
-		return (err);
-	}
-	return (0);
-}
 ////////////////////////////////////////////////////////////////////////
 //
 // callbacks
@@ -508,26 +404,39 @@ int Db::upgrade(const char *name, u_int32_t flags)
 // The alternative, creating a Dbt here in the callback, and populating
 // it from the DBT, is just too slow and cumbersome to be very useful.
 
-/* associate callback */
-extern "C" int _db_associate_intercept_c(DB *secondary,
-					 const DBT *key,
-					 const DBT *data,
-					 DBT *retval)
-{
-	Db *cxxthis;
+// These macros avoid a lot of boilerplate code for callbacks
 
-	DB_ASSERT(secondary != NULL);
-	cxxthis = (Db *)secondary->cj_internal;
-	DB_ASSERT(cxxthis != NULL);
-	DB_ASSERT(cxxthis->associate_callback_ != 0);
-
-	return (*cxxthis->associate_callback_)(cxxthis,
-					       Dbt::get_const_Dbt(key),
-					       Dbt::get_const_Dbt(data),
-					       Dbt::get_Dbt(retval));
+#define	DB_CALLBACK_C_INTERCEPT(_name, _rettype, _cargspec,		\
+    _return, _cxxargs)							\
+extern "C" _rettype _db_##_name##_intercept_c _cargspec			\
+{									\
+	Db *cxxthis;							\
+									\
+	DB_ASSERT(cthis != NULL);					\
+	cxxthis = (Db *)cthis->api_internal;				\
+	DB_ASSERT(cxxthis != NULL);					\
+	DB_ASSERT(cxxthis->_name##_callback_ != 0);			\
+									\
+	_return (*cxxthis->_name##_callback_) _cxxargs;			\
 }
 
-int Db::associate(Db *secondary, int (*callback)(Db *, const Dbt *,
+#define	DB_SET_CALLBACK(_cxxname, _name, _cxxargspec, _cb)		\
+int Db::_cxxname _cxxargspec						\
+{									\
+	DB *cthis = unwrap(this);					\
+									\
+	_name##_callback_ = _cb;					\
+	return ((*(cthis->_cxxname))(cthis,				\
+	    (_cb) ? _db_##_name##_intercept_c : NULL));			\
+}
+
+/* associate callback - doesn't quite fit the pattern because of the flags */
+DB_CALLBACK_C_INTERCEPT(associate,
+    int, (DB *cthis, const DBT *key, const DBT *data, DBT *retval),
+    return, (cxxthis, Dbt::get_const_Dbt(key), Dbt::get_const_Dbt(data),
+    Dbt::get_Dbt(retval)))
+
+int Db::associate(DbTxn *txn, Db *secondary, int (*callback)(Db *, const Dbt *,
 	const Dbt *, Dbt *), u_int32_t flags)
 {
 	DB *cthis = unwrap(this);
@@ -537,153 +446,54 @@ int Db::associate(Db *secondary, int (*callback)(Db *, const Dbt *,
 	 * rather than on 'this'.
 	 */
 	secondary->associate_callback_ = callback;
-	return ((*(cthis->associate))
-		(cthis, unwrap(secondary), _db_associate_intercept_c, flags));
+	return ((*(cthis->associate))(cthis, unwrap(txn), unwrap(secondary),
+	    (callback) ? _db_associate_intercept_c : NULL, flags));
 }
 
-/* feedback callback */
-extern "C" void _db_feedback_intercept_c(DB *cthis, int opcode, int pct)
-{
-	Db *cxxthis;
+DB_CALLBACK_C_INTERCEPT(feedback,
+    void, (DB *cthis, int opcode, int pct),
+    /* no return */ (void), (cxxthis, opcode, pct))
 
-	DB_ASSERT(cthis != NULL);
-	cxxthis = (Db *)cthis->cj_internal;
-	DB_ASSERT(cxxthis != NULL);
-	DB_ASSERT(cxxthis->feedback_callback_ != 0);
+DB_SET_CALLBACK(set_feedback, feedback,
+    (void (*arg)(Db *cxxthis, int opcode, int pct)), arg)
 
-	(*cxxthis->feedback_callback_)(cxxthis, opcode, pct);
-	return;
-}
+DB_CALLBACK_C_INTERCEPT(append_recno,
+    int, (DB *cthis, DBT *data, db_recno_t recno),
+    return, (cxxthis, Dbt::get_Dbt(data), recno))
 
-int Db::set_feedback(void (*arg)(Db *cxxthis, int opcode, int pct))
-{
-	DB *cthis = unwrap(this);
-	feedback_callback_ = arg;
-	return ((*(cthis->set_feedback))
-		(cthis, _db_feedback_intercept_c));
-}
+DB_SET_CALLBACK(set_append_recno, append_recno,
+    (int (*arg)(Db *cxxthis, Dbt *data, db_recno_t recno)), arg)
 
-/* append_recno callback */
-extern "C" int _db_append_recno_intercept_c(DB *cthis, DBT *data,
-					    db_recno_t recno)
-{
-	Db *cxxthis;
+DB_CALLBACK_C_INTERCEPT(bt_compare,
+    int, (DB *cthis, const DBT *data1, const DBT *data2),
+    return,
+    (cxxthis, Dbt::get_const_Dbt(data1), Dbt::get_const_Dbt(data2)))
 
-	DB_ASSERT(cthis != NULL);
-	cxxthis = (Db *)cthis->cj_internal;
-	DB_ASSERT(cxxthis != NULL);
-	DB_ASSERT(cxxthis->append_recno_callback_ != 0);
+DB_SET_CALLBACK(set_bt_compare, bt_compare,
+    (int (*arg)(Db *cxxthis, const Dbt *data1, const Dbt *data2)), arg)
 
-	return (*cxxthis->append_recno_callback_)(cxxthis,
-						  Dbt::get_Dbt(data),
-						  recno);
-}
+DB_CALLBACK_C_INTERCEPT(bt_prefix,
+    size_t, (DB *cthis, const DBT *data1, const DBT *data2),
+    return,
+    (cxxthis, Dbt::get_const_Dbt(data1), Dbt::get_const_Dbt(data2)))
 
-int Db::set_append_recno(int (*arg)(Db *cxxthis, Dbt *data, db_recno_t recno))
-{
-	DB *cthis = unwrap(this);
-	append_recno_callback_ = arg;
-	return ((*(cthis->set_append_recno))
-		(cthis, _db_append_recno_intercept_c));
-}
+DB_SET_CALLBACK(set_bt_prefix, bt_prefix,
+    (size_t (*arg)(Db *cxxthis, const Dbt *data1, const Dbt *data2)), arg)
 
-/* bt_compare callback */
-extern "C" int _db_bt_compare_intercept_c(DB *cthis, const DBT *data1,
-					  const DBT *data2)
-{
-	Db *cxxthis;
+DB_CALLBACK_C_INTERCEPT(dup_compare,
+    int, (DB *cthis, const DBT *data1, const DBT *data2),
+    return,
+    (cxxthis, Dbt::get_const_Dbt(data1), Dbt::get_const_Dbt(data2)))
 
-	DB_ASSERT(cthis != NULL);
-	cxxthis = (Db *)cthis->cj_internal;
-	DB_ASSERT(cxxthis != NULL);
-	DB_ASSERT(cxxthis->bt_compare_callback_ != 0);
+DB_SET_CALLBACK(set_dup_compare, dup_compare,
+    (int (*arg)(Db *cxxthis, const Dbt *data1, const Dbt *data2)), arg)
 
-	return (*cxxthis->bt_compare_callback_)(cxxthis,
-						Dbt::get_const_Dbt(data1),
-						Dbt::get_const_Dbt(data2));
-}
+DB_CALLBACK_C_INTERCEPT(h_hash,
+    u_int32_t, (DB *cthis, const void *data, u_int32_t len),
+    return, (cxxthis, data, len))
 
-int Db::set_bt_compare(int (*arg)(Db *cxxthis, const Dbt *data1,
-				  const Dbt *data2))
-{
-	DB *cthis = unwrap(this);
-	bt_compare_callback_ = arg;
-	return ((*(cthis->set_bt_compare))
-		(cthis, _db_bt_compare_intercept_c));
-}
-
-/* bt_prefix callback */
-extern "C" size_t _db_bt_prefix_intercept_c(DB *cthis, const DBT *data1,
-					    const DBT *data2)
-{
-	Db *cxxthis;
-
-	DB_ASSERT(cthis != NULL);
-	cxxthis = (Db *)cthis->cj_internal;
-	DB_ASSERT(cxxthis != NULL);
-	DB_ASSERT(cxxthis->bt_prefix_callback_ != 0);
-
-	return (*cxxthis->bt_prefix_callback_)(cxxthis,
-					       Dbt::get_const_Dbt(data1),
-					       Dbt::get_const_Dbt(data2));
-}
-
-int Db::set_bt_prefix(size_t (*arg)(Db *cxxthis, const Dbt *data1,
-				    const Dbt *data2))
-{
-	DB *cthis = unwrap(this);
-	bt_prefix_callback_ = arg;
-	return ((*(cthis->set_bt_prefix))
-		(cthis, _db_bt_prefix_intercept_c));
-}
-
-/* dup_compare callback */
-extern "C" int _db_dup_compare_intercept_c(DB *cthis, const DBT *data1,
-					   const DBT *data2)
-{
-	Db *cxxthis;
-
-	DB_ASSERT(cthis != NULL);
-	cxxthis = (Db *)cthis->cj_internal;
-	DB_ASSERT(cxxthis != NULL);
-	DB_ASSERT(cxxthis->dup_compare_callback_ != 0);
-
-	return (*cxxthis->dup_compare_callback_)(cxxthis,
-						 Dbt::get_const_Dbt(data1),
-						 Dbt::get_const_Dbt(data2));
-}
-
-int Db::set_dup_compare(int (*arg)(Db *cxxthis, const Dbt *data1,
-				   const Dbt *data2))
-{
-	DB *cthis = unwrap(this);
-	dup_compare_callback_ = arg;
-	return ((*(cthis->set_dup_compare))
-		(cthis, _db_dup_compare_intercept_c));
-}
-
-/* h_hash callback */
-extern "C" u_int32_t _db_h_hash_intercept_c(DB *cthis, const void *data,
-					    u_int32_t len)
-{
-	Db *cxxthis;
-
-	DB_ASSERT(cthis != NULL);
-	cxxthis = (Db *)cthis->cj_internal;
-	DB_ASSERT(cxxthis != NULL);
-	DB_ASSERT(cxxthis->h_hash_callback_ != 0);
-
-	return (*cxxthis->h_hash_callback_)(cxxthis, data, len);
-}
-
-int Db::set_h_hash(u_int32_t (*arg)(Db *cxxthis, const void *data,
-				    u_int32_t len))
-{
-	DB *cthis = unwrap(this);
-	h_hash_callback_ = arg;
-	return ((*(cthis->set_h_hash))
-		(cthis, _db_h_hash_intercept_c));
-}
+DB_SET_CALLBACK(set_h_hash, h_hash,
+    (u_int32_t (*arg)(Db *cxxthis, const void *data, u_int32_t len)), arg)
 
 // This is a 'glue' function declared as extern "C" so it will
 // be compatible with picky compilers that do not allow mixing
@@ -694,10 +504,10 @@ extern "C"
 int _verify_callback_c(void *handle, const void *str_arg)
 {
 	char *str;
-	OSTREAMCLASS *out;
+	__DB_OSTREAMCLASS *out;
 
 	str = (char *)str_arg;
-	out = (OSTREAMCLASS *)handle;
+	out = (__DB_OSTREAMCLASS *)handle;
 
 	(*out) << str;
 	if (out->fail())
@@ -707,83 +517,63 @@ int _verify_callback_c(void *handle, const void *str_arg)
 }
 
 int Db::verify(const char *name, const char *subdb,
-	       OSTREAMCLASS *ostr, u_int32_t flags)
+	       __DB_OSTREAMCLASS *ostr, u_int32_t flags)
 {
-	int err;
 	DB *db = unwrap(this);
+	int ret;
 
-	if (!db) {
-		DB_ERROR("Db::verify", EINVAL, error_policy());
-		return (EINVAL);
-	}
-	if ((err = __db_verify_internal(db, name, subdb, ostr,
-					_verify_callback_c, flags)) != 0) {
-		DB_ERROR("Db::verify", err, error_policy());
-		return (err);
-	}
-	return (0);
+	if (!db)
+		ret = EINVAL;
+	else
+		ret = __db_verify_internal(db, name, subdb, ostr,
+		    _verify_callback_c, flags);
+
+	if (!DB_RETOK_STD(ret))
+		DB_ERROR("Db::verify", ret, error_policy());
+
+	return (ret);
 }
 
-// This is a variant of the DB_WO_ACCESS macro to define a simple set_
-// method calling the underlying C method, but unlike a simple
-// set method, it may return an error or raise an exception.
-// Note this macro expects that input _argspec is an argument
-// list element (e.g. "char *arg") defined in terms of "arg".
-//
-#define	DB_DB_ACCESS(_name, _argspec)                          \
-\
-int Db::set_##_name(_argspec)                                  \
-{                                                              \
-	int ret;                                               \
-	DB *db = unwrap(this);                                 \
-							       \
-	if ((ret = (*(db->set_##_name))(db, arg)) != 0) {      \
-		DB_ERROR("Db::set_" # _name, ret, error_policy()); \
-	}                                                      \
-	return (ret);                                          \
-}
+DB_METHOD(set_bt_compare, (bt_compare_fcn_type func),
+    (db, func), DB_RETOK_STD)
+DB_METHOD(set_bt_maxkey, (u_int32_t bt_maxkey),
+    (db, bt_maxkey), DB_RETOK_STD)
+DB_METHOD(set_bt_minkey, (u_int32_t bt_minkey),
+    (db, bt_minkey), DB_RETOK_STD)
+DB_METHOD(set_bt_prefix, (bt_prefix_fcn_type func),
+    (db, func), DB_RETOK_STD)
+DB_METHOD(set_dup_compare, (dup_compare_fcn_type func),
+    (db, func), DB_RETOK_STD)
+DB_METHOD(set_encrypt, (const char *passwd, int flags),
+    (db, passwd, flags), DB_RETOK_STD)
+DB_METHOD_VOID(set_errfile, (FILE *errfile), (db, errfile))
+DB_METHOD_VOID(set_errpfx, (const char *errpfx), (db, errpfx))
+DB_METHOD(set_flags, (u_int32_t flags), (db, flags),
+    DB_RETOK_STD)
+DB_METHOD(set_h_ffactor, (u_int32_t h_ffactor),
+    (db, h_ffactor), DB_RETOK_STD)
+DB_METHOD(set_h_hash, (h_hash_fcn_type func),
+    (db, func), DB_RETOK_STD)
+DB_METHOD(set_h_nelem, (u_int32_t h_nelem),
+    (db, h_nelem), DB_RETOK_STD)
+DB_METHOD(set_lorder, (int db_lorder), (db, db_lorder),
+    DB_RETOK_STD)
+DB_METHOD(set_pagesize, (u_int32_t db_pagesize),
+    (db, db_pagesize), DB_RETOK_STD)
+DB_METHOD(set_re_delim, (int re_delim),
+    (db, re_delim), DB_RETOK_STD)
+DB_METHOD(set_re_len, (u_int32_t re_len),
+    (db, re_len), DB_RETOK_STD)
+DB_METHOD(set_re_pad, (int re_pad),
+    (db, re_pad), DB_RETOK_STD)
+DB_METHOD(set_re_source, (char *re_source),
+    (db, re_source), DB_RETOK_STD)
+DB_METHOD(set_q_extentsize, (u_int32_t extentsize),
+    (db, extentsize), DB_RETOK_STD)
 
-#define	DB_DB_ACCESS_NORET(_name, _argspec)                    \
-							       \
-void Db::set_##_name(_argspec)                                 \
-{                                                              \
-	DB *db = unwrap(this);                                 \
-							       \
-	(*(db->set_##_name))(db, arg);                         \
-	return;                                                \
-}
-
-DB_DB_ACCESS(bt_compare, bt_compare_fcn_type arg)
-DB_DB_ACCESS(bt_maxkey, u_int32_t arg)
-DB_DB_ACCESS(bt_minkey, u_int32_t arg)
-DB_DB_ACCESS(bt_prefix, bt_prefix_fcn_type arg)
-DB_DB_ACCESS(dup_compare, dup_compare_fcn_type arg)
-DB_DB_ACCESS_NORET(errfile, FILE *arg)
-DB_DB_ACCESS_NORET(errpfx, const char *arg)
-DB_DB_ACCESS(flags, u_int32_t arg)
-DB_DB_ACCESS(h_ffactor, u_int32_t arg)
-DB_DB_ACCESS(h_hash, h_hash_fcn_type arg)
-DB_DB_ACCESS(h_nelem, u_int32_t arg)
-DB_DB_ACCESS(lorder, int arg)
-DB_DB_ACCESS(pagesize, u_int32_t arg)
-DB_DB_ACCESS(re_delim, int arg)
-DB_DB_ACCESS(re_len, u_int32_t arg)
-DB_DB_ACCESS(re_pad, int arg)
-DB_DB_ACCESS(re_source, char *arg)
-DB_DB_ACCESS(q_extentsize, u_int32_t arg)
-
-// Here are the get/set methods that don't fit the above mold.
-//
-
-int Db::set_alloc(db_malloc_fcn_type malloc_fcn,
-		     db_realloc_fcn_type realloc_fcn,
-		     db_free_fcn_type free_fcn)
-{
-	DB *db;
-
-	db = unwrap(this);
-	return db->set_alloc(db, malloc_fcn, realloc_fcn, free_fcn);
-}
+DB_METHOD_QUIET(set_alloc, (db_malloc_fcn_type malloc_fcn,
+    db_realloc_fcn_type realloc_fcn, db_free_fcn_type free_fcn),
+    (db, malloc_fcn, realloc_fcn, free_fcn))
 
 void Db::set_errcall(void (*arg)(const char *, char *))
 {
@@ -800,23 +590,17 @@ void Db::set_app_private(void *value)
 	unwrap(this)->app_private = value;
 }
 
-int Db::set_cachesize(u_int32_t gbytes, u_int32_t bytes, int ncache)
-{
-	int ret;
-	DB *db = unwrap(this);
-
-	if ((ret = (*(db->set_cachesize))(db, gbytes, bytes, ncache)) != 0) {
-		DB_ERROR("Db::set_cachesize", ret, error_policy());
-	}
-	return (ret);
-}
+DB_METHOD(set_cachesize, (u_int32_t gbytes, u_int32_t bytes, int ncache),
+    (db, gbytes, bytes, ncache), DB_RETOK_STD)
+DB_METHOD(set_cache_priority, (DB_CACHE_PRIORITY priority),
+    (db, priority), DB_RETOK_STD)
 
 int Db::set_paniccall(void (*callback)(DbEnv *, int))
 {
 	return (env_->set_paniccall(callback));
 }
 
-void Db::set_error_stream(OSTREAMCLASS *error_stream)
+void Db::set_error_stream(__DB_OSTREAMCLASS *error_stream)
 {
 	env_->set_error_stream(error_stream);
 }

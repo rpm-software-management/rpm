@@ -1,28 +1,29 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2001
+ * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_dbt.cpp,v 11.49 2001/07/28 20:01:18 dda Exp ";
+static const char revid[] = "Id: cxx_dbt.cpp,v 11.53 2002/03/27 04:31:14 bostic Exp ";
 #endif /* not lint */
 
 #include <errno.h>
 #include <string.h>
 
 #include "db_cxx.h"
-#include "cxx_int.h"
+#include "dbinc/cxx_int.h"
 
 #include "db_int.h"
-#include "db_page.h"
-#include "db_auto.h"
-#include "crdel_auto.h"
-#include "db_ext.h"
-#include "common_ext.h"
+#include "dbinc/db_page.h"
+#include "dbinc_auto/db_auto.h"
+#include "dbinc_auto/crdel_auto.h"
+#include "dbinc/db_dispatch.h"
+#include "dbinc_auto/db_ext.h"
+#include "dbinc_auto/common_ext.h"
 
 Dbt::Dbt()
 {
@@ -30,7 +31,7 @@ Dbt::Dbt()
 	memset(dbt, 0, sizeof(DBT));
 }
 
-Dbt::Dbt(void *data_arg, size_t size_arg)
+Dbt::Dbt(void *data_arg, u_int32_t size_arg)
 {
 	DBT *dbt = this;
 	memset(dbt, 0, sizeof(DBT));

@@ -1,28 +1,47 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2001
+ * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_dbc.cpp,v 11.50 2001/09/29 15:48:05 dda Exp ";
+static const char revid[] = "Id: cxx_dbc.cpp,v 11.55 2002/07/03 21:03:52 bostic Exp ";
 #endif /* not lint */
 
 #include <errno.h>
 #include <string.h>
 
 #include "db_cxx.h"
-#include "cxx_int.h"
+#include "dbinc/cxx_int.h"
 
 #include "db_int.h"
-#include "db_page.h"
-#include "db_auto.h"
-#include "crdel_auto.h"
-#include "db_ext.h"
-#include "common_ext.h"
+#include "dbinc/db_page.h"
+#include "dbinc_auto/db_auto.h"
+#include "dbinc_auto/crdel_auto.h"
+#include "dbinc/db_dispatch.h"
+#include "dbinc_auto/db_ext.h"
+#include "dbinc_auto/common_ext.h"
+
+// Helper macro for simple methods that pass through to the
+// underlying C method. It may return an error or raise an exception.
+// Note this macro expects that input _argspec is an argument
+// list element (e.g., "char *arg") and that _arglist is the arguments
+// that should be passed through to the C method (e.g., "(db, arg)")
+//
+#define	DBC_METHOD(_name, _argspec, _arglist, _retok)			\
+int Dbc::_name _argspec							\
+{									\
+	int ret;							\
+	DBC *dbc = this;						\
+									\
+	ret = dbc->c_##_name _arglist;					\
+	if (!_retok(ret))						\
+		DB_ERROR("Dbc::" # _name, ret, ON_ERROR_UNKNOWN);	\
+	return (ret);							\
+}
 
 // It's private, and should never be called, but VC4.0 needs it resolved
 //
@@ -30,128 +49,67 @@ Dbc::~Dbc()
 {
 }
 
-int Dbc::close()
+DBC_METHOD(close, (void), (dbc), DB_RETOK_STD)
+DBC_METHOD(count, (db_recno_t *countp, u_int32_t _flags),
+    (dbc, countp, _flags), DB_RETOK_STD)
+DBC_METHOD(del, (u_int32_t _flags),
+    (dbc, _flags), DB_RETOK_DBCDEL)
+
+int Dbc::dup(Dbc** cursorp, u_int32_t _flags)
 {
-	DBC *cursor = this;
-	int err;
-
-	if ((err = cursor->c_close(cursor)) != 0) {
-		DB_ERROR("Dbc::close", err, ON_ERROR_UNKNOWN);
-		return (err);
-	}
-	return (0);
-}
-
-int Dbc::count(db_recno_t *countp, u_int32_t flags_arg)
-{
-	DBC *cursor = this;
-	int err;
-
-	if ((err = cursor->c_count(cursor, countp, flags_arg)) != 0) {
-		DB_ERROR("Db::count", err, ON_ERROR_UNKNOWN);
-		return (err);
-	}
-	return (0);
-}
-
-int Dbc::del(u_int32_t flags_arg)
-{
-	DBC *cursor = this;
-	int err;
-
-	if ((err = cursor->c_del(cursor, flags_arg)) != 0) {
-
-		// DB_KEYEMPTY is a "normal" return, so should not be
-		// thrown as an error
-		//
-		if (err != DB_KEYEMPTY) {
-			DB_ERROR("Dbc::del", err, ON_ERROR_UNKNOWN);
-			return (err);
-		}
-	}
-	return (err);
-}
-
-int Dbc::dup(Dbc** cursorp, u_int32_t flags_arg)
-{
-	DBC *cursor = this;
+	int ret;
+	DBC *dbc = this;
 	DBC *new_cursor = 0;
-	int err;
 
-	if ((err = cursor->c_dup(cursor, &new_cursor, flags_arg)) != 0) {
-		DB_ERROR("Dbc::dup", err, ON_ERROR_UNKNOWN);
-		return (err);
-	}
+	ret = dbc->c_dup(dbc, &new_cursor, _flags);
 
-	// The following cast implies that Dbc can be no larger than DBC
-	*cursorp = (Dbc*)new_cursor;
-	return (0);
+	if (DB_RETOK_STD(ret))
+		// The following cast implies that Dbc can be no larger than DBC
+		*cursorp = (Dbc*)new_cursor;
+	else
+		DB_ERROR("Dbc::dup", ret, ON_ERROR_UNKNOWN);
+
+	return (ret);
 }
 
-int Dbc::get(Dbt* key, Dbt *data, u_int32_t flags_arg)
+int Dbc::get(Dbt* key, Dbt *data, u_int32_t _flags)
 {
-	DBC *cursor = this;
-	int err;
+	int ret;
+	DBC *dbc = this;
 
-	if ((err = cursor->c_get(cursor, key, data, flags_arg)) != 0) {
+	ret = dbc->c_get(dbc, key, data, _flags);
 
-		// DB_NOTFOUND and DB_KEYEMPTY are "normal" returns,
-		// so should not be thrown as an error
-		//
-		if (err != DB_NOTFOUND && err != DB_KEYEMPTY) {
-			const char *name = "Dbc::get";
-			if (err == ENOMEM && DB_OVERFLOWED_DBT(key))
-				DB_ERROR_DBT(name, key, ON_ERROR_UNKNOWN);
-			else if (err == ENOMEM && DB_OVERFLOWED_DBT(data))
-				DB_ERROR_DBT(name, data, ON_ERROR_UNKNOWN);
-			else
-				DB_ERROR(name, err, ON_ERROR_UNKNOWN);
-
-			return (err);
-		}
+	if (!DB_RETOK_DBCGET(ret)) {
+		if (ret == ENOMEM && DB_OVERFLOWED_DBT(key))
+			DB_ERROR_DBT("Dbc::get", key, ON_ERROR_UNKNOWN);
+		else if (ret == ENOMEM && DB_OVERFLOWED_DBT(data))
+			DB_ERROR_DBT("Dbc::get", data, ON_ERROR_UNKNOWN);
+		else
+			DB_ERROR("Dbc::get", ret, ON_ERROR_UNKNOWN);
 	}
-	return (err);
+
+	return (ret);
 }
 
-int Dbc::pget(Dbt* key, Dbt *pkey, Dbt *data, u_int32_t flags_arg)
+int Dbc::pget(Dbt* key, Dbt *pkey, Dbt *data, u_int32_t _flags)
 {
-	DBC *cursor = this;
-	int err;
+	int ret;
+	DBC *dbc = this;
 
-	if ((err = cursor->c_pget(cursor, key, pkey, data, flags_arg)) != 0) {
+	ret = dbc->c_pget(dbc, key, pkey, data, _flags);
 
-		// DB_NOTFOUND and DB_KEYEMPTY are "normal" returns,
-		// so should not be thrown as an error
-		//
-		if (err != DB_NOTFOUND && err != DB_KEYEMPTY) {
-			const char *name = "Dbc::pget";
-			if (err == ENOMEM && DB_OVERFLOWED_DBT(key))
-				DB_ERROR_DBT(name, key, ON_ERROR_UNKNOWN);
-			else if (err == ENOMEM && DB_OVERFLOWED_DBT(data))
-				DB_ERROR_DBT(name, data, ON_ERROR_UNKNOWN);
-			else
-				DB_ERROR(name, err, ON_ERROR_UNKNOWN);
-
-			return (err);
-		}
+	/* Logic is the same as for Dbc::get - reusing macro. */
+	if (!DB_RETOK_DBCGET(ret)) {
+		if (ret == ENOMEM && DB_OVERFLOWED_DBT(key))
+			DB_ERROR_DBT("Dbc::pget", key, ON_ERROR_UNKNOWN);
+		else if (ret == ENOMEM && DB_OVERFLOWED_DBT(data))
+			DB_ERROR_DBT("Dbc::pget", data, ON_ERROR_UNKNOWN);
+		else
+			DB_ERROR("Dbc::pget", ret, ON_ERROR_UNKNOWN);
 	}
-	return (err);
+
+	return (ret);
 }
 
-int Dbc::put(Dbt* key, Dbt *data, u_int32_t flags_arg)
-{
-	DBC *cursor = this;
-	int err;
-
-	if ((err = cursor->c_put(cursor, key, data, flags_arg)) != 0) {
-
-		// DB_KEYEXIST is a "normal" return, so should not be
-		// thrown as an error
-		//
-		if (err != DB_KEYEXIST) {
-			DB_ERROR("Dbc::put", err, ON_ERROR_UNKNOWN);
-			return (err);
-		}
-	}
-	return (err);
-}
+DBC_METHOD(put, (Dbt* key, Dbt *data, u_int32_t _flags),
+    (dbc, key, data, _flags), DB_RETOK_DBCPUT)
