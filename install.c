@@ -66,14 +66,13 @@ static int installPackages(char * rootdir, char ** packages, char * location,
     for (i = 0, filename = packages; i < numPackages; i++, filename++) {
 	if (!*filename) continue;
 
-	hashesPrinted = 0;
-
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
-	    fprintf(stderr, "error: cannot open %s\n", *filename);
+	    fprintf(stderr, "error: cannot open file %s\n", *filename);
 	    numFailed++;
 	    *filename = NULL;
-	}
+	    continue;
+	} 
 
 	if (interfaceFlags & RPMINSTALL_PERCENT) 
 	    printFormat = "%%f %s:%s:%s\n";
@@ -96,8 +95,10 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 		message(MESS_DEBUG, "stopping source install as we're "
 			"just testing\n");
 		rc = 0;
-	    } else
+	    } else {
+		hashesPrinted = 0;
 		rc = rpmInstallSourcePackage(rootdir, fd, NULL);
+	    }
 	} 
 
 	if (rc == 1) {
@@ -179,9 +180,10 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
     for (filename = packages; *filename; filename++) {
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
-	    fprintf(stderr, "error: cannot open %s\n", *filename);
+	    fprintf(stderr, "error: cannot open file %s\n", *filename);
 	    numFailed++;
 	    *filename = NULL;
+	    continue;
 	}
 
 	rc = pkgReadHeader(fd, &binaryHeaders[numBinaryPackages], &isSource);
