@@ -295,9 +295,9 @@ static void printUsage(void) {
     puts(_("                        [--excludedocs] [--includedocs] [--noscripts]"));
     puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
-    puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
-    puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
-    puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
+    puts(_("                        [--justdb] [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--notriggers] [--excludepath <path>]"));
     puts(_("                        [--ignoresize] file1.rpm ... fileN.rpm"));
     fprintf(fp,  ("       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"), __progname);
@@ -305,7 +305,7 @@ static void printUsage(void) {
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
-    puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
+    puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
     puts(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"));
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--excludepath <path>] [--ignoresize]"));
@@ -319,9 +319,10 @@ static void printUsage(void) {
     fprintf(fp,  ("       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"), __progname);
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
-    puts(_("                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"));
-    puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
-    puts(_("                        [--ftpport <port>] [--provides] [--triggers] [--dump]"));
+    puts(_("                        [--triggeredby]"));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
+    puts(_("                        [--provides] [--triggers] [--dump]"));
     puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));
     fprintf(fp, _("       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"), __progname);
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));

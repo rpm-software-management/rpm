@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.63
+Release: 0.64
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -16,6 +16,9 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils sh-utils mktemp
 Requires: popt, bzip2 >= 0.9.0c-2
+# XXX glibc-2.1.92 has incompatible locale changes that affect statically
+# XXX linked binaries like /bin/rpm.
+Requires: glibc >= 2.1.92
 BuildRequires: db3-devel
 BuildRequires: bzip2 >= 0.9.0c-2
 BuildRequires: python-devel >= 1.5.2
@@ -261,6 +264,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Aug  3 2000 Jeff Johnson <jbj@redhat.com>
+- add glibc requirement.
+
 * Mon Jul 31 2000 Jeff Johnson <jbj@redhat.com>
 - fix: uniqify dependency problems when printing (#14034).
 - fix: segfault on erase if filestates is missing in header (#14679).

@@ -207,9 +207,9 @@ static void printUsage(void) {
     puts(_("                        [--excludedocs] [--includedocs] [--noscripts]"));
     puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
-    puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
-    puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
-    puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
+    puts(_("                        [--justdb] [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--notriggers] [--excludepath <path>]"));
     puts(_("                        [--ignoresize] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
@@ -225,9 +225,10 @@ static void printUsage(void) {
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
-    puts(_("                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"));
-    puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
-    puts(_("                        [--ftpport <port>] [--provides] [--triggers] [--dump]"));
+    puts(_("                        [--triggeredby]"));
+    puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
+    puts(_("                        [--provides] [--triggers] [--dump]"));
     puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
