@@ -496,7 +496,11 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sun Jan  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.4
+* Tue Jan  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.6
+- mac os x patches (#131943,#131944,#132924,#132926).
+- mac os x patches (#133611, #133612, #134637).
+
+* Sun Jan  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.5
 - upgrade to db-4.3.27.
 - revert MAGIC_COMPRESS, real fix is in libmagic (#143782).
 - upgrade to file-4.12 internal.

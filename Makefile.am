@@ -60,19 +60,19 @@ rpm_SOURCES =
 rpm_LDFLAGS =		$(myLDFLAGS)
 rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
+	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
 
-rpmb_SOURCES =		build.c
+rpmb_SOURCES =		$(top_srcdir)/build.c
 rpmb_LDFLAGS =		$(myLDFLAGS)
 rpmb_LDADD =		rpmb.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmb.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMBT -o $@ -c rpmqv.c
+	$(COMPILE) -DIAM_RPMBT -o $@ -c $(top_srcdir)/rpmqv.c
 
 rpmd_SOURCES =
 rpmd_LDFLAGS =		$(myLDFLAGS)
 rpmd_LDADD =		rpmd.o $(myLDADD)
 rpmd.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMDB -o $@ -c rpmqv.c
+	$(COMPILE) -DIAM_RPMDB -o $@ -c $(top_srcdir)/rpmqv.c
 
 rpmi_SOURCES =
 #rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
@@ -80,19 +80,19 @@ rpmi_SOURCES =
 rpmi_LDFLAGS =		$(myLDFLAGS)
 rpmi_LDADD =		rpmi.o $(myLDADD)
 rpmi.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMEIU -o $@ -c rpmqv.c
+	$(COMPILE) -DIAM_RPMEIU -o $@ -c $(top_srcdir)/rpmqv.c
 
 rpmk_SOURCES =
 rpmk_LDFLAGS =		$(myLDFLAGS)
 rpmk_LDADD =		rpmk.o $(myLDADD)
 rpmk.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMK -o $@ -c rpmqv.c
+	$(COMPILE) -DIAM_RPMK -o $@ -c $(top_srcdir)/rpmqv.c
 
 rpmq_SOURCES =
 rpmq_LDFLAGS =		$(myLDFLAGS)
 rpmq_LDADD =		rpmq.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmq.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMQV -o $@ -c rpmqv.c
+	$(COMPILE) -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
 
 rpm2cpio_SOURCES =	$(top_srcdir)/rpm2cpio.c
 rpm2cpio_LDFLAGS =	$(myLDFLAGS)

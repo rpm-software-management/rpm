@@ -12,6 +12,7 @@ SUBDIRS = rpmdb rpm
 EXTRA_DIST = system.h rpmdebug-py.c
 
 INCLUDES = -I. \
+	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
