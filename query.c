@@ -37,7 +37,7 @@ static int queryHeader(Header h, char * chptr) {
 
     str = headerSprintf(h, chptr, rpmTagTable, rpmHeaderFormats, &error);
     if (!str) {
-	fprintf(stderr, "error in format: %s\n", error);
+	fprintf(stderr, _("error in format: %s\n"), error);
 	return 1;
     }
 
