@@ -1,4 +1,8 @@
 4.0 -> 4.1
+	- add doxygen and lclint annotations most everywhere.
+	- rip out rpmrc configuration.
+	- consistent return for all signature verification.
+	- use enum for signature header tags.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

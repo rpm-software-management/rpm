@@ -338,82 +338,36 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 /*@{*/
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
-/* #define	RPMVAR_SOURCEDIR		0 -- No longer used */
-/* #define	RPMVAR_BUILDDIR			1 -- No longer used */
-/* #define	RPMVAR_DOCDIR			2 -- No longer used */
 #define	RPMVAR_OPTFLAGS			3
-/* #define	RPMVAR_TOPDIR			4 -- No longer used */
-/* #define	RPMVAR_SPECDIR			5 -- No longer used */
-/* #define	RPMVAR_ROOT			6 -- No longer used */
-/* #define	RPMVAR_RPMDIR			7 -- No longer used */
-/* #define	RPMVAR_SRPMDIR			8 -- No longer used */
-/* #define	RPMVAR_ARCHSENSITIVE 		9  -- No longer used */
-/* #define	RPMVAR_REQUIREDISTRIBUTION	10 -- No longer used */
-/* #define	RPMVAR_REQUIREGROUP			11 -- No longer used */
-/* #define	RPMVAR_REQUIREVENDOR		12 -- No longer used */
-/* #define	RPMVAR_DISTRIBUTION		13 -- No longer used */
-/* #define	RPMVAR_VENDOR			14 -- No longer used */
-/* #define	RPMVAR_MESSAGELEVEL		15 -- No longer used */
-/* #define	RPMVAR_REQUIREICON		16 -- No longer used */
-/* #define	RPMVAR_TIMECHECK		17 -- No longer used */
-/* #define	RPMVAR_SIGTYPE			18 -- No longer used */
-/* #define	RPMVAR_PGP_PATH			19 -- No longer used */
-/* #define	RPMVAR_PGP_NAME			20 -- No longer used */
-/* #define	RPMVAR_PGP_SECRING		21 -- No longer used */
-/* #define	RPMVAR_PGP_PUBRING		22 -- No longer used */
-/* #define	RPMVAR_EXCLUDEDOCS		23 -- No longer used */
-/* #define	RPMVAR_BUILDARCH		24 -- No longer used */
-/* #define	RPMVAR_BUILDOS			25 -- No longer used */
-/* #define	RPMVAR_BUILDROOT		26 */
-/* #define	RPMVAR_DBPATH			27 -- No longer used */
-/* #define	RPMVAR_PACKAGER			28 -- No longer used */
-/* #define	RPMVAR_FTPPROXY			29 -- No longer used */
-/* #define	RPMVAR_TMPPATH			30 -- No longer used */
-/* #define	RPMVAR_CPIOBIN			31 -- No longer used */
-/* #define	RPMVAR_FTPPORT			32 -- No longer used */
-/* #define	RPMVAR_NETSHAREDPATH		33 -- No longer used */
-/* #define	RPMVAR_DEFAULTDOCDIR		34 -- No longer used */
-/* #define	RPMVAR_FIXPERMS			35 -- No longer used */
-/* #define	RPMVAR_GZIPBIN			36 -- No longer used */
-/* #define	RPMVAR_RPMFILENAME		37 -- No longer used */
 #define	RPMVAR_PROVIDES			38
-/* #define	RPMVAR_BUILDSHELL		39 -- No longer used */
-/* #define	RPMVAR_INSTCHANGELOG		40 -- No longer used */
-/* #define	RPMVAR_BZIP2BIN			41 -- No longer used */
-/* #define	RPMVAR_LANGPATT			42 -- No longer used */
 #define	RPMVAR_INCLUDE			43
-/* #define	RPMVAR_ARCH			44 -- No longer used */
-/* #define	RPMVAR_OS			45 -- No longer used */
-/* #define	RPMVAR_BUILDPLATFORM		46 -- No longer used */
-/* #define	RPMVAR_BUILDARCH		47 -- No longer used */
-/* #define	RPMVAR_BUILDOS			48 -- No longer used */
 #define	RPMVAR_MACROFILES		49
-/* #define	RPMVAR_GPG_PATH			51 -- No longer used */
-/* #define	RPMVAR_GPG_NAME			52 -- No longer used */
-/* #define	RPMVAR_HTTPPROXY		53 -- No longer used */
-/* #define	RPMVAR_HTTPPORT			54 -- No longer used */
 
 #define	RPMVAR_NUM			55	/* number of RPMVAR entries */
 
 /** \ingroup rpmrc
  * Return value of rpmrc variable.
  * @deprecated Use rpmExpand() with appropriate macro expression.
+ * @todo Eliminate.
  */
 const char * rpmGetVar(int var);
 
 /** \ingroup rpmrc
  * Set value of rpmrc variable.
  * @deprecated Use rpmDefineMacro() to change appropriate macro instead.
+ * @todo Eliminate.
  */
 void rpmSetVar(int var, const char *val);
 
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.
  */
-#define	RPM_MACHTABLE_INSTARCH		0
-#define	RPM_MACHTABLE_INSTOS		1
-#define	RPM_MACHTABLE_BUILDARCH		2
-#define	RPM_MACHTABLE_BUILDOS  		3
+enum rpm_machtable_e {
+	RPM_MACHTABLE_INSTARCH		= 0,
+	RPM_MACHTABLE_INSTOS		= 1,
+	RPM_MACHTABLE_BUILDARCH		= 2,
+	RPM_MACHTABLE_BUILDOS  		= 3
+};
 #define	RPM_MACHTABLE_COUNT		4	/* number of arch/os tables */
 
 /** \ingroup rpmrc
@@ -673,18 +627,19 @@ int rpmdbRebuild(const char * root);
 /*@{*/
 
 /** */
-typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
-				RPMPROB_BADOS,
-				RPMPROB_PKG_INSTALLED,
-				RPMPROB_BADRELOCATE,
-				RPMPROB_REQUIRES,
-				RPMPROB_CONFLICT,
-				RPMPROB_NEW_FILE_CONFLICT,
-				RPMPROB_FILE_CONFLICT,
-				RPMPROB_OLDPACKAGE,
-				RPMPROB_DISKSPACE,
-				RPMPROB_BADPRETRANS
- 			      } rpmProblemType;
+typedef enum rpmProblemType_e {
+	RPMPROB_BADARCH, 
+	RPMPROB_BADOS,
+	RPMPROB_PKG_INSTALLED,
+	RPMPROB_BADRELOCATE,
+	RPMPROB_REQUIRES,
+	RPMPROB_CONFLICT,
+	RPMPROB_NEW_FILE_CONFLICT,
+	RPMPROB_FILE_CONFLICT,
+	RPMPROB_OLDPACKAGE,
+	RPMPROB_DISKSPACE,
+	RPMPROB_BADPRETRANS
+ } rpmProblemType;
 
 /** */
 typedef /*@abstract@*/ struct rpmProblem_s {
@@ -1079,12 +1034,14 @@ int showMatches(QVA_t *qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
 #define	QUERY_FOR_DUMPFILES     (1 << 8)
 
 /**
+ * Return name of tag from value.
  * @param tag		tag value
  * @return		name of tag
  */
 /*@observer@*/ const char *const tagName(int tag)	/*@*/;
 
 /**
+ * Return value of tag from name.
  * @param targstr	name of tag
  * @return		tag value
  */
@@ -1167,7 +1124,6 @@ int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 #define	UNINSTALL_NODEPS	(1 << 0)
 #define	UNINSTALL_ALLMATCHES	(1 << 1)
 
-
 /** \ingroup rpmcli
  * @param rootdir	path to top of install tree
  * @param argv		array of package file names (NULL terminated)
@@ -1192,8 +1148,6 @@ int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags,
 /** \name RPMK */
 /*@{*/
 
-/** signature.c **/
-
 /**************************************************/
 /*                                                */
 /* Signature Tags                                 */
@@ -1203,57 +1157,68 @@ int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags,
 /*                                                */
 /**************************************************/
 
-#define	RPMSIGTAG_SIZE         	        1000
+/** \ingroup signature
+ * Tags found in signature header from package.
+ */
+enum rpmtagSignature {
+	RPMSIGTAG_SIZE		= 1000,
 /* the md5 sum was broken *twice* on big endian machines */
-#define	RPMSIGTAG_LEMD5_1		1001
-#define	RPMSIGTAG_PGP          	        1002
-#define	RPMSIGTAG_LEMD5_2		1003
-#define	RPMSIGTAG_MD5		        1004
-#define	RPMSIGTAG_GPG		        1005
-#define	RPMSIGTAG_PGP5		        1006	/* XXX legacy use only */
+	RPMSIGTAG_LEMD5_1	= 1001,
+	RPMSIGTAG_PGP		= 1002,
+	RPMSIGTAG_LEMD5_2	= 1003,
+	RPMSIGTAG_MD5		= 1004,
+	RPMSIGTAG_GPG		= 1005,
+	RPMSIGTAG_PGP5		= 1006,	/* XXX legacy use only */
 
 /* Signature tags by Public Key Algorithm (RFC 2440) */
 /* N.B.: These tags are tenative, the values may change */
-#define	RPMTAG_PK_BASE			2048
-#define	RPMTAG_PK_RSA_ES		RPMTAG_PK_BASE+1
-#define	RPMTAG_PK_RSA_E			RPMTAG_PK_BASE+2
-#define	RPMTAG_PK_RSA_S			RPMTAG_PK_BASE+3
-#define	RPMTAG_PK_ELGAMAL_E		RPMTAG_PK_BASE+16
-#define	RPMTAG_PK_DSA			RPMTAG_PK_BASE+17
-#define	RPMTAG_PK_ELLIPTIC		RPMTAG_PK_BASE+18
-#define	RPMTAG_PK_ECDSA			RPMTAG_PK_BASE+19
-#define	RPMTAG_PK_ELGAMAL_ES		RPMTAG_PK_BASE+20
-#define	RPMTAG_PK_DH			RPMTAG_PK_BASE+21
+	RPMTAG_PK_BASE		= 512,
+	RPMTAG_PK_RSA_ES	= RPMTAG_PK_BASE+1,
+	RPMTAG_PK_RSA_E		= RPMTAG_PK_BASE+2,
+	RPMTAG_PK_RSA_S		= RPMTAG_PK_BASE+3,
+	RPMTAG_PK_ELGAMAL_E	= RPMTAG_PK_BASE+16,
+	RPMTAG_PK_DSA		= RPMTAG_PK_BASE+17,
+	RPMTAG_PK_ELLIPTIC	= RPMTAG_PK_BASE+18,
+	RPMTAG_PK_ECDSA		= RPMTAG_PK_BASE+19,
+	RPMTAG_PK_ELGAMAL_ES	= RPMTAG_PK_BASE+20,
+	RPMTAG_PK_DH		= RPMTAG_PK_BASE+21,
 
-#define	RPMTAG_HASH_BASE		2048+64
-#define	RPMTAG_HASH_MD5			RPMTAG_HASH_BASE+1
-#define	RPMTAG_HASH_SHA1		RPMTAG_HASH_BASE+2
-#define	RPMTAG_HASH_RIPEMD160		RPMTAG_HASH_BASE+3
-#define	RPMTAG_HASH_MD2			RPMTAG_HASH_BASE+5
-#define	RPMTAG_HASH_TIGER192		RPMTAG_HASH_BASE+6
-#define	RPMTAG_HASH_HAVAL_5_160		RPMTAG_HASH_BASE+7
+	RPMTAG_HASH_BASE	= 512+64,
+	RPMTAG_HASH_MD5		= RPMTAG_HASH_BASE+1,
+	RPMTAG_HASH_SHA1	= RPMTAG_HASH_BASE+2,
+	RPMTAG_HASH_RIPEMD160	= RPMTAG_HASH_BASE+3,
+	RPMTAG_HASH_MD2		= RPMTAG_HASH_BASE+5,
+	RPMTAG_HASH_TIGER192	= RPMTAG_HASH_BASE+6,
+	RPMTAG_HASH_HAVAL_5_160	= RPMTAG_HASH_BASE+7
+};
 
-/**************************************************/
-/*                                                */
-/* verifySignature() results                      */
-/*                                                */
-/**************************************************/
-
-/* verifySignature() results */
-#define	RPMSIG_OK		0
-#define	RPMSIG_UNKNOWN		1
-#define	RPMSIG_BAD		2
-#define	RPMSIG_NOKEY		3  /* Do not have the key to check this signature */
-#define	RPMSIG_NOTTRUSTED	4  /* We have the key but it is not trusted */
+/**
+ *  Return codes from verifySignature().
+ */
+enum rpmVerifySignatureReturn {
+	RPMSIG_OK	= 0,	/*!< Signature is OK. */
+	RPMSIG_UNKNOWN	= 1,	/*!< Signature is unknown. */
+	RPMSIG_BAD	= 2,	/*!< Signature does not verify. */
+	RPMSIG_NOKEY	= 3,	/*!< Key is unavailable. */
+	RPMSIG_NOTTRUSTED = 4	/*!< Signature is OK, but key is not trusted. */
+};
 
 /** \ingroup signature
+ * Verify a signature from a package.
+ * @param file		file name of header+payload
+ * @param sigTag	type of signature
+ * @param sig		signature itself
+ * @param count		no. of bytes in signature
+ * @param result	detailed text result of signature verification
+ * @return		result of signature verification
+ */
+enum rpmVerifySignatureReturn rpmVerifySignature(const char *file,
+		int_32 sigTag, void *sig, int count, char *result);
+
+/** \ingroup signature
+ * Destroy signature header from package.
  */
 void rpmFreeSignature(Header h);
-
-/** \ingroup signature
- */
-int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
-		       char *result);
 
 /* --- checksig/resign */
 
@@ -1262,17 +1227,28 @@ int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 #define	CHECKSIG_GPG (1 << 2)
 
 /** \ingroup rpmcli
+ * @param flags
  * @param argv		array of package file names (NULL terminated)
+ * @return		0 on success
  */
 int rpmCheckSig(int flags, const char ** argv);
 
 /** \ingroup rpmcli
- * @param argv		array of package file names (NULL terminated)
+ * Type of signature operation to perform.
  */
-int rpmReSign(int add, char *passPhrase, const char ** argv);
+enum rpmKtype {
+	RPMK_NEW_SIGNATURE = 0,		/*!< Discard previous signature. */
+	RPMK_ADD_SIGNATURE		/*!< Add element to signature. */
+};
 
-#define	ADD_SIGNATURE 1
-#define	NEW_SIGNATURE 0
+/** \ingroup rpmcli
+ * Create/modify elements in signature header.
+ * @param add		type of signature operation
+ * @param passPhrase
+ * @param argv		array of package file names (NULL terminated)
+ * @return		0 on success
+ */
+int rpmReSign(enum rpmKtype add, char *passPhrase, const char ** argv);
 
 /*@}*/
 

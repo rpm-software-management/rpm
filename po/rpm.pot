@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-08-27 15:15-0400\n"
+"POT-Creation-Date: 2000-08-27 17:01-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3409,7 +3409,7 @@ msgstr ""
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:348 lib/signature.c:691
+#: lib/signature.c:348 lib/signature.c:693
 msgid "Couldn't exec gpg"
 msgstr ""
 
@@ -3441,33 +3441,33 @@ msgstr ""
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:497 lib/signature.c:559
+#: lib/signature.c:499 lib/signature.c:561
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: lib/signature.c:557 lib/signature.c:630
+#: lib/signature.c:559 lib/signature.c:632
 msgid "exec failed!\n"
 msgstr ""
 
-#: lib/signature.c:632
+#: lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
-#: lib/signature.c:720
+#: lib/signature.c:722
 msgid "Couldn't exec pgp"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:724 lib/signature.c:777
+#: lib/signature.c:726 lib/signature.c:779
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: lib/signature.c:757
+#: lib/signature.c:759
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: lib/signature.c:769
+#: lib/signature.c:771
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 

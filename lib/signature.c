@@ -427,7 +427,8 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
     return ret;
 }
 
-static int verifySizeSignature(const char *datafile, int_32 size, char *result)
+static enum rpmVerifySignatureReturn
+verifySizeSignature(const char *datafile, int_32 size, char *result)
 {
     struct stat statbuf;
 
@@ -436,16 +437,17 @@ static int verifySizeSignature(const char *datafile, int_32 size, char *result)
 	sprintf(result, "Header+Archive size mismatch.\n"
 		"Expected %d, saw %d.\n",
 		size, (int)statbuf.st_size);
-	return 1;
+	return RPMSIG_BAD;
     }
 
     sprintf(result, "Header+Archive size OK: %d bytes\n", size);
-    return 0;
+    return RPMSIG_OK;
 }
 
 #define	X(_x)	(unsigned)((_x) & 0xff)
 
-static int verifyMD5Signature(const char *datafile, unsigned char *sig, 
+static enum rpmVerifySignatureReturn
+verifyMD5Signature(const char *datafile, unsigned char *sig, 
 			      char *result, md5func fn)
 {
     unsigned char md5sum[16];
@@ -465,7 +467,7 @@ static int verifyMD5Signature(const char *datafile, unsigned char *sig,
 		X(md5sum[4]),  X(md5sum[5]),  X(md5sum[6]),  X(md5sum[7]),
 		X(md5sum[8]),  X(md5sum[9]),  X(md5sum[10]), X(md5sum[11]),
 		X(md5sum[12]), X(md5sum[13]), X(md5sum[14]), X(md5sum[15]) );
-	return 1;
+	return RPMSIG_BAD;
     }
 
     sprintf(result, "MD5 sum OK: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
@@ -475,11 +477,11 @@ static int verifyMD5Signature(const char *datafile, unsigned char *sig,
 	    X(md5sum[8]),  X(md5sum[9]),  X(md5sum[10]), X(md5sum[11]),
 	    X(md5sum[12]), X(md5sum[13]), X(md5sum[14]), X(md5sum[15]) );
 
-    return 0;
+    return RPMSIG_OK;
 }
 
-static int verifyPGPSignature(const char *datafile, void *sig,
-			      int count, char *result)
+static enum rpmVerifySignatureReturn
+verifyPGPSignature(const char *datafile, void *sig, int count, char *result)
 {
     int pid, status, outpipe[2];
     FD_t sfd;
@@ -590,8 +592,8 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     return res;
 }
 
-static int verifyGPGSignature(const char *datafile, void *sig,
-			      int count, char *result)
+static enum rpmVerifySignatureReturn
+verifyGPGSignature(const char *datafile, void *sig, int count, char *result)
 {
     int pid, status, outpipe[2];
     FD_t sfd;
@@ -787,26 +789,21 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
     return pass;
 }
 
-int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
+enum rpmVerifySignatureReturn
+rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 		    char *result)
 {
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
-	if (verifySizeSignature(file, *(int_32 *)sig, result)) {
-	    return RPMSIG_BAD;
-	}
-	break;
+	return verifySizeSignature(file, *(int_32 *)sig, result);
+	/*@notreached@*/ break;
     case RPMSIGTAG_MD5:
-	if (verifyMD5Signature(file, sig, result, mdbinfile)) {
-	    return 1;
-	}
-	break;
+	return verifyMD5Signature(file, sig, result, mdbinfile);
+	/*@notreached@*/ break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:
-	if (verifyMD5Signature(file, sig, result, mdbinfileBroken)) {
-	    return 1;
-	}
-	break;
+	return verifyMD5Signature(file, sig, result, mdbinfileBroken);
+	/*@notreached@*/ break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	return verifyPGPSignature(file, sig, count, result);
@@ -818,6 +815,6 @@ int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
 	return RPMSIG_UNKNOWN;
     }
-
+    /*@notreached@*/
     return RPMSIG_OK;
 }
