@@ -396,6 +396,7 @@ int main(int argc, const char ** argv)
     qva->qva_queryFormat = _free(qva->qva_queryFormat);
     memset(qva, 0, sizeof(*qva));
     qva->qva_source = RPMQV_PACKAGE;
+    qva->qva_fflags = RPMFILE_ALL;
     qva->qva_mode = ' ';
     qva->qva_char = ' ';
 #endif

@@ -213,6 +213,7 @@ struct rpmQVArguments_s {
     rpmQVSources qva_source;	/*!< Identify CLI arg type. */
     int 	qva_sourceCount;/*!< Exclusive check (>1 is error). */
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
+    rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
 /*@unused@*/ int qva_verbose;	/*!< (unused) */
 /*@only@*/ /*@null@*/ const char * qva_queryFormat; /*!< Format for headerSprintf(). */
 /*@observer@*/ /*@null@*/ const char * qva_prefix; /*!< Path to top of install tree. */

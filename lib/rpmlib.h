@@ -395,6 +395,8 @@ typedef	enum rpmfileAttrs_e {
 #define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
 #define	RPMFILE_MULTILIB_MASK		RPMFILE_MULTILIB(7)
 
+#define	RPMFILE_ALL	~(RPMFILE_NONE)
+
 /* XXX Check file flags for multilib marker. */
 #define	isFileMULTILIB(_fflags)		((_fflags) & RPMFILE_MULTILIB_MASK)
 

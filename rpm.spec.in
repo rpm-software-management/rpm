@@ -241,7 +241,7 @@ fi
 %config(noreplace,missingok)	/etc/rpm/macros.db1
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 
-%define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok)
+%define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 %rpmdbattr	/var/lib/rpm/Basenames
 %rpmdbattr	/var/lib/rpm/Conflictname
 %rpmdbattr	/var/lib/rpm/__db.001

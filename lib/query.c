@@ -246,6 +246,11 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	  && !(fileFlagsList[i] & RPMFILE_CONFIG))
 	    continue;
 
+	/* If not querying %ghost, skip ghost files. */
+	if (!(qva->qva_fflags & RPMFILE_GHOST)
+	  && (fileFlagsList[i] & RPMFILE_GHOST))
+	    continue;
+
 	if (!rpmIsVerbose() && prefix)
 	    te = stpcpy(te, prefix);
 
@@ -306,15 +311,22 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	} else {
 	    char * filespec;
 	    int nlink;
+	    size_t fileSize;
 
 	    filespec = xmalloc(strlen(dirNames[dirIndexes[i]])
 					      + strlen(baseNames[i]) + 1);
 	    strcpy(filespec, dirNames[dirIndexes[i]]);
 	    strcat(filespec, baseNames[i]);
 					
+	    fileSize = fileSizeList[i];
 	    nlink = countLinks(fileRdevList, fileInodeList, count, i);
+
+if (S_ISDIR(fileModeList[i])) {
+    nlink++;
+    fileSize = 0;
+}
 	    if (fileOwnerList && fileGroupList) {
-		printFileInfo(te, filespec, fileSizeList[i],
+		printFileInfo(te, filespec, fileSize,
 					      fileModeList[i], fileMTimeList[i],
 					      fileRdevList[i], nlink,
 					      fileOwnerList[i], 
@@ -322,7 +334,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 					      -1, fileLinktoList[i]);
 		te += strlen(te);
 	    } else if (fileUIDList && fileGIDList) {
-		printFileInfo(te, filespec, fileSizeList[i],
+		printFileInfo(te, filespec, fileSize,
 					      fileModeList[i], fileMTimeList[i],
 					      fileRdevList[i], nlink,
 					      NULL, NULL, fileUIDList[i], 

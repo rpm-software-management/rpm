@@ -571,6 +571,7 @@ assert(fi->type == TR_ADDED);
 	    break;
 
 	case FA_BACKUP:
+	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 	    switch (fi->type) {
 	    case TR_ADDED:
 		fsm->osuffix = SUFFIX_RPMORIG;
@@ -583,15 +584,21 @@ assert(fi->type == TR_ADDED);
 
 	case FA_ALTNAME:
 assert(fi->type == TR_ADDED);
-	    fsm->nsuffix = SUFFIX_RPMNEW;
+	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
+		fsm->nsuffix = SUFFIX_RPMNEW;
 	    break;
 
 	case FA_SAVE:
 assert(fi->type == TR_ADDED);
-	    fsm->osuffix = SUFFIX_RPMSAVE;
+	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
+		fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
 	case FA_ERASE:
 	    assert(fi->type == TR_REMOVED);
+	    /*
+	     * XXX TODO: %ghost probably shouldn't be removed, but that changes
+	     * legacy rpm behavior.
+	     */
 	    break;
 	default:
 	    break;

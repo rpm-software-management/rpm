@@ -409,6 +409,12 @@ static int verifyHeader(QVA_t qva, Header h)
 	int rc;
 
 	fileAttrs = fileFlags[i];
+
+	/* If not verifying %ghost, skip ghost files. */
+	if (!(qva->qva_fflags & RPMFILE_GHOST)
+	&& (fileAttrs & RPMFILE_GHOST))
+	    continue;
+
 	rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask);
 	if (rc) {
 	    if (!(fileAttrs & RPMFILE_MISSINGOK) || rpmIsVerbose()) {

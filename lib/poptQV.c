@@ -150,6 +150,20 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("dump basic file information"), NULL },
  { "list", 'l', 0, 0, 'l',
 	N_("list files in package"), NULL },
+
+ /* Duplicate file attr flags from packages into command line options. */
+ { "noghost", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_fflags, RPMFILE_GHOST,
+        N_("skip %%ghost files"), NULL },
+#ifdef	NOTEVER		/* XXX there's hardly a need for these */
+ { "nolicense", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_fflags, RPMFILE_LICENSE,
+        N_("skip %%license files"), NULL },
+ { "noreadme", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVArgs.qva_fflags, RPMFILE_README,
+        N_("skip %%readme files"), NULL },
+#endif
+
  { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
 	POPT_QUERYFORMAT, NULL, NULL },
  { "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
@@ -174,6 +188,7 @@ struct poptOption rpmVerifyPoptTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
 
+ /* Duplicate file verify flags from packages into command line options. */
  { "nomd5", '\0', POPT_BIT_SET, &rpmQVArgs.qva_flags, VERIFY_MD5,
 	N_("don't verify MD5 digest of files"), NULL },
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
@@ -204,6 +219,7 @@ struct poptOption rpmVerifyPoptTable[] = {
 	N_("don't verify package dependencies"), NULL },
  { "noscript", '\0', POPT_BIT_SET,&rpmQVArgs.qva_flags, VERIFY_SCRIPT,
         N_("don't execute %verifyscript (if any)"), NULL },
+ /* XXX legacy had a trailing s on --noscript */
  { "noscripts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVArgs.qva_flags, VERIFY_SCRIPT,
         N_("don't execute %verifyscript (if any)"), NULL },
