@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-05-10 19:38-0400\n"
+"POT-Creation-Date: 1999-05-11 12:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -325,7 +325,7 @@ msgstr ""
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:202 ../lib/query.c:569 ../verify.c:225
+#: ../install.c:202 ../lib/query.c:569
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
@@ -363,7 +363,7 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:388 ../lib/query.c:717 ../verify.c:333
+#: ../install.c:388 ../lib/query.c:717
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -1527,97 +1527,6 @@ msgstr ""
 #: ../url.c:437
 #, c-format
 msgid "failed to create %s\n"
-msgstr ""
-
-#: ../lib/verify.c:36 ../verify.c:29
-msgid "don't verify files in package"
-msgstr ""
-
-#: ../lib/verify.c:257 ../verify.c:49
-#, c-format
-msgid "missing    %s\n"
-msgstr ""
-
-#: ../lib/verify.c:321 ../verify.c:113
-#, c-format
-msgid "Unsatisfied dependencies for %s-%s-%s: "
-msgstr ""
-
-#: ../lib/query.c:514 ../verify.c:161
-#, c-format
-msgid "record number %u\n"
-msgstr ""
-
-#: ../lib/query.c:518 ../verify.c:165
-msgid "error: could not read database record\n"
-msgstr ""
-
-#: ../lib/query.c:742 ../verify.c:197
-msgid "rpmQuery: rpmdbOpen() failed\n"
-msgstr ""
-
-#: ../lib/query.c:547 ../verify.c:209
-#, c-format
-msgid "open of %s failed\n"
-msgstr ""
-
-#: ../verify.c:228
-#, c-format
-msgid "verify of %s failed\n"
-msgstr ""
-
-#: ../lib/query.c:627 ../verify.c:243
-msgid "could not read database record!\n"
-msgstr ""
-
-#: ../lib/query.c:638 ../verify.c:254
-#, c-format
-msgid "group %s does not contain any packages\n"
-msgstr ""
-
-#: ../lib/query.c:648 ../verify.c:264
-#, c-format
-msgid "no package provides %s\n"
-msgstr ""
-
-#: ../lib/query.c:658 ../verify.c:274
-#, c-format
-msgid "no package triggers %s\n"
-msgstr ""
-
-#: ../lib/query.c:668 ../verify.c:284
-#, c-format
-msgid "no package requires %s\n"
-msgstr ""
-
-#: ../lib/query.c:683 ../verify.c:299
-#, c-format
-msgid "file %s: %s\n"
-msgstr ""
-
-#: ../lib/query.c:686 ../verify.c:302
-#, c-format
-msgid "file %s is not owned by any package\n"
-msgstr ""
-
-#: ../lib/query.c:699 ../verify.c:315
-#, c-format
-msgid "invalid package number: %s\n"
-msgstr ""
-
-#: ../lib/query.c:702 ../verify.c:318
-#, c-format
-msgid "package record number: %d\n"
-msgstr ""
-
-#: ../lib/query.c:705 ../verify.c:321
-#, c-format
-msgid "record %d could not be read\n"
-msgstr ""
-
-#: ../lib/query.c:720 ../verify.c:336
-#, c-format
-msgid "error looking for package %s\n"
 msgstr ""
 
 #: ../build/build.c:83 ../build/pack.c:248
@@ -2888,6 +2797,20 @@ msgstr ""
 msgid "package has neither file owner or id lists"
 msgstr ""
 
+#: ../lib/query.c:514
+#, c-format
+msgid "record number %u\n"
+msgstr ""
+
+#: ../lib/query.c:518
+msgid "error: could not read database record\n"
+msgstr ""
+
+#: ../lib/query.c:547
+#, c-format
+msgid "open of %s failed\n"
+msgstr ""
+
 #: ../lib/query.c:560
 msgid "old format source packages cannot be queried\n"
 msgstr ""
@@ -2900,6 +2823,64 @@ msgstr ""
 #: ../lib/query.c:593
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
+msgstr ""
+
+#: ../lib/query.c:627
+msgid "could not read database record!\n"
+msgstr ""
+
+#: ../lib/query.c:638
+#, c-format
+msgid "group %s does not contain any packages\n"
+msgstr ""
+
+#: ../lib/query.c:648
+#, c-format
+msgid "no package provides %s\n"
+msgstr ""
+
+#: ../lib/query.c:658
+#, c-format
+msgid "no package triggers %s\n"
+msgstr ""
+
+#: ../lib/query.c:668
+#, c-format
+msgid "no package requires %s\n"
+msgstr ""
+
+#: ../lib/query.c:683
+#, c-format
+msgid "file %s: %s\n"
+msgstr ""
+
+#: ../lib/query.c:686
+#, c-format
+msgid "file %s is not owned by any package\n"
+msgstr ""
+
+#: ../lib/query.c:699
+#, c-format
+msgid "invalid package number: %s\n"
+msgstr ""
+
+#: ../lib/query.c:702
+#, c-format
+msgid "package record number: %d\n"
+msgstr ""
+
+#: ../lib/query.c:705
+#, c-format
+msgid "record %d could not be read\n"
+msgstr ""
+
+#: ../lib/query.c:720
+#, c-format
+msgid "error looking for package %s\n"
+msgstr ""
+
+#: ../lib/query.c:742
+msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
 #: ../lib/rebuilddb.c:18
@@ -3330,12 +3311,26 @@ msgstr ""
 msgid "removal of %s failed: %s"
 msgstr ""
 
+#: ../lib/verify.c:36
+msgid "don't verify files in package"
+msgstr ""
+
 #: ../lib/verify.c:206
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 
 #: ../lib/verify.c:224
 msgid "package lacks both group name and id lists (this should never happen)"
+msgstr ""
+
+#: ../lib/verify.c:257
+#, c-format
+msgid "missing    %s\n"
+msgstr ""
+
+#: ../lib/verify.c:321
+#, c-format
+msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
 #: ../lib/verify.c:369
