@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.138 2001/01/19 01:38:58 jbj Exp $
+# $Id: sl.po,v 1.139 2001/01/19 16:49:18 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-18 20:21-0500\n"
+"POT-Creation-Date: 2001-01-19 11:41-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2445,40 +2445,40 @@ msgstr "ni mo¾no izbrisati %s: %s\n"
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1245
+#: lib/cpio.c:1253
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(napaka 0x%x)"
 
-#: lib/cpio.c:1248
+#: lib/cpio.c:1256
 msgid "Bad magic"
 msgstr "Napaèno magièno ¹tevilo"
 
-#: lib/cpio.c:1249
+#: lib/cpio.c:1257
 msgid "Bad/unreadable  header"
 msgstr "Po¹kodovana/neberljiva glava"
 
-#: lib/cpio.c:1267
+#: lib/cpio.c:1275
 msgid "Header size too big"
 msgstr "Glava je predolga"
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1276
 msgid "Unknown file type"
 msgstr "Neznan tip datoteke"
 
-#: lib/cpio.c:1269
+#: lib/cpio.c:1277
 msgid "Missing hard link"
 msgstr "Trda povezava manjka"
 
-#: lib/cpio.c:1270
+#: lib/cpio.c:1278
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1271
+#: lib/cpio.c:1279
 msgid "Internal error"
 msgstr "Notranja napaka"
 
-#: lib/cpio.c:1280
+#: lib/cpio.c:1288
 msgid " failed - "
 msgstr " neuspe¹no - "
 

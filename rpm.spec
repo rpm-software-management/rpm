@@ -1,6 +1,6 @@
 %define	with_python_subpackage	1
 %define	with_bzip2		1
-%define	with_apidocs		0
+%define	with_apidocs		1
 %define strip_binaries		1
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.30
+Release: 0.31
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -284,7 +284,7 @@ fi
 %files devel
 %defattr(-,root,root)
 %if %{with_apidocs}
-%doc 
+%doc apidocs
 %endif
 %{__prefix}/include/rpm
 %{__prefix}/lib/librpm.a
@@ -310,6 +310,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jan 19 2001 Jeff Johnson <jbj@redhat.com>
+- ewt's cpio.c hack.
+
 * Thu Jan 18 2001 Matt Wilson <msw@redhat.com>
 - fix: exit 0 at the end of %pre
 

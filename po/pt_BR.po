@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-01-18 20:21-0500\n"
+msgstr "POT-Creation-Date: 2001-01-19 11:41-0500\n"
 
 # , c-format
 #: build.c:26
@@ -2581,40 +2581,40 @@ msgstr ""
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1245
+#: lib/cpio.c:1253
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1248
+#: lib/cpio.c:1256
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1249
+#: lib/cpio.c:1257
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1267
+#: lib/cpio.c:1275
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1276
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1269
+#: lib/cpio.c:1277
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1270
+#: lib/cpio.c:1278
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1271
+#: lib/cpio.c:1279
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1280
+#: lib/cpio.c:1288
 #, fuzzy
 msgid " failed - "
 msgstr "Construção falhou.\n"

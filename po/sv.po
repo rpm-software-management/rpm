@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-18 20:21-0500\n"
+"POT-Creation-Date: 2001-01-19 11:41-0500\n"
 "PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2364,40 +2364,40 @@ msgstr "kan inte ta bort %s: %s\n"
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1245
+#: lib/cpio.c:1253
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(fel 0x%x)"
 
-#: lib/cpio.c:1248
+#: lib/cpio.c:1256
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
 
-#: lib/cpio.c:1249
+#: lib/cpio.c:1257
 msgid "Bad/unreadable  header"
 msgstr "Felaktigt/oläsbart huvud"
 
-#: lib/cpio.c:1267
+#: lib/cpio.c:1275
 msgid "Header size too big"
 msgstr "Huvudstorlek för stor"
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1276
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: lib/cpio.c:1269
+#: lib/cpio.c:1277
 msgid "Missing hard link"
 msgstr "Saknad hårdlänk"
 
-#: lib/cpio.c:1270
+#: lib/cpio.c:1278
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1271
+#: lib/cpio.c:1279
 msgid "Internal error"
 msgstr "Internt fel"
 
-#: lib/cpio.c:1280
+#: lib/cpio.c:1288
 msgid " failed - "
 msgstr " misslyckades - "
 

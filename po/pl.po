@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-18 20:21-0500\n"
+"POT-Creation-Date: 2001-01-19 11:41-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2450,40 +2450,40 @@ msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1245
+#: lib/cpio.c:1253
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(b³±d 0x%x)"
 
-#: lib/cpio.c:1248
+#: lib/cpio.c:1256
 msgid "Bad magic"
 msgstr "B³êdny magic"
 
-#: lib/cpio.c:1249
+#: lib/cpio.c:1257
 msgid "Bad/unreadable  header"
 msgstr "B³êdny/nieczytelny nag³ówek"
 
-#: lib/cpio.c:1267
+#: lib/cpio.c:1275
 msgid "Header size too big"
 msgstr "Rozmiar nag³ówka jest zbyt du¿y"
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1276
 msgid "Unknown file type"
 msgstr "Nieznany typ pliku"
 
-#: lib/cpio.c:1269
+#: lib/cpio.c:1277
 msgid "Missing hard link"
 msgstr "Brak twardego dowi±zania"
 
-#: lib/cpio.c:1270
+#: lib/cpio.c:1278
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1271
+#: lib/cpio.c:1279
 msgid "Internal error"
 msgstr "B³±d wewnêtrzny"
 
-#: lib/cpio.c:1280
+#: lib/cpio.c:1288
 msgid " failed - "
 msgstr " nie powiod³o siê -"
 

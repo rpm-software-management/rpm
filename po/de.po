@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-18 20:21-0500\n"
+"POT-Creation-Date: 2001-01-19 11:41-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2548,42 +2548,42 @@ msgstr ""
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1245
+#: lib/cpio.c:1253
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "Fehler: "
 
-#: lib/cpio.c:1248
+#: lib/cpio.c:1256
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1249
+#: lib/cpio.c:1257
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1267
+#: lib/cpio.c:1275
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1268
+#: lib/cpio.c:1276
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(unbekannter Typ)"
 
-#: lib/cpio.c:1269
+#: lib/cpio.c:1277
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1270
+#: lib/cpio.c:1278
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1271
+#: lib/cpio.c:1279
 #, fuzzy
 msgid "Internal error"
 msgstr "Fataler Fehler: "
 
-#: lib/cpio.c:1280
+#: lib/cpio.c:1288
 #, fuzzy
 msgid " failed - "
 msgstr "pgp fehlgeschlagen"
