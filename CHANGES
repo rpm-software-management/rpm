@@ -11,6 +11,9 @@
 	- do not ldd non-regular files
 	- do not pass leading "/" to ldd
 	- fix ExcludeOs: and ExclusiveOs:
+	- -V verifies dependencies, can be controlled with --nodeps
+	  and --nofiles
+	- added information on --nodeps to usage messages
 
 2.2 -> 2.2.1:
 	- made rpmRemovePackage() print message in verbose mode
