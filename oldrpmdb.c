@@ -363,15 +363,22 @@ void rpmdbFreeLabel(struct rpmdbLabel label) {
 /* Returns NULL on error */
 char * rpmdbGetPackageGroup(struct rpmdb * rpmdb, struct rpmdbLabel label) {
     datum key, rec;
+    char * g;
     
     key.dptr = label.name;
     key.dsize = strlen(label.name);
     
     rec = gdbm_fetch(rpmdb->groupIndex, key);
-    if (!rec.dptr)
-	error(RPMERR_OLDDBCORRUPT, "group not found in database");
+    if (!rec.dptr) {
+	return strdup("Unknown");
+    }
+    
+    g = malloc(rec.dsize + 1);
+    strncpy(g, rec.dptr, rec.dsize);
+    g[rec.dsize] = '\0';
+    free(rec.dptr);
 
-    return rec.dptr;
+    return g;
 }
 
 /* return 0 on success, 1 on failure */
@@ -391,9 +398,10 @@ int rpmdbGetPackageInfo(struct rpmdb * rpmdb, struct rpmdbLabel label,
     key.dsize = strlen(labelstr);
     
     rec = gdbm_fetch(rpmdb->packages, key);
-    if (!rec.dptr)
+    if (!rec.dptr) {
 	error(RPMERR_OLDDBCORRUPT, "package not found in database");
 	return 1;
+    }
 
     free(labelstr);
 
@@ -427,19 +435,22 @@ int rpmdbGetPackageInfo(struct rpmdb * rpmdb, struct rpmdbLabel label,
     pinfo->distribution = NULL;
     pinfo->vendor = NULL;
     pinfo->description = NULL;
+    pinfo->copyright = NULL;
 
     for (strptr = prelist; *strptr; strptr++) {
-	if (!strncmp("Description: ", *strptr, 13))
+	if (!strncasecmp("Description: ", *strptr, 13))
 	    pinfo->description = strdup((*strptr) + 13);
-	else if (!strncmp("Distribution: ", *strptr, 14))
+	else if (!strncasecmp("Copyright: ", *strptr, 11))
+	    pinfo->copyright = strdup((*strptr) + 11);
+	else if (!strncasecmp("Distribution: ", *strptr, 14))
 	    pinfo->distribution = strdup((*strptr) + 14);
-	else if (!strncmp("Vendor: ", *strptr, 8))
+	else if (!strncasecmp("Vendor: ", *strptr, 8))
 	    pinfo->vendor = strdup((*strptr) + 8);
-	else if (!strncmp("size: ", *strptr, 6))
+	else if (!strncasecmp("size: ", *strptr, 6))
 	    pinfo->size = atoi((*strptr) + 6);
-	else if (!strncmp("BuildTime: ", *strptr, 11))
+	else if (!strncasecmp("BuildDate: ", *strptr, 11))
 	    pinfo->buildTime =atoi((*strptr) + 11);
-	else if (!strncmp("BuildHost: ", *strptr, 11))
+	else if (!strncasecmp("BuildHost: ", *strptr, 11))
 	    pinfo->buildHost = strdup((*strptr) + 11);
     }
     freeSplitString(prelist);
@@ -447,6 +458,10 @@ int rpmdbGetPackageInfo(struct rpmdb * rpmdb, struct rpmdbLabel label,
     if (!pinfo->vendor) pinfo->vendor = strdup("");
     if (!pinfo->description) pinfo->description = strdup("");
     if (!pinfo->distribution) pinfo->distribution = strdup("");
+    if (!pinfo->copyright) {
+	pinfo->copyright = strdup("");
+	printf("no copyright!\n");
+    }
 
     pinfo->files = malloc(sizeof(struct rpmFileInfo) * pinfo->fileCount);
 
@@ -472,6 +487,7 @@ void rpmdbFreePackageInfo(struct rpmdbPackageInfo package) {
     free(package.buildHost);
     free(package.vendor);
     free(package.description);
+    free(package.copyright);
     free(package.distribution);
     free(package.preamble);
 
