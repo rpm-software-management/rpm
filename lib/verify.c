@@ -151,6 +151,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 			   NULL)) {
 	    if (strcmp(unameList[filenum], uidToUname(sb.st_uid)))
 		*result |= RPMVERIFY_USER;
+	    free(unameList);
 	} else if (headerGetEntry(h, RPMTAG_FILEUIDS, NULL, (void **) &uidList, 
 				  &count)) {
 	    if (uidList[filenum] != sb.st_uid)
@@ -167,6 +168,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 			NULL)) {
 	    if (strcmp(gnameList[filenum], gidToGname(sb.st_gid)))
 		*result |= RPMVERIFY_GROUP;
+	    free(gnameList);
 	} else if (headerGetEntry(h, RPMTAG_FILEGIDS, NULL, (void **) &gidList, 
 				  &count)) {
 	    if (gidList[filenum] != sb.st_gid)
