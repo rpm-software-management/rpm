@@ -1,4 +1,5 @@
 2.91 -> 2.92
+	- fix: with --target=i686, pass macro %_arch=i386.
 	- fix: rpm --target=arch ... resurrected.
 	- fix: rpm -q --specfile --specedit now works even with BuildArch:.
 

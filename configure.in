@@ -578,6 +578,22 @@ else
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
 
+dnl Determine the canonical arch-vendor-os for the build machine
+case "${build_cpu}" in
+i[x3456789]86)	RPMCANONARCH=i386 ;;
+alpha*)		RPMCANONARCH=alpha ;;
+sparc*)		RPMCANONARCH=sparc ;;
+*)		RPMCANONARCH=unknown ;;
+esac
+RPMCANONVENDOR="$build_vendor"
+case "${build_vendor}" in
+unknown)	test -f /etc/redhat-release && RPMCANONVENDOR=redhat ;;
+esac
+RPMCANONOS="$build_os_noversion"
+AC_SUBST(RPMCANONARCH)
+AC_SUBST(RPMCANONVENDOR)
+AC_SUBST(RPMCANONOS)
+
 if test -n "$LIBOBJS" ; then
     LIBMISC="$(top_builddir)/misc/libmisc.a"
 fi
