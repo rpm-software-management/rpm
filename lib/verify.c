@@ -31,6 +31,7 @@ static void verifyArgCallback(/*@unused@*/poptContext con,
 }
 
 static int noFiles = 0;
+/** */
 struct poptOption rpmVerifyPoptTable[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 		verifyArgCallback, 0, NULL, NULL },
@@ -41,6 +42,7 @@ struct poptOption rpmVerifyPoptTable[] = {
 
 /* ======================================================================== */
 /* XXX static */
+/** */
 int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result, 
 		  int omitMask)
 {
@@ -158,7 +160,7 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
     } 
     if (flags & RPMVERIFY_LINKTO) {
 	headerGetEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &linktoList, &count);
-	size = readlink(filespec, linkto, sizeof(linkto));
+	size = readlink(filespec, linkto, sizeof(linkto)-1);
 	if (size == -1)
 	    *result |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else  {
@@ -238,6 +240,7 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
 }
 
 /* XXX static */
+/** */
 int rpmVerifyScript(const char * root, Header h, FD_t err)
 {
     return runInstScript(root, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
@@ -342,6 +345,7 @@ static int verifyDependencies(/*@only@*/rpmdb db, Header h) {
     return 0;
 }
 
+/** */
 int showVerifyPackage(QVA_t *qva, rpmdb db, Header h)
 {
     int ec, rc;
@@ -361,6 +365,7 @@ int showVerifyPackage(QVA_t *qva, rpmdb db, Header h)
     return ec;
 }
 
+/** */
 int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg)
 {
     rpmdb db = NULL;

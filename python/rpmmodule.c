@@ -1107,7 +1107,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 		     &count);
 	}
 
-	i = readlink(s->fileList[fileNumber], buf, sizeof(buf));
+	i = readlink(s->fileList[fileNumber], buf, sizeof(buf)-1);
 	if (i <= 0)
 	    strcpy(buf, "(unknown)");
 	else
