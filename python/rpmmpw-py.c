@@ -20,8 +20,6 @@
 /*@unchecked@*/
 static int _mpw_debug = 0;
 
-#define is_mpw(o)	((o)->ob_type == &mpw_Type)
-
 /*@unchecked@*/ /*@observer@*/
 static const char initialiser_name[] = "rpm.mpw";
 
@@ -944,7 +942,7 @@ fprintf(stderr, "*** mpw_new(%p[%s],%p[%s],%p[%s]) ret %p[%s]\n", subtype, lbl(s
     return ns;
 }
 
-static mpwObject * mpw_New(void)
+mpwObject * mpw_New(void)
 	/*@*/
 {
     mpwObject * ns = PyObject_New(mpwObject, &mpw_Type);

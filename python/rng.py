@@ -1,7 +1,12 @@
 import rpm
 
 rpm.rng().Debug(-1);
-r = rpm.rng()
-m = rpm.mpw(10)
+#rpm.mpw().Debug(-1);
 
-print m.rndm(m,r)
+r = rpm.rng()
+for i in range(10):
+	print r.next()
+
+m = rpm.mpw("800000000000000000000000000000000000000000000000000000000000000000000000")
+for i in range(10):
+	print r.next(m)

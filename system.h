@@ -123,7 +123,7 @@ extern void error(int status, int errnum, const char *format, ...)
 #endif
 #endif
 
-if HAVE___SECURE_GETENV && !defined(__LCLINT__)
+#if HAVE___SECURE_GETENV && !defined(__LCLINT__)
 #define	getenv(_s)	__secure_getenv(_s)
 #endif
 

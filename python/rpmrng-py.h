@@ -13,6 +13,7 @@ typedef struct rngObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     randomGeneratorContext rngc;
+    mpbarrett b;
 } rngObject;
 
 /**

@@ -32,6 +32,7 @@ if (_rng_debug < -1)
 fprintf(stderr, "*** rng_dealloc(%p)\n", s);
 
     randomGeneratorContextFree(&s->rngc);
+    mpbfree(&s->b);
     PyObject_Del(s);
 }
 
@@ -51,11 +52,22 @@ static int rng_init(rngObject * s, PyObject *args, PyObject *kwds)
 	/*@modifies s @*/
 {
     PyObject * o = NULL;
+    const randomGenerator* rng = NULL;
 
     if (!PyArg_ParseTuple(args, "|O:Cvt", &o)) return -1;
 
-    if (randomGeneratorContextInit(&s->rngc, randomGeneratorDefault()) != 0)
+    if (o) {
+	/* XXX "FIPS 186" or "Mersenne Twister" */
+	if (PyString_Check(o))
+	    rng = randomGeneratorFind(PyString_AsString(o));
+    }
+
+    if (rng == NULL)
+	rng = randomGeneratorDefault();
+
+    if (randomGeneratorContextInit(&s->rngc, rng) != 0)
 	return -1;
+    mpbzero(&s->b);
 
 if (_rng_debug)
 fprintf(stderr, "*** rng_init(%p[%s],%p[%s],%p[%s])\n", s, lbl(s), args, lbl(args), kwds, lbl(kwds));
@@ -71,6 +83,7 @@ static void rng_free(/*@only@*/ rngObject * s)
 if (_rng_debug)
 fprintf(stderr, "*** rng_free(%p[%s])\n", s, lbl(s));
     randomGeneratorContextFree(&s->rngc);
+    mpbfree(&s->b);
     PyObject_Del(s);
 }
 
@@ -123,10 +136,69 @@ fprintf(stderr, "*** rng_Debug(%p)\n", s);
     return Py_None;
 }
 
+/** \ingroup py_c
+ */
+static PyObject *
+rng_Seed(rngObject * s, PyObject * args)
+        /*@*/
+{
+    if (!PyArg_ParseTuple(args, ":Seed")) return NULL;
+
+if (_rng_debug < 0)
+fprintf(stderr, "*** rng_Seed(%p)\n", s);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup py_c
+ */
+static PyObject *
+rng_Next(rngObject * s, PyObject * args)
+        /*@*/
+{
+    PyObject * bo = NULL;
+    randomGeneratorContext* rc = &s->rngc;
+    mpbarrett* b = &s->b;
+    mpwObject *z;
+
+    if (!PyArg_ParseTuple(args, "|O:Next", &bo)) return NULL;
+
+    if (bo) {
+	if (is_mpw(bo) && (z = (mpwObject*)bo)->n.size > 0) {
+	    b = alloca(sizeof(*b));
+	    mpbzero(b);
+	    /* XXX z probably needs normalization here. */
+	    mpbset(b, z->n.size, z->n.data);
+	} else
+	    ;	/* XXX error? */
+    }
+
+    z = mpw_New();
+    if (b == NULL || b->size == 0 || b->modl == NULL) {
+	mpw val;
+	rc->rng->next(rc->param, (byte*) &val, sizeof(val));
+	mpnsetw(&z->n, val);
+    } else {
+	mpw* wksp = alloca(b->size*sizeof(*wksp));
+	mpnsize(&z->n, b->size);
+	mpbrnd_w(b, rc, z->n.data, wksp);
+    }
+
+if (_rng_debug)
+fprintf(stderr, "*** rng_Next(%p) %p[%d]\t", s, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+
+    return (PyObject *)z;
+}
+
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rng_methods[] = {
  {"Debug",	(PyCFunction)rng_Debug,	METH_VARARGS,
+	NULL},
+ {"seed",	(PyCFunction)rng_Seed,	METH_VARARGS,
+	NULL},
+ {"next",	(PyCFunction)rng_Next,	METH_VARARGS,
 	NULL},
  {NULL,		NULL}		/* sentinel */
 };

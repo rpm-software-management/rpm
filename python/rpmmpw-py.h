@@ -20,4 +20,11 @@ typedef struct mpwObject_s {
 /*@unchecked@*/
 extern PyTypeObject mpw_Type;
 
+#define is_mpw(o)	((o)->ob_type == &mpw_Type)
+
+/**
+ */
+mpwObject * mpw_New(void)
+	/*@*/;
+
 #endif

@@ -23,8 +23,8 @@ echo "
 *                                                                          *
 * This is source code from the development branch of rpm-4.3.              *
 *                                                                          *
-* If you want the "production" rpm-4.0.4 or rpm-4.1 code, then you should  *
-* either use an rpm-4.0.4 or rpm-4.1 src.rpm. Alternatively, if using a    *
+* If you want the "production" rpm-4.2 code, then you should               *
+* use an rpm-4.1.1 or rpm-4.2 src.rpm. Alternatively, if using a           *
 * CVS checkout, do the following:                                          *
 *                                                                          *
 *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
