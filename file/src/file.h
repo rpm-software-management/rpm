@@ -86,14 +86,17 @@ struct magic {
 	/* Word 3 */
 	uint8_t in_op;		/* operator for indirection */
 	uint8_t mask_op;	/* operator for mask */
-#define				FILE_OPAND	1
-#define				FILE_OPOR	2
-#define				FILE_OPXOR	3
-#define				FILE_OPADD	4
-#define				FILE_OPMINUS	5
-#define				FILE_OPMULTIPLY	6
-#define				FILE_OPDIVIDE	7
-#define				FILE_OPMODULO	8
+	uint8_t dummy1;
+	uint8_t dummy2;
+#define				FILE_OPS	"&|^+-*%/"
+#define				FILE_OPAND	0
+#define				FILE_OPOR	1
+#define				FILE_OPXOR	2
+#define				FILE_OPADD	3
+#define				FILE_OPMINUS	4
+#define				FILE_OPMULTIPLY	5
+#define				FILE_OPDIVIDE	6
+#define				FILE_OPMODULO	7
 #define				FILE_OPINVERSE	0x80
 	/* Word 4 */
 	int32_t offset;		/* offset to magic number */
