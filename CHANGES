@@ -3,6 +3,7 @@
         - automatic shared lib provides now work with buildprefix
 	- fixed dependency checking during upgrades to work if the
 	  package wasn't previously installed
+	- clean up temp file after signature check
 
 2.1 -> 2.1.1:
 	- fixed -qi query format 
