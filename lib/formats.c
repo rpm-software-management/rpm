@@ -4,7 +4,12 @@
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 #include "misc.h"
 
-static char * permsString(int mode)
+/**
+ * Return ls-like formatted mode string.
+ * @param mode		file mode
+ * @return		formatted mode string (malloc'ed)
+ */
+static /*@only@*/ char * permsString(int mode)	/*@*/
 {
     char * perms = xmalloc(11);
 
@@ -58,9 +63,17 @@ static char * permsString(int mode)
     return perms;
 }
 
-static char * triggertypeFormat(int_32 type, const void * data, 
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	(unused)
+ * @param padding	(unused)
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data, 
 	/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
-	/*@unused@*/ int element)
+	/*@unused@*/ int element)	/*@*/
 {
     const int_32 * item = data;
     char * val;
@@ -76,8 +89,17 @@ static char * triggertypeFormat(int_32 type, const void * data,
     return val;
 }
 
-static char * permsFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding, /*@unused@*/ int element)
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * formatPrefix,
+	int padding, /*@unused@*/ int element)
+		/*@modifies formatPrefix @*/
 {
     char * val;
     char * buf;
@@ -95,8 +117,17 @@ static char * permsFormat(int_32 type, const void * data,
     return val;
 }
 
-static char * fflagsFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding, /*@unused@*/ int element)
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * fflagsFormat(int_32 type, const void * data, 
+	char * formatPrefix, int padding, /*@unused@*/ int element)
+		/*@modifies formatPrefix @*/
 {
     char * val;
     char buf[15];
@@ -127,8 +158,17 @@ static char * fflagsFormat(int_32 type, const void * data,
     return val;
 }
 
-static char * depflagsFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding, /*@unused@*/ int element)
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * depflagsFormat(int_32 type, const void * data, 
+	char * formatPrefix, int padding, /*@unused@*/ int element)
+		/*@modifies formatPrefix @*/
 {
     char * val;
     char buf[10];
@@ -154,9 +194,18 @@ static char * depflagsFormat(int_32 type, const void * data,
     return val;
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     const char ** list;
 
@@ -172,9 +221,18 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
     return 0; 
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int instprefixTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     char ** array;
 
@@ -193,9 +251,18 @@ static int instprefixTag(Header h, /*@out@*/ int_32 * type,
     return 1;
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int fssizesTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     const char ** filenames;
     int_32 * filesizes;
@@ -235,9 +302,18 @@ static int fssizesTag(Header h, /*@out@*/ int_32 * type,
     return 0;
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     int_32 * indices, * flags;
     char ** names, ** versions;
@@ -296,9 +372,18 @@ static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
     return 0;
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     int_32 * indices, * flags;
     char ** conds, ** s;
@@ -337,9 +422,18 @@ static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
     return 0;
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int filenamesTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     *type = RPM_STRING_ARRAY_TYPE;
 
@@ -358,9 +452,19 @@ static const char * language = "LANGUAGE";
 
 static char * _macro_i18ndomains = "%{?_i18ndomains:%{_i18ndomains}}";
 
+/**
+ * @param h		header
+ * @param tag		tag
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
@@ -410,13 +514,13 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	    *count = 1;
 	    *freeData = 1;
 	}
-	xfree(dstring); dstring = NULL;
+	free(dstring); dstring = NULL;
 	if (*data) {
 	    return 0;
 	}
     }
 
-    if (dstring) xfree(dstring);
+    if (dstring) free(dstring);
 
     rc = headerGetEntry(h, tag, type, (void **)data, count);
 
@@ -432,23 +536,50 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
     return 1;
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int summaryTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int descriptionTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
 
+/**
+ * @param h		header
+ * @retval type		address of tag type
+ * @retval data		address of tag value pointer
+ * @retval count	address of no. of data items
+ * @retval freedata	address of data-was-malloc'ed indicator
+ * @return		0 on success
+ */
 static int groupTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
