@@ -33,7 +33,7 @@ LIBS =
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
-	header.c hdrinline.c header_internal.c \
+	header.c header_internal.c \
 	manifest.c md5.c md5sum.c misc.c package.c \
 	problems.c poptBT.c poptI.c poptK.c poptQV.c psm.c query.c \
 	rpmchecksig.c rpminstall.c rpmlead.c rpmlibprov.c rpmrc.c rpmvercmp.c \

@@ -1826,7 +1826,7 @@ void initSourceHeader(Spec spec)
 	    break;
 	}
     }
-    headerFreeIterator(hi);
+    hi = headerFreeIterator(hi);
 
     /* Add the build restrictions */
     for (hi = headerInitIterator(spec->buildRestrictions);
@@ -1836,7 +1836,7 @@ void initSourceHeader(Spec spec)
 	if (ptr)
 	    (void) headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
     }
-    headerFreeIterator(hi);
+    hi = headerFreeIterator(hi);
 
     if (spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,

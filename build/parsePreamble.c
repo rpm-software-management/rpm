@@ -293,7 +293,7 @@ static int checkForDuplicates(Header h, const char * NVR)
 		     tagName(tag), NVR);
 	res = 1;
     }
-    headerFreeIterator(hi);
+    hi = headerFreeIterator(hi);
 
     return res;
 }

@@ -51,13 +51,14 @@ struct indexEntry {
  * The Header data structure.
  */
 struct headerToken {
-/*@unused@*/ HV_t hv;		/*!< Header public methods. */
+/*@unused@*/ struct HV_s hv;	/*!< Header public methods. */
 /*@owned@*/ indexEntry index;	/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
-    int region_allocated;	/*!< Is 1st header region allocated? */
-    int sorted; 		/*!< Are header entries sorted? */
-    int legacy;			/*!< Header came from legacy source? */
+    int flags;
+#define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
+#define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
+#define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
 /*@refs@*/ int nrefs;	/*!< Reference count. */
 };
 
@@ -124,65 +125,6 @@ extern "C" {
 #endif
 
 /** \ingroup header
- */
-extern unsigned char header_magic[8];
-
-/** \ingroup header
- */
-extern HV_t hv;
-
-/** \ingroup header
- * Swap int_32 and int_16 arrays within header region.
- *
- * This code is way more twisty than I would like.
- *
- * A bug with RPM_I18NSTRING_TYPE in rpm-2.5.x (fixed in August 1998)
- * causes the offset and length of elements in a header region to disagree
- * regarding the total length of the region data.
- *
- * The "fix" is to compute the size using both offset and length and
- * return the larger of the two numbers as the size of the region.
- * Kinda like computing left and right Riemann sums of the data elements
- * to determine the size of a data structure, go figger :-).
- *
- * There's one other twist if a header region tag is in the set to be swabbed,
- * as the data for a header region is located after all other tag data.
- *
- * @param entry		header entry
- * @param il		no. of entries
- * @param dl		start no. bytes of data
- * @param pe		header physical entry pointer (swapped)
- * @param dataStart	header data
- * @param regionid	region offset
- * @return		no. bytes of data in region, -1 on error
- */
-int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
-		entryInfo pe, char * dataStart, int regionid)
-	/*@modifies entry, *dataStart @*/;
-
-/** \ingroup header
- */
-/*@only@*/ /*@null@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
-	/*@modifies h, *lengthPtr @*/;
-
-/** \ingroup header
- * Retrieve data from header entry.
- * @todo Permit retrieval of regions other than HEADER_IMUTABLE.
- * @param entry		header entry
- * @retval type		address of type (or NULL)
- * @retval p		address of data (or NULL)
- * @retval c		address of count (or NULL)
- * @param minMem	string pointers refer to header memory?
- * @return		1 on success, otherwise error.
- */
-int copyEntry(const indexEntry entry,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * p,
-		/*@null@*/ /*@out@*/ hCNT_t c,
-		int minMem)
-	/*@modifies *type, *p, *c @*/;
-
-/** \ingroup header
  * Return array of locales found in header.
  * The array is terminated with a NULL sentinel.
  * @param h		header
@@ -191,6 +133,26 @@ int copyEntry(const indexEntry entry,
 /*@unused@*/
 /*@only@*/ /*@null@*/ char ** headerGetLangs(Header h)
 	/*@*/;
+
+/** \ingroup header
+ * Retrieve tag value with type match.
+ * If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
+ * match.
+ *
+ * @param h		header
+ * @param tag		tag
+ * @retval type		address of tag value data type (or NULL)
+ * @retval p		address of pointer to tag value(s) (or NULL)
+ * @retval c		address of number of values (or NULL)
+ * @return		1 on success, 0 on failure
+ */
+/*@-exportlocal@*/
+int headerGetRawEntry(Header h, int_32 tag,
+			/*@null@*/ /*@out@*/ hTYP_t type,
+			/*@null@*/ /*@out@*/ hPTR_t * p, 
+			/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies *type, *p, *c @*/;
+/*@=exportlocal@*/
 
 /** \ingroup header
  * Return header reference count.

@@ -10,6 +10,12 @@ extern "C" {
 #endif
 
 /** \ingroup header
+ * Create new (empty) header instance.
+ * @return		header
+ */
+Header headerNew(void)	/*@*/;
+
+/** \ingroup header
  * Dereference a header instance.
  * @param h		header
  * @return		NULL always
@@ -77,6 +83,43 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 	/*@modifies h @*/;
 
 /** \ingroup header
+ * Convert header to in-memory representation.
+ * @param uh		on-disk header blob (i.e. with offsets)
+ * @return		header
+ */
+/*@-exportlocal@*/
+/*@null@*/ Header headerLoad(/*@kept@*/ void * uh)
+	/*@modifies uh @*/;
+/*@=exportlocal@*/
+
+/** \ingroup header
+ * Write (with unload) header to file handle.
+ * @param fd		file handle
+ * @param h		header
+ * @param magicp	prefix write with 8 bytes of (magic, 0)?
+ * @return		0 on success, 1 on error
+ */
+int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+	/*@modifies fd, h, fileSystem @*/;
+
+/** \ingroup header
+ * Make a copy and convert header to in-memory representation.
+ * @param uh		on-disk header blob (i.e. with offsets)
+ * @return		header
+ */
+/*@null@*/ Header headerCopyLoad(const void * uh)
+	/*@*/;
+
+/** \ingroup header
+ * Read (and load) header from file handle.
+ * @param fd		file handle
+ * @param magicp	read (and verify) 8 bytes of (magic, 0)?
+ * @return		header (or NULL on error)
+ */
+/*@null@*/ Header headerRead(FD_t fd, enum hMagic magicp)
+	/*@modifies fd, fileSystem @*/;
+
+/** \ingroup header
  * Check if tag is in header.
  * @param h		header
  * @param tag		tag
@@ -121,26 +164,6 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hPTR_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/;
-
-/** \ingroup header
- * Retrieve tag value with type match.
- * If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
- * match.
- *
- * @param h		header
- * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-/*@-exportlocal@*/
-int headerGetRawEntry(Header h, int_32 tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hPTR_t * p, 
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/;
-/*@=exportlocal@*/
 
 /** \ingroup header
  * Add tag to header.
@@ -258,6 +281,47 @@ int headerRemoveEntry(Header h, int_32 tag)
 		     const struct headerSprintfExtension * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/;
+
+/** \ingroup header
+ * Duplicate tag values from one header into another.
+ * @param headerFrom	source header
+ * @param headerTo	destination header
+ * @param tagstocopy	array of tags that are copied
+ */
+void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
+	/*@modifies headerTo @*/;
+
+/** \ingroup header
+ * Destroy header tag iterator.
+ * @param hi		header tag iterator
+ * @return		NULL always
+ */
+/*@null@*/ HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
+	/*@modifies hi @*/;
+
+/** \ingroup header
+ * Create header tag iterator.
+ * @param h		header
+ * @return		header tag iterator
+ */
+HeaderIterator headerInitIterator(Header h)
+	/*@modifies h */;
+
+/** \ingroup header
+ * Return next tag from header.
+ * @param hi		header tag iterator
+ * @retval tag		address of tag
+ * @retval type		address of tag value data type
+ * @retval p		address of pointer to tag value(s)
+ * @retval c		address of number of values
+ * @return		1 on success, 0 on failure
+ */
+int headerNextIterator(HeaderIterator hi,
+		/*@null@*/ /*@out@*/ hTAG_t tag,
+		/*@null@*/ /*@out@*/ hTYP_t type,
+		/*@null@*/ /*@out@*/ hPTR_t * p,
+		/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies hi, *tag, *type, *p, *c @*/;
 
 #ifdef __cplusplus
 }

@@ -5,16 +5,35 @@
  * \file lib/hdrinline.h
  */
 
-/*@-exportlocal@*/
-extern int _hdrinline_debug;
-/*@=exportlocal@*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*@+voidabstract -nullpass -abstract -mustmod -compdef -shadow -predboolothers @*/
+/*@+voidabstract -nullpass -mustmod -compdef -shadow -predboolothers @*/
 
-#define	HV(_h)	((HV_t *)(_h))
+/** \ingroup header
+ * Header methods for rpm headers.
+ */
+extern struct HV_s * hdrVec;
+
+/** \ingroup header
+ */
+/*@unused@*/ static inline HV_t h2hv(Header h)
+{
+    /*@-abstract -castexpose -refcounttrans@*/
+    return ((HV_t)h);
+    /*@=abstract =castexpose =refcounttrans@*/
+}
+
+/** \ingroup header
+ * Create new (empty) header instance.
+ * @return		header
+ */
+/*@unused@*/ static inline
+Header headerNew(void)
+	/*@*/
+{
+    return hdrVec->hdrnew();
+}
 
 /** \ingroup header
  * Dereference a header instance.
@@ -25,8 +44,10 @@ extern "C" {
 /*@null@*/ Header headerFree( /*@null@*/ /*@killref@*/ Header h)
 	/*@modifies h @*/
 {
+    /*@-abstract@*/
     if (h == NULL) return NULL;
-    return (HV(h)->free) (h);
+    /*@=abstract@*/
+    return (h2hv(h)->hdrfree) (h);
 }
 
 /** \ingroup header
@@ -38,7 +59,7 @@ extern "C" {
 Header headerLink(Header h)
 	/*@modifies h @*/
 {
-    return (HV(h)->link) (h);
+    return (h2hv(h)->hdrlink) (h);
 }
 
 /*@-exportlocal@*/
@@ -50,7 +71,7 @@ Header headerLink(Header h)
 void headerSort(Header h)
 	/*@modifies h @*/
 {
-    return (HV(h)->sort) (h);
+    return (h2hv(h)->hdrsort) (h);
 }
 
 /** \ingroup header
@@ -61,7 +82,7 @@ void headerSort(Header h)
 void headerUnsort(Header h)
 	/*@modifies h @*/
 {
-    return (HV(h)->unsort) (h);
+    return (h2hv(h)->hdrunsort) (h);
 }
 /*@=exportlocal@*/
 
@@ -75,8 +96,10 @@ void headerUnsort(Header h)
 unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 	/*@modifies h @*/
 {
+    /*@-abstract@*/
     if (h == NULL) return 0;
-    return (HV(h)->size) (h, magicp);
+    /*@=abstract@*/
+    return (h2hv(h)->hdrsizeof) (h, magicp);
 }
 
 /** \ingroup header
@@ -88,7 +111,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 /*@only@*/ /*@null@*/ void * headerUnload(Header h)
 	/*@modifies h @*/
 {
-    return (HV(h)->unload) (h);
+    return (h2hv(h)->hdrunload) (h);
 }
 
 /** \ingroup header
@@ -102,7 +125,9 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 /*@null@*/ Header headerReload(/*@only@*/ Header h, int tag)
 	/*@modifies h @*/
 {
-    return (HV(h)->reload) (h, tag);
+    /*@-onlytrans@*/
+    return (h2hv(h)->hdrreload) (h, tag);
+    /*@=onlytrans@*/
 }
 
 /** \ingroup header
@@ -114,7 +139,61 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 /*@null@*/ Header headerCopy(Header h)
 	/*@modifies h @*/
 {
-    return (HV(h)->copy) (h);
+    return (h2hv(h)->hdrcopy) (h);
+}
+
+/** \ingroup header
+ * Convert header to in-memory representation.
+ * @param uh		on-disk header blob (i.e. with offsets)
+ * @return		header
+ */
+/*@unused@*/ static inline
+/*@null@*/ Header headerLoad(/*@kept@*/ void * uh)
+	/*@modifies uh @*/
+{
+    return hdrVec->hdrload(uh);
+}
+
+/** \ingroup header
+ * Make a copy and convert header to in-memory representation.
+ * @param uh		on-disk header blob (i.e. with offsets)
+ * @return		header
+ */
+/*@unused@*/ static inline
+/*@null@*/ Header headerCopyLoad(const void * uh)
+	/*@*/
+{
+    return hdrVec->hdrcopyload(uh);
+}
+
+/** \ingroup header
+ * Read (and load) header from file handle.
+ * @param fd		file handle
+ * @param magicp	read (and verify) 8 bytes of (magic, 0)?
+ * @return		header (or NULL on error)
+ */
+/*@unused@*/ static inline
+/*@null@*/ Header headerRead(FD_t fd, enum hMagic magicp)
+	/*@modifies fd, fileSystem @*/
+{
+    return hdrVec->hdrread(fd, magicp);
+}
+
+/** \ingroup header
+ * Write (with unload) header to file handle.
+ * @param fd		file handle
+ * @param h		header
+ * @param magicp	prefix write with 8 bytes of (magic, 0)?
+ * @return		0 on success, 1 on error
+ */
+/*@unused@*/ static inline
+int headerWrite(FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
+	/*@modifies fd, h, fileSystem @*/
+{
+    /*@-abstract@*/
+    if (h == NULL) return 0;
+    /*@=abstract@*/
+    return (h2hv(h)->hdrwrite) (fd, h, magicp);
 }
 
 /** \ingroup header
@@ -124,11 +203,28 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  * @return		1 on success, 0 on failure
  */
 /*@unused@*/ static inline
-int headerIsEntry(/*@null@*/Header h, int_32 tag)
+int headerIsEntry(/*@null@*/ Header h, int_32 tag)
 	/*@modifies h @*/
 {
+    /*@-abstract@*/
     if (h == NULL) return 0;
-    return (HV(h)->isentry) (h, tag);
+    /*@=abstract@*/
+    return (h2hv(h)->hdrisentry) (h, tag);
+}
+
+/** \ingroup header
+ * Free data allocated when retrieved from header.
+ * @param h		header
+ * @param data		address of data (or NULL)
+ * @param type		type of data (or -1 to force free)
+ * @return		NULL always
+ */
+/*@unused@*/ static inline
+/*@null@*/ void * headerFreeTag(Header h,
+		/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
+	/*@modifies data @*/
+{
+    return (h2hv(h)->hdrfreetag) (h, data, type);
 }
 
 /** \ingroup header
@@ -151,7 +247,7 @@ int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
-    return (HV(h)->get) (h, tag, type, p, c);
+    return (h2hv(h)->hdrget) (h, tag, type, p, c);
 }
 
 /** \ingroup header
@@ -173,32 +269,8 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
 {
-    return (HV(h)->getmin) (h, tag, type, p, c);
+    return (h2hv(h)->hdrgetmin) (h, tag, type, p, c);
 }
-
-/** \ingroup header
- * Retrieve tag value with type match.
- * If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
- * match.
- *
- * @param h		header
- * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-/*@-exportlocal@*/
-/*@unused@*/ static inline
-int headerGetRawEntry(Header h, int_32 tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hPTR_t * p, 
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/
-{
-    return (HV(h)->getraw) (h, tag, type, p, c);
-}
-/*@=exportlocal@*/
 
 /** \ingroup header
  * Add tag to header.
@@ -219,7 +291,7 @@ int headerGetRawEntry(Header h, int_32 tag,
 int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
 	/*@modifies h @*/
 {
-    return (HV(h)->add) (h, tag, type, p, c);
+    return (h2hv(h)->hdradd) (h, tag, type, p, c);
 }
 
 /** \ingroup header
@@ -241,7 +313,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
 		const void * p, int_32 c)
 	/*@modifies h @*/
 {
-    return (HV(h)->append) (h, tag, type, p, c);
+    return (h2hv(h)->hdrappend) (h, tag, type, p, c);
 }
 
 /** \ingroup header
@@ -259,7 +331,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
 		const void * p, int_32 c)
 	/*@modifies h @*/
 {
-    return (HV(h)->addorappend) (h, tag, type, p, c);
+    return (h2hv(h)->hdraddorappend) (h, tag, type, p, c);
 }
 
 /** \ingroup header
@@ -287,7 +359,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 		const char * lang)
 	/*@modifies h @*/
 {
-    return (HV(h)->addi18n) (h, tag, string, lang);
+    return (h2hv(h)->hdraddi18n) (h, tag, string, lang);
 }
 
 /** \ingroup header
@@ -305,7 +377,7 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
 			const void * p, int_32 c)
 	/*@modifies h @*/
 {
-    return (HV(h)->modify) (h, tag, type, p, c);
+    return (h2hv(h)->hdrmodify) (h, tag, type, p, c);
 }
 
 /** \ingroup header
@@ -321,7 +393,7 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
 int headerRemoveEntry(Header h, int_32 tag)
 	/*@modifies h @*/
 {
-    return (HV(h)->remove) (h, tag);
+    return (h2hv(h)->hdrremove) (h, tag);
 }
 
 /** \ingroup header
@@ -342,9 +414,67 @@ int headerRemoveEntry(Header h, int_32 tag)
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/
 {
-    return (HV(h)->sprintf) (h, fmt, tags, extensions, errmsg);
+    return (h2hv(h)->hdrsprintf) (h, fmt, tags, extensions, errmsg);
 }
-/*@=voidabstract =nullpass =abstract =mustmod =compdef =shadow =predboolothers @*/
+
+/** \ingroup header
+ * Duplicate tag values from one header into another.
+ * @param headerFrom	source header
+ * @param headerTo	destination header
+ * @param tagstocopy	array of tags that are copied
+ */
+/*@unused@*/ static inline
+void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
+	/*@modifies headerFrom, headerTo @*/
+{
+    return hdrVec->hdrcopytags(headerFrom, headerTo, tagstocopy);
+}
+
+/** \ingroup header
+ * Destroy header tag iterator.
+ * @param hi		header tag iterator
+ * @return		NULL always
+ */
+/*@unused@*/ static inline
+HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
+	/*@modifies hi @*/
+{
+    return hdrVec->hdrfreeiter(hi);
+}
+
+/** \ingroup header
+ * Create header tag iterator.
+ * @param h		header
+ * @return		header tag iterator
+ */
+/*@unused@*/ static inline
+HeaderIterator headerInitIterator(Header h)
+	/*@modifies h */
+{
+    return hdrVec->hdrinititer(h);
+}
+
+/** \ingroup header
+ * Return next tag from header.
+ * @param hi		header tag iterator
+ * @retval tag		address of tag
+ * @retval type		address of tag value data type
+ * @retval p		address of pointer to tag value(s)
+ * @retval c		address of number of values
+ * @return		1 on success, 0 on failure
+ */
+/*@unused@*/ static inline
+int headerNextIterator(HeaderIterator hi,
+		/*@null@*/ /*@out@*/ hTAG_t tag,
+		/*@null@*/ /*@out@*/ hTYP_t type,
+		/*@null@*/ /*@out@*/ hPTR_t * p,
+		/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies hi, *tag, *type, *p, *c @*/
+{
+    return hdrVec->hdrnextiter(hi, tag, type, p, c);
+}
+
+/*@=voidabstract =nullpass =mustmod =compdef =shadow =predboolothers @*/
 
 #ifdef __cplusplus
 }

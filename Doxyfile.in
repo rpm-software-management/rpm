@@ -359,7 +359,6 @@ INPUT                  = \
 	@top_srcdir@/lib/fs.c \
 	@top_srcdir@/lib/fsm.c \
 	@top_srcdir@/lib/fsm.h \
-	@top_srcdir@/lib/hdrinline.c \
 	@top_srcdir@/lib/hdrinline.h \
 	@top_srcdir@/lib/hdrproto.h \
 	@top_srcdir@/lib/header.c \

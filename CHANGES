@@ -119,6 +119,7 @@
 	- fix: Ferror returned spurious error for gzdio/bzdio.
 	- check for API/ABI creep, diddle up some compatibility.
 	- preliminary abstraction to support per-header methods.
+	- finalize per-header methods, accessing headerFoo through vector.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

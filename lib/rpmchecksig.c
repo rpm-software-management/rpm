@@ -426,7 +426,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 		}
 	    }
 	}
-	headerFreeIterator(hi);
+	hi = headerFreeIterator(hi);
 	res += res2;
 	(void) unlink(sigtarget);
 	sigtarget = _free(sigtarget);

@@ -49,7 +49,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	if (!headerIsEntry(h, tag))
 	    (void) hae(h, tag, type, ptr, count);
     }
-    headerFreeIterator(hi);
+    hi = headerFreeIterator(hi);
 }
 
 Header headerRegenSigHeader(const Header h)
@@ -82,7 +82,7 @@ Header headerRegenSigHeader(const Header h)
 	if (!headerIsEntry(sig, stag))
 	    (void) headerAddEntry(sig, stag, type, ptr, count);
     }
-    headerFreeIterator(hi);
+    hi = headerFreeIterator(hi);
     return sig;
 }
 /*@=mods@*/
