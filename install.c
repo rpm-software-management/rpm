@@ -105,6 +105,10 @@ int doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) {
 
     rc = rpmInstallPackage(prefix, db, fd, installFlags, fn, printFormat);
     if (rc == 1) {
+	fprintf(stderr, "error: %s does not appear to be a RPM package\n", arg);
+    }
+	
+    if (rc) {
 	fprintf(stderr, "error: %s cannot be installed\n", arg);
     }
 

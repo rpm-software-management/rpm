@@ -439,7 +439,11 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 		    }
 		    break;
 		case 1:
-		    fprintf(stderr, "%s is not an RPM\n", arg);
+		    fprintf(stderr, "%s does not appear to be a RPM package\n", 
+				arg);
+		    /* fallthrough */
+		case 2:
+		    fprintf(stderr, "query of %s failed\n", arg);
 		    retcode = 1;
 	    }
 
