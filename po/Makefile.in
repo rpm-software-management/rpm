@@ -11,7 +11,7 @@ MSGMERGE = msgmerge
 
 NLSPACKAGE = rpm
 
-CATALOGS = sv.mo fr.mo de.mo
+CATALOGS = sv.mo fr.mo de.mo pt-br.po
 
 POTFILES  = $(topdir)/rpm.c 		$(topdir)/query.c 		\
 	    $(topdir)/install.c 	$(topdir)/verify.c 		\
