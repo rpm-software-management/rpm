@@ -1,5 +1,5 @@
 SUBDIRS = lib
-OBJS = spec.o stringbuf.o build.o pack.o query.o
+OBJS = spec.o build.o pack.o query.o
 PROGS = rpm rpmlead rpmheader rpmarchive
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
@@ -7,7 +7,7 @@ DEBUG = -g
 OPTS = -O2
 CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib
 LDFLAGS = $(DEBUG) -Llib 
-LOADLIBES = -lrpm -ldb
+LOADLIBES = -lrpm -ldb -lefence
 
 all: make-subdirs $(OBJS) $(PROGS)
 	
@@ -23,3 +23,10 @@ clean:
 		(cd $$d; $(MAKE) $@) ;\
 	done
 	rm -f *.o *~ $(PROGS)
+
+depend:
+	$(CPP) $(CFLAGS) -M *.c > .depend
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
