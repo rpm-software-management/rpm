@@ -21,13 +21,16 @@
 /*@access rpmdb@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
-/*@access rpmDependencyConflict@*/
 
+/*@access rpmDependencyConflict@*/
 /*@access problemsSet@*/
+
 /*@access orderListIndex@*/
 /*@access tsortInfo@*/
 
+#ifdef DYING
 /*@access availablePackage@*/
+#endif
 
 /*@unchecked@*/
 static int _cacheDependsRC = 1;
@@ -242,10 +245,14 @@ static int rangeMatchesDepFlags (Header h,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmTagType pnt, pvt;
+#ifdef	DYING
     const char ** provides;
     const char ** providesEVR;
     int_32 * provideFlags;
     int providesCount;
+#else
+    struct rpmDepSet_s provides;
+#endif
     int result;
     int i, xx;
 
@@ -258,25 +265,25 @@ static int rangeMatchesDepFlags (Header h,
      * If no provides version info is available, match any requires.
      */
     if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt,
-		(void **) &providesEVR, &providesCount))
+		(void **) &provides.EVR, &provides.Count))
 	return 1;
 
-    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provides.Flags, NULL);
 
-    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides.N, &provides.Count))
     {
-	providesEVR = hfd(providesEVR, pvt);
+	provides.EVR = hfd(provides.EVR, pvt);
 	return 0;	/* XXX should never happen */
     }
 
     result = 0;
-    for (i = 0; i < providesCount; i++) {
+    for (i = 0; i < provides.Count; i++) {
 
 	/* Filter out provides that came along for the ride. */
-	if (strcmp(provides[i], reqName))
+	if (strcmp(provides.N[i], reqName))
 	    continue;
 
-	result = rpmRangesOverlap(provides[i], providesEVR[i], provideFlags[i],
+	result = rpmRangesOverlap(provides.N[i], provides.EVR[i], provides.Flags[i],
 			reqName, reqEVR, reqFlags);
 
 	/* If this provide matches the require, we're done. */
@@ -284,8 +291,8 @@ static int rangeMatchesDepFlags (Header h,
 	    break;
     }
 
-    provides = hfd(provides, pnt);
-    providesEVR = hfd(providesEVR, pvt);
+    provides.N = hfd(provides.N, pnt);
+    provides.EVR = hfd(provides.EVR, pvt);
 
     return result;
 }
@@ -994,14 +1001,22 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     rpmTagType rnt, rvt;
     rpmTagType cnt, cvt;
     const char * name, * version, * release;
+#ifdef	DYING
     const char ** requires;
     const char ** requiresEVR = NULL;
     int_32 * requireFlags = NULL;
     int requiresCount = 0;
+#else
+    struct rpmDepSet_s requires;
+#endif
+#ifdef	DYING
     const char ** conflicts;
     const char ** conflictsEVR = NULL;
     int_32 * conflictFlags = NULL;
     int conflictsCount = 0;
+#else
+    struct rpmDepSet_s conflicts;
+#endif
     rpmTagType type;
     int i, rc, xx;
     int ourrc = 0;
@@ -1009,32 +1024,32 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 
     xx = headerNVR(h, &name, &version, &release);
 
-    if (!hge(h, RPMTAG_REQUIRENAME, &rnt, (void **) &requires, &requiresCount))
+    if (!hge(h, RPMTAG_REQUIRENAME, &rnt, (void **) &requires.N, &requires.Count))
     {
-	requiresCount = 0;
+	requires.Count = 0;
 	rvt = RPM_STRING_ARRAY_TYPE;
     } else {
-	xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **) &requireFlags, NULL);
-	xx = hge(h, RPMTAG_REQUIREVERSION, &rvt, (void **) &requiresEVR, NULL);
+	xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **) &requires.Flags, NULL);
+	xx = hge(h, RPMTAG_REQUIREVERSION, &rvt, (void **) &requires.EVR, NULL);
     }
 
-    for (i = 0; i < requiresCount && !ourrc; i++) {
+    for (i = 0; i < requires.Count && !ourrc; i++) {
 	const char * keyDepend;
 
 	/* Filter out requires that came along for the ride. */
-	if (keyName && strcmp(keyName, requires[i]))
+	if (keyName && strcmp(keyName, requires.N[i]))
 	    continue;
 
 	/* If this requirement comes from the core package only, not libraries,
 	   then if we're installing the libraries only, don't count it in. */
-	if (multiLib && !isDependsMULTILIB(requireFlags[i]))
+	if (multiLib && !isDependsMULTILIB(requires.Flags[i]))
 	    continue;
 
 	keyDepend = printDepend("R",
-		requires[i], requiresEVR[i], requireFlags[i]);
+		requires.N[i], requires.EVR[i], requires.Flags[i]);
 
 	rc = unsatisfiedDepend(ts, " Requires", keyDepend,
-		requires[i], requiresEVR[i], requireFlags[i], &suggestion);
+		requires.N[i], requires.EVR[i], requires.Flags[i], &suggestion);
 
 	switch (rc) {
 	case 0:		/* requirements are satisfied. */
@@ -1054,9 +1069,9 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		pp->byName = xstrdup(name);
 		pp->byVersion = xstrdup(version);
 		pp->byRelease = xstrdup(release);
-		pp->needsName = xstrdup(requires[i]);
-		pp->needsVersion = xstrdup(requiresEVR[i]);
-		pp->needsFlags = requireFlags[i];
+		pp->needsName = xstrdup(requires.N[i]);
+		pp->needsVersion = xstrdup(requires.EVR[i]);
+		pp->needsFlags = requires.Flags[i];
 		pp->sense = RPMDEP_SENSE_REQUIRES;
 
 		if (suggestion) {
@@ -1083,38 +1098,38 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	keyDepend = _free(keyDepend);
     }
 
-    if (requiresCount) {
-	requiresEVR = hfd(requiresEVR, rvt);
-	requires = hfd(requires, rnt);
+    if (requires.Count) {
+	requires.EVR = hfd(requires.EVR, rvt);
+	requires.N = hfd(requires.N, rnt);
     }
 
-    if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **)&conflicts, &conflictsCount))
+    if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **)&conflicts.N, &conflicts.Count))
     {
-	conflictsCount = 0;
+	conflicts.Count = 0;
 	cvt = RPM_STRING_ARRAY_TYPE;
     } else {
 	xx = hge(h, RPMTAG_CONFLICTFLAGS, &type,
-		(void **) &conflictFlags, &conflictsCount);
+		(void **) &conflicts.Flags, &conflicts.Count);
 	xx = hge(h, RPMTAG_CONFLICTVERSION, &cvt,
-		(void **) &conflictsEVR, &conflictsCount);
+		(void **) &conflicts.EVR, &conflicts.Count);
     }
 
-    for (i = 0; i < conflictsCount && !ourrc; i++) {
+    for (i = 0; i < conflicts.Count && !ourrc; i++) {
 	const char * keyDepend;
 
 	/* Filter out conflicts that came along for the ride. */
-	if (keyName && strcmp(keyName, conflicts[i]))
+	if (keyName && strcmp(keyName, conflicts.N[i]))
 	    continue;
 
 	/* If this requirement comes from the core package only, not libraries,
 	   then if we're installing the libraries only, don't count it in. */
-	if (multiLib && !isDependsMULTILIB(conflictFlags[i]))
+	if (multiLib && !isDependsMULTILIB(conflicts.Flags[i]))
 	    continue;
 
-	keyDepend = printDepend("C", conflicts[i], conflictsEVR[i], conflictFlags[i]);
+	keyDepend = printDepend("C", conflicts.N[i], conflicts.EVR[i], conflicts.Flags[i]);
 
 	rc = unsatisfiedDepend(ts, "Conflicts", keyDepend,
-		conflicts[i], conflictsEVR[i], conflictFlags[i], NULL);
+		conflicts.N[i], conflicts.EVR[i], conflicts.Flags[i], NULL);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
@@ -1133,9 +1148,9 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		pp->byName = xstrdup(name);
 		pp->byVersion = xstrdup(version);
 		pp->byRelease = xstrdup(release);
-		pp->needsName = xstrdup(conflicts[i]);
-		pp->needsVersion = xstrdup(conflictsEVR[i]);
-		pp->needsFlags = conflictFlags[i];
+		pp->needsName = xstrdup(conflicts.N[i]);
+		pp->needsVersion = xstrdup(conflicts.EVR[i]);
+		pp->needsFlags = conflicts.Flags[i];
 		pp->sense = RPMDEP_SENSE_CONFLICTS;
 		pp->suggestedPackages = NULL;
 	    }
@@ -1152,9 +1167,9 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	keyDepend = _free(keyDepend);
     }
 
-    if (conflictsCount) {
-	conflictsEVR = hfd(conflictsEVR, cvt);
-	conflicts = hfd(conflicts, cnt);
+    if (conflicts.Count) {
+	conflicts.EVR = hfd(conflicts.EVR, cvt);
+	conflicts.N = hfd(conflicts.N, cnt);
     }
 
     return ourrc;
@@ -1359,19 +1374,19 @@ zapRelation(availablePackage q, availablePackage p,
 
 	if (tsi->tsi_suc != p)
 	    continue;
-	if (p->requires == NULL) continue;	/* XXX can't happen */
-	if (p->requireFlags == NULL) continue;	/* XXX can't happen */
-	if (p->requiresEVR == NULL) continue;	/* XXX can't happen */
+	if (p->requires.N == NULL) continue;	/* XXX can't happen */
+	if (p->requires.EVR == NULL) continue;	/* XXX can't happen */
+	if (p->requires.Flags == NULL) continue;/* XXX can't happen */
 
 	j = tsi->tsi_reqx;
-	dp = printDepend( identifyDepend(p->requireFlags[j]),
-		p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
+	dp = printDepend( identifyDepend(p->requires.Flags[j]),
+		p->requires.N[j], p->requires.EVR[j], p->requires.Flags[j]);
 
 	/*
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	/*@-branchstate@*/
-	if (zap && !(p->requireFlags[j] & RPMSENSE_PREREQ)) {
+	if (zap && !(p->requires.Flags[j] & RPMSENSE_PREREQ)) {
 	    rpmMessage(RPMMESS_DEBUG,
 			_("removing %s-%s-%s \"%s\" from tsort relations.\n"),
 			p->name, p->version, p->release, dp);
@@ -1408,18 +1423,18 @@ static inline int addRelation( const rpmTransactionSet ts,
     tsortInfo tsi;
     int matchNum;
 
-    if (!p->requires || !p->requiresEVR || !p->requireFlags)
+    if (!p->requires.N || !p->requires.EVR || !p->requires.Flags)
 	return 0;
 
     q = alSatisfiesDepend(ts->addedPackages, NULL, NULL,
-		p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
+		p->requires.N[j], p->requires.EVR[j], p->requires.Flags[j]);
 
     /* Ordering depends only on added package relations. */
     if (q == NULL)
 	return 0;
 
     /* Avoid rpmlib feature dependencies. */
-    if (!strncmp(p->requires[j], "rpmlib(", sizeof("rpmlib(")-1))
+    if (!strncmp(p->requires.N[j], "rpmlib(", sizeof("rpmlib(")-1))
 	return 0;
 
 #if defined(DEPENDENCY_WHITEOUT)
@@ -1536,7 +1551,7 @@ int rpmdepOrder(rpmTransactionSet ts)
 	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
 	    break;
 
-	if (p->requiresCount <= 0)
+	if (p->requires.Count <= 0)
 	    continue;
 
 	memset(selected, 0, sizeof(*selected) * npkgs);
@@ -1548,16 +1563,16 @@ int rpmdepOrder(rpmTransactionSet ts)
 	/* T2. Next "q <- p" relation. */
 
 	/* First, do pre-requisites. */
-	for (j = 0; j < p->requiresCount; j++) {
+	for (j = 0; j < p->requires.Count; j++) {
 
-	    if (p->requireFlags == NULL) /* XXX can't happen */
+	    if (p->requires.Flags == NULL) /* XXX can't happen */
 		/*@innercontinue@*/ continue;
 
 	    /* Skip if not %pre/%post requires or legacy prereq. */
 
-	    if (isErasePreReq(p->requireFlags[j]) ||
-		!( isInstallPreReq(p->requireFlags[j]) ||
-		   isLegacyPreReq(p->requireFlags[j]) ))
+	    if (isErasePreReq(p->requires.Flags[j]) ||
+		!( isInstallPreReq(p->requires.Flags[j]) ||
+		   isLegacyPreReq(p->requires.Flags[j]) ))
 		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
@@ -1566,16 +1581,16 @@ int rpmdepOrder(rpmTransactionSet ts)
 	}
 
 	/* Then do co-requisites. */
-	for (j = 0; j < p->requiresCount; j++) {
+	for (j = 0; j < p->requires.Count; j++) {
 
-	    if (p->requireFlags == NULL) /* XXX can't happen */
+	    if (p->requires.Flags == NULL) /* XXX can't happen */
 		/*@innercontinue@*/ continue;
 
 	    /* Skip if %pre/%post requires or legacy prereq. */
 
-	    if (isErasePreReq(p->requireFlags[j]) ||
-		 ( isInstallPreReq(p->requireFlags[j]) ||
-		   isLegacyPreReq(p->requireFlags[j]) ))
+	    if (isErasePreReq(p->requires.Flags[j]) ||
+		 ( isInstallPreReq(p->requires.Flags[j]) ||
+		   isLegacyPreReq(p->requires.Flags[j]) ))
 		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
@@ -1889,13 +1904,13 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
-	if (p->providesCount == 0 || p->provides == NULL)
+	if (p->provides.Count == 0 || p->provides.N == NULL)
 	    continue;
 
 	rc = 0;
-	for (j = 0; j < p->providesCount; j++) {
+	for (j = 0; j < p->provides.Count; j++) {
 	    /* Adding: check provides key against conflicts matches. */
-	    if (!checkDependentConflicts(ts, ps, p->provides[j]))
+	    if (!checkDependentConflicts(ts, ps, p->provides.N[j]))
 		/*@innercontinue@*/ continue;
 	    rc = 1;
 	    /*@innerbreak@*/ break;
@@ -1925,22 +1940,27 @@ int rpmdepCheck(rpmTransactionSet ts,
 		goto exit;
 	}
 
-	{   const char ** provides;
+	{
+#ifdef	DYING
+	    const char ** provides;
 	    int providesCount;
+#else
+	    struct rpmDepSet_s provides;
+#endif
 	    rpmTagType pnt;
 
-	    if (hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides,
-				&providesCount))
+	    if (hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides.N,
+				&provides.Count))
 	    {
 		rc = 0;
-		for (j = 0; j < providesCount; j++) {
+		for (j = 0; j < provides.Count; j++) {
 		    /* Erasing: check provides against requiredby matches. */
-		    if (!checkDependentPackages(ts, ps, provides[j]))
+		    if (!checkDependentPackages(ts, ps, provides.N[j]))
 			/*@innercontinue@*/ continue;
 		    rc = 1;
 		    /*@innerbreak@*/ break;
 		}
-		provides = hfd(provides, pnt);
+		provides.N = hfd(provides.N, pnt);
 		if (rc)
 		    goto exit;
 	    }

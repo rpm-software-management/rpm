@@ -38,16 +38,24 @@ struct availablePackage_s {
 /*@dependent@*/ const char * name;	/*!< Header name. */
 /*@dependent@*/ const char * version;	/*!< Header version. */
 /*@dependent@*/ const char * release;	/*!< Header release. */
+#ifdef DYING
 /*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
 /*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
 /*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
+    int providesCount;			/*!< No. of Provide:'s in header. */
+#else
+    struct rpmDepSet_s provides;	/*!< Provides: dependencies. */
+#endif
+#ifdef	DYING
 /*@owned@*//*@null@*/ const char ** requires;	/*!< Requires: name strings. */
 /*@owned@*//*@null@*/ const char ** requiresEVR;/*!< Requires: [epoch:]version[-release] strings. */
 /*@dependent@*//*@null@*/ int * requireFlags;	/*!< Requires: logical range qualifiers. */
+    int requiresCount;			/*!< No. of Require:'s in header. */
+#else
+    struct rpmDepSet_s requires;	/*!< Requires: dependencies. */
+#endif
 /*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
 /*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
-    int providesCount;			/*!< No. of Provide:'s in header. */
-    int requiresCount;			/*!< No. of Require:'s in header. */
     int filesCount;			/*!< No. of files in header. */
     int npreds;				/*!< No. of predecessors. */
     int depth;				/*!< Max. depth in dependency tree. */

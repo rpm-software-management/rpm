@@ -261,10 +261,10 @@ availableList alFree(availableList al)
 	    }
 	}
 
-	p->provides = hfd(p->provides, -1);
-	p->providesEVR = hfd(p->providesEVR, -1);
-	p->requires = hfd(p->requires, -1);
-	p->requiresEVR = hfd(p->requiresEVR, -1);
+	p->provides.N = hfd(p->provides.N, -1);
+	p->provides.EVR = hfd(p->provides.EVR, -1);
+	p->requires.N = hfd(p->requires.N, -1);
+	p->requires.EVR = hfd(p->requires.EVR, -1);
 	p->baseNames = hfd(p->baseNames, -1);
 	p->h = headerFree(p->h);
 
@@ -469,35 +469,35 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
     if (!hge(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, NULL))
 	p->epoch = NULL;
 
-    if (!hge(h, RPMTAG_PROVIDENAME, NULL, (void **) &p->provides,
-		&p->providesCount))
+    if (!hge(h, RPMTAG_PROVIDENAME, NULL, (void **) &p->provides.N,
+		&p->provides.Count))
     {
-	p->providesCount = 0;
-	p->provides = NULL;
-	p->providesEVR = NULL;
-	p->provideFlags = NULL;
+	p->provides.Count = 0;
+	p->provides.N = NULL;
+	p->provides.EVR = NULL;
+	p->provides.Flags = NULL;
     } else {
 	if (!hge(h, RPMTAG_PROVIDEVERSION,
-			NULL, (void **) &p->providesEVR, NULL))
-	    p->providesEVR = NULL;
+			NULL, (void **) &p->provides.EVR, NULL))
+	    p->provides.EVR = NULL;
 	if (!hge(h, RPMTAG_PROVIDEFLAGS,
-			NULL, (void **) &p->provideFlags, NULL))
-	    p->provideFlags = NULL;
+			NULL, (void **) &p->provides.Flags, NULL))
+	    p->provides.Flags = NULL;
     }
 
-    if (!hge(h, RPMTAG_REQUIRENAME, NULL, (void **) &p->requires,
-	&p->requiresCount)) {
-	p->requiresCount = 0;
-	p->requires = NULL;
-	p->requiresEVR = NULL;
-	p->requireFlags = NULL;
+    if (!hge(h, RPMTAG_REQUIRENAME, NULL, (void **) &p->requires.N,
+	&p->requires.Count)) {
+	p->requires.Count = 0;
+	p->requires.N = NULL;
+	p->requires.EVR = NULL;
+	p->requires.Flags = NULL;
     } else {
 	if (!hge(h, RPMTAG_REQUIREVERSION,
-			NULL, (void **) &p->requiresEVR, NULL))
-	    p->requiresEVR = NULL;
+			NULL, (void **) &p->requires.EVR, NULL))
+	    p->requires.EVR = NULL;
 	if (!hge(h, RPMTAG_REQUIREFLAGS,
-			NULL, (void **) &p->requireFlags, NULL))
-	    p->requireFlags = NULL;
+			NULL, (void **) &p->requires.Flags, NULL))
+	    p->requires.Flags = NULL;
     }
 
     if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **)&p->baseNames, &p->filesCount))
@@ -636,27 +636,27 @@ void alMakeIndex(availableList al)
     if (ai->size || al->list == NULL) return;
 
     for (i = 0; i < al->size; i++)
-	ai->size += al->list[i].providesCount;
+	ai->size += al->list[i].provides.Count;
 
     if (ai->size) {
 	ai->index = xcalloc(ai->size, sizeof(*ai->index));
 
 	k = 0;
 	for (i = 0; i < al->size; i++) {
-	    for (j = 0; j < al->list[i].providesCount; j++) {
+	    for (j = 0; j < al->list[i].provides.Count; j++) {
 
 		/* If multilib install, skip non-multilib provides. */
 		if (al->list[i].multiLib &&
-		    !isDependsMULTILIB(al->list[i].provideFlags[j])) {
+		    !isDependsMULTILIB(al->list[i].provides.Flags[j])) {
 			ai->size--;
 			/*@innercontinue@*/ continue;
 		}
 
 		ai->index[k].package = al->list + i;
 		/*@-assignexpose@*/
-		ai->index[k].entry = al->list[i].provides[j];
+		ai->index[k].entry = al->list[i].provides.N[j];
 		/*@=assignexpose@*/
-		ai->index[k].entryLen = strlen(al->list[i].provides[j]);
+		ai->index[k].entryLen = strlen(al->list[i].provides.N[j]);
 		ai->index[k].type = IET_PROVIDES;
 		k++;
 	    }
@@ -814,17 +814,17 @@ alAllSatisfiesDepend(const availableList al,
 	rc = 0;
 	switch (match->type) {
 	case IET_PROVIDES:
-	    for (i = 0; i < p->providesCount; i++) {
+	    for (i = 0; i < p->provides.Count; i++) {
 		const char * proEVR;
 		int proFlags;
 
 		/* Filter out provides that came along for the ride. */
-		if (strcmp(p->provides[i], keyName))
+		if (strcmp(p->provides.N[i], keyName))
 		    /*@innercontinue@*/ continue;
 
-		proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
-		proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
-		rc = rpmRangesOverlap(p->provides[i], proEVR, proFlags,
+		proEVR = (p->provides.EVR ? p->provides.EVR[i] : NULL);
+		proFlags = (p->provides.Flags ? p->provides.Flags[i] : 0);
+		rc = rpmRangesOverlap(p->provides.N[i], proEVR, proFlags,
 				keyName, keyEVR, keyFlags);
 		if (rc)
 		    /*@innerbreak@*/ break;

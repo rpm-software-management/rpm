@@ -14,6 +14,8 @@ typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
 typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
 typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
 
+typedef /*@abstract@*/ struct rpmDepSet_s *		rpmDepSet;
+
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _ts_debug;
@@ -43,6 +45,19 @@ struct transactionElement_s {
     } u;
 } ;
 /*@=fielduse@*/
+
+/**
+ * A package dependency set.
+ */
+struct rpmDepSet_s {
+/*@owned@*/
+    const char ** N;
+/*@owned@*/
+    const char ** EVR;
+    const int_32 * Flags;
+    int Count;
+    int Index;
+};
 
 /** \ingroup rpmdep
  * The set of packages to be installed/removed atomically.
