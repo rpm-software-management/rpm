@@ -9,6 +9,7 @@
 	- use directory tokens internally to reduce memory usage.
 	- permit --whatprovides to lookup file dependencies.
 	- fail to package if absolute symlink points within build root.
+	- initial version of check-prereqs.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
