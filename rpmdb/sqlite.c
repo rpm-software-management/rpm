@@ -837,7 +837,7 @@ static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 	    switch (tagType(dbi->dbi_rpmtag)) {
 	    case RPM_NULL_TYPE:   
 	    case RPM_BIN_TYPE:
-	        rc = sqlite3_bind_blob(scp->pStmt, 2, key->data, key->size, SQLITE_TRANSIENT);
+	        rc = sqlite3_bind_blob(scp->pStmt, pos, key->data, key->size, SQLITE_STATIC);
 		/*@innerbreak@*/ break;
 	    case RPM_CHAR_TYPE:
 	    case RPM_INT8_TYPE:
@@ -850,7 +850,7 @@ static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
             case RPM_STRING_TYPE:
             case RPM_STRING_ARRAY_TYPE:
             case RPM_I18NSTRING_TYPE:
-		rc = sqlite3_bind_text(scp->pStmt, pos, key->data, key->size, SQLITE_TRANSIENT);
+		rc = sqlite3_bind_text(scp->pStmt, pos, key->data, key->size, SQLITE_STATIC);
                 /*@innerbreak@*/ break;
             }
     }
@@ -863,7 +863,7 @@ static int sql_bind_data(dbiIndex dbi, SCP_t scp, int pos, DBT * data)
 {
     int rc = 0;
 
-    rc = sqlite3_bind_blob(scp->pStmt, 2, data->data, data->size, SQLITE_TRANSIENT);
+    rc = sqlite3_bind_blob(scp->pStmt, 2, data->data, data->size, SQLITE_STATIC);
 
     return rc;
 }
