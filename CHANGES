@@ -10,6 +10,7 @@
 	- moved --provides and --scripts to rpmpopt
 	- added --setperms, --setugids
 	- incorporated newer de.po from Karsten Weiss
+	- --resign/--addsign was broken in 2.3.3 from popt conversion
 
 2.3.2 -> 2.3.3:
 	- Ripped out header internals and redid them. Any compatibility 
