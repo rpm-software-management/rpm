@@ -1010,8 +1010,9 @@ Spec parseSpec(FILE *f, char *specfile)
 	    } else {
 	        /* Not a recognized preamble part */
 		s1 = line;
-		while (*s1 && *s1 != ' ' && *s1 != '\t') s1++;
-		if (*s1) {
+		while (*s1 && (*s1 == ' ' || *s1 == '\t')) s1++;
+		/* Handle blanks lines and comments */
+		if (*s1 && (*s1 != '#')) {
 		    /*message(MESS_WARNING, "Unknown Field: %s\n", line);*/
 		    error(RPMERR_BADSPEC, "Unknown Field: %s\n", line);
 		    return NULL;
