@@ -2,7 +2,7 @@
 	- fixed typo in default rpmrc
 	- made getBooleanVar() a bit better
 	- added triggers to package builds
-	- tagged spec file in spec file
+	- tagged spec file in source package file list
 	- added %verifyscript (controlled by --noscript, -v flags)
 	- changed pkgReadHeader() mechanism to be more generic
 	- added find-provides for Solaris, made find-provides setup
