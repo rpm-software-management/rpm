@@ -674,7 +674,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	     kill(SIGTERM, child);
 	}
 
-	if (write(p[1], buf, bytesRead) != bytesRead) {
+	if (bytesRead && write(p[1], buf, bytesRead) != bytesRead) {
 	     cpioFailed = 1;
 	     childDead = 1;
 	     kill(SIGTERM, child);
