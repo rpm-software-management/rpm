@@ -9,15 +9,18 @@
 #include <rpmbuild.h>
 #include "buildio.h"
 
+#include "depends.h"
+
 #include "legacy.h"	/* XXX providePackageNVR */
 #include "signature.h"
 #include "rpmlead.h"
 #include "debug.h"
 
-/*@access StringBuf @*/	/* compared with NULL */
+/*@access rpmTransactionSet @*/
 /*@access TFI_t @*/	/* compared with NULL */
 /*@access Header @*/	/* compared with NULL */
 /*@access FD_t @*/	/* compared with NULL */
+/*@access StringBuf @*/	/* compared with NULL */
 /*@access CSA_t @*/
 
 /**
@@ -313,8 +316,26 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     /* XXX the header just allocated will be allocated again */
     spec->packages->header = headerFree(spec->packages->header);
 
-   /* Read the rpm lead, signatures, and header */
-    rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
+    /* Read the rpm lead, signatures, and header */
+    {	const char * rootDir = "";
+	rpmdb db = NULL;
+	rpmTransactionSet ts = rpmtransCreateSet(db, rootDir);
+	int xx;
+
+	ts->need_payload = 1;
+	/* XXX W2DO? pass fileName? */
+	/*@-mustmod@*/      /* LCL: segfault */
+	xx = rpmReadPackageFile(ts, fdi, "readRPM",
+			 &spec->packages->header);
+	/*@=mustmod@*/
+	ts->need_payload = 0;
+	rc = (xx ? RPMRC_FAIL : RPMRC_OK);	/* XXX HACK */
+
+	ts = rpmtransFree(ts);
+
+	if (sigs) *sigs = NULL;			/* XXX HACK */
+    }
+
     switch (rc) {
     case RPMRC_BADMAGIC:
 	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),

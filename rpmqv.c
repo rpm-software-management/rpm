@@ -951,7 +951,11 @@ int main(int argc, const char ** argv)
 #ifdef	IAM_RPMBT
     case MODE_REBUILD:
     case MODE_RECOMPILE:
-      { const char * pkg;
+    {	const char * pkg;
+	const char * rootDir = "";
+	rpmdb db = NULL;
+	rpmTransactionSet ts = NULL;
+
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
 
@@ -967,11 +971,17 @@ int main(int argc, const char ** argv)
 	    ba->buildAmount |= RPMBUILD_RMBUILD;
 	}
 
+        if (rpmdbOpen(rootDir, &db, O_RDONLY, 0644)) {
+	    ec = 1;
+	    break;
+	}
+	ts = rpmtransCreateSet(db, rootDir);
+
 	while ((pkg = poptGetArg(optCon))) {
 	    const char * specFile = NULL;
 
 	    ba->cookie = NULL;
-	    ec = rpmInstallSource("", pkg, &specFile, &ba->cookie);
+	    ec = rpmInstallSource(ts, pkg, &specFile, &ba->cookie);
 	    if (ec == 0) {
 		ba->rootdir = rootdir;
 		ba->passPhrase = passPhrase;
@@ -983,11 +993,13 @@ int main(int argc, const char ** argv)
 	    if (ec)
 		/*@loopbreak@*/ break;
 	}
-      }	break;
 
-      case MODE_BUILD:
-      case MODE_TARBUILD:
-      { const char * pkg;
+	ts = rpmtransFree(ts);
+    }	break;
+
+    case MODE_BUILD:
+    case MODE_TARBUILD:
+    {	const char * pkg;
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
        
@@ -1038,7 +1050,7 @@ int main(int argc, const char ** argv)
 	    rpmFreeMacros(NULL);
 	    (void) rpmReadConfigFiles(rcfile, NULL);
 	}
-      }	break;
+    }	break;
 #endif	/* IAM_RPMBT */
 
 #ifdef	IAM_RPMEIU

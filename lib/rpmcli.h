@@ -413,7 +413,7 @@ extern int packagesTotal;
 
 /** \ingroup rpmcli
  * Install/upgrade/freshen binary rpm package.
- * @param rootdir	path to top of install tree
+ * @param rootDir	path to top of install tree
  * @param fileArgv	array of package file names (NULL terminated)
  * @param transFlags	bits to control rpmRunTransactions()
  * @param interfaceFlags bits to control rpmInstall()
@@ -421,7 +421,7 @@ extern int packagesTotal;
  * @param relocations	package file relocations
  * @return		0 on success
  */
-int rpmInstall(/*@null@*/ const char * rootdir,
+int rpmInstall(/*@null@*/ const char * rootDir,
 		/*@null@*/ const char ** fileArgv,
 		rpmtransFlags transFlags, 
 		rpmInstallInterfaceFlags interfaceFlags,
@@ -434,29 +434,29 @@ int rpmInstall(/*@null@*/ const char * rootdir,
 
 /** \ingroup rpmcli
  * Install source rpm package.
- * @param rootdir	path to top of install tree
+ * @param ts		transaction set
  * @param arg		source rpm file name
  * @retval specFile	address of (installed) spec file name
  * @retval cookie
  * @return		0 on success
  */
-int rpmInstallSource(const char * rootdir, const char * arg,
+int rpmInstallSource(rpmTransactionSet ts, const char * arg,
 		/*@null@*/ /*@out@*/ const char ** specFile,
 		/*@null@*/ /*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies *specFile, *cookie, rpmGlobalMacroContext,
+	/*@modifies ts, *specFile, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Erase binary rpm package.
- * @param rootdir	path to top of install tree
+ * @param rootDir	path to top of install tree
  * @param argv		array of package file names (NULL terminated)
  * @param transFlags	bits to control rpmRunTransactions()
  * @param interfaceFlags bits to control rpmInstall()
  * @return		0 on success
  */
-int rpmErase(/*@null@*/ const char * rootdir, /*@null@*/ const char ** argv,
+int rpmErase(/*@null@*/ const char * rootDir, /*@null@*/ const char ** argv,
 		rpmtransFlags transFlags, 
 		rpmEraseInterfaceFlags interfaceFlags)
 	/*@globals rpmGlobalMacroContext,
@@ -550,14 +550,15 @@ typedef /*@abstract@*/ struct IDTindex_s {
 
 /**
  * Load tag (instance,value) pairs from packages, and return sorted id index.
+ * @param ts		transaction set
  * @param globstr	glob expression
  * @param tag		rpm tag
  * @return 		id index
  */
-/*@only@*/ /*@null@*/ IDTX IDTXglob(const char * globstr, rpmTag tag)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
-
+/*@only@*/ /*@null@*/ IDTX IDTXglob(rpmTransactionSet ts,
+		const char * globstr, rpmTag tag)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Rollback transactions, erasing new, reinstalling old, package(s).
@@ -566,9 +567,9 @@ typedef /*@abstract@*/ struct IDTindex_s {
 int rpmRollback(struct rpmInstallArguments_s * ia,
 		/*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+		fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext,
-		fileSystem @*/;
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  */

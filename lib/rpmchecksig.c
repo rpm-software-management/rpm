@@ -18,8 +18,7 @@
 
 /*@access rpmTransactionSet @*/	/* ts->rpmdb, ts->id */
 /*@access Header @*/		/* XXX compared with NULL */
-/*@access FD_t @*/		/* XXX compared with NULL */
-/*@access DIGEST_CTX @*/	/* XXX compared with NULL */
+/*@access FD_t @*/
 /*@access pgpDig @*/
 
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
@@ -260,67 +259,6 @@ exit:
     return res;
 }
 
-/**
- */
-static int readFile(FD_t *sfdp, const char **sfnp, pgpDig dig)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *sfdp, *dig,
-		fileSystem, internalState @*/
-{
-    byte buf[4*BUFSIZ];
-    ssize_t count;
-    int rc = 1;
-    int i;
-
-    /*@-type@*/ /* FIX: cast? */
-    fdInitDigest(*sfdp, PGPHASHALGO_MD5, 0);
-    fdInitDigest(*sfdp, PGPHASHALGO_SHA1, 0);
-    /*@=type@*/
-    dig->nbytes = 0;
-
-    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
-    {
-	dig->nbytes += count;
-    }
-
-    if (count < 0) {
-	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
-	goto exit;
-    } else
-	dig->nbytes += count;
-
-    /*@-type@*/ /* FIX: cast? */
-    for (i = (*sfdp)->ndigests - 1; i >= 0; i--) {
-	FDDIGEST_t fddig = (*sfdp)->digests + i;
-	if (fddig->hashctx == NULL)
-	    continue;
-	if (fddig->hashalgo == PGPHASHALGO_MD5) {
-	    /*@-branchstate@*/
-	    if (dig->md5ctx != NULL)
-		(void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	    /*@=branchstate@*/
-	    dig->md5ctx = fddig->hashctx;
-	    fddig->hashctx = NULL;
-	    continue;
-	}
-	if (fddig->hashalgo == PGPHASHALGO_SHA1) {
-	    /*@-branchstate@*/
-	    if (dig->sha1ctx != NULL)
-		(void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	    /*@=branchstate@*/
-	    dig->sha1ctx = fddig->hashctx;
-	    fddig->hashctx = NULL;
-	    continue;
-	}
-    }
-    /*@=type@*/
-
-    rc = 0;
-
-exit:
-    return rc;
-}
-
 /** \ingroup rpmcli
  * Import public key(s).
  * @param ts		transaction set
@@ -471,6 +409,81 @@ bottom:
     return res;
 }
 
+/**
+ * @todo If the GPG key was known aavailable, the md5 digest could be skipped.
+ */
+static int readFile(FD_t fd, int_32 sigtag, const char * fn, pgpDig dig)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, *dig,
+		fileSystem, internalState @*/
+{
+    byte buf[4*BUFSIZ];
+    ssize_t count;
+    int rc = 1;
+    int i;
+
+    switch (sigtag) {
+    case RPMSIGTAG_GPG:
+    /*@-type@*/ /* FIX: cast? */
+	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+    /*@=type@*/
+	/*@fallthrough@*/
+    case RPMSIGTAG_PGP5:	/* XXX legacy */
+    case RPMSIGTAG_PGP:
+    case RPMSIGTAG_MD5:
+    /*@-type@*/ /* FIX: cast? */
+	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+    /*@=type@*/
+	break;
+    case RPMSIGTAG_LEMD5_2:
+    case RPMSIGTAG_LEMD5_1:
+    case RPMSIGTAG_SIZE:
+    default:
+	break;
+    }
+    dig->nbytes = 0;
+
+    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	dig->nbytes += count;
+
+    if (count < 0) {
+	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
+	goto exit;
+    }
+    dig->nbytes += count;
+
+    /*@-type@*/ /* FIX: cast? */
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	if (fddig->hashalgo == PGPHASHALGO_MD5) {
+	    /*@-branchstate@*/
+	    if (dig->md5ctx != NULL)
+		(void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
+	    /*@=branchstate@*/
+	    dig->md5ctx = fddig->hashctx;
+	    fddig->hashctx = NULL;
+	    continue;
+	}
+	if (fddig->hashalgo == PGPHASHALGO_SHA1) {
+	    /*@-branchstate@*/
+	    if (dig->sha1ctx != NULL)
+		(void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
+	    /*@=branchstate@*/
+	    dig->sha1ctx = fddig->hashctx;
+	    fddig->hashctx = NULL;
+	    continue;
+	}
+    }
+    /*@=type@*/
+
+    rc = 0;
+
+exit:
+    return rc;
+}
+
 int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 		const char * fn)
 {
@@ -480,6 +493,7 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
     char buf[8192], * b;
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
+    int_32 sigtag;
     Header sig;
     HeaderIterator hi;
     int res = 0;
@@ -515,11 +529,21 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	    goto bottom;
 	}
 
+	/* Grab a hint of what needs doing to avoid duplication. */
+	if (headerIsEntry(sig, RPMSIGTAG_GPG))
+	    sigtag = RPMSIGTAG_GPG;
+	else if (headerIsEntry(sig, RPMSIGTAG_PGP))
+	    sigtag = RPMSIGTAG_PGP;
+	else if (headerIsEntry(sig, RPMSIGTAG_MD5))
+	    sigtag = RPMSIGTAG_MD5;
+	else
+	    sigtag = 0;	/* XXX never happens */
+
 	ts->dig = pgpNewDig();
 
 	/* Read the file, generating digest(s) on the fly. */
 	/*@-mods@*/ /* FIX: double indirection */
-	if (readFile(&fd, &fn, ts->dig)) {
+	if (readFile(fd, sigtag, fn, ts->dig)) {
 	    res++;
 	    goto bottom;
 	}
@@ -536,8 +560,10 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	    headerNextIterator(hi, &ts->sigtag, &ts->sigtype, &ts->sig, &ts->siglen);
 	    ts->sig = headerFreeData(ts->sig, ts->sigtype))
 	{
+
 	    if (ts->sig == NULL) /* XXX can't happen */
 		continue;
+
 	    switch (ts->sigtag) {
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
@@ -546,44 +572,6 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 if (rpmIsDebug())
 fprintf(stderr, "========================= Package RSA Signature\n");
 		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
-
-#ifdef	DYING
-
-		/* XXX sanity check on ts->sigtag and signature agreement. */
-
-    /*@-type@*/ /* FIX: cast? */
-	    /*@-nullpass@*/ /* FIX: ts->dig->md5ctx may be null */
-	    {	DIGEST_CTX ctx = rpmDigestDup(ts->dig->md5ctx);
-		struct pgpDigParams_s * dsig = &ts->dig->signature;
-
-		xx = rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-		xx = rpmDigestFinal(ctx, (void **)&ts->dig->md5, &ts->dig->md5len, 1);
-
-		/* XXX compare leading 16 bits of digest for quick check. */
-	    }
-	    /*@=nullpass@*/
-    /*@=type@*/
-
-	    {	const char * prefix = "3020300c06082a864886f70d020505000410";
-		unsigned int nbits = 1024;
-		unsigned int nb = (nbits + 7) >> 3;
-		const char * hexstr;
-		char * t;
-
-		hexstr = t = xmalloc(2 * nb + 1);
-		memset(t, 'f', (2 * nb));
-		t[0] = '0'; t[1] = '0';
-		t[2] = '0'; t[3] = '1';
-		t += (2 * nb) - strlen(prefix) - strlen(ts->dig->md5) - 2;
-		*t++ = '0'; *t++ = '0';
-		t = stpcpy(t, prefix);
-		t = stpcpy(t, ts->dig->md5);
-		
-		mp32nzero(&ts->dig->rsahm);	mp32nsethex(&ts->dig->rsahm, hexstr);
-
-		hexstr = _free(hexstr);
-	    }
-#endif
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
 		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
@@ -591,35 +579,23 @@ fprintf(stderr, "========================= Package RSA Signature\n");
 if (rpmIsDebug())
 fprintf(stderr, "========================= Package DSA Signature\n");
 		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
-
-#ifdef	DYING
-		/* XXX sanity check on ts->sigtag and signature agreement. */
-
-    /*@-type@*/ /* FIX: cast? */
-	    /*@-nullpass@*/ /* FIX: ts->dig->sha1ctx may be null */
-	    {	DIGEST_CTX ctx = rpmDigestDup(ts->dig->sha1ctx);
-		struct pgpDigParams_s * dsig = &ts->dig->signature;
-
-		xx = rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-		xx = rpmDigestFinal(ctx, (void **)&ts->dig->sha1, &ts->dig->sha1len, 1);
-		mp32nzero(&ts->dig->hm);	mp32nsethex(&ts->dig->hm, ts->dig->sha1);
-	    }
-	    /*@=nullpass@*/
-    /*@=type@*/
-#endif
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
 	    case RPMSIGTAG_MD5:
 		if (!(qva->qva_flags & VERIFY_DIGEST)) 
 		     continue;
+		/*
+		 * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
+		 * than the legacy -- now unsupported -- legacy md5 breakage.
+		 */
+		if (sigtag == RPMSIGTAG_PGP)
+		    continue;
 		/*@switchbreak@*/ break;
 	    default:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
-	    if (ts->sig == NULL) /* XXX can't happen */
-		continue;
 
 	    res3 = rpmVerifySignature(ts, result);
 	    if (res3) {
@@ -630,18 +606,18 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 		} else {
 		    char *tempKey;
 		    switch (ts->sigtag) {
-		      case RPMSIGTAG_SIZE:
+		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "SIZE ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
-		      case RPMSIGTAG_LEMD5_2:
-		      case RPMSIGTAG_LEMD5_1:
-		      case RPMSIGTAG_MD5:
+		    case RPMSIGTAG_LEMD5_2:
+		    case RPMSIGTAG_LEMD5_1:
+		    case RPMSIGTAG_MD5:
 			b = stpcpy(b, "MD5 ");
 			res2 = 1;
 			/*@switchbreak@*/ break;
-		      case RPMSIGTAG_PGP5:	/* XXX legacy */
-		      case RPMSIGTAG_PGP:
+		    case RPMSIGTAG_PGP5:	/* XXX legacy */
+		    case RPMSIGTAG_PGP:
 			switch (res3) {
 			/* Do not consider these a failure */
 			case RPMSIG_NOKEY:
@@ -669,7 +645,7 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 			    /*@innerbreak@*/ break;
 			}
 			/*@switchbreak@*/ break;
-		      case RPMSIGTAG_GPG:
+		    case RPMSIGTAG_GPG:
 			/* Do not consider this a failure */
 			switch (res3) {
 			case RPMSIG_NOKEY:
@@ -685,7 +661,7 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 			    /*@innerbreak@*/ break;
 			}
 			/*@switchbreak@*/ break;
-		      default:
+		    default:
 			b = stpcpy(b, "?UnknownSignatureType? ");
 			res2 = 1;
 			/*@switchbreak@*/ break;

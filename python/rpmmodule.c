@@ -115,7 +115,6 @@ static PyObject * pyrpmError;
 struct hdrObject_s {
     PyObject_HEAD;
     Header h;
-    Header sigs;		/* XXX signature tags are in header */
     char ** md5list;
     char ** fileList;
     char ** linkList;
@@ -528,7 +527,6 @@ static PyObject * hdrGetAttr(hdrObject * s, char * name) {
  */
 static void hdrDealloc(hdrObject * s) {
     if (s->h) headerFree(s->h);
-    if (s->sigs) headerFree(s->sigs);
     if (s->md5list) free(s->md5list);
     if (s->fileList) free(s->fileList);
     if (s->linkList) free(s->linkList);
@@ -591,9 +589,7 @@ static PyObject * hdrSubscript(hdrObject * s, PyObject * item) {
             return NULL;
         }
         
-	/* XXX signature tags are appended to header, this API is gonna die */
-        if (!rpmPackageGetEntry(NULL, s->sigs, s->h, tag, &type, &data, &count))
-	{
+        if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
             Py_INCREF(Py_None);
             return Py_None;
         }
@@ -787,7 +783,6 @@ rpmdbMINext(rpmdbMIObject * s, PyObject * args) {
 
     ho = PyObject_NEW(hdrObject, &hdrType);
     ho->h = headerLink(h);
-    ho->sigs = NULL;
     ho->fileList = ho->linkList = ho->md5list = NULL;
     ho->uids = ho->gids = ho->mtimes = ho->fileSizes = NULL;
     ho->modes = ho->rdevs = NULL;
@@ -1113,7 +1108,6 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
 
     h = PyObject_NEW(hdrObject, &hdrType);
     h->h = NULL;
-    h->sigs = NULL;
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, &offset, sizeof(offset));
 	if ((h->h = rpmdbNextIterator(mi)) != NULL)
@@ -1799,7 +1793,6 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
 static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     hdrObject * h;
     Header header;
-    Header sigs;
     FD_t fd;
     int rawFd;
     int isSource = 0;
@@ -1808,7 +1801,7 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
     fd = fdDup(rawFd);
 
-    rc = rpmReadPackageInfo(fd, &sigs, &header);
+    rc = rpmReadPackageHeader(fd, &header, NULL, NULL, NULL);
     Fclose(fd);
 
     switch (rc) {
@@ -1816,12 +1809,10 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     case RPMRC_OK:
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
 	h->h = header;
-	h->sigs = sigs;
 	h->fileList = h->linkList = h->md5list = NULL;
 	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
 	h->modes = h->rdevs = NULL;
-	if (headerIsEntry(header, RPMTAG_SOURCEPACKAGE))
-	    isSource = 1;
+	isSource = headerIsEntry(header, RPMTAG_SOURCEPACKAGE);
 	break;
 
     case RPMRC_BADMAGIC:
@@ -1868,7 +1859,6 @@ static PyObject * hdrLoad(PyObject * self, PyObject * args) {
 
     h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
     h->h = hdr;
-    h->sigs = NULL;
     h->fileList = h->linkList = h->md5list = NULL;
     h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
     h->modes = h->rdevs = NULL;
@@ -1924,7 +1914,6 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
 
     h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
     h->h = hdr;
-    h->sigs = NULL;
     h->fileList = h->linkList = h->md5list = NULL;
     h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
     h->modes = h->rdevs = NULL;
@@ -2020,7 +2009,6 @@ static PyObject * rpmReadHeaders (FD_t fd) {
 	providePackageNVR (header);
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
 	h->h = header;
-	h->sigs = NULL;
 	h->fileList = h->linkList = h->md5list = NULL;
 	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
 	h->modes = h->rdevs = NULL;
@@ -2113,12 +2101,10 @@ static int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag) {
 	    return 1;
 	}
 
-	if (ho->sigs) headerFree(ho->sigs);
 	if (ho->md5list) free(ho->md5list);
 	if (ho->fileList) free(ho->fileList);
 	if (ho->linkList) free(ho->linkList);
 
-	ho->sigs = NULL;
 	ho->md5list = NULL;
 	ho->fileList = NULL;
 	ho->linkList = NULL;
@@ -2311,7 +2297,6 @@ static PyObject * getTsHeader (PyObject * self, PyObject * args) {
     if (transactionSetHeader) {
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
 	h->h = headerLink(transactionSetHeader);
-	h->sigs = NULL;
 	h->fileList = h->linkList = h->md5list = NULL;
 	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
 	h->modes = h->rdevs = NULL;

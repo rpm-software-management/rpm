@@ -673,7 +673,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
 	/* 0 makes for noops */
 	fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-	if (ts != NULL && fi->ap != NULL)
+	if (ts != NULL && fi->ap != NULL && fi->h != NULL)
 	{   Header foo = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
 	    foo = headerFree(foo);
 	}
@@ -1179,13 +1179,12 @@ static rpmRC chkdir (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
-rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
-			const char ** specFilePtr,
-			rpmCallbackFunction notify, rpmCallbackData notifyData,
-			const char ** cookie)
+rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
+		FD_t fd,
+		const char ** specFilePtr,
+		rpmCallbackFunction notify, rpmCallbackData notifyData,
+		const char ** cookie)
 {
-    rpmdb rpmdb = NULL;
-    rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
     TFI_t fi = xcalloc(sizeof(*fi), 1);
     const char * _sourcedir = NULL;
     const char * _specdir = NULL;
@@ -1197,18 +1196,22 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     PSM_t psm = &psmbuf;
     int isSource;
     rpmRC rc;
-    int i;
+    int i, xx;
 
+    /*@-mods -temptrans -assignexpose@*/
     ts->notify = notify;
-    /*@-temptrans -assignexpose@*/
     ts->notifyData = notifyData;
-    /*@=temptrans =assignexpose@*/
+    /*@=mods =temptrans =assignexpose@*/
 
     /*@-mustmod@*/	/* LCL: segfault */
-    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+    xx = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
     /*@=mustmod@*/
-    if (rc)
+    if (xx || h == NULL) {
+	rc = RPMRC_FAIL;			/* XXX HACK */
 	goto exit;
+    }
+    rc = RPMRC_OK;				/* XXX HACK */
+    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
     if (!isSource) {
 	rpmError(RPMERR_NOTSRPM, _("source package expected, binary found\n"));
@@ -1233,8 +1236,10 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     (void) rpmInstallLoadMacros(fi, fi->h);
 
     memset(psm, 0, sizeof(*psm));
+    /*@-assignexpose@*/
     psm->ts = ts;
     psm->fi = fi;
+    /*@=assignexpose@*/
 
     if (cookie) {
 	*cookie = NULL;
@@ -1352,7 +1357,6 @@ exit:
 	freeFi(fi);
 	fi = _free(fi);
     }
-    ts = rpmtransFree(ts);
 
     return rc;
 }

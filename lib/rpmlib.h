@@ -50,36 +50,6 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
     return NULL;
 }
 
-/**
- * Return package signatures and header from file handle.
- * @deprecated Signature tags are appended to header in rpm-4.0.2.
- * @todo Eliminate.
- * @param fd		file handle
- * @retval sigp		address of signature header (or NULL)
- * @retval hdrp		address of header (or NULL)
- * @return		rpmRC return code
- */
-rpmRC rpmReadPackageInfo(FD_t fd, /*@null@*/ /*@out@*/ Header * sigp,
-		/*@null@*/ /*@out@*/ Header * hdrp)
-	/*@globals fileSystem@*/
-	/*@modifies fd, *sigp, *hdrp, fileSystem @*/;
-
-/**
- * Return package header and lead info from file handle.
- * @param fd		file handle
- * @retval hdrp		address of header (or NULL)
- * @retval isSource	address to return lead source flag (or NULL)
- * @retval major	address to return lead major (or NULL)
- * @retval minor	address to return lead minor (or NULL)
- * @return		rpmRC return code
- */
-rpmRC rpmReadPackageHeader(FD_t fd, /*@null@*/ /*@out@*/ Header * hdrp,
-		/*@null@*/ /*@out@*/ int * isSource,
-		/*@null@*/ /*@out@*/ int * major,
-		/*@null@*/ /*@out@*/ int * minor)
-	/*@globals fileSystem@*/
-	/*@modifies fd, *hdrp, *isSource, *major, *minor, fileSystem @*/;
-
 /** \ingroup header
  * Return name, version, release strings from header.
  * @param h		header
@@ -140,29 +110,10 @@ void rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
  * @retval c		address of number of values
  * @return		0 on success, 1 on bad magic, 2 on error
  */
+/*@unused@*/
 int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 		/*@out@*/ void **p, /*@out@*/ int_32 *c)
 	/*@modifies *type, *p, *c @*/;
-
-/**
- * Retrieve tag info from header.
- * Yet Another "dressed" entry to headerGetEntry in order to unify
- * signature/header tag retrieval.
- * @deprecated Signature tags are now duplicated into header when installed.
- * @todo Eliminate from API.
- * @param leadp		rpm lead
- * @param h		header
- * @param sigs		signatures
- * @param tag		tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
- * @return		0 on success, 1 on bad magic, 2 on error
- */
-/*@unused@*/
-int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
-		int_32 tag, int_32 *type, void **p, int_32 *c)
-	/*@modifies h, *type, *p, *c @*/;
 
 /**
  * Automatically generated table of tag name/value pairs.
@@ -1127,31 +1078,11 @@ typedef int (*HRE_t) (Header h, int_32 tag)
  * We pass these around as an array with a sentinel.
  */
 typedef struct rpmRelocation_s {
-/*@only@*/ /*@null@*/ const char * oldPath;
-				/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
-/*@only@*/ /*@null@*/ const char * newPath;
-				/*!< NULL means to omit the file completely! */
+/*@only@*/ /*@null@*/
+    const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
+/*@only@*/ /*@null@*/
+    const char * newPath;	/*!< NULL means to omit the file completely! */
 } rpmRelocation;
-
-/**
- * Install source package.
- * @param rootDir	path to top of install tree (or NULL)
- * @param fd		file handle
- * @retval specFilePtr	address of spec file name (or NULL)
- * @param notify	progress callback
- * @param notifyData	progress callback private data
- * @retval cooke	address of cookie pointer (or NULL)
- * @return		rpmRC return code
- */
-rpmRC rpmInstallSourcePackage(/*@null@*/ const char * rootDir, FD_t fd,
-			/*@null@*/ /*@out@*/ const char ** specFilePtr,
-			/*@null@*/ rpmCallbackFunction notify,
-			/*@null@*/ rpmCallbackData notifyData,
-			/*@null@*/ /*@out@*/ const char ** cookie)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
 
 /**
  * Compare headers to determine which header is "newer".
@@ -1226,6 +1157,39 @@ typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
  * strict removals, and prerequisite ordering is done on installs/upgrades.
  */
 typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
+
+/**
+ * Return package header from file handle.
+ * @param ts		transaction set
+ * @param fd		file handle
+ * @param fn		file name
+ * @retval hdrp		address of header (or NULL)
+ * @return		0 on success
+ */
+int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
+		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fd, *hdrp, fileSystem, internalState @*/;
+
+/**
+ * Install source package.
+ * @param ts		transaction set
+ * @param fd		file handle
+ * @retval specFilePtr	address of spec file name (or NULL)
+ * @param notify	progress callback
+ * @param notifyData	progress callback private data
+ * @retval cooke	address of cookie pointer (or NULL)
+ * @return		rpmRC return code
+ */
+rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
+			/*@null@*/ /*@out@*/ const char ** specFilePtr,
+			/*@null@*/ rpmCallbackFunction notify,
+			/*@null@*/ rpmCallbackData notifyData,
+			/*@null@*/ /*@out@*/ const char ** cookie)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
  * Create an empty transaction set.

@@ -1,36 +1,60 @@
--I. -I.. -I../lib -I../rpmdb -I../rpmio -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I../lib -I../rpmdb -I../rpmio -I../beecrypt -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
++forcehints
 
 -warnunixlib
 -warnposix
 
 +unixlib
 
-# XXX ignore doxygen markings
--unrecogcomments
+-unrecogcomments	# XXX ignore doxygen markings
 
-# don't-bother-me-yet parameters
--branchstate		# ~39
--mustfree		# ~325
++strict			# lclint level
+-includenest 16		# getting deep, sigh
 
-# not-yet normal parameters
--boolops		# ~351 w->n
--predboolint		# ~200 w->n
--type			# ~271
+# --- +partial artifacts
+-declundef
+-exportheadervar
+-exportlocal
 
-# -weak paramaters
-#+boolint
-#-boolops
-#+ignorequals
-#+ignoresigns
-#-mustfree
-#+longintegral
-#+matchanyintegral
-#-nullpass
-#-observertrans
-#-predboolint
-#-predboolothers
-#-retvalint
-#-retvalother
-#-shiftsigned
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-bitwisesigned		# pita
+-elseifcomplete		# 95 occurences
+-exportconst		# 839 occurences
+-exportfcn
+-exporttype
+-exportvar
+-fielduse		# 1 occurence <bits/sigset.h>
+-forblock		# tedious
+-ifblock		# tedious
+-incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
+-matchfields		# <bits/ipc.h> heartburn
+-namechecks		# tedious ANSI compliance checks
+-numenummembers 1024	# RPMTAG has 138 members
+-numstructfields 256	# Java jni.h has 229 fields
+-ptrarith		# tedious
+-strictops
+-strictusereleased
+-stringliterallen 4096	# redhat*PubKey's are big
+-whileblock		# tedious
+
+# --- not-yet at checks level
+-ansi-reserved
++enumint
+-mustfree
+-predboolptr
+-usedef
+
+# --- not-yet at standard level
+-boolops
+-predboolint
++boolint
++charint
++ignorequals
++matchanyintegral

@@ -2,7 +2,11 @@
 
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
+#include <rpmpgp.h>
+
+#include "depends.c"
+
 #include "debug.h"
 
 int main(int argc, char **argv)
@@ -10,7 +14,7 @@ int main(int argc, char **argv)
     FD_t fdi, fdo;
     Header h;
     char * rpmio_flags;
-    int rc, isSource;
+    rpmRC rc;
     FD_t gzdi;
     
     setprogname(argv[0]);	/* Retrofit glibc __progname */
@@ -26,14 +30,33 @@ int main(int argc, char **argv)
     }
     fdo = fdDup(STDOUT_FILENO);
 
-    rc = rpmReadPackageHeader(fdi, &h, &isSource, NULL, NULL);
+#ifdef	DYING
+    rc = rpmReadPackageHeader(fdi, &h, NULL, NULL, NULL);
+#else
+    {	const char * rootDir = "";
+	rpmdb db = NULL;
+	rpmTransactionSet ts = rpmtransCreateSet(db, rootDir);
+
+	ts->need_payload = 1;
+	/*@-mustmod@*/      /* LCL: segfault */
+	rc = rpmReadPackageFile(ts, fdi, "rpm2cpio", &h);
+	/*@=mustmod@*/
+	ts->need_payload = 0;
+
+	ts = rpmtransFree(ts);
+    }
+#endif
+
     switch (rc) {
-    case 0:
+    case RPMRC_BADSIZE:
+    case RPMRC_OK:
 	break;
-    case 1:
+    case RPMRC_BADMAGIC:
 	fprintf(stderr, _("argument is not an RPM package\n"));
 	exit(EXIT_FAILURE);
 	break;
+    case RPMRC_FAIL:
+    case RPMRC_SHORTREAD:
     default:
 	fprintf(stderr, _("error reading header from package\n"));
 	exit(EXIT_FAILURE);

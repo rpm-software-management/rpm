@@ -159,7 +159,10 @@ struct rpmTransactionSet_s {
 /*@only@*/ const char * currDir;/*!< Current working directory. */
 /*@null@*/ FD_t scriptFd;	/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
-    int id;			/*!< Transaction id. */
+    int_32 id;			/*!< Transaction id. */
+
+    int need_payload;		/*!< Leave fd positioned at payload? */
+
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
     int_32  sigtag;		/*!< Current package signature tag. */
@@ -167,6 +170,7 @@ struct rpmTransactionSet_s {
 /*@null@*/ const void * sig;	/*!< Current package signature. */
     int_32 siglen;		/*!< Current package signature length. */
 /*@null@*/ struct pgpDig_s * dig;/*!< Current signature/pubkey parametrs. */
+
 } ;
 
 /** \ingroup rpmdep

@@ -453,36 +453,3 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
     }
     /*@notreached@*/
 }
-
-/*
- * XXX Yet Another dressed entry to unify signature/header tag retrieval.
- */
-int rpmPackageGetEntry( /*@unused@*/ void *leadp, Header sigs, Header h,
-	int_32 tag, int_32 *type, void **p, int_32 *c)
-{
-    int_32 sigtag;
-
-    switch (tag) {
-    case RPMTAG_SIGSIZE:	sigtag = RPMSIGTAG_SIZE;	break;
-    case RPMTAG_SIGLEMD5_1:	sigtag = RPMSIGTAG_LEMD5_1;	break;
-    case RPMTAG_SIGPGP:		sigtag = RPMSIGTAG_PGP;		break;
-    case RPMTAG_SIGLEMD5_2:	sigtag = RPMSIGTAG_LEMD5_2;	break;
-    case RPMTAG_SIGMD5:		sigtag = RPMSIGTAG_MD5;		break;
-    case RPMTAG_SIGGPG:		sigtag = RPMSIGTAG_GPG;		break;
-    case RPMTAG_SIGPGP5:	sigtag = RPMSIGTAG_GPG;		break;
-	
-    default:
-	return rpmHeaderGetEntry(h, tag, type, p, c);
-	/*@notreached@*/ break;
-    }
-
-    if (headerIsEntry(h, tag))
-	return rpmHeaderGetEntry(h, tag, type, p, c);
-
-    if (sigs == NULL) {
-	if (c)	*c = 0;
-	return 0;
-    }
-
-    return headerGetEntry(sigs, sigtag, type, p, c);
-}

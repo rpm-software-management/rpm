@@ -13,10 +13,10 @@
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
+/*@access rpmTransactionSet*/
 /*@access TFI_t*/
 /*@access PSM_t*/
 /*@access FD_t*/	/* XXX compared with NULL */
-/*@access rpmdb*/	/* XXX compared with NULL */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
@@ -289,10 +289,11 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     PSM_t psm = &psmbuf;
     int rc;
 
-    /*@-type@*/ /* FIX: cast? */
-    if (scriptFd != NULL)
+    if (scriptFd != NULL) {
+	/*@-type@*/ /* FIX: ??? */
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
-    /*@=type@*/
+	/*@=type@*/
+    }
     fi->magic = TFIMAGIC;
     loadFi(ts, fi, h, 1);
     memset(psm, 0, sizeof(*psm));
@@ -308,7 +309,9 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     fi = _free(fi);
 
     if (scriptFd != NULL) {
+	/*@-type@*/ /* FIX: ??? */
 	ts->scriptFd = fdFree(ts->scriptFd, "rpmVerifyScript");
+	/*@=type@*/
 	ts->scriptFd = NULL;
     }
 

@@ -1546,9 +1546,19 @@ assert(alp == fi->ap);
 
 		    h = headerFree(h);
 
+#ifdef	DYING
 		    /*@-mustmod@*/	/* LCL: segfault */
 		    rpmrc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
 		    /*@=mustmod@*/
+#else
+		    /* XXX Leave fd positioned at payload. */
+		    ts->need_payload = 1;
+		    /*@-mustmod@*/	/* LCL: segfault */
+		    xx = rpmReadPackageFile(ts, alp->fd, "rpmRunTransactions", &h);
+		    /*@=mustmod@*/
+		    ts->need_payload = 0;
+		    rpmrc = (xx ? RPMRC_FAIL : RPMRC_OK);      /* XXX HACK */
+#endif
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon @*/ /* FIX: check rc */
 			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,

@@ -176,8 +176,6 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 typedef /*@only@*/ /*@null@*/ const char * str_t;
 
 struct rpmEIU {
-/*@only@*/ rpmTransactionSet ts;
-/*@only@*/ /*@null@*/ rpmdb db;
     Header h;
     FD_t fd;
     int numFailed;
@@ -198,15 +196,19 @@ struct rpmEIU {
 };
 
 /** @todo Generalize --freshen policies. */
-int rpmInstall(const char * rootdir, const char ** fileArgv,
+int rpmInstall(const char * rootDir, const char ** fileArgv,
 		rpmtransFlags transFlags,
 		rpmInstallInterfaceFlags interfaceFlags,
 		rpmprobFilterFlags probFilter,
 		rpmRelocation * relocations)
 {
-    struct rpmEIU * eiu = alloca(sizeof(*eiu));
+    int mode = (transFlags & RPMTRANS_FLAG_TEST) ? O_RDONLY : (O_RDWR|O_CREAT);
+    rpmdb db = NULL;
+    rpmTransactionSet ts = NULL;
+
+    struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-    /*@only@*/ /*@null@*/ const char * fileURL = NULL;
+/*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
     int ac = 0;
@@ -214,12 +216,21 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     int xx;
     int i;
 
-    if (fileArgv == NULL) return 0;
+    if (fileArgv == NULL) goto exit;
+    /*@-branchstate@*/
+    if (rootDir == NULL) rootDir = "";
+    /*@=branchstate@*/
 
-    memset(eiu, 0, sizeof(*eiu));
-    eiu->numPkgs = 0;
-    eiu->prevx = 0;
-    eiu->pkgx = 0;
+    if (rpmdbOpen(rootDir, &db, mode, 0644)) {
+	const char *dn;
+	dn = rpmGetPath(rootDir, "%{_dbpath}", NULL);
+	rpmMessage(RPMMESS_ERROR,
+				_("cannot open Packages database in %s\n"), dn);
+	dn = _free(dn);
+	eiu->numFailed++;
+	goto exit;
+    }
+    ts = rpmtransCreateSet(db, rootDir);
 
     if ((eiu->relocations = relocations) != NULL) {
 	while (eiu->relocations->oldPath)
@@ -276,7 +287,7 @@ restart:
 	    {	char tfnbuf[64];
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
 		(void) mktemp(tfnbuf);
-		tfn = rpmGenPath(rootdir, "%{_tmppath}/", tfnbuf);
+		tfn = rpmGenPath(rootDir, "%{_tmppath}/", tfnbuf);
 	    }
 
 	    /* XXX undefined %{name}/%{version}/%{release} here */
@@ -332,9 +343,11 @@ restart:
 	}
 
 	/*@-mustmod@*/	/* LCL: segfault */
-	eiu->rpmrc = rpmReadPackageHeader(eiu->fd, &eiu->h,
-				&eiu->isSource, NULL, NULL);
+	xx = rpmReadPackageFile(ts, eiu->fd, *eiu->fnp, &eiu->h);
 	/*@=mustmod@*/
+	eiu->rpmrc = (xx ? RPMRC_FAIL : RPMRC_OK);	/* XXX HACK */
+	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
+
 	xx = Fclose(eiu->fd);
 	eiu->fd = NULL;
 
@@ -358,24 +371,6 @@ restart:
 	}
 
 	if (eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE) {
-	    if (eiu->db == NULL) {
-		int mode = (transFlags & RPMTRANS_FLAG_TEST)
-				? O_RDONLY : (O_RDWR | O_CREAT);
-
-		if (rpmdbOpen(rootdir, &eiu->db, mode, 0644)) {
-		    const char *dn;
-		    dn = rpmGetPath( (rootdir ? rootdir : ""),
-					"%{_dbpath}", NULL);
-		    rpmMessage(RPMMESS_ERROR,
-				_("cannot open Packages database in %s\n"), dn);
-		    dn = _free(dn);
-		    eiu->numFailed++; *eiu->fnp = NULL;
-		    break;
-		}
-		/*@-onlytrans@*/
-		eiu->ts = rpmtransCreateSet(eiu->db, rootdir);
-		/*@=onlytrans@*/
-	    }
 
 	    if (eiu->relocations) {
 		const char ** paths;
@@ -406,7 +401,7 @@ restart:
 
 		xx = headerNVR(eiu->h, &name, NULL, NULL);
 		/*@-onlytrans@*/
-		mi = rpmdbInitIterator(eiu->db, RPMTAG_NAME, name, 0);
+		mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
 		/*@=onlytrans@*/
 		count = rpmdbGetIteratorCount(mi);
 		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
@@ -424,7 +419,7 @@ restart:
 		/* Package is newer than those currently installed. */
 	    }
 
-	    rc = rpmtransAddPackage(eiu->ts, eiu->h, NULL, fileName,
+	    rc = rpmtransAddPackage(ts, eiu->h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
 	    /* XXX reference held by transaction set */
@@ -502,7 +497,7 @@ restart:
 	rpmDependencyConflict conflicts;
 	int numConflicts;
 
-	if (rpmdepCheck(eiu->ts, &conflicts, &numConflicts)) {
+	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
@@ -519,7 +514,7 @@ restart:
     }
 
     if (eiu->numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
-	if (rpmdepOrder(eiu->ts)) {
+	if (rpmdepOrder(ts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
@@ -531,7 +526,7 @@ restart:
 	packagesTotal = eiu->numRPMS + eiu->numSRPMS;
 
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	rc = rpmRunTransactions(eiu->ts, rpmShowProgress,
+	rc = rpmRunTransactions(ts, rpmShowProgress,
 			(void *) ((long)notifyFlags),
 		 	NULL, &probs, transFlags, probFilter);
 
@@ -562,7 +557,7 @@ restart:
 
 	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
 #if !defined(__LCLINT__) /* LCL: segfault */
-		eiu->rpmrc = rpmInstallSourcePackage(rootdir, eiu->fd, NULL,
+		eiu->rpmrc = rpmInstallSourcePackage(ts, eiu->fd, NULL,
 			rpmShowProgress, (void *) ((long)notifyFlags), NULL);
 #endif
 		if (eiu->rpmrc != RPMRC_OK) eiu->numFailed++;
@@ -574,7 +569,6 @@ restart:
     }
 
 exit:
-    eiu->ts = rpmtransFree(eiu->ts);
     if (eiu->pkgURL != NULL)
     for (i = 0; i < eiu->numPkgs; i++) {
 	if (eiu->pkgURL[i] == NULL) continue;
@@ -585,23 +579,24 @@ exit:
     eiu->pkgState = _free(eiu->pkgState);
     eiu->pkgURL = _free(eiu->pkgURL);
     eiu->argv = _free(eiu->argv);
-    if (eiu->db != NULL) {
-	xx = rpmdbClose(eiu->db);
-	eiu->db = NULL;
-    }
+
+    ts = rpmtransFree(ts);
+
     return eiu->numFailed;
 }
 
-int rpmErase(const char * rootdir, const char ** argv,
+int rpmErase(const char * rootDir, const char ** argv,
 		rpmtransFlags transFlags,
 		rpmEraseInterfaceFlags interfaceFlags)
 {
-    rpmdb db;
-    int mode;
+    /* XXX W2DO? O_EXCL??? */
+    int mode = (transFlags & RPMTRANS_FLAG_TEST) ? O_RDONLY : (O_RDWR|O_EXCL);
+    rpmdb db = NULL;
+    rpmTransactionSet ts = NULL;
+
     int count;
     const char ** arg;
     int numFailed = 0;
-    rpmTransactionSet ts;
     rpmDependencyConflict conflicts;
     int numConflicts;
     int stopUninstall = 0;
@@ -610,20 +605,15 @@ int rpmErase(const char * rootdir, const char ** argv,
 
     if (argv == NULL) return 0;
 
-    if (transFlags & RPMTRANS_FLAG_TEST)
-	mode = O_RDONLY;
-    else
-	mode = O_RDWR | O_EXCL;
-	
-    if (rpmdbOpen(rootdir, &db, mode, 0644)) {
+    if (rpmdbOpen(rootDir, &db, mode, 0644)) {
 	const char *dn;
-	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
+	dn = rpmGetPath( (rootDir ? rootDir : ""), "%{_dbpath}", NULL);
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
 	dn = _free(dn);
 	return -1;
     }
+    ts = rpmtransCreateSet(db, rootDir);
 
-    ts = rpmtransCreateSet(db, rootdir);
     for (arg = argv; *arg; arg++) {
 	rpmdbMatchIterator mi;
 
@@ -675,12 +665,11 @@ int rpmErase(const char * rootdir, const char ** argv,
     }
 
     ts = rpmtransFree(ts);
-    (void) rpmdbClose(db);
 
     return numFailed;
 }
 
-int rpmInstallSource(const char * rootdir, const char * arg,
+int rpmInstallSource(rpmTransactionSet ts, const char * arg,
 		const char ** specFile, const char ** cookie)
 {
     FD_t fd;
@@ -697,7 +686,7 @@ int rpmInstallSource(const char * rootdir, const char * arg,
 	fprintf(stdout, _("Installing %s\n"), arg);
 
     {
-	rpmRC rpmrc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL,
+	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFile, NULL, NULL,
 				 cookie);
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
     }
@@ -821,7 +810,7 @@ IDTX IDTXload(rpmTransactionSet ts, rpmTag tag)
     return IDTXsort(idtx);
 }
 
-IDTX IDTXglob(const char * globstr, rpmTag tag)
+IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
 {
     IDTX idtx = NULL;
     HGE_t hge = (HGE_t) headerGetEntry;
@@ -831,6 +820,7 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
     const char ** av = NULL;
     int ac = 0;
     int rc;
+    int xx;
     int i;
 
     av = NULL;	ac = 0;
@@ -852,8 +842,11 @@ IDTX IDTXglob(const char * globstr, rpmTag tag)
 	}
 
 	/*@-mustmod@*/	/* LCL: segfault */
-	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	xx = rpmReadPackageFile(ts, fd, av[i], &h);
 	/*@=mustmod@*/
+	rpmrc = (xx ? RPMRC_FAIL : RPMRC_OK);		/* XXX HACK */
+	isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+
 	if (rpmrc != RPMRC_OK || isSource) {
 	    (void) Fclose(fd);
 	    continue;
@@ -907,7 +900,7 @@ int rpmRollback(/*@unused@*/ struct rpmInstallArguments_s * ia,
     ts = rpmtransCreateSet(db, ia->rootdir);
 
     itids = IDTXload(ts, RPMTAG_INSTALLTID);
-    rtids = IDTXglob(globstr, RPMTAG_REMOVETID);
+    rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID);
 
     globstr = _free(globstr);
     rtids = IDTXfree(rtids);

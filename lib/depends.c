@@ -909,6 +909,7 @@ int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
     return removePackage(ts, dboffset, -1);
 }
 
+/*@-nullstate@*/ /* FIX: better annotations */
 void rpmtransClean(rpmTransactionSet ts)
 {
     if (ts) {
@@ -953,6 +954,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
     }
     return NULL;
 }
+/*@=nullstate@*/
 
 rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
 		int numConflicts)
