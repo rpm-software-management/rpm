@@ -37,12 +37,91 @@
 #include "system.h"
 #include "file.h"
 #include "names.h"
+#include "tar.h"
 #include "debug.h"
 
 FILE_RCSID("@(#)Id: ascmagic.c,v 1.32 2002/07/03 18:26:37 christos Exp ")
 
 /*@access fmagic @*/
 
+/*
+ * Stolen (by the author!) from the public domain tar program:
+ * Public Domain version written 26 Aug 1985 John Gilmore (ihnp4!hoptoad!gnu).
+ */
+#define	isodigit(c)	( ((c) >= '0') && ((c) <= '7') )
+
+/*
+ * Quick and dirty octal conversion.
+ *
+ * Result is -1 if the field is invalid (all blank, or nonoctal).
+ */
+static int
+from_oct(int digs, char *where)
+	/*@*/
+{
+	int	value;
+
+	while (isspace((unsigned char)*where)) {	/* Skip spaces */
+		where++;
+		if (--digs <= 0)
+			return -1;		/* All blank field */
+	}
+	value = 0;
+	while (digs > 0 && isodigit(*where)) {	/* Scan til nonoctal */
+		value = (value << 3) | (*where++ - '0');
+		--digs;
+	}
+
+	if (digs > 0 && *where && !isspace((unsigned char)*where))
+		return -1;			/* Ended on non-space/nul */
+
+	return value;
+}
+
+/*
+ * Return 
+ *	0 if the checksum is bad (i.e., probably not a tar archive), 
+ *	1 for old UNIX tar file,
+ *	2 for Unix Std (POSIX) tar file.
+ */
+static int
+is_tar(const fmagic fm)
+	/*@*/
+{
+	int nb = fm->nb;
+	union record *header = (union record *)fm->buf;
+	int	i;
+	int	sum, recsum;
+	char	*p;
+
+	if (nb < sizeof(*header))
+		return 0;
+
+	recsum = from_oct(8,  header->header.chksum);
+
+	sum = 0;
+	p = header->charptr;
+	for (i = sizeof(union record); --i >= 0;) {
+		/*
+		 * We can't use unsigned char here because of old compilers,
+		 * e.g. V7.
+		 */
+		sum += 0xFF & *p++;
+	}
+
+	/* Adjust checksum to count the "chksum" field as blanks. */
+	for (i = sizeof(header->header.chksum); --i >= 0;)
+		sum -= 0xFF & header->header.chksum[i];
+	sum += ' ' * sizeof header->header.chksum;	
+
+	if (sum != recsum)
+		return 0;	/* Not a tar archive */
+	
+	if (!strcmp(header->header.magic, TMAGIC)) 
+		return 2;		/* Unix Standard tar archive */
+
+	return 1;			/* Old fashioned tar archive */
+}
 typedef unsigned long unichar;
 
 #define MAXLINELEN 300	/* longest sane line length */
@@ -130,7 +209,7 @@ static char text_chars[256] = {
 };
 
 static int
-looks_ascii(const unsigned char *buf, int nbytes,
+looks_ascii(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
 	/*@modifies *ubuf, *ulen @*/
 {
@@ -138,7 +217,7 @@ looks_ascii(const unsigned char *buf, int nbytes,
 
 	*ulen = 0;
 
-	for (i = 0; i < nbytes; i++) {
+	for (i = 0; i < nb; i++) {
 		int t = text_chars[buf[i]];
 
 		if (t != T)
@@ -151,7 +230,7 @@ looks_ascii(const unsigned char *buf, int nbytes,
 }
 
 static int
-looks_latin1(const unsigned char *buf, int nbytes,
+looks_latin1(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
 	/*@modifies *ubuf, *ulen @*/
 {
@@ -159,7 +238,7 @@ looks_latin1(const unsigned char *buf, int nbytes,
 
 	*ulen = 0;
 
-	for (i = 0; i < nbytes; i++) {
+	for (i = 0; i < nb; i++) {
 		int t = text_chars[buf[i]];
 
 		if (t != T && t != I)
@@ -172,7 +251,7 @@ looks_latin1(const unsigned char *buf, int nbytes,
 }
 
 static int
-looks_extended(const unsigned char *buf, int nbytes,
+looks_extended(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
 	/*@modifies *ubuf, *ulen @*/
 {
@@ -180,7 +259,7 @@ looks_extended(const unsigned char *buf, int nbytes,
 
 	*ulen = 0;
 
-	for (i = 0; i < nbytes; i++) {
+	for (i = 0; i < nb; i++) {
 		int t = text_chars[buf[i]];
 
 		if (t != T && t != I && t != X)
@@ -193,7 +272,7 @@ looks_extended(const unsigned char *buf, int nbytes,
 }
 
 static int
-looks_utf8(const unsigned char *buf, int nbytes,
+looks_utf8(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
 	/*@modifies *ubuf, *ulen @*/
 {
@@ -203,7 +282,7 @@ looks_utf8(const unsigned char *buf, int nbytes,
 
 	*ulen = 0;
 
-	for (i = 0; i < nbytes; i++) {
+	for (i = 0; i < nb; i++) {
 		if ((buf[i] & 0x80) == 0) {	   /* 0xxxxxxx is plain ASCII */
 			/*
 			 * Even if the whole file is valid UTF-8 sequences,
@@ -239,7 +318,7 @@ looks_utf8(const unsigned char *buf, int nbytes,
 
 			for (n = 0; n < following; n++) {
 				i++;
-				if (i >= nbytes)
+				if (i >= nb)
 					goto done;
 
 				if ((buf[i] & 0x80) == 0 || (buf[i] & 0x40))
@@ -257,14 +336,14 @@ done:
 }
 
 static int
-looks_unicode(const unsigned char *buf, int nbytes,
+looks_unicode(const unsigned char *buf, int nb,
 		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
 	/*@modifies *ubuf, *ulen @*/
 {
 	int bigend;
 	int i;
 
-	if (nbytes < 2)
+	if (nb < 2)
 		return 0;
 
 	if (buf[0] == 0xff && buf[1] == 0xfe)
@@ -276,7 +355,7 @@ looks_unicode(const unsigned char *buf, int nbytes,
 
 	*ulen = 0;
 
-	for (i = 2; i + 1 < nbytes; i += 2) {
+	for (i = 2; i + 1 < nb; i += 2) {
 		/* XXX fix to properly handle chars > 65536 */
 
 		if (bigend)
@@ -375,15 +454,15 @@ static unsigned char ebcdic_1047_to_8859[] = {
 };
 
 /*
- * Copy buf[0 ... nbytes-1] into out[], translating EBCDIC to ASCII.
+ * Copy buf[0 ... nb-1] into out[], translating EBCDIC to ASCII.
  */
 static void
-from_ebcdic(const unsigned char *buf, int nbytes, /*@out@*/ unsigned char *otp)
+from_ebcdic(const unsigned char *buf, int nb, /*@out@*/ unsigned char *otp)
 	/*@modifies *otp @*/
 {
 	int i;
 
-	for (i = 0; i < nbytes; i++) {
+	for (i = 0; i < nb; i++) {
 		otp[i] = ebcdic_to_ascii[buf[i]];
 	}
 }
@@ -405,15 +484,18 @@ fmagicAMatch(const unsigned char *s, const unichar *us, int ulen)
 		return 1;
 }
 
-/* int nbytes: size actually read */
+/* int nb: size actually read */
 int
-fmagicA(fmagic fm, unsigned char *buf, int nbytes)
+fmagicA(fmagic fm)
 {
-	int i;
+	unsigned char * buf = fm->buf;
+	int nb = fm->nb;
+
 	char nbuf[HOWMANY+1];		/* one extra for terminating '\0' */
 	unichar ubuf[HOWMANY+1];	/* one extra for terminating '\0' */
 	int ulen;
 	struct names *p;
+	int i;
 
 	char *code = NULL;
 	char *code_mime = NULL;
@@ -436,7 +518,7 @@ fmagicA(fmagic fm, unsigned char *buf, int nbytes)
 	 * Do the tar test first, because if the first file in the tar
 	 * archive starts with a dot, we can confuse it with an nroff file.
 	 */
-	switch (is_tar(buf, nbytes)) {
+	switch (is_tar(fm)) {
 	case 1:
 		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-tar" : "tar archive", stdout);
 		return 1;
@@ -451,8 +533,8 @@ fmagicA(fmagic fm, unsigned char *buf, int nbytes)
 	 * but leave at least one byte to look at
 	 */
 
-	while (nbytes > 1 && buf[nbytes - 1] == '\0')
-		nbytes--;
+	while (nb > 1 && buf[nb - 1] == '\0')
+		nb--;
 
 	/*
 	 * Then try to determine whether it's any character code we can
@@ -460,15 +542,15 @@ fmagicA(fmagic fm, unsigned char *buf, int nbytes)
 	 * the text converted into one-unichar-per-character Unicode in
 	 * ubuf, and the number of characters converted in ulen.
 	 */
-	if (looks_ascii(buf, nbytes, ubuf, &ulen)) {
+	if (looks_ascii(buf, nb, ubuf, &ulen)) {
 		code = "ASCII";
 		code_mime = "us-ascii";
 		type = "text";
-	} else if (looks_utf8(buf, nbytes, ubuf, &ulen)) {
+	} else if (looks_utf8(buf, nb, ubuf, &ulen)) {
 		code = "UTF-8 Unicode";
 		code_mime = "utf-8";
 		type = "text";
-	} else if ((i = looks_unicode(buf, nbytes, ubuf, &ulen))) {
+	} else if ((i = looks_unicode(buf, nb, ubuf, &ulen))) {
 		if (i == 1)
 			code = "Little-endian UTF-16 Unicode";
 		else
@@ -476,22 +558,22 @@ fmagicA(fmagic fm, unsigned char *buf, int nbytes)
 
 		type = "character data";
 		code_mime = "utf-16";    /* is this defined? */
-	} else if (looks_latin1(buf, nbytes, ubuf, &ulen)) {
+	} else if (looks_latin1(buf, nb, ubuf, &ulen)) {
 		code = "ISO-8859";
 		type = "text";
 		code_mime = "iso-8859-1"; 
-	} else if (looks_extended(buf, nbytes, ubuf, &ulen)) {
+	} else if (looks_extended(buf, nb, ubuf, &ulen)) {
 		code = "Non-ISO extended-ASCII";
 		type = "text";
 		code_mime = "unknown";
 	} else {
-		from_ebcdic(buf, nbytes, nbuf);
+		from_ebcdic(buf, nb, nbuf);
 
-		if (looks_ascii(nbuf, nbytes, ubuf, &ulen)) {
+		if (looks_ascii(nbuf, nb, ubuf, &ulen)) {
 			code = "EBCDIC";
 			type = "character data";
 			code_mime = "ebcdic";
-		} else if (looks_latin1(nbuf, nbytes, ubuf, &ulen)) {
+		} else if (looks_latin1(nbuf, nb, ubuf, &ulen)) {
 			code = "International EBCDIC";
 			type = "character data";
 			code_mime = "ebcdic";
@@ -546,7 +628,7 @@ fmagicA(fmagic fm, unsigned char *buf, int nbytes)
 		/*
 		 * find the next whitespace
 		 */
-		for (end = i + 1; end < nbytes; end++)
+		for (end = i + 1; end < nb; end++)
 			if (ISSPC(ubuf[end]))
 				/*@innerbreak@*/ break;
 

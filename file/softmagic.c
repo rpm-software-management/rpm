@@ -34,13 +34,13 @@ FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
 /*@access fmagic @*/
 
 static int32_t
-fmagicSPrint(/*@unused@*/ const fmagic fm, union VALUETYPE *p, struct magic *m)
+fmagicSPrint(const fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
-	/*@modifies p, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
+	union VALUETYPE * p = &fm->val;
 	uint32_t v;
-	int32_t t=0 ;
-
+	int32_t t = 0;
 
   	switch (m->type) {
   	case BYTE:
@@ -113,10 +113,12 @@ fmagicSPrint(/*@unused@*/ const fmagic fm, union VALUETYPE *p, struct magic *m)
  * (unless you have a better idea)
  */
 static int
-fmagicSConvert(/*@unused@*/ const fmagic fm, union VALUETYPE *p, struct magic *m)
+fmagicSConvert(fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
-	/*@modifies p, fileSystem @*/
+	/*@modifies fm, fileSystem @*/
 {
+	union VALUETYPE * p = &fm->val;
+
 	switch (m->type) {
 	case BYTE:
 		if (m->mask)
@@ -394,43 +396,45 @@ fmagicSDebug(int32_t offset, char *str, int len)
 }
 
 static int
-fmagicSGet(const fmagic fm, union VALUETYPE *p, unsigned char *s,
-		struct magic *m, int nbytes)
+fmagicSGet(fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
-	/*@modifies p, s, fileSystem @*/
+	/*@modifies fm, s, fileSystem @*/
 {
+	unsigned char * buf = fm->buf;
+	int nb = fm->nb;
+	union VALUETYPE * p = &fm->val;
 	int32_t offset = m->offset;
 
 /*@-branchstate@*/
 	if (m->type == REGEX) {
-	      /*
-	       * offset is interpreted as last line to search,
-	       * (starting at 1), not as bytes-from start-of-file
-	       */
-	      char *last = NULL;
+		/*
+		* offset is interpreted as last line to search,
+		* (starting at 1), not as bytes-from start-of-file
+		*/
+		char *last = NULL;
 /*@-temptrans@*/
-	      p->buf = s;
+		p->buf = buf;
 /*@=temptrans@*/
-	      for (; offset && (s = strchr(s, '\n')) != NULL; offset--, s++)
-		    last = s;
-	      if (last != NULL)
-		*last = '\0';
-	} else if (offset + sizeof(union VALUETYPE) <= nbytes)
-		memcpy(p, s + offset, sizeof(union VALUETYPE));
+		for (; offset && (buf = strchr(buf, '\n')) != NULL; offset--, buf++)
+			last = buf;
+		if (last != NULL)
+			*last = '\0';
+	} else if (offset + sizeof(*p) <= nb)
+		memcpy(p, buf + offset, sizeof(*p));
 	else {
 		/*
 		 * the usefulness of padding with zeroes eludes me, it
 		 * might even cause problems
 		 */
-		int32_t have = nbytes - offset;
-		memset(p, 0, sizeof(union VALUETYPE));
+		int32_t have = nb - offset;
+		memset(p, 0, sizeof(*p));
 		if (have > 0)
-			memcpy(p, s + offset, have);
+			memcpy(p, buf + offset, have);
 	}
 /*@=branchstate@*/
 
 	if (fm->flags & FMAGIC_FLAGS_DEBUG) {
-		fmagicSDebug(offset, (char *) p, sizeof(union VALUETYPE));
+		fmagicSDebug(offset, (char *) p, sizeof(*p));
 		mdump(m);
 	}
 
@@ -758,35 +762,35 @@ fmagicSGet(const fmagic fm, union VALUETYPE *p, unsigned char *s,
 			break;
 		}
 
-		if (offset + sizeof(union VALUETYPE) > nbytes)
+		if (offset + sizeof(*p) > nb)
 			return 0;
 
-		memcpy(p, s + offset, sizeof(union VALUETYPE));
+		memcpy(p, buf + offset, sizeof(*p));
 
 		if (fm->flags & FMAGIC_FLAGS_DEBUG) {
-			fmagicSDebug(offset, (char *) p, sizeof(union VALUETYPE));
+			fmagicSDebug(offset, (char *) p, sizeof(*p));
 			mdump(m);
 		}
 	}
-	if (!fmagicSConvert(fm, p, m))
+	if (!fmagicSConvert(fm, m))
 	  return 0;
 	return 1;
 }
 
 static int
-fmagicSCheck(const fmagic fm, union VALUETYPE *p, struct magic *m)
+fmagicSCheck(const fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
+	union VALUETYPE * p = &fm->val;
 	uint32_t l = m->value.l;
-	uint32_t v;
+	uint32_t v = 0;
 	int matched;
 
 	if ( (m->value.s[0] == 'x') && (m->value.s[1] == '\0') ) {
 		fprintf(stderr, "BOINK");
 		return 1;
 	}
-
 
 	switch (m->type) {
 	case BYTE:
@@ -985,33 +989,33 @@ fmagicSCheck(const fmagic fm, union VALUETYPE *p, struct magic *m)
  *	so that higher-level continuations are processed.
  */
 static int
-fmagicSMatch(const fmagic fm, struct magic *m, uint32_t nmagic,
-		unsigned char *s, int nbytes)
+fmagicSMatch(const fmagic fm)
 	/*@globals fileSystem @*/
-	/*@modifies m, s, fileSystem @*/
+	/*@modifies fm, fileSystem @*/
 {
-	int magindex = 0;
+	uint32_t nmagic = fm->ml->nmagic;
 	int cont_level = 0;
 	int need_separator = 0;
-	union VALUETYPE p;
 	/*@only@*/
 	static int32_t *tmpoff = NULL;
 	static size_t tmplen = 0;
 	int32_t oldoff = 0;
-	int returnval = 0; /* if a match is found it is set to 1*/
 	int firstline = 1; /* a flag to print X\n  X\n- X */
+	int ret = 0; /* if a match is found it is set to 1*/
+	int i;
 
-	for (magindex = 0; magindex < nmagic; magindex++) {
+	for (i = 0; i < nmagic; i++) {
+		struct magic * m;
+		m = &fm->ml->magic[i];
 		/* if main entry matches, print it... */
-		if (!fmagicSGet(fm, &p, s, &m[magindex], nbytes) ||
-		    !fmagicSCheck(fm, &p, &m[magindex])) {
+		if (!fmagicSGet(fm, m) ||
+		    !fmagicSCheck(fm, m)) {
 			    /* 
 			     * main entry didn't match,
 			     * flush its continuations
 			     */
-			    while (magindex < nmagic &&
-			    	   m[magindex + 1].cont_level != 0)
-			    	   magindex++;
+			    while ((m+1)->cont_level != 0 && ++i < nmagic)
+				   m++;
 			    continue;
 		}
 
@@ -1022,33 +1026,34 @@ fmagicSMatch(const fmagic fm, struct magic *m, uint32_t nmagic,
 
 		if ((cont_level+1) >= tmplen)
 			tmpoff = (int32_t *) xrealloc(tmpoff, tmplen += 20);
-		tmpoff[cont_level] = fmagicSPrint(fm, &p, &m[magindex]);
+		tmpoff[cont_level] = fmagicSPrint(fm, m);
 		cont_level++;
 
 		/*
 		 * If we printed something, we'll need to print
 		 * a blank before we print something else.
 		 */
-		if (m[magindex].desc[0])
+		if (m->desc[0])
 			need_separator = 1;
 
 		/* and any continuations that match */
-		while (m[magindex+1].cont_level != 0 && ++magindex < nmagic) {
-			if (cont_level < m[magindex].cont_level)
+		while ((m+1)->cont_level != 0 && ++i < nmagic) {
+			m++;
+			if (cont_level < m->cont_level)
 				/*@innercontinue@*/ continue;
-			if (cont_level > m[magindex].cont_level) {
+			if (cont_level > m->cont_level) {
 				/*
 				 * We're at the end of the level
 				 * "cont_level" continuations.
 				 */
-				cont_level = m[magindex].cont_level;
+				cont_level = m->cont_level;
 			}
-			if (m[magindex].flag & OFFADD) {
-				oldoff = m[magindex].offset;
-				m[magindex].offset += tmpoff[cont_level-1];
+			if (m->flag & OFFADD) {
+				oldoff = m->offset;
+				m->offset += tmpoff[cont_level-1];
 			}
-			if (fmagicSGet(fm, &p, s, &m[magindex], nbytes) &&
-			    fmagicSCheck(fm, &p, &m[magindex]))
+			if (fmagicSGet(fm, m) &&
+			    fmagicSCheck(fm, m))
 			{
 				/*
 				 * This continuation matched.
@@ -1059,28 +1064,28 @@ fmagicSMatch(const fmagic fm, struct magic *m, uint32_t nmagic,
 				 */
 				/* space if previous printed */
 				if (need_separator
-				   && (m[magindex].nospflag == 0)
-				   && (m[magindex].desc[0] != '\0')
+				   && (m->nospflag == 0)
+				   && (m->desc[0] != '\0')
 				   ) {
 					(void) putchar(' ');
 					need_separator = 0;
 				}
 				if ((cont_level+1) >= tmplen)
 					tmpoff = xrealloc(tmpoff, tmplen += 20);
-				tmpoff[cont_level] = fmagicSPrint(fm, &p, &m[magindex]);
+				tmpoff[cont_level] = fmagicSPrint(fm, m);
 				cont_level++;
-				if (m[magindex].desc[0])
+				if (m->desc[0])
 					need_separator = 1;
 			}
-			if (m[magindex].flag & OFFADD)
-				 m[magindex].offset = oldoff;
+			if (m->flag & OFFADD)
+				m->offset = oldoff;
 		}
 		firstline = 0;
-		returnval = 1;
+		ret = 1;
 		if (!(fm->flags & FMAGIC_FLAGS_CONTINUE))	/* don't keep searching */
 			return 1;
 	}
-	return returnval;  /* This is hit if -k is set or there is no match */
+	return ret;	/* This is hit if -k is set or there is no match */
 }
 
 /*
@@ -1089,13 +1094,11 @@ fmagicSMatch(const fmagic fm, struct magic *m, uint32_t nmagic,
  * Passed the name and FILE * of one file to be typed.
  */
 int
-fmagicS(fmagic fm, unsigned char *buf, int nbytes)
+fmagicS(fmagic fm)
 {
-	struct mlist *ml;
-
 	if (fm->mlist != NULL)
-	for (ml = fm->mlist->next; ml != fm->mlist; ml = ml->next) {
-		if (fmagicSMatch(fm, ml->magic, ml->nmagic, buf, nbytes))
+	for (fm->ml = fm->mlist->next; fm->ml != fm->mlist; fm->ml = fm->ml->next) {
+		if (fmagicSMatch(fm))
 			return 1;
 	}
 

@@ -34,9 +34,12 @@ FILE_RCSID("@(#)Id: fsmagic.c,v 1.36 2002/07/03 19:00:41 christos Exp ")
 /*@access fmagic @*/
 
 int
-fmagicD(fmagic fm, const char *fn, struct stat *sb)
+fmagicD(fmagic fm)
 {
+	const char * fn = fm->fn;
+	struct stat * st = &fm->sb;
 	int ret = 0;
+	int xx;
 
 	/*
 	 * Fstat is cheaper but fails for files you don't have read perms on.
@@ -44,10 +47,10 @@ fmagicD(fmagic fm, const char *fn, struct stat *sb)
 	 */
 #if defined(S_IFLNK) || defined(__LCLINT__)
 	if (!(fm->flags & FMAGIC_FLAGS_FOLLOW))
-		ret = lstat(fn, sb);
+		ret = lstat(fn, st);
 	else
 #endif
-	ret = stat(fn, sb);	/* don't merge into if; see "ret =" above */
+	ret = stat(fn, st);	/* don't merge into if; see "ret =" above */
 
 	if (ret) {
 		ckfprintf(stdout,
@@ -58,24 +61,24 @@ fmagicD(fmagic fm, const char *fn, struct stat *sb)
 	}
 
 	if ((fm->flags & FMAGIC_FLAGS_MIME)) {
-		if ((sb->st_mode & S_IFMT) != S_IFREG) {
+		if ((st->st_mode & S_IFMT) != S_IFREG) {
 			ckfputs("application/x-not-regular-file", stdout);
 			return 1;
 		}
 	}
 	else {
 #if defined(S_ISUID) || defined(__LCLINT__)
-		if (sb->st_mode & S_ISUID) ckfputs("setuid ", stdout);
+		if (st->st_mode & S_ISUID) ckfputs("setuid ", stdout);
 #endif
 #if defined(S_ISGID) || defined(__LCLINT__)
-		if (sb->st_mode & S_ISGID) ckfputs("setgid ", stdout);
+		if (st->st_mode & S_ISGID) ckfputs("setgid ", stdout);
 #endif
 #if defined(S_ISVTX) || defined(__LCLINT__)
-		if (sb->st_mode & S_ISVTX) ckfputs("sticky ", stdout);
+		if (st->st_mode & S_ISVTX) ckfputs("sticky ", stdout);
 #endif
 	}
 	
-	switch (sb->st_mode & S_IFMT) {
+	switch (st->st_mode & S_IFMT) {
 	case S_IFDIR:
 		ckfputs("directory", stdout);
 		return 1;
@@ -91,12 +94,12 @@ fmagicD(fmagic fm, const char *fn, struct stat *sb)
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
 		(void) printf("character special (%d/%d/%d)",
-			major(sb->st_rdev),
-			dv_unit(sb->st_rdev),
-			dv_subunit(sb->st_rdev));
+			major(st->st_rdev),
+			dv_unit(st->st_rdev),
+			dv_subunit(st->st_rdev));
 # else
 		(void) printf("character special (%ld/%ld)",
-			(long) major(sb->st_rdev), (long) minor(sb->st_rdev));
+			(long) major(st->st_rdev), (long) minor(st->st_rdev));
 # endif
 #else
 		(void) printf("character special");
@@ -115,12 +118,12 @@ fmagicD(fmagic fm, const char *fn, struct stat *sb)
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
 		(void) printf("block special (%d/%d/%d)",
-			major(sb->st_rdev),
-			dv_unit(sb->st_rdev),
-			dv_subunit(sb->st_rdev));
+			major(st->st_rdev),
+			dv_unit(st->st_rdev),
+			dv_subunit(st->st_rdev));
 # else
 		(void) printf("block special (%ld/%ld)",
-			(long) major(sb->st_rdev), (long) minor(sb->st_rdev));
+			(long) major(st->st_rdev), (long) minor(st->st_rdev));
 # endif
 #else
 		(void) printf("block special");
@@ -185,7 +188,7 @@ fmagicD(fmagic fm, const char *fn, struct stat *sb)
 
 			/* Otherwise, handle it. */
 			if ((fm->flags & FMAGIC_FLAGS_FOLLOW)) {
-				fmagicProcess(fm, buf, strlen(buf));
+				xx = fmagicProcess(fm, buf, strlen(buf));
 				return 1;
 			} else { /* just print what it points to */
 				ckfputs("symbolic link to ", stdout);
@@ -204,7 +207,7 @@ fmagicD(fmagic fm, const char *fn, struct stat *sb)
 	case S_IFREG:
 		break;
 	default:
-		error("invalid mode 0%o.\n", sb->st_mode);
+		error("invalid mode 0%o.\n", st->st_mode);
 		/*@notreached@*/
 	}
 
@@ -220,7 +223,7 @@ fmagicD(fmagic fm, const char *fn, struct stat *sb)
 	 * the fact that it is empty will be detected and reported correctly
 	 * when we read the file.)
 	 */
-	if (!(fm->flags & FMAGIC_FLAGS_SPECIAL) && sb->st_size == 0) {
+	if (!(fm->flags & FMAGIC_FLAGS_SPECIAL) && st->st_size == 0) {
 		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-empty" : "empty", stdout);
 		return 1;
 	}
@@ -228,9 +231,8 @@ fmagicD(fmagic fm, const char *fn, struct stat *sb)
 }
 
 int
-fmagicF(fmagic fm, const char *fn, unsigned char *buf, int nb, int zfl)
+fmagicF(fmagic fm, int zfl)
 {
-
 	/*
 	 * The main work is done here!
 	 * We have the file name and/or the data buffer to be identified. 
@@ -245,15 +247,15 @@ fmagicF(fmagic fm, const char *fn, unsigned char *buf, int nb, int zfl)
 	       return 'o';
 #endif
 	/* try compression stuff */
-	if (zfl && fmagicZ(fm, fn, buf, nb))
+	if (zfl && fmagicZ(fm))
 		return 'z';
 
 	/* try tests in /etc/magic (or surrogate magic file) */
-	if (fmagicS(fm, buf, nb))
+	if (fmagicS(fm))
 		return 's';
 
 	/* try known keywords, check whether it is ASCII */
-	if (fmagicA(fm, buf, nb))
+	if (fmagicA(fm))
 		return 'a';
 
 	/* abandon hope, all ye who remain here */
@@ -264,45 +266,48 @@ fmagicF(fmagic fm, const char *fn, unsigned char *buf, int nb, int zfl)
 /*
  * fmagicProcess - process input file
  */
-void
-fmagicProcess(fmagic fm, const char *inname, int wid)
+int
+fmagicProcess(fmagic fm, const char *fn, int wid)
 {
 	int	fd = 0;
 	static  const char stdname[] = "standard input";
-	unsigned char	buf[HOWMANY+1];	/* one extra for terminating '\0' */
-	struct stat	sb;
-	int nbytes = 0;	/* number of bytes read from a datafile */
+	unsigned char	b[HOWMANY+1];	/* one extra for terminating '\0' */
 	char match = '\0';
+	int ret = 0;
 
-	if (strcmp("-", inname) == 0) {
-		if (fstat(0, &sb)<0) {
+	fm->fn = fn;
+	fm->buf = b;
+	fm->nb = 0;
+
+	if (strcmp("-", fn) == 0) {
+		if (fstat(0, &fm->sb)<0) {
 			error("cannot fstat `%s' (%s).\n", stdname,
 			      strerror(errno));
 			/*@notreached@*/
 		}
-		inname = stdname;
+		fm->fn = stdname;
 	}
 
 	if (wid > 0 && !(fm->flags & FMAGIC_FLAGS_BRIEF))
-	     (void) printf("%s:%*s ", inname, 
-			   (int) (wid - strlen(inname)), "");
+	     (void) printf("%s:%*s ", fm->fn, 
+			   (int) (wid - strlen(fm->fn)), "");
 
-	if (inname != stdname) {
+	if (fm->fn != stdname) {
 		/*
 		 * first try judging the file based on its filesystem status
 		 */
-		if (fmagicD(fm, inname, &sb) != 0) {
-			(void) putchar('\n');
-			return;
-		}
+		if (fmagicD(fm) != 0)
+			goto exit;
 
-		if ((fd = open(inname, O_RDONLY)) < 0) {
+		if ((fd = open(fm->fn, O_RDONLY)) < 0) {
 			/* We can't open it, but we were able to stat it. */
-			if (sb.st_mode & 0002) ckfputs("writeable, ", stdout);
-			if (sb.st_mode & 0111) ckfputs("executable, ", stdout);
-			ckfprintf(stdout, "can't read `%s' (%s).\n",
-			    inname, strerror(errno));
-			return;
+			if (fm->sb.st_mode & 0002)
+				ckfputs("writeable, ", stdout);
+			if (fm->sb.st_mode & 0111)
+				ckfputs("executable, ", stdout);
+			ckfprintf(stdout, "can't read `%s' (%s).",
+			    fm->fn, strerror(errno));
+			goto exit;
 		}
 	}
 
@@ -310,20 +315,20 @@ fmagicProcess(fmagic fm, const char *inname, int wid)
 	/*
 	 * try looking at the first HOWMANY bytes
 	 */
-	if ((nbytes = read(fd, (char *)buf, HOWMANY)) == -1) {
+	if ((fm->nb = read(fd, (char *)fm->buf, HOWMANY)) == -1) {
 		error("read failed (%s).\n", strerror(errno));
 		/*@notreached@*/
 	}
 
-	if (nbytes == 0)
+	if (fm->nb == 0)
 		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-empty" : "empty", stdout);
 	else {
-		buf[nbytes++] = '\0';	/* null-terminate it */
-		match = fmagicF(fm, inname, buf, nbytes, (fm->flags & FMAGIC_FLAGS_UNCOMPRESS));
+		fm->buf[fm->nb++] = '\0';	/* null-terminate it */
+		match = fmagicF(fm, (fm->flags & FMAGIC_FLAGS_UNCOMPRESS));
 	}
 
 #ifdef BUILTIN_ELF
-	if (match == 's' && nbytes > 5) {
+	if (match == 's' && fm->nb > 5) {
 		/*
 		 * We matched something in the file, so this *might*
 		 * be an ELF file, and the file is at least 5 bytes long,
@@ -332,11 +337,11 @@ fmagicProcess(fmagic fm, const char *inname, int wid)
 		 * from the ELF headers that can't easily be extracted
 		 * with rules in the magic file.
 		 */
-		tryelf(fd, buf, nbytes);
+		tryelf(fd, fm->buf, fm->nb);
 	}
 #endif
 
-	if (inname != stdname) {
+	if (fm->fn != stdname) {
 #ifdef RESTORE_TIME
 		/*
 		 * Try to restore access, modification times if read it.
@@ -346,19 +351,24 @@ fmagicProcess(fmagic fm, const char *inname, int wid)
 		 */
 # ifdef USE_UTIMES
 		struct timeval  utsbuf[2];
-		utsbuf[0].tv_sec = sb.st_atime;
-		utsbuf[1].tv_sec = sb.st_mtime;
+		utsbuf[0].tv_sec = fm->sb.st_atime;
+		utsbuf[1].tv_sec = fm->sb.st_mtime;
 
-		(void) utimes(inname, utsbuf); /* don't care if loses */
+		(void) utimes(fm->fn, utsbuf); /* don't care if loses */
 # else
 		struct utimbuf  utbuf;
 
-		utbuf.actime = sb.st_atime;
-		utbuf.modtime = sb.st_mtime;
-		(void) utime(inname, &utbuf); /* don't care if loses */
+		utbuf.actime = fm->sb.st_atime;
+		utbuf.modtime = fm->sb.st_mtime;
+		(void) utime(fm->fn, &utbuf); /* don't care if loses */
 # endif
 #endif
 		(void) close(fd);
 	}
+
+exit:
 	(void) putchar('\n');
+	fm->buf = NULL;
+	fm->nb = 0;
+	return ret;
 }

@@ -241,6 +241,7 @@ uncompressbuf(int method, const unsigned char *old,
 		error("cannot create pipe (%s).\n", strerror(errno));	
 		/*@notreached@*/
 	}
+
 	switch (fork()) {
 	case 0:	/* child */
 		(void) close(0);
@@ -288,6 +289,7 @@ err:
 		return n;
 	}
 	/*@notreached@*/
+	return 0;
 }
 
 /*
@@ -296,21 +298,27 @@ err:
  *		   information if recognized
  */
 int
-fmagicZ(fmagic fm, const char *fname, unsigned char *buf, int nbytes)
+fmagicZ(fmagic fm)
 {
-	unsigned char *newbuf;
+	unsigned char * buf = fm->buf;
+	int nb = fm->nb;
+	unsigned char * newbuf;
 	int newsize;
 	int i;
 
 	for (i = 0; i < ncompr; i++) {
-		if (nbytes < compr[i].maglen)
+		if (nb < compr[i].maglen)
 			continue;
 		if (memcmp(buf, compr[i].magic, compr[i].maglen) == 0 &&
-		    (newsize = uncompressbuf(i, buf, &newbuf, nbytes)) != 0) {
-			(void) fmagicF(fm, fname, newbuf, newsize, 1);
+		    (newsize = uncompressbuf(i, buf, &newbuf, nb)) != 0) {
+			fm->buf = newbuf;
+			fm->nb = newsize;
+			(void) fmagicF(fm, 1);
+			fm->buf = buf;
+			fm->nb = nb;
 			free(newbuf);
 			printf(" (");
-			(void) fmagicF(fm, fname, buf, nbytes, 0);
+			(void) fmagicF(fm, 0);
 			printf(")");
 			return 1;
 		}

@@ -891,7 +891,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	uint32_t version;
 	int needsbyteswap;
 	char *dbname = mkdbname(fn);
-	void *mm;
+	void *mm = NULL;
 
 	if (dbname == NULL)
 		return -1;

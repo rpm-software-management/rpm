@@ -12,7 +12,7 @@ noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h
 
 lib_LTLIBRARIES = libfmagic.la
 libfmagic_la_SOURCES = \
-	apprentice.c ascmagic.c fsmagic.c compress.c is_tar.c \
+	apprentice.c ascmagic.c fsmagic.c compress.c \
 	print.c readelf.c softmagic.c
 
 bin_PROGRAMS =	file

@@ -87,7 +87,7 @@ struct magic {
 		uint16_t h;
 		uint32_t l;
 		char s[MAXstring];
-		char *buf;
+		const char * buf;
 		uint8_t hs[2];	/* 2 bytes of a fixed-endian "short" */
 		uint8_t hl[4];	/* 4 bytes of a fixed-endian "long" */
 	} value;		/* either number or string */
@@ -138,6 +138,13 @@ struct fmagic_s {
     int lineno;			/*!< current line number in magic file	*/
 /*@null@*/
     struct mlist * mlist;	/*!< list of arrays of magic entries	*/
+/*@null@*/
+    struct mlist * ml;		/*!< current magic array item		*/
+    union VALUETYPE val;	/*!< current magic expression value	*/
+    const char * fn;		/*!< current file name			*/
+    struct stat sb;		/*!< current file stat(2) buffer	*/
+    unsigned char * buf;	/*!< current file buffer		*/
+    int nb;			/*!< current no. bytes in file buffer	*/
 };
 
 typedef /*@abstract@*/ struct fmagic_s * fmagic;
@@ -146,27 +153,26 @@ typedef /*@abstract@*/ struct fmagic_s * fmagic;
 extern int fmagicSetup(fmagic fm, const char *fn, int action)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fm, fileSystem, internalState @*/;
-extern void  fmagicProcess(fmagic fm, const char *inname, int wid)
+extern int fmagicProcess(fmagic fm, const char *fn, int wid)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fm, fileSystem, internalState @*/;
 
-extern int fmagicA(fmagic fm, unsigned char *buf, int nbytes)
+extern int fmagicA(fmagic fm)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 struct stat;
-extern int fmagicD(fmagic fm, const char *fn, /*@out@*/ struct stat *sb)
+extern int fmagicD(fmagic fm)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, *sb, fileSystem, internalState @*/;
-extern int fmagicS(fmagic fm, unsigned char *buf, int nbytes)
+	/*@modifies fm, fileSystem, internalState @*/;
+extern int fmagicS(fmagic fm)
 	/*@globals fileSystem @*/
-	/*@modifies fm, buf, fileSystem @*/;
-extern int fmagicF(fmagic fm, const char *fn, unsigned char *buf, int nb, int zfl)
+	/*@modifies fm, fileSystem @*/;
+extern int fmagicF(fmagic fm, int zfl)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, buf, fileSystem, internalState @*/;
-extern int fmagicZ(fmagic fm, const char *fname,
-		unsigned char *buf, int nbytes)
+	/*@modifies fm, fileSystem, internalState @*/;
+extern int fmagicZ(fmagic fm)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, buf, fileSystem, internalState @*/;
+	/*@modifies fm, fileSystem, internalState @*/;
 
 /*@exits@*/
 extern void error(const char *f, ...)
@@ -177,8 +183,6 @@ extern void ckfputs(const char *str, FILE *fil)
 	/*@modifies fil, fileSystem @*/;
 /*@observer@*/
 extern char *fmttime(long v, int local)
-	/*@*/;
-extern int   is_tar(unsigned char *buf, int nbytes)
 	/*@*/;
 extern void magwarn(const char *f, ...)
 	/*@globals fileSystem @*/

@@ -77,6 +77,7 @@ unwrap(fmagic fm, char *fn)
 	char buf[MAXPATHLEN];
 	FILE *f;
 	int wid = 0, cwid;
+	int xx;
 
 	if (strcmp("-", fn) == 0) {
 		f = stdin;
@@ -98,7 +99,7 @@ unwrap(fmagic fm, char *fn)
 
 	while (fgets(buf, MAXPATHLEN, f) != NULL) {
 		buf[strlen(buf)-1] = '\0';
-		fmagicProcess(fm, buf, wid);
+		xx = fmagicProcess(fm, buf, wid);
 		if(nobuffer)
 			(void) fflush(stdout);
 	}
@@ -164,6 +165,7 @@ main(int argc, char **argv)
 		default_magicfile, optind, progname,
 		fileSystem, internalState @*/
 {
+	int xx;
 	int c;
 	int action = 0, didsomefiles = 0, errflg = 0, ret = 0, app = 0;
 	char *mime, *home, *usermagic;
@@ -335,7 +337,7 @@ main(int argc, char **argv)
 				wid = nw;
 		}
 		for (; optind < argc; optind++)
-			fmagicProcess(fm, argv[optind], wid);
+			xx = fmagicProcess(fm, argv[optind], wid);
 	}
 
 #if HAVE_MCHECK_H && HAVE_MTRACE

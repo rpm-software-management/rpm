@@ -49,13 +49,16 @@ fi], [
   fsect=4
 ])
 AC_SUBST(fsect)
-AM_CONDITIONAL(FSECT5, test x$fsect = x5)
 
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
+if test "$ac_cv_prog_gcc" = yes; then
+    CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+fi
+export CFLAGS
 
 dnl Checks for headers
 AC_HEADER_STDC
