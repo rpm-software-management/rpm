@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "intl.h"
 #include "messages.h"
 #include "rpmlib.h"
 #include "intl.h"

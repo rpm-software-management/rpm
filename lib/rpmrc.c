@@ -17,6 +17,7 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include "intl.h"
 #include "messages.h"
 #include "misc.h"
 #include "rpmlib.h"
