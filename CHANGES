@@ -14,6 +14,10 @@
 	- fix: no transaction lock if --test was specified (#119783).
 	- perl: skip new-fangled head[34] while generating deps (#118243).
 	- perl: use __perl for perl variable macros (#115156).
+	? make peace with libtool-1.5.6.
+	? fix: follow current is_selinux_enabled() return (#121004).
+	? fix: exit fail when erasing multiple identical packages (#120519).
+        - add aurora/sparc patches (#124469).
 
 4.2.2 -> 4.3:
 	- upgrade to zlib-1.2.beta7.
