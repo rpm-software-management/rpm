@@ -23,6 +23,10 @@ static int isCompressed(char *file, int *compressed);
 static int checkOwners(char *file);
 static char *doUntar(Spec spec, int c, int quietly);
 
+#define COMPRESSED_NOT   0
+#define COMPRESSED_OTHER 1
+#define COMPRESSED_BZIP2 2
+
 int parsePrep(Spec spec)
 {
     int nextPart, res;
@@ -263,7 +267,9 @@ static char *doUntar(Spec spec, int c, int quietly)
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
-		rpmGetVar(RPMVAR_GZIPBIN), file, taropts);
+		(compressed == COMPRESSED_BZIP2) ?
+		rpmGetVar(RPMVAR_GZIPBIN) : rpmGetVar(RPMVAR_BZIP2BIN),
+		file, taropts);
     } else {
 	sprintf(buf, "tar %s %s", taropts, file);
     }
@@ -422,10 +428,14 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"
 		"%s -dc %s | patch -p%d %s -s\n"
-		"if [ $? -ne 0 ]; then\n"
-		"  exit $?\n"
+		"STATUS=$?\n"
+		"if [ $STATUS -ne 0 ]; then\n"
+		"  exit $STATUS\n"
 		"fi",
-		c, rpmGetVar(RPMVAR_GZIPBIN), file, strip, args);
+		c,
+		(compressed == COMPRESSED_BZIP2) ?
+		rpmGetVar(RPMVAR_GZIPBIN) : rpmGetVar(RPMVAR_BZIP2BIN),
+		file, strip, args);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"
@@ -456,7 +466,7 @@ static int isCompressed(char *file, int *compressed)
     int fd;
     unsigned char magic[4];
 
-    *compressed = 0;
+    *compressed = COMPRESSED_NOT;
 
     if (!(fd = open(file, O_RDONLY))) {
 	return 1;
@@ -474,7 +484,9 @@ static int isCompressed(char *file, int *compressed)
 	((magic[0] == 0120) && (magic[1] == 0113) &&
 	 (magic[2] == 0003) && (magic[3] == 0004))     /* pkzip */
 	) {
-	*compressed = 1;
+	*compressed = COMPRESSED_OTHER;
+    } else if ((magic[0] == 'B') && (magic[1] == 'Z')) {
+	*compressed = COMPRESSED_BZIP2;
     }
 
     return 0;

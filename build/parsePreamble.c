@@ -294,8 +294,9 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 {
     char *field = spec->line;
     char *end;
+    char **array;
     int multiToken = 0;
-    int num, rc;
+    int num, rc, len;
     
     /* Find the start of the "field" and strip trailing space */
     while ((*field) && (*field != ':')) {
@@ -368,6 +369,18 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	break;
       case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
+	headerGetEntry(pkg->header, tag, NULL, (void **)&array, &num);
+	while (num--) {
+	    len = strlen(array[num]);
+	    if (array[num][len - 1] == '/') {
+		rpmError(RPMERR_BADSPEC,
+			 "line %d: Prefixes must not end with \"/\": %s",
+			 spec->lineNum, spec->line);
+		FREE(array);
+		return RPMERR_BADSPEC;
+	    }
+	}
+	FREE(array);
 	break;
       case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;

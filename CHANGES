@@ -14,6 +14,8 @@
           (use --relocate <oldpath>=<newpath>, i.e. --relocate /usr=/foo)
         - added --badreloc flag to force RPM to relocate files which packages
           haven't advertised as relocateable
+	- fix return code on failed uncompresses in %prep
+	- preliminary handling of bzip2 compressed files
 
 2.4.99 -> 2.4.100:
 	- fixed handling of --rebuild and --recompile

@@ -102,6 +102,7 @@ static struct rpmOption optionTable[] = {
     { "builddir",		RPMVAR_BUILDDIR,		0, 0 },
     { "buildroot",              RPMVAR_BUILDROOT,               0, 0 },
     { "buildshell",             RPMVAR_BUILDSHELL,              0, 0 },
+    { "bzip2bin",		RPMVAR_BZIP2BIN,		0, 1 },
     { "dbpath",			RPMVAR_DBPATH,			0, 1 },
     { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0, 0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0, 0 },
