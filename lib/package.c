@@ -275,6 +275,14 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 	    return 2;
 	}
 
+	/* We don't use these entries (and rpm >= 2 never have) and they are
+	   pretty misleading. Let's just get rid of them so they don't confuse
+	   anyone. */
+	if (headerIsEntry(*hdr, RPMTAG_FILEUSERNAME))
+	    headerRemoveEntry(*hdr, RPMTAG_FILEUIDS);
+	if (headerIsEntry(*hdr, RPMTAG_FILEGROUPNAME))
+	    headerRemoveEntry(*hdr, RPMTAG_FILEGIDS);
+
 	/* We switched the way we do relocateable packages. We fix some of
 	   it up here, though the install code still has to be a bit 
 	   careful. This fixup makes queries give the new values though,
