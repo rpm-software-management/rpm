@@ -1,0 +1,29 @@
+LIBOBJECTS = spec.o build.o pack.o
+LIBBUILD = libbuild.a
+PROGS = rpmbuild
+
+# -----------------------------------------------------------------------
+
+ifeq (.depend,$(wildcard .depend))
+TARGET=everything
+else
+TARGET=depend everything
+endif
+
+all: $(TARGET)
+
+everything: $(LIBBUILD) $(PROGS)
+
+$(LIBBUILD): $(LIBOBJECTS) 
+	$(AR) $@ $(LIBOBJECTS)
+	$(RANLIB) $@
+
+clean:
+	rm -f *.a *.o *~ $(PROGS)
+
+depend:
+	$(CPP) $(CFLAGS) -M *.c > .depend
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
