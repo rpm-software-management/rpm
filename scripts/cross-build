@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Example script to cross-build for the platform "sh-linux-gnu".
+#
+#
+
+SHMAKE='make CC=sh-linux-gnu-gcc CONFIG_SITE=/usr/lib/rpm/config.site RANLIB=sh-linux-gnu-ranlib LD=sh-linux-gnu-ld AS=sh-linux-gnu-as GAS=sh-linux-gnu-as STRIP=sh-linux-gnu-strip CC_FOR_BUILD=gcc OBJDUMP=sh-linux-gnu-objdump AR="sh-linux-gnu-ar" CXX=sh-linux-g++'
+
+for pkg in $@ ; do 
+    echo $pkg
+    if [ ! -r $pkg.log ]; then 
+        $SHMAKE RPMFILE=$pkg 2>&1 | tee $pkg.log  
+	if [ -r /usr/src/redhat/RPMS/sh/`echo $pkg | sed -e "s:/tmp/srpms/::" -e "s/.src.rpm/.sh.rpm/"` ]; then
+	    mv $pkg $pkg.log /tmp/srpms/done
+	fi
+    fi
+done
