@@ -29,24 +29,29 @@ typedef /*@abstract@*/ struct sexpString_s * sexpString;
 typedef /*@abstract@*/ struct sexpList_s * sexpList;
 typedef /*@abstract@*/ union sexpObject_u * sexpObject;
 
+/* sexpIter */
+/* an "iterator" for going over lists */
+/* In this implementation, it is the same as a list */
+typedef /*@abstract@*/ sexpList sexpIter;
+
 typedef /*@abstract@*/ struct sexpInputStream_s * sexpInputStream;
 typedef /*@abstract@*/ struct sexpOutputStream_s * sexpOutputStream;
 
 /* sexpSimpleString */
 struct sexpSimpleString_s { 
-  long int length;
-  long int allocatedLength;
+    size_t length;
+    size_t allocatedLength;
 /*@null@*/
-  octet *string;
+    octet *string;
 };
 
 /* sexpString */
 struct sexpString_s {
-  int type;
+    int type;
 /*@null@*/
-  sexpSimpleString presentationHint;
+    sexpSimpleString presentationHint;
 /*@null@*/
-  sexpSimpleString string;
+    sexpSimpleString string;
 };
 
 /* sexpObject */
@@ -65,15 +70,10 @@ struct sexpList_s {
 /* so we can have a pointer to something of either type */
 union sexpObject_u {
 /*@unused@*/
-  struct sexpString_s string;
+    struct sexpString_s string;
 /*@unused@*/
-  struct sexpList_s list;
+    struct sexpList_s list;
 };
-
-/* sexpIter */
-/* an "iterator" for going over lists */
-/* In this implementation, it is the same as a list */
-typedef /*@abstract@*/ sexpList * sexpIter;
 
 /* Function prototypes */
 

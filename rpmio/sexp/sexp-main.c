@@ -9,9 +9,6 @@
 #include <popt.h>
 #include "sexp.h"
 
-/*@access sexpInputStream @*/
-/*@access sexpOutputStream @*/
-
 /*@unchecked@*/ /*@observer@*/
 static const char *help =
 "The program `sexp' reads, parses, and prints out S-expressions.\n"
