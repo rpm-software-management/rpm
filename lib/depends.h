@@ -130,20 +130,28 @@ struct transactionElement {
  * The set of packages to be installed/removed atomically.
  */
 struct rpmTransactionSet_s {
-    rpmtransFlags transFlags;		/*!< Bit(s) to control operation. */
-/*@null@*/ rpmCallbackFunction notify;	/*!< Callback function. */
+    rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
 /*@observer@*/ /*@null@*/
-    rpmCallbackData notifyData;		/*!< Callback private data. */
-/*@dependent@*/ rpmProblemSet probs;	/*!< Current problems in transaction. */
-    rpmprobFilterFlags ignoreSet;	/*!< Bits to filter current problems. */
-    int filesystemCount;		/*!< No. of mounted filesystems. */
-/*@dependent@*/ const char ** filesystems; /*!< Mounted filesystem names. */
-/*@only@*/ struct diskspaceInfo * di;	/*!< Per filesystem disk/inode usage. */
-/*@kept@*/ /*@null@*/ rpmdb rpmdb;	/*!< Database handle. */
-/*@only@*/ hashTable ht;		/*!< Fingerprint hash table. */
-/*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */
-    int numRemovedPackages;		/*!< No. removed rpmdb instances. */
-    int allocedRemovedPackages;		/*!< Size of removed packages array. */
+    rpmCallbackFunction notify;	/*!< Callback function. */
+/*@observer@*/ /*@null@*/
+    rpmCallbackData notifyData;	/*!< Callback private data. */
+/*@dependent@*/
+    rpmProblemSet probs;	/*!< Current problems in transaction. */
+    rpmprobFilterFlags ignoreSet;
+				/*!< Bits to filter current problems. */
+    int filesystemCount;	/*!< No. of mounted filesystems. */
+/*@dependent@*/
+    const char ** filesystems;	/*!< Mounted filesystem names. */
+/*@only@*/
+    struct diskspaceInfo * di;	/*!< Per filesystem disk/inode usage. */
+    int dbmode;			/*!< Database open mode. */
+/*@refcounted@*/ /*@null@*/
+    rpmdb rpmdb;		/*!< Database handle. */
+/*@only@*/ hashTable ht;	/*!< Fingerprint hash table. */
+/*@only@*/
+    int * removedPackages;	/*!< Set of packages being removed. */
+    int numRemovedPackages;	/*!< No. removed rpmdb instances. */
+    int allocedRemovedPackages;	/*!< Size of removed packages array. */
     struct availableList_s addedPackages;
 				/*!< Set of packages being installed. */
     struct availableList_s availablePackages;
@@ -161,7 +169,7 @@ struct rpmTransactionSet_s {
     int delta;			/*!< Delta for reallocation. */
     int_32 id;			/*!< Transaction id. */
 
-    int need_payload;		/*!< Leave fd positioned at payload? */
+    int verify_legacy;		/*!< Verify legacy signatures? */
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
@@ -169,7 +177,8 @@ struct rpmTransactionSet_s {
     int_32  sigtype;		/*!< Current package signature data type. */
 /*@null@*/ const void * sig;	/*!< Current package signature. */
     int_32 siglen;		/*!< Current package signature length. */
-/*@null@*/ struct pgpDig_s * dig;/*!< Current signature/pubkey parametrs. */
+/*@null@*/
+    struct pgpDig_s * dig;	/*!< Current signature/pubkey parametrs. */
 
 } ;
 

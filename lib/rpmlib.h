@@ -597,7 +597,7 @@ void rpmFreeRpmrc(void)
 
 /** \ingroup rpmdb
  */
-typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
 
 /** \ingroup rpmdb
  */
@@ -610,6 +610,22 @@ typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 /*@only@*/ /*@null@*/ extern int * dbiTags;
 /*@unchecked@*/
 extern int dbiTagsMax;
+
+/** \ingroup rpmdb
+ * Unreference a database instance.
+ * @retval db		rpm database
+ * @return		NULL always
+ */
+/*@null@*/ rpmdb rpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db)
+	/*@modifies db @*/;
+
+/** \ingroup rpmdb
+ * Reference a database instance.
+ * @param db		rpm database
+ * @return		new rpm database reference
+ */
+rpmdb rpmdbLink (rpmdb db)
+	/*@modifies db @*/;
 
 /** \ingroup rpmdb
  * Open rpm database.
@@ -648,9 +664,9 @@ int rpmdbVerify(/*@null@*/ const char * prefix)
  * @param db		rpm database
  * @return		0 on success
  */
-int rpmdbClose (/*@only@*/ /*@null@*/ rpmdb db)
+int rpmdbClose (/*@killref@*/ /*@only@*/ /*@null@*/ rpmdb db)
 	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
+	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Sync all database indices.
@@ -692,17 +708,6 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 		/*@only@*//*@null@*/rpmdbMatchIterator mi)
 	/*@globals fileSystem@*/
 	/*@modifies mi, fileSystem @*/;
-
-/** \ingroup rpmdb
- * Return rpm database used by iterator.
- * @todo Remove?
- * @param mi		rpm database iterator
- * @return		rpm database handle
- */
-/*@unused@*/
-/*@kept@*/ /*@null@*/ rpmdb rpmdbGetIteratorRpmDB(
-		/*@null@*/ rpmdbMatchIterator mi)
-	/*@*/;
 
 /** \ingroup rpmdb
  * Return join key for current position of rpm database iterator.
@@ -840,7 +845,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
-			/*@kept@*/ /*@null@*/ rpmdb db, int rpmtag,
+			/*@null@*/ rpmdb db, int rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
 	/*@globals fileSystem@*/
 	/*@modifies db, fileSystem @*/;
@@ -1192,15 +1197,46 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
+ * Close the database used by the transaction.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+int rpmtsCloseDB(rpmTransactionSet ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmtrans
+ * Open the database used by the transaction.
+ * @param ts		transaction set
+ * @param dbmode	O_RDONLY or O_RDWR
+ * @return		0 on success
+ */
+int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmtrans
+ * Return transaction database iterator.
+ * @param ts		transaction set
+ * @param rpmtag	rpm tag
+ * @param keyp		key data (NULL for sequential access)
+ * @param keylen	key data length (0 will use strlen(keyp))
+ * @return		NULL on failure
+ */
+/*@only@*/ /*@null@*/
+rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
+			/*@null@*/ const void * keyp, size_t keylen)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
+/** \ingroup rpmtrans
  * Create an empty transaction set.
  * @param db		rpm database (may be NULL if database is not accessed)
  * @param rootdir	path to top of install tree
  * @return		transaction set
  */
 /*@only@*/ rpmTransactionSet rpmtransCreateSet(
-		/*@null@*/ /*@kept@*/ rpmdb db,
+		/*@null@*/ rpmdb db,
 		/*@null@*/ const char * rootDir)
-	/*@*/;
+	/*@modifies db @*/;
 
 /** \ingroup rpmtrans
  * Add package to be installed to unordered transaction set.
@@ -1258,8 +1294,7 @@ void rpmtransClean(rpmTransactionSet ts)
  */
 /*@null@*/ rpmTransactionSet
 rpmtransFree(/*@only@*//*@null@*/ rpmTransactionSet ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@modifies ts @*/;
 
 /** \ingroup rpmtrans
  * Save file handle to be used as stderr when running package scripts.
@@ -1473,8 +1508,8 @@ typedef enum rpmprobFilterFlags_e {
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
 int rpmRunTransactions(rpmTransactionSet ts,
-			rpmCallbackFunction notify,
-			/*@owned@*/ rpmCallbackData notifyData,
+	/*@observer@*/	rpmCallbackFunction notify,
+	/*@observer@*/	rpmCallbackData notifyData,
 			rpmProblemSet okProbs,
 			/*@out@*/ rpmProblemSet * newProbs,
 			rpmtransFlags transFlags,

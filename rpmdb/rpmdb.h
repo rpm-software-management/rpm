@@ -31,19 +31,6 @@ struct _dbiIndexItem {
     unsigned int dbNum;			/*!< database index */
 };
 
-#ifdef DYING
-/** \ingroup dbi
- * A single item in an index database (i.e. the "data saved").
- */
-struct _dbiIR {
-/*@unused@*/ unsigned int recOffset;	/*!< byte offset of header in db */
-/*@unused@*/ unsigned int fileNumber;	/*!< file array index */
-};
-/*@-typeuse@*/
-typedef	struct _dbiIR * DBIR_t;
-/*@=typeuse@*/
-#endif	/* DYING */
-
 /** \ingroup dbi
  * Items retrieved from the index database.
  */
@@ -299,7 +286,7 @@ struct _dbiIndex {
 	/* queue access parameters */
     unsigned int	dbi_q_extentsize;
 
-/*@kept@*/ rpmdb	dbi_rpmdb;
+/*@refcounted@*/ rpmdb	dbi_rpmdb;
     rpmTag	dbi_rpmtag;		/*!< rpm tag used for index */
     int		dbi_jlen;		/*!< size of join key */
 
@@ -341,6 +328,8 @@ struct rpmdb_s {
 	/*@modifies *ptr @*/;
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex *	_dbi;		/*!< Tag indices. */
+
+/*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 
 /* for RPM's internal use only */
@@ -364,7 +353,7 @@ extern "C" {
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
  */
-/*@only@*/ /*@null@*/ dbiIndex db3New(/*@keep@*/ rpmdb rpmdb, int rpmtag)
+/*@only@*/ /*@null@*/ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
 

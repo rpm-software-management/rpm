@@ -476,16 +476,16 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     dbOpts = _free(dbOpts);
 
     /*@-assignexpose@*/
-    *dbi = db3dbi;	/* structure assignment */
+/*@i@*/	*dbi = db3dbi;	/* structure assignment */
     /*@=assignexpose@*/
     memset(&db3dbi, 0, sizeof(db3dbi));
 
     if (!(dbi->dbi_perms & 0600))
 	dbi->dbi_perms = 0644;
     dbi->dbi_mode = rpmdb->db_mode;
-    /*@-keeptrans@*/
-    dbi->dbi_rpmdb = rpmdb;
-    /*@=keeptrans@*/
+    /*@-assignexpose -newreftrans@*/ /* FIX: figger rpmdb/dbi refcounts */
+/*@i@*/	dbi->dbi_rpmdb = rpmdb;
+    /*@=assignexpose =newreftrans@*/
     dbi->dbi_rpmtag = rpmtag;
     
     /*

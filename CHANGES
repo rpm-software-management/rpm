@@ -21,7 +21,11 @@
 	- wire transactions through rpmcli signature modes.
 	- wire transactions through rpmcli query/verify modes.
 	- wire transactions through rpmcli install/erase modes.
-	- legacy signatures always checked on package read.
+	- legacy signatures always checked (where possible) on package read.
+	- wire transactions through rpmcli build modes.
+	- lazy rpmdb open/close through transaction methods (mostly anyways).
+	- no-brainer refcounts for rpmdb object.
+	- check added header against transaction set, replace if newer.
 
 4.0.3 -> 4.0.4:
 

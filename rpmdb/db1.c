@@ -516,7 +516,7 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     return rc;
 }
 
-static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag,
+static int db1open(rpmdb rpmdb, int rpmtag,
 		/*@out@*/ dbiIndex * dbip)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/

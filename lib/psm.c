@@ -1064,9 +1064,9 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
  * @param psm		package state machine data
  * @return		0 always
  */
-static int markReplacedFiles(PSM_t psm)
+static int markReplacedFiles(const PSM_t psm)
 	/*@globals fileSystem@*/
-	/*@modifies psm, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1101,7 +1101,7 @@ static int markReplacedFiles(PSM_t psm)
 	offsets[num++] = sfi->otherPkg;
     }
 
-    mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
+    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
     xx = rpmdbAppendIterator(mi, offsets, num);
     xx = rpmdbSetIteratorRewrite(mi, 1);
 
@@ -1196,7 +1196,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     PSM_t psm = &psmbuf;
     int isSource;
     rpmRC rc;
-    int i, xx;
+    int i;
 
     /*@-mods -temptrans -assignexpose@*/
     ts->notify = notify;
@@ -1204,10 +1204,9 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     /*@=mods =temptrans =assignexpose@*/
 
     /*@-mustmod@*/	/* LCL: segfault */
-    xx = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
+    rc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
     /*@=mustmod@*/
-    if (xx || h == NULL) {
-	rc = RPMRC_FAIL;			/* XXX HACK */
+    if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE) || h == NULL) {
 	goto exit;
     }
     rc = RPMRC_OK;				/* XXX HACK */
@@ -1823,7 +1822,7 @@ static int runTriggers(PSM_t psm)
 	int countCorrection = psm->countCorrection;
 
 	psm->countCorrection = 0;
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_TRIGGERNAME, fi->name, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, fi->name, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
 	}
@@ -1878,7 +1877,7 @@ static int runImmedTriggers(PSM_t psm)
 
 	    if (triggersRun[triggerIndices[i]] != 0) continue;
 	
-	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, triggerNames[i], 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, triggerNames[i], 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		rc |= handleOneTrigger(psm, sourceH, fi->h, 
@@ -1974,7 +1973,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
 assert(psm->mi == NULL);
-	    psm->mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
+	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, fi->name, 0);
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION,
 			RPMMIRE_DEFAULT, fi->version);
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE,
@@ -2556,7 +2555,7 @@ assert(psm->mi == NULL);
 
     case PSM_RPMDB_LOAD:
 assert(psm->mi == NULL);
-	psm->mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
+	psm->mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
 
 	fi->h = rpmdbNextIterator(psm->mi);

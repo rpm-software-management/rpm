@@ -737,21 +737,19 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 
 int rpmcliSign(QVA_t qva, const char ** argv)
 {
-    const char * rootDir = "/";
-    rpmdb db = NULL;
     rpmTransactionSet ts;
     const char * arg;
+    int dbmode = (qva->qva_mode != RPMSIGN_IMPORT_PUBKEY)
+		? O_RDONLY : (O_RDWR | O_CREAT);
     int res = 0;
     int xx;
 
     if (argv == NULL) return res;
 
-    db = NULL;
-    xx = rpmdbOpen(rootDir, &db,
-	((qva->qva_mode == RPMSIGN_IMPORT_PUBKEY) ? O_RDWR : O_RDONLY), 0644);
+    ts = rpmtransCreateSet(NULL, NULL);
+    xx = rpmtsOpenDB(ts, dbmode);
     if (xx != 0)
 	return -1;
-    ts = rpmtransCreateSet(db, rootDir);
 
     switch (qva->qva_mode) {
     case RPMSIGN_CHK_SIGNATURE:

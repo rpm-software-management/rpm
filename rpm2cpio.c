@@ -30,22 +30,14 @@ int main(int argc, char **argv)
     }
     fdo = fdDup(STDOUT_FILENO);
 
-#ifdef	DYING
-    rc = rpmReadPackageHeader(fdi, &h, NULL, NULL, NULL);
-#else
-    {	const char * rootDir = "";
-	rpmdb db = NULL;
-	rpmTransactionSet ts = rpmtransCreateSet(db, rootDir);
+    {	rpmTransactionSet ts = rpmtransCreateSet(NULL, NULL);
 
-	ts->need_payload = 1;
 	/*@-mustmod@*/      /* LCL: segfault */
 	rc = rpmReadPackageFile(ts, fdi, "rpm2cpio", &h);
 	/*@=mustmod@*/
-	ts->need_payload = 0;
 
 	ts = rpmtransFree(ts);
     }
-#endif
 
     switch (rc) {
     case RPMRC_BADSIZE:

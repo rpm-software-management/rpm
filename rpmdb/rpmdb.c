@@ -817,7 +817,9 @@ int rpmdbClose(rpmdb db)
     int dbix;
     int rc = 0;
 
-    if (db == NULL) return 0;
+    if (db == NULL || --db->nrefs > 0)
+	return 0;
+
     if (db->_dbi)
     for (dbix = db->db_ndbi; --dbix >= 0; ) {
 	int xx;
@@ -833,7 +835,7 @@ int rpmdbClose(rpmdb db)
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->_dbi = _free(db->_dbi);
-    db = _free(db);
+    /*@-refcounttrans@*/ db = _free(db); /*@=refcounttrans@*/
     return rc;
 }
 
@@ -858,9 +860,8 @@ static /*@only@*/ /*@null@*/
 rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
-	/*@globals _db_filter_dups, rpmGlobalMacroContext,
-		fileSystem @*/
-	/*@modifies _db_filter_dups, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals _db_filter_dups, rpmGlobalMacroContext @*/
+	/*@modifies _db_filter_dups, rpmGlobalMacroContext @*/
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
     const char * epfx = _DB_ERRPFX;
@@ -875,6 +876,8 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     *db = dbTemplate;	/* structure assignment */
     /*@=assignexpose@*/
 
+    db->_dbi = NULL;
+
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
     if (mode >= 0)	db->db_mode = mode;
@@ -887,7 +890,9 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     /*@=nullpass@*/
     if (!(db->db_home && db->db_home[0] != '%')) {
 	rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
-	(void) rpmdbClose(db);
+	db->db_root = _free(db->db_root);
+	db->db_home = _free(db->db_home);
+	db = _free(db);
 	/*@-globstate@*/ return NULL; /*@=globstate@*/
     }
     /*@-nullpass@*/
@@ -897,6 +902,7 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     db->db_filter_dups = _db_filter_dups;
     db->db_ndbi = dbiTagsMax;
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
+    db->nrefs = 1;
     /*@-globstate@*/ return db; /*@=globstate@*/
 }
 /*@=mods@*/
@@ -1046,6 +1052,18 @@ exit:
 	*dbp = db;
 
     return rc;
+}
+
+rpmdb rpmdbLink(rpmdb db)
+{
+    db->nrefs++;
+    /*@-refcounttrans@*/ return db; /*@=refcounttrans@*/
+}
+
+rpmdb rpmdbUnlink(rpmdb db)
+{
+    db->nrefs--;
+    return NULL;
 }
 
 /* XXX python/rpmmodule.c */
@@ -1517,7 +1535,7 @@ typedef struct miRE_s {
 struct _rpmdbMatchIterator {
 /*@only@*/ const void *	mi_keyp;
     size_t		mi_keylen;
-/*@kept@*/ rpmdb	mi_rpmdb;
+/*@refcounted@*/ rpmdb	mi_db;
     int			mi_rpmtag;
     dbiIndexSet		mi_set;
     DBC *		mi_dbc;
@@ -1547,7 +1565,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return mi;
 
-    dbi = dbiOpen(mi->mi_rpmdb, RPMDBI_PACKAGES, 0);
+    dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
     /*@-branchstate@*/
     if (mi->mi_h) {
 	if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
@@ -1584,16 +1602,9 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_dbc = NULL;
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
+    mi->mi_db = rpmdbUnlink(mi->mi_db);
     mi = _free(mi);
     return mi;
-}
-
-rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi) {
-    if (mi == NULL)
-	return NULL;
-    /*@-retexpose -retalias@*/
-    return mi->mi_rpmdb;
-    /*@=retexpose =retalias@*/
 }
 
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
@@ -2023,7 +2034,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return NULL;
 
-    dbi = dbiOpen(mi->mi_rpmdb, RPMDBI_PACKAGES, 0);
+    dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -2163,7 +2174,7 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi,
     if (!(mi && keyp))
 	return 1;
 
-    dbi = dbiOpen(mi->mi_rpmdb, mi->mi_rpmtag, 0);
+    dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
     if (dbi == NULL)
 	return 1;
 
@@ -2294,7 +2305,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     mi->mi_keylen = keylen;
 
     /*@-assignexpose@*/
-    mi->mi_rpmdb = db;
+    mi->mi_db = rpmdbLink(db);
     /*@=assignexpose@*/
     mi->mi_rpmtag = rpmtag;
 

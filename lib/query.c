@@ -604,11 +604,11 @@ restart:
 		/*@loopbreak@*/ break;
 	    }
 
+	    ts->verify_legacy = 1;
 	    /*@-mustmod@*/	/* LCL: something fishy here, was segfault */
-    	    rc = rpmReadPackageFile(ts, fd, fileURL, &h);
+    	    rpmrc = rpmReadPackageFile(ts, fd, fileURL, &h);
 	    /*@=mustmod@*/
-	    rpmrc = (rc == 0 ? RPMRC_OK : RPMRC_BADMAGIC);
-	    /* XXX rpmrc tests below need work */
+	    ts->verify_legacy = 0;
 
 	    (void) Fclose(fd);
 
@@ -711,7 +711,7 @@ restart:
       }	break;
 
     case RPMQV_ALL:
-	qva->qva_mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no packages\n"));
 	    res = 1;
@@ -730,7 +730,7 @@ restart:
 	break;
 
     case RPMQV_GROUP:
-	qva->qva_mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_GROUP, arg, 0);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO,
 		_("group %s does not contain any packages\n"), arg);
@@ -741,7 +741,7 @@ restart:
 	break;
 
     case RPMQV_TRIGGEREDBY:
-	qva->qva_mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_TRIGGERNAME, arg, 0);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, arg, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package triggers %s\n"), arg);
 	    res = 1;
@@ -751,7 +751,7 @@ restart:
 	break;
 
     case RPMQV_WHATREQUIRES:
-	qva->qva_mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_REQUIRENAME, arg, 0);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package requires %s\n"), arg);
 	    res = 1;
@@ -762,7 +762,7 @@ restart:
 
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/') {
-	    qva->qva_mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_PROVIDENAME, arg, 0);
+	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, arg, 0);
 	    if (qva->qva_mi == NULL) {
 		rpmError(RPMERR_QUERYINFO, _("no package provides %s\n"), arg);
 		res = 1;
@@ -793,7 +793,7 @@ restart:
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);
 
-	qva->qva_mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_BASENAMES, fn, 0);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
 	if (qva->qva_mi == NULL) {
 	    int myerrno = 0;
 	    if (access(fn, F_OK) != 0)
@@ -837,7 +837,7 @@ restart:
 	}
 	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
 	/* RPMDBI_PACKAGES */
-	qva->qva_mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
+	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERY,
 		_("record %u could not be read\n"), recOffset);
@@ -849,7 +849,7 @@ restart:
 
     case RPMQV_PACKAGE:
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
-	qva->qva_mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_LABEL, arg, 0);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    res = 1;
@@ -865,26 +865,24 @@ restart:
 
 int rpmcliQuery(QVA_t qva, const char ** argv)
 {
-    const char * rootDir = qva->qva_prefix;
-    rpmdb db = NULL;
-    rpmTransactionSet ts = NULL;
+    rpmTransactionSet ts;
     const char * arg;
     int ec = 0;
+
+    ts = rpmtransCreateSet(NULL, qva->qva_prefix);
+
+    if (qva->qva_showPackage == NULL)
+	qva->qva_showPackage = showQueryPackage;
 
     switch (qva->qva_source) {
     case RPMQV_RPM:
     case RPMQV_SPECFILE:
 	break;
     default:
-	if (rpmdbOpen(rootDir, &db, O_RDONLY, 0644))
+	if (rpmtsOpenDB(ts, O_RDONLY))
 	    return 1;	/* XXX W2DO? */
 	break;
     }
-
-    if (qva->qva_showPackage == NULL)
-	qva->qva_showPackage = showQueryPackage;
-
-    ts = rpmtransCreateSet(db, rootDir);
 
     if (qva->qva_source == RPMQV_ALL) {
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
@@ -898,10 +896,10 @@ int rpmcliQuery(QVA_t qva, const char ** argv)
 	}
     }
 
-    ts = rpmtransFree(ts);
-
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;
+
+    ts = rpmtransFree(ts);
 
     return ec;
 }

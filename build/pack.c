@@ -50,9 +50,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		fileSystem@*/
 	/*@modifies fdo, csa, rpmGlobalMacroContext, fileSystem @*/
 {
-    const char * rootDir = "/";
-    rpmdb rpmdb = NULL;
-    rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
+    rpmTransactionSet ts = rpmtransCreateSet(NULL, NULL);
     TFI_t fi = csa->cpioList;
     const char *failedFile = NULL;
     FD_t cfd;
@@ -317,19 +315,13 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     spec->packages->header = headerFree(spec->packages->header);
 
     /* Read the rpm lead, signatures, and header */
-    {	const char * rootDir = "";
-	rpmdb db = NULL;
-	rpmTransactionSet ts = rpmtransCreateSet(db, rootDir);
-	int xx;
+    {	rpmTransactionSet ts = rpmtransCreateSet(NULL, NULL);
 
-	ts->need_payload = 1;
 	/* XXX W2DO? pass fileName? */
 	/*@-mustmod@*/      /* LCL: segfault */
-	xx = rpmReadPackageFile(ts, fdi, "readRPM",
+	rc = rpmReadPackageFile(ts, fdi, "readRPM",
 			 &spec->packages->header);
 	/*@=mustmod@*/
-	ts->need_payload = 0;
-	rc = (xx ? RPMRC_FAIL : RPMRC_OK);	/* XXX HACK */
 
 	ts = rpmtransFree(ts);
 

@@ -952,9 +952,7 @@ int main(int argc, const char ** argv)
     case MODE_REBUILD:
     case MODE_RECOMPILE:
     {	const char * pkg;
-	const char * rootDir = "";
-	rpmdb db = NULL;
-	rpmTransactionSet ts = NULL;
+	rpmTransactionSet ts;
 
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
@@ -971,12 +969,7 @@ int main(int argc, const char ** argv)
 	    ba->buildAmount |= RPMBUILD_RMBUILD;
 	}
 
-        if (rpmdbOpen(rootDir, &db, O_RDONLY, 0644)) {
-	    ec = 1;
-	    break;
-	}
-	ts = rpmtransCreateSet(db, rootDir);
-
+	ts = rpmtransCreateSet(NULL, NULL);
 	while ((pkg = poptGetArg(optCon))) {
 	    const char * specFile = NULL;
 
@@ -993,8 +986,8 @@ int main(int argc, const char ** argv)
 	    if (ec)
 		/*@loopbreak@*/ break;
 	}
-
 	ts = rpmtransFree(ts);
+
     }	break;
 
     case MODE_BUILD:

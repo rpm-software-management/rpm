@@ -56,8 +56,7 @@ extern "C" {
 
 /**
  */
-typedef /*@only@*/ /*@null@*/
-    void * (*rpmCallbackFunction)
+typedef void * (*rpmCallbackFunction)
 		(/*@null@*/ const void * h, 
 		const rpmCallbackType what, 
 		const unsigned long amount, 

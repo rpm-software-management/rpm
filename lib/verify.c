@@ -581,11 +581,15 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 
 int rpmcliVerify(QVA_t qva, const char ** argv)
 {
-    const char * rootDir = qva->qva_prefix;
-    const char * arg;
-    rpmdb db = NULL;
     rpmTransactionSet ts;
+    const char * arg;
     int ec = 0;
+
+    ts = rpmtransCreateSet(NULL, qva->qva_prefix);
+
+    if (qva->qva_showPackage == NULL)
+        qva->qva_showPackage = showVerifyPackage;
+
 
     switch (qva->qva_source) {
     case RPMQV_RPM:
@@ -593,15 +597,10 @@ int rpmcliVerify(QVA_t qva, const char ** argv)
 	    break;
 	/*@fallthrough@*/
     default:
-	if (rpmdbOpen(rootDir, &db, O_RDONLY, 0644))
+	if (rpmtsOpenDB(ts, O_RDONLY))
 	    return 1;	/* XXX W2DO? */
 	break;
     }
-
-    if (qva->qva_showPackage == NULL)
-        qva->qva_showPackage = showVerifyPackage;
-
-    ts = rpmtransCreateSet(db, rootDir);
 
     if (qva->qva_source == RPMQV_ALL) {
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
@@ -615,10 +614,10 @@ int rpmcliVerify(QVA_t qva, const char ** argv)
 	}
     }
 
-    ts = rpmtransFree(ts);
-
     if (qva->qva_showPackage == showVerifyPackage)
         qva->qva_showPackage = NULL;
+
+    ts = rpmtransFree(ts);
 
     return ec;
 }

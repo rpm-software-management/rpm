@@ -32,7 +32,6 @@ static int
 do_tsort(const char *fileArgv[])
 {
     const char * rootdir = "/";
-    rpmdb rpmdb = NULL;
     rpmTransactionSet ts = NULL;
     const char ** pkgURL = NULL;
     char * pkgState = NULL;
@@ -53,16 +52,16 @@ do_tsort(const char *fileArgv[])
     if (fileArgv == NULL)
 	return 0;
 
-    rc = rpmdbOpen(rootdir, &rpmdb, O_RDONLY, 0644);
+    ts = rpmtransCreateSet(NULL, NULL);
+    if (!noChainsaw)
+	ts->transFlags = RPMTRANS_FLAG_CHAINSAW;
+
+    rc = rpmtsOpenDB(ts, O_RDONLY);
     if (rc) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open Packages database\n"));
 	rc = -1;
 	goto exit;
     }
-
-    ts = rpmtransCreateSet(rpmdb, rootdir);
-    if (!noChainsaw)
-	ts->transFlags = RPMTRANS_FLAG_CHAINSAW;
 
     /* Load all the available packages. */
     if (!(noDeps || noAvailable)) {
@@ -262,14 +261,14 @@ restart:
     rc = 0;
 
 exit:
-    if (ts) rpmtransFree(ts);
     for (i = 0; i < numPkgs; i++) {
         pkgURL[i] = _free(pkgURL[i]);
     }
     pkgState = _free(pkgState);
     pkgURL = _free(pkgURL);
     argv = _free(argv);
-    if (rpmdb) rpmdbClose(rpmdb);
+
+    ts = rpmtransFree(ts);
     return rc;
 }
 

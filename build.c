@@ -16,29 +16,17 @@
 
 /**
  */
-static int checkSpec(Header h)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
+static int checkSpec(rpmTransactionSet ts, Header h)
+	/*@globals fileSystem @*/
+	/*@modifies ts, h, fileSystem @*/
 {
-    const char * rootdir = NULL;
-    rpmdb db = NULL;
-    int mode = O_RDONLY;
-    rpmTransactionSet ts;
     rpmDependencyConflict conflicts;
     int numConflicts;
     int rc;
 
-    if (!headerIsEntry(h, RPMTAG_REQUIREFLAGS))
+    if (!headerIsEntry(h, RPMTAG_REQUIRENAME)
+     && !headerIsEntry(h, RPMTAG_CONFLICTNAME))
 	return 0;
-
-    if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	const char * dn;
-	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
-	rpmError(RPMERR_OPEN, _("cannot open rpm database in %s\n"), dn);
-	dn = _free(dn);
-	exit(EXIT_FAILURE);
-    }
-    ts = rpmtransCreateSet(db, rootdir);
 
     rc = rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
 
@@ -51,10 +39,6 @@ static int checkSpec(Header h)
 	rc = 1;
     }
     /*@=branchstate@*/
-
-    ts = rpmtransFree(ts);
-    if (db != NULL)
-	(void) rpmdbClose(db);
 
     return rc;
 }
@@ -105,10 +89,10 @@ static int isSpecFile(const char * specfile)
 
 /**
  */
-static int buildForTarget(const char * arg, BTA_t ba)
+static int buildForTarget(rpmTransactionSet ts, const char * arg, BTA_t ba)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;
@@ -276,7 +260,7 @@ static int buildForTarget(const char * arg, BTA_t ba)
     initSourceHeader(spec);
 
     /* Check build prerequisites */
-    if (!ba->noDeps && checkSpec(spec->sourceHeader)) {
+    if (!ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
 	rc = 1;
 	goto exit;
     }
@@ -298,14 +282,17 @@ exit:
 
 int build(const char * arg, BTA_t ba, const char * rcfile)
 {
+    rpmTransactionSet ts;
     char *t, *te;
     int rc = 0;
     char * targets = ba->targets;
 #define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
     int cleanFlags = ba->buildAmount & buildCleanMask;
 
+    ts = rpmtransCreateSet(NULL, NULL);
+
     if (targets == NULL) {
-	rc =  buildForTarget(arg, ba);
+	rc =  buildForTarget(ts, arg, ba);
 	goto exit;
     }
 
@@ -331,7 +318,7 @@ int build(const char * arg, BTA_t ba, const char * rcfile)
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
 	(void) rpmReadConfigFiles(rcfile, target);
-	rc = buildForTarget(arg, ba);
+	rc = buildForTarget(ts, arg, ba);
 	if (rc)
 	    break;
     }
@@ -340,5 +327,8 @@ exit:
     /* Restore original configuration. */
     rpmFreeMacros(NULL);
     (void) rpmReadConfigFiles(rcfile, NULL);
+
+    ts = rpmtransFree(ts);
+
     return rc;
 }

@@ -260,7 +260,7 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 	goto exit;
     }
 
-    if (ts->need_payload)	/* leave fd ready to install payload */
+    if (!ts->verify_legacy)	/* leave fd ready to install payload */
 	ts->sigtag = 0;
     else if (headerIsEntry(sig, RPMSIGTAG_GPG))
 	ts->sigtag = RPMSIGTAG_GPG;

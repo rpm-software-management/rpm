@@ -17,6 +17,7 @@
 #include "Python.h"
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
+#include "depends.h"	/* XXX for ts->rpmdb */
 #include "legacy.h"
 #include "misc.h"
 #include "header_internal.h"
@@ -1543,6 +1544,7 @@ static PyObject * rpmtransGetAttr(rpmtransObject * o, char * name) {
 static void rpmtransDealloc(PyObject * o) {
     rpmtransObject * trans = (void *) o;
 
+    trans->ts->rpmdb = NULL;	/* XXX HACK: avoid rpmdb close/free */
     rpmtransFree(trans->ts);
     if (trans->dbo) {
 	Py_DECREF(trans->dbo);
@@ -1619,9 +1621,10 @@ static PyObject * rpmtransCreate(PyObject * self, PyObject * args) {
     o = (void *) PyObject_NEW(rpmtransObject, &rpmtransType);
 
     Py_XINCREF(db);
-    o->dbo = db;
+    o->dbo = db;	/* XXX DYING: separate refcounts is bad craziness */
     o->scriptFd = NULL;
-    o->ts = rpmtransCreateSet(db ? db->db : NULL, rootPath);
+    o->ts = rpmtransCreateSet(NULL, rootPath);
+    o->ts->rpmdb = (db ? db->db : NULL);
     o->keyList = PyList_New(0);
 
     return (void *) o;

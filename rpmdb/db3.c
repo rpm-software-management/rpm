@@ -801,7 +801,7 @@ exit:
 }
 /*@=moduncon@*/
 
-static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
 	/*@modifies *dbip, fileSystem @*/

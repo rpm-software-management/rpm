@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmmacro.h>		/* XXX rpmGetPath */
 #include <rpmpgp.h>		/* XXX pgpFreeDig */
 
 #include "depends.h"
@@ -21,6 +22,9 @@
 /*@access rpmTransactionSet@*/
 /*@access rpmDependencyConflict@*/
 /*@access availableList@*/
+
+/*@unchecked@*/
+static int _debug = 0;
 
 /*@unchecked@*/
 static int _cacheDependsRC = 1;
@@ -205,8 +209,109 @@ static int dirInfoCompare(const void * one, const void * two)	/*@*/
 }
 
 /**
+ * Delete package from available list.
+ * @param al		available list
+ * @param pkgNnum	package index
+ */
+static void
+alDelPackage(availableList al, int pkgNum)
+	/*@modifies al @*/
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    struct availablePackage * p;
+
+    /*@-nullptrarith@*/ /* FIX: al->list might be NULL */
+    p = al->list + pkgNum;
+    /*@=nullptrarith@*/
+
+/*@-modfilesys@*/
+if (_debug)
+fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->version, p->release);
+/*@=modfilesys@*/
+
+    if (p->relocs) {
+	rpmRelocation * r;
+	for (r = p->relocs; r->oldPath || r->newPath; r++) {
+	    r->oldPath = _free(r->oldPath);
+	    r->newPath = _free(r->newPath);
+	}
+	p->relocs = _free(p->relocs);
+    }
+    if (p->fd) {
+	/*@-type@*/ /* FIX: cast? */
+	(void) fdFree(p->fd, "alDelPackage");
+	/*@=type@*/
+	p->fd = NULL;
+    }
+
+    if (p->baseNames != NULL && p->filesCount > 0) {
+	int origNumDirs = al->numDirs;
+	const char ** dirNames;
+	int_32 numDirs;
+	rpmTagType dnt;
+	int dirNum;
+	struct dirInfo_s dirNeedle;
+	dirInfo dirMatch;
+	int last;
+	int i, xx;
+
+	xx = hge(p->h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
+
+	/* XXX FIXME: We ought to relocate the directory list here */
+
+	if (al->dirs != NULL)
+	for (dirNum = al->numDirs - 1; dirNum >= 0; dirNum--) {
+	    dirNeedle.dirName = (char *) dirNames[dirNum];
+	    dirNeedle.dirNameLen = strlen(dirNames[dirNum]);
+	    dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
+			       sizeof(dirNeedle), dirInfoCompare);
+	    if (dirMatch == NULL)
+		continue;
+	    last = dirMatch->numFiles;
+	    for (i = dirMatch->numFiles - 1; i >= 0; i--) {
+		if (dirMatch->files[i].pkgNum != pkgNum)
+		    /*@innercontinue@*/ continue;
+		dirMatch->numFiles--;
+		if (i > dirMatch->numFiles)
+		    /*@innercontinue@*/ continue;
+		memmove(dirMatch->files, dirMatch->files+1,
+			(dirMatch->numFiles - i));
+	    }
+	    if (dirMatch->numFiles > 0) {
+		if (last > i)
+		    dirMatch->files = xrealloc(dirMatch->files,
+			dirMatch->numFiles * sizeof(*dirMatch->files));
+		continue;
+	    }
+	    dirMatch->files = _free(dirMatch->files);
+	    dirMatch->dirName = _free(dirMatch->dirName);
+	    al->numDirs--;
+	    if (dirNum > al->numDirs)
+		continue;
+	    memmove(dirMatch, dirMatch+1, (al->numDirs - dirNum));
+	}
+
+	if (origNumDirs > al->numDirs) {
+	    if (al->numDirs > 0)
+		al->dirs = xrealloc(al->dirs, al->numDirs * sizeof(*al->dirs));
+	    else
+		al->dirs = _free(al->dirs);
+	}
+
+	dirNames = hfd(dirNames, dnt);
+    }
+    p->h = headerFree(p->h);
+    memset(p, 0, sizeof(*p));
+    /*@-nullstate@*/ /* FIX: al->list->h may be NULL */
+    return;
+    /*@=nullstate@*/
+}
+
+/**
  * Add package to available list.
  * @param al		available list
+ * @param pkgNnum	package index, < 0 to force an append
  * @param h		package header
  * @param key		package private data
  * @param fd		package file handle
@@ -214,7 +319,7 @@ static int dirInfoCompare(const void * one, const void * two)	/*@*/
  * @return		available package pointer
  */
 static /*@exposed@*/ struct availablePackage *
-alAddPackage(availableList al,
+alAddPackage(availableList al, int pkgNum,
 		Header h, /*@null@*/ /*@dependent@*/ const void * key,
 		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
 	/*@modifies al, h @*/
@@ -223,34 +328,33 @@ alAddPackage(availableList al,
     HFD_t hfd = headerFreeData;
     rpmTagType dnt, bnt;
     struct availablePackage * p;
-    rpmRelocation * r;
     int i, xx;
-    int_32 * dirIndexes;
-    const char ** dirNames;
-    int numDirs, dirNum;
-    int * dirMapping;
-    struct dirInfo_s dirNeedle;
-    dirInfo dirMatch;
-    int first, last, fileNum;
-    int origNumDirs;
-    int pkgNum;
     uint_32 multiLibMask = 0;
-    uint_32 * fileFlags = NULL;
     uint_32 * pp = NULL;
 
-    if (al->size == al->alloced) {
-	al->alloced += al->delta;
-	al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);
+    if (pkgNum >= 0 && pkgNum < al->size) {
+	alDelPackage(al, pkgNum);
+    } else {
+	if (al->size == al->alloced) {
+	    al->alloced += al->delta;
+	    al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);
+	}
+	pkgNum = al->size++;
     }
 
-    pkgNum = al->size++;
     p = al->list + pkgNum;
+
     p->h = headerLink(h);	/* XXX reference held by transaction set */
     p->depth = p->npreds = 0;
     memset(&p->tsi, 0, sizeof(p->tsi));
     p->multiLib = 0;	/* MULTILIB */
 
     xx = headerNVR(p->h, &p->name, &p->version, &p->release);
+
+/*@-modfilesys@*/
+if (_debug)
+fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->version, p->release);
+/*@=modfilesys@*/
 
     /* XXX This should be added always so that packages look alike.
      * XXX However, there is logic in files.c/depends.c that checks for
@@ -274,7 +378,8 @@ alAddPackage(availableList al,
 	p->epoch = NULL;
 
     if (!hge(h, RPMTAG_PROVIDENAME, NULL, (void **) &p->provides,
-	&p->providesCount)) {
+		&p->providesCount))
+    {
 	p->providesCount = 0;
 	p->provides = NULL;
 	p->providesEVR = NULL;
@@ -308,6 +413,16 @@ alAddPackage(availableList al,
 	p->filesCount = 0;
 	p->baseNames = NULL;
     } else {
+	int_32 * dirIndexes;
+	const char ** dirNames;
+	int_32 numDirs;
+	uint_32 * fileFlags = NULL;
+	int * dirMapping;
+	struct dirInfo_s dirNeedle;
+	dirInfo dirMatch;
+	int first, last, fileNum, dirNum;
+	int origNumDirs;
+
 	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
 	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
 	xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
@@ -318,8 +433,8 @@ alAddPackage(availableList al,
 
 	/* allocated enough space for all the directories we could possible
 	   need to add */
-	al->dirs = xrealloc(al->dirs, 
-			    sizeof(*al->dirs) * (al->numDirs + numDirs));
+	al->dirs = xrealloc(al->dirs,
+			(al->numDirs + numDirs) * sizeof(*al->dirs));
 	origNumDirs = al->numDirs;
 
 	for (dirNum = 0; dirNum < numDirs; dirNum++) {
@@ -331,29 +446,27 @@ alAddPackage(availableList al,
 		dirMapping[dirNum] = dirMatch - al->dirs;
 	    } else {
 		dirMapping[dirNum] = al->numDirs;
-		al->dirs[al->numDirs].dirName = xstrdup(dirNames[dirNum]);
-		al->dirs[al->numDirs].dirNameLen = strlen(dirNames[dirNum]);
-		al->dirs[al->numDirs].files = NULL;
-		al->dirs[al->numDirs].numFiles = 0;
+		dirMatch = al->dirs + al->numDirs;
+		dirMatch->dirName = xstrdup(dirNames[dirNum]);
+		dirMatch->dirNameLen = strlen(dirNames[dirNum]);
+		dirMatch->files = NULL;
+		dirMatch->numFiles = 0;
 		al->numDirs++;
 	    }
 	}
 
 	dirNames = hfd(dirNames, dnt);
 
-	first = 0;
-	while (first < p->filesCount) {
-	    last = first;
-	    while ((last + 1) < p->filesCount) {
+	for (first = 0; first < p->filesCount; first = last + 1) {
+	    for (last = first; (last + 1) < p->filesCount; last++) {
 		if (dirIndexes[first] != dirIndexes[last + 1])
 		    /*@innerbreak@*/ break;
-		last++;
 	    }
 
 	    dirMatch = al->dirs + dirMapping[dirIndexes[first]];
 	    dirMatch->files = xrealloc(dirMatch->files,
-		sizeof(*dirMatch->files) * 
-		    (dirMatch->numFiles + last - first + 1));
+		    (dirMatch->numFiles + last - first + 1) *
+			sizeof(*dirMatch->files));
 	    if (p->baseNames != NULL)	/* XXX can't happen */
 	    for (fileNum = first; fileNum <= last; fileNum++) {
 		dirMatch->files[dirMatch->numFiles].baseName =
@@ -363,8 +476,6 @@ alAddPackage(availableList al,
 				fileFlags[fileNum];
 		dirMatch->numFiles++;
 	    }
-
-	    first = last + 1;
 	}
 
 	if (origNumDirs + al->numDirs)
@@ -378,6 +489,8 @@ alAddPackage(availableList al,
     /*@=type@*/
 
     if (relocs) {
+	rpmRelocation * r;
+
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
 	    {};
 	p->relocs = xmalloc((i + 1) * sizeof(*p->relocs));
@@ -427,7 +540,7 @@ static void alMakeIndex(availableList al)
 
     if (ai->size || al->list == NULL) return;
 
-    for (i = 0; i < al->size; i++) 
+    for (i = 0; i < al->size; i++)
 	ai->size += al->list[i].providesCount;
 
     if (ai->size) {
@@ -670,6 +783,48 @@ int headerMatchesDepFlags(Header h,
 
     return rpmRangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
 }
+/*@-modfilesystem@*/
+int rpmtsCloseDB(rpmTransactionSet ts)
+{
+    int rc = 0;
+
+    if (ts->rpmdb != NULL) {
+	rc = rpmdbClose(ts->rpmdb);
+	ts->rpmdb = NULL;
+    }
+    return rc;
+}
+
+int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
+{
+    int rc = 0;
+
+    if (ts->rpmdb != NULL) {
+	if ((rc = rpmtsCloseDB(ts)) != 0)
+	    return rc;
+    }
+
+    ts->dbmode = dbmode;
+    rc = rpmdbOpen(ts->rootDir, &ts->rpmdb, ts->dbmode, 0644);
+    if (rc) {
+	const char * dn;
+	/*@-globs -mods@*/ /* FIX: rpmGlobalMacroContext */
+	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
+	/*@=globs =mods@*/
+	rpmMessage(RPMMESS_ERROR,
+			_("cannot open Packages database in %s\n"), dn);
+	dn = _free(dn);
+    }
+    return rc;
+}
+
+rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
+			const void * keyp, size_t keylen)
+{
+    /*@-mods -onlytrans -type@*/ /* FIX: rpmdb excision */
+    return rpmdbInitIterator(ts->rpmdb, rpmtag, keyp, keylen);
+    /*@=mods =onlytrans =type@*/
+}
 
 rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
 {
@@ -684,9 +839,15 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->filesystemCount = 0;
     ts->filesystems = NULL;
     ts->di = NULL;
-    /*@-assignexpose@*/
-    ts->rpmdb = db;
-    /*@=assignexpose@*/
+    if (db != NULL) {
+	/*@-assignexpose@*/
+	ts->rpmdb = rpmdbLink(db);
+	/*@=assignexpose@*/
+	ts->dbmode = db->db_mode;
+    } else {
+	ts->rpmdb = NULL;
+	ts->dbmode = O_RDONLY;
+    }
     ts->scriptFd = NULL;
     ts->id = (int_32) time(NULL);
     ts->delta = 5;
@@ -707,7 +868,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
 	rootDir = t;
     }
 
-    ts->rootDir = xstrdup(rootDir);
+    ts->rootDir = (rootDir != NULL ? xstrdup(rootDir) : xstrdup(""));
     ts->currDir = NULL;
     ts->chrootDone = 0;
 
@@ -782,63 +943,116 @@ static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
     return 0;
 }
 
+static /*@only@*/ const char * hNVRstr(Header h, /*@out@*/ const char ** np )
+	/*@modifies *np @*/
+{
+    const char * NVR, * n, * v, * r;
+    char * t;
+
+    (void) headerNVR(h, &n, &v, &r);
+    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
+    t = stpcpy(t, n);
+    t = stpcpy(t, "-");
+    t = stpcpy(t, v);
+    t = stpcpy(t, "-");
+    t = stpcpy(t, r);
+    if (np)
+	*np = n;
+    return NVR;
+}
+
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 			const void * key, int upgrade, rpmRelocation * relocs)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
+    const char * name = NULL;
+    const char * addNVR = hNVRstr(h, &name);
+    const char * pkgNVR = NULL;
     rpmTagType ont, ovt;
-    /* this is an install followed by uninstalls */
-    const char * name;
+    struct availablePackage * p;
     int count;
     const char ** obsoletes;
     int alNum;
     int xx;
+    int ec = 0;
+    int rc;
+    int i = ts->orderCount;
 
     /*
-     * FIXME: handling upgrades like this is *almost* okay. It doesn't
-     * check to make sure we're upgrading to a newer version, and it
-     * makes it difficult to generate a return code based on the number of
-     * packages which failed.
+     * Check for previously added versions with the same name.
      */
-    if (ts->orderCount == ts->orderAlloced) {
-	ts->orderAlloced += ts->delta;
-	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
+    i = ts->orderCount;
+    if (ts->addedPackages.list != NULL)
+    for (i = 0; i < ts->orderCount; i++) {
+	p = ts->addedPackages.list + i;
+	if (strcmp(p->name, name))
+	    continue;
+	rc = rpmVersionCompare(p->h, h);
+	pkgNVR = hNVRstr(p->h, NULL);
+	if (rc > 0) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("newer package %s already added, skipping %s\n"),
+		pkgNVR, addNVR);
+	    goto exit;
+	} else if (rc == 0) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("package %s already added, ignoring\n"),
+		pkgNVR);
+	    goto exit;
+	} else {
+	    rpmMessage(RPMMESS_WARNING,
+		_("older package %s already added, replacing with %s\n"),
+		pkgNVR, addNVR);
+	}
+	break;
     }
-    ts->order[ts->orderCount].type = TR_ADDED;
+
+    /* XXX i == ts->orderCount most of the time. */
+
+    if (i == ts->orderAlloced) {
+	ts->orderAlloced += ts->delta;
+	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
+    }
+    ts->order[i].type = TR_ADDED;
     if (ts->addedPackages.list == NULL)
-	return 0;
+	goto exit;
 
-    alNum = alAddPackage(&ts->addedPackages, h, key, fd, relocs) -
+    alNum = alAddPackage(&ts->addedPackages, i, h, key, fd, relocs) -
     		ts->addedPackages.list;
-    ts->order[ts->orderCount++].u.addedIndex = alNum;
+    ts->order[i].u.addedIndex = alNum;
 
-    /*@-branchstate@*/
-    if (!upgrade || ts->rpmdb == NULL)
-	return 0;
-    /*@=branchstate@*/
+    if (i == ts->orderCount)
+	ts->orderCount++;
+
+    if (!upgrade)
+	goto exit;
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
-	return 0;
+	goto exit;
 
-    xx = headerNVR(h, &name, NULL, NULL);
+    /* Do lazy, readonly, open of rpm database. */
+    if (ts->rpmdb == NULL) {
+	if ((ec = rpmtsOpenDB(ts, ts->dbmode)) != 0)
+	    goto exit;
+    }
 
     {	rpmdbMatchIterator mi;
 	Header h2;
 
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, name, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
 	    /*@-branchstate@*/
 	    if (rpmVersionCompare(h, h2))
 		xx = removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 	    else {
-		uint_32 *p, multiLibMask = 0, oldmultiLibMask = 0;
+		uint_32 *pp, multiLibMask = 0, oldmultiLibMask = 0;
 
-		if (hge(h2, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL))
-		    oldmultiLibMask = *p;
-		if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL))
-		    multiLibMask = *p;
+		if (hge(h2, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
+		    oldmultiLibMask = *pp;
+		if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
+		    multiLibMask = *pp;
 		if (oldmultiLibMask && multiLibMask
 		    && !(oldmultiLibMask & multiLibMask)) {
 		    ts->addedPackages.list[alNum].multiLib = multiLibMask;
@@ -868,7 +1082,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	  { rpmdbMatchIterator mi;
 	    Header h2;
 
-	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, obsoletes[j], 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, obsoletes[j], 0);
 
 	    xx = rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
@@ -894,14 +1108,18 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	obsoletesEVR = hfd(obsoletesEVR, ovt);
 	obsoletes = hfd(obsoletes, ont);
     }
+    ec = 0;
 
-    return 0;
+exit:
+    pkgNVR = _free(pkgNVR);
+    addNVR = _free(addNVR);
+    return ec;
 }
 
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, const void * key)
 {
     struct availablePackage * al;
-    al = alAddPackage(&ts->availablePackages, h, key, NULL, NULL);
+    al = alAddPackage(&ts->availablePackages, -1, h, key, NULL, NULL);
 }
 
 int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
@@ -942,13 +1160,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 
 	rpmtransClean(ts);
 
-	if (ts->rpmdb) {
-	    int xx;
-	    /*@-kepttrans@*/
-	    xx = rpmdbClose(ts->rpmdb);
-	    ts->rpmdb = NULL;
-	    /*@=kepttrans@*/
-	}
+	(void) rpmtsCloseDB(ts);
 
 	ts = _free(ts);
     }
@@ -1310,7 +1522,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	if (*keyName == '/') {
 	    /* keyFlags better be 0! */
 
-	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_BASENAMES, keyName, 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, keyName, 0);
 
 	    (void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
@@ -1324,7 +1536,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	    mi = rpmdbFreeIterator(mi);
 	}
 
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_PROVIDENAME, keyName, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, keyName, 0);
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
@@ -1338,7 +1550,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	mi = rpmdbFreeIterator(mi);
 
 #if defined(DYING) || defined(__LCLINT__)
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, keyName, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_NAME, keyName, 0);
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
@@ -1617,7 +1829,7 @@ static int checkDependentPackages(rpmTransactionSet ts,
 	/*@modifies ts, psp, fileSystem @*/
 {
     rpmdbMatchIterator mi;
-    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_REQUIRENAME, key, 0);
+    mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, key, 0);
     return checkPackageSet(ts, psp, key, mi);
 }
 
@@ -1637,7 +1849,7 @@ static int checkDependentConflicts(rpmTransactionSet ts,
 
     if (ts->rpmdb) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_CONFLICTNAME, key, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, key, 0);
 	rc = checkPackageSet(ts, psp, key, mi);
     }
 
@@ -1680,7 +1892,7 @@ static struct badDeps_s {
     { "pam", "pamconfig" },
     { NULL, NULL }
 };
-    
+
 static int ignoreDep(const struct availablePackage * p,
 		const struct availablePackage * q)
 	/*@*/
@@ -2227,10 +2439,18 @@ int rpmdepCheck(rpmTransactionSet ts,
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
     struct availablePackage * p;
-    problemsSet ps;
+    problemsSet ps = NULL;
     int npkgs;
+    int closeatexit = 0;
     int i, j, xx;
     int rc;
+
+    /* Do lazy, readonly, open of rpm database. */
+    if (ts->rpmdb == NULL) {
+	if ((rc = rpmtsOpenDB(ts, ts->dbmode)) != 0)
+	    goto exit;
+	closeatexit = 1;
+    }
 
     npkgs = ts->addedPackages.size;
 
@@ -2284,7 +2504,7 @@ int rpmdepCheck(rpmTransactionSet ts,
      */
     /*@-branchstate@*/
     if (ts->numRemovedPackages > 0) {
-      mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
+      mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
       xx = rpmdbAppendIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages);
       while ((h = rpmdbNextIterator(mi)) != NULL) {
@@ -2336,7 +2556,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 				NULL);
 		rc = 0;
 		for (j = 0; j < fileCount; j++) {
-		    len = strlen(baseNames[j]) + 1 + 
+		    len = strlen(baseNames[j]) + 1 +
 			  strlen(dirNames[dirIndexes[j]]);
 		    if (len > fileAlloced) {
 			fileAlloced = len * 2;
@@ -2373,10 +2593,14 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 exit:
     mi = rpmdbFreeIterator(mi);
-    ps->problems = _free(ps->problems);
-    ps = _free(ps);
+    if (ps) {
+	ps->problems = _free(ps->problems);
+	ps = _free(ps);
+    }
     /*@-branchstate@*/
-    if (_cacheDependsRC)
+    if (closeatexit)
+	xx = rpmtsCloseDB(ts);
+    else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
     /*@=branchstate@*/
     return rc;

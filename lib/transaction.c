@@ -406,7 +406,6 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 {
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    rpmdb db = ts->rpmdb;
     rpmProblemSet probs = ts->probs;
     rpmtransFlags transFlags = ts->transFlags;
     rpmTagType oltype, omtype;
@@ -423,7 +422,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 
     rpmdbMatchIterator mi;
 
-    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &shared->otherPkg, sizeof(shared->otherPkg));
+    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &shared->otherPkg, sizeof(shared->otherPkg));
     h = rpmdbNextIterator(mi);
     if (h == NULL) {
 	mi = rpmdbFreeIterator(mi);
@@ -503,17 +502,16 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 static int handleRmvdInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 		struct sharedFileInfo * shared, int sharedCount)
 	/*@globals fileSystem @*/
-	/*@modifies ts, fi, fileSystem @*/
+	/*@modifies fi, fileSystem @*/
 {
     HGE_t hge = fi->hge;
-    rpmdb db = ts->rpmdb;
     Header h;
     const char * otherStates;
     int i, xx;
    
     rpmdbMatchIterator mi;
 
-    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES,
+    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 			&shared->otherPkg, sizeof(shared->otherPkg));
     h = rpmdbNextIterator(mi);
     if (h == NULL) {
@@ -1178,7 +1176,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    rpmdbMatchIterator mi;
 	    Header oldH;
-	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, alp->name, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
 		xx = ensureOlder(alp, oldH, ts->probs);
 	    mi = rpmdbFreeIterator(mi);
@@ -1187,7 +1185,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/* XXX multilib should not display "already installed" problems */
 	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !alp->multiLib) {
 	    rpmdbMatchIterator mi;
-	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, alp->name, 0);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION,
 			RPMMIRE_DEFAULT, alp->version);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE,
@@ -1212,7 +1210,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	Header h;
 	int fileCount;
 
-	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
+	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
 	xx = rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
@@ -1259,7 +1257,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    /* Retrieve erased package header from the database. */
 	    {	rpmdbMatchIterator mi;
 
-		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
+		mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
 		if ((fi->h = rpmdbNextIterator(mi)) != NULL)
 		    fi->h = headerLink(fi->h);
@@ -1546,19 +1544,11 @@ assert(alp == fi->ap);
 
 		    h = headerFree(h);
 
-#ifdef	DYING
 		    /*@-mustmod@*/	/* LCL: segfault */
-		    rpmrc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
+		    rpmrc = rpmReadPackageFile(ts, alp->fd,
+				"rpmRunTransactions", &h);
 		    /*@=mustmod@*/
-#else
-		    /* XXX Leave fd positioned at payload. */
-		    ts->need_payload = 1;
-		    /*@-mustmod@*/	/* LCL: segfault */
-		    xx = rpmReadPackageFile(ts, alp->fd, "rpmRunTransactions", &h);
-		    /*@=mustmod@*/
-		    ts->need_payload = 0;
-		    rpmrc = (xx ? RPMRC_FAIL : RPMRC_OK);      /* XXX HACK */
-#endif
+
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon @*/ /* FIX: check rc */
 			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,

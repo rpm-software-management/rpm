@@ -61,7 +61,7 @@ struct headerToken {
 #define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
 #define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
-/*@refs@*/ int nrefs;	/*!< Reference count. */
+/*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 
 /** \ingroup header
