@@ -479,6 +479,8 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
     }
 
     /* XXX WARNING: nothing below can access *p as t->order may be realloc'd */
+    name = p->name;
+
     {	rpmdbMatchIterator mi;
 	Header h2;
 
@@ -507,7 +509,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
     }
 
     p = ts->order + oc;
-    name = p->name;
     obsoletes = rpmdsLink(p->obsoletes, "Obsoletes");
     obsoletes = dsiInit(p->obsoletes);
     if (obsoletes != NULL)

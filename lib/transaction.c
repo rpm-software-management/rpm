@@ -862,28 +862,16 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     dff = alloca(dc * sizeof(*dff));
     memset(dff, 0, dc * sizeof(*dff));
 
-#ifdef	DYING
-    for (i = 0; i < fi->fc; i++)
-#else
     if ((fi = tfiInit(fi, 0)) != NULL)
     while ((i = tfiNext(fi)) >= 0)
-#endif
     {
 	char **nsp;
 
-#ifdef	DYING
-	bn = fi->bnl[i];
-	bnlen = strlen(bn);
-	ix = fi->dil[i];
-	dn = fi->dnl[ix];
-	dnlen = strlen(dn);
-#else
 	bn = tfiGetBN(fi);
 	bnlen = strlen(bn);
 	ix = tfiGetDX(fi);
 	dn = tfiGetDN(fi);
 	dnlen = strlen(dn);
-#endif
 	if (dn == NULL)
 	    continue;	/* XXX can't happen */
 
@@ -990,13 +978,8 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	}
 
 	/* If explicitly included in the package, skip the directory. */
-#ifdef	DYING
-	for (i = 0; i < fi->fc; i++)
-#else
 	if ((fi = tfiInit(fi, 0)) != NULL)
-	while ((i = tfiNext(fi)) >= 0)
-#endif
-	{
+	while ((i = tfiNext(fi)) >= 0) {
 	    const char * dir;
 
 	    if (XFA_SKIPPING(fi->actions[i]))
@@ -1302,13 +1285,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
 	/*@-branchstate@*/
-#ifdef	DYING
-	for (i = 0; i < fi->fc; i++)
-#else
  	if ((fi = tfiInit(fi, 0)) != NULL)
-	while ((i = tfiNext(fi)) >= 0)
-#endif
-	{
+	while ((i = tfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@innercontinue@*/ continue;
 	    /*@-dependenttrans@*/
@@ -1352,24 +1330,15 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
 
 	numShared = 0;
-#ifdef	DYING
-	for (i = 0; i < fi->fc; i++)
-#else
  	if ((fi = tfiInit(fi, 0)) != NULL)
 	while ((i = tfiNext(fi)) >= 0)
-#endif
 	    numShared += dbiIndexSetCount(matches[i]);
 
 	/* Build sorted file info list for this package. */
 	shared = sharedList = xcalloc((numShared + 1), sizeof(*sharedList));
 
-#ifdef DYING
-	for (i = 0; i < fi->fc; i++)
-#else
  	if ((fi = tfiInit(fi, 0)) != NULL)
-	while ((i = tfiNext(fi)) >= 0)
-#endif
-	{
+	while ((i = tfiNext(fi)) >= 0) {
 	    /*
 	     * Take care not to mark files as replaced in packages that will
 	     * have been removed before we will get here.
