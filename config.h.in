@@ -1,0 +1,22 @@
+#ifndef H_CONFIG
+#define H_CONFIG
+
+/* Define as 1 if you have <netinet/in_systm.h> */
+#define HAVE_NETINET_IN_SYSTM_H 0
+
+/* Define as 1 if you have <alloca.h> */
+#define HAVE_ALLOCA_H 0
+
+/* Define as 1 if you have <machine/types.h> */
+#define MACHINE_TYPES_H 0
+
+/* Define as 1 if you have <glob.h> */
+#define HAVE_GLOB_H 0
+
+/* Define as 1 if you have <fnmatch.h> */
+#define HAVE_FNMATCH_H 0
+
+/* Define as 1 if you have <libintl.h.h> */
+#define HAVE_LIBINTL_H 0
+
+#endif
