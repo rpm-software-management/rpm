@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     readLead(fd, &lead);
     rpmReadSignature(fd, NULL, lead.signature_type);
     hd = headerRead(fd, (lead.major >= 3) ?
-		    HEADER_MAGIC_NO : HEADER_MAGIC_NO);
+		    HEADER_MAGIC_YES : HEADER_MAGIC_NO);
 
     while ((ct = read(fd, &buffer, 1024))) {
 	write(1, &buffer, ct);
