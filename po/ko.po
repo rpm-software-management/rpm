@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-26 10:44-0400\n"
+"POT-Creation-Date: 2001-09-29 13:34-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3327,127 +3327,127 @@ msgstr "알 수 없는 시스템: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com 으로 연락주시기 바랍니다\n"
 
-#: lib/signature.c:122
+#: lib/signature.c:123
 msgid "file is not regular -- skipping size check\n"
 msgstr "파일이 올바르지(regular) 않습니다 -- 용량 검사를 생략합니다\n"
 
-#: lib/signature.c:130
+#: lib/signature.c:131
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "예상(Expected) 용량: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 
-#: lib/signature.c:134
+#: lib/signature.c:135
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr " 실제 용량: %12d\n"
 
-#: lib/signature.c:154
+#: lib/signature.c:155
 msgid "No signature\n"
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:158
+#: lib/signature.c:159
 msgid "Old PGP signature\n"
 msgstr "이전 PGP 서명\n"
 
-#: lib/signature.c:169
+#: lib/signature.c:170
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "이전 (내부-용) 서명!  어떻게 얻으셨습니까!?\n"
 
-#: lib/signature.c:223
+#: lib/signature.c:224
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/signature.c:283
+#: lib/signature.c:284
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "pgp (%s) (을)를 실행할 수 없습니다\n"
 
-#: lib/signature.c:296
+#: lib/signature.c:297
 msgid "pgp failed\n"
 msgstr "pgp에 실패함\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:303
+#: lib/signature.c:304
 msgid "pgp failed to write signature\n"
 msgstr "pgp 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:308
+#: lib/signature.c:309
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 서명 용량: %d\n"
 
-#: lib/signature.c:321 lib/signature.c:403
+#: lib/signature.c:322 lib/signature.c:404
 msgid "unable to read the signature\n"
 msgstr "서명을 읽을 수 없습니다\n"
 
-#: lib/signature.c:326
+#: lib/signature.c:327
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "%d 바이트의 PGP 서명을 얻었습니다\n"
 
-#: lib/signature.c:365 lib/signature.c:753
+#: lib/signature.c:366 lib/signature.c:760
 msgid "Couldn't exec gpg\n"
 msgstr "gpg를 실행할 수 없습니다\n"
 
-#: lib/signature.c:378
+#: lib/signature.c:379
 msgid "gpg failed\n"
 msgstr "gpg에 실패함\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:385
+#: lib/signature.c:386
 msgid "gpg failed to write signature\n"
 msgstr "gpg 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:390
+#: lib/signature.c:391
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 서명 용량: %d\n"
 
-#: lib/signature.c:408
+#: lib/signature.c:409
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 
-#: lib/signature.c:436
+#: lib/signature.c:437
 msgid "Generating signature using PGP.\n"
 msgstr "PGP를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:442
+#: lib/signature.c:443
 msgid "Generating signature using GPG.\n"
 msgstr "GPG를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:525 lib/signature.c:600
+#: lib/signature.c:526 lib/signature.c:604
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "pgp를 실행할 수 없습니다.  PGP 검사를 생략하시려면, --nopgp 옵션을 이용하십시"
 "요.\n"
 
-#: lib/signature.c:690
+#: lib/signature.c:697
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "gpg를 실행할 수 없습니다.  GPG 검사를 생략하시려면, --nogpg 옵션을 이용하십시"
 "요.\n"
 
-#: lib/signature.c:782
+#: lib/signature.c:789
 msgid "Couldn't exec pgp\n"
 msgstr "pgp를 실행할 수 없습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:786 lib/signature.c:839
+#: lib/signature.c:793 lib/signature.c:846
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일에 부적합한 %%_signature의 내용이 있습니다\n"
 
-#: lib/signature.c:819
+#: lib/signature.c:826
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_gpg_name\" 을 설정해 주셔야 합니다\n"
 
-#: lib/signature.c:831
+#: lib/signature.c:838
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_pgp_name\" 을 설정해 주셔야 합니다\n"

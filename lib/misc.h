@@ -12,9 +12,7 @@
 #include "header.h"
 #include "ugid.h"
 
-typedef unsigned char byte;
-typedef unsigned int uint32;
-typedef int (*md5func)(const char * fn, /*@out@*/ byte * digest);
+typedef int (*md5func)(const char * fn, /*@out@*/ unsigned char * digest);
 
 #ifdef __cplusplus
 extern "C" {

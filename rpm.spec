@@ -514,6 +514,8 @@ fi
 - loosely wire beecrypt library into rpm.
 - drop rpmio/base64.[ch] in favor of beecrypt versions.
 - drop lib/md5*.[ch] files in favor of beecrypt.
-- legacy: drop brokenMD5 support (rrpm-2.3.3 to rpm-2.3.8 on sparc).
+- legacy: drop brokenMD5 support (rpm-2.3.3 to rpm-2.3.8 on sparc).
 - eliminate DYING code.
 - bind beecrypt md5/sha1 underneath rpmio.
+- create RFC-2440 OpenPGP API in rpmio.
+- display signature packets before exec'ing gpg/pgp when verifying.

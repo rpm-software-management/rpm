@@ -50,19 +50,19 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 	/*@modifies kp, rgc @*/;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int rsakpInit(rsakp* kp)
 	/*@modifies kp @*/;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int rsakpFree(rsakp* kp)
 	/*@modifies kp @*/;
 

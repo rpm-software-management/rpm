@@ -77,6 +77,7 @@ typedef enum rpmParseState_e {
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*@-redecl@*/
 
 /** \ingroup rpmbuild
  * Destroy uid/gid caches.
@@ -90,7 +91,7 @@ void freeNames(void)
  * @param		user id
  * @return		cached user name
  */
-/*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
+extern /*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return cached user name.
@@ -98,7 +99,7 @@ void freeNames(void)
  * @param		user name
  * @return		cached user name
  */
-/*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
+extern /*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return cached user id.
@@ -114,7 +115,7 @@ uid_t getUidS(const char * uname)	/*@*/;
  * @param		group id
  * @return		cached group name
  */
-/*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
+extern /*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
 
 /** \ingroup rpmbuild
  * Return cached group name.
@@ -122,7 +123,7 @@ uid_t getUidS(const char * uname)	/*@*/;
  * @param		group name
  * @return		cached group name
  */
-/*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
+extern /*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return cached group id.
@@ -136,13 +137,13 @@ gid_t getGidS(const char * gname)	/*@*/;
  * Return build hostname.
  * @return		build hostname
  */
-/*@observer@*/ const char * const buildHost(void)	/*@*/;
+extern /*@observer@*/ const char * const buildHost(void)	/*@*/;
 
 /** \ingroup rpmbuild
  * Return build time stamp.
  * @return		build time stamp
  */
-/*@observer@*/ int_32 * const getBuildTime(void)	/*@*/;
+extern /*@observer@*/ int_32 * const getBuildTime(void)	/*@*/;
 
 /** \ingroup rpmbuild
  * Read next line from spec file.
@@ -495,6 +496,7 @@ int packageSources(Spec spec)
 		spec->sourceRpmName,
 		fileSystem @*/;
 
+/*@=redecl@*/
 #ifdef __cplusplus
 }
 #endif

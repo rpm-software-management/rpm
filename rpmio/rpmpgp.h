@@ -12,6 +12,14 @@
 
 #include "beecrypt.h"
 
+/*@-typeuse -fielduse@*/
+/**
+ */
+typedef const struct pgpValTbl_s {
+    int val;
+    const char * str;
+} * pgpValTbl;
+ 
 /**
  * 4.3. Packet Tags
  * 
@@ -19,27 +27,32 @@
  * old format headers can only have tags less than 16, whereas new
  * format headers can have tags as great as 63.
  */
-typedef enum pgpKeyPkt_e {
-    PGPKEYPKT_RESERVED		=  0, /*!< Reserved/Invalid */
-    PGPKEYPKT_PUBLIC_SESSION_KEY=  1, /*!< Public-Key Encrypted Session Key */
-    PGPKEYPKT_SIGNATURE		=  2, /*!< Signature */
-    PGPKEYPKT_SYMMETRIC_SESSION_KEY=3,/*!< Symmetric-Key Encrypted Session Key*/
-    PGPKEYPKT_ONEPASS_SIGNATURE	=  4, /*!< One-Pass Signature */
-    PGPKEYPKT_SECRET_KEY	=  5, /*!< Secret Key */
-    PGPKEYPKT_PUBLIC_KEY	=  6, /*!< Public Key */
-    PGPKEYPKT_SECRET_SUBKEY	=  7, /*!< Secret Subkey */
-    PGPKEYPKT_COMPRESSED_DATA	=  8, /*!< Compressed Data */
-    PGPKEYPKT_SYMMETRIC_DATA	=  9, /*!< Symmetrically Encrypted Data */
-    PGPKEYPKT_MARKER		= 10, /*!< Marker */
-    PGPKEYPKT_LITERAL_DATA	= 11, /*!< Literal Data */
-    PGPKEYPKT_TRUST		= 12, /*!< Trust */
-    PGPKEYPKT_USER_ID		= 13, /*!< User ID */
-    PGPKEYPKT_PUBLIC_SUBKEY	= 14, /*!< Public Subkey */
-    PGPKEYPKT_PRIVATE_60	= 60, /*!< Private or Experimental Values */
-    PGPKEYPKT_PRIVATE_61	= 61, /*!< Private or Experimental Values */
-    PGPKEYPKT_PRIVATE_62	= 62, /*!< Private or Experimental Values */
-    PGPKEYPKT_PRIVATE_63	= 63, /*!< Private or Experimental Values */
-} pgpKeyPkt;
+typedef enum pgpPkt_e {
+    PGPPKT_RESERVED		=  0, /*!< Reserved/Invalid */
+    PGPPKT_PUBLIC_SESSION_KEY	=  1, /*!< Public-Key Encrypted Session Key */
+    PGPPKT_SIGNATURE		=  2, /*!< Signature */
+    PGPPKT_SYMMETRIC_SESSION_KEY=  3, /*!< Symmetric-Key Encrypted Session Key*/
+    PGPPKT_ONEPASS_SIGNATURE	=  4, /*!< One-Pass Signature */
+    PGPPKT_SECRET_KEY		=  5, /*!< Secret Key */
+    PGPPKT_PUBLIC_KEY		=  6, /*!< Public Key */
+    PGPPKT_SECRET_SUBKEY	=  7, /*!< Secret Subkey */
+    PGPPKT_COMPRESSED_DATA	=  8, /*!< Compressed Data */
+    PGPPKT_SYMMETRIC_DATA	=  9, /*!< Symmetrically Encrypted Data */
+    PGPPKT_MARKER		= 10, /*!< Marker */
+    PGPPKT_LITERAL_DATA		= 11, /*!< Literal Data */
+    PGPPKT_TRUST		= 12, /*!< Trust */
+    PGPPKT_USER_ID		= 13, /*!< User ID */
+    PGPPKT_PUBLIC_SUBKEY	= 14, /*!< Public Subkey */
+    PGPPKT_PRIVATE_60		= 60, /*!< Private or Experimental Values */
+    PGPPKT_PRIVATE_61		= 61, /*!< Private or Experimental Values */
+    PGPPKT_PRIVATE_62		= 62, /*!< Private or Experimental Values */
+    PGPPKT_PRIVATE_63		= 63, /*!< Private or Experimental Values */
+} pgpPkt;
+
+/**
+ */
+/*@unused@*/
+extern struct pgpValTbl_s pgpPktTbl[];
 
 /**
  * 5.1. Public-Key Encrypted Session Key Packets (Tag 1)
@@ -110,6 +123,11 @@ typedef enum pgpSigType_e {
 } pgpSigType;
 
 /**
+ */
+/*@unused@*/
+extern struct pgpValTbl_s pgpSigTypeTbl[];
+
+/**
  * 9.1. Public Key Algorithms
  *
 \verbatim
@@ -143,6 +161,11 @@ typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
     PGPPUBKEYALGO_DH		= 21,	/*!< Diffie-Hellman (X9.42) */
 } pgpPubkeyAlgo;
+
+/**
+ */
+/*@unused@*/
+extern struct pgpValTbl_s pgpPubkeyTbl[];
 
 /**
  * 9.2. Symmetric Key Algorithms
@@ -183,6 +206,11 @@ typedef enum pgpSymkeyAlgo_e {
 } pgpSymkeyAlgo;
 
 /**
+ */
+/*@unused@*/
+extern struct pgpValTbl_s pgpSymkeyTbl[];
+
+/**
  * 9.3. Compression Algorithms
  *
 \verbatim
@@ -202,6 +230,11 @@ typedef enum pgpCompressAlgo_e {
     PGPCOMPRESSALGO_ZIP		=  1,	/*!< ZIP */
     PGPCOMPRESSALGO_ZLIB	=  2	/*!< ZLIB */
 } pgpCompressAlgo;
+
+/**
+ */
+/*@unused@*/
+extern struct pgpValTbl_s pgpCompressionTbl[];
 
 /**
  * 9.4. Hash Algorithms
@@ -233,6 +266,11 @@ typedef enum pgpHashAlgo_e {
 } pgpHashAlgo;
 
 /**
+ */
+/*@unused@*/
+extern struct pgpValTbl_s pgpHashTbl[];
+
+/**
  * 5.2.2. Version 3 Signature Packet Format
  * 
  * The body of a version 3 Signature Packet contains:
@@ -253,7 +291,7 @@ typedef enum pgpHashAlgo_e {
  *   - MPI of DSA value r.
  *   - MPI of DSA value s.
  */
-typedef struct pgpSigPktV3_s {
+typedef struct pgpPktSigV3_s {
     byte version;	/*!< version number (3). */
     byte hashlen;	/*!< length of following hashed material. MUST be 5. */
     byte sigtype;	/*!< signature type. */
@@ -263,7 +301,7 @@ typedef struct pgpSigPktV3_s {
     byte hash_algo;	/*!< hash algorithm. */
     byte signhash16[2];	/*!< left 16 bits of signed hash value. */
     byte data[1];	/*!< One or more multi-precision integers. */
-} * pgpSigPktV3;
+} * pgpPktSigV3;
 
 /**
  * 5.2.3. Version 4 Signature Packet Format
@@ -286,14 +324,14 @@ typedef struct pgpSigPktV3_s {
  *   - Two-octet field holding left 16 bits of signed hash value.
  *   - One or more multi-precision integers comprising the signature.
  */
-typedef struct pgpSigPktV4_s {
+typedef struct pgpPktSigV4_s {
     byte version;	/*!< version number (4). */
     byte sigtype;	/*!< signature type. */
     byte pubkey_algo;	/*!< public key algorithm. */
     byte hash_algo;	/*!< hash algorithm. */
     byte hashlen[2];	/*!< length of following hashed material. */
     byte data[1];	/*!< Hashed subpacket data. (zero or more subpackets) */
-} * pgpSigPktV4;
+} * pgpPktSigV4;
 
 /**
  * 5.2.3.1. Signature Subpacket Specification
@@ -361,7 +399,7 @@ typedef struct pgpSigPktV4_s {
  * marked critical but is unknown to the evaluating software, the
  * evaluator SHOULD consider the signature to be in error.
  */
-typedef enum pgpSubpktType_e {
+typedef enum pgpSubType_e {
     PGPSUBTYPE_SIG_CREATE_TIME	=   2, /*!< signature creation time */
     PGPSUBTYPE_SIG_EXPIRE_TIME	=   3, /*!< signature expiration time */
     PGPSUBTYPE_EXPORTABLE_CERT	=   4, /*!< exportable certification */
@@ -394,7 +432,12 @@ typedef enum pgpSubpktType_e {
     PGPSUBTYPE_INTERNAL_108	= 108, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_109	= 109, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_110	= 110, /*!< internal or user-defined */
-} pgpSubpktType;
+} pgpSubType;
+
+/**
+ */
+/*@unused@*/
+extern struct pgpValTbl_s pgpSubTypeTbl[];
 
 /**
  * 5.2. Signature Packet (Tag 2)
@@ -416,10 +459,10 @@ typedef enum pgpSubpktType_e {
  * message that is encrypted to a V3 key, it is reasonable to create a
  * V3 signature.
  */
-typedef union pgpSigPkt_u {
-    struct pgpSigPktV3_s v3;
-    struct pgpSigPktV4_s v4;
-} * pgpSigPkt;
+typedef union pgpPktSig_u {
+    struct pgpPktSigV3_s v3;
+    struct pgpPktSigV4_s v4;
+} * pgpPktSig;
 
 /**
  * 5.3. Symmetric-Key Encrypted Session-Key Packets (Tag 3)
@@ -449,9 +492,9 @@ typedef union pgpSigPkt_u {
  *     with the string-to-key object.
  *
  */
-typedef struct pgpSymkeyPkt_s {
+typedef struct pgpPktSymkey_s {
     byte version;	/*!< version number (4). */
-} * pgpSymkeyPkt;
+} * pgpPktSymkey;
 
 /**
  * 5.4. One-Pass Signature Packets (Tag 4)
@@ -482,9 +525,9 @@ typedef struct pgpSymkeyPkt_s {
  * packet and the final signature packet corresponds to the first one-
  * pass packet.
  */
-typedef struct pgpOnepassPkt_s {
+typedef struct pgpPktOnepass_s {
     byte version;	/*!< version number (3). */
-} * pgpOnepassPkt;
+} * pgpPktOnepass;
 
 /**
  * 5.5.1. Key Packet Variants
@@ -558,13 +601,13 @@ typedef struct pgpOnepassPkt_s {
  * of key IDs and fingerprints.
  *
  */
-typedef struct pgpKeyV3_s {
+typedef struct pgpPktKeyV3_s {
     byte version;	/*!< version number (3). */
     byte time[4];	/*!< time that the key was created. */
     byte valid[2];	/*!< time in days that this key is valid. */
     byte pubkey_algo;	/*!< public key algorithm. */
     byte data[1];	/*!< One or more multi-precision integers. */
-} * pgpKeyV3;
+} * pgpPktKeyV3;
 
 /**
  * The version 4 format is similar to the version 3 format except for
@@ -597,12 +640,12 @@ typedef struct pgpKeyV3_s {
  *         secret).
  *
  */
-typedef struct pgpKeyV4_s {
+typedef struct pgpPktKeyV4_s {
     byte version;	/*!< version number (4). */
     byte time[4];	/*!< time that the key was created. */
     byte pubkey_algo;	/*!< public key algorithm. */
     byte data[1];	/*!< One or more multi-precision integers. */
-} * pgpKeyV4;
+} * pgpPktKeyV4;
 
 /**
  * 5.5.3. Secret Key Packet Formats
@@ -789,23 +832,167 @@ typedef struct pgpKeyV4_s {
  * If it is text, it is encoded in UTF-8.
  *
  */
-typedef struct pgpUidPkt_s {
+typedef struct pgpPktUid_s {
     byte userid[1];
-} * pgpUidPkt;
+} * pgpPktUid;
 
 /**
  */
-typedef struct pgpValStr_s {
-    int val;
-    const char * str;
-} * pgpValStr;
- 
+/*@unused@*/
+extern const char * redhatPubKeyDSA;
+
+/**
+ */
+/*@unused@*/
+extern const char * redhatPubKeyRSA;
+/*@=typeuse =fielduse@*/
+
+/*@-fcnuse@*/
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ */
+/*@unused@*/ static inline
+unsigned int pgpGrab(const byte *s, int nbytes)
+	/*@*/
+{
+    unsigned int i = 0;
+    int nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
+    while (nb--)
+	i = (i << 8) | *s++;
+    return i;
+}
+
+/**
+ */
+/*@unused@*/ static inline
+unsigned int pgpMpiBits(const byte *p)
+	/*@*/
+{
+    return ((p[0] << 8) | p[1]);
+}
+
+/**
+ */
+/*@unused@*/ static inline
+unsigned int pgpMpiLen(const byte *p)
+	/*@*/
+{
+    return (2 + ((pgpMpiBits(p)+7)>>3));
+}
+	
+/**
+ */
+/*@unused@*/ static inline
+char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
+	/*@modifies *t @*/
+{
+    static char hex[] = "0123456789abcdef";
+    while (nbytes-- > 0) {
+	unsigned int i;
+	i = *s++;
+	*t++ = hex[ (i >> 4) & 0xf ];
+	*t++ = hex[ (i     ) & 0xf ];
+    }
+    *t = '\0';
+    return t;
+}
+
+/**
+ */
+/*@unused@*/ static inline /*@observer@*/
+char * pgpHexStr(const byte *p, unsigned int plen)
+	/*@*/
+{
+    static char prbuf[2048];
+    char *t = prbuf;
+    t = pgpHexCvt(t, p, plen);
+    return prbuf;
+}
+
+/**
+ */
+/*@unused@*/ static inline /*@observer@*/
+const char * pgpMpiStr(const byte *p)
+	/*@*/
+{
+    static char prbuf[2048];
+    char *t = prbuf;
+    sprintf(t, "[%u]: ", pgpGrab(p, 2));
+    t += strlen(t);
+    t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
+    return prbuf;
+}
+
+/**
+ */
+/*@unused@*/ static inline /*@observer@*/
+const char * pgpValStr(pgpValTbl vs, byte val)
+	/*@*/
+{
+    do {
+	if (vs->val == val)
+	    break;
+    } while ((++vs)->val != -1);
+    return vs->str;
+}
+
+/*@-exportlocal@*/
+/**
+ */
+void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtSubType(const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtPktSigV4(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtPktSig(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtKeyV4(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtKey(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtUserID(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+/*@=exportlocal@*/
+
+/**
+ */
+int pgpPrtPkt(const byte *p);
+
 #ifdef __cplusplus
 }
 #endif
+/*@=fcnuse@*/
 
 #endif	/* H_RPMPGP */

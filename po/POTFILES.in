@@ -63,6 +63,7 @@ rpmio/macro.c
 rpmio/rpmio.c
 rpmio/rpmlog.c
 rpmio/rpmmalloc.c
+rpmio/rpmpgp.c
 rpmio/rpmrpc.c
 rpmio/ugid.c
 rpmio/url.c

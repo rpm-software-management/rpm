@@ -4,10 +4,10 @@
 
 #include "system.h"
 #include "rpmio_internal.h"
-#include "beecrypt/beecrypt.h"
-#include "beecrypt/md5.h"
-#include "beecrypt/fips180.h"
-#include "beecrypt/sha256.h"
+#include "beecrypt.h"
+#include "md5.h"
+#include "endianness.h"
+#include "fips180.h"
 #include "debug.h"
 
 #ifdef	SHA_DEBUG
@@ -30,7 +30,7 @@ struct DIGEST_CTX_s {
 	/*@modifies param @*/;	/*!< Digest initialize. */
     int (*Update) (void * param, const byte * data, int len)
 	/*@modifies param @*/;	/*!< Digest transform. */
-    int (*Digest) (void * param, uint32 * data)
+    int (*Digest) (void * param, /*@out@*/ uint32 * digest)
 	/*@modifies param, digest @*/;	/*!< Digest finish. */
 };
 

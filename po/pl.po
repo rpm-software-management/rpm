@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-26 10:44-0400\n"
+"POT-Creation-Date: 2001-09-29 13:34-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3422,135 +3422,135 @@ msgstr "Nieznany system: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Skontaktuj siê, proszê, z rpm-list@redhat.com\n"
 
-#: lib/signature.c:122
+#: lib/signature.c:123
 msgid "file is not regular -- skipping size check\n"
 msgstr "plik nieregularny -- sprawdzanie rozmiaru pominiête\n"
 
-#: lib/signature.c:130
+#: lib/signature.c:131
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:134
+#: lib/signature.c:135
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Rozmiar sygnatury: %d\n"
 
-#: lib/signature.c:154
+#: lib/signature.c:155
 msgid "No signature\n"
 msgstr "Brak sygnatury\n"
 
-#: lib/signature.c:158
+#: lib/signature.c:159
 msgid "Old PGP signature\n"
 msgstr "Stara sygnatura PGP\n"
 
-#: lib/signature.c:169
+#: lib/signature.c:170
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Stara (tylko wewnêtrzna) sygnatura! Sk±d Ty to wzi±³e¶!?"
 
-#: lib/signature.c:223
+#: lib/signature.c:224
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Rozmiar sygnatury: %d\n"
 
-#: lib/signature.c:283
+#: lib/signature.c:284
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Nie mo¿na uruchomiæ pgp"
 
-#: lib/signature.c:296
+#: lib/signature.c:297
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp nie powiod³o siê"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:303
+#: lib/signature.c:304
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "zapisanie sygnatury przez pgp nie powiod³o siê"
 
-#: lib/signature.c:308
+#: lib/signature.c:309
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "rozmiar sygnatury PGP: %d\n"
 
-#: lib/signature.c:321 lib/signature.c:403
+#: lib/signature.c:322 lib/signature.c:404
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "nie mo¿na odczytaæ sygnatury"
 
-#: lib/signature.c:326
+#: lib/signature.c:327
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Mam %d bajtów sygnatury PGP\n"
 
-#: lib/signature.c:365 lib/signature.c:753
+#: lib/signature.c:366 lib/signature.c:760
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Nie mo¿na uruchomiæ gpg"
 
-#: lib/signature.c:378
+#: lib/signature.c:379
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg nie powiod³o siê"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:385
+#: lib/signature.c:386
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "zapisanie sygnatury przez gpg nie powiod³o siê"
 
-#: lib/signature.c:390
+#: lib/signature.c:391
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "rozmiar sygnatury GPG: %d\n"
 
-#: lib/signature.c:408
+#: lib/signature.c:409
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Mam %d bajtów sygnatury GPG\n"
 
-#: lib/signature.c:436
+#: lib/signature.c:437
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "Generowanie sygnatury: %d\n"
 
-#: lib/signature.c:442
+#: lib/signature.c:443
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "Generowanie sygnatury: %d\n"
 
-#: lib/signature.c:525 lib/signature.c:600
+#: lib/signature.c:526 lib/signature.c:604
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Nie mo¿na uruchomiæ pgp. U¿yj --nopgp aby pomin±æ sprawdz. PGP"
 
-#: lib/signature.c:690
+#: lib/signature.c:697
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Nie mo¿na uruchomiæ gpg. U¿yj --nopgp aby pomin±æ sprawdz. GPG"
 
-#: lib/signature.c:782
+#: lib/signature.c:789
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Nie mo¿na uruchomiæ pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:786 lib/signature.c:839
+#: lib/signature.c:793 lib/signature.c:846
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "B³êdny %%_signature spec w pliku makra.\n"
 
-#: lib/signature.c:819
+#: lib/signature.c:826
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musisz ustawiæ \"%%_gpg_name\" w pliku swego makra"
 
-#: lib/signature.c:831
+#: lib/signature.c:838
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musisz ustawiæ \"%%_pgp_name\" w pliku swego makra"

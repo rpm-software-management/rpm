@@ -20,6 +20,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 
+#include "rpmpgp.h"
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
 #include "rpmlead.h"
 #include "signature.h"
@@ -533,6 +534,9 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     if (pgpVer == PGP_5)
 	res = RPMSIG_BAD;
 
+    if (rpmIsVerbose())
+	(void) pgpPrtPkt(sig);
+
     /* Write out the signature */
 #ifdef	DYING
   { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);
@@ -645,6 +649,9 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     FILE *file;
     int res = RPMSIG_OK;
   
+    if (rpmIsVerbose())
+	(void) pgpPrtPkt(sig);
+
     /* Write out the signature */
 #ifdef	DYING
   { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);

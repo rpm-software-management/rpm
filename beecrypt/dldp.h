@@ -120,7 +120,7 @@ int  dldp_pEqual(const dldp_p* a, const dldp_p* b)
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize, int cofactor)
 	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
 
@@ -138,7 +138,7 @@ int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int  dldp_pgoqValidate(const dldp_p*, randomGeneratorContext* rgc, int cofactor)
 	/*@modifies rgc @*/;
 
@@ -149,7 +149,7 @@ int  dldp_pgoqValidate(const dldp_p*, randomGeneratorContext* rgc, int cofactor)
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize)
 	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
 
@@ -167,7 +167,7 @@ int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int  dldp_pgonValidate(const dldp_p* dp, randomGeneratorContext* rgc)
 	/*@modifies rgc @*/;
 

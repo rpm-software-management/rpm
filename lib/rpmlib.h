@@ -215,7 +215,9 @@ typedef enum rpmTag_e {
     RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,
     RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/*!< internal */
 
+/*@-enummemuse@*/
     RPMTAG_BADSHA1HEADER	= RPMTAG_SIG_BASE+8,	/*!< internal */
+/*@=enummemuse@*/
     RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+9,
 
     RPMTAG_NAME  		= 1000,
@@ -301,7 +303,9 @@ typedef enum rpmTag_e {
     RPMTAG_CHANGELOGTIME	= 1080,
     RPMTAG_CHANGELOGNAME	= 1081,
     RPMTAG_CHANGELOGTEXT	= 1082,
+/*@-enummemuse@*/
     RPMTAG_BROKENMD5		= 1083, /*!< internal - obsolete */
+/*@=enummemuse@*/
     RPMTAG_PREREQ		= 1084, /*!< internal */
     RPMTAG_PREINPROG		= 1085,
     RPMTAG_POSTINPROG		= 1086,
