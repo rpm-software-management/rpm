@@ -122,8 +122,9 @@
 	- finalize per-header methods, accessing headerFoo through vector.
 	- make package ordering loop messages debug, not warning.
 	- remove {ia64,sparc}-linux.{prov,req}, changes merged into linux.*.
-	- fix: partial sets of hardlinked files forbidden in payload.
+	- fix: partial sets of hardlinked files permitted in payload.
 	- fix: mark rpmdb files with %config to prevent erasure on downgrade.
+	- work around a (possible) compiler problem on ia64.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

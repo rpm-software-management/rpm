@@ -19,7 +19,7 @@
 
 int _fsm_debug = 0;
 
-static int all_hardlinks_in_package = 1;
+static int all_hardlinks_in_package = 0;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/
@@ -1073,7 +1073,7 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	(void) stpcpy(dn, fsm->path);
 	fsm->path = dn;
 
-	/* Assume '/' directory exists, otherwise "mkdir -p" if non-existent. */
+	/* Assume '/' directory exists, "mkdir -p" for others if non-existent */
 	for (i = 1, te = dn + 1; *te != '\0'; te++, i++) {
 	    if (*te != '/') continue;
 
