@@ -16,8 +16,9 @@
 
 #include "header.h"
 #include "specP.h"
-#include "rpmlib.h"
 #include "rpmerr.h"
+#include "rpmlead.h"
+#include "rpmlib.h"
 #include "misc.h"
 #include "pack.h"
 #include "messages.h"
@@ -26,8 +27,6 @@
 
 #define BINARY_HEADER 0
 #define SOURCE_HEADER 1
-
-static unsigned char magic[] = { 0xed, 0xab, 0xee, 0xdb };
 
 struct file_entry {
     char file[1024];
@@ -48,20 +47,21 @@ static int add_file_aux(char *file, struct stat *sb, int flag);
 static int writeMagic(Spec s, struct PackageRec *pr,
 		      int fd, char *name, unsigned char type)
 {
-    char header[74];
+    struct rpmlead lead;
 
-    header[0] = 2; /* major */
-    header[1] = 0; /* minor */
-    header[2] = 0;
-    header[3] = type;
-    header[4] = 0;
-    header[5] = getArchNum();
-    strncpy(&(header[6]), name, 66);
-    header[72] = 0;
-    header[73] = getOsNum();
-    
-    write(fd, &magic, 4);
-    write(fd, &header, 74);
+    lead.magic[0] = RPMLEAD_MAGIC0;
+    lead.magic[1] = RPMLEAD_MAGIC1;
+    lead.magic[2] = RPMLEAD_MAGIC2;
+    lead.magic[3] = RPMLEAD_MAGIC3;
+
+    lead.major = 2;
+    lead.minor = 0;
+    lead.type = htons(RPMLEAD_BINARY);
+    lead.archnum = htons(getArchNum());
+    lead.osnum = htons(getOsNum());
+    strncpy(lead.name, name, sizeof(lead.name));
+
+    write(fd, &lead, sizeof(lead));
 
     return 0;
 }
