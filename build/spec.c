@@ -240,23 +240,25 @@ int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
 
     package = s->packages;
     while (package) {
-	if (flags & (LP_SUBNAME | LP_NEWNAME)) {
-	    if ((! package->newname) & (! package->subname)) {
-		package = package->next;
-		continue;
-	    }
-	}
 	if (flags & LP_SUBNAME) {
+	    if (! package->subname) {
+	        package = package->next;
+	        continue;
+	    }
 	    if (! strcmp(package->subname, name)) {
 		break;
 	    }
 	} else if (flags & LP_NEWNAME) {
+	    if (! package->newname) {
+	        package = package->next;
+	        continue;
+	    }
 	    if (! strcmp(package->newname, name)) {
 		break;
 	    }
 	} else {
 	    /* Base package */
-	    if ((! package->newname) & (! package->subname)) {
+	    if ((! package->newname) && (! package->subname)) {
 		break;
 	    }
 	}
