@@ -5,6 +5,9 @@
 
 #include "system.h"
 
+#include <rpmio_internal.h>	/* XXX PGPHASHALGO and RPMDIGEST_NONE */
+#include <rpmlib.h>
+
 #include "psm.h"
 #include "rpmfi.h"
 #include "rpmts.h"
@@ -110,13 +113,13 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
     flags &= ~(omitMask | RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL);
 
     if (flags & RPMVERIFY_MD5) {
-	byte md5sum[16];
+	unsigned char md5sum[16];
 
 	rc = domd5(filespec, md5sum, 0);
 	if (rc)
 	    *result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	else {
-	    const byte * md5 = tfiGetMD5(fi);
+	    const unsigned char * md5 = tfiGetMD5(fi);
 	    if (md5 == NULL || memcmp(md5sum, md5, sizeof(md5sum)))
 		*result |= RPMVERIFY_MD5;
 	}
@@ -253,7 +256,7 @@ int rpmVerifyDigest(Header h)
 
     /* Retrieve header digest. */
     if (!hge(h, RPMTAG_SHA1HEADER, &hdt, (void **) &hdigest, NULL)
-     &&!hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
+     && !hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
     {
 	    return 0;
     }

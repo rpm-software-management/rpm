@@ -43,11 +43,9 @@
 -compdestroy
 -mustdefine
 -shiftimplementation
-#-shiftnegative
 
 -strictops
 -strictusereleased
--stringliterallen 4096	# redhat*PubKey's are big
 -whileblock		# tedious
 
 # --- not-yet at checks level

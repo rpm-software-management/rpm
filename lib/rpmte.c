@@ -3,6 +3,7 @@
  * Routine(s) to handle a transactionElement.
  */
 #include "system.h"
+#include <rpmlib.h>
 
 #include "psm.h"
 

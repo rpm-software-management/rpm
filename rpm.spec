@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.1
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.05
+Release: 0.06
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -170,7 +170,7 @@ make
 
 %if %{with_perl_subpackage}
 { cd Perl-RPM
-  CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL
+  CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL RPM_BUILD=1
   export SUBDIR="%{_builddir}/%{buildsubdir}"
   make INC="-I. -I$SUBDIR/lib -I$SUBDIR/rpmdb -I$SUBDIR/rpmio -I$SUBDIR/popt" \
     LDDLFLAGS="-shared -L$SUBDIR/lib/.libs -L$SUBDIR/rpmdb/.libs -L$SUBDIR/rpmio/.libs -L$SUBDIR/popt/.libs" %{?_smp_mflags}
@@ -521,6 +521,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Apr 12 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.06
+- use rpmdb-redhat to suggest dependency resolution(s).
+
 * Thu Apr 11 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.05
 - rescusitate --rebuild.
 

@@ -333,12 +333,12 @@ exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
-int dsiGetCount(rpmDepSet ds)
+int dsiGetCount(const rpmDepSet ds)
 {
     return (ds != NULL ? ds->Count : 0);
 }
 
-int dsiGetIx(rpmDepSet ds)
+int dsiGetIx(const rpmDepSet ds)
 {
     return (ds != NULL ? ds->i : -1);
 }
@@ -354,7 +354,7 @@ int dsiSetIx(rpmDepSet ds, int ix)
     return i;
 }
 
-const char * dsiGetDNEVR(rpmDepSet ds)
+const char * dsiGetDNEVR(const rpmDepSet ds)
 {
     const char * DNEVR = NULL;
 
@@ -365,7 +365,7 @@ const char * dsiGetDNEVR(rpmDepSet ds)
     return DNEVR;
 }
 
-const char * dsiGetN(rpmDepSet ds)
+const char * dsiGetN(const rpmDepSet ds)
 {
     const char * N = NULL;
 
@@ -376,7 +376,7 @@ const char * dsiGetN(rpmDepSet ds)
     return N;
 }
 
-const char * dsiGetEVR(rpmDepSet ds)
+const char * dsiGetEVR(const rpmDepSet ds)
 {
     const char * EVR = NULL;
 
@@ -387,7 +387,7 @@ const char * dsiGetEVR(rpmDepSet ds)
     return EVR;
 }
 
-int_32 dsiGetFlags(rpmDepSet ds)
+int_32 dsiGetFlags(const rpmDepSet ds)
 {
     int_32 Flags = 0;
 
@@ -396,6 +396,16 @@ int_32 dsiGetFlags(rpmDepSet ds)
 	    Flags = ds->Flags[ds->i];
     }
     return Flags;
+}
+
+rpmTag dsiGetTagN(const rpmDepSet ds)
+{
+    rpmTag tagN = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+	tagN = ds->tagN;
+    }
+    return tagN;
 }
 
 void dsiNotify(rpmDepSet ds, const char * where, int rc)

@@ -9,7 +9,12 @@
 
 #include "system.h"
 
+#include <rpmio_internal.h>
+#include <rpmlib.h>
+
+#include "cpio.h"
 #include "fsm.h"
+
 #include "rpmerr.h"
 #include "debug.h"
 

@@ -10,8 +10,10 @@
 #define BUF_CHUNK 1024
 
 struct StringBufRec {
-    /*@owned@*/ char *buf;
-    /*@dependent@*/ char *tail;     /* Points to first "free" char */
+/*@owned@*/
+    char *buf;
+/*@dependent@*/
+    char *tail;     /* Points to first "free" char */
     int allocated;
     int free;
 };
@@ -19,7 +21,7 @@ struct StringBufRec {
 /**
  * Locale insensitive isspace(3).
  */
-/*@unused@*/ static inline int xisspace(int c) {
+/*@unused@*/ static inline int xisspace(int c) /*@*/ {
     return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
 
@@ -66,10 +68,8 @@ void truncStringBuf(StringBuf sb)
 void stripTrailingBlanksStringBuf(StringBuf sb)
 {
     while (sb->free != sb->allocated) {
-	/*@-moduncon@*/
 	if (! xisspace(*(sb->tail - 1)))
 	    break;
-	/*@=moduncon@*/
 	sb->free++;
 	sb->tail--;
     }

@@ -234,6 +234,7 @@ int rpmInstall(rpmTransactionSet ts,
     probFilter = ia->probFilter;
     relocations = ia->relocations;
 
+    ts->goal = TSM_INSTALL;
     ts->nodigests = (ia->qva_flags & VERIFY_DIGEST);
     ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
 
@@ -536,11 +537,27 @@ restart:
 
 	/*@-branchstate@*/
 	if (!stopInstall && conflicts) {
-	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
+	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
 	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
+
+	    if (ts->suggests != NULL && ts->nsuggests > 0) {
+		rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
+		for (i = 0; i < ts->nsuggests; i++) {
+		    const char * str = ts->suggests[i];
+
+		    if (str == NULL)
+			break;
+
+		    rpmMessage(RPMMESS_NORMAL, "\t%s\n", str);
+		
+		    ts->suggests[i] = NULL;
+		    str = _free(str);
+		}
+		ts->suggests = _free(ts->suggests);
+	    }
 	}
 	/*@=branchstate@*/
     }
@@ -641,6 +658,7 @@ int rpmErase(rpmTransactionSet ts,
     }
 #endif
 
+    ts->goal = TSM_ERASE;
     ts->nodigests = (ia->qva_flags & VERIFY_DIGEST);
     ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
 

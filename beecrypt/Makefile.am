@@ -59,7 +59,6 @@ pkginclude_HEADERS = base64.h beecrypt.h blockmode.h blockpad.h blowfish.h blowf
 EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README.DLL README.WIN32 beecrypt.def beecrypt.mcp beecrypt.rc beecrypt.spec types.h config.gas.h config.win.h javaglue.h
 
 noinst_HEADERS = debug.h system.h
-BUILT_SOURCES = blowfishopt.S fips180opt.S mp32opt.S
 
 .PHONY: beetest
 beetest: all

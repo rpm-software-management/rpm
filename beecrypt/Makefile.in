@@ -157,7 +157,6 @@ pkginclude_HEADERS = base64.h beecrypt.h blockmode.h blockpad.h blowfish.h blowf
 EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README.DLL README.WIN32 beecrypt.def beecrypt.mcp beecrypt.rc beecrypt.spec types.h config.gas.h config.win.h javaglue.h
 
 noinst_HEADERS = debug.h system.h
-BUILT_SOURCES = blowfishopt.S fips180opt.S mp32opt.S
 
 DOXYGEN = /usr/bin/doxygen
 subdir = .
@@ -207,7 +206,7 @@ DIST_COMMON = README $(noinst_HEADERS) $(pkginclude_HEADERS) \
 DIST_SUBDIRS = $(SUBDIRS)
 SOURCES = $(libbeecrypt_la_SOURCES)
 
-all: $(BUILT_SOURCES) config.h
+all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
@@ -529,7 +528,6 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-recursive
 
 clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \

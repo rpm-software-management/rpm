@@ -278,10 +278,10 @@ static void printUsage(void)
 }
 
 /*@-mods@*/ /* FIX: shrug */
-#if defined(__GLIBC__) || defined(__LCLINT__)
-int main(int argc, const char ** argv)
-#else
+#if !defined(__GLIBC__) && !defined(__LCLINT__)
 int main(int argc, const char ** argv, /*@unused@*/ char ** envp)
+#else
+int main(int argc, const char ** argv)
 #endif
 	/*@globals __assert_program_name, rpmEVR, RPMVERSION,
 		rpmGlobalMacroContext, rpmCLIMacroContext,

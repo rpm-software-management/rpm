@@ -619,7 +619,7 @@ alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * key
     const char * fileName;
 
     if (keyp) *keyp = RPMAL_NOMATCH;
-    if ((fileName = dsiGetN(ds)) == NULL || *fileName != '/')
+    if (al == NULL || (fileName = dsiGetN(ds)) == NULL || *fileName != '/')
 	return NULL;
 
     /* Solaris 2.6 bsearch sucks down on this. */
@@ -699,34 +699,11 @@ exit:
     return ret;
 }
 
-#ifdef	DYING
-/**
- * Check added package file lists for first package that provides a file.
- * @param al		available list
- * @param ds		dependency
- * @return		available package pointer
- */
-/*@unused@*/ static /*@dependent@*/ /*@null@*/ fnpyKey
-alFileSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
-	/*@*/
-{
-    fnpyKey * tmp = alAllFileSatisfiesDepend(al, ds, keyp);
-
-    if (tmp) {
-	fnpyKey ret = tmp[0];
-	free(tmp);
-	return ret;
-    }
-    return NULL;
-}
-#endif	/* DYING */
-
 fnpyKey *
 alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 {
-    availableIndex ai = &al->index;
-    availableIndexEntry needle =
-		memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
+    availableIndex ai;
+    availableIndexEntry needle;
     availableIndexEntry match;
     fnpyKey * ret = NULL;
     int found = 0;
@@ -735,7 +712,8 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
     int rc;
 
     if (keyp) *keyp = RPMAL_NOMATCH;
-    if ((KName = dsiGetN(ds)) == NULL)
+
+    if (al == NULL || ds == NULL || (KName = dsiGetN(ds)) == NULL)
 	return ret;
 
     if (*KName == '/') {
@@ -745,9 +723,11 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
 	    return ret;
     }
 
+    ai = &al->index;
     if (ai->index == NULL || ai->size <= 0)
 	return NULL;
 
+    needle = memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
     /*@-assignexpose -temptrans@*/
     needle->entry = KName;
     /*@=assignexpose =temptrans@*/

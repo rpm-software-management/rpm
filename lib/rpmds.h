@@ -129,7 +129,7 @@ rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
  * @param ds		dependency set
  * @return		current count
  */
-int dsiGetCount(/*@null@*/ rpmDepSet ds)
+int dsiGetCount(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 
 /**
@@ -137,7 +137,7 @@ int dsiGetCount(/*@null@*/ rpmDepSet ds)
  * @param ds		dependency set
  * @return		current index
  */
-int dsiGetIx(/*@null@*/ rpmDepSet ds)
+int dsiGetIx(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 
 /**
@@ -155,7 +155,7 @@ int dsiSetIx(/*@null@*/ rpmDepSet ds, int ix)
  * @return		current dependency DNEVR, NULL on invalid
  */
 /*@null@*/
-const char * dsiGetDNEVR(/*@null@*/ rpmDepSet ds)
+const char * dsiGetDNEVR(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 
 /**
@@ -164,7 +164,7 @@ const char * dsiGetDNEVR(/*@null@*/ rpmDepSet ds)
  * @return		current dependency name, NULL on invalid
  */
 /*@null@*/
-const char * dsiGetN(/*@null@*/ rpmDepSet ds)
+const char * dsiGetN(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 
 /**
@@ -173,7 +173,7 @@ const char * dsiGetN(/*@null@*/ rpmDepSet ds)
  * @return		current dependency EVR, NULL on invalid
  */
 /*@null@*/
-const char * dsiGetEVR(/*@null@*/ rpmDepSet ds)
+const char * dsiGetEVR(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 
 /**
@@ -181,7 +181,15 @@ const char * dsiGetEVR(/*@null@*/ rpmDepSet ds)
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
  */
-int_32 dsiGetFlags(/*@null@*/ rpmDepSet ds)
+int_32 dsiGetFlags(/*@null@*/ const rpmDepSet ds)
+	/*@*/;
+
+/**
+ * Return current dependency type.
+ * @param ds		dependency set
+ * @return		current dependency type, 0 on invalid
+ */
+rpmTag dsiGetTagN(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 
 /**

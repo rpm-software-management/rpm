@@ -985,12 +985,16 @@ typedef enum rpmProblemType_e {
 /**
  */
 struct rpmProblem_s {
-/*@only@*/ /*@null@*/ char * pkgNEVR;
-/*@only@*/ /*@null@*/ char * altNEVR;
-/*@exposed@*/ /*@null@*/ fnpyKey key;
+/*@only@*/ /*@null@*/
+    char * pkgNEVR;
+/*@only@*/ /*@null@*/
+    char * altNEVR;
+/*@exposed@*/ /*@null@*/
+    fnpyKey key;
     rpmProblemType type;
     int ignoreProblem;
-/*@only@*/ /*@null@*/ char * str1;
+/*@only@*/ /*@null@*/
+    char * str1;
     unsigned long ulong1;
 };
 
@@ -1000,7 +1004,8 @@ struct rpmProblemSet_s {
     int numProblems;		/*!< Current probs array size. */
     int numProblemsAlloced;	/*!< Allocated probs array size. */
     rpmProblem probs;		/*!< Array of specific problems. */
-/*@refs@*/ int nrefs;		/*!< Reference count. */
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
 };
 
 /**
@@ -1373,6 +1378,44 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/;
 
+/**
+ * Attempt to solve a needed dependency.
+ * @param ts		transaction set
+ * @param ds		dependency set
+ * @return		0 if resolved (and added to ts), 1 not found
+ */
+int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/**
+ * Attempt to solve a needed dependency.
+ * @param ts		transaction set
+ * @param ds		dependency set
+ * @return		0 if resolved (and added to ts), 1 not found
+ */
+/*@unused@*/
+int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
+
+/** \ingroup rpmtrans
+ * Re-create an empty transaction set.
+ * @param ts		transaction set
+ */
+void rpmtransClean(rpmTransactionSet ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmtrans
+ * Destroy transaction set, closing the database as well.
+ * @param ts		transaction set
+ * @return		NULL always
+ */
+/*@null@*/ rpmTransactionSet
+rpmtransFree(/*@killref@*/ /*@only@*//*@null@*/ rpmTransactionSet ts)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
+
 /** \ingroup rpmtrans
  * Create an empty transaction set.
  * @param db		rpm database (may be NULL if database is not accessed)
@@ -1428,23 +1471,6 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
  */
 int rpmtransRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
 	/*@modifies ts, h @*/;
-
-/** \ingroup rpmtrans
- * Re-create an empty transaction set.
- * @param ts		transaction set
- */
-void rpmtransClean(rpmTransactionSet ts)
-	/*@modifies ts @*/;
-
-/** \ingroup rpmtrans
- * Destroy transaction set, closing the database as well.
- * @param ts		transaction set
- * @return		NULL always
- */
-/*@null@*/ rpmTransactionSet
-rpmtransFree(/*@killref@*/ /*@only@*//*@null@*/ rpmTransactionSet ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmtrans
  * Save file handle to be used as stderr when running package scripts.

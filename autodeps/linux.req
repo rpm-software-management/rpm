@@ -9,9 +9,10 @@ ulimit -c 0
 
 #
 # --- Set needed to 0 for traditional find-requires behavior.
+needed=1
 if [ X"$1" = Xldd ]; then
     needed=0
-else
+elif [ X"$1" = Xobjdump ]; then
     needed=1
 fi
 

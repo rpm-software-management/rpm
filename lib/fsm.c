@@ -5,7 +5,12 @@
 
 #include "system.h"
 
-#include "psm.h"
+#include <rpmio_internal.h>
+#include <rpmlib.h>
+
+#include "cpio.h"
+#include "fsm.h"
+#include "psm.h"	/* XXX fiTypeString */
 #include "rpmerr.h"
 
 #include "rpmfi.h"

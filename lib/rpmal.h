@@ -82,8 +82,8 @@ void alMakeIndex(/*@null@*/ availableList al)
  */
 /*@-exportlocal@*/
 /*@only@*/ /*@null@*/
-fnpyKey * alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds,
-		/*@null@*/ alKey * keyp)
+fnpyKey * alAllFileSatisfiesDepend(/*@null@*/ const availableList al,
+		/*@null@*/ const rpmDepSet ds, /*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/
 	/*@modifies al, *keyp, fileSystem @*/;
 /*@=exportlocal@*/

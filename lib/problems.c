@@ -148,7 +148,6 @@ int rpmProblemSetTrim(rpmProblemSet ps, rpmProblemSet filter)
     t = ps->probs;
     f = filter->probs;
 
-    /*@-branchstate@*/
     while ((f - filter->probs) < filter->numProblems) {
 	if (!f->ignoreProblem) {
 	    f++;
@@ -171,7 +170,6 @@ int rpmProblemSetTrim(rpmProblemSet ps, rpmProblemSet filter)
 	t->ignoreProblem = f->ignoreProblem;
 	t++, f++;
     }
-    /*@=branchstate@*/
 
     if ((t - ps->probs) < ps->numProblems)
 	gotProblems = 1;

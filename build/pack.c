@@ -8,6 +8,8 @@
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
 
+#include "cpio.h"
+#include "fsm.h"
 #include "psm.h"
 #include "rpmfi.h"
 

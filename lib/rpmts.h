@@ -19,6 +19,12 @@ extern int _ts_debug;
 extern int _cacheDependsRC;
 /*@=exportlocal@*/
 
+typedef enum tsStage_e {
+    TSM_UNKNOWN		=  0,
+    TSM_INSTALL		=  7,
+    TSM_ERASE		=  8,
+} tsmStage;
+
 /** \ingroup rpmdep
  * The set of packages to be installed/removed atomically.
  */
@@ -26,6 +32,18 @@ struct rpmTransactionSet_s {
     rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
 /*@observer@*/ /*@null@*/
     rpmCallbackFunction notify;	/*!< Callback function. */
+
+    tsmStage goal;		/*!< Transaction goal (i.e. mode) */
+
+/*@null@*/
+    int (*solve) (rpmTransactionSet ts, const rpmDepSet key)
+	/*@modifies ts @*/;	/*!< Search for NEVR key. */
+    int nsuggests;		/*!< No. of depCheck suggestions. */
+/*@only@*/ /*@null@*/
+    const void ** suggests;	/*!< Possible depCheck suggestions. */
+/*@refcounted@*/ /*@null@*/
+    rpmdb sdb;			/*!< Available universe database handle. */
+
 /*@observer@*/ /*@null@*/
     rpmCallbackData notifyData;	/*!< Callback private data. */
 /*@refcounted@*/ /*@null@*/
@@ -34,7 +52,7 @@ struct rpmTransactionSet_s {
 				/*!< Bits to filter current problems. */
 
     int filesystemCount;	/*!< No. of mounted filesystems. */
-/*@dependent@*/
+/*@dependent@*/ /*@null@*/
     const char ** filesystems;	/*!< Mounted filesystem names. */
 /*@only@*/ /*@null@*/
     struct diskspaceInfo * di;	/*!< Per filesystem disk/inode usage. */

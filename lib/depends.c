@@ -331,6 +331,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
     const char * Name;
     Header h;
     int rc;
+    int xx;
 
     if ((Name = dsiGetN(key)) == NULL)
 	return 0;	/* XXX can't happen */
@@ -352,7 +353,6 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 		void * datap = NULL;
 		size_t datalen = 0;
 		size_t DNEVRlen = strlen(DNEVR);
-		int xx;
 
 		xx = dbiCopen(dbi, &dbcursor, 0);
 		xx = dbiGet(dbi, dbcursor, (void **)&DNEVR, &DNEVRlen,
@@ -460,6 +460,12 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 
     }
 
+    /*
+     * Search for an unsatisifed dependency.
+     */
+    if (ts->solve)
+	xx = (*ts->solve) (ts, key);
+
 unsatisfied:
     rc = 1;	/* dependency is unsatisfied */
     dsiNotify(key, NULL, rc);
@@ -475,7 +481,7 @@ exit:
 	    _cacheDependsRC = 0;
 	} else {
 	    const char * DNEVR;
-	    int xx = 0;
+	    xx = 0;
 	    if ((DNEVR = dsiGetDNEVR(key)) != NULL) {
 		DBC * dbcursor = NULL;
 		size_t DNEVRlen = strlen(DNEVR);
@@ -486,13 +492,6 @@ exit:
 	    }
 	    if (xx)
 		_cacheDependsRC = 0;
-#if 0	/* XXX NOISY */
-	    else
-		rpmMessage(RPMMESS_DEBUG,
-			_("%9s: (%s, %s) added to Depends cache.\n"),
-			key->Type, (key->DNEVR != NULL ? key->DNEVR : "???"),
-			(rc ? _("NO ") : _("YES")));
-#endif
 	}
     }
     return rc;

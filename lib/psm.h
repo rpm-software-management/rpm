@@ -6,8 +6,6 @@
  * Package state machine to handle a package from a transaction set.
  */
 
-#include "fsm.h"
-
 /**
  */
 #define	PSM_VERBOSE	0x8000

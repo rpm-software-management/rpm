@@ -5,7 +5,11 @@
 
 #include "system.h"
 
-#include "fsm.h"	/* XXX newFSM and CPIO_MAP_* */
+#include <rpmio_internal.h>
+#include <rpmlib.h>
+
+#include "cpio.h"	/* XXX CPIO_FOO */
+#include "fsm.h"	/* XXX newFSM() */
 
 #include "rpmfi.h"
 #include "rpmte.h"

@@ -99,6 +99,7 @@
 	- permit --dbpath and --root with signature (i.e. --import) modes.
 	- beecrypt: add types.h, eliminate need for config.gnu.h.
 	- rescusitate --rebuild.
+	- use rpmdb-redhat to suggest dependency resolution(s).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

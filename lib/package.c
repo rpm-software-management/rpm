@@ -137,81 +137,6 @@ Header headerRegenSigHeader(const Header h)
     return sig;
 }
 
-#ifdef	DYING
-/**
- * Retrieve package components from file handle.
- * @param fd		file handle
- * @param leadPtr	address of lead (or NULL)
- * @param sigs		address of signatures (or NULL)
- * @param hdrPtr	address of header (or NULL)
- * @return		rpmRC return code
- */
-static rpmRC readPackageHeaders(FD_t fd,
-		/*@null@*/ /*@out@*/ struct rpmlead * leadPtr, 
-		/*@null@*/ /*@out@*/ Header * sigs,
-		/*@null@*/ /*@out@*/ Header * hdrPtr)
-	/*@globals fileSystem@*/
-	/*@modifies fd, *leadPtr, *sigs, *hdrPtr, fileSystem @*/
-{
-    Header hdrBlock;
-    struct rpmlead leadBlock;
-    Header * hdr = NULL;
-    struct rpmlead * lead;
-    struct stat sb;
-    rpmRC rc;
-
-    hdr = hdrPtr ? hdrPtr : &hdrBlock;
-    lead = leadPtr ? leadPtr : &leadBlock;
-
-    memset(&sb, 0, sizeof(sb));
-    (void) fstat(Fileno(fd), &sb);
-    /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
-    if (S_ISREG(sb.st_mode) && sb.st_size < sizeof(*lead)) return 1;
-
-    if (readLead(fd, lead))
-	return RPMRC_FAIL;
-
-    if (lead->magic[0] != RPMLEAD_MAGIC0 || lead->magic[1] != RPMLEAD_MAGIC1 ||
-	lead->magic[2] != RPMLEAD_MAGIC2 || lead->magic[3] != RPMLEAD_MAGIC3)
-	return RPMRC_BADMAGIC;
-
-    switch (lead->major) {
-    case 1:
-	rpmError(RPMERR_NEWPACKAGE,
-	    _("packaging version 1 is not supported by this version of RPM\n"));
-	return RPMRC_FAIL;
-	/*@notreached@*/ break;
-    case 2:
-    case 3:
-    case 4:
-	rc = rpmReadSignature(fd, sigs, lead->signature_type);
-	if (rc == RPMRC_FAIL)
-	    return rc;
-	*hdr = headerRead(fd, (lead->major >= 3)
-			  ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-	if (*hdr == NULL) {
-	    if (sigs != NULL)
-		*sigs = rpmFreeSignature(*sigs);
-	    return RPMRC_FAIL;
-	}
-
-	/* Convert legacy headers on the fly ... */
-	legacyRetrofit(*hdr, lead);
-	break;
-    default:
-	rpmError(RPMERR_NEWPACKAGE, _("only packaging with major numbers <= 4 "
-		"is supported by this version of RPM\n"));
-	return RPMRC_FAIL;
-	/*@notreached@*/ break;
-    } 
-
-    if (hdrPtr == NULL)
-	*hdr = headerFree(*hdr, "ReadPackageHeaders exit");
-    
-    return RPMRC_OK;
-}
-#endif
-
 /*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
@@ -317,10 +242,6 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 	}
     }
 
-#if 0
-fprintf(stderr, "*** RPF: legacy %d nodigests %d nosignatures %d sigtag %d\n", ts->verify_legacy, ts->nodigests, ts->nosignatures, ts->sigtag);
-#endif
-
     /* Read the metadata, computing digest(s) on the fly. */
     hmagic = ((l->major >= 3) ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
     h = headerRead(fd, hmagic);
@@ -369,16 +290,14 @@ fprintf(stderr, "*** RPF: legacy %d nodigests %d nosignatures %d sigtag %d\n", t
 	int_32 uht;
 	int_32 uhc;
 
-	/*@-branchstate@*/
-	if (headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
-	    ts->dig->md5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(ts->dig->md5ctx, header_magic, sizeof(header_magic));
-	    ts->dig->nbytes += sizeof(header_magic);
-	    (void) rpmDigestUpdate(ts->dig->md5ctx, uh, uhc);
-	    ts->dig->nbytes += uhc;
-	    uh = headerFreeData(uh, uht);
-	}
-	/*@=branchstate@*/
+	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
+	    break;
+	ts->dig->md5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(ts->dig->md5ctx, header_magic, sizeof(header_magic));
+	ts->dig->nbytes += sizeof(header_magic);
+	(void) rpmDigestUpdate(ts->dig->md5ctx, uh, uhc);
+	ts->dig->nbytes += uhc;
+	uh = headerFreeData(uh, uht);
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
@@ -398,16 +317,14 @@ fprintf(stderr, "*** RPF: legacy %d nodigests %d nosignatures %d sigtag %d\n", t
 	int_32 uht;
 	int_32 uhc;
 
-	/*@-branchstate@*/
-	if (headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
-	    ts->dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(ts->dig->hdrsha1ctx, header_magic, sizeof(header_magic));
-	    ts->dig->nbytes += sizeof(header_magic);
-	    (void) rpmDigestUpdate(ts->dig->hdrsha1ctx, uh, uhc);
-	    ts->dig->nbytes += uhc;
-	    uh = headerFreeData(uh, uht);
-	}
-	/*@=branchstate@*/
+	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
+	    break;
+	ts->dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(ts->dig->hdrsha1ctx, header_magic, sizeof(header_magic));
+	ts->dig->nbytes += sizeof(header_magic);
+	(void) rpmDigestUpdate(ts->dig->hdrsha1ctx, uh, uhc);
+	ts->dig->nbytes += uhc;
+	uh = headerFreeData(uh, uht);
     }	break;
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
@@ -444,27 +361,11 @@ fprintf(stderr, "*** RPF: legacy %d nodigests %d nosignatures %d sigtag %d\n", t
 	    if (fddig->hashctx == NULL)
 		continue;
 	    if (fddig->hashalgo == PGPHASHALGO_MD5) {
-#ifdef	DYING
-		/*@-branchstate@*/
-		if (ts->dig->md5ctx != NULL)
-		    (void) rpmDigestFinal(ts->dig->md5ctx, NULL, NULL, 0);
-		/*@=branchstate@*/
-#else
-assert(ts->dig->md5ctx == NULL);
-#endif
 		ts->dig->md5ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
 		continue;
 	    }
 	    if (fddig->hashalgo == PGPHASHALGO_SHA1) {
-#ifdef	DYING
-		/*@-branchstate@*/
-		if (ts->dig->sha1ctx != NULL)
-		    (void) rpmDigestFinal(ts->dig->sha1ctx, NULL, NULL, 0);
-		/*@=branchstate@*/
-#else
-assert(ts->dig->sha1ctx == NULL);
-#endif
 		ts->dig->sha1ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
 		continue;
