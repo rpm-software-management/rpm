@@ -1,21 +1,20 @@
 .\" rpm2cpio - Converts Red Hat Package (RPM) to cpio archive
-.TH rpm 8 "15 Sept 1995" "Red Hat Software" "Red Hat Commercial Linux"
+.TH rpm2cpio 8 "11 January 2001" "Red Hat, Inc." "Red Hat Linux"
 .SH NAME
-rpm2cpio \- Converts Red Hat Packge (RPM) to cpio archive
+rpm2cpio \- Extract cpio archive from RPM Package Manager (RPM) package.
 .SH SYNOPSIS
 \fBrpm2cpio\fP [filename] 
 .SH DESCRIPTION
-\fBrpm2cpio\fP converts the .rpm file specified as it's sole argument
-to a cpio archive on standard out. If no argument is given, a rpm stream
+\fBrpm2cpio\fP converts the .rpm file specified as a single argument
+to a cpio archive on standard out. If a '-' argument is given, an rpm stream
 is read from standard in.
 
 .br
 .I "\fBrpm2cpio rpm-1.1-1.i386.rpm\fP"
 .br
-.I "\fBrpm2cpio < glint-1.0-1.i386.rpm\fP"
+.I "\fBrpm2cpio - < glint-1.0-1.i386.rpm\fP"
 
 .SH SEE ALSO
-.IR glint (8) ,
 .IR rpm (8)
 .SH AUTHOR
 .nf
