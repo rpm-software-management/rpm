@@ -1374,7 +1374,8 @@ ne_session *ne_get_session(const ne_request *req)
 /* Create a CONNECT tunnel through the proxy server.
  * Returns HTTP_* */
 static int proxy_tunnel(ne_session *sess)
-	/*@*/
+	/*@globals internalState @*/
+	/*@modifies sess, internalState @*/
 {
     /* Hack up an HTTP CONNECT request... */
     ne_request *req;

@@ -71,11 +71,6 @@ while test $# -gt 0; do
 
     --libs)
 	LIBS="-lneon @NEON_LIBS@"
-	# Don't add standard library paths
-	case "${libdir}" in
-	/usr/lib|/lib) ;;
-	*) LIBS="-L${libdir} ${LIBS}" ;;
-	esac
 	echo @user_LDFLAGS@ ${LIBS}
 	;;
 

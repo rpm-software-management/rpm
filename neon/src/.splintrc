@@ -1,4 +1,4 @@
--I. -I.. -I../../expat/lib -I../../zlib -DHAVE_CONFIG_H -D_LARGFILE_SOURCE
+-I. -I.. -I../../expat/lib -I../../zlib -DHAVE_CONFIG_H -D_LARGFILE_SOURCE -D__i386__ -DINT_MAX=0x7fffffffL -DSHRT_MAX=0x7fff
 
 +partial
 +forcehints
@@ -31,6 +31,7 @@
 -infloops		# 1
 -infloopsuncon		# 1
 -initallelements	# 3
+-matchfields
 -mayaliasunique		# 4
 -modfilesys		# 12
 -modnomods		# 1
@@ -56,6 +57,7 @@
 -immediatetrans		# 5
 -kepttrans		# 5
 -observertrans		# 5
+-onlytrans
 -readonlytrans		# 1
 -statictrans		# 1
 -temptrans		# 46

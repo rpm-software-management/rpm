@@ -142,9 +142,11 @@ void ne_ssl_clicert_free(ne_ssl_client_cert *cc)
 
 /* Map a server cert verification into a string. */
 static void verify_err(ne_session *sess, int failures)
+	/*@modifies sess @*/
 {
     struct {
 	int bit;
+/*@observer@*/
 	const char *str;
     } reasons[] = {
 	{ NE_SSL_NOTYETVALID, N_("certificate is not yet valid") },
@@ -170,6 +172,7 @@ static void verify_err(ne_session *sess, int failures)
 /* Format an ASN1 time to a string. 'buf' must be at least of size
  * 'NE_SSL_VDATELEN'. */
 static void asn1time_to_string(ASN1_TIME *tm, char *buf)
+	/*@modifies buf @*/
 {
     BIO *bio;
     
@@ -197,6 +200,7 @@ void ne_ssl_cert_validity(const ne_ssl_certificate *cert,
  * used for session (hostname).  (Wildcard matching is no longer
  * mandated by RFC3280, but certs are deployed which use wildcards) */
 static int match_hostname(char *cn, const char *hostname)
+	/*@modifies cn @*/
 {
     const char *dot;
     NE_DEBUG(NE_DBG_SSL, "Match %s on %s...\n", cn, hostname);
@@ -219,7 +223,9 @@ static int match_hostname(char *cn, const char *hostname)
  * identity does not match, or <0 if the certificate had no identity.
  * If 'identity' is non-NULL, store the malloc-allocated identity in
  * *identity. */
+/*@-modunconnomods@*/
 static int check_identity(const char *hostname, X509 *cert, char **identity)
+	/*@modifies *identity @*/
 {
     STACK_OF(GENERAL_NAME) *names;
     int match = 0, found = 0;
@@ -300,9 +306,12 @@ static int check_identity(const char *hostname, X509 *cert, char **identity)
              match ? "good" : "bad");
     return match ? 0 : 1;
 }
+/*@=modunconnomods@*/
 
 /* Populate an ne_ssl_certificate structure from an X509 object. */
+/*@-modunconnomods@*/
 static ne_ssl_certificate *populate_cert(ne_ssl_certificate *cert, X509 *x5)
+	/*@modifies cert @*/
 {
     cert->subj_dn.dn = X509_get_subject_name(x5);
     cert->issuer_dn.dn = X509_get_issuer_name(x5);
@@ -313,9 +322,12 @@ static ne_ssl_certificate *populate_cert(ne_ssl_certificate *cert, X509 *x5)
     check_identity("", x5, &cert->identity);
     return cert;
 }
+/*@=modunconnomods@*/
 
 /* Return a linked list of certificate objects from an OpenSSL chain. */
+/*@-modunconnomods@*/
 static ne_ssl_certificate *make_chain(STACK_OF(X509) *chain)
+	/*@*/
 {
     int n, count = sk_X509_num(chain);
     ne_ssl_certificate *top = NULL, *current = NULL;
@@ -341,9 +353,12 @@ static ne_ssl_certificate *make_chain(STACK_OF(X509) *chain)
 
     return top;
 }
+/*@=modunconnomods@*/
 
 /* Verifies an SSL server certificate. */
+/*@-modunconnomods@*/
 static int check_certificate(ne_session *sess, SSL *ssl, ne_ssl_certificate *chain)
+	/*@modifies sess @*/
 {
     X509 *cert = chain->subject;
     ASN1_TIME *notBefore = X509_get_notBefore(cert);
@@ -413,9 +428,11 @@ static int check_certificate(ne_session *sess, SSL *ssl, ne_ssl_certificate *cha
 
     return ret;
 }
+/*@=modunconnomods@*/
 
 /* Duplicate a client certificate, which must be in the decrypted state. */
 static ne_ssl_client_cert *dup_client_cert(const ne_ssl_client_cert *cc)
+	/*@modifies cc @*/
 {
     ne_ssl_client_cert *newcc = ne_calloc(sizeof *newcc);
     
@@ -432,7 +449,9 @@ static ne_ssl_client_cert *dup_client_cert(const ne_ssl_client_cert *cc)
 }
 
 /* Callback invoked when the SSL server requests a client certificate.  */
+/*@-modunconnomods@*/
 static int provide_client_cert(SSL *ssl, X509 **cert, EVP_PKEY **pkey)
+	/*@modifies *cert, *pkey @*/
 {
     ne_ssl_context *ctx = SSL_get_app_data(ssl);
     ne_session *sess = SSL_CTX_get_app_data(ctx->ctx);
@@ -476,6 +495,7 @@ static int provide_client_cert(SSL *ssl, X509 **cert, EVP_PKEY **pkey)
 	return 0;
     }
 }
+/*@=modunconnomods@*/
 
 void ne_ssl_set_clicert(ne_session *sess, const ne_ssl_client_cert *cc)
 {
@@ -659,6 +679,7 @@ void ne_ssl_trust_default_ca(ne_session *sess)
 
 /* Find a friendly name in a PKCS12 structure the hard way, without
  * decrypting the parts which are encrypted.. */
+/*@-modunconnomods@*/
 static char *find_friendly_name(PKCS12 *p12)
 {
     STACK_OF(PKCS7) *safes = PKCS12_unpack_authsafes(p12);
@@ -690,6 +711,7 @@ static char *find_friendly_name(PKCS12 *p12)
     sk_PKCS7_pop_free(safes, PKCS7_free);
     return name;
 }
+/*@=modunconnomods@*/
 
 ne_ssl_client_cert *ne_ssl_clicert_read(const char *filename)
 {

@@ -212,12 +212,12 @@ int ne_service_lookup(const char *name)
 /* Negotiate an SSL connection on socket as an SSL server, using given
  * SSL context. */
 int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
-	/*@*/;
+	/*@modifies sock, ctx @*/;
 
 /* Negotiate an SSL connection on socket as an SSL client, using given
  * SSL context. */
 int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx)
-	/*@*/;
+	/*@modifies sock, ctx @*/;
 
 END_NEON_DECLS
 

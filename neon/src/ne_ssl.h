@@ -106,7 +106,7 @@ int ne_ssl_cert_digest(const ne_ssl_certificate *cert, char *digest)
  * least NE_SSL_VDATELEN bytes in length. */
 void ne_ssl_cert_validity(const ne_ssl_certificate *cert,
                           char *from, char *until)
-	/*@*/;
+	/*@modifies from, until @*/;
 
 /* Returns zero if 'c1' and 'c2' refer to the same certificate, or
  * non-zero otherwise. */
@@ -115,8 +115,8 @@ int ne_ssl_cert_cmp(const ne_ssl_certificate *c1,
 	/*@*/;
 
 /* Deallocate memory associated with certificate. */
-void ne_ssl_cert_free(ne_ssl_certificate *cert)
-	/*@*/;
+void ne_ssl_cert_free(/*@only@*/ ne_ssl_certificate *cert)
+	/*@modifies cert @*/;
 
 /* A client certificate (and private key). */
 typedef struct ne_ssl_client_cert_s ne_ssl_client_cert;
@@ -142,7 +142,7 @@ int ne_ssl_clicert_encrypted(const ne_ssl_client_cert *ccert)
  * again with a different password.  For a ccert on which _encrypted()
  * returns 0, calling _decrypt results in undefined behaviour. */
 int ne_ssl_clicert_decrypt(ne_ssl_client_cert *ccert, const char *password)
-	/*@*/;
+	/*@modifies ccert @*/;
 
 /* Return the actual certificate part of the client certificate (never
  * returns NULL). */
@@ -150,8 +150,8 @@ const ne_ssl_certificate *ne_ssl_clicert_owner(const ne_ssl_client_cert *ccert)
 	/*@*/;
 
 /* Deallocate memory associated with a client certificate. */
-void ne_ssl_clicert_free(ne_ssl_client_cert *ccert)
-	/*@*/;
+void ne_ssl_clicert_free(/*@only@*/ ne_ssl_client_cert *ccert)
+	/*@modifies ccert @*/;
 
 
 /* SSL context object.  The interfaces to manipulate an SSL context
@@ -184,8 +184,8 @@ int ne_ssl_context_set_verify(ne_ssl_context *ctx, int required,
 	/*@*/;
 
 /* Destroy an SSL context. */
-void ne_ssl_context_destroy(ne_ssl_context *ctx)
-	/*@*/;
+void ne_ssl_context_destroy(/*@only@*/ ne_ssl_context *ctx)
+	/*@modifies ctx @*/;
 
 END_NEON_DECLS
 

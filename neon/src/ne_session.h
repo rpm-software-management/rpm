@@ -142,7 +142,7 @@ void ne_ssl_set_verify(ne_session *sess, ne_ssl_verify_fn fn, void *userdata)
 /* Use the given client certificate for the session.  The client cert
  * MUST be in the decrypted state, otherwise behaviour is undefined. */
 void ne_ssl_set_clicert(ne_session *sess, const ne_ssl_client_cert *clicert)
-	/*@modifies sess @*/;
+	/*@modifies sess, clicert @*/;
 
 /* Indicate that the certificate 'cert' is trusted; 'cert' is
  * duplicated internally and may be destroyed at will. */

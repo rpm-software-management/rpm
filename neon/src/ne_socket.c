@@ -525,7 +525,7 @@ static const struct iofns iofns_raw = { read_raw, write_raw, readable_raw };
 #ifdef HAVE_OPENSSL
 /* OpenSSL I/O function implementations. */
 static int readable_ossl(ne_socket *sock, int secs)
-	/*@*/
+	/*@modifies sock @*/
 {
     if (SSL_pending(sock->ssl))
 	return 0;
@@ -534,7 +534,7 @@ static int readable_ossl(ne_socket *sock, int secs)
 
 /* SSL error handling, according to SSL_get_error(3). */
 static int error_ossl(ne_socket *sock, int sret)
-	/*@*/
+	/*@modifies sock @*/
 {
     int err = SSL_get_error(sock->ssl, sret), ret = NE_SOCK_ERROR;
     const char *str;
@@ -576,8 +576,9 @@ static int error_ossl(ne_socket *sock, int sret)
  * accidentally passing a negative number, etc. */
 #define CAST2INT(n) (((n) > INT_MAX) ? INT_MAX : (n))
 
+/*@-mustmod@*/
 static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
-	/*@*/
+	/*@modifies sock, buffer @*/
 {
     int ret;
 
@@ -590,9 +591,10 @@ static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
 
     return ret;
 }
+/*@=mustmod@*/
 
 static ssize_t write_ossl(ne_socket *sock, const char *data, size_t len)
-	/*@*/
+	/*@modifies sock @*/
 {
     int ret, ilen = CAST2INT(len);
     ret = SSL_write(sock->ssl, data, ilen);
