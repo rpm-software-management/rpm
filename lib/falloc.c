@@ -1,26 +1,40 @@
 #include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "falloc.h"
 
-#define FA_MAGIC	0x02050920
+#define FA_MAGIC      0x02050920
 
-typedef unsigned int u32;		/* this could be wrong someday */
+/* 
+   The entire file space is thus divided into blocks with a "struct fablock"
+   at the header of each. The size fields doubly link this block list.
+
+   There is an additional free list weaved through the block list, which 
+   keeps new allocations fast.
+
+   Much of this was inspired by Knuth vol 1.
+ */
 
 struct faFileHeader{
-    u32 magic;
-    u32 firstFree;
+    unsigned int magic;
+    unsigned int firstFree;
 };
 
-/* the free list is kept *sorted* to keep fragment compaction fast */
+struct faHeader {
+    unsigned int size;				
+    unsigned int freeNext; /* offset of the next free block, 0 if none */
+    unsigned int freePrev; 
+    unsigned int isFree;
 
-struct faBlock {
-    u32 isFree;
-    u32 next;				/* only meaningful if free */
-    u32 prev;				/* only meaningful if free */
-    u32 size;				
+    /* note that the u16's appear last for alignment/space reasons */
 };
+
+struct faFooter {
+    unsigned int size;
+    unsigned int isFree; 
+} ;
 
 /* flags here is the same as for open(2) - NULL returned on error */
 faFile faOpen(char * path, int flags, int perms) {
@@ -80,145 +94,229 @@ faFile faOpen(char * path, int flags, int perms) {
 }
 
 unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
-    u32 nextFreeBlock;
-    u32 bestFreeBlock = 0;
-    u32 bestFreeSize = 0;
-    unsigned int newBlock;
-    struct faBlock block, prevBlock, nextBlock;
+    unsigned int nextFreeBlock;
+    unsigned int newBlockOffset;
+    unsigned int footerOffset;
     int failed = 0;
+    struct faFileHeader faHeader;
+    struct faHeader header, origHeader;
+    struct faHeader * restoreHeader = NULL;
+    struct faHeader nextFreeHeader, origNextFreeHeader;
+    struct faHeader * restoreNextHeader = NULL;
+    struct faHeader prevFreeHeader, origPrevFreeHeader;
+    struct faHeader * restorePrevHeader = NULL;
+    struct faFooter footer, origFooter;
+    struct faFooter * restoreFooter = NULL;
+    int updateHeader = 0;
 
-    /* Make sure they are allocing multiples of four bytes. It'll keep
-       things smoother that way */
-    (size % 4) ? size += (4 - (size % 4)) : 0;
+    /* our internal idea of size includes overhead */
+    size += sizeof(struct faHeader) + sizeof(struct faFooter);
 
-    /* first, look through the free list for the best fit */
+    /* Make sure they are allocing multiples of 64 bytes. It'll keep
+       things less fragmented that way */
+    (size % 64) ? size += (64 - (size % 64)) : 0;
+
+    /* find a block via first fit - see Knuth vol 1 for why */
     nextFreeBlock =  fa->firstFree;
-    while (nextFreeBlock) {
-	if (lseek(fa->fd, nextFreeBlock, SEEK_SET) < 0) return 0;
-	if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) return 0;
+    newBlockOffset = 0;
 
-	if (block.size >= size) {
-	    if (bestFreeBlock) {
-		if (block.size < bestFreeSize) {
-		    bestFreeSize = block.size;
-		    bestFreeBlock = nextFreeBlock;
-		}
-	    } else {
-		bestFreeSize = block.size;
-		bestFreeBlock = nextFreeBlock;
-	    }
+    while (nextFreeBlock && !newBlockOffset) {
+	if (lseek(fa->fd, nextFreeBlock, SEEK_SET) < 0) return 0;
+	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) return 0;
+
+	if (!header.isFree) {
+	    fprintf(stderr, "free list corrupt");
+	    exit(1);
 	}
 
-	nextFreeBlock = block.next;
+	if (header.size >= size) {
+	    newBlockOffset = nextFreeBlock;
+	} else {
+	    nextFreeBlock = header.freeNext;
+	}
     }
 
-    if (bestFreeBlock) {
-	if (lseek(fa->fd, bestFreeBlock, SEEK_SET) < 0) return 0;
-	if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) 
+    if (newBlockOffset) {
+	if (lseek(fa->fd, newBlockOffset, SEEK_SET) < 0) return 0;
+	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) 
 	    return 0;
+	origHeader = header;
 
-	/* update the free list chain */
-	if (lseek(fa->fd, block.prev, SEEK_SET) < 0) return 0;
-	if (read(fa->fd, &prevBlock, sizeof(prevBlock)) != sizeof(prevBlock)) 
+	footerOffset = newBlockOffset + header.size - sizeof(footer);
+
+	if (lseek(fa->fd, footerOffset, SEEK_SET) < 0) return 0;
+	if (read(fa->fd, &footer, sizeof(footer)) != sizeof(footer)) 
 	    return 0;
-	if (lseek(fa->fd, block.next, SEEK_SET) < 0) return 0;
-	if (read(fa->fd, &nextBlock, sizeof(nextBlock)) != sizeof(nextBlock)) 
-	    return 0;
+	origFooter = footer;
 
-	prevBlock.next = block.next;
-	nextBlock.prev = block.prev;
+	/* should we split this block into two? */
 
-	if (lseek(fa->fd, block.prev, SEEK_SET) < 0) return 0;
-	if (write(fa->fd, &prevBlock, sizeof(prevBlock)) != sizeof(prevBlock)) 
-	    return 0;
+	/* XXX implement fragment creation here */
 
-	if (lseek(fa->fd, block.next, SEEK_SET) < 0) {
-	    failed = 1;
+	footer.isFree = header.isFree = 0;
+
+	/* remove it from the free list before */
+	if (newBlockOffset == fa->firstFree) {
+	    faHeader.magic = FA_MAGIC;
+	    faHeader.firstFree = header.freeNext;
 	} else {
-	    if (write(fa->fd, &nextBlock, sizeof(nextBlock)) != 
-		sizeof(nextBlock)) {
+	    if (lseek(fa->fd, header.freePrev, SEEK_SET) < 0) return 0;
+	    if (read(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader)) !=
+			 sizeof(prevFreeHeader)) 
+		return 0;
+	    origPrevFreeHeader = prevFreeHeader;
+
+	    prevFreeHeader.freeNext = header.freeNext;
+	}
+
+	/* and after */
+	if (header.freeNext) {
+	    if (lseek(fa->fd, header.freeNext, SEEK_SET) < 0) return 0;
+	    if (read(fa->fd, &nextFreeHeader, sizeof(nextFreeHeader)) !=
+			 sizeof(nextFreeHeader)) 
+		return 0;
+	    origNextFreeHeader = nextFreeHeader;
+
+	    nextFreeHeader.freePrev = header.freePrev;
+	}
+
+	/* if any of these fail, try and restore everything before leaving */
+	if (updateHeader) {
+	    if (lseek(fa->fd, 0, SEEK_SET) < 0) 
+		return 0;
+	    else if (write(fa->fd, &faHeader, sizeof(faHeader)) !=
+			     sizeof(faHeader)) 
+		return 0;
+	} else {
+	    if (lseek(fa->fd, header.freePrev, SEEK_SET) < 0)
+		return 0;
+	    else if (read(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader)) !=
+			 sizeof(prevFreeHeader))
+		return 0;
+	    restorePrevHeader = &origPrevFreeHeader;
+	}
+
+	if (header.freeNext) {
+	    if (lseek(fa->fd, header.freeNext, SEEK_SET) < 0)
+		return 0;
+	    else if (read(fa->fd, &nextFreeHeader, sizeof(nextFreeHeader)) !=
+			 sizeof(nextFreeHeader))
+		return 0;
+
+	    restoreNextHeader = &origNextFreeHeader;
+	}
+
+	if (!failed) {
+	    if (lseek(fa->fd, newBlockOffset, SEEK_SET) < 0) 
 		failed = 1;
+	    else if (write(fa->fd, &header, sizeof(header)) !=
+			 sizeof(header)) {
+		failed = 1;
+		restoreHeader = &origHeader;
+	    }
+	}
+
+	if (!failed) {
+	    if (lseek(fa->fd, footerOffset, SEEK_SET) < 0) 
+		failed = 1;
+	    else if (write(fa->fd, &footer, sizeof(footer)) !=
+			 sizeof(footer)) {
+		failed = 1;
+		restoreFooter = &origFooter;
 	    }
 	}
 
 	if (failed) {
-	    /* try and restore the "prev" block, this won't be a complete
-		disaster */
-	    prevBlock.next = bestFreeBlock;
+	    if (updateHeader) {
+		faHeader.firstFree = newBlockOffset;
+		fa->firstFree = newBlockOffset;
+	    	lseek(fa->fd, 0, SEEK_SET);
+	        write(fa->fd, &faHeader, sizeof(faHeader));
+	    } 
 
-	    lseek(fa->fd, block.prev, SEEK_SET);
-	    write(fa->fd, &prevBlock, sizeof(prevBlock));
-		
-	    return 0;
-	}
-
-	block.isFree = 0; 		/* mark it as used */
-	block.prev = block.next = 0;	
-	
-	/* At some point, we should split this block into two if it's
-	   bigger then the amount that's being allocated. Any space left
-	   at the end of this block is wasted right now ***/
-
-	if (lseek(fa->fd, bestFreeBlock, SEEK_SET) < 0) {
-	    failed = 1;
-	} else {
-	    if (write(fa->fd, &block, sizeof(block)) != sizeof(block)) {
-		failed = 1;
+	    if (restorePrevHeader) {
+	    	lseek(fa->fd, header.freePrev, SEEK_SET);
+	    	write(fa->fd, restorePrevHeader, sizeof(*restorePrevHeader));
 	    }
-	}
 
-	if (failed) {
-	    /* this space is gone :-( this really shouldn't ever happen. It
-	       won't result in furthur date coruption though, so lets not
-	       make it worse! */
+	    if (restoreNextHeader) {
+	    	lseek(fa->fd, header.freeNext, SEEK_SET);
+	    	write(fa->fd, restoreNextHeader, sizeof(*restoreNextHeader));
+	    }
+
+	    if (restoreHeader) {
+	    	lseek(fa->fd, newBlockOffset, SEEK_SET);
+	    	write(fa->fd, restoreHeader, sizeof(header));
+	    }
+
+	    if (restoreFooter) {
+	    	lseek(fa->fd, footerOffset, SEEK_SET);
+	    	write(fa->fd, restoreFooter, sizeof(footer));
+	    }
+
 	    return 0;
 	}
-
-	newBlock = bestFreeBlock;
     } else {
 	char * space;
 
 	/* make a new block */
-	newBlock = fa->fileSize;
+	newBlockOffset = fa->fileSize;
+	footerOffset = newBlockOffset + size - sizeof(footer);
 
-	space = calloc(1, size);
+	space = alloca(size);
 	if (!space) return 0;
 
-	block.next = block.prev = 0;
-	block.size = size;
-	block.isFree = 0;
+	footer.isFree = header.isFree = 0;
+	footer.size = header.size = size;
+	header.freePrev = header.freeNext = 0;
 
-        lseek(fa->fd, newBlock, SEEK_SET);
-	if (write(fa->fd, &block, sizeof(block)) != sizeof(block)) {
-	    free(space);	
-	    return 0;
-	}
+	/* reserve all space up front */
+        lseek(fa->fd, newBlockOffset, SEEK_SET);
 	if (write(fa->fd, space, size) != size) {
-	    free(space);	
 	    return 0;
 	}
-	free(space);
 
-	fa->fileSize += sizeof(block) + size;
+        lseek(fa->fd, newBlockOffset, SEEK_SET);
+	if (write(fa->fd, &header, sizeof(header)) != sizeof(header)) {
+	    return 0;
+	}
+
+        lseek(fa->fd, footerOffset, SEEK_SET);
+	if (write(fa->fd, &footer, sizeof(footer)) != sizeof(footer)) {
+	    return 0;
+	}
+
+	fa->fileSize += size;
     }
     
-    return newBlock + sizeof(block); 
+    return newBlockOffset + sizeof(header); 
 }
 
-int faFree(faFile fa, unsigned int offset) {
-    struct faBlock block;
+void faFree(faFile fa, unsigned int offset) {
+    struct faHeader header;
+    struct faFooter footer;
+    int footerOffset;
 
-    /* this is *really* bad ****/
+    /* any errors cause this to die, and thus result in lost space in the
+       database. which is at least better then corruption */
 
-    offset -= sizeof(block);
-    if (lseek(fa->fd, offset, SEEK_SET) < 0) return 0;
-    if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) return 0;
+    offset -= sizeof(header);
 
-    block.isFree = 1;
-    if (lseek(fa->fd, offset, SEEK_SET) < 0) return 0;
-    if (write(fa->fd, &block, sizeof(block)) != sizeof(block)) return 0;
+    /* for now, just add it to the free list */
 
-    return 1;
+    if (lseek(fa->fd, offset, SEEK_SET) < 0)
+	return;
+    if (read(fa->fd, &header, sizeof(header)) != sizeof(header))
+	return;
+
+    footerOffset = offset + header.size - sizeof(footer);
+
+    if (lseek(fa->fd, footerOffset, SEEK_SET) < 0)
+	return;
+    if (read(fa->fd, &header, sizeof(header)) != sizeof(header))
+	return;
+
+    return;
 }
 
 void faClose(faFile fa) {
@@ -231,11 +329,11 @@ unsigned int faFirstOffset(faFile fa) {
 }
 
 unsigned int faNextOffset(faFile fa, unsigned int lastOffset) {
-    struct faBlock block;
+    struct faHeader header;
     int offset;
 
     if (lastOffset) {
-	offset = lastOffset - sizeof(block);
+	offset = lastOffset - sizeof(header);
     } else {
 	offset = sizeof(struct faFileHeader);
     }
@@ -243,24 +341,24 @@ unsigned int faNextOffset(faFile fa, unsigned int lastOffset) {
     if (offset >= fa->fileSize) return 0;
 
     lseek(fa->fd, offset, SEEK_SET);
-    if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) {
+    if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) {
 	return 0;
     }
-    if (!lastOffset && !block.isFree) return (offset + sizeof(block));
+    if (!lastOffset && !header.isFree) return (offset + sizeof(header));
 
     do {
-	offset += sizeof(block) + block.size;
+	offset += header.size;
 
 	lseek(fa->fd, offset, SEEK_SET);
-	if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) {
+	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) {
 	    return 0;
 	}
 
-	if (!block.isFree) break;
-    } while (offset < fa->fileSize && block.isFree);
+	if (!header.isFree) break;
+    } while (offset < fa->fileSize && header.isFree);
 
     if (offset < fa->fileSize)
-	return (offset + sizeof(block));
+	return (offset + sizeof(header));
     else
 	return 0;
 }
