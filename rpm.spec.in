@@ -268,10 +268,10 @@ fi
 %rpmattr	%{__prefix}/bin/rpmquery
 %rpmattr	%{__prefix}/bin/rpmverify
 
-%{__prefix}/lib/librpm.so.*
-%{__prefix}/lib/librpmdb.so.*
-%{__prefix}/lib/librpmio.so.*
-%{__prefix}/lib/librpmbuild.so.*
+%{__prefix}/lib/librpm-@VERSION@.so
+%{__prefix}/lib/librpmdb-@VERSION@.so
+%{__prefix}/lib/librpmio-@VERSION@.so
+%{__prefix}/lib/librpmbuild-@VERSION@.so
 
 %rpmattr	%{__prefix}/lib/rpm/config.guess
 %rpmattr	%{__prefix}/lib/rpm/config.sub

@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: /usr/lib/rpm/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.83 2001/06/21 03:51:35 jbj Exp $
+# $Id: macros.in,v 1.84 2001/07/10 17:59:11 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -90,14 +90,13 @@
 #	These are the default values that can be overridden by other
 #	(e.g. per-platform, per-system, per-packager, per-package) macros.
 #
-#
 #	The directory where sources/patches will be unpacked and built.
 %_builddir		%{_topdir}/BUILD
 
 #	The interpreter used for build scriptlets.
 %_buildshell		/bin/sh
 
-#	The path to the bzip2 executable (legacy).
+#	The path to the bzip2 executable (legacy, use %{__bzip2} instead).
 %_bzip2bin		%{__bzip2}
 
 #	The location of the rpm database file(s).
@@ -119,7 +118,7 @@
 # fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
 # These macros are necessary only for legacy compatibility, and have moved
 # to per-platform macro configuration (i.e. /usr/lib/rpm/<arch>-<os>/macros)
-#%__id_u			@__ID_U@
+#%__id_u		@__ID_U@
 #%__chown_Rhf		@__CHOWN_RHF@
 #%__chgrp_Rhf		@__CHGRP_RHF@
 #%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
@@ -127,14 +126,14 @@
 #%_fixperms		%{__chmod} -Rf @FIXPERMS@
 #
 
-#	The path to the gzip executable (legacy).
+#	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
 
 #	The number of changelog entries kept when installing (legacy, unused in
 #	rpm-4.0.1 and later).
 %_instchangelog		5
 
-#	The path to the pgp executable (legacy).
+#	The path to the pgp executable (legacy, use %{__pgp} instead).
 %_pgpbin		%{__pgp}
 
 #	The directory where newly built binary packages will be written.
@@ -164,7 +163,7 @@
 #	Path to top of build area.
 %_topdir		%{_usrsrc}/redhat
 
-#	The path to the unzip executable (legacy).
+#	The path to the unzip executable (legacy, use %{__unzip} instead).
 %_unzipbin		%{__unzip}
 
 #==============================================================================
@@ -279,6 +278,19 @@
 #%vendor
 
 #==============================================================================
+# ---- Package version macro.
+#	The type of package to produce, for compatibility with legacy
+#	versions of rpm.
+#
+# This is an rpm version, e.g. 30005 means to produce packaging compatible
+# with rpm-3.0.5. At the moment, values < 30005 (i.e. compatibility with
+# version before rpm-3.0.5) are not supported. The only incompatible change
+# in rpm packaging since rpm-3.0.5 has been to replace a 3 with a 4 in the
+# rpmlead, so there's little need to use any value greater than 30005.
+#
+%_package_version	30005
+
+#==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.
 #
@@ -286,8 +298,8 @@
 # list of tokens, with an optional '!' negation to explicitly disable bit
 # values, or a "=value" if a parameter. A per-tag value is used (e.g.
 # %_dbi_config_Packages) if defined, otherwise a per-rpmdb default
-# (e.g. %_dbi_config). The configuration is # also conditioned on the
-# existence of an internal %{_rpmdb_rebuild} switch # to permit changing
+# (e.g. %_dbi_config). The configuration is also conditioned on the
+# existence of an internal %{_rpmdb_rebuild} switch to permit changing
 # the configuration while rebuilding an rpmdb database.
 #
 # The rpmdb configuration tokens are in a popt table in rpmdb/dbconfig.c,
@@ -358,7 +370,7 @@
 #   ht_dupsort	+++	(hash only) DB_DUPSORT
 #----------------------- rpmdb specific configuration:
 #   usecursors		(always on) Use db3 cursors in get/put/del ?
-#   usedbenv	+++	(on if not "traditional") Use db3 environment?
+#   usedbenv		(always on) Use db3 environment?
 #   verify		(always on, db3 only) Verify db after close?
 #   lockdbfd		(always on for Packages) Use fcntl(2) locking ?
 #   nofsync		Disable fsync(2) call performed after db3 writes?

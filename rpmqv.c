@@ -443,23 +443,26 @@ int main(int argc, const char ** argv)
 #if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
 	case 'i':
 #ifdef	IAM_RPMQV
-	    if (bigMode == MODE_QUERY) {
+	    if (bigMode == MODE_QUERY || qva->qva_mode == 'q') {
 		/*@-nullassign -readonlytrans@*/
 		const char * infoCommand[] = { "--info", NULL };
 		/*@=nullassign =readonlytrans@*/
 		(void) poptStuffArgs(optCon, infoCommand);
-	    }
+	    } else
 #endif
 #ifdef	IAM_RPMEIU
-	    if (bigMode == MODE_INSTALL)
+	    if (bigMode == MODE_INSTALL ||
+		(ia->installInterfaceFlags &
+		    (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL)))
 		/*@-ifempty@*/ ;
-	    if (bigMode == MODE_UNKNOWN) {
+	    else if (bigMode == MODE_UNKNOWN) {
 		/*@-nullassign -readonlytrans@*/
 		const char * installCommand[] = { "--install", NULL };
 		/*@=nullassign =readonlytrans@*/
 		(void) poptStuffArgs(optCon, installCommand);
-	    }
+	    } else
 #endif
+		/*@-ifempty@*/ ;
 	    break;
 #endif	/* IAM_RPMQV || IAM_RPMEIU || IAM_RPMBT */
 
@@ -507,6 +510,7 @@ int main(int argc, const char ** argv)
     }
 
 #ifdef	IAM_RPMBT
+  if (bigMode == MODE_UNKNOWN) {
     switch (ba->buildMode) {
     case 'b':	bigMode = MODE_BUILD;		break;
     case 't':	bigMode = MODE_TARBUILD;	break;
@@ -524,9 +528,11 @@ int main(int argc, const char ** argv)
 	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
 	argerror("--buildroot may only be used during package builds");
     }
+  }
 #endif	/* IAM_RPMBT */
     
 #ifdef	IAM_RPMDB
+  if (bigMode == MODE_UNKNOWN) {
     if (da->init) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
@@ -545,9 +551,11 @@ int main(int argc, const char ** argv)
 	else
 	    bigMode = MODE_VERIFYDB;
     }
+  }
 #endif	/* IAM_RPMDB */
 
 #ifdef	IAM_RPMQV
+  if (bigMode == MODE_UNKNOWN) {
     switch (qva->qva_mode) {
     case 'q':	bigMode = MODE_QUERY;		break;
     case 'V':	bigMode = MODE_VERIFY;		break;
@@ -567,12 +575,14 @@ int main(int argc, const char ** argv)
 
     if (qva->qva_source != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query source"));
+  }
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMEIU
+  if (bigMode == MODE_UNKNOWN)
     {	int iflags = (ia->installInterfaceFlags &
-		(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_NOERASE));
-	int eflags = (ia->installInterfaceFlags & INSTALL_UPGRADE);
+		(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL));
+	int eflags = (ia->installInterfaceFlags & INSTALL_ERASE);
 
 	if (iflags & eflags)
 	    argerror(_("only one major mode may be specified"));
@@ -584,6 +594,7 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMK
+  if (bigMode == MODE_UNKNOWN) {
 	switch (ka->addSign) {
 	case RESIGN_NONE:
 	    break;
@@ -596,6 +607,7 @@ int main(int argc, const char ** argv)
 	    break;
 
 	}
+  }
 #endif	/* IAM_RPMK */
 
     /* XXX TODO: never happens. */

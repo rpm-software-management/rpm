@@ -154,8 +154,10 @@
 	- glibc-2.0.x has not __va_copy().
 	- popthelp.c: don't use stpcpy to avoid portability grief (#47500).
 	- permit alias/exec description/arg text to be set from popt config.
-	- use rpmqv.c, not rpm.c, as rpm's main() routine.
 	- python: rhnLoad/rhnUnload to check header digest.
+	- package version now configureable, default v3.
+	- rename rpm libraries to have version with libtool -release.
+	- fix: -i CLI context broken Yet Again.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -337,6 +337,29 @@ static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
+#define	RPMPKGVERSION_MIN	30004
+#define	RPMPKGVERSION_MAX	40003
+static int rpmpkg_version = -1;
+
+static int rpmLeadVersion(void)
+{
+    int rpmlead_version;
+
+    /* Intitialize packaging version from macro configuration. */
+    if (rpmpkg_version < 0) {
+	rpmpkg_version = rpmExpandNumeric("%{_package_version}");
+	if (rpmpkg_version < RPMPKGVERSION_MIN)
+	    rpmpkg_version = RPMPKGVERSION_MIN;
+	if (rpmpkg_version > RPMPKGVERSION_MAX)
+	    rpmpkg_version = RPMPKGVERSION_MAX;
+    }
+
+    rpmlead_version = rpmpkg_version / 10000;
+    if (_noDirTokens || (rpmlead_version < 3 || rpmlead_version > 4))
+	rpmlead_version = 3;
+    return rpmlead_version;
+}
+
 int writeRPM(Header *hdrp, const char *fileName, int type,
 		    CSA_t csa, char *passPhrase, const char **cookie)
 {
@@ -523,8 +546,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	}
 
 	memset(&lead, 0, sizeof(lead));
-	/* XXX Set package version conditioned on noDirTokens. */
-	lead.major = (_noDirTokens ? 3 : 4);
+	lead.major = rpmLeadVersion();
 	lead.minor = 0;
 	lead.type = type;
 	lead.archnum = archnum;

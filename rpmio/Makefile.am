@@ -15,6 +15,7 @@ lib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c \
 	base64.c digest.c strcasecmp.c stubs.c \
 	ugid.c rpmmalloc.c rpmlog.c
+librpmio_la_LDFLAGS = -release @VERSION@
 
 # XXX Add internal libtool dependence
 install-data-local:

@@ -21,6 +21,7 @@ librpmbuild_la_SOURCES = \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c reqprov.c spec.c
+librpmbuild_la_LDFLAGS = -release @VERSION@
 
 # XXX Add internal libtool dependence
 install-data-local:

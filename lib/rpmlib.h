@@ -1633,10 +1633,8 @@ typedef enum rpmInstallInterfaceFlags_e {
     INSTALL_LABEL	= (1 << 4),	/*!< from --verbose (notify) */
     INSTALL_UPGRADE	= (1 << 5),	/*!< from --upgrade */
     INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
-    INSTALL_NOERASE	= (1 << 7),	/*!< from --install */
-/*@-enummemuse@*/
+    INSTALL_INSTALL	= (1 << 7),	/*!< from --install */
     INSTALL_ERASE	= (1 << 8)	/*!< from --erase */
-/*@=enummemuse@*/
 } rpmInstallInterfaceFlags;
 
 /** \ingroup rpmcli
