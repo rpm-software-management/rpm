@@ -6,7 +6,10 @@
 	  stale after some realloc()s in addEntry()
 	- ignore OS tag for v2 packages -- it was wrong anyway
 	- match shared libs on ".so" rather than ".so."
-	- skip blanks and _end from objdump for auto-provide
+	- skip blanks from objdump for auto-provide
+	- if objdump gets us _end, provide the file name
+	- do not ldd non-regular files
+	- do not pass leading "/" to ldd
 	- fix ExcludeOs: and ExclusiveOs:
 
 2.2 -> 2.2.1:
