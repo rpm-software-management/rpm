@@ -19,6 +19,7 @@ static int getFtpURL(char * hostAndFile, char * dest);
 static void printDepFlags(FILE * f, char * version, int flags);
 static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
 			     int numConflicts);
+static char * getFtpPassword(char * machine, char * account, int mustAsk);
 
 static void printHash(const unsigned long amount, const unsigned long total) {
     int hashesNeeded;
@@ -380,9 +381,51 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
     return rc;
 }
 
+struct pwcacheEntry {
+    char * machine;
+    char * account;
+    char * pw;
+} ;
+
+static char * getFtpPassword(char * machine, char * account, int mustAsk) {
+    static struct pwcacheEntry * pwCache = NULL;
+    static int pwCount = 0;
+    int i;
+    char * prompt;
+
+    for (i = 0; i < pwCount; i++) {
+	if (!strcmp(pwCache[i].machine, machine) &&
+	    !strcmp(pwCache[i].account, account))
+		break;
+    }
+
+    if (i < pwCount && !mustAsk) {
+	return pwCache[i].pw;
+    } else if (i == pwCount) {
+	pwCount++;
+	if (pwCache)
+	    pwCache = realloc(pwCache, sizeof(*pwCache) * pwCount);
+	else
+	    pwCache = malloc(sizeof(*pwCache));
+
+	pwCache[i].machine = strdup(machine);
+	pwCache[i].account = strdup(account);
+    } else
+	free(pwCache[i].pw);
+
+    prompt = alloca(strlen(machine) + strlen(account) + 50);
+    sprintf(prompt, "Password for %s@%s: ", account, machine);
+
+    pwCache[i].pw = strdup(getpass(prompt));
+
+    return pwCache[i].pw;
+}
+
 static int getFtpURL(char * hostAndFile, char * dest) {
     char * buf;
-    char * chptr;
+    char * chptr, * machineName, * fileName;
+    char * userName = NULL;
+    char * password = NULL;
     int ftpconn;
     int fd;
     int rc;
@@ -396,12 +439,35 @@ static int getFtpURL(char * hostAndFile, char * dest) {
     while (*chptr && (*chptr != '/')) chptr++;
     if (!*chptr) return -1;
 
-    *chptr = '\0';
+    machineName = buf;		/* could still have user:pass@ though */
+    fileName = chptr;
+    *fileName = '\0';
 
-    ftpconn = ftpOpen(buf, NULL, NULL);
+    chptr = machineName;
+    while (*chptr && *chptr != '@') chptr++;
+    if (*chptr) {		/* we have a username */
+	*chptr = '\0';
+	userName = machineName;
+	machineName = chptr + 1;
+	
+	chptr = userName;
+	while (*chptr && *chptr != ':') chptr++;
+	if (*chptr) {		/* we have a password */
+	    *chptr = '\0';
+	    password = chptr + 1;
+	}
+    }
+	
+    if (userName && !password) {
+	password = getFtpPassword(machineName, userName, 0);
+    }
+
+    message(MESS_DEBUG, "logging into %s as %s, pw %s\n", machineName,
+		userName ? userName : "ftp", 
+		password ? password : "(username)");
+
+    ftpconn = ftpOpen(machineName, userName, password);
     if (ftpconn < 0) return ftpconn;
-
-    *chptr = '/';
 
     fd = creat(dest, 0600);
 
@@ -411,8 +477,10 @@ static int getFtpURL(char * hostAndFile, char * dest) {
 	ftpClose(ftpconn);
 	return FTPERR_UNKNOWN;
     }
+
+    *fileName = '/';
     
-    if ((rc = ftpGetFile(ftpconn, chptr, fd))) {
+    if ((rc = ftpGetFile(ftpconn, fileName, fd))) {
 	unlink(dest);
 	close(fd);
 	ftpClose(ftpconn);
