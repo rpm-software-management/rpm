@@ -25,8 +25,7 @@
 #include "files.h"
 #include "reqprov.h"
 
-static int writeMagic(int fd, char *name, unsigned short type,
-		      unsigned short sigtype);
+static int writeMagic(int fd, char *name, unsigned short type);
 static int cpio_gzip(int fd, char *tempdir, char *writePtr, int *archiveSize);
 static int generateRPM(char *name,       /* name-version-release         */
 		       char *filename,   /* output filename              */
@@ -45,16 +44,11 @@ static int generateRPM(char *name,       /* name-version-release         */
 		       char *fileList,   /* list of files for cpio       */
 		       char *passPhrase)
 {
-    unsigned short sigtype;
+    int_32 sigtype;
     char *sigtarget, *archiveTemp;
     int fd, ifd, count, archiveSize;
     unsigned char buffer[8192];
-
-    /* Figure out the signature type */
-    if ((sigtype = sigLookupType()) == RPMSIG_BAD) {
-	error(RPMERR_BADSIGTYPE, "Bad signature type in rpmrc");
-	return RPMERR_BADSIGTYPE;
-    }
+    Header sig;
 
     /* Write the archive to a temp file so we can get the size */
     archiveTemp = tempnam("/var/tmp", "rpmbuild");
@@ -79,7 +73,7 @@ static int generateRPM(char *name,       /* name-version-release         */
 	unlink(archiveTemp);
 	return 1;
     }
-    writeHeader(fd, header);
+    writeHeader(fd, header, HEADER_MAGIC);
     ifd = open(archiveTemp, O_RDONLY, 0644);
     while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
         if (count == -1) {
@@ -110,7 +104,7 @@ static int generateRPM(char *name,       /* name-version-release         */
 	unlink(filename);
 	return 1;
     }
-    if (writeMagic(fd, name, type, sigtype)) {
+    if (writeMagic(fd, name, type)) {
 	close(fd);
 	unlink(sigtarget);
 	unlink(filename);
@@ -118,14 +112,23 @@ static int generateRPM(char *name,       /* name-version-release         */
     }
 
     /* Generate the signature */
+    sigtype = sigLookupType();
     message(MESS_VERBOSE, "Generating signature: %d\n", sigtype);
     fflush(stdout);
-    if (makeSignature(sigtarget, sigtype, fd, passPhrase)) {
+    sig = newSignature();
+    addSignature(sig, sigtarget, SIGTAG_SIZE, passPhrase);
+    addSignature(sig, sigtarget, SIGTAG_MD5, passPhrase);
+    if (sigtype>0) {
+	addSignature(sig, sigtarget, sigtype, passPhrase);
+    }
+    if (writeSignature(fd, sig)) {
 	close(fd);
 	unlink(sigtarget);
 	unlink(filename);
+	freeSignature(sig);
 	return 1;
     }
+    freeSignature(sig);
 
     /* Append the header and archive */
     ifd = open(sigtarget, O_RDONLY);
@@ -157,8 +160,7 @@ static int generateRPM(char *name,       /* name-version-release         */
 }
 
 static int writeMagic(int fd, char *name,
-		      unsigned short type,
-		      unsigned short sigtype)
+		      unsigned short type)
 {
     struct rpmlead lead;
 
@@ -168,7 +170,7 @@ static int writeMagic(int fd, char *name,
     lead.type = type;
     lead.archnum = getArchNum();
     lead.osnum = getOsNum();
-    lead.signature_type = sigtype;
+    lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
     strncpy(lead.name, name, sizeof(lead.name));
 
     writeLead(fd, &lead);
