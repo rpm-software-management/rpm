@@ -1,0 +1,110 @@
+DEPENDENCIES
+============
+
+Dependencies provide a way for a package builder to require other
+packages or capabilities to be installed before or simultaneously
+with one another. These can be used to require a python interpretor
+for a python based application for example. RPM ensures dependencies
+are satisfied whenever packages are installed, erased, or upgraded.
+
+Requiring Packages
+------------------
+
+To require packages, use:
+
+	Requires: python perl
+
+in the spec file. Note that "Requires python, perl" would work as well. If you
+needed to have a very recent version of python but any version of perl,
+
+	Requires: python >= 1.3, perl
+
+would do the trick. Again, the ',' in the line is optional.  Instead of
+'>=', you may also use '<', '>', '<=', or '='.
+
+RPM uses an internal algorithm to determine version number orderings which
+works correctly most of the time. For example, it will know that
+1.9a is older then 1.9b. However, it will also be later then 1.9 which
+may or may not be correct as some programmers use letters in version numbers
+to indicate beta versions. 
+
+To work around this, you may specify a serial number for a package like this:
+
+	Serial: 23
+
+If a Requires: line should be comparing the given number with a serial number
+instead of a version number, you would do this:
+
+	Requires: somepackage =S 23
+
+Virtual Packages
+----------------
+
+Sometimes you need to make sure the system your package is being installed 
+on has a package which provides a certain capability, even though you don't
+care what specific package provides it. For example, sendmail won't work
+properly unless a local delivery agent (lda) is present. You can ensure that
+one is installed like this:
+
+	Requires: lda
+
+This will match either a package called lda (as mentioned above), or any
+package which contains:
+
+	Provides: lda
+
+in its .spec file. No version numbers may be used with virtual packages.
+
+Automatic Dependencies
+----------------------
+
+To reduct the amount of work required by the package builder, RPM scans
+the file list of a package when it is being built. Any files in the file
+list which require shared libraries to work (as determined by ldd) cause
+that package to require the shared library.
+
+For example, if your package contains /bin/vi, RPM will add dependencies 
+for both libtermcap.so.2 and libc.so.5. These are treated as virtual
+packages, so no version numbers are used.
+
+A similar process allows RPM to add Provides information automatically. Any
+shared library in the file list is examined for its soname (the part of
+the name which must match for two shared libraries to be considered
+equivalent) and that soname is automatically provided by the package. For
+example, the libc-5.3.12 package has provides information added for
+libm.so.5 and libc.so.5. We expect this automatic dependency generation
+to eliminate the need for most packages to use explicit Requires: lines.
+
+Installing and Erasing Packages with Dependencies
+-------------------------------------------------
+
+For the most part, dependencies should be transparent to the user. However,
+a few things will change.
+
+First, when packages are added or upgraded, all of their dependencies
+must be satisfied. If they are not, an error message like this appears:
+
+    failed dependencies:
+	    libICE.so.6  is needed by somepackage-2.11-1
+	    libSM.so.6  is needed by somepackage-2.11-1
+	    libc.so.5  is needed by somepackage-2.11-1
+
+Similarly, when packages are removed, a check is made to ensure that 
+no installed packages will have their dependency conditions break due to
+the packages being removed. If you wish to turn off dependency checking for 
+a particular command, use the --nodeps flag.
+
+Querying with Dependencies
+--------------------------
+
+Two new query information selection options are now available. The first, 
+--provides, prints a list of all of the capabilities a package provides. 
+The second, --requires, shows the other packages that a package requires
+to be installed, along with any version number checking.
+
+There are also two new ways to search for packages. Running a query with 
+--whatrequires <item> queries all of the packages that require <item>. 
+Similarly, running --whatprovides <item> queries all of the packages that 
+provide the <item> virtual package. Note that querying for package that 
+provides "python" will not return anything, as python is a package, not
+a virtual package.
