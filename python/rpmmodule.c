@@ -1,158 +1,64 @@
-/** \ingroup python
- * \file python/rpmmodule.c
- */
-
-#include <alloca.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <time.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <glob.h>	/* XXX rpmio.h */
-#include <dirent.h>	/* XXX rpmio.h */
-#include <locale.h>
-#include <time.h>
 
 #include "Python.h"
-#include "rpmio_internal.h"
-#include "rpmcli.h"	/* XXX for rpmCheckSig */
-#include "depends.h"	/* XXX for ts->rpmdb */
-#include "legacy.h"
-#include "misc.h"
-#include "header_internal.h"
-#include "upgrade.h"
+#include "rpmlib.h"
 
-#include "db-py.h"
-#include "header-py.h"
+/* Forward types */
 
-extern int _rpmio_debug;
+typedef struct rpmdbObject_s rpmdbObject;
+typedef struct rpmtransObject_s rpmtransObject;
+typedef struct hdrObject_s hdrObject;
 
-/* XXX These names/constants have been removed from the rpmlib API. */
-enum {
-   RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
-   RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
-};
+/* Prototypes */
 
-#ifdef __LCLINT__
-#undef	PyObject_HEAD
-#define	PyObject_HEAD	int _PyObjectHead
-#endif
+static void rpmdbDealloc(rpmdbObject * s);
+static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name);
+static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args);
+static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args);
+static int rpmdbLength(rpmdbObject * s);
+static hdrObject * rpmdbSubscript(rpmdbObject * s, PyObject * key);
+
+static void hdrDealloc(hdrObject * s);
+static PyObject * hdrGetAttr(hdrObject * s, char * name);
+static PyObject * hdrSubscript(hdrObject * s, int item);
+static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args);
 
 void initrpm(void);
+static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args);
+static PyObject * archScore(PyObject * self, PyObject * args);
+static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args);
+static PyObject * rpmHeaderFromList(PyObject * self, PyObject * args);
 
-/* from lib/misc.c */
-int rpmvercmp(const char * one, const char * two);
+static PyObject * rpmtransCreate(PyObject * self, PyObject * args);
+static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args);
+static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args);
+static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args);
+static PyObject * rpmtransOrder(rpmtransObject * s, PyObject * args);
+static void rpmtransDealloc(PyObject * o);
+static PyObject * rpmtransGetAttr(rpmtransObject * o, char * name);
+static int rpmtransSetAttr(rpmtransObject * o, char * name, 
+			   PyObject * val);
 
-/** \ingroup python
- */
-typedef struct rpmtransObject_s rpmtransObject;
+/* Types */
 
-/** \ingroup python
- * \name Class: rpmtrans
- * \class rpmtrans
- * \brief A python rpmtrans object represents an RPM transaction set.
- * 
- * The transaction set is the workhorse of RPM.  It performs the
- * installation and upgrade of packages.  The rpmtrans object is
- * instantiated by the TransactionSet function in the rpm module.
- *
- * The TransactionSet function takes two optional arguments.  The first
- * argument is the root path, the second is an open database to perform
- * the transaction set upon.
- *
- * A rpmtrans object has the following methods:
- *
- * - add(header,data,mode)	Add a binary package to a transaction set.
- * @param header the header to be added
- * @param data	user data that will be passed to the transaction callback
- *		during transaction execution
- * @param mode 	optional argument that specifies if this package should
- *		be installed ('i'), upgraded ('u'), or if it is just
- *		available to the transaction when computing
- *		dependencies but no action should be performed with it
- *		('a').
- *
- * - remove
- *
- * - depcheck()	Perform a dependency and conflict check on the
- *		transaction set. After headers have been added to a
- *		transaction set, a dependency check can be performed
- *		to make sure that all package dependencies are
- *		satisfied.
- * @return	None If there are no unresolved dependencies
- *		Otherwise a list of complex tuples is returned, one tuple per
- *		unresolved dependency, with
- * The format of the dependency tuple is:
- *     ((packageName, packageVersion, packageRelease),
- *      (reqName, reqVersion),
- *      needsFlags,
- *      suggestedPackage,
- *      sense)
- *     packageName, packageVersion, packageRelease are the name,
- *     version, and release of the package that has the unresolved
- *     dependency or conflict.
- *     The reqName and reqVersion are the name and version of the
- *     requirement or conflict.
- *     The needsFlags is a bitfield that describes the versioned
- *     nature of a requirement or conflict.  The constants
- *     rpm.RPMSENSE_LESS, rpm.RPMSENSE_GREATER, and
- *     rpm.RPMSENSE_EQUAL can be logical ANDed with the needsFlags
- *     to get versioned dependency information.
- *     suggestedPackage is a tuple if the dependency check was aware
- *     of a package that solves this dependency problem when the
- *     dependency check was run.  Packages that are added to the
- *     transaction set as "available" are examined during the
- *     dependency check as possible dependency solvers. The tuple
- *     contains two values, (header, suggestedName).  These are set to
- *     the header of the suggested package and its name, respectively.
- *     If there is no known package to solve the dependency problem,
- *     suggestedPackage is None.
- *     The constants rpm.RPMDEP_SENSE_CONFLICTS and
- *     rpm.RPMDEP_SENSE_REQUIRES are set to show a dependency as a
- *     requirement or a conflict.
- *
- * - run(flags,problemSetFilter,callback,data) Attempt to execute a
- *	transaction set. After the transaction set has been populated
- *	with install and upgrade actions, it can be executed by invoking
- *	the run() method.
- * @param flags - modifies the behavior of the transaction set as it is
- *		processed.  The following values can be locical ORed
- *		together:
- *	- rpm.RPMTRANS_FLAG_TEST - test mode, do not modify the RPM
- *		database, change any files, or run any package scripts
- *	- rpm.RPMTRANS_FLAG_BUILD_PROBS - only build a list of
- *		problems encountered when attempting to run this transaction
- *		set
- *	- rpm.RPMTRANS_FLAG_NOSCRIPTS - do not execute package scripts
- *	- rpm.RPMTRANS_FLAG_JUSTDB - only make changes to the rpm
- *		database, do not modify files.
- *	- rpm.RPMTRANS_FLAG_NOTRIGGERS - do not run trigger scripts
- *	- rpm.RPMTRANS_FLAG_NODOCS - do not install files marked as %doc
- *	- rpm.RPMTRANS_FLAG_ALLFILES - create all files, even if a
- *		file is marked %config(missingok) and an upgrade is
- *		being performed.
- *	- rpm.RPMTRANS_FLAG_KEEPOBSOLETE - do not remove obsoleted
- *		packages.
- * @param problemSetFilter - control bit(s) to ignore classes of problems,
- *		any of
- *	- rpm.RPMPROB_FILTER_IGNOREOS - 
- *	- rpm.RPMPROB_FILTER_IGNOREARCH - 
- *	- rpm.RPMPROB_FILTER_REPLACEPKG - 
- *	- rpm.RPMPROB_FILTER_FORCERELOCATE - 
- *	- rpm.RPMPROB_FILTER_REPLACENEWFILES - 
- *	- rpm.RPMPROB_FILTER_REPLACEOLDFILES - 
- *	- rpm.RPMPROB_FILTER_OLDPACKAGE - 
- *	- rpm.RPMPROB_FILTER_DISKSPACE - 
- */
+static PyMethodDef rpmModuleMethods[] = {
+    { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
+    { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
+    { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
+    { "readHeaderList", (PyCFunction) rpmHeaderFromList, METH_VARARGS, NULL },
+    { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
+    { NULL }
+} ;
 
-/** \ingroup python
- * \name Class: rpmtrans
- */
-/*@{*/
+struct rpmdbObject_s {
+    PyObject_HEAD;
+    rpmdb db;
+} ;
 
-/** \ingroup python
- */
 struct rpmtransObject_s {
     PyObject_HEAD;
     rpmdbObject * dbo;
@@ -161,338 +67,740 @@ struct rpmtransObject_s {
     FD_t scriptFd;
 } ;
 
-/** \ingroup python
- */
-static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args) {
-    hdrObject * h;
-    PyObject * key;
-    char * how = NULL;
-    int isUpgrade = 0;
-    PyObject * hObj;
+struct hdrObject_s {
+    PyObject_HEAD;
+    Header h;
+    char ** md5list;
+    char ** fileList;
+    char ** linkList;
+    int_32 * fileSizes;
+    int_32 * mtimes;
+    int_32 * uids, * gids;
+    unsigned short * rdevs;
+    unsigned short * modes;
+} ;
 
-    if (!PyArg_ParseTuple(args, "OO|s", &h, &key, &how)) return NULL;
+/* Data */
 
-    hObj = (PyObject *) h;
-    if (hObj->ob_type != &hdrType) {
-	PyErr_SetString(PyExc_TypeError, "bad type for header argument");
-	return NULL;
-    }
+static PyObject * pyrpmError;
 
-    if (how && strcmp(how, "a") && strcmp(how, "u") && strcmp(how, "i")) {
-	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\", \"a\", or \"i\"");
-	return NULL;
-    } else if (how && !strcmp(how, "u"))
-    	isUpgrade = 1;
+static PySequenceMethods hdrAsSequence = {
+	0,				/* length */
+	0,				/* concat */
+	0,				/* repeat */
+	(intargfunc) hdrSubscript,	/* item */
+	0,				/* slice */
+	0,				/* assign item */
+	0,				/* assign slice */
+};
 
-    if (how && !strcmp(how, "a"))
-	rpmtransAvailablePackage(s->ts, hdrGetHeader(h), key);
-    else
-	rpmtransAddPackage(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
+static PyTypeObject hdrType = {
+	PyObject_HEAD_INIT(&PyType_Type)
+	0,				/* ob_size */
+	"header",			/* tp_name */
+	sizeof(hdrObject),		/* tp_size */
+	0,				/* tp_itemsize */
+	(destructor) hdrDealloc, 	/* tp_dealloc */
+	0,				/* tp_print */
+	(getattrfunc) hdrGetAttr, 	/* tp_getattr */
+	0,				/* tp_setattr */
+	0,				/* tp_compare */
+	0,				/* tp_repr */
+	0,				/* tp_as_number */
+	&hdrAsSequence,			/* tp_as_sequence */
+	0,				/* tp_as_mapping */
+};
 
-    /* This should increment the usage count for me */
-    if (key) {
-	PyList_Append(s->keyList, key);
-    }
+static PyMappingMethods rpmdbAsMapping = {
+	(inquiry) rpmdbLength,		/* mp_length */
+	(binaryfunc) rpmdbSubscript,	/* mp_subscript */
+	(objobjargproc)0,		/* mp_ass_subscript */
+};
 
-    Py_INCREF(Py_None);
-    return Py_None;
-}
+static PyTypeObject rpmdbType = {
+	PyObject_HEAD_INIT(&PyType_Type)
+	0,				/* ob_size */
+	"rpmdb",			/* tp_name */
+	sizeof(rpmdbObject),		/* tp_size */
+	0,				/* tp_itemsize */
+	(destructor) rpmdbDealloc, 	/* tp_dealloc */
+	0,				/* tp_print */
+	(getattrfunc) rpmdbGetAttr, 	/* tp_getattr */
+	0,				/* tp_setattr */
+	0,				/* tp_compare */
+	0,				/* tp_repr */
+	0,				/* tp_as_number */
+	0,				/* tp_as_sequence */
+	&rpmdbAsMapping,		/* tp_as_mapping */
+};
 
-/** \ingroup python
- */
-static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
-    char * name;
-    int count;
-    rpmdbMatchIterator mi;
-    
-    if (!PyArg_ParseTuple(args, "s", &name))
-        return NULL;
+static PyTypeObject rpmtransType = {
+	PyObject_HEAD_INIT(&PyType_Type)
+	0,				/* ob_size */
+	"rpmtrans",			/* tp_name */
+	sizeof(rpmtransObject),		/* tp_size */
+	0,				/* tp_itemsize */
+	(destructor) rpmtransDealloc, 	/* tp_dealloc */
+	0,				/* tp_print */
+	(getattrfunc) rpmtransGetAttr, 	/* tp_getattr */
+	(setattrfunc) rpmtransSetAttr,	/* tp_setattr */
+	0,				/* tp_compare */
+	0,				/* tp_repr */
+	0,				/* tp_as_number */
+	0,				/* tp_as_sequence */
+	0,				/* tp_as_mapping */
+};
 
-    /* XXX: Copied hack from ../lib/rpminstall.c, rpmErase() */
-    mi = rpmdbInitIterator(dbFromDb(s->dbo), RPMDBI_LABEL, name, 0);
-    count = rpmdbGetIteratorCount(mi);
-    if (count <= 0) {
-        PyErr_SetString(pyrpmError, "package not installed");
-        return NULL;
-    } else { /* XXX: Note that we automatically choose to remove all matches */
-        Header h;
-        while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-	    if (recOffset) {
-	        rpmtransRemovePackage(s->ts, h, recOffset);
-	    }
-	}
-    }
-    rpmdbFreeIterator(mi);
+static struct PyMethodDef rpmdbMethods[] = {
+	{"firstkey",	(PyCFunction) rpmdbFirst,	1 },
+	{"nextkey",	(PyCFunction) rpmdbNext,	1 },
+	{NULL,		NULL}		/* sentinel */
+};
 
-    Py_INCREF(Py_None);
-    return Py_None;
-}
+static struct PyMethodDef rpmtransMethods[] = {
+	{"add",		(PyCFunction) rpmtransAdd,	1 },
+	{"depcheck",	(PyCFunction) rpmtransDepCheck,	1 },
+	{"order",	(PyCFunction) rpmtransOrder,	1 },
+	{"run",		(PyCFunction) rpmtransRun, 1 },
+	{NULL,		NULL}		/* sentinel */
+};
 
-/** \ingroup python
- */
-static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
-    rpmProblem conflicts, c;
-    int numConflicts;
-    PyObject * list, * cf;
+static struct PyMethodDef hdrMethods[] = {
+	{"verifyFile",	(PyCFunction) hdrVerifyFile,	1 },
+	{NULL,		NULL}		/* sentinel */
+};
+
+/* Code */
+
+void initrpm(void) {
+    PyObject * m, * d, * tag;
     int i;
-    int allSuggestions = 0;
 
-    if (!PyArg_ParseTuple(args, "|i", &allSuggestions)) return NULL;
+    rpmReadConfigFiles(NULL, NULL);
 
-    rpmdepCheck(s->ts, &conflicts, &numConflicts);
-    if (numConflicts) {
-	list = PyList_New(0);
+    m = Py_InitModule("rpm", rpmModuleMethods);
+    d = PyModule_GetDict(m);
 
-	/* XXX TODO: rpmlib >= 4.0.3 can return multiple suggested keys. */
-	for (i = 0; i < numConflicts; i++) {
-#ifdef	DYING
-	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName,
-			       conflicts[i].byVersion, conflicts[i].byRelease,
+    pyrpmError = PyString_FromString("rpm.error");
+    PyDict_SetItemString(d, "error", pyrpmError);
 
-			       conflicts[i].needsName,
-			       conflicts[i].needsVersion,
-
-			       conflicts[i].needsFlags,
-			       conflicts[i].suggestedPkgs ?
-				   conflicts[i].suggestedPkgs[0] : Py_None,
-			       conflicts[i].sense);
-#else
-	    char * byName, * byVersion, * byRelease;
-	    char * needsName, * needsOP, * needsVersion;
-	    int needsFlags, sense;
-	    fnpyKey key;
-	    
-	    c = conflicts + i;
-
-	    byName = c->pkgNEVR;
-	    if ((byRelease = strrchr(byName, '-')) != NULL)
-		*byRelease++ = '\0';
-	    if ((byVersion = strrchr(byName, '-')) != NULL)
-		*byVersion++ = '\0';
-
-	    key = c->key;
-
-	    needsName = c->altNEVR;
-	    if (needsName[1] == ' ') {
-		sense = (needsName[0] == 'C')
-			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
-		needsName += 2;
-	    } else
-		sense = RPMDEP_SENSE_REQUIRES;
-	    if ((needsVersion = strrchr(needsName, ' ')) != NULL)
-		*needsVersion++ = '\0';
-
-	    needsFlags = 0;
-	    if ((needsOP = strrchr(needsName, ' ')) != NULL) {
-		for (*needsOP++ = '\0'; *needsOP != '\0'; needsOP++) {
-		    if (*needsOP == '<')	needsFlags |= RPMSENSE_LESS;
-		    else if (*needsOP == '>')	needsFlags |= RPMSENSE_GREATER;
-		    else if (*needsOP == '=')	needsFlags |= RPMSENSE_EQUAL;
-		}
-	    }
-	    
-	    cf = Py_BuildValue("((sss)(ss)iOi)", byName, byVersion, byRelease,
-			       needsName, needsVersion, needsFlags,
-			       (key != NULL ? key : Py_None),
-			       sense);
-#endif
-	    PyList_Append(list, (PyObject *) cf);
-	    Py_DECREF(cf);
-	}
-
-	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
-
-	return list;
+    for (i = 0; i < rpmTagTableSize; i++) {
+	tag = PyInt_FromLong(rpmTagTable[i].val);
+	PyDict_SetItemString(d, rpmTagTable[i].name, tag);
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    PyDict_SetItemString(d, "RPMFILE_STATE_NORMAL", 
+			 PyInt_FromLong(RPMFILE_STATE_NORMAL));
+    PyDict_SetItemString(d, "RPMFILE_STATE_REPLACED", 
+			 PyInt_FromLong(RPMFILE_STATE_REPLACED));
+    PyDict_SetItemString(d, "RPMFILE_STATE_NOTINSTALLED", 
+			 PyInt_FromLong(RPMFILE_STATE_NOTINSTALLED));
+    PyDict_SetItemString(d, "RPMFILE_CONFIG", 
+			 PyInt_FromLong(RPMFILE_CONFIG));
+    PyDict_SetItemString(d, "RPMFILE_DOC", 
+			 PyInt_FromLong(RPMFILE_DOC));
+
+    PyDict_SetItemString(d, "RPMDEP_SENSE_REQUIRES", 
+			 PyInt_FromLong(RPMDEP_SENSE_REQUIRES));
+    PyDict_SetItemString(d, "RPMDEP_SENSE_CONFLICTS", 
+			 PyInt_FromLong(RPMDEP_SENSE_CONFLICTS));
+
+    PyDict_SetItemString(d, "RPMSENSE_SERIAL",
+			 PyInt_FromLong(RPMSENSE_SERIAL));
+    PyDict_SetItemString(d, "RPMSENSE_LESS",
+			 PyInt_FromLong(RPMSENSE_LESS));
+    PyDict_SetItemString(d, "RPMSENSE_GREATER",
+			 PyInt_FromLong(RPMSENSE_GREATER));
+    PyDict_SetItemString(d, "RPMSENSE_EQUAL",
+			 PyInt_FromLong(RPMSENSE_EQUAL));
+    PyDict_SetItemString(d, "RPMSENSE_PREREQ",
+			 PyInt_FromLong(RPMSENSE_PREREQ));
+
+    PyDict_SetItemString(d, "RPMTRANS_FLAG_TEST",
+			 PyInt_FromLong(RPMTRANS_FLAG_TEST));
+    PyDict_SetItemString(d, "RPMTRANS_FLAG_BUILD_PROBS",
+			 PyInt_FromLong(RPMTRANS_FLAG_BUILD_PROBS));
+    PyDict_SetItemString(d, "RPMTRANS_FLAG_NOSCRIPTS",
+			 PyInt_FromLong(RPMTRANS_FLAG_NOSCRIPTS));
+    PyDict_SetItemString(d, "RPMTRANS_FLAG_JUSTDB",
+			 PyInt_FromLong(RPMTRANS_FLAG_JUSTDB));
+    PyDict_SetItemString(d, "RPMTRANS_FLAG_NOTRIGGERS",
+			 PyInt_FromLong(RPMTRANS_FLAG_NOTRIGGERS));
+    PyDict_SetItemString(d, "RPMTRANS_FLAG_NODOCS",
+			 PyInt_FromLong(RPMTRANS_FLAG_NODOCS));
+    PyDict_SetItemString(d, "RPMTRANS_FLAG_ALLFILES",
+			 PyInt_FromLong(RPMTRANS_FLAG_ALLFILES));
+    PyDict_SetItemString(d, "RPMTRANS_FLAG_KEEPOBSOLETE",
+			 PyInt_FromLong(RPMTRANS_FLAG_KEEPOBSOLETE));
+
+    PyDict_SetItemString(d, "RPMPROB_FILTER_IGNOREOS",
+			 PyInt_FromLong(RPMPROB_FILTER_IGNOREOS));
+    PyDict_SetItemString(d, "RPMPROB_FILTER_IGNOREARCH",
+			 PyInt_FromLong(RPMPROB_FILTER_IGNOREARCH));
+    PyDict_SetItemString(d, "RPMPROB_FILTER_REPLACEPKG",
+			 PyInt_FromLong(RPMPROB_FILTER_REPLACEPKG));
+    PyDict_SetItemString(d, "RPMPROB_FILTER_FORCERELOCATE",
+			 PyInt_FromLong(RPMPROB_FILTER_FORCERELOCATE));
+    PyDict_SetItemString(d, "RPMPROB_FILTER_REPLACENEWFILES",
+			 PyInt_FromLong(RPMPROB_FILTER_REPLACENEWFILES));
+    PyDict_SetItemString(d, "RPMPROB_FILTER_REPLACEOLDFILES",
+			 PyInt_FromLong(RPMPROB_FILTER_REPLACEOLDFILES));
+    PyDict_SetItemString(d, "RPMPROB_FILTER_OLDPACKAGE",
+			 PyInt_FromLong(RPMPROB_FILTER_OLDPACKAGE));
+    PyDict_SetItemString(d, "RPMPROB_FILTER_DISKSPACE",
+			 PyInt_FromLong(RPMPROB_FILTER_DISKSPACE));
+
+    PyDict_SetItemString(d, "RPMCALLBACK_INST_PROGRESS",
+			 PyInt_FromLong(RPMCALLBACK_INST_PROGRESS));
+    PyDict_SetItemString(d, "RPMCALLBACK_INST_START",
+			 PyInt_FromLong(RPMCALLBACK_INST_START));
+    PyDict_SetItemString(d, "RPMCALLBACK_INST_OPEN_FILE",
+			 PyInt_FromLong(RPMCALLBACK_INST_OPEN_FILE));
+    PyDict_SetItemString(d, "RPMCALLBACK_INST_CLOSE_FILE",
+			 PyInt_FromLong(RPMCALLBACK_INST_CLOSE_FILE));
+    PyDict_SetItemString(d, "RPMCALLBACK_TRANS_PROGRESS",
+			 PyInt_FromLong(RPMCALLBACK_TRANS_PROGRESS));
+    PyDict_SetItemString(d, "RPMCALLBACK_TRANS_START",
+			 PyInt_FromLong(RPMCALLBACK_TRANS_START));
+    PyDict_SetItemString(d, "RPMCALLBACK_TRANS_STOP",
+			 PyInt_FromLong(RPMCALLBACK_TRANS_STOP));
+    PyDict_SetItemString(d, "RPMCALLBACK_UNINST_PROGRESS",
+			 PyInt_FromLong(RPMCALLBACK_UNINST_PROGRESS));
+    PyDict_SetItemString(d, "RPMCALLBACK_UNINST_START",
+			 PyInt_FromLong(RPMCALLBACK_UNINST_START));
+    PyDict_SetItemString(d, "RPMCALLBACK_UNINST_STOP",
+			 PyInt_FromLong(RPMCALLBACK_UNINST_STOP));
 }
 
-/** \ingroup python
- */
-static PyObject * rpmtransOrder(rpmtransObject * s, PyObject * args) {
-    if (!PyArg_ParseTuple(args, "")) return NULL;
+static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
+    rpmdbObject * o;
+    char * root = "";
+    int forWrite = 0;
 
-    rpmdepOrder(s->ts);
+    if (!PyArg_ParseTuple(args, "|is", &forWrite, &root)) return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    o = PyObject_NEW(rpmdbObject, &rpmdbType);
+    o->db = NULL;
+    if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, 0)) {
+	Py_DECREF(o);
+	PyErr_SetString(pyrpmError, "cannot open database in /var/lib/rpm");
+	return NULL;
+    }
+
+    return o;
 }
 
-/** \ingroup python
- */
-static PyObject * py_rpmtransGetKeys(rpmtransObject * s, PyObject * args) {
-    const void **data = NULL;
-    int num, i;
-    PyObject *tuple;
+static PyObject * rpmHeaderFromList(PyObject * self, PyObject * args) {
+    char * filespec;
+    FD_t fd;
+    Header header;
+    PyObject * list;
+    hdrObject * h;
 
-    rpmtransGetKeys(s->ts, &data, &num);
-    if (data == NULL) {
+    if (!PyArg_ParseTuple(args, "s", &filespec)) return NULL;
+    fd = fdOpen(filespec, O_RDONLY, 0);
+
+    if (!fd) {
+	PyErr_SetFromErrno(pyrpmError);
+	return NULL;
+    }
+
+    list = PyList_New(0);
+
+    header = headerRead(fd, HEADER_MAGIC_YES);
+    while (header) {
+	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
+	h->h = header;
+	h->fileList = h->linkList = h->md5list = NULL;
+	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
+	h->modes = h->rdevs = NULL;
+	if (PyList_Append(list, (PyObject *) h)) {
+	    Py_DECREF(list);
+	    Py_DECREF(h);
+	    return NULL;
+	}
+
+	Py_DECREF(h);
+
+	header = headerRead(fd, HEADER_MAGIC_YES);
+    }
+
+    fdClose(fd);
+
+    return list;
+}
+
+static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
+    PyObject * fileObj;
+    hdrObject * h;
+    Header header;
+    int rc;
+    FD_t fd;
+    int rawFd;
+    int isSource;
+
+    if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
+    fd = fdDup(rawFd);
+
+    rc = rpmReadPackageHeader(fd, &header, &isSource, NULL, NULL);
+    fdClose(fd);
+
+    switch (rc) {
+      case 0:
+	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
+	h->h = header;
+	h->fileList = h->linkList = h->md5list = NULL;
+	h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
+	h->modes = h->rdevs = NULL;
+	break;
+
+      case 1:
+	Py_INCREF(Py_None);
+	h = (hdrObject *) Py_None;
+	break;
+
+      default:
+	PyErr_SetString(pyrpmError, "error reading package");
+	return NULL;
+    }
+
+    return Py_BuildValue("(Oi)", h, isSource);
+}
+
+/* methods for rpmdb object */
+
+static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name) {
+    return Py_FindMethod(rpmdbMethods, (PyObject * ) s, name);
+}
+
+static void rpmdbDealloc(rpmdbObject * s) {
+    if (s->db) {
+	rpmdbClose(s->db);
+    }
+}
+
+static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
+    int first;
+
+    if (!PyArg_Parse(args, "")) return NULL;
+
+    first = rpmdbFirstRecNum(s->db);
+
+    if (!first) {
+	PyErr_SetString(pyrpmError, "cannot find first entry in database\n");
+	return NULL;
+    }
+
+    return Py_BuildValue("i", first);
+}
+
+static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
+    int where;
+
+    if (!PyArg_Parse(args, "i", &where)) return NULL;
+
+    where = rpmdbNextRecNum(s->db, where);
+
+    if (!where) {
 	Py_INCREF(Py_None);
 	return Py_None;
     }
 
-    tuple = PyTuple_New(num);
-
-    for (i = 0; i < num; i++) {
-	PyObject *obj = (PyObject *) data[i];
-	Py_INCREF(obj);
-	PyTuple_SetItem(tuple, i, obj);
-    }
-
-    free (data);
-
-    return tuple;
+    return Py_BuildValue("i", where);
 }
 
-/** \ingroup python
- */
-struct tsCallbackType {
-    PyObject * cb;
-    PyObject * data;
-    int pythonError;
-};
+static int rpmdbLength(rpmdbObject * s) {
+    int first;
+    int count = 0;
 
-/** \ingroup python
- * @todo Remove, there's no headerLink refcount on the pointer.
- */
-static Header transactionSetHeader = NULL;
+    first = rpmdbFirstRecNum(s->db);
+    if (!first) return 0;
 
-/** \ingroup python
- */
-static void * tsCallback(const void * hd, const rpmCallbackType what,
-		         const unsigned long amount, const unsigned long total,
-	                 const void * pkgKey, rpmCallbackData data) {
-    struct tsCallbackType * cbInfo = data;
-    PyObject * args, * result;
-    int fd;
-    static FD_t fdt;
-    const Header h = (Header) hd;
+    count++;
+    while ((first = rpmdbNextRecNum(s->db, first))) {
+	count++;
+    }
 
-    if (cbInfo->pythonError) return NULL;
-    if (cbInfo->cb == Py_None) return NULL;
+    return count;
+}
 
-    if (!pkgKey) pkgKey = Py_None;
-    transactionSetHeader = h;    
-
-    args = Py_BuildValue("(illOO)", what, amount, total, pkgKey, cbInfo->data);
-    result = PyEval_CallObject(cbInfo->cb, args);
-    Py_DECREF(args);
-
-    if (!result) {
-	cbInfo->pythonError = 1;
+static hdrObject * rpmdbSubscript(rpmdbObject * s, PyObject * key) {
+    int offset;
+    hdrObject * h;
+    
+    if (!PyInt_Check(key)) {
+	PyErr_SetString(PyExc_TypeError, "integer expected");
 	return NULL;
     }
 
-    if (what == RPMCALLBACK_INST_OPEN_FILE) {
-        if (!PyArg_Parse(result, "i", &fd)) {
-	    cbInfo->pythonError = 1;
-	    return NULL;
+    offset = (int) PyInt_AsLong(key);
+
+    h = PyObject_NEW(hdrObject, &hdrType);
+    h->h = NULL;
+    h->h = rpmdbGetRecord(s->db, offset);
+    h->fileList = h->linkList = h->md5list = NULL;
+    h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
+    h->modes = h->rdevs = NULL;
+    if (!h->h) {
+	Py_DECREF(h);
+	PyErr_SetString(pyrpmError, "cannot read rpmdb entry");
+	return NULL;
+    }
+    
+    return h;
+}
+
+/* methods for header object */
+
+static void hdrDealloc(hdrObject * s) {
+    if (s->h) headerFree(s->h);
+    if (s->md5list) free(s->md5list);
+    if (s->fileList) free(s->fileList);
+    if (s->linkList) free(s->linkList);
+}
+
+static PyObject * hdrGetAttr(hdrObject * s, char * name) {
+    return Py_FindMethod(hdrMethods, (PyObject * ) s, name);
+}
+
+static PyObject * hdrSubscript(hdrObject * s, int tag) {
+    int type, count;
+    void * data;
+    PyObject * o, * metao;
+    int i;
+    char ** stringArray;
+    int forceArray = 0;
+
+    if (!headerGetEntry(s->h, tag, &type, &data, &count)) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+
+    switch (tag) {
+      case RPMTAG_FILENAMES:
+      case RPMTAG_FILESIZES:
+      case RPMTAG_FILESTATES:
+      case RPMTAG_FILEMODES:
+      case RPMTAG_FILEUIDS:
+      case RPMTAG_FILEGIDS:
+      case RPMTAG_FILERDEVS:
+      case RPMTAG_FILEMTIMES:
+      case RPMTAG_FILEMD5S:
+      case RPMTAG_FILELINKTOS:
+      case RPMTAG_FILEFLAGS:
+      case RPMTAG_ROOT:
+      case RPMTAG_FILEUSERNAME:
+      case RPMTAG_FILEGROUPNAME:
+	forceArray = 1;
+    }
+
+    switch (type) {
+      case RPM_BIN_TYPE:
+	o = PyString_FromStringAndSize(data, count);
+	break;
+
+      case RPM_INT32_TYPE:
+	if (count != 1 || forceArray) {
+	    metao = PyList_New(0);
+	    for (i = 0; i < count; i++) {
+		o = PyInt_FromLong(((int *) data)[i]);
+		PyList_Append(metao, o);
+		Py_DECREF(o);
+	    }
+	    o = metao;
+	} else {
+	    o = PyInt_FromLong(*((int *) data));
 	}
-	fdt = fdDup(fd);
-	
-	Py_DECREF(result);
-	return fdt;
+	break;
+
+      case RPM_CHAR_TYPE:
+      case RPM_INT8_TYPE:
+	if (count != 1 || forceArray) {
+	    metao = PyList_New(0);
+	    for (i = 0; i < count; i++) {
+		o = PyInt_FromLong(((char *) data)[i]);
+		PyList_Append(metao, o);
+		Py_DECREF(o);
+	    }
+	    o = metao;
+	} else {
+	    o = PyInt_FromLong(*((char *) data));
+	}
+	break;
+
+      case RPM_INT16_TYPE:
+	if (count != 1 || forceArray) {
+	    metao = PyList_New(0);
+	    for (i = 0; i < count; i++) {
+		o = PyInt_FromLong(((short *) data)[i]);
+		PyList_Append(metao, o);
+		Py_DECREF(o);
+	    }
+	    o = metao;
+	} else {
+	    o = PyInt_FromLong(*((short *) data));
+	}
+	break;
+
+      case RPM_STRING_ARRAY_TYPE:
+	stringArray = data;
+
+	metao = PyList_New(0);
+	for (i = 0; i < count; i++) {
+	    o = PyString_FromString(stringArray[i]);
+	    PyList_Append(metao, o);
+	    Py_DECREF(o);
+	}
+	o = metao;
+	break;
+
+      case RPM_STRING_TYPE:
+	if (count != 1 || forceArray) {
+	    stringArray = data;
+	    
+	    metao = PyList_New(0);
+	    for (i=0; i < count; i++) {
+		o = PyString_FromString(stringArray[i]);
+		PyList_Append(metao, o);
+		Py_DECREF(o);
+	    }
+	    o = metao;
+	} else
+	  o = PyString_FromString(data);
+	break;
+
+      default:
+	PyErr_SetString(PyExc_TypeError, "unsupported type in header");
+	return NULL;
     }
 
-    if (what == RPMCALLBACK_INST_CLOSE_FILE) {
-	Fclose (fdt);
-    }
-
-    Py_DECREF(result);
-
-    return NULL;
+    return o;
 }
 
-/** \ingroup python
- */
-static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
-    int flags, ignoreSet;
-    int rc, i;
-    PyObject * list, * prob;
-    rpmProblemSet probs;
-    struct tsCallbackType cbInfo;
+/* Returns a list of these tuple for each part which failed:
 
-    if (!PyArg_ParseTuple(args, "iiOO", &flags, &ignoreSet, &cbInfo.cb,
-			  &cbInfo.data))
-	return NULL;
+	(attr_name, correctValue, currentValue)
 
-    cbInfo.pythonError = 0;
+	It should be passwd the file number to verify.
+*/
+static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
+    int fileNumber;
+    int verifyResult;
+    PyObject * list, * tuple, * attrName;
+    int type, count;
+    struct stat sb;
+    char buf[2048];
+    int i;
+    time_t timeInt;
+    struct tm * timeStruct;
 
-    (void) rpmtsSetNotifyCallback(s->ts, tsCallback, (void *) &cbInfo);
-    (void) rpmtsSetFlags(s->ts, flags);
-
-    rc = rpmRunTransactions(s->ts, NULL, &probs, ignoreSet);
-
-    if (cbInfo.pythonError) {
-	if (rc > 0)
-	    rpmProblemSetFree(probs);
+    if (!PyInt_Check(args)) {
+	PyErr_SetString(PyExc_TypeError, "integer expected");
 	return NULL;
     }
 
-    if (rc < 0) {
-	list = PyList_New(0);
-	return list;
-    } else if (!rc) {
+    fileNumber = (int) PyInt_AsLong(args);
+
+    if (rpmVerifyFile("", s->h, fileNumber, &verifyResult, 0)) {
 	Py_INCREF(Py_None);
 	return Py_None;
     }
 
     list = PyList_New(0);
-    for (i = 0; i < probs->numProblems; i++) {
-	rpmProblem myprob = probs->probs + i;
-	prob = Py_BuildValue("s(isN)", rpmProblemString(myprob),
-			     myprob->type,
-			     myprob->str1,
-			     PyLong_FromLongLong(myprob->ulong1));
-	PyList_Append(list, prob);
-	Py_DECREF(prob);
+
+    if (!verifyResult) return list;
+
+    if (!s->fileList) {
+	headerGetEntry(s->h, RPMTAG_FILENAMES, &type, (void **) &s->fileList, 
+		 &count);
     }
 
-    rpmProblemSetFree(probs);
+    lstat(s->fileList[fileNumber], &sb);
+
+    if (verifyResult & RPMVERIFY_MD5) {
+	if (!s->md5list) {
+	    headerGetEntry(s->h, RPMTAG_FILEMD5S, &type, (void **) &s->md5list, 
+		     &count);
+	}
+	
+	if (mdfile(s->fileList[fileNumber], buf)) {
+	    strcpy(buf, "(unknown)");
+	} 
+	
+	tuple = PyTuple_New(3);
+	attrName = PyString_FromString("checksum");
+	PyTuple_SetItem(tuple, 0, attrName);
+	PyTuple_SetItem(tuple, 1, PyString_FromString(s->md5list[fileNumber]));
+	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
+	PyList_Append(list, tuple);
+    }
+
+    if (verifyResult & RPMVERIFY_FILESIZE) {
+	if (!s->fileSizes) {
+	    headerGetEntry(s->h, RPMTAG_FILESIZES, &type, (void **) &s->fileSizes, 
+		     &count);
+
+	}
+
+	tuple = PyTuple_New(3);
+	attrName = PyString_FromString("size");
+	PyTuple_SetItem(tuple, 0, attrName);
+
+	sprintf(buf, "%d", 100);
+	PyTuple_SetItem(tuple, 1, PyString_FromString(buf));
+	sprintf(buf, "%ld", sb.st_size);
+	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
+	PyList_Append(list, tuple);
+    }
+
+    if (verifyResult & RPMVERIFY_LINKTO) {
+	if (!s->linkList) {
+	    headerGetEntry(s->h, RPMTAG_FILELINKTOS, &type, (void **) &s->linkList, 
+		     &count);
+	}
+
+	i = readlink(s->fileList[fileNumber], buf, sizeof(buf));
+	if (i <= 0)
+	    strcpy(buf, "(unknown)");
+	else
+	    buf[i] = '\0';
+
+	tuple = PyTuple_New(3);
+	attrName = PyString_FromString("link");
+	PyTuple_SetItem(tuple, 0, attrName);
+	PyTuple_SetItem(tuple, 1, PyString_FromString(s->linkList[fileNumber]));
+	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
+	PyList_Append(list, tuple);
+    }
+
+    if (verifyResult & RPMVERIFY_MTIME) {
+	if (!s->mtimes) {
+	    headerGetEntry(s->h, RPMTAG_FILEMTIMES, &type, (void **) &s->mtimes, 
+		     &count);
+	}
+
+	tuple = PyTuple_New(3);
+	attrName = PyString_FromString("time");
+	PyTuple_SetItem(tuple, 0, attrName);
+
+	timeInt = sb.st_mtime;
+	timeStruct = localtime(&timeInt);
+	strftime(buf, sizeof(buf) - 1, "%c", timeStruct);
+	PyTuple_SetItem(tuple, 1, PyString_FromString(buf));
+
+	timeInt = s->mtimes[fileNumber];
+	timeStruct = localtime(&timeInt);
+	strftime(buf, sizeof(buf) - 1, "%c", timeStruct);
+
+	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
+
+	PyList_Append(list, tuple);
+    }
+
+    if (verifyResult & RPMVERIFY_RDEV) {
+	if (!s->rdevs) {
+	    headerGetEntry(s->h, RPMTAG_FILERDEVS, &type, (void **) &s->rdevs, 
+		     &count);
+	}
+
+	tuple = PyTuple_New(3);
+	attrName = PyString_FromString("device");
+
+	PyTuple_SetItem(tuple, 0, attrName);
+	sprintf(buf, "0x%-4x", s->rdevs[fileNumber]);
+	PyTuple_SetItem(tuple, 1, PyString_FromString(buf));
+	sprintf(buf, "0x%-4x", sb.st_rdev);
+	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
+	PyList_Append(list, tuple);
+    }
+
+    /* RPMVERIFY_USER and RPM_VERIFY_GROUP are handled wrong here, but rpmlib.a
+       doesn't do these correctly either. At least this is consisten */
+    if (verifyResult & RPMVERIFY_USER) {
+	if (!s->uids) {
+	    headerGetEntry(s->h, RPMTAG_FILEUIDS, &type, (void **) &s->uids, 
+		     &count);
+	}
+
+	tuple = PyTuple_New(3);
+	attrName = PyString_FromString("uid");
+	PyTuple_SetItem(tuple, 0, attrName);
+	sprintf(buf, "%d", s->uids[fileNumber]);
+	PyTuple_SetItem(tuple, 1, PyString_FromString(buf));
+	sprintf(buf, "%d", sb.st_uid);
+	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
+	PyList_Append(list, tuple);
+    }
+
+    if (verifyResult & RPMVERIFY_GROUP) {
+	if (!s->gids) {
+	    headerGetEntry(s->h, RPMTAG_FILEGIDS, &type, (void **) &s->gids, 
+		     &count);
+	}
+
+	tuple = PyTuple_New(3);
+	attrName = PyString_FromString("gid");
+	PyTuple_SetItem(tuple, 0, attrName);
+	sprintf(buf, "%d", s->gids[fileNumber]);
+	PyTuple_SetItem(tuple, 1, PyString_FromString(buf));
+	sprintf(buf, "%d", sb.st_gid);
+	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
+	PyList_Append(list, tuple);
+    }
+
+    if (verifyResult & RPMVERIFY_MODE) {
+	if (!s->modes) {
+	    headerGetEntry(s->h, RPMTAG_FILEMODES, &type, (void **) &s->modes, 
+		     &count);
+	}
+
+	tuple = PyTuple_New(3);
+	attrName = PyString_FromString("permissions");
+	PyTuple_SetItem(tuple, 0, attrName);
+	sprintf(buf, "0%-4o", s->modes[fileNumber]);
+	PyTuple_SetItem(tuple, 1, PyString_FromString(buf));
+	sprintf(buf, "0%-4o", sb.st_mode);
+	PyTuple_SetItem(tuple, 2, PyString_FromString(buf));
+	PyList_Append(list, tuple);
+    }
 
     return list;
 }
 
-/** \ingroup python
- */
-static struct PyMethodDef rpmtransMethods[] = {
-	{"add",		(PyCFunction) rpmtransAdd,	1 },
-	{"remove",	(PyCFunction) rpmtransRemove,	1 },
-	{"depcheck",	(PyCFunction) rpmtransDepCheck,	1 },
-	{"order",	(PyCFunction) rpmtransOrder,	1 },
-	{"getKeys",	(PyCFunction) py_rpmtransGetKeys, 1 },
-	{"run",		(PyCFunction) rpmtransRun, 1 },
-	{NULL,		NULL}		/* sentinel */
-};
+static PyObject * rpmtransCreate(PyObject * self, PyObject * args) {
+    rpmtransObject * o;
+    rpmdbObject * db = NULL;
+    char * rootPath = "/";
 
-/** \ingroup python
- */
+    if (!PyArg_ParseTuple(args, "|sO", &rootPath, &db)) return NULL;
+    if (db && db->ob_type != &rpmdbType) {
+	PyErr_SetString(PyExc_TypeError, "bad type for database argument");
+	return NULL;
+    }
+
+    o = (void *) PyObject_NEW(rpmtransObject, &rpmtransType);
+
+    Py_INCREF(db);
+    o->dbo = db;
+    o->ts = rpmtransCreateSet(db ? db->db : NULL, rootPath);
+    o->keyList = PyList_New(0);
+
+    return (void *) o;
+}
+
+static void rpmtransDealloc(PyObject * o) {
+    rpmtransObject * trans = (void *) o;
+
+    rpmtransFree(trans->ts);
+    if (trans->dbo) Py_DECREF(trans->dbo);
+    if (trans->scriptFd) fdClose(trans->scriptFd);
+    Py_DECREF(trans->keyList);
+}
+
 static PyObject * rpmtransGetAttr(rpmtransObject * o, char * name) {
     return Py_FindMethod(rpmtransMethods, (PyObject *) o, name);
 }
 
-/** \ingroup python
- */
-static void rpmtransDealloc(PyObject * o) {
-    rpmtransObject * trans = (void *) o;
-
-    trans->ts->rpmdb = NULL;	/* XXX HACK: avoid rpmdb close/free */
-    rpmtransFree(trans->ts);
-    if (trans->dbo) {
-	Py_DECREF(trans->dbo);
-    }
-    if (trans->scriptFd) Fclose(trans->scriptFd);
-    /* this will free the keyList, and decrement the ref count of all
-       the items on the list as well :-) */
-    Py_DECREF(trans->keyList);
-    PyMem_DEL(o);
-}
-
-/** \ingroup python
- */
 static int rpmtransSetAttr(rpmtransObject * o, char * name,
 			   PyObject * val) {
     int i;
@@ -514,87 +822,160 @@ static int rpmtransSetAttr(rpmtransObject * o, char * name,
     return 0;
 }
 
-/** \ingroup python
- */
-static PyTypeObject rpmtransType = {
-	PyObject_HEAD_INIT(NULL)
-	0,				/* ob_size */
-	"rpmtrans",			/* tp_name */
-	sizeof(rpmtransObject),		/* tp_size */
-	0,				/* tp_itemsize */
-	(destructor) rpmtransDealloc, 	/* tp_dealloc */
-	0,				/* tp_print */
-	(getattrfunc) rpmtransGetAttr, 	/* tp_getattr */
-	(setattrfunc) rpmtransSetAttr,	/* tp_setattr */
-	0,				/* tp_compare */
-	0,				/* tp_repr */
-	0,				/* tp_as_number */
-	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
-};
+static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args) {
+    hdrObject * h;
+    PyObject * key;
+    char * how = NULL;
 
-/*@}*/
-
-/** \ingroup python
- * \name Module: rpm
- */
-/*@{*/
-
-/**
- */
-static PyObject * rpmtransCreate(PyObject * self, PyObject * args) {
-    rpmtransObject * o;
-    rpmdbObject * db = NULL;
-    char * rootPath = "/";
-
-    if (!PyArg_ParseTuple(args, "|sO", &rootPath, &db)) return NULL;
-    if (db && ((PyObject *) db)->ob_type != &rpmdbType) {
-	PyErr_SetString(PyExc_TypeError, "bad type for database argument");
+    if (!PyArg_ParseTuple(args, "OO|s", &h, &key, &s)) return NULL;
+    if (h->ob_type != &hdrType) {
+	PyErr_SetString(PyExc_TypeError, "bad type for header argument");
 	return NULL;
     }
 
-    o = (void *) PyObject_NEW(rpmtransObject, &rpmtransType);
-
-    Py_XINCREF(db);
-    o->dbo = db;
-    o->scriptFd = NULL;
-    o->ts = rpmtransCreateSet(NULL, rootPath);
-    o->ts->rpmdb = (db ? dbFromDb(db) : NULL);
-    o->keyList = PyList_New(0);
-
-    return (void *) o;
-}
-
-/**
- */
-static PyObject * doAddMacro(PyObject * self, PyObject * args) {
-    char * name, * val;
-
-    if (!PyArg_ParseTuple(args, "ss", &name, &val))
+    if (how && strcmp(how, "a") && strcmp(how, "u")) {
+	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\" or \"a\"");
 	return NULL;
+    }
 
-    addMacro(NULL, name, NULL, val, RMIL_DEFAULT);
+    if (how && strcmp(how, "a"))
+	rpmtransAvailablePackage(s->ts, h->h, key);
+    else
+	rpmtransAddPackage(s->ts, h->h, NULL, key, how ? 1 : 0, NULL);
+
+    if (key) PyList_Append(s->keyList, key);
 
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-/**
- */
-static PyObject * doDelMacro(PyObject * self, PyObject * args) {
-    char * name;
+static PyObject * rpmtransOrder(rpmtransObject * s, PyObject * args) {
+    if (!PyArg_ParseTuple(args, "")) return NULL;
 
-    if (!PyArg_ParseTuple(args, "s", &name))
-	return NULL;
-
-    delMacro(NULL, name);
+    rpmdepOrder(s->ts);
 
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-/**
- */
+static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
+    struct rpmDependencyConflict * conflicts;
+    int numConflicts;
+    PyObject * list, * cf;
+    int i;
+
+    if (!PyArg_ParseTuple(args, "")) return NULL;
+
+    rpmdepCheck(s->ts, &conflicts, &numConflicts);
+    if (numConflicts) {
+	list = PyList_New(0);
+
+	for (i = 0; i < numConflicts; i++) {
+	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName, 
+			       conflicts[i].byVersion, conflicts[i].byRelease,
+			       conflicts[i].needsName, 
+			       conflicts[i].needsVersion,
+			       conflicts[i].needsFlags,
+			       conflicts[i].suggestedPackage ?
+				   conflicts[i].suggestedPackage : Py_None,
+			       conflicts[i].sense);
+	    PyList_Append(list, (PyObject *) cf);
+	    Py_DECREF(cf);
+	}
+
+	rpmdepFreeConflicts(conflicts, numConflicts);
+
+	return list;
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+struct tsCallbackType {
+    PyObject * cb;
+    PyObject * data;
+    int pythonError;
+};
+
+static void * tsCallback(const Header h, const rpmCallbackType what, 
+		         const unsigned long amount, const unsigned long total,
+	                 const void * pkgKey, void * data) {
+    struct tsCallbackType * cbInfo = data;
+    PyObject * args, * result;
+    int fd;
+    FD_t fdt;
+
+    if (cbInfo->pythonError) return NULL;
+
+    if (!pkgKey) pkgKey = Py_None;
+
+    args = Py_BuildValue("(illOO)", what, amount, total, pkgKey, cbInfo->data);
+    result = PyEval_CallObject(cbInfo->cb, args);
+    Py_DECREF(args);
+
+    if (!result) {
+	cbInfo->pythonError = 1;
+	return NULL;
+    }
+
+    if (what == RPMCALLBACK_INST_OPEN_FILE) {
+        if (!PyArg_Parse(result, "i", &fd)) {
+	    cbInfo->pythonError = 1;
+	    return NULL;
+	}
+	fdt = fdDup(fd);
+	close(fd);
+	Py_DECREF(result);
+	return fdt;
+    }
+
+    Py_DECREF(result);
+
+    return NULL;
+}
+
+static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
+    int flags, ignoreSet;
+    int rc, i;
+    PyObject * list, * prob;
+    rpmProblemSet probs;
+    struct tsCallbackType cbInfo;
+
+    if (!PyArg_ParseTuple(args, "iiOO", &flags, &ignoreSet, &cbInfo.cb,
+			  &cbInfo.data)) 
+	return NULL;
+
+    cbInfo.pythonError = 0;
+
+    rc = rpmRunTransactions(s->ts, tsCallback, &cbInfo, NULL, &probs, flags, 
+			    ignoreSet);
+
+    if (cbInfo.pythonError) {
+	if (rc > 0) 
+	    rpmProblemSetFree(probs);
+	return NULL;
+    }
+
+    if (rc < 0) {
+	return Py_BuildValue("i", rc);
+    } else if (!rc) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+
+    list = PyList_New(0);
+    for (i = 0; i < probs->numProblems; i++) {
+	prob = Py_BuildValue("s", rpmProblemString(probs->probs[i]));
+	PyList_Append(list, prob);
+	Py_DECREF(prob);
+    }
+
+    rpmProblemSetFree(probs);
+
+    return list;
+}
+
 static PyObject * archScore(PyObject * self, PyObject * args) {
     char * arch;
     int score;
@@ -606,565 +987,3 @@ static PyObject * archScore(PyObject * self, PyObject * args) {
 
     return Py_BuildValue("i", score);
 }
-
-/**
- */
-static int psGetArchScore(Header h) {
-    void * pkgArch;
-    int type, count;
-
-    if (!headerGetEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count) ||
-        type == RPM_INT8_TYPE)
-       return 150;
-    else
-        return rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch);
-}
-
-/**
- */
-static int pkgCompareVer(void * first, void * second) {
-    struct packageInfo ** a = first;
-    struct packageInfo ** b = second;
-    int ret, score1, score2;
-
-    /* put packages w/o names at the end */
-    if (!(*a)->name) return 1;
-    if (!(*b)->name) return -1;
-
-    ret = xstrcasecmp((*a)->name, (*b)->name);
-    if (ret) return ret;
-    score1 = psGetArchScore((*a)->h);
-    if (!score1) return 1;
-    score2 = psGetArchScore((*b)->h);
-    if (!score2) return -1;
-    if (score1 < score2) return -1;
-    if (score1 > score2) return 1;
-    return rpmVersionCompare((*b)->h, (*a)->h);
-}
-
-/**
- */
-static void pkgSort(struct pkgSet * psp) {
-    int i;
-    char *name;
-
-    if (psp->numPackages <= 0)
-	return;
-
-    qsort(psp->packages, psp->numPackages, sizeof(*psp->packages),
-	 (void *) pkgCompareVer);
-
-    name = psp->packages[0]->name;
-    if (!name) {
-       psp->numPackages = 0;
-       return;
-    }
-    for (i = 1; i < psp->numPackages; i++) {
-       if (!psp->packages[i]->name) break;
-       if (!strcmp(psp->packages[i]->name, name))
-	   psp->packages[i]->name = NULL;
-       else
-	   name = psp->packages[i]->name;
-    }
-
-    qsort(psp->packages, psp->numPackages, sizeof(*psp->packages),
-	 (void *) pkgCompareVer);
-
-    for (i = 0; i < psp->numPackages; i++)
-       if (!psp->packages[i]->name) break;
-    psp->numPackages = i;
-}
-
-/**
- */
-static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
-    PyObject * hdrList, * result;
-    char * root = "/";
-    int i;
-    struct pkgSet list;
-    hdrObject * hdr;
-
-    if (!PyArg_ParseTuple(args, "O|s", &hdrList, &root)) return NULL;
-
-    if (!PyList_Check(hdrList)) {
-	PyErr_SetString(PyExc_TypeError, "list of headers expected");
-	return NULL;
-    }
-
-    list.numPackages = PyList_Size(hdrList);
-    list.packages = alloca(sizeof(list.packages) * list.numPackages);
-    for (i = 0; i < list.numPackages; i++) {
-	hdr = (hdrObject *) PyList_GetItem(hdrList, i);
-	if (((PyObject *) hdr)->ob_type != &hdrType) {
-	    PyErr_SetString(PyExc_TypeError, "list of headers expected");
-	    return NULL;
-	}
-	list.packages[i] = alloca(sizeof(struct packageInfo));
-	list.packages[i]->h = hdrGetHeader(hdr);
-	list.packages[i]->selected = 0;
-	list.packages[i]->data = hdr;
-
-	headerGetEntry(list.packages[i]->h, RPMTAG_NAME, NULL,
-		      (void **) &list.packages[i]->name, NULL);
-    }
-
-    pkgSort (&list);
-
-    if (ugFindUpgradePackages(&list, root)) {
-	PyErr_SetString(pyrpmError, "error during upgrade check");
-	return NULL;
-    }
-
-    result = PyList_New(0);
-    for (i = 0; i < list.numPackages; i++) {
-	if (list.packages[i]->selected) {
-	    PyList_Append(result, list.packages[i]->data);
-/*  	    Py_DECREF(list.packages[i]->data); */
-	}
-    }
-
-    return result;
-}
-
-/**
- */
-static PyObject * rpmInitDB(PyObject * self, PyObject * args) {
-    char *root;
-    int forWrite = 0;
-
-    if (!PyArg_ParseTuple(args, "i|s", &forWrite, &root)) return NULL;
-
-    if (rpmdbInit(root, forWrite ? O_RDWR | O_CREAT: O_RDONLY)) {
-	char * errmsg = "cannot initialize database in %s";
-	char * errstr = NULL;
-	int errsize;
-
-	errsize = strlen(errmsg) + strlen(root);
-	errstr = alloca(errsize);
-	snprintf(errstr, errsize, errmsg, root);
-	PyErr_SetString(pyrpmError, errstr);
-	return NULL;
-    }
-
-    Py_INCREF(Py_None);
-    return(Py_None);
-}
-
-/**
- */
-static PyObject * errorCB = NULL, * errorData = NULL;
-
-/**
- */
-static void errorcb (void)
-{
-    PyObject * result, * args = NULL;
-
-    if (errorData)
-	args = Py_BuildValue("(O)", errorData);
-
-    result = PyEval_CallObject(errorCB, args);
-    Py_XDECREF(args);
-
-    if (result == NULL) {
-	PyErr_Print();
-	PyErr_Clear();
-    }
-    Py_DECREF (result);
-}
-
-/**
- */
-static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
-    PyObject *newCB = NULL, *newData = NULL;
-
-    if (!PyArg_ParseTuple(args, "O|O", &newCB, &newData)) return NULL;
-
-    /* if we're getting a void*, set the error callback to this. */
-    /* also, we can possibly decref any python callbacks we had  */
-    /* and set them to NULL.                                     */
-    if (PyCObject_Check (newCB)) {
-	rpmErrorSetCallback (PyCObject_AsVoidPtr(newCB));
-
-	Py_XDECREF (errorCB);
-	Py_XDECREF (errorData);
-
-	errorCB   = NULL;
-	errorData = NULL;
-	
-	Py_INCREF(Py_None);
-	return Py_None;
-    }
-    
-    if (!PyCallable_Check (newCB)) {
-	PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-	return NULL;
-    }
-
-    Py_XDECREF(errorCB);
-    Py_XDECREF(errorData);
-
-    errorCB = newCB;
-    errorData = newData;
-    
-    Py_INCREF (errorCB);
-    Py_XINCREF (errorData);
-
-    return PyCObject_FromVoidPtr(rpmErrorSetCallback (errorcb), NULL);
-}
-
-/**
- */
-static PyObject * errorString (PyObject * self, PyObject * args) {
-    return PyString_FromString(rpmErrorString ());
-}
-
-/**
- */
-static PyObject * checkSig (PyObject * self, PyObject * args) {
-    char * filename;
-    int flags;
-    int rc = 255;
-
-    if (PyArg_ParseTuple(args, "si", &filename, &flags)) {
-	rpmTransactionSet ts;
-	const char * av[2];
-	QVA_t ka = memset(alloca(sizeof(*ka)), 0, sizeof(*ka));
-
-	av[0] = filename;
-	av[1] = NULL;
-	ka->qva_mode = 'K';
-	ka->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
-	ka->sign = 0;
-	ka->passPhrase = NULL;
-	ts = rpmtransCreateSet(NULL, NULL);
-	rc = rpmcliSign(ts, ka, av);
-	rpmtransFree(ts);
-    }
-    return Py_BuildValue("i", rc);
-}
-
-/* hack to get the current header that's in the transaction set */
-/**
- */
-static PyObject * getTsHeader (PyObject * self, PyObject * args) {
-
-    if (!PyArg_ParseTuple(args, ""))
-	return NULL;
-    
-    if (transactionSetHeader) {
-	return (PyObject *) createHeaderObject(transactionSetHeader);
-    }
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
-}
-
-static PyObject * setVerbosity (PyObject * self, PyObject * args) {
-    int level;
-
-    if (!PyArg_ParseTuple(args, "i", &level))
-	return NULL;
-
-    rpmSetVerbosity(level);
-
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
-}
-
-/**
- */
-typedef struct FDlist_t FDlist;
-
-/**
- */
-struct FDlist_t {
-    FILE *f;
-    FD_t fd;
-    char *note;
-    FDlist *next;
-} ;
-
-/**
- */
-static FDlist *fdhead = NULL;
-
-/**
- */
-static FDlist *fdtail = NULL;
-
-/**
- */
-static int closeCallback(FILE * f) {
-    FDlist *node, *last;
-
-    printf ("close callback on %p\n", f);
-    
-    node = fdhead;
-    last = NULL;
-    while (node) {
-        if (node->f == f)
-            break;
-        last = node;
-        node = node->next;
-    }
-    if (node) {
-        if (last)
-            last->next = node->next;
-        else
-            fdhead = node->next;
-        printf ("closing %s %p\n", node->note, node->fd);
-	free (node->note);
-        node->fd = fdLink(node->fd, "closeCallback");
-        Fclose (node->fd);
-        while (node->fd)
-            node->fd = fdFree(node->fd, "closeCallback");
-        free (node);
-    }
-    return 0; 
-}
-
-/**
- */
-static PyObject * doFopen(PyObject * self, PyObject * args) {
-    char * path, * mode;
-    FDlist *node;
-    
-    if (!PyArg_ParseTuple(args, "ss", &path, &mode))
-	return NULL;
-    
-    node = malloc (sizeof(FDlist));
-    
-    node->fd = Fopen(path, mode);
-    node->fd = fdLink(node->fd, "doFopen");
-    node->note = strdup (path);
-
-    if (!node->fd) {
-	PyErr_SetFromErrno(pyrpmError);
-        free (node);
-	return NULL;
-    }
-    
-    if (Ferror(node->fd)) {
-	const char *err = Fstrerror(node->fd);
-        free(node);
-	if (err) {
-	    PyErr_SetString(pyrpmError, err);
-	    return NULL;
-	}
-    }
-    node->f = fdGetFp(node->fd);
-    printf ("opening %s fd = %p f = %p\n", node->note, node->fd, node->f);
-    if (!node->f) {
-	PyErr_SetString(pyrpmError, "FD_t has no FILE*");
-        free(node);
-	return NULL;
-    }
-
-    node->next = NULL;
-    if (!fdhead) {
-	fdhead = fdtail = node;
-    } else if (fdtail) {
-        fdtail->next = node;
-    } else {
-        fdhead = node;
-    }
-    fdtail = node;
-    
-    return PyFile_FromFile (node->f, path, mode, closeCallback);
-}
-
-/**
- */
-static PyMethodDef rpmModuleMethods[] = {
-    { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
-    { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS, NULL },
-    { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS, NULL },
-    { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
-    { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
-    { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
-    { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS, NULL },
-    { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS, NULL },
-    { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS, NULL },
-    { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
-    { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS, NULL },
-    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS, NULL },
-    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },
-    { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS, NULL },
-    { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS, NULL },
-    { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },
-    { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
-    { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
-    { "checksig", (PyCFunction) checkSig, METH_VARARGS, NULL },
-    { "getTransactionCallbackHeader", (PyCFunction) getTsHeader, METH_VARARGS, NULL },
-    { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL },
-    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS, NULL },
-    { NULL }
-} ;
-
-/**
- */
-void initrpm(void) {
-    PyObject * m, * d, *o, * tag = NULL, * dict;
-    int i;
-    const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
-    struct headerSprintfExtension_s * ext;
-    m = Py_InitModule("rpm", rpmModuleMethods);
-
-    hdrType.ob_type = &PyType_Type;
-    rpmdbMIType.ob_type = &PyType_Type;
-    rpmdbType.ob_type = &PyType_Type;
-    rpmtransType.ob_type = &PyType_Type;
-
-    if(!m)
-	return;
-
-/*      _rpmio_debug = -1; */
-    rpmReadConfigFiles(NULL, NULL);
-
-    d = PyModule_GetDict(m);
-
-    pyrpmError = PyString_FromString("rpm.error");
-    PyDict_SetItemString(d, "error", pyrpmError);
-    Py_DECREF(pyrpmError);
-
-    dict = PyDict_New();
-
-    for (i = 0; i < rpmTagTableSize; i++) {
-	tag = PyInt_FromLong(rpmTagTable[i].val);
-	PyDict_SetItemString(d, (char *) rpmTagTable[i].name, tag);
-	Py_DECREF(tag);
-        PyDict_SetItem(dict, tag, o=PyString_FromString(rpmTagTable[i].name + 7));
-	Py_DECREF(o);
-    }
-
-    while (extensions->name) {
-	if (extensions->type == HEADER_EXT_TAG) {
-            (const struct headerSprintfExtension *) ext = extensions;
-            PyDict_SetItemString(d, (char *) extensions->name, o=PyCObject_FromVoidPtr(ext, NULL));
-	    Py_DECREF(o);
-            PyDict_SetItem(dict, tag, o=PyString_FromString(ext->name + 7));
-	    Py_DECREF(o);    
-        }
-        extensions++;
-    }
-
-    PyDict_SetItemString(d, "tagnames", dict);
-    Py_DECREF(dict);
-
-
-#define REGISTER_ENUM(val) \
-    PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \
-    Py_DECREF(o);
-    
-    REGISTER_ENUM(RPMFILE_STATE_NORMAL);
-    REGISTER_ENUM(RPMFILE_STATE_REPLACED);
-    REGISTER_ENUM(RPMFILE_STATE_NOTINSTALLED);
-    REGISTER_ENUM(RPMFILE_STATE_NETSHARED);
-
-    REGISTER_ENUM(RPMFILE_CONFIG);
-    REGISTER_ENUM(RPMFILE_DOC);
-    REGISTER_ENUM(RPMFILE_MISSINGOK);
-    REGISTER_ENUM(RPMFILE_NOREPLACE);
-    REGISTER_ENUM(RPMFILE_GHOST);
-    REGISTER_ENUM(RPMFILE_LICENSE);
-    REGISTER_ENUM(RPMFILE_README);
-
-    REGISTER_ENUM(RPMDEP_SENSE_REQUIRES);
-    REGISTER_ENUM(RPMDEP_SENSE_CONFLICTS);
-
-    REGISTER_ENUM(RPMSENSE_SERIAL);
-    REGISTER_ENUM(RPMSENSE_LESS);
-    REGISTER_ENUM(RPMSENSE_GREATER);
-    REGISTER_ENUM(RPMSENSE_EQUAL);
-    REGISTER_ENUM(RPMSENSE_PREREQ);
-    REGISTER_ENUM(RPMSENSE_INTERP);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_PRE);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_POST);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_PREUN);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_POSTUN);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_VERIFY);
-    REGISTER_ENUM(RPMSENSE_FIND_REQUIRES);
-    REGISTER_ENUM(RPMSENSE_FIND_PROVIDES);
-    REGISTER_ENUM(RPMSENSE_TRIGGERIN);
-    REGISTER_ENUM(RPMSENSE_TRIGGERUN);
-    REGISTER_ENUM(RPMSENSE_TRIGGERPOSTUN);
-    REGISTER_ENUM(RPMSENSE_MULTILIB);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_PREP);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_BUILD);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_INSTALL);
-    REGISTER_ENUM(RPMSENSE_SCRIPT_CLEAN);
-    REGISTER_ENUM(RPMSENSE_RPMLIB);
-    REGISTER_ENUM(RPMSENSE_TRIGGERPREIN);
-
-    REGISTER_ENUM(RPMTRANS_FLAG_TEST);
-    REGISTER_ENUM(RPMTRANS_FLAG_BUILD_PROBS);
-    REGISTER_ENUM(RPMTRANS_FLAG_NOSCRIPTS);
-    REGISTER_ENUM(RPMTRANS_FLAG_JUSTDB);
-    REGISTER_ENUM(RPMTRANS_FLAG_NOTRIGGERS);
-    REGISTER_ENUM(RPMTRANS_FLAG_NODOCS);
-    REGISTER_ENUM(RPMTRANS_FLAG_ALLFILES);
-    REGISTER_ENUM(RPMTRANS_FLAG_KEEPOBSOLETE);
-    REGISTER_ENUM(RPMTRANS_FLAG_MULTILIB);
-
-    REGISTER_ENUM(RPMPROB_FILTER_IGNOREOS);
-    REGISTER_ENUM(RPMPROB_FILTER_IGNOREARCH);
-    REGISTER_ENUM(RPMPROB_FILTER_REPLACEPKG);
-    REGISTER_ENUM(RPMPROB_FILTER_FORCERELOCATE);
-    REGISTER_ENUM(RPMPROB_FILTER_REPLACENEWFILES);
-    REGISTER_ENUM(RPMPROB_FILTER_REPLACEOLDFILES);
-    REGISTER_ENUM(RPMPROB_FILTER_OLDPACKAGE);
-    REGISTER_ENUM(RPMPROB_FILTER_DISKSPACE);
-    REGISTER_ENUM(RPMPROB_FILTER_DISKNODES);
-
-    REGISTER_ENUM(RPMCALLBACK_INST_PROGRESS);
-    REGISTER_ENUM(RPMCALLBACK_INST_START);
-    REGISTER_ENUM(RPMCALLBACK_INST_OPEN_FILE);
-    REGISTER_ENUM(RPMCALLBACK_INST_CLOSE_FILE);
-    REGISTER_ENUM(RPMCALLBACK_TRANS_PROGRESS);
-    REGISTER_ENUM(RPMCALLBACK_TRANS_START);
-    REGISTER_ENUM(RPMCALLBACK_TRANS_STOP);
-    REGISTER_ENUM(RPMCALLBACK_UNINST_PROGRESS);
-    REGISTER_ENUM(RPMCALLBACK_UNINST_START);
-    REGISTER_ENUM(RPMCALLBACK_UNINST_STOP);
-    REGISTER_ENUM(RPMCALLBACK_UNPACK_ERROR);
-    REGISTER_ENUM(RPMCALLBACK_CPIO_ERROR);
-
-    REGISTER_ENUM(RPMPROB_BADARCH);
-    REGISTER_ENUM(RPMPROB_BADOS);
-    REGISTER_ENUM(RPMPROB_PKG_INSTALLED);
-    REGISTER_ENUM(RPMPROB_BADRELOCATE);
-    REGISTER_ENUM(RPMPROB_REQUIRES);
-    REGISTER_ENUM(RPMPROB_CONFLICT);
-    REGISTER_ENUM(RPMPROB_NEW_FILE_CONFLICT);
-    REGISTER_ENUM(RPMPROB_FILE_CONFLICT);
-    REGISTER_ENUM(RPMPROB_OLDPACKAGE);
-    REGISTER_ENUM(RPMPROB_DISKSPACE);
-    REGISTER_ENUM(RPMPROB_DISKNODES);
-    REGISTER_ENUM(RPMPROB_BADPRETRANS);
-
-#ifdef	DEAD
-    REGISTER_ENUM(CHECKSIG_PGP);	/* XXX use VERIFY_SIGNATURE */
-    REGISTER_ENUM(CHECKSIG_GPG);	/* XXX use VERIFY_SIGNATURE */
-    REGISTER_ENUM(CHECKSIG_MD5);	/* XXX use VERIFY_DIGEST */
-#else
-    REGISTER_ENUM(VERIFY_DIGEST);
-    REGISTER_ENUM(VERIFY_SIGNATURE);
-#endif
-
-    REGISTER_ENUM(RPMLOG_EMERG);
-    REGISTER_ENUM(RPMLOG_ALERT);
-    REGISTER_ENUM(RPMLOG_CRIT);
-    REGISTER_ENUM(RPMLOG_ERR);
-    REGISTER_ENUM(RPMLOG_WARNING);
-    REGISTER_ENUM(RPMLOG_NOTICE);
-    REGISTER_ENUM(RPMLOG_INFO);
-    REGISTER_ENUM(RPMLOG_DEBUG);
-
-    REGISTER_ENUM(RPMMIRE_DEFAULT);
-    REGISTER_ENUM(RPMMIRE_STRCMP);
-    REGISTER_ENUM(RPMMIRE_REGEX);
-    REGISTER_ENUM(RPMMIRE_GLOB);
-
-}
-
-/*@}*/
