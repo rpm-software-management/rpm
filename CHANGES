@@ -10,7 +10,7 @@
 	- changed ftp URL's to use \r\n, not just \n (this should let RPM
 	  work w/ some picky (but rfc compliant) ftp servers
 	- fix problem where parts at end of spec file were dropped
-	- added %config(noupdate missingok) (build-side)
+	- added %config(noreplace missingok) (build-side)
 	- simple spec file macros
 	- should now process entire file list before failing
 	
