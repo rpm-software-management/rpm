@@ -1,6 +1,6 @@
 Summary: C library for parsing command line parameters
 Name: popt
-%define version 1.1.1
+%define version 1.2
 Version: %{version}
 Release: 1
 Copyright: LGPL
@@ -18,6 +18,9 @@ files and includes utility functions for parsing arbitrary strings into
 argv[] arrays using shell-like rules. 
 
 %changelog
+
+* Thu Oct 22 1998 Erik Troan <ewt@redhat.com>
+- see CHANGES file for 1.2
 
 * Thu Apr 09 1998 Erik Troan <ewt@redhat.com>
 
