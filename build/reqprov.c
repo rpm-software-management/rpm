@@ -89,21 +89,28 @@ int addReqProv(struct PackageRec *p, int flags,
 
 static void parseFileForProv(char *f, struct PackageRec *p)
 {
-    char file[1024];
-    char *s, *tok;
+    char soname[1024];
+    char command[2048];
+    char *s;
+    FILE *pipe;
+    int len;
 
-    strcpy(file, f);
-    s = file + strlen(f) - 1;
+    s = f + strlen(f) - 1;
     while (*s != '/') {
 	s--;
     }
     s++;
-    tok = s;
     
-    if ((s = strstr(s, ".so."))) {
-	s += 3;
-	*s = '\0';
-	addReqProv(p, REQUIRE_PROVIDES, tok, NULL);
+    if (strstr(s, ".so.")) {
+	sprintf(command, "objdump --raw %s --section=.dynstr 2> /dev/null | tr '\\0' '\\n' | tail -1", f);
+	pipe = popen(command, "r");
+	soname[0] = '\0';
+	fgets(soname, sizeof(soname)-1, pipe);
+	pclose(pipe);
+	if ((len = strlen(soname))) {
+	    soname[len-1] = '\0';
+	    addReqProv(p, REQUIRE_PROVIDES, soname, NULL);
+	}
     }
 }
 
@@ -248,16 +255,11 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 		s++;
 	    }
 	    tok = s;
-	    if ((s = strstr(s, ".so"))) {
-		s += 3;
-		*s = '\0';
-		addReqProv(p, REQUIRE_ANY, tok, NULL);
-	    } else {
-		/* ACK! */
-		error(RPMERR_LDD, "ldd is babbling: %s", tok);
-		free(fsave);
-		return 1;
+	    while (! isspace(*s)) {
+		s++;
 	    }
+	    *s = '\0';
+	    addReqProv(p, REQUIRE_ANY, tok, NULL);
 	}
 
 	f++;
@@ -335,7 +337,8 @@ int processReqProv(Header h, struct PackageRec *p)
 	flagArray = flagPtr = malloc(p->numReq * sizeof(*flagArray));
 	message(MESS_VERBOSE, "Requires (%d):", p->numReq);
 	while (rd) {
-	    if (! (rd->flags & REQUIRE_PROVIDES)) {
+	    if (! ((rd->flags & REQUIRE_PROVIDES) ||
+		   (rd->flags & REQUIRE_CONFLICTS))) {
 		message(MESS_VERBOSE, " %s", rd->name);
 		*namePtr++ = rd->name;
 		*versionPtr++ = rd->version ? rd->version : "";
