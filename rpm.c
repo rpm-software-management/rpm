@@ -141,7 +141,11 @@ static struct poptOption optionsTable[] = {
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
  { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
+#ifndef	DYING
+ { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,	NULL, NULL},
+#else
  { "rcfile", '\0', 0, 0, GETOPT_RCFILE,		NULL, NULL},
+#endif
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
  { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,	NULL, NULL},
  { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},

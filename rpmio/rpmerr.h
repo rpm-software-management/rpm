@@ -9,7 +9,7 @@
 #include "rpmlog.h"
 
 #define	_em(_e)	\
-    (0x80000000 | ((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_ERR))
+    (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_ERR))
 
 /**
  * Tokens used by rpmError().

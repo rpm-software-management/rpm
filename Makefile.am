@@ -125,7 +125,8 @@ install-data-local:
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i586;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i686;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/athlon ;;\
-	alpha*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alpha ;;\
+	alpha*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alpha;\
+		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alphaev6 ;;\
 	sparc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparcv9;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc64 ;;\
@@ -134,6 +135,7 @@ install-data-local:
 	@case "@build_os@" in \
 	mint) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/m68kmint ;;\
 	solaris*|linux*) \
+	   chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ; \
 	   $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
 	*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
 	esac
@@ -143,8 +145,6 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
-#chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ; \
-#
 
 .PHONY: tar
 tar:

@@ -108,6 +108,9 @@
 /* Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt) */
 #undef LIBRPMALIAS_FILENAME
 
+/* Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc) */
+#undef LIBRPMRC_FILENAME
+
 /* Colon separated paths of macro files to read. */
 #undef MACROFILES
 

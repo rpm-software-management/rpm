@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.29 2000/08/28 15:25:04 jbj Exp $
+# $Id: rpmrc.in,v 2.30 2000/09/14 11:42:48 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -19,6 +19,11 @@ optflags: ia64 -O2
 
 # XXX Please note that -mieee has been added in rpm-3.0.5.
 optflags: alpha -O2 -mieee
+optflags: alphaev5 -O2 -mieee -mcpu=ev5
+optflags: alphaev56 -O2 -mieee -mcpu=ev56
+optflags: alphapca56 -O2 -mieee -mcpu=pca56
+optflags: alphaev6 -O2 -mieee -mcpu=ev6
+optflags: alphaev67 -O2 -mieee -mcpu=ev67
 
 optflags: sparc -O2 -m32 -mtune=ultrasparc
 optflags: sparcv9 -O2 -m32 -mcpu=ultrasparc
@@ -51,6 +56,11 @@ arch_canon:	i586:	i586	1
 arch_canon:	i486:	i486	1
 arch_canon:	i386:	i386	1
 arch_canon:	alpha:	alpha	2
+arch_canon:	alphaev5: alphaev5	2
+arch_canon:	alphaev56: alphaev56	2
+arch_canon:	alphapca56:alphapca56	2
+arch_canon:	alphaev6: alphaev6	2
+arch_canon:	alphaev67: alphaev67	2
 arch_canon: 	sparc:	sparc	3
 arch_canon: 	sun4:	sparc	3
 arch_canon: 	sun4m:	sparc	3
@@ -133,6 +143,12 @@ buildarchtranslate: osfmach3_ppc: ppc
 buildarchtranslate: powerpc: ppc
 buildarchtranslate: powerppc: ppc
 
+buildarchtranslate: alphaev5: alpha
+buildarchtranslate: alphaev56: alpha
+buildarchtranslate: alphapca56: alpha
+buildarchtranslate: alphaev6: alpha
+buildarchtranslate: alphaev67: alpha
+
 buildarchtranslate: sun4c: sparc
 buildarchtranslate: sun4d: sparc
 buildarchtranslate: sun4m: sparc
@@ -150,6 +166,11 @@ buildarchtranslate: hades: m68kmint
 #############################################################
 # Architecture compatibility
 
+arch_compat: alphaev67: alphaev6
+arch_compat: alphaev6: alphapca56
+arch_compat: alphapca56: alphaev56
+arch_compat: alphaev56: alphaev5
+arch_compat: alphaev5: alpha
 arch_compat: alpha: axp noarch
 
 arch_compat: ia64: noarch
@@ -243,7 +264,14 @@ buildarch_compat: sun4u: noarch
 buildarch_compat: sparc64: noarch
 buildarch_compat: sparcv9: sparc
 buildarch_compat: sparc: noarch
+
+buildarch_compat: alphaev67: alphaev6
+buildarch_compat: alphaev6: alphapca56
+buildarch_compat: alphapca56: alphaev56
+buildarch_compat: alphaev56: alphaev5
+buildarch_compat: alphaev5: alpha
 buildarch_compat: alpha: noarch
+
 buildarch_compat: m68k: noarch
 buildarch_compat: ppc: noarch
 buildarch_compat: mipsel: noarch

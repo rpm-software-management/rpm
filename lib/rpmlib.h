@@ -349,6 +349,20 @@ typedef	enum rpmsenseFlags_e {
 #define	RPMVAR_NUM			55	/* number of RPMVAR entries */
 
 /** \ingroup rpmrc
+ * Return value of rpmrc variable.
+ * @deprecated Use rpmExpand() with appropriate macro expression.
+ * @todo Eliminate from API.
+ */
+const char * rpmGetVar(int var);
+
+/** \ingroup rpmrc
+ * Set value of rpmrc variable.
+ * @deprecated Use rpmDefineMacro() to change appropriate macro instead.
+ * @todo Eliminate from API.
+ */
+void rpmSetVar(int var, const char *val);
+
+/** \ingroup rpmrc
  * List of macro files to read for configuring rpm.
  */
 const char * macrofiles;
@@ -374,16 +388,19 @@ enum rpm_machtable_e {
 int rpmReadConfigFiles(const char * file, const char * target);
 
 /** \ingroup rpmrc
+ * Read rpmrc (and macro) configuration file(s).
+ * @param file		colon separated files to read (NULL uses default)
+ * @return		0 on succes
+ */
+int rpmReadRC(const char * file);
+
+/** \ingroup rpmrc
  * Return current arch name and/or number.
  * @todo Generalize to extract arch component from target_platform macro.
  * @retval name		address of arch name (or NULL)
  * @retval num		address of arch number (or NULL)
  */
 void rpmGetArchInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
-void XrpmGetArchInfo( /*@out@*/ const char ** name, /*@out@*/ int * num,
-	const char * _f, unsigned _l);
-#define rpmGetArchInfo(_name, _num)	\
-	XrpmGetArchInfo(_name, _num, __FILE__, __LINE__)
 
 /** \ingroup rpmrc
  * Return current os name and/or number.
@@ -392,10 +409,6 @@ void XrpmGetArchInfo( /*@out@*/ const char ** name, /*@out@*/ int * num,
  * @retval num		address of os number (or NULL)
  */
 void rpmGetOsInfo( /*@out@*/ const char ** name, /*@out@*/ int * num);
-void XrpmGetOsInfo( /*@out@*/ const char ** name, /*@out@*/ int * num,
-	const char * _f, unsigned _l);
-#define rpmGetOsInfo(_name, _num)	\
-	XrpmGetOsInfo(_name, _num, __FILE__, __LINE__)
 
 /** \ingroup rpmrc
  * Return arch/os score of a name.
@@ -411,9 +424,6 @@ void XrpmGetOsInfo( /*@out@*/ const char ** name, /*@out@*/ int * num,
  * @return		arch score
  */
 int rpmMachineScore(int type, const char * name);
-int XrpmMachineScore(int type, const char * name, const char *_f, unsigned _l);
-#define	rpmMachineScore(_type, _name)	\
-	XrpmMachineScore(_type, _name, __FILE__, __LINE__)
 
 /** \ingroup rpmrc
  * Display current rpmrc (and macro) configuration.
@@ -441,10 +451,6 @@ void rpmSetTables(int archTable, int osTable);  /* only used by build code */
  * @param os		os name (or NULL)
  */
 void rpmSetMachine(const char * arch, const char * os);
-void XrpmSetMachine( /*@out@*/ const char *arch, /*@out@*/ const char *os,
-	const char *_f, unsigned _l);
-#define	rpmSetMachine(_arch, _os)	\
-	XrpmSetMachine(_arch, _os, __FILE__, __LINE__)
 
 /** \ingroup rpmrc
  * Return current arch/os names.
@@ -455,10 +461,6 @@ void XrpmSetMachine( /*@out@*/ const char *arch, /*@out@*/ const char *os,
  * @retval os		address of os name (or NULL)
  */
 void rpmGetMachine( /*@out@*/ const char **arch, /*@out@*/ const char **os);
-void XrpmGetMachine( /*@out@*/ const char **arch, /*@out@*/ const char **os,
-	const char *_f, unsigned _l);
-#define	rpmGetMachine(_arch, _os)	\
-	XrpmGetMachine(_arch, _os, __FILE__, __LINE__)
 
 /** \ingroup rpmrc
  * Destroy rpmrc arch/os compatibility tables.

@@ -109,6 +109,7 @@
 	- translate rpm.8 man page (Peter Ivanyi <ivanyi@internet.sk>).
 	- popt: support for float/double args.
 	- fix: honor --test when doing --freshen.
+	- add alpha* architectures.
 
 3.0.4 -> 3.0.5
 	- configure.in fiddles for BSD systems (Patrick Schoo).

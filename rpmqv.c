@@ -178,7 +178,11 @@ static struct poptOption optionsTable[] = {
  { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
 	N_("read <file:...> instead of default macro file(s)"),
 	N_("<file:...>") },
+#ifndef	DYING
+ { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,	NULL, NULL},
+#else
  { "rcfile", '\0', 0, 0, GETOPT_RCFILE,		NULL, NULL},
+#endif
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
 
 #if defined(IAM_RPMQV) || defined(IAM_RPMK)
