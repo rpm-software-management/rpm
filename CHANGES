@@ -18,6 +18,8 @@
 	- new signature types (internal)
 	- PGP key no longer limited to 1024 bits
 	- always do at least an MD5 "signature"
+	  as a result, -K will always tell you something
+	- --nopgp (with -K) to skip PGP check, just do MD5
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
