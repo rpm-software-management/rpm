@@ -10,6 +10,9 @@
 
 static int labelstrlistToLabelList(char * str, int length, 
 				   struct oldrpmdbLabel ** list);
+static char * getScript(char * which, struct oldrpmdb *oldrpmdb, 
+		        struct oldrpmdbLabel label);
+
 static char * prefix = "/var/lib/rpm";
 
 char * oldrpmdbLabelToLabelstr(struct oldrpmdbLabel label, int withFileNum) {
@@ -381,9 +384,43 @@ char * oldrpmdbGetPackageGroup(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel 
     return g;
 }
 
+static char * getScript(char * which, struct oldrpmdb *oldrpmdb, 
+		        struct oldrpmdbLabel label) {
+    datum key, rec;
+    char * labelstr;
+
+    labelstr = oldrpmdbLabelToLabelstr(label, 0);
+    labelstr = realloc(labelstr, strlen(labelstr) + 10);
+    strcat(labelstr, ":");
+    strcat(labelstr, which);
+
+    key.dptr = labelstr;
+    key.dsize = strlen(labelstr);
+    
+    rec = gdbm_fetch(oldrpmdb->postIndex, key);
+    free(labelstr);
+    if (!rec.dptr) {
+	return NULL;
+    }
+
+    printf("found for: %s\n", labelstr);
+
+    return rec.dptr;
+}
+
+char *oldrpmdbGetPackagePostun (struct oldrpmdb *oldrpmdb, 
+				struct oldrpmdbLabel label) {
+    return getScript("post", oldrpmdb, label);
+}
+
+char *oldrpmdbGetPackagePreun (struct oldrpmdb *oldrpmdb, 
+				struct oldrpmdbLabel label) {
+    return getScript("pre", oldrpmdb, label);
+}
+
 /* Returns NULL on error or if no icon exists */
-char * oldrpmdbGetPackageGif(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel label,
-			  int * size) {
+char * oldrpmdbGetPackageGif(struct oldrpmdb * oldrpmdb, 
+			     struct oldrpmdbLabel label, int * size) {
     datum key, rec;
     char * labelstr;
 

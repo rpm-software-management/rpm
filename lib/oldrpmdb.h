@@ -5,11 +5,14 @@
 
 #include "oldheader.h"
 
-typedef enum {
+typedef enum
+  {
     RPMDB_NONE, RPMDB_GDBM_ERROR, RPMDB_NO_MEMORY
-} rpm_error;
+  }
+rpm_error;
 
-struct oldrpmdb {
+struct oldrpmdb
+  {
     GDBM_FILE packages;
     GDBM_FILE nameIndex;
     GDBM_FILE pathIndex;
@@ -18,20 +21,23 @@ struct oldrpmdb {
     GDBM_FILE postIndex;
     rpm_error rpmdbError;
     gdbm_error gdbmError;
-};
+  };
 
-enum oldrpmdbFreeType {
+enum oldrpmdbFreeType
+  {
     RPMDB_NOFREE, RPMDB_FREENAME, RPMDB_FREEALL
-};
+  };
 
-struct oldrpmdbLabel {
+struct oldrpmdbLabel
+  {
     char *name, *version, *release;
     enum oldrpmdbFreeType freeType;
     struct oldrpmdbLabel *next;
     int fileNumber;		/* -1 means invalid */
-};
+  };
 
-struct oldrpmdbPackageInfo {
+struct oldrpmdbPackageInfo
+  {
     char *name, *version, *release;
     char *labelstr;
     unsigned int installTime, buildTime;
@@ -44,7 +50,7 @@ struct oldrpmdbPackageInfo {
     char *copyright;
     unsigned int fileCount;
     struct oldrpmFileInfo *files;
-};
+  };
 
 #define RPMDB_READER 1
 
@@ -55,7 +61,12 @@ struct oldrpmdbLabel *oldrpmdbFindPackagesByFile (struct oldrpmdb *oldrpmdb, cha
 struct oldrpmdbLabel *oldrpmdbFindPackagesByLabel (struct oldrpmdb *oldrpmdb,
 						struct oldrpmdbLabel label);
 
-char *oldrpmdbGetPackageGroup (struct oldrpmdb *oldrpmdb, struct oldrpmdbLabel label);
+char *oldrpmdbGetPackageGroup (struct oldrpmdb *oldrpmdb, 
+			       struct oldrpmdbLabel label);
+char *oldrpmdbGetPackagePostun (struct oldrpmdb *oldrpmdb, 
+				struct oldrpmdbLabel label);
+char *oldrpmdbGetPackagePreun (struct oldrpmdb *oldrpmdb, 
+				struct oldrpmdbLabel label);
 char *oldrpmdbGetPackageGif (struct oldrpmdb *oldrpmdb, struct oldrpmdbLabel label,
 			     int *size);
 int oldrpmdbGetPackageInfo (struct oldrpmdb *oldrpmdb, struct oldrpmdbLabel label,
