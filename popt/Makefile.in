@@ -94,8 +94,8 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(noinst_HEADERS)
 
-DIST_COMMON =  README Makefile.am Makefile.in acconfig.h aclocal.m4 \
-config.h.in configure configure.in install-sh missing mkinstalldirs \
+DIST_COMMON =  README COPYING Makefile.am Makefile.in acconfig.h \
+aclocal.m4 config.h.in configure.in install-sh missing mkinstalldirs \
 stamp-h.in
 
 
