@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-06 19:43-0400\n"
+"POT-Creation-Date: 1999-08-06 20:05-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3212,17 +3212,17 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 
-#: ../lib/transaction.c:350
+#: ../lib/transaction.c:348
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:357
+#: ../lib/transaction.c:355
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:472
+#: ../lib/transaction.c:470
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

@@ -271,11 +271,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    strcpy(t, s);
 	    stripTrailingSlashes(t);
 	    relocations[i].newPath = t;
-	} else {
-	    relocations[i].newPath = NULL;
-	}
 
-	if (relocations[i].newPath) {
 	    /* Verify that the relocation's old path is in the header. */
 	    for (j = 0; j < numValid; j++)
 		if (!strcmp(validRelocations[j],
@@ -283,6 +279,8 @@ static Header relocateFileList(struct availablePackage * alp,
 	    if (j == numValid && !allowBadRelocate)
 		psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h,
 			 relocations[i].oldPath, NULL,0 );
+	} else {
+	    relocations[i].newPath = NULL;
 	}
     }
 
@@ -819,12 +817,12 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
 
 static void skipFiles(struct fileInfo * fi, int noDocs)
 {
-    int i, j;
-    char ** netsharedPaths = NULL, ** nsp;
-    char ** fileLangs, ** languages, ** lang;
-    char * oneLang[2] = { NULL, NULL };
+    int i;
+    char ** netsharedPaths = NULL;
+    const char ** fileLangs;
+    const char ** languages;
+    const char * oneLang[2] = { NULL, NULL };
     int freeLanguages = 0;
-    char * chptr;
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
@@ -839,8 +837,9 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
 			NULL))
 	fileLangs = NULL;
 
-    if ((chptr = getenv("LINGUAS"))) {
-	languages = splitString(chptr, strlen(chptr), ':');
+    if ((oneLang[0]  = getenv("LINGUAS"))) {
+	languages = (const char **)
+		splitString(oneLang[0] , strlen(oneLang[0] ), ':');
 	freeLanguages = 1;
     } else if ((oneLang[0] = getenv("LANG"))) {
 	languages = oneLang;
@@ -850,17 +849,27 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
     }
 
     for (i = 0; i < fi->fc; i++) {
+	char **nsp;
+
+	/* Don't bother with skipped files */
 	if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
 	    continue;
 
-	/* netsharedPaths are not relative to the current root (though
-	   they do need to take package relocations into account) */
+	/*
+	 * Skip net shared paths.
+	 * Net shared paths are not relative to the current root (though
+	 * they do need to take package relocations into account).
+	 */
 	for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
-	    j = strlen(*nsp);
-	    if (!strncmp(fi->fl[i], *nsp, j) &&
-		(fi->fl[i][j] == '\0' ||
-		 fi->fl[i][j] == '/'))
-		break;
+	    int len;
+	    len = strlen(*nsp);
+	    if (strncmp(fi->fl[i], *nsp, len))
+		continue;
+
+	    /* Only directories or complete file paths can be net shared */
+	    if (!(fi->fl[i][len] == '/' || fi->fl[i][len] == '\0'))
+		continue;
+	    break;
 	}
 
 	if (nsp && *nsp) {
@@ -868,9 +877,12 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
 	    continue;
 	}
 
+	/*
+	 * Skip i18n language specific files.
+	 */
 	if (fileLangs && languages && *fileLangs[i]) {
+	    const char **lang, *l, *le;
 	    for (lang = languages; *lang; lang++) {
-		const char *l, *le;
 		for (l = fileLangs[i]; *l; l = le) {
 		    for (le = l; *le && *le != '|'; le++)
 			;
@@ -880,19 +892,22 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
 		}
 	    }
 	lingo:
-	    if (!*lang) {
+	    if (*lang == NULL) {
 		fi->actions[i] = FA_SKIPNSTATE;
 		continue;
 	    }
 	}
 
+	/*
+	 * Skip documentation if requested.
+	 */
 	if (noDocs && (fi->fflags[i] & RPMFILE_DOC))
 	    fi->actions[i] = FA_SKIPNSTATE;
     }
 
     if (netsharedPaths) freeSplitString(netsharedPaths);
     if (fileLangs) free(fileLangs);
-    if (freeLanguages) freeSplitString(languages);
+    if (freeLanguages) freeSplitString((char **)languages);
 }
 
 #define	NOTIFY(_x)	if (notify) notify _x
@@ -1088,7 +1103,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	}
 
 	/* actions is initialized earlier for added packages */
-	if (!fi->actions)
+	if (fi->actions == NULL)
 	    fi->actions = calloc(sizeof(*fi->actions), fi->fc);
 
 	headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL,
@@ -1134,11 +1149,11 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     }
 
     /* There are too many returns to plug this leak. Use alloca instead. */
-    {  char *s = currentDirectory();
+    {  const char *s = currentDirectory();
        char *t = alloca(strlen(s) + 1);
        strcpy(t, s);
        currDir = t;
-       free(s);
+       xfree(s);
     }
 
     chdir("/");
