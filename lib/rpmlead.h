@@ -15,8 +15,8 @@
 #define RPMLEAD_SIZE 96
 
 struct rpmlead {
-    char magic[4];
-    char major, minor;
+    unsigned char magic[4];
+    unsigned char major, minor;
     short type;
     short archnum;
     char name[66];
