@@ -34,6 +34,8 @@ extern struct _dbiVec db3vec;
 #define	DB3vec		NULL
 #endif
 
+int __do_dbenv_remove = -1;	/* XXX in dbindex.c, shared with rebuilddb.c */
+
 unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set->count;
 }
