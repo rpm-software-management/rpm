@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "lookup.h"
 #include "rpmlib.h"
 
 /* 0 found matches */
