@@ -103,7 +103,7 @@ static void init_arch_os(void)
 	(!strcmp(un.machine, "i386"))) {
 	archnum = 1;
 	archname = "i386";
-    } else if (!strcmp(un.machine, "axp")) {
+    } else if (!strcmp(un.machine, "alpha")) {
 	archnum = 2;
 	archname = "axp";
     } else {
