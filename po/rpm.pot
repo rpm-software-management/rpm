@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-24 10:26-0400\n"
+"POT-Creation-Date: 1999-09-24 11:41-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1972,78 +1972,85 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:365
+#. XXX legacy epoch-less requires/conflicts compatibility
+#: ../lib/depends.c:339
+#, c-format
+msgid ""
+"the \"B\" dependency needs an epoch (assuming same as A) -- A %s\tB %s\n"
+msgstr ""
+
+#: ../lib/depends.c:368
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: ../lib/depends.c:457
+#: ../lib/depends.c:460
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:691
+#: ../lib/depends.c:695
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr ""
 
-#: ../lib/depends.c:708
+#: ../lib/depends.c:712
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: ../lib/depends.c:713
+#: ../lib/depends.c:717
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: ../lib/depends.c:743
+#: ../lib/depends.c:747
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: ../lib/depends.c:771
+#: ../lib/depends.c:775
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: ../lib/depends.c:793
+#: ../lib/depends.c:797
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: ../lib/depends.c:815
+#: ../lib/depends.c:819
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr ""
 
-#: ../lib/depends.c:828
+#: ../lib/depends.c:832
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: ../lib/depends.c:838
+#: ../lib/depends.c:842
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: ../lib/depends.c:889
+#: ../lib/depends.c:893
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: ../lib/depends.c:951
+#: ../lib/depends.c:955
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:1006 ../lib/depends.c:1310
+#: ../lib/depends.c:1010 ../lib/depends.c:1314
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:1101
+#: ../lib/depends.c:1105
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""

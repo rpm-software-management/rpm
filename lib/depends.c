@@ -334,9 +334,12 @@ static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
     sense = 0;
     if (aE && *aE && bE && *bE)
 	sense = rpmvercmp(aE, bE);
-    else if (aE && *aE && atol(aE) > 0)
-	sense = 0; /* XXX legacy epoch-less requires/conflicts compatibility */
-    else if (bE && *bE && atol(bE) > 0)
+    else if (aE && *aE && atol(aE) > 0) {
+	/* XXX legacy epoch-less requires/conflicts compatibility */
+	rpmMessage(RPMMESS_WARNING, _("the \"B\" dependency needs an epoch (assuming same as \"A\")\n\tA %s\tB %s\n"),
+		aDepend, bDepend);
+	sense = 0;
+    } else if (bE && *bE && atol(bE) > 0)
 	sense = -1;
 
     if (sense == 0) {
