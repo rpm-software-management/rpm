@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-27 16:13-0500\n"
+"POT-Creation-Date: 2000-12-29 16:43-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3368,68 +3368,68 @@ msgstr "%s: 'readLead' hata verdi\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: 'readLead' hata verdi\n"
 
-#: lib/rpmchecksig.c:131 lib/rpmchecksig.c:265
+#: lib/rpmchecksig.c:136 lib/rpmchecksig.c:270
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: 'readLead' hata verdi\n"
 
-#: lib/rpmchecksig.c:136
+#: lib/rpmchecksig.c:141
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: v1.0-RPM (eski sürüm) imzalanamýyor\n"
 
-#: lib/rpmchecksig.c:140
+#: lib/rpmchecksig.c:145
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0-RPM (eski sürüm) yeniden imzalanamýyor\n"
 
-#: lib/rpmchecksig.c:148 lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:153 lib/rpmchecksig.c:284
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: 'rpmReadSignature' hata verdi\n"
 
-#: lib/rpmchecksig.c:152 lib/rpmchecksig.c:284
+#: lib/rpmchecksig.c:157 lib/rpmchecksig.c:289
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ýmza bulunmuyor\n"
 
-#: lib/rpmchecksig.c:185
+#: lib/rpmchecksig.c:190
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: 'readLead' hata verdi\n"
 
-#: lib/rpmchecksig.c:191
+#: lib/rpmchecksig.c:196
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: 'rpmReadSignature' hata verdi\n"
 
-#: lib/rpmchecksig.c:271
+#: lib/rpmchecksig.c:276
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ýmza bulundurmuyor (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:433
+#: lib/rpmchecksig.c:438
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
+#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (EKSÝK ANAHTARLAR)"
 
-#: lib/rpmchecksig.c:436 lib/rpmchecksig.c:450
+#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:442 lib/rpmchecksig.c:456
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:447
+#: lib/rpmchecksig.c:452
 msgid "OK"
 msgstr ""
 
@@ -3860,121 +3860,121 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:142
+#: lib/signature.c:147
 #, fuzzy
 msgid "No signature\n"
 msgstr "%s: Ýmza bulunmuyor\n"
 
-#: lib/signature.c:146
+#: lib/signature.c:151
 #, fuzzy
 msgid "Old PGP signature\n"
 msgstr "PGP-imzasý yaratýr"
 
-#: lib/signature.c:157
+#: lib/signature.c:162
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Eski imza !!! Eee bunu nasýl baþardýn bakiiim ?"
 
-#: lib/signature.c:210
+#: lib/signature.c:211
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: lib/signature.c:211
+#: lib/signature.c:212
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: lib/signature.c:273
+#: lib/signature.c:274
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "PGP çalýþtýrýlamadý"
 
-#: lib/signature.c:284
+#: lib/signature.c:285
 msgid "pgp failed"
 msgstr "PGP hata verdi"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:291
+#: lib/signature.c:292
 msgid "pgp failed to write signature"
 msgstr "PGP imzasýnýn yazýlmasý sýrasýnda hata oluþtu"
 
-#: lib/signature.c:296
+#: lib/signature.c:297
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:307 lib/signature.c:384
+#: lib/signature.c:308 lib/signature.c:385
 msgid "unable to read the signature"
 msgstr "imzayý okumak mümkün olmadý"
 
-#: lib/signature.c:312
+#: lib/signature.c:313
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:350 lib/signature.c:693
+#: lib/signature.c:351 lib/signature.c:694
 #, fuzzy
 msgid "Couldn't exec gpg"
 msgstr "PGP çalýþtýrýlamadý"
 
-#: lib/signature.c:361
+#: lib/signature.c:362
 #, fuzzy
 msgid "gpg failed"
 msgstr "PGP hata verdi"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:368
+#: lib/signature.c:369
 #, fuzzy
 msgid "gpg failed to write signature"
 msgstr "PGP imzasýnýn yazýlmasý sýrasýnda hata oluþtu"
 
-#: lib/signature.c:373
+#: lib/signature.c:374
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:389
+#: lib/signature.c:390
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:416
+#: lib/signature.c:417
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "PGP-imzasý yaratýr"
 
-#: lib/signature.c:422
+#: lib/signature.c:423
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "PGP-imzasý yaratýr"
 
-#: lib/signature.c:501 lib/signature.c:562
+#: lib/signature.c:502 lib/signature.c:563
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "PGP çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn."
 
-#: lib/signature.c:634
+#: lib/signature.c:635
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "PGP çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn."
 
-#: lib/signature.c:722
+#: lib/signature.c:723
 msgid "Couldn't exec pgp"
 msgstr "PGP çalýþtýrýlamadý"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:726 lib/signature.c:779
+#: lib/signature.c:727 lib/signature.c:780
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: lib/signature.c:759
+#: lib/signature.c:760
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 
-#: lib/signature.c:771
+#: lib/signature.c:772
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"

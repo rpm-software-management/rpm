@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-27 16:13-0500\n"
+"POT-Creation-Date: 2000-12-29 16:43-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.133 2000/12/27 21:19:56 jbj Exp $
+# $Id: ja.po,v 1.134 2000/12/29 21:44:40 jbj Exp $
 #: rpm.c:185 rpmqv.c:269
 #, c-format
 msgid "rpm: %s\n"
@@ -3315,68 +3315,68 @@ msgstr "%s: Fwrite に失敗しました: %s\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:131 lib/rpmchecksig.c:265
+#: lib/rpmchecksig.c:136 lib/rpmchecksig.c:270
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/rpmchecksig.c:136
+#: lib/rpmchecksig.c:141
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: v1.0 の RPM には署名できません\n"
 
-#: lib/rpmchecksig.c:140
+#: lib/rpmchecksig.c:145
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 の RPM には再署名できません\n"
 
-#: lib/rpmchecksig.c:148 lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:153 lib/rpmchecksig.c:284
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:152 lib/rpmchecksig.c:284
+#: lib/rpmchecksig.c:157 lib/rpmchecksig.c:289
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
 
-#: lib/rpmchecksig.c:185
+#: lib/rpmchecksig.c:190
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writedLead に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:191
+#: lib/rpmchecksig.c:196
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:271
+#: lib/rpmchecksig.c:276
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 有効な署名はありません(v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:433
+#: lib/rpmchecksig.c:438
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
+#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (キーの紛失) "
 
-#: lib/rpmchecksig.c:436 lib/rpmchecksig.c:450
+#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:442 lib/rpmchecksig.c:456
 msgid " (UNTRUSTED KEYS:"
 msgstr " (信頼できない鍵:"
 
-#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:447
+#: lib/rpmchecksig.c:452
 msgid "OK"
 msgstr ""
 
@@ -3807,123 +3807,123 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:142
+#: lib/signature.c:147
 msgid "No signature\n"
 msgstr "署名はありません\n"
 
-#: lib/signature.c:146
+#: lib/signature.c:151
 msgid "Old PGP signature\n"
 msgstr "古い PGP 署名\n"
 
-#: lib/signature.c:157
+#: lib/signature.c:162
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 
-#: lib/signature.c:210
+#: lib/signature.c:211
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:211
+#: lib/signature.c:212
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "署名パッド: %d\n"
 
-#: lib/signature.c:273
+#: lib/signature.c:274
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "pgp を実行できません(%s)"
 
-#: lib/signature.c:284
+#: lib/signature.c:285
 msgid "pgp failed"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:291
+#: lib/signature.c:292
 msgid "pgp failed to write signature"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:296
+#: lib/signature.c:297
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:307 lib/signature.c:384
+#: lib/signature.c:308 lib/signature.c:385
 msgid "unable to read the signature"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:312
+#: lib/signature.c:313
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:350 lib/signature.c:693
+#: lib/signature.c:351 lib/signature.c:694
 #, fuzzy
 msgid "Couldn't exec gpg"
 msgstr "gpg を実行できません"
 
-#: lib/signature.c:361
+#: lib/signature.c:362
 #, fuzzy
 msgid "gpg failed"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:368
+#: lib/signature.c:369
 #, fuzzy
 msgid "gpg failed to write signature"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:373
+#: lib/signature.c:374
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:389
+#: lib/signature.c:390
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
-#: lib/signature.c:416
+#: lib/signature.c:417
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "PGP を使用して署名の生成中\n"
 
-#: lib/signature.c:422
+#: lib/signature.c:423
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "GPG を使用して署名の生成中\n"
 
-#: lib/signature.c:501 lib/signature.c:562
+#: lib/signature.c:502 lib/signature.c:563
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 "pgp を実行できませんでした。\n"
 "PGP チェックをスキップするために --nopgp を使用してください。"
 
-#: lib/signature.c:634
+#: lib/signature.c:635
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 "gpg を実行できませんでした。\n"
 "GPG チェックをスキップするために --nogpg を使用してください。"
 
-#: lib/signature.c:722
+#: lib/signature.c:723
 msgid "Couldn't exec pgp"
 msgstr "pgp を実行できません"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:726 lib/signature.c:779
+#: lib/signature.c:727 lib/signature.c:780
 msgid "Invalid %%_signature spec in macro file"
 msgstr "マクロファイル中で無効な %%_signature スペック"
 
-#: lib/signature.c:759
+#: lib/signature.c:760
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:771
+#: lib/signature.c:772
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"

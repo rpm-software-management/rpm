@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-27 16:13-0500\n"
+"POT-Creation-Date: 2000-12-29 16:43-0500\n"
 "PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3184,67 +3184,67 @@ msgstr "%s: Fwrite misslyckades: %s\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:131 lib/rpmchecksig.c:265
+#: lib/rpmchecksig.c:136 lib/rpmchecksig.c:270
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead misslyckades\n"
 
-#: lib/rpmchecksig.c:136
+#: lib/rpmchecksig.c:141
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Kan inte signera v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:140
+#: lib/rpmchecksig.c:145
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Kan inte signera om v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:148 lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:153 lib/rpmchecksig.c:284
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature misslyckades\n"
 
-#: lib/rpmchecksig.c:152 lib/rpmchecksig.c:284
+#: lib/rpmchecksig.c:157 lib/rpmchecksig.c:289
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
 
-#: lib/rpmchecksig.c:185
+#: lib/rpmchecksig.c:190
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:191
+#: lib/rpmchecksig.c:196
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:271
+#: lib/rpmchecksig.c:276
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen signatur tillgänglig (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:433
+#: lib/rpmchecksig.c:438
 msgid "NOT OK"
 msgstr "EJ OK"
 
-#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
+#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:436 lib/rpmchecksig.c:450
+#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:442 lib/rpmchecksig.c:456
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:447
+#: lib/rpmchecksig.c:452
 msgid "OK"
 msgstr "OK"
 
@@ -3698,112 +3698,112 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr "Signaturstorlek  : %d\n"
 
-#: lib/signature.c:142
+#: lib/signature.c:147
 msgid "No signature\n"
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:146
+#: lib/signature.c:151
 msgid "Old PGP signature\n"
 msgstr "Gammal PGP-signatur\n"
 
-#: lib/signature.c:157
+#: lib/signature.c:162
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?"
 
-#: lib/signature.c:210
+#: lib/signature.c:211
 #, c-format
 msgid "Signature size: %d\n"
 msgstr "Signaturstorlek  : %d\n"
 
-#: lib/signature.c:211
+#: lib/signature.c:212
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr "Signaturutfyllnad: %d\n"
 
-#: lib/signature.c:273
+#: lib/signature.c:274
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Kunde inte köra pgp (%s)"
 
-#: lib/signature.c:284
+#: lib/signature.c:285
 msgid "pgp failed"
 msgstr "pgp misslyckades"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:291
+#: lib/signature.c:292
 msgid "pgp failed to write signature"
 msgstr "pgp misslyckades att skriva en signatur"
 
-#: lib/signature.c:296
+#: lib/signature.c:297
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP signaturstorlek: %d\n"
 
-#: lib/signature.c:307 lib/signature.c:384
+#: lib/signature.c:308 lib/signature.c:385
 msgid "unable to read the signature"
 msgstr "kan inte läsa signaturen"
 
-#: lib/signature.c:312
+#: lib/signature.c:313
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fick %d byte PGPsignatur\n"
 
-#: lib/signature.c:350 lib/signature.c:693
+#: lib/signature.c:351 lib/signature.c:694
 msgid "Couldn't exec gpg"
 msgstr "Kunde inte köra gpg"
 
-#: lib/signature.c:361
+#: lib/signature.c:362
 msgid "gpg failed"
 msgstr "gpg misslyckades"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:368
+#: lib/signature.c:369
 msgid "gpg failed to write signature"
 msgstr "gpg kunde inte skriva signatur"
 
-#: lib/signature.c:373
+#: lib/signature.c:374
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG signaturstorlek: %d\n"
 
-#: lib/signature.c:389
+#: lib/signature.c:390
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fick %d byte GPGsignatur\n"
 
-#: lib/signature.c:416
+#: lib/signature.c:417
 msgid "Generating signature using PGP.\n"
 msgstr "Genererar signatur med PGP.\n"
 
-#: lib/signature.c:422
+#: lib/signature.c:423
 msgid "Generating signature using GPG.\n"
 msgstr "Genererar signatur med GPG.\n"
 
-#: lib/signature.c:501 lib/signature.c:562
+#: lib/signature.c:502 lib/signature.c:563
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Kunde inte köra pgp.  Använd --nopgp för att hoppa över PGPkontroll."
 
-#: lib/signature.c:634
+#: lib/signature.c:635
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Kunde inte köra gpg.  Använd --nogpg för att hoppa över GPGkontroll."
 
-#: lib/signature.c:722
+#: lib/signature.c:723
 msgid "Couldn't exec pgp"
 msgstr "Kunde inte köra pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:726 lib/signature.c:779
+#: lib/signature.c:727 lib/signature.c:780
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Ogiltig %%_signature specifikation i makrofil"
 
-#: lib/signature.c:759
+#: lib/signature.c:760
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil"
 
-#: lib/signature.c:771
+#: lib/signature.c:772
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil"
 

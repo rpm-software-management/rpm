@@ -136,6 +136,11 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 
     if (headerp)
 	*headerp = NULL;
+
+    /* XXX Yuck, see ALPHA_LOSSAGE in lib/rpmchecksig.c */
+#ifdef	__alpha
+    if (sigType == RPMSIG_NONE) sigType = RPMSIG_HEADERSIG;
+#endif
     
     switch (sigType) {
       case RPMSIG_NONE:
@@ -166,10 +171,6 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 	/* XXX Legacy headers have a HEADER_IMAGE tag added. */
 	if (headerIsEntry(h, RPMTAG_HEADERIMAGE))
 	    sigSize -= (16 + 16);
-#if 0
-	if (headerIsEntry(h, RPMTAG_HEADERSIGNATURES))
-	    sigSize -= 16;
-#endif
 
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count))

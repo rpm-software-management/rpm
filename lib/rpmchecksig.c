@@ -99,10 +99,15 @@ exit:
 /*
  * XXX gcc-2.96-60 on alpha (at least) needs ALPHA_LOSSAGE defined.
  *
- * Otherwise, the (mis-compilation?!) symptom is the inability to pass sig_type- * correctly to rpmReadSignature(FD_t *fd, Header *header, short sig_type)
+ * Otherwise, the (mis-compilation?!) symptom is the inability to pass sig_type
+ * correctly to rpmReadSignature(FD_t *fd, Header *header, short sig_type)
  * (Note: the short in both struct rpmlead and in the prototype).
  */
+#ifdef	__alpha
+#define	ALPHA_LOSSAGE
+#else
 #undef	ALPHA_LOSSAGE
+#endif
 
 int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 {

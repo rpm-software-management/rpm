@@ -1362,7 +1362,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
  */
 		di[i].bavail = sfb.f_blocks - sfb.f_bfree;
 #endif
-		di[i].iavail = sfb.f_ffree;
+		/* XXX Avoid FAT and other file systems that have not inodes. */
+		di[i].iavail = (!(sfb.f_ffree == 0 && sfb.f_files == 0))
+				? sfb.f_ffree : -1;
 
 		stat(filesystems[i], &sb);
 		di[i].dev = sb.st_dev;
@@ -1694,14 +1696,21 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    if (!(di && fi->fc))
 		break;
 	    for (i = 0; i < filesystemCount; i++) {
-		if (adj_fs_blocks(di[i].bneeded) > di[i].bavail)
+		struct diskspaceInfo * dip = di + i;
+
+		/* XXX Avoid FAT and other file systems that have not inodes. */
+		if (dip->iavail <= 0)
+		    continue;
+
+		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
 		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap->key,
 			fi->ap->h, filesystems[i], NULL, NULL,
-	 	   (adj_fs_blocks(di[i].bneeded) - di[i].bavail) * di[i].bsize);
-		if (adj_fs_blocks(di[i].ineeded) > di[i].iavail)
+	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
+
+		if (adj_fs_blocks(dip->ineeded) > dip->iavail)
 		    psAppend(ts->probs, RPMPROB_DISKNODES, fi->ap->key,
 			fi->ap->h, filesystems[i], NULL, NULL,
-	 	    (adj_fs_blocks(di[i].ineeded) - di[i].iavail));
+	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
 	    }
 	    break;
 	case TR_REMOVED:
