@@ -948,23 +948,6 @@ char *rpmGetVar(int var)
     return rpmGetVarArch(var, NULL);
 }
 
-int rpmGetBooleanVar(int var) {
-    char * val;
-    int num;
-    char * end;
-
-    val = rpmGetVar(var);
-    if (!val) return 0;
-
-    if (val[0] == 'y' || val[0] == 'Y') return 1;
-
-    num = strtol(val, &end, 0);
-    if (end && *end == '\0')
-	return num != 0;
-
-    return 0;
-}
-
 /* this doesn't free the passed pointer! */
 static void freeRpmVar(struct rpmvarValue * orig) {
     struct rpmvarValue * next, * var = orig;

@@ -187,16 +187,16 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 
 /* #define	RPMVAR_SOURCEDIR		0 -- No longer used */
 /* #define	RPMVAR_BUILDDIR			1 -- No longer used */
-/* #define RPMVAR_DOCDIR		2 -- No longer used */
+/* #define RPMVAR_DOCDIR			2 -- No longer used */
 #define	RPMVAR_OPTFLAGS			3
 /* #define	RPMVAR_TOPDIR			4 -- No longer used */
 /* #define	RPMVAR_SPECDIR			5 -- No longer used */
 /* #define	RPMVAR_ROOT			6 -- No longer used */
 /* #define	RPMVAR_RPMDIR			7 -- No longer used */
 /* #define	RPMVAR_SRPMDIR			8 -- No longer used */
-/* #define RPMVAR_ARCHSENSITIVE 	9  -- No longer used */
+/* #define RPMVAR_ARCHSENSITIVE 		9  -- No longer used */
 /* #define	RPMVAR_REQUIREDISTRIBUTION	10 -- No longer used */
-/* #define RPMVAR_REQUIREGROUP		11 -- No longer used */
+/* #define RPMVAR_REQUIREGROUP			11 -- No longer used */
 /* #define	RPMVAR_REQUIREVENDOR		12 -- No longer used */
 /* #define	RPMVAR_DISTRIBUTION		13 -- No longer used */
 /* #define	RPMVAR_VENDOR			14 -- No longer used */
@@ -206,18 +206,18 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 /* #define	RPMVAR_SIGTYPE			18 -- No longer used */
 /* #define	RPMVAR_PGP_PATH			19 -- No longer used */
 /* #define	RPMVAR_PGP_NAME			20 -- No longer used */
-/* #define RPMVAR_PGP_SECRING		21 -- No longer used */
-/* #define RPMVAR_PGP_PUBRING		22 -- No longer used */
+/* #define	RPMVAR_PGP_SECRING		21 -- No longer used */
+/* #define	RPMVAR_PGP_PUBRING		22 -- No longer used */
 /* #define	RPMVAR_EXCLUDEDOCS		23 -- No longer used */
-/* #define RPMVAR_BUILDARCH		24 -- No longer used */
-/* #define RPMVAR_BUILDOS		25 -- No longer used */
+/* #define	RPMVAR_BUILDARCH		24 -- No longer used */
+/* #define	RPMVAR_BUILDOS			25 -- No longer used */
 /* #define	RPMVAR_BUILDROOT		26 */
 /* #define	RPMVAR_DBPATH			27 -- No longer used */
 /* #define	RPMVAR_PACKAGER			28 -- No longer used */
-#define	RPMVAR_FTPPROXY			29
+/* #define	RPMVAR_FTPPROXY			29 -- No longer used */
 /* #define	RPMVAR_TMPPATH			30 -- No longer used */
-/* #define RPMVAR_CPIOBIN		31 -- No longer used */
-#define	RPMVAR_FTPPORT			32
+/* #define	RPMVAR_CPIOBIN			31 -- No longer used */
+/* #define	RPMVAR_FTPPORT			32 -- No longer used */
 /* #define	RPMVAR_NETSHAREDPATH		33 -- No longer used */
 /* #define	RPMVAR_DEFAULTDOCDIR		34 -- No longer used */
 /* #define	RPMVAR_FIXPERMS			35 -- No longer used */
@@ -229,23 +229,22 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 /* #define	RPMVAR_BZIP2BIN			41 -- No longer used */
 /* #define	RPMVAR_LANGPATT			42 -- No longer used */
 #define	RPMVAR_INCLUDE			43
-/* #define RPMVAR_ARCH			44 -- No longer used */
-/* #define RPMVAR_OS			45 -- No longer used */
-/* #define RPMVAR_BUILDPLATFORM		46 -- No longer used */
-/* #define RPMVAR_BUILDARCH		47 -- No longer used */
-/* #define RPMVAR_BUILDOS		48 -- No longer used */
+/* #define	RPMVAR_ARCH			44 -- No longer used */
+/* #define	RPMVAR_OS			45 -- No longer used */
+/* #define	RPMVAR_BUILDPLATFORM		46 -- No longer used */
+/* #define	RPMVAR_BUILDARCH		47 -- No longer used */
+/* #define	RPMVAR_BUILDOS			48 -- No longer used */
 #define	RPMVAR_MACROFILES		49
 /* #define	RPMVAR_GPG_PATH			51 -- No longer used */
 /* #define	RPMVAR_GPG_NAME			52 -- No longer used */
-#define RPMVAR_HTTPPROXY                53
-#define RPMVAR_HTTPPORT                 54
+/* #define	RPMVAR_HTTPPROXY		53 -- No longer used */
+/* #define	RPMVAR_HTTPPORT			54 -- No longer used */
 
 #define	RPMVAR_NUM			55     /* number of RPMVAR entries */
 
 #define	xfree(_p)	free((void *)_p)
 
 char * rpmGetVar(int var);
-int rpmGetBooleanVar(int var);
 void rpmSetVar(int var, const char *val);
 
 /** rpmrc.c **/
