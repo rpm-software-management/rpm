@@ -27,6 +27,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
 			  char * owner, char * group, int uid, int gid,
 			  char * linkto);
+static void printScript(Header h, char * label, int tag);
 
 static char * defaultQueryFormat = 
 	    "Name        : %-27{NAME} Distribution: %{DISTRIBUTION}\n"
@@ -278,6 +279,23 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 		if (fileGroupList) free(fileGroupList);
 	    }
 	}
+
+	if (queryFlags & QUERY_FOR_SCRIPTS) {
+	    printScript(h, "preinstall script:\n", RPMTAG_PREIN);
+	    printScript(h, "postinstall script:\n", RPMTAG_POSTIN);
+	    printScript(h, "preuninstall script:\n", RPMTAG_PREUN);
+	    printScript(h, "preuninstall script:\n", RPMTAG_POSTUN);
+	}
+    }
+}
+
+static void printScript(Header h, char * label, int tag) {
+    int type, count;
+    char * script;
+
+    if (getEntry(h, tag, &type, (void **) &script, &count)) {
+	printf("%s", label);
+	printf("%s\n", script);
     }
 }
 
