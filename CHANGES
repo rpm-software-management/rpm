@@ -32,6 +32,9 @@
 	- [] now allows interation through query formats
 	- '-' flag for query tags removed
 	- :date and :perms supported as query format specifiers
+	- new rpmrc entries "arch" and "os" to override
+	- --arch and --os on the command line to override
+	- arch and os are now strings in the package header
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
