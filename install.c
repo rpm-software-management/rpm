@@ -98,7 +98,8 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 			"just testing\n");
 		rc = 0;
 	    } else {
-		rc = rpmInstallSourcePackage(rootdir, fd, NULL);
+		rc = rpmInstallSourcePackage(rootdir, fd, NULL, fn,
+					     printFormat);
 	    }
 	} 
 
@@ -187,7 +188,8 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    continue;
 	}
 
-	rc = pkgReadHeader(fd, &binaryHeaders[numBinaryPackages], &isSource);
+	rc = pkgReadHeader(fd, &binaryHeaders[numBinaryPackages], &isSource,
+			   NULL, NULL);
 
 	close(fd);
 	
@@ -372,7 +374,7 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
     if (isVerbose())
 	printf("Installing %s\n", arg);
 
-    rc = rpmInstallSourcePackage(rootdir, fd, specFile);
+    rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL);
     if (rc == 1) {
 	fprintf(stderr, "error: %s cannot be installed\n", arg);
     }
