@@ -4,6 +4,7 @@
 
 #include <rpmlib.h>
 #include <rpmmacro.h>
+#include <rpmurl.h>
 #include <rpmpgp.h>
 
 #include "depends.h"
@@ -12,6 +13,10 @@
 #include "debug.h"
 
 static int _debug = 0;
+/*@unchecked@*/
+extern int _ftp_debug;
+/*@unchecked@*/
+extern int _rpmio_debug;
 
 const char * bhpath;
 int bhpathlen = 0;
@@ -372,8 +377,14 @@ static void initGlobs(const char ** argv)
 }
 
 static struct poptOption optionsTable[] = {
- { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
+ { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
+	N_("debug protocol data stream"), NULL},
+ { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
+	N_("debug rpmio I/O"), NULL},
+ { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
+	N_("debug URL cache handling"), NULL},
+ { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
   POPT_AUTOHELP
   POPT_TABLEEND
 };

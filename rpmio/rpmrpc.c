@@ -4,6 +4,7 @@
  */
 
 #include "system.h"
+#include <pthread.h>
 #include <rpmio_internal.h>
 #include <popt.h>
 #include "ugid.h"
@@ -11,6 +12,10 @@
 
 /*@access FD_t@*/
 /*@access urlinfo@*/
+
+/*@-redecl@*/
+extern int _ftp_debug;
+/*@=redecl@*/
 
 /*@-redecl@*/
 extern int _rpmio_debug;
@@ -840,7 +845,7 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	if (fd == NULL || u == NULL)
 	    return -1;
 
-	u->openError = ftpReq(fd, "NLST", path);
+	u->openError = ftpReq(fd, "LIST", path);
 	break;
     default:
 	urldn = alloca_strdup(url);
@@ -1005,7 +1010,11 @@ static int ftpStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals fileSystem @*/
 	/*@modifies *st, fileSystem @*/
 {
-    return ftpNLST(path, DO_FTP_STAT, st, NULL, 0);
+    int rc;
+    rc = ftpNLST(path, DO_FTP_STAT, st, NULL, 0);
+if (_ftp_debug)
+fprintf(stderr, "*** ftpStat(%s) rc %d\n", path, rc);
+    return rc;
 }
 
 static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
@@ -1014,7 +1023,7 @@ static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
 {
     int rc;
     rc = ftpNLST(path, DO_FTP_LSTAT, st, NULL, 0);
-if (_rpmio_debug)
+if (_ftp_debug)
 fprintf(stderr, "*** ftpLstat(%s) rc %d\n", path, rc);
     return rc;
 }
@@ -1023,42 +1032,181 @@ static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 	/*@globals fileSystem @*/
 	/*@modifies *buf, fileSystem @*/
 {
-    return ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
-}
-
-static int ftpGlob(const char * path, int flags,
-		int errfunc(const char * epath, int eerno),
-		/*@out@*/ glob_t * pglob)
-	/*@globals fileSystem @*/
-	/*@modifies *pglob, fileSystem @*/
-{
     int rc;
-
-    if (pglob == NULL)
-	return -2;
-    rc = ftpNLST(path, DO_FTP_GLOB, NULL, NULL, 0);
-/*@-castfcnptr@*/
-if (_rpmio_debug)
-fprintf(stderr, "*** ftpGlob(%s,0x%x,%p,%p) ftpNLST rc %d\n", path, (unsigned)flags, (void *)errfunc, pglob, rc);
-/*@=castfcnptr@*/
-    if (rc)
-	return rc;
-    rc = poptParseArgvString(ftpBuf, &pglob->gl_pathc, (const char ***)&pglob->gl_pathv);
-    pglob->gl_offs = -1;	/* XXX HACK HACK HACK */
+    rc = ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
+if (_ftp_debug)
+fprintf(stderr, "*** ftpReadlink(%s) rc %d\n", path, rc);
     return rc;
 }
 
-static void ftpGlobfree(glob_t * pglob)
-	/*@modifies *pglob @*/
+struct __dirstream {
+    int fd;			/* File descriptor.  */
+    char * data;		/* Directory block.  */
+    size_t allocation;		/* Space allocated for the block.  */
+    size_t size;		/* Total valid data in the block.  */
+    size_t offset;		/* Current offset into the block.  */
+    off_t filepos;		/* Position of next entry to read.  */
+    pthread_mutex_t lock;	/* Mutex lock for this structure.  */
+};
+
+static int ftpmagicdir = 0x8440291;
+#define	ISFTPMAGIC(_dir) (!memcmp((_dir), &ftpmagicdir, sizeof(ftpmagicdir)))
+
+static DIR * ftpOpendir(const char * path)
 {
-/*@-modfilesys@*/
-if (_rpmio_debug)
-fprintf(stderr, "*** ftpGlobfree(%p)\n", pglob);
-/*@=modfilesys@*/
-    if (pglob->gl_offs == -1) {	/* XXX HACK HACK HACK */
-	free((void *)pglob->gl_pathv);
-	pglob->gl_pathv = NULL;
+    DIR * dir;
+    struct dirent * dp;
+    size_t nb;
+    const char * s, * sb, * se;
+    const char ** av;
+    unsigned char * dt;
+    char * t;
+    int ac;
+    int c;
+    int rc;
+
+if (_ftp_debug)
+fprintf(stderr, "*** ftpOpendir(%s)\n", path);
+    rc = ftpNLST(path, DO_FTP_GLOB, NULL, NULL, 0);
+    if (rc)
+	return NULL;
+
+    /*
+     * ftpBuf now contains absolute paths, newline terminated.
+     * Calculate the number of bytes to hold the directory info.
+     */
+    nb = sizeof(".") + sizeof("..");
+    ac = 2;
+    sb = NULL;
+    s = se = ftpBuf;
+    while ((c = *se) != '\0') {
+	se++;
+	switch (c) {
+	case '/':
+	    sb = se;
+	    break;
+	case '\r':
+	    if (sb == NULL) {
+		for (sb = se; sb > s && sb[-1] != ' '; sb--)
+		    ;
+	    }
+	    ac++;
+	    nb += (se - sb);
+
+	    if (*se == '\n') se++;
+	    sb = NULL;
+	    s = se;
+	    break;
+	default:
+	    break;
+	}
     }
+
+    nb += sizeof(*dir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
+    dir = xcalloc(1, nb);
+    dp = (struct dirent *) (dir + 1);
+    av = (const char **) (dp + 1);
+    dt = (char *) (av + (ac + 1));
+    t = (char *) (dt + ac + 1);
+
+    dir->fd = ftpmagicdir;
+    dir->data = (char *) dp;
+    dir->allocation = nb;
+    dir->size = ac;
+    dir->offset = -1;
+    dir->filepos = 0;
+
+    ac = 0;
+    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
+    dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
+    sb = NULL;
+    s = se = ftpBuf;
+    while ((c = *se) != '\0') {
+	se++;
+	switch (c) {
+	case '/':
+	    sb = se;
+	    break;
+	case '\r':
+	    av[ac] = t;
+	    if (sb == NULL) {
+		switch(*s) {
+		case 'p':	dt[ac] = DT_FIFO;	break;
+		case 'c':	dt[ac] = DT_CHR;	break;
+		case 'd':	dt[ac] = DT_DIR;	break;
+		case 'b':	dt[ac] = DT_BLK;	break;
+		case '-':	dt[ac] = DT_REG;	break;
+		case 'l':	dt[ac] = DT_LNK;	break;
+		case 's':	dt[ac] = DT_SOCK;	break;
+		default:	dt[ac] = DT_UNKNOWN;	break;
+		}
+		for (sb = se; sb > s && sb[-1] != ' '; sb--)
+		    ;
+	    }
+	    ac++;
+	    t = stpncpy(t, sb, (se - sb));
+	    t[-1] = '\0';
+	    if (*se == '\n') se++;
+	    sb = NULL;
+	    s = se;
+	    break;
+	default:
+	    break;
+	}
+    }
+    av[ac] = NULL;
+
+    return dir;
+}
+
+static struct dirent * ftpReaddir(DIR * dir)
+{
+    struct dirent * dp;
+    const char ** av;
+    unsigned char * dt;
+    int ac;
+    int i;
+
+    if (dir == NULL || !ISFTPMAGIC(dir) || dir->data == NULL) {
+	/* XXX TODO: EBADF errno. */
+	return NULL;
+    }
+
+    dp = (struct dirent *) dir->data;
+    av = (const char **) (dp + 1);
+    ac = dir->size;
+    dt = (char *) (av + (ac + 1));
+    i = dir->offset + 1;
+
+    if (i < 0 || i >= ac || av[i] == NULL)
+	return NULL;
+
+    dir->offset = i;
+
+    /* XXX glob(3) uses REAL_DIR_ENTRY(dp) test on d_ino */
+    dp->d_ino = i + 1;		/* W2DO? */
+    dp->d_off = 0;		/* W2DO? */
+    dp->d_reclen = 0;		/* W2DO? */
+    dp->d_type = dt[i];
+
+    strncpy(dp->d_name, av[i], sizeof(dp->d_name));
+if (_ftp_debug)
+fprintf(stderr, "*** ftpReaddir(%p) %p \"%s\"\n", dir, dp, dp->d_name);
+    
+    return dp;
+}
+
+static int ftpClosedir(DIR * dir)
+{
+if (_ftp_debug)
+fprintf(stderr, "*** ftpClosedir(%p)\n", dir);
+    if (dir == NULL || !ISFTPMAGIC(dir)) {
+	/* XXX TODO: EBADF errno. */
+	return -1;
+    }
+    free((void *)dir);
+    dir = NULL;
+    return 0;
 }
 
 int Stat(const char * path, struct stat * st)
@@ -1168,9 +1316,14 @@ if (_rpmio_debug)
 fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)errfunc, pglob);
 /*@=castfcnptr@*/
     switch (ut) {
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
-	return ftpGlob(pattern, flags, errfunc, pglob);
-	/*@notreached@*/ break;
+    case URL_IS_FTP:
+	pglob->gl_closedir = Closedir;
+	pglob->gl_readdir = Readdir;
+	pglob->gl_opendir = Opendir;
+	pglob->gl_lstat = Lstat;
+	pglob->gl_stat = Stat;
+	flags |= GLOB_ALTDIRFUNC;
+	break;
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	pattern = lpath;
@@ -1189,12 +1342,7 @@ void Globfree(glob_t *pglob)
 {
 if (_rpmio_debug)
 fprintf(stderr, "*** Globfree(%p)\n", pglob);
-    /*@-branchstate@*/
-    if (pglob->gl_offs == -1) /* XXX HACK HACK HACK */
-	ftpGlobfree(pglob);
-    else
-	globfree(pglob);
-    /*@=branchstate@*/
+    globfree(pglob);
 }
 
 DIR * Opendir(const char * path)
@@ -1205,7 +1353,9 @@ DIR * Opendir(const char * path)
 if (_rpmio_debug)
 fprintf(stderr, "*** Opendir(%s)\n", path);
     switch (ut) {
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_FTP:
+	return ftpOpendir(path);
+	/*@notreached@*/ break;
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
@@ -1227,6 +1377,8 @@ struct dirent * Readdir(DIR * dir)
 {
 if (_rpmio_debug)
 fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
+    if (dir == NULL || ISFTPMAGIC(dir))
+	return ftpReaddir(dir);
     return readdir(dir);
 }
 
@@ -1234,6 +1386,8 @@ int Closedir(DIR * dir)
 {
 if (_rpmio_debug)
 fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
+    if (dir == NULL || ISFTPMAGIC(dir))
+	return ftpClosedir(dir);
     return closedir(dir);
 }
 /*@=voidabstract@*/

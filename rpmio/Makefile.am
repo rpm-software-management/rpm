@@ -2,9 +2,9 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = tdigest.c tficl.c tkey.c trpmio.c
+EXTRA_DIST = tdigest.c tdir.c tficl.c tglob.c tkey.c trpmio.c
 
-EXTRA_PROGRAMS = tdigest tkey tring trpmio dumpasn1
+EXTRA_PROGRAMS = tdigest tdir tglob tkey tring trpmio dumpasn1
 
 INCLUDES = \
 	-I$(top_srcdir) \
@@ -26,7 +26,8 @@ LIBS +=	@WITH_ZLIB_LIB@ -lrt -lpthread
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
 lib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = digest.c fts.c macro.c rpmio.c rpmlog.c rpmmalloc.c \
+librpmio_la_SOURCES = digest.c fts.c macro.c \
+	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -release @VERSION@
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)
@@ -53,12 +54,20 @@ clean-local:
 tdigest_SOURCES = tdigest.c
 tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
-trpmio_SOURCES = trpmio.c
-trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tdir_SOURCES = tdir.c
+tdir_LDFLAGS = -all-static
+tdir_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+
+tglob_SOURCES = tglob.c
+tglob_LDFLAGS = -all-static
+tglob_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tkey_SOURCES = tkey.c
 tkey_LDFLAGS = -all-static
 tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+
+trpmio_SOURCES = trpmio.c
+trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tring_SOURCES = tring.c
 tring_LDFLAGS = -all-static

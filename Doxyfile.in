@@ -415,8 +415,11 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/tagname.c \
 	@top_srcdir@/rpmdb/tagtbl.c \
 	@top_srcdir@/rpmio/digest.c \
+	@top_srcdir@/rpmio/fts.c \
+	@top_srcdir@/rpmio/fts.h \
 	@top_srcdir@/rpmio/macro.c \
 	@top_srcdir@/rpmio/rpmlog.c \
+	@top_srcdir@/rpmio/rpmlog.h \
 	@top_srcdir@/rpmio/rpmerr.h \
 	@top_srcdir@/rpmio/rpmio.c \
 	@top_srcdir@/rpmio/rpmio.h \
@@ -450,7 +453,6 @@ INPUT                  = \
 	@top_srcdir@/tools/dumpdb.c \
 	@top_srcdir@/tools/javadeps.c \
 	@top_srcdir@/tools/rpmarchive.c \
-	@top_srcdir@/tools/rpmchecksig.c \
 	@top_srcdir@/tools/rpmheader.c \
 	@top_srcdir@/tools/rpminject.c \
 	@top_srcdir@/tools/rpmlead.c \
