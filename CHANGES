@@ -1,5 +1,6 @@
 2.4.107 -> 2.4.108:
         - make --clean work with no %setup
+	- fixed FSSIZES problem introduced in 2.4.107
 
 2.4.106 -> 2.4.107:
 	- --nomd5 wasn't handled properly
