@@ -2,6 +2,7 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "errno.h"
@@ -29,13 +30,17 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
     struct oldrpmlead * oldLead;
     int_8 arch;
     int isSource;
+    struct stat sb;
 
     hdr = hdrPtr ? hdrPtr : &hdrBlock;
     lead = leadPtr ? leadPtr : &leadBlock;
 
     oldLead = (struct oldrpmlead *) lead;
 
-    if (readLead(fd, lead)) {
+    fstat(fd, &sb);
+    if (sb.st_size < 4) return 1;
+
+    if ((rc = readLead(fd, lead))) {
 	return 2;
     }
 
