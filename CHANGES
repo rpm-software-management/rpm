@@ -1,3 +1,6 @@
+2.0.7 -> 2.0.8:
+	- explicitly turn off ASCII armor when running PGP
+
 2.0.6 -> 2.0.7:
         - builds now set umask 022 for all scripts
 	- queries relative paths correctly (thanks to Johnie Stafford)
