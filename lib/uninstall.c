@@ -26,11 +26,11 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 		      int test);
 
 static int sharedFileCmp(const void * one, const void * two) {
-    if (((struct sharedFile *) one)->mainFileNumber <
-	((struct sharedFile *) one)->mainFileNumber)
+    if (((struct sharedFile *) one)->secRecOffset <
+	((struct sharedFile *) two)->secRecOffset)
 	return -1;
-    else if (((struct sharedFile *) one)->mainFileNumber ==
-	((struct sharedFile *) one)->mainFileNumber)
+    else if (((struct sharedFile *) one)->secRecOffset ==
+	((struct sharedFile *) two)->secRecOffset)
 	return 0;
     else 
 	return 1;
@@ -76,7 +76,7 @@ int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 static int handleSharedFiles(rpmdb db, int offset, char ** fileList, 
 			     char ** fileMd5List, int fileCount, 
 			     enum fileActions * fileActions) {
-    Header sech;
+    Header sech = NULL;
     int secOffset = 0;
     struct sharedFile * sharedList;
     int sharedCount;
@@ -100,6 +100,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     for (i = 0; i < sharedCount; i++) {
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
+		freeHeader(sech);
 		free(secFileMd5List);
 		free(secFileList);
 	    }
@@ -136,8 +137,6 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 		     (void **) &secFileStatesList, &secFileCount);
 	    getEntry(sech, RPMTAG_FILEMD5S, &type, 
 		     (void **) &secFileMd5List, &secFileCount);
-
-	    freeHeader(sech);
 	}
 
 	message(MESS_DEBUG, "file %s is shared\n",
@@ -159,6 +158,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     }
 
     if (secOffset) {
+	freeHeader(sech);
 	free(secFileMd5List);
 	free(secFileList);
     }
