@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-10-31 13:18-0500\n"
+"POT-Creation-Date: 2000-10-31 15:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2052,53 +2052,53 @@ msgstr ""
 msgid "No patch number %d"
 msgstr ""
 
-#: build/parsePrep.c:162
+#: build/parsePrep.c:163
 #, c-format
 msgid "No source number %d"
 msgstr ""
 
-#: build/parsePrep.c:181
+#: build/parsePrep.c:182
 #, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr ""
 
-#: build/parsePrep.c:254
+#: build/parsePrep.c:276
 msgid "Error parsing %%setup: %s"
 msgstr ""
 
-#: build/parsePrep.c:269
+#: build/parsePrep.c:291
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr ""
 
-#: build/parsePrep.c:287
+#: build/parsePrep.c:309
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: build/parsePrep.c:420
+#: build/parsePrep.c:442
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: build/parsePrep.c:428
+#: build/parsePrep.c:450
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: build/parsePrep.c:440
+#: build/parsePrep.c:462
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:446
+#: build/parsePrep.c:468
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:453
+#: build/parsePrep.c:475
 msgid "Too many patches!"
 msgstr ""
 
-#: build/parsePrep.c:457
+#: build/parsePrep.c:479
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: build/parsePrep.c:493
+#: build/parsePrep.c:515
 msgid "line %d: second %%prep"
 msgstr ""
 
@@ -3879,35 +3879,35 @@ msgstr ""
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: rpmio/macro.c:992
+#: rpmio/macro.c:995
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: rpmio/macro.c:1058 rpmio/macro.c:1074
+#: rpmio/macro.c:1061 rpmio/macro.c:1077
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: rpmio/macro.c:1114
+#: rpmio/macro.c:1117
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: rpmio/macro.c:1240
+#: rpmio/macro.c:1243
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: rpmio/macro.c:1311
+#: rpmio/macro.c:1314
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1491 rpmio/macro.c:1497
+#: rpmio/macro.c:1494 rpmio/macro.c:1500
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: rpmio/macro.c:1500
+#: rpmio/macro.c:1503
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""

@@ -918,7 +918,7 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 		(void)urlPath(buf, (const char **)&b);
 		if (*b == '\0') b = "/";
 	} else if (STREQ("uncompress", f, fn)) {
-		int compressed = 1;
+		rpmCompressedMagic compressed = COMPRESSED_OTHER;
 		for (b = buf; (c = *b) && isblank(c);)
 			b++;
 		for (be = b; (c = *be) && !isblank(c);)
@@ -937,6 +937,9 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 			break;
 		case 2:	/* COMPRESSED_BZIP2 */
 			sprintf(be, "%%_bzip2 %s", b);
+			break;
+		case 3:	/* COMPRESSED_ZIP */
+			sprintf(be, "%%_unzip %s", b);
 			break;
 		}
 		b = be;
@@ -1476,7 +1479,7 @@ rpmFreeMacros(MacroContext *mc)
 }
 
 /* =============================================================== */
-int isCompressed(const char *file, int *compressed)
+int isCompressed(const char *file, rpmCompressedMagic *compressed)
 {
     FD_t fd;
     ssize_t nb;
@@ -1507,17 +1510,18 @@ int isCompressed(const char *file, int *compressed)
 
     rc = 0;
 
-    if (((magic[0] == 0037) && (magic[1] == 0213)) ||  /* gzip */
-	((magic[0] == 0037) && (magic[1] == 0236)) ||  /* old gzip */
-	((magic[0] == 0037) && (magic[1] == 0036)) ||  /* pack */
-	((magic[0] == 0037) && (magic[1] == 0240)) ||  /* SCO lzh */
-	((magic[0] == 0037) && (magic[1] == 0235)) ||  /* compress */
-	((magic[0] == 0120) && (magic[1] == 0113) &&
-	 (magic[2] == 0003) && (magic[3] == 0004))     /* pkzip */
+    if ((magic[0] == 'B') && (magic[1] == 'Z')) {
+	*compressed = COMPRESSED_BZIP2;
+    } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
+	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
+	*compressed = COMPRESSED_ZIP;
+    } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
+	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
+	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */
+	((magic[0] == 0037) && (magic[1] == 0240)) ||	/* SCO lzh */
+	((magic[0] == 0037) && (magic[1] == 0235))	/* compress */
 	) {
 	*compressed = COMPRESSED_OTHER;
-    } else if ((magic[0] == 'B') && (magic[1] == 'Z')) {
-	*compressed = COMPRESSED_BZIP2;
     }
 
     return rc;

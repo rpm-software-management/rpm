@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.68 2000/09/01 21:15:41 jbj Exp $
+# $Id: macros.in,v 1.69 2000/11/02 17:57:26 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -55,6 +55,7 @@
 %__sed			@__SED@
 %__ssh			@__SSH@
 %__tar			@__TAR@
+%__unzip		%{_unzipbin}
 
 #==============================================================================
 # ---- Build system path macros.
@@ -117,6 +118,7 @@
 %_srcrpmdir		%{_topdir}/SRPMS
 %_tmppath		%{_var}/tmp
 %_topdir		%{_usrsrc}/redhat
+%_unzipbin		@UNZIPBIN@
 
 #==============================================================================
 # ---- Optional rpmrc macros.

@@ -61,7 +61,7 @@ static int checkOwners(const char *urlfn)
     static char buf[BUFSIZ];
     char args[BUFSIZ];
     struct Source *sp;
-    int compressed = 0;
+    rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
@@ -149,8 +149,9 @@ static int checkOwners(const char *urlfn)
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
     char *taropts;
+    char *t = NULL;
     struct Source *sp;
-    int compressed = 0;
+    rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
@@ -205,21 +206,42 @@ static int checkOwners(const char *urlfn)
 	/*@notreached@*/ break;
     }
 
-    if (compressed) {
-	const char *zipper = rpmGetPath(
-	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
-	    NULL);
-	sprintf(buf,
-		"%s -dc %s | tar %s -\n"
+    if (compressed != COMPRESSED_NOT) {
+	const char *zipper;
+	int needtar = 1;
+
+	switch (compressed) {
+	case COMPRESSED_NOT:	/* XXX can't happen */
+	case COMPRESSED_OTHER:
+	    t = "%{_gzipbin} -dc";
+	    break;
+	case COMPRESSED_BZIP2:
+	    t = "%{_bzip2bin} -dc";
+	    break;
+	case COMPRESSED_ZIP:
+	    t = "%{_unzipbin}";
+	    needtar = 0;
+	    break;
+	}
+	zipper = rpmGetPath(t, NULL);
+	buf[0] = '\0';
+	t = stpcpy(buf, zipper);
+	xfree(zipper);
+	*t++ = ' ';
+	t = stpcpy(t, fn);
+	if (needtar)
+	    t = stpcpy( stpcpy( stpcpy(t, " | tar "), taropts), " -");
+	t = stpcpy(t,
+		"\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
-		"fi",
-		zipper,
-		fn, taropts);
-	xfree(zipper);
+		"fi");
     } else {
-	sprintf(buf, "tar %s %s", taropts, fn);
+	buf[0] = '\0';
+	t = stpcpy( stpcpy(buf, "tar "), taropts);
+	*t++ = ' ';
+	t = stpcpy(t, fn);
     }
 
     xfree(urlfn);
