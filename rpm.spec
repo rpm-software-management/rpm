@@ -42,7 +42,7 @@ will manipulate RPM packages and databases.
 %setup -q
 
 %build
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr --enable-shared
 make
 %ifos linux
 make -C python
