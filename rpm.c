@@ -89,14 +89,14 @@ static void printUsage(void) {
     puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
-    puts(_("                        file1.rpm ... fileN.rpm"));
+    puts(_("                        [--noorder] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"));
-    puts(_("                        file1.rpm ... fileN.rpm"));
+    puts(_("                        [--noorder] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
@@ -267,6 +267,8 @@ static void printHelp(void) {
 		  _("update the database, but do not modify the filesystem"));
     printHelpLine("      --nodeps            ",
 		  _("do not verify package dependencies"));
+    printHelpLine("      --noorder           ",
+		  _("do not reorder package installation to satisfy dependencies"));
     printHelpLine("      --noscripts         ",
 		  _("don't execute any installation scripts"));
     printHelpLine("      --percent           ",
@@ -297,6 +299,8 @@ static void printHelp(void) {
 		  _("update the database, but do not modify the filesystem"));
     printHelpLine("      --nodeps            ",
 		  _("do not verify package dependencies"));
+    printHelpLine("      --noorder           ",
+		  _("do not reorder package installation to satisfy dependencies"));
     printHelpLine("      --noscripts         ",
 		  _("do not execute any package specific scripts"));
     printHelpLine("      --root <dir>        ",
@@ -509,7 +513,7 @@ int main(int argc, char ** argv) {
     int showHash = 0, installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
     int shortCircuit = 0, queryTags = 0, excldocs = 0;
-    int incldocs = 0, noScripts = 0, noDeps = 0, allMatches = 0;
+    int incldocs = 0, noScripts = 0, noDeps = 0, allMatches = 0, noOrder = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
     int noMd5 = 0, allFiles = 0, justdb = 0;
@@ -572,6 +576,7 @@ int main(int argc, char ** argv) {
 	    { "justdb", '\0', 0, &justdb, 0 },
 	    { "list", 'l', 0, 0, 'l' },
 	    { "nodeps", '\0', 0, &noDeps, 0 },
+	    { "noorder", '\0', 0, &noOrder, 0 },
 	    { "nofiles", '\0', 0, &noFiles, 0 },
 	    { "nomd5", '\0', 0, &noMd5, 0 },
 	    { "nopgp", '\0', 0, &noPgp, 0 },
@@ -1251,6 +1256,7 @@ int main(int argc, char ** argv) {
 	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
 	if (showHash) interfaceFlags |= INSTALL_HASH;
 	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
+	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
 
 	if (!incldocs) {
 	    if (excldocs)
