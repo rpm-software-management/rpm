@@ -151,6 +151,7 @@ struct _FD_s {
 
 /*@dependent@*/
     void *	url;		/* ufdio: URL info */
+/*@relnull@*/
     void *	req;		/* ufdio: HTTP request */
 
     int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */

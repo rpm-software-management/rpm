@@ -254,7 +254,7 @@ int ne_end_request(ne_request *req)
  *   0 - end of response
  *  >0 - number of bytes read into buffer.
  */
-ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen)
+ssize_t ne_read_response_block(ne_request *req, /*@out@*/ char *buffer, size_t buflen)
 	/*@globals internalState @*/
 	/*@modifies req, buffer, internalState @*/;
 

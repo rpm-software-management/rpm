@@ -192,6 +192,10 @@ gzip -9n apidocs/man/man*/* || :
 { cd $RPM_BUILD_ROOT
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
   rm -rf .%{__mandir}/{fr,ko}
+%if %{with_python_subpackage}
+  rm -f %{__libdir}/python%{with_python_version}/site-packages/*.{a,la}
+  rm -f %{__libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
+%endif
 }
 
 %clean

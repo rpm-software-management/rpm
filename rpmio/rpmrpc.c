@@ -20,8 +20,10 @@
 /*@access FD_t @*/
 /*@access urlinfo @*/
 
+/*@-redecl@*/
 /*@unchecked@*/
 extern int noNeon;
+/*@=redecl@*/
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.

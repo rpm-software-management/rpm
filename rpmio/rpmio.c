@@ -360,7 +360,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
 
 static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals errno, fileSystem, internalState @*/
-	/*@modifies *buf, errno, fileSystem, internalState @*/
+	/*@modifies buf, errno, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
 	/*@ensures maxRead(buf) == result @*/
 {
@@ -463,10 +463,12 @@ static int fdClose( /*@only@*/ void * cookie)
 
     fdstat_enter(fd, FDSTAT_CLOSE);
     /* HACK: flimsy wiring for davClose */
+/*@-branchstate@*/
     if (fd->req != NULL)
 	rc = davClose(fd);
     else
 	rc = ((fdno >= 0) ? close(fdno) : -2);
+/*@=branchstate@*/
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
@@ -1709,7 +1711,7 @@ void * ufdGetUrlinfo(FD_t fd)
 /* =============================================================== */
 static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies *buf, fileSystem, internalState @*/
+	/*@modifies buf, fileSystem, internalState @*/
         /*@requires maxSet(buf) >= (count - 1) @*/
         /*@ensures maxRead(buf) == result @*/
 {
@@ -2797,11 +2799,17 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 		    /* HACK: flimsy Keepalive wiring. */
 		    if (hadreqpersist) {
 			fd->nfps--;
+/*@-exposetrans@*/
 			fdSetFp(fd, fp);
+/*@=exposetrans@*/
+/*@-refcounttrans@*/
 			(void) fdClose(fd);
+/*@=refcounttrans@*/
 			fdSetFp(fd, NULL);
 			fd->nfps++;
+/*@-refcounttrans@*/
 			(void) fdClose(fd);
+/*@=refcounttrans@*/
 		    } else
 			rc = fclose(fp);
 		}

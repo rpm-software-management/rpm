@@ -84,11 +84,11 @@ DIR * avOpendir(const char * path)
 /**
  * Send a http request.
  * @param ctrl		
- * @param davCmd	http command
- * @param davArg	http command argument
+ * @param httpCmd	http command
+ * @param httpArg	http command argument (NULL if none)
  * @returns		0 on success
  */
-int davReq(FD_t ctrl, const char * davCmd, const char * davArg)
+int davReq(FD_t ctrl, const char * httpCmd, /*@null@*/ const char * httpArg)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ctrl, fileSystem, internalState @*/;
 
@@ -99,9 +99,9 @@ int davReq(FD_t ctrl, const char * davCmd, const char * davArg)
  * @retval *str		error msg		
  * @returns		0 on success
  */
-int davResp(urlinfo u, FD_t ctrl, /*@out@*/ char *const * str)
-	/*@globals fileSystem @*/
-	/*@modifies ctrl, *str, fileSystem @*/;
+int davResp(urlinfo u, FD_t ctrl, /*@out@*/ /*@null@*/ char *const * str)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ctrl, *str, fileSystem, internalState @*/;
 
 /**
  */
@@ -116,7 +116,7 @@ FD_t davOpen(const char * url, /*@unused@*/ int flags,
 /*@-incondefs@*/
 ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
         /*@globals fileSystem, internalState @*/
-        /*@modifies *buf, fileSystem, internalState @*/
+        /*@modifies buf, fileSystem, internalState @*/
 	/*@requires maxSet(buf) >= (count - 1) @*/
 	/*@ensures maxRead(buf) == result @*/;
 /*@=incondefs@*/
@@ -135,7 +135,7 @@ int davSeek(void * cookie, _libio_pos_t pos, int whence)
 
 /**
  */
-int davClose(/*@only@*/ void * cookie)
+int davClose(void * cookie)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies cookie, fileSystem, internalState @*/;
 /*@=globuse@*/
