@@ -910,7 +910,8 @@ int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
     return removePackage(ts, dboffset, -1);
 }
 
-rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
+/*@-nullstate@*/ /* FIX: ts->di, ts->removedPackes, ts->order, modre NULL */
+void rpmtransClean(rpmTransactionSet ts)
 {
     if (ts) {
 	HFD_t hfd = headerFreeData;
@@ -920,9 +921,11 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	ts->removedPackages = _free(ts->removedPackages);
 	ts->order = _free(ts->order);
 	/*@-type@*/ /* FIX: cast? */
-	if (ts->scriptFd != NULL)
+	if (ts->scriptFd != NULL) {
 	    ts->scriptFd =
 		fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
+	    ts->scriptFd = NULL;
+	}
 	/*@=type@*/
 	ts->rootDir = _free(ts->rootDir);
 	ts->currDir = _free(ts->currDir);
@@ -932,6 +935,23 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	    ts->sig = hfd(ts->sig, ts->sigtype);
 	if (ts->dig != NULL)
 	    ts->dig = pgpFreeDig(ts->dig);
+    }
+}
+
+
+rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
+{
+    if (ts) {
+
+	rpmtransClean(ts);
+
+	if (ts->rpmdb) {
+	    int xx;
+	    /*@-kepttrans@*/
+	    xx = rpmdbClose(ts->rpmdb);
+	    ts->rpmdb = NULL;
+	    /*@=kepttrans@*/
+	}
 
 	ts = _free(ts);
     }

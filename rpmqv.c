@@ -1098,46 +1098,27 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMQV
     case MODE_QUERY:
-      { const char * pkg;
-
 	qva->qva_prefix = rootdir;
-	if (qva->qva_source == RPMQV_ALL) {
-#ifdef	DYING
-	    if (poptPeekArg(optCon))
-		argerror(_("extra arguments given for query of all packages"));
-#else
-	    const char ** av = poptGetArgs(optCon);
-#endif
-	    /*@-nullpass@*/	/* FIX: av can be NULL */
-	    ec = rpmQuery(qva, RPMQV_ALL, (const char *) av);
-	    /*@=nullpass@*/
-	} else {
-	    if (!poptPeekArg(optCon))
-		argerror(_("no arguments given for query"));
-	    while ((pkg = poptGetArg(optCon)))
-		ec += rpmQuery(qva, qva->qva_source, pkg);
-	}
-      }	break;
+	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
+	    argerror(_("no arguments given for query"));
+	ec = rpmcliQuery(qva, (const char **) poptGetArgs(optCon));
+	/* XXX don't overflow single byte exit status */
+	if (ec > 255) ec = 255;
+	break;
 
     case MODE_VERIFY:
-      { const char * pkg;
-	rpmVerifyFlags verifyFlags = VERIFY_ALL;
+    {	rpmVerifyFlags verifyFlags = VERIFY_ALL;
 
+	qva->qva_prefix = rootdir;
 	verifyFlags &= ~qva->qva_flags;
 	qva->qva_flags = (rpmQueryFlags) verifyFlags;
-	qva->qva_prefix = rootdir;
 
-	if (qva->qva_source == RPMQV_ALL) {
-	    if (poptPeekArg(optCon))
-		argerror(_("extra arguments given for verify of all packages"));
-	    ec = rpmVerify(qva, RPMQV_ALL, NULL);
-	} else {
-	    if (!poptPeekArg(optCon))
-		argerror(_("no arguments given for verify"));
-	    while ((pkg = poptGetArg(optCon)))
-		ec += rpmVerify(qva, qva->qva_source, pkg);
-	}
-      }	break;
+	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
+	    argerror(_("no arguments given for verify"));
+	ec = rpmcliVerify(qva, (const char **) poptGetArgs(optCon));
+	/* XXX don't overflow single byte exit status */
+	if (ec > 255) ec = 255;
+    }	break;
 
     case MODE_QUERYTAGS:
 	if (argc != 2)

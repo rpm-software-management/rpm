@@ -270,38 +270,47 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 }
 
 /**
- * Return exit code from running verify script in header.
- * @todo gnorpm/kpackage prevents static, should be using VERIFY_SCRIPT flag.
- * @param rootDir       path to top of install tree
+ * Return exit code from running verify script from header.
+ * @param qva		parsed query/verify options
+ * @param ts		transaction set
  * @param h             header
  * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
-int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
+static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
+		Header h, /*@null@*/ FD_t scriptFd)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
-    rpmdb db = NULL;
-    rpmTransactionSet ts = rpmtransCreateSet(db, rootDir);
     TFI_t fi = xcalloc(1, sizeof(*fi));
     struct psm_s psmbuf;
     PSM_t psm = &psmbuf;
     int rc;
 
     /*@-type@*/ /* FIX: cast? */
-    if (scriptFd != NULL)
+    if (scriptFd != NULL) {
+	/* XXX look for FD leaks! */
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
+    }
     /*@=type@*/
     fi->magic = TFIMAGIC;
     loadFi(ts, fi, h, 1);
     memset(psm, 0, sizeof(*psm));
+    /*@-assignexpose@*/
     psm->ts = ts;
     psm->fi = fi;
+    /*@=assignexpose@*/
     psm->stepName = "verify";
     psm->scriptTag = RPMTAG_VERIFYSCRIPT;
     psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
     rc = psmStage(psm, PSM_SCRIPT);
     freeFi(fi);
     fi = _free(fi);
-    ts = rpmtransFree(ts);
+
+    rpmtransClean(ts);
+
     return rc;
 }
 
@@ -350,10 +359,12 @@ int rpmVerifyDigest(Header h)
 
 /**
  * Check file info from header against what's actually installed.
+ * @param qva		parsed query/verify options
+ * @param ts		transaction set
  * @param h		header
  * @return		0 no problems, 1 problems found
  */
-static int verifyHeader(QVA_t qva, Header h)
+static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 	/*@globals fileSystem@*/
 	/*@modifies h, fileSystem @*/
 {
@@ -459,25 +470,25 @@ exit:
 
 /**
  * Check installed package dependencies for problems.
- * @param db		rpm database
+ * @param qva		parsed query/verify options
+ * @param ts		transaction set
  * @param h		header
  * @return		0 no problems, 1 problems found
  */
-static int verifyDependencies(rpmdb db, Header h)
+static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
+		Header h)
 	/*@globals fileSystem@*/
-	/*@modifies h, fileSystem @*/
+	/*@modifies ts, h, fileSystem @*/
 {
-    rpmTransactionSet ts;
     rpmDependencyConflict conflicts;
     int numConflicts;
     int rc = 0;		/* assume no problems */
     int i;
 
-    ts = rpmtransCreateSet(db, NULL);
+    rpmtransClean(ts);
     (void) rpmtransAddPackage(ts, h, NULL, NULL, 0, NULL);
 
     (void) rpmdepCheck(ts, &conflicts, &numConflicts);
-    ts = rpmtransFree(ts);
 
     /*@-branchstate@*/
     if (numConflicts) {
@@ -522,16 +533,19 @@ static int verifyDependencies(rpmdb db, Header h)
 	rc = 1;
     }
     /*@=branchstate@*/
+
+    rpmtransClean(ts);
+
     return rc;
 }
 
-int showVerifyPackage(QVA_t qva, rpmdb db, Header h)
+int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 {
-    const char * prefix = (qva->qva_prefix ? qva->qva_prefix : "");
     int ec = 0;
     int rc;
 
     if (qva->qva_flags & VERIFY_DIGEST) {
+	/* XXX Wire transaction set here, python bindings prevent. */
 	if ((rc = rpmVerifyDigest(h)) != 0) {
 	    const char *n, *v, *r;
 	    (void) headerNVR(h, &n, &v, &r);
@@ -542,16 +556,16 @@ int showVerifyPackage(QVA_t qva, rpmdb db, Header h)
 	}
     }
     if (qva->qva_flags & VERIFY_DEPS) {
-	if ((rc = verifyDependencies(db, h)) != 0)
+	if ((rc = verifyDependencies(qva, ts, h)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
-	if ((rc = verifyHeader(qva, h)) != 0)
+	if ((rc = verifyHeader(qva, ts, h)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_SCRIPT) {
 	FD_t fdo = fdDup(STDOUT_FILENO);
-	if ((rc = rpmVerifyScript(prefix, h, fdo)) != 0)
+	if ((rc = rpmVerifyScript(qva, ts, h, fdo)) != 0)
 	    ec = rc;
 	if (fdo)
 	    rc = Fclose(fdo);
@@ -559,26 +573,46 @@ int showVerifyPackage(QVA_t qva, rpmdb db, Header h)
     return ec;
 }
 
-int rpmVerify(QVA_t qva, rpmQVSources source, const char * arg)
+int rpmcliVerify(QVA_t qva, const char ** argv)
 {
+    const char * rootDir = qva->qva_prefix;
+    const char * arg;
     rpmdb db = NULL;
-    int rc;
+    rpmTransactionSet ts;
+    int ec = 0;
 
-    switch (source) {
+    switch (qva->qva_source) {
     case RPMQV_RPM:
 	if (!(qva->qva_flags & VERIFY_DEPS))
 	    break;
 	/*@fallthrough@*/
     default:
-	if ((rc = rpmdbOpen(qva->qva_prefix, &db, O_RDONLY, 0644)) != 0)
-	    return 1;
+	if (rpmdbOpen(rootDir, &db, O_RDONLY, 0644))
+	    return 1;	/* XXX W2DO? */
 	break;
     }
 
-    rc = rpmQueryVerify(qva, source, arg, db, showVerifyPackage);
+    if (qva->qva_showPackage == NULL)
+        qva->qva_showPackage = showVerifyPackage;
 
-    if (db != NULL)
-	(void) rpmdbClose(db);
+    ts = rpmtransCreateSet(db, rootDir);
 
-    return rc;
+    if (qva->qva_source == RPMQV_ALL) {
+	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	ec = rpmQueryVerify(qva, ts, (const char *) argv);
+	/*@=nullpass@*/
+    } else {
+	if (argv != NULL)
+	while ((arg = *argv++) != NULL) {
+	    ec += rpmQueryVerify(qva, ts, arg);
+	    rpmtransClean(ts);
+	}
+    }
+
+    ts = rpmtransFree(ts);
+
+    if (qva->qva_showPackage == showVerifyPackage)
+        qva->qva_showPackage = NULL;
+
+    return ec;
 }

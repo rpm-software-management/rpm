@@ -2296,7 +2296,7 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
 	ka.checksigFlags = flags;
 	ka.sign = 0;
 	ka.passPhrase = NULL;
-	rc = rpmCheckSig(&ka, av);
+	rc = rpmcliSign(&ka, av);
     }
     return Py_BuildValue("i", rc);
 }

@@ -135,24 +135,28 @@ typedef enum rpmVerifyFlags_e {
 
 /** \ingroup rpmcli
  * @param qva		parsed query/verify options
+ * @param ts		transaction set
  * @param db		rpm database
  * @param h		header to use for query/verify
  */
-typedef	int (*QVF_t) (QVA_t qva, rpmdb db, Header h)
+typedef	int (*QVF_t) (QVA_t qva, rpmTransactionSet ts, Header h)
 	/*@globals fileSystem@*/
-	/*@modifies db, fileSystem @*/;
+	/*@modifies qva, ts, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Display query/verify information for each header in iterator.
+ *
+ * This routine uses:
+ *	- qva->qva_mi		rpm database iterator
+ *	- qva->qva_showPackage	query/verify display routine
+ *
  * @param qva		parsed query/verify options
- * @param mi		rpm database iterator
- * @param showPackage	query/verify display routine
+ * @param ts		transaction set
  * @return		result of last non-zero showPackage() return
  */
-int showMatches(QVA_t qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
-		QVF_t showPackage)
+int showMatches(QVA_t qva, rpmTransactionSet ts)
 	/*@globals fileSystem@*/
-	/*@modifies mi, fileSystem @*/;
+	/*@modifies qva, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Display list of tags that can be used in --queryformat.
@@ -164,61 +168,63 @@ void rpmDisplayQueryTags(FILE * fp)
 
 /** \ingroup rpmcli
  * Common query/verify source interface, called once for each CLI arg.
+ *
+ * This routine uses:
+ *	- qva->qva_mi		rpm database iterator
+ *	- qva->qva_showPackage	query/verify display routine
+ *
  * @param qva		parsed query/verify options
- * @param source	type of source to query/verify
+ * @param ts		transaction set
  * @param arg		name of source to query/verify
- * @param db		rpm database
- * @param showPackage	query/verify specific display routine
  * @return		showPackage() result, 1 if rpmdbInitIterator() is NULL
  */
-int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
-		rpmdb db, QVF_t showPackage)
+int rpmQueryVerify(QVA_t qva, rpmTransactionSet ts, const char * arg)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies db, rpmGlobalMacroContext,
+	/*@modifies qva, ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Display results of package query.
  * @todo Devise a meaningful return code.
  * @param qva		parsed query/verify options
- * @param db		rpm database (unused for queries)
+ * @param ts		transaction set
  * @param h		header to use for query
  * @return		0 always
  */
-int showQueryPackage(QVA_t qva, rpmdb db, Header h)
-	/*@modifies db @*/;
+int showQueryPackage(QVA_t qva, rpmTransactionSet ts, Header h)
+	/*@modifies ts @*/;
 
 /** \ingroup rpmcli
  * Display package information.
  * @todo hack: RPMQV_ALL can pass char ** arglist = NULL, not char * arg. Union?
  * @param qva		parsed query/verify options
- * @param source	type of source to query
- * @param arg		name of source to query
- * @return		rpmQueryVerify() result, or 1 on rpmdbOpen() failure
+ * @param argv		query argument(s) (or NULL)
+ * @return		0 on success, else no. of failures
  */
-int rpmQuery(QVA_t qva, rpmQVSources source, const char * arg)
+int rpmcliQuery(QVA_t qva, /*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext,
+	/*@modifies qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Display results of package verify.
  * @param qva		parsed query/verify options
- * @param db		rpm database
+ * @param ts		transaction set
  * @param h		header to use for verify
  * @return		result of last non-zero verify return
  */
-int showVerifyPackage(QVA_t qva, /*@only@*/ rpmdb db, Header h)
+int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies db, h, rpmGlobalMacroContext,
+	/*@modifies ts, h, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /**
  * Check original header digest.
  * @todo Make digest check part of rpmdb iterator.
+ * @todo Wire transaction set here, python bindings prevent.
  * @param h		header
  * @return		0 on success (or unavailable), 1 on digest mismatch
  */
@@ -227,15 +233,15 @@ int rpmVerifyDigest(Header h)
 
 /** \ingroup rpmcli
  * Verify package install.
+ * @todo hack: RPMQV_ALL can pass char ** arglist = NULL, not char * arg. Union?
  * @param qva		parsed query/verify options
- * @param source	type of source to verify
- * @param arg		name of source to verify
- * @return		rpmQueryVerify() result, or 1 on rpmdbOpen() failure
+ * @param argv		verify argument(s) (or NULL)
+ * @return		0 on success, else no. of failures
  */
-int rpmVerify(QVA_t qva, rpmQVSources source, const char *arg)
+int rpmcliVerify(QVA_t qva, /*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext,
+	/*@modifies qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
@@ -243,12 +249,18 @@ int rpmVerify(QVA_t qva, rpmQVSources source, const char *arg)
  */
 struct rpmQVArguments_s {
     rpmQVSources qva_source;	/*!< Identify CLI arg type. */
-    int 	qva_sourceCount;/*!< Exclusive check (>1 is error). */
+    int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
     rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
+/*@only@*/ /*@null@*/
+    rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
+/*@null@*/
+    QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
 /*@unused@*/ int qva_verbose;	/*!< (unused) */
-/*@only@*/ /*@null@*/ const char * qva_queryFormat; /*!< Format for headerSprintf(). */
-/*@observer@*/ /*@null@*/ const char * qva_prefix; /*!< Path to top of install tree. */
+/*@only@*/ /*@null@*/
+    const char * qva_queryFormat;/*!< Format for headerSprintf(). */
+/*@observer@*/ /*@null@*/
+    const char * qva_prefix;	/*!< Path to top of install tree. */
     char	qva_mode;	/*!< 'q' is query, 'v' is verify mode. */
     char	qva_char;	/*!< (unused) always ' ' */
 };

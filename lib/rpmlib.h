@@ -744,9 +744,11 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 
 /** \ingroup rpmdb
  * Return rpm database used by iterator.
+ * @todo Remove?
  * @param mi		rpm database iterator
  * @return		rpm database handle
  */
+/*@unused@*/
 /*@kept@*/ /*@null@*/ rpmdb rpmdbGetIteratorRpmDB(
 		/*@null@*/ rpmdbMatchIterator mi)
 	/*@*/;
@@ -1279,13 +1281,21 @@ int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmtrans
- * Destroy transaction set.
+ * Re-create an empty transaction set.
+ * @param ts		transaction set
+ */
+void rpmtransClean(rpmTransactionSet ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmtrans
+ * Destroy transaction set, closing the database as well.
  * @param ts		transaction set
  * @return		NULL always
  */
 /*@null@*/ rpmTransactionSet
 rpmtransFree(/*@only@*//*@null@*/ rpmTransactionSet ts)
-	/*@modifies ts @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmtrans
  * Save file handle to be used as stderr when running package scripts.
@@ -1656,20 +1666,6 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 		/*@out@*/ rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
 	/*@globals fileSystem @*/
 	/*@modifies h, *result, fileSystem @*/;
-
-/**
- * Return exit code from running verify script from header.
- * @todo gnorpm/kpackage prevents static, should be using VERIFY_SCRIPT flag.
- * @param rootDir	path to top of install tree
- * @param h		header
- * @param scriptFd	file handle to use for stderr (or NULL)
- * @return		0 on success
- */
-int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies h, scriptFd, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
 
 /*@}*/
 /* ==================================================================== */

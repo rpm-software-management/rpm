@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-23 16:43-0400\n"
+"POT-Creation-Date: 2001-10-23 23:52-0400\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -422,27 +422,19 @@ msgstr "inga paket angivna för avinstallation"
 msgid "no packages given for install"
 msgstr "inga paket angivna för installation"
 
-#: rpmqv.c:1107
-msgid "extra arguments given for query of all packages"
-msgstr "extra argument angivna för förfrågan om alla paket"
-
-#: rpmqv.c:1116
+#: rpmqv.c:1103
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för fråga"
 
-#: rpmqv.c:1132
-msgid "extra arguments given for verify of all packages"
-msgstr "extra argument angivna för verifiering av alla paket"
-
-#: rpmqv.c:1136
+#: rpmqv.c:1117
 msgid "no arguments given for verify"
 msgstr "inga parametrar angivna för verifiering"
 
-#: rpmqv.c:1144
+#: rpmqv.c:1125
 msgid "unexpected arguments to --querytags "
 msgstr "oväntade argument till --querytags "
 
-#: rpmqv.c:1154
+#: rpmqv.c:1135
 #, fuzzy
 msgid "no arguments given"
 msgstr "inga parametrar angivna för fråga"
@@ -1300,60 +1292,60 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
+#: lib/depends.c:585 lib/depends.c:1252 lib/depends.c:1385
 msgid "YES"
 msgstr "JA"
 
-#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
+#: lib/depends.c:585 lib/depends.c:1252 lib/depends.c:1385
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/depends.c:1026
+#: lib/depends.c:1046
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s JA (lade till filer)\n"
 
-#: lib/depends.c:1137
+#: lib/depends.c:1157
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s JA (lade till tillhandahållande)\n"
 
-#: lib/depends.c:1231
+#: lib/depends.c:1251
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cachad)\n"
 
-#: lib/depends.c:1260
+#: lib/depends.c:1280
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
-#: lib/depends.c:1277
+#: lib/depends.c:1297
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s JA (rpmlib tillhandahåller)\n"
 
-#: lib/depends.c:1301
+#: lib/depends.c:1321
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:1314
+#: lib/depends.c:1334
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db-tillhandahållande)\n"
 
-#: lib/depends.c:1328
+#: lib/depends.c:1348
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s JA (db-paket)\n"
 
-#: lib/depends.c:1344
+#: lib/depends.c:1364
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1365
+#: lib/depends.c:1385
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
@@ -1361,43 +1353,43 @@ msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1438
+#: lib/depends.c:1458
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1517
+#: lib/depends.c:1537
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1770
+#: lib/depends.c:1790
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1920
+#: lib/depends.c:1940
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1980
+#: lib/depends.c:2000
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, djup)\n"
 
-#: lib/depends.c:2030
+#: lib/depends.c:2050
 msgid "========== successors only (presentation order)\n"
 msgstr "========== endast efterföljare (presentationsordning)\n"
 
-#: lib/depends.c:2083
+#: lib/depends.c:2103
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:2113
+#: lib/depends.c:2133
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
@@ -2303,124 +2295,124 @@ msgstr "%s misslyckades på fil %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
 
-#: lib/query.c:119
+#: lib/query.c:122
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "fel format: %s\n"
 
-#: lib/query.c:216
+#: lib/query.c:219
 msgid "(contains no files)"
 msgstr "(innehåller inga filer)"
 
-#: lib/query.c:277
+#: lib/query.c:280
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:280
+#: lib/query.c:283
 msgid "replaced      "
 msgstr "ersatt        "
 
-#: lib/query.c:283
+#: lib/query.c:286
 msgid "not installed "
 msgstr "oinstallerat  "
 
-#: lib/query.c:286
+#: lib/query.c:289
 msgid "net shared    "
 msgstr "nätdelad      "
 
-#: lib/query.c:289
+#: lib/query.c:292
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(okänd %3d)   "
 
-#: lib/query.c:294
+#: lib/query.c:297
 msgid "(no state)    "
 msgstr "(ej tillstnd) "
 
-#: lib/query.c:313 lib/query.c:369
+#: lib/query.c:316 lib/query.c:372
 msgid "package has neither file owner or id lists\n"
 msgstr "paketet har varken filägare eller id-listor\n"
 
-#: lib/query.c:458
+#: lib/query.c:461
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "kan inte fråga %s: %s\n"
 
-#: lib/query.c:596 lib/query.c:630 lib/rpminstall.c:323 lib/rpminstall.c:467
+#: lib/query.c:599 lib/query.c:633 lib/rpminstall.c:323 lib/rpminstall.c:467
 #: lib/rpminstall.c:847
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
 
-#: lib/query.c:609
+#: lib/query.c:612
 #, c-format
 msgid "query of %s failed\n"
 msgstr "fråga av %s misslyckades\n"
 
-#: lib/query.c:615
+#: lib/query.c:618
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går inte att fråga om\n"
 
-#: lib/query.c:640 lib/rpminstall.c:480
+#: lib/query.c:643 lib/rpminstall.c:480
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: läsning av paketlista misslyckades: %s\n"
 
-#: lib/query.c:684
+#: lib/query.c:687
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga av specfil %s misslyckades, kan inte tolka\n"
 
-#: lib/query.c:709
+#: lib/query.c:711
 msgid "no packages\n"
 msgstr "inga paket\n"
 
-#: lib/query.c:728
+#: lib/query.c:731
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:738
+#: lib/query.c:741
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:748
+#: lib/query.c:751
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:759
+#: lib/query.c:762
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:796
+#: lib/query.c:799
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:800
+#: lib/query.c:803
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tillhör inget paket\n"
 
-#: lib/query.c:826
+#: lib/query.c:830
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:829
+#: lib/query.c:833
 #, c-format
 msgid "package record number: %u\n"
 msgstr "paketpost nummer: %u\n"
 
-#: lib/query.c:834
+#: lib/query.c:838
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:845 lib/rpminstall.c:633
+#: lib/query.c:849 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -2837,17 +2829,17 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "paketet saknar både gruppnamn och id-listor (detta borde aldrig inträffa)\n"
 
-#: lib/verify.c:400
+#: lib/verify.c:411
 #, c-format
 msgid "missing    %s"
 msgstr "saknas     %s"
 
-#: lib/verify.c:497
+#: lib/verify.c:508
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
-#: lib/verify.c:539
+#: lib/verify.c:553
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrollsumma för oföränderlig huvudregion misslyckades\n"
@@ -3361,6 +3353,12 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "extra argument angivna för förfrågan om alla paket"
+
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "extra argument angivna för verifiering av alla paket"
 
 #~ msgid "no packages given for signature check"
 #~ msgstr "inga paket angivna för signaturkontroll"

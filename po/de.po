@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-23 16:43-0400\n"
+"POT-Creation-Date: 2001-10-23 23:52-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -486,28 +486,19 @@ msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
 msgid "no packages given for install"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: rpmqv.c:1107
-msgid "extra arguments given for query of all packages"
-msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
-
-#: rpmqv.c:1116
+#: rpmqv.c:1103
 msgid "no arguments given for query"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
-#: rpmqv.c:1132
-#, fuzzy
-msgid "extra arguments given for verify of all packages"
-msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
-
-#: rpmqv.c:1136
+#: rpmqv.c:1117
 msgid "no arguments given for verify"
 msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 
-#: rpmqv.c:1144
+#: rpmqv.c:1125
 msgid "unexpected arguments to --querytags "
 msgstr "Unerwartete Argumente zu --querytags "
 
-#: rpmqv.c:1154
+#: rpmqv.c:1135
 #, fuzzy
 msgid "no arguments given"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
@@ -1427,60 +1418,60 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
+#: lib/depends.c:585 lib/depends.c:1252 lib/depends.c:1385
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
+#: lib/depends.c:585 lib/depends.c:1252 lib/depends.c:1385
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:1026
+#: lib/depends.c:1046
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1137
+#: lib/depends.c:1157
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1231
+#: lib/depends.c:1251
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1260
+#: lib/depends.c:1280
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1277
+#: lib/depends.c:1297
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1301
+#: lib/depends.c:1321
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1314
+#: lib/depends.c:1334
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1328
+#: lib/depends.c:1348
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1344
+#: lib/depends.c:1364
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1365
+#: lib/depends.c:1385
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
@@ -1488,43 +1479,43 @@ msgstr "die Datei »%s« gehört zu keinem Paket\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1438
+#: lib/depends.c:1458
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:1517
+#: lib/depends.c:1537
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 # FIXME
-#: lib/depends.c:1770
+#: lib/depends.c:1790
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 #. Record all relations.
-#: lib/depends.c:1920
+#: lib/depends.c:1940
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1980
+#: lib/depends.c:2000
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2030
+#: lib/depends.c:2050
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2083
+#: lib/depends.c:2103
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2113
+#: lib/depends.c:2133
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2504,129 +2495,129 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "%s failed: %s\n"
 msgstr "pgp fehlgeschlagen"
 
-#: lib/query.c:119
+#: lib/query.c:122
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "Fehler beim Format %s\n"
 
-#: lib/query.c:216
+#: lib/query.c:219
 msgid "(contains no files)"
 msgstr "(beinhaltet keine Dateien)"
 
-#: lib/query.c:277
+#: lib/query.c:280
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:280
+#: lib/query.c:283
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:283
+#: lib/query.c:286
 #, fuzzy
 msgid "not installed "
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/query.c:286
+#: lib/query.c:289
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:289
+#: lib/query.c:292
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(unbekannter Typ)"
 
-#: lib/query.c:294
+#: lib/query.c:297
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:313 lib/query.c:369
+#: lib/query.c:316 lib/query.c:372
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "Paket hat keinen Namen"
 
-#: lib/query.c:458
+#: lib/query.c:461
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/query.c:596 lib/query.c:630 lib/rpminstall.c:323 lib/rpminstall.c:467
+#: lib/query.c:599 lib/query.c:633 lib/rpminstall.c:323 lib/rpminstall.c:467
 #: lib/rpminstall.c:847
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/query.c:609
+#: lib/query.c:612
 #, c-format
 msgid "query of %s failed\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:615
+#: lib/query.c:618
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:640 lib/rpminstall.c:480
+#: lib/query.c:643 lib/rpminstall.c:480
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: »readLead« fehlgeschlagen\n"
 
-#: lib/query.c:684
+#: lib/query.c:687
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:709
+#: lib/query.c:711
 #, fuzzy
 msgid "no packages\n"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/query.c:728
+#: lib/query.c:731
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/query.c:738
+#: lib/query.c:741
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "kein Paket triggert %s\n"
 
-#: lib/query.c:748
+#: lib/query.c:751
 #, c-format
 msgid "no package requires %s\n"
 msgstr "kein Paket verlangt %s\n"
 
 # oder besser: ... listet %s auf? -ke-
-#: lib/query.c:759
+#: lib/query.c:762
 #, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
 # , c-format
-#: lib/query.c:796
+#: lib/query.c:799
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/query.c:800
+#: lib/query.c:803
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/query.c:826
+#: lib/query.c:830
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:829
+#: lib/query.c:833
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:834
+#: lib/query.c:838
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:845 lib/rpminstall.c:633
+#: lib/query.c:849 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
@@ -3059,17 +3050,17 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:400
+#: lib/verify.c:411
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "fehlende { nach %{"
 
-#: lib/verify.c:497
+#: lib/verify.c:508
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
 
-#: lib/verify.c:539
+#: lib/verify.c:553
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3599,6 +3590,13 @@ msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
+
+#~ msgid "extra arguments given for query of all packages"
+#~ msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
+
+#, fuzzy
+#~ msgid "extra arguments given for verify of all packages"
+#~ msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
 #~ msgid "no packages given for signature check"
 #~ msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"

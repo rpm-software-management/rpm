@@ -531,3 +531,4 @@ fi
 - all symbols but hdrVec are now forward references in linkage.
 - generate an rpm header on the fly for imported pubkeys.
 - wire transactions through rpmcli signature modes.
+- wire transactions through rpmcli query/verify modes.
