@@ -196,14 +196,12 @@ struct rpmEIU {
 };
 
 /** @todo Generalize --freshen policies. */
-int rpmInstall(const char * rootDir, const char ** fileArgv,
+int rpmInstall(rpmTransactionSet ts, const char ** fileArgv,
 		rpmtransFlags transFlags,
 		rpmInstallInterfaceFlags interfaceFlags,
 		rpmprobFilterFlags probFilter,
 		rpmRelocation * relocations)
 {
-    rpmTransactionSet ts = NULL;
-
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
@@ -216,10 +214,7 @@ int rpmInstall(const char * rootDir, const char ** fileArgv,
 
     if (fileArgv == NULL) goto exit;
     /*@-branchstate@*/
-    if (rootDir == NULL) rootDir = "";
-    /*@=branchstate@*/
 
-    ts = rpmtransCreateSet(NULL, rootDir);
     ts->transFlags = transFlags;
     ts->dbmode = (transFlags & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_CREAT);
@@ -279,6 +274,8 @@ restart:
 		fprintf(stdout, _("Retrieving %s\n"), fileURL);
 
 	    {	char tfnbuf[64];
+		const char * rootDir;
+		rootDir = (ts->rootDir && *ts->rootDir) ? ts->rootDir : "";
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
 		(void) mktemp(tfnbuf);
 		tfn = rpmGenPath(rootDir, "%{_tmppath}/", tfnbuf);
@@ -337,9 +334,9 @@ restart:
 	}
 
 	ts->verify_legacy = 1;
-	/*@-mustmod@*/	/* LCL: segfault */
+	/*@-mustmod -nullstate @*/	/* LCL: segfault */
 	eiu->rpmrc = rpmReadPackageFile(ts, eiu->fd, *eiu->fnp, &eiu->h);
-	/*@=mustmod@*/
+	/*@=mustmod =nullstate @*/
 	ts->verify_legacy = 0;
 	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
 
@@ -368,10 +365,12 @@ restart:
 	if (eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE) {
 
 	    /* Open database RDWR for binary packages. */
+	    /*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	    if (rpmtsOpenDB(ts, ts->dbmode)) {
 		eiu->numFailed++;
 		goto exit;
 	    }
+	    /*@=nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 
 	    if (eiu->relocations) {
 		const char ** paths;
@@ -401,9 +400,9 @@ restart:
 		int count;
 
 		xx = headerNVR(eiu->h, &name, NULL, NULL);
-		/*@-onlytrans@*/
+		/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 		mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
-		/*@=onlytrans@*/
+		/*@=nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 		count = rpmdbGetIteratorCount(mi);
 		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
 		    if (rpmVersionCompare(oldH, eiu->h) < 0)
@@ -420,9 +419,12 @@ restart:
 		/* Package is newer than those currently installed. */
 	    }
 
+	    /*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	    rc = rpmtransAddPackage(ts, eiu->h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
+	    /*@=nullstate@*/
+
 	    /* XXX reference held by transaction set */
 	    eiu->h = headerFree(eiu->h);
 	    if (eiu->relocations)
@@ -498,10 +500,12 @@ restart:
 	rpmDependencyConflict conflicts;
 	int numConflicts;
 
+	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
+	/*@=nullstate@*/
 
 	/*@-branchstate@*/
 	if (!stopInstall && conflicts) {
@@ -515,10 +519,12 @@ restart:
     }
 
     if (eiu->numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
+	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	if (rpmdepOrder(ts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
+	/*@=nullstate@*/
     }
 
     if (eiu->numRPMS && !stopInstall) {
@@ -527,8 +533,11 @@ restart:
 	packagesTotal = eiu->numRPMS + eiu->numSRPMS;
 
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
+
+	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	rc = rpmRunTransactions(ts, ts->notify, ts->notifyData,
 		 	NULL, &probs, transFlags, probFilter);
+	/*@=nullstate@*/
 
 	if (rc < 0) {
 	    eiu->numFailed += eiu->numRPMS;
@@ -580,16 +589,13 @@ exit:
     eiu->pkgURL = _free(eiu->pkgURL);
     eiu->argv = _free(eiu->argv);
 
-    ts = rpmtransFree(ts);
-
     return eiu->numFailed;
 }
 
-int rpmErase(const char * rootDir, const char ** argv,
+int rpmErase(rpmTransactionSet ts, const char ** argv,
 		rpmtransFlags transFlags,
 		rpmEraseInterfaceFlags interfaceFlags)
 {
-    rpmTransactionSet ts;
 
     int count;
     const char ** arg;
@@ -602,7 +608,6 @@ int rpmErase(const char * rootDir, const char ** argv,
 
     if (argv == NULL) return 0;
 
-    ts = rpmtransCreateSet(NULL, rootDir);
     ts->transFlags = transFlags;
     /* XXX W2DO? O_EXCL??? */
     ts->dbmode = (transFlags & RPMTRANS_FLAG_TEST)
@@ -659,8 +664,6 @@ int rpmErase(const char * rootDir, const char ** argv,
 	numFailed += rpmRunTransactions(ts, NULL, NULL, NULL, &probs,
 					transFlags, 0);
     }
-
-    ts = rpmtransFree(ts);
 
     return numFailed;
 }
@@ -881,15 +884,13 @@ IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
     return idtx;
 }
 
-int rpmRollback(/*@unused@*/ struct rpmInstallArguments_s * ia,
+int rpmRollback(rpmTransactionSet ts,
+		/*@unused@*/ struct rpmInstallArguments_s * ia,
 		/*@unused@*/ const char ** argv)
 {
-    rpmTransactionSet ts;
     IDTX itids = NULL;
     const char * globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
     IDTX rtids = NULL;
-
-    ts = rpmtransCreateSet(NULL, ia->rootdir);
 
     itids = IDTXload(ts, RPMTAG_INSTALLTID);
 
@@ -898,8 +899,6 @@ int rpmRollback(/*@unused@*/ struct rpmInstallArguments_s * ia,
     globstr = _free(globstr);
     rtids = IDTXfree(rtids);
     itids = IDTXfree(itids);
-
-    ts = rpmtransFree(ts);
 
     return 0;
 }

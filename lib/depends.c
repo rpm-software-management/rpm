@@ -783,6 +783,19 @@ int headerMatchesDepFlags(Header h,
 
     return rpmRangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
 }
+
+rpmTransactionSet rpmtsLink(rpmTransactionSet ts)
+{
+    ts->nrefs++;
+    /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
+}
+
+rpmTransactionSet rpmtsUnlink(rpmTransactionSet ts)
+{
+    ts->nrefs--;
+    return NULL;
+}
+
 /*@-modfilesystem@*/
 int rpmtsCloseDB(rpmTransactionSet ts)
 {
@@ -1141,7 +1154,7 @@ void rpmtransClean(rpmTransactionSet ts)
 
 rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 {
-    if (ts) {
+    if (ts && --ts->nrefs > 0) {
 
 	alFree(&ts->addedPackages);
 	alFree(&ts->availablePackages);
@@ -1162,7 +1175,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 
 	(void) rpmtsCloseDB(ts);
 
-	ts = _free(ts);
+	/*@-refcounttrans@*/ ts = _free(ts); /*@=refcounttrans@*/
     }
     return NULL;
 }

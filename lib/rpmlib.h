@@ -1161,7 +1161,7 @@ typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
  * sets to reduce errors. In general, installs/upgrades are done before
  * strict removals, and prerequisite ordering is done on installs/upgrades.
  */
-typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmTransactionSet_s * rpmTransactionSet;
 
 /**
  * Return package header from file handle.
@@ -1195,6 +1195,22 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 		fileSystem, internalState @*/
 	/*@modifies ts, fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
+
+/** \ingroup rpmtrans
+ * Unreference a transaction instance.
+ * @param ts		transaction set
+ * @return		NULL always
+ */
+/*@null@*/ rpmTransactionSet rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmtrans
+ * Reference a transaction set instance.
+ * @param ts		transaction set
+ * @return		new transaction set reference
+ */
+rpmTransactionSet rpmtsLink (rpmTransactionSet ts)
+	/*@modifies ts @*/;
 
 /** \ingroup rpmtrans
  * Close the database used by the transaction.
@@ -1293,7 +1309,7 @@ void rpmtransClean(rpmTransactionSet ts)
  * @return		NULL always
  */
 /*@null@*/ rpmTransactionSet
-rpmtransFree(/*@only@*//*@null@*/ rpmTransactionSet ts)
+rpmtransFree(/*@killref@*/ /*@only@*//*@null@*/ rpmTransactionSet ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmtrans

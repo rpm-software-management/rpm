@@ -1236,7 +1236,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 
     memset(psm, 0, sizeof(*psm));
     /*@-assignexpose@*/
-    psm->ts = ts;
+    psm->ts = rpmtsLink(ts);
     psm->fi = fi;
     /*@=assignexpose@*/
 
@@ -1356,6 +1356,8 @@ exit:
 	freeFi(fi);
 	fi = _free(fi);
     }
+
+    psm->ts = rpmtsUnlink(ts);
 
     return rc;
 }

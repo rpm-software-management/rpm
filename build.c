@@ -280,16 +280,13 @@ exit:
     return rc;
 }
 
-int build(const char * arg, BTA_t ba, const char * rcfile)
+int build(rpmTransactionSet ts, const char * arg, BTA_t ba, const char * rcfile)
 {
-    rpmTransactionSet ts;
     char *t, *te;
     int rc = 0;
     char * targets = ba->targets;
 #define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
     int cleanFlags = ba->buildAmount & buildCleanMask;
-
-    ts = rpmtransCreateSet(NULL, NULL);
 
     if (targets == NULL) {
 	rc =  buildForTarget(ts, arg, ba);
@@ -327,8 +324,6 @@ exit:
     /* Restore original configuration. */
     rpmFreeMacros(NULL);
     (void) rpmReadConfigFiles(rcfile, NULL);
-
-    ts = rpmtransFree(ts);
 
     return rc;
 }

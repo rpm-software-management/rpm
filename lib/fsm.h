@@ -105,11 +105,12 @@ struct hardLink {
  * Iterator across package file info, forward on install, backward on erase.
  */
 struct fsmIterator_s {
-/*@kept@*/ /*@exposed@*/ rpmTransactionSet ts;	/*!< transaction set. */
-/*@kept@*/ /*@exposed@*/ TFI_t fi;	/*!< transaction element file info. */
-    int reverse;			/*!< reversed traversal? */
-    int isave;				/*!< last returned iterator index. */
-    int i;				/*!< iterator index. */
+    rpmTransactionSet ts;	/*!< transaction set. */
+/*@kept@*/ /*@exposed@*/
+    TFI_t fi;			/*!< transaction element file info. */
+    int reverse;		/*!< reversed traversal? */
+    int isave;			/*!< last returned iterator index. */
+    int i;			/*!< iterator index. */
 };
 
 /** \ingroup payload
@@ -212,13 +213,13 @@ extern "C" {
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
-		/*@kept@*/ const rpmTransactionSet ts,
+		const rpmTransactionSet ts,
 		/*@kept@*/ const TFI_t fi,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
 	/*@globals fileSystem @*/
-	/*@modifies fsm, *archiveSize, *failedFile, fileSystem  @*/;
+	/*@modifies fsm, ts, *archiveSize, *failedFile, fileSystem  @*/;
 
 /**
  * Clean file state machine.
@@ -235,7 +236,7 @@ int fsmTeardown(FSM_t fsm)
  * @param fsm		file state machine data
  * @return		transaction set
  */
-/*@kept@*/ /*@exposed@*/ rpmTransactionSet fsmGetTs(const FSM_t fsm)
+rpmTransactionSet fsmGetTs(const FSM_t fsm)
 	/*@*/;
 
 /**

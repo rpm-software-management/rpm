@@ -133,7 +133,7 @@ typedef enum pkgStage_e {
 /**
  */
 struct psm_s {
-/*@kept@*/
+/*@refcounted@*/
     rpmTransactionSet ts;	/*!< transaction set */
 /*@kept@*/
     TFI_t fi;			/*!< transaction element file info */

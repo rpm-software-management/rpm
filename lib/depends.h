@@ -180,6 +180,8 @@ struct rpmTransactionSet_s {
 /*@null@*/
     struct pgpDig_s * dig;	/*!< Current signature/pubkey parametrs. */
 
+/*@refs@*/ int nrefs;		/*!< Reference count. */
+
 } ;
 
 /** \ingroup rpmdep

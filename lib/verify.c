@@ -285,9 +285,10 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 		fileSystem, internalState @*/
 {
     TFI_t fi = xcalloc(1, sizeof(*fi));
-    struct psm_s psmbuf;
-    PSM_t psm = &psmbuf;
+    PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
     int rc;
+
+    psm->ts = rpmtsLink(ts);
 
     if (scriptFd != NULL) {
 	/*@-type@*/ /* FIX: ??? */
@@ -298,7 +299,6 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     loadFi(ts, fi, h, 1);
     memset(psm, 0, sizeof(*psm));
     /*@-assignexpose@*/
-    psm->ts = ts;
     psm->fi = fi;
     /*@=assignexpose@*/
     psm->stepName = "verify";
@@ -315,7 +315,9 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	ts->scriptFd = NULL;
     }
 
-    rpmtransClean(ts);
+    rpmtransClean(ts);	/* XXX this is sure to cause heartburn */
+
+    psm->ts = rpmtsUnlink(ts);
 
     return rc;
 }
@@ -377,7 +379,6 @@ static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char buf[BUFSIZ];
     char * t, * te;
-    const char * prefix = (qva->qva_prefix ? qva->qva_prefix : "");
     const char ** fileNames = NULL;
     int count;
     int_32 * fileFlags = NULL;
@@ -410,7 +411,7 @@ static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 	&& (fileAttrs & RPMFILE_GHOST))
 	    continue;
 
-	rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask);
+	rc = rpmVerifyFile(ts->rootDir, h, i, &verifyResult, omitMask);
 	if (rc) {
 	    /*@-internalglobs@*/ /* FIX: shrug */
 	    if (!(fileAttrs & RPMFILE_MISSINGOK) || rpmIsVerbose()) {
@@ -579,17 +580,13 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
     return ec;
 }
 
-int rpmcliVerify(QVA_t qva, const char ** argv)
+int rpmcliVerify(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 {
-    rpmTransactionSet ts;
     const char * arg;
     int ec = 0;
 
-    ts = rpmtransCreateSet(NULL, qva->qva_prefix);
-
     if (qva->qva_showPackage == NULL)
         qva->qva_showPackage = showVerifyPackage;
-
 
     switch (qva->qva_source) {
     case RPMQV_RPM:
@@ -616,8 +613,6 @@ int rpmcliVerify(QVA_t qva, const char ** argv)
 
     if (qva->qva_showPackage == showVerifyPackage)
         qva->qva_showPackage = NULL;
-
-    ts = rpmtransFree(ts);
 
     return ec;
 }

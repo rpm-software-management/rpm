@@ -28,7 +28,9 @@ int strict_erasures = 0;
 
 rpmTransactionSet fsmGetTs(const FSM_t fsm) {
     const FSMI_t iter = fsm->iter;
+    /*@-compdef -refcounttrans -retexpose -usereleased @*/
     return (iter ? iter->ts : NULL);
+    /*@=compdef =refcounttrans =retexpose =usereleased @*/
 }
 
 TFI_t fsmGetFi(const FSM_t fsm)
@@ -82,13 +84,14 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
  * @param p		file info iterator
  * @retval		NULL always
  */
-/*@-mustmod@*/ /* LCL: *p is modified */
-static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * p)
-	/*@modifies *p @*/
+static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
+	/*@*/
 {
+    FSMI_t iter = p;
+    if (iter)
+	iter->ts = rpmtsUnlink(iter->ts);
     return _free(p);
 }
-/*@=mustmod@*/
 
 /** \ingroup payload
  * Create file info iterator.
@@ -97,15 +100,14 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * p)
  * @return		file info iterator
  */
 static void *
-mapInitIterator(/*@kept@*/ const void * a, /*@kept@*/ const void * b)
-	/*@*/
+mapInitIterator(rpmTransactionSet ts, /*@kept@*/ const void * b)
+	/*@modifies ts @*/
 {
-    rpmTransactionSet ts = (void *)a;
     TFI_t fi = (void *)b;
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = ts;
+    iter->ts = rpmtsLink(ts);
     iter->fi = fi;
     iter->reverse = (fi->type == TR_REMOVED && fi->action != FA_COPYOUT);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
@@ -118,9 +120,8 @@ mapInitIterator(/*@kept@*/ const void * a, /*@kept@*/ const void * b)
  * @param a		file info iterator
  * @return		next index, -1 on termination
  */
-/*@-mustmod@*/ /* LCL: *a is modified */
 static int mapNextIterator(/*@null@*/ void * a)
-	/*@modifies *a @*/
+	/*@*/
 {
     FSMI_t iter = a;
     int i = -1;
@@ -136,7 +137,6 @@ static int mapNextIterator(/*@null@*/ void * a)
     }
     return i;
 }
-/*@=mustmod@*/
 
 /** \ingroup payload
  */
@@ -159,14 +159,13 @@ static int cpioStrCmp(const void * a, const void * b)
 
 /** \ingroup payload
  * Locate archive path in file info.
- * @param a		file info iterator
+ * @param iter		file info iterator
  * @param fsmPath	archive path
  * @return		index into file info, -1 if archive path was not found
  */
-static int mapFind(/*@null@*/ void * a, const char * fsmPath)
-	/*@modifies *a @*/
+static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
+	/*@modifies iter @*/
 {
-    FSMI_t iter = a;
     int ix = -1;
 
     if (iter) {

@@ -301,6 +301,7 @@ int main(int argc, const char ** argv)
 	/*@modifies __assert_program_name,
 		fileSystem, internalState@*/
 {
+    rpmTransactionSet ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
 
 #ifdef	IAM_RPMQV
@@ -934,6 +935,7 @@ int main(int argc, const char ** argv)
 	(void) close(p[1]);
     }
 	
+    ts = rpmtransCreateSet(NULL, rootdir);
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
@@ -952,7 +954,6 @@ int main(int argc, const char ** argv)
     case MODE_REBUILD:
     case MODE_RECOMPILE:
     {	const char * pkg;
-	rpmTransactionSet ts;
 
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
@@ -969,7 +970,6 @@ int main(int argc, const char ** argv)
 	    ba->buildAmount |= RPMBUILD_RMBUILD;
 	}
 
-	ts = rpmtransCreateSet(NULL, NULL);
 	while ((pkg = poptGetArg(optCon))) {
 	    const char * specFile = NULL;
 
@@ -978,7 +978,7 @@ int main(int argc, const char ** argv)
 	    if (ec == 0) {
 		ba->rootdir = rootdir;
 		ba->passPhrase = passPhrase;
-		ec = build(specFile, ba, rcfile);
+		ec = build(ts, specFile, ba, rcfile);
 	    }
 	    ba->cookie = _free(ba->cookie);
 	    specFile = _free(specFile);
@@ -986,7 +986,6 @@ int main(int argc, const char ** argv)
 	    if (ec)
 		/*@loopbreak@*/ break;
 	}
-	ts = rpmtransFree(ts);
 
     }	break;
 
@@ -1037,7 +1036,7 @@ int main(int argc, const char ** argv)
 	    ba->rootdir = rootdir;
 	    ba->passPhrase = passPhrase;
 	    ba->cookie = NULL;
-	    ec = build(pkg, ba, rcfile);
+	    ec = build(ts, pkg, ba, rcfile);
 	    if (ec)
 		/*@loopbreak@*/ break;
 	    rpmFreeMacros(NULL);
@@ -1053,7 +1052,7 @@ int main(int argc, const char ** argv)
 
 	if (ia->noDeps) ia->eraseInterfaceFlags |= UNINSTALL_NODEPS;
 
-	ec = rpmErase(rootdir, (const char **)poptGetArgs(optCon), 
+	ec = rpmErase(ts, (const char **)poptGetArgs(optCon), 
 			 ia->transFlags, ia->eraseInterfaceFlags);
 	break;
 
@@ -1091,25 +1090,23 @@ int main(int argc, const char ** argv)
 	/*@=branchstate@*/
 
 	/*@-compdef@*/ /* FIX: ia->relocations[0].newPath undefined */
-	ec += rpmInstall(rootdir, (const char **)poptGetArgs(optCon), 
+	ec += rpmInstall(ts, (const char **)poptGetArgs(optCon), 
 			ia->transFlags, ia->installInterfaceFlags, ia->probFilter,
 			ia->relocations);
 	/*@=compdef@*/
 	break;
 
     case MODE_ROLLBACK:
-	ia->rootdir = rootdir;
-	ec += rpmRollback(ia, (const char **)poptGetArgs(optCon));
+	ec += rpmRollback(ts, ia, (const char **)poptGetArgs(optCon));
 	break;
 
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
     case MODE_QUERY:
-	qva->qva_prefix = rootdir;
 	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
 	    argerror(_("no arguments given for query"));
-	ec = rpmcliQuery(qva, (const char **) poptGetArgs(optCon));
+	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	break;
@@ -1119,11 +1116,10 @@ int main(int argc, const char ** argv)
 
 	verifyFlags &= ~qva->qva_flags;
 	qva->qva_flags = (rpmQueryFlags) verifyFlags;
-	qva->qva_prefix = rootdir;
 
 	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
 	    argerror(_("no arguments given for verify"));
-	ec = rpmcliVerify(qva, (const char **) poptGetArgs(optCon));
+	ec = rpmcliVerify(ts, qva, (const char **) poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
     }	break;
@@ -1187,6 +1183,9 @@ int main(int argc, const char ** argv)
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
 exit:
 #endif	/* IAM_RPMBT || IAM_RPMK */
+
+    ts = rpmtransFree(ts);
+
     optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
 /*@i@*/	rpmFreeMacros(rpmCLIMacroContext);

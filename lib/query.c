@@ -863,13 +863,10 @@ restart:
     return res;
 }
 
-int rpmcliQuery(QVA_t qva, const char ** argv)
+int rpmcliQuery(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 {
-    rpmTransactionSet ts;
     const char * arg;
     int ec = 0;
-
-    ts = rpmtransCreateSet(NULL, qva->qva_prefix);
 
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;
@@ -898,8 +895,6 @@ int rpmcliQuery(QVA_t qva, const char ** argv)
 
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;
-
-    ts = rpmtransFree(ts);
 
     return ec;
 }

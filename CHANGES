@@ -26,6 +26,8 @@
 	- lazy rpmdb open/close through transaction methods (mostly anyways).
 	- no-brainer refcounts for rpmdb object.
 	- check added header against transaction set, replace if newer.
+	- transaction sets created in cli main.
+	- no-brainer refcounts for ts object.
 
 4.0.3 -> 4.0.4:
 

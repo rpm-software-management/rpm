@@ -949,7 +949,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
  * Iterator across transaction elements, forward on install, backward on erase.
  */
 struct tsIterator_s {
-/*@kept@*/ rpmTransactionSet ts;	/*!< transaction set. */
+/*@refcounted@*/ rpmTransactionSet ts;	/*!< transaction set. */
     int reverse;			/*!< reversed traversal? */
     int ocsave;				/*!< last returned iterator index. */
     int oc;				/*!< iterator index. */
@@ -996,25 +996,27 @@ static /*@dependent@*/ struct availablePackage * tsGetAlp(void * a)
  * @param a		transaction element iterator
  * @return		NULL always
  */
-static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ const void * a)
-	/*@modifies a @*/
+static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ void * a)
+	/*@*/
 {
+    struct tsIterator_s * iter = a;
+    if (iter)
+	iter->ts = rpmtsUnlink(iter->ts);
     return _free(a);
 }
 
 /**
  * Create transaction element iterator.
- * @param a		transaction set
+ * @param ts		transaction set
  * @return		transaction element iterator
  */
-static void * tsInitIterator(/*@kept@*/ const void * a)
-	/*@*/
+static void * tsInitIterator(rpmTransactionSet ts)
+	/*@modifies ts @*/
 {
-    rpmTransactionSet ts = (void *)a;
     struct tsIterator_s * iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = ts;
+    iter->ts = rpmtsLink(ts);
     iter->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
     iter->oc = (iter->reverse ? (ts->orderCount - 1) : 0);
     iter->ocsave = iter->oc;
@@ -1030,18 +1032,17 @@ static /*@dependent@*/ TFI_t tsNextIterator(void * a)
 	/*@*/
 {
     struct tsIterator_s * iter = a;
-    rpmTransactionSet ts = iter->ts;
     TFI_t fi = NULL;
     int oc = -1;
 
     if (iter->reverse) {
-	if (iter->oc >= 0)		oc = iter->oc--;
+	if (iter->oc >= 0)			oc = iter->oc--;
     } else {
-    	if (iter->oc < ts->orderCount)	oc = iter->oc++;
+    	if (iter->oc < iter->ts->orderCount)	oc = iter->oc++;
     }
     iter->ocsave = oc;
     if (oc != -1)
-	fi = ts->flList + oc;
+	fi = iter->ts->flList + oc;
     return fi;
 }
 
@@ -1095,7 +1096,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     memset(psm, 0, sizeof(*psm));
     /*@-assignexpose@*/
-    psm->ts = ts;
+    psm->ts = rpmtsLink(ts);
     /*@=assignexpose@*/
 
     /* Get available space on mounted file systems. */
@@ -1333,8 +1334,10 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(fi->fc, sizeof(*matches));
-	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fi->fc))
+	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fi->fc)) {
+	    psm->ts = rpmtsUnlink(ts);
 	    return 1;	/* XXX WTFO? */
+	}
 
 	numShared = 0;
 	for (i = 0; i < fi->fc; i++)
@@ -1491,6 +1494,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	ts->flList = freeFl(ts, ts->flList);
 	ts->flEntries = 0;
 	/*@-nullstate@*/
+	psm->ts = rpmtsUnlink(psm->ts);
 	return ts->orderCount;
 	/*@=nullstate@*/
     }
@@ -1638,6 +1642,8 @@ assert(alp == fi->ap);
 
     ts->flList = freeFl(ts, ts->flList);
     ts->flEntries = 0;
+
+    psm->ts = rpmtsUnlink(psm->ts);
 
     /*@-nullstate@*/
     if (ourrc)
