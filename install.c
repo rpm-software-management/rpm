@@ -20,7 +20,7 @@ static void printHash(const unsigned long amount, const unsigned long total) {
     int hashesNeeded;
 
     if (hashesPrinted != 50) {
-	hashesNeeded = 50 * (((float) amount) / total);
+	hashesNeeded = 50 * (total ? (((float) amount) / total) : 1);
 	while (hashesNeeded > hashesPrinted) {
 	    printf("#");
 	    hashesPrinted++;
@@ -35,7 +35,9 @@ static void printHash(const unsigned long amount, const unsigned long total) {
 
 static void printPercent(const unsigned long amount, const unsigned long total) 
 {
-    printf("%%%% %f\n", (float) (((float) amount) / total) * 100);
+    printf("%%%% %f\n", (total
+                        ? ((float) ((((float) amount) / total) * 100))
+                        : 100.0));
     fflush(stdout);
 }
 
@@ -76,6 +78,7 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
 	fd = getFtpURL(prefix, arg + 6);
 	if (fd < 0) {
 	    fprintf(stderr, "error: cannot ftp %s\n", arg);
+	    return;
 	}
     } else {
 	fd = open(arg, O_RDONLY);
@@ -203,7 +206,7 @@ static int getFtpURL(char * prefix, char * hostAndFile) {
     *chptr = '/';
 
     tmp = alloca(strlen(prefix) + 60);
-    sprintf(tmp, "%s/usr/tmp/rpm.ftp.%d", prefix, getuid());
+    sprintf(tmp, "%s/var/tmp/rpm.ftp.%d", prefix, getpid());
     fd = creat(tmp, 0600);
 
     if (fd < 0) {
