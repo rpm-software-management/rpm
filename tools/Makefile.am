@@ -50,9 +50,9 @@ rpmgraph_SOURCES =	rpmgraph.c
 #rpmgraph_LDFLAGS =	$(staticLDFLAGS)
 
 rpminject_SOURCES =	rpminject.c
-rpminject_LDFLAGS =	$(staticLDFLAGS)
+#rpminject_LDFLAGS =	$(staticLDFLAGS)
 
 rpmsort_SOURCES =	rpmsort.c
-rpmsort_LDFLAGS =	$(staticLDFLAGS)
+#rpmsort_LDFLAGS =	$(staticLDFLAGS)
 
 $(PROGRAMS): $(LDADD)

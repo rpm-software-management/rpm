@@ -59,7 +59,8 @@
 	- add --file{class,provide,require} popt aliases and header extensions.
 	- statically link against /usr/lib/nptl/libpthread.a, if present.
 	- remove popt aliases for -U et al.
-	- add -I/usr/include/nptl, Conflicts: kernel <= 2.4.19.
+	- add -I/usr/include/nptl, Conflicts: kernel < 2.4.20.
+	- dynamically link /bin/rpm, link against good old -lpthread.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.31
+Release: 0.32
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -31,10 +31,9 @@ Obsoletes: rpm-perl < %{version}
 BuildRequires: elfutils-libelf
 
 # XXX /dev/futex kernel support needed:
-Conflicts: kernel <= 2.4.19
-Requires: kernel >= 2.4.20-0.pp.9
+Conflicts: kernel < 2.4.20
 
-# XXX NPTL glibc support needed.
+# XXX NPTL glibc support needed:
 Requires: glibc >= 2.3.1-16nptl
 
 BuildRequires: zlib-devel
@@ -457,10 +456,13 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Dec 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.32
+- dynamically link /bin/rpm, link against good old -lpthread.
+
 * Thu Dec 19 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.31
 - statically link against /usr/lib/nptl/libpthread.a, if present.
 - remove popt aliases for -U et al.
-- add -I/usr/include/nptl, Conflicts: kernel <= 2.4.19.
+- add -I/usr/include/nptl, Conflicts: kernel < 2.4.20.
 
 * Wed Dec 18 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.29nptl
 - popt aliases for -U et al to achieve dynamic link with nptl.

@@ -70,7 +70,7 @@ rpmpopt-$(VERSION): rpmpopt
 noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =
-rpm_LDFLAGS =		$(staticLDFLAGS)
+rpm_LDFLAGS =		$(myLDFLAGS)
 rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(whyLDADD)
 rpm.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c

@@ -55,7 +55,12 @@ if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
 	mandir=/usr/man
 	infodir=/usr/info
     fi
-    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} "$@"
+    if [ -d /usr/lib/nptl ]; then
+	enable_posixmutexes="--enable-posixmutexes"
+    else
+	enable_posixmutexes=
+    fi
+    ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --infodir=${infodir} --mandir=${mandir} ${enable_posixmutexes} "$@"
 else
     ./configure "$@"
 fi
