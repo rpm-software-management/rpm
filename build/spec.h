@@ -8,7 +8,7 @@
 
 typedef struct SpecRec *Spec;
 
-Spec parseSpec(FILE *f);
+Spec parseSpec(FILE *f, char *specfile);
 void freeSpec(Spec s);
 
 void dumpSpec(Spec s, FILE *f);
