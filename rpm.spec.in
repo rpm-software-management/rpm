@@ -45,7 +45,7 @@ BuildRequires: sqlite3-devel
 
 # XXX Red Hat 5.2 has not bzip2 or python
 %if %{with_bzip2}
-BuildRequires: bzip2 >= 0.9.0c-2
+BuildRequires: bzip2-devel >= 0.9.0c-2
 %endif
 %if %{with_python_subpackage}
 BuildRequires: python-devel >= %{with_python_version}
