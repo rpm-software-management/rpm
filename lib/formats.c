@@ -233,18 +233,29 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     uint_32 * usages;
     int numFiles;
 
-    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL);
-    headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles);
+    if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL)) 
+	headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, 
+		       &numFiles);
+    else
+	filenames = NULL;
 
     if (rpmGetFilesystemList(NULL, count)) {
 	return 1;
     }
 
+    *type = RPM_INT32_TYPE;
+    *freeData = 1;
+
+    if (!filenames) {
+	*data = usages = malloc(sizeof(usages) * (*count));
+	memset(usages, 0, sizeof(usages) * (*count));
+
+	return 0;
+    }
+
     if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
 	return 1;
 
-    *type = RPM_INT32_TYPE;
-    *freeData = 1;
     *data = usages;
 
     return 0;
