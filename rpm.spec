@@ -163,7 +163,7 @@ fi
 %dir /usr/src/redhat/SRPMS
 %dir /usr/src/redhat/RPMS
 /usr/src/redhat/RPMS/*
-/usr/share/locale/*/LC_MESSAGES/rpm.mo
+/usr/*/locale/*/LC_MESSAGES/rpm.mo
 /usr/man/man[18]/*.[18]*
 %lang(pl) /usr/man/pl/man[18]/*.[18]*
 %lang(ru) /usr/man/ru/man[18]/*.[18]*
@@ -207,7 +207,7 @@ fi
 %files -n popt
 %defattr(-,root,root)
 /usr/lib/libpopt.so.*
-/usr/share/locale/*/LC_MESSAGES/popt.mo
+/usr/*/locale/*/LC_MESSAGES/popt.mo
 /usr/man/man3/popt.3*
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort now.
