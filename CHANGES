@@ -201,6 +201,7 @@
 	- configurable (default off) build failure iff unpackaged files (PLD).
 	- change from default off to default on.
 	- python: methods to disable all new features for benchmarking.
+	- preserve rpmdb file attributes across --rebuilddb (#70367).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
