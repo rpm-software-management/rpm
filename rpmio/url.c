@@ -171,23 +171,18 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo *uret, int mustAsk)
 {
     urlinfo u;
     int ucx;
-    int i;
+    int i = 0;
 
     if (uret == NULL)
 	return;
-
-    if (uCache == NULL) {
-	*uret = NULL;
-	return;
-    }
 
     u = *uret;
     URLSANE(u);
 
     ucx = -1;
     for (i = 0; i < uCount; i++) {
-	urlinfo ou;
-	if ((ou = uCache[i]) == NULL) {
+	urlinfo ou = NULL;
+	if (uCache == NULL || (ou = uCache[i]) == NULL) {
 	    if (ucx < 0)
 		ucx = i;
 	    continue;
@@ -211,12 +206,10 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo *uret, int mustAsk)
     if (i == uCount) {
 	if (ucx < 0) {
 	    ucx = uCount++;
-	    if (uCache)
-		uCache = xrealloc(uCache, sizeof(*uCache) * uCount);
-	    else
-		uCache = xmalloc(sizeof(*uCache));
+	    uCache = xrealloc(uCache, sizeof(*uCache) * uCount);
 	}
-	uCache[ucx] = urlLink(u, "uCache (miss)");
+	if (uCache)		/* XXX always true */
+	    uCache[ucx] = urlLink(u, "uCache (miss)");
 	u = urlFree(u, "urlSplit (urlFind miss)");
     } else {
 	ucx = i;
@@ -225,7 +218,8 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo *uret, int mustAsk)
 
     /* This URL is now cached. */
 
-    u = urlLink(uCache[ucx], "uCache");
+    if (uCache)		/* XXX always true */
+	u = urlLink(uCache[ucx], "uCache");
     *uret = u;
     /*@-usereleased@*/
     u = urlFree(u, "uCache (urlFind)");
@@ -239,8 +233,8 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo *uret, int mustAsk)
     if (u->urltype == URL_IS_FTP) {
 
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
-	    /*@observer@*/ const char * host = (u->host ? u->host : "");
-	    /*@observer@*/ const char * user = (u->user ? u->user : "");
+	    const char * host = (u->host ? u->host : "");
+	    const char * user = (u->user ? u->user : "");
 	    char * prompt;
 	    prompt = alloca(strlen(host) + strlen(user) + 256);
 	    sprintf(prompt, _("Password for %s@%s: "), user, host);

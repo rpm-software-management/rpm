@@ -76,6 +76,7 @@
 	- fix: return suggested packages when using Depends cache.
 	- merge sparc64/ia64 fiddles back into linux.{req,prov}.
 	- automagically generate perl module dependencies always.
+	- fix: lclint fiddles broke uCache initialization (#43139).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
