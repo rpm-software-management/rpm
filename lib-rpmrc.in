@@ -1,3 +1,10 @@
+
+dbpath:		@varprefix@/lib/rpm
+topdir:		@prefix@/src/redhat
+tmppath:	@tmpdir@
+
+#############################################################
+
 # Please send new entries to rpm-list@redhat.com
 
 #############################################################
