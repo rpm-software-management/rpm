@@ -1332,6 +1332,7 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
     }
 
     /* XXX If not already opened, open the database O_RDONLY now. */
+    /* XXX FIXME: lazy default rdonly open also done by rpmtsInitIterator(). */
     if (s->ts->rdb == NULL) {
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
 	if (rc || s->ts->rdb == NULL) {
