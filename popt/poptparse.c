@@ -12,22 +12,24 @@
 
 #include "popt.h"
 
-int poptParseArgvString(char * s, int * argcPtr, char *** argvPtr) {
-    char * buf = strcpy(alloca(strlen(s) + 1), s);
-    char * bufStart = buf;
-    char * src, * dst;
+static const int poptArgvArrayGrowDelta = 5;
+
+int poptParseArgvString(const char * s, int * argcPtr, char *** argvPtr) {
+    char * buf, * bufStart, * dst;
+    const char * src;
     char quote = '\0';
-    int argvAlloced = 5;
+    int argvAlloced = poptArgvArrayGrowDelta;
     char ** argv = malloc(sizeof(*argv) * argvAlloced);
     char ** argv2;
     int argc = 0;
-    int i;
+    int i, buflen;
+
+    buflen = strlen(s) + 1;
+    bufStart = buf = alloca(buflen);
+    memset(buf, '\0', buflen);
 
     src = s;
-    dst = buf;
     argv[argc] = buf;
-
-    memset(buf, '\0', strlen(s) + 1);
 
     while (*src) {
 	if (quote == *src) {
@@ -46,7 +48,7 @@ int poptParseArgvString(char * s, int * argcPtr, char *** argvPtr) {
 	    if (*argv[argc]) {
 		buf++, argc++;
 		if (argc == argvAlloced) {
-		    argvAlloced += 5;
+		    argvAlloced += poptArgvArrayGrowDelta;
 		    argv = realloc(argv, sizeof(*argv) * argvAlloced);
 		}
 		argv[argc] = buf;
