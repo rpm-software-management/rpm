@@ -314,7 +314,67 @@ rpmds_Notify(rpmdsObject * s, PyObject * args)
     return Py_None;
 }
 
+/* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
+static PyObject *
+rpmds_Sort(rpmdsObject * s, PyObject * args)
+	/*@modifies s @*/
+{
+    if (!PyArg_ParseTuple(args, ":Sort"))
+	return NULL;
+    /* XXX sort on (N,EVR,F) here. */
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject *
+rpmds_Find(rpmdsObject * s, PyObject * args)
+	/*@modifies s @*/
+{
+    PyObject * to = NULL;
+    rpmdsObject * o;
+    int rc;
+
+    if (!PyArg_ParseTuple(args, "O:Find", &to))
+	return NULL;
+    /* XXX ds type check needed. */
+    o = (rpmdsObject *)to;
+
+    /* XXX make sure ods index is valid, real fix in lib/rpmds.c. */
+    if (rpmdsIx(o->ds) == -1)	rpmdsSetIx(o->ds, 0);
+
+    rc = rpmdsFind(s->ds, o->ds);
+    return Py_BuildValue("i", rc);
+}
+
+static PyObject *
+rpmds_Merge(rpmdsObject * s, PyObject * args)
+	/*@modifies s @*/
+{
+    PyObject * to = NULL;
+    rpmdsObject * o;
+
+    if (!PyArg_ParseTuple(args, "O:Find", &to))
+	return NULL;
+    /* XXX ds type check needed. */
+    o = (rpmdsObject *)to;
+    return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
+}
+
 #ifdef	NOTYET
+static PyObject *
+rpmds_Compare(rpmdsObject * s, PyObject * args)
+	/*@modifies s @*/
+{
+    PyObject * to = NULL;
+    rpmdsObject * o;
+
+    if (!PyArg_ParseTuple(args, "O:Compare", &to))
+	return NULL;
+    /* XXX ds type check needed. */
+    o = (rpmdsObject *)to;
+    return Py_BuildValue("i", rpmdsCompare(s->ds, o->ds));
+}
+
 /*@null@*/
 static PyObject *
 rpmds_Problem(rpmdsObject * s, PyObject * args)
@@ -359,7 +419,15 @@ static struct PyMethodDef rpmds_methods[] = {
 	NULL},
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS,
 	NULL},
+ {"Sort",	(PyCFunction)rpmds_Sort,	METH_VARARGS,
+	NULL},
+ {"Find",	(PyCFunction)rpmds_Find,	METH_VARARGS,
+	NULL},
+ {"Merge",	(PyCFunction)rpmds_Merge,	METH_VARARGS,
+	NULL},
 #ifdef	NOTYET
+ {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS,
+	NULL},
  {"Problem",	(PyCFunction)rpmds_Problem,	METH_VARARGS,
 	NULL},
 #endif
