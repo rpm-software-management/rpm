@@ -4,8 +4,47 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Package.xs,v 1.3 2000/10/08 10:09:26 rjray Exp $";
+static char * const rcsid = "$Id: Package.xs,v 1.4 2000/10/12 05:09:45 rjray Exp $";
 
+/* Any constants that are specific to the RPM::Header class will be exported
+   from here, via this C-level constant() routine */
+static int constant(pTHX_ char *name)
+{
+    errno = 0;
+
+    if (strncmp((const char *)name, "RPM_PACKAGE_", 12))
+    {
+        errno = ENOENT;
+        return 0;
+    }
+    else
+    {
+        name += 12;
+        switch (*name)
+        {
+          case 'M':
+            if (strEQ(name, "MASK"))
+#ifdef RPM_HEADER_MASK
+                return RPM_PACKAGE_MASK;
+#endif
+          case 'N':
+            if (strEQ(name, "NOREAD"))
+#ifdef RPM_HEADER_NOREAD
+                return RPM_PACKAGE_NOREAD;
+#endif
+          case 'R':
+            if (strEQ(name, "READONLY"))
+#ifdef RPM_HEADER_READONLY
+                return RPM_PACKAGE_READONLY;
+#endif
+          default:
+            errno = EINVAL;
+            return 0;
+        }
+    }
+}
+
+/* This is the class constructor for RPM::Package */
 RPM__Package rpmpkg_new(pTHX_ char* class, SV* source, int flags)
 {
     char* fname;
@@ -314,5 +353,14 @@ rpmpkg_cmpver(self, other)
             RETVAL = 0;
         }
     }
+    OUTPUT:
+    RETVAL
+
+int
+constant(name)
+    char* name;
+    PROTOTYPE: $
+    CODE:
+    RETVAL = constant(aTHX_ name);
     OUTPUT:
     RETVAL

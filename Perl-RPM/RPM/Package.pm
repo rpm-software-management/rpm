@@ -7,18 +7,18 @@
 #
 ###############################################################################
 #
-#   $Id: Package.pm,v 1.4 2000/10/08 10:09:26 rjray Exp $
+#   $Id: Package.pm,v 1.5 2000/10/12 05:09:45 rjray Exp $
 #
 #   Description:    Perl-level glue and such for the RPM::Package class, the
 #                   methods and accessors to package operations.
 #
-#   Functions:      
+#   Functions:      AUTOLOAD
 #
 #   Libraries:      RPM
 #
-#   Global Consts:  
+#   Global Consts:  $VERSION
 #
-#   Environment:    
+#   Environment:    None.
 #
 ###############################################################################
 
@@ -26,13 +26,35 @@ package RPM::Package;
 
 use 5.005;
 use strict;
-use vars qw($VERSION $revision);
-use subs qw();
+use vars qw($VERSION $revision @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
+use subs qw(AUTOLOAD);
+
+require Exporter;
 
 use RPM;
 
 $VERSION = '0.29';
-$revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+
+@ISA = qw(Exporter);
+@EXPORT = ();
+@EXPORT_OK = qw(RPM_PACKAGE_MASK RPM_PACKAGE_NOREAD RPM_PACKAGE_READONLY);
+%EXPORT_TAGS = (all => \@EXPORT_OK);
+
+sub AUTOLOAD
+{
+    my $constname;
+    ($constname = $AUTOLOAD) =~ s/.*:://;
+    die "& not defined" if $constname eq 'constant';
+    my $val = constant($constname);
+    if ($! != 0)
+    {
+        die "Your vendor has not defined RPM macro $constname";
+    }
+    no strict 'refs';
+    *$AUTOLOAD = sub { $val };
+    goto &$AUTOLOAD;
+}
 
 1;
 
