@@ -27,23 +27,25 @@
 
 static int writeMagic(int fd, char *name, unsigned short type,
 		      unsigned short sigtype);
-static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize);
+static int cpio_gzip(int fd, char *tempdir, char *writePtr, int *archiveSize);
 static int generateRPM(char *name,       /* name-version-release         */
+		       char *filename,   /* output filename              */
 		       int type,         /* source or binary             */
 		       Header header,    /* the header                   */
 		       char *stempdir,   /* directory containing sources */
+		       char *fileList,   /* list of files for cpio       */
 		       char *passPhrase);
 
 
 static int generateRPM(char *name,       /* name-version-release         */
+		       char *filename,   /* output filename              */
 		       int type,         /* source or binary             */
 		       Header header,    /* the header                   */
 		       char *stempdir,   /* directory containing sources */
+		       char *fileList,   /* list of files for cpio       */
 		       char *passPhrase)
 {
     unsigned short sigtype;
-    char *archName;
-    char filename[1024];
     char *sigtarget, *archiveTemp;
     int fd, ifd, count, archiveSize;
     unsigned char buffer[8192];
@@ -54,23 +56,13 @@ static int generateRPM(char *name,       /* name-version-release         */
 	return RPMERR_BADSIGTYPE;
     }
 
-    /* Make the output RPM filename */
-    if (type == RPMLEAD_SOURCE) {
-	sprintf(filename, "%s/%s.src.rpm", getVar(RPMVAR_SRPMDIR), name);
-    } else {
-	archName = getArchName();
-	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
-		getBooleanVar(RPMVAR_ARCHSENSITIVE) ? archName : "",
-		name, archName);
-    }
-
     /* Write the archive to a temp file so we can get the size */
     archiveTemp = tempnam("/var/tmp", "rpmbuild");
     if ((fd = open(archiveTemp, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 	fprintf(stderr, "Could not open %s\n", archiveTemp);
 	return 1;
     }
-    if (cpio_gzip(header, fd, stempdir, &archiveSize)) {
+    if (cpio_gzip(fd, stempdir, fileList, &archiveSize)) {
 	close(fd);
 	unlink(archiveTemp);
 	return 1;
@@ -158,6 +150,8 @@ static int generateRPM(char *name,       /* name-version-release         */
     close(ifd);
     close(fd);
     unlink(sigtarget);
+
+    message(MESS_VERBOSE, "Wrote: %s\n", filename);
     
     return 0;
 }
@@ -168,6 +162,7 @@ static int writeMagic(int fd, char *name,
 {
     struct rpmlead lead;
 
+    /* There are the Major and Minor numbers */
     lead.major = 2;
     lead.minor = 0;
     lead.type = type;
@@ -181,18 +176,14 @@ static int writeMagic(int fd, char *name,
     return 0;
 }
 
-static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
+static int cpio_gzip(int fd, char *tempdir, char *writePtr, int *archiveSize)
 {
-    char **f, *s;
-    int count;
     int cpioPID, gzipPID;
     int cpioDead, gzipDead;
     int toCpio[2];
     int fromCpio[2];
     int toGzip[2];
 
-    StringBuf writeBuff;
-    char *writePtr;
     int writeBytesLeft, bytesWritten;
 
     int bytes;
@@ -228,6 +219,7 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 		exit(RPMERR_EXEC);
 	    }
 	} else {
+	    /* This is important! */
 	    chdir("/");
 	}
 
@@ -276,23 +268,8 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
     fcntl(fromCpio[0], F_SETFL, O_NONBLOCK);
     fcntl(toCpio[1], F_SETFL, O_NONBLOCK);
 
-    if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
-	/* count may already be 0, but this is safer */
-	count = 0;
-    }
-
-    writeBuff = newStringBuf();
-    writeBytesLeft = 0;
-    while (count--) {
-        s = *f++;
-        if (!tempdir) {
-	    s++;
-	}
-        writeBytesLeft += strlen(s) + 1;
-        appendLineStringBuf(writeBuff, s);
-    }
-    writePtr = getStringBuf(writeBuff);
-   
+    writeBytesLeft = strlen(writePtr);
+    
     cpioDead = 0;
     gzipDead = 0;
     do {
@@ -358,7 +335,6 @@ static int cpio_gzip(Header header, int fd, char *tempdir, int *archiveSize)
 	return 1;
     }
 
-    freeStringBuf(writeBuff);
     return 0;
 }
 
@@ -370,6 +346,7 @@ int packageBinaries(Spec s, char *passPhrase)
     char filename[1024];
     char sourcerpm[1024];
     char *icon;
+    char *archName;
     int iconFD;
     struct stat statbuf;
     struct PackageRec *pr;
@@ -384,6 +361,9 @@ int packageBinaries(Spec s, char *passPhrase)
     char *packageVersion, *packageRelease;
     int size;
     int_8 os, arch;
+    StringBuf cpioFileList;
+    char **farray, *file;
+    int count;
     
     if (!getEntry(s->packages->header, RPMTAG_VERSION, NULL,
 		  (void *) &version, NULL)) {
@@ -396,7 +376,8 @@ int packageBinaries(Spec s, char *passPhrase)
 	return RPMERR_BADSPEC;
     }
 
-    sprintf(sourcerpm, "%s-%s-%s.src.rpm", s->name, version, release);
+    sprintf(sourcerpm, "%s-%s-%s.%ssrc.rpm", s->name, version, release,
+	    (s->numNoPatch + s->numNoSource) ? "no" : "");
 
     vendor = NULL;
     if (!isEntry(s->packages->header, RPMTAG_VENDOR)) {
@@ -500,6 +481,19 @@ int packageBinaries(Spec s, char *passPhrase)
 	    return 1;
 	}
 
+	if (!getEntry(outHeader, RPMTAG_FILENAMES, NULL, (void **) &farray,
+		      &count)) {
+	    /* count may already be 0, but this is safer */
+	    count = 0;
+	}
+	
+	cpioFileList = newStringBuf();
+	while (count--) {
+	    file = *farray++;
+	    file++;  /* Skip leading "/" */
+	    appendLineStringBuf(cpioFileList, file);
+	}
+	
 	/* Generate any automatic require/provide entries */
 	/* Then add the whole thing to the header         */
 	generateAutoReqProv(outHeader, pr);
@@ -510,11 +504,19 @@ int packageBinaries(Spec s, char *passPhrase)
 
 	/**** Make the RPM ****/
 
-	if (generateRPM(name, RPMLEAD_BINARY, outHeader, NULL, passPhrase)) {
+	/* Make the output RPM filename */
+	archName = getArchName();
+	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
+		getBooleanVar(RPMVAR_ARCHSENSITIVE) ? archName : "",
+		name, archName);
+
+	if (generateRPM(name, filename, RPMLEAD_BINARY, outHeader, NULL,
+			getStringBuf(cpioFileList), passPhrase)) {
 	    /* Build failed */
 	    return 1;
 	}
 
+	freeStringBuf(cpioFileList);
 	freeHeader(outHeader);
 	pr = pr->next;
     }
@@ -529,41 +531,67 @@ int packageSource(Spec s, char *passPhrase)
     struct sources *source;
     struct PackageRec *package;
     char *tempdir;
-    char src[1024], dest[1024], fullname[1024];
+    char src[1024], dest[1024], fullname[1024], filename[1024];
     char *version;
     char *release;
     char *vendor;
     char *dist;
+    char *p;
     Header outHeader;
     StringBuf filelist;
+    StringBuf cpioFileList;
     int size;
     int_8 os, arch;
     char **sources;
     char **patches;
     int scount, pcount;
+    int skipi;
+    int_32 *skip;
 
     /**** Create links for all the sources ****/
     
     tempdir = tempnam("/var/tmp", "rpmbuild");
     mkdir(tempdir, 0700);
 
-    filelist = newStringBuf();
+    filelist = newStringBuf();     /* List in the header */
+    cpioFileList = newStringBuf(); /* List for cpio      */
 
     sources = malloc((s->numSources+1) * sizeof(char *));
     patches = malloc((s->numPatches+1) * sizeof(char *));
     
     /* Link in the spec file and all the sources */
-    sprintf(dest, "%s%s", tempdir, strrchr(s->specfile, '/'));
+    p = strrchr(s->specfile, '/');
+    sprintf(dest, "%s%s", tempdir, p);
     symlink(s->specfile, dest);
     appendLineStringBuf(filelist, dest);
+    appendLineStringBuf(cpioFileList, p+1);
     source = s->sources;
     scount = 0;
     pcount = 0;
     while (source) {
+	if (source->ispatch) {
+	    skipi = s->numNoPatch - 1;
+	    skip = s->noPatch;
+	} else {
+	    skipi = s->numNoSource - 1;
+	    skip = s->noSource;
+	}
+	while (skipi >= 0) {
+	    if (skip[skipi] == source->num) {
+		break;
+	    }
+	    skip--;
+	}
 	sprintf(src, "%s/%s", getVar(RPMVAR_SOURCEDIR), source->source);
 	sprintf(dest, "%s/%s", tempdir, source->source);
-	symlink(src, dest);
-	appendLineStringBuf(filelist, dest);
+	if (skipi < 0) {
+	    symlink(src, dest);
+	    appendLineStringBuf(cpioFileList, source->source);
+	} else {
+	    message(MESS_VERBOSE, "Skipping source/patch (%d): %s\n",
+		    source->num, source->source);
+	}
+	appendLineStringBuf(filelist, src);
 	if (source->ispatch) {
 	    patches[pcount++] = source->fullSource;
 	} else {
@@ -578,6 +606,7 @@ int packageSource(Spec s, char *passPhrase)
 	    sprintf(src, "%s/%s", getVar(RPMVAR_SOURCEDIR), package->icon);
 	    sprintf(dest, "%s/%s", tempdir, package->icon);
 	    appendLineStringBuf(filelist, dest);
+	    appendLineStringBuf(cpioFileList, package->icon);
 	    symlink(src, dest);
 	}
 	package = package->next;
@@ -607,6 +636,14 @@ int packageSource(Spec s, char *passPhrase)
         addEntry(outHeader, RPMTAG_SOURCE, STRING_ARRAY_TYPE, sources, scount);
     if (pcount)
         addEntry(outHeader, RPMTAG_PATCH, STRING_ARRAY_TYPE, patches, pcount);
+    if (s->numNoSource) {
+	addEntry(outHeader, RPMTAG_NOSOURCE, INT32_TYPE, s->noSource,
+		 s->numNoSource);
+    }
+    if (s->numNoPatch) {
+	addEntry(outHeader, RPMTAG_NOPATCH, INT32_TYPE, s->noPatch,
+		 s->numNoPatch);
+    }
     if (!isEntry(s->packages->header, RPMTAG_VENDOR)) {
 	if ((vendor = getVar(RPMVAR_VENDOR))) {
 	    addEntry(outHeader, RPMTAG_VENDOR, STRING_TYPE, vendor, 1);
@@ -623,22 +660,26 @@ int packageSource(Spec s, char *passPhrase)
 			 s->name, version, release, RPMLEAD_SOURCE)) {
 	return 1;
     }
+
     /* And add the final Header entry */
     addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
 
     /**** Make the RPM ****/
 
     sprintf(fullname, "%s-%s-%s", s->name, version, release);
+    sprintf(filename, "%s/%s.%ssrc.rpm", getVar(RPMVAR_SRPMDIR), fullname,
+	    (s->numNoPatch + s->numNoSource) ? "no" : "");
     message(MESS_VERBOSE, "Source Packaging: %s\n", fullname);
-   
-    if (generateRPM(fullname, RPMLEAD_SOURCE, outHeader,
-		    tempdir, passPhrase)) {
+
+    if (generateRPM(fullname, filename, RPMLEAD_SOURCE, outHeader,
+		    tempdir, getStringBuf(cpioFileList), passPhrase)) {
 	return 1;
     }
     
     /**** Now clean up ****/
 
     freeStringBuf(filelist);
+    freeStringBuf(cpioFileList);
     
     source = s->sources;
     while (source) {
