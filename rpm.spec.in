@@ -1,4 +1,5 @@
 %define	with_python_subpackage	@WITH_PYTHON_SUBPACKAGE@ %{nil}
+%define	with_python_version	@WITH_PYTHON_VERSION@ %{nil}
 %define with_perl_subpackage	1
 %define	with_bzip2		@WITH_BZIP2@ %{nil}
 %define	with_apidocs		@WITH_APIDOCS@ %{nil}
@@ -45,7 +46,7 @@ BuildRequires: zlib-devel
 BuildRequires: bzip2 >= 0.9.0c-2
 %endif
 %if %{with_python_subpackage}
-BuildRequires: python-devel >= 1.5.2
+BuildRequires: python-devel >= %{with_python_version}
 %endif
 %if %{with_perl_subpackage}
 BuildRequires: perl >= 0:5.00503
@@ -90,7 +91,7 @@ build packages using RPM.
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: rpm = %{rpm_version}
-Requires: python >= 1.5.2
+Requires: python >= %{with_python_version}
 Requires: popt = 1.7
 
 %description python
@@ -448,8 +449,8 @@ fi
 %if %{with_python_subpackage}
 %files python
 %defattr(-,root,root)
-%{__prefix}/lib/python1.5/site-packages/rpmmodule.so
-%{__prefix}/lib/python1.5/site-packages/poptmodule.so
+%{__prefix}/lib/python%{with_python_version}/site-packages/rpmmodule.so
+%{__prefix}/lib/python%{with_python_version}/site-packages/poptmodule.so
 %endif
 
 %if %{with_perl_subpackage}
@@ -602,3 +603,4 @@ fi
 - sparc: make dbenv per-rpmdb, not per-dbi.
 - handle lazy db open's in chroot with absolute path, not prefix strip.
 - Depends should use CDB if configured.
+- autodetect python 1.5/2.2.

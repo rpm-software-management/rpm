@@ -832,23 +832,42 @@ if test "$rpm_cv_glob" = yes; then
     LIBOBJS="$LIBOBJS glob.o fnmatch.o"
 fi
 dnl
-dnl Auto-detect whether python bindings should be built.
+dnl Auto-detect which python bindings should be built.
 dnl
 withval=auto
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
+WITH_PYTHON_VERSION=
 if test $withval = auto ; then
-  AC_MSG_CHECKING(for python 1.5.2)
+
+  AC_MSG_CHECKING(for python 2.2)
   AC_TRY_RUN([
+#include <python2.2/Python.h>
+main() {
+  exit(strncmp("2.2", PY_VERSION, 3));
+} ],
+  withval=yes, withval=no, withval=yes)
+  AC_MSG_RESULT($withval)
+  if test $withval = yes ; then
+    WITH_PYTHON_VERSION="2.2"
+  else
+
+    AC_MSG_CHECKING(for python 1.5.2)
+    AC_TRY_RUN([
 #include <python1.5/Python.h>
 main() {
   exit(strcmp("1.5.2", PY_VERSION));
 } ],
-  withval=yes, withval=no, withval=yes)
-  AC_MSG_RESULT($withval)
+    withval=yes, withval=no, withval=yes)
+    AC_MSG_RESULT($withval)
+    if test $withval = yes ; then
+      WITH_PYTHON_VERSION="1.5"
+    fi
+  fi
+
 fi
 
-if test $withval = yes ; then
+if test -n "$WITH_PYTHON_VERSION" ; then
   WITH_PYTHON_SUBDIR=python
   WITH_PYTHON_SUBPACKAGE=1
 else
@@ -857,6 +876,7 @@ else
 fi
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
+AC_SUBST(WITH_PYTHON_VERSION)
 
 AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
 dnl
