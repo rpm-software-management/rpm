@@ -296,6 +296,11 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    } else {
 		fileList[c] = strrchr(fest->file, '/') + 1;
 	    }
+	    if ((c > 0) && !strcmp(fileList[c], fileList[c-1])) {
+		error(RPMERR_BADSPEC, "File listed twice: %s", fileList[c]);
+		return(RPMERR_BADSPEC);
+	    }
+	    
 	    fileUnameList[c] = fest->uname;
 	    fileGnameList[c] = fest->gname;
 	    *size += fest->statbuf.st_size;
