@@ -702,6 +702,7 @@ static int doReadRC(FD_t fd, const char * filename)
 	    case RPMVAR_PROVIDES:
 	      {	char *t;
 		s = rpmGetVar(RPMVAR_PROVIDES);
+		if (s == NULL) s = "";
 		fn = t = malloc(strlen(s) + strlen(se) + 2);
 		while (*s) *t++ = *s++;
 		*t++ = ' ';
