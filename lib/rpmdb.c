@@ -244,7 +244,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     if ((dbi = rpmdb->_dbi[dbix]) != NULL)
 	return dbi;
 
-    _dbapi_wanted = rpmdb->db_api;
+    _dbapi_wanted = (_rebuildinprogress ? -1 : rpmdb->db_api;
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
     if (_dbapi_rebuild < 1 || _dbapi_rebuild > 3)
 	_dbapi_rebuild = 3;
