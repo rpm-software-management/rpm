@@ -598,11 +598,13 @@ void rpmalMakeIndex(rpmal al)
 
     ai->index = xrealloc(ai->index, ai->size * sizeof(*ai->index));
     ai->k = 0;
-
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
 	rpmalAddProvides(al, (alKey)i, alp->provides, alp->tscolor);
     }
+
+    /* Reset size to the no. of provides added. */
+    ai->size = ai->k;
     qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
 }
 
