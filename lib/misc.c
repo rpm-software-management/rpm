@@ -19,6 +19,8 @@
 #include "rpmlib.h"
 #include "messages.h"
 
+char * RPMVERSION = VERSION;
+
 char ** splitString(char * str, int length, char sep) {
     char * s, * source, * dest;
     char ** list;
