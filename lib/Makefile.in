@@ -4,7 +4,7 @@ LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o falloc.o \
 	     oldheader.o install.o signature.o verify.o
 LIBRPM = librpm.a
 LOADLIBES = -lrpm -lgdbm -ldb $(LIBEFENCE)
-PROGS = dump dumpdb
+PROGS = 
 
 # -----------------------------------------------------------------------
 
