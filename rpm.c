@@ -191,6 +191,7 @@ int main(int argc, char ** argv) {
     char * prefix = "/";
     char * specFile;
     char *passPhrase = "";
+    char * smallArgv[2] = { NULL, NULL };
     struct option options[] = {
 	    { "all", 0, 0, 'a' },
 	    { "build", 1, 0, 'b' },
@@ -220,6 +221,7 @@ int main(int argc, char ** argv) {
 	    { "stdin-packages", 0, 0, 'P' },
 	    { "stdin-query", 0, 0, 'Q' },
 	    { "test", 0, &test, 0 },
+	    { "upgrade", 0, 0, 'U' },
 	    { "uninstall", 0, 0, 'u' },
 	    { "verbose", 0, 0, 'v' },
 	    { "verify", 0, 0, 'V' },
@@ -231,7 +233,7 @@ int main(int argc, char ** argv) {
 	exit(-1);
 
     while (1) {
-	arg = getopt_long(argc, argv, "QqVyYhpvPfFilsagGducr:b:", options, 
+	arg = getopt_long(argc, argv, "QqVyUYhpvPfFilsagGducr:b:", options, 
 			  &long_index);
 	if (arg == -1) break;
 
@@ -311,9 +313,16 @@ int main(int argc, char ** argv) {
 	    }
 	    else if (!strcmp(options[long_index].name, "info"))
 		queryFor |= QUERY_FOR_INFO;
-	    else  
+	    else 
 		bigMode = MODE_INSTALL;
 		
+	    break;
+
+	  case 'U':
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
+		argerror("only one major mode may be specified");
+	    bigMode = MODE_INSTALL;
+	    installFlags |= INSTALL_UPGRADE;
 	    break;
 
 	  case 's':
@@ -548,11 +557,12 @@ int main(int argc, char ** argv) {
 	    char buffer[255];
 	    int i;
 
+	    smallArgv[0] = buffer;
 	    while (fgets(buffer, 255, stdin)) {
 		i = strlen(buffer) - 1;
 		if (buffer[i] == '\n') buffer[i] = 0;
-		if (strlen(buffer)) 
-		    doVerify(prefix, verifySource, buffer);
+		if (strlen(buffer))
+		    doVerify(prefix, verifySource, smallArgv);
 	    }
 	} else {
 	    if (optind == argc) 
