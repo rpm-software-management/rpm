@@ -7,9 +7,13 @@ INCLUDES = -I../build -I../lib -I../intl -I../misc @INCPATH@
 LDFLAGS = -L../popt -L../build -L../lib -L../misc
 LDADD = -lrpm
 
-noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
+noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb \
+	rpmgettext rpmputtext
+
+rpmgettext_SOURCES =	rpmgettext.c
+rpmgettext_LDADD =	-lrpmbuild -lpopt -lrpm @LIBMISC@
+
+rpmputtext_SOURCES =	rpmgettext.c
+rpmputtext_LDADD =	-lrpmbuild -lpopt -lrpm @LIBMISC@
 
 $(PROGRAMS): ../lib/librpm.a
-
-rpmgettext: rpmgettext.o ../build/librpmbuild.a ../popt/libpopt.a ../lib/librpm.a
-

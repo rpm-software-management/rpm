@@ -120,7 +120,14 @@ INCLUDES = -I../build -I../lib -I../intl -I../misc @INCPATH@
 LDFLAGS = -L../popt -L../build -L../lib -L../misc
 LDADD = -lrpm
 
-noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
+noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb \
+	rpmgettext rpmputtext
+
+rpmgettext_SOURCES =	rpmgettext.c
+rpmgettext_LDADD =	-lrpmbuild -lpopt -lrpm @LIBMISC@
+
+rpmputtext_SOURCES =	rpmgettext.c
+rpmputtext_LDADD =	-lrpmbuild -lpopt -lrpm @LIBMISC@
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -159,6 +166,12 @@ dumpdb_OBJECTS =  dumpdb.o
 dumpdb_LDADD = $(LDADD)
 dumpdb_DEPENDENCIES = 
 dumpdb_LDFLAGS = 
+rpmgettext_OBJECTS =  rpmgettext.o
+rpmgettext_DEPENDENCIES = 
+rpmgettext_LDFLAGS = 
+rpmputtext_OBJECTS =  rpmgettext.o
+rpmputtext_DEPENDENCIES = 
+rpmputtext_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
@@ -170,9 +183,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP = --best
 DEP_FILES =  .deps/dump.P .deps/dumpdb.P .deps/rpmarchive.P \
-.deps/rpmheader.P .deps/rpmlead.P .deps/rpmsignature.P
-SOURCES = rpmlead.c rpmheader.c rpmarchive.c rpmsignature.c dump.c dumpdb.c
-OBJECTS = rpmlead.o rpmheader.o rpmarchive.o rpmsignature.o dump.o dumpdb.o
+.deps/rpmgettext.P .deps/rpmheader.P .deps/rpmlead.P \
+.deps/rpmsignature.P
+SOURCES = rpmlead.c rpmheader.c rpmarchive.c rpmsignature.c dump.c dumpdb.c $(rpmgettext_SOURCES) $(rpmputtext_SOURCES)
+OBJECTS = rpmlead.o rpmheader.o rpmarchive.o rpmsignature.o dump.o dumpdb.o $(rpmgettext_OBJECTS) $(rpmputtext_OBJECTS)
 
 all: Makefile $(PROGRAMS)
 
@@ -234,6 +248,14 @@ dump: $(dump_OBJECTS) $(dump_DEPENDENCIES)
 dumpdb: $(dumpdb_OBJECTS) $(dumpdb_DEPENDENCIES)
 	@rm -f dumpdb
 	$(LINK) $(dumpdb_LDFLAGS) $(dumpdb_OBJECTS) $(dumpdb_LDADD) $(LIBS)
+
+rpmgettext: $(rpmgettext_OBJECTS) $(rpmgettext_DEPENDENCIES)
+	@rm -f rpmgettext
+	$(LINK) $(rpmgettext_LDFLAGS) $(rpmgettext_OBJECTS) $(rpmgettext_LDADD) $(LIBS)
+
+rpmputtext: $(rpmputtext_OBJECTS) $(rpmputtext_DEPENDENCIES)
+	@rm -f rpmputtext
+	$(LINK) $(rpmputtext_LDFLAGS) $(rpmputtext_OBJECTS) $(rpmputtext_LDADD) $(LIBS)
 
 tags: TAGS
 
@@ -364,8 +386,6 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 $(PROGRAMS): ../lib/librpm.a
-
-rpmgettext: rpmgettext.o ../build/librpmbuild.a ../popt/libpopt.a ../lib/librpm.a
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
