@@ -1,12 +1,11 @@
-#include<stdlib.h>
-#include<errno.h>
-#include<stdio.h>
+#include "system.h"
 
 extern int sys_nerr;
 extern char *sys_errlist[];
 static char buf[64];
-char * strerror(int errnum) 
 
+char *
+strerror(int errnum) 
 {
   if (errnum < 0 || errnum > sys_nerr)
     {

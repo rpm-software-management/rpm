@@ -16,6 +16,8 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
+#include "system.h"
+
 #define	UNSIGNED	1
-#include <limits.h>
-#include <strtol.c>
+
+#include "strtol.c"

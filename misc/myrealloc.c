@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#define size_t unsigned
-
-void *myrealloc(void *ptr, size_t size);
+#include "system.h"
 
 void *myrealloc(void *ptr, size_t size) {
 if (ptr == NULL)

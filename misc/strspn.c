@@ -1,5 +1,5 @@
-/* strdup.c -- return a newly allocated copy of a string
-   Copyright (C) 1990 Free Software Foundation, Inc.
+/* strspn.c -- return numbers of chars at start of string in a class
+   Copyright (C) 1987, 1990 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,32 +12,29 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#ifdef STDC_HEADERS
+#if defined(HAVE_STRING_H)
 #include <string.h>
-#include <stdlib.h>
 #else
-char *malloc ();
-char *strcpy ();
+#include <strings.h>
+#ifndef strchr
+#define strchr index
+#endif
 #endif
 
-/* Return a newly allocated copy of STR,
-   or 0 if out of memory. */
-
-char *
-strdup (str)
-     const char *str;
+int
+strspn (str, class)
+     char *str, *class;
 {
-  char *newstr;
+  register char *st = str;
 
-  newstr = (char *) malloc (strlen (str) + 1);
-  if (newstr)
-    strcpy (newstr, str);
-  return newstr;
+  while (*st && strchr (class, *st))
+    ++st;
+  return st - str;
 }

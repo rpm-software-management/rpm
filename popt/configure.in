@@ -1,7 +1,11 @@
 AC_INIT(popt.h)
+AM_INIT_AUTOMAKE(popt, 1.1.1)
+AM_CONFIG_HEADER(config.h)
 
 AC_PROG_CC
 AC_GCC_TRADITIONAL
+AM_C_PROTOTYPES
+
 AC_PROG_RANLIB
 AC_PROG_INSTALL
 
@@ -47,6 +51,7 @@ if test -d /usr/ucblib ; then
 else
 	AC_MSG_RESULT(no)
 fi
+
 AC_CHECK_FUNCS(strerror)
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])

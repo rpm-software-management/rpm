@@ -1,4 +1,5 @@
 2.5.5 -> 2.90
+	- configure using automake.
 	- arch/os (and platform) should be case insensitive everywhere forever.
 	- attempt to deal rationally with os as "Linux" or "linux".
 	- add generalized expression handler (Tom Dyas<tdyas@remus.rutgers.edu>)

@@ -13,23 +13,11 @@
  * GNU Library Public License for more details.
  */
 
-#include <sys/types.h>
-#if defined(HAVE_UNISTD_H) || defined(STDC_HEADERS)
-#include <unistd.h>
-#endif
-#include <stdio.h>
-#include <string.h>
-#ifdef _POSIX_VERSION
-#include <limits.h>			/* for PATH_MAX */
-#else
-#include <sys/param.h>			/* for MAXPATHLEN */
-#endif
-#include <errno.h>
+#include "system.h"
+
 #ifndef STDC_HEADERS
 extern int errno;
 #endif
-
-#include <sys/stat.h>			/* for S_IFLNK */
 
 #ifndef PATH_MAX
 #ifdef _POSIX_VERSION

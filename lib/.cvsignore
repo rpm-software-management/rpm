@@ -1,3 +1,4 @@
+.deps
 .depend
 Makefile
 tagtable.c

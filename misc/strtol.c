@@ -21,9 +21,13 @@ Cambridge, MA 02139, USA.  */
 # define USE_NUMBER_GROUPING
 # define STDC_HEADERS
 # define HAVE_LIMITS_H
+#else
+#include "system.h"
 #endif
 
-#include "system.h"
+#ifndef errno
+extern int errno;
+#endif
 
 #ifdef STDC_HEADERS
 # include <stddef.h>

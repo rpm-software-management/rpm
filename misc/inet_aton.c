@@ -10,7 +10,9 @@
 
 #include "inet_aton.h"
 
-int inet_aton(const char *cp, struct in_addr *inp) {
+int
+inet_aton(const char *cp, struct in_addr *inp)
+{
     long addr;
 
     addr = inet_addr(cp);

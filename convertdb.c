@@ -4,6 +4,8 @@
 
 #include "build/rpmbuild.h"
 
+#include "intl.h"
+
 #include "falloc.h"
 #include "oldrpmdb.h"
 #include "oldheader.h"
@@ -201,7 +203,7 @@ int main(int argc, char ** argv) {
 	exit(1);
     }
 
-    rpmReadConfigFiles(NULL, NULL, NULL, 0);
+    rpmReadConfigFiles(NULL, NULL, NULL, 0, NULL);
 
     printf(_("rpmconvert 1.0 - converting database in /var/lib/rpm\n"));
     convertDB();

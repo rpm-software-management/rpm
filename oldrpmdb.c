@@ -2,6 +2,8 @@
 
 #include "build/rpmbuild.h"
 
+#include "intl.h"
+
 #include "rpm_malloc.h"
 #include "oldrpmdb.h"
 

@@ -1,194 +1,725 @@
-include Makefile.inc
+# Makefile.in generated automatically by automake 1.3 from Makefile.am
 
-srcdir= @srcdir@
+# Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# Top level Makefile for rpm
+
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
 VPATH = @srcdir@
-top_srcdir= @top_srcdir@
-mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-INSTALL= @INSTALL@
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DISTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = .
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
-#LIBEFENCE = -lefence
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
 
-#DEBUG = -g
-installprefix=$(ROOT)
-
-#LIBEFENCE = -lefence
-
-CVSTAG = r$(subst .,-,$(VERSION))
-
-################################### Leave this stuff alone
-
-### These are variables meant to be exported
-
-BINDIR=$(prefix)/bin
-RPMBINDIR=$(subst usr/bin,bin,$(BINDIR))
-MANDIR=$(prefix)/man/man8
-LIBDIR=$(libdir)
-INCDIR=$(prefix)/include/rpm
-ETCDIR=$(ROOT)/etc
-
-# -----------------------------------------------------------------------
-
-SUBDIRS = popt @MISCDIR@ lib build tools @PO@
-ALLSUBDIRS = popt misc lib build tools po
-INSTSUBDIRS = lib scripts @PO@
-OTHERSUBDIRS = docs autodeps
-OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o build.o \
-       @GETTEXTSTUB@
-PROGS = @RPM@ rpm2cpio
-LIBS = @LIBS@ @LIBINTL@ @LIBDL@ $(LIBEFENCE)
-LOADLIBES = -lrpmbuild -lpopt -lrpm @LIBMISC@
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AR = @AR@
+AWK = @AWK@
+BZIP2BIN = @BZIP2BIN@
+CATALOGS = @CATALOGS@
+CATOBJEXT = @CATOBJEXT@
+CC = @CC@
+CPP = @CPP@
+DATADIRNAME = @DATADIRNAME@
+FIXPERMS = @FIXPERMS@
+GENCAT = @GENCAT@
+GETTEXTSTUB = @GETTEXTSTUB@
+GMOFILES = @GMOFILES@
+GMSGFMT = @GMSGFMT@
+GT_NO = @GT_NO@
+GT_YES = @GT_YES@
+GZIPBIN = @GZIPBIN@
+INCLUDE_LOCALE_H = @INCLUDE_LOCALE_H@
+INCPATH = @INCPATH@
+INSTOBJEXT = @INSTOBJEXT@
+INTLDEF = @INTLDEF@
+INTLDEPS = @INTLDEPS@
+INTLLIBS = @INTLLIBS@
+INTLOBJS = @INTLOBJS@
 LDFLAGS_STATIC = @LDFLAGS_STATIC@
+LIBDL = @LIBDL@
+LIBINTL = @LIBINTL@
+LIBMISC = @LIBMISC@
+LIBOBJS = @LIBOBJS@
+LIBS = @LIBS@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+MISCDIR = @MISCDIR@
+MISCPATH = @MISCPATH@
+MKDIR = @MKDIR@
+MKDIR_P = @MKDIR_P@
+MKINSTALLDIRS = @MKINSTALLDIRS@
+MSGFMT = @MSGFMT@
+PACKAGE = @PACKAGE@
+PO = @PO@
+POFILES = @POFILES@
+POSUB = @POSUB@
+RANLIB = @RANLIB@
+ROOT_GROUP = @ROOT_GROUP@
+RPM = @RPM@
+RPMCONFIGDIR = @RPMCONFIGDIR@
+TARGET = @TARGET@
+U = @U@
+USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
+USE_NLS = @USE_NLS@
+VERSION = @VERSION@
+XGETTEXT = @XGETTEXT@
+l = @l@
+tmpdir = @tmpdir@
+topdir = @topdir@
+topsrcdir = @topsrcdir@
+varprefix = @varprefix@
 
-SOURCES = $(subst .o,.c,$(OBJS))
+AUTOMAKE_OPTIONS = 1.3 foreign
 
-ifeq (.depend-done,$(wildcard .depend-done))
-TARGET=everything
-else
-TARGET=@TARGET@
-endif
+SUBDIRS = popt build lib po intl misc tools scripts
 
-all: $(TARGET)
+INCLUDES = -I./build -I./lib -I./intl @INCPATH@
 
-rpm: lib/librpm.a build/librpmbuild.a @MISCPATH@ $(OBJS) 
-	$(CC) -o rpm $(LDFLAGS_STATIC) $(OBJS) $(LDFLAGS) $(LOADLIBES) $(LIBS)
+LDFLAGS = @LDFLAGS_STATIC@ -L./popt -L./build -L./lib -L./misc
 
-rpm.shared: lib/librpm.a build/librpmbuild.a $(OBJS)
-	$(CC) -o rpm.shared $(LDFLAGS) $(OBJS) $(LOADLIBES) $(LIBS)
+rpmbindir = $(subst usr/bin,bin,$(bindir))
+rpmbin_PROGRAMS = rpm
 
-# we don't normally build this, so ./configure doesn't try very hard
-# to make it work
-rpmconvert: lib/librpm.a convertdb.o oldrpmdb.o
-	$(CC) -o rpmconvert $(LDFLAGS) convertdb.o oldrpmdb.o -lgdbm \
-		$(LOADLIBES) $(LIBS)
+bin_PROGRAMS =		rpm2cpio
+bin_SCRIPTS =		gendiff
+noinst_PROGRAMS =	rpmconvert
 
-rpm2cpio: lib/librpm.a rpm2cpio.o
-	$(CC) -o rpm2cpio $(LDFLAGS) rpm2cpio.o $(LOADLIBES) $(LIBS)
+man_MANS = rpm.8 rpm2cpio.8
 
-rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
-	$(CC) $(CFLAGS) -DRPMNLSPACKAGE=\"$(RPMNLSPACKAGE)\" \
-		-DRPMNLSDIR=\"$(RPMNLSDIR)\" \
-		-DVERSION=\"$(VERSION)\"  \
-		-DLIBRPMALIAS_FILENAME="\"$(LIBRPMALIAS_FILENAME)"\" \
-		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
-		-c $(srcdir)/rpm.c
+configdir = @RPMCONFIGDIR@
+config_DATA = rpmrc rpmpopt macros
+config_SCRIPTS = find-provides find-requires mkinstalldirs
 
-# these rules should be in here, but they drive me batty
-#Makefile: Makefile.in misc/Makefile.in lib/Makefile.in build/Makefile.in \
-          #tools/Makefile.in po/Makefile.in config.status
-	#sh ./config.status
+noinst_HEADERS = \
+	acconfig.h	build.h		checksig.h	ftp.h	\
+	install.h	query.h		system.h	url.h	\
+	verify.h
 
-#config.status: configure
-	#sh ./config.status --recheck
+rpm_SOURCES =		build.c checksig.c ftp.c install.c query.c rpm.c url.c \
+			verify.c
+rpm_LDADD =		-lrpmbuild -lpopt -lrpm @LIBMISC@
 
-#configure: configure.in
-	#cd $(srcdir); autoconf
+rpm2cpio_SOURCES =	rpm2cpio.c
+rpm2cpio_LDADD =	-lrpmbuild -lpopt -lrpm
 
-everything: make-subdirs $(PROGS)
+rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
+rpmconvert_LDADD =	-lrpmbuild -lpopt -lrpm -lgdbm
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = config.h
+CONFIG_CLEAN_FILES =  Makefile.inc lib-rpmrc macros
+PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS) $(rpmbin_PROGRAMS)
 
-make-subdirs:
-	for d in $(SUBDIRS); do \
-		(cd $$d; $(MAKE)) \
-		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
-	done && test -z "$$fail"
 
-newtree:
-	rm -f RCS
-	ln -s /usr/rhs/RCS/rpm-2.0 RCS
-	for d in $(SUBDIRS) $(OTHERSUBDIRS); do \
-		$(mkinstalldirs) $$d ;\
-		(cd $$d; rm -f RCS; ln -s /usr/rhs/RCS/rpm-2.0/$$d RCS) \
-		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
-	done && test -z "$$fail"
+DEFS = @DEFS@ -I. -I$(srcdir) -I.
+CPPFLAGS = @CPPFLAGS@
+rpm2cpio_OBJECTS =  rpm2cpio.o
+rpm2cpio_DEPENDENCIES = 
+rpm2cpio_LDFLAGS = 
+rpmconvert_OBJECTS =  convertdb.o oldrpmdb.o
+rpmconvert_DEPENDENCIES = 
+rpmconvert_LDFLAGS = 
+rpm_OBJECTS =  build.o checksig.o ftp.o install.o query.o rpm.o url.o \
+verify.o
+rpm_DEPENDENCIES = 
+rpm_LDFLAGS = 
+SCRIPTS =  $(bin_SCRIPTS) $(config_SCRIPTS)
 
-$(PROGS): $(OBJS)
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+man8dir = $(mandir)/man8
+MANS = $(man_MANS)
 
-install: all
-	[ -d $(installprefix)/$(RPMBINDIR) ] || \
-		$(mkinstalldirs) $(installprefix)/$(RPMBINDIR)
-	[ -d $(installprefix)/$(RPMNLSDIR) ] || \
-		$(mkinstalldirs) $(installprefix)/$(RPMNLSDIR)
-	[ -d $(installprefix)/$(BINDIR) ] || \
-		$(mkinstalldirs) $(installprefix)/$(BINDIR)
-	[ -d $(installprefix)/$(MANDIR) ] || \
-		$(mkinstalldirs) $(installprefix)/$(MANDIR)
-	[ -d $(installprefix)/$(ETCDIR) ] || \
-		$(mkinstalldirs) $(installprefix)/$(ETCDIR)
-	[ -d $(installprefix)/$(LIBDIR) ] || \
-		$(mkinstalldirs) $(installprefix)/$(LIBDIR)
-	[ -d $(installprefix)/$(INCDIR) ] || \
-		$(mkinstalldirs) $(installprefix)/$(INCDIR)
-	[ -d $(installprefix)/$(RPMCONFIGDIR) ] ||  \
-		$(mkinstalldirs) $(installprefix)/$(RPMCONFIGDIR)
-	if [ -x ./rpm ]; then \
-	    $(INSTALL_PROGRAM) -s -m 755 rpm $(installprefix)/$(RPMBINDIR); \
-	else \
-	    $(INSTALL_PROGRAM) -s -m 755 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
-	fi
-	$(INSTALL_PROGRAM) -m 755 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
-	$(INSTALL_PROGRAM) -m 755 $(topdir)/mkinstalldirs $(installprefix)/$(RPMCONFIGDIR)/mkinstalldirs
-	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-provides.sh $(installprefix)/$(RPMCONFIGDIR)/find-provides
-	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-requires.sh $(installprefix)/$(RPMCONFIGDIR)/find-requires
-	$(INSTALL_PROGRAM) -s -m 755 rpm2cpio $(installprefix)/$(BINDIR)
-	$(INSTALL_DATA) -m 644 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
-	$(INSTALL_DATA) -m 644 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
-	$(INSTALL_DATA) -m 644 $(topdir)/macros $(installprefix)/$(RPMCONFIGDIR)/macros
-	$(INSTALL_DATA) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(RPMCONFIGDIR)/rpmrc
-	$(INSTALL_DATA) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(RPMCONFIGDIR)/rpmpopt
-	(cd $(installprefix)/$(LIBDIR); rm -f rpmrc; ln -s $(RPMCONFIGDIR)/rpmrc)
-	(cd $(installprefix)/$(LIBDIR); rm -f rpmpopt; ln -s $(RPMCONFIGDIR)/rpmpopt)
-	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
-	(cd build; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
-	for d in $(INSTSUBDIRS); do \
-		(cd $$d; $(MAKE) installprefix=$(installprefix) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
+NROFF = nroff
+DATA =  $(config_DATA)
+
+HEADERS =  $(noinst_HEADERS)
+
+DIST_COMMON =  README ABOUT-NLS COPYING Makefile.am Makefile.in \
+Makefile.inc.in TODO acconfig.h aclocal.m4 config.guess config.h.in \
+config.sub configure configure.in install-sh lib-rpmrc.in macros.in \
+missing mkinstalldirs stamp-h.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP = --best
+DEP_FILES =  .deps/build.P .deps/checksig.P .deps/convertdb.P \
+.deps/ftp.P .deps/install.P .deps/oldrpmdb.P .deps/query.P .deps/rpm.P \
+.deps/rpm2cpio.P .deps/url.P .deps/verify.P
+SOURCES = $(rpm2cpio_SOURCES) $(rpmconvert_SOURCES) $(rpm_SOURCES)
+OBJECTS = $(rpm2cpio_OBJECTS) $(rpmconvert_OBJECTS) $(rpm_OBJECTS)
+
+all: all-recursive-am all-am
+
+.SUFFIXES:
+.SUFFIXES: .S .c .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+$(ACLOCAL_M4):  configure.in 
+	cd $(srcdir) && $(ACLOCAL)
+
+config.status: $(srcdir)/configure
+	$(SHELL) ./config.status --recheck
+$(srcdir)/configure: $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+	cd $(srcdir) && $(AUTOCONF)
+
+config.h: stamp-h
+	@:
+stamp-h: $(srcdir)/config.h.in $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES= CONFIG_HEADERS=config.h \
+	     $(SHELL) ./config.status
+	@echo timestamp > stamp-h
+$(srcdir)/config.h.in: $(srcdir)/stamp-h.in
+$(srcdir)/stamp-h.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) acconfig.h
+	cd $(top_srcdir) && $(AUTOHEADER)
+	@echo timestamp > $(srcdir)/stamp-h.in
+
+mostlyclean-hdr:
+
+clean-hdr:
+
+distclean-hdr:
+	-rm -f config.h
+
+maintainer-clean-hdr:
+Makefile.inc: $(top_builddir)/config.status Makefile.inc.in
+	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= ./config.status
+lib-rpmrc: $(top_builddir)/config.status lib-rpmrc.in
+	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= ./config.status
+macros: $(top_builddir)/config.status macros.in
+	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= ./config.status
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; \
 	done
 
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+mostlyclean-noinstPROGRAMS:
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+
+distclean-noinstPROGRAMS:
+
+maintainer-clean-noinstPROGRAMS:
+
+mostlyclean-rpmbinPROGRAMS:
+
+clean-rpmbinPROGRAMS:
+	-test -z "$(rpmbin_PROGRAMS)" || rm -f $(rpmbin_PROGRAMS)
+
+distclean-rpmbinPROGRAMS:
+
+maintainer-clean-rpmbinPROGRAMS:
+
+install-rpmbinPROGRAMS: $(rpmbin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(rpmbindir)
+	@list='$(rpmbin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(rpmbindir)/`echo $$p|sed '$(transform)'`"; \
+	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(rpmbindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; \
+	done
+
+uninstall-rpmbinPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(rpmbin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(rpmbindir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+rpm2cpio: $(rpm2cpio_OBJECTS) $(rpm2cpio_DEPENDENCIES)
+	@rm -f rpm2cpio
+	$(LINK) $(rpm2cpio_LDFLAGS) $(rpm2cpio_OBJECTS) $(rpm2cpio_LDADD) $(LIBS)
+
+rpmconvert: $(rpmconvert_OBJECTS) $(rpmconvert_DEPENDENCIES)
+	@rm -f rpmconvert
+	$(LINK) $(rpmconvert_LDFLAGS) $(rpmconvert_OBJECTS) $(rpmconvert_LDADD) $(LIBS)
+
+rpm: $(rpm_OBJECTS) $(rpm_DEPENDENCIES)
+	@rm -f rpm
+	$(LINK) $(rpm_LDFLAGS) $(rpm_OBJECTS) $(rpm_LDADD) $(LIBS)
+
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; fi; \
+	done
+
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+install-configSCRIPTS: $(config_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(configdir)
+	@list='$(config_SCRIPTS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(configdir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(configdir)/`echo $$p|sed '$(transform)'`; \
+	  else if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(configdir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(configdir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; fi; \
+	done
+
+uninstall-configSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	list='$(config_SCRIPTS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(configdir)/`echo $$p|sed '$(transform)'`; \
+	done
+
+install-man8:
+	$(mkinstalldirs) $(DESTDIR)$(man8dir)
+	@list='$(man8_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.8*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man8dir)/$$inst"; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(man8dir)/$$inst; \
+	done
+
+uninstall-man8:
+	@list='$(man8_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.8*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f $(DESTDIR)$(man8dir)/$$inst"; \
+	  rm -f $(DESTDIR)$(man8dir)/$$inst; \
+	done
+install-man: $(MANS)
+	@$(NORMAL_INSTALL)
+	$(MAKE) install-man8
+uninstall-man:
+	@$(NORMAL_UNINSTALL)
+	$(MAKE) uninstall-man8
+
+install-configDATA: $(config_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(configdir)
+	@list='$(config_DATA)'; for p in $$list; do \
+	  if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(configdir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(configdir)/$$p; \
+	  else if test -f $$p; then \
+	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(configdir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(configdir)/$$p; \
+	  fi; fi; \
+	done
+
+uninstall-configDATA:
+	@$(NORMAL_UNINSTALL)
+	list='$(config_DATA)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(configdir)/$$p; \
+	done
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+
+@SET_MAKE@
+
+all-recursive install-data-recursive install-exec-recursive \
+installdirs-recursive install-recursive uninstall-recursive  \
+check-recursive installcheck-recursive info-recursive dvi-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  target=`echo $@ | sed s/-recursive//`; \
+	  echo "Making $$target in $$subdir"; \
+	  (cd $$subdir && $(MAKE) $$target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
+	  rev="$$subdir $$rev"; \
+	done; \
+	for subdir in $$rev; do \
+	  target=`echo $@ | sed s/-recursive//`; \
+	  echo "Making $$target in $$subdir"; \
+	  (cd $$subdir && $(MAKE) $$target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  (cd $$subdir && $(MAKE) tags); \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $(SOURCES) $(HEADERS) $(LISP)
+
+TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+	done; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)config.h.in$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags config.h.in $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(PACKAGE)-$(VERSION)
+top_distdir = $(distdir)
+
+# This target untars the dist file and tries a VPATH configuration.  Then
+# it guarantees that the distribution is self-contained by making another
+# tarfile.
+distcheck: dist
+	-rm -rf $(distdir)
+	GZIP=$(GZIP) $(TAR) zxf $(distdir).tar.gz
+	mkdir $(distdir)/=build
+	mkdir $(distdir)/=inst
+	dc_install_base=`cd $(distdir)/=inst && pwd`; \
+	cd $(distdir)/=build \
+	  && ../configure --with-included-gettext --srcdir=.. --prefix=$$dc_install_base \
+	  && $(MAKE) \
+	  && $(MAKE) dvi \
+	  && $(MAKE) check \
+	  && $(MAKE) install \
+	  && $(MAKE) installcheck \
+	  && $(MAKE) dist
+	-rm -rf $(distdir)
+	@echo "========================"; \
+	echo "$(distdir).tar.gz is ready for distribution"; \
+	echo "========================"
+dist: distdir
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+dist-all: distdir
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+distdir: $(DISTFILES)
+	-rm -rf $(distdir)
+	mkdir $(distdir)
+	-chmod 777 $(distdir)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  test -f $(distdir)/$$file \
+	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	  || cp -p $$d/$$file $(distdir)/$$file; \
+	done
+	for subdir in $(SUBDIRS); do \
+	  test -d $(distdir)/$$subdir \
+	  || mkdir $(distdir)/$$subdir \
+	  || exit 1; \
+	  chmod 777 $(distdir)/$$subdir; \
+	  (cd $$subdir && $(MAKE) top_distdir=../$(distdir) distdir=../$(distdir)/$$subdir distdir) \
+	    || exit 1; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+
+maintainer-clean-depend:
+	-rm -rf .deps
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).P -c $<
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).p -c $<
+	@-sed -e 's/^\([^:]*\)\.o:/\1.lo \1.o:/' \
+	  < .deps/$(*F).p > .deps/$(*F).P
+	@-rm -f .deps/$(*F).p
+info: info-recursive
+dvi: dvi-recursive
+check: all-am
+	$(MAKE) check-recursive
+installcheck: installcheck-recursive
+all-recursive-am: config.h
+	$(MAKE) all-recursive
+
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS) $(DATA) $(HEADERS) config.h
+
+install-exec-am: install-binPROGRAMS install-binSCRIPTS
+
+install-data-am: install-rpmbinPROGRAMS install-configSCRIPTS install-man install-configDATA install-data-local
+
+uninstall-am: uninstall-binPROGRAMS uninstall-rpmbinPROGRAMS uninstall-binSCRIPTS uninstall-configSCRIPTS uninstall-man uninstall-configDATA
+
+install-exec: install-exec-recursive install-exec-am
+	@$(NORMAL_INSTALL)
+
+install-data: install-data-recursive install-data-am
+	@$(NORMAL_INSTALL)
+
+install: install-recursive install-exec-am install-data-am
+	@:
+
+uninstall: uninstall-recursive uninstall-am
+
+install-strip:
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
+installdirs: installdirs-recursive
+	$(mkinstalldirs)  $(DATADIR)$(bindir) $(DATADIR)$(rpmbindir) \
+		$(DATADIR)$(bindir) $(DATADIR)$(configdir) \
+		$(DESTDIR)$(mandir)/man8 $(DATADIR)$(configdir)
+
+
+mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(DISTCLEANFILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
+
+maintainer-clean-generic:
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean-am:  mostlyclean-hdr mostlyclean-binPROGRAMS \
+		mostlyclean-noinstPROGRAMS mostlyclean-rpmbinPROGRAMS \
+		mostlyclean-compile mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
+
+clean-am:  clean-hdr clean-binPROGRAMS clean-noinstPROGRAMS \
+		clean-rpmbinPROGRAMS clean-compile clean-tags \
+		clean-depend clean-generic mostlyclean-am
+
+distclean-am:  distclean-hdr distclean-binPROGRAMS \
+		distclean-noinstPROGRAMS distclean-rpmbinPROGRAMS \
+		distclean-compile distclean-tags distclean-depend \
+		distclean-generic clean-am
+
+maintainer-clean-am:  maintainer-clean-hdr maintainer-clean-binPROGRAMS \
+		maintainer-clean-noinstPROGRAMS \
+		maintainer-clean-rpmbinPROGRAMS \
+		maintainer-clean-compile maintainer-clean-tags \
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean-am
+
+mostlyclean:  mostlyclean-recursive mostlyclean-am
+
+clean:  clean-recursive clean-am
+
+distclean:  distclean-recursive distclean-am
+	-rm -f config.status
+
+maintainer-clean:  maintainer-clean-recursive maintainer-clean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f config.status
+
+.PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
+mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
+maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
+mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
+clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS \
+mostlyclean-rpmbinPROGRAMS distclean-rpmbinPROGRAMS \
+clean-rpmbinPROGRAMS maintainer-clean-rpmbinPROGRAMS \
+uninstall-rpmbinPROGRAMS install-rpmbinPROGRAMS mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+uninstall-binSCRIPTS install-binSCRIPTS uninstall-configSCRIPTS \
+install-configSCRIPTS install-man8 uninstall-man8 install-man \
+uninstall-man uninstall-configDATA install-configDATA \
+install-data-recursive uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir \
+mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info dvi installcheck all-recursive-am all-am \
+install-exec-am install-data-am uninstall-am install-exec install-data \
+install uninstall all installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
+
+
+rpm.o:
+	$(COMPILE) \
+		-DRPMNLSDIR=\"$(RPMNLSDIR)\" \
+		-DRPMNLSPACKAGE=\"$(PACKAGE)\" \
+                -DVERSION=\"$(VERSION)\"  \
+		-DLIBRPMALIAS_FILENAME=\"$(LIBRPMALIAS_FILENAME)\" \
+                -DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
+		-c rpm.c
+
+include ./Makefile.inc
+
+install-data-local:
+	ln -s rpm/rpmrc $(libdir)/rpmrc
+	ln -s rpm/rpmpopt $(libdir)/rpmpopt
+
+# FIXME: these should be generated in configure.in
+find-requires: find-requires.sh
+	cp $< $@
+find-provides: find-provides.sh
+	cp $< $@
+rpmrc: lib-rpmrc
+	cp $< $@
+
+# FIXME: these should be checked
 .PHONY:                tar
 tar:
 	rm -rf /tmp/rpm-$(VERSION)
 	make installprefix=/tmp/rpm-$(VERSION)$(ROOT) install
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/SOURCES
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/SPECS
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/SRPMS
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/RPMS
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/BUILD
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)@varprefix@/lib/rpm
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/SOURCES
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/SPECS
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/SRPMS
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/RPMS
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/BUILD
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)/var/local/lib/rpm
 	$(mkinstalldirs) /tmp/rpm-$(VERSION)/var/tmp
 #	Couldn't figure de ARCH value   
 #	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/RPMS/i386
 	cd /tmp/rpm-$(VERSION) ; tar cvf /tmp/rpm-$(VERSION).tar .
-
-.PHONY:		clean
-clean:
-	for d in $(ALLSUBDIRS); do \
-		(cd $$d; $(MAKE) $@) ;\
-	done
-	rm -f *.a *.o core *~ $(PROGS) rpm.shared
-	find . -name "*.orig" -exec rm {} \;
-	find . -name core -exec rm {} \;
-
-.PHONY:		distclean
-distclean:	
-	for d in $(ALLSUBDIRS); do \
-		(cd $$d; $(MAKE) $@) ;\
-	done
-	rm -f *.a *.o core *~ $(PROGS) rpm.shared librpmrc find-provides.sh find-requires.sh
-	rm -f .depend-done Makefile Makefile.inc config.h config.cache 
-	rm -f config.status config.log lib-rpmrc
-
-
-.PHONY:		depend
-depend:
-	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
-	/bin/rm -f .depend ; \
-	$(CPP) -MM $(CFLAGS) $(srcdir)/$(SOURCES) | \
-		sed s+$$topdir_path+$(top_srcdir)+g > .depend ; \
-	for d in $(ALLSUBDIRS); do \
-		(cd $$d; $(MAKE) $@) ;\
-	done
-	/bin/rm -f .depend-done
-	echo > .depend-done
 
 .PHONY: noconfig
 noconfig:
@@ -217,6 +748,6 @@ archive:
 	@echo " "
 	@echo "The final archive is ./rpm-$(VERSION).tar.gz."
 
-ifeq (.depend,$(wildcard .depend))
-include .depend
-endif
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

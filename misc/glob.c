@@ -32,7 +32,6 @@ Cambridge, MA 02139, USA.  */
 
 #if defined (_LIBC) || !defined (__GNU_LIBRARY__)
 
-
 #ifdef	STDC_HEADERS
 #include <stddef.h>
 #endif
@@ -69,17 +68,11 @@ extern int errno;
 #else	/* No standard headers.  */
 
 #ifdef HAVE_STRING_H
-#include <string.h>
 #define	ANSI_STRING
-#else
-#include <strings.h>
 #endif
 #ifdef	HAVE_MEMORY_H
 #include <memory.h>
 #endif
-
-extern char *malloc (), *realloc ();
-extern void free ();
 
 extern void qsort ();
 extern void abort (), exit ();
@@ -152,21 +145,21 @@ extern char *alloca ();
 
 /* Some system header files erroneously define these.
    We want our own definitions from <fnmatch.h> to take precedence.  */
-#undef	FNM_PATHNAME
-#undef	FNM_NOESCAPE
-#undef	FNM_PERIOD
+#undef FNM_PATHNAME
+#undef FNM_NOESCAPE
+#undef FNM_PERIOD
 
 /* Some system header files erroneously define these.
    We want our own definitions from <glob.h> to take precedence.  */
-#undef	GLOB_ERR
-#undef	GLOB_MARK
-#undef	GLOB_NOSORT
-#undef	GLOB_DOOFFS
-#undef	GLOB_NOCHECK
-#undef	GLOB_APPEND
-#undef	GLOB_NOESCAPE
-#undef	GLOB_PERIOD
-
+#undef GLOB_ERR
+#undef GLOB_MARK
+#undef GLOB_NOSORT
+#undef GLOB_DOOFFS
+#undef GLOB_NOCHECK
+#undef GLOB_APPEND
+#undef GLOB_NOESCAPE
+#undef GLOB_PERIOD
+
 __ptr_t (*__glob_opendir_hook) __P ((const char *directory));
 const char *(*__glob_readdir_hook) __P ((__ptr_t stream));
 void (*__glob_closedir_hook) __P ((__ptr_t stream));

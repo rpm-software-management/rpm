@@ -1,11 +1,13 @@
+.deps
+.depend
 Makefile
 mappcinames
 pci-ids-temp.h
 Makefile
 configure
+config.h
 config.log
 config.cache
 config.satus
 config.status
-.depend
 test1

@@ -1,0 +1,10 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define if you have the strerror function.  */
+#undef HAVE_STRERROR
+
+/* Define if you have the <alloca.h> header file.  */
+#undef HAVE_ALLOCA_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H

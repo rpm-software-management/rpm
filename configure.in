@@ -5,7 +5,16 @@ dnl failing causes the script to bomb out with a message. If we can't fix
 dnl it, why check it?
 
 AC_INIT(rpm.c)
-AC_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(config.h)
+AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
+
+AM_INIT_AUTOMAKE(rpm, 2.90)
+
+AC_CANONICAL_HOST
+dnl XXX AM_MAINTAINER_MODE
+
+dnl Set of available languages.
+ALL_LINGUAS="cz de fi fr pt_BR ru sk sr sv tr"
 
 dnl default to not using NLS
 XGETTEXT=""
@@ -13,14 +22,18 @@ LIBINTL=""
 PO=""
 GETTEXTSTUB="gettextstub.o"
 
-MISCOBJS=
+LIBOBJS=
 
-AC_CANONICAL_SYSTEM
+dnl YYY AC_CANONICAL_SYSTEM
 
 RPMCONFIGDIR='$(libdir)/rpm'
 
 dnl Checks for programs.
 AC_PROG_CC
+if test "$ac_cv_prog_gcc" = yes; then
+    CFLAGS="$CFLAGS -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+fi
+
 AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
@@ -148,6 +161,11 @@ AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}")
 AC_AIX
 AC_MINIX
 AC_ISC_POSIX
+
+dnl This test must precede tests of compiler characteristics like
+dnl that for the inline keyword, since it may change the degree to
+dnl which the compiler supports such features.
+AM_C_PROTOTYPES
 
 AC_PROG_AWK
 AC_PROG_LN_S
@@ -325,7 +343,7 @@ AC_CHECK_FUNC(dbopen, [],
            )
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
-	MISCOBJS=fakefork.o])
+	LIBOBJS=fakefork.o])
 
 dnl AmigaOS and IXEmul have a fork() dummy
     case "$target" in
@@ -362,11 +380,11 @@ AC_CHECK_HEADERS(sys/mman.h sys/param.h sys/resource.h sys/utsname.h sys/wait.h)
 # solaris2.4 and sinix 5.42 have broken fnmatch. get glob also to be safe.
 case $target in
     *-*-solaris2.4|mips-sni-sysv4*) 
-	MISCOBJS="$MISCOBJS glob.o fnmatch.o"
+	LIBOBJS="$LIBOBJS glob.o fnmatch.o"
 	;;
     *)
-	AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
-	AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
+	AC_CHECK_HEADERS(glob.h,,LIBOBJS="$LIBOBJS glob.o")
+	AC_CHECK_HEADERS(fnmatch.h,,LIBOBJS="$LIBOBJS fnmatch.o")
 	;;
 esac
 
@@ -426,18 +444,38 @@ AC_TYPE_MODE_T
 AC_TYPE_PID_T
 
 dnl Checks for library functions.
-AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), MISCOBJS="$MISCOBJS inet_aton.o")
-AC_CHECK_FUNC(realpath, AC_DEFINE(HAVE_REALPATH), MISCOBJS="$MISCOBJS realpath.o")
+AC_FUNC_ALLOCA
+
+dnl XXX AC_FUNC_FNMATCH
+dnl XXX if test $ac_cv_func_fnmatch_works = no; then
+dnl XXX   LIBOBJS="$LIBOBJS fnmatch.o"
+dnl XXX   AC_DEFINE_UNQUOTED(fnmatch, rpl_fnmatch)
+dnl XXX fi
+
+dnl XXX AC_FUNC_MEMCMP
+dnl XXX AC_FUNC_MMAP
+dnl XXX AC_TYPE_SIGNAL
+dnl XXX AC_FUNC_STRCOLL
+dnl XXX AC_FUNC_STRFTIME
+dnl XXX AC_FUNC_UTIME_NULL
+dnl XXX AC_FUNC_VFORK
+dnl XXX AC_FUNC_VPRINTF
+dnl XXX AC_CHECK_FUNCS(gethostname lchown mkdir mkfifo rmdir select uname)
+
+dnl XXX AC_REPLACE_FUNCS(getcwd getwd glob inet_aton putenv realpath strdup strerror strtol strtoul strspn strstr)
+
+AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), LIBOBJS="$LIBOBJS inet_aton.o")
+AC_CHECK_FUNC(realpath, AC_DEFINE(HAVE_REALPATH), LIBOBJS="$LIBOBJS realpath.o")
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL),[
     AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R), [
       AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="$LIBS -lc_r"; 
 					AC_DEFINE(HAVE_GETMNTINFO_R)],
-                 MISCOBJS="$MISCOBJS getmntent.o")])])])
-AC_CHECK_FUNC(strerror, [], MISCOBJS="$MISCOBJS strerror.o")
-AC_CHECK_FUNC(strtol, [], MISCOBJS="$MISCOBJS strtol.o")
-AC_CHECK_FUNC(strtoul, [], MISCOBJS="$MISCOBJS strtoul.o")
-AC_CHECK_FUNC(strdup, [], MISCOBJS="$MISCOBJS strdup.o")
+                 LIBOBJS="$LIBOBJS getmntent.o")])])])
+AC_CHECK_FUNC(strerror, [], LIBOBJS="$LIBOBJS strerror.o")
+AC_CHECK_FUNC(strtol, [], LIBOBJS="$LIBOBJS strtol.o")
+AC_CHECK_FUNC(strtoul, [], LIBOBJS="$LIBOBJS strtoul.o")
+AC_CHECK_FUNC(strdup, [], LIBOBJS="$LIBOBJS strdup.o")
 LCHOWN=no
 AC_CHECK_FUNC(lchown, [LCHOWN=yes; AC_DEFINE(HAVE_LCHOWN)])
 
@@ -513,6 +551,7 @@ AC_DEFINE_UNQUOTED(ROOT_GROUP, "$ROOT_GROUP")
 AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
 
+AM_GNU_GETTEXT
 
 if test "x$varprefix" = "x"; then
     varprefix=`echo $prefix | sed 's/usr/var/'`
@@ -540,7 +579,7 @@ elif echo "$build_os" | grep sunos > /dev/null; then
 	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
 	AC_DEFINE(NEED_STRINGS_H)
 	AC_DEFINE(NEED_MYREALLOC)
-	MISCOBJS="$MISCOBJS myrealloc.o"
+	LIBOBJS="$LIBOBJS myrealloc.o"
 elif echo "$build_os" | grep hpux > /dev/null; then
 	LIBDL=-ldld
 	echo "hacking things up for hpux"
@@ -590,13 +629,13 @@ else
 fi
 
 
-if test -n "$MISCOBJS" ; then
+if test -n "$LIBOBJS" ; then
 	MISCDIR=misc
 	LIBMISC=-lmisc
 	MISCPATH=misc/libmisc.a
 fi
 
-AC_SUBST(MISCOBJS)
+AC_SUBST(LIBOBJS)
 AC_SUBST(INCPATH)
 AC_SUBST(LIBINTL)
 AC_SUBST(varprefix)
@@ -621,14 +660,8 @@ AC_SUBST(RPMCONFIGDIR)
 AC_SUBST(MKDIR_P)
 AC_SUBST(LDFLAGS_STATIC)
 
-if test -d newbuild ; then
-   NBMAKEFILE=newbuild/Makefile
-else
-   NBMAKEFILE=
-fi
-
 # XXX Propagate -lucb to popt ...
 export LIBS INCPATH
 
 AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT(Makefile Makefile.inc lib-rpmrc macros lib/Makefile build/Makefile $NBMAKEFILE tools/Makefile po/Makefile misc/Makefile)
+AC_OUTPUT(Makefile Makefile.inc lib-rpmrc macros lib/Makefile build/Makefile tools/Makefile scripts/Makefile misc/Makefile po/Makefile intl/Makefile)

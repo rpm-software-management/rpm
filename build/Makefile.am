@@ -1,0 +1,23 @@
+# Makefile for rpmbuild library.
+
+AUTOMAKE_OPTIONS = 1.3 foreign
+
+INCLUDES = -I../lib @INCPATH@
+
+include_HEADERS = rpmbuild.h rpmspec.h
+noinst_HEADERS = buildio.h myftw.h
+
+lib_LIBRARIES = librpmbuild.a
+librpmbuild_a_SOURCES = \
+	build.c expression.c files.c misc.c myftw.c names.c pack.c \
+	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
+	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
+	parseSpec.c reqprov.c spec.c
+
+include ../Makefile.inc
+
+pack.o: pack.c
+	$(COMPILE) -DVERSION=\"$(VERSION)\" -o $@ -c $<
+
+files.o: files.c
+	$(COMPILE) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<

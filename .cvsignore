@@ -1,3 +1,7 @@
+.deps
+.depend
+.depend-done
+Makefile
 rpm
 rpm.shared
 rpm2cpio
@@ -8,9 +12,6 @@ config.guess
 config.cache
 Makefile.inc
 config.status
-Makefile
-.depend
-.depend-done
 *.tar.gz
 config.log
 configure
