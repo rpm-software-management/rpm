@@ -98,14 +98,14 @@ ALWAYS_DETAILED_SEC  = NO
 # path before files name in the file list and in the header files. If set
 # to NO the shortest path that makes the file name unique will be used.
 
-FULL_PATH_NAMES      = NO
+FULL_PATH_NAMES      = YES
 
 # If the FULL_PATH_NAMES tag is set to YES then the STRIP_FROM_PATH tag
 # can be used to strip a user defined part of the path. Stripping is
 # only done if one of the specified strings matches the left-hand part of
 # the path.
 
-STRIP_FROM_PATH      =
+STRIP_FROM_PATH      = @TOP_SOURCEDIR@/
 
 # The INTERNAL_DOCS tag determines if documentation
 # that is typed after a \internal command is included. If the tag is set 
@@ -180,7 +180,6 @@ INPUT                = \
 	./build.c \
 	./build.h \
 	./config.h \
-	./build.c \
 	./convertdb.c \
 	./oldrpmdb.c \
 	./rpm.c \
@@ -471,7 +470,7 @@ ENABLE_PREPROCESSING = YES
 # names in the source code. If set to NO (the default) only conditional 
 # compilation will be performed.
 
-MACRO_EXPANSION      = NO
+MACRO_EXPANSION      = YES
 
 # If the SEARCH_INCLUDES tag is set to YES (the default) the includes files
 # in the INCLUDE_PATH (see below) will be search if a #include is found.
