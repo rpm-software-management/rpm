@@ -401,6 +401,7 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     int x = h->entries_used;
     char **spp;
     char *sp;
+    int t;
 
     /* First find the tag */
     tag = htonl(tag);
@@ -411,13 +412,16 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     if (x == 0) {
 	return 0;
     }
-    *type = ntohl(index->type);
+    t = (int) ntohl(index->type);
+    if (type) {
+	*type = t;
+    }
     if (c) {
 	*c = ntohl(index->count);
     }
 
     /* Now look it up */
-    switch (*type) {
+    switch (t) {
     case INT64_TYPE:
     case INT32_TYPE:
     case INT16_TYPE:
@@ -444,7 +448,7 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	}
 	break;
     default:
-	fprintf(stderr, "Data type %d not supprted\n", (int) *type);
+	fprintf(stderr, "Data type %d not supprted\n", t);
 	exit(1);
     }
 
