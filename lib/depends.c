@@ -55,13 +55,10 @@ static void alFree(struct availableList * al)
 	headerFree(al->list[i].h);
 
 	if (al->list[i].relocs) {
-	    r = al->list[i].relocs;
-	    while (r->oldPath || r->newPath) {
+	    for (r = al->list[i].relocs; (r->oldPath || r->newPath); r++) {
 		if (r->oldPath) xfree(r->oldPath);
 		if (r->newPath) xfree(r->newPath);
-		r++;
 	    }
-
 	    free(al->list[i].relocs);
 	}
     }

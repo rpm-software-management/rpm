@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-06 18:47-0400\n"
+"POT-Creation-Date: 1999-08-06 19:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1976,31 +1976,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:554
+#: ../lib/depends.c:551
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:596
+#: ../lib/depends.c:593
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:721
+#: ../lib/depends.c:718
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:760
+#: ../lib/depends.c:757
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:813 ../lib/depends.c:1116
+#: ../lib/depends.c:810 ../lib/depends.c:1113
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:905
+#: ../lib/depends.c:902
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -3217,12 +3217,12 @@ msgstr ""
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:356
+#: ../lib/transaction.c:357
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:469
+#: ../lib/transaction.c:472
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

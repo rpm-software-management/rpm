@@ -228,13 +228,10 @@ static Header relocateFileList(struct availablePackage * alp,
 {
     int numValid, numRelocations;
     int i, j, rc;
-    rpmRelocation * nextReloc, * relocations = NULL;
     rpmRelocation * rawRelocations = alp->relocs;
+    rpmRelocation * relocations = NULL;
     const char ** validRelocations;
     const char ** names;
-    const char ** origNames;
-    int len = 0;
-    char * newName;
     int_32 fileCount;
     Header h;
     int relocated = 0;
@@ -256,6 +253,7 @@ static Header relocateFileList(struct availablePackage * alp,
     }
     relocations = alloca(sizeof(*relocations) * numRelocations);
 
+    /* Build sorted relocation list from raw relocations. */
     for (i = 0; i < numRelocations; i++) {
 	/* FIXME: default relocations (oldPath == NULL) need to be handled
 	   in the UI, not rpmlib */
@@ -278,6 +276,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	}
 
 	if (relocations[i].newPath) {
+	    /* Verify that the relocation's old path is in the header. */
 	    for (j = 0; j < numValid; j++)
 		if (!strcmp(validRelocations[j],
 			    relocations[i].oldPath)) break;
@@ -304,6 +303,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	if (!madeSwap) break;
     }
 
+    /* Add relocation values to the header */
     if (numValid) {
 	const char ** actualRelocations;
 	actualRelocations = malloc(sizeof(*actualRelocations) * numValid);
@@ -326,14 +326,15 @@ static Header relocateFileList(struct availablePackage * alp,
 	xfree(validRelocations);
     }
 
-    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &names,
-		   &fileCount);
+    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &names, &fileCount);
 
-    /* go through things backwards so that /usr/local relocations take
-       precedence over /usr ones */
+    /* Relocate all file paths.
+     * Go through sorted file and relocation lists backwards so that /usr/local
+     * relocations take precedence over /usr ones.
+     */
     for (i = fileCount - 1; i >= 0; i--) {
+	int len = 0;
 	for (j = numRelocations - 1; j >= 0; j--) {
-	    nextReloc = relocations + j;
 	    len = strlen(relocations[j].oldPath);
 	    rc = (!strncmp(relocations[j].oldPath, names[i], len) &&
 		    ((names[i][len] == '/') || !names[i][len]));
@@ -341,33 +342,35 @@ static Header relocateFileList(struct availablePackage * alp,
 	}
 
 	if (j >= 0) {
-	    nextReloc = relocations + j;
-	    if (nextReloc->newPath) {
-		newName = alloca(strlen(nextReloc->newPath) +
-				 strlen(names[i]) + 1);
-		strcpy(newName, nextReloc->newPath);
-		strcat(newName, names[i] + len);
+	    if (relocations[j].newPath) { /* Relocate the path */
+		const char *s = relocations[j].newPath;
+		char *t = alloca(strlen(s) + strlen(names[i]) - len + 1);
+		strcpy(t, s);
+		strcat(t, names[i] + len);
 		rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
-			   names[i], newName);
-		names[i] = newName;
+			   names[i], t);
+		names[i] = t;
 		relocated = 1;
-	    } else if (actions) {
+	    } else /* On install, a relocate to NULL means skip the file */
+	    if (actions) {
 		actions[i] = FA_SKIPNSTATE;
 		rpmMessage(RPMMESS_DEBUG, _("excluding %s\n"), names[i]);
 	    }
 	}
     }
 
+    /* Save original filenames in header and replace (relocated) filenames. */
     if (relocated) {
+	const char ** origNames;
 	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &origNames, NULL);
 	headerAddEntry(h, RPMTAG_ORIGFILENAMES, RPM_STRING_ARRAY_TYPE,
 			  origNames, fileCount);
-	free(origNames);
+	xfree(origNames);
 	headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE,
 			  names, fileCount);
     }
 
-    free(names);
+    xfree(names);
 
     return h;
 }
@@ -377,7 +380,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
     /* As the problem sets are generated in an order solely dependent
        on the ordering of the packages in the transaction, and that
        ordering can't be changed, the problem sets must be parallel to
-       on another. Additionally, the filter set must be a subset of the
+       one another. Additionally, the filter set must be a subset of the
        target set, given the operations available on transaction set.
        This is good, as it lets us perform this trim in linear time, rather
        then logarithmic or quadratic. */
@@ -694,7 +697,8 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	/* We need to figure out the current fate of this file. So,
 	   work backwards from this file and look for a final action
 	   we can work against. */
-	for (j = 0; recs[j] != fi; j++);
+	for (j = 0; recs[j] != fi; j++)
+	    ;
 
 	otherPkgNum = j - 1;
 	otherFileNum = -1;			/* keep gcc quiet */
@@ -915,7 +919,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int last;
     int lastFailed;
     int beingRemoved;
-    char * currDir, * chptr;
+    const char * currDir;
     FD_t fd;
     const char ** filesystems;
     int filesystemCount;
@@ -924,6 +928,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
     /* FIXME: what if the same package is included in ts twice? */
 
+    /* Get available space on mounted file systems */
     if (!(ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
 		!rpmGetFilesystemList(&filesystems, &filesystemCount)) {
 	struct stat sb;
@@ -975,6 +980,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     *newProbs = probs;
     hdrs = alloca(sizeof(*hdrs) * ts->addedPackages.size);
 
+    /* ===============================================
+     * For packages being installed:
+     * - verify package arch/os.
+     * - verify package epoch:version-release is newer.
+     * - count files.
+     * For packages being removed:
+     * - count files.
+     */
     /* The ordering doesn't matter here */
     for (alp = ts->addedPackages.list; (alp - ts->addedPackages.list) <
 	    ts->addedPackages.size; alp++) {
@@ -1025,6 +1038,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	}
     }
 
+    /* ===============================================
+     * Initialize file list:
+     */
     flEntries = ts->addedPackages.size + ts->numRemovedPackages;
     flList = alloca(sizeof(*flList) * (flEntries));
 
@@ -1047,6 +1063,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		continue;
 	    }
 
+	    /* Allocate file actions (and initialize to RPMFILE_STATE_NORMAL) */
 	    fi->actions = calloc(sizeof(*fi->actions), fi->fc);
 	    hdrs[i] = relocateFileList(alp, probs, alp->h, fi->actions,
 			          ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
@@ -1108,19 +1125,28 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	    /* 0 makes for noops */
 	    fi->replacedSizes = calloc(fi->fc, sizeof(*fi->replacedSizes));
+
+	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    skipFiles(fi, flags & RPMTRANS_FLAG_NODOCS);
 	}
 
         fi->fps = malloc(fi->fc * sizeof(*fi->fps));
     }
 
-    chptr = currentDirectory();
-    currDir = alloca(strlen(chptr) + 1);
-    strcpy(currDir, chptr);
-    free(chptr);
+    /* There are too many returns to plug this leak. Use alloca instead. */
+    {  char *s = currentDirectory();
+       char *t = alloca(strlen(s) + 1);
+       strcpy(t, s);
+       currDir = t;
+       free(s);
+    }
+
     chdir("/");
     chroot(ts->root);
 
+    /* ===============================================
+     * Add fingerprint for each file not skipped.
+     */
     for (fi = flList; (fi - flList) < flEntries; fi++) {
 	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
 	for (i = 0; i < fi->fc; i++) {
@@ -1131,6 +1157,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
     NOTIFY((NULL, RPMCALLBACK_TRANS_START, 6, flEntries, NULL, notifyData));
 
+    /* ===============================================
+     * Identify shared files:
+     */
     for (fi = flList; (fi - flList) < flEntries; fi++) {
 	int k, ro;
 	int knownBad;
@@ -1225,6 +1254,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     chroot(".");
     chdir(currDir);
 
+    /* ===============================================
+     * Free unused memory.
+     */
     htFree(ht);
 
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
@@ -1252,6 +1284,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	return ts->orderCount;
     }
 
+    /* ===============================================
+     * Install and remove packages.
+     */
     lastFailed = -2;
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
 	if (ts->order[oc].type == TR_ADDED) {
