@@ -5,6 +5,7 @@ use strict;
 use DynaLoader;
 use Data::Dumper;
 use Cwd qw/realpath/;
+use File::Basename;
 
 use vars qw/$VERSION/;
 $VERSION = '0.61';
@@ -65,7 +66,8 @@ sub open_package {
   my $hdr = RPM2::_read_package_info(*FH, $flags);
   close FH;
 
-  $hdr = RPM2::Header->_new_raw($hdr, realpath($file));
+  my ($filename, $path) = (basename($file), realpath(dirname($file)));
+  $hdr = RPM2::Header->_new_raw($hdr, File::Spec->catfile($path, $filename));
   return $hdr;
 }
 
