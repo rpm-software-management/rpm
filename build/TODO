@@ -1,3 +1,5 @@
+option to %setup to *not* do chown/chgrp/chmod
+
 > Most of my spec files have empty Distribution: and Vendor: tag because I
 > really don't care.  Now, empty tags are frowned upon.  So, I try to comment
 > out the lines and get a funny error message:
