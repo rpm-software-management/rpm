@@ -19,6 +19,8 @@
 	- add per-target macrofiles to search path.
 	- take globalMacroContext out of macro api.
 	- fix: flush all macros between builds.
+	- add name/version/release macros during src.rpm install.
+	- attempt mkdir sourcedir/specdir during src.rpm install.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-01 16:34-0500\n"
+"POT-Creation-Date: 1999-04-02 23:54-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2432,96 +2432,101 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: ../lib/install.c:75
+#: ../lib/install.c:100
 msgid "source package expected, binary found"
 msgstr ""
 
-#: ../lib/install.c:155 ../lib/uninstall.c:111
+#: ../lib/install.c:182 ../lib/uninstall.c:111
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: ../lib/install.c:172
+#: ../lib/install.c:199
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:180
+#: ../lib/install.c:207
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:207
+#: ../lib/install.c:234
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
-#: ../lib/install.c:275
+#: ../lib/install.c:302
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: ../lib/install.c:338
+#: ../lib/install.c:365
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:343
+#: ../lib/install.c:370
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:373
+#: ../lib/install.c:400
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:409
+#: ../lib/install.c:436
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:413 ../lib/install.c:750 ../lib/uninstall.c:337
+#: ../lib/install.c:440 ../lib/install.c:804 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:496
+#: ../lib/install.c:523
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:604
+#: ../lib/install.c:631
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:605
+#: ../lib/install.c:632
 msgid " on file "
 msgstr ""
 
-#: ../lib/install.c:644
+#: ../lib/install.c:672
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:650 ../lib/install.c:656
+#: ../lib/install.c:683 ../lib/install.c:705
+#, c-format
+msgid "cannot create %s"
+msgstr ""
+
+#: ../lib/install.c:690 ../lib/install.c:712
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:661
+#: ../lib/install.c:694
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:662
+#: ../lib/install.c:716
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:695 ../lib/install.c:727
+#: ../lib/install.c:749 ../lib/install.c:781
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:748
+#: ../lib/install.c:802
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
@@ -2628,7 +2633,7 @@ msgstr ""
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: ../lib/misc.c:341 ../lib/misc.c:347 ../lib/misc.c:354
+#: ../lib/misc.c:342 ../lib/misc.c:348 ../lib/misc.c:355
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""

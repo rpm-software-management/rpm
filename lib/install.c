@@ -58,6 +58,31 @@ static void freeFileMemory(struct fileMemory fileMem);
 static void trimChangelog(Header h);
 static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList);
 
+/* XXX add more tags */
+static struct tagMacro {
+	const char *	macroname;
+	int		tag;
+} tagMacros[] = {
+	{ "name",	RPMTAG_NAME },
+	{ "version",	RPMTAG_VERSION },
+	{ "release",	RPMTAG_RELEASE },
+	{ NULL, 0 }
+};
+
+static int rpmInstallLoadMacros(Header h) {
+    struct tagMacro *tagm;
+    const char *body;
+    int type;
+
+    for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
+	if (headerGetEntry(h, tagm->tag, &type, (void **) &body, NULL) &&
+	    type == RPM_STRING_TYPE) {
+		addMacro(NULL, tagm->macroname, NULL, body, -1);
+	}
+    }
+    return 0;
+}
+
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
@@ -88,6 +113,8 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
 	    *cookie = strdup(*cookie);
 	}
     }
+
+    rpmInstallLoadMacros(h);
     
     rc = installSources(h, rootdir, fd, specFile, notify, notifyData);
     if (h != NULL) headerFree(h);
@@ -639,26 +666,53 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
     int currDirLen;
     uid_t currUid = getuid();
     gid_t currGid = getgid();
+    struct stat st;
     int rc = 0;
 
     rpmMessage(RPMMESS_DEBUG, _("installing a source package\n"));
 
     realSourceDir = rpmGetPath(rootdir, "/%{_sourcedir}", NULL);
-    realSpecDir = rpmGetPath(rootdir, "/%{_specdir}", NULL);
-
+    if (stat(realSourceDir, &st) < 0) {
+	switch (errno) {
+	case ENOENT:
+	    /* XXX this will only create last component of directory path */
+	    if (mkdir(realSourceDir, 0755) == 0)
+		break;
+	    /* fall thru */
+	default:
+	    rpmError(RPMERR_CREATE, _("cannot create %s"), realSourceDir);
+	    rc = 2;
+	    goto exit;
+	    break;
+	}
+    }
     if (access(realSourceDir, W_OK)) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSourceDir);
 	rc = 2;
 	goto exit;
     }
+    rpmMessage(RPMMESS_DEBUG, _("sources in: %s\n"), realSourceDir);
 
+    realSpecDir = rpmGetPath(rootdir, "/%{_specdir}", NULL);
+    if (stat(realSpecDir, &st) < 0) {
+	switch (errno) {
+	case ENOENT:
+	    /* XXX this will only create last component of directory path */
+	    if (mkdir(realSpecDir, 0755) == 0)
+		break;
+	    /* fall thru */
+	default:
+	    rpmError(RPMERR_CREATE, _("cannot create %s"), realSpecDir);
+	    rc = 2;
+	    goto exit;
+	    break;
+	}
+    }
     if (access(realSpecDir, W_OK)) {
 	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSpecDir);
 	rc = 2;
 	goto exit;
     }
-
-    rpmMessage(RPMMESS_DEBUG, _("sources in: %s\n"), realSourceDir);
     rpmMessage(RPMMESS_DEBUG, _("spec file in: %s\n"), realSpecDir);
 
     if (h && headerIsEntry(h, RPMTAG_FILENAMES)) {
