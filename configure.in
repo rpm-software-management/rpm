@@ -38,11 +38,30 @@ AC_CHECK_FUNC(realpath, REALPATH='', REALPATH='realpath.o' LIBMISC='-lmisc')
 AC_CHECK_FUNC(ftw, FTW='', FTW='ftw.o' LIBMISC='-lmisc')
 AC_CHECK_FUNC(getopt_long, GETOPT='' GETOPT1='', GETOPT='getopt.o' GETOPT1='getopt1.o' LIBMISC='-lmisc')
 
+if test "x$varprefix" = "x"; then
+    varprefix=`echo $prefix | sed 's/usr/var/'`
+    test "x$prefix" = xNONE && varprefix=`echo $ac_default_prefix | sed 's/usr/var/'`
+fi
+
+if test "x$tmpdir" = "x"; then
+    if test -d $varprefix/tmp; then
+	tmpdir=$varprefix/tmp
+    else
+	if test -d /var/tmp; then
+	    tmpdir=/var/tmp
+	else
+	    tmpdir=/tmp
+	fi
+    fi
+fi
+
 AC_SUBST(REALPATH)
 AC_SUBST(FTW)
 AC_SUBST(GETOPT)
 AC_SUBST(GETOPT1)
 AC_SUBST(LIBMISC)
 AC_SUBST(LIBINTL)
+AC_SUBST(varprefix)
+AC_SUBST(tmpdir)
 
-AC_OUTPUT(Makefile lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
+AC_OUTPUT(Makefile lib-rpmrc lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
