@@ -1,0 +1,120 @@
+-I.
+
+#+partial
++forcehints
+
+
+-warnunixlib
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-branchstate
+-compdef
+-compmempass
+-declundef
+-evalorderuncon
+-exitarg
+-exportheader
+-exportheadervar
+-exportlocal
+-formatconst
+-globs
+-globstate
+-internalglobs
+-macroredef
+-modfilesys
+-modnomods
+-modobserver
+-modobserveruncon
+-modunconnomods
+-mustmod
+-noeffectuncon
+-noparams
+-noret
+-nullassign
+-nullderef
+-nullpass
+-nullptrarith
+-nullret
+-nullstate
+-paramuse
+-protoparammatch
+-redecl
+-redef
+-retalias
+-retvalint
+-retvalother
+-shadow
+-sizeoftype
+-type
+-uniondef
+-usereleased
+-usevarargs
+-varuse
+-warnlintcomments
+
+-dependenttrans
+-immediatetrans
+-kepttrans
+-observertrans
+-onlytrans
+-readonlytrans
+-statictrans
+-temptrans
+-unqualifiedtrans
+
+-casebreak
+-looploopbreak
+-looploopcontinue
+-loopswitchbreak
+-switchloopbreak
+-switchswitchbreak
+-unreachable
+-whileempty
+
+# --- +partial artifacts
+
+# --- not-yet at strict level
+-bitwisesigned		# pita
+-elseifcomplete		# 95 occurences
+-exportconst		# 839 occurences
+-exportfcn
+-exporttype
+-exportvar
+-fielduse		# 1 occurence <bits/sigset.h>
+-forblock		# tedious
+-ifblock		# tedious
+-incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
+-matchfields		# <bits/ipc.h> heartburn
+-namechecks		# tedious ANSI compliance checks
+-ptrarith		# tedious
+
+-compdestroy
+-mustdefine
+-shiftimplementation
+-shiftnegative
+
+-strictops
+-strictusereleased
+-whileblock		# tedious
+
+# --- not-yet at checks level
+-ansi-reserved
++enumint
+-mustfree
+-predboolptr
+-usedef
+
+# --- not-yet at standard level
+-boolops
+-predboolint
++boolint
++charint
++ignorequals
++matchanyintegral
