@@ -17,14 +17,20 @@ char *getVar(int var)
 
 int getBooleanVar(int var) {
     char * val;
+    int num;
+    char * chptr;
 
     val = getVar(var);
     if (!val) return 0;
 
     if (val[0] == 'y' || val[0] == 'Y') return 1;
-    if (!strcmp(val, "0")) return 0;
 
-    return 1;
+    num = strtol(val, &chptr, 0);
+    if (chptr && *chptr == '\0') {
+	return num != 0;
+    }
+
+    return 0;
 }
 
 void setVar(int var, char *val)
