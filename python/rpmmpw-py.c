@@ -21,7 +21,7 @@
 static int _mpw_debug = 0;
 
 /*@unchecked@*/ /*@observer@*/
-static const char initialiser_name[] = "rpm.mpw";
+static const char initialiser_name[] = "mpz";
 
 /*@unchecked@*/ /*@observer@*/
 static const struct {
@@ -2149,7 +2149,7 @@ PyTypeObject mpw_Type = {
 	(getattrofunc) mpw_getattro,	/* tp_getattro */
 	(setattrofunc) mpw_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,		/* tp_flags */
 	mpw_doc,			/* tp_doc */
 #if Py_TPFLAGS_HAVE_ITER
 	(traverseproc)0,		/* tp_traverse */

@@ -9,7 +9,7 @@ PYVER= @WITH_PYTHON_VERSION@
 pylibdir = $(shell python -c 'import sys; print sys.path[1]')
 pyincdir = $(prefix)/include/python${PYVER}
 
-SUBDIRS = rpmdb test
+SUBDIRS = rpmdb mpw
 
 EXTRA_DIST = rpmdebug-py.c
 
