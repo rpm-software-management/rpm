@@ -1155,6 +1155,103 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, mpw* result, mpw* 
 }
 #endif
 
+#ifndef ASM_MPEXTGCD_W
+/* needs workspace of (6*size+6) words */
+/* used to compute the modular inverse */
+int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, mpw* result, mpw* wksp)
+{
+	/*
+	 * For computing a modular inverse, pass the modulus as ndata and the number
+     * to be inverted as xdata.
+	 *
+	 * Fact: if a element of Zn, then a is invertible if and only if gcd(a,n) = 1
+	 * Hence: if ndata is even, then x must be odd, otherwise the gcd(x,n) >= 2
+	 *
+	 * The calling routine must guarantee this condition.
+	 */
+
+	register size_t sizep = size+1;
+	register int full;
+
+	mpw* udata = wksp;
+	mpw* vdata = udata+sizep;
+	mpw* adata = vdata+sizep;
+	mpw* bdata = adata+sizep;
+	mpw* cdata = bdata+sizep;
+	mpw* ddata = cdata+sizep;
+
+	mpsetx(sizep, udata, size, ndata);
+	mpsetx(sizep, vdata, size, xdata);
+	mpzero(sizep, bdata);
+	mpsetw(sizep, ddata, 1);
+
+	if ((full = mpeven(sizep, udata)))
+	{
+		mpsetw(sizep, adata, 1);
+		mpzero(sizep, cdata);
+	}
+
+	while (1)
+	{
+		while (mpeven(sizep, udata))
+		{
+			mpdivtwo(sizep, udata);
+
+			if ((full && mpodd(sizep, adata)) || mpodd(sizep, bdata))
+			{
+				if (full) mpaddx(sizep, adata, size, xdata);
+				mpsubx(sizep, bdata, size, ndata);
+			}
+
+			if (full) mpsdivtwo(sizep, adata);
+			mpsdivtwo(sizep, bdata);
+		}
+		while (mpeven(sizep, vdata))
+		{
+			mpdivtwo(sizep, vdata);
+
+			if ((full && mpodd(sizep, cdata)) || mpodd(sizep, ddata))
+			{
+				if (full) mpaddx(sizep, cdata, size, xdata);
+				mpsubx(sizep, ddata, size, ndata);
+			}
+
+			if (full) mpsdivtwo(sizep, cdata);
+			mpsdivtwo(sizep, ddata);
+		}
+		if (mpge(sizep, udata, vdata))
+		{
+			mpsub(sizep, udata, vdata);
+			if (full) mpsub(sizep, adata, cdata);
+			mpsub(sizep, bdata, ddata);
+		}
+		else
+		{
+			mpsub(sizep, vdata, udata);
+			if (full) mpsub(sizep, cdata, adata);
+			mpsub(sizep, ddata, bdata);
+		}
+		if (mpz(sizep, udata))
+		{       
+			if (mpisone(sizep, vdata))
+			{
+				if (result)
+				{
+					mpsetx(size, result, sizep, ddata);
+					if (*ddata & MP_MSBMASK)
+					{
+						/* keep adding the modulus until we get a carry */
+						while (!mpadd(size, result, ndata));
+					} 
+				}
+				return 1; 
+			}   
+			return 0;
+		}
+	}
+}
+#endif
+
 #ifndef ASM_MPPNDIV
 mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 {

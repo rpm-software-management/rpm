@@ -181,3 +181,20 @@ void mpnsethex(mpnumber* n, const char* hex)
 	}
 }
 /*@=usedef @*/
+
+int mpninv(mpnumber* inv, const mpnumber* k, const mpnumber* mod)
+{
+	int rc = 0;
+	size_t size = mod->size;
+	mpw* wksp = (mpw*) malloc((7*size+6) * sizeof(mpw));
+
+	if (wksp)
+	{
+		mpnsize(inv, size);
+		mpsetx(size, wksp, k->size, k->data);
+		rc = mpextgcd_w(size, wksp, mod->data, inv->data, wksp+size);
+		free(wksp);
+	}
+
+	return rc;
+}

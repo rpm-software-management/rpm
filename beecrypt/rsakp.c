@@ -45,7 +45,8 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 
 	if (temp)
 	{
-		mpbarrett r, psubone, qsubone, phi;
+		mpbarrett r, psubone, qsubone;
+		mpnumber phi;
 
 		nsize = pqsize << 1;
 
@@ -67,7 +68,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 		mpbzero(&r);
 		mpbzero(&psubone);
 		mpbzero(&qsubone);
-		mpbzero(&phi);
+		mpnzero(&phi);
 
 		while (1)
 		{
@@ -120,8 +121,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 		mpbset(&phi, nsize, temp);
 
 		/* compute d = inv(e) mod phi */
-		mpnsize(&kp->d, nsize);
-		(void) mpbinv_w(&phi, kp->e.size, kp->e.data, kp->d.data, temp);
+		(void) mpninv(&kp->d, &kp->e, &phi);
 
 		/* compute d1 = d mod (p-1) */
 		mpnsize(&kp->d1, pqsize);
@@ -132,8 +132,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 		mpbmod_w(&qsubone, kp->d.data, kp->d2.data, temp);
 
 		/* compute c = inv(q) mod p */
-		mpnsize(&kp->c, pqsize);
-		(void) mpbinv_w(&kp->p, pqsize, kp->q.modl, kp->c.data, temp);
+		(void) mpninv(&kp->c, (const mpnumber*) &kp->q, (const mpnumber*) &kp->p);
 
 		free(temp);
 		/*@=usedef@*/

@@ -41,36 +41,6 @@
 # define BEECRYPTAPI
 #endif
 
-/* Starting from GCC 3.2, the compiler seems smart enough to figure
- * out that we're trying to do a rotate without having to specify it.
- */
-#if defined(__GNUC__) && (__GNUC__ < 3 || __GNUC_MINOR__ < 2)
-# if defined(__i386__)
-static inline uint32_t _rotl32(uint32_t x, const unsigned char n)
-{
-	__asm__("roll %2,%0"
-		:	"=r" (x)
-		:	"0" (x), "I" (n));
-
-	return x;
-}
-
-#define ROTL32(x, n) _rotl32(x, n)
-
-static inline uint32_t _rotr32(uint32_t x, const unsigned char n)
-{
-	__asm__("rorl %2,%0"
-		:	"=r" (x)
-		:	"0" (x), "I" (n));
-
-	return x;
-}
-
-#define ROTR32(x, n) _rotr32(x, n)
-
-# endif
-#endif
-
 #ifndef ROTL32
 # define ROTL32(x, s) (((x) << (s)) | ((x) >> (32 - (s))))
 #endif

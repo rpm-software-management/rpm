@@ -95,6 +95,12 @@ BEECRYPTAPI /*@unused@*/
 void mpnsethex(/*@out@*/ mpnumber* n, const char* hex)
 	/*@modifies n->size, n->data @*/;
 
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+int mpninv(/*@out@*/ mpnumber* inv, const mpnumber* k, const mpnumber* mod)
+	/*@modifies inv->size, inv->data @*/;
+
 #ifdef __cplusplus
 }
 #endif

@@ -651,6 +651,12 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, /*@out@*/ mpw* res
 
 /**
  */
+BEECRYPTAPI
+int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ydata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
+	/*@modifies result, wksp @*/;
+
+/**
+ */
 /*@-exportlocal@*/
 BEECRYPTAPI
 mpw mppndiv(mpw xhi, mpw xlo, mpw y)

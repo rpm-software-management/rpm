@@ -565,17 +565,15 @@ dnl  BEECRYPT_ASM_ALIGN
 AC_DEFUN(BEECRYPT_ASM_ALIGN,[
   AC_CACHE_CHECK([how to align symbols],
     bc_cv_asm_align,[
-      case $target_os in
-      linux*)
-        case $target_cpu in
-        i[[3456]]86 | athlon*)
-          bc_cv_asm_align=".align 4"
-          ;;
-        s390x)
-          bc_cv_asm_align=".align 4"
-          ;;
-        esac
-        ;;
+      case $target_cpu in
+      i[[3456]]86 | athlon*)
+        bc_cv_asm_align=".align 4" ;;
+      ia64)
+        bc_cv_asm_align=".align 16" ;;
+      s390x)
+        bc_cv_asm_align=".align 4" ;;
+      sparc*)
+        bc_cv_asm_align=".align 4" ;;
       esac
     ])
   AC_SUBST(ASM_ALIGN,$bc_cv_asm_align)

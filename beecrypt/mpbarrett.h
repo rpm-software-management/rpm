@@ -169,12 +169,6 @@ BEECRYPTAPI
 void mpbtwopowmod_w(const mpbarrett* b, size_t psize, const mpw* pdata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
 	/*@modifies result, wksp @*/;
 
-/**
- */
-BEECRYPTAPI
-int  mpbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-
 #ifdef	NOTYET
 /**
  * @todo Simultaneous multiple exponentiation, for use in dsa and elgamal

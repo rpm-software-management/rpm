@@ -6,8 +6,8 @@
 #define INIT	0xdeadbeefU;
 
 static const mpw Z[4] = { 0U, 0U, 0U, 0U };
-static const mpw F[4] = { ~((mpw) 0U), ~((mpw) 0U), ~((mpw) 0U), ~((mpw) 0U)};
-static const mpw P[8] = { ~((mpw) 0U), ~((mpw) 0U), ~((mpw) 0U), ~((mpw) 0U) - 1U, 0U, 0U, 0U, 1U };
+static const mpw F[4] = { MP_ALLMASK, MP_ALLMASK, MP_ALLMASK, MP_ALLMASK};
+static const mpw P[8] = { MP_ALLMASK, MP_ALLMASK, MP_ALLMASK, MP_ALLMASK-1U, 0U, 0U, 0U, 1U };
 
 int main()
 {
