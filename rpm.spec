@@ -22,6 +22,7 @@ the package like its version, a description, etc.
 %package devel
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
+Requires: popt
 
 %description devel
 This package contains the RPM C library and header files.  These
