@@ -105,7 +105,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_POSTINPROG               1086
 #define RPMTAG_PREUNPROG                1087
 #define RPMTAG_POSTUNPROG               1088
-#define RPMTAG_BUILDARCHS               1089 /* internal */
+#define RPMTAG_BUILDARCHS               1089
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 
