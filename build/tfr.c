@@ -7,14 +7,7 @@
 
 #if HAVE_LIBELF_GELF_H
 
-#include <libelf/gelf.h>
-
-#if !defined(DT_GNU_PRELINKED)
-#define	DT_GNU_PRELINKED	0x6ffffdf5
-#endif
-#if !defined(DT_GNU_LIBLIST)
-#define	DT_GNU_LIBLIST		0x6ffffef9
-#endif
+#include <gelf.h>
 
 #endif
 
@@ -24,19 +17,20 @@ static int rpmfcELF(rpmfc fc)
 {
 #if HAVE_LIBELF_GELF_H && HAVE_LIBELF
     const char * fn = fc->fn[fc->ix];;
-    Elf *elf = NULL;
-    Elf_Scn *scn = NULL;
-    Elf_Data *data = NULL;
-    GElf_Ehdr ehdr;
-    GElf_Shdr shdr;
-    GElf_Dyn dyn;
-    int bingo;
+    Elf * elf;
+    Elf_Scn * scn;
+    Elf_Data * data;
+    GElf_Ehdr ehdr_mem, * ehdr;
+    GElf_Shdr shdr_mem, * shdr;
+    GElf_Verdef def_mem, * def;
+    GElf_Verneed need_mem, * need;
+    GElf_Dyn dyn_mem, * dyn;
+    unsigned int auxoffset;
+    unsigned int offset;
     int fdno;
+    int cnt2;
+    int cnt;
 
-size_t ndxscn[16];
-const char * sn;
-
-memset(ndxscn, 0, sizeof(ndxscn));
 fprintf(stderr, "*** %s\n", fn);
     fdno = open(fn, O_RDONLY);
     if (fdno < 0)
@@ -44,39 +38,88 @@ fprintf(stderr, "*** %s\n", fn);
 
     (void) elf_version(EV_CURRENT);
 
+    elf = NULL;
     if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
      || elf_kind(elf) != ELF_K_ELF
-     || gelf_getehdr(elf, &ehdr) == NULL
-     || !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
+     || (ehdr = gelf_getehdr(elf, &ehdr_mem)) == NULL
+     || !(ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC))
 	goto exit;
 
-    bingo = 0;
     /*@-branchstate -uniondef @*/
-    while (!bingo && (scn = elf_nextscn(elf, scn)) != NULL) {
-	(void) gelf_getshdr(scn, &shdr);
-fprintf(stderr, "\tsection %s\n", elf_strptr(elf, ehdr.e_shstrndx, shdr.sh_name));
-	if (shdr.sh_type >= 0 && shdr.sh_type < 16)
-	    ndxscn[shdr.sh_type] = elf_ndxscn(scn);
-	switch (shdr.sh_type) {
+    scn = NULL;
+    while ((scn = elf_nextscn(elf, scn)) != NULL) {
+	shdr = gelf_getshdr(scn, &shdr_mem);
+	if (shdr == NULL)
+	    break;
+
+	switch (shdr->sh_type) {
 	default:
 	    continue;
 	    /*@switchbreak@*/ break;
+	case SHT_GNU_verdef:
+fprintf(stderr, "\tsection %s\n", elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name));
+	    data = NULL;
+	    while ((data = elf_getdata (scn, data)) != NULL) {
+		offset = 0;
+		for (cnt = shdr->sh_info; --cnt >= 0; ) {
+		
+		    def = gelf_getverdef (data, offset, &def_mem);
+		    if (def == NULL)
+			break;
+		    auxoffset = offset + def->vd_aux;
+		    for (cnt2 = def->vd_cnt; --cnt2 >= 0; ) {
+			GElf_Verdaux aux_mem, * aux;
+
+			aux = gelf_getverdaux (data, auxoffset, &aux_mem);
+			if (aux == NULL)
+			    break;
+fprintf(stderr, "\t\tverdef: %s\n", elf_strptr(elf, shdr->sh_link, aux->vda_name));
+
+			auxoffset += aux->vda_next;
+		    }
+		    offset += def->vd_next;
+		}
+	    }
+	    /*@switchbreak@*/ break;
 	case SHT_GNU_verneed:
+fprintf(stderr, "\tsection %s\n", elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name));
+	    data = NULL;
+	    while ((data = elf_getdata (scn, data)) != NULL) {
+		offset = 0;
+		for (cnt = shdr->sh_info; --cnt >= 0; ) {
+		    need = gelf_getverneed (data, offset, &need_mem);
+		    if (need == NULL)
+			break;
+		    auxoffset = offset + need->vn_aux;
+		    for (cnt2 = need->vn_cnt; --cnt2 >= 0; ) {
+			GElf_Vernaux aux_mem, * aux;
+
+			aux = gelf_getvernaux (data, auxoffset, &aux_mem);
+			if (aux == NULL)
+			    break;
+fprintf(stderr, "\t\tverneed: %s\n", elf_strptr(elf, shdr->sh_link, aux->vna_name));
+
+			auxoffset += aux->vna_next;
+		    }
+		    offset += need->vn_next;
+		}
+	    }
 	    /*@switchbreak@*/ break;
 	case SHT_DYNAMIC:
-	    while (!bingo && (data = elf_getdata (scn, data)) != NULL) {
-		int maxndx = data->d_size / shdr.sh_entsize;
-		int ndx;
-
-		for (ndx = 0; ndx < maxndx; ++ndx) {
-		    (void) gelf_getdyn (data, ndx, &dyn);
-		    switch (dyn.d_tag) {
+fprintf(stderr, "\tsection %s\n", elf_strptr(elf, ehdr->e_shstrndx, shdr->sh_name));
+	    data = NULL;
+	    while ((data = elf_getdata (scn, data)) != NULL) {
+		for (cnt = 0; cnt < (shdr->sh_size / shdr->sh_entsize); ++cnt) {
+		    dyn = gelf_getdyn (data, cnt, &dyn_mem);
+		    switch (dyn->d_tag) {
 		    default:
 			/*@innercontinue@*/ continue;
 			/*@notreached@*/ break;
 		    case DT_NEEDED:
-sn = elf_strptr(elf, ndxscn[SHT_STRTAB], dyn.d_un.d_val);
-fprintf(stderr, "\t\tneeded %s\n", sn);
+fprintf(stderr, "\t\tneeded: %s\n", elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val));
+			/*@switchbreak@*/ break;
+		    case DT_SONAME:
+fprintf(stderr, "\t\tsoname: %s\n", elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val));
 			/*@switchbreak@*/ break;
 		    }
 		}
