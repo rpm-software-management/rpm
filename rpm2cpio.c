@@ -56,9 +56,13 @@ int main(int argc, char **argv)
         gzerror (stream, &zerror);
         if (zerror == Z_ERRNO){
 	    perror ("While uncompressing");
+	    gzclose(stream);
 	    return 1;
 	}
         fprintf (stderr, "rpm2cpio: zlib: %s error\n", zlib_err [-zerror]);
     }
+
+    gzclose(stream);
+
     return 0;
 }
