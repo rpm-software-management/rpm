@@ -4,7 +4,8 @@ VPATH = $(srcdir)
 LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o falloc.o \
 	     var.o md5.o md5sum.o dbindex.o rpmrc.o depends.o \
 	     rpmdb.o stringbuf.o rpmlead.o package.o uninstall.o \
-	     oldheader.o install.o signature.o verify.o rebuilddb.o
+	     oldheader.o install.o signature.o verify.o rebuilddb.o \
+	     tread.o
 SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS))) 
 TAGTABLE = tagtable.o
 LIBRPM = librpm.a
