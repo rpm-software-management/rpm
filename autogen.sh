@@ -21,6 +21,7 @@ recent versions of libtool/autoconf/automake.
 [ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" && exit 1
 
 (cd popt; ./autogen.sh --noconfigure "$@")
+(cd zlib; ./autogen.sh --noconfigure "$@")
 libtoolize --copy --force
 aclocal
 autoheader

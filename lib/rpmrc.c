@@ -2,6 +2,9 @@
 #include "system.h"
 
 #include <stdarg.h>
+#if defined(__linux__) && defined(__powerpc__)
+#include <setjmp.h>
+#endif
 
 #if HAVE_SYS_SYSTEMCFG_H
 #include <sys/systemcfg.h>
@@ -920,6 +923,15 @@ static int is_athlon(void)
 
 #endif
 
+#if defined(__linux__) && defined(__powerpc__)
+static jmp_buf mfspr_jmpbuf;
+
+static void mfspr_ill(int notused)
+{
+    longjmp(mfspr_jmpbuf, -1);
+}
+#endif
+
 static void defaultMachine(/*@out@*/ const char ** arch,
 		/*@out@*/ const char ** os)
 	/*@globals fileSystem@*/
@@ -1133,16 +1145,22 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
 #	if defined(__linux__) && defined(__powerpc__)
 	{
-	    unsigned pvr;
-	    __asm__ __volatile__ ("mfspr %0, 287" : "=r" (pvr));
+	    unsigned pvr = 0;
+	    __sighandler_t oldh = signal(SIGILL, mfspr_ill);
+	    if (setjmp(mfspr_jmpbuf) == 0) {
+		__asm__ __volatile__ ("mfspr %0, 287" : "=r" (pvr));
+	    }
+	    signal(SIGILL, oldh);
 
-	    pvr >>= 16;
-	    if ( pvr >= 0x40)
-		strcpy(un.machine, "ppcpseries");
-	    else if ( (pvr == 0x36) || (pvr == 0x37) )
-		strcpy(un.machine, "ppciseries");
-	    else
-		strcpy(un.machine, "ppc");
+	    if ( pvr ) {
+		pvr >>= 16;
+		if ( pvr >= 0x40)
+		    strcpy(un.machine, "ppcpseries");
+		else if ( (pvr == 0x36) || (pvr == 0x37) )
+		    strcpy(un.machine, "ppciseries");
+		else
+		    strcpy(un.machine, "ppc");
+	    }
 	}
 #	endif
 

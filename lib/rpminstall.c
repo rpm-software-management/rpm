@@ -48,7 +48,7 @@ static void printHash(const unsigned long amount, const unsigned long total)
 		int i;
 		for (i = 0; i < hashesPrinted; i++) (void) putchar ('#');
 		for (; i < hashesTotal; i++) (void) putchar (' ');
-		printf ("(%3d%%)",
+		fprintf(stdout, "(%3d%%)",
 			(int)(100 * (total ? (((float) amount) / total) : 1)));
 		for (i = 0; i < (hashesTotal + 6); i++) (void) putchar ('\b');
 	    } else
@@ -62,9 +62,12 @@ static void printHash(const unsigned long amount, const unsigned long total)
 	if (hashesPrinted == hashesTotal) {
 	    int i;
 	    progressCurrent++;
-	    for (i = 1; i < hashesPrinted; i++) (void) putchar ('#');
-	    printf (" [%3d%%]\n", (int)(100 * (progressTotal ?
+	    if (isatty(STDOUT_FILENO)) {
+	        for (i = 1; i < hashesPrinted; i++) (void) putchar ('#');
+		fprintf(stdout, " [%3d%%]", (int)(100 * (progressTotal ?
 			(((float) progressCurrent) / progressTotal) : 1)));
+	    }
+	    fprintf(stdout, "\n");
 	}
 	(void) fflush(stdout);
     }
@@ -123,6 +126,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 				rpmTagTable, rpmHeaderFormats, NULL);
 	    if (isatty (STDOUT_FILENO))
 		fprintf(stdout, "%4d:%-23.23s", progressCurrent + 1, s);
+	    else
+		fprintf(stdout, "%-28.28s", s);
 	    (void) fflush(stdout);
 	    s = _free(s);
 	} else {
@@ -154,7 +159,7 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	if (flags & INSTALL_HASH)
 	    fprintf(stdout, "%-28s", _("Preparing..."));
 	else
-	    printf("%s\n", _("Preparing packages for installation..."));
+	    fprintf(stdout, "%s\n", _("Preparing packages for installation..."));
 	(void) fflush(stdout);
 	break;
 

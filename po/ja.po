@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-22 09:52-0500\n"
+"POT-Creation-Date: 2002-01-27 11:31-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -626,99 +626,98 @@ msgstr "ファイルは \"/\" から始まらなければなりません: %s"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s"
 
-#. Two entries for the same file found, merge the entries.
-#: build/files.c:1113
+#: build/files.c:1110
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s"
 
-#: build/files.c:1260
+#: build/files.c:1254
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1475
+#: build/files.c:1491
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:1499
+#: build/files.c:1515
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1542 build/files.c:2156 build/parsePrep.c:50
+#: build/files.c:1558 build/files.c:2174 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:1554
+#: build/files.c:1571
 #, fuzzy, c-format
-msgid "File %4d: %07o %s.%s\t %s\n"
+msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1658
+#: build/files.c:1676
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1681
+#: build/files.c:1699
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "%d 行目: バージョンは許可されていません: %s"
 
-#: build/files.c:1696
+#: build/files.c:1714
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1758
+#: build/files.c:1776
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1769 build/pack.c:146
+#: build/files.c:1787 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "行目: %s"
 
-#: build/files.c:2144
+#: build/files.c:2162
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2218
+#: build/files.c:2236
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:2223
+#: build/files.c:2241
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:2307
+#: build/files.c:2325
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s 失敗"
 
-#: build/files.c:2311
+#: build/files.c:2329
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:2447
+#: build/files.c:2465
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:2473 build/files.c:2487
+#: build/files.c:2491 build/files.c:2505
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:2608
+#: build/files.c:2626
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -2365,8 +2364,8 @@ msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/query.c:599 lib/query.c:637 lib/rpminstall.c:328 lib/rpminstall.c:470
-#: lib/rpminstall.c:840
+#: lib/query.c:599 lib/query.c:637 lib/rpminstall.c:333 lib/rpminstall.c:475
+#: lib/rpminstall.c:845
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -2380,7 +2379,7 @@ msgstr "%s への問い合わせに失敗しました\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:647 lib/rpminstall.c:483
+#: lib/query.c:647 lib/rpminstall.c:488
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2440,7 +2439,7 @@ msgstr "パッケージレコード番号 %d\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:848 lib/rpminstall.c:628
+#: lib/query.c:848 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -2541,85 +2540,85 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
-#: lib/rpminstall.c:155
+#: lib/rpminstall.c:160
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:157
+#: lib/rpminstall.c:162
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "インストールのためのパッケージがありません"
 
-#: lib/rpminstall.c:276
+#: lib/rpminstall.c:281
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s を取得しています\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:288
+#: lib/rpminstall.c:293
 #, c-format
 msgid " ... as %s\n"
 msgstr "%s として...\n"
 
-#: lib/rpminstall.c:292
+#: lib/rpminstall.c:297
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/rpminstall.c:390
+#: lib/rpminstall.c:395
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/rpminstall.c:444
+#: lib/rpminstall.c:449
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s からの読み込みエラー "
 
-#: lib/rpminstall.c:450
+#: lib/rpminstall.c:455
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
 
-#: lib/rpminstall.c:462 lib/rpminstall.c:696
+#: lib/rpminstall.c:467 lib/rpminstall.c:701
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
 
-#: lib/rpminstall.c:498
+#: lib/rpminstall.c:503
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:516
+#: lib/rpminstall.c:521
 msgid "failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:539
+#: lib/rpminstall.c:544
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:561
+#: lib/rpminstall.c:566
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/rpminstall.c:631
+#: lib/rpminstall.c:636
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:655
+#: lib/rpminstall.c:660
 msgid "removing these packages would break dependencies:\n"
 msgstr "これらのパッケージを削除すると依存性を破壊します:\n"
 
-#: lib/rpminstall.c:682
+#: lib/rpminstall.c:687
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpminstall.c:688
+#: lib/rpminstall.c:693
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
@@ -2629,97 +2628,97 @@ msgstr "%s をインストール中\n"
 msgid "read failed: %s (%d)\n"
 msgstr "読み込みの失敗: %s (%d)"
 
-#: lib/rpmrc.c:188
+#: lib/rpmrc.c:191
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "2番目の ':' がありません(%s:%d で)"
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:194
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "%s:%d にアーキテクチャ名がありません"
 
-#: lib/rpmrc.c:345
+#: lib/rpmrc.c:348
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "%s:%d でデータ行が不完全です"
 
-#: lib/rpmrc.c:350
+#: lib/rpmrc.c:353
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "%s:%d でデータ行に引数が多すぎます"
 
-#: lib/rpmrc.c:358
+#: lib/rpmrc.c:361
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "不正な arch/os 番号: %s (%s:%d)"
 
-#: lib/rpmrc.c:395
+#: lib/rpmrc.c:398
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "%s:%d で不完全なデフォルト行"
 
-#: lib/rpmrc.c:400
+#: lib/rpmrc.c:403
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "%s:%d でデフォルト行は引数が多すぎます"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:570
+#: lib/rpmrc.c:573
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "%s を読むのに失敗: $s。"
 
-#: lib/rpmrc.c:608
+#: lib/rpmrc.c:611
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "%s:%d で ':' がありません"
 
-#: lib/rpmrc.c:625 lib/rpmrc.c:699
+#: lib/rpmrc.c:628 lib/rpmrc.c:702
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s の引数がありません %s:%d"
 
-#: lib/rpmrc.c:642 lib/rpmrc.c:664
+#: lib/rpmrc.c:645 lib/rpmrc.c:667
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s の伸張失敗 %s:%d \"%s\""
 
-#: lib/rpmrc.c:651
+#: lib/rpmrc.c:654
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "%s をオープンできません  %s:%d"
 
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:694
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s 用のアーキテクチャが見つかりません %s:%d"
 
-#: lib/rpmrc.c:758
+#: lib/rpmrc.c:761
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "'%s' の不正なオープン %s:%d"
 
-#: lib/rpmrc.c:1368
+#: lib/rpmrc.c:1386
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明なシステム: %s\n"
 
-#: lib/rpmrc.c:1369
+#: lib/rpmrc.c:1387
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com に連絡を下さい\n"
 
-#: lib/rpmrc.c:1594
+#: lib/rpmrc.c:1612
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "伸張できません %s"
 
-#: lib/rpmrc.c:1599
+#: lib/rpmrc.c:1617
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1616
+#: lib/rpmrc.c:1634
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"

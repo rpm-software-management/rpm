@@ -1804,7 +1804,12 @@ char *rpmCleanPath(char * path)
 	    /*@switchbreak@*/ break;
 	case '.':
 	    /* Leading .. is special */
-	    if (begin && s[1] == '.') {
+ 	    /* Check that it is ../, so that we don't interpret */
+	    /* ..?(i.e. "...") or ..* (i.e. "..bogus") as "..". */
+	    /* in the case of "...", this ends up being processed*/
+	    /* as "../.", and the last '.' is stripped.  This   */
+	    /* would not be correct processing.                 */
+	    if (begin && s[1] == '.' && (s[2] == '/' || s[2] == '\0')) {
 /*fprintf(stderr, "    leading \"..\"\n"); */
 		*t++ = *s++;
 		/*@switchbreak@*/ break;

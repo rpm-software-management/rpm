@@ -105,6 +105,10 @@
 	- fix: query format qualifiers needed header.c merge.
 	- ppc64 arch added (#58634,#58636).
 	- turn on auto-generated perl requirements (#58519, #58536, #58537).
+	- fix: %exclude functional (again).
+	- trap SIGILL for ppc64 inline asm voodoo fix from cross-dressed ppc32.
+	- fix: fancy hash fiddles if not a tty.
+	- fix: handle /.../ correctly in rpmCleanPath().
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

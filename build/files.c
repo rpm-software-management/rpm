@@ -1037,22 +1037,14 @@ static int isDoc(FileList fl, const char * fileName)	/*@*/
 static int checkHardLinks(FileList fl)
 	/*@*/
 {
-    char nlangs[BUFSIZ];
     FileListRec ilp, jlp;
     int i, j;
 
-    nlangs[0] = '\0';
     for (i = 0;  i < fl->fileListRecsUsed; i++) {
-	char *te;
-
 	ilp = fl->fileList + i;
 	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
-	if (ilp->flags & RPMFILE_SPECFILE)
-	    continue;
 
-	te = nlangs;
-	*te = '\0';
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
 	    if (!S_ISREG(jlp->fl_mode))
@@ -1109,12 +1101,14 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    !strcmp(flp->fileURL, flp[1].fileURL)) {
 
 	    /* Two entries for the same file found, merge the entries. */
-
-	    rpmMessage(RPMMESS_WARNING, _("File listed twice: %s\n"),
-		flp->fileURL);
+	    /* Note that an %exclude is a duplication of a file reference */
 
 	    /* file flags */
 	    flp[1].flags |= flp->flags;	
+
+	    if (!(flp[1].flags & RPMFILE_EXCLUDE))
+		rpmMessage(RPMMESS_WARNING, _("File listed twice: %s\n"),
+			flp->fileURL);
    
 	    /* file mode */
 	    if (S_ISDIR(flp->fl_mode)) {
@@ -1354,12 +1348,22 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		!strcmp(flp->fileURL, flp[1].fileURL))
 	    flp++;
 
+	if (flp->flags & RPMFILE_EXCLUDE) {
+	    i--;
+	    continue;
+	}
+
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
 	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
 	/*@=dependenttrans@*/
+#ifdef IA64_SUCKS_ROCKS
+	(void) stpcpy(d, flp->diskURL);
+	d += strlen(d);
+#else
 	d = stpcpy(d, flp->diskURL);
+#endif
 
 	/* Make room for the dirName NUL, find start of baseName. */
 	for (b = d; b > fi->dnl[fi->dil[i]] && *b != '/'; b--)
@@ -1373,8 +1377,20 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@-dependenttrans@*/	/* FIX: xstrdup? nah ... */
 	fi->apath[i] = a;
  	/*@=dependenttrans@*/
-	if (_addDotSlash) a = stpcpy(a, "./");
+	if (_addDotSlash) {
+#ifdef IA64_SUCKS_ROCKS
+	    (void) stpcpy(a, "./");
+	    a += strlen(a);
+#else
+	    a = stpcpy(a, "./");
+#endif
+	}
+#ifdef IA64_SUCKS_ROCKS
+	(void) stpcpy(a, (flp->fileURL + skipLen));
+	a += strlen(a);
+#else
 	a = stpcpy(a, (flp->fileURL + skipLen));
+#endif
 	a++;		/* skip apath NUL */
 
 	if (flp->flags & RPMFILE_GHOST) {
@@ -1551,8 +1567,10 @@ static int addFile(FileList fl, const char * diskURL, struct stat * statp)
 	fileGname = getGname(getgid());
 #endif
     
-    rpmMessage(RPMMESS_DEBUG, _("File %4d: %07o %s.%s\t %s\n"), fl->fileCount,
+#ifdef	DYING	/* XXX duplicates with %exclude, use psm.c output instead. */
+    rpmMessage(RPMMESS_DEBUG, _("File%5d: %07o %s.%s\t %s\n"), fl->fileCount,
 	(unsigned)fileMode, fileUname, fileGname, fileURL);
+#endif
 
     /* Add to the file list */
     if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {

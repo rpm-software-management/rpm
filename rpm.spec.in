@@ -164,9 +164,9 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --loc
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
 %endif
 
-# XXX workaround alpha sha1 digest miscompilation
-%ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
-make CFLAGS="-g -O0" digest.o digest.lo -C rpmio
+# XXX workaround ia64 gcc-3.1-0.18 miscompilation
+%ifarch ia64
+make CFLAGS="-g -O0 -DIA64_SUCKS_ROCKS" files.o files.lo -C build
 %endif
 
 make
@@ -618,3 +618,8 @@ fi
 - splint fiddles.
 - ppc64 arch added (#58634,#58636).
 - turn on auto-generated perl requirements (#58519, #58536, #58537).
+- fix: %exclude functional (again).
+- trap SIGILL for ppc64 inline asm voodoo fix from cross-dressed ppc32.
+- rpm-perl: force numeric comparison on rpm version (#58882).
+- fix: fancy hash fiddles if not a tty.
+- fix: handle /.../ correctly in rpmCleanPath().
