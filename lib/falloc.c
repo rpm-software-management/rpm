@@ -127,7 +127,8 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) return 0;
 
 	if (!header.isFree) {
-	    fprintf(stderr, "free list corrupt - contact support@redhat.com");
+	    fprintf(stderr, "free list corrupt (%d)- contact "
+			"support@redhat.com\n", nextFreeBlock);
 	    exit(1);
 	}
 
@@ -158,6 +159,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (newBlockOffset == fa->firstFree) {
 	    faHeader.magic = FA_MAGIC;
 	    faHeader.firstFree = header.freeNext;
+	    fa->firstFree = header.freeNext;
 	    updateHeader = 1;
 	} else {
 	    if (lseek(fa->fd, header.freePrev, SEEK_SET) < 0) return 0;
@@ -190,7 +192,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	} else {
 	    if (lseek(fa->fd, header.freePrev, SEEK_SET) < 0)
 		return 0;
-	    else if (read(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader)) !=
+	    else if (write(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader)) !=
 			 sizeof(prevFreeHeader))
 		return 0;
 	    restorePrevHeader = &origPrevFreeHeader;
@@ -199,7 +201,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (header.freeNext) {
 	    if (lseek(fa->fd, header.freeNext, SEEK_SET) < 0)
 		return 0;
-	    else if (read(fa->fd, &nextFreeHeader, sizeof(nextFreeHeader)) !=
+	    else if (write(fa->fd, &nextFreeHeader, sizeof(nextFreeHeader)) !=
 			 sizeof(nextFreeHeader))
 		return 0;
 
@@ -308,21 +310,23 @@ void faFree(faFile fa, unsigned int offset) {
     /* find out where in the (sorted) free list to put this */
     prevFreeOffset = fa->firstFree;
 
-    while (prevFreeOffset) {
+    if (!prevFreeOffset || (prevFreeOffset > offset)) {
+	nextFreeOffset = fa->firstFree;
+	prevFreeOffset = 0;
+    } else {
 	if (lseek(fa->fd, prevFreeOffset, SEEK_SET) < 0) return;
 	if (read(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader)) != 
 		sizeof(prevFreeHeader)) return;
 
-	if (prevFreeHeader.freeNext > offset || !prevFreeHeader.freeNext)
-	    break;
-	else
+	while (prevFreeHeader.freeNext && prevFreeHeader.freeNext < offset) {
 	    prevFreeOffset = prevFreeHeader.freeNext;
-    }
+	    if (lseek(fa->fd, prevFreeOffset, SEEK_SET) < 0) return;
+	    if (read(fa->fd, &prevFreeHeader, sizeof(prevFreeHeader)) != 
+		    sizeof(prevFreeHeader)) return;
+	} 
 
-    if (prevFreeOffset)
 	nextFreeOffset = prevFreeHeader.freeNext;
-    else
-	nextFreeOffset = fa->firstFree;
+    }
 
     if (nextFreeOffset) {
 	if (lseek(fa->fd, nextFreeOffset, SEEK_SET) < 0) return;
