@@ -79,6 +79,7 @@ struct option optionTable[] = {
     { "ftpport",		RPMVAR_FTPPORT,			0 },
     { "ftpproxy",		RPMVAR_FTPPROXY,		0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0 },
+    { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1 },
     { "packager",               RPMVAR_PACKAGER,                0 },
     { "pgp_name",               RPMVAR_PGP_NAME,                0 },
@@ -511,7 +512,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	if (!option) {
 	    error(RPMERR_RPMRC, "bad option '%s' at %s:%d\n", 
 			start, fn, linenum);
-	    return 1;
+	    continue;			/* aborting here is rude */
 	}
 
 	if (readWhat == READ_OTHER) {
