@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.7 2000/08/01 07:59:47 rjray Exp $
+#   $Id: Header.pm,v 1.8 2000/08/02 08:05:00 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -34,8 +34,8 @@ use RPM;
 use RPM::Error;
 use RPM::Constants ':rpmerr';
 
-$VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.7 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = '0.27';
+$revision = do { my @r=(q$Revision: 1.8 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -175,6 +175,14 @@ object is derived from is a source RPM.
 Return the size of the header, in bytes, within the disk file containing the
 associated package. The value is also returned for those headers within the
 database.
+
+=item scalar_tag(TAG)
+
+Returns a true/false value (1 or 0) based on whether the value returned by
+the specified tag is a scalar or an array reference. Useful in place of
+using C<ref> to test the fetched values. B<TAG> may be either a string (name)
+or a number (imported from the B<RPM::Constants> tag C<:rpmtag>). This
+method may be called as a class (static) method.
 
 =item tagtype(TAG)
 

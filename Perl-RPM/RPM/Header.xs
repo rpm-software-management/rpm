@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.10 2000/07/21 17:02:33 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.11 2000/08/02 08:05:00 rjray Exp $";
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -212,12 +212,11 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
     int fname_len;
     SV* val;
     RPM__Header TIEHASH;
-    RPM__Header ERR_RETURN;
     RPM_Header* hdr_struct; /* Use this to store the actual C-level data */
 
     hdr_struct = safemalloc(sizeof(RPM_Header));
     Zero(hdr_struct, 1, RPM_Header);
-    ERR_RETURN = (RPM__Header)newSVsv(&PL_sv_undef);
+    TIEHASH = (RPM__Header)newSVsv(&PL_sv_undef);
 
     if (! source)
         hdr_struct->hdr = headerNew();
@@ -232,7 +231,7 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
             fname = SvPV(source, fname_len);
             if (! new_from_fname(fname, hdr_struct))
             {
-                return ERR_RETURN;
+                return TIEHASH;
             }
         }
         else if (IoIFP(sv_2io(source)))
@@ -240,14 +239,14 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
             if (! new_from_fd(PerlIO_fileno(IoIFP(sv_2io(source))),
                               hdr_struct))
             {
-                return ERR_RETURN;
+                return TIEHASH;
             }
         }
         else
         {
             rpm_error(aTHX_ RPMERR_BADARG,
                       "Argument 2 must be filename or GLOB");
-            return ERR_RETURN;
+            return TIEHASH;
         }
     }
     else
@@ -907,6 +906,95 @@ int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
     return rpmVersionCompare(one->hdr, two->hdr);
 }
 
+/*
+  A matter-of-convenience function that tells whether the passed-in tag is
+  one that returns a scalar (yields a true return value) or one that returns
+  an array reference (yields a false value).
+*/
+int rpmhdr_scalar_tag(pTHX_ SV* self, SV* tag)
+{
+    int tag_value;
+
+    /* self is passed in as SV*, and unused, because this is a class method */
+    if (SvPOK(tag))
+    {
+        const char* name;
+        int i, namelen;
+        char* uc_name;
+
+        name = sv2key(aTHX_ tag);
+        if (! (name && (namelen = strlen(name))))
+            return 0;
+
+        uc_name = safemalloc(namelen + 1);
+        for (i = 0; i < namelen; i++)
+            uc_name[i] = toUPPER(name[i]);
+        uc_name[i] = '\0';
+        if (! (tag_value = tag2num(aTHX_ uc_name)))
+        {
+            char errmsg[256];
+
+            snprintf(errmsg, 256,
+                     "RPM::Header::scalar_tag: unknown tag %s", uc_name);
+            rpm_error(aTHX_ RPMERR_BADARG, errmsg);
+            Safefree(uc_name);
+            return 0;
+        }
+    }
+    else if (SvIOK(tag))
+    {
+        tag_value = SvIV(tag);
+    }
+    else
+    {
+        rpm_error(aTHX_ RPMERR_BADARG,
+                  "RPM::Header::scalar_tag: argument must be string or int");
+        return 0;
+    }
+
+    switch (tag_value)
+    {
+      case RPMTAG_ARCH:
+      case RPMTAG_ARCHIVESIZE:
+      case RPMTAG_BUILDHOST:
+      case RPMTAG_BUILDROOT:
+      case RPMTAG_BUILDTIME:
+      case RPMTAG_COOKIE:
+      case RPMTAG_DESCRIPTION:
+      case RPMTAG_DISTRIBUTION:
+      case RPMTAG_EPOCH:
+      case RPMTAG_EXCLUDEARCH:
+      case RPMTAG_EXCLUDEOS:
+      case RPMTAG_EXCLUSIVEARCH:
+      case RPMTAG_EXCLUSIVEOS:
+      case RPMTAG_GIF:
+      case RPMTAG_GROUP:
+      case RPMTAG_ICON:
+      case RPMTAG_INSTALLTIME:
+      case RPMTAG_LICENSE:
+      case RPMTAG_NAME:
+      case RPMTAG_OS:
+      case RPMTAG_PACKAGER:
+      case RPMTAG_RELEASE:
+      case RPMTAG_RPMVERSION:
+      case RPMTAG_SIZE:
+      case RPMTAG_SOURCE:
+      case RPMTAG_SOURCERPM:
+      case RPMTAG_SUMMARY:
+      case RPMTAG_URL:
+      case RPMTAG_VENDOR:
+      case RPMTAG_VERSION:
+      case RPMTAG_XPM:
+        return 1;
+        /* not reached */
+        break;
+      default:
+        return 0;
+        /* not reached */
+        break;
+    }
+    /* not reached */
+}
 
 MODULE = RPM::Header    PACKAGE = RPM::Header           PREFIX = rpmhdr_
 
@@ -1111,3 +1199,13 @@ rpmhdr_NVR(self)
             XPUSHs(sv_2mortal(newSVpv((char *)hdr->release, 0)));
         }
     }
+
+int
+rpmhdr_scalar_tag(self, tag)
+    SV* self;
+    SV* tag;
+    PROTOTYPE: $$
+    CODE:
+    RETVAL = rpmhdr_scalar_tag(aTHX_ self, tag);
+    OUTPUT:
+    RETVAL
