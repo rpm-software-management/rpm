@@ -1896,7 +1896,7 @@ psm->te->h = headerLink(fi->h);
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPOSTUN)) {
 		rc = rpmpsmNext(psm, PSM_SCRIPT);
-		/* XXX WTFO? postun failures don't cause erasure failure. */
+		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPOSTUN)) {
