@@ -90,7 +90,7 @@ static int ftpCheckResponse(int sock, char ** str) {
 
 	bufLength += bytesRead;
 
-	buf[bufLength + 1] = '\0';
+	buf[bufLength] = '\0';
 
 	/* divide the response into lines, checking each one to see if 
 	   we are finished or need to continue */
