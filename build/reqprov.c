@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <errno.h>
 
 #include "specP.h"
@@ -105,7 +106,7 @@ static void parseFileForProv(char *f, struct PackageRec *p)
 	sprintf(command,
 		"objdump --raw %s%s --section=.dynstr 2> /dev/null |"
 		"tr '\\0' '\\n' | tail -1",
-		getVar(RPMVAR_ROOT) ? getVar(RPMVAR_ROOT) : "" ,f);
+		getVar(RPMVAR_ROOT) ? getVar(RPMVAR_ROOT) : "", f);
 	pipe = popen(command, "r");
 	soname[0] = '\0';
 	fgets(soname, sizeof(soname)-1, pipe);
@@ -113,9 +114,12 @@ static void parseFileForProv(char *f, struct PackageRec *p)
 	/* length 1 lines are empty */
 	if ((len = strlen(soname)) > 1) {
 	    soname[len-1] = '\0';
-	    /* Skip "_end" results */
-	    if (strcmp(soname, "_end"))
+	    if (strcmp(soname, "_end")) {
 		addReqProv(p, REQUIRE_PROVIDES, soname, NULL);
+	    } else {
+		/* _end means no embedded soname */
+		addReqProv(p, REQUIRE_PROVIDES, s, NULL);
+	    }
 	}
     }
 }
@@ -128,6 +132,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     int lddDead;
     int toLdd[2];
     int fromLdd[2];
+    int_16 *modes;
 
     StringBuf writeBuff;
     StringBuf readBuff;
@@ -186,6 +191,10 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
 	/* count may already be 0, but this is safer */
 	count = 0;
+	fsave = NULL;
+    } else {
+	fsave = f;
+	getEntry(header, RPMTAG_FILEMODES, NULL, (void **) &modes, NULL);
     }
 
     readBuff = newStringBuf();
@@ -194,10 +203,15 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     writeBytesLeft = 0;
     while (count--) {
         s = *f++;
-	/* We skip the leading "/" (already normalized) */
-        writeBytesLeft += strlen(s);
-        appendLineStringBuf(writeBuff, s + 1);
-	parseFileForProv(s, p);
+	if (S_ISREG(*modes++)) {
+	    /* We skip the leading "/" (already normalized) */
+	    writeBytesLeft += strlen(s);
+	    appendLineStringBuf(writeBuff, s + 1);
+	    parseFileForProv(s, p);
+	}
+    }
+    if (fsave) {
+	free(fsave);
     }
     writePtr = getStringBuf(writeBuff);
     s = writePtr;
