@@ -56,17 +56,23 @@ static /*@only@*/ char *printDepend(const char * key, const char * keyEVR,
     return tbuf;
 }
 
-static /*@only@*/ char *buildEVR(int_32 *e, const char *v, const char *r)
+#ifdef	DYING
+static /*@only@*/ const char *buildEVR(int_32 *e, const char *v, const char *r)
 {
-    char *pEVR = xmalloc(21 + strlen(v) + 1 + strlen(r) + 1);
-    *pEVR = '\0';
-    if (e)
-	sprintf(pEVR, "%d:", *e);
-    strcat(pEVR, v);
-    strcat(pEVR, "-");
-    strcat(pEVR, r);
+    const char *pEVR;
+    char *p;
+
+    pEVR = p = xmalloc(21 + strlen(v) + 1 + strlen(r) + 1);
+    *p = '\0';
+    if (e) {
+	sprintf(p, "%d:", *e);
+	while (*p++)
+	    ;
+    }
+    (void) stpcpy( stpcpy( stpcpy(p, v) , "-") , r);
     return pEVR;
 }
+#endif
 
 struct orderListIndex {
     int alIndex;
@@ -143,6 +149,7 @@ static int dirInfoCompare(const void * one, const void * two) {
 
     if (lenchk)
 	return lenchk;
+
     /* XXX FIXME: this might do "backward" strcmp for speed */
     return strcmp(a->dirName, b->dirName);
 }
@@ -281,12 +288,16 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     return p;
 }
 
-static int indexcmp(const void * a, const void *b)
+static int indexcmp(const void * one, const void * two)
 {
-    const struct availableIndexEntry * aptr = a;
-    const struct availableIndexEntry * bptr = b;
+    const struct availableIndexEntry * a = one;
+    const struct availableIndexEntry * b = two;
+    int lenchk = a->entryLen - b->entryLen;
 
-    return strcmp(aptr->entry, bptr->entry);
+    if (lenchk)
+	return lenchk;
+
+    return strcmp(a->entry, b->entry);
 }
 
 static void alMakeIndex(struct availableList * al)
@@ -307,12 +318,14 @@ static void alMakeIndex(struct availableList * al)
 	for (i = 0; i < al->size; i++) {
 	    ai->index[k].package = al->list + i;
 	    ai->index[k].entry = al->list[i].name;
+	    ai->index[k].entryLen = strlen(al->list[i].name);
 	    ai->index[k].type = IET_NAME;
 	    k++;
 
 	    for (j = 0; j < al->list[i].providesCount; j++) {
 		ai->index[k].package = al->list + i;
 		ai->index[k].entry = al->list[i].provides[j];
+		ai->index[k].entryLen = strlen(al->list[i].provides[j]);
 		ai->index[k].type = IET_PROVIDES;
 		k++;
 	    }
@@ -504,9 +517,9 @@ int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, in
 {
     const char *name, *version, *release;
     int_32 * epoch;
-    char *pkgEVR;
+    const char *pkgEVR;
+    char *p;
     int pkgFlags = RPMSENSE_EQUAL;
-    int type, count;
 
     if (!((reqFlags & RPMSENSE_SENSEMASK) && reqEVR && *reqEVR))
 	return 1;
@@ -514,44 +527,23 @@ int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, in
     /* Get package information from header */
     headerNVR(h, &name, &version, &release);
 
-    pkgEVR = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
-    *pkgEVR = '\0';
-    if (headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epoch, &count))
-	sprintf(pkgEVR, "%d:", *epoch);
-    strcat(pkgEVR, version);
-    strcat(pkgEVR, "-");
-    strcat(pkgEVR, release);
+    pkgEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    *p = '\0';
+    if (headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+	sprintf(p, "%d:", *epoch);
+	while (*p++)
+	    ;
+    }
+    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
     return rangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
 
 }
 
-#ifdef DYING
-static inline int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset,
-			        const char * reqName, const char * reqEVR,
-				int reqFlags, dbrecMatch_t matchDepFlags)
-{
-    Header h;
-    int rc;
-
-    h = rpmdbGetRecord(rpmdep->db, recOffset);
-    if (h == NULL) {
-	rpmMessage(RPMMESS_DEBUG, _("dbrecMatchesDepFlags() failed to read header"));
-	return 0;
-    }
-
-    rc = matchDepFlags(h, reqName, reqEVR, reqFlags);
-
-    headerFree(h);
-
-    return rc;
-}
-#endif
-
 rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root)
 {
     rpmTransactionSet rpmdep;
-    int rootLength;
+    int rootLen;
 
     if (!root) root = "";
 
@@ -564,14 +556,13 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root)
 			sizeof(*rpmdep->removedPackages));
 
     /* This canonicalizes the root */
-    rootLength = strlen(root);
-    if (root && root[rootLength] == '/') {
+    rootLen = strlen(root);
+    if (!(rootLen && root[rootLen - 1] == '/')) {
 	char * newRootdir;
 
-	newRootdir = alloca(rootLength + 2);
-	strcpy(newRootdir, root);
-	newRootdir[rootLength++] = '/';
-	newRootdir[rootLength] = '\0';
+	newRootdir = alloca(rootLen + 2);
+	*newRootdir = '\0';
+	(void) stpcpy( stpcpy(newRootdir, root), "/");
 	root = newRootdir;
     }
 
@@ -818,6 +809,7 @@ alFileSatisfiesDepend(struct availableList * al,
     if (!al->index.size) return NULL;
 
     needle.entry = keyName;
+    needle.entryLen = strlen(keyName);
     match = bsearch(&needle, al->index.index, al->index.size,
 		    sizeof(*al->index.index), indexcmp);
 
@@ -827,11 +819,19 @@ alFileSatisfiesDepend(struct availableList * al,
     rc = 0;
     switch (match->type) {
     case IET_NAME:
-    {	char *pEVR;
+    {	const char *pEVR;
+	char *t;
 	int pFlags = RPMSENSE_EQUAL;
-	pEVR = buildEVR(p->epoch, p->version, p->release);
+
+	pEVR = t = alloca(21 + strlen(p->version) + 1 + strlen(p->release) + 1);
+	*t = '\0';
+	if (p->epoch) {
+	    sprintf(t, "%d:", *p->epoch);
+	    while (*t++)
+		;
+	}
+	(void) stpcpy( stpcpy( stpcpy(t, p->version) , "-") , p->release);
 	rc = rangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
-	free(pEVR);
 	if (keyType && keyDepend && rc)
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added package.\n"), keyType, keyDepend);
     }	break;
@@ -868,9 +868,8 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	const char * keyName, const char * keyEVR, int keyFlags,
 	/*@out@*/ struct availablePackage ** suggestion)
 {
-#ifdef	DYING
-    dbiIndexSet matches = NULL;
-#endif
+    rpmdbMatchIterator mi;
+    Header h;
     int rc = 0;	/* assume dependency is satisfied */
     int i;
 
@@ -878,6 +877,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 
   { const char * rcProvidesString;
     const char * start;
+
     if (!(keyFlags & RPMSENSE_SENSEMASK) &&
 	(rcProvidesString = rpmGetVar(RPMVAR_PROVIDES))) {
 	i = strlen(keyName);
@@ -898,92 +898,56 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     if (rpmdep->db != NULL) {
 	if (*keyName == '/') {
 	    /* keyFlags better be 0! */
-#ifdef DYING
-	    if (!rpmdbFindByFile(rpmdep->db, keyName, &matches)) {
-		for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-		    if (bsearch(&recOffset,
-				rpmdep->removedPackages,
-				rpmdep->numRemovedPackages,
-				sizeof(int), intcmp))
-			continue;
-		    break;
-		}
 
-		if (i < dbiIndexSetCount(matches)) {
-		    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db file lists.\n"), keyType, keyDepend);
-		    goto exit;
-		}
-	    }
-#else
-	    {	rpmdbMatchIterator mi;
-		Header h2;
-
-		mi = rpmdbInitIterator(rpmdep->db, RPMDBI_FILE, keyName, 0);
-		while ((h2 = rpmdbNextIterator(mi)) != NULL) {
-		    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-		    if (bsearch(&recOffset,
-			    rpmdep->removedPackages,
-			    rpmdep->numRemovedPackages,
-			    sizeof(int), intcmp))
-			continue;
-		    break;
-		}
-		rpmdbFreeIterator(mi);
-		if (h2) {
-		    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db file lists.\n"), keyType, keyDepend);
-		    goto exit;
-		}
-	    }
-#endif
-	}
-#ifdef	DYING
-	if (matches) {
-	    dbiFreeIndexSet(matches);
-	    matches = NULL;
-	}
-#endif
-
-	{   rpmdbMatchIterator mi;
-	    Header h2;
-
-	    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_PROVIDES, keyName, 0);
-	    while ((h2 = rpmdbNextIterator(mi)) != NULL) {
+	    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_FILE, keyName, 0);
+	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (bsearch(&recOffset,
 			    rpmdep->removedPackages,
 			    rpmdep->numRemovedPackages,
 			    sizeof(int), intcmp))
 		    continue;
-		if (rangeMatchesDepFlags(h2, keyName, keyEVR, keyFlags))
-		    break;
+		break;
 	    }
 	    rpmdbFreeIterator(mi);
-	    if (h2) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db provides.\n"), keyType, keyDepend);
+	    if (h) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db file lists.\n"), keyType, keyDepend);
 		goto exit;
 	    }
 	}
 
-	{   rpmdbMatchIterator mi;
-	    Header h2;
+	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_PROVIDES, keyName, 0);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+	    if (bsearch(&recOffset,
+			rpmdep->removedPackages,
+			rpmdep->numRemovedPackages,
+			sizeof(int), intcmp))
+		continue;
+	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags))
+		break;
+	}
+	rpmdbFreeIterator(mi);
+	if (h) {
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db provides.\n"), keyType, keyDepend);
+	    goto exit;
+	}
 
-	    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, keyName, 0);
-	    while ((h2 = rpmdbNextIterator(mi)) != NULL) {
-		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-		if (bsearch(&recOffset,
-			    rpmdep->removedPackages,
-			    rpmdep->numRemovedPackages,
-			    sizeof(int), intcmp))
-		    continue;
-		if (headerMatchesDepFlags(h2, keyName, keyEVR, keyFlags))
-		    break;
-	    }
-	    rpmdbFreeIterator(mi);
-	    if (h2) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db packages.\n"), keyType, keyDepend);
-		goto exit;
-	    }
+	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, keyName, 0);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+	    if (bsearch(&recOffset,
+			rpmdep->removedPackages,
+			rpmdep->numRemovedPackages,
+			sizeof(int), intcmp))
+		continue;
+	    if (headerMatchesDepFlags(h, keyName, keyEVR, keyFlags))
+		break;
+	}
+	rpmdbFreeIterator(mi);
+	if (h) {
+	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db packages.\n"), keyType, keyDepend);
+	    goto exit;
 	}
 
 	/*
@@ -1008,12 +972,6 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     rc = 1;	/* dependency is unsatisfied */
 
 exit:
-#ifdef	DYING
-    if (matches) {
-	dbiFreeIndexSet(matches);
-	matches = NULL;
-    }
-#endif
     return rc;
 }
 
@@ -1507,8 +1465,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 			fileAlloced = len * 2;
 			fileName = xrealloc(fileName, fileAlloced);
 		    }
-		    strcpy(fileName, dirNames[dirIndexes[j]]);
-		    strcat(fileName, baseNames[j]);
+		    *fileName = '\0';
+		    stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
 		    /* Erasing: check filename against requiredby matches. */
 		    if (checkDependentPackages(rpmdep, &ps, fileName)) {
 			rc = 1;

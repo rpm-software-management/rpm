@@ -271,7 +271,8 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset)
     return headerLoad(uh);
 }
 
-static int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
+static int rpmdbFindByFile(rpmdb db, const char * filespec,
+			/*@out@*/ dbiIndexSet * matches)
 {
     const char * dirName;
     const char * baseName;

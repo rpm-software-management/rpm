@@ -47,7 +47,7 @@ Requires: rpm = %{version}
 This package contains scripts and executable programs that are used to
 build packages using RPM.
 
-%ifos linux
+%ifos Xlinux
 %package python
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
@@ -88,7 +88,7 @@ capabilities.
 %build
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
 make
-%ifos linux
+%ifos Xlinux
 make -C python
 %endif
 
@@ -96,10 +96,10 @@ make -C python
 rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR="$RPM_BUILD_ROOT" install
-%ifos linux
+%ifos Xlinux
 make DESTDIR="$RPM_BUILD_ROOT" install -C python
-mkdir -p $RPM_BUILD_ROOT/etc/rpm
 %endif
+mkdir -p $RPM_BUILD_ROOT/etc/rpm
 
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
@@ -134,9 +134,7 @@ fi
 %defattr(-,root,root)
 %doc RPM-PGP-KEY CHANGES GROUPS doc/manual/*
 /bin/rpm
-%ifos linux
 %dir /etc/rpm
-%endif
 /usr/bin/rpm2cpio
 /usr/bin/gendiff
 /usr/lib/librpm.so.*
@@ -190,7 +188,7 @@ fi
 /usr/lib/rpm/rpmputtext
 /usr/lib/rpm/u_pkg.sh
 
-%ifos linux
+%ifos Xlinux
 %files python
 %defattr(-,root,root)
 /usr/lib/python1.5/site-packages/rpmmodule.so
@@ -219,6 +217,11 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Thu Apr 13 2000 Jeff Johnson <jbj@redhat.com>
+- API: pass *SearchIndex() length of key (0 will use strlen(key)).
+- API: remove rpmdb{First,Next}RecNum routines.
+- drop rpm-python subpackage until bindings are fixed.
+
 * Tue Apr 11 2000 Jeff Johnson <jbj@redhat.com>
 - solaris2.6: avoid bsearch with empty dir list (Ric Klaren - klaren@cs.utwente.nl)
 - db3: save join keys in endian neutral binary format.

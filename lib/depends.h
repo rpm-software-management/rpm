@@ -24,6 +24,7 @@ enum indexEntryType { IET_NAME, IET_PROVIDES };
 struct availableIndexEntry {
     /*@dependent@*/ struct availablePackage * package;
     /*@dependent@*/ const char * entry;
+    size_t entryLen;
     enum indexEntryType type;
 } ;
 

@@ -383,13 +383,6 @@ int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * dbp);
  */
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
 
-#ifdef	DYING
-/**
- * @param db		rpm database
- */
-int rpmdbFindByFile(rpmdb db, const char * filespec,
-	/*@out@*/ dbiIndexSet * matches);
-#endif
 /**
  * @param db		rpm database
  */

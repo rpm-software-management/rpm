@@ -472,7 +472,6 @@ int packageBinaries(Spec spec)
     CSA_t csabuf, *csa = &csabuf;
     int rc;
     const char *errorString;
-    char *name;
     Package pkg;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
@@ -514,6 +513,7 @@ int packageBinaries(Spec spec)
 			       rpmHeaderFormats, &errorString);
 	    xfree(binFormat);
 	    if (binRpm == NULL) {
+		const char *name;
 		headerNVR(pkg->header, &name, NULL, NULL);
 		rpmError(RPMERR_BADFILENAME, _("Could not generate output "
 		     "filename for package %s: %s\n"), name, errorString);

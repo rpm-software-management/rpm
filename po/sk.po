@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-04-12 09:57-0400\n"
+"POT-Creation-Date: 2000-04-13 12:17-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1668,12 +1668,12 @@ msgstr "Nie je mo¾né zapísa» balík: %s"
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
 
-#: build/pack.c:519
+#: build/pack.c:518
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
 
-#: build/pack.c:536
+#: build/pack.c:535
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie je mo¾né zapísa» do %s: "
@@ -1800,7 +1800,7 @@ msgstr "riadok %d: Prázdny popis: %s"
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:445 build/parseSpec.c:375
+#: build/parsePreamble.c:445 build/parseSpec.c:374
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "riadok %d: BuildRoot nemô¾e by» \"/\": %s"
@@ -1989,7 +1989,7 @@ msgstr "%s:%d: %%endif bez if"
 msgid "malformed %%include statement"
 msgstr "znetvorený príkaz %%include"
 
-#: build/parseSpec.c:470
+#: build/parseSpec.c:469
 msgid "No buildable architectures"
 msgstr "®iadne zostaviteµné architektúry"
 
@@ -2002,17 +2002,17 @@ msgstr "Balík neobsahuje %%description: %s"
 msgid "archive = %s, fs = %s\n"
 msgstr "archív = %s, fs = %s\n"
 
-#: build/spec.c:245
+#: build/spec.c:244
 #, c-format
 msgid "line %d: Bad number: %s"
 msgstr "riadok %d: Chybné èíslo: %s"
 
-#: build/spec.c:251
+#: build/spec.c:250
 #, c-format
 msgid "line %d: Bad no%s number: %d"
 msgstr "riadok %d: Chybné no%s èíslo: %d"
 
-#: build/spec.c:310
+#: build/spec.c:309
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
@@ -2099,88 +2099,84 @@ msgid "error removing record %s into %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:417
+#: lib/depends.c:430
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:446
+#: lib/depends.c:459
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:538
-msgid "dbrecMatchesDepFlags() failed to read header"
-msgstr "dbrecMatchesDepFlags() sa nepodarilo preèíta» hlavièku"
-
-#: lib/depends.c:795
+#: lib/depends.c:788
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:834
+#: lib/depends.c:836
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:851
+#: lib/depends.c:853
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:882
+#: lib/depends.c:886
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:909
+#: lib/depends.c:914
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:934
+#: lib/depends.c:932
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:959
+#: lib/depends.c:949
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:976
+#: lib/depends.c:961
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:986
+#: lib/depends.c:971
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1038
+#: lib/depends.c:1019
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1100
+#: lib/depends.c:1081
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/depends.c:1155 lib/depends.c:1450
-#, c-format
-msgid "cannot read header at %d for dependency check"
-msgstr "nie je mo¾né preèíta» hlavièku na %d pre kontrolu závislostí"
-
-#: lib/depends.c:1246
+#: lib/depends.c:1211
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "sluèka v re»azi po¾iadaviek: %s"
+
+#: lib/depends.c:1415
+#, c-format
+msgid "cannot read header at %d for dependency check"
+msgstr "nie je mo¾né preèíta» hlavièku na %d pre kontrolu závislostí"
 
 #: lib/falloc.c:135
 #, c-format
@@ -2365,7 +2361,7 @@ msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 msgid "renaming %s to %s\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/install.c:562 lib/install.c:834 lib/uninstall.c:29
+#: lib/install.c:562 lib/install.c:838 lib/uninstall.c:29
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "premenovanie %s na %s zlyhalo: %s"
@@ -2379,25 +2375,25 @@ msgstr "oèakávaný zdrojový balík, nájdený binárny"
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "balík: %s-%s-%s test súborov = %d\n"
 
-#: lib/install.c:764
+#: lib/install.c:768
 msgid "stopping install as we're running --test\n"
 msgstr "in¹talácia zastavená kvôli re¾imu --test\n"
 
-#: lib/install.c:769
+#: lib/install.c:773
 msgid "running preinstall script (if any)\n"
 msgstr "vykonávajú sa predin¹talaèné skripty (ak existujú)\n"
 
-#: lib/install.c:794
+#: lib/install.c:798
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "varovanie: %s vytvorené ako %s"
 
-#: lib/install.c:830
+#: lib/install.c:834
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/install.c:904
+#: lib/install.c:908
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "vykonávajú sa poin¹talaèné skripty (ak existujú)\n"
@@ -2670,133 +2666,129 @@ msgstr "otázka na %s zlyhala\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "otázka na spec-súbor %s zlyhala, nie je mo¾né analyzova»\n"
 
-#: lib/query.c:586
-msgid "could not read database record!\n"
-msgstr "nie je mo¾né preèíta» záznam v databáze!\n"
-
-#: lib/query.c:597
+#: lib/query.c:581
 #, fuzzy
 msgid "no packages\n"
 msgstr "nájdených %d balíkov\n"
 
-#: lib/query.c:608 lib/query.c:616
+#: lib/query.c:591
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾iadne balíky\n"
 
-#: lib/query.c:627 lib/query.c:635
+#: lib/query.c:601
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/query.c:646 lib/query.c:654
+#: lib/query.c:611
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾iadny z balíkov nevy¾aduje %s\n"
 
-#: lib/query.c:666 lib/query.c:674
+#: lib/query.c:622
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾iadny z balíkov neposkytuje %s\n"
 
-#: lib/query.c:691 lib/query.c:709
+#: lib/query.c:638
 #, c-format
 msgid "file %s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: lib/query.c:694 lib/query.c:712
+#: lib/query.c:641
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/query.c:735
+#: lib/query.c:663
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/query.c:738
+#: lib/query.c:666
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "po¾aduje sa záznam èíslo %d\n"
 
-#: lib/query.c:742 lib/query.c:751
+#: lib/query.c:669
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:763 lib/rpminstall.c:436
+#: lib/query.c:680 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/query.c:766
+#: lib/query.c:683
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: lib/query.c:791
+#: lib/query.c:708
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() zlyhalo\n"
 
-#: lib/query.c:850
+#: lib/query.c:767
 msgid "query package owning file"
 msgstr "opýta» sa balíku vlastniaceho súbor"
 
-#: lib/query.c:852
+#: lib/query.c:769
 msgid "query packages in group"
 msgstr "opýta» sa v¹etkých balíkov v skupine"
 
-#: lib/query.c:854
+#: lib/query.c:771
 msgid "query a package file"
 msgstr "opýta» sa súboru balíka"
 
-#: lib/query.c:858
+#: lib/query.c:775
 msgid "query a spec file"
 msgstr "opýta» sa spec súboru"
 
-#: lib/query.c:860
+#: lib/query.c:777
 msgid "query the pacakges triggered by the package"
 msgstr "opýta» sa balíkov spustených balíkom"
 
-#: lib/query.c:862
+#: lib/query.c:779
 msgid "query the packages which require a capability"
 msgstr "opýta» sa balíkov vy¾adujúcich schopnos»"
 
-#: lib/query.c:864
+#: lib/query.c:781
 msgid "query the packages which provide a capability"
 msgstr "opýta» sa balíkov poskytujúcich schopnos»"
 
-#: lib/query.c:903
+#: lib/query.c:820
 msgid "list all configuration files"
 msgstr "zobrazi» v¹etky konfiguraèné súbory"
 
-#: lib/query.c:905
+#: lib/query.c:822
 #, fuzzy
 msgid "list all documentation files"
 msgstr "zobrazi» v¹etky dokumentaèné súbory"
 
-#: lib/query.c:907
+#: lib/query.c:824
 msgid "dump basic file information"
 msgstr "zobrazi» základné informácie o balíku"
 
-#: lib/query.c:909
+#: lib/query.c:826
 msgid "list files in package"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/query.c:913
+#: lib/query.c:830
 msgid "use the following query format"
 msgstr "pou¾i» nasledovný formát otázky"
 
-#: lib/query.c:915
+#: lib/query.c:832
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: lib/query.c:917
+#: lib/query.c:834
 msgid "display the states of the listed files"
 msgstr "zobrazii» stav daných súborov"
 
-#: lib/query.c:919
+#: lib/query.c:836
 msgid "display a verbose file listing"
 msgstr "zobrazi» podrobný zoznam súborov balíka"
 
@@ -2834,40 +2826,30 @@ msgstr "otvára sa stará databáza\n"
 msgid "opening new database with dbi_major %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rebuilddb.c:112
-#, c-format
-msgid "record number %d in database is bad -- skipping it"
-msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
-
-#: lib/rebuilddb.c:131
+#: lib/rebuilddb.c:111
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rebuilddb.c:146
-#, c-format
-msgid "duplicated database entry: %s-%s-%s -- skipping."
-msgstr ""
-
-#: lib/rebuilddb.c:162
+#: lib/rebuilddb.c:140
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rebuilddb.c:186
+#: lib/rebuilddb.c:156
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rebuilddb.c:194
+#: lib/rebuilddb.c:164
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rebuilddb.c:196
+#: lib/rebuilddb.c:166
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rebuilddb.c:202
+#: lib/rebuilddb.c:172
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
@@ -2965,62 +2947,62 @@ msgstr ""
 "databázy v novom formáte"
 
 #. error
-#: lib/rpmdb.c:442
+#: lib/rpmdb.c:390
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmdb.c:598
+#: lib/rpmdb.c:613
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:607
+#: lib/rpmdb.c:622
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:625
+#: lib/rpmdb.c:640
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: lib/rpmdb.c:650
+#: lib/rpmdb.c:665
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstraòuje sa záznam z databázy\n"
 
-#: lib/rpmdb.c:656
+#: lib/rpmdb.c:671
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:664
+#: lib/rpmdb.c:679
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:668 lib/rpmdb.c:865
+#: lib/rpmdb.c:683 lib/rpmdb.c:880
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:803
+#: lib/rpmdb.c:818
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "nie je mo¾né prideli» miesto pre databázu"
 
-#: lib/rpmdb.c:842
+#: lib/rpmdb.c:857
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:854
+#: lib/rpmdb.c:869
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:861
+#: lib/rpmdb.c:876
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
@@ -3423,22 +3405,22 @@ msgstr "Musíte nastavi» \"%%pgp_name\" vo va¹om makro-súbore"
 msgid "excluding file %s%s\n"
 msgstr "vynecháva sa %s\n"
 
-#: lib/transaction.c:427 lib/transaction.c:511
+#: lib/transaction.c:426 lib/transaction.c:509
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/transaction.c:432
+#: lib/transaction.c:431
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/transaction.c:504
+#: lib/transaction.c:502
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/transaction.c:656
+#: lib/transaction.c:654
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
@@ -3551,6 +3533,15 @@ msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() zlyhalo\n"
+
+#~ msgid "dbrecMatchesDepFlags() failed to read header"
+#~ msgstr "dbrecMatchesDepFlags() sa nepodarilo preèíta» hlavièku"
+
+#~ msgid "could not read database record!\n"
+#~ msgstr "nie je mo¾né preèíta» záznam v databáze!\n"
+
+#~ msgid "record number %d in database is bad -- skipping it"
+#~ msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
 #~ msgid "opening database mode 0x%x in %s\n"
 #~ msgstr "otvára sa databáza s právami 0x%x v %s\n"

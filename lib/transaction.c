@@ -413,8 +413,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    fileAlloced = len * 2;
 	    filespec = xrealloc(filespec, fileAlloced);
 	}
-	strcpy(filespec, dirNames[dirIndexes[i]]);
-	strcat(filespec, baseNames[i]);
+	stpcpy( stpcpy(filespec, dirNames[dirIndexes[i]]) , baseNames[i]);
 
 	for (j = numRelocations - 1; j >= 0; j--)
 	    if (!strcmp(relocations[j].oldPath, filespec)) break;
@@ -499,8 +498,7 @@ static Header relocateFileList(struct availablePackage * alp,
 		const char *s = relocations[j].newPath;
 		char *t = alloca(strlen(s) + strlen(dirNames[i]) - oplen + 1);
 
-		strcpy(t, s);
-		strcat(t, dirNames[i] + oplen);
+		stpcpy( stpcpy(t, s) , dirNames[i] + oplen);
 		rpmMessage(RPMMESS_DEBUG, _("relocating directory %s to %s\n"),
 			dirNames[i], t);
 		dirNames[i] = t;

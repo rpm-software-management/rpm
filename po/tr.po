@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-12 09:57-0400\n"
+"POT-Creation-Date: 2000-04-13 12:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1730,12 +1730,12 @@ msgstr "%s 'nin yazýlmasý mümkün deðil"
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:519
+#: build/pack.c:518
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:536
+#: build/pack.c:535
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s dosyasý açýlamýyor: "
@@ -1862,7 +1862,7 @@ msgstr ""
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "%s açýlamadý: %s"
 
-#: build/parsePreamble.c:445 build/parseSpec.c:375
+#: build/parsePreamble.c:445 build/parseSpec.c:374
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr ""
@@ -2052,7 +2052,7 @@ msgstr ""
 msgid "malformed %%include statement"
 msgstr ""
 
-#: build/parseSpec.c:470
+#: build/parseSpec.c:469
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "paket mimarisini doðrulamaz"
@@ -2067,17 +2067,17 @@ msgstr "%s paketi %s altýnda gözükmüyor"
 msgid "archive = %s, fs = %s\n"
 msgstr ""
 
-#: build/spec.c:245
+#: build/spec.c:244
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: build/spec.c:251
+#: build/spec.c:250
 #, c-format
 msgid "line %d: Bad no%s number: %d"
 msgstr ""
 
-#: build/spec.c:310
+#: build/spec.c:309
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "geçersiz paket numarsý: %s\n"
@@ -2167,88 +2167,84 @@ msgid "error removing record %s into %s"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:417
+#: lib/depends.c:430
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:446
+#: lib/depends.c:459
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:538
-msgid "dbrecMatchesDepFlags() failed to read header"
-msgstr ""
-
-#: lib/depends.c:795
+#: lib/depends.c:788
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:834
+#: lib/depends.c:836
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/depends.c:851
+#: lib/depends.c:853
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:882
+#: lib/depends.c:886
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:909
+#: lib/depends.c:914
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:934
+#: lib/depends.c:932
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:959
+#: lib/depends.c:949
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/depends.c:976
+#: lib/depends.c:961
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:986
+#: lib/depends.c:971
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1038
+#: lib/depends.c:1019
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
 #. conflicts exist.
-#: lib/depends.c:1100
+#: lib/depends.c:1081
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: lib/depends.c:1155 lib/depends.c:1450
-#, c-format
-msgid "cannot read header at %d for dependency check"
-msgstr "baðýmlýlýk sorgulamasý için %d numaralý baþlýk okunamýyor"
-
-#: lib/depends.c:1246
+#: lib/depends.c:1211
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "gerekenler zincirinde döngü: %s"
+
+#: lib/depends.c:1415
+#, c-format
+msgid "cannot read header at %d for dependency check"
+msgstr "baðýmlýlýk sorgulamasý için %d numaralý baþlýk okunamýyor"
 
 #: lib/falloc.c:135
 #, c-format
@@ -2437,7 +2433,7 @@ msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:562 lib/install.c:834 lib/uninstall.c:29
+#: lib/install.c:562 lib/install.c:838 lib/uninstall.c:29
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s 'nin isminin  %s 'ye çevrilmesinde belirtilen hata oluþtu: %s"
@@ -2451,25 +2447,25 @@ msgstr ""
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s ortak (shared) dosyalar içeriyor\n"
 
-#: lib/install.c:764
+#: lib/install.c:768
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:769
+#: lib/install.c:773
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:794
+#: lib/install.c:798
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:830
+#: lib/install.c:834
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:904
+#: lib/install.c:908
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2744,145 +2740,141 @@ msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: lib/query.c:586
-msgid "could not read database record!\n"
-msgstr "veritabaný kaydý okunamadý!\n"
-
-#: lib/query.c:597
+#: lib/query.c:581
 #, fuzzy
 msgid "no packages\n"
 msgstr "Tüm paketleri sorgulama"
 
-#: lib/query.c:608 lib/query.c:616
+#: lib/query.c:591
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "%s grubu hiç paket içermiyor\n"
 
-#: lib/query.c:627 lib/query.c:635
+#: lib/query.c:601
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "hiç bir paket %s tetiklemiyor\n"
 
-#: lib/query.c:646 lib/query.c:654
+#: lib/query.c:611
 #, c-format
 msgid "no package requires %s\n"
 msgstr "hiç bir paket %s gerektirmiyor\n"
 
-#: lib/query.c:666 lib/query.c:674
+#: lib/query.c:622
 #, c-format
 msgid "no package provides %s\n"
 msgstr "hiç bir paket  %s saðlamýyor\n"
 
-#: lib/query.c:691 lib/query.c:709
+#: lib/query.c:638
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/query.c:694 lib/query.c:712
+#: lib/query.c:641
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/query.c:735
+#: lib/query.c:663
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: lib/query.c:738
+#: lib/query.c:666
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "geçersiz paket numarsý: %s\n"
 
-#: lib/query.c:742 lib/query.c:751
+#: lib/query.c:669
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "%d numaralý kayýt okunamadý\n"
 
-#: lib/query.c:763 lib/rpminstall.c:436
+#: lib/query.c:680 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s pakedi yüklenmemiþ\n"
 
-#: lib/query.c:766
+#: lib/query.c:683
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "%s pakedi aranýrken hata oluþtu\n"
 
-#: lib/query.c:791
+#: lib/query.c:708
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Eriþilemedi\n"
 
-#: lib/query.c:850
+#: lib/query.c:767
 #, fuzzy
 msgid "query package owning file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:852
+#: lib/query.c:769
 #, fuzzy
 msgid "query packages in group"
 msgstr "pakedin adý yok :-)"
 
-#: lib/query.c:854
+#: lib/query.c:771
 #, fuzzy
 msgid "query a package file"
 msgstr "Tüm paketleri sorgulama"
 
-#: lib/query.c:858
+#: lib/query.c:775
 #, fuzzy
 msgid "query a spec file"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: lib/query.c:860
+#: lib/query.c:777
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:862
+#: lib/query.c:779
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
 
-#: lib/query.c:864
+#: lib/query.c:781
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "<i> yeteneði olan paketleri sorgulama"
 
-#: lib/query.c:903
+#: lib/query.c:820
 #, fuzzy
 msgid "list all configuration files"
 msgstr ""
 "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
 
-#: lib/query.c:905
+#: lib/query.c:822
 #, fuzzy
 msgid "list all documentation files"
 msgstr "paket ile gelen belgeleri de yükler"
 
-#: lib/query.c:907
+#: lib/query.c:824
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paket bilgisini gösterme"
 
-#: lib/query.c:909
+#: lib/query.c:826
 #, fuzzy
 msgid "list files in package"
 msgstr "paket yüklemek"
 
-#: lib/query.c:913
+#: lib/query.c:830
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:915
+#: lib/query.c:832
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:917
+#: lib/query.c:834
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:919
+#: lib/query.c:836
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Paketin içerdiði dosyalarý gösterme"
@@ -2921,40 +2913,30 @@ msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 msgid "opening new database with dbi_major %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rebuilddb.c:112
-#, c-format
-msgid "record number %d in database is bad -- skipping it"
-msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
-
-#: lib/rebuilddb.c:131
+#: lib/rebuilddb.c:111
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: lib/rebuilddb.c:146
-#, c-format
-msgid "duplicated database entry: %s-%s-%s -- skipping."
-msgstr ""
-
-#: lib/rebuilddb.c:162
+#: lib/rebuilddb.c:140
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d de yer alan kayýt saklayamýyor"
 
-#: lib/rebuilddb.c:186
+#: lib/rebuilddb.c:156
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:194
+#: lib/rebuilddb.c:164
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:196
+#: lib/rebuilddb.c:166
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:202
+#: lib/rebuilddb.c:172
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s açýlamadý: %s"
@@ -3051,63 +3033,63 @@ msgid ""
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:442
+#: lib/rpmdb.c:390
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
 
-#: lib/rpmdb.c:598
+#: lib/rpmdb.c:613
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "%s pakedi %s içerisinde bulunamadý"
 
-#: lib/rpmdb.c:607
+#: lib/rpmdb.c:622
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "%s pakedi %s içerisinde bulunamadý"
 
-#: lib/rpmdb.c:625
+#: lib/rpmdb.c:640
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
-#: lib/rpmdb.c:650
+#: lib/rpmdb.c:665
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:656
+#: lib/rpmdb.c:671
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:664
+#: lib/rpmdb.c:679
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:668 lib/rpmdb.c:865
+#: lib/rpmdb.c:683 lib/rpmdb.c:880
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
 # reservieren???
-#: lib/rpmdb.c:803
+#: lib/rpmdb.c:818
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "Veritabaný için yer bulunamadý"
 
-#: lib/rpmdb.c:842
+#: lib/rpmdb.c:857
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:854
+#: lib/rpmdb.c:869
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:861
+#: lib/rpmdb.c:876
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
@@ -3531,22 +3513,22 @@ msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 msgid "excluding file %s%s\n"
 msgstr "%s alýnýyor\n"
 
-#: lib/transaction.c:427 lib/transaction.c:511
+#: lib/transaction.c:426 lib/transaction.c:509
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/transaction.c:432
+#: lib/transaction.c:431
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:504
+#: lib/transaction.c:502
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/transaction.c:656
+#: lib/transaction.c:654
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3656,6 +3638,12 @@ msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "%s: Eriþilemedi\n"
+
+#~ msgid "could not read database record!\n"
+#~ msgstr "veritabaný kaydý okunamadý!\n"
+
+#~ msgid "record number %d in database is bad -- skipping it"
+#~ msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
 #, fuzzy
 #~ msgid "opening database mode 0x%x in %s\n"
