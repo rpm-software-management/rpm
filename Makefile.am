@@ -81,7 +81,7 @@ rpmq.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMQV -o $@ -c $<
 
 rpm2cpio_SOURCES =	rpm2cpio.c
-rpm2cpio_LDFLAGS =	@LDFLAGS_STATIC@ $(myLDFLAGS)
+rpm2cpio_LDFLAGS =	$(myLDFLAGS)
 rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
 $(PROGRAMS): 		$(myLDADD)

@@ -244,10 +244,10 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     if ((dbi = rpmdb->_dbi[dbix]) != NULL)
 	return dbi;
 
-    _dbapi_wanted = (_rebuildinprogress ? -1 : rpmdb->db_api);
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
     if (_dbapi_rebuild < 1 || _dbapi_rebuild > 3)
 	_dbapi_rebuild = 3;
+    _dbapi_wanted = (_rebuildinprogress ? -1 : rpmdb->db_api);
 
     switch (_dbapi_wanted) {
     default:
@@ -258,7 +258,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 		fprintf(stderr, _("\n\
 --> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n\
     Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n\
-    and configure \"%%_dbapi -1\" (e.g. create and/or edit /etc/rpm/macros).\n\
+    and configure \"%%_dbapi 3\" (e.g. create and/or edit /etc/rpm/macros).\n\
 \n\
 "),	    _dbapi_wanted);
 	    return NULL;
@@ -266,6 +266,15 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 	errno = 0;
 	dbi = NULL;
 	rc = (*mydbvecs[_dbapi]->open) (rpmdb, rpmtag, &dbi);
+	if (rc) {
+	    static int _printed[32];
+	    if (!_printed[dbix & 0x1f]++)
+		rpmError(RPMERR_DBOPEN,
+			_("cannot open %s index using db%d - %s (%d)"),
+			tagName(rpmtag), _dbapi,
+			(rc > 0 ? strerror(rc) : ""), rc);
+	    _dbapi = -1;
+	}
 	break;
     case -1:
 	_dbapi = 4;
@@ -278,23 +287,21 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 	    if (rc == 0 && dbi)
 		break;
 	}
+	if (_dbapi <= 0) {
+	    static int _printed[32];
+	    if (!_printed[dbix & 0x1f]++)
+		rpmError(RPMERR_DBOPEN, _("cannot open %s index"),
+			tagName(rpmtag));
+	    rc = 1;
+	    goto exit;
+	}
 	if (rpmdb->db_api == -1 && _dbapi > 0)
 	    rpmdb->db_api = _dbapi;
     	break;
     }
 
-    /* Failed to open with any dbapi */
-    if (_dbapi <= 0) {
-	static int _printed[32];
-	if (!_printed[dbix & 0x1f]++)
-	    rpmError(RPMERR_DBOPEN, _("dbiOpen: cannot open %s index"),
-		tagName(rpmtag));
-	rc = 1;
-	goto exit;
-    }
-
     /* Require conversion. */
-    if (_dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
+    if (rc && _dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
 	static int _printed = 0;
 	rc = (_rebuildinprogress ? 0 : 1);
 	if (rc && !_printed++)
@@ -303,7 +310,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     If you have just upgraded the rpm package you need to convert\n\
     your database to db%d format by running \"rpm --rebuilddb\" as root.\n\
 \n\
-"),	_dbapi, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3));
+"),	_dbapi_wanted, (_dbapi_rebuild > 0 ? _dbapi_rebuild : 3));
 	goto exit;
     }
 
@@ -1718,7 +1725,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
 		rpmcnt = 1;
 	    } else {
 
-		rpmMessage(RPMMESS_DEBUG, _("removing %d entries from %s index:\n"), 
+		rpmMessage(RPMMESS_DEBUG, _("removing %d entries from %s index.\n"), 
 			rpmcnt, tagName(dbi->dbi_rpmtag));
 
 	    }
@@ -1942,7 +1949,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		rpmcnt = 1;
 	    } else {
 
-		rpmMessage(RPMMESS_DEBUG, _("adding %d entries to %s index:\n"), 
+		rpmMessage(RPMMESS_DEBUG, _("adding %d entries to %s index.\n"), 
 			rpmcnt, tagName(dbi->dbi_rpmtag));
 
 	    }
@@ -2272,7 +2279,6 @@ int rpmdbRebuild(const char * rootdir)
 
     _dbapi = rpmExpandNumeric("%{_dbapi}");
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
-    _rebuildinprogress = 1;
 
     tfn = rpmGetPath("%{_dbpath}", NULL);
     if (!(tfn && tfn[0] != '%')) {
@@ -2322,12 +2328,14 @@ int rpmdbRebuild(const char * rootdir)
 
     rpmMessage(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
 		_dbapi);
+    _rebuildinprogress = 1;
     if (openDatabase(rootdir, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
 	goto exit;
     }
     _dbapi = olddb->db_api;
+    _rebuildinprogress = 0;
 
     rpmMessage(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
 		_dbapi_rebuild);

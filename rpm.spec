@@ -263,6 +263,7 @@ fi
 %changelog
 * Sat Jul 29 2000 Jeff Johnson <jbj@redhat.com>
 - bail on firstkey/nextkey, there's a better way.
+- link rpm2cpio dynamically since cpio is linked dynamically.
 
 * Fri Jul 28 2000 Jeff Johnson <jbj@redhat.com>
 - resurrect firstkey/nextkey python bindings.
