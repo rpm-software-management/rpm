@@ -20,8 +20,8 @@ rpm alias --scripts --qf '\
 %|VERIFYSCRIPT?{verify script:\n%{VERIFYSCRIPT}\n}|\
 '
 
-rpm alias --setperms -q --qf '[%7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
-		   --pipe "grep -v \(none\) | sed 's/^.../chmod /' | sh"
+rpm alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
+		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh"
 
 rpm alias --setugids -q --qf \
 		   '[chown %{FILEUSERNAME:shescape}:%{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n]' \
