@@ -519,6 +519,8 @@ int poptReadDefaultConfig(poptContext con, int useEnv) {
 
     rc = poptReadConfigFile(con, "/etc/popt");
     if (rc) return rc;
+    if (getuid() != geteuid()) return 0;
+
     if ((home = getenv("HOME"))) {
 	fn = alloca(strlen(home) + 20);
 	sprintf(fn, "%s/.popt", home);
