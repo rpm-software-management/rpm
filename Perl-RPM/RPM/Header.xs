@@ -4,7 +4,17 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.22 2001/02/27 07:34:44 rjray Exp $";
+#ifndef RPMERR_READERROR
+#  define RPMERR_READERROR RPMERR_READ
+#endif
+
+#if (RPM_VERSION >= 0x040002)
+#  define HDR_ITER_CONST const
+#else
+#  define HDR_ITER_CONST
+#endif
+
+static char * const rcsid = "$Id: Header.xs,v 1.23 2001/04/29 22:44:54 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -882,9 +892,13 @@ int rpmhdr_FIRSTKEY(pTHX_ RPM__Header self, SV** key, SV** value)
 
     /* Run once to get started */
     headerNextIterator(hdr->iterator,
-                       Null(int *), Null(int *), Null(void **), Null(int *));
+                       Null(int *), Null(int *),
+                       Null(HDR_ITER_CONST void **),
+                       Null(int *));
     /* Now run it once, to get the first header entry */
-    if (! headerNextIterator(hdr->iterator, &tag, &type, (void **)&ptr, &size))
+    if (! headerNextIterator(hdr->iterator, &tag, &type,
+                             (HDR_ITER_CONST void **)&ptr,
+                             &size))
         return 0;
 
     tagname = num2tag(aTHX_ tag);
@@ -912,8 +926,8 @@ int rpmhdr_NEXTKEY(pTHX_ RPM__Header self, SV* key,
     while (1)
     {
         /* Run it once, to get the next header entry */
-        if (! headerNextIterator(hdr->iterator, &tag, &type, (void **)&ptr,
-                                 &size))
+        if (! headerNextIterator(hdr->iterator, &tag, &type,
+                                 (HDR_ITER_CONST void **)&ptr, &size))
             /* Last tag. Inform perl that iteration is over. */
             return 0;
 

@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Constants.xs,v 1.8 2001/04/27 08:41:56 rjray Exp $";
+static char * const rcsid = "$Id: Constants.xs,v 1.9 2001/04/29 22:44:54 rjray Exp $";
 
 static int constant(pTHX_ char *name)
 {
@@ -171,7 +171,7 @@ static int constant(pTHX_ char *name)
         if (strEQ(name, "RPMERR_PKGINSTALLED"))
             return RPMERR_PKGINSTALLED;
         if (strEQ(name, "RPMERR_READ") || strEQ(name, "RPMERR_READERROR"))
-#if ((RPM_MAJOR >= 4) && (RPM_PATCH >= 2))
+#if (RPM_VERSION > 0x040002)
             return RPMERR_READ;
 #else
             return RPMERR_READERROR;
