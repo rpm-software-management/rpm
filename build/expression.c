@@ -127,6 +127,7 @@ typedef struct _parseState
 
 #define	EXPRBUFSIZ	BUFSIZ
 
+#if defined(DEBUG_PARSER)
 typedef struct exprTokTableEntry {
     const char *name;
     int val;
@@ -165,6 +166,7 @@ static const char *prToken(int val)
     }
     return "???";
 }
+#endif	/* DEBUG_PARSER */
 
 static int rdToken(ParseState state)
 {

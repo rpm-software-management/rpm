@@ -165,8 +165,8 @@ extern void (*freeSpecVec) (Spec spec);	/* XXX FIXME */
 struct OpenFileInfo * newOpenFileInfo(void);
 struct spectag *stashSt(Spec spec, Header h, int tag, const char *lang);
 
-int addSource(Spec spec, Package pkg, char *field, int tag);
-int parseNoSource(Spec spec, char *field, int tag);
+int addSource(Spec spec, Package pkg, const char *field, int tag);
+int parseNoSource(Spec spec, const char *field, int tag);
 
 #ifdef __cplusplus
 }

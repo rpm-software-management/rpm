@@ -6,6 +6,9 @@
 extern char *specedit;
 extern MacroContext globalMacroContext;
 
+#define SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
+#define SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
+
 static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
 {
     struct TriggerFileEntry *o, *q = p;
@@ -48,39 +51,41 @@ static inline void freeSources(/*@only@*/ struct Source *s)
 
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
-    char buf[BUFSIZ];
-    char *n;
+    const char *pname;
     const char *fullName;
     Package p;
     
     /* "main" package */
-    if (! name) {
-	if (pkg) {
+    if (name == NULL) {
+	if (pkg)
 	    *pkg = spec->packages;
-	}
 	return 0;
     }
 
     /* Construct package name */
+  { char *n;
     if (flag == PART_SUBNAME) {
 	headerGetEntry(spec->packages->header, RPMTAG_NAME,
-		       NULL, (void **) &n, NULL);
-	sprintf(buf, "%s-%s", n, name);
-	fullName = buf;
+		       NULL, (void **) &pname, NULL);
+	fullName = n = alloca(strlen(pname) + 1 + strlen(name) + 1);
+	while (*pname) *n++ = *pname++;
+	*n++ = '-';
     } else {
-	fullName = name;
+	fullName = n = alloca(strlen(name)+1);
     }
+    strcpy(n, name);
+  }
 
+    /* Locate package with fullName */
     for (p = spec->packages; p != NULL; p = p->next) {
-	headerGetEntry(p->header, RPMTAG_NAME, NULL, (void **) &n, NULL);
-	if (n && (! strcmp(fullName, n))) {
+	headerGetEntry(p->header, RPMTAG_NAME, NULL, (void **) &pname, NULL);
+	if (pname && (! strcmp(fullName, pname))) {
 	    break;
 	}
     }
 
-    if (pkg) {
+    if (pkg)
 	*pkg = p;
-    }
     return ((p == NULL) ? 1 : 0);
 }
 
@@ -203,10 +208,10 @@ static char *getFullSource(Spec spec, int num, int flag)
 }
 #endif	/* UNUSED */
 
-int parseNoSource(Spec spec, char *field, int tag)
+int parseNoSource(Spec spec, const char *field, int tag)
 {
-    char buf[BUFSIZ];
-    char *s, *name;
+    const char *f, *fe;
+    const char *name;
     int num, flag;
 
     if (tag == RPMTAG_NOSOURCE) {
@@ -217,12 +222,20 @@ int parseNoSource(Spec spec, char *field, int tag)
 	name = "patch";
     }
     
-    strcpy(buf, field);
-    for (field = buf; (s = strtok(field, ", \t")); field = NULL) {
+    fe = field;
+    for (f = fe; *f; f = fe) {
         struct Source *p;
-	if (parseNum(s, &num)) {
+
+	SKIPWHITE(f);
+	if (*f == '\0')
+	    break;
+	fe = f;
+	SKIPNONWHITE(fe);
+	if (*fe) fe++;
+
+	if (parseNum(f, &num)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Bad number: %s"),
-		     spec->lineNum, spec->line);
+		     spec->lineNum, f);
 	    return RPMERR_BADSPEC;
 	}
 
@@ -239,12 +252,13 @@ int parseNoSource(Spec spec, char *field, int tag)
     return 0;
 }
 
-int addSource(Spec spec, Package pkg, char *field, int tag)
+int addSource(Spec spec, Package pkg, const char *field, int tag)
 {
     struct Source *p;
     int flag = 0;
     char *name = NULL;
-    char *nump, *fieldp = NULL;
+    char *nump;
+    const char *fieldp = NULL;
     char buf[BUFSIZ];
     int num = 0;
 
@@ -261,6 +275,7 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
 	break;
       case RPMTAG_ICON:
 	flag = RPMBUILD_ISICON;
+	fieldp = NULL;
 	break;
     }
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-19 08:32-0400\n"
+"POT-Creation-Date: 1999-07-19 12:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1248,56 +1248,56 @@ msgstr ""
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
-#: ../build/expression.c:206
+#: ../build/expression.c:208
 msgid "syntax error while parsing =="
 msgstr ""
 
-#: ../build/expression.c:236
+#: ../build/expression.c:238
 msgid "syntax error while parsing &&"
 msgstr ""
 
-#: ../build/expression.c:245
+#: ../build/expression.c:247
 msgid "syntax error while parsing ||"
 msgstr ""
 
-#: ../build/expression.c:287
+#: ../build/expression.c:289
 msgid "parse error in expression"
 msgstr ""
 
-#: ../build/expression.c:317
+#: ../build/expression.c:319
 msgid "unmatched ("
 msgstr ""
 
-#: ../build/expression.c:335
+#: ../build/expression.c:337
 msgid "undefined identifier"
 msgstr ""
 
-#: ../build/expression.c:354
+#: ../build/expression.c:356
 msgid "- only on numbers"
 msgstr ""
 
-#: ../build/expression.c:370
+#: ../build/expression.c:372
 msgid "! only on numbers"
 msgstr ""
 
-#: ../build/expression.c:409 ../build/expression.c:454
-#: ../build/expression.c:511 ../build/expression.c:598
+#: ../build/expression.c:411 ../build/expression.c:456
+#: ../build/expression.c:513 ../build/expression.c:600
 msgid "types must match"
 msgstr ""
 
-#: ../build/expression.c:422
+#: ../build/expression.c:424
 msgid "* / not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:470
+#: ../build/expression.c:472
 msgid "- not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:611
+#: ../build/expression.c:613
 msgid "&& and || not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:642 ../build/expression.c:687
+#: ../build/expression.c:644 ../build/expression.c:689
 msgid "syntax error in expression"
 msgstr ""
 
@@ -1610,29 +1610,29 @@ msgstr ""
 msgid "no description in %%changelog"
 msgstr ""
 
-#: ../build/parseDescription.c:35
+#: ../build/parseDescription.c:36
 msgid "line %d: Error parsing %%description: %s"
 msgstr ""
 
-#: ../build/parseDescription.c:48 ../build/parseFiles.c:42
+#: ../build/parseDescription.c:49 ../build/parseFiles.c:42
 #: ../build/parseScript.c:170
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr ""
 
-#: ../build/parseDescription.c:62 ../build/parseFiles.c:56
+#: ../build/parseDescription.c:63 ../build/parseFiles.c:56
 #: ../build/parseScript.c:184
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr ""
 
-#: ../build/parseDescription.c:72 ../build/parseFiles.c:66
+#: ../build/parseDescription.c:73 ../build/parseFiles.c:66
 #: ../build/parseScript.c:194
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr ""
 
-#: ../build/parseDescription.c:84
+#: ../build/parseDescription.c:85
 #, c-format
 msgid "line %d: Second description"
 msgstr ""
@@ -1907,22 +1907,22 @@ msgstr ""
 msgid "Package has no %%description: %s"
 msgstr ""
 
-#: ../build/spec.c:28
+#: ../build/spec.c:31
 #, c-format
 msgid "archive = %s, fs = %s\n"
 msgstr ""
 
-#: ../build/spec.c:224
+#: ../build/spec.c:237
 #, c-format
 msgid "line %d: Bad number: %s"
 msgstr ""
 
-#: ../build/spec.c:230
+#: ../build/spec.c:243
 #, c-format
 msgid "line %d: Bad no%s number: %d"
 msgstr ""
 
-#: ../build/spec.c:286
+#: ../build/spec.c:301
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
