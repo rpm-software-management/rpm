@@ -318,7 +318,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 /*@=boundswrite@*/
 	if (rc) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
-		sprintf(te, _("missing  %c %s"),
+		sprintf(te, _("missing   %c %s"),
 			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
