@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.6 2000/06/22 08:35:13 rjray Exp $
+ * $Id: RPM.h,v 1.7 2000/08/02 08:44:23 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -111,9 +111,26 @@ typedef HV* RPM__Header;
   and RPM__Header use.
 */
 
+typedef struct {
+    /* The filepath, ftp path or URI that refers to the package */
+    const char* path;
+    /* A weak ref to the header structure for the package, if it exists */
+    RPM__Header header;
+    /* The RPM signature (if present) is stored in the same struct as hdrs */
+    Header signature;
+    /* Should this be treated as a read-only source? */
+    int read_only;
+    /* The current notify/callback function associated with this package */
+    rpmCallbackFunction callback;
+} RPM_Package;
+
+#define new_RPM__Package(x) x = (RPM_Package *)safemalloc(sizeof(RPM_Package))
+
+
 /*
-  Because the HV* are going to be set magical, the following is needed for
+  Because our HV* are going to be set magical, the following is needed for
   explicit fetch and store calls that are done within the tied FETCH/STORE
+  methods.
 */
 #define hv_fetch_nomg(SVP, h, k, kl, f) \
         SvMAGICAL_off((SV *)(h)); \
@@ -137,9 +154,11 @@ typedef HV* RPM__Header;
   their native modules.
 */
 /* RPM.xs: */
-extern SV* rpm_errSV;
 extern int tag2num(pTHX_ const char *);
 extern const char* num2tag(pTHX_ int);
+
+/* RPM/Error.xs: */
+extern SV* rpm_errSV;
 extern void clear_errors(pTHX);
 extern SV* set_error_callback(pTHX_ SV *);
 extern void rpm_error(pTHX_ int, const char *);
@@ -154,10 +173,17 @@ extern int rpmhdr_EXISTS(pTHX_ RPM__Header, SV *);
 extern unsigned int rpmhdr_size(pTHX_ RPM__Header);
 extern int rpmhdr_tagtype(pTHX_ RPM__Header, SV *);
 extern int rpmhdr_write(pTHX_ RPM__Header, SV *, int);
+extern int rpmhdr_is_source(pTHX_ RPM__Header);
+extern int rpmhdr_cmpver(pTHX_ RPM__Header, RPM__Header);
 
 /* RPM/Database.xs: */
 extern RPM__Database rpmdb_TIEHASH(pTHX_ char *, SV *);
 extern RPM__Header rpmdb_FETCH(pTHX_ RPM__Database, SV *);
 extern int rpmdb_EXISTS(pTHX_ RPM__Database, SV *);
+
+/* RPM/Package.xs: */
+extern int rpmpkg_is_source(pTHX_ RPM_Package *);
+extern int rpmpkg_cmpver(pTHX_ RPM_Package *, RPM_Package *);
+extern int rpmpkg_cmpver2(pTHX_ RPM_Package *, RPM__Header);
 
 #endif /* H_RPM_XS_HDR */
