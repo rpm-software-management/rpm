@@ -58,8 +58,8 @@ address of the person who "maintains" the RPM package (which may be
 different from the person who actually maintains the program the
 package contains).
 
-Files attributes
----------------
+Files Attributes
+----------------
 
 A %ghost tag on a file indicates that this file is not to be included
 in the package.  It is typically used when the attributes of the file
@@ -76,3 +76,22 @@ The %config(noreplace) indicates that the file in the package should
 be installed with extension .rpmnew if there is already a file by
 the same name on the installed machine.
 
+Fine Adjustment of Automatic Dependencies
+-----------------------------------------
+
+Rpm currently supports separate "Autoreq:" and "Autoprov:" tags in a
+spec file to independently control the running of find-requires and
+find-provides. A common problem occurs when packaging a large third
+party binary which has interfaces to other third party libraries you
+do not own.  RPM will require all the third party libraries be
+installed on the target machine even though their intended use was
+optional. To rectify the situation you may turn off requirements when
+building the package by putting
+
+	Autoreq: 0 
+
+in your spec file. Any and all requirements should be added manually using the
+
+	Requires: depend1, ..., dependN
+
+in this case.

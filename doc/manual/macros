@@ -133,3 +133,82 @@ or
 The %{...} form allows you to place the expansion adjacent to other text.
 The %<name> form, if a parameterized macro, will do argc/argv processing
 of the rest of the line as described above.
+
+Command Line Options
+--------------------
+
+When the command line option "--define 'macroname value'" allows the
+user to specify the value that a macro should have during the build.
+Note lack of leading % for the macro name.  We will try to support
+users who accidentally type the leading % but this should not be
+relied upon.
+
+Evaluating a macro can be difficult outside of an rpm execution context. If
+you wish to see the expanded value of a macro, you may use
+	"--eval '<macro expression>'"
+that will read rpm config files and print the macro expansion on stdout.
+
+Note: This works only macros defined in rpm configuration files, not for
+macros defined in specfiles. You can use %{echo: %{your_macro_here}} if
+you wish to see the expansion of a macro defined in a spec file.
+ 
+RPM Configuration using Macros
+--------------------------------
+
+Starting in rpm 3.0, macros rather than rpmrc lines are used to configure rpm.
+In general, all the rpmrc configuration lines documented in "Maximum RPM"
+have been converted to macros, usually with a leading underscore, and the
+same name that was used in rpmrc files. In some cases, there is no leading
+underscore. Those macros existed in rpm-2.5.x and the underscore is omitted
+in order to preserve the meaning and usage of macros that are defined during
+spec file parsing.
+
+Here's an example to illustrate configuration using macros:
+
+   Old way:
+	In /etc/rpmrc and/or ~/.rpmrc you put
+		something:      some_value
+
+   New way:
+	In /etc/rpm/macros and/or ~/.rpmmacros
+		%_something     some_value
+
+Here are 2 common FAQ for experienced users of rpm:
+
+  1) --rcfile works differently.
+    Old way:	rpm --rcfile whatever
+    New way:	rpm --rcfile /usr/lib/rpm/rpmrc:whatever
+
+  2) topdir (and other rpmrc configurables) work differently.
+
+    Old way:
+	~/.rpmrc contains
+		topdir:         whatever
+
+    New way:
+	/usr/lib/rpm/rpmrc contains
+		macrofiles:     /usr/lib/rpm/macros: ... :~/.rpmmacros
+	~/.rpmmacros contains
+		%_topdir        whatever
+
+Macro Analogues of Autoconf Variables
+-------------------------------------
+
+Several macro definitions provided by the default rpm macro set have uses in
+packaging similar to the autoconf variables that are used in building packages:
+
+    %_prefix		/usr
+    %_exec_prefix	%{_prefix}
+    %_bindir		%{_exec_prefix}/bin
+    %_sbindir		%{_exec_prefix}/sbin
+    %_libexecdir	%{_exec_prefix}/libexec
+    %_datadir		%{_prefix}/share
+    %_sysconfdir	%{_prefix}/etc
+    %_sharedstatedir	%{_prefix}/com
+    %_localstatedir	%{_prefix}/var
+    %_libdir		%{_exec_prefix}/lib
+    %_includedir	%{_prefix}/include
+    %_oldincludedir	/usr/include
+    %_infodir		%{_prefix}/include
+    %_mandir		%{_prefix}/man
+

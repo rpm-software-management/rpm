@@ -2,5 +2,5 @@
 
 EXTRA_DIST	= \
 	dependencies macros queryformat spec buildroot format \
-	relocatable signatures triggers
+	multiplebuilds relocatable signatures triggers
 
