@@ -37,7 +37,7 @@ OTHERSUBDIRS = docs autodeps
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o build.o \
        @GETTEXTSTUB@
 PROGS = @RPM@ rpm2cpio
-LIBS = @LIBS@ @LIBINTL@ @LIBDL@
+LIBS = @LIBS@ @LIBINTL@ @LIBDL@ $(LIBEFENCE)
 LOADLIBES = -lrpmbuild -lpopt -lrpm @LIBMISC@
 LDFLAGS_STATIC = @LDFLAGS_STATIC@
 
@@ -52,12 +52,10 @@ endif
 all: $(TARGET)
 
 rpm: lib/librpm.a build/librpmbuild.a @MISCPATH@ $(OBJS) 
-	$(CC) -o rpm $(LDFLAGS_STATIC) $(OBJS) $(LDFLAGS) $(LOADLIBES) $(LIBS) \
-		$(LIBEFENCE)
+	$(CC) -o rpm $(LDFLAGS_STATIC) $(OBJS) $(LDFLAGS) $(LOADLIBES) $(LIBS)
 
 rpm.shared: lib/librpm.a build/librpmbuild.a $(OBJS)
-	$(CC) -o rpm.shared $(LDFLAGS) $(OBJS) $(LOADLIBES) $(LIBS) \
-		$(LIBEFENCE)
+	$(CC) -o rpm.shared $(LDFLAGS) $(OBJS) $(LOADLIBES) $(LIBS)
 
 # we don't normally build this, so ./configure doesn't try very hard
 # to make it work
@@ -97,10 +95,10 @@ make-subdirs:
 
 newtree:
 	rm -f RCS
-	ln -sf /usr/rhs/RCS/rpm-2.0 RCS
+	ln -s /usr/rhs/RCS/rpm-2.0 RCS
 	for d in $(SUBDIRS) $(OTHERSUBDIRS); do \
 		$(mkinstalldirs) $$d ;\
-		(cd $$d; rm -f RCS; ln -sf /usr/rhs/RCS/rpm-2.0/$$d RCS) \
+		(cd $$d; rm -f RCS; ln -s /usr/rhs/RCS/rpm-2.0/$$d RCS) \
 		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
 	done && test -z "$$fail"
 
@@ -138,8 +136,8 @@ install: all
 	$(INSTALL_DATA) -m 644 $(topdir)/macros $(installprefix)/$(RPMCONFIGDIR)/macros
 	$(INSTALL_DATA) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(RPMCONFIGDIR)/rpmrc
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(RPMCONFIGDIR)/rpmpopt
-	ln -sf $(RPMCONFIGDIR)/rpmrc $(installprefix)/$(LIBDIR)/rpmrc
-	ln -sf $(RPMCONFIGDIR)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
+	(cd $(installprefix)/$(LIBDIR); rm -f rpmrc; ln -s $(RPMCONFIGDIR)/rpmrc)
+	(cd $(installprefix)/$(LIBDIR); rm -f rpmpopt; ln -s $(RPMCONFIGDIR)/rpmpopt)
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	(cd build; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	for d in $(INSTSUBDIRS); do \
