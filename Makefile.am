@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 EXTRA_DIST = CHANGES CREDITS README.amiga RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	docs/[a-z]* gendiff groups po/*.in po/*.po po/rpm.pot \
-	rpm.8 rpm.8ru rpm.magic rpm.spec rpm2cpio.8 rpm2cpio.8ru
+	rpm.8 rpm.8ru rpm.magic rpmpopt rpm.spec rpm2cpio.8 rpm2cpio.8ru
 
 SUBDIRS = popt build lib po intl misc tools scripts tests .
 
