@@ -633,44 +633,34 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
     const char *opts, *o;
     int argc = 0;
     const char **argv;
-    int optc = 0;
-    const char **optv;
-    int opte;
     int c;
-    int saveoptind;	/* XXX optind must be saved on non-linux */
 
-    /* Copy macro name as argv[0] */
-    argc = 0;
-    b = be = buf;
-    strcpy(b, me->name);
-    be += strlen(b);
-    *be = '\0';
-    argc++;	/* XXX count argv[0] */
+    /* Copy macro name as argv[0], save beginning of args.  */
+    b = be = stpcpy(buf, me->name);
 
-    addMacro(mb->mc, "0", NULL, b, mb->depth);
+    addMacro(mb->mc, "0", NULL, buf, mb->depth);
     
+    argc = 1;	/* XXX count argv[0] */
+
     /* Copy args into buf until lastc */
     *be++ = ' ';
-    b = be;	/* Save beginning of args */
-    while ((c = *se) != 0) {
-	char *a;
-	se++;
-	if (c == lastc)
-		break;
-	if (isblank(c))
-		continue;
-	if (argc > 1)
-		*be++ = ' ';
-	a = be;
-	while (!(isblank(c) || c == lastc)) {
-		*be++ = c;
-		if ((c = *se) == '\0')
-			break;
-		se++;
+    while ((c = *se++) != '\0' && c != lastc) {
+	if (!isblank(c)) {
+	    *be++ = c;
+	    continue;
 	}
-	*be = '\0';
+	/* c is blank */
+	if (be[-1] == ' ')
+	    continue;
+	/* a word has ended */
+	*be++ = ' ';
 	argc++;
     }
+    if (c == '\0') se--;	/* one too far */
+    if (be[-1] != ' ')
+	argc++, be++;		/* last word has not trailing ' ' */
+    be[-1] = '\0';
+    if (*b == ' ') b++;		/* skip the leading ' ' */
 
 /*
  * The macro %* analoguous to the shell's $* means "Pass all non-macro
@@ -689,81 +679,54 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
 #endif
 
     /* Build argv array */
-    argv = (const char **)alloca((argc + 1) * sizeof(char *));
-    b = be = buf;
+    argv = (const char **) alloca((argc + 1) * sizeof(char *));
+    be[-1] = ' ';	/*  be - 1 == b + strlen(b) == buf + strlen(buf)  */
+    b = buf;
     for (c = 0; c < argc; c++) {
-	b = be;
-	if ((be = strchr(b, ' ')) == NULL)
-		be = b + strlen(b);
-	*be++ = '\0';
 	argv[c] = b;
+	b = strchr(b, ' ');
+	*b++ = '\0';
     }
+    /* now should be  b == be  */
     argv[argc] = NULL;
 
     opts = me->opts;
 
-    /* First count number of options ... */
-    saveoptind = optind;	/* XXX optind must be saved on non-linux */
-    optc = 0;
-    optc++;	/* XXX count argv[0] too */
+    /* Define option macros. */
     while((c = getopt(argc, (char **)argv, opts)) != -1) {
-	if (!(c != '?' && (o = strchr(opts, c)))) {
-		rpmError(RPMERR_BADSPEC, _("Unknown option %c in %s(%s)"),
+	if (c == '?' || (o = strchr(opts, c)) == NULL) {
+	    rpmError(RPMERR_BADSPEC, _("Unknown option %c in %s(%s)"),
 			c, me->name, opts);
-		return se;
+	    return se;
 	}
-	optc++;
-    }
-
-    /* ... then allocate storage ... */
-    opte = optc + (argc - optind);
-    optv = (const char **)alloca((opte + 1) * sizeof(char *));
-    optv[0] = me->name;
-    optv[opte] = NULL;
-
-    /* ... and finally define option macros. */
-    optind = saveoptind;	/* XXX optind must be restored on non-linux */
-    optc = 0;
-    optc++;			/* XXX count optv[0] */
-    while((c = getopt(argc, (char **)argv, opts)) != -1) {
-	o = strchr(opts, c);
-	b = be;
 	*be++ = '-';
 	*be++ = c;
 	if (o[1] == ':') {
-		*be++ = ' ';
-		strcpy(be, optarg);
-		be += strlen(be);
+	    *be++ = ' ';
+	    be = stpcpy(be, optarg);
 	}
 	*be++ = '\0';
-	sprintf(aname, "-%c", c);
+	aname[0] = '-'; aname[1] = c; aname[2] = '\0';
 	addMacro(mb->mc, aname, NULL, b, mb->depth);
 	if (o[1] == ':') {
-		sprintf(aname, "-%c*", c);
-		addMacro(mb->mc, aname, NULL, optarg, mb->depth);
+	    aname[0] = '-'; aname[1] = c; aname[2] = '*'; aname[3] = '\0';
+	    addMacro(mb->mc, aname, NULL, optarg, mb->depth);
 	}
-	optv[optc] = b;
-	optc++;
-    }
-
-    /* Add macro for each arg. Concatenate args for !*. */
-    b = be;
-    for (c = optind; c < argc; c++) {
-	sprintf(aname, "%d", (c - optind + 1));
-	addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
-
-	if (be > b) *be++ = ' ';
-	strcpy(be, argv[c]);
-	be += strlen(be);
-	*be = '\0';
-
-	optv[optc] = argv[c];
-	optc++;
+	be = b; /* reuse the space */
     }
 
     /* Add arg count as macro. */
     sprintf(aname, "%d", (argc - optind));
     addMacro(mb->mc, "#", NULL, aname, mb->depth);
+
+    /* Add macro for each arg. Concatenate args for %*. */
+    *be = '\0';
+    for (c = optind; c < argc; c++) {
+	sprintf(aname, "%d", (c - optind + 1));
+	addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
+	*be++ = ' ';
+	be = stpcpy(be, argv[c]);
+    }
 
     /* Add unexpanded args as macro. */
     addMacro(mb->mc, "*", NULL, b, mb->depth);
@@ -1445,16 +1408,11 @@ rpmExpand(const char *arg, ...)
 	return xstrdup("");
 
     p = buf;
-    strcpy(p, arg);
-    pe = p + strlen(p);
-    *pe = '\0';
+    pe = stpcpy(p, arg);
 
     va_start(ap, arg);
-    while ((s = va_arg(ap, const char *)) != NULL) {
-	strcpy(pe, s);
-	pe += strlen(pe);
-	*pe = '\0';
-    }
+    while ((s = va_arg(ap, const char *)) != NULL)
+	pe = stpcpy(pe, s);
     va_end(ap);
     expandMacros(NULL, NULL, buf, sizeof(buf));
     return xstrdup(buf);

@@ -131,7 +131,9 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	*to++ = '\0';
 	ofi->readPtr = from;
 
-	if (expandMacros(spec, spec->macros, spec->lbuf, sizeof(spec->lbuf))) {
+	/* Don't expand macros (eg. %define) in false branch of %if clause */
+	if (spec->readStack->reading &&
+	    expandMacros(spec, spec->macros, spec->lbuf, sizeof(spec->lbuf))) {
 		rpmError(RPMERR_BADSPEC, _("line %d: %s"), spec->lineNum, spec->lbuf);
 		return RPMERR_BADSPEC;
 	}

@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.42
+Release: 0.43
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -255,6 +255,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jun 21 2000 Jeff Johnson <jbj@redhat.com>
+- fix: don't expand macros in false branch of %if (kasal@suse.cz).
+- fix: macro expansion problem and clean up (#11484) (kasal@suse.cz).
+
 * Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
 - fix: typo in brp-compress caused i18n man pages not to compress.
 - API: uncouple fadio from rest of librpmio.
