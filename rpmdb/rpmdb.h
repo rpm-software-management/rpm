@@ -423,6 +423,7 @@ struct rpmdb_s {
 /*@only@*/ /*@null@*/
     unsigned char * db_bits;	/*!< package instance bit mask. */
     int		db_nbits;	/*!< no. of bits in mask. */
+    rpmdb	db_next;
     int		db_opens;
 /*@only@*/ /*@null@*/
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
