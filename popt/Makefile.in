@@ -6,6 +6,7 @@ LIBOBJECTS = 	popt.o
 
 SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS)))
 LIBPOPT = libpopt.a
+CC = @CC@
 
 RANLIB=@RANLIB@
 INSTALL=@INSTALL@
