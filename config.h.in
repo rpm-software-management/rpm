@@ -17,7 +17,7 @@
 #define HAVE_LIMITS_H 0
 
 /* Define as 1 if you have <machine/types.h> */
-#define MACHINE_TYPES_H 0
+#define HAVE_MACHINE_TYPES_H 0
 
 /* Define as 1 if you have <sys/socket.h> */
 #define HAVE_SYS_SOCKET_H 0

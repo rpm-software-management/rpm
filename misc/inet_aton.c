@@ -1,4 +1,5 @@
 #include "config.h"
+#include "miscfn.h"
 
 #ifdef HAVE_NETINET_IN_SYSTM_H
 # include <sys/types.h>

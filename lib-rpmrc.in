@@ -21,6 +21,8 @@ optflags: alpha -O2
 optflags: sparc -O2
 optflags: m68k -O2 -fomit-frame-pointer
 optflags: ppc -O2 -fsigned-char
+optflags: hppa1.0 -O2 -mpa-risc-1-0
+optflags: hppa1.1 -O2 -mpa-risc-1-0
 
 #############################################################
 # Canonical arch names and numbers
@@ -117,6 +119,9 @@ arch_compat: sparc: noarch
 
 arch_compat: ppc: noarch
 arch_compat: mips: noarch
+
+arch_compat: hppa1.1: hppa1.0
+arch_compat: hppa1.0: noarch
 
 os_compat:   IRIX64: IRIX
 

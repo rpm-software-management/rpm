@@ -1,3 +1,6 @@
+#include "config.h"
+#include "miscfn.h"
+
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <stdlib.h>

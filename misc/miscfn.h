@@ -16,15 +16,15 @@
 #endif
 
 #if ! HAVE_S_IFSOCK
-#define S_IFSOCK (0)
+#define S_IFSOCK (0xC000)
 #endif
 
 #if ! HAVE_S_ISLNK
-#define S_ISLNK(mode) ((mode) & S_IFLNK)
+#define S_ISLNK(mode) ((mode & 0xF000) == S_IFLNK)
 #endif
 
 #if ! HAVE_S_ISSOCK
-#define S_ISSOCK(mode) ((mode) & S_IFSOCK)
+#define S_ISSOCK(mode) ((mode & 0xF000) == S_IFSOCK)
 #endif
 
 #if NEED_STRINGS_H
@@ -47,6 +47,7 @@ extern void *myrealloc(void *, size_t);
 #endif
 
 #if HAVE_SYS_SOCKET_H
+#include <sys/types.h>
 #include <sys/socket.h>
 #endif
 
