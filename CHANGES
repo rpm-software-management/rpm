@@ -18,6 +18,8 @@
 	- add _mandir/_infodir macro expansions to docdirs (Tomasz Kloczko).
 	- add post install configurable dependency checking.
 	- fix: segfault on --rebuild (#4185).
+	- fix: getopt on non-linux requires optind to be saved/restored
+	  rather than just set to 0 (Benedict Lofstedt, #4220).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

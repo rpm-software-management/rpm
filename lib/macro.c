@@ -590,6 +590,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
     const char **optv;
     int opte;
     int c;
+    int saveoptind;	/* XXX optind must be saved on non-linux */
 
     /* Copy macro name as argv[0] */
     argc = 0;
@@ -624,9 +625,17 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
 	argc++;
     }
 
-#if 0	/* XXX this is shell syntax, macros need !* to be "the rest" */
+#if 0
+/*
+ * The macro %* analoguous to the shell's $* means "Pass all non-macro
+ * parameters." Consequently, there needs to be a macro that means "Pass all
+ * (including macro parameters) options". This is useful for verifying
+ * parameters during expansion and yet transparently passing all parameters
+ * through for higher level processing (e.g. %description and/or %setup).
+ * This is the (potential) justification for %{**} ...
+ */
     /* Add unexpanded args as macro */
-    addMacro(mb->mc, "*", NULL, b, mb->depth);
+    addMacro(mb->mc, "**", NULL, b, mb->depth);
 #endif
 
 #ifdef NOTYET
@@ -649,7 +658,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
     opts = me->opts;
 
     /* First count number of options ... */
-    optind = 0;
+    saveoptind = optind;	/* XXX optind must be saved on non-linux */
     optc = 0;
     optc++;	/* XXX count argv[0] too */
     while((c = getopt(argc, (char **)argv, opts)) != -1) {
@@ -668,9 +677,9 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
     optv[opte] = NULL;
 
     /* ... and finally define option macros. */
-    optind = 0;
+    optind = saveoptind;	/* XXX optind must be restored on non-linux */
     optc = 0;
-    optc++;	/* XXX count optv[0] */
+    optc++;			/* XXX count optv[0] */
     while((c = getopt(argc, (char **)argv, opts)) != -1) {
 	o = strchr(opts, c);
 	b = be;
