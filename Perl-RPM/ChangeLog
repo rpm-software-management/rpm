@@ -219,3 +219,21 @@ Revision history for Perl extension RPM.
 	#define to enum values in 4.0.2. This will be released as an
 	interim version, since Red Hat is shipping 7.1 with this version of
 	rpm.
+
+0.32	Tue May 15 00:54:20 PDT 2001
+	- alpha twelve
+
+	Found and fixed a bug in RPM/Database.xs that was causing more of
+	the "Attempt to free unreferenced scalar" messages. In the process,
+	noticed that caching of values during iteration wasn't actually
+	working as designed. The resulting fix should improve database look-ups
+	fairly noticably.
+
+	Two more places found (one in RPM/Header.xs, one in RPM/Database.xs)
+	that were contributing to memory leakage.
+
+	A lot of changes to RPM/Constants.xs in terms of reducing the number
+	and length of string-compares made in constant look-ups. This is most
+	noticable in the RPM* set of constants, where the breakdown is the
+	most granular. On the main dev box (a P-1/233MHz) this sped up the
+	full test suite by over 25%.
