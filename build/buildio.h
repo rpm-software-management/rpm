@@ -48,7 +48,8 @@ extern "C" {
  * @warning The first argument (header) is now passed by reference in order to
  * return a reloaded contiguous header to the caller.
  *
- * @retval hdrp		header to write (final header is returned).
+ * @retval *hdrp	header to write (final header is returned).
+ * @retval *sigp	signature header (or NULL)
  * @param fileName	file name of package
  * @param type		RPMLEAD_SOURCE/RPMLEAD_BINARY
  * @param csa
@@ -56,7 +57,7 @@ extern "C" {
  * @retval cookie	generated cookie (i.e build host/time)
  * @return		0 on success
  */
-int writeRPM(Header * hdrp,
+int writeRPM(Header * hdrp, /*@null@*/ Header * sigp,
 		const char * fileName,
 		int type,
 		CSA_t csa,
@@ -64,7 +65,7 @@ int writeRPM(Header * hdrp,
 		/*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies *hdrp, *cookie, csa, csa->cpioArchiveSize,
+	/*@modifies *hdrp, *sigp, *cookie, csa, csa->cpioArchiveSize,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus

@@ -782,7 +782,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	    if (ret)	/* can't happen */
 		ret[found] = alp->key;
 	    if (keyp)
-		*keyp = ((alKey)(alp - al->list));
+		*keyp = match->pkgKey;
 	    found++;
 	}
 	/*@=branchstate@*/

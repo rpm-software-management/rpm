@@ -223,6 +223,7 @@ typedef struct rpmQVKArguments_s * QVA_t;
  * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h		header to use for query/verify
+ * @return		0 on success
  */
 typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h)
 	/*@globals fileSystem@*/
@@ -359,7 +360,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
  * @todo gnorpm and python bindings prevent this from being static.
  * @param ts		transaction set
  * @param fi		file info (with linked header and current file index)
- * @retval res		address of bit(s) returned to indicate failure
+ * @retval *res		bit(s) returned to indicate failure
  * @param omitMask	bit(s) to disable verify checks
  * @return		0 on success (or not installed), 1 on error
  */
@@ -486,7 +487,8 @@ extern int rpmcliProgressTotal;
  * @param data		private data (e.g. rpmInstallInterfaceFlags)
  * @return		per-callback data (e.g. an opened FD_t)
  */
-/*@null@*/ void * rpmShowProgress(/*@null@*/ const void * arg,
+/*@null@*/
+void * rpmShowProgress(/*@null@*/ const void * arg,
 		const rpmCallbackType what,
 		const unsigned long amount,
 		const unsigned long total,
@@ -503,8 +505,8 @@ extern int rpmcliProgressTotal;
  * Install source rpm package.
  * @param ts		transaction set
  * @param arg		source rpm file name
- * @retval specFilePtr	address of (installed) spec file name
- * @retval cookie
+ * @retval *specFilePtr	(installed) spec file name
+ * @retval *cookie
  * @return		0 on success
  */
 int rpmInstallSource(rpmts ts, const char * arg,

@@ -418,7 +418,6 @@ Spec newSpec(void)
     Spec spec = xcalloc(1, sizeof(*spec));
     
     spec->specFile = NULL;
-    spec->sourceRpmName = NULL;
 
     spec->sl = newSl();
     spec->st = newSt();
@@ -439,6 +438,7 @@ Spec newSpec(void)
     spec->prep = NULL;
     spec->build = NULL;
     spec->install = NULL;
+    spec->check = NULL;
     spec->clean = NULL;
 
     spec->sources = NULL;
@@ -446,8 +446,9 @@ Spec newSpec(void)
     spec->noSource = 0;
     spec->numSources = 0;
 
+    spec->sourceRpmName = NULL;
+    spec->sourcePkgId = NULL;
     spec->sourceHeader = NULL;
-
     spec->sourceCpioList = NULL;
     
     spec->gotBuildRootURL = 0;
@@ -484,13 +485,13 @@ Spec freeSpec(Spec spec)
     spec->prep = freeStringBuf(spec->prep);
     spec->build = freeStringBuf(spec->build);
     spec->install = freeStringBuf(spec->install);
+    spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
 
     spec->buildRootURL = _free(spec->buildRootURL);
     spec->buildSubdir = _free(spec->buildSubdir);
     spec->rootURL = _free(spec->rootURL);
     spec->specFile = _free(spec->specFile);
-    spec->sourceRpmName = _free(spec->sourceRpmName);
 
 #ifdef	DEAD
   { struct OpenFileInfo *ofi;
@@ -515,6 +516,8 @@ Spec freeSpec(Spec spec)
 	rl = _free(rl);
     }
     
+    spec->sourceRpmName = _free(spec->sourceRpmName);
+    spec->sourcePkgId = _free(spec->sourcePkgId);
     spec->sourceHeader = headerFree(spec->sourceHeader);
 
     if (spec->sourceCpioList) {

@@ -25,6 +25,13 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h rpmhash.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
+pkgbindir = @RPMCONFIGDIR@
+pkgbin_PROGRAMS = \
+	rpmdb_deadlock rpmdb_dump rpmdb_load rpmdb_svc rpmdb_stat rpmdb_verify
+noinst_PROGRAMS = \
+	rpmdb_archive rpmdb_checkpoint rpmdb_printlog rpmdb_recover \
+	rpmdb_upgrade
+
 mylibs = librpmdb.la
 
 LIBS =
@@ -75,6 +82,83 @@ db.h:
 	  [ -f $$lo ] || $(LN_S) $(top_builddir)/$(WITH_DB_SUBDIR)/$$lo $$lo ; \
 	done
 	touch $@
+
+rpmdb_archive_SOURCES =
+rpmdb_archive_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_archive.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_checkpoint_SOURCES =
+rpmdb_checkpoint_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_checkpoint.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_deadlock_SOURCES =
+rpmdb_deadlock_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_deadlock.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_dump_SOURCES =
+rpmdb_dump_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_dump.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_load_SOURCES =
+rpmdb_load_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_load.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_printlog_SOURCES =
+rpmdb_printlog_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_printlog.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_recover_SOURCES =
+rpmdb_recover_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_recover.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_stat_SOURCES =
+rpmdb_stat_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_stat.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_svc_SOURCES =
+rpmdb_svc_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_proc.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_svc.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_util.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/gen_db_server.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.lo \
+	librpmdb.la
+
+rpmdb_upgrade_SOURCES =
+rpmdb_upgrade_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_upgrade.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
+
+rpmdb_verify_SOURCES =
+rpmdb_verify_LDADD = \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/db_verify.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.lo \
+	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.lo \
+	librpmdb.la
 
 clean-local:
 	rm -f $(DB3LOBJS) *.o .created db.h

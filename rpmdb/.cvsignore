@@ -5,6 +5,17 @@
 Makefile
 Makefile.in
 db3lobjs
+rpmdb_archive
+rpmdb_checkpoint
+rpmdb_deadlock
+rpmdb_dump
+rpmdb_load
+rpmdb_printlog
+rpmdb_recover
+rpmdb_stat
+rpmdb_svc
+rpmdb_upgrade
+rpmdb_verify
 tagtbl.c
 *.la
 *.lcd

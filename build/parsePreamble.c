@@ -110,7 +110,8 @@ static inline int parseYesNo(const char * s)
 }
 
 typedef struct tokenBits_s {
-/*@observer@*/ /*@null@*/ const char * name;
+/*@observer@*/ /*@null@*/
+    const char * name;
     rpmsenseFlags bits;
 } * tokenBits;
 
@@ -320,7 +321,8 @@ static int checkForDuplicates(Header h, const char * NVR)
 /*@observer@*/ /*@unchecked@*/
 static struct optionalTag {
     rpmTag	ot_tag;
-/*@observer@*/ /*@null@*/ const char * ot_mac;
+/*@observer@*/ /*@null@*/
+    const char * ot_mac;
 } optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
@@ -506,11 +508,11 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	multiToken = 1;
 
     switch (tag) {
-      case RPMTAG_NAME:
-      case RPMTAG_VERSION:
-      case RPMTAG_RELEASE:
-      case RPMTAG_URL:
-      case RPMTAG_RHNPLATFORM:
+    case RPMTAG_NAME:
+    case RPMTAG_VERSION:
+    case RPMTAG_RELEASE:
+    case RPMTAG_URL:
+    case RPMTAG_RHNPLATFORM:
 	SINGLE_TOKEN_ONLY;
 	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
@@ -530,20 +532,20 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	}
 	(void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
 	break;
-      case RPMTAG_GROUP:
-      case RPMTAG_SUMMARY:
+    case RPMTAG_GROUP:
+    case RPMTAG_SUMMARY:
 	(void) stashSt(spec, pkg->header, tag, lang);
 	/*@fallthrough@*/
-      case RPMTAG_DISTRIBUTION:
-      case RPMTAG_VENDOR:
-      case RPMTAG_LICENSE:
-      case RPMTAG_PACKAGER:
+    case RPMTAG_DISTRIBUTION:
+    case RPMTAG_VENDOR:
+    case RPMTAG_LICENSE:
+    case RPMTAG_PACKAGER:
 	if (!*lang)
 	    (void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
 	else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
-      case RPMTAG_BUILDROOT:
+    case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
       {	const char * buildRoot = NULL;
 	const char * buildRootURL = spec->buildRootURL;
@@ -589,7 +591,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	}
 	buildRootURL = _free(buildRootURL);
       }	break;
-      case RPMTAG_PREFIXES:
+    case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
 	xx = hge(pkg->header, tag, &type, (void **)&array, &num);
 	while (num--) {
@@ -604,7 +606,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	}
 	array = hfd(array, type);
 	break;
-      case RPMTAG_DOCDIR:
+    case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;
 	if (field[0] != '/') {
 	    rpmError(RPMERR_BADSPEC,
@@ -616,7 +618,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	delMacro(NULL, "_docdir");
 	addMacro(NULL, "_docdir", NULL, field, RMIL_SPEC);
 	break;
-      case RPMTAG_EPOCH:
+    case RPMTAG_EPOCH:
 	SINGLE_TOKEN_ONLY;
 	if (parseNum(field, &num)) {
 	    rpmError(RPMERR_BADSPEC,
@@ -626,38 +628,38 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	}
 	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
 	break;
-      case RPMTAG_AUTOREQPROV:
+    case RPMTAG_AUTOREQPROV:
 	pkg->autoReq = parseYesNo(field);
 	pkg->autoProv = pkg->autoReq;
 	break;
-      case RPMTAG_AUTOREQ:
+    case RPMTAG_AUTOREQ:
 	pkg->autoReq = parseYesNo(field);
 	break;
-      case RPMTAG_AUTOPROV:
+    case RPMTAG_AUTOPROV:
 	pkg->autoProv = parseYesNo(field);
 	break;
-      case RPMTAG_SOURCE:
-      case RPMTAG_PATCH:
+    case RPMTAG_SOURCE:
+    case RPMTAG_PATCH:
 	SINGLE_TOKEN_ONLY;
 	macro = NULL;
 	if ((rc = addSource(spec, pkg, field, tag)))
 	    return rc;
 	break;
-      case RPMTAG_ICON:
+    case RPMTAG_ICON:
 	SINGLE_TOKEN_ONLY;
 	if ((rc = addSource(spec, pkg, field, tag)))
 	    return rc;
 	if ((rc = readIcon(pkg->header, field)))
 	    return RPMERR_BADSPEC;
 	break;
-      case RPMTAG_NOSOURCE:
-      case RPMTAG_NOPATCH:
+    case RPMTAG_NOSOURCE:
+    case RPMTAG_NOPATCH:
 	spec->noSource = 1;
 	if ((rc = parseNoSource(spec, field, tag)))
 	    return rc;
 	break;
-      case RPMTAG_BUILDPREREQ:
-      case RPMTAG_BUILDREQUIRES:
+    case RPMTAG_BUILDPREREQ:
+    case RPMTAG_BUILDREQUIRES:
 	if ((rc = parseBits(lang, buildScriptBits, &tagflags))) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
@@ -667,8 +669,8 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
-      case RPMTAG_REQUIREFLAGS:
-      case RPMTAG_PREREQ:
+    case RPMTAG_REQUIREFLAGS:
+    case RPMTAG_PREREQ:
 	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
@@ -678,21 +680,21 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
-      case RPMTAG_BUILDCONFLICTS:
-      case RPMTAG_CONFLICTFLAGS:
-      case RPMTAG_OBSOLETEFLAGS:
-      case RPMTAG_PROVIDEFLAGS:
+    case RPMTAG_BUILDCONFLICTS:
+    case RPMTAG_CONFLICTFLAGS:
+    case RPMTAG_OBSOLETEFLAGS:
+    case RPMTAG_PROVIDEFLAGS:
 	tagflags = RPMSENSE_ANY;
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
-      case RPMTAG_EXCLUDEARCH:
-      case RPMTAG_EXCLUSIVEARCH:
-      case RPMTAG_EXCLUDEOS:
-      case RPMTAG_EXCLUSIVEOS:
+    case RPMTAG_EXCLUDEARCH:
+    case RPMTAG_EXCLUSIVEARCH:
+    case RPMTAG_EXCLUDEOS:
+    case RPMTAG_EXCLUSIVEOS:
 	addOrAppendListEntry(spec->buildRestrictions, tag, field);
 	break;
-      case RPMTAG_BUILDARCHS:
+    case RPMTAG_BUILDARCHS:
 	if ((rc = poptParseArgvString(field,
 				      &(spec->BACount),
 				      &(spec->BANames)))) {
@@ -705,7 +707,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	    spec->BANames = _free(spec->BANames);
 	break;
 
-      default:
+    default:
 	rpmError(RPMERR_INTERNAL, _("Internal error: Bogus tag %d\n"), tag);
 	return RPMERR_INTERNAL;
     }
@@ -726,7 +728,8 @@ typedef struct PreambleRec_s {
     rpmTag tag;
     int len;
     int multiLang;
-/*@observer@*/ /*@null@*/ const char * token;
+/*@observer@*/ /*@null@*/
+    const char * token;
 } * PreambleRec;
 
 /*@unchecked@*/

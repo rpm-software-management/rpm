@@ -646,7 +646,8 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages files given for rebuild"));
 
-	ba->buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL;
+	ba->buildAmount =
+	    RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL | RPMBUILD_CHECK;
 	if (bigMode == MODE_REBUILD) {
 	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    ba->buildAmount |= RPMBUILD_RMSOURCE;
@@ -690,6 +691,7 @@ int main(int argc, const char ** argv)
 	    /*@fallthrough@*/
 	case 'i':
 	    ba->buildAmount |= RPMBUILD_INSTALL;
+	    ba->buildAmount |= RPMBUILD_CHECK;
 	    if ((ba->buildChar == 'i') && ba->shortCircuit)
 		/*@innerbreak@*/ break;
 	    /*@fallthrough@*/

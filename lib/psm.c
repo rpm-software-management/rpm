@@ -859,11 +859,8 @@ static int psmWaitUnregister(rpmpsm psm, pid_t child)
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
     
     /*@-infloops@*/
-    while (psm->reaped != psm->child) {
-	(void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
-	(void) sleep(1);	/* XXX sleep guarantees loop traversal. */
-	(void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    }
+    while (psm->reaped != psm->child)
+	(void) sigsuspend(&oldMask);
     /*@=infloops@*/
 
 /*@-modfilesys@*/

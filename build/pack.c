@@ -404,7 +404,7 @@ static int rpmLeadVersion(void)
 }
 
 /*@-boundswrite@*/
-int writeRPM(Header *hdrp, const char *fileName, int type,
+int writeRPM(Header *hdrp, Header *sigp, const char *fileName, int type,
 		    CSA_t csa, char *passPhrase, const char **cookie)
 {
     FD_t fd = NULL;
@@ -422,6 +422,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
     *hdrp = headerFree(*hdrp);
+
+    if (sigp)
+	*sigp = NULL;
 
 #ifdef	DYING
     if (Fileno(csa->cpioFdIn) < 0) {
@@ -585,6 +588,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rpmError(RPMERR_RELOAD, _("Unable to reload signature header.\n"));
 	goto exit;
     }
+    /* Re-reference reallocated header. */
+    if (sigp != NULL)
+	*sigp = headerLink(sig);
 
     /* Open the output file */
     fd = Fopen(fileName, "w.ufdio");
@@ -767,6 +773,10 @@ int packageBinaries(Spec spec)
 	(void) genSourceRpmName(spec);
 	(void) headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
 		       spec->sourceRpmName, 1);
+	if (spec->sourcePkgId != NULL) {
+	(void) headerAddEntry(pkg->header, RPMTAG_SOURCEPKGID, RPM_BIN_TYPE,
+		       spec->sourcePkgId, 16);
+	}
 	
 	{   const char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
 	    char *binRpm, *binDir;
@@ -811,7 +821,7 @@ int packageBinaries(Spec spec)
 /*@i@*/	csa->cpioList = pkg->cpioList;
 	/*@=assignexpose =newreftrans@*/
 
-	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
+	rc = writeRPM(&pkg->header, NULL, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 	/*@=type@*/
@@ -845,6 +855,7 @@ int packageSources(Spec spec)
     
     /* XXX this should be %_srpmdir */
     {	const char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
+	Header sig;
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
@@ -854,8 +865,17 @@ int packageSources(Spec spec)
 /*@i@*/	csa->cpioList = spec->sourceCpioList;
 	/*@=assignexpose =newreftrans@*/
 
-	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
+	sig = NULL;
+	rc = writeRPM(&spec->sourceHeader, &sig, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
+	if (rc == 0 && sig != NULL) {
+	    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+	    const unsigned char * s = NULL;
+	    int xx;
+	    xx = hge(sig, RPMSIGTAG_MD5, NULL, (void **)&s, NULL);
+	    spec->sourcePkgId = s;
+	    sig = headerFree(sig);
+	}
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 	/*@=type@*/
 	fn = _free(fn);

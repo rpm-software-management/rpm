@@ -20,12 +20,14 @@ static int _debug = 0;
 static struct PartRec {
     int part;
     int len;
-/*@observer@*/ /*@null@*/ const char * token;
+/*@observer@*/ /*@null@*/
+    const char * token;
 } partList[] = {
     { PART_PREAMBLE,      0, "%package"},
     { PART_PREP,          0, "%prep"},
     { PART_BUILD,         0, "%build"},
     { PART_INSTALL,       0, "%install"},
+    { PART_CHECK,         0, "%check"},
     { PART_CLEAN,         0, "%clean"},
     { PART_PREUN,         0, "%preun"},
     { PART_POSTUN,        0, "%postun"},
@@ -459,6 +461,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    /*@switchbreak@*/ break;
 	case PART_BUILD:
 	case PART_INSTALL:
+	case PART_CHECK:
 	case PART_CLEAN:
 	    parsePart = parseBuildInstallClean(spec, parsePart);
 	    /*@switchbreak@*/ break;

@@ -96,6 +96,12 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
 	break;
+    case RPMBUILD_CHECK:
+	name = "%check";
+	sb = spec->check;
+	mTemplate = "%{__spec_check_template}";
+	mPost = "%{__spec_check_post}";
+	break;
     case RPMBUILD_CLEAN:
 	name = "%clean";
 	sb = spec->clean;
@@ -294,6 +300,10 @@ int buildSpec(Spec spec, int what, int test)
 
 	if ((what & RPMBUILD_INSTALL) &&
 	    (rc = doScript(spec, RPMBUILD_INSTALL, NULL, NULL, test)))
+		goto exit;
+
+	if ((what & RPMBUILD_CHECK) &&
+	    (rc = doScript(spec, RPMBUILD_CHECK, NULL, NULL, test)))
 		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&

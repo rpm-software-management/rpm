@@ -5,7 +5,6 @@
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
-%define _use_internal_dependency_generator 1
 
 %define	__prefix	/usr
 %{?!_lib: %define _lib lib}
@@ -133,7 +132,7 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
-	$WITH_PYTHON --without-javaglue
+	$WITH_PYTHON --enable-posixmutexes --without-javaglue
 %else
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
@@ -413,6 +412,12 @@ exit 0
 %{__prefix}%{__share}/man/man8/rpmcache.8*
 %{__prefix}%{__share}/man/man8/rpmgraph.8*
 %rpmattr	%{__prefix}/lib/rpm/rpmcache
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_deadlock
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_dump
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_load
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_svc
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_stat
+%rpmattr	%{__prefix}/lib/rpm/rpmdb_verify
 %rpmattr	%{__prefix}/bin/rpmgraph
 
 %files -n popt
@@ -456,6 +461,12 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Dec 21 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.34
+- add --enable-posixmutexes when configuring on linux.
+- add rpmdb_{deadlock,dump,load,svc,stat,verify} utilities.
+- include srpm pkgid in binary headers (#71460).
+- add %check scriptlet to run after %install (#64137).
+
 * Fri Dec 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.33
 - dynamically link /bin/rpm, link against good old -lpthread.
 - test pthread_{mutex,cond}attr_setpshared(), add DB_ENV_PRIVATE if not.
