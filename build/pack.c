@@ -373,10 +373,11 @@ int writeRPM(Header h, const char *fileName, int type,
     return 0;
 }
 
-static int cpio_gzip(FD_t fdo, CSA_t *csa) {
+static int cpio_gzip(FD_t fdo, CSA_t *csa)
+{
     CFD_t *cfd = &csa->cpioCfd;
     int rc;
-    const char *failedFile;
+    const char *failedFile = NULL;
 
     cfd->cpioIoType = cpioIoTypeGzFd;
     cfd->cpioGzFd = gzdFdopen(fdDup(fdFileno(fdo)), "w9");
@@ -395,7 +396,8 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa) {
     return rc;
 }
 
-static int cpio_copy(FD_t fdo, CSA_t *csa) {
+static int cpio_copy(FD_t fdo, CSA_t *csa)
+{
     char buf[BUFSIZ];
     ssize_t nb;
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-17 18:43-0400\n"
+"POT-Creation-Date: 1999-09-17 19:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1401,7 +1401,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1147 ../build/pack.c:434
+#: ../build/files.c:1147 ../build/pack.c:436
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1513,47 +1513,47 @@ msgstr ""
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: ../build/pack.c:386
+#: ../build/pack.c:387
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:404
+#: ../build/pack.c:406
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:411
+#: ../build/pack.c:413
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:490
+#: ../build/pack.c:492
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:497
+#: ../build/pack.c:499
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:504
+#: ../build/pack.c:506
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:511
+#: ../build/pack.c:513
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:519
+#: ../build/pack.c:521
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:535
+#: ../build/pack.c:537
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
