@@ -48,6 +48,9 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(PartialHardlinkSets)",    "4.0.4-1",
 	(                RPMSENSE_EQUAL),
     N_("a hardlink file set may be installed without being complete.") },
+    { "rpmlib(ConcurrentAccess)",    "4.1-1",
+	(                RPMSENSE_EQUAL),
+    N_("package scriptlets may access the rpm database while installing.") },
     { NULL,				NULL, 0,	NULL }
 };
 

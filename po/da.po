@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-03-07 17:07-0500\n"
+"POT-Creation-Date: 2003-03-10 18:19-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1430,26 +1430,26 @@ msgstr "========== fortsætter tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3333 rpmdb/header.c:3362 rpmdb/header.c:3386
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:428
+#: rpmdb/header.c:3258 rpmdb/header.c:3287 rpmdb/header.c:3311
 msgid "(not a number)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:170
+#: lib/formats.c:181 lib/formats.c:251
+msgid "(invalid type)"
+msgstr ""
+
+#: lib/formats.c:241
 #, fuzzy
 msgid "(not base64)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:180
-msgid "(invalid type)"
-msgstr ""
-
-#: lib/formats.c:205 lib/formats.c:254
+#: lib/formats.c:276 lib/formats.c:327
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(ikke et tal)"
 
-#: lib/formats.c:279
+#: lib/formats.c:352
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "overspring eventuelle PGP-signaturer"
@@ -2715,6 +2715,10 @@ msgstr ""
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
+#: lib/rpmlibprov.c:53
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+
 #. @observer@
 #: lib/rpmps.c:200
 msgid "different"
@@ -3224,81 +3228,68 @@ msgstr "%s har for stor eller lille 'long'-værdi, overspringes\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har for stor eller lille heltalsværdi, overspringes\n"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2427
+#: rpmdb/header.c:2437
 msgid "missing { after %"
 msgstr "manglende { efter %"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2457
+#: rpmdb/header.c:2467
 msgid "missing } after %{"
 msgstr "manglende } efter %{"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2471
+#: rpmdb/header.c:2483
 msgid "empty tag format"
 msgstr "tomt mærkeformat"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2485
+#: rpmdb/header.c:2495
 msgid "empty tag name"
 msgstr "tomt mærkenavn"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2502
+#: rpmdb/header.c:2512
 msgid "unknown tag"
 msgstr "ukendt mærke"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2529
+#: rpmdb/header.c:2542
 msgid "] expected at end of array"
 msgstr "] forventet ved slutningen af tabel"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2544
+#: rpmdb/header.c:2555
 msgid "unexpected ]"
 msgstr "uventet ]"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2557
+#: rpmdb/header.c:2568
 msgid "unexpected }"
 msgstr "uventet }"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2623
+#: rpmdb/header.c:2634
 msgid "? expected in expression"
 msgstr "? forventet i udtryk"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2632
+#: rpmdb/header.c:2641
 msgid "{ expected after ? in expression"
 msgstr "{ forventet efter ? i udtryk"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2646 rpmdb/header.c:2693
+#: rpmdb/header.c:2653 rpmdb/header.c:2693
 msgid "} expected in expression"
 msgstr "} forventet i udtryk"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2656
+#: rpmdb/header.c:2661
 msgid ": expected following ? subexpression"
 msgstr ": forventet efter ?-underudtryk"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2676
+#: rpmdb/header.c:2679
 msgid "{ expected after : in expression"
 msgstr "{ forventet efter : i udtryk"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2703
+#: rpmdb/header.c:2701
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
-#: rpmdb/header.c:2832
+#. @=modobserver =observertrans@
+#: rpmdb/header.c:2834
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3137
+#: rpmdb/header.c:3089
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

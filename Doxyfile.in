@@ -581,18 +581,14 @@ INPUT                  = \
 	@top_srcdir@/zlib/deflate.c \
 	@top_srcdir@/zlib/deflate.h \
 	@top_srcdir@/zlib/gzio.c \
-	@top_srcdir@/zlib/infblock.c \
-	@top_srcdir@/zlib/infblock.h \
-	@top_srcdir@/zlib/infcodes.c \
-	@top_srcdir@/zlib/infcodes.h \
+	@top_srcdir@/zlib/infback.c \
 	@top_srcdir@/zlib/inffast.c \
 	@top_srcdir@/zlib/inffast.h \
 	@top_srcdir@/zlib/inffixed.h \
 	@top_srcdir@/zlib/inflate.c \
+	@top_srcdir@/zlib/inflate.h \
 	@top_srcdir@/zlib/inftrees.c \
 	@top_srcdir@/zlib/inftrees.h \
-	@top_srcdir@/zlib/infutil.c \
-	@top_srcdir@/zlib/infutil.h \
 	@top_srcdir@/zlib/maketree.c \
 	@top_srcdir@/zlib/minigzip.c \
 	@top_srcdir@/zlib/trees.c \

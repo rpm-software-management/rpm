@@ -8,7 +8,7 @@ AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 AC_CONFIG_HEADERS
-AM_INIT_AUTOMAKE(rpm, 4.2)
+AM_INIT_AUTOMAKE(rpm, 4.3)
 AM_CONFIG_HEADER(config.h)
 
 dnl XXX AM_MAINTAINER_MODE
@@ -16,31 +16,34 @@ dnl XXX AM_MAINTAINER_MODE
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr"
 
-dnl echo "
-dnl ****************************************************************************
-dnl *                                                                          *
-dnl *                   *** WARNING WARNING WARNING ***                        *
-dnl *                                                                          *
-dnl * This is source code from the development branch of rpm-4.2.              *
-dnl *                                                                          *
-dnl * If you want the "production" rpm-4.0.4 or rpm-4.1 code, then you should  *
-dnl * either use an rpm-4.0.4 or rpm-4.1 src.rpm. Alternatively, if using a    *
-dnl * CVS checkout, do the following:                                          *
-dnl *                                                                          *
-dnl *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
-dnl *       (no password, just carriage return)                                *
-dnl *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
-dnl *       cd rpm                                                             *
-dnl *                                                                          *
-dnl * Here's the rpm-4_1 branch:                                               *
-dnl *       cvs up -r rpm-4_1                                                  *
-dnl *                                                                          *
-dnl * Here's the rpm-4_0 branch:                                               *
-dnl *       cvs up -r rpm-4_0                                                  *
-dnl *                                                                          *
-dnl ****************************************************************************
-dnl "
-dnl sleep 10
+echo "
+****************************************************************************
+*                                                                          *
+*                   *** WARNING WARNING WARNING ***                        *
+*                                                                          *
+* This is source code from the development branch of rpm-@VERSION@.              *
+*                                                                          *
+* If you want the "production" rpm-4.0.4 or rpm-4.1 code, then you should  *
+* either use an rpm-4.0.4 or rpm-4.1 src.rpm. Alternatively, if using a    *
+* CVS checkout, do the following:                                          *
+*                                                                          *
+*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
+*       (no password, just carriage return)                                *
+*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
+*       cd rpm                                                             *
+*                                                                          *
+* Here's the rpm-4_2 branch, latest is rpm-4.2:                            *
+*       cvs up -r rpm-4_2                                                  *
+*                                                                          *
+* Here's the rpm-4_1 branch, latest is rpm-4.1.1:                          *
+*       cvs up -r rpm-4_1                                                  *
+*                                                                          *
+* Here's the rpm-4_0 branch, latest is rpm-4.0.4:                          *
+*       cvs up -r rpm-4_0                                                  *
+*                                                                          *
+****************************************************************************
+"
+sleep 10
 
 dnl Checks for programs.
 AC_PROG_CC

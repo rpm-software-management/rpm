@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
-"POT-Creation-Date: 2003-03-07 17:07-0500\n"
+"POT-Creation-Date: 2003-03-10 18:19-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1414,24 +1414,24 @@ msgstr "========== fortsätter med tsort ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3333 rpmdb/header.c:3362 rpmdb/header.c:3386
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:428
+#: rpmdb/header.c:3258 rpmdb/header.c:3287 rpmdb/header.c:3311
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
-#: lib/formats.c:170
-msgid "(not base64)"
-msgstr "(inte base64)"
-
-#: lib/formats.c:180
+#: lib/formats.c:181 lib/formats.c:251
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: lib/formats.c:205 lib/formats.c:254
+#: lib/formats.c:241
+msgid "(not base64)"
+msgstr "(inte base64)"
+
+#: lib/formats.c:276 lib/formats.c:327
 msgid "(not a blob)"
 msgstr "(inte en klick)"
 
-#: lib/formats.c:279
+#: lib/formats.c:352
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 
@@ -2650,6 +2650,10 @@ msgstr "skriptinterpretatorn kan använda argument från huvudet."
 msgid "a hardlink file set may be installed without being complete."
 msgstr "en hårdlänkad filuppsättning får installeras utan att vara komplett."
 
+#: lib/rpmlibprov.c:53
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+
 #. @observer@
 #: lib/rpmps.c:200
 msgid "different"
@@ -3151,81 +3155,68 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2427
+#: rpmdb/header.c:2437
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2457
+#: rpmdb/header.c:2467
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2471
+#: rpmdb/header.c:2483
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2485
+#: rpmdb/header.c:2495
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2502
+#: rpmdb/header.c:2512
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2529
+#: rpmdb/header.c:2542
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2544
+#: rpmdb/header.c:2555
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2557
+#: rpmdb/header.c:2568
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2623
+#: rpmdb/header.c:2634
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2632
+#: rpmdb/header.c:2641
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2646 rpmdb/header.c:2693
+#: rpmdb/header.c:2653 rpmdb/header.c:2693
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2656
+#: rpmdb/header.c:2661
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2676
+#: rpmdb/header.c:2679
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2703
+#: rpmdb/header.c:2701
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: rpmdb/header.c:2832
+#. @=modobserver =observertrans@
+#: rpmdb/header.c:2834
 msgid "(index out of range)"
 msgstr "(index utanför intervall)"
 
-#: rpmdb/header.c:3137
+#: rpmdb/header.c:3089
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 

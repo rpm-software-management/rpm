@@ -138,13 +138,83 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 }
 
 /**
+ * Wrap tag data in simple header xml markup.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * xmlFormat(int_32 type, const void * data, 
+		char * formatPrefix, int padding,
+		/*@unused@*/ int element)
+	/*@modifies formatPrefix @*/
+{
+    const char * xtag;
+    size_t nb;
+    char * val;
+    char * s = NULL;
+    char * t, * te;
+    long anint = 0;
+
+    switch (type) {
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_TYPE:
+	s = data;
+	xtag = "string";
+	break;
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+	anint = *((int_8 *) data);
+	break;
+    case RPM_INT16_TYPE:
+	anint = *((int_16 *) data);
+	break;
+    case RPM_INT32_TYPE:
+	anint = *((int_32 *) data);
+	break;
+    case RPM_NULL_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    case RPM_BIN_TYPE:
+    default:
+	return xstrdup(_("(invalid type)"));
+	/*@notreached@*/ break;
+    }
+
+    if (s == NULL) {
+	int slen = 32;
+	s = memset(alloca(slen+1), 0, slen+1);
+	snprintf(s, slen, "%ld", anint);
+	xtag = "integer";
+    }
+
+    nb = 2 * strlen(xtag) + sizeof("<></>") + strlen(s);
+
+    te = t = alloca(nb);
+    te = stpcpy( stpcpy( stpcpy(te, "<"), xtag), ">");
+    te = stpcpy(te, s);
+    te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
+
+    nb += padding;
+    val = xmalloc(nb+1);
+/*@-boundswrite@*/
+    strcat(formatPrefix, "s");
+/*@=boundswrite@*/
+    snprintf(val, nb, formatPrefix, t);
+    val[nb] = '\0';
+
+    return val;
+}
+
+/**
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param type		tag type
  * @param data		tag value
- * @param formatPrefix
+ * @param formatPrefix	(unused)
  * @param padding	(unused)
- * @param element	(unused)
+ * @param element	no. bytes of binary data
  * @return		formatted string
  */
 static /*@only@*/ char * armorFormat(int_32 type, const void * data, 
@@ -160,6 +230,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     switch (type) {
     case RPM_BIN_TYPE:
 	s = data;
+	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	ns = element;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
@@ -190,7 +261,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
  * @todo Permit selectable display formats (i.e. binary).
  * @param type		tag type
  * @param data		tag value
- * @param formatPrefix
+ * @param formatPrefix	(unused)
  * @param padding
  * @param element
  * @return		formatted string
@@ -207,7 +278,9 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	const char * enc;
 	char * t;
 	int lc;
-	size_t nt = ((element + 2) / 3) * 4;
+	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
+	size_t ns = element;
+	size_t nt = ((ns + 2) / 3) * 4;
 
 /*@-boundswrite@*/
 	/*@-globs@*/
@@ -223,7 +296,7 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	val = t = xmalloc(nt + padding + 1);
 
 	*t = '\0';
-	if ((enc = b64encode(data, element)) != NULL) {
+	if ((enc = b64encode(data, ns)) != NULL) {
 	    t = stpcpy(t, enc);
 	    enc = _free(enc);
 	}
@@ -237,7 +310,7 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
  * Display signature fingerprint and time.
  * @param type		tag type
  * @param data		tag value
- * @param formatPrefix
+ * @param formatPrefix	(unused)
  * @param padding
  * @param element	(unused)
  * @return		formatted string
@@ -925,6 +998,7 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_FORMAT, "perms",		{ permsFormat } },
     { HEADER_EXT_FORMAT, "permissions",		{ permsFormat } },
     { HEADER_EXT_FORMAT, "triggertype",		{ triggertypeFormat } },
+    { HEADER_EXT_FORMAT, "xml",			{ xmlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
 } ;
 /*@=type@*/

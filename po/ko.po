@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2003-03-07 17:07-0500\n"
+"POT-Creation-Date: 2003-03-10 18:19-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1418,24 +1418,24 @@ msgstr "========== tsort를 진행합니다...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3333 rpmdb/header.c:3362 rpmdb/header.c:3386
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:428
+#: rpmdb/header.c:3258 rpmdb/header.c:3287 rpmdb/header.c:3311
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
-#: lib/formats.c:170
-msgid "(not base64)"
-msgstr "(base64가 아닙니다)"
-
-#: lib/formats.c:180
+#: lib/formats.c:181 lib/formats.c:251
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
 
-#: lib/formats.c:205 lib/formats.c:254
+#: lib/formats.c:241
+msgid "(not base64)"
+msgstr "(base64가 아닙니다)"
+
+#: lib/formats.c:276 lib/formats.c:327
 msgid "(not a blob)"
 msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
 
-#: lib/formats.c:279
+#: lib/formats.c:352
 #, fuzzy
 msgid "(not an OpenPGP signature)"
 msgstr "어떠한 PGP 서명도 검사하지 않습니다"
@@ -2690,6 +2690,10 @@ msgstr ""
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
+#: lib/rpmlibprov.c:53
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+
 #. @observer@
 #: lib/rpmps.c:200
 msgid "different"
@@ -3199,81 +3203,68 @@ msgstr "%s(은)는 너무 크거나 너무 적은 정수(long) 값입니다, 생략합니다\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2427
+#: rpmdb/header.c:2437
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 가 없습니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2457
+#: rpmdb/header.c:2467
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 가 없습니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2471
+#: rpmdb/header.c:2483
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2485
+#: rpmdb/header.c:2495
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2502
+#: rpmdb/header.c:2512
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2529
+#: rpmdb/header.c:2542
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 와야합니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2544
+#: rpmdb/header.c:2555
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 있습니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2557
+#: rpmdb/header.c:2568
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 있습니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2623
+#: rpmdb/header.c:2634
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 와야합니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2632
+#: rpmdb/header.c:2641
 msgid "{ expected after ? in expression"
 msgstr "표현식의 '?' 뒤에 '{' 가 와야합니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2646 rpmdb/header.c:2693
+#: rpmdb/header.c:2653 rpmdb/header.c:2693
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 와야합니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2656
+#: rpmdb/header.c:2661
 msgid ": expected following ? subexpression"
 msgstr "'?' 하부표현식(subexpression) 뒤에 ':' 이 와야합니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2676
+#: rpmdb/header.c:2679
 msgid "{ expected after : in expression"
 msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2703
+#: rpmdb/header.c:2701
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 
-#: rpmdb/header.c:2832
+#. @=modobserver =observertrans@
+#: rpmdb/header.c:2834
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3137
+#: rpmdb/header.c:3089
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

@@ -3462,9 +3462,11 @@ void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 /**
  * Header tag iterator data structure.
  */
-struct headerIteratorS {
-/*@unused@*/ Header h;		/*!< Header being iterated. */
-/*@unused@*/ int next_index;	/*!< Next tag index. */
+struct headerIterator_s {
+/*@unused@*/
+    Header h;		/*!< Header being iterated. */
+/*@unused@*/
+    int next_index;	/*!< Next tag index. */
 };
 
 /** \ingroup header
@@ -3502,10 +3504,10 @@ HeaderIterator headerInitIterator(Header h)
 /** \ingroup header
  * Return next tag from header.
  * @param hi		header tag iterator
- * @retval tag		address of tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
+ * @retval *tag		tag
+ * @retval *type	tag value data type
+ * @retval *p		pointer to tag value(s)
+ * @retval *c		number of values
  * @return		1 on success, 0 on failure
  */
 static

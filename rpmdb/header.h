@@ -50,6 +50,8 @@
  *	  to permit header data to be manipulated opaquely through vectors.
  *	- (rpm-4.0.3) Sanity checks on header data to limit #tags to 65K,
  *	  #bytes to 16Mb, and total metadata size to 32Mb added.
+ *	- with addition of tracking dependencies, the package version has been
+ *	  reverted back to 3.
  * .
  *
  * \par Development Issues
@@ -120,19 +122,20 @@ typedef int_32 *	hCNT_t;
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken * Header;
+typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct headerIteratorS * HeaderIterator;
+typedef /*@abstract@*/ struct headerIterator_s * HeaderIterator;
 
 /** \ingroup header
  * Associate tag names with numeric values.
  */
 typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
-/*@observer@*/ /*@null@*/ const char * name;	/*!< Tag name. */
-    int val;					/*!< Tag numeric value. */
+/*@observer@*/ /*@null@*/
+    const char * name;		/*!< Tag name. */
+    int val;			/*!< Tag numeric value. */
 };
 
 /** \ingroup header
@@ -283,12 +286,16 @@ typedef union hRET_s {
 /*@-typeuse -fielduse@*/
 typedef struct HE_s {
     int_32 tag;
-/*@null@*/ hTYP_t typ;
+/*@null@*/
+    hTYP_t typ;
     union {
-/*@null@*/ hPTR_t * ptr;
-/*@null@*/ hRET_t * ret;
+/*@null@*/
+	hPTR_t * ptr;
+/*@null@*/
+	hRET_t * ret;
     } u;
-/*@null@*/ hCNT_t cnt;
+/*@null@*/
+    hCNT_t cnt;
 } * HE_t;
 /*@=typeuse =fielduse@*/
 

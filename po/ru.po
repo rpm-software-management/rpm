@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-03-07 17:07-0500\n"
+"POT-Creation-Date: 2003-03-10 18:19-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1428,24 +1428,24 @@ msgstr "========== продолжение упорядочения ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "ошибка rpmtsOrder, осталось %d элементов\n"
 
-#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3333 rpmdb/header.c:3362 rpmdb/header.c:3386
+#: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:428
+#: rpmdb/header.c:3258 rpmdb/header.c:3287 rpmdb/header.c:3311
 msgid "(not a number)"
 msgstr "(не число)"
 
-#: lib/formats.c:170
-msgid "(not base64)"
-msgstr "(не base64)"
-
-#: lib/formats.c:180
+#: lib/formats.c:181 lib/formats.c:251
 msgid "(invalid type)"
 msgstr "(неправильный тип)"
 
-#: lib/formats.c:205 lib/formats.c:254
+#: lib/formats.c:241
+msgid "(not base64)"
+msgstr "(не base64)"
+
+#: lib/formats.c:276 lib/formats.c:327
 msgid "(not a blob)"
 msgstr "(not a blob)"
 
-#: lib/formats.c:279
+#: lib/formats.c:352
 msgid "(not an OpenPGP signature)"
 msgstr "(не подпись формата OpenPGP)"
 
@@ -2667,6 +2667,10 @@ msgstr "интерпретатор сценариев может использовать аргументы из заголовка."
 msgid "a hardlink file set may be installed without being complete."
 msgstr "поддерживается частичная установка набора жестких ссылок пакета."
 
+#: lib/rpmlibprov.c:53
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+
 #. @observer@
 #: lib/rpmps.c:200
 msgid "different"
@@ -3168,81 +3172,68 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 "%s имеет слишком малую или слишком большую величину integer, пропущено\n"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2427
+#: rpmdb/header.c:2437
 msgid "missing { after %"
 msgstr "отсутствует \"{\" после \"%\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2457
+#: rpmdb/header.c:2467
 msgid "missing } after %{"
 msgstr "отсутствует \"}\" после \"%{\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2471
+#: rpmdb/header.c:2483
 msgid "empty tag format"
 msgstr "пустой формат тэга"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2485
+#: rpmdb/header.c:2495
 msgid "empty tag name"
 msgstr "пустое имя тэга"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2502
+#: rpmdb/header.c:2512
 msgid "unknown tag"
 msgstr "неизвестный тэг"
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2529
+#: rpmdb/header.c:2542
 msgid "] expected at end of array"
 msgstr "в конце массива ожидалась \"]\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2544
+#: rpmdb/header.c:2555
 msgid "unexpected ]"
 msgstr "неожиданная \"]\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2557
+#: rpmdb/header.c:2568
 msgid "unexpected }"
 msgstr "неожиданная \"}\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2623
+#: rpmdb/header.c:2634
 msgid "? expected in expression"
 msgstr "в выражении ожидалось \"?\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2632
+#: rpmdb/header.c:2641
 msgid "{ expected after ? in expression"
 msgstr "в выражении после \"?\" ожидалось \"{\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2646 rpmdb/header.c:2693
+#: rpmdb/header.c:2653 rpmdb/header.c:2693
 msgid "} expected in expression"
 msgstr "в выражении ожидалось \"}\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2656
+#: rpmdb/header.c:2661
 msgid ": expected following ? subexpression"
 msgstr "в выражении после \"?\" ожидалось \":\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2676
+#: rpmdb/header.c:2679
 msgid "{ expected after : in expression"
 msgstr "в выражении после \":\" ожидалось \"{\""
 
-#. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2703
+#: rpmdb/header.c:2701
 msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
-#: rpmdb/header.c:2832
+#. @=modobserver =observertrans@
+#: rpmdb/header.c:2834
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3137
+#: rpmdb/header.c:3089
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
