@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.28nptl
+Release: 0.29nptl
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -461,6 +461,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Dec 18 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.29nptl
+- popt aliases for -U et al to achieve dynamic link with nptl.
+
 * Tue Dec 17 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.28nptl
 - re-enable CDB locking, removing "private" from %%__dbi_cdb macro.
 

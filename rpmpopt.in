@@ -86,8 +86,6 @@ rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VER
 rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
 
-rpm	alias --dwim --force --nodeps
-
 rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides \
 	--POPTdesc=$"find package name that contains a provided capability (needs rpmdb-redhat package installed)"
 
@@ -176,6 +174,15 @@ rpm	exec --querytags	rpmq --querytags
 rpm	exec -V			rpmv -V
 rpm	exec -y			rpmv -y
 rpm	exec --verify		rpmv --verify
+
+rpm	exec -i			rpmi -i
+rpm	exec --install		rpmi --install
+rpm	exec -U			rpmi -U
+rpm	exec --upgrade		rpmi --upgrade
+rpm	exec -F			rpmi -F
+rpm	exec --freshen		rpmi --freshen
+rpm	exec -e			rpmi -e
+rpm	exec --erase		rpmi --erase
 
 rpm	alias --with		--define "_with_!#:+       --with-!#:+" \
 	--POPTdesc=$"enable configure <option> for build" \

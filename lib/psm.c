@@ -1718,6 +1718,17 @@ psm->te->h = headerLink(fi->h);
     case PSM_PRE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
+/* XXX insure that trigger index is opened before entering chroot. */
+#ifdef	NOTYET
+{ static int oneshot = 0;
+  dbiIndex dbi;
+  if (!oneshot) {
+    dbi = dbiOpen(rpmtsGetRdb(ts), RPMTAG_TRIGGERNAME, 0);
+    oneshot++;
+  }
+}
+#endif
+
 	/* Change root directory if requested and not already done. */
 	rc = rpmpsmStage(psm, PSM_CHROOT_IN);
 
