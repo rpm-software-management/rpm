@@ -544,7 +544,7 @@ rpmps rpmtsProblems(rpmts ts)
 
 void rpmtsCleanDig(rpmts ts)
 {
-    ts->sig = headerFreeData(ts->sig, -1);
+    ts->sig = headerFreeData(ts->sig, ts->sigtype);
     ts->dig = pgpFreeDig(ts->dig);
 }
 

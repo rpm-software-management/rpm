@@ -2000,6 +2000,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
     rpmTagType t;
     int_32 c;
     miRE mire;
+    static int_32 zero = 0;
     int ntags = 0;
     int nmatches = 0;
     int i, j;
@@ -2017,8 +2018,13 @@ static int mireSkip (const rpmdbMatchIterator mi)
     for (i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
 
-	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c))
-	    continue;
+	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c)) {
+	    if (mire->tag != RPMTAG_EPOCH)
+		continue;
+	    t = RPM_INT32_TYPE;
+	    u.i32p = &zero;
+	    c = 1;
+	}
 
 	anymatch = 0;		/* no matches yet */
 	while (1) {

@@ -1055,6 +1055,8 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elments\n"), rpmtsNElements(ts))
 	/* XXX multilib should not display "already installed" problems */
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG) && !rpmteMultiLib(p)) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_DEFAULT,
+				rpmteE(p));
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT,
 				rpmteV(p));
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT,
