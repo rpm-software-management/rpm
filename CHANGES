@@ -1,4 +1,4 @@
-2.5.3 -> 2.9
+2.5.4 -> 2.9
 	- cpio_gzip: dup the fd before doing gzdopen (Thanks Erik!)
 	- add --noLang to skip non-default languages.
 	- writeRPM can now copy cpio archive from fd.
@@ -11,19 +11,23 @@
 	- rearrange functions to minimize exported routines in librpmbuild API.
 	- generalize cpio I/O to eliminate pipe to exec'd gzip on install.
 	- finish planting /usr/lib/rpm (remove compatibility symlinks)
-	- build.c: fix incorrect check for successful open
 	- add new fully recursive macro.c
 	- add {init,add,expand}Macro args everywhere (new macro.c compatibility)
 	- create /usr/lib/rpm directory and move rpmrc et al there
-	- added :hex query format
+
+2.5.3 -> 2.5.4:
+        - align "Build Host:" with other fields
 
 2.5.2 -> 2.5.3:
 	- copy changelog tags to sub-packages just before packaging.
+	- added EPOCH handling to supplement serial numbers
+	- add RPMTAG_EPOCH and RPMTAG_CAPABILITY init to 0.
 	- fix infinite recursion on non-ERANGE return from getcwd() during
 	  install (Matt Wilson).
 	- rm .depend for multiple builds in same tree (Will Partain)
 	- add special case code for "/" in %files.
 	- better query semantics with symlinks (Tim Mooney)
+	- build.c: fix incorrect check for successful open
 	- allow %define with leading whitespace
 	- use /usr/lib/rpm for rpmpopt, rpmrc, find-requires, find-provides
 	- added popt 'exec' functionality
