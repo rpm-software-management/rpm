@@ -194,6 +194,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     int status;
     void *oldhandler;
     char savecwd[1024];
+    char * failedFile;
 
     gzipbin = rpmGetVar(RPMVAR_GZIPBIN);
 
@@ -261,9 +262,10 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	}
     }
 
-    chdir(savecwd);
+    rc = cpioBuildArchive(toGzip[1], cpioList, numMappings, NULL, NULL, 
+			  &failedFile);
 
-    rc = cpioBuildArchive(toGzip[1], cpioList, numMappings, NULL, NULL, NULL);
+    chdir(savecwd);
 
     close(toGzip[1]); /* Terminates the gzip process */
     
@@ -276,7 +278,11 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     }
 
     if (rc) {
-	rpmError(RPMERR_CPIO, "cpio failed: %d", rc);
+	if (rc & CPIO_CHECK_ERRNO)
+	    rpmError(RPMERR_CPIO, "cpio failed on file %s: %d: %s", failedFile, 
+			rc, strerror(errno));
+	else
+	    rpmError(RPMERR_CPIO, "cpio failed on file %s: %d", failedFile, rc);
 	return 1;
     }
 

@@ -716,6 +716,8 @@ static int writeFile(int fd, struct stat sb, struct cpioFileMapping * map,
 
 	    sb.st_size -= amount;
 	}
+
+	close(datafd);
     } else if (writeData && S_ISLNK(sb.st_mode)) {
 	if ((rc = safewrite(fd, symbuf, amount)))
 	    return rc;
@@ -796,8 +798,10 @@ int cpioBuildArchive(int fd, struct cpioFileMapping * mappings,
 	else
 	    rc = lstat(mappings[i].fsPath, &sb);
 
-	if (rc)
+	if (rc) {
+	    if (failedFile) *failedFile = mappings[i].fsPath;
 	    return CPIO_STAT_FAILED;
+	}
 
 	if (!S_ISDIR(sb.st_mode) && sb.st_nlink > 1) {
 	    hlink = hlinkList.next;
