@@ -424,7 +424,7 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
     }
 }
 
-extern int specedit;
+extern	char *	specedit;
 
 static void
 printNewSpecfile(Spec spec)
@@ -436,8 +436,6 @@ printNewSpecfile(Spec spec)
 
     if (sl == NULL || st == NULL)
 	return;
-
-#define	SPECSPACKAGE	"specs"
 
     for (i = 0; i < st->st_ntags; i++) {
 	char *msgstr;
@@ -452,7 +450,7 @@ printNewSpecfile(Spec spec)
 	    sprintf(buf, "%s(%s)", n, tagName(t->t_tag));
 	    t->t_msgid = strdup(buf);
 	}
-	msgstr = strdup(dgettext(SPECSPACKAGE, t->t_msgid));
+	msgstr = strdup(dgettext(specedit, t->t_msgid));
 
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
@@ -565,7 +563,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	    break;
 	}
 
-	if (specedit) {
+	if (specedit != NULL) {
 	    printNewSpecfile(spec);
 	    freeSpec(spec);
 	    retcode = 0;

@@ -3,7 +3,7 @@
 #include "rpmbuild.h"
 #include "buildio.h"
 
-extern int specedit;
+extern char *specedit;
 extern MacroContext globalMacroContext;
 
 static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
@@ -330,7 +330,7 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
 static inline struct speclines * newSl(void)
 {
     struct speclines *sl;
-    if (!specedit)
+    if (specedit == NULL)
 	return NULL;
     sl = malloc(sizeof(struct speclines));
     sl->sl_lines = NULL;
@@ -353,7 +353,7 @@ static inline void freeSl(struct speclines *sl)
 static inline struct spectags * newSt(void)
 {
     struct spectags *st;
-    if (!specedit)
+    if (specedit == NULL)
 	return NULL;
     st = malloc(sizeof(struct spectags));
     st->st_t = NULL;
