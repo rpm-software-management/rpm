@@ -9,7 +9,7 @@
 
 #include "debug.h"
 
-DebugLink *
+static DebugLink *
 read_debuglink (Elf *elf)
 {
   GElf_Ehdr ehdr;
@@ -47,7 +47,7 @@ read_debuglink (Elf *elf)
   return NULL;
 }
 
-Elf_Scn *
+static Elf_Scn *
 find_section (Elf *elf, const unsigned char *name, const unsigned char *strtab)
 {
   Elf_Scn *section;
@@ -69,7 +69,7 @@ find_section (Elf *elf, const unsigned char *name, const unsigned char *strtab)
   return section;
 }
 
-size_t
+static size_t
 find_in_strtab (char *name, char *strtab, size_t strtab_len)
 {
   int name_len, i;
@@ -82,7 +82,7 @@ find_in_strtab (char *name, char *strtab, size_t strtab_len)
   return 0;
 }
 
-void
+static void
 unstrip_file (Elf *elf, Elf *debug_elf, Elf *out_elf)
 {
   UnstripInfo *info;

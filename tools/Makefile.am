@@ -28,12 +28,14 @@ LDADD = \
 	@INTLLIBS@
 
 noinst_PROGRAMS = \
-	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
+	convertdb1 dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = javadeps rpmcache striptofile unstripfile
 
 bin_PROGRAMS =	rpmgraph
+
+convertdb1_SOURCES =	convertdb1.c
 
 javadeps_SOURCES =	javadeps.c
 

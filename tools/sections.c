@@ -267,7 +267,7 @@ unstrip_info_to_data (UnstripInfo *info,
     fprintf (stderr, "Warning. unsupported elf class\n");
 }
 
-void
+static void
 unstrip_info_from_data32 (UnstripInfo *info,
 			  Elf *elf,
 			  Elf_Data *data)
@@ -289,7 +289,7 @@ unstrip_info_from_data32 (UnstripInfo *info,
     }
 }
 
-void
+static void
 unstrip_info_from_data64 (UnstripInfo *info,
 			  Elf *elf,
 			  Elf_Data *data)
@@ -351,7 +351,7 @@ debug_link_to_data32 (DebugLink *debuglink,
   data->d_buf = calloc (1, data->d_size);
 
   strcpy (data->d_buf, debuglink->filename);
-  p = data->d_buf + namelen_aligned;
+  p = ((char *)data->d_buf) + namelen_aligned;
   
   *(Elf32_Word *)p = word32_to_file (debuglink->checksum, elf);
 }
@@ -375,7 +375,7 @@ debug_link_to_data64 (DebugLink *debuglink,
   data->d_buf = calloc (1, data->d_size);
 
   strcpy (data->d_buf, debuglink->filename);
-  p = data->d_buf + namelen_aligned;
+  p = ((char *)data->d_buf) + namelen_aligned;
   
   *(Elf64_Word *)p = word64_to_file (debuglink->checksum, elf);
 }
@@ -397,7 +397,7 @@ debug_link_to_data (DebugLink *debuglink, Elf *elf, Elf_Data *data)
     fprintf (stderr, "Warning. unsupported elf class\n");
 }
 
-void
+static void
 debug_link_from_data32 (DebugLink *debuglink,
 			Elf *elf,
 			Elf_Data *data)
@@ -409,12 +409,12 @@ debug_link_from_data32 (DebugLink *debuglink,
 
   namelen_aligned = align_up (strlen (debuglink->filename) + 1, 4);
 
-  p = data->d_buf + namelen_aligned;
+  p = ((char *)data->d_buf) + namelen_aligned;
   
   debuglink->checksum = word32_from_file (*(Elf32_Word *)p, elf);
 }
 
-void
+static void
 debug_link_from_data64 (DebugLink *debuglink,
 			Elf *elf,
 			Elf_Data *data)
@@ -426,7 +426,7 @@ debug_link_from_data64 (DebugLink *debuglink,
 
   namelen_aligned = align_up (strlen (debuglink->filename) + 1, 4);
 
-  p = data->d_buf + namelen_aligned;
+  p = ((char *)data->d_buf) + namelen_aligned;
   
   debuglink->checksum = word64_from_file (*(Elf64_Word *)p, elf);
 }
