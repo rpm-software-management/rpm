@@ -510,7 +510,8 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
 
     assert(db != NULL);
     if ((dbiflags & DB_WRITECURSOR) &&
-	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY)
+	  && !((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host))
     {
 	flags = DB_WRITECURSOR;
     } else

@@ -27,10 +27,9 @@ noinst_HEADERS = fprint.h header_internal.h legacy.h
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = \
-	rpmdb_deadlock rpmdb_dump rpmdb_load rpmdb_svc rpmdb_stat rpmdb_verify
-noinst_PROGRAMS = \
-	rpmdb_archive rpmdb_checkpoint rpmdb_printlog rpmdb_recover \
-	rpmdb_upgrade
+	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump rpmdb_load \
+	rpmdb_printlog rpmdb_recover rpmdb_svc rpmdb_stat rpmdb_upgrade \
+	rpmdb_verify 
 
 mylibs = librpmdb.la
 
