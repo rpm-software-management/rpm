@@ -175,13 +175,13 @@ static int rpmtsOpenSDB(rpmts ts)
 	return 0;
 
     if (has_sdbpath < 0)
-	has_sdbpath = rpmExpandNumeric("%{?_sdbpath:1}");
+	has_sdbpath = rpmExpandNumeric("%{?_solve_dbpath:1}");
 
     /* If not configured, don't try to open. */
     if (has_sdbpath <= 0)
 	return 1;
 
-    addMacro(NULL, "_dbpath", NULL, "%{_sdbpath}", RMIL_DEFAULT);
+    addMacro(NULL, "_dbpath", NULL, "%{_solve_dbpath}", RMIL_DEFAULT);
     rc = rpmdbOpen(ts->rootDir, &ts->sdb, O_RDONLY, 0644);
     if (rc) {
 	const char * dn;

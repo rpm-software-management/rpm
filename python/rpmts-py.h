@@ -10,7 +10,6 @@
 typedef struct rpmtsObject_s {
     PyObject_HEAD
     rpmts	ts;
-    rpmdbObject * dbo;
     PyObject * keyList;		/* keeps reference counts correct */
     FD_t scriptFd;
     rpmtsi tsi;

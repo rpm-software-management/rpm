@@ -1015,6 +1015,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * For packages being removed:
      * - count files.
      */
+
+rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elments\n"), rpmtsNElements(ts));
     ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
     pi = rpmtsiInit(ts);
@@ -1095,6 +1097,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
+rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
@@ -1171,6 +1174,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
+rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     ps = rpmtsProblems(ts);
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1336,6 +1340,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * Save removed files before erasing.
      */
+rpmMessage(RPMMESS_DEBUG, _("repackage about-to-be-erased packages\n"));
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1361,6 +1366,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * Install and remove packages.
      */
+rpmMessage(RPMMESS_DEBUG, _("install/erase %d elements\n"), rpmtsNElements(ts));
     lastKey = (alKey)-2;	/* erased packages have -1 */
     pi = rpmtsiInit(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */

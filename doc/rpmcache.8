@@ -79,7 +79,7 @@ macro should be configured in either
 \fI/etc/rpm/macros\fR or
 \fI~/.rpmmacros\fR:
 .TP
-\fB%_sdbpath\fR
+\fB%_solve_dbpath\fR
 The location of the database that is used to provide
 suggested dependency resolutions.
 .PP
@@ -87,7 +87,7 @@ suggested dependency resolutions.
 .PP
 .nf
 %_cache_dbpath  /var/spool/up2date/cache
-%_sdbpath       %{_cache_dbpath}
+%_solve_dbpath  %{_cache_dbpath}
 %_bhpath        file://localhost/mnt/redhat/beehive/comps/dist
 %_bhcoll        7.3
 %_bhN           @(basesystem|bash|filesystem|glibc-common|glibc|ldconfig|libtermcap|mktemp|setup|termcap)
@@ -98,7 +98,7 @@ suggested dependency resolutions.
 .PP
 .nf
 %_cache_dbpath  /var/spool/up2date/cache
-%_sdbpath       %{_cache_dbpath}
+%_solve_dbpath  %{_cache_dbpath}
 %_bhpath        ftp://localhost/mnt/dist
 %_bhcoll        @(7.3|7.2|7.1|7.0|6.2|6.1|6.0|5.2|5.1|5.0)
 %_bhN           @(%{_arch})

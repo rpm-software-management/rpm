@@ -24,6 +24,8 @@
 
 #include "debug.h"
 
+static int _rpmts_debug = 0;
+
 /*@access alKey @*/
 
 /** \ingroup python
@@ -35,9 +37,8 @@
  * installation and upgrade of packages.  The rpm.ts object is
  * instantiated by the TransactionSet function in the rpm module.
  *
- * The TransactionSet function takes two optional arguments.  The first
- * argument is the root path, the second is an open database to perform
- * the transaction set upon.
+ * The TransactionSet function takes a single optional argument. The first
+ * argument is the root path.
  *
  * A rpm.ts object has the following methods:
  *
@@ -146,6 +147,10 @@ static void rpmtsAddAvailableElement(rpmts ts, Header h,
 		provides, fi);
     fi = rpmfiFree(fi, 1);
     provides = rpmdsFree(provides);
+
+if (_rpmts_debug < 0)
+fprintf(stderr, "\tAddAvailable(%p) list %p\n", ts, ts->availablePackages);
+
 }
 
 /** \ingroup python
@@ -160,17 +165,18 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args)
     char * how = NULL;
     int isUpgrade = 0;
 
-    if (!PyArg_ParseTuple(args, "O!O|s:Add", &hdr_Type, &h, &key, &how))
+    if (!PyArg_ParseTuple(args, "O!O|s:AddInstall", &hdr_Type, &h, &key, &how))
 	return NULL;
 
-#ifdef	DYING
     {	PyObject * hObj = (PyObject *) h;
 	if (hObj->ob_type != &hdr_Type) {
 	    PyErr_SetString(PyExc_TypeError, "bad type for header argument");
 	    return NULL;
 	}
     }
-#endif
+
+if (_rpmts_debug < 0 || (_rpmts_debug > 0 && *how != 'a'))
+fprintf(stderr, "*** rpmts_AddInstall(%p) ts %p\n", s, s->ts);
 
     if (how && strcmp(how, "a") && strcmp(how, "u") && strcmp(how, "i")) {
 	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\", \"a\", or \"i\"");
@@ -203,11 +209,13 @@ rpmts_AddErase(rpmtsObject * s, PyObject * args)
     int count;
     rpmdbMatchIterator mi;
     
-    if (!PyArg_ParseTuple(args, "s:Remove", &name))
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, "s:AddErase", &name))
         return NULL;
 
-    /* XXX: Copied hack from ../lib/rpminstall.c, rpmErase() */
-    mi = rpmdbInitIterator(dbFromDb(s->dbo), RPMDBI_LABEL, name, 0);
+    mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
     count = rpmdbGetIteratorCount(mi);
     if (count <= 0) {
         PyErr_SetString(pyrpmError, "package not installed");
@@ -240,6 +248,9 @@ rpmts_Check(rpmtsObject * s, PyObject * args)
     int i;
     int allSuggestions = 0;
     int xx;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Check(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, "|i:Check", &allSuggestions)) return NULL;
 
@@ -323,6 +334,9 @@ rpmts_Order(rpmtsObject * s, PyObject * args)
 {
     int xx;
 
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Order(%p) ts %p\n", s, s->ts);
+
     if (!PyArg_ParseTuple(args, ":Order")) return NULL;
 
     xx = rpmtsOrder(s->ts);
@@ -338,7 +352,8 @@ rpmts_Clean(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    int xx;
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":Clean")) return NULL;
 
@@ -356,6 +371,9 @@ rpmts_OpenDB(rpmtsObject * s, PyObject * args)
 	/*@modifies s, _Py_NoneStruct @*/
 {
     int xx;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":OpenDB")) return NULL;
 
@@ -376,6 +394,9 @@ rpmts_CloseDB(rpmtsObject * s, PyObject * args)
 {
     int xx;
 
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
+
     if (!PyArg_ParseTuple(args, ":CloseDB")) return NULL;
 
     xx = rpmtsCloseDB(s->ts);
@@ -395,6 +416,9 @@ rpmts_GetKeys(rpmtsObject * s, PyObject * args)
     const void **data = NULL;
     int num, i;
     PyObject *tuple;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** GetKeys(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":GetKeys")) return NULL;
 
@@ -435,8 +459,7 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 {
     struct rpmtsCallbackType_s * cbInfo = data;
     PyObject * args, * result;
-    int fd;
-    static FD_t fdt;
+    static FD_t fd;
 
     if (cbInfo->pythonError) return NULL;
     if (cbInfo->cb == Py_None) return NULL;
@@ -453,18 +476,27 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
     }
 
     if (what == RPMCALLBACK_INST_OPEN_FILE) {
-        if (!PyArg_Parse(result, "i", &fd)) {
+	int fdno;
+
+        if (!PyArg_Parse(result, "i", &fdno)) {
 	    cbInfo->pythonError = 1;
 	    return NULL;
 	}
-	fdt = fdDup(fd);
-	
 	Py_DECREF(result);
-	return fdt;
-    }
 
+	fd = fdDup(fdno);
+if (_rpmts_debug)
+fprintf(stderr, "\t%p = fdDup(%d)\n", fd, fdno);
+	
+	return fd;
+    } else
     if (what == RPMCALLBACK_INST_CLOSE_FILE) {
-	Fclose (fdt);
+if (_rpmts_debug)
+fprintf(stderr, "\tFclose(%p)\n", fd);
+	Fclose (fd);
+    } else {
+if (_rpmts_debug)
+fprintf(stderr, "\t%ld:%ld key %p\n", amount, total, pkgKey);
     }
 
     Py_DECREF(result);
@@ -492,6 +524,9 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 
     (void) rpmtsSetNotifyCallback(s->ts, rpmtsCallback, (void *) &cbInfo);
     (void) rpmtsSetFlags(s->ts, flags);
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Run(%p) ts %p flags %x ignore %x\n", s, s->ts, s->ts->transFlags, ignoreSet);
 
     rc = rpmtsRun(s->ts, NULL, ignoreSet);
     ps = rpmtsProblems(s->ts);
@@ -533,6 +568,9 @@ rpmts_Next(rpmtsObject * s)
 {
     rpmte te;
 
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
+
     if (s == NULL || s->tsi == NULL)
 	return NULL;
 
@@ -551,6 +589,9 @@ static PyObject *
 rpmts_Iter(rpmtsObject * s)
 	/*@modifies s @*/
 {
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Iter(%p) ts %p\n", s, s->ts);
+
     s->tsi = rpmtsiInit(s->ts);
     s->tsiFilter = 0;
     Py_INCREF(s);
@@ -570,6 +611,9 @@ rpmts_Match (rpmtsObject * s, PyObject * args)
     int len = 0;
     int tag = RPMDBI_PACKAGES;
     
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
+
     if (!PyArg_ParseTuple(args, "|Ozi", &TagN, &key, &len))
 	return NULL;
 
@@ -597,9 +641,15 @@ rpmts_Match (rpmtsObject * s, PyObject * args)
 static struct PyMethodDef rpmts_methods[] = {
     {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
 	NULL },
+    {"add",		(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
+	NULL },
     {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS,
 	NULL },
+    {"remove",		(PyCFunction) rpmts_AddErase,	METH_VARARGS,
+	NULL },
     {"check",		(PyCFunction) rpmts_Check,	METH_VARARGS,
+	NULL },
+    {"depcheck",	(PyCFunction) rpmts_Check,	METH_VARARGS,
 	NULL },
     {"order",		(PyCFunction) rpmts_Order,	METH_VARARGS,
 	NULL },
@@ -633,11 +683,10 @@ static void rpmts_dealloc(/*@only@*/ PyObject * o)
 {
     rpmtsObject * trans = (void *) o;
 
-    trans->ts->rdb = NULL;	/* XXX HACK: avoid rpmdb close/free */
+if (_rpmts_debug)
+fprintf(stderr, "%p -- ts %p db %p\n", trans, trans->ts, trans->ts->rdb);
     rpmtsFree(trans->ts);
-    if (trans->dbo) {
-	Py_DECREF(trans->dbo);
-    }
+
     if (trans->scriptFd) Fclose(trans->scriptFd);
     /* this will free the keyList, and decrement the ref count of all
        the items on the list as well :-) */
@@ -739,28 +788,20 @@ rpmtsObject *
 rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args)
 {
     rpmtsObject * o;
-    rpmdbObject * db = NULL;
     char * rootDir = "/";
 
-    if (!PyArg_ParseTuple(args, "|sO!:Create", &rootDir, &rpmdb_Type, &db))
+    if (!PyArg_ParseTuple(args, "|s:Create", &rootDir))
 	return NULL;
-#ifdef	DYING
-    if (db && ((PyObject *) db)->ob_type != &rpmdb_Type) {
-	PyErr_SetString(PyExc_TypeError, "bad type for database argument");
-	return NULL;
-    }
-#endif
 
     o = (void *) PyObject_NEW(rpmtsObject, &rpmts_Type);
 
-    Py_XINCREF(db);
-    o->dbo = db;
-    o->scriptFd = NULL;
     o->ts = rpmtsCreate();
     (void) rpmtsSetRootDir(o->ts, rootDir);
-    /* XXX this will be fun to fix */
-    o->ts->rdb = (db ? dbFromDb(db) : NULL);
-    o->keyList = PyList_New(0);
 
+    o->keyList = PyList_New(0);
+    o->scriptFd = NULL;
+
+if (_rpmts_debug)
+fprintf(stderr, "%p ++ ts %p db %p\n", o, o->ts, o->ts->rdb);
     return o;
 }

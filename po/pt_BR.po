@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-14 17:19-0400\n"
+"POT-Creation-Date: 2002-07-15 10:05-0400\n"
 
 #: build.c:40
 #, fuzzy

@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.48
+Release: 0.50
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -514,6 +514,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jul 15 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.50
+- have rpmdb-redhat autoconfigure rpm to use %%_solve_dbpath.
+
 * Sun Jul 14 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.49
 - python: sanity check fixes on rpmts/rpmte methods.
 
