@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.16 2000/11/10 09:55:51 rjray Exp $
+#   $Id: Header.pm,v 1.17 2001/02/27 07:37:01 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -39,7 +39,7 @@ use RPM::Error;
 use RPM::Constants ':rpmerr';
 
 $VERSION = '0.292';
-$revision = do { my @r=(q$Revision: 1.16 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.17 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @ISA = qw(Exporter);
 @EXPORT = ();
@@ -267,8 +267,7 @@ stored within the header.
 
 The commonly-needed data triple of (B<name>, B<version>, B<release>) may be
 accessed more directly by means of this method. It returns the three values
-on the stack, with no need to dereference list references, as would be the
-case when fetching the three tags via the usual means.
+on the stack, saving the need for three separate fetches.
 
 =item cmpver(OTHER)
 
