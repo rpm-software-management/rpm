@@ -47,15 +47,28 @@
 FILE_RCSID("@(#)$Id: softmagic.c,v 1.66 2004/07/24 20:38:56 christos Exp $")
 #endif	/* lint */
 
-private int match(struct magic_set *, struct magic *, uint32_t,
-    const unsigned char *, size_t);
-private int mget(struct magic_set *, union VALUETYPE *, const unsigned char *,
-    struct magic *, size_t);
-private int mcheck(struct magic_set *, union VALUETYPE *, struct magic *);
-private int32_t mprint(struct magic_set *, union VALUETYPE *, struct magic *);
-private void mdebug(uint32_t, const char *, size_t);
-private int mconvert(struct magic_set *, union VALUETYPE *, struct magic *);
-private int check_mem(struct magic_set *, unsigned int);
+private int match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
+    const unsigned char *s, size_t nbytes)
+	/*@globals fileSystem @*/
+	/*@modifies ms, magic, fileSystem @*/;
+private int mget(struct magic_set *ms, union VALUETYPE *p,
+    const unsigned char *s, struct magic *m, size_t nbytes)
+	/*@globals fileSystem @*/
+	/*@modifies ms, p, m, fileSystem @*/;
+private int mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
+	/*@globals fileSystem @*/
+	/*@modifies ms, p, fileSystem @*/;
+private int32_t mprint(struct magic_set *ms, union VALUETYPE *p,
+    struct magic *m)
+	/*@globals fileSystem @*/
+	/*@modifies ms, p, fileSystem @*/;
+private void mdebug(uint32_t offset, const char *str, size_t len)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+private int mconvert(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
+	/*@modifies ms, p @*/;
+private int check_mem(struct magic_set *ms, unsigned int level)
+	/*@modifies ms @*/;
 
 /*
  * softmagic - lookup one file in database 

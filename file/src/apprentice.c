@@ -79,27 +79,55 @@ FILE_RCSID("@(#)$Id: apprentice.c,v 1.78 2004/07/24 20:38:56 christos Exp $")
 #define MAXPATHLEN	1024
 #endif
 
-private int getvalue(struct magic_set *ms, struct magic *, char **);
-private int hextoint(int);
-private char *getstr(struct magic_set *, char *, char *, int, int *);
-private int parse(struct magic_set *, struct magic **, uint32_t *, char *, int);
-private void eatsize(char **);
-private int apprentice_1(struct magic_set *, const char *, int, struct mlist *);
-private int apprentice_file(struct magic_set *, struct magic **, uint32_t *,
-    const char *, int);
-private void byteswap(struct magic *, uint32_t);
-private void bs1(struct magic *);
-private uint16_t swap2(uint16_t);
-private uint32_t swap4(uint32_t);
-private char *mkdbname(const char *, char *, size_t);
-private int apprentice_map(struct magic_set *, struct magic **, uint32_t *,
-    const char *);
-private int apprentice_compile(struct magic_set *, struct magic **, uint32_t *,
-    const char *);
-private int check_format(struct magic *);
-
+/*@unchecked@*/
 private size_t maxmagic = 0;
+/*@unchecked@*/
 private size_t magicsize = sizeof(struct magic);
+
+private int getvalue(struct magic_set *ms, struct magic *m, char **p)
+	/*@globals fileSystem @*/
+	/*@modifies ms, m, *p, fileSystem @*/;
+private int hextoint(int c)
+	/*@*/;
+/*@null@*/
+private char *getstr(struct magic_set *ms, char *s, char *p, int plen,
+    int *slen)
+	/*@modifies ms, *p, *slen @*/;
+private int parse(struct magic_set *ms, struct magic **magicp,
+    uint32_t *nmagicp, char *l, int action)
+	/*@globals maxmagic, fileSystem @*/
+	/*@modifies ms, *magicp, *nmagicp, maxmagic, fileSystem @*/;
+private void eatsize(char **p)
+	/*@modifies *p @*/;
+private int apprentice_1(struct magic_set *ms, const char *fn, int action,
+    struct mlist *mlist)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, mlist, fileSystem, internalState @*/;
+private int apprentice_file(struct magic_set *ms, struct magic **magicp,
+    uint32_t *nmagicp, const char *fn, int action)
+	/*@globals maxmagic, fileSystem @*/
+	/*@modifies ms, *magicp, *nmagicp, maxmagic, fileSystem @*/;
+private void byteswap(struct magic *magic, uint32_t nmagic)
+	/*@modifies magic @*/;
+private void bs1(struct magic *m)
+	/*@modifies m @*/;
+private uint16_t swap2(uint16_t sv)
+	/*@*/;
+private uint32_t swap4(uint32_t sv)
+	/*@*/;
+private char *mkdbname(const char *fn, char *buf, size_t bufsiz)
+	/*@modifies buf @*/;
+private int apprentice_map(struct magic_set *ms, struct magic **magicp,
+    uint32_t *nmagicp, const char *fn)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, *magicp, *nmagicp, fileSystem, internalState @*/;
+private int apprentice_compile(struct magic_set *ms, struct magic **magicp,
+    uint32_t *nmagicp, const char *fn)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+private int check_format(struct magic *m)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 #ifdef COMPILE_ONLY
 
@@ -213,7 +241,7 @@ file_delmagic(struct magic *p, int type, size_t entries)
 		break;
 	case 1:
 		p--;
-		/*FALLTHROUGH*/
+		/*@fallthrough@*/
 	case 0:
 		free(p);
 		break;
@@ -396,6 +424,7 @@ parse(struct magic_set *ms, struct magic **magicp, uint32_t *nmagicp, char *l,
 	int i = 0;
 	struct magic *m;
 	char *t;
+/*@observer@*/
 	private const char *fops = FILE_OPS;
 	uint32_t val;
 
@@ -674,7 +703,7 @@ parse(struct magic_set *ms, struct magic **magicp, uint32_t *nmagicp, char *l,
 			++l;
 			break;
 		}
-		/*FALLTHROUGH*/
+		/*@fallthrough@*/
 	default:
 		if (*l == 'x' && isascii((unsigned char)l[1]) && 
 		    isspace((unsigned char)l[1])) {
@@ -732,7 +761,11 @@ GetDesc:
 private int
 check_format(struct magic *m)
 {
+/*@-nullassign@*/
+/*@observer@*/
 	static const char *formats[] = { FILE_FORMAT_STRING };
+/*@=nullassign@*/
+/*@observer@*/
 	static const char *names[] = { FILE_FORMAT_NAME };
 	char *ptr;
 
@@ -1004,7 +1037,7 @@ eatsize(char **p)
 	case 'b':    /* char/byte */
 	case 'c':    /* char/byte */
 		l++;
-		/*FALLTHROUGH*/
+		/*@fallthrough@*/
 	default:
 		break;
 	}
@@ -1104,6 +1137,7 @@ error:
 	return -1;
 }
 
+/*@unchecked@*/ /*@observer@*/
 private const uint32_t ar[] = {
     MAGICNO, VERSIONNO
 };
@@ -1147,6 +1181,7 @@ apprentice_compile(struct magic_set *ms, struct magic **magicp,
 	return 0;
 }
 
+/*@unchecked@*/ /*@observer@*/
 private const char ext[] = ".mgc";
 /*
  * make a dbname

@@ -63,13 +63,26 @@ typedef unsigned long unichar;
 #define ISSPC(x) ((x) == ' ' || (x) == '\t' || (x) == '\r' || (x) == '\n' \
 		  || (x) == 0x85 || (x) == '\f')
 
-private int looks_ascii(const unsigned char *, size_t, unichar *, size_t *);
-private int looks_utf8(const unsigned char *, size_t, unichar *, size_t *);
-private int looks_unicode(const unsigned char *, size_t, unichar *, size_t *);
-private int looks_latin1(const unsigned char *, size_t, unichar *, size_t *);
-private int looks_extended(const unsigned char *, size_t, unichar *, size_t *);
-private void from_ebcdic(const unsigned char *, size_t, unsigned char *);
-private int ascmatch(const unsigned char *, const unichar *, size_t);
+private int looks_ascii(const unsigned char *buf, size_t nbytes,
+    unichar *ubuf, size_t *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+private int looks_utf8(const unsigned char *buf, size_t nbytes,
+    unichar *ubuf, size_t *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+private int looks_unicode(const unsigned char *buf, size_t nbytes,
+    unichar *ubuf, size_t *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+private int looks_latin1(const unsigned char *buf, size_t nbytes,
+    unichar *ubuf, size_t *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+private int looks_extended(const unsigned char *buf, size_t nbytes,
+    unichar *ubuf, size_t *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+private void from_ebcdic(const unsigned char *buf, size_t nbytes,
+    unsigned char *out)
+	/*@modifies *out @*/;
+private int ascmatch(const unsigned char *s, const unichar *us, size_t ulen)
+	/*@*/;
 
 
 protected int
@@ -417,6 +430,7 @@ ascmatch(const unsigned char *s, const unichar *us, size_t ulen)
 #define I 2   /* character appears in ISO-8859 text */
 #define X 3   /* character appears in non-ISO extended ASCII (Mac, IBM PC) */
 
+/*@unchecked@*/ /*@observer@*/
 private char text_chars[256] = {
 	/*                  BEL BS HT LF    FF CR    */
 	F, F, F, F, F, F, F, T, T, T, T, F, T, T, F, F,  /* 0x0X */
@@ -624,6 +638,7 @@ looks_unicode(const unsigned char *buf, size_t nbytes, unichar *ubuf,
  * between old-style and internationalized examples of text.
  */
 
+/*@unchecked@*/ /*@observer@*/
 private unsigned char ebcdic_to_ascii[] = {
   0,   1,   2,   3, 156,   9, 134, 127, 151, 141, 142,  11,  12,  13,  14,  15,
  16,  17,  18,  19, 157, 133,   8, 135,  24,  25, 146, 143,  28,  29,  30,  31,

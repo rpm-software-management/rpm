@@ -43,18 +43,28 @@ FILE_RCSID("@(#)$Id: readelf.c,v 1.42 2004/07/24 20:57:22 christos Exp $")
 #endif
 
 #ifdef	ELFCORE
-private int dophn_core(struct magic_set *, int, int, int, off_t, int, size_t);
+private int dophn_core(struct magic_set *ms, int class, int swap, int fd,
+    off_t off, int num, size_t size)
+	/*@modifies ms @*/;
 #endif
-private int dophn_exec(struct magic_set *, int, int, int, off_t, int, size_t);
-private int doshn(struct magic_set *, int, int, int, off_t, int, size_t);
-private size_t donote(struct magic_set *, unsigned char *, size_t, size_t, int,
-    int, size_t);
+private int dophn_exec(struct magic_set *ms, int class, int swap, int fd,
+    off_t off, int num, size_t size)
+	/*@modifies ms @*/;
+private int doshn(struct magic_set *ms, int class, int swap, int fd, off_t off,
+    int num, size_t size)
+	/*@modifies ms @*/;
+private size_t donote(struct magic_set *ms, unsigned char *nbuf, size_t offset,
+    size_t size, int class, int swap, size_t align)
+	/*@modifies ms @*/;
 
 #define	ELF_ALIGN(a)	((((a) + align - 1) / align) * align)
 
-private uint16_t getu16(int, uint16_t);
-private uint32_t getu32(int, uint32_t);
-private uint64_t getu64(int, uint64_t);
+private uint16_t getu16(int swap, uint16_t value)
+	/*@*/;
+private uint32_t getu32(int swap, uint32_t value)
+	/*@*/;
+private uint64_t getu64(int swap, uint64_t value)
+	/*@*/;
 
 private uint16_t
 getu16(int swap, uint16_t value)
@@ -170,6 +180,7 @@ getu64(int swap, uint64_t value)
 			 : prpsoffsets64[i])
 
 #ifdef ELFCORE
+/*@unchecked@*/ /*@observer@*/
 size_t	prpsoffsets32[] = {
 	8,		/* FreeBSD */
 	28,		/* Linux 2.0.36 */
@@ -177,6 +188,7 @@ size_t	prpsoffsets32[] = {
 	84,		/* SunOS 5.x */
 };
 
+/*@unchecked@*/ /*@observer@*/
 size_t	prpsoffsets64[] = {
        120,		/* SunOS 5.x, 64-bit */
 };
@@ -211,6 +223,7 @@ size_t	prpsoffsets64[] = {
 #define	OS_STYLE_FREEBSD	1
 #define	OS_STYLE_NETBSD		2
 
+/*@unchecked@*/ /*@observer@*/
 private const char *os_style_names[] = {
 	"SVR4",
 	"FreeBSD",

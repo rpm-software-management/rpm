@@ -48,19 +48,40 @@ extern "C" {
 #endif
 
 typedef struct magic_set *magic_t;
-magic_t magic_open(int);
-void magic_close(magic_t);
 
-const char *magic_file(magic_t, const char *);
-const char *magic_buffer(magic_t, const void *, size_t);
+/*@null@*/
+magic_t magic_open(int)
+	/*@globals errno @*/
+	/*@modifies errno @*/;
+void magic_close(magic_t ms)
+	/*@globals fileSystem @*/
+	/*@modifies ms, fileSystem @*/;
 
-const char *magic_error(magic_t);
-int magic_setflags(magic_t, int);
+/*@null@*/
+const char *magic_file(magic_t ms, const char *)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+/*@null@*/
+const char *magic_buffer(magic_t ms, const void *, size_t)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
 
-int magic_load(magic_t, const char *);
-int magic_compile(magic_t, const char *);
-int magic_check(magic_t, const char *);
-int magic_errno(magic_t);
+const char *magic_error(magic_t ms)
+	/*@modifies ms @*/;
+int magic_setflags(magic_t ms, int)
+	/*@modifies ms @*/;
+
+int magic_load(magic_t ms, const char *)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+int magic_compile(magic_t ms, const char *)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+int magic_check(magic_t ms, const char *magicfile)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+int magic_errno(magic_t ms)
+	/*@modifies ms @*/;
 
 #ifdef __cplusplus
 };

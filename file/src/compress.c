@@ -59,9 +59,13 @@ FILE_RCSID("@(#)$Id: compress.c,v 1.37 2004/07/24 21:00:56 christos Exp $")
 #endif
 
 
+/*@-nullassign@*/
+/*@unchecked@*/ /*@observer@*/
 private struct {
+/*@observer@*/
 	const char *magic;
 	size_t maglen;
+/*@observer@*/
 	const char *const argv[3];
 	int silent;
 } compr[] = {
@@ -76,17 +80,24 @@ private struct {
 	{ "\037\036", 2, { "gzip", "-cdq", NULL }, 0 },		/* packed */
 	{ "BZh",      3, { "bzip2", "-cd", NULL }, 1 },		/* bzip2-ed */
 };
+/*@=nullassign@*/
 
+/*@unchecked@*/
 private int ncompr = sizeof(compr) / sizeof(compr[0]);
 
 
-private ssize_t swrite(int, const void *, size_t);
-private ssize_t sread(int, void *, size_t);
-private size_t uncompressbuf(struct magic_set *, size_t, const unsigned char *,
-    unsigned char **, size_t);
+private ssize_t swrite(int fd, const void *buf, size_t n)
+	/*@*/;
+private ssize_t sread(int fd, void *buf, size_t n)
+	/*@modifies buf @*/;
+private size_t uncompressbuf(struct magic_set *ms, size_t method,
+    const unsigned char *old, unsigned char **newch, size_t n)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, *newch, fileSystem, internalState @*/;
 #ifdef HAVE_LIBZ
-private size_t uncompressgzipped(struct magic_set *, const unsigned char *,
-    unsigned char **, size_t);
+private size_t uncompressgzipped(struct magic_set *ms, const unsigned char *old,
+    unsigned char **newch, size_t n)
+	/*@modifies ms, *newch @*/;
 #endif
 
 protected int
@@ -348,7 +359,7 @@ uncompressbuf(struct magic_set *ms, size_t method, const unsigned char *old,
 		execvp(compr[method].argv[0],
 		       (char *const *)compr[method].argv);
 		exit(1);
-		/*NOTREACHED*/
+		/*@notreached@*/ break;
 	case -1:
 		file_error(ms, errno, "could not fork");
 		return 0;
@@ -363,11 +374,11 @@ uncompressbuf(struct magic_set *ms, size_t method, const unsigned char *old,
 			if (swrite(fdin[1], old, n) != n)
 				exit(1);
 			exit(0);
-			/*NOTREACHED*/
+			/*@notreached@*/ break;
 
 		case -1:
 			exit(1);
-			/*NOTREACHED*/
+			/*@notreached@*/ break;
 
 		default:  /* parent */
 			break;
@@ -400,4 +411,5 @@ err:
 #endif
 		return n;
 	}
+	/*@notreached@*/
 }

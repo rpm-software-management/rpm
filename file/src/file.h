@@ -216,6 +216,7 @@ struct mlist {
 };
 
 struct magic_set {
+/*@null@*/
     struct mlist *mlist;
     struct cont {
 	size_t len;
@@ -237,29 +238,65 @@ struct magic_set {
 };
 
 struct stat;
-protected char *file_fmttime(uint32_t, int);
-protected int file_buffer(struct magic_set *, const void *, size_t);
-protected int file_fsmagic(struct magic_set *, const char *, struct stat *);
-protected int file_pipe2file(struct magic_set *, int, const void *, size_t);
-protected int file_printf(struct magic_set *, const char *, ...);
-protected int file_reset(struct magic_set *);
-protected int file_tryelf(struct magic_set *, int, const unsigned char *, size_t);
-protected int file_zmagic(struct magic_set *, const unsigned char *, size_t);
-protected int file_ascmagic(struct magic_set *, const unsigned char *, size_t);
-protected int file_is_tar(struct magic_set *, const unsigned char *, size_t);
-protected int file_softmagic(struct magic_set *, const unsigned char *, size_t);
-protected struct mlist *file_apprentice(struct magic_set *, const char *, int);
-protected uint32_t file_signextend(struct magic_set *, struct magic *, uint32_t);
-protected void file_delmagic(struct magic *, int type, size_t entries);
-protected void file_badread(struct magic_set *);
-protected void file_badseek(struct magic_set *);
-protected void file_oomem(struct magic_set *);
-protected void file_error(struct magic_set *, int, const char *, ...);
-protected void file_magwarn(const char *, ...);
-protected void file_mdump(struct magic *);
-protected void file_showstr(FILE *, const char *, size_t);
-protected size_t file_mbswidth(const char *);
-protected const char *file_getbuffer(struct magic_set *);
+protected char *file_fmttime(uint32_t, int)
+	/*@*/;
+protected int file_buffer(struct magic_set *ms, const void *, size_t)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+protected int file_fsmagic(struct magic_set *ms, const char *, struct stat *sb)
+	/*@modifies ms, sb @*/;
+protected int file_pipe2file(struct magic_set *ms, int fd, const void *startbuf,
+    size_t nbytes)
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies ms, errno, fileSystem, internalState @*/;
+protected int file_printf(struct magic_set *ms, const char *, ...)
+	/*@modifies ms @*/;
+protected int file_reset(struct magic_set *ms)
+	/*@modifies ms @*/;
+protected int file_tryelf(struct magic_set *ms, int, const unsigned char *, size_t)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+protected int file_zmagic(struct magic_set *ms, const unsigned char *, size_t)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+protected int file_ascmagic(struct magic_set *ms, const unsigned char *, size_t)
+	/*@modifies ms @*/;
+protected int file_is_tar(struct magic_set *ms, const unsigned char *, size_t)
+	/*@modifies ms @*/;
+protected int file_softmagic(struct magic_set *ms, const unsigned char *, size_t)
+	/*@globals fileSystem @*/
+	/*@modifies ms, fileSystem @*/;
+/*@null@*/
+protected struct mlist *file_apprentice(struct magic_set *ms, const char *, int)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ms, fileSystem, internalState @*/;
+protected uint32_t file_signextend(struct magic_set *ms, struct magic *, uint32_t)
+	/*@globals fileSystem @*/
+	/*@modifies ms, fileSystem @*/;
+protected void file_delmagic(struct magic *p, int type, size_t entries)
+	/*@globals fileSystem @*/
+	/*@modifies p, fileSystem @*/;
+protected void file_badread(struct magic_set *ms)
+	/*@modifies ms @*/;
+protected void file_badseek(struct magic_set *ms)
+	/*@modifies ms @*/;
+protected void file_oomem(struct magic_set *ms)
+	/*@modifies ms @*/;
+protected void file_error(struct magic_set *ms, int, const char *, ...)
+	/*@modifies ms @*/;
+protected void file_magwarn(const char *f, ...)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+protected void file_mdump(struct magic *m)
+	/*@globals fileSystem @*/
+	/*@modifies m, fileSystem @*/;
+protected void file_showstr(FILE *fp, const char *s, size_t len)
+	/*@globals fileSystem @*/
+	/*@modifies fp, fileSystem @*/;
+protected size_t file_mbswidth(const char *)
+	/*@*/;
+protected const char *file_getbuffer(struct magic_set *ms)
+	/*@modifies ms @*/;
 
 #ifndef HAVE_STRERROR
 extern int sys_nerr;

@@ -55,6 +55,7 @@ FILE_RCSID("@(#)$Id: print.c,v 1.44 2003/09/12 19:39:44 christos Exp $")
 protected void
 file_mdump(struct magic *m)
 {
+	/*@observer@*/
 	private const char *typ[] = { "invalid", "byte", "short", "invalid",
 				     "long", "string", "date", "beshort",
 				     "belong", "bedate", "leshort", "lelong",

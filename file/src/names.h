@@ -62,8 +62,11 @@
 #define	L_M4	13		/* M4 */
 #define	L_PO	14		/* PO */
 
+/*@unchecked@*/ /*@observer@*/
 static const struct {
+/*@observer@*/ /*@null@*/
 	const char *human;
+/*@observer@*/ /*@null@*/
 	const char *mime;
 } types[] = {
 	{ "C program",					"text/x-c", },
@@ -121,7 +124,9 @@ static const struct {
  * as Java, as it comes after "the" and "The".  Perhaps we need a fancier
  * heuristic to identify Java?
  */
+/*@unchecked@*/ /*@observer@*/
 static struct names {
+/*@observer@*/ /*@null@*/
 	const char *name;
 	short type;
 } names[] = {

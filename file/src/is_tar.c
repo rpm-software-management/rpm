@@ -55,8 +55,10 @@ FILE_RCSID("@(#)$Id: is_tar.c,v 1.24 2003/11/11 20:01:46 christos Exp $")
 
 #define	isodigit(c)	( ((c) >= '0') && ((c) <= '7') )
 
-private int is_tar(const unsigned char *, size_t);
-private int from_oct(int, const char *);	/* Decode octal number */
+private int is_tar(const unsigned char *buf, size_t nbytes)
+	/*@*/;
+private int from_oct(int digs, const char *where)
+	/*@*/;
 
 protected int
 file_is_tar(struct magic_set *ms, const unsigned char *buf, size_t nbytes)

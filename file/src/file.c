@@ -93,32 +93,49 @@ FILE_RCSID("@(#)$Id: file.c,v 1.93 2004/04/07 14:23:55 christos Exp $")
 #define	MAXPATHLEN	512
 #endif
 
+/*@unchecked@*/
 private int 		/* Global command-line options 		*/
 	bflag = 0,	/* brief output format	 		*/
 	nopad = 0,	/* Don't pad output			*/
 	nobuffer = 0;   /* Do not buffer stdout 		*/
 
+/*@unchecked@*/ /*@null@*/
 private const char *magicfile = 0;	/* where the magic is	*/
+/*@unchecked@*/ /*@observer@*/
 private const char *default_magicfile = MAGIC;
+/*@unchecked@*/ /*@observer@*/
 private char *separator = ":";	/* Default field separator	*/
 
+/*@unchecked@*/ /*@null@*/
 private char *progname;		/* used throughout 		*/
 
+/*@unchecked@*/ /*@null@*/
 private struct magic_set *magic;
 
-private void unwrap(char *);
-private void usage(void);
+private void unwrap(char *fn)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+private void usage(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 #ifdef HAVE_GETOPT_LONG
-private void help(void);
+private void help(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 #endif
 #if 0
-private int byteconv4(int, int, int);
-private short byteconv2(int, int, int);
+private int byteconv4(int from, int same, int big_endian)
+	/*@*/;
+private short byteconv2(int from, int same, int big_endian)
+	/*@*/;
 #endif
 
-int main(int, char *[]);
-private void process(const char *, int);
-private void load(const char *, int);
+private void process(const char *inname, int wid)
+	/*@globals magic, fileSystem, internalState @*/
+	/*@modifies magic, fileSystem, internalState @*/;
+private void load(const char *m, int flags)
+	/*@globals magic, fileSystem, internalState @*/
+	/*@modifies magic, fileSystem, internalState @*/;
 
 
 /*
@@ -126,6 +143,12 @@ private void load(const char *, int);
  */
 int
 main(int argc, char *argv[])
+	/*@globals bflag, default_magicfile, magic, magicfile,
+		nobuffer, nopad, optind, progname, separator,
+		fileSystem, internalState @*/
+	/*@modifies argv, bflag, default_magicfile, magic, magicfile,
+		nobuffer, nopad, optind, progname, separator,
+		fileSystem, internalState @*/
 {
 	int c;
 	int action = 0, didsomefiles = 0, errflg = 0;
@@ -135,6 +158,8 @@ main(int argc, char *argv[])
 #define OPTSTRING	"bcCdf:F:ikLm:nNprsvz"
 #ifdef HAVE_GETOPT_LONG
 	int longindex;
+/*@observer@*/
+/*@-nullassign -readonlytrans@*/
 	private struct option long_options[] =
 	{
 		{"version", 0, 0, 'v'},
@@ -161,6 +186,7 @@ main(int argc, char *argv[])
 		{"compile", 0, 0, 'C'},
 		{0, 0, 0, 0},
 	};
+/*@=nullassign =readonlytrans@*/
 #endif
 
 #ifdef LC_CTYPE
@@ -320,7 +346,7 @@ main(int argc, char *argv[])
 
 
 private void
-load(const char *m, int flags)
+load(/*@unused@*/ const char *m, int flags)
 {
 	if (magic)
 		return;

@@ -74,9 +74,13 @@ protected int file_os2_apptype(struct magic_set *ms, const char *fn,
     const void *buf, size_t nb);
 #endif /* __EMX__ */
 
-private void free_mlist(struct mlist *);
-private void close_and_restore(const struct magic_set *, const char *, int,
-    const struct stat *);
+private void free_mlist(struct mlist *mlist)
+	/*@globals fileSystem @*/
+	/*@modifies mlist, fileSystem @*/;
+private void close_and_restore(const struct magic_set *ms, const char *name,
+    int fd, const struct stat *sb)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 public struct magic_set *
 magic_open(int flags)
@@ -136,8 +140,7 @@ free_mlist(struct mlist *mlist)
 }
 
 public void
-magic_close(ms)
-    struct magic_set *ms;
+magic_close(struct magic_set *ms)
 {
 	free_mlist(ms->mlist);
 	free(ms->o.buf);

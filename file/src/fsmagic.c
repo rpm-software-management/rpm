@@ -290,7 +290,7 @@ file_fsmagic(struct magic_set *ms, const char *fn, struct stat *sb)
 	default:
 		file_error(ms, 0, "invalid mode 0%o", sb->st_mode);
 		return -1;
-		/*NOTREACHED*/
+		/*@notreached@*/
 	}
 
 	/*
