@@ -51,6 +51,7 @@ poptContext poptGetContext(char * name, int argc, char ** argv,
     con->finalArgv = malloc(sizeof(*con->finalArgv) * (argc * 2));
     con->finalArgvAlloced = argc * 2;
     con->flags = flags;
+    con->execAbsolute = 1;
 
     if (getenv("POSIXLY_CORRECT") || getenv("POSIX_ME_HARDER"))
 	con->flags |= POPT_CONTEXT_POSIXMEHARDER;
