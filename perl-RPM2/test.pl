@@ -11,7 +11,7 @@ use strict;
 
 use Test;
 use strict;
-BEGIN { plan tests => 30 };
+BEGIN { plan tests => 33 };
 use RPM2;
 ok(1); # If we made it this far, we're ok.
 
@@ -111,3 +111,8 @@ else {
   ok(1);
 }
 
+ok(RPM2->expand_macro("%%foo") eq "%foo");
+RPM2->add_macro("rpm2_test_macro", "testval $$");
+ok(RPM2->expand_macro("%rpm2_test_macro") eq "testval $$");
+RPM2->delete_macro("rpm2_test_macro");
+ok(RPM2->expand_macro("%rpm2_test_macro") eq "%rpm2_test_macro");

@@ -49,6 +49,17 @@ delete_macro(pkg, name)
     CODE:
 	delMacro(NULL, name);
 
+void
+expand_macro(pkg, str)
+	char * pkg
+	char * str
+    PREINIT:
+	char *ret;
+    PPCODE:
+	ret = rpmExpand(str, NULL);
+	PUSHs(sv_2mortal(newSVpv(ret, 0)));
+	free(ret);
+
 int
 rpmvercmp(one, two)
 	char* one
