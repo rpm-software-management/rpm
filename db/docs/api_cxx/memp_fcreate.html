@@ -1,4 +1,4 @@
-<!--Id: memp_fcreate.so,v 10.5 2002/06/24 14:49:26 bostic Exp -->
+<!--Id: memp_fcreate.so,v 10.8 2002/08/28 20:25:53 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -26,7 +26,7 @@ int
 DbEnv::memp_fcreate(DbMpoolFile **dbmfp, u_int32_t flags);
 </pre></h3>
 <h1>Description</h1>
-<p>The DbEnv::memp_fcreate method creates a DbMpoolFile structure that
+<p>The DbEnv::memp_fcreate method creates a <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> structure that
 is the handle for a Berkeley DB shared memory buffer pool file.  A pointer to
 this structure is returned in the memory to which <b>dbmfp</b> refers.
 Calling the <a href="../api_cxx/memp_fclose.html">DbMpoolFile::close</a> method will discard the returned handle.
@@ -40,28 +40,9 @@ either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVE
 <a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>Class</h1>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a>
 <h1>See Also</h1>
-<a href="../api_cxx/env_set_cachesize.html">DbEnv::set_cachesize</a>,
-<a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a>,
-<a href="../api_cxx/memp_register.html">DbEnv::memp_register</a>,
-<a href="../api_cxx/memp_stat.html">DbEnv::memp_stat</a>,
-<a href="../api_cxx/memp_sync.html">DbEnv::memp_sync</a>,
-<a href="../api_cxx/memp_trickle.html">DbEnv::memp_trickle</a>,
-<p>
-<a href="../api_cxx/memp_fcreate.html">DbEnv::memp_fcreate</a>,
-<a href="../api_cxx/memp_fclose.html">DbMpoolFile::close</a>,
-<a href="../api_cxx/memp_fget.html">DbMpoolFile::get</a>,
-<a href="../api_cxx/memp_fopen.html">DbMpoolFile::open</a>,
-<a href="../api_cxx/memp_fput.html">DbMpoolFile::put</a>,
-<a href="../api_cxx/memp_fset.html">DbMpoolFile::set</a>,
-<a href="../api_cxx/memp_set_fileid.html">DbMpoolFile::set_fileid</a>,
-<a href="../api_cxx/memp_set_clear_len.html">DbMpoolFile::set_clear_len</a>,
-<a href="../api_cxx/memp_set_ftype.html">DbMpoolFile::set_ftype</a>,
-<a href="../api_cxx/memp_set_lsn_offset.html">DbMpoolFile::set_lsn_offset</a>,
-<a href="../api_cxx/memp_set_pgcookie.html">DbMpoolFile::set_pgcookie</a>
-and
-<a href="../api_cxx/memp_fsync.html">DbMpoolFile::sync</a>.
+<a href="../api_cxx/memp_list.html">Memory Pools and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

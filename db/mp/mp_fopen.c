@@ -7,7 +7,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: mp_fopen.c,v 11.88 2002/07/01 15:05:30 bostic Exp ";
+static const char revid[] = "Id: mp_fopen.c,v 11.90 2002/08/26 15:22:01 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -136,6 +136,11 @@ __memp_set_fileid(dbmfp, fileid)
 {
 	MPF_ILLEGAL_AFTER_OPEN(dbmfp, "set_fileid");
 
+	/*
+	 * XXX
+	 * This is dangerous -- we're saving the caller's pointer instead
+	 * of allocating memory and copying the contents.
+	 */
 	dbmfp->fileid = fileid;
 	return (0);
 }
@@ -149,10 +154,6 @@ __memp_set_ftype(dbmfp, ftype)
 	DB_MPOOLFILE *dbmfp;
 	int ftype;
 {
-	DB_ENV *dbenv;
-
-	dbenv = dbmfp->dbmp->dbenv;
-
 	MPF_ILLEGAL_AFTER_OPEN(dbmfp, "set_ftype");
 
 	dbmfp->ftype = ftype;

@@ -1,5 +1,5 @@
 # Code to load up the tests in to the Queue database
-# Id: parallel.tcl,v 11.23 2002/08/08 19:25:39 sue Exp 
+# Id: parallel.tcl,v 11.28 2002/09/05 17:23:06 sandstro Exp 
 proc load_queue { file  {dbdir RUNQUEUE} nitems } {
 
 	puts -nonewline "Loading run queue with $nitems items..."
@@ -78,7 +78,7 @@ proc run_parallel { nprocs {list run_all} {nitems ALL} } {
 
 	set basedir [pwd]
 	set pidlist {}
-      set queuedir ../../[string range $basedir \
+	set queuedir ../../[string range $basedir \
 	    [string last "/" $basedir] end]/$queuedir
 
 	for { set i 1 } { $i <= $nprocs } { incr i } {
@@ -87,11 +87,12 @@ proc run_parallel { nprocs {list run_all} {nitems ALL} } {
 			set p [exec $tclsh_path << \
 			    "source $test_path/test.tcl;\
 			    run_queue $i $basename.$i $queuedir $nitems" &]
+			lappend pidlist $p
 			set f [open $testdir/begin.$p w]
 			close $f
 		} res]
 	}
-	watch_procs 300 360000
+	watch_procs $pidlist 300 360000
 
 	set failed 0
 	for { set i 1 } { $i <= $nprocs } { incr i } {
@@ -155,6 +156,9 @@ proc run_queue { i rundir queuedir nitems } {
                                 close $o
                         }
 			env_cleanup $testdir
+			set o [open $builddir/ALL.OUT.$i a]
+			puts $o "\nEnding record $num ([timestamp])\n"
+			close $o
 			incr count
 		} else {
 			incr waitcnt
@@ -167,6 +171,15 @@ proc run_queue { i rundir queuedir nitems } {
 	$dbc close
 	$db close
 	$dbenv close
+
+	#
+	# We need to put the pid file in the builddir's idea
+	# of testdir, not this child process' local testdir.
+	# Therefore source builddir's include.tcl to get its
+	# testdir.
+	# !!! This resets testdir, so don't do anything else
+	# local to the child after this.
+	source $builddir/include.tcl
 
 	set f [open $builddir/$testdir/end.[pid] w]
 	close $f
@@ -208,8 +221,8 @@ proc mkparalleldirs { nprocs basename queuedir } {
 
 		regsub {test_path } $d {test_path ../} d
 		regsub {src_root } $d {src_root ../} d
-		set tdir "testdir ./TESTDIR.$i"
-		regsub {testdir \./TESTDIR} $d $tdir d
+		set tdir "TESTDIR.$i"
+		regsub -all {TESTDIR} $d $tdir d
 		regsub {KILL \.} $d {KILL ..} d
 		set outfile [open $destdir/include.tcl w]
 		puts $outfile $d
@@ -221,5 +234,62 @@ proc mkparalleldirs { nprocs basename queuedir } {
 				catch {eval file copy $dir/$svc_exe $destdir}
 			}
 		}
+	}
+}
+
+proc run_ptest { nprocs test args } {
+	global parms
+	set basename ./PARALLEL_TESTDIR
+	set queuedir NULL
+	source ./include.tcl
+
+	mkparalleldirs $nprocs $basename $queuedir
+
+	if { [info exists parms($test)] } {
+		foreach method \
+		    "hash queue queueext recno rbtree frecno rrecno btree" {
+			if { [eval exec_ptest $nprocs $basename \
+			    $test $method $args] != 0 } {
+				break
+			}
+		}
+	} else {
+		eval exec_ptest $nprocs $basename $test $args
+	}
+}
+
+proc exec_ptest { nprocs basename test args } {
+	source ./include.tcl
+
+	set basedir [pwd]
+	set pidlist {}
+	puts "Running $nprocs parallel runs of $test"
+	for { set i 1 } { $i <= $nprocs } { incr i } {
+		set outf ALL.OUT.$i
+		fileremove -f $outf
+		set ret [catch {
+			set p [exec $tclsh_path << \
+		 	    "cd $basename.$i;\
+		            source ../$test_path/test.tcl;\
+		            $test $args" >& $outf &]
+			lappend pidlist $p
+			set f [open $testdir/begin.$p w]
+			close $f
+		} res]
+	}
+	watch_procs $pidlist 30 36000
+	set failed 0
+	for { set i 1 } { $i <= $nprocs } { incr i } {
+		if { [check_failed_run ALL.OUT.$i] != 0 } {
+			set failed 1
+			puts "Test $test failed in process $i."
+		}
+	}
+	if { $failed == 0 } {
+		puts "Test $test succeeded all processes"
+		return 0
+	} else {
+		puts "Test failed: stopping"
+		return 1
 	}
 }

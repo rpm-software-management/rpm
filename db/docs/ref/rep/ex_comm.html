@@ -25,7 +25,7 @@ all sites, a hybrid solution).  The communication infrastructure is
 implemented in the file <b>ex_repquote/ex_rq_net.c</b>, and each part
 of that infrastructure is described as follows.
 <p>Ex_repquote maintains a table of environment ID to TCP/IP port mappings.
-This table is stored in the app_private field of the <a href="../../api_c/env_create.html">DB_ENV</a>
+This table is stored in the app_private field of the <a href="../../api_c/env_class.html">DB_ENV</a>
 object so it can be accessed by any function that has the database
 environment handle.  The table is represented by a machtab_t structure
 which contains a reference to a linked list of member_t's, both of which

@@ -25,7 +25,7 @@ B and C respectively, while site B might assign the identifiers 301 and
 302 to sites A and C respectively.  Note that it is not wrong to have
 global identifiers, it is just not a requirement.
 <p>It is the responsibility of the application to label each incoming
-replication message passed to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function with the appropriate
+replication message passed to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method with the appropriate
 identifier.  Subsequently, Berkeley DB will label outgoing messages to the
 <b>send</b> interface with those same identifiers.
 <p>Negative identifiers are reserved for use by Berkeley DB, and should never be

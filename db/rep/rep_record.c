@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_record.c,v 1.108 2002/08/09 02:17:41 margo Exp ";
+static const char revid[] = "Id: rep_record.c,v 1.111 2002/09/11 19:39:11 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -89,7 +89,7 @@ __rep_process_message(dbenv, control, rec, eidp)
 	rp = (REP_CONTROL *)control->data;
 
 #if 0
-	__rep_print_message(rep->eid, rp, "rep_process_message");
+	__rep_print_message(dbenv, *eidp, rp, "rep_process_message");
 #endif
 
 	/* Complain if we see an improper version number. */
@@ -285,6 +285,9 @@ send:				ret = __rep_send_message(dbenv, *eidp,
 			R_LOCK(dbenv, &dblp->reginfo);
 			lsn = lp->lsn;
 			R_UNLOCK(dbenv, &dblp->reginfo);
+			MUTEX_LOCK(dbenv, db_rep->mutexp);
+			rep->gen++;
+			MUTEX_UNLOCK(dbenv, db_rep->mutexp);
 			return (__rep_send_message(dbenv,
 			    *eidp, REP_NEWMASTER, &lsn, NULL, 0));
 		}
@@ -606,9 +609,10 @@ rep_verify_err:	if ((t_ret = logc->close(logc, 0)) != 0 && ret == 0)
 #ifdef DIAGNOSTIC
 		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION)) {
 			__db_err(dbenv,
-			    "Existing vote: (eid)%d (pri)%d (gen)%d [%d,%d]",
+			    "%s(eid)%d (pri)%d (gen)%d (sites)%d [%d,%d]",
+			    "Existing vote: ",
 			    rep->winner, rep->w_priority, rep->w_gen,
-			    rep->w_lsn.file, rep->w_lsn.offset);
+			    rep->sites, rep->w_lsn.file, rep->w_lsn.offset);
 			__db_err(dbenv,
 			    "Incoming vote: (eid)%d (pri)%d (gen)%d [%d,%d]",
 			    *eidp, vi->priority, rp->gen, rp->lsn.file,
@@ -679,7 +683,7 @@ rep_verify_err:	if ((t_ret = logc->close(logc, 0)) != 0 && ret == 0)
 		/* If we have priority 0, we should never get a vote. */
 		DB_ASSERT(rep->priority != 0);
 
-		if (!IN_ELECTION(rep) && rep->master_id != DB_EID_INVALID) {
+		if (!IN_ELECTION(rep)) {
 #ifdef DIAGNOSTIC
 			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
 				__db_err(dbenv, "Not in election, got vote");
@@ -761,13 +765,13 @@ __rep_apply(dbenv, rp, rec)
 	REP *rep;
 	REP_CONTROL lsn_rc;
 	u_int32_t rectype, txnid;
-	int cmp, do_req, eid, have_mutex, newfile, ret, t_ret;
+	int cmp, do_req, eid, have_mutex, ret, t_ret;
 
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
 	dbp = db_rep->rep_db;
 	dbc = NULL;
-	have_mutex = newfile = ret = 0;
+	have_mutex = ret = 0;
 	memset(&control_dbt, 0, sizeof(control_dbt));
 	memset(&rec_dbt, 0, sizeof(rec_dbt));
 

@@ -1,4 +1,4 @@
-<!--Id: env_set_timeout.so,v 10.6 2002/06/24 14:49:21 bostic Exp -->
+<!--Id: env_set_timeout.so,v 10.8 2002/08/29 03:24:42 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -61,7 +61,7 @@ detection is performed.
 on a per-lock or per-transaction basis.  See <a href="../api_java/lock_vec.html">DbEnv.lock_vec</a> and
 <a href="../api_java/txn_set_timeout.html">DbTxn.set_timeout</a> for more information.
 <p>The DbEnv.set_timeout method configures a database environment, not only operations
-performed using the specified <a href="../api_java/dbenv_class.html">DbEnv</a> handle.
+performed using the specified <a href="../api_java/env_class.html">DbEnv</a> handle.
 <p>The DbEnv.set_timeout interface may be called at any time during the life of
 the application.
 <p>The DbEnv.set_timeout method throws an exception that encapsulates a non-zero error value on
@@ -76,45 +76,9 @@ If a catastrophic error has occurred, the DbEnv.set_timeout method may fail and
 throw a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>Class</h1>
-<a href="../api_java/dbenv_class.html">DbEnv</a>
+<a href="../api_java/env_class.html">DbEnv</a>
 <h1>See Also</h1>
-<a href="../api_java/env_close.html">DbEnv.close</a>,
-<a href="../api_java/env_dbremove.html">DbEnv.dbremove</a>,
-<a href="../api_java/env_dbrename.html">DbEnv.dbrename</a>,
-<a href="../api_java/env_err.html">DbEnv.err</a>,
-<a href="../api_java/env_err.html">DbEnv.errx</a>,
-<a href="../api_java/env_version.html">DbEnv.get_version_string</a>,
-<a href="../api_java/env_open.html">DbEnv.open</a>,
-<a href="../api_java/env_remove.html">DbEnv.remove</a>,
-<a href="../api_java/env_set_app_dispatch.html">DbEnv.set_app_dispatch</a>,
-<a href="../api_java/env_set_cachesize.html">DbEnv.set_cachesize</a>,
-<a href="../api_java/env_set_data_dir.html">DbEnv.set_data_dir</a>,
-<a href="../api_java/env_set_encrypt.html">DbEnv.set_encrypt</a>,
-<a href="../api_java/env_set_errcall.html">DbEnv.set_errcall</a>,
-<a href="../api_java/env_set_error_stream.html">DbEnv.set_error_stream</a>,
-<a href="../api_java/env_set_errpfx.html">DbEnv.set_errpfx</a>,
-<a href="../api_java/env_set_feedback.html">DbEnv.set_feedback</a>,
-<a href="../api_java/env_set_flags.html">DbEnv.set_flags</a>,
-<a href="../api_java/env_set_lg_bsize.html">DbEnv.set_lg_bsize</a>,
-<a href="../api_java/env_set_lg_dir.html">DbEnv.set_lg_dir</a>,
-<a href="../api_java/env_set_lg_max.html">DbEnv.set_lg_max</a>,
-<a href="../api_java/env_set_lg_regionmax.html">DbEnv.set_lg_regionmax</a>,
-<a href="../api_java/env_set_lk_conflicts.html">DbEnv.set_lk_conflicts</a>,
-<a href="../api_java/env_set_lk_detect.html">DbEnv.set_lk_detect</a>,
-<a href="../api_java/env_set_lk_max_lockers.html">DbEnv.set_lk_max_lockers</a>,
-<a href="../api_java/env_set_lk_max_locks.html">DbEnv.set_lk_max_locks</a>,
-<a href="../api_java/env_set_lk_max_objects.html">DbEnv.set_lk_max_objects</a>,
-<a href="../api_java/env_set_mp_mmapsize.html">DbEnv.set_mp_mmapsize</a>,
-<a href="../api_java/env_set_rpc_server.html">DbEnv.set_rpc_server</a>,
-<a href="../api_java/env_set_shm_key.html">DbEnv.set_shm_key</a>,
-<a href="../api_java/env_set_tas_spins.html">DbEnv.set_tas_spins</a>,
-<a href="../api_java/env_set_timeout.html">DbEnv.set_timeout</a>,
-<a href="../api_java/env_set_tmp_dir.html">DbEnv.set_tmp_dir</a>,
-<a href="../api_java/env_set_tx_max.html">DbEnv.set_tx_max</a>,
-<a href="../api_java/env_set_tx_timestamp.html">DbEnv.set_tx_timestamp</a>,
-<a href="../api_java/env_set_verbose.html">DbEnv.set_verbose</a>
-and
-<a href="../api_java/env_strerror.html">DbEnv.strerror</a>.
+<a href="../api_java/env_list.html">Database Environments and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

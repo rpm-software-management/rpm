@@ -1,4 +1,4 @@
-# Id: tcl.ac,v 11.13 2002/06/07 12:33:58 dda Exp 
+# Id: tcl.ac,v 11.14 2002/09/07 17:25:58 dda Exp 
 
 # The SC_* macros in this file are from the unix/tcl.m4 files in the Tcl
 # 8.3.0 distribution, with some minor changes.  For this reason, license
@@ -102,7 +102,7 @@ AC_DEFUN(SC_LOAD_TCLCONFIG, [
 	# given by the Tcl spec are insufficient for our use.  [#5779]
 	#
 	case "$host_os" in
-	aix4.[2-9].*)
+	aix4.[[2-9]].*)
 		LIBTSO_LIBS="$LIBTSO_LIBS $TCL_LIB_SPEC $TCL_LIB_FLAG"
 		LIBTSO_LIBS="$LIBTSO_LIBS -L$TCL_EXEC_PREFIX/lib -ltcl$TCL_VERSION";;
 	aix*)

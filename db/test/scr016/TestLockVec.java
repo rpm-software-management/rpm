@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestLockVec.java,v 1.3 2002/01/11 15:54:02 bostic Exp 
+ * Id: TestLockVec.java,v 1.4 2002/08/16 19:35:55 dda Exp 
  */
 
 /*
@@ -43,9 +43,9 @@ public class TestLockVec
             locker1 = dbenv1.lock_id();
             locker2 = dbenv1.lock_id();
             Db db1 = new Db(dbenv1, 0);
-            db1.open("my.db", null, Db.DB_BTREE, Db.DB_CREATE, 0);
+            db1.open(null, "my.db", null, Db.DB_BTREE, Db.DB_CREATE, 0);
             Db db2 = new Db(dbenv2, 0);
-            db2.open("my.db", null, Db.DB_BTREE, 0, 0);
+            db2.open(null, "my.db", null, Db.DB_BTREE, 0, 0);
 
             // populate our database, just two elements.
             Dbt Akey = new Dbt("A".getBytes());

@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestLogc.java,v 1.6 2002/01/11 15:54:03 bostic Exp 
+ * Id: TestLogc.java,v 1.7 2002/08/16 19:35:55 dda Exp 
  */
 
 /*
@@ -26,13 +26,13 @@ public class TestLogc
 
             // Do some database activity to get something into the log.
             Db db1 = new Db(env, 0);
-            db1.open("first.db", null, Db.DB_BTREE, Db.DB_CREATE, 0);
+            db1.open(null, "first.db", null, Db.DB_BTREE, Db.DB_CREATE, 0);
             db1.put(null, new Dbt("a".getBytes()), new Dbt("b".getBytes()), 0);
             db1.put(null, new Dbt("c".getBytes()), new Dbt("d".getBytes()), 0);
             db1.close(0);
 
             Db db2 = new Db(env, 0);
-            db2.open("second.db", null, Db.DB_BTREE, Db.DB_CREATE, 0644);
+            db2.open(null, "second.db", null, Db.DB_BTREE, Db.DB_CREATE, 0644);
             db2.put(null, new Dbt("w".getBytes()), new Dbt("x".getBytes()), 0);
             db2.put(null, new Dbt("y".getBytes()), new Dbt("z".getBytes()), 0);
             db2.close(0);

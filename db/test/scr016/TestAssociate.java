@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestAssociate.java,v 1.3 2002/01/11 15:54:01 bostic Exp 
+ * Id: TestAssociate.java,v 1.4 2002/08/16 19:35:54 dda Exp 
  */
 
 package com.sleepycat.test;
@@ -122,9 +122,8 @@ public class TestAssociate
         (new java.io.File(FileName)).delete();
         Db table = new Db(dbenv, 0);
         Db table2 = new Db(dbenv, 0);
-        table.set_dup_compare(this);
         table2.set_dup_compare(this);
-        table2.set_flags(Db.DB_DUP | Db.DB_DUPSORT);
+        table2.set_flags(Db.DB_DUPSORT);
         table.set_error_stream(System.err);
         table2.set_error_stream(System.err);
         table.set_errpfx("TestAssociate");
@@ -133,9 +132,10 @@ public class TestAssociate
         System.out.println("Secondary database is " + shownull(table2));
         saveddb1 = table;
         saveddb2 = table2;
-        table.open(FileName, null, Db.DB_BTREE, Db.DB_CREATE, 0644);
-        table2.open(FileName + "2", null, Db.DB_BTREE, Db.DB_CREATE, 0644);
-        table.associate(table2, new Capitalize(), 0);
+        table.open(null, FileName, null, Db.DB_BTREE, Db.DB_CREATE, 0644);
+        table2.open(null, FileName + "2", null,
+                    Db.DB_BTREE, Db.DB_CREATE, 0644);
+        table.associate(null, table2, new Capitalize(), 0);
 
         //
         // Insert records into the database, where the key is the user

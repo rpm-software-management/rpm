@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestDbtFlags.java,v 1.3 2002/01/11 15:54:02 bostic Exp 
+ * Id: TestDbtFlags.java,v 1.4 2002/08/16 19:35:54 dda Exp 
  */
 
 package com.sleepycat.test;
@@ -25,14 +25,18 @@ public class TestDbtFlags
 
     /*zippy quotes for test input*/
     static final String[] input_lines = {
-        "I'm having a RELIGIOUS EXPERIENCE..  and I don't take any DRUGS",
-        "I pretend I'm living in a styrofoam packing crate, high in th'" +
-         "SWISS ALPS, still unable to accept th' idea of TOUCH-TONE DIALING!!",
-        "FUN is never having to say you're SUSHI!!",
-        "Hold the MAYO & pass the COSMIC AWARENESS...",
-        "What GOOD is a CARDBOARD suitcase ANYWAY?",
-        "My nose feels like a bad Ronald Reagan movie...",
-        "The LOGARITHM of an ISOCELES TRIANGLE is TUESDAY WELD!!",
+        "If we shadows have offended", 
+        "Think but this, and all is mended",
+        "That you have but slumber'd here",
+        "While these visions did appear",
+        "And this weak and idle theme",
+        "No more yielding but a dream",
+        "Gentles, do not reprehend",
+        "if you pardon, we will mend",
+        "And, as I am an honest Puck, if we have unearned luck",
+        "Now to 'scape the serpent's tongue, we will make amends ere long;",
+        "Else the Puck a liar call; so, good night unto you all.",
+        "Give me your hands, if we be friends, and Robin shall restore amends."
     };
 
     public TestDbtFlags(int flag_value, int buf_size)
@@ -95,7 +99,7 @@ public class TestDbtFlags
         Db table = new Db(null, 0);
         table.set_error_stream(System.err);
         table.set_errpfx("TestDbtFlags");
-        table.open(FileName, null, Db.DB_BTREE, Db.DB_CREATE, 0644);
+        table.open(null, FileName, null, Db.DB_BTREE, Db.DB_CREATE, 0644);
 
         //
         // Insert records into the database, where the key is the user

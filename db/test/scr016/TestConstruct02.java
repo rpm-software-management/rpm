@@ -4,7 +4,7 @@
  * Copyright (c) 2000-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestConstruct02.java,v 1.5 2002/01/23 14:29:51 bostic Exp 
+ * Id: TestConstruct02.java,v 1.6 2002/08/16 19:35:54 dda Exp 
  */
 
 /*
@@ -95,6 +95,8 @@ public class TestConstruct02
     void rundb(Db db, int count)
 	throws DbException, FileNotFoundException
     {
+        if (count >= 64)
+	    throw new IllegalArgumentException("rundb count arg >= 64");
 
 	// The bit map of keys we've seen
 	long bitmap = 0;
@@ -106,20 +108,12 @@ public class TestConstruct02
 	int i;
 	for (i=0; i<count; i++) {
 	    outbuf[i] = (byte)('0' + i);
-	    //outbuf[i] = System.out.println((byte)('0' + i);
 	}
 	outbuf[i++] = (byte)'x';
-
-	/*
-	 System.out.println("byte: " + ('0' + 0) + ", after: " +
-	 (int)'0' + "=" + (int)('0' + 0) +
-	 "," + (byte)outbuf[0]);
-	 */
 
 	Dbt key = new Dbt(outbuf, 0, i);
 	Dbt data = new Dbt(outbuf, 0, i);
 
-	//DEBUGOUT("Put: " + (char)outbuf[0] + ": " + new String(outbuf));
 	db.put(null, key, data, Db.DB_NOOVERWRITE);
 
 	// Acquire a cursor for the table.
@@ -133,23 +127,31 @@ public class TestConstruct02
 	readkey.set_flags(Db.DB_DBT_MALLOC);
 	readdata.set_flags(Db.DB_DBT_MALLOC);
 
-	//DEBUGOUT("Dbc.get");
 	while (dbcp.get(readkey, readdata, Db.DB_NEXT) == 0) {
-	    String key_string = new String(readkey.get_data());
-	    String data_string = new String(readdata.get_data());
+            byte[] key_bytes = readkey.get_data();
+            byte[] data_bytes = readdata.get_data();
 
-	    //DEBUGOUT("Got: " + key_string + ": " + data_string);
-	    int len = key_string.length();
-	    if (len <= 0 || key_string.charAt(len-1) != 'x') {
+	    int len = key_bytes.length;
+	    if (len != data_bytes.length) {
+		ERR("key and data are different");
+	    }
+	    for (i=0; i<len-1; i++) {
+		byte want = (byte)('0' + i);
+		if (key_bytes[i] != want || data_bytes[i] != want) {
+		    System.out.println(" got " + new String(key_bytes) +
+				       "/" + new String(data_bytes));
+		    ERR("key or data is corrupt");
+		}
+            }
+	    if (len <= 0 ||
+                key_bytes[len-1] != (byte)'x' ||
+                data_bytes[len-1] != (byte)'x') {
 		ERR("reread terminator is bad");
 	    }
 	    len--;
 	    long bit = (1 << len);
 	    if (len > count) {
-		ERR("reread length is bad: expect " + count + " got "+ len + " (" + key_string + ")" );
-	    }
-	    else if (!data_string.equals(key_string)) {
-		ERR("key/data don't match");
+		ERR("reread length is bad: expect " + count + " got "+ len);
 	    }
 	    else if ((bitmap & bit) != 0) {
 		ERR("key already seen");
@@ -157,23 +159,12 @@ public class TestConstruct02
 	    else if ((expected & bit) == 0) {
 		ERR("key was not expected");
 	    }
-	    else {
-		bitmap |= bit;
-		expected &= ~(bit);
-		for (i=0; i<len; i++) {
-		    if (key_string.charAt(i) != ('0' + i)) {
-			System.out.print(" got " + key_string
-					 + " (" + (int)key_string.charAt(i)
-					 + "), wanted " + i
-					 + " (" + (int)('0' + i)
-					 + ") at position " + i + "\n");
-			ERR("key is corrupt");
-		    }
-		}
-	    }
+	    bitmap |= bit;
+	    expected &= ~(bit);
 	}
 	if (expected != 0) {
-	    System.out.print(" expected more keys, bitmap is: " + expected + "\n");
+	    System.out.print(" expected more keys, bitmap is: " +
+			     expected + "\n");
 	    ERR("missing keys in database");
 	}
 	dbcp.close();
@@ -242,25 +233,14 @@ public class TestConstruct02
 	}
     }
 
-    boolean doall(int mask)
+    boolean doall()
     {
 	itemcount = 0;
 	try {
-	    for (int item=1; item<32; item++) {
-		if ((mask & (1 << item)) != 0) {
-		    VERBOSEOUT("  Running test " + item + ":\n");
-		    switch (item) {
-			case 1:
-			    t1();
-			    break;
-			default:
-			    ERR("unknown test case: " + item);
-			    break;
-		    }
-		    VERBOSEOUT("  finished.\n");
-		}
-	    }
-	    removeall((mask & 1) != 0, false);
+	    VERBOSEOUT("  Running test 1:\n");
+	    t1();
+	    VERBOSEOUT("  finished.\n");
+	    removeall(true, false);
 	    return true;
 	}
 	catch (DbException dbe) {
@@ -275,38 +255,17 @@ public class TestConstruct02
     public static void main(String args[])
     {
 	int iterations = 200;
-	int mask = 0x3;
 
 	for (int argcnt=0; argcnt<args.length; argcnt++) {
 	    String arg = args[argcnt];
-	    if (arg.charAt(0) == '-') {
-                // keep on lower bit, which means to remove db between tests.
-		mask = 1;
-		for (int pos=1; pos<arg.length(); pos++) {
-		    char ch = arg.charAt(pos);
-		    if (ch >= '0' && ch <= '9') {
-			mask |= (1 << (ch - '0'));
-		    }
-                    else if (ch == 'v') {
-                        verbose_flag = true;
-                    }
-		    else {
-			ERR("Usage:  construct02 [-testdigits] count");
-		    }
+	    try {
+		iterations = Integer.parseInt(arg);
+		if (iterations < 0) {
+		    ERR("Usage:  construct02 [-testdigits] count");
 		}
-                System.out.println("mask = " + mask);
-
 	    }
-	    else {
-		try {
-		    iterations = Integer.parseInt(arg);
-		    if (iterations < 0) {
-			ERR("Usage:  construct02 [-testdigits] count");
-		    }
-		}
-		catch (NumberFormatException nfe) {
-		    ERR("EXCEPTION RECEIVED: " + nfe);
-		}
+	    catch (NumberFormatException nfe) {
+		ERR("EXCEPTION RECEIVED: " + nfe);
 	    }
 	}
 
@@ -334,7 +293,7 @@ public class TestConstruct02
 		VERBOSEOUT("(" + i + "/" + iterations + ") ");
 	    }
 	    VERBOSEOUT("construct02 running:\n");
-	    if (!con.doall(mask)) {
+	    if (!con.doall()) {
 		ERR("SOME TEST FAILED");
 	    }
 	    System.gc();

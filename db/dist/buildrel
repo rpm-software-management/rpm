@@ -1,12 +1,12 @@
 #!/bin/sh -
-#	Id: buildrel,v 1.34 2002/06/24 17:48:25 bostic Exp 
+#	Id: buildrel,v 1.39 2002/09/06 14:30:31 bostic Exp 
 #
 # Build the distribution archives.
 #
 # A set of commands intended to be cut and pasted into a csh window.
 
 # Development tree, release home.
-setenv D /a/db
+setenv D `pwd`
 
 # Update the release number.
 cd $D/dist
@@ -48,8 +48,8 @@ cd $R/build_run && make prefix=`pwd`/BDB install
 
 # Clean up the tree.
 cd $R && rm -rf build_run docs_src
-cd $R && rm -rf test/TODO test/upgrade
-cd $R && rm -rf test_perf test_purify test_server test_thread test_vxworks
+cd $R && rm -rf test/TODO test/upgrade test_perf test_purify
+cd $R && rm -rf test_server test_thread test_vxworks test_xa
 
 # ACQUIRE ROOT PRIVILEGES
 cd $R && find . -type d | xargs chmod 775
@@ -73,10 +73,18 @@ chmod 444 $T
 
 # Create the non-crypto tree.
 setenv RNC "$R/../db-$VERSION.NC"
-rm -rf $R/../__TMP && mkdir $R/../__TMP
+rm -rf $RNC $R/../__TMP && mkdir $R/../__TMP
 cd $R/../__TMP && gzcat $T | tar xpf - && mv -i db-$VERSION $RNC
 cd $R && rm -rf $R/../__TMP
 cd $RNC/dist && sh s_crypto
+
+# ACQUIRE ROOT PRIVILEGES
+cd $RNC && find . -type d | xargs chmod 775
+cd $RNC && find . -type f | xargs chmod 444
+cd $RNC && chmod 664 build_win32/*.dsp
+cd $RNC/dist && sh s_perm
+chown -R 100.100 $RNC
+# DISCARD ROOT PRIVILEGES
 
 # Create the non-crypto tar archive release.
 setenv T "$R/../db-$VERSION.NC.tar.gz"

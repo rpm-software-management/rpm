@@ -1,4 +1,4 @@
-<!--Id: macosx.so,v 11.4 2002/06/20 14:43:40 bostic Exp -->
+<!--Id: macosx.so,v 11.7 2002/09/05 15:59:10 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -17,7 +17,7 @@
 <p>
 <h1 align=center>Mac OS X</h1>
 <p><ol>
-<p><li><b>I can't use the Java API on Mac OS X.</b>
+<p><li><b>I cannot use the Java API on Mac OS X.</b>
 <p>The Berkeley DB configuration and build procedure is unable to dynamically
 load some libraries on Mac OS X.  This restriction is expected to be
 removed in future Berkeley DB releases.
@@ -27,6 +27,13 @@ our build procedure, does not support this extension.  To work around
 this, you must add a -D option to your Java command line to specify the
 complete pathname of the installed library:
 <p><blockquote><pre>% java -Dsleepycat.db.libfile=/full/path/to/libdb_java-VERSION.so</pre></blockquote>
+<p><li><b>I cannot run the test suite on Mac OS X.</b>
+<p>The Mac OS X 10.1 and 10.2 Developer Tools installer will optionally
+install one additional package called simply, "BSD SDK".  That package
+contains the additional parts of the TCL distribution required to
+configure, compile and run the Berkeley DB test suite.  The Berkeley DB configuration
+step will need the flag "--with-tcl=/System/Library/Tcl/8.3" added to
+the arguments in order to locate the now installed TCL distribution.
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../../ref/build_unix/linux.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>

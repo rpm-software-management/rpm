@@ -3,7 +3,7 @@
 # Copyright (c) 2001-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: rep001.tcl,v 1.14 2002/08/08 18:13:12 sue Exp 
+# Id: rep001.tcl,v 1.16 2002/08/26 17:52:19 margo Exp 
 #
 # TEST  rep001
 # TEST	Replication rename and forced-upgrade test.

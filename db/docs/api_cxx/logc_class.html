@@ -1,4 +1,4 @@
-<!--Id: logc_class.so,v 1.3 2002/06/27 19:10:06 bostic Exp -->
+<!--Id: logc_class.so,v 1.5 2002/08/24 18:22:51 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -25,30 +25,15 @@
 class DbLogc { ... };
 </pre></h3>
 <h1>Description</h1>
-<p>This manual page describes the specific details of the DbLogc class,
-which provides cursor support for log files.
-<p>The DbLogc functions are the library interface supporting
-sequential access to the records stored in log files.  Cursors are
-created by calling the <a href="../api_cxx/log_cursor.html">DbEnv::log_cursor</a> method which returns a pointer to a DbLogc object.
+<p>The DbLogc object is the handle for a cursor into the log files,
+supporting sequential access to the records stored in log files.  The
+handle is not free-threaded.  Once the <a href="../api_cxx/logc_close.html">DbLogc::close</a> method is called,
+the handle may not be accessed again, regardless of that method's
+return.
 <h1>Class</h1>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/logc_class.html">DbLogc</a>
+<a href="../api_cxx/env_class.html">DbEnv</a>, DbLogc, <a href="../api_cxx/lsn_class.html">DbLsn</a>
 <h1>See Also</h1>
-<a href="../api_cxx/log_archive.html">DbEnv::log_archive</a>,
-<a href="../api_cxx/log_file.html">DbEnv::log_file</a>,
-<a href="../api_cxx/log_flush.html">DbEnv::log_flush</a>,
-<a href="../api_cxx/log_put.html">DbEnv::log_put</a>,
-<a href="../api_cxx/log_stat.html">DbEnv::log_stat</a>,
-<a href="../api_cxx/env_set_lg_bsize.html">DbEnv::set_lg_bsize</a>,
-<a href="../api_cxx/env_set_lg_dir.html">DbEnv::set_lg_dir</a>,
-<a href="../api_cxx/env_set_lg_max.html">DbEnv::set_lg_max</a>,
-<a href="../api_cxx/env_set_lg_regionmax.html">DbEnv::set_lg_regionmax</a>,
-and
-<a href="../api_cxx/log_compare.html">DbEnv::log_compare</a>.
-<p>
-<a href="../api_cxx/log_cursor.html">DbEnv::log_cursor</a>,
-<a href="../api_cxx/logc_close.html">DbLogc::close</a>
-and
-<a href="../api_cxx/logc_get.html">DbLogc::get</a>.
+<a href="../api_cxx/log_list.html">Logging Subsystem and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

@@ -1,4 +1,4 @@
-<!--Id: c_index.so,v 10.96 2002/07/24 05:06:08 bostic Exp -->
+<!--Id: c_index.so,v 10.98 2002/08/24 18:22:34 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -12,7 +12,7 @@
 <h1 align=center>Berkeley DB: Java Interface</h1>
 <p><table border=1 align=center>
 <tr><th>Section</th><th>Class/Method</th><th>Description</th></tr>
-<tr><td><b>Database Environment</b></td><td><a href="../api_java/dbenv_class.html">DbEnv</a></td><td>Create an environment handle</td></tr>
+<tr><td><b>Database Environment</b></td><td><a href="../api_java/env_class.html">DbEnv</a></td><td>Create an environment handle</td></tr>
 <tr><td><br></td><td><a href="../api_java/env_close.html">DbEnv.close</a></td><td>Close an environment</td></tr>
 <tr><td><br></td><td><a href="../api_java/env_dbremove.html">DbEnv.dbremove</a></td><td>Remove a database</td></tr>
 <tr><td><br></td><td><a href="../api_java/env_dbrename.html">DbEnv.dbrename</a></td><td>Rename a database</td></tr>
@@ -33,8 +33,8 @@
 <tr><td><br></td><td><a href="../api_java/env_set_rpc_server.html">DbEnv.set_rpc_server</a></td><td>Establish an RPC server connection</td></tr>
 <tr><td><br></td><td><a href="../api_java/env_set_shm_key.html">DbEnv.set_shm_key</a></td><td>Set system memory shared segment ID</td></tr>
 <tr><td><br></td><td><a href="../api_java/env_set_tas_spins.html">DbEnv.set_tas_spins</a></td><td>Set the number of test-and-set spins</td></tr>
-<tr><td><br></td><td><a href="../api_java/env_set_tmp_dir.html">DbEnv.set_tmp_dir</a></td><td>Set the environment temporary file directory</td></tr>
 <tr><td><br></td><td><a href="../api_java/env_set_timeout.html">DbEnv.set_timeout</a></td><td>Set lock and transaction timeout</td></tr>
+<tr><td><br></td><td><a href="../api_java/env_set_tmp_dir.html">DbEnv.set_tmp_dir</a></td><td>Set the environment temporary file directory</td></tr>
 <tr><td><br></td><td><a href="../api_java/env_set_verbose.html">DbEnv.set_verbose</a></td><td>Set verbose messages</td></tr>
 <tr><td><b>Database Operations</b></td><td><a href="../api_java/db_class.html">Db</a></td><td>Create a database handle</td></tr>
 <tr><td><br></td><td><a href="../api_java/db_associate.html">Db.associate</a></td><td>Associate a secondary index</td></tr>
@@ -62,6 +62,7 @@
 <tr><td><br></td><td><a href="../api_java/db_set_dup_compare.html">Db.set_dup_compare</a></td><td>Set a duplicate comparison function</td></tr>
 <tr><td><br></td><td><a href="../api_java/db_set_encrypt.html">Db.set_encrypt</a></td><td>Set the database cryptographic key</td></tr>
 <tr><td><br></td><td><a href="../api_java/db_set_errcall.html">Db.set_errcall</a></td><td>Set error message callback</td></tr>
+<tr><td><br></td><td><a href="../api_java/db_set_error_stream.html">Db.set_error_stream</a></td><td>Set error message output stream</td></tr>
 <tr><td><br></td><td><a href="../api_java/db_set_errpfx.html">Db.set_errpfx</a></td><td>Set error message prefix</td></tr>
 <tr><td><br></td><td><a href="../api_java/db_set_feedback.html">Db.set_feedback</a></td><td>Set feedback callback</td></tr>
 <tr><td><br></td><td><a href="../api_java/db_set_flags.html">Db.set_flags</a></td><td>General database configuration</td></tr>
@@ -142,10 +143,9 @@
 <tr><td><br></td><td><a href="../api_java/rep_start.html">DbEnv.rep_start</a></td><td>Configure an environment for replication</td></tr>
 <tr><td><br></td><td><a href="../api_java/rep_stat.html">DbEnv.rep_stat</a></td><td>Replication statistics</td></tr>
 <tr><td><b>Exceptions</b></td><td><a href="../api_java/except_class.html">DbException</a></td><td><b>Exception Class for Berkeley DB Activity</b></td></tr>
-<tr><td><br></td><td><a href="../api_java/get_errno.html">DbException.get_errno</a></td><td>Get the error value</td></tr>
 <tr><td><br></td><td><a href="../api_java/deadlock_class.html">DbDeadlockException</a></td><td><b>Exception Class for deadlocks</b></td></tr>
 <tr><td><br></td><td><a href="../api_java/lockng_class.html">DbLockNotGrantedException</a></td><td><b>Exception Class for lock request failures</b></td></tr>
-<tr><td><br></td><td><a href="../api_java/mem_class.html">DbMemoryException</a></td><td><b>Exception Class for insufficient memory</b></td></tr>
+<tr><td><br></td><td><a href="../api_java/memp_class.html">DbMemoryException</a></td><td><b>Exception Class for insufficient memory</b></td></tr>
 <tr><td><br></td><td><a href="../api_java/runrec_class.html">DbRunRecoveryException</a></td><td><b>Exception Class for failures requiring recovery</b></td></tr>
 </table>
 <p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>

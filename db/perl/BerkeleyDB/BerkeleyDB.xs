@@ -347,28 +347,6 @@ hash_delete(char * hash, char * key);
 #  endif
 #endif
 
-#ifdef DBM_FILTERING
-#define ckFilter(arg,type,name)                                 \
-        if (db->type) {                                         \
-            SV * save_defsv ;                                   \
-            /* printf("filtering %s\n", name) ;*/               \
-            if (db->filtering)                                  \
-                softCrash("recursion detected in %s", name) ;   \
-            db->filtering = TRUE ;                              \
-            save_defsv = newSVsv(DEFSV) ;                       \
-            sv_setsv(DEFSV, arg) ;                              \
-            PUSHMARK(sp) ;                                      \
-            (void) perl_call_sv(db->type, G_DISCARD|G_NOARGS);  \
-            sv_setsv(arg, DEFSV) ;                              \
-            sv_setsv(DEFSV, save_defsv) ;                       \
-            SvREFCNT_dec(save_defsv) ;                          \
-            db->filtering = FALSE ;                             \
-            /*printf("end of filtering %s\n", name) ;*/         \
-        }
-#else
-#define ckFilter(type, sv, name)
-#endif
-
 #define ERR_BUFF "BerkeleyDB::Error"
 
 #define ZMALLOC(to, typ) ((to = (typ *)safemalloc(sizeof(typ))), \
@@ -421,7 +399,7 @@ hash_delete(char * hash, char * key);
 #define OutputValue(arg, name)                                  \
         { if (RETVAL == 0) {                                    \
               my_sv_setpvn(arg, name.data, name.size) ;         \
-              ckFilter(arg, filter_fetch_value,"filter_fetch_value") ;            \
+              DBM_ckFilter(arg, filter_fetch_value,"filter_fetch_value") ;            \
           }                                                     \
         }
 
@@ -434,7 +412,7 @@ hash_delete(char * hash, char * key);
                 else {                                          \
                     my_sv_setpvn(arg, name.data, name.size) ;   \
                 }                                               \
-                ckFilter(arg, filter_fetch_value, "filter_fetch_value");          \
+                DBM_ckFilter(arg, filter_fetch_value, "filter_fetch_value");          \
           }                                                     \
         }
 
@@ -446,7 +424,7 @@ hash_delete(char * hash, char * key);
                 }                                               \
                 else                                            \
                     sv_setiv(arg, (I32)*(I32*)name.data - RECNO_BASE);   \
-                ckFilter(arg, filter_fetch_key, "filter_fetch_key") ;            \
+                DBM_ckFilter(arg, filter_fetch_key, "filter_fetch_key") ;            \
           }                                                     \
         }
 
@@ -461,7 +439,7 @@ hash_delete(char * hash, char * key);
                 else {                                          \
                     my_sv_setpvn(arg, name.data, name.size);    \
                 }                                               \
-                ckFilter(arg, filter_fetch_key, "filter_fetch_key") ;            \
+                DBM_ckFilter(arg, filter_fetch_key, "filter_fetch_key") ;            \
           }                                                     \
         }
 
@@ -2232,7 +2210,9 @@ db_stat(db, flags=0)
 #else
 		hv_store_iv(RETVAL, "hash_nrecs", stat->hash_nrecs);
 #endif
+#ifndef AT_LEAST_DB_3_1
 		hv_store_iv(RETVAL, "hash_nelem", stat->hash_nelem);
+#endif
 		hv_store_iv(RETVAL, "hash_ffactor", stat->hash_ffactor);
 		hv_store_iv(RETVAL, "hash_buckets", stat->hash_buckets);
 		hv_store_iv(RETVAL, "hash_free", stat->hash_free);
@@ -2847,7 +2827,7 @@ filter_fetch_key(db, code)
 	SV *		code
 	SV *		RETVAL = &PL_sv_undef ;
 	CODE:
-	    setFilter(filter_fetch_key) ;
+	    DBM_setFilter(db->filter_fetch_key, code) ;
 
 SV *
 filter_store_key(db, code)
@@ -2855,7 +2835,7 @@ filter_store_key(db, code)
 	SV *		code
 	SV *		RETVAL = &PL_sv_undef ;
 	CODE:
-	    setFilter(filter_store_key) ;
+	    DBM_setFilter(db->filter_store_key, code) ;
 
 SV *
 filter_fetch_value(db, code)
@@ -2863,7 +2843,7 @@ filter_fetch_value(db, code)
 	SV *		code
 	SV *		RETVAL = &PL_sv_undef ;
 	CODE:
-	    setFilter(filter_fetch_value) ;
+	    DBM_setFilter(db->filter_fetch_value, code) ;
 
 SV *
 filter_store_value(db, code)
@@ -2871,7 +2851,7 @@ filter_store_value(db, code)
 	SV *		code
 	SV *		RETVAL = &PL_sv_undef ;
 	CODE:
-	    setFilter(filter_store_value) ;
+	    DBM_setFilter(db->filter_store_value, code) ;
 
 #endif /* DBM_FILTERING */
 
@@ -2948,7 +2928,7 @@ db_get(db, key, data, flags=0)
 	  Trace(("  RETVAL %d\n", RETVAL));
 	OUTPUT:
 	  RETVAL
-	  key	if (writeToKey()) OutputValue(ST(1), key) ;
+	  key	if (writeToKey()) OutputKey(ST(1), key) ;
 	  data
 
 #define db_pget(db, key, pkey, data, flags)   \
@@ -2974,7 +2954,7 @@ db_pget(db, key, pkey, data, flags=0)
 #endif
 	OUTPUT:
 	  RETVAL
-	  key	if (writeToKey()) OutputValue(ST(1), key) ;
+	  key	if (writeToKey()) OutputKey(ST(1), key) ;
 	  pkey
 	  data
 

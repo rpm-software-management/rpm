@@ -43,7 +43,7 @@ $OS2 = "-DOS2" if $^O eq 'os2' ;
 WriteMakefile(
 	NAME 		=> 'BerkeleyDB',
 	LIBS 		=> ["-L${LIB_DIR} $LIBS"],
-	MAN3PODS        => {},         # Pods will be built by installman. 
+	#MAN3PODS        => {},         # Pods will be built by installman. 
 	INC		=> "-I$INC_DIR",
 	VERSION_FROM	=> 'BerkeleyDB.pm',
 	XSPROTOARG	=> '-noprototypes',

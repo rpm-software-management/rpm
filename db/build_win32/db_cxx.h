@@ -5,7 +5,7 @@
  * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: db_cxx.in,v 11.112 2002/08/08 23:44:43 mjc Exp 
+ * Id: db_cxx.in,v 11.113 2002/08/23 13:02:27 mjc Exp 
  */
 
 #ifndef _DB_CXX_H_
@@ -516,7 +516,6 @@ public:
 	static int _rep_send_intercept(DB_ENV *env,
 				       const DBT *cntrl, const DBT *data,
 				       int id, u_int32_t flags);
-	static void _destroy_check(const char *str, int isDbEnv);
 
 private:
 	void cleanup();

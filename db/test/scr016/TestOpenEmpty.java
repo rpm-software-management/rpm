@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestOpenEmpty.java,v 1.3 2002/01/11 15:54:03 bostic Exp 
+ * Id: TestOpenEmpty.java,v 1.4 2002/08/16 19:35:55 dda Exp 
  */
 
 package com.sleepycat.test;
@@ -104,7 +104,7 @@ public class TestOpenEmpty
         Db table = new Db(null, 0);
         table.set_error_stream(System.err);
         table.set_errpfx("TestOpenEmpty");
-        table.open(FileName, null, Db.DB_BTREE, Db.DB_CREATE, 0644);
+        table.open(null, FileName, null, Db.DB_BTREE, Db.DB_CREATE, 0644);
 
         //
         // Insert records into the database, where the key is the user

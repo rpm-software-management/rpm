@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	Id: testone,v 1.4 2001/09/20 14:40:29 dda Exp 
+#	Id: testone,v 1.5 2002/08/16 19:35:56 dda Exp 
 #
 # Run just one Java regression test, the single argument
 # is the classname within this package.
@@ -83,7 +83,7 @@ fi
 rm -rf TESTDIR; mkdir TESTDIR
 cd ./TESTDIR
 mkdir -p $classdir
-${JAVAC} -d $classdir ../$name.java > ../$name.compileout 2>&1
+${JAVAC} -d $classdir ../$name.java ../TestUtil.java > ../$name.compileout 2>&1
 if [ $? != 0 -o -s ../$name.compileout ]; then
 	error "compilation of $name failed, see $name.compileout"
 	exit 1
@@ -100,9 +100,9 @@ fi
 rm -rf TESTDIR
 if [ "$stdinflag" = y ]
 then
-	${JAVA} com.sleepycat.test.$name           >../$name.out 2>../$name.err
+	${JAVA} com.sleepycat.test.$name $TEST_ARGS          >../$name.out 2>../$name.err
 else
-	${JAVA} com.sleepycat.test.$name  <$infile >../$name.out 2>../$name.err
+	${JAVA} com.sleepycat.test.$name $TEST_ARGS <$infile >../$name.out 2>../$name.err
 fi
 cd ..
 

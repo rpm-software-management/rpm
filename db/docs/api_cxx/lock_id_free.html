@@ -1,4 +1,4 @@
-<!--Id: lock_id_free.so,v 10.4 2002/06/24 14:49:23 bostic Exp -->
+<!--Id: lock_id_free.so,v 10.5 2002/08/18 21:16:37 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -27,7 +27,7 @@ DbEnv::lock_id_free(u_int32_t id);
 </pre></h3>
 <h1>Description</h1>
 <p>The DbEnv::lock_id_free method frees a locker ID allocated by the
-DbEnv::lock_id method.
+<a href="../api_cxx/lock_id.html">DbEnv::lock_id</a> method.
 <p>The DbEnv::lock_id_free method either returns a non-zero error value or throws an exception that
 encapsulates a non-zero error value on failure, and returns 0 on success.
 <h1>Errors</h1>
@@ -41,21 +41,9 @@ either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVE
 <a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>Class</h1>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/lock_class.html">DbLock</a>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/lock_class.html">DbLock</a>
 <h1>See Also</h1>
-<a href="../api_cxx/env_set_lk_conflicts.html">DbEnv::set_lk_conflicts</a>,
-<a href="../api_cxx/env_set_lk_detect.html">DbEnv::set_lk_detect</a>,
-<a href="../api_cxx/env_set_lk_max_lockers.html">DbEnv::set_lk_max_lockers</a>,
-<a href="../api_cxx/env_set_lk_max_locks.html">DbEnv::set_lk_max_locks</a>,
-<a href="../api_cxx/env_set_lk_max_objects.html">DbEnv::set_lk_max_objects</a>,
-<a href="../api_cxx/lock_detect.html">DbEnv::lock_detect</a>,
-<a href="../api_cxx/lock_get.html">DbEnv::lock_get</a>,
-<a href="../api_cxx/lock_id.html">DbEnv::lock_id</a>,
-<a href="../api_cxx/lock_id_free.html">DbEnv::lock_id_free</a>,
-<a href="../api_cxx/lock_put.html">DbEnv::lock_put</a>,
-<a href="../api_cxx/lock_stat.html">DbEnv::lock_stat</a>
-and
-<a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a>.
+<a href="../api_cxx/lock_list.html">Locking Subsystem and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

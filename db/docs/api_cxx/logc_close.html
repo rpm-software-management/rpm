@@ -1,4 +1,4 @@
-<!--Id: logc_close.so,v 10.5 2002/06/24 14:49:25 bostic Exp -->
+<!--Id: logc_close.so,v 10.6 2002/08/18 21:16:43 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -44,24 +44,9 @@ either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVE
 <a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>Class</h1>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/logc_class.html">DbLogc</a>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/logc_class.html">DbLogc</a>, <a href="../api_cxx/lsn_class.html">DbLsn</a>
 <h1>See Also</h1>
-<a href="../api_cxx/log_archive.html">DbEnv::log_archive</a>,
-<a href="../api_cxx/log_file.html">DbEnv::log_file</a>,
-<a href="../api_cxx/log_flush.html">DbEnv::log_flush</a>,
-<a href="../api_cxx/log_put.html">DbEnv::log_put</a>,
-<a href="../api_cxx/log_stat.html">DbEnv::log_stat</a>,
-<a href="../api_cxx/env_set_lg_bsize.html">DbEnv::set_lg_bsize</a>,
-<a href="../api_cxx/env_set_lg_dir.html">DbEnv::set_lg_dir</a>,
-<a href="../api_cxx/env_set_lg_max.html">DbEnv::set_lg_max</a>,
-<a href="../api_cxx/env_set_lg_regionmax.html">DbEnv::set_lg_regionmax</a>,
-and
-<a href="../api_cxx/log_compare.html">DbEnv::log_compare</a>.
-<p>
-<a href="../api_cxx/log_cursor.html">DbEnv::log_cursor</a>,
-<a href="../api_cxx/logc_close.html">DbLogc::close</a>
-and
-<a href="../api_cxx/logc_get.html">DbLogc::get</a>.
+<a href="../api_cxx/log_list.html">Logging Subsystem and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

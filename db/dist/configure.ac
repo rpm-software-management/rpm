@@ -1,4 +1,4 @@
-# Id: configure.ac,v 11.155 2002/07/12 18:56:44 bostic Exp 
+# Id: configure.ac,v 11.156 2002/09/04 13:51:17 bostic Exp 
 # Process this file with autoconf to produce a configure script.
 
 PACKAGE=db
@@ -495,20 +495,8 @@ if test "$db_cv_open_o_direct" = yes; then
 	AH_TEMPLATE(HAVE_O_DIRECT, [Define to 1 if you have the O_DIRECT flag.])
 fi
 
-# You can't build C++ with big-file support on HP-UX, the include files
-# are wrong.
-largefile_ok=yes
-case "$host_os" in
-hpux*)
-	if test "$db_cv_cxx" = "yes"; then
-AC_MSG_WARN([Large file and C++ API support are incompatible on HP-UX])
-AC_MSG_WARN([large file support has been turned off.])
-		largefile_ok=no
-	fi;;
-esac
-if test "$largefile_ok" = yes; then
-	AC_SYS_LARGEFILE
-fi
+# Check for largefile support.
+AC_SYS_LARGEFILE
 
 # Figure out how to create shared regions.
 #

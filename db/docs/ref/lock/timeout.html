@@ -36,10 +36,10 @@ configured with a different option, then regular deadlock detection will
 be performed, and in addition, if timeouts have also been specified,
 lock requests and transactions will time out as well.
 <p>Lock and transaction timeouts may be specified on a database environment
-wide basis using the <a href="../../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a> function.  Lock timeouts may be
-specified on a per-lock request basis using the <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> function.
+wide basis using the <a href="../../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a> method.  Lock timeouts may be
+specified on a per-lock request basis using the <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> method.
 Transaction timeouts may be specified on a per-transaction basis using
-the <a href="../../api_c/txn_set_timeout.html">DB_TXN-&gt;set_timeout</a> function.  Per-lock and per-transaction timeouts
+the <a href="../../api_c/txn_set_timeout.html">DB_TXN-&gt;set_timeout</a> method.  Per-lock and per-transaction timeouts
 supersede environment wide timeouts.
 <p>For example, consider that the environment wide transaction timeout has
 been set to 20ms, the environment wide lock timeout has been set to

@@ -2,7 +2,7 @@
  * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: bench_001.c,v 1.12 2002/08/06 06:11:23 bostic Exp 
+ * Id: bench_001.c,v 1.13 2002/08/15 02:45:39 bostic Exp 
  */
 
 /*
@@ -201,7 +201,6 @@ fill(dbenv, dbp, txn, datalen, num, dups)
 			default:
 				dbp->err(dbp, ret, "DB->put");
 				goto err;
-				break;
 			}
 		} while (++data_val->id < dups);
 	}
@@ -228,19 +227,17 @@ main(argc, argv)
 	DB_TXN *txnp;
 	struct timeval start_time, end_time;
 	double secs;
-	int ch, count, env, ret;
-	int cache, datalen, dups, init, iter, num, pagesize, read, txn;
+	int cache, ch, count, datalen, dups, env, init, iter, num, pagesize;
+	int ret, rflag, txn;
 
+	txnp = NULL;
 	datalen = 20;
 	iter = num = 1000000;
+	env = 1;
+	dups = init = rflag = txn = 0;
+
 	pagesize = 65536;
 	cache = 1000 * pagesize;
-	env = 1;
-	read = 0;
-	dups = 0;
-	init = 0;
-	txn = 0;
-	txnp = NULL;
 
 	while ((ch = getopt(argc, argv, "c:d:EIi:l:n:p:RT")) != EOF)
 		switch (ch) {
@@ -269,7 +266,7 @@ main(argc, argv)
 			pagesize = atoi(optarg);
 			break;
 		case 'R':
-			read = 1;
+			rflag = 1;
 			break;
 		case 'T':
 			txn = 1;
@@ -282,7 +279,7 @@ main(argc, argv)
 	argv += optind;
 
 	/* Remove the previous database. */
-	if (!read) {
+	if (!rflag) {
 		if (env)
 			system("rm -rf BENCH_001; mkdir BENCH_001");
 		else
@@ -340,7 +337,7 @@ main(argc, argv)
 	if (ret != 0)
 		goto err1;
 
-	if (read) {
+	if (rflag) {
 		/* If no environment, fill the cache. */
 		if (!env && (ret =
 		    get(dbp, txn, datalen, num, dups, iter, &count)) != 0)
@@ -364,7 +361,7 @@ main(argc, argv)
 		goto err1;
 
 	/* Close everything down. */
-	if ((ret = dbp->close(dbp, read ? DB_NOSYNC : 0)) != 0) {
+	if ((ret = dbp->close(dbp, rflag ? DB_NOSYNC : 0)) != 0) {
 		fprintf(stderr,
 		    "%s: DB->close: %s\n", progname, db_strerror(ret));
 		return (1);

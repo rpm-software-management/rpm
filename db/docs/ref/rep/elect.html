@@ -1,4 +1,4 @@
-<!--Id: elect.so,v 1.5 2001/10/25 21:20:01 bostic Exp -->
+<!--Id: elect.so,v 1.7 2002/09/11 19:25:03 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -20,7 +20,7 @@ application.  It is not dangerous to hold an election, as the Berkeley DB
 election process ensures there is never more than a single master
 environment.  Clients should initiate an election whenever they lose
 contact with the master environment, whenever they see a return of
-<a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a> from the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function, or when, for
+<a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a> from the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method, or when, for
 whatever reason, they do not know who the master is.  It is not
 necessary for applications to immediately hold elections when they
 start, as any existing master will be quickly discovered after calling
@@ -34,12 +34,12 @@ of the replication group must participate in the election.  In the case
 of multiple database environments with equal priorities, the environment
 with the most recent log records will win.
 <p>It is dangerous to configure more than one master environment using the
-<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function, and applications should be careful not to do so.
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method, and applications should be careful not to do so.
 Applications should only configure themselves as the master environment
 if they are the only possible master, or if they have won an election.
 An application can only know it has won an election if the
-<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function returns success and the local database environment's
-ID as the new master environment ID, or if the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function
+<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method returns success and the local database environment's
+ID as the new master environment ID, or if the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method
 returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a> and the local database environment's
 ID as the new master environment ID.
 <p>To add a database environment to the replication group with the intent
@@ -63,7 +63,7 @@ partition, either of these choices can result in there being two masters
 in one replication group, and the databases in the environment might
 irretrievably diverge as they are modified in different ways by the
 masters.
-<p>Finally, it is possible for the wrong database environment to win an
+<p>It is possible for a less-preferred database environment to win an
 election if a number of systems crash at the same time.  Because an
 election winner is declared as soon as enough environments participate
 in the election, the environment on a slow booting but well-connected
@@ -74,6 +74,22 @@ machine room), applications should bring the database environments on
 line as clients initially (which will allow them to process read queries
 immediately), and then hold an election after sufficient time has passed
 for the slower booting machines to catch up.
+<p>If, for any reason, a less-preferred database environment becomes the
+master, it is possible to switch masters in a replicated environment,
+although it is not a simple operation.  For example, the preferred
+master crashes, and one of the replication group clients becomes the
+group master.  In order to restore the preferred master to master
+status, take the following steps:
+<p><ol>
+<p><li>The preferred master should reboot and re-join the replication group
+as a client.
+<li>Once the preferred master has caught up with the replication group, the
+application on the current master should complete all active
+transactions, close all open database handles, and reconfigure itself
+as a client using the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method.
+<li>Then, the current or preferred master should call for an election using
+the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
+</ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>

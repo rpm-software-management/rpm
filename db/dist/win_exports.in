@@ -1,4 +1,4 @@
-# Id: win_exports.in,v 1.24 2002/07/15 06:07:55 mjc Exp 
+# Id: win_exports.in,v 1.25 2002/08/29 14:22:21 margo Exp 
 
 # Standard interfaces.
 	db_create
@@ -31,8 +31,6 @@
 	db_env_set_func_unmap
 	db_env_set_func_write
 	db_env_set_func_yield
-	db_env_set_thread_func
-	db_env_xa_attach
 
 # Needed for application-specific logging and recovery routines.
 	__db_add_recovery
@@ -134,13 +132,3 @@
 	__qam_init_print
 	__qam_pgin_out
 	__txn_init_print
-	__db_xa_close
-	__db_xa_commit
-	__db_xa_end
-	__db_xa_forget
-	__db_xa_open
-	__db_xa_prepare
-	__db_xa_recover
-	__db_xa_rollback
-	__db_xa_start
-	__db_rmid_to_env

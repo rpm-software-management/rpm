@@ -7,7 +7,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_method.c,v 1.69 2002/08/06 04:50:36 bostic Exp ";
+static const char revid[] = "Id: rep_method.c,v 1.78 2002/09/10 12:58:07 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -154,13 +154,19 @@ __rep_start(dbenv, dbt, flags)
     "DB_ENV->set_rep_transport must be called before DB_ENV->rep_start");
 		return (EINVAL);
 	}
+	
+	/* We'd better not have any logged files open if we are a client. */
+	if (LF_ISSET(DB_REP_CLIENT) && (ret = __dbreg_nofiles(dbenv)) != 0) {
+		__db_err(dbenv, "DB_ENV->rep_start called with open files");
+		return (ret);
+	}
 
 	MUTEX_LOCK(dbenv, db_rep->mutexp);
 	if (rep->eid == DB_EID_INVALID)
 		rep->eid = dbenv->rep_eid;
 
 	if (LF_ISSET(DB_REP_MASTER)) {
-		if (F_ISSET(dbenv, DB_ENV_REP_CLIENT))
+		if (F_ISSET(dbenv, DB_ENV_REP_CLIENT)) {
 			/*
 			 * If we're upgrading from having been a client,
 			 * preclose, so that we close our temporary database.
@@ -176,7 +182,16 @@ __rep_start(dbenv, dbt, flags)
 			if ((ret = __rep_preclose(dbenv, 0)) != 0)
 				return (ret);
 
-		F_CLR(dbenv, DB_ENV_REP_CLIENT);
+			/*
+			 * Now write a __txn_recycle record so that
+			 * clients don't get confused with our txnids
+			 * and txnids of previous masters.
+			 */
+			F_CLR(dbenv, DB_ENV_REP_CLIENT);
+			if ((ret = __txn_reset(dbenv)) != 0)
+				return (ret);
+		}
+
 		redo_prepared = 0;
 		if (!F_ISSET(rep, REP_F_MASTER)) {
 			/* Master is not yet set. */
@@ -276,13 +291,13 @@ __rep_client_dbinit(dbenv, startup)
 	int startup;
 {
 	DB_REP *db_rep;
-	DB *rep_db;
+	DB *dbp;
 	int ret, t_ret;
 	u_int32_t flags;
 
 	PANIC_CHECK(dbenv);
 	db_rep = dbenv->rep_handle;
-	rep_db = NULL;
+	dbp = NULL;
 
 #define	REPDBNAME	"__db.rep.db"
 
@@ -293,34 +308,34 @@ __rep_client_dbinit(dbenv, startup)
 	MUTEX_LOCK(dbenv, db_rep->db_mutexp);
 
 	if (startup) {
-		if ((ret = db_create(&rep_db, dbenv, 0)) != 0)
+		if ((ret = db_create(&dbp, dbenv, 0)) != 0)
 			goto err;
 		/*
 		 * Ignore errors, because if the file doesn't exist, this
 		 * is perfectly OK.
 		 */
-		(void)rep_db->remove(rep_db, REPDBNAME, NULL, 0);
+		(void)dbp->remove(dbp, REPDBNAME, NULL, 0);
 	}
 
-	if ((ret = db_create(&rep_db, dbenv, 0)) != 0)
+	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
 		goto err;
-	if ((ret = rep_db->set_bt_compare(rep_db, __rep_bt_cmp)) != 0)
+	if ((ret = dbp->set_bt_compare(dbp, __rep_bt_cmp)) != 0)
 		goto err;
 
 	/* Allow writes to this database on a client. */
-	F_SET(rep_db, DB_AM_CL_WRITER);
+	F_SET(dbp, DB_AM_CL_WRITER);
 
 	flags = (F_ISSET(dbenv, DB_ENV_THREAD) ? DB_THREAD : 0) |
 	    (startup ? DB_CREATE : 0);
-	if ((ret = rep_db->open(rep_db, NULL,
+	if ((ret = dbp->open(dbp, NULL,
 	    "__db.rep.db", NULL, DB_BTREE, flags, 0)) != 0)
 		goto err;
 
-	db_rep->rep_db = rep_db;
+	db_rep->rep_db = dbp;
 
 	if (0) {
-err:		if (rep_db != NULL &&
-		    (t_ret = rep_db->close(rep_db, DB_NOSYNC)) != 0 && ret == 0)
+err:		if (dbp != NULL &&
+		    (t_ret = dbp->close(dbp, DB_NOSYNC)) != 0 && ret == 0)
 			ret = t_ret;
 		db_rep->rep_db = NULL;
 	}
@@ -465,23 +480,24 @@ __rep_restore_prepared(dbenv)
 	if ((ret = __txn_getckp(dbenv, &lsn)) == 0) {
 		if ((ret = logc->get(logc, &lsn, &rec, DB_SET)) != 0)  {
 			__db_err(dbenv,
-			    "Checkpoint record at LSN [%ld][%ld] not found",
+			    "Checkpoint record at LSN [%lu][%lu] not found",
 			    (u_long)lsn.file, (u_long)lsn.offset);
 			goto err;
 		}
 
 		if ((ret = __txn_ckp_read(dbenv, rec.data, &ckp_args)) != 0) {
 			__db_err(dbenv,
-			    "Invalid checkpoint record at [%ld][%ld]",
+			    "Invalid checkpoint record at [%lu][%lu]",
 			    (u_long)lsn.file, (u_long)lsn.offset);
 			goto err;
 		}
 
 		ckp_lsn = ckp_args->ckp_lsn;
+		__os_free(dbenv, ckp_args);
 
 		if ((ret = logc->get(logc, &ckp_lsn, &rec, DB_SET)) != 0) {
 			__db_err(dbenv,
-			    "Checkpoint LSN record [%ld][%ld] not found",
+			    "Checkpoint LSN record [%lu][%lu] not found",
 			    (u_long)ckp_lsn.file, (u_long)ckp_lsn.offset);
 			goto err;
 		}
@@ -575,6 +591,7 @@ __rep_restore_prepared(dbenv)
 				ret = __db_txnlist_add(dbenv, txninfo,
 				    regop_args->txnid->txnid,
 				    regop_args->opcode, &lsn);
+			__os_free(dbenv, regop_args);
 			break;
 		case DB___txn_xa_regop:
 			/*
@@ -591,6 +608,7 @@ __rep_restore_prepared(dbenv)
 				if ((ret = __rep_process_txn(dbenv, &rec)) == 0)
 					ret = __txn_restore_txn(dbenv,
 					    &lsn, prep_args);
+			__os_free(dbenv, prep_args);
 			break;
 		default:
 			continue;
@@ -606,12 +624,6 @@ err:	t_ret = logc->close(logc, 0);
 
 	if (txninfo != NULL)
 		__db_txnlist_end(dbenv, txninfo);
-	if (ckp_args != NULL)
-		__os_free(dbenv, ckp_args);
-	if (prep_args != NULL)
-		__os_free(dbenv, prep_args);
-	if (regop_args != NULL)
-		__os_free(dbenv, regop_args);
 
 	return (ret == 0 ? t_ret : ret);
 }
@@ -774,7 +786,7 @@ __rep_elect(dbenv, nsites, priority, timeout, eidp)
 	__os_id(&pid);
 	if ((ret = __os_clock(dbenv, &sec, &usec)) != 0)
 		return (ret);
-	tiebreaker = (int)pid ^ (int)sec ^ (int)usec ^ rand() ^ (int)&pid;
+	tiebreaker = pid ^ sec ^ usec ^ (u_int)rand() ^ P_TO_UINT32(&pid);
 
 	if ((ret = __rep_elect_init(dbenv,
 	    &lsn, nsites, priority, tiebreaker, &in_progress)) != 0) {
@@ -913,8 +925,12 @@ __rep_elect_init(dbenv, lsnp, nsites, priority, tiebreaker, beginp)
 	MUTEX_LOCK(dbenv, db_rep->mutexp);
 	*beginp = IN_ELECTION(rep);
 	if (!*beginp) {
-		F_SET(rep, REP_F_EPHASE1);
-		rep->master_id = DB_EID_INVALID;
+		/*
+		 * Make sure that we always initialize all the election fields
+		 * before putting ourselves in an election state.  That means
+		 * issuing calls that can fail (allocation) before setting all
+		 * the variables.
+		 */
 		if (nsites > rep->asites &&
 		    (ret = __rep_grow_sites(dbenv, nsites)) != 0)
 			goto err;
@@ -922,6 +938,8 @@ __rep_elect_init(dbenv, lsnp, nsites, priority, tiebreaker, beginp)
 		rep->nsites = nsites;
 		rep->priority = priority;
 		rep->votes = 0;
+		rep->master_id = DB_EID_INVALID;
+		F_SET(rep, REP_F_EPHASE1);
 
 		/* We have always heard from ourselves. */
 		rep->sites = 1;

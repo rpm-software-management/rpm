@@ -30,7 +30,7 @@ to the backup directory.
 Berkeley DB files, it may be simpler to copy the directory itself instead of
 the individual files (see <a href="../../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> for additional
 information).  <b>Note: if any of the database files did not have
-an open <a href="../../api_c/db_create.html">DB</a> handle during the lifetime of the current log files,
+an open <a href="../../api_c/db_class.html">DB</a> handle during the lifetime of the current log files,
 <a href="../../utility/db_archive.html">db_archive</a> will not list them in its output!</b>  This is another
 reason it may be simpler to use a separate database file directory and
 copy the entire directory instead of archiving only the files listed by

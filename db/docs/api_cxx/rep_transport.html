@@ -1,4 +1,4 @@
-<!--Id: rep_transport.so,v 1.7 2002/06/24 14:49:30 bostic Exp -->
+<!--Id: rep_transport.so,v 1.9 2002/08/29 03:26:00 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -72,7 +72,7 @@ otherwise, any error from the <b>send</b> interface will be ignored.
 <b>send</b> interface; see <a href="../ref/env/faq.html">Environment
 FAQ</a> for a discussion on how to do this.
 <p>The DbEnv::set_rep_transport method configures operations performed using the specified
-<a href="../api_cxx/dbenv_class.html">DbEnv</a> handle, not all operations performed on the underlying
+<a href="../api_cxx/env_class.html">DbEnv</a> handle, not all operations performed on the underlying
 database environment.
 <p>The DbEnv::set_rep_transport interface may be called at any time during the life of
 the application.
@@ -84,12 +84,10 @@ If a catastrophic error has occurred, the DbEnv::set_rep_transport method may fa
 either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw a
 <a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>Class</h1>
+<a href="../api_cxx/env_class.html">DbEnv</a>
 <h1>See Also</h1>
-<a href="../api_cxx/rep_start.html">DbEnv::rep_start</a>,
-<a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a>,
-<a href="../api_cxx/rep_message.html">DbEnv::rep_process_message</a>
-and
-<a href="../api_cxx/rep_transport.html">DbEnv::set_rep_transport</a>.
+<a href="../api_cxx/rep_list.html">Replication and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

@@ -41,7 +41,7 @@ $OS2 = "-DOS2" if $Config{'osname'} eq 'os2' ;
 WriteMakefile(
 	NAME 		=> 'DB_File',
 	LIBS 		=> ["-L${LIB_DIR} $LIBS"],
-        MAN3PODS        => {},         # Pods will be built by installman.
+        #MAN3PODS        => {},         # Pods will be built by installman.
 	INC		=> "-I$INC_DIR",
 	VERSION_FROM	=> 'DB_File.pm',
 	XSPROTOARG	=> '-noprototypes',

@@ -22,8 +22,8 @@ queries but they still receive a complete copy the log files, so that in the
 event of master failure, a copy of the logs is available.
 <p>Log file only clients are configured like other client sites, except
 they should specify the <a href="../../api_c/rep_start.html#DB_REP_LOGSONLY">DB_REP_LOGSONLY</a> flag to the
-<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function and should specify a priority of 0 to the
-<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function.
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method and should specify a priority of 0 to the
+<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
 <p>There are two ways to recover using a log-file-only replica.
 The simplest way is to copy the log files from the log-file-only
 replica onto another site (either master or replica) and run catastrophic

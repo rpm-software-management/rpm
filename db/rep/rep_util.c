@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: rep_util.c,v 1.50 2002/08/06 04:50:36 bostic Exp ";
+static const char revid[] = "Id: rep_util.c,v 1.51 2002/09/05 02:30:00 margo Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -121,7 +121,7 @@ __rep_send_message(dbenv, eid, rtype, lsnp, dbtp, flags)
 	send_flags = (LF_ISSET(DB_PERMANENT) ? DB_REP_PERMANENT : 0);
 
 #if 0
-	__rep_print_message(eid, &cntrl, "rep_send_message");
+	__rep_print_message(dbenv, eid, &cntrl, "rep_send_message");
 #endif
 #ifdef REP_DIAGNOSTIC
 	if (rtype == REP_LOG)
@@ -776,10 +776,11 @@ err:	if (LOCK_ISSET(lk) && (t_ret = __LPUT(dbc, lk)) != 0 && ret == 0)
 
 #if 0
 /*
- * PUBLIC: void __rep_print_message __P((int, REP_CONTROL *, char *));
+ * PUBLIC: void __rep_print_message __P((DB_ENV *, int, REP_CONTROL *, char *));
  */
 void
-__rep_print_message(eid, rp, str)
+__rep_print_message(dbenv, eid, rp, str)
+	DB_ENV *dbenv;
 	int eid;
 	REP_CONTROL *rp;
 	char *str;
@@ -859,7 +860,8 @@ __rep_print_message(eid, rp, str)
 		type = "NOTYPE";
 		break;
 	}
-	printf("%s: eid %d, type %s, LSN [%u][%u]\n", str, eid,
-		type, rp->lsn.file, rp->lsn.offset);
+	printf("%s %s: gen = %d eid %d, type %s, LSN [%u][%u]\n",
+	    dbenv->db_home, str, rp->gen, eid, type, rp->lsn.file,
+	    rp->lsn.offset);
 }
 #endif

@@ -173,7 +173,7 @@ T_PTROBJ_AV
             croak(\"$var is not of type ${ntype}\")
 
 T_dbtkeydatum
-	ckFilter($arg, filter_store_key, \"filter_store_key\");
+	DBM_ckFilter($arg, filter_store_key, \"filter_store_key\");
 	DBT_clear($var) ;
 	if (db->recno_or_queue) {
 	    Value = GetRecnoKey(db, SvIV($arg)) ; 
@@ -186,7 +186,7 @@ T_dbtkeydatum
 	}
 
 T_dbtkeydatum_btree
-	ckFilter($arg, filter_store_key, \"filter_store_key\");
+	DBM_ckFilter($arg, filter_store_key, \"filter_store_key\");
 	DBT_clear($var) ;
 	if (db->recno_or_queue ||
 		(db->type == DB_BTREE && flagSet(DB_SET_RECNO))) {
@@ -200,7 +200,7 @@ T_dbtkeydatum_btree
 	}
 
 T_dbtdatum
-	ckFilter($arg, filter_store_value, \"filter_store_value\");
+	DBM_ckFilter($arg, filter_store_value, \"filter_store_value\");
 	DBT_clear($var) ;
 	$var.data = SvPV($arg, PL_na);
 	$var.size = (int)PL_na;
@@ -211,7 +211,7 @@ T_dbtdatum
 T_dbtdatum_opt
 	DBT_clear($var) ;
 	if (flagSet(DB_GET_BOTH)) {
-	   ckFilter($arg, filter_store_value, \"filter_store_value\");
+	   DBM_ckFilter($arg, filter_store_value, \"filter_store_value\");
 	   $var.data = SvPV($arg, PL_na);
 	   $var.size = (int)PL_na;
   	   $var.flags = db->partial ;
@@ -222,7 +222,7 @@ T_dbtdatum_opt
 T_dbtdatum_btree
 	DBT_clear($var) ;
 	if (flagSet(DB_GET_BOTH)) {
-	    ckFilter($arg, filter_store_value, \"filter_store_value\");
+	    DBM_ckFilter($arg, filter_store_value, \"filter_store_value\");
 	    $var.data = SvPV($arg, PL_na);
 	    $var.size = (int)PL_na;
   	    $var.flags = db->partial ;

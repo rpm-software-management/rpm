@@ -20,14 +20,14 @@
 of method calls can often dominate performance.  Berkeley DB offers bulk get
 interfaces which can significantly increase performance for some
 applications.  To retrieve records in bulk, an application buffer must
-be specified to the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> functions.  This is done
+be specified to the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> methods.  This is done
 in the C API by setting the <b>data</b> and <b>ulen</b> fields of the
-<b>data</b> <a href="../../api_c/dbt.html">DBT</a> to reference an application buffer, and the
-<b>flags</b> field of that structure to <a href="../../api_c/dbt.html#DB_DBT_USERMEM">DB_DBT_USERMEM</a>.  In
+<b>data</b> <a href="../../api_c/dbt_class.html">DBT</a> to reference an application buffer, and the
+<b>flags</b> field of that structure to <a href="../../api_c/dbt_class.html#DB_DBT_USERMEM">DB_DBT_USERMEM</a>.  In
 the Berkeley DB C++ and Java APIs, the actions are similar, although there
-are API-specific methods to set the <a href="../../api_c/dbt.html">DBT</a> values.  Then, the
+are API-specific methods to set the <a href="../../api_c/dbt_class.html">DBT</a> values.  Then, the
 <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> or <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flags are specified to
-the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> functions, which cause multiple records
+the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> methods, which cause multiple records
 to be returned in the specified buffer.
 <p>The difference between <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> and <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
 is as follows: <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> returns multiple data items for a
@@ -36,7 +36,7 @@ retrieve all of the duplicate data items for a single key in a single
 call.  The <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flag is used to retrieve multiple
 key/data pairs, where each returned key may or may not have duplicate
 data items.
-<p>Once the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> function has returned, the
+<p>Once the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method has returned, the
 application will walk through the buffer handling the returned records.
 This is implemented for the C and C++ APIs using four macros:
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_INIT">DB_MULTIPLE_INIT</a>, <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a>,
@@ -47,18 +47,18 @@ the Java API, this is implemented as three iterator classes:
 <a href="../../api_java/dbt_bulk_class.html">DbMultipleRecnoDataIterator</a>.
 <p>The <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_INIT">DB_MULTIPLE_INIT</a> macro is always called first.  It
 initializes a local application variable and the <b>data</b>
-<a href="../../api_c/dbt.html">DBT</a> for stepping through the set of returned records.  Then,
+<a href="../../api_c/dbt_class.html">DBT</a> for stepping through the set of returned records.  Then,
 the application calls one of the remaining three macros:
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a>, <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_KEY_NEXT">DB_MULTIPLE_KEY_NEXT</a>, and
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a>.
 <p>If the <a href="../../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> flag was specified to the <a href="../../api_c/db_get.html">DB-&gt;get</a> or
-<a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> function, the application will always call the
+<a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method, the application will always call the
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a> macro.  If the <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flag
-was specified to the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> function, and, the
+was specified to the <a href="../../api_c/db_get.html">DB-&gt;get</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method, and, the
 underlying database is a Btree or Hash database, the application will
 always call the <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_KEY_NEXT">DB_MULTIPLE_KEY_NEXT</a> macro.  If the
 <a href="../../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flag was specified to the <a href="../../api_c/db_get.html">DB-&gt;get</a> or
-<a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> function, and, the underlying database is a Queue or Recno
+<a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method, and, the underlying database is a Queue or Recno
 database, the application will always call the
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a> macro.  The <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a>,
 <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_KEY_NEXT">DB_MULTIPLE_KEY_NEXT</a>, and <a href="../../api_c/dbt_bulk.html#DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a> macros

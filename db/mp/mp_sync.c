@@ -7,7 +7,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: mp_sync.c,v 11.63 2002/08/13 18:30:07 bostic Exp ";
+static const char revid[] = "Id: mp_sync.c,v 11.64 2002/08/25 16:00:27 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES

@@ -1,4 +1,4 @@
-<!--Id: faq.so,v 10.5 2002/05/14 15:01:45 bostic Exp -->
+<!--Id: faq.so,v 10.6 2002/09/09 14:52:40 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -74,7 +74,19 @@ cannot be simply moved into different database environments.  To move
 a database into a different environment, dump and reload the database
 before moving it.  If the database is too large to dump and reload, the
 database may be prepared in place by setting the first eight bytes of
-each page in the file to 0.
+each database page in the file to 0.
+<p><li><b>I'm seeing the error "log_flush: LSN past current end-of-log",
+what does that mean?</b>
+<p>The most common cause of this error is that a system administrator has
+removed all of the log files from a database environment.  You should
+shut down your database environment as gracefully as possible, first
+flushing the database environment cache to disk, if that's possible.
+Then, dump and reload your databases.  If your databases are too large
+to dump and reload, the database may be repaired in place by setting
+the first eight bytes of each database page in the file to 0, but if
+you do that, you must verify your databases before using them again.
+(It is possible for the databases to be corrupted when this happens,
+and the longer the application runs, the worse it can get.)
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>

@@ -17,7 +17,7 @@ use Carp;
 use vars qw($VERSION @ISA @EXPORT $AUTOLOAD
 		$use_XSLoader);
 
-$VERSION = '0.19';
+$VERSION = '0.20';
 
 require Exporter;
 #require DynaLoader;
@@ -85,6 +85,7 @@ BEGIN {
 	DB_ENCRYPT
 	DB_ENCRYPT_AES
 	DB_ENV_APPINIT
+	DB_ENV_AUTO_COMMIT
 	DB_ENV_CDB
 	DB_ENV_CDB_ALLDB
 	DB_ENV_CREATE
@@ -307,6 +308,12 @@ BEGIN {
 	DB_SWAPBYTES
 	DB_SYSTEM_MEM
 	DB_TEMPORARY
+	DB_TEST_ELECTINIT
+	DB_TEST_ELECTSEND
+	DB_TEST_ELECTVOTE1
+	DB_TEST_ELECTVOTE2
+	DB_TEST_ELECTWAIT1
+	DB_TEST_ELECTWAIT2
 	DB_TEST_POSTDESTROY
 	DB_TEST_POSTEXTDELETE
 	DB_TEST_POSTEXTOPEN
@@ -330,6 +337,7 @@ BEGIN {
 	DB_TXNVERSION
 	DB_TXN_ABORT
 	DB_TXN_APPLY
+	DB_TXN_BACKWARD_ALLOC
 	DB_TXN_BACKWARD_ROLL
 	DB_TXN_CKP
 	DB_TXN_FORWARD_ROLL
@@ -1383,7 +1391,7 @@ sub db_join
     my $db = shift ;
     my ($addr) = $db->_db_join(@_) ;
     my $obj ;
-    $obj = bless [$addr, $db] , "BerkeleyDB::Cursor" if $addr ;
+    $obj = bless [$addr, $db, $_[0]] , "BerkeleyDB::Cursor" if $addr ;
     return $obj ;
 }
 

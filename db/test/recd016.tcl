@@ -3,7 +3,7 @@
 # Copyright (c) 1999-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: recd016.tcl,v 11.6 2002/05/24 16:14:15 sue Exp 
+# Id: recd016.tcl,v 11.8 2002/09/05 17:23:07 sandstro Exp 
 #
 # TEST	recd016
 # TEST	This is a recovery test for testing running recovery while
@@ -16,6 +16,8 @@ proc recd016 { method args } {
 	set omethod [convert_method $method]
 
 	puts "Recd016: $method ($args) simultaneous recovery test"
+	puts "Recd016: Skipping; waiting on SR #6277" 
+	return
 
 	# Create the database and environment.
 	set testfile recd016.db
@@ -115,7 +117,7 @@ proc recd016 { method args } {
 		set p [exec $util_path/db_recover -h $testdir -c &]
 		lappend pidlist $p
 	}
-	watch_procs 5
+	watch_procs $pidlist 5
 	#
 	# Now that they are all done run recovery correctly
 	puts "\tRecd016.d: Run recovery process"

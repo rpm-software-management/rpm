@@ -1,4 +1,4 @@
-<!--Id: rep_message.so,v 1.9 2002/07/02 15:22:24 bostic Exp -->
+<!--Id: rep_message.so,v 1.11 2002/08/29 03:26:00 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -27,7 +27,7 @@ DB_ENV-&gt;rep_process_message(DB_ENV *env,
     DBT *control, DBT *rec, int *envid)
 </pre></h3>
 <h1>Description</h1>
-<p>The DB_ENV-&gt;rep_process_message function processes an incoming replication
+<p>The DB_ENV-&gt;rep_process_message method processes an incoming replication
 message sent by a member of the replication group to the local database
 environment.
 <p>The <b>rec</b> and <b>control</b> parameters should reference a copy
@@ -38,48 +38,46 @@ corresponds to the environment that sent the message to be processed
 (see <a href="../ref/rep/id.html">Replication environment IDs</a> for more
 information).
 <p>For implementation reasons, all incoming replication messages must be
-processed using the same <a href="../api_c/env_create.html">DB_ENV</a> handle.  It is not required that
+processed using the same <a href="../api_c/env_class.html">DB_ENV</a> handle.  It is not required that
 a single thread of control process all messages, only that all threads
 of control processing messages use the same handle.
 <p>
-If a new master has been elected, the DB_ENV-&gt;rep_process_message function will return DB_REP_NEWMASTER.
+If a new master has been elected, the DB_ENV-&gt;rep_process_message method will return DB_REP_NEWMASTER.
 The <b>envid</b> parameter contains the environment ID of the new
 master.  If the recipient of this error return has been made master, it
 is the application's responsibility to begin acting as the master
 environment.
 <p>
-If the system received contact information from a new environment, the DB_ENV-&gt;rep_process_message function will return DB_REP_NEWSITE.
+If the system received contact information from a new environment, the DB_ENV-&gt;rep_process_message method will return DB_REP_NEWSITE.
 The <b>rec</b> parameter contains the opaque data specified in the
 <b>cdata</b> parameter to the <a href="../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.  The application
 should take whatever action is needed to establish a communication
 channel with this new environment.
 <p>
-If the replication group has more than one master, the DB_ENV-&gt;rep_process_message function will return DB_REP_DUPMASTER.
+If the replication group has more than one master, the DB_ENV-&gt;rep_process_message method will return DB_REP_DUPMASTER.
 The application should reconfigure itself as a client by calling the
-<a href="../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function, and then call for an election by calling
+<a href="../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method, and then call for an election by calling
 <a href="../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>.
 <p>
-If an election is needed, the DB_ENV-&gt;rep_process_message function will return DB_REP_HOLDELECTION.
+If an election is needed, the DB_ENV-&gt;rep_process_message method will return DB_REP_HOLDELECTION.
 The application should call for an election by
 calling <a href="../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>.
 <p>
 If the current environment's logs are too far out of date with respect
-to the master to be automatically synchronized, the DB_ENV-&gt;rep_process_message function will return DB_REP_OUTDATED. The
+to the master to be automatically synchronized, the DB_ENV-&gt;rep_process_message method will return DB_REP_OUTDATED. The
 application should copy over a hot backup of the environment, run
 recovery, and restart the client.
 <p>
-Otherwise, the DB_ENV-&gt;rep_process_message function returns a non-zero error value on failure and 0 on success.
+Otherwise, the DB_ENV-&gt;rep_process_message method returns a non-zero error value on failure and 0 on success.
 <h1>Errors</h1>
-<p>The DB_ENV-&gt;rep_process_message function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
-If a catastrophic error has occurred, the DB_ENV-&gt;rep_process_message function may fail and
+<p>The DB_ENV-&gt;rep_process_message method may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
+If a catastrophic error has occurred, the DB_ENV-&gt;rep_process_message method may fail and
 return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>Class</h1>
+<a href="../api_c/env_class.html">DB_ENV</a>
 <h1>See Also</h1>
-<a href="../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>,
-<a href="../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>,
-<a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>
-and
-<a href="../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>.
+<a href="../api_c/rep_list.html">Replication and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

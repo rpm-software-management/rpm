@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_db.cpp,v 11.69 2002/07/20 13:50:10 dda Exp ";
+static const char revid[] = "Id: cxx_db.cpp,v 11.71 2002/08/26 22:13:36 mjc Exp ";
 #endif /* not lint */
 
 #include <errno.h>
@@ -105,13 +105,17 @@ Db::Db(DbEnv *env, u_int32_t flags)
 {
 	if (env_ == 0)
 		flags_ |= DB_CXX_PRIVATE_ENV;
-	initialize();
+
+	if ((construct_error_ = initialize()) != 0)
+		DB_ERROR("Db::Db", construct_error_, error_policy());
 }
 
-// Note: if the user has not closed, we call _destroy_check
-// to warn against this non-safe programming practice.
-// We can't close, because the environment may already
-// be closed/destroyed.
+// If the DB handle is still open, we close it.  This is to make stack
+// allocation of Db objects easier so that they are cleaned up in the error
+// path.  If the environment was closed prior to this, it may cause a trap, but
+// an error message is generated during the environment close.  Applications
+// should call close explicitly in normal (non-exceptional) cases to check the
+// return value.
 //
 Db::~Db()
 {
@@ -119,16 +123,14 @@ Db::~Db()
 
 	db = unwrap(this);
 	if (db != NULL) {
-		DbEnv::_destroy_check("Db", 0);
 		cleanup();
+		(void)db->close(db, 0);
 	}
 }
 
 // private method to initialize during constructor.
 // initialize must create a backing DB object,
 // and if that creates a new DB_ENV, it must be tied to a new DbEnv.
-// If there is an error, construct_error_ is set; this is examined
-// during open.
 //
 int Db::initialize()
 {
@@ -144,10 +146,8 @@ int Db::initialize()
 	// one is allocated by DB.
 	//
 	if ((ret = db_create(&db, cenv,
-			     construct_flags_ & ~cxx_flags)) != 0) {
-		construct_error_ = ret;
+			     construct_flags_ & ~cxx_flags)) != 0)
 		return (ret);
-	}
 
 	// Associate the DB with this object
 	imp_ = wrap(db);
@@ -188,7 +188,6 @@ void Db::cleanup()
 			env_ = 0;
 		}
 	}
-	construct_error_ = 0;
 }
 
 // Return a tristate value corresponding to whether we should

@@ -1606,9 +1606,17 @@ else
     #        cross-compilation, but unfortunately the echo tests do not
     #        yet detect zsh echo's removal of \ escapes.
 
-    #### Local change for Sleepycat's Berkeley DB [#5664]
-    # removed double quotes in the following line:
-    archive_cmds='$nonopt $(test x$module = xyes && echo -bundle || echo -dynamiclib) $allow_undefined_flag -o $lib $libobjs $deplibs$linker_flags -install_name $rpath/$soname $verstring'
+    #### Local change for Sleepycat's Berkeley DB [#5664] [#6511]
+    case "$host_os" in
+    darwin[[12345]].*)
+       # removed double quotes in the following line:
+       archive_cmds='$nonopt $(test x$module = xyes && echo -bundle || echo -dynamiclib) $allow_undefined_flag -o $lib $libobjs $deplibs$linker_flags -install_name $rpath/$soname $verstring'
+       ;;
+    *) # Darwin6.0 on (Mac OS/X Jaguar)
+       archive_cmds='$nonopt $allow_undefined_flag -o $lib $libobjs $deplibs$linker_flags -dynamiclib -install_name $rpath/$soname $verstring'
+       ;;
+    esac
+    #### End of changes for Sleepycat's Berkeley DB [#5664] [#6511]
 
     # We need to add '_' to the symbols in $export_symbols first
     #archive_expsym_cmds="$archive_cmds"' && strip -s $export_symbols'

@@ -3,7 +3,7 @@
 # Copyright (c) 1999-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: test096.tcl,v 11.18 2002/07/22 16:53:00 sue Exp 
+# Id: test096.tcl,v 11.19 2002/08/19 20:09:29 margo Exp 
 #
 # TEST	test096
 # TEST	Db->truncate test.
@@ -107,7 +107,7 @@ proc test096 { method {pagesize 512} {nentries 50} {ndups 4} args} {
 	# Remove database, and create a new one with dups.
 	#
 	puts "\tTest096.d: Create $nentries entries with $ndups duplicates"
-	set ret [berkdb dbremove -env $env $testfile]
+	set ret [berkdb dbremove -env $env -auto_commit $testfile]
 	set db [eval {berkdb_open -pagesize $pagesize -dup -auto_commit \
 	    -create -env $env $omethod -mode 0644} $args $testfile]
 	error_check_good db_open [is_valid_db $db] TRUE

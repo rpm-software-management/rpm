@@ -35,6 +35,7 @@ ClassNotFoundException
 Config
 DBC
 DBENV
+DBP
 DBS
 DBSDIR
 DBT
@@ -175,6 +176,7 @@ OutputStream
 PGNO
 PID
 PREV
+Pgno
 RECNO
 RECNOSYNC
 RECNUM
@@ -211,6 +213,7 @@ TestLogc
 TpcbExample
 Tt
 Txn
+Txnid
 Txns
 UID
 UNAVAIL

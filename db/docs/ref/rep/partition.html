@@ -64,7 +64,7 @@ database environments in the replication group, applications can keep
 systems from declaring themselves the master unless they can talk to at
 a large percentage of the sites in the system.  For example, if there
 are 20 database environments in the replication group, and an argument
-of 30 is specified to the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function, then a system will have
+of 30 is specified to the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method, then a system will have
 to be able to talk to at least 16 of the sites to declare itself the
 master.
 <p>Specifying a <b>nsites</b> argument to <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> that is

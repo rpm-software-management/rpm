@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# Id: chk.javatests,v 1.4 2002/03/27 04:33:08 bostic Exp 
+# Id: chk.javatests,v 1.5 2002/08/16 19:35:56 dda Exp 
 #
 # Check to make sure that regression tests for Java run.
 
@@ -51,7 +51,8 @@ for testname in $testnames; do
 	rm -rf TESTJAVA; mkdir -p TESTJAVA/classes
 	cd ./TESTJAVA
 	testprefix=../$TEST_JAVA_SRCDIR/$testname
-	${JAVAC} -d ./classes $testprefix.java  > ../$testname.compileout 2>&1 || {
+	${JAVAC} -d ./classes $testprefix.java ../$TEST_JAVA_SRCDIR/TestUtil.java > ../$testname.compileout 2>&1 || {
+pwd
 		echo "FAIL: compilation of $testname failed, see ../$testname.compileout"
 		exit 1
 	}

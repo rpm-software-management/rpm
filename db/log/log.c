@@ -7,7 +7,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: log.c,v 11.110 2002/08/13 17:51:13 sue Exp ";
+static const char revid[] = "Id: log.c,v 11.111 2002/08/16 00:27:44 ubell Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -950,8 +950,10 @@ __log_vtruncate(dbenv, lsn, ckplsn)
 
 	/* Now throw away any extra log files that we have around. */
 	for (fn = lp->lsn.file + 1;; fn++) {
-		if (__log_name(dblp, fn, &fname, &fh, DB_OSO_RDONLY) != 0)
+		if (__log_name(dblp, fn, &fname, &fh, DB_OSO_RDONLY) != 0) {
+			__os_free(dbenv, fname);
 			break;
+		}
 		(void)__os_closehandle(dbenv, &fh);
 		ret = __os_unlink(dbenv, fname);
 		__os_free(dbenv, fname);

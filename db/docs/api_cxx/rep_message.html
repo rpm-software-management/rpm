@@ -1,4 +1,4 @@
-<!--Id: rep_message.so,v 1.9 2002/07/02 15:22:24 bostic Exp -->
+<!--Id: rep_message.so,v 1.11 2002/08/29 03:26:00 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -37,7 +37,7 @@ corresponds to the environment that sent the message to be processed
 (see <a href="../ref/rep/id.html">Replication environment IDs</a> for more
 information).
 <p>For implementation reasons, all incoming replication messages must be
-processed using the same <a href="../api_cxx/dbenv_class.html">DbEnv</a> handle.  It is not required that
+processed using the same <a href="../api_cxx/env_class.html">DbEnv</a> handle.  It is not required that
 a single thread of control process all messages, only that all threads
 of control processing messages use the same handle.
 <p>
@@ -75,12 +75,10 @@ If a catastrophic error has occurred, the DbEnv::rep_process_message method may 
 either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw a
 <a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
+<h1>Class</h1>
+<a href="../api_cxx/env_class.html">DbEnv</a>
 <h1>See Also</h1>
-<a href="../api_cxx/rep_start.html">DbEnv::rep_start</a>,
-<a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a>,
-<a href="../api_cxx/rep_message.html">DbEnv::rep_process_message</a>
-and
-<a href="../api_cxx/rep_transport.html">DbEnv::set_rep_transport</a>.
+<a href="../api_cxx/rep_list.html">Replication and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

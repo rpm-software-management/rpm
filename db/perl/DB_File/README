@@ -1,8 +1,8 @@
                                      DB_File
 
-                                  Version 1.804
+                                  Version 1.805
 
-                                  2nd June 2002
+                                  1st Sep 2002
 
  	Copyright (c) 1995-2002 Paul Marquess. All rights reserved. This
 	program is free software; you can redistribute it and/or modify
@@ -161,6 +161,35 @@ Solution: Setting the LIB & INCLUDE variables in config.in to point to the
           problem. If that doesn't work the easiest way to fix the
           problem is to either delete or temporarily rename the copies
           of db.h and libdb.a that you don't want DB_File to use.
+
+
+Undefined symbol dbopen
+-----------------------
+
+DB_File seems to have built correctly, but you get an error like this
+when you run the test harness:
+
+  ...
+  t/db-btree..........Can't load 'blib/arch/auto/DB_File/DB_File.so' for
+  module DB_File: blib/arch/auto/DB_File/DB_File.so: undefined symbol:
+  dbopen at /usr/local/lib/perl5/5.6.1/i586-linux/DynaLoader.pm line 206.
+   at t/db-btree.t line 23
+  Compilation failed in require at t/db-btree.t line 23.
+  ...
+
+This error usually happens when you have both version 1 and a more recent
+version of Berkeley DB installed on your system and DB_File attempts
+to build using the db.h for Berkeley DB version 1 and the newer version
+library. Unfortunately the two versions aren't compatible with each
+other. The undefined symbol error is actually caused because versions
+of Berkeley DB newer than version 1 doesn't have the symbol dbopen.
+
+Solution: Setting the LIB & INCLUDE variables in config.in to point to the
+          correct directories can sometimes be enough to fix this
+          problem. If that doesn't work the easiest way to fix the
+          problem is to either delete or temporarily rename the copies
+          of db.h and libdb.a that you don't want DB_File to use.
+
 
 Incompatible versions of db.h and libdb
 ---------------------------------------

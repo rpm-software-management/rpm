@@ -1,4 +1,4 @@
-<!--Id: txn_set_timeout.so,v 10.6 2002/06/24 14:49:36 bostic Exp -->
+<!--Id: txn_set_timeout.so,v 10.8 2002/08/29 03:26:14 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -65,23 +65,9 @@ either return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVE
 <a href="../api_cxx/runrec_class.html">DbRunRecoveryException</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>Class</h1>
-<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/txn_class.html">DbTxn</a>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/txn_class.html">DbTxn</a>
 <h1>See Also</h1>
-<a href="../api_cxx/env_set_tx_max.html">DbEnv::set_tx_max</a>,
-<a href="../api_cxx/env_set_tx_timestamp.html">DbEnv::set_tx_timestamp</a>,
-<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>,
-<a href="../api_cxx/txn_checkpoint.html">DbEnv::txn_checkpoint</a>,
-<a href="../api_cxx/txn_recover.html">DbEnv::txn_recover</a>
-and
-<a href="../api_cxx/txn_stat.html">DbEnv::txn_stat</a>.
-<p>
-<a href="../api_cxx/txn_abort.html">DbTxn::abort</a>,
-<a href="../api_cxx/txn_commit.html">DbTxn::commit</a>,
-<a href="../api_cxx/txn_discard.html">DbTxn::discard</a>,
-<a href="../api_cxx/txn_id.html">DbTxn::id</a>,
-<a href="../api_cxx/txn_prepare.html">DbTxn::prepare</a>
-and
-<a href="../api_cxx/txn_set_timeout.html">DbTxn::set_timeout</a>.
+<a href="../api_cxx/txn_list.html">Transaction Subsystem and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

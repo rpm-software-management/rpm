@@ -43,7 +43,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: hash_page.c,v 11.85 2002/08/06 06:11:27 bostic Exp ";
+static const char revid[] = "Id: hash_page.c,v 11.87 2002/08/15 02:46:20 bostic Exp ";
 #endif /* not lint */
 
 /*
@@ -542,7 +542,6 @@ __ham_del_pair(dbc, reclaim_page)
 {
 	DB *dbp;
 	DBT data_dbt, key_dbt;
-	DB_ENV *dbenv;
 	DB_LSN new_lsn, *n_lsn, tmp_lsn;
 	DB_MPOOLFILE *mpf;
 	HASH_CURSOR *hcp;
@@ -554,7 +553,6 @@ __ham_del_pair(dbc, reclaim_page)
 	u_int32_t order;
 
 	dbp = dbc->dbp;
-	dbenv = dbp->dbenv;
 	mpf = dbp->mpf;
 	hcp = (HASH_CURSOR *)dbc->internal;
 	n_pagep = p_pagep = nn_pagep = NULL;
@@ -830,9 +828,10 @@ __ham_replpair(dbc, dbt, make_dup)
 	u_int32_t make_dup;
 {
 	DB *dbp;
-	HASH_CURSOR *hcp;
 	DBT old_dbt, tdata, tmp;
+	DB_ENV *dbenv;
 	DB_LSN	new_lsn;
+	HASH_CURSOR *hcp;
 	int32_t change;			/* XXX: Possible overflow. */
 	u_int32_t dup_flag, len, memsize;
 	int beyond_eor, is_big, ret, type;
@@ -851,6 +850,7 @@ __ham_replpair(dbc, dbt, make_dup)
 	 * add.
 	 */
 	dbp = dbc->dbp;
+	dbenv = dbp->dbenv;
 	hcp = (HASH_CURSOR *)dbc->internal;
 
 	/*
@@ -916,13 +916,13 @@ __ham_replpair(dbc, dbt, make_dup)
 
 			/* Now we can delete the item. */
 			if ((ret = __ham_del_pair(dbc, 0)) != 0) {
-				__os_free(dbp->dbenv, memp);
+				__os_free(dbenv, memp);
 				goto err;
 			}
 
 			/* Now shift old data around to make room for new. */
 			if (change > 0) {
-				if ((ret = __os_realloc(dbp->dbenv,
+				if ((ret = __os_realloc(dbenv,
 				    tdata.size + change, &tdata.data)) != 0)
 					return (ret);
 				memp = tdata.data;
@@ -944,7 +944,7 @@ __ham_replpair(dbc, dbt, make_dup)
 
 			/* Now add the pair. */
 			ret = __ham_add_el(dbc, &tmp, &tdata, type);
-			__os_free(dbp->dbenv, memp);
+			__os_free(dbenv, memp);
 		}
 		F_SET(hcp, dup_flag);
 err:		return (ret);
@@ -1210,7 +1210,7 @@ __ham_split_page(dbc, obucket, nbucket)
 		}
 
 		if (carray != NULL)	/* We never knew its size. */
-			__os_free(dbp->dbenv, carray);
+			__os_free(dbenv, carray);
 		carray = NULL;
 	}
 	if (big_buf != NULL)
@@ -1266,7 +1266,7 @@ err:		if (old_pagep != NULL)
 	if (LOCK_ISSET(block))
 		__TLPUT(dbc, block);
 	if (carray != NULL)		/* We never knew its size. */
-		__os_free(dbp->dbenv, carray);
+		__os_free(dbenv, carray);
 	return (ret);
 }
 
@@ -1842,7 +1842,7 @@ __ham_c_delpg(dbc, old_pgno, new_pgno, num_ent, op, orderp)
 					break;
 				default:
 					DB_ASSERT(0);
-					return (__db_panic(dbp->dbenv, EINVAL));
+					return (__db_panic(dbenv, EINVAL));
 				}
 				if (my_txn != NULL && cp->txn != my_txn)
 					found = 1;

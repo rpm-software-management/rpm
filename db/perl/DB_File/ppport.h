@@ -279,4 +279,51 @@ SV *sv;
 #endif /* START_MY_CXT */
 
 
+#ifndef DBM_setFilter
+
+/* 
+   The DBM_setFilter & DBM_ckFilter macros are only used by 
+   the *DB*_File modules 
+*/
+
+#define DBM_setFilter(db_type,code)				\
+	{							\
+	    if (db_type)					\
+	        RETVAL = sv_mortalcopy(db_type) ;		\
+	    ST(0) = RETVAL ;					\
+	    if (db_type && (code == &PL_sv_undef)) {		\
+                SvREFCNT_dec(db_type) ;				\
+	        db_type = NULL ;				\
+	    }							\
+	    else if (code) {					\
+	        if (db_type)					\
+	            sv_setsv(db_type, code) ;			\
+	        else						\
+	            db_type = newSVsv(code) ;			\
+	    }	    						\
+	}
+
+#define DBM_ckFilter(arg,type,name)				\
+	if (db->type) {						\
+	    if (db->filtering) {				\
+	        croak("recursion detected in %s", name) ;	\
+	    }                     				\
+	    ENTER ;						\
+	    SAVETMPS ;						\
+	    SAVEINT(db->filtering) ;				\
+	    db->filtering = TRUE ;				\
+	    SAVESPTR(DEFSV) ;					\
+	    DEFSV = arg ;					\
+	    SvTEMP_off(arg) ;					\
+	    PUSHMARK(SP) ;					\
+	    PUTBACK ;						\
+	    (void) perl_call_sv(db->type, G_DISCARD); 		\
+	    SPAGAIN ;						\
+	    PUTBACK ;						\
+	    FREETMPS ;						\
+	    LEAVE ;						\
+	}
+
+#endif /* DBM_setFilter */
+
 #endif /* _P_P_PORTABILITY_H_ */

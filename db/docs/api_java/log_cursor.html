@@ -1,4 +1,4 @@
-<!--Id: log_cursor.so,v 10.3 2002/06/24 14:49:24 bostic Exp -->
+<!--Id: log_cursor.so,v 10.5 2002/08/24 15:13:43 bostic Exp -->
 <!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -41,49 +41,9 @@ If a catastrophic error has occurred, the DbEnv.log_cursor method may fail and
 throw a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>,
 in which case all subsequent Berkeley DB calls will fail in the same way.
 <h1>Class</h1>
-<a href="../api_java/db_class.html">Db</a>
+<a href="../api_java/env_class.html">DbEnv</a>, <a href="../api_java/logc_class.html">DbLogc</a>, <a href="../api_java/lsn_class.html">DbLsn</a>
 <h1>See Also</h1>
-<a href="../api_java/db_associate.html">Db.associate</a>,
-<a href="../api_java/db_close.html">Db.close</a>,
-<a href="../api_java/db_cursor.html">Db.cursor</a>,
-<a href="../api_java/db_del.html">Db.del</a>,
-<a href="../api_java/db_err.html">Db.err</a>,
-<a href="../api_java/db_err.html">Db.errx</a>,
-<a href="../api_java/db_fd.html">Db.fd</a>,
-<a href="../api_java/db_get.html">Db.get</a>,
-<a href="../api_java/db_get_byteswapped.html">Db.get_byteswapped</a>,
-<a href="../api_java/db_get_type.html">Db.get_type</a>,
-<a href="../api_java/db_join.html">Db.join</a>,
-<a href="../api_java/db_key_range.html">Db.key_range</a>,
-<a href="../api_java/db_open.html">Db.open</a>,
-<a href="../api_java/db_get.html">Db.pget</a>,
-<a href="../api_java/db_put.html">Db.put</a>,
-<a href="../api_java/db_remove.html">Db.remove</a>,
-<a href="../api_java/db_rename.html">Db.rename</a>,
-<a href="../api_java/db_set_append_recno.html">Db.set_append_recno</a>,
-<a href="../api_java/db_set_bt_minkey.html">Db.set_bt_minkey</a>,
-<a href="../api_java/db_set_cache_priority.html">Db.set_cache_priority</a>,
-<a href="../api_java/db_set_cachesize.html">Db.set_cachesize</a>,
-<a href="../api_java/db_set_encrypt.html">Db.set_encrypt</a>,
-<a href="../api_java/db_set_errcall.html">Db.set_errcall</a>,
-<a href="../api_java/db_set_errpfx.html">Db.set_errpfx</a>,
-<a href="../api_java/db_set_feedback.html">Db.set_feedback</a>,
-<a href="../api_java/db_set_flags.html">Db.set_flags</a>,
-<a href="../api_java/db_set_h_ffactor.html">Db.set_h_ffactor</a>,
-<a href="../api_java/db_set_h_nelem.html">Db.set_h_nelem</a>,
-<a href="../api_java/db_set_lorder.html">Db.set_lorder</a>,
-<a href="../api_java/db_set_pagesize.html">Db.set_pagesize</a>,
-<a href="../api_java/db_set_q_extentsize.html">Db.set_q_extentsize</a>,
-<a href="../api_java/db_set_re_delim.html">Db.set_re_delim</a>,
-<a href="../api_java/db_set_re_len.html">Db.set_re_len</a>,
-<a href="../api_java/db_set_re_pad.html">Db.set_re_pad</a>,
-<a href="../api_java/db_set_re_source.html">Db.set_re_source</a>,
-<a href="../api_java/db_stat.html">Db.stat</a>,
-<a href="../api_java/db_sync.html">Db.sync</a>,
-<a href="../api_java/db_truncate.html">Db.truncate</a>,
-<a href="../api_java/db_upgrade.html">Db.upgrade</a>
-and
-<a href="../api_java/db_verify.html">Db.verify</a>.
+<a href="../api_java/log_list.html">Logging Subsystem and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>

@@ -1,5 +1,13 @@
 Revision history for Perl extension BerkeleyDB.
 
+0.20 2nd September 2002
+
+        * More support for building with Berkeley DB 4.1.x
+        * db->get & db->pget used the wrong output macro for DBM filters 
+          bug spotted by Aaron Ross.
+	* db_join didn't keep a reference to the cursors it was joining.
+          Spotted by Winton Davies.
+
 0.19 5th June 2002
         * Removed the targets that used mkconsts from Makefile.PL. They relied
           on a module that is not available in all versions of Perl.

@@ -7,7 +7,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: mp_bh.c,v 11.68 2002/05/03 15:21:16 bostic Exp ";
+static const char revid[] = "Id: mp_bh.c,v 11.71 2002/09/04 19:06:45 margo Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -157,7 +157,7 @@ __memp_bhwrite(dbmp, hp, mfp, bhp, open_extents)
 	}
 	local_open = 1;
 
-found:	ret = __memp_pgwrite(dbmp, dbmfp, hp, bhp) == 0 ? 0 : 1;
+found:	ret = __memp_pgwrite(dbmp, dbmfp, hp, bhp);
 
 	MUTEX_THREAD_LOCK(dbenv, dbmp->mutexp);
 	if (incremented)
@@ -284,13 +284,11 @@ __memp_pgwrite(dbmp, dbmfp, hp, bhp)
 	DB_ENV *dbenv;
 	DB_IO db_io;
 	DB_LSN lsn;
-	MPOOL *mp;
 	MPOOLFILE *mfp;
 	size_t nw;
 	int callpgin, ret;
 
 	dbenv = dbmp->dbenv;
-	mp = dbmp->reginfo[0].primary;
 	mfp = dbmfp == NULL ? NULL : dbmfp->mfp;
 	callpgin = ret = 0;
 
@@ -360,7 +358,8 @@ __memp_pgwrite(dbmp, dbmfp, hp, bhp)
 
 		dblp = dbenv->lg_handle;
 		lp = dblp->reginfo.primary;
-		if (log_compare(&lp->s_lsn, &LSN(bhp->buf)) <= 0) {
+		if (!IS_NOT_LOGGED_LSN(LSN(bhp->buf)) &&
+		    log_compare(&lp->s_lsn, &LSN(bhp->buf)) <= 0) {
 			R_LOCK(dbenv, &dblp->reginfo);
 			DB_ASSERT(log_compare(&lp->s_lsn, &LSN(bhp->buf)) > 0);
 			R_UNLOCK(dbenv, &dblp->reginfo);

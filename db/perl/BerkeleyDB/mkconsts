@@ -606,7 +606,7 @@ use constant IGNORE => 'ignore' ;
 	DB_VERB_REPLICATION        => DEFINE,
 
 	#########
-	# 4.1.12
+	# 4.1.17
 	#########
 
 	DBC_OWN_LID                => IGNORE,
@@ -633,6 +633,7 @@ use constant IGNORE => 'ignore' ;
 	DB_DIRECT_LOG              => DEFINE,
 	DB_ENCRYPT                 => DEFINE,
 	DB_ENCRYPT_AES             => DEFINE,
+	DB_ENV_AUTO_COMMIT         => DEFINE,
 	DB_ENV_DIRECT_DB           => DEFINE,
 	DB_ENV_DIRECT_LOG          => DEFINE,
 	DB_ENV_FATAL               => DEFINE,
@@ -646,6 +647,12 @@ use constant IGNORE => 'ignore' ;
 	DB_PERMANENT               => DEFINE,
 	DB_PRINTABLE               => DEFINE,
 	DB_RENAMEMAGIC             => DEFINE,
+	DB_TEST_ELECTINIT          => DEFINE,
+	DB_TEST_ELECTSEND          => DEFINE,
+	DB_TEST_ELECTVOTE1         => DEFINE,
+	DB_TEST_ELECTVOTE2         => DEFINE,
+	DB_TEST_ELECTWAIT1         => DEFINE,
+	DB_TEST_ELECTWAIT2         => DEFINE,
 	DB_TEST_SUBDB_LOCKS        => DEFINE,
 	DB_TXN_LOCK                => DEFINE,
 	DB_TXN_WRITE_NOSYNC        => DEFINE,
@@ -654,21 +661,23 @@ use constant IGNORE => 'ignore' ;
 	_DB_EXT_PROT_IN_           => IGNORE,
 
 	# enum db_lockop_t
-	DB_LOCK_TRADE              => '4.1.12',
+	DB_LOCK_TRADE              => '4.1.17',
 
 	# enum db_status_t
-	DB_LSTAT_NOTEXIST          => IGNORE, # 4.1.12
+	DB_LSTAT_NOTEXIST          => IGNORE, # 4.1.17
 
 	# enum DB_CACHE_PRIORITY
-	DB_PRIORITY_VERY_LOW       => '4.1.12',
-	DB_PRIORITY_LOW            => '4.1.12',
-	DB_PRIORITY_DEFAULT        => '4.1.12',
-	DB_PRIORITY_HIGH           => '4.1.12',
-	DB_PRIORITY_VERY_HIGH      => '4.1.12',
+	DB_PRIORITY_VERY_LOW       => '4.1.17',
+	DB_PRIORITY_LOW            => '4.1.17',
+	DB_PRIORITY_DEFAULT        => '4.1.17',
+	DB_PRIORITY_HIGH           => '4.1.17',
+	DB_PRIORITY_VERY_HIGH      => '4.1.17',
 
 	# enum db_recops
-	DB_TXN_GETPGNOS            => '4.1.12',
-	DB_TXN_PRINT               => '4.1.12',
+	DB_TXN_BACKWARD_ALLOC      => '4.1.17',
+	DB_TXN_GETPGNOS            => '4.1.17',
+	DB_TXN_PRINT               => '4.1.17',
+
 	) ;
 
 sub enum_Macro

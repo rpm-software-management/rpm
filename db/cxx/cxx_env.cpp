@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: cxx_env.cpp,v 11.86 2002/08/08 15:43:25 bostic Exp ";
+static const char revid[] = "Id: cxx_env.cpp,v 11.88 2002/08/26 22:13:36 mjc Exp ";
 #endif /* not lint */
 
 #include <errno.h>
@@ -121,24 +121,6 @@ int _rep_send_intercept_c(DB_ENV *env, const DBT *cntrl,
 	    cntrl, data, id, flags));
 }
 
-// _destroy_check is called when there is a user error in a
-// destructor, specifically when close has not been called for an
-// object (even if it was never opened).  If the DbEnv is being
-// destroyed we cannot always use DbEnv::error_stream_, so we'll
-// use cerr in that case.
-//
-void DbEnv::_destroy_check(const char *str, int isDbEnv)
-{
-	__DB_OSTREAMCLASS *out;
-
-	out = error_stream_;
-	if (out == NULL || isDbEnv == 1)
-		out = &cerr;
-
-	(*out) << "DbEnv::_destroy_check: open " << str <<
-	    " object destroyed\n";
-}
-
 void DbEnv::_feedback_intercept(DB_ENV *env, int opcode, int pct)
 {
 	if (env == 0) {
@@ -242,10 +224,8 @@ DbEnv::DbEnv(u_int32_t flags)
 ,	pgout_callback_(0)
 ,	rep_send_callback_(0)
 {
-	int ret;
-
-	if ((ret = initialize(0)) != 0)
-		DB_ERROR("DbEnv::DbEnv", ret, error_policy());
+	if ((construct_error_ = initialize(0)) != 0)
+		DB_ERROR("DbEnv::DbEnv", construct_error_, error_policy());
 }
 
 DbEnv::DbEnv(DB_ENV *env, u_int32_t flags)
@@ -259,23 +239,22 @@ DbEnv::DbEnv(DB_ENV *env, u_int32_t flags)
 ,	pgout_callback_(0)
 ,	rep_send_callback_(0)
 {
-	int ret;
-
-	if ((ret = initialize(env)) != 0)
-		DB_ERROR("DbEnv::DbEnv", ret, error_policy());
+	if ((construct_error_ = initialize(env)) != 0)
+		DB_ERROR("DbEnv::DbEnv", construct_error_, error_policy());
 }
 
-// Note: if the user has not closed, we call _destroy_check
-// to warn against this non-safe programming practice,
-// and call close anyway.
+// If the DB_ENV handle is still open, we close it.  This is to make stack
+// allocation of DbEnv objects easier so that they are cleaned up in the error
+// path.  Note that the C layer catches cases where handles are open in the
+// environment at close time and reports an error.  Applications should call
+// close explicitly in normal (non-exceptional) cases to check the return
+// value.
 //
 DbEnv::~DbEnv()
 {
 	DB_ENV *env = unwrap(this);
 
 	if (env != NULL) {
-		_destroy_check("DbEnv", 1);
-
 		cleanup();
 		(void)env->close(env, 0);
 	}
@@ -357,8 +336,7 @@ void *DbEnv::get_app_private() const
 
 // used internally during constructor
 // to associate an existing DB_ENV with this DbEnv,
-// or create a new one.  If there is an error,
-// construct_error_ is set; this is examined during open.
+// or create a new one.
 //
 int DbEnv::initialize(DB_ENV *env)
 {
@@ -369,10 +347,8 @@ int DbEnv::initialize(DB_ENV *env)
 	if (env == 0) {
 		// Create a new DB_ENV environment.
 		if ((ret = ::db_env_create(&env,
-			construct_flags_ & ~DB_CXX_NO_EXCEPTIONS)) != 0) {
-			construct_error_ = ret;
+		    construct_flags_ & ~DB_CXX_NO_EXCEPTIONS)) != 0)
 			return (ret);
-		}
 	}
 	imp_ = wrap(env);
 	env->api1_internal = this;	// for DB_ENV* to DbEnv* conversion

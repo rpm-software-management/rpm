@@ -52,7 +52,7 @@ faster than local disk writes, replication becomes a way for
 applications to significantly improve their performance as well as their
 reliability.
 <p>The return status from the <b>send</b> interface specified to the
-<a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function must be set by the application to ensure the
+<a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method must be set by the application to ensure the
 transactional guarantees the application wants to provide.  The effect
 of the <b>send</b> interface returning failure is to flush the local
 database environment's log as necessary to ensure that any information
