@@ -319,7 +319,7 @@ typedef struct rpmRelocation_s {
 
 int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
 			    rpmNotifyFunction notify, void * notifyData,
-			    const char * labelFormat, char ** cookie);
+			    char ** cookie);
 int rpmVersionCompare(Header first, Header second);
 int rpmdbRebuild(const char * root);
 
@@ -350,7 +350,7 @@ struct rpmDependencyConflict {
    open and close the file descriptor. If Header is NULL, the fd is always
    used, otherwise fd is only needed (and only opened) for actual package 
    installation */
-void rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
+int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 			void * key, int update, rpmRelocation * relocs);
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key);
 void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
