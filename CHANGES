@@ -9,6 +9,7 @@
 	  mostly backwards compatible; this hack will be removed someday
 	- added :fflags tag
 	- fixed a couple of minor memory leaks in lib/install.c
+	- --test for building
 
 2.2.3 -> 2.2.4:
 	- only remove docdir if %doc occurs
