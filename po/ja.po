@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -350,11 +350,11 @@ msgstr "インストールのためのパッケージがありません"
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数がありません"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "検証のための引数がありません"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "問い合わせのための引数がありません"
@@ -781,7 +781,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -2330,17 +2330,17 @@ msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
@@ -2390,7 +2390,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2966,28 +2966,28 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "行目: %s"
 
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "ソースは: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 

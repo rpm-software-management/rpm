@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "PO-Revision-Date: 2002-08-19 22:26+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -329,11 +329,11 @@ msgstr "inga paket angivna för installation"
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för fråga"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "inga parametrar angivna för verifiering"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 msgid "no arguments given"
 msgstr "inga argument angivna"
 
@@ -746,7 +746,7 @@ msgstr "Kan inte läsa last från %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -2194,17 +2194,17 @@ msgstr "uppackning av arkiv misslyckades%s%s: %s\n"
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s misslyckades på fil %s: %s\n"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "fel format: %s\n"
@@ -2252,7 +2252,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "paketet har varken filägare eller id-listor\n"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2809,28 +2809,28 @@ msgstr "Kan inte läsa %s, HOME är för stor.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kan inte öppna %s för läsning: %s.\n"
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "kan inte öppna Solve-databas i %s\n"
 
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Lägger till: %s\n"
 
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Föreslår %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr "hämtar lista över monterade filsystem\n"
 

@@ -793,9 +793,6 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
 	qva->qva_specQuery = NULL;
-
-	/* XXX don't overflow single byte exit status */
-	if (ec > 255) ec = 255;
 	break;
 
     case MODE_VERIFY:
@@ -807,8 +804,6 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
 	    argerror(_("no arguments given for verify"));
 	ec = rpmcliVerify(ts, qva, (const char **) poptGetArgs(optCon));
-	/* XXX don't overflow single byte exit status */
-	if (ec > 255) ec = 255;
     }	break;
 #endif	/* IAM_RPMQV */
 
@@ -825,8 +820,6 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	    argerror(_("no arguments given"));
 	ka->passPhrase = passPhrase;
 	ec = rpmcliSign(ts, ka, (const char **)poptGetArgs(optCon));
-	/* XXX don't overflow single byte exit status */
-	if (ec > 255) ec = 255;
     	break;
 #endif	/* IAM_RPMK */
 	
@@ -856,6 +849,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_UNKNOWN:
 	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose())
 	    printUsage(optCon, stdout, 0);
+	ec = argc;
 	break;
     }
 
@@ -903,6 +897,10 @@ exit:
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
     /*@=noeffect@*/
 #endif
+
+    /* XXX don't overflow single byte exit status */
+    if (ec > 255) ec = 255;
+
     /*@-globstate@*/
     return ec;
     /*@=globstate@*/

@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -392,11 +392,11 @@ msgstr "Es wurden keine Pakete für die Installation angegeben"
 msgid "no arguments given for query"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
@@ -842,7 +842,7 @@ msgstr "Nicht möglich %s zu schreiben"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2410,17 +2410,17 @@ msgid " on file "
 msgstr ""
 
 # , c-format
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp fehlgeschlagen"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "Fehler beim Format %s\n"
@@ -2471,7 +2471,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "Paket hat keinen Namen"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -3050,30 +3050,30 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
 # , c-format
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "Hole %s heraus\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

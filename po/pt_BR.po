@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
@@ -370,11 +370,11 @@ msgstr "no foi passado pacote para instalao"
 msgid "no arguments given for query"
 msgstr "no foi passado argumento para pesquisa"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "no foi passado argumento para verificao"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "no foi passado argumento para pesquisa"
@@ -834,7 +834,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2422,17 +2422,17 @@ msgid " on file "
 msgstr ""
 
 # , c-format
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2483,7 +2483,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "no foi passado pacote para instalao"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -3093,19 +3093,19 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
@@ -3118,13 +3118,13 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "RPM verso %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

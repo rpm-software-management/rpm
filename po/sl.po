@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.366 2003/01/20 16:13:00 jbj Exp $
+# $Id: sl.po,v 1.367 2003/01/22 12:32:36 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -337,11 +337,11 @@ msgstr "paketi katere bi bilo potrebno namestiti niso navedeni"
 msgid "no arguments given for query"
 msgstr "argumenti za poizvedbo niso podani"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "argumenti za preverjanje niso podani"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "argumenti za poizvedbo niso podani"
@@ -768,7 +768,7 @@ msgstr "Ikone %s ni mo¾no prebrati: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -2292,17 +2292,17 @@ msgstr "raz¹iritev arhiva je bilo neuspe¹no%s%s: %s"
 msgid " on file "
 msgstr " za datoteko "
 
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s neuspe¹en"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "napaka v obliki: %s\n"
@@ -2352,7 +2352,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2919,28 +2919,28 @@ msgstr "Ni mo¾no prebrati %s, HOME je prevelik."
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s ni mo¾no odpreti za branje: %s."
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "zbirko podatkov paketov ni mo¾no odpreti v %s\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "datoteke %s/packages.rpm ni mogo¾no odpreti\n"
 
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "vrstica: %s"
 
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "izvori v: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr "zbiranje seznama priklopljenih datoteènih sistemov.\n"
 

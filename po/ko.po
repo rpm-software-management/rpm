@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -329,11 +329,11 @@ msgstr "설치할 패키지가 지정되지 않았습니다"
 msgid "no arguments given for query"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "검증에 필요한 인수가 지정되지 않았습니다"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
@@ -745,7 +745,7 @@ msgstr "%s의 payload를 읽을 수 없음: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s에 payload를 작성할 수 없음: %s\n"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
@@ -2227,17 +2227,17 @@ msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 msgid " on file "
 msgstr " 다음 파일의 "
 
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
@@ -2286,7 +2286,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2856,28 +2856,28 @@ msgstr "%s(을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s의 rpm 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "행: %s\n"
 
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -342,11 +342,11 @@ msgstr "asennukselle ei m‰‰ritelty paketteja"
 msgid "no arguments given for query"
 msgstr "kyselylle ei annettu parametrej‰"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "tarkistukselle ei annettu parametrej‰"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "kyselylle ei annettu parametrej‰"
@@ -765,7 +765,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2293,17 +2293,17 @@ msgstr "%s:n avaus ei onnistunut: %s\n"
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp ep‰onnistui"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "virhe formaatissa: %s\n"
@@ -2354,7 +2354,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "paketilla ei ole nime‰"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2918,28 +2918,28 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "En voi avata %s luettavaksi: %s."
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "Haen: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

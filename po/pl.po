@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -341,11 +341,11 @@ msgstr "nie podano nazw plików do zainstalowania"
 msgid "no arguments given for query"
 msgstr "nie podano argumentów dla trybu zapytañ"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "nie podano argumentów dla sprawdzania"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "nie podano argumentów dla trybu zapytañ"
@@ -772,7 +772,7 @@ msgstr "Nie mo¿na odczytaæ ikony: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -2294,17 +2294,17 @@ msgstr "rozpakowanie archiwum nie powiod³o siê %s%s: %s"
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³±d w formacie: %s\n"
@@ -2354,7 +2354,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "pakiet nie ma ani w³a¶ciciela pliku ani list id"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2920,28 +2920,28 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s."
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "linia: %s"
 
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "¼ród³a w: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

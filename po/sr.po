@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -335,11 +335,11 @@ msgstr "nedostaje paket za instalaciju"
 msgid "no arguments given for query"
 msgstr "nedostaju argumenti za upit"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "nedostaju argumenti za proveru"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "nedostaju argumenti za upit"
@@ -758,7 +758,7 @@ msgstr "Ne mogu da upi¹em %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2284,17 +2284,17 @@ msgstr "neuspelo otvaranje %s: %s\n"
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "PGP omanuo"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "gre¹ka u formatu: %s\n"
@@ -2345,7 +2345,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "paket nema imena"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2909,28 +2909,28 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "Pribavljam %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

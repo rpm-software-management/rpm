@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2003-01-20 11:06-0500\n"
+"POT-Creation-Date: 2003-01-22 07:25-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -337,11 +337,11 @@ msgstr "não foram indicados pacotes para instalar"
 msgid "no arguments given for query"
 msgstr "não foram indicados argumentos para a pesquisa"
 
-#: rpmqv.c:808
+#: rpmqv.c:805
 msgid "no arguments given for verify"
 msgstr "não foram indicados argumentos para a verificação"
 
-#: rpmqv.c:825
+#: rpmqv.c:820
 #, fuzzy
 msgid "no arguments given"
 msgstr "não foram indicados argumentos para a pesquisa"
@@ -755,7 +755,7 @@ msgstr "Não consegui ler o conteúdo de %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Não consegui escrever o conteúdo de %s: %s\n"
 
-#: build/pack.c:725 lib/psm.c:1948
+#: build/pack.c:725 lib/psm.c:1947
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravei: %s\n"
@@ -2238,17 +2238,17 @@ msgstr "a abertura do pacote falhou%s%s: %s\n"
 msgid " on file "
 msgstr " no ficheiro "
 
-#: lib/psm.c:1956
+#: lib/psm.c:1955
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s falhou no ficheiro %s: %s\n"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1958
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
 
-#: lib/query.c:122 lib/rpmts.c:451
+#: lib/query.c:122 lib/rpmts.c:453
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "formato incorrecto: %s\n"
@@ -2297,7 +2297,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "o pacote nem tem um dono do ficheiro ou as listas de IDs\n"
 
 #: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
+#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2866,28 +2866,28 @@ msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/rpmts.c:156
+#: lib/rpmts.c:158
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "não consigo abrir a base de dados Packages em %s\n"
 
-#: lib/rpmts.c:341
+#: lib/rpmts.c:343
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "não consigo a base de dados do RPM em %s\n"
 
-#: lib/rpmts.c:483
+#: lib/rpmts.c:485
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "linha: %s\n"
 
-#: lib/rpmts.c:495
+#: lib/rpmts.c:497
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "A obter o %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:927
+#: lib/rpmts.c:929
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
