@@ -23,7 +23,9 @@ void main(int argc, char **argv)
     if ((s = parseSpec(f))) {
 	execPrep(s);
 /* 	dumpSpec(s); */
-	packageBinaries(s);
+/*	packageBinaries(s); */
+	doBuild(s, RPMBUILD_PREP | RPMBUILD_BUILD |
+		RPMBUILD_INSTALL | RPMBUILD_BINARY | RPMBUILD_SOURCE);
     }
 
     fclose(f);
