@@ -264,8 +264,9 @@ static int rpmInstallLoadMacros(TFI_t fi, Header h)
 /**
  * Localize user/group id's.
  * @param fi		transaction element file info
+ * @return		0 always
  */
-static void setFileOwners(TFI_t fi)
+static int setFileOwners(TFI_t fi)
 {
     uid_t uid;
     gid_t gid;
@@ -290,6 +291,7 @@ static void setFileOwners(TFI_t fi)
 	fi->fuids[i] = uid;
 	fi->fgids[i] = gid;
     }
+    return 0;
 }
 
 /**
@@ -572,23 +574,16 @@ static int installArchive(PSM_t psm, int allFiles)
 	return 0;
     }
 
-    /* Retrieve type of payload compression. */
-    rc = psmStage(psm, PSM_RPMIO_FLAGS);
-
-    psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
     rc = psmStage(psm, PSM_PROCESS);
-    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-    Fclose(psm->cfd);
-    psm->cfd = NULL;
+
     if (!rc)
-	rc = psmStage(psm, PSM_PKGCOMMIT);
+	rc = psmStage(psm, PSM_COMMIT);
 
     if (rc) {
 	/*
 	 * This would probably be a good place to check if disk space
 	 * was used up - if so, we should return a different error.
 	 */
-	errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 	rpmError(RPMERR_CPIO, _("unpacking of archive failed%s%s: %s\n"),
 		(psm->failedFile != NULL ? _(" on file ") : ""),
 		(psm->failedFile != NULL ? psm->failedFile : ""),
@@ -602,9 +597,6 @@ static int installArchive(PSM_t psm, int allFiles)
 			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
 	}
     }
-
-    psm->failedFile = _free(psm->failedFile);
-    psm->rpmio_flags = _free(psm->rpmio_flags);
 
     return rc;
 }
@@ -723,6 +715,8 @@ static rpmRC installSources(const rpmTransactionSet ts, TFI_t fi,
 	psm->fi = fi;
 
 	rc = installArchive(psm, 1);
+
+	(void) psmStage(psm, PSM_FINI);
     }
 
     if (rc) {
@@ -1332,6 +1326,7 @@ int psmStage(PSM_t psm, pkgStage stage)
     TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
     int rc = psm->rc;
+    int saveerrno;
 
     switch (stage) {
     case PSM_UNKNOWN:
@@ -1346,12 +1341,27 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->progTag = RPMTAG_PREINPROG;
 	    rc = psmStage(psm, PSM_SCRIPT);
+	    if (rc) {
+		rpmError(RPMERR_SCRIPT,
+			_("%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"),
+			psm->stepName, tag2sln(psm->scriptTag), rc,
+			fi->name, fi->version, fi->release);
+		break;
+	    }
+
+	    /* Change root directory if requested and not already done. */
+	    (void) psmStage(psm, PSM_CHROOT_IN);
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    psm->scriptTag = RPMTAG_PREUN;
 	    psm->progTag = RPMTAG_PREUNPROG;
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
+
+	    /* Change root directory if requested and not already done. */
+	    rc = psmStage(psm, PSM_CHROOT_IN);
+	    if (rc) break;
+
 	    rc = psmStage(psm, PSM_TRIGGERS);
 	    if (rc) break;
 
@@ -1360,12 +1370,28 @@ int psmStage(PSM_t psm, pkgStage stage)
 
 	    rc = psmStage(psm, PSM_SCRIPT);
 	}
+	if (psm->goal == PSM_PKGSAVE) {
+	    /* Change root directory if requested and not already done. */
+	    rc = psmStage(psm, PSM_CHROOT_IN);
+	}
 	break;
     case PSM_PROCESS:
 	if (psm->goal == PSM_PKGINSTALL) {
+	    struct availablePackage * alp = fi->ap;
+
+	    /* Retrieve type of payload compression. */
+	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
+
+	    psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
+
 	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) fsmTeardown(fi->fsm);
+
+	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
+	    Fclose(psm->cfd);
+	    psm->cfd = NULL;
+	    errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    const void * pkgKey = NULL;
@@ -1392,9 +1418,17 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    fi->action = FA_COPYOUT;
 	    fi->actions = NULL;
 
+	    Fflush(psm->fd);
+	    psm->cfd = Fdopen(fdDup(Fileno(psm->fd)), psm->rpmio_flags);
+
 	    /* XXX failedFile? */
 	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd, NULL, NULL);
 	    (void) fsmTeardown(fi->fsm);
+
+	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
+	    Fclose(psm->cfd);
+	    psm->cfd = NULL;
+	    errno = saveerrno;
 
 	    fi->action = action;
 	    fi->actions = actions;
@@ -1420,6 +1454,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    if (rc) break;
 
 	    markReplacedFiles(ts, fi);
+
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    psm->scriptTag = RPMTAG_POSTUN;
@@ -1427,21 +1462,40 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    psm->sense = RPMSENSE_TRIGGERPOSTUN;
 	    psm->countCorrection = -1;
 
+	    rc = psmStage(psm, PSM_SCRIPT);
 	    /* XXX WTFO? postun failures are not cause for erasure failure. */
-	    (void) psmStage(psm, PSM_SCRIPT);
 
 	    rc = psmStage(psm, PSM_TRIGGERS);
+	    if (rc) break;
+
+	    rc = psmStage(psm, PSM_RPMDB_REMOVE);
 	}
 	break;
     case PSM_UNDO:
 	break;
     case PSM_FINI:
+	if (psm->fd) {
+	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
+	    Fclose(psm->fd);
+	    psm->fd = NULL;
+	    errno = saveerrno;
+	}
+
+	if (psm->goal == PSM_PKGSAVE) {
+	    if (!rc)
+		rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"), psm->pkgURL);
+	}
+
 	/* Restore root directory if changed. */
 	(void) psmStage(psm, PSM_CHROOT_OUT);
 
 	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE)) {
 	    headerFree(fi->h);
 	    fi->h = NULL;
+	}
+	if (psm->oh) {
+	    headerFree(psm->oh);
+	    psm->oh = NULL;
 	}
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
@@ -1453,10 +1507,6 @@ int psmStage(PSM_t psm, pkgStage stage)
     case PSM_PKGERASE:
 	break;
     case PSM_PKGCOMMIT:
-	if (!(ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT)) break;
-	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
-			NULL, NULL, &psm->failedFile);
-	(void) fsmTeardown(fi->fsm);
 	break;
     case PSM_PKGSAVE:
 	break;
@@ -1468,6 +1518,10 @@ int psmStage(PSM_t psm, pkgStage stage)
     case PSM_DESTROY:
 	break;
     case PSM_COMMIT:
+	if (!(ts->transFlags & RPMTRANS_FLAG_PKGCOMMIT)) break;
+	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
+			NULL, NULL, &psm->failedFile);
+	(void) fsmTeardown(fi->fsm);
 	break;
 
     case PSM_CHROOT_IN:
@@ -1571,7 +1625,6 @@ int installBinaryPackage(PSM_t psm)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
-    Header oldH = NULL;
     int ec = 2;		/* assume error return */
     int rc;
 
@@ -1589,13 +1642,15 @@ psm->stepName = "  install";
 	goto exit;
 
     {	rpmdbMatchIterator mi;
+	Header oh;
+
 	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
 	rpmdbSetIteratorVersion(mi, fi->version);
 	rpmdbSetIteratorRelease(mi, fi->release);
-	while ((oldH = rpmdbNextIterator(mi))) {
+	while ((oh = rpmdbNextIterator(mi))) {
 	    fi->record = rpmdbGetIteratorOffset(mi);
-	    oldH = (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
-		? headerCopy(oldH) : NULL;
+	    psm->oh = (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
+		? headerCopy(oh) : NULL;
 	    break;
 	}
 	rpmdbFreeIterator(mi);
@@ -1641,19 +1696,12 @@ psm->stepName = "  install";
     }
 
     rc = psmStage(psm, PSM_PRE);
-    if (rc) {
-	rpmError(RPMERR_SCRIPT,
-		_("skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"),
-		fi->name, fi->version, fi->release, rc);
+    if (rc)
 	goto exit;
-    }
-
-    /* Change root directory if requested and not already done. */
-    (void) psmStage(psm, PSM_CHROOT_IN);
 
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
 
-	setFileOwners(fi);
+	rc = setFileOwners(fi);
 
 	rc = installArchive(psm, 0);
 
@@ -1685,19 +1733,19 @@ psm->stepName = "  install";
      * before adding the new one.
      */
     if (fi->record)
-        rpmdbRemove(ts->rpmdb, ts->id, fi->record);
+	rc = psmStage(psm, PSM_RPMDB_REMOVE);
 
     if (ts->transFlags & RPMTRANS_FLAG_MULTILIB) {
 	uint_32 multiLib, * newMultiLib, * p;
 
 	if (hge(fi->h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib, NULL) &&
-	    hge(oldH, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL)) {
+	    hge(psm->oh, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL)) {
 	    multiLib = *p;
 	    multiLib |= *newMultiLib;
-	    headerModifyEntry(oldH, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+	    headerModifyEntry(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 			      &multiLib, 1);
 	}
-	if (mergeFiles(fi, oldH, fi->h))
+	if (mergeFiles(fi, psm->oh, fi->h))
 	    goto exit;
     }
 
@@ -1710,8 +1758,6 @@ psm->stepName = "  install";
 exit:
     (void) psmStage(psm, PSM_FINI);
 
-    if (oldH)
-	headerFree(oldH);
     return ec;
 }
 
@@ -1743,9 +1789,6 @@ psm->stepName = "    erase";
 	goto exit;
     }
 
-    /* Change root directory if requested and not already done. */
-    (void) psmStage(psm, PSM_CHROOT_IN);
-
     rc = psmStage(psm, PSM_PRE);
     if (rc) {
 	rc = 1;
@@ -1761,10 +1804,6 @@ psm->stepName = "    erase";
 	goto exit;
     }
 
-    rc = psmStage(psm, PSM_RPMDB_REMOVE);
-
-    rc = 0;
-
 exit:
     (void) psmStage(psm, PSM_FINI);
 
@@ -1774,7 +1813,6 @@ exit:
 int repackage(PSM_t psm)
 {
     TFI_t fi = psm->fi;
-    Header oh = NULL;
     int saveerrno;
     int rc = 0;
 
@@ -1796,10 +1834,10 @@ psm->stepName = "repackage";
 
 	if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
 	    HFD_t hfd = fi->hfd;
-	    oh = headerCopyLoad(uh);
+	    psm->oh = headerCopyLoad(uh);
 	    uh = hfd(uh, uht);
 	} else {
-	    oh = headerLink(fi->h);
+	    psm->oh = headerLink(fi->h);
 	}
     }
 
@@ -1865,34 +1903,15 @@ psm->stepName = "repackage";
     }
 
     /* Write the metadata section into the package. */
-    rc = headerWrite(psm->fd, oh, HEADER_MAGIC_YES);
+    rc = headerWrite(psm->fd, psm->oh, HEADER_MAGIC_YES);
     if (rc) goto exit;
 
-    /* Change root directory if requested and not already done. */
-    (void) psmStage(psm, PSM_CHROOT_IN);
+    rc = psmStage(psm, PSM_PRE);
 
     /* Write the payload into the package. */
-    Fflush(psm->fd);
-    psm->cfd = Fdopen(fdDup(Fileno(psm->fd)), psm->rpmio_flags);
     rc = psmStage(psm, PSM_PROCESS);
-    saveerrno = errno;	/* XXX FIXME: Fclose with libio destroys errno */
-    Fclose(psm->cfd);
-    psm->cfd = NULL;
-    errno = saveerrno;
 
 exit:
-
-    if (psm->fd) {
-	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	Fclose(psm->fd);
-	errno = saveerrno;
-    }
-
-    if (!rc)
-	rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"), psm->pkgURL);
-
-    if (oh)	headerFree(oh);
-
     (void) psmStage(psm, PSM_FINI);
 
     return rc;

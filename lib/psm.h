@@ -135,15 +135,16 @@ typedef enum pkgStage_e {
 /**
  */
 struct psm_s {
-    rpmTransactionSet ts;
-    TFI_t fi;
-    FD_t cfd;
-    FD_t fd;
+    rpmTransactionSet ts;	/*!< transaction set */
+    TFI_t fi;			/*!< transaction element file info */
+    FD_t cfd;			/*!< Payload file handle. */
+    FD_t fd;			/*!< Repackage file handle. */
+    Header oh;			/*!< Repackage/multilib header. */
 /*@observer@*/ const char * stepName;
 /*@owned@*/ const char * rpmio_flags;
 /*@owned@*/ const char * failedFile;
-/*@owned@*/ const char * pkgURL;
-/*@dependent@*/ const char * pkgfn;
+/*@owned@*/ const char * pkgURL;	/*!< Repackage URL. */
+/*@dependent@*/ const char * pkgfn;	/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int scriptArg;		/*!< No. of installed instances. */
