@@ -15,7 +15,7 @@ void setVerbosity(int level) {
 
 int isVerbose(void)
 {
-    return (minLevel >= MESS_VERBOSE);
+    return (minLevel <= MESS_VERBOSE);
 }
 
 void message(int level, char * format, ...) {
