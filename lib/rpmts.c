@@ -985,7 +985,7 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 
 int rpmtsSELinuxEnabled(rpmts ts)
 {
-    return (ts != NULL ? ts->selinuxEnabled : 0);
+    return (ts != NULL ? (ts->selinuxEnabled > 0) : 0);
 }
 
 int rpmtsChrootDone(rpmts ts)
