@@ -24,6 +24,7 @@
 	- fix: --excludedoc shouldn't create empty doc dir (#14531).
 	- fix: %_netsharedpath needs to look at basenames (#26561).
 	- fix: --excludepath was broken (#24434).
+	- fix: s390 (and ppc?) could return CPIOERR_BAD_HEADER (#28645).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

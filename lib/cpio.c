@@ -50,14 +50,14 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     if (*end)
 	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
     else
-	*endptr = ((char *)str) + strlen(str);
+	*endptr = ((char *)str) + strlen(buf);
 
     return ret;
 }
 
 #define GET_NUM_FIELD(phys, log) \
 	log = strntoul(phys, &end, 16, sizeof(phys)); \
-	if (*end) return CPIOERR_BAD_HEADER;
+	if ( (end - phys) != sizeof(phys) ) return CPIOERR_BAD_HEADER;
 #define SET_NUM_FIELD(phys, val, space) \
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	memcpy(phys, space, 8);
