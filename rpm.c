@@ -194,7 +194,7 @@ static void printHelp(void) {
     printHelpLine("        --dump            ",
 		  _("show all verifiable information for each file (must be used with -l, -c, or -d)"));
     printHelpLine("        --provides        ",
-		  _("list capabilbities package provides"));
+		  _("list capabilities package provides"));
     puts(       _("        --requires"));
     printHelpLine("        -R                ",
 		  _("list package dependencies"));
@@ -241,7 +241,7 @@ static void printHelp(void) {
     printHelpLine("      --hash              ",
 		  _("print hash marks as package installs (good with -v)"));
     printHelpLine("      --ignorearch        ",
-		  _("don't verify package architecure"));
+		  _("don't verify package architecture"));
     printHelpLine("      --ignoreos          ",
 		  _("don't verify package operating system"));
     printHelpLine("      --includedocs       ",
@@ -996,7 +996,7 @@ int main(int argc, char ** argv) {
 	argerror(_("--oldpackage may only be used during upgrades"));
 
     if (bigMode != MODE_QUERY && dump) 
-	argerror(_("--dump may only be used during queryies"));
+	argerror(_("--dump may only be used during queries"));
 
     if (bigMode == MODE_QUERY && dump && !(queryFor & QUERY_FOR_LIST))
 	argerror(_("--dump of queries must be used with -l, -c, or -d"));
