@@ -38,7 +38,7 @@ int execPart(Spec s, char *sb, char *name, int builddir);
 static int doSetupMacro(Spec spec, StringBuf sb, char *line);
 static int doPatchMacro(Spec spec, StringBuf sb, char *line);
 static char *do_untar(Spec spec, int c);
-static char *do_patch(Spec spec, int c, int strip, char *dashb);
+static char *do_patch(Spec spec, int c, int strip, char *dashb, int reverse);
 int isCompressed(char *file);
 static void doSweep(Spec s);
 static int doRmSource(Spec s);
@@ -414,11 +414,11 @@ static char *do_untar(Spec spec, int c)
     return buf;
 }
 
-static char *do_patch(Spec spec, int c, int strip, char *db)
+static char *do_patch(Spec spec, int c, int strip, char *db, int reverse)
 {
     static char buf[1024];
     char file[1024];
-    char dashb[1024];
+    char args[1024];
     char *s;
     struct sources *sp;
 
@@ -438,21 +438,27 @@ static char *do_patch(Spec spec, int c, int strip, char *db)
 
     sprintf(file, "%s/%s", getVar(RPMVAR_SOURCEDIR), s);
 
+    args[0] = '\0';
     if (db) {
-	sprintf(dashb, "-b %s", db);
-    } else {
-	strcpy(dashb, "");
+	strcat(args, "-b ");
+	strcat(args, db);
     }
-    
+    if (reverse) {
+	strcat(args, " -R");
+    }
+
     if (isCompressed(file)) {
 	sprintf(buf,
+		"echo \"Patch #%d:\"\n"
 		"gzip -dc %s | patch -p%d %s -s\n"
 		"if [ $? -ne 0 ]; then\n"
 		"  exit $?\n"
 		"fi",
-		file, strip, dashb);
+		c, file, strip, args);
     } else {
-	sprintf(buf, "patch -p%d %s -s < %s", strip, dashb, file);
+	sprintf(buf,
+		"echo \"Patch #%d:\"\n"
+		"patch -p%d %s -s < %s", c, strip, args, file);
     }
 
     return buf;
@@ -461,13 +467,13 @@ static char *do_patch(Spec spec, int c, int strip, char *db)
 static int doPatchMacro(Spec spec, StringBuf sb, char *line)
 {
     char *opt_b;
-    int opt_P, opt_p;
+    int opt_P, opt_p, opt_R;
     char *s, *s1;
     char buf[1024];
     int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
     int patch_index, x;
 
-    opt_P = opt_p = 0;
+    opt_P = opt_p = opt_R = 0;
     opt_b = NULL;
     patch_index = 0;
 
@@ -482,6 +488,8 @@ static int doPatchMacro(Spec spec, StringBuf sb, char *line)
     while ((s = strtok(NULL, " \t\n"))) {
 	if (!strcmp(s, "-P")) {
 	    opt_P = 1;
+	} else if (!strcmp(s, "-R")) {
+	    opt_R = 1;
 	} else if (!strcmp(s, "-b")) {
 	    /* orig suffix */
 	    opt_b = strtok(NULL, " \t\n");
@@ -525,7 +533,7 @@ static int doPatchMacro(Spec spec, StringBuf sb, char *line)
     /* All args processed */
 
     if (! opt_P) {
-	s = do_patch(spec, 0, opt_p, opt_b);
+	s = do_patch(spec, 0, opt_p, opt_b, opt_R);
 	if (! s) {
 	    return 1;
 	}
@@ -534,7 +542,7 @@ static int doPatchMacro(Spec spec, StringBuf sb, char *line)
 
     x = 0;
     while (x < patch_index) {
-	s = do_patch(spec, patch_nums[x], opt_p, opt_b);
+	s = do_patch(spec, patch_nums[x], opt_p, opt_b, opt_R);
 	if (! s) {
 	    return 1;
 	}
