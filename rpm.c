@@ -10,22 +10,17 @@
 #include "query.h"
 #include "verify.h"
 
-#define GETOPT_QUERYFORMAT	1000
-#define GETOPT_WHATREQUIRES	1001
-#define GETOPT_WHATPROVIDES	1002
 #define GETOPT_REBUILD		1003
 #define GETOPT_RECOMPILE	1004
 #define GETOPT_ADDSIGN		1005
 #define GETOPT_RESIGN		1006
 #define GETOPT_BUILDROOT 	1007
-#define GETOPT_QUERYBYNUMBER	1009
 #define GETOPT_DBPATH		1010
 #define GETOPT_TIMECHECK        1012
 #define GETOPT_REBUILDDB        1013
 #define GETOPT_INSTALL		1014
 #define GETOPT_RMSOURCE		1015
 #define GETOPT_RELOCATE		1016
-#define GETOPT_TRIGGEREDBY	1017
 #define GETOPT_SHOWRC		1018
 #define GETOPT_BUILDPLATFORM	1019
 #define GETOPT_BUILDARCH	1020
@@ -44,7 +39,6 @@ static int allMatches;
 static char * arch;
 static int badReloc;
 static int clean;
-static int dump;
 static int excldocs;
 static int force;
 static char * ftpPort;
@@ -82,6 +76,7 @@ static int test;
 
 static int rpm_version;
 
+static struct rpmQueryArguments queryArgs;
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
 	{ "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
@@ -96,17 +91,12 @@ static struct poptOption optionsTable[] = {
 	{ "buildroot", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDROOT },
 	{ "checksig", 'K', 0, 0, 'K' },
 	{ "clean", '\0', 0, &clean, 0 },
-	{ "configfiles", 'c', 0, 0, 'c' },
 	{ "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH },
-	{ "docfiles", 'd', 0, 0, 'd' },
-	{ "dump", '\0', 0, &dump, 0 },
 	{ "erase", 'e', 0, 0, 'e' },
 	{ "excludedocs", '\0', 0, &excldocs, 0},
-	{ "file", 'f', 0, 0, 'f' },
 	{ "force", '\0', 0, &force, 0 },
 	{ "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0},
 	{ "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0},
-	{ "group", 'g', 0, 0, 'g' },
 	{ "hash", 'h', 0, &showHash, 0 },
 	{ "help", '\0', 0, &help, 0 },
 	{  NULL, 'i', 0, 0, 'i' },
@@ -117,7 +107,6 @@ static struct poptOption optionsTable[] = {
 /* info and install both using 'i' is dumb */
 	{ "install", '\0', 0, 0, GETOPT_INSTALL },
 	{ "justdb", '\0', 0, &justdb, 0 },
-	{ "list", 'l', 0, 0, 'l' },
 	{ "nodeps", '\0', 0, &noDeps, 0 },
 	{ "nofiles", '\0', 0, &noFiles, 0 },
 	{ "nolang", '\0', 0, &noLang, 0 },
@@ -127,14 +116,10 @@ static struct poptOption optionsTable[] = {
 	{ "noscripts", '\0', 0, &noScripts, 0 },
 	{ "notriggers", '\0', 0, &noTriggers, 0 },
 	{ "oldpackage", '\0', 0, &oldPackage, 0 },
-	{ "package", 'p', 0, 0, 'p' },
 	{ "percent", '\0', 0, &showPercents, 0 },
 	{ "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0 },
 	{ "prefix", '\0', POPT_ARG_STRING, &prefix, 0 },
-	{ "qf", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
-	{ "query", 'q', 0, 0, 'q' },
-	{ "querybynumber", '\0', 0, 0, GETOPT_QUERYBYNUMBER },
-	{ "queryformat", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
+	{ "query", 'q', 0, NULL, 'q' },
 	{ "querytags", '\0', 0, &queryTags, 0 },
 	{ "quiet", '\0', 0, &quiet, 0 },
 	{ "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0 },
@@ -150,19 +135,19 @@ static struct poptOption optionsTable[] = {
 	{ "short-circuit", '\0', 0, &shortCircuit, 0 },
 	{ "showrc", '\0', 0, &showrc, GETOPT_SHOWRC },
 	{ "sign", '\0', 0, &signIt, 0 },
-	{ "state", 's', 0, 0, 's' },
 	{ "tarball", 't', POPT_ARG_STRING, 0, 't' },
 	{ "test", '\0', 0, &test, 0 },
 	{ "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK },
-	{ "triggeredby", '\0', 0, 0, GETOPT_TRIGGEREDBY },
 	{ "upgrade", 'U', 0, 0, 'U' },
 	{ "uninstall", 'u', 0, 0, 'u' },
 	{ "verbose", 'v', 0, 0, 'v' },
 	{ "verify", 'V', 0, 0, 'V' },
 	{  NULL, 'y', 0, 0, 'V' },
 	{ "version", '\0', 0, &rpm_version, 0 },
-	{ "whatrequires", '\0', 0, 0, GETOPT_WHATREQUIRES },
-	{ "whatprovides", '\0', 0, 0, GETOPT_WHATPROVIDES },
+	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
+		rpmQuerySourcePoptTable, 0, (void *) &queryArgs, NULL },
+	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
+		rpmQueryPoptTable, 0, (void *) &queryArgs, NULL },
 	{ 0, 0, 0, 0, 0 }
 };
 
@@ -501,10 +486,9 @@ static void printHelp(void) {
 
 int main(int argc, char ** argv) {
     enum modes bigMode = MODE_UNKNOWN;
-    enum querysources querySource = QUERY_PACKAGE;
+    enum rpmQuerySources querySource = QUERY_PACKAGE;
     enum verifysources verifySource = VERIFY_PACKAGE;
     int arg, len;
-    int queryFor = 0;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0;
     int gotDbpath = 0, building = 0, verifyFlags;
@@ -512,7 +496,6 @@ int main(int argc, char ** argv) {
     int checksigFlags = 0;
     int timeCheck = 0;
     int addSign = NEW_SIGNATURE;
-    char * queryFormat = NULL;
     char buildChar = ' ';
     char * specFile;
     char * tce;
@@ -538,7 +521,6 @@ int main(int argc, char ** argv) {
     arch = NULL;
     badReloc = 0;
     clean = 0;
-    dump = 0;
     excldocs = 0;
     force = 0;
     ftpProxy = NULL;
@@ -632,6 +614,8 @@ int main(int argc, char ** argv) {
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 
     poptResetContext(optCon);
+    if (queryArgs.queryFormat) free(queryArgs.queryFormat);
+    memset(&queryArgs, 0, sizeof(queryArgs));
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
@@ -731,22 +715,6 @@ int main(int argc, char ** argv) {
 	    installFlags |= RPMINSTALL_UPGRADE;
 	    break;
 
-	  case 's':
-	    queryFor |= QUERY_FOR_LIST | QUERY_FOR_STATE;
-	    break;
-
-	  case 'l':
-	    queryFor |= QUERY_FOR_LIST;
-	    break;
-
-	  case 'd':
-	    queryFor |= QUERY_FOR_DOCS | QUERY_FOR_LIST;
-	    break;
-
-	  case 'c':
-	    queryFor |= QUERY_FOR_CONFIG | QUERY_FOR_LIST;
-	    break;
-
 	  case 'p':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
 		argerror(_("one type of query/verify may be performed at a " "time"));
@@ -778,17 +746,7 @@ int main(int argc, char ** argv) {
 	    verifySource = VERIFY_EVERY;
 	    break;
 
-	  case GETOPT_QUERYFORMAT:
-	    if (queryFormat) {
-		len = strlen(queryFormat) + strlen(optArg) + 1;
-		queryFormat = realloc(queryFormat, len);
-		strcat(queryFormat, optArg);
-	    } else {
-		queryFormat = malloc(strlen(optArg) + 1);
-		strcpy(queryFormat, optArg);
-	    }
-	    break;
-
+#ifdef FOO
 	  case GETOPT_WHATREQUIRES:
 	    if (querySource != QUERY_PACKAGE && 
 		querySource != QUERY_WHATREQUIRES)
@@ -812,6 +770,7 @@ int main(int argc, char ** argv) {
 				"time"));
 	    querySource = QUERY_TRIGGEREDBY;
 	    break;
+#endif
 
 	  case GETOPT_REBUILD:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
@@ -861,14 +820,6 @@ int main(int argc, char ** argv) {
                 argerror(_("arguments to --dbpath must begin with a /"));
 	    rpmSetVar(RPMVAR_DBPATH, optArg);
 	    gotDbpath = 1;
-	    break;
-
-	  case GETOPT_QUERYBYNUMBER:
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
-		argerror(_("one type of query may be performed at a " 
-			    "time"));
-	    querySource = QUERY_DBOFFSET;
-	    verifySource = VERIFY_RPM;
 	    break;
 
 	  case GETOPT_TIMECHECK:
@@ -941,6 +892,13 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_QUERYTAGS;
     }
 
+    if (queryArgs.sourceCount) {
+	if (querySource != QUERY_PACKAGE || queryArgs.sourceCount > 1)
+	    argerror(_("one type of query/verify may be performed at a "
+			"time"));
+	querySource = queryArgs.source;
+    }
+
     if (buildRootOverride && bigMode != MODE_BUILD &&
 	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
 	argerror("--buildroot may only be used during package builds");
@@ -956,10 +914,10 @@ int main(int argc, char ** argv) {
 	bigMode != MODE_RECOMPILE && bigMode != MODE_TARBUILD) 
 	argerror(_("--timecheck may only be used during package builds"));
     
-    if (bigMode != MODE_QUERY && queryFor) 
+    if (bigMode != MODE_QUERY && queryArgs.flags) 
 	argerror(_("unexpected query specifiers"));
 
-    if (bigMode != MODE_QUERY && queryFormat) 
+    if (bigMode != MODE_QUERY && queryArgs.queryFormat) 
 	argerror(_("unexpected query specifiers"));
 
     if (bigMode != MODE_QUERY && bigMode != MODE_VERIFY &&
@@ -1082,12 +1040,6 @@ int main(int argc, char ** argv) {
     if (oldPackage && !(installFlags & RPMINSTALL_UPGRADE))
 	argerror(_("--oldpackage may only be used during upgrades"));
 
-    if (bigMode != MODE_QUERY && dump) 
-	argerror(_("--dump may only be used during queries"));
-
-    if (bigMode == MODE_QUERY && dump && !(queryFor & QUERY_FOR_LIST))
-	argerror(_("--dump of queries must be used with -l, -c, or -d"));
-
     if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
 	((bigMode == MODE_QUERY && querySource == QUERY_RPM)) ||
 	((bigMode == MODE_VERIFY && querySource == VERIFY_RPM))))
@@ -1165,7 +1117,7 @@ int main(int argc, char ** argv) {
 	if (argc != 2)
 	    argerror(_("unexpected arguments to --querytags "));
 
-	queryPrintTags();
+	rpmDisplayQueryTags(stdout);
 	break;
 
       case MODE_INITDB:
@@ -1328,18 +1280,18 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_QUERY:
-	if (dump) queryFor |= QUERY_FOR_DUMPFILES;
-
 	if (querySource == QUERY_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for query of all packages"));
 
-	    ec = doQuery(rootdir, QUERY_ALL, queryFor, NULL, queryFormat);
+	    ec = rpmQuery(rootdir, QUERY_ALL, queryArgs.flags, NULL, 
+			 queryArgs.queryFormat);
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec = doQuery(rootdir, querySource, queryFor, pkg, queryFormat);
+		ec = rpmQuery(rootdir, querySource, queryArgs.flags, pkg, 
+			     queryArgs.queryFormat);
 	}
 	break;
 
@@ -1368,7 +1320,7 @@ int main(int argc, char ** argv) {
     }
 
     /* keeps memory leak checkers quiet */
-    if (queryFormat) free(queryFormat);
+    if (queryArgs.queryFormat) free(queryArgs.queryFormat);
 
     return ec;
 }

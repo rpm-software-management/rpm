@@ -518,6 +518,31 @@ int rpmGetFilesystemList(char *** listptr, int * num);
 int rpmGetFilesystemUsage(char ** filelist, int_32 * fssizes, int numFiles,
 			  uint_32 ** usagesPtr, int flags);
 
+enum rpmQuerySources { QUERY_PACKAGE = 0, QUERY_PATH, QUERY_ALL, QUERY_RPM, 
+		       QUERY_GROUP, QUERY_WHATPROVIDES, QUERY_WHATREQUIRES,
+		       QUERY_DBOFFSET, QUERY_TRIGGEREDBY };
+
+#define QUERY_FOR_LIST		(1 << 1)
+#define QUERY_FOR_STATE		(1 << 2)
+#define QUERY_FOR_DOCS		(1 << 3)
+#define QUERY_FOR_CONFIG	(1 << 4)
+#define QUERY_FOR_DUMPFILES     (1 << 8)
+
+extern struct poptOption rpmQuerySourcePoptTable[];
+extern struct poptOption rpmQueryPoptTable[];
+
+struct rpmQueryArguments {
+    int flags;
+    enum rpmQuerySources source;
+    int sourceCount;		/* > 1 is an error */
+    char * queryFormat;
+    int verbose;
+};
+
+int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags, 
+	     char * arg, char * queryFormat);
+void rpmDisplayQueryTags(FILE * f);
+
 #ifdef __cplusplus
 }
 #endif

@@ -5,8 +5,7 @@
 #endif
 
 #include "build/rpmbuild.h"
-
-#include "query.h"
+#include "popt/popt.h"
 #include "url.h"
 
 static char * permsString(int mode);
@@ -17,6 +16,88 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
 			  char * owner, char * group, int uid, int gid,
 			  char * linkto);
+
+#define POPT_QUERYFORMAT	1000
+#define POPT_WHATREQUIRES	1001
+#define POPT_WHATPROVIDES	1002
+#define POPT_QUERYBYNUMBER	1003
+#define POPT_TRIGGEREDBY	1004
+#define POPT_DUMP		1005
+
+static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
+			     const struct poptOption * opt, const char * arg, 
+			     struct rpmQueryArguments * data);
+
+struct poptOption rpmQuerySourcePoptTable[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+		queryArgCallback, 0, NULL, NULL },
+	{ "file", 'f', 0, 0, 'f', "query package owning file", "FILE" },
+	{ "group", 'g', 0, 0, 'g', "query packages in group", "GROUP" },
+	{ "package", 'p', 0, 0, 'p', "query a package file" },
+	{ "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
+		"query the pacakges triggered by the package", "PACKAGE" },
+	{ "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
+		"query the packages which require a capability", "CAPABILITY" },
+	{ "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
+		"query the packages which provide a capability", "CAPABILITY" },
+	{ 0, 0, 0, 0, 0 }
+};
+
+struct poptOption rpmQueryPoptTable[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+		queryArgCallback, 0, NULL, NULL },
+	{ "configfiles", 'c', 0, 0, 'c', "list all configuration files" },
+	{ "docfiles", 'd', 0, 0, 'd', "list all documetnation files" },
+	{ "dump", '\0', 0, 0, POPT_DUMP, "dump basic file information" },
+	{ "list", 'l', 0, 0, 'l', "list files in package" },
+	{ "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
+		POPT_QUERYFORMAT },
+	{ "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
+		POPT_QUERYBYNUMBER },
+	{ "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
+		"use the following query format", "QUERYFORMAT" },
+	{ "state", 's', 0, 0, 's', "display the states of the listed files" },
+	{ "verbose", 'v', 0, 0, 'v', "display a verbose filelisting" },
+	{ 0, 0, 0, 0, 0 }
+};
+
+static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
+			     const struct poptOption * opt, const char * arg, 
+			     struct rpmQueryArguments * data) {
+    int len;
+
+    switch (opt->val) {
+      case 'c': data->flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
+      case 'd': data->flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
+      case 'l': data->flags |= QUERY_FOR_LIST; break;
+      case 's': data->flags |= QUERY_FOR_STATE | QUERY_FOR_LIST; break;
+      case POPT_DUMP: data->flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
+
+      case 'a': data->source |= QUERY_ALL; data->sourceCount++; break;
+      case 'f': data->source |= QUERY_PATH; data->sourceCount++; break;
+      case 'g': data->source |= QUERY_GROUP; data->sourceCount++; break;
+      case 'p': data->source |= QUERY_RPM; data->sourceCount++; break;
+      case POPT_WHATPROVIDES: data->source |= QUERY_WHATPROVIDES; 
+			      data->sourceCount++; break;
+      case POPT_WHATREQUIRES: data->source |= QUERY_WHATREQUIRES; 
+			      data->sourceCount++; break;
+      case POPT_QUERYBYNUMBER: data->source |= QUERY_DBOFFSET; 
+			      data->sourceCount++; break;
+      case POPT_TRIGGEREDBY: data->source |= QUERY_TRIGGEREDBY;
+			      data->sourceCount++; break;
+
+      case POPT_QUERYFORMAT:
+	if (data->queryFormat) {
+	    len = strlen(data->queryFormat) + strlen(arg) + 1;
+	    data->queryFormat = realloc(data->queryFormat, len);
+	    strcat(data->queryFormat, arg);
+	} else {
+	    data->queryFormat = malloc(strlen(arg) + 1);
+	    strcpy(data->queryFormat, arg);
+	}
+	break;
+    }
+}
 
 static int queryHeader(Header h, char * chptr) {
     char * str;
@@ -328,7 +409,7 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
     }
 }
 
-int doQuery(char * prefix, enum querysources source, int queryFlags, 
+int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags, 
 	     char * arg, char * queryFormat) {
     Header h;
     int offset;
@@ -534,18 +615,18 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     return retcode;
 }
 
-void queryPrintTags(void) {
+void rpmDisplayQueryTags(FILE * f) {
     const struct headerTagTableEntry * t;
     int i;
     const struct headerSprintfExtension * ext = rpmHeaderFormats;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	fprintf(stdout, "%s\n", t->name + 7);
+	fprintf(f, "%s\n", t->name + 7);
     }
 
     while (ext->name) {
 	if (ext->type == HEADER_EXT_TAG)
-	    fprintf(stdout, "%s\n", ext->name + 7), ext++;
+	    fprintf(f, "%s\n", ext->name + 7), ext++;
 	else if (ext->type == HEADER_EXT_MORE)
 	    ext = ext->u.more;
 	else

@@ -140,10 +140,10 @@ config_SCRIPTS = find-provides find-requires mkinstalldirs
 
 noinst_HEADERS = \
 	acconfig.h	build.h		checksig.h	ftp.h	\
-	install.h	query.h		system.h	url.h	\
+	install.h	system.h	url.h	\
 	verify.h
 
-rpm_SOURCES =		build.c checksig.c ftp.c install.c query.c rpm.c url.c \
+rpm_SOURCES =		build.c checksig.c ftp.c install.c rpm.c url.c \
 			verify.c
 rpm_LDADD =		-lrpmbuild -lpopt -lrpm @LIBMISC@
 
@@ -169,8 +169,7 @@ rpm2cpio_LDFLAGS =
 rpmconvert_OBJECTS =  convertdb.o oldrpmdb.o
 rpmconvert_DEPENDENCIES = 
 rpmconvert_LDFLAGS = 
-rpm_OBJECTS =  build.o checksig.o ftp.o install.o query.o rpm.o url.o \
-verify.o
+rpm_OBJECTS =  build.o checksig.o ftp.o install.o rpm.o url.o verify.o
 rpm_DEPENDENCIES = 
 rpm_LDFLAGS = 
 SCRIPTS =  $(bin_SCRIPTS) $(config_SCRIPTS)
@@ -197,7 +196,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP = --best
 DEP_FILES =  .deps/build.P .deps/checksig.P .deps/convertdb.P \
-.deps/ftp.P .deps/install.P .deps/oldrpmdb.P .deps/query.P .deps/rpm.P \
+.deps/ftp.P .deps/install.P .deps/oldrpmdb.P .deps/rpm.P \
 .deps/rpm2cpio.P .deps/url.P .deps/verify.P
 SOURCES = $(rpm2cpio_SOURCES) $(rpmconvert_SOURCES) $(rpm_SOURCES)
 OBJECTS = $(rpm2cpio_OBJECTS) $(rpmconvert_OBJECTS) $(rpm_OBJECTS)

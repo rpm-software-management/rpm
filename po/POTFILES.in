@@ -6,7 +6,6 @@ build.c
 checksig.c
 ftp.c
 install.c
-query.c
 rpm.c
 url.c
 verify.c
@@ -47,6 +46,7 @@ lib/messages.c
 lib/misc.c
 lib/oldheader.c
 lib/package.c
+lib/query.c
 lib/rebuilddb.c
 lib/rpmdb.c
 lib/rpmerr.c

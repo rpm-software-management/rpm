@@ -23,10 +23,10 @@ config_SCRIPTS = find-provides find-requires mkinstalldirs
 
 noinst_HEADERS = \
 	acconfig.h	build.h		checksig.h	ftp.h	\
-	install.h	query.h		system.h	url.h	\
+	install.h	system.h	url.h	\
 	verify.h
 
-rpm_SOURCES =		build.c checksig.c ftp.c install.c query.c rpm.c url.c \
+rpm_SOURCES =		build.c checksig.c ftp.c install.c rpm.c url.c \
 			verify.c
 rpm_LDADD =		-lrpmbuild -lpopt -lrpm @LIBMISC@
 
