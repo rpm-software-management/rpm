@@ -464,20 +464,6 @@ static void alMakeIndex(struct availableList * al)
 }
 
 /**
- * Compare removed package instances (qsort/bsearch).
- * @param a		1st instance address
- * @param b		2nd instance address
- * @return		result of comparison
- */
-static int intcmp(const void * a, const void *b)
-{
-    const int * aptr = a;
-    const int * bptr = b;
-    int rc = (*aptr - *bptr);
-    return rc;
-}
-
-/**
  * Split EVR into epoch, version, and release components.
  * @param evr		[epoch:]version[-release] string
  * @retval *ep		pointer to epoch
@@ -731,6 +717,20 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
 }
 
 /**
+ * Compare removed package instances (qsort/bsearch).
+ * @param a		1st instance address
+ * @param b		2nd instance address
+ * @return		result of comparison
+ */
+static int intcmp(const void * a, const void *b)
+{
+    const int * aptr = a;
+    const int * bptr = b;
+    int rc = (*aptr - *bptr);
+    return rc;
+}
+
+/**
  * Add removed package instance to ordered transaction set.
  * @param ts		transaction set
  * @param dboffset	rpm database instance
@@ -739,12 +739,13 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
 static void removePackage(rpmTransactionSet ts, int dboffset, int depends)
 	/*@modifies ts @*/
 {
-    int i;
 
     /* Filter out duplicate erasures. */
-    if (ts->removedPackages != NULL)
-    for (i = 0; i < ts->numRemovedPackages; i++)
-	if (dboffset == ts->removedPackages[i]) return;
+    if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
+	if (bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
+			sizeof(int), intcmp) != NULL)
+	    return;
+    }
 
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
 	ts->allocedRemovedPackages += ts->delta;
@@ -752,7 +753,10 @@ static void removePackage(rpmTransactionSet ts, int dboffset, int depends)
 		sizeof(int *) * ts->allocedRemovedPackages);
     }
 
-    ts->removedPackages[ts->numRemovedPackages++] = dboffset;
+    if (ts->removedPackages != NULL) {	/* XXX can't happen. */
+	ts->removedPackages[ts->numRemovedPackages++] = dboffset;
+	qsort(ts->removedPackages, ts->numRemovedPackages, sizeof(int), intcmp);
+    }
 
     if (ts->orderCount == ts->orderAlloced) {
 	ts->orderAlloced += ts->delta;
@@ -1975,8 +1979,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 
     *conflicts = NULL;
     *numConflicts = 0;
-
-    qsort(ts->removedPackages, ts->numRemovedPackages, sizeof(int), intcmp);
 
     alMakeIndex(&ts->addedPackages);
     alMakeIndex(&ts->availablePackages);
