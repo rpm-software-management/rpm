@@ -4,7 +4,6 @@
 
 #include "system.h"
 
-#include "Python.h"
 #include "structmember.h"
 
 #ifdef __LCLINT__

@@ -4,12 +4,6 @@
 
 #include "system.h"
 
-#include "Python.h"
-#ifdef __LCLINT__
-#undef  PyObject_HEAD
-#define PyObject_HEAD   int _PyObjectHead;
-#endif
-
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
 #include <rpmio_internal.h>

@@ -88,8 +88,8 @@
 
 /* --------------------------------------------------------------------- */
 
-#include <stddef.h>   /* for offsetof() */
 #include <Python.h>
+#include <stddef.h>   /* for offsetof() */
 #include <db.h>
 
 /* --------------------------------------------------------------------- */
@@ -102,7 +102,7 @@
 #endif
 
 #define PY_BSDDB_VERSION "4.2.4"
-static char *rcs_id = "$Id: _rpmdb.c,v 1.11 2003/12/16 03:41:35 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.12 2004/01/01 16:34:10 jbj Exp $";
 
 
 #ifdef WITH_THREAD
