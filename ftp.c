@@ -15,7 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define TIMEOUT_SECS 20
+#define TIMEOUT_SECS 60
 #define BUFFER_SIZE 4096
 
 #include "ftp.h"
@@ -44,8 +44,13 @@ static int ftpCheckResponse(int sock) {
 	timeout.tv_usec = 0;
     
 	rc = select(sock + 1, &readSet, &emptySet, &emptySet, &timeout);
-	if (rc < 1) return 1;
-    
+	if (rc < 1) {
+	    if (rc==0) 
+		return FTPERR_BAD_SERVER_RESPONSE;
+	    else
+		return FTPERR_UNKNOWN;
+	}
+
 	/* We got a response - make sure none of the response codes are in the
 	   400's or 500's. That would indicate a problem */
 
@@ -61,7 +66,9 @@ static int ftpCheckResponse(int sock) {
 	else
 	    doesContinue = 0;
 
-	if (*start == '4' || *start == '5') return 1;
+	if (*start == '4' || *start == '5') {
+	    return FTPERR_BAD_SERVER_RESPONSE;
+	}
 	while (chptr < (bufLength + buf)) {
 	    if (*chptr == '\n') {
 		start = chptr + 1;
@@ -70,7 +77,9 @@ static int ftpCheckResponse(int sock) {
 			doesContinue = 1;
 		    else
 			doesContinue = 0;
-		    if (*start == '4' || *start == '5') return 1;
+		    if (*start == '4' || *start == '5') {
+		        return FTPERR_BAD_SERVER_RESPONSE;
+		    }
 		}
 	    }
 	    chptr++;
@@ -92,6 +101,7 @@ int ftpCommand(int sock, char * command, ...) {
     int len;
     char * s;
     char * buf;
+    int rc;
 
     va_start(ap, command);
     len = strlen(command) + 1;
@@ -118,11 +128,12 @@ int ftpCommand(int sock, char * command, ...) {
     buf[len - 1] = '\n';
     buf[len] = '\0';
      
-    if (write(sock, buf, len) != len)
-	return 1;
+    if (write(sock, buf, len) != len) {
+        return FTPERR_SERVER_IO_ERROR;
+    }
 
-    if (ftpCheckResponse(sock))
-	return 1;
+    if ((rc = ftpCheckResponse(sock)))
+	return rc;
 
     return 0;
 }
@@ -131,33 +142,36 @@ static int getHostAddress(const char * host, struct in_addr * address) {
     struct hostent * hostinfo;
 
     if (isdigit(host[0])) {
-	if (inet_aton(host, address))
-	    return 1;
+      if (inet_aton(host, address)) {
+	  return FTPERR_BAD_HOST_ADDR;
+      }
     } else {
-	hostinfo = gethostbyname(host);
-	if (!hostinfo) {
-	    errno = h_errno;
-	    return 1;
-	}
-
-	memcpy(address, hostinfo->h_addr_list[0], hostinfo->h_length);
+      hostinfo = gethostbyname(host);
+      if (!hostinfo) {
+	  errno = h_errno;
+	  return FTPERR_BAD_HOSTNAME;
+      }
+      
+      memcpy(address, hostinfo->h_addr_list[0], hostinfo->h_length);
     }
-
+    
     return 0;
 }
 
-/* returns -1 on error, error code in errno */
 int ftpOpen(char * host, char * name, char * password) {
     static int sock;
     /*static char * lastHost = NULL;*/
     struct in_addr serverAddress;
     struct sockaddr_in destPort;
     struct passwd * pw;
+    int rc;
 
-    if (getHostAddress(host, &serverAddress)) return -1;
+    if ((rc = getHostAddress(host, &serverAddress))) return rc;
 
     sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    if (sock < 0) return -1;
+    if (sock < 0) {
+        return FTPERR_FAILED_CONNECT;
+    }
 
     destPort.sin_family = AF_INET;
     destPort.sin_port = htons(IPPORT_FTP);
@@ -167,16 +181,18 @@ int ftpOpen(char * host, char * name, char * password) {
 
     if (connect(sock, (struct sockaddr *) &destPort, sizeof(destPort))) {
 	close(sock);
-	return -1;
+        return FTPERR_FAILED_CONNECT;
     }
 
     /* ftpCheckResponse() assumes the socket is nonblocking */
     if (fcntl(sock, F_SETFL, O_NONBLOCK)) {
 	close(sock);
-	return -1;
+        return FTPERR_FAILED_CONNECT;
     }
 
-    ftpCheckResponse(sock);
+    if ((rc = ftpCheckResponse(sock))) {
+        return rc;     
+    }
 
     if (!name)
 	name = "anonymous";
@@ -190,19 +206,19 @@ int ftpOpen(char * host, char * name, char * password) {
 
     message(MESS_DEBUG, "logging in\n");
 
-    if (ftpCommand(sock, "USER", name, NULL)) {
+    if ((rc = ftpCommand(sock, "USER", name, NULL))) {
 	close(sock);
-	return -1;
+	return rc;
     }
 
-    if (ftpCommand(sock, "PASS", password, NULL)) {
+    if ((rc = ftpCommand(sock, "PASS", password, NULL))) {
 	close(sock);
-	return -1;
+	return rc;
     }
 
-    if (ftpCommand(sock, "TYPE", "I", NULL)) {
+    if ((rc = ftpCommand(sock, "TYPE", "I", NULL))) {
 	close(sock);
-	return -1;
+	return rc;
     }
 
     message(MESS_DEBUG, "logged into ftp site\n");
@@ -227,11 +243,10 @@ int ftpReadData(int sock, int out) {
 	rc = select(sock + 1, &readSet, &emptySet, &emptySet, &timeout);
 	if (rc == 0) {
 	    close(sock);
-	    return 1;
-	}
-	if (rc < 0) {
+	    return FTPERR_SERVER_TIMEOUT;
+	} else if (rc < 0) {
 	    close(sock);
-	    return 1;
+	    return FTPERR_UNKNOWN;
 	}
 
 	bytesRead = read(sock, buf, sizeof(buf));
@@ -242,7 +257,7 @@ int ftpReadData(int sock, int out) {
 
 	if (write(out, buf, bytesRead) != bytesRead) {
 	    close(sock);
-	    return 1;
+	    return FTPERR_FILE_IO_ERROR;
 	}
     }
 }
@@ -256,33 +271,36 @@ int ftpGetFile(int sock, char * remotename, int dest) {
     char * dotAddress;
     char * chptr;
     unsigned short dataPort;
+    int rc;
 
     i = sizeof(myAddress);
-    if (getsockname(sock, (struct sockaddr *) &myAddress, &i))
-	return 1;
+    if (getsockname(sock, (struct sockaddr *) &myAddress, &i)) {
+        return FTPERR_UNKNOWN;
+    }
 
     dataAddress.sin_family = AF_INET;
     dataAddress.sin_port = 0;
     dataAddress.sin_addr = myAddress.sin_addr;
 
     dataSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    if (dataSocket < 0)
-	return 1;
+    if (dataSocket < 0) {
+        return FTPERR_FAILED_CONNECT;
+    }
 
     if (bind(dataSocket, (struct sockaddr *) &dataAddress, 
 	     sizeof(dataAddress))) {
-	close(dataSocket);
-	return 1;
+        close(dataSocket);
+        return FTPERR_FAILED_CONNECT;
     }
 
     if (listen(dataSocket, 1)) {
 	close(dataSocket);
-	return 1;
+	return FTPERR_UNKNOWN;
     }
 
     if (getsockname(dataSocket, (struct sockaddr *) &dataAddress, &i)) {
  	close(dataSocket);
-	return 1;
+	return FTPERR_UNKNOWN;
     }
 
     dotAddress = inet_ntoa(dataAddress.sin_addr);
@@ -297,18 +315,18 @@ int ftpGetFile(int sock, char * remotename, int dest) {
 
     message(MESS_DEBUG, "sending PORT command\n");
 
-    if (ftpCommand(sock, "PORT", portbuf, NULL)) {
+    if ((rc = ftpCommand(sock, "PORT", portbuf, NULL))) {
 	close(dataSocket);
-	return 1;
+	return rc;
     }
 
     message(MESS_DEBUG, "sending RETR command\n");
 
-    if (ftpCommand(sock, "RETR", remotename, NULL)) {
+    if ((rc = ftpCommand(sock, "RETR", remotename, NULL))) {
         message(MESS_DEBUG, "RETR command failed\n");
 
 	close(dataSocket);
-	return 1;
+	return rc;
     }
 
     i = sizeof(dataAddress);
@@ -324,3 +342,32 @@ void ftpClose(int sock) {
     close(sock);
 }
 
+const char *ftpStrerror(int errorNumber) {
+  switch (errorNumber) {
+    case FTPERR_BAD_SERVER_RESPONSE:
+      return ("Bad FTP server response");
+
+    case FTPERR_SERVER_IO_ERROR:
+      return("FTP IO error");
+
+    case FTPERR_SERVER_TIMEOUT:
+      return("FTP server timeout");
+
+    case FTPERR_BAD_HOST_ADDR:
+      return("Unable to lookup FTP server host address");
+
+    case FTPERR_BAD_HOSTNAME:
+      return("Unable to lookup FTP server host name");
+
+    case FTPERR_FAILED_CONNECT:
+      return("Failed to connect to FTP server");
+
+    case FTPERR_FILE_IO_ERROR:
+      return("IO error to local file");
+
+    case FTPERR_UNKNOWN:
+    default:
+      return("FTP Unknown or unexpected error");
+  }
+}
+  

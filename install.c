@@ -77,7 +77,8 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
 	}
 	fd = getFtpURL(prefix, arg + 6);
 	if (fd < 0) {
-	    fprintf(stderr, "error: ftp of %s failed\n", arg);
+	    fprintf(stderr, "error: ftp of %s failed - %s\n", arg,
+			ftpStrerror(fd));
 	    return;
 	}
     } else {
@@ -187,6 +188,8 @@ static int getFtpURL(char * prefix, char * hostAndFile) {
     char * chptr;
     int ftpconn;
     int fd;
+    int rc;
+   
     char * tmp;
 
     message(MESS_DEBUG, "getting %s via anonymous ftp\n", hostAndFile);
@@ -201,7 +204,7 @@ static int getFtpURL(char * prefix, char * hostAndFile) {
     *chptr = '\0';
 
     ftpconn = ftpOpen(buf, NULL, NULL);
-    if (ftpconn < 0) return -1;
+    if (ftpconn < 0) return ftpconn;
 
     *chptr = '/';
 
@@ -212,14 +215,14 @@ static int getFtpURL(char * prefix, char * hostAndFile) {
     if (fd < 0) {
 	unlink(tmp);
 	ftpClose(ftpconn);
-	return -1;
+	return FTPERR_UNKNOWN;
     }
     
-    if (ftpGetFile(ftpconn, chptr, fd)) {
+    if ((rc = ftpGetFile(ftpconn, chptr, fd))) {
 	unlink(tmp);
 	close(fd);
 	ftpClose(ftpconn);
-	return -1;
+	return rc;
     }    
 
     ftpClose(ftpconn);

@@ -1,6 +1,17 @@
 #ifndef H_FTP
 #define H_FTP
 
+const char * ftpStrerror(int ftpErrno);
+
+#define FTPERR_BAD_SERVER_RESPONSE   -1
+#define FTPERR_SERVER_IO_ERROR       -2
+#define FTPERR_SERVER_TIMEOUT        -3
+#define FTPERR_BAD_HOST_ADDR         -4
+#define FTPERR_BAD_HOSTNAME          -5
+#define FTPERR_FAILED_CONNECT        -6
+#define FTPERR_FILE_IO_ERROR         -7
+#define FTPERR_UNKNOWN               -8
+
 int ftpOpen(char * host, char * name, char * password);
 int ftpGetFile(int sock, char * remotename, int dest);
 void ftpClose(int sock);
