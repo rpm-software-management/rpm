@@ -32,6 +32,7 @@ struct file_entry {
     char file[1024];
     int isdoc;
     int isconf;
+    int isspecfile;
     int verify_flags;
     char *uname;  /* reference -- do not free */
     char *gname;  /* reference -- do not free */
@@ -56,7 +57,8 @@ static int isDoc(char *filename);
 
 int process_filelist(Header header, struct PackageRec *pr,
 		     StringBuf sb, int *size, char *name,
-		     char *version, char *release, int type, char *prefix)
+		     char *version, char *release, int type,
+		     char *prefix, char *specFile)
 {
     char buf[1024];
     char **files, **fp;
@@ -232,6 +234,9 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fest = malloc(sizeof(struct file_entry));
 	    fest->isdoc = 0;
 	    fest->isconf = 0;
+	    if (!strcmp(filename, specFile)) {
+		fest->isspecfile = 1;
+	    }
 	    fest->verify_flags = 0;  /* XXX - something else? */
 	    stat(filename, &fest->statbuf);
 	    fest->uname = getUname(fest->statbuf.st_uid);
@@ -349,6 +354,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 		fileFlagsList[c] |= RPMFILE_DOC;
 	    if (fest->isconf)
 		fileFlagsList[c] |= RPMFILE_CONFIG;
+	    if (fest->isspecfile)
+		fileFlagsList[c] |= RPMFILE_SPECFILE;
 
 	    fileModesList[c] = fest->statbuf.st_mode;
 	    fileRDevsList[c] = fest->statbuf.st_rdev;
@@ -539,6 +546,7 @@ static int add_file(struct file_entry **festack, const char *name,
 
     p->isdoc = isdoc;
     p->isconf = isconf;
+    p->isspecfile = 0;  /* source packages are done by hand */
     p->verify_flags = verify_flags;
     if (getVar(RPMVAR_ROOT)) {
 	sprintf(fullname, "%s%s", getVar(RPMVAR_ROOT), name);
