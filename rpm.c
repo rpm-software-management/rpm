@@ -830,7 +830,7 @@ int main(int argc, char ** argv) {
 		 "uninstallation, and building"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
-	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && 			bigMode != MODE_REBUILDDB && rootdir[1])
+	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && 			bigMode != MODE_REBUILDDB && bigMode != MODE_INITDB && rootdir[1])
 	argerror(_("--root (-r) may only be specified during "
 		 "installation, uninstallation, querying, and "
 		 "database rebuilds"));
