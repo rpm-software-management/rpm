@@ -1609,7 +1609,7 @@ static int addFile(FileList fl, const char * diskURL,
 	fileGname = getGname(getgid());
     
     /* S_XXX macro must be consistent with type in find call at check-files script */
-    if (check_fileList && S_ISREG(fileMode)) {
+    if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
 	appendStringBuf(check_fileList, diskURL);
 	appendStringBuf(check_fileList, "\n");
     }
