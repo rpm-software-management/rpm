@@ -1,7 +1,5 @@
 #!/bin/sh
 
-${test1:=./test1}
-
 run() {
     prog=$1; shift
     name=$1; shift
@@ -9,14 +7,19 @@ run() {
 
     echo Running test $name.
 
-    result=`./$prog $*`
+    result=`$builddir/$prog $*`
     if [ "$answer" != "$result" ]; then
-	echo "Test \"$*\" failed with: $result"
+	echo "Test \"$*\" failed with: \"$result\" != \"$answer\" "
 	exit 2
     fi
 }
 
-make -q testcases
+builddir=`pwd`
+cd ${srcdir}
+test1=${builddir}/test1
+echo "Running tests in `pwd`"
+
+#make -q testcases
 
 run test1 "test1 - 1" "arg1: 1 arg2: (none)" --arg1
 run test1 "test1 - 2" "arg1: 0 arg2: foo" --arg2 foo

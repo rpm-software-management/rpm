@@ -3,7 +3,9 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = autogen.sh CHANGES $(man_MANS) popt.spec \
-	testit.sh po/Makefile.in.in po/POTFILES.in po/*.po po/popt.pot popt.ps
+	testit.sh test-poptrc \
+	po/Makefile.in.in po/POTFILES.in po/sk.po po/ro.po po/popt.pot \
+	popt.ps
 
 SUBDIRS = intl po
 
