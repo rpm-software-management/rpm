@@ -43,11 +43,16 @@ extern int errno;
 
 #if HAVE_ERROR && HAVE_ERROR_H
 #include <error.h>
-#else
+#endif
+
+#if defined(__LCLINT__)
+/*@-declundef @*/
 /*@exits@*/
-extern void error(int status, int errnum, const char *f, ...)
+extern void error(int status, int errnum, const char *format, ...)
+	__attribute__ ((__format__ (__printf__, 3, 4)))
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+/*@=declundef @*/
 #endif
 
 #ifdef STDC_HEADERS
@@ -240,8 +245,7 @@ char * xstrdup (const char *str)
  */
 /*@unused@*/ /*@exits@*/ /*@only@*/
 static inline void * vmefail(/*@unused@*/ size_t nb)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@*/
 {
 	error(EXIT_FAILURE, 0, "out of memory");
 	/*@notreached@*/

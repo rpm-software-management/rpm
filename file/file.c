@@ -99,8 +99,12 @@ unwrap(fmagic fm, char *fn)
 
 	while (fgets(buf, MAXPATHLEN, f) != NULL) {
 		buf[strlen(buf)-1] = '\0';
+		fm->obp = fm->obuf;
+		*fm->obp = '\0';
+		fm->nob = sizeof(fm->obuf);
 		xx = fmagicProcess(fm, buf, wid);
-		if(nobuffer)
+		fprintf(stdout, "%s\n", fm->obuf);
+		if (nobuffer)
 			(void) fflush(stdout);
 	}
 
@@ -336,8 +340,15 @@ main(int argc, char **argv)
 			if (nw > wid)
 				wid = nw;
 		}
-		for (; optind < argc; optind++)
+		for (; optind < argc; optind++) {
+			fm->obp = fm->obuf;
+			*fm->obp = '\0';
+			fm->nob = sizeof(fm->obuf);
 			xx = fmagicProcess(fm, argv[optind], wid);
+			fprintf(stdout, "%s\n", fm->obuf);
+			if (nobuffer)
+				(void) fflush(stdout);
+		}
 	}
 
 #if HAVE_MCHECK_H && HAVE_MTRACE

@@ -140,13 +140,20 @@ struct fmagic_s {
     struct mlist * mlist;	/*!< list of arrays of magic entries	*/
 /*@null@*/
     struct mlist * ml;		/*!< current magic array item		*/
+/*@observer@*/
     const char * fn;		/*!< current file name			*/
-    int fd;			/*!< current file descriptor		*/
+    int fd;			/*!< current file descriptor            */
     struct stat sb;		/*!< current file stat(2) buffer	*/
+/*@relnull@*/
     unsigned char * buf;	/*!< current file buffer		*/
     int nb;			/*!< current no. bytes in file buffer	*/
     union VALUETYPE val;	/*!< current magic expression value	*/
-    FILE * f;			/*!< output file handle			*/
+    int cls;			/*!< Elf class				*/
+    int swap;			/*!< Elf swap bytes?			*/
+/*@dependent@*/
+    char * obp;			/*!< current output buffer pointer	*/
+    size_t nob;			/*!< bytes remaining in output buffer	*/
+    char obuf[512];		/*!< output buffer			*/
 };
 
 typedef /*@abstract@*/ struct fmagic_s * fmagic;
@@ -160,32 +167,29 @@ extern int fmagicProcess(fmagic fm, const char *fn, int wid)
 	/*@modifies fm, fileSystem, internalState @*/;
 
 extern int fmagicA(fmagic fm)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-struct stat;
+	/*@modifies fm @*/;
 extern int fmagicD(fmagic fm)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fm, fileSystem, internalState @*/;
+extern void fmagicE(fmagic fm)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fm, fileSystem, internalState @*/;
+extern int fmagicF(fmagic fm, int zfl)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fm, fileSystem, internalState @*/;
 extern int fmagicS(fmagic fm)
 	/*@globals fileSystem @*/
 	/*@modifies fm, fileSystem @*/;
-extern int fmagicF(fmagic fm, int zfl)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, fileSystem, internalState @*/;
 extern int fmagicZ(fmagic fm)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fm, fileSystem, internalState @*/;
 
+extern void fmagicPrintf(const fmagic fm, const char *f, ...)
+	/*@modifies fm @*/;
+
 /*@observer@*/
 extern char *fmttime(long v, int local)
 	/*@*/;
-
-extern void ckfputs(const char *str, fmagic fm)
-	/*@globals fileSystem @*/
-	/*@modifies fm, fileSystem @*/;
-extern void ckfprintf(fmagic fm, const char *fmt, ...)
-	/*@globals fileSystem @*/
-	/*@modifies fm, fileSystem @*/;
 
 extern void magwarn(const char *f, ...)
 	/*@globals fileSystem @*/
@@ -200,9 +204,6 @@ extern void showstr(FILE *fp, const char *s, int len)
 extern uint32_t signextend(struct magic *m, uint32_t v)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-extern void tryelf(int fd, unsigned char *buf, int nbytes)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
 extern int pipe2file(int fd, void *startbuf, size_t nbytes)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;

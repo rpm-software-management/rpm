@@ -129,33 +129,6 @@ mdump(struct magic *m)
 }
 #endif
 
-/*
- * ckfputs - fputs, but with error checking
- * ckfprintf - fprintf, but with error checking
- */
-void
-ckfputs(const char *str, fmagic fm)
-{
-	FILE *f = (fm->f ? fm->f : stdout);
-	if (fputs(str, f) == EOF)
-		error(EXIT_FAILURE, 0, "ckfputs write failed.\n");
-}
-
-/*VARARGS*/
-void
-ckfprintf(fmagic fm, const char *fmt, ...)
-{
-	FILE *f = (fm->f ? fm->f : stdout);
-
-	va_list va;
-
-	va_start(va, fmt);
-	(void) vfprintf(f, fmt, va);
-	if (ferror(f))
-		error(EXIT_FAILURE, 0, "ckfprintf write failed.\n");
-	va_end(va);
-}
-
 #if !defined(HAVE_ERROR)
 /*
  * error - print best error message possible and exit
@@ -198,6 +171,23 @@ magwarn(const char *f, ...)
 	(void) vfprintf(stderr, f, va);
 	va_end(va);
 	(void) fputc('\n', stderr);
+}
+
+void
+fmagicPrintf(const fmagic fm, const char *f, ...)
+{
+	va_list va;
+	size_t nob;
+	int rc;
+
+	va_start(va, f);
+	rc = vsnprintf(fm->obp, fm->nob, f, va);
+	va_end(va);
+
+	fm->obuf[sizeof(fm->obuf)-1] = '\0';
+	nob = strlen(fm->obp);
+	fm->obp += nob;
+	fm->nob -= nob;
 }
 
 

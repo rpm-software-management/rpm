@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime magic.mime \
 	Localstuff Header $(magic_FRAGMENTS) file.man magic.man
 
@@ -26,13 +28,16 @@ file_SOURCES =	file.c
 file_LDFLAGS =	-all-static
 file_LDADD =	libfmagic.la
 
-data_DATA = magic magic.mime magic.mgc magic.mime.mgc
-
 man_MAGIC = magic.@fsect@
 #man_MANS = file.1 $(man_MAGIC)
 noinst_MANS = file.1 $(man_MAGIC)
 
-MAGIC	 = @datadir@/magic
+#MAGIC	 = @datadir@/magic
+#data_DATA = magic magic.mime magic.mgc magic.mime.mgc
+
+pkglibdir =  @prefix@/lib/rpm
+pkglib_DATA = magic magic.mime magic.mgc magic.mime.mgc
+MAGIC	 = $(pkglibdir)/magic
 CPPFLAGS = -DMAGIC='"$(MAGIC)"'
 
 fsect = @fsect@
@@ -225,7 +230,7 @@ Magdir/xenix \
 Magdir/zilog \
 Magdir/zyxel
 
-.PHONY: lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(file_SOURCES) $(libfmagic_la_SOURCES) $(pkginc_HEADERS) $(noinst_HEADERS)
+.PHONY: lint
+lint:
+	$(LINT)  $(DEFS) $(INCLUDES) $(file_SOURCES) $(libfmagic_la_SOURCES) $(pkginc_HEADERS) $(noinst_HEADERS)
 

@@ -1,4 +1,4 @@
--I. -DHAVE_CONFIG_H -DSTDC -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGFILE_SOURCE -D__GLIBC__ -D__STDC__=1 -DHAVE_STRUCT_STAT_ST_RDEV
+-I. -DHAVE_CONFIG_H -DSTDC -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGFILE_SOURCE -D__GLIBC__ -D__STDC__=1 -DHAVE_STRUCT_STAT_ST_RDEV -DSIZEOF_UINT64_T=8
 
 #+partial
 +forcehints
@@ -14,18 +14,18 @@
 +strict			# lclint level
 
 # --- in progress
-+slovak-fcns
-
+-compdef
+-compmempass
 -exportheader		# 19
--formatconst		# 9
--macroredef		# 1 tar.h
+-formatconst		# 1
+-macroredef		# 20 tar.h
+#-noeffect
 -nullderef		# 4
--nullpass		# 27
+-nullpass		# 22
 -nullptrarith		# 1
--redef			# 4
+-redef			# 1 tar.h
 -sizeoftype		# 29
 -uniondef		# 6
--warnmissingglobs
 
 # --- +partial artifacts
 

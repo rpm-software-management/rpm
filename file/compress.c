@@ -5,6 +5,8 @@
 
 FILE_RCSID("@(#)Id: compress.c,v 1.25 2002/07/03 18:26:37 christos Exp ")
 
+/*@access fmagic @*/
+
 /*@-nullassign@*/
 /*@unchecked@*/
 static struct {
@@ -316,7 +318,9 @@ fmagicZ(fmagic fm)
 			(void) fmagicF(fm, 1);
 			fm->buf = buf;
 			fm->nb = nb;
+/*@-kepttrans@*/
 			free(newbuf);
+/*@=kepttrans@*/
 			printf(" (");
 			(void) fmagicF(fm, 0);
 			printf(")");

@@ -36,7 +36,7 @@ FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
 static int32_t
 fmagicSPrint(const fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@modifies fm, fileSystem @*/
 {
 	union VALUETYPE * p = &fm->val;
 	uint32_t v;
@@ -45,7 +45,7 @@ fmagicSPrint(const fmagic fm, struct magic *m)
   	switch (m->type) {
   	case BYTE:
 		v = signextend(m, p->b);
-		(void) printf(m->desc, (unsigned char) v);
+		fmagicPrintf(fm, m->desc, (unsigned char) v);
 		t = m->offset + sizeof(char);
 		break;
 
@@ -53,7 +53,7 @@ fmagicSPrint(const fmagic fm, struct magic *m)
   	case BESHORT:
   	case LESHORT:
 		v = signextend(m, p->h);
-		(void) printf(m->desc, (unsigned short) v);
+		fmagicPrintf(fm, m->desc, (unsigned short) v);
 		t = m->offset + sizeof(short);
 		break;
 
@@ -61,14 +61,14 @@ fmagicSPrint(const fmagic fm, struct magic *m)
   	case BELONG:
   	case LELONG:
 		v = signextend(m, p->l);
-		(void) printf(m->desc, (uint32_t) v);
+		fmagicPrintf(fm, m->desc, (uint32_t) v);
 		t = m->offset + sizeof(int32_t);
   		break;
 
   	case STRING:
   	case PSTRING:
 		if (m->reln == '=') {
-			(void) printf(m->desc, m->value.s);
+			fmagicPrintf(fm, m->desc, m->value.s);
 			t = m->offset + strlen(m->value.s);
 		}
 		else {
@@ -77,7 +77,7 @@ fmagicSPrint(const fmagic fm, struct magic *m)
 				if (cp != NULL)
 					*cp = '\0';
 			}
-			(void) printf(m->desc, p->s);
+			fmagicPrintf(fm, m->desc, p->s);
 			t = m->offset + strlen(p->s);
 		}
 		break;
@@ -85,18 +85,18 @@ fmagicSPrint(const fmagic fm, struct magic *m)
 	case DATE:
 	case BEDATE:
 	case LEDATE:
-		(void) printf(m->desc, fmttime(p->l, 1));
+		fmagicPrintf(fm, m->desc, fmttime(p->l, 1));
 		t = m->offset + sizeof(time_t);
 		break;
 
 	case LDATE:
 	case BELDATE:
 	case LELDATE:
-		(void) printf(m->desc, fmttime(p->l, 0));
+		fmagicPrintf(fm, m->desc, fmttime(p->l, 0));
 		t = m->offset + sizeof(time_t);
 		break;
 	case REGEX:
-	  	(void) printf(m->desc, p->s);
+	  	fmagicPrintf(fm, m->desc, p->s);
 		t = m->offset + strlen(p->s);
 		break;
 
@@ -114,8 +114,7 @@ fmagicSPrint(const fmagic fm, struct magic *m)
  */
 static int
 fmagicSConvert(fmagic fm, struct magic *m)
-	/*@globals fileSystem @*/
-	/*@modifies fm, fileSystem @*/
+	/*@modifies fm @*/
 {
 	union VALUETYPE * p = &fm->val;
 
@@ -398,7 +397,7 @@ fmagicSDebug(int32_t offset, char *str, int len)
 static int
 fmagicSGet(fmagic fm, struct magic *m)
 	/*@globals fileSystem @*/
-	/*@modifies fm, s, fileSystem @*/
+	/*@modifies fm, fileSystem @*/
 {
 	unsigned char * buf = fm->buf;
 	int nb = fm->nb;
@@ -1022,7 +1021,7 @@ fmagicSMatch(const fmagic fm)
 
 		if (! firstline) { /* we found another match */
 			/* put a newline and '-' to do some simple formatting */
-			printf("\n- ");
+			fmagicPrintf(fm, "\n- ");
 		}
 
 		if ((cont_level+1) >= tmplen)
@@ -1068,7 +1067,7 @@ fmagicSMatch(const fmagic fm)
 				   && (m->nospflag == 0)
 				   && (m->desc[0] != '\0')
 				   ) {
-					ckfputs(" ", fm);
+					fmagicPrintf(fm, " ");
 					need_separator = 0;
 				}
 				if ((cont_level+1) >= tmplen)
@@ -1097,11 +1096,13 @@ fmagicSMatch(const fmagic fm)
 int
 fmagicS(fmagic fm)
 {
+/*@-branchstate@*/
 	if (fm->mlist != NULL)
 	for (fm->ml = fm->mlist->next; fm->ml != fm->mlist; fm->ml = fm->ml->next) {
 		if (fmagicSMatch(fm))
 			return 1;
 	}
+/*@=branchstate@*/
 
 	return 0;
 }

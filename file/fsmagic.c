@@ -55,31 +55,31 @@ fmagicD(fmagic fm)
 	if (ret) {
 		/* Yes, I do mean stdout. */
 		/* No \n, caller will provide. */
-		ckfprintf(fm, "can't stat `%s' (%s).", fn, strerror(errno));
+		fmagicPrintf(fm, "can't stat `%s' (%s).", fn, strerror(errno));
 		return 1;
 	}
 
 	if ((fm->flags & FMAGIC_FLAGS_MIME)) {
 		if ((st->st_mode & S_IFMT) != S_IFREG) {
-			ckfputs("application/x-not-regular-file", fm);
+			fmagicPrintf(fm, "application/x-not-regular-file");
 			return 1;
 		}
 	}
 	else {
 #if defined(S_ISUID) || defined(__LCLINT__)
-		if (st->st_mode & S_ISUID) ckfputs("setuid ", fm);
+		if (st->st_mode & S_ISUID) fmagicPrintf(fm, "setuid ");
 #endif
 #if defined(S_ISGID) || defined(__LCLINT__)
-		if (st->st_mode & S_ISGID) ckfputs("setgid ", fm);
+		if (st->st_mode & S_ISGID) fmagicPrintf(fm, "setgid ");
 #endif
 #if defined(S_ISVTX) || defined(__LCLINT__)
-		if (st->st_mode & S_ISVTX) ckfputs("sticky ", fm);
+		if (st->st_mode & S_ISVTX) fmagicPrintf(fm, "sticky ");
 #endif
 	}
 	
 	switch (st->st_mode & S_IFMT) {
 	case S_IFDIR:
-		ckfputs("directory", fm);
+		fmagicPrintf(fm, "directory");
 		return 1;
 #if defined(S_IFCHR) || defined(__LCLINT__)
 	case S_IFCHR:
@@ -92,16 +92,16 @@ fmagicD(fmagic fm)
 			break;
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
-		(void) printf("character special (%d/%d/%d)",
+		fmagicPrintf(fm, "character special (%d/%d/%d)",
 			major(st->st_rdev),
 			dv_unit(st->st_rdev),
 			dv_subunit(st->st_rdev));
 # else
-		(void) printf("character special (%ld/%ld)",
+		fmagicPrintf(fm, "character special (%ld/%ld)",
 			(long) major(st->st_rdev), (long) minor(st->st_rdev));
 # endif
 #else
-		(void) printf("character special");
+		fmagicPrintf(fm, "character special");
 #endif
 		return 1;
 #endif
@@ -116,28 +116,28 @@ fmagicD(fmagic fm)
 			break;
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
-		(void) printf("block special (%d/%d/%d)",
+		fmagicPrintf(fm, "block special (%d/%d/%d)",
 			major(st->st_rdev),
 			dv_unit(st->st_rdev),
 			dv_subunit(st->st_rdev));
 # else
-		(void) printf("block special (%ld/%ld)",
+		fmagicPrintf(fm, "block special (%ld/%ld)",
 			(long) major(st->st_rdev), (long) minor(st->st_rdev));
 # endif
 #else
-		(void) printf("block special");
+		fmagicPrintf(fm, "block special");
 #endif
 		return 1;
 #endif
 	/* TODO add code to handle V7 MUX and Blit MUX files */
 #if defined(S_IFIFO) || defined(__LCLINT__)
 	case S_IFIFO:
-		ckfputs("fifo (named pipe)", fm);
+		fmagicPrintf(fm, "fifo (named pipe)");
 		return 1;
 #endif
 #if defined(S_IFDOOR)
 	case S_IFDOOR:
-		ckfputs("door", fm);
+		fmagicPrintf(fm, "door");
 		return 1;
 #endif
 #if defined(S_IFLNK) || defined(__LCLINT__)
@@ -149,7 +149,7 @@ fmagicD(fmagic fm)
 
 			buf[0] = '\0';
 			if ((nch = readlink(fn, buf, BUFSIZ-1)) <= 0) {
-				ckfprintf(fm, "unreadable symlink (%s).", strerror(errno));
+				fmagicPrintf(fm, "unreadable symlink (%s).", strerror(errno));
 				return 1;
 			}
 			buf[nch] = '\0';	/* readlink(2) forgets this */
@@ -158,7 +158,7 @@ fmagicD(fmagic fm)
 /*@-branchstate@*/
 			if (*buf == '/') {
 			    if (stat(buf, &tstatbuf) < 0) {
-				ckfprintf(fm, "broken symbolic link to %s", buf);
+				fmagicPrintf(fm, "broken symbolic link to %s", buf);
 				return 1;
 			    }
 			}
@@ -176,7 +176,7 @@ fmagicD(fmagic fm)
 				tmp = buf2;
 			    }
 			    if (stat(tmp, &tstatbuf) < 0) {
-				ckfprintf(fm, "broken symbolic link to %s", buf);
+				fmagicPrintf(fm, "broken symbolic link to %s", buf);
 				return 1;
 			    }
                         }
@@ -184,11 +184,11 @@ fmagicD(fmagic fm)
 
 			/* Otherwise, handle it. */
 			if ((fm->flags & FMAGIC_FLAGS_FOLLOW)) {
+				fmagicPrintf(fm, "\n");
 				xx = fmagicProcess(fm, buf, strlen(buf));
 				return 1;
 			} else { /* just print what it points to */
-				ckfputs("symbolic link to ", fm);
-				ckfputs(buf, fm);
+				fmagicPrintf(fm, "symbolic link to %s", buf);
 			}
 		}
 		return 1;
@@ -196,7 +196,7 @@ fmagicD(fmagic fm)
 #if defined(S_IFSOCK)
 #ifndef __COHERENT__
 	case S_IFSOCK:
-		ckfputs("socket", fm);
+		fmagicPrintf(fm, "socket");
 		return 1;
 #endif
 #endif
@@ -220,8 +220,8 @@ fmagicD(fmagic fm)
 	 * when we read the file.)
 	 */
 	if (!(fm->flags & FMAGIC_FLAGS_SPECIAL) && st->st_size == 0) {
-		ckfputs(((fm->flags & FMAGIC_FLAGS_MIME)
-			? "application/x-empty" : "empty"), fm);
+		fmagicPrintf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
+			? "application/x-empty" : "empty"));
 		return 1;
 	}
 	return 0;
@@ -256,8 +256,8 @@ fmagicF(fmagic fm, int zfl)
 		return 'a';
 
 	/* abandon hope, all ye who remain here */
-	ckfputs(((fm->flags & FMAGIC_FLAGS_MIME)
-		? "application/octet-stream" : "data"), fm);
+	fmagicPrintf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
+		? "application/octet-stream" : "data"));
 	return '\0';
 }
 
@@ -267,16 +267,18 @@ fmagicF(fmagic fm, int zfl)
 int
 fmagicProcess(fmagic fm, const char *fn, int wid)
 {
-	int	fd = 0;
 	static  const char stdname[] = "standard input";
 	unsigned char	b[HOWMANY+1];	/* one extra for terminating '\0' */
 	char match = '\0';
 	int ret = 0;
 
+/*@-assignexpose -temptrans @*/
 	fm->fn = fn;
+/*@=assignexpose =temptrans @*/
 	fm->buf = b;
 	fm->nb = 0;
 
+/*@-branchstate@*/
 	if (strcmp("-", fn) == 0) {
 		if (fstat(0, &fm->sb)<0) {
 			error(EXIT_FAILURE, 0, "cannot fstat `%s' (%s).\n", stdname,
@@ -285,9 +287,10 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 		}
 		fm->fn = stdname;
 	}
+/*@=branchstate@*/
 
 	if (wid > 0 && !(fm->flags & FMAGIC_FLAGS_BRIEF))
-	     (void) printf("%s:%*s ", fm->fn, 
+	     fmagicPrintf(fm, "%s:%*s ", fm->fn, 
 			   (int) (wid - strlen(fm->fn)), "");
 
 	if (fm->fn != stdname) {
@@ -297,13 +300,13 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 		if (fmagicD(fm) != 0)
 			goto exit;
 
-		if ((fd = open(fm->fn, O_RDONLY)) < 0) {
+		if ((fm->fd = open(fm->fn, O_RDONLY)) < 0) {
 			/* We can't open it, but we were able to stat it. */
 			if (fm->sb.st_mode & 0002)
-				ckfputs("writeable, ", fm);
+				fmagicPrintf(fm, "writeable, ");
 			if (fm->sb.st_mode & 0111)
-				ckfputs("executable, ", fm);
-			ckfprintf(fm, "can't read `%s' (%s).", fm->fn, strerror(errno));
+				fmagicPrintf(fm, "executable, ");
+			fmagicPrintf(fm, "can't read `%s' (%s).", fm->fn, strerror(errno));
 			goto exit;
 		}
 	}
@@ -312,13 +315,13 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 	/*
 	 * try looking at the first HOWMANY bytes
 	 */
-	if ((fm->nb = read(fd, (char *)fm->buf, HOWMANY)) == -1) {
+	if ((fm->nb = read(fm->fd, (char *)fm->buf, HOWMANY)) == -1) {
 		error(EXIT_FAILURE, 0, "read failed (%s).\n", strerror(errno));
 		/*@notreached@*/
 	}
 
 	if (fm->nb == 0)
-		ckfputs(((fm->flags & FMAGIC_FLAGS_MIME)
+		fmagicPrintf(fm, ((fm->flags & FMAGIC_FLAGS_MIME)
 			? "application/x-empty" : "empty"), fm);
 	else {
 		fm->buf[fm->nb++] = '\0';	/* null-terminate it */
@@ -335,7 +338,7 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 		 * from the ELF headers that can't easily be extracted
 		 * with rules in the magic file.
 		 */
-		tryelf(fd, fm->buf, fm->nb);
+		fmagicE(fm);
 	}
 #endif
 
@@ -361,11 +364,11 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 		(void) utime(fm->fn, &utbuf); /* don't care if loses */
 # endif
 #endif
-		(void) close(fd);
+		(void) close(fm->fd);
+		fm->fd = -1;
 	}
 
 exit:
-	ckfputs("\n", fm);
 	fm->buf = NULL;
 	fm->nb = 0;
 	return ret;
