@@ -14,7 +14,6 @@ void printHeader(Header h, int queryFlags) {
     uint_32 * size;
     int_32 count, type;
     int_32 * pBuildDate;
-    int_32 buildDate;
     char * prefix = NULL;
     char buildDateStr[100];
     struct tm * tstruct;
@@ -41,8 +40,7 @@ void printHeader(Header h, int queryFlags) {
 	    getEntry(h, RPMTAG_SIZE, &type, (void **) &size, &count);
 	    getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, &count);
 
-	    buildDate = ntohl(*pBuildDate);
-	    tstruct = localtime((time_t *) &buildDate);
+	    tstruct = localtime(&pBuildDate);
 	    strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", tstruct);
 	   
 	    printf("Name        : %-27s Distribution: %s\n", 
@@ -51,7 +49,7 @@ void printHeader(Header h, int queryFlags) {
 	    printf("Release     : %-27s   Build Date: %s\n", release,				    buildDateStr); 
 	    printf("Install date: %-27s   Build Host: %s\n", "", buildHost);
 	    printf("Group       : %s\n", group);
-	    printf("Size        : %d\n", ntohl(*size));
+	    printf("Size        : %d\n", *size);
 	    printf("Description : %s\n", description);
 	    prefix = "    ";
 	}
@@ -64,8 +62,6 @@ void printHeader(Header h, int queryFlags) {
 		     (void **) &fileFlagsList, &count);
 
 	    for (i = 0; i < count; i++) {
-		fileFlagsList[i] = ntohl(fileFlagsList[i]);
-
 		if (!((queryFlags & QUERY_FOR_DOCS) || 
 		      (queryFlags & QUERY_FOR_CONFIG)) 
 		    || ((queryFlags & QUERY_FOR_DOCS) && 
