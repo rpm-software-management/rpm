@@ -23,19 +23,19 @@
  * \ingroup HASH_m HASH_sha256_m
  */
  
-#include "system.h"
-#include "sha256.h"
-#include "mp.h"
-#include "endianness.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/sha256.h"
+#include "beecrypt/endianness.h"
 
 /*!\addtogroup HASH_sha256_m
  * \{
  */
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static const uint32_t k[64] = {
 	0x428a2f98U, 0x71374491U, 0xb5c0fbcfU, 0xe9b5dba5U, 0x3956c25bU, 0x59f111f1U, 0x923f82a4U, 0xab1c5ed5U,
 	0xd807aa98U, 0x12835b01U, 0x243185beU, 0x550c7dc3U, 0x72be5d74U, 0x80deb1feU, 0x9bdc06a7U, 0xc19bf174U,
@@ -47,30 +47,23 @@ static const uint32_t k[64] = {
 	0x748f82eeU, 0x78a5636fU, 0x84c87814U, 0x8cc70208U, 0x90befffaU, 0xa4506cebU, 0xbef9a3f7U, 0xc67178f2U
 };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static const uint32_t hinit[8] = {
 	0x6a09e667U, 0xbb67ae85U, 0x3c6ef372U, 0xa54ff53aU, 0x510e527fU, 0x9b05688cU, 0x1f83d9abU, 0x5be0cd19U
 };
 
-/*@-sizeoftype@*/
-const hashFunction sha256 = {
-	"SHA-256",
-	sizeof(sha256Param),
-	64U,
-	8U * sizeof(uint32_t),
-	(hashFunctionReset) sha256Reset,
-	(hashFunctionUpdate) sha256Update,
-	(hashFunctionDigest) sha256Digest
-};
-/*@=sizeoftype@*/
+const hashFunction sha256 = { "SHA-256", sizeof(sha256Param), 64, 32, (hashFunctionReset) sha256Reset, (hashFunctionUpdate) sha256Update, (hashFunctionDigest) sha256Digest };
 
-int sha256Reset(sha256Param* sp)
+int sha256Reset(register sha256Param* sp)
 {
-	memcpy(sp->h, hinit, sizeof(sp->h));
-	memset(sp->data, 0, sizeof(sp->data));
-	memset(&sp->length, 0, sizeof(sp->length));
+	memcpy(sp->h, hinit, 8 * sizeof(uint32_t));
+	memset(sp->data, 0, 64 * sizeof(uint32_t));
+	#if (MP_WBITS == 64)
+	mpzero(1, sp->length);
+	#elif (MP_WBITS == 32)
+	mpzero(2, sp->length);
+	#else
+	# error
+	#endif
 	sp->offset = 0;
 	return 0;
 }
@@ -91,7 +84,7 @@ int sha256Reset(sha256Param* sp)
 	d += temp
 
 #ifndef ASM_SHA256PROCESS
-void sha256Process(sha256Param* sp)
+void sha256Process(register sha256Param* sp)
 {
 	register uint32_t a, b, c, d, e, f, g, h, temp;
 	register uint32_t *w;
@@ -104,7 +97,7 @@ void sha256Process(sha256Param* sp)
 	t = 16;
 	while (t--)
 	{
-		temp = swapu32(*w);
+		register uint32_t temp = swapu32(*w);
 		*(w++) = temp;
 	}
 	#endif
@@ -112,7 +105,7 @@ void sha256Process(sha256Param* sp)
 	t = 48;
 	while (t--)
 	{
-		temp = sig1(w[-2]) + w[-7] + sig0(w[-15]) + w[-16];
+		register uint32_t temp = sig1(w[-2]) + w[-7] + sig0(w[-15]) + w[-16];
 		*(w++) = temp;
 	}
 
@@ -197,7 +190,7 @@ void sha256Process(sha256Param* sp)
 }
 #endif
 
-int sha256Update(sha256Param* sp, const byte* data, size_t size)
+int sha256Update(register sha256Param* sp, const byte* data, size_t size)
 {
 	register uint32_t proclength;
 
@@ -205,21 +198,20 @@ int sha256Update(sha256Param* sp, const byte* data, size_t size)
 	mpw add[1];
 	mpsetw(1, add, size);
 	mplshift(1, add, 3);
-	(void) mpadd(1, sp->length, add);
+	mpadd(1, sp->length, add);
 	#elif (MP_WBITS == 32)
 	mpw add[2];
 	mpsetw(2, add, size);
 	mplshift(2, add, 3);
-	(void) mpadd(2, sp->length, add);
+	mpadd(2, sp->length, add);
 	#else
 	# error
 	#endif
 
-/*@-type@*/
 	while (size > 0)
 	{
 		proclength = ((sp->offset + size) > 64U) ? (64U - sp->offset) : size;
-		memmove(((byte *) sp->data) + sp->offset, data, proclength);
+		memcpy(((byte *) sp->data) + sp->offset, data, proclength);
 		size -= proclength;
 		data += proclength;
 		sp->offset += proclength;
@@ -230,21 +222,15 @@ int sha256Update(sha256Param* sp, const byte* data, size_t size)
 			sp->offset = 0;
 		}
 	}
-/*@=type@*/
 	return 0;
 }
 
-/**
- */
-static void sha256Finish(sha256Param* sp)
-	/*@globals internalState @*/
-	/*@modifies sp, internalState @*/
+static void sha256Finish(register sha256Param* sp)
 {
 	register byte *ptr = ((byte *) sp->data) + sp->offset++;
 
 	*(ptr++) = 0x80;
 
-/*@-type@*/
 	if (sp->offset > 56)
 	{
 		while (sp->offset++ < 64)
@@ -257,7 +243,6 @@ static void sha256Finish(sha256Param* sp)
 	ptr = ((byte *) sp->data) + sp->offset;
 	while (sp->offset++ < 56)
 		*(ptr++) = 0;
-/*@=type@*/
 
 	#if (MP_WBITS == 64)
 	ptr[0] = (byte)(sp->length[0] >> 56);
@@ -285,45 +270,45 @@ static void sha256Finish(sha256Param* sp)
 	sp->offset = 0;
 }
 
-int sha256Digest(sha256Param* sp, byte* digest)
+int sha256Digest(register sha256Param* sp, byte* data)
 {
 	sha256Finish(sp);
 
 	/* encode 8 integers big-endian style */
-	digest[ 0] = (byte)(sp->h[0] >> 24);
-	digest[ 1] = (byte)(sp->h[0] >> 16);
-	digest[ 2] = (byte)(sp->h[0] >>  8);
-	digest[ 3] = (byte)(sp->h[0] >>  0);
-	digest[ 4] = (byte)(sp->h[1] >> 24);
-	digest[ 5] = (byte)(sp->h[1] >> 16);
-	digest[ 6] = (byte)(sp->h[1] >>  8);
-	digest[ 7] = (byte)(sp->h[1] >>  0);
-	digest[ 8] = (byte)(sp->h[2] >> 24);
-	digest[ 9] = (byte)(sp->h[2] >> 16);
-	digest[10] = (byte)(sp->h[2] >>  8);
-	digest[11] = (byte)(sp->h[2] >>  0);
-	digest[12] = (byte)(sp->h[3] >> 24);
-	digest[13] = (byte)(sp->h[3] >> 16);
-	digest[14] = (byte)(sp->h[3] >>  8);
-	digest[15] = (byte)(sp->h[3] >>  0);
-	digest[16] = (byte)(sp->h[4] >> 24);
-	digest[17] = (byte)(sp->h[4] >> 16);
-	digest[18] = (byte)(sp->h[4] >>  8);
-	digest[19] = (byte)(sp->h[4] >>  0);
-	digest[20] = (byte)(sp->h[5] >> 24);
-	digest[21] = (byte)(sp->h[5] >> 16);
-	digest[22] = (byte)(sp->h[5] >>  8);
-	digest[23] = (byte)(sp->h[5] >>  0);
-	digest[24] = (byte)(sp->h[6] >> 24);
-	digest[25] = (byte)(sp->h[6] >> 16);
-	digest[26] = (byte)(sp->h[6] >>  8);
-	digest[27] = (byte)(sp->h[6] >>  0);
-	digest[28] = (byte)(sp->h[7] >> 24);
-	digest[29] = (byte)(sp->h[7] >> 16);
-	digest[30] = (byte)(sp->h[7] >>  8);
-	digest[31] = (byte)(sp->h[7] >>  0);
+	data[ 0] = (byte)(sp->h[0] >> 24);
+	data[ 1] = (byte)(sp->h[0] >> 16);
+	data[ 2] = (byte)(sp->h[0] >>  8);
+	data[ 3] = (byte)(sp->h[0] >>  0);
+	data[ 4] = (byte)(sp->h[1] >> 24);
+	data[ 5] = (byte)(sp->h[1] >> 16);
+	data[ 6] = (byte)(sp->h[1] >>  8);
+	data[ 7] = (byte)(sp->h[1] >>  0);
+	data[ 8] = (byte)(sp->h[2] >> 24);
+	data[ 9] = (byte)(sp->h[2] >> 16);
+	data[10] = (byte)(sp->h[2] >>  8);
+	data[11] = (byte)(sp->h[2] >>  0);
+	data[12] = (byte)(sp->h[3] >> 24);
+	data[13] = (byte)(sp->h[3] >> 16);
+	data[14] = (byte)(sp->h[3] >>  8);
+	data[15] = (byte)(sp->h[3] >>  0);
+	data[16] = (byte)(sp->h[4] >> 24);
+	data[17] = (byte)(sp->h[4] >> 16);
+	data[18] = (byte)(sp->h[4] >>  8);
+	data[19] = (byte)(sp->h[4] >>  0);
+	data[20] = (byte)(sp->h[5] >> 24);
+	data[21] = (byte)(sp->h[5] >> 16);
+	data[22] = (byte)(sp->h[5] >>  8);
+	data[23] = (byte)(sp->h[5] >>  0);
+	data[24] = (byte)(sp->h[6] >> 24);
+	data[25] = (byte)(sp->h[6] >> 16);
+	data[26] = (byte)(sp->h[6] >>  8);
+	data[27] = (byte)(sp->h[6] >>  0);
+	data[28] = (byte)(sp->h[7] >> 24);
+	data[29] = (byte)(sp->h[7] >> 16);
+	data[30] = (byte)(sp->h[7] >>  8);
+	data[31] = (byte)(sp->h[7] >>  0);
 
-	(void) sha256Reset(sp);
+	sha256Reset(sp);
 	return 0;
 }
 

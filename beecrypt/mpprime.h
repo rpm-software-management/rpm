@@ -26,61 +26,31 @@
 #ifndef _MPPRIME_H
 #define _MPPRIME_H
 
-#include "mpbarrett.h"
+#include "beecrypt/mpbarrett.h"
 
 #define SMALL_PRIMES_PRODUCT_MAX	32
 
-/**
- */
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern mpw* mpspprod[SMALL_PRIMES_PRODUCT_MAX];
-/*@=exportlocal@*/
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- */
 BEECRYPTAPI
-int  mpptrials     (size_t bits)
-	/*@*/;
-
-/**
- */
+int  mpptrials     (size_t);
 BEECRYPTAPI
-int  mppmilrab_w   (const mpbarrett* p, randomGeneratorContext* rc, int t, /*@out@*/ mpw* wksp)
-	/*@modifies wksp @*/;
+int  mppmilrab_w   (const mpbarrett*, randomGeneratorContext*, int, mpw*);
 
-/**
- */
 BEECRYPTAPI
-void mpprnd_w      (mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, /*@null@*/ const mpnumber* f, /*@out@*/ mpw* wksp)
-	/*@globals mpspprod @*/
-	/*@modifies p, rc, wksp @*/;
-
-/**
- */
+int  mpprnd_w      (mpbarrett*, randomGeneratorContext*, size_t, int, const mpnumber*, mpw*);
 BEECRYPTAPI
-void mpprndsafe_w  (mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, /*@out@*/ mpw* wksp)
-	/*@globals mpspprod @*/
-	/*@modifies p, rc, wksp @*/;
-
-#ifdef	NOTYET
-/**
- */
-BEECRYPTAPI /*@unused@*/
-void mpprndcon_w   (mpbarrett* p, randomGeneratorContext* rc, size_t, int, const mpnumber*, const mpnumber*, const mpnumber*, mpnumber*, /*@out@*/ mpw* wksp)
-	/*@modifies wksp @*/;
-#endif
-
-/**
- */
+int  mpprndr_w     (mpbarrett*, randomGeneratorContext*, size_t, int, const mpnumber*, const mpnumber*, const mpnumber*, mpw*);
 BEECRYPTAPI
-void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpbarrett* q, /*@null@*/ const mpnumber* f, mpnumber* r, int cofactor, /*@out@*/ mpw* wksp)
-	/*@globals mpspprod @*/
-	/*@modifies p, rc, r, wksp @*/;
+void mpprndsafe_w  (mpbarrett*, randomGeneratorContext*, size_t, int, mpw*);
+BEECRYPTAPI
+void mpprndcon_w   (mpbarrett*, randomGeneratorContext*, size_t, int, const mpnumber*, const mpnumber*, const mpnumber*, mpnumber*, mpw*);
+BEECRYPTAPI
+void mpprndconone_w(mpbarrett*, randomGeneratorContext*, size_t, int, const mpbarrett*, const mpnumber*, mpnumber*, int, mpw*);
 
 #ifdef __cplusplus
 }

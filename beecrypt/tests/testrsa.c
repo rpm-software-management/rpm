@@ -23,10 +23,10 @@
  * \ingroup UNIT_m
  */
 
-#include "system.h"
+#include <stdio.h>
+
 #include "beecrypt.h"
 #include "rsa.h"
-#include "debug.h"
 
 static const char* rsa_n  = "bbf82f090682ce9c2338ac2b9da871f7368d07eed41043a440d6b6f07454f51fb8dfbaaf035c02ab61ea48ceeb6fcd4876ed520d60e1ec4619719d8a5b8b807fafb8e0a3dfc737723ee6b4b7d93a2584ee6a649d060953748834b2454598394ee0aab12d7b61a51f527a9a41f6c1687fe2537298ca2a8f5946f8e5fd091dbdcb";
 static const char* rsa_e  = "11";
@@ -44,39 +44,64 @@ int main()
 
 	rsakp keypair;
 	mpnumber m, cipher, decipher;
+	randomGeneratorContext rngc;
 
-	rsakpInit(&keypair);
+	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	{
+		/* First we do the fixed value verification */
+		rsakpInit(&keypair);
 
-	mpbsethex(&keypair.n, rsa_n);
-	mpnsethex(&keypair.e, rsa_e);
-	/* we don't set n, as we're going to use CRT */
-	mpbsethex(&keypair.p, rsa_p);
-	mpbsethex(&keypair.q, rsa_q);
-	mpnsethex(&keypair.d1, rsa_d1);
-	mpnsethex(&keypair.d2, rsa_d2);
-	mpnsethex(&keypair.c, rsa_c);
+		mpbsethex(&keypair.n, rsa_n);
+		mpnsethex(&keypair.e, rsa_e);
+		mpbsethex(&keypair.p, rsa_p);
+		mpbsethex(&keypair.q, rsa_q);
+		mpnsethex(&keypair.dp, rsa_d1);
+		mpnsethex(&keypair.dq, rsa_d2);
+		mpnsethex(&keypair.qi, rsa_c);
 
-	mpnzero(&m);
-	mpnzero(&cipher);
-	mpnzero(&decipher);
+		mpnzero(&m);
+		mpnzero(&cipher);
+		mpnzero(&decipher);
 
-	mpnsethex(&m, rsa_m);
+		mpnsethex(&m, rsa_m);
 
-	/* it's safe to cast the keypair to a public key */
-	if (rsapub((rsapk*) &keypair, &m, &cipher))
-		failures++;
+		/* it's safe to cast the keypair to a public key */
+		if (rsapub(&keypair.n, &keypair.e, &m, &cipher))
+			failures++;
 
-	if (rsapricrt(&keypair, &cipher, &decipher))
-		failures++;
-	
-	if (mpnex(m.size, m.data, decipher.size, decipher.data))
-		failures++;
+		if (rsapricrt(&keypair.n, &keypair.p, &keypair.q, &keypair.dp, &keypair.dq, &keypair.qi, &cipher, &decipher))
+			failures++;
 
-	mpnfree(&decipher);
-	mpnfree(&cipher);
-	mpnfree(&m);
+		if (mpnex(m.size, m.data, decipher.size, decipher.data))
+			failures++;
 
-	rsakpFree(&keypair);
+		mpnfree(&decipher);
+		mpnfree(&cipher);
+		mpnfree(&m);
 
+		rsakpFree(&keypair);
+
+		mpnzero(&m);
+		mpnzero(&cipher);
+		mpnzero(&decipher);
+
+		/* Now we generate a keypair and do some tests on it */
+		rsakpMake(&keypair, &rngc, 512);
+
+		/* generate a random m in the range 0 < m < n */
+		mpbnrnd(&keypair.n, &rngc, &m);
+
+		/* it's safe to cast the keypair to a public key */
+		if (rsapub(&keypair.n, &keypair.e, &m, &cipher))
+			failures++;
+
+		if (rsapricrt(&keypair.n, &keypair.p, &keypair.q, &keypair.dp, &keypair.dq, &keypair.qi, &cipher, &decipher))
+			failures++;
+
+		if (mpnex(m.size, m.data, decipher.size, decipher.data))
+			failures++;
+
+		rsakpFree(&keypair);
+	}
 	return failures;
 }

@@ -33,85 +33,51 @@
 #ifndef _DHAES_H
 #define _DHAES_H
  
-#include "beecrypt.h"
-#include "dldp.h"
+#include "beecrypt/beecrypt.h"
+#include "beecrypt/dldp.h"
 
-/**
- */
 typedef struct
 {
-	const dldp_p*			param;
-	const hashFunction*		hash;
-	const blockCipher*		cipher;
+	const dldp_p*				param;
+	const hashFunction*			hash;
+	const blockCipher*			cipher;
 	const keyedHashFunction*	mac;
-	size_t				cipherkeybits;
-	size_t				mackeybits;
+	size_t						cipherkeybits;
+	size_t						mackeybits;
 } dhaes_pParameters;
 
-/**
- */
 typedef struct
 {
-	dldp_p				param;
-	mpnumber			pub;
-	mpnumber			pri;
-	hashFunctionContext		hash;
-	blockCipherContext		cipher;
+	dldp_p						param;
+	mpnumber					pub;
+	mpnumber					pri;
+	hashFunctionContext			hash;
+	blockCipherContext			cipher;
 	keyedHashFunctionContext	mac;
-	size_t				cipherkeybits;
-	size_t				mackeybits;
+	size_t						cipherkeybits;
+	size_t						mackeybits;
 } dhaes_pContext;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int dhaes_pUsable(const dhaes_pParameters* params)
-	/*@*/;
-/*@=exportlocal@*/
+int dhaes_pUsable(const dhaes_pParameters*);
 
-/**
- */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int dhaes_pContextInit       (/*@special@*/ dhaes_pContext* ctxt, const dhaes_pParameters* params)
-	/*@defines ctxt->hash, ctxt->cipher, ctxt->mac @*/
-	/*@modifies ctxt @*/;
-/*@=exportlocal@*/
+int dhaes_pContextInit       (dhaes_pContext*, const dhaes_pParameters*);
+BEECRYPTAPI
+int dhaes_pContextInitDecrypt(dhaes_pContext*, const dhaes_pParameters*, const mpnumber*);
+BEECRYPTAPI
+int dhaes_pContextInitEncrypt(dhaes_pContext*, const dhaes_pParameters*, const mpnumber*);
+BEECRYPTAPI
+int dhaes_pContextFree       (dhaes_pContext*);
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pri)
-	/*@modifies ctxt @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pub)
-	/*@modifies ctxt @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dhaes_pContextFree       (/*@only@*/ dhaes_pContext* ctxt)
-	/*@modifies ctxt @*/;
-
-/**
- */
-BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt,       mpnumber* ephemeralPublicKey,       mpnumber* mac, const memchunk* cleartext, randomGeneratorContext* rng)
-	/*@modifies ctxt, ephemeralPublicKey, mac, rng @*/;
-
-/**
- */
-BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralPublicKey, const mpnumber* mac, const memchunk* ciphertext)
-	/*@modifies ctxt @*/;
+BEECRYPTAPI
+memchunk* dhaes_pContextEncrypt(dhaes_pContext*,       mpnumber*,       mpnumber*, const memchunk*, randomGeneratorContext*);
+BEECRYPTAPI
+memchunk* dhaes_pContextDecrypt(dhaes_pContext*, const mpnumber*, const mpnumber*, const memchunk*);
 
 #ifdef __cplusplus
 }

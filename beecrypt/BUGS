@@ -2,13 +2,19 @@ Legend:
 	- = open bug
 	* = fixed bug
 
-3.0.0pre:
-	- Intel icc can't cope with gcj headers; there's also a problem in
-      combination with aio.h. Solution should be to not test gcj when using
-      this compiler. As a workaround, you can specify --without-javaglue.
-	- GCC 3.3 produces faster output for Blowfish than the included assembler
-	  source; try coding two Blowfish rounds (without swap) in C and compile
-	  to assembler to see how GCC accomplishes this.
+3.1.0:
+	* Error in final result computation of mpextgcd_w in certain circumstances.
+	* PowerPC 64-bit assembler symbols aren't defined according to LSB 1.3.
+	
+3.0.0:
+	- Can't seem to generate 64-bit shared libraries on AIX; use
+	  --disable-shared on this platform for now.
+	- Intel icc can't cope with gcj headers. There's also a problem in
+	  combination with aio.h; solution should be to not test gcj when using
+	  this compiler. As a workaround, you can specify --without-javaglue.
+	- GCC 3.3 produces faster output for Blowfish on Pentium 4 than the
+	  included assembler source; try coding two Blowfish rounds (without swap)
+	  in C and compile to assembler to see how GCC accomplishes this.
 
 2.3.0pre:
 	* bug in certain instances of computing modular inverse.

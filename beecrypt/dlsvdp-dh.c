@@ -27,15 +27,34 @@
  * \ingroup DL_m DL_dh_m
  */
 
-#include "system.h"
-#include "dlsvdp-dh.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/dlsvdp-dh.h"
 
 /*!\addtogroup DL_dh_m
  * \{
  */
 
-int dlsvdp_pDHSecret(const dldp_p* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)
+/*!\fn dlsvdp_pDHSecret(const dhparam* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)
+ * \brief Computes the shared secret.
+ *
+ * Equation:
+ *
+ * \li \f$s=y^{x}\ \textrm{mod}\ p\f$
+ *
+ * \param dp The domain parameters.
+ * \param x The private value.
+ * \param y The public value (of the peer).
+ * \param s The computed secret value.
+ *
+ * \retval 0 on success.
+ * \retval -1 on failure.
+ */
+int dlsvdp_pDHSecret(const dhparam* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)
 {
 	mpbnpowmod(&dp->p, y, x, s);
 

@@ -23,7 +23,7 @@
 AUTOMAKE_OPTIONS = gnu no-dependencies
 
 EXTRA_DIST = \
-	aesopt.i586.m4 \
+	aesopt.x86.m4 \
 	aesopt.ppc.m4 \
 	alpha.m4 \
 	asmdefs.m4 \

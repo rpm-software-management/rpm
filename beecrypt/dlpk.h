@@ -26,55 +26,47 @@
 #ifndef _DLPK_H
 #define _DLPK_H
 
-#include "dldp.h"
+#include "beecrypt/dldp.h"
 
-/**
+/*!\ingroup DL_m
  */
-typedef struct
+#ifdef __cplusplus
+struct BEECRYPTAPI dlpk_p
+#else
+struct _dlpk_p
+#endif
 {
 	dldp_p param;
 	mpnumber y;
-} dlpk_p;
+#ifdef __cplusplus
+	dlpk_p();
+	dlpk_p(const dlpk_p&);
+	~dlpk_p();
+#endif
+};
+
+#ifndef __cplusplus
+typedef struct _dlpk_p dlpk_p;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dlpk_pInit(dlpk_p* pk)
-	/*@modifies pk @*/;
+BEECRYPTAPI
+int dlpk_pInit(dlpk_p*);
+BEECRYPTAPI
+int dlpk_pFree(dlpk_p*);
+BEECRYPTAPI
+int dlpk_pCopy(dlpk_p*, const dlpk_p*);
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dlpk_pFree(dlpk_p* pk)
-	/*@modifies pk @*/;
+BEECRYPTAPI
+int  dlpk_pEqual(const dlpk_p*, const dlpk_p*);
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
-	/*@modifies dst @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int  dlpk_pEqual(const dlpk_p* a, const dlpk_p* b)
-	/*@*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int  dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofactor)
-	/*@modifies rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int  dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
-	/*@modifies rgc @*/;
+BEECRYPTAPI
+int  dlpk_pgoqValidate(const dlpk_p*, randomGeneratorContext*, int cofactor);
+BEECRYPTAPI
+int  dlpk_pgonValidate(const dlpk_p*, randomGeneratorContext*);
 
 #ifdef __cplusplus
 }

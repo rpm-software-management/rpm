@@ -23,14 +23,16 @@
  * \ingroup MP_m
  */
 
-#include "system.h"
-#include "mpprime.h"
-#include "mp.h"
-#include "mpbarrett.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
 
-/**
- * A word of explanation here on what these tables accomplish:
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/mpprime.h"
+
+/*
+ * A word of explanation here on what this table accomplishes:
  *
  * For fast checking whether a candidate prime can be divided by small primes, we use this table,
  * which contains the products of all small primes starting at 3, up to a word size equal to the size
@@ -47,69 +49,42 @@
 
 #if (MP_WBITS == 64)
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_01[] =	/* primes 3 to 53 */
 { 0xe221f97c30e94e1dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_02[] =	/* primes 3 to 101 */
 { 0x5797d47c51681549U, 0xd734e4fc4c3eaf7fU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_03[] =	/* primes 3 to 149 */
 { 0x1e6d8e2a0ffceafbU, 0xbcbfc14a4c3bc1e1U,
   0x009c6a22a0a7adf5U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_04[] =	/* primes 3 to 193 */
 { 0xdbf05b6f5654b3c0U, 0xf524355143958688U,
   0x9f155887819aed2aU, 0xc05b93352be98677U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_05[] =	/* primes 3 to 239 */
 { 0x3faa5dadb695ce58U, 0x4a579328eab20f1fU,
   0xef00fe27ffc36456U, 0x0a65723e27d8884aU,
   0xd59da0a992f77529U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_06[] =	/* primes 3 to 281 */
 { 0x501201cc51a492a5U, 0x44d3900ad4f8b32aU,
   0x203c858406a4457cU, 0xab0b4f805ab18ac6U,
   0xeb9572ac6e9394faU, 0x522bffb6f44af2f3U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_07[] =	/* primes 3 to 331 */
 { 0x0120eb4d70279230U, 0x9ed122fce0488be4U,
   0x1d0c99f5d8c039adU, 0x058c90b4780500feU,
   0xf39c05cc09817a27U, 0xc3e1776a246b6af2U,
   0x946a10d66eafaedfU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_08[] =	/* primes 3 to 379 */
 { 0x106aa9fb7646fa6eU, 0xb0813c28c5d5f09fU,
   0x077ec3ba238bfb99U, 0xc1b631a203e81187U,
   0x233db117cbc38405U, 0x6ef04659a4a11de4U,
   0x9f7ecb29bada8f98U, 0x0decece92e30c48fU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_09[] =	/* primes 3 to 421 */
 { 0x0185dbeb2b8b11d3U, 0x7633e9dc1eec5415U,
   0x65c6ce8431d227eeU, 0x28f0328a60c90118U,
@@ -117,9 +92,6 @@ static mpw spp_09[] =	/* primes 3 to 421 */
   0xf35e974579072ec8U, 0xcaf1ac8eefd5566fU,
   0xa15fb94fe34f5d37U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_10[] =	/* primes 3 to 463 */
 { 0x833a505cf9922beeU, 0xc80265a6d50e1cceU,
   0xa22f6fec2eb84450U, 0xcec64a3c0e10d472U,
@@ -127,9 +99,6 @@ static mpw spp_10[] =	/* primes 3 to 463 */
   0x5e21023267bda426U, 0x738730cfb8e6e2aeU,
   0xc08c9d4bd2420066U, 0xdccf95ef49a560b7U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_11[] =	/* primes 3 to 509 */
 { 0x309d024bd5380319U, 0x2ca334690bafb43aU,
   0x0abd5840fbeb24d1U, 0xf49b633047902baeU,
@@ -138,9 +107,6 @@ static mpw spp_11[] =	/* primes 3 to 509 */
   0x8ffd0db8e8fa61a1U, 0x6e1c0970beb81adcU,
   0xf49c82dff960d36fU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_12[] =	/* primes 3 to 569 */
 { 0x25eac89f8d4da338U, 0x337b49850d2d1489U,
   0x2663177b4010af3dU, 0xd23eeb0b228f3832U,
@@ -149,9 +115,6 @@ static mpw spp_12[] =	/* primes 3 to 569 */
   0x93c158c1a9a8227fU, 0xf81a90c5630e9c44U,
   0x845c755c7df35a7dU, 0x430c679a11575655U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_13[] =	/* primes 3 to 607 */
 { 0x3383219d26454f06U, 0xe2789b7f9c3b940eU,
   0x03be2105798e3ff7U, 0x945bd325997bc262U,
@@ -161,9 +124,6 @@ static mpw spp_13[] =	/* primes 3 to 607 */
   0xde195be86e66ba89U, 0xb0ab042d3276976cU,
   0x3dbeb3d7413ea96dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_14[] =	/* primes 3 to 647 */
 { 0x6e02645460adbd18U, 0xcd52ce1a1beab1c0U,
   0x36e468e9f350d69bU, 0x1d357d083a59f778U,
@@ -173,9 +133,6 @@ static mpw spp_14[] =	/* primes 3 to 647 */
   0xc74d951db361f061U, 0xc4d14f000d806db4U,
   0xcd939110c7cab492U, 0x2f3ea4c4852ca469U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_15[] =	/* primes 3 to 683 */
 { 0x008723131f66758aU, 0x414bbebb2f8670bfU,
   0x01dc959d74468901U, 0x57c57f40e210c9c2U,
@@ -186,9 +143,6 @@ static mpw spp_15[] =	/* primes 3 to 683 */
   0xe61b766ec0943254U, 0x1cd70f0fd5a0ce6bU,
   0x8ab998fb8ab36e0dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_16[] =	/* primes 3 to 739 */
 { 0x02c85ff870f24be8U, 0x0f62b1ba6c20bd72U,
   0xb837efdf121206d8U, 0x7db56b7d69fa4c02U,
@@ -199,9 +153,6 @@ static mpw spp_16[] =	/* primes 3 to 739 */
   0x35bbb6e5dae2783dU, 0xd1c0ce7dec4fc70eU,
   0x5186d411df36368fU, 0x061aa36011f30179U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_17[] =	/* primes 3 to 787 */
 { 0x16af5c18a2bef8efU, 0xf2278332182d0fbfU,
   0x0038cc205148b83dU, 0x06e3d7d932828b18U,
@@ -213,9 +164,6 @@ static mpw spp_17[] =	/* primes 3 to 787 */
   0xb0cfbf964c8f27ceU, 0x05d6c77a01f9d332U,
   0x36c9d442ad69ed33U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_18[] =	/* primes 3 to 827 */
 { 0x005bfd2583ab7a44U, 0x13d4df0f537c686cU,
   0xa8e6b583e491130eU, 0x96dfcc1c05ba298fU,
@@ -227,9 +175,6 @@ static mpw spp_18[] =	/* primes 3 to 827 */
   0x9513a9cbe3e67e3aU, 0xe501c1c522aa8ba9U,
   0xf955789589161febU, 0xc69941a147aa9685U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_19[] =	/* primes 3 to 877 */
 { 0x06706918e8355b7fU, 0xfd3f024da6b012e2U,
   0xbb7338f30d51a968U, 0x0f3d912035ed70e0U,
@@ -242,9 +187,6 @@ static mpw spp_19[] =	/* primes 3 to 877 */
   0xe85d8e9434a37006U, 0x8cebc96060ab2f87U,
   0x81efeb182d0e724bU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_20[] =	/* primes 3 to 929 */
 { 0xa9e9591f7815617eU, 0xcabe352fa13445c4U,
   0xf8e319ba63042e1cU, 0xb0a017d0e729a699U,
@@ -257,9 +199,6 @@ static mpw spp_20[] =	/* primes 3 to 929 */
   0x30b96bfb6475393bU, 0x5f43a549d95c5619U,
   0x7e274850ad1a6d18U, 0xb5eaa41dd42fda55U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_21[] =	/* primes 3 to 971 */
 { 0x06e1d136cb78cac5U, 0x4da4bfcb6f2c4a24U,
   0xfcf3796b77719c31U, 0xd27915860001f03eU,
@@ -273,9 +212,6 @@ static mpw spp_21[] =	/* primes 3 to 971 */
   0x0d57d0f076647b0aU, 0xb191f543dc08c392U,
   0x3167e5ee56c66847U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_22[] =	/* primes 3 to 1013 */
 { 0x005ca1a92edd0e81U, 0x9619289e1ecfe2d7U,
   0xf3949eaf363a5fe8U, 0xf6fee01ccd480490U,
@@ -289,9 +225,6 @@ static mpw spp_22[] =	/* primes 3 to 1013 */
   0x5b7138fc36f7989cU, 0xe85b07c2d4d59d42U,
   0x1541c765f6c2111dU, 0xb82eca06b437f757U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_23[] =	/* primes 3 to 1051 */
 { 0x18e5b310229f618dU, 0xe0f54782f57fff33U,
   0x10546ba8efc0a69cU, 0xac4b573b749cc43dU,
@@ -306,9 +239,6 @@ static mpw spp_23[] =	/* primes 3 to 1051 */
   0x531bccbf17e3c78dU, 0x5c43d8f6866ad640U,
   0xfdbbba0fe997b27bU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_24[] =	/* primes 3 to 1093 */
 { 0x021bf9497091b8c3U, 0x68cc7c8e00c1990cU,
   0x6027481b79215ac8U, 0xa7517749a2151377U,
@@ -323,9 +253,6 @@ static mpw spp_24[] =	/* primes 3 to 1093 */
   0x7dfb5c9c8ada77cdU, 0x0d5b94eff021e02eU,
   0x307d08010312d57cU, 0xb5d975764697842dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_25[] =	/* primes 3 to 1151 */
 { 0xfa1bd62baae1e767U, 0x47535af3830fc07dU,
   0xebcf3ef7e5a8e46bU, 0x8937c4afe02aef0aU,
@@ -341,9 +268,6 @@ static mpw spp_25[] =	/* primes 3 to 1151 */
   0x138b42a3c1d9593cU, 0xe1254fb3214d2b08U,
   0x52532bc528bc6467U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_26[] =	/* primes 3 to 1193 */
 { 0x239afcd438799705U, 0xab8a0cda4802bc8fU,
   0xb0e87f44a568f618U, 0x7c604708dfb79072U,
@@ -359,9 +283,6 @@ static mpw spp_26[] =	/* primes 3 to 1193 */
   0x66aa84bf84d4448dU, 0x2119029166db27bdU,
   0x515599cdcd147810U, 0x3acf73e7fe62aed9U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_27[] =	/* primes 3 to 1231 */
 { 0x0654f0d4cdacb307U, 0x5419612fae3cf746U,
   0xfbab751fd0887955U, 0x28adc68d26f32877U,
@@ -378,9 +299,6 @@ static mpw spp_27[] =	/* primes 3 to 1231 */
   0x55e0d645628c5475U, 0x6217c0bdf119900bU,
   0x05ea71dd714fd2c9U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_28[] =	/* primes 3 to 1283 */
 { 0x01662c66dab7a4faU, 0xdba4265ac2075912U,
   0x59e9c885e1330cb6U, 0xc91bee92f1b334ffU,
@@ -397,9 +315,6 @@ static mpw spp_28[] =	/* primes 3 to 1283 */
   0x4548a05562ed1c09U, 0x1a63309bf1a9df8bU,
   0xf0c59af912a62c22U, 0xe1e1f49bb0115c17U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_29[] =	/* primes 3 to 1307 */
 { 0x005cda0c54b07f4fU, 0xff0caca07cc89b95U,
   0x1c021191164be693U, 0x6665357ebb2f689cU,
@@ -417,9 +332,6 @@ static mpw spp_29[] =	/* primes 3 to 1307 */
   0xd052c10abfc67bf6U, 0x915d44352688091bU,
   0x1eb1c7117c91eae5U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_30[] =	/* primes 3 to 1381 */
 { 0xa0604bc54c251adeU, 0xcf22bf075a150bb1U,
   0x2a67d65a5045c183U, 0x172466270d72a8c6U,
@@ -437,9 +349,6 @@ static mpw spp_30[] =	/* primes 3 to 1381 */
   0xca98bda05c0c6ac6U, 0x666daad014d2ff3fU,
   0x7138fa68ddd5e9f0U, 0xe92edcaa62b56483U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_31[] =	/* primes 3 to 1433 */
 { 0x4742fdaff7e8231aU, 0xded6827758493423U,
   0x12b13d2f5925c539U, 0x82d876ef7ff69e7fU,
@@ -458,9 +367,6 @@ static mpw spp_31[] =	/* primes 3 to 1433 */
   0x177c5dc0fbfbb491U, 0xa1e5e03e5715875cU,
   0xa02a0fa41fde7abdU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_32[] =	/* primes 3 to 1471 */
 { 0x2465a7bd85011e1cU, 0x9e0527929fff268cU,
   0x82ef7efa416863baU, 0xa5acdb0971dba0ccU,
@@ -481,129 +387,78 @@ static mpw spp_32[] =	/* primes 3 to 1471 */
 
 #elif (MP_WBITS == 32)
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_01[] =	/* primes 3 to 29 */
 { 0xc0cfd797U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_02[] =	/* primes 3 to 53 */
 { 0xe221f97cU, 0x30e94e1dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_03[] =	/* primes 3 to 73 */
 { 0x41cd66acU, 0xc237b226U, 0x81a18067U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_04[] =	/* primes 3 to 101 */
 { 0x5797d47cU, 0x51681549U, 0xd734e4fcU, 0x4c3eaf7fU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_05[] =	/* primes 3 to 113 */
 { 0x02c4b8d0U, 0xd2e0d937U, 0x3935200fU, 0xb49be231U,
   0x5ce1a307U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_06[] =	/* primes 3 to 149 */
 { 0x1e6d8e2aU, 0x0ffceafbU, 0xbcbfc14aU, 0x4c3bc1e1U,
   0x009c6a22U, 0xa0a7adf5U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_07[] =	/* primes 3 to 167 */
 { 0x049265d3U, 0x574cefd0U, 0x4229bfd6U, 0x62a4a46fU,
   0x8611ed02U, 0x26c655f0U, 0x76ebade3U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_08[] =	/* primes 3 to 193 */
 { 0xdbf05b6fU, 0x5654b3c0U, 0xf5243551U, 0x43958688U,
   0x9f155887U, 0x819aed2aU, 0xc05b9335U, 0x2be98677U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_09[] =	/* primes 3 to 223 */
 { 0x5e75cec8U, 0xb5de5ea1U, 0x5da8302aU, 0x2f28b4adU,
   0x2735bdc3U, 0x9344c52eU, 0x67570925U, 0x6feb71efU,
   0x6811d741U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_10[] =	/* primes 3 to 239 */
 { 0x3faa5dadU, 0xb695ce58U, 0x4a579328U, 0xeab20f1fU,
   0xef00fe27U, 0xffc36456U, 0x0a65723eU, 0x27d8884aU,
   0xd59da0a9U, 0x92f77529U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_11[] =	/* primes 3 to 263 */
 { 0x3c9b6e49U, 0xb7cf685bU, 0xe7f3a239U, 0xfb4084cbU,
   0x166885e3U, 0x9d4f65b4U, 0x0bb0e51cU, 0x0a5d36feU,
   0x98c32069U, 0xfd5c441cU, 0x6d82f115U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_12[] =	/* primes 3 to 281 */
 { 0x501201ccU, 0x51a492a5U, 0x44d3900aU, 0xd4f8b32aU,
   0x203c8584U, 0x06a4457cU, 0xab0b4f80U, 0x5ab18ac6U,
   0xeb9572acU, 0x6e9394faU, 0x522bffb6U, 0xf44af2f3U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_13[] =	/* primes 3 to 311 */
 { 0x9397b5b4U, 0x414dc331U, 0x04561364U, 0x79958cc8U,
   0xfd5ea01fU, 0x5d5e9f61U, 0xbd0f1cb6U, 0x24af7e6aU,
   0x3284dbb2U, 0x9857622bU, 0x8be980a6U, 0x5456a5c1U,
   0xed928009U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_14[] =	/* primes 3 to 331 */
 { 0x0120eb4dU, 0x70279230U, 0x9ed122fcU, 0xe0488be4U,
   0x1d0c99f5U, 0xd8c039adU, 0x058c90b4U, 0x780500feU,
   0xf39c05ccU, 0x09817a27U, 0xc3e1776aU, 0x246b6af2U,
   0x946a10d6U, 0x6eafaedfU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_15[] =	/* primes 3 to 353 */
 { 0x03c91dd1U, 0x2e893191U, 0x94095649U, 0x874b41d6U,
   0x05810c06U, 0x195d70ebU, 0xbd54a862U, 0x50c52733U,
   0x06dc6648U, 0x1c251ca4U, 0xa02c9a04U, 0x78c96f0dU,
   0x02f0db0bU, 0x39d624caU, 0x0b0441c1U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_16[] =	/* primes 3 to 379 */
 { 0x106aa9fbU, 0x7646fa6eU, 0xb0813c28U, 0xc5d5f09fU,
   0x077ec3baU, 0x238bfb99U, 0xc1b631a2U, 0x03e81187U,
   0x233db117U, 0xcbc38405U, 0x6ef04659U, 0xa4a11de4U,
   0x9f7ecb29U, 0xbada8f98U, 0x0decece9U, 0x2e30c48fU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_17[] =	/* primes 3 to 401 */
 { 0x5aa88d8cU, 0x594bb372U, 0xc4bc813fU, 0x4a87a266U,
   0x1f984840U, 0xdab15692U, 0x2c2a177dU, 0x95843665U,
@@ -611,9 +466,6 @@ static mpw spp_17[] =	/* primes 3 to 401 */
   0x3b3536a4U, 0x0b2745bdU, 0xadf1a6c9U, 0x7b23e85aU,
   0xdc6695c1U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_18[] =	/* primes 3 to 421 */
 { 0x0185dbebU, 0x2b8b11d3U, 0x7633e9dcU, 0x1eec5415U,
   0x65c6ce84U, 0x31d227eeU, 0x28f0328aU, 0x60c90118U,
@@ -621,9 +473,6 @@ static mpw spp_18[] =	/* primes 3 to 421 */
   0xf35e9745U, 0x79072ec8U, 0xcaf1ac8eU, 0xefd5566fU,
   0xa15fb94fU, 0xe34f5d37U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_19[] =	/* primes 3 to 443 */
 { 0x0cde6fd1U, 0xcf108066U, 0xcc548df9U, 0x070e102cU,
   0x2c651b88U, 0x5f24f503U, 0xaaffe276U, 0xfeb57311U,
@@ -631,9 +480,6 @@ static mpw spp_19[] =	/* primes 3 to 443 */
   0xc43f999dU, 0x5d06b89fU, 0xcb22e533U, 0x5a9287bcU,
   0x6d75a3e9U, 0x1e53906dU, 0x413163d5U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_20[] =	/* primes 3 to 463 */
 { 0x833a505cU, 0xf9922beeU, 0xc80265a6U, 0xd50e1cceU,
   0xa22f6fecU, 0x2eb84450U, 0xcec64a3cU, 0x0e10d472U,
@@ -641,9 +487,6 @@ static mpw spp_20[] =	/* primes 3 to 463 */
   0x5e210232U, 0x67bda426U, 0x738730cfU, 0xb8e6e2aeU,
   0xc08c9d4bU, 0xd2420066U, 0xdccf95efU, 0x49a560b7U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_21[] =	/* primes 3 to 487 */
 { 0x035417f1U, 0xe321c06cU, 0xbe32ffceU, 0xae752cc9U,
   0xa9fe11a6U, 0x3d94c946U, 0x456edd7dU, 0x5a060de1U,
@@ -652,9 +495,6 @@ static mpw spp_21[] =	/* primes 3 to 487 */
   0x491cbd61U, 0x55e565afU, 0x4a9f4331U, 0x0adbb0d7U,
   0x06e86f6dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_22[] =	/* primes 3 to 509 */
 { 0x309d024bU, 0xd5380319U, 0x2ca33469U, 0x0bafb43aU,
   0x0abd5840U, 0xfbeb24d1U, 0xf49b6330U, 0x47902baeU,
@@ -663,9 +503,6 @@ static mpw spp_22[] =	/* primes 3 to 509 */
   0x8ffd0db8U, 0xe8fa61a1U, 0x6e1c0970U, 0xbeb81adcU,
   0xf49c82dfU, 0xf960d36fU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_23[] =	/* primes 3 to 541 */
 { 0x01ab244aU, 0x33bc047eU, 0x804590b4U, 0xc3207237U,
   0xea503fa0U, 0x7541b251U, 0x57cfd03fU, 0xf602c9d0U,
@@ -674,9 +511,6 @@ static mpw spp_23[] =	/* primes 3 to 541 */
   0xb6a5129cU, 0x7699fb5cU, 0xccec6d45U, 0x56c9b8eaU,
   0xfa05897cU, 0xb8c5cf72U, 0xb77603d9U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_24[] =	/* primes 3 to 569 */
 { 0x25eac89fU, 0x8d4da338U, 0x337b4985U, 0x0d2d1489U,
   0x2663177bU, 0x4010af3dU, 0xd23eeb0bU, 0x228f3832U,
@@ -685,9 +519,6 @@ static mpw spp_24[] =	/* primes 3 to 569 */
   0x93c158c1U, 0xa9a8227fU, 0xf81a90c5U, 0x630e9c44U,
   0x845c755cU, 0x7df35a7dU, 0x430c679aU, 0x11575655U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_25[] =	/* primes 3 to 587 */
 { 0x01b515a8U, 0xdca3d6e4U, 0x69090373U, 0x84febfe8U,
   0xf32e06cfU, 0x9bde8c89U, 0x6b3f992fU, 0x2ff23508U,
@@ -697,9 +528,6 @@ static mpw spp_25[] =	/* primes 3 to 587 */
   0x6b3faafcU, 0x0f200b35U, 0x7485ce4aU, 0x2f08f148U,
   0xcce6887dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_26[] =	/* primes 3 to 607 */
 { 0x3383219dU, 0x26454f06U, 0xe2789b7fU, 0x9c3b940eU,
   0x03be2105U, 0x798e3ff7U, 0x945bd325U, 0x997bc262U,
@@ -709,9 +537,6 @@ static mpw spp_26[] =	/* primes 3 to 607 */
   0xde195be8U, 0x6e66ba89U, 0xb0ab042dU, 0x3276976cU,
   0x3dbeb3d7U, 0x413ea96dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_27[] =	/* primes 3 to 619 */
 { 0x02ced4b7U, 0xf15179e8U, 0x7fcba6daU, 0x7b07a6f3U,
   0xf9311218U, 0xa7b88985U, 0xac74b503U, 0xbf745330U,
@@ -721,9 +546,6 @@ static mpw spp_27[] =	/* primes 3 to 619 */
   0x80751585U, 0xc70e20c2U, 0x2d15d3feU, 0xc1b40c7fU,
   0x8e25dd07U, 0xdb09dd86U, 0x791aa9e3U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_28[] =	/* primes 3 to 647 */
 { 0x6e026454U, 0x60adbd18U, 0xcd52ce1aU, 0x1beab1c0U,
   0x36e468e9U, 0xf350d69bU, 0x1d357d08U, 0x3a59f778U,
@@ -733,9 +555,6 @@ static mpw spp_28[] =	/* primes 3 to 647 */
   0xc74d951dU, 0xb361f061U, 0xc4d14f00U, 0x0d806db4U,
   0xcd939110U, 0xc7cab492U, 0x2f3ea4c4U, 0x852ca469U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_29[] =	/* primes 3 to 661 */
 { 0x074921f7U, 0x6a76cec3U, 0xaeb05f74U, 0x60b21f16U,
   0x49dece2fU, 0x21bb3ed9U, 0xe4cb4ebcU, 0x05d6f408U,
@@ -746,9 +565,6 @@ static mpw spp_29[] =	/* primes 3 to 661 */
   0xc7001c45U, 0x4a84a45dU, 0x66007591U, 0x27e85693U,
   0x2288d0fbU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_30[] =	/* primes 3 to 683 */
 { 0x00872313U, 0x1f66758aU, 0x414bbebbU, 0x2f8670bfU,
   0x01dc959dU, 0x74468901U, 0x57c57f40U, 0xe210c9c2U,
@@ -759,9 +575,6 @@ static mpw spp_30[] =	/* primes 3 to 683 */
   0xe61b766eU, 0xc0943254U, 0x1cd70f0fU, 0xd5a0ce6bU,
   0x8ab998fbU, 0x8ab36e0dU };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_31[] =	/* primes 3 to 719 */
 { 0x1e595df4U, 0x3064a8c9U, 0xd61ae17bU, 0xde1938f0U,
   0x22ee6357U, 0x35f4caddU, 0x3d39f473U, 0xafed7df5U,
@@ -772,9 +585,6 @@ static mpw spp_31[] =	/* primes 3 to 719 */
   0x20969ec0U, 0x1a480d31U, 0x331b3252U, 0x01b36fabU,
   0x3d5b415bU, 0x1a4567e7U, 0x3baf6389U };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static mpw spp_32[] =	/* primes 3 to 739 */
 { 0x02c85ff8U, 0x70f24be8U, 0x0f62b1baU, 0x6c20bd72U,
   0xb837efdfU, 0x121206d8U, 0x7db56b7dU, 0x69fa4c02U,
@@ -896,37 +706,57 @@ int mpptrials(size_t bits)
 	return 35;
 }
 
-/**
+/*
+ * needs workspace of (size*2) words
  */
-static void mpprndbits(mpbarrett* p, size_t msbclr, size_t lsbset, randomGeneratorContext* rc)
-	/*@modifies p @*/
+static void mpprndbits(mpbarrett* p, size_t bits, size_t lsbset, const mpnumber* min, const mpnumber* max, randomGeneratorContext* rc, mpw* wksp)
 {
 	register size_t size = p->size;
+	register size_t msbclr = MP_WORDS_TO_BITS(size) - bits;
 
-	if (p == (mpbarrett*) 0 || p->modl == (mpw*) 0)
-		return;
+	/* assume that mpbits(max) == bits */
+	/* calculate k=max-min; generate q such that 0 <= q <= k; then set p = q + min */
+	/* for the second step, set the appropriate number of bits */
 
-/*@-noeffectuncon@*/
-	(void) rc->rng->next(rc->param, (byte*) p->modl, MP_WORDS_TO_BYTES(size));
-/*@=noeffectuncon@*/
+	if (max)
+	{
+		mpsetx(size, wksp, max->size, max->data);
+	} 
+	else
+	{
+		mpfill(size, wksp, MP_ALLMASK);
+		wksp[0] &= (MP_ALLMASK >> msbclr);
+	}
+	if (min)
+	{
+		mpsetx(size, wksp+size, min->size, min->data);
+	}
+	else
+	{
+		mpzero(size, wksp+size);
+		wksp[size] |= (MP_MSBMASK >> msbclr);
+	}
 
-	if (msbclr != 0)
-		p->modl[0] &= (MP_ALLMASK >> msbclr);
+	mpsub(size, wksp, wksp+size);
 
-	p->modl[0] |= (MP_MSBMASK >> msbclr);
+    rc->rng->next(rc->param, (byte*) p->modl, MP_WORDS_TO_BYTES(size));
 
-	if (lsbset != 0)
+	p->modl[0] &= (MP_ALLMASK >> msbclr);
+
+	while (mpgt(size, p->modl, wksp))
+		mpsub(size, p->modl, wksp);
+
+	mpadd(size, p->modl, wksp+size);
+
+	if (lsbset)
 		p->modl[size-1] |= (MP_ALLMASK >> (MP_WBITS - lsbset));
 }
 
-/**
+/*
  * mppsppdiv_w
  *  needs workspace of (3*size) words
  */
-static
-int mppsppdiv_w(const mpbarrett* p, /*@out@*/ mpw* wksp)
-	/*@globals mpspprod @*/
-	/*@modifies wksp @*/
+int mppsppdiv_w(const mpbarrett* p, mpw* wksp)
 {
 	/* small prime product trial division test */
 	register size_t size = p->size;
@@ -934,9 +764,7 @@ int mppsppdiv_w(const mpbarrett* p, /*@out@*/ mpw* wksp)
 	if (size > SMALL_PRIMES_PRODUCT_MAX)
 	{
 		mpsetx(size, wksp+size, SMALL_PRIMES_PRODUCT_MAX, mpspprod[SMALL_PRIMES_PRODUCT_MAX-1]);
-		/*@-compdef@*/ /* LCL: wksp+size undef */
 		mpgcd_w(size, p->modl, wksp+size, wksp, wksp+2*size);
-		/*@=compdef@*/
 	}
 	else
 	{
@@ -946,13 +774,10 @@ int mppsppdiv_w(const mpbarrett* p, /*@out@*/ mpw* wksp)
 	return mpisone(size, wksp);
 }
 
-/**
- * mppmilrabtwo_w
+/*
  * needs workspace of (5*size+2)
  */
-static
-int mppmilrabtwo_w(const mpbarrett* p, int s, const mpw* rdata, const mpw* ndata, /*@out@*/ mpw* wksp)
-	/*@modifies wksp @*/
+int mppmilrabtwo_w(const mpbarrett* p, int s, const mpw* rdata, const mpw* ndata, mpw* wksp)
 {
 	register size_t size = p->size;
 	register int j = 0;
@@ -974,13 +799,10 @@ int mppmilrabtwo_w(const mpbarrett* p, int s, const mpw* rdata, const mpw* ndata
 	}
 }
 
-/**
- * mppmilraba_w
+/*
  * needs workspace of (5*size+2) words
  */
-static
-int mppmilraba_w(const mpbarrett* p, const mpw* adata, int s, const mpw* rdata, const mpw* ndata, /*@out@*/ mpw* wksp)
-	/*@modifies wksp @*/
+int mppmilraba_w(const mpbarrett* p, const mpw* adata, int s, const mpw* rdata, const mpw* ndata, mpw* wksp)
 {
 	register size_t size = p->size;
 	register int j = 0;
@@ -1002,7 +824,7 @@ int mppmilraba_w(const mpbarrett* p, const mpw* adata, int s, const mpw* rdata, 
 	}
 }
 
-/**
+/*
  * needs workspace of (8*size+2) words
  */
 int mppmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, mpw* wksp)
@@ -1029,7 +851,7 @@ int mppmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, mpw* wksp
 	int s;
 
 	mpcopy(size, ndata, p->modl);
-	(void) mpsubw(size, ndata, 1);
+	mpsubw(size, ndata, 1);
 	mpcopy(size, rdata, ndata);
 
 	s = mprshiftlsz(size, rdata); /* we've split p-1 into (2^s)*r */
@@ -1055,24 +877,48 @@ int mppmilrab_w(const mpbarrett* p, randomGeneratorContext* rc, int t, mpw* wksp
     return 1;
 }
 
-/**
+/*
  * needs workspace of (8*size+2) words
  */
-void mpprnd_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpnumber* f, mpw* wksp)
+int mpprnd_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpnumber* f, mpw* wksp)
+{
+	return mpprndr_w(p, rc, bits, t, (const mpnumber*) 0, (const mpnumber*) 0, f, wksp);
+}
+
+/*
+ * implements IEEE P1363 A.15.6
+ *
+ * f, min, max are optional
+ */
+int mpprndr_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpnumber* min, const mpnumber* max, const mpnumber* f, mpw* wksp)
 {
 	/*
 	 * Generate a prime into p with the requested number of bits
 	 *
 	 * Conditions: size(f) <= size(p)
 	 *
+	 * Optional input min: if min is not null, then search p so that min <= p
+	 * Optional input max: if max is not null, then search p so that p <= max
 	 * Optional input f: if f is not null, then search p so that GCD(p-1,f) = 1
 	 */
 
 	size_t size = MP_BITS_TO_WORDS(bits + MP_WBITS - 1);
 
+	/* if min has more bits than what was requested for p, bail out */
+	if (min && (mpbits(min->size, min->data) > bits))
+		return -1;
+
+	/* if max has a different number of bits than what was requested for p, bail out */
+	if (max && (mpbits(max->size, max->data) != bits))
+		return -1;
+
+	/* if min is not less than max, bail out */
+	if (min && max && mpgex(min->size, min->data, max->size, max->data))
+		return -1;
+
 	mpbinit(p, size);
 
-	if (p->modl != (mpw*) 0)
+	if (p->modl)
 	{
 		while (1)
 		{
@@ -1080,7 +926,7 @@ void mpprnd_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, cons
 			 * Generate a random appropriate candidate prime, and test
 			 * it with small prime divisor test BEFORE computing mu
 			 */
-			mpprndbits(p, MP_WORDS_TO_BITS(size) - bits, 1, rc);
+			mpprndbits(p, bits, 1, min, max, rc, wksp);
 
 			/* do a small prime product trial division test on p */
 			if (!mppsppdiv_w(p, wksp))
@@ -1090,7 +936,7 @@ void mpprnd_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, cons
 			if (f != (mpnumber*) 0)
 			{
 				mpcopy(size, wksp, p->modl);
-				(void) mpsubw(size, wksp, 1);
+				mpsubw(size, wksp, 1);
 				mpsetx(size, wksp+size, f->size, f->data);
 				mpgcd_w(size, wksp, wksp+size, wksp+2*size, wksp+3*size);
 
@@ -1102,12 +948,13 @@ void mpprnd_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, cons
 			mpbmu_w(p, wksp);
 
 			if (mppmilrab_w(p, rc, t, wksp))
-				return;
+				return 0;
 		}
 	}
+	return -1;
 }
 
-/**
+/*
  * needs workspace of (8*size+2) words
  */
 void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpbarrett* q, const mpnumber* f, mpnumber* r, int cofactor, mpw* wksp)
@@ -1139,9 +986,8 @@ void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t
 
 		while (1)
 		{
-			mpprndbits(&s, MP_WORDS_TO_BITS(s.size) - sbits, 0, rc);
+			mpprndbits(&s, sbits, 0, (mpnumber*) 0, (mpnumber*) 0, rc, wksp);
 
-			/*@-usedef@*/ /* s is set */
 			if (cofactor == 1)
 			{
 				mpsetlsb(s.size, s.modl);
@@ -1174,8 +1020,8 @@ void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t
 			/* s.size + q.size may be greater than p.size by 1, but the product will fit exactly into p */
 			mpsetx(p->size, p->modl, s.size+q->size, wksp);
 			/* multiply by two and add 1 */
-			(void) mpmultwo(p->size, p->modl);
-			(void) mpaddw(p->size, p->modl, 1);
+			mpmultwo(p->size, p->modl);
+			mpaddw(p->size, p->modl, 1);
 			/* test if the product actually contains enough bits */
 			if (mpbits(p->size, p->modl) < bits)
 				continue;
@@ -1188,7 +1034,7 @@ void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t
 			if (f != (mpnumber*) 0)
 			{
 				mpcopy(p->size, wksp, p->modl);
-				(void) mpsubw(p->size, wksp, 1);
+				mpsubw(p->size, wksp, 1);
 				mpsetx(p->size, wksp, f->size, f->data);
 				mpgcd_w(p->size, wksp, wksp+p->size, wksp+2*p->size, wksp+3*p->size);
 				if (!mpisone(p->size, wksp+2*p->size))
@@ -1211,11 +1057,10 @@ void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t
 				continue;
 
 			mpnset(r, s.size, s.modl);
-			(void) mpmultwo(r->size, r->data);
+			mpmultwo(r->size, r->data);
 			mpbfree(&s);
 
 			return;
-			/*@=usedef@*/
 		}
 	}
 }
@@ -1239,7 +1084,6 @@ void mpprndsafe_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, 
 		mpbzero(&q);
 		mpbinit(&q, size);
 
-		/*@-usedef@*/	/* q is set */
 		while (1)
 		{
 			/*
@@ -1247,7 +1091,7 @@ void mpprndsafe_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, 
 			 * it with small prime divisor test BEFORE computing mu
 			 */
 
-			mpprndbits(p, 0, 2, rc);
+			mpprndbits(p, bits, 2, (mpnumber*) 0, (mpnumber*) 0, rc, wksp);
 
 			mpcopy(size, q.modl, p->modl);
 			mpdivtwo(size, q.modl);
@@ -1275,6 +1119,5 @@ void mpprndsafe_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, 
 
 			return;
 		}
-		/*@=usedef@*/
 	}
 }

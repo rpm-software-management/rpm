@@ -26,14 +26,23 @@
 #ifndef _SHA256_H
 #define _SHA256_H
 
-#include "beecrypt.h"
+#include "beecrypt/beecrypt.h"
 
-/** \ingroup HASH_sha256_m
+/*!\brief Holds all the parameters necessary for the SHA-256 algorithm.
+ * \ingroup HASH_sha256_m
  */
 typedef struct
 {
+	/*!\var h
+	 */
 	uint32_t h[8];
+	/*!\var data
+	 */
 	uint32_t data[64];
+	/*!\var length
+	 * \brief Multi-precision integer counter for the bits that have been
+	 *  processed so far.
+	 */
 	#if (MP_WBITS == 64)
 	mpw length[1];
 	#elif (MP_WBITS == 32)
@@ -41,6 +50,10 @@ typedef struct
 	#else
 	# error
 	#endif
+	/*!\var offset
+	 * \brief Offset into \a data; points to the place where new data will be
+	 *  copied before it is processed.
+	 */
 	uint32_t offset;
 } sha256Param;
 
@@ -48,55 +61,48 @@ typedef struct
 extern "C" {
 #endif
 
-/** \ingroup HASH_sha256_m
- * Holds the full API description of the SHA-256 algorithm.
+/*!\var sha256
+ * \brief Holds the full API description of the SHA-256 algorithm.
  */
-/*@observer@*/ /*@checked@*/
 extern BEECRYPTAPI const hashFunction sha256;
 
-/*@-exportlocal@*/
-/** \ingroup HASH_sha256_m
- * This function performs the SHA-256 hash algorithm on 64 byte blocks of data.
- * @param sp		hash parameter block
+/*!\fn void sha256Process(sha256Param* sp)
+ * \brief This function performs the core of the SHA-256 hash algorithm; it
+ *  processes a block of 64 bytes.
+ * \param sp The hash function's parameter block.
  */
 BEECRYPTAPI
-void sha256Process(sha256Param* sp)
-	/*@globals internalState @*/
-	/*@modifies sp, internalState @*/;
+void sha256Process(sha256Param* sp);
 
-/** \ingroup HASH_sha256_m
- * This function resets the parameter block so that it's ready for a new hash.
- * @param sp		hash parameter block
- * @return		0 on success
+/*!\fn int sha256Reset(sha256Param* sp)
+ * \brief This function resets the parameter block so that it's ready for a
+ *  new hash.
+ * \param sp The hash function's parameter block.
+ * \retval 0 on success.
  */
 BEECRYPTAPI
-int  sha256Reset  (sha256Param* sp)
-	/*@modifies sp @*/;
+int  sha256Reset  (sha256Param* sp);
 
-/** \ingroup HASH_sha256_m
- * This function should be used to pass successive blocks of data to be hashed.
- * @param sp		hash parameter block
- * @param *data		bytes to hash
- * @param size		no. of bytes to hash
- * @return		0 on success
+/*!\fn int sha256Update(sha256Param* sp, const byte* data, size_t size)
+ * \brief This function should be used to pass successive blocks of data
+ *  to be hashed.
+ * \param sp The hash function's parameter block.
+ * \param data
+ * \param size
+ * \retval 0 on success.
  */
 BEECRYPTAPI
-int  sha256Update (sha256Param* sp, const byte* data, size_t size)
-	/*@globals internalState @*/
-	/*@modifies sp, internalState @*/;
+int  sha256Update (sha256Param* sp, const byte* data, size_t size);
 
-/** \ingroup HASH_sha256_m
- * This function finishes the current hash computation, returning the digest
- * value in \a digest.
- * @param sp		hash parameter block
- * @retval *digest	32 byte SHA-256 digest
- * @return		0 on success
+/*!\fn int sha256Digest(sha256Param* sp, byte* digest)
+ * \brief This function finishes the current hash computation and copies
+ *  the digest value into \a digest.
+ * \param sp The hash function's parameter block.
+ * \param digest The place to store the 32-byte digest.
+ * \retval 0 on success.
  */
 BEECRYPTAPI
-int  sha256Digest (sha256Param* sp, /*@out@*/ byte* digest)
-	/*@globals internalState @*/
-	/*@modifies sp, digest, internalState @*/;
-/*@=exportlocal@*/
+int  sha256Digest (sha256Param* sp, byte* digest);
 
 #ifdef __cplusplus
 }

@@ -26,44 +26,43 @@
 #ifndef _DLKP_H
 #define _DLKP_H
 
-#include "dlpk.h"
+#include "beecrypt/dlpk.h"
 
 /*!\ingroup DL_m
  */
-typedef struct
+#ifdef __cplusplus
+struct BEECRYPTAPI dlkp_p
+#else
+struct _dlkp_p
+#endif
 {
 	dldp_p param;
 	mpnumber y;
 	mpnumber x;
-} dlkp_p;
+
+	#ifdef __cplusplus
+	dlkp_p();
+	dlkp_p(const dlkp_p&);
+	~dlkp_p();
+	#endif
+};
+
+#ifndef __cplusplus
+typedef struct _dlkp_p dlkp_p;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p* param)
-	/*@modifies kp, rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dlkp_pInit(dlkp_p* kp)
-	/*@modifies kp @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dlkp_pFree(dlkp_p* kp)
-	/*@modifies kp @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)
-	/*@modifies dst @*/;
+BEECRYPTAPI
+int dlkp_pPair(dlkp_p*, randomGeneratorContext*, const dldp_p*);
+BEECRYPTAPI
+int dlkp_pInit(dlkp_p*);
+BEECRYPTAPI
+int dlkp_pFree(dlkp_p*);
+BEECRYPTAPI
+int dlkp_pCopy(dlkp_p*, const dlkp_p*);
 
 #ifdef __cplusplus
 }

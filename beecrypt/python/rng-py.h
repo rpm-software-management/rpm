@@ -4,8 +4,8 @@
 /** \ingroup py_c  
  * \file python/rng-py.h
  */
-#include "beecrypt.h"
-#include "mpprime.h"
+#include "beecrypt/beecrypt.h"
+#include "beecrypt/mpprime.h"
 
 /**
  */

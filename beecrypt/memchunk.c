@@ -1,6 +1,4 @@
 /*
- * memchunk.c
- *
  * Copyright (c) 2001 Virtual Unlimited B.V.
  *
  * This library is free software; you can redistribute it and/or
@@ -23,21 +21,22 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
-#include "system.h"
-#include "memchunk.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
 
-/*@-compdef@*/	/* tmp->data is undefined */
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/memchunk.h"
+
 memchunk* memchunkAlloc(size_t size)
 {
-	memchunk* tmp = (memchunk*) calloc(1, sizeof(*tmp));
+	memchunk* tmp = (memchunk*) calloc(1, sizeof(memchunk));
 
 	if (tmp)
 	{
 		tmp->size = size;
-		/*@-mustfree@*/ /* tmp->data is OK */
 		tmp->data = (byte*) malloc(size);
-		/*@=mustfree@*/
 
 		if (tmp->data == (byte*) 0)
 		{
@@ -48,7 +47,23 @@ memchunk* memchunkAlloc(size_t size)
 
 	return tmp;
 }
-/*@=compdef@*/
+
+void memchunkInit(memchunk* m)
+{
+	m->data = (byte*) 0;
+	m->size = 0;
+}
+
+void memchunkWipe(memchunk* m)
+{
+	if (m)
+	{
+		if (m->data)
+		{
+			memset(m->data, 0, m->size);
+		}
+	}
+}
 
 void memchunkFree(memchunk* m)
 {
@@ -67,7 +82,6 @@ void memchunkFree(memchunk* m)
 
 memchunk* memchunkResize(memchunk* m, size_t size)
 {
-	/*@-branchstate@*/
 	if (m)
 	{
 		if (m->data)
@@ -81,15 +95,10 @@ memchunk* memchunkResize(memchunk* m, size_t size)
 			m = (memchunk*) 0;
 		}
 		else
-			/*@-nullderef@*/
 			m->size = size;
-			/*@=nullderef@*/
 	}
-	/*@=branchstate@*/
 
-	/*@-nullret -compdef @*/	/* LCL: m->data might be NULL */
 	return m;
-	/*@=nullret =compdef@*/
 }
 
 memchunk* memchunkClone(const memchunk* m)

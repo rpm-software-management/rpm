@@ -23,10 +23,13 @@
  * \ingroup MP_m
  */
 
-#include "system.h"
-#include "mpnumber.h"
-#include "mp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/mpnumber.h"
 
 void mpnzero(mpnumber* n)
 {
@@ -34,7 +37,6 @@ void mpnzero(mpnumber* n)
 	n->data = (mpw*) 0;
 }
 
-/*@-compdef @*/	/* n->data not initialized */
 void mpnsize(mpnumber* n, size_t size)
 {
 	if (size)
@@ -42,18 +44,23 @@ void mpnsize(mpnumber* n, size_t size)
 		if (n->data)
 		{
 			if (n->size != size)
-				n->data = (mpw*) realloc(n->data, size * sizeof(*n->data));
-		}
-		else
-			n->data = (mpw*) malloc(size * sizeof(*n->data));
+			{
+				if (size < n->size)
+				{
+					register size_t offset = n->size - size;
 
-		if (n->data)
-			n->size = size;
-		else
-		{
-			n->size = 0;
-			n->data = (mpw*) 0;
+					memmove(n->data, n->data + offset, offset * sizeof(mpw));
+				}
+				n->data = (mpw*) realloc(n->data, size * sizeof(mpw));
+			}
 		}
+		else
+			n->data = (mpw*) malloc(size * sizeof(mpw));
+
+		if (n->data == (mpw*) 0)
+			n->size = 0;
+		else
+			n->size = size;
 
 	}
 	else if (n->data)
@@ -63,23 +70,15 @@ void mpnsize(mpnumber* n, size_t size)
 		n->size = 0;
 	}
 }
-/*@=compdef @*/
 
-/*@-bounds@*/
 void mpninit(mpnumber* n, size_t size, const mpw* data)
 {
 	n->size = size;
-	if (n->data)
-	{
-		free(n->data);
-		n->data = (mpw*) 0;
-	}
-	n->data = (mpw*) malloc(size * sizeof(*n->data));
+	n->data = (mpw*) malloc(size * sizeof(mpw));
 
-	if (n->data != (mpw*) 0 && data != (mpw*) 0)
+	if (n->data)
 		mpcopy(size, n->data, data);
 }
-/*@=bounds@*/
 
 void mpnfree(mpnumber* n)
 {
@@ -98,7 +97,7 @@ void mpncopy(mpnumber* n, const mpnumber* copy)
 
 void mpnwipe(mpnumber* n)
 {
-	if (n->data)
+	if (n->data != (mpw*) 0)
 		mpzero(n->size, n->data);
 }
 
@@ -109,23 +108,15 @@ void mpnset(mpnumber* n, size_t size, const mpw* data)
 		if (n->data)
 		{
 			if (n->size != size)
-				n->data = (mpw*) realloc(n->data, size * sizeof(*n->data));
+				n->data = (mpw*) realloc(n->data, size * sizeof(mpw));
 		}
 		else
-			n->data = (mpw*) malloc(size * sizeof(*n->data));
+			n->data = (mpw*) malloc(size * sizeof(mpw));
 
-		if (n->data != (mpw*) 0 && data != (mpw*) 0)
-		{
-			n->size = size;
-			/*@-nullpass@*/ /* data is notnull */
-			mpcopy(n->size, n->data, data);
-			/*@=nullpass@*/
-		}
+		if (n->data)
+			mpcopy(n->size = size, n->data, data);
 		else
-		{
 			n->size = 0;
-			n->data = (mpw*) 0;
-		}
 	}
 	else if (n->data)
 	{
@@ -140,10 +131,10 @@ void mpnsetw(mpnumber* n, mpw val)
 	if (n->data)
 	{
 		if (n->size != 1)
-			n->data = (mpw*) realloc(n->data, 1 * sizeof(*n->data));
+			n->data = (mpw*) realloc(n->data, sizeof(mpw));
 	}
 	else
-		n->data = (mpw*) malloc(1 * sizeof(*n->data));
+		n->data = (mpw*) malloc(sizeof(mpw));
 
 	if (n->data)
 	{
@@ -151,53 +142,128 @@ void mpnsetw(mpnumber* n, mpw val)
 		n->data[0] = val;
 	}
 	else
-	{
 		n->size = 0;
-		n->data = (mpw*) 0;
-	}
 }
 
-/*@-usedef @*/	/* n->data may be NULL */
-void mpnsethex(mpnumber* n, const char* hex)
+int mpnsetbin(mpnumber* n, const byte* osdata, size_t ossize)
 {
-	register size_t len = strlen(hex);
-	register size_t size = MP_NIBBLES_TO_WORDS(len + MP_WNIBBLES - 1);
+	int rc = -1;
+	size_t size;
+
+	/* skip zero bytes */
+	while ((*osdata == 0) && ossize)
+	{
+		osdata++;
+		ossize--;
+	}
+
+	size = MP_BYTES_TO_WORDS(ossize + MP_WBYTES - 1);
 
 	if (n->data)
 	{
 		if (n->size != size)
-			n->data = (mpw*) realloc(n->data, size * sizeof(*n->data));
+			n->data = (mpw*) realloc(n->data, size * sizeof(mpw));
 	}
 	else
-		n->data = (mpw*) malloc(size * sizeof(*n->data));
+		n->data = (mpw*) malloc(size * sizeof(mpw));
 
 	if (n->data)
 	{
 		n->size = size;
 
-		(void) hs2ip(n->data, size, hex, len);
+		rc = os2ip(n->data, size, osdata, ossize);
 	}
-	else {
+	else
 		n->size = 0;
-		n->data = (mpw*)0;
-	}
+
+	return rc;
 }
-/*@=usedef @*/
+
+int mpnsethex(mpnumber* n, const char* hex)
+{
+	int rc = -1;
+	size_t len = strlen(hex);
+	size_t size = MP_NIBBLES_TO_WORDS(len + MP_WNIBBLES - 1);
+
+	if (n->data)
+	{
+		if (n->size != size)
+			n->data = (mpw*) realloc(n->data, size * sizeof(mpw));
+	}
+	else
+		n->data = (mpw*) malloc(size * sizeof(mpw));
+
+	if (n->data)
+	{
+		n->size = size;
+
+		rc = hs2ip(n->data, size, hex, len);
+	}
+	else
+		n->size = 0;
+
+	return rc;
+}
 
 int mpninv(mpnumber* inv, const mpnumber* k, const mpnumber* mod)
 {
 	int rc = 0;
 	size_t size = mod->size;
-	mpw* wksp = (mpw*) malloc((7*size+6) * sizeof(*wksp));
+	mpw* wksp = (mpw*) malloc((7*size+6) * sizeof(mpw));
 
 	if (wksp)
 	{
-		mpnzero(inv);
 		mpnsize(inv, size);
 		mpsetx(size, wksp, k->size, k->data);
-		rc = mpextgcd_w(size, wksp, mod->data, inv->data, wksp+size);
+		rc = mpextgcd_w(size, mod->data, wksp, inv->data, wksp+size);
 		free(wksp);
 	}
 
 	return rc;
+}
+
+size_t mpntrbits(mpnumber* n, size_t bits)
+{
+	size_t sigbits = mpbits(n->size, n->data);
+	size_t offset = 0;
+
+	if (sigbits < bits)
+	{
+		/* no need to truncate */
+		return sigbits;
+	}
+	else
+	{
+		size_t allbits = MP_BITS_TO_WORDS(n->size + MP_WBITS - 1);
+
+		while ((allbits - bits) > MP_WBITS)
+		{
+			/* zero a word */
+			n->data[offset++] = 0;
+			allbits -= MP_WBITS;
+		}
+
+		if ((allbits - bits))
+		{
+			/* mask the next word */
+			n->data[offset] &= (MP_ALLMASK >> (MP_WBITS - bits));
+
+			/* resize the number */
+			mpnsize(n, n->size - offset);
+
+			/* finally return the number of remaining bits */
+			return bits;
+		}
+		else
+		{
+			/* nothing remains */
+			mpnsetw(n, 0);
+			return 0;
+		}
+	}
+}
+
+size_t mpnbits(const mpnumber* n)
+{
+	return mpbits(n->size, n->data);
 }

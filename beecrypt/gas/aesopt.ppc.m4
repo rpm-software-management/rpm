@@ -21,6 +21,7 @@ dnl  License along with this library; if not, write to the Free Software
 dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 include(config.m4)
+include(ASM_SRCDIR/asmdefs.m4)
 include(ASM_SRCDIR/ppc.m4)
 
 define(`s0',`r24')
@@ -33,21 +34,10 @@ define(`t2',`r30')
 define(`t3',`r31')
 
 define(`sxrk',`
-ifelse(ASM_BIGENDIAN,yes,`
 	lwz s0, 0($2)
 	lwz s1, 4($2)
 	lwz s2, 8($2)
 	lwz s3,12($2)
-',`
-	li r0,0
-	lwbrx s0,$2,r0
-	li r0,4
-	lwbrx s1,$2,r0
-	li r0,8
-	lwbrx s2,$2,r0
-	li r0,13
-	lwbrx s0,$2,r0
-')
 	lwz r7, 0($1)
 	lwz r8, 4($1)
 	lwz r9, 8($1)
@@ -63,7 +53,7 @@ define(`etfs',`
 	lwz t1,$2+ 4($1)
 	lwz t2,$2+ 8($1)
 	lwz t3,$2+12($1)
-
+ifelse(ASM_BIGENDIAN,yes,`
 	rlwinm r7,s0,10,22,29 
 	rlwinm r8,s1,10,22,29
 	rlwinm r9,s2,10,22,29
@@ -121,6 +111,9 @@ define(`etfs',`
 	xor t1,t1,r8
 	xor t2,t2,r9
 	xor t3,t3,r10
+',`
+	dnl to be done
+')
 
 	la r12,-3072(r12)
 ')
@@ -130,7 +123,7 @@ define(`esft',`
 	lwz s1,$2+ 4($1)
 	lwz s2,$2+ 8($1)
 	lwz s3,$2+12($1)
-
+ifelse(ASM_BIGENDIAN,yes,`
 	rlwinm r7,t0,10,22,29
 	rlwinm r8,t1,10,22,29
 	rlwinm r9,t2,10,22,29
@@ -188,7 +181,9 @@ define(`esft',`
 	xor s1,s1,r8
 	xor s2,s2,r9
 	xor s3,s3,r10
-
+',`
+	dnl to be done
+')
 	la r12,-3072(r12)
 ')
 
@@ -199,7 +194,7 @@ define(`elr',`
 	lwz s3,12($1)
 
 	la r12,4096(r12)
-
+ifdef(ASM_BIGENDIAN,yes,`
 	rlwinm r7,t0,10,22,29
 	rlwinm r8,t1,10,22,29
 	rlwinm r9,t2,10,22,29
@@ -267,7 +262,9 @@ define(`elr',`
 	xor s1,s1,r8
 	xor s2,s2,r9
 	xor s3,s3,r10
-
+',`
+dnl	to be done
+')
 	la r12,-4096(r12)
 ')
 
@@ -556,30 +553,33 @@ EXTERNAL_VARIABLE(_ad0)
 
 C_FUNCTION_BEGIN(aesEncrypt)
 	subi r1,r1,32
-	stmw r24,0(r1)
+	stw r24, 0(r1)
+	stw r25, 4(r1)
+	stw r26, 8(r1)
+	stw r27,12(r1)
+	stw r28,16(r1)
+	stw r29,20(r1)
+	stw r30,24(r1)
+	stw r31,28(r1)
 
 	LOAD_ADDRESS(_ae0,r12)
 
 	eblock(r3,r5,LOCAL(00))
 
-ifelse(ASM_BIGENDIAN,yes,`
 	stw s0, 0(r4)
 	stw s1, 4(r4)
 	stw s2, 8(r4)
 	stw s3,12(r4)
-',`
-	li r0,0
-	stwbrx s0,r4,r0
-	li r0,4
-	stwbrx s1,r4,r0
-	li r0,8
-	stwbrx s2,r4,r0
-	li r0,12
-	stwbrx s3,r4,r0
-')
 
 	li r3,0
-	lmw r24,0(r1)
+	lwzx 28(r1),r31
+	lwzx 24(r1),r30
+	lwzx 20(r1),r29
+	lwzx 16(r1),r28
+	lwzx 12(r1),r27
+	lwzx  8(r1),r26
+	lwzx  4(r1),r25
+	lwzx  0(r1),r24
 	addi r1,r1,32
 	blr
 C_FUNCTION_END(aesEncrypt)
@@ -593,21 +593,10 @@ C_FUNCTION_BEGIN(aesDecrypt)
 
 	dblock(r3,r5,LOCAL(01))
 
-ifelse(ASM_BIGENDIAN,yes,`
 	stw s0, 0(r4)
 	stw s1, 4(r4)
 	stw s2, 8(r4)
 	stw s3,12(r4)
-',`
-	li r0,0
-	stwbrx s0,r4,r0
-	li r0,4
-	stwbrx s1,r4,r0
-	li r0,8
-	stwbrx s2,r4,r0
-	li r0,12
-	stwbrx s3,r4,r0
-')
 
 	li r3,0
 	lmw r24,0(r1)

@@ -19,16 +19,16 @@
 
 /*!\file dldp.h
  * \brief Discrete Logarithm domain parameters, headers.
- * \author Bob Deblier <bob@virtualunlimited.com>
+ * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup DL_m
  */
 
 #ifndef _DLDP_H
 #define _DLDP_H
 
-#include "mpbarrett.h"
+#include "beecrypt/mpbarrett.h"
 
-/**
+/*
  * Discrete Logarithm Domain Parameters - Prime
  *
  * Standard definition where p = qr+1; in case where p=2q+1, r=2
@@ -43,127 +43,120 @@
  * g is either a generator of a subgroup of order q, or a generator of order
  *  n = (p-1)
  */
-typedef struct
+
+/*!\brief Discrete Logarithm Domain Parameters over a prime field.
+ *
+ * For the variables in this structure /f$p=qr+1/f$; if /f$p=2q+1 then r=2/f$.
+ *
+ * \ingroup DL_m
+ */
+#ifdef __cplusplus
+struct BEECRYPTAPI dldp_p
+#else
+struct _dldp_p
+#endif
 {
+	/*!\var p
+	 * \brief The prime.
+	 *
+	 */
 	mpbarrett p;
+	/*!\var q
+	 * \brief The cofactor.
+	 *
+	 * \f$q\f$ is a prime divisor of \f$p-1\f$.
+	 */
 	mpbarrett q;
-	mpnumber  r;
-	mpnumber  g;
+	/*!\var r
+	 *
+	 * \f$p=qr+1\f$
+	 */
+	mpnumber r;
+	/*!\var g
+	 * \brief The generator.
+	 *
+ 	 * \f$g\f$ is either a generator of \f$\mathds{Z}^{*}_p\f$, or a generator
+	 * of a cyclic subgroup \f$G\f$ of \f$\mathds{Z}^{*}_p\f$ of order \f$q\f$.
+	 */
+	mpnumber g;
+	/*!\var n
+	 *
+	 * \f$n=p-1=qr\f$
+	 */
 	mpbarrett n;
-} dldp_p;
+#ifdef __cplusplus
+	dldp_p();
+	dldp_p(const dldp_p&);
+	~dldp_p();
+#endif
+};
+
+#ifndef __cplusplus
+typedef struct _dldp_p dldp_p;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+/*
+ * Functions for setting up and copying
  */
-BEECRYPTAPI
-int dldp_pInit(dldp_p* dp)
-	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n @*/;
 
-/**
- */
 BEECRYPTAPI
-int dldp_pFree(/*@special@*/ dldp_p* dp)
-	/*@releases dp->p.modl, dp->q.modl, dp->n.modl @*/
-	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n @*/;
-
-/**
- */
+int dldp_pInit(dldp_p*);
 BEECRYPTAPI
-int dldp_pCopy(dldp_p* dst, const dldp_p* src)
-	/*@modifies dst @*/;
+int dldp_pFree(dldp_p*);
+BEECRYPTAPI
+int dldp_pCopy(dldp_p*, const dldp_p*);
 
 /*
  * Functions for generating keys
  */
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x)
-	/*@modifies rgc, x @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dldp_pPublic(const dldp_p* dp, const mpnumber* x, mpnumber* y)
-	/*@modifies y @*/;
-
-/**
- */
 BEECRYPTAPI
-int dldp_pPair(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x, mpnumber* y)
-	/*@modifies rgc, x, y @*/;
+int dldp_pPrivate  (const dldp_p*, randomGeneratorContext*, mpnumber*);
+BEECRYPTAPI
+int dldp_pPrivate_s(const dldp_p*, randomGeneratorContext*, mpnumber*, size_t);
+BEECRYPTAPI
+int dldp_pPublic   (const dldp_p*, const mpnumber*, mpnumber*);
+BEECRYPTAPI
+int dldp_pPair     (const dldp_p*, randomGeneratorContext*, mpnumber*, mpnumber*);
+BEECRYPTAPI
+int dldp_pPair_s   (const dldp_p*, randomGeneratorContext*, mpnumber*, mpnumber*, size_t);
 
 /*
  * Function for comparing domain parameters
  */
 
-
-/**
- */
 BEECRYPTAPI
-int  dldp_pEqual(const dldp_p* a, const dldp_p* b)
-	/*@*/;
+int  dldp_pEqual  (const dldp_p*, const dldp_p*);
 
 /*
  * Functions for generating and validating dldp_pgoq variant domain parameters
  */
 
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t qbits, int cofactor)
-	/*@modifies dp, rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t bits)
-	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
-	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int  dldp_pgoqValidate(const dldp_p*, randomGeneratorContext* rgc, int cofactor)
-	/*@modifies rgc @*/;
+BEECRYPTAPI
+int dldp_pgoqMake     (dldp_p*, randomGeneratorContext*, size_t, size_t, int);
+BEECRYPTAPI
+int dldp_pgoqMakeSafe (dldp_p*, randomGeneratorContext*, size_t);
+BEECRYPTAPI
+int dldp_pgoqGenerator(dldp_p*, randomGeneratorContext*);
+BEECRYPTAPI
+int  dldp_pgoqValidate (const dldp_p*, randomGeneratorContext*, int);
 
 /*
  * Functions for generating and validating dldp_pgon variant domain parameters
  */
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t qbits)
-	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
-	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
-	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int  dldp_pgonValidate(const dldp_p* dp, randomGeneratorContext* rgc)
-	/*@modifies rgc @*/;
+BEECRYPTAPI
+int dldp_pgonMake     (dldp_p*, randomGeneratorContext*, size_t, size_t);
+BEECRYPTAPI
+int dldp_pgonMakeSafe (dldp_p*, randomGeneratorContext*, size_t);
+BEECRYPTAPI
+int dldp_pgonGenerator(dldp_p*, randomGeneratorContext*);
+BEECRYPTAPI
+int dldp_pgonValidate (const dldp_p*, randomGeneratorContext*);
 
 #ifdef __cplusplus
 }

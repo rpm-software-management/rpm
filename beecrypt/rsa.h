@@ -26,76 +26,93 @@
 #ifndef _RSA_H
 #define _RSA_H
 
-#include "rsakp.h"
+#include "beecrypt/rsakp.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * The raw RSA public key operation.
+/*!\fn int rsapub(const mpbarrett* n, const mpnumber* e, const mpnumber* m, mpnumber* c)
+ * \brief This function performs a raw RSA public key operation.
  *
  * This function can be used for encryption and verifying.
  *
  * It performs the following operation:
  * \li \f$c=m^{e}\ \textrm{mod}\ n\f$
  *
- * @param pk		RSA public key
- * @param m		message
- * @param c		ciphertext
- * @retval		0 on success, -1 on failure
- */ 
-BEECRYPTAPI /*@unused@*/
- int rsapub(const rsapk* pk, const mpnumber* m, mpnumber* c)
-	/*@modifies c @*/;
+ * \param n The RSA modulus.
+ * \param e The RSA public exponent.
+ * \param m The message.
+ * \param c The ciphertext.
+ * \retval 0 on success.
+ * \retval -1 on failure.
+ */
+BEECRYPTAPI
+int rsapub(const mpbarrett* n, const mpnumber* e,
+           const mpnumber* m, mpnumber* c);
 
-/**
- * The raw RSA private key operation.
+/*!\fn int rsapri(const mpbarrett* n, const mpnumber* d, const mpnumber* c, mpnumber* m)
+ * \brief This function performs a raw RSA private key operation.
  *
  * This function can be used for decryption and signing.
  *
  * It performs the operation:
  * \li \f$m=c^{d}\ \textrm{mod}\ n\f$
  *
- * @param kp		RSA keypair
- * @param c		ciphertext
- * @param m		message
- * @retval		0 on success, -1 on failure
+ * \param n The RSA modulus.
+ * \param d The RSA private exponent.
+ * \param c The ciphertext.
+ * \param m The message.
+ * \retval 0 on success.
+ * \retval -1 on failure.
  */
-BEECRYPTAPI /*@unused@*/
-int rsapri   (const rsakp* kp, const mpnumber* c, mpnumber* m)
-	/*@modifies m @*/;
+BEECRYPTAPI
+int rsapri(const mpbarrett* n, const mpnumber* d,
+           const mpnumber* c, mpnumber* m);
 
-/**
- * The raw RSA private key operation, with Chinese Remainder Theorem.
+/*!\fn int rsapricrt(const mpbarrett* n, const mpbarrett* p, const mpbarrett* q, const mpnumber* dp, const mpnumber* dq, const mpnumber* qi, const mpnumber* c, mpnumber* m)
+ *
+ * \brief This function performs a raw RSA private key operation, with
+ *  application of the Chinese Remainder Theorem.
  *
  * It performs the operation:
- * \li \f$j_1=c^{d_1}\ \textrm{mod}\ p\f$
- * \li \f$j_2=c^{d_2}\ \textrm{mod}\ q\f$
- * \li \f$h=c \cdot (j_1-j_2)\ \textrm{mod}\ p\f$
+ * \li \f$j_1=c^{dp}\ \textrm{mod}\ p\f$
+ * \li \f$j_2=c^{dq}\ \textrm{mod}\ q\f$
+ * \li \f$h=qi \cdot (j_1-j_2)\ \textrm{mod}\ p\f$
  * \li \f$m=j_2+hq\f$
  *
- * @param kp		RSA keypair
- * @param c		ciphertext
- * @param m		message
- * @retval		0 on success, -1 on failure.
+ * \param n The RSA modulus.
+ * \param p The first RSA prime factor.
+ * \param q The second RSA prime factor.
+ * \param dp
+ * \param dq
+ * \param qi
+ * \param c The ciphertext.
+ * \param m The message.
+ * \retval 0 on success.
+ * \retval -1 on failure.
  */
 BEECRYPTAPI
-int rsapricrt(const rsakp* kp, const mpnumber* c, mpnumber* m)
-	/*@modifies m @*/;
+int rsapricrt(const mpbarrett* n, const mpbarrett* p, const mpbarrett* q,
+              const mpnumber* dp, const mpnumber* dq, const mpnumber* qi,
+              const mpnumber* c, mpnumber* m);
 
-/**
- * Verify if ciphertext \e c was encrypted from cleartext \e m
- * with the private key matching the given public key \e pk.
+/*!\fn int rsavrfy(const mpbarrett* n, const mpnumber* e, const mpnumber* m, const mpnumber* c)
+ * \brief This function performs a raw RSA verification.
  *
- * @param pk		RSA public key
- * @param m		cleartext message
- * @param c		ciphertext message
- * @retval		1 on success, 0 on failure
+ * It verifies if ciphertext \a c was encrypted from cleartext \a m
+ * with the private key matching the given public key \a (n, e).
+ *
+ * \param n The RSA modulus.
+ * \param e The RSA public exponent.
+ * \param m The cleartext message.
+ * \param c The ciphertext message.
+ * \retval 1 on success.
+ * \retval 0 on failure.
  */
 BEECRYPTAPI
-int rsavrfy  (const rsapk* pk, const mpnumber* m, const mpnumber* c)
-	/*@*/;
+int rsavrfy(const mpbarrett* n, const mpnumber* e,
+            const mpnumber* m, const mpnumber* c);
 
 #ifdef __cplusplus
 }

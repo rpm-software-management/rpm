@@ -23,12 +23,9 @@
  * \ingroup UNIT_m
  */
 
-#include "system.h"
+#include <stdio.h>
 
-#include "beecrypt.h"
 #include "aes.h"
-
-#include "debug.h"
 
 extern int fromhex(byte*, const char*);
 

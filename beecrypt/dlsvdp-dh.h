@@ -20,34 +20,24 @@
 /*!\file dlsvdp-dh.h
  * \brief Diffie-Hellman algorithm, headers.
  * \author Bob Deblier <bob.deblier@pandora.be>
- * \ingroup DL_m DL_dh_m
+ * \ingroup DL_m DL_dh_m 
  */
 
 #ifndef _DLSVDP_DH_H
 #define _DLSVDP_DH_H
 
-#include "dldp.h"
+#include "beecrypt/dldp.h"
+#include "beecrypt/dlkp.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * Computes the shared secret.
- *
- * Equation:
- *
- * \li \f$s=y^{x}\ \textrm{mod}\ p\f$
- *
- * @param dp		domain parameters
- * @param x		private value
- * @param y		public value (of the peer)
- * @param s		computed secret value
- * @retval		0 on success, -1 on failure.
- */
+typedef dldp_p dhparam;
+typedef dlkp_p dhkp;
+
 BEECRYPTAPI
-int dlsvdp_pDHSecret(const dldp_p* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)
-	/*@modifies s @*/;
+int dlsvdp_pDHSecret(const dhparam*, const mpnumber*, const mpnumber*, mpnumber*);
 
 #ifdef __cplusplus
 }

@@ -27,31 +27,32 @@
  * \ingroup HMAC_m HMAC_md5_m
  */
 
-#include "system.h"
-#include "hmacmd5.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/hmacmd5.h"
 
 /*!\addtogroup HMAC_md5_m
  * \{
  */
 
-/*@-sizeoftype@*/
 const keyedHashFunction hmacmd5 = {
 	"HMAC-MD5",
 	sizeof(hmacmd5Param),
-	64U,
-	4U * sizeof(uint32_t),
-	64U,
-	512U,
-	32U,
-	(const keyedHashFunctionSetup) hmacmd5Setup,
-	(const keyedHashFunctionReset) hmacmd5Reset,
-	(const keyedHashFunctionUpdate) hmacmd5Update,
-	(const keyedHashFunctionDigest) hmacmd5Digest
+	64,
+	16,
+	64,
+	512,
+	32,
+	(keyedHashFunctionSetup) hmacmd5Setup,
+	(keyedHashFunctionReset) hmacmd5Reset,
+	(keyedHashFunctionUpdate) hmacmd5Update,
+	(keyedHashFunctionDigest) hmacmd5Digest
 };
-/*@=sizeoftype@*/
 
-/*@-type@*/	/* fix: cast to (hashFunctionParam*) */
 int hmacmd5Setup (hmacmd5Param* sp, const byte* key, size_t keybits)
 {
 	return hmacSetup(sp->kxi, sp->kxo, &md5, &sp->mparam, key, keybits);
@@ -71,7 +72,6 @@ int hmacmd5Digest(hmacmd5Param* sp, byte* data)
 {
 	return hmacDigest(sp->kxo, &md5, &sp->mparam, data);
 }
-/*@=type@*/
 
 /*!\}
  */

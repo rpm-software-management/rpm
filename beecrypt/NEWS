@@ -1,4 +1,23 @@
-3.0.0pre:
+4.0.0:
+	- Added a C++ API interface, modeled after Java's security & crypto API.
+	- Added the new GNU noexecstack feature.
+	- Added more x86_64 and s390x assembler routines.
+	- Modified i2osp, so that it only requires as many octets as there are
+	  significant bytes in the multi-precision integers.
+	- Fixed a bug in the creation of rsa keypairs; code was not correctly
+	  migrated to new calling sequence. The code now implements the method
+	  described in IEEE P.1363.
+	- Fixed another bug in mpextgcd_w which sometimes returned incorrect
+	  results.
+	- Fixed a bug in mprshiftlsz, which didn't work correctly when size = 1.
+	- Fixed a configuration problem on Tru64 Unix.
+
+3.1.0:
+	- Added wiping of private key components of keypairs before freeing.
+	- Fixed bug in mpextgcd_w which sometimes returned incorrect result.
+	- Fixed error in PowerPC 64-bit assembler symbol definitions.
+
+3.0.0:
 	- Cleaned up installed header files.
 	- Modified the API so that all keys can be passed as arrays of bytes.
 	- Modified the API so that all key sizes are given in bits.
@@ -11,7 +30,10 @@
 	- Added multi-precision integer assembler routines for PowerPC 64-bit.
 	- Added multi-precision integer assembler routines for Alpha.
 	- Added multi-precision integer assembler routines for Opteron.
+	- Added multi-precision integer assembler routines for IBM zSeries 64-bit.
 	- Added multi-precision integer assembler routines for M68K.
+	- Added Jeff Johnson's python bindings.
+	- Added new unit tests.
 	- Added new benchmarking programs.
 
 2.3.0pre:

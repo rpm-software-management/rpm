@@ -1,5 +1,6 @@
 I would like to thank the following people (in alphabetical order):
 
+- Seth Arnold, for contributing to the documentation.
 - Jan-Rudolph Bührmann, for helping me get started on the 64-bit multi-
   precision integer library.
 - Luca Filipozzi, maintainer/packager of BeeCrypt for Debian GNU/Linux.

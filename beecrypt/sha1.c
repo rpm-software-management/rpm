@@ -22,53 +22,46 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup HASH_m HASH_sha1_m
  */
+ 
+#define BEECRYPT_DLL_EXPORT
 
-#include "system.h"
-#include "beecrypt.h"
-#include "sha1opt.h"
-#include "sha1.h"
-#include "mp.h"
-#include "endianness.h"
-#include "debug.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/sha1.h"
+#include "beecrypt/endianness.h"
 
 /*!\addtogroup HASH_sha1_m
  * \{
  */
 
-/** \ingroup HASH_sha1_m
- */
-/*@observer@*/ /*@unchecked@*/
 static const uint32_t k[4] = { 0x5a827999U, 0x6ed9eba1U, 0x8f1bbcdcU, 0xca62c1d6U };
 
-/** \ingroup HASH_sha1_m
- */
-/*@observer@*/ /*@unchecked@*/
 static const uint32_t hinit[5] = { 0x67452301U, 0xefcdab89U, 0x98badcfeU, 0x10325476U, 0xc3d2e1f0U };
 
-/*@-sizeoftype@*/
 const hashFunction sha1 = {
 	"SHA-1",
 	sizeof(sha1Param),
-	64U,
-	5U * sizeof(uint32_t),
+	64,
+	20,
 	(hashFunctionReset) sha1Reset,
 	(hashFunctionUpdate) sha1Update,
 	(hashFunctionDigest) sha1Digest
 };
-/*@=sizeoftype@*/
 
-int sha1Reset(sha1Param* sp)
+int sha1Reset(register sha1Param* p)
 {
-	memcpy(sp->h, hinit, sizeof(sp->h));
-	memset(sp->data, 0, sizeof(sp->data));
+	memcpy(p->h, hinit, 5 * sizeof(uint32_t));
+	memset(p->data, 0, 80 * sizeof(uint32_t));
 	#if (MP_WBITS == 64)
-	mpzero(1, sp->length);
+	mpzero(1, p->length);
 	#elif (MP_WBITS == 32)
-	mpzero(2, sp->length);
+	mpzero(2, p->length);
 	#else
 	# error
 	#endif
-	sp->offset = 0;
+	p->offset = 0;
 	return 0;
 }
 
@@ -215,45 +208,39 @@ int sha1Update(sha1Param* sp, const byte* data, size_t size)
 	mpw add[1];
 	mpsetw(1, add, size);
 	mplshift(1, add, 3);
-	(void) mpadd(1, sp->length, add);
+	mpadd(1, sp->length, add);
 	#elif (MP_WBITS == 32)
 	mpw add[2];
 	mpsetw(2, add, size);
 	mplshift(2, add, 3);
-	(void) mpadd(2, sp->length, add);
+	mpadd(2, sp->length, add);
 	#else
 	# error
 	#endif
 
-/*@-type@*/
 	while (size > 0)
 	{
 		proclength = ((sp->offset + size) > 64U) ? (64U - sp->offset) : size;
-		memmove(((byte *) sp->data) + sp->offset, data, proclength);
+		memcpy(((byte *) sp->data) + sp->offset, data, proclength);
 		size -= proclength;
 		data += proclength;
 		sp->offset += proclength;
 
-		if (sp->offset == 64U)
+		if (sp->offset == 64)
 		{
 			sha1Process(sp);
 			sp->offset = 0;
 		}
 	}
-/*@=type@*/
 	return 0;
 }
 
-/** \ingroup HASH_sha1_m
- */
 static void sha1Finish(sha1Param* sp)
-	/*@modifies sp @*/
 {
 	register byte *ptr = ((byte *) sp->data) + sp->offset++;
 
 	*(ptr++) = 0x80;
 
-/*@-type@*/
 	if (sp->offset > 56)
 	{
 		while (sp->offset++ < 64)
@@ -266,10 +253,9 @@ static void sha1Finish(sha1Param* sp)
 	ptr = ((byte*) sp->data) + sp->offset;
 	while (sp->offset++ < 56)
 		*(ptr++) = 0;
-/*@=type@*/
 
 	#if WORDS_BIGENDIAN
-	memcpy(ptr, sp->length, sizeof(sp->length));
+	memcpy(ptr, sp->length, 8);
 	#else
 	# if (MP_WBITS == 64)
 	ptr[0] = (byte)(sp->length[0] >> 56);
@@ -299,37 +285,37 @@ static void sha1Finish(sha1Param* sp)
 	sp->offset = 0;
 }
 
-int sha1Digest(sha1Param* sp, byte* digest)
+int sha1Digest(sha1Param* sp, byte* data)
 {
 	sha1Finish(sp);
 
 	#if WORDS_BIGENDIAN
-	memcpy(digest, sp->h, sizeof(sp->h));
+	memcpy(data, sp->h, 20);
 	#else
 	/* encode 5 integers big-endian style */
-	digest[ 0] = (byte)(sp->h[0] >> 24);
-	digest[ 1] = (byte)(sp->h[0] >> 16);
-	digest[ 2] = (byte)(sp->h[0] >>  8);
-	digest[ 3] = (byte)(sp->h[0] >>  0);
-	digest[ 4] = (byte)(sp->h[1] >> 24);
-	digest[ 5] = (byte)(sp->h[1] >> 16);
-	digest[ 6] = (byte)(sp->h[1] >>  8);
-	digest[ 7] = (byte)(sp->h[1] >>  0);
-	digest[ 8] = (byte)(sp->h[2] >> 24);
-	digest[ 9] = (byte)(sp->h[2] >> 16);
-	digest[10] = (byte)(sp->h[2] >>  8);
-	digest[11] = (byte)(sp->h[2] >>  0);
-	digest[12] = (byte)(sp->h[3] >> 24);
-	digest[13] = (byte)(sp->h[3] >> 16);
-	digest[14] = (byte)(sp->h[3] >>  8);
-	digest[15] = (byte)(sp->h[3] >>  0);
-	digest[16] = (byte)(sp->h[4] >> 24);
-	digest[17] = (byte)(sp->h[4] >> 16);
-	digest[18] = (byte)(sp->h[4] >>  8);
-	digest[19] = (byte)(sp->h[4] >>  0);
+	data[ 0] = (byte)(sp->h[0] >> 24);
+	data[ 1] = (byte)(sp->h[0] >> 16);
+	data[ 2] = (byte)(sp->h[0] >>  8);
+	data[ 3] = (byte)(sp->h[0] >>  0);
+	data[ 4] = (byte)(sp->h[1] >> 24);
+	data[ 5] = (byte)(sp->h[1] >> 16);
+	data[ 6] = (byte)(sp->h[1] >>  8);
+	data[ 7] = (byte)(sp->h[1] >>  0);
+	data[ 8] = (byte)(sp->h[2] >> 24);
+	data[ 9] = (byte)(sp->h[2] >> 16);
+	data[10] = (byte)(sp->h[2] >>  8);
+	data[11] = (byte)(sp->h[2] >>  0);
+	data[12] = (byte)(sp->h[3] >> 24);
+	data[13] = (byte)(sp->h[3] >> 16);
+	data[14] = (byte)(sp->h[3] >>  8);
+	data[15] = (byte)(sp->h[3] >>  0);
+	data[16] = (byte)(sp->h[4] >> 24);
+	data[17] = (byte)(sp->h[4] >> 16);
+	data[18] = (byte)(sp->h[4] >>  8);
+	data[19] = (byte)(sp->h[4] >>  0);
 	#endif
 
-	(void) sha1Reset(sp);
+	sha1Reset(sp);
 
 	return 0;
 }

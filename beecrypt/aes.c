@@ -1,4 +1,3 @@
-/*@-bitwisesigned@*/
 /*
  * Copyright (c) 2002, 2003 Bob Deblier
  *
@@ -28,12 +27,13 @@
  * \ingroup BC_aes_m BC_m
  */
 
-#include "system.h"
-#include "beecrypt.h"
-#include "aesopt.h"
-#include "aes.h"
-#include "mp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/aes.h"
 
 #if defined(BYTE_ORDER) && defined(BIG_ENDIAN) && defined(LITTLE_ENDIAN)
 # if (BYTE_ORDER != BIG_ENDIAN) && (BYTE_ORDER != LITTLE_ENDIAN)
@@ -41,14 +41,10 @@
 # endif
 #endif
 
-/*!\addtogroup BC_aes_m
- * \{
- */
-
 #if WORDS_BIGENDIAN
-# include "aes_be.h"
+# include "beecrypt/aes_be.h"
 #else
-# include "aes_le.h"
+#  include "beecrypt/aes_le.h"
 #endif
 
 #ifdef ASM_AESENCRYPTECB
@@ -59,15 +55,13 @@ extern int aesEncryptECB(aesParam*, uint32_t*, const uint32_t*, unsigned int);
 extern int aesDecryptECB(aesParam*, uint32_t*, const uint32_t*, unsigned int);
 #endif
 
-/*@-sizeoftype@*/
-/*@-castfcnptr@*/
 const blockCipher aes = {
 	"AES",
 	sizeof(aesParam),
-	16U,
-	128U,
-	256U,
-	64U,
+	16,
+	128,
+	256,
+	64,
 	(blockCipherSetup) aesSetup,
 	(blockCipherSetIV) aesSetIV,
 	/* raw */
@@ -95,8 +89,6 @@ const blockCipher aes = {
 	},
 	(blockCipherFeedback) aesFeedback
 };
-/*@=castfcnptr@*/
-/*@=sizeoftype@*/
 
 int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 {
@@ -127,16 +119,16 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			{
 				t = rk[3];
 				#if WORDS_BIGENDIAN
-				t = (_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
-					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
-					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
+				t = (_ae4[(t >> 16) & 0xff] & 0xff000000) ^
+					(_ae4[(t >>  8) & 0xff] & 0x00ff0000) ^
+					(_ae4[(t      ) & 0xff] & 0x0000ff00) ^
+					(_ae4[(t >> 24)       ] & 0x000000ff) ^
 					 _arc[i];
 				#else
-				t = (_ae4[(t >>  8) & 0xff] & 0x000000ffU) ^
-					(_ae4[(t >> 16) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t >> 24)       ] & 0x00ff0000U) ^
-					(_ae4[(t      ) & 0xff] & 0xff000000U) ^
+				t = (_ae4[(t >>  8) & 0xff] & 0x000000ff) ^
+					(_ae4[(t >> 16) & 0xff] & 0x0000ff00) ^
+					(_ae4[(t >> 24)       ] & 0x00ff0000) ^
+					(_ae4[(t      ) & 0xff] & 0xff000000) ^
 					 _arc[i];
 				#endif
 				rk[4] = (t ^= rk[0]);
@@ -154,16 +146,16 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			{
 				t = rk[5];
 				#if WORDS_BIGENDIAN
-				t = (_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
-					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
-					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
+				t = (_ae4[(t >> 16) & 0xff] & 0xff000000) ^
+					(_ae4[(t >>  8) & 0xff] & 0x00ff0000) ^
+					(_ae4[(t      ) & 0xff] & 0x0000ff00) ^
+					(_ae4[(t >> 24)       ] & 0x000000ff) ^
 					 _arc[i];
 				#else
-				t = (_ae4[(t >>  8) & 0xff] & 0x000000ffU) ^
-					(_ae4[(t >> 16) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t >> 24)       ] & 0x00ff0000U) ^
-					(_ae4[(t      ) & 0xff] & 0xff000000U) ^
+				t = (_ae4[(t >>  8) & 0xff] & 0x000000ff) ^
+					(_ae4[(t >> 16) & 0xff] & 0x0000ff00) ^
+					(_ae4[(t >> 24)       ] & 0x00ff0000) ^
+					(_ae4[(t      ) & 0xff] & 0xff000000) ^
 					 _arc[i];
 				#endif
 				rk[6] = (t ^= rk[0]);
@@ -183,16 +175,16 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			{
 				t = rk[7];
 				#if WORDS_BIGENDIAN
-				t = (_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
-					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
-					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
+				t = (_ae4[(t >> 16) & 0xff] & 0xff000000) ^
+					(_ae4[(t >>  8) & 0xff] & 0x00ff0000) ^
+					(_ae4[(t      ) & 0xff] & 0x0000ff00) ^
+					(_ae4[(t >> 24)       ] & 0x000000ff) ^
 					 _arc[i];
 				#else
-				t = (_ae4[(t >>  8) & 0xff] & 0x000000ffU) ^
-					(_ae4[(t >> 16) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t >> 24)       ] & 0x00ff0000U) ^
-					(_ae4[(t      ) & 0xff] & 0xff000000U) ^
+				t = (_ae4[(t >>  8) & 0xff] & 0x000000ff) ^
+					(_ae4[(t >> 16) & 0xff] & 0x0000ff00) ^
+					(_ae4[(t >> 24)       ] & 0x00ff0000) ^
+					(_ae4[(t      ) & 0xff] & 0xff000000) ^
 					 _arc[i];
 				#endif
 				rk[8] = (t ^= rk[0]);
@@ -202,15 +194,15 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 				if (++i == 7)
 					break;
 				#if WORDS_BIGENDIAN
-				t = (_ae4[(t >> 24)       ] & 0xff000000U) ^
-					(_ae4[(t >> 16) & 0xff] & 0x00ff0000U) ^
-					(_ae4[(t >>  8) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t      ) & 0xff] & 0x000000ffU);
+				t = (_ae4[(t >> 24)       ] & 0xff000000) ^
+					(_ae4[(t >> 16) & 0xff] & 0x00ff0000) ^
+					(_ae4[(t >>  8) & 0xff] & 0x0000ff00) ^
+					(_ae4[(t      ) & 0xff] & 0x000000ff);
 				#else
-				t = (_ae4[(t      ) & 0xff] & 0x000000ffU) ^
-					(_ae4[(t >>  8) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t >> 16) & 0xff] & 0x00ff0000U) ^
-					(_ae4[(t >> 24)       ] & 0xff000000U);
+				t = (_ae4[(t      ) & 0xff] & 0x000000ff) ^
+					(_ae4[(t >>  8) & 0xff] & 0x0000ff00) ^
+					(_ae4[(t >> 16) & 0xff] & 0x00ff0000) ^
+					(_ae4[(t >> 24)       ] & 0xff000000);
 				#endif
 				rk[12] = (t ^= rk[4]);
 				rk[13] = (t ^= rk[5]);
@@ -235,9 +227,9 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			{
 				rk += 4;
 				#if WORDS_BIGENDIAN
- 				rk[0] =
- 					_ad0[_ae4[(rk[0] >> 24)       ] & 0xff] ^
- 					_ad1[_ae4[(rk[0] >> 16) & 0xff] & 0xff] ^
+				rk[0] =
+					_ad0[_ae4[(rk[0] >> 24)       ] & 0xff] ^
+					_ad1[_ae4[(rk[0] >> 16) & 0xff] & 0xff] ^
 					_ad2[_ae4[(rk[0] >>  8) & 0xff] & 0xff] ^
 					_ad3[_ae4[(rk[0]      ) & 0xff] & 0xff];
 				rk[1] =
@@ -252,9 +244,9 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 					_ad3[_ae4[(rk[2]      ) & 0xff] & 0xff];
 				rk[3] =
 					_ad0[_ae4[(rk[3] >> 24)       ] & 0xff] ^
- 					_ad1[_ae4[(rk[3] >> 16) & 0xff] & 0xff] ^
- 					_ad2[_ae4[(rk[3] >>  8) & 0xff] & 0xff] ^
- 					_ad3[_ae4[(rk[3]      ) & 0xff] & 0xff];
+					_ad1[_ae4[(rk[3] >> 16) & 0xff] & 0xff] ^
+					_ad2[_ae4[(rk[3] >>  8) & 0xff] & 0xff] ^
+					_ad3[_ae4[(rk[3]      ) & 0xff] & 0xff];
 				#else
 				rk[0] =
 					_ad0[_ae4[(rk[0]      ) & 0xff] & 0xff] ^
@@ -287,12 +279,10 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 #ifndef ASM_AESSETIV
 int aesSetIV(aesParam* ap, const byte* iv)
 {
-/*@-mayaliasunique@*/
 	if (iv)
 		memcpy(ap->fdback, iv, 16);
 	else
 		memset(ap->fdback, 0, 16);
-/*@=mayaliasunique@*/
 
 	return 0;
 }
@@ -394,6 +384,3 @@ uint32_t* aesFeedback(aesParam* ap)
 {
 	return ap->fdback;
 }
-/*@=bitwisesigned@*/
-/*!\}
- */

@@ -23,9 +23,13 @@
  * \ingroup IF_m IF_rsa_m
  */
 
-#include "system.h"
-#include "rsapk.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/rsapk.h"
 
 /*!\addtogroup IF_rsa_m
  * \{
@@ -33,7 +37,7 @@
 
 int rsapkInit(rsapk* pk)
 {
-	memset(pk, 0, sizeof(*pk));
+	memset(pk, 0, sizeof(rsapk));
 	/* or
 	mpbzero(&pk->n);
 	mpnzero(&pk->e);
@@ -44,12 +48,10 @@ int rsapkInit(rsapk* pk)
 
 int rsapkFree(rsapk* pk)
 {
-	/*@-usereleased -compdef @*/ /* pk->n.modl is OK */
 	mpbfree(&pk->n);
 	mpnfree(&pk->e);
 
 	return 0;
-	/*@=usereleased =compdef @*/
 }
 
 int rsapkCopy(rsapk* dst, const rsapk* src)

@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([beecrypt],[3.0.0pre],[bob.deblier@pandora.be])
+AC_INIT([beecrypt],[4.0.0],[bob.deblier@telenet.be])
 AM_INIT_AUTOMAKE
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR(beecrypt.h)
@@ -17,125 +17,15 @@ AC_ARG_ENABLE(debug, [  --enable-debug          creates debugging code [default=
   ],[ ac_enable_debug=no])
 
 AC_ARG_WITH(cpu,[  --with-cpu              optimize for specific cpu],[
-  ac_with_cpu=yes
-  bc_target_cpu=$withval
-  case $target_cpu in
-  i[[3456]]86)
-    case $withval in
-    i[[3456]]86 | \
-    pentium | pentium-mmx | pentiumpro | pentium[[234]] | \
-    athlon | athlon-tbird | athlon-4 | athlon-xp | athlon-mp)
-      ;;
-    *)
-      AC_MSG_WARN([invalid cpu type])
-      bc_target_cpu=$target_cpu
-      ;;
-    esac
-    ;;
-  powerpc)
-    case $withval in
-    403 | 505 | \
-    60[[1234]] | 60[[34]]e | 6[[23]]0 | \
-    7[[45]]0 | 74[[05]]0 | \
-    801 | 82[[13]] | 860 | \
-    power | power2 | powerpc | powerpc64)
-      ;;
-    *)
-      AC_MSG_WARN([invalid cpu type])
-      bc_target_cpu=$target_cpu
-      ;;
-    esac
-    ;;
-  sparc)
-    case $withval in
-    sparcv8 | sparcv8plus | sparcv8plus[[ab]] | sparcv9 | sparcv9[[ab]])
-      ;;
-    *)
-      AC_MSG_WARN([invalid cpu type])
-      bc_target_cpu=$target_cpu
-      ;;
-    esac
-    ;;
-  x86) # QNX Neutrino doesn't list the exact cpu type
-    case $withval in
-    i[[3456]]86)
-      ;;
-    *)
-      AC_MSG_WARN([unsupported or invalid cpu type])
-      bc_target_cpu=$target_cpu
-      ;;
-    esac
-    ;;
-  *)
-    AC_MSG_WARN([unsupported or invalid cpu type])
-    bc_target_cpu=$target_cpu
-    ;;
-  esac
+  BEECRYPT_WITH_CPU
   ],[
-  ac_with_cpu=no
-  bc_target_cpu=$target_cpu
+  BEECRYPT_WITHOUT_CPU
   ])
 
 AC_ARG_WITH(arch,[  --with-arch             optimize for specific architecture (may not run on other cpus of same family)],[
-  ac_with_arch=yes
-  bc_target_arch=$withval
-  case $target_cpu in
-  i[[3456]]86)
-    case $withval in
-    i[[3456]]86 | \
-    pentium | pentium-mmx | pentiumpro | pentium[[234]] | \
-    athlon | athlon-tbird | athlon-4 | athlon-xp | athlon-mp)
-      if test "$ac_with_cpu" != yes; then
-        bc_target_cpu=$withval
-      fi
-      ;;
-    esac
-    ;;
-  powerpc*)
-    case $withval in
-    powerpc)
-      ;;
-    powerpc64)
-      bc_target_arch=powerpc64
-      ;;
-    *)
-      AC_MSG_WARN([unsupported on invalid arch type])
-      bc_target_arch=powerpc
-      ;;
-    esac
-    ;;
-  esac
+  BEECRYPT_WITH_ARCH
   ],[
-  ac_with_arch=no
-  case $target_cpu in
-  alpha*)
-    bc_target_arch=alpha
-    ;;
-  arm*)
-    bc_target_arch=arm
-    ;;
-  i[[3456]]86)
-    bc_target_arch=i386
-    ;;
-  ia64)
-    bc_target_arch=ia64
-    ;;
-  m68k)
-    bc_target_arch=m68k
-    ;;
-  powerpc*)
-    bc_target_arch=powerpc
-    ;;
-  s390x)
-    bc_target_arch=s390x
-    ;;
-  sparc*)
-    bc_target_arch=sparc
-    ;;
-  x86_64)
-    bc_target_arch=x86_64
-    ;;
-  esac
+  BEECRYPT_WITHOUT_ARCH
   ])
 
 AC_ARG_ENABLE(threads,[  --enable-threads        enables multithread support [default=yes]],[
@@ -145,8 +35,6 @@ AC_ARG_ENABLE(threads,[  --enable-threads        enables multithread support [de
     ac_enable_threads=yes
   fi
   ],[ ac_enable_threads=yes])
-
-AH_TEMPLATE([ENABLE_THREADS],[Define to 1 if you want to enable multithread support])
 
 AC_ARG_ENABLE(aio,[  --enable-aio            enables asynchronous i/o for entropy gathering [default=yes]],[
   if test "$enableval" = no; then
@@ -166,21 +54,29 @@ AC_ARG_WITH(mtmalloc,[  --with-mtmalloc         links against the mtmalloc libra
   fi
   ],[ac_with_mtmalloc=no])
 
-AC_ARG_WITH(java,[  --with-java         creates the java glue code [default=no]],[
+AC_ARG_WITH(cplusplus,[  --with-cplusplus        creates the C++ API code [default=yes]],[
+  if test "$withval" = no; then
+    ac_with_cplusplus=no
+  else
+    ac_with_cplusplus=yes
+  fi
+  ],[ac_with_cplusplus=yes])
+
+AC_ARG_WITH(java,[  --with-java             creates the java glue code [default=yes]],[
   if test "$withval" = no; then
     ac_with_java=no
   else
     ac_with_java=yes
   fi
-  ],[ac_with_java=no])
+  ],[ac_with_java=yes])
 
-AC_ARG_WITH(python,[  --with-python         creates the python bindings code [default=no]],[
+AC_ARG_WITH(python,[  --with-python           creates the python bindings code [default=yes]],[
   if test "$withval" = no; then
     ac_with_python=no
   else
     ac_with_python=yes
   fi
-  ],[ac_with_python=no])
+  ],[ac_with_python=yes])
 
 # Check for Unix variants
 AC_AIX
@@ -188,49 +84,21 @@ AC_AIX
 # Checks for C compiler and preprocessor
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AC_PROG_LD
+AC_PROG_LN_S
 AM_PROG_AS
 
 # Checks for compiler characteristics and flags
-if test "$ac_cv_c_compiler_gnu" = yes; then
-  BEECRYPT_GNU_CC
-else
-  case $target_os in
-  aix*)
-    BEECRYPT_IBM_CC
-    ;;
-  hpux*)
-    BEECRYPT_HPUX_CC
-    ;;
-  linux*)
-    BEECRYPT_INTEL_CC
-    ;;
-  solaris*)
-    BEECRYPT_SUN_FORTE_CC
-    ;;
-  osf*)
-    BEECRYPT_COMPAQ_CC
-    ;;
-  esac
-fi
+BEECRYPT_CC
+BEECRYPT_CXX
+
+# Check for stack protection
+BEECRYPT_NOEXECSTACK
 
 # Checks for program flags needed by libtool
-case $target_os in
-aix*)
-  case $bc_target_arch in
-  powerpc64)
-    AR="ar -X64"
-    NM="/usr/bin/nm -B -X64"
-    ;;
-  esac
-  ;;
-solaris*)
-  case $bc_target_arch in
-  sparcv9*)
-    LD="/usr/ccs/bin/ld -64"
-    ;;
-  esac
-  ;;
-esac
+BEECRYPT_LIBTOOL
 
 # Checks for further programs
 AC_PROG_AWK
@@ -238,66 +106,7 @@ AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
 # Predefines for autoheader
-AH_TEMPLATE([AIX],[Define to 1 if you are using AIX])
-AH_TEMPLATE([CYGWIN],[Define to 1 if you are using Cygwin])
-AH_TEMPLATE([DARWIN],[Define to 1 if you are using Darwin/MacOS X])
-AH_TEMPLATE([FREEBSD],[Define to 1 if you are using FreeBSD])
-AH_TEMPLATE([HPUX],[Define to 1 if you are using HPUX])
-AH_TEMPLATE([LINUX],[Define to 1 if you are using GNU/Linux])
-AH_TEMPLATE([NETBSD],[Define to 1 if you are using NetBSD])
-AH_TEMPLATE([OPENBSD],[Define to 1 if you are using OpenBSD])
-AH_TEMPLATE([OSF],[Define to 1 if you are using OSF])
-AH_TEMPLATE([QNX],[Define to 1 if you are using QNX])
-AH_TEMPLATE([SCO_UNIX],[Define to 1 if you are using SCO Unix])
-AH_TEMPLATE([SOLARIS],[Define to 1 if you are using Solaris])
-AH_VERBATIM([WIN32],[
-#ifndef WIN32
-#undef WIN32
-#endif
-])
-
-case $target_os in
-  aix*)
-    AC_DEFINE([AIX])
-    ;;
-  cygwin*)
-    AC_DEFINE([CYGWIN])
-    AC_DEFINE([WIN32])
-    ;;
-  darwin*)
-    AC_DEFINE([DARWIN])
-    ;;
-  freebsd*)
-    AC_DEFINE([FREEBSD])
-    ;;
-  hpux*)
-    AC_DEFINE([HPUX])
-    ;;
-  linux*)
-    AC_DEFINE([LINUX])
-    ;;
-  netbsd*)
-    AC_DEFINE([NETBSD])
-    ;;
-  openbsd*)
-    AC_DEFINE([OPENBSD])
-    ;;
-  osf*)
-    AC_DEFINE([OSF])
-    ;;
-  *qnx)
-    AC_DEFINE([QNX])
-    ;;
-  solaris*)
-    AC_DEFINE([SOLARIS])
-    ;;
-  sysv*uv*)
-    AC_DEFINE([SCO_UNIX])
-    ;;
-  *)
-    AC_MSG_WARN([Operating system type $target_os currently not supported and/or tested])
-    ;;
-esac
+BEECRYPT_OS_DEFS
 
 AH_TEMPLATE([HAVE_CTYPE_H],[.])
 AH_TEMPLATE([HAVE_ERRNO_H],[.])
@@ -305,6 +114,7 @@ AH_TEMPLATE([HAVE_FCNTL_H],[.])
 AH_TEMPLATE([HAVE_TERMIO_H],[.])
 AH_TEMPLATE([HAVE_TERMIOS_H],[.])
 AH_TEMPLATE([HAVE_TIME_H],[.])
+AH_TEMPLATE([HAVE_DLFCN_H],[.])
 
 AH_TEMPLATE([HAVE_SYS_AUDIOIO_H],[.])
 AH_TEMPLATE([HAVE_SYS_IOCTL_H],[.])
@@ -312,11 +122,6 @@ AH_TEMPLATE([HAVE_SYS_SOUNDCARD_H],[.])
 AH_TEMPLATE([HAVE_SYS_STAT_H],[.])
 AH_TEMPLATE([HAVE_SYS_TIME_H],[.])
 AH_TEMPLATE([HAVE_SYS_TYPES_H],[.])
-
-AH_TEMPLATE([HAVE_THREAD_H],[.])
-AH_TEMPLATE([HAVE_PTHREAD_H],[.])
-AH_TEMPLATE([HAVE_SYNCH_H],[.])
-AH_TEMPLATE([HAVE_SEMAPHORE_H],[.])
 
 AH_TEMPLATE([HAVE_AIO_H],[.])
 
@@ -353,6 +158,7 @@ bc_include_stdlib_h=
 bc_include_malloc_h=
 bc_include_string_h=
 bc_include_unistd_h=
+bc_include_dlfcn_h=
 if test "$ac_cv_header_stdio_h" = yes; then
   bc_include_stdio_h="#include <stdio.h>"
 fi
@@ -374,48 +180,20 @@ fi
 if test "$ac_cv_header_unistd_h" = yes; then
   bc_include_unistd_h="#include <unistd.h>"
 fi
+if test "$ac_cv_header_dlfcn_h" = yes; then
+  bc_include_dlfcn_h="#include <dlfcn.h>"
+fi
 AC_SUBST(INCLUDE_STDIO_H,$bc_include_stdio_h)
 AC_SUBST(INCLUDE_STDLIB_H,$bc_include_stdlib_h)
 AC_SUBST(INCLUDE_MALLOC_H,$bc_include_malloc_h)
 AC_SUBST(INCLUDE_STRING_H,$bc_include_string_h)
 AC_SUBST(INCLUDE_UNISTD_H,$bc_include_unistd_h)
+AC_SUBST(INCLUDE_DLFCN_H,$bc_include_dlfcn_h)
 
-if test "$ac_enable_threads" = yes; then
-  AC_CHECK_HEADERS([thread.h pthread.h synch.h semaphore.h])
-fi
+BEECRYPT_DLFCN
+BEECRYPT_MULTITHREAD
 
 # Checks for libraries.
-bc_include_synch_h=
-bc_include_pthread_h=
-bc_typedef_bc_lock_t=
-if test "$ac_enable_threads" = yes; then
-  if test "$ac_cv_header_thread_h" = yes -a "$ac_cv_header_synch_h" = yes; then
-    AC_SEARCH_LIBS([mutex_lock],[thread],[
-      AC_DEFINE([ENABLE_THREADS],1)
-      bc_include_synch_h="#include <synch.h>"
-      bc_typedef_bc_lock_t="typedef mutex_t bc_lock_t;"
-      ])
-  elif test "$ac_cv_header_pthread_h" = yes; then
-    AC_SEARCH_LIBS([pthread_mutex_lock],[pthread],[
-      AC_DEFINE([ENABLE_THREADS],1)
-      bc_include_pthread_h="#include <pthread.h>"
-      bc_typedef_bc_lock_t="typedef pthread_mutex_t bc_lock_t;"
-      # On most systems this tests will say 'none required', but that doesn't
-      # mean that the linked code will work correctly!
-      case $target_os in
-      linux* | solaris* )
-        LIBS="-lpthread $LIBS"
-        ;;
-      esac
-      ])
-  else
-    AC_MSG_WARN([Don't know which thread library to check for])
-  fi
-fi
-AC_SUBST(INCLUDE_SYNCH_H,$bc_include_synch_h)
-AC_SUBST(INCLUDE_PTHREAD_H,$bc_include_pthread_h)
-AC_SUBST(TYPEDEF_BC_LOCK_T,$bc_typedef_bc_lock_t)
-
 if test "$ac_enable_aio" = yes; then
   BEECRYPT_WORKING_AIO
   if test "$bc_cv_aio_works" = yes; then
@@ -450,8 +228,42 @@ AC_CHECK_FUNCS([memset memcmp memmove strcspn strerror strspn])
 AH_TEMPLATE([HAVE_GETHRTIME],[.])
 AH_TEMPLATE([HAVE_GETTIMEOFDAY],[.])
 if test "$ac_cv_header_sys_time_h" = yes; then
-  AC_CHECK_FUNCS([gethrtime gettimeofday])
+  AC_CHECK_FUNCS([gethrtime])
+  # gettimeofday detection fails on HP/UX!
+  AC_MSG_CHECKING([for gettimeofday])
+  AC_TRY_LINK([#include <sys/time.h> ],[
+    struct timeval dummy;
+    gettimeofday(&dummy, (void*) 0);
+    ],[
+    AC_MSG_RESULT([yes])
+    AC_DEFINE([HAVE_GETTIMEOFDAY],1)
+    ac_cv_func_gettimeofday=yes
+    ],[
+    AC_MSG_RESULT([no])
+    AC_DEFINE([HAVE_GETTIMEOFDAY],0)
+    ac_cv_func_gettimeofday=no
+    ])
 fi
+
+# Predefines and checks for C++ API support
+AH_TEMPLATE([CPPGLUE],[Define to 1 if you want to include the C++ code])
+
+if test "$ac_with_cplusplus" = yes; then
+  AC_MSG_CHECKING([for IBM's ICU library])
+  AC_TRY_LINK([#include <unicode/uversion.h> ],[
+    ],[
+    AC_MSG_RESULT([yes])
+    ],[
+    AC_MSG_RESULT([no])
+    AC_MSG_WARN([disabling cplusplus])
+    ac_with_cplusplus=no
+    ])
+fi
+
+if test "$ac_with_cplusplus" = yes ; then
+  AC_DEFINE([CPPGLUE],1)
+fi
+
 
 # Predefines and checks for Java API support
 AH_TEMPLATE([JAVAGLUE],[Define to 1 if you want to include the Java code])
@@ -524,6 +336,8 @@ EOF
               cygwin*)
                 ac_cv_java_include="-I$java_include -I$java_include/win32" ;;
               darwin*) ;;
+              hpux*)
+                ac_cv_java_include="-I$java_include -I$java_include/hpux" ;;
               linux*)
                 ac_cv_java_include="-I$java_include -I$java_include/linux" ;;
               osf*)
@@ -559,7 +373,33 @@ fi
 
 if test "$ac_with_java" = yes ; then
   AC_DEFINE([JAVAGLUE],1)
+  AC_SUBST(JAVAINC,$ac_cv_java_include)
 fi
+
+
+# Predefines and checks for Python API support
+AH_TEMPLATE([PYTHONGLUE],[Define to 1 if you want to include the Python code])
+
+if test "$ac_with_python" = yes ; then
+  AC_CHECK_PROG(ac_cv_have_python, python, yes, no)
+  if test "$ac_cv_have_python" = yes; then
+    AC_CACHE_CHECK([for python headers], ac_cv_python_include, [
+      ac_cv_python_include="-I`python -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_inc()'`"
+    ])
+    AC_CACHE_CHECK([for python libraries], ac_cv_python_libdir, [
+      ac_cv_python_libdir="`python -c 'import distutils.sysconfig; print distutils.sysconfig.get_python_lib()'`"
+    ])
+  else
+    ac_with_python=no
+  fi
+fi
+
+if test "$ac_with_python" = yes; then
+  AC_DEFINE([PYTHONGLUE],1)
+  AC_SUBST(PYTHONINC,$ac_cv_python_include)
+  AC_SUBST(PYTHONLIB,$ac_cv_python_libdir)
+fi
+
 
 # Checks for entropy sources.
 AS_MESSAGE(checking for specific entropy devices...)
@@ -669,8 +509,11 @@ if test "$ac_enable_debug" != yes; then
   m68k)
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_M68K"
     ;;
-  pentium | pentium-mmx)
+  pentium)
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I586"
+    ;;
+  pentium-mmx)
+    CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I586 -DOPTIMIZE_MMX"
     ;;
   pentiumpro)
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I686"
@@ -682,7 +525,7 @@ if test "$ac_enable_debug" != yes; then
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I686 -DOPTIMIZE_MMX -DOPTIMIZE_SSE"
     ;;
   pentium4)
-    CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I686 -DOPTIMIZE_MMX -DOPTIMIZE_SSE -DOPTIMIZE_SSE2" 
+    CPPFLAGS="$CPPFLAGS -DOPTIMIZE_I686 -DOPTIMIZE_MMX -DOPTIMIZE_SSE -DOPTIMIZE_SSE2"
     ;;
   powerpc)
     CPPFLAGS="$CPPFLAGS -DOPTIMIZE_POWERPC"
@@ -728,22 +571,26 @@ BEECRYPT_ASM_SOURCES
 BEECRYPT_INT_TYPES
 BEECRYPT_CPU_BITS
 
-if test "$ac_with_java" = yes ; then
-  CFLAGS="$CFLAGS $ac_cv_java_include"
+MAYBE_SUB=
+MAYBE_LTLIB=
+
+if test "$ac_with_cplusplus" = yes; then
+  MAYBE_SUB="$MAYBE_SUB c++"
+  MAYBE_LTLIB="$MAYBE_LTLIB libbeecrypt_cxx.la"
 fi
 
-MAYBE_OPT=
-
 if test "$ac_with_java" = yes; then
-  MAYBE_OPT="$MAYBE_OPT java"
+  MAYBE_SUB="$MAYBE_SUB java"
+  MAYBE_LTLIB="$MAYBE_LTLIB libbeecrypt_java.la"
 fi
 
 if test "$ac_with_python" = yes; then
-  MAYBE_OPT="$MAYBE_OPT python"
+  MAYBE_SUB="$MAYBE_SUB python"
 fi
 
-AC_SUBST([MAYBE_OPT])
-       
+AC_SUBST([MAYBE_SUB])
+AC_SUBST([MAYBE_LTLIB])
+
 # Check where to install the libraries
 bc_libalt=
 case $target_os in
@@ -751,22 +598,47 @@ linux*)
   case $bc_target_arch in
   alpha* | powerpc64 | s390x | x86_64)
     bc_libalt="64"
-    ;; 
-  esac 
+    ;;
+  esac
   ;;
 esac
 AC_SUBST(LIBALT,$bc_libalt)
 
 # Generate output files.
-AC_CONFIG_FILES([Makefile
-                 Doxyfile
-                 beecrypt.gnu.h
-                 config.m4
-                 docs/Makefile
-                 gas/Makefile
-                 java/Makefile
-                 masm/Makefile
-                 python/Makefile
-                 python/test/Makefile
-                 tests/Makefile])
+AC_CONFIG_FILES([
+    Makefile
+    Doxyfile
+    config.m4
+    c++/Makefile
+    c++/beeyond/Makefile
+    c++/crypto/Makefile
+    c++/crypto/interfaces/Makefile
+    c++/crypto/spec/Makefile
+    c++/io/Makefile
+    c++/lang/Makefile
+    c++/provider/Makefile
+    c++/security/Makefile
+    c++/security/cert/Makefile
+    c++/security/interfaces/Makefile
+    c++/security/spec/Makefile
+    c++/util/Makefile
+    docs/Makefile
+    gas/Makefile
+    java/Makefile
+    masm/Makefile
+    python/Makefile
+    python/test/Makefile
+    tests/Makefile
+  ])
+AC_CONFIG_FILES([gnu.h],[
+    if test $srcdir != "."; then
+      cp gnu.h $ac_top_srcdir/gnu.h
+    fi
+  ])
+AC_CONFIG_COMMANDS_POST([
+    if test -h "beecrypt"; then
+      rm -f beecrypt
+    fi
+    $LN_S $srcdir beecrypt
+  ])
 AC_OUTPUT

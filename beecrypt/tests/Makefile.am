@@ -53,13 +53,15 @@ testrsa_SOURCES = testrsa.c
 
 testdldp_SOURCES = testdldp.c
 
-EXTRA_PROGRAMS = benchme benchhf benchbc
+EXTRA_PROGRAMS = benchme benchhf benchbc testconv
 
 benchme_SOURCES = benchme.c
 
 benchhf_SOURCES = benchhf.c
 
 benchbc_SOURCES = benchbc.c
+
+testconv_SOURCES = testconv.c
 
 # Run every benchmark test twice
 bench: benchme benchhf benchbc

@@ -19,6 +19,7 @@ dnl  License along with this library; if not, write to the Free Software
 dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  
 include(config.m4)
+include(ASM_SRCDIR/asmdefs.m4)
 include(ASM_SRCDIR/x86.m4)
 
 
@@ -29,7 +30,7 @@ C_FUNCTION_BEGIN(mpzero)
 	movl 12(%esp),%edi
 
 	xorl %eax,%eax
-	repz stosl
+	repz; stosl
 
 	popl %edi
 	ret
@@ -43,7 +44,7 @@ C_FUNCTION_BEGIN(mpfill)
 	movl 12(%esp),%edi
 	movl 16(%esp),%eax
 
-	repz stosl
+	repz; stosl
 
 	popl %edi
 	ret

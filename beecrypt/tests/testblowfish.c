@@ -23,11 +23,9 @@
  * \ingroup UNIT_m
  */
 
-#include "system.h"
+#include <stdio.h>
 
 #include "blowfish.h"
-
-#include "debug.h"
 
 extern int fromhex(byte*, const char*);
 
@@ -82,9 +80,6 @@ int main()
     
         switch (table[i].op)
         {
-	case NOCRYPT:
-	    return -1;
-	    break;
         case ENCRYPT:
             if (blowfishEncrypt(&param, (uint32_t*) dst, (const uint32_t*) src))
                 return -1;

@@ -16,61 +16,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
+ 
 /*!\file elgamal.c
  * \brief ElGamal algorithm.
- *
- * For more information on this algorithm, see:
- *  "Handbook of Applied Cryptography"
- *  11.5.2: "The ElGamal signature scheme", p. 454-459
- *
- * Two of the signature variants in Note 11.70 are described.
- *
- * \todo Explore the possibility of using simultaneous multiple exponentiation,
- *       as described in HAC, 14.87 (iii).
- *
  * \author Bob Deblier <bob.deblier@pandora.be>
- * \ingroup DL_m DL_elgamal_m
- *
- * - ElGamal Signature variant 1: (i.e. the standard version)
- *  - Signing equation:
- *   - r = g^k mod p and
- *   - s = inv(k) * (h(m) - x*r) mod (p-1)
- *  - Verifying equation:
- *   - check 1 <= r <= (p-1)
- *   - v1 = g^h(m) mod p
- *   - v2 = y^r * r^s mod p
- *   - check v1 == v2
- *  - Simultaneous multiple exponentiation verification:
- *   - y^r * r^s * g^(p-1-h(m)) mod p = 1 or (the former is probably faster)
- *   - y^r * r^s * inv(g)^h(m) mod p = 1
- *
- * - ElGamal Signature variant 3: signing is simpler, because no inverse has to be calculated
- *  - Signing equation:
- *   - r = g^k mod p and
- *   - s = x*r + k*h(m) mod (p-1)
- *  - Verifying equation:
- *   - check 1 <= r <= (p-1)
- *   - v1 = g^s mod p
- *   - v2 = y^r * r^h(m) mod p
- *  - Simultaneous multiple exponentiation verification:
- *   - y^r * r^h(m) * g^(p-1-s) mod p = 1 (one of the exponents is significantly smaller, i.e. h(m))
  */
 
-#include "system.h"
-#include "elgamal.h"
-#include "dldp.h"
-#include "mp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
 
-/*!\addtogroup DL_elgamal_m
- * \{
- */
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/elgamal.h"
+#include "beecrypt/dldp.h"
 
 int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
 	register size_t size = p->size;
-	register mpw* temp = (mpw*) malloc((13*size+11) * sizeof(*temp));
+	register mpw* temp = (mpw*) malloc((8*size+6)*sizeof(mpw));
 
 	if (temp)
 	{
@@ -87,7 +51,7 @@ int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomG
 
 		/* compute -(x*r) mod n */
 		mpneg(size, temp);
-		(void) mpadd(size, temp, n->modl);
+		mpadd(size, temp, n->modl);
 
 		/* compute h(m) - x*r mod n */
 		mpbaddmod_w(n, hm->size, hm->data, size, temp, temp, temp+2*size);
@@ -121,7 +85,7 @@ int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
 	if (mpgex(s->size, s->data, n->size, n->modl))
 		return 0;
 
-	temp = (mpw*) malloc((6*size+2) * sizeof(*temp));
+	temp = (mpw*) malloc((6*size+2)*sizeof(mpw));
 
 	if (temp)
 	{
@@ -151,7 +115,7 @@ int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
 int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
 	register size_t size = p->size;
-	register mpw* temp = (mpw*) malloc((6*size+2) * sizeof(*temp));
+	register mpw* temp = (mpw*) malloc((6*size+2)*sizeof(mpw));
 
 	if (temp)
 	{
@@ -198,7 +162,7 @@ int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
 	if (mpgex(s->size, s->data, n->size, n->modl))
 		return 0;
 
-	temp = (mpw*) malloc((6*size+2) * sizeof(*temp));
+	temp = (mpw*) malloc((6*size+2)*sizeof(mpw));
 
 	if (temp)
 	{

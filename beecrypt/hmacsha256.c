@@ -23,31 +23,32 @@
  * \ingroup HMAC_m HMAC_sha256_m
  */
 
-#include "system.h"
-#include "hmacsha256.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/hmacsha256.h"
 
 /*!\addtogroup HMAC_sha256_m
  * \{
  */
 
-/*@-sizeoftype@*/
 const keyedHashFunction hmacsha256 = {
 	"HMAC-SHA-256",
 	sizeof(hmacsha256Param),
-	64U,
-	8U * sizeof(uint32_t),
-	64U,
-	512U,
-	32U,
+	64,
+	32,
+	64,
+	512,
+	32,
 	(keyedHashFunctionSetup) hmacsha256Setup,
 	(keyedHashFunctionReset) hmacsha256Reset,
 	(keyedHashFunctionUpdate) hmacsha256Update,
 	(keyedHashFunctionDigest) hmacsha256Digest
 };
-/*@=sizeoftype@*/
 
-/*@-type@*/	/* fix: cast to (hashFunctionParam*) */
 int hmacsha256Setup (hmacsha256Param* sp, const byte* key, size_t keybits)
 {
 	return hmacSetup(sp->kxi, sp->kxo, &sha256, &sp->sparam, key, keybits);
@@ -67,7 +68,6 @@ int hmacsha256Digest(hmacsha256Param* sp, byte* data)
 {
 	return hmacDigest(sp->kxo, &sha256, &sp->sparam, data);
 }
-/*@=type@*/
 
 /*!\}
  */

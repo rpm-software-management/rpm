@@ -26,80 +26,84 @@
 #ifndef _MPNUMBER_H
 #define _MPNUMBER_H
 
-#include "mp.h"
+#include "beecrypt/mp.h"
 
-/**
- */
-typedef struct
+#ifdef __cplusplus
+# include <iostream>
+#endif
+
+#ifdef __cplusplus
+struct BEECRYPTAPI mpnumber
+#else
+struct _mpnumber
+#endif
 {
 	size_t	size;
-/*@owned@*/ /*@relnull@*/
 	mpw*	data;
-} mpnumber;
+
+#ifdef __cplusplus
+	mpnumber();
+	mpnumber(unsigned int);
+	mpnumber(const mpnumber&);
+	~mpnumber();
+
+	const mpnumber& operator=(const mpnumber&);
+	bool operator==(const mpnumber&);
+	bool operator!=(const mpnumber&);
+
+	void wipe();
+
+	size_t bitlength() const;
+#endif
+};
+
+#ifndef __cplusplus
+typedef struct _mpnumber mpnumber;
+#else
+BEECRYPTAPI
+std::ostream& operator<<(std::ostream&, const mpnumber&);
+/*
+BEECRYPTAPI
+std::istream& operator>>(std::istream&, mpnumber&);
+*/
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+BEECRYPTAPI
+void mpnzero(mpnumber*);
+BEECRYPTAPI
+void mpnsize(mpnumber*, size_t);
+BEECRYPTAPI
+void mpninit(mpnumber*, size_t, const mpw*);
+BEECRYPTAPI
+void mpnfree(mpnumber*);
+BEECRYPTAPI
+void mpncopy(mpnumber*, const mpnumber*);
+BEECRYPTAPI
+void mpnwipe(mpnumber*);
+
+BEECRYPTAPI
+void mpnset   (mpnumber*, size_t, const mpw*);
+BEECRYPTAPI
+void mpnsetw  (mpnumber*, mpw);
+
+BEECRYPTAPI
+int mpnsetbin(mpnumber*, const byte*, size_t);
+BEECRYPTAPI
+int mpnsethex(mpnumber*, const char*);
+
+BEECRYPTAPI
+int  mpninv(mpnumber*, const mpnumber*, const mpnumber*);
+
+/*!\brief Truncate the mpnumber to the specified number of (least significant) bits.
  */
 BEECRYPTAPI
-void mpnzero(/*@out@*/ mpnumber* n)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
+size_t mpntrbits(mpnumber*, size_t);
 BEECRYPTAPI
-void mpnsize(mpnumber* n, size_t size)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-void mpninit(mpnumber* n, size_t size, const mpw* data)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpnfree(mpnumber* n)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpncopy(mpnumber* n, const mpnumber* copy)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpnwipe(mpnumber* n)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpnset   (mpnumber* n, size_t size, /*@null@*/ const mpw* data)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpnsetw  (mpnumber* n, mpw val)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-void mpnsethex(/*@out@*/ mpnumber* n, const char* hex)
-	/*@modifies n->size, n->data @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int mpninv(/*@out@*/ mpnumber* inv, const mpnumber* k, const mpnumber* mod)
-	/*@modifies inv->size, inv->data @*/;
+size_t mpnbits(const mpnumber*);
 
 #ifdef __cplusplus
 }

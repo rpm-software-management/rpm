@@ -19,12 +19,27 @@
 
 /*!\file timestamp.c
  * \brief Java compatible 64-bit timestamp.
- * \author Bob Deblier <bob@virtualunlimited.com>
+ * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
-#include "system.h"
-#include "timestamp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/timestamp.h"
+
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# elif HAVE_TIME_H
+#  include <time.h>
+# endif
+#endif
 
 javalong timestamp()
 {
@@ -33,7 +48,7 @@ javalong timestamp()
 	# if HAVE_GETTIMEOFDAY
 	struct timeval now;
 
-	(void) gettimeofday(&now, 0);
+	gettimeofday(&now, 0);
 
 	tmp = ((javalong) now.tv_sec) * 1000 + (now.tv_usec / 1000);
 	# else

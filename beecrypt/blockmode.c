@@ -23,14 +23,13 @@
  * \ingroup BC_m
  */
 
-#include "system.h"
-#include "blockmode.h"
-#include "mp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
 
-/*!\addtogroup BC_m
- * \{
- */
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/blockmode.h"
 
 int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, unsigned int nblocks)
 {
@@ -38,9 +37,7 @@ int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 	while (nblocks > 0)
 	{
-/*@-noeffectuncon@*/
-		(void) bc->raw.encrypt(bp, dst, src);
-/*@=noeffectuncon@*/
+		bc->raw.encrypt(bp, dst, src);
 
 		dst += blockwords;
 		src += blockwords;
@@ -57,9 +54,7 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 	while (nblocks > 0)
 	{
-/*@-noeffectuncon@*/
-		(void) bc->raw.decrypt(bp, dst, src);
-/*@=noeffectuncon@*/
+		bc->raw.decrypt(bp, dst, src);
 
 		dst += blockwords;
 		src += blockwords;
@@ -82,24 +77,20 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 		for (i = 0; i < blockwords; i++)
 			dst[i] = src[i] ^ fdback[i];
 
-/*@-noeffectuncon@*/
-		(void) bc->raw.encrypt(bp, dst, dst);
-/*@=noeffectuncon@*/
+		bc->raw.encrypt(bp, dst, dst);
 
 		src += blockwords;
 
 		nblocks--;
 
-/*@-usedef@*/ /* LCL: dst is initialized. */
 		while (nblocks > 0)
 		{
 			for (i = 0; i < blockwords; i++)
 				dst[i+blockwords] = src[i] ^ dst[i];
+
 			dst += blockwords;
 
-/*@-noeffectuncon@*/
-			(void) bc->raw.encrypt(bp, dst, dst);
-/*@=noeffectuncon@*/
+			bc->raw.encrypt(bp, dst, dst);
 
 			src += blockwords;
 
@@ -110,7 +101,6 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 		for (i = 0; i < blockwords; i++)
 			fdback[i] = dst[i];
-/*@=usedef@*/
 	}
 
 	return 0;
@@ -120,7 +110,7 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 {
 	register const unsigned int blockwords = bc->blocksize >> 2;
 	register uint32_t* fdback = bc->getfb(bp);
-	register uint32_t* buf = (uint32_t*) malloc(blockwords * sizeof(*buf));
+	register uint32_t* buf = (uint32_t*) malloc(blockwords * sizeof(uint32_t));
 
 	if (buf)
 	{
@@ -129,16 +119,12 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 			register uint32_t tmp;
 			register unsigned int i;
 
-/*@-noeffectuncon@*/
-			(void) bc->raw.decrypt(bp, buf, src);
-/*@=noeffectuncon@*/
+			bc->raw.decrypt(bp, buf, src);
 
 			for (i = 0; i < blockwords; i++)
 			{
 				tmp = src[i];
-/*@-usedef@*/ /* LCL: buf is initialized. */
 				dst[i] = buf[i] ^ fdback[i];
-/*@-usedef@*/
 				fdback[i] = tmp;
 			}
 
@@ -153,6 +139,3 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 	return -1;
 }
-
-/*!\}
- */

@@ -17,16 +17,19 @@
  *
  */
 
-/*!\file dlpk.c
+/*!\file dlpk.h
  * \brief Discrete Logarithm public key.
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup DL_m
  */
 
-#include "system.h"
-#include "dlpk.h"
-#include "mp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/dlpk.h"
 
 /*!\addtogroup DL_m
  * \{
@@ -44,14 +47,12 @@ int dlpk_pInit(dlpk_p* pk)
 
 int dlpk_pFree(dlpk_p* pk)
 {
-	/*@-usereleased -compdef @*/ /* pk->param.{p,q,n}.modl is OK */
 	if (dldp_pFree(&pk->param) < 0)
 		return -1;
 
 	mpnfree(&pk->y);
 
 	return 0;
-	/*@=usereleased =compdef @*/
 }
 
 int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)

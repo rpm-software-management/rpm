@@ -23,25 +23,21 @@
  * \ingroup DL_m
  */
 
-#include "system.h"
-#include "dldp.h"
-#include "mp.h"
-#include "mpprime.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/dldp.h"
+#include "beecrypt/mp.h"
+#include "beecrypt/mpprime.h"
 
 /*!\addtogroup DL_m
  * \{
  */
-
-/**
- */
-static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ mpw* wksp)
-	/*@modifies dp->g, wksp @*/;
-
-/**
- */
-static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ mpw* wksp)
-	/*@modifies dp->g, wksp @*/;
+static int dldp_pgoqGenerator_w(dldp_p*, randomGeneratorContext*, mpw*);
+static int dldp_pgonGenerator_w(dldp_p*, randomGeneratorContext*, mpw*);
 
 int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x)
 {
@@ -52,6 +48,19 @@ int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x)
 	 */
 
 	mpbnrnd(&dp->q, rgc, x);
+
+	return 0;
+}
+
+int dldp_pPrivate_s(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x, size_t xbits)
+{
+	/*
+	 * Note: the private key is randomly selected smaller than q with xbits < mpbits(q)
+	 *
+	 */
+
+	mpbnrnd(&dp->q, rgc, x);
+	mpntrbits(x, xbits);
 
 	return 0;
 }
@@ -79,6 +88,15 @@ int dldp_pPair(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x, mpnum
 	return 0;
 }
 
+int dldp_pPair_s(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x, mpnumber* y, size_t xbits)
+{
+	mpbnrnd(&dp->q, rgc, x);
+	mpntrbits(x, xbits);
+	mpbnpowmod(&dp->p, &dp->g, x, y);
+
+	return 0;
+}
+
 int dldp_pEqual(const dldp_p* a, const dldp_p* b)
 {
 	return mpeqx(a->p.size, a->p.modl, b->p.size, b->p.modl) &&
@@ -86,14 +104,14 @@ int dldp_pEqual(const dldp_p* a, const dldp_p* b)
 		mpeqx(a->g.size, a->g.data, b->g.size, b->g.data);
 }
 
-/**
+/*
  * needs to make workspace of 8*size+2
  */
-static int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
-	/*@*/
+int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
 {
 	register size_t size = dp->p.size;
-	register mpw* temp = (mpw*) malloc((8*size+2) * sizeof(*temp));
+
+	register mpw* temp = (mpw*) malloc((8*size+2) * sizeof(mpw));
 
 	if (temp)
 	{
@@ -150,13 +168,11 @@ int dldp_pInit(dldp_p* dp)
 
 int dldp_pFree(dldp_p* dp)
 {
-	/*@-usedef -compdef@*/
 	mpbfree(&dp->p);
 	mpbfree(&dp->q);
 	mpnfree(&dp->g);
 	mpnfree(&dp->r);
 	mpbfree(&dp->n);
-	/*@=usedef =compdef@*/
 
 	return 0;
 }
@@ -178,7 +194,7 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 	 * Generate parameters as described by IEEE P1363, A.16.1
 	 */
 	register size_t psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
-	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
+	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(mpw));
 
 	if (temp)
 	{
@@ -194,7 +210,7 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 		/* clear g */
 		mpnzero(&dp->g);
 
-		(void) dldp_pgoqGenerator_w(dp, rgc, temp);
+		dldp_pgoqGenerator_w(dp, rgc, temp);
 
 		free(temp);
 
@@ -212,7 +228,7 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t bits)
 	 */
 
 	register size_t size = MP_BITS_TO_WORDS(bits + MP_WBITS - 1);
-	register mpw* temp = (mpw*) malloc((8*size+2) * sizeof(*temp));
+	register mpw* temp = (mpw*) malloc((8*size+2) * sizeof(mpw));
 
 	if (temp)
 	{
@@ -230,7 +246,7 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t bits)
 		/* clear n */
 		mpbzero(&dp->n);
 
-		(void) dldp_pgoqGenerator_w(dp, rgc, temp);
+		dldp_pgoqGenerator_w(dp, rgc, temp);
 
 		free(temp);
 
@@ -269,11 +285,11 @@ int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, mpw* wksp)
 int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 {
 	register size_t size = dp->p.size;
-	register mpw* temp = (mpw*) malloc((4*size+2) * sizeof(*temp));
+	register mpw* temp = (mpw*) malloc((4*size+2)*sizeof(mpw));
 
 	if (temp)
 	{
-		(void) dldp_pgoqGenerator_w(dp, rgc, temp);
+		dldp_pgoqGenerator_w(dp, rgc, temp);
 
 		free(temp);
 
@@ -282,7 +298,7 @@ int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 	return -1;
 }
 
-int dldp_pgoqValidate(const dldp_p* dp, randomGeneratorContext* rgc, /*@unused@*/ int cofactor)
+int dldp_pgoqValidate(const dldp_p* dp, randomGeneratorContext* rgc, int cofactor)
 {
 	register int rc = dldp_pValidate(dp, rgc);
 
@@ -305,7 +321,7 @@ int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 	 */
 
 	register size_t psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
-	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
+	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(mpw));
 
 	if (temp)
 	{
@@ -319,7 +335,7 @@ int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t 
 		mpbsubone(&dp->p, temp);
 		mpbset(&dp->n, psize, temp);
 
-		(void) dldp_pgonGenerator_w(dp, rgc, temp);
+		dldp_pgonGenerator_w(dp, rgc, temp);
 
 		free(temp);
 
@@ -335,7 +351,7 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
 	 */
 
 	register size_t psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
-	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
+	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(mpw));
 
 	if (temp)
 	{
@@ -354,7 +370,7 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
 		/* set r = 2 */
 		mpnsetw(&dp->r, 2);
 
-		(void) dldp_pgonGenerator_w(dp, rgc, temp);
+		dldp_pgonGenerator_w(dp, rgc, temp);
 
 		free(temp);
 
@@ -431,11 +447,11 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, mpw* wksp)
 int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 {
 	register size_t psize = dp->p.size;
-	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(*temp));
+	register mpw* temp = (mpw*) malloc((8*psize+2) * sizeof(mpw));
 
 	if (temp)
 	{
-		(void) dldp_pgonGenerator_w(dp, rgc, temp);
+		dldp_pgonGenerator_w(dp, rgc, temp);
 
 		free(temp);
 

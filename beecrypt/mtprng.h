@@ -19,76 +19,65 @@
 
 /*!\file mtprng.h
  * \brief Mersenne Twister pseudo-random number generator, headers.
- * \author Bob Deblier <bob@virtualunlimited.com>
+ * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup PRNG_m
  */
 
 #ifndef _MTPRNG_H
 #define _MTPRNG_H
 
-#include "beecrypt.h"
+#include "beecrypt/beecrypt.h"
+
+#ifdef _REENTRANT
+# if WIN32
+#  include <windows.h>
+#  include <winbase.h>
+# endif
+#endif
 
 #define N	624
 #define M	397
 #define K	0x9908B0DFU
 
-/**
+/*
  */
 typedef struct
 {
 	#ifdef _REENTRANT
-	# if WIN32
-	HANDLE	lock;
-	# else
-	bc_lock_t lock;
-	# endif
+	bc_mutex_t	lock;
 	#endif
-	uint32_t  state[N+1];
-	uint32_t  left;
-/*@kept@*/
-	uint32_t* nextw;
+	uint32_t	state[N+1];
+	uint32_t	left;
+	uint32_t*	nextw;
 } mtprngParam;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+/*
  */
-/*@observer@*/ /*@checked@*/
 extern BEECRYPTAPI const randomGenerator mtprng;
 
-/**
+/*
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngSetup  (mtprngParam* mp)
-	/*@modifies mp @*/;
-/*@=exportlocal@*/
+int mtprngSetup  (mtprngParam* mp);
 
-/**
+/*
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngSeed   (mtprngParam* mp, const byte* data, size_t size)
-	/*@modifies mp @*/;
-/*@=exportlocal@*/
+int mtprngSeed   (mtprngParam* mp, const byte* data, size_t size);
 
-/**
+/*
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngNext   (mtprngParam* mp, byte* data, size_t size)
-	/*@modifies mp, data @*/;
-/*@=exportlocal@*/
+int mtprngNext   (mtprngParam* mp, byte* data, size_t size);
 
-/**
+/*
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngCleanup(mtprngParam* mp)
-	/*@modifies mp @*/;
-/*@=exportlocal@*/
+int mtprngCleanup(mtprngParam* mp);
 
 #ifdef __cplusplus
 }

@@ -23,9 +23,13 @@
  * \ingroup BC_m
  */
 
-#include "system.h"
-#include "blockpad.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/blockpad.h"
 
 memchunk* pkcs5Pad(size_t blockbytes, memchunk* tmp)
 {
@@ -46,14 +50,10 @@ memchunk* pkcs5Unpad(size_t blockbytes, memchunk* tmp)
 {
 	if (tmp)
 	{
-		byte padvalue;
+		byte padvalue = tmp->data[tmp->size - 1];
+
 		unsigned int i;
 
-/*@-usedef@*/ /* LCL: tmp->{data,size} not initialized? */
-		if (tmp->data == (byte*) 0)
-			return (memchunk*) 0;
-		padvalue = tmp->data[tmp->size - 1];
-/*@=usedef@*/
 		if (padvalue > blockbytes)
 			return (memchunk*) 0;
 
@@ -64,12 +64,10 @@ memchunk* pkcs5Unpad(size_t blockbytes, memchunk* tmp)
 		}
 
 		tmp->size -= padvalue;
-/*		tmp->data = (byte*) realloc(tmp->data, tmp->size; */
+/*		tmp->data = (byte*) realloc(tmp->data, tmp->size); */
 	}
 
-	/*@-temptrans -compdef @*/
 	return tmp;
-	/*@=temptrans =compdef @*/
 }
 
 memchunk* pkcs5PadCopy(size_t blockbytes, const memchunk* src)
@@ -91,15 +89,13 @@ memchunk* pkcs5PadCopy(size_t blockbytes, const memchunk* src)
 	return tmp;
 }
 
-memchunk* pkcs5UnpadCopy(/*@unused@*/ size_t blockbytes, const memchunk* src)
+memchunk* pkcs5UnpadCopy(size_t blockbytes, const memchunk* src)
 {
 	memchunk* tmp;
 	byte padvalue;
 	unsigned int i;
 
 	if (src == (memchunk*) 0)
-		return (memchunk*) 0;
-	if (src->data == (byte*) 0)
 		return (memchunk*) 0;
 
 	padvalue = src->data[src->size - 1];

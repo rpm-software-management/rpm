@@ -4,8 +4,10 @@
 # include "config.h"
 #endif
 
-#include "beecrypt.h"
-#include "blockmode.h"
+#include "beecrypt/beecrypt.h"
+#include "beecrypt/blockmode.h"
+#include "beecrypt/mpnumber.h"
+#include "beecrypt/mpbarrett.h"
 
 #if JAVAGLUE
 
@@ -18,10 +20,6 @@
 
 #include "javaglue.h"
 
-#ifndef WORDS_BIGENDIAN
-# define WORDS_BIGENDIAN	0
-#endif
-
 static const char* JAVA_OUT_OF_MEMORY_ERROR = "java/lang/OutOfMemoryError";
 static const char* JAVA_PROVIDER_EXCEPTION = "java/security/ProviderException";
 static const char* JAVA_INVALID_KEY_EXCEPTION = "java/security/InvalidKeyException";
@@ -29,6 +27,46 @@ static const char* MSG_OUT_OF_MEMORY = "out of memory";
 static const char* MSG_NO_SUCH_ALGORITHM = "algorithm not available";
 static const char* MSG_NO_ENTROPY_SOURCE = "no entropy source";
 static const char* MSG_INVALID_KEY = "invalid key";
+
+/* Utility functions */
+
+static void jba_to_mpnumber(JNIEnv* env, jbyteArray input, mpnumber* n)
+{
+    jbyte* data = (*env)->GetByteArrayElements(env, input, (jboolean*) 0);
+    if (data == (jbyte*) 0)
+    {
+        jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
+        if (ex)
+            (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+    }
+	else
+	{
+		jsize len = (*env)->GetArrayLength(env, input);
+		size_t size = MP_BYTES_TO_WORDS(len + MP_WBYTES - 1);
+
+		mpnsetbin(n, data, len);
+	}
+	(*env)->ReleaseByteArrayElements(env, input, data, JNI_ABORT);
+}
+
+static void jba_to_mpbarrett(JNIEnv* env, jbyteArray input, mpbarrett* b)
+{
+    jbyte* data = (*env)->GetByteArrayElements(env, input, (jboolean*) 0);
+    if (data == (jbyte*) 0)
+    {
+        jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
+        if (ex)
+            (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+    }
+	else
+	{
+		jsize len = (*env)->GetArrayLength(env, input);
+		size_t size = MP_BYTES_TO_WORDS(len + MP_WBYTES - 1);
+
+		mpbsetbin(b, data, len);
+	}
+	(*env)->ReleaseByteArrayElements(env, input, data, JNI_ABORT);
+}
 
 /* NativeMessageDigest */
 
@@ -103,7 +141,6 @@ jbyteArray JNICALL Java_beecrypt_security_NativeMessageDigest_digest(JNIEnv* env
 	jbyte* digest;
 
 	int digestsize = (jsize) ((const hashFunction*) hash)->digestsize;
-	int digestwords = digestsize >> 2;
 
 	digestArray = (*env)->NewByteArray(env, digestsize);
 	digest = (*env)->GetByteArrayElements(env, digestArray, (jboolean*) 0);

@@ -5,6 +5,8 @@
  *
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
+ * Author: Bob Deblier <bob@virtualunlimited.com>
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -24,7 +26,7 @@
 #ifndef _ENDIANNESS_H
 #define _ENDIANNESS_H
 
-#include "beecrypt.h"
+#include "beecrypt/beecrypt.h"
 
 #ifdef __cplusplus
 inline int16_t swap16(int16_t n)
@@ -67,35 +69,19 @@ inline int64_t swap64(int64_t n)
 				((n & ((int64_t) 0xff) << 56) >> 56) );
 }
 #else
-/*@-exportlocal@*/
-/**
- */
-/*@unused@*/
- int16_t swap16 (int16_t n)
-	/*@*/;
+ int16_t swap16 (int16_t);
+uint16_t swapu16(uint16_t);
+ int32_t swap32 (int32_t);
+uint32_t swapu32(uint32_t);
+ int64_t swap64 (int64_t);
+#endif
 
-/**
- */
-uint16_t swapu16(uint16_t n)
-	/*@*/;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/**
- */
-/*@unused@*/
- int32_t swap32 (int32_t n)
-	/*@*/;
-
-/**
- */
-uint32_t swapu32(uint32_t n)
-	/*@*/;
-
-/**
- */
-/*@unused@*/
- int64_t swap64 (int64_t n)
-	/*@*/;
-/*@=exportlocal@*/
+#ifdef __cplusplus
+}
 #endif
 
 #endif

@@ -18,20 +18,20 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-LIBBEECRYPT_LT_CURRENT = 6
-LIBBEECRYPT_LT_AGE = 0
-LIBBEECRYPT_LT_REVISION = 0
-
 AUTOMAKE_OPTIONS = gnu no-dependencies
 
-BEECRYPT_JAVA_OBJECTS = javaglue.lo
+LIBBEECRYPT_JAVA_LT_CURRENT = 8
+LIBBEECRYPT_JAVA_LT_AGE = 2
+LIBBEECRYPT_JAVA_LT_REVISION = 0
 
-lib_LTLIBRARIES = libbeecrypt_java.la
+INCLUDES = -I$(top_srcdir)/.. @JAVAINC@
+
+libaltdir=$(prefix)/lib@LIBALT@
+
+libalt_LTLIBRARIES = libbeecrypt_java.la
 
 noinst_HEADERS = javaglue.h
 
 libbeecrypt_java_la_SOURCES = javaglue.c
-
-libbeecrypt_java_la_DEPENDENCIES = $(BEECRYPT_JAVA_OBJECTS)
-
-libbeecrypt_java_la_LDFLAGS = -no-undefined -version-info $(LIBBEECRYPT_LT_CURRENT):$(LIBBEECRYPT_LT_REVISION):$(LIBBEECRYPT_LT_AGE)
+libbeecrypt_java_la_LIBADD = $(top_builddir)/libbeecrypt.la
+libbeecrypt_java_la_LDFLAGS = -no-undefined -version $(LIBBEECRYPT_JAVA_LT_CURRENT):$(LIBBEECRYPT_JAVA_LT_REVISION):$(LIBBEECRYPT_JAVA_LT_AGE)

@@ -1,4 +1,3 @@
-/*@-bitwisesigned -shiftimplementation @*/
 /*
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
@@ -23,9 +22,13 @@
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
-#include "system.h"
-#include "endianness.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/endianness.h"
 
 int16_t swap16(int16_t n)
 {
@@ -57,13 +60,12 @@ uint32_t swapu32(uint32_t n)
 
 int64_t swap64(int64_t n)
 {
-	return (    ((n & ((int64_t) 0xff)      ) << 56) |
-				((n & ((int64_t) 0xff) <<  8) << 40) |
-				((n & ((int64_t) 0xff) << 16) << 24) |
-				((n & ((int64_t) 0xff) << 24) <<  8) |
-				((n & ((int64_t) 0xff) << 32) >>  8) |
-				((n & ((int64_t) 0xff) << 40) >> 24) |
-				((n & ((int64_t) 0xff) << 48) >> 40) |
-				((n & ((int64_t) 0xff) << 56) >> 56) );
+	return (    ((n & (((int64_t) 0xff)      )) << 56) |
+				((n & (((int64_t) 0xff) <<  8)) << 40) |
+				((n & (((int64_t) 0xff) << 16)) << 24) |
+				((n & (((int64_t) 0xff) << 24)) <<  8) |
+				((n & (((int64_t) 0xff) << 32)) >>  8) |
+				((n & (((int64_t) 0xff) << 40)) >> 24) |
+				((n & (((int64_t) 0xff) << 48)) >> 40) |
+				((n & (((int64_t) 0xff) << 56)) >> 56) );
 }
-/*@=bitwisesigned =shiftimplementation @*/

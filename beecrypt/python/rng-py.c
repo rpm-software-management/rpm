@@ -11,7 +11,7 @@
 #define PyObject_HEAD   int _PyObjectHead;
 #endif
 
-#include "rng-py.h"
+#include "beecrypt/python/rng-py.h"
 
 #include "debug-py.c"
 

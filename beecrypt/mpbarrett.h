@@ -26,203 +26,128 @@
 #ifndef _MPBARRETT_H
 #define _MPBARRETT_H
 
-#include "beecrypt.h"
-#include "mpnumber.h"
+#include "beecrypt/beecrypt.h"
+#include "beecrypt/mpnumber.h"
 
-typedef struct
+#ifdef __cplusplus
+# include <iostream>
+#endif
+
+#ifdef __cplusplus
+struct BEECRYPTAPI mpbarrett
+#else
+struct _mpbarrett
+#endif
 {
 	size_t	size;
-/*@owned@*/
 	mpw*	modl;	/* (size) words */
-/*@dependent@*/ /*@null@*/
-	mpw*	mu;	/* (size+1) words */
-} mpbarrett;
+	mpw*	mu;		/* (size+1) words */
+
+#ifdef __cplusplus
+	mpbarrett();
+	mpbarrett(const mpbarrett&);
+	~mpbarrett();
+																				
+	const mpbarrett& operator=(const mpbarrett&);
+	bool operator==(const mpbarrett&);
+	bool operator!=(const mpbarrett&);
+																				
+	void wipe();
+	size_t bitlength() const;
+#endif
+};
+
+#ifndef __cplusplus
+typedef struct _mpbarrett mpbarrett;
+#else
+BEECRYPTAPI
+std::ostream& operator<<(std::ostream&, const mpbarrett&);
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+BEECRYPTAPI
+void mpbzero(mpbarrett*);
+BEECRYPTAPI
+void mpbinit(mpbarrett*, size_t);
+BEECRYPTAPI
+void mpbfree(mpbarrett*);
+BEECRYPTAPI
+void mpbcopy(mpbarrett*, const mpbarrett*);
+BEECRYPTAPI
+void mpbwipe(mpbarrett*);
+
+BEECRYPTAPI
+void mpbset(mpbarrett*, size_t, const mpw*);
+
+BEECRYPTAPI
+int mpbsetbin(mpbarrett*, const byte*, size_t);
+BEECRYPTAPI
+int mpbsethex(mpbarrett*, const char*);
+
+BEECRYPTAPI
+void mpbsubone(const mpbarrett*, mpw*);
+
+BEECRYPTAPI
+void mpbmu_w(mpbarrett*, mpw*);
+
+BEECRYPTAPI
+void mpbrnd_w   (const mpbarrett*, randomGeneratorContext*, mpw*, mpw*);
+BEECRYPTAPI
+void mpbrndodd_w(const mpbarrett*, randomGeneratorContext*, mpw*, mpw*);
+BEECRYPTAPI
+void mpbrndinv_w(const mpbarrett*, randomGeneratorContext*, mpw*, mpw*, mpw*);
+
+BEECRYPTAPI
+void mpbneg_w(const mpbarrett*, const mpw*, mpw*);
+BEECRYPTAPI
+void mpbmod_w(const mpbarrett*, const mpw*, mpw*, mpw*);
+
+BEECRYPTAPI
+void mpbaddmod_w(const mpbarrett*, size_t, const mpw*, size_t, const mpw*, mpw*, mpw*);
+BEECRYPTAPI
+void mpbsubmod_w(const mpbarrett*, size_t, const mpw*, size_t, const mpw*, mpw*, mpw*);
+BEECRYPTAPI
+void mpbmulmod_w(const mpbarrett*, size_t, const mpw*, size_t, const mpw*, mpw*, mpw*);
+BEECRYPTAPI
+void mpbsqrmod_w(const mpbarrett*, size_t, const mpw*, mpw*, mpw*);
+BEECRYPTAPI
+void mpbpowmod_w(const mpbarrett*, size_t, const mpw*, size_t, const mpw*, mpw*, mpw*);
+BEECRYPTAPI
+void mpbpowmodsld_w(const mpbarrett*, const mpw*, size_t, const mpw*, mpw*, mpw*);
+BEECRYPTAPI
+void mpbtwopowmod_w(const mpbarrett*, size_t, const mpw*, mpw*, mpw*);
+
+/* To be added:
+ * simultaneous multiple exponentiation, for use in dsa and elgamal signature verification
  */
 BEECRYPTAPI
-void mpbzero(/*@out@*/ mpbarrett* b)
-	/*@modifies b->size, b->modl, b->mu @*/;
-
-/**
- */
+void mpbsm2powmod(const mpbarrett*, const mpw*, const mpw*, const mpw*, const mpw*);
 BEECRYPTAPI
-void mpbinit(mpbarrett* b, size_t size)
-	/*@modifies b->size, b->modl, b->mu @*/;
+void mpbsm3powmod(const mpbarrett*, const mpw*, const mpw*, const mpw*, const mpw*, const mpw*, const mpw*);
 
-/**
- */
 BEECRYPTAPI
-void mpbfree(/*@special@*/ mpbarrett* b)
-	/*@uses b->size, b->modl @*/
-	/*@releases b->modl @*/
-	/*@modifies b->size, b->modl, b->mu @*/;
+int  mpbpprime_w(const mpbarrett*, randomGeneratorContext*, int, mpw*);
 
-/**
- */
+/* the next routines take mpnumbers as parameters */
+
 BEECRYPTAPI
-void mpbcopy(mpbarrett* b, const mpbarrett* copy)
-	/*@modifies b->size, b->modl, b->mu @*/;
+void mpbnrnd(const mpbarrett*, randomGeneratorContext*, mpnumber*);
 
-/**
- */
 BEECRYPTAPI
-void mpbset(mpbarrett* b, size_t size, const mpw* data)
-	/*@modifies b->size, b->modl, b->mu @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-void mpbsethex(mpbarrett* b, const char* hex)
-	/*@modifies b->size, b->modl, b->mu @*/;
-
-/**
- */
+void mpbnmulmod(const mpbarrett*, const mpnumber*, const mpnumber*, mpnumber*);
 BEECRYPTAPI
-void mpbsubone(const mpbarrett* b, mpw* result)
-	/*@modifies result @*/;
+void mpbnsqrmod(const mpbarrett*, const mpnumber*, mpnumber*);
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-void mpbneg(const mpbarrett* b, const mpw* data, mpw* result)
-	/*@modifies result @*/;
-
-/**
- */
 BEECRYPTAPI
-void mpbmu_w(mpbarrett* b, /*@out@*/ mpw* wksp)
-	/*@modifies b->size, b->modl, b->mu, wksp @*/;
-
-/**
- */
+void mpbnpowmod   (const mpbarrett*, const mpnumber*, const mpnumber*, mpnumber*);
 BEECRYPTAPI
-void mpbrnd_w   (const mpbarrett* b, randomGeneratorContext* rc, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
+void mpbnpowmodsld(const mpbarrett*, const mpw*, const mpnumber*, mpnumber*);
 
-/**
- */
-/*@-exportlocal@*/
 BEECRYPTAPI
-void mpbrndodd_w(const mpbarrett* b, randomGeneratorContext* rc, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-/*@=exportlocal@*/
-
-/**
- */
-BEECRYPTAPI
-void mpbrndinv_w(const mpbarrett* b, randomGeneratorContext* rc, /*@out@*/ mpw* result, /*@out@*/ mpw* inverse, /*@out@*/ mpw* wksp)
-	/*@modifies result, inverse, wksp @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpbmod_w(const mpbarrett* b, const mpw* data, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpbaddmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-void mpbsubmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpbmulmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpbsqrmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-
-/**
- */
-BEECRYPTAPI
-void mpbpowmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t psize, const mpw* pdata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-
-/**
- */
-/*@-exportlocal@*/
-BEECRYPTAPI
-void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mpw* pdata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@globals internalState @*/
-	/*@modifies result, wksp, internalState @*/;
-/*@=exportlocal@*/
-
-/**
- */
-BEECRYPTAPI
-void mpbtwopowmod_w(const mpbarrett* b, size_t psize, const mpw* pdata, /*@out@*/ mpw* result, /*@out@*/ mpw* wksp)
-	/*@modifies result, wksp @*/;
-
-#ifdef	NOTYET
-/**
- * @todo Simultaneous multiple exponentiation, for use in dsa and elgamal
- * signature verification.
- */
-BEECRYPTAPI /*@unused@*/
-void mpbsm2powmod(const mpbarrett* b, const mpw*, const mpw*, const mpw*, const mpw*);
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-void mpbsm3powmod(const mpbarrett* b, const mpw*, const mpw*, const mpw*, const mpw*, const mpw*, const mpw*);
-#endif	/* NOTYET */
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int  mpbpprime_w(const mpbarrett* b, randomGeneratorContext* r, int t, /*@out@*/ mpw* wksp)
-	/*@modifies wksp @*/;
-
-/**
- * @note Takes mpnumber as parameter.
- */
-BEECRYPTAPI
-void mpbnrnd(const mpbarrett* b, randomGeneratorContext* rc, mpnumber* result)
-	/*@modifies result @*/;
-
-/**
- * @note Takes mpnumber as parameter.
- */
-BEECRYPTAPI /*@unused@*/
-void mpbnmulmod(const mpbarrett* b, const mpnumber* x, const mpnumber* y, mpnumber* result)
-	/*@modifies result @*/;
-
-/**
- * @note Takes mpnumber as parameter.
- */
-BEECRYPTAPI /*@unused@*/
-void mpbnsqrmod(const mpbarrett* b, const mpnumber* x, mpnumber* result)
-	/*@modifies result @*/;
-
-/**
- * @note Takes mpnumber as parameter.
- */
-BEECRYPTAPI
-void mpbnpowmod   (const mpbarrett* b, const mpnumber* x, const mpnumber* pow, mpnumber* y)
-	/*@modifies y @*/;
-
-/**
- * @note Takes mpnumber as parameter.
- */
-BEECRYPTAPI /*@unused@*/
-void mpbnpowmodsld(const mpbarrett* b, const mpw* slide, const mpnumber* pow, mpnumber* y)
-	/*@modifies y @*/;
+size_t mpbbits(const mpbarrett*);
 
 #ifdef __cplusplus
 }

@@ -23,35 +23,35 @@
  * \ingroup HASH_m HASH_md5_m
  */
 
-#include "system.h"
-#include "md5.h"
-#include "mp.h"
-#include "endianness.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/md5.h"
+#include "beecrypt/endianness.h"
 
 /*!\addtogroup HASH_md5_m
  * \{
  */
 
-/*@observer@*/ /*@unchecked@*/
-static uint32_t md5hinit[4] = { 0x67452301U, 0xefcdab89U, 0x98badcfeU, 0x10325476U };
+static uint32_t md5hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
 
-/*@-sizeoftype@*/
 const hashFunction md5 = {
 	"MD5",
 	sizeof(md5Param),
-	64U,
-	16U,
+	64,
+	16,
 	(hashFunctionReset) md5Reset,
 	(hashFunctionUpdate) md5Update,
 	(hashFunctionDigest) md5Digest
 };
-/*@=sizeoftype@*/
 
 int md5Reset(register md5Param* mp)
 {
-	memcpy(mp->h, md5hinit, sizeof(mp->h));
-	memset(mp->data, 0, sizeof(mp->data));
+	memcpy(mp->h, md5hinit, 4 * sizeof(uint32_t));
+	memset(mp->data, 0, 16 * sizeof(uint32_t));
 	#if (MP_WBITS == 64)
 	mpzero(1, mp->length);
 	#elif (MP_WBITS == 32)
@@ -188,21 +188,20 @@ int md5Update(md5Param* mp, const byte* data, size_t size)
 	mpw add[1];
 	mpsetw(1, add, size);
 	mplshift(1, add, 3);
-	(void) mpadd(1, mp->length, add);
+	mpadd(1, mp->length, add);
 	#elif (MP_WBITS == 32)
 	mpw add[2];
 	mpsetw(2, add, size);
 	mplshift(2, add, 3);
-	(void) mpadd(2, mp->length, add);
+	mpadd(2, mp->length, add);
 	#else
 	# error
 	#endif
 
-/*@-type@*/
 	while (size > 0)
 	{
 		proclength = ((mp->offset + size) > 64U) ? (64U - mp->offset) : size;
-		memmove(((byte *) mp->data) + mp->offset, data, proclength);
+		memcpy(((byte *) mp->data) + mp->offset, data, proclength);
 		size -= proclength;
 		data += proclength;
 		mp->offset += proclength;
@@ -213,20 +212,15 @@ int md5Update(md5Param* mp, const byte* data, size_t size)
 			mp->offset = 0;
 		}
 	}
-/*@=type@*/
 	return 0;
 }
 
-/**
- */
 static void md5Finish(md5Param* mp)
-	/*@modifies mp @*/
 {
 	register byte *ptr = ((byte *) mp->data) + mp->offset++;
 
 	*(ptr++) = 0x80;
 
-/*@-type@*/
 	if (mp->offset > 56)
 	{
 		while (mp->offset++ < 64)
@@ -239,7 +233,6 @@ static void md5Finish(md5Param* mp)
 	ptr = ((byte *) mp->data) + mp->offset;
 	while (mp->offset++ < 56)
 		*(ptr++) = 0;
-/*@=type@*/
 
 	#if (MP_WBITS == 64)
 	ptr[0] = (byte)(mp->length[0]      );
@@ -268,29 +261,29 @@ static void md5Finish(md5Param* mp)
 	mp->offset = 0;
 }
 
-int md5Digest(md5Param* mp, byte* digest)
+int md5Digest(md5Param* mp, byte* data)
 {
 	md5Finish(mp);
 
 	/* encode 4 integers little-endian style */
-	digest[ 0] = (byte)(mp->h[0]      );
-	digest[ 1] = (byte)(mp->h[0] >>  8);
-	digest[ 2] = (byte)(mp->h[0] >> 16);
-	digest[ 3] = (byte)(mp->h[0] >> 24);
-	digest[ 4] = (byte)(mp->h[1]      );
-	digest[ 5] = (byte)(mp->h[1] >>  8);
-	digest[ 6] = (byte)(mp->h[1] >> 16);
-	digest[ 7] = (byte)(mp->h[1] >> 24);
-	digest[ 8] = (byte)(mp->h[2]      );
-	digest[ 9] = (byte)(mp->h[2] >>  8);
-	digest[10] = (byte)(mp->h[2] >> 16);
-	digest[11] = (byte)(mp->h[2] >> 24);
-	digest[12] = (byte)(mp->h[3]      );
-	digest[13] = (byte)(mp->h[3] >>  8);
-	digest[14] = (byte)(mp->h[3] >> 16);
-	digest[15] = (byte)(mp->h[3] >> 24);
+	data[ 0] = (byte)(mp->h[0]      );
+	data[ 1] = (byte)(mp->h[0] >>  8);
+	data[ 2] = (byte)(mp->h[0] >> 16);
+	data[ 3] = (byte)(mp->h[0] >> 24);
+	data[ 4] = (byte)(mp->h[1]      );
+	data[ 5] = (byte)(mp->h[1] >>  8);
+	data[ 6] = (byte)(mp->h[1] >> 16);
+	data[ 7] = (byte)(mp->h[1] >> 24);
+	data[ 8] = (byte)(mp->h[2]      );
+	data[ 9] = (byte)(mp->h[2] >>  8);
+	data[10] = (byte)(mp->h[2] >> 16);
+	data[11] = (byte)(mp->h[2] >> 24);
+	data[12] = (byte)(mp->h[3]      );
+	data[13] = (byte)(mp->h[3] >>  8);
+	data[14] = (byte)(mp->h[3] >> 16);
+	data[15] = (byte)(mp->h[3] >> 24);
 
-	(void) md5Reset(mp);
+	md5Reset(mp);
 	return 0;
 }
 

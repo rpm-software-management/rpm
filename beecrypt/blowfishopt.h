@@ -19,12 +19,15 @@
 
 /*!\file blowfishopt.h
  * \brief Blowfish block cipher, assembler-optimized routines, headers.
- * \author Bob Deblier <bob@virtualunlimited.com>
+ * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_blowfish_m
  */
 
 #ifndef _BLOWFISHOPT_H
 #define _BLOWFISHOPT_H
+
+#include "beecrypt/beecrypt.h"
+#include "beecrypt/blowfish.h"
 
 #ifdef __cplusplus
 extern "C" {

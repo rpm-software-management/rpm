@@ -24,9 +24,12 @@
 
 #define BEECRYPT_DLL_EXPORT
 
-#include "system.h"
-#include "entropy.h"
-#include "endianness.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/entropy.h"
+#include "beecrypt/endianness.h"
 
 #if WIN32
 # include <mmsystem.h>
@@ -36,8 +39,22 @@
 # if HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
 # endif
+# if HAVE_SYS_STAT_H
+#  include <sys/types.h>
+#  include <sys/stat.h>
+# endif
+# if TIME_WITH_SYS_TIME
+#  include <sys/time.h>
+#  include <time.h>
+# else
+#  if HAVE_SYS_TIME_H
+#   include <sys/time.h>
+#  elif HAVE_TIME_H
+#   include <time.h>
+#  endif
+# endif
 # if HAVE_SYS_AUDIOIO_H
-#  include <sys/audioio.h>
+#   include <sys/audioio.h>
 # endif
 # if HAVE_SYS_SOUNDCARD_H
 #  include <sys/soundcard.h>
@@ -47,69 +64,23 @@
 # elif HAVE_TERMIO_H
 #  include <termio.h>
 # endif
-# if HAVE_SYNCH_H
-#  include <synch.h>
-# elif HAVE_PTHREAD_H
-#  include <pthread.h>
+# ifdef _REENTRANT
+#  if HAVE_THREAD_H && HAVE_SYNCH_H
+#   include <synch.h>
+#  elif HAVE_PTHREAD_H
+#   include <pthread.h>
+#  endif
 # endif
 # if HAVE_AIO_H
 #  include <aio.h>
-#  if defined(__LCLINT__)
-/*@-declundef -exportheader -incondefs -constuse -warnmissingglobs @*/
-	extern int /*@unused@*/
-nanosleep (const struct timespec *__requested_time,
-                      /*@out@*/ /*@null@*/ struct timespec *__remaining)
-	/*@modifies *__remaining, errno @*/;
-
-	extern void
-aio_init (const struct aioinit *__init)
-	/*@*/;
-	extern int
-aio_read (struct aiocb *__aiocbp)
-	/*@modifies errno, fileSystem, systemState @*/;
-	extern int
-aio_write (struct aiocb *__aiocbp)
-	/*@modifies errno, fileSystem, systemState @*/;
-	extern int
-lio_listio (int __mode,
-                       struct aiocb *const __list[],
-                       int __nent, struct sigevent *__sig)
-	/*@modifies errno, fileSystem, systemState @*/;
-	extern int
-aio_error (const struct aiocb *__aiocbp)
-	/*@modifies errno @*/;
-	extern __ssize_t
-aio_return (struct aiocb *__aiocbp)
-	/*@modifies errno, systemState @*/;
-	extern int
-aio_cancel (int __fildes, /*@null@*/ struct aiocb *__aiocbp)
-	/*@modifies errno, systemState @*/;
-	extern int
-aio_suspend (/*@out@*/ const struct aiocb *const __list[], int __nent,
-                        /*@out@*/ const struct timespec *__timeout)
-	/*@modifies errno, systemState @*/;
-	extern int
-aio_fsync (int __operation, struct aiocb *__aiocbp)
-	/*@modifies errno, fileSystem, systemState @*/;
-
-/*@constant int AIO_CANCELED@*/
-/*@constant int AIO_NOTCANCELED@*/
-/*@constant int AIO_ALLDONE@*/
-/*@constant int LIO_READ@*/
-/*@constant int LIO_WRITE@*/
-/*@constant int LIO_NOP@*/
-/*@constant int LIO_WAIT@*/
-/*@constant int LIO_NOWAIT@*/
-/*@constant int SIGEV_SIGNAL@*/
-/*@constant int SIGEV_NONE@*/
-/*@constant int SIGEV_THREAD@*/
-
-/*@=declundef =exportheader =incondefs =constuse =warnmissingglobs @*/
-#  endif
 # endif
 #endif
-
-#include "debug.h"
+#if HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+#if HAVE_ERRNO_H
+# include <errno.h>
+#endif
 
 #if WIN32
 static HINSTANCE	entropy_instance = (HINSTANCE) 0;
@@ -147,16 +118,13 @@ int entropy_provider_cleanup()
 #endif
 
 #if WIN32 || HAVE_DEV_AUDIO || HAVE_DEV_DSP
-/** \ingroup ES_audio_m ES_dsp_m
+/*
  * Mask the low-order bit of a bunch of sound samples, analyze them and
  * return an error in case they are all zeroes or ones.
  */
-static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samplesize, int channels, int swap)
-	/*@globals errno @*/
-	/*@modifies sampledata, errno @*/
+static int entropy_noise_filter(void* sampledata, int samplecount, int samplesize, int channels, int swap)
 {
-	register int rc = 0;
-	register unsigned i;
+	register int rc = 0, i;
 
 	switch (samplesize)
 	{
@@ -173,7 +141,7 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 
 					for (i = 0; i < samplecount; i++)
 					{
-						if ((samples[i] & 0x1) != 0)
+						if (samples[i] &= 0x1)
 							ones_count++;
 						else
 							zero_count++;
@@ -187,7 +155,7 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 						rc = -1;
 					}
 				}
-				/*@innerbreak@*/ break;
+				break;
 
 			case 2:
 				{
@@ -198,16 +166,16 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 
 					for (i = 0; i < samplecount; i++)
 					{
-						if (i & 1U)
+						if (i & 1)
 						{
-							if ((samples[i] & 0x1) != 0)
+							if (samples[i] &= 0x1)
 								ones_count_left++;
 							else
 								zero_count_left++;
 						}
 						else
 						{
-							if ((samples[i] & 0x1) != 0)
+							if (samples[i] &= 0x1)
 								ones_count_right++;
 							else
 								zero_count_right++;
@@ -223,7 +191,7 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 						rc = -1;
 					}
 				}
-				/*@innerbreak@*/ break;
+				break;
 
 			default:
 				#if HAVE_ERRNO_H
@@ -250,7 +218,7 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 						if (swap)
 							samples[i] = swapu16(samples[i]);
 
-						if ((samples[i] & 0x1) != 0)
+						if (samples[i] &= 0x1)
 							ones_count++;
 						else
 							zero_count++;
@@ -264,7 +232,7 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 						rc = -1;
 					}
 				}
-				/*@innerbreak@*/ break;
+				break;
 
 			case 2:
 				{
@@ -280,14 +248,14 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 
 						if (i & 1)
 						{
-							if ((samples[i] & 0x1) != 0)
+							if (samples[i] &= 0x1)
 								ones_count_left++;
 							else
 								zero_count_left++;
 						}
 						else
 						{
-							if ((samples[i] & 0x1) != 0)
+							if (samples[i] &= 0x1)
 								ones_count_right++;
 							else
 								zero_count_right++;
@@ -303,14 +271,13 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 						rc = -1;
 					}
 				}
-				/*@innerbreak@*/ break;
+				break;
 
 			default:
 				#if HAVE_ERRNO_H
 				errno = EINVAL;
 				#endif
 				rc = -1;
-				/*@innerbreak@*/ break;
 			}
 		}
 		break;
@@ -320,28 +287,23 @@ static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samp
 		errno = EINVAL;
 		#endif
 		rc = -1;
-		break;
 	}
 
 	return 0;
 }
 
-/**
- * Bit deskewing technique: the classical Von Neumann method.
- *	- only use the lsb bit of every sample
- *	- there is a chance of bias in 0 or 1 bits, so to deskew this:
- *		- look at two successive sampled bits
- *		- if they are the same, discard them
- *		- if they are different, they're either 0-1 or 1-0; use the first bit of the pair as output
- */
+/* bit deskewing technique: the classical Von Neumann method
+	- only use the lsb bit of every sample
+	- there is a chance of bias in 0 or 1 bits, so to deskew this:
+		- look at two successive sampled bits
+		- if they are the same, discard them
+		- if they are different, they're either 0-1 or 1-0; use the first bit of the pair as output
+*/
 
 #if WIN32
 static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, int swap, int timeout, byte* data, size_t size)
 #else
-/*@-mustmod@*/ /* data is modified, annotations incorrect */
-static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, /*@unused@*/ int timeout, /*@out@*/ byte* data, size_t size)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *data, errno, fileSystem @*/
+static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, byte* data, size_t size)
 #endif
 {
 	size_t randombits = size << 3;
@@ -373,11 +335,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 	#   error
 	#  endif
 
-	/*@-nullderef@*/
-	*sampledata = 0;
-	/*@=nullderef@*/
 	memset(&my_aiocb, 0, sizeof(struct aiocb));
-	memset(&my_aiocb_timeout, 0, sizeof(struct timespec));
 
 	my_aiocb.aio_fildes = fd;
 	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
@@ -392,7 +350,6 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		return -1;
 	}
 
-	/*@-infloops -infloopsuncon -branchstate @*/
 	while (randombits)
 	{
 		#if WIN32
@@ -415,9 +372,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		}
 		#else
 		# if ENABLE_AIO
-		/*@-mustfree@*/ /* my_aiocb.aio_buf is OK */
 		my_aiocb.aio_buf = sampledata;
-		/*@=mustfree@*/
 		my_aiocb.aio_nbytes = 1024 * samplesize * channels;
 
 		rc = aio_read(&my_aiocb);
@@ -427,9 +382,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 
 		if (rc < 0)
 		{
-			/*@-kepttrans@*/
 			free(sampledata);
-			/*@=kepttrans@*/
 			return -1;
 		}
 
@@ -445,7 +398,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			if (errno == EAGAIN)
 			{
 				/* certain linux glibc versions are buggy and don't aio_suspend properly */
-				(void) nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+				nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
 
 				my_aiocb_timeout.tv_sec = (timeout / 1000);
 				my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
@@ -468,15 +421,13 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 					my_aiocb_timeout.tv_sec = (timeout / 1000);
 					my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
-					(void) nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+					nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
 				}
 
 				if (rc < 0)
-					/*@innerbreak@*/ break;
+					break;
 			}
-			/*@-kepttrans@*/
 			free(sampledata);
-			/*@=kepttrans@*/
 			return -1;
 		}
 
@@ -484,9 +435,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 
 		if (rc)
 		{
-			/*@-kepttrans@*/
 			free(sampledata);
-			/*@=kepttrans@*/
 			return -1;
 		}
 
@@ -494,22 +443,16 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 
 		if (rc < 0)
 		{
-			/*@-kepttrans@*/
 			free(sampledata);
-			/*@=kepttrans@*/
 			return -1;
 		}
 		# endif
 		#endif
 
-/*@-type@*/
 		if (entropy_noise_filter(sampledata, rc / samplesize, samplesize, channels, swap) < 0)
-/*@=type@*/
 		{
 			fprintf(stderr, "noise filter indicates too much bias in audio samples\n");
-			/*@-kepttrans@*/
 			free(sampledata);
-			/*@=kepttrans@*/
 			return -1;
 		}
 
@@ -521,7 +464,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 
 				for (i = 0; randombits && (i < 1024); i += 2)
 				{
-					if ((samples[i] ^ samples[i+1]) != 0)
+					if (samples[i] ^ samples[i+1])
 					{
 						temp <<= 1;
 						temp |= samples[i];
@@ -531,7 +474,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 					}
 				}
 			}
-			/*@switchbreak@*/ break;
+			break;
 
 		case 2:
 			{
@@ -549,29 +492,22 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 					}
 				}
 			}
-			/*@switchbreak@*/ break;
+			break;
 
 		default:
-			/*@-kepttrans@*/
 			free(sampledata);
-			/*@=kepttrans@*/
 			return -1;
-			/*@notreached@*/ /*@switchbreak@*/ break;
 		}
 	}
-	/*@=infloops =infloopsuncon =branchstate @*/
 
 	#if WIN32
 	waveInStop(wavein);
 	waveInReset(wavein);
 	#endif
 
-	/*@-usereleased -kepttrans@*/
 	free(sampledata);
-	/*@=usereleased =kepttrans@*/
 	return 0;
 }
-/*@=mustmod@*/
 #endif
 
 #if WIN32
@@ -678,7 +614,7 @@ int entropy_wavein(byte* data, size_t size)
 	rc = waveInOpen(&wavein, WAVE_MAPPER, &waveformatex, (DWORD) entropy_wavein_event, (DWORD) 0, CALLBACK_EVENT);
 	if (rc != MMSYSERR_NOERROR)
 	{
-		fprintf(stderr, "waveInOpen failed!\n"); (void) fflush(stderr);
+		fprintf(stderr, "waveInOpen failed!\n"); fflush(stderr);
 		ReleaseMutex(entropy_wavein_lock);
 		return -1;
 	}
@@ -708,21 +644,21 @@ int entropy_console(byte* data, size_t size)
 		return -1;
 	}
 
-	printf("please press random keys on your keyboard\n"); (void) fflush(stdout);
+	printf("please press random keys on your keyboard\n"); fflush(stdout);
 
 	while (randombits)
 	{
 		if (!ReadConsoleInput(hStdin, &inEvent, 1, &inRet))
 		{
-			fprintf(stderr, "ReadConsoleInput failed\n"); (void) fflush(stderr);
+			fprintf(stderr, "ReadConsoleInput failed\n"); fflush(stderr);
 			return -1;
 		}
 		if ((inRet == 1) && (inEvent.EventType == KEY_EVENT) && inEvent.Event.KeyEvent.bKeyDown)
 		{
-			printf("."); (void) fflush(stdout);
+			printf("."); fflush(stdout);
 			if (!QueryPerformanceCounter(&hrtsample))
 			{
-				fprintf(stderr, "QueryPerformanceCounter failed\n"); (void) fflush(stderr);
+				fprintf(stderr, "QueryPerformanceCounter failed\n"); fflush(stderr);
 				return -1;
 			}
 
@@ -739,7 +675,7 @@ int entropy_console(byte* data, size_t size)
 	
 	if (!FlushConsoleInputBuffer(hStdin))
 	{
-		fprintf(stderr, "FlushConsoleInputBuffer failed\n"); (void) fflush(stderr);
+		fprintf(stderr, "FlushConsoleInputBuffer failed\n"); fflush(stderr);
 		return -1;
 	}
 
@@ -779,152 +715,102 @@ int entropy_wincrypt(byte* data, size_t size)
 #else
 
 #if HAVE_DEV_AUDIO
-/** \ingroup ES_audio_m
+/*!\addtogroup ES_audio_m
+ * \{
  */
-/*@observer@*/ /*@unchecked@*/
 static const char* name_dev_audio = "/dev/audio";
-
-/** \ingroup ES_audio_m
- */
-/*@unchecked@*/
 static int dev_audio_fd = -1;
-
-/** \ingroup ES_audio_m
- */
 # ifdef _REENTRANT
-#  if HAVE_SYNCH_H
-/*@unchecked@*/
+#  if HAVE_THREAD_H && HAVE_SYNCH_H
 static mutex_t dev_audio_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
-/*@unchecked@*/
 static pthread_mutex_t dev_audio_lock = PTHREAD_MUTEX_INITIALIZER;
 #  else
 #   error Need locking mechanism
 #  endif
 # endif
+/*!\}
+ */
 #endif
 
 #if HAVE_DEV_DSP
-/** \ingroup ES_dsp_m
+/*!\addtogroup ES_dsp_m
+ * \{
  */
-/*@observer@*/ /*@unchecked@*/
 static const char* name_dev_dsp = "/dev/dsp";
-
-/** \ingroup ES_dsp_m
- */
-/*@unchecked@*/
 static int dev_dsp_fd = -1;
-
-/** \ingroup ES_dsp_m
- */
 # ifdef _REENTRANT
-#  if HAVE_SYNCH_H
-/*@unchecked@*/
+#  if HAVE_THREAD_H && HAVE_SYNCH_H
 static mutex_t dev_dsp_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
-/*@-type@*/
-/*@unchecked@*/
 static pthread_mutex_t dev_dsp_lock = PTHREAD_MUTEX_INITIALIZER;
-/*@=type@*/
 #  else
 #   error Need locking mechanism
 #  endif
 # endif
+/*!\}
+ */
 #endif
 
 #if HAVE_DEV_RANDOM
-/** \ingroup ES_random_m
+/*!\addtogroup ES_random_m
+ * \{
  */
-/*@observer@*/ /*@unchecked@*/
 static const char* name_dev_random = "/dev/random";
-
-/** \ingroup ES_random_m
- */
-/*@unchecked@*/
 static int dev_random_fd = -1;
-
-/** \ingroup ES_random_m
- */
 # ifdef _REENTRANT
-#  if HAVE_SYNCH_H
-/*@unchecked@*/
+#  if HAVE_THREAD_H && HAVE_SYNCH_H
 static mutex_t dev_random_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
-/*@-type@*/
-/*@unchecked@*/
 static pthread_mutex_t dev_random_lock = PTHREAD_MUTEX_INITIALIZER;
-/*@=type@*/
 #  else
 #   error Need locking mechanism
 #  endif
 # endif
+/*!\}
+ */
 #endif
 
 #if HAVE_DEV_URANDOM
-/** \ingroup ES_urandom_m
+/*!\addtogroup ES_urandom_m
+ * \{
  */
-/*@observer@*/ /*@unchecked@*/
 static const char* name_dev_urandom = "/dev/urandom";
-
-/** \ingroup ES_urandom_m
- */
-/*@unchecked@*/
 static int dev_urandom_fd = -1;
-
-/** \ingroup ES_urandom_m
- */
 # ifdef _REENTRANT
-#  if HAVE_SYNCH_H
-/*@unchecked@*/
+#  if HAVE_THREAD_H && HAVE_SYNCH_H
 static mutex_t dev_urandom_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
-/*@-type@*/
-/*@unchecked@*/
 static pthread_mutex_t dev_urandom_lock = PTHREAD_MUTEX_INITIALIZER;
-/*@=type@*/
 #  else
 #   error Need locking mechanism
 #  endif
 # endif
+/*!\}
+ */
 #endif
 
 #if HAVE_DEV_TTY
-/** \ingroup ES_tty_m
+/*!\addtogroup ES_tty_m
+ * \{
  */
-/*@observer@*/ /*@unchecked@*/
 static const char *dev_tty_name = "/dev/tty";
-
-/** \ingroup ES_tty_m
- */
-/*@unchecked@*/
 static int dev_tty_fd = -1;
-
-/** \ingroup ES_tty_m
- * @todo hpux needs real locking mechanism.
- */
-# if defined(_REENTRANT) && !defined(hpux)
-#  if HAVE_SYNCH_H
-/*@unchecked@*/
+# ifdef _REENTRANT
+#  if HAVE_THREAD_H && HAVE_SYNCH_H
 static mutex_t dev_tty_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
-/*@-type@*/
-/*@unchecked@*/
 static pthread_mutex_t dev_tty_lock = PTHREAD_MUTEX_INITIALIZER;
-/*@=type@*/
 #  else
 #   error Need locking mechanism
 #  endif
 # endif
+/*!\}
+ */
 #endif
 
 #if HAVE_SYS_STAT_H
-/**
- * @param device
- * @return
- */
 static int statdevice(const char *device)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
 	struct stat s;
 
@@ -944,13 +830,7 @@ static int statdevice(const char *device)
 }
 #endif
 
-/**
- * @param device
- * @return
- */
 static int opendevice(const char *device)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
 	register int fd;
 
@@ -966,15 +846,10 @@ static int opendevice(const char *device)
 }
 
 #if HAVE_DEV_RANDOM || HAVE_DEV_URANDOM
-/** \ingroup ES_random_m ES_urandom_m
- * @param fd
- * @param timeout		in milliseconds
- * @retval data
- * @param size
- * @return
+/* timeout is in milliseconds */
+/*!\ingroup ES_random_m ES_urandom_m
  */
-static int entropy_randombits(int fd, /*@unused@*/ int timeout, /*@out@*/ byte* data, size_t size)
-	/*@modifies *data @*/
+static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
 {
 	register int rc;
 
@@ -988,19 +863,15 @@ static int entropy_randombits(int fd, /*@unused@*/ int timeout, /*@out@*/ byte* 
 	# endif
 
 	memset(&my_aiocb, 0, sizeof(struct aiocb));
-	memset(&my_aiocb_timeout, 0, sizeof(struct timespec));
 
 	my_aiocb.aio_fildes = fd;
 	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
 	#endif
 
-	/*@-branchstate@*/
 	while (size)
 	{
 		#if ENABLE_AIO
-		/*@-mustfree@*/ /* my_aiocb.aio_buf is OK */
 		my_aiocb.aio_buf = data;
-		/*@=mustfree@*/
 		my_aiocb.aio_nbytes = size;
 
 		rc = aio_read(&my_aiocb);
@@ -1023,7 +894,7 @@ static int entropy_randombits(int fd, /*@unused@*/ int timeout, /*@out@*/ byte* 
 			if (errno == EAGAIN)
 			{
 				/* certain linux glibc versions are buggy and don't aio_suspend properly */
-				(void) nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+				nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
 
 				my_aiocb_timeout.tv_sec = 0;
 				my_aiocb_timeout.tv_nsec = 0;
@@ -1046,11 +917,11 @@ static int entropy_randombits(int fd, /*@unused@*/ int timeout, /*@out@*/ byte* 
 					my_aiocb_timeout.tv_sec = (timeout / 1000);
 					my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
-					(void) nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+					nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
 				}
 
 				if (rc < 0)
-					/*@innerbreak@*/ break;
+					break;
 			}
 
 			return -1;
@@ -1070,21 +941,14 @@ static int entropy_randombits(int fd, /*@unused@*/ int timeout, /*@out@*/ byte* 
 		data += rc;
 		size -= rc;
 	}
-	/*@=branchstate@*/
 	return 0;
 }
 #endif
 
 #if HAVE_DEV_TTY
-/** \ingroup ES_tty_m
- * @param fd
- * @retval data
- * @param size
- * @return
+/*!\ingroup ES_tty_m
  */
-static int entropy_ttybits(int fd, /*@out@*/ byte* data, size_t size)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+static int entropy_ttybits(int fd, byte* data, size_t size)
 {
 	byte dummy;
 
@@ -1115,14 +979,10 @@ static int entropy_ttybits(int fd, /*@out@*/ byte* data, size_t size)
 	}
 
 	tio_set = tio_save;
-	/*@-noeffect -type @*/	/* LCL: dunno @*/
 	tio_set.c_cc[VMIN] = 1;				/* read 1 tty character at a time */
 	tio_set.c_cc[VTIME] = 0;			/* don't timeout the read */
-	/*@=noeffect =type @*/
-/*@-bitwisesigned@*/
 	tio_set.c_iflag |= IGNBRK;			/* ignore <ctrl>-c */
 	tio_set.c_lflag &= ~(ECHO|ICANON);	/* don't echo characters */
-/*@=bitwisesigned@*/
 
 	/* change the tty settings, and flush input characters */
 	if (tcsetattr(fd, TCSAFLUSH, &tio_set) < 0)
@@ -1168,18 +1028,17 @@ static int entropy_ttybits(int fd, /*@out@*/ byte* data, size_t size)
 			#endif
 			return -1;
 		}
-		printf("."); (void) fflush(stdout);
+		printf("."); fflush(stdout);
 		#if HAVE_GETHRTIME
 		hrtsample = gethrtime();
 		/* discard the 10 lowest bits i.e. 1024 nanoseconds of a sample */
-		temp |= (uint16_t)(hrtsample >> 10);
 		*(data++) = (byte)(hrtsample >> 10);
 		size--;
 		#elif HAVE_GETTIMEOFDAY
 		/* discard the 4 lowest bits i.e. 4 microseconds */
-		(void) gettimeofday(&tvsample, 0);
+		gettimeofday(&tvsample, 0);
 		/* get 8 bits from the sample */
-		*(data++) = (byte)(((unsigned)tvsample.tv_usec) >> 2);
+		*(data) = (byte)(tvsample.tv_usec >> 2);
 		size--;
 		#else
 		# error Need alternative high-precision timer sample
@@ -1189,7 +1048,7 @@ static int entropy_ttybits(int fd, /*@out@*/ byte* data, size_t size)
 	printf("\nthanks\n");
 
 	/* give the user 1 second to stop typing */
-	(void) sleep(1U);
+	sleep(1);
 
 	#if HAVE_TERMIOS_H
 	/* change the tty settings, and flush input characters */
@@ -1218,14 +1077,16 @@ static int entropy_ttybits(int fd, /*@out@*/ byte* data, size_t size)
 #endif
 
 #if HAVE_DEV_AUDIO
-int entropy_dev_audio(uint32 *data, int size)
+/*!\ingroup ES_audio_m
+ */
+int entropy_dev_audio(byte* data, size_t size)
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_AUDIO_TIMEOUT");
 
 	register int rc;
 
 	#ifdef _REENTRANT
-	# if HAVE_SYNCH_H
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	if (mutex_lock(&dev_audio_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
@@ -1271,7 +1132,7 @@ int entropy_dev_audio(uint32 *data, int size)
 					#if HAVE_ERRNO_H
 					perror("ioctl AUDIO_SETINFO failed");
 					#endif
-					(void) close(dev_audio_fd);
+					close(dev_audio_fd);
 
 					goto dev_audio_end;
 				}
@@ -1281,7 +1142,7 @@ int entropy_dev_audio(uint32 *data, int size)
 				#if HAVE_ERRNO_H
 				perror("ioctl AUDIO_SETINFO failed");
 				#endif
-				(void) close(dev_audio_fd);
+				close(dev_audio_fd);
 
 				goto dev_audio_end;
 			}
@@ -1293,11 +1154,11 @@ int entropy_dev_audio(uint32 *data, int size)
 	# error Unknown type of /dev/audio interface
 	#endif
 
-	(void) close(dev_audio_fd);
+	close(dev_audio_fd);
 
 dev_audio_end:
 	#ifdef _REENTRANT
-	# if HAVE_SYNCH_H
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	mutex_unlock(&dev_audio_lock);
 	# elif HAVE_PTHREAD_H
 	pthread_mutex_unlock(&dev_audio_lock);
@@ -1308,23 +1169,21 @@ dev_audio_end:
 #endif
 
 #if HAVE_DEV_DSP
-int entropy_dev_dsp(byte *data, size_t size)
-	/*@globals dev_dsp_fd @*/
-	/*@modifies dev_dsp_fd @*/
+/*!\ingroup ES_dsp_m
+ */
+int entropy_dev_dsp(byte* data, size_t size)
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_DSP_TIMEOUT");
 
 	register int rc;
 
 	#ifdef _REENTRANT
-	# if HAVE_SYNCH_H
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	if (mutex_lock(&dev_dsp_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
-	/*@-moduncon -noeffectuncon @*/ /* FIX: annotate */
 	if (pthread_mutex_lock(&dev_dsp_lock))
 		return -1;
-	/*@=moduncon =noeffectuncon @*/
 	# endif
 	#endif
 
@@ -1340,20 +1199,16 @@ int entropy_dev_dsp(byte *data, size_t size)
 	{
 		int mask, format, samplesize, stereo, speed, swap;
 
-		mask = 0;
-		/*@-bitwisesigned -shiftimplementation -sizeoftype -type @*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_GETFMTS, &mask)) < 0)
-		/*@=bitwisesigned =shiftimplementation =sizeoftype =type @*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_GETFMTS failed");
 			#endif
-			(void) close (dev_dsp_fd);
+			close (dev_dsp_fd);
 
 			goto dev_dsp_end;
 		}
 
-/*@-bitwisesigned@*/
 		#if WORDS_BIGENDIAN
 		if (mask & AFMT_S16_BE)
 		{
@@ -1392,34 +1247,27 @@ int entropy_dev_dsp(byte *data, size_t size)
 			/* No linear audio format available */
 			rc = -1;
 
-			(void) close(dev_dsp_fd);
+			close(dev_dsp_fd);
 
 			goto dev_dsp_end;
 		}
-/*@=bitwisesigned@*/
 
-		/*@-bitwisesigned -shiftimplementation -sizeoftype -type @*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_SETFMT, &format)) < 0)
-		/*@=bitwisesigned =shiftimplementation =sizeoftype =type @*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_SETFMT failed");
 			#endif
-			(void) close(dev_dsp_fd);
+			close(dev_dsp_fd);
 
 			goto dev_dsp_end;
 		}
 
 		/* the next two commands are not critical */
 		stereo = 1;
-		/*@-bitwisesigned -shiftimplementation -sizeoftype -type @*/
-		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_STEREO, &stereo);
-		/*@=bitwisesigned =shiftimplementation =sizeoftype =type @*/
+		ioctl(dev_dsp_fd, SNDCTL_DSP_STEREO, &stereo);
 
 		speed = 44100;
-		/*@-bitwisesigned -shiftimplementation -sizeoftype -type @*/
-		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_SPEED, &speed);
-		/*@=bitwisesigned =shiftimplementation =sizeoftype =type @*/
+		ioctl(dev_dsp_fd, SNDCTL_DSP_SPEED, &speed);
 
 		rc = entropy_noise_gather(dev_dsp_fd, samplesize, 2, swap, timeout_env ? atoi(timeout_env) : 1000, data, size);
 	}
@@ -1427,16 +1275,14 @@ int entropy_dev_dsp(byte *data, size_t size)
 	# error Unknown type of /dev/dsp interface
 	#endif
 
-	(void) close(dev_dsp_fd);
+	close(dev_dsp_fd);
 
 dev_dsp_end:
 	#ifdef _REENTRANT
-	# if HAVE_SYNCH_H
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	mutex_unlock(&dev_dsp_lock);
 	# elif HAVE_PTHREAD_H
-	/*@-moduncon -noeffectuncon @*/ /* FIX: annotate */
-	(void) pthread_mutex_unlock(&dev_dsp_lock);
-	/*@=moduncon =noeffectuncon @*/
+	pthread_mutex_unlock(&dev_dsp_lock);
 	# endif
 	#endif
 
@@ -1445,23 +1291,21 @@ dev_dsp_end:
 #endif
 
 #if HAVE_DEV_RANDOM
+/*!\ingroup ES_random_m
+ */
 int entropy_dev_random(byte* data, size_t size)
-	/*@globals dev_random_fd @*/
-	/*@modifies dev_random_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_RANDOM_TIMEOUT");
 
 	int rc;
 
 	#ifdef _REENTRANT
-	# if HAVE_SYNCH_H
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	if (mutex_lock(&dev_random_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
-	/*@-moduncon -noeffectuncon @*/ /* FIX: annotate */
 	if (pthread_mutex_lock(&dev_random_lock))
 		return -1;
-	/*@=moduncon =noeffectuncon @*/
 	# endif
 	#endif
 
@@ -1476,16 +1320,14 @@ int entropy_dev_random(byte* data, size_t size)
 	/* collect entropy, with timeout */
 	rc = entropy_randombits(dev_random_fd, timeout_env ? atoi(timeout_env) : 1000, data, size);
 
-	(void) close(dev_random_fd);
+	close(dev_random_fd);
 
 dev_random_end:
 	#ifdef _REENTRANT
-	# if HAVE_SYNCH_H
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	mutex_unlock(&dev_random_lock);
 	# elif HAVE_PTHREAD_H
-	/*@-moduncon -noeffectuncon @*/ /* FIX: annotate */
-	(void) pthread_mutex_unlock(&dev_random_lock);
-	/*@=moduncon =noeffectuncon @*/
+	pthread_mutex_unlock(&dev_random_lock);
 	# endif
 	#endif
 	return rc;
@@ -1493,23 +1335,21 @@ dev_random_end:
 #endif
 
 #if HAVE_DEV_URANDOM
+/*!\ingroup ES_urandom_m
+ */
 int entropy_dev_urandom(byte* data, size_t size)
-	/*@globals dev_urandom_fd @*/
-	/*@modifies dev_urandom_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_URANDOM_TIMEOUT");
 
 	register int rc;
 
 	#ifdef _REENTRANT
-	# if HAVE_SYNCH_H
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	if (mutex_lock(&dev_urandom_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
-	/*@-moduncon -noeffectuncon @*/ /* FIX: annotate */
 	if (pthread_mutex_lock(&dev_urandom_lock))
 		return -1;
-	/*@=moduncon =noeffectuncon @*/
 	# endif
 	#endif
 
@@ -1524,16 +1364,14 @@ int entropy_dev_urandom(byte* data, size_t size)
 	/* collect entropy, with timeout */
 	rc = entropy_randombits(dev_urandom_fd, timeout_env ? atoi(timeout_env) : 1000, data, size);
 
-	(void) close(dev_urandom_fd);
+	close(dev_urandom_fd);
 
 dev_urandom_end:
 	#ifdef _REENTRANT
-	# if HAVE_SYNCH_H
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	mutex_unlock(&dev_urandom_lock);
 	# elif HAVE_PTHREAD_H
-	/*@-moduncon -noeffectuncon @*/ /* FIX: annotate */
-	(void) pthread_mutex_unlock(&dev_urandom_lock);
-	/*@=moduncon =noeffectuncon @*/
+	pthread_mutex_unlock(&dev_urandom_lock);
 	# endif
 	#endif
 	return rc;
@@ -1541,22 +1379,19 @@ dev_urandom_end:
 #endif
 
 #if HAVE_DEV_TTY
+/*!\ingroup ES_tty_m
+ */
 int entropy_dev_tty(byte* data, size_t size)
-	/*@globals dev_tty_fd @*/
-	/*@modifies dev_tty_fd @*/
 {
 	register int rc;
 
-/** @todo hpux needs real locking mechanism. */
-	#if defined(_REENTRANT) && !defined(hpux)
-	# if HAVE_SYNCH_H
+	#ifdef _REENTRANT
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	if (mutex_lock(&dev_tty_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
-	/*@-moduncon -noeffectuncon @*/ /* FIX: annotate */
 	if (pthread_mutex_lock(&dev_tty_lock))
 		return -1;
-	/*@=moduncon =noeffectuncon @*/
 	# endif
 	#endif
 
@@ -1570,17 +1405,14 @@ int entropy_dev_tty(byte* data, size_t size)
 
 	rc = entropy_ttybits(dev_tty_fd, data, size);
 
-	(void) close(dev_tty_fd);
+	close(dev_tty_fd);
 
 dev_tty_end:
-/** @todo hpux needs real locking mechanism. */
-	#if defined(_REENTRANT) && !defined(hpux)
-	# if HAVE_SYNCH_H
+	#ifdef _REENTRANT
+	# if HAVE_THREAD_H && HAVE_SYNCH_H
 	mutex_unlock(&dev_tty_lock);
 	# elif HAVE_PTHREAD_H
-	/*@-moduncon -noeffectuncon @*/ /* FIX: annotate */
-	(void) pthread_mutex_unlock(&dev_tty_lock);
-	/*@=moduncon =noeffectuncon @*/
+	pthread_mutex_unlock(&dev_tty_lock);
 	# endif
 	#endif
 

@@ -1,39 +1,28 @@
 # Makefile for rpm library.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
+AUTOMAKE_OPTIONS = 1.4 foreign no-dependencies
 
 LINT = splint
 
-PYVER= 2.2
-
 SUBDIRS = test
-
-pylibdir = $(shell python -c 'import sys; print sys.path[1]')
-pyincdir = $(prefix)/include/python${PYVER}
 
 EXTRA_DIST = debug-py.c
 
 INCLUDES = -I. \
-	-I$(top_srcdir) \
-	-I$(pyincdir)
+	-I$(top_srcdir)/.. @PYTHONINC@
 
 noinst_HEADERS = mpw-py.h rng-py.h
 
-mylibs= $(top_builddir)/.libs/libbeecrypt.so
+mylibs = $(top_builddir)/libbeecrypt.la
 
 LDADD =
 
-pythondir = $(pylibdir)/site-packages
-python_PROGRAMS = _bc.so
+pythondir = @PYTHONLIB@
+python_LTLIBRARIES = _bc.la
 
-_bc_so_SOURCES =
-_bc_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,_bc.so
-
-noinst_LTLIBRARIES = libbc.la
-libbc_la_SOURCES = _bc-py.c mpw-py.c rng-py.c
-
-_bc.so$(EXEEXT): $(libbc_la_OBJECTS)
-	$(CC) -o $@ $(libbc_la_OBJECTS) $(_bc_so_LDFLAGS)
+_bc_la_SOURCES = _bc-py.c mpw-py.c rng-py.c
+_bc_la_LDFLAGS = -avoid-version -module
+_bc_la_LIBADD = $(mylibs)
 
 splint_srcs = _bc-py.c $(libbc_la_sources)
 

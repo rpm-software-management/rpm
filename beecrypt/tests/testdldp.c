@@ -23,10 +23,10 @@
  * \ingroup UNIT_m
  */
 
-#include "system.h"
+#include <stdio.h>
+
 #include "beecrypt.h"
 #include "dldp.h"
-#include "debug.h"
 
 int main()
 {
@@ -57,7 +57,7 @@ int main()
 		mpnfree(&gq);
 
 		dldp_pFree(&params);
-
+		
 		randomGeneratorContextFree(&rngc);  
 	}
 	else

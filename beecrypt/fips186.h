@@ -26,6 +26,15 @@
 #ifndef _FIPS186_H
 #define _FIPS186_H
 
+#include "beecrypt/beecrypt.h"
+
+#ifdef _REENTRANT
+# if WIN32
+#  include <windows.h>
+#  include <winbase.h>
+# endif
+#endif
+
 #include "beecrypt.h"
 #include "sha1.h"
 
@@ -42,15 +51,11 @@
 typedef struct
 {
 	#ifdef _REENTRANT
-	# if WIN32
-	HANDLE		lock;
-	# else
-	bc_lock_t	lock;
-	# endif
+	bc_mutex_t		lock;
 	#endif
-	sha1Param	param;
-	mpw		state[FIPS186_STATE_SIZE];
-	byte		digest[20];
+	sha1Param		param;
+	mpw			state[FIPS186_STATE_SIZE];
+	byte			digest[20];
 	unsigned char	digestremain;
 } fips186Param;
 
@@ -58,42 +63,16 @@ typedef struct
 extern "C" {
 #endif
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 extern BEECRYPTAPI const randomGenerator fips186prng;
 
-/**
- */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int fips186Setup  (fips186Param* fp)
-	/*@modifies fp @*/;
-/*@=exportlocal@*/
-
-/**
- */
-/*@-exportlocal@*/
+int fips186Setup  (fips186Param*);
 BEECRYPTAPI
-int fips186Seed   (fips186Param* fp, const byte* data, size_t size)
-	/*@modifies fp @*/;
-/*@=exportlocal@*/
-
-/**
- */
-/*@-exportlocal@*/
+int fips186Seed   (fips186Param*, const byte*, size_t);
 BEECRYPTAPI
-int fips186Next   (fips186Param* fp, byte* data, size_t size)
-	/*@modifies fp, data @*/;
-/*@=exportlocal@*/
-
-/**
- */
-/*@-exportlocal@*/
+int fips186Next   (fips186Param*, byte*, size_t);
 BEECRYPTAPI
-int fips186Cleanup(fips186Param* fp)
-	/*@modifies fp @*/;
-/*@=exportlocal@*/
+int fips186Cleanup(fips186Param*);
 
 #ifdef __cplusplus
 }

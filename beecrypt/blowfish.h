@@ -34,18 +34,28 @@
 #ifndef _BLOWFISH_H
 #define _BLOWFISH_H
 
-#include "beecrypt.h"
-#include "blowfishopt.h"
+#include "beecrypt/beecrypt.h"
+#include "beecrypt/blowfishopt.h"
 
 #define BLOWFISHROUNDS	16
 #define BLOWFISHPSIZE	(BLOWFISHROUNDS+2)
 
-/** \ingroup BC_blowfish_m
+/*!\brief Holds all the parameters necessary for the Blowfish cipher.
+ * \ingroup BC_blowfish_m
  */
 typedef struct
 {
+	/*!\var p
+	 * \brief Holds the key expansion.
+	 */
 	uint32_t p[BLOWFISHPSIZE];
+	/*!\var s
+	 * \brief Holds the s-boxes.
+	 */
 	uint32_t s[1024];
+	/*!\var fdback
+	 * \brief Buffer to be used by block chaining or feedback modes.
+	 */
 	uint32_t fdback[2];
 } blowfishParam;
 
@@ -53,50 +63,59 @@ typedef struct
 extern "C" {
 #endif
 
-/** \ingroup BC_blowfish_m
+/*!\var blowfish
+ * \brief Holds the full API description of the Blowfish algorithm.
  */
-/*@observer@*/ /*@checked@*/
 extern const BEECRYPTAPI blockCipher blowfish;
 
-/** \ingroup BC_blowfish_m
+/*!\fn int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOperation
+ op)
+ * \brief The function performs the cipher's key expansion.
+ * \param bp The cipher's parameter block.
+ * \param key The key value.
+ * \param keybits The number of bits in the key; legal values are: 32 to 448,
+ *  in multiples of 8.
+ * \param op ENCRYPT or DECRYPT.
+ * \retval 0 on success.
+ * \retval -1 on failure.
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int blowfishSetup  (blowfishParam* bp, const byte* key, size_t keybits, cipherOperation op)
-	/*@modifies bp @*/;
-/*@=exportlocal@*/
+int		blowfishSetup   (blowfishParam*, const byte*, size_t, cipherOperation);
 
-/** \ingroup BC_blowfish_m
+/*!\fn int blowfishSetIV(blowfishParam* bp, const byte* iv)
+ * \brief This function sets the Initialization Vector.
+ * \note This function is only useful in block chaining or feedback modes.
+ * \param bp The cipher's parameter block.
+ * \param iv The initialization vector; may be null.
+ * \retval 0 on success.
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int blowfishSetIV  (blowfishParam* bp, const byte* iv)
-	/*@modifies bp @*/;
-/*@=exportlocal@*/
+int		blowfishSetIV   (blowfishParam*, const byte*);
 
-/** \ingroup BC_blowfish_m
+/*!\fn blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
+ * \brief This function performs the Blowfish encryption; it encrypts one block
+ *  of 64 bits.
+ * \param bp The cipher's parameter block.
+ * \param dst The ciphertext; should be aligned on 32-bit boundary.
+ * \param src The cleartext; should be aligned on 32-bit boundary.
+ * \retval 0 on success.
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
-	/*@modifies bp, dst @*/;
-/*@=exportlocal@*/
+int		blowfishEncrypt (blowfishParam*, uint32_t*, const uint32_t*);
 
-/** \ingroup BC_blowfish_m
+/*!\fn blowfishDecrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
+ * \brief This function performs the Blowfish decryption; it Rderypts one block
+ *  of 64 bits.
+ * \param bp The cipher's parameter block.
+ * \param dst The cleartext; should be aligned on 32-bit boundary.
+ * \param src The ciphertext; should be aligned on 32-bit boundary.
+ * \retval 0 on success.
  */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int blowfishDecrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
-	/*@modifies bp, dst @*/;
-/*@=exportlocal@*/
+int		blowfishDecrypt (blowfishParam*, uint32_t*, const uint32_t*);
 
-/** \ingroup BC_blowfish_m
- */
-/*@-exportlocal@*/
-BEECRYPTAPI /*@observer@*/
-uint32_t* blowfishFeedback(blowfishParam* bp)
-	/*@*/;
-/*@=exportlocal@*/
+BEECRYPTAPI
+uint32_t*	blowfishFeedback(blowfishParam*);
 
 #ifdef __cplusplus
 }

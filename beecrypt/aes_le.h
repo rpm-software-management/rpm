@@ -17,7 +17,6 @@
  *
  */
 
-/*@observer@*/ /*@unchecked@*/
 #if defined(OPTIMIZE_MMX) && (defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686))
 const uint64_t _ae0[256] = {
 #else
@@ -89,7 +88,6 @@ const uint32_t _ae0[256] = {
 	0xcbb0b07b, 0xfc5454a8, 0xd6bbbb6d, 0x3a16162c
 };
 
-/*@observer@*/ /*@unchecked@*/
 #if defined(OPTIMIZE_MMX) && (defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686))
 const uint64_t _ae1[256] = {
 #else
@@ -161,7 +159,6 @@ const uint32_t _ae1[256] = {
 	0xb0b07bcb, 0x5454a8fc, 0xbbbb6dd6, 0x16162c3a
 };
 
-/*@observer@*/ /*@unchecked@*/
 #if defined(OPTIMIZE_MMX) && (defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686))
 const uint64_t _ae2[256] = {
 #else
@@ -233,7 +230,6 @@ const uint32_t _ae2[256] = {
 	0xb07bcbb0, 0x54a8fc54, 0xbb6dd6bb, 0x162c3a16
 };
 
-/*@observer@*/ /*@unchecked@*/
 #if defined(OPTIMIZE_MMX) && (defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686))
 const uint64_t _ae3[256] = {
 #else
@@ -305,7 +301,6 @@ const uint32_t _ae3[256] = {
 	0x7bcbb0b0, 0xa8fc5454, 0x6dd6bbbb, 0x2c3a1616
 };
 
-/*@observer@*/ /*@unchecked@*/
 const uint32_t _ae4[256] = {
 	0x63636363, 0x7c7c7c7c, 0x77777777, 0x7b7b7b7b,
 	0xf2f2f2f2, 0x6b6b6b6b, 0x6f6f6f6f, 0xc5c5c5c5,
@@ -373,7 +368,6 @@ const uint32_t _ae4[256] = {
 	0xb0b0b0b0, 0x54545454, 0xbbbbbbbb, 0x16161616
 };
 
-/*@observer@*/ /*@unchecked@*/
 #if defined(OPTIMIZE_MMX) && (defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686))
 const uint64_t _ad0[256] = {
 #else
@@ -445,7 +439,6 @@ const uint32_t _ad0[256] = {
 	0x6184cb7b, 0x70b632d5, 0x745c6c48, 0x4257b8d0
 };
 
-/*@observer@*/ /*@unchecked@*/
 #if defined(OPTIMIZE_MMX) && (defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686))
 const uint64_t _ad1[256] = {
 #else
@@ -517,7 +510,6 @@ const uint32_t _ad1[256] = {
 	0x84cb7b61, 0xb632d570, 0x5c6c4874, 0x57b8d042
 };
 
-/*@observer@*/ /*@unchecked@*/
 #if defined(OPTIMIZE_MMX) && (defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686))
 const uint64_t _ad2[256] = {
 #else
@@ -589,7 +581,6 @@ const uint32_t _ad2[256] = {
 	0xcb7b6184, 0x32d570b6, 0x6c48745c, 0xb8d04257
 };
 
-/*@observer@*/ /*@unchecked@*/
 #if defined(OPTIMIZE_MMX) && (defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686))
 const uint64_t _ad3[256] = {
 #else
@@ -661,7 +652,6 @@ const uint32_t _ad3[256] = {
 	0x7b6184cb, 0xd570b632, 0x48745c6c, 0xd04257b8
 };
 
-/*@observer@*/ /*@unchecked@*/
 const uint32_t _ad4[256] = {
 	0x52525252, 0x09090909, 0x6a6a6a6a, 0xd5d5d5d5,
 	0x30303030, 0x36363636, 0xa5a5a5a5, 0x38383838,
@@ -729,7 +719,6 @@ const uint32_t _ad4[256] = {
 	0x55555555, 0x21212121, 0x0c0c0c0c, 0x7d7d7d7d
 };
 
-/*@observer@*/ /*@unchecked@*/
 static const uint32_t _arc[] = {
     0x00000001, 0x00000002, 0x00000004, 0x00000008,
     0x00000010, 0x00000020, 0x00000040, 0x00000080,

@@ -26,7 +26,7 @@
 #ifndef _HMAC_H
 #define _HMAC_H
 
-#include "beecrypt.h"
+#include "beecrypt/beecrypt.h"
 
 /*!\ingroup HMAC_m
  */
@@ -35,29 +35,16 @@
 extern "C" {
 #endif
 
-/**
- */
-BEECRYPTAPI
-int hmacSetup (byte* kxi, byte* kxo, const hashFunction* hash, hashFunctionParam* param, const byte* key, size_t keybits)
-	/*@modifies kxi, kxo, param @*/;
+/* not used directly as keyed hash function, but instead used as generic methods */
 
-/**
- */
 BEECRYPTAPI
-int hmacReset (const byte* kxi, const hashFunction* hash, hashFunctionParam* param)
-	/*@modifies param @*/;
-
-/**
- */
+int hmacSetup (      byte*,       byte*, const hashFunction*, hashFunctionParam*, const byte*, size_t);
 BEECRYPTAPI
-int hmacUpdate(const hashFunction* hash, hashFunctionParam* param, const byte* data, size_t size)
-	/*@modifies param @*/;
-
-/**
- */
+int hmacReset (const byte*,              const hashFunction*, hashFunctionParam*);
 BEECRYPTAPI
-int hmacDigest(const byte* kxo, const hashFunction* hash, hashFunctionParam* param, /*@out@*/ byte* data)
-	/*@modifies data @*/;
+int hmacUpdate(                          const hashFunction*, hashFunctionParam*, const byte*, size_t);
+BEECRYPTAPI
+int hmacDigest(             const byte*, const hashFunction*, hashFunctionParam*, byte*);
 
 #ifdef __cplusplus
 }

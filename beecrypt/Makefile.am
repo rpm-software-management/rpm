@@ -28,72 +28,39 @@
 # 3. Interfaces removed (bad): Increment CURRENT, set AGE and REVISION to 0.
 #
 
-LIBBEECRYPT_LT_CURRENT = 6
-LIBBEECRYPT_LT_AGE = 0
+LIBBEECRYPT_LT_CURRENT = 8
+LIBBEECRYPT_LT_AGE = 2
 LIBBEECRYPT_LT_REVISION = 0
 
 AUTOMAKE_OPTIONS = gnu check-news no-dependencies
 
-LINT = splint
-
-SUBDIRS = . docs gas masm tests $(MAYBE_OPT)
+SUBDIRS = . $(MAYBE_SUB) tests docs gas masm
 
 SUFFIXES = .s
+
+INCLUDES = -I$(top_srcdir)/..
 
 .s.lo:
 	$(LTCOMPILE) -c -o $@ `test -f $< || echo '$(srcdir)/'`$<
 
-BEECRYPT_OBJECTS = aes.lo aesopt.lo base64.lo beecrypt.lo blockmode.lo blockpad.lo blowfish.lo blowfishopt.lo dhaes.lo dldp.lo dlkp.lo dlpk.lo dlsvdp-dh.lo dsa.lo elgamal.lo endianness.lo entropy.lo fips186.lo hmac.lo hmacmd5.lo hmacsha1.lo hmacsha256.lo md5.lo memchunk.lo mp.lo mpbarrett.lo mpnumber.lo mpopt.lo mpprime.lo mtprng.lo rsa.lo rsakp.lo rsapk.lo sha1.lo sha1opt.lo sha256.lo timestamp.lo
+BEECRYPT_OBJECTS = aes.lo aesopt.lo base64.lo beecrypt.lo blockmode.lo blockpad.lo blowfish.lo blowfishopt.lo dhaes.lo dldp.lo dlkp.lo dlpk.lo dlsvdp-dh.lo dsa.lo elgamal.lo endianness.lo entropy.lo fips186.lo hmac.lo hmacmd5.lo hmacsha1.lo hmacsha256.lo md5.lo memchunk.lo mp.lo mpopt.lo mpbarrett.lo mpnumber.lo mpprime.lo mtprng.lo pkcs1.lo pkcs12.lo rsa.lo rsakp.lo rsapk.lo sha1.lo sha1opt.lo sha256.lo timestamp.lo
 
-libaltdir = $(libdir)@LIBALT@
+libaltdir=$(prefix)/lib@LIBALT@
 
 libalt_LTLIBRARIES = libbeecrypt.la
 
-libbeecrypt_la_SOURCES = aes.c base64.c beecrypt.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c dsa.c elgamal.c endianness.c entropy.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c md5.c memchunk.c mp.c mpbarrett.c mpnumber.c mpprime.c mtprng.c rsa.c rsakp.c rsapk.c sha1.c sha256.c timestamp.c
-
+libbeecrypt_la_SOURCES = aes.c base64.c beecrypt.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c dsa.c elgamal.c endianness.c entropy.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c md5.c memchunk.c mp.c mpbarrett.c mpnumber.c mpprime.c mtprng.c pkcs1.c pkcs12.c rsa.c rsakp.c rsapk.c sha1.c sha256.c timestamp.c cppglue.cxx
 libbeecrypt_la_DEPENDENCIES = $(BEECRYPT_OBJECTS)
-
 libbeecrypt_la_LIBADD = aesopt.lo blowfishopt.lo mpopt.lo sha1opt.lo
-
 libbeecrypt_la_LDFLAGS = -no-undefined -version-info $(LIBBEECRYPT_LT_CURRENT):$(LIBBEECRYPT_LT_REVISION):$(LIBBEECRYPT_LT_AGE)
 
-pkginclude_HEADERS = aes.h base64.h beecrypt.h beecrypt.api.h beecrypt.gnu.h blockmode.h blockpad.h blowfish.h dhaes.h dldp.h dlkp.h dlpk.h dlsvdp-dh.h dsa.h elgamal.h endianness.h entropy.h fips186.h hmac.h hmacmd5.h hmacsha1.h hmacsha256.h md5.h memchunk.h mp.h mpbarrett.h mpnumber.h mpprime.h mtprng.h rsa.h rsakp.h rsapk.h sha1.h sha256.h timestamp.h
+pkginclude_HEADERS = aes.h aesopt.h api.h base64.h beecrypt.h blockmode.h blockpad.h blowfish.h blowfishopt.h dhaes.h dldp.h dlkp.h dlpk.h dlsvdp-dh.h dsa.h elgamal.h endianness.h entropy.h fips186.h gnu.h hmac.h hmacmd5.h hmacsha1.h hmacsha256.h md5.h memchunk.h mp.h mpbarrett.h mpnumber.h mpopt.h mpprime.h mtprng.h pkcs1.h pkcs12.h rsa.h rsakp.h rsapk.h sha1.h sha1opt.h sha256.h timestamp.h win.h
 
-noinst_HEADERS = aes_be.h aes_le.h aesopt.h beecrypt.win.h \
-	blowfishopt.h debug.h mpopt.h sha1opt.h system.h
+noinst_HEADERS = aes_be.h aes_le.h
 
-EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README README.DLL README.WIN32 beecrypt.gnu.h.in beecrypt.rc beecrypt.spec autogen.sh Makefile.mak
+EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS README.DLL README.WIN32 Doxyheader beecrypt.rc autogen.sh Makefile.mak
 
 DISTCLEANFILES = mpopt.s aesopt.s blowfishopt.s sha1opt.s
 
 bench:
 	(cd tests && $(MAKE) $(AM_MAKEFLAGS) bench)
-
-.PHONY: beetest
-beetest: all
-	${MAKE} -C tests beetest
-	./tests/beetest
-
-beecrypt.lcd: Makefile.am ${libbeecrypt_la_SOURCES} ${pkginclude_HEADERS} ${noinst_HEADERS}
-	lclint $(DEFS) $(INCLUDES) ${libbeecrypt_la_SOURCES} -dump $@
-
-# XXX don't bite into gcj java dependencies (yet)
-.PHONY: sources
-sources:
-	@echo $(libbeecrypt_la_SOURCES:%=beecrypt/%) | sed -e 's,beecrypt/javaglue.c,,'
-
-# XXX don't bite into javaglue.c (yet)
-.PHONY: lint
-lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(libbeecrypt_la_SOURCES:javaglue.c=) tests/beetest.c
-
-.PHONY: listobjs
-listobjs:
-	@echo $(BEECRYPT_OBJECTS) > $@
-
-DOXYGEN = /usr/bin/doxygen
-.PHONY: doxygen
-doxygen apidocs: Doxyfile Doxyheader
-	rm -rf $@
-	mkdir -p $@
-	- [ -x ${DOXYGEN} ] && ${DOXYGEN}

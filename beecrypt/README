@@ -109,6 +109,7 @@ Planned for the near future are:
 The library has been tested on the following platforms:
 	- AIX 5.1 ppc
 	- AIX 5.1 ppc64
+	- Darwin 6.5 (a.k.a. MacOS X 10.2)
     - FreeBSD 4.0 alpha
     - FreeBSD 4.0, 4.2 x86
     - Linux glibc 2.x alpha
@@ -123,8 +124,6 @@ The library has been tested on the following platforms:
     - Win32 (Windows 95, 98, NT 4.0, 2000, XP)
 
 The library is currently in the process of being ported to:
-    - Darwin (apparently Apple has decided to change the PPC assembler format;
-      this will need a fix)
     - Cygwin (Can't seem to get the DLL to build properly with the current
       version of the autotools)
     - HP/UX is a pain in the backside; I'll try getting it working, but the
@@ -135,7 +134,7 @@ For more information, refer to the HTML documentation in the docs directory.
 If you want to report bugs, make suggestions, contribute fixes or
 enhancements, please see the beecrypt-specific website:
 
-http://beecrypt.virtualunlimited.com/
+http://sourceforge.net/projects/beecrypt
 
 or contact me at mailto:bob.deblier@pandora.be
 

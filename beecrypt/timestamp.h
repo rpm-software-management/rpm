@@ -1,11 +1,11 @@
-/** \ingroup JAVA_m
- * \file timestamp.h
- *
- * Java-compatible 64 bit timestamp, header.
- */
-
 /*
+ * timestamp.h
+ *
+ * Java-compatible 64 bit timestamp, header
+ *
  * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
+ *
+ * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@
 #ifndef _TIMESTAMP_H
 #define _TIMESTAMP_H
 
-#include "beecrypt.h"
+#include "beecrypt/beecrypt.h"
 
 #if HAVE_LONG_LONG
 # define ONE_SECOND	1000LL
@@ -48,9 +48,7 @@
 extern "C" {
 #endif
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
+BEECRYPTAPI
 javalong timestamp(void);
 
 #ifdef __cplusplus

@@ -26,14 +26,24 @@
 #ifndef _SHA1_H
 #define _SHA1_H
 
-#include "beecrypt.h"
+#include "beecrypt/beecrypt.h"
+#include "beecrypt/sha1opt.h"
 
-/** \ingroup HASH_sha1_m
+/*!\brief Holds all the parameters necessary for the SHA-1 algorithm.
+ * \ingroup HASH_sha1_m
  */
 typedef struct
 {
+	/*!\var h
+	 */
 	uint32_t h[5];
+	/*!\var data
+	 */
 	uint32_t data[80];
+	/*!\var length
+	 * \brief Multi-precision integer counter for the bits that have been
+	 *  processed so far.
+	 */
 	#if (MP_WBITS == 64)
 	mpw length[1];
 	#elif (MP_WBITS == 32)
@@ -41,6 +51,10 @@ typedef struct
 	#else
 	# error
 	#endif
+	/*!\var offset
+	 * \brief Offset into \a data; points to the place where new data will be
+	 *  copied before it is processed.
+	 */
 	uint32_t offset;
 } sha1Param;
 
@@ -48,50 +62,48 @@ typedef struct
 extern "C" {
 #endif
 
-/** \ingroup HASH_sha1_m
- * Holds the full API description of the SHA-1 algorithm.
+/*!\var sha1
+ * \brief Holds the full API description of the SHA-1 algorithm.
  */
-/*@observer@*/ /*@unchecked@*/
 extern BEECRYPTAPI const hashFunction sha1;
 
-/** \ingroup HASH_sha1_m
- * This function performs the SHA-1 hash algorithm on 64 byte blocks of data.
- * @param sp		hash parameter block
+/*!\fn void sha1Process(sha1Param* sp)
+ * \brief This function performs the core of the SHA-1 hash algorithm; it
+ *  processes a block of 64 bytes.
+ * \param sp The hash function's parameter block.
  */
 BEECRYPTAPI
-void sha1Process(sha1Param* sp)
-	/*@modifies sp @*/;
+void sha1Process(sha1Param* sp);
 
-/** \ingroup HASH_sha1_m
- * This function resets the parameter block so that it's ready for a new hash.
- * @param sp		hash parameter block
- * @return		0 on success
+/*!\fn int sha1Reset(sha1Param* sp)
+ * \brief This function resets the parameter block so that it's ready for a
+ *  new hash.
+ * \param sp The hash function's parameter block.
+ * \retval 0 on success. 
  */
-BEECRYPTAPI /*@unused@*/
-int  sha1Reset  (sha1Param* sp)
-	/*@modifies sp @*/;
+BEECRYPTAPI
+int  sha1Reset  (sha1Param* sp);
 
-/** \ingroup HASH_sha1_m
- * This function should be used to pass successive blocks of data to be hashed.
- * @param sp		hash parameter block
- * @param *data		bytes to hash
- * @param size		no. of bytes to hash
- * @return		0 on success
+/*!\fn int sha1Update(sha1Param* sp, const byte* data, size_t size)
+ * \brief This function should be used to pass successive blocks of data 
+ *  to be hashed.
+ * \param sp The hash function's parameter block.
+ * \param data
+ * \param size
+ * \retval 0 on success.
  */
-BEECRYPTAPI /*@unused@*/
-int  sha1Update (sha1Param* sp, const byte* data, size_t size)
-	/*@modifies sp @*/;
+BEECRYPTAPI
+int  sha1Update (sha1Param* sp, const byte* data, size_t size);
 
-/** \ingroup HASH_sha1_m
- * This function finishes the current hash computation, returning the digest
- * value in \a digest.
- * @param sp		hash parameter block
- * @retval *digest	20 byte SHA-1 digest
- * @return		0 on success
+/*!\fn int sha1Digest(sha1Param* sp, byte* digest)
+ * \brief This function finishes the current hash computation and copies
+ *  the digest value into \a digest.
+ * \param sp The hash function's parameter block.
+ * \param digest The place to store the 20-byte digest.
+ * \retval 0 on success.
  */
-BEECRYPTAPI /*@unused@*/
-int  sha1Digest (sha1Param* sp, /*@out@*/ byte* digest)
-	/*@modifies sp, digest @*/;
+BEECRYPTAPI
+int  sha1Digest (sha1Param* sp, byte* digest);
 
 #ifdef __cplusplus
 }

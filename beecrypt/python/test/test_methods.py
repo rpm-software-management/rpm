@@ -90,12 +90,10 @@ class BasicTestCase(unittest.TestCase):
 
 	zs = hex(za)
 	print "__hex__:\t", hex(wa), "\t", zs
-# XXX x86_64 appends L to zs
-#	assert hex(wa) == zs
+#	assert hex(wa) == zs	# fails because of missing trailing L
 	zs = oct(za)
 	print "__oct__:\t", oct(wa), "\t", zs
-# XXX x86_64 appends L to zs
-#	assert oct(wa) == zs
+#	assert oct(wa) == zs	# fails because of missing trailing L
 
 	print "__neg__:\t", (-wa), "\t",  long(-za)
 	print "__pos__:\t", (+wa), "\t",  long(+za)

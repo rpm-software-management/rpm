@@ -26,7 +26,7 @@
 #ifndef _ENTROPY_H
 #define _ENTROPY_H
 
-#include "beecrypt.h"
+#include "beecrypt/beecrypt.h"
 
 #if WIN32
 #include <Windows.h>
@@ -40,54 +40,29 @@ extern "C" {
 BEECRYPTAPI
 int entropy_provider_setup(HINSTANCE);
 BEECRYPTAPI
-int entropy_provider_cleanup(void);
+int entropy_provider_cleanup();
 
 BEECRYPTAPI
-int entropy_wavein(byte* data, size_t size);
+int entropy_wavein(byte*, size_t);
 BEECRYPTAPI
-int entropy_console(byte* data, size_t size);
+int entropy_console(byte*, size_t);
 BEECRYPTAPI
-int entropy_wincrypt(byte* data, size_t size);
+int entropy_wincrypt(byte*, size_t);
 #else
-
 #if HAVE_DEV_AUDIO
-/** \ingroup ES_audio_m ES_m
- */
-int entropy_dev_audio (/*@out@*/ byte* data, size_t size)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies data, fileSystem, internalState @*/;
+int entropy_dev_audio  (byte*, size_t);
 #endif
-
 #if HAVE_DEV_DSP
-/** \ingroup ES_dsp_m ES_m
- */
-int entropy_dev_dsp   (/*@out@*/ byte* data, size_t size)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies data, fileSystem, internalState @*/;
+int entropy_dev_dsp    (byte*, size_t);
 #endif
-
 #if HAVE_DEV_RANDOM
-/** \ingroup ES_random_m ES_m
- */
-int entropy_dev_random(/*@out@*/ byte* data, size_t size)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies data, fileSystem, internalState @*/;
+int entropy_dev_random (byte*, size_t);
 #endif
-
 #if HAVE_DEV_URANDOM
-/** \ingroup ES_urandom_m ES_m
- */
-int entropy_dev_urandom(/*@out@*/ byte* data, size_t size)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies data, fileSystem, internalState @*/;
+int entropy_dev_urandom(byte*, size_t);
 #endif
-
 #if HAVE_DEV_TTY
-/** \ingroup ES_tty_m ES_m
- */
-int entropy_dev_tty   (/*@out@*/ byte* data, size_t size)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies data, fileSystem, internalState @*/;
+int entropy_dev_tty    (byte*, size_t);
 #endif
 #endif
 

@@ -23,12 +23,14 @@
  * \ingroup BC_m BC_blowfish_m
  */
 
-#include "system.h"
-#include "beecrypt.h"
-#include "blowfishopt.h"
-#include "blowfish.h"
-#include "endianness.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/blowfish.h"
+#include "beecrypt/endianness.h"
 
 #ifdef ASM_BLOWFISHENCRYPTECB
 extern int blowfishEncryptECB(blowfishparam*, uint32_t*, const uint32_t*, unsigned int);
@@ -38,13 +40,6 @@ extern int blowfishEncryptECB(blowfishparam*, uint32_t*, const uint32_t*, unsign
 extern int blowfishDecryptECB(blowfishparam*, uint32_t*, const uint32_t*, unsigned int);
 #endif
 
-/*!\addtogroup BC_blowfish_m
- * \{
- */
-
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static uint32_t _bf_p[BLOWFISHPSIZE] = {
 	0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
 	0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
@@ -53,9 +48,6 @@ static uint32_t _bf_p[BLOWFISHPSIZE] = {
 	0x9216d5d9, 0x8979fb1b
 };
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static uint32_t _bf_s[1024] = {
 	0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
 	0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
@@ -318,15 +310,13 @@ static uint32_t _bf_s[1024] = {
 #define EROUND(l,r) l ^= *(p++); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 #define DROUND(l,r) l ^= *(p--); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 
-/*@-sizeoftype@*/
-/*@-castfcnptr@*/
 const blockCipher blowfish = {
 	"Blowfish",
 	sizeof(blowfishParam),
-	8U,
-	64U,
-	448U,
-	32U,
+	8,
+	64,
+	448,
+	32,
 	(blockCipherSetup) blowfishSetup,
 	(blockCipherSetIV) blowfishSetIV,
 	/* raw */
@@ -354,8 +344,6 @@ const blockCipher blowfish = {
 	},
 	(blockCipherFeedback) blowfishFeedback
 };
-/*@=castfcnptr@*/
-/*@=sizeoftype@*/
 
 int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOperation op)
 {
@@ -370,7 +358,7 @@ int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOper
 
 		uint32_t tmp, work[2];
 
-		memcpy(s, _bf_s, 1024 * sizeof(*s));
+		memcpy(s, _bf_s, 1024 * sizeof(uint32_t));
 
 		for (i = 0, k = 0; i < BLOWFISHPSIZE; i++)
 		{
@@ -389,7 +377,7 @@ int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOper
 
 		for (i = 0; i < BLOWFISHPSIZE; i += 2, p += 2)
 		{
-			(void) blowfishEncrypt(bp, work, work);
+			blowfishEncrypt(bp, work, work);
 			#if WORDS_BIGENDIAN
 			p[0] = work[0];
 			p[1] = work[1];
@@ -401,7 +389,7 @@ int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOper
 
 		for (i = 0; i < 1024; i += 2, s += 2)
 		{
-			(void) blowfishEncrypt(bp, work, work);
+			blowfishEncrypt(bp, work, work);
 			#if WORDS_BIGENDIAN
 			s[0] = work[0];
 			s[1] = work[1];
@@ -423,21 +411,16 @@ int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOper
 #ifndef ASM_BLOWFISHSETIV
 int blowfishSetIV(blowfishParam* bp, const byte* iv)
 {
-/*@-mayaliasunique@*/
 	if (iv)
-		memcpy(bp->fdback, iv, sizeof(bp->fdback));
+		memcpy(bp->fdback, iv, 8);
 	else
-		memset(bp->fdback, 0, sizeof(bp->fdback));
-/*@=mayaliasunique@*/
+		memset(bp->fdback, 0, 8);
 
 	return 0;
 }
 #endif
 
-/*@-exportheader@*/
-/*@unused@*/
 int blowfishBlowit(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
-	/*@modifies *dst @*/
 {
 	register uint32_t xl = src[0], xr = src[1];
 	register uint32_t* p = bp->p;
@@ -450,7 +433,6 @@ int blowfishBlowit(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 
 	return 0;
 }
-/*@=exportheader@*/
 
 #ifndef ASM_BLOWFISHENCRYPT
 int blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
@@ -520,6 +502,3 @@ uint32_t* blowfishFeedback(blowfishParam* bp)
 {
 	return bp->fdback;
 }
-
-/*!\}
- */

@@ -23,39 +23,32 @@
  * \ingroup PRNG_m PRNG_fips186_m
  */
 
-#include "system.h"
-#include "beecrypt.h"
-#include "fips186.h"
-#include "mpopt.h"
-#include "mp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/fips186.h"
 
 /*!\addtogroup PRNG_fips186_m
  * \{
  */
 
-/**
- */
-/*@observer@*/ /*@unchecked@*/
 static uint32_t fips186hinit[5] = { 0xefcdab89U, 0x98badcfeU, 0x10325476U, 0xc3d2e1f0U, 0x67452301U };
 
-/*@-sizeoftype@*/
 const randomGenerator fips186prng = {
 	"FIPS 186",
 	sizeof(fips186Param),
-	(const randomGeneratorSetup) fips186Setup,
-	(const randomGeneratorSeed) fips186Seed,
-	(const randomGeneratorNext) fips186Next,
-	(const randomGeneratorCleanup) fips186Cleanup
+	(randomGeneratorSetup) fips186Setup,
+	(randomGeneratorSeed) fips186Seed,
+	(randomGeneratorNext) fips186Next,
+	(randomGeneratorCleanup) fips186Cleanup
 };
-/*@=sizeoftype@*/
 
-/**
- */
 static int fips186init(register sha1Param* p)
-	/*@modifies p @*/
 {
-	memcpy(p->h, fips186hinit, sizeof(p->h));
+	memcpy(p->h, fips186hinit, 5 * sizeof(uint32_t));
 	return 0;
 }
 
@@ -72,12 +65,8 @@ int fips186Setup(fips186Param* fp)
 		if (mutex_init(&fp->lock, USYNC_THREAD, (void *) 0))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-nullpass@*/
-		/*@-moduncon@*/
 		if (pthread_mutex_init(&fp->lock, (pthread_mutexattr_t *) 0))
 			return -1;
-		/*@=moduncon@*/
-		/*@=nullpass@*/
 		#  endif
 		# endif
 		#endif
@@ -102,10 +91,8 @@ int fips186Seed(fips186Param* fp, const byte* data, size_t size)
 		if (mutex_lock(&fp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_lock(&fp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -119,7 +106,7 @@ int fips186Seed(fips186Param* fp, const byte* data, size_t size)
 
 			/* convert to multi-precision integer, and add to the state */
 			if (os2ip(seed, FIPS186_STATE_SIZE, data, size) == 0)
-				(void) mpadd(FIPS186_STATE_SIZE, fp->state, seed);
+				mpadd(FIPS186_STATE_SIZE, fp->state, seed);
 		}
 		#ifdef _REENTRANT
 		# if WIN32
@@ -130,10 +117,8 @@ int fips186Seed(fips186Param* fp, const byte* data, size_t size)
 		if (mutex_unlock(&fp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_unlock(&fp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -157,10 +142,8 @@ int fips186Next(fips186Param* fp, byte* data, size_t size)
 		if (mutex_lock(&fp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_lock(&fp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -171,12 +154,12 @@ int fips186Next(fips186Param* fp, byte* data, size_t size)
 
 			if (fp->digestremain == 0)
 			{
-				(void) fips186init(&fp->param);
+				fips186init(&fp->param);
 				/* copy the 512 bits of state data into the sha1Param */
 				memcpy(fp->param.data, fp->state, MP_WORDS_TO_BYTES(FIPS186_STATE_SIZE));
 				/* process the data */
 				sha1Process(&fp->param);
-
+				
 				#if WORDS_BIGENDIAN
 				memcpy(fp->digest, fp->param.h, 20);
 				#else
@@ -206,12 +189,12 @@ int fips186Next(fips186Param* fp, byte* data, size_t size)
 				if (os2ip(dig, FIPS186_STATE_SIZE, fp->digest, 20) == 0)
 				{
 					/* set state to state + digest + 1 mod 2^512 */
-					(void) mpadd (FIPS186_STATE_SIZE, fp->state, dig);
-					(void) mpaddw(FIPS186_STATE_SIZE, fp->state, 1);
+					mpadd (FIPS186_STATE_SIZE, fp->state, dig);
+					mpaddw(FIPS186_STATE_SIZE, fp->state, 1);
 				}
 				/* else shouldn't occur */
 				/* we now have 5 words of pseudo-random data */
-				fp->digestremain = (unsigned char) 20;
+				fp->digestremain = 20;
 			}
 			copy = (size > fp->digestremain) ? fp->digestremain : size;
 			memcpy(data, fp->digest+20-fp->digestremain, copy);
@@ -228,10 +211,8 @@ int fips186Next(fips186Param* fp, byte* data, size_t size)
 		if (mutex_unlock(&fp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_unlock(&fp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -253,10 +234,8 @@ int fips186Cleanup(fips186Param* fp)
 		if (mutex_destroy(&fp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_destroy(&fp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif

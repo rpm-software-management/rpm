@@ -18,33 +18,18 @@
  */
 
 /*!\file dsa.c
- * \brief Digital Signature Algorithm, as specified by NIST FIPS 186.
- *
- * FIPS 186 specifies the DSA algorithm as having a large prime \f$p\f$,
- * a cofactor \f$q\f$ and a generator \f$g\f$ of a subgroup of
- * \f$\mathds{Z}^{*}_p\f$ with order \f$q\f$. The private and public key
- * values are \f$x\f$ and \f$y\f$ respectively.
- *
- * \author Bob Deblier <bob.deblier@pandora.be>
+ * \brief Digital Signature Algorithm.
  * \ingroup DL_m DL_dsa_m
- *
- *  - Signing equation:
- *   - r = (g^k mod p) mod q and
- *   - s = (inv(k) * (h(m) + x*r)) mod q
- *  - Verifying equation:
- *   - check 0 < r < q and 0 < s < q
- *   - w = inv(s) mod q
- *   - u1 = (h(m)*w) mod q
- *   - u2 = (r*w) mod q
- *   - v = ((g^u1 * y^u2) mod p) mod q
- *   - check v == r
  */
+ 
+#define BEECRYPT_DLL_EXPORT
 
-#include "system.h"
-#include "dsa.h"
-#include "dldp.h"
-#include "mp.h"
-#include "debug.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/dsa.h"
+#include "beecrypt/dldp.h"
 
 int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
@@ -59,11 +44,11 @@ int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGen
 
 	register int rc = -1;
 
-	ptemp = (mpw*) malloc((5*psize+2) * sizeof(*ptemp));
+	ptemp = (mpw*) malloc((5*psize+2)*sizeof(mpw));
 	if (ptemp == (mpw*) 0)
 		return rc;
 
-	qtemp = (mpw*) malloc((14*qsize+11) * sizeof(*qtemp));
+	qtemp = (mpw*) malloc((9*qsize+6)*sizeof(mpw));
 	if (qtemp == (mpw*) 0)
 	{
 		free(ptemp);
@@ -133,11 +118,11 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
 	if (mpgex(s->size, s->data, qsize, q->modl))
 		return rc;
 
-	ptemp = (mpw*) malloc((6*psize+2) * sizeof(*ptemp));
+	ptemp = (mpw*) malloc((6*psize+2)*sizeof(mpw));
 	if (ptemp == (mpw*) 0)
 		return rc;
 
-	qtemp = (mpw*) malloc((13*qsize+11) * sizeof(*qtemp));
+	qtemp = (mpw*) malloc((8*qsize+6)*sizeof(mpw));
 	if (qtemp == (mpw*) 0)
 	{
 		free(ptemp);
@@ -150,11 +135,8 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
 	mpsetx(qsize, qtemp+qsize, s->size, s->data);
 
 	/* compute w = inv(s) mod q */
-/*@-compdef@*/ /* FIX: mpsetx annotations, qtemp[qsize] is defined */
-	if (mpextgcd_w(qsize, qtemp+qsize, q->modl, qtemp, qwksp))
-/*@=compdef@*/
+	if (mpextgcd_w(qsize, q->modl, qtemp+qsize, qtemp, qwksp))
 	{
-
 		/* compute u1 = h(m)*w mod q */
 		mpbmulmod_w(q, hm->size, hm->data, qsize, qtemp, qtemp+qsize, qwksp);
 
@@ -180,4 +162,17 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
 	free(ptemp);
 
 	return rc;
+}
+
+int dsaparamMake(dsaparam* dp, randomGeneratorContext* rgc, size_t psize)
+{
+	/* psize must be >= 512 and <= 1024 */
+	if ((psize < 512) || (psize > 1024))
+		return -1;
+
+	/* psize must be a multiple of 64 */
+	if ((psize & 0x3f) != 0)
+		return -1;
+
+	return dldp_pgoqMake(dp, rgc, psize, 160, 1);
 }

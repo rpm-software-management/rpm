@@ -26,37 +26,37 @@
 #ifndef _RSAPK_H
 #define _RSAPK_H
 
-#include "mpbarrett.h"
+#include "beecrypt/mpbarrett.h"
 
-/**
- */
-typedef struct
+#ifdef __cplusplus
+struct BEECRYPTAPI rsapk
+#else
+struct _rsapk
+#endif
 {
 	mpbarrett n;
 	mpnumber e;
-} rsapk;
+	#ifdef __cplusplus
+	rsapk();
+	rsapk(const rsapk&);
+	~rsapk();
+	#endif
+};
+
+#ifndef __cplusplus
+typedef struct _rsapk rsapk;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int rsapkInit(rsapk* pk)
-	/*@modifies pk @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int rsapkFree(rsapk* pk)
-	/*@modifies pk @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int rsapkCopy(rsapk* dst, const rsapk* src)
-	/*@modifies dst @*/;
+BEECRYPTAPI
+int rsapkInit(rsapk*);
+BEECRYPTAPI
+int rsapkFree(rsapk*);
+BEECRYPTAPI
+int rsapkCopy(rsapk*, const rsapk*);
 
 #ifdef __cplusplus
 }

@@ -23,13 +23,13 @@
  * \ingroup DL_m
  */
 
-#include "system.h"
-#include "dlkp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
 
-/*!\addtogroup DL_m
- * \{
- */
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/dlkp.h"
 
 int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p* param)
 {
@@ -56,15 +56,15 @@ int dlkp_pInit(dlkp_p* kp)
 
 int dlkp_pFree(dlkp_p* kp)
 {
-	/*@-usereleased -compdef @*/ /* kp->param.{p,q,n}.modl is OK */
 	if (dldp_pFree(&kp->param) < 0)
 		return -1;
 
 	mpnfree(&kp->y);
+	/* wipe secret key before freeing */
+	mpnwipe(&kp->x);
 	mpnfree(&kp->x);
 
 	return 0;
-	/*@=usereleased =compdef @*/
 }
 
 int dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)
@@ -77,6 +77,3 @@ int dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)
 
 	return 0;
 }
-
-/*!\}
- */

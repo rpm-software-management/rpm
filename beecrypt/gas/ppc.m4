@@ -18,10 +18,6 @@ dnl  You should have received a copy of the GNU Lesser General Public
 dnl  License along with this library; if not, write to the Free Software
 dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-ifelse(substr(ASM_OS,0,5),linux,`
-define(USE_NUMERIC_REGISTERS)
-')
-
 ifelse(substr(ASM_OS,0,3),aix,`
 define(USE_NUMERIC_REGISTERS)
 undefine(`C_FUNCTION_BEGIN')
@@ -47,13 +43,25 @@ L$1:
 	.tc $1[TC],$1[RW]
 ')
 	.machine	"ppc"
-',`
+')
+
+ifelse(substr(ASM_OS,0,6),darwin,`
+define(LOAD_ADDRESS,`
+	lis $2,hi16($1)
+	la $2,lo16($1)($2)
+')
+define(EXTERNAL_VARIABLE)
+')
+
+ifelse(substr(ASM_OS,0,5),linux,`
+define(USE_NUMERIC_REGISTERS)
 define(LOAD_ADDRESS,`
 	lis $2,$1@ha
 	la $2,$1@l($2)
 ')
 define(EXTERNAL_VARIABLE)
 ')
+
 
 ifdef(`USE_NUMERIC_REGISTERS',`
 define(r0,0)

@@ -26,50 +26,77 @@
 #ifndef _RSAKP_H
 #define _RSAKP_H
 
-#include "rsapk.h"
+#include "beecrypt/rsapk.h"
 
 /*!\brief RSA keypair.
  * \ingroup IF_rsa_m
  */
-typedef struct
+#ifdef __cplusplus
+struct BEECRYPTAPI rsakp
+#else
+struct _rsakp
+#endif
 {
+	/*!\var n
+	 * \brief The modulus.
+	 *
+	 * \f$n=pq\f$
+	 */
 	mpbarrett n;
+	/*!\var e
+	 * \brief The public exponent.
+	 */
 	mpnumber e;
+	/*!\var d
+	 * \brief The private exponent.
+	 */
 	mpnumber d;
+	/*!\var p
+	 * \brief The first prime factor of the modulus.
+	 */
 	mpbarrett p;
+	/*!\var q
+	 * \brief The second prime factor of the modulus.
+	 */
 	mpbarrett q;
-	mpnumber d1;
-	mpnumber d2;
-	mpnumber c;
-} rsakp;
+	/*!\var dp
+	 * \brief the first prime coefficient.
+	 * \f$dp=d\ \textrm{mod}\ (p-1)\f$
+	 */
+	mpnumber dp;
+	/*!\var dq
+	 * \brief the second prime coefficient.
+	 * \f$dq=d\ \textrm{mod}\ (q-1)\f$
+	 */
+	mpnumber dq;
+	/*!\var qi
+	 * \brief the crt coefficient.
+	 * \f$qi=q^{-1}\ \textrm{mod}\ p\f$
+	 */
+	mpnumber qi;
+	#ifdef __cplusplus
+	rsakp();
+	rsakp(const rsakp&);
+	~rsakp();
+	#endif
+};
+
+#ifndef __cplusplus
+typedef struct _rsakp rsakp;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
-	/*@modifies kp, rgc @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int rsakpInit(rsakp* kp)
-	/*@modifies kp @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int rsakpFree(rsakp* kp)
-	/*@modifies kp @*/;
-
-/**
- */
-BEECRYPTAPI /*@unused@*/
-int rsakpCopy(rsakp* dst, const rsakp* src)
-	/*@modifies dst @*/;
+BEECRYPTAPI
+int rsakpMake(rsakp*, randomGeneratorContext*, size_t);
+BEECRYPTAPI
+int rsakpInit(rsakp*);
+BEECRYPTAPI
+int rsakpFree(rsakp*);
+BEECRYPTAPI
+int rsakpCopy(rsakp*, const rsakp*);
 
 #ifdef __cplusplus
 }

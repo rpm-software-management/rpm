@@ -26,8 +26,8 @@
 #ifndef _HMACMD5_H
 #define _HMACMD5_H
 
-#include "hmac.h"
-#include "md5.h"
+#include "beecrypt/hmac.h"
+#include "beecrypt/md5.h"
 
 /*!\ingroup HMAC_md5_m
  */
@@ -42,46 +42,16 @@ typedef struct
 extern "C" {
 #endif
 
-/** \ingroup HMAC_md5_m
- */
-/*@observer@*/ /*@unchecked@*/
 extern BEECRYPTAPI const keyedHashFunction hmacmd5;
 
-/** \ingroup HMAC_md5_m
- */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int hmacmd5Setup (hmacmd5Param* sp, const byte* key, size_t keybits)
-	/*@globals md5 @*/
-	/*@modifies sp @*/;
-/*@=exportlocal@*/
-
-/** \ingroup HMAC_md5_m
- */
-/*@-exportlocal@*/
+int hmacmd5Setup (hmacmd5Param*, const byte*, size_t);
 BEECRYPTAPI
-int hmacmd5Reset (hmacmd5Param* sp)
-	/*@globals md5 @*/
-	/*@modifies sp @*/;
-/*@=exportlocal@*/
-
-/** \ingroup HMAC_md5_m
- */
-/*@-exportlocal@*/
+int hmacmd5Reset (hmacmd5Param*);
 BEECRYPTAPI
-int hmacmd5Update(hmacmd5Param* sp, const byte* data, size_t size)
-	/*@globals md5 @*/
-	/*@modifies sp @*/;
-/*@=exportlocal@*/
-
-/** \ingroup HMAC_md5_m
- */
-/*@-exportlocal@*/
+int hmacmd5Update(hmacmd5Param*, const byte*, size_t);
 BEECRYPTAPI
-int hmacmd5Digest(hmacmd5Param* sp, byte* data)
-	/*@globals md5 @*/
-	/*@modifies sp, data @*/;
-/*@=exportlocal@*/
+int hmacmd5Digest(hmacmd5Param*, byte*);
 
 #ifdef __cplusplus
 }

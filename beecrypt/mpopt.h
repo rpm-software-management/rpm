@@ -71,10 +71,10 @@
 #  define ASM_MPFILL
 #  define ASM_MPEVEN
 #  define ASM_MPODD
-#  define ASM_MPADDW
-#  define ASM_MPSUBW
 #  define ASM_MPADD
+#  define ASM_MPADDW
 #  define ASM_MPSUB
+#  define ASM_MPSUBW
 #  define ASM_MPMULTWO
 #  define ASM_MPDIVTWO
 #  define ASM_MPSETMUL
@@ -97,10 +97,10 @@
 #  define ASM_MPADDSQRTRC
 # elif defined(OPTIMIZE_POWERPC) || defined(OPTIMIZE_POWERPC64)
 #  define ASM_MPSETMUL
-#  define ASM_MPADDW
-#  define ASM_MPSUBW
 #  define ASM_MPADD
+#  define ASM_MPADDW
 #  define ASM_MPSUB
+#  define ASM_MPSUBW
 #  define ASM_MPMULTWO
 #  define ASM_MPADDMUL
 #  define ASM_MPADDSQRTRC
@@ -125,8 +125,15 @@
 #  define ASM_MPFILL
 #  define ASM_MPEVEN
 #  define ASM_MPODD
+#  define ASM_MPADD
+#  define ASM_MPADDW
+#  define ASM_MPSUB
+#  define ASM_MPSUBW
+#  define ASM_MPDIVTWO
+#  define ASM_MPMULTWO
 #  define ASM_MPSETMUL
 #  define ASM_MPADDMUL
+#  define ASM_MPADDSQRTRC
 # endif
 #endif
 

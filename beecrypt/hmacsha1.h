@@ -26,8 +26,8 @@
 #ifndef _HMACSHA1_H
 #define _HMACSHA1_H
 
-#include "hmac.h"
-#include "sha1.h"
+#include "beecrypt/hmac.h"
+#include "beecrypt/sha1.h"
 
 /*!\ingroup HMAC_sha1_m
  */
@@ -42,46 +42,16 @@ typedef struct
 extern "C" {
 #endif
 
-/** \ingroup HMAC_sha1_m
- */
-/*@observer@*/ /*@unchecked@*/
 extern BEECRYPTAPI const keyedHashFunction hmacsha1;
 
-/** \ingroup HMAC_sha1_m
- */
-/*@-exportlocal@*/
 BEECRYPTAPI
-int hmacsha1Setup (hmacsha1Param* sp, const byte* key, size_t keybits)
-	/*@globals sha1 @*/
-	/*@modifies sp @*/;
-/*@=exportlocal@*/
-
-/** \ingroup HMAC_sha1_m
- */
-/*@-exportlocal@*/
+int hmacsha1Setup (hmacsha1Param*, const byte*, size_t);
 BEECRYPTAPI
-int hmacsha1Reset (hmacsha1Param* sp)
-	/*@globals sha1 @*/
-	/*@modifies sp @*/;
-/*@=exportlocal@*/
-
-/** \ingroup HMAC_sha1_m
- */
-/*@-exportlocal@*/
+int hmacsha1Reset (hmacsha1Param*);
 BEECRYPTAPI
-int hmacsha1Update(hmacsha1Param* sp, const byte* data, size_t size)
-	/*@globals sha1 @*/
-	/*@modifies sp @*/;
-/*@=exportlocal@*/
-
-/** \ingroup HMAC_sha1_m
- */
-/*@-exportlocal@*/
+int hmacsha1Update(hmacsha1Param*, const byte*, size_t);
 BEECRYPTAPI
-int hmacsha1Digest(hmacsha1Param* sp, byte* data)
-	/*@globals sha1 @*/
-	/*@modifies sp, data @*/;
-/*@=exportlocal@*/
+int hmacsha1Digest(hmacsha1Param*, byte*);
 
 #ifdef __cplusplus
 }

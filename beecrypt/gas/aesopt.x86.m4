@@ -1,4 +1,5 @@
 include(config.m4)
+include(ASM_SRCDIR/asmdefs.m4)
 include(ASM_SRCDIR/x86.m4)
 
 ifdef(`USE_MMX',`

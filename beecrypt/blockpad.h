@@ -26,52 +26,21 @@
 #ifndef _BLOCKPAD_H
 #define _BLOCKPAD_H
 
-#include "beecrypt.h"
+#include "beecrypt/beecrypt.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * Enlarge buffer to boundary.
- * @param blockbytes	desired block alignment/pad boundary
- * @param tmp		buffer to pad
- * @return		buffer with pad added
- */
-BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* pkcs5Pad  (size_t blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
-	/*@*/;
+BEECRYPTAPI
+memchunk* pkcs5Pad  (size_t, memchunk*);
+BEECRYPTAPI
+memchunk* pkcs5Unpad(size_t, memchunk*);
 
-/**
- * Shrink buffer to boundary.
- * @param blockbytes	desired block alignment/pad boundary
- * @param tmp		buffer to unpad
- * @return		buffer with pad removed
- */
-BEECRYPTAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5Unpad(size_t blockbytes,
-		/*@returned@*/ /*@null@*/ /*@out@*/ memchunk* tmp)
-	/*@modifies tmp @*/;
-
-/**
- * Copy/enlarge buffer to boundary.
- * @param blockbytes	desired block alignment/pad boundary
- * @param src		buffer to pad
- * @return		copy of buffer with pad added
- */
-BEECRYPTAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5PadCopy  (size_t blockbytes, const memchunk* src)
-	/*@*/;
-
-/**
- * Copy/shrink buffer to boundary.
- * @param blockbytes	desired block alignment/pad boundary
- * @param src		buffer to unpad
- * @return		copy of buffer with pad removed
- */
-BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* pkcs5UnpadCopy(size_t blockbytes, const memchunk* src)
-	/*@*/;
+BEECRYPTAPI
+memchunk* pkcs5PadCopy  (size_t, const memchunk*);
+BEECRYPTAPI
+memchunk* pkcs5UnpadCopy(size_t, const memchunk*);
 
 #ifdef __cplusplus
 }

@@ -1,8 +1,6 @@
 /*
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -28,35 +26,31 @@
  * Adapted from optimized code by Shawn J. Cokus <cokus@math.washington.edu>
  *
  * \warning This generator has a very long period, passes statistical test and
- &          is very fast, but is not recommended for use in cryptography.
- *
- * \author Bob Deblier <bob@virtualunlimited.com>
+ *          is very fast, but is not recommended for use in cryptography.
+ * 
+ * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup PRNG_m
  */
 
-#include "system.h"
-#include "beecrypt.h"
-#include "mtprng.h"
-#include "mpopt.h"
-#include "mp.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/mtprng.h"
 
 #define hiBit(a)		((a) & 0x80000000U)
 #define loBit(a)		((a) & 0x1U)
 #define loBits(a)		((a) & 0x7FFFFFFFU)
 #define mixBits(a, b)	(hiBit(a) | loBits(b))
 
-/*@-sizeoftype@*/
 const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (randomGeneratorSetup) mtprngSetup, (randomGeneratorSeed) mtprngSeed, (randomGeneratorNext) mtprngNext, (randomGeneratorCleanup) mtprngCleanup };
-/*@=sizeoftype@*/
 
-/**
- */
 static void mtprngReload(mtprngParam* mp)
-	/*@modifies mp @*/
 {
     register uint32_t *p0 = mp->state;
-    register uint32_t *p2=p0+2, *pM = p0+M, s0, s1;
+	register uint32_t *p2 = p0+2, *pM = p0+M, s0, s1;
     register int j;
 
     for (s0=mp->state[0], s1=mp->state[1], j=N-M+1; --j; s0=s1, s1=*(p2++))
@@ -84,19 +78,15 @@ int mtprngSetup(mtprngParam* mp)
 		if (mutex_init(&mp->lock, USYNC_THREAD, (void *) 0))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-nullpass@*/
-		/*@-moduncon@*/
 		if (pthread_mutex_init(&mp->lock, (pthread_mutexattr_t *) 0))
 			return -1;
-		/*@=moduncon@*/
-		/*@=nullpass@*/
 		#  endif
 		# endif
 		#endif
 
 		mp->left = 0;
 
-		return entropyGatherNext((byte*)mp->state, sizeof(mp->state));
+		return entropyGatherNext((byte*) mp->state, (N+1) * sizeof(uint32_t));
 	}
 	return -1;
 }
@@ -105,8 +95,8 @@ int mtprngSeed(mtprngParam* mp, const byte* data, size_t size)
 {
 	if (mp)
 	{
-		size_t	needed = sizeof(mp->state);
-		byte*	dest = (byte *) mp->state;
+		size_t	needed = (N+1) * sizeof(uint32_t);
+		byte*	dest = (byte*) mp->state;
 
 		#ifdef _REENTRANT
 		# if WIN32
@@ -117,10 +107,8 @@ int mtprngSeed(mtprngParam* mp, const byte* data, size_t size)
 		if (mutex_lock(&mp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_lock(&mp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -140,10 +128,8 @@ int mtprngSeed(mtprngParam* mp, const byte* data, size_t size)
 		if (mutex_unlock(&mp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_unlock(&mp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -167,14 +153,11 @@ int mtprngNext(mtprngParam* mp, byte* data, size_t size)
 		if (mutex_lock(&mp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_lock(&mp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
-		/*@-branchstate@*/
 		while (size > 0)
 		{
 			if (mp->left == 0)
@@ -187,10 +170,10 @@ int mtprngNext(mtprngParam* mp, byte* data, size_t size)
 			tmp ^= (tmp >> 18);
 			mp->left--;
 
-			if (size >= sizeof(tmp))
+			if (size >= 4)
 			{
-				memcpy(data, &tmp, sizeof(tmp));
-				size -= sizeof(tmp);
+				memcpy(data, &tmp, 4);
+				size -= 4;
 			}
 			else
 			{
@@ -198,7 +181,6 @@ int mtprngNext(mtprngParam* mp, byte* data, size_t size)
 				size = 0;
 			}
 		}
-		/*@=branchstate@*/
 		#ifdef _REENTRANT
 		# if WIN32
 		if (!ReleaseMutex(mp->lock))
@@ -208,10 +190,8 @@ int mtprngNext(mtprngParam* mp, byte* data, size_t size)
 		if (mutex_unlock(&mp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_unlock(&mp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -233,10 +213,8 @@ int mtprngCleanup(mtprngParam* mp)
 		if (mutex_destroy(&mp->lock))
 			return -1;
 		#  elif HAVE_PTHREAD_H
-		/*@-moduncon@*/
 		if (pthread_mutex_destroy(&mp->lock))
 			return -1;
-		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif

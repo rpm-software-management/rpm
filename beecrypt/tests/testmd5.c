@@ -24,9 +24,9 @@
  * \ingroup UNIT_m
  */
 
-#include "system.h"
+#include <stdio.h>
+
 #include "md5.h"
-#include "debug.h"
 
 struct vector
 {

@@ -1,4 +1,3 @@
-/*@-compdef@*/
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited, B.V.
  *
@@ -20,37 +19,39 @@
 
 /*!\file dhaes.c
  * \brief DHAES encryption scheme.
- *
- * This code implements the encryption scheme from the paper:
- *
- * "DHAES: An Encryption Scheme Based on the Diffie-Hellman Problem"
- * Michel Abdalla, Mihir Bellare, Phillip Rogaway
- * September 1998
- *
- * Good combinations will be:
- *
- * - For 64-bit encryption:
- *	- DHAES(MD5, Blowfish, HMAC-MD5) <- best candidate
- *	- DHAES(MD5, Blowfish, HMAC-SHA-1)
- *	- DHAES(MD5, Blowfish, HMAC-SHA-256)
- *
- * - For 96-bit encryption with 64-bit mac:
- *	- DHAES(SHA-1, Blowfish, HMAC-MD5, 96)
- *	- DHAES(SHA-1, Blowfish, HMAC-SHA-1, 96) <- best candidate
- *	- DHAES(SHA-1, Blowfish, HMAC-SHA-256, 96) <- best candidate
- *
- * - For 128-bit encryption:
- *	- DHAES(SHA-256, Blowfish, HMAC-MD5)
- *	- DHAES(SHA-256, Blowfish, HMAC-SHA-1)
- *	- DHAES(SHA-256, Blowfish, HMAC-SHA-256)
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup DL_m DL_dh_m
  */
 
-#include "system.h"
-#include "dhaes.h"
-#include "dlsvdp-dh.h"
-#include "blockmode.h"
-#include "blockpad.h"
-#include "debug.h"
+#define BEECRYPT_DLL_EXPORT
+
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "beecrypt/dhaes.h"
+#include "beecrypt/dlsvdp-dh.h"
+#include "beecrypt/blockmode.h"
+#include "beecrypt/blockpad.h"
+
+/*
+ * Good combinations will be:
+ *
+ * For 64-bit encryption:
+ *	DHAES(MD5, Blowfish, HMAC-MD5) <- best candidate
+ *	DHAES(MD5, Blowfish, HMAC-SHA-1)
+ *  DHAES(MD5, Blowfish, HMAC-SHA-256)
+ *
+ * For 96-bit encryption with 64-bit mac:
+ *  DHAES(SHA-1, Blowfish, HMAC-MD5, 96)
+ *  DHAES(SHA-1, Blowfish, HMAC-SHA-1, 96) <- best candidate
+ *  DHAES(SHA-1, Blowfish, HMAC-SHA-256, 96) <- best candidate
+ *
+ * For 128-bit encryption:
+ *	DHAES(SHA-256, Blowfish, HMAC-MD5)
+ *	DHAES(SHA-256, Blowfish, HMAC-SHA-1)
+ *  DHAES(SHA-256, Blowfish, HMAC-SHA-256)
+ */
 
 int dhaes_pUsable(const dhaes_pParameters* params)
 {
@@ -84,7 +85,7 @@ int dhaes_pUsable(const dhaes_pParameters* params)
 
 	/* test if keybits length is appropriate for mac */
 	if ((mackeybits < params->mac->keybitsmin) ||
-			(((unsigned)params->mackeybits) > params->mac->keybitsmax))
+			(params->mackeybits > params->mac->keybitsmax))
 		return 0;
 
 	if (((mackeybits - params->mac->keybitsmin) % params->mac->keybitsinc) != 0)
@@ -116,13 +117,12 @@ int dhaes_pContextInit(dhaes_pContext* ctxt, const dhaes_pParameters* params)
 	if (!dhaes_pUsable(params))
 		return -1;
 
-	(void) dldp_pInit(&ctxt->param);
-	(void) dldp_pCopy(&ctxt->param, params->param);
+	dldp_pInit(&ctxt->param);
+	dldp_pCopy(&ctxt->param, params->param);
 
 	mpnzero(&ctxt->pub);
 	mpnzero(&ctxt->pri);
 
-	/*@-modobserver@*/
 	if (hashFunctionContextInit(&ctxt->hash, params->hash))
 		return -1;
 
@@ -131,7 +131,6 @@ int dhaes_pContextInit(dhaes_pContext* ctxt, const dhaes_pParameters* params)
 
 	if (keyedHashFunctionContextInit(&ctxt->mac, params->mac))
 		return -1;
-	/*@=modobserver@*/
 
 	ctxt->cipherkeybits = params->cipherkeybits;
 	ctxt->mackeybits = params->mackeybits;
@@ -161,12 +160,11 @@ int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* par
 
 int dhaes_pContextFree(dhaes_pContext* ctxt)
 {
-	(void) dldp_pFree(&ctxt->param);
+	dldp_pFree(&ctxt->param);
 
 	mpnfree(&ctxt->pub);
 	mpnfree(&ctxt->pri);
 
-	/*@-mustfree -modobserver @*/ /* ctxt is OK */
 	if (hashFunctionContextFree(&ctxt->hash))
 		return -1;
 
@@ -177,13 +175,9 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 		return -1;
 
 	return 0;
-	/*@=mustfree =modobserver @*/
 }
 
-/**
- */
-static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, const mpnumber* pubkey, const mpnumber* message, cipherOperation op)
-	/*@modifies ctxt @*/
+static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* private, const mpnumber* public, const mpnumber* message, cipherOperation op)
 {
 	register int rc;
 
@@ -196,7 +190,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 
 	/* compute the shared secret, Diffie-Hellman style */
 	mpnzero(&secret);
-	if (dlsvdp_pDHSecret(&ctxt->param, privkey, pubkey, &secret))
+	if (dlsvdp_pDHSecret(&ctxt->param, private, public, &secret))
 	{
 		mpnfree(&secret);
 		free(digest);
@@ -204,10 +198,11 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 	}
 
 	/* compute the hash of the message (ephemeral public) key and the shared secret */
-	(void) hashFunctionContextReset   (&ctxt->hash);
-	(void) hashFunctionContextUpdateMP(&ctxt->hash, message);
-	(void) hashFunctionContextUpdateMP(&ctxt->hash, &secret);
-	(void) hashFunctionContextDigest  (&ctxt->hash, digest);
+
+	hashFunctionContextReset   (&ctxt->hash);
+	hashFunctionContextUpdateMP(&ctxt->hash, message);
+	hashFunctionContextUpdateMP(&ctxt->hash, &secret);
+	hashFunctionContextDigest  (&ctxt->hash, digest);
 
 	/* we don't need the secret anymore */
 	mpnwipe(&secret);
@@ -224,11 +219,10 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 	 * size requirements.
 	 */
 
-	/*@-usedef@*/	/* LCL: digest already set */
 	if (ctxt->hash.algo->digestsize > 0)
 	{
 		byte* mackey = digest;
-		byte* cipherkey = digest + ((unsigned)(ctxt->mackeybits + 7) >> 3);
+		byte* cipherkey = digest + ((ctxt->mackeybits + 7) >> 3);
 
 		if ((rc = keyedHashFunctionContextSetup(&ctxt->mac, mackey, ctxt->mackeybits)))
 			goto setup_end;
@@ -240,16 +234,13 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 	}
 	else
 		rc = -1;
-	/*@=usedef@*/
 
 setup_end:
 	/* wipe digest for good measure */
 	memset(digest, 0, ctxt->hash.algo->digestsize); 
 	free(digest);
 
-	/*@-mustfree@*/ /* {secret,digest}.data are OK */
 	return rc;
-	/*@=mustfree@*/
 }
 
 memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mpnumber* ephemeralPublicKey, mpnumber* mac, const memchunk* cleartext, randomGeneratorContext* rng)
@@ -261,7 +252,7 @@ memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mpnumber* ephemeralPublicK
 
 	/* make the ephemeral keypair */
 	mpnzero(&ephemeralPrivateKey);
-	(void) dldp_pPair(&ctxt->param, rng, &ephemeralPrivateKey, ephemeralPublicKey);
+	dldp_pPair(&ctxt->param, rng, &ephemeralPrivateKey, ephemeralPublicKey);
 
 	/* Setup the key and initialize the mac and the blockcipher */
 	if (dhaes_pContextSetup(ctxt, &ephemeralPrivateKey, &ctxt->pub, ephemeralPublicKey, ENCRYPT))
@@ -269,8 +260,6 @@ memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mpnumber* ephemeralPublicK
 
 	/* add pkcs-5 padding */
 	paddedtext = pkcs5PadCopy(ctxt->cipher.algo->blocksize, cleartext);
-	if (paddedtext == (memchunk*) 0)
-		goto encrypt_end;
 
 	/* encrypt the memchunk in CBC mode */
 	if (blockEncryptCBC(ctxt->cipher.algo, ctxt->cipher.param, (uint32_t*) paddedtext->data, (const uint32_t*) paddedtext->data, paddedtext->size / ctxt->cipher.algo->blocksize))
@@ -301,9 +290,7 @@ encrypt_end:
 	mpnwipe(&ephemeralPrivateKey);
 	mpnfree(&ephemeralPrivateKey);
 
-	/*@-mustfree@*/	/* ephemeralPrivateKey.data is OK */
 	return ciphertext;
-	/*@=mustfree@*/
 }
 
 memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralPublicKey, const mpnumber* mac, const memchunk* ciphertext)
@@ -323,15 +310,13 @@ memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralP
 		goto decrypt_end;
 
 	/* decrypt the memchunk with CBC mode */
-	paddedtext = (memchunk*) calloc(1, sizeof(*paddedtext));
+	paddedtext = (memchunk*) calloc(1, sizeof(memchunk));
 
 	if (paddedtext == (memchunk*) 0)
 		goto decrypt_end;
 
 	paddedtext->size = ciphertext->size;
-	/*@-mustfree@*/ /* paddedtext->data is OK */
 	paddedtext->data = (byte*) malloc(ciphertext->size);
-	/*@=mustfree@*/
 
 	if (paddedtext->data == (byte*) 0)
 	{
@@ -357,8 +342,5 @@ memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralP
 
 decrypt_end:
 
-	/*@-usereleased@*/ /* LCL: cleartext released??? */
 	return cleartext;
-	/*@=usereleased@*/
 }
-/*@=compdef@*/

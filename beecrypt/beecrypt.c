@@ -1,4 +1,3 @@
-/*@-compdef -sizeoftype@*/
 /*
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
@@ -23,27 +22,31 @@
  * \ingroup ES_m PRNG_m HASH_m HMAC_m BC_m
  */
 
-#include "system.h"
-#include "beecrypt.h"
+#define BEECRYPT_DLL_EXPORT
 
-#include "entropy.h"
-#include "fips186.h"
-#include "hmacmd5.h"
-#include "hmacsha1.h"
-#include "hmacsha256.h"
-#include "md5.h"
-#include "mp.h"
-#include "mtprng.h"
-#include "sha1.h"
-#include "sha256.h"
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
 
-#include "aes.h"
-#include "blowfish.h"
-#include "blockmode.h"
+#include "beecrypt/beecrypt.h"
 
-#include "debug.h"
+#include "beecrypt/entropy.h"
 
-/*@observer@*/ /*@unchecked@*/
+#include "beecrypt/fips186.h"
+#include "beecrypt/mtprng.h"
+
+#include "beecrypt/md5.h"
+#include "beecrypt/sha1.h"
+#include "beecrypt/sha256.h"
+
+#include "beecrypt/hmacmd5.h"
+#include "beecrypt/hmacsha1.h"
+#include "beecrypt/hmacsha256.h"
+
+#include "beecrypt/aes.h"
+#include "beecrypt/blowfish.h"
+#include "beecrypt/blockmode.h"
+
 static entropySource entropySourceList[] =
 {
 #if WIN32
@@ -108,10 +111,7 @@ const entropySource* entropySourceDefault()
 	{
 		return entropySourceList+0;
 	}
-	else
-	{
-		return (const entropySource*) 0;
-	}
+	return (const entropySource*) 0;
 }
 
 int entropyGatherNext(byte* data, size_t size)
@@ -138,7 +138,6 @@ int entropyGatherNext(byte* data, size_t size)
 	return -1;
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const randomGenerator* randomGeneratorList[] =
 {
 	&fips186prng,
@@ -157,9 +156,7 @@ const randomGenerator* randomGeneratorGet(int index)
 	if ((index < 0) || (index >= RANDOMGENERATORS))
 		return (const randomGenerator*) 0;
 
-	/*@-compmempass@*/
 	return randomGeneratorList[index];
-	/*@=compmempass@*/
 }
 
 const randomGenerator* randomGeneratorFind(const char* name)
@@ -169,9 +166,7 @@ const randomGenerator* randomGeneratorFind(const char* name)
 	for (index = 0; index < RANDOMGENERATORS; index++)
 	{
 		if (strcmp(name, randomGeneratorList[index]->name) == 0)
-			/*@-compmempass@*/
 			return randomGeneratorList[index];
-			/*@=compmempass@*/
 	}
 	return (const randomGenerator*) 0;
 }
@@ -183,9 +178,7 @@ const randomGenerator* randomGeneratorDefault()
 	if (selection)
 		return randomGeneratorFind(selection);
 	else
-		/*@-compmempass @*/
 		return &fips186prng;
-		/*@=compmempass @*/
 }
 
 int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerator* rng)
@@ -197,40 +190,42 @@ int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerat
 		return -1;
 
 	ctxt->rng = rng;
-	ctxt->param = (randomGeneratorParam*) calloc(rng->paramsize, 1);
 
-	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
-	if (ctxt->param == (randomGeneratorParam*) 0)
-		return -1;
+	if (rng->paramsize)
+	{
+		ctxt->param = (randomGeneratorParam*) calloc(rng->paramsize, 1);
+		if (ctxt->param == (randomGeneratorParam*) 0)
+			return -1;
+	}
+	else
+		ctxt->param = (randomGeneratorParam*) 0;
 
 	return ctxt->rng->setup(ctxt->param);
-	/*@=nullstate@*/
 }
 
 int randomGeneratorContextFree(randomGeneratorContext* ctxt)
 {
-	register int rc;
+	register int rc = 0;
 
-	/*@-mustfree@*/
 	if (ctxt == (randomGeneratorContext*) 0)
 		return -1;
 
 	if (ctxt->rng == (randomGenerator*) 0)
 		return -1;
 
-	if (ctxt->param == (randomGeneratorParam*) 0)
-		return -1;
-	/*@=mustfree@*/
+	if (ctxt->rng->paramsize)
+	{
+		if (ctxt->param == (randomGeneratorParam*) 0)
+			return -1;
+	
+		rc = ctxt->rng->cleanup(ctxt->param);
 
-	rc = ctxt->rng->cleanup(ctxt->param);
+		free(ctxt->param);
 
-	free(ctxt->param);
+		ctxt->param = (randomGeneratorParam*) 0;
+	}
 
-	ctxt->param = (randomGeneratorParam*) 0;
-
-	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	return rc;
-	/*@=nullstate@*/
 }
 
 int randomGeneratorContextNext(randomGeneratorContext* ctxt, byte* data, size_t size)
@@ -238,7 +233,11 @@ int randomGeneratorContextNext(randomGeneratorContext* ctxt, byte* data, size_t 
 	return ctxt->rng->next(ctxt->param, data, size);
 }
 
-/*@observer@*/ /*@unchecked@*/
+int randomGeneratorContextSeed(randomGeneratorContext* ctxt, const byte* data, size_t size)
+{
+	return ctxt->rng->seed(ctxt->param, data, size);
+}
+
 static const hashFunction* hashFunctionList[] =
 {
 	&md5,
@@ -260,9 +259,7 @@ const hashFunction* hashFunctionDefault()
 	if (selection)
 		return hashFunctionFind(selection);
 	else
-		/*@-compmempass @*/
 		return &sha1;
-		/*@=compmempass @*/
 }
 
 const hashFunction* hashFunctionGet(int index)
@@ -270,9 +267,7 @@ const hashFunction* hashFunctionGet(int index)
 	if ((index < 0) || (index >= HASHFUNCTIONS))
 		return (const hashFunction*) 0;
 
-	/*@-compmempass@*/
 	return hashFunctionList[index];
-	/*@=compmempass@*/
 }
 
 const hashFunction* hashFunctionFind(const char* name)
@@ -282,9 +277,7 @@ const hashFunction* hashFunctionFind(const char* name)
 	for (index = 0; index < HASHFUNCTIONS; index++)
 	{
 		if (strcmp(name, hashFunctionList[index]->name) == 0)
-			/*@-compmempass@*/
 			return hashFunctionList[index];
-			/*@=compmempass@*/
 	}
 	return (const hashFunction*) 0;
 }
@@ -300,31 +293,25 @@ int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
 	ctxt->algo = hash;
 	ctxt->param = (hashFunctionParam*) calloc(hash->paramsize, 1);
 
-	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	if (ctxt->param == (hashFunctionParam*) 0)
 		return -1;
 
 	return ctxt->algo->reset(ctxt->param);
-	/*@=nullstate@*/
 }
 
 int hashFunctionContextFree(hashFunctionContext* ctxt)
 {
-	/*@-mustfree@*/
 	if (ctxt == (hashFunctionContext*) 0)
 		return -1;
 
 	if (ctxt->param == (hashFunctionParam*) 0)
 		return -1;
-	/*@=mustfree@*/
 
 	free(ctxt->param);
 
 	ctxt->param = (hashFunctionParam*) 0;
 
-	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	return 0;
-	/*@=nullstate@*/
 }
 
 int hashFunctionContextReset(hashFunctionContext* ctxt)
@@ -389,22 +376,25 @@ int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
 	if (n != (mpnumber*) 0)
 	{
 		int rc;
-		byte* tmp = (byte*) malloc(MP_WORDS_TO_BYTES(n->size) + 1);
+
+		/* get the number of significant bits in the number */
+		size_t sig = mpbits(n->size, n->data);
+
+		/* calculate how many bytes we need for a java-style encoding;
+		 * if the most significant bit of the most significant byte
+		 * is set, then we need to prefix a zero byte.
+		 */
+		size_t req = ((sig+7) >> 3) + (((sig&7) == 0) ? 1 : 0);
+
+		byte* tmp = (byte*) malloc(req);
 
 		if (tmp == (byte*) 0)
 			return -1;
 
-		if (mpmsbset(n->size, n->data))
-		{
-			tmp[0] = 0;
-			(void) i2osp(tmp+1, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
-			rc = ctxt->algo->update(ctxt->param, tmp, MP_WORDS_TO_BYTES(n->size) + 1);
-		}
-		else
-		{
-			(void) i2osp(tmp, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
-			rc = ctxt->algo->update(ctxt->param, tmp, MP_WORDS_TO_BYTES(n->size));
-		}
+		i2osp(tmp, req, n->data, n->size);
+
+		rc = ctxt->algo->update(ctxt->param, tmp, req);
+
 		free(tmp);
 
 		return rc;
@@ -477,12 +467,9 @@ int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* d)
 
 	mpnfree(&match);
 
-	/*@-mustfree@*/ /* dig.data is OK */
 	return rc;
-	/*@=mustfree@*/
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const keyedHashFunction* keyedHashFunctionList[] =
 {
 	&hmacmd5,
@@ -504,9 +491,7 @@ const keyedHashFunction* keyedHashFunctionDefault()
 	if (selection)
 		return keyedHashFunctionFind(selection);
 	else
-		/*@-compmempass @*/
 		return &hmacsha1;
-		/*@=compmempass @*/
 }
 
 const keyedHashFunction* keyedHashFunctionGet(int index)
@@ -514,9 +499,7 @@ const keyedHashFunction* keyedHashFunctionGet(int index)
 	if ((index < 0) || (index >= KEYEDHASHFUNCTIONS))
 		return (const keyedHashFunction*) 0;
 
-	/*@-compmempass@*/
 	return keyedHashFunctionList[index];
-	/*@=compmempass@*/
 }
 
 const keyedHashFunction* keyedHashFunctionFind(const char* name)
@@ -526,9 +509,7 @@ const keyedHashFunction* keyedHashFunctionFind(const char* name)
 	for (index = 0; index < KEYEDHASHFUNCTIONS; index++)
 	{
 		if (strcmp(name, keyedHashFunctionList[index]->name) == 0)
-			/*@-compmempass@*/
 			return keyedHashFunctionList[index];
-			/*@=compmempass@*/
 	}
 	return (const keyedHashFunction*) 0;
 }
@@ -544,17 +525,14 @@ int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHash
 	ctxt->algo = mac;
 	ctxt->param = (keyedHashFunctionParam*) calloc(mac->paramsize, 1);
 
-	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	if (ctxt->param == (keyedHashFunctionParam*) 0)
 		return -1;
 
 	return ctxt->algo->reset(ctxt->param);
-	/*@=nullstate@*/
 }
 
 int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
 {
-	/*@-mustfree@*/
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
 
@@ -563,15 +541,12 @@ int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
 
 	if (ctxt->param == (keyedHashFunctionParam*) 0)
 		return -1;
-	/*@=mustfree@*/
 
 	free(ctxt->param);
 
 	ctxt->param = (keyedHashFunctionParam*) 0;
 
-	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	return 0;
-	/*@=nullstate@*/
 }
 
 int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const byte* key, size_t keybits)
@@ -652,23 +627,27 @@ int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnum
 
 	if (n != (mpnumber*) 0)
 	{
-		register int rc;
-		register byte* temp = (byte*) malloc(MP_WORDS_TO_BYTES(n->size)+1);
-		if (temp == (byte*) 0)
+		int rc;
+
+		/* get the number of significant bits in the number */
+		size_t sig = mpbits(n->size, n->data);
+
+		/* calculate how many bytes we need a java-style encoding; if the
+		 * most significant bit of the most significant byte is set, then
+		 * we need to prefix a zero byte.
+		 */
+		size_t req = ((sig+7) >> 3) + (((sig&7) == 0) ? 1 : 0);
+
+		byte* tmp = (byte*) malloc(req);
+
+		if (tmp == (byte*) 0)
 			return -1;
 
-		if (mpmsbset(n->size, n->data))
-		{
-			temp[0] = 0;
-			(void) i2osp(temp+1, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
-			 rc = ctxt->algo->update(ctxt->param, temp, MP_WORDS_TO_BYTES(n->size)+1);
-		}
-		else
-		{
-			(void) i2osp(temp, MP_WORDS_TO_BYTES(n->size), n->data, n->size);
-			rc = ctxt->algo->update(ctxt->param, temp, MP_WORDS_TO_BYTES(n->size));
-		}
-		free(temp);
+		i2osp(tmp, req, n->data, n->size);
+
+		rc = ctxt->algo->update(ctxt->param, tmp, req);
+
+		free(tmp);
 
 		return rc;
 	}
@@ -692,7 +671,7 @@ int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, byte* digest)
 	return ctxt->algo->digest(ctxt->param, digest);
 }
 
-int keyedHashFunctionContextDigestMP(keyedHashFunctionContext* ctxt, const mpnumber* d)
+int keyedHashFunctionContextDigestMP(keyedHashFunctionContext* ctxt, mpnumber* d)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
@@ -740,12 +719,9 @@ int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp
 
 	mpnfree(&match);
 
-	/*@-mustfree@*/ /* dig.data is OK */
 	return rc;
-	/*@=mustfree@*/
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const blockCipher* blockCipherList[] =
 {
 	&aes,
@@ -766,9 +742,7 @@ const blockCipher* blockCipherDefault()
 	if (selection)
 		return blockCipherFind(selection);
 	else
-		/*@-compmempass @*/
 		return &aes;
-		/*@=compmempass @*/
 }
 
 const blockCipher* blockCipherGet(int index)
@@ -776,9 +750,7 @@ const blockCipher* blockCipherGet(int index)
 	if ((index < 0) || (index >= BLOCKCIPHERS))
 		return (const blockCipher*) 0;
 
-	/*@-compmempass@*/
 	return blockCipherList[index];
-	/*@=compmempass@*/
 }
 
 const blockCipher* blockCipherFind(const char* name)
@@ -788,9 +760,7 @@ const blockCipher* blockCipherFind(const char* name)
 	for (index = 0; index < BLOCKCIPHERS; index++)
 	{
 		if (strcmp(name, blockCipherList[index]->name) == 0)
-			/*@-compmempass@*/
 			return blockCipherList[index];
-			/*@=compmempass@*/
 	}
 
 	return (const blockCipher*) 0;
@@ -808,12 +778,10 @@ int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
 	ctxt->param = (blockCipherParam*) calloc(ciph->paramsize, 1);
 	ctxt->op = NOCRYPT;
 
-	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	if (ctxt->param == (blockCipherParam*) 0)
 		return -1;
 
 	return 0;
-	/*@=nullstate@*/
 }
 
 int blockCipherContextSetup(blockCipherContext* ctxt, const byte* key, size_t keybits, cipherOperation op)
@@ -853,78 +821,62 @@ int blockCipherContextSetIV(blockCipherContext* ctxt, const byte* iv)
 
 int blockCipherContextFree(blockCipherContext* ctxt)
 {
-	/*@-mustfree@*/
 	if (ctxt == (blockCipherContext*) 0)
 		return -1;
 
 	if (ctxt->param == (blockCipherParam*) 0)
 		return -1;
-	/*@=mustfree@*/
 
 	free(ctxt->param);
 
 	ctxt->param = (blockCipherParam*) 0;
 
-	/*@-nullstate@*/ /* FIX: ctxt->param is NULL */
 	return 0;
-	/*@=nullstate@*/
 }
 
-int blockCipherContextECB(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, size_t nblocks)
+int blockCipherContextECB(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, int nblocks)
 {
 	switch (ctxt->op)
 	{
 	case NOCRYPT:
-/*@-mayaliasunique@*/
 		memcpy(dst, src, nblocks * ctxt->algo->blocksize);
-/*@=mayaliasunique@*/
 		return 0;
-		/*@notreached@*/ break;
 	case ENCRYPT:
 		return (ctxt->algo->ecb.encrypt) ?
 			ctxt->algo->ecb.encrypt(ctxt->param, dst, src, nblocks) :
 			blockEncryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
-		/*@notreached@*/ break;
 	case DECRYPT:
 		return (ctxt->algo->ecb.decrypt) ?
 			ctxt->algo->ecb.decrypt(ctxt->param, dst, src, nblocks) :
 			blockDecryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
-		/*@notreached@*/ break;
 	}
-	/*@notreached@*/
 	return -1;
 }
 
-int blockCipherContextCBC(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, size_t nblocks)
+int blockCipherContextCBC(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, int nblocks)
 {
 	switch (ctxt->op)
 	{
 	case NOCRYPT:
-/*@-mayaliasunique@*/
 		memcpy(dst, src, nblocks * ctxt->algo->blocksize);
-/*@=mayaliasunique@*/
 		return 0;
-		/*@notreached@*/ break;
 	case ENCRYPT:
 		return (ctxt->algo->cbc.encrypt) ?
 			ctxt->algo->cbc.encrypt(ctxt->param, dst, src, nblocks) :
 			blockEncryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
-		/*@notreached@*/ break;
 	case DECRYPT:
 		return (ctxt->algo->cbc.decrypt) ?
 			ctxt->algo->cbc.decrypt(ctxt->param, dst, src, nblocks) :
 			blockDecryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
-		/*@notreached@*/ break;
 	}
-	/*@notreached@*/
 	return -1;
 }
 
 #if WIN32
 __declspec(dllexport)
-BOOL WINAPI DllMain(HINSTANCE hInst, DWORD wDataSeg, LPVOID lpReserved)
+BOOL WINAPI DllMain(HINSTANCE hInst, DWORD fdwReason, LPVOID lpReserved)
 {
-	switch (wDataSeg)
+	switch (fdwReason)
 	{
    	case DLL_PROCESS_ATTACH:
    		entropy_provider_setup(hInst);
@@ -933,7 +885,7 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD wDataSeg, LPVOID lpReserved)
 		entropy_provider_cleanup();
 		break;
    	}
-   	return TRUE;
+
+	return TRUE;
 }
 #endif
-/*@=compdef =sizeoftype@*/
