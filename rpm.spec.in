@@ -583,3 +583,6 @@ fi
 - annotations to make a transactionElement opaque.
 - use array of pointers rather than contiguous array for ts->order.
 - methods to complete making transactionElement opaque.
+- use TR_REMOVED relations as well as TR_ADDED for ordering.
+- drop requirement that removed packages immediately follow added.
+- hybrid chainsaw/presentation ordering algorithm.

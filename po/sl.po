@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.209 2001/11/17 08:02:49 jbj Exp $
+# $Id: sl.po,v 1.210 2001/11/17 20:44:41 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-17 02:54-0500\n"
+"POT-Creation-Date: 2001-11-17 15:43-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1524,30 +1524,30 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1271
+#: lib/depends.c:1293
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1342
+#: lib/depends.c:1387
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1416
+#: lib/depends.c:1471
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1476
+#: lib/depends.c:1541
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1511
+#: lib/depends.c:1576
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1516
+#: lib/depends.c:1581
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""

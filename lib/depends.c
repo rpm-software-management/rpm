@@ -1210,6 +1210,10 @@ static void addQ(/*@dependent@*/ transactionElement p,
 	if (teGetTSI(q)->tsi_qcnt <= teGetTSI(p)->tsi_qcnt)
 	    break;
     }
+
+    /* Mark the package as queued. */
+    teGetTSI(p)->tsi_reqx = 1;
+
     if (qprev == NULL) {	/* insert at beginning of list */
 	teGetTSI(p)->tsi_suc = q;
 	/*@-dependenttrans@*/
@@ -1232,22 +1236,31 @@ int rpmdepOrder(rpmTransactionSet ts)
 	rpmDepSet requires;
 	int_32 Flags;
 
-    int numAddedPackages = ts->numAddedPackages;
+#ifdef	DYING
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
+#else
+    int chainsaw = 1;
+#endif
     teIterator pi; transactionElement p;
     teIterator qi; transactionElement q;
     teIterator ri; transactionElement r;
     tsortInfo tsi;
     tsortInfo tsi_next;
-    alKey * ordering = alloca(sizeof(*ordering) * (numAddedPackages + 1));
+    alKey * ordering;
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
     int loopcheck;
     transactionElement * newOrder;
     int newOrderCount = 0;
     orderListIndex orderList;
+    int numOrderList;
     int nrescans = 10;
     int _printed = 0;
+#ifdef	DYING
+    int oType = TR_ADDED;
+#else
+    int oType = 0;
+#endif
     int qlen;
     int i, j;
 
@@ -1259,19 +1272,28 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 /*@=modfilesystem =nullpass =formattype@*/
 
     /* T1. Initialize. */
-    loopcheck = numAddedPackages;	/* XXX TR_ADDED only: should be ts->orderCount */
+    if (oType == 0)
+	numOrderList = ts->orderCount;
+    else {
+	numOrderList = 0;
+	if (oType & TR_ADDED)
+	    numOrderList += ts->numAddedPackages;
+	if (oType & TR_REMOVED)
+	    numOrderList += ts->numRemovedPackages;
+     }
+    ordering = alloca(sizeof(*ordering) * (numOrderList + 1));
+    loopcheck = numOrderList;
+
     pi = teInitIterator(ts);
-    /* XXX Only added packages are ordered (for now). */
-    while ((p = teNext(pi, TR_ADDED)) != NULL) {
+    while ((p = teNext(pi, oType)) != NULL)
 	teNewTSI(p);
-    }
     pi = teFreeIterator(pi);
 
     /* Record all relations. */
     rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
     pi = teInitIterator(ts);
     /* XXX Only added packages are ordered (for now). */
-    while ((p = teNext(pi, TR_ADDED)) != NULL) {
+    while ((p = teNext(pi, oType)) != NULL) {
 
 	if ((requires = teGetDS(p, RPMTAG_REQUIRENAME)) == NULL)
 	    continue;
@@ -1290,12 +1312,24 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 
 	    Flags = dsiGetFlags(requires);
 
-	    /* Skip if not %pre/%post requires or legacy prereq. */
-
-	    if (isErasePreReq(Flags) ||
-		!( isInstallPreReq(Flags) ||
-		   isLegacyPreReq(Flags) ))
-		/*@innercontinue@*/ continue;
+	    switch (p->type) {
+	    case TR_REMOVED:
+		/* Skip if not %preun/%postun requires or legacy prereq. */
+		if (isInstallPreReq(Flags)
+		 || !( isErasePreReq(Flags)
+		    || isLegacyPreReq(Flags)
+		    ))
+		    /*@innercontinue@*/ continue;
+		break;
+	    case TR_ADDED:
+		/* Skip if not %pre/%post requires or legacy prereq. */
+		if (isErasePreReq(Flags)
+		 || !( isInstallPreReq(Flags)
+		    || isLegacyPreReq(Flags)
+		    ))
+		    /*@innercontinue@*/ continue;
+		break;
+	    }
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, p, selected, requires);
@@ -1309,12 +1343,24 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 
 	    Flags = dsiGetFlags(requires);
 
-	    /* Skip if %pre/%post requires or legacy prereq. */
-
-	    if (isErasePreReq(Flags) ||
-		 ( isInstallPreReq(Flags) ||
-		   isLegacyPreReq(Flags) ))
-		/*@innercontinue@*/ continue;
+	    switch (p->type) {
+	    case TR_REMOVED:
+		/* Skip if %preun/%postun requires or legacy prereq. */
+		if (isInstallPreReq(Flags)
+		 ||  ( isErasePreReq(Flags)
+		    || isLegacyPreReq(Flags)
+		    ))
+		    /*@innercontinue@*/ continue;
+		break;
+	    case TR_ADDED:
+		/* Skip if %pre/%post requires or legacy prereq. */
+		if (isErasePreReq(Flags)
+		 ||  ( isInstallPreReq(Flags)
+		    || isLegacyPreReq(Flags)
+		    ))
+		    /*@innercontinue@*/ continue;
+		break;
+	    }
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, p, selected, requires);
@@ -1325,8 +1371,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 
     /* Save predecessor count. */
     pi = teInitIterator(ts);
-    /* XXX Only added packages are ordered (for now). */
-    while ((p = teNext(pi, TR_ADDED)) != NULL) {
+    while ((p = teNext(pi, oType)) != NULL) {
 
 	(void) teSetNpreds(p, teGetTSI(p)->tsi_count);
 
@@ -1346,8 +1391,7 @@ rescan:
     q = r = NULL;
     qlen = 0;
     pi = teInitIterator(ts);
-    /* XXX Only added packages are ordered (for now). */
-    while ((p = teNext(pi, TR_ADDED)) != NULL) {
+    while ((p = teNext(pi, oType)) != NULL) {
 
 	/* Prefer packages in chainsaw or presentation order. */
 	if (!chainsaw)
@@ -1368,21 +1412,32 @@ prtTSI(" p", teGetTSI(p));
 
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = teGetTSI(q)->tsi_suc) {
+	char deptypechar;
 
-	/* XXX Only added packages are ordered (for now). */
+	/* Mark the package as unqueued. */
+	teGetTSI(q)->tsi_reqx = 0;
+
+	if (oType != 0)
 	switch (teGetType(q)) {
 	case TR_ADDED:
+	    if (!(oType & TR_ADDED))
+		continue;
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
+	    if (!(oType & TR_REMOVED))
+		continue;
+	    /*@switchbreak@*/ break;
 	default:
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
+	deptypechar = (teGetType(q) == TR_REMOVED ? '-' : '+');
 
-	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%3d %*s %s\n",
+	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%5d %*s%c%s\n",
 			orderingCount, teGetNpreds(q),
 			teGetTSI(q)->tsi_qcnt, teGetDepth(q),
 			(2 * teGetDepth(q)), "",
+			deptypechar,
 			(teGetNEVR(q) ? teGetNEVR(q) : "???"));
 
 	ordering[orderingCount] = teGetAddedKey(q);
@@ -1414,6 +1469,19 @@ prtTSI(" p", teGetTSI(p));
 	    _printed++;
 	    rpmMessage(RPMMESS_DEBUG,
 		_("========== successors only (presentation order)\n"));
+
+	    /* Relink the queue in presentation order. */
+	    tsi = teGetTSI(q);
+	    pi = teInitIterator(ts);
+	    while ((p = teNext(pi, oType)) != NULL) {
+		/* Is this element in the queue? */
+		if (teGetTSI(p)->tsi_reqx == 0)
+		    continue;
+		tsi->tsi_suc = p;
+		tsi = teGetTSI(p);
+	    }
+	    pi = teFreeIterator(pi);
+	    tsi->tsi_suc = NULL;
 	}
     }
 
@@ -1424,8 +1492,7 @@ prtTSI(" p", teGetTSI(p));
 	/* T9. Initialize predecessor chain. */
 	nzaps = 0;
 	qi = teInitIterator(ts);
-	/* XXX Only added packages are ordered (for now). */
-	while ((q = teNext(qi, TR_ADDED)) != NULL) {
+	while ((q = teNext(qi, oType)) != NULL) {
 	    teGetTSI(q)->tsi_chain = NULL;
 	    teGetTSI(q)->tsi_reqx = 0;
 	    /* Mark packages already sorted. */
@@ -1436,8 +1503,7 @@ prtTSI(" p", teGetTSI(p));
 
 	/* T10. Mark all packages with their predecessors. */
 	qi = teInitIterator(ts);
-	/* XXX Only added packages are ordered (for now). */
-	while ((q = teNext(qi, TR_ADDED)) != NULL) {
+	while ((q = teNext(qi, oType)) != NULL) {
 	    if ((tsi = teGetTSI(q)->tsi_next) == NULL)
 		continue;
 	    teGetTSI(q)->tsi_next = NULL;
@@ -1448,8 +1514,7 @@ prtTSI(" p", teGetTSI(p));
 
 	/* T11. Print all dependency loops. */
 	ri = teInitIterator(ts);
-	/* XXX Only added packages are ordered (for now). */
-	while ((r = teNext(ri, TR_ADDED)) != NULL)
+	while ((r = teNext(ri, oType)) != NULL)
 	{
 	    int printed;
 
@@ -1518,30 +1583,37 @@ prtTSI(" p", teGetTSI(p));
 	return loopcheck;
     }
 
+    /* Clean up tsort remnants (if any). */
+    pi = teInitIterator(ts);
+    while ((p = teNextIterator(pi)) != NULL)
+	teFreeTSI(p);
+    pi = teFreeIterator(pi);
+
     /*
      * The order ends up as installed packages followed by removed packages,
      * with removes for upgrades immediately following the installation of
      * the new package. This would be easier if we could sort the
      * addedPackages array, but we store indexes into it in various places.
      */
-    orderList = xcalloc(numAddedPackages, sizeof(*orderList));
+    orderList = xcalloc(numOrderList, sizeof(*orderList));
     j = 0;
     pi = teInitIterator(ts);
-    /* XXX Only added packages are ordered (for now). */
-    while ((p = teNext(pi, TR_ADDED)) != NULL) {
-
-	/* Clean up tsort remnants (if any). */
-	teFreeTSI(p);
-
+    while ((p = teNext(pi, oType)) != NULL) {
 	/* Prepare added package ordering permutation. */
-	orderList[j].pkgKey = teGetAddedKey(p);
+	switch (teGetType(p)) {
+	case TR_ADDED:
+	    orderList[j].pkgKey = teGetAddedKey(p);
+	    break;
+	case TR_REMOVED:
+	    orderList[j].pkgKey = RPMAL_NOMATCH;
+	    break;
+	}
 	orderList[j].orIndex = teiGetOc(pi);
 	j++;
     }
     pi = teFreeIterator(pi);
-    assert(j <= numAddedPackages);
 
-    qsort(orderList, numAddedPackages, sizeof(*orderList), orderListIndexCmp);
+    qsort(orderList, numOrderList, sizeof(*orderList), orderListIndexCmp);
 
 /*@-type@*/
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
@@ -1553,14 +1625,19 @@ prtTSI(" p", teGetTSI(p));
 	orderListIndex needle;
 
 	key.pkgKey = ordering[i];
-	needle = bsearch(&key, orderList, numAddedPackages,
+	needle = bsearch(&key, orderList, numOrderList,
 				sizeof(key), orderListIndexCmp);
 	/* bsearch should never, ever fail */
-	if (needle == NULL) continue;
+	if (needle == NULL)
+	    continue;
 
 	j = needle->orIndex;
-	newOrder[newOrderCount++] = q = ts->order[j];
+	if ((q = ts->order[j]) == NULL)
+	    continue;
+
+	newOrder[newOrderCount++] = q;
 	ts->order[j] = NULL;
+	if (!chainsaw)
 	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
 	    if ((q = ts->order[j]) == NULL)
 		/*@innerbreak@*/ break;
@@ -1578,11 +1655,10 @@ prtTSI(" p", teGetTSI(p));
     for (j = 0; j < ts->orderCount; j++) {
 	if ((p = ts->order[j]) == NULL)
 	    continue;
-	assert(teGetType(p) == TR_REMOVED);
 	newOrder[newOrderCount++] = p;
 	ts->order[j] = NULL;
     }
-    assert(newOrderCount == ts->orderCount);
+assert(newOrderCount == ts->orderCount);
 
 /*@+voidabstract@*/
     ts->order = _free(ts->order);

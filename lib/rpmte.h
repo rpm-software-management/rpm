@@ -39,8 +39,8 @@ struct tsortInfo_s {
 /** \ingroup rpmdep
  */
 typedef enum rpmTransactionType_e {
-    TR_ADDED,			/*!< Package will be installed. */
-    TR_REMOVED			/*!< Package will be removed. */
+    TR_ADDED		= (1 << 0),	/*!< Package will be installed. */
+    TR_REMOVED		= (1 << 1)	/*!< Package will be removed. */
 } rpmTransactionType;
 
 /** \ingroup rpmdep

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-17 02:54-0500\n"
+"POT-Creation-Date: 2001-11-17 15:43-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1492,30 +1492,30 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1271
+#: lib/depends.c:1293
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1342
+#: lib/depends.c:1387
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1416
+#: lib/depends.c:1471
 msgid "========== successors only (presentation order)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1476
+#: lib/depends.c:1541
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1511
+#: lib/depends.c:1576
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1516
+#: lib/depends.c:1581
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-17 02:54-0500\n"
+"POT-Creation-Date: 2001-11-17 15:43-0500\n"
 
 #: build.c:36
 #, fuzzy
@@ -1635,30 +1635,30 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "No consegui abrir: %s\n"
 
 #. Record all relations.
-#: lib/depends.c:1271
+#: lib/depends.c:1293
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1342
+#: lib/depends.c:1387
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1416
+#: lib/depends.c:1471
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1476
+#: lib/depends.c:1541
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1511
+#: lib/depends.c:1576
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1516
+#: lib/depends.c:1581
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""

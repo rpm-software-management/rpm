@@ -416,10 +416,8 @@ transactionElement teNext(teIterator tei, rpmTransactionType type)
     transactionElement p;
 
     while ((p = teNextIterator(tei)) != NULL) {
-	/*@-type@*/
-	if (p->type == type)
+	if (type == 0 || p->type == type)
 	    break;
-	/*@=type@*/
     }
     return p;
 }
