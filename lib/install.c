@@ -72,6 +72,7 @@ static int archOkay(Header h);
 static int osOkay(Header h);
 static int moveFile(char * sourceName, char * destName);
 static int copyFile(char * sourceName, char * destName);
+static void unglobFilename(char * dptr, char * sptr);
 
 /* 0 success */
 /* 1 bad magic */
@@ -106,7 +107,8 @@ int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
 /* 1 bad magic */
 /* 2 error */
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location, 
-		      int flags, notifyFunction notify, char * labelFormat) {
+		      int flags, notifyFunction notify, char * labelFormat,
+		      char * netsharedPath) {
     int rc, isSource, major, minor;
     char * name, * version, * release;
     Header h;
@@ -117,20 +119,18 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     uint_32 * fileSizesList;
     int_16 * fileModesList;
     int_32 installTime;
-    char * fileStatesList;
+    char * fileStatesList = NULL;
     struct fileToInstall * files;
     enum instActions * instActions = NULL;
     int i;
     int archiveFileCount = 0;
     int installFile = 0;
-    int normalState = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
     int prefixLength = strlen(rootdir);
     char ** prefixedFileList = NULL;
     struct replacedFile * replacedList = NULL;
-    char * sptr, * dptr, * defaultPrefix;
-    int length;
+    char * defaultPrefix;
     dbIndexSet matches;
     int * oldVersions;
     int * intptr;
@@ -146,12 +146,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     if (rc) return rc;
 
     if (isSource) {
-	/* We deal with source packages pretty badly. They should end
-	   up in the database, and we should be smarter about installing
-	   them. Old source packages are broken though, and this hack
-	   is the easiest way. It's too bad the notify stuff doesn't work
-	   though  */
-
 	if (flags & INSTALL_TEST) {
 	    message(MESS_DEBUG, "stopping install as we're running --test\n");
 	    return 0;
@@ -199,6 +193,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	relocationSize = 1;
     }
 
+    /* You're probably upset because name already points to the name of
+       this package, right? Almost... it points to the name in the original
+       header, which could have been trahsed by relocateFileList() */
     getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
@@ -217,6 +214,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	return 2;
     }
 
+    if (packageAlreadyInstalled(db, name, version, release, &otherOffset, 
+				flags)) {
+	freeHeader(h);
+	return 2;
+    }
+
     if (labelFormat) {
 	printf(labelFormat, name, version, release);
 	fflush(stdout);
@@ -224,12 +227,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     message(MESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
 		name, version, release, flags & INSTALL_TEST);
-
-    if (packageAlreadyInstalled(db, name, version, release, &otherOffset, 
-				flags)) {
-	freeHeader(h);
-	return 2;
-    }
 
     rc = rpmdbFindPackage(db, name, &matches);
     if (rc == -1) return 2;
@@ -269,9 +266,18 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     fileList = NULL;
     if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 		 &fileCount)) {
+	char ** netsharedPaths;
+	char ** nsp;
+
+	if (netsharedPath) 
+	    netsharedPaths = splitString(netsharedPath, 
+					 strlen(netsharedPath), ':');
+	else
+	    netsharedPaths = NULL;
 
 	instActions = alloca(sizeof(enum instActions) * fileCount);
 	prefixedFileList = alloca(sizeof(char *) * fileCount);
+	fileStatesList = alloca(sizeof(*fileStatesList) * fileCount);
 
 	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
 	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
@@ -294,18 +300,31 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    } else 
 		prefixedFileList[i] = fileList[i];
 
-	    instActions[i] = CREATE;
-	    if ((fileFlagsList[i] & RPMFILE_CONFIG) &&
-		!S_ISDIR(fileModesList[i])) {
-		if (exists(prefixedFileList[i])) {
-		    message(MESS_DEBUG, "%s exists - backing up\n", 
-				prefixedFileList[i]);
-		    instActions[i] = BACKUP;
+	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) 
+		if (!strncmp(prefixedFileList[i], *nsp, strlen(*nsp))) break;
+
+	    if (nsp && *nsp) {
+		message(MESS_DEBUG, "file %s in netshared path\n", 
+			prefixedFileList[i]);
+		instActions[i] = SKIP;
+		fileStatesList[i] = RPMFILE_STATE_NETSHARED;
+	    } else if ((fileFlagsList[i] & RPMFILE_DOC) && 
+			(flags & INSTALL_NODOCS)) {
+		instActions[i] = SKIP;
+		fileStatesList[i] = RPMFILE_STATE_NOTINSTALLED;
+	    } else {
+		fileStatesList[i] = RPMFILE_STATE_NORMAL;
+
+		instActions[i] = CREATE;
+		if ((fileFlagsList[i] & RPMFILE_CONFIG) &&
+		    !S_ISDIR(fileModesList[i])) {
+		    if (exists(prefixedFileList[i])) {
+			message(MESS_DEBUG, "%s exists - backing up\n", 
+				    prefixedFileList[i]);
+			instActions[i] = BACKUP;
+		    }
 		}
 	    }
-
-	    if ((fileFlagsList[i] & RPMFILE_DOC) && (flags & INSTALL_NODOCS))
-		instActions[i] = SKIP;
 	}
 
 	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileModesList,
@@ -338,7 +357,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     }
 
     if (fileList) {
-
 	if (createDirectories(rootdir, fileList, fileCount)) {
 	    freeHeader(h);
 	    free(fileList);
@@ -350,36 +368,30 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		 &fileCount);
 
 	files = alloca(sizeof(struct fileToInstall) * fileCount);
-	fileStatesList = malloc(sizeof(char) * fileCount);
 	for (i = 0; i < fileCount; i++) {
 	    switch (instActions[i]) {
 	      case BACKUP:
 		ext = ".rpmorig";
 		installFile = 1;
-		normalState = 1;
 		break;
 
 	      case SAVE:
 		ext = ".rpmsave";
 		installFile = 1;
-		normalState = 1;
 		break;
 
 	      case CREATE:
 		installFile = 1;
-		normalState = 1;
 		ext = NULL;
 		break;
 
 	      case KEEP:
 		installFile = 0;
-		normalState = 1;
 		ext = NULL;
 		break;
 
 	      case SKIP:
 		installFile = 0;
-		normalState = 0;
 		ext = NULL;
 		break;
 	    }
@@ -403,35 +415,22 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    }
 
 	    if (installFile) {
- 		/* 1) we skip over the leading /
-		   2) we have to escape globbing characters :-( */
-
 		/* if we are using a relocateable package, we need to strip
-		   off whatever part of the (already relocated!) filelist */
+		   off whatever part of the (already relocated!) filelist
 
-		length = strlen(fileList[i]);
-		files[archiveFileCount].fileName = alloca((length * 2) + 1);
-		dptr = files[archiveFileCount].fileName;
-		for (sptr = fileList[i] + relocationSize; *sptr; sptr++) {
-		    switch (*sptr) {
-		      case '*': case '[': case ']': case '?': case '\\':
-			*dptr++ = '\\';
-			/*fallthrough*/
-		      default:
-			*dptr++ = *sptr;
-		    }
-		}
-		*dptr++ = *sptr;
+		   we also need to strip globbing characters, as cpio
+		   globs the patterns we pass to it against the filenames
+		   in the archive */
 
+		files[archiveFileCount].fileName = 
+			alloca((strlen(fileList[i]) * 2) + 1);
+
+		unglobFilename(files[archiveFileCount].fileName, 
+				fileList[i] + relocationSize);
 		files[archiveFileCount].size = fileSizesList[i];
 
 		archiveFileCount++;
 	    }
-
-	    if (normalState) 
-		fileStatesList[i] = RPMFILE_STATE_NORMAL;
-	    else
-		fileStatesList[i] = RPMFILE_STATE_NOTINSTALLED;
 	}
 
 	if (rootdir) {
@@ -464,7 +463,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		    free(fileOwners);
 		    free(fileGroups);
 		    free(fileList);
-		    free(fileStatesList);
 		    if (replacedList) free(replacedList);
 
 		    return 2;
@@ -476,7 +474,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	free(fileList);
 
 	addEntry(h, RPMTAG_FILESTATES, CHAR_TYPE, fileStatesList, fileCount);
-	free(fileStatesList);
 
 	installTime = time(NULL);
 	addEntry(h, RPMTAG_INSTALLTIME, INT32_TYPE, &installTime, 1);
@@ -1144,6 +1141,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
     int rc = 0;
     struct replacedFile * replacedList;
     int numReplacedFiles, numReplacedAlloced;
+    char state;
 
     if (findSharedFiles(db, 0, fileList, fileCount, &sharedList, 
 			&sharedCount)) {
@@ -1218,12 +1216,11 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 
 	/* if this instance of the shared file is already recorded as
 	   replaced, just forget about it */
-	if (secFileStatesList[sharedList[i].secFileNumber] == 
-		RPMFILE_STATE_REPLACED) {
+	state = secFileStatesList[sharedList[i].secFileNumber];
+	if (state == RPMFILE_STATE_REPLACED) {
 	    message(MESS_DEBUG, "	old version already replaced\n");
 	    continue;
-	} else if (secFileStatesList[sharedList[i].secFileNumber] == 
-		RPMFILE_STATE_NOTINSTALLED) {
+	} else if (state == RPMFILE_STATE_NOTINSTALLED) {
 	    message(MESS_DEBUG, "	other version never installed\n");
 	    continue;
 	}
@@ -1276,7 +1273,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	free(secFileList);
     }
 
-    free(sharedList);
+    if (sharedList) free(sharedList);
    
     if (!numReplacedFiles) 
 	free(replacedList);
@@ -1523,6 +1520,8 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
 	if (tag != RPMTAG_FILENAMES)
 	    addEntry(newh, tag, type, data, count);
 
+    freeIterator(it);
+
     newFileList = alloca(sizeof(char *) * fileCount);
     for (i = 0; i < fileCount; i++) {
 	if (!strncmp(fileList[i], defaultPrefix, defaultPrefixLength)) {
@@ -1646,4 +1645,17 @@ static int copyFile(char * sourceName, char * destName) {
 	return 1;
 
     return 0;
+}
+
+static void unglobFilename(char * dptr, char * sptr) {
+    while (*sptr) {
+	switch (*sptr) {
+	  case '*': case '[': case ']': case '?': case '\\':
+	    *dptr++ = '\\';
+	    /*fallthrough*/
+	  default:
+	    *dptr++ = *sptr++;
+	}
+    }
+    *dptr++ = *sptr;
 }
