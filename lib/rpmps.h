@@ -132,7 +132,7 @@ rpmps XrpmpsLink (rpmps ps,
  * @param ps		problem set
  * @return		number of problems
  */
-int rpmpsNumProblems(rpmps ps)
+int rpmpsNumProblems(/*@null@*/ rpmps ps)
 	/*@*/;
 
 /**

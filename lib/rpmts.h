@@ -330,7 +330,7 @@ int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
  * @return		transaction rootDir
  */
 /*@observer@*/ /*@null@*/
-const char * rpmtsRootDir(rpmts ts)
+extern const char * rpmtsRootDir(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts
@@ -347,7 +347,7 @@ void rpmtsSetRootDir(rpmts ts, /*@null@*/ const char * rootDir)
  * @return		transaction currDir
  */
 /*@observer@*/ /*@null@*/
-const char * rpmtsCurrDir(rpmts ts)
+extern const char * rpmtsCurrDir(rpmts ts)
 	/*@*/;
 
 /** \ingroup rpmts

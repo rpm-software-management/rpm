@@ -179,7 +179,7 @@ rpmElementType rpmteType(rpmte te)
  * @return		name string
  */
 /*@observer@*/
-const char * rpmteN(rpmte te)
+extern const char * rpmteN(rpmte te)
 	/*@*/;
 
 /**
@@ -188,7 +188,7 @@ const char * rpmteN(rpmte te)
  * @return		epoch string
  */
 /*@observer@*/ /*@null@*/
-const char * rpmteE(rpmte te)
+extern const char * rpmteE(rpmte te)
 	/*@*/;
 
 /**
@@ -197,7 +197,7 @@ const char * rpmteE(rpmte te)
  * @return		version string
  */
 /*@observer@*/ /*@null@*/
-const char * rpmteV(rpmte te)
+extern const char * rpmteV(rpmte te)
 	/*@*/;
 
 /**
@@ -206,7 +206,7 @@ const char * rpmteV(rpmte te)
  * @return		release string
  */
 /*@observer@*/ /*@null@*/
-const char * rpmteR(rpmte te)
+extern const char * rpmteR(rpmte te)
 	/*@*/;
 
 /**
@@ -215,7 +215,7 @@ const char * rpmteR(rpmte te)
  * @return		arch string
  */
 /*@observer@*/ /*@null@*/
-const char * rpmteA(rpmte te)
+extern const char * rpmteA(rpmte te)
 	/*@*/;
 
 /**
@@ -224,7 +224,7 @@ const char * rpmteA(rpmte te)
  * @return		os string
  */
 /*@observer@*/ /*@null@*/
-const char * rpmteO(rpmte te)
+extern const char * rpmteO(rpmte te)
 	/*@*/;
 
 /**
@@ -403,7 +403,7 @@ int rpmteDBOffset(rpmte te)
  * @return		name-version-release string
  */
 /*@observer@*/
-const char * rpmteNEVR(rpmte te)
+extern const char * rpmteNEVR(rpmte te)
 	/*@*/;
 
 /**

@@ -36,3 +36,57 @@
  */
 /** \defgroup	popt	POPT.
  */
+/*! \defgroup	ES_m	Entropy sources
+ */
+/*! \defgroup	ES_audio_m	Entropy sources: /dev/audio
+ */
+/*! \defgroup	ES_dsp_m	Entropy sources: /dev/dsp
+ */
+/*! \defgroup	ES_random_m	Entropy sources: /dev/random
+ */
+/*! \defgroup	ES_urandom_m	Entropy sources: /dev/urandom
+ */
+/*! \defgroup	ES_tty_m	Entropy sources: /dev/tty
+ */
+/*! \defgroup	PRNG_m	Pseudo-Random Number Generators
+ */
+/*! \defgroup	PRNG_fips186_m	Pseudo-Random Number Generators: FIPS-186
+ */
+/*! \defgroup	HASH_m	Hash Functions
+ */
+/*! \defgroup	HASH_md5_m	Hash Functions: MD5
+ */
+/*! \defgroup	HASH_sha1_m	Hash Functions: SHA-1
+ */
+/*! \defgroup	HASH_sha256_m	Hash Functions: SHA-256
+ */
+/*! \defgroup	HMAC_m	Keyed Hash Functions, a.k.a. Message Authentication Codes
+ */
+/*! \defgroup	HMAC_md5_m	Keyed Hash Functions: HMAC-MD5
+ */
+/*! \defgroup	HMAC_sha1_m	Keyed Hash Functions: HMAC-SHA-1
+ */
+/*! \defgroup	HMAC_sha256_m	Keyed Hash Functions: HMAC-SHA-256
+ */
+/*! \defgroup	BC_m	Block ciphers
+ */
+/*! \defgroup	BC_aes_m	Block ciphers: AES
+ */
+/*! \defgroup	BC_blowfish_m	Block ciphers: Blowfish
+ */
+/*! \defgroup	DL_m	Discrete Logarithm Primitives
+ */
+/*! \defgroup	DH_m	Diffie-Hellman Primitives
+ */
+/*! \defgroup	DSA_m	DSA Encryption/Signature Primitives
+ */
+/*! \defgroup	RSA_m	RSA Encryption/Signature Primitives
+ */
+/*! \defgroup	ELGAMAL_m	ElGamal Signature Primitives
+ */
+/*! \defgroup	MP32_m	Multiple Precision Integer Arithmetic (32 bit)
+ */
+/*! \defgroup	MP64_m	Multiple Precision Integer Arithmetic (64 bit)
+ */
+/*! \defgroup	JAVA_m	Java API
+ */

@@ -23,13 +23,17 @@ _free(/*@only@*/ /*@null@*/ const void * p)
 }
 
 /* Bit mask macros. */
+/*@-exporttype@*/
 typedef	unsigned int __pbm_bits;
+/*@=exporttype@*/
 #define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
 #define	__PBM_IX(d)		((d) / __PBM_NBITS)
 #define __PBM_MASK(d)		((__pbm_bits) 1 << (((unsigned)(d)) % __PBM_NBITS))
+/*@-exporttype@*/
 typedef struct {
     __pbm_bits bits[1];
 } pbm_set;
+/*@=exporttype@*/
 #define	__PBM_BITS(set)	((set)->bits)
 
 #define	PBM_ALLOC(d)	calloc(__PBM_IX (d) + 1, sizeof(__pbm_bits))
@@ -40,37 +44,53 @@ typedef struct {
 
 struct optionStackEntry {
     int argc;
-/*@only@*/ /*@null@*/ const char ** argv;
-/*@only@*/ /*@null@*/ pbm_set * argb;
+/*@only@*/ /*@null@*/
+    const char ** argv;
+/*@only@*/ /*@null@*/
+    pbm_set * argb;
     int next;
-/*@only@*/ /*@null@*/ const char * nextArg;
-/*@keep@*/ /*@null@*/ const char * nextCharArg;
-/*@dependent@*/ /*@null@*/ poptItem currAlias;
+/*@only@*/ /*@null@*/
+    const char * nextArg;
+/*@observer@*/ /*@null@*/
+    const char * nextCharArg;
+/*@dependent@*/ /*@null@*/
+    poptItem currAlias;
     int stuffed;
 };
 
 struct poptContext_s {
     struct optionStackEntry optionStack[POPT_OPTION_DEPTH];
-/*@dependent@*/ struct optionStackEntry * os;
-/*@owned@*/ /*@null@*/ const char ** leftovers;
+/*@dependent@*/
+    struct optionStackEntry * os;
+/*@owned@*/ /*@null@*/
+    const char ** leftovers;
     int numLeftovers;
     int nextLeftover;
-/*@keep@*/ const struct poptOption * options;
+/*@keep@*/
+    const struct poptOption * options;
     int restLeftover;
-/*@only@*/ /*@null@*/ const char * appName;
-/*@only@*/ /*@null@*/ poptItem aliases;
+/*@only@*/ /*@null@*/
+    const char * appName;
+/*@only@*/ /*@null@*/
+    poptItem aliases;
     int numAliases;
     int flags;
-/*@owned@*/ /*@null@*/ poptItem execs;
+/*@owned@*/ /*@null@*/
+    poptItem execs;
     int numExecs;
-/*@only@*/ /*@null@*/ const char ** finalArgv;
+/*@only@*/ /*@null@*/
+    const char ** finalArgv;
     int finalArgvCount;
     int finalArgvAlloced;
-/*@dependent@*/ /*@null@*/ poptItem doExec;
-/*@only@*/ const char * execPath;
+/*@dependent@*/ /*@null@*/
+    poptItem doExec;
+/*@only@*/
+    const char * execPath;
     int execAbsolute;
-/*@only@*/ const char * otherHelp;
-/*@null@*/ pbm_set * arg_strip;
+/*@only@*/
+    const char * otherHelp;
+/*@null@*/
+    pbm_set * arg_strip;
 };
 
 #ifdef HAVE_LIBINTL_H

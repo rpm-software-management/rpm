@@ -17,7 +17,6 @@
 #+bounds
 #+boundswrite
 -redecl
--redef
 
 # --- not-yet at strict level
 -bitwisesigned		# pita
@@ -32,7 +31,6 @@
 -incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
 -matchfields		# <bits/ipc.h> heartburn
 -namechecks		# tedious ANSI compliance checks
--numenummembers 1024	# RPMTAG has 138 members
 -numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
 
@@ -41,8 +39,6 @@
 -shiftimplementation	# <ctype.h> pain
 
 -strictops
--strictusereleased
--stringliterallen 4096	# redhat*PubKey's are big
 -whileblock		# tedious
 
 # --- random anal-retentive parameters

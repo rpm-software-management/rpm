@@ -134,11 +134,13 @@ struct poptAlias {
 /** \ingroup popt
  * A popt alias or exec argument for poptAddItem().
  */
+/*@-exporttype@*/
 typedef struct poptItem_s {
     struct poptOption option;	/*!< alias/exec name(s) and description. */
     int argc;			/*!< (alias) no. of args. */
 /*@owned@*/ const char ** argv;	/*!< (alias) args, must be free()able. */
 } * poptItem;
+/*@=exporttype@*/
 
 /** \ingroup popt
  * \name Auto-generated help/usage
@@ -148,16 +150,20 @@ typedef struct poptItem_s {
 /**
  * Empty table marker to enable displaying popt alias/exec options.
  */
+/*@-exportvar@*/
 /*@observer@*/ /*@checked@*/
 extern struct poptOption poptAliasOptions[];
+/*@=exportvar@*/
 #define POPT_AUTOALIAS { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptAliasOptions, \
 			0, "Options implemented via popt alias/exec:", NULL },
 
 /**
  * Auto help table options.
  */
+/*@-exportvar@*/
 /*@observer@*/ /*@checked@*/
 extern struct poptOption poptHelpOptions[];
+/*@=exportvar@*/
 #define POPT_AUTOHELP { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptHelpOptions, \
 			0, "Help options:", NULL },
 
@@ -166,19 +172,25 @@ extern struct poptOption poptHelpOptions[];
 
 /** \ingroup popt
  */
+/*@-exporttype@*/
 typedef /*@abstract@*/ struct poptContext_s * poptContext;
+/*@=exporttype@*/
 
 /** \ingroup popt
  */
 #ifndef __cplusplus
-/*@-typeuse@*/
+/*@-exporttype -typeuse@*/
 typedef struct poptOption * poptOption;
-/*@=typeuse@*/
+/*@=exporttype =typeuse@*/
 #endif
 
-enum poptCallbackReason { POPT_CALLBACK_REASON_PRE, 
-			  POPT_CALLBACK_REASON_POST,
-			  POPT_CALLBACK_REASON_OPTION };
+/*@-exportconst@*/
+enum poptCallbackReason {
+    POPT_CALLBACK_REASON_PRE	= 0, 
+    POPT_CALLBACK_REASON_POST	= 1,
+    POPT_CALLBACK_REASON_OPTION = 2
+};
+/*@=exportconst@*/
 
 #ifdef __cplusplus
 extern "C" {

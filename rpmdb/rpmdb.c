@@ -210,8 +210,10 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 	return NULL;
 
     /* Is this index already open ? */
+/*@-compdef@*/ /* FIX: db->_dbi may be NULL */
     if ((dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
+/*@=compdef@*/
 
 /*@-globs -mods @*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
@@ -291,7 +293,9 @@ exit:
     else
 	dbi = db3Free(dbi);
 
+/*@-compdef -nullstate@*/ /* FIX: db->_dbi may be NULL */
     return dbi;
+/*@=compdef =nullstate@*/
 }
 
 /**

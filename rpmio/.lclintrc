@@ -23,40 +23,35 @@
 -varuse
 
 # --- not-yet at strict level
--bitwisesigned		# pita
--elseifcomplete		# 95 occurences
--exportconst		# 839 occurences
--exportfcn
--exporttype
--exportvar
--fielduse		# 1 occurence <bits/sigset.h>
+-bitwisesigned		# 204
+-elseifcomplete		# 31
+-exportconst		# 265
+-exportfcn		# 381
+-exporttype		# 109
+-exportvar		# 32
+-fielduse		# 72
 -forblock		# tedious
 -ifblock		# tedious
--incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
--matchfields		# <bits/ipc.h> heartburn
--namechecks		# tedious ANSI compliance checks
--ptrarith		# tedious
+-incondefs		# 96 <bits/{ipc,pthreadtypes}.h> heartburn
+-namechecks		# 1454 tedious ANSI compliance checks
+-ptrarith		# 104
 
--compdestroy
--mustdefine
+-compdestroy		# 21
+-mustdefine		# 34
 -shiftimplementation	# ctype.h pain
 
--strictops
--strictusereleased
--stringliterallen 4096	# redhat*PubKey's are big
+-strictops		# 51
 -whileblock		# tedious
 
 # --- not-yet at checks level
--ansi-reserved
-+enumint
--mustfree
--predboolptr
--usedef
++enumint		# 117
+-mustfree		# 136
+-predboolptr		# 156
+-usedef			# 9
 
 # --- not-yet at standard level
--boolops
--predboolint
-+boolint
-+charint
-+ignorequals
-+matchanyintegral
+-boolops		# 116
++boolint		# 11
++charint		# 146
++ignorequals		# 112
++matchanyintegral	# 39

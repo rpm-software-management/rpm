@@ -237,7 +237,7 @@ int rpmfiSetDX(/*@null@*/ rpmfi fi, int dx)
  * @return		current base name, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * rpmfiBN(/*@null@*/ rpmfi fi)
+extern const char * rpmfiBN(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -246,7 +246,7 @@ const char * rpmfiBN(/*@null@*/ rpmfi fi)
  * @return		current directory, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * rpmfiDN(/*@null@*/ rpmfi fi)
+extern const char * rpmfiDN(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -255,7 +255,7 @@ const char * rpmfiDN(/*@null@*/ rpmfi fi)
  * @return		current file name
  */
 /*@observer@*/
-const char * rpmfiFN(/*@null@*/ rpmfi fi)
+extern const char * rpmfiFN(/*@null@*/ rpmfi fi)
 	/*@modifies fi @*/;
 
 /**
@@ -296,7 +296,7 @@ rpmfileState rpmfiFState(/*@null@*/ rpmfi fi)
  * @return		current file md5 digest, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const unsigned char * rpmfiMD5(/*@null@*/ rpmfi fi)
+extern const unsigned char * rpmfiMD5(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -305,7 +305,7 @@ const unsigned char * rpmfiMD5(/*@null@*/ rpmfi fi)
  * @return		current file linkto, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * rpmfiFLink(/*@null@*/ rpmfi fi)
+extern const char * rpmfiFLink(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -338,7 +338,7 @@ int_32 rpmfiFMtime(/*@null@*/ rpmfi fi)
  * @return		current file owner, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * rpmfiFUser(/*@null@*/ rpmfi fi)
+extern const char * rpmfiFUser(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -347,7 +347,7 @@ const char * rpmfiFUser(/*@null@*/ rpmfi fi)
  * @return		current file group, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * rpmfiFGroup(/*@null@*/ rpmfi fi)
+extern const char * rpmfiFGroup(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**

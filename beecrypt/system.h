@@ -69,7 +69,7 @@
 # include <ctype.h>
 #endif
 
-#if HAVE_MALLOC_H
+#if HAVE_MALLOC_H && !defined(__LCLINT__)
 # include <malloc.h>
 #endif
 

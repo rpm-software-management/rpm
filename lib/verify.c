@@ -353,6 +353,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	/*@modifies ts, h, fileSystem, internalState @*/
 {
     rpmps ps;
+    int numProblems;
     int rc = 0;		/* assume no problems */
     int xx;
     int i;
@@ -363,14 +364,15 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     xx = rpmtsCheck(ts);
     ps = rpmtsProblems(ts);
 
+    numProblems = rpmpsNumProblems(ps);
     /*@-branchstate@*/
-    if (rpmpsNumProblems(ps) > 0) {
+    if (ps != NULL && numProblems > 0) {
 	const char * pkgNEVR, * altNEVR;
 	rpmProblem p;
 	char * t, * te;
 	int nb = 512;
 
-	for (i = 0; i < ps->numProblems; i++) {
+	for (i = 0; i < numProblems; i++) {
 	    p = ps->probs + i;
 	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
 	    nb += strlen(altNEVR+2) + sizeof(", ") - 1;
@@ -380,7 +382,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
 	sprintf(te, _("Unsatisifed dependencies for %s: "), pkgNEVR);
 	te += strlen(te);
-	for (i = 0; i < ps->numProblems; i++) {
+	for (i = 0; i < numProblems; i++) {
 	    p = ps->probs + i;
 	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
 	    if (i) te = stpcpy(te, ", ");

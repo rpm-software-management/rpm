@@ -164,7 +164,7 @@ int rpmdsSetIx(/*@null@*/ rpmds ds, int ix)
  * @return		current dependency DNEVR, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
+extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -173,7 +173,7 @@ const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
  * @return		current dependency name, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * rpmdsN(/*@null@*/ const rpmds ds)
+extern const char * rpmdsN(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -182,7 +182,7 @@ const char * rpmdsN(/*@null@*/ const rpmds ds)
  * @return		current dependency EVR, NULL on invalid
  */
 /*@observer@*/ /*@null@*/
-const char * rpmdsEVR(/*@null@*/ const rpmds ds)
+extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**

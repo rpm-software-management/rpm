@@ -222,10 +222,11 @@ void poptResetContext(poptContext con)
     con->doExec = NULL;
 
     if (con->finalArgv != NULL)
-    for (i = 0; i < con->finalArgvCount; i++)
+    for (i = 0; i < con->finalArgvCount; i++) {
 	/*@-unqualifiedtrans@*/		/* FIX: typedef double indirection. */
 	con->finalArgv[i] = _free(con->finalArgv[i]);
 	/*@=unqualifiedtrans@*/
+    }
 
     con->finalArgvCount = 0;
     con->arg_strip = PBM_FREE(con->arg_strip);
@@ -296,7 +297,7 @@ static int handleExec(/*@special@*/ poptContext con,
 /* Only one of longName, shortName may be set at a time */
 static int handleAlias(/*@special@*/ poptContext con,
 		/*@null@*/ const char * longName, char shortName,
-		/*@keep@*/ /*@null@*/ const char * nextCharArg)
+		/*@exposed@*/ /*@null@*/ const char * nextCharArg)
 	/*@uses con->aliases, con->numAliases, con->optionStack, con->os,
 		con->os->currAlias, con->os->currAlias->option.longName @*/
 	/*@modifies con @*/
@@ -346,6 +347,7 @@ static int handleAlias(/*@special@*/ poptContext con,
     return (rc ? rc : 1);
 }
 
+/*@-bounds -boundswrite @*/
 static int execCommand(poptContext con)
     /*@*/
 {
@@ -417,6 +419,7 @@ static int execCommand(poptContext con)
 
     if (argv[0] == NULL)
 	return POPT_ERROR_NOARG;
+
 #ifdef MYDEBUG
     {	const char ** avp;
 	fprintf(stderr, "==> execvp(%s) argv[%d]:", argv[0], argc);
@@ -427,8 +430,10 @@ static int execCommand(poptContext con)
 #endif
 
     rc = execvp(argv[0], (char *const *)argv);
+
     return POPT_ERROR_ERRNO;
 }
+/*@=bounds =boundswrite @*/
 
 /*@observer@*/ /*@null@*/ static const struct poptOption *
 findOption(const struct poptOption * opt, /*@null@*/ const char * longName,

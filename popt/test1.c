@@ -4,43 +4,71 @@
 
 #include "system.h"
 
+/*@unchecked@*/
 static int pass2 = 0;
-static void option_callback(poptContext con, enum poptCallbackReason reason,
-		     const struct poptOption * opt,
-		     char * arg, void * data) {
+static void option_callback(/*@unused@*/ poptContext con,
+		/*@unused@*/ enum poptCallbackReason reason,
+		const struct poptOption * opt,
+		char * arg, void * data)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
     if (pass2)
 	fprintf(stdout, "callback: %c %s %s ", opt->val, (char *) data, arg);
 }
 
-int arg1 = 0;
-char * arg2 = "(none)";
-int arg3 = 0;
-int inc = 0;
-int shortopt = 0;
+/*@unchecked@*/
+static int arg1 = 0;
+/*@unchecked@*/ /*@observer@*/
+static char * arg2 = "(none)";
+/*@unchecked@*/
+static int arg3 = 0;
+/*@unchecked@*/
+static int inc = 0;
+/*@unchecked@*/
+static int shortopt = 0;
 
-int aVal = 141421;
-int bVal = 141421;
-int aFlag = 0;
-int bFlag = 0;
+/*@unchecked@*/
+static int aVal = 141421;
+/*@unchecked@*/
+static int bVal = 141421;
+/*@unchecked@*/
+static int aFlag = 0;
+/*@unchecked@*/
+static int bFlag = 0;
 
-int aInt = 271828;
-int bInt = 271828;
-long aLong = 738905609L;
-long bLong = 738905609L;
-float aFloat = 3.1415926535;
-float bFloat = 3.1415926535;
-double aDouble = 9.86960440108935861883;
-double bDouble = 9.86960440108935861883;
-char * oStr = (char *) -1;
-int singleDash = 0;
+/*@unchecked@*/
+static int aInt = 271828;
+/*@unchecked@*/
+static int bInt = 271828;
+/*@unchecked@*/
+static long aLong = 738905609L;
+/*@unchecked@*/
+static long bLong = 738905609L;
+/*@unchecked@*/
+static float aFloat = 3.1415926535;
+/*@unchecked@*/
+static float bFloat = 3.1415926535;
+/*@unchecked@*/
+static double aDouble = 9.86960440108935861883;
+/*@unchecked@*/
+static double bDouble = 9.86960440108935861883;
+/*@unchecked@*/ /*@null@*/
+static char * oStr = (char *) -1;
+/*@unchecked@*/
+static int singleDash = 0;
 
-char * lStr = "This tests default strings and exceeds the ... limit. "
+/*@unchecked@*/ /*@observer@*/
+static char * lStr =
+"This tests default strings and exceeds the ... limit. "
 "123456789+123456789+123456789+123456789+123456789+ "
 "123456789+123456789+123456789+123456789+123456789+ "
 "123456789+123456789+123456789+123456789+123456789+ "
 "123456789+123456789+123456789+123456789+123456789+ ";
-char * nStr = NULL; 
+/*@unchecked@*/ /*@null@*/
+static char * nStr = NULL; 
 
+/*@unchecked@*/
 static struct poptOption moreCallbackArgs[] = {
   { NULL, '\0', POPT_ARG_CALLBACK|POPT_CBFLAG_INC_DATA,
 	(void *)option_callback, 0,
@@ -50,8 +78,10 @@ static struct poptOption moreCallbackArgs[] = {
   POPT_TABLEEND
 };
 
+/*@unchecked@*/
 static struct poptOption callbackArgs[] = {
-  { NULL, '\0', POPT_ARG_CALLBACK, (void *)option_callback, 0, "sampledata" },
+  { NULL, '\0', POPT_ARG_CALLBACK, (void *)option_callback, 0,
+	"sampledata", NULL },
   { "cb", 'c', POPT_ARG_STRING, NULL, 'c',
 	"Test argument callbacks", NULL },
   { "longopt", '\0', 0, NULL, 'l',
@@ -59,13 +89,16 @@ static struct poptOption callbackArgs[] = {
   POPT_TABLEEND
 };
 
+/*@unchecked@*/
 static struct poptOption moreArgs[] = {
-  { "inc", 'I', 0, &inc, 0, "An included argument" },
+  { "inc", 'I', 0, &inc, 0, "An included argument", NULL },
   POPT_TABLEEND
 };
 
+/*@unchecked@*/
 static struct poptOption options[] = {
-  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreCallbackArgs, 0, "arg for cb2" },
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreCallbackArgs, 0,
+	"arg for cb2", NULL },
   { "arg1", '\0', 0, &arg1, 0, "First argument with a really long"
 	    " description. After all, we have to test argument help"
 	    " wrapping somehow, right?", NULL },
@@ -114,6 +147,12 @@ static struct poptOption options[] = {
 };
 
 static void resetVars(void)
+	/*@globals arg1, arg2, arg3, inc, shortopt,
+		aVal, aFlag, aInt, aLong, aFloat, aDouble,
+		oStr, singleDash, pass2 @*/
+	/*@modifies arg1, arg2, arg3, inc, shortopt,
+		aVal, aFlag, aInt, aLong, aFloat, aDouble,
+		oStr, singleDash, pass2 @*/
 {
     arg1 = 0;
     arg2 = "(none)";
@@ -135,7 +174,10 @@ static void resetVars(void)
     pass2 = 0;
 }
 
-int main(int argc, const char ** argv) {
+int main(int argc, const char ** argv)
+	/*@globals pass2, fileSystem @*/
+	/*@modifies pass2, fileSystem @*/
+{
     int rc;
     int ec = 0;
     poptContext optCon;
@@ -144,19 +186,27 @@ int main(int argc, const char ** argv) {
     int usage = 0;
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
+    /*@-moduncon -noeffectuncon@*/
     mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=moduncon =noeffectuncon@*/
 #endif
 
+/*@-modobserver@*/
     resetVars();
+/*@=modobserver@*/
+/*@-temptrans@*/
     optCon = poptGetContext("test1", argc, argv, options, 0);
-    poptReadConfigFile(optCon, "./test-poptrc");
+/*@=temptrans@*/
+    (void) poptReadConfigFile(optCon, "./test-poptrc");
 
 #if 1
     while ((rc = poptGetNextOpt(optCon)) > 0)	/* Read all the options ... */
-	;
+	{};
 
     poptResetContext(optCon);			/* ... and then start over. */
+/*@-modobserver@*/
     resetVars();
+/*@=modobserver@*/
 #endif
 
     pass2 = 1;
@@ -193,10 +243,12 @@ int main(int argc, const char ** argv) {
 	fprintf(stdout, " aInt: %d", aInt);
     if (aLong != bLong)
 	fprintf(stdout, " aLong: %ld", aLong);
+/*@-realcompare@*/
     if (aFloat != bFloat)
 	fprintf(stdout, " aFloat: %g", aFloat);
     if (aDouble != bDouble)
 	fprintf(stdout, " aDouble: %g", aDouble);
+/*@=realcompare@*/
     if (oStr != (char *)-1)
 	fprintf(stdout, " oStr: %s", (oStr ? oStr : "(none)"));
     if (singleDash)
@@ -216,7 +268,9 @@ int main(int argc, const char ** argv) {
 exit:
     optCon = poptFreeContext(optCon);
 #if HAVE_MCHECK_H && HAVE_MTRACE
+    /*@-moduncon -noeffectuncon@*/
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=moduncon =noeffectuncon@*/
 #endif
     return ec;
 }

@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.26
+Release: 0.27
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -519,6 +519,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Jun 15 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.27
+- beecrypt: merge changes from beecrypt-2.3.0.
+- beecrypt: merge doxygen markup with rpmapi doco.
+- beecrypt: revert cpu/arch compile option mixup (#66752).
+
 * Wed Jun 12 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.26
 - fix: separate existence and number checks for problems found (#66552).
 

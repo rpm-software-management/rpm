@@ -40,7 +40,7 @@ sources:
 
 .PHONY: lclint
 lclint:
-	lclint ${DEFS} ${INCLUDES} ${libpopt_la_SOURCES}
+	lclint ${DEFS} ${INCLUDES} test1.c ${libpopt_la_SOURCES}
 
 CVSTAG = $(PACKAGE)-$(subst .,_,$(VERSION))
 

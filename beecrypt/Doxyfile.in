@@ -306,7 +306,8 @@ WARN_LOGFILE           =
 
 INPUT                  = \
 	@top_srcdir@/Doxyheader \
-	@top_srcdir@/acconfig.h \
+	@top_srcdir@/system.h \
+	@top_srcdir@/debug.h \
 	@top_srcdir@/aes.c \
 	@top_srcdir@/aes.h \
 	@top_srcdir@/aesopt.h \
