@@ -17,7 +17,18 @@
 	- tried to make the locale stuff a bit more portable (again)
 	- reworked the owner/group setting on installs to be more generic
 	  (in preperation for getting rid of cpio)
-	- made verify verify owner and groups by name rather then by id
+	- made verify verify owner and groups by name rather then by id -- if
+	  the symbolic names aren't available use the uids
+	- cleaned up relocateFilelist() and related code thanks to
+	  new header introduced in 2.3.3 -- this could break relocateable
+	  packages but they seem okay
+	- fixed a bug which could cause relocateable packages to not get
+	  relocated -- I think this bit some people during hard drive
+	  installs of all things (Jason Salopek pestered me consistently
+	  enough to keep this on the front burner for me)
+	- removed FILEUIDS and FILEGIDS from the header in the database --
+	  we never used it and it jsut wasted room
+	- convert uid/gid lists in v1 headers to symbolic names 
 
 2.3.3 -> 2.3.4:
 	- %changelog processing
