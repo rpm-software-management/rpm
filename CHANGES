@@ -1,4 +1,4 @@
-2.3.4 -> 2.4.1:
+2.4 -> 2.4.1:
 	- take advantage of lchown() if it's available
 	- fixed configure script to assume chown() doesn't follow symlinks
 	  if lchown() isn't available and configure is not being run as root
@@ -11,6 +11,8 @@
 	- include "miscfn.h" first in every file which needs it
 	- created noarch architecture which everything is compatible with
 	- fixed group verification (Benedict Lofstedt)
+	- don't backup config files on netsharedpaths
+	- added info on --build{arch|os} to --help and usage messages
 
 2.3.11 -> 2.4:
 	- changed RPMNLSDIR directories to and @datadir@ to better
