@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.122 $
+# $Revision: 1.123 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-19 07:25-0400\n"
+"POT-Creation-Date: 2000-06-20 11:41-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -65,32 +65,32 @@ msgstr "Bygger målplattformar: %s\n"
 msgid "Building for target %s\n"
 msgstr "Bygger för mål %s\n"
 
-#: convertdb.c:39
+#: convertdb.c:40
 msgid "RPM database already exists"
 msgstr "RPM-databasen existerar redan"
 
-#: convertdb.c:44
+#: convertdb.c:45
 msgid "Old db is missing"
 msgstr "Gammal db saknas"
 
-#: convertdb.c:55
+#: convertdb.c:56
 msgid "failed to create RPM database /var/lib/rpm"
 msgstr "misslyckades att skapa RPM-databasen /var/lib/rpm"
 
-#: convertdb.c:61
+#: convertdb.c:62
 msgid "Old db is corrupt"
 msgstr "Gammal db är trasig"
 
-#: convertdb.c:70
+#: convertdb.c:71
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
 msgstr "oldrpmdbGetPackageInfo misslyckades &olddb = %p olddb.packages = %p\n"
 
-#: convertdb.c:204
+#: convertdb.c:205
 msgid "rpmconvert: no arguments expected"
 msgstr "rpmconvert: tar inga argument"
 
-#: convertdb.c:210
+#: convertdb.c:211
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr "rpmconvert 1.0 - konverterar databasen i /var/lib/rpm\n"
 
@@ -3920,59 +3920,59 @@ msgstr "saknas     %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:529
 msgid "Success"
 msgstr "Lyckades"
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:532
 msgid "Bad server response"
 msgstr "Konstigt svar från server"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:535
 msgid "Server IO error"
 msgstr "IO-fel mot server"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:538
 msgid "Server timeout"
 msgstr "Förbindelsen med servern dog ut (timeout)"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:541
 msgid "Unable to lookup server host address"
 msgstr "Kunde inte slå upp serverns adress"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:544
 msgid "Unable to lookup server host name"
 msgstr "Kunde inte slå upp serverns namn"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:547
 msgid "Failed to connect to server"
 msgstr "Misslyckades med att kontakta servern"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:550
 msgid "Failed to establish data connection to server"
 msgstr "Misslyckades med att etablera en dataförbindelse till servern"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:553
 msgid "IO error to local file"
 msgstr "IO-fel mot lokal fil"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:556
 msgid "Error setting remote server to passive mode"
 msgstr "Fel när den fjärrservern sattes i passivt läge"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:559
 msgid "File not found on server"
 msgstr "Filen fanns inte på servern"
 
-#: rpmio/rpmio.c:565
+#: rpmio/rpmio.c:562
 msgid "Abort in progress"
 msgstr "Avbruten under gång"
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:566
 msgid "Unknown or unexpected error"
 msgstr "Okänt eller oväntat fel"
 
-#: rpmio/rpmio.c:1164
+#: rpmio/rpmio.c:1161
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "loggar in på %s som %s, lösenord %s\n"

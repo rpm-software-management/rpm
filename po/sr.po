@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-19 07:25-0400\n"
+"POT-Creation-Date: 2000-06-20 11:41-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -70,33 +70,33 @@ msgstr ""
 msgid "Building for target %s\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: convertdb.c:39
+#: convertdb.c:40
 #, fuzzy
 msgid "RPM database already exists"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: convertdb.c:44
+#: convertdb.c:45
 msgid "Old db is missing"
 msgstr ""
 
-#: convertdb.c:55
+#: convertdb.c:56
 msgid "failed to create RPM database /var/lib/rpm"
 msgstr ""
 
-#: convertdb.c:61
+#: convertdb.c:62
 msgid "Old db is corrupt"
 msgstr ""
 
-#: convertdb.c:70
+#: convertdb.c:71
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
 msgstr ""
 
-#: convertdb.c:204
+#: convertdb.c:205
 msgid "rpmconvert: no arguments expected"
 msgstr ""
 
-#: convertdb.c:210
+#: convertdb.c:211
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
@@ -3979,67 +3979,67 @@ msgstr "nedostaje { posle %"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:529
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:532
 #, fuzzy
 msgid "Bad server response"
 msgstr "Lo¹ odgovor FTP servera"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:535
 #, fuzzy
 msgid "Server IO error"
 msgstr "Ulazno/izlazna FTP gre¹ka"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:538
 #, fuzzy
 msgid "Server timeout"
 msgstr "Tajm-aut FTP servera"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:541
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Ne mogu da odredim host adresu FTP servera"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:544
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Ne mogu da odredim ime FTP hosta"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:547
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Ne mogu da se pove¾em sa FTP serverom"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:550
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Ne mogu da uspostavim vezu podataka sa FTP serverom"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:553
 msgid "IO error to local file"
 msgstr "Ulazno/izlazna gre¹ka kod lokalne datoteke"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:556
 msgid "Error setting remote server to passive mode"
 msgstr "Gre¹ka kod stavljanja udaljenog servera u pasivni re¾im"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:559
 msgid "File not found on server"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: rpmio/rpmio.c:565
+#: rpmio/rpmio.c:562
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:566
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
 
-#: rpmio/rpmio.c:1164
+#: rpmio/rpmio.c:1161
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

@@ -257,6 +257,8 @@ fi
 %changelog
 * Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
 - fix: typo in brp-compress caused i18n man pages not to compress.
+- API: uncouple fadio from rest of librpmio.
+- API: externalize legacy fdOpen interface for rpmfind et al in librpmio.
 
 * Mon Jun 19 2000 Jeff Johnson <jbj@redhat.com>
 - fix: open all db indices before performing chroot.

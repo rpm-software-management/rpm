@@ -61,6 +61,7 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #endif
 
 #include <rpmio_internal.h>
+
 #include "ugid.h"
 #include "rpmmessages.h"
 
@@ -210,17 +211,11 @@ DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie,
 }
 #endif
 
-#undef	fdRead
-#undef	fdWrite
-#undef	fdSeek
-#undef	fdClose
 #if 0
 #undef	fdLink
 #undef	fdFree
 #undef	fdNew
 #endif
-#undef	fdFileno
-#undef	fdOpen
 
 /* =============================================================== */
 static inline FD_t XfdLink(void * cookie, const char *msg, const char *file, unsigned line) {
@@ -283,7 +278,7 @@ static inline /*@null@*/ FD_t XfdNew(const char *msg, const char *file, unsigned
     return XfdLink(fd, msg, file, line);
 }
 
-static inline ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
+ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count) {
     FD_t fd = c2f(cookie);
     ssize_t rc;
 
@@ -298,7 +293,7 @@ DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)coun
     return rc;
 }
 
-static inline ssize_t fdWrite(void * cookie, const char * buf, size_t count) {
+ssize_t fdWrite(void * cookie, const char * buf, size_t count) {
     FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
     ssize_t rc;
@@ -346,7 +341,7 @@ DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence
     return rc;
 }
 
-static inline int fdClose( /*@only@*/ void * cookie) {
+int fdClose( /*@only@*/ void * cookie) {
     FD_t fd;
     int fdno;
     int rc;
@@ -367,7 +362,7 @@ DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", fd, (long)rc, fdbg(fd)));
     return rc;
 }
 
-static inline /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode) {
+/*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode) {
     FD_t fd;
     int fdno;
 
@@ -385,6 +380,8 @@ static struct FDIO_s fdio_s = {
   fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t fdio = /*@-compmempass@*/ &fdio_s /*@=compmempass@*/ ;
+
+FDIO_t fadio;	/* XXX usually NULL, filled in when linked with rpm */
 
 int fdWritable(FD_t fd, int secs)
 {

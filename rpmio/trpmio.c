@@ -2,8 +2,6 @@
  
 #include "rpmio.h"
 
-FDIO_t fadio = NULL;		/* XXX this wartlet will be removed */
- 
 int main (void)
 {
     FD_t f1, f2, f3, f4, f5;

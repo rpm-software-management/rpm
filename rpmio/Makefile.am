@@ -10,7 +10,7 @@ pkginc_HEADERS = rpmio.h rpmurl.h rpmmacro.h rpmmessages.h rpmerr.h
 noinst_HEADERS = rpmio_internal.h ugid.h
 
 lib_LTLIBRARIES = librpmio.la
-librpmio_la_SOURCES = rpmrpc.c rpmio.c url.c macro.c \
+librpmio_la_SOURCES = rpmrpc.c rpmio.c rpmio_api.c url.c macro.c \
 	ugid.c rpmmalloc.c rpmerr.c messages.c
 
 # XXX Add internal libtool dependence
@@ -25,5 +25,5 @@ lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
 trpmio: librpmio.la trpmio.o
-	$(LINK) -o $@ trpmio.o librpmio.la
+	$(LINK) -o $@ trpmio.o librpmio.la $(top_builddir)/popt/libpopt.la
 

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.62 2000/06/19 11:35:31 jbj Exp $
+# $Id: sl.po,v 1.63 2000/06/20 15:54:49 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-19 07:25-0400\n"
+"POT-Creation-Date: 2000-06-20 11:41-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -65,32 +65,32 @@ msgstr "Izgradnja za ciljna strojna okolja: %s\n"
 msgid "Building for target %s\n"
 msgstr "Izgradnja za ciljni sistem %s\n"
 
-#: convertdb.c:39
+#: convertdb.c:40
 msgid "RPM database already exists"
 msgstr "Podatovna zbirka RPM ¾e obstaja"
 
-#: convertdb.c:44
+#: convertdb.c:45
 msgid "Old db is missing"
 msgstr "Stara podatkovna zbirka manjka"
 
-#: convertdb.c:55
+#: convertdb.c:56
 msgid "failed to create RPM database /var/lib/rpm"
 msgstr "podatkovne zbirke RPM /var/lib/rpm ni uspelo ustvariti"
 
-#: convertdb.c:61
+#: convertdb.c:62
 msgid "Old db is corrupt"
 msgstr "Stara podatkovna zbirka je po¹kodovana"
 
-#: convertdb.c:70
+#: convertdb.c:71
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
 msgstr "oldrpmdbGetPackageInfo neuspe¹en &olddb = %p olddb.packages = %p\n"
 
-#: convertdb.c:204
+#: convertdb.c:205
 msgid "rpmconvert: no arguments expected"
 msgstr "rpmconvert: argumentov ne prièakujemo"
 
-#: convertdb.c:210
+#: convertdb.c:211
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr "rpmconvert 1.0 - pretvorba podatkovne zbirke v /var/lib/rpm\n"
 
@@ -3932,59 +3932,59 @@ msgstr "manjka     %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:529
 msgid "Success"
 msgstr "Uspe¹no"
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:532
 msgid "Bad server response"
 msgstr "Okvarjen odziv stre¾nika"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:535
 msgid "Server IO error"
 msgstr "V/I napaka na stre¾niku"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:538
 msgid "Server timeout"
 msgstr "Potekel èas na stre¾niku"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:541
 msgid "Unable to lookup server host address"
 msgstr "Naslov stre¾nika ni ugotovljiv"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:544
 msgid "Unable to lookup server host name"
 msgstr "Ime stre¾nika ni ugotovljivo"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:547
 msgid "Failed to connect to server"
 msgstr "Neuspe¹en poskus prikljuèitve na stre¾nik"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:550
 msgid "Failed to establish data connection to server"
 msgstr "Neuspe¹na vzpostavitev podatkovne povezave s stre¾nikom"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:553
 msgid "IO error to local file"
 msgstr "V/I napaka na lokalni datoteki"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:556
 msgid "Error setting remote server to passive mode"
 msgstr "Napaka pri nastavitvi oddaljenega stre¾nika v pasivni naèin"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:559
 msgid "File not found on server"
 msgstr "Datoteke ni mo¾no najti na stre¾niku"
 
-#: rpmio/rpmio.c:565
+#: rpmio/rpmio.c:562
 msgid "Abort in progress"
 msgstr "Prekinitev v teku"
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:566
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: rpmio/rpmio.c:1164
+#: rpmio/rpmio.c:1161
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"

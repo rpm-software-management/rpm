@@ -4,8 +4,8 @@
 
 #include "system.h"
 
-#include <rpmbuild.h>
 #include <rpmio_internal.h>
+#include <rpmbuild.h>
 
 static int _build_debug = 0;
 

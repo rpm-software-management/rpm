@@ -9,6 +9,22 @@
 extern "C" {
 #endif
 
+static inline long int fadGetFileSize(FD_t fd) {
+    return fd->fileSize;
+}
+
+static inline void fadSetFileSize(FD_t fd, long int fileSize) {
+    fd->fileSize = fileSize;
+}
+
+static inline unsigned int fadGetFirstFree(FD_t fd) {
+    return fd->firstFree;
+}
+
+static inline void fadSetFirstFree(FD_t fd, unsigned int firstFree) {
+    fd->firstFree = firstFree;
+}
+
 /*@null@*/ FD_t	fadOpen		(const char * path, int flags, mode_t perms);
 unsigned int	fadAlloc	(FD_t fd, unsigned int size); /* 0 on failure */
 void		fadFree		(FD_t fd, unsigned int offset);

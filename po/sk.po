@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-06-19 07:25-0400\n"
+"POT-Creation-Date: 2000-06-20 11:41-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -61,32 +61,32 @@ msgstr "predefinova» cieµovú platformu"
 msgid "Building for target %s\n"
 msgstr "vyhµadáva sa balík %s\n"
 
-#: convertdb.c:39
+#: convertdb.c:40
 msgid "RPM database already exists"
 msgstr "RPM databáza u¾ existuje"
 
-#: convertdb.c:44
+#: convertdb.c:45
 msgid "Old db is missing"
 msgstr "Stará databáza neexistuje"
 
-#: convertdb.c:55
+#: convertdb.c:56
 msgid "failed to create RPM database /var/lib/rpm"
 msgstr "Nepodarilo sa vytvori» RPM databázu /var/lib/rpm"
 
-#: convertdb.c:61
+#: convertdb.c:62
 msgid "Old db is corrupt"
 msgstr "Stará databáze je po¹kodená"
 
-#: convertdb.c:70
+#: convertdb.c:71
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
 msgstr "oldrpmdbGetPackageInfo zlyhal &olddb = %p olddb.packages = %p\n"
 
-#: convertdb.c:204
+#: convertdb.c:205
 msgid "rpmconvert: no arguments expected"
 msgstr "rpmconvert: argumenty nie sú oèakávané"
 
-#: convertdb.c:210
+#: convertdb.c:211
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr "rpmconvert 1.0 - konverzia databázy v /var/lib/rpm\n"
 
@@ -3953,59 +3953,59 @@ msgstr "chýbajúce    %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:529
 msgid "Success"
 msgstr "Úspech"
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:532
 msgid "Bad server response"
 msgstr "Chybná odpoveï servera"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:535
 msgid "Server IO error"
 msgstr "Chyba vstupu/výstupu servera"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:538
 msgid "Server timeout"
 msgstr "Prekroèenie èasového limitu servera"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:541
 msgid "Unable to lookup server host address"
 msgstr "Nie je mo¾né vyhµada» adresu servera"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:544
 msgid "Unable to lookup server host name"
 msgstr "Nie je mo¾né vyhµada» názov servera"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:547
 msgid "Failed to connect to server"
 msgstr "Pripojenie k serveru zlyhalo"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:550
 msgid "Failed to establish data connection to server"
 msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:553
 msgid "IO error to local file"
 msgstr "Chyba vstupu/výstupu lokálneho súboru"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:556
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:559
 msgid "File not found on server"
 msgstr "Súbor sa na serveri nenachádza"
 
-#: rpmio/rpmio.c:565
+#: rpmio/rpmio.c:562
 msgid "Abort in progress"
 msgstr "Zru¹enie prebieha"
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:566
 msgid "Unknown or unexpected error"
 msgstr "Neznáma alebo neoèakávaná chyba"
 
-#: rpmio/rpmio.c:1164
+#: rpmio/rpmio.c:1161
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prihlasuje sa na %s ako %s, heslo %s\n"

@@ -10,9 +10,9 @@
 #include <regex.h>
 #include <signal.h>	/* getOutputFrom() */
 
+#include <rpmio_internal.h>
 #include <rpmbuild.h>
 #include <rpmmacro.h>
-#include <rpmio_internal.h>
 
 #include "buildio.h"
 

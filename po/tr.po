@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-19 07:25-0400\n"
+"POT-Creation-Date: 2000-06-20 11:41-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,33 +67,33 @@ msgstr ""
 msgid "Building for target %s\n"
 msgstr "%s paketi bulunamadý\n"
 
-#: convertdb.c:39
+#: convertdb.c:40
 #, fuzzy
 msgid "RPM database already exists"
 msgstr "geçici veritabaný %s mevcut"
 
-#: convertdb.c:44
+#: convertdb.c:45
 msgid "Old db is missing"
 msgstr ""
 
-#: convertdb.c:55
+#: convertdb.c:56
 msgid "failed to create RPM database /var/lib/rpm"
 msgstr ""
 
-#: convertdb.c:61
+#: convertdb.c:62
 msgid "Old db is corrupt"
 msgstr ""
 
-#: convertdb.c:70
+#: convertdb.c:71
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
 msgstr ""
 
-#: convertdb.c:204
+#: convertdb.c:205
 msgid "rpmconvert: no arguments expected"
 msgstr ""
 
-#: convertdb.c:210
+#: convertdb.c:211
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
@@ -4032,67 +4032,67 @@ msgstr "% den sonra eksik {"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:529
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:532
 #, fuzzy
 msgid "Bad server response"
 msgstr "FTP sunucusundan kötü yanýt"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:535
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP I/O hatasý"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:538
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP sunucusu zaman aþýmý"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:541
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:544
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:547
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "FTP sunucusuna baðlanýlamadý"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:550
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:553
 msgid "IO error to local file"
 msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:556
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:559
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:565
+#: rpmio/rpmio.c:562
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:566
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1164
+#: rpmio/rpmio.c:1161
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

@@ -64,6 +64,8 @@
 	- require --rebuilddb to convert db1 -> db3, better messages.
 	- fix: open all db indices before performing chroot.
 	- fix: typo in brp-compress caused i18n man pages not to compress.
+	- API: uncouple fadio from rest of rpmio.
+	- API: externalize legacy fdOpen interface for rpmfind et al.
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

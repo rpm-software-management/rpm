@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-19 07:25-0400\n"
+"POT-Creation-Date: 2000-06-20 11:41-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -66,33 +66,33 @@ msgstr ""
 msgid "Building for target %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
 
-#: convertdb.c:39
+#: convertdb.c:40
 #, fuzzy
 msgid "RPM database already exists"
 msgstr "doèasná databáze %s ji¾ existuje"
 
-#: convertdb.c:44
+#: convertdb.c:45
 msgid "Old db is missing"
 msgstr ""
 
-#: convertdb.c:55
+#: convertdb.c:56
 msgid "failed to create RPM database /var/lib/rpm"
 msgstr ""
 
-#: convertdb.c:61
+#: convertdb.c:62
 msgid "Old db is corrupt"
 msgstr ""
 
-#: convertdb.c:70
+#: convertdb.c:71
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
 msgstr ""
 
-#: convertdb.c:204
+#: convertdb.c:205
 msgid "rpmconvert: no arguments expected"
 msgstr ""
 
-#: convertdb.c:210
+#: convertdb.c:211
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
@@ -3991,67 +3991,67 @@ msgstr "chybí      %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:529
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:532
 #, fuzzy
 msgid "Bad server response"
 msgstr "Chybná odezva serveru FTP"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:535
 #, fuzzy
 msgid "Server IO error"
 msgstr "V/V chyba FTP"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:538
 #, fuzzy
 msgid "Server timeout"
 msgstr "Promlka serveru FTP"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:541
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Nelze vyhledat adresu hostitelského serveru FTP"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:544
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Nelze vyhledat název hostitelského serveru FTP"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:547
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "K serveru FTP se nelze pøipojit"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:550
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Se serverem FTP nelze navázat datové spojení"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:553
 msgid "IO error to local file"
 msgstr "V/V chyba na místní soubor"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:556
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pøi nastavení vzdáleného serveru na pasivní re¾im"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:559
 msgid "File not found on server"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: rpmio/rpmio.c:565
+#: rpmio/rpmio.c:562
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:566
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neznámá nebo neèekaná chyba FTP"
 
-#: rpmio/rpmio.c:1164
+#: rpmio/rpmio.c:1161
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "probíhá pøihla¹ování na %s jako %s, h. %s\n"

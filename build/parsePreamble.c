@@ -6,8 +6,8 @@
 
 static int _debug = 0;
 
-#include <rpmbuild.h>
 #include <rpmio_internal.h>
+#include <rpmbuild.h>
 
 static int_32 copyTagsDuringParse[] = {
     RPMTAG_EPOCH,

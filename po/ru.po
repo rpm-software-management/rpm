@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-19 07:25-0400\n"
+"POT-Creation-Date: 2000-06-20 11:41-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -59,33 +59,33 @@ msgstr "Целевые платформы: %s\n"
 msgid "Building for target %s\n"
 msgstr "Сборка для целевой платформы %s\n"
 
-#: convertdb.c:39
+#: convertdb.c:40
 msgid "RPM database already exists"
 msgstr "База данных RPM уже существует"
 
-#: convertdb.c:44
+#: convertdb.c:45
 msgid "Old db is missing"
 msgstr "Отсутствует старая база данных"
 
-#: convertdb.c:55
+#: convertdb.c:56
 #, fuzzy
 msgid "failed to create RPM database /var/lib/rpm"
 msgstr "неудача создания базы данных RPM /var/state/rpm"
 
-#: convertdb.c:61
+#: convertdb.c:62
 msgid "Old db is corrupt"
 msgstr "Старая база данных повреждена"
 
-#: convertdb.c:70
+#: convertdb.c:71
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
 msgstr "неудача oldrpmdbGetPackageInfo: &olddb = %p olddb.packages = %p\n"
 
-#: convertdb.c:204
+#: convertdb.c:205
 msgid "rpmconvert: no arguments expected"
 msgstr "rpmconvert: аргументы не нужны"
 
-#: convertdb.c:210
+#: convertdb.c:211
 #, fuzzy
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr "rpmconvert 1.0 - конвертирую базу данных в /var/state/rpm\n"
@@ -3944,59 +3944,59 @@ msgstr "отсутствует %s\n"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:529
 msgid "Success"
 msgstr "Удалось"
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:532
 msgid "Bad server response"
 msgstr "Неверный ответ сервера"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:535
 msgid "Server IO error"
 msgstr "Ошибка ввода/вывода сервера"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:538
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:541
 msgid "Unable to lookup server host address"
 msgstr "Не могу найти IP-адрес сервера"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:544
 msgid "Unable to lookup server host name"
 msgstr "Не могу найти имя сервера"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:547
 msgid "Failed to connect to server"
 msgstr "Не могу соединиться с сервером"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:550
 msgid "Failed to establish data connection to server"
 msgstr "Не могу установить соединение для данных с сервером"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:553
 msgid "IO error to local file"
 msgstr "Ошибка ввода/вывода в локальный файл"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:556
 msgid "Error setting remote server to passive mode"
 msgstr "Ошибка при переводе удаленного сервера в пассивный режим"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:559
 msgid "File not found on server"
 msgstr "Файл не найден на сервере"
 
-#: rpmio/rpmio.c:565
+#: rpmio/rpmio.c:562
 msgid "Abort in progress"
 msgstr "Отмена в процессе"
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:566
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: rpmio/rpmio.c:1164
+#: rpmio/rpmio.c:1161
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"

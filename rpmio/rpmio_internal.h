@@ -1,6 +1,8 @@
 #ifndef	H_RPMIO_INTERNAL
 #define	H_RPMIO_INTERNAL
 
+static inline int fdFileno(void * cookie);
+
 #include <rpmio.h>
 #include <rpmurl.h>
 #include <assert.h>
@@ -236,32 +238,11 @@ static inline FD_t c2f(void * cookie) {
     return fd;
 }
 
-#undef	fdFileno
 static inline int fdFileno(void * cookie) {
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
     return fd->fps[0].fdno;
-}
-
-static inline long int fadGetFileSize(FD_t fd) {
-    FDSANE(fd);
-    return fd->fileSize;
-}
-
-static inline void fadSetFileSize(FD_t fd, long int fileSize) {
-    FDSANE(fd);
-    fd->fileSize = fileSize;
-}
-
-static inline unsigned int fadGetFirstFree(FD_t fd) {
-    FDSANE(fd);
-    return fd->firstFree;
-}
-
-static inline void fadSetFirstFree(FD_t fd, unsigned int firstFree) {
-    FDSANE(fd);
-    fd->firstFree = firstFree;
 }
 
 #ifdef __cplusplus

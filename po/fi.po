@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-19 07:25-0400\n"
+"POT-Creation-Date: 2000-06-20 11:41-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -72,33 +72,33 @@ msgstr ""
 msgid "Building for target %s\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
-#: convertdb.c:39
+#: convertdb.c:40
 #, fuzzy
 msgid "RPM database already exists"
 msgstr "väliaikainen tietokanta %s on jo olemassa"
 
-#: convertdb.c:44
+#: convertdb.c:45
 msgid "Old db is missing"
 msgstr ""
 
-#: convertdb.c:55
+#: convertdb.c:56
 msgid "failed to create RPM database /var/lib/rpm"
 msgstr ""
 
-#: convertdb.c:61
+#: convertdb.c:62
 msgid "Old db is corrupt"
 msgstr ""
 
-#: convertdb.c:70
+#: convertdb.c:71
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
 msgstr ""
 
-#: convertdb.c:204
+#: convertdb.c:205
 msgid "rpmconvert: no arguments expected"
 msgstr ""
 
-#: convertdb.c:210
+#: convertdb.c:211
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
@@ -4032,67 +4032,67 @@ msgstr "puuttuva '{' '%':n jälkeen"
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s:n tyydyttämättömät riippuvuudet:"
 
-#: rpmio/rpmio.c:532
+#: rpmio/rpmio.c:529
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:535
+#: rpmio/rpmio.c:532
 #, fuzzy
 msgid "Bad server response"
 msgstr "Virheellinen FTP-palvelijan vastaus"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:535
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP:n IO-virhe"
 
-#: rpmio/rpmio.c:541
+#: rpmio/rpmio.c:538
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP-palvelimen timeout"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:541
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP-palvelimen osoitetta ei löytynyt"
 
-#: rpmio/rpmio.c:547
+#: rpmio/rpmio.c:544
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP-palvelimen nimeä ei löytynyt"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:547
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "En saanut yhteyttä FTP-palvelijaan"
 
-#: rpmio/rpmio.c:553
+#: rpmio/rpmio.c:550
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "En saanut data-yhteyttä FTP-palvelijaan"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:553
 msgid "IO error to local file"
 msgstr "Paikallisen tiedoston IO-virhe"
 
-#: rpmio/rpmio.c:559
+#: rpmio/rpmio.c:556
 msgid "Error setting remote server to passive mode"
 msgstr "Virhe asetettaessa palvelinta passiiviin moodiin"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:559
 msgid "File not found on server"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: rpmio/rpmio.c:565
+#: rpmio/rpmio.c:562
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:569
+#: rpmio/rpmio.c:566
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP:n tuntematon tai odottamaton virhe"
 
-#: rpmio/rpmio.c:1164
+#: rpmio/rpmio.c:1161
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
