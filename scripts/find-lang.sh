@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #findlang - automagically generate list of language specific files
 #for inclusion in an rpm spec file.
 #This does assume that the *.mo files are under .../share/locale/...
