@@ -97,7 +97,11 @@ for f in $liblist $exelist ; do
 	/^$/ { START=0; }
 	/^Dynamic Section:$/ { START=1; }
 	(START==1) && /NEEDED/ {
-	    if (needed) { print $2 ; }
+	    if (needed) {
+		sub(/$/, "()'$mark64'", $2) ;
+		sub(/()$/, "", $2) ;
+		print $2 ;
+	    }
 	}
 	/^Version References:$/ { START=2; }
 	(START==2) && /required from/ {

@@ -208,13 +208,15 @@ INCLUDES = -I. \
 	@INCPATH@
 
 
-EXTRA_DIST = db-py.h hash.h header-py.h upgrade.h
+noinst_HEADERS = \
+	db-py.h hash.h header-py.h rpmds-py.h rpmfi-py.h rpmts-py.h upgrade.h
+
 
 mylibs = \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la
+	$(top_builddir)/lib/.libs/librpm.so \
+	$(top_builddir)/rpmdb/.libs/librpmdb.so \
+	$(top_builddir)/rpmio/.libs/librpmio.so \
+	$(top_builddir)/popt/.libs/libpopt.so
 
 
 LDADD = 
@@ -277,7 +279,9 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 CFLAGS = @CFLAGS@
 DIST_SOURCES = $(librpmmodule_la_SOURCES) $(poptmodule_so_SOURCES) \
 	$(rpmmodule_so_SOURCES)
-DIST_COMMON = ChangeLog Makefile.am Makefile.in
+HEADERS = $(noinst_HEADERS)
+
+DIST_COMMON = $(noinst_HEADERS) ChangeLog Makefile.am Makefile.in
 SOURCES = $(librpmmodule_la_SOURCES) $(poptmodule_so_SOURCES) $(rpmmodule_so_SOURCES)
 
 all: all-am
@@ -433,7 +437,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(HEADERS)
 
 installdirs:
 	$(mkinstalldirs) $(DESTDIR)$(pythondir)
@@ -515,10 +519,10 @@ uninstall-am: uninstall-info-am uninstall-pythonPROGRAMS
 
 
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
-	$(LINK) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
+	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
 
 poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
-	$(LINK) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
+	$(CC) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
 
 .PHONY:	lclint
 lclint:

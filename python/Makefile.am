@@ -13,13 +13,14 @@ INCLUDES = -I. \
 	-I/usr/include/python${PYVER} \
 	@INCPATH@
 
-EXTRA_DIST = db-py.h hash.h header-py.h upgrade.h
+noinst_HEADERS =  \
+	db-py.h hash.h header-py.h rpmds-py.h rpmfi-py.h rpmts-py.h upgrade.h
 
 mylibs= \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la
+	$(top_builddir)/lib/.libs/librpm.so \
+	$(top_builddir)/rpmdb/.libs/librpmdb.so \
+	$(top_builddir)/rpmio/.libs/librpmio.so \
+	$(top_builddir)/popt/.libs/libpopt.so
 
 LDADD =
 
@@ -37,10 +38,10 @@ librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c \
 	db-py.c header-py.c rpmds-py.c rpmfi-py.c rpmts-py.c
 
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
-	$(LINK) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
+	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
 
 poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
-	$(LINK) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
+	$(CC) -o $@ $(poptmodule_so_OBJECTS) $(poptmodule_so_LDFLAGS)
 
 .PHONY:	lclint
 lclint:

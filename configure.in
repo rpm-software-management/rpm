@@ -807,7 +807,7 @@ dnl
 withval=auto
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
-WITH_PYTHON_VERSION=
+WITH_PYTHON_VERSION=$withval
 if test $withval = auto ; then
 
   AC_MSG_CHECKING(for python 2.2)
@@ -837,7 +837,7 @@ main() {
 
 fi
 
-if test -n "$WITH_PYTHON_VERSION" ; then
+if test "$WITH_PYTHON_VERSION" != no ; then
   WITH_PYTHON_SUBDIR=python
   WITH_PYTHON_SUBPACKAGE=1
 else
