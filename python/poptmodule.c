@@ -4,14 +4,14 @@
  * 
  */
 
-#define PY_POPT_VERSION "0.1"
+#define PY_POPT_VERSION "0.2"
 
-static const char *rcs_id = "$Id: poptmodule.c,v 1.2 2001/07/17 20:01:46 jbj Exp $";
+static const char *rcs_id = "$Id: poptmodule.c,v 1.3 2001/07/20 17:09:08 jbj Exp $";
 
-static const char *module_doc = "Python bindings for the popt library
-
-The popt library provides useful command-line parsing functions.
-The latest version of the popt library is distributed with rpm
+static char *module_doc = "Python bindings for the popt library\n\
+\n\
+The popt library provides useful command-line parsing functions.\n\
+The latest version of the popt library is distributed with rpm\n\
 and is always available from ftp://ftp.rpm.org/pub/rpm/dist";
 
 #include <Python.h>
@@ -50,7 +50,7 @@ static PyObject * __poptOptionValue2PyObject(const struct poptOption *option)
 {
     if (option == NULL) {
         /* This shouldn't really happen */
-        PyErr_SetString(PyExc_ValueError, "expected a poptOption, got null");
+        PyErr_BadInternalCall();
         return NULL;
     }
     if (option->arg == NULL) {
@@ -212,13 +212,9 @@ static PyObject * ctxPrintHelp(poptContextObject *self, PyObject *args)
     PyObject *file;
     if (!PyArg_ParseTuple(args, "|O!i", &PyFile_Type, &file, &flags)) 
 	return NULL;
-    if (file == Py_None)
+    f = PyFile_AsFile(file);
+    if (f == NULL)
         f = stderr;
-    else {
-        f = PyFile_AsFile(file);
-        if (f == NULL)
-            return NULL;
-    }
     poptPrintHelp(self->ctx, f, flags);
     Py_INCREF(Py_None);
     return Py_None;
@@ -231,13 +227,9 @@ static PyObject * ctxPrintUsage(poptContextObject *self, PyObject *args)
     PyObject *file;
     if (!PyArg_ParseTuple(args, "|O!i", &PyFile_Type, &file, &flags))
 	return NULL;
-    if (file == Py_None)
-        f = stderr;
-    else {
         f = PyFile_AsFile(file);
-        if (f == NULL)
-            return NULL;
-    }
+    if (f == NULL)
+        f = stderr;
     poptPrintUsage(self->ctx, f, flags);
     Py_INCREF(Py_None);
     return Py_None;
@@ -376,47 +368,64 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
             *opt = __autohelp[0];
             return 1;
         }
-        PyErr_SetString(PyExc_TypeError, "Expected list or autohelp");
+        PyErr_SetString(pypoptError, "Expected list or autohelp");
         return 0;
     }
     if (!PyList_Check(list)) {
-        PyErr_SetString(PyExc_TypeError, "List expected");
+        PyErr_SetString(pypoptError, "List expected");
         return 0;
     }
     listSize = PyList_Size(list);
     if (listSize < 3) {
-        PyErr_SetString(PyExc_ValueError, "List is too short");
+        PyErr_SetString(pypoptError, "List is too short");
         return 0;
     }
     
     /* longName */
     o = PyList_GetItem(list, 0);
     /* Sanity check */
-    if (!PyString_Check(o)) {
-        PyErr_SetString(PyExc_TypeError, "Long name should be a string");
-        return 0;
+    if (o == Py_None)
+        opt->longName = NULL;
+    else {
+        if (!PyString_Check(o)) {
+            PyErr_SetString(pypoptError, "Long name should be a string");
+            return 0;
+        } 
+        opt->longName = PyString_AsString(o);
     }
-    opt->longName = PyString_AsString(o);
     
     /* shortName */
     o = PyList_GetItem(list, 1);
     /* Sanity check */
-    if (!PyString_Check(o)) {
-        PyErr_SetString(PyExc_TypeError, "Short name should be a string");
+    if (o == Py_None)
+        opt->shortName = '\0';
+    else {
+        if (!PyString_Check(o)) {
+            PyErr_SetString(pypoptError, "Short name should be a string");
+            return 0;
+        }
+        s = PyString_AsString(o);
+        /* If s is the empty string, we set the short name to '\0', which is
+         * the expected behaviour */
+        opt->shortName = s[0];
+    }
+
+    /* Make sure they have specified at least one of the long name or short
+     * name; we don't allow for table inclusions and callbacks for now, even
+     * if it would be nice to have them. The table inclusion is broken anyway
+     * unless I find a good way to pass the second table as a reference; I
+     * would normally have to pass it thru the arg field, but I don't pass
+     * that in the python table */
+    if (opt->longName == NULL && opt->shortName == '\0') {
+        PyErr_SetString(pypoptError, "At least one of the short name and long name must be specified");
         return 0;
     }
-    s = PyString_AsString(o);
-    if (strlen(s) != 1) {
-        PyErr_SetString(PyExc_ValueError, "Short name too short");
-        return 0;
-    }
-    opt->shortName = s[0];
     
     /* argInfo */
     o = PyList_GetItem(list, 2);
     /* Sanity check */
     if (!PyInt_Check(o)) {
-        PyErr_SetString(PyExc_TypeError, "argInfo is not an int");
+        PyErr_SetString(pypoptError, "argInfo is not an int");
         return 0;
     }
     opt->argInfo = PyInt_AsLong(o);
@@ -437,7 +446,7 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
 	    objsize = sizeof(long);
 	    break;
 	default:
-            PyErr_SetString(PyExc_ValueError, "Wrong value for argInfo");
+            PyErr_SetString(pypoptError, "Wrong value for argInfo");
 	    return 0;
     }
     opt->arg = (void *)malloc(objsize);
@@ -458,12 +467,13 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
     /* Sanity check */
     if (o == Py_None)
         opt->val = 0;
-    else 
+    else {
         if (!PyInt_Check(o)) {
-            PyErr_SetString(PyExc_TypeError, "Val should be int or None");
+            PyErr_SetString(pypoptError, "Val should be int or None");
             return 0;
+        }
+        opt->val = PyInt_AsLong(o);
     }
-    opt->val = PyInt_AsLong(o);
     /* If nothing left, end the stuff here */
     if (listSize == 4)
         return 1;
@@ -471,9 +481,10 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
     /* descrip */
     o = PyList_GetItem(list, 4);
     /* Sanity check */
-    if (!PyString_Check(o) && o != Py_None)
-        /* XXX FIXME raise exception */
+    if (!PyString_Check(o) && o != Py_None) {
+        PyErr_SetString(pypoptError, "Invalid value passed for the description");
         return 0;
+    }
     if (o == Py_None)
         opt->descrip = NULL;
     else
@@ -485,9 +496,10 @@ int __setPoptOption(PyObject *list, struct poptOption *opt)
     /* argDescrip */
     o = PyList_GetItem(list, 5);
     /* Sanity check */
-    if (!PyString_Check(o) && o != Py_None)
-        /* XXX FIXME raise exception */
+    if (!PyString_Check(o) && o != Py_None) {
+        PyErr_SetString(pypoptError, "Invalid value passed for the argument description");
         return 0;
+    }
     if (o == Py_None)
         opt->argDescrip = NULL;
     else
@@ -501,7 +513,7 @@ struct poptOption * __getPoptOptions(PyObject *list, int *count)
     struct poptOption *opts;
     struct poptOption sentinel = POPT_TABLEEND;
     if (!PyList_Check(list)) {
-        PyErr_SetString(PyExc_TypeError, "List expected");
+        PyErr_SetString(pypoptError, "List expected");
         return NULL;
     }
     listSize = PyList_Size(list);
@@ -519,7 +531,7 @@ struct poptOption * __getPoptOptions(PyObject *list, int *count)
         PyObject *o = PyList_GetItem(list, item);
         ret = __setPoptOption(o, opts + item);
 	if (ret == 0) {
-	    /* XXX FIXME raise exception */
+	    /* Presumably we pass the error from the previous level */
 	    return NULL;
 	}
         //__printPopt(opts + item);
@@ -534,23 +546,22 @@ char ** __getArgv(PyObject *list, int *argc)
 {
     int listSize, item, totalmem;
     char **argv;
-    if (!PyList_Check(list))
-        /* XXX FIXME raise exception */
-        return NULL;
     listSize = PyList_Size(list);
     /* Malloc exactly the size of the list */
     totalmem = (1 + listSize) * sizeof(char *);
     argv = (char **)malloc(totalmem);
-    if (argv == NULL)
-        /* XXX FIXME raise exception */
+    if (argv == NULL) {
+        PyErr_NoMemory();
         return NULL;
+    }
     memset(argv, '\0', totalmem);
     for (item = 0; item < listSize; item++) {
         /* Retrieve the item */
         PyObject *o = PyList_GetItem(list, item);
-        if (!PyString_Check(o))
-            /* XXX FIXME raise exception */
+        if (!PyString_Check(o)) {
+            PyErr_SetString(pypoptError, "Expected a string as value for the argument");
             return NULL;
+        }
         argv[item] = PyString_AsString(o);
         //debug("getArgv", argv[item]);
     }
@@ -575,12 +586,15 @@ static PyObject * getContext(PyObject *self, PyObject *args)
         return NULL;
     /* Parse argv */
     argv = __getArgv(a, &argc);
+    if (argv == NULL)
+        return NULL;
+    /* Parse argv */
     /* Parse opts */
     opts = __getPoptOptions(o, &count);
     if (opts == NULL)
 	/* Presumably they've set the exception at a previous level */
 	return NULL;
-    // XXX
+    /* Parse argv */
     c = PyObject_NEW(poptContextObject, &poptContextType);
     c->options = opts;
     c->optionsNo = count;
@@ -664,5 +678,8 @@ void initpopt()
         PyDict_SetItemString(dict, "POPT_AUTOHELP", val);
         Py_DECREF(val);
     }
+    /* The exception */
+    pypoptError = PyErr_NewException("popt.error", NULL, NULL);
+    PyDict_SetItemString(dict, "error", pypoptError);
 }
 
