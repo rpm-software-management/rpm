@@ -478,7 +478,12 @@ int main(int argc, const char ** argv)
 		ka->qva_flags |= VERIFY_MD5;
 	    else
 #endif
-		/*@-ifempty@*/ ;
+#ifdef IAM_RPMEIU
+	    if (bigMode & MODES_IE)
+		ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+	    else
+#endif
+		{};
 	    /*@switchbreak@*/ break;
 #endif	/* IAM_RPMQV || IAM_RPMK */
 
@@ -1036,6 +1041,8 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for erase"));
+ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	    ec += rpmRollback(ts, ia, NULL);
 	} else {
 	    ec += rpmErase(ts, (const char **)poptGetArgs(optCon), 
@@ -1076,6 +1083,8 @@ int main(int argc, const char ** argv)
 	if (!poptPeekArg(optCon)) {
 	    if (ia->rbtid == 0)
 		argerror(_("no packages given for install"));
+ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	    ec += rpmRollback(ts, ia, NULL);
 	} else {
 	    /*@-compdef@*/ /* FIX: ia->relocations[0].newPath undefined */

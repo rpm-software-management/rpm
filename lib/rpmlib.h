@@ -1541,22 +1541,23 @@ typedef enum rpmtransFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_REVERSE	= (1 << 15),
 
-    RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),
-    RPMTRANS_FLAG_NOPRE		= (1 << 17),
-    RPMTRANS_FLAG_NOPOST	= (1 << 18),
-    RPMTRANS_FLAG_NOTRIGGERIN	= (1 << 19),
-    RPMTRANS_FLAG_NOTRIGGERUN	= (1 << 20),
-    RPMTRANS_FLAG_NOPREUN	= (1 << 21),
-    RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),
-    RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),
+    RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
+    RPMTRANS_FLAG_NOPRE		= (1 << 17),	/*!< from --nopre */
+    RPMTRANS_FLAG_NOPOST	= (1 << 18),	/*!< from --nopost */
+    RPMTRANS_FLAG_NOTRIGGERIN	= (1 << 19),	/*!< from --notriggerin */
+    RPMTRANS_FLAG_NOTRIGGERUN	= (1 << 20),	/*!< from --notriggerun */
+    RPMTRANS_FLAG_NOPREUN	= (1 << 21),	/*!< from --nopreun */
+    RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),	/*!< from --nopostun */
+    RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),	/*!< from --notriggerpostun */
 /*@-enummemuse@*/
     RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
 /*@=enummemuse@*/
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
 /*@-enummemuse@*/
-    RPMTRANS_FLAG_CHAINSAW	= (1 << 26)
+    RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
 /*@=enummemuse@*/
+    RPMTRANS_FLAG_NOMD5		= (1 << 27)	/*!< from --nomd5 */
 } rpmtransFlags;
 
 #define	_noTransScripts		\

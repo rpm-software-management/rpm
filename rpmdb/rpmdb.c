@@ -2632,7 +2632,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
     if (db == NULL)
 	return 0;
 
+#ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
     xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
+#endif
     if (iid != 0 && iid != -1) {
 	int_32 tid = iid;
 	if (!headerIsEntry(h, RPMTAG_INSTALLTID))

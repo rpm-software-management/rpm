@@ -349,6 +349,7 @@ fi
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/macros
 %rpmattr	%{__prefix}/lib/rpm/mkinstalldirs
 %rpmattr	%{__prefix}/lib/rpm/rpm.*
+%rpmattr	%{__prefix}/lib/rpm/rpm2cpio.sh
 %rpmattr	%{__prefix}/lib/rpm/rpm[deiukqv]
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc
@@ -444,6 +445,7 @@ fi
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
 %rpmattr	%{__prefix}/lib/rpm/rpmdiff
 %rpmattr	%{__prefix}/lib/rpm/rpmdiff.cgi
+%rpmattr	%{__prefix}/lib/rpm/trpm
 %rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
@@ -629,3 +631,4 @@ fi
 - a couple more perl.{prov,req} fiddles.
 - macro for %files, always include %defattr(), redhat config only.
 - fix: drop header region when writing repackaged legacy header.
+- transaction rollbacks are functional.
