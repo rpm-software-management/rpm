@@ -26,26 +26,23 @@ creation of graphical package managers and other tools that need
 intimate knowledge of RPM packages.
 
 %prep
-%setup
+%setup -q
 
+%build
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+make
+
+%install
 rm -rf $RPM_BUILD_ROOT
-mkdir $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/usr/lib
-mkdir -p $RPM_BUILD_ROOT/usr/src/redhat
+
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/SOURCES
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/SPECS
-mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/SRPMS
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/BUILD
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/${RPM_ARCH}
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/noarch
-%build
 
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
-
-make
-
-%install
 make installprefix="$RPM_BUILD_ROOT" install
 
 %clean

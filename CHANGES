@@ -19,6 +19,7 @@
 2.5.4 -> 2.5.5:
 	- getOutputFrom(): fix race between last read on pipe and child death
 	  (exacerbated in 2.5.4).
+	- rpm.spec: create /usr/src/redhat/* in %install.
 
 2.5.3 -> 2.5.4:
 	- expand args using popt on pre-rpmReadConfigFiles arg pass.
