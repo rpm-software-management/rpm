@@ -9,7 +9,7 @@ use File::Basename;
 use File::Spec;
 
 use vars qw/$VERSION/;
-$VERSION = '0.62';
+$VERSION = '0.63';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
