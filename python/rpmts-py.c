@@ -13,6 +13,7 @@
 #include "rpmds-py.h"	/* XXX for rpmdsNew */
 #include "rpmfi-py.h"	/* XXX for rpmfiNew */
 #include "rpmmi-py.h"
+#include "rpmps-py.h"
 #include "rpmte-py.h"
 #include "spec-py.h"
 
@@ -1112,6 +1113,24 @@ fprintf(stderr, "*** rpmts_SetProbFilter(%p) ts %p ignoreSet %x\n", s, s->ts, ig
 
 /** \ingroup py_c
  */
+/*@null@*/
+static rpmpsObject *
+rpmts_Problems(rpmtsObject * s, PyObject * args)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
+{
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_Problems(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, ":Problems"))
+	return NULL;
+
+    return rpmps_Wrap( rpmtsProblems(s->ts) );
+}
+
+/** \ingroup py_c
+ */
 static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
@@ -1279,7 +1298,7 @@ spec_Parse(rpmtsObject * s, PyObject * args)
     int anyarch = 1;
     int force = 1;
 
-    if (!PyArg_ParseTuple(args, "s:parseSpec", &specfile)) {
+    if (!PyArg_ParseTuple(args, "s:Parse", &specfile)) {
                     return NULL;
     }
                         
@@ -1311,7 +1330,7 @@ rpmts_Match(rpmtsObject * s, PyObject * args)
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 
-    if (!PyArg_ParseTuple(args, "|OO", &TagN, &Key))
+    if (!PyArg_ParseTuple(args, "|OO:Match", &TagN, &Key))
 	return NULL;
 
     if (TagN && (tag = tagNumFromPyObject (TagN)) == -1) {
@@ -1370,6 +1389,9 @@ static struct PyMethodDef rpmts_methods[] = {
 "ts.setProbFilter(ignoreSet) -> previous ignoreSet\n\
 - Set control bit(s) for ignoring problems found by ts.run().\n\
   Note: This method replaces the 2nd argument to the old ts.run()\n" },
+ {"problems",	(PyCFunction) rpmts_Problems,	METH_VARARGS,
+"ts.problems() -> ps\n\
+- Return current problem set.\n" },
  {"run",	(PyCFunction) rpmts_Run,	METH_VARARGS,
 "ts.run(callback, data) -> (problems)\n\
 - Run a transaction set, returning list of problems found.\n\
@@ -1428,7 +1450,8 @@ static struct PyMethodDef rpmts_methods[] = {
  {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
 	NULL },
  {"parseSpec",	(PyCFunction) spec_Parse,	METH_VARARGS,
-	"ts.parseSpec(\"/path/to/foo.spec\")\n" },
+"ts.parseSpec(\"/path/to/foo.spec\") -> spec\n\
+- Parse a spec file.\n" },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },

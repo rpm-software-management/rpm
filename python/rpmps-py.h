@@ -23,4 +23,16 @@ typedef struct rpmpsObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmps_Type;
 
+/**
+ */
+/*@null@*/
+rpmps psFromPs(rpmpsObject * ps)
+	/*@*/;
+
+/**
+ */
+/*@null@*/
+rpmpsObject * rpmps_Wrap(rpmps ps)
+	/*@*/;
+
 #endif

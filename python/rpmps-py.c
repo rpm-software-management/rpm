@@ -136,6 +136,8 @@ rpmps_subscript(rpmpsObject * s, PyObject * key)
     int ix;
 
     if (!PyInt_Check(key)) {
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_subscript(%p[%s],%p[%s])\n", s, lbl(s), key, lbl(key));
 	PyErr_SetString(PyExc_TypeError, "integer expected");
 	return NULL;
     }
@@ -189,7 +191,7 @@ fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, 
     } else {
 	rpmProblem p = memset(alloca(sizeof(*p)), 0, sizeof(*p));
 
-	if (!PyArg_ParseTuple(value, "ssOiisi:rpmps value tuple",
+	if (!PyArg_ParseTuple(value, "ssOiisN:rpmps value tuple",
 				&p->pkgNEVR, &p->altNEVR, &p->key,
 				&p->type, &p->ignoreProblem, &p->str1,
 				&p->ulong1))
@@ -345,3 +347,21 @@ PyTypeObject rpmps_Type = {
 /*@=fullinitblock@*/
 
 /* ---------- */
+
+rpmps psFromPs(rpmpsObject * s)
+{
+    return s->ps;
+}
+
+rpmpsObject *
+rpmps_Wrap(rpmps ps)
+{
+    rpmpsObject * s = PyObject_New(rpmpsObject, &rpmps_Type);
+
+    if (s == NULL)
+	return NULL;
+    s->ps = ps;
+    s->active = 0;
+    s->ix = -1;
+    return s;
+}
