@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "checksig.h"
+#include "intl.h"
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"
@@ -26,23 +27,23 @@ int doReSign(int add, char *passPhrase, char **argv)
 	rpm = *argv++;
 	printf("%s:\n", rpm);
 	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
-	    fprintf(stderr, "%s: Open failed\n", rpm);
+	    fprintf(stderr, _("%s: Open failed\n"), rpm);
 	    exit(1);
 	}
 	if (readLead(fd, &lead)) {
-	    fprintf(stderr, "%s: readLead failed\n", rpm);
+	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
 	    exit(1);
 	}
 	if (lead.major == 1) {
-	    fprintf(stderr, "%s: Can't sign v1.0 RPM\n", rpm);
+	    fprintf(stderr, _("%s: Can't sign v1.0 RPM\n"), rpm);
 	    exit(1);
 	}
 	if (lead.major == 2) {
-	    fprintf(stderr, "%s: Can't re-sign v2.0 RPM\n", rpm);
+	    fprintf(stderr, _("%s: Can't re-sign v2.0 RPM\n"), rpm);
 	    exit(1);
 	}
 	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
-	    fprintf(stderr, "%s: rpmReadSignature failed\n", rpm);
+	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    exit(1);
 	}
 	if (add != ADD_SIGNATURE) {
@@ -54,13 +55,13 @@ int doReSign(int add, char *passPhrase, char **argv)
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
-		perror("Couldn't read the header/archive");
+		perror(_("Couldn't read the header/archive"));
 		close(ofd);
 		unlink(sigtarget);
 		exit(1);
 	    }
 	    if (write(ofd, buffer, count) < 0) {
-		perror("Couldn't write header/archive to temp file");
+		perror(_("Couldn't write header/archive to temp file"));
 		close(ofd);
 		unlink(sigtarget);
 		exit(1);
@@ -105,7 +106,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	fd = open(sigtarget, O_RDONLY);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
-		perror("Couldn't read sigtarget");
+		perror(_("Couldn't read sigtarget"));
 		close(ofd);
 		close(fd);
 		unlink(sigtarget);
@@ -113,7 +114,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 		exit(1);
 	    }
 	    if (write(ofd, buffer, count) < 0) {
-		perror("Couldn't write package");
+		perror(_("Couldn't write package"));
 		close(ofd);
 		close(fd);
 		unlink(sigtarget);
@@ -149,27 +150,27 @@ int doCheckSig(int flags, char **argv)
     while (*argv) {
 	rpm = *argv++;
 	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
-	    fprintf(stderr, "%s: Open failed\n", rpm);
+	    fprintf(stderr, _("%s: Open failed\n"), rpm);
 	    res++;
 	    continue;
 	}
 	if (readLead(fd, &lead)) {
-	    fprintf(stderr, "%s: readLead failed\n", rpm);
+	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
 	    res++;
 	    continue;
 	}
 	if (lead.major == 1) {
-	    fprintf(stderr, "%s: No signature available (v1.0 RPM)\n", rpm);
+	    fprintf(stderr, _("%s: No signature available (v1.0 RPM)\n"), rpm);
 	    res++;
 	    continue;
 	}
 	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
-	    fprintf(stderr, "%s: rpmReadSignature failed\n", rpm);
+	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
 	    res++;
 	    continue;
 	}
 	if (! sig) {
-	    fprintf(stderr, "%s: No signature available\n", rpm);
+	    fprintf(stderr, _("%s: No signature available\n"), rpm);
 	    res++;
 	    continue;
 	}
@@ -178,13 +179,13 @@ int doCheckSig(int flags, char **argv)
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
-		perror("Couldn't read the header/archive");
+		perror(_("Couldn't read the header/archive"));
 		close(ofd);
 		unlink(sigtarget);
 		exit(1);
 	    }
 	    if (write(ofd, buffer, count) < 0) {
-		fprintf(stderr, "Unable to write %s", sigtarget);
+		fprintf(stderr, _("Unable to write %s"), sigtarget);
 		perror("");
 		close(ofd);
 		unlink(sigtarget);
@@ -274,14 +275,14 @@ int doCheckSig(int flags, char **argv)
 		fprintf(stderr, "%s", buffer);
 	    } else {
 		fprintf(stderr, "%sNOT OK%s\n", buffer,
-			missingKeys ? " (MISSING KEYS)" : "");
+			missingKeys ? _(" (MISSING KEYS)") : "");
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
 		printf("%s", buffer);
 	    } else {
 		printf("%sOK%s\n", buffer,
-		       missingKeys ? " (MISSING KEYS)" : "");
+		       missingKeys ? _(" (MISSING KEYS)") : "");
 	    }
 	}
     }

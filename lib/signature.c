@@ -21,6 +21,7 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include "intl.h"
 #include "md5.h"
 #include "misc.h"
 #include "rpmlib.h"
@@ -92,7 +93,7 @@ int rpmReadSignature(int fd, Header *header, short sig_type)
       case RPMSIG_MD5:
       case RPMSIG_MD5_PGP:
 	rpmError(RPMERR_BADSIGTYPE,
-	      "Old (internal-only) signature!  How did you get that!?");
+	      _("Old (internal-only) signature!  How did you get that!?"));
 	return 1;
 	break;
       case RPMSIG_HEADERSIG:
@@ -215,7 +216,7 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
 	       "+batchmode=on", "+verbose=0", "+armor=off",
 	       name, "-sb", file, sigfile,
 	       NULL);
-	rpmError(RPMERR_EXEC, "Couldn't exec pgp");
+	rpmError(RPMERR_EXEC, _("Couldn't exec pgp"));
 	_exit(RPMERR_EXEC);
     }
 
@@ -226,14 +227,14 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
 
     waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SIGGEN, "pgp failed");
+	rpmError(RPMERR_SIGGEN, _("pgp failed"));
 	return 1;
     }
 
     if (stat(sigfile, &statbuf)) {
 	/* PGP failed to write signature */
 	unlink(sigfile);  /* Just in case */
-	rpmError(RPMERR_SIGGEN, "pgp failed to write signature");
+	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature"));
 	return 1;
     }
 
@@ -246,7 +247,7 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
 	unlink(sigfile);
 	close(fd);
 	free(*sig);
-	rpmError(RPMERR_SIGGEN, "unable to read the signature");
+	rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
 	return 1;
     }
     close(fd);
@@ -388,7 +389,8 @@ static int verifyPGPSignature(char *datafile, void *sig,
 	       sigfile, datafile,
 	       NULL);
 	printf("exec failed!\n");
-	rpmError(RPMERR_EXEC, "Could not run pgp.  Use --nopgp to skip PGP checks.");
+	rpmError(RPMERR_EXEC, 
+		 _("Could not run pgp.  Use --nopgp to skip PGP checks."));
 	_exit(RPMERR_EXEC);
     }
 
@@ -422,7 +424,7 @@ char *rpmGetPassPhrase(char *prompt)
 
     if (! rpmGetVar(RPMVAR_PGP_NAME)) {
 	rpmError(RPMERR_SIGGEN,
-	      "You must set \"pgp_name:\" in your rpmrc file");
+	         _("You must set \"pgp_name:\" in your rpmrc file"));
 	return NULL;
     }
 
@@ -471,7 +473,7 @@ static int checkPassPhrase(char *passPhrase)
 	       "+batchmode=on", "+verbose=0",
 	       name, "-sf",
 	       NULL);
-	rpmError(RPMERR_EXEC, "Couldn't exec pgp");
+	rpmError(RPMERR_EXEC, _("Couldn't exec pgp"));
 	_exit(RPMERR_EXEC);
     }
 

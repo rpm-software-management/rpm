@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #include "install.h"
+#include "intl.h"
 #include "messages.h"
 #include "md5.h"
 #include "misc.h"
@@ -123,8 +124,8 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 	    secOffset = sharedList[i].secRecOffset;
 	    sech = rpmdbGetRecord(db, secOffset);
 	    if (!sech) {
-		rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for "
-		      "uninstall", offset);
+		rpmError(RPMERR_DBCORRUPT, 
+			 _("cannot read header at %d for uninstall"), offset);
 		rc = 1;
 		break;
 	    }
@@ -136,8 +137,9 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 	    headerGetEntry(sech, RPMTAG_RELEASE, &type, (void **) &release, 
 		     &secFileCount);
 
-	    rpmMessage(RPMMESS_DEBUG, "package %s-%s-%s contain shared files\n", 
-		    name, version, release);
+	    rpmMessage(RPMMESS_DEBUG, 
+			_("package %s-%s-%s contain shared files\n"), 
+		    	name, version, release);
 
 	    if (!headerGetEntry(sech, RPMTAG_FILENAMES, &type, 
 			  (void **) &secFileList, &secFileCount)) {
@@ -336,7 +338,8 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	fd = open(fn, O_CREAT | O_RDWR);
 	if (!isdebug) unlink(fn);
 	if (fd < 0) {
-	    rpmError(RPMERR_SCRIPT, "error creating file for (un)install script");
+	    rpmError(RPMERR_SCRIPT, 
+			_("error creating file for (un)install script"));
 	    return 1;
 	}
 	write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
@@ -370,7 +373,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	waitpid(child, &status, 0);
 
 	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	    rpmError(RPMERR_SCRIPT, "execution of script failed");
+	    rpmError(RPMERR_SCRIPT, _("execution of script failed"));
 	    return 1;
 	}
     }
@@ -400,13 +403,15 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 		rc = mdfile(file, currentMd5);
 
 	    if (mdfile(file, currentMd5)) 
-		rpmMessage(RPMMESS_DEBUG, "    failed - assuming file removed\n");
+		rpmMessage(RPMMESS_DEBUG, 
+				"    failed - assuming file removed\n");
 	    else {
 		if (strcmp(currentMd5, md5)) {
 		    rpmMessage(RPMMESS_DEBUG, "    file changed - will save\n");
 		    action = BACKUP;
 		} else {
-		    rpmMessage(RPMMESS_DEBUG, "    file unchanged - will remove\n");
+		    rpmMessage(RPMMESS_DEBUG, 
+				"    file unchanged - will remove\n");
 		}
 	    }
 	}
@@ -424,7 +429,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 		strcpy(newfile, file);
 		strcat(newfile, ".rpmsave");
 		if (rename(file, newfile)) {
-		    rpmError(RPMERR_RENAME, "rename of %s to %s failed: %s",
+		    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
 				file, newfile, strerror(errno));
 		    rc = 1;
 		}
@@ -437,10 +442,11 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 		if (!test) {
 		    if (rmdir(file)) {
 			if (errno == ENOTEMPTY)
-			    rpmError(RPMERR_RMDIR, "cannot remove %s - directory "
-				  "not empty", file);
+			    rpmError(RPMERR_RMDIR, 
+				_("cannot remove %s - directory not empty"), 
+				file);
 			else
-			    rpmError(RPMERR_RMDIR, "rmdir of %s failed: %s",
+			    rpmError(RPMERR_RMDIR, _("rmdir of %s failed: %s"),
 					file, strerror(errno));
 			rc = 1;
 		    }
@@ -448,7 +454,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    } else {
 		if (!test) {
 		    if (unlink(file)) {
-			rpmError(RPMERR_UNLINK, "removal of %s failed: %s",
+			rpmError(RPMERR_UNLINK, _("removal of %s failed: %s"),
 				    file, strerror(errno));
 			rc = 1;
 		    }

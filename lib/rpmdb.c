@@ -15,6 +15,7 @@
 #include "dbindex.h"
 #include "falloc.h"
 #include "header.h"
+#include "intl.h"
 #include "misc.h"
 #include "rpmdb.h"
 #include "rpmlib.h"
@@ -104,7 +105,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     if (!justcheck || !exists(filename)) {
 	db.pkgs = faOpen(filename, mode, 0644);
 	if (!db.pkgs) {
-	    rpmError(RPMERR_DBOPEN, "failed to open %s\n", filename);
+	    rpmError(RPMERR_DBOPEN, _("failed to open %s\n"), filename);
 	    return 1;
 	}
 
@@ -117,14 +118,15 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 	if (mode & O_RDWR) {
 	    lockinfo.l_type = F_WRLCK;
 	    if (fcntl(db.pkgs->fd, F_SETLK, (void *) &lockinfo)) {
-		rpmError(RPMERR_FLOCK, "cannot get %s lock on database", 
-			"exclusive");
+		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
+			 _("exclusive"));
 		return 1;
 	    } 
 	} else {
 	    lockinfo.l_type = F_RDLCK;
 	    if (fcntl(db.pkgs->fd, F_SETLK, (void *) &lockinfo)) {
-		rpmError(RPMERR_FLOCK, "cannot get %s lock on database", "shared");
+		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
+			 _("shared"));
 		return 1;
 	    } 
 	}
@@ -306,7 +308,7 @@ static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
     switch (rc) {
       case 0:
 	if (dbiRemoveIndexRecord(&matches, rec) && !tolerant) {
-	    rpmError(RPMERR_DBCORRUPT, "package %s not listed in %s",
+	    rpmError(RPMERR_DBCORRUPT, _("package %s not listed in %s"),
 		  key, idxName);
 	} else {
 	    dbiUpdateIndex(dbi, key, &matches);
@@ -317,7 +319,8 @@ static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
 	break;
       case 1:
 	if (!tolerant) 
-	    rpmError(RPMERR_DBCORRUPT, "package %s not found in %s", key, idxName);
+	    rpmError(RPMERR_DBCORRUPT, _("package %s not found in %s"), 
+			key, idxName);
 	break;
       case 2:
 	break;   /* error message already generated from dbindex.c */
@@ -339,7 +342,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 
     h = rpmdbGetRecord(db, offset);
     if (!h) {
-	rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
+	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for uninstall"),
 	      offset);
 	return 1;
     }
@@ -347,7 +350,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     blockSignals();
 
     if (!headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count)) {
-	rpmError(RPMERR_DBCORRUPT, "package has no name");
+	rpmError(RPMERR_DBCORRUPT, _("package has no name"));
     } else {
 	rpmMessage(RPMMESS_DEBUG, "removing name index\n");
 	removeIndexEntry(db->nameIndex, name, rec, tolerant, "name index");
@@ -482,7 +485,7 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 
     dboffset = faAlloc(db->pkgs, headerSizeof(dbentry, HEADER_MAGIC_NO));
     if (!dboffset) {
-	rpmError(RPMERR_DBCORRUPT, "cannot allocate space for database");
+	rpmError(RPMERR_DBCORRUPT, _("cannot allocate space for database"));
 	unblockSignals();
 	if (providesCount) free(providesList);
 	if (requiredbyCount) free(requiredbyList);
@@ -540,7 +543,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
 
     oldHeader = rpmdbGetRecord(db, offset);
     if (!oldHeader) {
-	rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for update",
+	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for update"),
 		offset);
 	return 1;
     }
