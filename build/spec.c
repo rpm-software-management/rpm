@@ -64,7 +64,8 @@ Spec newSpec(void)
 
     initMacros(&spec->macros);
     
-    spec->autoReqProv = 1;
+    spec->autoReq = 1;
+    spec->autoProv = 1;
 
     return spec;
 }

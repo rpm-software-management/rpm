@@ -123,6 +123,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_TRIGGERIN                1100 /* internal */
 #define RPMTAG_TRIGGERUN                1101 /* internal */
 #define RPMTAG_TRIGGERPOSTUN            1102 /* internal */
+#define RPMTAG_AUTOREQ                  1103 /* internal */
+#define RPMTAG_AUTOPROV                 1104 /* internal */
     
 #define RPMTAG_EXTERNAL_TAG		1000000
 

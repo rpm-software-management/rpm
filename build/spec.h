@@ -81,7 +81,8 @@ struct SpecStruct {
     
     struct MacroContext macros;
 
-    int autoReqProv;
+    int autoReq;
+    int autoProv;
     
     StringBuf prep;
     StringBuf build;

@@ -405,7 +405,14 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
 	break;
       case RPMTAG_AUTOREQPROV:
-	spec->autoReqProv = parseYesNo(field);
+	spec->autoReq = parseYesNo(field);
+	spec->autoProv = spec->autoReq;
+	break;
+      case RPMTAG_AUTOREQ:
+	spec->autoReq = parseYesNo(field);
+	break;
+      case RPMTAG_AUTOPROV:
+	spec->autoProv = parseYesNo(field);
 	break;
       case RPMTAG_SOURCE:
       case RPMTAG_PATCH:
@@ -521,6 +528,8 @@ static struct PreambleRec {
     {RPMTAG_BUILDARCHS,    0, 0, "buildarchitectures"},
     {RPMTAG_BUILDARCHS,    0, 0, "buildarch"},
     {RPMTAG_AUTOREQPROV,   0, 0, "autoreqprov"},
+    {RPMTAG_AUTOREQ,       0, 0, "autoreq"},
+    {RPMTAG_AUTOPROV,      0, 0, "autoprov"},
     {RPMTAG_DOCDIR,        0, 0, "docdir"},
     {0, 0, 0, 0}
 };

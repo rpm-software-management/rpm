@@ -107,10 +107,14 @@ int generateAutoReqProv(Spec spec, Package pkg,
     char *argv[2];
     char **f, **fsave;
 
-    if (!cpioCount || !spec->autoReqProv) {
+    if (!cpioCount) {
 	return 0;
     }
 
+    if (! (spec->autoReq || spec->autoProv)) {
+	return 0;
+    }
+    
     writeBuf = newStringBuf();
     writeBytes = 0;
     while (cpioCount--) {
@@ -121,53 +125,57 @@ int generateAutoReqProv(Spec spec, Package pkg,
 
     /*** Do Provides ***/
 
-    rpmMessage(RPMMESS_NORMAL, "Finding provides...\n");
+    if (spec->autoProv) {
+	rpmMessage(RPMMESS_NORMAL, "Finding provides...\n");
     
-    argv[0] = "find-provides";
-    argv[1] = NULL;
-    readBuf = getOutputFrom(NULL, argv,
-			     getStringBuf(writeBuf), writeBytes, 1);
-    if (!readBuf) {
-	rpmError(RPMERR_EXEC, "Failed to find provides");
-	freeStringBuf(writeBuf);
-	return RPMERR_EXEC;
-    }
-    
-    f = fsave = splitString(getStringBuf(readBuf),
-			    strlen(getStringBuf(readBuf)), '\n');
-    freeStringBuf(readBuf);
-    while (*f) {
-	if (**f) {
-	    addReqProv(spec, pkg, RPMSENSE_PROVIDES, *f, NULL, 0);
+	argv[0] = "find-provides";
+	argv[1] = NULL;
+	readBuf = getOutputFrom(NULL, argv,
+				getStringBuf(writeBuf), writeBytes, 1);
+	if (!readBuf) {
+	    rpmError(RPMERR_EXEC, "Failed to find provides");
+	    freeStringBuf(writeBuf);
+	    return RPMERR_EXEC;
 	}
-	f++;
+	
+	f = fsave = splitString(getStringBuf(readBuf),
+				strlen(getStringBuf(readBuf)), '\n');
+	freeStringBuf(readBuf);
+	while (*f) {
+	    if (**f) {
+		addReqProv(spec, pkg, RPMSENSE_PROVIDES, *f, NULL, 0);
+	    }
+	    f++;
+	}
+	freeSplitString(fsave);
     }
-    freeSplitString(fsave);
 
     /*** Do Requires ***/
-    
-    rpmMessage(RPMMESS_NORMAL, "Finding requires...\n");
 
-    argv[0] = "find-requires";
-    argv[1] = NULL;
-    readBuf = getOutputFrom(NULL, argv,
-			     getStringBuf(writeBuf), writeBytes, 0);
-    if (!readBuf) {
-	rpmError(RPMERR_EXEC, "Failed to find requires");
-	freeStringBuf(writeBuf);
-	return RPMERR_EXEC;
-    }
+    if (spec->autoReq) {
+	rpmMessage(RPMMESS_NORMAL, "Finding requires...\n");
 
-    f = fsave = splitString(getStringBuf(readBuf),
-			    strlen(getStringBuf(readBuf)), '\n');
-    freeStringBuf(readBuf);
-    while (*f) {
-	if (**f) {
-	    addReqProv(spec, pkg, RPMSENSE_ANY, *f, NULL, 0);
+	argv[0] = "find-requires";
+	argv[1] = NULL;
+	readBuf = getOutputFrom(NULL, argv,
+				getStringBuf(writeBuf), writeBytes, 0);
+	if (!readBuf) {
+	    rpmError(RPMERR_EXEC, "Failed to find requires");
+	    freeStringBuf(writeBuf);
+	    return RPMERR_EXEC;
 	}
-	f++;
+
+	f = fsave = splitString(getStringBuf(readBuf),
+				strlen(getStringBuf(readBuf)), '\n');
+	freeStringBuf(readBuf);
+	while (*f) {
+	    if (**f) {
+		addReqProv(spec, pkg, RPMSENSE_ANY, *f, NULL, 0);
+	    }
+	    f++;
+	}
+	freeSplitString(fsave);
     }
-    freeSplitString(fsave);
 
     /*** Clean Up ***/
 
