@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.40
+Release: 0.41
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -255,6 +255,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jun 20 2000 Jeff Johnson <jbj@redhat.com>
+- fix: typo in brp-compress caused i18n man pages not to compress.
+
 * Mon Jun 19 2000 Jeff Johnson <jbj@redhat.com>
 - fix: open all db indices before performing chroot.
 

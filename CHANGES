@@ -63,6 +63,7 @@
 	- fix: permit '\0' as special case key (e.g. "/" in Basenames).
 	- require --rebuilddb to convert db1 -> db3, better messages.
 	- fix: open all db indices before performing chroot.
+	- fix: typo in brp-compress caused i18n man pages not to compress.
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

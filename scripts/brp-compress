@@ -12,7 +12,7 @@ COMPRESS="gzip -9"
 COMPRESS_EXT=.gz
 
 for d in ./usr/man/man* ./usr/man/*/man* \
-	./usr/share/man/man* ./usr/share/ma/*/man* \
+	./usr/share/man/man* ./usr/share/man/*/man* \
 	./usr/X11R6/man/man* ./usr/lib/perl5/man/man*
 do
     [ -d $d ] || continue
