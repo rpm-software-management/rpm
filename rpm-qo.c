@@ -1,5 +1,4 @@
 #include <getopt.h>
-#include <libintl.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +7,7 @@
 #include <sys/stat.h>
 
 #include "install.h"
+#include <intl.h>
 #include "lib/messages.h"
 #include "lib/signature.h"
 #include "query.h"
