@@ -5,7 +5,7 @@ dnl failing causes the script to bomb out with a message. If we can't fix
 dnl it, why check it?
 
 AC_INIT(rpm.c)
-AC_CONFIG_HEADER(misc/misc-config.h)
+AC_CONFIG_HEADER(config.h)
 
 dnl default to not using NLS
 XGETTEXT=""
