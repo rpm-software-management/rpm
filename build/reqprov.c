@@ -110,8 +110,6 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     pipe(fromProg);
     
     if (!(progPID = fork())) {
-	close(0);
-	close(1);
 	close(toProg[1]);
 	close(fromProg[0]);
 	
