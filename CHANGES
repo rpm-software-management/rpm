@@ -2,6 +2,8 @@
 	- --allmatches handling in -e broke some cases
 	- new predefined macros: %SOURCEn %PATCHn %SOURCEURLn %PATCHURLn
 	- fix anomoly with %files -f <file> and %doc
+	- ignore config bit when it's set on directories (which allows
+	  users to replace directories with symlinks)
 
 2.3.8 -> 2.3.9:
 	- reworked %setup to allow multiple -a and -b options, which
