@@ -521,7 +521,8 @@ static int add_file(struct file_entry **festack, const char *name,
 	    prefixTest++;
 	}
 	if (*prefixPtr) {
-	    error(RPMERR_BADSPEC, "File doesn't match prefix: %s", name);
+	    error(RPMERR_BADSPEC, "File doesn't match prefix (%s): %s",
+		  prefix, name);
 	    return 0;
 	}
     }
