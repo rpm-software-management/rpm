@@ -1,0 +1,195 @@
+.\" rpm - Red Hat Package Manager
+.TH rpm 8 "23 October 1995" "Red Hat Software" "Red Hat Commercial Linux"
+.SH NAME
+rpm \- Red Hat Package Manager
+.SH SYNOPSIS
+\fBrpm\fP [options] 
+.br
+\fBrpmq\fP [options] 
+.SH DESCRIPTION
+\fBrpm\fP is a powerful \fIpackage manager\fP, which can be used to
+build, install, query, verify, update, and uninstall individual
+software packages.  A \fIpackage\fP consists of an archive of files,
+and package information, including name, version, and description.
+
+\fBrpmq\fP is a work\-in\-progress rewrite of rpm in the C language.
+It currently handles most querying options well, and installs are
+partially implemented. It is however, much faster then the standard
+\fBrpm\fP.
+
+There are five basic modes of operation, and each takes a different
+set of options.  They are \fIbuild\fP, \fIinstall\fP, \fIquery\fP,
+\fIverify\fP, and \fIuninstall\fP.
+
+.I "\fBrpm \-i [install\-options] <package_file>+\fP"
+.br
+.I "\fBrpm \-q [query\-options]\fP"
+.br
+.I "\fBrpm \-V|\-y|\-\-verify [verify\-options]\fP"
+.br
+.I "\fBrpm \-u <package_name>+\fP"
+.br
+.I "\fBrpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
+
+.SH INSTALL OPTIONS
+.IP "\fB\-U, \-\-upgrade\fP"
+Upgrade the package currently installed to the version in the new RPM.
+This is the same as install, except all other version of the package
+are removed from the system.
+.IP "\fB\-S, \-\-search\fP"
+Search the locations listed in /etc/rpmrc for the rpm.
+.IP "\fB\-h, \-\-hash\fP"
+Print 50 hash marks as the package archive is unpacked.  Use
+with \fB\-v\fP for a nice display.
+.IP "\fB\-\-percent\fP"
+Print percentages as files are unpacked from the package archive.
+.IP "\fB\-\-force\fP"
+Install despite any potential conflicts.
+.IP "\fB\-\-test\fP"
+Do not install the package, simply check for and report potential
+conflicts.
+.IP "\fB\-\-root \fI<dir>\fP"
+Do the installation on the system rooted at \fI<dir>\fP.  Note that
+this means the database will be updated under \fI<dir>\fP and any
+\fIpre\fP or \fIpost\fP scripts are run after a chroot() to \fI<dir>\fP.
+
+.SH UNINSTALL OPTIONS
+.IP "\fB\-\-test\fP"
+Don't really uninstall anything, just go through the motions. This is
+designed primarily for testing and should normally be used with the
+\fB\-vv\fP option.
+
+.SH BUILD OPTIONS
+The general form of a rpm build command is
+.PP
+    \fBrpm \-b\fIO\fB [build\-options] <package_spec>+\fP
+.PP
+where \fB\-b\fIO\fP specifies the stages of building and
+packaging to be done and is one of:
+
+.IP "\fB\-bp\fP"
+Executes the "%prep" stage from the spec file.  Normally this
+involves unpacking the sources and applying any patches.
+.IP "\fB\-bl\fP"
+Do a "list check".  The "%files" section from the spec file
+is macro expanded, and checks are made to insure the files
+exist.
+.IP "\fB\-bc\fP"
+Do the "%build" stage from the spec file (after doing the prep stage).
+This generally involves the equivalent of a "make".
+.IP "\fB\-bi\fP"
+Do the "%install" stage from the spec file (after doing the prep
+and build stages).  This generally involves the equivalent of a
+"make install".
+.IP "\fB\-bb\fP"
+Build a binary package (after doing the prep, build, and install stages).
+.IP "\fB\-ba\fP"
+Build binary and source packages (after doing the prep, build, and 
+install stages).
+.PP
+The following options may also be used:
+.IP "\fB\-\-short\-circuit\fP"
+Skip straight to specified stage (ie, skip all stages leading up
+to the specified stage).  Only valid for \fB\-bc\fP and \fB\-bi\fP.
+.IP "\fB\-\-clean\fP"
+Remove the build tree after the packages are made.
+.IP "\fB\-\-test\fP"
+Do not execute any build stages.  Implies \fB\-\-keep\-temps\fP.
+Useful for testing out spec files.
+
+.SH QUERY OPTIONS
+There are two sets of options for querying: package selection, and
+information selection.
+
+Package selection options:
+.br
+.IP "\fB\fI<package_name>\fP"
+Query pacakge named \fB\fI<package_name>\fP.
+.IP "\fB\-a\fP"
+Query all packages
+.IP "\fB\-f \fI<file>\fP"
+Query package owning \fI<file>\fP.
+.IP "\fB\-F\fP"
+Like \fB\-f\fP but read file names from stdin.
+.IP "\fB\-p \fI<package_file>\fP"
+Query an (uninstalled) package \fI<package_file>\fP.
+.IP "\fB\-P\fP"
+Like \fB\-p\fP but read package file names from stdin.
+.br
+Information selection options:
+.br
+.IP "\fB\-i\fP"
+Display package information, including name, version, and description.
+.IP "\fB\-l\fP"
+List files in package.
+.IP "\fB\-s\fP"
+Display \fIstates\fP of file in package (implies \fB\-l\fP).  
+The state of each package is
+either \fInormal\fP or \fIoverwritten\fP.
+.IP "\fB\-d\fP"
+List only documentation files (implies \fB\-l\fP).  
+.IP "\fB\-c\fP"
+List only configuration files (implies \fB\-l\fP).  
+
+.SH VERIFY OPTIONS
+Verifying a package compares information about the installed
+files in the package with information about the files taken from the
+original package and stored in the rpm database.  Among other things,
+verifying compares the size, MD5 sum, permissions, type, owner and group
+of each file.  Any discrepencies are displayed.  The package specification
+options are the same as for package querying.
+
+.SH REBUILD OPTION
+
+There is another way to invoke rpm:
+
+.I "\fBrpm \-\-rebuild <source_package_file>+\fP"
+
+When invoked this way, rpm installs the named source package, and
+builds a binary package from it as if it were invoked as:
+
+.SH WHERE OPTION
+
+There is one more option that can be used to invoke rpm:
+
+.IP "\fB\-w, \-\-where\fP"
+This causes rpm to search the locations listed in /etc/rpmrc for any rpm
+matching those listed as arguments on the command line.
+
+
+.SH GENERAL OPTIONS
+These options can be used in all the different modes.
+.IP "\fB\-vv\fP"
+Print lots of ugly debugging information.
+.IP "\fB\-\-keep\-temps\fP"
+Do not remove temporary files (/tmp/rpm\-*).  Primarily only useful
+for debugging rpm.
+.IP "\fB\-\-quiet\fP"
+Print as little as possible \- normally only error messages will be
+displayed.
+.IP "\fB\-\-help\fP"
+Print a longer usage message then normal.
+.IP "\fB\-\-version\fP"
+Print a single line containing the version number of rpm being used.
+.IP "\fB\-\-root <dir>\fP"
+Use the directory given as top level directory for all operations.
+
+.SH FILES
+.nf
+/etc/rpmrc
+/var/lib/rpm/packages
+/var/lib/rpm/pathidx
+/var/lib/rpm/nameidx
+/tmp/rpm-*
+.fi
+.El
+.SH SEE ALSO
+.IR glint (8) ,
+.IR rpm2cpio (8) ,
+.nf
+RPM-HOWTO on http://www.redhat.com
+.SH AUTHORS
+.nf
+Marc Ewing <marc@redhat.com>
+Erik Troan <ewt@redhat.com>
+.fi
