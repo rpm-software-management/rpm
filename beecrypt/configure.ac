@@ -357,14 +357,17 @@ fi
 
 # Checks for libraries.
 # XXX Insert "typedef foo bc_lock_t" into types.h.
+include_pthread_h=
 typedef_bc_lock_t=
 if test "$ac_enable_threads" = yes; then
   if test "$ac_cv_header_thread_h" = yes; then
     AC_SEARCH_LIBS([mutex_lock],[thread],[
       AC_DEFINE([ENABLE_THREADS],1)
       if test "$ac_cv_header_sync_h" = yes; then
+	include_pthread_h='#include <sync.h>'
 	typedef_bc_lock_t='typedef mutex_t bc_lock_t;'
       else
+	include_pthread_h='#include <pthread.h>'
 	typedef_bc_lock_t='typedef pthread_mutex_t bc_lock_t;'
       fi
       ])
@@ -372,6 +375,7 @@ if test "$ac_enable_threads" = yes; then
     AC_SEARCH_LIBS([pthread_mutex_lock],[pthread],[
       AC_DEFINE([ENABLE_THREADS],1)
       if test "$ac_cv_header_pthread_h" = yes; then
+	include_pthread_h='#include <pthread.h>'
 	typedef_bc_lock_t='typedef pthread_mutex_t bc_lock_t;'
       fi
       ])
@@ -379,6 +383,7 @@ if test "$ac_enable_threads" = yes; then
     AC_MSG_WARN([Don't know which thread library to check for])
   fi
 fi
+AC_SUBST(include_pthread_h)
 AC_SUBST(typedef_bc_lock_t)
 
 if test "$ac_enable_aio" = yes; then

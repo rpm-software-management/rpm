@@ -95,6 +95,9 @@ typedef uint16_t mphw;
 # error
 #endif
 
+#if defined(_REENTRANT)
+@include_pthread_h@
 @typedef_bc_lock_t@
+#endif
 
 #endif /* _TYPES_H */

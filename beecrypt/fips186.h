@@ -27,22 +27,6 @@
 #define _FIPS186_H
 
 #include "beecrypt.h"
-
-#ifdef _REENTRANT
-# if WIN32
-#  include <windows.h>
-#  include <winbase.h>
-# else
-#  if HAVE_THREAD_H && HAVE_SYNCH_H
-#   include <synch.h>
-#  elif HAVE_PTHREAD_H
-#   include <pthread.h>
-#  else
-#   error need locking mechanism
-#  endif
-# endif
-#endif
-
 #include "sha1.h"
 
 #if (MP_WBITS == 64)
@@ -59,21 +43,14 @@ typedef struct
 {
 	#ifdef _REENTRANT
 	# if WIN32
-	HANDLE			lock;
+	HANDLE		lock;
 	# else
-	#  if HAVE_THREAD_H && HAVE_SYNCH_H
-	mutex_t			lock;
-	#  elif HAVE_PTHREAD_H
-	pthread_mutex_t	lock;
-	#  else
-	#   error need locking mechanism
-	#  endif
-	# endif
+	bc_lock_t	lock;
 	#endif
 	sha1Param	param;
-	mpw			state[FIPS186_STATE_SIZE];
+	mpw		state[FIPS186_STATE_SIZE];
 	byte		digest[20];
-	int			digestremain;
+	int		digestremain;
 } fips186Param;
 
 #ifdef __cplusplus
