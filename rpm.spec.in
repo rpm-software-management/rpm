@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.5
+Release: 0.6
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -482,6 +482,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Jan  5 2004 Jeff Johnson <jbj@redhat.com> 4.2-0.6
+- selinux phases 1 and 2 delivered.
+
 * Tue Dec 23 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.5
 - plug some rpmbuild memory leaks.
 - file security contexts added to package header.
