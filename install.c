@@ -118,7 +118,7 @@ int doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) {
     return rc;
 }
 
-void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
+void doUninstall(char * prefix, char * arg, int flags, int uninstallFlags) {
     rpmdb db;
     dbIndexSet matches;
     int i;
@@ -126,7 +126,7 @@ void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
     int rc;
     int count;
 
-    if (test) 
+    if (flags & UNINSTALL_TEST) 
 	mode = O_RDONLY;
     else
 	mode = O_RDWR | O_EXCL;
@@ -155,7 +155,7 @@ void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
 		    message(MESS_DEBUG, "uninstalling record number %d\n",
 				matches.recs[i].recOffset);
 		    rpmRemovePackage(prefix, db, matches.recs[i].recOffset, 
-				     test);
+				     flags & UNINSTALL_TEST);
 		}
 	    }
 	}
