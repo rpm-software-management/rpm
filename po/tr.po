@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-01-22 09:52-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2072,81 +2072,81 @@ msgid "generate signature"
 msgstr "imza üretir"
 
 #. @observer@
-#: lib/problems.c:229
+#: lib/problems.c:227
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:237
+#: lib/problems.c:235
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "%s farklý bir mimari için"
 
-#: lib/problems.c:242
+#: lib/problems.c:240
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "%s farklý bir iþletim sistemi için"
 
-#: lib/problems.c:247
+#: lib/problems.c:245
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s zaten kurulu"
 
-#: lib/problems.c:252
+#: lib/problems.c:250
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "%s dosya yolu %s paketinde yeniden konumlandýrýlamaz"
 
-#: lib/problems.c:257
+#: lib/problems.c:255
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%s dosyasý kalkýþýlan %s ve %s kurulumlarý arasýnda çeliþiyor"
 
-#: lib/problems.c:262
+#: lib/problems.c:260
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%s dosyasýnýn %s kurulumu %s kurulumundaki dosya ile çeliþiyor"
 
-#: lib/problems.c:267
+#: lib/problems.c:265
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s paketi zaten yüklü (%s sürümünden daha yeni)"
 
-#: lib/problems.c:272
+#: lib/problems.c:270
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "%s kurulumu %ld%cb gerektiriyor (%s dosya sisteminde)"
 
-#: lib/problems.c:282
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "%s kurulumu %ld i-düðüm gerektiriyor (%s dosya sisteminde)"
 
-#: lib/problems.c:287
+#: lib/problems.c:285
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "%s iþlem öncesi sistem çaðrý(sý/larý): %s baþarýsýz: %s"
 
-#: lib/problems.c:291
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
-#: lib/problems.c:295
+#: lib/problems.c:293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
-#: lib/problems.c:300
+#: lib/problems.c:298
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "anlaþýlamayan %d hatasý, %s paketi iþlenirken saptandý"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "conflicts with"
 msgstr " %s-%s-%s ile çeliþiyor\n"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "is needed by"
 msgstr " %s-%s-%s için gerekli\n"

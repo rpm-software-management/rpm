@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-01-22 09:52-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2069,82 +2069,82 @@ msgid "generate signature"
 msgstr "generér PGP/GPG-signatur"
 
 #. @observer@
-#: lib/problems.c:229
+#: lib/problems.c:227
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:237
+#: lib/problems.c:235
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "pakken %s hører til en anden arkitektur"
 
-#: lib/problems.c:242
+#: lib/problems.c:240
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "pakken %s hører til et andet operativsystem"
 
-#: lib/problems.c:247
+#: lib/problems.c:245
 #, c-format
 msgid "package %s is already installed"
 msgstr "pakken %s er allerede installeret"
 
-#: lib/problems.c:252
+#: lib/problems.c:250
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "sti %s i pakke %s kan ikke omrokeres"
 
-#: lib/problems.c:257
+#: lib/problems.c:255
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "filen %s skaber konflikt mellem den forsøgte installation af %s og %s"
 
-#: lib/problems.c:262
+#: lib/problems.c:260
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "filen %s fra installationen af %s skaber konflikt med fil fra pakken %s"
 
-#: lib/problems.c:267
+#: lib/problems.c:265
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "pakke %s (som er nyere end %s) er allerede installeret"
 
-#: lib/problems.c:272
+#: lib/problems.c:270
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "installation af pakke %s kræver %ld%cb på %s-filsystemet"
 
-#: lib/problems.c:282
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "installation af pakken %s kræver %ld inode'r på %s-filsystemet"
 
-#: lib/problems.c:287
+#: lib/problems.c:285
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "pakke %s prætransaktion-systemkald: %s mislykkedes: %s"
 
-#: lib/problems.c:291
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 
-#: lib/problems.c:295
+#: lib/problems.c:293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 
-#: lib/problems.c:300
+#: lib/problems.c:298
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "ukendt fejl %d under arbejdet med pakken %s"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "conflicts with"
 msgstr " skaber konflikt med %s-%s-%s\n"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "is needed by"
 msgstr " kræves af %s-%s-%s\n"

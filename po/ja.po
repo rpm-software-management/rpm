@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-01-22 09:52-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2152,90 +2152,90 @@ msgid "generate signature"
 msgstr "PGP/GPG 署名を生成します"
 
 #. @observer@
-#: lib/problems.c:229
+#: lib/problems.c:227
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:237
+#: lib/problems.c:235
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "パッケージ %s-%s-%s は異なるアーキテクチャ向けです"
 
-#: lib/problems.c:242
+#: lib/problems.c:240
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "パッケージ %s-%s-%s は異なる OS 向けです"
 
-#: lib/problems.c:247
+#: lib/problems.c:245
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/problems.c:252
+#: lib/problems.c:250
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/problems.c:257
+#: lib/problems.c:255
 #, fuzzy, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "ファイル %s は %s-%s-%s と %s-%s-%s のインストールのファイルと競合しています"
 
-#: lib/problems.c:262
+#: lib/problems.c:260
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "%s-%s-%s のインストールからのファイル %s はパッケージ %s-%s-%s からのファイル"
 "と競合しています"
 
-#: lib/problems.c:267
+#: lib/problems.c:265
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "パッケージ %s-%s-%s (%s-%s-%sよりも新しいもの) はすでにインストールされていま"
 "す"
 
-#: lib/problems.c:272
+#: lib/problems.c:270
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:282
+#: lib/problems.c:280
 #, fuzzy, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:287
+#: lib/problems.c:285
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:291
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
-#: lib/problems.c:295
+#: lib/problems.c:293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
-#: lib/problems.c:300
+#: lib/problems.c:298
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "conflicts with"
 msgstr " %s-%s-%s と競合します\n"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "is needed by"
 msgstr "は %s-%s-%s に必要とされています\n"

@@ -137,10 +137,12 @@ void htFree(hashTable ht)
 
     for (i = 0; i < ht->numBuckets; i++) {
 	b = ht->buckets[i];
-	/*@-branchstate@*/
-	if (ht->keySize && b) free((void *)b->key);
-	/*@=branchstate@*/
-	while (b) {
+	if (b == NULL)
+	    continue;
+	ht->buckets[i] = NULL;
+	if (ht->keySize > 0)
+	    b->key = _free(b->key);
+	do {
 	    n = b->next;
 	    /*@-branchstate@*/
 	    if (b->data) {
@@ -150,8 +152,7 @@ void htFree(hashTable ht)
 	    }
 	    /*@=branchstate@*/
 	    b = _free(b);
-	    b = n;
-	}
+	} while ((b = n) != NULL);
     }
 
     ht->buckets = _free(ht->buckets);

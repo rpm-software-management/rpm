@@ -119,15 +119,22 @@ sub process_file {
 #   eval { require Carp } if defined $^S; # If error/warning during compilation,
 
 
-	(m/^\s*         # we hope the inclusion starts the line
-	 (do|require|use)\s+(?!\{)     # do not want 'do {' loops
+	(m/^(\s*)         # we hope the inclusion starts the line
+	 (require|use)\s+(?!\{)     # do not want 'do {' loops
 	 # quotes around name are always legal
 	 [\'\"]?([^\;\ \'\"\t]*)[\'\"]?[\t\;\ ]
 	 # the syntax for 'use' allows version requirements
 	 \s*([.0-9]*)
 	 /x)
        ) {
-      my ($module, $version) = ($2,$3);
+      my ($whitespace, $statement, $module, $version) = ($1, $2, $3,$4);
+
+      # we only consider require statements that are flush against
+      # the left edge. any other require statements give too many
+      # false positives, as they are usually inside of an if statement
+      # as a fallback module or a rarely used option
+
+      ($whitespace ne "" && $statement eq "require") && next;
 
       # if there is some interpolation of variables just skip this
       # dependency, we do not want
@@ -182,8 +189,7 @@ sub process_file {
       # will be included with the name sys/systeminfo.ph so only use the
       # basename of *.ph files
 
-      ($module  =~ m/\.ph$/) && ($module =~ s!.*/!!g );
-
+      ($module  =~ m/\.ph$/) && next;
 
       $require{$module}=$version;
       $line{$module}=$_;

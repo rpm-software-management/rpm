@@ -1883,7 +1883,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	    regfree(preg);
 	    /*@+voidabstract -usereleased @*/ /* LCL: regfree has bogus only */
 	    preg = _free(preg);
-	    /*@=voidabstract@*/
+	    /*@=voidabstract =usereleased @*/
 	}
 	/*@=kepttrans@*/
 	return rc;

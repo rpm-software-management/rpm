@@ -1,7 +1,7 @@
 #/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
 # \verbatim
 #
-# $Id: rpmrc.in,v 2.46 2001/12/20 16:28:46 jbj Exp $
+# $Id: rpmrc.in,v 2.47 2002/01/23 00:58:47 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -37,6 +37,7 @@ optflags: m68k -O2 -fomit-frame-pointer
 optflags: ppc -O2 -fsigned-char
 optflags: ppciseries -O2 -fsigned-char
 optflags: ppcpseries -O2 -fsigned-char
+optflags: ppc64 -O2 -fsigned-char
 
 optflags: parisc -O2 -mpa-risc-1-0
 optflags: hppa1.0 -O2 -mpa-risc-1-0
@@ -112,9 +113,12 @@ arch_canon:	falcon: m68kmint	13
 arch_canon:	atariclone: m68kmint	13
 arch_canon:	milan: m68kmint		13
 arch_canon:	hades: m68kmint		13
+
 arch_canon:	s390: s390	14
 arch_canon:	i370: i370	14
 arch_canon:	s390x: s390x	15
+
+arch_canon:	ppc64:	ppc64	16
 
 #############################################################
 # Canonical OS names and numbers
@@ -217,6 +221,7 @@ arch_compat: powerpc: ppc
 arch_compat: powerppc: ppc
 arch_compat: ppciseries: ppc
 arch_compat: ppcpseries: ppc
+arch_compat: ppc64: ppc
 arch_compat: ppc: rs6000
 arch_compat: rs6000: noarch
 
@@ -310,6 +315,7 @@ buildarch_compat: m68k: noarch
 buildarch_compat: ppciseries: noarch
 buildarch_compat: ppcpseries: noarch
 buildarch_compat: ppc: noarch
+buildarch_compat: ppc64: noarch
 
 buildarch_compat: mips: noarch
 buildarch_compat: mipsel: noarch

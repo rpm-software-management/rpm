@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-01-22 09:52-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2046,87 +2046,87 @@ msgid "generate signature"
 msgstr "서명을 작성합니다"
 
 #. @observer@
-#: lib/problems.c:229
+#: lib/problems.c:227
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:237
+#: lib/problems.c:235
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "%s (은)는 다른 아키텍쳐를 위한 패키지입니다"
 
-#: lib/problems.c:242
+#: lib/problems.c:240
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "%s (은)는 다른 운영체제를 위한 패키지입니다"
 
-#: lib/problems.c:247
+#: lib/problems.c:245
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/problems.c:252
+#: lib/problems.c:250
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
-#: lib/problems.c:257
+#: lib/problems.c:255
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%2$s (와)과 %3$s 의 설치 과정에서 %1$s 파일이 서로 충돌합니다"
 
-#: lib/problems.c:262
+#: lib/problems.c:260
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%2$s 에서 설치되는 %1$s 파일은 %3$s 패키지의 파일과 충돌합니다"
 
-#: lib/problems.c:267
+#: lib/problems.c:265
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
-#: lib/problems.c:272
+#: lib/problems.c:270
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb (이)가 필요합"
 "니다"
 
-#: lib/problems.c:282
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld 의 아이노드(inode)"
 "가 필요합니다"
 
-#: lib/problems.c:287
+#: lib/problems.c:285
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 "%s 패키지의 선(pre)-트랜잭션 시스템콜(syscall): %s (이)가 실패했습니다: %s"
 
-#: lib/problems.c:291
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
-#: lib/problems.c:295
+#: lib/problems.c:293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
-#: lib/problems.c:300
+#: lib/problems.c:298
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 "%2$s 패키지를 처리하는 과정에서 알 수 없는 오류 %1$d (이)가 발생했습니다"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "conflicts with"
 msgstr " %s-%s-%s (와)과 충돌합니다\n"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "is needed by"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"

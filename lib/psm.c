@@ -1817,7 +1817,7 @@ assert(psm->mi == NULL);
 	/* Run triggers in other package(s) this package sets off. */
 	rc = runTriggers(psm);
 	break;
-    case PSM_IMMED_TRIGGERS:	
+    case PSM_IMMED_TRIGGERS:
 	/* Run triggers in this package other package(s) set off. */
 	rc = runImmedTriggers(psm);
 	break;

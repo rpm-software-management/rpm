@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-01-22 09:52-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2235,85 +2235,85 @@ msgid "generate signature"
 msgstr "PGP-Signatur generieren"
 
 #. @observer@
-#: lib/problems.c:229
+#: lib/problems.c:227
 msgid "different"
 msgstr ""
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/problems.c:237
+#: lib/problems.c:235
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/problems.c:242
+#: lib/problems.c:240
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/problems.c:247
+#: lib/problems.c:245
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/problems.c:252
+#: lib/problems.c:250
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/problems.c:257
+#: lib/problems.c:255
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:262
+#: lib/problems.c:260
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr " steht im Konflikt mit %s-%s-%s\n"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/problems.c:267
+#: lib/problems.c:265
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/problems.c:272
+#: lib/problems.c:270
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:282
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/problems.c:287
+#: lib/problems.c:285
 #, fuzzy, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/problems.c:291
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/problems.c:295
+#: lib/problems.c:293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/problems.c:300
+#: lib/problems.c:298
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "conflicts with"
 msgstr " steht im Konflikt mit %s-%s-%s\n"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "is needed by"
 msgstr " wird von %s-%s-%s gebraucht\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-01-22 09:52-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -2048,81 +2048,81 @@ msgid "generate signature"
 msgstr "gerar a assinatura PGP/GPG"
 
 #. @observer@
-#: lib/problems.c:229
+#: lib/problems.c:227
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:237
+#: lib/problems.c:235
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "o pacote %s é para uma arquitectura diferente"
 
-#: lib/problems.c:242
+#: lib/problems.c:240
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "o pacote %s é para um sistema operativo diferente"
 
-#: lib/problems.c:247
+#: lib/problems.c:245
 #, c-format
 msgid "package %s is already installed"
 msgstr "o pacote %s já está instalado"
 
-#: lib/problems.c:252
+#: lib/problems.c:250
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "a directoria %s no pacote %s não pode ser mudada de sítio"
 
-#: lib/problems.c:257
+#: lib/problems.c:255
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "o ficheiro %s está em conflito com as tentativas de instalação do %s e %s"
 
-#: lib/problems.c:262
+#: lib/problems.c:260
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "o ficheiro %s da instalação do %s está em conflito com o ficheiro do pacote %s"
 
-#: lib/problems.c:267
+#: lib/problems.c:265
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "o pacote %s (que é mais recente que o %s) já está instalado"
 
-#: lib/problems.c:272
+#: lib/problems.c:270
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "a instalação do pacote %s precisa de %ld%cb no sistema de ficheiros %s"
 
-#: lib/problems.c:282
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "a instalação do pacote %s precisa de %ld 'inodes' no sistema de ficheiros %s"
 
-#: lib/problems.c:287
+#: lib/problems.c:285
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "a(s) chamada(s) de pré-transacção do pacote %s: %s falhou: %s"
 
-#: lib/problems.c:291
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
 
-#: lib/problems.c:295
+#: lib/problems.c:293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
 
-#: lib/problems.c:300
+#: lib/problems.c:298
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "encontrado o erro desconhecido %d ao manipular o pacote %s"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "conflicts with"
 msgstr " está em conflito com o %s-%s-%s\n"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "is needed by"
 msgstr " é necessário pelo %s-%s-%s\n"

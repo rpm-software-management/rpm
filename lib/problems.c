@@ -211,9 +211,7 @@ static inline int snprintf(/*@out@*/ char * buf, int nb, const char * fmt, ...)
     va_list ap;
     int rc;
     va_start(ap, fmt);
-    /*@=modunconnomods@*/
     rc = vsnprintf(buf, nb, fmt, ap);
-    /*@=modunconnomods@*/
     va_end(ap);
     return rc;
 }

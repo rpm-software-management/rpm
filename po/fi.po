@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-01-22 09:52-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -321,40 +321,49 @@ msgstr "--allfiles: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
 
 #: rpmqv.c:791
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
+msgstr ""
+"--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
 
 #: rpmqv.c:796
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr "--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
+msgstr ""
+"--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
 
 #: rpmqv.c:801
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr "--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
+msgstr ""
+"--justdb: voidaan k‰ytt‰‰ vain paketteja asennettaessa tai poistettaessa"
 
 #: rpmqv.c:805
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
-msgstr "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+msgstr ""
+"--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
+"tarkistettaessa"
 
 #: rpmqv.c:810
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
-msgstr "--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja k‰‰nnett‰ess‰"
+msgstr ""
+"--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja "
+"k‰‰nnett‰ess‰"
 
 #: rpmqv.c:815
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
-msgstr "--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
+msgstr ""
+"--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, "
+"kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
 
 #: rpmqv.c:827
 msgid "arguments to --root (-r) must begin with a /"
@@ -1634,13 +1643,15 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 #: lib/package.c:167 lib/package.c:238
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
-msgstr "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
+msgstr ""
+"t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
 #: lib/package.c:188 lib/package.c:246
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
-msgstr "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
+msgstr ""
+"t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
 #: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:522
 #, c-format
@@ -1695,13 +1706,16 @@ msgstr ""
 
 #: lib/poptI.c:100
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "asenna kaikki tiedostot, myˆs konfiguraatiot, jotka muuten ehk‰ ohitettaisiin"
+msgstr ""
+"asenna kaikki tiedostot, myˆs konfiguraatiot, jotka muuten ehk‰ ohitettaisiin"
 
 #: lib/poptI.c:104
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr "poista kaikki paketit, joiden nime‰ vastaa  <paketti> (tavallisesti, jos  <paketti> m‰‰ritt‰‰ useita paketteja, tulee virhe)"
+msgstr ""
+"poista kaikki paketit, joiden nime‰ vastaa  <paketti> (tavallisesti, jos  "
+"<paketti> m‰‰ritt‰‰ useita paketteja, tulee virhe)"
 
 #: lib/poptI.c:110 lib/poptI.c:161
 #, fuzzy
@@ -1837,7 +1851,9 @@ msgstr "‰l‰ suorita asennusskriptej‰"
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr "p‰ivit‰ vanhempaan versioon (--force p‰ivitett‰ess‰ tekee t‰m‰n automaattisesti)"
+msgstr ""
+"p‰ivit‰ vanhempaan versioon (--force p‰ivitett‰ess‰ tekee t‰m‰n "
+"automaattisesti)"
 
 #: lib/poptI.c:197
 msgid "print percentages as package installs"
@@ -2102,81 +2118,81 @@ msgid "generate signature"
 msgstr "generoi PGP-allekirjoitus"
 
 #. @observer@
-#: lib/problems.c:229
+#: lib/problems.c:227
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:237
+#: lib/problems.c:235
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/problems.c:242
+#: lib/problems.c:240
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/problems.c:247
+#: lib/problems.c:245
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/problems.c:252
+#: lib/problems.c:250
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/problems.c:257
+#: lib/problems.c:255
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:262
+#: lib/problems.c:260
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 
-#: lib/problems.c:267
+#: lib/problems.c:265
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/problems.c:272
+#: lib/problems.c:270
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:282
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:287
+#: lib/problems.c:285
 #, fuzzy, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/problems.c:291
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/problems.c:295
+#: lib/problems.c:293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/problems.c:300
+#: lib/problems.c:298
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "conflicts with"
 msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "is needed by"
 msgstr "vaatii %s-%s-%s\n"
@@ -3748,7 +3764,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #, fuzzy
 #~ msgid ""
 #~ "   Install, upgrade and query (with -p) allow URL's to be used in place"
-#~ msgstr "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja voidaan k‰ytt‰‰"
+#~ msgstr ""
+#~ "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja "
+#~ "voidaan k‰ytt‰‰"
 
 #, fuzzy
 #~ msgid "   of file names as well as the following options:"
@@ -3850,7 +3868,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "show all verifiable information for each file (must be used with -l, -c, "
 #~ "or -d)"
-#~ msgstr "n‰yt‰ kaikki varmistettavissa oleva tieto kustakin tiedostosta (pit‰‰ k‰ytt‰‰ -l, -c, tai -d kanssa)"
+#~ msgstr ""
+#~ "n‰yt‰ kaikki varmistettavissa oleva tieto kustakin tiedostosta (pit‰‰ "
+#~ "k‰ytt‰‰ -l, -c, tai -d kanssa)"
 
 #~ msgid "list capabilities package provides"
 #~ msgstr "luettele paketin tarjoamat ominaisuudet"
@@ -3864,7 +3884,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "verify a package installation using the same same package specification "
 #~ "options as -q"
-#~ msgstr "tarkista paketin asennus k‰ytt‰en samoja paketin m‰‰rittelyparametrej‰ kuin -q "
+#~ msgstr ""
+#~ "tarkista paketin asennus k‰ytt‰en samoja paketin m‰‰rittelyparametrej‰ "
+#~ "kuin -q "
 
 #~ msgid "do not verify file attributes"
 #~ msgstr "‰l‰ tarkista tiedostojen ominaisuuksia"
@@ -3953,7 +3975,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "install source package, build binary package and remove spec file, "
 #~ "sources, patches, and icons."
-#~ msgstr "asenna l‰hdekoodipaketti, k‰‰nn‰ bin‰‰ripaketti ja poista m‰‰rittelytiedosto, l‰hdekoodi, korjaukset ja kuvakkeet"
+#~ msgstr ""
+#~ "asenna l‰hdekoodipaketti, k‰‰nn‰ bin‰‰ripaketti ja poista "
+#~ "m‰‰rittelytiedosto, l‰hdekoodi, korjaukset ja kuvakkeet"
 
 #~ msgid "like --rebuild, but don't build any package"
 #~ msgstr "kuten --rebuild, mutta ei k‰‰nn‰ paketteja"
@@ -3983,12 +4007,16 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "set the file permissions to those in the package database using the same "
 #~ "package specification options as -q"
-#~ msgstr "aseta tiedostojen oikeudet niiksi, jotka ne ovat pakettien tietokannassa k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
+#~ msgstr ""
+#~ "aseta tiedostojen oikeudet niiksi, jotka ne ovat pakettien tietokannassa "
+#~ "k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
 
 #~ msgid ""
 #~ "set the file owner and group to those in the package database using the "
 #~ "same package specification options as -q"
-#~ msgstr "aseta tiedostojen omistaja ja ryhm‰ niiksi, jotka ne ovat pakettien tietokannassa k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
+#~ msgstr ""
+#~ "aseta tiedostojen omistaja ja ryhm‰ niiksi, jotka ne ovat pakettien "
+#~ "tietokannassa k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
 
 #~ msgid "-u and --uninstall are deprecated and no longer work.\n"
 #~ msgstr "-u ja --uninstall ovat vanhentuneet eiv‰tk‰ en‰‰ toimi.\n"
@@ -4000,7 +4028,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "script disabling options may only be specified during package "
 #~ "installation, erasure, and verification"
-#~ msgstr "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+#~ msgstr ""
+#~ "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa "
+#~ "tai tarkistettaessa"
 
 #, fuzzy
 #~ msgid "--apply may only be specified during package installation"
@@ -4020,7 +4050,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "--nomd5 may only be used during signature checking and package "
 #~ "verification"
-#~ msgstr "--nopgp: voidaan k‰ytt‰‰ vain allekirjoitusta tarkistettaessa ja paketteja todennettaessa"
+#~ msgstr ""
+#~ "--nopgp: voidaan k‰ytt‰‰ vain allekirjoitusta tarkistettaessa ja "
+#~ "paketteja todennettaessa"
 
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
@@ -4070,7 +4102,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "  Install, upgrade and query (with -p) modes allow URL's to be used in "
 #~ "place"
-#~ msgstr "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja voidaan k‰ytt‰‰"
+#~ msgstr ""
+#~ "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja "
+#~ "voidaan k‰ytt‰‰"
 
 #, fuzzy
 #~ msgid "  of file names as well as the following options:"
@@ -4228,7 +4262,9 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, "
 #~ "and verification"
-#~ msgstr "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+#~ msgstr ""
+#~ "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
+#~ "tarkistettaessa"
 
 #, fuzzy
 #~ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -4396,22 +4432,29 @@ msgstr "%s:n luonti ep‰onnistui\n"
 
 #, fuzzy
 #~ msgid "                        [--rmsource] [--rmspec] specfile"
-#~ msgstr "                        [--buildarch <arkk>] [--rmsource] m‰‰rittelytiedosto"
+#~ msgstr ""
+#~ "                        [--buildarch <arkk>] [--rmsource] "
+#~ "m‰‰rittelytiedosto"
 
 #, fuzzy
 #~ msgid "       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"
-#~ msgstr "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
+#~ msgstr ""
+#~ "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
 
 #, fuzzy
 #~ msgid ""
 #~ "       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
-#~ msgstr "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... l‰hdekoodiN.rpm"
+#~ msgstr ""
+#~ "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
+#~ "l‰hdekoodiN.rpm"
 
 #, fuzzy
 #~ msgid ""
 #~ "       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN."
 #~ "rpm\n"
-#~ msgstr "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... l‰hdekoodiN.rpm"
+#~ msgstr ""
+#~ "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
+#~ "l‰hdekoodiN.rpm"
 
 #, fuzzy
 #~ msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
@@ -4509,16 +4552,21 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ "<kj>]"
 
 #~ msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-#~ msgstr "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
+#~ msgstr ""
+#~ "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
 
 #~ msgid ""
 #~ "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... l‰hdekoodiN.rpm"
+#~ msgstr ""
+#~ "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
+#~ "l‰hdekoodiN.rpm"
 
 #~ msgid ""
 #~ "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN."
 #~ "rpm"
-#~ msgstr "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... l‰hdekoodiN.rpm"
+#~ msgstr ""
+#~ "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
+#~ "l‰hdekoodiN.rpm"
 
 #, fuzzy
 #~ msgid "                        [--sign] [--nobuild] ]"
@@ -4547,10 +4595,12 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgstr "‰l‰ tarkista paketin k‰yttˆj‰rjestelm‰‰"
 
 #~ msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr "--build (-b) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
+#~ msgstr ""
+#~ "--build (-b) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
 
 #~ msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr "--tarbuild (-t) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
+#~ msgstr ""
+#~ "--tarbuild (-t) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
 
 #~ msgid "arguments to --dbpath must begin with a /"
 #~ msgstr "--dbpath:n parametrien pit‰‰ alkaa /-merkill‰"
@@ -4561,13 +4611,17 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "ftp options can only be used during package queries, installs, and "
 #~ "upgrades"
-#~ msgstr "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa ja p‰ivitett‰ess‰"
+#~ msgstr ""
+#~ "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa "
+#~ "ja p‰ivitett‰ess‰"
 
 #, fuzzy
 #~ msgid ""
 #~ "http options can only be used during package queries, installs, and "
 #~ "upgrades"
-#~ msgstr "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa ja p‰ivitett‰ess‰"
+#~ msgstr ""
+#~ "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa "
+#~ "ja p‰ivitett‰ess‰"
 
 #~ msgid "relocate files even though the package doesn't allow it"
 #~ msgstr "siirr‰ tiedostot toiseen hakemistoon vaikka paketti ei sit‰ sallisi"
@@ -4884,25 +4938,33 @@ msgstr "%s:n luonti ep‰onnistui\n"
 #~ msgid ""
 #~ "--noscripts may only be specified during package installation and "
 #~ "uninstallation"
-#~ msgstr "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+#~ msgstr ""
+#~ "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa "
+#~ "tai tarkistettaessa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--nodeps may only be specified during package installation, "
 #~ "uninstallation, and verification"
-#~ msgstr "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai tarkistettaessa"
+#~ msgstr ""
+#~ "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
+#~ "tarkistettaessa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--test may only be specified during package installation, uninstallation, "
 #~ "and building"
-#~ msgstr "--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja k‰‰nnett‰ess‰"
+#~ msgstr ""
+#~ "--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja "
+#~ "k‰‰nnett‰ess‰"
 
 #, fuzzy
 #~ msgid ""
 #~ "--root (-r) may only be specified during installation, uninstallation, "
 #~ "querying, and database rebuilds"
-#~ msgstr "--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
+#~ msgstr ""
+#~ "--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, "
+#~ "kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
 
 #, fuzzy
 #~ msgid "--clean may only be used during package building"

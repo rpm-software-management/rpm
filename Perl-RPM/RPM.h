@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.16 2001/09/15 13:49:11 jbj Exp $
+ * $Id: RPM.h,v 1.17 2002/01/23 00:58:48 jbj Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -42,13 +42,13 @@
 
 /* XXX Certain constants moved in rpm-4.0.3 to a developing CLI API */
 #if RPM_MAJOR >= 4 && RPM_MINOR >= 0 && RPM_PATCH >= 3
-#include <rpm/rpmcli.h>
+#include <rpmcli.h>
 #endif
 
-#include <rpm/rpmlib.h>
+#include <rpmlib.h>
 #if RPM_MAJOR < 4
-#  include <rpm/header.h>
-#  include <rpm/dbindex.h>
+#  include <header.h>
+#  include <dbindex.h>
 #endif
 
 /* Various flags. For now, one nybble for header and one for package. */

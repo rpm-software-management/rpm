@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-01-22 09:52-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -340,19 +340,23 @@ msgstr "--justdb mo緀te koristiti samo kod instalacije i brisanja paketa"
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
-msgstr "--nodeps mo緀te koristiti samo kod instalacije, uklanjanja ili provere paketa"
+msgstr ""
+"--nodeps mo緀te koristiti samo kod instalacije, uklanjanja ili provere paketa"
 
 #: rpmqv.c:810
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
-msgstr "--test mo緀te koristiti samo kod instalacije, uklanjanja ili kreiranja paketa"
+msgstr ""
+"--test mo緀te koristiti samo kod instalacije, uklanjanja ili kreiranja paketa"
 
 #: rpmqv.c:815
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
-msgstr "--root (-r) mo緀te navesti samo kod instalacije, uklanjanja, upita ili rekreiranja baze podataka"
+msgstr ""
+"--root (-r) mo緀te navesti samo kod instalacije, uklanjanja, upita ili "
+"rekreiranja baze podataka"
 
 #: rpmqv.c:827
 msgid "arguments to --root (-r) must begin with a /"
@@ -1693,13 +1697,16 @@ msgstr ""
 
 #: lib/poptI.c:100
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr "instaliraj sve datoteke, 鑑k i konfiguracije koje bi ina鑕 bile presko鑕ne"
+msgstr ""
+"instaliraj sve datoteke, 鑑k i konfiguracije koje bi ina鑕 bile presko鑕ne"
 
 #: lib/poptI.c:104
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr "ukloni sve pakete koji odgovaraju <paketu> (normalno, javlja se gre筴a ako <paket> ozna鑑va vi筫 paketa)"
+msgstr ""
+"ukloni sve pakete koji odgovaraju <paketu> (normalno, javlja se gre筴a ako "
+"<paket> ozna鑑va vi筫 paketa)"
 
 #: lib/poptI.c:110 lib/poptI.c:161
 #, fuzzy
@@ -1836,7 +1843,8 @@ msgstr "nemoj izvr筰ti nijedan instalacioni skript"
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr "a緐riraj na staru verziju paketa (--force kod a緐riranja ovo radi automatski)"
+msgstr ""
+"a緐riraj na staru verziju paketa (--force kod a緐riranja ovo radi automatski)"
 
 #: lib/poptI.c:197
 msgid "print percentages as package installs"
@@ -2101,81 +2109,81 @@ msgid "generate signature"
 msgstr "napravi PGP potpis"
 
 #. @observer@
-#: lib/problems.c:229
+#: lib/problems.c:227
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:237
+#: lib/problems.c:235
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "paket %s-%s-%s sadr緄 deljene datoteke\n"
 
-#: lib/problems.c:242
+#: lib/problems.c:240
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "paket %s-%s-%s sadr緄 deljene datoteke\n"
 
-#: lib/problems.c:247
+#: lib/problems.c:245
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/problems.c:252
+#: lib/problems.c:250
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/problems.c:257
+#: lib/problems.c:255
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:262
+#: lib/problems.c:260
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr " se sudara sa %s-%s-%s\n"
 
-#: lib/problems.c:267
+#: lib/problems.c:265
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paket %s-%s-%s sadr緄 deljene datoteke\n"
 
-#: lib/problems.c:272
+#: lib/problems.c:270
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:282
+#: lib/problems.c:280
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:287
+#: lib/problems.c:285
 #, fuzzy, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "paket %s-%s-%s sadr緄 deljene datoteke\n"
 
-#: lib/problems.c:291
+#: lib/problems.c:289
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: lib/problems.c:295
+#: lib/problems.c:293
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: lib/problems.c:300
+#: lib/problems.c:298
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "conflicts with"
 msgstr " se sudara sa %s-%s-%s\n"
 
-#: lib/problems.c:380
+#: lib/problems.c:378
 #, fuzzy
 msgid "is needed by"
 msgstr " je potreban paketu %s-%s-%s\n"
@@ -3655,7 +3663,9 @@ msgstr "neuspelo kreiranje %s\n"
 #, fuzzy
 #~ msgid ""
 #~ "   Install, upgrade and query (with -p) allow URL's to be used in place"
-#~ msgstr "   instaliranje, pobolj筧vanja i upit (sa -p) dozvoljavaju kori规enje URL-ova"
+#~ msgstr ""
+#~ "   instaliranje, pobolj筧vanja i upit (sa -p) dozvoljavaju kori规enje URL-"
+#~ "ova"
 
 #, fuzzy
 #~ msgid "   of file names as well as the following options:"
@@ -3757,7 +3767,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "show all verifiable information for each file (must be used with -l, -c, "
 #~ "or -d)"
-#~ msgstr "poka緄 sve informacije koje se mogu proveriti za svaku datoteku (mora se koristiti sa -l, -c ili -d)"
+#~ msgstr ""
+#~ "poka緄 sve informacije koje se mogu proveriti za svaku datoteku (mora se "
+#~ "koristiti sa -l, -c ili -d)"
 
 #~ msgid "list capabilities package provides"
 #~ msgstr "poka緄 koja svojstva donosi paket"
@@ -3772,7 +3784,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "verify a package installation using the same same package specification "
 #~ "options as -q"
-#~ msgstr "proveri instalaciju paketa koriste鎖 iste opcije za odre餰nje paketa kao i -q"
+#~ msgstr ""
+#~ "proveri instalaciju paketa koriste鎖 iste opcije za odre餰nje paketa kao "
+#~ "i -q"
 
 #~ msgid "do not verify file attributes"
 #~ msgstr "nemoj proveravati atribute datoteke"
@@ -3893,12 +3907,16 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "set the file permissions to those in the package database using the same "
 #~ "package specification options as -q"
-#~ msgstr "postavi dozvole datoteke kao one u bazi podataka paketa koriste鎖 iste opcije za odre餰nje datoteka kao i -q"
+#~ msgstr ""
+#~ "postavi dozvole datoteke kao one u bazi podataka paketa koriste鎖 iste "
+#~ "opcije za odre餰nje datoteka kao i -q"
 
 #~ msgid ""
 #~ "set the file owner and group to those in the package database using the "
 #~ "same package specification options as -q"
-#~ msgstr "postavi vlasnika i grupu datoteke kao i one u bazi podataka paketa koriste鎖 iste opcije za odre餰nje datoteka kao i -q"
+#~ msgstr ""
+#~ "postavi vlasnika i grupu datoteke kao i one u bazi podataka paketa "
+#~ "koriste鎖 iste opcije za odre餰nje datoteka kao i -q"
 
 #~ msgid "-u and --uninstall are deprecated and no longer work.\n"
 #~ msgstr "-u i --uninstall nisu vi筫 podr綼ni i ne rade vi筫.\n"
@@ -3910,7 +3928,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "script disabling options may only be specified during package "
 #~ "installation, erasure, and verification"
-#~ msgstr "--noscripsts mo緀te koristiti samo kod instalacije, uklanjanja ili provere paketa"
+#~ msgstr ""
+#~ "--noscripsts mo緀te koristiti samo kod instalacije, uklanjanja ili "
+#~ "provere paketa"
 
 #, fuzzy
 #~ msgid "--apply may only be specified during package installation"
@@ -3934,11 +3954,13 @@ msgstr "neuspelo kreiranje %s\n"
 
 #, fuzzy
 #~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-#~ msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da presko鑙te PGP proveru."
+#~ msgstr ""
+#~ "Ne mogu da pokrenem pgp. Koristite --nopgp da presko鑙te PGP proveru."
 
 #, fuzzy
 #~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-#~ msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da presko鑙te PGP proveru."
+#~ msgstr ""
+#~ "Ne mogu da pokrenem pgp. Koristite --nopgp da presko鑙te PGP proveru."
 
 #, fuzzy
 #~ msgid "generate GPG/PGP signature"
@@ -3980,7 +4002,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "  Install, upgrade and query (with -p) modes allow URL's to be used in "
 #~ "place"
-#~ msgstr "   instaliranje, pobolj筧vanja i upit (sa -p) dozvoljavaju kori规enje URL-ova"
+#~ msgstr ""
+#~ "   instaliranje, pobolj筧vanja i upit (sa -p) dozvoljavaju kori规enje URL-"
+#~ "ova"
 
 #, fuzzy
 #~ msgid "  of file names as well as the following options:"
@@ -4138,7 +4162,9 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, "
 #~ "and verification"
-#~ msgstr "--nodeps mo緀te koristiti samo kod instalacije, uklanjanja ili provere paketa"
+#~ msgstr ""
+#~ "--nodeps mo緀te koristiti samo kod instalacije, uklanjanja ili provere "
+#~ "paketa"
 
 #, fuzzy
 #~ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
@@ -4396,10 +4422,12 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgstr "nemoj proveravati operativni sistem za paket"
 
 #~ msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr "--build (-b) zahteva jedan od slede鎖h podargumenata: a,b,i,c,p ili l"
+#~ msgstr ""
+#~ "--build (-b) zahteva jedan od slede鎖h podargumenata: a,b,i,c,p ili l"
 
 #~ msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr "--tarbuild (-t) zahteva jedan od slede鎖h podargumenata: a,b,c,i,p ili l"
+#~ msgstr ""
+#~ "--tarbuild (-t) zahteva jedan od slede鎖h podargumenata: a,b,c,i,p ili l"
 
 #~ msgid "arguments to --dbpath must begin with a /"
 #~ msgstr "argumenti za --dbpath moraju po鑕ti znakom '/'"
@@ -4410,13 +4438,17 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "ftp options can only be used during package queries, installs, and "
 #~ "upgrades"
-#~ msgstr "opcije za FTP se mogu koristiti samo kod upita, instalacije ili a緐riranja paketa"
+#~ msgstr ""
+#~ "opcije za FTP se mogu koristiti samo kod upita, instalacije ili "
+#~ "a緐riranja paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "http options can only be used during package queries, installs, and "
 #~ "upgrades"
-#~ msgstr "opcije za FTP se mogu koristiti samo kod upita, instalacije ili a緐riranja paketa"
+#~ msgstr ""
+#~ "opcije za FTP se mogu koristiti samo kod upita, instalacije ili "
+#~ "a緐riranja paketa"
 
 #~ msgid "relocate files even though the package doesn't allow it"
 #~ msgstr "premesti datoteke 鑑k iako paket to ne dozvoljava"
@@ -4725,25 +4757,33 @@ msgstr "neuspelo kreiranje %s\n"
 #~ msgid ""
 #~ "--noscripts may only be specified during package installation and "
 #~ "uninstallation"
-#~ msgstr "--noscripsts mo緀te koristiti samo kod instalacije, uklanjanja ili provere paketa"
+#~ msgstr ""
+#~ "--noscripsts mo緀te koristiti samo kod instalacije, uklanjanja ili "
+#~ "provere paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--nodeps may only be specified during package installation, "
 #~ "uninstallation, and verification"
-#~ msgstr "--nodeps mo緀te koristiti samo kod instalacije, uklanjanja ili provere paketa"
+#~ msgstr ""
+#~ "--nodeps mo緀te koristiti samo kod instalacije, uklanjanja ili provere "
+#~ "paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--test may only be specified during package installation, uninstallation, "
 #~ "and building"
-#~ msgstr "--test mo緀te koristiti samo kod instalacije, uklanjanja ili kreiranja paketa"
+#~ msgstr ""
+#~ "--test mo緀te koristiti samo kod instalacije, uklanjanja ili kreiranja "
+#~ "paketa"
 
 #, fuzzy
 #~ msgid ""
 #~ "--root (-r) may only be specified during installation, uninstallation, "
 #~ "querying, and database rebuilds"
-#~ msgstr "--root (-r) mo緀te navesti samo kod instalacije, uklanjanja, upita ili rekreiranja baze podataka"
+#~ msgstr ""
+#~ "--root (-r) mo緀te navesti samo kod instalacije, uklanjanja, upita ili "
+#~ "rekreiranja baze podataka"
 
 #, fuzzy
 #~ msgid "--clean may only be used during package building"

@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.26 2002/01/10 19:16:54 jbj Exp $
+# $Id: Makefile.PL,v 1.27 2002/01/23 00:58:48 jbj Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -84,16 +84,23 @@ else
 }
 
 # Check for needed header files
-$rpm_libdir = '';
-for (qw(/usr/include /usr/local/include /opt/include /opt/rpm/include))
+if ( -d "../lib" )
 {
+  $rpm_libdir = '.';
+}
+else
+{
+  $rpm_libdir = '';
+  for (qw(/usr/include /usr/local/include /opt/include /opt/rpm/include))
+  {
     next unless -d $_ and -d "$_/rpm";
     $rpm_libdir = "$_/rpm", last if (-d "$_/rpm" && -e "$_/rpm/rpmlib.h");
-}
-die "Header file 'rpmlib.h' not found. This is needed for compiling the XS glue
+  }
+  die "Header file 'rpmlib.h' not found. This is needed for compiling the XS glue
 code. If this is present, edit $0 and add the correct directory to the search
 list near line 78. Stopped"
     unless $rpm_libdir;
+}
 
 WriteMakefile(
               NAME         => 'RPM',

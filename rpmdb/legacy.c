@@ -49,6 +49,7 @@ int _noDirTokens = 0;
 /*@=exportheadervar@*/
 
 static int dncmp(const void * a, const void * b)
+	/*@*/
 {
     const char *const * first = a;
     const char *const * second = b;

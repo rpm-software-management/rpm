@@ -7,7 +7,6 @@ filelist=`sed "s/['\"]/\\\&/g"`
 
 solist=$(echo $filelist | grep "\\.so" | grep -v "^/lib/ld.so" | \
 	xargs file -L 2>/dev/null | grep "ELF.*shared object" | cut -d: -f1)
-perllist=$(echo $filelist | grep '\.pm$')
 pythonlist=
 tcllist=
 
@@ -46,8 +45,8 @@ done | sort -u
 
 #
 # --- Perl modules.
-[ -x /usr/lib/rpm/perl.prov -a -n "$perllist" ] &&
-    echo $perllist | tr [:blank:] \\n | /usr/lib/rpm/perl.prov | sort -u
+[ -x /usr/lib/rpm/perl.prov ] &&
+    echo $filelist | tr [:blank:] \\n | grep '\.pm$' | /usr/lib/rpm/perl.prov | sort -u
 
 #
 # --- Python modules.
