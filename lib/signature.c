@@ -24,6 +24,7 @@
 #include "intl.h"
 #include "md5.h"
 #include "misc.h"
+#include "miscfn.h"
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"

@@ -10,6 +10,12 @@ TODO:
 
 ******************************/
 
+#include "config.h"
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>

@@ -1,3 +1,9 @@
+#include "config.h"
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>

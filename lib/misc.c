@@ -1,3 +1,9 @@
+#include "config.h"
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <errno.h>
 #include <ctype.h>
 #include <grp.h>

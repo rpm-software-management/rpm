@@ -452,12 +452,12 @@ static char *do_patch(Spec spec, int c, int strip, char *db,
 
     if (isCompressed(file)) {
 	sprintf(buf,
-		"echo \"Patch #%s:\"\n"
+		"echo \"Patch #%d:\"\n"
 		"%s -dc %s | patch -p%d %s -s\n"
 		"if [ $? -ne 0 ]; then\n"
 		"  exit $?\n"
 		"fi",
-		rpmGetVar(RPMVAR_GZIPBIN), c, file, strip, args);
+		c, rpmGetVar(RPMVAR_GZIPBIN), file, strip, args);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"

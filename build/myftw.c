@@ -19,6 +19,12 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
+#include "config.h"
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>

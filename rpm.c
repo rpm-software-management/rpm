@@ -1,3 +1,9 @@
+#include "config.h"
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 #include <ctype.h>
 #include <errno.h>
 #include <locale.h>
@@ -128,7 +134,7 @@ static void printHelpLine(char * prefix, char * help) {
 	while (ch > (help + 1) && isspace(*ch)) ch--;
 	ch++;
 
-	sprintf(format, "%%.%ds\n%%%ds", ch - help, indentLength);
+	sprintf(format, "%%.%ds\n%%%ds", (int) (ch - help), indentLength);
 	printf(format, help, " ");
 	help = ch;
 	while (isspace(*help) && *help) help++;
