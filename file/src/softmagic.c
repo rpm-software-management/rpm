@@ -974,7 +974,7 @@ fmagicSMatch(const fmagic fm)
     int cont_level = 0;
     int need_separator = 0;
     /*@only@*/
-    static int32_t * tmpoff = NULL;
+    static int32_t * tmpoff = NULL;	/* XXX memory leak */
     static int tmpdelta = 64;
     static size_t tmplen = 0;
     int32_t oldoff = 0;

@@ -1450,6 +1450,7 @@ if (fi->actions == NULL)
 	(void) freecon(scon);
     }
 /*@=branchstate@*/
+    fi->fn = _free(fi->fn);
 
     /* Initialize array ptrs into data following array. */
     len = ((fi->fc+1) * sizeof(*fi->fcontexts)) + fctxtlen;

@@ -747,7 +747,7 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
 	break;
     case RPMSIGTAG_MD5:
 	pktlen = 16;
-	pkt = xcalloc(1, pktlen);
+	pkt = memset(alloca(pktlen), 0, pktlen);
 	if (domd5(file, pkt, 0, NULL)
 	 || !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;

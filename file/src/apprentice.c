@@ -878,6 +878,7 @@ apprentice_compile(/*@unused@*/ const fmagic fm,
 	static const uint32_t ar[] = {
 	    MAGICNO, VERSIONNO
 	};
+	int rc = -1;	/* assume failure */
 
 	if (dbname == NULL) 
 		return -1;
@@ -885,30 +886,34 @@ apprentice_compile(/*@unused@*/ const fmagic fm,
 	if ((fd = open(dbname, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 		(void)fprintf(stderr, "%s: Cannot open `%s' (%s)\n",
 		    __progname, dbname, strerror(errno));
-		return -1;
+		goto exit;
 	}
 
 	if (write(fd, ar, sizeof(ar)) != sizeof(ar)) {
 		(void)fprintf(stderr, "%s: error writing `%s' (%s)\n",
 		    __progname, dbname, strerror(errno));
-		return -1;
+		goto exit;
 	}
 
 	if (lseek(fd, sizeof(**magicp), SEEK_SET) != sizeof(**magicp)) {
 		(void)fprintf(stderr, "%s: error seeking `%s' (%s)\n",
 		    __progname, dbname, strerror(errno));
-		return -1;
+		goto exit;
 	}
 
 	if (write(fd, *magicp,  sizeof(**magicp) * *nmagicp) 
 	    != sizeof(**magicp) * *nmagicp) {
 		(void)fprintf(stderr, "%s: error writing `%s' (%s)\n",
 		    __progname, dbname, strerror(errno));
-		return -1;
+		goto exit;
 	}
+	rc = 0;
 
-	(void)close(fd);
-	return 0;
+exit:
+	if (fd >= 0)
+		(void)close(fd);
+	free(dbname);
+	return rc;
 }
 /*@=bounds@*/
 
@@ -934,8 +939,10 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	if (dbname == NULL)
 		return -1;
 
-	if ((fd = open(dbname, O_RDONLY)) == -1)
+	if ((fd = open(dbname, O_RDONLY)) == -1) {
+		free(dbname);
 		return -1;
+	}
 
 	if (fstat(fd, &st) == -1) {
 		(void)fprintf(stderr, "%s: Cannot stat `%s' (%s)\n",
@@ -987,9 +994,11 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	(*magicp)++;
 	if (needsbyteswap)
 		byteswap(*magicp, *nmagicp);
+	free(dbname);
 	return 0;
 
 errxit:
+	free(dbname);
 	if (fd != -1)
 		(void)close(fd);
 /*@-branchstate@*/

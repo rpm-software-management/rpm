@@ -808,12 +808,8 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
 		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
 {
     *type = RPM_STRING_ARRAY_TYPE;
-
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, (const char ***) data, count);
     *freeData = 1;
-
-    *freeData = 0;	/* XXX WTFO? */
-
     return 0; 
 }
 
