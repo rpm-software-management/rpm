@@ -155,7 +155,7 @@ void doUninstall(char * prefix, char * arg, int flags, int uninstallFlags) {
 		    message(MESS_DEBUG, "uninstalling record number %d\n",
 				matches.recs[i].recOffset);
 		    rpmRemovePackage(prefix, db, matches.recs[i].recOffset, 
-				     flags & UNINSTALL_TEST);
+				     0, flags & UNINSTALL_TEST);
 		}
 	    }
 	}
