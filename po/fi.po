@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-19 09:49-0400\n"
+"POT-Creation-Date: 2000-04-19 18:07-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2708,145 +2708,145 @@ msgstr "%s:n kysely ei onnistunut\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:581
+#: lib/query.c:582
 #, fuzzy
 msgid "no packages\n"
 msgstr "kysele kaikki paketit"
 
-#: lib/query.c:591
+#: lib/query.c:592
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/query.c:601
+#: lib/query.c:602
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "mik‰‰n paketti ei laukaise %s:a\n"
 
-#: lib/query.c:611
+#: lib/query.c:612
 #, c-format
 msgid "no package requires %s\n"
 msgstr "mik‰‰n pakettie ei tarvitse %s:a\n"
 
-#: lib/query.c:622
+#: lib/query.c:623
 #, c-format
 msgid "no package provides %s\n"
 msgstr "mik‰‰n paketti ei tarjoa %s:a\n"
 
-#: lib/query.c:638
+#: lib/query.c:639
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/query.c:641
+#: lib/query.c:642
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/query.c:663
+#: lib/query.c:664
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:666
+#: lib/query.c:667
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: lib/query.c:669
+#: lib/query.c:671
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:680 lib/rpminstall.c:436
+#: lib/query.c:682 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/query.c:683
+#: lib/query.c:685
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: lib/query.c:708
+#: lib/query.c:710
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: avaus ei onnistunut\n"
 
-#: lib/query.c:767
+#: lib/query.c:769
 #, fuzzy
 msgid "query package owning file"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/query.c:769
+#: lib/query.c:771
 #, fuzzy
 msgid "query packages in group"
 msgstr "paketilla ei ole nime‰"
 
-#: lib/query.c:771
+#: lib/query.c:773
 #, fuzzy
 msgid "query a package file"
 msgstr "kysele kaikki paketit"
 
-#: lib/query.c:775
+#: lib/query.c:777
 #, fuzzy
 msgid "query a spec file"
 msgstr "%s:n kysely ei onnistunut\n"
 
-#: lib/query.c:777
+#: lib/query.c:779
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/query.c:779
+#: lib/query.c:781
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
 
-#: lib/query.c:781
+#: lib/query.c:783
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
 
-#: lib/query.c:820
+#: lib/query.c:822
 #, fuzzy
 msgid "list all configuration files"
 msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
 
-#: lib/query.c:822
+#: lib/query.c:824
 #, fuzzy
 msgid "list all documentation files"
 msgstr "asenna dokumentaatio"
 
-#: lib/query.c:824
+#: lib/query.c:826
 #, fuzzy
 msgid "dump basic file information"
 msgstr "n‰yt‰ paketin tiedot"
 
-#: lib/query.c:826
+#: lib/query.c:828
 #, fuzzy
 msgid "list files in package"
 msgstr "asenna paketti"
 
-#: lib/query.c:830
+#: lib/query.c:832
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:832
+#: lib/query.c:834
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/query.c:834
+#: lib/query.c:836
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:836
+#: lib/query.c:838
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "n‰yt‰ paketin tiedostolistaus"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:451
+#: lib/rebuilddb.c:34 lib/rpmdb.c:491
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
@@ -2880,30 +2880,30 @@ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 msgid "opening new database with dbi_major %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: lib/rebuilddb.c:112
+#: lib/rebuilddb.c:113
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: lib/rebuilddb.c:144
+#: lib/rebuilddb.c:145
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "en voi lis‰t‰ tietuetta %d:st‰"
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:161
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:168
+#: lib/rebuilddb.c:169
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:170
+#: lib/rebuilddb.c:171
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:176
+#: lib/rebuilddb.c:177
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -2993,27 +2993,27 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:89
+#: lib/rpmdb.c:115
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: lib/rpmdb.c:110
+#: lib/rpmdb.c:136
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: lib/rpmdb.c:115
+#: lib/rpmdb.c:141
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: lib/rpmdb.c:267
+#: lib/rpmdb.c:299
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "en voinut avata %s: %s"
 
-#: lib/rpmdb.c:308
+#: lib/rpmdb.c:340
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -3021,84 +3021,84 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:321
+#: lib/rpmdb.c:356
 #, fuzzy, c-format
 msgid "cannot open file %s: %s"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpmdb.c:523
+#: lib/rpmdb.c:560
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:699
+#: lib/rpmdb.c:744
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
-#: lib/rpmdb.c:1021
+#: lib/rpmdb.c:1076
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/rpmdb.c:1029
+#: lib/rpmdb.c:1084
 #, fuzzy, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/rpmdb.c:1055
+#: lib/rpmdb.c:1110
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
 
-#: lib/rpmdb.c:1086
+#: lib/rpmdb.c:1143
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1093
+#: lib/rpmdb.c:1150
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: lib/rpmdb.c:1101
+#: lib/rpmdb.c:1158
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: lib/rpmdb.c:1105
+#: lib/rpmdb.c:1162
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1245
+#: lib/rpmdb.c:1305
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "en voi varata tilaa tietokannalle"
 
-#: lib/rpmdb.c:1291
+#: lib/rpmdb.c:1352
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1304
+#: lib/rpmdb.c:1365
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1311
+#: lib/rpmdb.c:1372
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1315
+#: lib/rpmdb.c:1376
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1626
+#: lib/rpmdb.c:1691
 #, c-format
 msgid "cannot read header at %d for lookup"
 msgstr ""

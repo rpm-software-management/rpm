@@ -47,7 +47,7 @@ Requires: rpm = %{version}
 This package contains scripts and executable programs that are used to
 build packages using RPM.
 
-%ifos Xlinux
+%ifos linux
 %package python
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
@@ -88,7 +88,7 @@ capabilities.
 %build
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
 make
-%ifos Xlinux
+%ifos linux
 make -C python
 %endif
 
@@ -96,7 +96,7 @@ make -C python
 rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR="$RPM_BUILD_ROOT" install
-%ifos Xlinux
+%ifos linux
 make DESTDIR="$RPM_BUILD_ROOT" install -C python
 %endif
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
@@ -127,7 +127,7 @@ fi
 %postun -n popt -p /sbin/ldconfig
 %endif
 
-%ifos Xlinux
+%ifos linux
 %post python -p /sbin/ldconfig
 %postun python -p /sbin/ldconfig
 %endif
@@ -190,7 +190,7 @@ fi
 /usr/lib/rpm/rpmputtext
 /usr/lib/rpm/u_pkg.sh
 
-%ifos Xlinux
+%ifos linux
 %files python
 %defattr(-,root,root)
 /usr/lib/python1.5/site-packages/rpmmodule.so
