@@ -364,14 +364,12 @@ done
 dnl zlib-1.0.4 has not gzseek
 AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK)])
 
-for bz2lib in bz2 ; do
-   AC_CHECK_LIB(${bz2lib}, bzread, 
-	[LIBS="$LIBS -l${bz2lib}"; break], 
-	[if test ${bz2lib} = bz2; then 
-	    AC_MSG_WARN([rpm needs libbz2.a (from the bzip2 package)]) 
-	 fi]
-	       )
-done
+AC_CHECK_LIB(bz2, bzread, 
+  [LIBS="$LIBS -lbz2"; break], 
+   AC_CHECK_LIB(bz2, BZ2_bzread, [
+     LIBS="$LIBS -lbz2"
+     AC_DEFINE(HAVE_BZ2_1_0) ], 
+     AC_MSG_WARN([rpm needs libbz2.a (from the bzip2 package)])))
 
 dnl Red Hat 4.x has not personality
 AC_CHECK_FUNCS(personality)

@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.18
+Release: 0.19
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -236,6 +236,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue May 16 2000 Matt Wilson <msw@redhat.com>
+- build against bzip2 1.0
+
 * Fri May 12 2000 Jeff Johnson <jbj@redhat.com>
 - fix stupid mistakes (alpha segfaults).
 

@@ -26,6 +26,9 @@
 /* Define to 1 if NLS is requested.  */
 #undef ENABLE_NLS
 
+/* Define as 1 if you bzip2 1.0 */
+#undef HAVE_BZ2_1_0
+
 /* Define as 1 if you have catgets and don't want to use GNU gettext.  */
 #undef HAVE_CATGETS
 
