@@ -11,7 +11,7 @@ tie %DB, "RPM::Database" or die "$RPM::err";
 #
 # Find a package to use for package existence and data integrity testing.
 #
-for (qw(kernel rpm inetd bash))
+for (qw(rpm kernel inetd bash))
 {
     $test_pack = $_, last if (exists $DB{$_});
 }
