@@ -346,7 +346,7 @@ fprintf(stderr, "\t %s ", pre), mp32println(stderr, mpn->size, mpn->data);
 }
 /*@=boundswrite@*/
 
-int pgpPrtSubType(const byte *h, unsigned int hlen)
+int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 {
     const byte *p = h;
     unsigned plen;
@@ -377,11 +377,8 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 	    /*@switchbreak@*/ break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
 /*@-mods -mayaliasunique @*/
-#ifdef	DYING
-	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY)
-#else
-	    if (_digp && !(_digp->saved & PGPDIG_SAVED_TIME))
-#endif
+	    if (sigtype == PGPSIGTYPE_POSITIVE_CERT &&
+		_digp && !(_digp->saved & PGPDIG_SAVED_TIME))
 	    {
 		_digp->saved |= PGPDIG_SAVED_TIME;
 		memcpy(_digp->time, p+1, sizeof(_digp->time));
@@ -400,11 +397,8 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 /*@-mods -mayaliasunique @*/
-#ifdef	DYING
-	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY)
-#else
-	    if (_digp && !(_digp->saved & PGPDIG_SAVED_ID))
-#endif
+	    if (sigtype == PGPSIGTYPE_POSITIVE_CERT &&
+		_digp && !(_digp->saved & PGPDIG_SAVED_ID))
 	    {
 		_digp->saved |= PGPDIG_SAVED_ID;
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
@@ -586,7 +580,7 @@ fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
 	}
 /*@=mods@*/
-	(void) pgpPrtSubType(p, plen);
+	(void) pgpPrtSubType(p, plen, v->sigtype);
 	p += plen;
 
 	plen = pgpGrab(p,2);
@@ -594,7 +588,7 @@ fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 
 if (_debug && _print)
 fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
-	(void) pgpPrtSubType(p, plen);
+	(void) pgpPrtSubType(p, plen, v->sigtype);
 	p += plen;
 
 	plen = pgpGrab(p,2);

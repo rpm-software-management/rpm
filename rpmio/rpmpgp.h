@@ -1144,9 +1144,10 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
  * Print/parse an OpenPGP subtype packet.
  * @param h		packet
  * @param hlen		packet length (no. of bytes)
+ * @param sigtype	signature type
  * @return		0 on success
  */
-int pgpPrtSubType(const byte *h, unsigned int hlen)
+int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 

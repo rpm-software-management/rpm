@@ -840,9 +840,11 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 			      if (res3 == RPMSIG_NOKEY) {
 				m = stpcpy(m, " PGP#");
 				m = stpncpy(m, tempKey + offset, 8);
+				*m = '\0';
 			      } else {
 			        u = stpcpy(u, " PGP#");
 				u = stpncpy(u, tempKey + offset, 8);
+				*u = '\0';
 			      }
 			    }
 			}   /*@innerbreak@*/ break;
@@ -863,8 +865,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 			    b = stpcpy(b, "(GPG) ");
 			    m = stpcpy(m, " GPG#");
 			    tempKey = strstr(result, "ey ID");
-			    if (tempKey)
+			    if (tempKey) {
 				m = stpncpy(m, tempKey+6, 8);
+				*m = '\0';
+			    }
 			    res2 = 1;
 			    /*@innerbreak@*/ break;
 			default:

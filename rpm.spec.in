@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.65
+Release: 0.66
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -336,6 +336,7 @@ fi
 %rpmattr	%{__prefix}/lib/rpm/rpm.*
 %rpmattr	%{__prefix}/lib/rpm/rpm2cpio.sh
 %rpmattr	%{__prefix}/lib/rpm/rpm[deiukqv]
+%rpmattr	%{__prefix}/lib/rpm/tgpg
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc
 
@@ -516,9 +517,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Aug  2 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.65
+* Fri Aug  2 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.66
 - fix: identify athlon with 3DNOWEXT as "athlon", not "i786" (#70539).
 - fix: repair --root with --verify (#70527).
+- fix: signed pubkeys were imported incorrectly (#68291).
+- include tgpg script to verify signatures using only gpg.
 
 * Thu Aug  1 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.63
 - add check-files to rpm-build manifest.
