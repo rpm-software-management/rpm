@@ -458,23 +458,37 @@ void *headerUnload(Header h)
 /*                                                                  */
 /********************************************************************/
 
-void headerWrite(FD_t fd, Header h, int magicp)
+int headerWrite(FD_t fd, Header h, int magicp)
 {
     void * p;
     int length;
     int_32 l;
+    ssize_t nb;
 
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	(void)fdWrite(fd, header_magic, sizeof(header_magic));
+	nb = fdWrite(fd, header_magic, sizeof(header_magic));
+	if (nb != sizeof(header_magic)) {
+	    free(p);
+	    return 1;
+	}
 	l = htonl(0);
-	(void)fdWrite(fd, &l, sizeof(l));
+	nb = fdWrite(fd, &l, sizeof(l));
+	if (nb != sizeof(l)) {
+	    free(p);
+	    return 1;
+	}
     }
     
-    (void)fdWrite(fd, p, length);
+    nb = fdWrite(fd, p, length);
+    if (nb != length) {
+	free(p);
+	return 1;
+    }
 
     free(p);
+    return 0;
 }
 
 Header headerRead(FD_t fd, int magicp)

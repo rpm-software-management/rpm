@@ -11,6 +11,7 @@ int main(int argc, char **argv)
     FD_t fdi, fdo;
     struct rpmlead lead;
     Header hd;
+    int rc;
     
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
@@ -27,7 +28,7 @@ int main(int argc, char **argv)
     hd = headerRead(fdi, (lead.major >= 3) ?
 		    HEADER_MAGIC_YES : HEADER_MAGIC_NO);
     fdo = fdDup(STDOUT_FILENO);
-    headerWrite(fdo, hd, HEADER_MAGIC_YES);
+    rc = headerWrite(fdo, hd, HEADER_MAGIC_YES);
     
-    return 0;
+    return rc;
 }

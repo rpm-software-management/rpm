@@ -211,17 +211,22 @@ int rpmWriteSignature(FD_t fd, Header header)
 {
     int sigSize, pad;
     unsigned char buf[8];
+    int rc = 0;
     
-    headerWrite(fd, header, HEADER_MAGIC_YES);
+    rc = headerWrite(fd, header, HEADER_MAGIC_YES);
+    if (rc)
+	return rc;
+
     sigSize = headerSizeof(header, HEADER_MAGIC_YES);
     pad = (8 - (sigSize % 8)) % 8;
     if (pad) {
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	memset(buf, 0, pad);
-	(void)fdWrite(fd, buf, pad);
+	if (fdWrite(fd, buf, pad) != pad)
+	    rc = 1;
     }
-    return 0;
+    return rc;
 }
 
 Header rpmNewSignature(void)

@@ -12,6 +12,7 @@ void main(int argc, char **argv)
     int_16 i16 = 1;
     int_16 i16a[] = {100, 200, 300};
     char ca[] = "char array";
+    int rc;
 
     h = headerNew();
 
@@ -26,7 +27,7 @@ void main(int argc, char **argv)
 
     fprintf(stdout, "Original = %d\n", headerSizeof(h));
     fd = open("test.out", O_WRONLY|O_CREAT);
-    headerWrite(fd, h);
+    rc = headerWrite(fd, h);
     close(fd);
     h2 = headerCopy(h);
     fprintf(stdout, "Copy     = %d\n", headerSizeof(h2));

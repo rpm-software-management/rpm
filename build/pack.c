@@ -240,16 +240,17 @@ int writeRPM(Header h, const char *fileName, int type,
 	rpmError(RPMERR_CREATE, _("Unable to open temp file"));
 	return RPMERR_CREATE;
     }
-    headerWrite(fd, h, HEADER_MAGIC_YES);
-	     
-    /* Write the archive and get the size */
-    if (csa->cpioList != NULL) {
-	rc = cpio_gzip(fd, csa);
-    } else if (fdFileno(csa->cpioFdIn) >= 0) {
-	rc = cpio_copy(fd, csa);
-    } else {
-	rpmError(RPMERR_CREATE, _("Bad CSA data"));
-	rc = RPMERR_BADARG;
+    if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
+	rc = RPMERR_NOSPACE;
+    } else { /* Write the archive and get the size */
+	if (csa->cpioList != NULL) {
+	    rc = cpio_gzip(fd, csa);
+	} else if (fdFileno(csa->cpioFdIn) >= 0) {
+	    rc = cpio_copy(fd, csa);
+	} else {
+	    rpmError(RPMERR_CREATE, _("Bad CSA data"));
+	    rc = RPMERR_BADARG;
+	}
     }
     if (rc != 0) {
 	fdClose(fd);
@@ -264,12 +265,19 @@ int writeRPM(Header h, const char *fileName, int type,
 		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
     }
     (void)fdLseek(fd, 0,  SEEK_SET);
-    headerWrite(fd, h, HEADER_MAGIC_YES);
+    if (headerWrite(fd, h, HEADER_MAGIC_YES))
+	rc = RPMERR_NOSPACE;
 
     fdClose(fd);
+    unlink(fileName);
+
+    if (rc) {
+	unlink(sigtarget);
+	xfree(sigtarget);
+	return rc;
+    }
 
     /* Open the output file */
-    unlink(fileName);
     if (fdFileno(fd = fdOpen(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) {
 	rpmError(RPMERR_CREATE, _("Could not open %s\n"), fileName);
 	unlink(sigtarget);

@@ -580,18 +580,16 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 
     dboffset = faAlloc(db->pkgs, headerSizeof(dbentry, HEADER_MAGIC_NO));
     if (!dboffset) {
-	rpmError(RPMERR_DBCORRUPT, _("cannot allocate space for database"));
-	unblockSignals();
-	if (providesCount) free(providesList);
-	if (requiredbyCount) free(requiredbyList);
-	if (conflictCount) free(conflictList);
-	if (triggerCount) free(triggerList);
-	if (count) free(fileList);
-	return 1;
+	rc = 1;
+    } else {
+	(void)faLseek(db->pkgs, dboffset, SEEK_SET);
+	rc = headerWrite(faFileno(db->pkgs), dbentry, HEADER_MAGIC_NO);
     }
-    (void)faLseek(db->pkgs, dboffset, SEEK_SET);
 
-    headerWrite(faFileno(db->pkgs), dbentry, HEADER_MAGIC_NO);
+    if (rc) {
+	rpmError(RPMERR_DBCORRUPT, _("cannot allocate space for database"));
+	goto exit;
+    }
 
     /* Now update the appropriate indexes */
     if (addIndexEntry(db->nameIndex, name, dboffset, 0))
@@ -635,6 +633,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     dbiSyncIndex(db->requiredbyIndex);
     dbiSyncIndex(db->triggerIndex);
 
+exit:
     unblockSignals();
 
     if (requiredbyCount) free(requiredbyList);
@@ -650,6 +649,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
 {
     Header oldHeader;
     int oldSize;
+    int rc = 0;
 
     oldHeader = rpmdbGetRecord(db, offset);
     if (oldHeader == NULL) {
@@ -673,12 +673,12 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
 
 	(void)faLseek(db->pkgs, offset, SEEK_SET);
 
-	headerWrite(faFileno(db->pkgs), newHeader, HEADER_MAGIC_NO);
+	rc = headerWrite(faFileno(db->pkgs), newHeader, HEADER_MAGIC_NO);
 
 	unblockSignals();
     }
 
-    return 0;
+    return rc;
 }
 
 void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath)

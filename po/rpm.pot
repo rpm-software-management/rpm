@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-24 10:09-0400\n"
+"POT-Creation-Date: 1999-08-24 11:10-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1409,7 +1409,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1150 ../build/pack.c:425
+#: ../build/files.c:1150 ../build/pack.c:433
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1496,72 +1496,72 @@ msgstr ""
 msgid "Bad CSA data"
 msgstr ""
 
-#: ../build/pack.c:274
+#: ../build/pack.c:282
 #, c-format
 msgid "Could not open %s\n"
 msgstr ""
 
-#: ../build/pack.c:306 ../build/pack.c:349
+#: ../build/pack.c:314 ../build/pack.c:357
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: ../build/pack.c:322 ../lib/rpmchecksig.c:94
+#: ../build/pack.c:330 ../lib/rpmchecksig.c:94
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: ../build/pack.c:339
+#: ../build/pack.c:347
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr ""
 
-#: ../build/pack.c:364
+#: ../build/pack.c:372
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: ../build/pack.c:379
+#: ../build/pack.c:387
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:395
+#: ../build/pack.c:403
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:402
+#: ../build/pack.c:410
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:481
+#: ../build/pack.c:489
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:488
+#: ../build/pack.c:496
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:495
+#: ../build/pack.c:503
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:502
+#: ../build/pack.c:510
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:510
+#: ../build/pack.c:518
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:526
+#: ../build/pack.c:534
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2020,8 +2020,8 @@ msgid ""
 msgstr ""
 
 #: ../lib/formats.c:65 ../lib/formats.c:83 ../lib/formats.c:104
-#: ../lib/formats.c:137 ../lib/header.c:2058 ../lib/header.c:2075
-#: ../lib/header.c:2095
+#: ../lib/formats.c:137 ../lib/header.c:2072 ../lib/header.c:2089
+#: ../lib/header.c:2109
 msgid "(not a number)"
 msgstr ""
 
@@ -2107,74 +2107,74 @@ msgstr ""
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: ../lib/header.c:714
+#: ../lib/header.c:728
 #, c-format
 msgid "Data type %d not supprted\n"
 msgstr ""
 
-#: ../lib/header.c:1058
+#: ../lib/header.c:1072
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1458
+#: ../lib/header.c:1472
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1486
+#: ../lib/header.c:1500
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1498
+#: ../lib/header.c:1512
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1508
+#: ../lib/header.c:1522
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1523
+#: ../lib/header.c:1537
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1549
+#: ../lib/header.c:1563
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1565
+#: ../lib/header.c:1579
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1567
+#: ../lib/header.c:1581
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1619
+#: ../lib/header.c:1633
 msgid "? expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1626
+#: ../lib/header.c:1640
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: ../lib/header.c:1636 ../lib/header.c:1668
+#: ../lib/header.c:1650 ../lib/header.c:1682
 msgid "} expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1643
+#: ../lib/header.c:1657
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: ../lib/header.c:1656
+#: ../lib/header.c:1670
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: ../lib/header.c:1675
+#: ../lib/header.c:1689
 msgid "| expected at end of expression"
 msgstr ""
 
-#: ../lib/header.c:1842
+#: ../lib/header.c:1856
 msgid "(unknown type)"
 msgstr ""
 
@@ -2891,7 +2891,7 @@ msgstr ""
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:583
+#: ../lib/rpmdb.c:590
 msgid "cannot allocate space for database"
 msgstr ""
 
@@ -3129,90 +3129,90 @@ msgid "New Header signature\n"
 msgstr ""
 
 #. 8-byte pad
-#: ../lib/signature.c:181 ../lib/signature.c:219
+#: ../lib/signature.c:181 ../lib/signature.c:223
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:182 ../lib/signature.c:220
+#: ../lib/signature.c:182 ../lib/signature.c:224
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:276 ../lib/signature.c:712
+#: ../lib/signature.c:281 ../lib/signature.c:717
 msgid "Couldn't exec pgp"
 msgstr ""
 
-#: ../lib/signature.c:287
+#: ../lib/signature.c:292
 msgid "pgp failed"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: ../lib/signature.c:294
+#: ../lib/signature.c:299
 msgid "pgp failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:299
+#: ../lib/signature.c:304
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:310 ../lib/signature.c:386
+#: ../lib/signature.c:315 ../lib/signature.c:391
 msgid "unable to read the signature"
 msgstr ""
 
-#: ../lib/signature.c:315
+#: ../lib/signature.c:320
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: ../lib/signature.c:352 ../lib/signature.c:687
+#: ../lib/signature.c:357 ../lib/signature.c:692
 msgid "Couldn't exec gpg"
 msgstr ""
 
-#: ../lib/signature.c:363
+#: ../lib/signature.c:368
 msgid "gpg failed"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: ../lib/signature.c:370
+#: ../lib/signature.c:375
 msgid "gpg failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:375
+#: ../lib/signature.c:380
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:391
+#: ../lib/signature.c:396
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: ../lib/signature.c:510 ../lib/signature.c:557
+#: ../lib/signature.c:515 ../lib/signature.c:562
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: ../lib/signature.c:555 ../lib/signature.c:627
+#: ../lib/signature.c:560 ../lib/signature.c:632
 msgid "exec failed!\n"
 msgstr ""
 
-#: ../lib/signature.c:629
+#: ../lib/signature.c:634
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
 #. This case should have been screened out long ago.
-#: ../lib/signature.c:716 ../lib/signature.c:769
+#: ../lib/signature.c:721 ../lib/signature.c:774
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/signature.c:749
+#: ../lib/signature.c:754
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: ../lib/signature.c:761
+#: ../lib/signature.c:766
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 
