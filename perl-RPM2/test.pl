@@ -11,7 +11,7 @@ use strict;
 
 use Test;
 use strict;
-BEGIN { plan tests => 28 };
+BEGIN { plan tests => 30 };
 use RPM2;
 ok(1); # If we made it this far, we're ok.
 
@@ -24,8 +24,9 @@ ok(RPM2::rpmvercmp("1.0", "1.1") == -1);
 ok(RPM2::rpmvercmp("1.1", "1.0") == 1);
 ok(RPM2::rpmvercmp("1.0", "1.0") == 0);
 
-# this is a bug case in rpmvervmp; good one for testing
-ok(RPM2::rpmvercmp("1.a", "1.0") == RPM2::rpmvercmp("1.0", "1.a"));
+# UPDATE: the vercmp bug was finally fixed, and broke this test, heh
+#  this is a bug case in rpmvervmp; good one for testing
+#  ok(RPM2::rpmvercmp("1.a", "1.0") == RPM2::rpmvercmp("1.0", "1.a"));
 
 my $db = RPM2->open_rpm_db();
 ok(defined $db);
@@ -37,11 +38,11 @@ ok($i);
 while (my $pkg = $i->next) {
   push @pkg, $pkg;
 }
+
 ok(@pkg);
 ok($pkg[0]->name);
 
 @pkg = ();
-
 $i = $db->find_by_name_iter("kernel");
 ok($i);
 while (my $pkg = $i->next) {
@@ -82,11 +83,14 @@ if (@pkg) {
 my $pkg = RPM2->open_package("test-rpm-1.0-1.noarch.rpm");
 ok($pkg);
 ok($pkg->name eq 'test-rpm');
+ok($pkg->tagformat("--%{NAME}%{VERSION}--") eq '--test-rpm1.0--');
+ok($pkg->tagformat("--%{NAME}%{VERSION}--") ne 'NOT A MATCH');
 ok(!$pkg->is_source_package);
 
 $pkg = RPM2->open_package("test-rpm-1.0-1.src.rpm");
 ok($pkg);
 ok($pkg->name eq 'test-rpm');
+ok($pkg->tagformat("--%{NAME}--") eq '--test-rpm--');
 ok($pkg->is_source_package);
 
 my $pkg2 = RPM2->open_package("test-rpm-1.0-1.noarch.rpm");

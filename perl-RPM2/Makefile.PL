@@ -15,7 +15,10 @@ if (open FH, "<$filename") {
   my ($line, @rest) = grep { /^dependency_libs=/ } <FH>;
   if ($line and not @rest) {
     if ($line =~ /^dependency_libs='(.*)'$/) {
-      $libs = "$extra_libs -lrpm $1";
+      my $l = $1;
+      my @l = split /\s+/, $l;
+      @l = grep { /^-l/ } @l;
+      $libs = "$libs -lrpm @l";
     }
   }
 }

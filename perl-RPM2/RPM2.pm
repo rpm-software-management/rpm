@@ -7,48 +7,24 @@ use Data::Dumper;
 use Cwd qw/realpath/;
 
 use vars qw/$VERSION/;
-$VERSION = '0.48';
+$VERSION = '0.60';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
 bootstrap RPM2 $VERSION;
 
-my %tagmap;
-
-RPM2_C::_init_rpm();
-RPM2_C::_populate_header_tags(\%tagmap);
-
-sub rpmvercmp {
-  return RPM2_C::rpmvercmp(@_);
-}
-
-sub add_macro {
-  my $class = shift;
-  my $name = shift;
-  my $val = shift;
-
-  RPM2_C::_add_macro($name, $val);
-}
-
-sub delete_macro {
-  my $class = shift;
-  my $name = shift;
-
-  RPM2_C::_delete_macro($name);
-}
-
 sub open_rpm_db {
   my $class = shift;
   my %params = @_;
 
-  my $self = bless { }, $class;
+  my $self = bless { }, "RPM2::DB";
   if ($params{-path}) {
     $class->add_macro("_dbpath", $params{-path});
-    $self->{db} = RPM2_C::_open_rpm_db($params{-readwrite} ? 1 : 0);
+    $self->{c_db} = RPM2::_open_rpm_db($params{-readwrite} ? 1 : 0);
     $class->delete_macro("_dbpath");
   }
   else {
-    $self->{db} = RPM2_C::_open_rpm_db($params{-readwrite} ? 1 : 0);
+    $self->{c_db} = RPM2::_open_rpm_db($params{-readwrite} ? 1 : 0);
   }
 
   return $self;
@@ -61,39 +37,32 @@ sub open_package {
   open FH, "<$file"
     or die "Can't open $file: $!";
 
-  my $hdr = RPM2_C::_read_package_info(*FH);
+  my $hdr = RPM2::_read_package_info(*FH);
   close FH;
 
-  $hdr = RPM2::Header->_new_raw($hdr, 1, realpath($file));
-
+  $hdr = RPM2::Header->_new_raw($hdr, realpath($file));
   return $hdr;
 }
 
-sub close_rpm_db {
-  my $self = shift;
-  die "db not open" unless $self->{db};
-
-  RPM2_C::_close_rpm_db($self->{db});
-  $self->{db} = undef;
-}
+package RPM2::DB;
 
 sub find_all_iter {
   my $self = shift;
 
-  return $self->iterator("RPMTAG_NAME")
+  return RPM2::PackageIterator->new_iterator($self, "RPMTAG_NAME")
 }
 
 sub find_all {
   my $self = shift;
 
-  return $self->iterator()->expand_iter();
+  return RPM2::PackageIterator->new_iterator($self)->expand_iter();
 }
 
 sub find_by_name_iter {
   my $self = shift;
   my $name = shift;
 
-  return $self->iterator("RPMTAG_NAME", $name);
+  return RPM2::PackageIterator->new_iterator($self, "RPMTAG_NAME", $name);
 }
 sub find_by_name {
   my $self = shift;
@@ -106,7 +75,7 @@ sub find_by_provides_iter {
   my $self = shift;
   my $name = shift;
 
-  return $self->iterator("RPMTAG_PROVIDES", $name);
+  return RPM2::PackageIterator->new_iterator($self, "RPMTAG_PROVIDES", $name);
 }
 sub find_by_provides {
   my $self = shift;
@@ -119,7 +88,7 @@ sub find_by_requires_iter {
   my $self = shift;
   my $name = shift;
 
-  return $self->iterator("RPMTAG_REQUIRENAME", $name);
+  return RPM2::PackageIterator->new_iterator($self, "RPMTAG_REQUIRENAME", $name);
 }
 
 sub find_by_requires {
@@ -133,32 +102,14 @@ sub find_by_file_iter {
   my $self = shift;
   my $name = shift;
 
-  return $self->iterator("RPMTAG_BASENAMES", $name);
+  return RPM2::PackageIterator->new_iterator($self, "RPMTAG_BASENAMES", $name);
 }
+
 sub find_by_file {
   my $self = shift;
   my $name = shift;
 
   return $self->find_by_file_iter($name)->expand_iter;
-}
-
-sub iterator {
-  my $self = shift;
-  my $tag = shift;
-  my $str = shift;
-
-  die "db closed" unless $self->{db};
-  my $iter = RPM2::PackageIterator->new_iterator($self->{db}, $tag, $str);
-
-  return $iter;
-}
-
-sub DESTROY {
-  my $self = shift;
-
-  if ($self->{db}) {
-    $self->close_rpm_db();
-  }
 }
 
 package RPM2::Header;
@@ -169,12 +120,10 @@ use overload '<=>' => \&op_spaceship,
 sub _new_raw {
   my $class = shift;
   my $c_header = shift;
-  my $need_free = shift;
   my $filename = shift;
 
   my $self = bless { }, $class;
-  $self->{header} = $c_header;
-  $self->{need_free} = $need_free;
+  $self->{c_header} = $c_header;
   $self->{filename} = $filename if defined $filename;
 
   return $self;
@@ -187,22 +136,29 @@ sub tag {
   $tag = uc "RPMTAG_$tag";
 
   die "tag $tag invalid"
-    unless exists $tagmap{$tag};
+    unless exists $RPM2::header_tag_map{$tag};
 
-  return RPM2_C::_header_tag($self->{header}, $tagmap{$tag});
+  return $self->{c_header}->tag_by_id($RPM2::header_tag_map{$tag});
+}
+
+sub tagformat {
+  my $self   = shift;
+  my $format = shift;
+
+  return RPM2::C::Header::_header_sprintf($self->{c_header}, $format);
 }
 
 sub compare {
   my $h1 = shift;
   my $h2 = shift;
 
-  return RPM2_C::_header_compare($h1->{header}, $h2->{header});
+  return RPM2::C::Header::_header_compare($h1->{c_header}, $h2->{c_header});
 }
 
 sub op_bool {
   my $self = shift;
 
-  return defined($self) && defined($self->{header});
+  return defined($self) && defined($self->{c_header});
 }
 
 sub op_spaceship {
@@ -220,7 +176,7 @@ sub op_spaceship {
 sub is_source_package {
   my $self = shift;
 
-  return RPM2_C::_header_is_source($self->{header});
+  return $self->tag("sourcepackage");
 }
 
 sub filename {
@@ -243,7 +199,7 @@ sub as_nvre {
   return $ret;
 }
 
-foreach my $tag (keys %tagmap) {
+foreach my $tag (keys %RPM2::header_tag_map) {
   $tag =~ s/^RPMTAG_//g;
 
   my $sub = q {
@@ -282,14 +238,6 @@ sub files {
   return @{$self->{files}};
 }
 
-sub DESTROY {
-  my $self = shift;
-
-  if ($self->{need_free}) {
-    RPM2_C::_free_header(delete $self->{header});
-  }
-}
-
 package RPM2::PackageIterator;
 
 sub new_iterator {
@@ -299,21 +247,21 @@ sub new_iterator {
   my $key = shift;
 
   my $self = bless { }, $class;
-  $self->{iter} = RPM2_C::_init_iterator($db, $tagmap{$tag}, $key || "", defined $key ? length $key : 0);
-  $self->{db} = $db;
-
+  $self->{c_iter} = RPM2::C::DB::_init_iterator($db->{c_db},
+						$RPM2::header_tag_map{$tag},
+						$key || "",
+						defined $key ? length $key : 0);
   return $self;
 }
 
 sub next {
   my $self = shift;
 
-  return unless $self->{iter};
-
-  my $hdr = RPM2_C::_iterator_next($self->{iter});
+  return unless $self->{c_iter};
+  my $hdr = $self->{c_iter}->_iterator_next();
   return unless $hdr;
 
-  my $ret = RPM2::Header->_new_raw($hdr, 1);
+  my $ret = RPM2::Header->_new_raw($hdr);
   return $ret;
 }
 
@@ -326,14 +274,6 @@ sub expand_iter {
   }
 
   return @ret;
-}
-
-sub DESTROY {
-  my $self = shift;
-
-  if ($self->{iter}) {
-    RPM2_C::_destroy_iterator($self->{iter});
-  }
 }
 
 # Preloaded methods go here.

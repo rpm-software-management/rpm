@@ -13,83 +13,46 @@
 #include "perl.h"
 #include "XSUB.h"
 
-const char *CLASS = "RPM2_C";
-MODULE = RPM2		PACKAGE = RPM2_C
+void
+_populate_header_tags(HV *href)
+{
+    int i = 0;
+
+    for (i = 0; i < rpmTagTableSize; i++) {
+        hv_store(href, rpmTagTable[i].name, strlen(rpmTagTable[i].name), newSViv(rpmTagTable[i].val), 0);
+    }
+}
+
+MODULE = RPM2		PACKAGE = RPM2
 
 PROTOTYPES: ENABLE
-
-int
-rpmvercmp(one, two)
-	char* one
-	char* two
-
-void
-_init_rpm()
-    CODE:
+BOOT:
+    {
+	HV *header_tags;
 	rpmReadConfigFiles(NULL, NULL);
+	header_tags = perl_get_hv("RPM2::header_tag_map", TRUE);
+	_populate_header_tags(header_tags);
+    }
 
 void
-_add_macro(name, val)
+add_macro(pkg, name, val)
+	char * pkg
 	char * name
 	char * val
     CODE:
 	addMacro(NULL, name, NULL, val, RMIL_DEFAULT);
 
 void
-_delete_macro(name)
+delete_macro(pkg, name)
+	char * pkg
 	char * name
     CODE:
 	delMacro(NULL, name);
 
-void
-_close_rpm_db(db)
-	rpmdb db
-    CODE:
-	rpmdbClose(db);
-
-rpmdb
-_open_rpm_db(for_write)
-	int   for_write
-    PREINIT:
-	 rpmdb db;
-    CODE:
-	if (rpmdbOpen(NULL, &db, for_write ? O_RDWR | O_CREAT : O_RDONLY, 0644)) {
-		croak("rpmdbOpen failed");
-		RETVAL = NULL;
-	}
-	RETVAL = db;		
-    OUTPUT:
-	RETVAL
-
-rpmdbMatchIterator
-_init_iterator(db, rpmtag, key, len)
-	rpmdb db
-	int rpmtag
-	char *key
-	size_t len
-    CODE:
-	RETVAL = rpmdbInitIterator(db, rpmtag, key && *key ? key : NULL, len);
-    OUTPUT:
-	RETVAL
-
-void
-_destroy_iterator(i)
-	rpmdbMatchIterator i
-    CODE:
-	rpmdbFreeIterator(i);
-
-Header
-_iterator_next(i)
-	rpmdbMatchIterator i
-    PREINIT:
-	Header ret;
-    CODE:
-	ret = rpmdbNextIterator(i);
-	if (ret)
-		headerLink(ret);
-	RETVAL = ret;
-    OUTPUT:
-	RETVAL
+int
+rpmvercmp(one, two)
+	char* one
+	char* two
 
 void
 _read_package_info(fp)
@@ -130,7 +93,7 @@ _read_package_info(fp)
 	    EXTEND(SP, 1);
 
 	    h_sv = sv_newmortal();
-            sv_setref_pv(h_sv, "Header", (void *)ret);
+            sv_setref_pv(h_sv, "RPM2::C::Header", (void *)ret);
 
 	    PUSHs(h_sv);
 	}
@@ -141,14 +104,76 @@ _read_package_info(fp)
 	ts = rpmtsFree(ts);
 #endif
 
+rpmdb
+_open_rpm_db(for_write)
+	int   for_write
+    PREINIT:
+	 rpmdb db;
+    CODE:
+	if (rpmdbOpen(NULL, &db, for_write ? O_RDWR | O_CREAT : O_RDONLY, 0644)) {
+		croak("rpmdbOpen failed");
+		RETVAL = NULL;
+	}
+	RETVAL = db;		
+    OUTPUT:
+	RETVAL
+
+MODULE = RPM2		PACKAGE = RPM2::C::DB
+
 void
-_free_header(h)
+DESTROY(db)
+	rpmdb db
+    CODE:
+	rpmdbClose(db);
+
+void
+_close_rpm_db(self)
+	rpmdb self
+    CODE:
+	rpmdbClose(self);
+
+rpmdbMatchIterator
+_init_iterator(db, rpmtag, key, len)
+	rpmdb db
+	int rpmtag
+	char *key
+	size_t len
+    CODE:
+	RETVAL = rpmdbInitIterator(db, rpmtag, key && *key ? key : NULL, len);
+    OUTPUT:
+	RETVAL
+
+MODULE = RPM2		PACKAGE = RPM2::C::PackageIterator
+Header
+_iterator_next(i)
+	rpmdbMatchIterator i
+    PREINIT:
+	Header ret;
+    CODE:
+	ret = rpmdbNextIterator(i);
+	if (ret)
+		headerLink(ret);
+	RETVAL = ret;
+    OUTPUT:
+	RETVAL
+
+void
+DESTROY(i)
+	rpmdbMatchIterator i
+    CODE:
+	rpmdbFreeIterator(i);
+
+
+MODULE = RPM2		PACKAGE = RPM2::C::Header
+
+void
+DESTROY(h)
 	Header h
     CODE:
 	headerFree(h);
 
 void
-_header_tag(h, tag)
+tag_by_id(h, tag)
 	Header h
 	int tag
     PREINIT:
@@ -212,22 +237,13 @@ _header_compare(h1, h2)
     OUTPUT:
         RETVAL
 
-int
-_header_is_source(h)
-	Header h
-    CODE:
-	RETVAL = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
-    OUTPUT:
-	RETVAL
-
 void
-_populate_header_tags(href)
-	SV *href
+_header_sprintf(h, format)
+	Header h
+	char * format
     PREINIT:
-	int i = 0;
-	HV *h;
-    CODE:
-	h = (HV *)SvRV(href);
-	for (i = 0; i < rpmTagTableSize; i++) {
-	    hv_store(h, rpmTagTable[i].name, strlen(rpmTagTable[i].name), newSViv(rpmTagTable[i].val), 0);
-	}
+	char * s;
+    PPCODE:
+	s =  headerSprintf(h, format, rpmTagTable, rpmHeaderFormats, NULL);
+	PUSHs(sv_2mortal(newSVpv((char *)s, 0)));
+	s = _free(s);
