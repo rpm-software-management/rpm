@@ -863,34 +863,6 @@ int rpmVersionCompare(Header first, Header second) {
     return rpmvercmp(one, two);
 }
 
-#ifdef	UNUSED
-static int ensureOlder(rpmdb db, Header new, int dbOffset);
-static int ensureOlder(rpmdb db, Header new, int dbOffset) {
-    Header old;
-    char * name, * version, * release;
-    int result, rc = 0;
-
-    old = rpmdbGetRecord(db, dbOffset);
-    if (old == NULL) return 1;
-
-    result = rpmVersionCompare(old, new);
-    if (result < 0)
-	rc = 0;
-    else if (result > 0) {
-	rc = 1;
-	headerGetEntry(old, RPMTAG_NAME, NULL, (void **) &name, NULL);
-	headerGetEntry(old, RPMTAG_VERSION, NULL, (void **) &version, NULL);
-	headerGetEntry(old, RPMTAG_RELEASE, NULL, (void **) &release, NULL);
-	rpmError(RPMERR_OLDPACKAGE, _("package %s-%s-%s (which is newer) is "
-		"already installed"), name, version, release);
-    }
-
-    headerFree(old);
-
-    return rc;
-}
-#endif
-
 const char * fileActionString(enum fileActions a) {
     switch (a) {
       case UNKNOWN: return "unknown";
