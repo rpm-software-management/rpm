@@ -1492,11 +1492,9 @@ static int osOkay(Header h) {
     /* make sure we're trying to install this on the proper os */
     getEntry(h, RPMTAG_OS, &type, (void **) &pkgOs, &count);
     if (type == INT8_TYPE) {
-	/* old os handling */
-	pkgOsNum = pkgOs;
-	if (getOsNum() != *pkgOsNum) {
-	    return 0;
-	}
+	/* v1 packages and v2 packages both used improper OS numbers, so just
+	   deal with it hope things work */
+	return 0;
     } else {
 	/* new os handling */
 	if (!rpmOsScore(pkgOs)) {
