@@ -191,7 +191,7 @@ static int optionCompare(const void * a, const void * b) {
 		      ((struct rpmOption *) b)->name);
 }
 
-static void rpmRebuildTargetVars(const char ** canontarget);
+static void rpmRebuildTargetVars(const char **target, const char ** canontarget);
 
 
 static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
@@ -458,22 +458,22 @@ static const char *lookupInDefaultTable(const char *name, struct defaultEntry *t
 int rpmReadConfigFiles(const char * file, const char * target)
 {
 
-    rpmSetMachine(NULL, NULL);
+    /* Preset target macros */
+    rpmRebuildTargetVars(&target, NULL);
 
-    if (target == NULL) {
-       rpmRebuildTargetVars(&target);
-    } else {
-       addMacro(&globalMacroContext, "_target", NULL, target, RMIL_RPMRC);
-    }
-
+    /* Read the files */
     if (rpmReadRC(file)) return -1;
 
-    rpmRebuildTargetVars(&target);
+    /* Reset target macros */
+    rpmRebuildTargetVars(&target, NULL);
 
-   {	const char *cpu = getMacroBody(&globalMacroContext, "_target_cpu");
-	const char *os = getMacroBody(&globalMacroContext, "_target_os");
+    /* Finally set target platform */
+    {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
+	const char *os = rpmExpand("%{_target_os}", NULL);
 	rpmSetMachine(cpu, os);
-   }
+	xfree(cpu);
+	xfree(os);
+    }
 
     return 0;
 }
@@ -564,7 +564,35 @@ static void setDefaults(void) {
 
 }
 
-const char * rpmGetPath(const char *path, ...) {
+/* Return concatenated and expanded macro list */
+char * rpmExpand(const char *arg, ...)
+{
+    char buf[BUFSIZ], *p, *pe;
+    const char *s;
+    va_list ap;
+
+    if (arg == NULL)
+	return strdup("");
+
+    p = buf;
+    strcpy(p, arg);
+    pe = p + strlen(p);
+    *pe = '\0';
+
+    va_start(ap, arg);
+    while ((s = va_arg(ap, const char *)) != NULL) {
+	strcpy(pe, s);
+	pe += strlen(pe);
+	*pe = '\0';
+    }
+    va_end(ap);
+    expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
+    return strdup(buf);
+}
+
+/* Return concatenated and expanded path with multiple /'s removed */
+const char * rpmGetPath(const char *path, ...)
+{
     char buf[BUFSIZ], *p, *pe;
     const char *s;
     va_list ap;
@@ -730,7 +758,7 @@ static int doReadRC(FD_t fd, const char * filename) {
 	    case RPMVAR_INCLUDE:
 	      {	FD_t fdinc;
 
-		rpmRebuildTargetVars(NULL);
+		rpmRebuildTargetVars(NULL, NULL);
 
 		strcpy(buf, start);
 		if (expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
@@ -1197,27 +1225,12 @@ void rpmGetOsInfo(char ** name, int * num) {
     getMachineInfo(OS, name, num);
 }
 
-void rpmRebuildTargetVars(const char ** canontarget)
+void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 {
 
-    char * ca = NULL, * co = NULL;
+    char *ca = NULL, *co = NULL, *ct;
     const char * target = NULL;
     int x;
-
-/*
- * XXX getMacroBody() may be nuked -- I originally added it for tdyas and it's
- * kinda half-baked (remember, each macro is actually a stack so it's not
- * clear which body is intended).
- *
- * You can, however, always do
- *	char buf[BUFSIZ];
- *	strcpy(buf, "%_target")
- *	expandMacros(NULL, &globalMacroContext, buf, sizeof(buf)))
- *	target = strdup(buf);
- *
- */
-    if ((target = getMacroBody(&globalMacroContext, "_target")) != NULL)
-	target = strdup(target);
 
     /* Rebuild the compat table to recalculate the current target arch.  */
 
@@ -1225,31 +1238,37 @@ void rpmRebuildTargetVars(const char ** canontarget)
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
-    rpmGetArchInfo(&ca,NULL);
-    rpmGetOsInfo(&co,NULL);
+    if (buildtarget && *buildtarget) {
+	/* Set arch and os from specified build target */
+	ca = ct = strdup(*buildtarget);
+	if ((co = strrchr(ct, '-')) != NULL) {
+	    *co++ = '\0';
+	    if (!strcmp(co, "gnu") && (co = strrchr(ct, '-')) != NULL)
+		*co++ = '\0';
+	}
+	if (co == NULL)
+	    co = "linux";
+    } else {
+	/* Set build target from default arch and os */
+	rpmGetArchInfo(&ca,NULL);
+	rpmGetOsInfo(&co,NULL);
 
-    if (ca == NULL) defaultMachine(&ca, NULL);
-    if (co == NULL) defaultMachine(NULL, &co);
+	if (ca == NULL) defaultMachine(&ca, NULL);
+	if (co == NULL) defaultMachine(NULL, &co);
 
-    for (x = 0; ca[x]; x++)
-	ca[x] = tolower(ca[x]);
-    for (x = 0; co[x]; x++)
-	co[x] = tolower(co[x]);
+	for (x = 0; ca[x]; x++)
+	    ca[x] = tolower(ca[x]);
+	for (x = 0; co[x]; x++)
+	    co[x] = tolower(co[x]);
 
-    if (target == NULL) {
-	char *ct = malloc(strlen(co)+strlen(ca)+2);
+	ct = malloc(strlen(co)+strlen(ca)+2);
 	sprintf(ct, "%s-%s", ca, co);
 	target = ct;
     }
 
 /*
- * XXX All this macro pokery/jiggery could be achieved (I think)
- * by doing a delayed
+ * XXX All this macro pokery/jiggery could be achieved by doing a delayed
  *	initMacros(&globalMacroContext, PER-PLATFORM-MACRO-FILE-NAMES);
- * (I haven't looked at the code :-)
- *
- * In fact, if you want to get really sophisticated, you could encapsulate
- * within per-platform MacroContexts (but I'm not quite ready for that yet).
  */
     delMacro(&globalMacroContext, "_target");
     addMacro(&globalMacroContext, "_target", NULL, target, RMIL_RPMRC);
@@ -1260,6 +1279,8 @@ void rpmRebuildTargetVars(const char ** canontarget)
 
     if (canontarget)
 	*canontarget = target;
+    if (ct != NULL && ct != target)
+	free(ct);
 }
 
 int rpmShowRC(FILE *f)
