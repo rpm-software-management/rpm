@@ -1,5 +1,5 @@
 /** \ingroup py_c
- * \file python/_rpmmodule.c
+ * \file python/rpmmodule.c
  */
 
 #include "system.h"

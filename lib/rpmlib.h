@@ -214,15 +214,15 @@ extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 /**
  * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
  */
-#define	RPMDBI_PACKAGES		0	/*!< Installed package headers. */
-#define	RPMDBI_DEPENDS		1	/*!< Dependency resolution cache. */
-#define	RPMDBI_LABEL		2	/*!< Fingerprint search marker. */
-#define	RPMDBI_ADDED		3	/*!< Added package headers. */
-#define	RPMDBI_REMOVED		4	/*!< Removed package headers. */
-#define	RPMDBI_AVAILABLE	5	/*!< Available package headers. */
-#define	RPMDBI_HDLIST		6	/*!< (rpmgi) Header list. */
-#define	RPMDBI_ARGLIST		7	/*!< (rpmgi) Argument list. */
-#define	RPMDBI_FTSWALK		8	/*!< (rpmgi) File tree  walk. */
+#define	RPMDBI_PACKAGES		0	/* Installed package headers. */
+#define	RPMDBI_DEPENDS		1	/* Dependency resolution cache. */
+#define	RPMDBI_LABEL		2	/* Fingerprint search marker. */
+#define	RPMDBI_ADDED		3	/* Added package headers. */
+#define	RPMDBI_REMOVED		4	/* Removed package headers. */
+#define	RPMDBI_AVAILABLE	5	/* Available package headers. */
+#define	RPMDBI_HDLIST		6	/* (rpmgi) Header list. */
+#define	RPMDBI_ARGLIST		7	/* (rpmgi) Argument list. */
+#define	RPMDBI_FTSWALK		8	/* (rpmgi) File tree  walk. */
 
 /**
  * Tags identify data in package headers.

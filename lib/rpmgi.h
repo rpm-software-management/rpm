@@ -2,7 +2,7 @@
 #define	H_RPMGI
 
 /** \ingroup rpmio
- * \file rpmio/rpmgi.h
+ * \file lib/rpmgi.h
  */
 
 #include <rpmlib.h>
@@ -105,10 +105,13 @@ rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
 	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
         /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
 
-/** Create a generalized iterator.
- * @param argv		iterator argv array
- * @param flags		iterator flags
- * @return		new general iterator
+/**
+ * Return a generalized iterator.
+ * @param ts		transaction set
+ * @param tag		rpm tag
+ * @param keyp		key data (NULL for sequential access)
+ * @param keylen	key data length (0 will use strlen(keyp))
+ * @return		new iterator
  */
 /*@null@*/
 rpmgi rpmgiNew(rpmts ts, int tag, /*@null@*/ const void * keyp, size_t keylen)

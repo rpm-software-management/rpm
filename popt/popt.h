@@ -131,7 +131,7 @@ struct poptOption {
 struct poptAlias {
 /*@owned@*/ /*@null@*/
     const char * longName;	/*!< may be NULL */
-    char shortName;		/*!< may be '\0' */
+    char shortName;		/*!< may be NUL */
     int argc;
 /*@owned@*/
     const char ** argv;		/*!< must be free()able */

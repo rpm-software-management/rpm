@@ -576,7 +576,7 @@ rpmtsType rpmtsGetType(rpmts ts)
  * 	RPMTRANS_TYPE_AUTOROLLBACK
  *
  * @param ts		transaction set
- * @param rollback	rpmtsType
+ * @param type		transaction type
  * @return		void
  */
 void rpmtsSetType(rpmts ts, rpmtsType type)

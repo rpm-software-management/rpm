@@ -1091,15 +1091,15 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
  *       be made more efficient (only create on per running transaction).
  * @param ts		rpm transaction
  * @param te		transaction element
- * @return hdrp		Repackaged header
- * @return fn		Repackaged package's path (transaction key)
+ * @retval hdrp		Repackaged header
+ * @retval fnp		Repackaged package's path (transaction key)
  * @return 		RPMRC_NOTFOUND or RPMRC_OK
  */
 static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 		/*@out@*/ /*@null@*/ Header *hdrp,
-		/*@out@*/ /*@null@*/ const char **fn)
+		/*@out@*/ /*@null@*/ const char **fnp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, *hdrp, *fn,
+	/*@modifies ts, *hdrp, *fnp,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int_32 tid;
@@ -1122,8 +1122,8 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
     /* Set header pointer to null if its not already */
     if (hdrp)
 	*hdrp = NULL;
-    if (fn)
-	*fn = NULL;
+    if (fnp)
+	*fnp = NULL;
 
     /* Get the TID of the current transaction */
     tid = rpmtsGetTid(ts);
@@ -1213,8 +1213,8 @@ exit:
 	if (hdrp != NULL)
 	    *hdrp = headerLink(h);
 /*@-branchstate@*/
-	if (fn != NULL)
-	    *fn = rp;
+	if (fnp != NULL)
+	    *fnp = rp;
 	else
 	    rp = _free(rp);
 /*@=branchstate@*/

@@ -288,7 +288,6 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
  * @param buf		input buffer
  * @param size		inbut buffer size (bytes)
  * @param fd		file handle
- * @param escapes	permit escaped newlines?
  * @return		buffer, or NULL on end-of-file
  */
 /*@-boundswrite@*/

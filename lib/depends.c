@@ -946,6 +946,7 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
  * @param requires	relation
  * @param zap		max. no. of co-requisites to remove (-1 is all)?
  * @retval nzaps	address of no. of relations removed
+ * @param msglvl	message level at which to spew
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
  */
 /*@-boundswrite@*/

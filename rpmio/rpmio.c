@@ -2756,7 +2756,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 
 /**
  * Convert stdio fmode to open(2) mode, filtering out zlib/bzlib flags.
- *	returns stdio[0] = '\0' on error.
+ *	returns stdio[0] = NUL on error.
  *
  * - gzopen:	[0-9] is compession level
  * - gzopen:	'f' is filtered (Z_FILTERED)

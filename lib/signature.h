@@ -79,9 +79,9 @@ int rpmAddSignature(Header sig, const char * file,
 /**
  *  Possible actions for rpmLookupSignatureType()
  */
-#define RPMLOOKUPSIG_QUERY	0	/*!< Lookup type in effect          */
-#define RPMLOOKUPSIG_DISABLE	1	/*!< Disable (--sign was not given) */
-#define RPMLOOKUPSIG_ENABLE	2	/*!< Re-enable %_signature          */
+#define RPMLOOKUPSIG_QUERY	0	/* Lookup type in effect          */
+#define RPMLOOKUPSIG_DISABLE	1	/* Disable (--sign was not given) */
+#define RPMLOOKUPSIG_ENABLE	2	/* Re-enable %_signature          */
 
 /** \ingroup signature
  * Return type of signature needed for signing/building.
