@@ -81,7 +81,6 @@ int dbiSearchIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set) {
 	return 1;
     } 
 
-    set->recs = data.data;
     set->recs = malloc(data.size);
     memcpy(set->recs, data.data, data.size);
     set->count = data.size / sizeof(dbiIndexRecord);
