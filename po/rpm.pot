@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-16 15:59-0500\n"
+"POT-Creation-Date: 1999-12-17 13:40-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2477,7 +2477,7 @@ msgstr ""
 
 #: lib/problems.c:98
 #, c-format
-msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
+msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr ""
 
 #: lib/problems.c:104

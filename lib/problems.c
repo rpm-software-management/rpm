@@ -95,7 +95,7 @@ const char * rpmProblemString(rpmProblem prob)
 	break;
 
       case RPMPROB_OLDPACKAGE:
-	sprintf(buf, _("package %s-%s-%s (which is newer then %s-%s-%s) is "
+	sprintf(buf, _("package %s-%s-%s (which is newer than %s-%s-%s) is "
 		       "already installed"), altName, altVersion, altRelease,
 			name, version, release);
 	break;
