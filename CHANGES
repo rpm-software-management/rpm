@@ -17,6 +17,7 @@
 	- MiNT port (Guido Flohr <gufl0000@stud.uni-sb.de>).
 	- fix: --rebuilddb with --root dinna remove directory (Michael Andres).
 	- fix: false fingerprint stat cache hit -- "the tetex problem" (#2727).
+	- fix: bsearch needs macro table sorted after undefine.
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

@@ -1162,13 +1162,17 @@ addMacro(MacroContext *mc, const char *n, const char *o, const char *b, int leve
 void
 delMacro(MacroContext *mc, const char *name)
 {
-	MacroEntry **mep = findEntry(mc, name, 0);
+	MacroEntry **mep;
 
 	if (mc == NULL)
 		mc = &globalMacroContext;
 	/* If name exists, pop entry */
-	if ((mep = findEntry(mc, name, 0)) != NULL)
+	if ((mep = findEntry(mc, name, 0)) != NULL) {
 		popMacro(mep);
+		/* If deleted name, sort macro table */
+		if (!(mep && *mep))
+			sortMacroTable(mc);
+	}
 }
 
 int
