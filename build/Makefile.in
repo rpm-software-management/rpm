@@ -135,23 +135,24 @@ rpmincdir = $(includedir)/rpm
 rpminc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h myftw.h
 
-lib_LIBRARIES = librpmbuild.a
-librpmbuild_a_SOURCES =  	build.c expression.c files.c misc.c myftw.c names.c pack.c 	parseBuildInstallClean.c parseChangelog.c parseDescription.c 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c 	parseSpec.c reqprov.c spec.c
+lib_LTLIBRARIES = librpmbuild.la
+librpmbuild_la_SOURCES =  	build.c expression.c files.c misc.c myftw.c names.c pack.c 	parseBuildInstallClean.c parseChangelog.c parseDescription.c 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c 	parseSpec.c reqprov.c spec.c
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-LIBRARIES =  $(lib_LIBRARIES)
+LTLIBRARIES =  $(lib_LTLIBRARIES)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
-librpmbuild_a_LIBADD = 
-librpmbuild_a_OBJECTS =  build.o expression.o files.o misc.o myftw.o \
-names.o pack.o parseBuildInstallClean.o parseChangelog.o \
-parseDescription.o parseFiles.o parsePreamble.o parsePrep.o parseReqs.o \
-parseScript.o parseSpec.o reqprov.o spec.o
+librpmbuild_la_LDFLAGS = 
+librpmbuild_la_LIBADD = 
+librpmbuild_la_OBJECTS =  build.lo expression.lo files.lo misc.lo \
+myftw.lo names.lo pack.lo parseBuildInstallClean.lo parseChangelog.lo \
+parseDescription.lo parseFiles.lo parsePreamble.lo parsePrep.lo \
+parseReqs.lo parseScript.lo parseSpec.lo reqprov.lo spec.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -171,8 +172,8 @@ DEP_FILES =  .deps/build.P .deps/expression.P .deps/files.P .deps/misc.P \
 .deps/parseChangelog.P .deps/parseDescription.P .deps/parseFiles.P \
 .deps/parsePreamble.P .deps/parsePrep.P .deps/parseReqs.P \
 .deps/parseScript.P .deps/parseSpec.P .deps/reqprov.P .deps/spec.P
-SOURCES = $(librpmbuild_a_SOURCES)
-OBJECTS = $(librpmbuild_a_OBJECTS)
+SOURCES = $(librpmbuild_la_SOURCES)
+OBJECTS = $(librpmbuild_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -185,36 +186,29 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 
-mostlyclean-libLIBRARIES:
+mostlyclean-libLTLIBRARIES:
 
-clean-libLIBRARIES:
-	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
 
-distclean-libLIBRARIES:
+distclean-libLTLIBRARIES:
 
-maintainer-clean-libLIBRARIES:
+maintainer-clean-libLTLIBRARIES:
 
-install-libLIBRARIES: $(lib_LIBRARIES)
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(libdir)
-	@list='$(lib_LIBRARIES)'; for p in $$list; do \
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(libdir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(libdir)/$$p; \
-	  else :; fi; \
-	done
-	@$(POST_INSTALL)
-	@list='$(lib_LIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo " $(RANLIB) $(DESTDIR)$(libdir)/$$p"; \
-	    $(RANLIB) $(DESTDIR)$(libdir)/$$p; \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p; \
 	  else :; fi; \
 	done
 
-uninstall-libLIBRARIES:
+uninstall-libLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	list='$(lib_LIBRARIES)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(libdir)/$$p; \
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
 	done
 
 .s.o:
@@ -249,10 +243,8 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-librpmbuild.a: $(librpmbuild_a_OBJECTS) $(librpmbuild_a_DEPENDENCIES)
-	-rm -f librpmbuild.a
-	$(AR) cru librpmbuild.a $(librpmbuild_a_OBJECTS) $(librpmbuild_a_LIBADD)
-	$(RANLIB) librpmbuild.a
+librpmbuild.la: $(librpmbuild_la_OBJECTS) $(librpmbuild_la_DEPENDENCIES)
+	$(LINK) -rpath $(libdir) $(librpmbuild_la_LDFLAGS) $(librpmbuild_la_OBJECTS) $(librpmbuild_la_LIBADD) $(LIBS)
 
 install-rpmincHEADERS: $(rpminc_HEADERS)
 	@$(NORMAL_INSTALL)
@@ -358,7 +350,7 @@ check-am: all-am
 check: check-am
 installcheck-am:
 installcheck: installcheck-am
-install-exec-am: install-libLIBRARIES
+install-exec-am: install-libLTLIBRARIES
 install-exec: install-exec-am
 
 install-data-am: install-rpmincHEADERS
@@ -367,9 +359,9 @@ install-data: install-data-am
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am: uninstall-libLIBRARIES uninstall-rpmincHEADERS
+uninstall-am: uninstall-libLTLIBRARIES uninstall-rpmincHEADERS
 uninstall: uninstall-am
-all-am: Makefile $(LIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -386,25 +378,25 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean-am:  mostlyclean-libLIBRARIES mostlyclean-compile \
+mostlyclean-am:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
 		mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-libLIBRARIES clean-compile clean-libtool clean-tags \
+clean-am:  clean-libLTLIBRARIES clean-compile clean-libtool clean-tags \
 		clean-depend clean-generic mostlyclean-am
 
 clean: clean-am
 
-distclean-am:  distclean-libLIBRARIES distclean-compile \
+distclean-am:  distclean-libLTLIBRARIES distclean-compile \
 		distclean-libtool distclean-tags distclean-depend \
 		distclean-generic clean-am
 	-rm -f libtool
 
 distclean: distclean-am
 
-maintainer-clean-am:  maintainer-clean-libLIBRARIES \
+maintainer-clean-am:  maintainer-clean-libLTLIBRARIES \
 		maintainer-clean-compile maintainer-clean-libtool \
 		maintainer-clean-tags maintainer-clean-depend \
 		maintainer-clean-generic distclean-am
@@ -413,14 +405,14 @@ maintainer-clean-am:  maintainer-clean-libLIBRARIES \
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: mostlyclean-libLIBRARIES distclean-libLIBRARIES \
-clean-libLIBRARIES maintainer-clean-libLIBRARIES uninstall-libLIBRARIES \
-install-libLIBRARIES mostlyclean-compile distclean-compile \
-clean-compile maintainer-clean-compile mostlyclean-libtool \
-distclean-libtool clean-libtool maintainer-clean-libtool \
-uninstall-rpmincHEADERS install-rpmincHEADERS tags mostlyclean-tags \
-distclean-tags clean-tags maintainer-clean-tags distdir \
-mostlyclean-depend distclean-depend clean-depend \
+.PHONY: mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool uninstall-rpmincHEADERS install-rpmincHEADERS \
+tags mostlyclean-tags distclean-tags clean-tags maintainer-clean-tags \
+distdir mostlyclean-depend distclean-depend clean-depend \
 maintainer-clean-depend info-am info dvi-am dvi check check-am \
 installcheck-am installcheck install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
@@ -431,7 +423,7 @@ mostlyclean distclean maintainer-clean
 
 .PHONY:	lclint
 lclint:
-	lclint ${DEFS} ${INCLUDES} ${librpmbuild_a_SOURCES}
+	lclint ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES}
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

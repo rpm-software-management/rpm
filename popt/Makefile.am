@@ -18,8 +18,8 @@ test1_SOURCES = test1.c
 test1_LDADD = -lpopt
 
 include_HEADERS = popt.h
-lib_LIBRARIES = libpopt.a
-libpopt_a_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
+lib_LTLIBRARIES = libpopt.la
+libpopt_la_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
 man_MANS = popt.3
 
 CVSTAG = $(PACKAGE)-$(subst .,_,$(VERSION))

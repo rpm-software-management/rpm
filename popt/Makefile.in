@@ -94,8 +94,8 @@ test1_SOURCES = test1.c
 test1_LDADD = -lpopt
 
 include_HEADERS = popt.h
-lib_LIBRARIES = libpopt.a
-libpopt_a_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
+lib_LTLIBRARIES = libpopt.la
+libpopt_la_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
 man_MANS = popt.3
 
 CVSTAG = $(PACKAGE)-$(subst .,_,$(VERSION))
@@ -103,15 +103,16 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES = 
-LIBRARIES =  $(lib_LIBRARIES)
+LTLIBRARIES =  $(lib_LTLIBRARIES)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I.
 CPPFLAGS = @CPPFLAGS@
 LIBS = @LIBS@
-libpopt_a_LIBADD = 
-libpopt_a_OBJECTS =  popt.o findme.o poptparse.o poptconfig.o popthelp.o
-AR = ar
+libpopt_la_LDFLAGS = 
+libpopt_la_LIBADD = 
+libpopt_la_OBJECTS =  popt.lo findme.lo poptparse.lo poptconfig.lo \
+popthelp.lo
 PROGRAMS =  $(noinst_PROGRAMS)
 
 test1_OBJECTS =  test1.o
@@ -139,8 +140,8 @@ TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/findme.P .deps/popt.P .deps/poptconfig.P \
 .deps/popthelp.P .deps/poptparse.P .deps/test1.P
-SOURCES = $(libpopt_a_SOURCES) $(test1_SOURCES)
-OBJECTS = $(libpopt_a_OBJECTS) $(test1_OBJECTS)
+SOURCES = $(libpopt_la_SOURCES) $(test1_SOURCES)
+OBJECTS = $(libpopt_la_OBJECTS) $(test1_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -188,36 +189,29 @@ distclean-hdr:
 
 maintainer-clean-hdr:
 
-mostlyclean-libLIBRARIES:
+mostlyclean-libLTLIBRARIES:
 
-clean-libLIBRARIES:
-	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
 
-distclean-libLIBRARIES:
+distclean-libLTLIBRARIES:
 
-maintainer-clean-libLIBRARIES:
+maintainer-clean-libLTLIBRARIES:
 
-install-libLIBRARIES: $(lib_LIBRARIES)
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(libdir)
-	@list='$(lib_LIBRARIES)'; for p in $$list; do \
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(libdir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(libdir)/$$p; \
-	  else :; fi; \
-	done
-	@$(POST_INSTALL)
-	@list='$(lib_LIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo " $(RANLIB) $(DESTDIR)$(libdir)/$$p"; \
-	    $(RANLIB) $(DESTDIR)$(libdir)/$$p; \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p; \
 	  else :; fi; \
 	done
 
-uninstall-libLIBRARIES:
+uninstall-libLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
-	list='$(lib_LIBRARIES)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(libdir)/$$p; \
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
 	done
 
 .s.o:
@@ -252,10 +246,8 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-libpopt.a: $(libpopt_a_OBJECTS) $(libpopt_a_DEPENDENCIES)
-	-rm -f libpopt.a
-	$(AR) cru libpopt.a $(libpopt_a_OBJECTS) $(libpopt_a_LIBADD)
-	$(RANLIB) libpopt.a
+libpopt.la: $(libpopt_la_OBJECTS) $(libpopt_la_DEPENDENCIES)
+	$(LINK) -rpath $(libdir) $(libpopt_la_LDFLAGS) $(libpopt_la_OBJECTS) $(libpopt_la_LIBADD) $(LIBS)
 
 mostlyclean-noinstPROGRAMS:
 
@@ -520,7 +512,7 @@ installcheck: installcheck-recursive
 all-recursive-am: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
-install-exec-am: install-libLIBRARIES
+install-exec-am: install-libLTLIBRARIES
 install-exec: install-exec-recursive
 
 install-data-am: install-man install-includeHEADERS
@@ -529,10 +521,10 @@ install-data: install-data-recursive
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-recursive
-uninstall-am: uninstall-libLIBRARIES uninstall-man \
+uninstall-am: uninstall-libLTLIBRARIES uninstall-man \
 		uninstall-includeHEADERS
 uninstall: uninstall-recursive
-all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(MANS) $(HEADERS) config.h
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(HEADERS) config.h
 all-redirect: all-recursive-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
@@ -551,20 +543,20 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean-am:  mostlyclean-hdr mostlyclean-libLIBRARIES \
+mostlyclean-am:  mostlyclean-hdr mostlyclean-libLTLIBRARIES \
 		mostlyclean-compile mostlyclean-libtool \
 		mostlyclean-noinstPROGRAMS mostlyclean-tags \
 		mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-recursive
 
-clean-am:  clean-hdr clean-libLIBRARIES clean-compile clean-libtool \
+clean-am:  clean-hdr clean-libLTLIBRARIES clean-compile clean-libtool \
 		clean-noinstPROGRAMS clean-tags clean-depend \
 		clean-generic mostlyclean-am
 
 clean: clean-recursive
 
-distclean-am:  distclean-hdr distclean-libLIBRARIES distclean-compile \
+distclean-am:  distclean-hdr distclean-libLTLIBRARIES distclean-compile \
 		distclean-libtool distclean-noinstPROGRAMS \
 		distclean-tags distclean-depend distclean-generic \
 		clean-am
@@ -573,7 +565,8 @@ distclean-am:  distclean-hdr distclean-libLIBRARIES distclean-compile \
 distclean: distclean-recursive
 	-rm -f config.status
 
-maintainer-clean-am:  maintainer-clean-hdr maintainer-clean-libLIBRARIES \
+maintainer-clean-am:  maintainer-clean-hdr \
+		maintainer-clean-libLTLIBRARIES \
 		maintainer-clean-compile maintainer-clean-libtool \
 		maintainer-clean-noinstPROGRAMS maintainer-clean-tags \
 		maintainer-clean-depend maintainer-clean-generic \
@@ -585,19 +578,19 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f config.status
 
 .PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
-mostlyclean-libLIBRARIES distclean-libLIBRARIES clean-libLIBRARIES \
-maintainer-clean-libLIBRARIES uninstall-libLIBRARIES \
-install-libLIBRARIES mostlyclean-compile distclean-compile \
-clean-compile maintainer-clean-compile mostlyclean-libtool \
-distclean-libtool clean-libtool maintainer-clean-libtool \
-mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
-clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS install-man3 \
-uninstall-man3 install-man uninstall-man uninstall-includeHEADERS \
-install-includeHEADERS install-data-recursive uninstall-data-recursive \
-install-exec-recursive uninstall-exec-recursive installdirs-recursive \
-uninstalldirs-recursive all-recursive check-recursive \
-installcheck-recursive info-recursive dvi-recursive \
-mostlyclean-recursive distclean-recursive clean-recursive \
+mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool mostlyclean-noinstPROGRAMS \
+distclean-noinstPROGRAMS clean-noinstPROGRAMS \
+maintainer-clean-noinstPROGRAMS install-man3 uninstall-man3 install-man \
+uninstall-man uninstall-includeHEADERS install-includeHEADERS \
+install-data-recursive uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir \
 mostlyclean-depend distclean-depend clean-depend \

@@ -8,8 +8,8 @@ rpmincdir = $(includedir)/rpm
 rpminc_HEADERS = rpmbuild.h rpmspec.h
 noinst_HEADERS = buildio.h myftw.h
 
-lib_LIBRARIES = librpmbuild.a
-librpmbuild_a_SOURCES = \
+lib_LTLIBRARIES = librpmbuild.la
+librpmbuild_la_SOURCES = \
 	build.c expression.c files.c misc.c myftw.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
@@ -17,4 +17,4 @@ librpmbuild_a_SOURCES = \
 
 .PHONY:	lclint
 lclint:
-	lclint ${DEFS} ${INCLUDES} ${librpmbuild_a_SOURCES}
+	lclint ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES}
