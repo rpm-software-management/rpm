@@ -1,0 +1,14 @@
+rpm alias provides --qf '[%{PROVIDES}\n]'
+
+rpm alias scripts --qf 'preinstall script:\n%{RPMTAG_PREIN}\npostinstall \
+script:\n%{RPMTAG_POSTIN}\npreuninstall \
+script:\n%{RPMTAG_PREUN}\npostuninstall \
+script:\n%{RPMTAG_POSTUN}\nverify script:\n%{VERIFYSCRIPT}\n'
+
+rpm alias setperms -q --qf '[%{FILEMODES:octal} %{FILENAMES}\n]' \
+		   --pipe "sed 's/^.../chmod /' | sh"
+
+rpm alias setugids -q --qf \
+		   '[chown %{FILEUSERNAME}:%{FILEGROUPNAME} %{FILENAMES}\n]' \
+		   --pipe "sh"
+
