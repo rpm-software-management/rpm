@@ -12,7 +12,7 @@ MSGMERGE = msgmerge
 
 NLSPACKAGE = rpm
 
-CATALOGS = sv.mo fr.mo de.mo pt_BR.mo tr.mo fi.mo
+CATALOGS = sv.mo fr.mo de.mo pt_BR.mo tr.mo fi.mo ru.mo
 
 POTFILES  = $(topsrcdir)/rpm.c 		$(topsrcdir)/query.c 		\
 	$(topsrcdir)/install.c 		$(topsrcdir)/verify.c 		\
