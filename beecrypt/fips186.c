@@ -25,6 +25,7 @@
 
 #include "system.h"
 #include "beecrypt.h"
+#include "endianness.h"		/* XXX for encodeInts */
 #include "fips186.h"
 #include "mpopt.h"
 #include "mp.h"

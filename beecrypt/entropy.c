@@ -344,7 +344,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 	/*@modifies data, errno, fileSystem @*/
 #endif
 {
-	size_t randombits = ((unsigned)size) << 5;
+	size_t randombits = size << 3;
 	byte temp = 0;
 	int rc, i;
 

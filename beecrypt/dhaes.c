@@ -203,10 +203,10 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 	}
 
 	/* compute the hash of the message (ephemeral public) key and the shared secret */
-	(void) hashFunctionContextReset     (&ctxt->hash);
+	(void) hashFunctionContextReset   (&ctxt->hash);
 	(void) hashFunctionContextUpdateMP(&ctxt->hash, message);
 	(void) hashFunctionContextUpdateMP(&ctxt->hash, &secret);
-	(void) hashFunctionContextDigest    (&ctxt->hash, &digest);
+	(void) hashFunctionContextDigest  (&ctxt->hash, digest);
 
 	/* we don't need the secret anymore */
 	mpnwipe(&secret);

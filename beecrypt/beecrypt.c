@@ -214,8 +214,6 @@ int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerat
 		return -1;
 
 	ctxt->rng = rng;
-	if (ctxt->param)	/* XXX error? */
-		free(ctxt->param);
 	ctxt->param = (randomGeneratorParam*) calloc(rng->paramsize, 1);
 
 	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */

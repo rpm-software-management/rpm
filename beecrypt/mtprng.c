@@ -96,7 +96,7 @@ int mtprngSetup(mtprngParam* mp)
 
 		mp->left = 0;
 
-		return entropyGatherNext(mp->state, N+1);
+		return entropyGatherNext((byte*)mp->state, N+1);
 	}
 	return -1;
 }

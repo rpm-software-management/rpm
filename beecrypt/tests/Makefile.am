@@ -27,6 +27,8 @@ LDADD = $(top_builddir)/libbeecrypt.la
 
 TESTS = testmd5 testsha1 testsha256 testhmacmd5 testhmacsha1 testblowfish testrsa testdldp
 
+staticLDFLAGS = -all-static
+
 check_PROGRAMS = testmd5 testsha1 testsha256 testhmacmd5 testhmacsha1 testblowfish testrsa testdldp
 
 testmd5_SOURCES = testmd5.c
@@ -44,6 +46,8 @@ testblowfish_SOURCES = testblowfish.c
 testrsa_SOURCES = testrsa.c
 
 testdldp_SOURCES = testdldp.c
+#testdldp_LDADD =  $(LDADD) -lpthread
+#testdldp_LDFLAGS = $(staticLDFLAGS)
 
 EXTRA_PROGRAMS = benchme benchhf benchbc
 

@@ -4,22 +4,9 @@
 
 static int _debug = 0;
 
+#include "system.h"
 #include "base64.h"
-
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-#if HAVE_ERRNO_H
-# include <errno.h>
-#endif
-#if HAVE_TIME_H
-# include <time.h>
-#endif
-
-#include <stdio.h>
+#include "debug.h"
 
 static inline int grab(const byte *s, int nbytes)
 {

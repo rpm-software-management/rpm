@@ -23,11 +23,11 @@
  * \ingroup UNIT_m
  */
 
-#include <stdio.h>
-
+#include "system.h"
 #include "beecrypt.h"
 #include "dlkp.h"
 #include "dsa.h"
+#include "debug.h"
 
 static const char* dsa_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
 static const char* dsa_q = "c773218c737ec8ee993b4f2ded30f48edace915f";

@@ -24,6 +24,7 @@
 
 #include "system.h"
 #include "base64.h"
+#include "endianness.h"		/* XXX swapu32 for crc */
 #include "debug.h"
 
 /*@unchecked@*/

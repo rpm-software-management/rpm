@@ -23,10 +23,10 @@
  * \ingroup UNIT_m
  */
 
-#include <stdio.h>
-
+#include "system.h"
 #include "beecrypt.h"
 #include "rsa.h"
+#include "debug.h"
 
 static const char* rsa_n  = "bbf82f090682ce9c2338ac2b9da871f7368d07eed41043a440d6b6f07454f51fb8dfbaaf035c02ab61ea48ceeb6fcd4876ed520d60e1ec4619719d8a5b8b807fafb8e0a3dfc737723ee6b4b7d93a2584ee6a649d060953748834b2454598394ee0aab12d7b61a51f527a9a41f6c1687fe2537298ca2a8f5946f8e5fd091dbdcb";
 static const char* rsa_e  = "11";

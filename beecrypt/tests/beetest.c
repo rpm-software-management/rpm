@@ -23,6 +23,8 @@
  *
  */
 
+#include "system.h"
+
 #include "beecrypt.h"
 #include "blockmode.h"
 #include "aes.h"
@@ -39,20 +41,7 @@
 #include "sha256.h"
 #include "mp.h"
 
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-#if HAVE_ERRNO_H
-# include <errno.h>
-#endif
-#if HAVE_TIME_H
-# include <time.h>
-#endif
-
-#include <stdio.h>
+#include "debug.h"
 
 /*@unchecked@*/ /*@observer@*/
 static const char* dsa_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";

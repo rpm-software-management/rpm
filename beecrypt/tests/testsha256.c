@@ -21,9 +21,9 @@
  *
  */
 
-#include <stdio.h>
-
+#include "system.h"
 #include "sha256.h"
+#include "debug.h"
 
 struct vector
 {
