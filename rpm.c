@@ -519,8 +519,8 @@ int main(int argc, char ** argv)
     const char * pkg;
     char * errString = NULL;
     poptContext optCon;
-    char * infoCommand[] = { "--info", NULL };
-    char * installCommand[] = { "--install", NULL };
+    const char * infoCommand[] = { "--info", NULL };
+    const char * installCommand[] = { "--install", NULL };
     int ec = 0;
     int status;
     int p[2];

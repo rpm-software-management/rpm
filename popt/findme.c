@@ -22,7 +22,7 @@
 
 #include "findme.h"
 
-char * findProgramPath(char * argv0) {
+const char * findProgramPath(const char * argv0) {
     char * path = getenv("PATH");
     char * pathbuf;
     char * start, * chptr;

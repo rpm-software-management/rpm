@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.32 1999/07/23 19:19:15 jbj Exp $
+# $Id: macros.in,v 1.33 1999/07/27 22:05:43 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -70,8 +70,8 @@
 #%__find_obsoletes	???
 #
 # XXX fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
-%_fixowner		[ `%{__id} -u` = '0' ] && %{__chown} -Rf root
-%_fixgroup		[ `%{__id} -u` = '0' ] && %{__chgrp} -Rf @ROOT_GROUP@
+%_fixowner		[ `%{__id} -u` = '0' ] && %{__chown} -Rhf root
+%_fixgroup		[ `%{__id} -u` = '0' ] && %{__chgrp} -Rhf @ROOT_GROUP@
 %_fixperms		%{__chmod} -Rf @FIXPERMS@
 #
 %_gzipbin		@GZIPBIN@

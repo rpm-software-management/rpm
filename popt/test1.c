@@ -59,7 +59,7 @@ static struct poptOption options[] = {
 int main(int argc, char ** argv) {
     int rc;
     poptContext optCon;
-    char ** rest;
+    const char ** rest;
     int help = 0;
     int usage = 0;
 

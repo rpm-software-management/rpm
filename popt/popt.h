@@ -57,15 +57,15 @@ struct poptOption {
     int argInfo;
     void * arg;			/* depends on argInfo */
     int val;			/* 0 means don't return, just update flag */
-    char * descrip;		/* description for autohelp -- may be NULL */
-    char * argDescrip;		/* argument description for autohelp */
+    const char * descrip;	/* description for autohelp -- may be NULL */
+    const char * argDescrip;	/* argument description for autohelp */
 };
 
 struct poptAlias {
-    char * longName;		/* may be NULL */
+    const char * longName;	/* may be NULL */
     char shortName;		/* may be '\0' */
     int argc;
-    char ** argv;		/* must be free()able */
+    const char ** argv;		/* must be free()able */
 };
 
 extern struct poptOption poptHelpOptions[];
@@ -83,9 +83,9 @@ enum poptCallbackReason { POPT_CALLBACK_REASON_PRE,
 typedef void (*poptCallbackType)(poptContext con, 
 				 enum poptCallbackReason reason,
 			         const struct poptOption * opt,
-				 const char * arg, void * data);
+				 const char * arg, const void * data);
 
-poptContext poptGetContext(char * name, int argc, char ** argv, 
+poptContext poptGetContext(const char * name, int argc, char ** argv, 
 			   const struct poptOption * options, int flags);
 void poptResetContext(poptContext con);
 
@@ -95,14 +95,14 @@ int poptGetNextOpt(poptContext con);
 char * poptGetOptArg(poptContext con);
 /* returns NULL if no more options are available */
 char * poptGetArg(poptContext con);
-char * poptPeekArg(poptContext con);
-char ** poptGetArgs(poptContext con);
+const char * poptPeekArg(poptContext con);
+const char ** poptGetArgs(poptContext con);
 /* returns the option which caused the most recent error */
-char * poptBadOption(poptContext con, int flags);
+const char * poptBadOption(poptContext con, int flags);
 void poptFreeContext(poptContext con);
-int poptStuffArgs(poptContext con, char ** argv);
+int poptStuffArgs(poptContext con, const char ** argv);
 int poptAddAlias(poptContext con, struct poptAlias alias, int flags);
-int poptReadConfigFile(poptContext con, char * fn);
+int poptReadConfigFile(poptContext con, const char * fn);
 /* like above, but reads /etc/popt and $HOME/.popt along with environment 
    vars */
 int poptReadDefaultConfig(poptContext con, int useEnv);

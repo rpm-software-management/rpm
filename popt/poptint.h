@@ -7,41 +7,43 @@
 
 struct optionStackEntry {
     int argc;
-    char ** argv;
+    const char ** argv;
     int next;
-    char * nextArg;
-    char * nextCharArg;
+    const char * nextArg;
+    const char * nextCharArg;
     struct poptAlias * currAlias;
     int stuffed;
 };
 
 struct execEntry {
-    char * longName;
+    const char * longName;
     char shortName;
-    char * script;
+    const char * script;
 };
 
 struct poptContext_s {
     struct optionStackEntry optionStack[POPT_OPTION_DEPTH], * os;
-    char ** leftovers;
+    const char ** leftovers;
     int numLeftovers;
     int nextLeftover;
     const struct poptOption * options;
     int restLeftover;
-    char * appName;
+    const char * appName;
     struct poptAlias * aliases;
     int numAliases;
     int flags;
     struct execEntry * execs;
     int numExecs;
-    char ** finalArgv;
+    const char ** finalArgv;
     int finalArgvCount;
     int finalArgvAlloced;
     struct execEntry * doExec;
-    char * execPath;
+    const char * execPath;
     int execAbsolute;
-    char * otherHelp;
+    const char * otherHelp;
 };
+
+#define	xfree(_a)	free((void *)_a)
 
 #ifdef HAVE_LIBINTL_H
 #include <libintl.h>

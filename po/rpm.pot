@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-26 17:44-0400\n"
+"POT-Creation-Date: 1999-07-27 17:31-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1503,7 +1503,7 @@ msgstr ""
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: ../build/pack.c:330 ../lib/rpmchecksig.c:93
+#: ../build/pack.c:330 ../lib/rpmchecksig.c:94
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
@@ -1962,17 +1962,17 @@ msgstr ""
 msgid "cannot open file %s: %s"
 msgstr ""
 
-#: ../lib/dbindex.c:77
+#: ../lib/dbindex.c:80
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: ../lib/dbindex.c:104
+#: ../lib/dbindex.c:107
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: ../lib/dbindex.c:111
+#: ../lib/dbindex.c:114
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
@@ -2714,83 +2714,83 @@ msgstr ""
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:29 ../lib/rpmchecksig.c:167
+#: ../lib/rpmchecksig.c:30 ../lib/rpmchecksig.c:168
 #, c-format
 msgid "%s: Open failed\n"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:33 ../lib/rpmchecksig.c:172
+#: ../lib/rpmchecksig.c:34 ../lib/rpmchecksig.c:173
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:37
+#: ../lib/rpmchecksig.c:38
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:41
+#: ../lib/rpmchecksig.c:42
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:45 ../lib/rpmchecksig.c:182
+#: ../lib/rpmchecksig.c:46 ../lib/rpmchecksig.c:183
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:58 ../lib/rpmchecksig.c:196
+#: ../lib/rpmchecksig.c:59 ../lib/rpmchecksig.c:197
 msgid "Couldn't read the header/archive"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:65
+#: ../lib/rpmchecksig.c:66
 msgid "Couldn't write header/archive to temp file"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:116
+#: ../lib/rpmchecksig.c:117
 msgid "Couldn't read sigtarget"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:125
+#: ../lib/rpmchecksig.c:126
 msgid "Couldn't write package"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:177
+#: ../lib/rpmchecksig.c:178
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:187
+#: ../lib/rpmchecksig.c:188
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:203
+#: ../lib/rpmchecksig.c:204
 #, c-format
 msgid "Unable to write %s"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:329
+#: ../lib/rpmchecksig.c:330
 msgid "NOT OK"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:330 ../lib/rpmchecksig.c:344
+#: ../lib/rpmchecksig.c:331 ../lib/rpmchecksig.c:345
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:332 ../lib/rpmchecksig.c:346
+#: ../lib/rpmchecksig.c:333 ../lib/rpmchecksig.c:347
 msgid ") "
 msgstr ""
 
-#: ../lib/rpmchecksig.c:333 ../lib/rpmchecksig.c:347
+#: ../lib/rpmchecksig.c:334 ../lib/rpmchecksig.c:348
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:335 ../lib/rpmchecksig.c:349
+#: ../lib/rpmchecksig.c:336 ../lib/rpmchecksig.c:350
 msgid ")"
 msgstr ""
 
-#: ../lib/rpmchecksig.c:343
+#: ../lib/rpmchecksig.c:344
 msgid "OK"
 msgstr ""
 

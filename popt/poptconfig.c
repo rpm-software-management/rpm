@@ -51,7 +51,7 @@ static void configLine(poptContext con, char * line) {
 	shortName = opt[1];
 
     if (!strcmp(entryType, "alias")) {
-	if (poptParseArgvString(line, &alias.argc, &alias.argv)) return;
+	if (poptParseArgvString(line, &alias.argc, (char ***)&alias.argv)) return;
 	alias.longName = longName, alias.shortName = shortName;
 	poptAddAlias(con, alias, 0);
     } else if (!strcmp(entryType, "exec")) {
@@ -69,7 +69,7 @@ static void configLine(poptContext con, char * line) {
     }
 }
 
-int poptReadConfigFile(poptContext con, char * fn) {
+int poptReadConfigFile(poptContext con, const char * fn) {
     char * file, * chptr, * end;
     char * buf, * dst;
     int fd, rc;
