@@ -145,8 +145,8 @@ extern const int rpmTagTableSize;
 #define RPMSENSE_CONFLICTS       (1 << 5) /* only used internally by builds */
 #define RPMSENSE_SENSEMASK       15       /* Mask to get senses */
 
-#define RPMSENSE_TRIGGER_ON              (1 << 16)
-#define RPMSENSE_TRIGGER_OFF             (1 << 17)
+#define RPMSENSE_TRIGGER_IN      (1 << 16)
+#define RPMSENSE_TRIGGER_UN      (1 << 17)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 

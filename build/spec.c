@@ -875,8 +875,8 @@ static int find_preamble_line(char *line, char **s)
 #define FILES_PART         10
 #define CHANGELOG_PART     11
 #define DESCRIPTION_PART   12
-#define TRIGGERON_PART     13
-#define TRIGGEROFF_PART    14
+#define TRIGGERIN_PART     13
+#define TRIGGERUN_PART     14
 #define VERIFYSCRIPT_PART  15
 
 static struct part_rec {
@@ -896,8 +896,8 @@ static struct part_rec {
     {FILES_PART,       0, "%files"},
     {CHANGELOG_PART,   0, "%changelog"},
     {DESCRIPTION_PART, 0, "%description"},
-    {TRIGGERON_PART,   0, "%triggeron"},
-    {TRIGGEROFF_PART,  0, "%triggeroff"},
+    {TRIGGERUN_PART,   0, "%triggerun"},
+    {TRIGGERIN_PART,   0, "%trigger"},
     {VERIFYSCRIPT_PART, 0, "%verifyscript"},
     {0, 0, 0}
 };
@@ -993,14 +993,14 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
 	    return 1;
 	}
 	break;
-      case TRIGGERON_PART:
-	if (addTrigger(cur_package, RPMSENSE_TRIGGER_ON,
+      case TRIGGERIN_PART:
+	if (addTrigger(cur_package, RPMSENSE_TRIGGER_IN,
 		       getStringBuf(sb), triggerArgs)) {
 	    return 1;
 	}
 	break;
-      case TRIGGEROFF_PART:
-	if (addTrigger(cur_package, RPMSENSE_TRIGGER_OFF,
+      case TRIGGERUN_PART:
+	if (addTrigger(cur_package, RPMSENSE_TRIGGER_UN,
 		       getStringBuf(sb), triggerArgs)) {
 	    return 1;
 	}
@@ -1125,7 +1125,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 			fileFile[0] ? fileFile : "(null)");
 
 	    /* If trigger, pull off the args */
-	    if (tag == TRIGGERON_PART || tag == TRIGGEROFF_PART) {
+	    if (tag == TRIGGERIN_PART || tag == TRIGGERUN_PART) {
 		s1 = strstr(s, "--");
 		if (s1) {
 		    strcpy(triggerArgs, s1+2);
@@ -1398,8 +1398,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	  case VERIFYSCRIPT_PART:
 	    appendLineStringBuf(sb, line);
 	    break;
-	  case TRIGGERON_PART:
-	  case TRIGGEROFF_PART:
+	  case TRIGGERIN_PART:
+	  case TRIGGERUN_PART:
 	    appendLineStringBuf(sb, line);
 	    break;
 	  case FILES_PART:
