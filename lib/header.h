@@ -50,9 +50,14 @@ void dumpHeader(Header h, FILE *f, int flags);
 int getEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
 int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
+int isEntry(Header h, int_32 tag);
+
 HeaderIterator initIterator(Header h);
 int nextIterator(HeaderIterator iter,
 		 int_32 *tag, int_32 *type, void **p, int_32 *c);
+void freeIterator(HeaderIterator iter);
+
+Header copyHeader(Header h);
 
 /* Entry Types */
 
