@@ -440,7 +440,7 @@ static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
     int i;
 
     for (i = 0; i < numConflicts; i++) {
-	fprintf(f, "\t%s ", conflicts[i].needsName);
+	fprintf(f, "\t%s", conflicts[i].needsName);
 	printDepFlags(stderr, conflicts[i].needsVersion, 
 		      conflicts[i].needsFlags);
 	fprintf(f, " is needed by %s-%s-%s\n", conflicts[i].byName, 
