@@ -161,11 +161,11 @@ class BasicTestCase(unittest.TestCase):
             print '\n', '-=' * 30
             print "Running %s.test03_Signs..." % \
                   self.__class__.__name__
-	wp = rpm.mpw(10)
+	wp = rpm.mpw(11)
 	wm = -wp
 	wpp = wp + 1
 	wmm = -wpp
-	zp = long(10)
+	zp = long(11)
 	zm = -zp
 	zpp = zp + 1
 	zmm = -zpp
@@ -185,6 +185,7 @@ class BasicTestCase(unittest.TestCase):
 	print "div -+:\t", (wm/wp), "\t", (zm/zp)
 	print "div +-:\t", (wp/wm), "\t", (zp/zm)
 	print "div ++:\t", (wp/wp), "\t", (zp/zp)
+
 	print "pow --:\t", (wm**wm), "\t", (zm**zm)
 	print "pow -+:\t", (wm**wp), "\t", (zm**zp)
 	print "pow +-:\t", (wp**wm), "\t", (zp**zm)

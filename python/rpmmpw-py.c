@@ -1539,10 +1539,12 @@ fprintf(stderr, "sub ++: borrow\n");
 	mpnzero(&zn);
 	if (msize == 0 || (msize == 1 && *mdata == 0))
 	    mpnsetw(&zn, 1);
-	else if (m->ob_size < 0)
+	else if (mpz(xsize, xdata) || m->ob_size < 0)
 	    mpnsetw(&zn, 0);
-	else
+	else {
+	    zsign = (x->ob_size > 0 || mpeven(msize, mdata)) ? 1 : -1;
 	    mpnpow_w(&zn, xsize, xdata, msize, mdata);
+	}
 	z = mpw_FromMPW(zn.size, zn.data, 1);
 	mpnfree(&zn);
 	if (zsign < 0)
