@@ -920,36 +920,45 @@ static void checkHardLinks(struct FileList *fl)
  * @todo Remove RPMTAG_OLDFILENAMES, add dirname/basename instead.
  * @param fl		package file tree walk data
  */
-static void genCpioListAndHeader(struct FileList *fl, void **cpioList,
-				 int *cpioCount, Header h, int isSrc)
+static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
+				 Header h, int isSrc)
 {
-    int skipLen;
-    FileListRec *flp;
-    int fc;
-    char *s;
-    char buf[BUFSIZ];
+    int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
     uint_32 multiLibMask = 0;
+    int apathlen = 0;
+    int dpathlen = 0;
+    int skipLen = 0;
+    FileListRec *flp;
+    char buf[BUFSIZ];
+    int i;
     
     /* Sort the big list */
     qsort(fl->fileList, fl->fileListRecsUsed,
 	  sizeof(*(fl->fileList)), compareFileListRecs);
     
     /* Generate the header. */
-    skipLen = 0;
     if (! isSrc) {
 	skipLen = 1;
 	if (fl->prefix)
 	    skipLen += strlen(fl->prefix);
     }
 
-    for (fc = 0, flp = fl->fileList; fc < fl->fileListRecsUsed; fc++, flp++) {
-	if (fc < (fl->fileListRecsUsed - 1) &&
+    for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
+	char *s;
+
+	if (i < (fl->fileListRecsUsed - 1) &&
 	    !strcmp(flp->fileURL, flp[1].fileURL))
 	{
 	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s\n"),
 		flp->fileURL);
 	    fl->processingFailed = 1;
 	}
+
+	/* Omit '/' and/or URL prefix, leave room for "./" prefix */
+	apathlen += (strlen(flp->fileURL) - skipLen + (_addDotSlash ? 3 : 1));
+
+	/* Leave room for both dirname and basename NUL's */
+	dpathlen += (strlen(flp->diskURL) + 2);
 
 	if (flp->flags & RPMFILE_MULTILIB_MASK)
 	    multiLibMask |=
@@ -1068,6 +1077,9 @@ static void genCpioListAndHeader(struct FileList *fl, void **cpioList,
 	headerAddEntry(h, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 		       &multiLibMask, 1);
 
+    if (_addDotSlash)
+	rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
+
     /* Choose how filenames are represented. */
     if (_noDirTokens)
 	expandFilelist(h);
@@ -1077,66 +1089,31 @@ static void genCpioListAndHeader(struct FileList *fl, void **cpioList,
 	rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
 
-#ifdef	DYING
-  { struct cpioFileMapping * clp = xmalloc(sizeof(*clp) * fl->fileListRecsUsed);
-    int clpcnt = 0;
-
-    /* Make the cpio list */
-    for (fc = 0, flp = fl->fileList; fc < fl->fileListRecsUsed; fc++, flp++) {
-	char * t;
-
-	if (flp->flags & RPMFILE_GHOST)
-	    continue;
-
-	clp->dirName = t = xmalloc(strlen(flp->diskURL) + 2);
-	t = stpcpy(t, flp->diskURL);
-	    
-	/* Make room for the dirName NUL, find start of baseName. */
-	for (; t > clp->dirName && *t != '/'; t--)
-	    t[1] = t[0];
-	t++;
-	*t++ = '\0';
-	clp->baseName = t;
-
-  /* XXX legacy requires './' payload prefix to be omitted from rpm packages. */
-	clp->archivePath = t = xmalloc(strlen(flp->fileURL) - skipLen + 3);
-	if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}")) {
-	    t = stpcpy(t, "./");
-	    rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
-	}
-	t = stpcpy(t, (flp->fileURL + skipLen));
-
-	clp->finalMode = flp->fl_mode;
-	clp->finalUid = flp->fl_uid;
-	clp->finalGid = flp->fl_gid;
-	clp->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE |
-		CPIO_MAP_UID | CPIO_MAP_GID;
-
-	if (isSrc)
-	    clp->mapFlags |= CPIO_FOLLOW_SYMLINKS;
-	if (flp->flags & RPMFILE_MULTILIB_MASK)
-	    clp->mapFlags |= CPIO_MULTILIB;
-
-	clp++;
-	clpcnt++;
-    }
-    if (cpioList)
-	*cpioList = clp;
-    else
-	free(clp);
-    if (cpioCount)
-	*cpioCount = clpcnt;
-  }
-#else
   { TFI_t fi = xmalloc(sizeof(*fi) * fl->fileListRecsUsed);
-    int i;
+    char * a, * d;
 
     fi->type = TR_ADDED;
     loadFi(h, fi);
-    fi->striplen = 1;
+    if (fi->dnl) {
+	free((void *)fi->dnl); fi->dnl = NULL;
+    }
+    fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen);
+    d = (char *)(fi->dnl + fi->fc);
+    *d = '\0';
+
+    if (fi->bnl) {
+	free((void *)fi->bnl); fi->bnl = NULL;
+    }
+    fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
+    fi->dil = (int *)(fi->bnl + fi->fc);
+
+    fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen);
+    a = (char *)(fi->apath + fi->fc);
+    *a = '\0';
+
     fi->actions = xcalloc(sizeof(*fi->actions), fi->fc);
     fi->fmapflags = xcalloc(sizeof(*fi->fmapflags), fi->fc);
-    rpmBuildFileList(h, &fi->apath, NULL);
+    fi->striplen = 0;
     fi->fuser = NULL;
     fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
     fi->fgroup = NULL;
@@ -1144,6 +1121,27 @@ static void genCpioListAndHeader(struct FileList *fl, void **cpioList,
 
     /* Make the cpio list */
     for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
+	char * b;
+
+	/* Create disk directory and base name. */
+	fi->dil[i] = i;
+	fi->dnl[fi->dil[i]] = d;
+	d = stpcpy(d, flp->diskURL);
+
+	/* Make room for the dirName NUL, find start of baseName. */
+	for (b = d; b > fi->dnl[fi->dil[i]] && *b != '/'; b--)
+	    b[1] = b[0];
+	b++;		/* dirname's end in '/' */
+	*b++ = '\0';	/* terminate dirname, b points to basename */
+	fi->bnl[i] = b;
+	d += 2;		/* skip both dirname and basename NUL's */
+
+	/* Create archive path, normally adding "./" */
+	fi->apath[i] = a;
+	if (_addDotSlash) a = stpcpy(a, "./");
+	a = stpcpy(a, (flp->fileURL + skipLen));
+	a++;		/* skip apath NUL */
+
 	if (flp->flags & RPMFILE_GHOST) {
 	    fi->actions[i] = FA_SKIP;
 	    continue;
@@ -1163,10 +1161,7 @@ static void genCpioListAndHeader(struct FileList *fl, void **cpioList,
 	*cpioList = fi;
     else
 	free(fi);
-    if (cpioCount)
-	*cpioCount = fc;
   }
-#endif
 }
 
 /**
@@ -1435,7 +1430,6 @@ static int processPackageFiles(Spec spec, Package pkg,
     
     nullAttrRec(&specialDocAttrRec);
     pkg->cpioList = NULL;
-    pkg->cpioCount = 0;
 
     if (pkg->fileFile) {
 	const char *ffn;
@@ -1607,8 +1601,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     /* Verify that file attributes scope over hardlinks correctly. */
     checkHardLinks(&fl);
 
-    genCpioListAndHeader(&fl, &(pkg->cpioList), &(pkg->cpioCount),
-			     pkg->header, 0);
+    genCpioListAndHeader(&fl, (TFI_t *)&pkg->cpioList, pkg->header, 0);
 
     if (spec->timeCheck)
 	timeCheck(spec->timeCheck, pkg->header);
@@ -1748,7 +1741,6 @@ int processSourceFiles(Spec spec)
     }
 
     spec->sourceCpioList = NULL;
-    spec->sourceCpioCount = 0;
 
     fl.fileList = xmalloc((spec->numSources + 1) * sizeof(FileListRec));
     fl.processingFailed = 0;
@@ -1815,8 +1807,7 @@ int processSourceFiles(Spec spec)
     freeSplitString(files);
 
     if (! fl.processingFailed) {
-	genCpioListAndHeader(&fl, &(spec->sourceCpioList),
-			     &(spec->sourceCpioCount), spec->sourceHeader, 1);
+	genCpioListAndHeader(&fl, (TFI_t *)&spec->sourceCpioList, spec->sourceHeader, 1);
     }
 
     freeStringBuf(sourceFiles);
@@ -2014,8 +2005,7 @@ DepMsg_t depMsgs[] = {
 
 /**
  */
-static int generateDepends(Spec spec, Package pkg, void *cpioList,
-			/*@unused@*/ int cpioCount, int multiLib)
+static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 {
     TFI_t fi = cpioList;
     StringBuf writeBuf;
@@ -2245,10 +2235,10 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
      * XXX existence (rather than value) that will need to change as well.
      */
 	if (headerGetEntry(pkg->header, RPMTAG_MULTILIBS, NULL, NULL, NULL)) {
-	    generateDepends(spec, pkg, pkg->cpioList, pkg->cpioCount, 1);
-	    generateDepends(spec, pkg, pkg->cpioList, pkg->cpioCount, 2);
+	    generateDepends(spec, pkg, pkg->cpioList, 1);
+	    generateDepends(spec, pkg, pkg->cpioList, 2);
 	} else
-	    generateDepends(spec, pkg, pkg->cpioList, pkg->cpioCount, 0);
+	    generateDepends(spec, pkg, pkg->cpioList, 0);
 	printDeps(pkg->header);
 	
     }

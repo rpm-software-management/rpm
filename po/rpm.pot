@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-23 17:58-0500\n"
+"POT-Creation-Date: 2001-01-24 10:48-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1618,92 +1618,92 @@ msgstr ""
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:949
+#: build/files.c:952
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1033
+#: build/files.c:1042
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1230
+#: build/files.c:1225
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1240
+#: build/files.c:1235
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1283 build/files.c:1807 build/parsePrep.c:42
+#: build/files.c:1278 build/files.c:1799 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1295
+#: build/files.c:1290
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1372
+#: build/files.c:1367
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1402
+#: build/files.c:1397
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1457
+#: build/files.c:1451
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1466 build/pack.c:108
+#: build/files.c:1460 build/pack.c:108
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:1795
+#: build/files.c:1787
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1864
+#: build/files.c:1855
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:1869
+#: build/files.c:1860
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:1951
+#: build/files.c:1942
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:1955
+#: build/files.c:1946
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2083
+#: build/files.c:2073
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2111 build/files.c:2125
+#: build/files.c:2101 build/files.c:2115
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2238
+#: build/files.c:2228
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2170,75 +2170,70 @@ msgstr ""
 msgid "Package has no %%description: %s\n"
 msgstr ""
 
-#: build/spec.c:42
-#, c-format
-msgid "archive = %s, fs = %s%s\n"
-msgstr ""
-
-#: build/spec.c:238
+#: build/spec.c:216
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr ""
 
-#: build/spec.c:244
+#: build/spec.c:222
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr ""
 
-#: build/spec.c:302
+#: build/spec.c:280
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:581
+#: lib/cpio.c:595
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:587
+#: lib/cpio.c:601
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:894
+#: lib/cpio.c:907
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1404
+#: lib/cpio.c:1416
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1407
+#: lib/cpio.c:1419
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1408
+#: lib/cpio.c:1420
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1426
+#: lib/cpio.c:1438
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1427
+#: lib/cpio.c:1439
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1428
+#: lib/cpio.c:1440
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1429
+#: lib/cpio.c:1441
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1430
+#: lib/cpio.c:1442
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1439
+#: lib/cpio.c:1451
 msgid " failed - "
 msgstr ""
 
@@ -2517,7 +2512,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1015 lib/install.c:361
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:279
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2602,93 +2597,95 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:182
+#: lib/install.c:101
 #, c-format
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/install.c:210
+#: lib/install.c:130
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/install.c:219
+#: lib/install.c:138
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#. this would probably be a good place to check if disk space
-#. was used up - if so, we should return a different error
+#.
+#. * This would probably be a good place to check if disk space
+#. * was used up - if so, we should return a different error.
+#.
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:658
+#: lib/install.c:540
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/install.c:659
+#: lib/install.c:541
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:701
+#: lib/install.c:581
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/install.c:707
+#: lib/install.c:587
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/install.c:736
+#: lib/install.c:614
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:787 lib/install.c:820
+#: lib/install.c:671 lib/install.c:704
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/install.c:840
+#: lib/install.c:724
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:842 lib/install.c:1113 lib/uninstall.c:43
+#: lib/install.c:726 lib/install.c:994 lib/uninstall.c:43
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/install.c:940
+#: lib/install.c:823
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:978
+#: lib/install.c:860
 #, c-format
 msgid "package: %s-%s-%s has %d files test = %d\n"
 msgstr ""
 
-#: lib/install.c:1018
+#: lib/install.c:900
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:1023
+#: lib/install.c:905
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1030
+#: lib/install.c:911
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
-#: lib/install.c:1067
+#: lib/install.c:953
 #, c-format
 msgid "%s%s created as %s\n"
 msgstr ""
 
-#: lib/install.c:1108
+#: lib/install.c:989
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/install.c:1190
+#: lib/install.c:1063
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -3024,7 +3021,7 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:563 lib/rpminstall.c:312
+#: lib/query.c:563 lib/rpminstall.c:314
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
@@ -3088,7 +3085,7 @@ msgstr ""
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:746 lib/rpminstall.c:548
+#: lib/query.c:746 lib/rpminstall.c:550
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3324,117 +3321,117 @@ msgstr ""
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:142
+#: lib/rpminstall.c:144
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:145
+#: lib/rpminstall.c:147
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:206
+#: lib/rpminstall.c:208
 msgid "counting packages to install\n"
 msgstr ""
 
-#: lib/rpminstall.c:210
+#: lib/rpminstall.c:212
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:215
+#: lib/rpminstall.c:217
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: lib/rpminstall.c:230
+#: lib/rpminstall.c:232
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr ""
 
-#: lib/rpminstall.c:245
+#: lib/rpminstall.c:247
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:255
+#: lib/rpminstall.c:257
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:259
+#: lib/rpminstall.c:261
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:288
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:298 lib/rpminstall.c:472
+#: lib/rpminstall.c:300 lib/rpminstall.c:474
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:316 lib/rpminstall.c:613
+#: lib/rpminstall.c:318 lib/rpminstall.c:615
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:331
+#: lib/rpminstall.c:333
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:353
+#: lib/rpminstall.c:355
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:398
+#: lib/rpminstall.c:400
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:403
+#: lib/rpminstall.c:405
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:422
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:431
+#: lib/rpminstall.c:433
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:452
+#: lib/rpminstall.c:454
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:535
+#: lib/rpminstall.c:537
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: lib/rpminstall.c:551
+#: lib/rpminstall.c:553
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:574
+#: lib/rpminstall.c:576
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:604
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:610
 #, c-format
 msgid "Installing %s\n"
 msgstr ""

@@ -31,24 +31,6 @@ static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
     }
 }
 
-#ifdef	DYING
-/**
- */
-static inline void freeCpioList(/*@only@*/ struct cpioFileMapping *cpioList, int cpioCount)
-{
-    struct cpioFileMapping *p = cpioList;
-
-    while (cpioCount--) {
-	rpmMessage(RPMMESS_DEBUG, _("archive = %s, fs = %s%s\n"),
-		   p->archivePath, p->dirName, p->baseName);
-	FREE(p->archivePath);
-	FREE(p->dirName);	/* XXX baseName is free'd here as well */
-	p++;
-    }
-    FREE(cpioList);
-}
-#endif
-
 /**
  */
 static inline void freeSources(/*@only@*/ struct Source *s)
@@ -127,7 +109,6 @@ Package newPackage(Spec spec)
     p->fileList = NULL;
 
     p->cpioList = NULL;
-    p->cpioCount = 0;
 
     p->preInFile = NULL;
     p->postInFile = NULL;
@@ -164,14 +145,11 @@ void freePackage(/*@only@*/ Package p)
     headerFree(p->header);
     freeStringBuf(p->fileList);
     FREE(p->fileFile);
-#ifdef	DYING
-    freeCpioList(p->cpioList, p->cpioCount);
-#else
-    {	TFI_t fi = p->cpioList;
+    if (p->cpioList) {
+	TFI_t fi = p->cpioList;
 	freeFi(fi);
 	free((void *)fi);
     }
-#endif
     p->cpioList = NULL;
 
     freeStringBuf(p->specialDoc);
@@ -435,7 +413,6 @@ Spec newSpec(void)
 
     spec->sourceHeader = NULL;
 
-    spec->sourceCpioCount = 0;
     spec->sourceCpioList = NULL;
     
     spec->gotBuildRootURL = 0;
@@ -499,14 +476,11 @@ void freeSpec(/*@only@*/ Spec spec)
 	spec->sourceHeader = NULL;
     }
 
-#ifdef	DYING
-    freeCpioList(spec->sourceCpioList, spec->sourceCpioCount);
-#else
-    {	TFI_t fi = spec->sourceCpioList;
+    if (spec->sourceCpioList) {
+	TFI_t fi = spec->sourceCpioList;
 	freeFi(fi);
 	free((void *)fi);
     }
-#endif
     spec->sourceCpioList = NULL;
     
     headerFree(spec->buildRestrictions);

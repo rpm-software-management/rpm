@@ -46,7 +46,7 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t * csa, const char * fmodeMacro)
 	fmode = xstrdup("w9.gzdio");
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
-    rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
+    rc = cpioBuildArchive(cfd, csa->cpioList, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {
 	rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s\n"),
@@ -647,7 +647,6 @@ int packageBinaries(Spec spec)
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
 	csa->cpioList = pkg->cpioList;
-	csa->cpioCount = pkg->cpioCount;
 
 	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
@@ -684,7 +683,6 @@ int packageSources(Spec spec)
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = fdNew("init (packageSources)");
 	csa->cpioList = spec->sourceCpioList;
-	csa->cpioCount = spec->sourceCpioCount;
 
 	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));

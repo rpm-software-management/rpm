@@ -10,8 +10,6 @@
 #include "system.h"
 #include <rpmlib.h>
 
-#include "depends.h"
-#include "install.h"
 #include "cpio.h"
 #include "rpmerr.h"
 #include "debug.h"
@@ -97,16 +95,22 @@ static void prtli(const char *msg, struct hardLink * li)
 }
 #endif
 
+/**
+ */
 static int mapFlags(const void * this, cpioMapFlags mask) {
     const struct cpioFileMapping * map = this;
     return (map->mapFlags & mask);
 }
 
+/**
+ */
 static /*@only@*/ const char * mapArchivePath(const void * this) {
     const struct cpioFileMapping * map = this;
     return xstrdup(map->archivePath);
 }
 
+/**
+ */
 static /*@only@*/ const char * mapFsPath(const void * this) {
     const struct cpioFileMapping * map = this;
     char * t = xmalloc(	strlen(map->dirName) + strlen(map->baseName) + 1);
@@ -114,32 +118,44 @@ static /*@only@*/ const char * mapFsPath(const void * this) {
     return t;
 }
 
+/**
+ */
 static mode_t mapFinalMode(const void * this) {
     const struct cpioFileMapping * map = this;
     return map->finalMode;
 }
 
+/**
+ */
 static uid_t mapFinalUid(const void * this) {
     const struct cpioFileMapping * map = this;
     return map->finalUid;
 }
 
+/**
+ */
 static gid_t mapFinalGid(const void * this) {
     const struct cpioFileMapping * map = this;
     return map->finalGid;
 }
 
+/**
+ */
 static const char * mapMd5sum(const void * this) {
     const struct cpioFileMapping * map = this;
     return map->md5sum;
 }
 
+/**
+ */
 struct mapi {
     TFI_t fi;
     int i;
     struct cpioFileMapping map;
 };
 
+/**
+ */
 static const void * mapLink(const void * this) {
     const struct cpioFileMapping * omap = this;
     struct cpioFileMapping * nmap = xcalloc(sizeof(*nmap), 1);
@@ -147,16 +163,22 @@ static const void * mapLink(const void * this) {
     return nmap;
 }
 
+/**
+ */
 static void mapFree(const void * this) {
     free((void *)this);
 }
 
+/**
+ */
 static void mapFreeIterator(/*@only@*/ const void * this) {
     if (this)
 	free((void *)this);
 }
 
-static void * mapInitIterator(const void * this, int numMappings) {
+/**
+ */
+static void * mapInitIterator(const void * this) {
     struct mapi * mapi;
 
     if (this == NULL)
@@ -167,6 +189,8 @@ static void * mapInitIterator(const void * this, int numMappings) {
     return mapi;
 }
 
+/**
+ */
 static const void * mapNextIterator(void * this) {
     struct mapi * mapi = this;
     TFI_t fi = mapi->fi;
@@ -187,23 +211,11 @@ static const void * mapNextIterator(void * this) {
     map->finalUid = (fi->fuids ? fi->fuids[i] : fi->uid); /* XXX chmod u-s */
     map->finalGid = (fi->fgids ? fi->fgids[i] : fi->gid); /* XXX chmod g-s */
     map->mapFlags = (fi->fmapflags ? fi->fmapflags[i] : fi->mapflags);
-    mapi->i++;
     return map;
 }
 
-#ifdef	DYING
-static int cpioFileMapCmp(const void * a, const void * b) {
-    const char * afn = ((const struct cpioFileMapping *)a)->archivePath;
-    const char * bfn = ((const struct cpioFileMapping *)b)->archivePath;
-
-    /* Match payloads with ./ prefixes as well. */
-    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
-    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
-
-    return strcmp(afn, bfn);
-}
-#endif
-
+/**
+ */
 static int cpioStrCmp(const void * a, const void * b) {
     const char * afn = *(const char **)a;
     const char * bfn = *(const char **)b;
@@ -219,6 +231,8 @@ static int cpioStrCmp(const void * a, const void * b) {
     return strcmp(afn, bfn);
 }
 
+/**
+ */
 static const void * mapFind(void * this, const char * hdrPath) {
     struct mapi * mapi = this;
     const TFI_t fi = mapi->fi;
@@ -858,12 +872,11 @@ static int eatBytes(FD_t cfd, int amount)
 }
 
 /** @todo Verify payload MD5 sum. */
-int cpioInstallArchive(FD_t cfd, const void * mappings,
-		       int numMappings, cpioCallback cb, void * cbData,
+int cpioInstallArchive(FD_t cfd, const TFI_t fi, cpioCallback cb, void * cbData,
 		       const char ** failedFile)
 {
     struct cpioHeader ch, *hdr = &ch;
-    void * mapi = mapInitIterator(mappings, numMappings);
+    void * mapi = mapInitIterator(fi);
     const void * map = NULL;
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     struct hardLink * links = NULL;
@@ -1267,11 +1280,10 @@ exit:
     return rc;
 }
 
-int cpioBuildArchive(FD_t cfd, const void * mappings,
-		     int numMappings, cpioCallback cb, void * cbData,
+int cpioBuildArchive(FD_t cfd, const TFI_t fi, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, const char ** failedFile)
 {
-    void * mapi = mapInitIterator(mappings, numMappings);
+    void * mapi = mapInitIterator(fi);
     const void * map;
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     struct cpioCrcPhysicalHeader hdr;

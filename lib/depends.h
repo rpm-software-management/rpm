@@ -137,13 +137,13 @@ struct transactionFileInfo_s {
     const uint_32 * fsizes;	/*!< File sizes (from header) */
     const char ** bnl;		/*!< Base names (from header) */
     const char ** dnl;		/*!< Directory names (from header) */
-    const int * dil;		/*!< Directory indices (from header) */
+    int * dil;			/*!< Directory indices (from header) */
     const char ** obnl;		/*!< Original Base names (from header) */
     const char ** odnl;		/*!< Original Directory names (from header) */
-    const int * odil;		/*!< Original Directory indices (from header) */
+    int * odil;			/*!< Original Directory indices (from header) */
     const char ** fmd5s;	/*!< file MD5 sums (from header) */
     const char ** flinks;	/*!< file links (from header) */
-/* XXX setuid/setgid bits are turned off if fsuer/fgroup doesn't map. */
+/* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
     uint_16 * fmodes;		/*!< file modes (from header) */
     char * fstates;		/*!< file states (from header) */
     const char ** fuser;	/*!< file owner(s) */

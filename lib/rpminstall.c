@@ -71,6 +71,8 @@ static void printHash(const unsigned long amount, const unsigned long total)
     }
 }
 
+/**
+ */
 static void * showProgress(const void * arg, const rpmCallbackType what, 
 			   const unsigned long amount, 
 			   const unsigned long total,
@@ -186,7 +188,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     int numFailed = 0;
     Header h;
     int isSource;
-    rpmTransactionSet rpmdep = NULL;
+    rpmTransactionSet ts = NULL;
     int numConflicts;
     int stopInstall = 0;
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
@@ -334,7 +336,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 			pkgURL[i] = NULL;
 			break;
 		    }
-		    rpmdep = rpmtransCreateSet(db, rootdir);
+		    ts = rpmtransCreateSet(db, rootdir);
 		    dbIsOpen = 1;
 		}
 
@@ -383,7 +385,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 		    /* Package is newer than those currently installed. */
 		}
 
-		rc = rpmtransAddPackage(rpmdep, h, NULL, fileName,
+		rc = rpmtransAddPackage(ts, h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
 
@@ -422,7 +424,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 
     if (numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
 	struct rpmDependencyConflict * conflicts;
-	if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
+	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
 	    numFailed = numPkgs;
 	    stopInstall = 1;
 	}
@@ -437,7 +439,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
     }
 
     if (numRPMS && !(interfaceFlags & INSTALL_NOORDER)) {
-	if (rpmdepOrder(rpmdep)) {
+	if (rpmdepOrder(ts)) {
 	    numFailed = numPkgs;
 	    stopInstall = 1;
 	}
@@ -450,7 +452,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
        packagesTotal = numRPMS;
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	rc = rpmRunTransactions(rpmdep, showProgress, (void *) ((long)notifyFlags), 
+	rc = rpmRunTransactions(ts, showProgress, (void *) ((long)notifyFlags), 
 				    NULL, &probs, transFlags, probFilter);
 
 	if (rc < 0) {
@@ -463,7 +465,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	if (probs) rpmProblemSetFree(probs);
     }
 
-    if (numRPMS) rpmtransFree(rpmdep);
+    if (numRPMS) rpmtransFree(ts);
 
     if (numSRPMS && !stopInstall) {
 	for (i = 0; i < numSRPMS; i++) {
@@ -517,7 +519,7 @@ int rpmErase(const char * rootdir, const char ** argv,
     int count;
     const char ** arg;
     int numFailed = 0;
-    rpmTransactionSet rpmdep;
+    rpmTransactionSet ts;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     int stopUninstall = 0;
@@ -537,7 +539,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	return -1;
     }
 
-    rpmdep = rpmtransCreateSet(db, rootdir);
+    ts = rpmtransCreateSet(db, rootdir);
     for (arg = argv; *arg; arg++) {
 	rpmdbMatchIterator mi;
 
@@ -556,7 +558,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset) {
-		    rpmtransRemovePackage(rpmdep, recOffset);
+		    rpmtransRemovePackage(ts, recOffset);
 		    numPackages++;
 		}
 	    }
@@ -565,7 +567,7 @@ int rpmErase(const char * rootdir, const char ** argv,
     }
 
     if (!(interfaceFlags & UNINSTALL_NODEPS)) {
-	if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
+	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
 	    numFailed = numPackages;
 	    stopUninstall = 1;
 	}
@@ -581,11 +583,11 @@ int rpmErase(const char * rootdir, const char ** argv,
     }
 
     if (!stopUninstall) {
-	numFailed += rpmRunTransactions(rpmdep, NULL, NULL, NULL, &probs,
+	numFailed += rpmRunTransactions(ts, NULL, NULL, NULL, &probs,
 					transFlags, 0);
     }
 
-    rpmtransFree(rpmdep);
+    rpmtransFree(ts);
     rpmdbClose(db);
 
     return numFailed;

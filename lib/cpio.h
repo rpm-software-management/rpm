@@ -17,6 +17,9 @@
 
 #include <rpmio_internal.h>
 
+#include "depends.h"	/* XXX DYING @todo Ratioanlize TFI_t. */
+#include "install.h"	/* XXX DYING */
+
 /** \ingroup payload
  * @note CPIO_CHECK_ERRNO bit is set only if errno is valid.
  */
@@ -57,7 +60,7 @@ typedef enum cpioMapFlags_e {
     CPIO_MAP_MODE		= (1 << 1),
     CPIO_MAP_UID		= (1 << 2),
     CPIO_MAP_GID		= (1 << 3),
-    CPIO_FOLLOW_SYMLINKS	= (1 << 4),  /* only for building */
+    CPIO_FOLLOW_SYMLINKS	= (1 << 4), /* @todo Implement. */
     CPIO_MULTILIB		= (1 << 31) /* internal, only for building */
 } cpioMapFlags;
 
@@ -93,15 +96,13 @@ typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
  * user.
  *
  * @param cfd		file handle
- * @param mappings	archive info for extraction
- * @param numMappings	number of archive elements
+ * @param fi		transaction element file info
  * @param cb		progress callback
  * @param cbData	progress callback data
  * @retval failedFile	file name (malloc'ed) that caused failure (if any)
  * @return		0 on success
  */
-int cpioInstallArchive(FD_t cfd, const void * mappings,
-		       int numMappings, cpioCallback cb, void * cbData,
+int cpioInstallArchive(FD_t cfd, const TFI_t fi, cpioCallback cb, void * cbData,
 		       /*@out@*/const char ** failedFile)
 	/*@modifies fileSystem, cfd, *failedFile @*/;
 
@@ -109,28 +110,15 @@ int cpioInstallArchive(FD_t cfd, const void * mappings,
  * The RPM internal equivalent of the command line "cpio -o".
  *
  * @param cfd		file handle
- * @param mappings	archive info for building
- * @param numMappings	number of archive elements
+ * @param fi		transaction element file info
  * @param cb		progress callback
  * @param cbData	progress callback data
  * @retval failedFile	file name (malloc'ed) that caused failure (if any)
  * @return		0 on success
  */
-int cpioBuildArchive(FD_t cfd, const void * mappings,
-		     int numMappings, cpioCallback cb, void * cbData,
+int cpioBuildArchive(FD_t cfd, const TFI_t fi, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, /*@out@*/const char ** failedFile)
 	/*@modifies fileSystem, cfd, *archiveSize, *failedFile @*/;
-
-#ifdef	DYING
-/** \ingroup payload
- * Compare two cpio file map entries (qsort/bsearch).
- * This is designed to be qsort/bsearch compatible.
- * @param a		1st map
- * @param b		2nd map
- * @return		result of comparison
- */
-int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
-#endif
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.
