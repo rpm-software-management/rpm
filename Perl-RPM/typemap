@@ -39,8 +39,15 @@ O_RPM_Header
         }
 
 O_RPM_Blessed
-        sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\",
-                     (void*)$var);
+        if ($var)
+        {
+            sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\",
+                         (void*)$var);
+        }
+        else
+        {
+            $arg = newSVsv(&PL_sv_undef);
+        }
 
 INPUT
 O_RPM_Database
