@@ -637,6 +637,8 @@ fmagicA(fmagic fm)
 		 * compare the word thus isolated against the token list
 		 */
 		for (p = names; p < names + NNAMES; p++) {
+			if (p->name == NULL)
+				/*@innerbreak@*/ break;
 			if (fmagicAMatch(p->name, ubuf + i, end - i)) {
 				subtype = types[p->type].human;
 				subtype_mime = types[p->type].mime;

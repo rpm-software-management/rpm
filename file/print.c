@@ -129,23 +129,23 @@ mdump(struct magic *m)
 }
 #endif
 
-#if !defined(HAVE_ERROR)
+#if !defined(HAVE_ERROR) || defined(__LCLINT__)
 /*
  * error - print best error message possible and exit
  */
 /*VARARGS*/
 void
-error(int status, int errnum, const char *fmt, ...)
+error(int status, /*@unused@*/ int errnum, const char * format, ...)
 {
 	va_list va;
 
-	va_start(va, fmt);
+	va_start(va,  format);
 	/* cuz we use stdout for most, stderr here */
 	(void) fflush(stdout); 
 
 	if (progname != NULL) 
 		(void) fprintf(stderr, "%s: ", progname);
-	(void) vfprintf(stderr, fmt, va);
+	(void) vfprintf(stderr,  format, va);
 	va_end(va);
 #if NOTYET
 	if (status)

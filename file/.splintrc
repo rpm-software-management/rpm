@@ -1,0 +1,51 @@
+-I. -DHAVE_CONFIG_H -DSTDC -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGFILE_SOURCE -D__STDC__=1 -DHAVE_STRUCT_STAT_ST_RDEV -DSIZEOF_UINT64_T=8
+
+#+partial
++forcehints
+
+
+-warnunixlib
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-compmempass		# 7
+-exportheader		# 50
+-formatconst		# 1
+-globstate		# 3
+-macroredef		# 1 tar.h
+-nullderef		# 1
+-nullpass		# 5
+-nullptrarith		# 1
+-redef			# 1 tar.h
+-sizeoftype		# 14
+
+# --- not-yet at strict level
+-bitwisesigned		# 86
+-elseifcomplete		# 2
+-forblock		# 6
+-ifblock		# 231
+-incondefs		# 64
+-namechecks		# tedious ANSI compliance checks
+-ptrarith		# tedious
+
+-mustdefine		# 25
+-shiftimplementation	# 148 ctype.h
+
+-strictops		# 37
+-whileblock		# 16
+
+# --- not-yet at checks level
+-mustfree		# 26
+-usedef			# 31
+
+# --- not-yet at standard level
++boolint		# 38
++charint		# 147
++ignorequals		# 49
++matchanyintegral	# 77

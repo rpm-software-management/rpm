@@ -268,14 +268,14 @@ int
 fmagicProcess(fmagic fm, const char *fn, int wid)
 {
 	static  const char stdname[] = "standard input";
-	unsigned char	b[HOWMANY+1];	/* one extra for terminating '\0' */
 	char match = '\0';
 	int ret = 0;
 
 /*@-assignexpose -temptrans @*/
 	fm->fn = fn;
 /*@=assignexpose =temptrans @*/
-	fm->buf = b;
+	fm->buf = xmalloc(HOWMANY+1);
+	fm->buf[0] = '\0';
 	fm->nb = 0;
 
 /*@-branchstate@*/
@@ -369,6 +369,8 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 	}
 
 exit:
+	if (fm->buf != NULL)
+		free(fm->buf);
 	fm->buf = NULL;
 	fm->nb = 0;
 	return ret;

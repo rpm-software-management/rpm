@@ -41,10 +41,6 @@ extern int errno;
 /*@=declundef @*/
 #endif
 
-#if HAVE_ERROR && HAVE_ERROR_H
-#include <error.h>
-#endif
-
 #if defined(__LCLINT__)
 /*@-declundef @*/
 /*@exits@*/
@@ -53,6 +49,10 @@ extern void error(int status, int errnum, const char *format, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=declundef @*/
+#else
+#if HAVE_ERROR && HAVE_ERROR_H
+#include <error.h>
+#endif
 #endif
 
 #ifdef STDC_HEADERS
@@ -65,7 +65,7 @@ extern void error(int status, int errnum, const char *format, ...)
 #include <varargs.h>
 #endif /* STDC_HEADERS */
 
-#if defined (__GLIBC__) && defined(__LCLINT__)
+#if defined(__LCLINT__)
 /*@-declundef@*/
 /*@-exportfcn@*/
 extern __const unsigned short int **__ctype_b_loc (void)
@@ -107,7 +107,7 @@ extern int _tolower(int) __THROW	/*@*/;
 #endif
 
 /* XXX solaris2.5.1 has not */
-#if !defined(EXIT_FAILURE)
+#if !defined(EXIT_FAILURE) && !defined(__LCLINT__)
 #define	EXIT_FAILURE	1
 #endif
 
@@ -245,7 +245,8 @@ char * xstrdup (const char *str)
  */
 /*@unused@*/ /*@exits@*/ /*@only@*/
 static inline void * vmefail(/*@unused@*/ size_t nb)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	error(EXIT_FAILURE, 0, "out of memory");
 	/*@notreached@*/

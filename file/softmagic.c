@@ -114,7 +114,8 @@ fmagicSPrint(const fmagic fm, struct magic *m)
  */
 static int
 fmagicSConvert(fmagic fm, struct magic *m)
-	/*@modifies fm @*/
+	/*@globals fileSystem @*/
+	/*@modifies fm, fileSystem @*/
 {
 	union VALUETYPE * p = &fm->val;
 

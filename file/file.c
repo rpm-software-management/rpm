@@ -88,7 +88,7 @@ unwrap(fmagic fm, char *fn)
 			/*@notreached@*/
 		}
 
-		while (fgets(buf, MAXPATHLEN, f) != NULL) {
+		while (fgets(buf, sizeof(buf), f) != NULL) {
 			cwid = strlen(buf) - 1;
 			if (cwid > wid)
 				wid = cwid;
@@ -97,7 +97,7 @@ unwrap(fmagic fm, char *fn)
 		rewind(f);
 	}
 
-	while (fgets(buf, MAXPATHLEN, f) != NULL) {
+	while (fgets(buf, sizeof(buf), f) != NULL) {
 		buf[strlen(buf)-1] = '\0';
 		fm->obp = fm->obuf;
 		*fm->obp = '\0';
@@ -281,8 +281,10 @@ main(int argc, char **argv)
 		case 'i':
 			fm->flags |= FMAGIC_FLAGS_MIME;
 			mime = malloc(strlen(fm->magicfile) + sizeof(".mime"));
-			(void)strcpy(mime, fm->magicfile);
-			(void)strcat(mime, ".mime");
+			if (mime != NULL) {
+				(void)strcpy(mime, fm->magicfile);
+				(void)strcat(mime, ".mime");
+			}
 			fm->magicfile = mime;
 			/*@switchbreak@*/ break;
 		case 'k':

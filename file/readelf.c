@@ -110,7 +110,8 @@ getu64(const fmagic fm, uint64_t value)
 
 static void
 doshn(fmagic fm, off_t off, int num, size_t size)
-	/*@modifies fm @*/
+	/*@globals fileSystem @*/
+	/*@modifies fm, fileSystem @*/
 {
 	Elf32_Shdr sh32;
 	Elf64_Shdr sh64;
@@ -140,7 +141,8 @@ doshn(fmagic fm, off_t off, int num, size_t size)
  */
 static void
 dophn_exec(fmagic fm, off_t off, int num, size_t size)
-	/*@modifies fm @*/
+	/*@globals fileSystem @*/
+	/*@modifies fm, fileSystem @*/
 {
 	Elf32_Phdr ph32;
 	Elf32_Nhdr *nh32 = NULL;
@@ -339,7 +341,8 @@ static const char *os_style_names[] = {
 
 static void
 dophn_core(fmagic fm, off_t off, int num, size_t size)
-	/*@modifies fm @*/
+	/*@globals fileSystem @*/
+	/*@modifies fm, fileSystem @*/
 {
 	Elf32_Phdr ph32;
 	Elf32_Nhdr *nh32 = NULL;

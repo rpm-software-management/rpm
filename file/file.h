@@ -108,13 +108,13 @@ struct magic {
 struct mlist {
 	struct magic *magic;		/* array of magic entries */
 	uint32_t nmagic;		/* number of entries in array */
-/*@null@*/
+/*@relnull@*/
 	struct mlist *next;
-/*@null@*/
+/*@relnull@*/
 	struct mlist *prev;
 };
 
-/*@unchecked@*/ /*@observer@*/ /*@null@*/
+/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 extern char *progname;		/* the program name 			*/
 /*@unchecked@*/
 
@@ -133,12 +133,12 @@ enum fmagicFlags_e {
 
 struct fmagic_s {
     int flags;			/*!< bit(s) to control fmagic behavior. */
-/*@dependent@*/ /*@observer@*/ /*@null@*/
+/*@dependent@*/ /*@observer@*/ /*@relnull@*/
     const char *magicfile;	/*!< name of the magic file		*/
     int lineno;			/*!< current line number in magic file	*/
-/*@null@*/
+/*@relnull@*/
     struct mlist * mlist;	/*!< list of arrays of magic entries	*/
-/*@null@*/
+/*@relnull@*/
     struct mlist * ml;		/*!< current magic array item		*/
 /*@observer@*/
     const char * fn;		/*!< current file name			*/

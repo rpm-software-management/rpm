@@ -298,10 +298,10 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	if (*nmagicp + 1 >= maxmagic){
 		maxmagic += ALLOC_INCR;
 /*@-unqualifiedtrans @*/
-		*magicp = xrealloc(*magicp, sizeof(struct magic) * maxmagic);
+		*magicp = xrealloc(*magicp, sizeof(**magicp) * maxmagic);
 /*@=unqualifiedtrans @*/
 		m = &(*magicp)[*nmagicp];
-		memset(m, 0, sizeof(struct magic) * ALLOC_INCR);
+		memset(m, 0, sizeof(**magicp) * ALLOC_INCR);
 	} else
 		m = &(*magicp)[*nmagicp];
 	m->flag = 0;
@@ -749,10 +749,11 @@ void bs1(struct magic *m)
  * Byteswap an mmap'ed file if needed
  */
 static void
-byteswap(struct magic *m, uint32_t nmagic)
+byteswap(/*@null@*/ struct magic *m, uint32_t nmagic)
 	/*@modifies m @*/
 {
 	uint32_t i;
+	if (m != NULL)
 	for (i = 0; i < nmagic; i++)
 		bs1(&m[i]);
 }
@@ -801,7 +802,7 @@ apprentice_file(fmagic fm, /*@out@*/ struct magic **magicp,
 	}
 
         maxmagic = MAXMAGIS;
-	*magicp = (struct magic *) xcalloc(sizeof(struct magic), maxmagic);
+	*magicp = (struct magic *) xcalloc(sizeof(**magicp), maxmagic);
 
 	/* parse it */
 	if (action == CHECK)	/* print silly verbose header for USG compat. */
@@ -858,14 +859,14 @@ apprentice_compile(/*@unused@*/ const fmagic fm,
 		return -1;
 	}
 
-	if (lseek(fd, sizeof(struct magic), SEEK_SET) != sizeof(struct magic)) {
+	if (lseek(fd, sizeof(**magicp), SEEK_SET) != sizeof(**magicp)) {
 		(void)fprintf(stderr, "%s: error seeking `%s' (%s)\n",
 		    progname, dbname, strerror(errno));
 		return -1;
 	}
 
-	if (write(fd, *magicp,  sizeof(struct magic) * *nmagicp) 
-	    != sizeof(struct magic) * *nmagicp) {
+	if (write(fd, *magicp,  sizeof(**magicp) * *nmagicp) 
+	    != sizeof(**magicp) * *nmagicp) {
 		(void)fprintf(stderr, "%s: error writing `%s' (%s)\n",
 		    progname, dbname, strerror(errno));
 		return -1;
@@ -943,7 +944,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 		    progname, version, VERSIONNO, dbname);
 		goto errxit;
 	}
-	*nmagicp = (st.st_size / sizeof(struct magic)) - 1;
+	*nmagicp = (st.st_size / sizeof(**magicp)) - 1;
 	(*magicp)++;
 	if (needsbyteswap)
 		byteswap(*magicp, *nmagicp);
@@ -999,10 +1000,10 @@ apprentice_1(fmagic fm, const char *fn, int action)
 	if (rv != 0)
 		return rv;
 	     
-	ml = xmalloc(sizeof(*ml));
-
 	if (magic == NULL || nmagic == 0)
 		return rv;
+
+	ml = xmalloc(sizeof(*ml));
 
 	ml->magic = magic;
 	ml->nmagic = nmagic;
