@@ -485,10 +485,12 @@ static void printHelp(void) {
 		  _("verify a package installation using the same same package specification options as -q"));
     printHelpLine(  "     --nodeps             ",
 		  _("do not verify package dependencies"));
-    printHelpLine(  "     --nomd5              ",
-		  _("do not verify file md5 checksums"));
     printHelpLine(  "     --nofiles            ",
 		  _("do not verify file attributes"));
+    printHelpLine(  "     --nomd5              ",
+		  _("do not verify file md5 checksums"));
+    printHelpLine(  "     --noscripts          ",
+		  _("do not execute verify script (if any)"));
     puts("");
     printHelpLine(  "   --querytags            ",
 		  _("list the tags that can be used in a query format"));
