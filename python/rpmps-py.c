@@ -64,30 +64,6 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p ix %d active %d\n", s, s->ps, s->i
     return result;
 }
 
-#ifdef	NOTUSED
-/*@null@*/
-static PyObject *
-rpmps_Next(rpmpsObject * s, PyObject *args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
-{
-    PyObject * result;
-
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_Next(%p,%p)\n", s, args);
-    if (!PyArg_ParseTuple(args, ":Next"))
-	return NULL;
-
-    result = rpmps_iternext(s);
-
-    if (result == NULL) {
-	Py_INCREF(Py_None);
-        return Py_None;
-    }
-    return result;
-}
-#endif
-
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmps_methods[] = {
@@ -165,12 +141,14 @@ rpmps_subscript(rpmpsObject * s, PyObject * key)
     }
 
     ix = (int) PyInt_AsLong(key);
+    /* XXX range check */
     ps = s->ps;
-    if (ix < ps->numProblems)
+    if (ix < ps->numProblems) {
 	result = Py_BuildValue("s", rpmProblemString(ps->probs + ix));
-
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(result));
+    }
+
     return result;
 }
 
