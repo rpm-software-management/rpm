@@ -1177,7 +1177,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	      default:
 	        /* XXX - should be able to drop the -n in non-%package parts */
 	        if (! lookup_package(spec, &cur_package, s, lookupopts)) {
-		    rpmError(RPMERR_INTERNAL, "Package lookup failed: %s", s);
+		    rpmError(RPMERR_INTERNAL, "Package lookup failed: %s",
+			     (s) ? s : "(main)");
 		    return NULL;
 	        }
 	        rpmMessage(RPMMESS_DEBUG, "Switched to package: %s\n", 
