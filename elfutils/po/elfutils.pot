@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-10-22 09:19-0700\n"
+"POT-Creation-Date: 2002-10-23 02:06-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,7 +284,7 @@ msgstr ""
 msgid "Not an ELF file - it has the wrong magic bytes at the start"
 msgstr ""
 
-#: src/readelf.c:451 src/elflint.c:1754
+#: src/readelf.c:451 src/elflint.c:1826
 #, c-format
 msgid "cannot read ELF header: %s"
 msgstr ""
@@ -2237,157 +2237,162 @@ msgstr ""
 msgid "section [%2d] '%s' is contained in more than one section group"
 msgstr ""
 
-#: src/elflint.c:1445
+#: src/elflint.c:1492
 msgid "cannot get section header of zeroth section"
 msgstr ""
 
-#: src/elflint.c:1449
+#: src/elflint.c:1496
 msgid "zeroth section has nonzero name"
 msgstr ""
 
-#: src/elflint.c:1451
+#: src/elflint.c:1498
 msgid "zeroth section has nonzero type"
 msgstr ""
 
-#: src/elflint.c:1453
+#: src/elflint.c:1500
 msgid "zeroth section has nonzero flags"
 msgstr ""
 
-#: src/elflint.c:1455
+#: src/elflint.c:1502
 msgid "zeroth section has nonzero address"
 msgstr ""
 
-#: src/elflint.c:1457
+#: src/elflint.c:1504
 msgid "zeroth section has nonzero offset"
 msgstr ""
 
-#: src/elflint.c:1459
+#: src/elflint.c:1506
 msgid "zeroth section has nonzero info field"
 msgstr ""
 
-#: src/elflint.c:1461
+#: src/elflint.c:1508
 msgid "zeroth section has nonzero align value"
 msgstr ""
 
-#: src/elflint.c:1463
+#: src/elflint.c:1510
 msgid "zeroth section has nonzero entry size value"
 msgstr ""
 
-#: src/elflint.c:1466
+#: src/elflint.c:1513
 msgid ""
 "zeroth section has nonzero size value while ELF header has nonzero shnum "
 "value"
 msgstr ""
 
-#: src/elflint.c:1469
+#: src/elflint.c:1516
 msgid ""
 "zeroth section has nonzero link value while ELF header does not signal "
 "overflow in shstrndx"
 msgstr ""
 
-#: src/elflint.c:1480
+#: src/elflint.c:1527
 #, c-format
 msgid "cannot get section header for section [%2d] '%s': %s"
 msgstr ""
 
-#: src/elflint.c:1491
+#: src/elflint.c:1550
+#, c-format
+msgid "section [%2d] '%s' has wrong type: expected %s, is %s"
+msgstr ""
+
+#: src/elflint.c:1563
 #, c-format
 msgid "section [%2d] '%s': size not multiple of entry size"
 msgstr ""
 
-#: src/elflint.c:1496
+#: src/elflint.c:1568
 msgid "cannot get section header"
 msgstr ""
 
-#: src/elflint.c:1504
+#: src/elflint.c:1576
 #, c-format
 msgid "unsupported section type %d"
 msgstr ""
 
-#: src/elflint.c:1510
+#: src/elflint.c:1582
 #, c-format
 msgid "section [%2d] '%s' contain unknown flag"
 msgstr ""
 
-#: src/elflint.c:1513
+#: src/elflint.c:1585
 #, c-format
 msgid "section [%2d] '%s': thread-local data sections not yet supported"
 msgstr ""
 
-#: src/elflint.c:1518
+#: src/elflint.c:1590
 #, c-format
 msgid "section [%2d] '%s': invalid section reference in link value"
 msgstr ""
 
-#: src/elflint.c:1523
+#: src/elflint.c:1595
 #, c-format
 msgid "section [%2d] '%s': invalid section reference in info value"
 msgstr ""
 
-#: src/elflint.c:1530
+#: src/elflint.c:1602
 #, c-format
 msgid "section [%2d] '%s': strings flag set without merge flag"
 msgstr ""
 
-#: src/elflint.c:1535
+#: src/elflint.c:1607
 #, c-format
 msgid "section [%2d] '%s': merge flag set but entry size is zero"
 msgstr ""
 
-#: src/elflint.c:1543
+#: src/elflint.c:1615
 #, c-format
 msgid ""
 "section [%2d] '%s': ELF header says this is the section header string table "
 "but type is not SHT_TYPE"
 msgstr ""
 
-#: src/elflint.c:1595
+#: src/elflint.c:1667
 #, c-format
 msgid "phdr[%d]: no note entries defined for the type of file"
 msgstr ""
 
-#: src/elflint.c:1618
+#: src/elflint.c:1690
 #, c-format
 msgid "phdr[%d]: extra %zu bytes after last note"
 msgstr ""
 
-#: src/elflint.c:1647
+#: src/elflint.c:1719
 #, c-format
 msgid "phdr[%d]: unknown core file note type %<PRIu32> at offset %zd"
 msgstr ""
 
-#: src/elflint.c:1655
+#: src/elflint.c:1727
 #, c-format
 msgid "phdr[%d]: unknown object file note type %<PRIu32> at offset %zd"
 msgstr ""
 
-#: src/elflint.c:1682
+#: src/elflint.c:1754
 msgid ".interp section present but no program header"
 msgstr ""
 
-#: src/elflint.c:1689
+#: src/elflint.c:1761
 msgid ""
 "only executables, shared objects, and core files can have program headers"
 msgstr ""
 
-#: src/elflint.c:1700
+#: src/elflint.c:1772
 #, c-format
 msgid "cannot get program header entry %d: %s"
 msgstr ""
 
-#: src/elflint.c:1706
+#: src/elflint.c:1778
 #, c-format
 msgid "program header entry %d: unknown program header entry type"
 msgstr ""
 
-#: src/elflint.c:1715
+#: src/elflint.c:1787
 msgid "more than one INTERP entry in program header"
 msgstr ""
 
-#: src/elflint.c:1719
+#: src/elflint.c:1791
 msgid "INTERP program header entry but no .interp section"
 msgstr ""
 
-#: src/elflint.c:1726
+#: src/elflint.c:1798
 msgid "more than one TLS entry in program header"
 msgstr ""
