@@ -26,7 +26,7 @@ Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
-Prereq: gawk fileutils textutils mktemp shadow-utils
+Prereq: fileutils mktemp shadow-utils
 %endif
 Requires: popt = 1.8
 Obsoletes: rpm-perl < %{version}
