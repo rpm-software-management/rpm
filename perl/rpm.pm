@@ -44,7 +44,7 @@ bootstrap rpm $VERSION;
 
 # Preloaded methods go here.
 
-sub HeaderPtr::ItemByName {
+sub Header::ItemByName {
   my $header = shift;
   my $item = shift;
   my $item_index = shift;
@@ -56,7 +56,7 @@ sub HeaderPtr::ItemByName {
   }
 }
 
-sub HeaderPtr::ItemByVal {
+sub Header::ItemByVal {
   my $header = shift;
   my $item = shift;
   my $item_index = shift;
@@ -68,13 +68,13 @@ sub HeaderPtr::ItemByVal {
   }
 }
 
-sub HeaderPtr::List {
+sub Header::List {
   my $header = shift;
 
   return %{$header->ListRef()};
 }
 
-sub HeaderPtr::Tags {
+sub Header::Tags {
   my $header = shift;
 
   return @{$header->TagsRef()};

@@ -7,15 +7,19 @@ my $testfile = "foo.i386.rpm";
 
 my $header = rpm::Header($testfile);
 
+print "Test No. 1\n";
 if ($header) {
   my @foo_test = ();
   my %foo_test = ();
   my $key;
 
   print "call to the header function SUCCEEDED\n";
-  @foo_test = $header->ItemByVal(1081);
-  print "values returned ", @foo_test, "\n\n\n";
+  @foo_test = $header->ItemByVal(1027);
+  print "values returned by ItemByVal(1027) ", join(' ',@foo_test), "\n\n\n";
+  @foo_test = $header->ItemByName("Filenames");
+  print "values returned by ItemByName(\"Filenames\") ", join(' ',@foo_test), "\n\n\n";
 
+  print "\n\nTest No. 2\n";
   %foo_test = $header->List();
   foreach $key (sort keys %foo_test) {
     my $foo_it;
@@ -26,8 +30,23 @@ if ($header) {
     print "\n";
   }
   
+  print "\n\nTest No. 3\n";
   print "The number of header tags is: ", scalar $header->Tags(), "\n";
 
+  print "\n\nTest No. 4\n";
+  rpm::Debug();
+  my $db = rpm::dbOpen();
+  if ($db) {
+    my $rec = $db->First();
+    while ($rec != 0) {
+      my $hdr = $db->Record($rec);
+      print "Found header: Name=[", $hdr->ItemByName("Name"), "]\n";
+      $rec = $db->Next($rec);
+    }
+    $db->Close();
+  } else {
+    print "Could not open the RPM database! Error code: ", rpm::Error(), "\n";
+  }
 } else {
   print "call to the header function FAILED\n";
 }

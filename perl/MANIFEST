@@ -8,3 +8,5 @@ test.pl
 typemap
 foo.i386.rpm
 junk.xs
+transaction.xs
+header.xs
