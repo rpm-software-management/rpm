@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-04 15:34-0500\n"
+"POT-Creation-Date: 1999-11-05 14:49-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2827,7 +2827,7 @@ msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/rpmdb.c:156 lib/url.c:374
+#: lib/rpmdb.c:156 lib/url.c:378
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
@@ -3021,59 +3021,59 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:246
+#: lib/rpmio.c:291
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:249
+#: lib/rpmio.c:294
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:252
+#: lib/rpmio.c:297
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:255
+#: lib/rpmio.c:300
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:258
+#: lib/rpmio.c:303
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:261
+#: lib/rpmio.c:306
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:264
+#: lib/rpmio.c:309
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:267
+#: lib/rpmio.c:312
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:270
+#: lib/rpmio.c:315
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:273
+#: lib/rpmio.c:318
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:276
+#: lib/rpmio.c:321
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:279
+#: lib/rpmio.c:324
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:283
+#: lib/rpmio.c:328
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:318
+#: lib/rpmio.c:368
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3093,85 +3093,85 @@ msgstr ""
 msgid "missing architecture name at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:299
+#: lib/rpmrc.c:301
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:303
+#: lib/rpmrc.c:305
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:310
+#: lib/rpmrc.c:312
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr ""
 
-#: lib/rpmrc.c:344
+#: lib/rpmrc.c:346
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:349
+#: lib/rpmrc.c:351
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:540
+#: lib/rpmrc.c:541
 #, c-format
 msgid "Cannot expand %s"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/rpmrc.c:556
+#: lib/rpmrc.c:557
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:600
+#: lib/rpmrc.c:601
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: lib/rpmrc.c:633
+#: lib/rpmrc.c:634
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:650 lib/rpmrc.c:725
+#: lib/rpmrc.c:651 lib/rpmrc.c:726
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:667 lib/rpmrc.c:690
+#: lib/rpmrc.c:668 lib/rpmrc.c:691
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/rpmrc.c:677
+#: lib/rpmrc.c:678
 #, c-format
 msgid "cannot open %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:717
+#: lib/rpmrc.c:718
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:784
+#: lib/rpmrc.c:785
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:1147
+#: lib/rpmrc.c:1153
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1148
+#: lib/rpmrc.c:1154
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3374,22 +3374,22 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
-#: lib/url.c:177
+#: lib/url.c:181
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:202 lib/url.c:228
+#: lib/url.c:206 lib/url.c:232
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:337
+#: lib/url.c:341
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:392
+#: lib/url.c:396
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""

@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <assert.h>
+
 #if !defined(HAVE_CONFIG_H)
 #define HAVE_MACHINE_TYPES_H 1
 #define HAVE_ALLOCA_H 1
@@ -46,8 +48,6 @@ extern int h_errno;
 int inet_aton(const char *cp, struct in_addr *inp);
 #endif
 
-#define TIMEOUT_SECS 60
-
 #if defined(USE_ALT_DNS) && USE_ALT_DNS 
 #include "dns.h"
 #endif
@@ -67,20 +67,22 @@ int inet_aton(const char *cp, struct in_addr *inp);
 static int ftp_debug = 0;
 #define DBG(_f, _x)     if ((ftp_debug | (_f))) fprintf _x
 
-int ftpTimeoutSecs = TIMEOUT_SECS;
-static int httpTimeoutSecs = TIMEOUT_SECS;
-
-static int checkResponse(int fd, int secs, int *ecp, /*@out@*/ char ** str) {
-    static char buf[BUFSIZ + 1];	/* XXX yuk */
+static int checkResponse(urlinfo u, int fdno, int secs, int *ecp,
+		/*@out@*/ char ** str)
+{
+    static char buf[BUFSIZ + 1];	/* XXX Yuk! */
     int bufLength = 0; 
     fd_set emptySet, readSet;
-    char *se, *s;
-    struct timeval timeout;
+    const char *s;
+    char *se;
+    struct timeval timeout, *tvp = (secs < 0 ? NULL : &timeout);
     int bytesRead, rc = 0;
     int doesContinue = 1;
     char errorCode[4];
  
+    assert(secs > 0);
     errorCode[0] = '\0';
+    u->httpContentLength = -1;
     
     do {
 	/*
@@ -91,12 +93,14 @@ static int checkResponse(int fd, int secs, int *ecp, /*@out@*/ char ** str) {
 	do {
 	    FD_ZERO(&emptySet);
 	    FD_ZERO(&readSet);
-	    FD_SET(fd, &readSet);
+	    FD_SET(fdno, &readSet);
 
-	    timeout.tv_sec = secs;
-	    timeout.tv_usec = 0;
+	    if (tvp) {
+		tvp->tv_sec = secs;
+		tvp->tv_usec = 0;
+	    }
     
-	    rc = select(fd + 1, &readSet, &emptySet, &emptySet, &timeout);
+	    rc = select(fdno + 1, &readSet, &emptySet, &emptySet, tvp);
 	    if (rc < 1) {
 		if (rc == 0) 
 		    return FTPERR_BAD_SERVER_RESPONSE;
@@ -105,58 +109,105 @@ static int checkResponse(int fd, int secs, int *ecp, /*@out@*/ char ** str) {
 	    } else
 		rc = 0;
 
-	    s = buf + bufLength;
-	    bytesRead = read(fd, s, 1);
+	    se = buf + bufLength;
+	    bytesRead = read(fdno, se, 1);
 	    bufLength += bytesRead;
 	    buf[bufLength] = '\0';
-	} while (bufLength < sizeof(buf) && *s != '\n');
+	} while (bufLength < sizeof(buf) && *se != '\n');
 
 	/*
 	 * Divide the response into lines. Skip continuation lines.
 	 */
-	s = se = buf;
-	while (*se != '\0') {
+	for (s = se = buf; *s != '\0'; s = se) {
+		const char *e;
+
 		while (*se && *se != '\n') se++;
 
 		if (se > s && se[-1] == '\r')
 		   se[-1] = '\0';
 		if (*se == '\0')
-			break;
+		    break;
 
-		/* HTTP header termination on empty line */
+		DBG(0, (stderr, "<- %s\n", s));
+
+		/* HTTP: header termination on empty line */
 		if (*s == '\0') {
-			doesContinue = 0;
-			break;
+		    doesContinue = 0;
+		    break;
 		}
 		*se++ = '\0';
 
 		/* HTTP: look for "HTTP/1.1 123 ..." */
 		if (!strncmp(s, "HTTP", sizeof("HTTP")-1)) {
-			char *e;
-			if ((e = strchr(s, ' ')) != NULL) {
-			    e++;
-			    if (strchr("0123456789", *e))
-				strncpy(errorCode, e, 3);
-			    errorCode[3] = '\0';
-			}
-			s = se;
-			continue;
+		    if ((e = strchr(s, '.')) != NULL) {
+			e++;
+			u->httpVersion = *e - '0';
+			if (u->httpVersion < 1 || u->httpVersion > 2)
+			    u->httpPersist = u->httpVersion = 0;
+		    }
+		    if ((e = strchr(s, ' ')) != NULL) {
+			e++;
+			if (strchr("0123456789", *e))
+			    strncpy(errorCode, e, 3);
+			errorCode[3] = '\0';
+		    }
+		    continue;
+		}
+
+		/* HTTP: look for "<token>: ..." */
+		for (e = s; *e && !(*e == ' ' || *e == ':'); e++)
+		    ;
+		if (e > s && *e++ == ':') {
+		    size_t ne = (e - s);
+		    while (*e && *e == ' ') e++;
+#if 0
+		    if (!strncmp(s, "Date:", ne)) {
+		    } else
+		    if (!strncmp(s, "Server:", ne)) {
+		    } else
+		    if (!strncmp(s, "Last-Modified:", ne)) {
+		    } else
+		    if (!strncmp(s, "ETag:", ne)) {
+		    } else
+#endif
+		    if (!strncmp(s, "Accept-Ranges:", ne)) {
+			if (!strcmp(e, "bytes"))
+			    u->httpHasRange = 1;
+			if (!strcmp(e, "none"))
+			    u->httpHasRange = 0;
+		    } else
+		    if (!strncmp(s, "Content-Length:", ne)) {
+			if (strchr("0123456789", *e))
+			    u->httpContentLength = atoi(e);
+		    } else
+		    if (!strncmp(s, "Connection:", ne)) {
+			if (!strcmp(e, "close"))
+			    u->httpPersist = 0;
+		    } else
+#if 0
+		    if (!strncmp(s, "Content-Type:", ne)) {
+		    } else
+		    if (!strncmp(s, "Transfer-Encoding:", ne)) {
+		    } else
+		    if (!strncmp(s, "Allow:", ne)) {
+		    } else
+#endif
+			;
+		    continue;
 		}
 
 		/* FTP: look for "123-" and/or "123 " */
 		if (strchr("0123456789", *s)) {
-			if (errorCode[0]) {
-			    if (!strncmp(s, errorCode, sizeof("123")-1) && s[3] == ' ')
-				doesContinue = 0;
-			} else {
-			    strncpy(errorCode, s, sizeof("123")-1);
-			    errorCode[3] = '\0';
-			    if (s[3] != '-') {
-				doesContinue = 0;
-			    } 
-			}
+		    if (errorCode[0]) {
+			if (!strncmp(s, errorCode, sizeof("123")-1) && s[3] == ' ')
+			    doesContinue = 0;
+		    } else {
+			strncpy(errorCode, s, sizeof("123")-1);
+			errorCode[3] = '\0';
+			if (s[3] != '-')
+			    doesContinue = 0;
+		    }
 		}
-		s = se;
 	}
 
 	if (doesContinue && se > s) {
@@ -168,17 +219,17 @@ static int checkResponse(int fd, int secs, int *ecp, /*@out@*/ char ** str) {
 	}
     } while (doesContinue && !rc);
 
-    DBG(0, (stderr, "<- %s\n", buf));
-
     if (str)	*str = buf;
     if (ecp)	*ecp = atoi(errorCode);
 
     return rc;
 }
 
-int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str) {
+int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
+{
     int ec = 0;
-    int rc =  checkResponse(fdio->fileno(u->ftpControl), ftpTimeoutSecs, &ec, str);
+    int secs = fdGetRdTimeoutSecs(u->ftpControl);
+    int rc =  checkResponse(u, fdio->fileno(u->ftpControl), secs, &ec, str);
 
     switch (ec) {
     case 550:
@@ -195,11 +246,12 @@ int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str) {
     return rc;
 }
 
-static int ftpCommand(urlinfo u, char * command, ...) {
+static int ftpCommand(urlinfo u, char * command, ...)
+{
     va_list ap;
     int len;
     char * s;
-    char * buf;
+    char * req;
 
     va_start(ap, command);
     len = strlen(command) + 2;
@@ -210,32 +262,33 @@ static int ftpCommand(urlinfo u, char * command, ...) {
     }
     va_end(ap);
 
-    buf = alloca(len + 1);
+    req = alloca(len + 1);
 
     va_start(ap, command);
-    strcpy(buf, command);
-    strcat(buf, " ");
+    strcpy(req, command);
+    strcat(req, " ");
     s = va_arg(ap, char *);
     while (s) {
-	strcat(buf, s);
-	strcat(buf, " ");
+	strcat(req, s);
+	strcat(req, " ");
 	s = va_arg(ap, char *);
     }
     va_end(ap);
 
-    buf[len - 2] = '\r';
-    buf[len - 1] = '\n';
-    buf[len] = '\0';
+    req[len - 2] = '\r';
+    req[len - 1] = '\n';
+    req[len] = '\0';
 
-    DBG(0, (stderr, "-> %s", buf));
-    if (fdio->write(u->ftpControl, buf, len) != len)
+    DBG(0, (stderr, "-> %s", req));
+    if (fdio->write(u->ftpControl, req, len) != len)
 	return FTPERR_SERVER_IO_ERROR;
 
     return ftpCheckResponse(u, NULL);
 }
 
 #if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
-static int mygethostbyname(const char * host, struct in_addr * address) {
+static int mygethostbyname(const char * host, struct in_addr * address)
+{
     struct hostent * hostinfo;
 
     hostinfo = /*@-unrecog@*/ gethostbyname(host) /*@=unrecog@*/;
@@ -246,7 +299,8 @@ static int mygethostbyname(const char * host, struct in_addr * address) {
 }
 #endif
 
-static int getHostAddress(const char * host, struct in_addr * address) {
+static int getHostAddress(const char * host, struct in_addr * address)
+{
     if (isdigit(host[0])) {
       if (! /*@-unrecog@*/ inet_aton(host, address) /*@=unrecog@*/ ) {
 	  return FTPERR_BAD_HOST_ADDR;
@@ -298,13 +352,13 @@ static int tcpConnect(const char *host, int port)
     return sock;
 }
 
-int httpOpen(urlinfo u)
+int httpOpen(urlinfo u, const char *httpcmd)
 {
     int sock;
     const char *host;
     const char *path;
     int port;
-    char *buf;
+    char *req;
     size_t len;
 
     if (u == NULL || ((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
@@ -316,23 +370,36 @@ int httpOpen(urlinfo u)
     if ((sock = tcpConnect(host, port)) < 0)
 	return sock;
 
-    len = strlen(path) + sizeof("GET  HTTP/1.0\r\n\r\n");
-    buf = alloca(len);
-    strcpy(buf, "GET ");
-    strcat(buf, path);
-    strcat(buf, " HTTP/1.0\r\n");
-    strcat(buf, "\r\n");
+    len = sizeof("\
+req x HTTP/1.0\r\n\
+User-Agent: rpm/3.0.4\r\n\
+Host: y:z\r\n\
+Accept: text/plain\r\n\
+\r\n\
+") + strlen(httpcmd) + strlen(path) + sizeof(VERSION) + strlen(host) + 20;
 
-    if (write(sock, buf, len) != len) {
+    req = alloca(len);
+    *req = '\0';
+
+    sprintf(req, "\
+%s %s HTTP/1.%d\r\n\
+User-Agent: rpm/%s\r\n\
+Host: %s:%d\r\n\
+Accept: text/plain\r\n\
+\r\n\
+",	httpcmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
+
+    if (write(sock, req, len) != len) {
 	close(sock);
 	return FTPERR_SERVER_IO_ERROR;
     }
 
-    DBG(0, (stderr, "-> %s", buf));
+    DBG(0, (stderr, "-> %s", req));
 
   { int ec = 0;
+    int secs = fdGetRdTimeoutSecs(u->ftpControl);
     int rc;
-    rc = checkResponse(sock, httpTimeoutSecs, &ec, NULL);
+    rc = checkResponse(u, sock, secs, &ec, NULL);
 
     switch (ec) {
     default:
@@ -356,6 +423,7 @@ int ftpOpen(urlinfo u)
     const char * user;
     const char * password;
     int port;
+    int secs;
     int rc;
 
     if (u == NULL || ((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
@@ -378,6 +446,7 @@ int ftpOpen(urlinfo u)
 	}
     }
 
+    secs = fdGetRdTimeoutSecs(u->ftpControl);
     fdSetFdno(u->ftpControl, tcpConnect(host, port));
     if (fdio->fileno(u->ftpControl) < 0)
 	return fdio->fileno(u->ftpControl);
@@ -409,7 +478,8 @@ errxit:
     return rc;
 }
 
-int ftpFileDone(urlinfo u) {
+int ftpFileDone(urlinfo u)
+{
     if (u == NULL)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 

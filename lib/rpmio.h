@@ -84,6 +84,8 @@ void fdSetFdno(FD_t fd, int fdno);
 /*@null@*/ const FDIO_t fdGetIoCookie(FD_t fd);
 void fdSetIoCookie(FD_t fd, FDIO_t iop);
 
+int fdGetRdTimeoutSecs(FD_t fd);
+
 long int fdGetCpioPos(FD_t fd);
 extern /*@null@*/ FD_t fdDup(int fdno);
 void fdSetCpioPos(FD_t fd, long int cpioPos);

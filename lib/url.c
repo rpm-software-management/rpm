@@ -44,6 +44,10 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->port = -1;
     u->ftpControl = fdio->new(fdio, "url ftpControl", __FILE__, __LINE__);
     u->ftpFileDoneNeeded = 0;
+    u->httpVersion = 0;
+    u->httpHasRange = 1;
+    u->httpContentLength = 0;
+    u->httpPersist = 1;
     u->nrefs = 0;
     return XurlLink(u, msg, file, line);
 }

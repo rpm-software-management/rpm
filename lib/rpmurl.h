@@ -31,49 +31,52 @@ typedef enum {
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
 /*@refs@*/ int nrefs;
-    const char *url;		/* copy of original url */
-    const char *service;
-    const char *user;
-    const char *password;
-    const char *host;
-    const char *portstr;
-    const char *path;
-    const char *proxyu;		/* FTP: proxy user */
-    const char *proxyh;		/* FTP/HTTP: proxy host */
+    const char * url;		/* copy of original url */
+    const char * service;
+    const char * user;
+    const char * password;
+    const char * host;
+    const char * portstr;
+    const char * path;
+    const char * proxyu;	/* FTP: proxy user */
+    const char * proxyh;	/* FTP/HTTP: proxy host */
     int proxyp;			/* FTP/HTTP: proxy port */
     int	port;
     FD_t ftpControl;
     int ftpFileDoneNeeded;
     int openError;		/* Type of open failure */
+    int httpVersion;
+    int httpHasRange;
+    int httpContentLength;
+    int httpPersist;
 } *urlinfo;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int	ftpTimeoutSecs;
-int	ftpCheckResponse(urlinfo u, /*@out@*/ char **str);
-int	httpOpen(urlinfo u);
+int	ftpCheckResponse(urlinfo u, /*@out@*/ char ** str);
+int	httpOpen(urlinfo u, const char * httpcmd);
 int	ftpOpen(urlinfo u);
 int	ftpFileDone(urlinfo u);
 int	ftpFileDesc(urlinfo u, const char * cmd, FD_t fd);
 
-urlinfo	urlLink(urlinfo u, const char *msg);
-urlinfo	XurlLink(urlinfo u, const char *msg, const char *file, unsigned line);
+urlinfo	urlLink(urlinfo u, const char * msg);
+urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line);
 #define	urlLink(_u, _msg) XurlLink(_u, _msg, __FILE__, __LINE__)
 
-urlinfo	urlNew(const char *msg);
-urlinfo	XurlNew(const char *msg, const char *file, unsigned line);
+urlinfo	urlNew(const char * msg);
+urlinfo	XurlNew(const char * msg, const char * file, unsigned line);
 #define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
 
-void	urlFree( /*@killref@*/ urlinfo u, const char *msg);
-void	XurlFree( /*@killref@*/ urlinfo u, const char *msg, const char *file, unsigned line);
+void	urlFree( /*@killref@*/ urlinfo u, const char * msg);
+void	XurlFree( /*@killref@*/ urlinfo u, const char * msg, const char * file, unsigned line);
 #define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)
 
 void	urlFreeCache(void);
 
 urltype	urlIsURL(const char * url);
-int 	urlSplit(const char *url, /*@out@*/ urlinfo *u);
+int 	urlSplit(const char * url, /*@out@*/ urlinfo * u);
 
 int	urlGetFile(const char * url, const char * dest);
 
