@@ -1,6 +1,6 @@
 Summary: Red Hat Package Manager
 Name: rpm
-%define version 2.4.9
+%define version 2.4.10
 Version: %{version}
 Release: 1
 Group: Utilities/System
@@ -38,6 +38,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/SRPMS
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/BUILD
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/${RPM_ARCH}
+mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/noarch
 %build
 
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
