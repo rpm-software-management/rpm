@@ -1,8 +1,10 @@
+/**
+ * \file base64.c
+ *
+ * Base64 encoding/decoding, code.
+ */
+
 /*
- * base64.c
- *
- * Base64 encoding/decoding, code
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -27,21 +29,25 @@
 
 #include "base64.h"
 
+static int _debug = 0;
+
 #if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
 #if HAVE_STRING_H
 # include <string.h>
 #endif
+#if HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef	DYING
 #if HAVE_CTYPE_H
 # include <ctype.h>
 #endif
 
 /*@observer@*/ static const char* to_b64 =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-/* encode 72 characters per line */
-#define CHARS_PER_LINE	72
 
 char* b64enc(const memchunk* chunk)
 {
@@ -104,7 +110,68 @@ char* b64enc(const memchunk* chunk)
 
 	return string;
 }
+#else
 
+#include <stdio.h>
+
+/*@unused@*/ int b64encode_chars_per_line = B64ENCODE_CHARS_PER_LINE;
+
+/*@unused@*/ const char * b64encode_eolstr = B64ENCODE_EOLSTR;
+
+/*@-internalglobs -modfilesys @*/
+char * b64encode (const void * data, int ns)
+{
+    static char b64enc[] =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const unsigned char *s = data;
+    unsigned char *t, *te;
+    int nt;
+    unsigned c;
+
+    if (s == NULL)	return NULL;
+    if (*s == '\0')	return strdup("");
+
+    if (ns == 0) ns = strlen(s);
+    nt = ((ns + 2) / 3) * 4;
+    t = te = malloc(nt + 1);
+
+    if (te)
+    while (ns) {
+
+if (_debug)
+fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
+(unsigned)ns, (unsigned)s[0], (unsigned)s[1], (unsigned)s[2],
+(unsigned)(s[0] >> 2),
+(unsigned)((s[0] & 0x3) << 4) | (s[1] >> 4),
+(unsigned)((s[1] & 0xf) << 2) | (s[2] >> 6),
+(unsigned)(s[2]& 0x3f));
+	c = *s++;
+	*te++ = b64enc[ (c >> 2) ];
+	*te++ = b64enc[ ((c & 0x3) << 4) | (*s >> 4) ];
+	if (--ns == 0) {
+	    *te++ = '=';
+	    *te++ = '=';
+	    continue;
+	}
+	c = *s++;
+	*te++ = b64enc[ ((c & 0xf) << 2) | (*s >> 6) ];
+	if (--ns == 0) {
+	    *te++ = '=';
+	    continue;
+	}
+	*te++ = b64enc[ (int)(*s & 0x3f) ];
+	s++;
+	--ns;
+    }
+    if (te) *te = '\0';
+    /*@-mustfree@*/
+    return t;
+    /*@=mustfree@*/
+}
+/*@=internalglobs =modfilesys @*/
+#endif
+
+#ifdef	DYING
 memchunk* b64dec(const char* string)
 {
 	/* return a decoded memchunk, or a null pointer in case of failure */
@@ -232,3 +299,76 @@ memchunk* b64dec(const char* string)
 
 	return rc;
 }
+#else
+
+/*@unused@*/ const char * b64decode_whitespace = B64DECODE_WHITESPACE;
+
+/*@-internalglobs -modfilesys @*/
+int b64decode (const char * s, void ** datap, int *lenp)
+{
+    static char b64dec[255];
+    unsigned char *t, *te;
+    int ns, nt;
+    unsigned a, b, c, d;
+
+    if (s == NULL)	return 1;
+    ns = strlen(s);
+    if (ns & 0x3)	return 2;
+
+    if (b64dec[0] == '\0') {
+	memset(b64dec, 0x80, sizeof(b64dec));
+	for (c = 'A'; c <= 'Z'; c++)
+	    b64dec[ c ] = 0 + (c - 'A');
+	for (c = 'a'; c <= 'z'; c++)
+	    b64dec[ c ] = 26 + (c - 'a');
+	for (c = '0'; c <= '9'; c++)
+	    b64dec[ c ] = 52 + (c - '0');
+	b64dec[(unsigned)'+'] = 62;
+	b64dec[(unsigned)'/'] = 63;
+	b64dec[(unsigned)'='] = 0;
+    }
+    
+    nt = (ns / 4) * 3;
+    t = te = malloc(nt + 1);
+
+    while (ns > 0) {
+	if ((a = b64dec[ (unsigned)*s++ ]) == 0x80)
+	    break;
+	if ((b = b64dec[ (unsigned)*s++ ]) == 0x80)
+	    break;
+	if ((c = b64dec[ (unsigned)*s++ ]) == 0x80)
+	    break;
+	if ((d = b64dec[ (unsigned)*s++ ]) == 0x80)
+	    break;
+if (_debug)
+fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
+(unsigned)ns, a, b, c, d,
+(((a << 2) | (b >> 4)) & 0xff),
+(((b << 4) | (c >> 2)) & 0xff),
+(((c << 6) | d) & 0xff));
+	ns -= 4;
+	*te++ = (a << 2) | (b >> 4);
+	if (s[-2] == '=') break;
+	*te++ = (b << 4) | (c >> 2);
+	if (s[-1] == '=') break;
+	*te++ = (c << 6) | d;
+    }
+
+    if (ns > 0) {
+	if (t) free(t);
+	return 3;
+    }
+    if (lenp)
+	*lenp = (te - t);
+
+    if (datap)
+	*datap = t;
+    else
+	if (t) free(t);
+    else
+	{};
+
+    return 0;
+}
+/*@=internalglobs =modfilesys @*/
+#endif
