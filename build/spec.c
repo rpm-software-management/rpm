@@ -9,15 +9,10 @@ TODO:
 . skip blank lines
 . strip leading/trailing spaces in %preamble and %files
 . multiline descriptions (general backslash processing)
-. real arch/os checking
-. %exclude
-. %doc
-. %config
-. %setup
-. %patch
-. %changelog
-. %package -n
-. %dir and real directory handling
+. source and patch lines (multiple)
+. %exclude and real arch/os checking
+. %dir %doc %config globbing
+. %setup %patch
 . root: option
 
 ******************************/
@@ -284,32 +279,34 @@ static int find_preamble_line(char *line, char **s)
 }
 
 /* None of these can be 0 !! */
-#define PREAMBLE_PART 1
-#define PREP_PART     2
-#define BUILD_PART    3
-#define INSTALL_PART  4
-#define CLEAN_PART    5
-#define PREIN_PART    6
-#define POSTIN_PART   7
-#define PREUN_PART    8
-#define POSTUN_PART   9
-#define FILES_PART    10
+#define PREAMBLE_PART  1
+#define PREP_PART      2
+#define BUILD_PART     3
+#define INSTALL_PART   4
+#define CLEAN_PART     5
+#define PREIN_PART     6
+#define POSTIN_PART    7
+#define PREUN_PART     8
+#define POSTUN_PART    9
+#define FILES_PART     10
+#define CHANGELOG_PART 11
 
 static struct part_rec {
     int part;
     int len;
     char *s;
 } part_list[] = {
-    {PREAMBLE_PART, 0, "%package"},
-    {PREP_PART,     0, "%prep"},
-    {BUILD_PART,    0, "%build"},
-    {INSTALL_PART,  0, "%install"},
-    {CLEAN_PART,    0, "%clean"},
-    {PREIN_PART,    0, "%prein"},
-    {POSTIN_PART,   0, "%postin"},
-    {PREUN_PART,    0, "%preun"},
-    {POSTUN_PART,   0, "%postun"},
-    {FILES_PART,    0, "%files"},
+    {PREAMBLE_PART,  0, "%package"},
+    {PREP_PART,      0, "%prep"},
+    {BUILD_PART,     0, "%build"},
+    {INSTALL_PART,   0, "%install"},
+    {CLEAN_PART,     0, "%clean"},
+    {PREIN_PART,     0, "%prein"},
+    {POSTIN_PART,    0, "%postin"},
+    {PREUN_PART,     0, "%preun"},
+    {POSTUN_PART,    0, "%postun"},
+    {FILES_PART,     0, "%files"},
+    {CHANGELOG_PART, 0, "%changelog"},
     {0, 0, 0}
 };
 
@@ -394,6 +391,9 @@ Spec parseSpec(FILE *f)
 	      case POSTUN_PART:
 		t1 = RPMTAG_POSTUN;
 		break;
+	      case CHANGELOG_PART:
+		t1 = RPMTAG_CHANGELOG;
+		break;
 	    }
 	    if (t1) {
 		addEntry(cur_package->header, t1,
@@ -403,20 +403,35 @@ Spec parseSpec(FILE *f)
 	    truncStringBuf(sb);
 
 	    /* Now switch the current package to s */
-	    /* XXX Check for -n here               */
-	    lookupopts = (s) ? LP_SUBNAME : 0;
-	    if (tag == PREAMBLE_PART) {
-		lookupopts |= LP_CREATE | LP_FAIL_EXISTS;
-	    }
 	    if (s) {
 	        switch (tag) {
 		  case PREP_PART:
 		  case BUILD_PART:
 		  case INSTALL_PART:
 		  case CLEAN_PART:
+		  case CHANGELOG_PART:
 		    error(RPMERR_BADARG, "Tag takes no arguments: %s", s);
 		    return NULL;
 	        }
+	    }
+
+	    /* Handle -n in part tags */
+	    lookupopts = 0;
+	    if (s) {
+		if (!strncmp(s, "-n", 2)) {
+		    s += 2;
+		    s += strspn(s, ": \t");
+		    if (*s == '\0') {
+			error(RPMERR_BADARG, "-n takes argument");
+			return NULL;
+		    }
+		    lookupopts = LP_NEWNAME;
+		} else {
+		    lookupopts = LP_SUBNAME;
+		}
+	    }
+	    if (tag == PREAMBLE_PART) {
+		lookupopts |= LP_CREATE | LP_FAIL_EXISTS;
 	    }
 
 	    if (! lookup_package(spec, &cur_package, s, lookupopts)) {
@@ -427,6 +442,7 @@ Spec parseSpec(FILE *f)
 	    message(MESS_DEBUG, "Switched to package: %s\n", s);
 
 	    if (cur_part == FILES_PART) {
+		/* set files to 0 (current -1 means no %files, no package */
 		cur_package->files = 0;
 	    }
 	    
@@ -487,6 +503,7 @@ Spec parseSpec(FILE *f)
 	  case CLEAN_PART:
 	    appendLineStringBuf(spec->clean, line);
 	    break;
+	  case CHANGELOG_PART:
 	  case PREIN_PART:
 	  case POSTIN_PART:
 	  case PREUN_PART:
