@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.25 (third alpha)
+Version 0.26 (fourth alpha)
 
 
 WHAT IS IT
@@ -42,9 +42,9 @@ Please send any reports of problems or bugs to rjray@blackperl.com.
 
 CHANGES
 
-This is the third release. Full details are itemized in the ChangeLog file,
-but the primary change in this release is the location and correction of a
-bug in the RPM::Header code that could cause segmentation faults.
+This is the fourth release. Full details are itemized in the ChangeLog file,
+but the primary changes in this release are more effort on thread-safing the
+extension, and a sample script in the utils/ directory.
 
 
 LICENSE
