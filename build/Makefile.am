@@ -26,14 +26,14 @@ tfr_LDADD = \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
-noinst_HEADERS = argv.h buildio.h
+noinst_HEADERS = argv.h buildio.h rpmfc.h
 
 lib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \
 	argv.c build.c expression.c files.c misc.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
-	parseSpec.c poptBT.c reqprov.c spec.c
+	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c
 librpmbuild_la_LDFLAGS = -release @VERSION@
 
 # XXX Add internal libtool dependence

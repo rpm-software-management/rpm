@@ -33,16 +33,27 @@ void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
 
 }
 
-int argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
+ARGI_t argiFree(ARGI_t argi)
+{
+    if (argi) {
+	argi->nvals = 0;
+	argi->vals = _free(argi->vals);
+    }
+    argi = _free(argi);
+    return NULL;
+}
+
+ARGV_t argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
 {
     ARGV_t av;
     
-    if ((av = argv)) {
-	while (*av)
-	    *av = _free(*av);
-	argv = _free(argv);
-    }
-    return 0;
+/*@-branchstate@*/
+    if (argv)
+    for (av = argv; *av; av++)
+	*av = _free(*av);
+/*@=branchstate@*/
+    argv = _free(argv);
+    return NULL;
 }
 
 int argvCount(/*@null@*/ const ARGV_t argv)
@@ -57,22 +68,64 @@ int argvCount(/*@null@*/ const ARGV_t argv)
 int argvCmp(const void * a, const void * b)
 {
 /*@-boundsread@*/
-    ARG_t astr = *(ARGV_t)a;
-    ARG_t bstr = *(ARGV_t)b;
+    ARGstr_t astr = *(ARGV_t)a;
+    ARGstr_t bstr = *(ARGV_t)b;
 /*@=boundsread@*/
     return strcmp(astr, bstr);
 }
 
 int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
 {
+    if (compar == NULL)
+	compar = argvCmp;
     qsort(argv, argvCount(argv), sizeof(*argv), compar);
     return 0;
 }
 
-ARGV_t argvSearch(ARGV_t argv, ARG_t s,
+ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
 		int (*compar)(const void *, const void *))
 {
-    return bsearch(&s, argv, argvCount(argv), sizeof(*argv), compar);
+    if (argv == NULL)
+	return NULL;
+    if (compar == NULL)
+	compar = argvCmp;
+    return bsearch(&val, argv, argvCount(argv), sizeof(*argv), compar);
+}
+
+int argiAdd(/*@out@*/ ARGI_t * argip, unsigned ix, int val)
+{
+    ARGI_t argi;
+
+    if (argip == NULL)
+	return -1;
+    if (*argip == NULL)
+	*argip = xcalloc(1, sizeof(**argip));
+    argi = *argip;
+    if (ix >= argi->nvals) {
+	argi->vals = xrealloc(argi->vals, (ix + 1) * sizeof(*argi->vals));
+	memset(argi->vals + argi->nvals, 0,
+		(ix - argi->nvals) * sizeof(*argi->vals));
+	argi->nvals = ix + 1;
+    }
+    argi->vals[ix] = val;
+    return 0;
+}
+
+int argvAdd(/*@out@*/ ARGV_t * argvp, ARGstr_t val)
+{
+    ARGV_t argv;
+    int argc;
+
+    if (argvp == NULL)
+	return -1;
+    argc = argvCount(*argvp);
+/*@-unqualifiedtrans@*/
+    *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
+/*@=unqualifiedtrans@*/
+    argv = *argvp;
+    argv[argc++] = xstrdup(val);
+    argv[argc  ] = NULL;
+    return 0;
 }
 
 int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)

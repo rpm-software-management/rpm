@@ -2,6 +2,7 @@
 
 #include <rpmbuild.h>
 #include <argv.h>
+#include <rpmfc.h>
 
 #include "debug.h"
 
@@ -25,6 +26,7 @@ main(int argc, char *const argv[])
     int pac = 0;
     ARGV_t xav;
     ARGV_t av = NULL;
+    FCLASS_t fc;
     int ac = 0;
     const char * s;
     int ec = 1;
@@ -50,23 +52,23 @@ main(int argc, char *const argv[])
     xav = NULL;
     xx = argvAppend(&xav, pav);
     xx = argvAppend(&xav, av);
-    pav = _free(pav);
+    pav = _free(pav);	/* XXX popt mallocs in single blob. */
     s = _free(s);
 
     /* Read file(1) output. */
     sb = getOutputFrom(NULL, xav, NULL, 0, 1);
+    xav = argvFree(xav);
 
-    xx = argvFree(xav);
-
-    xav = NULL;
     xx = argvSplit(&xav, getStringBuf(sb), "\n");
     sb = freeStringBuf(sb);
 
     xx = argvSort(xav, argvCmp);
 
-argvPrint("final", xav, NULL);
+    fc = NULL;
+    xx = fclassClassify(&fc, xav);
+    fc = fclassFree(fc);
 
-    xx = argvFree(xav);
+    xav = argvFree(xav);
 
 exit:
     optCon = rpmcliFini(optCon);

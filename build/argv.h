@@ -5,8 +5,15 @@
  * \file build/argv.h
  */
 
-typedef	const char * ARG_t;
-typedef ARG_t * ARGV_t;
+typedef	const char * ARGstr_t;
+typedef ARGstr_t * ARGV_t;
+
+typedef	int * ARGint_t;
+struct ARGI_s {
+    unsigned nvals;
+    ARGint_t vals;
+};
+typedef	struct ARGI_s * ARGI_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,10 +30,21 @@ void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
 	/*@modifies *fp, fileSystem @*/;
 
 /**
+ * Destroy an argi array.
+ * @param argi		argi array
+ * @return		NULL always
+ */
+/*@null@*/
+ARGI_t argiFree(/*@only@*/ /*@null@*/ ARGI_t argi)
+	/*@modifies argi @*/;
+
+/**
  * Destroy an argv array.
  * @param argv		argv array
+ * @return		NULL always
  */
-int argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
+/*@null@*/
+ARGV_t argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
 	/*@modifies argv @*/;
 
 /**
@@ -57,14 +75,34 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
  * @param argv		argv array
  */
 /*@dependent@*/ /*@null@*/
-ARGV_t argvSearch(ARGV_t argv, ARG_t s,
+ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
 		int (*compar)(const void *, const void *))
 	/*@*/;
+
+/**
+ * Add an int to an argi array.
+ * @retval *argip	argi array
+ * @parm ix		argi array index
+ * @param val		int arg to add
+ * @return		0 always
+ */
+int argiAdd(/*@out@*/ ARGI_t * argip, unsigned ix, int val)
+	/*@modifies *argip @*/;
+
+/**
+ * Add a string to an argv array.
+ * @retval *argvp	argv array
+ * @param val		string arg to append
+ * @return		0 always
+ */
+int argvAdd(/*@out@*/ ARGV_t * argvp, ARGstr_t val)
+	/*@modifies *argvp @*/;
 
 /**
  * Append one argv array to another.
  * @retval *argvp	argv array
  * @param av		argv array to append
+ * @return		0 always
  */
 int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
 	/*@modifies *argvp @*/;
