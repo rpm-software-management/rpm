@@ -1611,13 +1611,13 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 			 extCache + tag->extNum)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
-	    data = _("(none)");
+	    data = "(none)";		/* XXX i18n? NO!, sez; gafton */
 	}
     } else {
 	if (!headerGetEntry(h, tag->tag, &type, &data, &count)){
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
-	    data = _("(none)");
+	    data = "(none)";		/* XXX i18n? NO!, sez; gafton */
 	}
 
 	mayfree = 1;
@@ -1800,7 +1800,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 
 	if (numElements == -1) {
 	    val = malloc(20);
-	    strcpy(val, _("(none)"));
+	    strcpy(val, "(none)");	/* XXX i18n? NO!, sez; gafton */
 	} else {
 	    alloced = numElements * token->u.array.numTokens * 20;
 	    val = malloc(alloced);

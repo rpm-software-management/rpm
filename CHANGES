@@ -23,6 +23,7 @@
 	- add new fully recursive macro.c
 
 2.5.4 -> 2.5.5:
+	- untranslate "(none)" for auto relocating script wrappers.
 	- non-linux arch/os identification (Eugene Kanter).
 	- portable mode_t/pid_t typedefs.
 	- fix check for trailing / in Prefix:
