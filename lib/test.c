@@ -1,6 +1,5 @@
-#include <string.h>
-
 #include "header.h"
+#include "rpmlib.h"
 
 void main(int argc, char ** argv)
 {
@@ -15,14 +14,14 @@ void main(int argc, char ** argv)
 
   h = newHeader();
 
-  addEntry(h, NAME, STRING_TYPE, "MarcEwing", 1);
-  addEntry(h, VERSION, STRING_TYPE, "1.1", 1);
-  addEntry(h, VERSION, STRING_TYPE, sa, 3);
-  addEntry(h, SIZE, INT32_TYPE, &i32, 1);
-  addEntry(h, SIZE, INT16_TYPE, &i16, 1);
-  addEntry(h, SIZE, INT16_TYPE, i16a, 3);
-  addEntry(h, VENDOR, CHAR_TYPE, ca, strlen(ca));
-  addEntry(h, SIZE, INT32_TYPE, i32a, 3);
+  addEntry(h, RPMTAG_NAME, STRING_TYPE, "MarcEwing", 1);
+  addEntry(h, RPMTAG_VERSION, STRING_TYPE, "1.1", 1);
+  addEntry(h, RPMTAG_VERSION, STRING_TYPE, sa, 3);
+  addEntry(h, RPMTAG_SIZE, INT32_TYPE, &i32, 1);
+  addEntry(h, RPMTAG_SIZE, INT16_TYPE, &i16, 1);
+  addEntry(h, RPMTAG_SIZE, INT16_TYPE, i16a, 3);
+  addEntry(h, RPMTAG_VENDOR, CHAR_TYPE, ca, strlen(ca));
+  addEntry(h, RPMTAG_SIZE, INT32_TYPE, i32a, 3);
 
   f = fopen("test.out", "w");
   writeHeader(f, h);
