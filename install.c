@@ -201,7 +201,10 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    numFailed++;
 	    *filename = NULL;
 	} else if (isSource) {
-	    freeHeader(binaryHeaders[numBinaryPackages]);
+	    /* the header will be NULL if this is a v1 source package */
+	    if (binaryHeaders[numBinaryPackages])
+		freeHeader(binaryHeaders[numBinaryPackages]);
+
 	    numSourcePackages++;
 	} else {
 	    numBinaryPackages++;
@@ -426,6 +429,7 @@ static int getFtpURL(char * hostAndFile, char * dest) {
     char * chptr, * machineName, * fileName;
     char * userName = NULL;
     char * password = NULL;
+    char * proxy;
     int ftpconn;
     int fd;
     int rc;
@@ -443,9 +447,9 @@ static int getFtpURL(char * hostAndFile, char * dest) {
     fileName = chptr;
     *fileName = '\0';
 
-    chptr = machineName;
-    while (*chptr && *chptr != '@') chptr++;
-    if (*chptr) {		/* we have a username */
+    chptr = fileName;
+    while (chptr > buf && *chptr != '@') chptr--;
+    if (chptr > buf) {		/* we have a username */
 	*chptr = '\0';
 	userName = machineName;
 	machineName = chptr + 1;
@@ -466,7 +470,9 @@ static int getFtpURL(char * hostAndFile, char * dest) {
 		userName ? userName : "ftp", 
 		password ? password : "(username)");
 
-    ftpconn = ftpOpen(machineName, userName, password);
+    proxy = getVar(RPMVAR_FTPPROXY);
+
+    ftpconn = ftpOpen(machineName, userName, password, proxy);
     if (ftpconn < 0) return ftpconn;
 
     fd = creat(dest, 0600);
@@ -512,8 +518,11 @@ static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
 
     for (i = 0; i < numConflicts; i++) {
 	fprintf(f, "\t%s", conflicts[i].needsName);
-	printDepFlags(stderr, conflicts[i].needsVersion, 
-		      conflicts[i].needsFlags);
+	if (conflicts[i].needsFlags) {
+	    fprintf(f, " ");
+	    printDepFlags(stderr, conflicts[i].needsVersion, 
+			  conflicts[i].needsFlags);
+	}
 	fprintf(f, " is needed by %s-%s-%s\n", conflicts[i].byName, 
 		conflicts[i].byVersion, conflicts[i].byRelease);
     }
