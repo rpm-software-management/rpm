@@ -4,6 +4,7 @@
 	- dep ordering returns w/ an error as soon as a prereq loop is found
 	- autoreqprov flag was being ignored during builds
 	- add autoreq: and autoprov:
+	- missed a few unlink() when scripts failed
 
 2.4.108 -> 2.4.109:
         - remove icons with --rmsource
