@@ -20,6 +20,7 @@
 #define CPIO_MKDIR_FAILED	(-13  | CPIO_CHECK_ERRNO)
 #define CPIO_MKNOD_FAILED	(-14  | CPIO_CHECK_ERRNO)
 #define CPIO_MKFIFO_FAILED	(-15  | CPIO_CHECK_ERRNO)
+#define CPIO_LINK_FAILED	(-16  | CPIO_CHECK_ERRNO)
 
 /* Don't think this behaves just like standard cpio. It's pretty close, but
    it has some behaviors which are more to RPM's liking. I tried to document

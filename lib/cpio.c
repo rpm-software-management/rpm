@@ -32,6 +32,16 @@ struct ourfd {
     int pos;
 };
 
+struct hardLink {
+    char ** files;		/* there are nlink of these */
+    dev_t dev;
+    ino_t inode;
+    int nlink;			
+    int linksLeft;
+    int createdPath;
+    struct hardLink * next;
+};
+
 struct cpioCrcPhysicalHeader {
     char magic[6];
     char inode[8];
@@ -336,20 +346,62 @@ static int expandDevice(struct ourfd * fd, struct cpioHeader * hdr) {
     return 0;
 }
 
+static void freeLink(struct hardLink * li) {
+    int i;
+
+    for (i = 0; i < li->nlink; i++) {
+	if (li->files[i]) free(li->files[i]);
+    }
+    free(li->files);
+}
+
+static int createLinks(struct hardLink * li, char ** failedFile) {
+    int i;
+    struct stat sb;
+
+    for (i = 0; i < li->nlink; i++) {
+	if (i == li->createdPath) continue;
+	if (!li->files[i]) continue;
+
+	if (!lstat(li->files[i], &sb)) {
+	    if (unlink(li->files[i])) {
+		*failedFile = strdup(li->files[i]);
+		return CPIO_UNLINK_FAILED;
+	    }
+	}
+
+	if (link(li->files[li->createdPath], li->files[i])) {
+	    *failedFile = strdup(li->files[i]);
+	    return CPIO_LINK_FAILED;
+	}
+
+	free(li->files[i]);
+	li->files[i] = NULL;
+	li->linksLeft--;
+    }
+
+    return 0;
+}
+
 int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings, 
 		       int numMappings, cpioCallback cb, void * cbData,
 		       char ** failedFile) {
     struct cpioHeader ch;
     struct ourfd fd;
     int rc = 0;
+    int linkNum = 0;
     struct cpioFileMapping * map = NULL;
     struct cpioFileMapping needle;
     mode_t cpioMode;
     int olderr;
     struct cpioCallbackInfo cbInfo;
+    struct hardLink * links = NULL;
+    struct hardLink * li = NULL;
 
     fd.fd = stream;
     fd.pos = 0;
+
+    *failedFile = NULL;
 
     do {
 	if ((rc = getNextHeader(&fd, &ch))) {
@@ -385,31 +437,70 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 		    ch.gid = map->finalGid;
 	    }
 
-    	    rc = checkDirectory(ch.path);
+	    /* This won't get hard linked symlinks right, but I can't seem 
+	       to create those anyway */
 
-	    if (!rc) {
-		if (S_ISREG(ch.mode))
-		    rc = expandRegular(&fd, &ch, cb, cbData);
-		else if (S_ISDIR(ch.mode))
-		    rc = createDirectory(ch.path);
-		else if (S_ISLNK(ch.mode))
-		    rc = expandSymlink(&fd, &ch);
-		else if (S_ISFIFO(ch.mode))
-		    rc = expandFifo(&fd, &ch);
-		else if (S_ISCHR(ch.mode) || S_ISBLK(ch.mode))
-		    rc = expandDevice(&fd, &ch);
-		else if (S_ISSOCK(ch.mode)) {
-		    /* should we do something here??? */
-		    rc = 0;
-		} else {
-		    rc = CPIO_INTERNAL;
+	    if (ch.nlink > 1) {
+		li = links;
+		for (li = links; li; li = li->next) {
+		    if (li->inode == ch.inode && li->dev == ch.dev) break;
+		}
+
+		if (!li) {
+		    li = malloc(sizeof(*li));
+		    li->inode = ch.inode;
+		    li->dev = ch.dev;
+		    li->nlink = ch.nlink;
+		    li->linksLeft = ch.nlink;
+		    li->createdPath = -1;
+		    li->files = calloc(sizeof(char *), li->nlink);
+		    li->next = links;
+		    links = li;
+		}
+
+		for (linkNum = 0; linkNum < li->nlink; linkNum++)
+		    if (!li->files[linkNum]) break;
+		li->files[linkNum] = strdup(ch.path);
+	    }
+		
+	    if ((ch.nlink > 1) && S_ISREG(ch.mode) && !ch.size &&
+		li->createdPath == -1) {
+		/* defer file creation */
+	    } else if ((ch.nlink > 1) && (li->createdPath != -1)) {
+		createLinks(li, failedFile);
+	    } else {
+		rc = checkDirectory(ch.path);
+
+		if (!rc) {
+		    if (S_ISREG(ch.mode))
+			rc = expandRegular(&fd, &ch, cb, cbData);
+		    else if (S_ISDIR(ch.mode))
+			rc = createDirectory(ch.path);
+		    else if (S_ISLNK(ch.mode))
+			rc = expandSymlink(&fd, &ch);
+		    else if (S_ISFIFO(ch.mode))
+			rc = expandFifo(&fd, &ch);
+		    else if (S_ISCHR(ch.mode) || S_ISBLK(ch.mode))
+			rc = expandDevice(&fd, &ch);
+		    else if (S_ISSOCK(ch.mode)) {
+			/* this mimicks cpio but probably isnt' right */
+			rc = expandFifo(&fd, &ch);
+		    } else {
+			rc = CPIO_INTERNAL;
+		    }
+		}
+
+		if (!rc)
+		    rc = setInfo(&ch);
+
+		if (ch.nlink > 1) {
+		    li->createdPath = linkNum;
+		    li->linksLeft--;
+		    rc = createLinks(li, failedFile);
 		}
 	    }
 
-	    if (!rc)
-		rc = setInfo(&ch);
-
-	    if (rc) {
+	    if (rc && !*failedFile) {
 		*failedFile = strdup(ch.path);
 
 		olderr = errno;
@@ -430,6 +521,32 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 
 	free(ch.path);
     } while (1 && !rc);
+
+    li = links;
+    while (li && !rc) {
+	if (li->linksLeft) {
+	    if (li->createdPath == -1)
+		rc = CPIO_INTERNAL;
+	    else 
+		rc = createLinks(li, failedFile);
+	}
+
+	freeLink(li);
+
+	links = li;
+	li = li->next;
+	free(links);
+	links = li;
+    }
+
+    li = links;
+    /* if an error got us here links will still be eating some memory */
+    while (li) {
+	freeLink(li);
+	links = li;
+	li = li->next;
+	free(links);
+    }
 
     return rc;
 }
