@@ -1,6 +1,6 @@
 # Makefile for rpm scripts.
 
-AUTOMAKE_OPTIONS = 1.2 foreign
+AUTOMAKE_OPTIONS = 1.4 foreign
 
 installprefix = $(DESTDIR)
 

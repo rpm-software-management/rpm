@@ -1,6 +1,6 @@
 # Makefile for rpm tools.
 
-AUTOMAKE_OPTIONS = 1.3 foreign
+AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl -I$(top_srcdir)/misc @INCPATH@
 

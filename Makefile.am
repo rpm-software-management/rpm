@@ -1,6 +1,6 @@
 # Top level Makefile for rpm
 
-AUTOMAKE_OPTIONS = 1.3 foreign
+AUTOMAKE_OPTIONS = 1.4 foreign
 
 SUBDIRS = popt build lib po intl misc tools scripts tests
 

@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in.
 
+AUTOMAKE_OPTIONS = 1.4 foreign
+
 EXTRA_DIST =
 SUBDIRS = hello-test
 

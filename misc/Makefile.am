@@ -1,6 +1,6 @@
 # Makefile for misc library.
 
-AUTOMAKE_OPTIONS = 1.3 foreign
+AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) @INCPATH@
 

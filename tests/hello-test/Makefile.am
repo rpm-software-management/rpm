@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in.
 
+AUTOMAKE_OPTIONS = 1.4 foreign
+
 all:
 
 noinst_SCRIPTS = initdb showrc querytags ba ckL ckH ckS ckC i qi e
