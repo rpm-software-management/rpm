@@ -1,4 +1,5 @@
 #include <db.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <strings.h>
 
@@ -11,10 +12,11 @@ dbIndex * openDBIndex(char * filename, int flags, int perms) {
     db = malloc(sizeof(*db));
     db->indexname = strdup(filename);
     db->db = dbopen(filename, flags, perms, DB_HASH, NULL);
-    if (!db) {
+    if (!db->db) {
 	free(db->indexname);
 	free(db);
-	error(RPMERR_DBOPEN, "cannot open file %s filename");
+	error(RPMERR_DBOPEN, "cannot open file %s: ", filename, 
+			      strerror(errno));
 	return NULL;
     }
 
