@@ -23,7 +23,7 @@ target="`$RPM --eval '%{_target}'`"
 
 case "$arch" in
   sparc*) SUBSTS="s_sparc64_sparc_ s_sparc[^6]_sparc64_" ;;
-  *) SUBST=y___ ;;
+  *) SUBSTS=y___ ;;
 esac
 
 for SUBST in $SUBSTS; do

@@ -10,7 +10,7 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils sh-utils mktemp
 Requires: popt, bzip2 >= 0.9.0c-2
-BuildRequires: db1-devel, db3-devel
+BuildRequires: db3-devel
 BuildRequires: bzip2 >= 0.9.0c-2
 BuildRequires: python-devel >= 1.5.2
 %endif
