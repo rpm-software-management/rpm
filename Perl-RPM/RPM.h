@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.5 2000/06/11 11:23:26 rjray Exp $
+ * $Id: RPM.h,v 1.6 2000/06/22 08:35:13 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -23,6 +23,9 @@
 #ifdef Fflush
 #  undef Fflush
 #endif
+#ifdef Fopen
+#  undef Fopen
+#endif
 
 /* Borrowed from DB_File.xs */
 #ifndef pTHX
@@ -42,6 +45,10 @@
 #include <rpm/dbindex.h>
 
 /*
+ *    Perl complement: RPM::Database
+ */
+
+/*
   This is the underlying struct that implements the interface to the RPM
   database. Since we need the actual object to be a hash, the struct will
   be stored as an SV (actually, a pointer to a struct) on a special key
@@ -57,6 +64,11 @@ typedef struct {
 typedef HV* RPM__Database;
 
 #define new_RPM__Database(x) x = newHV()
+
+
+/*
+ *    Perl complement: RPM::Header
+ */
 
 /*
   This is the underlying struct that implements the interface to the RPM
@@ -86,6 +98,18 @@ typedef HV* RPM__Header;
 
 #define RPM_HEADER_READONLY 1
 #define RPM_HEADER_FROM_REF 2
+
+
+/*
+ *    Perl complement: RPM::Package
+ */
+
+/*
+  This is the underlying struct that implements the interface to the RPM
+  packages. As above, we need the actual object to be a hash, so the struct
+  will be stored as an SV on the same sort of special key as RPM__Database
+  and RPM__Header use.
+*/
 
 /*
   Because the HV* are going to be set magical, the following is needed for
