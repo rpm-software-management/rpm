@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-01-05 15:54-0500\n"
+"POT-Creation-Date: 2000-01-12 16:44-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1499,7 +1499,7 @@ msgstr "Súbor nebol nájdený: %s"
 msgid "Could not open %%files file %s: %s"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: build/files.c:1164 build/pack.c:481
+#: build/files.c:1164 build/pack.c:485
 #, c-format
 msgid "line: %s"
 msgstr "riadok: %s"
@@ -1627,47 +1627,47 @@ msgstr "Nie je mo¾né zapísa» balík: %s"
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
 
-#: build/pack.c:430
+#: build/pack.c:433
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
 
-#: build/pack.c:449
+#: build/pack.c:453
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "cpio_copy zápis zlyhal: %s"
 
-#: build/pack.c:456
+#: build/pack.c:460
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "cpio_copy èítanie zlyhalo: %s"
 
-#: build/pack.c:536
+#: build/pack.c:540
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Nie je mo¾né otvori» PreIn súbor: %s"
 
-#: build/pack.c:543
+#: build/pack.c:547
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Nie je mo¾né otvori» PreUn súbor: %s"
 
-#: build/pack.c:550
+#: build/pack.c:554
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Nie je mo¾né otvori» PostIn súbor: %s"
 
-#: build/pack.c:557
+#: build/pack.c:561
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Nie je mo¾né otvori» PostUn súbor: %s"
 
-#: build/pack.c:565
+#: build/pack.c:569
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Nie je mo¾né otvori» VerifyScript súbor: %s"
 
-#: build/pack.c:580
+#: build/pack.c:584
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Nie je mo¾né otvori» Trigger skriptový súbor: %s"
@@ -2278,7 +2278,7 @@ msgstr "| oèakávené na konci výrazu"
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
-#: lib/install.c:142 lib/uninstall.c:194
+#: lib/install.c:142 lib/uninstall.c:195
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   súbor: akcia %s: %s\n"
@@ -2346,7 +2346,7 @@ msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 msgid "renaming %s to %s\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:27
+#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "premenovanie %s na %s zlyhalo: %s"
@@ -2945,76 +2945,76 @@ msgstr ""
 "existuje databáza v starom formáte; pou¾ite --rebuilddb pre vytvorenie "
 "databázy v novom formáte"
 
-#: lib/rpmdb.c:469
+#: lib/rpmdb.c:470
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "balík %s nie je uvedený v %s"
 
-#: lib/rpmdb.c:480
+#: lib/rpmdb.c:481
 #, c-format
 msgid "package %s not found in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:504 lib/uninstall.c:86
+#: lib/rpmdb.c:505 lib/uninstall.c:87
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre odin¹talovanie"
 
-#: lib/rpmdb.c:512
+#: lib/rpmdb.c:513
 msgid "package has no name"
 msgstr "balík nemá meno"
 
-#: lib/rpmdb.c:514
+#: lib/rpmdb.c:515
 msgid "removing name index\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:519
+#: lib/rpmdb.c:520
 msgid "package has no group\n"
 msgstr "balík nemá skupinu\n"
 
-#: lib/rpmdb.c:521
+#: lib/rpmdb.c:522
 msgid "removing group index\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:528
+#: lib/rpmdb.c:529
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr "odstraòuje sa index poskytovaných vlastností pre %s\n"
 
-#: lib/rpmdb.c:543
+#: lib/rpmdb.c:544
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr "odstraòuje sa index po¾iadaviek pre %s\n"
 
-#: lib/rpmdb.c:555
+#: lib/rpmdb.c:556
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr "odstraòuje sa index triggerov pre %s\n"
 
-#: lib/rpmdb.c:566
+#: lib/rpmdb.c:567
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr "odstraòuje sa index kolízií pre %s\n"
 
-#: lib/rpmdb.c:577
+#: lib/rpmdb.c:578
 #, c-format
 msgid "removing file index for %s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/rpmdb.c:586
+#: lib/rpmdb.c:587
 msgid "package has no files\n"
 msgstr "balík neobsahuje ¾iadne súbory\n"
 
-#: lib/rpmdb.c:692
+#: lib/rpmdb.c:693
 msgid "cannot allocate space for database"
 msgstr "nie je mo¾né prideli» miesto pre databázu"
 
-#: lib/rpmdb.c:751
+#: lib/rpmdb.c:752
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre úpravu"
 
-#: lib/rpmdb.c:764
+#: lib/rpmdb.c:765
 msgid "header changed size!"
 msgstr "zmenila sa veµkos» hlavièky!"
 
@@ -3436,40 +3436,40 @@ msgstr "presúva sa %s do %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
 
-#: lib/uninstall.c:38
+#: lib/uninstall.c:39
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "nie je mo¾né odstráni» %s - adresár nie je prázdny"
 
-#: lib/uninstall.c:41
+#: lib/uninstall.c:42
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "rmdir %s zlyhalo: %s"
 
-#: lib/uninstall.c:49
+#: lib/uninstall.c:50
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "odstránenie %s zlyhalo: %s"
 
-#: lib/uninstall.c:98
+#: lib/uninstall.c:99
 #, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr "nie je mo¾né preèíta» balíky %s pre odin¹talovanie"
 
-#: lib/uninstall.c:131
+#: lib/uninstall.c:132
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "budú sa odstraòova» súbory test = %d\n"
 
-#: lib/uninstall.c:208
+#: lib/uninstall.c:209
 msgid "running postuninstall script (if any)\n"
 msgstr "vykonávajú sa postdein¹talaèné skripty (ak existujú)\n"
 
-#: lib/uninstall.c:222
+#: lib/uninstall.c:223
 msgid "removing database entry\n"
 msgstr "odstraòuje sa záznam z databázy\n"
 
-#: lib/uninstall.c:400
+#: lib/uninstall.c:408
 msgid "execution of script failed"
 msgstr "vykonanie skriptu zlyhalo"
 

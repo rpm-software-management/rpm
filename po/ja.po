@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-01-05 15:54-0500\n"
+"POT-Creation-Date: 2000-01-12 16:44-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.5 2000/01/05 19:48:31 jbj Exp $
+# $Id: ja.po,v 1.6 2000/01/12 22:06:21 jbj Exp $
 #: rpm.c:197
 #, c-format
 msgid "rpm: %s\n"
@@ -1527,7 +1527,7 @@ msgstr "ファイルが見つかりません(by glob): %s"
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1164 build/pack.c:481
+#: build/files.c:1164 build/pack.c:485
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
@@ -1655,47 +1655,47 @@ msgstr "パッケージの書き込みに失敗しました: %s"
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:430
+#: build/pack.c:433
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "ファイル %s でアーカイブの作成に失敗: %s"
 
-#: build/pack.c:449
+#: build/pack.c:453
 #, fuzzy, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "cpio_copy で書き込み失敗: %s"
 
-#: build/pack.c:456
+#: build/pack.c:460
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "cpio_copy で読み込み失敗: %s"
 
-#: build/pack.c:536
+#: build/pack.c:540
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "PreIn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:543
+#: build/pack.c:547
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "PreUn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:550
+#: build/pack.c:554
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "PostIn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:557
+#: build/pack.c:561
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "PostUn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:565
+#: build/pack.c:569
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "VerifyScript ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:580
+#: build/pack.c:584
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "トリガースクリプトファイルをオープンできませんでした: %s"
@@ -2319,7 +2319,7 @@ msgstr "式の終りに | が期待されます"
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
-#: lib/install.c:142 lib/uninstall.c:194
+#: lib/install.c:142 lib/uninstall.c:195
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "ファイル %s: アクション: %s\n"
@@ -2391,7 +2391,7 @@ msgstr "ソースパッケージは .spec ファイルを含んでいません"
 msgid "renaming %s to %s\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:27
+#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s を %s にする名前の変更に失敗: %s"
@@ -3013,76 +3013,76 @@ msgid ""
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:469
+#: lib/rpmdb.c:470
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "パッケージ %s は %s 中にリストされていません"
 
-#: lib/rpmdb.c:480
+#: lib/rpmdb.c:481
 #, c-format
 msgid "package %s not found in %s"
 msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:504 lib/uninstall.c:86
+#: lib/rpmdb.c:505 lib/uninstall.c:87
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "アンインストールのために %d でヘッダを読むことができません"
 
-#: lib/rpmdb.c:512
+#: lib/rpmdb.c:513
 msgid "package has no name"
 msgstr "パッケージに名前がありません"
 
-#: lib/rpmdb.c:514
+#: lib/rpmdb.c:515
 msgid "removing name index\n"
 msgstr "name インデックス削除します\n"
 
-#: lib/rpmdb.c:519
+#: lib/rpmdb.c:520
 msgid "package has no group\n"
 msgstr "パッケージにグループがありません\n"
 
-#: lib/rpmdb.c:521
+#: lib/rpmdb.c:522
 msgid "removing group index\n"
 msgstr "group インデックスを削除します\n"
 
-#: lib/rpmdb.c:528
+#: lib/rpmdb.c:529
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr "%s 用の provides インデックスを削除します\n"
 
-#: lib/rpmdb.c:543
+#: lib/rpmdb.c:544
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr "%s 用の requiredby インデックスを削除します\n"
 
-#: lib/rpmdb.c:555
+#: lib/rpmdb.c:556
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr "%s 用の tigger インデックスを削除します\n"
 
-#: lib/rpmdb.c:566
+#: lib/rpmdb.c:567
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr "%s 用の confilict インデックスを削除します\n"
 
-#: lib/rpmdb.c:577
+#: lib/rpmdb.c:578
 #, c-format
 msgid "removing file index for %s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: lib/rpmdb.c:586
+#: lib/rpmdb.c:587
 msgid "package has no files\n"
 msgstr "パッケージにファイルが有りません\n"
 
-#: lib/rpmdb.c:692
+#: lib/rpmdb.c:693
 msgid "cannot allocate space for database"
 msgstr "データベース用の空き容量が足りません"
 
-#: lib/rpmdb.c:751
+#: lib/rpmdb.c:752
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "アップデート用の %d でヘッダを読めません"
 
-#: lib/rpmdb.c:764
+#: lib/rpmdb.c:765
 msgid "header changed size!"
 msgstr "ヘッダのサイズが変更されました"
 
@@ -3523,41 +3523,41 @@ msgstr "ディレクトリ %s を %s に再配置しています\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
-#: lib/uninstall.c:38
+#: lib/uninstall.c:39
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "%s を削除できません - ディレクトリが空でありません"
 
-#: lib/uninstall.c:41
+#: lib/uninstall.c:42
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "%s の rmdir に失敗: %s"
 
-#: lib/uninstall.c:49
+#: lib/uninstall.c:50
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "%s の削除に失敗: %s"
 
-#: lib/uninstall.c:98
+#: lib/uninstall.c:99
 #, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr ""
 "アンインストールするために %s と名付けられたパッケージを読むことができません"
 
-#: lib/uninstall.c:131
+#: lib/uninstall.c:132
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "ファイル test = %d を削除します\n"
 
-#: lib/uninstall.c:208
+#: lib/uninstall.c:209
 msgid "running postuninstall script (if any)\n"
 msgstr "ポストアンインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/uninstall.c:222
+#: lib/uninstall.c:223
 msgid "removing database entry\n"
 msgstr "データベースエントリを削除します\n"
 
-#: lib/uninstall.c:400
+#: lib/uninstall.c:408
 msgid "execution of script failed"
 msgstr "スクリプトの実行に失敗"
 
