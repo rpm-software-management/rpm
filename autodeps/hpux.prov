@@ -1,7 +1,7 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: hpux.prov,v 1.5 1999/09/30 00:22:15 jbj Exp $
+# $Id: hpux.prov,v 1.6 2000/03/02 20:21:10 jbj Exp $
 #
 # This file is distributed under the terms of the GNU Public License
 #
@@ -34,6 +34,13 @@
 #         instruction page size: 4K
 #
 
+#
+# Implementation notes: some of the system libraries are built without an
+# `internal name' (HP-UX's equivalent to a SONAME), so I need to track what
+# chatr outputs as its first line.  We'll use the basename of that line in
+# the event of no internal name.
+#
+
 PATH=/usr/bin:/usr/sbin:/usr/ccs/bin
 export PATH
 
@@ -44,6 +51,10 @@ export PATH
 IFS=""
 while read f
 do
+	# It's possible that I should be testing to make sure that the file
+	# we're trying isn't a symlink,  and skipping it if it is, because of
+	# the possible odd situation where we could have a link to a library
+	# with no internal name.  This would need more investigation, though.
 	chatr $f 2>/dev/null \
 	| awk '
 
@@ -51,6 +62,12 @@ do
 			FS = " ";
 			RS = "\n";
 
+			# This flag signfies that we have seen the internal name:
+			# marker.  Once we see that, we set the flag to 1.  The next
+			# line we read should contain the library internal name, the
+			# SOM equivalent of an soname.  At that point we set the flag
+			# found_internal_name to 1 and exit
+			# the main body of the awk script, going through the END
 			in_internal_name = 0;
 
 			#
@@ -86,15 +103,6 @@ do
 			exit
 		}
 
-		#
-		# If we see this, we know we have passed all the information we care
-		# about, so exit.
-		#
-		/^ +shared library list: *$/ || /^ +static branch prediction/ {
-			in_internal_name = 0
-			exit
-		}
-
 		in_internal_name == 1 {
 		
 			# We found the library internal name.  If it does not contain
@@ -113,10 +121,13 @@ do
 			# an internal name
 			#
 			found_internal_name = 1;
+			in_internal_name = 0
+			exit
 		}
 
 		#
-		# we have hit the internal name section.  Set the flag
+		# we have hit the internal name section.  Set the flag.  The next
+		# line should be what we are looking for.
 		#
 		/^ +internal name: *$/ {
 			in_internal_name = 1

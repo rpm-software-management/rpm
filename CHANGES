@@ -62,6 +62,7 @@
 	- try for /etc/rpm/macros.specspo so that specspo autoconfigures rpm.
 	- per-platform configuration factored into /usr/lib/rpm subdir.
 	- sparc-sun-solaris2.6 portability check.
+	- simpler hpux.prov script (Tim Mooney).
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

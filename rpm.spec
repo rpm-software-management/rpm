@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.48
+Release: 0.49
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,6 +219,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Thu Mar  2 2000 Jeff Johnson <jbj@redhat.com>
+- simpler hpux.prov script (Tim Mooney).
+
 * Wed Mar  1 2000 Jeff Johnson <jbj@redhat.com>
 - fix rpmmodule.so python bindings.
 
