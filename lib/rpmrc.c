@@ -1,3 +1,5 @@
+#include "miscfn.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,7 +8,6 @@
 
 #include "messages.h"
 #include "misc.h"
-#include "miscfn.h"
 #include "rpmlib.h"
 
 /* the rpmrc is read from /etc/rpmrc or $HOME/.rpmrc - it is not affected

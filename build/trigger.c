@@ -1,6 +1,7 @@
 /* handle triggers */
 
 #include "config.h"
+#include "miscfn.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +14,6 @@
 #include "rpmlib.h"
 #include "stringbuf.h"
 #include "misc.h"
-#include "miscfn.h"
 
 #define FREE(x) { if (x) free(x); }
 #define CHUNK 8

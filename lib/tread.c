@@ -1,9 +1,10 @@
+#include "miscfn.h"
+
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "miscfn.h"
 #include "tread.h"
 
 int timedRead(int fd, void * bufptr, int length) {

@@ -1,5 +1,7 @@
 /* The very final packaging steps */
 
+#include "miscfn.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -16,7 +18,6 @@
 #include <sys/time.h>  /* For 'select()' interfaces */
 
 #include "pack.h"
-#include "miscfn.h"
 #include "header.h"
 #include "spec.h"
 #include "specP.h"

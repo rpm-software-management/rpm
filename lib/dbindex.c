@@ -1,4 +1,5 @@
 #include "config.h"
+#include "miscfn.h"
 
 #include <db.h>
 #include <errno.h>
@@ -6,7 +7,6 @@
 #include <string.h>
 
 #include "dbindex.h"
-#include "miscfn.h"
 #include "rpmlib.h"
 
 dbiIndex * dbiOpenIndex(char * filename, int flags, int perms) {

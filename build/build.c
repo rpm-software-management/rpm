@@ -3,6 +3,8 @@
  * build.c - routines for preparing and building the sources
  */
 
+#include "miscfn.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/resource.h>
@@ -23,7 +25,6 @@
 #include "messages.h"
 #include "stringbuf.h"
 #include "misc.h"
-#include "miscfn.h"
 #include "pack.h"
 #include "popt.h"
 

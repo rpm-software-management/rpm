@@ -1,3 +1,6 @@
+#include "config.h"
+#include "miscfn.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -7,9 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "config.h"
 #include "misc.h"
-#include "miscfn.h"
 #include "oldheader.h"
 #include "rpmlib.h"
 #include "tread.h"

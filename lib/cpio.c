@@ -1,4 +1,5 @@
 #include "config.h"
+#include "miscfn.h"
 
 #if HAVE_ALLOCA_H
 # include <alloca.h>
@@ -15,7 +16,6 @@
 #include <utime.h>
 
 #include "cpio.h"
-#include "miscfn.h"
 
 #if MAJOR_IN_SYSMACROS 
 #include <sys/sysmacros.h>

@@ -3,13 +3,14 @@
  * prepack.c - routines for packaging
  */
 
+#include "miscfn.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
 
-#include "miscfn.h"
 #include "spec.h"
 #include "specP.h"
 #include "stringbuf.h"

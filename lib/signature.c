@@ -8,6 +8,7 @@
  */
 
 #include "config.h"
+#include "miscfn.h"
 
 #if HAVE_ASM_BYTEORDER_H
 #include <asm/byteorder.h>
@@ -26,7 +27,6 @@
 #include "intl.h"
 #include "md5.h"
 #include "misc.h"
-#include "miscfn.h"
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"

@@ -1,4 +1,5 @@
 #include "config.h"
+#include "miscfn.h"
 
 #if HAVE_ALLOCA_H
 # include <alloca.h>
@@ -25,7 +26,6 @@
 #include "md5.h"
 #include "messages.h"
 #include "misc.h"
-#include "miscfn.h"
 #include "rpmdb.h"
 #include "rpmlib.h"
 

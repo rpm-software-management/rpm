@@ -8,6 +8,7 @@
 /* network byte order and is converted on the fly to host order. */
 
 #include "config.h"
+#include "miscfn.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -17,7 +18,6 @@
 #include <netinet/in.h>
 
 #include "header.h"
-#include "miscfn.h"
 #include "tread.h"
 
 #define INDEX_MALLOC_SIZE 8
