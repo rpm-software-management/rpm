@@ -355,8 +355,8 @@ static int mergeFiles(rpmfi fi, Header h, Header newH)
  */
 /*@-bounds@*/
 static int markReplacedFiles(const PSM_t psm)
-	/*@globals fileSystem@*/
-	/*@modifies psm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;

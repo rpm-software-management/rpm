@@ -101,8 +101,8 @@ extern "C" {
  * @return		0 on success
  */
 int cpioTrailerWrite(FSM_t fsm)
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/;
 
 /**
  * Write cpio header.
@@ -111,8 +111,8 @@ int cpioTrailerWrite(FSM_t fsm)
  * @return		0 on success
  */
 int cpioHeaderWrite(FSM_t fsm, struct stat * st)
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/;
 
 /**
  * Read cpio header.
@@ -121,15 +121,16 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
  * @return		0 on success
  */
 int cpioHeaderRead(FSM_t fsm, struct stat * st)
-	/*@globals fileSystem@*/
-	/*@modifies fsm, *st, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, *st, fileSystem, internalState @*/;
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.
  * @param rc		error code
  * @return		formatted error string
  */
-/*@observer@*/ const char *const cpioStrerror(int rc)		/*@*/;
+/*@observer@*/ const char *const cpioStrerror(int rc)
+	/*@*/;
 
 #ifdef __cplusplus
 }

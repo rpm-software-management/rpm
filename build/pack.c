@@ -55,9 +55,9 @@ static inline int genSourceRpmName(Spec spec)
  */
 static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		const char * fmodeMacro)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies fdo, csa, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies fdo, csa, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     rpmts ts = rpmtsCreate();
     rpmfi fi = csa->cpioList;
@@ -104,8 +104,8 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 /**
  */
 static int cpio_copy(FD_t fdo, CSA_t csa)
-	/*@globals fileSystem@*/
-	/*@modifies fdo, csa, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fdo, csa, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
     size_t nb;
@@ -130,9 +130,8 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
  */
 static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 		const char * file, /*@only@*/ StringBuf sb)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
     const char * fn = buf;
@@ -168,9 +167,8 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 /**
  */
 static int addFileToTag(Spec spec, const char * file, Header h, int tag)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
@@ -193,9 +191,8 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 /**
  */
 static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     StringBuf sb = newStringBuf();
     char *s;
@@ -213,9 +210,9 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 /**
  */
 static int processScriptFiles(Spec spec, Package pkg)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies pkg->header, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies pkg->header, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     struct TriggerFileEntry *p;
     

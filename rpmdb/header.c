@@ -1669,6 +1669,7 @@ int headerGetEntry(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ void ** p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
     return intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
 }
@@ -1691,6 +1692,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
 			/*@null@*/ /*@out@*/ hPTR_t * p,
 			/*@null@*/ /*@out@*/ hCNT_t c)
 	/*@modifies *type, *p, *c @*/
+	/*@requires maxSet(type) >= 0 /\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
 {
     return intGetEntry(h, tag, type, p, c, 1);
 }
@@ -2678,11 +2680,13 @@ static char * formatValue(sprintfTag tag, Header h,
 	}
 /*@=boundswrite@*/
     } else {
+/*@-boundswrite@*/
 	if (!headerGetEntry(h, tag->tag, &type, (void **)&data, &count)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
 	}
+/*@=boundswrite@*/
 
 	datafree = 1;
     }
@@ -2952,9 +2956,11 @@ static char * singleSprintf(Header h, sprintfToken token,
 		     continue;
 /*@=boundswrite@*/
 	    } else {
+/*@-boundswrite@*/
 		if (!headerGetEntry(h, token->u.array.format[i].u.tag.tag, 
 				    &type, NULL, &numElements))
 		    continue;
+/*@=boundswrite@*/
 	    } 
 	    /*@loopbreak@*/ break;
 	}
@@ -3297,9 +3303,11 @@ void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	int_32 count;
 	if (headerIsEntry(headerTo, *p))
 	    continue;
+/*@-boundswrite@*/
 	if (!headerGetEntryMinMemory(headerFrom, *p, &type,
 				(hPTR_t *) &s, &count))
 	    continue;
+/*@=boundswrite@*/
 	(void) headerAddEntry(headerTo, *p, type, s, count);
 	s = headerFreeData(s, type);
     }

@@ -410,12 +410,16 @@ ssize_t fdWrite(void * cookie, const char * buf, size_t count)
     if (count == 0) return 0;
 
     fdstat_enter(fd, FDSTAT_WRITE);
+/*@-boundsread@*/
     rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+/*@=boundsread@*/
     fdstat_exit(fd, FDSTAT_WRITE, rc);
 
     if (fd->wr_chunked) {
 	int ec;
+/*@-boundsread@*/
 	ec = write(fdno, "\r\n", sizeof("\r\n")-1);
+/*@=boundsread@*/
 	if (ec == -1)	fd->syserrno = errno;
     }
 
@@ -769,8 +773,8 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 /*@=boundsread@*/
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
-	/*@globals fileSystem @*/
-	/*@modifies ctrl, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ctrl, fileSystem, internalState @*/
 {
     struct sockaddr_in sin;
     int fdno = -1;
@@ -1054,8 +1058,8 @@ fprintf(stderr, "-> %s", t);
 }
 
 static int ftpLogin(urlinfo u)
-	/*@globals fileSystem @*/
-	/*@modifies u, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies u, fileSystem, internalState @*/
 {
     const char * host;
     const char * user;
@@ -1362,8 +1366,8 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 }
 
 static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
-	/*@globals fileSystem @*/
-	/*@modifies *uret, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *uret, fileSystem, internalState @*/
 {
     urlinfo u;
     int rc = 0;
@@ -1451,8 +1455,8 @@ int ftpCmd(const char * cmd, const char * url, const char * arg2)
 #endif
 
 static int ftpAbort(urlinfo u, FD_t data)
-	/*@globals fileSystem @*/
-	/*@modifies u, data, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies u, data, fileSystem, internalState @*/
 {
     static unsigned char ipbuf[3] = { IAC, IP, IAC };
     FD_t ctrl;
@@ -1558,8 +1562,8 @@ fprintf(stderr, "*** httpResp: rc %d ec %d\n", rc, ec);
 }
 
 static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
-	/*@globals fileSystem @*/
-	/*@modifies ctrl, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ctrl, fileSystem, internalState @*/
 {
     urlinfo u = ctrl->url;
     const char * host;
@@ -1686,6 +1690,8 @@ void * ufdGetUrlinfo(FD_t fd)
 static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *buf, fileSystem, internalState @*/
+        /*@requires maxSet(buf) >= (count - 1) @*/
+        /*@ensures maxRead(buf) == result @*/
 {
     FD_t fd = c2f(cookie);
     int bytesRead;
@@ -2000,7 +2006,8 @@ exit:
 /*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
-	/*@modifies *uret @*/
+	/*@globals internalState @*/
+	/*@modifies *uret, internalState @*/
 {
     urlinfo u = NULL;
     FD_t fd = NULL;
@@ -2045,8 +2052,8 @@ exit:
 /*@=nullstate@*/
 
 static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     FD_t fd = NULL;
     const char * cmd;

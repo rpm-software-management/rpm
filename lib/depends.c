@@ -334,8 +334,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
 static int unsatisfiedDepend(rpmts ts, rpmds dep)
-	/*@globals _cacheDependsRC, fileSystem @*/
-	/*@modifies ts, _cacheDependsRC, fileSystem @*/
+	/*@globals _cacheDependsRC, fileSystem, internalState @*/
+	/*@modifies ts, _cacheDependsRC, fileSystem, internalState @*/
 {
     DBT * key = alloca(sizeof(*key));
     DBT * data = alloca(sizeof(*data));
@@ -556,8 +556,8 @@ exit:
 static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
 		/*@null@*/ const char * depName, uint_32 multiLib, int adding)
-	/*@globals fileSystem @*/
-	/*@modifies ts, requires, conflicts, fileSystem */
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, requires, conflicts, fileSystem, internalState */
 {
     const char * Name;
     int_32 Flags;
@@ -657,8 +657,8 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
  */
 static int checkPackageSet(rpmts ts, const char * dep,
 		/*@only@*/ /*@null@*/ rpmdbMatchIterator mi, int adding)
-	/*@globals fileSystem @*/
-	/*@modifies ts, mi, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, mi, fileSystem, internalState @*/
 {
     int scareMem = 1;
     Header h;
@@ -696,8 +696,8 @@ static int checkPackageSet(rpmts ts, const char * dep,
  * @return		0 no problems found
  */
 static int checkDependentPackages(rpmts ts, const char * dep)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/
 {
     rpmdbMatchIterator mi;
     mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
@@ -711,8 +711,8 @@ static int checkDependentPackages(rpmts ts, const char * dep)
  * @return		0 no problems found
  */
 static int checkDependentConflicts(rpmts ts, const char * dep)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/
 {
     int rc = 0;
 

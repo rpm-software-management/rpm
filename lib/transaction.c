@@ -85,8 +85,8 @@ static int sharedCmp(const void * one, const void * two)
 /*@-boundsread@*/
 static fileAction decideFileFate(const rpmts ts,
 		const rpmfi ofi, rpmfi nfi)
-	/*@globals fileSystem @*/
-	/*@modifies nfi, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies nfi, fileSystem, internalState @*/
 {
     const char * fn = rpmfiFN(nfi);
     int newFlags = rpmfiFFlags(nfi);
@@ -222,8 +222,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 		rpmte p, rpmfi fi,
 		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fi, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fi, fileSystem, internalState @*/
 {
     const char * altNEVR = NULL;
     rpmfi otherFi = NULL;
@@ -311,8 +311,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 /* XXX only ts->rpmdb modified */
 static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 		sharedFileInfo shared, int sharedCount)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fi, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fi, fileSystem, internalState @*/
 {
     HGE_t hge = fi->hge;
     Header h;
@@ -502,8 +502,8 @@ bingoFps->baseName);
 /* XXX only ts->{probs,di} modified */
 static void handleOverlappedFiles(const rpmts ts,
 		const rpmte p, rpmfi fi)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fi, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fi, fileSystem, internalState @*/
 {
     uint_32 fixupSize = 0;
     rpmps ps;

@@ -22,8 +22,8 @@ typedef int (*myftwFunc) (void *fl, const char *name, struct stat *statp)
 	/*@*/;
 
 int myftw (const char *dir, int descriptors, myftwFunc func, void *fl)
-	/*@globals fileSystem @*/
-	/*@modifies *fl, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *fl, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

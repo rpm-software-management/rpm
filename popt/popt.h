@@ -241,8 +241,8 @@ void poptResetContext(/*@null@*/poptContext con)
  * @return		next option val, -1 on last item, POPT_ERROR_* on error
  */
 int poptGetNextOpt(/*@null@*/poptContext con)
-	/*@globals fileSystem@*/
-	/*@modifies con, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies con, fileSystem, internalState @*/;
 
 /*@-redecl@*/
 /** \ingroup popt
@@ -334,9 +334,9 @@ int poptAddItem(poptContext con, poptItem newItem, int flags)
  * @return		0 on success, POPT_ERROR_ERRNO on failure
  */
 int poptReadConfigFile(poptContext con, const char * fn)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem,
-		con->execs, con->numExecs @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies con->execs, con->numExecs,
+		fileSystem, internalState @*/;
 
 /** \ingroup popt
  * Read default configuration from /etc/popt and $HOME/.popt.
@@ -345,9 +345,9 @@ int poptReadConfigFile(poptContext con, const char * fn)
  * @return		0 on success, POPT_ERROR_ERRNO on failure
  */
 int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem,
-		con->execs, con->numExecs @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies con->execs, con->numExecs,
+		fileSystem, internalState @*/;
 
 /** \ingroup popt
  * Duplicate an argument array.

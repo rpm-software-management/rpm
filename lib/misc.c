@@ -122,8 +122,8 @@ int dosetenv(const char * name, const char * value, int overwrite)
 }
 
 static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     char * d, * de;
     int created = 0;

@@ -18,8 +18,8 @@
 
 /* =============================================================== */
 static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     int rc;
     if ((rc = ftpCmd("MKD", path, NULL)) != 0)
@@ -34,22 +34,22 @@ static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
 }
 
 static int ftpChdir(const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("CWD", path, NULL);
 }
 
 static int ftpRmdir(const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("RMD", path, NULL);
 }
 
 static int ftpRename(const char * oldpath, const char * newpath)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     int rc;
     if ((rc = ftpCmd("RNFR", oldpath, NULL)) != 0)
@@ -58,8 +58,8 @@ static int ftpRename(const char * oldpath, const char * newpath)
 }
 
 static int ftpUnlink(const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("DELE", path, NULL);
 }
@@ -825,8 +825,8 @@ static /*@only@*/ char * ftpBuf = NULL;
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
 		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
-	/*@globals fileSystem @*/
-	/*@modifies *st, *rlbuf, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *st, *rlbuf, fileSystem, internalState @*/
 {
     FD_t fd;
     const char * path;
@@ -1034,8 +1034,8 @@ static const char * statstr(const struct stat * st,
 static int ftp_st_ino = 0xdead0000;
 
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals fileSystem @*/
-	/*@modifies *st, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *st, fileSystem, internalState @*/
 {
     char buf[1024];
     int rc;
@@ -1051,8 +1051,8 @@ fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 }
 
 static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals fileSystem @*/
-	/*@modifies *st, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *st, fileSystem, internalState @*/
 {
     char buf[1024];
     int rc;
@@ -1068,8 +1068,8 @@ fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
 }
 
 static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals fileSystem @*/
-	/*@modifies *buf, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *buf, fileSystem, internalState @*/
 {
     int rc;
     rc = ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
@@ -1098,8 +1098,8 @@ static int ftpmagicdir = 0x8440291;
 /*@-type@*/ /* FIX: abstract DIR */
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     DIR * dir;
     struct dirent * dp;
@@ -1231,7 +1231,7 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 }
 /*@=boundswrite@*/
 
-/*@null@*/
+/*@dependent@*/ /*@null@*/
 static struct dirent * ftpReaddir(DIR * dir)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -1367,7 +1367,9 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
 	return -2;
 	/*@notreached@*/ break;
     }
+/*@-compdef@*/
     return readlink(path, buf, bufsiz);
+/*@=compdef@*/
 }
 
 int Access(const char * path, int amode)

@@ -70,9 +70,9 @@ memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 /*		tmp->data = (byte*) realloc(tmp->data, tmp->size; */
 	}
 
-	/*@-temptrans@*/
+	/*@-temptrans -compdef @*/
 	return tmp;
-	/*@=temptrans@*/
+	/*@=temptrans =compdef @*/
 }
 /*@=boundsread@*/
 

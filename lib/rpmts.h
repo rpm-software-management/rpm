@@ -263,8 +263,8 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 /*@only@*/ /*@null@*/
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, int rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /**
  * Attempt to solve a needed dependency.

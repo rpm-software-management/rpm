@@ -109,21 +109,22 @@ urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
  * @return		dereferenced instance (NULL if freed)
  */
 /*@unused@*/ urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
-	/*@modifies u @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies u, fileSystem, internalState @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg,
 		const char * file, unsigned line)
-	/*@globals fileSystem@*/
-	/*@modifies u, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies u, fileSystem, internalState @*/;
 #define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)
 
 /**
  * Free cached URL control structures.
  */
 void urlFreeCache(void)
-	/*@globals _url_cache, _url_count, fileSystem @*/
-	/*@modifies _url_cache, _url_count, fileSystem @*/;
+	/*@globals _url_cache, _url_count, fileSystem, internalState @*/
+	/*@modifies _url_cache, _url_count, fileSystem, internalState @*/;
 
 /**
  * Return type of URL.
@@ -152,7 +153,8 @@ urltype	urlPath(const char * url, /*@out@*/ const char ** pathp)
  * @return		0 on success, -1 on error
  */
 int urlSplit(const char * url, /*@out@*/ urlinfo * uret)
-	/*@modifies *uret @*/;
+	/*@globals internalState @*/
+	/*@modifies *uret, internalState @*/;
 
 /**
  * Copy data from URL to local file.
@@ -161,8 +163,8 @@ int urlSplit(const char * url, /*@out@*/ urlinfo * uret)
  * @return		0 on success, otherwise FTPERR_* code
  */
 int urlGetFile(const char * url, /*@null@*/ const char * dest)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

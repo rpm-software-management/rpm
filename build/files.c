@@ -710,9 +710,12 @@ static int parseForConfig(char * buf, FileList fl)
 
 /**
  */
-static int langCmp(const void * ap, const void * bp)	/*@*/
+static int langCmp(const void * ap, const void * bp)
+	/*@*/
 {
+/*@-boundsread@*/
     return strcmp(*(const char **)ap, *(const char **)bp);
+/*@=boundsread@*/
 }
 
 /**
@@ -1124,10 +1127,9 @@ static int checkHardLinks(FileList fl)
 /*@-bounds@*/
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmfi * cpioList, Header h, int isSrc)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies h, *cpioList, fl->processingFailed, fl->fileList,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
     uint_32 multiLibMask = 0;
@@ -1503,12 +1505,11 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 /*@-boundswrite@*/
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     const char *fileURL = diskURL;
     struct stat statbuf;
@@ -1727,12 +1728,11 @@ static int addFile(FileList fl, const char * diskURL,
 /*@-boundswrite@*/
 static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int doGlob;
     const char *diskURL = NULL;

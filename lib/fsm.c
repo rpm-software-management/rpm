@@ -384,8 +384,8 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 	/*@uses fsm->links, fsm->ix, fsm->sb, fsm->goal, fsm->nsuffix @*/
 	/*@defines fsm->li @*/
 	/*@releases fsm->path @*/
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     struct stat * st = &fsm->sb;
     int rc = 0;
@@ -736,8 +736,8 @@ int fsmMapAttrs(FSM_t fsm)
  */
 static int expandRegular(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->sb @*/
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     const struct stat * st = &fsm->sb;
     int left = st->st_size;
@@ -803,8 +803,8 @@ exit:
  */
 static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	/*@uses fsm->path, fsm->opath, fsm->sb, fsm->osb, fsm->cfd @*/
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     const char * opath = fsm->opath;
@@ -951,8 +951,8 @@ exit:
  */
 static int writeLinkedFile(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->nsuffix, fsm->ix, fsm->li, fsm->failedFile @*/
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
@@ -999,8 +999,8 @@ static int writeLinkedFile(/*@special@*/ FSM_t fsm)
 /*@-boundsread@*/
 static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->opath, fsm->nsuffix, fsm->ix, fsm->li @*/
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     const char * opath = fsm->opath;
@@ -1064,8 +1064,8 @@ static int fsmMakeLinks(/*@special@*/ FSM_t fsm)
 static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->nsuffix, fsm->ix, fsm->sb,
 		fsm->li, fsm->links @*/
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
@@ -1110,8 +1110,8 @@ static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
  */
 static int fsmRmdirs(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->dnlx, fsm->ldn, fsm->rdbuf, fsm->iter @*/
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     const char * path = fsm->path;
     void * dnli = dnlInitIterator(fsm, 1);
@@ -1167,8 +1167,8 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	/*@uses fsm->path, fsm->sb, fsm->osb, fsm->rdbuf, fsm->iter,
 		fsm->ldn, fsm->ldnlen, fsm->ldnalloc @*/
 	/*@defines fsm->dnlx, fsm->ldn @*/
-	/*@globals fileSystem@*/
-	/*@modifies fsm, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fsm, fileSystem, internalState @*/
 {
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;

@@ -103,7 +103,9 @@ int
 rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 {
 DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->param, ((char *)data)));
+/*@-boundsread@*/
     return (*ctx->Update) (ctx->param, data, len);
+/*@=boundsread@*/
 }
 /*@=mustmod@*/
 

@@ -372,8 +372,8 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 /*@-incondefs@*/
 int rpmVerifyFile(const rpmts ts, rpmfi fi,
 		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
-	/*@globals fileSystem @*/
-	/*@modifies fi, *res, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fi, *res, fileSystem, internalState @*/
 	/*@requires maxSet(res) >= 0 @*/;
 /*@=incondefs@*/
 
@@ -575,8 +575,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @return 		id index
  */
 /*@only@*/ /*@null@*/ IDTX IDTXload(rpmts ts, rpmTag tag)
-	/*@globals fileSystem@*/
-	/*@modifies ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState  @*/;
 
 /**
  * Load tag (instance,value) pairs from packages, and return sorted id index.

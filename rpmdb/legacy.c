@@ -244,6 +244,7 @@ exit:
 int _noDirTokens = 0;
 /*@=exportheadervar@*/
 
+/*@-boundsread@*/
 static int dncmp(const void * a, const void * b)
 	/*@*/
 {
@@ -251,6 +252,7 @@ static int dncmp(const void * a, const void * b)
     const char *const * second = b;
     return strcmp(*first, *second);
 }
+/*@=boundsread@*/
 
 /*@-bounds@*/
 void compressFilelist(Header h)

@@ -105,7 +105,8 @@ int rpmLookupSignatureType(int action)
  * @param sigTag	signature type/tag
  * @return		pass phrase
  */
-/*@null@*/ char * rpmGetPassPhrase(/*@null@*/ const char * prompt,
+/*@dependent@*/ /*@null@*/
+char * rpmGetPassPhrase(/*@null@*/ const char * prompt,
 		const int sigTag)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;

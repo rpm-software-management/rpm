@@ -512,7 +512,9 @@ int readChars(javachar* c, FILE* ifp, int count)
 
 int writeByte(javabyte b, FILE* ofp)
 {
+/*@-boundsread@*/
 	return fwrite(&b, 1, 1, ofp);
+/*@=boundsread@*/
 }
 
 int writeShort(javashort s, FILE* ofp)
@@ -520,7 +522,9 @@ int writeShort(javashort s, FILE* ofp)
 	#if !(WORDS_BIGENDIAN)
 	s = swap16(s);
 	#endif
+/*@-boundsread@*/
 	return fwrite(&s, 2, 1, ofp);
+/*@=boundsread@*/
 }
 
 int writeInt(javaint i, FILE* ofp)
@@ -528,7 +532,9 @@ int writeInt(javaint i, FILE* ofp)
 	#if !(WORDS_BIGENDIAN)
 	i = swap32(i);
 	#endif
+/*@-boundsread@*/
 	return fwrite(&i, 4, 1, ofp);
+/*@=boundsread@*/
 }
 
 int writeLong(javalong l, FILE* ofp)
@@ -536,7 +542,9 @@ int writeLong(javalong l, FILE* ofp)
 	#if !(WORDS_BIGENDIAN)
 	l = swap64(l);
 	#endif
+/*@-boundsread@*/
 	return fwrite(&l, 8, 1, ofp);
+/*@=boundsread@*/
 }
 
 int writeChar(javachar c, FILE* ofp)
@@ -544,7 +552,9 @@ int writeChar(javachar c, FILE* ofp)
 	#if !(WORDS_BIGENDIAN)
 	c = swap16(c);
 	#endif
+/*@-boundsread@*/
 	return fwrite(&c, 2, 1, ofp);
+/*@=boundsread@*/
 }
 
 int writeInts(const javaint* i, FILE* ofp, int count)

@@ -192,8 +192,8 @@ extern "C" {
  * @return		NULL always
  */
 /*@null@*/ Spec freeSpec(/*@only@*/ /*@null@*/ Spec spec)
-	/*@globals fileSystem @*/
-	/*@modifies spec, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies spec, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
@@ -201,8 +201,8 @@ extern "C" {
  */
 /*@-declundef@*/
 extern /*@null@*/ Spec (*freeSpecVec) (Spec spec)	/* XXX FIXME */
-	/*@globals fileSystem @*/
-	/*@modifies spec, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies spec, fileSystem, internalState @*/;
 /*@=declundef@*/
 
 /** \ingroup rpmbuild

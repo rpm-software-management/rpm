@@ -271,7 +271,9 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     EVR[0] = t;
     if (ep) {
 	sprintf(t, "%d:", *ep);
+/*@-compdef@*/
 	t += strlen(t);
+/*@=compdef@*/
     }
     t = stpcpy( stpcpy( stpcpy( t, v), "-"), r);
 /*@=boundswrite@*/

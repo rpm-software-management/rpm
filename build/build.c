@@ -20,9 +20,8 @@ static int _build_debug = 0;
 /**
  */
 static void doRmSource(Spec spec)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     struct Source *p;
     Package pkg;

@@ -272,8 +272,10 @@ Header rpmFreeSignature(Header h)
  */
 static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 		/*@out@*/ int_32 * pktlen, /*@null@*/ const char * passPhrase)
-	/*@globals errno, rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies errno, *pkt, *pktlen, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals errno, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies errno, *pkt, *pktlen, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -291,7 +293,9 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
     addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     inpipe[0] = inpipe[1] = 0;
+/*@-boundsread@*/
     (void) pipe(inpipe);
+/*@=boundsread@*/
 
     if (!(pid = fork())) {
 	const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
@@ -402,8 +406,10 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
  */
 static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 		/*@out@*/ int_32 * pktlen, /*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies *pkt, *pktlen, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *pkt, *pktlen, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -422,7 +428,9 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
     addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     inpipe[0] = inpipe[1] = 0;
+/*@-boundsread@*/
     (void) pipe(inpipe);
+/*@=boundsread@*/
 
     if (!(pid = fork())) {
 	const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
@@ -682,7 +690,9 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
     int xx;
 
     passPhrasePipe[0] = passPhrasePipe[1] = 0;
+/*@-boundsread@*/
     xx = pipe(passPhrasePipe);
+/*@=boundsread@*/
     if (!(pid = fork())) {
 	const char * cmd;
 	char *const *av;
@@ -824,7 +834,9 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 	/*@notreached@*/ break;
     }
 
+/*@-moduncon -nullpass @*/
     pass = /*@-unrecog@*/ getpass( (prompt ? prompt : "") ) /*@=unrecog@*/ ;
+/*@=moduncon -nullpass @*/
 
     if (checkPassPhrase(pass, sigTag))
 	return NULL;

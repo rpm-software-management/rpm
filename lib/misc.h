@@ -18,8 +18,8 @@ extern "C" {
  * @return		rpmRC return code
  */
 rpmRC rpmMkdirPath (const char * dpath, const char * dname)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Split string into fields separated by a character.

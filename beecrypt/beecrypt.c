@@ -172,9 +172,11 @@ const randomGenerator* randomGeneratorGet(int index)
 	if ((index < 0) || (index >= RANDOMGENERATORS))
 		return (const randomGenerator*) 0;
 
+/*@-boundsread@*/
 	/*@-compmempass@*/
 	return randomGeneratorList[index];
 	/*@=compmempass@*/
+/*@=boundsread@*/
 }
 
 /*@-boundsread@*/
@@ -291,9 +293,11 @@ const hashFunction* hashFunctionGet(int index)
 	if ((index < 0) || (index >= HASHFUNCTIONS))
 		return (const hashFunction*) 0;
 
+/*@-boundsread@*/
 	/*@-compmempass@*/
 	return hashFunctionList[index];
 	/*@=compmempass@*/
+/*@=boundsread@*/
 }
 
 /*@-boundsread@*/
@@ -511,9 +515,11 @@ const keyedHashFunction* keyedHashFunctionGet(int index)
 	if ((index < 0) || (index >= KEYEDHASHFUNCTIONS))
 		return (const keyedHashFunction*) 0;
 
+/*@-boundsread@*/
 	/*@-compmempass@*/
 	return keyedHashFunctionList[index];
 	/*@=compmempass@*/
+/*@=boundsread@*/
 }
 
 /*@-boundsread@*/
@@ -752,9 +758,11 @@ const blockCipher* blockCipherGet(int index)
 	if ((index < 0) || (index >= BLOCKCIPHERS))
 		return (const blockCipher*) 0;
 
+/*@-boundsread@*/
 	/*@-compmempass@*/
 	return blockCipherList[index];
 	/*@=compmempass@*/
+/*@=boundsread@*/
 }
 
 /*@-boundsread@*/

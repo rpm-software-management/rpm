@@ -57,8 +57,8 @@ static int checkSpec(rpmts ts, Header h)
 /**
  */
 static int isSpecFile(const char * specfile)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     char buf[256];
     const char * s;

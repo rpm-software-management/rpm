@@ -27,8 +27,8 @@ extern "C" {
  */
 int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
 		/*@null@*/ /*@out@*/ size_t *fsizep)
-	/*@globals fileSystem @*/
-	/*@modifies digest, *fsizep, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies digest, *fsizep, fileSystem, internalState @*/;
 
 /**
  * Convert absolute path tag to (dirname,basename,dirindex) tags.

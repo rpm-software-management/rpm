@@ -353,9 +353,8 @@ static void fillOutMainPackage(Header h)
  */
 /*@-boundswrite@*/
 static int readIcon(Header h, const char * file)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     const char *fn = NULL;
     char *icon;
@@ -459,14 +458,13 @@ extern int noLang;
 /*@-boundswrite@*/
 static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 			     const char *lang)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies spec->macros, spec->st, spec->buildRootURL,
 		spec->sources, spec->numSources, spec->noSource,
 		spec->buildRestrictions, spec->BANames, spec->BACount,
 		spec->line, spec->gotBuildRootURL,
 		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;

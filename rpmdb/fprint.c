@@ -42,7 +42,9 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
 
     if (htGetEntry(cache->ht, dirName, &data, NULL, NULL))
 	return NULL;
+/*@-boundsread@*/
     return data[0];
+/*@=boundsread@*/
 }
 
 /**

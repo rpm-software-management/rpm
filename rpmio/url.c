@@ -193,8 +193,8 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
 /*@-boundswrite@*/
 /*@-mods@*/
 static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
-	/*@globals rpmGlobalMacroContext, fileSystem@*/
-	/*@modifies *uret, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies *uret, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     urlinfo u;
     int ucx;
@@ -266,8 +266,11 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	    prompt = alloca(strlen(host) + strlen(user) + 256);
 	    sprintf(prompt, _("Password for %s@%s: "), user, host);
 	    u->password = _free(u->password);
+/*@-dependenttrans -moduncon @*/
 	    u->password = /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/;
-	    u->password = xstrdup(u->password);	/* XXX xstrdup has side effects. */
+/*@=dependenttrans =moduncon @*/
+	    if (u->password)
+		u->password = xstrdup(u->password);
 	}
 
 	if (u->proxyh == NULL) {

@@ -36,8 +36,8 @@
  * @return		0 on success
  */
 static int checkOwners(const char * urlfn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     struct stat sb;
 
@@ -67,9 +67,8 @@ static int checkOwners(const char * urlfn)
 /*@-boundswrite@*/
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -162,9 +161,8 @@ static int checkOwners(const char * urlfn)
  */
 /*@-boundswrite@*/
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -281,10 +279,9 @@ static int checkOwners(const char * urlfn)
  * @return		0 on success
  */
 static int doSetupMacro(Spec spec, char *line)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies spec->buildSubdir, spec->macros, spec->prep,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
     StringBuf before;
@@ -441,8 +438,9 @@ static int doSetupMacro(Spec spec, char *line)
 /*@-boundswrite@*/
 static int doPatchMacro(Spec spec, char *line)
 	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies spec->prep, rpmGlobalMacroContext, fileSystem @*/
+		fileSystem, internalState @*/
+	/*@modifies spec->prep, rpmGlobalMacroContext,
+		fileSystem, internalState  @*/
 {
     char *opt_b;
     int opt_P, opt_p, opt_R, opt_E;

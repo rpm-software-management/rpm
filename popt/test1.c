@@ -175,8 +175,8 @@ static void resetVars(void)
 }
 
 int main(int argc, const char ** argv)
-	/*@globals pass2, fileSystem @*/
-	/*@modifies pass2, fileSystem @*/
+	/*@globals pass2, fileSystem, internalState @*/
+	/*@modifies pass2, fileSystem, internalState @*/
 {
     int rc;
     int ec = 0;

@@ -137,8 +137,8 @@ void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
  */
 void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)
 	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
-		fileSystem @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
+		fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Destroy macro context.
@@ -163,8 +163,8 @@ typedef enum rpmCompressedMagic_e {
  */
 int	isCompressed	(const char * file,
 				/*@out@*/ rpmCompressedMagic * compressed)
-	/*@globals fileSystem@*/
-	/*@modifies *compressed, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *compressed, fileSystem, internalState @*/;
 
 /**
  * Return (malloc'ed) concatenated macro expansion(s).

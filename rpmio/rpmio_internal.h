@@ -180,26 +180,26 @@ int fdFgets(FD_t fd, char * buf, size_t len)
  */
 /*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
                 /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
-	/*@globals fileSystem @*/
-	/*@modifies *uret, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *uret, fileSystem, internalState @*/;
 
 /** \ingroup rpmio
  */
 int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
-	/*@globals fileSystem @*/
-	/*@modifies data, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies data, fileSystem, internalState @*/;
 
 /** \ingroup rpmio
  */
 int ftpCmd(const char * cmd, const char * url, const char * arg2)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmio
  */
 int ufdClose( /*@only@*/ void * cookie)
-	/*@globals fileSystem @*/
-	/*@modifies cookie, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies cookie, fileSystem, internalState @*/;
 
 /** \ingroup rpmio
  */
@@ -208,7 +208,9 @@ int ufdClose( /*@only@*/ void * cookie)
 	/*@*/
 {
     FDSANE(fd);
+/*@-boundsread@*/
     return fd->fps[fd->nfps].io;
+/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
@@ -234,9 +236,11 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@*/
 {
     FDSANE(fd);
+/*@-boundsread@*/
     /*@+voidabstract@*/
     return ((FILE *)fd->fps[fd->nfps].fp);
     /*@=voidabstract@*/
+/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
@@ -246,7 +250,9 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@*/
 {
     FDSANE(fd);
+/*@-boundsread@*/
     return fd->fps[fd->nfps].fp;
+/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
@@ -272,7 +278,9 @@ int fdGetFdno(FD_t fd)
 	/*@*/
 {
     FDSANE(fd);
+/*@-boundsread@*/
     return fd->fps[fd->nfps].fdno;
+/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
@@ -549,16 +557,23 @@ int fdFileno(/*@null@*/ void * cookie)
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
+/*@-boundsread@*/
     return fd->fps[0].fdno;
+/*@=boundsread@*/
 }
 /*@=shadow@*/
 
 /**
+ * Read an entire file into a buffer.
+ * @param fn		file name to read
+ * @retval *bp		(malloc'd) buffer address
+ * @retval *blenp	(malloc'd) buffer length
+ * @return		0 on success
  */
 int rpmioSlurp(const char * fn,
                 /*@out@*/ const unsigned char ** bp, /*@out@*/ ssize_t * blenp)
-        /*@globals fileSystem @*/
-        /*@modifies *bp, *blenp, fileSystem @*/;
+        /*@globals fileSystem, internalState @*/
+        /*@modifies *bp, *blenp, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

@@ -348,7 +348,7 @@ static int rpmImportPubkey(const rpmts ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
 	/*@globals RPMVERSION, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/
 {
     const char * fn;
     int res = 0;

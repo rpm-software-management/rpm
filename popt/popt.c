@@ -355,7 +355,8 @@ static int handleAlias(/*@special@*/ poptContext con,
 
 /*@-bounds -boundswrite @*/
 static int execCommand(poptContext con)
-    /*@*/
+	/*@globals internalState @*/
+	/*@modifies internalState @*/
 {
     poptItem item = con->doExec;
     const char ** argv;

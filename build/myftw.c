@@ -58,8 +58,8 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
 	   myftwFunc func,
 	   void *fl)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *dirs, *dir, errno, fileSystem @*/
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies *dirs, *dir, errno, fileSystem, internalState @*/
 {
   int got;
   struct dirent *entry;

@@ -1074,6 +1074,7 @@ int pgpLen(const byte *s, /*@out@*/ unsigned int *lenp)
  */
 /*@unused@*/ static inline
 unsigned int pgpMpiBits(const byte *p)
+	/*@requires maxRead(p) >= 1 @*/
 	/*@*/
 {
     return ((p[0] << 8) | p[1]);
@@ -1086,6 +1087,7 @@ unsigned int pgpMpiBits(const byte *p)
  */
 /*@unused@*/ static inline
 unsigned int pgpMpiLen(const byte *p)
+	/*@requires maxRead(p) >= 1 @*/
 	/*@*/
 {
     return (2 + ((pgpMpiBits(p)+7)>>3));
@@ -1140,6 +1142,7 @@ char * pgpHexStr(const byte *p, unsigned int plen)
  */
 /*@unused@*/ static inline /*@observer@*/
 const char * pgpMpiStr(const byte *p)
+	/*@requires maxRead(p) >= 3 @*/
 	/*@*/
 {
     static char prbuf[2048];
@@ -1282,8 +1285,8 @@ int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpDig_s *dig, int pr
  */
 pgpArmor pgpReadPkts(const char * fn,
 		/*@out@*/ const byte ** pkt, /*@out@*/ size_t * pktlen)
-	/*@globals fileSystem @*/
-	/*@modifies *pkt, *pktlen, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *pkt, *pktlen, fileSystem, internalState @*/;
 
 /**
  * Create a container for parsed OpenPGP packates.

@@ -3020,8 +3020,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
  * @return		1 if file exists, 0 if not
  */
 static int rpmioFileExists(const char * urlfn)
-        /*@globals fileSystem @*/
-        /*@modifies fileSystem @*/
+        /*@globals fileSystem, internalState @*/
+        /*@modifies fileSystem, internalState @*/
 {
     const char *fn;
     int urltype = urlPath(urlfn, &fn);
@@ -3054,8 +3054,8 @@ static int rpmioFileExists(const char * urlfn)
 
 static int rpmdbRemoveDatabase(const char * prefix,
 		const char * dbpath, int _dbapi)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 { 
     int i;
     char * filename;
@@ -3109,8 +3109,8 @@ static int rpmdbRemoveDatabase(const char * prefix,
 static int rpmdbMoveDatabase(const char * prefix,
 		const char * olddbpath, int _olddbapi,
 		const char * newdbpath, int _newdbapi)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     int i;
     char * ofilename, * nfilename;
