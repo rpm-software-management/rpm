@@ -1,5 +1,7 @@
 #include "system.h"
 
+int _depends_debug = 0;
+
 /** \ingroup rpmdep
  * \file lib/depends.c
  */
@@ -135,27 +137,36 @@ static void alCreate(struct availableList * al)
  */
 static void alFree(struct availableList * al)
 {
-    int i;
+    struct availablePackage * p;
     rpmRelocation * r;
+    int i;
 
-    for (i = 0; i < al->size; i++) {
-	if (al->list[i].provides)
-	    free(al->list[i].provides);
-	if (al->list[i].providesEVR)
-	    free(al->list[i].providesEVR);
-	if (al->list[i].baseNames)
-	    free(al->list[i].baseNames);
-	headerFree(al->list[i].h);
+    for (i = 0, p = al->list; i < al->size; i++, p++) {
 
-	if (al->list[i].relocs) {
-	    for (r = al->list[i].relocs; (r->oldPath || r->newPath); r++) {
+	{   struct tsortInfo * tsi;
+	    while ((tsi = p->tsi.tsi_next) != NULL) {
+		p->tsi.tsi_next = tsi->tsi_next;
+		tsi->tsi_next = NULL;
+		free(tsi);
+	    }
+	}
+
+	if (p->provides)	free(p->provides);
+	if (p->providesEVR)	free(p->providesEVR);
+	if (p->requires)	free(p->requires);
+	if (p->requiresEVR)	free(p->requiresEVR);
+	if (p->baseNames)	free(p->baseNames);
+	if (p->h)		headerFree(p->h);
+
+	if (p->relocs) {
+	    for (r = p->relocs; (r->oldPath || r->newPath); r++) {
 		if (r->oldPath) xfree(r->oldPath);
 		if (r->newPath) xfree(r->newPath);
 	    }
-	    free(al->list[i].relocs);
+	    free(p->relocs);
 	}
-	if (al->list[i].fd)
-	    al->list[i].fd = fdFree(al->list[i].fd, "alAddPackage (alFree)");
+	if (p->fd)
+	    p->fd = fdFree(p->fd, "alAddPackage (alFree)");
     }
 
     for (i = 0; i < al->numDirs; i++) {
@@ -229,6 +240,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     pkgNum = al->size++;
     p = al->list + pkgNum;
     p->h = headerLink(h);	/* XXX reference held by transaction set */
+    memset(&p->tsi, 0, sizeof(p->tsi));
     p->multiLib = 0;	/* MULTILIB */
 
     headerNVR(p->h, &p->name, &p->version, &p->release);
@@ -267,6 +279,21 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	if (!headerGetEntry(h, RPMTAG_PROVIDEFLAGS,
 			NULL, (void **) &p->provideFlags, NULL))
 	    p->provideFlags = NULL;
+    }
+
+    if (!headerGetEntry(h, RPMTAG_REQUIRENAME, NULL, (void **) &p->requires,
+	&p->requiresCount)) {
+	p->requiresCount = 0;
+	p->requires = NULL;
+	p->requiresEVR = NULL;
+	p->requireFlags = NULL;
+    } else {
+	if (!headerGetEntry(h, RPMTAG_REQUIREVERSION,
+			NULL, (void **) &p->requiresEVR, NULL))
+	    p->requiresEVR = NULL;
+	if (!headerGetEntry(h, RPMTAG_REQUIREFLAGS,
+			NULL, (void **) &p->requireFlags, NULL))
+	    p->requireFlags = NULL;
     }
 
     if (!headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, (void **) 
@@ -1129,13 +1156,17 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 		Header h, const char * keyName, uint_32 multiLib)
 {
     const char * name, * version, * release;
-    const char ** requires, ** requiresEVR = NULL;
-    const char ** conflicts, ** conflictsEVR = NULL;
-    int requiresCount = 0, conflictsCount = 0;
+    const char ** requires;
+    const char ** requiresEVR = NULL;
+    int_32 * requireFlags = NULL;
+    int requiresCount = 0;
+    const char ** conflicts;
+    const char ** conflictsEVR = NULL;
+    int_32 * conflictFlags = NULL;
+    int conflictsCount = 0;
     int type;
     int i, rc;
     int ourrc = 0;
-    int_32 * requireFlags = NULL, * conflictFlags = NULL;
     struct availablePackage * suggestion;
 
     headerNVR(h, &name, &version, &release);
@@ -1276,8 +1307,10 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
     return ourrc;
 }
 
-/* Adding: check name/provides key against each conflict match. */
-/* Erasing: check name/provides/filename key against each requiredby match. */
+/**
+ * Adding: check name/provides key against each conflict match,
+ * Erasing: check name/provides/filename key against each requiredby match.
+ */
 static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	const char * key, /*@only@*/ rpmdbMatchIterator mi)
 {
@@ -1297,7 +1330,9 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
     return rc;
 }
 
-/* Erasing: check name/provides/filename key against requiredby matches. */
+/**
+ * Erasing: check name/provides/filename key against requiredby matches.
+ */
 static int checkDependentPackages(rpmTransactionSet rpmdep,
 			struct problemsSet * psp, const char * key)
 {
@@ -1306,7 +1341,9 @@ static int checkDependentPackages(rpmTransactionSet rpmdep,
     return checkPackageSet(rpmdep, psp, key, mi);
 }
 
-/* Adding: check name/provides key against conflicts matches. */
+/**
+ * Adding: check name/provides key against conflicts matches.
+ */
 static int checkDependentConflicts(rpmTransactionSet rpmdep,
 		struct problemsSet * psp, const char * key)
 {
@@ -1321,99 +1358,116 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
     return rc;
 }
 
-/* selection status is one of:
-
-	-1:	selected
-	0:	not selected
-	> 0:	selection class
-
-   the current selection pass is included as a separate parameter, and is
-   incremented when satisfying a prerequisite */
-
-static int addOrderedPack(rpmTransactionSet rpmdep,
-			struct availablePackage * package,
-			int * ordering, int * orderNumPtr,
-			int * selected, int selectionClass,
-			int satisfyDepends, const char ** errorStack)
+#if 0
+static struct badDeps_s {
+    const char * pname;
+    const char * qname;
+} badDeps[] = {
+#if 0
+    { "libtermcap", "bash" },
+    { "modutils", "vixie-cron" },
+    { "XFree86", "Mesa" },
+    { "ypbind", "yp-tools" },
+    { "pango-gtkbeta", "pango-gtkbeta-devel" },
+    { "ghostscript-fonts", "ghostscript" },
+/* ================= */
+    { "usermode", "util-linux" },
+    { "chkfontpath", "SysVinit" },
+    { "vixie-cron", "sysklogd" },
+    { "XFree86", "XFree86-xfs" },
+    { "Xconfigurator", "kudzu" },
+#endif
+    { NULL, NULL }
+};
+    
+static int ignoreDep(struct availablePackage * p, struct availablePackage * q)
 {
-    const char ** requires;
-    const char ** requiresEVR;
-    int_32 * requireFlags;
-    int requiresCount;
-    int matchNum;
-    int packageNum = package - rpmdep->addedPackages.list;
-    int i;
-    struct availablePackage * match;
-    int rc = 0;
+    struct badDeps_s *bdp;
 
-    *errorStack++ = package->name;
-
-    if (selected[packageNum] > 0) {
-	const char * errorString;
-	const char ** stack;
-	char * t;
-
-	i = 0;
-	stack = errorStack - 1;
-	while (*(--stack))
-	    i += strlen(*stack) + 1;
-
-	errorString = t = alloca(i + 2);
-	while ((++stack) < errorStack) {
-	    t = stpcpy(t, *stack);
-	    *t++ = ' ';
+    for (bdp = badDeps; bdp->pname != NULL; bdp++) {
+	if (!strcmp(p->name, bdp->pname) && !strcmp(q->name, bdp->qname)) {
+fprintf(stderr, "*** avoiding %s Requires: %s\n", p->name, q->name);
+	    return 1;
 	}
-
-	rpmError(RPMMESS_PREREQLOOP, _("loop in prerequisite chain: %s"),
-		 errorString);
-
-	return 1;
     }
+    return 0;
+}
+#endif
 
-    selected[packageNum] = selectionClass;
+/**
+ * Recursively mark all nodes with their predecessors.
+ * @param tsi		successor chain
+ * @param q		predecessor
+ */
+static void markLoop(struct tsortInfo * tsi, struct availablePackage * q)
+{
+    struct availablePackage * p;
 
-    if (headerGetEntry(package->h, RPMTAG_REQUIRENAME, NULL,
-			(void **) &requires, &requiresCount)) {
-	headerGetEntry(package->h, RPMTAG_REQUIREFLAGS, NULL,
-			(void **) &requireFlags, NULL);
-	headerGetEntry(package->h, RPMTAG_REQUIREVERSION, NULL,
-			(void **) &requiresEVR, NULL);
+    while (tsi != NULL) {
+	p = tsi->tsi_suc;
+	tsi = tsi->tsi_next;
+	if (p->tsi.tsi_pkg != NULL)
+	    continue;
+	p->tsi.tsi_pkg = q;
+	markLoop(p->tsi.tsi_next, p);
+    }
+}
 
-	for (i = 0; rc == 0 && i < requiresCount; i++) {
-	    if (!(satisfyDepends || (requireFlags[i] & RPMSENSE_PREREQ)))
-		continue;
-	    match = alSatisfiesDepend(&rpmdep->addedPackages, NULL, NULL,
-			  requires[i], requiresEVR[i], requireFlags[i]);
-	    /* broken dependencies don't concern us */
-	    if (!match) continue;
+/**
+ * Find (and eliminate PreReq's) "q <- p" relation in dependency loop.
+ * Search all successors of q for instance of p. Format the specific relation,
+ * (e.g. p contains "Requires: q"). Unlink and free PreReq: successor node(s).
+ * @param q		sucessor (i.e. package required by p)
+ * @param p		predecessor (i.e. package that "Requires: q")
+ * @param zap		eliminate PreReq's ?
+ * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
+ */
+static /*@owned@*/ /*@null@*/ const char *
+zapRelation(struct availablePackage * q, struct availablePackage * p,
+	int zap, int * nzaps)
+{
+    struct tsortInfo * tsi_prev;
+    struct tsortInfo * tsi;
+    const char *dp = NULL;
 
-	    /* let this package satisfy its own predependencies */
-	    if (match == package) continue;
+    if (q == NULL)
+	return dp;
+    for (tsi_prev = &q->tsi, tsi = q->tsi.tsi_next;
+	 tsi != NULL;
+	 tsi_prev = tsi, tsi = tsi->tsi_next)
+    {
+	int j;
 
-	    /* the package has already been selected */
-	    matchNum = match - rpmdep->addedPackages.list;
-	    if(selected[matchNum] == -1 || selected[matchNum] == selectionClass)
-		continue;
+	if (tsi->tsi_suc != p)
+	    continue;
+	j = tsi->tsi_reqx;
+	dp = printDepend( ((p->requireFlags[j] & RPMSENSE_PREREQ)
+			? "PreReq:" : "Requires:"),
+		p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
 
-	    if (requireFlags[i] & RPMSENSE_PREREQ)
-		rc = addOrderedPack(rpmdep, match, ordering, orderNumPtr,
-			        selected, selectionClass + 1, 1, errorStack);
-	    else
-		rc = addOrderedPack(rpmdep, match, ordering, orderNumPtr,
-			        selected, selectionClass, 1, errorStack);
+	/*
+	 * XXX Attempt to unravel a dependency loop by eliminating PreReq's.
+	 * This hack "works" for the (relatively) more important autogenerated
+	 *	Requires: lib*.so.*
+	 * but may cause package %pre/%post scriptlets with, for example,
+	 *	PreReq: /bin/sh
+	 * to fail.
+	 */
+	if (zap && (p->requireFlags[j] & RPMSENSE_PREREQ)) {
+	    rpmMessage(RPMMESS_WARNING,
+			_("removing %s-%s-%s \"%s\" from tsort relations.\n"),
+			p->name, p->version, p->release, dp);
+	    p->tsi.tsi_count--;
+	    tsi_prev->tsi_next = tsi->tsi_next;
+	    tsi->tsi_next = NULL;
+	    tsi->tsi_suc = NULL;
+	    free(tsi);
+	    if (nzaps)
+		(*nzaps)++;
 	}
-
-	free(requires);
-	free(requiresEVR);
+	break;
     }
-
-    /* whew -- add this package */
-    if (rc == 0) {
-	ordering[(*orderNumPtr)++] = packageNum;
-	selected[packageNum] = -1;
-    }
-
-    return rc;
+    return dp;
 }
 
 /**
@@ -1431,41 +1485,232 @@ static int orderListIndexCmp(const void * one, const void * two)
 
 int rpmdepOrder(rpmTransactionSet rpmdep)
 {
-    int i, j;
-    int * selected;
-    int * ordering;
-    int orderingCount;
-    const char ** errorStack;
+    struct availablePackage * p;
+    struct availablePackage * q;
+    struct availablePackage * r;
+    struct tsortInfo * tsi;
+    struct tsortInfo * tsi_next;
+    int npkgs = rpmdep->addedPackages.size;
+    int * ordering = alloca(sizeof(*ordering) * (npkgs + 1));
+    int orderingCount = 0;
+    unsigned char * selected = alloca(sizeof(*selected) * (npkgs + 1));
+    int loopcheck;
     struct transactionElement * newOrder;
     int newOrderCount = 0;
-    struct orderListIndex * orderList, * needle, key;
+    struct orderListIndex * orderList;
+    int nrescans = 10;
+    int i, j;
 
     alMakeIndex(&rpmdep->addedPackages);
     alMakeIndex(&rpmdep->availablePackages);
 
-    selected = alloca(sizeof(*selected) * rpmdep->addedPackages.size);
-    memset(selected, 0, sizeof(*selected) * rpmdep->addedPackages.size);
+    /* T1. Initialize. */
+    loopcheck = npkgs;
 
-    errorStack = alloca(sizeof(*errorStack) * (rpmdep->addedPackages.size + 1));
-    *errorStack++ = NULL;
+    /* Record all relations. */
+    rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
+    for (i = 0, p = rpmdep->addedPackages.list;
+	 i < rpmdep->addedPackages.size;
+	 i++, p++)
+    {
+	int matchNum;
 
-    ordering = alloca(sizeof(*ordering) * (rpmdep->addedPackages.size + 1));
-    orderingCount = 0;
+	if (p->requiresCount <= 0)
+	    continue;
 
-    for (i = 0; i < rpmdep->addedPackages.size; i++) {
-	if (!selected[i]) {
-	    if (addOrderedPack(rpmdep, rpmdep->addedPackages.list + i,
-			       ordering, &orderingCount, selected, 1, 0,
-			       errorStack)) {
-		return 1;
-	    }
+	memset(selected, 0, sizeof(*selected) * npkgs);
+
+	/* Avoid narcisstic relations. */
+	matchNum = p - rpmdep->addedPackages.list;
+	selected[matchNum] = 1;
+
+	/* T2. Next "q <- p" relation. */
+	for (j = 0; j < p->requiresCount; j++) {
+
+	    /* Avoid rpmlib feature dependencies. */
+	    if (!strncmp(p->requires[j], "rpmlib(", sizeof("rpmlib(")-1))
+		continue;
+
+#if 0
+	    /* XXX FIXME: add control bit. */
+	    /* Only PreReq:'s determine order (for now). */
+	    if (!_depends_debug && !(p->requireFlags[j] & RPMSENSE_PREREQ))
+		continue;
+#endif
+
+	    /* Ordering depends only on added package relations. */
+	    q = alSatisfiesDepend(&rpmdep->addedPackages, NULL, NULL,
+			p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
+	    if (q == NULL) continue;
+
+#if 0
+	    /* Avoid certain dependency relations. */
+	    if (ignoreDep(p, q)) continue;
+#endif
+
+	    /* Avoid redundant relations. */
+	    /* XXX FIXME: add control bit. */
+	    matchNum = q - rpmdep->addedPackages.list;
+	    if (selected[matchNum]) continue;
+	    selected[matchNum] = 1;
+
+	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    p->tsi.tsi_count++;
+	    tsi = xmalloc(sizeof(*tsi));
+	    tsi->tsi_suc = p;
+	    tsi->tsi_reqx = j;
+	    tsi->tsi_next = q->tsi.tsi_next;
+	    q->tsi.tsi_next = tsi;
 	}
     }
 
-    /* The order ends up as installed packages followed by removed packages,
-       with removes for upgrades immediately follwing the installation of
-       the new package. This would be easier if we could sort the
-       addedPackages array, but we store indexes into it in various places. */
+    /* T4. Scan for zeroes. */
+    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages\n"));
+
+rescan:
+    q = r = NULL;
+    for (i = 0, p = rpmdep->addedPackages.list;
+	     i < rpmdep->addedPackages.size;
+	     i++, p++)
+    {
+	    if (p->tsi.tsi_count != 0)
+		continue;
+	    p->tsi.tsi_suc = NULL;
+	    if (r == NULL)
+		q = p;
+	    else
+		r->tsi.tsi_suc = p;
+	    r = p;
+    }
+
+    /* T5. Output fromt of queue (T7. Remove from queue.) */
+    for (; q != NULL; q = q->tsi.tsi_suc) {
+
+	rpmMessage(RPMMESS_DEBUG, "%5d %s-%s-%s\n", orderingCount,
+			q->name, q->version, q->release);
+
+	ordering[orderingCount++] = q - rpmdep->addedPackages.list;
+	loopcheck--;
+
+	/* T6. Erase relations. */
+	tsi_next = q->tsi.tsi_next;
+	q->tsi.tsi_next = NULL;
+	while ((tsi = tsi_next) != NULL) {
+	    tsi_next = tsi->tsi_next;
+	    tsi->tsi_next = NULL;
+	    p = tsi->tsi_suc;
+	    if ((--p->tsi.tsi_count) <= 0) {
+		/* XXX FIXME: add control bit. */
+#ifdef	QUEUE_AT_REAR
+		p->tsi.tsi_suc = NULL;
+		r->tsi.tsi_suc = p;
+		r = p;
+#else
+		p->tsi.tsi_suc = q->tsi.tsi_suc;
+		q->tsi.tsi_suc = p;
+#endif
+	    }
+	    free(tsi);
+	}
+    }
+
+    /* T8. End of process. Check for loops. */
+    if (loopcheck != 0) {
+	int nzaps;
+
+	/* T9. Initialize predecessor chain. */
+	nzaps = 0;
+	for (i = 0, q = rpmdep->addedPackages.list;
+	     i < rpmdep->addedPackages.size;
+	     i++, q++)
+	{
+	    q->tsi.tsi_pkg = NULL;
+	    q->tsi.tsi_reqx = 0;
+	    /* Mark packages already sorted. */
+	    if (q->tsi.tsi_count == 0)
+		q->tsi.tsi_count = -1;
+	}
+
+	/* T10. Mark all packages with their predecessors. */
+	for (i = 0, q = rpmdep->addedPackages.list;
+	     i < rpmdep->addedPackages.size;
+	     i++, q++)
+	{
+	    if ((tsi = q->tsi.tsi_next) == NULL)
+		continue;
+	    q->tsi.tsi_next = NULL;
+	    markLoop(tsi, q);
+	    q->tsi.tsi_next = tsi;
+	}
+
+	/* T11. Print all dependency loops. */
+	for (i = 0, r = rpmdep->addedPackages.list;
+	     i < rpmdep->addedPackages.size;
+	     i++, r++)
+	{
+	    int printed;
+
+	    printed = 0;
+
+	    /* T12. Mark predecessor chain, looking for start of loop. */
+	    for (q = r->tsi.tsi_pkg; q != NULL; q = q->tsi.tsi_pkg) {
+		if (q->tsi.tsi_reqx)
+		    break;
+		q->tsi.tsi_reqx = 1;
+	    }
+
+	    /* T13. Print predecessor chain from start of loop. */
+	    while ((p = q) != NULL && (q = p->tsi.tsi_pkg) != NULL) {
+		const char * dp;
+		char buf[4096];
+
+		/* Unchain predecessor loop. */
+		p->tsi.tsi_pkg = NULL;
+
+		if (!printed) {
+		    rpmMessage(RPMMESS_NORMAL, _("LOOP:\n"));
+		    printed = 1;
+		}
+
+		/* Find (and destroy if PreReq:) "q <- p" relation. */
+		dp = zapRelation(q, p, 1, &nzaps);
+
+		/* Print next member of loop. */
+		sprintf(buf, "%s-%s-%s", p->name, p->version, p->release);
+		rpmMessage(RPMMESS_NORMAL, "    %-40s %s\n", buf, dp);
+
+		if (dp) {
+		    xfree(dp);
+		    dp = NULL;
+		}
+	    }
+
+	    /* Walk (and erase) linear part of predecessor chain as well. */
+	    for (p = r, q = r->tsi.tsi_pkg;
+		 q != NULL;
+		 p = q, q = q->tsi.tsi_pkg)
+	    {
+		/* Unchain linear part of predecessor loop. */
+		p->tsi.tsi_pkg = NULL;
+		p->tsi.tsi_reqx = 0;
+	    }
+	}
+
+	/* If a relation was eliminated, then continue sorting. */
+	/* XXX FIXME: add control bit. */
+	if (nzaps && nrescans-- > 0) {
+	    rpmMessage(RPMMESS_DEBUG, _("========== continuing tsort ...\n"));
+	    goto rescan;
+	}
+	return 1;
+    }
+
+    /*
+     * The order ends up as installed packages followed by removed packages,
+     * with removes for upgrades immediately following the installation of
+     * the new package. This would be easier if we could sort the
+     * addedPackages array, but we store indexes into it in various places.
+     */
     orderList = xmalloc(sizeof(*orderList) * rpmdep->addedPackages.size);
     for (i = 0, j = 0; i < rpmdep->orderCount; i++) {
 	if (rpmdep->order[i].type == TR_ADDED) {
@@ -1481,6 +1726,8 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 
     newOrder = xmalloc(sizeof(*newOrder) * rpmdep->orderCount);
     for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
+	struct orderListIndex * needle, key;
+
 	key.alIndex = ordering[i];
 	needle = bsearch(&key, orderList, rpmdep->addedPackages.size,
 			 sizeof(key), orderListIndexCmp);
@@ -1503,7 +1750,6 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 	    newOrder[newOrderCount++] = rpmdep->order[i];
 	}
     }
-
     if (newOrderCount != rpmdep->orderCount) abort();
 
     free(rpmdep->order);
@@ -1540,8 +1786,10 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     /* Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
-    p = rpmdep->addedPackages.list;
-    for (i = 0; i < rpmdep->addedPackages.size; i++, p++) {
+    for (i = 0, p = rpmdep->addedPackages.list;
+	 i < rpmdep->addedPackages.size;
+	 i++, p++)
+    {
 
 	rc = checkPackageDeps(rpmdep, &ps, p->h, NULL, p->multiLib);
 	if (rc)

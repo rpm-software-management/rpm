@@ -8,20 +8,40 @@
 #include <header.h>
 
 /**
+ * Dependncy ordering information.
+ */
+struct tsortInfo {
+    union {
+	int	count;
+	/*@dependent@*/ struct availablePackage * suc;
+    } tsi_u;
+#define	tsi_count	tsi_u.count
+#define	tsi_suc		tsi_u.suc
+/*@owned@*/ struct tsortInfo *tsi_next;
+/*@dependent@*/ struct availablePackage * tsi_pkg;
+    int		tsi_reqx;
+};
+
+/**
  * Info about a single package to be installed/removed.
  */
 struct availablePackage {
     Header h;				/*!< Package header. */
-/*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
-/*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
-/*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
-/*@owned@*/ const char ** baseNames;	/*!< Header file basenames. */
 /*@dependent@*/ const char * name;	/*!< Header name. */
 /*@dependent@*/ const char * version;	/*!< Header version. */
 /*@dependent@*/ const char * release;	/*!< Header release. */
+/*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
+/*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
+/*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
+/*@owned@*/ const char ** requires;	/*!< Requires: name strings. */
+/*@owned@*/ const char ** requiresEVR;	/*!< Requires: [epoch:]version[-release] strings. */
+/*@dependent@*/ int * requireFlags;	/*!< Requires: logical range qualifiers. */
+/*@owned@*/ const char ** baseNames;	/*!< Header file basenames. */
 /*@dependent@*/ int_32 * epoch;		/*!< Header epoch (if any). */
     int providesCount;			/*!< No. of Provide:'s in header. */
+    int requiresCount;			/*!< No. of Require:'s in header. */
     int filesCount;			/*!< No. of files in header. */
+    struct tsortInfo tsi;		/*!< Dependency tsort data. */
     uint_32 multiLib;	/* MULTILIB */
 /*@dependent@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
     rpmRelocation * relocs;

@@ -1,13 +1,13 @@
 4.0 -> 4.1
 	- add doxygen and lclint annotations most everywhere.
 	- rip out rpm{get,put}text, use getpo.sh and specspo instead.
-	- rip out rpmrc configuration.
 	- consistent return for all signature verification.
 	- use enums for almost all rpmlib #define's.
 	- API: change rpmProblem typedef to pass by reference, not value.
 	- unify rpmError and rpmMessge interfaces through rpmlog.
 	- collect and display rpm build error messages at end of build.
 	- don't trim leading ./ in rpmCleanPath() (#14961).
+	- order packages using tsort, clipping PreReq:'s in dependency loops.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.99 2000/09/14 11:42:52 jbj Exp $
+# $Id: sl.po,v 1.100 2000/09/26 18:04:17 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-09-14 07:26-0400\n"
+"POT-Creation-Date: 2000-09-26 10:31-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1785,97 +1785,97 @@ msgstr "Ime datoteke se mora zaèeti z \"/\": %s"
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Posebnih %%doc ni mo¾no me¹ati z ostalimi oblikami: %s"
 
-#: build/files.c:813
+#: build/files.c:816
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Datoteka je navedena dvakrat: %s"
 
-#: build/files.c:922
+#: build/files.c:925
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
-#: build/files.c:1011
+#: build/files.c:1015
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Datoteka se ne ujema s predpono (%s): %s"
 
-#: build/files.c:1021
+#: build/files.c:1025
 #, c-format
 msgid "File not found: %s"
 msgstr "Datoteke ni najti: %s"
 
-#: build/files.c:1064
+#: build/files.c:1068
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Okvarjen lastnik/skupina: %s\n"
 
-#: build/files.c:1076
+#: build/files.c:1080
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Datoteka: %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1150
+#: build/files.c:1154
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:1179
+#: build/files.c:1183
 #, c-format
 msgid "File not found by glob: %s"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1231
+#: build/files.c:1235
 msgid "Could not open %%files file %s: %s"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1240 build/pack.c:101
+#: build/files.c:1244 build/pack.c:101
 #, c-format
 msgid "line: %s"
 msgstr "vrstica: %s"
 
-#: build/files.c:1567
+#: build/files.c:1571
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "Okvarjena datoteka: %s: %s"
 
-#: build/files.c:1579 build/parsePrep.c:35
+#: build/files.c:1583 build/parsePrep.c:35
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Okvarjen lastnik/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1634
+#: build/files.c:1638
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Ni mo¾no izvesti %s: %s"
 
-#: build/files.c:1639
+#: build/files.c:1643
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Vejitev %s ni mo¾na: %s"
 
-#: build/files.c:1721
+#: build/files.c:1725
 #, c-format
 msgid "%s failed"
 msgstr "%s neuspe¹en"
 
-#: build/files.c:1725
+#: build/files.c:1729
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "pisanje podatkov na %s neuspe¹no"
 
-#: build/files.c:1821
+#: build/files.c:1825
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "I¹èemo  %s: (z uporabo %s)...\n"
 
-#: build/files.c:1849 build/files.c:1859
+#: build/files.c:1853 build/files.c:1863
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:1969
+#: build/files.c:1973
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdelujemo datoteke: %s-%s-%s\n"
@@ -2400,7 +2400,7 @@ msgid " failed - "
 msgstr " neuspe¹no - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:522
+#: lib/depends.c:549
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2409,72 +2409,90 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:551
+#: lib/depends.c:578
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:905
+#: lib/depends.c:932
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s zadovoljen ob dodatnem seznamu datotek.\n"
 
-#: lib/depends.c:964
+#: lib/depends.c:991
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s zadovoljen ob dodatni ponudbi.\n"
 
-#: lib/depends.c:1016
+#: lib/depends.c:1043
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1035
+#: lib/depends.c:1062
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:1052
+#: lib/depends.c:1079
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s zadovoljen ob dodatnem ponudbi rpmrc.\n"
 
-#: lib/depends.c:1073
+#: lib/depends.c:1100
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1086
+#: lib/depends.c:1113
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s zadovoljen ob ponudbi db.\n"
 
-#: lib/depends.c:1099
+#: lib/depends.c:1126
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1120
+#: lib/depends.c:1147
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s zadovoljen ob dodatnem paketu.\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1174
+#: lib/depends.c:1205
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s zahteva, a ni zadovoljeno: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1241
+#: lib/depends.c:1272
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s v sporu: %s\n"
 
-#: lib/depends.c:1367
-#, c-format
-msgid "loop in prerequisite chain: %s"
-msgstr "zanka v predpogojevani verigi: %s"
+#: lib/depends.c:1458
+#, fuzzy, c-format
+msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
+msgstr "odstranjujemo seznam skupin\n"
+
+#. Record all relations.
+#: lib/depends.c:1511
+msgid "========== recording tsort relations\n"
+msgstr ""
+
+#. T4. Scan for zeroes.
+#: lib/depends.c:1568
+msgid "========== tsorting packages\n"
+msgstr ""
+
+#: lib/depends.c:1671
+msgid "LOOP:\n"
+msgstr ""
+
+#: lib/depends.c:1702
+msgid "========== continuing tsort ...\n"
+msgstr ""
 
 #: lib/db1.c:102 lib/db3.c:449
 #, c-format
@@ -3360,7 +3378,7 @@ msgstr "napaka pri pisanju zapisa %s v %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "napaka pri brisanju zapisa %s iz %s"
 
-#: lib/rpmdb.c:770 lib/rpmdb.c:2304
+#: lib/rpmdb.c:770 lib/rpmdb.c:2303
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
@@ -3371,112 +3389,112 @@ msgid ""
 msgstr "staro obliko podatkove zbirke pretvorite v novo z --rebuilddb"
 
 #. error
-#: lib/rpmdb.c:1081
+#: lib/rpmdb.c:1080
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "napaka pri iskanju paketa %s\n"
 
-#: lib/rpmdb.c:1140 lib/rpmdb.c:1674
+#: lib/rpmdb.c:1139 lib/rpmdb.c:1673
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "ni mo¾no prebrati glave pri %d za vpogled"
 
-#: lib/rpmdb.c:1727
+#: lib/rpmdb.c:1726
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstranjujemo vnose v podatkovni zbirki\n"
 
-#: lib/rpmdb.c:1738
+#: lib/rpmdb.c:1737
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
-#: lib/rpmdb.c:1747
+#: lib/rpmdb.c:1746
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstranjujemo seznam imen\n"
 
-#: lib/rpmdb.c:1889
+#: lib/rpmdb.c:1888
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "napaka pri iskanju paketa %s\n"
 
-#: lib/rpmdb.c:1946
+#: lib/rpmdb.c:1945
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1962
+#: lib/rpmdb.c:1961
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/rpmdb.c:1971
+#: lib/rpmdb.c:1970
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/rpmdb.c:2329
+#: lib/rpmdb.c:2328
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
-#: lib/rpmdb.c:2333
+#: lib/rpmdb.c:2332
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "zaèasna podatkovna zbirka %s ¾e obstaja"
 
-#: lib/rpmdb.c:2339
+#: lib/rpmdb.c:2338
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ustvarjamo imenik: %s\n"
 
-#: lib/rpmdb.c:2341
+#: lib/rpmdb.c:2340
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "napaka pri ustvarjanju imenika %s: %s"
 
-#: lib/rpmdb.c:2348
+#: lib/rpmdb.c:2347
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "odpiramo staro podatkovno zbirko\n"
 
-#: lib/rpmdb.c:2359
+#: lib/rpmdb.c:2358
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "odpiramo novo podatkovno zbirko\n"
 
-#: lib/rpmdb.c:2382
+#: lib/rpmdb.c:2381
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "zapis ¹t. %d v zbirki je okvarjen -- preskakujemo."
 
-#: lib/rpmdb.c:2414
+#: lib/rpmdb.c:2413
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: lib/rpmdb.c:2432
+#: lib/rpmdb.c:2431
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke neuspe¹na; stara ostaja na istem mestu\n"
 
-#: lib/rpmdb.c:2440
+#: lib/rpmdb.c:2439
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo neuspe¹na!\n"
 
-#: lib/rpmdb.c:2442
+#: lib/rpmdb.c:2441
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "posku¹amo povrniti z nadomestitvijo datotek v %s z datotekami iz %s"
 
-#: lib/rpmdb.c:2452
+#: lib/rpmdb.c:2451
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ustvarjamo imenik: %s\n"
 
-#: lib/rpmdb.c:2454
+#: lib/rpmdb.c:2453
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
@@ -4101,6 +4119,9 @@ msgstr "neuspe¹no odpiranje %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#~ msgid "loop in prerequisite chain: %s"
+#~ msgstr "zanka v predpogojevani verigi: %s"
 
 #, fuzzy
 #~ msgid "   --rcfile <file>        "
