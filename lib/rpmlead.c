@@ -1,7 +1,7 @@
 #include "config.h"
 #include "miscfn.h"
 
-#ifdef HAVE_MACHINE_TYPES_H
+#if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
 #endif
 
