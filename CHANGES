@@ -22,6 +22,8 @@
 	- xml: <integer/> instead of <integer>0</integer> markup.
 	- fix: disable fingerprint generation on kernel paths.
 	- add ppc8[25]60 arches.
+	- fix: evaluate rather than default file_contexts path. (#127501).
+	- avoid "can't happen" recursion while retrieving pubkeys.
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).

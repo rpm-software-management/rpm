@@ -350,7 +350,9 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     int i;
+    static int hclvl;
 
+    hclvl++;
 /*@-boundswrite@*/
     buf[0] = '\0';
 /*@=boundswrite@*/
@@ -489,6 +491,7 @@ exit:
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
 /*@=boundswrite@*/
+	hclvl--;
 	return rc;
     }
 
@@ -510,6 +513,7 @@ verifyinfo_exit:
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
 /*@=boundswrite@*/
+	hclvl--;
 	return rc;
     }
 
@@ -627,9 +631,12 @@ verifyinfo_exit:
     if (msg) *msg = xstrdup(buf);
 /*@=boundswrite@*/
 
+    /* XXX headerCheck can recurse, free info only at top level. */
+    if (hclvl == 1)
     rpmtsCleanDig(ts);
     if (info->tag == RPMTAG_SHA1HEADER)
 	sig = _free(sig);
+    hclvl--;
     return rc;
 }
 
