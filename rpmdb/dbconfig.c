@@ -399,7 +399,6 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
 	    /* Save value in template as appropriate. */
 	    switch (argInfo & POPT_ARG_MASK) {
-	    long aLong;
 
 	    case POPT_ARG_NONE:
 		(void) dbSaveInt(opt, argInfo, 1L);
@@ -417,7 +416,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
 	    case POPT_ARG_INT:
 	    case POPT_ARG_LONG:
-		aLong = strtol(p, &pe, 0);
+	      {	long aLong = strtol(p, &pe, 0);
 		if (pe) {
 		    if (!xstrncasecmp(pe, "Mb", 2))
 			aLong *= 1024 * 1024;
@@ -449,7 +448,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 		    }
 		    (void) dbSaveInt(opt, argInfo, aLong);
 		}
-		break;
+	      }	break;
 	    default:
 		break;
 	    }

@@ -24,8 +24,9 @@
  * @param brokenEndian	calculate broken MD5 sum?
  * @return		0 on success, 1 on error
  */
-static int domd5(const char * fn, unsigned char * digest, int asAscii,
+static int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
 		 int brokenEndian)
+	/*@modifies digest, fileSystem @*/
 {
     int rc;
 
@@ -107,6 +108,7 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
     return rc;
 }
 
+/*@-mods@*/ /* FIX: shrug */
 int mdbinfile(const char *fn, unsigned char *bindigest) {
     return domd5(fn, bindigest, 0, 0);
 }
@@ -122,3 +124,4 @@ int mdfile(const char *fn, unsigned char *digest) {
 int mdfileBroken(const char *fn, unsigned char *digest) {
     return domd5(fn, digest, 1, 1);
 }
+/*@=mods@*/

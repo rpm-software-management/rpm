@@ -630,7 +630,7 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
     size_t rlen = (recsize < sizeof(*(set->recs)))
 		? recsize : sizeof(*(set->recs));
 
-    if (set == NULL || recs == NULL || nrecs <= 0 || recsize <= 0)
+    if (set == NULL || recs == NULL || nrecs <= 0 || recsize == 0)
 	return 1;
 
     if (set->count == 0)
@@ -1485,7 +1485,9 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	mire->pattern = _free(mire->pattern);
 	if (mire->preg != NULL) {
 	    regfree(mire->preg);
+	    /*@+voidabstract@*/
 	    mire->preg = _free(mire->preg);
+	    /*@=voidabstract@*/
 	}
     }
     mi->mi_re = _free(mi->mi_re);
@@ -1726,7 +1728,9 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	allpat = _free(allpat);
 	if (preg) {
 	    regfree(preg);
+	    /*@+voidabstract@*/
 	    preg = _free(preg);
+	    /*@=voidabstract@*/
 	}
 	/*@=kepttrans@*/
 	return rc;

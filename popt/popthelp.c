@@ -254,7 +254,9 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 		}
 		*le++ = '=';
 		if (negate) *le++ = '~';
+		/*@-formatconst@*/
 		le += sprintf(le, (ops ? "0x%lx" : "%ld"), aLong);
+		/*@=formatconst@*/
 		*le++ = ']';
 	    }	break;
 	    case POPT_ARG_INT:
@@ -301,7 +303,9 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 	ch++;
 
 	sprintf(format, "%%.%ds\n%%%ds", (int) (ch - help), indentLength);
+	/*@-formatconst@*/
 	fprintf(fp, format, help, " ");
+	/*@=formatconst@*/
 	help = ch;
 	while (isspace(*help) && *help) help++;
 	helpLength = strlen(help);

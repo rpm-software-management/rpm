@@ -153,6 +153,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     if (headerp)
 	*headerp = NULL;
 
+    buf[0] = 0;
     switch (sig_type) {
     case RPMSIGTYPE_NONE:
 	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
@@ -456,7 +457,7 @@ int rpmAddSignature(Header h, const char * file, int_32 sigTag,
 }
 
 static rpmVerifySignatureReturn
-verifySizeSignature(const char * datafile, int_32 size, char * result)
+verifySizeSignature(const char * datafile, int_32 size, /*@out@*/ char * result)
 	/*@modifies *result, fileSystem @*/
 {
     struct stat st;
@@ -477,11 +478,12 @@ verifySizeSignature(const char * datafile, int_32 size, char * result)
 
 static rpmVerifySignatureReturn
 verifyMD5Signature(const char * datafile, const byte * sig, 
-			      char * result, md5func fn)
+			      /*@out@*/ char * result, md5func fn)
 	/*@modifies *result, fileSystem @*/
 {
     byte md5sum[16];
 
+    memset(md5sum, 0, sizeof(md5sum));
     (void) fn(datafile, md5sum);
     if (memcmp(md5sum, sig, 16)) {
 	sprintf(result, "MD5 sum mismatch\n"
@@ -512,7 +514,7 @@ verifyMD5Signature(const char * datafile, const byte * sig,
 
 static rpmVerifySignatureReturn
 verifyPGPSignature(const char * datafile, const void * sig, int count,
-		char * result)
+		/*@out@*/ char * result)
 	/*@modifies *result, fileSystem @*/
 {
     int pid, status, outpipe[2];
@@ -641,7 +643,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
 
 static rpmVerifySignatureReturn
 verifyGPGSignature(const char * datafile, const void * sig, int count,
-		char * result)
+		/*@out@*/ char * result)
 	/*@modifies *result, fileSystem @*/
 {
     int pid, status, outpipe[2];

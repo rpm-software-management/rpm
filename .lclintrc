@@ -14,6 +14,34 @@
 
 +checks			# lclint level
 
+# --- lclint-3.0.0.15 is pickier than lclint-2.5r
+#-formatconst
+#-compdef
+#-nullstate
+-usedef			# 296 occurences wtfo?
+#-unsignedcompare
+#-compmempass
+#-multithreaded
+#-nullderef		# 6 occurences in getdate.y
+#-nullpass
+#-unrecog
+#-portability
+#-readonlytrans		# 128 occurences in getdate.y
+#-noparams
+-usereleased		# 3 occurences wtfo?
+#-firstcase
+#-shadow
+#-bufferoverflowhigh
+#-superuser
+#-retvalint
+#-incondefs
+#-nullptrarith
+#-fcnuse
+-fielduse		# noisy in 3.0.0.15
+#-varuse
+#-exportlocal
+#-exportheadervar
+
 # --- not-yet at strict level
 #+ptrarith
 #+bitwisesigned
@@ -47,8 +75,8 @@
 #+loopswitchbreak	# 286 occurences
 #+switchswitchbreak	# 32 occurences
 #+looploopcontinue	# 86 occurences
-#+whileblock
 +forempty
+#+whileblock
 #+forblock
 #+ifblock
 #+noeffectuncon		# 228 occurences

@@ -2265,6 +2265,7 @@ static char * formatValue(sprintfTag tag, Header h,
     headerTagFormatFunction tagtype = NULL;
     headerSprintfExtension ext;
 
+    memset(buf, 0, sizeof(buf));
     if (tag->ext) {
 	if (getExtension(h, tag->ext, &type, &data, &count, 
 			 extCache + tag->extNum))
@@ -2325,7 +2326,9 @@ static char * formatValue(sprintfTag tag, Header h,
 
 	    len = strlen(strarray[element]) + tag->pad + 20;
 	    val = xmalloc(len);
+	    /*@-formatconst@*/
 	    sprintf(val, buf, strarray[element]);
+	    /*@=formatconst@*/
 	}
 
 	/*@-observertrans -modobserver@*/
@@ -2343,7 +2346,9 @@ static char * formatValue(sprintfTag tag, Header h,
 
 	    len = strlen(data) + tag->pad + 20;
 	    val = xmalloc(len);
+	    /*@-formatconst@*/
 	    sprintf(val, buf, data);
+	    /*@=formatconst@*/
 	}
 	break;
 
@@ -2366,7 +2371,9 @@ static char * formatValue(sprintfTag tag, Header h,
 	    strcat(buf, "d");
 	    len = 10 + tag->pad + 20;
 	    val = xmalloc(len);
+	    /*@-formatconst@*/
 	    sprintf(val, buf, intVal);
+	    /*@=formatconst@*/
 	}
 	break;
 
@@ -2615,7 +2622,9 @@ static char * octalFormat(int_32 type, hPTR_t data,
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "o");
+	/*@-formatconst@*/
 	sprintf(val, formatPrefix, *((int_32 *) data));
+	/*@=formatconst@*/
     }
 
     return val;
@@ -2634,7 +2643,9 @@ static char * hexFormat(int_32 type, hPTR_t data,
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "x");
+	/*@-formatconst@*/
 	sprintf(val, formatPrefix, *((int_32 *) data));
+	/*@=formatconst@*/
     }
 
     return val;
@@ -2665,7 +2676,9 @@ static char * realDateFormat(int_32 type, hPTR_t data,
 	buf[0] = '\0';
 	if (tstruct)
 	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
+	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
+	/*@=formatconst@*/
     }
 
     return val;
@@ -2701,11 +2714,15 @@ static char * shescapeFormat(int_32 type, hPTR_t data,
     if (type == RPM_INT32_TYPE) {
 	result = xmalloc(padding + 20);
 	strcat(formatPrefix, "d");
+	/*@-formatconst@*/
 	sprintf(result, formatPrefix, *((int_32 *) data));
+	/*@=formatconst@*/
     } else {
 	buf = alloca(strlen(data) + padding + 2);
 	strcat(formatPrefix, "s");
+	/*@-formatconst@*/
 	sprintf(buf, formatPrefix, data);
+	/*@=formatconst@*/
 
 	result = dst = xmalloc(strlen(buf) * 4 + 3);
 	*dst++ = '\'';

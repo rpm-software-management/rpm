@@ -101,14 +101,14 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 	c = *s++;
 	*te++ = b64enc[ (c >> 2) ];
 	*te++ = b64enc[ ((c & 0x3) << 4) | (*s >> 4) ];
-	if (--ns <= 0) {
+	if (--ns == 0) {
 	    *te++ = '=';
 	    *te++ = '=';
 	    continue;
 	}
 	c = *s++;
 	*te++ = b64enc[ ((c & 0xf) << 2) | (*s >> 6) ];
-	if (--ns <= 0) {
+	if (--ns == 0) {
 	    *te++ = '=';
 	    continue;
 	}

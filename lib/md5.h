@@ -78,7 +78,7 @@ void rpmMD5Transform(uint32 buf[4], uint32 const in[16])
  * @retval digest	MD5 digest
  * @return		0 on success, 1 on error
  */
-int mdfile(const char * fn, unsigned char * digest)
+int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
 	/*@modifies digest @*/;
 
 /**
@@ -87,7 +87,7 @@ int mdfile(const char * fn, unsigned char * digest)
  * @retval bindigest	MD5 digest
  * @return		0 on success, 1 on error
  */
-int mdbinfile(const char * fn, unsigned char * bindigest)
+int mdbinfile(const char * fn, /*@out@*/ unsigned char * bindigest)
 	/*@modifies *bindigest @*/;
 
 /* These assume a little endian machine and return incorrect results!
@@ -100,7 +100,7 @@ int mdbinfile(const char * fn, unsigned char * bindigest)
  * @retval digest	MD5 digest
  * @return		0 on success, 1 on error
  */
-int mdfileBroken(const char * fn, unsigned char * digest)
+int mdfileBroken(const char * fn, /*@out@*/ unsigned char * digest)
 	/*@modifies *digest @*/;
 
 /**
@@ -110,7 +110,7 @@ int mdfileBroken(const char * fn, unsigned char * digest)
  * @retval bindigest	MD5 digest
  * @return		0 on success, 1 on error
  */
-int mdbinfileBroken(const char * fn, unsigned char * bindigest)
+int mdbinfileBroken(const char * fn, /*@out@*/ unsigned char * bindigest)
 	/*@modifies *bindigest @*/;
 
 #ifdef __cplusplus

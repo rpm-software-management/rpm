@@ -281,7 +281,7 @@ int Unlink(const char * path)
 /**
  * readlink(2) clone.
  */
-int Readlink(const char * path, char * buf, size_t bufsiz)
+int Readlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 	/*@modifies *buf, fileSystem @*/;
 
 /**
@@ -363,7 +363,7 @@ off_t	fdSize(FD_t fd)
 /*@-exportlocal@*/
 /**
  */
-int fdFileno(void * cookie)
+/*@unused@*/ int fdFileno(void * cookie)
 	/*@*/;
 #define	fdFileno(_fd)		fdio->_fileno(_fd)
 
@@ -463,7 +463,7 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 
 /**
  */
-int timedRead(FD_t fd, /*@out@*/ void * bufptr, int length)
+/*@unused@*/ int timedRead(FD_t fd, /*@out@*/ void * bufptr, int length)
 	/*@modifies fd, *bufptr, fileSystem @*/;
 #define	timedRead	ufdio->read
 

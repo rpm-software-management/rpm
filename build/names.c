@@ -9,15 +9,16 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
+typedef /*@owned@*/ /*@null@*/ const char * ugstr_t;
+
 static uid_t uids[1024];
-/*@owned@*/ /*@null@*/ static const char *unames[1024];
+static ugstr_t unames[1024];
 static int uid_used = 0;
 
 static gid_t gids[1024];
-/*@owned@*/ /*@null@*/ static const char *gnames[1024];
+static ugstr_t gnames[1024];
 static int gid_used = 0;
     
-/*@-nullderef@*/	/* FIX: shrug */
 void freeNames(void)
 {
     int x;
@@ -33,6 +34,7 @@ const char *getUname(uid_t uid)
     int x;
 
     for (x = 0; x < uid_used; x++) {
+	if (unames[x] == NULL) continue;
 	if (uids[x] == uid)
 	    return unames[x];
     }
@@ -54,6 +56,7 @@ const char *getUnameS(const char *uname)
     int x;
 
     for (x = 0; x < uid_used; x++) {
+	if (unames[x] == NULL) continue;
 	if (!strcmp(unames[x],uname))
 	    return unames[x];
     }
@@ -75,6 +78,7 @@ uid_t getUidS(const char *uname)
     int x;
 
     for (x = 0; x < uid_used; x++) {
+	if (unames[x] == NULL) continue;
 	if (!strcmp(unames[x],uname))
 	    return uids[x];
     }
@@ -96,6 +100,7 @@ const char *getGname(gid_t gid)
     int x;
 
     for (x = 0; x < gid_used; x++) {
+	if (gnames[x] == NULL) continue;
 	if (gids[x] == gid)
 	    return gnames[x];
     }
@@ -117,6 +122,7 @@ const char *getGnameS(const char *gname)
     int x;
 
     for (x = 0; x < gid_used; x++) {
+	if (gnames[x] == NULL) continue;
 	if (!strcmp(gnames[x], gname))
 	    return gnames[x];
     }
@@ -138,6 +144,7 @@ gid_t getGidS(const char *gname)
     int x;
 
     for (x = 0; x < gid_used; x++) {
+	if (gnames[x] == NULL) continue;
 	if (!strcmp(gnames[x], gname))
 	    return gids[x];
     }
@@ -152,7 +159,6 @@ gid_t getGidS(const char *gname)
     gnames[x] = (gr ? xstrdup(gr->gr_name) : xstrdup(gname));
     return gids[x];
 }
-/*@=nullderef@*/
 
 int_32 *const getBuildTime(void)
 {
@@ -171,7 +177,10 @@ const char *const buildHost(void)
 
     if (! gotit) {
         (void) gethostname(hostname, sizeof(hostname));
-	if ((hbn = /*@-unrecog@*/ gethostbyname(hostname) /*@=unrecog@*/ ))
+	/*@-unrecog -multithreaded @*/
+	hbn = gethostbyname(hostname);
+	/*@=unrecog =multithreaded @*/
+	if (hbn)
 	    strcpy(hostname, hbn->h_name);
 	else
 	    rpmMessage(RPMMESS_WARNING,

@@ -466,7 +466,7 @@ static int vfs_parse_filemode (const char *p)
     return res;
 }
 
-static int vfs_parse_filedate(int idx, time_t *t)
+static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
 	/*@modifies *t @*/
 {	/* This thing parses from idx in columns[] array */
 
@@ -789,7 +789,8 @@ static /*@only@*/ char * ftpBuf = NULL;
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
-		/*@out@*/ struct stat * st, char * rlbuf, size_t rlbufsiz)
+		/*@out@*/ /*@null@*/ struct stat * st,
+		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
 	/*@modifies *st, *rlbuf, fileSystem @*/
 {
     FD_t fd;
@@ -986,7 +987,7 @@ fprintf(stderr, "*** ftpLstat(%s) rc %d\n", path, rc);
     return rc;
 }
 
-static int ftpReadlink(const char * path, char * buf, size_t bufsiz)
+static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
 	/*@modifies *buf @*/
 {
     return ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);

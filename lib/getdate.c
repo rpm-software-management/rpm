@@ -1,4 +1,6 @@
-/*@-globstate -retvalint -unqualifiedtrans -usedef -varuse@*/
+/*@-globstate -statictrans -unqualifiedtrans -noparams @*/
+/*@-retvalint -usedef -varuse -nullderef -nullassign @*/
+/*@-readonlytrans -modunconnomods -compdef @*/
 #ifndef lint
 static char const 
 yyrcsid[] = "$FreeBSD: src/usr.bin/yacc/skeleton.c,v 1.28 2000/01/17 02:04:06 bde Exp $";
@@ -200,7 +202,7 @@ typedef union {
     time_t		Number;
     enum _MERIDIAN	Meridian;
 } YYSTYPE;
-#line 203 "y.tab.c"
+#line 203 "getdate.c"
 #define YYERRCODE 256
 #define tAGO 257
 #define tDAY 258
@@ -215,49 +217,49 @@ typedef union {
 #define tUNUMBER 267
 #define tZONE 268
 #define tDST 269
-const short yylhs[] = {                                        -1,
+static const short yylhs[] = {                                        -1,
     0,    0,    2,    2,    2,    2,    2,    2,    3,    3,
     3,    3,    3,    4,    4,    4,    6,    6,    6,    5,
     5,    5,    5,    5,    5,    5,    5,    7,    7,    9,
     9,    9,    9,    9,    9,    9,    9,    9,    8,    1,
     1,
 };
-const short yylen[] = {                                         2,
+static const short yylen[] = {                                         2,
     0,    2,    1,    1,    1,    1,    1,    1,    2,    4,
     4,    6,    6,    1,    1,    2,    1,    2,    2,    3,
     5,    3,    3,    2,    4,    2,    3,    2,    1,    2,
     2,    1,    2,    2,    1,    2,    2,    1,    1,    0,
     1,
 };
-const short yydefred[] = {                                      1,
+static const short yydefred[] = {                                      1,
     0,    0,   15,   32,    0,   38,   35,    0,    0,    0,
     2,    3,    4,    5,    6,    7,    8,    0,   18,    0,
    31,   36,   33,   19,    9,   30,    0,   37,   34,    0,
     0,    0,   16,   28,    0,   23,   27,   22,    0,    0,
    25,   41,   11,    0,   10,    0,    0,   21,   13,   12,
 };
-const short yydgoto[] = {                                       1,
+static const short yydgoto[] = {                                       1,
    45,   11,   12,   13,   14,   15,   16,   17,   18,
 };
-const short yysindex[] = {                                      0,
+static const short yysindex[] = {                                      0,
  -249,  -38,    0,    0, -260,    0,    0, -240,  -47, -248,
     0,    0,    0,    0,    0,    0,    0, -237,    0,  -18,
     0,    0,    0,    0,    0,    0, -262,    0,    0, -239,
  -238, -236,    0,    0, -235,    0,    0,    0,  -56,  -19,
     0,    0,    0, -234,    0, -232, -258,    0,    0,    0,
 };
-const short yyrindex[] = {                                      0,
+static const short yyrindex[] = {                                      0,
     0,    1,    0,    0,    0,    0,    0,    0,   69,   12,
     0,    0,    0,    0,    0,    0,    0,   23,    0,   34,
     0,    0,    0,    0,    0,    0,   67,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,   56,   45,
     0,    0,    0,    0,    0,    0,   56,    0,    0,    0,
 };
-const short yygindex[] = {                                      0,
+static const short yygindex[] = {                                      0,
   -17,    0,    0,    0,    0,    0,    0,    0,    0,
 };
 #define YYTABLESIZE 337
-const short yytable[] = {                                      32,
+static const short yytable[] = {                                      32,
    17,   44,   42,   36,   37,   19,   20,   49,    2,    3,
    31,   14,    4,    5,    6,    7,    8,    9,   10,   34,
    33,   21,   29,   22,   23,   35,   38,   46,   39,   50,
@@ -293,7 +295,7 @@ const short yytable[] = {                                      32,
    40,    0,   40,   40,   26,   26,    0,   39,   26,   26,
    26,   26,    0,    0,   26,   39,   39,
 };
-const short yycheck[] = {                                      47,
+static const short yycheck[] = {                                      47,
     0,   58,  261,  266,  267,   44,  267,  266,  258,  259,
    58,    0,  262,  263,  264,  265,  266,  267,  268,  257,
   269,  262,    0,  264,  265,   44,  266,   47,  267,   47,
@@ -406,18 +408,18 @@ const char * const yyrule[] = {
 #endif
 #endif
 #define YYINITSTACKSIZE 200
-int yydebug;
-int yynerrs;
-int yyerrflag;
-int yychar;
-short *yyssp;
-YYSTYPE *yyvsp;
-YYSTYPE yyval;
-YYSTYPE yylval;
-short *yyss;
-short *yysslim;
-YYSTYPE *yyvs;
-int yystacksize;
+/*@unused@*/ static int yydebug;
+static int yynerrs;
+static int yyerrflag;
+static int yychar;
+static short *yyssp;
+static YYSTYPE *yyvsp;
+static YYSTYPE yyval;
+static YYSTYPE yylval;
+static short *yyss;
+static short *yysslim;
+static YYSTYPE *yyvs;
+static int yystacksize;
 #line 403 "./getdate.y"
 
 /* Month and day table. */
@@ -1047,7 +1049,7 @@ main(ac, av)
     /* NOTREACHED */
 }
 #endif	/* defined(TEST) */
-#line 1050 "y.tab.c"
+#line 1050 "getdate.c"
 /* allocate initial stack or double stack size, up to YYMAXDEPTH */
 static int yygrowstack()
 {
@@ -1532,7 +1534,7 @@ case 41:
 	    yyval.Meridian = yyvsp[0].Meridian;
 	}
 break;
-#line 1535 "y.tab.c"
+#line 1535 "getdate.c"
     }
     yyssp -= yym;
     yystate = *yyssp;
@@ -1589,4 +1591,6 @@ yyabort:
 yyaccept:
     return (0);
 }
-/*@=globstate =retvalint =unqualifiedtrans =usedef =varuse@*/
+/*@=readonlytrans =modunconnomods =compdef @*/
+/*@=retvalint =usedef =varuse =nullderef =nullassign @*/
+/*@=globstate =statictrans =unqualifiedtrans =noparams @*/

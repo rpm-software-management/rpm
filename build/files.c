@@ -444,10 +444,12 @@ static int parseForDev(char * buf, FileList fl)
 	{} ;
     if (*pe == '\0') {
 	fl->devmajor = atoi(p);
+	/*@-unsignedcompare @*/	/* LCL: ge is ok */
 	if (!(fl->devmajor >= 0 && fl->devmajor < 256)) {
 	    errstr = "devmajor";
 	    goto exit;
 	}
+	/*@=unsignedcompare @*/
 	pe++;
     } else {
 	errstr = "devmajor";
@@ -1027,6 +1029,7 @@ static void checkHardLinks(FileList fl)
     FileListRec ilp, jlp;
     int i, j;
 
+    nlangs[0] = '\0';
     for (i = 0;  i < fl->fileListRecsUsed; i++) {
 	char *te;
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-07-16 21:53-0400\n"
+"POT-Creation-Date: 2001-09-21 10:20-0400\n"
 "PO-Revision-Date: 2001-01-17 01:01+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -103,10 +103,10 @@ msgstr "DOUBLE"
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:434
+#: popthelp.c:438
 msgid "Usage:"
 msgstr "Uso:"
 
-#: popthelp.c:456
+#: popthelp.c:460
 msgid "[OPTION...]"
 msgstr "[OPCIÓN...]"

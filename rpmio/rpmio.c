@@ -6,7 +6,9 @@
 #include <stdarg.h>
 
 #ifdef	__LCLINT__
+/*@-incondefs@*/
 typedef	unsigned int		uint32_t;
+/*@=incondefs@*/
 #define	INADDR_ANY		((uint32_t) 0x00000000)
 #define	IPPROTO_IP		0
 
@@ -662,7 +664,9 @@ static int mygethostbyname(const char * host,
 {
     struct hostent * hostinfo;
 
-    hostinfo = /*@-unrecog@*/ gethostbyname(host) /*@=unrecog@*/;
+    /*@-unrecog -multithreaded @*/
+    hostinfo = gethostbyname(host);
+    /*@=unrecog =multithreaded @*/
     if (!hostinfo) return 1;
 
     /*@-nullderef@*/
@@ -721,7 +725,7 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 if (_ftp_debug)
 fprintf(stderr,"++ connect %s:%d on fdno %d\n",
 /*@-unrecog@*/ inet_ntoa(sin.sin_addr) /*@=unrecog@*/ ,
-ntohs(sin.sin_port), fdno);
+(int)ntohs(sin.sin_port), fdno);
 
     fdSetFdno(ctrl, (fdno >= 0 ? fdno : -1));
     return 0;

@@ -82,7 +82,7 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 	goto exit;
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
-	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) < 0) {
+	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) != count) {
 	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
 	    goto exit;

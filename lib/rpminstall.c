@@ -169,9 +169,9 @@ struct rpmEIU {
     FD_t fd;
     int numFailed;
     int numPkgs;
-/*@only@*/ /*@null@*/ str_t * pkgURL;
+/*@only@*/ str_t * pkgURL;
 /*@dependent@*/ /*@null@*/ str_t * fnp;
-/*@only@*/ /*@null@*/ char * pkgState;
+/*@only@*/ char * pkgState;
     int prevx;
     int pkgx;
     int numRPMS;
@@ -766,8 +766,8 @@ IDTX IDTXload(rpmdb db, rpmTag tag)
 
     mi = rpmdbInitIterator(db, tag, NULL, 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	rpmTagType type;
-	int_32 count;
+	rpmTagType type = RPM_NULL_TYPE;
+	int_32 count = 0;
 	int_32 * tidp;
 
 	tidp = NULL;

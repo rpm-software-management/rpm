@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-15 17:19-0400\n"
+"POT-Creation-Date: 2001-09-21 11:01-0400\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1110,15 +1110,15 @@ msgstr "--sign может быть использован только при сборке пакетов"
 msgid "exec failed\n"
 msgstr "запуск не удался\n"
 
-#: rpm.c:1116 rpmqv.c:1101
+#: rpm.c:1116 rpmqv.c:1103
 msgid "unexpected arguments to --querytags "
 msgstr "неожиданные аргументы для --querytags "
 
-#: rpm.c:1127 rpmqv.c:1110
+#: rpm.c:1127 rpmqv.c:1112
 msgid "no packages given for signature check"
 msgstr "не заданы пакеты для проверки подписи"
 
-#: rpm.c:1138 rpmqv.c:1119
+#: rpm.c:1138 rpmqv.c:1121
 msgid "no packages given for signing"
 msgstr "не заданы пакеты для подписи"
 
@@ -1130,19 +1130,19 @@ msgstr "не заданы пакеты для удаления"
 msgid "no packages given for install"
 msgstr "не заданы пакеты для установки"
 
-#: rpm.c:1267 rpmqv.c:1064
+#: rpm.c:1267 rpmqv.c:1066
 msgid "extra arguments given for query of all packages"
 msgstr "в запросе ко всем пакетам заданы лишние аргументы"
 
-#: rpm.c:1272 rpmqv.c:1073
+#: rpm.c:1272 rpmqv.c:1075
 msgid "no arguments given for query"
 msgstr "не заданы аргументы запроса"
 
-#: rpm.c:1289 rpmqv.c:1089
+#: rpm.c:1289 rpmqv.c:1091
 msgid "extra arguments given for verify of all packages"
 msgstr "в запросе верификации всех пакетов заданы лишние аргументы"
 
-#: rpm.c:1293 rpmqv.c:1093
+#: rpm.c:1293 rpmqv.c:1095
 msgid "no arguments given for verify"
 msgstr "не заданы аргументы для верификации"
 
@@ -1323,40 +1323,40 @@ msgstr "синтаксическая ошибка при анализе &&\n"
 msgid "syntax error while parsing ||\n"
 msgstr "синтаксическая ошибка при анализе ||\n"
 
-#: build/expression.c:295
+#: build/expression.c:298
 msgid "parse error in expression\n"
 msgstr "ошибка анализа выражения\n"
 
-#: build/expression.c:327
+#: build/expression.c:330
 msgid "unmatched (\n"
 msgstr "незакрытая (\n"
 
-#: build/expression.c:357
+#: build/expression.c:360
 msgid "- only on numbers\n"
 msgstr "- только для чисел\n"
 
-#: build/expression.c:373
+#: build/expression.c:376
 msgid "! only on numbers\n"
 msgstr "! только для чисел\n"
 
-#: build/expression.c:415 build/expression.c:463 build/expression.c:521
-#: build/expression.c:613
+#: build/expression.c:418 build/expression.c:466 build/expression.c:524
+#: build/expression.c:616
 msgid "types must match\n"
 msgstr "типы должны совпадать\n"
 
-#: build/expression.c:428
+#: build/expression.c:431
 msgid "* / not suported for strings\n"
 msgstr "* / не поддерживается для строк\n"
 
-#: build/expression.c:479
+#: build/expression.c:482
 msgid "- not suported for strings\n"
 msgstr "- не поддерживается для строк\n"
 
-#: build/expression.c:626
+#: build/expression.c:629
 msgid "&& and || not suported for strings\n"
 msgstr "&& и || не поддерживаются для строк\n"
 
-#: build/expression.c:659 build/expression.c:706
+#: build/expression.c:662 build/expression.c:709
 msgid "syntax error in expression\n"
 msgstr "синтаксическая ошибка в выражении\n"
 
@@ -1365,204 +1365,204 @@ msgstr "синтаксическая ошибка в выражении\n"
 msgid "TIMECHECK failure: %s\n"
 msgstr "Ошибка TIMECHECK: %s\n"
 
-#: build/files.c:326 build/files.c:516 build/files.c:699
+#: build/files.c:326 build/files.c:518 build/files.c:701
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Отсутствует '(' в %s %s\n"
 
-#: build/files.c:337 build/files.c:641 build/files.c:710
+#: build/files.c:337 build/files.c:643 build/files.c:712
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "отсутствует ')' в %s(%s\n"
 
-#: build/files.c:375 build/files.c:666
+#: build/files.c:375 build/files.c:668
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Неверный токен %s: %s\n"
 
-#: build/files.c:479
+#: build/files.c:481
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Отсутствует %s в %s %s\n"
 
-#: build/files.c:532
+#: build/files.c:534
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Не пробел следует после %s(): %s\n"
 
-#: build/files.c:570
+#: build/files.c:572
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Неверный синтаксис: %s(%s)\n"
 
-#: build/files.c:580
+#: build/files.c:582
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Неверные права: %s(%s)\n"
 
-#: build/files.c:592
+#: build/files.c:594
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Неверные права на каталог %s(%s)\n"
 
-#: build/files.c:737
+#: build/files.c:739
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Необычная длина locale: \"%.*s\" в %%lang(%s)\n"
 
-#: build/files.c:748
+#: build/files.c:750
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Дубликат locale %.*s в %%lang(%s)\n"
 
-#: build/files.c:894
+#: build/files.c:896
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Лимит для %%docdir превышен\n"
 
-#: build/files.c:900
+#: build/files.c:902
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Только один аргумент для %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:928
+#: build/files.c:930
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Два файла в одной строке: %s\n"
 
-#: build/files.c:942
+#: build/files.c:944
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:954
+#: build/files.c:956
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s\n"
 
 #. Two entries for the same file found, merge the entries.
-#: build/files.c:1127
+#: build/files.c:1130
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s\n"
 
-#: build/files.c:1260
+#: build/files.c:1263
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1458
+#: build/files.c:1461
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s\n"
 
-#: build/files.c:1482
+#: build/files.c:1485
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1525 build/files.c:2123 build/parsePrep.c:45
+#: build/files.c:1528 build/files.c:2126 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
-#: build/files.c:1537
+#: build/files.c:1540
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Файл %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1638
+#: build/files.c:1641
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:1661
+#: build/files.c:1664
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob не разрешаются: %s\n"
 
-#: build/files.c:1675
+#: build/files.c:1678
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1733
+#: build/files.c:1736
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files %s: %s\n"
 
-#: build/files.c:1744 build/pack.c:142
+#: build/files.c:1747 build/pack.c:142
 #, c-format
 msgid "line: %s\n"
 msgstr "строка: %s\n"
 
-#: build/files.c:2111
+#: build/files.c:2114
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2182
+#: build/files.c:2185
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Невозможно вылнить %s: %s\n"
 
-#: build/files.c:2187
+#: build/files.c:2190
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Сбой ветвления %s: %s\n"
 
-#: build/files.c:2269
+#: build/files.c:2272
 #, c-format
 msgid "%s failed\n"
 msgstr "%s не удалось\n"
 
-#: build/files.c:2273
+#: build/files.c:2276
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "запись всех данных в %s не удалась\n"
 
-#: build/files.c:2405
+#: build/files.c:2408
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Поиск %s (используя %s): ...\n"
 
-#: build/files.c:2431 build/files.c:2445
+#: build/files.c:2434 build/files.c:2448
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:\n"
 
-#: build/files.c:2564
+#: build/files.c:2567
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
 
-#: build/names.c:42
+#: build/names.c:44
 msgid "getUname: too many uid's\n"
 msgstr "getUname: слишком много uid\n"
 
-#: build/names.c:63
+#: build/names.c:66
 msgid "getUnameS: too many uid's\n"
 msgstr "getUnameS: слишком много uid\n"
 
-#: build/names.c:84
+#: build/names.c:88
 msgid "getUidS: too many uid's\n"
 msgstr "getUidS: слишком много пользовательских идентификаторов\n"
 
-#: build/names.c:105
+#: build/names.c:110
 msgid "getGname: too many gid's\n"
 msgstr "getGname: слишком много gid\n"
 
-#: build/names.c:126
+#: build/names.c:132
 msgid "getGnameS: too many gid's\n"
 msgstr "getGnameS: слишком много gid\n"
 
-#: build/names.c:147
+#: build/names.c:154
 msgid "getGidS: too many gid's\n"
 msgstr "getGidS: слишком много идентификаторов групп.\n"
 
-#: build/names.c:178
+#: build/names.c:187
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Невозможно канонизировать имя компьютера: %s\n"
@@ -1672,7 +1672,7 @@ msgstr "Невозможно перезагрузить заголовок подписи.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:571 lib/psm.c:1521
+#: build/pack.c:571 lib/psm.c:1523
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -1702,7 +1702,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:651 lib/psm.c:1780
+#: build/pack.c:651 lib/psm.c:1782
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -1757,17 +1757,17 @@ msgstr "нет описания в %%changelog\n"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "строка %d: Ошибка анализа %%description: %s\n"
 
-#: build/parseDescription.c:54 build/parseFiles.c:50 build/parseScript.c:191
+#: build/parseDescription.c:54 build/parseFiles.c:50 build/parseScript.c:192
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "строка %d: Неверный параметр %s: %s\n"
 
-#: build/parseDescription.c:67 build/parseFiles.c:62 build/parseScript.c:203
+#: build/parseDescription.c:67 build/parseFiles.c:62 build/parseScript.c:204
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "строка %d: Слишком много имен: %s\n"
 
-#: build/parseDescription.c:77 build/parseFiles.c:71 build/parseScript.c:212
+#: build/parseDescription.c:77 build/parseFiles.c:71 build/parseScript.c:213
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "строка %d: Пакет не существует: %s\n"
@@ -1999,22 +1999,22 @@ msgstr "строка %d: Версии в именах файлов недопустимы: %s\n"
 msgid "line %d: Version required: %s\n"
 msgstr "строка %d: Требуется версия: %s\n"
 
-#: build/parseScript.c:157
+#: build/parseScript.c:158
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
 msgstr "строка %d: триггеры должны содержать --: %s\n"
 
-#: build/parseScript.c:167 build/parseScript.c:228
+#: build/parseScript.c:168 build/parseScript.c:229
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "строка %d: Ошибка анализа %s: %s\n"
 
-#: build/parseScript.c:178
+#: build/parseScript.c:179
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "строка %d: Программы в сценариях должны начинаться с '/': %s\n"
 
-#: build/parseScript.c:220
+#: build/parseScript.c:221
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr "строка %d: Второе %s\n"
@@ -2121,7 +2121,7 @@ msgid " failed - "
 msgstr "не удалось - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:566
+#: lib/depends.c:567
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2130,113 +2130,113 @@ msgstr ""
 "для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:595
+#: lib/depends.c:596
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:596 lib/depends.c:1222 lib/depends.c:1355
+#: lib/depends.c:597 lib/depends.c:1223 lib/depends.c:1356
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:596 lib/depends.c:1222 lib/depends.c:1355
+#: lib/depends.c:597 lib/depends.c:1223 lib/depends.c:1356
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/depends.c:1020
+#: lib/depends.c:1021
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:1130
+#: lib/depends.c:1131
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:1221
+#: lib/depends.c:1222
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cached)\n"
 
-#: lib/depends.c:1250
+#: lib/depends.c:1251
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:1267
+#: lib/depends.c:1268
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:1291
+#: lib/depends.c:1292
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1304
+#: lib/depends.c:1305
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:1318
+#: lib/depends.c:1319
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db package)\n"
 
-#: lib/depends.c:1334
+#: lib/depends.c:1335
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1355
+#: lib/depends.c:1356
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1427
+#: lib/depends.c:1428
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1506
+#: lib/depends.c:1507
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1752
+#: lib/depends.c:1753
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1901
+#: lib/depends.c:1902
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1959
+#: lib/depends.c:1960
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:2009
+#: lib/depends.c:2010
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:2061
+#: lib/depends.c:2062
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:2090
+#: lib/depends.c:2091
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
-#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2614 lib/header.c:2633 lib/header.c:2653
+#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:128
+#: lib/header.c:2621 lib/header.c:2642 lib/header.c:2664
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -2259,7 +2259,7 @@ msgstr "невозможно получить информацию о %s: %s\n"
 msgid "getting list of mounted filesystems\n"
 msgstr "получение списка смонтированных файловых систем\n"
 
-#: lib/fs.c:153 rpmio/url.c:475
+#: lib/fs.c:153 rpmio/url.c:477
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
@@ -2394,7 +2394,7 @@ msgstr "в выражении после \":\" ожидалось \"{\""
 msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
-#: lib/header.c:2374
+#: lib/header.c:2381
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
@@ -2814,57 +2814,57 @@ msgstr " нужен для %s-%s-%s\n"
 msgid " conflicts with %s-%s-%s\n"
 msgstr " конфликтует с %s-%s-%s\n"
 
-#: lib/problems.c:123
+#: lib/problems.c:125
 #, c-format
 msgid "package %s is for a different architecture"
 msgstr "пакет %s - для другой архитектуры"
 
-#: lib/problems.c:128
+#: lib/problems.c:130
 #, c-format
 msgid "package %s is for a different operating system"
 msgstr "пакет %s - для другой операционной системы"
 
-#: lib/problems.c:133
+#: lib/problems.c:135
 #, c-format
 msgid "package %s is already installed"
 msgstr "пакет %s уже установлен"
 
-#: lib/problems.c:138
+#: lib/problems.c:140
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "путь %s в пакете %s - не перемещаемый"
 
-#: lib/problems.c:143
+#: lib/problems.c:145
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "конфликт файла %s при попытках установки %s и %s"
 
-#: lib/problems.c:148
+#: lib/problems.c:150
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "файл %s из установленного пакета %s конфликтует с файлом из пакета %s"
 
-#: lib/problems.c:153
+#: lib/problems.c:155
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакет %s (который новее, чем %s) уже установлен"
 
-#: lib/problems.c:158
+#: lib/problems.c:160
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "для установки пакета %s нужно %ld%cb на файловой системе %s"
 
-#: lib/problems.c:168
+#: lib/problems.c:170
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "для установки пакета %s нужно %ld inodes на файловой системе %s"
 
-#: lib/problems.c:173
+#: lib/problems.c:175
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "пакет %s pre-transaction syscall(s): %s: ошибка: %s"
 
-#: lib/problems.c:180
+#: lib/problems.c:182
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
@@ -2887,178 +2887,178 @@ msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
-#: lib/psm.c:1001
+#: lib/psm.c:1003
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, waitpid() возвратил %s\n"
 
-#: lib/psm.c:1008
+#: lib/psm.c:1010
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
-#: lib/psm.c:1326
+#: lib/psm.c:1328
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s содержит %d файлов, test = %d\n"
 
-#: lib/psm.c:1443
+#: lib/psm.c:1445
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr "%s: ошибка сценария %s (%d), %s-%s-%s пропускается\n"
 
-#: lib/psm.c:1558
+#: lib/psm.c:1560
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "пользователь %s не существует - используется root\n"
 
-#: lib/psm.c:1567
+#: lib/psm.c:1569
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "группа %s не существует - используется root\n"
 
-#: lib/psm.c:1606
+#: lib/psm.c:1608
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:1607
+#: lib/psm.c:1609
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:1788
+#: lib/psm.c:1790
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s ошибка на файле %s: %s\n"
 
-#: lib/psm.c:1791
+#: lib/psm.c:1793
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: lib/psm.c:1883
+#: lib/psm.c:1885
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "%s: выполняется сценарий %s (если есть)\n"
 
-#: lib/query.c:115
+#: lib/query.c:117
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ошибка в формате: %s\n"
 
-#: lib/query.c:209
+#: lib/query.c:211
 msgid "(contains no files)"
 msgstr "(не содержит файлов)"
 
-#: lib/query.c:268
+#: lib/query.c:270
 msgid "normal        "
 msgstr "нормальный    "
 
-#: lib/query.c:270
+#: lib/query.c:272
 msgid "replaced      "
 msgstr "замененный    "
 
-#: lib/query.c:272
+#: lib/query.c:274
 msgid "not installed "
 msgstr "не установлен "
 
-#: lib/query.c:274
+#: lib/query.c:276
 msgid "net shared    "
 msgstr "сетевой       "
 
-#: lib/query.c:276
+#: lib/query.c:278
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(неизв. %3d)  "
 
-#: lib/query.c:281
+#: lib/query.c:283
 msgid "(no state)    "
 msgstr "(сост. нет)   "
 
-#: lib/query.c:300 lib/query.c:352
+#: lib/query.c:302 lib/query.c:354
 msgid "package has neither file owner or id lists\n"
 msgstr "пакет не содержит списков ни хозяев файлов, ни их ID\n"
 
-#: lib/query.c:438
+#: lib/query.c:440
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
-#: lib/query.c:574 lib/query.c:608 lib/rpminstall.c:309 lib/rpminstall.c:453
+#: lib/query.c:576 lib/query.c:610 lib/rpminstall.c:309 lib/rpminstall.c:453
 #: lib/rpminstall.c:826
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/query.c:587
+#: lib/query.c:589
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:593
+#: lib/query.c:595
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
-#: lib/query.c:618 lib/rpminstall.c:466
+#: lib/query.c:620 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: ошибка чтения списка файлов: %s\n"
 
-#: lib/query.c:660
+#: lib/query.c:662
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос файла спецификации %s не удался, невозможно разобрать файл\n"
 
-#: lib/query.c:682
+#: lib/query.c:684
 msgid "no packages\n"
 msgstr "нет пакетов\n"
 
-#: lib/query.c:701
+#: lib/query.c:703
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:711
+#: lib/query.c:713
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:721
+#: lib/query.c:723
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:732
+#: lib/query.c:734
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:767
+#: lib/query.c:769
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:771
+#: lib/query.c:773
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:797
+#: lib/query.c:799
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:800
+#: lib/query.c:802
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер записи пакета: %u\n"
 
-#: lib/query.c:805
+#: lib/query.c:807
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:816 lib/rpminstall.c:615
+#: lib/query.c:818 lib/rpminstall.c:615
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -3352,158 +3352,158 @@ msgstr "Ожидаемый размер: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgid "  Actual size: %12d\n"
 msgstr "Фактический размер: %12d\n"
 
-#: lib/signature.c:158
+#: lib/signature.c:159
 msgid "No signature\n"
 msgstr "Подписи нет\n"
 
-#: lib/signature.c:162
+#: lib/signature.c:163
 msgid "Old PGP signature\n"
 msgstr "Старая подпись PGP\n"
 
-#: lib/signature.c:173
+#: lib/signature.c:174
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 "Старая (только для внутреннего использования) подпись! Где вы ЭТО взяли!?\n"
 
-#: lib/signature.c:229
+#: lib/signature.c:230
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
-#: lib/signature.c:289
+#: lib/signature.c:290
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Нвозможно запустить pgp (%s)\n"
 
-#: lib/signature.c:302
+#: lib/signature.c:303
 msgid "pgp failed\n"
 msgstr "ошибка pgp\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:309
+#: lib/signature.c:310
 msgid "pgp failed to write signature\n"
 msgstr "ошибка pgp при записи подписи\n"
 
-#: lib/signature.c:314
+#: lib/signature.c:315
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
-#: lib/signature.c:327 lib/signature.c:409
+#: lib/signature.c:328 lib/signature.c:410
 msgid "unable to read the signature\n"
 msgstr "невозможно прочесть подпись\n"
 
-#: lib/signature.c:332
+#: lib/signature.c:333
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
-#: lib/signature.c:371 lib/signature.c:758
+#: lib/signature.c:372 lib/signature.c:760
 msgid "Couldn't exec gpg\n"
 msgstr "Невозможно запустить gpg\n"
 
-#: lib/signature.c:384
+#: lib/signature.c:385
 msgid "gpg failed\n"
 msgstr "ошибка gpg\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:391
+#: lib/signature.c:392
 msgid "gpg failed to write signature\n"
 msgstr "ошибка gpg при записи подписи\n"
 
-#: lib/signature.c:396
+#: lib/signature.c:397
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Размер подписи GPG: %d\n"
 
-#: lib/signature.c:414
+#: lib/signature.c:415
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Получено %d байт подписи GPG\n"
 
-#: lib/signature.c:442
+#: lib/signature.c:443
 msgid "Generating signature using PGP.\n"
 msgstr "Генерируется подпись PGP.\n"
 
-#: lib/signature.c:448
+#: lib/signature.c:449
 msgid "Generating signature using GPG.\n"
 msgstr "Генерируется подпись GPG.\n"
 
-#: lib/signature.c:530 lib/signature.c:605
+#: lib/signature.c:532 lib/signature.c:607
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "Нвозможно запустить pgp. Используйте --nopgp чтобы пропустить проверку PGP "
 "подписей.\n"
 
-#: lib/signature.c:695
+#: lib/signature.c:697
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "Невозможно запустить gpg. Используйте --nogpg чтобы пропустить проверку GPG "
 "подписей.\n"
 
-#: lib/signature.c:787
+#: lib/signature.c:789
 msgid "Couldn't exec pgp\n"
 msgstr "Невозможно запустить pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:791 lib/signature.c:844
+#: lib/signature.c:793 lib/signature.c:846
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Неверная спецификация %%_signature в макрофайле\n"
 
-#: lib/signature.c:824
+#: lib/signature.c:826
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:836
+#: lib/signature.c:838
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле\n"
 
-#: lib/transaction.c:443
+#: lib/transaction.c:446
 msgid "========== relocations\n"
 msgstr "========== перемещений\n"
 
-#: lib/transaction.c:447
+#: lib/transaction.c:450
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d исключен %s\n"
 
-#: lib/transaction.c:450
+#: lib/transaction.c:453
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d перемещение %s -> %s\n"
 
-#: lib/transaction.c:520
+#: lib/transaction.c:523
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "исключается многобиблиотечный путь %s%s\n"
 
-#: lib/transaction.c:583
+#: lib/transaction.c:586
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "исключается %s %s\n"
 
-#: lib/transaction.c:593
+#: lib/transaction.c:596
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещается %s в %s\n"
 
-#: lib/transaction.c:671
+#: lib/transaction.c:674
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещается каталог %s в %s\n"
 
-#: lib/transaction.c:805
+#: lib/transaction.c:808
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
-#: lib/transaction.c:1403
+#: lib/transaction.c:1406
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
@@ -3636,17 +3636,17 @@ msgstr "заблокирован индекс базы данных %s/%s\n"
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "неопознанный параметр базы данных: \"%s\" проигнорирован\n"
 
-#: rpmdb/dbconfig.c:428
+#: rpmdb/dbconfig.c:427
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "неверное числовое значение %s, пропущено\n"
 
-#: rpmdb/dbconfig.c:437
+#: rpmdb/dbconfig.c:436
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s имеет слишком малую или слишком большую величину long, пропущено\n"
 
-#: rpmdb/dbconfig.c:446
+#: rpmdb/dbconfig.c:445
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3728,110 +3728,110 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "ошибка(%d) при подсчёте пакетов\n"
 
-#: rpmdb/rpmdb.c:1936 rpmdb/rpmdb.c:3118
+#: rpmdb/rpmdb.c:1940 rpmdb/rpmdb.c:3122
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "запись номер %u в базе данных неверна, пропускается.\n"
 
-#: rpmdb/rpmdb.c:1987
+#: rpmdb/rpmdb.c:1991
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: получен поврежденный заголовок #%u, пропускается.\n"
 
-#: rpmdb/rpmdb.c:2252
+#: rpmdb/rpmdb.c:2256
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x\n"
 
-#: rpmdb/rpmdb.c:2321
+#: rpmdb/rpmdb.c:2325
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:2330
+#: rpmdb/rpmdb.c:2334
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:2525
+#: rpmdb/rpmdb.c:2529
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета\n"
 
-#: rpmdb/rpmdb.c:2603
+#: rpmdb/rpmdb.c:2607
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: rpmdb/rpmdb.c:2614
+#: rpmdb/rpmdb.c:2618
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: rpmdb/rpmdb.c:3007
+#: rpmdb/rpmdb.c:3011
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "удаляется %s после успешного завершения переиндекации базы в db3.\n"
 
-#: rpmdb/rpmdb.c:3037
+#: rpmdb/rpmdb.c:3041
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
-#: rpmdb/rpmdb.c:3064
+#: rpmdb/rpmdb.c:3068
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: rpmdb/rpmdb.c:3068
+#: rpmdb/rpmdb.c:3072
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "временная база данных %s уже существует\n"
 
-#: rpmdb/rpmdb.c:3074
+#: rpmdb/rpmdb.c:3078
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: rpmdb/rpmdb.c:3076
+#: rpmdb/rpmdb.c:3080
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "создаётся каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:3083
+#: rpmdb/rpmdb.c:3087
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3094
+#: rpmdb/rpmdb.c:3098
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3158
+#: rpmdb/rpmdb.c:3162
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "невозможно добавить запись (первоначально в %u)\n"
 
-#: rpmdb/rpmdb.c:3176
+#: rpmdb/rpmdb.c:3180
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: rpmdb/rpmdb.c:3184
+#: rpmdb/rpmdb.c:3188
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: rpmdb/rpmdb.c:3186
+#: rpmdb/rpmdb.c:3190
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: rpmdb/rpmdb.c:3196
+#: rpmdb/rpmdb.c:3200
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: rpmdb/rpmdb.c:3198
+#: rpmdb/rpmdb.c:3202
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"
@@ -3927,59 +3927,59 @@ msgstr "Файл %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Длина файла %s меньше чем %u байт\n"
 
-#: rpmio/rpmio.c:597
+#: rpmio/rpmio.c:599
 msgid "Success"
 msgstr "Выполнено"
 
-#: rpmio/rpmio.c:600
+#: rpmio/rpmio.c:602
 msgid "Bad server response"
 msgstr "Неверный ответ сервера"
 
-#: rpmio/rpmio.c:603
+#: rpmio/rpmio.c:605
 msgid "Server I/O error"
 msgstr "Ошибка ввода/вывода сервера"
 
-#: rpmio/rpmio.c:606
+#: rpmio/rpmio.c:608
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: rpmio/rpmio.c:609
+#: rpmio/rpmio.c:611
 msgid "Unable to lookup server host address"
 msgstr "Не могу найти адрес сервера"
 
-#: rpmio/rpmio.c:612
+#: rpmio/rpmio.c:614
 msgid "Unable to lookup server host name"
 msgstr "Не могу найти имя сервера"
 
-#: rpmio/rpmio.c:615
+#: rpmio/rpmio.c:617
 msgid "Failed to connect to server"
 msgstr "Не могу соединиться с сервером"
 
-#: rpmio/rpmio.c:618
+#: rpmio/rpmio.c:620
 msgid "Failed to establish data connection to server"
 msgstr "Не могу установить соединение для данных с сервером"
 
-#: rpmio/rpmio.c:621
+#: rpmio/rpmio.c:623
 msgid "I/O error to local file"
 msgstr "Файловая ошибка ввода/вывода"
 
-#: rpmio/rpmio.c:624
+#: rpmio/rpmio.c:626
 msgid "Error setting remote server to passive mode"
 msgstr "Ошибка при переводе удаленного сервера в пассивный режим"
 
-#: rpmio/rpmio.c:627
+#: rpmio/rpmio.c:629
 msgid "File not found on server"
 msgstr "Файл не найден на сервере"
 
-#: rpmio/rpmio.c:630
+#: rpmio/rpmio.c:632
 msgid "Abort in progress"
 msgstr "Отмена в процессе"
 
-#: rpmio/rpmio.c:634
+#: rpmio/rpmio.c:636
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: rpmio/rpmio.c:1255
+#: rpmio/rpmio.c:1259
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
@@ -4040,7 +4040,7 @@ msgid "url port must be a number\n"
 msgstr "url порт должен быть числом\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:495
+#: rpmio/url.c:497
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"

@@ -753,7 +753,7 @@ static inline void initPreambleList(void)
 /**
  */
 static int findPreambleTag(Spec spec, /*@out@*/int * tag,
-		/*@null@*/ /*@out@*/ const char ** macro, char * lang)
+		/*@null@*/ /*@out@*/ const char ** macro, /*@out@*/ char * lang)
 	/*@modifies *tag, *macro, *lang @*/
 {
     PreambleRec p;

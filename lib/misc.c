@@ -222,9 +222,9 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	goto errxit;
 
     switch(temput) {
-	struct stat sb, sb2;
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
+      {	struct stat sb, sb2;
 	if (!stat(tfn, &sb) && S_ISLNK(sb.st_mode)) {
 	    rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
 	    goto errxit;
@@ -241,7 +241,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 		goto errxit;
 	    }
 	}
-	break;
+      }	break;
     default:
 	break;
     }

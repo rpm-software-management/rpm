@@ -261,6 +261,7 @@ static int rdToken(ParseState state)
     if (xisdigit(*p)) {
       char temp[EXPRBUFSIZ], *t = temp;
 
+      temp[0] = '\0';
       while (*p && xisdigit(*p))
 	*t++ = *p++;
       *t++ = '\0';
@@ -272,6 +273,7 @@ static int rdToken(ParseState state)
     } else if (xisalpha(*p)) {
       char temp[EXPRBUFSIZ], *t = temp;
 
+      temp[0] = '\0';
       while (*p && (xisalnum(*p) || *p == '_'))
 	*t++ = *p++;
       *t++ = '\0';
@@ -283,6 +285,7 @@ static int rdToken(ParseState state)
     } else if (*p == '\"') {
       char temp[EXPRBUFSIZ], *t = temp;
 
+      temp[0] = '\0';
       p++;
       while (*p && *p != '\"')
 	*t++ = *p++;

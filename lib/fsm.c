@@ -1576,7 +1576,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    }
 	} else if (S_ISCHR(st->st_mode) ||
 		   S_ISBLK(st->st_mode) ||
-		   S_ISSOCK(st->st_mode))
+    /*@-unrecog@*/ S_ISSOCK(st->st_mode) /*@=unrecog@*/)
 	{
 	    rc = fsmStage(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_LSTAT_FAILED)
@@ -1921,9 +1921,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
 	break;
     case FSM_MKNOD:
-	/*@-unrecog@*/
+	/*@-unrecog -portability @*/ /* FIX: check S_IFIFO or dev != 0 */
 	rc = mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
-	/*@=unrecog@*/
+	/*@=unrecog =portability @*/
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & ~07777),

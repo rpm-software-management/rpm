@@ -403,6 +403,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		? t
 		: stripTrailingChar(t, '/');
 
+	    /*@-nullpass@*/	/* FIX:  relocations[i].oldPath == NULL */
 	    /* Verify that the relocation's old path is in the header. */
 	    for (j = 0; j < numValid; j++)
 		if (!strcmp(validRelocations[j], relocations[i].oldPath))
@@ -413,6 +414,8 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 			 relocations[i].oldPath, NULL, NULL, 0);
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
+	    /*@=nullpass@*/
+
 	    if (del > reldel)
 		reldel = del;
 	} else {
@@ -1123,8 +1126,8 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	}
 
 	switch (fi->type) {
-	struct stat sb;
 	case TR_ADDED:
+	  { struct stat sb;
 	    if (otherPkgNum < 0) {
 		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
@@ -1161,7 +1164,7 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	    } else {
 		fi->actions[i] = FA_CREATE;
 	    }
-	    break;
+	  } break;
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
 		/* Here is an overlapped added file we don't want to nuke. */
@@ -1769,7 +1772,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     if (!ts->chrootDone) {
 	(void) chdir("/");
-	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
+	/*@-unrecog -superuser @*/
+	(void) chroot(ts->rootDir);
+	/*@=unrecog =superuser @*/
 	ts->chrootDone = 1;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
 	/*@-onlytrans@*/
@@ -1935,7 +1940,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     tsi = tsFreeIterator(tsi);
 
     if (ts->chrootDone) {
-	/*@-unrecog@*/ chroot("."); /*@-unrecog@*/
+	/*@-unrecog -superuser @*/
+	(void) chroot(".");
+	/*@=unrecog =superuser @*/
 	ts->chrootDone = 0;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
 	chroot_prefix = NULL;

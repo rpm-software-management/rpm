@@ -6,7 +6,9 @@
 #include "system.h"
 
 #ifndef PATH_MAX
+/*@-incondefs@*/	/* FIX: long int? */
 # define PATH_MAX 255
+/*@=incondefs@*/
 #endif
 
 #include <rpmcli.h>

@@ -58,7 +58,7 @@ extern int url_iobuf_size;
  * @param msg		debugging identifier (unused)
  * @return		new instance
  */
-urlinfo	urlNew(const char * msg)	/*@*/;
+/*@unused@*/ urlinfo	urlNew(const char * msg)	/*@*/;
 
 /** @todo Remove debugging entry from the ABI. */
 urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
@@ -70,7 +70,7 @@ urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
  * @param msg		debugging identifier (unused)
  * @return		referenced instance
  */
-urlinfo	urlLink(urlinfo u, const char * msg)
+/*@unused@*/ urlinfo	urlLink(urlinfo u, const char * msg)
 	/*@modifies u @*/;
 
 /** @todo Remove debugging entry from the ABI. */
@@ -84,7 +84,7 @@ urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
  * @param msg		debugging identifier (unused)
  * @return		dereferenced instance (NULL if freed)
  */
-urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
+/*@unused@*/ urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
 	/*@modifies u @*/;
 
 /** @todo Remove debugging entry from the ABI. */

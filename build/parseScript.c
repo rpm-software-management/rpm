@@ -92,6 +92,7 @@ int parseScript(Spec spec, int parsePart)
     const char **argv = NULL;
     poptContext optCon = NULL;
     
+    reqargs[0] = '\0';
     name = NULL;
     prog = "/bin/sh";
     file = NULL;

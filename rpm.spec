@@ -19,7 +19,7 @@ Name: rpm
 %define version 4.0.3
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1.05
+Release: 1.06
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -509,6 +509,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Sep 21 2001 Jeff Johnson <jbj@redhat.com>
+- lclint-3.0.0.15 fiddles.
+
 * Sat Sep 15 2001 Jeff Johnson <jbj@redhat.com>
 - close/discard Depends index after rpmdepCheck() use.
 

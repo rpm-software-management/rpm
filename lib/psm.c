@@ -983,7 +983,9 @@ static int runScript(PSM_t psm, Header h,
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
 	    if (!ts->chrootDone && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
-		/*@-unrecog@*/ chroot(rootDir); /*@=unrecog@*/
+		/*@-unrecog -superuser @*/
+		(void) chroot(rootDir);
+		/*@=unrecog =superuser @*/
 	    }
 	    (void) chdir("/");
 	    (void) execv(argv[0], (char *const *)argv);
@@ -1857,9 +1859,9 @@ assert(psm->mi == NULL);
 	    }
 
 	    (void) chdir("/");
-	    /*@-unrecog@*/
+	    /*@-unrecog -superuser @*/
 	    rc = chroot(ts->rootDir);
-	    /*@=unrecog@*/
+	    /*@=unrecog =superuser @*/
 	    psm->chrootDone = ts->chrootDone = 1;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 1;
 	    /*@-onlytrans@*/
@@ -1870,9 +1872,9 @@ assert(psm->mi == NULL);
     case PSM_CHROOT_OUT:
 	/* Restore root directory if changed. */
 	if (psm->chrootDone) {
-	    /*@-unrecog@*/
+	    /*@-unrecog -superuser @*/
 	    rc = chroot(".");
-	    /*@=unrecog@*/
+	    /*@=unrecog =superuser @*/
 	    psm->chrootDone = ts->chrootDone = 0;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 0;
 	    chroot_prefix = NULL;

@@ -1603,7 +1603,9 @@ void rpmFreeRpmrc(void)
     current[OS] = _free(current[OS]);
     current[ARCH] = _free(current[ARCH]);
     defaultsInitialized = 0;
+/*@-nullstate@*/ /* FIX: current may be NULL */
     return;
+/*@=nullstate@*/
 }
 
 int rpmShowRC(FILE * fp)

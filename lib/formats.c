@@ -56,7 +56,9 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * form
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
 	buf = rpmPermsString(*((int_32 *) data));
+	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
+	/*@=formatconst@*/
 	buf = _free(buf);
     }
 
@@ -98,7 +100,9 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 
 	val = xmalloc(5 + padding);
 	strcat(formatPrefix, "s");
+	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
+	/*@=formatconst@*/
     }
 
     return val;
@@ -134,7 +138,9 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 
 	val = xmalloc(5 + padding);
 	strcat(formatPrefix, "s");
+	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
+	/*@=formatconst@*/
     }
 
     return val;
@@ -480,7 +486,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 
     rc = hge(h, tag, type, (void **)data, count);
 
-    if (rc) {
+    if (rc && (*data) != NULL) {
 	*data = xstrdup(*data);
 	*freeData = 1;
 	return 0;

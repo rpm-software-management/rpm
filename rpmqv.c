@@ -240,7 +240,7 @@ static void printUsage(void)
     (void) puts("");
 
     fprintf(fp, _("Usage: %s {--help}\n"), __progname);
-    fprintf(fp,  ("       %s {--version}\n"), __progname);
+    fprintf(fp,   "       %s {--version}\n" , __progname);
 
 #ifdef	IAM_RPMEIU
 #ifdef	DYING
@@ -1041,9 +1041,11 @@ int main(int argc, const char ** argv)
 	    ia->relocations[ia->numRelocations].newPath = NULL;
 	}
 
+	/*@-compdef@*/ /* FIX: ia->relocations[0].newPath undefined */
 	ec += rpmInstall(rootdir, (const char **)poptGetArgs(optCon), 
 			ia->transFlags, ia->installInterfaceFlags, ia->probFilter,
 			ia->relocations);
+	/*@=compdef@*/
 	break;
 
     case MODE_ROLLBACK:

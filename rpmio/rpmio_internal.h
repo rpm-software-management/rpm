@@ -168,6 +168,7 @@ int ufdClose( /*@only@*/ void * cookie)
 
 /** \ingroup rpmio
  */
+/*@-nullstate@*/ /* FIX: io may be NULL */
 /*@unused@*/ static inline
 void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@modifies fd @*/
@@ -177,6 +178,7 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
     fd->fps[fd->nfps].io = io;
     /*@=assignexpose@*/
 }
+/*@=nullstate@*/
 
 /** \ingroup rpmio
  */
@@ -204,6 +206,7 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 
 /** \ingroup rpmio
  */
+/*@-nullstate@*/ /* FIX: fp may be NULL */
 /*@unused@*/ static inline
 void fdSetFp(FD_t fd, /*@kept@*/ /*@null@*/ void * fp)
 	/*@modifies fd @*/
@@ -213,6 +216,7 @@ void fdSetFp(FD_t fd, /*@kept@*/ /*@null@*/ void * fp)
     fd->fps[fd->nfps].fp = fp;
     /*@=assignexpose@*/
 }
+/*@=nullstate@*/
 
 /** \ingroup rpmio
  */

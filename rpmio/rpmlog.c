@@ -130,6 +130,8 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 }
 #endif
 
+/*@-compmempass@*/ /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
+/*@-nullstate@*/ /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	/*@modifies internalState @*/
 {
@@ -208,6 +210,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     if (pri <= RPMLOG_CRIT)
 	exit(EXIT_FAILURE);
 }
+/*@=compmempass =nullstate@*/
 
 void rpmlog (int code, const char *fmt, ...)
 {

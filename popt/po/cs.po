@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-07-16 21:53-0400\n"
+"POT-Creation-Date: 2001-09-21 10:20-0400\n"
 "PO-Revision-Date: 2001-07-24 00:03+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -102,10 +102,10 @@ msgstr "DOUBLE"
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:434
+#: popthelp.c:438
 msgid "Usage:"
 msgstr "Pou¾ití:"
 
-#: popthelp.c:456
+#: popthelp.c:460
 msgid "[OPTION...]"
 msgstr "[VOLBY...]"

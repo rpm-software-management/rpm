@@ -3,7 +3,7 @@
  */
 
 /*@-exportheadervar@*/
-/*@unused@*/ int _depends_debug = 0;
+/*@unused@*/ static int _depends_debug = 0;
 /*@=exportheadervar@*/
 
 #include "system.h"
@@ -377,6 +377,7 @@ alAddPackage(availableList al,
 	    dirMatch->files = xrealloc(dirMatch->files,
 		sizeof(*dirMatch->files) * 
 		    (dirMatch->numFiles + last - first + 1));
+	    if (p->baseNames != NULL)	/* XXX can't happen */
 	    for (fileNum = first; fileNum <= last; fileNum++) {
 		dirMatch->files[dirMatch->numFiles].baseName =
 		    p->baseNames[fileNum];
@@ -2152,8 +2153,8 @@ rescan:
  * @param rpmtag	rpm tag
  * @return              0 on success
  */
-static int rpmdbCloseDBI(rpmdb db, int rpmtag)
-	/*@ modifies fileSystem @*/
+static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
+	/*@ modifies db, fileSystem @*/
 {
     int dbix;
     int rc = 0;
@@ -2211,7 +2212,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     for (i = 0; i < npkgs; i++, p++)
     {
 
-        rpmMessage(RPMMESS_DEBUG, ("========== +++ %s-%s-%s\n"),
+        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s-%s-%s\n" ,
 		p->name, p->version, p->release);
 	rc = checkPackageDeps(ts, ps, p->h, NULL, p->multiLib);
 	if (rc)
@@ -2248,7 +2249,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 	{   const char * name, * version, * release;
 	    (void) headerNVR(h, &name, &version, &release);
-	    rpmMessage(RPMMESS_DEBUG, ("========== --- %s-%s-%s\n"),
+	    rpmMessage(RPMMESS_DEBUG,  "========== --- %s-%s-%s\n" ,
 		name, version, release);
 
 	    /* Erasing: check name against requiredby matches. */

@@ -442,7 +442,9 @@ int urlSplit(const char * url, urlinfo *uret)
 
     if (u->port < 0 && u->service != NULL) {
 	struct servent *serv;
-	serv = /*@-unrecog@*/ getservbyname(u->service, "tcp") /*@=unrecog@*/;
+	/*@-unrecog -multithreaded @*/
+	serv = getservbyname(u->service, "tcp");
+	/*@=unrecog =multithreaded @*/
 	if (serv != NULL)
 	    u->port = ntohs(serv->s_port);
 	else if (u->urltype == URL_IS_FTP)

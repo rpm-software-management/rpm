@@ -1199,7 +1199,7 @@ expandMacro(MacroBuf mb)
 	/* XXX Everything below expects fe > f */
 	fn = (fe - f);
 	gn = (ge - g);
-	if (fn <= 0) {
+	if ((fe - f) <= 0) {
 /* XXX Process % in unknown context */
 		c = '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
@@ -1384,7 +1384,7 @@ expandMacros(void * spec, MacroContext mc, char * s, size_t slen)
     char *tbuf;
     int rc;
 
-    if (s == NULL || slen <= 0)
+    if (s == NULL || slen == 0)
 	return 0;
     if (mc == NULL) mc = &rpmGlobalMacroContext;
 
@@ -1407,7 +1407,7 @@ expandMacros(void * spec, MacroContext mc, char * s, size_t slen)
 
     rc = expandMacro(mb);
 
-    if (mb->nb <= 0)
+    if (mb->nb == 0)
 	rpmError(RPMERR_BADSPEC, _("Target buffer overflow\n"));
 
     tbuf[slen] = '\0';	/* XXX just in case */

@@ -234,6 +234,7 @@
 	- fix: ftp remote globs broken (#46892).
 	- popt: clarify X consortium license in popt.3 man page.
 	- close/discard Depends index after rpmdepCheck() use.
+	- lclint-3.0.0.15 fiddles.
 
 4.0 -> 4.0.[12]
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
