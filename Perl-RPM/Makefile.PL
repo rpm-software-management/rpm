@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.28 2002/04/12 22:37:34 rjray Exp $
+# $Id: Makefile.PL,v 1.29 2002/05/10 08:04:55 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -64,7 +64,7 @@ list near this line. Stopped"
 WriteMakefile(
               NAME         => 'RPM',
               DISTNAME     => 'Perl-RPM',
-              VERSION      => '0.33',
+              VERSION      => '0.40',
               LIBS         => $rpm_libs,
               DEFINE       => $rpm_defines,
               PM           => \%PM,
@@ -126,6 +126,7 @@ sub MY::postamble
         print "Local build detected. Generating $self->{DISTNAME}.spec...\n";
         $self->{INSTALLDIR} = $Config{installsitearch}
             unless $self->{INSTALLDIR};
+        $self->{RELEASE} = $opts{release} || 1 unless $self->{RELEASE};
         # Copy all the RPM_* args from the command-line (parsed earlier), but
         # don't overwrite any of MM's internal values
         $self->{uc $_} ||= $opts{$_} for (keys %opts);
@@ -199,9 +200,9 @@ srpm: \$(SPECFILE) \$(DISTVNAME).tar\$(SUFFIX)
 
 __DATA__
 Summary: Perl bindings to the rpmlib API
-Name: rpm-perl
-Version: %{rpm_version}
-Release: SPEC_VERSION.SPEC_EXTRA
+Name: SPEC_DISTNAME
+Version: SPEC_VERSION
+Release: SPEC_RELEASE
 Epoch: 1
 Vendor: Randy J. Ray
 Copyright: Artistic
@@ -214,7 +215,7 @@ Requires: rpm = %{rpm_version}
 Provides: SPEC_DISTNAME = SPEC_VERSION
 Provides: perl(RPM::Database) = %{rpm_version}
 Provides: perl(RPM::Header) = %{rpm_version}
-Obsoletes: perl-Perl-RPM
+Obsoletes: rpm-perl
 BuildRoot: %{_tmppath}/%{name}-root
 
 %description
@@ -223,7 +224,7 @@ of Perl and C/XS (compiled) code to provide access to the RPM database,
 headers of installed packages, and more.
 
 %prep
-%setup -q -n rpm-perl-%{version}
+%setup -q -n SPEC_DISTNAME-%{version}
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL
