@@ -5,8 +5,8 @@
 #define BUF_CHUNK 1024
 
 struct StringBufRec {
-    char *buf;
-    char *tail;     /* Points to first "free" char (usually '\0') */
+    /*@owned@*/ char *buf;
+    /*@dependent@*/ char *tail;     /* Points to first "free" char */
     int allocated;
     int free;
 };

@@ -5,10 +5,10 @@
 
 struct availablePackage {
     Header h;
-    const char ** provides;
-    const char ** providesEVR;
+    /*@owned@*/ const char ** provides;
+    /*@owned@*/ const char ** providesEVR;
     /*@dependent@*/ int * provideFlags;
-    const char ** baseFileNames;
+    /*@owned@*/ const char ** baseFileNames;
     /*@dependent@*/ const char * name;
     /*@dependent@*/ const char * version;
     /*@dependent@*/ const char * release;
@@ -28,14 +28,14 @@ struct availableIndexEntry {
 } ;
 
 struct fileIndexEntry {
-    struct availablePackage * package;
-    const char * basename;
+    /*@owned@*/ struct availablePackage * package;
+    /*@dependent@*/ const char * basename;
 } ;
 
 struct dirInfo {
-    char * dirName;			/* strdup'd */
+    /*@owned@*/ char * dirName;		/* strdup'd */
     int dirNum;
-    struct fileIndexEntry * files;	/* malloc'd */
+    /*@owned@*/ struct fileIndexEntry * files;	/* malloc'd */
     int numFiles;
 } ;
 
@@ -71,7 +71,7 @@ struct rpmTransactionSet_s {
     /*@only@*/struct transactionElement * order;
     int orderCount, orderAlloced;
     /*@only@*/const char * root;
-    FD_t scriptFd;
+    /*@only@*/ FD_t scriptFd;
 };
 
 struct problemsSet {

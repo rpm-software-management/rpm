@@ -369,7 +369,7 @@ struct rpmDependencyConflict {
        which isn't needed as well */
     char * needsName, * needsVersion;
     int needsFlags;
-    const void * suggestedPackage;			/* NULL if none */
+    /*@observer@*/ /*@null@*/ const void * suggestedPackage; /* NULL if none */
     enum { RPMDEP_SENSE_REQUIRES, RPMDEP_SENSE_CONFLICTS } sense;
 } ;
 
@@ -389,7 +389,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key);
 void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
 void rpmtransFree( /*@only@*/ rpmTransactionSet rpmdep);
-void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd);
+void rpmtransSetScriptFd(rpmTransactionSet ts, /*@only@*/ FD_t fd);
 
 /* this checks for dependency satisfaction, but *not* ordering */
 int rpmdepCheck(rpmTransactionSet rpmdep,
@@ -723,10 +723,6 @@ int rpmInstallSource(const char * prefix, const char * arg, const char ** specFi
 		    char ** cookie);
 int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags, 
 		 int interfaceFlags);
-
-void printDepFlags(FILE * fp, const char * version, int flags);
-void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
-			     int numConflicts);
 
 /* ==================================================================== */
 /* --- checksig/resign */

@@ -268,8 +268,8 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
     }
 
     close(inpipe[0]);
-    write(inpipe[1], passPhrase, strlen(passPhrase));
-    write(inpipe[1], "\n", 1);
+    (void)write(inpipe[1], passPhrase, strlen(passPhrase));
+    (void)write(inpipe[1], "\n", 1);
     close(inpipe[1]);
 
     (void)waitpid(pid, &status, 0);
@@ -723,8 +723,8 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
     }
 
     close(passPhrasePipe[0]);
-    write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
-    write(passPhrasePipe[1], "\n", 1);
+    (void)write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
+    (void)write(passPhrasePipe[1], "\n", 1);
     close(passPhrasePipe[1]);
 
     (void)waitpid(pid, &status, 0);

@@ -19,7 +19,7 @@ typedef /*@abstract@*/ struct {
 } dbiIndexRecord;
 
 typedef /*@abstract@*/ struct {
-    dbiIndexRecord * recs;
+    /*@only@*/ dbiIndexRecord * recs;
     int count;
 } dbiIndexSet;
 

@@ -201,8 +201,8 @@ int dosetenv(const char *name, const char *value, int overwrite) {
    is looked up via getpw() and getgr() functions.  If this performs
    too poorly I'll have to implement it properly :-( */
 
-int unameToUid(char * thisUname, uid_t * uid) {
-    static char * lastUname = NULL;
+int unameToUid(const char * thisUname, uid_t * uid) {
+    /*@only@*/ static char * lastUname = NULL;
     static int lastUnameLen = 0;
     static int lastUnameAlloced;
     static uid_t lastUid;
@@ -241,8 +241,8 @@ int unameToUid(char * thisUname, uid_t * uid) {
     return 0;
 }
 
-int gnameToGid(char * thisGname, gid_t * gid) {
-    static char * lastGname = NULL;
+int gnameToGid(const char * thisGname, gid_t * gid) {
+    /*@only@*/ static char * lastGname = NULL;
     static int lastGnameLen = 0;
     static int lastGnameAlloced;
     static uid_t lastGid;
@@ -282,7 +282,7 @@ int gnameToGid(char * thisGname, gid_t * gid) {
 
 char * uidToUname(uid_t uid) {
     static int lastUid = -1;
-    static char * lastUname = NULL;
+    /*@only@*/ static char * lastUname = NULL;
     static int lastUnameLen = 0;
     struct passwd * pwent;
     int len;
@@ -312,7 +312,7 @@ char * uidToUname(uid_t uid) {
 
 char * gidToGname(gid_t gid) {
     static int lastGid = -1;
-    static char * lastGname = NULL;
+    /*@only@*/ static char * lastGname = NULL;
     static int lastGnameLen = 0;
     struct group * grent;
     int len;

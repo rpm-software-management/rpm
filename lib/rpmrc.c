@@ -673,6 +673,7 @@ static int doReadRC(FD_t fd, const char * filename)
 			option->name, filename, linenum, s);
 		    if (fn) xfree(fn);
 		    return 1;
+		    /*@notreached@*/
 		}
 
 		fdinc = fdOpen(fn, O_RDONLY, 0);
@@ -687,7 +688,7 @@ static int doReadRC(FD_t fd, const char * filename)
 		if (fn) xfree(fn);
 		if (rc) return rc;
 		continue;	/* XXX don't save include value as var/macro */
-	      }	break;
+	      }	/*@notreached@*/ break;
 	    case RPMVAR_MACROFILES:
 		fn = rpmGetPath(se, NULL);
 		if (fn == NULL || *fn == '\0') {
@@ -862,8 +863,7 @@ static void defaultMachine(char ** arch, char ** os) {
                  free (chptr);
               }
            }
-           if (!prelid)
-              /* parsing /etc/.relid file failed */
+           if (prelid == NULL)	/* parsing /etc/.relid file failed? */
               strcpy(un.sysname,"ncr-sysv4");
            /* wrong, just for now, find out how to look for i586 later*/
            strcpy(un.machine,"i486");
@@ -1125,7 +1125,9 @@ static void rebuildCompatTables(int type, char * name) {
 		   name);
 }
 
-static void getMachineInfo(int type, /*@out@*/char ** name, /*@out@*/int * num) {
+static void getMachineInfo(int type, /*@only@*/ /*@out@*/ char ** name,
+			/*@out@*/int * num)
+{
     struct canonEntry * canon;
     int which = currTables[type];
 

@@ -731,8 +731,10 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
     free(conflicts);
 }
 
-static struct availablePackage * alFileSatisfiesDepend(
-	struct availableList * al, const char * keyType, const char *fileName) {
+/*@dependent@*/ /*@null@*/ static struct availablePackage *
+alFileSatisfiesDepend(struct availableList * al, const char * keyType,
+			const char *fileName)
+{
     int i;
     char * file = xstrdup(fileName);
     char * chptr = strrchr(file, '/');
@@ -756,7 +758,7 @@ static struct availablePackage * alFileSatisfiesDepend(
 	if (!strcmp(dirMatch->files[i].basename, base)) {
 	    if (keyType)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added file "
-			    "list.\n"), keyType, file);
+			    "list.\n"), keyType, fileName);
 	    return dirMatch->files[i].package;
 	}
     }
@@ -827,7 +829,7 @@ static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(
 static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	const char *keyType, const char *keyDepend,
 	const char * keyName, const char * keyEVR, int keyFlags,
-	/*@out@*/struct availablePackage ** suggestion)
+	/*@out@*/ struct availablePackage ** suggestion)
 {
     dbiIndexSet matches;
     int rc = 0;	/* assume dependency is satisfied */

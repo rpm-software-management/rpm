@@ -106,6 +106,7 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 
     /* This can't happen, or stat('/') just failed! */
     abort();
+    /*@notreached@*/
 
     return fp;
 }

@@ -886,7 +886,7 @@ expandMacro(MacroBuf *mb)
 	default:
 		SAVECHAR(mb, c);
 		continue;
-		break;
+		/*@notreached@*/ break;
 	}
 
 	/* Expand next macro */
@@ -946,7 +946,7 @@ expandMacro(MacroBuf *mb)
 
 		s = se;
 		continue;
-		break;
+		/*@notreached@*/ break;
 	case '{':		/* %{...}/%{...:...} substitution */
 		if ((se = matchchar(s, c, '}')) == NULL) {
 			rpmError(RPMERR_BADSPEC, _("Unterminated %c: %s"), c, s);

@@ -117,11 +117,11 @@ int rpmReSign(int add, char *passPhrase, const char **argv)
 	case 1:
 	    fprintf(stderr, _("%s: Can't sign v1.0 RPM\n"), rpm);
 	    goto exit;
-	    break;
+	    /*@notreached@*/ break;
 	case 2:
 	    fprintf(stderr, _("%s: Can't re-sign v2.0 RPM\n"), rpm);
 	    goto exit;
-	    break;
+	    /*@notreached@*/ break;
 	default:
 	    break;
 	}
@@ -248,7 +248,7 @@ int rpmCheckSig(int flags, const char **argv)
 	    fprintf(stderr, _("%s: No signature available (v1.0 RPM)\n"), rpm);
 	    res++;
 	    goto bottom;
-	    break;
+	    /*@notreached@*/ break;
 	default:
 	    break;
 	}
@@ -296,7 +296,7 @@ int rpmCheckSig(int flags, const char **argv)
 		break;
 	    default:
 		continue;
-		break;
+		/*@notreached@*/ break;
 	    }
 
 	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, 

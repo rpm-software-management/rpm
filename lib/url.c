@@ -142,7 +142,7 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	    FREE(u->password);
 	    prompt = alloca(strlen(u->host) + strlen(u->user) + 40);
 	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
-	    u->password = xstrdup(getpass(prompt));
+	    u->password = xstrdup( /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/ );
 	}
 
 	if (u->proxyh == NULL) {
@@ -227,7 +227,7 @@ int urlSplit(const char * url, urlinfo **uret)
 
     u->url = xstrdup(url);
 
-    do {
+    while (1) {
 	/* Point to end of next item */
 	while (*se && *se != '/') se++;
 	if (*se == '\0') {
@@ -249,7 +249,7 @@ int urlSplit(const char * url, urlinfo **uret)
 	u->path = xstrdup(se);
 	*se = '\0';
 	break;
-    } while (1);
+    }
 
     /* Look for ...@host... */
     fe = f = s;

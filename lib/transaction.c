@@ -469,7 +469,6 @@ static Header relocateFileList(struct availablePackage * alp,
     /* Start off by relocating directories. */
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
-	    int len;
 
 	    len = strlen(relocations[j].oldPath);
 	    if (strncmp(relocations[j].oldPath, dirNames[i], len))
@@ -1154,7 +1153,7 @@ static void skipFiles(TFI_t * fi, int noDocs)
     if (languages) freeSplitString((char **)languages);
 }
 
-#define	NOTIFY(_x)	if (notify) notify _x
+#define	NOTIFY(_x)	if (notify) (void) notify _x
 
 /* Return -1 on error, > 0 if newProbs is set, 0 if everything happened */
 
@@ -1409,7 +1408,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     }
 
     chdir("/");
-    chroot(ts->root);
+    /*@-unrecog@*/ chroot(ts->root); /*@=unrecog@*/
 
     ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
     fpc = fpCacheCreate(totalFileCount);
@@ -1606,7 +1605,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		    headerFree(hdrs[i]);
 		    rc = rpmReadPackageHeader(fd, &h, NULL, NULL, NULL);
 		    if (rc) {
-			notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
+			(void)notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
 				    alp->key, notifyData);
 			ourrc++;
 			fd = NULL;
@@ -1634,7 +1633,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    headerFree(hdrs[i]);
 
 	    if (alp->fd == NULL && fd)
-		notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key,
+		(void)notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key,
 		   notifyData);
 	    break;
 	case TR_REMOVED:

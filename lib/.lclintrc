@@ -12,7 +12,7 @@
 #-immediatetrans
 -mustfree
 #-observertrans
--statictrans
+#-statictrans
 
 # not-yet normal parameters
 -boolops		# w->n

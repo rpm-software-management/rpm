@@ -40,7 +40,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		void * notifyData, const void * pkgKey, 
 		enum fileActions * actions,
 		struct sharedFileInfo * sharedList, FD_t scriptFd);
-const char * fileActionString(enum fileActions a);
+/*@observer@*/ const char *const fileActionString(enum fileActions a);
 
 #ifdef __cplusplus
 }

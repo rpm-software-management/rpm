@@ -8,8 +8,8 @@
 
 typedef	/*@abstract@*/ struct _FD {
     int		fd_fd;
-    void *	fd_bzd;
-    void *	fd_gzd;
+    /*@owned@*/ void *	fd_bzd;
+    /*@owned@*/ void *	fd_gzd;
     void *	fd_url;
 } *FD_t;
 
@@ -36,7 +36,7 @@ extern ssize_t	fdRead(FD_t fd, /*@out@*/void * buf, size_t count);
 extern ssize_t	fdWrite(FD_t fd, const void * buf, size_t count);
 extern int	fdClose(/*@only@*/ FD_t fd);
 
-extern /*@null@*/ FILE *fdFdopen(FD_t fd, const char *mode);
+extern /*@dependent@*/ /*@null@*/ FILE *fdFdopen( /*@only@*/ FD_t fd, const char *mode);
 
 /*
  * Support for GZIP library.
@@ -45,13 +45,13 @@ extern /*@null@*/ FILE *fdFdopen(FD_t fd, const char *mode);
 
 #include <zlib.h>
 
-extern gzFile * gzdFileno(FD_t fd);
+extern /*@dependent@*/ /*@null@*/ gzFile * gzdFileno(FD_t fd);
 
 extern /*@only@*/ /*@null@*/ FD_t gzdOpen(const char *pathname, const char *mode);
 
-extern /*@only@*/ /*@null@*/ FD_t gzdFdopen(FD_t fd, const char *mode);
+extern /*@only@*/ /*@null@*/ FD_t gzdFdopen( /*@only@*/ FD_t fd, const char *mode);
 
-extern ssize_t gzdRead(FD_t fd, /*@out@*/void * buf, size_t count);
+extern ssize_t gzdRead(FD_t fd, /*@out@*/ void * buf, size_t count);
 
 extern ssize_t gzdWrite(FD_t fd, const void * buf, size_t count);
 
@@ -61,7 +61,7 @@ extern int gzdFlush(FD_t fd);
 
 extern /*@only@*/ /*@observer@*/ const char * gzdStrerror(FD_t fd);
 
-extern int gzdClose(/*@only@*/ FD_t fd);
+extern int gzdClose( /*@only@*/ FD_t fd);
 
 #endif	/* HAVE_ZLIB_H */
 
@@ -72,21 +72,21 @@ extern int gzdClose(/*@only@*/ FD_t fd);
 
 #include <bzlib.h>
 
-extern BZFILE * bzdFileno(FD_t fd);
+extern /*@dependent@*/ /*@null@*/ BZFILE * bzdFileno(FD_t fd);
 
 extern /*@only@*/ /*@null@*/ FD_t bzdOpen(const char *pathname, const char *mode);
 
-extern /*@only@*/ /*@null@*/ FD_t bzdFdopen(FD_t fd, const char *mode);
+extern /*@only@*/ /*@null@*/ FD_t bzdFdopen( /*@only@*/ FD_t fd, const char *mode);
 
-extern ssize_t bzdRead(FD_t fd, /*@out@*/void * buf, size_t count);
+extern ssize_t bzdRead(FD_t fd, /*@out@*/ void * buf, size_t count);
 
 extern ssize_t bzdWrite(FD_t fd, const void * buf, size_t count);
 
 extern int bzdFlush(FD_t fd);
 
-extern /*@only@*/ /*@observer@*/ const char * bzdStrerror(FD_t fd);
+extern /*@observer@*/ const char * bzdStrerror(FD_t fd);
 
-extern int bzdClose(/*@only@*/ FD_t fd);
+extern int bzdClose( /*@only@*/ FD_t fd);
 
 #endif	/* HAVE_BZLIB_H */
 

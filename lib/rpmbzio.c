@@ -37,6 +37,7 @@ FD_t bzdFdopen(FD_t fd, const char *mode) {
 }
 
 ssize_t bzdRead(FD_t fd, void * buf, size_t count) {
+    *((char *)buf) = '\0';
     return bzread(bzdFileno(fd), buf, count);
 }
 
@@ -49,7 +50,7 @@ int bzdFlush(FD_t fd) {
 }
 
 const char * bzdStrerror(FD_t fd) {
-    int bzerr;
+    int bzerr = 0;
     return bzerror(bzdFileno(fd), &bzerr);
 }
 

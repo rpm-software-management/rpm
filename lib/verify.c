@@ -247,7 +247,7 @@ int rpmVerifyScript(const char * root, Header h, FD_t err)
 /* ======================================================================== */
 static int verifyHeader(QVA_t *qva, Header h)
 {
-    char ** fileList;
+    const char ** fileList;
     int count;
     int verifyResult;
     int i, ec, rc;
@@ -258,7 +258,7 @@ static int verifyHeader(QVA_t *qva, Header h)
     if (!(qva->qva_flags & VERIFY_MD5)) omitMask = RPMVERIFY_MD5;
 
     if (headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL) &&
-       headerIsEntry(h, RPMTAG_COMPFILELIST)) {
+	headerIsEntry(h, RPMTAG_COMPFILELIST)) {
 	buildFileList(h, &fileList, &count);
 
 	for (i = 0; i < count; i++) {
@@ -267,8 +267,8 @@ static int verifyHeader(QVA_t *qva, Header h)
 	    } else {
 		const char * size, * md5, * link, * mtime, * mode;
 		const char * group, * user, * rdev;
-		static const char * aok = ".";
-		static const char * unknown = "?";
+		/*@observer@*/ static const char *const aok = ".";
+		/*@observer@*/ static const char *const unknown = "?";
 
 		if (!verifyResult) continue;
 	    

@@ -55,11 +55,11 @@ void oldrpmfileFromInfoLine(char * path, char * state, char * str,
 void oldrpmfileFree(struct oldrpmFileInfo * fi);
 char * oldrpmfileToInfoStr(struct oldrpmFileInfo * fi);
 
-char * oldhdrReadFromStream(FD_t fd, /*@out@*/struct oldrpmHeader * header);
-char * oldhdrReadFromFile(char * filename, /*@out@*/struct oldrpmHeader * header);
-char * oldhdrParseSpec(struct oldrpmHeader * header, /*@out@*/struct oldrpmHeaderSpec * spec);
-void   oldhdrFree(/*@only@*/ struct oldrpmHeader * header);
-void   oldhdrSpecFree(/*@only@*/ struct oldrpmHeaderSpec * spec);
+/*@observer@*/ char * oldhdrReadFromStream(FD_t fd, /*@out@*/ struct oldrpmHeader * header);
+/*@observer@*/ char * oldhdrReadFromFile(char * filename, /*@out@*/ struct oldrpmHeader * header);
+/*@observer@*/ char * oldhdrParseSpec(struct oldrpmHeader * header, /*@out@*/struct oldrpmHeaderSpec * spec);
+void   oldhdrFree( /*@only@*/ struct oldrpmHeader * header);
+void   oldhdrSpecFree( /*@only@*/ struct oldrpmHeaderSpec * spec);
 
 #ifdef __cplusplus
 }

@@ -11,6 +11,7 @@ static char * permsString(int mode)
    
     if (mode & S_ISVTX) perms[10] = 't';
 
+    /*@-unrecog@*/
     if (mode & S_IRUSR) perms[1] = 'r';
     if (mode & S_IWUSR) perms[2] = 'w';
     if (mode & S_IXUSR) perms[3] = 'x';
@@ -22,6 +23,7 @@ static char * permsString(int mode)
     if (mode & S_IROTH) perms[7] = 'r';
     if (mode & S_IWOTH) perms[8] = 'w';
     if (mode & S_IXOTH) perms[9] = 'x';
+    /*@=unrecog@*/
 
     if (mode & S_ISUID) {
 	if (mode & S_IXUSR) 

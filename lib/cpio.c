@@ -321,9 +321,9 @@ static int setInfo(struct cpioHeader * hdr)
     return rc;
 }
 
-static int checkDirectory(char * filename)
+static int checkDirectory(const char * filename)
 {
-    static char * lastDir = NULL;	/* XXX memory leak */
+    /*@only@*/ static char * lastDir = NULL;	/* XXX memory leak */
     static int lastDirLength = 0;
     static int lastDirAlloced = 0;
     int length = strlen(filename);
