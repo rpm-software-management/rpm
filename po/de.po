@@ -1,9 +1,17 @@
 # German messages for RPM
-# Revised by Karl Eichwalder <ke@SuSE.DE>, 1997.
+# Revised by Karl Eichwalder <ke@SuSE.DE>, 1997-1998.
 #
-# Verbesserungen willkommen!
+# Verbesserungen jeder Art willkommen!
 #
 # Status:
+#
+# 1998-08-04 11:00:36 MEST
+# Update für 2.5.2
+# -ke-
+#
+# 1997-10-12 18:08:57 MEST
+# Update für 2.4.8
+# -ke-
 #
 # 1997-07-20 16:13:20 CEST
 # Update für 2.4.3
@@ -28,9 +36,9 @@
 # ### sollte »query« nicht besser mit Abfrage üs werden (statt Anfrage)? -ke-
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm-2.4.3\n"
-"POT-Creation-Date: 1997-07-20 16:09+0200\n"
-"PO-Revision-Date: 1997-07-20 16:15 CEST\n"
+"Project-Id-Version: rpm 2.5.2\n"
+"POT-Creation-Date: 1998-08-03 16:21+0200\n"
+"PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -38,330 +46,355 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 # , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:69
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:193
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Version %s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:73
-msgid "Copyright (C) 1997 - Red Hat Software"
-msgstr "Copyright © 1997 - Red Hat Software"
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:197
+msgid "Copyright (C) 1998 - Red Hat Software"
+msgstr "Copyright © 1998 - Red Hat Software"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:74
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:198
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
 msgstr ""
 "Dies darf unter den Bedingungen der »GNU Public License« frei verteilt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:83
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:207
 msgid "usage: rpm {--help}"
 msgstr "Benutzung: rpm {--help}"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:84
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:208
 msgid "       rpm {--version}"
 msgstr ""
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:85
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:209
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
 msgstr "       rpm {--initdb}   [--dbpath <VERZ>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:86
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:210
 msgid ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:87
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:211
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
 "                        [--replacepkgs] [--replacefiles] [--root <VERZ>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:88
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:212
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr ""
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:89
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:213
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 "                        [--rcfile <DATEI>] [--ignorearch] [--dbpath <VERZ>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:90
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:214
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
 "                        [--prefix <VERZ>] [--ignoreos] [--nodeps] "
 "[--allfiles]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:91 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:97
-msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpproxy <HOST>] [--ftpport <PORT>]"
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:215
+msgid ""
+"                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
+msgstr ""
+"                        [--ftpproxy <RECHNER>] [--ftpport <PORT>] [--justdb]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:92 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:99
-msgid "                        file1.rpm ... fileN.rpm"
-msgstr "                        DATEI1.rpm ... DATEIn.rpm"
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:216
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:224
+msgid "                        [--noorder] [--relocate oldpath=newpath]"
+msgstr "                        [--noorder] [--relocate <ALTPFAD>=<NEUPFAD>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:93
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:217
+msgid ""
+"                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"
+msgstr "                        [--badreloc] [--notriggers] DATEI1.rpm ... DATEIn.rpm"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:218
 msgid ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:94
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:219
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <VERZ>] [--noscripts]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:95
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:220
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
 "                        [--excludedocs] [--includedocs] [--rcfile <DATEI>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:96
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:221
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <VERZ>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:98
-msgid "                        [--ignoreos] [--nodeps] [--allfiles]"
-msgstr "                        [--ignoreos] [--nodeps] [--allfiles]"
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:222
+msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
+msgstr "                        [--ftpproxy <HOST>] [--ftpport <PORT>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:100
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:223
+msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
+msgstr ""
+"                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:225
+msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
+msgstr "                        [--badreloc] DATEI1.rpm ... DATEIn.rpm"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:226
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr ""
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:101
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:227
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr "                        [--scripts] [--root <VERZ>] [--rcfile <DATEI>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:102
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:228
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:103
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:229
 msgid ""
 "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
 msgstr ""
 "                        [--ftpuseport] [--ftpproxy <HOST>] [--ftpport <PORT>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:104
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:230
 msgid ""
 "                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"
 msgstr ""
 "                        [--provides] [--dump] [--dbpath <VERZ>] [--changelog]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:105
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:231
 msgid "                        [targets]"
 msgstr "                        [ZIELE]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:106
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:232
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr "       rpm {--verify -V -y} [-afpg] [--root <VERZ>] [--rcfile <DATEI>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:107
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:233
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
 "                        [--dbpath <VERZ>] [--nodeps] [--nofiles] "
 "[--noscripts]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:108
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:234
 msgid "                        [--nomd5] [targets]"
 msgstr "                        [--nomd5] [ZIELE]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:109
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:235
 msgid "       rpm {--setperms} [-afpg] [target]"
 msgstr "       rpm {--setperms} [-afpg] [ZIEL]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:110
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:236
 msgid "       rpm {--setugids} [-afpg] [target]"
 msgstr "       rpm {--setugids} [-afpg] [ZIEL]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:111
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:237
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
 "       rpm {--erase -e] [--root <VERZ>] [--noscripts] [--rcfile <DATEI>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:112
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:238
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <VERZ>] [--nodeps] [--allmatches]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:113
-msgid "                        package1 ... packageN"
-msgstr "                        PAKET1 ... PAKETn"
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:239
+msgid ""
+"                        [--justdb] [--notriggers] rpackage1 ... packageN"
+msgstr "                        [--justdb] [--notriggers] PAKET1 ... PAKETn"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:114
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:240
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<DATEI>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:115
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:241
 msgid ""
 "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 msgstr ""
 "                        [--sign] [--test] [--timecheck <S>] [--buildos <BS>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:116
-msgid "                        [--buildarch <arch>] specfile"
-msgstr "                        [--buildarch <ARCH>] SPEC-DATEI"
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:242
+msgid "                        [--buildarch <arch>] [--rmsource] specfile"
+msgstr "                        [--buildarch <ARCH>] [--rmsource] SPEC-DATEI"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:117
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:243
+msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
+msgstr "       rpm {--rmsource} [--rcfile <DATAEI>] [-v] SPEC-DATEI"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:244
 msgid ""
 "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr ""
-"       rpm {--rebuild} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
+msgstr "       rpm {--rebuild} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:118
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:245
 msgid ""
 "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--recompile} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:119
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:246
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--resign} [--rcfile <DATEI>] PAKET1 PAKET2 ... PAKETn"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:120
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:247
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--addsign} [--rcfile <DATEI>] PAKET1 PAKET2 ... PAKETn"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:121
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:248
 msgid "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"
 msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <DATEI>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:122
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:249
 msgid "                           package1 ... packageN"
 msgstr "                           PAKET1 ... PAKETn"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:123
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:250
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <DATEI>] [--dbpath <VERZ>]"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:124
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:251
 msgid "       rpm {--querytags}"
 msgstr ""
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:158
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:285
 msgid "usage:"
 msgstr "Benutzung:"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:160
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:287
 msgid "print this message"
 msgstr "Gibt diesen Text aus"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:162
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:289
 msgid "print the version of rpm being used"
 msgstr "Die benutzte RPM-Version anzeigen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:163
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:290
 msgid "   all modes support the following arguments:"
 msgstr "   alle Modi unterstützen folgende Argumente:"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:165
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:292
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "<DATEI> anstelle von /etc/rpmrc und $HOME/.rpmrc benutzen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:167
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:294
 msgid "be a little more verbose"
 msgstr "Ausgabe etwas ausführlicher gestalten"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:169
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:296
 msgid "be incredibly verbose (for debugging)"
 msgstr "extrem ausführliche Ausgabe (um Programm-Fehler zu finden)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:171
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:298
 msgid "query mode"
 msgstr "Anfrage-Modus"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:173 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:227
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:277 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:299
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:357
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:300
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:354
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:414
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:442
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:504
 msgid "use <dir> as the top level directory"
 msgstr "<VERZ> als Stammverzeichnis benutzen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:175 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:225
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:249 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:293
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:355
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:302
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:352
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:380
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:430
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:502
 msgid "use <dir> as the directory for the database"
 msgstr "<VERZ> als Datenbankverzeichnis benutzen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:177
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:304
 msgid "use s as the header format (implies -i)"
 msgstr "S als Kopfzeilen-Format benutzen (impliziert -i)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:178
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:305
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
 "   Installieren, Aktualisieren und Anfragen (mit -p) erlauben es, ftp-URLs"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:179
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:306
 msgid "   of file names as well as the following options:\n"
 msgstr ""
 "   anstelle von Dateinamen zu benutzen. Außerdem die folgenden Optionen:\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:181
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:308
 msgid "hostname or IP of ftp proxy"
 msgstr "Hostname oder IP des ftp-Proxys"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:183
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:310
 msgid "port number of ftp server (or proxy)"
 msgstr "Portnummer des ftp-Servers (oder -Proxys)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:184
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:311
 msgid "      Package specification options:"
 msgstr "      Optionen der Paketauswahl:"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:186
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:313
 msgid "query all packages"
 msgstr "Anfrage an alle Pakete"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:188
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:315
 msgid "query package owning <file>"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:190
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:317
 msgid "query (uninstalled) package <packagefile>"
 msgstr "Anfrage nach (nicht installiertem) Paket <PAKET-DATEI>"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:192
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:319
 msgid "query packages which provide <i> capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:194
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:321
 msgid "query packages which require <i> capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:195
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:322
 msgid "      Information selection options:"
 msgstr "      Optionen der Informationsauswahl:"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:197
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:324
 msgid "display package information"
 msgstr "Paketinformationen anzeigen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:199
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:326
 msgid "display the package's change log"
 msgstr "Changelog des Pakets anzeigen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:201
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:328
 msgid "display package file list"
 msgstr "Dateiliste des Pakets anzeigen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:203
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:330
 msgid "show file states (implies -l)"
 msgstr "Status der Dateien anzeigen (impliziert -l)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:205
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:332
 msgid "list only documentation files (implies -l)"
 msgstr "Nur Dokumentationsdateien auflisten (impliziert -l)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:207
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:334
 msgid "list only configuration files (implies -l)"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:209
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:336
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
@@ -369,48 +402,49 @@ msgstr ""
 "Alle überprüfbaren Infos zu jeder Datei anzeigen (mit -l, -c oder -d "
 "benutzen!)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:211
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:338
 msgid "list capabilities package provides"
 msgstr "Fähigkeiten des Pakets auflisten"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:212
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:339
 msgid "        --requires"
 msgstr ""
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:214
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:341
 msgid "list package dependencies"
 msgstr "Paket-Abhängigkeiten ausgeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:216
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:343
 msgid "print the various [un]install scripts"
 msgstr "Die diversen (De-)Installations-Skripte ausgeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:221
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:348
 msgid "send stdout to <cmd>"
 msgstr "Standard-Ausgabe nach <BEFEHL> umleiten"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:223
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:350
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr ""
 "Ein Paket mit denselben Paketspezifikations-Optionen wie bei -q überprüfen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:229 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:267
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:295
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:356
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:400
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:434
 msgid "do not verify package dependencies"
 msgstr "Dateiabhängigkeiten nicht überprüfen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:231
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:358
 msgid "do not verify file md5 checksums"
 msgstr "md5-Prüfsumme der Datei nicht überprüfen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:233
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:360
 msgid "do not verify file attributes"
 msgstr "Dateiattribute nicht überprüfen"
 
 # Was ist gemeint?
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:236
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:363
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
@@ -419,7 +453,7 @@ msgstr ""
 "Paketspezifikationsoptionen wie bei -q benutzt würden"
 
 # Was ist gemeint?
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:239
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:366
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
@@ -427,70 +461,94 @@ msgstr ""
 "Datei-Eigentümer und -Gruppe gemäß deren in der Paketdatenbank setzen, wie "
 "wenn dieselben Paketspezifikationsoptionen wie bei -q benutzt würden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:245
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:372
 msgid "install package"
 msgstr "Paket installieren"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:247
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:374
+msgid "relocate files from <oldpath> to <newpath>"
+msgstr "verschiebe Dateien von <alter_Pfad> nach <neuer_Pfad>"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:376
+msgid "relocate files even though the package doesn't allow it"
+msgstr "verschiebe Dateien, obglich das Paket es nicht erlaubt"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:378
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 "Verschiebe das Paket, wenn es verschiebbar ist, in das Verzeichnis <VERZ>"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:251
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:382
 msgid "do not install documentation"
 msgstr "Dokumentation nicht installieren"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:253
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:384
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "Abkürzung für --replacepkgs --replacefiles"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:256
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:387
 msgid "print hash marks as package installs (good with -v)"
 msgstr "Fortschrittsanzeige bei der Paketinstallation (gut zusammen mit -v)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:258
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:389
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "alle Dateien installieren, auch die config-Dateien, die sonst übergangen "
 "würden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:261
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:392
 msgid "don't verify package architecture"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:263
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:394
 msgid "don't verify package operating system"
 msgstr "Paket-Betriebssystem nicht überprüfen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:265
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:396
 msgid "install documentation"
 msgstr "Dokumentation installieren"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:269
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:398
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:432
+msgid "update the database, but do not modify the filesystem"
+msgstr "Datenbank erneuern, aber das Dateisystem nicht verändern"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:402
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:436
+msgid "do not reorder package installation to satisfy dependencies"
+msgstr ""
+"Paket-Installation nicht neu sortieren, um den Abhängigkeiten zu genügen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:404
 msgid "don't execute any installation scripts"
 msgstr "Keine Installations-Skripte ausführen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:271
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:406
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:440
+msgid "don't execute any scripts triggered by this package"
+msgstr "kein Skript ausführen, das durch dieses Paket veranlasst wurde"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:408
 msgid "print percentages as package installs"
 msgstr "Prozentangabe bei der Paketinstallation ausgeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:273
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:410
 msgid "install even if the package replaces installed files"
 msgstr "Auch dann installieren, wenn das Paket installierte Dateien ersetzt"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:275
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:412
 msgid "reinstall if the package is already present"
 msgstr "Neuinstallation, wenn das Paket schon vorhanden ist"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:279
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:416
 msgid "don't install, but tell if it would work or not"
 msgstr "Nicht installieren - nur anzeigen, ob es funktionieren würde"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:283
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:420
 msgid "upgrade package (same options as --install, plus)"
 msgstr "Paket aktualisieren (dieselben Optionen wie --install, außerdem)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:285
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:422
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -498,11 +556,11 @@ msgstr ""
 "Aktualisierung auf eine alte Version des Pakets (--force macht das bei "
 "Aktualisierungen automatisch)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:289
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:426
 msgid "erase (uninstall) package"
 msgstr "Paket löschen (deinstallieren)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:291
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:428
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -510,80 +568,84 @@ msgstr ""
 "Alle Pakete entfernen, die mit <PAKET> übereinstimmen (normalerweise wird "
 "ein Fehler angezeigt, wenn <PAKET> mehrere Pakete bezeichnet)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:297
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:438
 msgid "do not execute any package specific scripts"
 msgstr "Keine paketspezifischen Skripte ausführen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:301
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:444
 msgid "    -b<stage> <spec>      "
 msgstr "    -b<STUFE> <SPEC>      "
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:303
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:446
 msgid "build package, where <stage> is one of:"
 msgstr "Paket erstellen, <STUFE> ist einer der Buchstaben:"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:305
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:448
 msgid "prep (unpack sources and apply patches)"
 msgstr "präparieren (Quellen entpacken und Patch-Dateien anwenden"
 
 # , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:307
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:450
 #, c-format
 msgid "list check (do some cursory checks on %files)"
 msgstr "kontrollieren (oberflächliche Überprüfung der %files)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:309
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:452
 msgid "compile (prep and compile)"
 msgstr "kompilieren (präparieren und kompilieren)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:311
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:454
 msgid "install (prep, compile, install)"
 msgstr "installieren (präparieren, kompilieren, installieren)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:313
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:456
 msgid "binary package (prep, compile, install, package)"
 msgstr ""
 "Binärpaket erstellen (präparieren, kompilieren, installieren und paketieren)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:315
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:458
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
 "Binär- und Quellpaket erstellen (präparieren, kompilieren, installieren und "
 "Paketieren"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:317
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:460
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "Direkt zur angegeben Stufe springen (nur für c und i)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:319
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:462
 msgid "remove build tree when done"
 msgstr "Erstellungsdateibaum nach Beendigung löschen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:321
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:464
+msgid "remove sources and spec file when done"
+msgstr "Quellen und spec-Dateien nach Beendigung löschen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:466
 msgid "generate PGP signature"
 msgstr "PGP-Signatur generieren"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:323
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:468
 msgid "use <dir> as the build root"
 msgstr "Benutze <VERZ> als Stammverzeichnis beim Erstellen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:325
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:470
 msgid "build the packages for architecture <arch>"
 msgstr "Erstelle die Pakete für die Architektur <ARCH>"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:327
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:472
 msgid "build the packages for ositecture <os>"
 msgstr "Erstelle die Pakete für das Betriebssystem <BS>"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:329
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:474
 msgid "do not execute any stages"
 msgstr "Keine Stufen ausführen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:331
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:476
 msgid "set the time check to S seconds (0 disables it)"
 msgstr "Die Zeitüberprüfung auf S Sekunden setzen (mit 0 ausschalten)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:334
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:479
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
@@ -591,190 +653,210 @@ msgstr ""
 "Quellpaket installieren, Binarypaket erstellen und spec-Datei, Quellen, "
 "Patch-Dateien und Icons löschen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:336
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:481
+msgid "remove sources and spec file"
+msgstr "lösche Quellen und spec-Datei"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:483
 msgid "like --rebuild, but don't build any package"
 msgstr "wie --rebuild aber kein Paket erstellen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:338
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:485
 msgid "sign a package (discard current signature)"
 msgstr "Ein Paket signieren (die aktuelle Signature wird verworfen)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:340
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:487
 msgid "add a signature to a package"
 msgstr "Signatur einem Paket hinzufügen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:343
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:490
 msgid "verify package signature"
 msgstr "Paketsignatur überprüfen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:345
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:492
 msgid "skip any PGP signatures"
 msgstr "alle PGP-Signaturen überspringen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:347
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:494
 msgid "skip any MD5 signatures"
 msgstr "alle MD5-Signaturen überspringen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:349
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:496
 msgid "list the tags that can be used in a query format"
 msgstr "Tags auflisten, die im Anfrageformat benutzt werden können"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:351
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:498
 msgid "make sure a valid database exists"
 msgstr "Sicherstellen, daß eine gültige Datenbank vorhanden ist"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:353
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:500
 msgid "rebuild database from existing database"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-# , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:381
-#, c-format
-msgid "Failed to open tar pipe: %s\n"
-msgstr "tar-Pipe zu öffnen, ist fehlgeschlagen: %s\n"
-
-# , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:386
-#, c-format
-msgid "Failed to read spec file from %s\n"
-msgstr "spec-Datei von %s zu lesen, ist fehlgeschlagen\n"
-
-# , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:447
-#, c-format
-msgid "unable to open: %s\n"
-msgstr "Datei kann nicht geöffnet werden: %s\n"
-
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:460 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:471
-msgid "Build failed.\n"
-msgstr "Die Erstellung ist fehlgeschlagen.\n"
-
-# , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:469
-#, c-format
-msgid "%s doesn't build on this architecture\n"
-msgstr "%s läßt sich auf dieser Architektur nicht erstellen\n"
-
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:643 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:649
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:656 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:662
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:671 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:678
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:723 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:729
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:810 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:816
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:823 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:829
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:837 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:869
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:894 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:900
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:632
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:638
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:645
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:651
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:660
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:667
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:713
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:719
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:808
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:815
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:821
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:828
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:834
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:842
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:875
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:917
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:923
 msgid "only one major mode may be specified"
 msgstr "Es darf nur ein Hauptmodus angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:664
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:653
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u und --uninstall sind veraltet und funktionieren nicht mehr.\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:666
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:655
 msgid "Use -e or --erase instead.\n"
 msgstr "Benutzen Sie stattdessen -e oder --erase\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:682
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:671
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--build (-b) benötigt einen Buchstaben aus a,b,i,c,p,l als einziges Argument"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:686
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:675
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--tarbuild (-t) benötigt einen Buchstaben aus a,b,i,c,p,l als einziges "
 "Argument"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:752 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:759
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:767 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:775
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:795 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:803
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:742
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:749
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:757
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:765
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:785
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:793
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:801
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 "Nur nur eine Art der Anfrage/Überprüfung kann pro Programmlauf durchgeführt "
 "werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:845
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:850
 msgid "arguments to --dbpath must begin with a /"
 msgstr "Argumente zu --dbpath müssen mit einem / beginnen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:852
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:857
 msgid "one type of query may be performed at a time"
 msgstr "Nur eine Art der Anfrage kann pro Programmlauf durchgeführt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:912
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:881
+msgid "relocations must begin with a /"
+msgstr "Verschiebungen müssen mit einem »/« beginnen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:883
+msgid "relocations must contain a ="
+msgstr "Verschiebungen müssen ein »=« beinhalten"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:886
+msgid "relocations must have a / following the ="
+msgstr "bei Verschiebungen muss ein »/« dem »=« folgen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:935
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath wurde für eine Operation angeben, die keine Datenbank benutzt"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:917
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:940
 msgid "--timecheck may only be used during package builds"
 msgstr "--clean darf nur während der Paketerstellung benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:920 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:923
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:943
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:946
 msgid "unexpected query specifiers"
 msgstr "Unerwartete Angaben für die Anfrage"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:927
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:950
 msgid "unexpected query source"
 msgstr "Unerwartete Quelle der Anfrage"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:930
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:953
 msgid "only installation and upgrading may be forced"
 msgstr "nur die Installation und Aktualisierung darf erzwungen werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:933
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:956
+msgid "files may only be relocated during package installation"
+msgstr "Dateien können nur während der Paketinstallation verschoben werden"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:959
+msgid "only one of --prefix or --relocate may be used"
+msgstr "nur eines der Argumente --prefix oder --relocate darf angegeben werden"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:962
+msgid "--relocate may only be used when installing new packages"
+msgstr "--relocate darf nur bei der Installation neuer Pakete benutzt werden"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:965
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix darf nur bei der Installation neuer Pakete benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:936
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:968
 msgid "arguments to --prefix must begin with a /"
 msgstr "Argumente zu --prefix müssen mit einem / beginnen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:939
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:971
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:943
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:975
 msgid "--percent may only be specified during package installation"
 msgstr "--percent darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:947
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:979
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:951
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:983
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:955
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:987
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:959
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:991
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:963
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:995
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "nur eines der Argumente --excludedocs und --includedocs darf angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:967
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:999
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:971
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1003
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:975
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1007
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches darf nur während der Paketdeinstallaiton angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:979
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1011
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:984
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1015
+msgid "--justdb may only be specified during package installation and erasure"
+msgstr ""
+"--justdb kann nur während der Paketinstallation und -deinstallation "
+"angegeben werden"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1020
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -782,7 +864,13 @@ msgstr ""
 "--noscripts darf nur während der Paketinstallation, -deinstallation und "
 "-überprüfung angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:989
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1024
+msgid ""
+"--notriggers may only be specified during package installation, erasure, and "
+"verification"
+msgstr "--notriggers darf nur während der Paketinstallation, -deinstallation und -überprüfung angegeben werden"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1029
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
@@ -790,11 +878,11 @@ msgstr ""
 "--nodeps darf nur während der Paketinstallation, -deinstallation und "
 "-überprüfung angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:993
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1033
 msgid "--nofiles may only be specified during package verification"
 msgstr "--nofiles darf nur während der Paketüberprüfung angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:998
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1038
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -802,7 +890,7 @@ msgstr ""
 "--test darf nur während der Paketinstallation, -deinstallation und "
 "-erstellung angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1003
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1043
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -810,452 +898,766 @@ msgstr ""
 "--root (-r) darf nur während der Paketinstallation, -deinstallation, "
 "-anfrage und Datenbankneuerstellungen angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1008
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1048
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "Argumente zu --root (-r) müssen mit einem / beginnen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1011
-msgid "--clean may only be used during package building"
-msgstr "--clean darf nur während der Paketerstellung benutzt werden"
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1051
+msgid "--clean may only be used with -b and -t"
+msgstr "--clean darf nur mit -b und -t benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1014
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1054
+msgid "--rmsource may only be used with -b and -t"
+msgstr "--rmsource darf nur mit -b und -t benutzt werden"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1057
 msgid "--short-circuit may only be used during package building"
 msgstr "--short-circuit darf nur während der Paketerstellung benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1017
-msgid "--short-circuit may only be used with -bc, -bi, -tc or -ti"
-msgstr ""
-"--short-circuit darf nur zusammen mit -bc, bi, -tc oder -ti benutzt werden"
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1061
+msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
+msgstr "--short-circuit darf nur mit -bc, -bi, -bs, -tc -ti oder -ts benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1022
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1066
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage darf nur während Aktualisierungen benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1025
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1069
 msgid "--dump may only be used during queries"
 msgstr "--dump darf nur während Anfragen benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1028
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1072
 msgid "--dump of queries must be used with -l, -c, or -d"
 msgstr "--dump der Anfragen muß zusammen mit  -l, -c, or -d benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1033
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1077
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "ftp-Optionen können nur während Paketanfragen, -installationen und "
 "-aktualisierungen benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1040
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1084
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp darf nur während der Signatur-Überprüfung benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1043
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1087
 msgid ""
 "--nopgp may only be used during signature checking and package verification"
 msgstr ""
 "--nopgp darf nur während der Signatur- und Paketüberprüfung angegeben werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1056
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1100
 msgid "Pass phrase check failed\n"
 msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1059
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1103
 msgid "Pass phrase is good.\n"
 msgstr "Das Passwort ist richtig.\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1071
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1115
 msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paketerstellung benutzt werden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1105
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1149
 msgid "unexpected arguments to --querytags "
 msgstr "Unerwartete Argumente zu --querytags "
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1116
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1160
 msgid "no packages given for signature check"
 msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1123
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1167
 msgid "no packages given for signing"
 msgstr "Es wurden keine Pakete für die Signatur angeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1132
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1176
 msgid "no packages files given for rebuild"
 msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1187
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1239
 msgid "no spec files given for build"
 msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1189
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1241
 msgid "no tar files given for build"
 msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1200
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1253
 msgid "no packages given for uninstall"
 msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1234
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1293
 msgid "no packages given for install"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1245
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1317
 msgid "extra arguments given for query of all packages"
 msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1250
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1322
 msgid "no arguments given for query"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1267
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/rpm.c:1339
 msgid "no arguments given for verify"
 msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:77
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:40
+#, c-format
+msgid "error in format: %s\n"
+msgstr "Fehler beim Format %s\n"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:77
 msgid "(contains no files)"
 msgstr "(beinhaltet keine Dateien)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:331
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:127
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:331
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:127
 msgid "error: could not read database record\n"
 msgstr "Fehler: konnte Datenbank-Eintrag nicht lesen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:367 /usr/src/ke/rpm/rpm-2.4.3/query.c:374
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:179
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:186
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:367
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:374
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:179
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:186
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:390
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:390
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:399
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:399
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:403
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:403
 #, c-format
 msgid "query of %s failed\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:416
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:163
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:416
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:163
 msgid "could not read database record!\n"
 msgstr "kann Datenbank-Eintrag nicht lesen!\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:427
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:209
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:427
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:209
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
 # oder besser: ... listet %s auf? -ke-
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:437
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:437
 #, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:447
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:447
+#, c-format
+msgid "no package triggers %s\n"
+msgstr "kein Paket triggert %s\n"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:457
 #, c-format
 msgid "no package requires %s\n"
 msgstr "kein Paket verlangt %s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:461
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:223
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:471
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:223
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:472
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:482
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:475
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:485
 #, c-format
 msgid "showing package: %d\n"
 msgstr "zeige Paket an: %d\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:479
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:489
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:332
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:491
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:234
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:332
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:501
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:234
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/query.c:494
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:236
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/query.c:504
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:236
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:81
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:196
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:79
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:195
 #, c-format
 msgid "error: cannot open file %s\n"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:98
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:96
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:116
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:209
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:114
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:208
 #, c-format
 msgid "error: %s does not appear to be a RPM package\n"
 msgstr "Fehler: %s scheint zu keinem RPM-Paket zu gehören\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:121
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:214
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:421
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:119
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:213
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:422
 #, c-format
 msgid "error: %s cannot be installed\n"
 msgstr "Fehler: %s kann nicht installiert werden\n"
 
 # , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:168
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:166
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hole %s heraus\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:178
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:177
 #, c-format
 msgid "error: skipping %s - transfer failed - %s\n"
 msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:255
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:233
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:322
+#, c-format
+msgid "error: cannot open %s%s/packages.rpm\n"
+msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:254
 msgid "failed dependencies:\n"
 msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:322
-#, c-format
-msgid "cannot open %s%s/packages.rpm\n"
-msgstr "kann %s%s/packages.rpm nicht öffnen\n"
-
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:335
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:335
 #, c-format
 msgid "error searching for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:343
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:343
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" bezeichnet mehrere Pakete\n"
 
 # oder besser: "... verletzen" ?
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:380
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:380
 msgid "removing these packages would break dependencies:\n"
 msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:412
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:413
 #, c-format
 msgid "error: cannot open %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:458
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:461
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " wird von %s-%s-%s gebraucht\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/install.c:461
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/install.c:464
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " steht im Konflikt mit %s-%s-%s\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:90
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/verify.c:90
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:30
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:153
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:31
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:162
 #, c-format
 msgid "%s: Open failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:34
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:158
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:35
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:167
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: »readLead« fehlgeschlagen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:38
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:39
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Kann v1.0-RPM nicht signieren\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:42
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:43
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Kann v2.0-RPM nicht erneuert signieren\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:46
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:168
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:47
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:177
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: »rpmReadSignature« fehlgeschlagen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:58
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:182
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:60
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:191
 msgid "Couldn't read the header/archive"
 msgstr "Konnte Kopfzeilen/Archiv nicht lesen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:64
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:67
 msgid "Couldn't write header/archive to temp file"
 msgstr "Konnte Kopfzeilen/Archiv nicht in eine temporäre Datei schreiben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:109
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:115
 msgid "Couldn't read sigtarget"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:117
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:124
 msgid "Couldn't write package"
 msgstr "Konnte Paket nicht schreiben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:163
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:172
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Keine Signatur verfügbar (v1.0 RPM)\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:173
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:182
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Keine Signatur verfügbar\n"
 
 # , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:188
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:198
 #, c-format
 msgid "Unable to write %s"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:278
-#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:285
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:290
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/checksig.c:297
 msgid " (MISSING KEYS)"
 msgstr " (FEHLENDE SCHLüSSEL)"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:345
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:131
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/url.c:59
+#, c-format
+msgid "Password for %s@%s: "
+msgstr "Passworf für %s@%s: "
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/url.c:143
+msgid "error: ftpport must be a number\n"
+msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
+
+# , c-format
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/url.c:201
+#, c-format
+msgid "failed to create %s\n"
+msgstr "anlegen von %s fehlgeschlagen\n"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:445
+msgid "Bad FTP server response"
+msgstr "Nicht passende Antwort des FTP-Servers"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:448
+msgid "FTP IO error"
+msgstr "FTP IO-Fehler"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:451
+msgid "FTP server timeout"
+msgstr "Timeout des FTP-Servers"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:454
+msgid "Unable to lookup FTP server host address"
+msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:457
+msgid "Unable to lookup FTP server host name"
+msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:460
+msgid "Failed to connect to FTP server"
+msgstr "Verbindung zum FTP-Server fehlgeschlagen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:463
+msgid "Failed to establish data connection to FTP server"
+msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:466
+msgid "IO error to local file"
+msgstr "IO-Fehler bei lokaler Datei"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:469
+msgid "Error setting remote server to passive mode"
+msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:472
+msgid "File not found on server"
+msgstr "Datei auf dem Server nicht gefunden"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/ftp.c:476
+msgid "FTP Unknown or unexpected error"
+msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:320
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/uninstall.c:135
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:144
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/uninstall.c:148
 #, c-format
 msgid "package %s-%s-%s contain shared files\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:381
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:387
-#, c-format
-msgid "error creating file %s for (un)install script"
-msgstr "Fehler beim Anlegen der Datei %s für das (De-)Installations-Skript"
-
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:439
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/uninstall.c:523
 msgid "execution of script failed"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:494
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/uninstall.c:607
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:508
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/uninstall.c:621
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:511
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/uninstall.c:624
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "Entfernen von %s fehlgeschlagen: %s"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:519
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/uninstall.c:634
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:108
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:132
 #, c-format
 msgid "failed to open %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:121
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:128
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:145
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:152
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:122
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:146
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:129
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:153
 msgid "shared"
 msgstr "geteilt"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:311
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:286
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:322
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:297
 #, c-format
 msgid "package %s not found in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:353
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:328
 msgid "package has no name"
 msgstr "Paket hat keinen Namen"
 
 # reservieren???
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:488
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:473
 msgid "cannot allocate space for database"
 msgstr "kann keinen Platz für die Datenbank bekommen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:546
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmdb.c:537
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:99
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/signature.c:99
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Alte Signatur (nur intern)!  Wie bist du daran gekommen!?"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:222
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:479
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/signature.c:222
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/signature.c:479
 msgid "Couldn't exec pgp"
 msgstr "Konnte pgp nicht durchführen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:233
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/signature.c:233
 msgid "pgp failed"
 msgstr "pgp fehlgeschlagen"
 
 #. PGP failed to write signature
 #. Just in case
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:240
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/signature.c:240
 msgid "pgp failed to write signature"
 msgstr "pgp fehlgeschlagen beim Schreiben der Signatur"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:253
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/signature.c:253
 msgid "unable to read the signature"
 msgstr "nicht möglich, die Signatur zu lesen"
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:396
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/signature.c:396
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Konnte pgp nicht aufrufen.  Überspring die PGP-Checks mit --nopgp."
 
-#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:430
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/signature.c:430
 msgid "You must set \"pgp_name:\" in your rpmrc file"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/dbindex.c:26
+#, c-format
+msgid "cannot open file %s: "
+msgstr "kann Datei %s nicht öffnen: "
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/dbindex.c:53
+#, c-format
+msgid "error getting record %s from %s"
+msgstr "Fehler beim Eintrag %s von %s"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/dbindex.c:81
+#, c-format
+msgid "error storing record %s into %s"
+msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
+
+# FIXME
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/dbindex.c:88
+#, c-format
+msgid "error removing record %s into %s"
+msgstr "Fehler beim Löschen des Eintrags %s nach %s"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/depends.c:383
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/depends.c:538
+#, c-format
+msgid "cannot read header at %d for dependency check"
+msgstr "kann Kopfzeilen bei %d nicht lesen, um Abhängigkeiten zu prüfen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/depends.c:825
+#, c-format
+msgid "loop in prerequisite chain: %s"
+msgstr ""
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/formats.c:104
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/formats.c:121
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/formats.c:141
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/formats.c:173
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1918
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1938
+msgid "(not a number)"
+msgstr "(keine Zahl)"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/fs.c:53
+#, c-format
+msgid "mntctl() failed to return fugger size: %s"
+msgstr ""
+
+# , c-format
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/fs.c:128
+#, c-format
+msgid "failed to open %s: %s"
+msgstr "Öffnen von %s fehlgeschlagen: %s"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1274
+msgid "? expected in expression"
+msgstr "? im Ausdruck erwartet"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1281
+msgid "{ exected after ? in expression"
+msgstr "{ nach ? im Ausdruck erwartet"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1291
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1323
+msgid "} expected in expression"
+msgstr "} im Ausdruck erwartet"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1298
+msgid ": expected following ? subexpression"
+msgstr ": nach ? Unterausdruck erwartet"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1311
+msgid "{ exected after : in expression"
+msgstr "{ nach : im Ausdruck erwartet"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1330
+msgid "| expected at end of expression"
+msgstr "| am Ende des Ausdrucks erwartet"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1424
+#, c-format
+msgid "missing { after %"
+msgstr "fehlende { nach %{"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1452
+msgid "missing } after %{"
+msgstr "fehlende } nach %{"
+
+# »Tag« übersetzen??? -ke-
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1464
+msgid "empty tag format"
+msgstr "leeres »Tag«-Format"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1474
+msgid "empty tag name"
+msgstr "leerer »Tag«-Name"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1489
+msgid "unknown tag"
+msgstr "unbekannter »Tag«"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1515
+msgid "] expected at end of array"
+msgstr "] am Ende des Arrays erwartet"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1531
+msgid "unexpected ]"
+msgstr "unerwartete ]"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1533
+msgid "unexpected }"
+msgstr "unerwartete }"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1608
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1614
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1797
+msgid "(none)"
+msgstr "(kein)"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/header.c:1708
+msgid "(unknown type)"
+msgstr "(unbekannter Typ)"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/lookup.c:91
+#, c-format
+msgid "cannot read header at %d for lookup"
+msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rebuilddb.c:30
+msgid "no dbpath has been set"
+msgstr "»dbpath« ist nicht gesetzt"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rebuilddb.c:38
+#, c-format
+msgid "temporary database %s already exists"
+msgstr "die temporäre Datenbank %s existiert schon"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rebuilddb.c:44
+#, c-format
+msgid "error creating directory %s: %s"
+msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rebuilddb.c:63
+#, c-format
+msgid "cannot read database record at %d"
+msgstr "kann Datenbank-Eintrag bei %d nicht lesen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rebuilddb.c:77
+#, c-format
+msgid "cannot add record originally at %d"
+msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rebuilddb.c:83
+#, c-format
+msgid "record number %d in database is bad -- skipping it"
+msgstr "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/messages.c:53
+msgid "warning: "
+msgstr "Warnung: "
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/messages.c:59
+msgid "error: "
+msgstr "Fehler: "
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/messages.c:65
+msgid "fatal error: "
+msgstr "Fataler Fehler: "
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/package.c:110
+msgid ""
+"only packages with major numbers <= 3 are supported by this version of RPM"
+msgstr "Nur Pakete mit Hauptnummern <= 3 werden von dieser RPM-Version unterstützt"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmlead.c:49
+#, c-format
+msgid "read failed: %s (%d)"
+msgstr "lesen fehlgeschlagen: %s (%d)"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:213
+#, c-format
+msgid "missing second ':' at %s:%d"
+msgstr "fehlendes zweites ':' bei %s:%d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:216
+#, c-format
+msgid "missing architecture name at %s:%d"
+msgstr "fehlender Name cer Architektur bei %s:%d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:353
+#, c-format
+msgid "Incomplete data line at %s:%d"
+msgstr "Unvollständige Datenzeile bei %s:%d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:357
+#, c-format
+msgid "Too many args in data line at %s:%d"
+msgstr "Zu viele Argumente in der Datenzeile bei %s:%d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:364
+#, c-format
+msgid "Bad arch/os number: %s (%s:%d)"
+msgstr "Unzureichende arch/os Zahl: %s (%s:%d)"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:397
+#, c-format
+msgid "Incomplete default line at %s:%d"
+msgstr "Unvollständige Standardzeile bei %s:%d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:402
+#, c-format
+msgid "Too many args in default line at %s:%d"
+msgstr "Zu viele Argumente in der Standardzeile bei %s:%d"
+
+# , c-format
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:493
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:509
+#, c-format
+msgid "Unable to open %s for reading: %s."
+msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
+
+# , c-format
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:552
+#, c-format
+msgid "Failed to read %s: %s."
+msgstr "Lesen von %s fehlgeschlagen: %s."
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:582
+#, c-format
+msgid "missing ':' at %s:%d"
+msgstr "fehlender ':' bei %s:%d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:598
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:619
+#, c-format
+msgid "missing argument for %s at %s:%d"
+msgstr "fehlendes Argument für %s bei %s:%d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:609
+#, c-format
+msgid "missing architecture for %s at %s:%d"
+msgstr "fehlende Architektur für %s bei %s:%d"
+
+#: /home/alex/ke/suse/rpm/rpm-2.5.2/lib/rpmrc.c:662
+#, c-format
+msgid "bad option '%s' at %s:%d"
+msgstr "unzureichende Option '%s' bei %s:%d"
