@@ -1234,8 +1234,12 @@ static char *buildHost(void)
 
     if (! gotit) {
         gethostname(hostname, sizeof(hostname));
-	hbn = gethostbyname(hostname);
-	strcpy(hostname, hbn->h_name);
+	if ((hbn = gethostbyname(hostname))) {
+	    strcpy(hostname, hbn->h_name);
+	} else {
+	    message(MESS_WARNING, "Could not canonicalize hostname: %s\n",
+		    hostname);
+	}
 	gotit = 1;
     }
     return(hostname);
