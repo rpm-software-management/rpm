@@ -167,7 +167,7 @@ static struct poptOption optionsTable[] = {
  { "rpmiodebug", '\0', POPT_ARG_VAL, &_rpmio_debug, -1,		NULL, NULL},
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
- { "tarball", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
+ { "tarbuild", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
  { "test", '\0', 0, &test, 0,			NULL, NULL},
  { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK,	NULL, NULL},
  { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
