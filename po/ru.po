@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-15 12:09-0500\n"
+"POT-Creation-Date: 2001-03-15 13:52-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3720,12 +3720,12 @@ msgstr "отсутствует архитектура для %s в %s:%d"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "неверная опция '%s' в %s:%d"
 
-#: lib/rpmrc.c:1323
+#: lib/rpmrc.c:1350
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1324
+#: lib/rpmrc.c:1351
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 

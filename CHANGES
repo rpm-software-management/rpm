@@ -5,10 +5,11 @@
 	- re-position callbacks with ts/fi in cpio payload layer.
 	- state machines for packages (psm.c) and payloads (fsm.c)
 	- add --repackage option to put erased bits back into a package.
-	- update per-interpreter dependency scripts, add sql/tcl (#20295).
-	- fix: rpmvercmp("1.a", "1.") returned -1, not +1 (#21392).
 
 4.0.2 -> 4.0.3
+	- update per-interpreter dependency scripts, add sql/tcl (#20295).
+	- fix: rpmvercmp("1.a", "1.") returned -1, not +1 (#21392).
+	- add cpuid asm voodoo to detect athlon processors.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

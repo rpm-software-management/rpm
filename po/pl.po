@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-15 12:09-0500\n"
+"POT-Creation-Date: 2001-03-15 13:52-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3780,12 +3780,12 @@ msgstr "brak architektury dla %s przy %s:%d"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "b³êdna opcja '%s' przy %s:%d"
 
-#: lib/rpmrc.c:1323
+#: lib/rpmrc.c:1350
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Nieznany system: %s\n"
 
-#: lib/rpmrc.c:1324
+#: lib/rpmrc.c:1351
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Skontaktuj siê, proszê, z rpm-list@redhat.com\n"
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-15 12:09-0500\n"
+"POT-Creation-Date: 2001-03-15 13:52-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3810,12 +3810,12 @@ msgstr "%s için %s te eksik mimari:%d"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "%s geçersiz seçenek %s:%d"
 
-#: lib/rpmrc.c:1323
+#: lib/rpmrc.c:1350
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1324
+#: lib/rpmrc.c:1351
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

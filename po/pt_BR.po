@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-03-15 12:09-0500\n"
+msgstr "POT-Creation-Date: 2001-03-15 13:52-0500\n"
 
 # , c-format
 #: build.c:31
@@ -3966,12 +3966,12 @@ msgstr ""
 msgid "bad option '%s' at %s:%d\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/rpmrc.c:1323
+#: lib/rpmrc.c:1350
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1324
+#: lib/rpmrc.c:1351
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

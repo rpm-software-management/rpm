@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-03-15 12:09-0500\n"
+msgstr "POT-Creation-Date: 2001-03-15 13:52-0500\n"
 
 #: build.c:31
 #, fuzzy, c-format
@@ -3811,12 +3811,12 @@ msgstr ""
 msgid "bad option '%s' at %s:%d\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmrc.c:1323
+#: lib/rpmrc.c:1350
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1324
+#: lib/rpmrc.c:1351
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

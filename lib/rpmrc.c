@@ -921,6 +921,31 @@ static inline int RPMClass(void)
 	return 5;
 }
 
+/* should only be called for model 6 CPU's */
+static int is_athlon(void) {
+	unsigned int eax, ebx, ecx, edx;
+	char vendor[16];
+	int i;
+	
+	cpuid (0, &eax, &ebx, &ecx, &edx);
+
+ 	/* If you care about space, you can just check ebx, ecx and edx directly
+ 	   instead of forming a string first and then doing a strcmp */
+ 	memset(vendor, 0, sizeof(vendor));
+ 	
+ 	for (i=0; i<4; i++)
+ 		vendor[i] = (unsigned char) (ebx >>(8*i));
+ 	for (i=0; i<4; i++)
+ 		vendor[4+i] = (unsigned char) (edx >>(8*i));
+ 	for (i=0; i<4; i++)
+ 		vendor[8+i] = (unsigned char) (ecx >>(8*i));
+ 		
+ 	if (strcmp(vendor, "AuthenticAMD") != 0)  
+ 		return 0;
+
+	return 1;
+}
+
 #endif
 
 static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char ** os)
@@ -1112,7 +1137,9 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 	{
 	    char class = (char) (RPMClass() | '0');
 
-	    if (strchr("3456", un.machine[1]) && un.machine[1] != class)
+	    if (class == '6' && is_athlon())
+	    	strcpy(un.machine, "athlon");
+	    else if (strchr("3456", un.machine[1]) && un.machine[1] != class)
 		un.machine[1] = class;
 	}
 #	endif
