@@ -38,7 +38,7 @@ Uninstall mode:
 .br
 Build mode:
 .br
-.I "\fB    rpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
+.I "\fB    rpm \-[b|t]\fIO\fB [build\-options] <package_spec>+\fP"
 .br
 Rebuild database:
 .br
@@ -273,10 +273,13 @@ Don't check for broken dependencies before removing the package.
 .SH BUILD OPTIONS
 The general form of an rpm build command is
 .PP
-    \fBrpm \-b\fIO\fP [build\-options] <package_spec>+\fP
+    \fBrpm \-[b|t]\fIO\fP [build\-options] <package_spec>+\fP
 .PP
-where \fB\-b\fIO\fR specifies the stages of building and
-packaging to be done and is one of:
+The argument used is \fB-b\fR if a spec file is being used to build the package
+and \fB-t\fR if \fBRPM\fR should look inside of a gzipped (or compressed) tar
+file for the spec file to use. After the first argument, the next argument
+(\fIO\fR) specifies the stages of building and packaging to be done and
+is one of:
 
 .IP "\fB\-bp\fP"
 Executes the "%prep" stage from the spec file.  Normally this
