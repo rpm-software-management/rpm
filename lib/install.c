@@ -43,7 +43,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  char ** installArchive);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
 				   char * release, int * recOffset, int flags);
-static int setFileOwnerships(char * prefix, char ** fileList, 
+static int setFileOwnerships(char * rootdir, char ** fileList, 
 			     char ** fileOwners, char ** fileGroups, 
 			     int_16 * fileModes, 
 			     enum instActions * instActions, int fileCount);
@@ -54,18 +54,20 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 			         char ** fileMd5List, int_16 * fileModeList,
 				 char ** fileLinkList,
 				 int fileCount, enum instActions * instActions, 
-			 	 char ** prefixedFileList, int * notErrors,
+			 	 char ** prootdirootdir, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags);
 static int fileCompare(const void * one, const void * two);
-static int installSources(char * prefix, int fd, char ** specFilePtr);
+static int installSources(char * rootdir, int fd, char ** specFilePtr);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int ensureOlder(rpmdb db, char * name, char * newVersion, 
 		       char * newRelease, int dbOffset);
+static int relocateFilelist(Header * hp, char * defaultPrefix, 
+			char * newPrefix, int * relocationSize);
 
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile) {
+int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile) {
     int rc, isSource;
     Header h;
 
@@ -79,14 +81,14 @@ int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile) {
 
     if (h) freeHeader(h);
 
-    return installSources(prefix, fd, specFile);
+    return installSources(rootdir, fd, specFile);
 }
 
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
-		      notifyFunction notify, char * labelFormat) {
+int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location, 
+		      int flags, notifyFunction notify, char * labelFormat) {
     int rc, isSource;
     char * name, * version, * release;
     Header h;
@@ -106,17 +108,19 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     int normalState = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
-    int prefixLength = strlen(prefix);
+    int prefixLength = strlen(rootdir);
     char ** prefixedFileList = NULL;
     struct replacedFile * replacedList = NULL;
-    char * sptr, * dptr;
+    char * sptr, * dptr, * defaultPrefix;
     int length;
     dbIndexSet matches;
     int * oldVersions;
     int * intptr;
     int_8 * pkgArchNum;
     void * pkgArch;
+    char * archivePrefix;
     int scriptArg;
+    int relocationSize = 1;		/* strip at least first / for cpio */
 
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
@@ -138,8 +142,25 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
 	if (h) freeHeader(h);
 
-	return installSources(prefix, fd, NULL);
+	return installSources(rootdir, fd, NULL);
     }
+
+    if (location && !getEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *)
+			      &defaultPrefix, &fileCount)) {
+	error(RPMERR_NORELOCATE, "package %s-%s-%s is not relocatable",
+		      name, version, release);
+	freeHeader(h);
+	return 2;
+    }
+
+    if (location) {
+	relocateFilelist(&h, defaultPrefix, location, &relocationSize);
+        getEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *) &defaultPrefix, 
+		&fileCount);
+	archivePrefix = alloca(strlen(rootdir) + strlen(location) + 2);
+	sprintf(archivePrefix, "%s/%s", rootdir, location);
+    } else
+	archivePrefix = rootdir;
 
     getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
@@ -239,7 +260,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	    if (prefixLength > 1) {
 		prefixedFileList[i] = alloca(strlen(fileList[i]) + 
 				prefixLength + 3);
-		strcpy(prefixedFileList[i], prefix);
+		strcpy(prefixedFileList[i], rootdir);
 		strcat(prefixedFileList[i], "/");
 		strcat(prefixedFileList[i], fileList[i]);
 	    } else 
@@ -281,7 +302,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     }
 
     message(MESS_DEBUG, "running preinstall script (if any)\n");
-    if (runScript(prefix, h, RPMTAG_PREIN, scriptArg, 
+    if (runScript(rootdir, h, RPMTAG_PREIN, scriptArg, 
 		  flags & INSTALL_NOSCRIPTS)) {
 	free(fileList);
 	if (replacedList) free(replacedList);
@@ -290,7 +311,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
     if (fileList) {
 
-	if (createDirectories(prefix, fileList, fileCount)) {
+	if (createDirectories(rootdir, fileList, fileCount)) {
 	    freeHeader(h);
 	    free(fileList);
 	    if (replacedList) free(replacedList);
@@ -358,10 +379,13 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
  		/* 1) we skip over the leading /
 		   2) we have to escape globbing characters :-( */
 
+		/* if we are using a relocateable package, we need to strip
+		   off whatever part of the (already relocated!) filelist */
+
 		length = strlen(fileList[i]);
 		files[archiveFileCount].fileName = alloca((length * 2) + 1);
 		dptr = files[archiveFileCount].fileName;
-		for (sptr = fileList[i] + 1; *sptr; sptr++) {
+		for (sptr = fileList[i] + relocationSize; *sptr; sptr++) {
 		    switch (*sptr) {
 		      case '*': case '[': case ']': case '?': case '\\':
 			*dptr++ = '\\';
@@ -384,7 +408,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(prefix, fd, files, archiveFileCount, notify, NULL)) {
+	if (installArchive(archivePrefix, fd, files, archiveFileCount, notify, 
+			   NULL)) {
 	    freeHeader(h);
 	    free(fileList);
 	    if (replacedList) free(replacedList);
@@ -395,7 +420,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		     &fileCount)) {
 	    if (getEntry(h, RPMTAG_FILEGROUPNAME, &type, (void **) &fileGroups, 
 			 &fileCount)) {
-		if (setFileOwnerships(prefix, fileList, fileOwners, fileGroups, 
+		if (setFileOwnerships(rootdir, fileList, fileOwners, fileGroups, 
 				fileModesList, instActions, fileCount)) {
 		    free(fileOwners);
 		    free(fileGroups);
@@ -438,7 +463,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
     message(MESS_DEBUG, "running postinstall script (if any)\n");
 
-    if (runScript(prefix, h, RPMTAG_POSTIN, scriptArg,
+    if (runScript(rootdir, h, RPMTAG_POSTIN, scriptArg,
 		  flags & INSTALL_NOSCRIPTS)) {
 	return 2;
     }
@@ -447,7 +472,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	message(MESS_DEBUG, "removing old versions of package\n");
 	intptr = oldVersions;
 	while (*intptr) {
-	    rpmRemovePackage(prefix, db, *intptr, 0);
+	    rpmRemovePackage(rootdir, db, *intptr, 0);
 	    intptr++;
 	}
     }
@@ -706,7 +731,7 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
     return 0;
 }
 
-static int setFileOwnerships(char * prefix, char ** fileList, 
+static int setFileOwnerships(char * rootdir, char ** fileList, 
 			     char ** fileOwners, char ** fileGroups, 
 			     int_16 * fileModesList,
 			     enum instActions * instActions, int fileCount) {
@@ -718,7 +743,7 @@ static int setFileOwnerships(char * prefix, char ** fileList,
 
     message(MESS_DEBUG, "setting file owners and groups by name (not id)\n");
 
-    chptr = prefix;
+    chptr = rootdir;
     while (*chptr && *chptr == '/') 
 	chptr++;
 
@@ -731,7 +756,7 @@ static int setFileOwnerships(char * prefix, char ** fileList,
 	    waitpid(child, &status, 0);
 	    return 0;
 	} else {
-	    chroot(prefix);
+	    chroot(rootdir);
 	}
     }
 
@@ -1194,7 +1219,7 @@ static int fileCompare(const void * one, const void * two) {
 }
 
 
-static int installSources(char * prefix, int fd, char ** specFilePtr) {
+static int installSources(char * rootdir, int fd, char ** specFilePtr) {
     char * specFile;
     char * sourceDir, * specDir;
     char * realSourceDir, * realSpecDir;
@@ -1205,13 +1230,13 @@ static int installSources(char * prefix, int fd, char ** specFilePtr) {
     sourceDir = getVar(RPMVAR_SOURCEDIR);
     specDir = getVar(RPMVAR_SPECDIR);
 
-    realSourceDir = alloca(strlen(prefix) + strlen(sourceDir) + 2);
-    strcpy(realSourceDir, prefix);
+    realSourceDir = alloca(strlen(rootdir) + strlen(sourceDir) + 2);
+    strcpy(realSourceDir, rootdir);
     strcat(realSourceDir, "/");
     strcat(realSourceDir, sourceDir);
 
-    realSpecDir = alloca(strlen(prefix) + strlen(specDir) + 2);
-    strcpy(realSpecDir, prefix);
+    realSpecDir = alloca(strlen(rootdir) + strlen(specDir) + 2);
+    strcpy(realSpecDir, rootdir);
     strcat(realSpecDir, "/");
     strcat(realSpecDir, specDir);
 
@@ -1352,4 +1377,73 @@ enum fileTypes whatis(short mode) {
 	result = REG;
  
     return result;
+}
+
+/* This is *much* more difficult then it should be. Rather then just
+   modifying an entry with a single call to modifyEntry(), we have to
+   clone most of the header. Once the internal data structures of
+   header.c get cleaned up, this will be *much* easier */
+static int relocateFilelist(Header * hp, char * defaultPrefix, 
+			    char * newPrefix, int * relocationLength) {
+    Header newh, h = *hp;
+    HeaderIterator it;
+    char ** newFileList, ** fileList;
+    int type, count, tag, fileCount, i;
+    void * data;
+    int defaultPrefixLength;
+    int newPrefixLength;
+
+    /* a trailing '/' in the defaultPrefix or in the newPrefix would really
+       confuse us */
+    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), defaultPrefix);
+    stripTrailingSlashes(defaultPrefix);
+    newPrefix = strcpy(alloca(strlen(newPrefix) + 1), newPrefix);
+    stripTrailingSlashes(newPrefix);
+
+    if (!strcmp(newPrefix, defaultPrefix)) {
+	*relocationLength = strlen(defaultPrefix);
+	return 0;		/* NOP */
+    }
+
+    message(MESS_DEBUG, "relocating files from %s to %s\n", defaultPrefix,
+			 newPrefix);
+
+    defaultPrefixLength = strlen(defaultPrefix);
+    newPrefixLength = strlen(newPrefix);
+
+    /* packages can have empty filelists */
+    if (!getEntry(h, RPMTAG_FILENAMES, &type, (void *) &fileList, &fileCount))
+	return 0;
+    if (!count)
+	return 0;
+
+    newh = newHeader();
+    it = initIterator(h);
+    while (nextIterator(it, &tag, &type, &data, &count))
+	if (tag != RPMTAG_FILENAMES)
+	    addEntry(newh, tag, type, data, count);
+
+    newFileList = alloca(sizeof(char *) * fileCount);
+    for (i = 0; i < fileCount; i++) {
+	if (!strncmp(fileList[i], defaultPrefix, defaultPrefixLength)) {
+	    newFileList[i] = alloca(strlen(fileList[i]) + newPrefixLength -
+				 defaultPrefixLength + 2);
+	    sprintf(newFileList[i], "%s/%s", newPrefix, 
+		    fileList[i] + defaultPrefixLength + 1);
+	} else {
+	    message(MESS_DEBUG, "BAD - unprefixed file in relocatable package");
+	    newFileList[i] = alloca(strlen(fileList[i]) - 
+					defaultPrefixLength + 2);
+	    sprintf(newFileList[i], "/%s", fileList[i] + 
+			defaultPrefixLength + 1);
+	}
+    }
+
+    addEntry(newh, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, newFileList, fileCount);
+    addEntry(newh, RPMTAG_INSTALLPREFIX, STRING_TYPE, newPrefix, 1);
+
+    *relocationLength = newPrefixLength + 1;
+    *hp = newh;
+
+    return 0;
 }
