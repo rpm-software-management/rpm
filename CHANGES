@@ -1,3 +1,7 @@
+2.3.7 -> 2.3.8:
+	- added -t? options to build packages from tarballs which contain
+	  .spec files instead of from the .spec files directly
+
 2.3.6 -> 2.3.7:
 	- fixed nasty memory link in -Va
 	- configure checks for -lnsl explicitly rather then linking it
