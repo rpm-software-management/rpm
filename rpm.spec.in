@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.21
+Release: 0.22
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -485,6 +485,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Tue Mar 16 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.22
+- fix: grrr, skip notes on non-i386 entirely.
+
 * Fri Mar 12 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.21
 - fix: increase file context regex parse buffer to BUFSIZ.
 - fix: handle elf64 note sections correctly.

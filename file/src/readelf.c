@@ -88,6 +88,7 @@ getu64(const fmagic fm, uint64_t value)
 #define shs_type	(fm->cls == ELFCLASS32		\
 			 ? getu32(fm, sh32.sh_type)	\
 			 : getu32(fm, sh64.sh_type))
+
 #define ph_addr		(fm->cls == ELFCLASS32		\
 			 ? (void *) &ph32		\
 			 : (void *) &ph64)
@@ -103,6 +104,10 @@ getu64(const fmagic fm, uint64_t value)
 #define ph_align	(fm->cls == ELFCLASS32		\
 			 ? (ph32.p_align ? getu32(fm, ph32.p_align) : 4) \
 			 : (ph64.p_align ? getu64(fm, ph64.p_align) : 4))
+#define ph_filesz	(fm->cls == ELFCLASS32		\
+			 ? getu32(fm, ph32.p_filesz)	\
+			 : getu64(fm, ph64.p_filesz))
+
 #define nh_type		(fm->cls == ELFCLASS32		\
 			 ? getu32(fm, nh32->n_type)	\
 			 : getu32(fm, nh64->n_type))
@@ -167,8 +172,8 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 	char *linking_style = "statically";
 	char *shared_libraries = "";
 	char nbuf[BUFSIZ];
-	int bufsize;
-	size_t offset, end, noff, doff;
+	int nb;
+	size_t nbufsize, offset, end, noff, doff;
 	size_t align = (fm->cls == ELFCLASS32 ? 4 : 8);
 #define ALIGNED_LEN(len) (((len) + align - 1) & ~(align - 1))
 	int printed;
@@ -184,10 +189,18 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 	}
 
   	for ( ; num; num--) {
-  		if (read(fm->fd, ph_addr, size) == -1) {
+		/* Read the program header data. */
+		nb = read(fm->fd, ph_addr, size);
+  		if (nb == -1) {
   			error(EXIT_FAILURE, 0, "read failed (%s).\n", strerror(errno));
 			/*@notreached@*/
 		}
+
+		/* XXX Elf64 notes cannot be read, so don't attempt for now. */
+#if !defined(__i386__)
+		if (ph_type == PT_NOTE) 
+			break;          
+#endif
 
 		switch (ph_type) {
 		case PT_DYNAMIC:
@@ -205,8 +218,12 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 				error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 				/*@notreached@*/
 			}
-			bufsize = read(fm->fd, nbuf, sizeof(nbuf));
-			if (bufsize == -1) {
+
+			/* XXX Read only the notes section. */
+			nbufsize = (ph_filesz < sizeof(nbuf)
+					? ph_filesz : sizeof(nbuf));
+			nb = read(fm->fd, nbuf, nbufsize);
+			if (nb == -1) {
 				error(EXIT_FAILURE, 0, ": " "read failed (%s).\n",
 				    strerror(errno));
 				/*@notreached@*/
@@ -215,7 +232,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 			printed = 0;
 			for (;;) {
 				end = offset + 12;
-				if (end >= bufsize)
+				if (end >= nb)
 					/*@innerbreak@*/ break;
 
 				if (fm->cls == ELFCLASS32)
@@ -224,9 +241,16 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					nh64 = (Elf64_Nhdr *)&nbuf[offset];
 
 				offset = end;	/* skip note header. */
+
+				/* XXX Avoid notes that are not 1-16 bytes */
+				if (nh_namesz <= 0 || nh_descsz <= 0)
+					break;
+				if (nh_namesz  > 16 || nh_descsz > 16)
+					break;
+
 				end = offset	+ ALIGNED_LEN (nh_namesz)
 						+ ALIGNED_LEN (nh_descsz);
-				if (end > bufsize)
+				if (end > nb)
 					/*@innerbreak@*/ break;
 
 				noff = offset;
@@ -388,7 +412,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 	unsigned char c;
 	int i, j;
 	char nbuf[BUFSIZ];
-	int bufsize;
+	int nb;
 	int os_style = -1;
 
 	if (size != ph_size) {
@@ -420,14 +444,14 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 			error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 			/*@notreached@*/
 		}
-		bufsize = read(fm->fd, nbuf, BUFSIZ);
-		if (bufsize == -1) {
+		nb = read(fm->fd, nbuf, BUFSIZ);
+		if (nb == -1) {
 			error(EXIT_FAILURE, 0, ": " "read failed (%s).\n", strerror(errno));
 			/*@notreached@*/
 		}
 		offset = 0;
 		for (;;) {
-			if (offset >= bufsize)
+			if (offset >= nb)
 				/*@innerbreak@*/ break;
 			if (fm->cls == ELFCLASS32)
 				nh32 = (Elf32_Nhdr *)&nbuf[offset];
@@ -439,7 +463,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 			 * Check whether this note has the name "CORE" or
 			 * "FreeBSD", or "NetBSD-CORE".
 			 */
-			if (offset + nh_namesz >= bufsize) {
+			if (offset + nh_namesz >= nb) {
 				/*
 				 * We're past the end of the buffer.
 				 */
@@ -528,7 +552,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 						 * the end of the buffer; if
 						 * we are, just give up.
 						 */
-						if (noffset >= bufsize)
+						if (noffset >= nb)
 							goto tryanother;
 
 						/*
@@ -613,7 +637,6 @@ fmagicE(fmagic fm)
 	    || (fm->buf[EI_MAG1] != ELFMAG1 && fm->buf[EI_MAG1] != OLFMAG1)
 	    || fm->buf[EI_MAG2] != ELFMAG2 || fm->buf[EI_MAG3] != ELFMAG3)
 	    return;
-
 
 	fm->cls = fm->buf[EI_CLASS];
 
