@@ -1,3 +1,25 @@
+/*@-bounds@*/
+/*@-branchstate@*/
+/*@-compdef@*/
+/*@-immediatetrans@*/
+/*@-internalglobs@*/
+/*@-loopswitchbreak@*/
+/*@-modnomods@*/
+/*@-mods@*/
+/*@-moduncon@*/
+/*@-modunconnomods@*/
+/*@-noeffectuncon@*/
+/*@-nullpass@*/
+/*@-onlytrans@*/
+/*@-protoparammatch@*/
+/*@-retalias@*/
+/*@-retvalint@*/
+/*@-shadow@*/
+/*@-sizeoftype@*/
+/*@-temptrans@*/
+/*@-unqualifiedtrans@*/
+/*@-unrecog@*/
+
 /* Copyright (C) 1991,92,93,94,95,96,97,98,99 Free Software Foundation, Inc.
 
    This library is free software; you can redistribute it and/or
@@ -20,6 +42,8 @@
  #pragma alloca
 #endif
 
+/*@access DIR@*/
+
 # include "system.h"
 
 # include <assert.h>
@@ -37,9 +61,6 @@
 #endif /* POSIX */
 
 #include <errno.h>
-#ifndef errno
-extern int errno;
-#endif
 #ifndef __set_errno
 # define __set_errno(val) errno = (val)
 #endif
@@ -61,8 +82,7 @@ static int collated_compare __P ((const __ptr_t, const __ptr_t));
 /* Find the end of the sub-pattern in a brace expression.  We define
    this as an inline function if the compiler permits.  */
 static inline const char *
-next_brace_sub (begin)
-     const char *begin;
+next_brace_sub (const char *begin)
 {
   unsigned int depth = 0;
   const char *cp = begin;
@@ -110,11 +130,8 @@ static int __glob_pattern_p (const char *pattern, int quote);
    If memory cannot be allocated for PGLOB, GLOB_NOSPACE is returned.
    Otherwise, `glob' returns zero.  */
 int
-glob (pattern, flags, errfunc, pglob)
-     const char *pattern;
-     int flags;
-     int (*errfunc) __P ((const char *, int));
-     glob_t *pglob;
+glob (const char *pattern, int flags,
+	int (*errfunc) __P ((const char *, int)), glob_t *pglob)
 {
   const char *filename;
   const char *dirname;
@@ -814,8 +831,7 @@ glob (pattern, flags, errfunc, pglob)
 
 /* Free storage allocated in PGLOB by a previous `glob' call.  */
 void
-globfree (pglob)
-     register glob_t *pglob;
+globfree (glob_t *pglob)
 {
   if (pglob->gl_pathv != NULL)
     {
@@ -830,9 +846,7 @@ globfree (pglob)
 
 /* Do a collated comparison of A and B.  */
 static int
-collated_compare (a, b)
-     const __ptr_t a;
-     const __ptr_t b;
+collated_compare (const __ptr_t a, const __ptr_t b)
 {
   const char *const s1 = *(const char *const * const) a;
   const char *const s2 = *(const char *const * const) b;
@@ -852,10 +866,7 @@ collated_compare (a, b)
    A slash is inserted between DIRNAME and each elt of ARRAY,
    unless DIRNAME is just "/".  Each old element of ARRAY is freed.  */
 static int
-prefix_array (dirname, array, n)
-     const char *dirname;
-     char **array;
-     size_t n;
+prefix_array (const char *dirname, char **array, size_t n)
 {
   register size_t i;
   size_t dirlen = strlen (dirname);
@@ -960,12 +971,8 @@ weak_alias (__glob_pattern_p, glob_pattern_p)
    The GLOB_NOSORT bit in FLAGS is ignored.  No sorting is ever done.
    The GLOB_APPEND flag is assumed to be set (always appends).  */
 static int
-glob_in_dir (pattern, directory, flags, errfunc, pglob)
-     const char *pattern;
-     const char *directory;
-     int flags;
-     int (*errfunc) __P ((const char *, int));
-     glob_t *pglob;
+glob_in_dir (const char *pattern, const char *directory, int flags,
+		int (*errfunc) __P ((const char *, int)), glob_t *pglob)
 {
   __ptr_t stream = NULL;
 
@@ -1169,3 +1176,24 @@ glob_in_dir (pattern, directory, flags, errfunc, pglob)
     }
   return GLOB_NOSPACE;
 }
+/*@=unrecog@*/
+/*@=unqualifiedtrans@*/
+/*@=temptrans@*/
+/*@=sizeoftype@*/
+/*@=shadow@*/
+/*@=retvalint@*/
+/*@=retalias@*/
+/*@=protoparammatch@*/
+/*@=onlytrans@*/
+/*@=nullpass@*/
+/*@=noeffectuncon@*/
+/*@=modunconnomods@*/
+/*@=moduncon@*/
+/*@=mods@*/
+/*@=modnomods@*/
+/*@=loopswitchbreak@*/
+/*@=internalglobs@*/
+/*@=immediatetrans@*/
+/*@=compdef@*/
+/*@=branchstate@*/
+/*@=bounds@*/

@@ -287,9 +287,7 @@ void rpmsqAction(int signum,
 	if (tbl->signum != signum)
 	    continue;
 
-	/* XXX Ignore any signals that were originally SIG_IGN */
-	if (tbl->oact.sa_handler != SIG_IGN)
-	    (void) sigaddset(&rpmsqCaught, signum);
+	(void) sigaddset(&rpmsqCaught, signum);
 
 	switch (signum) {
 	case SIGCHLD:
@@ -343,15 +341,23 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 	if (signum >= 0) {			/* Enable. */
 	    if (ADD_REF(tbl) <= 0) {
 		(void) sigdelset(&rpmsqCaught, tbl->signum);
+
+		/* XXX Don't set a signal handler if already SIG_IGN */
+		(void) sigaction(tbl->signum, NULL, &tbl->oact);
+		if (tbl->oact.sa_handler == SIG_IGN)
+		    continue;
+
 		(void) sigemptyset (&sa.sa_mask);
-/*@-compdef -type @*/
 		sa.sa_flags = SA_SIGINFO;
+#if defined(__LCLINT__)	/* XXX glibc has union to track handler prototype. */
+		sa.sa_handler = (handler != NULL ? handler : tbl->handler);
+#else
 		sa.sa_sigaction = (handler != NULL ? handler : tbl->handler);
+#endif
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
 		    SUB_REF(tbl);
 		    break;
 		}
-/*@=compdef =type @*/
 		tbl->active = 1;		/* XXX just in case */
 		if (handler != NULL)
 		    tbl->handler = handler;

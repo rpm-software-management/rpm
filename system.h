@@ -482,14 +482,14 @@ const char *__progname;
 
 /* ============== from misc/miscfn.h */
 
-#if !defined(USE_GNU_GLOB)
+#if !defined(USE_GNU_GLOB) || defined(__LCLINT__)
 #if HAVE_FNMATCH_H
 /*@-noparams@*/
 #include <fnmatch.h>
 /*@=noparams@*/
 #endif
 
-#if HAVE_GLOB_H
+#if HAVE_GLOB_H || defined(__LCLINT__)
 /*@-noparams@*/
 #include <glob.h>
 /*@=noparams@*/

@@ -1,3 +1,8 @@
+/*@-bounds@*/
+/*@-retalias@*/
+/*@-shiftimplementation@*/
+/*@-temptrans@*/
+/*@-unreachable@*/
 /* Copyright (C) 1991-1993, 1996-1999, 2000 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -20,9 +25,7 @@
 
 /* Find the first occurrence of C in S or the final NUL byte.  */
 static inline char *
-__strchrnul (s, c)
-     const char *s;
-     int c;
+__strchrnul (const char *s, int c)
 {
   const unsigned char *char_ptr;
   const unsigned long int *longword_ptr;
@@ -613,3 +616,8 @@ fnmatch (pattern, string, flags)
 }
 
 #endif	/* _LIBC or not __GNU_LIBRARY__.  */
+/*@=unreachable@*/
+/*@=temptrans@*/
+/*@=shiftimplementation@*/
+/*@=retalias@*/
+/*@=bounds@*/
