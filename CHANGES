@@ -32,6 +32,7 @@
 	- perl.req: avoid regex misfire on '^use' in "= <<" assign (#109934).
 	- use perldeps {--provides|--requires}.
 	- find-debuginfo.sh: permit stripping unwritable by non-root (#112429).
+	- missing build dependency (#111104).
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.

@@ -33,6 +33,7 @@ Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
 BuildRequires: elfutils-libelf
+BuildRequires: elfutils-devel
 
 BuildRequires: zlib-devel
 
@@ -143,10 +144,7 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
 %endif
 
-# XXX hack out O_DIRECT support in db4 for now.
-perl -pi -e 's/#define HAVE_O_DIRECT 1/#undef HAVE_O_DIRECT/' db3/db_config.h
-
-make
+make %{_smp_mflags}
 
 %install
 # XXX rpm needs functioning nptl for configure tests
