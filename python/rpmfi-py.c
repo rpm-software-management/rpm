@@ -222,7 +222,7 @@ rpmfi_iternext(rpmfiObject * s)
 
     /* Reset loop indices on 1st entry. */
     if (!s->active) {
-	rpmfiInit(s->fi, 0);
+	s->fi = rpmfiInit(s->fi, 0);
 	s->active = 1;
     }
 
@@ -410,7 +410,7 @@ rpmfi_print(rpmfiObject * s, FILE * fp, /*@unused@*/ int flags)
     if (!(s && s->fi))
 	return -1;
 
-    rpmfiInit(s->fi, 0);
+    s->fi = rpmfiInit(s->fi, 0);
     while (rpmfiNext(s->fi) >= 0)
 	fprintf(fp, "%s\n", rpmfiFN(s->fi));
     return 0;

@@ -11,6 +11,7 @@
 #endif
 
 #include "rpmrng-py.h"
+#include "mpprime.h"
 
 #include "rpmdebug-py.c"
 
@@ -31,7 +32,9 @@ rng_dealloc(rngObject * s)
 if (_rng_debug < -1)
 fprintf(stderr, "*** rng_dealloc(%p)\n", s);
 
+/*@-modobserver@*/
     randomGeneratorContextFree(&s->rngc);
+/*@=modobserver@*/
     mpbfree(&s->b);
     PyObject_Del(s);
 }
@@ -39,7 +42,7 @@ fprintf(stderr, "*** rng_dealloc(%p)\n", s);
 static int
 rng_print(rngObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@globals fileSystem @*/
-	/*@modifies fp, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 if (_rng_debug < -1)
 fprintf(stderr, "*** rng_print(%p)\n", s);
@@ -65,8 +68,10 @@ static int rng_init(rngObject * s, PyObject *args, PyObject *kwds)
     if (rng == NULL)
 	rng = randomGeneratorDefault();
 
+/*@-modobserver@*/
     if (randomGeneratorContextInit(&s->rngc, rng) != 0)
 	return -1;
+/*@=modobserver@*/
     mpbzero(&s->b);
 
 if (_rng_debug)
@@ -82,7 +87,9 @@ static void rng_free(/*@only@*/ rngObject * s)
 {
 if (_rng_debug)
 fprintf(stderr, "*** rng_free(%p[%s])\n", s, lbl(s));
+/*@-modobserver@*/
     randomGeneratorContextFree(&s->rngc);
+/*@=modobserver@*/
     mpbfree(&s->b);
     PyObject_Del(s);
 }
@@ -140,9 +147,19 @@ fprintf(stderr, "*** rng_Debug(%p)\n", s);
  */
 static PyObject *
 rng_Seed(rngObject * s, PyObject * args)
-        /*@*/
+        /*@globals _Py_NoneStruct @*/
+        /*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, ":Seed")) return NULL;
+    PyObject * o;
+    randomGeneratorContext* rc = &s->rngc;
+    mpwObject *z;
+
+    if (!PyArg_ParseTuple(args, "O:Seed", &o)) return NULL;
+
+    if (!is_mpw(o) || (z = (mpwObject*)o)->n.size > 0)
+	return NULL;
+
+    rc->rng->seed(rc->param, (byte*) z->n.data, z->n.size);
 
 if (_rng_debug < 0)
 fprintf(stderr, "*** rng_Seed(%p)\n", s);
@@ -157,15 +174,15 @@ static PyObject *
 rng_Next(rngObject * s, PyObject * args)
         /*@*/
 {
-    PyObject * bo = NULL;
+    PyObject * o = NULL;
     randomGeneratorContext* rc = &s->rngc;
     mpbarrett* b = &s->b;
     mpwObject *z;
 
-    if (!PyArg_ParseTuple(args, "|O:Next", &bo)) return NULL;
+    if (!PyArg_ParseTuple(args, "|O:Next", &o)) return NULL;
 
-    if (bo) {
-	if (is_mpw(bo) && (z = (mpwObject*)bo)->n.size > 0) {
+    if (o) {
+	if (is_mpw(o) && (z = (mpwObject*)o)->n.size > 0) {
 	    b = alloca(sizeof(*b));
 	    mpbzero(b);
 	    /* XXX z probably needs normalization here. */
@@ -191,6 +208,38 @@ fprintf(stderr, "*** rng_Next(%p) %p[%d]\t", s, z->n.data, z->n.size), mpprintln
     return (PyObject *)z;
 }
 
+/** \ingroup py_c
+ */
+static PyObject *
+rng_Prime(rngObject * s, PyObject * args)
+        /*@*/
+{
+    randomGeneratorContext* rc = &s->rngc;
+    unsigned pbits = 160;
+    int trials = -1;
+    size_t psize;
+    mpwObject *z;
+
+    if (!PyArg_ParseTuple(args, "|ii:Prime", &pbits, &trials)) return NULL;
+
+    psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
+    if((z = mpw_New()) != NULL) {
+	mpbarrett* b = alloca(sizeof(*b));
+	mpw *temp = alloca((8*psize+2) * sizeof(*temp));
+
+	mpbzero(b);
+	if (trials <= 2)
+	    trials = mpptrials(pbits);
+	mpprnd_w(b, rc, pbits, trials, (const mpnumber*) 0, temp);
+	mpnset(&z->n, b->size, b->modl);
+
+if (_rng_debug)
+fprintf(stderr, "*** rng_Prime(%p) %p[%d]\t", s, z->n.data, z->n.size), mpprintln(stderr, z->n.size, z->n.data);
+    }
+
+    return (PyObject *)z;
+}
+
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rng_methods[] = {
@@ -199,6 +248,8 @@ static struct PyMethodDef rng_methods[] = {
  {"seed",	(PyCFunction)rng_Seed,	METH_VARARGS,
 	NULL},
  {"next",	(PyCFunction)rng_Next,	METH_VARARGS,
+	NULL},
+ {"prime",	(PyCFunction)rng_Prime,	METH_VARARGS,
 	NULL},
  {NULL,		NULL}		/* sentinel */
 };

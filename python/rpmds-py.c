@@ -125,7 +125,7 @@ rpmds_iternext(rpmdsObject * s)
 
     /* Reset loop indices on 1st entry. */
     if (!s->active) {
-	rpmdsInit(s->ds);
+	s->ds = rpmdsInit(s->ds);
 	s->active = 1;
     }
 
@@ -268,7 +268,7 @@ rpmds_print(rpmdsObject * s, FILE * fp, /*@unused@*/ int flags)
     if (!(s && s->ds))
 	return -1;
 
-    rpmdsInit(s->ds);
+    s->ds = rpmdsInit(s->ds);
     while (rpmdsNext(s->ds) >= 0)
 	fprintf(fp, "%s\n", rpmdsDNEVR(s->ds));
     return 0;

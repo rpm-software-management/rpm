@@ -28,7 +28,7 @@ static const char initialiser_name[] = "rpm.bc";
 
 static void
 rpmbc_dealloc(rpmbcObject * s)
-	/*@modifies s @*/
+	/*@*/
 {
 if (_bc_debug < -1)
 fprintf(stderr, "*** rpmbc_dealloc(%p)\n", s);
@@ -38,8 +38,7 @@ fprintf(stderr, "*** rpmbc_dealloc(%p)\n", s);
 
 static int
 rpmbc_print(rpmbcObject * s, FILE * fp, /*@unused@*/ int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fp, fileSystem @*/
+	/*@*/
 {
 if (_bc_debug < -1)
 fprintf(stderr, "*** rpmbc_print(%p)\n", s);
@@ -49,7 +48,7 @@ fprintf(stderr, "*** rpmbc_print(%p)\n", s);
 /** \ingroup py_c
  */
 static int rpmbc_init(rpmbcObject * z, PyObject *args, PyObject *kwds)
-	/*@modifies z @*/
+	/*@*/
 {
     PyObject * o = NULL;
 
@@ -64,7 +63,7 @@ fprintf(stderr, "*** rpmbc_init(%p[%s],%p[%s],%p[%s])\n", z, lbl(z), args, lbl(a
 /** \ingroup py_c
  */
 static void rpmbc_free(/*@only@*/ rpmbcObject * s)
-	/*@modifies s @*/
+	/*@*/
 {
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_free(%p[%s])\n", s, lbl(s));

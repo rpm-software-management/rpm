@@ -3,7 +3,6 @@
 +partial
 +forcehints
 
--warnunixlib
 -warnposix
 
 +unixlib
@@ -13,7 +12,7 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds
++likelybounds
 +slovak-fcns
 -bufferoverflowhigh
 
@@ -33,17 +32,18 @@
 -modunconnomods
 -noeffect
 -noeffectuncon
+-nullassign
 -nullderef
--nullpass
+-nullpass		# 40
 -nullret
 -nullstate
+-paramuse		# 14
 -predboolothers
 -protoparammatch
--redecl
--redef
+-redecl			# 23
 -retalias
 -retvalint
--retvalother
+-shiftimplementation
 -sizeoftype
 -type
 -usereleased

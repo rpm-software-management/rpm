@@ -348,7 +348,9 @@ static void myndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize,
 	{
 		q = mppndiv(result[0], result[1], msw);
 
+/*@-evalorder@*/
 		*workspace = mpsetmul(ysize, workspace+1, ydata, q);
+/*@=evalorder@*/
 
 		while (mplt(ysize+1, result, workspace))
 		{
@@ -848,7 +850,7 @@ fprintf(stderr, "*** mpw_str(%p): \"%s\"\n", a, PyString_AS_STRING(so));
 /** \ingroup py_c
  */
 static int mpw_init(mpwObject * s, PyObject *args, PyObject *kwds)
-	/*@modifies z @*/
+	/*@modifies s @*/
 {
     PyObject * o = NULL;
     size_t words = 0;
@@ -956,7 +958,7 @@ mpwObject * mpw_New(void)
  */
 static mpwObject *
 mpw_i2mpw(PyObject * o)
-	/*@*/
+	/*@modifies o @*/
 {
     if (is_mpw(o)) {
 	Py_INCREF(o);
@@ -1076,7 +1078,6 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n
 	size_t zsize;
 	mpw* zdata;
 	size_t znorm;
-	mpw* wksp;
 
 	if (anorm < asize) {
 	    asize -= anorm;
@@ -1107,7 +1108,6 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n
 	size_t bnorm = mpsize(bsize, bdata);
 	size_t zsize = x->n.size;
 	mpw* zdata = alloca(zsize * sizeof(*zdata));
-	mpw* wksp;
 
 	if (bnorm < bsize) {
 	    bsize -= bnorm;
@@ -1829,7 +1829,7 @@ fprintf(stderr, "*** mpw_inplace_subtract(%p,%p):\t", a, b), mpprintln(stderr, a
 
 static PyObject *
 mpw_inplace_multiply(mpwObject * a, mpwObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     size_t zsize = a->n.size + b->n.size;
     mpw* zdata = alloca(zsize * sizeof(*zdata));
@@ -1851,7 +1851,7 @@ fprintf(stderr, "*** mpw_inplace_multiply(%p,%p):\t", a, b), mpprintln(stderr, a
 
 static PyObject *
 mpw_inplace_divide(mpwObject * a, mpwObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     size_t asize = a->n.size;
     mpw* adata = a->n.data;
@@ -1896,7 +1896,7 @@ fprintf(stderr, "*** mpw_inplace_divide(%p,%p):\t", a, b), mpprintln(stderr, a->
 
 static PyObject *
 mpw_inplace_remainder(mpwObject * a, mpwObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     size_t bsize = b->n.size;
     mpw* bdata = b->n.data;
@@ -1976,7 +1976,7 @@ fprintf(stderr, "*** mpw_inplace_rshift(%p,%p):\t", a, b), mpprintln(stderr, a->
 
 static PyObject *
 mpw_inplace_and(mpwObject * a, mpwObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     if (a->n.size <= b->n.size)
 	mpand(a->n.size, a->n.data, b->n.data + (b->n.size - a->n.size));
@@ -1994,6 +1994,7 @@ fprintf(stderr, "*** mpw_inplace_and(%p,%p):\t", a, b), mpprintln(stderr, a->n.s
 
 static PyObject *
 mpw_inplace_xor(mpwObject * a, mpwObject * b)
+	/*@modifies a @*/
 {
     if (a->n.size <= b->n.size)
 	mpxor(a->n.size, a->n.data, b->n.data + (b->n.size - a->n.size));
@@ -2011,7 +2012,7 @@ fprintf(stderr, "*** mpw_inplace_xor(%p,%p):\t", a, b), mpprintln(stderr, a->n.s
 
 static PyObject *
 mpw_inplace_or(mpwObject * a, mpwObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     if (a->n.size <= b->n.size)
 	mpor(a->n.size, a->n.data, b->n.data + (b->n.size - a->n.size));

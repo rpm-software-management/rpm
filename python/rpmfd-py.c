@@ -115,7 +115,7 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
     node->note = xstrdup (path);
 
     if (!node->fd) {
-	PyErr_SetFromErrno(pyrpmError);
+	(void) PyErr_SetFromErrno(pyrpmError);
 	node = _free (node);
 	return NULL;
     }
@@ -201,7 +201,7 @@ fprintf(stderr, "*** rpmfd_init(%p,%p,%p)\n", s, args, kwds);
     s->fd = Fopen(path, mode);
 
     if (s->fd == NULL) {
-	PyErr_SetFromErrno(pyrpmError);
+	(void) PyErr_SetFromErrno(pyrpmError);
 	return -1;
     }
 

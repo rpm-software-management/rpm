@@ -299,7 +299,7 @@ static PyMemberDef rpmfts_members[] = {
 "Option bit(s): FTS_{COMFOLLOW|LOGICAL|NOCHDIR|NOSTAT|PHYSICAL|SEEDOT|XDEV}"},
     {"ignore",	T_INT,	offsetof(rpmftsObject, ignore),		0,
 "Ignore bit(s): (1 << info) with info one of FTS_{D|DC|DEFAULT|DNR|DOT|DP|ERR|F|INIT|NS|NSOK|SL|SLNONE|W}"}, 
-    {NULL, 0, 0, 0}
+    {NULL, 0, 0, 0, NULL}
 };              
 
 static PyObject * rpmfts_getattro(rpmftsObject * s, PyObject * n)
@@ -341,7 +341,7 @@ rpmfts_iternext(rpmftsObject * s)
 /* ---------- */
 
 static void rpmfts_free(/*@only@*/ PyObject * s)
-	/*@modifies s @*/
+	/*@*/
 {
     _PyObject_GC_Del(s);
 }
@@ -375,7 +375,7 @@ rpmfts_debug(__FUNCTION__, s);
 }
 
 static int rpmfts_init(rpmftsObject * s, PyObject *args, PyObject *kwds)
-	/*@*/
+	/*@modifies s @*/
 {
     char * root = NULL;
     int options = -1;

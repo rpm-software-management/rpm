@@ -467,7 +467,8 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
  */
 static PyObject *
 rpmts_Order(rpmtsObject * s, PyObject * args)
-	/*@modifies s @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     int rc;
 
@@ -733,8 +734,8 @@ fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
  */
 static PyObject *
 rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args)
-	/*@globals rpmGlobalMacroContext, _Py_NoneStruct, fileSystem @*/
-	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies s, rpmGlobalMacroContext, fileSystem @*/
 {
     PyObject * result = NULL;
     Header h;
@@ -1351,7 +1352,7 @@ static void rpmts_dealloc(/*@only@*/ rpmtsObject * s)
 
 if (_rpmts_debug)
 fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
-    rpmtsFree(s->ts);
+    s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd) Fclose(s->scriptFd);
     /* this will free the keyList, and decrement the ref count of all
@@ -1425,7 +1426,7 @@ static void rpmts_free(/*@only@*/ rpmtsObject * s)
 {
 if (_rpmts_debug)
 fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
-    rpmtsFree(s->ts);
+    s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd)
 	Fclose(s->scriptFd);
