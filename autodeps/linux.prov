@@ -6,7 +6,7 @@
 filelist=$(grep "\\.so" | grep -v "^/lib/ld.so" | xargs file | grep "ELF.*shared object" | cut -d: -f1)
 
 for f in $filelist; do
-    soname=$(objdump --raw $f --section=.dynstr 2> /dev/null | tr '\\0' '\\n' | tail -1)
+    soname=$(objdump --raw $f --section=.dynstr 2> /dev/null | tr '\0' '\n' | tail -1)
 
     if [ "$soname" != "" ]; then
         if [ "$soname" != "_end" ]; then
