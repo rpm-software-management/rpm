@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 urltype	urlIsURL(const char * url);
-int 	rlSplit(const char *url, urlinfo **u);
+int 	urlSplit(const char *url, urlinfo **u);
 urlinfo	*newUrlinfo(void);
 void	freeUrlinfo(urlinfo *u);
 

@@ -93,7 +93,7 @@ int rpmdbRebuild(char * rootdir) {
 	    return 1;
 	}
 	if (rmdir(newdbpath))
-	    rpmMessage(RPMESS_ERROR, _("failed to remove directory %s: %s\n"),
+	    rpmMessage(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
 			newdbpath, strerror(errno));
     }
 

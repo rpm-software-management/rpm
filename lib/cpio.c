@@ -735,7 +735,7 @@ static int writeFile(CFD_t *cfd, struct stat sb, struct cpioFileMapping * map,
     num = strlen(map->archivePath) + 1; SET_NUM_FIELD(hdr.namesize, num, buf);
     memcpy(hdr.checksum, "00000000", 8);
 
-    if ((rc = safewrite(cfd, &hdr, PHYS_HDR_SIZE) != PHYS_HDR_SIZE)
+    if ((rc = safewrite(cfd, &hdr, PHYS_HDR_SIZE)) != PHYS_HDR_SIZE)
 	return rc;
     if ((rc = safewrite(cfd, map->archivePath, num)) != num)
 	return rc;
@@ -920,11 +920,11 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 	totalsize += size;
     }
 
-    memset(&hdr, '0', PHYS_HDR_SIZE)
+    memset(&hdr, '0', PHYS_HDR_SIZE);
     memcpy(hdr.magic, CPIO_NEWC_MAGIC, sizeof(hdr.magic));
     memcpy(hdr.nlink, "00000001", 8);
     memcpy(hdr.namesize, "0000000b", 8);
-    if ((rc = safewrite(cfd, &hdr, PHYS_HDR_SIZE) != PHYS_HDR_SIZE)
+    if ((rc = safewrite(cfd, &hdr, PHYS_HDR_SIZE)) != PHYS_HDR_SIZE)
 	return rc;
     if ((rc = safewrite(cfd, "TRAILER!!!", 11)) != 11)
 	return rc;
