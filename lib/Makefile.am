@@ -22,11 +22,6 @@ librpm_a_SOURCES = \
 	rpmrc.c signature.c stringbuf.c tagtable.c \
 	tread.c uninstall.c verify.c transaction.c problems.c hash.c fprint.c
 
-include ../Makefile.inc
-
-#rpmrc.o: rpmrc.c
-#	$(COMPILE) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
-
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c
 	@echo '#include "rpmlib.h"' >> tagtable.c

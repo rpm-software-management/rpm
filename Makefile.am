@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-SUBDIRS = popt build lib po intl misc tools scripts tests
+SUBDIRS = popt build lib po intl misc tools scripts tests .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
 

@@ -104,15 +104,17 @@
 #	(Note: Above is the goal, below are the macros under development)
 #
 # The configure macro does the following:
-#
 #	optionally change to a subdirectory.
 #	attempt to update onfig.guess and config.sub.
 #	run configure with correct prefix, platform, and CFLAGS.
 #	optionally restore current directory.
+# The configure macro should be invoked as %configure (rather than %{configure})
+# because the rest of the arguments will be expanded using %*. Another
+# gotcha is that arguments, if present, should be on the same line as the
+# %configure.
 #
 %configure(C:)	\
-  %{C:%{-C:pushd %{-C*}}} \
+  %{-C:pushd %{-C*}} \
   %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
-  CFLAGS="%{optflags}" ./configure %{_build} --prefix=%{_prefix} \
-  %{C:%{-C:popd }}
-
+  CFLAGS="%{optflags}" ./configure %{_target} --prefix=%{_prefix} \
+  %{-C:popd}

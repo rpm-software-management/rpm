@@ -528,8 +528,10 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
     ch.path = NULL;
     do {
 	if ((rc = getNextHeader(cfd, &ch))) {
+#if 0	/* XXX this is the failure point for an unreadable rpm */
 	    fprintf(stderr, _("getNextHeader: %s\n"), cpioStrerror(rc));
-	    return CPIOERR_BAD_HEADER;
+#endif
+	    return rc;
 	}
 
 	if (!strcmp(ch.path, TRAILER)) {
@@ -896,7 +898,7 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		hlink = malloc(sizeof(*hlink));
 		hlink->next = hlinkList.next;
 		hlinkList.next = hlink;
-		hlink->sb = sb;
+		hlink->sb = sb;		/* structure assignment */
 		hlink->dev = sb.st_dev;
 		hlink->inode = sb.st_ino;
 		hlink->nlink = sb.st_nlink;
@@ -984,7 +986,7 @@ const char * cpioStrerror(int rc)
 	s = NULL;
 	break;
     case CPIOERR_BAD_MAGIC:	s = _("Bad magic");		break;
-    case CPIOERR_BAD_HEADER:	s = _("Bad header");		break;
+    case CPIOERR_BAD_HEADER:	s = _("Bad/unreadable  header");break;
 
     case CPIOERR_OPEN_FAILED:	s = "open";	break;
     case CPIOERR_CHMOD_FAILED:	s = "chmod";	break;

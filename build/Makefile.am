@@ -15,11 +15,6 @@ librpmbuild_a_SOURCES = \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c reqprov.c spec.c
 
-include ../Makefile.inc
-
-#files.o: files.c
-#	$(COMPILE) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<
-
 .PHONY:	lclint
 lclint:
 	lclint ${DEFS} ${INCLUDES} ${librpmbuild_a_SOURCES}

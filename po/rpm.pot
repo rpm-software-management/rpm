@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-19 12:43-0500\n"
+"POT-Creation-Date: 1999-01-21 10:57-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2149,37 +2149,37 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:531
+#: ../lib/cpio.c:532
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:983
+#: ../lib/cpio.c:985
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: ../lib/cpio.c:986
+#: ../lib/cpio.c:988
 msgid "Bad magic"
 msgstr ""
 
-#: ../lib/cpio.c:987
-msgid "Bad header"
-msgstr ""
-
-#: ../lib/cpio.c:1005
-msgid "Internal error"
-msgstr ""
-
-#: ../lib/cpio.c:1006
-msgid "Header size too big"
+#: ../lib/cpio.c:989
+msgid "Bad/unreadable  header"
 msgstr ""
 
 #: ../lib/cpio.c:1007
+msgid "Internal error"
+msgstr ""
+
+#: ../lib/cpio.c:1008
+msgid "Header size too big"
+msgstr ""
+
+#: ../lib/cpio.c:1009
 msgid "Unknown file type"
 msgstr ""
 
-#: ../lib/cpio.c:1016
+#: ../lib/cpio.c:1018
 msgid " failed - "
 msgstr ""
 
@@ -2395,7 +2395,7 @@ msgstr ""
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:426 ../lib/install.c:761 ../lib/uninstall.c:337
+#: ../lib/install.c:426 ../lib/install.c:763 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -2408,38 +2408,42 @@ msgstr ""
 #. was used up - if so, we should return a different error
 #: ../lib/install.c:617
 #, c-format
-msgid "unpacking of archive failed on file %s: %s"
+msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:655
+#: ../lib/install.c:618
+msgid " on file"
+msgstr ""
+
+#: ../lib/install.c:657
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:661 ../lib/install.c:667
+#: ../lib/install.c:663 ../lib/install.c:669
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:672
+#: ../lib/install.c:674
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:673
+#: ../lib/install.c:675
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:706 ../lib/install.c:738
+#: ../lib/install.c:708 ../lib/install.c:740
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:759
+#: ../lib/install.c:761
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: ../lib/install.c:882
+#: ../lib/install.c:884
 #, c-format
 msgid "package %s-%s-%s (which is newer) is already installed"
 msgstr ""
