@@ -4,9 +4,9 @@
 #include "spec.h"
 
 int doBuild(Spec s, int flags, char *passPhrase);
-int execPrep(Spec s, int really_exec);
-int execBuild(Spec s);
-int execInstall(Spec s);
+int execPrep(Spec s, int really_exec, int test);
+int execBuild(Spec s, int test);
+int execInstall(Spec s, int test);
 int execClean(Spec s);
 int verifyList(Spec s);
 
@@ -20,5 +20,6 @@ extern char build_subdir[1024];
 #define RPMBUILD_SWEEP      (1 << 5)
 #define RPMBUILD_LIST       (1 << 6)
 #define RPMBUILD_RMSOURCE   (1 << 7)
+#define RPMBUILD_TEST       (1 << 8)
 
 #endif _BUILD_H_

@@ -793,9 +793,10 @@ int main(int argc, char ** argv) {
 	argerror(_("--nofiles may only be specified during package "
 		   "verification"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && test)
-	argerror(_("--test may only be specified during package installation "
-		 "and uninstallation"));
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
+	bigMode != MODE_BUILD && test)
+	argerror(_("--test may only be specified during package installation, "
+		 "uninstallation, and building"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
 	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && rootdir[1])
@@ -932,6 +933,9 @@ int main(int argc, char ** argv) {
 
 	if (clean)
 	    buildAmount |= RPMBUILD_SWEEP;
+
+	if (test)
+	    buildAmount |= RPMBUILD_TEST;
 
 	if (optind == argc) 
 	    argerror(_("no spec files given for build"));

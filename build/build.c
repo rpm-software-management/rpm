@@ -33,8 +33,8 @@ struct Script {
 struct Script *openScript(Spec spec, int builddir, char *name);
 void writeScript(struct Script *script, char *s);
 int execScript(struct Script *script);
-void freeScript(struct Script *script);
-int execPart(Spec s, char *sb, char *name, int builddir);
+void freeScript(struct Script *script, int test);
+int execPart(Spec s, char *sb, char *name, int builddir, int test);
 static int doSetupMacro(Spec spec, StringBuf sb, char *line);
 static int doPatchMacro(Spec spec, StringBuf sb, char *line);
 static char *do_untar(Spec spec, int c);
@@ -138,24 +138,27 @@ int execScript(struct Script *script)
     return 0;
 }
 
-void freeScript(struct Script *script)
+void freeScript(struct Script *script, int test)
 {
     if (script->file)
 	fclose(script->file);
-    unlink(script->name);
+    if (! test)
+	unlink(script->name);
     free(script->name);
     free(script);
 }
 
-int execPart(Spec s, char *sb, char *name, int builddir)
+int execPart(Spec s, char *sb, char *name, int builddir, int test)
 {
     struct Script *script;
 
     message(MESS_DEBUG, "RUNNING: %s\n", name);
     script = openScript(s, builddir, name);
     writeScript(script, sb);
-    execScript(script);
-    freeScript(script);
+    if (!test) {
+	execScript(script);
+    }
+    freeScript(script, test);
     return 0;
 }
 
@@ -169,7 +172,7 @@ static void doSweep(Spec s)
         sprintf(buf, "rm -rf %s\n", build_subdir);
         writeScript(script, buf);
         execScript(script);
-        freeScript(script);
+        freeScript(script, 0);
     }
 }
 
@@ -586,7 +589,7 @@ static int checkSources(Spec s)
     return 0;
 }
 
-int execPrep(Spec s, int really_exec)
+int execPrep(Spec s, int really_exec, int test)
 {
     char **lines, **lines1, *p;
     StringBuf out;
@@ -618,30 +621,30 @@ int execPrep(Spec s, int really_exec)
     freeSplitString(lines1);
     res = 0;
     if (really_exec) {
-	res = execPart(s, getStringBuf(out), "%prep", 0);
+	res = execPart(s, getStringBuf(out), "%prep", 0, test);
     }
     freeStringBuf(out);
     return res;
 }
 
-int execBuild(Spec s)
+int execBuild(Spec s, int test)
 {
-    return execPart(s, getStringBuf(s->build), "%build", 1);
+    return execPart(s, getStringBuf(s->build), "%build", 1, test);
 }
 
-int execInstall(Spec s)
+int execInstall(Spec s, int test)
 {
     int res;
 
-    if ((res = execPart(s, getStringBuf(s->install), "%install", 1))) {
+    if ((res = execPart(s, getStringBuf(s->install), "%install", 1, test))) {
 	return res;
     }
-    return execPart(s, getStringBuf(s->doc), "special doc", 1);
+    return execPart(s, getStringBuf(s->doc), "special doc", 1, test);
 }
 
 int execClean(Spec s)
 {
-    return execPart(s, getStringBuf(s->clean), "%clean", 1);
+    return execPart(s, getStringBuf(s->clean), "%clean", 1, 0);
 }
 
 int verifyList(Spec s)
@@ -651,11 +654,14 @@ int verifyList(Spec s)
 
 int doBuild(Spec s, int flags, char *passPhrase)
 {
+    int test;
+
+    test = flags & RPMBUILD_TEST;
 
     strcpy(build_subdir, ".");
 
     /* We always need to parse the %prep section */
-    if (execPrep(s, (flags & RPMBUILD_PREP))) {
+    if (execPrep(s, (flags & RPMBUILD_PREP), test)) {
 	return 1;
     }
 
@@ -663,17 +669,21 @@ int doBuild(Spec s, int flags, char *passPhrase)
 	return verifyList(s);
 
     if (flags & RPMBUILD_BUILD) {
-	if (execBuild(s)) {
+	if (execBuild(s, test)) {
 	    return 1;
 	}
     }
 
     if (flags & RPMBUILD_INSTALL) {
-	if (execInstall(s)) {
+	if (execInstall(s, test)) {
 	    return 1;
 	}
     }
 
+    if (test) {
+	return 0;
+    }
+    
     markBuildTime();
     
     if (flags & RPMBUILD_BINARY) {
