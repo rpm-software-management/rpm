@@ -400,11 +400,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		newpath = malloc(strlen(prefixedFileList[i]) + 20);
 		strcpy(newpath, prefixedFileList[i]);
 		strcat(newpath, ext);
-		error(RPMMESS_BACKUP, "warning: %s saved as %s\n", 
+		error(RPMMESS_BACKUP, "warning: %s saved as %s", 
 			prefixedFileList[i], newpath);
 
 		if (rename(prefixedFileList[i], newpath)) {
-		    error(RPMERR_RENAME, "rename of %s to %s failed: %s\n",
+		    error(RPMERR_RENAME, "rename of %s to %s failed: %s",
 			  prefixedFileList[i], newpath, strerror(errno));
 		    if (replacedList) free(replacedList);
 		    free(newpath);
@@ -893,7 +893,7 @@ static int setFileOwner(char * file, char * owner, char * group,
     message(MESS_DEBUG, "%s owned by %s (%d), group %s (%d) mode %o\n",
 		file, owner, uid, group, gid, mode & 07777);
     if (chown(file, uid, gid)) {
-	error(RPMERR_CHOWN, "cannot set owner and group for %s - %s\n",
+	error(RPMERR_CHOWN, "cannot set owner and group for %s - %s",
 		file, strerror(errno));
 	/* screw with the permissions so it's not SUID and 0.0 */
 	chmod(file, 0644);
@@ -902,7 +902,7 @@ static int setFileOwner(char * file, char * owner, char * group,
     /* Also set the mode according to what is stored in the header */
     if (! S_ISLNK(mode)) {
 	if (chmod(file, mode & 07777)) {
-	    error(RPMERR_CHOWN, "cannot change mode for %s - %s\n",
+	    error(RPMERR_CHOWN, "cannot change mode for %s - %s",
 		  file, strerror(errno));
 	    /* screw with the permissions so it's not SUID and 0.0 */
 	    chmod(file, 0644);
@@ -1009,7 +1009,7 @@ static int mkdirIfNone(char * directory, mode_t perms) {
 
     chmod(directory, perms);  /* this should not be modified by the umask */
 
-    error(RPMERR_MKDIR, "failed to create %s - %s\n", directory, 
+    error(RPMERR_MKDIR, "failed to create %s - %s", directory, 
 	  strerror(errno));
 
     return errno;
@@ -1185,7 +1185,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 
 	    if (!getEntry(sech, RPMTAG_FILENAMES, &type, 
 			  (void **) &secFileList, &secFileCount)) {
-		error(RPMERR_DBCORRUPT, "package %s contains no files\n",
+		error(RPMERR_DBCORRUPT, "package %s contains no files",
 		      name);
 		freeHeader(sech);
 		rc = 1;
@@ -1291,7 +1291,9 @@ static int fileCompare(const void * one, const void * two) {
 		  ((struct fileToInstall *) two)->fileName);
 }
 
-
+/* 0 success */
+/* 1 bad magic */
+/* 2 error */
 static int installSources(Header h, char * rootdir, int fd, 
 			  char ** specFilePtr, notifyFunction notify,
 			  char * labelFormat) {
@@ -1307,6 +1309,16 @@ static int installSources(Header h, char * rootdir, int fd,
 
     sourceDir = getVar(RPMVAR_SOURCEDIR);
     specDir = getVar(RPMVAR_SPECDIR);
+
+    if (access(sourceDir, W_OK)) {
+	error(RPMERR_CREATE, "cannot write to %s", sourceDir);
+	return 2;
+    }
+
+    if (access(specDir, W_OK)) {
+	error(RPMERR_CREATE, "cannot write to %s", sourceDir);
+	return 2;
+    }
 
     realSourceDir = alloca(strlen(rootdir) + strlen(sourceDir) + 2);
     strcpy(realSourceDir, rootdir);
@@ -1341,11 +1353,11 @@ static int installSources(Header h, char * rootdir, int fd,
 
     if (installArchive(realSourceDir, fd, NULL, -1, notify, &specFile, 
 		       tmpPath, archiveSizePtr ? *archiveSizePtr : 0)) {
-	return 1;
+	return 2;
     }
 
     if (!specFile) {
-	error(RPMERR_NOSPEC, "source package contains no .spec file\n");
+	error(RPMERR_NOSPEC, "source package contains no .spec file");
 	return 1;
     }
 
@@ -1365,7 +1377,7 @@ static int installSources(Header h, char * rootdir, int fd,
     if (rename(instSpecFile, correctSpecFile)) {
 	/* try copying the file */
 	if (moveFile(instSpecFile, correctSpecFile))
-	    return 1;
+	    return 2;
     }
 
     if (specFilePtr)
