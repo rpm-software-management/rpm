@@ -9,9 +9,9 @@
 
 int main(int argc, char **argv)
 {
-    int fd;
+    int fd, length;
     struct rpmlead lead;
-    char *sig;
+    unsigned char *sig;
     
     if (argc == 1) {
 	fd = 0;
@@ -32,6 +32,8 @@ int main(int argc, char **argv)
 	write(1, sig, 16);
 	break;
     case RPMSIG_MD5_PGP:
+	length = sig[16] * 256 + sig[17];
+	write(1, sig, 18 + length);
 	break;
     default:
 	fprintf(stderr, "Unknown signature type: %d\n", lead.signature_type);
