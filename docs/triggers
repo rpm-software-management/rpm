@@ -111,3 +111,14 @@ conditions becomes true (the , can be read as "or"). For example:
 Will put a trigger in package 'package' which runs when the installation
 status of either fileutils > 3.0 or perl < 1.2 is changed. The script will
 be run through /usr/bin/perl rather then /bin/sh (which is the default).
+
+An Unusual Case
+---------------
+
+There is one other type of trigger available -- %triggerpostun. These are
+triggers that are run after their target package has been removed; they will
+never be run when the package containing the trigger is removed. 
+
+While this type of trigger is almost never usefull, they allow a package to
+fix errors introduced by the %postun of another package (or by an earlier 
+version of that package).

@@ -340,6 +340,11 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 		      flags & RPMUNINSTALL_NOSCRIPTS, 0);
     }
 
+    /* Run postun triggers which are set off by this package's removal */
+    if (runTriggers(rootdir, db, RPMSENSE_TRIGGERPOSTUN, h, 0)) {
+	return 2;
+    }
+
     headerFree(h);
 
     rpmMessage(RPMMESS_DEBUG, "removing database entry\n");

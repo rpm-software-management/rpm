@@ -2,6 +2,7 @@
 	- --nomd5 wasn't handled properly
 	- updated configure.in find-req and find-prov checks (Tim Mooney)
         - make --rmsource actually work
+	- run postun triggers
 
 2.4.105 -> 2.4.106:
 	- build: only check for non-printables in first 128 chars
