@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-18 18:37-0400\n"
+"POT-Creation-Date: 2000-06-19 07:25-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Date: 1999-05-27 17:30:00+0300\n"
 "From: Sergey Kubushin <ksi@ksi-linux.com>\n"
 
-#: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:422
+#: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:425
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "не могу открыть %s/packages.rpm\n"
@@ -3179,7 +3179,7 @@ msgstr "открытие %s не удалось\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к SRPM в старом формате не поддерживаются\n"
 
-#: lib/query.c:520 lib/rpminstall.c:231
+#: lib/query.c:520 lib/rpminstall.c:234
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s не похож на пакет RPM...\n"
@@ -3244,7 +3244,7 @@ msgstr "запись пакета номер %d\n"
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:683 lib/rpminstall.c:435
+#: lib/query.c:683 lib/rpminstall.c:438
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -3408,11 +3408,11 @@ msgstr "ошибка сохранения записи %s в %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "ошибка удаления записи %s из %s"
 
-#: lib/rpmdb.c:773 lib/rpmdb.c:2279
+#: lib/rpmdb.c:785 lib/rpmdb.c:2291
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
-#: lib/rpmdb.c:872
+#: lib/rpmdb.c:884
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -3421,213 +3421,213 @@ msgstr ""
 "базы нового формата"
 
 #. error
-#: lib/rpmdb.c:1082
+#: lib/rpmdb.c:1094
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "ошибка при поиске пакета %s\n"
 
-#: lib/rpmdb.c:1140 lib/rpmdb.c:1653 lib/uninstall.c:90
+#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "не могу прочесть хедер в %d для поиска"
 
-#: lib/rpmdb.c:1705
+#: lib/rpmdb.c:1717
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "удаляю запись базы данных\n"
 
-#: lib/rpmdb.c:1716
+#: lib/rpmdb.c:1728
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляю индекс групп\n"
 
-#: lib/rpmdb.c:1725
+#: lib/rpmdb.c:1737
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "удаляю индекс имен\n"
 
-#: lib/rpmdb.c:1732 lib/rpmdb.c:1953
+#: lib/rpmdb.c:1744 lib/rpmdb.c:1965
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1865
+#: lib/rpmdb.c:1877
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "ошибка при поиске пакета %s\n"
 
-#: lib/rpmdb.c:1921
+#: lib/rpmdb.c:1933
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1937
+#: lib/rpmdb.c:1949
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/rpmdb.c:1946
+#: lib/rpmdb.c:1958
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2304
+#: lib/rpmdb.c:2316
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраиваю базу в корневом каталоге %s\n"
 
-#: lib/rpmdb.c:2308
+#: lib/rpmdb.c:2320
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rpmdb.c:2314
+#: lib/rpmdb.c:2326
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/rpmdb.c:2316
+#: lib/rpmdb.c:2328
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rpmdb.c:2323
+#: lib/rpmdb.c:2335
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открываю старую базу\n"
 
-#: lib/rpmdb.c:2332
+#: lib/rpmdb.c:2344
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открываю новую базу\n"
 
-#: lib/rpmdb.c:2355
+#: lib/rpmdb.c:2367
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rpmdb.c:2387
+#: lib/rpmdb.c:2399
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "не могу добавить запись (первоначально в %d)"
 
-#: lib/rpmdb.c:2405
+#: lib/rpmdb.c:2417
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "перестроение базы не удалось, старая база остается на месте\n"
 
-#: lib/rpmdb.c:2413
+#: lib/rpmdb.c:2425
 msgid "failed to replace old database with new database!\n"
 msgstr "замена старой базы на новую не удалась!\n"
 
-#: lib/rpmdb.c:2415
+#: lib/rpmdb.c:2427
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "для восстановления заменяет файлы в %s файлами из %s"
 
-#: lib/rpmdb.c:2425
+#: lib/rpmdb.c:2437
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/rpmdb.c:2427
+#: lib/rpmdb.c:2439
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "удаление каталога %s не удалось: %s\n"
 
-#: lib/rpminstall.c:126
+#: lib/rpminstall.c:129
 msgid "counting packages to install\n"
 msgstr "считаю пакеты для установки\n"
 
-#: lib/rpminstall.c:130
+#: lib/rpminstall.c:133
 #, c-format
 msgid "found %d packages\n"
 msgstr "найдено %d пакетов\n"
 
-#: lib/rpminstall.c:135
+#: lib/rpminstall.c:138
 msgid "looking for packages to download\n"
 msgstr "ищу пакеты для получения с ftp/http\n"
 
-#: lib/rpminstall.c:150
+#: lib/rpminstall.c:153
 #, fuzzy, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "пропускаю %s - ошибка передачи - %s\n"
 
-#: lib/rpminstall.c:165
+#: lib/rpminstall.c:168
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Получаю %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:175
+#: lib/rpminstall.c:178
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... как %s\n"
 
-#: lib/rpminstall.c:179
+#: lib/rpminstall.c:182
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "пропускаю %s - ошибка передачи - %s\n"
 
-#: lib/rpminstall.c:206
+#: lib/rpminstall.c:209
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "получено %d пакетов\n"
 
-#: lib/rpminstall.c:217 lib/rpminstall.c:360
+#: lib/rpminstall.c:220 lib/rpminstall.c:363
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "не могу открыть файл %s: %s"
 
-#: lib/rpminstall.c:235 lib/rpminstall.c:499
+#: lib/rpminstall.c:238 lib/rpminstall.c:503
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
 
-#: lib/rpminstall.c:270
+#: lib/rpminstall.c:273
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "пакет %s - не перемещаемый\n"
 
-#: lib/rpminstall.c:289
+#: lib/rpminstall.c:292
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ошибка чтения из файла %s\n"
 
-#: lib/rpminstall.c:294
+#: lib/rpminstall.c:297
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "файл %s требует более новой версии RPM\n"
 
-#: lib/rpminstall.c:311
+#: lib/rpminstall.c:314
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:325
 msgid "failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
 
-#: lib/rpminstall.c:340
+#: lib/rpminstall.c:343
 msgid "installing binary packages\n"
 msgstr "устанавливаю бинарные пакеты\n"
 
-#: lib/rpminstall.c:438
+#: lib/rpminstall.c:441
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:461
+#: lib/rpminstall.c:464
 msgid "removing these packages would break dependencies:\n"
 msgstr "удаление этих пакетов нарушит зависимости:\n"
 
-#: lib/rpminstall.c:488
+#: lib/rpminstall.c:492
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "не могу открыть %s\n"
 
-#: lib/rpminstall.c:494
+#: lib/rpminstall.c:498
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливаю %s\n"

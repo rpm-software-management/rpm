@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.39
+Release: 0.40
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -255,6 +255,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jun 19 2000 Jeff Johnson <jbj@redhat.com>
+- fix: open all db indices before performing chroot.
+
 * Sun Jun 18 2000 Jeff Johnson <jbj@redhat.com>
 - require --rebuilddb to convert db1 -> db3, better messages.
 

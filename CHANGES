@@ -62,6 +62,7 @@
 	- fix: don't count removed files if removed packages is empty set.
 	- fix: permit '\0' as special case key (e.g. "/" in Basenames).
 	- require --rebuilddb to convert db1 -> db3, better messages.
+	- fix: open all db indices before performing chroot.
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

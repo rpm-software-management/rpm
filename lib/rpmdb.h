@@ -257,6 +257,7 @@ struct rpmdb_s {
 
 #define RPMDB_FLAG_JUSTCHECK	(1 << 0)
 #define RPMDB_FLAG_MINIMAL	(1 << 1)
+#define	RPMDB_FLAG_CHROOT	(1 << 2)
 
 #ifdef __cplusplus
 extern "C" {

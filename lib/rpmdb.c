@@ -698,6 +698,18 @@ static struct rpmdb_s dbTemplate = {
     _DB_MAJOR,	_DB_REMOVE_ENV, _DB_FILTER_DUPS, _DB_ERRPFX
 };
 
+int rpmdbOpenAll (rpmdb rpmdb)
+{
+    int dbix;
+
+    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+	if (rpmdb->_dbi[dbix] != NULL)
+	    continue;
+    	dbiOpen(rpmdb, dbiTags[dbix], rpmdb->db_flags);
+    }
+    return 0;
+}
+
 /* XXX query.c, rpminstall.c, verify.c */
 int rpmdbClose (rpmdb rpmdb)
 {

@@ -352,6 +352,11 @@ int rpmdbClose ( /*@only@*/ rpmdb rpmdb);
 int rpmdbSync (rpmdb rpmdb);
 
 /**
+ * @param rpmdb		rpm database
+ */
+int rpmdbOpenAll (rpmdb rpmdb);
+
+/**
  * Return number of instances of package in rpm database.
  * @param db		rpm database
  * @param name		rpm package name

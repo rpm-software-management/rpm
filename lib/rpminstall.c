@@ -8,7 +8,8 @@
 
 static int hashesPrinted = 0;
 
-static void printHash(const unsigned long amount, const unsigned long total) {
+static void printHash(const unsigned long amount, const unsigned long total)
+{
     int hashesNeeded;
 
     if (hashesPrinted != 50) {
@@ -26,10 +27,12 @@ static void printHash(const unsigned long amount, const unsigned long total) {
     }
 }
 
-static void * showProgress(const Header h, const rpmCallbackType what, 
+static void * showProgress(const void * arg, const rpmCallbackType what, 
 			   const unsigned long amount, 
 			   const unsigned long total,
-			   const void * pkgKey, void * data) {
+			   const void * pkgKey, void * data)
+{
+    Header h = (Header) arg;
     char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
@@ -479,7 +482,8 @@ int rpmErase(const char * rootdir, const char ** argv, int transFlags,
 }
 
 int rpmInstallSource(const char * rootdir, const char * arg, const char ** specFile,
-		    char ** cookie) {
+		    char ** cookie)
+{
     FD_t fd;
     int rc;
 

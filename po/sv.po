@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.121 $
+# $Revision: 1.122 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-18 18:37-0400\n"
+"POT-Creation-Date: 2000-06-19 07:25-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:422
+#: build.c:25 lib/rpminstall.c:253 lib/rpminstall.c:425
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "kan inte öppna %s/packages.rpm\n"
@@ -3159,7 +3159,7 @@ msgstr "misslyckades öppna %s: %s\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går ej att fråga om\n"
 
-#: lib/query.c:520 lib/rpminstall.c:231
+#: lib/query.c:520 lib/rpminstall.c:234
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s verkar inte vara ett RPM-paket\n"
@@ -3224,7 +3224,7 @@ msgstr "paketpost nummer: %d\n"
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:683 lib/rpminstall.c:435
+#: lib/query.c:683 lib/rpminstall.c:438
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -3387,11 +3387,11 @@ msgstr "fel när post %s sparades i %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "fel när post %s togs bort ur %s"
 
-#: lib/rpmdb.c:773 lib/rpmdb.c:2279
+#: lib/rpmdb.c:785 lib/rpmdb.c:2291
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
-#: lib/rpmdb.c:872
+#: lib/rpmdb.c:884
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -3400,213 +3400,213 @@ msgstr ""
 "i nytt format"
 
 #. error
-#: lib/rpmdb.c:1082
+#: lib/rpmdb.c:1094
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "fel vid sökning efter paket %s\n"
 
-#: lib/rpmdb.c:1140 lib/rpmdb.c:1653 lib/uninstall.c:90
+#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "kan inte läsa huvud vid %d för uppslagning"
 
-#: lib/rpmdb.c:1705
+#: lib/rpmdb.c:1717
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "tar bort databasposter\n"
 
-#: lib/rpmdb.c:1716
+#: lib/rpmdb.c:1728
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "tar bort gruppindex\n"
 
-#: lib/rpmdb.c:1725
+#: lib/rpmdb.c:1737
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "tar bort namnindex\n"
 
-#: lib/rpmdb.c:1732 lib/rpmdb.c:1953
+#: lib/rpmdb.c:1744 lib/rpmdb.c:1965
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1865
+#: lib/rpmdb.c:1877
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "fel vid sökning efter paket %s\n"
 
-#: lib/rpmdb.c:1921
+#: lib/rpmdb.c:1933
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1937
+#: lib/rpmdb.c:1949
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "byter namn på %s till %s\n"
 
-#: lib/rpmdb.c:1946
+#: lib/rpmdb.c:1958
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2304
+#: lib/rpmdb.c:2316
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "bygger om databas %s till %s\n"
 
-#: lib/rpmdb.c:2308
+#: lib/rpmdb.c:2320
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "tillfällig databas %s existerar redan"
 
-#: lib/rpmdb.c:2314
+#: lib/rpmdb.c:2326
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "skapar katalog: %s\n"
 
-#: lib/rpmdb.c:2316
+#: lib/rpmdb.c:2328
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "fel när katalog skapades %s: %s"
 
-#: lib/rpmdb.c:2323
+#: lib/rpmdb.c:2335
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "öppnar gammal databas\n"
 
-#: lib/rpmdb.c:2332
+#: lib/rpmdb.c:2344
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas\n"
 
-#: lib/rpmdb.c:2355
+#: lib/rpmdb.c:2367
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "post nummer %d i databasen är felaktig -- hoppar över den"
 
-#: lib/rpmdb.c:2387
+#: lib/rpmdb.c:2399
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kan inte lägga till post ursprungligen vid %d"
 
-#: lib/rpmdb.c:2405
+#: lib/rpmdb.c:2417
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen; orginaldatabasen finns kvar\n"
 
-#: lib/rpmdb.c:2413
+#: lib/rpmdb.c:2425
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: lib/rpmdb.c:2415
+#: lib/rpmdb.c:2427
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: lib/rpmdb.c:2425
+#: lib/rpmdb.c:2437
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "skapar katalog: %s\n"
 
-#: lib/rpmdb.c:2427
+#: lib/rpmdb.c:2439
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"
 
-#: lib/rpminstall.c:126
+#: lib/rpminstall.c:129
 msgid "counting packages to install\n"
 msgstr "räknar paket att installera\n"
 
-#: lib/rpminstall.c:130
+#: lib/rpminstall.c:133
 #, c-format
 msgid "found %d packages\n"
 msgstr "hittade %d paket\n"
 
-#: lib/rpminstall.c:135
+#: lib/rpminstall.c:138
 msgid "looking for packages to download\n"
 msgstr "letar efter paket att hämta\n"
 
-#: lib/rpminstall.c:150
+#: lib/rpminstall.c:153
 #, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "hoppar över %s - rpmGlob misslyckades(%d)\n"
 
-#: lib/rpminstall.c:165
+#: lib/rpminstall.c:168
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hämtar %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:175
+#: lib/rpminstall.c:178
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:179
+#: lib/rpminstall.c:182
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "hoppar över %s - överföring misslyckades - %s\n"
 
-#: lib/rpminstall.c:206
+#: lib/rpminstall.c:209
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "hämtade %d paket\n"
 
-#: lib/rpminstall.c:217 lib/rpminstall.c:360
+#: lib/rpminstall.c:220 lib/rpminstall.c:363
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kan inte öppna filen %s: %s\n"
 
-#: lib/rpminstall.c:235 lib/rpminstall.c:499
+#: lib/rpminstall.c:238 lib/rpminstall.c:503
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
-#: lib/rpminstall.c:270
+#: lib/rpminstall.c:273
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paket %s är inte relokerbart\n"
 
-#: lib/rpminstall.c:289
+#: lib/rpminstall.c:292
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fel vid läsning från fil %s\n"
 
-#: lib/rpminstall.c:294
+#: lib/rpminstall.c:297
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "fil %s behöver en nyare version av RPM\n"
 
-#: lib/rpminstall.c:311
+#: lib/rpminstall.c:314
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "hittade %d käll- och %d binärpaket\n"
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:325
 msgid "failed dependencies:\n"
 msgstr "ouppfyllda beroenden:\n"
 
-#: lib/rpminstall.c:340
+#: lib/rpminstall.c:343
 msgid "installing binary packages\n"
 msgstr "installerar binärpaket\n"
 
-#: lib/rpminstall.c:438
+#: lib/rpminstall.c:441
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:461
+#: lib/rpminstall.c:464
 msgid "removing these packages would break dependencies:\n"
 msgstr "att ta bort dessa paket skulle göra sönder beroenden:\n"
 
-#: lib/rpminstall.c:488
+#: lib/rpminstall.c:492
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:494
+#: lib/rpminstall.c:498
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"

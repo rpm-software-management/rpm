@@ -1442,6 +1442,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
        xfree(s);
     }
 
+    /* Open all dtabase indices before installing */
+    rpmdbOpenAll(ts->db);
+
     chdir("/");
     /*@-unrecog@*/ chroot(ts->root); /*@=unrecog@*/
 
@@ -1631,6 +1634,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     /* ===============================================
      * Install and remove packages.
      */
+
     lastFailed = -2;
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
 	switch (ts->order[oc].type) {
