@@ -215,6 +215,7 @@ static void printUsage(void) {
     puts(_("                        [--nomd5] [targets]"));
     puts(_("       rpm {--setperms} [-afpg] [target]"));
     puts(_("       rpm {--setugids} [-afpg] [target]"));
+    puts(_("       rpm {--freshen -F} file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"));
