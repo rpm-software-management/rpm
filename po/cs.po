@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-04 06:01-0400\n"
+"POT-Creation-Date: 2000-04-06 10:45-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -2844,7 +2844,7 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "zobrazit seznam souborù balíèkù"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:290
+#: lib/rebuilddb.c:34 lib/rpmdb.c:294
 msgid "no dbpath has been set"
 msgstr "nebyla nastavena dbpath"
 
@@ -2898,20 +2898,20 @@ msgstr "nelze pøidat záznam - pùvodnì u %d"
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databázi je chybný -- vynechává se"
 
-#: lib/rebuilddb.c:152
+#: lib/rebuilddb.c:153
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "databázi nelze pøestavit; pùvodní databáze zùstává na svém místì\n"
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:161
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: lib/rebuilddb.c:162
+#: lib/rebuilddb.c:163
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "aby se obnovily, nahrazuje soubory v %s soubory z %s"
 
-#: lib/rebuilddb.c:168
+#: lib/rebuilddb.c:169
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nelze odstranit %s: %s\n"
@@ -3001,95 +3001,95 @@ msgstr ""
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmdb.c:188
+#: lib/rpmdb.c:190
 #, fuzzy, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "probíhá otevírání databázového re¾imu: 0%o\n"
 
-#: lib/rpmdb.c:200 lib/url.c:445
+#: lib/rpmdb.c:202 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nelze otevøít %s: %s"
 
-#: lib/rpmdb.c:214 lib/rpmdb.c:222
+#: lib/rpmdb.c:216 lib/rpmdb.c:224
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "nelze získat %s zámek k databázi"
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:217
 msgid "exclusive"
 msgstr "výhradní"
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:225
 msgid "shared"
 msgstr "sdílený"
 
-#: lib/rpmdb.c:263
+#: lib/rpmdb.c:267
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:536
+#: lib/rpmdb.c:554
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "balíèek %s nenalezen v %s"
 
-#: lib/rpmdb.c:545
+#: lib/rpmdb.c:563
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "balíèek %s nenalezen v %s"
 
-#: lib/rpmdb.c:563
+#: lib/rpmdb.c:581
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "nelze èíst hlavièku u %d pro vyhledání"
 
-#: lib/rpmdb.c:582
+#: lib/rpmdb.c:609
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstraòuje se polo¾ka databáze\n"
 
-#: lib/rpmdb.c:588
+#: lib/rpmdb.c:615
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje se rejstøík skupin\n"
 
-#: lib/rpmdb.c:596
+#: lib/rpmdb.c:623
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "odstraòuje se rejstøík názvù\n"
 
-#: lib/rpmdb.c:600 lib/rpmdb.c:775
+#: lib/rpmdb.c:627 lib/rpmdb.c:812
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:719
+#: lib/rpmdb.c:745
 msgid "cannot allocate space for database"
 msgstr "nelze alokovat prostor pro databázi"
 
-#: lib/rpmdb.c:752
+#: lib/rpmdb.c:789
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:764
+#: lib/rpmdb.c:801
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "Probíhá získávání %s jako %s\n"
 
-#: lib/rpmdb.c:771
+#: lib/rpmdb.c:808
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:829
+#: lib/rpmdb.c:866
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nelze èíst hlavièku u %d pro inovaci"
 
-#: lib/rpmdb.c:842
+#: lib/rpmdb.c:879
 msgid "header changed size!"
 msgstr "hlavièka zmìnila velikost!"
 

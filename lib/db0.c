@@ -1,5 +1,7 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #include <db1/db.h>
 
 #define	DB_VERSION_MAJOR	0
@@ -26,6 +28,24 @@ static inline DBTYPE dbi_to_dbtype(DBI_TYPE dbitype)
 
 static inline /*@observer@*/ /*@null@*/ DB * GetDB(dbiIndex dbi) {
     return ((DB *)dbi->dbi_db);
+}
+
+static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
+    int rc = 0;
+
+    if (error == 0)
+	rc = 0;
+    else if (error < 0)
+	rc = -1;
+    else if (error > 0)
+	rc = 1;
+
+    if (printit && rc) {
+	fprintf(stderr, "*** db%d %s rc %d error %d\n", dbi->dbi_major, msg,
+		rc, error);
+    }
+
+    return rc;
 }
 
 #if defined(__USE_DB2)
@@ -218,10 +238,21 @@ static int db0SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
     case RET_SUCCESS:	/* 0 */
 	rc = 0;
 	if (set) {
+	    DBIR_t dbir = data.data;
+	    int i;
+
 	    *set = dbiCreateIndexSet();
-	    (*set)->recs = xmalloc(data.size);
-	    memcpy((*set)->recs, data.data, data.size);
-	    (*set)->count = data.size / sizeof(*(*set)->recs);
+	    (*set)->count = data.size / sizeof(*dbir);
+	    (*set)->recs = xmalloc((*set)->count * sizeof(*((*set)->recs)));
+
+	    /* Convert from database internal format. */
+	    for (i = 0; i < (*set)->count; i++) {
+		/* XXX TODO: swab data */
+		(*set)->recs[i].recOffset = dbir[i].recOffset;
+		(*set)->recs[i].fileNumber = dbir[i].fileNumber;
+		(*set)->recs[i].fpNum = 0;
+		(*set)->recs[i].dbNum = 0;
+	    }
 	}
 	break;
     }
@@ -240,10 +271,19 @@ static int db0UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
 
     if (set->count) {
 	DBT data;
+	DBIR_t dbir = alloca(set->count * sizeof(*dbir));
+	int i;
+
+	/* Convert to database internal format */
+	for (i = 0; i < set->count; i++) {
+	    /* XXX TODO: swab data */
+	    dbir[i].recOffset = set->recs[i].recOffset;
+	    dbir[i].fileNumber = set->recs[i].fileNumber;
+	}
 
 	_mymemset(&data, 0, sizeof(data));
-	data.data = set->recs;
-	data.size = set->count * sizeof(*(set->recs));
+	data.data = dbir;
+	data.size = set->count * sizeof(*dbir);
 
 #if defined(__USE_DB2)
 	rc = db->put(db, NULL, &key, &data, 0);
@@ -285,6 +325,72 @@ static int db0UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
 }
 /*@=compmempass@*/
 
+static int db0del(dbiIndex dbi, void * keyp, size_t keylen)
+{
+    DBT key;
+    DB * db = GetDB(dbi);
+    int rc;
+
+    _mymemset(&key, 0, sizeof(key));
+
+    key.data = keyp;
+    key.size = keylen;
+
+    rc = db->del(db, &key, 0);
+    rc = cvtdberr(dbi, "db->del", rc, _debug);
+
+    return rc;
+}
+
+static int db0get(dbiIndex dbi, void * keyp, size_t keylen,
+		void ** datap, size_t * datalen)
+{
+    DBT key, data;
+    DB * db = GetDB(dbi);
+    int rc;
+
+    if (datap) *datap = NULL;
+    if (datalen) *datalen = 0;
+    _mymemset(&key, 0, sizeof(key));
+    _mymemset(&data, 0, sizeof(data));
+
+    key.data = keyp;
+    key.size = keylen;
+    data.data = NULL;
+    data.size = 0;
+
+    rc = db->get(db, &key, &data, 0);
+    rc = cvtdberr(dbi, "db->get", rc, _debug);
+
+    if (rc == 0) {
+	*datap = data.data;
+	*datalen = data.size;
+    }
+
+    return rc;
+}
+
+static int db0put(dbiIndex dbi, void * keyp, size_t keylen,
+		void * datap, size_t datalen)
+{
+    DBT key, data;
+    DB * db = GetDB(dbi);
+    int rc;
+
+    _mymemset(&key, 0, sizeof(key));
+    _mymemset(&data, 0, sizeof(data));
+
+    key.data = keyp;
+    key.size = keylen;
+    data.data = datap;
+    data.size = datalen;
+
+    rc = db->put(db, &key, &data, 0);
+    rc = cvtdberr(dbi, "db->put", rc, _debug);
+
+    return rc;
+}
+
 static int db0open(dbiIndex dbi)
 {
     int rc;
@@ -325,5 +431,6 @@ fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbi->dbi_file);
 
 struct _dbiVec db0vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db0open, db0close, db0sync, db0GetFirstKey, db0SearchIndex, db0UpdateIndex
+    db0open, db0close, db0sync, db0GetFirstKey, db0SearchIndex, db0UpdateIndex,
+    db0del, db0get, db0put
 };

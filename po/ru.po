@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-04 06:01-0400\n"
+"POT-Creation-Date: 2000-04-06 10:45-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2791,7 +2791,7 @@ msgstr "показать состояние показанных файлов"
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:290
+#: lib/rebuilddb.c:34 lib/rpmdb.c:294
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
@@ -2845,20 +2845,20 @@ msgstr "не могу добавить запись (первоначально в %d)"
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rebuilddb.c:152
+#: lib/rebuilddb.c:153
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "перестроение базы не удалось, старая база остается на месте\n"
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:161
 msgid "failed to replace old database with new database!\n"
 msgstr "замена старой базы на новую не удалась!\n"
 
-#: lib/rebuilddb.c:162
+#: lib/rebuilddb.c:163
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "для восстановления заменяет файлы в %s файлами из %s"
 
-#: lib/rebuilddb.c:168
+#: lib/rebuilddb.c:169
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "удаление каталога %s не удалось: %s\n"
@@ -2947,30 +2947,30 @@ msgstr ")"
 msgid "OK"
 msgstr "Ok"
 
-#: lib/rpmdb.c:188
+#: lib/rpmdb.c:190
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "открываю базу в режиме 0x%x в %s\n"
 
-#: lib/rpmdb.c:200 lib/url.c:445
+#: lib/rpmdb.c:202 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "не могу открыть %s: %s"
 
-#: lib/rpmdb.c:214 lib/rpmdb.c:222
+#: lib/rpmdb.c:216 lib/rpmdb.c:224
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "не могу получить %s доступ к базе данных"
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:217
 msgid "exclusive"
 msgstr "исключительный"
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:225
 msgid "shared"
 msgstr "разделяемый"
 
-#: lib/rpmdb.c:263
+#: lib/rpmdb.c:267
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2978,66 +2978,66 @@ msgstr ""
 "найдена база данных старого формата; используйте --rebuilddb для генерации "
 "базы нового формата"
 
-#: lib/rpmdb.c:536
+#: lib/rpmdb.c:554
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:545
+#: lib/rpmdb.c:563
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:563
+#: lib/rpmdb.c:581
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "не могу прочесть хедер в %d для поиска"
 
-#: lib/rpmdb.c:582
+#: lib/rpmdb.c:609
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "удаляю запись базы данных\n"
 
-#: lib/rpmdb.c:588
+#: lib/rpmdb.c:615
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляю индекс групп\n"
 
-#: lib/rpmdb.c:596
+#: lib/rpmdb.c:623
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "удаляю индекс имен\n"
 
-#: lib/rpmdb.c:600 lib/rpmdb.c:775
+#: lib/rpmdb.c:627 lib/rpmdb.c:812
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:719
+#: lib/rpmdb.c:745
 msgid "cannot allocate space for database"
 msgstr "не могу выделить место для базы данных"
 
-#: lib/rpmdb.c:752
+#: lib/rpmdb.c:789
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:764
+#: lib/rpmdb.c:801
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/rpmdb.c:771
+#: lib/rpmdb.c:808
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:829
+#: lib/rpmdb.c:866
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "не могу прочитать хедер в %d для апгрейда"
 
-#: lib/rpmdb.c:842
+#: lib/rpmdb.c:879
 msgid "header changed size!"
 msgstr "хедер изменил размер!"
 

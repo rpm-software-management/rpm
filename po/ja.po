@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-04-04 06:01-0400\n"
+"POT-Creation-Date: 2000-04-06 10:45-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.36 2000/04/04 10:10:48 jbj Exp $
+# $Id: ja.po,v 1.37 2000/04/06 15:20:30 jbj Exp $
 #: rpm.c:200
 #, c-format
 msgid "rpm: %s\n"
@@ -2866,7 +2866,7 @@ msgstr "列挙したファイルの状態を表示します"
 msgid "display a verbose file listing"
 msgstr "ファイルリストを冗長に表示します"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:290
+#: lib/rebuilddb.c:34 lib/rpmdb.c:294
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
@@ -2920,21 +2920,21 @@ msgstr "%d に オリジナルのレコードを付加できません"
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rebuilddb.c:152
+#: lib/rebuilddb.c:153
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:161
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rebuilddb.c:162
+#: lib/rebuilddb.c:163
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rebuilddb.c:168
+#: lib/rebuilddb.c:169
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -3024,95 +3024,95 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:188
+#: lib/rpmdb.c:190
 #, fuzzy, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: lib/rpmdb.c:200 lib/url.c:445
+#: lib/rpmdb.c:202 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/rpmdb.c:214 lib/rpmdb.c:222
+#: lib/rpmdb.c:216 lib/rpmdb.c:224
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "データベースの %s をロックできません"
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:217
 msgid "exclusive"
 msgstr "除外"
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:225
 msgid "shared"
 msgstr "共有"
 
-#: lib/rpmdb.c:263
+#: lib/rpmdb.c:267
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:536
+#: lib/rpmdb.c:554
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:545
+#: lib/rpmdb.c:563
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:563
+#: lib/rpmdb.c:581
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: lib/rpmdb.c:582
+#: lib/rpmdb.c:609
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "データベースエントリを削除します\n"
 
-#: lib/rpmdb.c:588
+#: lib/rpmdb.c:615
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: lib/rpmdb.c:596
+#: lib/rpmdb.c:623
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "name インデックス削除します\n"
 
-#: lib/rpmdb.c:600 lib/rpmdb.c:775
+#: lib/rpmdb.c:627 lib/rpmdb.c:812
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:719
+#: lib/rpmdb.c:745
 msgid "cannot allocate space for database"
 msgstr "データベース用の空き容量が足りません"
 
-#: lib/rpmdb.c:752
+#: lib/rpmdb.c:789
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:764
+#: lib/rpmdb.c:801
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/rpmdb.c:771
+#: lib/rpmdb.c:808
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:829
+#: lib/rpmdb.c:866
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "アップデート用の %d でヘッダを読めません"
 
-#: lib/rpmdb.c:842
+#: lib/rpmdb.c:879
 msgid "header changed size!"
 msgstr "ヘッダのサイズが変更されました"
 

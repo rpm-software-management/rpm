@@ -13,13 +13,25 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 
 /* this will break if sizeof(int) != 4 */
 /**
- * A single item in an index database.
- * Note: In rpm-3.0.4 and earlier, this structure was passed by value.
+ * A single item from an index database (i.e. the "data returned").
+ * Note: In rpm-3.0.4 and earlier, this structure was passed by value,
+ * and was identical to the "data saved" structure below.
  */
 struct _dbiIndexRecord {
     unsigned int recOffset;		/*!< byte offset of header in db */
     unsigned int fileNumber;		/*!< file array index */
+    int fpNum;				/*!< finger print index */
+    int dbNum;				/*!< database index */
 };
+
+/**
+ * A single item in an index database (i.e. the "data saved").
+ */
+struct _dbiIR {
+    unsigned int recOffset;		/*!< byte offset of header in db */
+    unsigned int fileNumber;		/*!< file array index */
+};
+typedef	struct _dbiIR * DBIR_t;
 
 /**
  * Items retrieved from the index database.
@@ -83,6 +95,37 @@ struct _dbiVec {
  * @return	0 success, 1 not found
  */
     int (*UpdateIndex) (dbiIndex dbi, const char * str, dbiIndexSet set);
+
+/**
+ * Delete item using db->del.
+ * @param dbi	index database handle
+ * @param keyp	key data
+ * @param keylen key data length
+ */
+    int (*del) (dbiIndex dbi, void * keyp, size_t keylen);
+
+/**
+ * Retrieve item using db->get.
+ * @param dbi	index database handle
+ * @param keyp	key data
+ * @param keylen key data length
+ * @param datap	address of data pointer
+ * @param datalen address of data length
+ */
+    int (*get) (dbiIndex dbi, void * keyp, size_t keylen,
+			void ** datap, size_t * datalen);
+
+/**
+ * Save item using db->put.
+ * @param dbi	index database handle
+ * @param keyp	key data
+ * @param keylen key data length
+ * @param datap	data pointer
+ * @param datalen data length
+ */
+    int (*put) (dbiIndex dbi, void * keyp, size_t keylen,
+			void * datap, size_t datalen);
+
 };
 
 /**

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-04-04 06:01-0400\n"
+"POT-Creation-Date: 2000-04-06 10:45-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2787,7 +2787,7 @@ msgstr "wy¶wietl status pokazywanych plików"
 msgid "display a verbose file listing"
 msgstr "wy¶wietl wiêcej informacji o plikach z listy"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:290
+#: lib/rebuilddb.c:34 lib/rpmdb.c:294
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
@@ -2841,20 +2841,20 @@ msgstr "nie mo¿na dodaæ rekordu oryginalnie przy %d"
 msgid "record number %d in database is bad -- skipping."
 msgstr "rekord numer %d w bazie danych jest b³êdny -- rekord pominiêto"
 
-#: lib/rebuilddb.c:152
+#: lib/rebuilddb.c:153
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:161
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: lib/rebuilddb.c:162
+#: lib/rebuilddb.c:163
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "naprawcze zastêpowanie plików w %s plikami z %s"
 
-#: lib/rebuilddb.c:168
+#: lib/rebuilddb.c:169
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
@@ -2943,30 +2943,30 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmdb.c:188
+#: lib/rpmdb.c:190
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: lib/rpmdb.c:200 lib/url.c:445
+#: lib/rpmdb.c:202 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
 
-#: lib/rpmdb.c:214 lib/rpmdb.c:222
+#: lib/rpmdb.c:216 lib/rpmdb.c:224
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:217
 msgid "exclusive"
 msgstr ""
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:225
 msgid "shared"
 msgstr ""
 
-#: lib/rpmdb.c:263
+#: lib/rpmdb.c:267
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2974,66 +2974,66 @@ msgstr ""
 "baza danych jest w starym formacie; u¿yj --rebuilddb aby wygenerowaæ bazê  w "
 "nowym formacie"
 
-#: lib/rpmdb.c:536
+#: lib/rpmdb.c:554
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "pakiet %s nie znaleziony w %s"
 
-#: lib/rpmdb.c:545
+#: lib/rpmdb.c:563
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "pakiet %s nie znaleziony w %s"
 
-#: lib/rpmdb.c:563
+#: lib/rpmdb.c:581
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla poszukiwania"
 
-#: lib/rpmdb.c:582
+#: lib/rpmdb.c:609
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "usuwanie wpisu w bazie\n"
 
-#: lib/rpmdb.c:588
+#: lib/rpmdb.c:615
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "usuwanie indeksu grupy\n"
 
-#: lib/rpmdb.c:596
+#: lib/rpmdb.c:623
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "usuwanie indeksu nazw\n"
 
-#: lib/rpmdb.c:600 lib/rpmdb.c:775
+#: lib/rpmdb.c:627 lib/rpmdb.c:812
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:719
+#: lib/rpmdb.c:745
 msgid "cannot allocate space for database"
 msgstr "nie mo¿na alokowaæ przestrzeni dla bazy danych"
 
-#: lib/rpmdb.c:752
+#: lib/rpmdb.c:789
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:764
+#: lib/rpmdb.c:801
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: lib/rpmdb.c:771
+#: lib/rpmdb.c:808
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:829
+#: lib/rpmdb.c:866
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla uaktualnienia"
 
-#: lib/rpmdb.c:842
+#: lib/rpmdb.c:879
 msgid "header changed size!"
 msgstr "nag³ówek zmieni³ swój rozmiar!"
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-04-04 06:01-0400\n"
+"POT-Creation-Date: 2000-04-06 10:45-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2795,7 +2795,7 @@ msgstr "zobrazii» stav daných súborov"
 msgid "display a verbose file listing"
 msgstr "zobrazi» podrobný zoznam súborov balíka"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:290
+#: lib/rebuilddb.c:34 lib/rpmdb.c:294
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
@@ -2849,20 +2849,20 @@ msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rebuilddb.c:152
+#: lib/rebuilddb.c:153
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rebuilddb.c:160
+#: lib/rebuilddb.c:161
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rebuilddb.c:162
+#: lib/rebuilddb.c:163
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rebuilddb.c:168
+#: lib/rebuilddb.c:169
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
@@ -2951,30 +2951,30 @@ msgstr ")"
 msgid "OK"
 msgstr "V PORIADKU"
 
-#: lib/rpmdb.c:188
+#: lib/rpmdb.c:190
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/rpmdb.c:200 lib/url.c:445
+#: lib/rpmdb.c:202 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/rpmdb.c:214 lib/rpmdb.c:222
+#: lib/rpmdb.c:216 lib/rpmdb.c:224
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: lib/rpmdb.c:215
+#: lib/rpmdb.c:217
 msgid "exclusive"
 msgstr "výhradný"
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:225
 msgid "shared"
 msgstr "zdieµaný"
 
-#: lib/rpmdb.c:263
+#: lib/rpmdb.c:267
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2982,66 +2982,66 @@ msgstr ""
 "existuje databáza v starom formáte; pou¾ite --rebuilddb pre vytvorenie "
 "databázy v novom formáte"
 
-#: lib/rpmdb.c:536
+#: lib/rpmdb.c:554
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:545
+#: lib/rpmdb.c:563
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:563
+#: lib/rpmdb.c:581
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: lib/rpmdb.c:582
+#: lib/rpmdb.c:609
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstraòuje sa záznam z databázy\n"
 
-#: lib/rpmdb.c:588
+#: lib/rpmdb.c:615
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:596
+#: lib/rpmdb.c:623
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:600 lib/rpmdb.c:775
+#: lib/rpmdb.c:627 lib/rpmdb.c:812
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:719
+#: lib/rpmdb.c:745
 msgid "cannot allocate space for database"
 msgstr "nie je mo¾né prideli» miesto pre databázu"
 
-#: lib/rpmdb.c:752
+#: lib/rpmdb.c:789
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:764
+#: lib/rpmdb.c:801
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:771
+#: lib/rpmdb.c:808
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:829
+#: lib/rpmdb.c:866
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre úpravu"
 
-#: lib/rpmdb.c:842
+#: lib/rpmdb.c:879
 msgid "header changed size!"
 msgstr "zmenila sa veµkos» hlavièky!"
 

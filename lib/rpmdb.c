@@ -1,5 +1,7 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/signal.h>
@@ -24,8 +26,8 @@ extern int _noDirTokens;
 #define	_DBI_MAJOR	-1
 
 struct _dbiIndex rpmdbi[] = {
-    { "packages.rpm", 0,
-	DBI_RECNO, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+    { "packages.db3", 0,
+	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 #define	RPMDBI_PACKAGES		0
     { "nameindex.rpm", RPMTAG_NAME,
@@ -57,7 +59,7 @@ struct _dbiIndex rpmdbi[] = {
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
 #define	RPMDBI_TRIGGER		7
     { NULL }
-#define	RPMDBI_MIN		1	/* XXX no package headers yet */
+#define	RPMDBI_MIN		0
 #define	RPMDBI_MAX		8
 };
 
@@ -234,8 +236,10 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	    dbiIndex dbiTemplate;
 
 	    dbiTemplate = rpmdbi + dbix;
+
 	    rc = openDbFile(prefix, dbpath, dbiTemplate, justcheck, mode,
 			&db->_dbi[dbix]);
+	    if (dbix == 0) rc = 0;	/* XXX HACK */
 	    if (rc)
 		continue;
 
@@ -318,7 +322,7 @@ void rpmdbClose (rpmdb db)
     int dbix;
 
     if (db->pkgs != NULL) Fclose(db->pkgs);
-    for (dbix = RPMDBI_MIN; dbix < RPMDBI_MAX; dbix++) {
+    for (dbix = RPMDBI_MAX; --dbix >= RPMDBI_MAX; ) {
 	if (db->_dbi[dbix] == NULL)
 	    continue;
     	dbiCloseIndex(db->_dbi[dbix]);
@@ -394,6 +398,20 @@ static Header doGetRecord(rpmdb db, unsigned int offset, int pristine)
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset)
 {
+    int _use_falloc = rpmExpandNumeric("%{_db3_use_falloc}");
+    dbiIndex dbi;
+
+    if (!_use_falloc && (dbi = db->_dbi[RPMDBI_PACKAGES]) != NULL) {
+	void * uh;
+	size_t uhlen;
+	int rc;
+
+	rc = (*dbi->dbi_vec->get) (dbi, &offset, sizeof(offset), &uh, &uhlen);
+	if (rc)
+	    return NULL;
+	return headerLoad(uh);
+    }
+
     return doGetRecord(db, offset, 0);
 }
 
@@ -437,14 +455,14 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     *matches = dbiCreateIndexSet();
     rec = dbiReturnIndexRecordInstance(0, 0);
     i = 0;
-    while (i < dbiIndexSetCount(allMatches)) {
+    while (i < allMatches->count) {
 	const char ** baseNames, ** dirNames;
 	int_32 * dirIndexes;
-	unsigned int recoff = dbiIndexRecordOffset(allMatches, i);
+	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
 	unsigned int prevoff;
 	Header h;
 
-	if ((h = rpmdbGetRecord(db, recoff)) == NULL) {
+	if ((h = rpmdbGetRecord(db, offset)) == NULL) {
 	    i++;
 	    continue;
 	}
@@ -467,11 +485,11 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 		dbiAppendIndexRecord(*matches, rec);
 	    }
 
-	    prevoff = recoff;
+	    prevoff = offset;
 	    i++;
-	    recoff = dbiIndexRecordOffset(allMatches, i);
-	} while (i < dbiIndexSetCount(allMatches) && 
-		(i == 0 || recoff == prevoff));
+	    offset = dbiIndexRecordOffset(allMatches, i);
+	} while (i < allMatches->count && 
+		(i == 0 || offset == prevoff));
 
 	free(baseNames);
 	free(dirNames);
@@ -489,7 +507,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 
     fpCacheFree(fpc);
 
-    if (dbiIndexSetCount(*matches) == 0) {
+    if ((*matches)->count == 0) {
 	dbiFreeIndexSet(*matches);
 	*matches = NULL; 
 	return 1;
@@ -577,6 +595,15 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	    int rpmcnt = 0;
 
 	    dbi = db->_dbi[dbix];
+
+if (_debug)
+fprintf(stderr, "*** removing dbix %d tag %d offset 0x%x\n", dbix, dbi->dbi_rpmtag, offset);
+	    if (dbi->dbi_rpmtag == 0) {
+		/* XXX TODO: remove h to packages.rpm */
+		(void) (*dbi->dbi_vec->del) (dbi, &offset, sizeof(offset));
+		continue;
+	    }
+	
 	    if (!headerGetEntry(h, dbi->dbi_rpmtag, &rpmtype,
 		(void **) &rpmvals, &rpmcnt)) {
 		rpmMessage(RPMMESS_DEBUG, _("removing 0 %s entries.\n"),
@@ -690,13 +717,12 @@ int rpmdbAdd(rpmdb db, Header h)
     int rc = 0;
 
     /*
-     * If old style filenames is requested, the basenames need to be
+     * If old style filename tags is requested, the basenames need to be
      * retrieved early, and the header needs to be converted before
      * being written to the package header database.
      */
 
-    headerGetEntry(h, RPMTAG_BASENAMES, &type, (void **) 
-		    &baseNames, &count);
+    headerGetEntry(h, RPMTAG_BASENAMES, &type, (void **) &baseNames, &count);
 
     if (_noDirTokens)
 	expandFilelist(h);
@@ -734,6 +760,17 @@ int rpmdbAdd(rpmdb db, Header h)
 
 	    dbi = db->_dbi[dbix];
 
+if (_debug)
+fprintf(stderr, "*** adding dbix %d tag %d offset 0x%x\n", dbix, dbi->dbi_rpmtag, offset);
+	    if (dbi->dbi_rpmtag == 0) {
+		size_t uhlen = headerSizeof(h, HEADER_MAGIC_NO);
+		void * uh = headerUnload(h);
+		/* XXX TODO: add h to packages.rpm */
+		(void) (*dbi->dbi_vec->put) (dbi, &offset, sizeof(offset), uh, uhlen);
+		free(uh);
+		continue;
+	    }
+	
 	    /* XXX preserve legacy behavior */
 	    switch (dbi->dbi_rpmtag) {
 	    case RPMTAG_BASENAMES:
@@ -925,16 +962,20 @@ int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char *
     return rc;
 }
 
-struct intMatch {
+#ifdef	DYING
+typedef struct intMatch {
     unsigned int recOffset;
     unsigned int fileNumber;
     int fpNum;
-};
+} IM_t;
+#else
+typedef	struct _dbiIndexRecord IM_t;
+#endif
 
 static int intMatchCmp(const void * one, const void * two)
 {
-    const struct intMatch * a = one;
-    const struct intMatch * b = two;
+    const IM_t * a = one;
+    const IM_t * b = two;
 
     if (a->recOffset < b->recOffset)
 	return -1;
@@ -949,7 +990,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 {
     int numIntMatches = 0;
     int intMatchesAlloced = numItems;
-    struct intMatch * intMatches;
+    IM_t * intMatches;
     int i, j;
     int start, end;
     int num;
@@ -980,18 +1021,20 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    return 1;
 	    /*@notreached@*/ break;
 	case 0:
-	    if ((numIntMatches + dbiIndexSetCount(matches)) >= intMatchesAlloced) {
-		intMatchesAlloced += dbiIndexSetCount(matches);
+	    if ((numIntMatches + matches->count) >= intMatchesAlloced) {
+		intMatchesAlloced += matches->count;
 		intMatchesAlloced += intMatchesAlloced / 5;
 		intMatches = xrealloc(intMatches, 
 				     sizeof(*intMatches) * intMatchesAlloced);
 	    }
 
-	    for (j = 0; j < dbiIndexSetCount(matches); j++) {
+	    for (j = 0; j < matches->count; j++) {
+		IM_t * im;
 		
-		intMatches[numIntMatches].recOffset = dbiIndexRecordOffset(matches, j);
-		intMatches[numIntMatches].fileNumber = dbiIndexRecordFileNumber(matches, j);
-		intMatches[numIntMatches].fpNum = i;
+		im = intMatches + numIntMatches;
+		im->recOffset = dbiIndexRecordOffset(matches, j);
+		im->fileNumber = dbiIndexRecordFileNumber(matches, j);
+		im->fpNum = i;
 		numIntMatches++;
 	    }
 
@@ -1015,7 +1058,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
     /* For each set of files matched in a package ... */
     for (start = 0; start < numIntMatches; start = end) {
-	struct intMatch * im;
+	IM_t * im;
 	Header h;
 	fingerPrint * fps;
 

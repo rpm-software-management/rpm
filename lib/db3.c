@@ -489,21 +489,28 @@ static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
     } else
 #endif
     rc = db->get(db, NULL, &key, &data, 0);
-#if 0
     _printit = (rc == DB_NOTFOUND ? 0 : _debug);
-#else
-    _printit = _debug;
-#endif
     rc = cvtdberr(dbi, "db->get", rc, _printit);
 #else
     rc = db->get(db, &key, &data, 0);
 #endif
 
     if (rc == 0 && set) {
+	DBIR_t dbir = data.data;
+	int i;
+
 	*set = dbiCreateIndexSet();
-	(*set)->recs = xmalloc(data.size);
-	memcpy((*set)->recs, data.data, data.size);
-	(*set)->count = data.size / sizeof(*(*set)->recs);
+	(*set)->count = data.size / sizeof(*dbir);
+	(*set)->recs = xmalloc((*set)->count * sizeof(*((*set)->recs)));
+
+	/* Convert to database internal format */
+	for (i = 0; i < (*set)->count; i++) {
+	    /* XXX TODO: swab data */
+	    (*set)->recs[i].recOffset = dbir[i].recOffset;
+	    (*set)->recs[i].fileNumber = dbir[i].fileNumber;
+	    (*set)->recs[i].fpNum = 0;
+	    (*set)->recs[i].dbNum = 0;
+	}
     }
     return rc;
 }
@@ -525,6 +532,16 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
     if (set->count) {
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
+	DBIR_t dbir = alloca(set->count * sizeof(*dbir));
+	int i;
+
+	/* Convert to database internal format */
+	for (i = 0; i < set->count; i++) {
+	    /* XXX TODO: swab data */
+	    dbir[i].recOffset = set->recs[i].recOffset;
+	    dbir[i].fileNumber = set->recs[i].fileNumber;
+	}
+	
 #if defined(__USE_DB3)
 	if (dbi->dbi_dbcursor) {
 	    DBC *dbcursor = dbi->dbi_dbcursor;
@@ -532,16 +549,16 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 
 	    rc = dbcursor->c_get(dbcursor, &key, &data, (DB_SET|DB_RMW));
 	    xx = cvtdberr(dbi, "db->c_get RMW put", rc, _debug);
-	    data.data = set->recs;
-	    data.size = set->count * sizeof(*(set->recs));
+	    data.data = dbir;
+	    data.size = set->count * sizeof(*dbir);
 	    rc = dbcursor->c_put(dbcursor, &key, &data,
 		(rc == DB_NOTFOUND ? DB_KEYFIRST : DB_CURRENT));
 	    rc = cvtdberr(dbi, "db->c_put RMW", rc, _debug);
 	} else
 #endif
 	{
-	    data.data = set->recs;
-	    data.size = set->count * sizeof(*(set->recs));
+	    data.data = dbir;
+	    data.size = set->count * sizeof(*dbir);
 	    rc = db->put(db, NULL, &key, &data, 0);
 	    rc = cvtdberr(dbi, "db->put", rc, _debug);
 	}
@@ -578,6 +595,83 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
     return rc;
 }
 /*@=compmempass@*/
+
+static int db3del(dbiIndex dbi, void * keyp, size_t keylen)
+{
+    DB_TXN * txnid = NULL;
+    DBT key;
+    DB * db = GetDB(dbi);
+    int rc;
+
+    _mymemset(&key, 0, sizeof(key));
+
+    key.data = keyp;
+    key.size = keylen;
+
+    rc = db->del(db, txnid, &key, 0);
+if (_debug)
+fprintf(stderr, "*** db3del(%p, %p,%d) rc %d\n", dbi, keyp, keylen, rc);
+    rc = cvtdberr(dbi, "db->del", rc, _debug);
+
+    return rc;
+}
+
+static int db3get(dbiIndex dbi, void * keyp, size_t keylen,
+		void ** datap, size_t * datalen)
+{
+    DB_TXN * txnid = NULL;
+    DBT key, data;
+    DB * db = GetDB(dbi);
+    int _printit;
+    int rc;
+
+    if (datap) *datap = NULL;
+    if (datalen) *datalen = 0;
+    _mymemset(&key, 0, sizeof(key));
+    _mymemset(&data, 0, sizeof(data));
+
+    key.data = keyp;
+    key.size = keylen;
+    data.data = NULL;
+    data.size = 0;
+
+    rc = db->get(db, txnid, &key, &data, 0);
+    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
+    rc = cvtdberr(dbi, "db->get", rc, _printit);
+
+    if (rc == 0) {
+	*datap = data.data;
+	*datalen = data.size;
+    }
+if (_debug)
+fprintf(stderr, "*** db3get(%p, %p,%d, %p,%d) rc %d\n", dbi, keyp, keylen, *datap, *datalen, rc);
+
+    return rc;
+}
+
+static int db3put(dbiIndex dbi, void * keyp, size_t keylen,
+		void * datap, size_t datalen)
+{
+    DB_TXN * txnid = NULL;
+    DBT key, data;
+    DB * db = GetDB(dbi);
+    int rc;
+
+    _mymemset(&key, 0, sizeof(key));
+    _mymemset(&data, 0, sizeof(data));
+
+    key.data = keyp;
+    key.size = keylen;
+    data.data = datap;
+    data.size = datalen;
+
+    rc = db->put(db, txnid, &key, &data, 0);
+if (_debug)
+fprintf(stderr, "*** db3put(%p, %p,%d, %p,%d) rc %d\n", dbi, keyp, keylen, datap, datalen, rc);
+    rc = cvtdberr(dbi, "db->get", rc, _debug);
+
+    return rc;
+}
 
 static int db3open(dbiIndex dbi)
 {
@@ -637,8 +731,13 @@ static int db3open(dbiIndex dbi)
 		rc = cvtdberr(dbi, "db->set_flags", rc, _debug);
 	    }
 	    dbi->dbi_dbinfo = NULL;
-	    rc = db->open(db, dbfile, NULL, dbi_to_dbtype(dbi->dbi_type),
+	    if (dbi->dbi_rpmtag == 0) {
+		rc = db->open(db, dbfile, "packages.rpm", dbi_to_dbtype(dbi->dbi_type),
 			dbflags, dbi->dbi_perms);
+	    } else {
+		rc = db->open(db, "packages.db3", dbfile, dbi_to_dbtype(dbi->dbi_type),
+			dbflags, dbi->dbi_perms);
+	    }
 	    rc = cvtdberr(dbi, "db->open", rc, _debug);
 
 	    __do_dbcursor_rmw = rpmExpandNumeric("%{_db3_dbcursor_rmw}");
@@ -693,7 +792,8 @@ fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, dbfile);
 
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db3open, db3close, db3sync, db3GetFirstKey, db3SearchIndex, db3UpdateIndex
+    db3open, db3close, db3sync, db3GetFirstKey, db3SearchIndex, db3UpdateIndex,
+    db3del, db3get, db3put
 };
 
 #endif	/* DB_VERSION_MAJOR == 3 */

@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.49 2000/04/03 14:24:55 jbj Exp $
+# $Id: macros.in,v 1.50 2000/04/06 15:20:29 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -206,6 +206,9 @@
 #	2	native db2 interface.
 #	3	native db3 interface.
 %_preferdb		3
+%_db3_flags		create:mpool
+%_db3_dbenv_remove	yes
+%_db3_use_falloc	no
 
 # Filter duplicate entries in db (needed only to correct bug pre rpm-3.0.4)
 %_filterdbdups		no
