@@ -39,6 +39,7 @@
 	- add versions to prereq.
 	- add syntax sensitive implict prereq on rpm-3.0.3.
 	- fix: don't successfully match with strncasecmp("sparc", "sparc64", 5)
+	- add sparcv9 architecture.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

@@ -925,6 +925,29 @@ static void defaultMachine(char ** arch, char ** os) {
 	}
 #	endif	/* hpux */
 
+#	if defined(__linux__) && defined(__sparc__)
+	if (!strcmp(un.machine, "sparc")) {
+	    #define PERS_LINUX		0x00000000
+	    #define PERS_LINUX_32BIT	0x00800000
+	    #define PERS_LINUX32	0x00000008
+
+	    extern int personality(unsigned long);
+	    int oldpers;
+	    
+	    oldpers = personality(PERS_LINUX_32BIT);
+	    if (oldpers != -1) {
+		if (personality(PERS_LINUX) != -1) {
+		    uname(&un);
+		    if (! strcmp(un.machine, "sparc64")) {
+			strcpy(un.machine, "sparcv9");
+			oldpers = PERS_LINUX32;
+		    }
+		}
+		personality(oldpers);
+	    }
+	}
+#	endif	/* sparc*-linux */
+
 	/* the uname() result goes through the arch_canon table */
 	canon = lookupInCanonTable(un.machine,
 				   tables[RPM_MACHTABLE_INSTARCH].canons,

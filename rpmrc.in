@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.13 1999/07/03 14:52:06 jbj Exp $
+# $Id: rpmrc.in,v 2.14 1999/09/07 12:32:10 jbj Exp $
 
 #############################################################
 
@@ -10,6 +10,7 @@
 optflags: i386 -O2 -m486 -fno-strength-reduce
 optflags: alpha -O2
 optflags: sparc -O2
+optflags: sparcv9 -O2 -mv8 -mtune=ultrasparc
 optflags: sparc64 -O2
 optflags: m68k -O2 -fomit-frame-pointer
 optflags: ppc -O2 -fsigned-char
@@ -45,7 +46,8 @@ arch_canon: 	sparc:	sparc	3
 arch_canon: 	sun4:	sparc	3
 arch_canon: 	sun4m:	sparc	3
 arch_canon: 	sun4c:	sparc	3
-arch_canon:     sun4d:  sparc   3
+arch_canon:	sun4d:  sparc   3
+arch_canon:   sparcv9: sparcv9	3
 # This is really a place holder for MIPS.
 arch_canon:	mipseb:	mipseb	4
 arch_canon:	ppc:	ppc	5
@@ -128,6 +130,7 @@ buildarchtranslate: powerppc: ppc
 buildarchtranslate: sun4c: sparc
 buildarchtranslate: sun4d: sparc
 buildarchtranslate: sun4m: sparc
+buildarchtranslate: sparcv9: sparc
 buildarchtranslate: sun4u: sparc64
 
 buildarchtranslate: atarist: m68kmint
@@ -167,7 +170,8 @@ arch_compat: sun4c: sparc
 arch_compat: sun4d: sparc
 arch_compat: sun4m: sparc
 arch_compat: sun4u: sparc64
-arch_compat: sparc64: sparc
+arch_compat: sparc64: sparcv9
+arch_compat: sparcv9: sparc
 arch_compat: sparc: noarch
 
 arch_compat: ppc: rs6000
@@ -232,6 +236,7 @@ buildarch_compat: sun4d: noarch
 buildarch_compat: sun4m: noarch
 buildarch_compat: sun4u: noarch
 buildarch_compat: sparc64: noarch
+buildarch_compat: sparcv9: sparc
 buildarch_compat: sparc: noarch
 buildarch_compat: alpha: noarch
 buildarch_compat: m68k: noarch
