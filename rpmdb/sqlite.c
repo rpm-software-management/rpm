@@ -1090,25 +1090,29 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     DB * db = dbi->dbi_db;
 /*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     SCP_t scp;
-    int cleanup = 0;   
+    int copen_done = 0;   
     int rc = 0;
 
 assert(sqldb->db != NULL);
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
+/* XXX modern rpm always uses copen/cclose. */
+assert(dbcursor != NULL);
     if ( dbcursor == NULL ) {
 	rc = sql_copen ( dbi, NULL, &dbcursor, 0 );
-	cleanup = 1;
+	copen_done = 1;
     }
 
     /* Find our version of the db3 cursor */
     scp = sqldb->head_cursor;
+/* XXX no need to chain cursors with copen/cclose. */
+assert(scp != NULL && scp->name == dbcursor);
     while ( scp != NULL && scp->name != dbcursor ) {
 	scp = scp->next;
     }
 
-    assert(scp != NULL);
+assert(scp != NULL);
 if (noisy)
 fprintf(stderr, "\tcget(%s) scp %p\n", dbi->dbi_subfile, scp);
 
@@ -1117,7 +1121,7 @@ fprintf(stderr, "\tcget(%s) scp %p\n", dbi->dbi_subfile, scp);
      * scan the whole DB
      */
 
-    if ( rc == 0 && key->size == 0 ) {
+    if (rc == 0 && key->size == 0) {
 	scp->all++;
     }
 
@@ -1181,11 +1185,13 @@ fprintf(stderr, "\tcget(%s) got %d rows, %d columns\n",
 	dbi->dbi_subfile, scp->nr, scp->nc);
     }
 
-    if (rc == 0 && ! scp->av)
+    if (rc == 0 && scp->av == NULL)
 	rc = DB_NOTFOUND;
 
 repeat:
-    if ( rc == 0 ) {
+    if (rc != 0)
+	goto exit;
+    {
 	scp->rx++;
 	if ( scp->rx > scp->nr )
 	    rc = DB_NOTFOUND; /* At the end of the list */
@@ -1247,12 +1253,13 @@ fprintf(stderr, "\tcget(%s) found data 0x%x (%d)\n", dbi->dbi_subfile,
 	}
     }
 
+exit:
     if (rc == DB_NOTFOUND) {
 if (_debug)
 fprintf(stderr, "\tcget(%s) not found\n", dbi->dbi_subfile);
     }
 
-    if (cleanup)
+    if (copen_done)
 	/*@-temptrans@*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=temptrans@*/
 
     return rc;
