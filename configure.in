@@ -356,6 +356,7 @@ elif echo "$build_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
 	RPM=rpm.shared
 	AC_DEFINE(NEED_STRINGS_H)
+	AC_DEFINE(HAVE_STRUCT_MNTTAB)
 elif echo "$build_os" | grep sunos > /dev/null; then
 	echo "hacking things up for sunos"
 	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"

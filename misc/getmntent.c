@@ -11,6 +11,16 @@
 #define COMMENTCHAR '#'
 #endif
 
+#if HAVE_STRUCT_MNTTAB {
+our_mntent * getmntent(FILE *filep) {
+    static struct mnttab entry;
+    static our_mntent item = { entry.mt_filsys };
+
+    if (!fread(&entry, sizeof(entry), 1, filep)) return NULL;
+
+    return &item;
+}
+#else {
 our_mntent *getmntent(FILE *filep) {
     static our_mntent item = { NULL };
     char buf[1024], * start;
@@ -55,4 +65,5 @@ our_mntent *getmntent(FILE *filep) {
     }
 
     return NULL;
+}
 }

@@ -90,4 +90,7 @@
 /* Define as one if you have mntctl() (only aix?) */
 #define HAVE_MNTCTL 0
 
+/* Define as one if you have "struct mnttab" (only sco?) */
+#define HAVE_STRUCT_MNTTAB 0
+
 #endif

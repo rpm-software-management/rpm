@@ -62,8 +62,8 @@ extern void *myrealloc(void *, size_t);
 #define lchown chown
 #endif
 
-#if HAVE_MNTENT_H || !(HAVE_GETMNTENT)
-# if HAVE_MNTENT_H
+#if HAVE_MNTENT_H || !(HAVE_GETMNTENT) || HAVE_STRUCT_MNTTAB
+# if HAVE_MNTENT_H || HAVE_STRUCT_MNTTAB
 #  include <mntent.h>
 #  define our_mntent struct mntent
 #  define our_mntdir mnt_dir
@@ -84,6 +84,7 @@ extern void *myrealloc(void *, size_t);
 # define GETMNTENT_TWO 1
 # define our_mntent struct mnttab
 # define our_mntdir mnt_mountp
+#define 
 #else if !HAVE_MNTCTL
 # error Neither mntent.h, mnttab.h, or mntctl() exists. I cannot build on this system.
 #endif
