@@ -458,7 +458,7 @@ int main(int argc, char ** argv) {
 		    fprintf(stderr, "Pass phrase check failed\n");
 		    exit(1);
 		} else {
-		    message(MESS_VERBOSE, "Pass phrase is good.\n");
+		    fprintf(stderr, "Pass phrase is good.\n");
 		    passPhrase = strdup(passPhrase);
 		}
 	    }
