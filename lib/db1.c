@@ -23,7 +23,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
-/* XXX remap DB3 types back into DB0 types */
+/* XXX remap DB3 types back into DB1 types */
 static inline DBTYPE db3_to_dbtype(int dbitype)
 {
     switch(dbitype) {
@@ -36,7 +36,7 @@ static inline DBTYPE db3_to_dbtype(int dbitype)
     /*@notreached@*/ return DB_HASH;
 }
 
-char * db0basename (int rpmtag) {
+char * db1basename (int rpmtag) {
     char * base = NULL;
     switch (rpmtag) {
     case 0:			base = "packages.rpm";		break;
@@ -54,10 +54,6 @@ char * db0basename (int rpmtag) {
       }	break;
     }
     return xstrdup(base);
-}
-
-static inline /*@observer@*/ /*@null@*/ DB * GetDB(dbiIndex dbi) {
-    return ((DB *)dbi->dbi_db);
 }
 
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
@@ -78,8 +74,8 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
     return rc;
 }
 
-static int db0sync(dbiIndex dbi, unsigned int flags) {
-    DB * db = GetDB(dbi);
+static int db1sync(dbiIndex dbi, unsigned int flags) {
+    DB * db = dbi->dbi_db;
     int rc = 0;
 
     if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
@@ -107,7 +103,7 @@ static int db0sync(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-static int db0byteswapped(dbiIndex dbi)
+static int db1byteswapped(dbiIndex dbi)
 {
     return 0;
 }
@@ -180,16 +176,16 @@ exit:
     return uh;
 }
 
-static int db0copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags) {
+static int db1copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags) {
     return 0;
 }
 
-static int db0cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags) {
+static int db1cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags) {
     dbi->dbi_lastoffset = 0;
     return 0;
 }
 
-static int db0cget(dbiIndex dbi, void ** keyp, size_t * keylen,
+static int db1cget(dbiIndex dbi, void ** keyp, size_t * keylen,
                 void ** datap, size_t * datalen, unsigned int flags)
 {
     DBT key, data;
@@ -228,7 +224,7 @@ static int db0cget(dbiIndex dbi, void ** keyp, size_t * keylen,
 	    if (offset == 0)
 		return -1;
 	    offset--;	/* XXX hack: caller will increment */
-	    /* XXX hack: return offset as data, free in db0cput */
+	    /* XXX hack: return offset as data, free in db1cput */
 	    data.data = xmalloc(sizeof(offset));
 	    memcpy(data.data, &offset, sizeof(offset));
 	    data.size = sizeof(offset);
@@ -252,7 +248,7 @@ static int db0cget(dbiIndex dbi, void ** keyp, size_t * keylen,
 	} else {
 	    rc = db->get(db, &key, &data, 0);
 	    _printit = (rc == 1 ? 0 : _debug);
-	    rc = cvtdberr(dbi, "db0cget", rc, _printit);
+	    rc = cvtdberr(dbi, "db1cget", rc, _printit);
 	}
     }
 
@@ -276,7 +272,7 @@ static int db0cget(dbiIndex dbi, void ** keyp, size_t * keylen,
     return rc;
 }
 
-static int db0cdel(dbiIndex dbi, const void * keyp, size_t keylen,
+static int db1cdel(dbiIndex dbi, const void * keyp, size_t keylen,
 		unsigned int flags)
 {
     int rc = 0;
@@ -287,7 +283,7 @@ static int db0cdel(dbiIndex dbi, const void * keyp, size_t keylen,
 	fadFree(dbi->dbi_pkgs, offset);
     } else {
 	DBT key;
-	DB * db = GetDB(dbi);
+	DB * db = dbi->dbi_db;
 
 	_mymemset(&key, 0, sizeof(key));
 
@@ -301,7 +297,7 @@ static int db0cdel(dbiIndex dbi, const void * keyp, size_t keylen,
     return rc;
 }
 
-static int db0cput(dbiIndex dbi, const void * keyp, size_t keylen,
+static int db1cput(dbiIndex dbi, const void * keyp, size_t keylen,
 		const void * datap, size_t datalen, unsigned int flags)
 {
     DBT key, data;
@@ -320,7 +316,7 @@ static int db0cput(dbiIndex dbi, const void * keyp, size_t keylen,
 	memcpy(&offset, key.data, sizeof(offset));
 
 	if (offset == 0) {	/* XXX simulated offset 0 record */
-	    /* XXX hack: return offset as data, free in db0cput */
+	    /* XXX hack: return offset as data, free in db1cput */
 	    if (data.size == sizeof(offset)) {
 		free(data.data);
 	    }
@@ -337,8 +333,7 @@ static int db0cput(dbiIndex dbi, const void * keyp, size_t keylen,
 	    headerFree(h);
 	}
     } else {
-	DB * db = GetDB(dbi);
-	int xx;
+	DB * db = dbi->dbi_db;
 
 	rc = db->put(db, &key, &data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
@@ -347,10 +342,10 @@ static int db0cput(dbiIndex dbi, const void * keyp, size_t keylen,
     return rc;
 }
 
-static int db0close(dbiIndex dbi, unsigned int flags) {
-    DB * db = GetDB(dbi);
+static int db1close(dbiIndex dbi, unsigned int flags) {
+    DB * db = dbi->dbi_db;
     rpmdb rpmdb = dbi->dbi_rpmdb;
-    const char * base = db0basename(dbi->dbi_rpmtag);
+    const char * base = db1basename(dbi->dbi_rpmtag);
     const char * urlfn = rpmGenPath(rpmdb->db_root, rpmdb->db_home, base);
     const char * fn;
     int rc = 0;
@@ -397,7 +392,7 @@ static int db0close(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 {
     const char * base = NULL;
     const char * urlfn = NULL;
@@ -409,8 +404,9 @@ static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	*dbip = NULL;
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	return 1;
+    dbi->dbi_major = DB_VERSION_MAJOR;
 
-    base = db0basename(rpmtag);
+    base = db1basename(rpmtag);
     urlfn = rpmGenPath(rpmdb->db_root, rpmdb->db_home, base);
     (void) urlPath(urlfn, &fn);
     if (!(fn && *fn != '\0')) {
@@ -423,7 +419,6 @@ static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		urlfn, dbi->dbi_mode);
 
     if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
-	struct flock l;
 	FD_t pkgs;
 
 	pkgs = fadOpen(fn, dbi->dbi_mode, dbi->dbi_perms);
@@ -434,16 +429,21 @@ static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    goto exit;
 	}
 
-	l.l_whence = 0;
-	l.l_start = 0;
-	l.l_len = 0;
-	l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
+	/* XXX HACK: fcntl lock if db3 (DB_INIT_CDB | DB_INIT_LOCK) specified */
+	if (dbi->dbi_lockdbfd || (dbi->dbi_eflags & 0x30)) {
+	    struct flock l;
 
-	if (Fcntl(pkgs, F_SETLK, (void *) &l)) {
+	    l.l_whence = 0;
+	    l.l_start = 0;
+	    l.l_len = 0;
+	    l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
+
+	    if (Fcntl(pkgs, F_SETLK, (void *) &l)) {
 	    rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"),
 		((dbi->dbi_mode & O_RDWR) ? _("exclusive") : _("shared")));
 	    rc = 1;
 	    goto exit;
+	    }
 	}
 
 	dbi->dbi_pkgs = pkgs;
@@ -475,8 +475,8 @@ exit:
     return rc;
 }
 
-struct _dbiVec db0vec = {
+struct _dbiVec db1vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db0open, db0close, db0sync, db0copen, db0cclose, db0cdel, db0cget, db0cput,
-    db0byteswapped
+    db1open, db1close, db1sync, db1copen, db1cclose, db1cdel, db1cget, db1cput,
+    db1byteswapped
 };

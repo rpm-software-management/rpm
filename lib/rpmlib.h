@@ -348,9 +348,18 @@ int rpmdbInit(const char * root, int perms);
     /* nonzero on error */
 
 /**
- * @param db		rpm database
+ * Close all database indices and free rpmdb.
+ * @param rpmdb		rpm database
+ * @return		0 always
  */
-void rpmdbClose ( /*@only@*/ rpmdb db);
+int rpmdbClose ( /*@only@*/ rpmdb rpmdb);
+
+/**
+ * Sync all database indices.
+ * @param rpmdb		rpm database
+ * @return		0 always
+ */
+int rpmdbSync (rpmdb rpmdb);
 
 /**
  * Return number of instances of package in rpm database.

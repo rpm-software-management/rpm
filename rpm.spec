@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.13
+Release: 0.14
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -157,6 +157,21 @@ fi
 /usr/lib/rpm/rpmrc
 /usr/lib/rpm/vpkg-provides.sh
 /usr/lib/rpm/vpkg-provides2.sh
+%ifarch i386 i486 i586 i686
+/usr/lib/rpm/i[3456]86*
+%endif
+%ifarch alpha
+/usr/lib/rpm/alpha*
+%endif
+%ifarch sparc sparc64
+/usr/lib/rpm/sparc*
+%endif
+%ifarch ia64
+/usr/lib/rpm/ia64*
+%endif
+%ifarch powerpc ppc
+/usr/lib/rpm/powerpc*
+%endif
 
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
@@ -219,6 +234,11 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Mon May  1 2000 Jeff Johnson <jbj@redhat.com>
+- Rename db0.c to db1.c, resurrect db2.c (from db3.c).
+- Add ia64 and sparc64 changes.
+- rpm.spec: add per-platform sub-directories.
+
 * Fri Apr 28 2000 Jeff Johnson <jbj@redhat.com>
 - Filter DB_INCOMPLETE on db->sync, it's usually harmless.
 - Add per-transaction cache of resolved dependencies (aka Depends).

@@ -158,8 +158,11 @@ struct _dbiIndex {
     int			dbi_tear_down;
     int			dbi_use_cursors;
     int			dbi_get_rmw_cursor;
-    int			dbi_no_fsync;
-    int			dbi_temporary;
+    int			dbi_no_fsync;	/*<! no-op fsync for db */
+    int			dbi_no_dbsync;	/*<! don't call dbiSync */
+    int			dbi_lockdbfd;	/*<! do fcntl lock on db fd */
+    int			dbi_temporary;	/*<! non-persistent */
+    int			dbi_debug;
 
 	/* dbenv parameters */
     int			dbi_lorder;
@@ -360,7 +363,7 @@ int dbiByteSwapped(dbiIndex dbi);
  * @param rpmtag	rpm tag
  * @return		base file name
  */
-char * db0basename(int rpmtag);
+char * db1basename(int rpmtag);
 
 /**
  */

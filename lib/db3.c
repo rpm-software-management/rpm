@@ -82,7 +82,10 @@ struct dbOption rdbOptions[] = {
  { "usecursors",POPT_ARG_NONE,		&db3dbi.dbi_use_cursors, 0 },
  { "rmwcursor",	POPT_ARG_NONE,		&db3dbi.dbi_get_rmw_cursor, 0 },
  { "nofsync",	POPT_ARG_NONE,		&db3dbi.dbi_no_fsync, 0 },
+ { "nodbsync",	POPT_ARG_NONE,		&db3dbi.dbi_no_dbsync, 0 },
+ { "lockdbfd",	POPT_ARG_NONE,		&db3dbi.dbi_lockdbfd, 0 },
  { "temporary",	POPT_ARG_NONE,		&db3dbi.dbi_temporary, 0 },
+ { "debug",	POPT_ARG_NONE,		&db3dbi.dbi_debug, 0 },
 
  { "cachesize",	POPT_ARG_INT,		&db3dbi.dbi_cachesize, 0 },
  { "errpfx",	POPT_ARG_STRING,	&db3dbi.dbi_errpfx, 0 },
@@ -197,7 +200,8 @@ void db3Free(dbiIndex dbi) {
     }
 }
 
-static const char *_dbi_config_default = "create:mpool:hash:perms=0644:teardown";
+static const char *db3_config_default =
+    "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:mp_size=512Kb:pagesize=512:perms=0644";
 
 dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 {
@@ -214,7 +218,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	}
 	dbOpts = rpmExpand("%{_dbi_config}", NULL);
 	if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
-	    dbOpts = xstrdup(_dbi_config_default);
+	    dbOpts = rpmExpand(db3_config_default, NULL);
 	}
     }
 
@@ -624,9 +628,7 @@ static int db3c_get(dbiIndex dbi, DBC * dbcursor,
     int rmw;
 
 #ifdef	NOTYET
-    if ((dbi->dbi_eflags & DB_INIT_CDB) &&
-		!(dbi->dbi_oflags & DB_RDONLY) &&
-		!(dbi->dbi_mode & O_RDWR))
+    if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
 	rmw = DB_RMW;
     else
 #endif
@@ -667,9 +669,7 @@ static inline int db3c_open(dbiIndex dbi, DBC ** dbcp)
     int rc;
 
 #if defined(__USE_DB3)
-    if ((dbi->dbi_eflags & DB_INIT_CDB) &&
-		!(dbi->dbi_oflags & DB_RDONLY) &&
-		!(dbi->dbi_mode & O_RDWR))
+    if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
 	flags = DB_WRITECURSOR;
     else
 	flags = 0;
@@ -693,6 +693,7 @@ static int db3cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
 	if (dbcursor == dbi->dbi_rmw)
 	    dbi->dbi_rmw = NULL;
     }
+    if (dbi->dbi_debug) fprintf(stderr, "db3cclose: rc %d rmw %p\n", rc, dbi->dbi_rmw);
     return rc;
 }
 
@@ -701,16 +702,15 @@ static int db3copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags)
     DBC * dbcursor;
     int rc = 0;
 
-    if ((dbcursor = dbi->dbi_rmw) != NULL) {
-	if (dbcp) *dbcp = dbi->dbi_rmw;
-	return 0;
-    } else if ((rc = db3c_open(dbi, &dbcursor)) == 0) {
-	dbi->dbi_rmw = dbcursor;
+    if ((dbcursor = dbi->dbi_rmw) == NULL) {
+	if ((rc = db3c_open(dbi, &dbcursor)) == 0)
+	    dbi->dbi_rmw = dbcursor;
     }
 
     if (dbcp)
-	*dbcp = dbcursor;
+	*dbcp = dbi->dbi_rmw;
 
+    if (dbi->dbi_debug) fprintf(stderr, "db3copen: rc %d dbc %p 0x%x rmw %p\n", rc, dbcursor, (dbcursor ? dbcursor->flags : 0), dbi->dbi_rmw);
     return rc;
 }
 
@@ -1024,6 +1024,33 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		dbi->dbi_rmw = dbcursor;
 	    } else
 		dbi->dbi_rmw = NULL;
+
+	    if (dbi->dbi_lockdbfd) {
+		int fdno = -1;
+
+		if (!(db->fd(db, &fdno) == 0 && fdno >= 0)) {
+		    rc = 1;
+		} else {
+		    struct flock l;
+		    l.l_whence = 0;
+		    l.l_start = 0;
+		    l.l_len = 0;
+		    l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
+
+		    if (fcntl(fdno, F_SETLK, (void *) &l)) {
+			rpmError(RPMERR_FLOCK,
+				_("cannot get %s lock on %s/%s(%s)\n"),
+				((dbi->dbi_mode & O_RDWR)
+					? _("exclusive") : _("shared")),
+				dbhome, dbfile, dbsubfile);
+			rc = 1;
+		    } else if (dbfile) {
+			rpmMessage(RPMMESS_VERBOSE,
+				_("locked  db index       %s/%s(%s)\n"),
+				dbhome, dbfile, dbsubfile);
+		    }
+		}
+	    }
 	}
 #else
       {	DB_INFO * dbinfo = xcalloc(1, sizeof(*dbinfo));
@@ -1070,7 +1097,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	*dbip = dbi;
     } else {
 	rc = 1;
-	db3Free(dbi);
+	db3close(dbi, 0);
     }
 
     if (urlfn)

@@ -41,7 +41,7 @@ for SUBST in $SUBSTS; do
 
   ARCH_INSTALL_POST='%{nil}'
   case "${ARCH}-${OS}" in
-    sparc64-linux) ARCH_INSTALL_POST=${pkglibdir}/brp-sparc64-linux ;;
+    sparc64-linux) ARCH_INSTALL_POST=${pkglibdir}/brp-sparc64-linux; LIB=lib64 ;;
   esac
 
   cat $PLATFORM | \

@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.55 2000/04/28 15:14:47 jbj Exp $
+# $Id: macros.in,v 1.56 2000/05/01 17:50:35 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -206,13 +206,14 @@
 #	Macros used to configure Berkley db parameters.
 #
 # Choose db interface:
-#	0	linux glibc libdb1 routines.
-#	1	db_185.h interface in db2/db3 libdb.a.
+#	0	same as 1
+#	1	native db1 interface (e.g. linux glibc libdb1 routines).
 #	2	native db2 interface.
 #	3	native db3 interface.
-#	-1	db3 -> db2 -> db1 -> db0 (as available).
-# There are two macros so that --rebuilddb can convert old_db_api -> new_db_api.
-%_dbapi			0
+#	-1	db3 -> db2 -> db1 (as available).
+#
+# There are two macros so that --rebuilddb can convert db1 -> db3
+%_dbapi			1
 %_dbapi_rebuild		3
 
 #
@@ -236,42 +237,41 @@
 #
 # See http://www.sleepycat.com for Berkeley db-3.0.55 configuration.
 #
-# The (intended) default value for Red Hat Linux is
-#	hash:mpool:shared:lock
+# The (intended) default value for rpm-3.1 on Red Hat Linux is
+#	db3:hash:mpool:cdb:usecursors:mp_mmapsize=8Mb:mp_size=8Mb:pagesize=512
 #
 # Additional rpm specific configuration:
-#   teardown	Should the DB3 environment be removed after use (experimental)?
-#   usecursors	Should DB3 cursors be used in get/put/del (experimental)?
+#   usecursors	Should DB3 cursors be used in get/put/del ?
 #
-%__dbi_flags		mpool:nommap
-%__dbi_type		hash
-%__dbi_perms		perms=0644
 %__dbi_major		db%{_dbapi}
+%__dbi_type		hash
+%__dbi_flags		mpool:cdb
 %__dbi_other		usecursors
 %__dbi_verbose		verbose
 %__dbi_mp_mmapsize	mp_mmapsize=16Mb
-%__dbi_mp_size		mp_size=4Mb
-%__dbi_pagesize		pagesize=16Kb
+%__dbi_mp_size		mp_size=512Kb
+%__dbi_pagesize		pagesize=512
+%__dbi_perms		perms=0644
 
 # This is a colon (or white space) separated list of tokens for Berkeley
 # dbi configuration.
 %_dbi_config	\
-  %{__dbi_flags}\
-  %{__dbi_type}\
-  %{__dbi_perms}\
   %{__dbi_major}\
+  %{__dbi_type}\
+  %{__dbi_flags}\
   %{__dbi_other}\
   %{__dbi_verbose}\
   %{__dbi_mp_mmapsize}\
   %{__dbi_mp_size}\
   %{__dbi_pagesize}\
+  %{__dbi_perms}\
 %{nil}
 
-# Depends is a per-transaction cache of known dependency resolutions.
-%_dbi_config_Depends	%{_dbi_config}:private:temporary
-
-# This is the list of tags for which indices will be built.
+# The list of tags for which indices will be built.
 %_dbi_indices	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Depends
+
+# "Depends" is a per-transaction cache of known dependency resolutions.
+%_dbi_config_Depends	%{_dbi_config}:temporary
 
 #==============================================================================
 # ---- per-platform macros.

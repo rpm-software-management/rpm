@@ -27,7 +27,8 @@ build/reqprov.c
 build/spec.c
 lib/cpio.c
 lib/depends.c
-lib/db0.c
+lib/db1.c
+lib/db2.c
 lib/db3.c
 lib/falloc.c
 lib/formats.c

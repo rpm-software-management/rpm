@@ -1679,6 +1679,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		ourrc++;
 	    break;
 	}
+	(void) rpmdbSync(ts->db);
     }
 
     freeFl(ts, flList);

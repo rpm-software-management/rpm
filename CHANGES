@@ -24,6 +24,15 @@
 	- API: replace rpmdbFindByLabel with RPMDBI_LABEL iteration.
 	- API: replace rpmdbGetRecord with iterators.
 	- API: replace findMatches with iterators.
+	- Filter DB_INCOMPLETE on db->sync, it's usually harmless.
+	- Add per-transaction cache of resolved dependencies (aka Depends).
+	- Do lazy dbi{Open,Close} throughout.
+	- Attempt fine grained dbi cursors throughout.
+	- fix: free iterator *after* loop, not during.
+	- fix: Depends needed keylen in dbiPut, rpmdbFreeIterator after use.
+	- Rename db0.c to db1.c, resurrect db2.c (from db3.c).
+	- Add ia64 and sparc64 changes.
+	- rpm.spec: add per-platform sub-directories.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

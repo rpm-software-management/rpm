@@ -311,8 +311,8 @@ AC_CHECK_LIB(port, writev)
 DBLIBOBJS=""
 dnl Check for Berkeley db3 API.
 AC_CHECK_FUNC(db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],
-  AC_CHECK_LIB(db, db_create, [LIBS="$LIBS -ldb"; DBLIBOBJS="$DBLIBOBJS db3.c"],
-    AC_CHECK_LIB(db-3.0, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],,-lpthread))
+  AC_CHECK_LIB(db, db_create, [LIBS="$LIBS -ldb -lpthread"; DBLIBOBJS="$DBLIBOBJS db3.c"],
+    AC_CHECK_LIB(db-3.0, db_create, [LIBS="$LIBS -lpthread"; DBLIBOBJS="$DBLIBOBJS db3.c"],,-lpthread))
 )
 dnl Check for Berkeley db2 API.
 dnl AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],
@@ -323,7 +323,7 @@ dnl AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"],
 dnl     AC_CHECK_LIB(db, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"])
 dnl )
 dnl Check for Berkeley db1 API in glibc.
-AC_CHECK_LIB(db1, dbopen, [DBLIBOBJS="$DBLIBOBJS db0.c"])
+AC_CHECK_LIB(db1, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"])
 
 if test X"$DBLIBOBJS" = X; then
     AC_MSG_ERROR([sorry rpm requires libdb.a or libdb1.a (from the Berkeley db package)]) 
@@ -336,7 +336,6 @@ for dbi in $DBLIBOBJS; do
   db3.c) AC_DEFINE(USE_DB3) ;;
   db2.c) AC_DEFINE(USE_DB2) ;;
   db1.c) AC_DEFINE(USE_DB1) ;;
-  db0.c) AC_DEFINE(USE_DB0) ;;
   esac
 done
 
@@ -881,6 +880,7 @@ fi
 dnl Determine the canonical arch-vendor-os for the build machine
 case "${build_cpu}" in
 i386|i486|i586|i686|ix86)	RPMCANONARCH=i386 ;;
+ia64*)		RPMCANONARCH=ia64 ;;
 alpha*)		RPMCANONARCH=alpha ;;
 sparc*)		RPMCANONARCH=sparc ;;
 powerpc*)	RPMCANONARCH=ppc ;;

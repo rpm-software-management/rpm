@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.19 2000/03/17 21:04:50 jbj Exp $
+# $Id: rpmrc.in,v 2.20 2000/05/01 17:50:35 jbj Exp $
 
 #############################################################
 
@@ -8,6 +8,7 @@
 # Values for RPM_OPT_FLAGS for various platforms
 
 optflags: i386 -O2 -m486 -fno-strength-reduce
+optflags: ia64 -O2
 optflags: alpha -O2
 optflags: sparc -O2
 optflags: sparcv9 -O2 -mv8 -mtune=ultrasparc
@@ -115,6 +116,8 @@ buildarchtranslate: osfmach3_i586: i386
 buildarchtranslate: osfmach3_i486: i386
 buildarchtranslate: osfmach3_i386: i386
 
+buildarchtranslate: ia64: ia64
+
 buildarchtranslate: i986: i386
 buildarchtranslate: i886: i386
 buildarchtranslate: i786: i386
@@ -145,6 +148,8 @@ buildarchtranslate: hades: m68kmint
 # Architecture compatibility
 
 arch_compat: alpha: axp noarch
+
+arch_compat: ia64: noarch
 
 arch_compat: i986: i886
 arch_compat: i886: i786
@@ -224,6 +229,8 @@ os_compat: FreeMiNT: mint MiNT TOS
 os_compat: MiNT: FreeMiNT mint TOS
 os_compat: mint: FreeMiNT MiNT TOS
 os_compat: TOS: FreeMiNT MiNT mint
+
+buildarch_compat: ia64: noarch
 
 buildarch_compat: i986: i886
 buildarch_compat: i886: i786

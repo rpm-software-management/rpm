@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/popt @INCPATH@
 
-EXTRA_DIST = falloc.c db0.c db2.c db3.c
+EXTRA_DIST = falloc.c db1.c db2.c db3.c
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -54,7 +54,7 @@ db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	    rm -f $${F}.o ; \
 	done
 
-db0.lo: db0.c falloc.lo $(top_srcdir)/system.h rpmlib.h rpmdb.h
+db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
 	    @__LD@ -r -o $${F}.o $${F} falloc.lo -L/usr/lib -ldb1 ; \

@@ -104,14 +104,12 @@ static void dbiTagsInit(void)
     free(dbiTagStr);
 }
 
-#if USE_DB0
-extern struct _dbiVec db0vec;
-#define	DB0vec		&db0vec
+#if USE_DB1
+extern struct _dbiVec db1vec;
+#define	DB1vec		&db1vec
 #else
-#define	DB0vec		NULL
-#endif
-
 #define	DB1vec		NULL
+#endif
 
 #if USE_DB2
 extern struct _dbiVec db2vec;
@@ -128,7 +126,7 @@ extern struct _dbiVec db3vec;
 #endif
 
 static struct _dbiVec *mydbvecs[] = {
-    DB0vec, DB1vec, DB2vec, DB3vec, NULL
+    DB1vec, DB1vec, DB2vec, DB3vec, NULL
 };
 
 inline int dbiSync(dbiIndex dbi, unsigned int flags) {
@@ -196,6 +194,12 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
     case 1:
     case 0:
 	if (mydbvecs[major] == NULL) {
+		fprintf(stderr, _("\n\
+--> This version of rpm was not compiled with support for db%d. Please\
+    verify the setting of the macro %%_dbapi using \"rpm --showrc\" and\
+    correct your configuration.\
+\n\
+"));
 	   rc = 1;
 	   break;
 	}
@@ -206,7 +210,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
 	break;
     case -1:
 	major = 4;
-	while (major-- > 0) {
+	while (major-- > 1) {
 	    if (mydbvecs[major] == NULL)
 		continue;
 	    errno = 0;
@@ -216,7 +220,6 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
 		break;
 	    }
 	    if (rc == 1 && major == 3) {
-		fprintf(stderr, "*** FIXME: <message about how to convert db>\n");
 		fprintf(stderr, _("\n\
 --> Please run \"rpm --rebuilddb\" as root to convert your database from\n\
     db1 to db3 on-disk format.\n\
@@ -542,7 +545,7 @@ static struct rpmdb_s dbTemplate = {
 };
 
 /* XXX query.c, rpminstall.c, verify.c */
-void rpmdbClose (rpmdb rpmdb)
+int rpmdbClose (rpmdb rpmdb)
 {
     int dbix;
 
@@ -569,6 +572,19 @@ void rpmdbClose (rpmdb rpmdb)
 	rpmdb->_dbi = NULL;
     }
     free(rpmdb);
+    return 0;
+}
+
+int rpmdbSync(rpmdb rpmdb)
+{
+    int dbix;
+
+    for (dbix = 0; dbix < rpmdb->db_ndbi; dbix++) {
+	if (rpmdb->_dbi[dbix] == NULL)
+	    continue;
+    	dbiSync(rpmdb->_dbi[dbix], 0);
+    }
+    return 0;
 }
 
 static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
@@ -658,17 +674,17 @@ static int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 	    }
 
 	    dbi = dbiOpen(rpmdb, rpmtag, 0);
-	    if (dbi == NULL)
-		continue;
 
 	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
+		if (dbi == NULL) rc |= 1;
 #if 0
 		if (rpmdb->db_major == 3)
 #endif
 		    goto exit;
 		break;
 	    case RPMTAG_NAME:
+		if (dbi == NULL) rc |= 1;
 		if (minimal)
 		    goto exit;
 		break;
@@ -1044,6 +1060,7 @@ static int dbiUpdateRecord(dbiIndex dbi, int offset, Header h)
     void * uh;
     size_t uhlen;
     int rc;
+    int xx;
 
     if (_noDirTokens)
 	expandFilelist(h);
@@ -1052,6 +1069,7 @@ static int dbiUpdateRecord(dbiIndex dbi, int offset, Header h)
     uh = headerUnload(h);
     blockSignals(dbi->dbi_rpmdb, &signalMask);
     rc = dbiPut(dbi, &offset, sizeof(offset), uh, uhlen, 0);
+    xx = dbiSync(dbi, 0);
     unblockSignals(dbi->dbi_rpmdb, &signalMask);
     free(uh);
 
@@ -1508,7 +1526,9 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 		xx = dbiCopen(dbi, NULL, 0);
 		xx = dbiDel(dbi, &offset, sizeof(offset), 0);
 		xx = dbiCclose(dbi, NULL, 0);
-		xx = dbiSync(dbi, 0);
+		/* XXX HACK sync is on the bt with multiple db access */
+		if (!dbi->dbi_no_dbsync)
+		    xx = dbiSync(dbi, 0);
 		continue;
 		/*@notreached@*/ break;
 	    }
@@ -1564,7 +1584,9 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 	    }
 	    xx = dbiCclose(dbi, NULL, 0);
 
-	    dbiSync(dbi, 0);
+	    /* XXX HACK sync is on the bt with multiple db access */
+	    if (!dbi->dbi_no_dbsync)
+		xx = dbiSync(dbi, 0);
 
 	    switch (rpmtype) {
 	    case RPM_STRING_ARRAY_TYPE:
@@ -1678,6 +1700,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	}
 
 	rc = dbiPut(dbi, keyp, keylen, datap, datalen, 0);
+	xx = dbiSync(dbi, 0);
 
 	xx = dbiCclose(dbi, NULL, 0);
 
@@ -1710,7 +1733,8 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		xx = dbiCopen(dbi, NULL, 0);
 		xx = dbiUpdateRecord(dbi, offset, h);
 		xx = dbiCclose(dbi, NULL, 0);
-		xx = dbiSync(dbi, 0);
+		if (!dbi->dbi_no_dbsync)
+		    xx = dbiSync(dbi, 0);
 		{   const char *n, *v, *r;
 		    headerNVR(h, &n, &v, &r);
 		    rpmMessage(RPMMESS_VERBOSE, "  +++ %10d %s-%s-%s\n", offset, n, v, r);
@@ -1785,7 +1809,9 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	    }
 	    xx = dbiCclose(dbi, NULL, 0);
 
-	    dbiSync(dbi, 0);
+	    /* XXX HACK sync is on the bt with multiple db access */
+	    if (!dbi->dbi_no_dbsync)
+		xx = dbiSync(dbi, 0);
 
 	    switch (rpmtype) {
 	    case RPM_STRING_ARRAY_TYPE:
@@ -1829,7 +1855,7 @@ static void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath)
     {	int i;
 
 	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base = db0basename(dbiTags[i]);
+	    const char * base = db1basename(dbiTags[i]);
 	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
 	    unlink(filename);
 	    xfree(base);
@@ -1909,7 +1935,7 @@ static int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath,
     case 0:
       {	int i;
 	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base = db0basename(dbiTags[i]);
+	    const char * base = db1basename(dbiTags[i]);
 	    sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, base);
 	    sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, base);
 	    (void)rpmCleanPath(ofilename);
