@@ -52,10 +52,12 @@ int inet_aton(const char *cp, struct in_addr *inp);
 static int ftpDebug = 0;
 static int ftpTimeoutSecs = TIMEOUT_SECS;
 
+#ifdef	DYING
 static int ftpCheckResponse(urlinfo *u, char ** str);
 static int ftpCommand(urlinfo *u, char * command, ...);
 static int copyData(FD_t sfd, FD_t tfd);
 static int getHostAddress(const char * host, struct in_addr * address);
+#endif
 
 static int ftpCheckResponse(urlinfo *u, char ** str) {
     static char buf[BUFFER_SIZE + 1];
@@ -148,7 +150,7 @@ fprintf(stderr, "<- %s\n", buf);
     return 0;
 }
 
-int ftpCommand(urlinfo *u, char * command, ...) {
+static int ftpCommand(urlinfo *u, char * command, ...) {
     va_list ap;
     int len;
     char * s;
@@ -347,7 +349,7 @@ int ftpOpen(urlinfo *u)
     return u->ftpControl;
 }
 
-int copyData(FD_t sfd, FD_t tfd) {
+static int copyData(FD_t sfd, FD_t tfd) {
     char buf[BUFFER_SIZE];
     fd_set emptySet, readSet;
     struct timeval timeout;
@@ -424,6 +426,13 @@ fprintf(stderr, "-> ABOR\n");
     return 0;
 }
 
+static int ftpGetFileDone(urlinfo *u) {
+    if (u->ftpGetFileDoneNeeded && ftpCheckResponse(u, NULL))
+	return FTPERR_BAD_SERVER_RESPONSE;
+    u->ftpGetFileDoneNeeded = 0;
+    return 0;
+}
+
 int ftpGetFileDesc(FD_t fd)
 {
     urlinfo *u;
@@ -437,6 +446,15 @@ int ftpGetFileDesc(FD_t fd)
 
     u = (urlinfo *)fd->fd_url;
     remotename = u->path;
+
+/*
+ * XXX When ftpGetFileDesc() is called, there may be a lurking
+ * XXX transfer complete message (if ftpGetFileDone() was not
+ * XXX called to clear that message). Clear that message now.
+ */
+
+    if (u->ftpGetFileDoneNeeded)
+	rc = ftpGetFileDone(u);
 
 if (ftpDebug)
 fprintf(stderr, "-> PASV\n");
@@ -507,12 +525,7 @@ fprintf(stderr, "-> %s", retrCommand);
 	return rc;
     }
 
-    return 0;
-}
-
-static int ftpGetFileDone(urlinfo *u) {
-    if (ftpCheckResponse(u, NULL))
-	return FTPERR_BAD_SERVER_RESPONSE;
+    u ->ftpGetFileDoneNeeded = 1;
     return 0;
 }
 

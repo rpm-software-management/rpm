@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-21 10:57-0500\n"
+"POT-Creation-Date: 1999-01-21 14:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,55 +175,55 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: ../ftp.c:554
+#: ../ftp.c:567
 msgid "Success"
 msgstr ""
 
-#: ../ftp.c:557
+#: ../ftp.c:570
 msgid "Bad server response"
 msgstr ""
 
-#: ../ftp.c:560
+#: ../ftp.c:573
 msgid "Server IO error"
 msgstr ""
 
-#: ../ftp.c:563
+#: ../ftp.c:576
 msgid "Server timeout"
 msgstr ""
 
-#: ../ftp.c:566
+#: ../ftp.c:579
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: ../ftp.c:569
+#: ../ftp.c:582
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: ../ftp.c:572
+#: ../ftp.c:585
 msgid "Failed to connect to server"
 msgstr ""
 
-#: ../ftp.c:575
+#: ../ftp.c:588
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: ../ftp.c:578
+#: ../ftp.c:591
 msgid "IO error to local file"
 msgstr ""
 
-#: ../ftp.c:581
+#: ../ftp.c:594
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: ../ftp.c:584
+#: ../ftp.c:597
 msgid "File not found on server"
 msgstr ""
 
-#: ../ftp.c:587
+#: ../ftp.c:600
 msgid "Abort in progress"
 msgstr ""
 
-#: ../ftp.c:591
+#: ../ftp.c:604
 msgid "Unknown or unexpected error"
 msgstr ""
 

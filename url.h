@@ -18,6 +18,7 @@ typedef struct urlinfo {
     const char *path;
     int	port;
     int ftpControl;
+    int ftpGetFileDoneNeeded;
 } urlinfo;
 
 #ifndef	IPPORT_HTTP
