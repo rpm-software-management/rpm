@@ -74,11 +74,11 @@ fi</string>
 	<integer>33188</integer>
   </rpmTag>
   <rpmTag name="Filerdevs">
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
+	<integer/>
+	<integer/>
+	<integer/>
+	<integer/>
+	<integer/>
   </rpmTag>
   <rpmTag name="Filemtimes">
 	<integer>1081809659</integer>
@@ -89,21 +89,21 @@ fi</string>
   </rpmTag>
   <rpmTag name="Filemd5s">
 	<string>a811f210128c11dddbbbe069fe6df5d2</string>
-	<string></string>
+	<string/>
 	<string>0ad5e82cfb2ac82b2bfc3bb998150ed6</string>
 	<string>44e9fc77c32600526ed39343511914a1</string>
 	<string>b0f6f713c3249dc4f31a6715dc893d44</string>
   </rpmTag>
   <rpmTag name="Filelinktos">
-	<string></string>
-	<string></string>
-	<string></string>
-	<string></string>
-	<string></string>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
   </rpmTag>
   <rpmTag name="Fileflags">
-	<integer>0</integer>
-	<integer>0</integer>
+	<integer/>
+	<integer/>
 	<integer>2</integer>
 	<integer>2</integer>
 	<integer>2</integer>
@@ -127,9 +127,9 @@ fi</string>
   </rpmTag>
   <rpmTag name="Fileverifyflags">
 	<integer>4294967295</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
+	<integer/>
+	<integer/>
+	<integer/>
 	<integer>4294967295</integer>
   </rpmTag>
   <rpmTag name="Providename">
@@ -156,12 +156,12 @@ fi</string>
 	<string>rpmlib(PayloadFilesHavePrefix)</string>
   </rpmTag>
   <rpmTag name="Requireversion">
-	<string></string>
-	<string></string>
-	<string></string>
-	<string></string>
-	<string></string>
-	<string></string>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
 	<string>3.0.4-1</string>
 	<string>4.0-1</string>
   </rpmTag>
@@ -257,11 +257,11 @@ instead.</string>
 	<integer>4194947</integer>
   </rpmTag>
   <rpmTag name="Filelangs">
-	<string></string>
-	<string></string>
-	<string></string>
-	<string></string>
-	<string></string>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
+	<string/>
   </rpmTag>
   <rpmTag name="Prefixes">
 	<string>/usr</string>
@@ -273,7 +273,7 @@ instead.</string>
 	<string>1.7-22</string>
   </rpmTag>
   <rpmTag name="Dirindexes">
-	<integer>0</integer>
+	<integer/>
 	<integer>1</integer>
 	<integer>2</integer>
 	<integer>2</integer>
@@ -312,37 +312,37 @@ instead.</string>
   </rpmTag>
   <rpmTag name="Filecolors">
 	<integer>1</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
+	<integer/>
+	<integer/>
+	<integer/>
+	<integer/>
   </rpmTag>
   <rpmTag name="Fileclass">
 	<integer>2</integer>
 	<integer>3</integer>
 	<integer>1</integer>
 	<integer>1</integer>
-	<integer>0</integer>
+	<integer/>
   </rpmTag>
   <rpmTag name="Classdict">
-	<string></string>
+	<string/>
 	<string>ASCII English text</string>
 	<string>ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.2.5, dynamically linked (uses shared libs), not stripped</string>
 	<string>directory</string>
   </rpmTag>
   <rpmTag name="Filedependsx">
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
+	<integer/>
+	<integer/>
+	<integer/>
+	<integer/>
+	<integer/>
   </rpmTag>
   <rpmTag name="Filedependsn">
 	<integer>3</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
-	<integer>0</integer>
+	<integer/>
+	<integer/>
+	<integer/>
+	<integer/>
   </rpmTag>
   <rpmTag name="Dependsdict">
 	<integer>1375731715</integer>
@@ -350,7 +350,7 @@ instead.</string>
 	<integer>1375731717</integer>
   </rpmTag>
   <rpmTag name="Sourcepkgid">
-	<base64>8vaKpUrEkvma6oCg0Z/otm==</base64>
+	<base64>8vaKpUrEkvma6oCg0Z/oti==</base64>
   </rpmTag>
   <rpmTag name="Filecontexts">
 	<string>system_u:object_r:bin_t</string>

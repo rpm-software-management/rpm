@@ -39,6 +39,41 @@ static rpmtoolIOBits obits = RPMIOBITS_NONE;
 
 static int _rpmtool_debug = 0;
 
+typedef struct rpmavi_s * rpmavi;
+
+struct rpmavi_s {
+    const char ** av;
+    int flags;
+};
+
+static rpmavi rpmaviFree(rpmavi avi)
+{
+    if (avi) {
+	memset(avi, 0, sizeof(*avi));
+	avi = _free(avi);
+    }
+    return NULL;
+}
+
+static rpmavi rpmaviNew(const char ** av, int flags)
+{
+    rpmavi avi = xcalloc(1, sizeof(*avi));
+    if (avi) {
+	avi->av = av;
+	avi->flags = flags;
+    }
+    return avi;
+}
+
+static const char * rpmaviNext(rpmavi avi)
+{
+    const char * a = NULL;
+
+    if (avi && avi->av && *avi->av)
+	a = *avi->av++;
+    return a;
+}
+
 static struct iobits_s {
     const char * name;
     rpmtoolIOBits bits;
@@ -157,37 +192,30 @@ static void initTool(const char * argv0)
     if (!strcmp(__progname, "rpmlead")) {
 	ibits = _RPMIOBITS_PKGMASK;
 	obits = RPMIOBITS_LEAD;
-	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpmsignature")) {
 	ibits = _RPMIOBITS_PKGMASK;
 	obits = RPMIOBITS_SHEADER;
-	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpmheader")) {
 	ibits = _RPMIOBITS_PKGMASK;
 	obits = RPMIOBITS_HEADER;
-	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpm2cpio")) {
 	ibits = _RPMIOBITS_PKGMASK;
 	obits = RPMIOBITS_PAYLOAD | RPMIOBITS_UNCOMPRESS;
-	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpmarchive")) {
 	ibits = _RPMIOBITS_PKGMASK;
 	obits = RPMIOBITS_PAYLOAD;
-	ofmt = NULL;
     }
     if (!strcmp(__progname, "dump")) {
 	ibits = _RPMIOBITS_PKGMASK;
 	obits = RPMIOBITS_HEADER | RPMIOBITS_DUMP;
-	ofmt = NULL;
     }
     if (!strcmp(__progname, "rpmdump")) {
 	ibits = _RPMIOBITS_PKGMASK;
 	obits = RPMIOBITS_HEADER | RPMIOBITS_DUMP;
-	ofmt = NULL;
     }
 }
 
@@ -200,6 +228,7 @@ main(int argc, char *const argv[])
     FD_t fdi = NULL;
     FD_t fdo = NULL;
     const char ** av = NULL;
+    rpmavi avi = NULL;
     const char * ifn = NULL;
     const char * ofn = NULL;
     const char * s;
@@ -244,7 +273,8 @@ fprintf(stderr, "*** av %p av[0] %p av[1] %p\n", av,
 	goto bottom;
     }
 
-    while ((ifn = *av++) != NULL) {
+    avi = rpmaviNew(av, 0);
+    while ((ifn = rpmaviNext(avi)) != NULL) {
 
 	/* Open input file. */
 	if (fdi == NULL) {
@@ -421,6 +451,7 @@ bottom:
 	    fdo = NULL;
 	}
     }
+    avi = rpmaviFree(avi);
 
 exit:
     sigh = headerFree(sigh);

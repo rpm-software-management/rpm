@@ -94,9 +94,13 @@ printf("%d %d %s %d\n", xp->depth, xp->nodeType, xp->name, xp->isEmptyElement);
 	    }
 	    xmlFree(attrN);
 	}
-	printf(">");
-	if (xp->depth < 2)
-	    printf("\n");
+	if (xp->isEmptyElement)
+	    printf("/>\n");
+	else {
+	    printf(">");
+	    if (xp->depth < 2)
+		printf("\n");
+	}
 	break;
     case XML_READER_TYPE_END_ELEMENT:
 	if (xp->depth < 2)
