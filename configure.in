@@ -74,7 +74,7 @@ if test "$cross_compiling" != "yes"; then
     PATCHMINOR=`echo $PATCHVERSION | cut -d. -f2`
 
     if test $PATCHMAJOR -le 2 -a $PATCHMINOR -le 1; then
-	AC_DEFINE(CONFIG_OLDPATCH_21)
+	AC_DEFINE(HAVE_OLDPATCH_21)
 	AC_MSG_RESULT(patch older then 2.2 found)
     else
 	AC_MSG_RESULT(patch later then 2.2 found)
