@@ -57,7 +57,7 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 	    flags = RPMSENSE_TRIGGERIN;
 	    name = "%triggerin";
 	} else if (tag == RPMTAG_TRIGGERPOSTUN) {
-	    flags = RPMSENSE_TRIGGERUN;
+	    flags = RPMSENSE_TRIGGERPOSTUN;
 	    name = "%triggerpostun";
 	} else if (tag == RPMTAG_TRIGGERUN) {
 	    flags = RPMSENSE_TRIGGERUN;
