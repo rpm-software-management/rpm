@@ -54,7 +54,7 @@ BEGIN_NEON_DECLS
 
 /* The name of a WebDAV property. 'nspace' may be NULL. */
 typedef struct {
-/*@observer@*/
+/*@observer@*/ /*@null@*/
     const char *nspace;
 /*@observer@*/
     const char *name;
@@ -242,7 +242,7 @@ typedef void *(*ne_props_create_complex)(void *userdata,
 
 void ne_propfind_set_private(ne_propfind_handler *handler,
 			     ne_props_create_complex creator,
-			     void *userdata)
+			     /*@null@*/ void *userdata)
 	/*@modifies handler @*/;
 
 /* Fetch all properties.

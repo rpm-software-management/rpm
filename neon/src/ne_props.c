@@ -51,6 +51,7 @@ struct ne_propfind_handler_s {
 
     /* Callback to create the private structure. */
     ne_props_create_complex private_creator;
+/*@null@*/
     void *private_userdata;
     
     /* Current propset, or NULL if none being processed. */

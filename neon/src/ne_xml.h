@@ -85,10 +85,10 @@ ne_xml_parser *ne_xml_create(void)
 /* Push a new handler on the stack of parser 'p'. 'cdata' and/or
  * 'endelm' may be NULL; startelm must be non-NULL. */
 void ne_xml_push_handler(ne_xml_parser *p,
-                         ne_xml_startelm_cb *startelm, 
-                         ne_xml_cdata_cb *cdata,
-                         ne_xml_endelm_cb *endelm,
-                         void *userdata)
+                         /*@null@*/ ne_xml_startelm_cb *startelm, 
+                         /*@null@*/ ne_xml_cdata_cb *cdata,
+                         /*@null@*/ ne_xml_endelm_cb *endelm,
+                         /*@null@*/ void *userdata)
 	/*@modifies p @*/;
 
 /* ne_xml_failed returns non-zero if there was an error during
@@ -154,7 +154,10 @@ struct ne_xml_idmap {
 };
 
 /* Return the size of an idmap array */
-#define NE_XML_MAPLEN(map) (sizeof(map) / sizeof(struct ne_xml_idmap))
+#define NE_XML_MAPLEN(map) \
+    /*@-sizeoftype@*/ \
+    (sizeof(map) / sizeof(struct ne_xml_idmap)) \
+    /*@=sizeoftype@*/
 
 /* Return the 'id' corresponding to {nspace, name}, or zero. */
 int ne_xml_mapid(const struct ne_xml_idmap map[], size_t maplen,

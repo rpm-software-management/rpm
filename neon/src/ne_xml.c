@@ -60,9 +60,13 @@ typedef xmlChar ne_xml_char;
 #define ERR_SIZE (2048)
 
 struct handler {
+/*@null@*/
     ne_xml_startelm_cb *startelm_cb; /* start-element callback */
+/*@null@*/
     ne_xml_endelm_cb *endelm_cb; /* end-element callback */
+/*@null@*/
     ne_xml_cdata_cb *cdata_cb; /* character-data callback. */
+/*@null@*/
     void *userdata; /* userdata for the above. */
     struct handler *next; /* next handler in stack. */
 };
