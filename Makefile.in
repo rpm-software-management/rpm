@@ -15,7 +15,7 @@ LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
 AR = ar r
 RANLIB = ranlib
 
-VERSION=2.0.4
+VERSION=2.0.5
 
 BINDIR=$(prefix)/bin
 RPMBINDIR=$(subst usr/bin,bin,$(BINDIR))
