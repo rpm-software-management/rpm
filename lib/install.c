@@ -47,8 +47,7 @@ static int setFileOwnerships(char * prefix, char ** fileList,
 			     char ** fileOwners, char ** fileGroups, 
 			     int_16 * fileModes, 
 			     enum instActions * instActions, int fileCount);
-static int setFileOwner(char * prefix, char * file, char * owner, 
-			char * group, int_16 mode);
+static int setFileOwner(char * file, char * owner, char * group, int_16 mode);
 static int createDirectories(char * prefix, char ** fileList, int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
@@ -693,17 +692,41 @@ static int setFileOwnerships(char * prefix, char ** fileList,
 			     int_16 * fileModesList,
 			     enum instActions * instActions, int fileCount) {
     int i;
+    char * chptr;
+    int doFork = 1;
+    pid_t child;
+    int status;
 
     message(MESS_DEBUG, "setting file owners and groups by name (not id)\n");
+
+    chptr = prefix;
+    while (*chptr && *chptr == '/') 
+	chptr++;
+
+    if (*chptr) {
+	message(MESS_DEBUG, "forking child to setid's in chroot() "
+		"environment\n");
+	doFork = 1;
+
+	if ((child = fork())) {
+	    waitpid(child, &status, 0);
+	    return 0;
+	} else {
+	    chroot(prefix);
+	}
+    }
 
     for (i = 0; i < fileCount; i++) {
 	if (instActions[i] != SKIP) {
 	    /* ignore errors here - setFileOwner handles them reasonable
 	       and we want to keep running */
-	    setFileOwner(prefix, fileList[i], fileOwners[i], fileGroups[i],
+	    setFileOwner(fileList[i], fileOwners[i], fileGroups[i],
 			 fileModesList[i]);
 	}
     }
+
+    if (doFork)
+	exit(0);
 
     return 0;
 }
@@ -714,8 +737,8 @@ static int setFileOwnerships(char * prefix, char ** fileList,
    are cached, everything else is looked up via getpw() and getgr() functions. 
    If this performs too poorly I'll have to implement it properly :-( */
 
-static int setFileOwner(char * prefix, char * file, char * owner, 
-			char * group, int_16 mode ) {
+static int setFileOwner(char * file, char * owner, char * group, 
+			int_16 mode ) {
     static char * lastOwner = NULL, * lastGroup = NULL;
     static uid_t lastUID;
     static gid_t lastGID;
@@ -723,12 +746,6 @@ static int setFileOwner(char * prefix, char * file, char * owner,
     gid_t gid = 0;
     struct passwd * pwent;
     struct group * grent;
-    char * filespec;
-
-    filespec = alloca(strlen(prefix) + strlen(file) + 5);
-    strcpy(filespec, prefix);
-    strcat(filespec, "/");
-    strcat(filespec, file);
 
     if (!strcmp(owner, "root"))
 	uid = 0;
@@ -766,21 +783,21 @@ static int setFileOwner(char * prefix, char * file, char * owner,
     }
 	
     message(MESS_DEBUG, "%s owned by %s (%d), group %s (%d) mode %o\n",
-		filespec, owner, uid, group, gid, mode & 07777);
-    if (chown(filespec, uid, gid)) {
+		file, owner, uid, group, gid, mode & 07777);
+    if (chown(file, uid, gid)) {
 	error(RPMERR_CHOWN, "cannot set owner and group for %s - %s\n",
-		filespec, strerror(errno));
+		file, strerror(errno));
 	/* screw with the permissions so it's not SUID and 0.0 */
-	chmod(filespec, 0644);
+	chmod(file, 0644);
 	return 1;
     }
     /* Also set the mode according to what is stored in the header */
     if (! S_ISLNK(mode)) {
-	if (chmod(filespec, mode & 07777)) {
+	if (chmod(file, mode & 07777)) {
 	    error(RPMERR_CHOWN, "cannot change mode for %s - %s\n",
-		  filespec, strerror(errno));
+		  file, strerror(errno));
 	    /* screw with the permissions so it's not SUID and 0.0 */
-	    chmod(filespec, 0644);
+	    chmod(file, 0644);
 	    return 1;
 	}
     }
