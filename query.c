@@ -639,15 +639,19 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
       case QUERY_RPM:
 	if (urlIsURL(arg)) {
 	    isUrl = 1;
-	    fd = urlGetFd(arg, &context);
+	    if ((fd = urlGetFd(arg, &context)) < 0) {
+		fprintf(stderr, "open of %s failed: %s\n", arg, 
+			ftpStrerror(fd));
+	    }
 	} else {
 	    isUrl = 0;
-	    fd = open(arg, O_RDONLY);
+	    if ((fd = open(arg, O_RDONLY)) < 0) {
+		fprintf(stderr, "open of %s failed: %s\n", arg, 
+			strerror(errno));
+	    }
 	}
 
-	if (fd < 0) {
-	    fprintf(stderr, "open of %s failed: %s\n", arg, strerror(errno));
-	} else {
+	if (fd >= 0) {
 	    rc = pkgReadHeader(fd, &h, &isSource, NULL, NULL);
 
 	    close(fd);
