@@ -326,6 +326,7 @@ int main(int argc, char ** argv) {
 	    { "percent", 0, &showPercents, 0 },
 	    { "prefix", 1, 0, GETOPT_PREFIX },
 	    { "provides", 0, 0, GETOPT_PROVIDES },
+	    { "qf", 1, 0, GETOPT_QUERYFORMAT },
 	    { "query", 0, 0, 'q' },
 	    { "querybynumber", 0, 0, GETOPT_QUERYBYNUMBER },
 	    { "queryformat", 1, 0, GETOPT_QUERYFORMAT },
