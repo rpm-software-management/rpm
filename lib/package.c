@@ -40,10 +40,8 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 		lead.major);
 
 	if (lead.major == 1) {
-	    message(MESS_DEBUG, "archvie offset is 0x%x\n", 
-			oldLead->archiveOffset);
 	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
-	    message(MESS_DEBUG, "archvie offset is %d\n", 
+	    message(MESS_DEBUG, "archive offset is %d\n", 
 			oldLead->archiveOffset);
 	    lseek(fd, oldLead->archiveOffset, SEEK_SET);
 	    
