@@ -88,6 +88,7 @@
 	- fix: segfault on erase if filestates is missing in header (#14679).
 	- fix: popt POST callbacks typo.
 	- fix: -Va broken, make db cursors per-iterator, not per-dbi.
+	- fix: segfault when globbing on "" (#15593).
 
 3.0.4 -> 3.0.5
 	- configure.in fiddles for BSD systems (Patrick Schoo).

@@ -539,7 +539,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	    if (argc == 0)
 		argv = xmalloc((argc+2) * sizeof(*argv));
 	    else
-		argv = xrealloc(argv, (argc+2) * sizeof(*argv));
+		argv = xrealloc(argv, (argc+1) * sizeof(*argv));
 if (_debug)
 fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, av[j]);
 	    argv[argc++] = xstrdup(av[j]);
@@ -596,12 +596,16 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 	Globfree(&gl);
 	xfree(globURL);
     }
-    argv[argc] = NULL;
-    if (argvPtr)
-	*argvPtr = argv;
-    if (argcPtr)
-	*argcPtr = argc;
-    rc = 0;
+    if (argv != NULL && argc > 0) {
+	argv[argc] = NULL;
+	if (argvPtr)
+	    *argvPtr = argv;
+	if (argcPtr)
+	    *argcPtr = argc;
+	rc = 0;
+    } else
+	rc = 1;
+
 
 exit:
     if (av)
