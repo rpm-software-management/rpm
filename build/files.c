@@ -86,7 +86,7 @@ int finish_filelists(Spec spec)
     FILE *file;
     struct PackageRec *pr = spec->packages;
     char *s, **files, **line;
-    char *version, *release, *packageVersion, *packageRelease, *docs, *name;
+    char *version, *release, *packageVersion, *docs, *name;
 
     headerGetEntry(spec->packages->header, RPMTAG_VERSION, NULL,
 	     (void *) &version, NULL);
@@ -119,20 +119,16 @@ int finish_filelists(Spec spec)
 	}
 	freeSplitString(files);
 
-	/* Handle subpackage version/release overrides */
+	/* Handle subpackage version overrides */
         if (!headerGetEntry(pr->header, RPMTAG_VERSION, NULL,
 		      (void *) &packageVersion, NULL)) {
             packageVersion = version;
-	}
-        if (!headerGetEntry(pr->header, RPMTAG_RELEASE, NULL,
-		      (void *) &packageRelease, NULL)) {
-            packageRelease = release;
 	}
 
 	/* Generate the doc script */
 	appendStringBuf(spec->doc, "DOCDIR=$RPM_ROOT_DIR/$RPM_DOC_DIR/");
 	headerGetEntry(pr->header, RPMTAG_NAME, NULL, (void *) &name, NULL);
-	sprintf(buf, "%s-%s-%s", name, packageVersion, packageRelease);
+	sprintf(buf, "%s-%s", name, packageVersion);
 	appendLineStringBuf(spec->doc, buf);
 	docs = getStringBuf(pr->doc);
 	if (*docs) {
@@ -262,8 +258,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 		    processFileListFailed = 1;
 		    fp++; continue;
 		}
-		sprintf(buf, "%s/%s-%s-%s", rpmGetVar(RPMVAR_DEFAULTDOCDIR), 
-			name, version, release);
+		sprintf(buf, "%s/%s-%s", rpmGetVar(RPMVAR_DEFAULTDOCDIR), 
+			name, version);
 		filename = buf;
 		passed_special_doc = 1;
 	    }

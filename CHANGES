@@ -5,6 +5,9 @@
 	  have been obsoleted
 	- updated rpmdepUpgradePackage() to deal with obsoletes tag
 	- moved popt into a separate library
+	- directory created with %doc is now name-version (dropped
+          the release)
+	- added buildarch/buildos macros
 
 2.4.6 -> 2.4.7:
 	- had some wrong month lengths in changelog date parsing

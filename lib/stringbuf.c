@@ -31,6 +31,10 @@ StringBuf newStringBuf(void)
 
 void freeStringBuf(StringBuf sb)
 {
+    if (! sb) {
+	return;
+    }
+    
     free(sb->buf);
     free(sb);
 }

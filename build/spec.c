@@ -1151,6 +1151,7 @@ Spec parseSpecAux(FILE *f, char *specfile, char *buildRootOverride,
     int gotRoot = 0;
     int versionMacroSet = 0;
     int releaseMacroSet = 0;
+    char *arch, *os;
 
     struct PackageRec *cur_package = NULL;
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
@@ -1176,6 +1177,11 @@ Spec parseSpecAux(FILE *f, char *specfile, char *buildRootOverride,
 
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
+
+    rpmGetArchInfo(&arch, NULL);
+    rpmGetOsInfo(&os, NULL);
+    addMacro("buildarch", arch);
+    addMacro("buildos", os);
 
     scriptProg[0] = '\0';
     cur_part = PREAMBLE_PART;

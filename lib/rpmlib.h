@@ -66,8 +66,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_ROOT                     1038
 #define RPMTAG_FILEUSERNAME             1039
 #define RPMTAG_FILEGROUPNAME            1040
-#define RPMTAG_EXCLUDE                  1041 /* not used - internal */
-#define RPMTAG_EXCLUSIVE                1042 /* not used - internal */
+#define RPMTAG_EXCLUDE                  1041 /* not used - depricated */
+#define RPMTAG_EXCLUSIVE                1042 /* not used - depricated */
 #define RPMTAG_ICON                     1043
 #define RPMTAG_SOURCERPM                1044
 #define RPMTAG_FILEVERIFYFLAGS          1045
