@@ -121,7 +121,14 @@ int generateRPM(char *name,       /* name-version-release         */
     writeHeader(fd, header);
     ifd = open(archiveTemp, O_RDONLY, 0644);
     while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
-	write(fd, buffer, count);
+        if (count == -1) {
+	    perror("Couldn't read archiveTemp");
+	    exit(1);
+        }
+        if (write(fd, buffer, count) < 0) {
+	    perror("Couldn't write package to temp file");
+	    exit(1);
+        }
     }
     close(ifd);
     close(fd);
@@ -149,7 +156,14 @@ int generateRPM(char *name,       /* name-version-release         */
     /* Append the header and archive */
     ifd = open(sigtarget, O_RDONLY);
     while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
-	write(fd, buffer, count);
+        if (count == -1) {
+	    perror("Couldn't read sigtarget");
+	    exit(1);
+        }
+        if (write(fd, buffer, count) < 0) {
+	    perror("Couldn't write package");
+	    exit(1);
+        }
     }
     close(ifd);
     close(fd);
