@@ -161,6 +161,9 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     if (mode & O_WRONLY) 
 	return 1;
 
+    if (!(perms & 0600))	/* XXX sanity */
+	perms = 0644;
+
     /* we should accept NULL as a valid prefix */
     if (!prefix) prefix="";
 
