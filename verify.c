@@ -92,7 +92,7 @@ static void verifyDependencies(rpmdb db, Header h) {
 	    }
 	}
 	printf("\n");
-	free(conflicts);
+	rpmdepFreeConflicts(conflicts, numConflicts);
     }
 }
 
