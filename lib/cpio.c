@@ -123,11 +123,18 @@ static inline int padoutfd(int fd, size_t * where, int modulo) {
 }
 
 static int strntoul(const char * str, char ** endptr, int base, int num) {
-    char * buf;
+    char * buf, * end;
+    unsigned long return;
 
     buf = alloca(num + 1);
     strncpy(buf, str, num);
     buf[num] = '\0';
+
+    ret = strtoul(buf, &end, base);
+    if (*end)
+	*endptr = str + (end - buf);
+    else
+	*endptr = "";
 
     return strtoul(buf, endptr, base);
 }
