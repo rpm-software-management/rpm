@@ -1,3 +1,9 @@
+2.0.9 -> 2.0.10:
+	- fixed the fix to rpm -q <num> bug
+	  to query by number you now need --querybynumber
+	- made arch_sensitive on by default
+	- handle # comments in preamble
+
 2.0.8 -> 2.0.9:
 	- %files -f <file>
 	- prelim Require/Provide handling
