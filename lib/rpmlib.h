@@ -292,10 +292,10 @@ typedef enum rpmfileStates_e {
 typedef	enum rpmfileAttrs_e {
     RPMFILE_CONFIG	= (1 << 0),	/*!< from %%config */
     RPMFILE_DOC		= (1 << 1),	/*!< from %%doc */
-    RPMFILE_DONOTUSE	= (1 << 2),	/*!< @todo Document. */
+    RPMFILE_DONOTUSE	= (1 << 2),	/*!< @todo (unimplemented) from %donotuse. */
     RPMFILE_MISSINGOK	= (1 << 3),	/*!< from %%config(missingok) */
     RPMFILE_NOREPLACE	= (1 << 4),	/*!< from %%config(noreplace) */
-    RPMFILE_SPECFILE	= (1 << 5),	/*!< @todo Document. */
+    RPMFILE_SPECFILE	= (1 << 5),	/*!< @todo (unnecessary) marks 1st file in srpm. */
     RPMFILE_GHOST	= (1 << 6),	/*!< from %%ghost */
     RPMFILE_LICENSE	= (1 << 7),	/*!< from %%license */
     RPMFILE_README	= (1 << 8)	/*!< from %%readme */
@@ -858,14 +858,24 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 
 /** \ingroup rpmtrans
  * Determine package order in a transaction set according to dependencies.
- * Orders packages, returns error on circular dependencies. No dependency
- * check is done, use rpmdepCheck() for that. If dependencies are not
- * satisfied a "best-effort" ordering is attempted.
  *
- * @param order		rpm transaction set
+ * Order packages, returning error if circular dependencies cannot be
+ * eliminated by removing PreReq's from the loop(s). Only dependencies from
+ * added or removed packages are used to determine ordering using a
+ * topological sort (Knuth vol. 1, p. 262). Use rpmdepCheck() to verify
+ * that all dependencies can be reolved.
+ *
+ * The order ends up as installed packages followed by removed packages,
+ * with packages removed for upgrades immediately following the new package
+ * to be installed.
+ *
+ * The operation would be easier if we could sort the addedPackages array in the
+ * transaction set, but we store indexes into the array in various places.
+ *
+ * @param rpmdep	transaction set
  * @return		0 if packages are successfully ordered, 1 otherwise
  */
-int rpmdepOrder(rpmTransactionSet order)	/*@modifies order @*/;
+int rpmdepOrder(rpmTransactionSet rpmdep)	/*@modifies rpmdep @*/;
 
 /** \ingroup rpmtrans
  * Destroy dependency conflicts storage.
