@@ -70,6 +70,34 @@
 #define INSTALL_REPLACEFILES	2
 #define INSTALL_TEST		4
 
+/* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
+
+#define RPMVAR_SOURCEDIR     		0
+#define RPMVAR_BUILDDIR      		1
+#define RPMVAR_DOCDIR        		2
+#define RPMVAR_OPTFLAGS      		3
+#define RPMVAR_TOPDIR        		4
+#define RPMVAR_SPECDIR       		5
+#define RPMVAR_ROOT          		6
+#define RPMVAR_RPMDIR        		7
+#define RPMVAR_SRPMDIR       		8
+#define RPMVAR_ARCHSENSITIVE 		9
+#define RPMVAR_REQUIREDISTRIBUTION	10
+#define RPMVAR_REQUIREGROUP		11
+#define RPMVAR_REQUIREVENDOR		12
+#define RPMVAR_DISTRIBUTION		13
+#define RPMVAR_VENDOR			14
+#define RPMVAR_MESSAGELEVEL		15
+#define RPMVAR_REQUIREICON		16
+#define RPMVAR_TIMECHECK		17
+
+#define RPMVAR_LASTVAR	     14		/* this is important to keep right! */
+
+char *getVar(int var);
+void setVar(int var, char *val);
+
+int readConfigFiles(void);
+
 typedef struct rpmdb * rpmdb;
 
 typedef void (*notifyFunction)(const unsigned long amount,
