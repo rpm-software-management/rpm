@@ -354,9 +354,24 @@ static int expandRegular(CFD_t * cfd, struct cpioHeader * hdr,
     struct cpioCallbackInfo cbInfo;
     struct stat sb;
 
-    if (!lstat(hdr->path, &sb))
-	if (unlink(hdr->path))
+    /* Rename the old file before attempting unlink to avoid EBUSY errors */
+    if (!lstat(hdr->path, &sb)) {
+	strcpy(buf, hdr->path);
+	strcpy(buf, "-RPMDELETE");
+	if (rename(hdr->path, buf)) {
+	    fprintf(stderr, _("can't rename %s to %x: %s\n"),
+		hdr->path, buf, strerror(errno));
+            return CPIOERR_UNLINK_FAILED;
+	}
+
+	if (unlink(buf)) {
+	    fprintf(stderr, _("can't unlink %s: %s\n"),
+		buf, strerror(errno));
+#if 0
 	    return CPIOERR_UNLINK_FAILED;
+#endif
+	}
+    }
 
     out = fdOpen(hdr->path, O_CREAT | O_WRONLY, 0);
     if (fdFileno(out) < 0) 
