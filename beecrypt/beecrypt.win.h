@@ -52,9 +52,10 @@
 #endif
 
 #if defined(_MSC_VER) || __MWERKS__
+#include <stdlib.h>
+#include <string.h>
+
 #define HAVE_ERRNO_H			1
-#define HAVE_STRING_H			1
-#define HAVE_STDLIB_H			1
 #define HAVE_CTYPE_H			1
 #define HAVE_FCNTL_H			1
 #define HAVE_TIME_H				1
@@ -87,9 +88,6 @@
 #endif
 
 #if __MWERKS__
-#define HAVE_UNISTD_H			1
-#define HAVE_MALLOC_H			1
-
 #define HAVE_SYS_STAT_H			0
 
 #define HAVE_LONG_LONG			1
@@ -109,9 +107,6 @@ typedef unsigned long		uint32_t;
 typedef unsigned long long	uint64_t;
 
 #elif defined(_MSC_VER)
-#define HAVE_UNISTD_H			0
-#define HAVE_MALLOC_H			1
-
 #define HAVE_SYS_STAT_H			1
 
 #define HAVE_LONG_LONG			0

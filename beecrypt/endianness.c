@@ -21,12 +21,11 @@
  * \brief Endian-dependant encoding/decoding.
  * \author Bob Deblier <bob.deblier@pandora.be>
  */
- 
+
 #include "system.h"
 #include "endianness.h"
 #include "debug.h"
 
-/*@-bitwisesigned -shiftimplementation@*/
 int16_t swap16(int16_t n)
 {
 	return (    ((n & 0xff) << 8) |
@@ -66,4 +65,3 @@ int64_t swap64(int64_t n)
 				((n & ((int64_t) 0xff) << 48) >> 40) |
 				((n & ((int64_t) 0xff) << 56) >> 56) );
 }
-/*@=bitwisesigned =shiftimplementation@*/

@@ -166,7 +166,7 @@ AC_ARG_WITH(mtmalloc,[  --with-mtmalloc         links against the mtmalloc libra
   fi
   ],[ac_with_mtmalloc=no])
 
-AC_ARG_WITH(java,[  --with-java             creates the java glue code [default=no]],[
+AC_ARG_WITH(java,[  --with-java         creates the java glue code [default=no]],[
   if test "$withval" = no; then
     ac_with_java=no
   else
@@ -360,12 +360,30 @@ AC_HEADER_TIME
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h malloc.h termio.h termios.h])
 AC_CHECK_HEADERS([sys/ioctl sys/audioio.h sys/soundcard.h])
 
-if test "$ac_enable_threads" = yes; then
-  AC_CHECK_HEADERS([thread.h pthread.h synch.h semaphore.h])
+bc_include_stdlib_h=
+bc_include_malloc_h=
+bc_include_string_h=
+if test "$ac_cv_header_stdlib_h" = yes; then
+  bc_include_stdlib_h="#include <stdlib.h>"
+elif test "$ac_cv_header_malloc_h" = yes; then
+  bc_include_malloc_h="#include <malloc.h>"
 fi
-
 if test "$ac_with_mtmalloc" = yes; then
   AC_CHECK_HEADERS(mtmalloc.h)
+  if test "$ac_cv_header_mtmalloc_h" = yes; then
+    bc_include_stdlib_h=
+    bc_include_malloc_h="#include <mtmalloc.h>"
+  fi
+fi
+if test "$ac_cv_header_string_h" = yes; then
+  bc_include_string_h="#include <string.h>"
+fi
+AC_SUBST(INCLUDE_STDLIB_H,$bc_include_stdlib_h)
+AC_SUBST(INCLUDE_MALLOC_H,$bc_include_malloc_h)
+AC_SUBST(INCLUDE_STRING_H,$bc_include_string_h)
+
+if test "$ac_enable_threads" = yes; then
+  AC_CHECK_HEADERS([thread.h pthread.h synch.h semaphore.h])
 fi
 
 # Checks for libraries.
@@ -389,9 +407,9 @@ if test "$ac_enable_threads" = yes; then
     AC_MSG_WARN([Don't know which thread library to check for])
   fi
 fi
-AC_SUBST(INCLUDE_SYNCH_H, $bc_include_synch_h)
-AC_SUBST(INCLUDE_PTHREAD_H, $bc_include_pthread_h)
-AC_SUBST(TYPEDEF_BC_LOCK_T, $bc_typedef_bc_lock_t)
+AC_SUBST(INCLUDE_SYNCH_H,$bc_include_synch_h)
+AC_SUBST(INCLUDE_PTHREAD_H,$bc_include_pthread_h)
+AC_SUBST(TYPEDEF_BC_LOCK_T,$bc_typedef_bc_lock_t)
 
 if test "$ac_enable_aio" = yes; then
   BEECRYPT_WORKING_AIO
@@ -458,7 +476,7 @@ EOF
           ac_cv_java_include="$ac_cv_java_include -I$gcjpath/include"
         fi
       else
-        AC_MSG_WARN([java headers not found, disabling java])
+        AC_MSG_WARN([java headers not found, disabling java glue])
         ac_cv_java_headers=no
         ac_cv_java_include=
         ac_with_java=no
@@ -466,12 +484,12 @@ EOF
       rm -fr conftest*
     ])
   else
-  AC_CHECK_PROG(ac_cv_have_java, java, yes, no)
-  if test "$ac_cv_have_java" = yes; then
-    AC_CHECK_PROG(ac_cv_have_javac, javac, yes, no)
-    if test "$ac_cv_have_javac" = yes; then
-      AC_CACHE_CHECK([for java native interface headers],ac_cv_java_include,[
-        cat > conftest.java << EOF
+    AC_CHECK_PROG(ac_cv_have_java, java, yes, no)
+    if test "$ac_cv_have_java" = yes; then
+      AC_CHECK_PROG(ac_cv_have_javac, javac, yes, no)
+      if test "$ac_cv_have_javac" = yes; then
+        AC_CACHE_CHECK([for java native interface headers],ac_cv_java_include,[
+          cat > conftest.java << EOF
 public class conftest
 {
   public static void main(String[[]] argv)
@@ -480,20 +498,20 @@ public class conftest
   }
 }
 EOF
-        java_home=`javac conftest.java; java -classpath . conftest`
-        case $target_os in
-        cygwin*)
-          java_home=`cygpath -u -p "$java_home"` ;;
-        esac
-	if test -d "$java_home"; then
+          java_home=`javac conftest.java; java -classpath . conftest`
           case $target_os in
-          darwin*)
-	    java_include="$java_home/../../../Headers" ;;
-          *)
-	    java_include="$java_home"/../include ;;
+          cygwin*)
+            java_home=`cygpath -u -p "$java_home"` ;;
           esac
-	  if test -d "$java_include"; then
-            ac_cv_java_headers=yes
+          if test -d "$java_home"; then
+            case $target_os in
+            darwin*)
+              java_include="$java_home/../../../Headers" ;;
+            *)
+              java_include="$java_home"/../include ;;
+            esac
+            if test -d "$java_include"; then
+              ac_cv_java_headers=yes
               ac_cv_java_include="-I$java_include"
               case $target_os in
               aix*)
@@ -511,27 +529,27 @@ EOF
                 AC_MSG_WARN([please add appropriate -I$java_include/<operating system> flag])
                 ac_cv_java_include="-I$java_include" ;;
               esac
-          else
-            AC_MSG_WARN([java headers not found, disabling java])
-            ac_cv_java_headers=no
+            else
+              AC_MSG_WARN([java headers not found, disabling java])
+              ac_cv_java_headers=no
               ac_cv_java_include=
-            ac_with_java=no
+              ac_with_java=no
+            fi
           fi
-        fi
-        rm -fr conftest*
-      ])
-    else
-      AC_MSG_WARN([javac not found, disabling java])
-      ac_cv_java_headers=no
+          rm -fr conftest*
+        ])
+      else
+        AC_MSG_WARN([javac not found, disabling java])
+        ac_cv_java_headers=no
         ac_cv_java_include=
         ac_with_java=no
+      fi
+    else
+      AC_MSG_WARN([java not found, disabling java])
+      ac_cv_java_headers=no
+      ac_with_java=no
     fi
-  else
-    AC_MSG_WARN([java not found, disabling java])
-    ac_cv_java_headers=no
-    ac_with_java=no
   fi
-fi
 fi
 
 if test "$ac_with_java" = yes ; then
@@ -689,8 +707,8 @@ if test "$ac_enable_debug" != yes; then
   BEECRYPT_ASM_ALIGN
 fi
 
-  # generate assembler source files from m4 files
-  BEECRYPT_ASM_SOURCES
+# generate assembler source files from m4 files
+BEECRYPT_ASM_SOURCES
 
 # Check for standard types and integers of specific sizes
 BEECRYPT_INT_TYPES

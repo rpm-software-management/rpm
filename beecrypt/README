@@ -2,7 +2,7 @@ Welcome to the BeeCrypt crypto library!
 
 Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
 
-Author: Bob Deblier <bob@virtualunlimited.com>
+Author: Bob Deblier <bob.deblier@pandora.be>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,16 @@ this distribution.
 
 
 
-Welcome to version 2.2.0 of BeeCrypt:
+Welcome to version 3.0.0 of BeeCrypt:
 
 AES support has been added, and the library has been thoroughly debugged,
 with the addition of unit tests. Once you've built the library, you can
 verify the correct functioning with 'make check'.
+
+Multi-precision integer routines should now perform dramatically better 
+an 64-bit processors, especially Alpha and Itanium.
+
+Benchmarks can be obtained with 'make bench'.
 
 As usual, your comments are welcome.
 
@@ -93,8 +98,6 @@ Included in the library are:
     - DHAES encryption scheme
 
 Planned for the near future are:
-    - mp64 library for operation on 64-bit computers (and possibly also
-      on certain 32-bit platforms)
     - compliance with and compliance statements for IEEE P1363
     - more blockciphers (Twofish, ... )
 	- more hash functions (RIPEMD-160, SHA-384, SHA-512, HAVAL, Tiger)
@@ -103,30 +106,28 @@ Planned for the near future are:
     - more blockcipher modes (OFB, ... )
 
 The library has been tested on the following platforms:
+	- AIX 5.1 ppc
+	- AIX 5.1 ppc64
     - FreeBSD 4.0 alpha
     - FreeBSD 4.0, 4.2 x86
-        - includes assembler optimization (tuned for Pentium and higher)
     - Linux glibc 2.x alpha
     - Linux glibc 2.x arm
-        - includes assembler optimization
+	- Linux glibc 2.x ia64
     - Linux glibc 2.x ppc
-        - includes assembler optimization for 32-bit PowerPC
-     - Linux glibc 2.x sparc
-        - includes assembler optimization for Sparc v8
+    - Linux glibc 2.x sparc
     - Linux glibc 2.x x86
-        - includes assembler optimization (tuned for Pentium and higher)
-    - Solaris 2.6/2.7/2.8 sparc (with Forte or gnu compilers)
-        - includes assembler optimization for Sparc v8, v8plus and v9
-    - Solaris 2.7/2.8 x86 (with Forte or gnu compilers)
-        - includes assembler optimization (tuned for Pentium and higher)
+    - Solaris 2.6/2.7/2.8/2.9 sparc (with Forte or gnu compilers)
+    - Solaris 2.7/2.8 x86 (with Forte or GNU compilers)
     - Tru64 Unix alpha
-    - Win32 (Windows 95, 98, NT 4.0, 2000)
-        - includes assembler optimization (tuned for Pentium and higher)
+    - Win32 (Windows 95, 98, NT 4.0, 2000, XP)
 
 The library is currently in the process of being ported to:
     - Darwin (apparently Apple has decided to change the PPC assembler format;
       this will need a fix)
-    - Cygwin (Can't seem to get the DLL to build properly with the current version of the autotools)
+    - Cygwin (Can't seem to get the DLL to build properly with the current
+      version of the autotools)
+    - HP/UX is a pain in the backside; I'll try getting it working, but the
+      configure script doesn't seem capable of properly detecting gettimeofday.
 
 For more information, refer to the HTML documentation in the docs directory.
 
@@ -135,7 +136,7 @@ enhancements, please see the beecrypt-specific website:
 
 http://beecrypt.virtualunlimited.com/
 
-or contact me at mailto:beecrypt@virtualunlimited.com
+or contact me at mailto:bob.deblier@pandora.be
 
 Sincerely,
 

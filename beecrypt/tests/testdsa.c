@@ -42,46 +42,12 @@ static const char* dsa_hm = "a9993e364706816aba3e25717850c26c9cd0d89d";
 static const char* expect_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
 static const char* expect_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
 
-/* we need to fake a random generator to pass k into the signing algorithm */
-
-int fake_setup(randomGeneratorParam* p)
-{
-	return 0;
-}
-
-int fake_seed(randomGeneratorParam* p, const byte* data, size_t size)
-{
-	return 0;
-}
-
-int fake_next(randomGeneratorParam* p, byte* data, size_t size)
-{
-	mpnumber tmp;
-
-	mpnzero(&tmp);
-	mpnsethex(&tmp, dsa_k);
-
-	memcpy(data, tmp.data, size);
-
-	mpnfree(&tmp);
-
-	return 0;
-}
-
-int fake_cleanup(randomGeneratorParam* p)
-{
-	return 0;
-}
-
-const randomGenerator fakeprng = { "fake", 4, fake_setup, fake_seed, fake_next, fake_cleanup };
-
 int main()
 {
 	int failures = 0;
 
 	dlkp_p keypair;
-	mpnumber hm, r, s, e_r, e_s;
-	randomGeneratorContext rngc;
+	mpnumber hm, r, s, k, e_r, e_s;
 
 	dlkp_pInit(&keypair);
 
@@ -93,57 +59,20 @@ int main()
 
 	mpnzero(&e_r);
 	mpnzero(&e_s);
+
 	mpnsethex(&e_r, expect_r);
 	mpnsethex(&e_s, expect_s);
 
 	mpnzero(&hm);
 	mpnsethex(&hm, dsa_hm);
 
-	/* first test, from NIST FIPS 186-1 */
 	mpnzero(&r);
 	mpnzero(&s);
 
-	if (randomGeneratorContextInit(&rngc, &fakeprng))
-		return -1;
-
-	if (dsasign(&keypair.param.p, &keypair.param.q, &keypair.param.g, &rngc, &hm, &keypair.x, &r, &s))
-		return -1;
-
-	if (mpnex(e_r.size, e_r.data, r.size, r.data) || mpnex(e_s.size, e_s.data, s.size, s.data))
-	{
-		printf("failed test vector 1\n");
+	/* first test, verify the signature result from NIST FIPS 186-1 */
+	if (!dsavrfy(&keypair.param.p, &keypair.param.q, &keypair.param.g, &hm, &keypair.y, &e_r, &e_s))
 		failures++;
-	}
-	else
-		printf("ok\n");
 
-	if (randomGeneratorContextFree(&rngc))
-		return -1;
-
-	mpnfree(&s);
-	mpnfree(&r);
-
-	/* second test, sign a hash and verify the signature */
-	mpnzero(&s);
-	mpnzero(&r);
-
-	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()))
-		return -1;
-
-	if (dsasign(&keypair.param.p, &keypair.param.q, &keypair.param.g, &rngc, &hm, &keypair.x, &r, &s))
-		return -1;
-
-	if (!dsavrfy(&keypair.param.p, &keypair.param.q, &keypair.param.g, &hm, &keypair.y, &r, &s))
-	{
-		printf("failed test vector 2\n");
-		failures++;
-	}
-	else
-		printf("ok\n");
-
-	if (randomGeneratorContextFree(&rngc))
-		return -1;
-		
 	mpnfree(&s);
 	mpnfree(&r);
 

@@ -20,20 +20,38 @@ dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 ifelse(substr(ASM_OS,0,5),linux,`
 define(USE_SIZE_DIRECTIVE,yes)
+define(USE_TYPE_DIRECTIVE,yes)
 ')
 
 define(SYMNAME,`GSYM_PREFIX`$1'')
 define(LOCAL,`LSYM_PREFIX`$1'')
 
-ifdef(ALIGN,,`
-define(ALIGN)
-')
+ifdef(`ALIGN',,`define(`ALIGN',`')')
 
+ifelse(USE_TYPE_DIRECTIVE,yes,`
+ifelse(SUBSTR(ASM_ARCH,0,3),arm,`
+define(FUNCTION_TYPE,`function')
+',`
+ifelse(SUBSTR(ASM_ARCH,0,5),sparc,`
+define(FUNCTION_TYPE,`#function')
+',`
+define(FUNCTION_TYPE,`@function')
+')
+')
+define(C_FUNCTION_BEGIN,`
+	TEXTSEG
+	ALIGN
+	GLOBL SYMNAME($1)
+	.type SYMNAME($1),FUNCTION_TYPE
+SYMNAME($1):
+')
+',`
 define(C_FUNCTION_BEGIN,`
 	TEXTSEG
 	ALIGN
 	GLOBL SYMNAME($1)
 SYMNAME($1):
+')
 ')
 
 ifelse(USE_SIZE_DIRECTIVE,yes,`

@@ -25,9 +25,9 @@ AUTOMAKE_OPTIONS = gnu no-dependencies
 INCLUDES = -I$(top_srcdir)
 LDADD = $(top_builddir)/libbeecrypt.la
 
-TESTS = testmd5 testsha1 testsha256 testhmacmd5 testhmacsha1 testaes testblowfish testmp testmpinv testrsa testdldp
+TESTS = testmd5 testsha1 testsha256 testhmacmd5 testhmacsha1 testaes testblowfish testmp testmpinv testdsa testrsa testdldp
 
-check_PROGRAMS = testmd5 testsha1 testsha256 testhmacmd5 testhmacsha1 testaes testblowfish testmp testmpinv testrsa testdldp
+check_PROGRAMS = testmd5 testsha1 testsha256 testhmacmd5 testhmacsha1 testaes testblowfish testmp testmpinv testdsa testrsa testdldp
 
 testmd5_SOURCES = testmd5.c
 
@@ -46,6 +46,8 @@ testblowfish_SOURCES = testblowfish.c testutil.c
 testmp_SOURCES = testmp.c
 
 testmpinv_SOURCES = testmpinv.c
+
+testdsa_SOURCES = testdsa.c
 
 testrsa_SOURCES = testrsa.c
 

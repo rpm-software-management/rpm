@@ -391,6 +391,20 @@ int blowfishSetIV(blowfishParam* bp, const byte* iv)
 }
 #endif
 
+int blowfishBlowit(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
+{
+	register uint32_t xl = src[0], xr = src[1];
+	register uint32_t* p = bp->p;
+	register uint32_t* s = bp->s;
+
+	EROUND(xl, xr); EROUND(xr, xl);
+
+	dst[1] = xr;
+	dst[0] = xl;
+
+	return 0;
+}
+
 #ifndef ASM_BLOWFISHENCRYPT
 int blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 {

@@ -20,12 +20,12 @@
 
 /*!\file base64.c
  * \brief Base64 encoding and decoding.
- * \author Bob Deblier <bob@virtualunlimited.com>
+ * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
 #include "system.h"
 #include "base64.h"
-#include "endianness.h"		/* XXX swapu32 for crc */
+#include "endianness.h"
 #include "debug.h"
 
 /*@unchecked@*/

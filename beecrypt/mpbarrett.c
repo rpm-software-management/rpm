@@ -23,7 +23,7 @@
  *        "Handbook of Applied Cryptography", Chapter 14.3.3
  *        Menezes, van Oorschot, Vanstone
  *        CRC Press
- * \author Bob Deblier <bob@virtualunlimited.com>
+ * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup MP__m
  */
 
