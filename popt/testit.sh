@@ -29,8 +29,8 @@ run test1 "test1 - 10" "arg1: 0 arg2: (none) arg3: 50" -3 50
 run test1 "test1 - 11" "arg1: 0 arg2: bar" -T bar
 run test1 "test1 - 12" "arg1: 1 arg2: (none)" -O 
 run test1 "test1 - 13" "arg1: 1 arg2: foo" -OT foo
-run test1 "test1 - 14" "" --echo-args
-run test1 "test1 - 15" "--arg1" --echo-args --arg1
-run test1 "test1 - 16" "--arg2 something" -T something -e
-run test1 "test1 - 17" "--arg2 something -- more args" -T something -a more args
-run test1 "test1 - 18" "--echo-args -a" --echo-args -e -a
+run test1 "test1 - 14" "./test1 ;" --echo-args
+run test1 "test1 - 15" "./test1 ; --arg1" --echo-args --arg1
+run test1 "test1 - 16" "./test1 ; --arg2 something" -T something -e
+run test1 "test1 - 17" "./test1 ; --arg2 something -- more args" -T something -a more args
+run test1 "test1 - 18" "./test1 ; --echo-args -a" --echo-args -e -a
