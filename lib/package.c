@@ -53,7 +53,7 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 	if (lead.major == 1) {
 	    readOldHeader(fd, hdr, isSource);
 	    arch = getArchNum();
-	    addEntry(hdr, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
+	    addEntry(*hdr, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
 	} else if (lead.major == 2) {
 	    if (!readSignature(fd, lead.signature_type, NULL)) {
 	       return 2;
