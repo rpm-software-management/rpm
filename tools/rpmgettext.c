@@ -2,13 +2,19 @@
 
 #include "system.h"
 
+#include "../build/rpmbuild.h"
+#include "../build/buildio.h"
+
 #include "rpmlead.h"
 #include "signature.h"
 #include "header.h"
+
 #include "intl.h"
 
+#if 0
 #ifndef	FREE
 #define FREE(_x) { if (_x) free(_x); (_x) = NULL; }
+#endif
 #endif
 
 static int escape = 1;	/* use octal escape sequence for !isprint(c)? */
@@ -146,6 +152,8 @@ contractRpmPO(char *t, const char *s)
     *t = '\0';
 }
 
+/* ================================================================== */
+
 static int poTags[] = {
     RPMTAG_DESCRIPTION,
     RPMTAG_GROUP,
@@ -160,7 +168,7 @@ static int poTags[] = {
 };
 
 static int
-dofile(int fd, const char *file, FILE *fp)
+gettextfile(int fd, const char *file, FILE *fp)
 {
     struct rpmlead lead;
     Header h;
@@ -189,7 +197,7 @@ dofile(int fd, const char *file, FILE *fp)
 	expandRpmPO(buf, e);
 	fprintf(fp, "msgid %s\n", buf);
 	if (count <= 1)
-	    fprintf(fp, "nsgstr \"\"\n");
+	    fprintf(fp, "msgstr \"\"\n");
 	for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
 		expandRpmPO(buf, e);
 		fprintf(fp, "msgstr(%s) %s\n", langs[i], buf);
@@ -204,15 +212,186 @@ dofile(int fd, const char *file, FILE *fp)
     return 0;
 }
 
+/* ================================================================== */
+
+static int
+readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs, CSA_t *csa)
+{
+    int fdi = 0;
+    Spec spec;
+    int rc;
+
+    if (fileName != NULL && (fdi = open(fileName, O_RDONLY, 0644)) < 0) {
+	perror("cannot open package");
+	exit(1);
+    }
+
+    /* Get copy of lead */
+    if ((rc = read(fdi, lead, sizeof(*lead))) != sizeof(*lead)) {
+	perror("cannot read lead");
+	exit(1);
+    }
+    lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
+
+    /* Reallocate build data structures */
+    spec = newSpec();
+    spec->packages = newPackage(spec);
+
+    /* XXX the header just allocated will be allocated again */
+    if (spec->packages->header) {
+	headerFree(spec->packages->header);
+	spec->packages->header = NULL;
+    }
+
+   /* Read the rpm lead and header */
+    rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
+    switch (rc) {
+    case 1:
+	fprintf(stderr, _("error: %s is not an RPM package\n"), fileName);
+	exit(1);
+    case 0:
+	break;
+    default:
+	fprintf(stderr, _("error: reading header from %s\n"), fileName);
+	exit(1);
+	break;
+    }
+
+    if (specp)		*specp = spec;
+
+    if (csa) {
+	csa->cpioFdIn = fdi;
+    } else if (fdi != 0) {
+	close(fdi);
+    }
+
+    return 0;
+}
+
+static int
+rewriteBinaryRPM(char *fni, char *fno)
+{
+    struct rpmlead lead;	/* XXX FIXME: exorcize lead/arch/os */
+    Header sigs;
+    Spec spec;
+    CSA_t csabuf, *csa = &csabuf;
+    int rc;
+
+    csa->cpioArchiveSize = 0;
+    csa->cpioFdIn = -1;
+    csa->cpioList = NULL;
+    csa->cpioCount = 0;
+    csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
+
+    /* Read rpm and (partially) recreate spec/pkg control structures */
+    rc = readRPM(fni, &spec, &lead, &sigs, csa);
+    if (rc)
+	return rc;
+
+    /* Rewrite the rpm */
+    if (lead.type == RPMLEAD_SOURCE) {
+	return writeRPM(spec->packages->header, fno, (int)lead.type,
+		csa, spec->passPhrase, &(spec->cookie));
+    } else {
+	return writeRPM(spec->packages->header, fno, (int)lead.type,
+		csa, spec->passPhrase, NULL);
+    }
+}
+
+/* ================================================================== */
+
 int debug = 0;
 int verbose = 0;
 char *inputdir = NULL;
 char *outputdir = NULL;
 int gentran = 0;
 
+#define	STDINFN	"<stdin>"
+
+static int
+rpmgettext(int fd, const char *file, FILE *ofp)
+{
+	char fni[BUFSIZ], fno[BUFSIZ];
+
+	if (file == NULL)
+	    file = STDINFN;
+
+	if (!strcmp(file, STDINFN))
+	    return gettextfile(fd, file, ofp);
+
+	fni[0] = '\0';
+	if (inputdir && *file != '/') {
+	    strcpy(fni, inputdir);
+	    strcat(fni, "/");
+	}
+	strcat(fni, file);
+
+	if (gentran) {
+	    char *op;
+	    fno[0] = '\0';
+	    if (outputdir && *file != '/') {
+		strcpy(fno, outputdir);
+		strcat(fno, "/");
+	    }
+	    strcat(fno, file);
+
+	    if ((op = strrchr(fno, '-')) != NULL &&
+		(op = strchr(op, '.')) != NULL)
+		    strcpy(op, ".tran");
+
+	    if ((ofp = fopen(fno, "w")) == NULL) {
+		fprintf(stderr, "Can't open %s\n", fno);
+		return 4;
+	    }
+	}
+
+	if ((fd = open(fni, O_RDONLY, 0644)) < 0) {
+	    perror(fni);
+	    return 2;
+	}
+
+	if (gettextfile(fd, fni, ofp)) {
+	    return 3;
+	}
+
+	if (ofp != stdout)
+	    fclose(ofp);
+	if (fd != 0)
+	    close(fd);
+
+	return 0;
+}
+
+static int
+rpmputtext(const char *file)
+{
+	char fni[BUFSIZ], fno[BUFSIZ];
+
+	fni[0] = '\0';
+	if (inputdir && *file != '/') {
+	    strcpy(fni, inputdir);
+	    strcat(fni, "/");
+	}
+	strcat(fni, file);
+
+	fno[0] = '\0';
+	if (outputdir && *file != '/') {
+	    strcpy(fno, outputdir);
+	    strcat(fno, "/");
+	    strcat(fno, file);
+	} else {
+	    strcat(fno, file);
+	    strcat(fno, ".out");
+	}
+
+	return rewriteBinaryRPM(fni, fno);
+
+}
+
 int
 main(int argc, char **argv)
 {
+    int rc = 0;
     int c;
     extern char *optarg;
     extern int optind;
@@ -242,59 +421,22 @@ main(int argc, char **argv)
 	errflg++;
 	break;
     }
+
     if (errflg) {
 	exit(1);
     }
 
+    /* XXX I don't want to read rpmrc yet */
+    rpmSetVar(RPMVAR_TMPPATH, "/tmp");
+
     if (optind == argc) {
-	return dofile(0, "<stdin>", stdout);
+	rc = rpmgettext(0, STDINFN, stdout);
+    } else {
+	for ( ; optind < argc; optind++ ) {
+	    if ((rc = rpmgettext(0, argv[optind], stdout)) != 0)
+		break;
+	}
     }
 
-    for ( ; optind < argc; optind++ ) {
-	char *file, ifn[BUFSIZ], ofn[BUFSIZ];
-	FILE *ofp;
-	int fd;
-
-	file = argv[optind];
-	ofp = stdout;
-
-	ifn[0] = '\0';
-	if (inputdir && *file != '/') {
-		strcpy(ifn, inputdir);
-		strcat(ifn, "/");
-	}
-	strcat(ifn, file);
-
-	if (gentran) {
-	    char *op;
-	    ofn[0] = '\0';
-	    if (outputdir && *file != '/') {
-		strcpy(ofn, outputdir);
-		strcat(ofn, "/");
-	    }
-	    strcat(ofn, file);
-
-	    if ((op = strrchr(ofn, '-')) != NULL &&
-		(op = strchr(op, '.')) != NULL)
-		    strcpy(op, ".tran");
-
-	    if ((ofp = fopen(ofn, "w")) == NULL) {
-		fprintf(stderr, "Can't open %s\n", ofn);
-		exit(4);
-	    }
-	}
-
-	if ((fd = open(ifn, O_RDONLY, 0644)) < 0) {
-	    perror(ifn);
-	    exit(2);
-	}
-	if (dofile(fd, ifn, ofp)) {
-		exit(3);
-	}
-	if (ofp != stdout)
-		fclose(ofp);
-	close(fd);
-    }
-
-    return 0;
+    return rc;
 }
