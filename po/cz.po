@@ -1,32 +1,26 @@
-# Turkish Messages for RPM
-# Revised by KGF <kgf@wpi.edu>, 1998.
-#
-# Translated from de.po 
-#
-# Türkçe Sözlük  http://www.linux.org.tr/sozluk.html
-# bazý sorunlu kelimeler 'içinde' orjinal olarak verildi.. 
-#
-# Ama baþlangýç için idare eder gibi.. 
-# 
-# May 5, 1998 
-#
+msgid ""
+msgstr ""
+"Date: 1998-05-02 21:41:47-0400\n"
+"From: Erik Troan <ewt@lacrosse.redhat.com>\n"
+"Content-Type: text/plain; charset=\n"
+"Xgettext-Options: --default-domain=rpm --add-comments --keyword=_ --keyword=N_\n"
+"Files: /home/ewt/redhat/rpm/rpm.c /home/ewt/redhat/rpm/query.c /home/ewt/redhat/rpm/install.c /home/ewt/redhat/rpm/verify.c /home/ewt/redhat/rpm/checksig.c /home/ewt/redhat/rpm/url.c /home/ewt/redhat/rpm/ftp.c /home/ewt/redhat/rpm/lib/uninstall.c /home/ewt/redhat/rpm/lib/rpmdb.c /home/ewt/redhat/rpm/lib/signature.c /home/ewt/redhat/rpm/lib/dbindex.c /home/ewt/redhat/rpm/lib/depends.c /home/ewt/redhat/rpm/lib/formats.c /home/ewt/redhat/rpm/lib/fs.c /home/ewt/redhat/rpm/lib/header.c /home/ewt/redhat/rpm/lib/lookup.c /home/ewt/redhat/rpm/lib/rebuilddb.c /home/ewt/redhat/rpm/lib/messages.c /home/ewt/redhat/rpm/lib/package.c /home/ewt/redhat/rpm/lib/rpmlead.c /home/ewt/redhat/rpm/lib/rpmrc.c\n"
 
 #: /home/ewt/redhat/rpm/rpm.c:191
-# , c-format
 msgid "RPM version %s\n"
-msgstr "RPM Sürüm %s\n"
+msgstr "RPM verze %s\n"
 
 #: /home/ewt/redhat/rpm/rpm.c:195
 msgid "Copyright (C) 1998 - Red Hat Software"
-msgstr "Copyright (C) 1998 - Red Hat Software"
+msgstr "Copyright (c) 1998 - Red Hat Software"
 
 #: /home/ewt/redhat/rpm/rpm.c:196
 msgid "This may be freely redistributed under the terms of the GNU Public License"
-msgstr "Bu ðrogram GNU Kamu lisansý uyarýnca serbestçe daðýtýlabilir."
+msgstr "Toto lze volnì distribuovat znovu podle podmínek GPL (GNU Public License)."
 
 #: /home/ewt/redhat/rpm/rpm.c:205
 msgid "usage: rpm {--help}"
-msgstr "Kullaným: rpm {--help}"
+msgstr "pou¾ití: rpm {--help}"
 
 #: /home/ewt/redhat/rpm/rpm.c:206
 msgid "       rpm {--version}"
@@ -34,7 +28,7 @@ msgstr "       rpm {--version}"
 
 #: /home/ewt/redhat/rpm/rpm.c:207
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
-msgstr "       rpm {--initdb}   [--dbpath <dizin>]"
+msgstr "       rpm {--initdb} [--dbpath <adresáø>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:208
 msgid "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
@@ -42,32 +36,31 @@ msgstr "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test
 
 #: /home/ewt/redhat/rpm/rpm.c:209
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
-msgstr "                        [--replacepkgs] [--replacefiles] [--root <dizin>]"
-
+msgstr "                      [--replacepkgs] [--replacefiles] [--root <adresáø>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:210
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
-msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
+msgstr "                      [--excludedocs] [--includedocs] [--noscripts]"
 
 #: /home/ewt/redhat/rpm/rpm.c:211
 msgid "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-msgstr "                        [--rcfile <dosya>] [--ignorearch] [--dbpath <dizin>]"
+msgstr "                      [--rcfile <soubor>] [--ignorearch] [--dbpath <adresáø>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:212
 msgid "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
-msgstr "                        [--prefix <dizin>] [--ignoreos] [--nodeps] [--allfiles]"
+msgstr "                      [--prefix <adresáø>] [--ignoreos] [--nodeps] [--allfiles]"
 
 #: /home/ewt/redhat/rpm/rpm.c:213
 msgid "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
-msgstr "                        [--ftpproxy <sunucu>] [--ftpport <port>] [--justdb]"
+msgstr "                      [--ftpproxy <hostitel>] [--ftpport <port>] [--justdb]"
 
 #: /home/ewt/redhat/rpm/rpm.c:214 /home/ewt/redhat/rpm/rpm.c:222
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
-msgstr "                        [--noorder] [--relocate eskidizin=yenidizin]"
+msgstr "                      [--noorder] [--relocate starácesta=novácesta]"
 
 #: /home/ewt/redhat/rpm/rpm.c:215 /home/ewt/redhat/rpm/rpm.c:223
 msgid "                        [--badreloc] file1.rpm ... fileN.rpm"
-msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
+msgstr "                      [--badreloc] soubor1.rpm ... souborN.rpm"
 
 #: /home/ewt/redhat/rpm/rpm.c:216
 msgid "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
@@ -75,23 +68,23 @@ msgstr "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test
 
 #: /home/ewt/redhat/rpm/rpm.c:217
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-msgstr "                        [--oldpackage] [--root <dizin>] [--noscripts]"
+msgstr "                      [--oldpackage] [--root <adresáø>] [--noscripts]"
 
 #: /home/ewt/redhat/rpm/rpm.c:218
 msgid "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
-msgstr "                        [--excludedocs] [--includedocs] [--rcfile <dosya>]"
+msgstr "                      [--excludedocs] [--includedocs] [--rcfile <soubor>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:219
 msgid "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
-msgstr "                        [--ignorearch]  [--dbpath <dizin>] [--prefix <dizin>] "
+msgstr "                      [--ignorearch]  [--dbpath <adresáø>] [--prefix <adresáø>] "
 
 #: /home/ewt/redhat/rpm/rpm.c:220
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpproxy <sunucu>] [--ftpport <port>]"
+msgstr "                      [--ftpproxy <hostitel>] [--ftpport <port>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:221
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-msgstr "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
+msgstr "                      [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
 #: /home/ewt/redhat/rpm/rpm.c:224
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
@@ -99,100 +92,99 @@ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
 #: /home/ewt/redhat/rpm/rpm.c:225
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr "                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
+msgstr "                      [--scripts] [--root <adresáø>] [--rcfile <soubor>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:226
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
-msgstr ""
+msgstr "                      [--whatprovides] [--whatrequires] [--requires]"
 
 #: /home/ewt/redhat/rpm/rpm.c:227
 msgid "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpuseport] [--ftpproxy <sunucu>] [--ftpport <port>]"
+msgstr "                      [--ftpuseport] [--ftpproxy <hostitel>] [--ftpport <port>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:228
 msgid "                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"
-msgstr "                        [--provides] [--dump] [--dbpath <dizin>] [--changelog]"
+msgstr "                      [--provides] [--dump] [--dbpath <adresáø>] [--changelog]"
 
 #: /home/ewt/redhat/rpm/rpm.c:229
 msgid "                        [targets]"
-msgstr "                        [targets]"
+msgstr "                      [cíle]"
 
 #: /home/ewt/redhat/rpm/rpm.c:230
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-msgstr "       rpm {--verify -V -y} [-afpg] [--root <dizin>] [--rcfile <dosya>]"
+msgstr "       rpm {--verify -V -y} [-afpg] [--root <adresáø>] [--rcfile <soubor>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:231
 msgid "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
-msgstr "                        [--dbpath <dizin>] [--nodeps] [--nofiles] [--noscripts]"
+msgstr "                      [--dbpath <adresáø>] [--nodeps] [--nofiles] [--noscripts]"
 
 #: /home/ewt/redhat/rpm/rpm.c:232
 msgid "                        [--nomd5] [targets]"
-msgstr "                        [--nomd5] [targets]"
+msgstr "                      [--nomd5] [cíle]"
 
 #: /home/ewt/redhat/rpm/rpm.c:233
 msgid "       rpm {--setperms} [-afpg] [target]"
-msgstr "       rpm {--setperms} [-afpg] [target]"
+msgstr "       rpm {--setperms} [-afpg] [cíl]"
 
 #: /home/ewt/redhat/rpm/rpm.c:234
 msgid "       rpm {--setugids} [-afpg] [target]"
-msgstr "       rpm {--setugids} [-afpg] [target]"
+msgstr "       rpm {--setugids} [-afpg] [cíl]"
 
 #: /home/ewt/redhat/rpm/rpm.c:235
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
-msgstr ""
-"       rpm {--erase -e] [--root <dizin>] [--noscripts] [--rcfile <dosya>]"
+msgstr "       rpm {--erase -e} [--root <adresáø>] [--noscripts] [--rcfile <soubor>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:236
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-msgstr "                        [--dbpath <dizin>] [--nodeps] [--allmatches]"
+msgstr "                      [--dbpath <adresáø>] [--nodeps] [--allmatches]"
 
 #: /home/ewt/redhat/rpm/rpm.c:237
 msgid "                        [--justdb] package1 ... packageN"
-msgstr "                        [--justdb] paket1 ... paketN"
+msgstr "                      [--justdb] balíèek1 ... balíèekN"
 
 #: /home/ewt/redhat/rpm/rpm.c:238
 msgid "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
-msgstr "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <dosya>]"
+msgstr "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <soubor>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:239
 msgid "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
-msgstr "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
+msgstr "                      [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:240
 msgid "                        [--buildarch <arch>] [--rmsource] specfile"
-msgstr "                        [--buildarch <mimari>] [--rmsource] specdosyasý"
+msgstr "                      [--buildarch <arch>] [--rmsource] souborspec"
 
 #: /home/ewt/redhat/rpm/rpm.c:241
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-msgstr "       rpm {--rmsource} [--rcfile <dosya>] [-v] specdosyasý"
+msgstr "       rpm {--rmsource} [--rcfile <soubor>] [-v] souborspec"
 
 #: /home/ewt/redhat/rpm/rpm.c:242
 msgid "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr "       rpm {--rebuild} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
+msgstr "       rpm {--rebuild} [--rcfile <soubor>] [-v] zdroj1.rpm ... zdrojN.rpm"
 
 #: /home/ewt/redhat/rpm/rpm.c:243
 msgid "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr "       rpm {--recompile} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
+msgstr "       rpm {--recompile} [--rcfile <soubor>] [-v] zdroj1.rpm ... zdrojN.rpm"
 
 #: /home/ewt/redhat/rpm/rpm.c:244
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr "       rpm {--resign} [--rcfile <dosya>] paket1 paket2 ... paketN"
+msgstr "       rpm {--resign} [--rcfile <soubor>] balíèek1 balíèek2 ... balíèekN"
 
 #: /home/ewt/redhat/rpm/rpm.c:245
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr "       rpm {--addsign} [--rcfile <dosya>] paket1 paket2 ... paketN"
+msgstr "       rpm {--addsign} [--rcfile <soubor>] balíèek1 balíèek2 ... balíèekN"
 
 #: /home/ewt/redhat/rpm/rpm.c:246
 msgid "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"
-msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <dosya>]"
+msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <soubor>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:247
 msgid "                           package1 ... packageN"
-msgstr "                           paket1 ... paketN"
+msgstr "                         balíèek1 ... balíèekN"
 
 #: /home/ewt/redhat/rpm/rpm.c:248
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
+msgstr "       rpm {--rebuilddb} [--rcfile <soubor>] [--dbpath <adresáø>]"
 
 #: /home/ewt/redhat/rpm/rpm.c:249
 msgid "       rpm {--querytags}"
@@ -200,124 +192,123 @@ msgstr "       rpm {--querytags}"
 
 #: /home/ewt/redhat/rpm/rpm.c:283
 msgid "usage:"
-msgstr "Kullaným:"
+msgstr "pou¾ití:"
 
 #: /home/ewt/redhat/rpm/rpm.c:285
 msgid "print this message"
-msgstr "Bu bilgiyi verir"
+msgstr "vytisknout tuto zprávu"
 
 #: /home/ewt/redhat/rpm/rpm.c:287
 msgid "print the version of rpm being used"
-msgstr "Kullanýlan RPM sürümünü verir"
+msgstr "vytisknout verzi pou¾ívaného rpm"
 
 #: /home/ewt/redhat/rpm/rpm.c:288
 msgid "   all modes support the following arguments:"
-msgstr "   tüm kipler aþaðýdaki argümanlarý kabul ederler:"
+msgstr "   v¹echny re¾imy podporují následující argumenty:"
 
 #: /home/ewt/redhat/rpm/rpm.c:290
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-msgstr "/etc/rpmrc ve $HOME/.rpmrc yerine <dosya> kullanýn"
+msgstr "pou¾ijte <soubor> místo /etc/rpmrc a $HOME/.rpmrc"
 
 #: /home/ewt/redhat/rpm/rpm.c:292
 msgid "be a little more verbose"
-msgstr "daha çok açýklama verir"
+msgstr "o nìco popisnìj¹í re¾im"
 
 #: /home/ewt/redhat/rpm/rpm.c:294
 msgid "be incredibly verbose (for debugging)"
-msgstr "çok fazla açýklama verir (hata ayýklama için)"
+msgstr "velmi popisný re¾im (pro odlaïování)"
 
 #: /home/ewt/redhat/rpm/rpm.c:296
 msgid "query mode"
-msgstr "Sorgulama kipi"
+msgstr "dotazovací re¾im"
 
 #: /home/ewt/redhat/rpm/rpm.c:298 /home/ewt/redhat/rpm/rpm.c:352 /home/ewt/redhat/rpm/rpm.c:410 /home/ewt/redhat/rpm/rpm.c:436 /home/ewt/redhat/rpm/rpm.c:498
 msgid "use <dir> as the top level directory"
-msgstr "kök (baþlangýç) dizini olarak <dizin> kullanýlýr"
+msgstr "pou¾ít <adresáø> jako adresáø vrcholové úrovnì"
 
 #: /home/ewt/redhat/rpm/rpm.c:300 /home/ewt/redhat/rpm/rpm.c:350 /home/ewt/redhat/rpm/rpm.c:378 /home/ewt/redhat/rpm/rpm.c:426 /home/ewt/redhat/rpm/rpm.c:496
 msgid "use <dir> as the directory for the database"
-msgstr "Veritabaný dizini olarak <dizin> kullanýlýr"
+msgstr "pou¾ít <adresáø> jako adresáø pro databázi"
 
 #: /home/ewt/redhat/rpm/rpm.c:302
 msgid "use s as the header format (implies -i)"
-msgstr "'header format' olarak s kullanýlýr (-i'yi gerektirir)"
+msgstr "pou¾ít s jako hlavièkový formát (implikuje -i)"
 
 #: /home/ewt/redhat/rpm/rpm.c:303
 msgid "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
-msgstr "   yükleme, güncelleme ve sorgulama (-p ile) iþlemlerimde dosya isimleri "
+msgstr "   instalovat, aktualizovat a dotazovat (s -p) k umo¾nìní pou¾ití prvkù URL"
 
 #: /home/ewt/redhat/rpm/rpm.c:304
 msgid "   of file names as well as the following options:\n"
-msgstr ""
-"   yerine FTP adreslerini aþaðýdaki seçeneklerle kabul eder:\n"
+msgstr "   ftp místo názvù souborù i následujících mo¾ností:\n"
 
 #: /home/ewt/redhat/rpm/rpm.c:306
 msgid "hostname or IP of ftp proxy"
-msgstr "Makina ismi veya FTP-Proxy'nin IP numarasý"
+msgstr "název hostitele nebo IP adresa ftp proxy"
 
 #: /home/ewt/redhat/rpm/rpm.c:308
 msgid "port number of ftp server (or proxy)"
-msgstr "FTP sunucusunun (ya da Proxy'nin) port numarasý"
+msgstr "èíslo portu serveru ftp (nebo proxy)"
 
 #: /home/ewt/redhat/rpm/rpm.c:309
 msgid "      Package specification options:"
-msgstr "      Paket seçim seçenekleri:"
+msgstr "      Mo¾nosti specifikace balíèku:"
 
 #: /home/ewt/redhat/rpm/rpm.c:311
 msgid "query all packages"
-msgstr "Tüm paketleri sorgulama"
+msgstr "dotazovat v¹echny balíèky"
 
 #: /home/ewt/redhat/rpm/rpm.c:313
 msgid "query package owning <file>"
-msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
+msgstr "dotazovat balíèek vlastnící <soubor>"
 
 #: /home/ewt/redhat/rpm/rpm.c:315
 msgid "query (uninstalled) package <packagefile>"
-msgstr "(henüz yüklenmemiþ) <paket dosyasý> paketi sorgulama"
+msgstr "dotazovat (nenainstalovaný) balíèek <souborbalíèku>"
 
 #: /home/ewt/redhat/rpm/rpm.c:317
 msgid "query packages which provide <i> capability"
-msgstr "<i> yeteneði olan paketleri sorgulama"
+msgstr "dotazovat balíèky poskytující schopnost <i>"
 
 #: /home/ewt/redhat/rpm/rpm.c:319
 msgid "query packages which require <i> capability"
-msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
+msgstr "dotazovat balíèky vy¾adující schopnost <i>"
 
 #: /home/ewt/redhat/rpm/rpm.c:320
 msgid "      Information selection options:"
-msgstr "      Bilgilendirme seçenekleri:"
+msgstr "      Mo¾nosti vybírání informací:"
 
 #: /home/ewt/redhat/rpm/rpm.c:322
 msgid "display package information"
-msgstr "Paket bilgisini gösterme"
+msgstr "zobrazit informace o balíèku"
 
 #: /home/ewt/redhat/rpm/rpm.c:324
 msgid "display the package's change log"
-msgstr "Paketin 'Change Log' (deðiþiklik) bilgisini gösterme"
+msgstr "zobrazit protokol zmìn balíèku"
 
 #: /home/ewt/redhat/rpm/rpm.c:326
 msgid "display package file list"
-msgstr "Paketin içerdiði dosyalarý gösterme"
+msgstr "zobrazit seznam souborù balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:328
 msgid "show file states (implies -l)"
-msgstr "dosyalarýn durumunu gösterir (-l gerektirir)"
+msgstr "zobrazit stavy souborù (implikuje -l)"
 
 #: /home/ewt/redhat/rpm/rpm.c:330
 msgid "list only documentation files (implies -l)"
-msgstr "sadece belge dosyalarýný gösterir (-l gerektirir)"
+msgstr "uvést pouze dokumentaèní soubory (implikuje -l)"
 
 #: /home/ewt/redhat/rpm/rpm.c:332
 msgid "list only configuration files (implies -l)"
-msgstr "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
+msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
 
 #: /home/ewt/redhat/rpm/rpm.c:334
 msgid "show all verifiable information for each file (must be used with -l, -c, or -d)"
-msgstr "her dosya için doðrulanabilir bilgileri göster (-l, -c veya -d ile kullanýlmalý)"
+msgstr "zobrazit v¹echny ovìøitelné údaje pro ka¾dý soubor (musí se pou¾ít s -l, -c nebo -d)"
 
 #: /home/ewt/redhat/rpm/rpm.c:336
 msgid "list capabilities package provides"
-msgstr "paketin saðladýðý yetenekleri sýralar"
+msgstr "uvést schopnosti poskytované balíèkem"
 
 #: /home/ewt/redhat/rpm/rpm.c:337
 msgid "        --requires"
@@ -325,1039 +316,1026 @@ msgstr "        --requires"
 
 #: /home/ewt/redhat/rpm/rpm.c:339
 msgid "list package dependencies"
-msgstr "paketin baðýmlýlýklarýný (gerektirdiði paketleri) gösterir"
+msgstr "uvést závislosti balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:341
 msgid "print the various [un]install scripts"
-msgstr "paketin çeþitli yükleme, silme betiklerini (scripts) gösterir"
+msgstr "vytisknout rùzné [de]instalaèní skripty"
 
 #: /home/ewt/redhat/rpm/rpm.c:346
 msgid "send stdout to <cmd>"
-msgstr "standart çýktýyý <KOMUT>'a gönderir"
+msgstr "odeslat stdout do <pøíkazu>"
 
 #: /home/ewt/redhat/rpm/rpm.c:348
 msgid "verify a package installation using the same same package specification options as -q"
-msgstr "paketi -q ile belirtilen paket parametrelerini kullanarak doðrula"
+msgstr "ovìøit instalaci balíèku pou¾itím stejných mo¾ností specifikace balíèku, jako -q"
 
 #: /home/ewt/redhat/rpm/rpm.c:354 /home/ewt/redhat/rpm/rpm.c:398 /home/ewt/redhat/rpm/rpm.c:430
 msgid "do not verify package dependencies"
-msgstr "paket baðýmlýlýklarýný doðrulamaz"
+msgstr "neovìøovat závislosti balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:356
 msgid "do not verify file md5 checksums"
-msgstr "dosyalarýn 'md5-checksum' larýný doðrulamaz"
+msgstr "neovìøovat kontrolní souèty md5 souborù"
 
 #: /home/ewt/redhat/rpm/rpm.c:358
 msgid "do not verify file attributes"
-msgstr "dosya özelliklerini doðrulamaz"
+msgstr "neovìøovat atributy souborù"
 
 #: /home/ewt/redhat/rpm/rpm.c:361
 msgid "set the file permissions to those in the package database using the same package specification options as -q"
-msgstr "dosya eriþim haklarýný veri tabanýnda yer alanlarla -q ile belirtilen paket parametrelerini kullanarak güncelle"
+msgstr "nastavit oprávnìní souborù dle údajù v databázi balíèkù pomocí stejných mo¾ností specifikace balíèku, jako -q"
 
 #: /home/ewt/redhat/rpm/rpm.c:364
 msgid "set the file owner and group to those in the package database using the same package specification options as -q"
-msgstr "dosya kullanýcý ve grup bilgilerini veri tabanýnda yer alanlarla -q ile belirtilen paket parametrelerini kullanarak güncelle"
+msgstr "nastavit vlastníka a skupinu souborù dle údajù v databázi balíèkù pomocí stejných mo¾ností specifikace balíèku, jako -q"
 
 #: /home/ewt/redhat/rpm/rpm.c:370
 msgid "install package"
-msgstr "paket yüklemek"
+msgstr "instalovat balíèek"
 
 #: /home/ewt/redhat/rpm/rpm.c:372
 msgid "relocate files from <oldpath> to <newpath>"
-msgstr "dosyalarý <eskidizin> den <yenidizin> e relocate et"
+msgstr "pøemístit soubory ze <starécesty> na <novoucestu>"
 
 #: /home/ewt/redhat/rpm/rpm.c:374
 msgid "relocate files even though the package doesn't allow it"
-msgstr "paket desteklemese bile dosyalarý relocate et"
+msgstr "pøemístit soubory, i kdy¾ to balíèek nedovoluje"
 
 #: /home/ewt/redhat/rpm/rpm.c:376
 msgid "relocate the package to <dir>, if relocatable"
-msgstr ""
-"paketin yerini (eðer deðitirilebiliyorsa) <dizin>'e deðiþtirir"
+msgstr "pøemístit soubory do <adresáøe>, jsou-li pøemístitelné"
 
 #: /home/ewt/redhat/rpm/rpm.c:380
 msgid "do not install documentation"
-msgstr "yazýlýmýn belgelerini yüklemez"
+msgstr "neinstalovat dokumentaci"
 
 #: /home/ewt/redhat/rpm/rpm.c:382
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr "--replacepkgs --replacefiles'ýn kýsaltmasý"
+msgstr "zkratka pro --replacepkgs --replacefiles"
 
 #: /home/ewt/redhat/rpm/rpm.c:385
 msgid "print hash marks as package installs (good with -v)"
-msgstr "yükleme sýrasýnda bir gösterge çýkarýr (-v seçeneði ile iyi)"
+msgstr "tisknout dvojité køí¾ky dle instalace balíèku (dobré s -v)"
 
 #: /home/ewt/redhat/rpm/rpm.c:387
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr ""
-"tüm dosyalarý, hatta normal olarak atlanabilecek yapýlandýrmalarý bile,"
-"yükler"
+msgstr "instalovat v¹echny soubory - i konfigurace, které by se jinak mohly vynechat"
 
 #: /home/ewt/redhat/rpm/rpm.c:390
 msgid "don't verify package architecture"
-msgstr "paket mimarisini doðrulamaz"
+msgstr "neovìøovat architekturu balíèku"
 
 #: /home/ewt/redhat/rpm/rpm.c:392
 msgid "don't verify package operating system"
-msgstr "paketin ait olduðu iþletim sistemini doðrulamaz"
+msgstr "neovìøovat operaèní systém balíèku"
 
 #: /home/ewt/redhat/rpm/rpm.c:394
 msgid "install documentation"
-msgstr "paket ile gelen belgeleri de yükler"
+msgstr "instalovat dokumentaci"
 
 #: /home/ewt/redhat/rpm/rpm.c:396 /home/ewt/redhat/rpm/rpm.c:428
 msgid "update the database, but do not modify the filesystem"
-msgstr "veri tabanýný günceller, ama dosya sistemini deðiþtirmez"
+msgstr "inovovat databázi, ale neupravovat souborový systém"
 
 #: /home/ewt/redhat/rpm/rpm.c:400 /home/ewt/redhat/rpm/rpm.c:432
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr "paket yükleme sýrasýný baðýmlýlýklara göre düzenleme"
+msgstr "nemìòte poøadí instalace balíèkù pro vyøe¹ení závislostí"
 
 #: /home/ewt/redhat/rpm/rpm.c:402
 msgid "don't execute any installation scripts"
-msgstr "yükleme betiklerini (scripts) çalýþtýrmaz."
+msgstr "nespou¹tìjte ¾ádné instalaèní skripty"
 
 #: /home/ewt/redhat/rpm/rpm.c:404
 msgid "print percentages as package installs"
-msgstr "yükleme sýrasýnda geliþme yüzde olarak gösterilir"
+msgstr "tisknout procenta dle instalace balíèku"
 
 #: /home/ewt/redhat/rpm/rpm.c:406
 msgid "install even if the package replaces installed files"
-msgstr "paket mevcut dosyalarý silse bile paketi yükler"
+msgstr "instalovat, i kdy¾ balíèek nahradí nainstalované soubory"
 
 #: /home/ewt/redhat/rpm/rpm.c:408
 msgid "reinstall if the package is already present"
-msgstr "paket mevcutsa yeniden yükler"
+msgstr "pøeinstalovat, i kdy¾ je ji¾ balíèek pøítomen"
 
 #: /home/ewt/redhat/rpm/rpm.c:412
 msgid "don't install, but tell if it would work or not"
-msgstr "yükleme yapmaz, sadece çalýþýp çalýþmayacaðýný belirtir"
+msgstr "neinstalovat ale sdìlit, zda-li by to fungovalo èi nikoliv"
 
 #: /home/ewt/redhat/rpm/rpm.c:416
 msgid "upgrade package (same options as --install, plus)"
-msgstr "Paketi günceller (seçenekler --install ile ayný, ek olarak)"
+msgstr "aktualizovat balíèek (stejné mo¾nosti jako --install, plus)"
 
 #: /home/ewt/redhat/rpm/rpm.c:418
 msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
-msgstr "pakedin eski bir sürüme güncellenmesini saðlar (--force ayný iþi görür)"
+msgstr "aktualizovat na star¹í verzi balíèku (--force to dìlá pøi aktualizacích automaticky)"
 
 #: /home/ewt/redhat/rpm/rpm.c:422
 msgid "erase (uninstall) package"
-msgstr "paketi siler (uninstall)"
+msgstr "smazat (deinstalovat) balíèek"
 
 #: /home/ewt/redhat/rpm/rpm.c:424
 msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
-msgstr "<paket> ile eþlenen tüm paketleri siler (birden fazla paket eþlenirse bir hata mesajý çýkmasý gerekir)"
+msgstr "odstranit v¹echny balíèky odpovídající <balíèku> (normálnì se generuje chyba, specifikuje-li <balíèek> více balíèkù)"
 
 #: /home/ewt/redhat/rpm/rpm.c:434
 msgid "do not execute any package specific scripts"
-msgstr "pakete ait hiçbir betik (Script) çalýþtýrýlmaz"
+msgstr "nespou¹tìt ¾ádné skripty specifické balíèkùm"
 
 #: /home/ewt/redhat/rpm/rpm.c:438
 msgid "    -b<stage> <spec>      "
-msgstr "    -b<adým> <spec>      "
+msgstr "    -b<etapa> <spec>      "
 
 #: /home/ewt/redhat/rpm/rpm.c:440
 msgid "build package, where <stage> is one of:"
-msgstr "paket yaratýr, <adým> aþaðýdaki harflerden biridir:"
+msgstr "sestavit balíèek, kde <etapa> je jedna z:"
 
 #: /home/ewt/redhat/rpm/rpm.c:442
 msgid "prep (unpack sources and apply patches)"
-msgstr "hazýrlama (kaynaklar açýlýr ve yamalar uygulanýr)"
+msgstr "pøíprava (rozbalí zdroje a aplikuje záplaty)"
 
 #: /home/ewt/redhat/rpm/rpm.c:444
-# , c-format
 msgid "list check (do some cursory checks on %files)"
-msgstr "kontrol ( %files üstünkörü bir kontrol edilir)"
+msgstr "kontrola seznamù (provede urèité zbì¾né kontroly %souborù)"
 
 #: /home/ewt/redhat/rpm/rpm.c:446
 msgid "compile (prep and compile)"
-msgstr "derleme (hazýrlama ve derleme)"
+msgstr "kompilace (pøíprava a kompilace)"
 
 #: /home/ewt/redhat/rpm/rpm.c:448
 msgid "install (prep, compile, install)"
-msgstr "yükleme (hazýrlama, derleme, yükleme)"
+msgstr "instalace (pøíprava, kompilace a instalace)"
 
 #: /home/ewt/redhat/rpm/rpm.c:450
 msgid "binary package (prep, compile, install, package)"
-msgstr ""
-"çalýþtýrýlabilir paket yaratma (hazýrlama, derleme, yükleme, paketleme)"
+msgstr "binární balíèek (pøíprava, kompilace, instalace, zabalení)"
 
 #: /home/ewt/redhat/rpm/rpm.c:452
 msgid "bin/src package (prep, compile, install, package)"
-msgstr ""
-"çalýþtýrýlabilir ve Kaynak paket yaratmak (hazýrlama, derleme, yükleme ve"
-"paketleme)"
+msgstr "bin/src balíèek (pøíprava, kompilace, instalace, zabalení)"
 
 #: /home/ewt/redhat/rpm/rpm.c:454
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "doðrudan belirtilen adýma atlar (sadece c ve i için)"
+msgstr "pøejít pøímo k urèené etapì (pouze pro c,i)"
 
 #: /home/ewt/redhat/rpm/rpm.c:456
 msgid "remove build tree when done"
-msgstr "iþlem sonunda paket yaratma yapýsýný siler"
+msgstr "po dokonèení odstranit sestavovací strom"
 
 #: /home/ewt/redhat/rpm/rpm.c:458
 msgid "remove sources and spec file when done"
-msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
+msgstr "po dokonèení odstranit zdroje a soubor specifikací"
 
 #: /home/ewt/redhat/rpm/rpm.c:460
 msgid "generate PGP signature"
-msgstr "PGP-imzasý yaratýr"
+msgstr "generovat podpis PGP"
 
 #: /home/ewt/redhat/rpm/rpm.c:462
 msgid "use <dir> as the build root"
-msgstr "paket yaratýlýrken <dizin> baþlangýç dizini olarak kullanýlýr"
+msgstr "pou¾ít <adresáø> jako sestavovací koøen"
 
 #: /home/ewt/redhat/rpm/rpm.c:464
 msgid "build the packages for architecture <arch>"
-msgstr "paketleri <arch> mimarisi için oluþturur"
+msgstr "sestavit balíèky pro architekturu <arch>"
 
 #: /home/ewt/redhat/rpm/rpm.c:466
 msgid "build the packages for ositecture <os>"
-msgstr "paketleri <os> iþletim sistemi için oluþturur"
+msgstr "sestavit balíèky pro ositekturu <os>"
 
 #: /home/ewt/redhat/rpm/rpm.c:468
 msgid "do not execute any stages"
-msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
+msgstr "nespou¹tìt ¾ádné etapy"
 
 #: /home/ewt/redhat/rpm/rpm.c:470
 msgid "set the time check to S seconds (0 disables it)"
-msgstr "zaman kontrolünü S saniyeye ayarlar (0 ile tümüyle kaldýrýr)"
+msgstr "nastavit èasovou kontrolu na S sekund (0 ji deaktivuje)"
 
 #: /home/ewt/redhat/rpm/rpm.c:473
 msgid "install source package, build binary package and remove spec file, sources, patches, and icons."
-msgstr "kaynak paketini yükler, çalýþýr paketi oluþturur ve spec dosyasý, kaynaklar ile yamalarý siler"
+msgstr "instalovat zdrojový balíèek, sestavit binární balíèek a odstranit soubor specifikací, zdroje, záplaty i ikony."
 
 #: /home/ewt/redhat/rpm/rpm.c:475
 msgid "remove sources and spec file"
-msgstr "kaynak dosyalarýný ve spec dosyasýný siler"
+msgstr "odstranit zdroje a soubor specifikací"
 
 #: /home/ewt/redhat/rpm/rpm.c:477
 msgid "like --rebuild, but don't build any package"
-msgstr "--rebuild gibi, ama paket yaratmaz"
+msgstr "jako --rebuild, ale nesestavovat ¾ádný balíèek"
 
 #: /home/ewt/redhat/rpm/rpm.c:479
 msgid "sign a package (discard current signature)"
-msgstr "paketi imzalar (mevcut imza kaldýrýlýr)"
+msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
 #: /home/ewt/redhat/rpm/rpm.c:481
 msgid "add a signature to a package"
-msgstr "pakete bir imza ekler"
+msgstr "pøidat k balíèku podpis"
 
 #: /home/ewt/redhat/rpm/rpm.c:484
 msgid "verify package signature"
-msgstr "paket imzasýný doðrular"
+msgstr "ovìøit podpis balíèku"
 
 #: /home/ewt/redhat/rpm/rpm.c:486
 msgid "skip any PGP signatures"
-msgstr "tüm PGP imzalarýný atlar"
+msgstr "vynechat libovolné podpisy PGP"
 
 #: /home/ewt/redhat/rpm/rpm.c:488
 msgid "skip any MD5 signatures"
-msgstr "tüm MD5 imzalarýný atlar"
+msgstr "vynechat libovolné podpisy MD5"
 
 #: /home/ewt/redhat/rpm/rpm.c:490
 msgid "list the tags that can be used in a query format"
-msgstr "sorgulama sýrasýnda kullanýlabilecek 'Tag'leri sýralar"
+msgstr "uvést pøíznaky, které lze pou¾ít v dotazovacím formátu"
 
 #: /home/ewt/redhat/rpm/rpm.c:492
 msgid "make sure a valid database exists"
-msgstr "geçerli bir veri tabaný olmasýný saðlar"
+msgstr "zajistìte, aby existovala platná databáze"
 
 #: /home/ewt/redhat/rpm/rpm.c:494
 msgid "rebuild database from existing database"
-msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
+msgstr "znovu sestavit databázi z existující databáze"
 
 #: /home/ewt/redhat/rpm/rpm.c:625 /home/ewt/redhat/rpm/rpm.c:631 /home/ewt/redhat/rpm/rpm.c:638 /home/ewt/redhat/rpm/rpm.c:644 /home/ewt/redhat/rpm/rpm.c:653 /home/ewt/redhat/rpm/rpm.c:660 /home/ewt/redhat/rpm/rpm.c:705 /home/ewt/redhat/rpm/rpm.c:711 /home/ewt/redhat/rpm/rpm.c:800 /home/ewt/redhat/rpm/rpm.c:807 /home/ewt/redhat/rpm/rpm.c:813 /home/ewt/redhat/rpm/rpm.c:820 /home/ewt/redhat/rpm/rpm.c:826 /home/ewt/redhat/rpm/rpm.c:834 /home/ewt/redhat/rpm/rpm.c:867 /home/ewt/redhat/rpm/rpm.c:909 /home/ewt/redhat/rpm/rpm.c:915
 msgid "only one major mode may be specified"
-msgstr "sadece bir ana kip (major mode) belirtilebilir"
+msgstr "specifikovat lze jen jeden hlavní re¾im"
 
 #: /home/ewt/redhat/rpm/rpm.c:646
 msgid "-u and --uninstall are deprecated and no longer work.\n"
-msgstr "-u ve --uninstall komutlarý eskidirler ve çalýþmamaktadýrlar.\n"
+msgstr "-u a --uninstall se neschvalují a ji¾ dále nefungují.\n"
 
 #: /home/ewt/redhat/rpm/rpm.c:648
 msgid "Use -e or --erase instead.\n"
-msgstr "Yerine  -e veya --erase komutunu kullanýn\n"
+msgstr "Místo nich pou¾ijte -e nebo --erase.\n"
 
 #: /home/ewt/redhat/rpm/rpm.c:664
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-msgstr ""
-"--build (-b) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
+msgstr "--build (-b) vy¾aduje jedno z písmen a,b,i,c,p,l jako jeho výhradní argument"
 
 #: /home/ewt/redhat/rpm/rpm.c:668
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-msgstr ""
-"--tarbuild (-t) tek argüman olarak a,b,i,c,p,l harflerinden birini kabul eder"
+msgstr "--tarbuild (-t) vy¾aduje jedno z písmen a,b,i,c,p,l jako jeho výhradní argument"
 
 #: /home/ewt/redhat/rpm/rpm.c:734 /home/ewt/redhat/rpm/rpm.c:741 /home/ewt/redhat/rpm/rpm.c:749 /home/ewt/redhat/rpm/rpm.c:757 /home/ewt/redhat/rpm/rpm.c:777 /home/ewt/redhat/rpm/rpm.c:785 /home/ewt/redhat/rpm/rpm.c:793
 msgid "one type of query/verify may be performed at a time"
-msgstr "bir anda sadece bir tarz sorgulama veya doðrulama yapýlabilir"
+msgstr "v daném okam¾iku lze provést jeden typ dotazu nebo ovìøení"
 
 #: /home/ewt/redhat/rpm/rpm.c:842
 msgid "arguments to --dbpath must begin with a /"
-msgstr "--dbpath için verilen argümanlar '/' ile baþlamalý"
+msgstr "argumenty pro --dbpath musejí zaèínat znakem /"
 
 #: /home/ewt/redhat/rpm/rpm.c:849
 msgid "one type of query may be performed at a time"
-msgstr "bir anda sadece tek bir tarz sorgulama yapýlabilir"
+msgstr "v daném okam¾iku lze provést jeden typ dotazu"
 
 #: /home/ewt/redhat/rpm/rpm.c:873
 msgid "relocations must begin with a /"
-msgstr "relocate iþlemi / ile baþlamalý"
+msgstr "pøemístìní musejí zaèínat znakem /"
 
 #: /home/ewt/redhat/rpm/rpm.c:875
 msgid "relocations must contain a ="
-msgstr "relocate satýrýnda = bulunmalý"
+msgstr "pøemístìní musejí obsahovat ="
 
 #: /home/ewt/redhat/rpm/rpm.c:878
 msgid "relocations must have a / following the ="
-msgstr "relocate için = den sonra bir / gerekir"
+msgstr "pøemístìní musejí mít za znakem = znak /"
 
 #: /home/ewt/redhat/rpm/rpm.c:927
 msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath veritabaný kullanýlmayan bir iþlemde belirtildi"
+msgstr "--dbpath zadána pro operaci, která nepou¾ívá databázi"
 
 #: /home/ewt/redhat/rpm/rpm.c:932
 msgid "--timecheck may only be used during package builds"
-msgstr "--timecheck sadece paket oluþturulurken kullanýlabilir"
+msgstr "--timecheck lze pou¾ít jen pøi sestavování balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:935 /home/ewt/redhat/rpm/rpm.c:938
 msgid "unexpected query specifiers"
-msgstr "sorgulama için beklenmeyen bilgiler girildi"
+msgstr "neoèekávané specifikátory dotazu"
 
 #: /home/ewt/redhat/rpm/rpm.c:942
 msgid "unexpected query source"
-msgstr "beklenmeyen sorgulama kaynaðý girildi"
+msgstr "neoèekávaný zdroj dotazu"
 
 #: /home/ewt/redhat/rpm/rpm.c:945
 msgid "only installation and upgrading may be forced"
-msgstr "sadece yükleme ve güncelleme zorlanabilir (force edilebilir)"
+msgstr "vynucena mù¾e být jen instalace a aktualizace"
 
 #: /home/ewt/redhat/rpm/rpm.c:948
 msgid "files may only be relocated during package installation"
-msgstr "dosyalar sadece paket yüklemesi sýrasýnda relocate edilebilir"
+msgstr "soubory mohou být pøemístìny jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:951
 msgid "only one of --prefix or --relocate may be used"
-msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
+msgstr "pou¾ít lze jen jeden z --prefix nebo --relocate"
 
 #: /home/ewt/redhat/rpm/rpm.c:954
 msgid "--relocate may only be used when installing new packages"
-msgstr "--relocate sadece yeni paketler yüklenirken kullanýlýr"
+msgstr "--relocate se mù¾e pou¾ít jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:957
 msgid "--prefix may only be used when installing new packages"
-msgstr "--prefix sadece yeni paketlerin yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--prefix se mù¾e pou¾ít jen pøi instalaci nových balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:960
 msgid "arguments to --prefix must begin with a /"
-msgstr "--prefix komutunun argümanlarý '/' ile baþlamalý"
+msgstr "argumenty pro --prefix musejí zaèínat znakem /"
 
 #: /home/ewt/redhat/rpm/rpm.c:963
 msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--hash (-h) se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:967
 msgid "--percent may only be specified during package installation"
-msgstr "--percent sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--percent se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:971
 msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--replacefiles se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:975
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--replacepkgs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:979
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--excludedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:983
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--includedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:987
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr ""
-"--excludedocs ve --includedocs bir arada kullanýlamaz (bi daha olmasýn)"
+msgstr "specifikovat lze jen jeden z --excludedocs a --includedocs"
 
 #: /home/ewt/redhat/rpm/rpm.c:991
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--ignorearch se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:995
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--ignoreos se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:999
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches sadece paket silinmesi sýrasýnda kullanýlabilir"
+msgstr "--allmatches se mù¾e specifikovat jen pøi mazání balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1003
 msgid "--allfiles may only be specified during package installation"
-msgstr "--allfiles sadece paket yüklenmesi sýrasýnda kullanýlabilir"
+msgstr "--allfiles se mù¾e specifikovat jen pøi instalaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1007
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--justdb sadece paket yükleme ve silmelerinde kullanýlýr"
+msgstr "--justdb se mù¾e specifikovat jen pøi instalaci nebo mazání balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1012
 msgid "--noscripts may only be specified during package installation, erasure, and verification"
-msgstr "--noscripts sadece paket yükleme, silme ve doðrulamalarýnda kullanýlýr"
+msgstr "--noscripts se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1017
 msgid "--nodeps may only be specified during package installation, erasure, and verification"
-msgstr "--nodeps sadece paket yüklemelerinde, silme ve doðrulamalarda kullanýlýr"
+msgstr "--nodeps se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1021
 msgid "--nofiles may only be specified during package verification"
-msgstr "--nofiles sadece paket doðrulamasý sýrasýnda kullanýlabilir"
+msgstr "--nofiles se mù¾e specifikovat jen pøi verifikaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1026
 msgid "--test may only be specified during package installation, erasure, and building"
-msgstr "--test sadece paket yüklemelerinde, silme ve derlemelerinde kullanýlýr"
+msgstr "--test se mù¾e specifikovat jen pøi instalaci, mazání nebo sestavování balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1031
 msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
-msgstr "--root (-r) sadece yükleme, silme, sorgulama ve veritabaný güncellemelerinde kullanýlýr"
+msgstr "--root (-r) se mù¾e urèit jen pøi instalaci, mazání, dotazování a opìtných sestavování databází"
 
 #: /home/ewt/redhat/rpm/rpm.c:1036
 msgid "arguments to --root (-r) must begin with a /"
-msgstr "--root (-r) komutun argümanlarý '/' ile baþlamalý"
+msgstr "argumenty pro --root (-r) musejí zaèínat znakem /"
 
 #: /home/ewt/redhat/rpm/rpm.c:1039
 msgid "--clean may only be used with -b and -t"
-msgstr "--clean sadece -b ve -t ile kullanýlýr"
+msgstr "--clean lze pou¾ít pouze s -b nebo -t"
 
 #: /home/ewt/redhat/rpm/rpm.c:1042
 msgid "--rmsource may only be used with -b and -t"
-msgstr "--rmsource sadece -b ve -t ile kullanýlýr"
+msgstr "--rmsource lze pou¾ít pouze s -b nebo -t"
 
 #: /home/ewt/redhat/rpm/rpm.c:1045
 msgid "--short-circuit may only be used during package building"
-msgstr "--short-circuit sadece paket oluþturulmasý sýrasýnda kullanýlabilir"
+msgstr "--short-circuit lze pou¾ít jen pøi sestavování balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1048
 msgid "--short-circuit may only be used with -bc, -bi, -tc or -ti"
-msgstr ""
-"--short-circuit mutlaka -bc, bi, -tc veya -ti ile beraber kullanýlmalýdýr"
+msgstr "--short-circuit lze pou¾ít pouze s -bc, -bi, -tc nebo -ti"
 
 #: /home/ewt/redhat/rpm/rpm.c:1053
 msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
+msgstr "--oldpackage lze pou¾ít jen pøi aktualizacích"
 
 #: /home/ewt/redhat/rpm/rpm.c:1056
 msgid "--dump may only be used during queries"
-msgstr "--dump sadece sorgulama sýrasýnda kullanýlabilir"
+msgstr "--dump lze pou¾ít jen pøi dotazování"
 
 #: /home/ewt/redhat/rpm/rpm.c:1059
 msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "sorgulamada --dump mutlaka -l, -c, or -d ile kullanýlmalýdýr"
+msgstr "--dump pro dotazy se musí pou¾ít s -l, -c nebo -d"
 
 #: /home/ewt/redhat/rpm/rpm.c:1064
 msgid "ftp options can only be used during package queries, installs, and upgrades"
-msgstr "FTP seçenekleri sadece sorgulama, yükleme ve güncellemede kullanýlýr"
+msgstr "volby ftp lze pou¾ít jen pøi dotazování, instalacích a aktualizacích balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1071
 msgid "--nopgp may only be used during signature checking"
-msgstr "--nopgp sadece Ýmza kontrolü sýrasýnda kullanýlabilir"
+msgstr "--nopgp lze pou¾ít jen pøi kontrolování podpisù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1074
 msgid "--nopgp may only be used during signature checking and package verification"
-msgstr "--nopgp sadece imza kontrolü veya paket doðrulamasý sýrasýnda kullanýlýr"
+msgstr "--nopgp se mù¾e pou¾ít jen pøi kontrolování podpisù a verifikaci balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1087
 msgid "Pass phrase check failed\n"
-msgstr "Parola kontrolü baþarýsýzlýkla sonuçlandý\n"
+msgstr "Kontrola heslové fráze selhala\n"
 
 #: /home/ewt/redhat/rpm/rpm.c:1090
 msgid "Pass phrase is good.\n"
-msgstr "Parola doðru.\n"
+msgstr "Heslová fráze je dobrá.\n"
 
 #: /home/ewt/redhat/rpm/rpm.c:1102
 msgid "--sign may only be used during package building"
-msgstr "--sign sadece paket olusturulurken kullanýlabilir"
+msgstr "--sign lze pou¾ít jen pøi sestavování balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1136
 msgid "unexpected arguments to --querytags "
-msgstr "--querytags için beklenmeyen argümanlar"
+msgstr "neoèekávané argumenty pro --querytags "
 
 #: /home/ewt/redhat/rpm/rpm.c:1147
 msgid "no packages given for signature check"
-msgstr "imzasý kontrol edilecek paketler belirtilmedi"
+msgstr "ke kontrole podpisu nezadány ¾ádné balíèky"
 
 #: /home/ewt/redhat/rpm/rpm.c:1154
 msgid "no packages given for signing"
-msgstr "imzalanacak paketler belirtilmedi"
+msgstr "k podpisu nezadány ¾ádné balíèky"
 
 #: /home/ewt/redhat/rpm/rpm.c:1163
 msgid "no packages files given for rebuild"
-msgstr "yeniden oluþturmak için paket dosyalarý belirtilmedi"
+msgstr "k opìtnému sestavení nezadány ¾ádné soubory balíèkù"
 
 #: /home/ewt/redhat/rpm/rpm.c:1223
 msgid "no spec files given for build"
-msgstr "oluþturma için gerekli spec dosyasý belirtilmedi"
+msgstr "pro sestavení nezadány ¾ádné soubory specifikací"
 
 #: /home/ewt/redhat/rpm/rpm.c:1225
 msgid "no tar files given for build"
-msgstr "oluþturma için gereken tar dosyalarý belirttilmedi"
+msgstr "pro sestavení nezadány ¾ádné soubory tar"
 
 #: /home/ewt/redhat/rpm/rpm.c:1237
 msgid "no packages given for uninstall"
-msgstr "sistemden silinecek paketler belirtilmedi"
+msgstr "pro deinstalaci nezadány ¾ádné balíèky"
 
 #: /home/ewt/redhat/rpm/rpm.c:1275
 msgid "no packages given for install"
-msgstr "yüklenecek paketler belirtilmedi"
+msgstr "pro instalaci nezadány ¾ádné balíèky"
 
 #: /home/ewt/redhat/rpm/rpm.c:1299
 msgid "extra arguments given for query of all packages"
-msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
+msgstr "k dotazu na v¹echny balíèky zadány argumenty navíc"
 
 #: /home/ewt/redhat/rpm/rpm.c:1304
 msgid "no arguments given for query"
-msgstr "sorgulama için hiç argüman belirtilmedi"
+msgstr "k dotazu nezadány ¾ádné argumenty"
 
 #: /home/ewt/redhat/rpm/rpm.c:1321
 msgid "no arguments given for verify"
-msgstr "doðrulama için hiç argüman belirtilmedi"
+msgstr "pro verifikaci nezadány ¾ádné argumenty"
 
 #: /home/ewt/redhat/rpm/query.c:40
 msgid "error in format: %s\n"
-msgstr "format hatasý: %s\n"
+msgstr "chyba v formátu: %s\n"
 
 #: /home/ewt/redhat/rpm/query.c:77
 msgid "(contains no files)"
-msgstr "(hiç dosya içermiyor)"
+msgstr "(neobsahuje ¾ádné soubory)"
 
 #: /home/ewt/redhat/rpm/query.c:331 /home/ewt/redhat/rpm/verify.c:127
 msgid "error: could not read database record\n"
-msgstr "hata: veritabaný kaydý okunamadý\n"
+msgstr "chyba: nelze naèíst databázový záznam\n"
 
 #: /home/ewt/redhat/rpm/query.c:367 /home/ewt/redhat/rpm/query.c:374 /home/ewt/redhat/rpm/verify.c:179 /home/ewt/redhat/rpm/verify.c:186
 msgid "open of %s failed: %s\n"
-msgstr "%s 'ye erisimde belirtilen hata oluþtu: %s\n"
+msgstr "otevøení %s selhalo: %s\n"
 
 #: /home/ewt/redhat/rpm/query.c:390
 msgid "old format source packages cannot be queried\n"
-msgstr "eski tip kaynak paketleri sorgulanamýyor\n"
+msgstr "zdrojové balíèky ve starém formátu nelze dotazovat\n"
 
 #: /home/ewt/redhat/rpm/query.c:399
 msgid "%s does not appear to be a RPM package\n"
-msgstr "%s bir RPM paketi deðil (gibi)\n"
+msgstr "nezdá se, ¾e by %s byl balíèek RPM\n"
 
 #: /home/ewt/redhat/rpm/query.c:403
 msgid "query of %s failed\n"
-msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
+msgstr "dotaz na %s selhal\n"
 
 #: /home/ewt/redhat/rpm/query.c:416 /home/ewt/redhat/rpm/verify.c:163
 msgid "could not read database record!\n"
-msgstr "veritabaný kaydý okunamadý!\n"
+msgstr "nelze naèíst databázový záznam!\n"
 
 #: /home/ewt/redhat/rpm/query.c:427 /home/ewt/redhat/rpm/verify.c:209
 msgid "group %s does not contain any packages\n"
-msgstr "%s grubu hiç paket içermiyor\n"
+msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
 #: /home/ewt/redhat/rpm/query.c:437
 msgid "no package provides %s\n"
-msgstr "hiç bir paket  %s saðlamýyor\n"
+msgstr "¾ádný balíèek neposkytuje %s\n"
 
 #: /home/ewt/redhat/rpm/query.c:447
 msgid "no package triggers %s\n"
-msgstr "hiç bir paket %s tetiklemiyor\n"
+msgstr "¾ádný balíèek neuvolní %s\n"
 
 #: /home/ewt/redhat/rpm/query.c:457
 msgid "no package requires %s\n"
-msgstr "hiç bir paket %s gerektirmiyor\n"
+msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
 #: /home/ewt/redhat/rpm/query.c:471 /home/ewt/redhat/rpm/verify.c:223
 msgid "file %s is not owned by any package\n"
-msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
+msgstr "¾ádný balíèek nevlastní soubor %s\n"
 
 #: /home/ewt/redhat/rpm/query.c:482
 msgid "invalid package number: %s\n"
-msgstr "geçersiz paket numarsý: %s\n"
+msgstr "neplatné èíslo balíèku: %s\n"
 
 #: /home/ewt/redhat/rpm/query.c:485
 msgid "showing package: %d\n"
-msgstr "%d : numaralý paketi gösteriyorum\n"
+msgstr "zobrazen balíèek: %d\n"
 
 #: /home/ewt/redhat/rpm/query.c:489
 msgid "record %d could not be read\n"
-msgstr "%d numaralý kayýt okunamadý\n"
+msgstr "záznam %d nelze naèíst\n"
 
 #: /home/ewt/redhat/rpm/install.c:332 /home/ewt/redhat/rpm/query.c:501 /home/ewt/redhat/rpm/verify.c:234
 msgid "package %s is not installed\n"
-msgstr "%s pakedi yüklenmemiþ\n"
+msgstr "balíèek %s není nainstalován\n"
 
 #: /home/ewt/redhat/rpm/query.c:504 /home/ewt/redhat/rpm/verify.c:236
 msgid "error looking for package %s\n"
-msgstr "%s pakedi aranýrken hata oluþtu\n"
+msgstr "chyba pøi hledání balíèku %s\n"
 
 #: /home/ewt/redhat/rpm/install.c:79 /home/ewt/redhat/rpm/install.c:195
 msgid "error: cannot open file %s\n"
-msgstr "hata: %s dosyasý okunamadý\n"
+msgstr "chyba: nelze otevøít soubor %s\n"
 
 #: /home/ewt/redhat/rpm/install.c:96
 msgid "Installing %s\n"
-msgstr "%s yükleniyor\n"
+msgstr "Instaluje se %s\n"
 
 #: /home/ewt/redhat/rpm/install.c:114 /home/ewt/redhat/rpm/install.c:208
 msgid "error: %s does not appear to be a RPM package\n"
-msgstr "hata: %s herhangi bir RPM pakedine ait görünmüyor\n"
+msgstr "chyba: nezdá se, ¾e by %s byl balíèek RPM\n"
 
 #: /home/ewt/redhat/rpm/install.c:119 /home/ewt/redhat/rpm/install.c:213 /home/ewt/redhat/rpm/install.c:422
 msgid "error: %s cannot be installed\n"
-msgstr "hata: %s yüklenemedi\n"
+msgstr "chyba: %s nelze nainstalovat\n"
 
 #: /home/ewt/redhat/rpm/install.c:166
 msgid "Retrieving %s\n"
-msgstr "%s alýnýyor\n"
+msgstr "Získává se %s\n"
 
 #: /home/ewt/redhat/rpm/install.c:177
 msgid "error: skipping %s - transfer failed - %s\n"
-msgstr "hata: %s atlanýyor - aktarým baþarýsýz - %s\n"
+msgstr "chyba: vynechává se %s - pøenos selhal - %s\n"
 
 #: /home/ewt/redhat/rpm/install.c:233 /home/ewt/redhat/rpm/install.c:322
 msgid "error: cannot open %s%s/packages.rpm\n"
-msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
+msgstr "chyba: nelze otevøít %s%s/packages.rpm\n"
 
 #: /home/ewt/redhat/rpm/install.c:254
 msgid "failed dependencies:\n"
-msgstr "baðýmlýlýk hatasý, aþaðýdaki paketlere ihtiyacýnýz var:\n"
+msgstr "selhaly závislosti:\n"
 
 #: /home/ewt/redhat/rpm/install.c:335
 msgid "error searching for package %s\n"
-msgstr "%s paketi bulunamadý\n"
+msgstr "chyba pøi hledání balíèku %s\n"
 
 #: /home/ewt/redhat/rpm/install.c:343
 msgid "\"%s\" specifies multiple packages\n"
-msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
+msgstr "\"%s\" specifikuje více balíèkù\n"
 
 #: /home/ewt/redhat/rpm/install.c:380
 msgid "removing these packages would break dependencies:\n"
-msgstr "bu paketin silinmesi aþaðýdaki baðýmlýlýklarý etkileyecektir:\n"
+msgstr "odstranìní tìchto balíèkù by naru¹ilo závislosti:\n"
 
 #: /home/ewt/redhat/rpm/install.c:413
 msgid "error: cannot open %s\n"
-msgstr "hata: %s eriþilemiyor\n"
+msgstr "chyba: nelze otevøít %s\n"
 
 #: /home/ewt/redhat/rpm/install.c:461
 msgid " is needed by %s-%s-%s\n"
-msgstr ", %s-%s-%s tarafýndan kullanýlýyor\n"
+msgstr " je nutné pro %s-%s-%s\n"
 
 #: /home/ewt/redhat/rpm/install.c:464
 msgid " conflicts with %s-%s-%s\n"
-msgstr ", %s-%s-%s ile çeliþiyor\n"
+msgstr " koliduje s %s-%s-%s\n"
 
 #: /home/ewt/redhat/rpm/verify.c:90
 msgid "Unsatisfied dependencies for %s-%s-%s: "
-msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
+msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 
 #: /home/ewt/redhat/rpm/checksig.c:31 /home/ewt/redhat/rpm/checksig.c:162
 msgid "%s: Open failed\n"
-msgstr "%s: Eriþilemedi\n"
+msgstr "%s: Open selhal\n"
 
 #: /home/ewt/redhat/rpm/checksig.c:35 /home/ewt/redhat/rpm/checksig.c:167
 msgid "%s: readLead failed\n"
-msgstr "%s: 'readLead' hata verdi\n"
+msgstr "%s: readLead selhal\n"
 
 #: /home/ewt/redhat/rpm/checksig.c:39
 msgid "%s: Can't sign v1.0 RPM\n"
-msgstr "%s: v1.0-RPM (eski sürüm) imzalanamýyor\n"
+msgstr "%s: RPM v1.0 nelze podepsat\n"
 
 #: /home/ewt/redhat/rpm/checksig.c:43
 msgid "%s: Can't re-sign v2.0 RPM\n"
-msgstr "%s: v2.0-RPM (eski sürüm) yeniden imzalanamýyor\n"
+msgstr "%s: RPM v2.0 nelze podepsat znovu\n"
 
 #: /home/ewt/redhat/rpm/checksig.c:47 /home/ewt/redhat/rpm/checksig.c:177
 msgid "%s: rpmReadSignature failed\n"
-msgstr "%s: 'rpmReadSignature' hata verdi\n"
+msgstr "%s: rpmReadSignature selhal\n"
 
 #: /home/ewt/redhat/rpm/checksig.c:60 /home/ewt/redhat/rpm/checksig.c:191
 msgid "Couldn't read the header/archive"
-msgstr "'header/archive' okunamadý"
+msgstr "Nelze naèíst hlavièku nebo archiv"
 
 #: /home/ewt/redhat/rpm/checksig.c:67
 msgid "Couldn't write header/archive to temp file"
-msgstr "'header/archive' geçici bir dosyaya yazýlamadý"
+msgstr "Nelze zapsat hlavièku nebo archiv do doèasného souboru"
 
 #: /home/ewt/redhat/rpm/checksig.c:115
 msgid "Couldn't read sigtarget"
-msgstr "Ýmza hedefi 'sigtarget' okunamadý"
+msgstr "Nelze naèíst cílpodpisu"
 
 #: /home/ewt/redhat/rpm/checksig.c:124
 msgid "Couldn't write package"
-msgstr "Paket yazýlamadý"
+msgstr "Balíèek nelze zapsat"
 
 #: /home/ewt/redhat/rpm/checksig.c:172
 msgid "%s: No signature available (v1.0 RPM)\n"
-msgstr "%s: Ýmza bulundurmuyor (v1.0 RPM)\n"
+msgstr "%s: Podpis není dostupný (RPM v1.0)\n"
 
 #: /home/ewt/redhat/rpm/checksig.c:182
 msgid "%s: No signature available\n"
-msgstr "%s: Ýmza bulunmuyor\n"
+msgstr "%s: Dostupný není ¾ádný podpis\n"
 
 #: /home/ewt/redhat/rpm/checksig.c:198
 msgid "Unable to write %s"
-msgstr "%s 'nin yazýlmasý mümkün deðil"
+msgstr "Nelze zapsat %s"
 
 #: /home/ewt/redhat/rpm/checksig.c:290 /home/ewt/redhat/rpm/checksig.c:297
 msgid " (MISSING KEYS)"
-msgstr " (EKSÝK ANAHTARLAR)"
+msgstr " (CHYBÌJÍ KLÁVESY)"
 
 #: /home/ewt/redhat/rpm/url.c:59
 msgid "Password for %s@%s: "
-msgstr "%s'%s için parola"
+msgstr "Heslo pro %s@%s: "
 
 #: /home/ewt/redhat/rpm/url.c:143
 msgid "error: ftpport must be a number\n"
-msgstr "hata: ftpport bir sayý olmalý"
+msgstr "chyba: ftpport musí být èíslo\n"
 
 #: /home/ewt/redhat/rpm/url.c:201
 msgid "failed to create %s\n"
-msgstr "%s yaratýlamýyor\n"
+msgstr "vytvoøení %s selhalo\n"
 
 #: /home/ewt/redhat/rpm/ftp.c:445
 msgid "Bad FTP server response"
-msgstr "FTP sunucusundan kötü yanýt"
+msgstr "©patná odezva FTP serveru"
 
 #: /home/ewt/redhat/rpm/ftp.c:448
 msgid "FTP IO error"
-msgstr "FTP I/O hatasý"
+msgstr "Chyba I/O FTP"
 
 #: /home/ewt/redhat/rpm/ftp.c:451
 msgid "FTP server timeout"
-msgstr "FTP sunucusu zaman aþýmý"
+msgstr "Promlka FTP serveru"
 
 #: /home/ewt/redhat/rpm/ftp.c:454
 msgid "Unable to lookup FTP server host address"
-msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
+msgstr "Nelze vyhledat adresu hostitelského FTP serveru"
 
 #: /home/ewt/redhat/rpm/ftp.c:457
 msgid "Unable to lookup FTP server host name"
-msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
+msgstr "Nelze vyhledat název hostitelského FTP serveru"
 
 #: /home/ewt/redhat/rpm/ftp.c:460
 msgid "Failed to connect to FTP server"
-msgstr "FTP sunucusuna baðlanýlamadý"
+msgstr "Pøipojení k FTP serveru selhalo"
 
 #: /home/ewt/redhat/rpm/ftp.c:463
 msgid "Failed to establish data connection to FTP server"
-msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
+msgstr "Navázání datového pøipojení k FTP serveru selhalo"
 
 #: /home/ewt/redhat/rpm/ftp.c:466
 msgid "IO error to local file"
-msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
+msgstr "I/O chyba na místní soubor"
 
 #: /home/ewt/redhat/rpm/ftp.c:469
 msgid "Error setting remote server to passive mode"
-msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
+msgstr "Chyba pøi nastavení vzdáleného serveru na pasivní re¾im"
 
 #: /home/ewt/redhat/rpm/ftp.c:472
 msgid "File not found on server"
-msgstr "Dosya sunucuda bulunamadý"
+msgstr "Soubor nebyl na serveru nalezen"
 
 #: /home/ewt/redhat/rpm/ftp.c:476
 msgid "FTP Unknown or unexpected error"
-msgstr "FTP bilinmeyen ya da beklenmeyen hata"
+msgstr "Neznámá nebo neèekaná chyba FTP"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:320 /home/ewt/redhat/rpm/lib/uninstall.c:135
 msgid "cannot read header at %d for uninstall"
-msgstr "%d numaralý paketin silmek için gereken 'header' kýsmý okunamadý"
+msgstr "nelze èíst hlavièku u %d pro deinstalaci"
 
 #: /home/ewt/redhat/rpm/lib/uninstall.c:148
 msgid "package %s-%s-%s contain shared files\n"
-msgstr "Paket %s-%s-%s ortak (shared) dosyalar içeriyor\n"
+msgstr "balíèek %s-%s-%s obsahuje sdílené soubory\n"
 
 #: /home/ewt/redhat/rpm/lib/uninstall.c:499
 msgid "execution of script failed"
-msgstr "betik (script) çalýþtýrýlamadý "
+msgstr "spu¹tìní skriptu selhalo"
 
 #: /home/ewt/redhat/rpm/lib/uninstall.c:583
 msgid "rename of %s to %s failed: %s"
-msgstr "%s 'nin isminin  %s 'ye çevrilmesinde belirtilen hata oluþtu: %s"
+msgstr "pøejmenování %s na %s selhalo: %s"
 
 #: /home/ewt/redhat/rpm/lib/uninstall.c:597
 msgid "cannot remove %s - directory not empty"
-msgstr "%s silinemedi - belirtilen dizin boþ deðil"
+msgstr "nelze odstranit %s - adresáø není prázdný"
 
 #: /home/ewt/redhat/rpm/lib/uninstall.c:600
 msgid "rmdir of %s failed: %s"
-msgstr "%s dizinin silinmesinde belirtilen hata oluþtu: %s"
+msgstr "rmdir %s selhalo: %s"
 
 #: /home/ewt/redhat/rpm/lib/uninstall.c:610
 msgid "removal of %s failed: %s"
-msgstr "%s 'in silinmesinde belirtilen hata oluþtu: %s"
+msgstr "odstranìní %s selhalo: %s"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:132
-# , c-format
 msgid "failed to open %s\n"
-msgstr "%s 'ye eriþimde hata oluþtu\n"
+msgstr "otevøení %s selhalo\n"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:145 /home/ewt/redhat/rpm/lib/rpmdb.c:152
 msgid "cannot get %s lock on database"
-msgstr "Veritabaný için %s kilit (lock) alýnamadý"
+msgstr "nelze získat %s zámek k databázi"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:146
 msgid "exclusive"
-msgstr "özel"
+msgstr "výhradní"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:153
 msgid "shared"
-msgstr "paylaþýlan (shared)"
+msgstr "sdílený"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:286
 msgid "package %s not listed in %s"
-msgstr "%s paketi %s altýnda gözükmüyor"
+msgstr "balíèek %s není uveden v %s"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:297
 msgid "package %s not found in %s"
-msgstr "%s pakedi %s içerisinde bulunamadý"
+msgstr "balíèek %s nenalezen v %s"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:328
 msgid "package has no name"
-msgstr "pakedin adý yok :-)"
+msgstr "balíèek nemá název"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:473
-# reservieren???
 msgid "cannot allocate space for database"
-msgstr "Veritabaný için yer bulunamadý"
+msgstr "nelze alokovat prostor pro databázi"
 
 #: /home/ewt/redhat/rpm/lib/rpmdb.c:537
 msgid "cannot read header at %d for update"
-msgstr "%d numaralý paketin güncelleme için gereken 'header' kýsmý okunamadý"
+msgstr "nelze èíst hlavièku u %d pro inovaci"
 
 #: /home/ewt/redhat/rpm/lib/signature.c:99
 msgid "Old (internal-only) signature!  How did you get that!?"
-msgstr "Eski imza !!! Eee bunu nasýl baþardýn bakiiim ?"
+msgstr "Starý (pouze interní) podpis! Jak jste to získali!?"
 
 #: /home/ewt/redhat/rpm/lib/signature.c:222 /home/ewt/redhat/rpm/lib/signature.c:479
 msgid "Couldn't exec pgp"
-msgstr "PGP çalýþtýrýlamadý"
+msgstr "Nelze spustit pgp"
 
 #: /home/ewt/redhat/rpm/lib/signature.c:233
 msgid "pgp failed"
-msgstr "PGP hata verdi"
+msgstr "pgp selhal"
 
 #. PGP failed to write signature
 #. Just in case
 #: /home/ewt/redhat/rpm/lib/signature.c:240
 msgid "pgp failed to write signature"
-msgstr "PGP imzasýnýn yazýlmasý sýrasýnda hata oluþtu"
+msgstr "pgp selhal pøi zápisu podpisu"
 
 #: /home/ewt/redhat/rpm/lib/signature.c:253
 msgid "unable to read the signature"
-msgstr "imzayý okumak mümkün olmadý"
+msgstr "podpis nelze pøeèíst"
 
 #: /home/ewt/redhat/rpm/lib/signature.c:396
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
-msgstr "PGP çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn."
+msgstr "Nelze spustit pgp. Vynechte kontroly PGP pomocí --nopgp."
 
 #: /home/ewt/redhat/rpm/lib/signature.c:430
 msgid "You must set \"pgp_name:\" in your rpmrc file"
-msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
+msgstr "V souboru rpmrc musíte nastavit \"pgp_name:\""
 
 #: /home/ewt/redhat/rpm/lib/dbindex.c:22
 msgid "cannot open file %s: "
-msgstr "%s dosyasý açýlamýyor: "
+msgstr "nelze otevøít soubor %s: "
 
 #: /home/ewt/redhat/rpm/lib/dbindex.c:49
 msgid "error getting record %s from %s"
-msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
+msgstr "chyba získávání záznamu %s z %s"
 
 #: /home/ewt/redhat/rpm/lib/dbindex.c:77
 msgid "error storing record %s into %s"
-msgstr "%s kaydý %s dosyasýna yazýlamýyor"
+msgstr "chyba ukládání záznamu %s do %s"
 
 #: /home/ewt/redhat/rpm/lib/dbindex.c:84
 msgid "error removing record %s into %s"
-msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
+msgstr "chyba odstraòování záznamu %s do %s"
 
 #: /home/ewt/redhat/rpm/lib/depends.c:383 /home/ewt/redhat/rpm/lib/depends.c:538
 msgid "cannot read header at %d for dependency check"
-msgstr "baðýmlýlýk sorgulamasý için %d numaralý baþlýk okunamýyor"
+msgstr "nelze èíst hlavièku u %d pro kontrolu závislostí"
 
 #: /home/ewt/redhat/rpm/lib/depends.c:825
 msgid "loop in prerequisite chain: %s"
-msgstr "gerekenler zincirinde döngü: %s"
+msgstr "smyèka v øetìzu pøedpokladù: %s"
 
 #: /home/ewt/redhat/rpm/lib/formats.c:104 /home/ewt/redhat/rpm/lib/formats.c:121 /home/ewt/redhat/rpm/lib/formats.c:141 /home/ewt/redhat/rpm/lib/formats.c:173 /home/ewt/redhat/rpm/lib/header.c:1848 /home/ewt/redhat/rpm/lib/header.c:1868
 msgid "(not a number)"
-msgstr "(üye deðil)"
+msgstr "(není èíslo)"
 
 #: /home/ewt/redhat/rpm/lib/fs.c:53
 msgid "mntctl() failed to return fugger size: %s"
-msgstr "mntctl() çaðrýsý boyut bilgisi vermedi: %s"
+msgstr "mntctl() nevrátil velikost fuggeru(?): %s"
 
 #: /home/ewt/redhat/rpm/lib/fs.c:128
 msgid "failed to open %s: %s"
-msgstr "%s açýlamadý: %s"
+msgstr "otevøení %s selhalo: %s"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1204
 msgid "? expected in expression"
-msgstr "dizi içerisinde ? bekleniyordu"
+msgstr "ve výrazu se oèekával ?"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1211
 msgid "{ exected after ? in expression"
-msgstr "dizi içerisinde ? den sonra { bekleniyordu"
+msgstr "ve výrazu se po ? oèekávala {"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1221 /home/ewt/redhat/rpm/lib/header.c:1253
 msgid "} expected in expression"
-msgstr "dizi içerisinde } bekleniyordu"
+msgstr "ve výrazu se oèekávala }"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1228
 msgid ": expected following ? subexpression"
-msgstr "? altdizisinden sonra : bekleniyordu"
+msgstr "v podvýrazu se po ? oèekávala :"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1241
 msgid "{ exected after : in expression"
-msgstr "dizide : den sonra { bekleniyordu"
+msgstr "ve výrazu se po : oèekávala {"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1260
 msgid "| expected at end of expression"
-msgstr "dizinin sonunda | bekleniyordu"
+msgstr "na konci výrazu se oèekávala |"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1354
 msgid "missing { after %"
-msgstr "% den sonra eksik {"
+msgstr "po % chybí {"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1382
 msgid "missing } after %{"
-msgstr "%{ den sonra eksik }"
+msgstr "po %{ chybí }"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1394
 msgid "empty tag format"
-msgstr "boþ tag tanýmlamasý"
+msgstr "prázdný formát pøíznaku"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1404
 msgid "empty tag name"
-msgstr "boþ tag ismi"
+msgstr "prázdný název pøíznaku"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1419
 msgid "unknown tag"
-msgstr "bilinmeyen tag"
+msgstr "neznámý pøíznak"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1445
 msgid "] expected at end of array"
-msgstr "dizinin sonunda ] bekleniyordu"
+msgstr "na konci øady se oèekávala ]"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1461
 msgid "unexpected ]"
-msgstr "beklenmeyen ]"
+msgstr "neoèekávaná ]"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1463
 msgid "unexpected }"
-msgstr "beklenmeyen }"
+msgstr "neoèekávaná }"
 
 #: /home/ewt/redhat/rpm/lib/header.c:1538 /home/ewt/redhat/rpm/lib/header.c:1544 /home/ewt/redhat/rpm/lib/header.c:1727
-msgid "(none)"
-msgstr "(hiçbiri)"
+msgid "(¾ádný)"
+msgstr ""
 
 #: /home/ewt/redhat/rpm/lib/header.c:1638
 msgid "(unknown type)"
-msgstr "(bilinmeyen tip)"
+msgstr "(neznámý typ)"
 
 #: /home/ewt/redhat/rpm/lib/lookup.c:91
 msgid "cannot read header at %d for lookup"
-msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
+msgstr "nelze èíst hlavièku u %d pro vyhledání"
 
 #: /home/ewt/redhat/rpm/lib/rebuilddb.c:30
 msgid "no dbpath has been set"
-msgstr "dbpath deðeri girilmemiþ"
+msgstr "nebyla nastavena ¾ádná dbpath"
 
 #: /home/ewt/redhat/rpm/lib/rebuilddb.c:38
 msgid "temporary database %s already exists"
-msgstr "geçici veritabaný %s mevcut"
+msgstr "doèasná databáze %s ji¾ existuje"
 
 #: /home/ewt/redhat/rpm/lib/rebuilddb.c:44
 msgid "error creating directory %s: %s"
-msgstr "%s dizinin oluþturulmasýnda hata: %s"
+msgstr "chyba vytváøení adresáøe %s: %s"
 
 #: /home/ewt/redhat/rpm/lib/rebuilddb.c:63
 msgid "cannot read database record at %d"
-msgstr "%d numaralý veritabaný kaydý okunamýyor"
+msgstr "nelze èíst databázový záznam u %d"
 
 #: /home/ewt/redhat/rpm/lib/rebuilddb.c:77
 msgid "cannot add record originally at %d"
-msgstr "%d de yer alan kayýt saklayamýyor"
+msgstr "nelze pøidat záznam - pùvodnì u %d"
 
 #: /home/ewt/redhat/rpm/lib/rebuilddb.c:83
 msgid "record number %d in database is bad -- skipping it"
-msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
+msgstr "záznam èíslo %d v databázi je ¹patný -- vynechává se"
 
 #: /home/ewt/redhat/rpm/lib/messages.c:53
 msgid "warning: "
-msgstr "uyarý: "
+msgstr "varování: "
 
 #: /home/ewt/redhat/rpm/lib/messages.c:59
 msgid "error: "
-msgstr "hata: "
+msgstr "chyba: "
 
 #: /home/ewt/redhat/rpm/lib/messages.c:65
 msgid "fatal error: "
-msgstr "ölümcül hata: "
+msgstr "fatální chyba: "
 
 #: /home/ewt/redhat/rpm/lib/package.c:110
 msgid "only packages with major numbers <= 3 are supported by this version of RPM"
-msgstr "RPM'in bu sürümünde sadece major numarasý <= 3 olan paketler destekleniyor"
+msgstr "tato verze RPM podporuje jen balíèky, které mají hlavní (major) èísla <= 3"
 
 #: /home/ewt/redhat/rpm/lib/rpmlead.c:49
 msgid "read failed: %s (%d)"
-msgstr "okuma hatasý: %s (%d)"
+msgstr "ètení selhalo: %s (%d)"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:213
 msgid "missing second ':' at %s:%d"
-msgstr "%s te ikinci ':' eksik:%d"
+msgstr "chybí druhá ':' u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:216
 msgid "missing architecture name at %s:%d"
-msgstr "%s te eksik mimari tanýmlamasý:%d"
+msgstr "chybí název architektury u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:353
 msgid "Incomplete data line at %s:%d"
-msgstr "%s te eksik data satýrý:%d"
+msgstr "Neúplný datový øádek u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:357
 msgid "Too many args in data line at %s:%d"
-msgstr "%s te data satýrýnda çok fazla argüman:%d"
+msgstr "Pøíli¹ mnoho argumentù v datovém øádku u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:364
 msgid "Bad arch/os number: %s (%s:%d)"
-msgstr "Kötü arch/os numarasý %s: (%s:%d)"
+msgstr "©patné èíslo arch/os: %s (%s:%d)"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:397
 msgid "Incomplete default line at %s:%d"
-msgstr "%s te eksik default satýrý:%d"
+msgstr "Neúplný výchozí øádek u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:402
 msgid "Too many args in default line at %s:%d"
-msgstr "%s te default satýrýnda çok fazla argüman:%d"
+msgstr "Pøíli¹ mnoho argumentù ve výchozím øádku u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:493 /home/ewt/redhat/rpm/lib/rpmrc.c:509
 msgid "Unable to open %s for reading: %s."
-msgstr "%s okuma eriþimi için açýlamadý:%s."
+msgstr "Nelze otevøít %s pro ètení: %s."
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:552
 msgid "Failed to read %s: %s."
-msgstr "%s okunamadý: %s"
+msgstr "Selhalo ètení %s: %s."
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:582
 msgid "missing ':' at %s:%d"
-msgstr "%s te eksik ':' :%d"
+msgstr "chybí ':' u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:598 /home/ewt/redhat/rpm/lib/rpmrc.c:619
 msgid "missing argument for %s at %s:%d"
-msgstr "%s için %s te eksik argüman :%d"
+msgstr "chybí argument pro %s u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:609
 msgid "missing architecture for %s at %s:%d"
-msgstr "%s için %s te eksik mimari:%d"
+msgstr "chybí architektura pro %s u %s:%d"
 
 #: /home/ewt/redhat/rpm/lib/rpmrc.c:662
 msgid "bad option '%s' at %s:%d"
-msgstr "%s geçersiz seçenek %s:%d"
+msgstr "¹patná volba '%s' u %s:%d"
