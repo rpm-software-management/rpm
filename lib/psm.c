@@ -5,11 +5,10 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include "psm.h"
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
-#include "psm.h"
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
 #include "misc.h"

@@ -860,10 +860,6 @@ rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
     case RPMSIGTAG_MD5:
 	return verifyMD5Signature(file, sig, result, mdbinfile);
 	/*@notreached@*/ break;
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_LEMD5_2:
-	return verifyMD5Signature(file, sig, result, mdbinfileBroken);
-	/*@notreached@*/ break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	return verifyPGPSignature(file, sig, count, result);
@@ -871,6 +867,8 @@ rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
     case RPMSIGTAG_GPG:
 	return verifyGPGSignature(file, sig, count, result);
 	/*@notreached@*/ break;
+    case RPMSIGTAG_LEMD5_1:
+    case RPMSIGTAG_LEMD5_2:
     default:
 	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
 	return RPMSIG_UNKNOWN;

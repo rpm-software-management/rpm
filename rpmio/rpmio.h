@@ -363,9 +363,11 @@ off_t	fdSize(FD_t fd)
 /*@-exportlocal@*/
 /**
  */
+#ifndef H_RPMIO_INTERNAL	/* XXX avoid gcc warning */
 /*@unused@*/ int fdFileno(void * cookie)
 	/*@*/;
 #define	fdFileno(_fd)		fdio->_fileno(_fd)
+#endif
 
 /**
  */

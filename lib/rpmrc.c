@@ -307,18 +307,11 @@ static int addCanon(canonEntry * table, int * tableLen, char * line,
     const char * tshort_name;
     int tnum;
 
-#ifdef	DYING
-    if (! *tableLen) {
-	*tableLen = 2;
-	*table = xmalloc(2 * sizeof(struct canonEntry_s));
-    } else
-#endif
-    {
-	(*tableLen) += 2;
-	/*@-unqualifiedtrans@*/
-	*table = xrealloc(*table, sizeof(struct canonEntry_s) * (*tableLen));
-	/*@=unqualifiedtrans@*/
-    }
+    (*tableLen) += 2;
+    /*@-unqualifiedtrans@*/
+    *table = xrealloc(*table, sizeof(struct canonEntry_s) * (*tableLen));
+    /*@=unqualifiedtrans@*/
+
     t = & ((*table)[*tableLen - 2]);
 
     tname = strtok(line, ": \t");
@@ -363,18 +356,11 @@ static int addDefault(defaultEntry * table, int * tableLen, char * line,
 {
     defaultEntry t;
 
-#ifdef	DYING
-    if (! *tableLen) {
-	*tableLen = 1;
-	*table = xmalloc(sizeof(struct defaultEntry_s));
-    } else
-#endif
-    {
-	(*tableLen)++;
-	/*@-unqualifiedtrans@*/
-	*table = xrealloc(*table, sizeof(struct defaultEntry_s) * (*tableLen));
-	/*@=unqualifiedtrans@*/
-    }
+    (*tableLen)++;
+    /*@-unqualifiedtrans@*/
+    *table = xrealloc(*table, sizeof(struct defaultEntry_s) * (*tableLen));
+    /*@=unqualifiedtrans@*/
+
     t = & ((*table)[*tableLen - 1]);
 
     /*@-temptrans@*/

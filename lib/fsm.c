@@ -652,7 +652,6 @@ int fsmMapAttrs(FSM_t fsm)
 
 /** \ingroup payload
  * Create file from payload stream.
- * @todo Legacy: support brokenEndian MD5 checks?
  * @param fsm		file state machine data
  * @return		0 on success
  */
@@ -672,7 +671,6 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
     /* XXX md5sum's will break on repackaging that includes modified files. */
     fmd5sum = fsm->fmd5sum;
 
-    /* XXX This doesn't support brokenEndian checks. */
     if (st->st_size > 0 && fmd5sum)
 	fdInitMD5(fsm->wfd, 0);
 

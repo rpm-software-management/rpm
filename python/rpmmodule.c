@@ -15,9 +15,9 @@
 #include <time.h>
 
 #include "Python.h"
+#include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 #include "misc.h"
-#include "rpmio_internal.h"
 #include "header_internal.h"
 #include "upgrade.h"
 

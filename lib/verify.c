@@ -5,9 +5,9 @@
 
 #include "system.h"
 
+#include "psm.h"
 #include <rpmcli.h>
 
-#include "psm.h"
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
@@ -15,14 +15,6 @@
 /*@access PSM_t*/
 /*@access FD_t*/	/* XXX compared with NULL */
 /*@access rpmdb*/	/* XXX compared with NULL */
-
-static int _ie = 0x44332211;
-static union _vendian {
-/*@unused@*/ int i;
-    char b[4];
-} *_endian = (union _vendian *)&_ie;
-#define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
-#define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
@@ -41,27 +33,6 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     int count;
     int rc;
     struct stat sb;
-    int_32 useBrokenMd5;
-
-  if (IS_BIG_ENDIAN()) {	/* XXX was ifdef WORDS_BIGENDIAN */
-    int_32 * brokenPtr;
-    if (!hge(h, RPMTAG_BROKENMD5, NULL, (void **) &brokenPtr, NULL)) {
-	HAE_t hae = (HAE_t)headerAddEntry;
-	const char * rpmVersion;
-
-	if (hge(h, RPMTAG_RPMVERSION, NULL, (void **) &rpmVersion, NULL)) {
-	    useBrokenMd5 = ((rpmvercmp(rpmVersion, "2.3.3") >= 0) &&
-			    (rpmvercmp(rpmVersion, "2.3.8") <= 0));
-	} else {
-	    useBrokenMd5 = 1;
-	}
-	(void) hae(h, RPMTAG_BROKENMD5, RPM_INT32_TYPE, &useBrokenMd5, 1);
-    } else {
-	useBrokenMd5 = *brokenPtr;
-    }
-  } else {
-    useBrokenMd5 = 0;
-  }
 
     (void) hge(h, RPMTAG_FILEMODES, NULL, (void **) &modeList, &count);
     if (hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL))
@@ -174,9 +145,6 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	if (!hge(h, RPMTAG_FILEMD5S, &mdt, (void **) &md5List, NULL))
 	    *result |= RPMVERIFY_MD5;
 	else {
-	    if (useBrokenMd5)
-		rc = mdfileBroken(filespec, md5sum);
-	    else
 		rc = mdfile(filespec, md5sum);
 
 	    if (rc)

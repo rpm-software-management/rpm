@@ -26,12 +26,10 @@ extern "C" {
  * @param fn		file name
  * @retval digest	address of md5sum
  * @param asAscii	return md5sum as ascii string?
- * @param brokenEndian	calculate broken MD5 sum?
  * @return		0 on success, 1 on error
  */
 /*@-exportlocal@*/
-int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
-		 int brokenEndian)
+int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii)
 	/*@modifies digest, fileSystem @*/;
 /*@=exportlocal@*/
 
@@ -46,7 +44,7 @@ int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
 int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
 	/*@modifies digest, fileSystem @*/
 {
-    return domd5(fn, digest, 1, 0);
+    return domd5(fn, digest, 1);
 }
 
 /**
@@ -60,45 +58,22 @@ int mdfile(const char * fn, /*@out@*/ unsigned char * digest)
 int mdbinfile(const char * fn, /*@out@*/ unsigned char * bindigest)
 	/*@modifies bindigest, fileSystem @*/
 {
-    return domd5(fn, bindigest, 0, 0);
+    return domd5(fn, bindigest, 0);
 }
 
 /**
- * Return (broken!) MD5 sum of file as ASCII string.
- * @deprecated Here for compatibility with old (broken) versions of RPM.
- * @todo Eliminate, use beecrypt instead.
- * @param fn		file name
- * @retval digest	MD5 digest
- * @return		0 on success, 1 on error
- */
-/*@unused@*/ static inline
-int mdfileBroken(const char * fn, /*@out@*/ unsigned char * digest)
-	/*@modifies digest, fileSystem @*/
-{
-    return domd5(fn, digest, 1, 1);
-}
-
-/**
- * Return (broken!) MD5 sum of file as binary data.
- * @deprecated Here for compatibility with old (broken) versions of RPM.
- * @todo Eliminate, use beecrypt instead.
- * @param fn		file name
- * @retval bindigest	MD5 digest
- * @return		0 on success, 1 on error
- */
-/*@unused@*/ static inline
-int mdbinfileBroken(const char * fn, /*@out@*/ unsigned char * bindigest)
-	/*@modifies bindigest, fileSystem @*/
-{
-    return domd5(fn, bindigest, 0, 1);
-}
-
-/**
+ * Split string into fields separated by a character.
+ * @param str		string
+ * @param length	length of string
+ * @param sep		separator character
+ * @return		(malloc'd) argv array
  */
 /*@only@*/ char ** splitString(const char * str, int length, char sep)
 	/*@*/;
 
 /**
+ * Free split string argv array.
+ * @param list		argv array
  */
 void freeSplitString( /*@only@*/ char ** list)
 	/*@modifies list @*/;
@@ -120,21 +95,27 @@ void freeSplitString( /*@only@*/ char ** list)
 }
 
 /**
+ * Check if file esists using stat(2).
+ * @param urlfn		file name (may be URL)
+ * @return		1 if file exists, 0 if not
  */
 int rpmfileexists(const char * urlfn)
 	/*@modifies fileSystem @*/;
 
-/*
- * These are like the libc functions, but they malloc() the space which
- * is needed.
- */
-
 /**
+ * Like the libc function, but malloc()'s the space needed.
+ * @param name		variable name
+ * @param value		variable value
+ * @param overwrte	should an existing variable be changed?
+ * @return		0 on success
  */
 int dosetenv(const char * name, const char * value, int overwrite)
 	/*@modifies fileSystem @*/;
 
 /**
+ * Like the libc function, but malloc()'s the space needed.
+ * @param str		"name=value" string
+ * @return		0 on success
  */
 int doputenv(const char * str)
 	/*@modifies fileSystem @*/;
@@ -165,16 +146,21 @@ int makeTempFile(/*@null@*/ const char * prefix,
 	/*@modifies fileSystem @*/;
 
 /**
+ * Convert absolute path tag to (dirname,basename,dirindex) tags.
+ * @param h		header
  */
 void compressFilelist(Header h)
 	/*@modifies h @*/;
 
 /**
+ * Convert (dirname,basename,dirindex) tags to absolute path tag.
+ * @param h		header
  */
 void expandFilelist(Header h)
 	/*@modifies h @*/;
 
 /**
+ * @param h		header
  */
 void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			/*@out@*/ int * fileCountPtr)
@@ -191,6 +177,9 @@ int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
 		/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
 
 /**
+ * Retrofit a Provides: name = version-release dependency into legacy
+ * packages.
+ * @param h		header
  */
 void providePackageNVR(Header h)
 	/*@modifies h @*/;

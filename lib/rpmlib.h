@@ -301,7 +301,7 @@ typedef enum rpmTag_e {
     RPMTAG_CHANGELOGTIME	= 1080,
     RPMTAG_CHANGELOGNAME	= 1081,
     RPMTAG_CHANGELOGTEXT	= 1082,
-    RPMTAG_BROKENMD5		= 1083, /*!< internal */
+    RPMTAG_BROKENMD5		= 1083, /*!< internal - obsolete */
     RPMTAG_PREREQ		= 1084, /*!< internal */
     RPMTAG_PREINPROG		= 1085,
     RPMTAG_POSTINPROG		= 1086,
@@ -325,7 +325,7 @@ typedef enum rpmTag_e {
     RPMTAG_AUTOREQ		= 1103, /*!< internal */
     RPMTAG_AUTOPROV		= 1104, /*!< internal */
 /*@-enummemuse@*/
-    RPMTAG_CAPABILITY		= 1105, /*!< internal obsolete */
+    RPMTAG_CAPABILITY		= 1105, /*!< internal - obsolete */
 /*@=enummemuse@*/
     RPMTAG_SOURCEPACKAGE	= 1106, /*!< internal */
 /*@-enummemuse@*/
@@ -335,7 +335,7 @@ typedef enum rpmTag_e {
     RPMTAG_BUILDREQUIRES	= 1109, /*!< internal */
     RPMTAG_BUILDCONFLICTS	= 1110, /*!< internal */
 /*@-enummemuse@*/
-    RPMTAG_BUILDMACROS		= 1111, /*!< internal */
+    RPMTAG_BUILDMACROS		= 1111, /*!< internal - unused */
 /*@=enummemuse@*/
     RPMTAG_PROVIDEFLAGS		= 1112,
     RPMTAG_PROVIDEVERSION	= 1113,

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 12:19-0400\n"
+"POT-Creation-Date: 2001-09-25 16:48-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1661,7 +1661,7 @@ msgstr "Nemohu pøeèíst hlavièku z %s: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "Nemohu otevøít %s: %s\n"
 
-#: build/pack.c:571 lib/psm.c:1523
+#: build/pack.c:571 lib/psm.c:1522
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nemohu zapsat balíèek: %s\n"
@@ -1691,7 +1691,7 @@ msgstr "Nemohu pøeèíst payload z %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nemohu zapsat payload do %s: %s\n"
 
-#: build/pack.c:651 lib/psm.c:1782
+#: build/pack.c:651 lib/psm.c:1781
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapsáno: %s\n"
@@ -2053,59 +2053,59 @@ msgstr "Nenalezeny ¾ádné kompatibilní architektury pro sestavení\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Balíèek nemá ¾ádné %%description: %s\n"
 
-#: build/spec.c:228
+#: build/spec.c:227
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "øádek %d: ©patné èíslo: %s\n"
 
-#: build/spec.c:234
+#: build/spec.c:233
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "øádek %d: ©patné èíslo %s: %d\n"
 
-#: build/spec.c:293
+#: build/spec.c:292
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "øádek %d: ©patné èíslo %s: %s\n"
 
-#: lib/cpio.c:187
+#: lib/cpio.c:186
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(chyba: 0x%x)"
 
-#: lib/cpio.c:190
+#: lib/cpio.c:189
 msgid "Bad magic"
 msgstr "©patné magické èíslo"
 
-#: lib/cpio.c:191
+#: lib/cpio.c:190
 msgid "Bad/unreadable  header"
 msgstr "©patná nebo neèitelná hlavièka"
 
-#: lib/cpio.c:212
+#: lib/cpio.c:211
 msgid "Header size too big"
 msgstr "Velikost hlavièky je pøili¹ velká"
 
-#: lib/cpio.c:213
+#: lib/cpio.c:212
 msgid "Unknown file type"
 msgstr "Neznámý typ souboru"
 
-#: lib/cpio.c:214
+#: lib/cpio.c:213
 msgid "Missing hard link(s)"
 msgstr "Chybìjící hardlink(y)"
 
-#: lib/cpio.c:215
+#: lib/cpio.c:214
 msgid "MD5 sum mismatch"
 msgstr "MD5 souèet nesouhlasí"
 
-#: lib/cpio.c:216
+#: lib/cpio.c:215
 msgid "Internal error"
 msgstr "Interní chyba"
 
-#: lib/cpio.c:217
+#: lib/cpio.c:216
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:226
+#: lib/cpio.c:225
 msgid " failed - "
 msgstr "selhal - "
 
@@ -2266,37 +2266,37 @@ msgstr "========= Adresáøe, které nebyly explicitnì zaøazeny do balíèku:\n"
 msgid "%9d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1124
+#: lib/fsm.c:1122
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "vytvoøen adresáø %s s právy %04o.\n"
 
-#: lib/fsm.c:1401
+#: lib/fsm.c:1399
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1520 lib/fsm.c:1645
+#: lib/fsm.c:1518 lib/fsm.c:1643
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s ulo¾eno jako %s\n"
 
-#: lib/fsm.c:1671
+#: lib/fsm.c:1669
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s odstranìní %s selhalo: Adresáø není prázdný\n"
 
-#: lib/fsm.c:1677
+#: lib/fsm.c:1675
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s selhal: %s\n"
 
-#: lib/fsm.c:1687
+#: lib/fsm.c:1685
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s selhal: %s\n"
 
-#: lib/fsm.c:1706
+#: lib/fsm.c:1704
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s vytvoøen jako %s\n"
@@ -2306,7 +2306,7 @@ msgstr "%s vytvoøen jako %s\n"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "Poèet dataLength() RPM_STRING_TYPE musí být 1.\n"
 
-#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:400
+#: lib/header.c:296 lib/header_internal.c:139 lib/psm.c:399
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datový typ %d není podporován\n"
@@ -2386,7 +2386,7 @@ msgstr "na konci výrazu je oèekáváno |"
 msgid "(unknown type)"
 msgstr "(neznámý typ)"
 
-#: lib/misc.c:264 lib/misc.c:269 lib/misc.c:275
+#: lib/misc.c:262 lib/misc.c:267 lib/misc.c:273
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
@@ -2849,74 +2849,74 @@ msgstr "pøedtransakèní syscall v balíèku %s: %s selhalo: %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s"
 
-#: lib/psm.c:594
+#: lib/psm.c:593
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/psm.c:600
+#: lib/psm.c:599
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nemohu zapsat do %%%s %s\n"
 
-#: lib/psm.c:638
+#: lib/psm.c:637
 msgid "source package expected, binary found\n"
 msgstr "oèekávám balíèek se zdrojovými kódy, nalezen v¹ak binární\n"
 
-#: lib/psm.c:745
+#: lib/psm.c:744
 msgid "source package contains no .spec file\n"
 msgstr "zdrojový balíèek neobsahuje .spec soubor\n"
 
-#: lib/psm.c:1003
+#: lib/psm.c:1002
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "provedení skripletu %s z %s-%s-%s selhalo, návratový kód byl: %s\n"
 
-#: lib/psm.c:1010
+#: lib/psm.c:1009
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "provedení %s skripletu z %s-%s-%s selhalo, návratový kód: %d\n"
 
-#: lib/psm.c:1328
+#: lib/psm.c:1327
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s obsahuje %d souborù, test = %d\n"
 
-#: lib/psm.c:1445
+#: lib/psm.c:1444
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr "%s: scriptlet %s selhal (%d), pøeskakuji %s-%s-%s\n"
 
-#: lib/psm.c:1560
+#: lib/psm.c:1559
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "u¾ivatel %s neexistuje - pou¾it u¾ivatel root\n"
 
-#: lib/psm.c:1569
+#: lib/psm.c:1568
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s neexistuje - pou¾ita skupina root\n"
 
-#: lib/psm.c:1608
+#: lib/psm.c:1607
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozbalování archívu selhalo %s%s: %s\n"
 
-#: lib/psm.c:1609
+#: lib/psm.c:1608
 msgid " on file "
 msgstr " na souboru "
 
-#: lib/psm.c:1790
+#: lib/psm.c:1789
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nemohu otevøít %s: %s\n"
 
-#: lib/psm.c:1793
+#: lib/psm.c:1792
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s selhalo\n"
 
-#: lib/psm.c:1885
+#: lib/psm.c:1884
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "%s: spou¹tím %s skript(y) (pokud existují)\n"
@@ -3233,88 +3233,88 @@ msgstr "chybí druhá ':' u %s:%d\n"
 msgid "missing architecture name at %s:%d\n"
 msgstr "chybí název architektury u %s:%d\n"
 
-#: lib/rpmrc.c:328
+#: lib/rpmrc.c:321
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Neúplný datový øádek %s:%d\n"
 
-#: lib/rpmrc.c:333
+#: lib/rpmrc.c:326
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Pøíli¹ mnoho parametrù v datovém øádku %s:%d\n"
 
-#: lib/rpmrc.c:341
+#: lib/rpmrc.c:334
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Chybné èíslo architektury nebo OS: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:384
+#: lib/rpmrc.c:370
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Neúplný standardní øádek %s:%d\n"
 
-#: lib/rpmrc.c:389
+#: lib/rpmrc.c:375
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Pøíli¹ mnoho parametrù ve výchozím øádku u %s:%d\n"
 
-#: lib/rpmrc.c:591
+#: lib/rpmrc.c:577
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nemohu expandovat %s\n"
 
-#: lib/rpmrc.c:596
+#: lib/rpmrc.c:582
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Nemohu èíst %s, HOME je pøíli¹ velký.\n"
 
-#: lib/rpmrc.c:613
+#: lib/rpmrc.c:599
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nemohu otevøít %s pro ètení: %s.\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:660
+#: lib/rpmrc.c:646
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Nemohu èíst %s: %s.\n"
 
-#: lib/rpmrc.c:697
+#: lib/rpmrc.c:683
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "chybí ':' (nalezeno na 0x%02x) v %s:%d\n"
 
-#: lib/rpmrc.c:714 lib/rpmrc.c:788
+#: lib/rpmrc.c:700 lib/rpmrc.c:774
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "chybí parametr pro %s u %s:%d\n"
 
-#: lib/rpmrc.c:731 lib/rpmrc.c:753
+#: lib/rpmrc.c:717 lib/rpmrc.c:739
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "expanze %s selhala na %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:740
+#: lib/rpmrc.c:726
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nemohu otevøít soubor %s na %s:%d: %s\n"
 
-#: lib/rpmrc.c:780
+#: lib/rpmrc.c:766
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "chybí architektura pro %s u %s:%d\n"
 
-#: lib/rpmrc.c:847
+#: lib/rpmrc.c:833
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "chybná volba '%s' u %s:%d\n"
 
-#: lib/rpmrc.c:1442
+#: lib/rpmrc.c:1428
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámý systém: %s\n"
 
-#: lib/rpmrc.c:1443
+#: lib/rpmrc.c:1429
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Zkontaktujte prosím rpm-list@redhat.com\n"
 
@@ -3440,72 +3440,72 @@ msgstr "Musíte nastavit \"%%_gpg_name\" ve svém makro souboru\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_pgp_name\" ve svém makro souboru\n"
 
-#: lib/transaction.c:446
+#: lib/transaction.c:459
 msgid "========== relocations\n"
 msgstr "========== relokace\n"
 
-#: lib/transaction.c:450
+#: lib/transaction.c:463
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d vynechávám %s\n"
 
-#: lib/transaction.c:453
+#: lib/transaction.c:466
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d pøemís»uji %s -> %s\n"
 
-#: lib/transaction.c:523
+#: lib/transaction.c:536
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "vynechávám multilib cestu %s%s\n"
 
-#: lib/transaction.c:586
+#: lib/transaction.c:599
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "vynechávám %s %s\n"
 
-#: lib/transaction.c:596
+#: lib/transaction.c:609
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "pøemís»uji %s do %s\n"
 
-#: lib/transaction.c:674
+#: lib/transaction.c:687
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "pøemís»uji adresáø %s do %s\n"
 
-#: lib/transaction.c:808
+#: lib/transaction.c:830
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pøeskoèeno, proto¾e chybí pøíznak\n"
 
-#: lib/transaction.c:1406
+#: lib/transaction.c:1434
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "vynechávám adresáø %s\n"
 
-#: lib/verify.c:273
+#: lib/verify.c:241
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "balíèek neobsahuje ani u¾ivatelská jména ani seznam id (nemìlo by se nikdy "
 "stát)\n"
 
-#: lib/verify.c:294
+#: lib/verify.c:262
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "balíèek neobsahuje ani jména skupin ani seznam id (nemìlo by se nikdy stát)\n"
 
-#: lib/verify.c:429
+#: lib/verify.c:397
 #, c-format
 msgid "missing    %s"
 msgstr "chybí      %s"
 
-#: lib/verify.c:522
+#: lib/verify.c:490
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 
-#: lib/verify.c:561
+#: lib/verify.c:529
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrola digestu v hlavièce selhala\n"

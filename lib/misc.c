@@ -6,19 +6,18 @@
 
 static int _debug = 0;
 
-#include <rpmlib.h>
+#include "rpmio_internal.h"
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
+#include <rpmlib.h>
 
-#include "rpmio_internal.h"
 #include "misc.h"
 #include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
-int domd5(const char * fn, unsigned char * digest, int asAscii,
-		 int brokenEndian)
+int domd5(const char * fn, unsigned char * digest, int asAscii)
 {
     int rc;
 
@@ -33,8 +32,7 @@ int domd5(const char * fn, unsigned char * digest, int asAscii,
 	return 1;
     }
 
-    /* Preserve legacy "brokenEndian" behavior. */
-    fdInitMD5(fd, brokenEndian);
+    fdInitMD5(fd, 0);
 
     while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	{};

@@ -1305,7 +1305,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	}
 	mi = rpmdbFreeIterator(mi);
 
-#ifndef DYING
+#ifdef DYING
 	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, keyName, 0);
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);

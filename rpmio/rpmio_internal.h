@@ -7,8 +7,6 @@
 
 
 #include <rpmio.h>
-#undef	fdFileno
-
 #include <rpmurl.h>
 
 /** \ingroup rpmio

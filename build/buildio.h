@@ -9,6 +9,7 @@
  */
 
 #include "psm.h"
+#include "rpmbuild.h"
 
 /**
  */

@@ -8,7 +8,6 @@
  */
 
 #include "system.h"
-#include <rpmlib.h>
 
 #include "fsm.h"
 #include "rpmerr.h"

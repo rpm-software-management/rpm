@@ -4,8 +4,9 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
 #include <rpmio_internal.h>
+#include <rpmlib.h>
+
 #include "stringbuf.h"
 #include "manifest.h"
 #include "misc.h"

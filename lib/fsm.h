@@ -6,7 +6,6 @@
  * File state machine to handle a payload within an rpm package.
  */
 
-#include <rpmlib.h>
 #include "cpio.h"
 
 /**
