@@ -1,4 +1,4 @@
-2.3.1 -> 2.3.2:
+2.3.2 -> 2.3.3:
 	- Ripped out header internals and redid them. Any compatibility 
 	  problems this causes are *bugs* as it should be completley 
 	  transparent. If this works the devil better buy some Prestone (TM).
@@ -6,6 +6,11 @@
 	- use <string.h> instead of (non standard) <strings.h> in some places
 	- look for non-POSIX (broken) chmod
 	- include local copies of glob/fnmatch
+	- removed getopt() check from configure.in
+	- fixed bug in ftp code which prevented proper logins to some sites
+	- switched to popt from getopt, which allows command line aliasing
+	- read initial aliases from /usr/lib/rpmpopt then /etc/popt and
+	  $HOME/.popt
 
 2.3.1 -> 2.3.2:
 	- fixed bug in new rpmVersionCompare() which made it worse then
