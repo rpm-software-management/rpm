@@ -198,7 +198,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     Header h;
-    int i;
+    int i, j;
     int fileCount;
     char * rmmess, * name, * version, * release;
     char * fnbuffer = NULL;
@@ -253,7 +253,8 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	}
     }
     
-    rpmMessage(RPMMESS_DEBUG, "%s files test = %d\n", rmmess, flags & RPMUNINSTALL_TEST);
+    rpmMessage(RPMMESS_DEBUG, "%s files test = %d\n", rmmess, 
+		flags & RPMUNINSTALL_TEST);
     if (!(flags & RPMUNINSTALL_JUSTDB) &&
 	headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	               &fileCount)) {
@@ -279,7 +280,29 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	    else
 		fileActions[i] = REMOVE;
 
-	handleSharedFiles(db, offset, fileList, fileMd5List, fileCount, fileActions);
+	if (rpmGetVar(RPMVAR_NETSHAREDPATH)) {
+	    char ** netsharedPaths, ** nsp;
+
+	    netsharedPaths = splitString(rpmGetVar(RPMVAR_NETSHAREDPATH),
+			strlen(rpmGetVar(RPMVAR_NETSHAREDPATH)), ':');
+
+	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
+		j = strlen(*nsp);
+
+		for (i = 0; i < fileCount; i++) 
+		if (!strncmp(fileList[i], *nsp, j) &&
+		    (fileList[i][j] == '\0' || fileList[i][j] == '/')) {
+		    rpmMessage(RPMMESS_DEBUG, "%s has a netshared override\n",
+				fileList[i]);
+		    fileActions[i] = KEEP;
+		}
+	    }
+
+	    free(netsharedPaths);
+	}
+
+	handleSharedFiles(db, offset, fileList, fileMd5List, fileCount, 
+			  fileActions);
 
 	/* go through the filelist backwards to help insure that rmdir()
 	   will work */
@@ -372,7 +395,7 @@ int runScript(char * root, Header h, int scriptTag, int progTag,
 	memcpy(programArgv, argv, programArgc * sizeof(char *));
     }
 
-    if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) prefixes,
+    if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void *) &prefixes,
 		       &numPrefixes)) {
 	freePrefixes = 1;
     } else if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, 
