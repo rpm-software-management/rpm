@@ -234,7 +234,7 @@ dnl
 dnl use defaults if cross-compiling, otherwise use the default path.
 dnl
 if test "$cross_compiling" = "yes"; then
-    MYPATH=""
+    MYPATH=":"
 else
 #    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
     MYPATH=$PATH
