@@ -390,7 +390,7 @@ int main(int argc, char ** argv) {
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
     char *tce;
-    int timeCheck;
+    int timeCheck = 0;
     int addSign = NEW_SIGNATURE;
     char * rcfile = NULL, * queryFormat = NULL, * prefix = NULL;
     char buildChar = ' ';
@@ -814,7 +814,9 @@ int main(int argc, char ** argv) {
     if (help) printHelp();
 
     if (arg < -1) {
-	fprintf(stderr, "bad option\n");	
+	fprintf(stderr, "%s: %s\n", 
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
+		poptStrerror(arg));
 	exit(1);
     }
 
@@ -844,6 +846,10 @@ int main(int argc, char ** argv) {
 	bigMode != MODE_INITDB && gotDbpath)
 	argerror(_("--dbpath given for operation that does not use a "
 			"database"));
+
+    if (timeCheck && bigMode != MODE_BUILD && bigMode != MODE_REBUILD &&
+	bigMode != MODE_RECOMPILE) 
+	argerror(_("--timecheck may only be used during package builds"));
     
     if (bigMode != MODE_QUERY && queryFor) 
 	argerror(_("unexpected query specifiers"));
