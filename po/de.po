@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-12-06 13:01-0500\n"
+"POT-Creation-Date: 1999-12-08 11:31-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:25 lib/rpminstall.c:246 lib/rpminstall.c:406
+#: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
@@ -2213,85 +2213,85 @@ msgid "error removing record %s into %s"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:404
+#: lib/depends.c:414
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:433
+#: lib/depends.c:443
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:525
+#: lib/depends.c:535
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:764
+#: lib/depends.c:780
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:803
+#: lib/depends.c:823
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:820
+#: lib/depends.c:840
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:851
+#: lib/depends.c:871
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:879
+#: lib/depends.c:899
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:901
+#: lib/depends.c:921
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:923
+#: lib/depends.c:943
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:936
+#: lib/depends.c:956
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:946
+#: lib/depends.c:966
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:994
+#: lib/depends.c:1014
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:1056
+#: lib/depends.c:1076
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/depends.c:1111 lib/depends.c:1410
+#: lib/depends.c:1131 lib/depends.c:1430
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Abhängigkeiten zu prüfen"
 
-#: lib/depends.c:1206
+#: lib/depends.c:1226
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2781,7 +2781,7 @@ msgstr "öffnen von %s fehlgeschlagen: %s\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:496 lib/rpminstall.c:227
+#: lib/query.c:496 lib/rpminstall.c:228
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
@@ -2847,7 +2847,7 @@ msgstr "ungültige Paket-Nummer: %s\n"
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:644 lib/rpminstall.c:417
+#: lib/query.c:644 lib/rpminstall.c:418
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
@@ -3213,146 +3213,146 @@ msgstr "Hole %s heraus\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:181
+#: lib/rpminstall.c:182
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:185
+#: lib/rpminstall.c:186
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 
-#: lib/rpminstall.c:203
+#: lib/rpminstall.c:204
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:214 lib/rpminstall.c:356
+#: lib/rpminstall.c:215 lib/rpminstall.c:357
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/rpminstall.c:231 lib/rpminstall.c:494
+#: lib/rpminstall.c:232 lib/rpminstall.c:495
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "Fehler: %s kann nicht installiert werden\n"
 
-#: lib/rpminstall.c:267
+#: lib/rpminstall.c:268
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/rpminstall.c:285
+#: lib/rpminstall.c:286
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpminstall.c:290
+#: lib/rpminstall.c:291
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:307
+#: lib/rpminstall.c:308
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/rpminstall.c:318
+#: lib/rpminstall.c:319
 msgid "failed dependencies:\n"
 msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#: lib/rpminstall.c:336
+#: lib/rpminstall.c:337
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "Paket installieren"
 
-#: lib/rpminstall.c:421
+#: lib/rpminstall.c:422
 #, fuzzy, c-format
 msgid "searching for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/rpminstall.c:430
+#: lib/rpminstall.c:431
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" bezeichnet mehrere Pakete\n"
 
 # oder besser: "... verletzen" ?
-#: lib/rpminstall.c:456
+#: lib/rpminstall.c:457
 msgid "removing these packages would break dependencies:\n"
 msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
 
-#: lib/rpminstall.c:483
+#: lib/rpminstall.c:484
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/rpminstall.c:489
+#: lib/rpminstall.c:490
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
 
-#: lib/rpmio.c:762
+#: lib/rpmio.c:763
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:765
+#: lib/rpmio.c:766
 #, fuzzy
 msgid "Bad server response"
 msgstr "Nicht passende Antwort des FTP-Servers"
 
-#: lib/rpmio.c:768
+#: lib/rpmio.c:769
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP IO-Fehler"
 
-#: lib/rpmio.c:771
+#: lib/rpmio.c:772
 #, fuzzy
 msgid "Server timeout"
 msgstr "Timeout des FTP-Servers"
 
-#: lib/rpmio.c:774
+#: lib/rpmio.c:775
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Unmöglich die Hostadresse des FTP-Servers zu bestimmen"
 
-#: lib/rpmio.c:777
+#: lib/rpmio.c:778
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Unmöglich den Hostnamen des FTP-Servers zu bestimmen"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:781
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Verbindung zum FTP-Server fehlgeschlagen"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:784
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Aufbau einer Datenverbindung zum FTP-Server fehlgeschlagen"
 
-#: lib/rpmio.c:786
+#: lib/rpmio.c:787
 msgid "IO error to local file"
 msgstr "IO-Fehler bei lokaler Datei"
 
-#: lib/rpmio.c:789
+#: lib/rpmio.c:790
 msgid "Error setting remote server to passive mode"
 msgstr "Fehler beim Setzen des FTP-Servers in den passiven Modus"
 
-#: lib/rpmio.c:792
+#: lib/rpmio.c:793
 msgid "File not found on server"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: lib/rpmio.c:795
+#: lib/rpmio.c:796
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:800
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 
-#: lib/rpmio.c:1320
+#: lib/rpmio.c:1323
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3605,27 +3605,27 @@ msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
 
 # , c-format
-#: lib/transaction.c:386
+#: lib/transaction.c:387
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "Hole %s heraus\n"
 
-#: lib/transaction.c:412 lib/transaction.c:496
+#: lib/transaction.c:413 lib/transaction.c:497
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/transaction.c:417
+#: lib/transaction.c:418
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:489
+#: lib/transaction.c:490
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/transaction.c:637
+#: lib/transaction.c:641
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
