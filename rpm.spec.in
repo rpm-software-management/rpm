@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://jbj.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -498,6 +498,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Feb 20 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.5
+- updated sv.po <goeran@uddrborg.se>.
+
 * Wed Feb 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.4
 - sqlite3: revert cClose scoping, data is freed in cClose unlike db4.
 - build against sqlite3-3.1.2.

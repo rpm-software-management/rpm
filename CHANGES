@@ -7,6 +7,7 @@
 	- remove _rpmdb now that python2.[34] are commonly available.
 	- remove remnant -I/opt/local hacks, --prefix=/usr is recommended.
 	- rework configure.ac et al to lose internal library baggage flexibly.
+	- updated sv.po <goeran@uddrborg.se>.
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
