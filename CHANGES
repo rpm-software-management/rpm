@@ -6,6 +6,7 @@
 	- query and installs should now return 0 on success and nonzero
 	  otherwise (rpm -i should return the number of packages that
 	  failed actually)
+	- made rpm -qa fail if extra arguments are passed to it
 
 2.0.3 -> 2.0.4:
 	- added support for PowerPC, and OSF mklinux ports
