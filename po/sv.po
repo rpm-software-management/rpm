@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-02 13:26-0500\n"
+msgstr "POT-Creation-Date: 1999-12-05 15:37-0500\n"
 
 #: build.c:25 lib/rpminstall.c:246 lib/rpminstall.c:406
 #, c-format
@@ -3020,7 +3020,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:157 lib/url.c:447
+#: lib/rpmdb.c:157 lib/url.c:451
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kan inte öppna: %s\n"
@@ -3218,59 +3218,59 @@ msgstr "kan inte öppna: %s\n"
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:755
+#: lib/rpmio.c:762
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:758
+#: lib/rpmio.c:765
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:761
+#: lib/rpmio.c:768
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:764
+#: lib/rpmio.c:771
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:767
+#: lib/rpmio.c:774
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:770
+#: lib/rpmio.c:777
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:773
+#: lib/rpmio.c:780
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:776
+#: lib/rpmio.c:783
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:779
+#: lib/rpmio.c:786
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:782
+#: lib/rpmio.c:789
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:785
+#: lib/rpmio.c:792
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:788
+#: lib/rpmio.c:795
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:792
+#: lib/rpmio.c:799
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1313
+#: lib/rpmio.c:1320
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3575,37 +3575,37 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
-#: lib/url.c:81
+#: lib/url.c:85
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:98
+#: lib/url.c:102
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:126
+#: lib/url.c:130
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:223
+#: lib/url.c:227
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:248 lib/url.c:274
+#: lib/url.c:252 lib/url.c:278
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:411
+#: lib/url.c:415
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:470
+#: lib/url.c:474
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kan inte öppna: %s\n"
