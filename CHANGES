@@ -8,6 +8,7 @@
 	- make mips compatible with noarch
 	- fixed bug w/ printing string arrays in conditionals
 	- handle modern patch programs (> 2.1)
+	- handle packages w/ duplicate dependency names
 
 2.4.7 -> 2.4.8:
 	- added noarch build compatibilities for ppc, m68k

@@ -376,11 +376,15 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 
     if (headerGetEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requiredbyList, 
 	 &count)) {
+	/* There could be dups in requiredByLIst, and the list is sorted.
+	   Rather then sort the list, be tolerant of missing entries
+	   as they should just indicate duplicated requirements. */
+
 	for (i = 0; i < count; i++) {
 	    rpmMessage(RPMMESS_DEBUG, "removing requiredby index for %s\n", 
 		    requiredbyList[i]);
 	    removeIndexEntry(db->requiredbyIndex, requiredbyList[i], rec, 
-			     tolerant, "requiredby index");
+			     1, "requiredby index");
 	}
 	free(requiredbyList);
     }
