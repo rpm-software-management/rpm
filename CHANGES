@@ -2,8 +2,9 @@
 	- don't fail, and do report, if -K can't find a PGP key
 	- handle file names with quotes and spaces when passed to ldd
 	  (still can't have spaces in %files)
-	- remove require_group from rpmrc -- groups are always required
+	- removed require_group from rpmrc -- groups are always required
 	- do not allow Prefix: or Buildprefix: in sub packages
+	- removed arch_sensitive from rpmrc -- always on
 
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
