@@ -347,7 +347,7 @@ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 		if (j == 0) {
 		    j = 1;
 		    rpmMessage(RPMMESS_DEBUG,
-	_("========== Directories not explictly included in package:\n"));
+	_("========== Directories not explicitly included in package:\n"));
 		}
 		rpmMessage(RPMMESS_DEBUG, _("%10d %s\n"), i, fi->dnl[i]);
 	    }
