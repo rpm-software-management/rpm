@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-13 13:56-0500\n"
+"POT-Creation-Date: 2001-11-13 19:04-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2363,11 +2363,11 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:647
+#: lib/rpmal.c:673
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:744
+#: lib/rpmal.c:770
 msgid "(added provide)"
 msgstr ""
 
@@ -2777,18 +2777,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:185
+#: lib/transaction.c:182
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:850
+#: lib/transaction.c:842
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:918
+#: lib/transaction.c:932
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

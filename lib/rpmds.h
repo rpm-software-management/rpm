@@ -175,15 +175,15 @@ const char * dsiGetEVR(/*@null@*/ rpmDepSet ds)
 	/*@*/;
 
 /**
- * Return current dependency Flags.
+ * Return current dependency flags.
  * @param ds		dependency set
- * @return		current dependency EVR, 0 on invalid
+ * @return		current dependency flags, 0 on invalid
  */
 int_32 dsiGetFlags(/*@null@*/ rpmDepSet ds)
 	/*@*/;
 
 /**
- * Notify of results of dependency match;
+ * Notify of results of dependency match.
  * @param ds		dependency set
  * @param where		where dependency was resolved (or NULL)
  * @param rc		0 == YES, otherwise NO

@@ -12,14 +12,15 @@
 
 typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
 
+/*@unchecked@*/
+static int _al_debug = 0;
+
 /*@access alKey @*/
 /*@access alNum @*/
 /*@access availableList @*/
 /*@access availablePackage @*/
 
 /*@access fnpyKey @*/	/* XXX suggestedKeys array */
-
-/*@access TFI_t @*/	/* XXX abstraction wrappers needed */
 
 /** \ingroup rpmdep
  * Info about a single package to be installed.
@@ -28,7 +29,7 @@ struct availablePackage_s {
 /*@refcounted@*/ /*@null@*/
     rpmDepSet provides;		/*!< Provides: dependencies. */
 /*@refcounted@*/ /*@null@*/
-    TFI_t fi;		/*!< File info set. */
+    TFI_t fi;			/*!< File info set. */
 
 #ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
@@ -77,7 +78,7 @@ typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
  * A file to be installed/removed.
  */
 struct fileIndexEntry_s {
-/*@dependent@*/
+/*@dependent@*/ /*@null@*/
     const char * baseName;	/*!< File basename. */
     int baseNameLen;
     alNum pkgNum;		/*!< Containing package index. */
@@ -91,7 +92,7 @@ typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
  * A directory to be installed/removed.
  */
 struct dirInfo_s {
-/*@owned@*/
+/*@owned@*/ /*@null@*/
     const char * dirName;	/*!< Directory path (+ trailing '/'). */
     int dirNameLen;		/*!< No. bytes in directory path. */
 /*@owned@*/
@@ -113,9 +114,6 @@ struct availableList_s {
 /*@owned@*/ /*@null@*/
     dirInfo dirs;		/*!< Set of directories. */
 };
-
-/*@unchecked@*/
-static int _al_debug = 0;
 
 /**
  * Destroy available item index.
@@ -247,7 +245,10 @@ static int dieCompare(const void * one, const void * two)
     /*@=castexpose@*/
     int lenchk = a->dirNameLen - b->dirNameLen;
 
-    if (lenchk)
+    if (lenchk || a->dirNameLen == 0)
+	return lenchk;
+
+    if (a->dirName == NULL || b->dirName == NULL)
 	return lenchk;
 
     /* XXX FIXME: this might do "backward" strcmp for speed */
@@ -272,6 +273,9 @@ static int fieCompare(const void * one, const void * two)
     if (lenchk)
 	return lenchk;
 
+    if (a->baseName == NULL || b->baseName == NULL)
+	return lenchk;
+
     /* XXX FIXME: this might do "backward" strcmp for speed */
     return strcmp(a->baseName, b->baseName);
 }
@@ -294,9 +298,9 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 
     /* Delete directory/file info entries from added package list. */
     if ((fi = alp->fi) != NULL)
-    if (fi->bnl != NULL && fi->fc > 0) {
+    if (tfiGetFC(fi) > 0) {
 	int origNumDirs = al->numDirs;
-	int dirNum;
+	int dx;
 	dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
 	dirInfo die;
@@ -306,14 +310,17 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	/* XXX FIXME: We ought to relocate the directory list here */
 
 	if (al->dirs != NULL)
-	if (fi->dnl != NULL)
-	for (dirNum = fi->dc - 1; dirNum >= 0; dirNum--) {
+	for (dx = tfiGetDC(fi) - 1; dx >= 0; dx--)
+	{
 	    fileIndexEntry fie;
 
+	    (void) tfiSetDX(fi, dx);
+
 	    /*@-assignexpose@*/
-	    dieNeedle->dirName = (char *) fi->dnl[dirNum];
+	    dieNeedle->dirName = (char *) tfiGetDN(fi);
 	    /*@=assignexpose@*/
-	    dieNeedle->dirNameLen = strlen(dieNeedle->dirName);
+	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
+			? strlen(dieNeedle->dirName) : 0);
 	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
 			       sizeof(*dieNeedle), dieCompare);
 	    if (die == NULL)
@@ -391,47 +398,55 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 
     fi = rpmfiLink(alp->fi, "Files index (alAddPackage)");
     if ((fi = tfiInit(fi, 0)) != NULL)
-    if (fi->bnl != NULL)	/* XXX can't happen */
-    if (fi->dil != NULL)	/* XXX can't happen */
-    if (fi->dnl != NULL)	/* XXX can't happen */
-    if (fi->fflags != NULL)	/* XXX can't happen */
-    if (fi->fc > 0) {
+    if (tfiGetFC(fi) > 0) {
 	int * dirMapping;
 	dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
 	dirInfo die;
-	int first, dirNum;
+	int first;
 	int origNumDirs;
+	int dx;
+	int dc;
+
+	dc = tfiGetDC(fi);
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
-	dirMapping = alloca(sizeof(*dirMapping) * fi->dc);
+	dirMapping = alloca(sizeof(*dirMapping) * dc);
 
 	/*
 	 * Allocated enough space for all the directories we could possible
 	 * need to add
 	 */
-	al->dirs = xrealloc(al->dirs,
-			(al->numDirs + fi->dc) * sizeof(*al->dirs));
+	al->dirs = xrealloc(al->dirs, (al->numDirs + dc) * sizeof(*al->dirs));
 	origNumDirs = al->numDirs;
 
-	if (fi->dnl != NULL)
-	for (dirNum = 0; dirNum < fi->dc; dirNum++) {
+	for (dx = 0; dx < dc; dx++) {
+
+	    (void) tfiSetDX(fi, dx);
+
 	    /*@-assignexpose@*/
-	    dieNeedle->dirName = (char *) fi->dnl[dirNum];
+	    dieNeedle->dirName = (char *) tfiGetDN(fi);
 	    /*@=assignexpose@*/
-	    dieNeedle->dirNameLen = strlen(fi->dnl[dirNum]);
+	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
+			? strlen(dieNeedle->dirName) : 0);
 	    die = bsearch(dieNeedle, al->dirs, origNumDirs,
 			       sizeof(*dieNeedle), dieCompare);
 	    if (die) {
-		dirMapping[dirNum] = die - al->dirs;
+		dirMapping[dx] = die - al->dirs;
 	    } else {
-		dirMapping[dirNum] = al->numDirs;
+		dirMapping[dx] = al->numDirs;
 		die = al->dirs + al->numDirs;
-		die->dirName = xstrdup(fi->dnl[dirNum]);
-		die->dirNameLen = strlen(die->dirName);
+		if (dieNeedle->dirName != NULL)
+		    die->dirName = xstrdup(dieNeedle->dirName);
+		die->dirNameLen = dieNeedle->dirNameLen;
 		die->files = NULL;
 		die->numFiles = 0;
+/*@-modfilesys@*/
+if (_al_debug)
+fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, die->dirName);
+/*@=modfilesys@*/
+
 		al->numDirs++;
 	    }
 	}
@@ -441,13 +456,14 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 	    int next;
 
 	    /* Find the first file of the next directory. */
+	    dx = tfiGetDX(fi);
 	    while ((next = tfiNext(fi)) >= 0) {
-		if (fi->dil[first] != fi->dil[next])
+		if (dx != tfiGetDX(fi))
 		    /*@innerbreak@*/ break;
 	    }
-	    if (next < 0) next = fi->fc;	/* XXX reset end-of-list */
+	    if (next < 0) next = tfiGetFC(fi);	/* XXX reset end-of-list */
 
-	    die = al->dirs + dirMapping[fi->dil[first]];
+	    die = al->dirs + dirMapping[dx];
 	    die->files = xrealloc(die->files,
 			(die->numFiles + next - first) * sizeof(*die->files));
 	    fie = die->files + die->numFiles;
@@ -456,12 +472,12 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 	    fi = tfiInit(fi, first);
 	    if (fi != NULL)
 	    while ((first = tfiNext(fi)) >= 0 && first < next) {
-		/*@-assignexpose@*/
-		fie->baseName = fi->bnl[fi->i];
-		fie->baseNameLen = strlen(fi->bnl[fi->i]);
-		/*@=assignexpose@*/
+		/*@-assignexpose -onlytrans @*/
+		fie->baseName = tfiGetBN(fi);
+		/*@=assignexpose =onlytrans @*/
+		fie->baseNameLen = (fie->baseName ? strlen(fie->baseName) : 0);
 		fie->pkgNum = pkgNum;
-		fie->fileFlags = fi->fflags[fi->i];
+		fie->fileFlags = tfiGetFFlags(fi);
 		die->numFiles++;
 		fie++;
 	    }
@@ -628,12 +644,22 @@ alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * key
 	 die++)
     {
 
+/*@-modfilesys@*/
+if (_al_debug)
+fprintf(stderr, "==> die %p %s\n", die, (die->dirName ? die->dirName : "(nil)"));
+/*@=modfilesys@*/
+
 	fieNeedle->baseName = baseName;
 	fieNeedle->baseNameLen = strlen(fieNeedle->baseName);
 	fie = bsearch(fieNeedle, die->files, die->numFiles,
 		       sizeof(*fieNeedle), fieCompare);
 	if (fie == NULL)
 	    continue;	/* XXX shouldn't happen */
+
+/*@-modfilesys@*/
+if (_al_debug)
+fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"));
+/*@=modfilesys@*/
 
 #ifdef	DYING	/* XXX FIXME: multilib colored dependency search */
 	/*

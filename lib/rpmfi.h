@@ -3,7 +3,7 @@
 
 /** \ingroup rpmdep rpmtrans
  * \file lib/rpmfi.h
- * Structure used for file info tag sets.
+ * Structure(s) used for file info tag sets.
  */
 
 /**
@@ -23,7 +23,8 @@ struct sharedFileInfo_s {
  * A package filename set.
  */
 struct TFI_s {
-    int i;			/*!< File index. */
+    int i;			/*!< Current file index. */
+    int j;			/*!< Current directory index. */
 
 /*@observer@*/
     const char * Type;		/*!< Tag name. */
@@ -96,8 +97,11 @@ struct TFI_s {
     const char ** odnl;		/*!< Original dirname(s) (from header) */
 /*@unused@*/
     int_32 * odil;		/*!< Original dirindex(s) (from header) */
-    int bnlmax;			/*!< Length (in bytes) of longest basename. */
-    int dnlmax;			/*!< Length (in bytes) of longest dirname. */
+
+/*@only@*/ /*@null@*/
+    char * fn;			/*!< File name buffer. */
+    int fnlen;			/*!< FIle name buffer length. */
+
     int astriplen;
     int striplen;
     unsigned int archiveSize;
@@ -171,6 +175,130 @@ fnpyKey rpmfiGetKey(TFI_t fi)
 	/*@*/;
 
 /**
+ * Return file count from file info set.
+ * @param fi		file info set
+ * @return		current file count
+ */
+int tfiGetFC(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file index from file info set.
+ * @param fi		file info set
+ * @return		current file index
+ */
+/*@unused@*/
+int tfiGetFX(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Set current file index in file info set.
+ * @param fi		file info set
+ * @param fx		new file index
+ * @return		current file index
+ */
+/*@unused@*/
+int tfiSetFX(/*@null@*/ TFI_t fi, int fx)
+	/*@modifies fi @*/;
+
+/**
+ * Return directory count from file info set.
+ * @param fi		file info set
+ * @return		current directory count
+ */
+int tfiGetDC(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current directory index from file info set.
+ * @param fi		file info set
+ * @return		current directory index
+ */
+int tfiGetDX(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Set current directory index in file info set.
+ * @param fi		file info set
+ * @param fx		new directory index
+ * @return		current directory index
+ */
+int tfiSetDX(/*@null@*/ TFI_t fi, int dx)
+	/*@modifies fi @*/;
+
+/**
+ * Return current base name from file info set.
+ * @param fi		file info set
+ * @return		current base name, NULL on invalid
+ */
+/*@null@*/
+const char * tfiGetBN(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current directory name from file info set.
+ * @param fi		file info set
+ * @return		current directory, NULL on invalid
+ */
+/*@null@*/
+const char * tfiGetDN(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file name from file info set.
+ * @param fi		file info set
+ * @return		current file name
+ */
+/*@observer@*/
+const char * tfiGetFN(/*@null@*/ TFI_t fi)
+	/*@modifies fi @*/;
+
+/**
+ * Return current file flags from file info set.
+ * @param fi		file info set
+ * @return		current file flags, 0 on invalid
+ */
+int_32 tfiGetFFlags(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return next file iterator index.
+ * @param fi		file info set
+ * @return		file iterator index, -1 on termination
+ */
+int tfiNext(/*@null@*/ TFI_t fi)
+	/*@modifies fi @*/;
+
+/**
+ * Initialize file iterator index.
+ * @param fi		file info set
+ * @param fx		file iterator index
+ * @return		file info set, NULL if fx is out of range
+ */
+/*@null@*/
+TFI_t tfiInit(/*@null@*/ TFI_t fi, int fx)
+	/*@modifies fi @*/;
+
+/**
+ * Return next directory iterator index.
+ * @param fi		file info set
+ * @return		directory iterator index, -1 on termination
+ */
+/*@unused@*/
+int tdiNext(/*@null@*/ TFI_t fi)
+	/*@modifies fi @*/;
+
+/**
+ * Initialize directory iterator index.
+ * @param fi		file info set
+ * @param dx		directory iterator index
+ * @return		file info set, NULL if dx is out of range
+ */
+/*@unused@*/ /*@null@*/
+TFI_t tdiInit(/*@null@*/ TFI_t fi, int dx)
+	/*@modifies fi @*/;
+
+/**
  * Destroy a file info set.
  * @param fi		file set
  * @param freefimem	free fi memory too?
@@ -193,24 +321,6 @@ TFI_t fiFree(/*@killref@*/ /*@only@*/ /*@null@*/ TFI_t fi, int freefimem)
 TFI_t fiNew(rpmTransactionSet ts, /*@null@*/ TFI_t fi,
 		Header h, rpmTag tagN, int scareMem)
 	/*@modifies ts, fi, h @*/;
-
-/**
- * Return next file info set iterator index.
- * @param fi		file info set
- * @return		file info set iterator index, -1 on termination
- */
-int tfiNext(/*@null@*/ TFI_t fi)
-	/*@modifies fi @*/;
-
-/**
- * Initialize file info set iterator.
- * @param fi		file info set
- * @param ix		file info set index
- * @return		file info set, NULL if ix is out of range
- */
-/*@null@*/
-TFI_t tfiInit(/*@null@*/ TFI_t fi, int ix)
-	/*@modifies fi @*/;
 
 /**
  * Return file type from mode_t.

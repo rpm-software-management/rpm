@@ -157,8 +157,8 @@ static int sharedCmp(const void * one, const void * two)
 
 /**
  */
-static fileAction decideFileFate(const char * dirName,
-			const char * baseName, short dbMode,
+static fileAction decideFileFate(const char * fn,
+			short dbMode,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
 			rpmtransFlags transFlags)
@@ -171,11 +171,8 @@ static fileAction decideFileFate(const char * dirName,
     struct stat sb;
     int i, rc;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
-    char * filespec = alloca(strlen(dirName) + strlen(baseName) + 1);
 
-    (void) stpcpy( stpcpy(filespec, dirName), baseName);
-
-    if (lstat(filespec, &sb)) {
+    if (lstat(fn, &sb)) {
 	/*
 	 * The file doesn't exist on the disk. Create it unless the new
 	 * package has marked it as missingok, or allfiles is requested.
@@ -183,7 +180,7 @@ static fileAction decideFileFate(const char * dirName,
 	if (!(transFlags & RPMTRANS_FLAG_ALLFILES) &&
 	   (newFlags & RPMFILE_MISSINGOK)) {
 	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
-			filespec);
+			fn);
 	    return FA_SKIP;
 	} else {
 	    return FA_CREATE;
@@ -211,7 +208,7 @@ static fileAction decideFileFate(const char * dirName,
     }
 
     if (dbWhat == REG) {
-	rc = mdfile(filespec, buffer);
+	rc = mdfile(fn, buffer);
 
 	if (rc) {
 	    /* assume the file has been removed, don't freak */
@@ -221,7 +218,7 @@ static fileAction decideFileFate(const char * dirName,
 	newAttr = newMd5;
     } else /* dbWhat == LINK */ {
 	memset(buffer, 0, sizeof(buffer));
-	i = readlink(filespec, buffer, sizeof(buffer) - 1);
+	i = readlink(fn, buffer, sizeof(buffer) - 1);
 	if (i == -1) {
 	    /* assume the file has been removed, don't freak */
 	    return FA_CREATE;
@@ -313,12 +310,17 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
     xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &otherFlags, NULL);
     xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &otherSizes, NULL);
 
-    fi->replaced = xmalloc(sharedCount * sizeof(*fi->replaced));
+    fi->replaced = xcalloc(sharedCount, sizeof(*fi->replaced));
 
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
+	const char * fn;
+
 	otherFileNum = shared->otherFileNum;
 	fileNum = shared->pkgFileNum;
+
+	(void) tfiSetFX(fi, fileNum);
+	fn = tfiGetFN(fi);
 
 	/* XXX another tedious segfault, assume file state normal. */
 	if (otherStates && otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
@@ -337,7 +339,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 		const char * altNEVR = hGetNEVR(h, NULL);
 		rpmProblemSetAppend(ts->probs, RPMPROB_FILE_CONFLICT,
 			p->NEVR, p->key,
-			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum],
+			tfiGetDN(fi), tfiGetBN(fi),
 			altNEVR,
 			0);
 		altNEVR = _free(altNEVR);
@@ -352,9 +354,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 	}
 
 	if ((otherFlags[otherFileNum] | fi->fflags[fileNum]) & RPMFILE_CONFIG) {
-	    fi->actions[fileNum] = decideFileFate(
-			fi->dnl[fi->dil[fileNum]],
-			fi->bnl[fileNum],
+	    fi->actions[fileNum] = decideFileFate(fn,
 			otherModes[otherFileNum],
 			otherMd5s[otherFileNum],
 			otherLinks[otherFileNum],
@@ -431,11 +431,12 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 {
     struct diskspaceInfo * ds = NULL;
     uint_32 fixupSize = 0;
-    char * filespec = NULL;
-    int fileSpecAlloced = 0;
+    const char * fn;
     int i, j;
   
-    for (i = 0; i < fi->fc; i++) {
+    fi = tfiInit(fi, 0);
+    if (fi != NULL)
+    while ((i = tfiNext(fi)) >= 0) {
 	int otherPkgNum, otherFileNum;
 	const TFI_t * recs;
 	int numRecs;
@@ -443,15 +444,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	if (XFA_SKIPPING(fi->actions[i]))
 	    continue;
 
-	j = strlen(fi->dnl[fi->dil[i]]) + strlen(fi->bnl[i]) + 1;
-	/*@-branchstate@*/
-	if (j > fileSpecAlloced) {
-	    fileSpecAlloced = j * 2;
-	    filespec = xrealloc(filespec, fileSpecAlloced);
-	}
-	/*@=branchstate@*/
-
-	(void) stpcpy( stpcpy( filespec, fi->dnl[fi->dil[i]]), fi->bnl[i]);
+	fn = tfiGetFN(fi);
 
 	if (ts->di) {
 	    ds = ts->di;
@@ -530,7 +523,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 		if (fi->actions[i] != FA_UNKNOWN)
 		    /*@switchbreak@*/ break;
 		if ((fi->fflags[i] & RPMFILE_CONFIG) && 
-			!lstat(filespec, &sb)) {
+			!lstat(fn, &sb)) {
 		    /* Here is a non-overlapped pre-existing config file. */
 		    fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
@@ -552,7 +545,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 		const char * altNEVR = recs[otherPkgNum]->te->NEVR;
 		rpmProblemSetAppend(ts->probs, RPMPROB_NEW_FILE_CONFLICT,
 			p->NEVR, p->key,
-			filespec, NULL,
+			fn, NULL,
 			altNEVR,
 			0);
 	    }
@@ -560,7 +553,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = recs[otherPkgNum]->fsizes[otherFileNum];
 
-	    if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(filespec, &sb)) {
+	    if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
 		/* Here is an overlapped  pre-existing config file. */
 		fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
@@ -590,7 +583,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char mdsum[50];
-		if (!mdfile(filespec, mdsum) && strcmp(fi->fmd5s[i], mdsum)) {
+		if (!mdfile(fn, mdsum) && strcmp(fi->fmd5s[i], mdsum)) {
 		    fi->actions[i] = FA_BACKUP;
 		    /*@switchbreak@*/ break;
 		}
@@ -632,7 +625,6 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	    ds->bneeded -= BLOCK_ROUND(fixupSize, ds->bsize);
 	}
     }
-    filespec = _free(filespec);
 }
 
 /**
@@ -860,6 +852,28 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     if (languages) freeSplitString((char **)languages);
 }
 
+/**
+ * Return transaction element's file info.
+ * @todo Take a TFI_t refcount here.
+ * @param tei		transaction element iterator
+ * @return		transaction element file info
+ */
+static /*@null@*/
+TFI_t teGetFi(const teIterator tei)
+	/*@modifies tei @*/
+{
+    TFI_t fi = NULL;
+
+    if (tei != NULL && tei->ocsave != -1) {
+	transactionElement te = tei->ts->order + tei->ocsave;
+	if ((fi = te->fi) != NULL)
+	    fi->te = te;
+    }
+    /*@-compdef -refcounttrans -usereleased @*/
+    return fi;
+    /*@=compdef =refcounttrans =usereleased @*/
+}
+
 #define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmRunTransactions(	rpmTransactionSet ts,
@@ -1055,7 +1069,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
 
-	fi = teGetFi(pi);
 	if ((fi = teGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 

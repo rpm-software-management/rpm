@@ -46,16 +46,116 @@ fnpyKey rpmfiGetKey(TFI_t fi)
     return fi->te->key;
 }
 
+int tfiGetFC(TFI_t fi)
+{
+    return (fi != NULL ? fi->fc : 0);
+}
 
-int tfiNext(/*@null@*/ TFI_t fi)
-	/*@modifies fi @*/
+int tfiGetDC(TFI_t fi)
+{
+    return (fi != NULL ? fi->dc : 0);
+}
+
+#ifdef	NOTYET
+int tfiGetDI(TFI_t fi)
+{
+}
+#endif
+
+int tfiGetFX(TFI_t fi)
+{
+    return (fi != NULL ? fi->i : -1);
+}
+
+int tfiSetFX(TFI_t fi, int fx)
+{
+    int i = -1;
+
+    if (fi != NULL && fx >= 0 && fx < fi->fc) {
+	i = fi->i;
+	fi->i = fx;
+	fi->j = fi->dil[fi->i];
+    }
+    return i;
+}
+
+int tfiGetDX(TFI_t fi)
+{
+    return (fi != NULL ? fi->j : -1);
+}
+
+int tfiSetDX(TFI_t fi, int dx)
+{
+    int j = -1;
+
+    if (fi != NULL && dx >= 0 && dx < fi->dc) {
+	j = fi->j;
+	fi->j = dx;
+    }
+    return j;
+}
+
+const char * tfiGetBN(TFI_t fi)
+{
+    const char * BN = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->bnl != NULL)
+	    BN = fi->bnl[fi->i];
+    }
+    return BN;
+}
+
+const char * tfiGetDN(TFI_t fi)
+{
+    const char * DN = NULL;
+
+    if (fi != NULL && fi->j >= 0 && fi->j < fi->dc) {
+	if (fi->dnl != NULL)
+	    DN = fi->dnl[fi->j];
+    }
+    return DN;
+}
+
+const char * tfiGetFN(TFI_t fi)
+{
+    const char * FN = "";
+
+    /*@-branchstate@*/
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	char * t;
+	if (fi->fn == NULL)
+	    fi->fn = xmalloc(fi->fnlen);
+	FN = t = fi->fn;
+	*t = '\0';
+	t = stpcpy(t, fi->dnl[fi->dil[fi->i]]);
+	t = stpcpy(t, fi->bnl[fi->i]);
+    }
+    /*@=branchstate@*/
+    return FN;
+}
+
+int_32 tfiGetFFlags(TFI_t fi)
+{
+    int_32 FFlags = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->fflags != NULL)
+	    FFlags = fi->fflags[fi->i];
+    }
+    return FFlags;
+}
+
+int tfiNext(TFI_t fi)
 {
     int i = -1;
 
     if (fi != NULL && ++fi->i >= 0) {
-	if (fi->i < fi->fc)
+	if (fi->i < fi->fc) {
 	    i = fi->i;
-	else
+	    if (fi->dil != NULL)
+		fi->j = fi->dil[fi->i];
+	} else
 	    fi->i = -1;
 
 /*@-modfilesystem @*/
@@ -68,12 +168,46 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), i);
     return i;
 }
 
-TFI_t tfiInit(/*@returned@*/ /*@null@*/ TFI_t fi, int ix)
-	/*@modifies fi @*/
+TFI_t tfiInit(TFI_t fi, int fx)
 {
     if (fi != NULL) {
-	if (ix >= 0 && ix < fi->fc)
-	    fi->i = ix - 1;
+	if (fx >= 0 && fx < fi->fc) {
+	    fi->i = fx - 1;
+	    fi->j = -1;
+	} else
+	    fi = NULL;
+    }
+
+    /*@-refcounttrans@*/
+    return fi;
+    /*@=refcounttrans@*/
+}
+
+int tdiNext(TFI_t fi)
+{
+    int j = -1;
+
+    if (fi != NULL && ++fi->j >= 0) {
+	if (fi->j < fi->dc)
+	    j = fi->j;
+	else
+	    fi->j = -1;
+
+/*@-modfilesystem @*/
+if (_fi_debug  < 0 && j != -1)
+fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), j);
+/*@=modfilesystem @*/
+
+    }
+
+    return j;
+}
+
+TFI_t tdiInit(TFI_t fi, int dx)
+{
+    if (fi != NULL) {
+	if (dx >= 0 && dx < fi->fc)
+	    fi->j = dx - 1;
 	else
 	    fi = NULL;
     }
@@ -596,6 +730,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
     fi->fsm = freeFSM(fi->fsm);
 
+    fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
     fi->fmapflags = _free(fi->fmapflags);
 
@@ -634,6 +769,7 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     const char * Type;
     uint_32 * uip;
     int malloced = 0;
+    int dnlmax, bnlmax;
     int len;
     int xx;
     int i;
@@ -745,16 +881,19 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
 	fi->h = headerFree(fi->h, fi->Type);
     }
 
-    fi->dnlmax = -1;
+    dnlmax = -1;
     for (i = 0; i < fi->dc; i++) {
-	if ((len = strlen(fi->dnl[i])) > fi->dnlmax)
-	    fi->dnlmax = len;
+	if ((len = strlen(fi->dnl[i])) > dnlmax)
+	    dnlmax = len;
     }
-    fi->bnlmax = -1;
+    bnlmax = -1;
     for (i = 0; i < fi->fc; i++) {
-	if ((len = strlen(fi->bnl[i])) > fi->bnlmax)
-	    fi->bnlmax = len;
+	if ((len = strlen(fi->bnl[i])) > bnlmax)
+	    bnlmax = len;
     }
+    fi->fnlen = dnlmax + bnlmax + 1;
+    fi->fn = NULL;
+
     fi->dperms = 0755;
     fi->fperms = 0644;
 

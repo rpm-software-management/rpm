@@ -17,8 +17,8 @@
 
 #include "debug.h"
 
-/*@access TFI_t @*/		/* XXX abstraction wrappers needed */
 /*@access tsortInfo @*/
+/*@access transactionElement @*/
 /*@access rpmTransactionSet @*/
 
 /*@access alKey @*/	/* XXX for reordering and RPMAL_NOMATCH assign */
@@ -1740,8 +1740,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 {
     rpmdbMatchIterator mi = NULL;
     teIterator pi = NULL; transactionElement p;
-    char * fn = NULL;
-    int fileAlloced = 0;
     int closeatexit = 0;
     int xx;
     int rc;
@@ -1840,29 +1838,13 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
-	fi = tfiInit(p->fi, 0);
 
-	if (fi == NULL)
-	    continue;
-	if (fi->bnl == NULL)
-	    continue;	/* XXX can't happen */
-	if (fi->dnl == NULL)
-	    continue;	/* XXX can't happen */
-	if (fi->dil == NULL)
-	    continue;	/* XXX can't happen */
 
 	rc = 0;
+	if ((fi = tfiInit(p->fi, 0)) != NULL)
 	while (tfiNext(fi) >= 0) {
-	    int len;
+	    const char * fn = tfiGetFN(fi);
 
-	    len = strlen(fi->bnl[fi->i]) + 1 +
-				strlen(fi->dnl[fi->dil[fi->i]]);
-	    if (len > fileAlloced) {
-		fileAlloced = len * 2;
-		fn = xrealloc(fn, fileAlloced);
-	    }
-	    *fn = '\0';
-	    (void) stpcpy( stpcpy(fn, fi->dnl[fi->dil[fi->i]]), fi->bnl[fi->i]);
 	    /* Erasing: check filename against requiredby matches. */
 	    if (!checkDependentPackages(ts, fn))
 		/*@innercontinue@*/ continue;
@@ -1885,7 +1867,6 @@ int rpmdepCheck(rpmTransactionSet ts,
     rc = 0;
 
 exit:
-    fn = _free(fn);
     mi = rpmdbFreeIterator(mi);
     pi = teFreeIterator(pi);
     /*@-branchstate@*/

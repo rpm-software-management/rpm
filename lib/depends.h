@@ -206,7 +206,6 @@ extern "C" {
 #if defined(_NEED_TEITERATOR)
 /*@access teIterator @*/
 
-/*@access TFI_t @*/
 /*@access transactionElement @*/
 /*@access rpmTransactionSet @*/
 
@@ -220,28 +219,6 @@ int teGetOc(teIterator tei)
 	/*@*/
 {
     return tei->ocsave;
-}
-
-/**
- * Return transaction element's file info.
- * @todo Take a TFI_t refcount here.
- * @param tei		transaction element iterator
- * @return		transaction element file info
- */
-/*@unused@*/ static inline /*@null@*/
-TFI_t teGetFi(teIterator tei)
-	/*@modifies tei @*/
-{
-    TFI_t fi = NULL;
-
-    if (tei != NULL && tei->ocsave != -1) {
-	transactionElement te = tei->ts->order + tei->ocsave;
-	if ((fi = te->fi) != NULL)
-	    fi->te = te;
-    }
-    /*@-compdef -refcounttrans -usereleased @*/
-    return fi;
-    /*@=compdef =refcounttrans =usereleased @*/
 }
 
 /**
