@@ -7,13 +7,16 @@
  * size key you like).  We also honor PGPPATH finally.
  */
 
+#ifdef HAVE_ASM_BYTEORDER_H
+#include <asm/byteorder.h>
+#endif
+
 #include <paths.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <asm/byteorder.h>
 #include <fcntl.h>
 #include <strings.h>
 
