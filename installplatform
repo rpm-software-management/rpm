@@ -32,9 +32,10 @@ ln -sf ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${OS}
 
 case "$arch" in
   i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_' ;;
-  sparc*) SUBSTS='s_sparc64_sparc_ s_sparc\([^6]\|$\)_sparc64\1_' ;;
+  sparc*) SUBSTS='s_sparc\(64\|v9\)_sparc_ s_sparc64_sparcv9_;s_sparc\([^v]\|$\)_sparcv9\1_ s_sparcv9_sparc64_;s_sparc\([^6]\|$\)_sparc64\1_' ;;
   *) SUBSTS=y___ ;;
 esac
+base_arch=`echo $arch | sed -e 's_i?86_i386_;s_sparc.*_sparc_'`
 
 for SUBST in $SUBSTS ; do
   ARCH=`echo $arch | sed -e $SUBST`
@@ -46,7 +47,8 @@ for SUBST in $SUBSTS ; do
 
   [ -d $PPD ] || mkdir $PPD
 
-  RPMRC_OPTFLAGS="`$RPM --eval '%{optflags}'`"
+#  RPMRC_OPTFLAGS="`$RPM --target $TARGET --eval '%{optflags}'`"
+  RPMRC_OPTFLAGS="`sed -n 's/^optflags: '$ARCH' //p' $RPMRC`"
   RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
 
   ARCH_INSTALL_POST='%{nil}'
@@ -56,7 +58,7 @@ for SUBST in $SUBSTS ; do
 
   cat $PLATFORM | \
     sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
-	-e "s,@RPMRC_ARCH@,$arch," \
+	-e "s,@RPMRC_ARCH@,$base_arch," \
 	-e "s,@LIB@,$LIB," \
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
 	-e "s,@DEFAULTDOCDIR@,$DEFAULTDOCDIR," \
@@ -67,9 +69,6 @@ for SUBST in $SUBSTS ; do
   # Better try to create these too until the smoke clears. Yuck.
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
   [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
-
-  [ "$ARCH" = sparc ] && ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/sparcv9-${OS}
-  [ "$ARCH" = sparc ] && ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/sparcv9-${VENDOR}-${OS}
 
 done
 
