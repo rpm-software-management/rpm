@@ -25,6 +25,7 @@
 	  Replacing it is buildarchtranslate: and buildostranslate:
 	  to allow building with arch/os other than what uname() returns.
 	  Can still be overriden with --buildarch and --buildos
+	- rpmrc keywords are now case-insensitive
 
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
