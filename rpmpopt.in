@@ -187,14 +187,14 @@ rpm	exec -V			rpmv -V
 rpm	exec -y			rpmv -y
 rpm	exec --verify		rpmv --verify
 
-rpm	exec -i			rpmi -i
-rpm	exec --install		rpmi --install
-rpm	exec -U			rpmi -U
-rpm	exec --upgrade		rpmi --upgrade
-rpm	exec -F			rpmi -F
-rpm	exec --freshen		rpmi --freshen
-rpm	exec -e			rpmi -e
-rpm	exec --erase		rpmi --erase
+#rpm	exec -i			rpmi -i
+#rpm	exec --install		rpmi --install
+#rpm	exec -U			rpmi -U
+#rpm	exec --upgrade		rpmi --upgrade
+#rpm	exec -F			rpmi -F
+#rpm	exec --freshen		rpmi --freshen
+#rpm	exec -e			rpmi -e
+#rpm	exec --erase		rpmi --erase
 
 rpm	alias --with		--define "_with_!#:+       --with-!#:+" \
 	--POPTdesc=$"enable configure <option> for build" \

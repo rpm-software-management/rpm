@@ -2,7 +2,6 @@
 %define	with_python_version	@WITH_PYTHON_VERSION@%{nil}
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
-%define with_internal_db	@WITH_INTERNAL_DB@%{nil}
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -17,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.29nptl
+Release: 0.31
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -28,17 +27,14 @@ Prereq: gawk fileutils textutils mktemp shadow-utils
 Requires: popt = 1.8
 Obsoletes: rpm-perl < %{version}
 
-# XXX necessary only to drag in /usr/lib/libelf.a
-BuildRequires: elfutils-devel >= 0.63
+# XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
+BuildRequires: elfutils-libelf
 
-%if !%{with_internal_db}
-BuildRequires: db3-devel
-%endif
-
-# XXX /dev/futex support needed:
+# XXX /dev/futex kernel support needed:
+Conflicts: kernel <= 2.4.19
 Requires: kernel >= 2.4.20-0.pp.9
 
-# XXX NPTL support needed.
+# XXX NPTL glibc support needed.
 Requires: glibc >= 2.3.1-16nptl
 
 BuildRequires: zlib-devel
@@ -461,9 +457,14 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Dec 19 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.31
+- statically link against /usr/lib/nptl/libpthread.a, if present.
+- remove popt aliases for -U et al.
+- add -I/usr/include/nptl, Conflicts: kernel <= 2.4.19.
+
 * Wed Dec 18 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.29nptl
 - popt aliases for -U et al to achieve dynamic link with nptl.
-- add --file{class,provide,require} popt aliases and header extensions
+- add --file{class,provide,require} popt aliases and header extensions.
 
 * Tue Dec 17 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.28nptl
 - re-enable CDB locking, removing "private" from %%__dbi_cdb macro.

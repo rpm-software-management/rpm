@@ -263,13 +263,13 @@ int main(int argc, const char ** argv)
     default:
 	break;
     }
-#endif
 
     /* XXX Eliminate query linkage loop */
     /*@-type@*/	/* FIX: casts? */
     parseSpecVec = parseSpec;
     freeSpecVec = freeSpec;
     /*@=type@*/
+#endif
 
 #if defined(ENABLE_NLS)
     /* set up the correct locale */
@@ -876,7 +876,6 @@ exit:
     }
 
     /* keeps memory leak checkers quiet */
-    freeNames();
     freeFilesystems();
 /*@i@*/	urlFreeCache();
     rpmlogClose();
@@ -887,6 +886,7 @@ exit:
 #endif
 
 #ifdef	IAM_RPMBT
+    freeNames();
     ba->buildRootOverride = _free(ba->buildRootOverride);
     ba->targets = _free(ba->targets);
 #endif

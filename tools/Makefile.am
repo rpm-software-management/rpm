@@ -23,6 +23,8 @@ LDADD = \
 	$(top_builddir)/lib/librpm.la \
 	@INTLLIBS@
 
+staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
+
 noinst_PROGRAMS = \
 	convertdb1 dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
@@ -38,19 +40,19 @@ debugedit_SOURCES =	debugedit.c hashtab.c
 javadeps_SOURCES =	javadeps.c
 
 rpmcache_SOURCES =	rpmcache.c
-#rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
+#rpmcache_LDFLAGS =	$(staticLDFLAGS)
 
 rpmdeps_SOURCES =	rpmdeps.c
 rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
-#rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@
+#rpmdeps_LDFLAGS =	$(staticLDFLAGS)
 
 rpmgraph_SOURCES =	rpmgraph.c
-#rpmgraph_LDFLAGS =	@LDFLAGS_STATIC@
+#rpmgraph_LDFLAGS =	$(staticLDFLAGS)
 
 rpminject_SOURCES =	rpminject.c
-rpminject_LDFLAGS =	@LDFLAGS_STATIC@
+rpminject_LDFLAGS =	$(staticLDFLAGS)
 
 rpmsort_SOURCES =	rpmsort.c
-rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
+rpmsort_LDFLAGS =	$(staticLDFLAGS)
 
 $(PROGRAMS): $(LDADD)

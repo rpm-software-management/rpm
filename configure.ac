@@ -144,6 +144,16 @@ AC_MSG_RESULT($LDFLAGS_STATIC)
 AC_SUBST(LDFLAGS_STATIC)
 
 dnl
+dnl XXX Test for libpthread.a that is NPTL aware.
+dnl
+LDFLAGS_NPTL=
+if test -f /usr/lib/nptl/libpthread.a ; then
+    LDFLAGS_NPTL="-L/usr/lib/nptl"
+    INCPATH="$INCPATH -I/usr/include/nptl"
+fi
+AC_SUBST(LDFLAGS_NPTL)
+
+dnl
 dnl look for POSIX chmod attributes
 dnl
 AC_MSG_CHECKING(POSIX chmod)
