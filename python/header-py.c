@@ -991,7 +991,9 @@ PyObject * versionCompare (PyObject * self, PyObject * args)
  */
 static int label_compare_values(const char *str1, const char *str2)
 {
-    if (str1 && !str2)
+    if (!str1 && !str2)
+	return 0;
+    else if (str1 && !str2)
 	return 1;
     else if (!str1 && str2)
 	return -1;
