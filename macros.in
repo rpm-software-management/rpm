@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.33 1999/07/27 22:05:43 jbj Exp $
+# $Id: macros.in,v 1.34 1999/08/18 16:29:53 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -165,7 +165,7 @@
 %_libdir		%{_exec_prefix}/lib
 %_includedir		%{_prefix}/include
 %_oldincludedir		/usr/include
-%_infodir		%{_prefix}/include
+%_infodir		%{_prefix}/info
 %_mandir		%{_prefix}/man
 
 #==============================================================================
