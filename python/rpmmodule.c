@@ -1816,7 +1816,6 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
 	const char *av[2];
 	av[0] = filename;
 	av[1] = NULL;
-fprintf(stderr, "*** rpmCheckSig(%x,%p) %s\n", flags, av, av[0]);
 	rc = rpmCheckSig(flags, av);
     }
     return Py_BuildValue("i", rc);
