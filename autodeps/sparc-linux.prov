@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# This script reads filenames from STDIN and outputs any relevant provides
+# information that needs to be included in the package.
+
+filelist=$(grep "\\.so" | grep -v "^/lib/ld.so" | xargs file -L 2>/dev/null | grep "ELF.*shared object" | cut -d: -f1)
+
+for f in $filelist; do
+    soname=$(objdump -p $f | awk '/SONAME/ {print $2}')
+
+    if [ "$soname" != "" ]; then
+	lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+	if [ ! -L $f ]; then
+	    echo $soname$lib64
+	    objdump -p $f | awk '
+		BEGIN { START=0 ; }
+		/Version definitions:/ { START=1; }
+		/^[0-9]/ && (START==1) { print $4; }
+		/^$/ { START=0; }
+	    ' | \
+		grep -v $soname | \
+		while read symbol ; do
+		    echo "$soname($symbol)`echo $lib64 | sed 's/()//'`"
+		done
+	fi
+    else
+	echo ${f##*/}
+    fi
+done | sort -u

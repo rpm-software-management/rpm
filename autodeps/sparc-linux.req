@@ -11,14 +11,16 @@ scriptlist=`echo $filelist | xargs -r file | egrep ":.* (commands|script) " | cu
 liblist=`echo $filelist | xargs -r file | grep ":.*shared object" | cut -d : -f1 `
 
 for f in $exelist; do
+    lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
     if [ -x $f ]; then
-	ldd $f | awk '/=>/ { print $1 }'
+	ldd $f | awk '/=>/ { if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) { gsub(/'\''"/,"\\&",$1); printf "%s'$lib64'\n", $1 } }'
     fi
-done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | grep -v 'libNoVersion.so' | grep -v '4[um]lib.so' | sort -u
+done | xargs -r -n 1 basename | sort -u
 
 for f in $liblist; do
-    ldd $f | awk '/=>/ { print $1 }'
-done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | grep -v 'libNoVersion.so' | grep -v '4[um]lib.so' | sort -u
+    lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "()(64bit)"; fi`
+    ldd $f | awk '/=>/ { if ($1 !~ /libNoVersion.so/ && $1 !~ /4[um]lib.so/) { gsub(/'\''"/,"\\&",$1); printf "%s'$lib64'\n", $1 } }'
+done | xargs -r -n 1 basename | sort -u
 
 for f in $scriptlist; do
     if [ -x $f ]; then
@@ -27,6 +29,7 @@ for f in $scriptlist; do
 done | sort -u
 
 for f in $liblist $exelist ; do
+    lib64=`if file -L $f 2>/dev/null | grep "ELF 64-bit" >/dev/null; then echo "(64bit)"; fi`
     objdump -p $f | awk '
 	BEGIN { START=0; LIBNAME=""; }
 	/Version References:/ { START=1; }
@@ -34,7 +37,7 @@ for f in $liblist $exelist ; do
 	    sub(/:/, "", $3);
 	    LIBNAME=$3;
 	}
-	(START==1) && (LIBNAME!="") && ($4!="") { print LIBNAME "(" $4 ")"; }
+	(START==1) && (LIBNAME!="") && ($4!="") { print LIBNAME "(" $4 ")'$lib64'"; }
 	/^$/ { START=0; }
     '
 done | sort -u
