@@ -18,7 +18,7 @@
 int rpmdbRebuild(char * rootdir) {
     rpmdb olddb, newdb;
     char * dbpath, * newdbpath;
-    unsigned int recnum; 
+    int recnum; 
     Header h;
     int failed = 0;
 
@@ -57,17 +57,28 @@ int rpmdbRebuild(char * rootdir) {
     }
 
     recnum = rpmdbFirstRecNum(olddb);
-    while (recnum) {
+    while (recnum > 0) {
 	if (!(h = rpmdbGetRecord(olddb, recnum))) {
 	    rpmError(RPMERR_INTERNAL, "cannot read database record at %d", recnum);
 	    failed = 1;
 	    break;
 	}
-	if (rpmdbAdd(newdb, h)) {
-	    rpmError(RPMERR_INTERNAL, "cannot add record originally at %d", 
-		  recnum);
-	    failed = 1;
-	    break;
+
+	/* let's sanity check this record a bit, otherwise just skip it */
+	if (headerIsEntry(h, RPMTAG_NAME) &&
+	    headerIsEntry(h, RPMTAG_VERSION) &&
+	    headerIsEntry(h, RPMTAG_RELEASE) &&
+	    headerIsEntry(h, RPMTAG_RELEASE) &&
+	    headerIsEntry(h, RPMTAG_BUILDTIME)) {
+	    if (rpmdbAdd(newdb, h)) {
+		rpmError(RPMERR_INTERNAL, "cannot add record originally at %d", 
+		      recnum);
+		failed = 1;
+		break;
+	    }
+	} else {
+	    rpmError(RPMERR_INTERNAL, "record number %d in database is bad "
+			"-- skipping it", recnum);
 	}
 	recnum = rpmdbNextRecNum(olddb, recnum);
     }
