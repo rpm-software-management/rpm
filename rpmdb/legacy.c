@@ -8,8 +8,16 @@
 #define	__LIBELF_INTERNAL__	1
 #  undef __P
 #  define __P(protos)   protos
+
 #include <gelf.h>
+
+#if !defined(DT_GNU_PRELINKED)
 #define	DT_GNU_PRELINKED	0x6ffffdf5
+#endif
+#if !defined(DT_GNU_LIBLIST)
+#define	DT_GNU_LIBLIST		0x6ffffef9
+#endif
+
 #endif
 
 #include "rpmio_internal.h"
@@ -90,7 +98,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 
             for (ndx = 0; ndx < maxndx; ++ndx) {
 		(void) gelf_getdyn (data, ndx, &dyn);
-		if (dyn.d_tag != DT_GNU_PRELINKED)
+		if (!(dyn.d_tag == DT_GNU_PRELINKED || dyn.d_tag == DT_GNU_LIBLIST))
 		    /*@innercontinue@*/ continue;
 		bingo = 1;
 		/*@innerbreak@*/ break;

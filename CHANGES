@@ -139,6 +139,7 @@
 	- ix86: make sure that rpm can verify prelinked shared libraries.
 	- don't install /usr/lib/rpm/redhat per-vendor configuration anymore.
 	- add translated man pages from PLD.
+	- resurrect libelf with Elf64, prelink verify should work everywhere.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

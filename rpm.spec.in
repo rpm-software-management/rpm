@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.29
+Release: 0.30
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -402,7 +402,7 @@ fi
 %{__prefix}%{__share}/man/man1/gendiff.1*
 %{__prefix}%{__share}/man/man8/rpm.8*
 %{__prefix}%{__share}/man/man8/rpm2cpio.8*
-%lang(fr)	%{__prefix}%{__share}/man/fr/man[18]/*.[18]*
+#%lang(fr)	%{__prefix}%{__share}/man/fr/man[18]/*.[18]*
 %lang(ja)	%{__prefix}%{__share}/man/ja/man[18]/*.[18]*
 %lang(ko)	%{__prefix}%{__share}/man/ko/man[18]/*.[18]*
 %lang(pl)	%{__prefix}%{__share}/man/pl/man[18]/*.[18]*
@@ -524,6 +524,7 @@ fi
 %changelog
 * Thu Jun 20 2002 Jeff Johnson <jbj@redhat.com>
 - add translated man pages from PLD.
+- resurrect libelf with Elf64, prelink verify should work everywhere.
 
 * Wed Jun 19 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.28
 - ix86: make sure that rpm can verify prelinked shared libraries.

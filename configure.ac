@@ -368,19 +368,13 @@ AC_CHECK_HEADER([libelf/gelf.h], [
 	    AC_CHECK_LIB(elf, gelf_getdyn)
 	)
     ], [
-	case `uname -m` in
-	i[[3456]]86)
-	  if test -d libelf ; then
+	if test -d libelf ; then
 	    AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
 	    WITH_LIBELF_SUBDIR=libelf
 	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_LIBELF_SUBDIR}/lib"
 	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/libelf.la"
-	  fi
-	  ;;
-	*)
-	  ;;
-	esac
+	fi
 ])
 AC_SUBST(WITH_LIBELF_SUBDIR)
 AC_SUBST(WITH_LIBELF_INCLUDE)
