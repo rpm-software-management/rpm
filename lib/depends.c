@@ -455,7 +455,11 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 	    psp->problems[psp->num].needsVersion = requiresVersion[i];
 	    psp->problems[psp->num].needsFlags = requireFlags[i];
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_REQUIRES;
-	    psp->problems[psp->num].suggestedPackage = suggestion->key;
+
+	    if (suggestion)
+		psp->problems[psp->num].suggestedPackage = suggestion->key;
+	    else
+		psp->problems[psp->num].suggestedPackage = NULL;
 
 	    psp->num++;
 	} else if (rc) {
