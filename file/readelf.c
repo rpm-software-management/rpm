@@ -92,6 +92,9 @@ getu64(const fmagic fm, uint64_t value)
 #define ph_offset	(fm->cls == ELFCLASS32		\
 			 ? getu32(fm, ph32.p_offset)	\
 			 : getu64(fm, ph64.p_offset))
+#define ph_align	(fm->cls == ELFCLASS32		\
+			 ? getu32(fm, ph32.p_align)	\
+			 : getu64(fm, ph64.p_align))
 #define nh_size		(fm->cls == ELFCLASS32		\
 			 ? sizeof *nh32			\
 			 : sizeof *nh64)
@@ -153,6 +156,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 	char nbuf[BUFSIZ];
 	int bufsize;
 	size_t offset, nameoffset;
+	off_t savedoffset;
 
 	if (lseek(fm->fd, off, SEEK_SET) == -1) {
 		error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
@@ -162,6 +166,10 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
   	for ( ; num; num--) {
   		if (read(fm->fd, ph_addr, size) == -1) {
   			error(EXIT_FAILURE, 0, "read failed (%s).\n", strerror(errno));
+			/*@notreached@*/
+		}
+		if ((savedoffset = lseek(fm->fd, 0, SEEK_CUR)) == -1) {
+			error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 			/*@notreached@*/
 		}
 
@@ -181,7 +189,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 				error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
 				/*@notreached@*/
 			}
-			bufsize = read(fm->fd, nbuf, BUFSIZ);
+			bufsize = read(fm->fd, nbuf, sizeof(nbuf));
 			if (bufsize == -1) {
 				error(EXIT_FAILURE, 0, ": " "read failed (%s).\n",
 				    strerror(errno));
@@ -206,7 +214,14 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 
 				nameoffset = offset;
 				offset += nh_namesz;
-				offset = ((offset + 3)/4)*4;
+				offset = ((offset+ph_align-1)/ph_align)*ph_align;
+
+				if ((nh_namesz == 0) && (nh_descsz == 0)) {
+					/*
+					 * We're out of note headers.
+					 */
+					break;
+				}
 
 				if (offset + nh_descsz >= bufsize)
 					/*@innerbreak@*/ break;
@@ -281,6 +296,10 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					fmagicPrintf(fm, ", for OpenBSD");
 					/* Content of note is always 0 */
 				}
+			}
+			if ((lseek(fm->fd, savedoffset + offset, SEEK_SET)) == -1) {
+			    error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
+			    /*@notreached@*/
 			}
 			/*@switchbreak@*/ break;
 		}
