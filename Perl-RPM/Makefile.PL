@@ -1,12 +1,16 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.27 2002/01/23 00:58:48 jbj Exp $
+# $Id: Makefile.PL,v 1.28 2002/04/12 22:37:34 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
 use Cwd 'cwd';
 
 $cwd = cwd;
+
+# Check for any "local" arguments to the command that creates the Makefile
+@ARGV = map { /^RPM_(\w+)=(.*)/ ? do { $opts{lc $1} = $2; (); } : $_ } @ARGV
+    if @ARGV;
 
 %XS = qw(
          RPM.xs             RPM.c
@@ -38,81 +42,36 @@ $CLEAN = join(' ', values %XS) . " $OBJECT";
 $CLEAN .= ' Perl-RPM.spec pod2html-* */pod2html-* *.html */*.html RPM/typemap';
 $CLEAN .= ' rpmrc rpmmacro Perl-RPM-*';
 
-#
-# Check for non-Perl dependancies:
-#
-print "Checking for required software components...\n";
-$rpm_binary = '';
-for (split(':', $ENV{PATH}))
-{
-    $rpm_binary = "$_/rpm", last
-        if (-e "$_/rpm" && -x _ && ! -d _);
-}
-die "Executable 'rpm' not found. This is needed for fetching configuration
-information, stopped"
-    unless $rpm_binary;
-
-chomp($rpm_version = qx($rpm_binary --version));
-$rpm_version = (reverse split(/ /, $rpm_version))[0];
-@rpm_version = split(/\./, $rpm_version);
-push(@rpm_version, '0') unless (@rpm_version > 2);
-$rpm_version = sprintf '0x%02x'.'%02x'x$#rpm_version, @rpm_version;
-die "RPM version must be at least 3.0.4, due to I/O features not available
-prior to that version. Stopped"
-    # The stringification is because Perl is still treating $rpm_version as a
-    # string
-    unless ($rpm_version ge "0x030004");
-# Starting with RPM 4.0, there are a number of subtle-but-significant changes
-$rpm_defines = "-DRPM_MAJOR=$rpm_version[0] -DRPM_MINOR=$rpm_version[1]" .
-    " -DRPM_PATCH=$rpm_version[2] -DRPM_VERSION=$rpm_version";
-
-# XXX rpm-4.0.3 has an internal copy of db-3.3.4 in -lrpmdb
-if ($rpm_version >= "0x040003")
-{
-    $rpm_libs = '-lrpm -lrpmdb -lrpmio -lpopt';
-}
-else
-{
-  if ($rpm_version >= "0x040000")
-  {
-    $rpm_libs = '-lrpm -lrpmio -lpopt';
-  }
-  else
-  {
-    $rpm_libs = '-lrpm -lpopt';
-  }
-}
-
+$rpm_libs = '-lrpm -lrpmdb -lrpmio -lpopt';
 # Check for needed header files
-if ( -d "../lib" )
+$rpm_libdir = '';
+unless ($opts{build})
 {
-  $rpm_libdir = '.';
-}
-else
-{
-  $rpm_libdir = '';
-  for (qw(/usr/include /usr/local/include /opt/include /opt/rpm/include))
-  {
-    next unless -d $_ and -d "$_/rpm";
-    $rpm_libdir = "$_/rpm", last if (-d "$_/rpm" && -e "$_/rpm/rpmlib.h");
-  }
-  die "Header file 'rpmlib.h' not found. This is needed for compiling the XS glue
+    # If RPM_BUILD was set, then this module is being built as a part of the
+    # whole rpm kit. In that case, when the make is run the CFLAGS environment
+    # variable will have all the paths we need.
+    for (qw(/usr/include /usr/local/include /opt/include /opt/rpm/include))
+    {
+        next unless -d $_ and -d "$_/rpm";
+        $rpm_libdir = "$_/rpm", last if (-d "$_/rpm" && -e "$_/rpm/rpmlib.h");
+    }
+    die "Header file 'rpmlib.h' not found. This is needed for compiling the XS
 code. If this is present, edit $0 and add the correct directory to the search
-list near line 78. Stopped"
-    unless $rpm_libdir;
+list near this line. Stopped"
+        unless $rpm_libdir;
 }
 
 WriteMakefile(
               NAME         => 'RPM',
               DISTNAME     => 'Perl-RPM',
-              VERSION      => '0.32',
+              VERSION      => '0.33',
               LIBS         => $rpm_libs,
               DEFINE       => $rpm_defines,
               PM           => \%PM,
               XS           => \%XS,
               EXE_FILES    => [ @SAMPLES ],
               OBJECT       => $OBJECT,
-              INC          => "-I. -I$rpm_libdir",
+              INC          => $rpm_libdir ? "-I. -I$rpm_libdir" : '-I.',
               DIR          => [],
 #              XSOPT        => '-noversioncheck -nolinenumbers',
               XSOPT        => '-noversioncheck',
@@ -139,7 +98,7 @@ sub MY::tools_other
 
     my $text = shift->SUPER::tools_other(@_);
 
-    "$text\nECHO=\@echo\nRPM=$::rpm_binary\n";
+    "$text\nECHO=\@echo\nRPM=rpm\n";
 }
 
 sub MY::post_constants
@@ -156,48 +115,58 @@ sub MY::postamble
     my @text;
 
     #
-    # Generate the spec file from <DATA> with substitutions
+    # Only create the support files and extra make targets when packaging
+    # locally.
     #
-    print "Generating $self->{DISTNAME}.spec...\n";
-    $self->{RELEASE} = 1 unless $self->{RELEASE};
-    $self->{INSTALLDIR} = $Config{installsitearch} unless $self->{INSTALLDIR};
-    open(SPEC, "> $self->{DISTNAME}.spec");
-    if ($?)
+    unless ($opts{build})
     {
-        die "Error creating spec file: $!, stopped";
-    }
-    else
-    {
-        for (<DATA>)
+        #
+        # Generate the spec file from <DATA> with substitutions
+        #
+        print "Local build detected. Generating $self->{DISTNAME}.spec...\n";
+        $self->{INSTALLDIR} = $Config{installsitearch}
+            unless $self->{INSTALLDIR};
+        # Copy all the RPM_* args from the command-line (parsed earlier), but
+        # don't overwrite any of MM's internal values
+        $self->{uc $_} ||= $opts{$_} for (keys %opts);
+        open(SPEC, "> $self->{DISTNAME}.spec");
+        if ($?)
         {
-            s/(SPEC_(\w+))/$self->{$2}/eg;
-            print SPEC $_;
+            die "Error creating spec file: $!, stopped";
         }
-        close(SPEC);
-    }
-    print "Generating rpmrc...\n";
-    open(RPMRC, "> rpmrc");
-    if ($?)
-    {
-        die "Error creating rpmrc file: $!, stopped";
-    }
-    else
-    {
-        print RPMRC <<END_rpmrc;
+        else
+        {
+            for (<DATA>)
+            {
+                s/(SPEC_(\w+))/$self->{$2}/eg;
+                print SPEC $_;
+            }
+            close(SPEC);
+        }
+        print "Generating rpmrc...\n";
+        open(RPMRC, "> rpmrc");
+        if ($?)
+        {
+            die "Error creating rpmrc file: $!, stopped";
+        }
+        else
+        {
+            print RPMRC <<END_rpmrc;
 include: /usr/lib/rpm/rpmrc
 macrofiles: /usr/lib/rpm/macros:rpmmacro
 END_rpmrc
-        close(RPMRC);
-    }
-    print "Generating rpmmacros...\n";
-    open(MACRO, "> rpmmacro");
-    if ($?)
-    {
-        die "Error creating macro file: $!, stopped";
-    }
-    else
-    {
-        print MACRO <<END_macro;
+            close(RPMRC);
+        }
+        print "Generating rpmmacros...\n";
+        open(MACRO, "> rpmmacro");
+        if ($?)
+        {
+            die "Error creating macro file: $!, stopped";
+        }
+        else
+        {
+            chomp(my $rpm_ver = (reverse split(/ /, qx{rpm --version}))[0]);
+            print MACRO <<END_macro;
 %_rpmfilename           %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 %_builddir              %{_topdir}
 %_sourcedir             %{_topdir}
@@ -205,18 +174,20 @@ END_rpmrc
 %_srcrpmdir             %{_topdir}
 %_rpmdir                %{_topdir}
 %_topdir                $cwd
+%rpm_version            $rpm_ver
 END_macro
-        close(MACRO);
-    }
+            close(MACRO);
+        }
 
-    # Create the rules that create RPM and SRPM files
-    push(@text, qq{
+        # Create the rules that create RPM and SRPM files
+        push(@text, qq{
 rpm: \$(SPECFILE) \$(DISTVNAME).tar\$(SUFFIX)
 \t\$(RPM) -bb --clean --rcfile rpmrc \$(SPECFILE)
 
 srpm: \$(SPECFILE) \$(DISTVNAME).tar\$(SUFFIX)
 \t\$(RPM) -bs --clean --rcfile rpmrc \$(SPECFILE)
 });
+    }
 
     # Create per-object-file dependancy on RPM.h
     push(@text, ('',
@@ -228,18 +199,22 @@ srpm: \$(SPECFILE) \$(DISTVNAME).tar\$(SUFFIX)
 
 __DATA__
 Summary: Perl bindings to the rpmlib API
-Name: SPEC_DISTNAME
-Version: SPEC_VERSION
-Release: SPEC_RELEASE
+Name: rpm-perl
+Version: %{rpm_version}
+Release: SPEC_VERSION.SPEC_EXTRA
 Epoch: 1
 Vendor: Randy J. Ray
 Copyright: Artistic
-Group: Applications/CPAN
+Group: Development/Languages
 Source: SPEC_DISTNAME-SPEC_VERSION.tar.gz
 Url: http://www.blackperl.com/SPEC_DISTNAME
 BuildRequires: perl >= 0:5.00503
 Requires: perl >= 0:5.00503
+Requires: rpm = %{rpm_version}
 Provides: SPEC_DISTNAME = SPEC_VERSION
+Provides: perl(RPM::Database) = %{rpm_version}
+Provides: perl(RPM::Header) = %{rpm_version}
+Obsoletes: perl-Perl-RPM
 BuildRoot: %{_tmppath}/%{name}-root
 
 %description
@@ -248,7 +223,7 @@ of Perl and C/XS (compiled) code to provide access to the RPM database,
 headers of installed packages, and more.
 
 %prep
-%setup -q -n SPEC_DISTNAME-%{version} 
+%setup -q -n rpm-perl-%{version}
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL
