@@ -21,6 +21,8 @@ Requires: popt, bzip2 >= 0.9.0c-2
 %ifnarch ia64
 Requires: glibc >= 2.1.92
 %endif
+# XXX needed to avoid libdb.so.2 satisfied by compat/libc5 provides.
+Requires: db1 = 1.85
 BuildRequires: db3-devel
 BuildRequires: bzip2 >= 0.9.0c-2
 BuildRequires: python-devel >= 1.5.2
@@ -129,6 +131,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 rm -rf $RPM_BUILD_ROOT
 
 %post
+/sbin/ldconfig
 %ifos linux
 if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f %{__prefix}/lib/rpm/convertrpmrc.sh ] 
 then
@@ -137,6 +140,8 @@ fi
 %else
 /bin/rpm --initdb
 %endif
+
+%postun -p /sbin/ldconfig
 
 %ifos linux
 %post devel -p /sbin/ldconfig

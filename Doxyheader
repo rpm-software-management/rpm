@@ -1,0 +1,34 @@
+/*! \mainpage RPM API Documentation.
+ */
+/** \defgroup	rpmcli	RPMCLI.
+ */
+/** \defgroup	rpmbuild	RPMBUILD.
+ */
+/** \defgroup	rpmrc	RPMRC.
+ */
+/** \defgroup	rpmdep	RPMDEP.
+ */
+/** \defgroup	rpmtrans	RPMTRANS.
+ */
+/** \defgroup	rpmdb	RPMDB.
+ */
+/** \defgroup	lead	LEAD.
+ */
+/** \defgroup	signature	SIGNATURE.
+ */
+/** \defgroup	header	HEADER.
+ */
+/** \defgroup	payload	PAYLOAD.
+ */
+/** \defgroup	dbi	DBI.
+ */
+/** \defgroup	db1	DB1.
+ */
+/** \defgroup	db2	DB2.
+ */
+/** \defgroup	db3	DB3.
+ */
+/** \defgroup	rpmio	RPMIO.
+ */
+/** \defgroup	popt	POPT.
+ */

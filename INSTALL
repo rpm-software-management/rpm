@@ -1,75 +1,148 @@
-
-
 To build RPM you will need several other packages:
 --------------------------------------------------
 
+The zlib library for compression support. You might also need/want
+the zip executable for java jar dependency analysis. All available from
+    ftp://ftp.freesoftware.com/pub/infozip/zlib/
 
-The zlib library for compression support available from
-	http://www.cdrom.com/pub/infozip/zlib/
+The Berkeley db1 and db3 libraries. These are available from
+    http://www.sleepycat.com.
 
-The berkeley db library db.1.85, or db.2* (currently the latest is
-db-2.6.4) with compatibility mode for db.1.85 defined.  The developers
-of RPM did not upgrade RPM to use the current version of libdb because
-they are uncomfortable with changes in the softwares license.  Now db2
-has a special exception license within glibc-2.1 so whatever license
-discomfort there is/was is quickly becoming moot.  The remaining issue
-is that the db_185 compatibility does not work in glibc-2.1.  This is
-available from
-	http://www.sleepycat.com/download.html.
-
-The instructions for building db-2.6.4:
-
-	cd build_unix 
-	../dist/configure --enable-compat185
-	make
-	make install
-
+Minimal instructions for building db3 are (see a Red Hat dbN package
+spac file for more conmplete details)
+    cd build_unix 
+    ../dist/configure --enable-compat185
+    make
+    make install
 
 It may be desired to install bzip2 and gzip so that RPM can use these
 formats.  Gzip, is necessary to build packages that contain compressed
 tar balls, these are quite common on the Internet.
 These are availible from
-	http://www.digistar.com/bzip2/index.html
-	http://www.gnu.org/
-
-If National Language Support (NLS) is desired 
-you will need gnu gettext available from
-	http://www.gnu.org/
-
-If you need support of RPM 1.x databases, which are in an old RPM
-format. You will need the GNU db library gdbm to build the rpmconvert
-binary. This is availible from :
-	http://www.gnu.org/
+    http://www.digistar.com/bzip2/index.html
+    http://sources.redhat.com/bzip2/
 
 For best results you should compile with GCC and GNU Make.  Users have
-reported difficulty with other build tools.  available from
-	http://www.gnu.org/
+reported difficulty with other build tools (any patches to lift these
+dependencies are welcome). Both GCC and GNU Make available from 
+    http://www.gnu.org/
+
+If National Language Support (NLS) is desired you will need gnu
+gettext (currently this is required to build rpm but we hope to 
+lift this requirement soon), available from 
+    http://www.gnu.org/
+
+If you are going to hack the sources (or compile from anonymous cvs
+retrevial) you will need most of the GNU development tools including:
+autoconf, automake, gettext, libtool, makeinfo, perl, GNU m4, GNU tar
+available from 
+    http://www.gnu.org/
+
+If you plan on using cryptographic signatures you will need a version
+of GPG.
+
+Since Red Hat 6.1 uses gnupg for signing packages, previous releases were
+signed with pgp-2.6.3. Pgp5 can be used instead of pgp-2.6.3 signatures iff
+RSA signature's are used.
+
+These can be downloaded (for US citizens) from:
+    http://web.mit.edu/network/pgp.html
+    http://www.gnu.org/
+    http://www.pgpi.com/
+
+Note: rpm-4.0 on Red Hat 7.0 is currently using
+    zlib-1.1.3
+    db1-1.85
+    db3-3.1.14
+    bzip2-1.0.1
+    gnupg-1.0.2
+You may use the tarballs within those packagese, and examine the patches and
+spec files for details about how to build the libraries needed by rpm.
 
 
 To compile RPM:
 --------------
 
-If your libraries are in a standard place you will need to change
-the configure environment.
+RPM uses a small shell script to run: libtool, autoconf,
+automake. This step should not be necessary if you are running a
+released version of rpm, however if you have gotten the rpm sources
+using anonymous CVS or via anonymous FTP, you should probably regenerate
+intermediate files by re-running the autogen.sh script.
+
+The autogen.sh script checks that the required tools are installed.
+While other versions of the tools may be used, the script checks for
+the same version of the tools that was used at the time the tarball
+was produced. Edit the top of the script to change version numbers if you wish.
+
+The autogen.sh script also runs configure for you and passes the command line
+arguments to configure.  To run it without configure type:
+
+    ./autogen.sh --noconfigure
+
+If your libraries are not in a standard place you will need to change
+configures environment.  These options can be passed directly to
+configure or to autogen.sh which will pass them through to configure.
 
 Here is an example:
-	LIBS='-L/opt/libz/ -L/opt/BerkeleyDB/lib/' \
-	CPPFLAGS='-I/opt/libz/ -I/opt/BerkeleyDB/include' \
-	export LIBS CPPFLAGS
-	./configure
+    LIBS='-L/opt/libz/ -L/opt/BerkeleyDB/lib/' \
+    CPPFLAGS='-I/opt/libz/ -I/opt/BerkeleyDB/include' \
+    ./configure
+
+If you have build tools stored in non standard places you should check
+the resulting Makefile to be sure that the tools you wish to use have
+been correctly identified.  The configure script will modify your path
+before looking for the build tools and it may find versions of these
+tools that you do not want.  It uses the following search path
+
+    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/opt/gnu/bin"
 
 now build the system with:
 
-	make
+    make
 
-if you wish to make a tarfile of the binaries so that you may easily
-install on other machines (ed note: what about putting gzip and bzip2
-in the tar, modifying the /etc/rpmrc?):
+and then install with:
 
-	make tar
+    make install
 
-when installing do not forget to init the database (rpm --initdb)
+If you wish to make a tarfile of the binaries so that you may easily
+install on machines with OS package managers other then rpm (ed note:
+what about putting gzip and bzip2 in the tar, modifying the
+/etc/rpmrc?):
 
+    make tar
+
+when installing. If you do install from a tarball, you will need to do
+something like
+
+    mkdir /var/lib/rpm
+    rpm --initdb
+
+to initialize your rpm database.
+
+Finally, if you wish to prepare an rpm source tar ball, you should do
+
+    make dist
+
+To package RPM:
+--------------
+
+After RPM has been installed you can run rpm to build an rpm package.
+Edit the rpm.spec file to mirror any special steps you needed to
+follow to make rpm compile and change the specfile to match your
+taste.  You will need to put the rpm source tar file into the
+redhat/SOURCES directory and we suggest putting the specfile in the
+redhat/SPECS directory, then run rpm -ba rpm.spec.  You will end up
+with two rpms which can be found in redhat/RPMS and redhat/SRPMS.
+
+If you are going to install rpm on machines with OS package managers
+other then rpm, you may choose to install the base rpm package via a
+cpio instead of a tar file.  Instead of running "make tar" during the
+build process, as discribed above, use the base rpm packages to create
+a cpio.  After the rpms have been created run rpm2cpio on the base rpm
+package, this will give you a cpio package which can then use to
+install rpm on a new system.
+
+    rpm2cpio rpm-4.0-1.solaris2.6-sparc.rpm > rpm-4.0-1.solaris2.6-sparc.cpio
 
 
 Non Linux Configuration Issues:
@@ -94,25 +167,31 @@ will depend on exactly how you bootstrap RPM onto your system and what
 parts of the sytem you put into packages as well as on the specific OS
 you are using.
 
-You should satisfy dependencies for all shells and interpreters. A
-reasonable list of OS installed shells can be generated with:
+The script vpkg-provides.sh can be used to generate a package which
+will satisfy the dependencies on your system.  To run it you will need
+to create a specfile header for this empty package and run the progam
+with:
 
-   cat /etc/shells
+    --spec_header '/path/to/os-base-header.spec
 
-You should satisfy dependencies for all system libraries. For each of
-the system library directories you should run 
+and if you wish to ensure that some directories are not traversed you
+can use the option: 
 
-   echo * | find-provides.sh
+    --ignore_dirs 'egrep|pattern|of|paths|to|ignore
 
-(On Linux a list of system library directories can be found in
-/etc/ld.so.conf, other OS require an experienced system administrator
-to know where the libraries are.)
+By default the generated rpm will include a %verifyscript to verify
+checksum of all files traversed has not changed.  This additional
+check can be surpressed with:
 
+    --no_verify
 
-You may add as many "provides: " lines as you like to /etc/rpmrc/ but
-they can not be continued.  Each line is limited to 8K bytes. Here is
-a example (truncated) of the provides lines used by one user of
-Digital Unix.
+The result of running the script will be a specfile which will create
+a package continging all the dependencies found on the system.  There
+will be one provides line for each depednecy. The package will contain
+none of the actual OS library files as it is assumed they are already
+on your system and managed by other means.  Here is a example
+(truncated) of the provides lines used by one user of Digital Unix. (I
+have put several provides on the same line for brevity)
 
 provides: /bin/sh /usr/bin/ksh /usr/bin/csh 
 provides: libc.so.osf.1 libm.so.osf.1 libcurses.so.xpg4 libdb.so.osf.1
@@ -121,28 +200,35 @@ provides: libdnet_stub.so.osf.1 libsecurity.so.osf.1 libpthread.so.osf.1
 provides: libexc.so.osf.1 libmach.so.osf.1 libdps.so libdpstk.so 
 
 
+The script vpkg-provides2.sh is underdevelopment as a more advanced
+version of vpkg-provides.sh which is aware of many different unix
+vendor packaging schemes.  It will create one "dependency package" for
+each unix package your OS vendor installed.
+
 
 rpmfilename:
 -----------
 
 If you plan on packaging for more then one OS you may want to edit
-/etc/rpmrc and change the line which has rpmfilename to something
-which include both the %{OS} and %{ARCH}.  This will cause the name of
-the generated rpm files to the operating system name as well as the
-architecture which the rpm runs under.  The line to change looks like:
+/etc/macros or /usr/lib/rpm/macros and change the line which has
+rpmfilename to something which include both the %{_target_os} and
+%{_target_cpu}.  This will cause the name of the generated rpm files
+to the operating system name as well as the architecture which the rpm
+runs under.  The line to change looks like:
 
-> rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
+%_rpmfilename           %%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
-you may wish to include both the %{OS} and %{ARCH} in the final base
-name, so that it's easier to distinguish between what package is
-appropriate for a particular arch-os-version combo.  We suggest
+you may wish to include both the %{_target_os} and %{_target_cpu} in
+the final base name, so that it's easier to distinguish between what
+package is appropriate for a particular arch-os-version combo.  We
+suggest:
 
-> rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{OS}-%{ARCH}.rpm
+%_rpmfilename           %%{_target_platform/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{_target_platform}.rpm
 
-There is no %{OS_VERSION} tag, so if you need to also distinguish between
-RPMs for certain versions of the OS, you can hard-code the version in
-the rpmrc on the build machine, so that .rpm files are generated with
-the version as part of the filename.
+There is no %{_target_os_version} tag, so if you need to also
+distinguish between RPMs for certain versions of the OS, you can
+hard-code the version in the rpmrc on the build machine, so that .rpm
+files are generated with the version as part of the filename.
 
 For example when one user builds RPMs for Digital Unix 4.0b and 4.0d,
 optimization is important and he will build one set of RPMs for the
@@ -154,10 +240,49 @@ on the particular build machine.
 The "rpmfilename: "tag on one machine (Digital Unix 4.0d, EV56 PWS 433)
 looks like:
 
-rpmfilename: %{OS}/4.0d/%{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{OS}-%{ARCH}-ev56.rpm
+rpmfilename: %{_target_os}/4.0d/%{_target_cpu}/%{name}-%{version}-%{release}.%{_target_os}-%{_target_cpu}ev56.rpm
 
 For package `foo-1.1', at build time that would translate into:
 
-	osf1/4.0d/alpha/foo-1.1-1.osf1-alphaev56.rpm
+    osf1/4.0d/alpha/foo-1.1-1.osf1-alphaev56.rpm
+
+The hyphen between the %{_target_cpu} and ev56 is left out for compatibility
+with GNU Config.guess and because `alphaev56' looks more "normal" to
+people with an alpha than alpha-ev56 for someone on an Intel Pentium
+Pro would want `i586pro' over `i586-pro', but it does make parsing
+this filename by other programs a bit more difficult.
 
 
+GPG/PGP/PGP5
+------------
+
+To use the signing features of rpm, you will need to configure certain
+rpm macros.
+
+Here's what I use for gpg:
+
+    /etc/rpm/macros for per-system (or ~/.rpmmacros for per-user) configuration
+	%_signature     gpg
+	%_gpg_name      Jeff Johnson (ARS N3NPQ) <jbj@redhat.com>
+	%_gpg_path      /home/devel/jbj/.gnupg
+
+Here's what I use for pgp2.6:
+
+    /etc/rpm/macros for per-system (or ~/.rpmmacros for per-user) configuration
+	%_signature	pgp
+	%_pgpbin	/usr/bin/pgp
+	%_pgp_name	Jeff Johnson <jbj@redhat.com>
+	%_pgp_path	/home/jbj/.pgp
+
+In order to use pgp5, you will need to change:
+
+	%_signature	pgp5
+	%_pgpbin	/path/to/pgp5/binary
+	%_pgp_path	/path/to/pgp5/keyring
+
+(Note: Only one of pgp and pgp5 may be used because of name conflicts.)
+
+You may also need Red Hat GPG/PGP public keys. These can be found in the
+rpm source tarball, in /usr/doc/rpm*, or form http://www.redhat.com. In
+order to verify a package signed by Red Hat you will need to import these
+keys onto you key ring. See the GPG/PGP documentation for how to do this.

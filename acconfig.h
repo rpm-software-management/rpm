@@ -108,10 +108,7 @@
 /* Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt) */
 #undef LIBRPMALIAS_FILENAME
 
-/* Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc) */
-#undef LIBRPMRC_FILENAME
-
-/* Full path to macros configuration file (usually /usr/lib/rpm/macros) */
+/* Colon separated paths of macro files to read. */
 #undef MACROFILES
 
 /* statfs in <sys/statvfs.h> (for solaris 2.6+ systems) */

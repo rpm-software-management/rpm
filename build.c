@@ -99,8 +99,6 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     Spec spec = NULL;
     int rc;
 
-    rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
-
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
 

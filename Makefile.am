@@ -51,31 +51,31 @@ rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpm_LDADD =		$(myLDADD) @LIBMISC@
 
 rpmb_SOURCES =		build.c
-rpmb_LDFLAGS =		$(myLDFLAGS)
+rpmb_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpmb_LDADD =		rpmb.o $(myLDADD)
 rpmb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c $<
 
 rpmdb_SOURCES =
-rpmdb_LDFLAGS =		$(myLDFLAGS)
+rpmdb_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpmdb_LDADD =		rpmdb.o $(myLDADD)
 rpmdb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c $<
 
 rpmi_SOURCES =
-rpmi_LDFLAGS =		$(myLDFLAGS)
+rpmi_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpmi_LDADD =		rpmi.o $(myLDADD)
 rpmi.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMEIU -o $@ -c $<
 
 rpmk_SOURCES =
-rpmk_LDFLAGS =		$(myLDFLAGS)
+rpmk_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpmk_LDADD =		rpmk.o $(myLDADD)
 rpmk.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMK -o $@ -c $<
 
 rpmq_SOURCES =
-rpmq_LDFLAGS =		$(myLDFLAGS)
+rpmq_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpmq_LDADD =		rpmq.o $(myLDADD)
 rpmq.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMQV -o $@ -c $<
