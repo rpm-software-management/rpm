@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2001
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -36,7 +36,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: log_rec.c,v 11.48 2001/01/11 18:19:53 bostic Exp $";
+static const char revid[] = "Id: log_rec.c,v 11.59 2001/05/08 19:00:54 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -50,6 +50,7 @@ static const char revid[] = "$Id: log_rec.c,v 11.48 2001/01/11 18:19:53 bostic E
 #include "db_am.h"
 #include "log.h"
 
+static int __log_check_master __P((DB_ENV *, u_int8_t *, char *));
 static int __log_do_open __P((DB_ENV *, DB_LOG *,
     u_int8_t *, char *, DBTYPE, int32_t, db_pgno_t));
 static int __log_open_file __P((DB_ENV *, DB_LOG *, __log_register_args *));
@@ -84,8 +85,9 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 		goto out;
 
 	if ((argp->opcode == LOG_OPEN &&
-	    (DB_REDO(op) || op == DB_TXN_OPENFILES)) ||
-	    (argp->opcode == LOG_CLOSE && DB_UNDO(op))) {
+	    (DB_REDO(op) || op == DB_TXN_OPENFILES || op == DB_TXN_POPENFILES))
+	    || ((argp->opcode == LOG_CLOSE || argp->opcode == LOG_RCLOSE) &&
+	    DB_UNDO(op))) {
 		/*
 		 * If we are redoing an open or undoing a close, then we need
 		 * to open a file.  We must open the file even if
@@ -96,13 +98,15 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 		ret = __log_open_file(dbenv, logp, argp);
 		F_CLR(logp, DBLOG_FORCE_OPEN);
 		if (ret == ENOENT || ret == EINVAL) {
-			if (op == DB_TXN_OPENFILES && argp->name.size != 0 &&
+			if ((op == DB_TXN_OPENFILES || op == DB_TXN_POPENFILES)
+			    && argp->name.size != 0 &&
 			    (ret = __db_txnlist_delete(dbenv, info,
 				argp->name.data, argp->fileid, 0)) != 0)
 				goto out;
 			ret = 0;
 		}
-	} else if (argp->opcode != LOG_CHECKPOINT) {
+	} else if (argp->opcode == LOG_OPEN || argp->opcode == LOG_CLOSE ||
+	    (argp->opcode == LOG_RCLOSE && op != DB_TXN_POPENFILES)) {
 		/*
 		 * If we are undoing an open, then we need to close the file.
 		 *
@@ -117,7 +121,14 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 		if (argp->fileid < logp->dbentry_cnt) {
 			dbe = &logp->dbentry[argp->fileid];
 
-			DB_ASSERT(dbe->refcount == 1);
+			if (dbe->refcount != 1) {
+				__db_err(dbenv,
+				    "Improper file close. LSN: %lu/%lu.",
+				    (u_long)logp->c_lsn.file,
+				    (u_long)logp->c_lsn.offset);
+				ret = EINVAL;
+				goto out;
+			}
 
 			ret = __db_txnlist_close(info,
 			    argp->fileid, dbe->count);
@@ -137,7 +148,9 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 			    dbp->mpf == NULL ? DB_NOSYNC : 0)) != 0 && ret == 0)
 				ret = t_ret;
 		}
-	} else if (DB_UNDO(op) || op == DB_TXN_OPENFILES) {
+	} else if (argp->opcode == LOG_CHECKPOINT &&
+	    (DB_UNDO(op) ||
+	    op == DB_TXN_OPENFILES || op == DB_TXN_POPENFILES)) {
 		/*
 		 * It's a checkpoint and we are rolling backward.  It
 		 * is possible that the system was shut down and thus
@@ -156,7 +169,7 @@ __log_register_recover(dbenv, dbtp, lsnp, op, info)
 	}
 
 out:	if (argp != NULL)
-		__os_free(argp, 0);
+		__os_free(dbenv, argp, 0);
 	return (ret);
 }
 
@@ -292,7 +305,7 @@ __log_reopen_file(dbenv, name, ndx, fileid, meta_pgno)
 	ret = __log_do_open(dbenv, logp, fileid, name, ftype, ndx, meta_pgno);
 
 	if (tmp_name != NULL)
-		__os_free(tmp_name, 0);
+		__os_free(dbenv, tmp_name, 0);
 
 out:	return (ret);
 }
@@ -335,12 +348,15 @@ __log_do_open(dbenv, lp, uid, name, ftype, ndx, meta_pgno)
 	if (meta_pgno != PGNO_BASE_MD)
 		memcpy(dbp->fileid, uid, DB_FILE_ID_LEN);
 	dbp->type = ftype;
-	if ((ret =
-	    __db_dbopen(dbp, name, 0, __db_omode("rw----"), meta_pgno)) == 0) {
+	if ((ret = __db_dbopen(dbp,
+	     name, DB_ODDFILESIZE, __db_omode("rw----"), meta_pgno)) == 0) {
 		/*
 		 * Verify that we are opening the same file that we were
 		 * referring to when we wrote this log record.
 		 */
+		if (meta_pgno != PGNO_BASE_MD &&
+		    __log_check_master(dbenv, uid, name) != 0)
+			goto not_right;
 		if (memcmp(uid, dbp->fileid, DB_FILE_ID_LEN) != 0) {
 			memset(zeroid, 0, DB_FILE_ID_LEN);
 			if (memcmp(dbp->fileid, zeroid, DB_FILE_ID_LEN) != 0)
@@ -359,6 +375,28 @@ not_right:
 	(void)__log_add_logid(dbenv, lp, NULL, ndx);
 
 	return (ENOENT);
+}
+
+static int
+__log_check_master(dbenv, uid, name)
+	DB_ENV *dbenv;
+	u_int8_t *uid;
+	char *name;
+{
+	DB *dbp;
+	int ret;
+
+	ret = 0;
+	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+		return (ret);
+	dbp->type = DB_BTREE;
+	ret = __db_dbopen(dbp, name, 0, __db_omode("rw----"), PGNO_BASE_MD);
+
+	if (ret == 0 && memcmp(uid, dbp->fileid, DB_FILE_ID_LEN) != 0)
+		ret = EINVAL;
+
+	(void)dbp->close(dbp, 0);
+	return (ret);
 }
 
 /*
@@ -390,7 +428,7 @@ __log_add_logid(dbenv, logp, dbp, ndx)
 	if (logp->dbentry_cnt <= ndx) {
 		if ((ret = __os_realloc(dbenv,
 		    (ndx + DB_GROW_SIZE) * sizeof(DB_ENTRY),
-		    NULL, &logp->dbentry)) != 0)
+		    &logp->dbentry)) != 0)
 			goto err;
 
 		/*
@@ -515,11 +553,15 @@ __db_fileid_to_db(dbenv, dbpp, ndx, inc)
 	}
 
 	/*
-	 * Otherwise return 0, but if we don't have a corresponding DB, it's
-	 * an error.
+	 * Otherwise return 0, but if we don't have a corresponding DB,
+	 * thats not read only its an error.
 	 */
 	if ((*dbpp = TAILQ_FIRST(&logp->dbentry[ndx].dblist)) == NULL)
 		ret = ENOENT;
+
+	while (ret == 0 && F_ISSET(*dbpp, DB_AM_RDONLY))
+		if ((*dbpp = TAILQ_NEXT(*dbpp, links)) == NULL)
+			ret = ENOENT;
 
 err:	MUTEX_THREAD_UNLOCK(dbenv, logp->mutexp);
 	return (ret);

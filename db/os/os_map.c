@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2001
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: os_map.c,v 11.32 2000/11/30 00:58:42 ubell Exp $";
+static const char revid[] = "Id: os_map.c,v 11.34 2001/04/10 20:44:34 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -26,8 +26,6 @@ static const char revid[] = "$Id: os_map.c,v 11.32 2000/11/30 00:58:42 ubell Exp
 #endif
 
 #include "db_int.h"
-#include "db_page.h"
-#include "db_ext.h"
 #include "os_jump.h"
 
 #ifdef HAVE_MMAP

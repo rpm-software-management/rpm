@@ -1,18 +1,19 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996-2001
  *	Sleepycat Software.  All rights reserved.
  */
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "$Id: log.c,v 11.42 2001/01/15 16:42:37 bostic Exp $";
+static const char revid[] = "Id: log.c,v 11.52 2001/04/20 17:35:47 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -29,12 +30,12 @@ static const char revid[] = "$Id: log.c,v 11.42 2001/01/15 16:42:37 bostic Exp $
 #include "txn_auto.h"
 
 #ifdef HAVE_RPC
-#include "gen_client_ext.h"
 #include "rpc_client_ext.h"
 #endif
 
 static int __log_init __P((DB_ENV *, DB_LOG *));
 static int __log_recover __P((DB_LOG *));
+static size_t __log_region_size __P((DB_ENV *));
 
 /*
  * __log_open --
@@ -69,7 +70,7 @@ __log_open(dbenv)
 	if (F_ISSET(dbenv, DB_ENV_CREATE))
 		F_SET(&dblp->reginfo, REGION_CREATE_OK);
 	if ((ret = __db_r_attach(
-	    dbenv, &dblp->reginfo, LG_BASE_REGION_SIZE + dbenv->lg_bsize)) != 0)
+	    dbenv, &dblp->reginfo, __log_region_size(dbenv))) != 0)
 		goto err;
 
 	dblp->readbufp = readbufp;
@@ -90,10 +91,11 @@ __log_open(dbenv)
 	 */
 	if (F_ISSET(dbenv, DB_ENV_THREAD)) {
 		if ((ret = __db_mutex_alloc(
-		    dbenv, &dblp->reginfo, &dblp->mutexp)) != 0)
+		    dbenv, &dblp->reginfo, 1, &dblp->mutexp)) != 0)
 			goto err;
-		if ((ret = __db_mutex_init(
-		    dbenv, dblp->mutexp, 0, MUTEX_THREAD)) != 0)
+		if ((ret = __db_shmutex_init(dbenv, dblp->mutexp, 0,
+		    MUTEX_THREAD, &dblp->reginfo,
+		    (REGMAINT *)R_ADDR(&dblp->reginfo, lp->maint_off))) != 0)
 			goto err;
 	}
 
@@ -113,10 +115,10 @@ err:	if (dblp->reginfo.addr != NULL) {
 	}
 
 	if (readbufp != NULL)
-		__os_free(readbufp, dbenv->lg_bsize);
+		__os_free(dbenv, readbufp, dbenv->lg_bsize);
 	if (dblp->mutexp != NULL)
 		__db_mutex_free(dbenv, &dblp->reginfo, dblp->mutexp);
-	__os_free(dblp, sizeof(*dblp));
+	__os_free(dbenv, dblp, sizeof(*dblp));
 	return (ret);
 }
 
@@ -132,6 +134,9 @@ __log_init(dbenv, dblp)
 	LOG *region;
 	int ret;
 	void *p;
+#ifdef  MUTEX_SYSTEM_RESOURCES
+	u_int8_t *addr;
+#endif
 
 	if ((ret = __db_shalloc(dblp->reginfo.addr,
 	    sizeof(*region), 0, &dblp->reginfo.primary)) != 0)
@@ -150,6 +155,15 @@ __log_init(dbenv, dblp)
 	/* Initialize LOG LSNs. */
 	region->lsn.file = 1;
 	region->lsn.offset = 0;
+
+#ifdef  MUTEX_SYSTEM_RESOURCES
+	/* Allocate room for the txn maintenance info and initialize it. */
+	if ((ret = __db_shalloc(dblp->reginfo.addr,
+	    sizeof(REGMAINT) + LG_MAINT_SIZE, 0, &addr)) != 0)
+		goto mem_err;
+	__db_maintinit(&dblp->reginfo, addr, LG_MAINT_SIZE);
+	region->maint_off = R_OFFSET(&dblp->reginfo, addr);
+#endif
 
 	/* Initialize the buffer. */
 	if ((ret =
@@ -309,11 +323,11 @@ __log_find(dblp, find_first, valp, statusp)
 	int find_first, *valp;
 	logfile_validity *statusp;
 {
+	char *c, **names, *p, *q, savech;
+	const char *dir;
+	int cnt, fcnt, ret;
 	logfile_validity logval_status, status;
 	u_int32_t clv, logval;
-	int cnt, fcnt, ret;
-	const char *dir;
-	char **names, *p, *q, savech;
 
 	logval_status = status = DB_LV_NONEXISTENT;
 
@@ -346,13 +360,23 @@ __log_find(dblp, find_first, valp, statusp)
 
 	if (ret != 0) {
 		__db_err(dblp->dbenv, "%s: %s", dir, db_strerror(ret));
-		__os_freestr(p);
+		__os_freestr(dblp->dbenv, p);
 		return (ret);
 	}
 
 	/* Search for a valid log file name. */
 	for (cnt = fcnt, clv = logval = 0; --cnt >= 0;) {
 		if (strncmp(names[cnt], LFPREFIX, sizeof(LFPREFIX) - 1) != 0)
+			continue;
+
+		/*
+		 * Names of the form log\.[0-9]* are reserved for DB.  Other
+		 * names sharing LFPREFIX, such as "log.db", are legal.
+		 */
+		for (c = names[cnt] + sizeof(LFPREFIX); *c != '\0'; c++)
+			if (!isdigit(*c))
+				break;
+		if (*c != '\0')
 			continue;
 
 		/*
@@ -422,8 +446,8 @@ __log_find(dblp, find_first, valp, statusp)
 
 	*valp = logval;
 
-err:	__os_dirfree(names, fcnt);
-	__os_freestr(p);
+err:	__os_dirfree(dblp->dbenv, names, fcnt);
+	__os_freestr(dblp->dbenv, p);
 	*statusp = logval_status;
 
 	return (ret);
@@ -459,7 +483,7 @@ __log_valid(dblp, number, set_persist, statusp)
 	/* Try to open the log file. */
 	if ((ret = __log_name(dblp,
 	    number, &fname, &fh, DB_OSO_RDONLY | DB_OSO_SEQ)) != 0) {
-		__os_freestr(fname);
+		__os_freestr(dblp->dbenv, fname);
 		return (ret);
 	}
 
@@ -527,7 +551,7 @@ __log_valid(dblp, number, set_persist, statusp)
 		region->persist.mode = persist.mode;
 	}
 
-err:	__os_freestr(fname);
+err:	__os_freestr(dblp->dbenv, fname);
 	*statusp = status;
 	return (ret);
 }
@@ -564,17 +588,17 @@ __log_close(dbenv)
 	    (t_ret = __os_closehandle(&dblp->lfh)) != 0 && ret == 0)
 		ret = t_ret;
 	if (dblp->c_dbt.data != NULL)
-		__os_free(dblp->c_dbt.data, dblp->c_dbt.ulen);
+		__os_free(dbenv, dblp->c_dbt.data, dblp->c_dbt.ulen);
 	if (F_ISSET(&dblp->c_fh, DB_FH_VALID) &&
 	    (t_ret = __os_closehandle(&dblp->c_fh)) != 0 && ret == 0)
 		ret = t_ret;
 	if (dblp->dbentry != NULL)
-		__os_free(dblp->dbentry,
+		__os_free(dbenv, dblp->dbentry,
 		    (dblp->dbentry_cnt * sizeof(DB_ENTRY)));
 	if (dblp->readbufp != NULL)
-		__os_free(dblp->readbufp, dbenv->lg_bsize);
+		__os_free(dbenv, dblp->readbufp, dbenv->lg_bsize);
 
-	__os_free(dblp, sizeof(*dblp));
+	__os_free(dbenv, dblp, sizeof(*dblp));
 
 	dbenv->lg_handle = NULL;
 	return (ret);
@@ -582,13 +606,14 @@ __log_close(dbenv)
 
 /*
  * log_stat --
- *	Return LOG statistics.
+ *	Return log statistics.
+ *
+ * EXTERN: int log_stat __P((DB_ENV *, DB_LOG_STAT **));
  */
 int
-log_stat(dbenv, statp, db_malloc)
+log_stat(dbenv, statp)
 	DB_ENV *dbenv;
 	DB_LOG_STAT **statp;
-	void *(*db_malloc) __P((size_t));
 {
 	DB_LOG *dblp;
 	DB_LOG_STAT *stats;
@@ -597,19 +622,18 @@ log_stat(dbenv, statp, db_malloc)
 
 #ifdef HAVE_RPC
 	if (F_ISSET(dbenv, DB_ENV_RPCCLIENT))
-		return (__dbcl_log_stat(dbenv, statp, db_malloc));
+		return (__dbcl_log_stat(dbenv, statp));
 #endif
 
 	PANIC_CHECK(dbenv);
-	ENV_REQUIRES_CONFIG(dbenv, dbenv->lg_handle, DB_INIT_LOG);
+	ENV_REQUIRES_CONFIG(dbenv, dbenv->lg_handle, "log_stat", DB_INIT_LOG);
 
 	*statp = NULL;
 
 	dblp = dbenv->lg_handle;
 	region = dblp->reginfo.primary;
 
-	if ((ret = __os_malloc(dbenv,
-	    sizeof(DB_LOG_STAT), db_malloc, &stats)) != 0)
+	if ((ret = __os_umalloc(dbenv, sizeof(DB_LOG_STAT), &stats)) != 0)
 		return (ret);
 
 	/* Copy out the global statistics. */
@@ -654,4 +678,47 @@ __log_lastckp(dbenv, lsnp)
 
 	*lsnp = lp->chkpt_lsn;
 	return (0);
+}
+
+/*
+ * __log_region_size --
+ *	Return the amount of space needed for the log region.
+ *	Make the region large enough to hold txn_max transaction
+ *	detail structures  plus some space to hold thread handles
+ *	and the beginning of the shalloc region and anything we
+ *	need for mutex system resource recording.
+ */
+static size_t
+__log_region_size(dbenv)
+	DB_ENV *dbenv;
+{
+	size_t s;
+
+	s = dbenv->lg_regionmax + dbenv->lg_bsize;
+#ifdef MUTEX_SYSTEM_RESOURCES
+	if (F_ISSET(dbenv, DB_ENV_THREAD))
+		s += sizeof(REGMAINT) + LG_MAINT_SIZE;
+#endif
+	return (s);
+}
+
+/*
+ * __log_region_destroy
+ *	Destroy any region maintenance info.
+ *
+ * PUBLIC: void __log_region_destroy __P((DB_ENV *, REGINFO *));
+ */
+void
+__log_region_destroy(dbenv, infop)
+	DB_ENV *dbenv;
+	REGINFO *infop;
+{
+	LOG *region;
+
+	COMPQUIET(dbenv, NULL);
+	region = R_ADDR(infop, infop->rp->primary);
+
+	__db_shlocks_destroy(infop,
+	    (REGMAINT *)R_ADDR(infop, region->maint_off));
+	return;
 }
