@@ -1,0 +1,120 @@
+#!/usr/bin/perl
+
+# a simple makedepends like script for perl.
+
+# I plan to rewrite this in C so that perl is not required by RPM at
+# build time.
+
+# by Ken Estes Mail.com kestes@staff.mail.com
+
+# it would be much better if perl could tell us the dependencies of a
+# given script.
+
+if ("@ARGV") {
+  foreach (@ARGV) {
+    process_file($_);
+  }
+} else {
+  
+  # notice we are passed a list of filenames NOT as common in unix the
+  # contents of the file.
+  
+  foreach (<>) {
+    process_file($_);
+  }
+}
+
+
+foreach $module (sort keys %require) {
+  if (length($require{$module}) == 0) {
+    print "perl($module)\n";
+  } else {
+
+    print "perl($module)>=$require{$module}\n";
+
+    # we need to print it without the version number until the
+    # requires syntax accepts version numbers correctly.
+
+    print "perl($module)\n";
+  }
+}
+
+exit 0;
+
+
+
+sub process_file {
+  
+  my ($file) = @_;
+  chomp $file;
+  
+  open(FILE, "<$file")||
+    die("Could not open file: '$file' : $!\n");
+  
+  while (<FILE>) {
+    
+    # skip the documentation
+    if ( (m/^=(head1|head2|pod)/) .. (m/^=(cut)/) ) {
+      next;
+    }
+
+    # skip the data section
+    if (m/^__(DATA|END)__$/) {
+      last;
+    }
+
+    if ( 
+
+# ouch could be in a eval, perhaps we do not want these since we catch
+# an exception they must not be required
+
+#   eval { require Term::ReadLine } or die $@;
+#   eval "require Term::Rendezvous;" or die $@;
+#   eval { require Carp } if defined $^S; # If error/warning during compilation,
+
+
+	(m/^\s*         # we hope the inclusion starts the line
+	 (do|require|use)\s+(?!\{)     # do not want 'do {' loops
+	 # quotes around name are always legal
+	 [\'\"]?([^\;\ \'\"\t]*)[\'\"]?[\t\;\ ]
+	 # the syntax for 'use' allows version requirements
+	 \s*([.0-9]*)
+	 /x)
+       ) {
+      my ($module, $version) = ($2,$3);
+
+      # if there is some interpolation of variables just skip this
+      # dependency, we do not want
+      #        do "$ENV{LOGDIR}/$rcfile";
+   
+      ($module =~ m/\$/) && next;
+
+      # if the module ends in a comma we probaly caught some
+      # documentation of the form 'check stuff,\n do stuff, clean
+      # stuff.' there are several of these in the perl distribution
+
+      ($module  =~ m/[,>]$/) && next;
+
+      # ph files do not use the package name inside the file.
+      # perlmodlib  documentation says:
+      
+      #       the .ph files made by h2ph will probably end up as
+      #       extension modules made by h2xs.
+      
+      # so do not expend much effort on these.
+
+
+      # there is no easy way to find out if a file named systeminfo.ph
+      # will be included with the name sys/systeminfo.ph so only use the
+      # basename of *.ph files
+
+      ($module  =~ m/\.ph$/) && ($module =~ s!.*/!!g );
+
+
+      $require{$module}=$version;
+      $line{$module}=$_;
+    }
+    
+  }
+ 
+}

@@ -19,7 +19,8 @@ mylibs=	$(top_builddir)/build/librpmbuild.la \
 
 LDADD = $(top_builddir)/lib/librpm.la
 
-noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
+noinst_PROGRAMS = \
+	rpmlead rpmheader rpmarchive rpmsignature dump dumpdb javadeps
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = rpmgettext rpmputtext

@@ -1,0 +1,112 @@
+#!/usr/bin/perl
+
+# a simple script to print the proper name for perl libraries.
+
+# I plan to rewrite this in C so that perl is not required by RPM at
+# build time.
+
+# by Ken Estes Mail.com kestes@staff.mail.com
+
+# it would be much better if perl could tell us the proper name of a
+# given script.
+
+
+if ("@ARGV") {
+  foreach (@ARGV) {
+    process_file($_);
+  }
+} else {
+
+  # notice we are passed a list of filenames NOT as common in unix the
+  # contents of the file.
+
+  foreach (<>) {
+    process_file($_);
+  }
+}
+
+
+foreach $module (sort keys %require) {
+  if (length($require{$module}) == 0) {
+    print "perl($module)\n";
+  } else {
+    print "perl($module)=$require{$module}\n";
+
+    # we need to print it without the version number until the
+    # requires syntax accepts version numbers correctly.
+
+    print "perl($module)\n";
+  }
+}
+
+exit 0;
+
+
+
+sub process_file {
+
+  my ($file) = @_;
+  chomp $file;
+  
+  open(FILE, "<$file")||
+    die("Could not open file: '$file' : $!\n");
+
+  my ($package, $version) = ();
+
+  while (<FILE>) {
+    
+    # skip the documentation
+    if ( (m/^=(head1|head2|pod)/) .. (m/^=(cut)/) ) {
+      next;
+    }
+    
+    # skip the data section
+    if (m/^__(DATA|END)__$/) {
+      last;
+    }
+
+    # not everyone puts the package name of the file as the first
+    # package name so we report all namespaces as if they were
+    # provided packages (really ugly).
+
+    if (m/^\s*package\s+([_:a-zA-Z0-9]+)\s*;/) {
+      $package=$1;
+      undef $version;
+      $require{$package}=undef;
+    }
+
+    # after we found the package name take the first assignment to
+    # $VERSION as the version number. Exporter requires that the
+    # variable be called VERSION so we are safe.
+
+    # here are examples of VERSION lines from the perl distribution
+
+    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.1 $, 10;
+    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.1 $)[1];
+    #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
+
+    if ( 
+	($package) && 
+	(m/^\s*\$VERSION\s+=\s+/)
+       ) {
+
+      # first see if the version string contains the string
+      # '$Revision' this often causes bizzare strings and is the most
+      # common method of non static numbering.
+
+      if (m/(\$Revision: (\d+[.0-9]+))/) {
+	$version= $2; 
+      } elsif (m/[\'\"]?(\d+[.0-9]+)[\'\"]?/) {
+	
+	# look for a static number hard coded in the script
+	
+	$version= $1; 
+      }
+      $require{$package}=$version;
+    }
+    
+  }
+
+  return ;
+}
