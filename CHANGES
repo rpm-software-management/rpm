@@ -2,6 +2,7 @@
 	- had some wrong month lengths in changelog date parsing
 	- updated fine-requires (Linux version) to add lines for shell
 	  scripts (Donnie Barnes)
+	- didn't package / properly
 
 2.4.5 -> 2.4.6:
 	- added os_canon entries for BSD/OS and NextStep

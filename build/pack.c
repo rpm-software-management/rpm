@@ -219,9 +219,17 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     numMappings = 0;
     while (chptr && *chptr) {
 	cpioList[numMappings].fsPath = chptr;
-	cpioList[numMappings++].mapFlags = tempdir ? CPIO_FOLLOW_SYMLINKS : 0;
+	cpioList[numMappings].mapFlags = tempdir ? CPIO_FOLLOW_SYMLINKS : 0;
+
 	chptr = strchr(chptr, '\n');
 	if (chptr) *chptr++ = '\0';
+
+	/* hack */
+	if (!strlen(cpioList[numMappings].fsPath)) {
+	    cpioList[numMappings].fsPath = ".";
+	}
+
+	numMappings++;
     }
  
     oldhandler = signal(SIGPIPE, SIG_IGN);
