@@ -14,6 +14,8 @@
 static int gitag = RPMGI_FTSWALK;
 static int ftsOpts = 0;
 
+static const char * queryFormat = NULL;
+
 static struct poptOption optionsTable[] = {
  { "rpmgidebug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgi_debug, -1,
 	N_("debug generalized iterator"), NULL},
@@ -26,6 +28,11 @@ static struct poptOption optionsTable[] = {
 	N_("iterate arglist"), NULL },
  { "ftswalk", '\0', POPT_ARG_VAL, &gitag, RPMGI_FTSWALK,
 	N_("iterate fts(3) walk"), NULL },
+
+ { "qf", '\0', POPT_ARG_STRING, &queryFormat, 0,
+        N_("use the following query format"), "QUERYFORMAT" },
+ { "queryformat", '\0', POPT_ARG_STRING, &queryFormat, 0,
+        N_("use the following query format"), "QUERYFORMAT" },
 
  { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, FTS_COMFOLLOW,
 	N_("follow command line symlinks"), NULL },
@@ -43,16 +50,6 @@ static struct poptOption optionsTable[] = {
 	N_("don't cross devices"), NULL },
  { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
 	N_("return whiteout information"), NULL },
-
-#ifdef DYING
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
- { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
-#endif
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
         N_("Common options for all rpm modes and executables:"),
@@ -84,6 +81,7 @@ main(int argc, char *const argv[])
     ts = rpmtsCreate();
     av = poptGetArgs(optCon);
     gi = rpmgiNew(ts, gitag, av, ftsOpts);
+    (void) rpmgiSetQueryFormat(gi, queryFormat);
 
     ac = 0;
     while ((arg = rpmgiNext(gi)) != NULL) {

@@ -34,16 +34,24 @@ typedef enum rpmgiTag_e {
 /** \ingroup rpmio
  */
 struct rpmgi_s {
+/*@refcounted@*/
     rpmts ts;
     int tag;
     int i;
 
+/*@dependent@*/
     rpmdbMatchIterator mi;
 
+/*@only@*/
+    const char * queryFormat;
+
+/*@dependent@*/
     char *const * argv;
     int argc;
     int ftsOpts;
+/*@dependent@*/
     FTS * ftsp;
+/*@dependent@*/
     FTSENT * fts;
 
 /*@refs@*/
@@ -111,6 +119,9 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 
 const char * rpmgiNext(/*@null@*/ rpmgi gi)
         /*@modifies gi @*/;
+
+int rpmgiSetQueryFormat(rpmgi gi, const char * queryFormat)
+	/*@modifies gi @*/;
 
 #ifdef __cplusplus
 }

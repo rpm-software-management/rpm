@@ -61,6 +61,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
 	break;
     }
 
+    gi->queryFormat = _free(gi->queryFormat);
     if (gi->ftsp != NULL) {
 	int xx;
 	xx = Fts_close(gi->ftsp);
@@ -146,6 +147,29 @@ static const char * ftsInfoStr(int fts_info) {
     return ftsInfoStrings[ fts_info ];
 }
 
+/*@only@*/
+static const char * rpmgiPathOrQF(rpmgi gi, const char * fn,
+		/*@null@*/ Header * hdrp)
+	/*@modifies gi, *hdrp @*/
+{
+    const char * fmt = ((gi->queryFormat != NULL)
+	? gi->queryFormat : "%{name}-%{version}-%{release}");
+    const char * val = NULL;
+    Header h = NULL;
+
+    if (hdrp != NULL && *hdrp != NULL)
+	h = headerLink(*hdrp);
+
+    if (h != NULL)
+	val = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, NULL);
+    else
+	val = xstrdup(fn);
+
+    h = headerFree(h);
+
+    return val;
+}
+
 const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	/*@modifies gi @*/
 {
@@ -158,8 +182,7 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
     case RPMGI_RPMDB:
 	h = rpmdbNextIterator(gi->mi);
 	if (h != NULL) {
-	    const char * fmt = "%{NAME}-%{VERSION}-%{RELEASE}";
-	    val = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, NULL);
+	    val = rpmgiPathOrQF(gi, "rpmdb", &h);
 	} else {
 	    gi->mi = rpmdbFreeIterator(gi->mi);
 	    gi->i = -1;
@@ -171,14 +194,19 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	if (gi->argv != NULL && gi->argv[gi->i] != NULL) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
-	    val = xstrdup(gi->argv[gi->i]);
+	    val = rpmgiPathOrQF(gi, gi->argv[gi->i], NULL);
 	} else
 	    gi->i = -1;
 	break;
     case RPMGI_FTSWALK:
-	if (gi->ftsp == NULL && gi->i == 0)
+	if (gi->argv == NULL)
+	    break;
+	if (gi->ftsp == NULL && gi->i == 0) {
 	    gi->ftsp = Fts_open(gi->argv, gi->ftsOpts, NULL);
+	    /* XXX NULL with open(2)/malloc(3) errno set */
+	}
 
+	if (gi->ftsp != NULL)
 	while (val == NULL && (gi->fts = Fts_read(gi->ftsp)) != NULL) {
 	    FTSENT * fts = gi->fts;
 
@@ -192,7 +220,7 @@ fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 	    case FTS_SL:
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->ftsp, gi->i, fts->fts_path);
-		val = xstrdup(fts->fts_path);
+		val = rpmgiPathOrQF(gi, fts->fts_path, NULL);
 		break;
 	    default:
 		break;
@@ -209,4 +237,17 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->ftsp, gi->i, fts->fts_path);
 
     return val;
 }
+
+int rpmgiSetQueryFormat(rpmgi gi, const char * queryFormat)
+{
+    int rc = 0;
+                                                                                
+    if (gi != NULL) {
+	gi->queryFormat = _free(gi->queryFormat);
+        gi->queryFormat = xstrdup(queryFormat);
+    }
+    return rc;
+
+}
+
 /*@=modfilesys@*/
