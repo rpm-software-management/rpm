@@ -19,11 +19,12 @@
 #include <fcntl.h>
 #include <strings.h>
 
-#include "signature.h"
 #include "md5.h"
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "rpmerr.h"
+#include "signature.h"
+#include "tread.h"
 
 typedef int (*md5func)(char * fn, unsigned char * digest);
 
@@ -77,7 +78,7 @@ int readSignature(int fd, Header *header, short sig_type)
       case RPMSIG_PGP262_1024:
 	message(MESS_DEBUG, "Old PGP signature\n");
 	/* These are always 256 bytes */
-	if (read(fd, buf, 256) != 256) {
+	if (timedRead(fd, buf, 256) != 256) {
 	    return 1;
 	}
 	if (header) {
@@ -111,7 +112,7 @@ int readSignature(int fd, Header *header, short sig_type)
 	    return 1;
 	}
 	if (pad) {
-	    if (read(fd, buf, pad) != pad) {
+	    if (timedRead(fd, buf, pad) != pad) {
 		freeHeader(h);
 		return 1;
 	    }
@@ -238,7 +239,7 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
     *sig = malloc(*size);
     
     fd = open(sigfile, O_RDONLY);
-    if (read(fd, *sig, *size) != *size) {
+    if (timedRead(fd, *sig, *size) != *size) {
 	unlink(sigfile);
 	close(fd);
 	free(*sig);
@@ -259,13 +260,19 @@ static int checkSize(int fd, int size, int sigsize)
     struct stat statbuf;
 
     fstat(fd, &statbuf);
-    headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;
 
-    message(MESS_DEBUG, "sigsize         : %d\n", sigsize);
-    message(MESS_DEBUG, "Header + Archive: %d\n", headerArchiveSize);
-    message(MESS_DEBUG, "expected size   : %d\n", size);
+    if (S_ISREG(statbuf.st_mode)) {
+	headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;
 
-    return size - headerArchiveSize;
+	message(MESS_DEBUG, "sigsize         : %d\n", sigsize);
+	message(MESS_DEBUG, "Header + Archive: %d\n", headerArchiveSize);
+	message(MESS_DEBUG, "expected size   : %d\n", size);
+
+	return size - headerArchiveSize;
+    } else {
+	message(MESS_DEBUG, "file is not regular -- skipping size check\n");
+	return 0;
+    }
 }
 
 int verifySignature(char *file, int_32 sigTag, void *sig, int count,

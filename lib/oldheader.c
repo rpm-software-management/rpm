@@ -11,6 +11,7 @@
 #include "oldheader.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
+#include "tread.h"
 
 /* This *can't* read 1.0 headers -- it needs 1.1 (w/ group and icon fields)
    or better. I'd be surprised if any 1.0 headers are left anywhere anyway.
@@ -42,7 +43,7 @@ char * oldhdrReadFromStream(int fd, struct oldrpmHeader * header) {
     unsigned int archiveOffset;
     unsigned int groupLength;
 
-    if (read(fd, &lit, sizeof(lit)) != sizeof(lit)) {
+    if (timedRead(fd, &lit, sizeof(lit)) != sizeof(lit)) {
 	return strerror(errno);
     }
 
@@ -86,7 +87,7 @@ char * oldhdrReadFromStream(int fd, struct oldrpmHeader * header) {
 	    return "out of memory";
 	}
 
-	if (read(fd, header->group, groupLength) != groupLength) {
+	if (timedRead(fd, header->group, groupLength) != groupLength) {
 	    oldhdrFree(header);
 	    return strerror(errno);
 	}
@@ -104,7 +105,8 @@ char * oldhdrReadFromStream(int fd, struct oldrpmHeader * header) {
 	    free(header->icon);
 	    return "out of memory";
 	}
-	if (read(fd, header->icon, header->iconLength) != header->iconLength) {
+	if (timedRead(fd, header->icon, header->iconLength) != 
+			header->iconLength) {
 	    oldhdrFree(header);
 	    return strerror(errno);
 	}
@@ -114,21 +116,21 @@ char * oldhdrReadFromStream(int fd, struct oldrpmHeader * header) {
     }
 
     while (bytesRead < specOffset) {
-	if (read(fd, &ch, 1) != 1) {
+	if (timedRead(fd, &ch, 1) != 1) {
 	    oldhdrFree(header);
 	    return strerror(errno);
 	}
 	bytesRead++;
     }
 
-    if (read(fd, header->spec, header->specLength) != header->specLength) {
+    if (timedRead(fd, header->spec, header->specLength) != header->specLength) {
 	oldhdrFree(header);
 	return strerror(errno);
     }
     bytesRead += header->specLength;
 
     while (bytesRead < archiveOffset) {
-	if (read(fd, &ch, 1) != 1) {
+	if (timedRead(fd, &ch, 1) != 1) {
 	    oldhdrFree(header);
 	    return strerror(errno);
 	}

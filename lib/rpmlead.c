@@ -11,6 +11,7 @@
 
 #include "rpmerr.h"
 #include "rpmlead.h"
+#include "tread.h"
 
 /* The lead needs to be 8 byte aligned */
 
@@ -37,7 +38,7 @@ int writeLead(int fd, struct rpmlead *lead)
 
 int readLead(int fd, struct rpmlead *lead)
 {
-    if (read(fd, lead, sizeof(*lead)) != sizeof(*lead)) {
+    if (timedRead(fd, lead, sizeof(*lead)) != sizeof(*lead)) {
 	error(RPMERR_READERROR, "read failed: %s (%d)", strerror(errno), 
 	      errno);
 	return 1;
