@@ -6,8 +6,8 @@
 #include <libintl.h>
 #define _(String) gettext((String))
 #else
-void bindtextdomain(const char * package, const char * dir);
-void textdomain(const char * package);
+#define bindtextdomain(foo, bar)
+#define textdomain(foo)
 #define _(String) (String)
 #endif
 
