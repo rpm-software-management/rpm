@@ -185,7 +185,7 @@ static int dbSaveInt(const struct dbOption * opt, long aLong) {
 	break;
     default:
 	return POPT_ERROR_BADOPERATION;
-	break;
+	/*@notreached@*/ break;
     }
     return 0;
 }
@@ -364,7 +364,7 @@ static const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
     if (dbflags) {
 	if (oe != buf)
 	    *oe++ = ':';
-	    sprintf(oe, "0x%x", dbflags);
+	    sprintf(oe, "0x%x", (unsigned)dbflags);
     }
     return buf;
 }
