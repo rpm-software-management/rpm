@@ -1,11 +1,10 @@
+#include <netinet/in.h>
 #include <alloca.h>
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/protocols.h>
 #include <pwd.h>
 #include <stdarg.h>
 #include <stdio.h>
