@@ -34,6 +34,7 @@ static int read_line(FILE *f, char *line);
 static int match_arch(char *s);
 static int match_os(char *s);
 static void free_packagerec(struct PackageRec *p);
+static void generateNames(Spec s);
 static void reset_spec(void);
 static int find_preamble_line(char *line, char **s);
 static int check_part(char *line, char **s);
@@ -234,7 +235,6 @@ void freeSpec(Spec s)
 
 int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
 {
-    char buf[1024];
     struct PackageRec *package;
     struct PackageRec **ppp;
 
@@ -282,15 +282,12 @@ int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
 
     /* Create it */
     package = new_packagerec();
-    if (flags & LP_SUBNAME) {
-	package->subname = strdup(name);
-	sprintf(buf, "%s-%s", s->name, name);
-    } else if (flags & LP_NEWNAME) {
-	package->newname = strdup(name);
-	sprintf(buf, "%s", name);
-    }
     if (name) {
-	addEntry(package->header, RPMTAG_NAME, STRING_TYPE, buf, 1);
+	if (flags & LP_SUBNAME) {
+	    package->subname = strdup(name);
+	} else if (flags & LP_NEWNAME) {
+	    package->newname = strdup(name);
+	}
     }
 
     /* Link it in to the spec */
@@ -302,6 +299,27 @@ int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
 
     *pr = package;
     return 1;
+}
+
+static void generateNames(Spec s)
+{
+    struct PackageRec *package;
+    char buf[1024];
+
+    package = s->packages;
+    while (package) {
+	if (package->subname) {
+	    sprintf(buf, "%s-%s", s->name, package->subname);
+	    addEntry(package->header, RPMTAG_NAME, STRING_TYPE, buf, 1);
+	} else if (package->newname) {
+	    addEntry(package->header, RPMTAG_NAME, STRING_TYPE,
+		     package->newname, 1);
+	} else {
+	    /* Must be the main package */
+	    addEntry(package->header, RPMTAG_NAME, STRING_TYPE, s->name, 1);
+	}
+	package = package->next;
+    }
 }
 
 /**********************************************************************/
@@ -706,6 +724,9 @@ Spec parseSpec(FILE *f, char *specfile)
 		    if (!spec->name) {
 			spec->name = strdup(s);
 		    }
+		    /* The NAME entries must be generated after */
+		    /* the whole spec file is parsed.           */
+		    break;
 		  case RPMTAG_VERSION:
 		  case RPMTAG_RELEASE:
 		  case RPMTAG_SUMMARY:
@@ -793,6 +814,7 @@ Spec parseSpec(FILE *f, char *specfile)
 	return NULL;
     }
 
+    generateNames(spec);
     return spec;
 }
 
