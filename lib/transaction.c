@@ -465,7 +465,7 @@ static Header relocateFileList(struct availablePackage * alp,
 			(void **) &validRelocations, &numValid))
 	numValid = 0;
 
-    for (i = 0; rawRelocations[i].newPath; i++) ;
+    for (i = 0; rawRelocations[i].newPath || rawRelocations[i].oldPath; i++) ;
     numRelocations = i;
     relocations = alloca(sizeof(*relocations) * numRelocations);
 
@@ -492,12 +492,14 @@ static Header relocateFileList(struct availablePackage * alp,
 	    relocations[i].newPath = NULL;
 	}
 
-	for (j = 0; j < numValid; j++) 
-	    if (!strcmp(validRelocations[j],
-			relocations[i].oldPath)) break;
-	if (j == numValid)
-	    psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h, 
-		     relocations[i].oldPath, NULL);
+	if (relocations[i].newPath) {
+	    for (j = 0; j < numValid; j++) 
+		if (!strcmp(validRelocations[j],
+			    relocations[i].oldPath)) break;
+	    if (j == numValid)
+		psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h, 
+			 relocations[i].oldPath, NULL);
+	}
     }
 
     /* stupid bubble sort, but it's probably faster here */
@@ -543,22 +545,24 @@ static Header relocateFileList(struct availablePackage * alp,
        precedence over /usr ones */
     nextReloc = relocations + numRelocations - 1;
     len = strlen(nextReloc->oldPath);
-    newLen = strlen(nextReloc->newPath);
+    newLen = nextReloc->newPath ? strlen(nextReloc->newPath) : 0;
     for (i = fileCount - 1; i >= 0 && nextReloc; i--) {
 	do {
-	    rc = strncmp(nextReloc->oldPath, names[i], len);
-	    if (rc > 0) {
+	    rc = (!strncmp(nextReloc->oldPath, names[i], len) && 
+		    (names[i][len] == '/'));
+	    if (!rc) {
 		if (nextReloc == relocations) {
 		    nextReloc = 0;
 		} else {
 		    nextReloc--;
 		    len = strlen(nextReloc->oldPath);
-		    newLen = strlen(nextReloc->newPath);
+		    newLen = nextReloc->newPath ? 
+				strlen(nextReloc->newPath) : 0;
 		}
 	    }
-	} while (rc > 0 && nextReloc);
+	} while (!rc && nextReloc);
 
-	if (!rc) {
+	if (rc) {
 	    if (nextReloc->newPath) {
 		newName = alloca(newLen + strlen(names[i]) + 1);
 		strcpy(newName, nextReloc->newPath);
@@ -568,13 +572,14 @@ static Header relocateFileList(struct availablePackage * alp,
 		names[i] = newName;
 		relocated = 1;
 	    } else if (actions) {
-		actions[i] = SKIP;
+		actions[i] = SKIPNSTATE;
+		rpmMessage(RPMMESS_DEBUG, _("excluding %s\n"), names[i]);
 	    }
 	} 
     }
 
     if (relocated) {
-	headerGetEntry(h, RPMTAG_FILENAMES, NULL, &origNames, NULL);
+	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &origNames, NULL);
 	headerAddEntry(h, RPMTAG_ORIGFILENAMES, RPM_STRING_ARRAY_TYPE, 
 			  origNames, fileCount);
 	free(origNames);
@@ -928,7 +933,7 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	} else if (fi->type == REMOVED && otherPkgNum >= 0) {
 	    fi->actions[i] = SKIP;
 	} else if (fi->type == REMOVED) {
-	    if (fi->actions[i] != SKIP && 
+	    if (fi->actions[i] != SKIP && fi->actions[i] != SKIPNSTATE &&
 			fi->fstates[i] == RPMFILE_STATE_NORMAL ) {
 		if (S_ISREG(fi->fmodes[i]) && 
 			    (fi->fflags[i] & RPMFILE_CONFIG)) {
