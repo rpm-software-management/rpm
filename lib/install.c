@@ -362,7 +362,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		newpath = malloc(strlen(prefixedFileList[i]) + 20);
 		strcpy(newpath, prefixedFileList[i]);
 		strcat(newpath, ext);
-		error(RPMMESS_BACKUP, "%s saved as %s\n", 
+		error(RPMMESS_BACKUP, "warning: %s saved as %s\n", 
 			prefixedFileList[i], newpath);
 
 		if (rename(prefixedFileList[i], newpath)) {
