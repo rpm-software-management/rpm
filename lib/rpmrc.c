@@ -894,7 +894,7 @@ exit:
 /*
  * Generic CPUID function
  */
-static inline void cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
+static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx)
 	/*@modifies *eax, *ebx, *ecx, *edx @*/
 {
 #ifdef	__LCLINT__
@@ -1000,8 +1000,8 @@ static inline int RPMClass(void)
 	if (cpuid_eax(0x000000000)==0)
 		return 4;
 
-	cpuid(0x000000001, &tfms, &junk, &junk, &cap);
-	cpuid(0x800000001, &junk, &junk, &junk, &capamd);
+	cpuid(0x00000001, &tfms, &junk, &junk, &cap);
+	cpuid(0x80000001, &junk, &junk, &junk, &capamd);
 	
 	cpu = (tfms>>8)&15;
 	
