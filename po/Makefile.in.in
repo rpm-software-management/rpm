@@ -26,7 +26,7 @@ subdir = po
 
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
-MKINSTALLDIRS = @MKINSTALLDIRS@
+MKINSTALLDIRS = $(top_srcdir)/@MKINSTALLDIRS@
 
 CC = @CC@
 GENCAT = @GENCAT@
@@ -84,7 +84,7 @@ all-no:
 
 $(srcdir)/$(PACKAGE).pot: $(POTFILES)
 	$(XGETTEXT) --default-domain=$(PACKAGE) --directory=$(top_srcdir) \
-	  --add-comments --keyword=_ --keyword=N_ \
+	  --add-comments --keyword=_ --keyword=N_ --keyword=RPM_ \
 	  --files-from=$(srcdir)/POTFILES.in \
 	&& test ! -f $(PACKAGE).po \
 	   || ( rm -f $(srcdir)/$(PACKAGE).pot \
@@ -207,7 +207,7 @@ dist distdir: update-po $(DISTFILES)
 
 update-po: Makefile
 	$(MAKE) $(PACKAGE).pot
-	PATH=`pwd`/../src:$$PATH; \
+	PATH=`pwd`/../intl:$$PATH; \
 	cd $(srcdir); \
 	catalogs='$(CATALOGS)'; \
 	for cat in $$catalogs; do \
@@ -227,8 +227,8 @@ update-po: Makefile
 refresh-po: Makefile
 	catalogs='$(CATALOGS)'; \
 	for cat in $$catalogs; do \
-		lang=`echo $$cat | sed 's/.mo//'`; \
-		if $(MSGMERGE) $$lang.po $(NLSPACKAGE).pot > $$lang.pot ; then \
+		lang=`echo $$cat | sed 's/\$(CATOBJEXT)$$//'`; \
+		if $(MSGMERGE) $$lang.po $(PACKAGE).pot > $$lang.pot ; then \
 			echo "$(MSGMERGE) of $$lang succeeded" ; \
 			mv -f $$lang.pot $$lang.po ; \
 		else \
