@@ -1,22 +1,22 @@
 /*
  * Perl interface to rpmlib
  *
- * $Id: rpm.xs,v 1.4 1999/07/16 08:44:54 gafton Exp $
+ * $Id: rpm.xs,v 1.5 2000/02/10 22:13:48 jbj Exp $
  */
 
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
 
-#include <rpm/rpmio.h>
-#include <rpm/dbindex.h>
-#include <rpm/header.h>
-#include <popt.h>
-#include <rpm/rpmlib.h>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+#include "rpmlib.h"
+#include "rpmio.h"
+#include "dbindex.h"
+#include "header.h"
+#include "popt.h"
 
 /*
  * External functions

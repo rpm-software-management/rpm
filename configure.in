@@ -906,7 +906,7 @@ AC_OUTPUT([Doxyfile Makefile rpmrc macros lib/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile
 	doc/Makefile doc/manual/Makefile
 	doc/ja/Makefile doc/pl/Makefile doc/ru/Makefile
-	python/Makefile],
+	python/Makefile perl/Makefile perl/Makefile.PL],
 	[echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in])
 dnl	touch Makefile.in
