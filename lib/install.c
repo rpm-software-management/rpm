@@ -272,7 +272,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
-
     rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s files test = %d\n"), 
 		name, version, release, flags & RPMTRANS_FLAG_TEST);
 
@@ -282,6 +281,11 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
  	scriptArg = 1;
     } else {
 	scriptArg = dbiIndexSetCount(matches) + 1;
+	dbiFreeIndexRecord(matches);
+    }
+
+    if (!rpmdbFindByHeader(db, h, &matches)) {
+	otherOffset = matches.recs[0].recOffset;
 	dbiFreeIndexRecord(matches);
     }
 
