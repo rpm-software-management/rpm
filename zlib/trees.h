@@ -1,4 +1,7 @@
-/* header created automatically with -DGEN_TREES_H */
+/**
+ * \file trees.h
+ * Header created automatically with -DGEN_TREES_H
+ */
 
 local const ct_data static_ltree[L_CODES+2] = {
 {{ 12},{  8}}, {{140},{  8}}, {{ 76},{  8}}, {{204},{  8}}, {{ 44},{  8}},

@@ -1,6 +1,11 @@
-/* inffast.c -- process literals and length/distance pairs fast
+/*
  * Copyright (C) 1995-1998 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
+ */
+
+/**
+ * \file inffast.c
+ * Process literals and length/distance pairs fast.
  */
 
 #include "zutil.h"

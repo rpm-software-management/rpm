@@ -1,3 +1,7 @@
+/**
+ * \file crc32.h
+ */
+
 #define partial_crc32		__z_partial_crc32
 #define partial_crc32_copy	__z_partial_crc32_copy
 

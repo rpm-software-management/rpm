@@ -1,11 +1,14 @@
-/* gzio.c -- IO on .gz files
+/* @(#) $Id: gzio.c,v 1.5 2001/12/06 18:35:38 jbj Exp $ */
+/*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
- *
- * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
 
-/* @(#) $Id: gzio.c,v 1.4 2001/11/22 21:12:46 jbj Exp $ */
+/**
+ * \file gzio.c
+ * I/O on .gz files.
+ * Compile this file with -DNO_DEFLATE to avoid the compression code.
+ */
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -36,29 +39,29 @@ static int z_bufsize = Z_BUFSIZE;
 #define ALLOC(size) malloc(size)
 #define TRYFREE(p) {if (p) free(p);}
 
-static int gz_magic[2] = {0x1f, 0x8b}; /* gzip magic header */
+static int gz_magic[2] = {0x1f, 0x8b}; /*!< gzip magic header */
 
 /* gzip flag byte */
-#define ASCII_FLAG   0x01 /* bit 0 set: file probably ascii text */
-#define HEAD_CRC     0x02 /* bit 1 set: header CRC present */
-#define EXTRA_FIELD  0x04 /* bit 2 set: extra field present */
-#define ORIG_NAME    0x08 /* bit 3 set: original file name present */
-#define COMMENT      0x10 /* bit 4 set: file comment present */
-#define RESERVED     0xE0 /* bits 5..7: reserved */
+#define ASCII_FLAG   0x01 /*!< bit 0 set: file probably ascii text */
+#define HEAD_CRC     0x02 /*!< bit 1 set: header CRC present */
+#define EXTRA_FIELD  0x04 /*!< bit 2 set: extra field present */
+#define ORIG_NAME    0x08 /*!< bit 3 set: original file name present */
+#define COMMENT      0x10 /*!< bit 4 set: file comment present */
+#define RESERVED     0xE0 /*!< bits 5..7: reserved */
 
 typedef struct gz_stream {
     z_stream stream;
-    int      z_err;   /* error code for last stream operation */
-    int      z_eof;   /* set if end of input file */
-    FILE     *file;   /* .gz file */
-    Byte     *inbuf;  /* input buffer */
-    Byte     *outbuf; /* output buffer */
-    char     *msg;    /* error message */
-    char     *path;   /* path name for debugging only */
-    int      transparent; /* 1 if input file is not a .gz file */
-    char     mode;    /* 'w' or 'r' */
+    int      z_err;   /*!< error code for last stream operation */
+    int      z_eof;   /*!< set if end of input file */
+    FILE     *file;   /*!< .gz file */
+    Byte     *inbuf;  /*!< input buffer */
+    Byte     *outbuf; /*!< output buffer */
+    char     *msg;    /*!< error message */
+    char     *path;   /*!< path name for debugging only */
+    int      transparent; /*!< 1 if input file is not a .gz file */
+    char     mode;    /*!< 'w' or 'r' */
     char     mmap_mode;
-    long     startpos; /* start of compressed data in file (header skipped) */
+    long     startpos; /*!< start of compressed data in file (header skipped) */
     off_t    mmap_pos;
     off_t    mmap_end;
     int      fd;
@@ -87,15 +90,16 @@ local uLong  getLong      OF((gz_stream *s))
 	/*@globals fileSystem@*/
 	/*@modifies s, fileSystem @*/;
 
-/* ===========================================================================
-     Opens a gzip (.gz) file for reading or writing. The mode parameter
-   is as in fopen ("rb" or "wb"). The file is given either by file descriptor
-   or path name (if fd == -1).
-     gz_open return NULL if the file could not be opened or if there was
-   insufficient memory to allocate the (de)compression state; errno
-   can be checked to distinguish the two cases (if errno is zero, the
-   zlib error is Z_MEM_ERROR).
-*/
+/* ========================================================================= */
+/**
+ * Opens a gzip (.gz) file for reading or writing. The mode parameter
+ * is as in fopen ("rb" or "wb"). The file is given either by file descriptor
+ * or path name (if fd == -1).
+ * gz_open return NULL if the file could not be opened or if there was
+ * insufficient memory to allocate the (de)compression state; errno
+ * can be checked to distinguish the two cases (if errno is zero, the
+ * zlib error is Z_MEM_ERROR).
+ */
 local gzFile gz_open (const char *path, const char *mode, int fd)
 {
     int err;
@@ -240,18 +244,20 @@ local gzFile gz_open (const char *path, const char *mode, int fd)
     return (gzFile)s;
 }
 
-/* ===========================================================================
-     Opens a gzip (.gz) file for reading or writing.
-*/
+/* ========================================================================= */
+/**
+ * Opens a gzip (.gz) file for reading or writing.
+ */
 gzFile ZEXPORT gzopen (const char *path, const char *mode)
 {
     return gz_open (path, mode, -1);
 }
 
-/* ===========================================================================
-     Associate a gzFile with the file descriptor fd. fd is not dup'ed here
-   to mimic the behavio(u)r of fdopen.
-*/
+/* ========================================================================= */
+/**
+ * Associate a gzFile with the file descriptor fd. fd is not dup'ed here
+ * to mimic the behavio(u)r of fdopen.
+ */
 gzFile ZEXPORT gzdopen (int fd, const char *mode)
 {
     char name[20];
@@ -262,7 +268,8 @@ gzFile ZEXPORT gzdopen (int fd, const char *mode)
     return gz_open (name, mode, fd);
 }
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Update the compression level and strategy
  */
 int ZEXPORT gzsetparams (gzFile file, int level, int strategy)
@@ -326,11 +333,12 @@ static inline int gz_refill_inbuf(gz_stream *s)
 	return 0;
 }
 
-/* ===========================================================================
-     Read a byte from a gz_stream; update next_in and avail_in. Return EOF
-   for end of file.
-   IN assertion: the stream s has been sucessfully opened for reading.
-*/
+/* ========================================================================= */
+/**
+ * Read a byte from a gz_stream; update next_in and avail_in. Return EOF
+ * for end of file.
+ * IN assertion: the stream s has been sucessfully opened for reading.
+ */
 local inline int get_byte(gz_stream *s)
 {
     if (s->z_eof) return EOF;
@@ -343,15 +351,16 @@ local inline int get_byte(gz_stream *s)
     return *(s->stream.next_in)++;
 }
 
-/* ===========================================================================
-      Check the gzip header of a gz_stream opened for reading. Set the stream
-    mode to transparent if the gzip magic header is not present; set s->err
-    to Z_DATA_ERROR if the magic header is present but the rest of the header
-    is incorrect.
-    IN assertion: the stream s has already been created sucessfully;
-       s->stream.avail_in is zero for the first time, but may be non-zero
-       for concatenated .gz files.
-*/
+/* ========================================================================= */
+/**
+ * Check the gzip header of a gz_stream opened for reading. Set the stream
+ * mode to transparent if the gzip magic header is not present; set s->err
+ * to Z_DATA_ERROR if the magic header is present but the rest of the header
+ * is incorrect.
+ * IN assertion: the stream s has already been created sucessfully;
+ * s->stream.avail_in is zero for the first time, but may be non-zero
+ * for concatenated .gz files.
+ */
 local void check_header(gz_stream *s)
 {
     int method; /* method byte */
@@ -400,9 +409,10 @@ local void check_header(gz_stream *s)
     s->z_err = s->z_eof ? Z_DATA_ERROR : Z_OK;
 }
 
- /* ===========================================================================
+/* ========================================================================= */
+/**
  * Cleanup then free the given gz_stream. Return a zlib error code.
-   Try freeing in the reverse order of allocations.
+ * Try freeing in the reverse order of allocations.
  */
 local int destroy (gz_stream *s)
 {
@@ -446,10 +456,11 @@ local int destroy (gz_stream *s)
     return err;
 }
 
-/* ===========================================================================
-     Reads the given number of uncompressed bytes from the compressed file.
-   gzread returns the number of bytes actually read (0 for end of file).
-*/
+/* ========================================================================= */
+/**
+ * Reads the given number of uncompressed bytes from the compressed file.
+ * gzread returns the number of bytes actually read (0 for end of file).
+ */
 int ZEXPORT gzread (gzFile file, voidp buf, unsigned len)
 {
     gz_stream *s = (gz_stream*)file;
@@ -533,10 +544,11 @@ again:
 }
 
 
-/* ===========================================================================
-      Reads one byte from the compressed file. gzgetc returns this byte
-   or -1 in case of end of file or error.
-*/
+/* ========================================================================= */
+/**
+ * Reads one byte from the compressed file. gzgetc returns this byte
+ * or -1 in case of end of file or error.
+ */
 int ZEXPORT gzgetc(gzFile file)
 {
     unsigned char c;
@@ -545,15 +557,16 @@ int ZEXPORT gzgetc(gzFile file)
 }
 
 
-/* ===========================================================================
-      Reads bytes from the compressed file until len-1 characters are
-   read, or a newline character is read and transferred to buf, or an
-   end-of-file condition is encountered.  The string is then terminated
-   with a null character.
-      gzgets returns buf, or Z_NULL in case of error.
-
-      The current implementation is not optimized at all.
-*/
+/* ========================================================================= */
+/**
+ * Reads bytes from the compressed file until len-1 characters are
+ * read, or a newline character is read and transferred to buf, or an
+ * end-of-file condition is encountered.  The string is then terminated
+ * with a null character.
+ * gzgets returns buf, or Z_NULL in case of error.
+ *
+ * The current implementation is not optimized at all.
+ */
 char * ZEXPORT gzgets(gzFile file, char *buf, int len)
 {
     char *b = buf;
@@ -566,10 +579,11 @@ char * ZEXPORT gzgets(gzFile file, char *buf, int len)
 
 
 #ifndef NO_DEFLATE
-/* ===========================================================================
-     Writes the given number of uncompressed bytes into the compressed file.
-   gzwrite returns the number of bytes actually written (0 in case of error).
-*/
+/* ========================================================================= */
+/**
+ * Writes the given number of uncompressed bytes into the compressed file.
+ * gzwrite returns the number of bytes actually written (0 in case of error).
+ */
 int ZEXPORT gzwrite (gzFile file, const voidp buf, unsigned len)
 {
     gz_stream *s = (gz_stream*)file;
@@ -598,11 +612,12 @@ int ZEXPORT gzwrite (gzFile file, const voidp buf, unsigned len)
     return (int)(len - s->stream.avail_in);
 }
 
-/* ===========================================================================
-     Converts, formats, and writes the args to the compressed file under
-   control of the format string, as in fprintf. gzprintf returns the number of
-   uncompressed bytes actually written (0 in case of error).
-*/
+/* ========================================================================= */
+/**
+ * Converts, formats, and writes the args to the compressed file under
+ * control of the format string, as in fprintf. gzprintf returns the number of
+ * uncompressed bytes actually written (0 in case of error).
+ */
 #ifdef STDC
 #include <stdarg.h>
 
@@ -648,10 +663,11 @@ int ZEXPORTVA gzprintf (gzFile file, const char *format, int a1, int a2, int a3,
 }
 #endif
 
-/* ===========================================================================
-      Writes c, converted to an unsigned char, into the compressed file.
-   gzputc returns the value that was written, or -1 in case of error.
-*/
+/* ========================================================================= */
+/**
+ * Writes c, converted to an unsigned char, into the compressed file.
+ * gzputc returns the value that was written, or -1 in case of error.
+ */
 int ZEXPORT gzputc(gzFile file, int c)
 {
     unsigned char cc = (unsigned char) c; /* required for big endian systems */
@@ -660,21 +676,23 @@ int ZEXPORT gzputc(gzFile file, int c)
 }
 
 
-/* ===========================================================================
-      Writes the given null-terminated string to the compressed file, excluding
-   the terminating null character.
-      gzputs returns the number of characters written, or -1 in case of error.
-*/
+/* ========================================================================= */
+/**
+ * Writes the given null-terminated string to the compressed file, excluding
+ * the terminating null character.
+ * gzputs returns the number of characters written, or -1 in case of error.
+ */
 int ZEXPORT gzputs(gzFile file, const char *s)
 {
     return gzwrite(file, (char*)s, (unsigned)strlen(s));
 }
 
 
-/* ===========================================================================
-     Flushes all pending output into the compressed file. The parameter
-   flush is as in the deflate() function.
-*/
+/* ========================================================================= */
+/**
+ * Flushes all pending output into the compressed file. The parameter
+ * flush is as in the deflate() function.
+ */
 local int do_flush (gzFile file, int flush)
 {
     uInt len;
@@ -723,14 +741,15 @@ int ZEXPORT gzflush (gzFile file, int flush)
 }
 #endif /* NO_DEFLATE */
 
-/* ===========================================================================
-      Sets the starting position for the next gzread or gzwrite on the given
-   compressed file. The offset represents a number of bytes in the
-      gzseek returns the resulting offset location as measured in bytes from
-   the beginning of the uncompressed stream, or -1 in case of error.
-      SEEK_END is not implemented, returns error.
-      In this version of the library, gzseek can be extremely slow.
-*/
+/* ========================================================================= */
+/**
+ * Sets the starting position for the next gzread or gzwrite on the given
+ * compressed file. The offset represents a number of bytes in the
+ * gzseek returns the resulting offset location as measured in bytes from
+ * the beginning of the uncompressed stream, or -1 in case of error.
+ * SEEK_END is not implemented, returns error.
+ * In this version of the library, gzseek can be extremely slow.
+ */
 z_off_t ZEXPORT gzseek (gzFile file, z_off_t offset, int whence)
 {
     gz_stream *s = (gz_stream*)file;
@@ -806,9 +825,10 @@ z_off_t ZEXPORT gzseek (gzFile file, z_off_t offset, int whence)
     return (z_off_t)s->stream.total_out;
 }
 
-/* ===========================================================================
-     Rewinds input file. 
-*/
+/* ========================================================================= */
+/**
+ * Rewinds input file. 
+ */
 int ZEXPORT gzrewind (gzFile file)
 {
     gz_stream *s = (gz_stream*)file;
@@ -831,20 +851,22 @@ int ZEXPORT gzrewind (gzFile file)
     return fseek(s->file, s->startpos, SEEK_SET);
 }
 
-/* ===========================================================================
-     Returns the starting position for the next gzread or gzwrite on the
-   given compressed file. This position represents a number of bytes in the
-   uncompressed data stream.
-*/
+/* ========================================================================= */
+/**
+ * Returns the starting position for the next gzread or gzwrite on the
+ * given compressed file. This position represents a number of bytes in the
+ * uncompressed data stream.
+ */
 z_off_t ZEXPORT gztell (gzFile file)
 {
     return gzseek(file, 0L, SEEK_CUR);
 }
 
-/* ===========================================================================
-     Returns 1 when EOF has previously been detected reading the given
-   input stream, otherwise zero.
-*/
+/* ========================================================================= */
+/**
+ * Returns 1 when EOF has previously been detected reading the given
+ * input stream, otherwise zero.
+ */
 int ZEXPORT gzeof (gzFile file)
 {
     gz_stream *s = (gz_stream*)file;
@@ -852,9 +874,10 @@ int ZEXPORT gzeof (gzFile file)
     return (s == NULL || s->mode != 'r') ? 0 : s->z_eof;
 }
 
-/* ===========================================================================
-   Outputs a long in LSB order to the given file
-*/
+/* ========================================================================= */
+/**
+ * Outputs a long in LSB order to the given file
+ */
 local void putLong (FILE * file, uLong x)
 {
     int n;
@@ -864,10 +887,11 @@ local void putLong (FILE * file, uLong x)
     }
 }
 
-/* ===========================================================================
-   Reads a long in LSB order from the given gz_stream. Sets z_err in case
-   of error.
-*/
+/* ========================================================================= */
+/**
+ * Reads a long in LSB order from the given gz_stream. Sets z_err in case
+ * of error.
+ */
 local uLong getLong (gz_stream *s)
 {
     uLong x = (uLong)get_byte(s);
@@ -881,10 +905,11 @@ local uLong getLong (gz_stream *s)
     return x;
 }
 
-/* ===========================================================================
-     Flushes all pending output if necessary, closes the compressed file
-   and deallocates all the (de)compression state.
-*/
+/* ========================================================================= */
+/**
+ * Flushes all pending output if necessary, closes the compressed file
+ * and deallocates all the (de)compression state.
+ */
 int ZEXPORT gzclose (gzFile file)
 {
     int err;
@@ -906,13 +931,14 @@ int ZEXPORT gzclose (gzFile file)
     return destroy((gz_stream*)file);
 }
 
-/* ===========================================================================
-     Returns the error message for the last error which occured on the
-   given compressed file. errnum is set to zlib error number. If an
-   error occured in the file system and not in the compression library,
-   errnum is set to Z_ERRNO and the application may consult errno
-   to get the exact error code.
-*/
+/* ========================================================================= */
+/**
+ * Returns the error message for the last error which occured on the
+ * given compressed file. errnum is set to zlib error number. If an
+ * error occured in the file system and not in the compression library,
+ * errnum is set to Z_ERRNO and the application may consult errno
+ * to get the exact error code.
+ */
 const char*  ZEXPORT gzerror (gzFile file, int *errnum)
 {
     char *m;

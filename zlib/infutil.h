@@ -1,6 +1,11 @@
-/* infutil.h -- types and macros common to blocks and codes
+/*
  * Copyright (C) 1995-1998 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
+ */
+
+/**
+ * \file infutil.h
+ * Types and macros common to blocks and codes.
  */
 
 /* WARNING: this file should *not* be used by applications. It is
@@ -12,51 +17,51 @@
 #define _INFUTIL_H
 
 typedef enum {
-      TYPE,     /* get type bits (3, including end bit) */
-      LENS,     /* get lengths for stored */
-      STORED,   /* processing stored block */
-      TABLE,    /* get table lengths */
-      BTREE,    /* get bit lengths tree for a dynamic block */
-      DTREE,    /* get length, distance trees for a dynamic block */
-      CODES,    /* processing fixed or dynamic block */
-      DRY,      /* output remaining window bytes */
-      DONE,     /* finished last block, done */
-      BAD}      /* got a data error--stuck here */
-inflate_block_mode;
+      TYPE,	/*!< get type bits (3, including end bit) */
+      LENS,	/*!< get lengths for stored */
+      STORED,	/*!< processing stored block */
+      TABLE,	/*!< get table lengths */
+      BTREE,	/*!< get bit lengths tree for a dynamic block */
+      DTREE,	/*!< get length, distance trees for a dynamic block */
+      CODES,	/*!< processing fixed or dynamic block */
+      DRY,	/*!< output remaining window bytes */
+      DONE,	/*!< finished last block, done */
+      BAD	/*!< got a data error--stuck here */
+} inflate_block_mode;
 
 /* inflate blocks semi-private state */
 struct inflate_blocks_state {
 
   /* mode */
-  inflate_block_mode  mode;     /* current inflate_block mode */
+  inflate_block_mode  mode;     /*!< current inflate_block mode */
 
   /* mode dependent information */
   union {
-    uInt left;          /* if STORED, bytes left to copy */
+    uInt left;          /*!< if STORED, bytes left to copy */
     struct {
-      uInt table;               /* table lengths (14 bits) */
-      uInt index;               /* index into blens (or border) */
-      uIntf *blens;             /* bit lengths of codes */
-      uInt bb;                  /* bit length tree depth */
-      inflate_huft *tb;         /* bit length decoding tree */
-    } trees;            /* if DTREE, decoding info for trees */
+      uInt table;               /*!< table lengths (14 bits) */
+      uInt index;               /*!< index into blens (or border) */
+      uIntf *blens;             /*!< bit lengths of codes */
+      uInt bb;                  /*!< bit length tree depth */
+      inflate_huft *tb;         /*!< bit length decoding tree */
+    } trees;            /*!< if DTREE, decoding info for trees */
     struct {
       inflate_codes_statef 
          *codes;
-    } decode;           /* if CODES, current state */
-  } sub;                /* submode */
-  uInt last;            /* true if this block is the last block */
+    } decode;           /*!< if CODES, current state */
+  } sub;                /*!< submode */
+  uInt last;            /*!< true if this block is the last block */
 
   /* mode independent information */
-  uInt bitk;            /* bits in bit buffer */
-  uLong bitb;           /* bit buffer */
-  inflate_huft *hufts;  /* single malloc for tree space */
-  Bytef *window;        /* sliding window */
-  Bytef *end;           /* one byte after sliding window */
-  Bytef *read;          /* window read pointer */
-  Bytef *write;         /* window write pointer */
-  check_func checkfn;   /* check function */
-  uLong check;          /* check on output */
+  uInt bitk;            /*!< bits in bit buffer */
+  uLong bitb;           /*!< bit buffer */
+  inflate_huft *hufts;  /*!< single malloc for tree space */
+  Bytef *window;        /*!< sliding window */
+  Bytef *end;           /*!< one byte after sliding window */
+  Bytef *read;          /*!< window read pointer */
+  Bytef *write;         /*!< window write pointer */
+  check_func checkfn;   /*!< check function */
+  uLong check;          /*!< check on output */
 
 };
 

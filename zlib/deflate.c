@@ -1,8 +1,13 @@
-/* deflate.c -- compress data using the deflation algorithm
+/* @(#) $Id: deflate.c,v 1.3 2001/12/08 17:12:13 jbj Exp $ */
+/*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
+/**
+ * \file deflate.c
+ * Compress data using the deflation algorithm.
+ */
 /*
  *  ALGORITHM
  *
@@ -47,7 +52,6 @@
  *
  */
 
-/* @(#) $Id: deflate.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
 
 #include "deflate.h"
 
@@ -61,14 +65,15 @@ const char deflate_copyright[] =
   copyright string in the executable of your product.
  */
 
-/* ===========================================================================
+/* ========================================================================= */
+/*
  *  Function prototypes.
  */
 typedef enum {
-    need_more,      /* block not completed, need more input or more output */
-    block_done,     /* block flush performed */
-    finish_started, /* finish started, need only more output at next deflate */
-    finish_done     /* finish done, accept no more input or output */
+    need_more,      /*!< block not completed, need more input or more output */
+    block_done,     /*!< block flush performed */
+    finish_started, /*!< finish started, need only more output at next deflate */
+    finish_done     /*!< finish done, accept no more input or output */
 } block_state;
 
 typedef block_state (*compress_func) OF((deflate_state *s, int flush))
@@ -109,7 +114,8 @@ local  void check_match OF((deflate_state *s, IPos start, IPos match,
 
 /*@access z_streamp @*/
 
-/* ===========================================================================
+/* ========================================================================= */
+/*
  * Local data
  */
 
@@ -139,15 +145,16 @@ local int rsync = 0;
 /* Whether window sum matches magic value */
 #endif
 
-/* Values for max_lazy_match, good_match and max_chain_length, depending on
+/**
+ * Values for max_lazy_match, good_match and max_chain_length, depending on
  * the desired pack level (0..9). The values given below have been tuned to
  * exclude worst case performance for pathological files. Better values may be
  * found for specific files.
  */
 typedef struct config_s {
-   ush good_length; /* reduce lazy search above this match length */
-   ush max_lazy;    /* do not perform lazy search above this match length */
-   ush nice_length; /* quit search above this match length */
+   ush good_length; /*!< reduce lazy search above this match length */
+   ush max_lazy;    /*!< do not perform lazy search above this match length */
+   ush nice_length; /*!< quit search above this match length */
    ush max_chain;
    compress_func func;
 } config;
@@ -176,8 +183,9 @@ local const config configuration_table[10] = {
 
 struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
 
-/* ===========================================================================
- * Update a hash value with the given input byte
+/* ========================================================================= */
+/**
+ * Update a hash value with the given input byte.
  * IN  assertion: all calls to to UPDATE_HASH are made with consecutive
  *    input characters, so that a running hash key can be computed from the
  *    previous key instead of complete recalculation each time.
@@ -185,7 +193,8 @@ struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
 #define UPDATE_HASH(s,h,c) (h = (((h)<<s->hash_shift) ^ (c)) & s->hash_mask)
 
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Insert string str in the dictionary and set match_head to the previous head
  * of the hash chain (the most recent string with same hash key). Return
  * the previous length of the hash chain.
@@ -207,7 +216,8 @@ struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
     s->head[s->ins_h] = (Pos)(str))
 #endif
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Initialize the hash table (avoiding 64K overflow for 16 bit systems).
  * prev[] will be initialized on the fly.
  */
@@ -407,7 +417,8 @@ int ZEXPORT deflateParams(z_streamp strm, int level, int strategy)
     return err;
 }
 
-/* =========================================================================
+/* ========================================================================= */
+/**
  * Put a short in the pending buffer. The 16-bit value is put in MSB order.
  * IN assertion: the stream state is correct and there is enough room in
  * pending_buf.
@@ -418,7 +429,8 @@ local void putShortMSB (deflate_state *s, uInt b)
     put_byte(s, (Byte)(b & 0xff));
 }   
 
-/* =========================================================================
+/* ========================================================================= */
+/**
  * Flush as much pending output as possible. All deflate() output goes
  * through this function so some applications may wish to modify it
  * to avoid allocating a large strm->next_out buffer and copying into it.
@@ -599,7 +611,8 @@ int ZEXPORT deflateEnd (z_streamp strm)
     return status == BUSY_STATE ? Z_DATA_ERROR : Z_OK;
 }
 
-/* =========================================================================
+/* ========================================================================= */
+/**
  * Copy the source state to the destination state.
  * To simplify the source, this is not supported for 16-bit MSDOS (which
  * doesn't have enough memory anyway to duplicate compression states).
@@ -657,7 +670,8 @@ int ZEXPORT deflateCopy (z_streamp dest, z_streamp source)
 #endif
 }
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Read a new buffer from the current input stream, update the adler32
  * and total number of bytes read.  All deflate() input goes through
  * this function so some applications may wish to modify it to avoid
@@ -683,7 +697,8 @@ local int read_buf(z_streamp strm, Bytef *buf, unsigned size)
     return (int)len;
 }
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Initialize the "longest match" routines for a new zlib stream
  */
 local void lm_init (deflate_state *s)
@@ -717,7 +732,8 @@ local void lm_init (deflate_state *s)
 #endif
 }
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Set match_start to the longest match starting at the given string and
  * return its length. Matches shorter or equal to prev_length are discarded,
  * in which case the result is equal to prev_length and match_start is
@@ -925,7 +941,8 @@ local uInt longest_match(deflate_state *s, IPos cur_match)
 #endif /* ASMV */
 
 #ifdef DEBUG
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Check that the match at match_start is indeed a match.
  */
 local void check_match(deflate_state *s, IPos start, IPos match, int length)
@@ -949,7 +966,8 @@ local void check_match(deflate_state *s, IPos start, IPos match, int length)
 #  define check_match(s, start, match, length)
 #endif
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Fill the window when the lookahead becomes insufficient.
  * Updates strstart and lookahead.
  *
@@ -1082,7 +1100,8 @@ local void rsync_roll(deflate_state *s, unsigned num)
     }
 }
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Set rsync_chunk_end if window sum matches magic value.
  */
 #define RSYNC_ROLL(s, num) \
@@ -1091,7 +1110,8 @@ local void rsync_roll(deflate_state *s, unsigned num)
 #define RSYNC_ROLL(s, num)
 #endif	/* WITH_RSYNC_PAD */
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Flush the current block, with given end-of-file flag.
  * IN assertion: strstart is set to the end of the current match.
  */
@@ -1113,7 +1133,8 @@ local void rsync_roll(deflate_state *s, unsigned num)
    if (s->strm->avail_out == 0) return (eof) ? finish_started : need_more; \
 }
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Copy without compression as much as possible from the input stream, return
  * the current block state.
  * This function does not insert new strings in the dictionary since
@@ -1177,7 +1198,8 @@ local block_state deflate_stored(deflate_state *s, int flush)
     return flush == Z_FINISH ? finish_done : block_done;
 }
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Compress as much as possible from the input stream, return the current
  * block state.
  * This function does not perform lazy evaluation of matches and inserts
@@ -1281,7 +1303,8 @@ local block_state deflate_fast(deflate_state *s, int flush)
     return flush == Z_FINISH ? finish_done : block_done;
 }
 
-/* ===========================================================================
+/* ========================================================================= */
+/**
  * Same as above, but achieves better compression. We use a lazy
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.

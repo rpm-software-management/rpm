@@ -1,6 +1,11 @@
-/* inflate_util.c -- data and routines common to blocks and codes
+/*
  * Copyright (C) 1995-1998 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
+ */
+
+/**
+ * \file infutil.c
+ * Data and routines common to blocks and codes.
  */
 #if 1
 #include "zutil.h"
@@ -20,7 +25,9 @@ uInt inflate_mask[17] = {
 };
 
 
-/* copy as much as possible from the sliding window to the output area */
+/**
+ * Copy as much as possible from the sliding window to the output area.
+ */
 int inflate_flush(inflate_blocks_statef *s, z_streamp z, int r)
 {
   uInt n;

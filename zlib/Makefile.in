@@ -1,180 +1,450 @@
-# Makefile for zlib
-# Copyright (C) 1995-1998 Jean-loup Gailly.
-# For conditions of distribution and use, see copyright notice in zlib.h 
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# To compile and test, type:
-#   ./configure; make test
-# The call of configure is optional if you don't have special requirements
-# If you wish to build zlib as a shared library, use: ./configure -s
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-# To install /usr/local/lib/libz.* and /usr/local/include/zlib.h, type:
-#    make install
-# To install in $HOME instead of /usr/local, use:
-#    make install prefix=$HOME
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
-CC=cc
 
-CFLAGS=-O
-#CFLAGS=-O -DMAX_WBITS=14 -DMAX_MEM_LEVEL=7
-#CFLAGS=-g -DDEBUG
-#CFLAGS=-O3 -Wall -Wwrite-strings -Wpointer-arith -Wconversion \
-#           -Wstrict-prototypes -Wmissing-prototypes
+SHELL = @SHELL@
 
-LDFLAGS=-L. -lz
-LDSHARED=$(CC)
-CPP=$(CC) -E
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-VER=1.1.3
-LIBS=libz.a
-SHAREDLIB=libz.so
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
 
-AR=ar rc
-RANLIB=ranlib
-TAR=tar
-SHELL=/bin/sh
+DESTDIR =
 
-prefix = /usr/local
-exec_prefix = ${prefix}
-libdir = ${exec_prefix}/lib
-includedir = ${prefix}/include
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
 
-OBJS = adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o \
-       zutil.o inflate.o infblock.o inftrees.o infutil.o inffast.o
+top_builddir = .
 
-OBJA =
-# to use the asm code: make OBJA=match.o
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
-TEST_OBJS = example.o minigzip.o
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
 
-DISTFILES = README FAQ INDEX ChangeLog configure Make*[a-z0-9] *.[ch] *.mms \
-  algorithm.txt zlib.3 msdos/Make*[a-z0-9] msdos/zlib.def msdos/zlib.rc \
-  nt/Make*[a-z0-9] nt/zlib.dnt amiga/Make*.??? os2/M*.os2 os2/zlib.def \
-  contrib/RE*.contrib contrib/*.txt contrib/asm386/*.asm contrib/asm386/*.c \
-  contrib/asm386/*.bat contrib/asm386/zlibvc.d?? contrib/asm[56]86/*.?86 \
-  contrib/asm[56]86/*.S contrib/iostream/*.cpp \
-  contrib/iostream/*.h  contrib/iostream2/*.h contrib/iostream2/*.cpp \
-  contrib/untgz/Makefile contrib/untgz/*.c contrib/untgz/*.w32 \
-  contrib/minizip/[CM]*[pe] contrib/minizip/*.[ch] contrib/minizip/*.[td]?? \
-  contrib/delphi*/*.???
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+AS = @AS@
+CC = @CC@
+DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+STRIP = @STRIP@
+VERSION = @VERSION@
 
-all: example minigzip
+AUTOMAKE_OPTIONS = 1.4 foreign
 
-test: all
-	@LD_LIBRARY_PATH=.:$(LD_LIBRARY_PATH) ; export LD_LIBRARY_PATH; \
-	echo hello world | ./minigzip | ./minigzip -d || \
-	  echo '		*** minigzip test FAILED ***' ; \
-	if ./example; then \
-	  echo '		*** zlib test OK ***'; \
-	else \
-	  echo '		*** zlib test FAILED ***'; \
-	fi
+EXTRA_DIST = algorithm.txt ChangeLog Doxyfile FAQ INDEX README \
+	zlib.3 zlib.spec \
+	amiga/* contrib/* msdos/* nt/* os2/*
 
-libz.a: $(OBJS) $(OBJA)
-	$(AR) $@ $(OBJS) $(OBJA)
-	-@ ($(RANLIB) $@ || true) >/dev/null 2>&1
 
-match.o: match.S
-	$(CPP) match.S > _match.s
-	$(CC) -c _match.s
-	mv _match.o match.o
-	rm -f _match.s
+BUILT_SOURCES = Doxyfile
 
-$(SHAREDLIB).$(VER): $(OBJS)
-	$(LDSHARED) -o $@ $(OBJS) -lc
-	rm -f $(SHAREDLIB) $(SHAREDLIB).1
-	ln -s $@ $(SHAREDLIB)
-	ln -s $@ $(SHAREDLIB).1
+noinst_HEADERS = \
+	crc32.h deflate.h infblock.h infcodes.h inffast.h inffixed.h \
+	inftrees.h infutil.h trees.h zconf.h zlib.h zutil.h
 
-example: example.o $(LIBS)
-	$(CC) $(CFLAGS) -o $@ example.o $(LDFLAGS)
 
-minigzip: minigzip.o $(LIBS)
-	$(CC) $(CFLAGS) -o $@ minigzip.o $(LDFLAGS)
+noinst_LTLIBRARIES = libz.la
 
-install: $(LIBS)
-	-@if [ ! -d $(includedir)  ]; then mkdir $(includedir); fi
-	-@if [ ! -d $(libdir) ]; then mkdir $(libdir); fi
-	cp zlib.h zconf.h $(includedir)
-	chmod 644 $(includedir)/zlib.h $(includedir)/zconf.h
-	cp $(LIBS) $(libdir)
-	cd $(libdir); chmod 755 $(LIBS)
-	-@(cd $(libdir); $(RANLIB) libz.a || true) >/dev/null 2>&1
-	cd $(libdir); if test -f $(SHAREDLIB).$(VER); then \
-	  rm -f $(SHAREDLIB) $(SHAREDLIB).1; \
-	  ln -s $(SHAREDLIB).$(VER) $(SHAREDLIB); \
-	  ln -s $(SHAREDLIB).$(VER) $(SHAREDLIB).1; \
-	  (ldconfig || true)  >/dev/null 2>&1; \
-	fi
-# The ranlib in install is needed on NeXTSTEP which checks file times
-# ldconfig is for Linux
+libz_la_SOURCES = \
+	adler32.c compress.c crc32.c gzio.c uncompr.c deflate.c trees.c \
+	zutil.c inflate.c infblock.c inftrees.c infutil.c inffast.c
 
-uninstall:
-	cd $(includedir); \
-	v=$(VER); \
-	if test -f zlib.h; then \
-	  v=`sed -n '/VERSION "/s/.*"\(.*\)".*/\1/p' < zlib.h`; \
-          rm -f zlib.h zconf.h; \
-	fi; \
-	cd $(libdir); rm -f libz.a; \
-	if test -f $(SHAREDLIB).$$v; then \
-	  rm -f $(SHAREDLIB).$$v $(SHAREDLIB) $(SHAREDLIB).1; \
-	fi
 
-clean:
-	rm -f *.o *~ example minigzip libz.a libz.so* foo.gz so_locations \
-	   _match.s maketree
+noinst_PROGRAMS = example minigzip
 
-distclean:	clean
+example_SOURCES = example.c
+example_LDFLAGS = -L. -lz
 
-zip:
-	mv Makefile Makefile~; cp -p Makefile.in Makefile
-	rm -f test.c ztest*.c contrib/minizip/test.zip
-	v=`sed -n -e 's/\.//g' -e '/VERSION "/s/.*"\(.*\)".*/\1/p' < zlib.h`;\
-	zip -ul9 zlib$$v $(DISTFILES)
-	mv Makefile~ Makefile
+minigzip_SOURCES = minigzip.c
+minigzip_LDFLAGS = -L. -lz
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+mkinstalldirs = $(SHELL) $(top_srcdir)/../mkinstalldirs
+CONFIG_CLEAN_FILES =  Doxyfile
+LTLIBRARIES =  $(noinst_LTLIBRARIES)
 
-dist:
-	mv Makefile Makefile~; cp -p Makefile.in Makefile
-	rm -f test.c ztest*.c contrib/minizip/test.zip
-	d=zlib-`sed -n '/VERSION "/s/.*"\(.*\)".*/\1/p' < zlib.h`;\
-	rm -f $$d.tar.gz; \
-	if test ! -d ../$$d; then rm -f ../$$d; ln -s `pwd` ../$$d; fi; \
-	files=""; \
-	for f in $(DISTFILES); do files="$$files $$d/$$f"; done; \
-	cd ..; \
-	GZIP=-9 $(TAR) chofz $$d/$$d.tar.gz $$files; \
-	if test ! -d $$d; then rm -f $$d; fi
-	mv Makefile~ Makefile
 
-tags:	
-	etags *.[ch]
+DEFS = @DEFS@ -I. -I$(srcdir) 
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+libz_la_LDFLAGS = 
+libz_la_LIBADD = 
+libz_la_OBJECTS =  adler32.lo compress.lo crc32.lo gzio.lo uncompr.lo \
+deflate.lo trees.lo zutil.lo inflate.lo infblock.lo inftrees.lo \
+infutil.lo inffast.lo
+noinst_PROGRAMS =  example$(EXEEXT) minigzip$(EXEEXT)
+PROGRAMS =  $(noinst_PROGRAMS)
 
-depend:
-	makedepend -- $(CFLAGS) -- *.[ch]
+example_OBJECTS =  example.$(OBJEXT)
+example_LDADD = $(LDADD)
+example_DEPENDENCIES = 
+minigzip_OBJECTS =  minigzip.$(OBJEXT)
+minigzip_LDADD = $(LDADD)
+minigzip_DEPENDENCIES = 
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(noinst_HEADERS)
 
-.PHONY: distdir
-distdir:
+DIST_COMMON =  README ChangeLog Doxyfile.in Makefile.am Makefile.in \
+aclocal.m4 configure configure.in
 
-lclint_files = $(OBJS:%.o=%.c)
-.PHONY: lclint
-lclint:
-	lclint $(lclint_files)
 
-# DO NOT DELETE THIS LINE -- make depend depends on it.
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-adler32.o: zlib.h zconf.h
-compress.o: zlib.h zconf.h
-crc32.o: zlib.h zconf.h crc32.h
-deflate.o: deflate.h zutil.h zlib.h zconf.h
-example.o: zlib.h zconf.h
-gzio.o: zutil.h zlib.h zconf.h crc32.h
-infblock.o: infblock.h inftrees.h infcodes.h infutil.h zutil.h zlib.h zconf.h
-inffast.o: zutil.h zlib.h zconf.h inftrees.h crc32.h
-inffast.o: infblock.h infcodes.h infutil.h inffast.h
-inflate.o: zutil.h zlib.h zconf.h infblock.h
-inftrees.o: zutil.h zlib.h zconf.h inftrees.h
-infutil.o: zutil.h zlib.h zconf.h infblock.h inftrees.h infcodes.h infutil.h crc32.h
-minigzip.o:  zlib.h zconf.h 
-trees.o: deflate.h zutil.h zlib.h zconf.h trees.h
-uncompr.o: zlib.h zconf.h
-zutil.o: zutil.h zlib.h zconf.h  
+TAR = gtar
+GZIP_ENV = --best
+DEP_FILES =  .deps/adler32.P .deps/compress.P .deps/crc32.P \
+.deps/deflate.P .deps/example.P .deps/gzio.P .deps/infblock.P \
+.deps/inffast.P .deps/inflate.P .deps/inftrees.P .deps/infutil.P \
+.deps/minigzip.P .deps/trees.P .deps/uncompr.P .deps/zutil.P
+SOURCES = $(libz_la_SOURCES) $(example_SOURCES) $(minigzip_SOURCES)
+OBJECTS = $(libz_la_OBJECTS) $(example_OBJECTS) $(minigzip_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .obj .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+$(ACLOCAL_M4):  configure.in 
+	cd $(srcdir) && $(ACLOCAL)
+
+config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+$(srcdir)/configure: $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+	cd $(srcdir) && $(AUTOCONF)
+Doxyfile: $(top_builddir)/config.status Doxyfile.in
+	cd $(top_builddir) && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+mostlyclean-noinstLTLIBRARIES:
+
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+
+distclean-noinstLTLIBRARIES:
+
+maintainer-clean-noinstLTLIBRARIES:
+
+# FIXME: We should only use cygpath when building on Windows,
+# and only if it is available.
+.c.obj:
+	$(COMPILE) -c `cygpath -w $<`
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libz.la: $(libz_la_OBJECTS) $(libz_la_DEPENDENCIES)
+	$(LINK)  $(libz_la_LDFLAGS) $(libz_la_OBJECTS) $(libz_la_LIBADD) $(LIBS)
+
+mostlyclean-noinstPROGRAMS:
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+
+distclean-noinstPROGRAMS:
+
+maintainer-clean-noinstPROGRAMS:
+
+example$(EXEEXT): $(example_OBJECTS) $(example_DEPENDENCIES)
+	@rm -f example$(EXEEXT)
+	$(LINK) $(example_LDFLAGS) $(example_OBJECTS) $(example_LDADD) $(LIBS)
+
+minigzip$(EXEEXT): $(minigzip_OBJECTS) $(minigzip_DEPENDENCIES)
+	@rm -f minigzip$(EXEEXT)
+	$(LINK) $(minigzip_LDFLAGS) $(minigzip_OBJECTS) $(minigzip_LDADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(PACKAGE)-$(VERSION)
+top_distdir = $(distdir)
+
+# This target untars the dist file and tries a VPATH configuration.  Then
+# it guarantees that the distribution is self-contained by making another
+# tarfile.
+distcheck: dist
+	-rm -rf $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) zxf $(distdir).tar.gz
+	mkdir $(distdir)/=build
+	mkdir $(distdir)/=inst
+	dc_install_base=`cd $(distdir)/=inst && pwd`; \
+	cd $(distdir)/=build \
+	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
+	  && $(MAKE) $(AM_MAKEFLAGS) \
+	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
+	  && $(MAKE) $(AM_MAKEFLAGS) check \
+	  && $(MAKE) $(AM_MAKEFLAGS) install \
+	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	  && $(MAKE) $(AM_MAKEFLAGS) dist
+	-rm -rf $(distdir)
+	@banner="$(distdir).tar.gz is ready for distribution"; \
+	dashes=`echo "$$banner" | sed s/./=/g`; \
+	echo "$$dashes"; \
+	echo "$$banner"; \
+	echo "$$dashes"
+dist: distdir
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+dist-all: distdir
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+distdir: $(DISTFILES)
+	-rm -rf $(distdir)
+	mkdir $(distdir)
+	-chmod 777 $(distdir)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign Makefile
+	$(mkinstalldirs) $(distdir)/amiga $(distdir)/contrib $(distdir)/msdos \
+	   $(distdir)/nt $(distdir)/os2
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am:
+install-exec: install-exec-am
+
+install-data-am:
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am:
+uninstall: uninstall-am
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(HEADERS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+mostlyclean-am:  mostlyclean-noinstLTLIBRARIES mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-noinstPROGRAMS \
+		mostlyclean-tags mostlyclean-depend mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-noinstLTLIBRARIES clean-compile clean-libtool \
+		clean-noinstPROGRAMS clean-tags clean-depend \
+		clean-generic mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-noinstLTLIBRARIES distclean-compile \
+		distclean-libtool distclean-noinstPROGRAMS \
+		distclean-tags distclean-depend distclean-generic \
+		clean-am
+	-rm -f libtool
+
+distclean: distclean-am
+	-rm -f config.status
+
+maintainer-clean-am:  maintainer-clean-noinstLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-noinstPROGRAMS maintainer-clean-tags \
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+	-rm -f config.status
+
+.PHONY: mostlyclean-noinstLTLIBRARIES distclean-noinstLTLIBRARIES \
+clean-noinstLTLIBRARIES maintainer-clean-noinstLTLIBRARIES \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile mostlyclean-libtool distclean-libtool \
+clean-libtool maintainer-clean-libtool mostlyclean-noinstPROGRAMS \
+distclean-noinstPROGRAMS clean-noinstPROGRAMS \
+maintainer-clean-noinstPROGRAMS tags mostlyclean-tags distclean-tags \
+clean-tags maintainer-clean-tags distdir mostlyclean-depend \
+distclean-depend clean-depend maintainer-clean-depend info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
+
+.PHONY: doxygen
+doxygen apidocs: Doxyfile
+	rm -rf $@
+	mkdir -p $@
+	doxygen
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

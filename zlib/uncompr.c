@@ -1,27 +1,32 @@
-/* uncompr.c -- decompress a memory buffer
+/* @(#) $Id: uncompr.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
+/*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: uncompr.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/**
+ * \file uncompr.c
+ * Decompress a memory buffer.
+ */
 
 #include "zlib.h"
 
-/* ===========================================================================
-     Decompresses the source buffer into the destination buffer.  sourceLen is
-   the byte length of the source buffer. Upon entry, destLen is the total
-   size of the destination buffer, which must be large enough to hold the
-   entire uncompressed data. (The size of the uncompressed data must have
-   been saved previously by the compressor and transmitted to the decompressor
-   by some mechanism outside the scope of this compression library.)
-   Upon exit, destLen is the actual size of the compressed buffer.
-     This function can be used to decompress a whole file at once if the
-   input file is mmap'ed.
-
-     uncompress returns Z_OK if success, Z_MEM_ERROR if there was not
-   enough memory, Z_BUF_ERROR if there was not enough room in the output
-   buffer, or Z_DATA_ERROR if the input data was corrupted.
-*/
+/* ========================================================================= */
+/**
+ * Decompresses the source buffer into the destination buffer.  sourceLen is
+ * the byte length of the source buffer. Upon entry, destLen is the total
+ * size of the destination buffer, which must be large enough to hold the
+ * entire uncompressed data. (The size of the uncompressed data must have
+ * been saved previously by the compressor and transmitted to the decompressor
+ * by some mechanism outside the scope of this compression library.)
+ * Upon exit, destLen is the actual size of the compressed buffer.
+ * This function can be used to decompress a whole file at once if the
+ * input file is mmap'ed.
+ *
+ * uncompress returns Z_OK if success, Z_MEM_ERROR if there was not
+ * enough memory, Z_BUF_ERROR if there was not enough room in the output
+ * buffer, or Z_DATA_ERROR if the input data was corrupted.
+ */
 int ZEXPORT uncompress (Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen)
 {
     z_stream stream;

@@ -1,6 +1,41 @@
-/* inftrees.c -- generate Huffman trees for efficient decoding
+/*
  * Copyright (C) 1995-1998 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h 
+ */
+
+/**
+ * \file inftrees.c
+ * Generate Huffman trees for efficient decoding.
+ *
+ * Huffman code decoding is performed using a multi-level table lookup.
+ * The fastest way to decode is to simply build a lookup table whose
+ * size is determined by the longest code.  However, the time it takes
+ * to build this table can also be a factor if the data being decoded
+ * is not very long.  The most common codes are necessarily the
+ * shortest codes, so those codes dominate the decoding time, and hence
+ * the speed.  The idea is you can have a shorter table that decodes the
+ * shorter, more probable codes, and then point to subsidiary tables for
+ * the longer codes.  The time it costs to decode the longer codes is
+ * then traded against the time it takes to make longer tables.
+ *
+ * This results of this trade are in the variables lbits and dbits
+ * below.  lbits is the number of bits the first level table for literal/
+ * length codes can decode in one step, and dbits is the same thing for
+ * the distance codes.  Subsequent tables are also less than or equal to
+ * those sizes.  These values may be adjusted either when all of the
+ * codes are shorter than that, in which case the longest code length in
+ * bits is used, or when the shortest code is *longer* than the requested
+ * table size, in which case the length of the shortest code in bits is
+ * used.
+ *
+ * There are two different values for the two tables, since they code a
+ * different number of possibilities each.  The literal/length table
+ * codes 286 possible values, or in a flat code, a little over eight
+ * bits.  The distance table codes 30 possible values, or a little less
+ * than five bits, flat.  The optimum values for speed end up being
+ * about one bit more than those, so lbits is 8+1 and dbits is 5+1.
+ * The optimum values may differ though from machine to machine, and
+ * possibly even between compilers.  Your mileage may vary.
  */
 
 #include "zutil.h"
@@ -46,39 +81,6 @@ local const uInt cpdext[30] = { /* Extra bits for distance codes */
         0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
         7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
         12, 12, 13, 13};
-
-/*
-   Huffman code decoding is performed using a multi-level table lookup.
-   The fastest way to decode is to simply build a lookup table whose
-   size is determined by the longest code.  However, the time it takes
-   to build this table can also be a factor if the data being decoded
-   is not very long.  The most common codes are necessarily the
-   shortest codes, so those codes dominate the decoding time, and hence
-   the speed.  The idea is you can have a shorter table that decodes the
-   shorter, more probable codes, and then point to subsidiary tables for
-   the longer codes.  The time it costs to decode the longer codes is
-   then traded against the time it takes to make longer tables.
-
-   This results of this trade are in the variables lbits and dbits
-   below.  lbits is the number of bits the first level table for literal/
-   length codes can decode in one step, and dbits is the same thing for
-   the distance codes.  Subsequent tables are also less than or equal to
-   those sizes.  These values may be adjusted either when all of the
-   codes are shorter than that, in which case the longest code length in
-   bits is used, or when the shortest code is *longer* than the requested
-   table size, in which case the length of the shortest code in bits is
-   used.
-
-   There are two different values for the two tables, since they code a
-   different number of possibilities each.  The literal/length table
-   codes 286 possible values, or in a flat code, a little over eight
-   bits.  The distance table codes 30 possible values, or a little less
-   than five bits, flat.  The optimum values for speed end up being
-   about one bit more than those, so lbits is 8+1 and dbits is 5+1.
-   The optimum values may differ though from machine to machine, and
-   possibly even between compilers.  Your mileage may vary.
- */
-
 
 /* If BMAX needs to be larger than 16, then h and x[] should be uLong. */
 #define BMAX 15         /* maximum bit length of any code */

@@ -1,0 +1,35 @@
+AC_INIT(gzio.c)
+AC_CANONICAL_SYSTEM
+
+AM_INIT_AUTOMAKE(zlib, 1.1.3)
+
+dnl Check for programs.
+AC_PROG_CC
+AM_DISABLE_SHARED
+AC_PROG_LIBTOOL
+
+if test "$ac_cv_prog_gcc" = yes; then
+    CFLAGS="-DWITH_RSYNC_PAD -O3 -fomit-frame-pointer -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+fi
+export CFLAGS
+
+
+AC_CHECK_HEADERS(unistd.h errno.h)
+
+AC_MSG_CHECKING(if mmap is available)
+AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/stat.h> ], [
+caddr_t hello() {
+  return mmap((caddr_t)0, (off_t)0, PROT_READ, MAP_SHARED, 0, (off_t)0); 
+}
+],
+[AC_MSG_RESULT(yes)
+   CFLAGS="-DUSE_MMAP $CFLAGS"],
+[AC_MSG_RESULT(no)]
+)
+
+AC_OUTPUT([ Doxyfile Makefile ],
+  [	echo timestamp > stamp-h.in ]
+)

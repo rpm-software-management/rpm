@@ -1,9 +1,13 @@
-/* zutil.c -- target dependent utility functions for the compression library
+/* @(#) $Id: zutil.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
+/*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: zutil.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/**
+ * \file zutil.c
+ * Target dependent utility functions for the compression library.
+ */
 
 #include "zutil.h"
 
@@ -108,7 +112,7 @@ typedef struct ptr_table_s {
 } ptr_table;
 
 local ptr_table table[MAX_PTR];
-/* This table is used to remember the original form of pointers
+/*!< This table is used to remember the original form of pointers
  * to large buffers (64K). Such pointers are normalized with a zero offset.
  * Since MSDOS is not a preemptive multitasking OS, this table is not
  * protected from concurrent access. This hack doesn't work anyway on

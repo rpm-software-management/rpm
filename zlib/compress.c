@@ -1,23 +1,28 @@
-/* compress.c -- compress a memory buffer
+/* @(#) $Id: compress.c,v 1.2 2001/11/22 21:12:46 jbj Exp $ */
+/*
  * Copyright (C) 1995-1998 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: compress.c,v 1.1.1.1 2001/11/21 19:43:12 jbj Exp $ */
+/**
+ * \file compress.c
+ * Compress a memory buffer.
+ */
 
 #include "zlib.h"
 
-/* ===========================================================================
-     Compresses the source buffer into the destination buffer. The level
-   parameter has the same meaning as in deflateInit.  sourceLen is the byte
-   length of the source buffer. Upon entry, destLen is the total size of the
-   destination buffer, which must be at least 0.1% larger than sourceLen plus
-   12 bytes. Upon exit, destLen is the actual size of the compressed buffer.
-
-     compress2 returns Z_OK if success, Z_MEM_ERROR if there was not enough
-   memory, Z_BUF_ERROR if there was not enough room in the output buffer,
-   Z_STREAM_ERROR if the level parameter is invalid.
-*/
+/* ========================================================================= */
+/**
+ * Compresses the source buffer into the destination buffer. The level
+ * parameter has the same meaning as in deflateInit.  sourceLen is the byte
+ * length of the source buffer. Upon entry, destLen is the total size of the
+ * destination buffer, which must be at least 0.1% larger than sourceLen plus
+ * 12 bytes. Upon exit, destLen is the actual size of the compressed buffer.
+ *
+ * compress2 returns Z_OK if success, Z_MEM_ERROR if there was not enough
+ * memory, Z_BUF_ERROR if there was not enough room in the output buffer,
+ * Z_STREAM_ERROR if the level parameter is invalid.
+ */
 int ZEXPORT compress2 (Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen, int level)
 {
     z_stream stream;
@@ -51,8 +56,7 @@ int ZEXPORT compress2 (Bytef *dest, uLongf *destLen, const Bytef *source, uLong 
     return err;
 }
 
-/* ===========================================================================
- */
+/* ========================================================================= */
 int ZEXPORT compress (Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen)
 {
     return compress2(dest, destLen, source, sourceLen, Z_DEFAULT_COMPRESSION);
