@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -479,7 +479,11 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Mon Aug 26 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.1
+* Fri Oct 18 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.2
+- add debug sub-package patch.
+- re-add elfutils/libdwarf (for dwarf.h), eliminate tools/dwarf2.h.
+
+* Thu Oct 17 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.1
 - set cachesize without a dbenv, the default is far too small.
 - db: don't return EACCES on db->close w/o environment.
 - unify cachesize configuration, with (or without) a dbenv.

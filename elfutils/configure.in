@@ -144,4 +144,6 @@ AC_OUTPUT([Makefile
 	   intl/Makefile
 	   libelf/Makefile
 	   libelf-po/Makefile.in
+	   libdwarf/Makefile
+	   libdwarf-po/Makefile.in
 	   po/Makefile.in])

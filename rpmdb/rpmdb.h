@@ -8,8 +8,8 @@
  */
 
 #include <assert.h>
-#include <rpmlib.h>
-#include <db.h>
+#include "rpmlib.h"
+#include "db.h"
 
 /*@-exportlocal@*/
 /*@unchecked@*/

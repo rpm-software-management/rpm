@@ -9,6 +9,8 @@
 	- python: permit headers to be hashed.
 	- use %%{_lib} for libraries.
 	- include file-3.39 (with homebrewed) libfmagic, for now.
+	- add debug sub-package patch.
+	- re-add elfutils/libdwarf (for dwarf.h), eliminate tools/dwarf2.h.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

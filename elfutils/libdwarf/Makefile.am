@@ -6,9 +6,8 @@ DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DDWARF_DEBUG
 AM_CFLAGS = -Wall -Werror
 INCLUDES = -I. -I$(srcdir) -I$(srcdir)/../libelf -I.. -I$(srcdir)/../lib
 
-lib_LTLIBRARIES = libdwarf.la
-
-include_HEADERS = dwarf.h libdwarf.h
+#lib_LTLIBRARIES = libdwarf.la
+noinst_LTLIBRARIES = libdwarf.la
 
 libdwarf_la_SOURCES = dwarf_init.c dwarf_elf_init.c dwarf_get_elf.c \
 		      dwarf_finish.c \
@@ -50,7 +49,10 @@ libdwarf_la_SOURCES = dwarf_init.c dwarf_elf_init.c dwarf_get_elf.c \
 		      dwarf_seterrhand.c dwarf_seterrarg.c \
 		      dwarf_dealloc.c
 
-noinst_HEADERS = libdwarfP.h memory-access.h dwarf_abbrev_hash.h
+noinst_HEADERS = libdwarfP.h memory-access.h dwarf_abbrev_hash.h \
+		dwarf.h libdwarf.h
+
+#include_HEADERS = dwarf.h libdwarf.h
 
 EXTRA_DIST = AVAILABLE libdwarf.sym
 

@@ -29,11 +29,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <popt.h>
-#include <elf.h>
-#include <libelf/libelf.h>
-#include <libelf/gelf.h>
 
-#include "dwarf2.h"
+#include <gelf.h>
+#include <dwarf.h>
+
 #include "hashtab.h"
 
 char *base_dir = NULL;

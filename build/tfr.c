@@ -5,7 +5,7 @@
 #include <rpmfc.h>
 
 
-#if HAVE_LIBELF_GELF_H
+#if HAVE_GELF_H
 
 #include <gelf.h>
 
@@ -15,7 +15,7 @@
 
 static int rpmfcELF(rpmfc fc)
 {
-#if HAVE_LIBELF_GELF_H && HAVE_LIBELF
+#if HAVE_GELF_H && HAVE_LIBELF
     const char * fn = fc->fn[fc->ix];;
     Elf * elf;
     Elf_Scn * scn;

@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#if HAVE_LIBELF_GELF_H
+#if HAVE_GELF_H
 
 #include <gelf.h>
 
@@ -68,7 +68,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	return fdno;
 /*@=boundsread@*/
 
-#if HAVE_LIBELF_GELF_H && HAVE_LIBELF
+#if HAVE_GELF_H && HAVE_LIBELF
  {  Elf *elf = NULL;
     Elf_Scn *scn = NULL;
     Elf_Data *data = NULL;

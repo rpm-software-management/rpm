@@ -78,7 +78,7 @@
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
 #include <stdio.h>
-#include <rpmio.h>
+#include "rpmio.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -717,7 +717,7 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
 }
 
 #if !defined(__HEADER_PROTOTYPES__)
-#include <hdrinline.h>
+#include "hdrinline.h"
 #endif
 
 #ifdef __cplusplus

@@ -8,7 +8,7 @@ ACLOCAL_AMFLAGS = -I m4
 #SUBDIRS = m4 doc intl lib libltdl libelf libebl libdwarf libasm src \
 #	  libelf-po libebl-po libdwarf-po libasm-po po tests
 
-SUBDIRS = m4 doc intl lib libltdl libelf libelf-po po
+SUBDIRS = m4 doc intl lib libltdl libelf libdwarf libelf-po libdwarf-po po
 
 EXTRA_DIST = config.rpath splint.rc
 

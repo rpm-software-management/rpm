@@ -10,11 +10,12 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
+	@WITH_LIBDWARF_INCLUDE@ \
 	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpminject.c rpmsort.c sections.h utils.h dwarf2.h hashtab.h
+EXTRA_DIST =	rpminject.c rpmsort.c sections.h utils.h hashtab.h
 
 EXTRA_PROGRAMS = rpminject rpmsort
 
