@@ -1,0 +1,90 @@
+<!--Id: memp_set_fileid.so,v 10.1 2001/07/24 18:31:14 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DbMpoolFile::set_fileid</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbMpoolFile::set_fileid</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbMpoolFile::set(u_int8_t *fileid);
+</pre></h3>
+<h1>Description</h1>
+<p>The shared memory buffer pool functions must be able to uniquely
+identify files in order that multiple processes wanting to share a file
+will correctly identify it in the pool.  The DbMpoolFile::set_fileid method
+specifies a unique identifier for the file.  Unique file identifiers
+must be a DB_FILE_ID_LEN length array of bytes.
+<p>On most UNIX/POSIX systems, the <b>fileid</b> field will not need to
+be set, and the memory pool functions will use the file's device and
+inode numbers for this purpose.  On Windows systems, the memory pool
+functions use the values returned by GetFileInformationByHandle() by
+default -- these values are known to be constant between processes and
+over reboot in the case of NTFS (in which they are the NTFS MFT
+indices).
+<p>On other filesystems (for example, FAT or NFS), these default values
+are not necessarily unique between processes or across system reboots.
+<b>Applications wanting to maintain a shared memory buffer pool
+between processes or across system reboots, in which the pool contains
+pages from files stored on such filesystems, must specify a unique file
+identifier using the DbMpoolFile::set_fileid method, and each process opening
+the file must provide the same unique identifier.</b>
+<p>This call should not be necessary for most applications.  Specifically,
+it is not necessary if the memory pool is not shared between processes
+and is reinstantiated after each system reboot, if the application is
+using the Berkeley DB access methods instead of calling the pool functions
+explicitly, or if the files in the memory pool are stored on filesystems
+in which the default values as described previously are invariant
+between process and across system reboots.
+<p>The DbMpoolFile::set_fileid method either returns a non-zero error value or throws an exception that
+encapsulates a non-zero error value on failure, and returns 0 on success.
+<h1>Errors</h1>
+<p>The DbMpoolFile::set_fileid method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the DbMpoolFile::set_fileid method may fail and either
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw an exception encapsulating
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
+in the same way.
+<h1>Class</h1>
+<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a>
+<h1>See Also</h1>
+<a href="../api_cxx/env_set_cachesize.html">DbEnv::set_cachesize</a>,
+<a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a>,
+<a href="../api_cxx/memp_fcreate.html">DbEnv::memp_fcreate</a>,
+<a href="../api_cxx/memp_fclose.html">DbMpoolFile::close</a>,
+<a href="../api_cxx/memp_fget.html">DbMpoolFile::get</a>,
+<a href="../api_cxx/memp_fopen.html">DbMpoolFile::open</a>,
+<a href="../api_cxx/memp_fput.html">DbMpoolFile::put</a>,
+<a href="../api_cxx/memp_fset.html">DbMpoolFile::set</a>,
+<a href="../api_cxx/memp_fsync.html">DbMpoolFile::sync</a>,
+<a href="../api_cxx/memp_register.html">DbEnv::memp_register</a>,
+<a href="../api_cxx/memp_set_clear_len.html">DbMpoolFile::set_clear_len</a>,
+<a href="../api_cxx/memp_set_fileid.html">DbMpoolFile::set_fileid</a>,
+<a href="../api_cxx/memp_set_ftype.html">DbMpoolFile::set_ftype</a>,
+<a href="../api_cxx/memp_set_lsn_offset.html">DbMpoolFile::set_lsn_offset</a>,
+<a href="../api_cxx/memp_set_pgcookie.html">DbMpoolFile::set_pgcookie</a>,
+<a href="../api_cxx/memp_stat.html">DbEnv::memp_stat</a>,
+<a href="../api_cxx/memp_sync.html">DbEnv::memp_sync</a>,
+and
+<a href="../api_cxx/memp_trickle.html">DbEnv::memp_trickle</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

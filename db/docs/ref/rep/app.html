@@ -1,0 +1,73 @@
+<!--Id: app.so,v 1.1 2001/10/13 19:56:23 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Building replicated applications</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/pri.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/comm.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Building replicated applications</h1>
+<p>The simplest way to build a replicated Berkeley DB application is to first
+build (and debug!) the transactional version of the same application.
+Then, add a thin replication layer to the application.  Highly available
+applications use the following additional four Berkeley DB methods:
+<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>, <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> and
+<a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>:
+<p><dl compact>
+<p><dt><a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a><dd>The <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function configures (or reconfigures) an existing database
+environment to be a replication master or client.
+<p><dt><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a><dd>The <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function causes the replication group to elect a new
+master; it is called whenever contact with the master is lost.
+<p><dt><a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a><dd>The <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function is used to process incoming messages from other
+environments in the replication group.  For clients, it is responsible
+for accepting log records and updating the local databases based on
+messages from the master.  For both the master and the clients, it is
+responsible for handling administrative functions (for example, the
+protocol for dealing with lost messages), and permitting new clients to
+join an active replication group.
+<p><dt><a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a><dd>The <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function configures the replication system's
+communications infrastructure.
+</dl>
+<p>To add replication to a Berkeley DB application, application initialization
+must be changed, and some new code, the application's communications
+infrastructure, must be written.  The application initialization changes
+are relatively simple, but the communications infrastructure code is
+fairly complex.
+<p>During application initialization, the application must perform two
+additional tasks: first, it must provide Berkeley DB information about its
+communications infrastructure, and second, it must start the Berkeley DB
+replication system.  Generally, a replicated application will do normal
+Berkeley DB recovery and configuration, exactly like any other transactional
+application.  Then, once the database environment has been opened, it
+will call the <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function to configure Berkeley DB for replication,
+and then will call the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function to join or create the
+replication group.  When calling <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>, the application has
+two choices:  specifically configure the master for the replication
+group, or, alternatively, configure all group members as clients and
+then call an election, letting the clients select the master from among
+themselves.  Either is correct, and the choice is entirely up to the
+application.
+<p>Databases are generally opened read-write on both clients and masters
+in order to simplify upgrading replication clients to be masters.  (If
+databases are opened read-only on clients, and the client is then
+upgraded to be the master, the client would have to close and reopen
+all of its databases in order to support database update queries.)
+However, even though the database is opened read-write on the client,
+any attempt to update it will result in an error until the client is
+reconfigured as a master.
+<p>There are no additional interface calls required to shut down a database
+environment participating in a replication group.  The application
+should shut down the environment in the usual manner, by calling the
+<a href="../../api_c/env_close.html">DB_ENV-&gt;close</a> function.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/pri.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/comm.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

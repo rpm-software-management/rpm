@@ -1,0 +1,36 @@
+=-=-=-= Test with DBT flags 4 bufsize -1
+=-=-=-= Test with DBT flags 16 bufsize -1
+=-=-=-= Test with DBT flags 32 bufsize 20
+exception, iteration 0: Dbt not large enough for available data
+  key size: 41 ulen: 20
+  data size: 41 ulen: 20
+exception, iteration 1: Dbt not large enough for available data
+  key size: 44 ulen: 20
+  data size: 44 ulen: 20
+exception, iteration 2: Dbt not large enough for available data
+  key size: 129 ulen: 20
+  data size: 129 ulen: 20
+exception, iteration 3: Dbt not large enough for available data
+  key size: 63 ulen: 20
+  data size: 63 ulen: 20
+exception, iteration 4: Dbt not large enough for available data
+  key size: 47 ulen: 20
+  data size: 47 ulen: 20
+exception, iteration 5: Dbt not large enough for available data
+  key size: 55 ulen: 20
+  data size: 55 ulen: 20
+exception, iteration 6: Dbt not large enough for available data
+  key size: 41 ulen: 20
+  data size: 41 ulen: 20
+=-=-=-= Test with DBT flags 32 bufsize 50
+exception, iteration 2: Dbt not large enough for available data
+  key size: 129 ulen: 50
+  data size: 129 ulen: 50
+exception, iteration 3: Dbt not large enough for available data
+  key size: 63 ulen: 50
+  data size: 63 ulen: 50
+exception, iteration 5: Dbt not large enough for available data
+  key size: 55 ulen: 50
+  data size: 55 ulen: 50
+=-=-=-= Test with DBT flags 32 bufsize 200
+=-=-=-= Test with DBT flags 0 bufsize -1

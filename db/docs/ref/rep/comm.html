@@ -1,0 +1,71 @@
+<!--Id: comm.so,v 1.1 2001/10/13 19:56:23 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Building the communications infrastructure</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/app.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/newsite.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Building the communications infrastructure</h1>
+<p>Replicated applications are typically written with one or more threads
+of control looping on one or more communication channels.  These threads
+accept messages from remote environments for the local database
+environment, and accept messages from the local environment for remote
+environments.  Messages from remote environments are passed to the local
+database environment using the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function.  Messages from the
+local environment are passed to the application for transmission using
+the callback interface specified to the <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function.
+<p>Both clients and servers establish communication channels by calling
+the <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function.  This method specifies the <b>send</b>
+interface, a callback interface used by Berkeley DB for sending messages to
+other database environments in the replication group.  The <b>send</b>
+interface takes an environment ID and two opaque data objects. It is
+the responsibility of the <b>send</b> interface to transmit the
+information in the two data objects to the database environment
+corresponding to the ID, with the receiving application then calling
+the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function to process the message.
+<p>The details of the transport mechanism are left entirely to the
+application; the only requirement is that the data buffer and size of
+each of the control and rec <a href="../../api_c/dbt.html">DBT</a>s passed to the <b>send</b>
+function on the sending site be faithfully copied and delivered to the
+receiving site by means of a call to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> with
+corresponding arguments.  The <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function is free-threaded; it
+is safe to deliver any number of messages simultaneously, and from any
+arbitrary thread or process in the Berkeley DB environment.
+<p>There are a number of informational returns from the
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function:
+<p><dl compact>
+<p><dt><a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a>, it means
+that another database environment in the replication group has called
+for an election.  The application should call the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function.
+<p><dt><a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a>, it means that
+a new master has been elected.  The call will also return the local
+environment's ID for that master.  If the ID of the master has changed,
+the application may need to reconfigure itself (for example, to redirect
+update queries to the new master rather then the old one).  If the new
+master is the local environment, then the application must call the
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function, and to reconfigure the supporting Berkeley DB library as
+a replication master.
+<p><dt><a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>, it means that
+a message from a previously unknown member of the replication group has
+been received.  The application should reconfigure itself as necessary
+so it is able to send messages to this site.
+<p><dt><a href="../../api_c/rep_message.html#DB_REP_OUTDATED">DB_REP_OUTDATED</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_OUTDATED">DB_REP_OUTDATED</a>, it means that
+the environment has been out-of-contact with the master for too long a
+time, and the master no longer has sufficient logs in order to bring the
+local client up-to-date.  The application should shut down, and the
+client reinitialized (see <a href="../../ref/rep/init.html">Initializing
+a new site</a> for more information.)
+</dl>
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/app.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/newsite.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

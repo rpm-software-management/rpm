@@ -1,0 +1,104 @@
+<!--Id: env_set_timeout.so,v 10.2 2001/09/07 21:43:16 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv.set_timeout</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbEnv.set_timeout</h1>
+</td>
+<td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+import com.sleepycat.db.*;
+<p>
+public void set_timeout(long timeout, int flags)
+	throws DbException;
+</pre></h3>
+<h1>Description</h1>
+<p>The DbEnv.set_timeout method sets timeout values for locks or
+transactions in the database environment.  The timeout value is
+currently specified as an unsigned 32-bit number of microseconds,
+limiting the maximum timeout to roughly 71 minutes.
+<p>The <b>flags</b> value must be set to one of the following values:
+<p><dl compact>
+<p><dt><a name="Db.DB_SET_LOCK_TIMEOUT">Db.DB_SET_LOCK_TIMEOUT</a><dd>Set the timeout value for locks in this database environment.
+<p>The database environment's transaction timeout value may also be set using the environment's
+<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
+single line with the string "set_txn_timeout", one or more whitespace characters,
+and the transaction timeout value.  Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.
+<p><dt><a name="Db.DB_SET_TXN_TIMEOUT">Db.DB_SET_TXN_TIMEOUT</a><dd>Set the timeout value for transactions in this database environment.
+<p>The database environment's lock timeout value may also be set using the environment's
+<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
+single line with the string "set_lock_timeout", one or more whitespace characters,
+and the lock timeout value.  Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.
+</dl>
+<p>Timeouts are checked whenever a thread of control blocks on a lock or
+when deadlock detection is performed.  (In the case of
+Db.DB_SET_LOCK_TIMEOUT, the lock is one requested explicitly
+through the Lock subsystem interfaces.  In the case of
+Db.DB_SET_TXN_TIMEOUT, the lock is one requested on behalf of a
+transaction.  In either case, it may be a lock requested by the database
+access methods underlying the application.)  As timeouts are only
+checked when the lock request first blocks or when deadlock detection
+is performed, the accuracy of the timeout depends on how often deadlock
+detection is performed.
+<p>Timeout values specified for the database environment may be overridden
+on a per-lock or per-transaction basis.  See <a href="../api_java/lock_vec.html">DbEnv.lock_vec</a> and
+<a href="../api_java/txn_set_timeout.html">DbTxn.set_timeout</a> for more information.
+<p>The DbEnv.set_timeout interface may be used only to configure Berkeley DB before
+the <a href="../api_java/env_open.html">DbEnv.open</a> interface is called.
+<p>The DbEnv.set_timeout method throws an exception that encapsulates a non-zero error value on
+failure.
+<h1>Errors</h1>
+<p>The DbEnv.set_timeout method may fail and throw an exception encapsulating a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p>Called after <a href="../api_java/env_open.html">DbEnv.open</a> was called.
+</dl>
+<p>The DbEnv.set_timeout method may fail and throw an exception for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the DbEnv.set_timeout method may fail and throw
+a <a href="../api_java/runrec_class.html">DbRunRecoveryException</a>, in which case all subsequent Berkeley DB calls
+will fail in the same way.
+<h1>Class</h1>
+<a href="../api_java/dbenv_class.html">DbEnv</a>
+<h1>See Also</h1>
+<a href="../api_java/env_close.html">DbEnv.close</a>,
+<a href="../api_java/env_version.html">DbEnv.get_version_string</a>,
+<a href="../api_java/env_open.html">DbEnv.open</a>,
+<a href="../api_java/env_remove.html">DbEnv.remove</a>,
+<a href="../api_java/env_set_cachesize.html">DbEnv.set_cachesize</a>,
+<a href="../api_java/env_set_data_dir.html">DbEnv.set_data_dir</a>,
+<a href="../api_java/env_set_errcall.html">DbEnv.set_errcall</a>,
+<a href="../api_java/env_set_error_stream.html">DbEnv.set_error_stream</a>,
+<a href="../api_java/env_set_errpfx.html">DbEnv.set_errpfx</a>,
+<a href="../api_java/env_set_feedback.html">DbEnv.set_feedback</a>,
+<a href="../api_java/env_set_flags.html">DbEnv.set_flags</a>,
+<a href="../api_java/env_set_rec_init.html">DbEnv.set_recovery_init</a>,
+<a href="../api_java/env_set_rpc_server.html">DbEnv.set_rpc_server</a>,
+<a href="../api_java/env_set_shm_key.html">DbEnv.set_shm_key</a>,
+<a href="../api_java/env_set_tas_spins.html">DbEnv.set_tas_spins</a>,
+<a href="../api_java/env_set_tmp_dir.html">DbEnv.set_tmp_dir</a>,
+<a href="../api_java/env_set_timeout.html">DbEnv.set_timeout</a>,
+<a href="../api_java/env_set_verbose.html">DbEnv.set_verbose</a>,
+and <a href="../api_java/env_strerror.html">DbEnv.strerror</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_java/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

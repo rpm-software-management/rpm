@@ -1,0 +1,32 @@
+<!--Id: pri.so,v 1.1 2001/10/13 19:56:24 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Replication environment priorities</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/id.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/app.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Replication environment priorities</h1>
+<p>Each database environment included in a replication group must have a
+priority, which specifies a relative ordering among the different
+environments in a replication group.  This ordering determines which
+environment will be selected as a new master in case the existing master
+fails.
+<p>Priorities may be any integer.  Larger valued priorities indicate a more
+desirable master.  For example, if a replication group consists of three
+database environments, two of which are connected by an OC3 and the
+third of which is connected by a T1, the third database environment
+should be assigned a priority value which is lower than either of the
+other two.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/id.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/app.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

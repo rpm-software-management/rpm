@@ -1,0 +1,76 @@
+#!/bin/sh -
+#
+# Id: chk.define,v 1.15 2001/10/12 17:55:32 bostic Exp 
+#
+# Check to make sure that all #defines are actually used.
+
+d=../..
+
+[ -f $d/LICENSE ] || {
+	echo 'FAIL: cannot find source distribution directory.'
+	exit 1
+}
+
+exitv=0
+t1=__1
+t2=__2
+
+egrep '^#define' $d/include/*.h $d/include/*.in |
+    sed -e '/db_185.in/d' -e '/xa.h/d' |
+    awk '{print $2}' |
+    sed -e '/^ALIGNP/d' \
+	-e '/^B_DELETE/d' \
+	-e '/^B_MAX/d' \
+	-e '/^CIRCLEQ/d' \
+	-e '/^DB_AM_TXN/d' \
+	-e '/^DB_BTREEOLDVER/d' \
+	-e '/^DB_HASHOLDVER/d' \
+	-e '/^DB_LOCKVERSION/d' \
+	-e '/^DB_MAX_PAGES/d' \
+	-e '/^DB_QAMOLDVER/d' \
+	-e '/^DB_RO_ACCESS/d' \
+	-e '/^DB_TXNVERSION/d' \
+	-e '/^DEFINE_DB_CLASS/d' \
+	-e '/^LIST/d' \
+	-e '/^LOG_OP/d' \
+	-e '/^MINFILL/d' \
+	-e '/^MUTEX_FIELDS/d' \
+	-e '/^NCACHED2X/d' \
+	-e '/^NCACHED30/d' \
+	-e '/^PAIR_MASK/d' \
+	-e '/^POWER_OF_TWO/d' \
+	-e '/^P_16_COPY/d' \
+	-e '/^P_32_COPY/d' \
+	-e '/^P_32_SWAP/d' \
+	-e '/^SH_CIRCLEQ/d' \
+	-e '/^SH_LIST/d' \
+	-e '/^SH_TAILQ/d' \
+	-e '/^TAILQ/d' \
+	-e '/^WRAPPED_CLASS/d' \
+	-e '/^XA_$/d' \
+	-e '/^__BIT_TYPES_DEFINED__/d' \
+	-e '/^__DBC_INTERNAL/d' \
+	-e '/_AUTO_H$/d' \
+	-e '/_H_$/d' \
+	-e '/_UNUSED/d' \
+        -e '/^i_/d' \
+        -e '/ext_h_/d' \
+	-e 's/(.*//' | sort > $t1
+
+for i in `cat $t1`; do
+	if egrep -w $i $d/*/*.c $d/*/*.cpp > /dev/null; then
+	    :;
+	else
+	    f=`egrep -l "#define.*$i" $d/include/*.h  $d/include/*.in |
+	    sed 's;\.\.\/\.\.\/include/;;' | tr -s "[:space:]" " "`
+	    echo "FAIL: $i: $f"
+	fi
+done | sort +1 > $t2
+
+test -s $t2 && {
+	cat $t2
+	echo "FAIL: found unused #defines"
+	exit 1
+}
+
+exit $exitv

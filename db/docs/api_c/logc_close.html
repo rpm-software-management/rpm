@@ -1,0 +1,66 @@
+<!--Id: logc_close.so,v 10.3 2001/10/02 01:33:35 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DB_LOGC-&gt;close</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_LOGC-&gt;close</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_LOGC-&gt;close(DB_LOGC *cursor, u_int32_t flags);
+</pre></h3>
+<h1>Description</h1>
+<p>The DB_LOGC-&gt;close function discards the log cursor.  After DB_LOGC-&gt;close
+has been called, regardless of its return, the cursor handle may not be
+used again.
+<p>The <b>flags</b> parameter is currently unused, and must be set to 0.
+<p>The DB_LOGC-&gt;close function returns a non-zero error value on failure and 0 on success.
+<h1>Errors</h1>
+<p>The DB_LOGC-&gt;close function may fail and return a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p>The cursor was previously closed.
+</dl>
+<p>The DB_LOGC-&gt;close function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
+If a catastrophic error has occurred, the DB_LOGC-&gt;close function may fail and return
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
+in the same way.
+<h1>See Also</h1>
+<a href="../api_c/env_set_lg_bsize.html">DB_ENV-&gt;set_lg_bsize</a>,
+<a href="../api_c/env_set_lg_dir.html">DB_ENV-&gt;set_lg_dir</a>,
+<a href="../api_c/env_set_lg_max.html">DB_ENV-&gt;set_lg_max</a>,
+<a href="../api_c/env_set_lg_regionmax.html">DB_ENV-&gt;set_lg_regionmax</a>,
+<a href="../api_c/log_archive.html">DB_ENV-&gt;log_archive</a>,
+<a href="../api_c/log_compare.html">log_compare</a>,
+<a href="../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a>,
+<a href="../api_c/log_file.html">DB_ENV-&gt;log_file</a>,
+<a href="../api_c/log_flush.html">DB_ENV-&gt;log_flush</a>,
+<a href="../api_c/log_put.html">DB_ENV-&gt;log_put</a>,
+<a href="../api_c/log_register.html">DB_ENV-&gt;log_register</a>,
+<a href="../api_c/log_stat.html">DB_ENV-&gt;log_stat</a>,
+<a href="../api_c/log_unregister.html">DB_ENV-&gt;log_unregister</a>,
+<a href="../api_c/logc_close.html">DB_LOGC-&gt;close</a>
+and
+<a href="../api_c/logc_get.html">DB_LOGC-&gt;get</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

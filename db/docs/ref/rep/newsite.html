@@ -1,0 +1,43 @@
+<!--Id: newsite.so,v 1.1 2001/10/13 19:56:24 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Connecting to a new site</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/init.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Connecting to a new site</h1>
+<p>Connecting to a new site in the replication group happens whenever the
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>.  The application
+should assign the new site a local environment ID number, and all future
+messages from the site passed to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> should include that
+environment ID number.  It is possible, of course, for the application
+to be aware of a new site before the return of <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> (for
+example, applications using a connection-oriented protocols are likely
+to detect new sites immediately, while applications using broadcast
+protocols may not).
+<p>Regardless, in applications supporting the dynamic addition of database
+environments to replication groups, environments joining an existing
+replication group may need to provide contact information.  (For
+example, in an application using TCP/IP sockets, a DNS name or IP
+address might be a reasonable value to provide.)  This can be done using
+the <b>cdata</b> parameter to the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function.  The information
+referenced by <b>cdata</b> is wrapped in the initial contact message
+sent by the new environment, and is provided to the existing members of
+the group using the <b>rec</b> parameter returned by <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>.
+If no additional information was provided for Berkeley DB to forward to the
+existing members of the group, the <b>data</b> field of the <b>rec</b>
+parameter passed to the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function will be NULL after
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/init.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,5 @@
+target/src/BerkeleyDB.@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@DB_VERSION_PATCH@/build_vxworks/BerkeleyDB.wpj
+target/src/BerkeleyDB.@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@DB_VERSION_PATCH@/build_vxworks/BerkeleyDB.wsp
+target/src/BerkeleyDB.@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@DB_VERSION_PATCH@/build_vxworks/db.h
+target/src/BerkeleyDB.@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@DB_VERSION_PATCH@/build_vxworks/db_config.h
+target/src/BerkeleyDB.@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@DB_VERSION_PATCH@/build_vxworks/db_int.h

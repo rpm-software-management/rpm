@@ -1,0 +1,57 @@
+<!--Id: logc_class.so,v 1.1 2001/09/28 15:09:37 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DbLogc</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbLogc</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+class DbLogc { ... };
+</pre></h3>
+<h1>Description</h1>
+<p>This manual page describes the specific details of the DbLogc class,
+which provides cursor support for log files.
+<p>The DbLogc functions are the library interface supporting
+sequential access to the records stored in log files.  Cursors are
+created by calling the <a href="../api_cxx/log_cursor.html">DbEnv::log_cursor</a> method which returns a pointer to a DbLogc object.
+<h1>Class</h1>
+<a href="../api_cxx/dbenv_class.html">DbEnv</a>
+<h1>See Also</h1>
+<a href="../api_cxx/env_set_lg_bsize.html">DbEnv::set_lg_bsize</a>,
+<a href="../api_cxx/env_set_lg_dir.html">DbEnv::set_lg_dir</a>,
+<a href="../api_cxx/env_set_lg_max.html">DbEnv::set_lg_max</a>,
+<a href="../api_cxx/env_set_lg_regionmax.html">DbEnv::set_lg_regionmax</a>,
+<a href="../api_cxx/log_archive.html">DbEnv::log_archive</a>,
+<a href="../api_cxx/log_compare.html">DbEnv::log_compare</a>,
+<a href="../api_cxx/log_cursor.html">DbEnv::log_cursor</a>,
+<a href="../api_cxx/log_file.html">DbEnv::log_file</a>,
+<a href="../api_cxx/log_flush.html">DbEnv::log_flush</a>,
+<a href="../api_cxx/log_put.html">DbEnv::log_put</a>,
+<a href="../api_cxx/log_register.html">DbEnv::log_register</a>,
+<a href="../api_cxx/log_stat.html">DbEnv::log_stat</a>,
+<a href="../api_cxx/log_unregister.html">DbEnv::log_unregister</a>,
+<a href="../api_cxx/logc_close.html">DbLogc::logc_close</a>
+and
+<a href="../api_cxx/logc_get.html">DbLogc::logc_get</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

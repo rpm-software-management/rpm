@@ -1,0 +1,84 @@
+<!--Id: txn_set_timeout.so,v 10.2 2001/09/07 21:43:17 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DbTxn::set_timeout</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbTxn::set_timeout</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+u_int32_t
+DbTxn::set_timeout(db_timeout_t timeout, u_int32_t flags);
+</pre></h3>
+<h1>Description</h1>
+<p>The DbTxn::set_timeout method sets timeout values for locks or
+transactions for the specified transaction.  The timeout value is
+currently specified as an unsigned 32-bit number of microseconds,
+limiting the maximum timeout to roughly 71 minutes.
+<p>The <b>flags</b> value must be set to one of the following values:
+<p><dl compact>
+<p><dt><a name="DB_SET_LOCK_TIMEOUT">DB_SET_LOCK_TIMEOUT</a><dd>Set the timeout value for locks in this transaction.
+<p><dt><a name="DB_SET_TXN_TIMEOUT">DB_SET_TXN_TIMEOUT</a><dd>Set the timeout value for this transaction.
+</dl>
+<p>Timeouts are checked whenever a thread of control blocks on a lock or
+when deadlock detection is performed.  (In the case of
+DB_SET_LOCK_TIMEOUT, the lock is one requested explicitly
+through the Lock subsystem interfaces.  In the case of
+DB_SET_TXN_TIMEOUT, the lock is one requested on behalf of a
+transaction.  In either case, it may be a lock requested by the database
+access methods underlying the application.)  As timeouts are only
+checked when the lock request first blocks or when deadlock detection
+is performed, the accuracy of the timeout depends on how often deadlock
+detection is performed.
+<p>Timeout values may be specified for the database environment as a whole.
+See <a href="../api_cxx/env_set_timeout.html">DbEnv::set_timeout</a> and for more information.
+<p>The DbTxn::set_timeout method either returns a non-zero error value or throws an exception that
+encapsulates a non-zero error value on failure, and returns 0 on success.
+<h1>Errors</h1>
+<p>The DbTxn::set_timeout method may fail and throw an exception or return a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+</dl>
+<p>The DbTxn::set_timeout method may fail and throw an exception or return a non-zero error for errors specified for other Berkeley DB and C library or system methods.
+If a catastrophic error has occurred, the DbTxn::set_timeout method may fail and either
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> or throw an exception encapsulating
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
+in the same way.
+<h1>Class</h1>
+<a href="../api_cxx/dbenv_class.html">DbEnv</a>, <a href="../api_cxx/txn_class.html">DbTxn</a>
+<h1>See Also</h1>
+<a href="../api_cxx/env_set_tx_max.html">DbEnv::set_tx_max</a>,
+<a href="../api_cxx/env_set_tx_recover.html">DbEnv::set_tx_recover</a>,
+<a href="../api_cxx/env_set_tx_timestamp.html">DbEnv::set_tx_timestamp</a>,
+<a href="../api_cxx/txn_abort.html">DbTxn::abort</a>,
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>,
+<a href="../api_cxx/txn_checkpoint.html">DbEnv::txn_checkpoint</a>,
+<a href="../api_cxx/txn_commit.html">DbTxn::commit</a>,
+<a href="../api_cxx/txn_discard.html">DbTxn::discard</a>,
+<a href="../api_cxx/txn_id.html">DbTxn::id</a>,
+<a href="../api_cxx/txn_prepare.html">DbTxn::prepare</a>,
+<a href="../api_cxx/txn_recover.html">DbEnv::txn_recover</a>,
+<a href="../api_cxx/txn_set_timeout.html">DbTxn::set_timeout</a>
+and
+<a href="../api_cxx/txn_stat.html">DbEnv::txn_stat</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

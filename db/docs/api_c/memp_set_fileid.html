@@ -1,0 +1,86 @@
+<!--Id: memp_set_fileid.so,v 10.1 2001/07/24 18:31:14 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DB_MPOOLFILE-&gt;set_fileid</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_MPOOLFILE-&gt;set_fileid</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_MPOOLFILE-&gt;set_fileid(DB_MPOOLFILE *mpf, u_int8_t *fileid);
+</pre></h3>
+<h1>Description</h1>
+<p>The shared memory buffer pool functions must be able to uniquely
+identify files in order that multiple processes wanting to share a file
+will correctly identify it in the pool.  The DB_MPOOLFILE-&gt;set_fileid function
+specifies a unique identifier for the file.  Unique file identifiers
+must be a DB_FILE_ID_LEN length array of bytes.
+<p>On most UNIX/POSIX systems, the <b>fileid</b> field will not need to
+be set, and the memory pool functions will use the file's device and
+inode numbers for this purpose.  On Windows systems, the memory pool
+functions use the values returned by GetFileInformationByHandle() by
+default -- these values are known to be constant between processes and
+over reboot in the case of NTFS (in which they are the NTFS MFT
+indices).
+<p>On other filesystems (for example, FAT or NFS), these default values
+are not necessarily unique between processes or across system reboots.
+<b>Applications wanting to maintain a shared memory buffer pool
+between processes or across system reboots, in which the pool contains
+pages from files stored on such filesystems, must specify a unique file
+identifier using the DB_MPOOLFILE-&gt;set_fileid function, and each process opening
+the file must provide the same unique identifier.</b>
+<p>This call should not be necessary for most applications.  Specifically,
+it is not necessary if the memory pool is not shared between processes
+and is reinstantiated after each system reboot, if the application is
+using the Berkeley DB access methods instead of calling the pool functions
+explicitly, or if the files in the memory pool are stored on filesystems
+in which the default values as described previously are invariant
+between process and across system reboots.
+<p>The DB_MPOOLFILE-&gt;set_fileid function returns a non-zero error value on failure and 0 on success.
+<h1>Errors</h1>
+<p>The DB_MPOOLFILE-&gt;set_fileid function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
+If a catastrophic error has occurred, the DB_MPOOLFILE-&gt;set_fileid function may fail and return
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
+in the same way.
+<h1>See Also</h1>
+<a href="../api_c/env_set_cachesize.html">DB_ENV-&gt;set_cachesize</a>,
+<a href="../api_c/env_set_mp_mmapsize.html">DB_ENV-&gt;set_mp_mmapsize</a>,
+<a href="../api_c/memp_fcreate.html">DB_ENV-&gt;memp_fcreate</a>,
+<a href="../api_c/memp_fclose.html">DB_MPOOLFILE-&gt;close</a>,
+<a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a>,
+<a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a>,
+<a href="../api_c/memp_fput.html">DB_MPOOLFILE-&gt;put</a>,
+<a href="../api_c/memp_fset.html">DB_MPOOLFILE-&gt;set</a>,
+<a href="../api_c/memp_fsync.html">DB_MPOOLFILE-&gt;sync</a>,
+<a href="../api_c/memp_register.html">DB_ENV-&gt;memp_register</a>,
+<a href="../api_c/memp_set_clear_len.html">DB_MPOOLFILE-&gt;set_clear_len</a>,
+<a href="../api_c/memp_set_fileid.html">DB_MPOOLFILE-&gt;set_fileid</a>,
+<a href="../api_c/memp_set_ftype.html">DB_MPOOLFILE-&gt;set_ftype</a>,
+<a href="../api_c/memp_set_lsn_offset.html">DB_MPOOLFILE-&gt;set_lsn_offset</a>,
+<a href="../api_c/memp_set_pgcookie.html">DB_MPOOLFILE-&gt;set_pgcookie</a>,
+<a href="../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a>,
+<a href="../api_c/memp_sync.html">DB_ENV-&gt;memp_sync</a>,
+and
+<a href="../api_c/memp_trickle.html">DB_ENV-&gt;memp_trickle</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

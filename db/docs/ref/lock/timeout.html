@@ -1,0 +1,58 @@
+<!--Id: timeout.so,v 1.1 2001/08/18 17:05:29 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Deadlock detection using timers</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a><a name="3"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Locking Subsystem</dl></h3></td>
+<td align=right><a href="../../ref/lock/dead.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/lock/page.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Deadlock detection using timers</h1>
+<p>Lock and transaction timeouts may be used in place of, or in addition
+to, regular deadlock detection.  If lock timeouts are set, lock requests
+will return <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> from a lock call when it is
+detected that the locks timeouts has expired, that is, the lock request
+has blocked, waiting, longer than the specified timeout.  If transaction
+timeouts are set, lock requests will return <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>
+from a lock call when it has been detected that the transaction has been
+active longer than the specified timeout.
+<p>As lock and transaction timeouts are only checked when lock requests
+first block or when deadlock detection is performed, the accuracy of
+the timeout depends on how often deadlock detection is performed.  More
+specifically, transactions will continue to run after their timeout has
+expired if they do not block on a lock request after that time.
+<p>If the database environment deadlock detector has been configured with
+the <a href="../../api_c/env_set_lk_detect.html#DB_LOCK_EXPIRE">DB_LOCK_EXPIRE</a> option, timeouts are the only mechanism by
+which deadlocks will be broken.  If the deadlock detector has been
+configured with a different option, then regular deadlock detection will
+be performed, and in addition, if timeouts have also been specified,
+lock requests and transactions will time out as well.
+<p>Lock and transaction timeouts may be specified on a database environment
+wide basis using the <a href="../../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a> function.  Lock timeouts may be
+specified on a per-lock request basis using the <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> function.
+Transaction timeouts may be specified on a per-transaction basis using
+the <a href="../../api_c/txn_set_timeout.html">DB_TXN-&gt;set_timeout</a> function.  Per-lock and per-transaction timeouts
+supersede environment wide timeouts.
+<p>For example, consider that the environment wide transaction timeout has
+been set to 20ms, the environment wide lock timeout has been set to
+10ms, a transaction has been created in this environment and its timeout
+value set to 8ms, and a specific lock request has been made on behalf
+of this transaction where the lock timeout was set to 4ms.  By default,
+transactions in this environment will be timed out if they block waiting
+for a lock after 20ms.  The specific transaction described will be timed
+out if it blocks waiting for a lock after 8ms.  By default, any lock
+request in this system will be timed out if it blocks longer than 10ms,
+and the specific lock described will be timed out if it blocks longer
+than 4ms.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/lock/dead.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/lock/page.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!--Id: init.so,v 1.1 2001/10/13 19:56:24 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Initializing a new site</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/elect.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Initializing a new site</h1>
+<p>Perform the following steps to add a new site to the replication
+group:
+<p><ol>
+<p><li>Perform a hot backup of the master's environment, as described in
+<a href="../../ref/transapp/archival.html">Database and log file archival</a>.
+<p><li>Copy the hot backup to the client.
+<p><li>Run ordinary (non-catastrophic) recovery on the client's new
+environment, using either the <a href="../../utility/db_recover.html">db_recover</a> utility or the
+<a href="../../api_c/env_open.html#DB_RECOVER">DB_RECOVER</a> flag to <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a>.
+<p><li>Reconfigure and reopen the environment as a client member of the
+replication group.
+</ol>
+<p>If copying the hot backup to the client takes a long time relative to
+the frequency with which log files are reclaimed using the
+<a href="../../utility/db_archive.html">db_archive</a> utility or the <a href="../../api_c/log_archive.html">DB_ENV-&gt;log_archive</a> function, it may be
+necessary to suppress log reclamation until the newly restarted client
+has "caught up" and applied all log records generated during its
+downtime.
+<p>As with any Berkeley DB application, the database environment must be in a
+consistent state at application startup.  This is most easily assured
+by running recovery at startup time in one thread or process; it is
+harmless to do this on both clients and masters even when not strictly
+necessary.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/elect.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,3 @@
+target/src/BerkeleyDB.@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@DB_VERSION_PATCH@/build_vxworks/demo/DBdemo.wpj
+target/src/BerkeleyDB.@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@DB_VERSION_PATCH@/build_vxworks/demo/README
+target/src/BerkeleyDB.@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@DB_VERSION_PATCH@/build_vxworks/demo/dbdemo.c

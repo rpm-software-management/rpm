@@ -1,0 +1,57 @@
+<!--Id: intro.so,v 1.2 2001/10/13 20:21:47 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Introduction</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/transapp/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/id.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Introduction</h1>
+<p>Berkeley DB includes support for building highly available applications based
+on single-master (read-only) replication.  Berkeley DB replication groups
+consist of some number of independently configured database
+environments.  The database environments might be on separate computers,
+on separate boards in a computer with replicated hardware, or on
+separate disks in a single computer.  The environments may be accessed
+by any number of applications, from one to many.  As always with Berkeley DB
+environments, any number of concurrent processes or threads may access
+the database environment.
+<p>Berkeley DB replication groups contain a single <i>master</i> database
+environment and one or more <i>client</i> database environments.
+Master environments support both database reads and writes; client
+environments support only database reads.  If the master environment
+fails, applications may upgrade a client to be the new master.
+<p>Applications may be written to provide various degrees of consistency
+between the master and clients.  The system can be run synchronously
+such that replicas are guaranteed to be up-to-date with all committed
+transactions, but doing so may incur a significant performance penalty.
+Higher performance solutions sacrifice total consistency, allowing the
+clients to be out of date for an application-controlled amount of time.
+<p>While Berkeley DB includes the tools necessary to construct highly available
+database environments, applications must provide several critical
+components.  First, the application is responsible for providing the
+communication infrastructure.  Applications may use whatever wire
+protocol is appropriate for their application (for example, RPC, TCP/IP,
+UDP, VI, message-passing over the backplane, etc.).  Second, the
+application is responsible for naming.  Berkeley DB refers to the members of
+a replication group using an application-provided ID, and applications
+must map that ID to a particular database environment or communication
+channel. Third, the application is responsible for monitoring the status
+of the master and clients, and identifying any unavailable database
+environments.  Finally, the application must provide whatever security
+policies are needed.  For example, the application may choose to encrypt
+data, use a secure socket layer, or do nothing at all.  The level of
+security is left to the sole discretion of the application.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/transapp/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/id.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

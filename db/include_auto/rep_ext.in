@@ -1,0 +1,42 @@
+/* DO NOT EDIT: automatically built by dist/s_include. */
+#ifndef	_rep_ext_h_
+#define	_rep_ext_h_
+#if defined(__cplusplus)
+extern "C" {
+#endif
+#define	__rep_dbenv_create __rep_dbenv_create@DB_VERSION_UNIQUE_NAME@
+int __rep_dbenv_create __P((DB_ENV *));
+#define	__rep_process_message __rep_process_message@DB_VERSION_UNIQUE_NAME@
+int __rep_process_message __P((DB_ENV *, DBT *, DBT *, int *));
+#define	__rep_client_dbinit __rep_client_dbinit@DB_VERSION_UNIQUE_NAME@
+int __rep_client_dbinit __P((DB_ENV *, int));
+#define	__rep_send_message __rep_send_message@DB_VERSION_UNIQUE_NAME@
+int __rep_send_message __P((DB_ENV *, int, u_int32_t, DB_LSN *, const DBT *, u_int32_t));
+#define	__rep_region_init __rep_region_init@DB_VERSION_UNIQUE_NAME@
+int __rep_region_init __P((DB_ENV *));
+#define	__rep_region_destroy __rep_region_destroy@DB_VERSION_UNIQUE_NAME@
+int __rep_region_destroy __P((DB_ENV *));
+#define	__rep_dbenv_close __rep_dbenv_close@DB_VERSION_UNIQUE_NAME@
+int __rep_dbenv_close __P((DB_ENV *));
+#define	__rep_preclose __rep_preclose@DB_VERSION_UNIQUE_NAME@
+int __rep_preclose __P((DB_ENV *));
+#define	__rep_check_alloc __rep_check_alloc@DB_VERSION_UNIQUE_NAME@
+int __rep_check_alloc __P((DB_ENV *, TXN_RECS *, int));
+#define	__rep_new_master __rep_new_master@DB_VERSION_UNIQUE_NAME@
+int __rep_new_master __P((DB_ENV *, REP_CONTROL *, int));
+#define	__rep_lockpgno_init __rep_lockpgno_init@DB_VERSION_UNIQUE_NAME@
+int __rep_lockpgno_init __P((DB_ENV *, int (***)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *), size_t *));
+#define	__rep_unlockpages __rep_unlockpages@DB_VERSION_UNIQUE_NAME@
+int __rep_unlockpages __P((DB_ENV *, u_int32_t));
+#define	__rep_lockpages __rep_lockpages@DB_VERSION_UNIQUE_NAME@
+int __rep_lockpages __P((DB_ENV *, int (**)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *), DB_LSN *, DB_LSN *, TXN_RECS *, u_int32_t));
+#define	__rep_is_client __rep_is_client@DB_VERSION_UNIQUE_NAME@
+int __rep_is_client __P((DB_ENV *));
+#define	__rep_send_vote __rep_send_vote@DB_VERSION_UNIQUE_NAME@
+int __rep_send_vote __P((DB_ENV *, DB_LSN *, int, int));
+#define	__rep_grow_sites __rep_grow_sites@DB_VERSION_UNIQUE_NAME@
+int __rep_grow_sites __P((DB_ENV *dbenv, int nsites));
+#if defined(__cplusplus)
+}
+#endif
+#endif /* _rep_ext_h_ */

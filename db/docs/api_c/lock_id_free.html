@@ -1,0 +1,60 @@
+<!--Id: lock_id_free.so,v 10.1 2001/09/25 15:18:55 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;lock_id_free</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_ENV-&gt;lock_id_free</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;lock_id_free(DB_ENV *env, u_int32_t id);
+</pre></h3>
+<h1>Description</h1>
+<p>The DB_ENV-&gt;lock_id_free function frees a locker ID allocated by the
+DB_ENV-&gt;lock_id function.
+<p>The DB_ENV-&gt;lock_id_free function returns a non-zero error value on failure and 0 on success.
+<h1>Errors</h1>
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p>The locker ID is invalid or locks are still held by this locker ID.
+</dl>
+<p>The DB_ENV-&gt;lock_id_free function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
+If a catastrophic error has occurred, the DB_ENV-&gt;lock_id_free function may fail and return
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
+in the same way.
+<h1>See Also</h1>
+<a href="../api_c/env_set_lk_conflicts.html">DB_ENV-&gt;set_lk_conflicts</a>,
+<a href="../api_c/env_set_lk_detect.html">DB_ENV-&gt;set_lk_detect</a>,
+<a href="../api_c/env_set_lk_max_lockers.html">DB_ENV-&gt;set_lk_max_lockers</a>,
+<a href="../api_c/env_set_lk_max_locks.html">DB_ENV-&gt;set_lk_max_locks</a>,
+<a href="../api_c/env_set_lk_max_objects.html">DB_ENV-&gt;set_lk_max_objects</a>,
+<a href="../api_c/lock_detect.html">DB_ENV-&gt;lock_detect</a>,
+<a href="../api_c/lock_get.html">DB_ENV-&gt;lock_get</a>,
+<a href="../api_c/lock_id.html">DB_ENV-&gt;lock_id</a>,
+<a href="../api_c/lock_id_free.html">DB_ENV-&gt;lock_id_free</a>,
+<a href="../api_c/lock_put.html">DB_ENV-&gt;lock_put</a>,
+<a href="../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a>,
+and
+<a href="../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

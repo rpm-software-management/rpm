@@ -1,0 +1,101 @@
+<!--Id: trans.so,v 1.1 2001/10/13 19:56:24 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Transactional guarantees</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/logonly.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Transactional guarantees</h1>
+<p>It is important to consider replication in the context of the overall
+database environment's transactional guarantees.  To briefly review,
+transactional guarantees in a non-replicated application are based on
+the writing of log file records to "stable storage", usually a disk
+drive.  If the application or system then fails, the Berkeley DB logging
+information is reviewed during recovery, and the databases are updated
+so that all changes made as part of committed transactions appear, and
+all changes made as part of uncommitted transactions do not appear.  In
+this case, no information will have been lost.
+<p>If the database environment has been configured to not synchronously
+flush the log to stable storage when transactions are committed (using
+the <a href="../../api_c/env_open.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> flag to increase performance at the cost of
+sacrificing transactional durability), Berkeley DB recovery will only be able
+to restore the system to the state of the last commit found on stable
+storage.  In this case, information may have been lost (for example,
+changes made on the part of a committed transaction may not appear in
+a database).
+<p>Finally, if there is database or log file loss or corruption (for
+example, if a disk drive fails), then catastrophic recovery is
+necessary, and Berkeley DB recovery will only be able to restore the system
+to the state of the last archived log file.  In this case, information
+may also have been lost.
+<p>Replicating the database environment extends this model, by adding a
+new component to "stable storage": the client's replicated information.
+If a database environment is replicated, there is no lost information
+in the case of database or log file loss, because the replicated system
+contains a complete set of databases and log records up to the point of
+failure.  A database environment that loses a disk drive can have the
+drive replaced, and it can rejoin the replication group as a client.
+<p>Because of this new component of stable storage, specifying
+<a href="../../api_c/env_open.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> in a replicated environment no longer sacrifices
+durability, as long as one or more clients have acknowledged receipt of
+the messages sent by the master.  Since network connections are often
+faster than local disk writes, replication becomes a way for
+applications to significantly improve their performance as well as their
+reliability.
+<p>The return status from the <b>send</b> interface specified to the
+<a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> function must be set by the application to ensure the
+transactional guarantees the application wants to provide.  The effect
+of the <b>send</b> interface returning failure is to flush the local
+database environment's log as necessary to ensure that any information
+critical to database integrity is not lost.  Because this flush is an
+expensive operation in terms of database performance, applications will
+want to avoid returning an error from the <b>send</b> interface.
+<p>First, there is no reason for the <b>send</b> interface to ever return
+failure unless the <a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag is specified.  Messages
+without that flag do not make visible changes to databases, and
+therefore the application's <b>send</b> interface can return success
+to Berkeley DB immediately after it has broadcast the message (or even simply
+copied the message to local memory).
+<p>Further, unless the master's database environment has been configured
+to not synchronously flush the log on transaction commit, there is no
+reason for the <b>send</b> interface to ever return failure, as any
+information critical to database integrity has already been flushed to
+the local log before <b>send</b> was called.  Again, the <b>send</b>
+interface should return success to Berkeley DB as soon as possible.  However,
+in such cases, in order to avoid potential loss of information after
+the master database environment fails, the master database environment
+should be recovered before holding an election, as only the master
+database environment is guaranteed to have the most up-to-date logs.
+<p>To sum up, the only reason for the <b>send</b> interface to return
+failure is when the master database environment has been configured to
+not synchronously flush the log on transaction commit and the
+<b>send</b> interface was unable to determine that some number of
+clients received the message.  How many clients should have received
+the message before the <b>send</b> interface can return success is an
+application choice, and, in fact, may not depend as much on a specific
+number of clients reporting success as one or more geographically
+distributed clients.
+<p>Of course, it is important to ensure that the replicated master and
+client environments are truly independent of each other.  For example,
+it does not help matters that a client has acknowledged receipt of a
+message if both master and clients are on the same power supply, as the
+failure of the power supply will still potentially lose information.
+<p>Finally, the Berkeley DB replication implementation has one other additional
+feature to increase application reliability.  Replication in Berkeley DB was
+implemented to perform database updates using a different code path than
+the standard ones.  This means operations which manage to crash the
+replication master due to a software bug will not necessarily also crash
+replication clients.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/logonly.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

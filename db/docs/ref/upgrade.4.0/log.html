@@ -1,0 +1,55 @@
+<!--Id: log.so,v 1.3 2001/09/28 15:09:42 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.0: log_XXX</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../../ref/upgrade.4.0/lock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.0/mp.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Release 4.0: log_XXX</h1>
+<p>The C API for the Berkeley DB Logging subsystem was reworked in the 4.0
+release as follows:
+<p><table border=1 align=center>
+<tr><th>Historic functional interface</th><th>Berkeley DB 4.X method</th></tr>
+<tr><td>log_archive</td><td><a href="../../api_c/log_archive.html">DB_ENV-&gt;log_archive</a></td></tr>
+<tr><td>log_file</td><td><a href="../../api_c/log_file.html">DB_ENV-&gt;log_file</a></td></tr>
+<tr><td>log_flush</td><td><a href="../../api_c/log_flush.html">DB_ENV-&gt;log_flush</a></td></tr>
+<tr><td>log_get</td><td><a href="../../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a>, <a href="../../api_c/logc_get.html">DB_LOGC-&gt;get</a>, <a href="../../api_c/logc_close.html">DB_LOGC-&gt;close</a></td></tr>
+<tr><td>log_put</td><td><a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a></td></tr>
+<tr><td>log_register</td><td><a href="../../api_c/log_register.html">DB_ENV-&gt;log_register</a></td></tr>
+<tr><td>log_stat</td><td><a href="../../api_c/log_stat.html">DB_ENV-&gt;log_stat</a></td></tr>
+<tr><td>log_unregister</td><td><a href="../../api_c/log_unregister.html">DB_ENV-&gt;log_unregister</a></td></tr>
+</table>
+<p>Applications calling any of these functions should update their calls
+to use the enclosing <a href="../../api_c/env_create.html">DB_ENV</a> handle's method (in all cases other
+than the log_get call, this is easily done as the first argument to the
+existing call is the correct handle to use).
+<p>Application calls to the historic log_get interface must be replaced
+with the creation of a log file cursor (a <a href="../../api_c/log_cursor.html">DB_LOGC</a> object), using
+the <a href="../../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a> function, calls to the <a href="../../api_c/logc_get.html">DB_LOGC-&gt;get</a> function to retrieve log
+records and calls to the <a href="../../api_c/logc_close.html">DB_LOGC-&gt;close</a> function to destroy the cursor.  It
+may also be possible to simplify some applications.  In previous
+releases of Berkeley DB, the DB_CURRENT, DB_NEXT, and DB_PREV flags to the
+log_get function could not be used by a free-threaded <a href="../../api_c/env_create.html">DB_ENV</a>
+handle.  If their <a href="../../api_c/env_create.html">DB_ENV</a> handle was free-threaded, applications
+had to create an additional, unique environment handle by separately
+calling <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> without specifying <a href="../../api_c/env_open.html#DB_THREAD">DB_THREAD</a>.  This
+is no longer an issue in the log cursor interface, and applications may
+be able to remove the now unnecessary creation of the additional
+<a href="../../api_c/env_create.html">DB_ENV</a> object.
+<p>Finally, the <a href="../../api_c/log_stat.html">DB_ENV-&gt;log_stat</a> call has been changed in the 4.0 release
+to take a flags argument.  To leave their historic behavior unchanged,
+applications should add a final argument of 0 to any calls made to
+<a href="../../api_c/log_stat.html">DB_ENV-&gt;log_stat</a>.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/upgrade.4.0/lock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.0/mp.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!--Id: env_set_timeout.so,v 10.2 2001/09/07 21:43:16 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;set_timeout</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_ENV-&gt;set_timeout</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;set_timeout(DB_ENV *dbenv, db_timeout_t timeout, u_int32_t flags);
+</pre></h3>
+<h1>Description</h1>
+<p>The DB_ENV-&gt;set_timeout function sets timeout values for locks or
+transactions in the database environment.  The timeout value is
+currently specified as an unsigned 32-bit number of microseconds,
+limiting the maximum timeout to roughly 71 minutes.
+<p>The <b>flags</b> value must be set to one of the following values:
+<p><dl compact>
+<p><dt><a name="DB_SET_LOCK_TIMEOUT">DB_SET_LOCK_TIMEOUT</a><dd>Set the timeout value for locks in this database environment.
+<p>The database environment's transaction timeout value may also be set using the environment's
+<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
+single line with the string "set_txn_timeout", one or more whitespace characters,
+and the transaction timeout value.  Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.
+<p><dt><a name="DB_SET_TXN_TIMEOUT">DB_SET_TXN_TIMEOUT</a><dd>Set the timeout value for transactions in this database environment.
+<p>The database environment's lock timeout value may also be set using the environment's
+<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
+single line with the string "set_lock_timeout", one or more whitespace characters,
+and the lock timeout value.  Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.
+</dl>
+<p>Timeouts are checked whenever a thread of control blocks on a lock or
+when deadlock detection is performed.  (In the case of
+DB_SET_LOCK_TIMEOUT, the lock is one requested explicitly
+through the Lock subsystem interfaces.  In the case of
+DB_SET_TXN_TIMEOUT, the lock is one requested on behalf of a
+transaction.  In either case, it may be a lock requested by the database
+access methods underlying the application.)  As timeouts are only
+checked when the lock request first blocks or when deadlock detection
+is performed, the accuracy of the timeout depends on how often deadlock
+detection is performed.
+<p>Timeout values specified for the database environment may be overridden
+on a per-lock or per-transaction basis.  See <a href="../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> and
+<a href="../api_c/txn_set_timeout.html">DB_TXN-&gt;set_timeout</a> for more information.
+<p>The DB_ENV-&gt;set_timeout interface may be used only to configure Berkeley DB before
+the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> interface is called.
+<p>The DB_ENV-&gt;set_timeout function returns a non-zero error value on failure and 0 on success.
+<h1>Errors</h1>
+<p>The DB_ENV-&gt;set_timeout function may fail and return a non-zero error for the following conditions:
+<p><dl compact>
+<p><dt>EINVAL<dd>An invalid flag value or parameter was specified.
+<p>Called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called.
+</dl>
+<p>The DB_ENV-&gt;set_timeout function may fail and return a non-zero error for errors specified for other Berkeley DB and C library or system functions.
+If a catastrophic error has occurred, the DB_ENV-&gt;set_timeout function may fail and return
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, in which case all subsequent Berkeley DB calls will fail
+in the same way.
+<h1>See Also</h1>
+<a href="../api_c/env_create.html">db_env_create</a>,
+<a href="../api_c/env_close.html">DB_ENV-&gt;close</a>,
+<a href="../api_c/env_err.html">DB_ENV-&gt;err</a>, <a href="../api_c/env_err.html">DB_ENV-&gt;errx</a>
+<a href="../api_c/env_open.html">DB_ENV-&gt;open</a>,
+<a href="../api_c/env_remove.html">DB_ENV-&gt;remove</a>,
+<a href="../api_c/env_set_alloc.html">DB_ENV-&gt;set_alloc</a>,
+<a href="../api_c/env_set_cachesize.html">DB_ENV-&gt;set_cachesize</a>,
+<a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a>,
+<a href="../api_c/env_set_errcall.html">DB_ENV-&gt;set_errcall</a>,
+<a href="../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a>,
+<a href="../api_c/env_set_errpfx.html">DB_ENV-&gt;set_errpfx</a>,
+<a href="../api_c/env_set_feedback.html">DB_ENV-&gt;set_feedback</a>,
+<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a>,
+<a href="../api_c/env_set_paniccall.html">DB_ENV-&gt;set_paniccall</a>,
+<a href="../api_c/env_set_rec_init.html">DB_ENV-&gt;set_recovery_init</a>,
+<a href="../api_c/env_set_rpc_server.html">DB_ENV-&gt;set_rpc_server</a>,
+<a href="../api_c/env_set_shm_key.html">DB_ENV-&gt;set_shm_key</a>,
+<a href="../api_c/env_set_tas_spins.html">DB_ENV-&gt;set_tas_spins</a>,
+<a href="../api_c/env_set_tmp_dir.html">DB_ENV-&gt;set_tmp_dir</a>,
+<a href="../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a>,
+<a href="../api_c/env_set_verbose.html">DB_ENV-&gt;set_verbose</a>,
+<a href="../api_c/env_strerror.html">db_strerror</a>
+and
+<a href="../api_c/env_version.html">db_version</a>.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,85 @@
+#!/bin/sh -
+#	Id: s_test,v 1.21 2001/09/24 20:46:59 sandstro Exp 
+#
+# Build the Tcl test files.
+
+msgshb="# DO NOT EDIT BELOW THIS LINE: automatically built by dist/s_test."
+
+t=/tmp/__t
+trap 'rm -f $t; exit 0' 0 1 2 3 13 15
+
+. RELEASE
+
+(echo "set tclsh_path @TCL_TCLSH@"		&& \
+ echo "set tcllib .libs/libdb_tcl-@DB_VERSION_MAJOR@.@DB_VERSION_MINOR@.@SOSUFFIX@" && \
+ echo "set rpc_server localhost"	 	&& \
+ echo "set rpc_path ."			 	&& \
+ echo "set src_root @srcdir@/.."		&& \
+ echo "set test_path @srcdir@/../test"		&& \
+ echo "global testdir"				&& \
+ echo "set testdir ./TESTDIR"			&& \
+ echo ""					&& \
+ echo "set KILL \"@db_cv_path_kill@\""		&& \
+ echo ""					&& \
+ echo "$msgshb"					&& \
+ echo ""					&& \
+ echo "global dict"				&& \
+ echo "global util_path"			&& \
+ echo "set rpc_testdir \$rpc_path/TESTDIR"	&& \
+ echo ""					&& \
+ echo "global is_hp_test"			&& \
+ echo "global is_qnx_test"			&& \
+ echo "global is_windows_test") > $t
+
+f=../test/include.tcl
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+
+(echo "set tclsh_path SET_YOUR_TCLSH_PATH"	&& \
+ echo "set test_path ../test"			&& \
+ echo "set src_root .."				&& \
+ echo "global testdir"				&& \
+ echo "set testdir ./TESTDIR"			&& \
+ echo "set tcllib ./Debug/libdb_tcl${DB_VERSION_MAJOR}${DB_VERSION_MINOR}d.dll" && \
+ echo ""					&& \
+ echo "set KILL ./dbkill.exe"			&& \
+ echo ""					&& \
+ echo "$msgshb"					&& \
+ echo ""					&& \
+ echo "global dict"				&& \
+ echo "global util_path"			&& \
+ echo ""					&& \
+ echo "global is_hp_test"			&& \
+ echo "global is_qnx_test"			&& \
+ echo "global is_windows_test") > $t
+
+f=../build_win32/include.tcl
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+
+# Build the test directory TESTS file.
+(echo $msgshb;
+cat `egrep -l '^#[	 ][	 ]*TEST' ../test/*.tcl` |
+sed -e '/^#[	 ][	 ]*TEST/!{' \
+    -e 's/.*//' \
+    -e '}' |
+cat -s |
+sed -e '/TEST/{' \
+    -e 's/^#[	 ][	 ]*TEST//' \
+    -e 's/^	//' \
+    -e 'H' \
+    -e 'd' \
+    -e '}' \
+    -e 's/.*//' \
+    -e x \
+    -e 's/\n/__LINEBREAK__/g' |
+sort |
+sed -e 's/__LINEBREAK__/\
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\
+/' \
+    -e 's/__LINEBREAK__/\
+	/g') > $t
+
+f=../test/TESTS
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)

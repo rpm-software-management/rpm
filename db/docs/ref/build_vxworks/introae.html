@@ -1,0 +1,137 @@
+<!--Id: introae.so,v 1.3 2001/10/12 19:21:26 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Building for VxWorks AE</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for VxWorks systems</dl></h3></td>
+<td align=right><a href="../../ref/build_vxworks/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_vxworks/notes.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Building for VxWorks AE</h1>
+<p>The build_vxworks directory in the Berkeley DB distribution contains component
+files for Tornado 3.1.  The Berkeley DB distribution also contains workspace
+and project files for Tornado 2.0.  See
+<a href="../../ref/build_vxworks/intro.html">Building for VxWorks</a> for
+information about Tornado 2.0/VxWorks 5.4.
+The VxWorks AE component files are all within subdirectories, and
+all component files are named <i>component.wpj</i>.
+<p><table border=1 align=center>
+<tr><th>File</th><th>Description</th></tr>
+<tr>    <td align=left>Berkeley DB/</td>    <td align=left>Berkeley DB component directory</td>    </tr>
+<tr>    <td align=left>demo/demo</td>    <td align=left>Demo program component directory</td>    </tr>
+<tr>    <td align=left>db_*/db_*</td>    <td align=left><a href="../../utility/index.html">Support utilities</a> component directories</td>    </tr>
+</table>
+<h3>Building With Tornado 3.1</h3>
+<p>This document assumes you already have a workspace set up and you
+want to add Berkeley DB as a component in that workspace.  You may include
+this component in any domain deemed appropriate for your application.
+<p>To add the Berkeley DB component into your workspace, right-click on the
+"Components" and choose <i>Add existing...</i>.  Enter
+the pathname to your Berkeley DB distribution in the form
+<i>&lt;pathname to your Berkeley DB distribution&gt;</i>
+<b>/build_vxworks/Berkeley DB/</b>.
+You will see <b>component.wpj</b> listed under the "Files".
+Choose that filename and click "Ok".  You will now have
+a Berkeley DB component in your workspace.
+<p>There are essentially three options regarding protection
+domains and the Berkeley DB component.  The first option is to add
+the Berkeley DB component directly into your application domain.  You may
+choose to do this by downloading Berkeley DB into that domain on your
+target, or by adding the component to the domain itself and it will
+be built when the application domain is built.  The disadvantage
+of this option is that no other application domain will have access to
+the Berkeley DB interfaces. 
+<p>The second option is to add the Berkeley DB component directly into your
+<i>vxKernel</i> domain.  The advantage is that any application
+using the Berkeley DB interface would have access to them and no changes
+would be necessary to the linkage path.  The disadvantage is that
+all Berkeley DB code would run with system privileges. 
+<p>The third option is to add a Berkeley DB shared library domain to your
+system.  Then add or download the Berkeley DB component to that shared
+library domain.  The advantage is that all application domains
+using the Berkeley DB interfaces can access a single copy of the library
+running in user mode.  The disadvantages are that one must
+remember to add the Berkeley DB shared library domain to the linkage
+path of every application domain using Berkeley DB and that shared library
+domains may not link against one another, a consideration if the
+application using Berkeley DB is itself a shared library.
+<p>We believe the options outlined above are the most common methods
+that the Berkeley DB component will be used.  We believe that the third
+option, creating a shared library domain, is the most useful option.
+Ultimately, the responsibility of choosing the correct mechanism
+for including the Berkeley DB component into the appropriate domain falls
+to the application developer.
+<p>The remainder of this document assumes that you already have a
+VxWorks AE target and a target server, both up and running.  It also
+assumes that your VxWorks AE image is configured properly for your
+needs.  It also assumes that you
+have an acceptable file system already available.  See
+<a href="../../ref/build_vxworks/faq.html">VxWorks FAQ</a> for more
+information about file system requirements.
+<p>To build Berkeley DB, first, you need to set the build selection.  To do
+this, right-click on the Berkeley DB component name and choose the
+<i>Build settings...</i> selection.  If you look at the
+<i>Active Build Specification</i> drop down list, you will see
+several different builds, containing different configurations. 
+<p><table border=1 align=center>
+<tr><th>Build</th><th>Description</th></tr>
+<tr>    <td align=left>PENTIUM2gnu.debug</td>    <td align=left>PII BSP with debugging</td>    </tr>
+<tr>    <td align=left>PENTIUM2gnu.release</td>    <td align=left>PII BSP no debugging</td>    </tr>
+</table>
+<p>You have to add a new build specification if you use a
+different BSP, want to add a build for the simulator or
+want to customize further.  For instance, if you have the Power PC (PPC)
+BSP, you need to add a new build for the PPC tool chain.  To do so,
+select the "Add..." button in the <i>Build Settings</i> window.
+A new window will appear giving you a list of all the BSPs
+you have available from which to choose.
+For your new build target, you need to decide whether it should be built for
+debugging.  See the <i>C/C++ compiler</i> tab of the Pentium
+builds for ways to
+configure for each case.  After you add this build, you still need
+to configure the include directories correctly, as described in the
+sections that follow.
+<p>If you are running with a different
+BSP, you should remove the build specifications that do not apply to
+your hardware.  We recommend that you do this after you configure any
+new build specifications first. 
+<p>If you are adding a new build you must set the include directories
+correctly.  After you have added the new build in the "Build Settings"
+window, click on the <i>C/C++ compiler</i> tab.
+In the edit box, you need to add the pathname of the
+<i>build_vxworks</i> subdirectory of Berkeley DB, followed by the
+pathname of the <i>include</i> and <i>include_auto</i>
+subdirectories of Berkeley DB.  You should add these directories
+relative to the project directory, using the <b>PRJ_DIR</b>
+macro, which is the Berkeley DB subdirectory of <i>build_vxworks</i>.
+Then, click OK.  The typical addition of include
+directories will look like:
+<p><blockquote><pre>-I$(PRJ_DIR)/.. -I$(PRJ_DIR)/../../include -I$(PRJ_DIR)/../../include_auto</pre></blockquote>
+<p>If the architecture for this new build has the most significant byte
+first, you also need to edit the <i>db_config.h</i> file in the
+build directory and define <b>WORDS_BIGENDIAN</b>.
+<p>To build and download the Berkeley DB downloadable application for the first time
+requires several steps: 
+<p><ol>
+<p><li>Select the build you are interested in using the <i>Build Settings</i>
+window.  Click OK when done.
+<p><li>Select the Berkeley DB component and right-click.  Choose the
+<i>Clean Build</i> selection.
+<p><li>Select the Berkeley DB component and right-click.  Choose the
+<i>Download...</i> selection.
+</ol>
+<p>You need to repeat this procedure for all builds you are interested in
+building, as well as for all of the utility project builds you want to
+run.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/build_vxworks/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/build_vxworks/notes.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

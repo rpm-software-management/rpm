@@ -1,0 +1,71 @@
+<!--Id: elect.so,v 1.1 2001/10/13 19:56:23 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Elections</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../../ref/rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Elections</h1>
+<p>Berkeley DB never initiates elections, that is the responsibility of the
+application.  It is not dangerous to hold an election, as the Berkeley DB
+election process ensures there is never more than a single master
+environment.  Clients should initiate an election whenever they lose
+contact with the master environment, whenever see a return of
+<a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a> from the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function, or when, for
+whatever reason, they do not know who the master is.
+<p>For a client to become the master, the client must win an election.  To
+win an election, the replication group must currently have no master
+and the client must have the highest priority of the database
+environments participating in the election.  It is dangerous to
+configure more than one master environment using the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> function,
+and applications should be careful not to do so.  Applications should
+only configure themselves as the master environment if they are the only
+possible master, or if they have won an election.  An application can
+only know it has won an election if the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> function returns
+success and the local database environment's ID as the new master
+environment ID, or if the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> function returns
+<a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a> and the local database environment's ID as the
+new master environment ID.
+<p>To add a database environment to the replication group with the intent
+of it becoming the master, first add it as a client.  Since it may be
+out-of-date with respect to the current master, allow it to update
+itself from the current master.  Then, shut the current master down.
+Presumably, the added client will win the subsequent election.  If the
+client does not win the election, it is likely that it was not given
+sufficient time to update itself with respect to the current master.
+<p>If a client is unable to find a master or win an election, it means that
+the network has been partitioned and there are not enough environments
+participating in the election for one of the participants to win.  In
+this case, the application should periodically hold an election until
+a master is found or an election is won.  In desperate circumstances,
+an application could simply declare itself the master by calling
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>, or by reducing the number of participants required
+to win an election until the election is won.  Neither of these
+solutions is recommended: in the case of a network partition, either of
+these choices can result in there being two masters in one replication
+group, and the databases in the environment might irretrievably diverge
+as they are modified in different ways by the masters.
+<p>Finally, it is possible for the wrong database environment to win an
+election if a number of systems crash at the same time.  Because an
+election winner is declared as soon as enough environments participate
+in the election, the environment on a slow booting but well-connected
+machine might lose to an environment on a badly connected but faster
+booting machine.  In the case of a number of environments crashing at
+the same time (for example, a set of replicated servers in a single
+machine room), applications should bring the database environments on
+line as clients initially (which will allow them to process read queries
+immediately), and then hold an election after sufficient time has passed
+for the slower booting machines to catch up.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

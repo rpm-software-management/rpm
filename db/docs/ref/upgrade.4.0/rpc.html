@@ -1,0 +1,26 @@
+<!--Id: rpc.so,v 1.5 2001/07/27 23:18:47 bostic Exp -->
+<!--Copyright 1997-2001 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.0: DB_ENV-&gt;set_server</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../../ref/upgrade.4.0/env.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.0/set_lk_max.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Release 4.0: DB_ENV-&gt;set_server</h1>
+<p>The DB_ENV-&gt;set_server interface has been replaced with the
+<a href="../../api_c/env_set_rpc_server.html">DB_ENV-&gt;set_rpc_server</a> function.  The DB_ENV-&gt;set_server interface
+can be easily converted to the <a href="../../api_c/env_set_rpc_server.html">DB_ENV-&gt;set_rpc_server</a> function by changing
+the name, and specifying a NULL for the added argument, second in
+the argument list.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/upgrade.4.0/env.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.0/set_lk_max.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>
