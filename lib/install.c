@@ -263,7 +263,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     }
 
     message(MESS_DEBUG, "running preinstall script (if any)\n");
-    if (runScript(prefix, h, RPMTAG_PREIN)) {
+    if (runScript(prefix, h, RPMTAG_PREIN, flags & INSTALL_NOSCRIPTS)) {
 	free(fileList);
 	if (replacedList) free(replacedList);
 	return 2;
@@ -419,7 +419,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
     message(MESS_DEBUG, "running postinstall script (if any)\n");
 
-    if (runScript(prefix, h, RPMTAG_POSTIN)) {
+    if (runScript(prefix, h, RPMTAG_POSTIN, flags & INSTALL_NOSCRIPTS)) {
 	return 2;
     }
 
