@@ -1,0 +1,20 @@
+TYPEMAP
+rpmTransaction *	O_OBJECT
+rpmdb			O_OBJECT
+rpmdbMatchIterator	O_OBJECT
+Header                  O_OBJECT
+
+INPUT
+O_OBJECT
+    if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVMG))
+        $var = ($type)SvIV((SV*)SvRV( $arg ));
+    else {
+        warn( \"${Package}::$func_name() -- $var is not a blessed SV reference\" );
+        XSRETURN_UNDEF;
+    }
+
+
+
+OUTPUT
+O_OBJECT
+        sv_setref_pv( $arg, (char *)CLASS, (void*)$var );
