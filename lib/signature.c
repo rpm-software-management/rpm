@@ -124,8 +124,13 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, int datalen)
 	/*@modifies fileSystem @*/
 {
     struct stat st;
+    int fdno = Fileno(fd);
 
-    if (fstat(Fileno(fd), &st) < 0)
+    /* HACK: workaround for davRead wiring. */
+    if (fdno == 123456789) {
+	st.st_size = 0;
+	st.st_size -= sizeof(struct rpmlead)+siglen+pad+datalen;
+    } else if (fstat(fdno, &st) < 0)
 	return RPMRC_FAIL;
 
     /*@-sizeoftype@*/
@@ -314,8 +319,12 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 	}
 
 	/* Print package component sizes. */
-	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(void **)&archSize, NULL))
+	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(void **)&archSize, NULL)) {
 	    rc = printSize(fd, sigSize, pad, *archSize);
+	    if (rc != RPMRC_OK)
+		(void) snprintf(buf, sizeof(buf),
+			_("sigh sigSize(%d): BAD, fstat(2) failed\n"), sigSize);
+	}
     }
 
 exit:

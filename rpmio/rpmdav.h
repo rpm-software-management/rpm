@@ -80,6 +80,7 @@ DIR * avOpendir(const char * path)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
+/*@-globuse@*/
 /**
  * Send a http request.
  * @param data		
@@ -93,11 +94,21 @@ int davReq(FD_t data, const char * davCmd, const char * davArg)
 
 /**
  */
+/*@null@*/
+FD_t davOpen(const char * url, /*@unused@*/ int flags,
+		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
+        /*@globals h_errno, internalState @*/
+        /*@modifies *uret, internalState @*/;
+
+/**
+ */
+/*@-incondefs@*/
 ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
         /*@globals fileSystem, internalState @*/
         /*@modifies *buf, fileSystem, internalState @*/
-        /*@requires maxSet(buf) >= (count - 1) @*/
-        /*@ensures maxRead(buf) == result @*/;
+	/*@requires maxSet(buf) >= (count - 1) @*/
+	/*@ensures maxRead(buf) == result @*/;
+/*@=incondefs@*/
 
 /**
  */
@@ -116,6 +127,7 @@ int davSeek(void * cookie, _libio_pos_t pos, int whence)
 int davClose(/*@only@*/ void * cookie)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies cookie, fileSystem, internalState @*/;
+/*@=globuse@*/
 
 /**
  * Close a DAV collection.

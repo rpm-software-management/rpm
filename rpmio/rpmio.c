@@ -63,6 +63,7 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #undef	fdClose
 #define	fdClose	__fdClose
 
+#include <rpmdav.h>
 #include "ugid.h"
 #include "rpmmessages.h"
 
@@ -1718,6 +1719,8 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
 	bytesRead = 0;
 
+	/* HACK: flimsy wiring for davRead */
+	if (fd->req == NULL) {
 	/* Is there data to read? */
 	if (fd->bytesRemain == 0) return total;	/* XXX simulate EOF */
 	rc = fdReadable(fd, fd->rd_timeoutsecs);
@@ -1730,9 +1733,14 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	default:	/* data to read */
 	    /*@switchbreak@*/ break;
 	}
+	}
 
 /*@-boundswrite@*/
-	rc = fdRead(fd, buf + total, count - total);
+	/* HACK: flimsy wiring for davRead */
+	if (fd->req != NULL)
+	    rc = davRead(fd, buf + total, count - total);
+	else
+	    rc = fdRead(fd, buf + total, count - total);
 /*@=boundswrite@*/
 
 	if (rc < 0) {
@@ -2093,6 +2101,26 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	}
 	break;
     case URL_IS_HTTPS:
+	fd = davOpen(url, flags, mode, &u);
+	if (fd == NULL || u == NULL)
+	    break;
+
+	cmd = ((flags & O_WRONLY)
+		?  ((flags & O_APPEND) ? "PUT" :
+		   ((flags & O_CREAT) ? "PUT" : "PUT"))
+		: "GET");
+	u->openError = davReq(fd, cmd, path);
+	if (u->openError < 0) {
+	    /* XXX make sure that we can exit through ufdClose */
+	    fd = fdLink(fd, "error ctrl (ufdOpen HTTP)");
+	    fd = fdLink(fd, "error data (ufdOpen HTTP)");
+	} else {
+	    fd->bytesRemain = ((!strcmp(cmd, "GET"))
+		?  fd->contentLength : -1);
+	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
+		?  fd->wr_chunked : 0);
+	}
+	break;
     case URL_IS_HTTP:
 	fd = httpOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
@@ -3062,6 +3090,9 @@ int Ferror(FD_t fd)
     int i, rc = 0;
 
     if (fd == NULL) return -1;
+    if (fd->req != NULL)
+	rc = 0;	/* HACK: https has no steenkin errors. */
+    else
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
 /*@-boundsread@*/
 	FDSTACK_t * fps = &fd->fps[i];
@@ -3096,11 +3127,15 @@ int Fileno(FD_t fd)
 {
     int i, rc = -1;
 
+    if (fd->req != NULL)
+	rc = 123456789;	/* HACK: https has no steenkin fileno. */
+    else
     for (i = fd->nfps ; rc == -1 && i >= 0; i--) {
 /*@-boundsread@*/
 	rc = fd->fps[i].fdno;
 /*@=boundsread@*/
     }
+    
 DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
     return rc;
 }

@@ -1,5 +1,8 @@
 /*@-bounds@*/
+/*@-globuse@*/
 /*@-modfilesys@*/
+/*@-mustmod@*/
+/*@-paramuse@*/
 /** \ingroup rpmio
  * \file rpmio/rpmdav.c
  */
@@ -135,6 +138,7 @@ static int davConnect(urlinfo u)
     case NE_CONNECT:
     case NE_LOOKUP:
     default:
+if (_dav_debug)
 fprintf(stderr, "Connect to %s:%d failed(%d):\n%s\n",
 		   u->host, u->port, rc, ne_get_error(u->sess));
 	break;
@@ -326,6 +330,7 @@ static void fetch_results(void *userdata, const char *uri,
     const ne_status *status = NULL;
     ne_uri u;
 
+if (_dav_debug)
 fprintf(stderr, "Uri: %s\n", uri);
 
     newres = ne_propset_private(set);
@@ -338,10 +343,12 @@ fprintf(stderr, "Uri: %s\n", uri);
 	return;
     }
 
+if (_dav_debug)
 fprintf(stderr, "URI path %s in %s\n", u.path, ctx->uri);
     
     if (ne_path_compare(ctx->uri, u.path) == 0 && !ctx->include_target) {
 	/* This is the target URI */
+if (_dav_debug)
 fprintf(stderr, "Skipping target resource.\n");
 	/* Free the private structure. */
 	free(newres);
@@ -406,6 +413,7 @@ fprintf(stderr, "Skipping target resource.\n");
 	newres->is_vcr = 0;
     }
 
+if (_dav_debug)
 fprintf(stderr, "End resource %s\n", newres->uri);
 
     for (current = *ctx->resrock, previous = NULL; current != NULL; 
@@ -642,37 +650,307 @@ exit:
 }
 
 /* =============================================================== */
+static const char * my_retstrerror(int ret)
+	/*@*/
+{
+    const char * str = "NE_UNKNOWN";
+    switch (ret) {
+    case NE_OK:		str = "NE_OK: Succeeded.";			break;
+    case NE_ERROR:	str = "NE_ERROR: Generic error.";		break;
+    case NE_LOOKUP:	str = "NE_LOOKUP: Hostname lookup failed.";	break;
+    case NE_AUTH:	str = "NE_AUTH: Server authentication failed.";	break;
+    case NE_PROXYAUTH:	str = "NE_PROXYAUTH: Proxy authentication failed.";break;
+    case NE_CONNECT:	str = "NE_CONNECT: Could not connect to server.";break;
+    case NE_TIMEOUT:	str = "NE_TIMEOUT: Connection timed out.";	break;
+    case NE_FAILED:	str = "NE_FAILED: The precondition failed.";	break;
+    case NE_RETRY:	str = "NE_RETRY: Retry request.";		break;
+    case NE_REDIRECT:	str = "NE_REDIRECT: Redirect received.";	break;
+    default:		str = "NE_UNKNOWN";				break;
+    }
+    return str;
+}
+
+static int my_result(const char * msg, int ret, FILE * fp)
+	/*@*/
+{
+    /* HACK: don't print unless debugging. */
+    if (_dav_debug == 0)
+	return ret;
+    if (fp == NULL)
+	fp = stderr;
+    if (msg != NULL)
+	fprintf(fp, "%s:", msg);
+#ifdef	HACK
+    fprintf(fp, "%s: %s\n", my_retstrerror(ret), ne_get_error(sess));
+#else
+    fprintf(fp, "%s\n", my_retstrerror(ret));
+#endif
+    return ret;
+}
+
+static void hexdump(unsigned char * buf, ssize_t len)
+	/*@*/
+{
+    int i;
+    if (len <= 0)
+	return;
+    for (i = 0; i < len; i++) {
+	if (i != 0 && (i%16) == 0)
+	    fprintf(stderr, "\n");
+	fprintf(stderr, " %02X", buf[i]);
+    }
+    fprintf(stderr, "\n");
+}
+
 int davReq(FD_t data, const char * davCmd, const char * davArg)
 {
-    return -1;
+#ifdef	REFERENCE
+    urlinfo u = ctrl->url;
+    const char * host;
+    const char * path;
+    int port;
+    int rc;
+    char * req;
+    size_t len;
+    int retrying = 0;
+
+    URLSANE(u);
+    assert(ctrl != NULL);
+
+    if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
+	return FTPERR_BAD_HOSTNAME;
+
+    if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
+    path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
+    /*@-branchstate@*/
+    if (path == NULL) path = "";
+    /*@=branchstate@*/
+
+reopen:
+    /*@-branchstate@*/
+    if (fdFileno(ctrl) >= 0 && (rc = fdWritable(ctrl, 0)) < 1) {
+	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
+    }
+    /*@=branchstate@*/
+
+/*@-usereleased@*/
+    if (fdFileno(ctrl) < 0) {
+	rc = tcpConnect(ctrl, host, port);
+	if (rc < 0)
+	    goto errxit2;
+	ctrl = fdLink(ctrl, "open ctrl (httpReq)");
+    }
+
+    len = sizeof("\
+req x HTTP/1.0\r\n\
+User-Agent: rpm/3.0.4\r\n\
+Host: y:z\r\n\
+Accept: text/plain\r\n\
+Transfer-Encoding: chunked\r\n\
+\r\n\
+") + strlen(httpCmd) + strlen(path) + sizeof(VERSION) + strlen(host) + 20;
+
+/*@-boundswrite@*/
+    req = alloca(len);
+    *req = '\0';
+
+  if (!strcmp(httpCmd, "PUT")) {
+    sprintf(req, "\
+%s %s HTTP/1.%d\r\n\
+User-Agent: rpm/%s\r\n\
+Host: %s:%d\r\n\
+Accept: text/plain\r\n\
+Transfer-Encoding: chunked\r\n\
+\r\n\
+",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
+} else {
+    sprintf(req, "\
+%s %s HTTP/1.%d\r\n\
+User-Agent: rpm/%s\r\n\
+Host: %s:%d\r\n\
+Accept: text/plain\r\n\
+\r\n\
+",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
+}
+/*@=boundswrite@*/
+
+if (_ftp_debug)
+fprintf(stderr, "-> %s", req);
+
+    len = strlen(req);
+    if (fdWrite(ctrl, req, len) != len) {
+	rc = FTPERR_SERVER_IO_ERROR;
+	goto errxit;
+    }
+
+    /*@-branchstate@*/
+    if (!strcmp(httpCmd, "PUT")) {
+	ctrl->wr_chunked = 1;
+    } else {
+
+	rc = httpResp(u, ctrl, NULL);
+
+	if (rc) {
+	    if (!retrying) {	/* not HTTP_OK */
+		retrying = 1;
+		/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
+		goto reopen;
+	    }
+	    goto errxit;
+	}
+    }
+    /*@=branchstate@*/
+
+    ctrl = fdLink(ctrl, "open data (httpReq)");
+    return 0;
+
+errxit:
+    /*@-observertrans@*/
+    fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
+    /*@=observertrans@*/
+errxit2:
+    /*@-branchstate@*/
+    if (fdFileno(ctrl) >= 0)
+	/*@-refcounttrans@*/ (void) fdClose(ctrl); /*@=refcounttrans@*/
+    /*@=branchstate@*/
+    return rc;
+/*@=usereleased@*/
+#else
+    return FTPERR_BAD_SERVER_RESPONSE;
+#endif
+}
+
+#define TIMEOUT_SECS 60
+/*@unchecked@*/
+static int httpTimeoutSecs = TIMEOUT_SECS;
+
+FD_t davOpen(const char * url, /*@unused@*/ int flags,
+		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
+{
+    ne_session * sess;
+    ne_request * req;
+    const char * path = NULL;
+    urlinfo u = NULL;
+    FD_t fd = NULL;
+    int rc;
+
+#if 0	/* XXX makeTempFile() heartburn */
+    assert(!(flags & O_RDWR));
+#endif
+
+if (_dav_debug)
+fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
+    rc = davInit(url, &u);
+    if (rc || u == NULL || (sess = u->sess) == NULL)
+	goto exit;
+
+    /* HACK: use davReq instead. */
+    rc = davConnect(u);
+    (void) urlPath(url, &path);
+    req = ne_request_create(sess, "GET", path);
+
+    if (u->ctrl == NULL)
+	u->ctrl = fdNew("persist ctrl (httpOpen)");
+    if (u->ctrl->nrefs > 2 && u->data == NULL)
+	u->data = fdNew("persist data (httpOpen)");
+
+    if (u->ctrl->url == NULL)
+	fd = fdLink(u->ctrl, "grab ctrl (httpOpen persist ctrl)");
+    else if (u->data->url == NULL)
+	fd = fdLink(u->data, "grab ctrl (httpOpen persist data)");
+    else
+	fd = fdNew("grab ctrl (httpOpen)");
+
+    if (fd) {
+	rc = ne_begin_request(req);
+	rc = my_result("ne_begin_req(req)", rc, NULL);
+	
+	fd->req = req;
+	fdSetIo(fd, ufdio);
+	fd->ftpFileDoneNeeded = 0;
+	fd->rd_timeoutsecs = httpTimeoutSecs;
+	fd->contentLength = fd->bytesRemain = -1;
+	fd->url = urlLink(u, "url (httpOpen)");
+	fd = fdLink(fd, "grab data (httpOpen)");
+	fd->urlType = URL_IS_HTTP;
+    } else {
+	/* HACK: also needs doing in rpmio.c */
+	ne_request_destroy(req);
+	req = NULL;
+    }
+
+exit:
+/*@-boundswrite@*/
+    if (uret)
+	*uret = u;
+/*@=boundswrite@*/
+    /*@-refcounttrans@*/
+    return fd;
+    /*@=refcounttrans@*/
 }
 
 ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies *buf, fileSystem, internalState @*/
-        /*@requires maxSet(buf) >= (count - 1) @*/
-        /*@ensures maxRead(buf) == result @*/
 {
-    return -1;
+    FD_t fd = cookie;
+    ssize_t rc;
+
+#if 0
+    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+#endif
+
+    fdstat_enter(fd, FDSTAT_READ);
+/*@-boundswrite@*/
+    rc = ne_read_response_block(fd->req, buf, count);
+/*@=boundswrite@*/
+    fdstat_exit(fd, FDSTAT_READ, rc);
+
+    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
+
+if (_dav_debug) {
+fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, (unsigned)rc);
+hexdump(buf, rc);
+    }
+
+    return rc;
 }
 
 ssize_t davWrite(void * cookie, const char * buf, size_t count)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies fileSystem, internalState @*/
 {
+#ifdef	NOTYET
+    FD_t fd = cookie;
+    return ne_read_response_block(fd->req, buf, count);
+#else
+if (_dav_debug)
+fprintf(stderr, "*** davWrite(%p,%p,0x%x)\n", cookie, buf, count);
     return -1;
+#endif
 }
 
 int davSeek(void * cookie, _libio_pos_t pos, int whence)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies fileSystem, internalState @*/
 {
+if (_dav_debug)
+fprintf(stderr, "*** davSeek(%p,pos,%d)\n", cookie, whence);
     return -1;
 }
 
 int davClose(/*@only@*/ void * cookie)
 {
-    return -1;
+    FD_t fd = cookie;
+    ne_request * req = fd->req;
+    int ret;
+
+if (_dav_debug)
+fprintf(stderr, "*** davClose(%p)\n", cookie);
+    ret =  ne_end_request(req);
+    ret = my_result("ne_end_request(req)", ret, NULL);
+
+    /* HACK: gotta figger NE_RETRY somehow. */
+
+    /* HACK: also needs doing in rpmio.c */
+    ne_request_destroy(req);
+    fd->req = NULL;
+
+    return ret;
 }
 
 /* =============================================================== */
@@ -747,6 +1025,7 @@ static const char * statstr(const struct stat * st,
 /*@unchecked@*/
 static int dav_st_ino = 0xdead0000;
 
+/*@-boundswrite@*/
 int davStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals dav_st_ino, fileSystem, internalState @*/
 	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
@@ -789,7 +1068,9 @@ exit:
     ctx = fetch_destroy_context(ctx);
     return rc;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 int davLstat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals dav_st_ino, fileSystem, internalState @*/
 	/*@modifies *st, dav_st_ino, fileSystem, internalState @*/
@@ -832,6 +1113,7 @@ exit:
     ctx = fetch_destroy_context(ctx);
     return rc;
 }
+/*@=boundswrite@*/
 
 #ifdef	NOTYET
 static int davReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
@@ -1122,6 +1404,8 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     return (DIR *) avdir;
 /*@=kepttrans@*/
 }
-/*@=boundswrite@*/
+/*@=paramuse@*/
+/*@=mustmod@*/
 /*@=modfilesys@*/
+/*@=globuse@*/
 /*@=bounds@*/
