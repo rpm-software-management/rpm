@@ -890,12 +890,13 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	if (dbi == NULL)
 	    _cacheDependsRC = 0;
 	else {
+	    DBC * dbcursor = NULL;
 	    size_t keylen = strlen(keyDepend);
 	    void * datap = NULL;
 	    size_t datalen = 0;
 	    int xx;
-	    xx = dbiCopen(dbi, NULL, 0);
-	    xx = dbiGet(dbi, (void **)&keyDepend, &keylen, &datap, &datalen, 0);
+	    xx = dbiCopen(dbi, &dbcursor, 0);
+	    xx = dbiGet(dbi, dbcursor, (void **)&keyDepend, &keylen, &datap, &datalen, 0);
 	    if (xx == 0 && datap && datalen == 4) {
 		memcpy(&rc, datap, datalen);
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s %-3s (cached)\n"),
@@ -903,7 +904,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 		xx = dbiCclose(dbi, NULL, 0);
 		return rc;
 	    }
-	    xx = dbiCclose(dbi, NULL, 0);
+	    xx = dbiCclose(dbi, dbcursor, 0);
 	}
     }
 
@@ -1006,16 +1007,17 @@ exit:
 	if (dbi == NULL) {
 	    _cacheDependsRC = 0;
 	} else {
+	    DBC * dbcursor = NULL;
 	    int xx;
-	    xx = dbiCopen(dbi, NULL, 0);
-	    xx = dbiPut(dbi, keyDepend, strlen(keyDepend), &rc, sizeof(rc), 0);
+	    xx = dbiCopen(dbi, &dbcursor, 0);
+	    xx = dbiPut(dbi, dbcursor, keyDepend, strlen(keyDepend), &rc, sizeof(rc), 0);
 	    if (xx)
 		_cacheDependsRC = 0;
 #if 0	/* XXX NOISY */
 	    else
 		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %s) added to Depends cache.\n"), keyType, keyDepend, (rc ? "NO" : "YES"));
 #endif
-	    xx = dbiCclose(dbi, NULL, 0);
+	    xx = dbiCclose(dbi, dbcursor, 0);
 	}
     }
     return rc;

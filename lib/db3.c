@@ -700,6 +700,9 @@ static int db3cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
 {
     int rc = 0;
 
+    if (!dbi->dbi_use_cursors)
+	return 0;
+
     if (dbcursor == NULL)
 	dbcursor = dbi->dbi_rmw;
     if (dbcursor) {
@@ -715,6 +718,11 @@ static int db3copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags)
     DBC * dbcursor;
     int rc = 0;
 
+    if (!dbi->dbi_use_cursors) {
+	if (dbcp) *dbcp = NULL;
+	return 0;
+    }
+
     if ((dbcursor = dbi->dbi_rmw) == NULL) {
 	if ((rc = db3c_open(dbi, &dbcursor)) == 0)
 	    dbi->dbi_rmw = dbcursor;
@@ -726,7 +734,7 @@ static int db3copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags)
     return rc;
 }
 
-static int db3cput(dbiIndex dbi, const void * keyp, size_t keylen,
+static int db3cput(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 		const void * datap, size_t datalen, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
@@ -741,24 +749,19 @@ static int db3cput(dbiIndex dbi, const void * keyp, size_t keylen,
     data.data = (void *)datap;
     data.size = datalen;
 
-    if (!dbi->dbi_use_cursors) {
+    if (dbcursor == NULL) {
 	rc = db->put(db, txnid, &key, &data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
-	DBC * dbcursor;
-
-	if ((rc = db3copen(dbi, &dbcursor, 0)) != 0)
-	    return rc;
 
 	rc = db3c_put(dbi, dbcursor, &key, &data, DB_KEYLAST);
 
-	(void) db3cclose(dbi, dbcursor, 0);
     }
 
     return rc;
 }
 
-static int db3cdel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags)
+static int db3cdel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -771,14 +774,10 @@ static int db3cdel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int 
     key.data = (void *)keyp;
     key.size = keylen;
 
-    if (!dbi->dbi_use_cursors) {
+    if (dbcursor == NULL) {
 	rc = db->del(db, txnid, &key, 0);
 	rc = cvtdberr(dbi, "db->del", rc, _debug);
     } else {
-	DBC * dbcursor;
-
-	if ((rc = db3copen(dbi, &dbcursor, 0)) != 0)
-	    return rc;
 
 	rc = db3c_get(dbi, dbcursor, &key, &data, DB_SET);
 
@@ -787,14 +786,12 @@ static int db3cdel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int 
 	    rc = db3c_del(dbi, dbcursor, 0);
 	}
 
-	(void) db3c_close(dbi, dbcursor);
-
     }
 
     return rc;
 }
 
-static int db3cget(dbiIndex dbi, void ** keyp, size_t * keylen,
+static int db3cget(dbiIndex dbi, DBC * dbcursor, void ** keyp, size_t * keylen,
 		void ** datap, size_t * datalen, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
@@ -809,24 +806,18 @@ static int db3cget(dbiIndex dbi, void ** keyp, size_t * keylen,
     if (datap)		data.data = *datap;
     if (datalen)	data.size = *datalen;
 
-    if (!dbi->dbi_use_cursors) {
+    if (dbcursor == NULL) {
 	int _printit;
 	rc = db->get(db, txnid, &key, &data, 0);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->get", rc, _printit);
     } else {
-	DBC * dbcursor;
-
-	if ((rc = db3copen(dbi, &dbcursor, 0)) != 0)
-	    return rc;
 
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
 	rc = db3c_get(dbi, dbcursor, &key, &data,
 		key.data == NULL ? DB_NEXT : DB_SET);
 
-	if (rc > 0)	/* DB_NOTFOUND */
-	    (void) db3cclose(dbi, dbcursor, 0);
     }
 
     if (rc == 0) {

@@ -72,7 +72,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 			int flags, enum fileActions * actions, FD_t scriptFd)
 {
     rpmdbMatchIterator mi = NULL;
-    Header h;
+    Header h = NULL;
     int i;
     int fileCount;
     const char * name, * version, * release;
@@ -89,9 +89,12 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     if (h == NULL) {
 	rpmError(RPMERR_DBCORRUPT, _("%s: cannot read header at 0x%x"),
 		"findMatches", offset);
+	rpmdbFreeIterator(mi);
 	rc = 1;
 	goto exit;
     }
+    h = headerLink(h);
+    rpmdbFreeIterator(mi);
 
     headerNVR(h, &name, &version, &release);
 
@@ -215,8 +218,10 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     rc = 0;
 
  exit:
-    if (mi)
-	rpmdbFreeIterator(mi);
+    if (h) {
+	headerFree(h);
+	h = NULL;
+    }
     return rc;
 }
 

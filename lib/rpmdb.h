@@ -88,7 +88,7 @@ struct _dbiVec {
 
 /**
  */
-    int (*cclose) (dbiIndex dbi, DBC * dbcursor, unsigned int flags);
+    int (*cclose) (dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags);
 
 /**
  * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
@@ -98,7 +98,7 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cdel) (dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags);
+    int (*cdel) (dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen, unsigned int flags);
 
 /**
  * Retrieve (key,data) pair using db->get or dbcursor->c_get.
@@ -110,7 +110,7 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cget) (dbiIndex dbi, void ** keypp, size_t * keylenp,
+    int (*cget) (dbiIndex dbi, DBC * dbcursor, void ** keypp, size_t * keylenp,
 			void ** datapp, size_t * datalenp, unsigned int flags);
 
 /**
@@ -123,7 +123,7 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cput) (dbiIndex dbi, const void * keyp, size_t keylen,
+    int (*cput) (dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 			const void * datap, size_t datalen, unsigned int flags);
 
 /**
@@ -307,7 +307,8 @@ int XdbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags, const char *f, 
  * @param flags		(unused)
  * @return		0 on success
  */
-int dbiDel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags);
+int dbiDel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
+	unsigned int flags);
 
 /**
  * Retrieve (key,data) pair from index database.
@@ -319,7 +320,7 @@ int dbiDel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags);
  * @param flags		(unused)
  * @return		0 on success
  */
-int dbiGet(dbiIndex dbi, void ** keypp, size_t * keylenp,
+int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp, size_t * keylenp,
         void ** datapp, size_t * datalenp, unsigned int flags);
 
 /**
@@ -332,7 +333,7 @@ int dbiGet(dbiIndex dbi, void ** keypp, size_t * keylenp,
  * @param flags		(unused)
  * @return		0 on success
  */
-int dbiPut(dbiIndex dbi, const void * keyp, size_t keylen,
+int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 	const void * datap, size_t datalen, unsigned int flags);
 
 /**

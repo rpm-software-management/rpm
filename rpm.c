@@ -99,10 +99,6 @@ extern struct rpmBuildArguments		rpmBTArgs;
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
  { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,	NULL, NULL},
-/* all and allmatches both using 'a' is dumb */
-#ifdef	DYING
- { "all", 'a', 0, 0, 'a',			NULL, NULL},
-#endif
  { "allfiles", '\0', 0, &allFiles, 0,		NULL, NULL},
  { "allmatches", '\0', 0, &allMatches, 0,	NULL, NULL},
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
@@ -541,9 +537,6 @@ int main(int argc, const char ** argv)
 {
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t *qva = &rpmQVArgs;
-#ifdef	DYING
-    enum rpmQVSources QVSource = RPMQV_PACKAGE;
-#endif
     int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int verifyFlags;
@@ -676,21 +669,6 @@ int main(int argc, const char ** argv)
 	    bigMode = MODE_CHECKSIG;
 	    break;
 	    
-#ifdef	DYING
-	  case 'q':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_QUERY;
-	    break;
-
-	  case 'V':
-	  case 'y':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_VERIFY)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_VERIFY;
-	    break;
-#endif
-
 	  case 'u':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
 		argerror(_("only one major mode may be specified"));
@@ -734,35 +712,6 @@ int main(int argc, const char ** argv)
 	    bigMode = MODE_INSTALL;
 	    upgrade = 1;
 	    break;
-
-#ifdef	DYING
-	  case 'p':
-	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_RPM)
-		argerror(_("one type of query/verify may be performed at a " "time"));
-	    QVSource = RPMQV_RPM;
-	    break;
-
-	  case 'g':
-	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_GROUP)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_GROUP;
-	    break;
-
-	  case 'f':
-	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_PATH)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_PATH;
-	    break;
-
-	  case 'a':
-	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_ALL)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_ALL;
-	    break;
-#endif
 
 	  case GETOPT_RESIGN:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)

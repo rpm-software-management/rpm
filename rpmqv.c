@@ -165,9 +165,6 @@ static struct poptOption optionsTable[] = {
 #endif
 
  /* XXX colliding options */
-#ifdef	DYING
- { "all", 'a', 0, 0, 'a',			NULL, NULL},
-#endif
 #if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
  {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
 #endif
@@ -640,9 +637,6 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMQV
     QVA_t *qva = &rpmQVArgs;
-#ifdef	DYING
-    enum rpmQVSources QVSource = RPMQV_PACKAGE;
-#endif
 #endif
 
 #ifdef	IAM_RPMBT
@@ -859,50 +853,6 @@ int main(int argc, const char ** argv)
 	    relocations[numRelocations++].newPath = errString;
 	  } break;
 #endif	/* IAM_RPMEIU */
-
-#ifdef	DYING
-#ifdef	IAM_RPMQV
-	  case 'q':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_QUERY;
-	    break;
-
-	  case 'V':
-	  case 'y':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_VERIFY)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_VERIFY;
-	    break;
-
-	  case 'p':
-	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_RPM)
-		argerror(_("one type of query/verify may be performed at a " "time"));
-	    QVSource = RPMQV_RPM;
-	    break;
-
-	  case 'g':
-	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_GROUP)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_GROUP;
-	    break;
-
-	  case 'f':
-	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_PATH)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_PATH;
-	    break;
-
-	  case 'a':
-	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_ALL)
-		argerror(_("one type of query/verify may be performed at a "
-				"time"));
-	    QVSource = RPMQV_ALL;
-	    break;
-#endif	/* IAM_RPMQV */
-#endif
 
 #ifdef	IAM_RPMDB
 	  case GETOPT_REBUILDDB:

@@ -205,7 +205,7 @@ static int db1cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags) {
     return 0;
 }
 
-static int db1cget(dbiIndex dbi, void ** keyp, size_t * keylen,
+static int db1cget(dbiIndex dbi, DBC * dbcursor, void ** keyp, size_t * keylen,
                 void ** datap, size_t * datalen, unsigned int flags)
 {
     DBT key, data;
@@ -283,7 +283,7 @@ static int db1cget(dbiIndex dbi, void ** keyp, size_t * keylen,
     return rc;
 }
 
-static int db1cdel(dbiIndex dbi, const void * keyp, size_t keylen,
+static int db1cdel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 		unsigned int flags)
 {
     int rc = 0;
@@ -309,7 +309,7 @@ static int db1cdel(dbiIndex dbi, const void * keyp, size_t keylen,
     return rc;
 }
 
-static int db1cput(dbiIndex dbi, const void * keyp, size_t keylen,
+static int db1cput(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 		const void * datap, size_t datalen, unsigned int flags)
 {
     DBT key, data;
