@@ -1,3 +1,12 @@
+2.3 -> 2.3.1:
+	- changed --help routing to have intelligent line wrapping
+	  to make i18n efforts easier
+	- NLSDIR should be used for nls catalogs, not a hardcoded path
+	- NLSDIR should be in share, not lib
+	- renamed sweedish catalog from se to sv
+	- added german catalog
+	- treat RPM_CHAR_TYPE as RPM_INT8_TYPE for queries
+
 2.2.11 -> 2.3:
 	- replaced putenv/setenv which calls which malloc() buffer -- these
 	  are memory leaks, but the functions are only used between a fork()
