@@ -8,6 +8,7 @@ Makefile.in
 aclocal.m4
 autom4te*
 apidocs
+compile
 config.cache
 config.guess
 config.h

@@ -1,0 +1,24 @@
+By using `rpm -K' and the GNU GPG package, the following public key can be
+used to verify RPM packages built and signed by Red Hat, Inc.  for rawhide
+and testing.  Questions about this key should be sent to
+security@redhat.com.
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v1.0.7 (GNU/Linux)
+
+mQGiBD9DmVMRBACW9LRPUtKnUTNeSQN5huiPA0+d0hGLTEG1kkUj47zWC3RXZ1Xh
+c/6yzWOrPk85Q7ys/dGoLLqsfekkxDVipUE0iS+47VMYgm531x4cd2oKnQb3Z/2R
+3A6kjDkc2KyTmfOsZ8DTdL76u81Rnv6MCQjXTJCFOQzv3yxmn6ZDhOoSkwCg24J2
+Qh0zuvvtyfNMsj+S8ksase8D/1qQgcURZDYZkaxrQSsdyZWsqb4NT51snXG5wE4L
+Yh1VGH26YU/kY7YxU5TPo8kbQTztkqaoFHk/O6zx+Q/iS8Izv2ByTsZv0F/Weym7
+Fyf+x+PTA7oDvV9hN/aJy/UPF+t4GRrsEV2mH8Ee3hIZGKSWwTwZZh+JyfIcqkyU
+zwY9BACLOZ8xZjHzU4MjZw2qgWemr96Zyr2foGl0+2G1STnluWf24//nNWBiLFuA
+txucItsppnUM0qB5RZ69N4c9MOmCZkBoahP3Q30qAsaAN4RaaE6AG7Yms0wtPW3m
+qzzhcuCtRAumXqA/oQWYqmHaEwUPenJaxut5rasApm2r5QxaQbRFUmVkIEhhdCwg
+SW5jLiBhdXRvbWF0ZWQgYnVpbGQgc2lnbmluZyBrZXkgKDIwMDMpIDxyYXdoaWRl
+QHJlZGhhdC5jb20+iFsEExECABsFAj9DmVMGCwkIBwMCAxUCAwMWAgECHgECF4AA
+CgkQlM1XQuQY46oixwCfUKmLRHSIBd1FbGTaR5ARBfSsK+MAn1BfxKyahkQ0ScN7
+9RNaYei9kxGIiEYEExECAAYFAj9DvtMACgkQIZGAzdtCpg5exACeJlj9DExab5AK
+C0eQHr8td+WRJ0QAnRNDGXQCBENRgFNgcecDMAr7P6se
+=LmwA
+-----END PGP PUBLIC KEY BLOCK-----
