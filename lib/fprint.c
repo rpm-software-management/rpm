@@ -12,22 +12,17 @@ struct lookupCache {
     ino_t ino;
 };
 
-static fingerPrint doLookup(const char * fullName, int scareMemory, 
-			    struct lookupCache * cache);
-
-static int strCompare(const void * a, const void * b) {
+static int strCompare(const void * a, const void * b)
+{
     const char * const * one = a;
     const char * const * two = a;
 
     return strcmp(*one, *two);
 }
 
-fingerPrint fpLookup(const char * fullName, int scareMemory) {
-    return doLookup(fullName, scareMemory, NULL);
-}
-
 static fingerPrint doLookup(const char * fullName, int scareMemory, 
-			    struct lookupCache * cache) {
+			    struct lookupCache * cache)
+{
     char dir[PATH_MAX];
     const char * chptr1;
     char * end, * bn;
@@ -130,7 +125,8 @@ static fingerPrint doLookup(const char * fullName, int scareMemory,
     return fp;
 }
 
-unsigned int fpHashFunction(const void * key) {
+unsigned int fpHashFunction(const void * key)
+{
     const fingerPrint * fp = key;
     unsigned int hash = 0;
     char ch;
@@ -147,12 +143,19 @@ unsigned int fpHashFunction(const void * key) {
     return hash;
 }
 
-int fpEqual(const void * key1, const void * key2) {
+int fpEqual(const void * key1, const void * key2)
+{
     return FP_EQUAL(*((const fingerPrint *) key1), *((fingerPrint *) key2));
 }
 
+fingerPrint fpLookup(const char * fullName, int scareMemory)
+{
+    return doLookup(fullName, scareMemory, NULL);
+}
+
 void fpLookupList(const char ** fullNames, fingerPrint * fpList, int numItems,
-		  int alreadySorted) {
+		  int alreadySorted)
+{
     int i, j;
     struct lookupCache cache;
     int maxLen = 0;
