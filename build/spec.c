@@ -983,10 +983,10 @@ Spec parseSpec(FILE *f, char *specfile)
 		    break;
 		  case RPMTAG_VERSION:
 		  case RPMTAG_RELEASE:
-		  case RPMTAG_SUMMARY:
 		    s1 = s;
 		    while (*s1 && *s1 != ' ' && *s1 != '\t') s1++;
 		    *s1 = '\0';
+		  case RPMTAG_SUMMARY:
 		  case RPMTAG_DISTRIBUTION:
 		  case RPMTAG_VENDOR:
 		  case RPMTAG_COPYRIGHT:
