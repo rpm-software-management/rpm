@@ -38,18 +38,22 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     int size;
     char ** unameList, ** gnameList;
     int_32 useBrokenMd5;
+    int_32 * brokenPtr;
 
 #if WORDS_BIGENDIAN
-    if (!headerGetEntry(h, RPMTAG_BROKENMD5, NULL, &useBrokenMd5, NULL)) {
+    if (!headerGetEntry(h, RPMTAG_BROKENMD5, NULL, (void **) &brokenPtr, NULL)) {
 	char * rpmVersion;
 
-	if (headerGetEntry(h, RPMTAG_RPMVERSION, NULL, &rpmVersion, NULL)) {
+	if (headerGetEntry(h, RPMTAG_RPMVERSION, NULL, (void **) &rpmVersion, 
+				NULL)) {
 	    useBrokenMd5 = ((rpmvercmp(rpmVersion, "2.3.3") >= 0) &&
 			    (rpmvercmp(rpmVersion, "2.3.8") <= 0));
 	} else {
 	    useBrokenMd5 = 1;
 	}
 	headerAddEntry(h, RPMTAG_BROKENMD5, RPM_INT32_TYPE, &useBrokenMd5, 1);
+    } else {
+	useBrokenMd5 = *brokenPtr;
     }
 #else
     useBrokenMd5 = 0;
