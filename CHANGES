@@ -47,6 +47,7 @@
 	- python: include Python.h before glibc features.h.
 	- python: return [], not None, accessing header tags (#112794).
 	- python: avoid invoking python to acquire ill-specified parameters.
+	- add ia32e arch.
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.

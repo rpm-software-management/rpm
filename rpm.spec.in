@@ -482,6 +482,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sun Feb 22 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.14
+- add ia32e arch.
+
 * Fri Feb 20 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.13
 - fix: only first "mkdir -p" directory had context set.
                                                                                 
