@@ -160,7 +160,7 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     struct rpmRelocation * relocations = NULL;
     struct rpmRelocation tmpReloc;
     struct rpmRelocation * nextReloc;
-    char ** validRelocations = NULL;
+    char ** validRelocations = NULL, ** actualRelocations;
     char * newName;
     int rc;
     int numValid;
@@ -230,6 +230,34 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	    }
 	    if (!madeSwap) break;
 	}
+
+	if (validRelocations) free(validRelocations);
+    }
+
+    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
+			(void **) &validRelocations, &numValid)) {
+	actualRelocations = malloc(sizeof(*actualRelocations) * numValid);
+
+	/* handle the special case of oldPath == NULL, which can only happen
+	   when numValid == 1 (which we've tested for when we build the
+	   relocation table above */
+	for (i = 0; i < numValid; i++) {
+	    for (j = 0; j < numRelocations; j++) {
+		if (!strcmp(validRelocations[i], relocations[j].oldPath)) {
+		    actualRelocations[i] = relocations[j].newPath;
+		    break;
+		}
+	    }
+
+	    if (j == numRelocations)
+		actualRelocations[i] = validRelocations[i];
+	}
+
+	headerAddEntry(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
+		       (void **) actualRelocations, numValid);
+
+	free(validRelocations);
+	free(actualRelocations);
     }
 
     headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
@@ -378,8 +406,7 @@ static void trimChangelog(Header h) {
 /* 2 error */
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 		      struct rpmRelocation * relocations,
-		      int flags, rpmNotifyFunction notify, char * labelFormat,
-		      char * netsharedPath) {
+		      int flags, rpmNotifyFunction notify, char * labelFormat) {
     int rc, isSource, major, minor;
     char * name, * version, * release;
     Header h;
@@ -624,9 +651,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 
 	freeFileMem = 1;
 
-	if (netsharedPath) 
-	    netsharedPaths = splitString(netsharedPath, 
-					 strlen(netsharedPath), ':');
+	if ((tmpPath = rpmGetVar(RPMVAR_NETSHAREDPATH)))
+	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
 	else
 	    netsharedPaths = NULL;
 
@@ -635,7 +661,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 	   instHandleSharedFiles() below will take care of the problem */
 	for (i = 0; i < fileCount; i++) {
 	    /* netsharedPaths are not relative to the current root (though 
-	       they do need to take the package prefix into account */
+	       they do need to take package relocations into account) */
 	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
 		j = strlen(*nsp);
 		if (!strncmp(files[i].relativePath, *nsp, j) &&
@@ -675,6 +701,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 		}
 	    }
 	}
+
+	if (netsharedPaths) free(netsharedPaths);
 
 	rc = instHandleSharedFiles(db, otherOffset, files, fileCount, 
 				   toRemove, &replacedList, flags);
