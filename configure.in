@@ -13,6 +13,8 @@ LIBINTL=""
 PO=""
 GETTEXTSTUB="gettextstub.o"
 
+MISCOBJS=
+
 AC_CANONICAL_SYSTEM
 
 dnl Checks for programs.
@@ -285,7 +287,7 @@ if test "$LCHOWN" = no; then
     AC_ARG_ENABLE([broken-chown],
     [  --enable-broken-chown  this system's chown follows symbolic links], 
 	    result=yes, result=unknown)
-    if echo "$build" | egrep "(aix)|(hpux)" > /dev/null ; then
+    if echo "$build" | egrep "(aix)|(hpux)|(linux)" > /dev/null ; then
 	result=yes
     elif echo "$build" | egrep "(nextstep)" > /dev/null ; then
 	result=no
@@ -382,6 +384,12 @@ else
 	ln -s autodeps/none ./find-requires.sh
 fi
 
+if test -n "$MISCOBJS" ; then
+	MISCDIR=misc
+	MISCLIB=-lmisc
+	MISCPATH=misc/libmisc.a
+fi
+
 AC_SUBST(MISCOBJS)
 AC_SUBST(INCPATH)
 AC_SUBST(LIBMISC)
@@ -399,8 +407,11 @@ AC_SUBST(GETTEXTSTUB)
 AC_SUBST(RPM)
 AC_SUBST(GZIPBIN)
 AC_SUBST(FIXPERMS)
+AC_SUBST(MISCDIR)
+AC_SUBST(MISCLIB)
+AC_SUBST(MISCPATH)
 
-if [ -d newbuild ]; then
+if test -d newbuild ; then
    NBMAKEFILE=newbuild/Makefile
 else
    NBMAKEFILE=
