@@ -82,12 +82,18 @@ getu64(const fmagic fm, uint64_t value)
 #define sh_addr		(fm->cls == ELFCLASS32		\
 			 ? (void *) &sh32		\
 			 : (void *) &sh64)
+#define sh_size		(fm->cls == ELFCLASS32		\
+			 ? sizeof sh32			\
+			 : sizeof sh64)
 #define shs_type	(fm->cls == ELFCLASS32		\
 			 ? getu32(fm, sh32.sh_type)	\
 			 : getu32(fm, sh64.sh_type))
 #define ph_addr		(fm->cls == ELFCLASS32		\
 			 ? (void *) &ph32		\
 			 : (void *) &ph64)
+#define ph_size		(fm->cls == ELFCLASS32		\
+			 ? sizeof ph32			\
+			 : sizeof ph64)
 #define ph_type		(fm->cls == ELFCLASS32		\
 			 ? getu32(fm, ph32.p_type)	\
 			 : getu32(fm, ph64.p_type))
@@ -121,6 +127,11 @@ doshn(fmagic fm, off_t off, int num, size_t size)
 {
 	Elf32_Shdr sh32;
 	Elf64_Shdr sh64;
+
+	if (size != sh_size) {
+		error(EXIT_FAILURE, 0, "corrupted program header size.\n");
+		/*@notreached@*/
+	}
 
 	if (lseek(fm->fd, off, SEEK_SET) == -1) {
 		error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
@@ -161,6 +172,11 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 	char nbuf[BUFSIZ];
 	int bufsize;
 	size_t offset, nameoffset;
+
+	if (size != ph_size) {
+		error(EXIT_FAILURE, 0, "corrupted program header size.\n");
+		/*@notreached@*/
+	}
 
 	if (lseek(fm->fd, off, SEEK_SET) == -1) {
 		error(EXIT_FAILURE, 0, "lseek failed (%s).\n", strerror(errno));
@@ -375,6 +391,11 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 	char nbuf[BUFSIZ];
 	int bufsize;
 	int os_style = -1;
+
+	if (size != ph_size) {
+		error(EXIT_FAILURE, 0, "corrupted program header size.\n");
+		/*@notreached@*/
+	}
 
 	/*
 	 * Loop through all the program headers.
