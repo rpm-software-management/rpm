@@ -734,6 +734,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     const char * dbfile;
     const char * dbsubfile;
     DB * db = dbi->dbi_db;
+    int _printit;
     int rc = 0, xx;
 
     flags = 0;	/* XXX unused */
@@ -769,7 +770,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
     if (db) {
 	rc = db->close(db, 0);
-	rc = cvtdberr(dbi, "db->close", rc, _debug);
+	/* XXX ignore not found error messages. */
+	_printit = (rc == ENOENT ? 0 : _debug);
+	rc = cvtdberr(dbi, "db->close", rc, _printit);
 	db = dbi->dbi_db = NULL;
 
 	rpmMessage(RPMMESS_DEBUG, _("closed   db index       %s/%s\n"),
@@ -844,7 +847,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 			(dbfile ? dbfile : tagName(dbi->dbi_rpmtag)));
 
 		xx = db->close(db, 0);
-		xx = cvtdberr(dbi, "db->close", xx, _debug);
+		/* XXX ignore not found error messages. */
+		_printit = (xx == ENOENT ? 0 : _debug);
+		xx = cvtdberr(dbi, "db->close", xx, _printit);
 		db = NULL;
 		if (rc == 0 && xx) rc = xx;
 

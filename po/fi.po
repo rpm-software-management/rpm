@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-26 15:35-0500\n"
+"POT-Creation-Date: 2002-12-27 14:23-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -3195,40 +3195,40 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:775
+#: rpmdb/db3.c:778
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:842
+#: rpmdb/db3.c:845
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:980
+#: rpmdb/db3.c:985
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1084
+#: rpmdb/db3.c:1089
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:1322
+#: rpmdb/db3.c:1327
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db3.c:1324
+#: rpmdb/db3.c:1329
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:1324
+#: rpmdb/db3.c:1329
 msgid "shared"
 msgstr "jaettua"
 
-#: rpmdb/db3.c:1328
+#: rpmdb/db3.c:1333
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"

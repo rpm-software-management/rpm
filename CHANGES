@@ -79,6 +79,7 @@
 	- resurrect automagic perl(foo) dependency generation.
 	- add BETA-GPG-KEY (but not in headers using %%pubkey yet).
 	- disable perl module magic rule.
+	- ignore ENOENT return from db->close (#80514,#79314).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
