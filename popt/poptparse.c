@@ -81,9 +81,10 @@ int poptParseArgvString(const char * s, int * argcPtr, char *** argvPtr) {
 		free(argv);
 		return POPT_ERROR_BADQUOTE;
 	    }
-	    /* fallthrough */
+	    /*@fallthrough@*/
 	  default:
 	    *buf++ = *src;
+	    break;
 	}
 
 	src++;

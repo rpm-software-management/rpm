@@ -7,11 +7,11 @@
 
 struct optionStackEntry {
     int argc;
-    const char ** argv;
+    /*@keep@*/ const char ** argv;
     int next;
-    const char * nextArg;
-    const char * nextCharArg;
-    struct poptAlias * currAlias;
+    /*@keep@*/ const char * nextArg;
+    /*@keep@*/ const char * nextCharArg;
+    /*@dependent@*/ struct poptAlias * currAlias;
     int stuffed;
 };
 
@@ -22,25 +22,26 @@ struct execEntry {
 };
 
 struct poptContext_s {
-    struct optionStackEntry optionStack[POPT_OPTION_DEPTH], * os;
-    const char ** leftovers;
+    struct optionStackEntry optionStack[POPT_OPTION_DEPTH];
+    /*@dependent@*/ struct optionStackEntry * os;
+    /*@owned@*/ const char ** leftovers;
     int numLeftovers;
     int nextLeftover;
-    const struct poptOption * options;
+    /*@keep@*/ const struct poptOption * options;
     int restLeftover;
-    const char * appName;
-    struct poptAlias * aliases;
+    /*@owned@*/ const char * appName;
+    /*@owned@*/ struct poptAlias * aliases;
     int numAliases;
     int flags;
     struct execEntry * execs;
     int numExecs;
-    const char ** finalArgv;
+    /*@owned@*/ const char ** finalArgv;
     int finalArgvCount;
     int finalArgvAlloced;
-    struct execEntry * doExec;
-    const char * execPath;
+    /*@dependent@*/ struct execEntry * doExec;
+    /*@owned@*/ const char * execPath;
     int execAbsolute;
-    const char * otherHelp;
+    /*@owned@*/ const char * otherHelp;
 };
 
 #define	xfree(_a)	free((void *)_a)
@@ -49,13 +50,13 @@ struct poptContext_s {
 #include <libintl.h>
 #endif
 
-#ifdef HAVE_GETTEXT
+#if defined(HAVE_GETTEXT) && !defined(__LCLINT__)
 #define _(foo) gettext(foo)
 #else
 #define _(foo) (foo)
 #endif
 
-#ifdef HAVE_DGETTEXT
+#if defined(HAVE_DGETTEXT) && !defined(__LCLINT__)
 #define D_(dom, str) dgettext(dom, str)
 #define POPT_(foo) D_("popt", foo)
 #else

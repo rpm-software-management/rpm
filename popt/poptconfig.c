@@ -84,7 +84,7 @@ int poptReadConfigFile(poptContext con, const char * fn) {
     }
 
     fileLength = lseek(fd, 0, SEEK_END);
-    lseek(fd, 0, 0);
+    (void) lseek(fd, 0, 0);
 
     file = alloca(fileLength + 1);
     if (read(fd, file, fileLength) != fileLength) {
@@ -122,13 +122,14 @@ int poptReadConfigFile(poptContext con, const char * fn) {
 	    break;
 	  default:
 	    *dst++ = *chptr++;
+	    break;
 	}
     }
 
     return 0;
 }
 
-int poptReadDefaultConfig(poptContext con, int useEnv) {
+int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv) {
     char * fn, * home;
     int rc;
 

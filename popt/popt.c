@@ -73,10 +73,10 @@ poptContext poptGetContext(const char * name, int argc, char ** argv,
     if (!(flags & POPT_CONTEXT_KEEP_FIRST))
 	con->os->next = 1;			/* skip argv[0] */
 
-    con->leftovers = malloc(sizeof(char *) * (argc + 1));
+    con->leftovers = calloc( (argc + 1), sizeof(char *) );
     con->options = options;
-    con->finalArgv = malloc(sizeof(*con->finalArgv) * (argc * 2));
     con->finalArgvAlloced = argc * 2;
+    con->finalArgv = calloc( con->finalArgvAlloced, sizeof(*con->finalArgv) );
     con->flags = flags;
     con->execAbsolute = 1;
 
@@ -129,7 +129,7 @@ static int handleExec(poptContext con, char * longName, char shortName) {
     if (con->flags & POPT_CONTEXT_NO_EXEC)
 	return 1;
 
-    if (!con->doExec) {
+    if (con->doExec == NULL) {
 	con->doExec = con->execs + i;
 	return 1;
     }
@@ -156,7 +156,7 @@ static int handleExec(poptContext con, char * longName, char shortName) {
 
 /* Only one of longName, shortName may be set at a time */
 static int handleAlias(poptContext con, const char * longName, char shortName,
-		       const char * nextCharArg) {
+		       /*@keep@*/ const char * nextCharArg) {
     int i;
 
     if (con->os->currAlias && con->os->currAlias->longName && longName &&
@@ -187,7 +187,8 @@ static int handleAlias(poptContext con, const char * longName, char shortName,
     con->os++;
     con->os->next = 0;
     con->os->stuffed = 0;
-    con->os->nextArg = con->os->nextCharArg = NULL;
+    con->os->nextArg = NULL;
+    con->os->nextCharArg = NULL;
     con->os->currAlias = con->aliases + i;
     con->os->argc = con->os->currAlias->argc;
     con->os->argv = con->os->currAlias->argv;
@@ -249,12 +250,12 @@ static void execCommand(poptContext con) {
     execvp(argv[0], (char *const *)argv);
 }
 
-static const struct poptOption * findOption(const struct poptOption * table,
-					    const char * longName,
-					    char shortName,
-					    poptCallbackType * callback,
-					    const void ** callbackData,
-					    int singleDash) {
+/*@observer@*/ static const struct poptOption *
+findOption(const struct poptOption * table, const char * longName,
+    char shortName,
+    /*@out@*/ poptCallbackType * callback, /*@out@*/ const void ** callbackData,
+    int singleDash)
+{
     const struct poptOption * opt = table;
     const struct poptOption * opt2;
     const struct poptOption * cb = NULL;
@@ -306,8 +307,8 @@ int poptGetNextOpt(poptContext con) {
     const struct poptOption * opt = NULL;
     int done = 0;
     int i;
-    poptCallbackType cb;
-    const void * cbData;
+    poptCallbackType cb = NULL;
+    const void * cbData = NULL;
     int singleDash;
 
     while (!done) {
@@ -438,7 +439,7 @@ int poptGetNextOpt(poptContext con) {
 		  default:
 		    fprintf(stdout, POPT_("option type (%d) not implemented in popt\n"),
 		      opt->argInfo & POPT_ARG_MASK);
-		    exit(1);
+		    exit(EXIT_FAILURE);
 		}
 	    }
 	}
@@ -521,7 +522,9 @@ void poptFreeContext(poptContext con) {
     free(con);
 }
 
-int poptAddAlias(poptContext con, struct poptAlias newAlias, int flags) {
+int poptAddAlias(poptContext con, struct poptAlias newAlias,
+		/*@unused@*/ int flags)
+{
     int aliasNum = con->numAliases++;
     struct poptAlias * alias;
 
@@ -533,12 +536,12 @@ int poptAddAlias(poptContext con, struct poptAlias newAlias, int flags) {
 			       sizeof(newAlias) * con->numAliases);
     alias = con->aliases + aliasNum;
     
-    *alias = newAlias;
-    if (alias->longName)
-	alias->longName = strcpy(malloc(strlen(alias->longName) + 1), 
-				    alias->longName);
-    else
-	alias->longName = NULL;
+    alias->longName = (newAlias->longName)
+	? strcpy(malloc(strlen(newAlias->longName) + 1), newAlias->longName)
+	: NULL;
+    alias->shortName = newAlias->shortName;
+    alias->argc = newAlias->argc;
+    alias->argv = newAlias->argv;
 
     return 0;
 }
@@ -560,7 +563,7 @@ const char * poptBadOption(poptContext con, int flags) {
 #define POPT_ERROR_BADQUOTE	-15	/* only from poptParseArgString() */
 #define POPT_ERROR_ERRNO	-16	/* only from poptParseArgString() */
 
-const char * poptStrerror(const int error) {
+const char *const poptStrerror(const int error) {
     switch (error) {
       case POPT_ERROR_NOARG:
 	return POPT_("missing argument");
@@ -587,11 +590,13 @@ int poptStuffArgs(poptContext con, const char ** argv) {
     if ((con->os - con->optionStack) == POPT_OPTION_DEPTH)
 	return POPT_ERROR_OPTSTOODEEP;
 
-    for (i = 0; argv[i]; i++);
+    for (i = 0; argv[i]; i++)
+	;
 
     con->os++;
     con->os->next = 0;
-    con->os->nextArg = con->os->nextCharArg = NULL;
+    con->os->nextArg = NULL;
+    con->os->nextCharArg = NULL;
     con->os->currAlias = NULL;
     con->os->argc = i;
     con->os->argv = argv;

@@ -20,9 +20,10 @@
 #include "popt.h"
 #include "poptint.h"
 
-static void displayArgs(poptContext con, enum poptCallbackReason foo, 
-			struct poptOption * key, 
-			const char * arg, void * data) {
+static void displayArgs(poptContext con,
+		/*@unused@*/ enum poptCallbackReason foo,
+		struct poptOption * key, 
+		/*@unused@*/ const char * arg, /*@unused@*/ void * data) {
     if (key->shortName== '?')
 	poptPrintHelp(con, stdout, 0);
     else
@@ -31,14 +32,14 @@ static void displayArgs(poptContext con, enum poptCallbackReason foo,
 }
 
 struct poptOption poptHelpOptions[] = {
-    { NULL, '\0', POPT_ARG_CALLBACK, (void *)&displayArgs, '\0', NULL },
-    { "help", '?', 0, NULL, '?', N_("Show this help message") },
-    { "usage", '\0', 0, NULL, 'u', N_("Display brief usage message") },
-    { NULL, '\0', 0, NULL, 0 }
+    { NULL, '\0', POPT_ARG_CALLBACK, (void *)&displayArgs, '\0', NULL, NULL },
+    { "help", '?', 0, NULL, '?', N_("Show this help message"), NULL },
+    { "usage", '\0', 0, NULL, 'u', N_("Display brief usage message"), NULL },
+    { NULL, '\0', 0, NULL, 0, NULL, NULL }
 } ;
 
 
-static const char *
+/*@observer@*/ /*@null@*/ static const char *const
 getTableTranslationDomain(const struct poptOption *table)
 {
   const struct poptOption *opt;
@@ -53,8 +54,9 @@ getTableTranslationDomain(const struct poptOption *table)
   return NULL;
 }
 
-static const char * getArgDescrip(const struct poptOption * opt,
-				  const char *translation_domain) {
+/*@observer@*/ /*@null@*/ static const char *const
+getArgDescrip(const struct poptOption * opt, const char *translation_domain)
+{
     if (!(opt->argInfo & POPT_ARG_MASK)) return NULL;
 
     if (opt == (poptHelpOptions + 1) || opt == (poptHelpOptions + 2))
@@ -193,7 +195,7 @@ static int showHelpIntro(poptContext con, FILE * f) {
     return len;
 }
 
-void poptPrintHelp(poptContext con, FILE * f, int flags) {
+void poptPrintHelp(poptContext con, FILE * f, /*@unused@*/ int flags) {
     int leftColWidth;
 
     showHelpIntro(con, f);
@@ -210,7 +212,7 @@ static int singleOptionUsage(FILE * f, int cursor,
 			     const struct poptOption * opt,
 			     const char *translation_domain) {
     int len = 3;
-    char shortStr[2];
+    char shortStr[2] = { '\0', '\0' };
     const char * item = shortStr;
     const char * argDescrip = getArgDescrip(opt, translation_domain);
 
@@ -268,9 +270,10 @@ static int showShortOptions(const struct poptOption * opt, FILE * f,
     char s[300];		/* this is larger then the ascii set, so
 				   it should do just fine */
 
-    if (!str) {
+    s[0] = '\0';
+    if (str == NULL) {
+	memset(s, 0, sizeof(s));
 	str = s;
-	memset(str, 0, sizeof(s));
     }
 
     while (opt->longName || opt->shortName || opt->arg) {
@@ -289,7 +292,7 @@ static int showShortOptions(const struct poptOption * opt, FILE * f,
     return strlen(s) + 4;
 }
 
-void poptPrintUsage(poptContext con, FILE * f, int flags) {
+void poptPrintUsage(poptContext con, FILE * f, /*@unused@*/ int flags) {
     int cursor;
 
     cursor = showHelpIntro(con, f);
