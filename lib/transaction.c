@@ -24,14 +24,10 @@ struct fileInfo {
   /* these are for ADDED packages */
     char ** flinks;
     struct availablePackage * ap;
+    struct sharedFileInfo * replaced;
   /* for REMOVED packages */
     unsigned int record;
-};
-
-struct sharedFileInfo {
-    int pkgFileNum;
-    int otherFileNum;
-    int otherPkg;
+    char * fstates;
 };
 
 static rpmProblemSet psCreate(void);
@@ -162,6 +158,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	fi->actions = malloc(sizeof(*fi->actions) * fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
 	fi->ap = alp;
+	fi->replaced = NULL;
 	fi++;
     }
 
@@ -183,6 +180,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 				(void *) &fi->fmd5s, NULL);
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMODES, NULL, 
 				(void *) &fi->fmodes, NULL);
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILESTATES, NULL, 
+				(void *) &fi->fstates, NULL);
 
 	fi->actions = malloc(sizeof(*fi->actions) * fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
@@ -284,7 +283,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	fi = flList + numPackages;
 	if (installBinaryPackage(ts->root, ts->db, al->list[pkgNum].fd, 
 			  	 hdrs[pkgNum], instFlags, notify, notifyData, 
-				 fi->actions))
+				 fi->actions, fi->replaced))
 	    ourrc++;
 	headerFree(hdrs[pkgNum]);
 
@@ -717,6 +716,7 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
     uint_16 * otherModes;
     int otherFileNum;
     int fileNum;
+    int numReplaced = 0;
 
     if (!(h = rpmdbGetRecord(db, shared->otherPkg)))
 	return 1;
@@ -732,18 +732,24 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
     headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
 			    (void **) &otherFlags, NULL);
 
+    fi->replaced = malloc(sizeof(*fi->replaced) * sharedCount);
+
     for (i = 0; i < sharedCount; i++, shared++) {
 	otherFileNum = shared->otherFileNum;
 	fileNum = shared->pkgFileNum;
 	if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL) {
-	    if (reportConflicts && filecmp(otherModes[otherFileNum],
+	    if (filecmp(otherModes[otherFileNum],
 			otherMd5s[otherFileNum],
 			otherLinks[otherFileNum],
 			fi->fmodes[fileNum],
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
-		psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key, 
-			 fi->ap->h, fi->fl[fileNum], h);
+		if (reportConflicts)
+		    psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key, 
+			     fi->ap->h, fi->fl[fileNum], h);
+		if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
+			    & RPMFILE_CONFIG)
+		    fi->replaced[numReplaced++] = *shared;
 	    }
 
 	    if ((otherFlags[otherFileNum] | fi->fflags[fileNum])
@@ -764,6 +770,10 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
     free(otherMd5s);
     free(otherLinks);
     headerFree(h);
+
+    fi->replaced = realloc(fi->replaced,
+			   sizeof(*fi->replaced) * (numReplaced + 1));
+    fi->replaced[numReplaced].otherPkg = 0;
 
     return 0;
 }
@@ -858,7 +868,8 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	} else if (fi->type == REMOVED && otherPkgNum >= 0) {
 	    fi->actions[i] = SKIP;
 	} else if (fi->type == REMOVED) {
-	    if (fi->actions[i] != SKIP) {
+	    if (fi->actions[i] != SKIP && 
+			fi->fstates[i] == RPMFILE_STATE_NORMAL ) {
 		if (S_ISREG(fi->fmodes[i]) && 
 			    (fi->fflags[i] & RPMFILE_CONFIG)) {
 		    rc = mdfile(fi->fl[i], mdsum);
