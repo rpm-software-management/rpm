@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-01-19 11:41-0500\n"
+msgstr "POT-Creation-Date: 2001-01-19 12:17-0500\n"
 
 # , c-format
 #: build.c:26
