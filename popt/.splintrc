@@ -17,7 +17,6 @@
 -bufferoverflowhigh
 
 # --- +partial artifacts
--exportlocal		# 14
 -fcnuse			# 7
 
 # --- not-yet at strict level

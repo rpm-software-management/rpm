@@ -297,7 +297,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    /* Ignore colored packages not in our rainbow. */
 	    ohcolor = hGetColor(oh);
 	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
-		continue;
+		/*@innercontinue@*/ continue;
 
 	    /*
 	     * Rpm prior to 3.0.3 does not have versioned obsoletes.

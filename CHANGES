@@ -119,6 +119,7 @@
 	- pay attention to package color when upgrading identical packages.
 	- fix: trap SIGPIPE, close database(s).
 	- configurable default query output format.
+	- popt: diddle doxygen/splint annotations, corrected doco.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

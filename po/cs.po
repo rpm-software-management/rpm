@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-31 17:59-0500\n"
+"POT-Creation-Date: 2003-02-06 11:51-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1578,65 +1578,65 @@ msgstr ""
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:535 lib/package.c:575 lib/package.c:876 lib/package.c:900
-#: lib/package.c:930 lib/rpmchecksig.c:805
+#: lib/package.c:535 lib/package.c:576 lib/package.c:878 lib/package.c:902
+#: lib/package.c:932 lib/rpmchecksig.c:805
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:654
+#: lib/package.c:656
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:658
+#: lib/package.c:660
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:666
+#: lib/package.c:668
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:675
+#: lib/package.c:677
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:689
+#: lib/package.c:691
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:702
+#: lib/package.c:704
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:767
+#: lib/package.c:769
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "práce s balíèky verze 1 není podporována touto verzí RPM\n"
 
-#: lib/package.c:775
+#: lib/package.c:777
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "tato verze RPM podporuje práci s balíèky s verzí <= 4\n"
 
-#: lib/package.c:786 lib/rpmchecksig.c:229 lib/rpmchecksig.c:720
+#: lib/package.c:788 lib/rpmchecksig.c:229 lib/rpmchecksig.c:720
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/package.c:793 lib/rpmchecksig.c:236 lib/rpmchecksig.c:728
+#: lib/package.c:795 lib/rpmchecksig.c:236 lib/rpmchecksig.c:728
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:840
+#: lib/package.c:842
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/package.c:943 lib/rpmchecksig.c:117 lib/rpmchecksig.c:643
+#: lib/package.c:945 lib/rpmchecksig.c:117 lib/rpmchecksig.c:643
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
@@ -3149,46 +3149,46 @@ msgstr ""
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:291
+#: rpmdb/db3.c:292
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:778
+#: rpmdb/db3.c:779
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:845
+#: rpmdb/db3.c:846
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:985
+#: rpmdb/db3.c:986
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1089
+#: rpmdb/db3.c:1090
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1327
+#: rpmdb/db3.c:1328
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: rpmdb/db3.c:1329
+#: rpmdb/db3.c:1330
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1329
+#: rpmdb/db3.c:1330
 #, fuzzy
 msgid "shared"
 msgstr "sdílen v síti "
 
-#: rpmdb/db3.c:1333
+#: rpmdb/db3.c:1334
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
