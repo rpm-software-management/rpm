@@ -721,7 +721,7 @@ static int IDTintcmp(const void * a, const void * b)
 	/*@*/
 {
     /*@-castexpose@*/
-    return ( reverse * (((IDT)a)->val.i32 - ((IDT)b)->val.i32) );
+    return ( reverse * (((IDT)a)->val.u32 - ((IDT)b)->val.u32) );
     /*@=castexpose@*/
 }
 
@@ -807,7 +807,7 @@ IDTX IDTXload(rpmTransactionSet ts, rpmTag tag)
 	    idt->h = headerLink(h, "IDTXload idt->h");
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
-	    idt->val.i32 = *tidp;
+	    idt->val.u32 = *tidp;
 	}
 	idtx->nidt++;
     }
@@ -875,7 +875,7 @@ IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
 		idt->key = av[i];
 		av[i] = NULL;
 		idt->instance = 0;
-		idt->val.i32 = *tidp;
+		idt->val.u32 = *tidp;
 	    }
 	    idtx->nidt++;
 	}
@@ -892,21 +892,169 @@ IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
     return idtx;
 }
 
+/** @todo Transaction handling, more, needs work. */
 int rpmRollback(rpmTransactionSet ts,
-		/*@unused@*/ struct rpmInstallArguments_s * ia,
-		/*@unused@*/ const char ** argv)
+		struct rpmInstallArguments_s * ia,
+		 const char ** argv)
 {
+#ifdef	NOTYET
+    rpmdb db = NULL;
+    rpmTransactionSet ts = NULL;
+    rpmDependencyConflict conflicts = NULL;
+    int numConflicts = 0;
+    rpmProblemSet probs = NULL;
+    int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
+    unsigned thistid = 0xffffffff;
+    unsigned prevtid;
+    time_t tid;
+#endif
     IDTX itids = NULL;
-    const char * globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
     IDTX rtids = NULL;
+    IDT rp;
+    int nrids = 0;
+    IDT ip;
+    int niids = 0;
+    int rc = 0;
+
+    if (argv != NULL && *argv != NULL) {
+	rc = -1;
+	goto exit;
+    }
 
     itids = IDTXload(ts, RPMTAG_INSTALLTID);
+    if (itids != NULL) {
+	ip = itids->idt;
+	niids = itids->nidt;
+    } else {
+	ip = NULL;
+	niids = 0;
+    }
 
-    rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID);
+    {	const char * globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
+	if (globstr == NULL || *globstr == '%') {
+	    globstr = _free(globstr);
+	    rc = -1;
+	    goto exit;
+	}
+	rtids = IDTXglob(ts, globstr, RPMTAG_REMOVETID);
+	if (rtids != NULL) {
+	    rp = rtids->idt;
+	    nrids = rtids->nidt;
+	} else {
+	    rp = NULL;
+	    nrids = 0;
+	}
+	globstr = _free(globstr);
+    }
 
-    globstr = _free(globstr);
+#ifdef	NOTYET
+    /* Run transactions until rollback goal is achieved. */
+    do {
+	prevtid = thistid;
+	rc = 0;
+	packagesTotal = 0;
+	ia->installInterfaceFlags &= ~ifmask;
+
+	/* Find larger of the remaining install/erase transaction id's. */
+	thistid = 0;
+	if (ip != NULL && ip->val.u32 > thistid)
+	    thistid = ip->val.u32;
+	if (rp != NULL && rp->val.u32 > thistid)
+	    thistid = rp->val.u32;
+
+	/* If we've achieved the rollback goal, then we're done. */
+	if (thistid == 0 || thistid < ia->rbtid)
+	    break;
+
+	/* Install the previously erased packages for this transaction. */
+	while (rp != NULL && rp->val.u32 == thistid) {
+
+	    rpmMessage(RPMMESS_DEBUG, "\t+++ %s\n", rp->key);
+
+	    rc = rpmtransAddPackage(ts, rp->h, (fnpyKey)rp->key,
+			       0, ia->relocations);
+	    if (rc != 0)
+		goto exit;
+
+	    packagesTotal++;
+	    if (!(ia->installInterfaceFlags & ifmask))
+		ia->installInterfaceFlags |= INSTALL_UPGRADE;
+
+#ifdef	NOTYET
+	    rp->h = headerFree(rp->h);
+#endif
+	    nrids--;
+	    if (nrids > 0)
+		rp++;
+	    else
+		rp = NULL;
+	}
+
+	/* Erase the previously installed packages for this transaction. */
+	while (ip != NULL && ip->val.u32 == thistid) {
+
+	    rpmMessage(RPMMESS_DEBUG,
+			"\t--- rpmdb instance #%u\n", ip->instance);
+
+	    rc = rpmtransRemovePackage(ts, ip->instance);
+	    if (rc != 0)
+		goto exit;
+
+	    packagesTotal++;
+	    if (!(ia->installInterfaceFlags & ifmask))
+		ia->installInterfaceFlags |= INSTALL_ERASE;
+
+#ifdef	NOTYET
+	    ip->instance = 0;
+#endif
+	    niids--;
+	    if (niids > 0)
+		ip++;
+	    else
+		ip = NULL;
+	}
+
+	/* Anything to do? */
+	if (packagesTotal <= 0)
+	    break;
+
+	tid = (time_t)thistid;
+	rpmMessage(RPMMESS_DEBUG, _("rollback %d packages to %s"),
+			packagesTotal, ctime(&tid));
+
+	conflicts = NULL;
+	numConflicts = 0;
+	rc = rpmdepCheck(ts, &conflicts, &numConflicts);
+	if (rc != 0) {
+	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
+	    printDepProblems(stderr, conflicts, numConflicts);
+	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	    goto exit;
+	}
+
+	rc = rpmdepOrder(ts);
+	if (rc != 0)
+	    goto exit;
+
+	probs = NULL;
+	rc = rpmRunTransactions(ts,  rpmShowProgress,
+		(void *) ((long)ia->installInterfaceFlags),
+		NULL, &probs, ia->transFlags,
+		(ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
+	if (rc > 0) {
+	    rpmProblemSetPrint(stderr, probs);
+	    if (probs != NULL) rpmProblemSetFree(probs);
+	    probs = NULL;
+	    goto exit;
+	}
+
+    } while (1);
+#endif
+
+exit:
+
     rtids = IDTXfree(rtids);
     itids = IDTXfree(itids);
 
-    return 0;
+    return rc;
 }

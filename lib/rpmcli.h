@@ -29,8 +29,10 @@ extern "C" {
  */
 struct rpmBuildArguments_s {
     int buildAmount;		/*!< Bit(s) to control operation. */
-/*@null@*/ const char * buildRootOverride; /*!< from --buildroot */
-/*@null@*/ char * targets;	/*!< Target platform(s), comma separated. */
+/*@null@*/
+    const char * buildRootOverride; /*!< from --buildroot */
+/*@null@*/
+    char * targets;		/*!< Target platform(s), comma separated. */
 /*@observer@*/
     const char * passPhrase;	/*!< Pass phrase. */
 /*@only@*/ /*@null@*/
@@ -44,7 +46,8 @@ struct rpmBuildArguments_s {
     int useCatalog;		/*!< from --usecatalog */
     char buildMode;		/*!< Build mode (one of "btBC") */
     char buildChar;		/*!< Build stage (one of "abcilps ") */
-/*@observer@*/ /*@null@*/ const char * rootdir;
+/*@observer@*/ /*@null@*/
+    const char * rootdir;
 };
 
 /** \ingroup rpmcli
@@ -204,7 +207,8 @@ struct rpmQVKArguments_s {
     rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
 /*@null@*/
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
-/*@unused@*/ int qva_verbose;	/*!< (unused) */
+/*@unused@*/
+    int qva_verbose;		/*!< (unused) */
 /*@only@*/ /*@null@*/
     const char * qva_queryFormat;/*!< Format for headerSprintf(). */
     int sign;			/*!< Is a passphrase needed? */
@@ -474,13 +478,16 @@ struct rpmInstallArguments_s {
     rpmprobFilterFlags probFilter;
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;
-/*@only@*/ /*@null@*/ rpmRelocation * relocations;
+/*@only@*/ /*@null@*/
+    rpmRelocation * relocations;
     int numRelocations;
     int noDeps;
     int incldocs;
-/*@null@*/ const char * prefix;
-/*@observer@*/ /*@null@*/ const char * rootdir;
-    int_32 rbtid;		/*!< from --rollback */
+/*@null@*/
+    const char * prefix;
+/*@observer@*/ /*@null@*/
+    const char * rootdir;
+    uint_32 rbtid;		/*!< from --rollback */
 };
 
 /**
@@ -489,10 +496,11 @@ struct rpmInstallArguments_s {
 /*@-fielduse@*/
 typedef /*@abstract@*/ struct IDT_s {
     unsigned int instance;	/*!< installed package transaction id. */
-/*@owned@*/ /*@null@*/ const char * key; /*! removed package file name. */
+/*@owned@*/ /*@null@*/
+    const char * key;		/*! removed package file name. */
     Header h;			/*!< removed package header. */
     union {
-	int_32 i32;		/*!< install/remove transaction id */
+	uint_32 u32;		/*!< install/remove transaction id */
     } val;
 } * IDT;
 /*@=fielduse@*/
@@ -505,7 +513,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
     int size;			/*!< size of id index element. */
     int alloced;		/*!< current number of elements allocated. */
     int nidt;			/*!< current number of elements initialized. */
-/*@only@*/ /*@null@*/ IDT idt;	/*!< id index elements. */
+/*@only@*/ /*@null@*/
+    IDT idt;			/*!< id index elements. */
 } * IDTX;
 
 /**

@@ -1545,7 +1545,8 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
 	xx = dbiSync(dbi, 0);
 	(void) unblockSignals(dbi->dbi_rpmdb, &signalMask);
 	uh = _free(uh);
-    }
+    } else
+fprintf(stderr, "*** dbiUpdateRecord: uh is NULL\n");
     return rc;
 }
 
@@ -2631,9 +2632,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
     if (db == NULL)
 	return 0;
 
+    xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
     if (iid != 0 && iid != -1) {
 	int_32 tid = iid;
-	xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
 	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
 	   xx = headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
     }
