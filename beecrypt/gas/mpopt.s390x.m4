@@ -21,19 +21,34 @@ dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 include(config.m4) 
 
 
-divert(-1)
-dnl r2 contains count -> move elsewhere; return register = carry
-dnl r3 contains result
-dnl r4 contains data
-dnl r5 contains multiplier
-dnl r6 index; start value = (count << 3) - 8
-dnl r7 zero register
-dnl r0,r1 free for computations
+C_FUNCTION_BEGIN(mpsetmul)
+	stmg %r6,%r7,48(%r15)
+	sllg %r6,%r2,3
+	aghi %r6,-8
+	xgr %r2,%r2
+	xgr %r7,%r7
+
+LOCAL(mpsetmul_loop):
+	lgr %r1,%r5
+	mlg %r0,0(%r4,%r6)
+	algr %r1,%r2
+	alcgr %r0,%r7
+	stg %r1,0(%r3,%r6)
+	lgr %r2,%r0
+	aghi %r6,-8
+	jhe LOCAL(mpsetmul_loop)
+
+	lmg %r6,%r7,48(%r15)
+	br %r14
+C_FUNCTION_END(mpsetmul)
+
+
 C_FUNCTION_BEGIN(mpaddmul)
 	stmg %r6,%r7,48(%r15)
 	sllg %r6,%r2,3
-	xgr %r7,%r7
+	aghi %r6,-8
 	xgr %r2,%r2
+	xgr %r7,%r7
 	
 LOCAL(mpaddmul_loop):
 	lgr %r1,%r5
@@ -45,8 +60,40 @@ LOCAL(mpaddmul_loop):
 	stg %r1,0(%r3,%r6)
 	lgr %r2,%r0
 	aghi %r6,-8
-	jle LOCAL(mpaddmul_loop)
+	jhe LOCAL(mpaddmul_loop)
+
 	lmg %r6,%r7,48(%r15)
 	br %r14
 C_FUNCTION_END(mpaddmul)
+
+
+divert(-1)
+dnl function fails; illegal instruction on mlgr
+dnl I've tried many alternative, but nothing seems to work so far
+C_FUNCTION_BEGIN(mpaddsqrtrc)
+	stmg %r6,%r7,48(%r15)
+	sllg %r5,%r2,3
+	sllg %r6,%r2,4
+	aghi %r5,-8
+	aghi %r6,-16
+	xgr %r2,%r2
+	xgr %r7,%r7
+
+LOCAL(mpaddsqrtrc_loop):
+	lg %r1,0(%r4,%r5)
+	mlgr %r1,%r1
+	algr %r1,%r2
+	alcgr %r0,%r7
+	xgr %r2,%r2
+	alg %r1,8(%r3,%r6)
+	alcg %r0,0(%r3,%r6)
+	alcgr %r2,%r7
+	stg %r1,8(%r3,%r6)
+	stg %r0,0(%r3,%r6)
+	aghi %r5,-8
+	jhe LOCAL(mpaddsqrtrc_loop)
+
+	lmg %r6,%r7,48(%r15)
+	br %r14
+C_FUNCTION_END(mpaddsqrtrc)
 divert(0)

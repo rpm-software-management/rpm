@@ -277,43 +277,43 @@ static void sha256Finish(sha256Param* sp)
 	sp->offset = 0;
 }
 
-int sha256Digest(sha256Param* sp, byte* data)
+int sha256Digest(sha256Param* sp, byte* digest)
 {
 	sha256Finish(sp);
 
 	/* encode 8 integers big-endian style */
-	data[ 0] = (byte)(sp->h[0] >> 24);
-	data[ 1] = (byte)(sp->h[0] >> 16);
-	data[ 2] = (byte)(sp->h[0] >>  8);
-	data[ 3] = (byte)(sp->h[0] >>  0);
-	data[ 4] = (byte)(sp->h[1] >> 24);
-	data[ 5] = (byte)(sp->h[1] >> 16);
-	data[ 6] = (byte)(sp->h[1] >>  8);
-	data[ 7] = (byte)(sp->h[1] >>  0);
-	data[ 8] = (byte)(sp->h[2] >> 24);
-	data[ 9] = (byte)(sp->h[2] >> 16);
-	data[10] = (byte)(sp->h[2] >>  8);
-	data[11] = (byte)(sp->h[2] >>  0);
-	data[12] = (byte)(sp->h[3] >> 24);
-	data[13] = (byte)(sp->h[3] >> 16);
-	data[14] = (byte)(sp->h[3] >>  8);
-	data[15] = (byte)(sp->h[3] >>  0);
-	data[16] = (byte)(sp->h[4] >> 24);
-	data[17] = (byte)(sp->h[4] >> 16);
-	data[18] = (byte)(sp->h[4] >>  8);
-	data[19] = (byte)(sp->h[4] >>  0);
-	data[20] = (byte)(sp->h[5] >> 24);
-	data[21] = (byte)(sp->h[5] >> 16);
-	data[22] = (byte)(sp->h[5] >>  8);
-	data[23] = (byte)(sp->h[5] >>  0);
-	data[24] = (byte)(sp->h[6] >> 24);
-	data[25] = (byte)(sp->h[6] >> 16);
-	data[26] = (byte)(sp->h[6] >>  8);
-	data[27] = (byte)(sp->h[6] >>  0);
-	data[28] = (byte)(sp->h[7] >> 24);
-	data[29] = (byte)(sp->h[7] >> 16);
-	data[30] = (byte)(sp->h[7] >>  8);
-	data[31] = (byte)(sp->h[7] >>  0);
+	digest[ 0] = (byte)(sp->h[0] >> 24);
+	digest[ 1] = (byte)(sp->h[0] >> 16);
+	digest[ 2] = (byte)(sp->h[0] >>  8);
+	digest[ 3] = (byte)(sp->h[0] >>  0);
+	digest[ 4] = (byte)(sp->h[1] >> 24);
+	digest[ 5] = (byte)(sp->h[1] >> 16);
+	digest[ 6] = (byte)(sp->h[1] >>  8);
+	digest[ 7] = (byte)(sp->h[1] >>  0);
+	digest[ 8] = (byte)(sp->h[2] >> 24);
+	digest[ 9] = (byte)(sp->h[2] >> 16);
+	digest[10] = (byte)(sp->h[2] >>  8);
+	digest[11] = (byte)(sp->h[2] >>  0);
+	digest[12] = (byte)(sp->h[3] >> 24);
+	digest[13] = (byte)(sp->h[3] >> 16);
+	digest[14] = (byte)(sp->h[3] >>  8);
+	digest[15] = (byte)(sp->h[3] >>  0);
+	digest[16] = (byte)(sp->h[4] >> 24);
+	digest[17] = (byte)(sp->h[4] >> 16);
+	digest[18] = (byte)(sp->h[4] >>  8);
+	digest[19] = (byte)(sp->h[4] >>  0);
+	digest[20] = (byte)(sp->h[5] >> 24);
+	digest[21] = (byte)(sp->h[5] >> 16);
+	digest[22] = (byte)(sp->h[5] >>  8);
+	digest[23] = (byte)(sp->h[5] >>  0);
+	digest[24] = (byte)(sp->h[6] >> 24);
+	digest[25] = (byte)(sp->h[6] >> 16);
+	digest[26] = (byte)(sp->h[6] >>  8);
+	digest[27] = (byte)(sp->h[6] >>  0);
+	digest[28] = (byte)(sp->h[7] >> 24);
+	digest[29] = (byte)(sp->h[7] >> 16);
+	digest[30] = (byte)(sp->h[7] >>  8);
+	digest[31] = (byte)(sp->h[7] >>  0);
 
 	(void) sha256Reset(sp);
 	return 0;

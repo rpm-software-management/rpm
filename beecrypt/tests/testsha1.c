@@ -63,8 +63,6 @@ int main()
 			printf("failed test vector %d\n", i+1);
 			failures++;
 		}
-		else
-			printf("ok\n");
 	}
 	return failures;
 }

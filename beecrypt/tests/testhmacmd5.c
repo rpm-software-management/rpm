@@ -93,11 +93,9 @@ int main()
 
 		if (memcmp(digest, table[i].expect, 16))
 		{
-			printf("failed\n");
+			printf("failed test vector %d\n", i+1);
 			failures++;
 		}
-		else
-			printf("ok\n");
 	}
 
 	return failures;

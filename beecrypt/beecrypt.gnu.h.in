@@ -1,315 +1,44 @@
-/* beecrypt.gnu.h.in.  Generated from configure.ac by autoheader.  */
-
-/* Define to 1 if you are using AIX */
-#undef AIX
-
-/* Define to 1 if you are using Cygwin */
-#undef CYGWIN
-
-/* Define to 1 if you are using Darwin/MacOS X */
-#undef DARWIN
-
-/* Define to 1 if you want to enable asynchronous I/O support */
-#undef ENABLE_AIO
-
-/* Define to 1 if you want to enable multithread support */
-#undef ENABLE_THREADS
-
-/* Define to 1 if you are using FreeBSD */
-#undef FREEBSD
-
-/* Define to 1 if you have the <aio.h> header file. */
-#undef HAVE_AIO_H
-
-/* Define to 1 if you have the <ctype.h> header file. */
-#undef HAVE_CTYPE_H
-
-/* Define to 1 if your system has device /dev/audio */
-#undef HAVE_DEV_AUDIO
-
-/* Define to 1 if your system has device /dev/dsp */
-#undef HAVE_DEV_DSP
-
-/* Define to 1 if your system has device /dev/random */
-#undef HAVE_DEV_RANDOM
-
-/* Define to 1 if your system has device /dev/tty */
-#undef HAVE_DEV_TTY
-
-/* Define to 1 if your system has device /dev/urandom */
-#undef HAVE_DEV_URANDOM
-
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#undef HAVE_DLFCN_H
-
-/* Define to 1 if you have the <errno.h> header file. */
-#undef HAVE_ERRNO_H
-
-/* Define to 1 if you have the <fcntl.h> header file. */
-#undef HAVE_FCNTL_H
-
-/* Define to 1 if you have the `gethrtime' function. */
-#undef HAVE_GETHRTIME
-
-/* Define to 1 if you have the `gettimeofday' function. */
-#undef HAVE_GETTIMEOFDAY
-
-/* */
-#undef HAVE_INT64_T
-
-/* Define to 1 if you have the <inttypes.h> header file. */
-#undef HAVE_INTTYPES_H
-
-/* Define to 1 if you have the `mtmalloc' library (-lmtmalloc). */
-#undef HAVE_LIBMTMALLOC
-
-/* Define to 1 if you have the `winmm' library (-lwinmm). */
-#undef HAVE_LIBWINMM
-
-/* Define to 1 if you have the <malloc.h> header file. */
-#undef HAVE_MALLOC_H
-
-/* Define to 1 if you have the `memcmp' function. */
-#undef HAVE_MEMCMP
-
-/* Define to 1 if you have the `memmove' function. */
-#undef HAVE_MEMMOVE
-
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
-
-/* Define to 1 if you have the `memset' function. */
-#undef HAVE_MEMSET
-
-/* Define to 1 if you have the <mtmalloc.h> header file. */
-#undef HAVE_MTMALLOC_H
-
-/* Define to 1 if you have the <pthread.h> header file. */
-#undef HAVE_PTHREAD_H
-
-/* Define to 1 if you have the <semaphore.h> header file. */
-#undef HAVE_SEMAPHORE_H
-
-/* Define to 1 if `stat' has the bug that it succeeds when given the
-   zero-length file name argument. */
-#undef HAVE_STAT_EMPTY_STRING_BUG
-
-/* Define to 1 if you have the <stdint.h> header file. */
-#undef HAVE_STDINT_H
-
-/* . */
-#undef HAVE_STDLIB_H
-
-/* Define to 1 if you have the `strcspn' function. */
-#undef HAVE_STRCSPN
-
-/* Define to 1 if you have the `strerror' function. */
-#undef HAVE_STRERROR
-
-/* Define to 1 if you have the <strings.h> header file. */
-#undef HAVE_STRINGS_H
-
-/* . */
-#undef HAVE_STRING_H
-
-/* Define to 1 if you have the `strspn' function. */
-#undef HAVE_STRSPN
-
-/* Define to 1 if you have the <synch.h> header file. */
-#undef HAVE_SYNCH_H
-
-/* Define to 1 if you have the <sys/audioio.h> header file. */
-#undef HAVE_SYS_AUDIOIO_H
-
-/* Define to 1 if you have the <sys/ioctl> header file. */
-#undef HAVE_SYS_IOCTL
-
-/* . */
-#undef HAVE_SYS_IOCTL_H
-
-/* Define to 1 if you have the <sys/soundcard.h> header file. */
-#undef HAVE_SYS_SOUNDCARD_H
-
-/* . */
-#undef HAVE_SYS_STAT_H
-
-/* Define to 1 if you have the <sys/time.h> header file. */
-#undef HAVE_SYS_TIME_H
-
-/* . */
-#undef HAVE_SYS_TYPES_H
-
-/* Define to 1 if you have the <termios.h> header file. */
-#undef HAVE_TERMIOS_H
-
-/* Define to 1 if you have the <termio.h> header file. */
-#undef HAVE_TERMIO_H
-
-/* Define to 1 if you have the <thread.h> header file. */
-#undef HAVE_THREAD_H
-
-/* Define to 1 if you have the <time.h> header file. */
-#undef HAVE_TIME_H
-
-/* */
-#undef HAVE_UINT64_T
-
-/* . */
-#undef HAVE_UNISTD_H
-
-/* Define to 1 if you are using HPUX */
-#undef HPUX
-
-/* Define to 1 if you want to include the Java code */
-#undef JAVAGLUE
-
-/* Define to 1 if you are using GNU/Linux */
-#undef LINUX
-
-/* Define to 1 if `lstat' dereferences a symlink specified with a trailing
-   slash. */
-#undef LSTAT_FOLLOWS_SLASHED_SYMLINK
-
-/* Define to the word size of your CPU */
-#undef MP_WBITS
-
-/* Define to 1 if you are using NetBSD */
-#undef NETBSD
-
-/* Define to 1 if you are using OpenBSD */
-#undef OPENBSD
-
-/* Define to 1 if you are using OSF */
-#undef OSF
-
-/* Name of package */
-#undef PACKAGE
-
-/* Define to the address where bug reports for this package should be sent. */
-#undef PACKAGE_BUGREPORT
-
-/* Define to the full name of this package. */
-#undef PACKAGE_NAME
-
-/* Define to the full name and version of this package. */
-#undef PACKAGE_STRING
-
-/* Define to the one symbol short name of this package. */
-#undef PACKAGE_TARNAME
-
-/* Define to the version of this package. */
-#undef PACKAGE_VERSION
-
-/* Define to 1 if you are using QNX */
-#undef QNX
-
-/* Define to 1 if you are using SCO Unix */
-#undef SCO_UNIX
-
-/* The size of a `char', as computed by sizeof. */
-#undef SIZEOF_CHAR
-
-/* The size of a `int', as computed by sizeof. */
-#undef SIZEOF_INT
-
-/* The size of a `long', as computed by sizeof. */
-#undef SIZEOF_LONG
-
-/* The size of a `long long', as computed by sizeof. */
-#undef SIZEOF_LONG_LONG
-
-/* The size of a `short', as computed by sizeof. */
-#undef SIZEOF_SHORT
-
-/* The size of a `unsigned char', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_CHAR
-
-/* The size of a `unsigned int', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_INT
-
-/* The size of a `unsigned long', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_LONG
-
-/* The size of a `unsigned long long', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_LONG_LONG
-
-/* The size of a `unsigned short', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_SHORT
-
-/* Define to 1 if you are using Solaris */
-#undef SOLARIS
-
-/* Define to 1 if you have the ANSI C header files. */
-#undef STDC_HEADERS
-
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#undef TIME_WITH_SYS_TIME
-
-/* Version number of package */
-#undef VERSION
-
-
-#ifndef WIN32
-#undef WIN32
+/*
+ * Copyright (c) 2003 Bob Deblier
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+#ifndef _BEECRYPT_GNU_H
+#define _BEECRYPT_GNU_H
+
+@INCLUDE_INTTYPES_H@
+@INCLUDE_STDINT_H@
+@INCLUDE_SYNCH_H@
+@INCLUDE_PTHREAD_H@
+
+@TYPEDEF_BC_LOCK_T@
+
+@TYPEDEF_INT8_T@
+@TYPEDEF_INT16_T@
+@TYPEDEF_INT32_T@
+@TYPEDEF_INT64_T@
+
+@TYPEDEF_UINT8_T@
+@TYPEDEF_UINT16_T@
+@TYPEDEF_UINT32_T@
+@TYPEDEF_UINT64_T@
+
+#if !defined(MP_WBITS) /* dangerous; some assembler routines make assumptions */
+# define MP_WBITS	@MP_WBITS@
 #endif
 
-
-/* Define to 1 if your processor stores words with the most significant byte
-   first (like Motorola and SPARC, unlike Intel and VAX). */
-#undef WORDS_BIGENDIAN
-
-/* Define to 1 if on AIX 3.
-   System headers sometimes define this.
-   We just want to avoid a redefinition error message.  */
-#ifndef _ALL_SOURCE
-# undef _ALL_SOURCE
 #endif
-
-/* Define to empty if `const' does not conform to ANSI C. */
-#undef const
-
-/* Define as `__inline' if that's what the C compiler calls it, or to nothing
-   if it is not supported. */
-#undef inline
-
-/* If not already defined, define as a signed integer of exactly 16 bits */
-#undef int16_t
-
-/* If not already defined, define as a signed integer of exactly 32 bits */
-#undef int32_t
-
-/* If not already defined, define as a signed integer of exactly 64 bits */
-#undef int64_t
-
-/* If not already defined, define as a signed integer of 8 bits */
-#undef int8_t
-
-/* Define to `unsigned' if <sys/types.h> does not define. */
-#undef size_t
-
-/* If not already defined, define as an unsigned integer of exactly 16 bits */
-#undef uint16_t
-
-/* If not already defined, define as an unsigned integer of exactly 32 bits */
-#undef uint32_t
-
-/* If not already defined, define as an unsigned integer of exactly 64 bits */
-#undef uint64_t
-
-/* If not already defined, define as an unsigned integer of 8 bits */
-#undef uint8_t
-
-
-#if ENABLE_THREADS
-# ifndef _REENTRANT
-#  define _REENTRANT
-# endif
-# if LINUX
-#  define _LIBC_REENTRANT
-# endif
-#else
-# ifdef _REENTRANT
-#  undef _REENTRANT
-# endif
-#endif
-

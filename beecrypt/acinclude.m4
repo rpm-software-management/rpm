@@ -10,93 +10,109 @@ dnl  LGPL
 
 dnl  BEECRYPT_INT_TYPES
 AC_DEFUN(BEECRYPT_INT_TYPES,[
+  AC_TYPE_SIZE_T
+  if test $ac_cv_header_inttypes_h = yes; then
+    AC_SUBST(INCLUDE_INTTYPES_H,["#include <inttypes.h>"])
+  else
+    AC_SUBST(INCLUDE_INTTYPES_H,[ ])
+  fi
+  if test $ac_cv_header_stdint_h = yes; then
+    AC_SUBST(INCLUDE_STDINT_H,["#include <stdint.h>"])
+  else
+    AC_SUBST(INCLUDE_STDINT_H,[ ])
+  fi
   AH_TEMPLATE([HAVE_INT64_T])
   AH_TEMPLATE([HAVE_UINT64_T])
+  bc_typedef_int8_t=
   AC_CHECK_TYPE([int8_t],,[
-    # Candidates are [char]
-    AC_CHECK_SIZEOF([char])
-    if test $ac_cv_sizeof_char -eq 1; then
-      AC_DEFINE_UNQUOTED([int8_t],[char],[If not already defined, define as a signed integer of 8 bits])
+    AC_CHECK_SIZEOF([signed char])
+    if test $ac_cv_sizeof_signed_char -eq 1; then
+      bc_typedef_int8_t="typedef signed char int8_t;"
     fi
     ])
+  AC_SUBST(TYPEDEF_INT8_T,$bc_typedef_int8_t)
+  bc_typedef_int16_t=
   AC_CHECK_TYPE([int16_t],,[
-    # Candidates are [short]
     AC_CHECK_SIZEOF([short])
     if test $ac_cv_sizeof_short -eq 2; then
-      AC_DEFINE_UNQUOTED([int16_t],[short],[If not already defined, define as a signed integer of exactly 16 bits])
+      bc_typedef_int16_t="typedef short int16_t;"
     fi
     ])
+  AC_SUBST(TYPEDEF_INT16_T,$bc_typedef_int16_t)
+  bc_typedef_int32_t=
   AC_CHECK_TYPE([int32_t],,[
-    # Candidates are [int]
     AC_CHECK_SIZEOF([int])
     if test $ac_cv_sizeof_int -eq 4; then
-      AC_DEFINE_UNQUOTED([int32_t],[int],[If not already defined, define as a signed integer of exactly 32 bits])
+      bc_typedef_int32_t="typedef int int32_t;"
     fi
     ])
+  AC_SUBST(TYPEDEF_INT32_T,$bc_typedef_int32_t)
+  bc_typedef_int64_t=
   AC_CHECK_TYPE([int64_t],[
     AC_DEFINE([HAVE_INT64_T],1)
     ],[
-    # Candidates are [long] and [long long]
     AC_CHECK_SIZEOF([long])
     if test $ac_cv_sizeof_long -eq 8; then
-      AC_DEFINE_UNQUOTED([int64_t],[long],[If not already defined, define as a signed integer of exactly 64 bits])
+      bc_typedef_int64_t="typedef long int64_t;"
     else
       AC_CHECK_SIZEOF([long long])
       if test $ac_cv_sizeof_long_long -eq 8; then
-        AC_DEFINE_UNQUOTED([int64_t],[long long],[If not already defined, define as a signed integer of exactly 64 bits])
         AC_DEFINE([HAVE_INT64_T],1)
+        bc_typedef_int64_t="typedef long long int64_t;"
       fi
     fi
     ])
+  AC_SUBST(TYPEDEF_INT64_T,$bc_typedef_int64_t)
+  bc_typedef_uint8_t=
   AC_CHECK_TYPE([uint8_t],,[
-    # Candidates are [unsigned char]
     AC_CHECK_SIZEOF([unsigned char])
     if test $ac_cv_sizeof_unsigned_char -eq 1; then
-      AC_DEFINE_UNQUOTED([uint8_t],[unsigned char],[If not already defined, define as an unsigned integer of 8 bits])
+      bc_typedef_uint8_t="typedef unsigned char uint8_t;"
     fi
     ])
+  AC_SUBST(TYPEDEF_UINT8_T,$bc_typedef_uint8_t)
+  bc_typedef_uint16_t=
   AC_CHECK_TYPE([uint16_t],,[
-    # Candidates are [unsigned short]
     AC_CHECK_SIZEOF([unsigned short])
     if test $ac_cv_sizeof_unsigned_short -eq 2; then
-      AC_DEFINE_UNQUOTED([uint16_t],[unsigned short],[If not already defined, define as an unsigned integer of exactly 16 bits])
+      bc_typedef_uint16_t="typedef unsigned short uint16_t;"
     fi
     ])
+  AC_SUBST(TYPEDEF_UINT16_T,$bc_typedef_uint16_t)
+  bc_typedef_uint32_t=
   AC_CHECK_TYPE([uint32_t],,[
-    # Candidates are [unsigned int]
     AC_CHECK_SIZEOF([unsigned int])
     if test $ac_cv_sizeof_unsigned_int -eq 4; then
-      AC_DEFINE_UNQUOTED([uint32_t],[unsigned int],[If not already defined, define as an unsigned integer of exactly 32 bits])
+      bc_typedef_uint32_t="typedef unsigned int uint32_t;"
     fi
     ])
+  AC_SUBST(TYPEDEF_UINT32_T,$bc_typedef_uint32_t)
+  bc_typedef_uint64_t=
   AC_CHECK_TYPE([uint64_t],[
     AC_DEFINE([HAVE_UINT64_T],1)
     ],[
-    # Candidates are [unsigned long] and [unsigned long long]
     AC_CHECK_SIZEOF([unsigned long])
     if test $ac_cv_sizeof_unsigned_long -eq 8; then
-      AC_DEFINE_UNQUOTED([uint64_t],[unsigned long],[If not already defined, define as an unsigned integer of exactly 64 bits])
+      bc_typedef_uint64_t="typedef unsigned long uint64_t;"
     else
       AC_CHECK_SIZEOF([unsigned long long])
       if test $ac_cv_sizeof_unsigned_long_long -eq 8; then
-        AC_DEFINE_UNQUOTED([uint64_t],[unsigned long long],[If not already defined, define as an unsigned integer of exactly 64 bits])
         AC_DEFINE([HAVE_UINT64_T],1)
+        bc_typedef_uint64_t="typedef unsigned long long uint64_t;"
       fi
     fi
     ])
+  AC_SUBST(TYPEDEF_UINT64_T,$bc_typedef_uint64_t)
   ])
 
 
 dnl  BEECRYPT_CPU_BITS
 AC_DEFUN(BEECRYPT_CPU_BITS,[
-  AH_TEMPLATE([MP_WBITS],[Define to the word size of your CPU, i.e. 32 or 64])
   AC_CHECK_SIZEOF([unsigned long])
   if test $ac_cv_sizeof_unsigned_long -eq 8; then
-    mp_wbits="64U"
-    AC_SUBST(MP_WBITS,$mp_wbits)
+    AC_SUBST(MP_WBITS,64U)
   elif test $ac_cv_sizeof_unsigned_long -eq 4; then
-    mp_wbits="32U"
-    AC_SUBST(MP_WBITS,$mp_wbits)
+    AC_SUBST(MP_WBITS,32U)
   else
     AC_MSG_ERROR([Illegal CPU word size])
   fi
@@ -585,6 +601,11 @@ AC_DEFUN(BEECRYPT_ASM_SOURCES,[
   powerpc64)
     AC_CONFIG_COMMANDS([mpopt.ppc64],[
       m4 $srcdir/gas/mpopt.ppc64.m4 > mpopt.s
+      ])
+    ;;
+  s390x)
+    AC_CONFIG_COMMANDS([mpopt.s390x],[
+      m4 $srcdir/gas/mpopt.s390x.m4 > mpopt.s
       ])
     ;;
   sparcv8)

@@ -358,35 +358,29 @@ if test "$ac_with_mtmalloc" = yes; then
 fi
 
 # Checks for libraries.
-# XXX Insert "typedef foo bc_lock_t" into types.h.
-include_pthread_h=
-typedef_bc_lock_t=
+bc_include_synch_h=
+bc_include_pthread_h=
+bc_typedef_bc_lock_t=
 if test "$ac_enable_threads" = yes; then
-  if test "$ac_cv_header_thread_h" = yes; then
+  if test "$ac_cv_header_thread_h" = yes -a "$ac_cv_header_synch_h" = yes; then
     AC_SEARCH_LIBS([mutex_lock],[thread],[
       AC_DEFINE([ENABLE_THREADS],1)
-      if test "$ac_cv_header_sync_h" = yes; then
-	include_pthread_h='#include <sync.h>'
-	typedef_bc_lock_t='typedef mutex_t bc_lock_t;'
-      else
-	include_pthread_h='#include <pthread.h>'
-	typedef_bc_lock_t='typedef pthread_mutex_t bc_lock_t;'
-      fi
+      bc_include_synch_h="#include <sync.h>"
+      bc_typedef_bc_lock_t="typedef pthread_mutex_t bc_lock_t;"
       ])
   elif test "$ac_cv_header_pthread_h" = yes; then
     AC_SEARCH_LIBS([pthread_mutex_lock],[pthread],[
       AC_DEFINE([ENABLE_THREADS],1)
-      if test "$ac_cv_header_pthread_h" = yes; then
-	include_pthread_h='#include <pthread.h>'
-	typedef_bc_lock_t='typedef pthread_mutex_t bc_lock_t;'
-      fi
+      bc_include_pthread_h="#include <pthread.h>"
+      bc_typedef_bc_lock_t="typedef pthread_mutex_t bc_lock_t;"
       ])
   else
     AC_MSG_WARN([Don't know which thread library to check for])
   fi
 fi
-AC_SUBST(include_pthread_h)
-AC_SUBST(typedef_bc_lock_t)
+AC_SUBST(INCLUDE_SYNCH_H, $bc_include_synch_h)
+AC_SUBST(INCLUDE_PTHREAD_H, $bc_include_pthread_h)
+AC_SUBST(TYPEDEF_BC_LOCK_T, $bc_typedef_bc_lock_t)
 
 if test "$ac_enable_aio" = yes; then
   BEECRYPT_WORKING_AIO
@@ -637,29 +631,8 @@ else
 fi
 
 # Check for standard types and integers of specific sizes
-AC_TYPE_SIZE_T
 BEECRYPT_INT_TYPES
 BEECRYPT_CPU_BITS
-
-# XXX Insert correct stdint includes into types.h.
-include_stdint_h=
-if test "$ac_cv_header_stdint_h" = yes; then
-  include_stdint_h='#include <stdint.h>'
-elif test "$ac_cv_header_inttypes_h" = yes; then
-  include_stdint_h='#include <inttypes.h>'
-else
-  include_stdint_h='
-typedef signed char		int8_t;\
-typedef short int		int16_t;\
-typedef int			int32_t;\
-typedef long long int		int64_t;\
-typedef unsigned char		uint8_t;\
-typedef unsigned short int	uint16_t;\
-typedef unsigned int		uint32_t;\
-typedef unsigned long long int	uint64_t;\
-'
-fi
-AC_SUBST(include_stdint_h)
 
 if test "$ac_with_javaglue" = yes ; then
   CFLAGS="$CFLAGS -I$ac_cv_java_include"
@@ -690,8 +663,8 @@ fi
 # Generate output files.
 AC_CONFIG_FILES([Makefile
                  Doxyfile
+                 beecrypt.gnu.h
                  config.m4
-                 types.h
                  docs/Makefile
                  gas/Makefile
                  masm/Makefile

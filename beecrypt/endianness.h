@@ -51,17 +51,10 @@ inline int32_t swap32(int32_t n)
 
 inline uint32_t swapu32(uint32_t n)
 {
-	#if (SIZEOF_UNSIGNED_LONG == 4)
 	return (    ((n & 0xffU) << 24) |
 				((n & 0xff00U) << 8) |
 				((n & 0xff0000U) >> 8) |
 				((n & 0xff000000U) >> 24) );
-	#else
-	return (    ((n & 0xffUL) << 24) |
-				((n & 0xff00UL) << 8) |
-				((n & 0xff0000UL) >> 8) |
-				((n & 0xff000000UL) >> 24) );
-	#endif
 }
 
 inline int64_t swap64(int64_t n)

@@ -30,7 +30,7 @@ typedef struct
 /*@=sizeoftype@*/
 #endif
 
-#include "types.h"
+#include "beecrypt.gnu.h"
 
 #if HAVE_SYS_STAT_H
 # include <sys/types.h>

@@ -67,7 +67,7 @@ void md5Process(md5Param* mp)
 /** \ingroup HASH_md5_m
  * This function resets the parameter block so that it's ready for a new hash.
  * @param mp		hash parameter block
- * @return		0 on success.
+ * @return		0 on success
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
@@ -93,7 +93,7 @@ int md5Update  (md5Param* mp, const byte* data, size_t size)
  * value in \a digest.
  * @param sp		hash parameter block
  * @retval *digest	16 byte MD5 digest
- * @return		0 on success.
+ * @return		0 on success
  */
 /*@-exportlocal@*/
 BEECRYPTAPI

@@ -26,7 +26,7 @@
 #ifndef _MP_H
 #define _MP_H
 
-#include "beecrypt.h"
+#include "beecrypt.api.h"
 #include "mpopt.h"
 
 #define MP_HWBITS	(MP_WBITS >> 1)

@@ -30,7 +30,7 @@
 #ifndef _BEECRYPT_H
 #define _BEECRYPT_H
 
-#include "types.h"
+#include "beecrypt.api.h"
 
 #include "memchunk.h"
 #include "mpnumber.h"

@@ -10,6 +10,7 @@ missing
 mkinstalldirs
 apidocs
 autom4te*
+beecrypt.gnu.h
 beecrypt.spec
 beecrypt-*.tar.gz
 config.h
@@ -38,4 +39,3 @@ sha1opt.c
 stamp-h
 stamp-h1
 stamp-h.in
-types.h

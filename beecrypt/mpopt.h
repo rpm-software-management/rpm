@@ -101,6 +101,8 @@
 #  define ASM_MPADDMUL
 #  define ASM_MPADDSQRTRC
 # elif defined(OPTIMIZE_S390X)
+#  define ASM_MPSETMUL
+#  define ASM_MPADDMUL
 # elif defined(OPTIMIZE_SPARCV8)
 #  define ASM_MPSETMUL
 #  define ASM_MPADDMUL

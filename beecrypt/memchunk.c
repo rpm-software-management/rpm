@@ -28,7 +28,7 @@
 #include "debug.h"
 
 /*@-compdef@*/	/* tmp->data is undefined */
-memchunk* memchunkAlloc(int size)
+memchunk* memchunkAlloc(size_t size)
 {
 	memchunk* tmp = (memchunk*) calloc(1, sizeof(*tmp));
 
@@ -65,7 +65,7 @@ void memchunkFree(memchunk* m)
 	}
 }
 
-memchunk* memchunkResize(memchunk* m, int size)
+memchunk* memchunkResize(memchunk* m, size_t size)
 {
 	/*@-branchstate@*/
 	if (m)

@@ -26,7 +26,7 @@
 #ifndef _MPNUMBER_H
 #define _MPNUMBER_H
 
-#include "types.h"
+#include "mp.h"
 
 /**
  */
