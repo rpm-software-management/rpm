@@ -82,3 +82,18 @@ Revision history for Perl extension RPM.
 
 	Added a sample script in utils, called rpmprune. It has a --help
 	summary and a man page, see those for details.
+
+0.27
+	- fifth alpha
+
+	Added filenames() method to RPM::Header. This re-assembles the list of
+	filenames from the components in the tags, BASENAMES, DIRNAMES and
+	DIRINDEXES.
+
+	Added scalar_tag() method to RPM::Header. This returns a 0/1 value
+	based on whether the return value for a given flag is an array ref or
+	scalar (respectively). Can be called with either a string or a number
+	argument. Can be called as a static (class) method.
+
+	Added RPM/Error.xs and integrated into the build. All the XS code for
+	RPM::Error that was previously in RPM.xs has been moved here.
