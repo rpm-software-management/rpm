@@ -8,9 +8,9 @@ MACROS="${2:-macros}"
 PLATFORM="${3:-platform}"
 
 if grep /share/ $PLATFORM > /dev/null 2>&1 ; then
-    DEFAULTDOCDIR='%{_prefix}/share/doc'
+    DEFAULTDOCDIR='%{_usr}/share/doc'
 else
-    DEFAULTDOCDIR='%{_prefix}/doc'
+    DEFAULTDOCDIR='%{_usr}/doc'
 fi
 
 TEMPRC="/tmp/rpmrc.$$"
