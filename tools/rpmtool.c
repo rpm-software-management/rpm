@@ -1,24 +1,13 @@
 #include "system.h"
 
 #include <rpmcli.h>
+#include <rpmxp.h>
 
 #include <rpmlead.h>
 #include <signature.h>
 #include "header_internal.h"
 #include "misc.h"
 #include "debug.h"
-
-static const char * rpmxpDTD = "\
-<?xml version=\"1.0\"?>\n\
-<!DOCTYPE rpmHeader [\n\
-<!ELEMENT rpmHeader (rpmTag+)>\n\
-<!ELEMENT rpmTag	(string+|integer+|base64+)>\n\
-<!ATTLIST rpmTag name	CDATA #REQUIRED>\n\
-<!ELEMENT string	(#PCDATA)>\n\
-<!ELEMENT integer	(#PCDATA)>\n\
-<!ELEMENT base64	(#PCDATA)>\n\
-]>\n\
-";
 
 typedef enum rpmtoolComponentBits_e {
     RPMTOOL_NONE	= 0,
@@ -233,7 +222,8 @@ fprintf(stderr, "*** Fopen(%s,w.ufdio)\n", (ofn != NULL ? ofn : "-"));
 		t = headerSprintf(h, s, rpmTagTable, rpmHeaderFormats, &errstr);
 		
 		if (t != NULL) {
-		    Fwrite(rpmxpDTD, strlen(rpmxpDTD), 1, fdo);
+		    if (rpmxpDTD != NULL && *rpmxpDTD != '\0')
+			Fwrite(rpmxpDTD, strlen(rpmxpDTD), 1, fdo);
 		    Fwrite(t, strlen(t), 1, fdo);
 		}
 		t = _free(t);

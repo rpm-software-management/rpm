@@ -66,8 +66,9 @@ rpminject_SOURCES =	rpminject.c
 rpmsort_SOURCES =	rpmsort.c
 #rpmsort_LDFLAGS =	$(staticLDFLAGS)
 
-rpmtool_SOURCES =	rpmtool.c
+rpmtool_SOURCES =	rpmtool.c rpmxp.c
 #rpmtool_LDFLAGS =	$(staticLDFLAGS)
+rpmtool_LDADD =		$(LDADD) -lxml2
 
 rpmxml_SOURCES =	rpmxml.c rpmxp.c
 rpmxml_LDADD =		-lxml2

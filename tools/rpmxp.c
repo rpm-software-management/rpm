@@ -5,6 +5,18 @@
 
 int _rpmxp_debug = 0;
 
+const char * rpmxpDTD = "\
+<?xml version=\"1.0\"?>\n\
+<!DOCTYPE rpmHeader [\n\
+<!ELEMENT rpmHeader (rpmTag+)>\n\
+<!ELEMENT rpmTag	(string+|integer+|base64+)>\n\
+<!ATTLIST rpmTag name	CDATA #REQUIRED>\n\
+<!ELEMENT string	(#PCDATA)>\n\
+<!ELEMENT integer	(#PCDATA)>\n\
+<!ELEMENT base64	(#PCDATA)>\n\
+]>\n\
+";
+
 rpmxp rpmxpFree(rpmxp xp)
 {
     if (xp != NULL) {

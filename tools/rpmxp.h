@@ -17,8 +17,12 @@ extern int _rpmxp_debug;
 
 /**
  */
-typedef struct rpmxp_s * rpmxp;
+/*@unchecked@*/ /*@observer@*/
+extern const char * rpmxpDTD;
 
+/**
+ */
+typedef struct rpmxp_s * rpmxp;
 
 #if defined(_RPMXP_INTERNAL)
 /**
