@@ -42,6 +42,7 @@ availablePackage alGetPkg(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
 /*@=exportlocal@*/
 
+#ifdef	DYING
 /**
  * Return (malloc'd) available package name-version-release string.
  * @param al		available list
@@ -51,6 +52,7 @@ availablePackage alGetPkg(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey)
 /*@only@*/ /*@null@*/
 char * alGetNVR(/*@null@*/const availableList al, /*@null@*/ alKey pkgKey)
 	/*@*/;
+#endif
 
 /**
  * Initialize available packckages, items, and directory list.

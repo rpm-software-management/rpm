@@ -90,6 +90,10 @@ struct transactionElement_s {
 /*@refcounted@*/ /*@null@*/
     rpmDepSet requires;		/*!< Requires: dependencies. */
 /*@refcounted@*/ /*@null@*/
+    rpmDepSet conflicts;	/*!< Conflicts: dependencies. */
+/*@refcounted@*/ /*@null@*/
+    rpmDepSet obsoletes;	/*!< Obsoletes: dependencies. */
+/*@refcounted@*/ /*@null@*/
     rpmFNSet fns;		/*!< File info set. */
 
     uint_32 multiLib;	/* (TR_ADDED) MULTILIB */

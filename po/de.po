@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-09 17:39-0500\n"
+"POT-Creation-Date: 2001-11-09 20:32-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1573,95 +1573,95 @@ msgstr "pgp fehlgeschlagen"
 msgid "cannot open Packages database in %s\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
-#: lib/depends.c:334
+#: lib/depends.c:354
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:339
+#: lib/depends.c:359
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/depends.c:344
+#: lib/depends.c:364
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:658
+#: lib/depends.c:716
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:683
+#: lib/depends.c:741
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:699
+#: lib/depends.c:757
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
 # , c-format
-#: lib/depends.c:720
+#: lib/depends.c:778
 #, fuzzy
 msgid "(db files)"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/depends.c:732
+#: lib/depends.c:790
 #, fuzzy
 msgid "(db provides)"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:745
+#: lib/depends.c:803
 #, fuzzy
 msgid "(db package)"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/depends.c:784
+#: lib/depends.c:842
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:786 lib/rpmds.c:457 lib/rpmds.c:614
+#: lib/depends.c:844 lib/rpmds.c:468 lib/rpmds.c:625
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:786 lib/rpmds.c:457 lib/rpmds.c:614
+#: lib/depends.c:844 lib/rpmds.c:468 lib/rpmds.c:625
 msgid "YES"
 msgstr ""
 
 # FIXME
-#: lib/depends.c:1120
+#: lib/depends.c:1178
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 #. Record all relations.
-#: lib/depends.c:1366
+#: lib/depends.c:1424
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1439
+#: lib/depends.c:1497
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1514
+#: lib/depends.c:1572
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1575
+#: lib/depends.c:1633
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1610
+#: lib/depends.c:1668
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1615
+#: lib/depends.c:1673
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2661,12 +2661,12 @@ msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
 
 # , c-format
-#: lib/rpmal.c:693
+#: lib/rpmal.c:695
 #, fuzzy
 msgid "(added files)"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/rpmal.c:792
+#: lib/rpmal.c:794
 #, fuzzy
 msgid "(added provide)"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
@@ -2737,20 +2737,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:584
+#: lib/rpmds.c:595
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:613
+#: lib/rpmds.c:624
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:638
+#: lib/rpmds.c:649
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"

@@ -1343,7 +1343,7 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
         while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 	    if (recOffset) {
-	        rpmtransRemovePackage(s->ts, recOffset);
+	        rpmtransRemovePackage(s->ts, h, recOffset);
 	    }
 	}
     }

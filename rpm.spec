@@ -569,3 +569,4 @@ fi
 - no-brainer refcounts for rpmProblemSet object.
 - header tag sets are per-transactionElement, not per-availablePackage.
 - no-brainer refcounts for rpmDepSet and rpmFNSet objects.
+- strip header tags for erased as well as installed transactionElements.

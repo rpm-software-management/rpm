@@ -636,7 +636,7 @@ int rpmErase(rpmTransactionSet ts, const char ** argv,
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset) {
-		    (void) rpmtransRemovePackage(ts, recOffset);
+		    (void) rpmtransRemovePackage(ts, h, recOffset);
 		    numPackages++;
 		}
 	    }
@@ -799,7 +799,7 @@ IDTX IDTXload(rpmTransactionSet ts, rpmTag tag)
 	    /*@-nullderef@*/
 	    idt = idtx->idt + idtx->nidt;
 	    /*@=nullderef@*/
-	    idt->h = NULL;
+	    idt->h = headerLink(h, "IDTXload idt->h");
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
 	    idt->val.i32 = *tidp;

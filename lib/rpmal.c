@@ -197,6 +197,7 @@ Header alGetHeader(availableList al, alKey pkgKey, int unlink)
     return h;
 }
 
+#ifdef	DYING
 char * alGetNVR(const availableList al, alKey pkgKey)
 {
     availablePackage alp = alGetPkg(al, pkgKey);
@@ -216,6 +217,7 @@ char * alGetNVR(const availableList al, alKey pkgKey)
     }
     return pkgNVR;
 }
+#endif
 
 availableList alCreate(int delta)
 {

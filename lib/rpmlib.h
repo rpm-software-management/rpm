@@ -1410,7 +1410,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
 	/*@modifies db @*/;
 
 /** \ingroup rpmtrans
- * Add package to be installed to unordered transaction set.
+ * Add package to be installed to transaction set.
  *
  * If fd is NULL, the callback specified in rpmtransCreateSet() is used to
  * open and close the file descriptor. If Header is NULL, the fd is always
@@ -1444,13 +1444,14 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
 	/*@modifies h, ts @*/;
 
 /** \ingroup rpmtrans
- * Add package to be removed to unordered transaction set.
+ * Add package to be erased to transaction set.
  * @param ts		transaction set
+ * @param h		header
  * @param dboffset	rpm database instance
  * @return		0 on success
  */
-int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
-	/*@modifies ts @*/;
+int rpmtransRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
+	/*@modifies ts, h @*/;
 
 /** \ingroup rpmtrans
  * Re-create an empty transaction set.

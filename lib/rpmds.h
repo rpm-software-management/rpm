@@ -45,6 +45,15 @@ struct rpmFNSet_s {
     const uint_16 * frdevs;	/*!< File rdev(s) (from header) */
 
 /*@only@*/ /*@null@*/
+    const char ** fuser;	/*!< File owner(s) */
+/*@only@*/ /*@null@*/
+    const char ** fgroup;	/*!< File group(s) */
+/*@only@*/ /*@null@*/
+    uid_t * fuids;		/*!< File uid(s) */
+/*@only@*/ /*@null@*/
+    gid_t * fgids;		/*!< File gid(s) */
+
+/*@only@*/ /*@null@*/
     char * fstates;		/*!< File state(s) (from header) */
 
     int_32 dc;			/*!< No. of directories. */

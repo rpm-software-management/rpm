@@ -80,6 +80,11 @@ fprintf(stderr, "*** fns %p -- %s[%d]\n", fns, fns->Type, fns->fc);
 	fns->flangs = hfd(fns->flangs, -1);
 	fns->fmd5s = hfd(fns->fmd5s, -1);
 
+	fns->fuser = hfd(fns->fuser, -1);
+	fns->fuids = _free(fns->fuids);
+	fns->fgroup = hfd(fns->fgroup, -1);
+	fns->fgids = _free(fns->fgids);
+
 	fns->fstates = _free(fns->fstates);
 
 	/*@-evalorder@*/
@@ -152,8 +157,14 @@ rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
 	xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fns->frdevs, NULL);
 	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fns->dil, NULL);
 
+	xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fns->fuser, NULL);
+	fns->fuids = NULL;
+	xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fns->fgroup, NULL);
+	fns->fgids = NULL;
+
 	xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fns->fstates, NULL);
 	_fdupe(fns, fstates);
+
 	if (xx == 0 || fns->fstates == NULL)
 	    fns->fstates = xcalloc(fns->fc, sizeof(*fns->fstates));
 

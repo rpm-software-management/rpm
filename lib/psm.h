@@ -32,23 +32,6 @@ struct transactionFileInfo_s {
 /*@owned@*/ const char * version; /*!< Version: tag (malloc'd). */
 /*@owned@*/ const char * release; /*!< Release: tag (malloc'd). */
 
-#ifdef	NOTYET
-/*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
-/*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
-/*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
-/*@owned@*//*@null@*/ const char ** requires;	/*!< Requires: name strings. */
-/*@owned@*//*@null@*/ const char ** requiresEVR;/*!< Requires: [epoch:]version[-release] strings. */
-/*@dependent@*//*@null@*/ int * requireFlags;	/*!< Requires: logical range qualifiers. */
-/*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
-/*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
-    int providesCount;			/*!< No. of Provide:'s in header. */
-    int requiresCount;			/*!< No. of Require:'s in header. */
-    int filesCount;			/*!< No. of files in header. */
-    int npreds;				/*!< No. of predecessors. */
-    int depth;				/*!< Max. depth in dependency tree. */
-    struct tsortInfo_s tsi;		/*!< Dependency tsort data. */
-#endif
-
     uint_32 multiLib;		/* MULTILIB */
 /*@null@*/
     fnpyKey key;		/*!< Package notify key. */
@@ -71,26 +54,33 @@ struct transactionFileInfo_s {
     HFD_t hfd;			/*!< Vector to headerFreeData() */
     int_32 epoch;
     uint_32 flags;		/*!< File flag default. */
+
+/*@owned@*/ const char ** bnl;	/*!< Base name(s) (from header) */
+/*@owned@*/ const char ** dnl;	/*!< Directory name(s) (from header) */
+/*@owned@*/ const char ** fmd5s;/*!< File MD5 sum(s) (from header) */
+/*@owned@*/ const char ** flinks;	/*!< File link(s) (from header) */
+/*@owned@*/ const char ** flangs;	/*!< File lang(s) */
+    int_32 * dil;		/*!< Directory indice(s) (from header) */
     const uint_32 * fflags;	/*!< File flag(s) (from header) */
     const uint_32 * fsizes;	/*!< File size(s) (from header) */
     const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
-/*@owned@*/ const char ** bnl;	/*!< Base name(s) (from header) */
-/*@owned@*/ const char ** dnl;	/*!< Directory name(s) (from header) */
-    int_32 * dil;		/*!< Directory indice(s) (from header) */
-/*@owned@*/ const char ** obnl;	/*!< Original base name(s) (from header) */
-/*@owned@*/ const char ** odnl;	/*!< Original directory name(s) (from header) */
-/*@unused@*/ int_32 * odil;	/*!< Original directory indice(s) (from header) */
-/*@owned@*/ const char ** fmd5s;/*!< File MD5 sum(s) (from header) */
-/*@owned@*/ const char ** flinks;	/*!< File link(s) (from header) */
 /* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
     uint_16 * fmodes;		/*!< File mode(s) (from header) */
     uint_16 * frdevs;		/*!< File rdev(s) (from header) */
-/*@only@*/ /*@null@*/ char * fstates;	/*!< File state(s) (from header) */
+
 /*@owned@*/ const char ** fuser;	/*!< File owner(s) */
 /*@owned@*/ const char ** fgroup;	/*!< File group(s) */
-/*@owned@*/ const char ** flangs;	/*!< File lang(s) */
+/*@owned@*/ /*@null@*/ uid_t * fuids;	/*!< File uid(s) */
+/*@owned@*/ /*@null@*/ gid_t * fgids;	/*!< File gid(s) */
+
+/*@only@*/ /*@null@*/ char * fstates;	/*!< File state(s) (from header) */
+
     int fc;			/*!< No. of files. */
     int dc;			/*!< No. of directories. */
+
+/*@owned@*/ const char ** obnl;	/*!< Original base name(s) (from header) */
+/*@owned@*/ const char ** odnl;	/*!< Original directory name(s) (from header) */
+/*@unused@*/ int_32 * odil;	/*!< Original directory indice(s) (from header) */
     int bnlmax;			/*!< Length (in bytes) of longest base name. */
     int dnlmax;			/*!< Length (in bytes) of longest dir name. */
     int astriplen;
@@ -102,21 +92,20 @@ struct transactionFileInfo_s {
     int mapflags;
 /*@owned@*/ /*@null@*/ int * fmapflags;
     uid_t uid;
-/*@owned@*/ /*@null@*/ uid_t * fuids;	/*!< File uid(s) */
     gid_t gid;
-/*@owned@*/ /*@null@*/ gid_t * fgids;	/*!< File gid(s) */
     int magic;
 
 #define	TFIMAGIC	0x09697923
 /*@owned@*/ FSM_t fsm;		/*!< File state machine data. */
 
     int keep_header;		/*!< Keep header? */
-/*@refs@*/ int nrefs;		/*!< Reference count. */
 
 /*@owned@*/ struct sharedFileInfo * replaced;	/*!< (TR_ADDED) */
 /*@owned@*/ uint_32 * replacedSizes;	/*!< (TR_ADDED) */
 
     unsigned int record;	/*!< (TR_REMOVED) */
+
+/*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 
 /**
