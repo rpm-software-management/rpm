@@ -34,9 +34,18 @@ static u_int32_t dbh_nelem = 0;		/* db1 default: 1 */
 static u_int32_t dbh_flags = 0;
 
 #if defined(__USE_DB3)
-static int dbopenflags = DB_INIT_MPOOL|DB_SYSTEM_MEM;	/* W2DO? DB_PRIVATE */
+/* XXX FIXME: db3 sets up shm with 600 perms */
+/* XXX FIXME: db3 coredumps in dbenv->remove with DB_SYSTEM_MEM */
+static int __do_dbenv_remove = 0;
+/* XXX FIXME: db3 hangs with DB_INIT_CDB */
+/* XXX FIXME: db3 hangs with DB_INIT_TXN */
+#if 0
+static int dbopenflags = DB_INIT_MPOOL|DB_INIT_CDB|DB_SYSTEM_MEM;
 #else
-static int dbopenflags = DB_INIT_MPOOL;
+static int dbopenflags = DB_INIT_MPOOL|DB_INIT_CDB|DB_SYSTEM_MEM;
+#endif
+#else
+static int dbopenflags = DB_INIT_MPOOL|DB_PRIVATE;
 #endif
 
 #define	_mymemset(_a, _b, _c)	memset((_a), (_b), (_c))
@@ -137,13 +146,13 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 }
 
 static int db_init(dbiIndex dbi, const char *home, int dbflags,
-			DB_ENV **dbenvp, void **dbinfop)
+			DB_ENV **dbenvp)
 {
     DB_ENV *dbenv = NULL;
     int mydbopenflags;
     int rc;
 
-    if (dbenvp == NULL || dbinfop == NULL)
+    if (dbenvp == NULL)
 	return 1;
     if (db_errfile == NULL)
 	db_errfile = stderr;
@@ -187,30 +196,15 @@ static int db_init(dbiIndex dbi, const char *home, int dbflags,
     mydbopenflags = (dbflags & _DBFMASK) | dbopenflags;
 
 #if defined(__USE_DB3)
-    rc = dbenv->open(dbenv, home, NULL, mydbopenflags, 0);
+    rc = dbenv->open(dbenv, home, NULL, mydbopenflags, dbi->dbi_perms);
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
-    *dbinfop = NULL;
 #else
     rc = db_appinit(home, NULL, dbenv, mydbopenflags);
     rc = cvtdberr(dbi, "db_appinit", rc, _debug);
     if (rc)
 	goto errxit;
-    {	DB_INFO * dbinfo = xcalloc(1, sizeof(*dbinfo));
-	/* XXX W2DO? */
-	dbinfo->db_cachesize = db_cachesize;
-	dbinfo->db_lorder = db_lorder;
-	dbinfo->db_pagesize = db_pagesize;
-	dbinfo->db_malloc = db_malloc;
-	if (dbflags & DB_CREATE) {
-	    dbinfo->h_ffactor = dbh_ffactor;
-	    dbinfo->h_hash = dbh_hash;
-	    dbinfo->h_nelem = dbh_nelem;
-	    dbinfo->flags = dbh_flags;
-	}
-	*dbinfop = dbinfo;
-     }
 #endif
 
     *dbenvp = dbenv;
@@ -259,8 +253,24 @@ static int db3close(dbiIndex dbi, unsigned int flags)
     if (dbi->dbi_dbenv) {
 	DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
 #if defined(__USE_DB3)
-	xx = dbenv->close(dbenv, 0);
-	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
+	char * dbhome = alloca(strlen(dbi->dbi_file) + 1);
+	char **dbconfig = NULL;
+	char * dbfile = NULL;
+
+	strcpy(dbhome, dbi->dbi_file);
+	dbfile = strrchr(dbhome, '/');
+	if (dbfile)
+	    *dbfile++ = '\0';
+	else
+	    dbfile = dbhome;
+
+	if ((dbopenflags & DB_SYSTEM_MEM) && __do_dbenv_remove) {
+	    xx = dbenv->remove(dbenv, dbhome, dbconfig, 0);
+	    xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
+	} else {
+	    xx = dbenv->close(dbenv, 0);
+	    xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
+	}
 #else
 	xx = db_appexit(dbenv);
 	xx = cvtdberr(dbi, "db_appexit", xx, _debug);
@@ -422,7 +432,6 @@ static int db3open(dbiIndex dbi)
     char * dbfile = NULL;
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
-    void * dbinfo = NULL;
     u_int32_t dbflags;
 
     dbhome = alloca(strlen(dbi->dbi_file) + 1);
@@ -436,31 +445,67 @@ static int db3open(dbiIndex dbi)
     dbflags = (	!(dbi->dbi_flags & O_RDWR) ? DB_RDONLY :
 		((dbi->dbi_flags & O_CREAT) ? DB_CREATE : 0));
 
-    rc = db_init(dbi, dbhome, dbflags, &dbenv, &dbinfo);
+    rc = db_init(dbi, dbhome, dbflags, &dbenv);
+    dbi->dbi_dbinfo = NULL;
 
     if (rc == 0) {
 #if defined(__USE_DB3)
 	rc = db_create(&db, dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0) {
+	    if (db_lorder) {
+		rc = db->set_lorder(db, db_lorder);
+		rc = cvtdberr(dbi, "db->set_lorder", rc, _debug);
+	    }
+	    if (db_cachesize) {
+		rc = db->set_cachesize(db, 0, db_cachesize, 0);
+		rc = cvtdberr(dbi, "db->set_cachesize", rc, _debug);
+	    }
 	    if (db_pagesize) {
 		rc = db->set_pagesize(db, db_pagesize);
 		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);
 	    }
+	    if (db_malloc) {
+		rc = db->set_malloc(db, db_malloc);
+		rc = cvtdberr(dbi, "db->set_malloc", rc, _debug);
+	    }
+	    if (dbflags & DB_CREATE) {
+		rc = db->set_h_ffactor(db, dbh_ffactor);
+		rc = cvtdberr(dbi, "db->set_h_ffactor", rc, _debug);
+		rc = db->set_h_hash(db, dbh_hash);
+		rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
+		rc = db->set_h_nelem(db, dbh_nelem);
+		rc = cvtdberr(dbi, "db->set_h_nelem", rc, _debug);
+		rc = db->set_flags(db, dbh_flags);
+		rc = cvtdberr(dbi, "db->set_flags", rc, _debug);
+	    }
+	    dbi->dbi_dbinfo = NULL;
 	    rc = db->open(db, dbfile, NULL, dbi_to_dbtype(dbi->dbi_type),
 			dbflags, dbi->dbi_perms);
 	    rc = cvtdberr(dbi, "db->open", rc, _debug);
 	}
 #else
+    {	DB_INFO * dbinfo = xcalloc(1, sizeof(*dbinfo));
+	dbinfo->db_cachesize = db_cachesize;
+	dbinfo->db_lorder = db_lorder;
+	dbinfo->db_pagesize = db_pagesize;
+	dbinfo->db_malloc = db_malloc;
+	if (dbflags & DB_CREATE) {
+	    dbinfo->h_ffactor = dbh_ffactor;
+	    dbinfo->h_hash = dbh_hash;
+	    dbinfo->h_nelem = dbh_nelem;
+	    dbinfo->flags = dbh_flags;
+	}
+	dbi->dbi_dbinfo = dbinfo;
 	rc = db_open(dbfile, dbi_to_dbtype(dbi->dbi_type), dbflags,
 			dbi->dbi_perms, dbenv, dbinfo, &db);
 	rc = cvtdberr(dbi, "db_open", rc, _debug);
+     }
 #endif	/* __USE_DB3 */
     }
 
     dbi->dbi_db = db;
     dbi->dbi_dbenv = dbenv;
-    dbi->dbi_dbinfo = dbinfo;
 
 #else
     dbi->dbi_db = dbopen(dbfile, dbi->dbi_flags, dbi->dbi_perms,
