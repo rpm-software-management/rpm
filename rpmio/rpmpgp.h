@@ -10,8 +10,10 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
-#include "beecrypt.h"
 #include "base64.h"
+#include "rsapk.h"
+#include "rsa.h"
+#include "dsa.h"
 
 /*@-typeuse -fielduse@*/
 /**
@@ -97,7 +99,6 @@ typedef struct pgpPubkeySession_s {
     byte version;	/*!< version number (generate 3, accept 2). */
     byte keyid[8];	/*!< key ID of the public key for session key. */
     byte algo;		/*!< public key algorithm used. */
-    byte data[1];
 } * pgpPubkeySession;
 
 
@@ -305,7 +306,6 @@ typedef struct pgpPktSigV3_s {
     byte pubkey_algo;	/*!< public key algorithm. */
     byte hash_algo;	/*!< hash algorithm. */
     byte signhash16[2];	/*!< left 16 bits of signed hash value. */
-    byte data[1];	/*!< One or more multi-precision integers. */
 } * pgpPktSigV3;
 
 /**
@@ -335,7 +335,6 @@ typedef struct pgpPktSigV4_s {
     byte pubkey_algo;	/*!< public key algorithm. */
     byte hash_algo;	/*!< hash algorithm. */
     byte hashlen[2];	/*!< length of following hashed material. */
-    byte data[1];	/*!< Hashed subpacket data. (zero or more subpackets) */
 } * pgpPktSigV4;
 
 /**
@@ -611,7 +610,6 @@ typedef struct pgpPktKeyV3_s {
     byte time[4];	/*!< time that the key was created. */
     byte valid[2];	/*!< time in days that this key is valid. */
     byte pubkey_algo;	/*!< public key algorithm. */
-    byte data[1];	/*!< One or more multi-precision integers. */
 } * pgpPktKeyV3;
 
 /**
@@ -649,7 +647,6 @@ typedef struct pgpPktKeyV4_s {
     byte version;	/*!< version number (4). */
     byte time[4];	/*!< time that the key was created. */
     byte pubkey_algo;	/*!< public key algorithm. */
-    byte data[1];	/*!< One or more multi-precision integers. */
 } * pgpPktKeyV4;
 
 /**
@@ -850,6 +847,36 @@ extern const char * redhatPubKeyDSA;
  */
 /*@unused@*/
 extern const char * redhatPubKeyRSA;
+
+/**
+ */
+struct pgpSig_s {
+    union {
+	struct pgpPktSigV3_s v3;
+	struct pgpPktSigV4_s v4;
+    } sig;
+
+    int hash_datalen;
+/*@only@*/ /*@null@*/ byte *hash_data;
+
+    int size;			/*!< No. bytes in digest. */
+/*@only@*/ /*@null@*/ void * data; /*!< Digest data. */
+
+    /* DSA parameters. */
+    mp32barrett p;
+    mp32barrett q;
+    mp32number g;
+    mp32number y;
+    mp32number hm;
+    mp32number r;
+    mp32number s;
+
+    /* RSA parameters. */
+    rsapk rsa_pk;
+    mp32number m;
+    mp32number c;
+} * pgpSig;
+
 /*@=typeuse =fielduse@*/
 
 /*@-fcnuse@*/
@@ -943,8 +970,20 @@ const char * pgpMpiStr(const byte *p)
 {
     static char prbuf[2048];
     char *t = prbuf;
-    sprintf(t, "[%u]: ", pgpGrab(p, 2));
+    sprintf(t, "[%4u]: ", pgpGrab(p, 2));
     t += strlen(t);
+    t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
+    return prbuf;
+}
+
+/**
+ */
+/*@unused@*/ static inline /*@observer@*/
+const char * pgpMpiHex(const byte *p)
+	/*@*/
+{
+    static char prbuf[2048];
+    char *t = prbuf;
     t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
     return prbuf;
 }
@@ -1016,12 +1055,12 @@ int pgpPrtComment(pgpPkt pkt, const byte *h, unsigned int hlen)
 
 /**
  */
-int pgpPrtPkts(const byte *pkts, unsigned int plen)
-	/*@modifies fileSystem @*/;
+int pgpPrtPkt(const byte *p);
 
 /**
  */
-int pgpPrtPkt(const byte *p);
+int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s *rpmdig, int printing)
+	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus
 }

@@ -55,6 +55,7 @@ trpmio_SOURCES = trpmio.c
 trpmio_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
 
 tkey_SOURCES = tkey.c
+tkey_LDFLAGS = -all-static
 tkey_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
 
 dumpasn1_SOURCES = dumpasn1.c

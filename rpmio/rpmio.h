@@ -14,6 +14,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/**
+ */
+typedef /*@abstract@*/ struct pgpSig_s * rpmDigest;
+
 /** \ingroup rpmio
  * Hide libio API lossage.
  * The libio interface changed after glibc-2.1.3 to pass the seek offset

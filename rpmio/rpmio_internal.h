@@ -58,6 +58,8 @@ typedef enum rpmDigestFlags_e {
 } rpmDigestFlags;
 #define	RPMDIGEST_MASK	0xffff
 
+/**
+ */
 typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
 
 /** \ingroup rpmio
