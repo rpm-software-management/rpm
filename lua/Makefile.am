@@ -4,7 +4,12 @@ LINT = splint
 noinst_LTLIBRARIES = liblua.la
 noinst_PROGRAMS = lua/lua luac/luac
 
-EXTRA_DIST = COPYRIGHT HISTORY
+EXTRA_DIST = \
+	COPYRIGHT \
+	HISTORY \
+	local/modemuncher.c \
+	local/userconfig.c \
+	local/linit.lua
 
 LDADD = liblua.la
 INCLUDES = -I$(srcdir)/include -I$(srcdir)/local
