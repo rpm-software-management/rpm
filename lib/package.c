@@ -92,6 +92,15 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
     addEntry(dbentry, RPMTAG_COPYRIGHT, STRING_TYPE, spec.copyright, 1); 
     addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, oldheader.group, 1);
 
+    if (spec.prein) 
+	addEntry(dbentry, RPMTAG_PREIN, STRING_TYPE, spec.prein, 1);
+    if (spec.preun) 
+	addEntry(dbentry, RPMTAG_PREUN, STRING_TYPE, spec.preun, 1);
+    if (spec.postin) 
+	addEntry(dbentry, RPMTAG_POSTIN, STRING_TYPE, spec.postin, 1);
+    if (spec.postun) 
+	addEntry(dbentry, RPMTAG_POSTUN, STRING_TYPE, spec.postun, 1);
+
     *hdr = dbentry;
 
     if (spec.fileCount) {
