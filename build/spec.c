@@ -990,9 +990,6 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
     int t2 = 0;
 
     stripTrailingBlanksStringBuf(sb);
-    if (*(getStringBuf(sb)) == '\0') {
-	return 0;
-    }
 
     switch (cur_part) {
       case PREIN_PART:
@@ -1038,14 +1035,14 @@ static int finishCurrentPart(Spec spec, StringBuf sb,
 	}
 	break;
     }
-    if (t1) {
+    if (t1 && (*(getStringBuf(sb)) != '\0')) {
 	headerAddEntry(cur_package->header, t1,
 		       RPM_STRING_TYPE, getStringBuf(sb), 1);
-	if (t2) {
-            addReqProv(cur_package, RPMSENSE_PREREQ, scriptProg, NULL);
-	    headerAddEntry(cur_package->header, t2,
-			   RPM_STRING_TYPE, scriptProg, 1);
-	}
+    }
+    if (t2) {
+	addReqProv(cur_package, RPMSENSE_PREREQ, scriptProg, NULL);
+	headerAddEntry(cur_package->header, t2,
+		       RPM_STRING_TYPE, scriptProg, 1);
     }
     return 0;
 }
