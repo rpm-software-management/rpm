@@ -34,14 +34,15 @@ static int read_line(FILE *f, char *line);
 static int match_arch(char *s);
 static int match_os(char *s);
 static void free_packagerec(struct PackageRec *p);
-static void generateNames(Spec s);
+static void generateNamesAndDocScript(Spec s);
 static void reset_spec(void);
 static int find_preamble_line(char *line, char **s);
 static int check_part(char *line, char **s);
-int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags);
+static int lookup_package(Spec s, struct PackageRec **pr,
+			  char *name, int flags);
 static void dumpPackage(struct PackageRec *p, FILE *f);
-char *chop_line(char *s);
-void parseForDocFiles(Spec spec, char *line);
+static char *chop_line(char *s);
+static void parseForDocFiles(struct PackageRec *package, char *line);
 
 /**********************************************************************/
 /*                                                                    */
@@ -196,6 +197,7 @@ static struct PackageRec *new_packagerec(void)
     p->header = newHeader();
     p->filelist = newStringBuf();
     p->files = -1;  /* -1 means no %files, thus no package */
+    p->doc = newStringBuf();
     p->next = NULL;
 
     return p;
@@ -205,6 +207,7 @@ void free_packagerec(struct PackageRec *p)
 {
     freeHeader(p->header);
     freeStringBuf(p->filelist);
+    freeStringBuf(p->doc);
     FREE(p->subname);
     FREE(p->newname);
     FREE(p->icon);
@@ -301,23 +304,49 @@ int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
     return 1;
 }
 
-static void generateNames(Spec s)
+static void generateNamesAndDocScript(Spec s)
 {
     struct PackageRec *package;
     char buf[1024];
+    char fullname[1024];
+    char *name, *version, *release, *packageVersion, *packageRelease, *docs;
 
+    getEntry(s->packages->header, RPMTAG_VERSION, NULL,
+	     (void *) &version, NULL);
+    getEntry(s->packages->header, RPMTAG_RELEASE, NULL,
+	     (void *) &release, NULL);
+    
     package = s->packages;
     while (package) {
 	if (package->subname) {
 	    sprintf(buf, "%s-%s", s->name, package->subname);
-	    addEntry(package->header, RPMTAG_NAME, STRING_TYPE, buf, 1);
+	    name = buf;
 	} else if (package->newname) {
-	    addEntry(package->header, RPMTAG_NAME, STRING_TYPE,
-		     package->newname, 1);
+	    name = package->newname;
 	} else {
 	    /* Must be the main package */
-	    addEntry(package->header, RPMTAG_NAME, STRING_TYPE, s->name, 1);
+	    name = s->name;
 	}
+	addEntry(package->header, RPMTAG_NAME, STRING_TYPE, name, 1);
+
+	/* Handle subpackage version/release overrides */
+        if (!getEntry(package->header, RPMTAG_VERSION, NULL,
+		      (void *) &packageVersion, NULL)) {
+            packageVersion = version;
+	}
+        if (!getEntry(package->header, RPMTAG_RELEASE, NULL,
+		      (void *) &packageRelease, NULL)) {
+            packageRelease = release;
+	}
+
+	/* Generate the doc script */
+	appendStringBuf(s->doc, "DOCDIR=$RPM_ROOT_DIR/$RPM_DOC_DIR/");
+	sprintf(fullname, "%s-%s-%s", name, packageVersion, packageRelease);
+	appendLineStringBuf(s->doc, fullname);
+	appendLineStringBuf(s->doc, "rm -rf $DOCDIR");
+	docs = getStringBuf(package->doc);
+	appendLineStringBuf(s->doc, docs);
+	
 	package = package->next;
     }
 }
@@ -531,7 +560,7 @@ static int check_part(char *line, char **s)
     return p->part;
 }
 
-char *chop_line(char *s)
+static char *chop_line(char *s)
 {
     char *p, *e;
 
@@ -547,7 +576,7 @@ char *chop_line(char *s)
     return p;
 }
 
-void parseForDocFiles(Spec spec, char *line)
+static void parseForDocFiles(struct PackageRec *package, char *line)
 {
     if (strncmp(line, "%doc", 4)) {
 	return;
@@ -562,10 +591,10 @@ void parseForDocFiles(Spec spec, char *line)
 	return;
     }
     
-    appendLineStringBuf(spec->doc, "mkdir -p $DOCDIR");
-    appendStringBuf(spec->doc, "cp -ar ");
-    appendStringBuf(spec->doc, line);
-    appendLineStringBuf(spec->doc, " $DOCDIR");
+    appendLineStringBuf(package->doc, "mkdir -p $DOCDIR");
+    appendStringBuf(package->doc, "cp -ar ");
+    appendStringBuf(package->doc, line);
+    appendLineStringBuf(package->doc, " $DOCDIR");
 }
 
 /**********************************************************************/
@@ -604,11 +633,6 @@ Spec parseSpec(FILE *f, char *specfile)
     sb = newStringBuf();
     reset_spec();         /* Reset the parser */
 
-    appendLineStringBuf(spec->doc, "DOCDIR=$RPM_ROOT_DIR/$RPM_DOC_DIR/"
-			"$RPM_PACKAGE_NAME-$RPM_PACKAGE_VERSION"
-			"-$RPM_PACKAGE_RELEASE");
-    appendLineStringBuf(spec->doc, "rm -rf $DOCDIR");
-    
     cur_part = PREAMBLE_PART;
     while ((x = read_line(f, buf)) > 0) {
 	line = buf;
@@ -828,7 +852,7 @@ Spec parseSpec(FILE *f, char *specfile)
 	  case FILES_PART:
 	    cur_package->files++;
 	    appendLineStringBuf(cur_package->filelist, line);
-	    parseForDocFiles(spec, line);
+	    parseForDocFiles(cur_package, line);
 	    break;
 	  default:
 	    error(RPMERR_INTERNAL, "Bad part");
@@ -839,7 +863,7 @@ Spec parseSpec(FILE *f, char *specfile)
 	return NULL;
     }
 
-    generateNames(spec);
+    generateNamesAndDocScript(spec);
     return spec;
 }
 
