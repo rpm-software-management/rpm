@@ -1,4 +1,4 @@
-/**
+/** \ingroup rpmcli
  * \file lib/poptQV.c
  *  Popt tables for query/verify modes.
  */
@@ -25,7 +25,7 @@ int specedit = 0;
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 	/*@unused@*/ enum poptCallbackReason reason,
 	const struct poptOption * opt, /*@unused@*/ const char * arg, 
-	const void * data)
+	/*@unused@*/ const void * data)
 {
     QVA_t *qva = &rpmQVArgs;
 

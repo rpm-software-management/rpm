@@ -21,9 +21,9 @@
 #define	rpmSetVerbosity(_lvl)	\
 	((void)rpmlogSetMask( RPMLOG_UPTO( RPMLOG_PRI(_lvl))))
 #define	rpmIncreaseVerbosity()	\
-	((void)rpmlogSetMask((((rpmlogSetMask(0) & 0xff) << 1) | 1)))
+    ((void)rpmlogSetMask(((((unsigned)(rpmlogSetMask(0) & 0xff)) << 1) | 1)))
 #define	rpmDecreaseVerbosity()	\
-	((void)rpmlogSetMask(((rpmlogSetMask(0) & 0xff) >> 1)))
+	((void)rpmlogSetMask((((int)(rpmlogSetMask(0) & 0xff)) >> 1)))
 #define	rpmIsNormal()		\
 	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMMESS_NORMAL ))
 #define	rpmIsVerbose()		\

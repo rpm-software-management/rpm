@@ -1,12 +1,17 @@
-As we start updating packages for Red Hat 6.2, I'd like to see packages
-start to make use of build dependencies. Basically build dependencies are
-just like install dependencies, but they are resolved against the build system
-just after parsing the spec file. Syntactically, build dependencies look just
-like install dependencies in a spec file with "Build" prefixed:
+/*! \page builddpendencies How to generate build depedencies
 
+As we start updating packages for the next Red Hat distro, I'd like to see
+packages start to make use of build dependencies. Basically build
+dependencies are just like install dependencies, but they are resolved
+against the build system just after parsing the spec file. Syntactically,
+build dependencies look just like install dependencies in a spec file with
+"Build" prefixed:
+
+\verbatim
 	BuildPrereqs:
 	BuildRequires:
 	BuildConflicts:
+\endverbatim
 
 All the above dependencies include versions, files, existence/range tests, etc.
 The build dependency checking can also be turned off with --nodeps if necessary
@@ -21,6 +26,7 @@ spec files as part of rebuilding packages for Red Hat 6.2.
 Here's a short example of how to generate the package/file names that were used
 while building gnorpm using InDependence:
 
+\verbatim
 	rpm -U /mnt/redhat/comps/powertools/6.2/i386/InDependence-1.0-3.i386.rpm
 	rpm -i /mnt/redhat/comps/dist/6.2/SRPMS/gnorpm-0.9-11.src.rpm
 	cd /usr/src/redhat/SPECS
@@ -29,8 +35,9 @@ while building gnorpm using InDependence:
 	(the build will take longer since both dep and strace are pigs)
 	...
 	grep -- '::' xxx > yyy
+\endverbatim
 
-=========================================================================
+\verbatim
 Aside:	The dep perl wrapper is a "pig" only because it's exec'ing
 		rpm -qf <filename>
         in order to turn filenames into package names. There are easier/faster
@@ -42,10 +49,11 @@ Aside:	The dep perl wrapper is a "pig" only because it's exec'ing
 	same open/execve syscalls using LD_PRELOAD.
 
 	Patches cheerfully accepted :-)
-=========================================================================
+\endverbatim
 
 Here's what's in yyy (<packagename>::<filename> format):
 
+\verbatim
 	ORBit-devel-0.4.95-2::/usr/bin/orbit-config 
 	XFree86-libs-3.3.5-6::/usr/X11R6/lib/libICE.so.6 
 	XFree86-libs-3.3.5-6::/usr/X11R6/lib/libSM.so.6 
@@ -151,15 +159,20 @@ Here's what's in yyy (<packagename>::<filename> format):
 	textutils-2.0-2::/usr/bin/cut 
 	textutils-2.0-2::/usr/bin/tr 
 	zlib-1.1.3-5::/usr/lib/libz.so.1 
+\endverbatim
 
 The information can be used to generate build prerequisites. What is still
 needed is a sensible approach on
 
+\verbatim
 	1) eliminating obvious common dependencies (e.g. libtool, egcs).
 	2) identifying (and removing for now) per-platform build dependencies.
 	3) deciding on whether to add the build dependency on a file or on the
 	package that contains the file.
 	4) if adding a dependency on a package, choosing version ranges as
 	appropriate.
+\endverbatim
 
 but that's up to individual packagers.
+
+*/

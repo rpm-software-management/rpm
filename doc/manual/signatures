@@ -1,5 +1,4 @@
-New RPM Signatures
-==================
+/*! \page signatures Signature header
 
 The 2.1 release of RPM had a few improvements in the area of
 digital package signatures.  The usage of PGP has been cleaned
@@ -7,8 +6,7 @@ up and extended, the signature section in the RPM file format
 has been made easily extensible with new signature types, and
 packages can have multiple signatures.
 
-PGP
----
+<h2>PGP</h2>
 
 RPM's previous usage of PGP was cumbersome, and only supported
 1024 bit keys.  Both of these problems have been corrected.
@@ -23,40 +21,48 @@ uses its default ($HOME/.pgp).
 
 If you just want to verify packages, you need to supply values
 for the macros
+\verbatim
 	%_pgpbin	the path to the pgp executable
 	%_signature	the type of signature to use
+\endverbatim
 
 In order to be able to sign packages, you may also have to
 supply values for
+\verbatim
 	%_pgp_name	the pgp signature to use for signing
 	%_pgp_path	the path to the key ring
+\endverbatim
 
-Signature Creation
-------------------
+<h2>Signature Creation</h2>
 
 Signature creation is the same as previous releases: just add
 a --sign to your build command line.  You can sign a package
 after the package is built with:
 
-rpm --resign <package>
+\verbatim
+	rpm --resign <package>
+\endverbatim
 
 Using --resign removes any previous signature in the package.
 To *add* a signature to a package, leaving all existing
 signatures use:
 
-rpm --addsign <package>
+\verbatim
+	rpm --addsign <package>
+\endverbatim
 
 RPM always creates MD5 and SIZE signatures when it build
 packages, which means that packages built without --sign can
 be "verified" to some extent.  The MD5 signature should catch
 problems like corrupt packages, faulty downloads, etc.
 
-Signature Verification
-----------------------
+<h2>Signature Verification</h2>
 
 Package signature verification is the same as previous releases:
 
-rpm -K <package>
+\verbatim
+	rpm -K <package>
+\endverbatim
 
 RPM will verify evey signature in the package, which may include
 more than one PGP signature.  The output indicates what types of
@@ -67,7 +73,11 @@ If you have a package with PGP signatures, but don't have PGP
 installed, but still want to verify it as much as possible, you
 can do:
 
-rpm -K --nopgp <package>
+\verbatim
+	rpm -K --nopgp <package>
+\endverbatim
 
 That will cause RPM to skip any PGP signatures, but still check
 any others (currently only MD5 and SIZE).
+
+*/

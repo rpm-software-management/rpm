@@ -16,6 +16,11 @@
 
 extern int _noDirTokens;
 
+/*@access StringBuf @*/	/* compared with NULL */
+/*@access TFI_t @*/	/* compared with NULL */
+/*@access Header @*/	/* compared with NULL */
+/*@access FD_t @*/	/* compared with NULL */
+
 /**
  */
 static inline int genSourceRpmName(Spec spec)

@@ -1,5 +1,4 @@
-TRIGGERS
-========
+/*! \page triggers Trigger scriptlets
 
 Triggers provide a well-defined method for packages to interact with one
 another at package install and uninstall time. They are an extension
@@ -8,8 +7,7 @@ of the normal installation scripts (i.e. %pre) which allows one package
 "triggered package"]) to execute an action when the installation status
 of another package (the "target" of the trigger) changes.
 
-A Simple Example
-----------------
+<h2>A Simple Example</h2>
 
 Say the package "mymailer" needs an /etc/mymailer/mailer symlink which points
 to the mail transport agent to use. If sendmail is installed, the link should
@@ -22,22 +20,27 @@ not exist at all.
 This can be accomplished by mymailer providing trigger scripts which 
 move the symlink when any of the following occurs:
 
+\verbatim
 	1) sendmail is installed
 	2) vmail is installed
 	3) sendmail is removed
 	4) vmail is removed
+\endverbatim
 
 The first two of these scripts would look like this:
 
+\verbatim
 	%triggerin -- sendmail
 	ln -sf /usr/bin/sendmail /etc/mymailer/mailer
 
 	%triggerin -- vmail
 	ln -sf /usr/bin/vmail /etc/mymailer/mailer
+\endverbatim
 
 These are two installation triggers, triggered by one of sendmail or vmail.
 They are run when:
 
+\verbatim
 	1) mymailer is already installed, and sendmail is installed or
 	   upgraded
 	2) mymailer is already installed, and vmail is installed or
@@ -46,11 +49,13 @@ They are run when:
 	   upgraded
 	4) vmail is already installed, and mymailer is installed or
 	   upgraded
+\endverbatim
 
 For the upgrading, the strategy is a little different. Rather then
 setting the link to point to the trigger, the link is set to point to
 the *other* mailer (if it exists), as follows:
 
+\verbatim
 	%triggerun -- sendmail
 	[ $2 = 0 ] || exit 0
 	if [ -f /usr/bin/vmail ]; then
@@ -71,13 +76,16 @@ the *other* mailer (if it exists), as follows:
 
 	%postun
 	[ $1 = 0 ] && rm -f /etc/mymailer/mailer
+\endverbatim
 
 These trigger scripts get run when:
 
+\verbatim
 	1) sendmail is installed, and mymailer is removed
 	2) vmail is installed, and mymailer is removed
 	3) mymailer is installed, and sendmail gets removed
 	4) mymailer is installed, and vmail gets removed
+\endverbatim
 
 The %postun insures that /etc/mymailer/mailer is removed when mymailer
 is removed (triggers get run at the same time as %preun scripts, so 
@@ -92,12 +100,13 @@ this case, if any of the targets will remain after the uninstall, the
 trigger doesn't do anything (as it's probably being triggered by an
 upgrade).
 
-Trigger Syntax
---------------
+<h2>Trigger Syntax</h2>
 
 Trigger specifications are of the form:
 
+\verbatim
 	%trigger{un|in|postun} [[-n] <subpackage>] [-p <program>] -- <trigger>
+\endverbatim
 
 The -n and -p arguments are the same as for %post scripts.  The
 <trigger> portion is syntactically equivalent to a "Requires"
@@ -105,30 +114,31 @@ specification (version numbers may be used). If multiple items are
 given (comma separated), the trigger is run when *any* of those
 conditions becomes true (the , can be read as "or"). For example:
 
+\verbatim
 	%triggerin -n package -p /usr/bin/perl -- fileutils > 3.0, perl < 1.2
 	print "I'm in my trigger!\n";
+\endverbatim
 
 Will put a trigger in package 'package' which runs when the installation
 status of either fileutils > 3.0 or perl < 1.2 is changed. The script will
 be run through /usr/bin/perl rather then /bin/sh (which is the default).
 
-An Unusual Case
----------------
+<h2>An Unusual Case</h2>
 
 There is one other type of trigger available -- %triggerpostun. These are
 triggers that are run after their target package has been removed; they will
 never be run when the package containing the trigger is removed. 
 
-While this type of trigger is almost never usefull, they allow a package to
+While this type of trigger is almost never useful, they allow a package to
 fix errors introduced by the %postun of another package (or by an earlier 
 version of that package).
 
-Order of Script Execution
--------------------------
+<h2>Order of Script Execution</h2>
 
 For reference, here's the order in which scripts are executed on a single
 package upgrade:
 
+\verbatim
   new-%pre	for new version of package being installed
   ...		(all new files are installed)
   new-%post	for new version of package being installed
@@ -145,4 +155,5 @@ package upgrade:
   old-%triggerpostun
   any-%triggerpostun (%triggerpostun from other packages set off by old un
 		install)
-
+\endverbatim
+*/

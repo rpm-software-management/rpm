@@ -31,7 +31,7 @@ static struct rpmlibProvides {
     { "rpmlib(HeaderLoadSortsTags)",    "4.0.1-1",
 	(                RPMSENSE_EQUAL),
     N_("header tags are always sorted after being loaded.") },
-    { NULL,				NULL,	0 }
+    { NULL,				NULL, NULL,	0 }
 };
 
 void rpmShowRpmlibProvides(FILE * fp)

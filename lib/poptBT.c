@@ -52,9 +52,12 @@ static int noDeps = 0;
 static int signIt = 0;
 static int useCatalog = 0;
 
+/**
+ */
 static void buildArgCallback( /*@unused@*/ poptContext con,
 	/*@unused@*/ enum poptCallbackReason reason,
-	const struct poptOption * opt, const char * arg, const void * data)
+	const struct poptOption * opt, const char * arg,
+	/*@unused@*/ const void * data)
 {
     struct rpmBuildArguments * rba = &rpmBTArgs;
 
@@ -76,7 +79,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case POPT_TP:
     case POPT_TS:
 	if (rba->buildMode == ' ') {
-	    rba->buildMode = (opt->val >> 8) & 0xff;
+	    rba->buildMode = ((unsigned)(opt->val >> 8)) & 0xff;
 	    rba->buildChar = (opt->val     ) & 0xff;
 	}
 	break;
@@ -111,7 +114,8 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     }
 }
 
-/** */
+/**
+ */
 struct poptOption rpmBuildPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	buildArgCallback, 0, NULL, NULL },

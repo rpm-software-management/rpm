@@ -1,5 +1,6 @@
 /** \ingroup rpmcli
  * \file lib/query.c
+ * Display tag values from package metadata.
  */
 
 #include "system.h"
@@ -25,7 +26,8 @@ static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
     return NULL;
 }
 
-/* ======================================================================== */
+/**
+ */
 static char * permsString(int mode)
 {
     char *perms = xstrdup("----------");
@@ -69,6 +71,8 @@ static char * permsString(int mode)
     return perms;
 }
 
+/**
+ */
 static void printFileInfo(char * te, const char * name,
 			  unsigned int size, unsigned short mode,
 			  unsigned int mtime,
@@ -151,6 +155,8 @@ static void printFileInfo(char * te, const char * name,
     if (perms) free(perms);
 }
 
+/**
+ */
 static inline const char * queryHeader(Header h, const char * qfmt)
 {
     const char * errstr;
@@ -162,6 +168,8 @@ static inline const char * queryHeader(Header h, const char * qfmt)
     return str;
 }
 
+/**
+ */
 static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
 		int xfile)
 {
@@ -402,6 +410,8 @@ exit:
     return rc;
 }
 
+/**
+ */
 static void
 printNewSpecfile(Spec spec)
 {

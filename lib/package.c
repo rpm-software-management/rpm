@@ -37,7 +37,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	case RPMSIGTAG_MD5:	tag = RPMTAG_SIGMD5;	break;
 	case RPMSIGTAG_GPG:	tag = RPMTAG_SIGGPG;	break;
 	case RPMSIGTAG_PGP5:	tag = RPMTAG_SIGPGP5;	break;
-	default:					break;
+	default:
 	    continue;
 	    /*@notreached@*/ break;
 	}

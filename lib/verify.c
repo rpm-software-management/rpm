@@ -1,5 +1,6 @@
 /** \ingroup rpmcli
  * \file lib/verify.c
+ * Verify installed payload files from package metadata.
  */
 
 #include "system.h"
@@ -11,6 +12,9 @@
 #include "md5.h"
 #include "misc.h"
 #include "debug.h"
+
+/*@ access TFI_t */
+/*@ access PSM_t */
 
 static int _ie = 0x44332211;
 static union _vendian { int i; char b[4]; } *_endian = (union _vendian *)&_ie;

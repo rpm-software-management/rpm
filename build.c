@@ -1,3 +1,7 @@
+/** \ingroup rpmcli
+ * Parse spec file and build package.
+ */
+
 #include "system.h"
 
 #include <rpmbuild.h>
@@ -6,6 +10,8 @@
 #include "build.h"
 #include "debug.h"
 
+/**
+ */
 static int checkSpec(Header h)
 {
     char *rootdir = NULL;
@@ -51,6 +57,8 @@ static int checkSpec(Header h)
  * angielsku...
  */
 /* XXX this is still a dumb test but at least it's i18n aware */
+/**
+ */
 static int isSpecFile(const char *specfile)
 {
     char buf[256];
@@ -86,6 +94,8 @@ static int isSpecFile(const char *specfile)
     return 1;
 }
 
+/**
+ */
 static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	const char *passPhrase, char *cookie)
 {

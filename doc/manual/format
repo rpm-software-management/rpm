@@ -1,5 +1,4 @@
-RPM File Format
-===============
+/*! \page pkgformat Package format
 
 This document describes the RPM file format version 3.0, which is used
 by RPM versions 2.1 and greater.  The format is subject to change, and
@@ -12,24 +11,26 @@ LIBRARY!!
 The RPM file format covers both source and binary packages.  An RPM
 package file is divided in 4 logical sections:
 
+\verbatim
 . Lead      -- 96 bytes of "magic" and other info
 . Signature -- collection of "digital signatures"
 . Header    -- holding area for all the package information
-. Archive   -- compressed archive of all the files in the package
+. Payload   -- compressed archive of all the files in the package
+\endverbatim
 
 All 2 and 4 byte "integer" quantities (int16 and int32) are stored in
 network byte order.  When data is presented, the first number is the
 byte number, or address, in hex, followed by the byte values in hex,
 followed by character "translations" (where appropriate).
 
-Lead
-----
+<h2>Lead</h2>
 
 The Lead is basically for file(1).  All the information contained in
 the Lead is duplicated or superceded by information in the Header.
 Much of the info in the Lead was used in old versions of RPM but is
 now ignored.  The Lead is stored as a C structure:
 
+\code
 struct rpmlead {
     unsigned char magic[4];
     unsigned char major, minor;
@@ -40,11 +41,14 @@ struct rpmlead {
     short signature_type;
     char reserved[16];
 };
+\endcode
 
 and is illustrated with one pulled from the rpm-2.1.2-1.i386.rpm
 package:
 
+\verbatim
 00000000: ed ab ee db 03 00 00 00
+\endverbatim
 
 The first 4 bytes (0-3) are "magic" used to uniquely identify an RPM
 package.  It is used by RPM and file(1).  The next two bytes (4, 5)
@@ -53,7 +57,9 @@ version.  This package is in 3.0 format.  The following 2 bytes (6-7)
 form an int16 which indicates the package type.  As of this writing
 there are only two types: 0 == binary, 1 == source.
 
+\verbatim
 00000008: 00 01 72 70 6d 2d 32 2e    ..rpm-2.
+\endverbatim
 
 The next two bytes (8-9) form an int16 that indicates the architecture
 the package was built for.  While this is used by file(1), the true
@@ -63,6 +69,7 @@ Starting with byte 10 and extending to byte 75, are 65 characters and
 a null byte which contain the familiar "name-version-release" of the
 package, padded with null (0) bytes.
 
+\verbatim
 00000010: 31 2e 32 2d 31 00 00 00    1.2-1...
 00000018: 00 00 00 00 00 00 00 00    ........
 00000020: 00 00 00 00 00 00 00 00    ........
@@ -71,6 +78,7 @@ package, padded with null (0) bytes.
 00000038: 00 00 00 00 00 00 00 00    ........
 00000040: 00 00 00 00 00 00 00 00    ........
 00000048: 00 00 00 00 00 01 00 05    ........
+\endverbatim
 
 Bytes 76-77 ("00 01" above) form an int16 that indicates the OS the
 package was built for.  In this case, 1 == Linux.  The next 2 bytes
@@ -78,14 +86,15 @@ package was built for.  In this case, 1 == Linux.  The next 2 bytes
 RPM what to expect in the Signature.  For version 3.0 packages, this
 is 5, which indicates the new "Header-style" signatures.
 
+\verbatim
 00000050: 04 00 00 00 68 e6 ff bf    ........
 00000058: ab ad 00 08 3c eb ff bf    ........
+\endverbatim
 
 The remaining 16 bytes (80-95) are currently unused and are reserved
 for future expansion.
 
-Signature
----------
+<h2>Signature</h2>
 
 A 3.0 format signature (denoted by signature type 5 in the Lead), uses
 the same structure as the Header.  For historical reasons, this
@@ -99,11 +108,13 @@ The Signature can contain multiple signatures, of different types.
 There are currently only three types, each with its own tag in the
 header structure:
 
+\verbatim
 	Name	Tag	Header Type
 	----	----	-----------
 	SIZE	1000	INT_32
 	MD5	1001	BIN
 	PGP	1002	BIN
+\endverbatim
 
 The MD5 signature is 16 bytes, and the PGP signature varies with
 the size of the PGP key used to sign the package.
@@ -111,8 +122,7 @@ the size of the PGP key used to sign the package.
 As of RPM 2.1, all packages carry at least SIZE and MD5 signatures,
 and the Signature section is padded to a multiple of 8 bytes.
 
-Header
-------
+<h2>Header</h2>
 
 The Header contains all the information about a package: name,
 version, file list, etc.  It uses the same "header structure" as the
@@ -121,14 +131,12 @@ tags for the Header would take too much space to list here, and the
 list grows fairly frequently.  For the complete list see lib/rpmlib.h
 in the RPM sources.
 
-Archive
--------
+<h2>Payload</h2>
 
-The Archive is currently a gzipped cpio archive.  The cpio
+The Payload is currently a gzipped cpio archive.  The cpio
 archive type used is SVR4 with a CRC checksum.
 
-The Header Structure
---------------------
+<h2>The Header Structure</h2>
 
 The header structure is a little complicated, but actually performs a
 very simple function.  It acts almost like a small database in that it
@@ -141,6 +149,7 @@ Along with the tag and the data, a data "type" is stored, which indicates,
 obviously, the type of the data associated with the tag.  There are
 currently 9 types:
 
+\verbatim
 	Type		Number
 	----		------
 	NULL		0
@@ -152,6 +161,8 @@ currently 9 types:
 	STRING		6
 	BIN		7
 	STRING_ARRAY	8
+	I18NSTRING_TYPE	9
+\endverbatim
 
 One final piece of information is a "count" which is stored with each
 tag, and indicates the number of items of the associated type that are
@@ -162,12 +173,16 @@ STRING_ARRAY.
 Altogether, the tag, type, count, and data are called an "Entry" or
 "Header Entry".
 
+\verbatim
 00000000: 8e ad e8 01 00 00 00 00    ........
+\endverbatim
 
 A header begins with 3 bytes of magic "8e ad e8" and a single byte to
 indicate the header version.  The next four bytes (4-7) are reserved.
 
+\verbatim
 00000008: 00 00 00 20 00 00 07 77    ........
+\endverbatim
 
 The next four bytes (8-11) form an int32 that is a count of the number
 of entries stored (in this case, 32).  Bytes 12-15 form an int32 that
@@ -175,7 +190,9 @@ is a count of the number of bytes of data stored (that is, the number
 of bytes made up by the data portion of each entry).  In this case it
 is 1911 bytes.
 
+\verbatim
 00000010: 00 00 03 e8 00 00 00 06 00 00 00 00 00 00 00 01    ................
+\endverbatim
 
 Following the first 16 bytes is the part of the header called the
 "index".  The index is made of up "index entries", one for each entry
@@ -192,6 +209,7 @@ not allowed to have a count greater than 1).
 In our example there would be 32 such 16-byte index entries, followed
 by the data section:
 
+\verbatim
 00000210: 72 70 6d 00 32 2e 31 2e 32 00 31 00 52 65 64 20    rpm.2.1.2.1.Red 
 00000220: 48 61 74 20 50 61 63 6b 61 67 65 20 4d 61 6e 61    Hat Package Mana
 00000230: 67 65 72 00 31 e7 cb b4 73 63 68 72 6f 65 64 65    ger.1...schroede
@@ -199,6 +217,7 @@ by the data section:
 ...
 00000970: 6c 69 62 63 2e 73 6f 2e 35 00 6c 69 62 64 62 2e    libc.so.5.libdb.
 00000980: 73 6f 2e 32 00 00                                  so.2..
+\endverbatim
 
 The data section begins at byte 528 (4 magic, 4 reserved, 4 index
 entry count, 4 data byte count, 16 * 32 index entries).  At offset 0,
@@ -211,11 +230,13 @@ so that the data of INT64 type starts on an 8 byte boundary, INT32
 type starts on a 4 byte boundary, and an INT16 type starts on a 2 byte
 boundary.  For example:
 
+\verbatim
 00000060: 00 00 03 ef 00 00 00 06 00 00 00 28 00 00 00 01    ................
 00000070: 00 00 03 f1 00 00 00 04 00 00 00 40 00 00 00 01    ................
 ...
 00000240: 72 2e 72 65 64 68 61 74 2e 63 6f 6d 00 00 00 00    r.redhat.com....
 00000250: 00 09 9b 31 52 65 64 20 48 61 74 20 4c 69 6e 75    ....Red Hat Linu
+\endverbatim
 
 Index entry number 6 is the BUILDHOST, of type STRING.  Index entry
 number 7 is the SIZE, of type INT32.  The corresponding data for entry
@@ -224,23 +245,28 @@ could start at byte 589, byte that is an improper boundary for an INT32.
 As a result, 3 null bytes are inserted and the date for the SIZE actually
 starts at byte 592: "00 09 9b 31", which is 629553).
 
-Tools
------
+<h2>Tools</h2>
 
 The tools directory in the RPM sources contains a number of small
 programs that use the RPM library to pick apart packages.  These
 tools are mostly used for debugging, but can also be used to help
 you understand the internals of the RPM package format.
 
+\verbatim
 	rpmlead		- extracts the Lead from a package
 	rpmsignature	- extracts the Signature from a package
 	rpmheader	- extracts the Header from a package
 	rpmarchive	- extracts the Archive from a package
 	dump		- displays a header structure in readable format
+\endverbatim
 
 Given a package foo.rpm you might try:
 
+\verbatim
 	rpmlead foo.rpm | od -x
 	rpmsignature foo.rpm | dump
 	rpmheader foo.rpm | dump
 	rpmarchive foo.rpm | zcat | cpio --list
+\endverbatim
+
+*/

@@ -39,7 +39,8 @@ extern "C" {
  * @return		rpmRC return code
  */
 rpmRC rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
-	/*@out@*/ Header * hdr) /*@modifies fd, *signatures, *hdr @*/;
+	/*@out@*/ Header * hdr)
+		/*@modifies fd, *signatures, *hdr @*/;
 
 /**
  * Return package header and lead info from file handle.

@@ -9,6 +9,8 @@
 #include <rpmbuild.h>
 #include "debug.h"
 
+/*@access StringBuf @8/	/* compared with NULL */
+
 /* These have to be global to make up for stupid compilers */
     static int leaveDirs, skipDefaultAction;
     static int createDir, quietly;

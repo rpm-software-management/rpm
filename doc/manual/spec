@@ -1,10 +1,8 @@
-SPEC FILE ADDITIONS
-===================
+/*! \page specfile Spec file tags
 
 A few additions have been made to the spec file format.
 
-Summary and Description
------------------------
+<h2>Summary and Description</h2>
 
 The Summary: tag should be use to give a short (50 char or so) summary
 of the package.  Most package's Description: line should be changed to
@@ -13,15 +11,18 @@ be changed to a "%description" entry similar to %package and %files.
 At some point in the future support will be removed for "Description:".
 As an example, this spec file fragment:
 
+\verbatim
   Description: Screen drawing library
   Name: screenlib
   Version: 1.0
 
   %package devel
   Description: Screen drawing library headers and static libs
+\endverbatim
 
 might be changed to:
 
+\verbatim
   Summary: Screen drawing library
   Name: screenlib
   Version: 1.0
@@ -40,6 +41,7 @@ might be changed to:
 
   You'll only need this package if you
   are doing development.
+\endverbatim
 
 The description is free form text, but there are two things to note.
 The first regards reformating.  Lines that begin with white space
@@ -47,8 +49,7 @@ are considered "pre-formatted" and will be left alone.  Adjacent
 lines without leading whitespace are considered a single paragraph
 and may be subject to formatting by glint or another RPM tool.
 
-Other Tags
-----------
+<h2>Other Tags</h2>
 
 Two new tags are "URL:" and "Packager:".  "URL:" is a place to put a
 URL for more information and/or documentation on the software
@@ -58,8 +59,7 @@ address of the person who "maintains" the RPM package (which may be
 different from the person who actually maintains the program the
 package contains).
 
-Files Attributes
-----------------
+<h2>Files Attributes</h2>
 
 A %ghost tag on a file indicates that this file is not to be included
 in the package.  It is typically used when the attributes of the file
@@ -76,8 +76,7 @@ The %config(noreplace) indicates that the file in the package should
 be installed with extension .rpmnew if there is already a file by
 the same name on the installed machine.
 
-Fine Adjustment of Automatic Dependencies
------------------------------------------
+<h2>Fine Adjustment of Automatic Dependencies</h2>
 
 Rpm currently supports separate "Autoreq:" and "Autoprov:" tags in a
 spec file to independently control the running of find-requires and
@@ -88,10 +87,16 @@ installed on the target machine even though their intended use was
 optional. To rectify the situation you may turn off requirements when
 building the package by putting
 
+\verbatim
 	Autoreq: 0 
+\endverbatim
 
 in your spec file. Any and all requirements should be added manually using the
 
+\verbatim
 	Requires: depend1, ..., dependN
+\endverbatim
 
 in this case.
+
+*/

@@ -12,6 +12,9 @@
 
 static int _build_debug = 0;
 
+/*@access StringBuf @*/
+/*@access FD_t @*/
+
 /**
  */
 static void doRmSource(Spec spec)

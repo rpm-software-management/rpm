@@ -36,7 +36,8 @@ OUTPUT_DIRECTORY       = @WITH_APIDOCS_TARGET@
 # information to generate all constant output in the proper language. 
 # The default language is English, other supported languages are: 
 # Dutch, French, Italian, Czech, Swedish, German, Finnish, Japanese, 
-# Spanish, Russian, Croatian, Polish, and Portuguese.
+# Korean, Hungarian, Norwegian, Spanish, Romanian, Russian, Croatian,
+# Polish, Portuguese and Slovene.
 
 OUTPUT_LANGUAGE        = English
 
@@ -110,7 +111,7 @@ STRIP_FROM_PATH        = @TOP_SOURCEDIR@/
 # to NO (the default) then the documentation will be excluded. 
 # Set it to YES to include the internal documentation. 
 
-INTERNAL_DOCS          = NO
+INTERNAL_DOCS          = YES
 
 # If the CLASS_DIAGRAMS tag is set to YES (the default) Doxygen will 
 # generate a class diagram (in Html and LaTeX) for classes with base or 
@@ -134,11 +135,11 @@ INLINE_SOURCES         = NO
 
 STRIP_CODE_COMMENTS    = YES
 
-# If the CASE_SENSE_NAMES tag is set to NO (the default) then Doxygen 
-# will only generate file names in lower case letters. If set to 
-# YES upper case letters are also allowed. This is useful if you have 
-# classes or files whose names only differ in case and if your file system 
-# supports case sensitive file names. 
+# If the CASE_SENSE_NAMES tag is set to NO then Doxygen will only generate 
+# file names in lower case letters. If set to YES upper case letters are also 
+# allowed. This is useful if you have classes or files whose names only differ 
+# in case and if your file system supports case sensitive file names. Windows 
+# users are adviced to set this option to NO.
 
 CASE_SENSE_NAMES       = YES
 
@@ -160,10 +161,11 @@ VERBATIM_HEADERS       = YES
 
 SHOW_INCLUDE_FILES     = YES
 
-# If the JAVADOC_AUTOBRIEF tag is set to YES (the default) then Doxygen 
-# will interpret the first line (until the first dot) of a JavaDoc-style 
-# comment as the brief description. If set to NO, the Javadoc-style will 
-# behave just like the Qt-style comments. 
+# If the JAVADOC_AUTOBRIEF tag is set to YES then Doxygen
+# will interpret the first line (until the first dot) of a JavaDoc-style
+# comment as the brief description. If set to NO, the JavaDoc
+# comments  will behave just like the Qt-style comments (thus requiring an
+# explict @brief command for a brief description.
 
 JAVADOC_AUTOBRIEF      = YES
 
@@ -184,6 +186,13 @@ INLINE_INFO            = YES
 # declaration order. 
 
 SORT_MEMBER_DOCS       = YES
+
+# If member grouping is used in the documentation and the DISTRIBUTE_GROUP_DOC 
+# tag is set to YES, then doxygen will reuse the documentation of the first 
+# member in the group (if any) for the other members of the group. By default 
+# all members of a group must be documented explicitly.
+
+DISTRIBUTE_GROUP_DOC   = NO
 
 # The TAB_SIZE tag can be used to set the number of spaces in a tab. 
 # Doxygen uses this value to replace tabs by spaces in code fragments. 
@@ -206,6 +215,44 @@ GENERATE_TODOLIST      = YES
 # commands in the documentation.
 
 GENERATE_TESTLIST      = YES
+
+# The GENERATE_BUGLIST tag can be used to enable (YES) or 
+# disable (NO) the bug list. This list is created by putting \bug 
+# commands in the documentation.
+
+GENERATE_BUGLIST       = YES
+
+# This tag can be used to specify a number of aliases that acts 
+# as commands in the documentation. An alias has the form "name=value". 
+# For example adding "sideeffect=\par Side Effects:\n" will allow you to 
+# put the command \sideeffect (or @sideeffect) in the documentation, which 
+# will result in a user defined paragraph with heading "Side Effects:". 
+# You can put \n's in the value part of an alias to insert newlines. 
+
+ALIASES                = 
+
+# The MAX_INITIALIZER_LINES tag determines the maximum number of lines 
+# the initial value of a variable or define consist of for it to appear in 
+# the documentation. If the initializer consists of more lines than specified 
+# here it will be hidden. Use a value of 0 to hide initializers completely. 
+# The appearance of the initializer of individual variables and defines in the 
+# documentation can be controlled using \showinitializer or \hideinitializer 
+# command in the documentation regardless of this setting. 
+
+MAX_INITIALIZER_LINES  = 30
+
+# Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources 
+# only. Doxygen will then generate output that is more tailored for C. 
+# For instance some of the names that are used will be different. The list 
+# of all members will be omitted, etc. 
+
+OPTIMIZE_OUTPUT_FOR_C  = YES
+
+# Set the SHOW_USED_FILES tag to NO to disable the list of files generated 
+# at the bottom of the documentation of classes and structs. If set to YES the 
+# list will mention the files that were used to generate the documentation. 
+
+SHOW_USED_FILES        = YES
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -235,6 +282,12 @@ WARN_IF_UNDOCUMENTED   = YES
 
 WARN_FORMAT            = "$file:$line: $text"
 
+# The WARN_LOGFILE tag can be used to specify a file to which warning 
+# and error messages should be written. If left blank the output is written 
+# to stderr. 
+
+WARN_LOGFILE           = 
+
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
@@ -246,6 +299,17 @@ WARN_FORMAT            = "$file:$line: $text"
 
 INPUT                  = \
 	./Doxyheader \
+	./doc/manual/builddependencies \
+	./doc/manual/buildroot \
+	./doc/manual/dependencies \
+	./doc/manual/format \
+	./doc/manual/macros \
+	./doc/manual/multiplebuilds \
+	./doc/manual/queryformat \
+	./doc/manual/signatures \
+	./doc/manual/relocatable \
+	./doc/manual/spec \
+	./doc/manual/triggers \
 	./build.c \
 	./build.h \
 	./config.h \
@@ -415,6 +479,12 @@ IMAGE_PATH             =
 
 INPUT_FILTER           = 
 
+# If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using 
+# INPUT_FILTER) will be used to filter the input files when producing source 
+# files to browse. 
+
+FILTER_SOURCE_FILES    = NO
+
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
@@ -485,11 +555,47 @@ HTML_ALIGN_MEMBERS     = YES
 
 GENERATE_HTMLHELP      = NO
 
+# If the GENERATE_HTMLHELP tag is set to YES, the GENERATE_CHI flag 
+# controls if a separate .chi index file is generated (YES) or that 
+# it should be included in the master .chm file (NO).
+
+GENERATE_CHI           = NO
+
+# If the GENERATE_HTMLHELP tag is set to YES, the BINARY_TOC flag 
+# controls whether a binary table of contents is generated (YES) or a 
+# normal table of contents (NO) in the .chm file.
+
+BINARY_TOC             = NO
+
+# The TOC_EXPAND flag can be set YES to add extra items for group members 
+# to the contents of the Html help documentation and to the tree view. 
+
+TOC_EXPAND             = NO
+
 # The DISABLE_INDEX tag can be used to turn on/off the condensed index at 
 # top of each HTML page. The value NO (the default) enables the index and 
 # the value YES disables it. 
 
 DISABLE_INDEX          = NO
+
+# This tag can be used to set the number of enum values (range [1..20]) 
+# that doxygen will group on one line in the generated HTML documentation. 
+
+ENUM_VALUES_PER_LINE   = 4
+
+# If the GENERATE_TREEVIEW tag is set to YES, a side panel will be
+# generated containing a tree-like index structure (just like the one that 
+# is generated for HTML Help). For this to work a browser that supports 
+# JavaScript and frames is required (for instance Netscape 4.0+ 
+# or Internet explorer 4.0+). 
+
+GENERATE_TREEVIEW      = NO
+
+# If the treeview is enabled (see GENERATE_TREEVIEW) then this tag can be 
+# used to set the initial width (in pixels) of the frame in which the tree 
+# is shown. 
+
+TREEVIEW_WIDTH         = 250
 
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
@@ -516,7 +622,7 @@ COMPACT_LATEX          = NO
 # by the printer. Possible values are: a4, a4wide, letter, legal and 
 # executive. If left blank a4wide will be used. 
 
-PAPER_TYPE             = a4wide
+PAPER_TYPE             = letter
 
 # The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX 
 # packages that should be included in the LaTeX output. 
@@ -606,17 +712,6 @@ MAN_OUTPUT             = man
 # the generated man pages (default is the subroutine's section .3) 
 
 MAN_EXTENSION          = .3
-
-#---------------------------------------------------------------------------
-# configuration options related to the XML output
-#---------------------------------------------------------------------------
-
-# If the GENERATE_XML tag is set to YES Doxygen will 
-# generate an XML file that captures the structure of 
-# the code including all documentation. Warning: This feature 
-# is still experimental and very incomplete.
-
-GENERATE_XML           = NO
 
 #---------------------------------------------------------------------------
 # Configuration options related to the preprocessor   
@@ -761,6 +856,18 @@ MAX_DOT_GRAPH_WIDTH    = 1024
 # large images. 
 
 MAX_DOT_GRAPH_HEIGHT   = 1024
+
+# If the GENERATE_LEGEND tag is set to YES (the default) Doxygen will 
+# generate a legend page explaining the meaning of the various boxes and 
+# arrows in the dot generated graphs. 
+
+GENERATE_LEGEND        = YES
+
+# If the DOT_CLEANUP tag is set to YES (the default) Doxygen will 
+# remove the intermedate dot files that are used to generate 
+# the various graphs. 
+
+DOT_CLEANUP            = YES
 
 #---------------------------------------------------------------------------
 # Configuration::addtions related to the search engine   

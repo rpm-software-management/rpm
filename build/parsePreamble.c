@@ -9,6 +9,8 @@
 #include <rpmbuild.h>
 #include "debug.h"
 
+/*@access FD_t @*/	/* compared with NULL */
+
 /**
  */
 static int_32 copyTagsDuringParse[] = {

@@ -15,6 +15,8 @@ extern MacroContext rpmGlobalMacroContext;
 #define SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
 
+/*@access Header @*/	/* compared with NULL */
+
 /**
  */
 static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)

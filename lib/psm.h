@@ -135,8 +135,8 @@ typedef enum pkgStage_e {
 /**
  */
 struct psm_s {
-    rpmTransactionSet ts;	/*!< transaction set */
-    TFI_t fi;			/*!< transaction element file info */
+/*@kept@*/ rpmTransactionSet ts;/*!< transaction set */
+/*@kept@*/ TFI_t fi;		/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage/multilib header. */

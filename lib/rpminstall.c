@@ -11,6 +11,7 @@
 #include "misc.h"
 #include "debug.h"
 
+/*@access rpmTransactionSet@*/	/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 

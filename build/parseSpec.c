@@ -11,6 +11,8 @@ static int _debug = 0;
 #include <rpmbuild.h>
 #include "debug.h"
 
+/*@access FD_t @*/	/* compared with NULL */
+
 /**
  */
 static struct PartRec {

@@ -16,7 +16,11 @@
 
 /*@access Header @*/		/* compared with NULL */
 /*@access rpmTransactionSet @*/	/* compared with NULL */
+/*@access rpmdbMatchIterator @*/ /* compared with NULL */
 /*@access TFI_t @*/		/* compared with NULL */
+/*@access FSM_t @*/		/* compared with NULL */
+/*@access PSM_t @*/		/* compared with NULL */
+/*@access FD_t @*/		/* compared with NULL */
 
 extern int _fsm_debug;
 
@@ -1198,7 +1202,7 @@ static int runImmedTriggers(PSM_t psm)
 	    rpmdbFreeIterator(mi);
 	}
     }
-    triggerIndices = hfd(triggerNames, tit);
+    triggerIndices = hfd(triggerIndices, tit);
     triggerNames = hfd(triggerNames, tnt);
     return rc;
 }

@@ -7,6 +7,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
+/*@access StringBuf @*/
+
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 {
     int nextPart, rc;

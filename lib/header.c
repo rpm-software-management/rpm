@@ -299,7 +299,8 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 
 	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) +
 			entry->rdlen + REGION_TAG_COUNT;
-	    ei = (int_32 *) *p = xmalloc(count);
+	    *p = xmalloc(count);
+	    ei = (int_32 *) *p;
 	    ei[0] = htonl(ril);
 	    ei[1] = htonl(entry->rdlen + REGION_TAG_COUNT);
 	    pe = (struct entryInfo *) memcpy(ei + 2, pe, (ril * sizeof(*pe)));

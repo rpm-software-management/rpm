@@ -21,6 +21,11 @@
 #include "md5.h"
 #include "debug.h"
 
+/*@access Header @*/
+/*@access StringBuf @*/
+/*@access TFI_t @*/
+/*@access FD_t @*/
+
 #define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
 

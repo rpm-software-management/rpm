@@ -1,4 +1,4 @@
-(From Ken Estes <kestes@staff.mail.com>)
+/*! \page multiplebuilds Multiple build areas
 
 It is possible to run several RPM builds on the same machine using
 separate RPM databases.  On my build machine I have several build
@@ -7,35 +7,41 @@ interfere with each other.  Each build behaves as if it was running on
 its own machine and no build area knows about the RPM database which
 actually configures the machine.
 
-1) First setup a "topdir" in a prefix other then where RPM is
+First, setup a "topdir" in a prefix other then where RPM is
 installed.  You will need to make the directories.  They need to be
 writable by the account which will do the building, typically they
 are owned by the buildmaster account and set to permissions
 755.
 
+\verbatim
         BUILD RPMS SOURCES SPECS SRPMS
+\endverbatim
 
-2) Next you will need to decide where the database files live. I suggest
+Next, you will need to decide where the database files live. I suggest
 putting them in a separate directory under "topdir".  I call my
 directory DB and it has the same owner and permissions as the other
 directories.
 
-3) Each separate build area needs a rpmrc.  This will need to specify
-the new topdir and dbpath.  If you will be building the same packages
-in different work areas you will also need to specify a tmppath into
-the topdir.  I suggest either making tmppath be the same as the BUILD
-directory or adding another directory called BUILDROOT for it in the
-topdir.
+Each separate build area needs a rpmrc and macro configuration file. This
+will need to specify the new topdir and dbpath.  If you will be building
+the same packages in different work areas you will also need to specify a
+tmppath into the topdir.  I suggest either making tmppath be the same as
+the BUILD directory or adding another directory called BUILDROOT for it
+in the topdir.
 
-4) keeping track of the correct rpmrc for each build area can be
+Keeping track of the correct rpmrc for each build area can be
 difficult.  To make my life easier I make a small shell script with the
 topdir hard coded inside:
 
+\verbatim
         #!/bin/sh
         /bin/rpm --rcfile /topdir/rpmrc "$@"
         exit $?
+\endverbatim
 
 I call the shell script rpm and it lives in the topdir.  Each time I
 wish to use a particular build area I just ensure that the build area
 is first in my path so that when I run "rpm" I get the regular rpm
 binary but I am using the local build areas rpmrc.
+
+*/

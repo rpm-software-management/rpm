@@ -1,18 +1,17 @@
-BUILD ROOT
-==========
+/*! \page buildroot Using a build root
 
-The build root is very similar to Root: (which will be deprecated
-soon).  By using Buildroot: in your spec file you are indicating
+The build root is very similar to Root: (which is now legacy).
+By using Buildroot: in your spec file you are indicating
 that your package can be built (installed into and packaged from)
 a user-definable directory.  This helps package building by normal
 users.
 
-The Spec File
--------------
+<h2>The Spec File</h2>
 
 Simply use
-
+\verbatim
   Buildroot: <dir>
+\endverbatim
 
 in your spec file.  The acutal buildroot used by RPM during the
 build will be available to you (and your %prep, %build, and %install
@@ -22,6 +21,7 @@ proper buildroot.  As with Root:, the files listed in the %files
 section should *not* contain the buildroot.  For example, the
 following hypothetical spec file:
 
+\verbatim
   Name: foo
   ...
   Root: /tmp
@@ -37,12 +37,14 @@ following hypothetical spec file:
   
   %files
   /usr/bin/fooprog
+\endverbatim
 
 would be changed to:
 
+\verbatim
   Name: foo
   ...
-  Buildroot: /tmp
+  BuildRoot: /tmp
   
   %prep
   ...
@@ -55,9 +57,9 @@ would be changed to:
   
   %files
   /usr/bin/fooprog
+\endverbatim
 
-Building With a Build Root
---------------------------
+<h2>Building With a Build Root</h2>
 
 RPM will use the buildroot listed in the spec file as the default
 buildroot.  There are two ways to override this.  First, you can
@@ -65,19 +67,22 @@ have "buildroot: <dir>" in your rpmrc.  Second, you can override
 the default, and any entry in an rpmrc by using "--buildroot <dir>"
 on the RPM command line.
 
-Caveats using Build Roots
--------------------------
+<h2>Caveats using Build Roots</h2>
 
 Care should be taken when using buildroots that the install directory
 is owned by the correct package.  For example the file
 
+\verbatim
 	/usr/lib/perl5/site_perl/MD5.pm
+\endverbatim
 
 is installed by the package perl-MD5.  If we were to use a buildroot
 and specified 
 
+\verbatim
 	%files  
 	/usr/lib/perl5/site_perl
+\endverbatim
 
 we would end up with the directory /usr/lib/perl5/site_perl being
 owned by the library package. This directory is in fact used by ALL
@@ -85,7 +90,9 @@ perl libriares and should be owned by the package for perl not any of
 its libraries. It is important that the %files command specifies all
 the known directories explicitly. So this would be preferable:
 
+\verbatim
 	/usr/lib/perl5/site_perl/*
+\endverbatim
 
 Since we only want the files and directories that the package perl-MD5
 installed into /usr/lib/perl5/site_perl/ to be owned by the package.
@@ -111,3 +118,5 @@ contains file names already used by other packages on the system then
 RPM will warn you of the problem and give a fatal error. This error can
 be overriden with --force and the installed file will be replaced by the
 new file and when the new package is removed the file will be removed as well.
+
+*/

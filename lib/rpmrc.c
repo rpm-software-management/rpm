@@ -8,6 +8,8 @@
 #define __power_pc() 0
 #endif
 
+/*@ access FD_t @*/		/* compared with NULL */
+
 #include <rpmlib.h>
 #include <rpmmacro.h>
 

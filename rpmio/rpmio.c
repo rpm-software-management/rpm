@@ -65,7 +65,8 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 
 #include "debug.h"
 
-/*@access urlinfo@*/
+/*@access urlinfo @*/
+/*@access FDSTAT_t @*/
 
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)

@@ -1,22 +1,22 @@
-SPEC FILE MACROS
-================
+/*! \page macros Macro syntax
 
-RPM 2.4.104 introduces fully recursive spec file macros.  Simple macros
-do straight text substitution. Parameterized macros include an options
-field, and perform argc/argv processing on white space separated tokens
-to the next newline. During macro expansion, both flags and arguments are
-available as macros which are deleted at the end of macro expansion.
-Macros can be used (almost) anywhere in a spec file, and, in particular,
-in "included file lists" (i.e. those read in using %files -f <file>).
-In addition, macros can be nested, hiding the previous definition for the
-duration of the expansion of the macro which contains nested macros.
+RPM has fully recursive spec file macros.  Simple macros do straight text
+substitution. Parameterized macros include an options field, and perform
+argc/argv processing on white space separated tokens to the next newline.
+During macro expansion, both flags and arguments are available as macros
+which are deleted at the end of macro expansion.  Macros can be used
+(almost) anywhere in a spec file, and, in particular, in "included file
+lists" (i.e. those read in using %files -f <file>).  In addition, macros
+can be nested, hiding the previous definition for the duration of the
+expansion of the macro which contains nested macros.
 
-Defining a Macro
-----------------
+<h2>Defining a Macro</h2>
 
 To define a macro use:
 
-%define <name>[(opts)] <body>
+\verbatim
+	%define <name>[(opts)] <body>
+\endverbatim
 
 All whitespace surrounding <body> is removed.  Name may be composed
 of alphanumeric characters, and the character `_' and must be at least
@@ -27,18 +27,19 @@ exactly as is to getopts(3) for argc/argv processing at the beginning of
 a macro invocation.  While a parameterized macro is being expanded, the
 following shell-like macros are available:
 
+\verbatim
 	%0	the name of the macro being invoked
 	%*	all arguments (unlike shell, not including any processed flags)
 	%#	the number of arguments
 	%{-f}	if present at invocation, the flag f itself
 	%{-f*}	if present at invocation, the argument to flag f
 	%1, %2	the arguments themselves (after getopt(3) processing)
+\endverbatim
 
 At the end of invocation of a parameterized macro, the above macros are
 (at the moment, silently) discarded.
 
-Writing a Macro
----------------
+<h2>Writing a Macro</h2>
 
 Within the body of a macro, there are several constructs that permit
 testing for the presence of optional parameters. The simplest construct
@@ -56,11 +57,12 @@ deleted). Note the 2nd % needed to escape the arguments to /bin/date.
 There is currently an 8K limit on the size that this macro can expand
 to.
 
-Builtin Macros
---------------
+<h2>Builtin Macros</h2>
+
 There are several builtin macros (with reserved names) that are needed
 to perform useful operations. The current list is
 
+\verbatim
 	%trace		toggle print of debugging information before/after
 			expansion
 	%dump		print the active (i.e. non-covered) macro table
@@ -83,29 +85,35 @@ to perform useful operations. The current list is
 	%{S:...}	expand ... to <source> file name
 	%{P:...}	expand ... to <patch> file name
 	%{F:...}	expand ... to <file> file name
+\endverbatim
 
 Macros may also be automatically included from /usr/lib/rpm/macros.
 In addition, rpm itself defines numerous macros. To display the current
 set, add "%dump" to the beginning of any spec file, process with rpm, and
 examine the output from stderr.
 
-Example of a Macro
-------------------
+<h2>Example of a Macro</h2>
 
 Here is an example %patch definition from /usr/lib/rpm/macros:
 
-%patch(b:p:P:REz:) \
-%define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
-%define patch_suffix	%{!-z:%{-b:--suffix %{-b*}}}%{!-b:%{-z:--suffix %{-z*}}}%{!-z:%{!-b: }}%{-z:%{-b:%{error:Can't specify both -z(%{-z*}) and -b(%{-b*})}}} \
-	%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E} \
+\verbatim
+	%patch(b:p:P:REz:) \
+	%define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
+	%define patch_suffix	%{!-z:%{-b:--suffix %{-b*}}}%{!-b:%{-z:--suffix %{-z*}}}%{!-z:%{!-b: }}%{-z:%{-b:%{error:Can't specify both -z(%{-z*}) and -b(%{-b*})}}} \
+		%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E} \
 	...
+\endverbatim
+
 
 The first line defines %patch with its options. The body of %patch is
 
+\verbatim
 	%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E}
+\endverbatim
 
 The body contains 7 macros, which expand as follows
 
+\verbatim
 	%{uncompress:...}	copy uncompressed patch to stdout
 	  %patch_file		... the name of the patch file
 	%{-p:...}		if "-p N" was present, (re-)generate "-pN" flag
@@ -113,29 +121,34 @@ The body contains 7 macros, which expand as follows
 	%patch_suffix		override (default) ".orig" suffix if desired
 	%{-R}			supply -R (reversed) flag if desired
 	%{-E}			supply -E (delete empty?) flag if desired
+\endverbatim
 
 There are two "private" helper macros:
 
+\verbatim
 	%patch_file	the gory details of generating the patch file name
 	%patch_suffix	the gory details of overriding the (default) ".orig"
+\endverbatim
 
-Using a Macro
--------------
+<h2>Using a Macro</h2>
 
 To use a macro, write:
 
-%<name> ...
+\verbatim
+	%<name> ...
+\endverbatim
 
 or
 
-%{<name>}
+\verbatim
+	%{<name>}
+\endverbatim
 
 The %{...} form allows you to place the expansion adjacent to other text.
 The %<name> form, if a parameterized macro, will do argc/argv processing
 of the rest of the line as described above.
 
-Command Line Options
---------------------
+<h2>Command Line Options</h2>
 
 When the command line option "--define 'macroname value'" allows the
 user to specify the value that a macro should have during the build.
@@ -144,16 +157,17 @@ users who accidentally type the leading % but this should not be
 relied upon.
 
 Evaluating a macro can be difficult outside of an rpm execution context. If
-you wish to see the expanded value of a macro, you may use
-	"--eval '<macro expression>'"
+you wish to see the expanded value of a macro, you may use the option
+\verbatim
+	--eval '<macro expression>'
+\endverbatim
 that will read rpm config files and print the macro expansion on stdout.
 
 Note: This works only macros defined in rpm configuration files, not for
 macros defined in specfiles. You can use %{echo: %{your_macro_here}} if
 you wish to see the expansion of a macro defined in a spec file.
  
-RPM Configuration using Macros
---------------------------------
+<h2>Configuration using Macros</h2>
 
 Starting in rpm 3.0, macros rather than rpmrc lines are used to configure rpm.
 In general, all the rpmrc configuration lines documented in "Maximum RPM"
@@ -165,6 +179,7 @@ spec file parsing.
 
 Here's an example to illustrate configuration using macros:
 
+\verbatim
    Old way:
 	In /etc/rpmrc and/or ~/.rpmrc you put
 		something:      some_value
@@ -172,9 +187,11 @@ Here's an example to illustrate configuration using macros:
    New way:
 	In /etc/rpm/macros and/or ~/.rpmmacros
 		%_something     some_value
+\endverbatim
 
 Here are 2 common FAQ for experienced users of rpm:
 
+\verbatim
   1) --rcfile works differently.
     Old way:	rpm --rcfile whatever
     New way:	rpm --rcfile /usr/lib/rpm/rpmrc:whatever
@@ -190,13 +207,14 @@ Here are 2 common FAQ for experienced users of rpm:
 		macrofiles:     /usr/lib/rpm/macros: ... :~/.rpmmacros
 	~/.rpmmacros contains
 		%_topdir        whatever
+\endverbatim
 
-Macro Analogues of Autoconf Variables
--------------------------------------
+<h2>Macro Analogues of Autoconf Variables</h2>
 
 Several macro definitions provided by the default rpm macro set have uses in
 packaging similar to the autoconf variables that are used in building packages:
 
+\verbatim
     %_prefix		/usr
     %_exec_prefix	%{_prefix}
     %_bindir		%{_exec_prefix}/bin
@@ -211,4 +229,6 @@ packaging similar to the autoconf variables that are used in building packages:
     %_oldincludedir	/usr/include
     %_infodir		%{_prefix}/include
     %_mandir		%{_prefix}/man
+\endverbatim
 
+*/

@@ -1,5 +1,5 @@
-/** \ingroup db3
- * \file lib/db3.c
+/** \ingroup rpmdb
+ * \file lib/dbconfig.c
  */
 
 #include "system.h"
