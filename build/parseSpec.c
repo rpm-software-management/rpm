@@ -347,7 +347,6 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 {
     int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
-    char *name;
     const char *saveArch;
     Package pkg;
     int x, index;
@@ -513,8 +512,9 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
       }
 
       for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	headerGetEntry(pkg->header, RPMTAG_NAME, NULL, (void **) &name, NULL);
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
+	    const char * name;
+	    headerNVR(pkg->header, &name, NULL, NULL);
 	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s"), name);
 	    freeSpec(spec);
 	    return RPMERR_BADSPEC;

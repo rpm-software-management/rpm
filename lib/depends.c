@@ -645,8 +645,9 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 
     if (!upgrade || rpmdep->db == NULL) return 0;
 
-    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name, &count);
+    headerNVR(h, &name, NULL, NULL);
 
+#ifdef DYING
     if (!rpmdbFindPackage(rpmdep->db, name, &matches))  {
 
 	for (i = 0; i < dbiIndexSetCount(matches); i++) {
@@ -659,6 +660,18 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	    headerFree(h2);
 	}
     }
+#else
+    {	rpmdbMatchIterator mi;
+	Header h2;
+
+	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, name, 0);
+	while((h2 = rpmdbNextIterator(mi)) != NULL) {
+	    if (rpmVersionCompare(h, h2))
+		removePackage(rpmdep, rpmdbGetIteratorOffset(mi), alNum);
+	}
+	rpmdbFreeIterator(mi);
+    }
+#endif
 
     if (headerGetEntry(h, RPMTAG_OBSOLETENAME, NULL, (void **) &obsoletes, &count)) {
 	const char **obsoletesEVR;
@@ -678,13 +691,13 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	    if (!strcmp(name, obsoletes[j]))
 		continue;
 
-	    if (rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches)) {
+#ifdef	DYING
+	    if (rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))
 		continue;
-	    }
 
 	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-		 if (bsearch(&recOffset,
+		if (bsearch(&recOffset,
 			rpmdep->removedPackages, rpmdep->numRemovedPackages,
 			sizeof(int), intcmp))
 		    continue;
@@ -700,6 +713,31 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 			removePackage(rpmdep, recOffset, alNum);
 		}
 	    }
+#else
+	  { rpmdbMatchIterator mi;
+	    Header h2;
+
+	    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, obsoletes[j], 0);
+	    while((h2 = rpmdbNextIterator(mi)) != NULL) {
+		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+		if (bsearch(&recOffset,
+			rpmdep->removedPackages, rpmdep->numRemovedPackages,
+			sizeof(int), intcmp))
+		    continue;
+
+		/*
+		 * Rpm prior to 3.0.3 does not have versioned obsoletes.
+		 * If no obsoletes version info is available, match all names.
+		 */
+		if (obsoletesEVR == NULL ||
+		    headerMatchesDepFlags(h2,
+			obsoletes[j], obsoletesEVR[j], obsoletesFlags[j])) {
+			removePackage(rpmdep, recOffset, alNum);
+		}
+	    }
+	    rpmdbFreeIterator(mi);
+	  }
+#endif
 	}
 
 	if (obsoletesEVR) free(obsoletesEVR);
@@ -940,6 +978,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    matches = NULL;
 	}
 
+#ifdef	DYING
 	if (!rpmdbFindPackage(rpmdep->db, keyName, &matches)) {
 	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
@@ -964,6 +1003,28 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    dbiFreeIndexSet(matches);
 	    matches = NULL;
 	}
+#else
+	{   rpmdbMatchIterator mi;
+	    Header h2;
+
+	    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, keyName, 0);
+	    while ((h2 = rpmdbNextIterator(mi)) != NULL) {
+		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+		if (bsearch(&recOffset,
+			    rpmdep->removedPackages,
+			    rpmdep->numRemovedPackages,
+			    sizeof(int), intcmp))
+		    continue;
+		if (headerMatchesDepFlags(h2, keyName, keyEVR, keyFlags))
+		    break;
+	    }
+	    rpmdbFreeIterator(mi);
+	    if (h2) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db packages.\n"), keyType, keyDepend);
+		goto exit;
+	    }
+	}
+#endif
 
 	/*
 	 * New features in rpm spec files add implicit dependencies on rpm

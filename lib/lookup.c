@@ -76,6 +76,7 @@ exit:
     return rc;
 }
 
+#ifdef DYING
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
@@ -87,6 +88,7 @@ int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches)
 
     return findMatches(db, name, version, release, matches);
 }
+#endif
 
 /* 0 found matches */
 /* 1 no matches */

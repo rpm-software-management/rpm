@@ -378,32 +378,23 @@ void rpmdbClose ( /*@only@*/ rpmdb db);
  */
 int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * dbp);
 
-#ifdef	DYING
-/**
- * @param db		rpm database
- */
-int rpmdbFirstRecNum(rpmdb db);
-/**
- * @param db		rpm database
- * @return		0 at end, -1 on error
- */
-int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
-#endif
-
 /**
  * @param db		rpm database
  */
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
+
 /**
  * @param db		rpm database
  */
 int rpmdbFindByFile(rpmdb db, const char * filespec,
 	/*@out@*/ dbiIndexSet * matches);
+#ifdef	DYING
 /**
  * @param db		rpm database
  */
 int rpmdbFindByGroup(rpmdb db, const char * group,
 	/*@out@*/ dbiIndexSet * matches);
+#endif
 /**
  * @param db		rpm database
  */
@@ -424,11 +415,13 @@ int rpmdbFindByRequiredBy(rpmdb db, const char * requires,
  */
 int rpmdbFindByConflicts(rpmdb db, const char * conflicts,
 	/*@out@*/ dbiIndexSet * matches);
+#ifdef	DYING
 /**
  * @param db		rpm database
  */
 int rpmdbFindByTriggeredBy(rpmdb db, const char * package,
 	/*@out@*/ dbiIndexSet * matches);
+#endif
 
 /* these are just convenience functions */
 /**
@@ -436,11 +429,13 @@ int rpmdbFindByTriggeredBy(rpmdb db, const char * package,
  */
 int rpmdbFindByLabel(rpmdb db, const char * label,
 	/*@out@*/ dbiIndexSet * matches);
+#ifdef	DYING
 /**
  * @param db		rpm database
  */
 int rpmdbFindByHeader(rpmdb db, Header h,
 	/*@out@*/ dbiIndexSet * matches);
+#endif
 
 /**
  * Return number of instances of package in rpm database.
@@ -461,6 +456,18 @@ void rpmdbFreeIterator( /*@only@*/ rpmdbMatchIterator mi);
 /**
  */
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
+
+/**
+ */
+int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
+
+/**
+ */
+void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version);
+
+/**
+ */
+void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release);
 
 /**
  */

@@ -514,8 +514,7 @@ int packageBinaries(Spec spec)
 			       rpmHeaderFormats, &errorString);
 	    xfree(binFormat);
 	    if (binRpm == NULL) {
-		headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
-			   (void **)&name, NULL);
+		headerNVR(pkg->header, &name, NULL, NULL);
 		rpmError(RPMERR_BADFILENAME, _("Could not generate output "
 		     "filename for package %s: %s\n"), name, errorString);
 		return RPMERR_BADFILENAME;

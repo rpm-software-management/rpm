@@ -1053,13 +1053,20 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
     if (filespec) free(filespec);
 }
 
+#ifdef	DYING
 static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
 			/*@dependent@*/ const void * key)
+#else
+static int ensureOlder(rpmdb db, Header new, Header old, rpmProblemSet probs,
+			/*@dependent@*/ const void * key)
+#endif
 {
-    Header old;
     int result, rc = 0;
+#ifdef	DYING
+    Header old;
 
     old = rpmdbGetRecord(db, dbOffset);
+#endif
     if (old == NULL) return 1;
 
     result = rpmVersionCompare(old, new);
@@ -1070,7 +1077,9 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
 	psAppend(probs, RPMPROB_OLDPACKAGE, key, new, NULL, old, 0);
     }
 
+#ifdef	DYING
     headerFree(old);
+#endif
 
     return rc;
 }
@@ -1271,7 +1280,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
      */
     /* The ordering doesn't matter here */
     for (alp = ts->addedPackages.list;
-	(alp - ts->addedPackages.list) < ts->addedPackages.size; alp++) {
+	(alp - ts->addedPackages.list) < ts->addedPackages.size;
+	alp++)
+    {
 	if (!archOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL, 0);
 
@@ -1279,6 +1290,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL, 0);
 
 	if (!(ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
+#ifdef	DYING
 	    rc = rpmdbFindPackage(ts->db, alp->name, &dbi);
 	    switch (rc) {
 	    case 2:
@@ -1301,6 +1313,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		dbiFreeIndexSet(dbi);
 		dbi = NULL;
 	    }
+#else
+	    rpmdbMatchIterator mi;
+	    Header oldH;
+	    mi = rpmdbInitIterator(ts->db, RPMDBI_NAME, alp->name, 0);
+	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
+		ensureOlder(ts->db, alp->h, oldH, probs, alp->key);
+	    rpmdbFreeIterator(mi);
+#endif
 	}
 
 	rc = findMatches(ts->db, alp->name, alp->version, alp->release, &dbi);

@@ -439,8 +439,10 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
     const char ** triggerEVR;
     const char ** triggerScripts;
     const char ** triggerProgs;
-    int_32 * triggerFlags, * triggerIndices;
-    char * triggerPackageName, * sourceName;
+    int_32 * triggerFlags;
+    int_32 * triggerIndices;
+    const char * triggerPackageName;
+    const char * sourceName;
     int numTriggers;
     int rc = 0;
     int i;
@@ -452,7 +454,7 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	return 0;
     }
 
-    headerGetEntry(sourceH, RPMTAG_NAME, NULL, (void **) &sourceName, NULL);
+    headerNVR(sourceH, &sourceName, NULL, NULL);
 
     headerGetEntry(triggeredH, RPMTAG_TRIGGERFLAGS, NULL, 
 		   (void **) &triggerFlags, NULL);
@@ -486,8 +488,7 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	headerGetEntry(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, NULL,
 		       (void **) &triggerProgs, NULL);
 
-	headerGetEntry(triggeredH, RPMTAG_NAME, NULL, 
-		       (void **) &triggerPackageName, NULL);
+	headerNVR(triggeredH, &triggerPackageName, NULL, NULL);
 
 	{   int arg1;
 	    int index;
@@ -523,48 +524,60 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 int runTriggers(const char * root, rpmdb db, int sense, Header h,
 		int countCorrection, FD_t scriptFd)
 {
-    const char * packageName;
-    dbiIndexSet matches;
-    Header triggeredH;
+    const char * name;
     int numPackage;
-    int rc;
-    int i;
+    int rc = 0;
 
-    headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &packageName, NULL);
+    headerNVR(h, &name, NULL, NULL);
 
-    matches = NULL;
-    if ((rc = rpmdbFindByTriggeredBy(db, packageName, &matches)) < 0) {
-	rc = 1;
-	goto exit;
-    } else if (rc) {
-	rc = 0;
-	goto exit;
-    }
+    numPackage = rpmdbCountPackages(db, name);
+    if (numPackage < 0)
+	return 1;
 
-    numPackage = rpmdbCountPackages(db, packageName);
-    if (numPackage < 0) {
-	rc = 1;
-	goto exit;
-    }
+    {	Header triggeredH;
 
-    rc = 0;
-    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-	if ((triggeredH = rpmdbGetRecord(db, recOffset)) == NULL) {
+#ifdef	DYING
+	dbiIndexSet matches = NULL;
+	int i;
+
+	if ((rc = rpmdbFindByTriggeredBy(db, name, &matches)) < 0) {
 	    rc = 1;
-	    break;
+	    goto exit;
+	} else if (rc) {
+	    rc = 0;
+	    goto exit;
 	}
 
-	rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
+	rc = 0;
+	for (i = 0; i < dbiIndexSetCount(matches); i++) {
+	    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+	    if ((triggeredH = rpmdbGetRecord(db, recOffset)) == NULL) {
+		rc = 1;
+		break;
+	    }
+
+	    rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
 			       NULL, scriptFd);
 	
-	headerFree(triggeredH);
-    }
+	    headerFree(triggeredH);
+	}
 
 exit:
-    if (matches) {
-	dbiFreeIndexSet(matches);
-	matches = NULL;
+	if (matches) {
+	    dbiFreeIndexSet(matches);
+	    matches = NULL;
+	}
+#else
+	rpmdbMatchIterator mi;
+
+	mi = rpmdbInitIterator(db, RPMDBI_TRIGGER, name, 0);
+	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	    rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
+			       NULL, scriptFd);
+	}
+
+	rpmdbFreeIterator(mi);
+#endif
     }
 
     return rc;
@@ -574,55 +587,79 @@ exit:
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		     int countCorrection, FD_t scriptFd)
 {
-    dbiIndexSet matches = NULL;
-    int rc = 0;
-    char ** triggerNames;
+    const char ** triggerNames;
     int numTriggers;
-    int i, j;
     int_32 * triggerIndices;
+    int numTriggerIndices;
     char * triggersRun;
-    Header sourceH;
+    int rc = 0;
 
     if (!headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, (void **) &triggerNames, 
 			&numTriggers))
 	return 0;
     headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &triggerIndices, 
-		   &i);
-    triggersRun = alloca(sizeof(*triggersRun) * i);
-    memset(triggersRun, 0, sizeof(*triggersRun) * i);
+		   &numTriggerIndices);
+    triggersRun = alloca(sizeof(*triggersRun) * numTriggerIndices);
+    memset(triggersRun, 0, sizeof(*triggersRun) * numTriggerIndices);
 
-    for (i = 0; i < numTriggers; i++) {
+    {	Header sourceH = NULL;
+	int i;
 
+#ifdef	DYING
+	dbiIndexSet matches = NULL;
+	int j;
+
+	for (i = 0; i < numTriggers; i++) {
+
+	    if (triggersRun[triggerIndices[i]]) continue;
+	
+	    if (matches) {
+		dbiFreeIndexSet(matches);
+		matches = NULL;
+	    }
+
+            if ((j = rpmdbFindPackage(db, triggerNames[i], &matches))) {
+		if (j < 0) rc |= 1;	
+		continue;
+	    }
+
+	    for (j = 0; j < dbiIndexSetCount(matches); j++) {
+		unsigned int recOffset = dbiIndexRecordOffset(matches, j);
+		if ((sourceH = rpmdbGetRecord(db, recOffset)) == NULL) {
+		    rc = 1;
+		    goto exit;
+		}
+		rc |= handleOneTrigger(root, db, sense, sourceH, h, 
+				   countCorrection, dbiIndexSetCount(matches), 
+				   triggersRun, scriptFd);
+		headerFree(sourceH);
+		if (triggersRun[triggerIndices[i]]) break;
+	    }
+	}
+
+exit:
 	if (matches) {
 	    dbiFreeIndexSet(matches);
 	    matches = NULL;
 	}
+#else
+	for (i = 0; i < numTriggers; i++) {
+	    rpmdbMatchIterator mi;
+	    const char * name = triggerNames[i];
 
-	if (triggersRun[triggerIndices[i]]) continue;
+	    if (triggersRun[triggerIndices[i]]) continue;
 	
-        if ((j = rpmdbFindPackage(db, triggerNames[i], &matches))) {
-	    if (j < 0) rc |= 1;	
-	    continue;
-	} 
+	    mi = rpmdbInitIterator(db, RPMDBI_NAME, name, 0);
 
-	for (j = 0; j < dbiIndexSetCount(matches); j++) {
-	    unsigned int recOffset = dbiIndexRecordOffset(matches, j);
-	    if ((sourceH = rpmdbGetRecord(db, recOffset)) == NULL) {
-		rc = 1;
-		goto exit;
-	    }
-	    rc |= handleOneTrigger(root, db, sense, sourceH, h, 
-				   countCorrection, dbiIndexSetCount(matches), 
+	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
+		rc |= handleOneTrigger(root, db, sense, sourceH, h, 
+				   countCorrection, rpmdbGetIteratorCount(mi),
 				   triggersRun, scriptFd);
-	    headerFree(sourceH);
-	    if (triggersRun[triggerIndices[i]]) break;
-	}
-    }
+	    }
 
-exit:
-    if (matches) {
-	dbiFreeIndexSet(matches);
-	matches = NULL;
+	    rpmdbFreeIterator(mi);
+	}
+#endif
     }
     return rc;
 }

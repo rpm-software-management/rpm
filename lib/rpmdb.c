@@ -436,6 +436,8 @@ struct _rpmdbMatchIterator {
     int			mi_setx;
     Header		mi_h;
     unsigned int	mi_offset;
+    const char *	mi_version;
+    const char *	mi_release;
 };
 
 void rpmdbFreeIterator(rpmdbMatchIterator mi)
@@ -443,6 +445,14 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return;
 
+    if (mi->mi_release) {
+	xfree(mi->mi_release);
+	mi->mi_release = NULL;
+    }
+    if (mi->mi_version) {
+	xfree(mi->mi_version);
+	mi->mi_version = NULL;
+    }
     if (mi->mi_h) {
 	headerFree(mi->mi_h);
 	mi->mi_h = NULL;
@@ -473,6 +483,26 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
     return mi->mi_set->count;
 }
 
+void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release) {
+    if (mi == NULL)
+	return;
+    if (mi->mi_release) {
+	xfree(mi->mi_release);
+	mi->mi_release = NULL;
+    }
+    mi->mi_release = (release ? xstrdup(release) : NULL);
+}
+
+void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version) {
+    if (mi == NULL)
+	return;
+    if (mi->mi_version) {
+	xfree(mi->mi_version);
+	mi->mi_version = NULL;
+    }
+    mi->mi_version = (version ? xstrdup(version) : NULL);
+}
+
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;
@@ -489,6 +519,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     keyp = &mi->mi_offset;
     keylen = sizeof(mi->mi_offset);
 
+top:
     /* XXX skip over instances with 0 join key */
     do {
 	if (mi->mi_set) {
@@ -514,6 +545,20 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
 	mi->mi_h = NULL;
     }
     mi->mi_h = headerLoad(uh);
+
+    if (mi->mi_release) {
+	const char *release;
+	headerNVR(mi->mi_h, NULL, NULL, &release);
+	if (strcmp(mi->mi_release, release))
+	    goto top;
+    }
+
+    if (mi->mi_version) {
+	const char *version;
+	headerNVR(mi->mi_h, NULL, &version, NULL);
+	if (strcmp(mi->mi_version, version))
+	    goto top;
+    }
 
     return mi->mi_h;
 }
@@ -566,6 +611,8 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix, const void * key, size_
     mi->mi_setx = 0;
     mi->mi_h = NULL;
     mi->mi_offset = 0;
+    mi->mi_version = NULL;
+    mi->mi_release = NULL;
     return mi;
 }
 

@@ -95,7 +95,6 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
     }
 
     {	Header h = NULL;
-
 	rpmdbMatchIterator mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
@@ -116,23 +115,38 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 
 	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 	    if (_filterDbDups) {
+		const char * name, * version, * release;
+		int skip = 0;
+
+		headerNVR(h, &name, &version, &release);
+
+#ifdef	DYING
 		dbiIndexSet matches = NULL;
-		int skip;
 
 		if (!rpmdbFindByHeader(newdb, h, &matches)) {
-		    const char * name, * version, * release;
-		    headerNVR(h, &name, &version, &release);
 
 		    rpmError(RPMERR_INTERNAL,
 			_("duplicated database entry: %s-%s-%s -- skipping."),
 			name, version, release);
 		    skip = 1;
-		} else
-		    skip = 0;
+		}
+
 		if (matches) {
 		    dbiFreeIndexSet(matches);
 		    matches = NULL;
 		}
+#else
+		{   rpmdbMatchIterator mi;
+		    mi = rpmdbInitIterator(newdb, RPMDBI_NAME, name, 0);
+		    rpmdbSetIteratorVersion(mi, version);
+		    rpmdbSetIteratorRelease(mi, release);
+		    while (rpmdbNextIterator(mi)) {
+			skip = 1;
+			break;
+		    }
+		    rpmdbFreeIterator(mi);
+		}
+#endif
 
 		if (skip)
 		    continue;

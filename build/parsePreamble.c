@@ -678,7 +678,7 @@ int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;
     int tag, rc;
-    char *name, *mainName, *linep, *macro;
+    char *name, *linep, *macro;
     int flag;
     Package pkg;
     char fullName[BUFSIZ];
@@ -703,8 +703,8 @@ int parsePreamble(Spec spec, int initialPackage)
 	
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
-	    headerGetEntry(spec->packages->header, RPMTAG_NAME,
-			   NULL, (void **) &mainName, NULL);
+	    const char * mainName;
+	    headerNVR(spec->packages->header, &mainName, NULL, NULL);
 	    sprintf(fullName, "%s-%s", mainName, name);
 	} else {
 	    strcpy(fullName, name);
