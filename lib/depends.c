@@ -305,18 +305,25 @@ int rpmdepCheck(rpmDependencies rpmdep,
 
 	if (checkDependentPackages(rpmdep, &ps, name)) {
 	    free(ps.problems);
+	    freeHeader(h);
 	    return 1;
 	}
 
 	if (!getEntry(h, RPMTAG_PROVIDES, &type, (void **) &provides, 
-		 &providesCount)) continue;
+		 &providesCount)) {
+	    freeHeader(h);
+	    continue;
+	}
 
 	for (j = 0; j < providesCount; j++) {
 	    if (checkDependentPackages(rpmdep, &ps, provides[j])) {
 		free(ps.problems);
+		freeHeader(h);
 		return 1;
 	    }
 	}
+
+	freeHeader(h);
     }
 
     if (!ps.num) 
