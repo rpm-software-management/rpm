@@ -4,7 +4,7 @@
 
 #include "popt/popt.h"
 
-static int copyTagsDuringParse[] = {
+static int_32 copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,

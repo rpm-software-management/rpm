@@ -69,7 +69,7 @@ int packageSources(Spec spec)
     return rc;
 }
 
-static int copyTags[] = {
+static int_32 copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,

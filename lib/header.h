@@ -153,19 +153,11 @@ int headerNextIterator(HeaderIterator iter,
 		       int_32 *tag, int_32 *type, void **p, int_32 *c);
 void headerFreeIterator(/*@only@*/ HeaderIterator iter);
 
-/* reexamines LANGUAGE and LANG settings to set a new language for the
-   header; this only needs to be called if LANGUAGE or LANG may have changed
-   since the first headerGetEntry() on the header */
-void headerResetLang(Header h);
-/* sets the language path for the header; this doesn't need to be done if
-   the LANGUAGE or LANG enivronment variable are correct */
-void headerSetLangPath(Header h, const char * lang);
-
 Header headerCopy(Header h);
 void headerSort(Header h);
 Header headerLink(Header h);
 
-void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy);
+void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy);
 
 /* Entry Types */
 

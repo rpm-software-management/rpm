@@ -41,7 +41,6 @@ struct headerToken {
     int indexAlloced;
 
     int sorted;  
-    int langNum;
     int usageCount;
 };
 
@@ -327,7 +326,6 @@ Header headerLoad(void *pv)
 
     /* This assumes you only headerLoad() something you headerUnload()-ed */
     h->sorted = 1;
-    h->langNum = -1;
 
     pe = (struct entryInfo *) p;
     dataStart = (char *) (pe + h->indexUsed);
@@ -896,55 +894,6 @@ static char *headerFindI18NString(Header h, struct indexEntry *entry)
     return entry->data;
 }
 
-void headerSetLangPath(Header h, const char * lang)
-{
-    const char *l, *le;
-    struct indexEntry * table;
-
-    if (lang == NULL ||
-      (table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL) {
-	h->langNum = -1;
-	return;
-    }
-
-    for (l = lang; *l; l = le) {
-	const char *td;
-	int langNum;
-
-	while (*l && *l == ':')			/* skip leading colons */
-	    l++;
-	if (*l == '\0')
-	    break;
-	for (le = l; *le && *le != ':'; le++)	/* find end of this locale */
-	    ;
-
-	for (langNum = 0, td = table->data;
-	     langNum < table->info.count;
-	     langNum++, td += strlen(td) + 1) {
-
-		if (headerMatchLocale(td, l, le)) {
-		    h->langNum = langNum;
-		    return;
-		}
-
-	}
-    }
-
-    h->langNum = -1;
-}
-
-void headerResetLang(Header h)
-{
-    const char * str;
-
-    if ((str = getenv("LANGUAGE"))) {
-	headerSetLangPath(h, str);
-	return;
-    }
-   
-    headerSetLangPath(h, getenv("LANG"));
-}
-
 static int intGetEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c,
 		       int minMem)
 {
@@ -999,7 +948,6 @@ Header headerNew()
     h->indexUsed = 0;
 
     h->sorted = 0;
-    h->langNum = -1;
     h->usageCount = 1;
 
     return (Header) h;
