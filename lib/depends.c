@@ -551,6 +551,11 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	headerGetEntry(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletesFlags, NULL);
 
 	for (j = 0; j < count; j++) {
+
+	    /* XXX avoid self-obsoleting packages. */
+	    if (!strcmp(name, obsoletes[j]))
+		continue;
+
 	    if (rpmdbFindPackage(rpmdep->db, obsoletes[j], &matches))
 		continue;
 	    for (i = 0; i < dbiIndexSetCount(matches); i++) {

@@ -46,6 +46,7 @@
 	- Tru64: avoid find-requires variable size limit (Tim Mooney).
 	- Solaris: use getpassphrase rather than getpass if available.
 	- pgp and pgp5 have compatible RSA signature (#4780).
+	- fix: avoid db problems with self-obsoleting packages on install.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).
