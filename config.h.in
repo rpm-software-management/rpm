@@ -56,4 +56,10 @@
 /* Define as one if major, minor, and makedev macros are in <sys/mkdev.h> */
 #define MAJOR_IN_MKDEV 0
 
+/* Define as 1 if we need timezone */
+#define NEED_TIMEZONE 0
+
+/* Define as 1 if we need myrealloc */
+#define NEED_MYREALLOC 0
+
 #endif
