@@ -8,7 +8,7 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* @(#) $Id: zutil.h,v 1.7 2002/03/17 15:46:23 jbj Exp $ */
+/* @(#) $Id: zutil.h,v 1.8 2002/10/07 09:05:07 jbj Exp $ */
 
 #ifndef _Z_UTIL_H
 #define _Z_UTIL_H
@@ -37,6 +37,7 @@ typedef unsigned short ush;
 typedef ush FAR ushf;
 typedef unsigned long  ulg;
 
+/*@unchecked@*/
 extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
 

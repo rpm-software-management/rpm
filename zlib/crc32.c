@@ -9,7 +9,7 @@
  * increase in speed on a Power PC using gcc -O3.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: crc32.c,v 1.9 2003/03/08 21:47:46 jbj Exp $ */
 
 #ifdef MAKECRCH
 #  include <stdio.h>
@@ -186,10 +186,8 @@ const unsigned long FAR * ZEXPORT get_crc_table()
 #define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
 
 /* ========================================================================= */
-unsigned long ZEXPORT crc32(crc, buf, len)
-    unsigned long crc;
-    const unsigned char FAR *buf;
-    unsigned len;
+unsigned long ZEXPORT crc32(unsigned long crc, const unsigned char FAR *buf,
+		unsigned len)
 {
     if (buf == Z_NULL) return 0UL;
 

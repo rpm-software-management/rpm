@@ -3,7 +3,6 @@
 +partial
 +forcehints
 
-
 -warnunixlib
 -warnposix
 
@@ -14,53 +13,46 @@
 +strict			# lclint level
 
 # --- in progress
--abstract
+-abstract		# 4
 -aliasunique
+-assignexpose
 -branchstate
--casebreak
+-bufferoverflowhigh
 -castfcnptr
--commenterror
 -compdef
 -compmempass
--dependenttrans
--evalorder
--globs
+-evalorder		# 2
 -globstate
+-modfilesys
+-mods			# 13
+-mustmod
+-noeffectuncon		# 10
+-nullderef		# 9
+-nullpass		# 24
+-nullptrarith
+-nullret		# 13
+-protoparammatch	# 22
+-redef			# 4
+-retalias		# 4
+-retvalint		# painful
+-sizeoftype		# 106
+-type
+-usereleased		# 38
+
+-dependenttrans	# 2
 -immediatetrans
--infloopsuncon
--internalglobs
 -kepttrans
+-observertrans
+-readonlytrans
+-statictrans
+-temptrans
+-unqualifiedtrans
+
+-casebreak
 -looploopbreak
 -looploopcontinue
 -loopswitchbreak
--modfilesys
--modnomods
--modobserveruncon
--moduncon
--modunconnomods
--mustmod
--noeffect
--noeffectuncon		# 22
--nullderef
--nullpass
--nullret
--nullstate		# 36
--observertrans
--oldstyle
--paramuse
--protoparammatch	# 22
--readonlytrans
--redef
--retalias
--retvalint		# painful
--sizeoftype		# 110
--statictrans
 -switchswitchbreak
--temptrans
--type
--unqualifiedtrans
--unsignedcompare
--usereleased
 -whileempty
 
 # --- +partial artifacts

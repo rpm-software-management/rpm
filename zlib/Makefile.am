@@ -17,13 +17,16 @@ libz_la_SOURCES = \
 	infback.c inffast.c inflate.c inftrees.c \
 	trees.c uncompr.c zutil.c
 
-noinst_PROGRAMS = example minigzip
+noinst_PROGRAMS = example minigzip ung
 
 example_SOURCES = example.c
 example_LDFLAGS = -L. -lz
 
 minigzip_SOURCES = minigzip.c
 minigzip_LDFLAGS = -L. -lz
+
+ung_SOURCES = ung.c
+ung_LDFLAGS = -L. -lz
 
 #BUILT_SOURCES = Doxyfile zlib.lcd
 

@@ -5,7 +5,7 @@
  * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
 
-/* @(#) $Id: gzio.c,v 1.9 2002/03/17 15:46:23 jbj Exp $ */
+/* @(#) $Id: gzio.c,v 1.10 2002/10/07 09:05:07 jbj Exp $ */
 
 #include <stdio.h>
 
@@ -42,11 +42,16 @@ typedef struct gz_stream {
     z_stream stream;
     int      z_err;   /*!< error code for last stream operation */
     int      z_eof;   /*!< set if end of input file */
+/*@null@*/
     FILE     *file;   /*!< .gz file */
+/*@null@*/
     Byte     *inbuf;  /*!< input buffer */
+/*@null@*/
     Byte     *outbuf; /*!< output buffer */
     uLong    crc;     /*!< crc32 of uncompressed data */
+/*@null@*/
     char     *msg;    /*!< error message */
+/*@null@*/
     char     *path;   /*!< path name for debugging only */
     int      transparent; /*!< 1 if input file is not a .gz file */
     char     mode;    /*!< 'w' or 'r' */
@@ -55,8 +60,8 @@ typedef struct gz_stream {
 
 
 local gzFile gz_open      OF((const char *path, const char *mode, int  fd))
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
 local int do_flush        OF((gzFile file, int flush))
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;

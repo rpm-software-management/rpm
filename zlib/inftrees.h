@@ -52,4 +52,5 @@ typedef enum {
 
 extern int inflate_table OF((codetype type, unsigned short FAR *lens,
                              unsigned codes, code * FAR *table, unsigned *bits,
-                             unsigned short FAR *work));
+                             unsigned short FAR *work))
+	/*@*/;

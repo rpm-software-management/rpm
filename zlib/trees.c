@@ -34,7 +34,7 @@
  *          Addison-Wesley, 1983. ISBN 0-201-06672-6.
  */
 
-/* @(#) $Id: trees.c,v 1.8 2002/03/17 15:46:23 jbj Exp $ */
+/* @(#) $Id: trees.c,v 1.9 2002/06/22 18:51:58 jbj Exp $ */
 
 /* #define GEN_TREES_H */
 
@@ -98,6 +98,7 @@ local const uch bl_order[BL_CODES]
 #if defined(GEN_TREES_H) || !defined(STDC)
 /* non ANSI compilers may not accept trees.h */
 
+/*@unchecked@*/
 local ct_data static_ltree[L_CODES+2];
 /*!< The static literal tree. Since the bit lengths are imposed, there is no
  * need for the L_CODES extra codes used during heap construction. However
@@ -105,17 +106,20 @@ local ct_data static_ltree[L_CODES+2];
  * below).
  */
 
+/*@unchecked@*/
 local ct_data static_dtree[D_CODES];
 /*!< The static distance tree. (Actually a trivial tree since all codes use
  * 5 bits.)
  */
 
+/*@unchecked@*/
 uch _dist_code[DIST_CODE_LEN];
 /*!< Distance codes. The first 256 values correspond to the distances
  * 3 .. 258, the last 256 values correspond to the top 8 bits of
  * the 15 bit distances.
  */
 
+/*@unchecked@*/
 uch _length_code[MAX_MATCH-MIN_MATCH+1];
 /*!< length code for each normalized match length (0 == MIN_MATCH) */
 
@@ -159,7 +163,8 @@ local static_tree_desc  static_bl_desc =
  */
 
 local void tr_static_init OF((void))
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 local void init_block     OF((deflate_state *s))
 	/*@modifies *s @*/;
 local void pqdownheap     OF((deflate_state *s, ct_data *tree, int k))
@@ -190,8 +195,8 @@ local void bi_windup      OF((deflate_state *s))
 	/*@modifies *s @*/;
 local void bi_flush       OF((deflate_state *s))
 	/*@modifies *s @*/;
-local void copy_block     OF((deflate_state *s, charf *buf, unsigned len,
-                              int header))
+local void copy_block     OF((deflate_state *s, /*@null@*/ charf *buf,
+		unsigned len, int header))
 	/*@modifies *s @*/;
 
 #ifdef GEN_TREES_H
