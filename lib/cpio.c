@@ -639,7 +639,7 @@ static int writeFile(int fd, struct stat sb, struct cpioFileMapping * map,
     char buf[8192], symbuf[2048];
     dev_t num;
     int datafd;
-    size_t size, amount;
+    size_t size, amount = 0;
     int rc, olderrno;
 
     if (!(map->mapFlags & CPIO_MAP_PATH))
