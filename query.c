@@ -513,11 +513,11 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_SPACKAGE:
       case QUERY_PACKAGE:
-	if (isdigit(arg[0])) {
+	if (queryFlags & QUERY_BY_NUMBER) {
 	    char *end = NULL;
 	    recNumber = strtoul(arg, &end, 10);
 	    if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
-		fprintf(stderr, "invalid package name: %s\n", arg);
+		fprintf(stderr, "invalid package number: %s\n", arg);
 		return 1;
 	    }
 	    message(MESS_DEBUG, "showing package: %d\n", recNumber);

@@ -268,6 +268,7 @@ int main(int argc, char ** argv) {
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
 	    { "query", 0, 0, 'q' },
+	    { "querybynumber", 0, 0, 0 },
 	    { "queryformat", 1, 0, 0 },
 	    { "querytags", 0, &queryTags, 0 },
 	    { "quiet", 0, &quiet, 0 },
@@ -525,6 +526,11 @@ int main(int argc, char ** argv) {
 		    argerror(_("only one major mode may be specified"));
 		bigMode = MODE_RESIGN;
 		signIt = 1;
+	    } else if (!strcmp(options[long_index].name, "querybynumber")) {
+		if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
+		    argerror(_("only one major mode may be specified"));
+		bigMode = MODE_QUERY;
+		queryFor |= QUERY_BY_NUMBER;
 	    } else if (!strcmp(options[long_index].name, "queryformat")) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
 		    argerror(_("only one major mode may be specified"));
