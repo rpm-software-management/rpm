@@ -3327,10 +3327,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (isxml) {
 		const char * tagN = tagName(spft->u.tag.tag);
 
-		need = strlen(tagN) + sizeof("    <rpmTag name=\"\">\n") - 1;
+		need = strlen(tagN) + sizeof("  <rpmTag name=\"\">\n") - 1;
 		t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		te = stpcpy(t, "    <rpmTag name=\"");
+		te = stpcpy(t, "  <rpmTag name=\"");
 		te = stpcpy(te, tagN);
 		te = stpcpy(te, "\">\n");
 /*@=boundswrite@*/
@@ -3348,10 +3348,10 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 
 	    if (isxml) {
-		need = sizeof("    </rpmTag>\n") - 1;
+		need = sizeof("  </rpmTag>\n") - 1;
 		t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
-		te = stpcpy(t, "    </rpmTag>\n");
+		te = stpcpy(t, "  </rpmTag>\n");
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);
 	    }

@@ -237,6 +237,44 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 }
 
 /**
+ */
+static size_t xmlstrlen(const char * s)
+	/*@*/
+{
+    size_t len = 0;
+    int c;
+
+    while ((c = *s++) != '\0') {
+	switch (c) {
+	case '<': case '>':	len += 4;	/*@switchbreak@*/ break;
+	case '&':		len += 5;	/*@switchbreak@*/ break;
+	default:		len += 1;	/*@switchbreak@*/ break;
+	}
+    }
+    return len;
+}
+
+/**
+ */
+static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
+	/*@modifies t @*/
+{
+    char * te = t;
+    int c;
+
+    while ((c = *s++) != '\0') {
+	switch (c) {
+	case '<':	te = stpcpy(te, "&lt;");	/*@switchbreak@*/ break;
+	case '>':	te = stpcpy(te, "&gt;");	/*@switchbreak@*/ break;
+	case '&':	te = stpcpy(te, "&amp;");	/*@switchbreak@*/ break;
+	default:	*te++ = c;			/*@switchbreak@*/ break;
+	}
+    }
+    *te = '\0';
+    return t;
+}
+
+/**
  * Wrap tag data in simple header xml markup.
  * @param type		tag type
  * @param data		tag value
@@ -295,10 +333,11 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	xtag = "integer";
     }
 
-    nb = 2 * strlen(xtag) + sizeof("\t<></>") + strlen(s);
+    nb = 2 * strlen(xtag) + sizeof("\t<></>") + xmlstrlen(s);
     te = t = alloca(nb);
     te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
-    te = stpcpy(te, s);
+    te = xmlstrcpy(te, s);
+    te += strlen(te);
     te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
 
     /* XXX s was malloc'd */
