@@ -1,21 +1,21 @@
 .\" rpm2cpio - Converts Red Hat Package (RPM) to cpio archive
-.TH rpm 8 "04 July 1998" "KSI Software" "KSI Linux"
+.TH rpm 8 "23 Апреля 1999" "KSI Software" "KSI Linux"
 .SH НАЗВАНИЕ
-rpm2cpio \- конвертирует пакет RPM в архив cpio
+\fBrpm2cpio\fP \- конвертирует пакет RPM в архив cpio
 .SH УПОТРЕБЛЕНИЕ
-\fBrpm2cpio\fP [filename] 
+\fBrpm2cpio [filename]\fP
 .SH ОПИСАНИЕ
 \fBrpm2cpio\fP конвертирует файл .rpm, заданный как его единственный аргумент,
 в архив cpio на стандартном выводе. Если аргумент не задан, RPM читается
 со стандартного ввода.
 
+Пример:
 .br
-.I "\fBrpm2cpio rpm-2.5.2.KSI2-1.i586.rpm\fP"
+.I "\fBrpm2cpio rpm-2.3.0.KSI2-1.i586.rpm\fP"
 .br
-.I "\fBrpm2cpio < SSLeay-0.8.1.KSI2-2.i586.rpm\fP"
+.I "\fBrpm2cpio < openssl-0.9.2b.KSI2-1.i686.rpm\fP"
 
 .SH СМ. ТАКЖЕ
-.IR glint (8) ,
 .IR rpm (8)
 .SH АВТОР
 .nf
