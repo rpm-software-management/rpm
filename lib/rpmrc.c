@@ -11,7 +11,7 @@
 /* the rpmrc is read from /etc/rpmrc or $HOME/.rpmrc - it is not affected
    by a --root option */
 
-struct option {
+struct rpmoption {
     char * name;
     int var;
     int archSpecific;
@@ -68,7 +68,7 @@ static struct archosEquivInfo * archosEquivSearch(
 		struct archosEquivTable * table, char * name);
 
 /* this *must* be kept in alphabetical order */
-struct option optionTable[] = {
+struct rpmoption optionTable[] = {
     { "builddir",		RPMVAR_BUILDDIR,		0 },
     { "buildroot",              RPMVAR_BUILDROOT,               0 },
     { "cpiobin",                RPMVAR_CPIOBIN,                 0 },
@@ -99,7 +99,7 @@ struct option optionTable[] = {
     { "vendor",			RPMVAR_VENDOR,			0 },
 };
 
-static int optionTableSize = sizeof(optionTable) / sizeof(struct option);
+static int optionTableSize = sizeof(optionTable) / sizeof(struct rpmoption);
 
 #define READ_TABLES       1
 #define READ_OTHER        2
@@ -136,8 +136,8 @@ static struct archosEquivTable archEquivTable;
 static struct archosEquivTable osEquivTable;
 
 static int optionCompare(const void * a, const void * b) {
-    return strcasecmp(((struct option *) a)->name,
-		      ((struct option *) b)->name);
+    return strcasecmp(((struct rpmoption *) a)->name,
+		      ((struct rpmoption *) b)->name);
 }
 
 static struct archosEquivInfo * archosEquivSearch(
@@ -413,7 +413,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
     char * chptr;
     char * archName = NULL;
     int linenum = 0;
-    struct option * option, searchOption;
+    struct rpmoption * option, searchOption;
 
     while (fgets(buf, sizeof(buf), f)) {
 	linenum++;
@@ -508,7 +508,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	/* Parse the argument a little further */
 	searchOption.name = start;
 	option = bsearch(&searchOption, optionTable, optionTableSize,
-			 sizeof(struct option), optionCompare);
+			 sizeof(struct rpmoption), optionCompare);
 	if (!option) {
 	    rpmError(RPMERR_RPMRC, "bad option '%s' at %s:%d", 
 			start, fn, linenum);
@@ -767,7 +767,7 @@ char *rpmGetArchName(void)
 
 int rpmShowRC(FILE *f)
 {
-    struct option *opt;
+    struct rpmoption *opt;
     int count = 0;
     char *s;
     int i;
