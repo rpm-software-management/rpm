@@ -39,7 +39,7 @@ extern "C" {
  * @return		buffer with pad added
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* pkcs5Pad  (int blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
+memchunk* pkcs5Pad  (size_t blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
 	/*@*/;
 
 /**
@@ -49,7 +49,7 @@ memchunk* pkcs5Pad  (int blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
  * @return		buffer with pad removed
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5Unpad(int blockbytes,
+memchunk* pkcs5Unpad(size_t blockbytes,
 		/*@returned@*/ /*@null@*/ /*@out@*/ memchunk* tmp)
 	/*@modifies tmp @*/;
 
@@ -60,7 +60,7 @@ memchunk* pkcs5Unpad(int blockbytes,
  * @return		copy of buffer with pad added
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5PadCopy  (int blockbytes, const memchunk* src)
+memchunk* pkcs5PadCopy  (size_t blockbytes, const memchunk* src)
 	/*@*/;
 
 /**
@@ -70,7 +70,7 @@ memchunk* pkcs5PadCopy  (int blockbytes, const memchunk* src)
  * @return		copy of buffer with pad removed
  */
 BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
-memchunk* pkcs5UnpadCopy(int blockbytes, const memchunk* src)
+memchunk* pkcs5UnpadCopy(size_t blockbytes, const memchunk* src)
 	/*@*/;
 
 #ifdef __cplusplus

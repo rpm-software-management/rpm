@@ -15,7 +15,6 @@
 # --- in progress
 +likelybounds
 -bufferoverflowhigh
-#-compdef		# 83
 
 -elseifcomplete
 -whileempty
@@ -50,5 +49,6 @@
 # --- not-yet at standard level
 -boolops		# 53
 -predboolint		# 238
++boolint
++charint
 +matchanyintegral
--type			# 150

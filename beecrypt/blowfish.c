@@ -319,7 +319,7 @@ static uint32_t _bf_s[1024] = {
 #define DROUND(l,r) l ^= *(p--); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 
 /*@-sizeoftype@*/
-const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 8, 64, 448, 32, (blockCipherSetup) blowfishSetup, (blockCipherSetIV) blowfishSetIV, (blockCipherEncrypt) blowfishEncrypt, (blockCipherDecrypt) blowfishDecrypt, (blockCipherFeedback) blowfishFeedback };
+const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 8U, 64U, 448U, 32U, (blockCipherSetup) blowfishSetup, (blockCipherSetIV) blowfishSetIV, (blockCipherEncrypt) blowfishEncrypt, (blockCipherDecrypt) blowfishDecrypt, (blockCipherFeedback) blowfishFeedback };
 /*@=sizeoftype@*/
 
 int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, /*@unused@*/ cipherOperation op)

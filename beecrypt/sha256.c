@@ -55,7 +55,7 @@ static const uint32_t hinit[8] = {
 };
 
 /*@-sizeoftype@*/
-const hashFunction sha256 = { "SHA-256", sizeof(sha256Param), 64, 8 * sizeof(uint32_t), (hashFunctionReset) sha256Reset, (hashFunctionUpdate) sha256Update, (hashFunctionDigest) sha256Digest };
+const hashFunction sha256 = { "SHA-256", sizeof(sha256Param), 64U, 8U * sizeof(uint32_t), (hashFunctionReset) sha256Reset, (hashFunctionUpdate) sha256Update, (hashFunctionDigest) sha256Digest };
 /*@=sizeoftype@*/
 
 int sha256Reset(register sha256Param* p)
@@ -207,6 +207,7 @@ int sha256Update(register sha256Param* p, const byte* data, size_t size)
 	# error
 	#endif
 
+/*@-type@*/
 	while (size > 0)
 	{
 		proclength = ((p->offset + size) > 64) ? (64 - p->offset) : size;
@@ -221,6 +222,7 @@ int sha256Update(register sha256Param* p, const byte* data, size_t size)
 			p->offset = 0;
 		}
 	}
+/*@=type@*/
 	return 0;
 }
 
@@ -234,6 +236,7 @@ static void sha256Finish(register sha256Param* p)
 
 	*(ptr++) = 0x80;
 
+/*@-type@*/
 	if (p->offset > 56)
 	{
 		while (p->offset++ < 64)
@@ -246,6 +249,7 @@ static void sha256Finish(register sha256Param* p)
 	ptr = ((byte *) p->data) + p->offset;
 	while (p->offset++ < 56)
 		*(ptr++) = 0;
+/*@=type@*/
 
 	#if (MP_WBITS == 64)
 	ptr[0] = (byte)(p->length[0] >> 56);

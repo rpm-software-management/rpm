@@ -46,7 +46,7 @@ static const uint32_t k[4] = { 0x5a827999U, 0x6ed9eba1U, 0x8f1bbcdcU, 0xca62c1d6
 static const uint32_t hinit[5] = { 0x67452301U, 0xefcdab89U, 0x98badcfeU, 0x10325476U, 0xc3d2e1f0U };
 
 /*@-sizeoftype@*/
-const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64, 5 * sizeof(uint32_t), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
+const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64U, 5U * sizeof(uint32_t), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
 /*@=sizeoftype@*/
 
 int sha1Reset(register sha1Param* p)
@@ -217,6 +217,7 @@ int sha1Update(register sha1Param* p, const byte* data, size_t size)
 	# error
 	#endif
 
+/*@-type@*/
 	while (size > 0)
 	{
 		proclength = ((p->offset + size) > 64) ? (64 - p->offset) : size;
@@ -231,6 +232,7 @@ int sha1Update(register sha1Param* p, const byte* data, size_t size)
 			p->offset = 0;
 		}
 	}
+/*@=type@*/
 	return 0;
 }
 
@@ -243,6 +245,7 @@ static void sha1Finish(register sha1Param* p)
 
 	*(ptr++) = 0x80;
 
+/*@-type@*/
 	if (p->offset > 56)
 	{
 		while (p->offset++ < 64)
@@ -255,6 +258,7 @@ static void sha1Finish(register sha1Param* p)
 	ptr = ((byte*) p->data) + p->offset;
 	while (p->offset++ < 56)
 		*(ptr++) = 0;
+/*@=type@*/
 
 	#if WORDS_BIGENDIAN
 	memcpy(ptr, p->length, sizeof(p->length));

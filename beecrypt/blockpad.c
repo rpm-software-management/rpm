@@ -31,7 +31,7 @@
  * \{
  */
 
-memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
+memchunk* pkcs5Pad(size_t blockbytes, memchunk* tmp)
 {
 	if (tmp)
 	{
@@ -46,7 +46,7 @@ memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
 	return tmp;
 }
 
-memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
+memchunk* pkcs5Unpad(size_t blockbytes, memchunk* tmp)
 {
 	if (tmp)
 	{
@@ -76,7 +76,7 @@ memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 	/*@=temptrans =compdef @*/
 }
 
-memchunk* pkcs5PadCopy(int blockbytes, const memchunk* src)
+memchunk* pkcs5PadCopy(size_t blockbytes, const memchunk* src)
 {
 	memchunk* tmp;
 	byte padvalue = blockbytes - (src->size % blockbytes);
@@ -95,7 +95,7 @@ memchunk* pkcs5PadCopy(int blockbytes, const memchunk* src)
 	return tmp;
 }
 
-memchunk* pkcs5UnpadCopy(/*@unused@*/ int blockbytes, const memchunk* src)
+memchunk* pkcs5UnpadCopy(/*@unused@*/ size_t blockbytes, const memchunk* src)
 {
 	memchunk* tmp;
 	byte padvalue;

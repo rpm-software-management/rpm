@@ -210,11 +210,11 @@ static uint32_t keyValue[] =
 	0x3c3d3e3f
 };
 	
-static void testBlockInit(uint8_t* block, int length)
+static void testBlockInit(uint8_t* block, size_t length)
 	/*@modifies *block @*/
 {
-	register int i;
-	for (i = 1; i <= length; i++) {
+	register unsigned int i;
+	for (i = 1U; i <= length; i++) {
 		*block = (uint8_t) i;
 		block++;
 	}
@@ -224,7 +224,8 @@ static void testBlockCiphers(void)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-	int i, k;
+	unsigned int k;
+	int i;
 
 	printf("Timing the blockciphers:\n");
 
@@ -255,14 +256,14 @@ static void testBlockCiphers(void)
 
 			for (k = tmp->keybitsmin; k <= tmp->keybitsmax; k += tmp->keybitsinc)
 			{
-				printf("    setup encrypt (%d bits key): ", k);
+				printf("    setup encrypt (%u bits key): ", k);
 				if (tmp->setup(encrypt_param, keyValue, k, ENCRYPT) < 0)
 				{
 					printf("failed\n");
 					/*@innercontinue@*/ continue;
 				}
 				printf("ok\n");
-				printf("    setup decrypt (%d bits key): ", k);
+				printf("    setup decrypt (%u bits key): ", k);
 				if (tmp->setup(decrypt_param, keyValue, k, DECRYPT) < 0)
 				{
 					printf("failed\n");
@@ -272,8 +273,8 @@ static void testBlockCiphers(void)
 				printf("    encrypt/decrypt test block: ");
 				testBlockInit((uint8_t*) src_block, tmp->blocksize >> 2);
 
-				(void) blockEncryptCBC(tmp, encrypt_param, 2, enc_block, src_block);
-				(void) blockDecryptCBC(tmp, decrypt_param, 2, dec_block, enc_block);
+				(void) blockEncryptCBC(tmp, encrypt_param, enc_block, src_block, 2);
+				(void) blockDecryptCBC(tmp, decrypt_param, dec_block, enc_block, 2);
 
 				if (memcmp(dec_block, src_block, tmp->blocksize >> 2))
 				{
@@ -291,7 +292,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockEncryptECB(tmp, encrypt_param, 1024 * 1024, spd_block, spd_block);
+					(void) blockEncryptECB(tmp, encrypt_param, spd_block, spd_block, 1024 * 1024);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -300,7 +301,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockDecryptECB(tmp, decrypt_param, 1024 * 1024, spd_block, spd_block);
+					(void) blockDecryptECB(tmp, decrypt_param, spd_block, spd_block, 1024 * 1024);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -309,7 +310,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockEncryptCBC(tmp, encrypt_param, 1024 * 1024, spd_block, spd_block);
+					(void) blockEncryptCBC(tmp, encrypt_param, spd_block, spd_block, 1024 * 1024);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -318,7 +319,7 @@ static void testBlockCiphers(void)
 					#if HAVE_TIME_H
 					tstart = clock();
 					#endif
-					(void) blockDecryptCBC(tmp, decrypt_param, 1024 * 1024, spd_block, spd_block);
+					(void) blockDecryptCBC(tmp, decrypt_param, spd_block, spd_block, 1024 * 1024);
 					#if HAVE_TIME_H
 					tstop = clock();
 					ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
@@ -378,7 +379,7 @@ static void testHashFunctions(void)
 						#endif
 
 						(void) hashFunctionContextUpdate(&hfc, data, 32 * 1024 * 1024);
-						(void) hashFunctionContextDigest(&hfc, &digest);
+						(void) hashFunctionContextDigestMP(&hfc, &digest);
 
 						#if HAVE_TIME_H
 						tstop = clock();
@@ -720,7 +721,8 @@ int main(/*@unused@*/ int argc, /*@unused@*/ char *argv[])
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-	int i, j;
+	unsigned int j;
+	int i;
 
 	printf("the beecrypt library implements:\n");
 	printf("  %d entropy source%s:\n", entropySourceCount(), entropySourceCount() == 1 ? "" : "s");
@@ -768,7 +770,7 @@ int main(/*@unused@*/ int argc, /*@unused@*/ char *argv[])
 			printf("    %s ", tmp->name);
 			for (j = tmp->keybitsmin; j <= tmp->keybitsmax; j += tmp->keybitsinc)
 			{
-				printf("%d", j);
+				printf("%u", j);
 				if (j < tmp->keybitsmax)
 					printf("/");
 				else

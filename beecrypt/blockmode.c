@@ -35,7 +35,7 @@
 
 int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
 {
-	register const int blockwords = bc->blocksize >> 2;
+	register const unsigned int blockwords = bc->blocksize >> 2;
 
 	while (nblocks > 0)
 	{
@@ -53,7 +53,7 @@ int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
 {
-	register const int blockwords = bc->blocksize >> 2;
+	register const unsigned int blockwords = bc->blocksize >> 2;
 
 	while (nblocks > 0)
 	{
@@ -71,12 +71,12 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
 {
-	register int blockwords = bc->blocksize >> 2;
+	register unsigned int blockwords = bc->blocksize >> 2;
 	register uint32_t* fdback = bc->getfb(bp);
 
 	if (nblocks > 0)
 	{
-		register int i;
+		register unsigned int i;
 
 		for (i = 0; i < blockwords; i++)
 			dst[i] = src[i] ^ fdback[i];
@@ -116,7 +116,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
 {
 	/* assumes that every blockcipher's blocksize is a multiple of 32 bits */
-	register int blockwords = bc->blocksize >> 2;
+	register unsigned int blockwords = bc->blocksize >> 2;
 	register uint32_t* fdback = bc->getfb(bp);
 	register uint32_t* buf = (uint32_t*) malloc(blockwords * sizeof(*buf));
 
@@ -125,7 +125,7 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 		while (nblocks > 0)
 		{
 			register uint32_t tmp;
-			register int i;
+			register unsigned int i;
 
 /*@-noeffectuncon@*/
 			(void) bc->decrypt(bp, buf, src);

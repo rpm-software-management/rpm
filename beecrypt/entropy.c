@@ -1,4 +1,3 @@
-/*@-sizeoftype -type@*/
 /*
  * Copyright (c) 1998, 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
@@ -152,7 +151,7 @@ int entropy_provider_cleanup()
  * Mask the low-order bit of a bunch of sound samples, analyze them and
  * return an error in case they are all zeroes or ones.
  */
-static int entropy_noise_filter(void* sampledata, int samplecount, int samplesize, int channels, int swap)
+static int entropy_noise_filter(void* sampledata, unsigned samplecount, int samplesize, int channels, int swap)
 	/*@globals errno @*/
 	/*@modifies sampledata, errno @*/
 {
@@ -503,7 +502,9 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		# endif
 		#endif
 
+/*@-type@*/
 		if (entropy_noise_filter(sampledata, rc / samplesize, samplesize, channels, swap) < 0)
+/*@=type@*/
 		{
 			fprintf(stderr, "noise filter indicates too much bias in audio samples\n");
 			/*@-kepttrans@*/
@@ -821,8 +822,10 @@ static int dev_dsp_fd = -1;
 /*@unchecked@*/
 static mutex_t dev_dsp_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@-type@*/
 /*@unchecked@*/
 static pthread_mutex_t dev_dsp_lock = PTHREAD_MUTEX_INITIALIZER;
+/*@=type@*/
 #  else
 #   error Need locking mechanism
 #  endif
@@ -847,8 +850,10 @@ static int dev_random_fd = -1;
 /*@unchecked@*/
 static mutex_t dev_random_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@-type@*/
 /*@unchecked@*/
 static pthread_mutex_t dev_random_lock = PTHREAD_MUTEX_INITIALIZER;
+/*@=type@*/
 #  else
 #   error Need locking mechanism
 #  endif
@@ -873,8 +878,10 @@ static int dev_urandom_fd = -1;
 /*@unchecked@*/
 static mutex_t dev_urandom_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@-type@*/
 /*@unchecked@*/
 static pthread_mutex_t dev_urandom_lock = PTHREAD_MUTEX_INITIALIZER;
+/*@=type@*/
 #  else
 #   error Need locking mechanism
 #  endif
@@ -900,8 +907,10 @@ static int dev_tty_fd = -1;
 /*@unchecked@*/
 static mutex_t dev_tty_lock = DEFAULTMUTEX;
 #  elif HAVE_PTHREAD_H
+/*@-type@*/
 /*@unchecked@*/
 static pthread_mutex_t dev_tty_lock = PTHREAD_MUTEX_INITIALIZER;
+/*@=type@*/
 #  else
 #   error Need locking mechanism
 #  endif
@@ -964,7 +973,7 @@ static int opendevice(const char *device)
  * @param size
  * @return
  */
-static int entropy_randombits(int fd, /*@unused@*/ int timeout, byte* data, size_t size)
+static int entropy_randombits(int fd, /*@unused@*/ int timeout, /*@out@*/ byte* data, size_t size)
 	/*@modifies *data @*/
 {
 	register int rc;
@@ -1073,7 +1082,7 @@ static int entropy_randombits(int fd, /*@unused@*/ int timeout, byte* data, size
  * @param size
  * @return
  */
-static int entropy_ttybits(int fd, byte* data, size_t size)
+static int entropy_ttybits(int fd, /*@out@*/ byte* data, size_t size)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -1106,10 +1115,10 @@ static int entropy_ttybits(int fd, byte* data, size_t size)
 	}
 
 	tio_set = tio_save;
-	/*@-noeffect@*/	/* LCL: dunno @*/
+	/*@-noeffect -type @*/	/* LCL: dunno @*/
 	tio_set.c_cc[VMIN] = 1;				/* read 1 tty character at a time */
 	tio_set.c_cc[VTIME] = 0;			/* don't timeout the read */
-	/*@=noeffect@*/
+	/*@=noeffect =type @*/
 /*@-bitwisesigned@*/
 	tio_set.c_iflag |= IGNBRK;			/* ignore <ctrl>-c */
 	tio_set.c_lflag &= ~(ECHO|ICANON);	/* don't echo characters */
@@ -1180,7 +1189,7 @@ static int entropy_ttybits(int fd, byte* data, size_t size)
 	printf("\nthanks\n");
 
 	/* give the user 1 second to stop typing */
-	(void) sleep(1);
+	(void) sleep(1U);
 
 	#if HAVE_TERMIOS_H
 	/* change the tty settings, and flush input characters */
@@ -1332,9 +1341,9 @@ int entropy_dev_dsp(byte *data, size_t size)
 		int mask, format, samplesize, stereo, speed, swap;
 
 		mask = 0;
-		/*@-bitwisesigned -shiftimplementation@*/
+		/*@-bitwisesigned -shiftimplementation -sizeoftype -type @*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_GETFMTS, &mask)) < 0)
-		/*@=bitwisesigned =shiftimplementation@*/
+		/*@=bitwisesigned =shiftimplementation =sizeoftype =type @*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_GETFMTS failed");
@@ -1389,9 +1398,9 @@ int entropy_dev_dsp(byte *data, size_t size)
 		}
 /*@=bitwisesigned@*/
 
-		/*@-bitwisesigned -shiftimplementation@*/
+		/*@-bitwisesigned -shiftimplementation -sizeoftype -type @*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_SETFMT, &format)) < 0)
-		/*@=bitwisesigned =shiftimplementation@*/
+		/*@=bitwisesigned =shiftimplementation =sizeoftype =type @*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_SETFMT failed");
@@ -1403,14 +1412,14 @@ int entropy_dev_dsp(byte *data, size_t size)
 
 		/* the next two commands are not critical */
 		stereo = 1;
-		/*@-bitwisesigned -shiftimplementation@*/
+		/*@-bitwisesigned -shiftimplementation -sizeoftype -type @*/
 		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_STEREO, &stereo);
-		/*@=bitwisesigned =shiftimplementation@*/
+		/*@=bitwisesigned =shiftimplementation =sizeoftype =type @*/
 
 		speed = 44100;
-		/*@-bitwisesigned -shiftimplementation@*/
+		/*@-bitwisesigned -shiftimplementation -sizeoftype -type @*/
 		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_SPEED, &speed);
-		/*@=bitwisesigned =shiftimplementation@*/
+		/*@=bitwisesigned =shiftimplementation =sizeoftype =type @*/
 
 		rc = entropy_noise_gather(dev_dsp_fd, samplesize, 2, swap, timeout_env ? atoi(timeout_env) : 1000, data, size);
 	}
@@ -1580,4 +1589,3 @@ dev_tty_end:
 #endif
 
 #endif
-/*@=sizeoftype =type@*/

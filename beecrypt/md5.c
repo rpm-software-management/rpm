@@ -34,10 +34,10 @@
  */
 
 /*@observer@*/ /*@unchecked@*/
-static uint32_t md5hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
+static uint32_t md5hinit[4] = { 0x67452301U, 0xefcdab89U, 0x98badcfeU, 0x10325476U };
 
 /*@-sizeoftype@*/
-const hashFunction md5 = { "MD5", sizeof(md5Param), 64, 16, (hashFunctionReset) md5Reset, (hashFunctionUpdate) md5Update, (hashFunctionDigest) md5Digest };
+const hashFunction md5 = { "MD5", sizeof(md5Param), 64U, 16U, (hashFunctionReset) md5Reset, (hashFunctionUpdate) md5Update, (hashFunctionDigest) md5Digest };
 /*@=sizeoftype@*/
 
 int md5Reset(register md5Param* p)
@@ -190,6 +190,7 @@ int md5Update(md5Param* p, const byte* data, size_t size)
 	# error
 	#endif
 
+/*@-type@*/
 	while (size > 0)
 	{
 		proclength = ((p->offset + size) > 64) ? (64 - p->offset) : size;
@@ -204,6 +205,7 @@ int md5Update(md5Param* p, const byte* data, size_t size)
 			p->offset = 0;
 		}
 	}
+/*@=type@*/
 	return 0;
 }
 
@@ -216,6 +218,7 @@ static void md5Finish(md5Param* p)
 
 	*(ptr++) = 0x80;
 
+/*@-type@*/
 	if (p->offset > 56)
 	{
 		while (p->offset++ < 64)
@@ -228,6 +231,7 @@ static void md5Finish(md5Param* p)
 	ptr = ((byte *) p->data) + p->offset;
 	while (p->offset++ < 56)
 		*(ptr++) = 0;
+/*@=type@*/
 
 	#if (MP_WBITS == 64)
 	ptr[0] = (byte)(p->length[0]      );

@@ -1,3 +1,4 @@
+/*@-type@*/
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
  *
@@ -449,3 +450,4 @@ fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
     return 0;
 }
 /*@=globs =internalglobs =modfilesys @*/
+/*@=type@*/

@@ -1,4 +1,3 @@
-/*@-sizeoftype -type@*/
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
@@ -568,7 +567,7 @@ void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mp
 	/* if temp is still zero, then we're trying to raise x to power zero, and result stays one */
 	if (temp)
 	{
-		unsigned short l = 0, n = 0, count = MP_WBITS;
+		unsigned int l = 0, n = 0, count = MP_WBITS;
 
 		/* first skip bits until we reach a one */
 		while (count != 0)
@@ -593,9 +592,9 @@ void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mp
 					if (l != 0)
 						l++;
 					else if (bit != 0)
-						l = 1;
+						l = 1U;
 
-					if (l == 4)
+					if (l == 4U)
 					{
 						byte s = mpbslide_presq[n];
 
@@ -671,7 +670,7 @@ void mpbtwopowmod_w(const mpbarrett* b, size_t psize, const mpw* pdata, mpw* res
 	/* if temp is still zero, then we're trying to raise x to power zero, and result stays one */
 	if (temp)
 	{
-		register int count = MP_WBITS;
+		register unsigned int count = MP_WBITS;
 
 		/* first skip bits until we reach a one */
 		while (count)
@@ -1230,4 +1229,3 @@ void mpbnpowmodsld(const mpbarrett* b, const mpw* slide, const mpnumber* pow, mp
 	free(temp);
 	/*@=nullpass@*/
 }
-/*@=sizeoftype =type@*/

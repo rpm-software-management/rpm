@@ -78,7 +78,7 @@ struct vector table[7] =
 
 int main()
 {
-	int i, j, failures = 0;
+	int i, failures = 0;
 	hmacmd5Param param;
 	byte digest[16];
 

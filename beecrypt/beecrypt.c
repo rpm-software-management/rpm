@@ -57,7 +57,6 @@ typedef struct
  * \{
  */
 
-/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static entropySource entropySourceList[] =
 {
@@ -83,7 +82,6 @@ static entropySource entropySourceList[] =
 # endif
 #endif
 };
-/*@=type@*/
 
 #define ENTROPYSOURCES (sizeof(entropySourceList) / sizeof(entropySource))
 
@@ -153,14 +151,12 @@ int entropyGatherNext(byte* data, size_t size)
  * \{
  */
 
-/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static const randomGenerator* randomGeneratorList[] =
 {
 	&fips186prng,
 	&mtprng
 };
-/*@=type@*/
 
 #define RANDOMGENERATORS	(sizeof(randomGeneratorList) / sizeof(randomGenerator*))
 
@@ -260,7 +256,6 @@ int randomGeneratorContextNext(randomGeneratorContext* ctxt, byte* data, size_t 
  * \{
  */
 
-/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static const hashFunction* hashFunctionList[] =
 {
@@ -268,7 +263,6 @@ static const hashFunction* hashFunctionList[] =
 	&sha1,
 	&sha256
 };
-/*@=type@*/
 
 #define HASHFUNCTIONS (sizeof(hashFunctionList) / sizeof(hashFunction*))
 
@@ -513,7 +507,6 @@ int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* d)
  * \{
  */
 
-/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static const keyedHashFunction* keyedHashFunctionList[] =
 {
@@ -521,7 +514,6 @@ static const keyedHashFunction* keyedHashFunctionList[] =
 	&hmacsha1,
 	&hmacsha256
 };
-/*@=type@*/
 
 #define KEYEDHASHFUNCTIONS 	(sizeof(keyedHashFunctionList) / sizeof(keyedHashFunction*))
 
@@ -783,14 +775,12 @@ int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp
  * \{
  */
 
-/*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/
 static const blockCipher* blockCipherList[] =
 {
 	&aes,
 	&blowfish
 };
-/*@=type@*/
 
 #define BLOCKCIPHERS (sizeof(blockCipherList) / sizeof(blockCipher*))
 

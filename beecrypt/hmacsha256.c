@@ -32,10 +32,10 @@
  */
 
 /*@-sizeoftype@*/
-const keyedHashFunction hmacsha256 = { "HMAC-SHA-256", sizeof(hmacsha256Param), 64, 8 * sizeof(uint32_t), 64, 512, 32, (keyedHashFunctionSetup) hmacsha256Setup, (keyedHashFunctionReset) hmacsha256Reset, (keyedHashFunctionUpdate) hmacsha256Update, (keyedHashFunctionDigest) hmacsha256Digest };
+const keyedHashFunction hmacsha256 = { "HMAC-SHA-256", sizeof(hmacsha256Param), 64U, 8U * sizeof(uint32_t), 64U, 512U, 32U, (keyedHashFunctionSetup) hmacsha256Setup, (keyedHashFunctionReset) hmacsha256Reset, (keyedHashFunctionUpdate) hmacsha256Update, (keyedHashFunctionDigest) hmacsha256Digest };
 /*@=sizeoftype@*/
 
-/*@-type@*/
+/*@-type@*/	/* fix: cast to (hashFunctionParam*) */
 int hmacsha256Setup (hmacsha256Param* sp, const byte* key, size_t keybits)
 {
 	return hmacSetup(sp->kxi, sp->kxo, &sha256, &sp->sparam, key, keybits);
@@ -55,7 +55,7 @@ int hmacsha256Digest(hmacsha256Param* sp, byte* data)
 {
 	return hmacDigest(sp->kxo, &sha256, &sp->sparam, data);
 }
+/*@=type@*/
 
 /*!\}
  */
-/*@=type@*/

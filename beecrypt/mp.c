@@ -987,7 +987,7 @@ void mplshift(register size_t size, register mpw* data, size_t count)
 		if (lbits != 0)
 		{
 			register mpw temp, carry = 0;
-			register unsigned short rbits = MP_WBITS - lbits;
+			register unsigned int rbits = MP_WBITS - lbits;
 			register size_t i = size;
 
 			while (i > words)
@@ -1021,7 +1021,7 @@ void mprshift(register size_t size, register mpw* data, size_t count)
 		if (rbits != 0)
 		{
 			register mpw temp, carry = 0;
-			register unsigned short lbits = MP_WBITS - rbits;
+			register unsigned int lbits = MP_WBITS - rbits;
 			register size_t i = 0;
 
 			while (i < size-words)
@@ -1048,7 +1048,7 @@ size_t mprshiftlsz(register size_t size, register mpw* data)
 {
 	register mpw* slide = data+size-1;
 	register size_t  zwords = 0; /* counter for 'all zero bit' words */
-	register unsigned short lbits, rbits = 0; /* counter for 'least significant zero' bits */
+	register unsigned int lbits, rbits = 0; /* counter for 'least significant zero' bits */
 	register mpw  temp, carry = 0;
 
 	data = slide;
@@ -1164,8 +1164,8 @@ void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, mpw* result, mpw* 
 mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 {
 	register mpw result = 0;
-	register short count = MP_WBITS;
-	register int carry = 0;
+	register unsigned int count = MP_WBITS;
+	register unsigned int carry = 0;
 
 	while (count--)
 	{

@@ -53,7 +53,7 @@ int entropy_wincrypt(byte* data, size_t size);
 #if HAVE_DEV_AUDIO
 /** \ingroup ES_audio_m ES_m
  */
-int entropy_dev_audio (byte* data, size_t size)
+int entropy_dev_audio (/*@out@*/ byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif
@@ -61,7 +61,7 @@ int entropy_dev_audio (byte* data, size_t size)
 #if HAVE_DEV_DSP
 /** \ingroup ES_dsp_m ES_m
  */
-int entropy_dev_dsp   (byte* data, size_t size)
+int entropy_dev_dsp   (/*@out@*/ byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif
@@ -69,7 +69,7 @@ int entropy_dev_dsp   (byte* data, size_t size)
 #if HAVE_DEV_RANDOM
 /** \ingroup ES_random_m ES_m
  */
-int entropy_dev_random(byte* data, size_t size)
+int entropy_dev_random(/*@out@*/ byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif
@@ -77,7 +77,7 @@ int entropy_dev_random(byte* data, size_t size)
 #if HAVE_DEV_URANDOM
 /** \ingroup ES_urandom_m ES_m
  */
-int entropy_dev_urandom(byte* data, size_t size)
+int entropy_dev_urandom(/*@out@*/ byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif
@@ -85,7 +85,7 @@ int entropy_dev_urandom(byte* data, size_t size)
 #if HAVE_DEV_TTY
 /** \ingroup ES_tty_m ES_m
  */
-int entropy_dev_tty   (byte* data, size_t size)
+int entropy_dev_tty   (/*@out@*/ byte* data, size_t size)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies data, fileSystem, internalState @*/;
 #endif

@@ -747,7 +747,7 @@ static const uint32_t _arc[] = {
 };
 
 /*@-sizeoftype@*/
-const blockCipher aes = { "AES", sizeof(aesParam), 16, 128, 256, 64, (blockCipherSetup) aesSetup, (blockCipherSetIV) aesSetIV, (blockCipherEncrypt) aesEncrypt, (blockCipherDecrypt) aesDecrypt, (blockCipherFeedback) aesFeedback };
+const blockCipher aes = { "AES", sizeof(aesParam), 16U, 128U, 256U, 64U, (blockCipherSetup) aesSetup, (blockCipherSetIV) aesSetIV, (blockCipherEncrypt) aesEncrypt, (blockCipherDecrypt) aesDecrypt, (blockCipherFeedback) aesFeedback };
 /*@=sizeoftype@*/
 
 int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
