@@ -288,9 +288,9 @@ typedef void (*rpmNotifyFunction)(const Header h, const rpmNotifyType what,
 				  const unsigned long total,
 				  void * data);
 
-int rpmdbOpen (char * root, rpmdb * dbp, int mode, int perms);
+int rpmdbOpen (const char * root, rpmdb * dbp, int mode, int perms);
     /* 0 on error */
-int rpmdbInit(char * root, int perms);
+int rpmdbInit(const char * root, int perms);
     /* nonzero on error */
 void rpmdbClose (rpmdb db);
 
@@ -299,16 +299,16 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
     /* 0 at end, -1 on error */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
-int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches);
-int rpmdbFindByGroup(rpmdb db, char * group, dbiIndexSet * matches);
-int rpmdbFindPackage(rpmdb db, char * name, dbiIndexSet * matches);
-int rpmdbFindByProvides(rpmdb db, char * provides, dbiIndexSet * matches);
-int rpmdbFindByRequiredBy(rpmdb db, char * requires, dbiIndexSet * matches);
-int rpmdbFindByConflicts(rpmdb db, char * conflicts, dbiIndexSet * matches);
-int rpmdbFindByTriggeredBy(rpmdb db, char * package, dbiIndexSet * matches);
+int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches);
+int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches);
+int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches);
+int rpmdbFindByProvides(rpmdb db, const char * provides, dbiIndexSet * matches);
+int rpmdbFindByRequiredBy(rpmdb db, const char * requires, dbiIndexSet * matches);
+int rpmdbFindByConflicts(rpmdb db, const char * conflicts, dbiIndexSet * matches);
+int rpmdbFindByTriggeredBy(rpmdb db, const char * package, dbiIndexSet * matches);
 
 /* these are just convenience functions */
-int rpmdbFindByLabel(rpmdb db, char * label, dbiIndexSet * matches);
+int rpmdbFindByLabel(rpmdb db, const char * label, dbiIndexSet * matches);
 int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
 
 /* we pass these around as an array with a sentinel */
@@ -317,15 +317,15 @@ typedef struct rpmRelocation_s {
     char * newPath;     /* odd behavior is only for backwards compatibility */
 } rpmRelocation;
 
-int rpmInstallSourcePackage(char * root, FD_t fd, char ** specFile,
+int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
 			    rpmNotifyFunction notify, void * notifyData,
-			    char * labelFormat, char ** cookie);
+			    const char * labelFormat, char ** cookie);
 int rpmVersionCompare(Header first, Header second);
-int rpmdbRebuild(char * root);
+int rpmdbRebuild(const char * root);
 
-int rpmVerifyFile(char * root, Header h, int filenum, int * result,
+int rpmVerifyFile(const char * root, Header h, int filenum, int * result,
 		  int omitMask);
-int rpmVerifyScript(char * root, Header h, FD_t err);
+int rpmVerifyScript(const char * root, Header h, FD_t err);
 
 /* Transaction sets are inherently unordered! RPM may reorder transaction
    sets to reduce errors. In general, installs/upgrades are done before
@@ -560,11 +560,11 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 
 void rpmFreeSignature(Header h);
 
-int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
+int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
 
-int rpmGetFilesystemList(char *** listptr, int * num);
-int rpmGetFilesystemUsage(char ** filelist, int_32 * fssizes, int numFiles,
+int rpmGetFilesystemList(const char *** listptr, int * num);
+int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes, int numFiles,
 			  uint_32 ** usagesPtr, int flags);
 
 enum rpmQuerySources { QUERY_PACKAGE = 0, QUERY_PATH, QUERY_ALL, QUERY_RPM, 
@@ -588,8 +588,8 @@ struct rpmQueryArguments {
     int verbose;
 };
 
-int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags, 
-	     char * arg, char * queryFormat);
+int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags, 
+	     const char * arg, const char * queryFormat);
 void rpmDisplayQueryTags(FILE * f);
 
 #ifdef __cplusplus

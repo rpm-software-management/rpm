@@ -14,7 +14,8 @@ int doReSign(int add, char *passPhrase, char **argv)
     int count;
     struct rpmlead lead;
     unsigned short sigtype;
-    char *rpm, *sigtarget;
+    char *rpm;
+    const char *sigtarget;
     char tmprpm[1024];
     unsigned char buffer[8192];
     Header sig;
@@ -55,14 +56,14 @@ int doReSign(int add, char *passPhrase, char **argv)
 		perror(_("Couldn't read the header/archive"));
 		fdClose(ofd);
 		unlink(sigtarget);
-		free(sigtarget);
+		xfree(sigtarget);
 		exit(EXIT_FAILURE);
 	    }
 	    if (fdWrite(ofd, buffer, count) < 0) {
 		perror(_("Couldn't write header/archive to temp file"));
 		fdClose(ofd);
 		unlink(sigtarget);
-		free(sigtarget);
+		xfree(sigtarget);
 		exit(EXIT_FAILURE);
 	    }
 	}
@@ -78,7 +79,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	    fdClose(ofd);
 	    unlink(sigtarget);
 	    unlink(tmprpm);
-	    free(sigtarget);
+	    xfree(sigtarget);
 	    exit(EXIT_FAILURE);
 	}
 
@@ -97,7 +98,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	    fdClose(ofd);
 	    unlink(sigtarget);
 	    unlink(tmprpm);
-	    free(sigtarget);
+	    xfree(sigtarget);
 	    rpmFreeSignature(sig);
 	    exit(EXIT_FAILURE);
 	}
@@ -112,7 +113,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 		fdClose(fd);
 		unlink(sigtarget);
 		unlink(tmprpm);
-		free(sigtarget);
+		xfree(sigtarget);
 		exit(EXIT_FAILURE);
 	    }
 	    if (fdWrite(ofd, buffer, count) < 0) {
@@ -121,14 +122,14 @@ int doReSign(int add, char *passPhrase, char **argv)
 		fdClose(fd);
 		unlink(sigtarget);
 		unlink(tmprpm);
-		free(sigtarget);
+		xfree(sigtarget);
 		exit(EXIT_FAILURE);
 	    }
 	}
 	fdClose(fd);
 	fdClose(ofd);
 	unlink(sigtarget);
-	free(sigtarget);
+	xfree(sigtarget);
 
 	/* Move it in to place */
 	unlink(rpm);
@@ -144,7 +145,8 @@ int doCheckSig(int flags, char **argv)
     int res, res2, res3, missingKeys;
     struct rpmlead lead;
     char *rpm;
-    char result[1024], * sigtarget;
+    char result[1024];
+    const char * sigtarget;
     unsigned char buffer[8192];
     Header sig;
     HeaderIterator sigIter;
@@ -187,7 +189,7 @@ int doCheckSig(int flags, char **argv)
 		perror(_("Couldn't read the header/archive"));
 		fdClose(ofd);
 		unlink(sigtarget);
-		free(sigtarget);
+		xfree(sigtarget);
 		exit(EXIT_FAILURE);
 	    }
 	    if (fdWrite(ofd, buffer, count) < 0) {
@@ -195,7 +197,7 @@ int doCheckSig(int flags, char **argv)
 		perror("");
 		fdClose(ofd);
 		unlink(sigtarget);
-		free(sigtarget);
+		xfree(sigtarget);
 		exit(EXIT_FAILURE);
 	    }
 	}
@@ -276,7 +278,7 @@ int doCheckSig(int flags, char **argv)
 	headerFreeIterator(sigIter);
 	res += res2;
 	unlink(sigtarget);
-	free(sigtarget);
+	xfree(sigtarget);
 
 	if (res2) {
 	    if (rpmIsVerbose()) {

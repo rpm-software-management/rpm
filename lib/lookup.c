@@ -19,7 +19,7 @@ int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches) {
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
-int rpmdbFindByLabel(rpmdb db, char * arg, dbiIndexSet * matches) {
+int rpmdbFindByLabel(rpmdb db, const char * arg, dbiIndexSet * matches) {
     char * localarg, * chptr;
     char * release;
     int rc;

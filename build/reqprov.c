@@ -5,10 +5,10 @@
 #include "rpmbuild.h"
 
 int addReqProv(Spec spec, Package pkg,
-	       int flag, char *name, char *version, int index)
+	       int flag, const char *name, const char *version, int index)
 {
-    char **names;
-    char **versions = NULL;
+    const char **names;
+    const char **versions = NULL;
     int *flags = NULL;
     int *indexes = NULL;
     int nametag = 0;

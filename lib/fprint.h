@@ -4,19 +4,19 @@
 typedef struct fingerprint_s {
     dev_t dev;
     ino_t ino;
-    char * basename;
+    const char * basename;
 } fingerPrint;
 
 /* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
-fingerPrint fpLookup(char * fullName, int scareMemory);
+fingerPrint fpLookup(const char * fullName, int scareMemory);
 unsigned int fpHashFunction(const void * string);
 int fpEqual(const void * key1, const void * key2);
 /* scareMemory is assumed here! */
-void fpLookupList(char ** fullNames, fingerPrint * fpList, int numItems,
+void fpLookupList(const char ** fullNames, fingerPrint * fpList, int numItems,
 		  int alreadySorted);
 
 /* only if !scarceMemory */
-#define fpFree(a) free((a).basename)
+#define fpFree(a) free((void *)(a).basename)
 
 #define FP_EQUAL(a, b) ((&(a) == &(b)) || \
 			       (((a).dev == (b).dev) && \

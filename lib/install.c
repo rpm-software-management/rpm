@@ -50,9 +50,9 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  void * notifydb, Header h,
 			  char ** specFile, int archiveSize);
-static int installSources(Header h, char * rootdir, FD_t fd, 
-			  char ** specFilePtr, rpmNotifyFunction notify,
-			  void * notifyData, char * labelFormat);
+static int installSources(Header h, const char * rootdir, FD_t fd, 
+			  const char ** specFilePtr, rpmNotifyFunction notify,
+			  void * notifyData, const char * labelFormat);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
@@ -64,9 +64,9 @@ static void trimChangelog(Header h);
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallSourcePackage(char * rootdir, FD_t fd, char ** specFile,
+int rpmInstallSourcePackage(const char * rootdir, FD_t fd, const char ** specFile,
 			    rpmNotifyFunction notify, void * notifyData,
-			    char * labelFormat, char ** cookie) {
+			    const char * labelFormat, char ** cookie) {
     int rc, isSource;
     Header h;
     int major, minor;
@@ -263,7 +263,7 @@ static void trimChangelog(Header h) {
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int installBinaryPackage(char * rootdir, rpmdb db, FD_t fd, Header h,
+int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		         int flags, rpmNotifyFunction notify, 
 			 void * notifyData, enum fileActions * actions) {
     int rc;
@@ -643,10 +643,10 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-static int installSources(Header h, char * rootdir, FD_t fd, 
-			  char ** specFilePtr, rpmNotifyFunction notify,
+static int installSources(Header h, const char * rootdir, FD_t fd, 
+			  const char ** specFilePtr, rpmNotifyFunction notify,
 			  void * notifyData,
-			  char * labelFormat)
+			  const char * labelFormat)
 {
     char * specFile;
     int specFileIndex = -1;

@@ -13,7 +13,7 @@ static union _endian { int i; char b[4]; } *_endian = (union _endian *)&_ie;;
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
-int rpmVerifyFile(char * prefix, Header h, int filenum, int * result, 
+int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result, 
 		  int omitMask) {
     char ** fileList, ** md5List, ** linktoList;
     int_32 * verifyFlags, flags;
@@ -203,7 +203,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     return 0;
 }
 
-int rpmVerifyScript(char * root, Header h, FD_t err) {
+int rpmVerifyScript(const char * root, Header h, FD_t err) {
     return runInstScript(root, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
 		     0, 0, err);
 }

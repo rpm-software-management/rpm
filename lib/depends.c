@@ -695,10 +695,10 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
     return ourrc;
 }
 
-int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
-    char * name, * version, * release, * chptr;
-    char * reqVersion = reqInfo;
-    char * reqRelease = NULL;
+int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags) {
+    const char * name, * version, * release, * chptr;
+    const char * reqVersion = reqInfo;
+    const char * reqRelease = NULL;
     int type, count;
     int_32 * epoch;
     char buf[20];
@@ -721,9 +721,10 @@ int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
 	headerGetEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
 	chptr = strrchr(reqInfo, '-');
 	if (chptr) {
-	    reqVersion = alloca(strlen(reqInfo) + 1);
-	    strcpy(reqVersion, reqInfo);
-	    reqVersion[chptr - reqInfo] = '\0';
+	    char *rv = alloca(strlen(reqInfo) + 1);
+	    strcpy(rv, reqInfo);
+	    rv[chptr - reqInfo] = '\0';
+	    reqVersion = rv;
 	    reqRelease = reqVersion + (chptr - reqInfo) + 1;
 	    if (*reqRelease) 
 		headerGetEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);

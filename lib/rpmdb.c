@@ -55,33 +55,39 @@ static int intMatchCmp(const void * one, const void * two) {
     return 0;
 };
 
-int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
-    char * dbpath;
+int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms) {
+    const char * dbpath;
+    int rc;
 
-    dbpath = rpmGetVar(RPMVAR_DBPATH);
-    if (!dbpath) {
+    dbpath = rpmGetPath("%{_dbpath}", NULL);
+    if (dbpath == NULL || dbpath[0] == '%') {
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
 	return 1;
     }
 
-    return openDatabase(prefix, dbpath, rpmdbp, mode, perms, 0);
+    rc = openDatabase(prefix, dbpath, rpmdbp, mode, perms, 0);
+    xfree(dbpath);
+    return rc;
 }
 
-int rpmdbInit (char * prefix, int perms) {
+int rpmdbInit (const char * prefix, int perms) {
     rpmdb db;
-    char * dbpath;
+    const char * dbpath;
+    int rc;
 
-    dbpath = rpmGetVar(RPMVAR_DBPATH);
-    if (!dbpath) {
+    dbpath = rpmGetPath("%{_dbpath}", NULL);
+    if (dbpath == NULL || dbpath[0] == '%') {
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
 	return 1;
     }
 
-    return openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 
+    rc = openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 
 			RPMDB_FLAG_JUSTCHECK);
+    xfree(dbpath);
+    return rc;
 }
 
-static int openDbFile(char * prefix, char * dbpath, char * shortName, 
+static int openDbFile(const char * prefix, const char * dbpath, const char * shortName, 
 		      int justCheck, int perms, dbiIndex ** db, DBTYPE type){
     char * filename = alloca(strlen(prefix) + strlen(dbpath) + 
 			     strlen(shortName) + 20);
@@ -102,7 +108,7 @@ static int openDbFile(char * prefix, char * dbpath, char * shortName,
     return 0;
 }
 
-int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode, 
+int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mode, 
 		 int perms, int flags) {
     char * filename;
     struct rpmdb_s db;
@@ -110,7 +116,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     struct flock lockinfo;
     int justcheck = flags & RPMDB_FLAG_JUSTCHECK;
     int minimal = flags & RPMDB_FLAG_MINIMAL;
-    char * akey;
+    const char * akey;
 
     /* we should accept NULL as a valid prefix */
     if (!prefix) prefix="";
@@ -188,7 +194,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 			"use --rebuilddb to generate a new format database"));
 	    rc |= 1;
 	}
-	free(akey);
+	xfree(akey);
     }
 
     if (!rc)
@@ -256,8 +262,8 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset) {
     return headerRead(faFileno(db->pkgs), HEADER_MAGIC_NO);
 }
 
-int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
-    char * basename;
+int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches) {
+    const char * basename;
     fingerPrint fp1, fp2;
     dbiIndexSet allMatches;
     int i, rc;
@@ -310,27 +316,27 @@ int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
     return 0;
 }
 
-int rpmdbFindByProvides(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByProvides(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->providesIndex, filespec, matches);
 }
 
-int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByRequiredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->requiredbyIndex, filespec, matches);
 }
 
-int rpmdbFindByConflicts(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByConflicts(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->conflictsIndex, filespec, matches);
 }
 
-int rpmdbFindByTriggeredBy(rpmdb db, char * filespec, dbiIndexSet * matches) {
+int rpmdbFindByTriggeredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
     return dbiSearchIndex(db->triggerIndex, filespec, matches);
 }
 
-int rpmdbFindByGroup(rpmdb db, char * group, dbiIndexSet * matches) {
+int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches) {
     return dbiSearchIndex(db->groupIndex, group, matches);
 }
 
-int rpmdbFindPackage(rpmdb db, char * name, dbiIndexSet * matches) {
+int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
     return dbiSearchIndex(db->nameIndex, name, matches);
 }
 
@@ -649,7 +655,7 @@ static void unblockSignals(void) {
     sigprocmask(SIG_SETMASK, &signalMask, NULL);
 }
 
-void rpmdbRemoveDatabase(char * rootdir, char * dbpath) { 
+void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath) { 
     int i;
     char * filename;
 
@@ -686,7 +692,7 @@ void rpmdbRemoveDatabase(char * rootdir, char * dbpath) {
     unlink(filename);
 }
 
-int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath) {
+int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath) {
     int i;
     char * ofilename, * nfilename;
     int rc = 0;
@@ -755,7 +761,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     int intMatchesAlloced, numIntMatches;
     int start, end;
     int num, rc;
-    char ** fullfl, **fl;
+    const char ** fullfl, **fl;
     int_32 fc;
     fingerPrint * fps;
     Header h;

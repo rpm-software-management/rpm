@@ -6,8 +6,9 @@
 
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
 
-char ** splitString(char * str, int length, char sep) {
-    char * s, * source, * dest;
+char ** splitString(const char * str, int length, char sep) {
+    const char * source;
+    char * s, * dest;
     char ** list;
     int i;
     int fields;
@@ -45,7 +46,7 @@ void freeSplitString(char ** list) {
     free(list);
 }
 
-int rpmfileexists(char * filespec) {
+int rpmfileexists(const char * filespec) {
     struct stat buf;
 
     if (stat(filespec, &buf)) {
@@ -59,20 +60,21 @@ int rpmfileexists(char * filespec) {
     return 1;
 }
 
-int rpmvercmp(char * one, char * two) {
+int rpmvercmp(const char * a, const char * b) {
     int num1, num2;
     char oldch1, oldch2;
     char * str1, * str2;
+    char * one, * two;
     int rc;
     int isnum;
     
-    if (!strcmp(one, two)) return 0;
+    if (!strcmp(a, b)) return 0;
 
-    str1 = alloca(strlen(one) + 1);
-    str2 = alloca(strlen(two) + 1);
+    str1 = alloca(strlen(a) + 1);
+    str2 = alloca(strlen(b) + 1);
 
-    strcpy(str1, one);
-    strcpy(str2, two);
+    strcpy(str1, a);
+    strcpy(str2, b);
 
     one = str1;
     two = str2;
@@ -312,17 +314,15 @@ char * gidToGname(gid_t gid) {
     }
 }
 
-int makeTempFile(char * prefix, char ** fnptr, FD_t * fdptr) {
-    char * fn;
+int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
+    const char * fn;
     FD_t fd;
     int ran;
-    char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
     struct stat sb, sb2;
 
-    if (tmpdir == NULL)	tmpdir = "/var/tmp";
     if (!prefix) prefix = "";
 
-    fn = malloc(strlen(prefix) + 25 + strlen(tmpdir));
+    fn = NULL;
 
     srand(time(NULL));
     ran = rand() % 100000;
@@ -330,27 +330,36 @@ int makeTempFile(char * prefix, char ** fnptr, FD_t * fdptr) {
      /* maybe this should use link/stat? */
 
     do {
-	sprintf(fn, "%s%s/rpm-tmp.%d", prefix, tmpdir, ran++);
+	char tfn[32];
+	sprintf(tfn, "rpm-tmp.%d", ran++);
+	if (fn)	xfree(fn);
+	fn = rpmGetPath(prefix, "%{_tmppath}/", tfn, NULL);
 	fd = fdOpen(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
     } while (fdFileno(fd) < 0 && errno == EEXIST);
 
     if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
+	xfree(fn);
 	return 1;
     }
 
     if (sb.st_nlink != 1) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
+	xfree(fn);
 	return 1;
     }
 
     fstat(fdFileno(fd), &sb2);
     if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
+	xfree(fn);
 	return 1;
     }
 
-    if (fnptr) *fnptr = fn;
+    if (fnptr)
+	*fnptr = fn;
+    else
+	xfree(fn);
     *fdptr = fd;
 
     return 0;

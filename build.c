@@ -10,13 +10,13 @@ int buildForTarget(char *arg, int buildAmount, char *passPhrase,
 		  force);
 #endif
 
-static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
-	          char *buildRoot, int fromTarball, int test, char *cookie,
+static int buildForTarget(const char *arg, int buildAmount, const char *passPhrase,
+	          const char *buildRoot, int fromTarball, int test, char *cookie,
 		  int force)
 {
 
     FILE *f;
-    char * specfile;
+    const char * specfile;
     int res = 0;
     struct stat statbuf;
     char * s;
@@ -29,7 +29,7 @@ static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
     if (fromTarball) {
 	const char *specDir;
 	const char * tmpSpecFile;
-	char * cmd;
+	char * cmd, *s;
 	char tfn[64];
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
@@ -43,6 +43,8 @@ static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
 	if (!(f = popen(cmd, "r"))) {
 	    fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));
+	    xfree(specDir);
+	    xfree(tmpSpecFile);
 	    return 1;
 	}
 	if ((!fgets(buf, sizeof(buf) - 1, f)) || !strchr(buf, '/')) {
@@ -54,36 +56,42 @@ static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
 	    if (!(f = popen(cmd, "r"))) {
 		fprintf(stderr, _("Failed to open tar pipe: %s\n"), 
 			strerror(errno));
+		xfree(specDir);
+		xfree(tmpSpecFile);
 		return 1;
 	    }
 	    if (!fgets(buf, sizeof(buf) - 1, f)) {
 		/* Give up */
 		fprintf(stderr, _("Failed to read spec file from %s\n"), arg);
 		unlink(tmpSpecFile);
-		return 1;
+		xfree(specDir);
+		xfree(tmpSpecFile);
+	    	return 1;
 	    }
 	}
 	pclose(f);
 
-	cmd = specfile = buf;
+	cmd = s = buf;
 	while (*cmd) {
-	    if (*cmd == '/') specfile = cmd + 1;
+	    if (*cmd == '/') s = cmd + 1;
 	    cmd++;
 	}
 
-	cmd = specfile;
+	cmd = s;
 
 	/* remove trailing \n */
-	specfile = cmd + strlen(cmd) - 1;
-	*specfile = '\0';
+	s = cmd + strlen(cmd) - 1;
+	*s = '\0';
 
-	specfile = alloca(strlen(specDir) + strlen(cmd) + 5);
-	sprintf(specfile, "%s/%s", specDir, cmd);
+	s = alloca(strlen(specDir) + strlen(cmd) + 5);
+	sprintf(s, "%s/%s", specDir, cmd);
 	
-	if (rename(tmpSpecFile, specfile)) {
+	if (rename(tmpSpecFile, s)) {
 	    fprintf(stderr, _("Failed to rename %s to %s: %s\n"),
-		    tmpSpecFile, specfile, strerror(errno));
+		    tmpSpecFile, s, strerror(errno));
 	    unlink(tmpSpecFile);
+	    xfree(specDir);
+	    xfree(tmpSpecFile);
 	    return 1;
 	}
 
@@ -104,13 +112,15 @@ static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
 	addMacro(&globalMacroContext, "_sourcedir", NULL, buf, RMIL_TARBALL);
 	xfree(specDir);
 	xfree(tmpSpecFile);
+	specfile = s;
     } else if (arg[0] == '/') {
 	specfile = arg;
     } else {
-	specfile = alloca(BUFSIZ);
-	(void)getcwd(specfile, BUFSIZ);
-	strcat(specfile, "/");
-	strcat(specfile, arg);
+	char *s = alloca(BUFSIZ);
+	(void)getcwd(s, BUFSIZ);
+	strcat(s, "/");
+	strcat(s, arg);
+	specfile = s;
     }
 
     stat(specfile, &statbuf);
@@ -155,9 +165,9 @@ static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
     return res;
 }
 
-int build(char *arg, int buildAmount, char *passPhrase,
-	  char *buildRoot, int fromTarball, int test, char *cookie,
-          char * rcfile, char *targets, int force)
+int build(const char *arg, int buildAmount, const char *passPhrase,
+	  const char *buildRoot, int fromTarball, int test, char *cookie,
+          const char * rcfile, char *targets, int force)
 {
     char *target, *t;
     int rc;

@@ -8,7 +8,7 @@ struct fsinfo {
 };
 
 static struct fsinfo * filesystems;
-static char ** fsnames;
+static const char ** fsnames;
 static int numFilesystems;
 
 static int getFilesystemList(void);
@@ -63,12 +63,13 @@ static int getFilesystemList(void) {
     fsnames = malloc(sizeof(char *) * (numFilesystems + 1));
     
     for (vm = buf, i = 0; i < num; i++) {
+	char *fsn;
 	fsnameLength = vm->vmt_data[VMT_STUB].vmt_size;
-	fsnames[i] = malloc(fsnameLength + 1);
-	strncpy(fsnames[i],(char *)vm + vm->vmt_data[VMT_STUB].vmt_off, 
+	fsn = malloc(fsnameLength + 1);
+	strncpy(fsn, (char *)vm + vm->vmt_data[VMT_STUB].vmt_off, 
 		fsnameLength);
 
-	filesystems[i].mntPoint = fsnames[i];
+	filesystems[i].mntPoint = fsnames[i] = fsn;
 	
 	if (stat(filesystems[i].mntPoint, &sb)) {
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), fsnames[i],
@@ -178,7 +179,7 @@ static int getFilesystemList(void) {
 }
 #endif
 
-int rpmGetFilesystemList(char *** listptr, int * num) {
+int rpmGetFilesystemList(const char *** listptr, int * num) {
     if (!fsnames) 
 	if (getFilesystemList())
 	    return 1;
@@ -189,7 +190,7 @@ int rpmGetFilesystemList(char *** listptr, int * num) {
     return 0;
 }
 
-int rpmGetFilesystemUsage(char ** fileList, int_32 * fssizes, int numFiles,
+int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles,
 			  uint_32 ** usagesPtr, int flags) {
     int_32 * usages;
     int i, len, j;

@@ -29,7 +29,7 @@ void dbiSyncIndex(dbiIndex * dbi) {
     dbi->db->sync(dbi->db, 0);
 }
 
-int dbiGetFirstKey(dbiIndex * dbi, char ** keyp) {
+int dbiGetFirstKey(dbiIndex * dbi, const char ** keyp) {
     DBT key, data;
     int rc;
 
@@ -38,18 +38,20 @@ int dbiGetFirstKey(dbiIndex * dbi, char ** keyp) {
 	return 1;
     }
 
-    *keyp = malloc(key.size + 1);
-    memcpy(*keyp, key.data, key.size);
-    (*keyp)[key.size] = '\0';
+    {	char *k = malloc(key.size + 1);
+	memcpy(k, key.data, key.size);
+	k[key.size] = '\0';
+	*keyp = k;
+    }
 
     return 0;
 }
 
-int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
+int dbiSearchIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set) {
     DBT key, data;
     int rc;
 
-    key.data = str;
+    key.data = (void *)str;
     key.size = strlen(str);
 
     rc = dbi->db->get(dbi->db, &key, &data, 0);
@@ -68,12 +70,12 @@ int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
     return 0;
 }
 
-int dbiUpdateIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
+int dbiUpdateIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set) {
    /* 0 on success */
     DBT key, data;
     int rc;
 
-    key.data = str;
+    key.data = (void *)str;
     key.size = strlen(str);
 
     if (set->count) {

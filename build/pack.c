@@ -238,7 +238,8 @@ int writeRPM(Header header, const char *fileName, int type,
     FD_t fd, ifd;
     int rc, count, sigtype;
     int archnum, osnum;
-    char *sigtarget, *name, *version, *release;
+    const char *sigtarget;
+    char *name, *version, *release;
     char buf[BUFSIZ];
     Header sig;
     struct rpmlead lead;
@@ -276,7 +277,7 @@ int writeRPM(Header header, const char *fileName, int type,
     if (rc != 0) {
 	fdClose(fd);
 	unlink(sigtarget);
-	free(sigtarget);
+	xfree(sigtarget);
 	return rc;
     }
 
@@ -295,7 +296,7 @@ int writeRPM(Header header, const char *fileName, int type,
     if (fdFileno(fd = fdOpen(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) {
 	rpmError(RPMERR_CREATE, _("Could not open %s\n"), fileName);
 	unlink(sigtarget);
-	free(sigtarget);
+	xfree(sigtarget);
 	return RPMERR_CREATE;
     }
 
@@ -329,7 +330,7 @@ int writeRPM(Header header, const char *fileName, int type,
 		 strerror(errno));
 	fdClose(fd);
 	unlink(sigtarget);
-	free(sigtarget);
+	xfree(sigtarget);
 	unlink(fileName);
 	return rc;
     }
@@ -347,7 +348,7 @@ int writeRPM(Header header, const char *fileName, int type,
     if ((rc = rpmWriteSignature(fd, sig))) {
 	fdClose(fd);
 	unlink(sigtarget);
-	free(sigtarget);
+	xfree(sigtarget);
 	unlink(fileName);
 	rpmFreeSignature(sig);
 	return rc;
@@ -363,7 +364,7 @@ int writeRPM(Header header, const char *fileName, int type,
 	    fdClose(ifd);
 	    fdClose(fd);
 	    unlink(sigtarget);
-	    free(sigtarget);
+	    xfree(sigtarget);
 	    unlink(fileName);
 	    return RPMERR_READERROR;
 	}
@@ -373,7 +374,7 @@ int writeRPM(Header header, const char *fileName, int type,
 	    fdClose(ifd);
 	    fdClose(fd);
 	    unlink(sigtarget);
-	    free(sigtarget);
+	    xfree(sigtarget);
 	    unlink(fileName);
 	    return RPMERR_NOSPACE;
 	}
@@ -381,7 +382,7 @@ int writeRPM(Header header, const char *fileName, int type,
     fdClose(ifd);
     fdClose(fd);
     unlink(sigtarget);
-    free(sigtarget);
+    xfree(sigtarget);
 
     rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
 

@@ -13,13 +13,13 @@
 #define UNINSTALL_NODEPS        (1 << 0)
 #define UNINSTALL_ALLMATCHES    (1 << 1)
 
-int doInstall(char * rootdir, char ** argv, int installFlags, 
+int doInstall(const char * rootdir, const char ** argv, int installFlags, 
 	      int interfaceFlags, int probFilter, rpmRelocation * relocations);
-int doSourceInstall(char * prefix, char * arg, char ** specFile,
+int doSourceInstall(const char * prefix, const char * arg, const char ** specFile,
 		    char ** cookie);
-int doUninstall(char * rootdir, char ** argv, int uninstallFlags, 
+int doUninstall(const char * rootdir, const char ** argv, int uninstallFlags, 
 		 int interfaceFlags);
-void printDepFlags(FILE * f, char * version, int flags);
+void printDepFlags(FILE * f, const char * version, int flags);
 
 #endif
 

@@ -9,9 +9,9 @@
 #include "url.h"
 
 static char * permsString(int mode);
-static void printHeader(Header h, int queryFlags, char * queryFormat);
+static void printHeader(Header h, int queryFlags, const char * queryFormat);
 static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags, 
-			char * queryFormat);
+			const char * queryFormat);
 static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
 			  char * owner, char * group, int uid, int gid,
@@ -113,7 +113,7 @@ static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
     }
 }
 
-static int queryHeader(Header h, char * chptr) {
+static int queryHeader(Header h, const char * chptr) {
     char * str;
     char * error;
 
@@ -128,7 +128,7 @@ static int queryHeader(Header h, char * chptr) {
     return 0;
 }
 
-static void printHeader(Header h, int queryFlags, char * queryFormat) {
+static void printHeader(Header h, int queryFlags, const char * queryFormat) {
     char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
@@ -403,7 +403,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 }
 
 static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags, 
-			char * queryFormat) {
+			const char * queryFormat) {
     int i;
     Header h;
 
@@ -424,8 +424,8 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
     }
 }
 
-int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags, 
-	     char * arg, char * queryFormat) {
+int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags, 
+	     const char * arg, const char * queryFormat) {
     Header h;
     int offset;
     int rc;

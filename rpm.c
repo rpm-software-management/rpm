@@ -479,7 +479,7 @@ int main(int argc, char ** argv) {
     int checksigFlags = 0;
     unsigned long int timeCheck = 0L;
     int addSign = NEW_SIGNATURE;
-    char * specFile;
+    const char * specFile;
     char * tce;
     char * passPhrase = "";
     char * cookie = NULL;
@@ -1158,7 +1158,7 @@ int main(int argc, char ** argv) {
 		exit(EXIT_FAILURE);
 	    }
 	    free(cookie);
-	    free(specFile);
+	    xfree(specFile);
 	}
 	break;
 
@@ -1220,7 +1220,7 @@ int main(int argc, char ** argv) {
 	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
 	if (allMatches) interfaceFlags |= UNINSTALL_ALLMATCHES;
 
-	ec = doUninstall(rootdir, poptGetArgs(optCon), uninstallFlags, 
+	ec = doUninstall(rootdir, (const char **)poptGetArgs(optCon), uninstallFlags, 
 		interfaceFlags);
 	break;
 
@@ -1271,7 +1271,7 @@ int main(int argc, char ** argv) {
 	    relocations[numRelocations].newPath = NULL;
 	}
 
-	ec += doInstall(rootdir, poptGetArgs(optCon), installFlags, 
+	ec += doInstall(rootdir, (const char **)poptGetArgs(optCon), installFlags, 
 			interfaceFlags, probFilter, relocations);
 	break;
 

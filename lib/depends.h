@@ -3,7 +3,7 @@
 
 #include "header.h"
 
-int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags);
+int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags);
 
 struct availablePackage {
     Header h;

@@ -38,6 +38,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.6 -> 2.5.7:
+	- propagate "const char *" into rpmlib prototypes.
 	- use "original db-1.85" if available (Raw Hide glibc 2.1).
 	- make sure files to sign exist before asking for the pass phrase
 

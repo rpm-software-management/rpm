@@ -38,8 +38,8 @@ int rpmReadSignature(FD_t fd, Header *header, short sig_type);
 int rpmWriteSignature(FD_t fd, Header header);
 
 /* Generate a signature of data in file, insert in header */
-int rpmAddSignature(Header header, char *file,
-		    int_32 sigTag, char *passPhrase);
+int rpmAddSignature(Header header, const char *file,
+		    int_32 sigTag, const char *passPhrase);
 
 /******************************************************************/
 
@@ -47,6 +47,6 @@ int rpmAddSignature(Header header, char *file,
 int rpmLookupSignatureType(void);
 
 /* Utility to read a pass phrase from the user */
-char *rpmGetPassPhrase(char *prompt);
+char *rpmGetPassPhrase(const char *prompt);
 
 #endif	/* H_SIGNATURE */

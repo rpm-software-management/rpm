@@ -22,15 +22,15 @@
 
 typedef int (*md5func)(const char * fn, unsigned char * digest);
 
-static int makePGPSignature(char *file, void **sig, int_32 *size,
-			    char *passPhrase);
+static int makePGPSignature(const char *file, void **sig, int_32 *size,
+			    const char *passPhrase);
 static int checkSize(FD_t fd, int size, int sigsize);
-static int verifySizeSignature(char *datafile, int_32 size, char *result);
-static int verifyMD5Signature(char *datafile, unsigned char *sig,
+static int verifySizeSignature(const char *datafile, int_32 size, char *result);
+static int verifyMD5Signature(const char *datafile, unsigned char *sig,
 			      char *result, md5func fn);
-static int verifyPGPSignature(char *datafile, void *sig,
+static int verifyPGPSignature(const char *datafile, void *sig,
 			      int count, char *result);
-static int checkPassPhrase(char *passPhrase);
+static int checkPassPhrase(const char *passPhrase);
 
 int rpmLookupSignatureType(void)
 {
@@ -151,7 +151,7 @@ void rpmFreeSignature(Header h)
     headerFree(h);
 }
 
-int rpmAddSignature(Header header, char *file, int_32 sigTag, char *passPhrase)
+int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *passPhrase)
 {
     struct stat statbuf;
     int_32 size;
@@ -177,8 +177,8 @@ int rpmAddSignature(Header header, char *file, int_32 sigTag, char *passPhrase)
     return 0;
 }
 
-static int makePGPSignature(char *file, void **sig, int_32 *size,
-			    char *passPhrase)
+static int makePGPSignature(const char *file, void **sig, int_32 *size,
+			    const char *passPhrase)
 {
     char name[1024];
     char sigfile[1024];
@@ -270,7 +270,7 @@ static int checkSize(FD_t fd, int size, int sigsize)
     }
 }
 
-int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
+int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 		    char *result)
 {
     switch (sigTag) {
@@ -301,7 +301,7 @@ int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
     return RPMSIG_OK;
 }
 
-static int verifySizeSignature(char *datafile, int_32 size, char *result)
+static int verifySizeSignature(const char *datafile, int_32 size, char *result)
 {
     struct stat statbuf;
 
@@ -317,7 +317,7 @@ static int verifySizeSignature(char *datafile, int_32 size, char *result)
     return 0;
 }
 
-static int verifyMD5Signature(char *datafile, unsigned char *sig, 
+static int verifyMD5Signature(const char *datafile, unsigned char *sig, 
 			      char *result, md5func fn)
 {
     unsigned char md5sum[16];
@@ -350,7 +350,7 @@ static int verifyMD5Signature(char *datafile, unsigned char *sig,
     return 0;
 }
 
-static int verifyPGPSignature(char *datafile, void *sig,
+static int verifyPGPSignature(const char *datafile, void *sig,
 			      int count, char *result)
 {
     int pid, status, outpipe[2];
@@ -410,7 +410,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
     return res;
 }
 
-char *rpmGetPassPhrase(char *prompt)
+char *rpmGetPassPhrase(const char *prompt)
 {
     char *pass;
 
@@ -433,7 +433,7 @@ char *rpmGetPassPhrase(char *prompt)
     return pass;
 }
 
-static int checkPassPhrase(char *passPhrase)
+static int checkPassPhrase(const char *passPhrase)
 {
     char name[1024];
     int passPhrasePipe[2];

@@ -18,9 +18,9 @@ struct rpmBuildArguments {
     char buildChar;
 };
 
-int build(char *arg, int buildAmount, char *passPhrase,
-	         char *buildRoot, int fromTarball, int test, char *cookie,
-                 char * rcfile, char * buildplatforms, int force);
+int build(const char *arg, int buildAmount, const char *passPhrase,
+	         const char *buildRoot, int fromTarball, int test, char *cookie,
+                 const char * rcfile, char * buildplatforms, int force);
 
 #ifdef __cplusplus
 }

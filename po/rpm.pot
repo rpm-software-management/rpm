@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-05 18:03-0500\n"
+"POT-Creation-Date: 1999-01-06 11:47-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,159 +15,159 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: ../build.c:44 ../build.c:55
+#: ../build.c:44 ../build.c:57
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr ""
 
 #. Give up
-#: ../build.c:61
+#: ../build.c:65
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: ../build.c:84
+#: ../build.c:90
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr ""
 
-#: ../build.c:118
+#: ../build.c:128
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr ""
 
-#: ../build.c:123
+#: ../build.c:133
 #, c-format
 msgid "Unable to open spec file: %s\n"
 msgstr ""
 
-#: ../build.c:131
+#: ../build.c:141
 #, c-format
 msgid "File contains non-printable characters(%c): %s\n"
 msgstr ""
 
-#: ../build.c:218
+#: ../build.c:228
 msgid "buildroot already specified"
 msgstr ""
 
-#: ../build.c:224
+#: ../build.c:234
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: ../build.c:228
+#: ../build.c:238
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: ../build.c:249
+#: ../build.c:259
 msgid "override build architecture"
 msgstr ""
 
-#: ../build.c:251
+#: ../build.c:261
 msgid "override build operating system"
 msgstr ""
 
-#: ../build.c:253
+#: ../build.c:263
 msgid "override build root"
 msgstr ""
 
-#: ../build.c:255 ../rpm.c:429
+#: ../build.c:265 ../rpm.c:429
 msgid "remove build tree when done"
 msgstr ""
 
-#: ../build.c:257
+#: ../build.c:267
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: ../build.c:259
+#: ../build.c:269
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: ../build.c:261
+#: ../build.c:271
 msgid "remove sources and specfile when done"
 msgstr ""
 
-#: ../build.c:263 ../rpm.c:427
+#: ../build.c:273 ../rpm.c:427
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: ../build.c:265
+#: ../build.c:275
 msgid "override target platform"
 msgstr ""
 
-#: ../build.c:267
+#: ../build.c:277
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
-#: ../checksig.c:26 ../checksig.c:158
+#: ../checksig.c:27 ../checksig.c:160
 #, c-format
 msgid "%s: Open failed\n"
 msgstr ""
 
-#: ../checksig.c:30 ../checksig.c:163
+#: ../checksig.c:31 ../checksig.c:165
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: ../checksig.c:34
+#: ../checksig.c:35
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: ../checksig.c:38
+#: ../checksig.c:39
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: ../checksig.c:42 ../checksig.c:173
+#: ../checksig.c:43 ../checksig.c:175
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: ../checksig.c:55 ../checksig.c:187
+#: ../checksig.c:56 ../checksig.c:189
 msgid "Couldn't read the header/archive"
 msgstr ""
 
-#: ../checksig.c:62
+#: ../checksig.c:63
 msgid "Couldn't write header/archive to temp file"
 msgstr ""
 
-#: ../build/pack.c:344 ../checksig.c:87
+#: ../build/pack.c:345 ../checksig.c:88
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: ../checksig.c:110
+#: ../checksig.c:111
 msgid "Couldn't read sigtarget"
 msgstr ""
 
-#: ../checksig.c:119
+#: ../checksig.c:120
 msgid "Couldn't write package"
 msgstr ""
 
-#: ../checksig.c:168
+#: ../checksig.c:170
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: ../checksig.c:178
+#: ../checksig.c:180
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: ../checksig.c:194
+#: ../checksig.c:196
 #, c-format
 msgid "Unable to write %s"
 msgstr ""
 
-#: ../checksig.c:285
+#: ../checksig.c:287
 msgid "NOT OK"
 msgstr ""
 
-#: ../checksig.c:286 ../checksig.c:293
+#: ../checksig.c:288 ../checksig.c:295
 msgid " (MISSING KEYS)"
 msgstr ""
 
-#: ../checksig.c:292
+#: ../checksig.c:294
 msgid "OK"
 msgstr ""
 
@@ -264,84 +264,74 @@ msgstr ""
 msgid "opening database mode: 0%o\n"
 msgstr ""
 
-#: ../install.c:156
+#: ../install.c:158 ../install.c:296
 #, c-format
-msgid "error: cannot open %s%s/packages.rpm\n"
+msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: ../install.c:166
+#: ../install.c:168
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:177
+#: ../install.c:180 ../lib/query.c:478
 #, c-format
-msgid "error: %s does not appear to be a RPM package\n"
+msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:180
-#, c-format
-msgid "error: %s cannot be installed\n"
-msgstr ""
-
-#: ../install.c:193
-#, c-format
-msgid "found %d source and %d binary packages\n"
-msgstr ""
-
-#: ../install.c:203
-msgid "failed dependencies:\n"
-msgstr ""
-
-#: ../install.c:219
-msgid "installing binary packages\n"
-msgstr ""
-
-#: ../install.c:286
-#, c-format
-msgid "cannot open %s%s/packages.rpm\n"
-msgstr ""
-
-#: ../install.c:296 ../lib/query.c:614 ../verify.c:243
-#, c-format
-msgid "package %s is not installed\n"
-msgstr ""
-
-#: ../install.c:299
-#, c-format
-msgid "searching for package %s\n"
-msgstr ""
-
-#: ../install.c:307
-#, c-format
-msgid "\"%s\" specifies multiple packages\n"
-msgstr ""
-
-#: ../install.c:332
-msgid "removing these packages would break dependencies:\n"
-msgstr ""
-
-#: ../install.c:359
-#, c-format
-msgid "cannot open %s\n"
-msgstr ""
-
-#: ../install.c:364
-#, c-format
-msgid "Installing %s\n"
-msgstr ""
-
-#: ../install.c:369
+#: ../install.c:184 ../install.c:383
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:408
+#: ../install.c:201
+#, c-format
+msgid "found %d source and %d binary packages\n"
+msgstr ""
+
+#: ../install.c:211
+msgid "failed dependencies:\n"
+msgstr ""
+
+#: ../install.c:227
+msgid "installing binary packages\n"
+msgstr ""
+
+#: ../install.c:307 ../lib/query.c:614 ../verify.c:243
+#, c-format
+msgid "package %s is not installed\n"
+msgstr ""
+
+#: ../install.c:311
+#, c-format
+msgid "searching for package %s\n"
+msgstr ""
+
+#: ../install.c:320
+#, c-format
+msgid "\"%s\" specifies multiple packages\n"
+msgstr ""
+
+#: ../install.c:346
+msgid "removing these packages would break dependencies:\n"
+msgstr ""
+
+#: ../install.c:373
+#, c-format
+msgid "cannot open %s\n"
+msgstr ""
+
+#: ../install.c:378
+#, c-format
+msgid "Installing %s\n"
+msgstr ""
+
+#: ../install.c:422
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:411
+#: ../install.c:425
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -1348,7 +1338,7 @@ msgstr ""
 msgid "error: ftpport must be a number\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:144 ../url.c:333
+#: ../lib/rpmdb.c:150 ../url.c:333
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
@@ -1456,7 +1446,7 @@ msgstr ""
 msgid "no copyright!\n"
 msgstr ""
 
-#: ../build/build.c:86 ../build/pack.c:262
+#: ../build/build.c:86 ../build/pack.c:263
 msgid "Unable to open temp file"
 msgstr ""
 
@@ -1627,7 +1617,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1091 ../build/pack.c:447
+#: ../build/files.c:1091 ../build/pack.c:448
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1728,71 +1718,71 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: ../build/pack.c:273
+#: ../build/pack.c:274
 msgid "Bad CSA data"
 msgstr ""
 
-#: ../build/pack.c:296
+#: ../build/pack.c:297
 #, c-format
 msgid "Could not open %s\n"
 msgstr ""
 
-#: ../build/pack.c:328 ../build/pack.c:371
+#: ../build/pack.c:329 ../build/pack.c:372
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: ../build/pack.c:361
+#: ../build/pack.c:362
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr ""
 
-#: ../build/pack.c:386
+#: ../build/pack.c:387
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: ../build/pack.c:401
+#: ../build/pack.c:402
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:417
+#: ../build/pack.c:418
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:424
+#: ../build/pack.c:425
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:503
+#: ../build/pack.c:504
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:510
+#: ../build/pack.c:511
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:517
+#: ../build/pack.c:518
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:524
+#: ../build/pack.c:525
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:532
+#: ../build/pack.c:533
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:548
+#: ../build/pack.c:549
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2171,17 +2161,17 @@ msgstr ""
 msgid "cannot open file %s: "
 msgstr ""
 
-#: ../lib/dbindex.c:57
+#: ../lib/dbindex.c:59
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: ../lib/dbindex.c:85
+#: ../lib/dbindex.c:87
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: ../lib/dbindex.c:92
+#: ../lib/dbindex.c:94
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
@@ -2206,11 +2196,11 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:757
+#: ../lib/depends.c:758
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:809
+#: ../lib/depends.c:810
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2231,17 +2221,17 @@ msgstr ""
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
-#: ../lib/fs.c:74 ../lib/fs.c:236
+#: ../lib/fs.c:75 ../lib/fs.c:237
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr ""
 
-#: ../lib/fs.c:115
+#: ../lib/fs.c:116
 #, c-format
 msgid "failed to open %s: %s"
 msgstr ""
 
-#: ../lib/fs.c:257
+#: ../lib/fs.c:258
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr ""
@@ -2378,7 +2368,7 @@ msgstr ""
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:434 ../lib/install.c:785 ../lib/uninstall.c:341
+#: ../lib/install.c:434 ../lib/install.c:785 ../lib/uninstall.c:342
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -2529,7 +2519,7 @@ msgstr ""
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: ../lib/misc.c:338 ../lib/misc.c:343 ../lib/misc.c:349
+#: ../lib/misc.c:341 ../lib/misc.c:347 ../lib/misc.c:354
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
@@ -2667,11 +2657,6 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: ../lib/query.c:478
-#, c-format
-msgid "%s does not appear to be a RPM package\n"
-msgstr ""
-
 #: ../lib/query.c:481
 #, c-format
 msgid "query of %s failed\n"
@@ -2717,160 +2702,160 @@ msgstr ""
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:14
+#: ../lib/rebuilddb.c:17
 #, c-format
 msgid "rebuilding database in rootdir %s\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:18 ../lib/rpmdb.c:63 ../lib/rpmdb.c:76
+#: ../lib/rebuilddb.c:21 ../lib/rpmdb.c:64 ../lib/rpmdb.c:80
 msgid "no dbpath has been set"
 msgstr ""
 
-#: ../lib/rebuilddb.c:26
+#: ../lib/rebuilddb.c:29
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: ../lib/rebuilddb.c:30
+#: ../lib/rebuilddb.c:33
 #, c-format
 msgid "creating directory: %s\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:32
+#: ../lib/rebuilddb.c:35
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: ../lib/rebuilddb.c:38
+#: ../lib/rebuilddb.c:43
 msgid "opening old database\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:44
+#: ../lib/rebuilddb.c:50
 msgid "opening new database\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:53 ../lib/rebuilddb.c:71
+#: ../lib/rebuilddb.c:60 ../lib/rebuilddb.c:78
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr ""
 
-#: ../lib/rebuilddb.c:65
+#: ../lib/rebuilddb.c:72
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: ../lib/rebuilddb.c:82
+#: ../lib/rebuilddb.c:89
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:89
+#: ../lib/rebuilddb.c:97
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:91
+#: ../lib/rebuilddb.c:99
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: ../lib/rebuilddb.c:96
+#: ../lib/rebuilddb.c:105
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:135
+#: ../lib/rpmdb.c:141
 #, c-format
 msgid "opening database in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:157 ../lib/rpmdb.c:164
+#: ../lib/rpmdb.c:163 ../lib/rpmdb.c:170
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: ../lib/rpmdb.c:158
+#: ../lib/rpmdb.c:164
 msgid "exclusive"
 msgstr ""
 
-#: ../lib/rpmdb.c:165
+#: ../lib/rpmdb.c:171
 msgid "shared"
 msgstr ""
 
-#: ../lib/rpmdb.c:187
+#: ../lib/rpmdb.c:193
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: ../lib/rpmdb.c:346
+#: ../lib/rpmdb.c:352
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:357
+#: ../lib/rpmdb.c:363
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:381 ../lib/uninstall.c:40
+#: ../lib/rpmdb.c:387 ../lib/uninstall.c:40
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: ../lib/rpmdb.c:389
+#: ../lib/rpmdb.c:395
 msgid "package has no name"
 msgstr ""
 
-#: ../lib/rpmdb.c:391
+#: ../lib/rpmdb.c:397
 msgid "removing name index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:396
+#: ../lib/rpmdb.c:402
 msgid "package has no group\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:398
+#: ../lib/rpmdb.c:404
 msgid "removing group index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:405
+#: ../lib/rpmdb.c:411
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:420
+#: ../lib/rpmdb.c:426
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:432
+#: ../lib/rpmdb.c:438
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:443
+#: ../lib/rpmdb.c:449
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:460
+#: ../lib/rpmdb.c:466
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:469
+#: ../lib/rpmdb.c:475
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:542
+#: ../lib/rpmdb.c:548
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: ../lib/rpmdb.c:613
+#: ../lib/rpmdb.c:619
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: ../lib/rpmdb.c:622
+#: ../lib/rpmdb.c:628
 msgid "header changed size!"
 msgstr ""
 
@@ -3072,21 +3057,21 @@ msgstr ""
 msgid "removing database entry\n"
 msgstr ""
 
-#: ../lib/uninstall.c:293
+#: ../lib/uninstall.c:294
 msgid "execution of script failed"
 msgstr ""
 
-#: ../lib/uninstall.c:352
+#: ../lib/uninstall.c:353
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr ""
 
-#: ../lib/uninstall.c:355
+#: ../lib/uninstall.c:356
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr ""
 
-#: ../lib/uninstall.c:363
+#: ../lib/uninstall.c:364
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr ""

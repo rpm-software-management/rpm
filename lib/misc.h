@@ -4,14 +4,14 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-char ** splitString(char * str, int length, char sep);
+char ** splitString(const char * str, int length, char sep);
 void freeSplitString(char ** list);
 void stripTrailingSlashes(char * str);
 
-int rpmfileexists(char * filespec);
+int rpmfileexists(const char * filespec);
 
-int rpmvercmp(char * one, char * two);
-int findMatches(rpmdb db, char * name, char * version, char * release,
+int rpmvercmp(const char * one, const char * two);
+int findMatches(rpmdb db, const char * name, const char * version, const char * release,
 		       dbiIndexSet * matches);
 
 /* these are like the normal functions, but they malloc() the space which
@@ -28,6 +28,6 @@ int gnameToGid(char * thisGname, gid_t * gid);
 char * uidToUname(uid_t uid);
 char * gidToGname(gid_t gid);
 
-int makeTempFile(char * prefix, /*@out@*/char ** fnptr, /*@out@*/FD_t * fdptr);
+int makeTempFile(const char * prefix, /*@out@*/const char ** fnptr, /*@out@*/FD_t * fdptr);
 
 #endif	/* H_MISC */

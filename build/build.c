@@ -43,11 +43,11 @@ static char *_preScriptChdir =
 	"cd %{_builddir}\n"
 ;
 
-int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
+int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 {
     FD_t fd;
     FILE *f;
-    char *scriptName;
+    const char *scriptName;
     int pid;
     int status;
     char *buildShell;

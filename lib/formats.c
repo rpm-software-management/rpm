@@ -186,14 +186,14 @@ static char * depflagsFormat(int_32 type, const void * data,
 
 static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
 		      int * freeData) {
-    char ** list;
+    const char ** list;
 
     if (rpmGetFilesystemList(&list, count)) {
 	return 1;
     }
 
     *type = RPM_STRING_ARRAY_TYPE;
-    *((char ***) data) = list;
+    *((const char ***) data) = list;
 
     *freeData = 0;
 
@@ -221,7 +221,7 @@ static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
 
 static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
 		      int * freeData) {
-    char ** filenames;
+    const char ** filenames;
     int_32 * filesizes;
     uint_32 * usages;
     int numFiles;

@@ -65,15 +65,15 @@ static void showProgress(const Header h, const rpmNotifyType what,
     }
 }	
 
-int doInstall(char * rootdir, char ** argv, int installFlags, 
+int doInstall(const char * rootdir, const char ** argv, int installFlags, 
 	      int interfaceFlags, int probFilter, 
 	      rpmRelocation * relocations) {
     rpmdb db = NULL;
     FD_t fd;
     int i;
     int mode, rc, major;
-    char ** packages, ** tmpPackages;
-    char ** filename;
+    const char ** packages, ** tmpPackages;
+    const char ** filename;
     int numPackages;
     int numTmpPackages = 0, numBinaryPackages = 0, numSourcePackages = 0;
     int numFailed = 0;
@@ -155,8 +155,10 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
        would create all sorts of confusion later. */
     rpmMessage(RPMMESS_DEBUG, _("opening database mode: 0%o\n"), mode);
     if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	fprintf(stderr, _("error: cannot open %s%s/packages.rpm\n"), 
-		    rootdir, rpmGetVar(RPMVAR_DBPATH));
+	const char *dn;
+	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
+	rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
+	xfree(dn);
 	exit(EXIT_FAILURE);
     }
 
@@ -173,22 +175,28 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 
 	rc = rpmReadPackageHeader(fd, &h, &isSource, &major, NULL);
 
-	if (rc == 1) {
+	switch (rc) {
+	case 1:
 	    fdClose(fd);
-	    fprintf(stderr, 
-			_("error: %s does not appear to be a RPM package\n"), 
-		    *filename);
-	} else if (rc) {
-	    fprintf(stderr, _("error: %s cannot be installed\n"), *filename);
+	    rpmMessage(RPMMESS_ERROR, 
+			_("%s does not appear to be a RPM package\n"), 
+			*filename);
+	    break;
+	default:
+	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *filename);
 	    numFailed++;
 	    packages[i] = NULL;
-	} else if (isSource && major == 1) {
-	    printf("XXX FIXME I can't install v1 source packages!!!\n");
-	} else {
-	    rpmtransAddPackage(rpmdep, h, fd,
+	    break;
+	case 0:
+	    if (isSource && major == 1) {
+		printf("XXX FIXME I can't install v1 source packages!!!\n");
+	    } else {
+		rpmtransAddPackage(rpmdep, h, fd,
 			       packages[i], 
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
+	    }
+	    break;
 	}
     }
 
@@ -236,7 +244,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 		numFailed += rc;
 		for (i = 0; i < finalProbs->numProblems; i++)
 		    if (!finalProbs->probs[i].ignoreProblem)
-			fprintf(stderr, "error: %s\n", 
+			rpmMessage(RPMMESS_ERROR, "%s\n", 
 			        rpmProblemString(finalProbs->probs[i]));
 
 		rpmProblemSetFree(finalProbs);
@@ -258,7 +266,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     return numFailed;
 }
 
-int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
+int doUninstall(const char * rootdir, const char ** argv, int uninstallFlags,
 		 int interfaceFlags) {
     rpmdb db;
     dbiIndexSet matches;
@@ -266,7 +274,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     int mode;
     int rc;
     int count;
-    char ** arg;
+    const char ** arg;
     int numFailed = 0;
     rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
@@ -285,8 +293,10 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	mode = O_RDWR | O_EXCL;
 	
     if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	rpmMessage(RPMMESS_ERROR, _("cannot open %s%s/packages.rpm\n"), 
-		rootdir, rpmGetVar(RPMVAR_DBPATH));
+	const char *dn;
+	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
+	rpmMessage(RPMMESS_ERROR, _("cannot open %s/packages.rpm\n"), dn);
+	xfree(dn);
 	exit(EXIT_FAILURE);
     }
 
@@ -294,13 +304,16 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     rpmdep = rpmtransCreateSet(db, rootdir);
     for (arg = argv; *arg; arg++) {
 	rc = rpmdbFindByLabel(db, *arg, &matches);
-	if (rc == 1) {
+	switch (rc) {
+	case 1:
 	    rpmMessage(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
 	    numFailed++;
-	} else if (rc == 2) {
+	    break;
+	case 2:
 	    rpmMessage(RPMMESS_ERROR, _("searching for package %s\n"), *arg);
 	    numFailed++;
-	} else {
+	    break;
+	default:
 	    count = 0;
 	    for (i = 0; i < dbiIndexSetCount(matches); i++)
 		if (dbiIndexRecordOffset(matches, i)) count++;
@@ -321,6 +334,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	    }
 
 	    dbiFreeIndexRecord(matches);
+	    break;
 	}
     }
 
@@ -351,7 +365,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     return numFailed;
 }
 
-int doSourceInstall(char * rootdir, char * arg, char ** specFile,
+int doSourceInstall(const char * rootdir, const char * arg, const char ** specFile,
 		    char ** cookie) {
     FD_t fd;
     int rc;
@@ -378,7 +392,7 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile,
     return rc;
 }
 
-void printDepFlags(FILE * f, char * version, int flags) {
+void printDepFlags(FILE * f, const char * version, int flags) {
     if (flags)
 	fprintf(f, " ");
 

@@ -276,8 +276,8 @@ void closeSpec(Spec spec)
 
 int noLang = 0;		/* XXX FIXME: pass as arg */
 
-int parseSpec(Spec *specp, char *specFile, char *buildRoot,
-	      int inBuildArch, char *passPhrase, char *cookie,
+int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
+	      int inBuildArch, const char *passPhrase, char *cookie,
 	      int anyarch, int force)
 {
     int parsePart = PART_PREAMBLE;

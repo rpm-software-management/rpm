@@ -12,7 +12,7 @@ struct lookupCache {
     ino_t ino;
 };
 
-static fingerPrint doLookup(char * fullName, int scareMemory, 
+static fingerPrint doLookup(const char * fullName, int scareMemory, 
 			    struct lookupCache * cache);
 
 static int strCompare(const void * a, const void * b) {
@@ -22,14 +22,15 @@ static int strCompare(const void * a, const void * b) {
     return strcmp(*one, *two);
 };
 
-fingerPrint fpLookup(char * fullName, int scareMemory) {
+fingerPrint fpLookup(const char * fullName, int scareMemory) {
     return doLookup(fullName, scareMemory, NULL);
 }
 
-static fingerPrint doLookup(char * fullName, int scareMemory, 
+static fingerPrint doLookup(const char * fullName, int scareMemory, 
 			    struct lookupCache * cache) {
     char dir[PATH_MAX];
-    char * chptr1, * end;
+    const char * chptr1;
+    char * end;
     fingerPrint fp;
     struct stat sb;
     char * buf;
@@ -74,9 +75,9 @@ static fingerPrint doLookup(char * fullName, int scareMemory,
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
 	if (realpath(".", dir) != NULL) {
-	    chptr1 = alloca(strlen(dir) + strlen(fullName) + 2);
-	    sprintf(chptr1, "%s/%s", dir, fullName);
-	    fullName = chptr1;
+	    char *s = alloca(strlen(dir) + strlen(fullName) + 2);
+	    sprintf(s, "%s/%s", dir, fullName);
+	    fullName = chptr1 = s;
 	}
     }
 
@@ -127,7 +128,7 @@ unsigned int fpHashFunction(const void * key) {
     const fingerPrint * fp = key;
     unsigned int hash = 0;
     char ch;
-    char * chptr;
+    const char * chptr;
 
     ch = 0;
     chptr = fp->basename;
@@ -144,7 +145,7 @@ int fpEqual(const void * key1, const void * key2) {
     return FP_EQUAL(*((const fingerPrint *) key1), *((fingerPrint *) key2));
 }
 
-void fpLookupList(char ** fullNames, fingerPrint * fpList, int numItems,
+void fpLookupList(const char ** fullNames, fingerPrint * fpList, int numItems,
 		  int alreadySorted) {
     int i, j;
     struct lookupCache cache;
