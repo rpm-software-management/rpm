@@ -30,6 +30,7 @@ lib/formats.c
 lib/fs.c
 lib/fsm.c
 lib/header.c
+lib/header_internal.c
 lib/manifest.c
 lib/md5.c
 lib/md5sum.c
@@ -46,6 +47,7 @@ lib/rpmchecksig.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmrc.c
+lib/rpmvercmp.c
 lib/signature.c
 lib/stringbuf.c
 lib/transaction.c

@@ -841,6 +841,12 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
 /*@null@*/ Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
 	/*@modifies mi @*/;
 
+/** @todo Remove debugging entry from the ABI. */
+/*@unused@*/
+/*@null@*/ Header XrpmdbNextIterator(rpmdbMatchIterator mi,
+		const char * f, unsigned int l)
+	/*@modifies mi @*/;
+
 /** \ingroup rpmdb
  * Return database iterator.
  * @param db		rpm database
@@ -931,19 +937,21 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 	/*@modifies *fp, fileSystem @*/;
 
 /**
+ * Dependency problems found by rpmdepCheck().
+ * @todo Rename, but rpmfind prevents "struct rpmDependencyConflict_s".
  */
-typedef /*@abstract@*/ struct rpmDependencyConflict_s {
-    const char * byName;
-    const char * byVersion;
-    const char * byRelease;
-    Header byHeader;
+typedef /*@abstract@*/ struct rpmDependencyConflict {
+    const char * byName;	/*!< package name */
+    const char * byVersion;	/*!< package version */
+    const char * byRelease;	/*!< package release */
+    Header byHeader;		/*!< header with dependency problems */
     /*
      * These needs fields are misnamed -- they are used for the package
      * which isn't needed as well.
      */
-    const char * needsName;
-    const char * needsVersion;
-    int needsFlags;
+    const char * needsName;	/*!< dependency name */
+    const char * needsVersion;	/*!< dependency epoch:version-release */
+    int needsFlags;		/*!< dependency flags */
 /*@owned@*/ /*@null@*/ const void ** suggestedPackages; /* terminated by NULL */
     enum {
 	RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
@@ -1372,6 +1380,16 @@ int rpmGetRpmlibProvides(/*@null@*/ /*@out@*/ const char *** provNames,
 			/*@null@*/ /*@out@*/ int ** provFlags,
 			/*@null@*/ /*@out@*/ const char *** provVersions)
 	/*@ modifies *provNames, *provFlags, *provVersions @*/;
+
+/** \ingroup rpmtrans
+ * Segmented string compare for version and/or release.
+ *
+ * @param a		1st string
+ * @param b		2nd string
+ * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
+ */
+int rpmvercmp(const char * a, const char * b)
+	/*@*/;
 
 /** \ingroup rpmtrans
  * Compare two versioned dependency ranges, looking for overlap.

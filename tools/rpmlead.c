@@ -18,7 +18,8 @@ int main(int argc, char **argv)
 	fdi = Fopen(argv[1], "r.ufdio");
     }
     if (fdi == NULL || Ferror(fdi)) {
-	perror(argv[1]);
+	fprintf(stderr, "%s: %s: %s\n", argv[0],
+		(argc == 1 ? "<stdin>" : argv[1]), Fstrerror(fdi));
 	exit(EXIT_FAILURE);
     }
 

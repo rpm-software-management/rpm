@@ -9,7 +9,7 @@
 
 #include "psm.h"
 #include "md5.h"
-#include "misc.h"
+#include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
 /*@access TFI_t*/

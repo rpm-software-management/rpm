@@ -389,11 +389,13 @@ ssize_t	fdWrite(void * cookie, const char * buf, size_t count)
 int fdClose( /*@only@*/ void * cookie)
 	/*@modifies *cookie, fileSystem @*/;
 
-/* XXX FD_t reference count debugging wrappers */
+/**
+ * FD_t reference count debugging wrappers.
+ * @todo Remove debugging entries from the ABI.
+ */
 #define	fdLink(_fd, _msg)	fdio->_fdref(_fd, _msg, __FILE__, __LINE__)
 #define	fdFree(_fd, _msg)	fdio->_fdderef(_fd, _msg, __FILE__, __LINE__)
 #define	fdNew(_msg)		fdio->_fdnew(_msg, __FILE__, __LINE__)
-
 
 /** \ingroup rpmio
  */

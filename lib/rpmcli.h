@@ -5,9 +5,9 @@
  * \file lib/rpmcli.h
  */
 
-#include <rpmlib.h>
-#include <rpmurl.h>
-#include <rpmmacro.h>
+#include "rpmlib.h"
+#include "rpmurl.h"
+#include "rpmmacro.h"
 
 /** \ingroup rpmcli
  * Should version 3 packages be produced?

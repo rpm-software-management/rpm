@@ -1,6 +1,7 @@
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
+#include "header_internal.h"
 #include "debug.h"
 
 int main(int argc, char ** argv)
@@ -19,7 +20,7 @@ int main(int argc, char ** argv)
     }
 
     if (rpmdbOpen("", &db, O_RDONLY, 0644)) {
-	fprintf(stderr, _("cannot open /var/lib/rpm/packages.rpm\n"));
+	fprintf(stderr, _("cannot open Packages\n"));
 	exit(1);
     }
 
@@ -36,14 +37,14 @@ int main(int argc, char ** argv)
 	    if (!(dspBlockNum != 0 && dspBlockNum != blockNum))
 		continue;
 
-	    headerDump(h, stdout, 1, rpmTagTable);
+	    headerDump(h, stdout, HEADER_DUMP_INLINE, rpmTagTable);
 	    fprintf(stdout, "Offset: %d\n", _RECNUM);
     
 	    if (dspBlockNum && blockNum > dspBlockNum)
 		exit(0);
 	}
 
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 
     }
 

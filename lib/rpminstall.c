@@ -7,7 +7,7 @@
 #include <rpmcli.h>
 
 #include "manifest.h"
-#include "misc.h"
+#include "misc.h"	/* XXX for rpmGlob() */
 #include "debug.h"
 
 /*@access rpmTransactionSet@*/	/* XXX compared with NULL */

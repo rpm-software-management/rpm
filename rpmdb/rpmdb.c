@@ -1859,6 +1859,12 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) {
     return rc;
 }
 
+Header XrpmdbNextIterator(rpmdbMatchIterator mi,
+		/*@unused@*/ const char * f, /*@unused@*/ unsigned int l)
+{
+    return rpmdbNextIterator(mi);
+}
+
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;

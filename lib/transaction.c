@@ -11,7 +11,7 @@
 #include "fprint.h"
 #include "rpmhash.h"
 #include "md5.h"
-#include "misc.h"
+#include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 #include "rpmdb.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */

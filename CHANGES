@@ -117,6 +117,7 @@
 	- popt: add POPT_CONTEXT_ARG_OPTS for all opts to return 1 (#30912).
 	- fix: fsm reads/writes now return error on partial I/O.
 	- fix: Ferror returned spurious error for gzdio/bzdio.
+	- check for API/ABI creep, diddle up some compatibility.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

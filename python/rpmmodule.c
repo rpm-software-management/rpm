@@ -1273,7 +1273,7 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
-    struct rpmDependencyConflict_s * conflicts;
+    rpmDependencyConflict conflicts;
     int numConflicts;
     PyObject * list, * cf;
     int i;

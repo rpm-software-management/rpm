@@ -11,8 +11,8 @@
 #include <rpmlib.h>
 
 #include "depends.h"
-#include "rpmdb.h"
-#include "misc.h"
+#include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
+
 #include "debug.h"
 
 /*@access dbiIndex@*/		/* XXX compared with NULL */

@@ -59,6 +59,8 @@ extern int url_iobuf_size;
  * @return		new instance
  */
 urlinfo	urlNew(const char * msg)	/*@*/;
+
+/** @todo Remove debugging entry from the ABI. */
 urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
 #define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
 
@@ -70,6 +72,8 @@ urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	/*@*/;
  */
 urlinfo	urlLink(urlinfo u, const char * msg)
 	/*@modifies u @*/;
+
+/** @todo Remove debugging entry from the ABI. */
 urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
 	/*@modifies u @*/;
 #define	urlLink(_u, _msg) XurlLink(_u, _msg, __FILE__, __LINE__)
@@ -82,6 +86,8 @@ urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line)
  */
 urlinfo	urlFree( /*@killref@*/ urlinfo u, const char * msg)
 	/*@modifies u @*/;
+
+/** @todo Remove debugging entry from the ABI. */
 urlinfo	XurlFree( /*@killref@*/ urlinfo u, const char * msg,
 		const char * file, unsigned line)
 	/*@modifies u @*/;

@@ -266,25 +266,6 @@ Header headerLink(Header h)
 /*@null@*/ Header headerFree( /*@null@*/ /*@killref@*/ Header h)
 	/*@modifies h @*/;
 
-/** \ingroup header
- * Return header reference count.
- * @param h		header
- * @return		no. of references
- */
-/*@unused@*/
-int headerUsageCount(Header h)	/*@*/;
-
-/** \ingroup header
- * Dump a header in human readable format (for debugging).
- * @param h		header
- * @param flags		0 or HEADER_DUMP_LINLINE
- * @param tags		array of tag name/value pairs
- */
-/*@unused@*/
-void headerDump(Header h, FILE *f, int flags,
-		const struct headerTagTableEntry * tags);
-#define HEADER_DUMP_INLINE   1
-
 /*@-redef@*/	/* LCL: no clue */
 typedef const char * errmsg_t;
 /*@=redef@*/
@@ -337,15 +318,6 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
 int headerModifyEntry(Header h, int_32 tag, int_32 type,
 			const void * p, int_32 c)
 	/*@modifies h @*/;
-
-/** \ingroup header
- * Return array of locales found in header.
- * The array is terminated with a NULL sentinel.
- * @param h		header
- * @return		array of locales (or NULL on error)
- */
-/*@unused@*/
-/*@only@*/ /*@null@*/ char ** headerGetLangs(Header h)	/*@*/;
 
 /** \ingroup header
  * Add locale specific tag to header.
