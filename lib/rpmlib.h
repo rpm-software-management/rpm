@@ -231,8 +231,7 @@ int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile,
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
 		      int flags, rpmNotifyFunction notify, char * labelFormat,
 		      char * netsharedPath);
-int rpmEnsureOlder(rpmdb db, char * name, char * newVersion, 
-		char * newRelease, int dbOffset);
+int rpmVersionCompare(Header first, Header second);
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
 int rpmVerifyFile(char * prefix, Header h, int filenum, int * result);
 int rpmVerifyScript(char * root, Header h, int err);
