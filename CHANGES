@@ -2,6 +2,8 @@
 	- allow -R to %patch
 	- moved to use GNU autoconf, though it probably isn't perfect yet
 	  (thanks Kristof Depraetere)
+	- spec file sanity: no - chars in version or release,
+	  must be a regular file :-)
 
 2.2.2 -> 2.2.3:
 	- fixed script file md5 checking when files are in a root
