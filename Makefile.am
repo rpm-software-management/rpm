@@ -18,6 +18,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/popt \
 	@INCPATH@ \
+	-I/usr/include \
 	-I$(top_srcdir)/misc
 
 mylibs=	$(top_builddir)/build/librpmbuild.la \

@@ -2,7 +2,10 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = -I$(top_srcdir) @INCPATH@
+INCLUDES = \
+	-I$(top_srcdir) \
+	@INCPATH@ \
+	-I$(top_srcdir}/misc
 
 EXTRA_DIST = \
 	alloca.c	basename.c	err.c		error.c		\
