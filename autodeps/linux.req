@@ -98,8 +98,9 @@ for f in $liblist $exelist ; do
 	/^Dynamic Section:$/ { START=1; }
 	(START==1) && /NEEDED/ {
 	    if (needed) {
-		sub(/$/, "()'$mark64'", $2) ;
-		sub(/()$/, "", $2) ;
+		if ("'$lib64'" != "") {
+		    sub(/$/, "()'$lib64'", $2) ;
+		}
 		print $2 ;
 	    }
 	}
