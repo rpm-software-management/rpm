@@ -7,7 +7,6 @@
 TODO:
 
 . strip blank lines, leading/trailing spaces in %preamble
-. multiline descriptions (general backslash processing ?)
 . %doc globbing
 . should be able to drop the -n in non-%package parts
 
@@ -526,6 +525,7 @@ Spec parseSpec(FILE *f, char *specfile)
     int lookupopts;
     StringBuf sb;
     char *s = NULL;
+    char *s1;
 
     struct PackageRec *cur_package = NULL;
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
@@ -656,7 +656,6 @@ Spec parseSpec(FILE *f, char *specfile)
 		  case RPMTAG_RELEASE:
 		  case RPMTAG_SERIAL:
 		  case RPMTAG_SUMMARY:
-		  case RPMTAG_DESCRIPTION:
 		  case RPMTAG_DISTRIBUTION:
 		  case RPMTAG_VENDOR:
 		  case RPMTAG_COPYRIGHT:
@@ -664,6 +663,23 @@ Spec parseSpec(FILE *f, char *specfile)
 		  case RPMTAG_GROUP:
 		  case RPMTAG_URL:
 		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
+		    break;
+		  case RPMTAG_DESCRIPTION:
+		    /* Special case -- need to handle backslash */
+		    truncStringBuf(sb);
+		    while (1) {
+		        s1 = s + strlen(s) - 1;
+			if (*s1 != '\\') {
+			    break;
+			}
+		        *s1 = '\0';
+			appendLineStringBuf(sb, s);
+			read_line(f, buf);
+			s = buf;
+		    }
+		    appendStringBuf(sb, s);
+		    addEntry(cur_package->header, RPMTAG_DESCRIPTION,
+			     STRING_TYPE, getStringBuf(sb), 1);
 		    break;
 		  case RPMTAG_ROOT:
 		      /* special case */
