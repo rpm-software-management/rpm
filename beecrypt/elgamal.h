@@ -43,7 +43,7 @@ extern "C" {
  * @param p		The prime.
  * @param n		The reducer mod (p-1).
  * @param g		The generator.
- * @param rgc		The pseudo-random generat
+ * @param rgc		The pseudo-random generator.
  * @param hm		The hash to be signed.
  * @param x		The private key value.
  * @param r		The signature's \e r value.
@@ -51,7 +51,7 @@ extern "C" {
  * @retval		0 on success, -1 on failure.
  */
 BEECRYPTAPI /*@unused@*/
-int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 	/*@modifies r, s */;
 
 /**
@@ -65,7 +65,7 @@ int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomG
  * @param p		The prime.
  * @param n		The reducer mod (p-1).
  * @param g		The generator.
- * @param rgc		The pseudo-random generat
+ * @param rgc		The pseudo-random generator.
  * @param hm		The hash to be signed.
  * @param x		The private key value.
  * @param r		The signature's \e r value.
@@ -73,7 +73,7 @@ int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomG
  * @retval		0 on success, -1 on failure.
  */
 BEECRYPTAPI /*@unused@*/
-int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 	/*@modifies r, s */;
 
 /**
@@ -112,7 +112,7 @@ int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
  * \li \f$v_2=y^{r}r^{h(m)}\ \textrm{mod}\ p\f$
  * \li Check \f$v_1=v_2\f$
  *
- * \warning The return type of this function should be a boolean, but since
+ * @warning The return type of this function should be a boolean, but since
  *          that type isn't as portable, an int is used.
  *
  * @param p		The prime.

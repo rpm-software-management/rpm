@@ -324,9 +324,12 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     }
 
     left = _free(left);
+/*@-branchstate@*/
     if (defs) {
-	help = defs; defs = NULL;
+	help = defs;
+	defs = NULL;
     }
+/*@=branchstate@*/
 
     helpLength = strlen(help);
 /*@-boundsread@*/

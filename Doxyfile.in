@@ -327,8 +327,6 @@ INPUT                  = \
 	@top_srcdir@/beecrypt/base64.h \
 	@top_srcdir@/beecrypt/beecrypt.c \
 	@top_srcdir@/beecrypt/beecrypt.h \
-	@top_srcdir@/beecrypt/beecrypt.gas.h \
-	@top_srcdir@/beecrypt/beecrypt.win.h \
 	@top_srcdir@/beecrypt/blockmode.c \
 	@top_srcdir@/beecrypt/blockmode.h \
 	@top_srcdir@/beecrypt/blockpad.c \
@@ -369,15 +367,15 @@ INPUT                  = \
 	@top_srcdir@/beecrypt/md5.h \
 	@top_srcdir@/beecrypt/memchunk.c \
 	@top_srcdir@/beecrypt/memchunk.h \
-	@top_srcdir@/beecrypt/mp32barrett.c \
-	@top_srcdir@/beecrypt/mp32barrett.h \
-	@top_srcdir@/beecrypt/mp32.c \
-	@top_srcdir@/beecrypt/mp32.h \
-	@top_srcdir@/beecrypt/mp32number.c \
-	@top_srcdir@/beecrypt/mp32number.h \
-	@top_srcdir@/beecrypt/mp32opt.h \
-	@top_srcdir@/beecrypt/mp32prime.c \
-	@top_srcdir@/beecrypt/mp32prime.h \
+	@top_srcdir@/beecrypt/mpbarrett.c \
+	@top_srcdir@/beecrypt/mpbarrett.h \
+	@top_srcdir@/beecrypt/mp.c \
+	@top_srcdir@/beecrypt/mp.h \
+	@top_srcdir@/beecrypt/mpnumber.c \
+	@top_srcdir@/beecrypt/mpnumber.h \
+	@top_srcdir@/beecrypt/mpopt.h \
+	@top_srcdir@/beecrypt/mpprime.c \
+	@top_srcdir@/beecrypt/mpprime.h \
 	@top_srcdir@/beecrypt/mtprng.c \
 	@top_srcdir@/beecrypt/mtprng.h \
 	@top_srcdir@/beecrypt/rsa.c \

@@ -74,7 +74,7 @@ int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type)
 extern int pthread_mutex_destroy(pthread_mutex_t *mutex)
 	/*@modifies *mutex @*/;
 extern int pthread_mutex_init(/*@out@*/ pthread_mutex_t *restrict mutex,
-		const pthread_mutexattr_t *restrict attr)
+		/*@null@*/ const pthread_mutexattr_t *restrict attr)
 	/*@modifies *mutex @*/;
 
 extern int pthread_mutex_lock(pthread_mutex_t *mutex)

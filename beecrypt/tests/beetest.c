@@ -209,7 +209,7 @@ static void testBlockCiphers(void)
 		{
 			size_t blockwords = tmp->blocksize >> 2;
 
-			mpw* src_block = (mpw*) malloc(2 * blockwords * sizeof(*src_block));
+			mpw* src_block = (mpw*) calloc(1, 2 * blockwords * sizeof(*src_block));
 			mpw* enc_block = (mpw*) malloc(2 * blockwords * sizeof(*enc_block));
 			mpw* dec_block = (mpw*) malloc(2 * blockwords * sizeof(*dec_block));
 			mpw* spd_block = (mpw*) malloc(1024 * 1024 * blockwords * sizeof(*spd_block));

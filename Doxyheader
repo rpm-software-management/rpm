@@ -54,6 +54,8 @@
  */
 /*! \defgroup	PRNG_fips186_m	Pseudo-Random Number Generators: FIPS-186
  */
+/*! \defgroup   PRNG_mt_m       Pseudo-Random Number Generators: Mersenne Twister
+ */
 /*! \defgroup	HASH_m	Hash Functions
  */
 /*! \defgroup	HASH_md5_m	Hash Functions: MD5
@@ -76,19 +78,23 @@
  */
 /*! \defgroup	BC_blowfish_m	Block ciphers: Blowfish
  */
+/*! \defgroup   MP_m    Multiple Precision Integer Arithmetic
+ */
 /*! \defgroup	DL_m	Discrete Logarithm Primitives
  */
-/*! \defgroup	DH_m	Diffie-Hellman Primitives
+/*! \defgroup   DL_dh_m Discrete Logarithm Primitives: Diffie-Hellman
  */
-/*! \defgroup	DSA_m	DSA Encryption/Signature Primitives
+/*! \defgroup   DL_dsa_m        Discrete Logarithm Primitives: DSA
  */
-/*! \defgroup	RSA_m	RSA Encryption/Signature Primitives
+/*! \defgroup   DL_elgamal_m    Discrete Logarithm Primitives: ElGamal
  */
-/*! \defgroup	ELGAMAL_m	ElGamal Signature Primitives
+/*! \defgroup   IF_m    Integer Factorization Primitives
  */
-/*! \defgroup	MP32_m	Multiple Precision Integer Arithmetic (32 bit)
- */
-/*! \defgroup	MP64_m	Multiple Precision Integer Arithmetic (64 bit)
+/*! \defgroup   IF_rsa_m        Integer Factorization Primitives: RSA
  */
 /*! \defgroup	JAVA_m	Java API
+ */
+/*! \defgroup   UNIT_m  Unit tests
+ */
+/*! \defgroup   BENCH_m Benchmark tests
  */

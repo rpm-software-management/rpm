@@ -31,6 +31,7 @@
  *
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup DL_m DL_elgamal_m
+ *
  * - ElGamal Signature variant 1: (i.e. the standard version)
  *  - Signing equation:
  *   - r = g^k mod p and
@@ -61,6 +62,10 @@
 #include "dldp.h"
 #include "mp.h"
 #include "debug.h"
+
+/*!\addtogroup DL_elgamal_m
+ * \{
+ */
 
 int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
