@@ -1,13 +1,10 @@
-CC = @CC@
-CPP = @CPP@
-
 srcdir = @srcdir@
 VPATH = $(srcdir)
 
+include $(srcdir)/../Makefile.inc
+
 LIBOBJECTS = @REALPATH@ @FTW@ @GETOPT@ @GETOPT1@
 LIBMISC = libmisc.a
-AR = ar r
-RANLIB = ranlib
 
 # -----------------------------------------------------------------------
 
@@ -22,7 +19,7 @@ all: $(TARGET)
 everything: $(LIBMISC)
 
 $(LIBMISC): $(LIBOBJECTS) 
-	$(AR) $@ $(LIBOBJECTS)
+	$(AR) r $@ $(LIBOBJECTS)
 	$(RANLIB) $@
 
 $(PROGS): $(LIBOBJECTS)
@@ -30,7 +27,7 @@ $(PROGS): $(LIBOBJECTS)
 clean:
 	rm -f *.a *.o *~ $(PROGS)
 
-realclean: clean
+distclean: clean
 	rm -f .depend Makefile
 
 depend:
