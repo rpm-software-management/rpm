@@ -60,6 +60,7 @@ int isPart(char *line)
 static int matchTok(const char *token, const char *line)
 {
     const char *b, *be = line;
+    size_t toklen = strlen(token);
     int rc = 0;
 
     while ( *(b = be) ) {
@@ -73,7 +74,7 @@ static int matchTok(const char *token, const char *line)
      * XXX os-from-uname (e.g. "Linux") is compatible with the new
      * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
      */
-	if (strncasecmp(token, b, (be-b)))
+	if (toklen != (be-b) || strncasecmp(token, b, (be-b)))
 	    continue;
 	rc = 1;
 	break;

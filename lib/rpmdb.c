@@ -242,7 +242,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 			&db.triggerIndex, DB_HASH);
 
     if (rc) {
-	faClose(db.pkgs);
+	if (db.pkgs) faClose(db.pkgs);
 	if (db.nameIndex) dbiCloseIndex(db.nameIndex);
 	if (db.fileIndex) dbiCloseIndex(db.fileIndex);
 	if (db.providesIndex) dbiCloseIndex(db.providesIndex);

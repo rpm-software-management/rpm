@@ -164,6 +164,7 @@ dnl
     AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
 
     AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
+dnl Solaris prefers /usr/xpg4/bin/id
     AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
     AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
     AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)

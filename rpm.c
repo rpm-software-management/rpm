@@ -1162,7 +1162,7 @@ int main(int argc, char ** argv)
 	if (!noPgp) checksigFlags |= CHECKSIG_PGP;
 	if (!noGpg) checksigFlags |= CHECKSIG_GPG;
 	if (!noMd5) checksigFlags |= CHECKSIG_MD5;
-	ec = rpmCheckSig(checksigFlags, poptGetArgs(optCon));
+	ec = rpmCheckSig(checksigFlags, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	exit(ec);
@@ -1171,7 +1171,7 @@ int main(int argc, char ** argv)
       case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signing"));
-	ec = rpmReSign(addSign, passPhrase, poptGetArgs(optCon));
+	ec = rpmReSign(addSign, passPhrase, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	exit(ec);

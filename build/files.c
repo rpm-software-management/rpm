@@ -710,14 +710,11 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 	    res = 1;
 	} else {
 	/* XXX WATCHOUT: buf is an arg */
-	    {	const char *ddir, *name, *version;
+	    {	const char *ddir, *n, *v;
 
-		headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
-			(void **) &name, NULL);
-		headerGetEntry(pkg->header, RPMTAG_VERSION, NULL,
-			(void **) &version, NULL);
+		headerNVR(pkg->header, &n, &v, NULL);
 
-		ddir = rpmGetPath("%{_docdir}/", name, "-", version, NULL);
+		ddir = rpmGetPath("%{_docdir}/", n, "-", v, NULL);
 		strcpy(buf, ddir);
 		xfree(ddir);
 	    }

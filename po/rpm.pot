@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-24 19:23-0400\n"
+"POT-Creation-Date: 1999-09-06 16:57-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1375,81 +1375,81 @@ msgstr ""
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: ../build/files.c:795
+#: ../build/files.c:792
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:955
+#: ../build/files.c:952
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:965 ../build/files.c:1102
+#: ../build/files.c:962 ../build/files.c:1099
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:1008
+#: ../build/files.c:1005
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:1022
+#: ../build/files.c:1019
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr ""
 
-#: ../build/files.c:1086
+#: ../build/files.c:1083
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1143
+#: ../build/files.c:1140
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1150 ../build/pack.c:433
+#: ../build/files.c:1147 ../build/pack.c:433
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1472 ../build/parsePrep.c:31
+#: ../build/files.c:1469 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1525
+#: ../build/files.c:1522
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1529
+#: ../build/files.c:1526
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1608
+#: ../build/files.c:1605
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1612
+#: ../build/files.c:1609
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1698
+#: ../build/files.c:1695
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: ../build/files.c:1726 ../build/files.c:1735
+#: ../build/files.c:1723 ../build/files.c:1732
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: ../build/files.c:1841
+#: ../build/files.c:1838
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -1846,49 +1846,49 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-#: ../build/parseSpec.c:125
+#: ../build/parseSpec.c:126
 #, c-format
 msgid "line %d: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:171
+#: ../build/parseSpec.c:172
 #, c-format
 msgid "Unable to open: %s\n"
 msgstr ""
 
-#: ../build/parseSpec.c:183
+#: ../build/parseSpec.c:184
 msgid "Unclosed %%if"
 msgstr ""
 
-#: ../build/parseSpec.c:242
+#: ../build/parseSpec.c:243
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: ../build/parseSpec.c:250
+#: ../build/parseSpec.c:251
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: ../build/parseSpec.c:261
+#: ../build/parseSpec.c:262
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: ../build/parseSpec.c:275 ../build/parseSpec.c:284
+#: ../build/parseSpec.c:276 ../build/parseSpec.c:285
 msgid "malformed %%include statement"
 msgstr ""
 
-#: ../build/parseSpec.c:365
+#: ../build/parseSpec.c:366
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:448
+#: ../build/parseSpec.c:449
 msgid "No buildable architectures"
 msgstr ""
 
-#: ../build/parseSpec.c:493
+#: ../build/parseSpec.c:494
 msgid "Package has no %%description: %s"
 msgstr ""
 
@@ -2030,17 +2030,21 @@ msgstr ""
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
-#: ../lib/fs.c:75 ../lib/fs.c:249
+#: ../lib/fs.c:75 ../lib/fs.c:251
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr ""
 
-#: ../lib/fs.c:117
+#: ../lib/fs.c:114
+msgid "getting list of mounted filesystems\n"
+msgstr ""
+
+#: ../lib/fs.c:119
 #, c-format
 msgid "failed to open %s: %s"
 msgstr ""
 
-#: ../lib/fs.c:270
+#: ../lib/fs.c:272
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr ""
