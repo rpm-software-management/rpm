@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-11 13:11-0500\n"
+"POT-Creation-Date: 2004-11-19 12:42-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -122,7 +122,7 @@ msgstr "모든 rpm 모드에서의 일반적인 옵션:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:137 lib/poptALL.c:130
+#: rpmqv.c:137 lib/poptALL.c:127
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM 버전 - %s\n"
@@ -1262,19 +1262,19 @@ msgstr "패키지 제작 의존성을 검사하지 않습니다"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "(기존의) rpm[23] 패키징과 호환하는 패키지 헤더를 생성합니다"
 
-#: build/poptBT.c:229 lib/poptALL.c:275 lib/poptI.c:283 lib/poptQV.c:363
+#: build/poptBT.c:229 lib/poptALL.c:272 lib/poptI.c:283 lib/poptQV.c:363
 #: lib/poptQV.c:372 lib/poptQV.c:413
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: build/poptBT.c:231 lib/poptALL.c:277 lib/poptI.c:285 lib/poptQV.c:366
+#: build/poptBT.c:231 lib/poptALL.c:274 lib/poptI.c:285 lib/poptQV.c:366
 #: lib/poptQV.c:374 lib/poptQV.c:416
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "패키지의 아키텍쳐를 검사하지 않습니다"
 
-#: build/poptBT.c:233 lib/poptALL.c:285 lib/poptI.c:287 lib/poptQV.c:369
+#: build/poptBT.c:233 lib/poptALL.c:280 lib/poptI.c:287 lib/poptQV.c:369
 #: lib/poptQV.c:376 lib/poptQV.c:418
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1701,165 +1701,160 @@ msgstr "%s: readLead이 실패했습니다\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread이 실패했습니다: %s\n"
 
-#: lib/poptALL.c:232
+#: lib/poptALL.c:229
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:231
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:233
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:235
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:237
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:239
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:241
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:243
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:259
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:263 lib/poptALL.c:266
+#: lib/poptALL.c:260 lib/poptALL.c:263
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:262
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:268
+#: lib/poptALL.c:265
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "<표현식>+ 의 매크로 확장을 출력합니다"
 
-#: lib/poptALL.c:269
+#: lib/poptALL.c:266
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:271 lib/poptALL.c:292 lib/poptALL.c:296
+#: lib/poptALL.c:268 lib/poptALL.c:287 lib/poptALL.c:291
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "기본 매크로 파일 대신 <파일:..>을 읽어들입니다"
 
-#: lib/poptALL.c:272 lib/poptALL.c:293 lib/poptALL.c:297
+#: lib/poptALL.c:269 lib/poptALL.c:288 lib/poptALL.c:292
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:280 lib/poptALL.c:316
+#: lib/poptALL.c:277 lib/poptALL.c:311
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API의 사용을 해제합니다"
 
 #: lib/poptALL.c:283
 #, fuzzy
-msgid "disable use of libneon for HTTP"
-msgstr "libio(3) API의 사용을 해제합니다"
-
-#: lib/poptALL.c:288
-#, fuzzy
 msgid "send stdout to CMD"
 msgstr "표준출력을 <명령>으로 보냅니다"
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:284
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:300
+#: lib/poptALL.c:295
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "<디렉토리>를 최상위 디렉토리로 사용합니다"
 
-#: lib/poptALL.c:301
+#: lib/poptALL.c:296
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:304
+#: lib/poptALL.c:299
 msgid "display known query tags"
 msgstr "질의 태그를 보여줍니다"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:301
 msgid "display final rpmrc and macro configuration"
 msgstr "현재 설정되어 있는 rpmrc의 내용과 매크로를 보여줍니다"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:303
 msgid "provide less detailed output"
 msgstr "자세한 출력을 제공합니다"
 
-#: lib/poptALL.c:310
+#: lib/poptALL.c:305
 msgid "provide more detailed output"
 msgstr "아주 상세한 출력을 제공합니다"
 
-#: lib/poptALL.c:312
+#: lib/poptALL.c:307
 msgid "print the version of rpm being used"
 msgstr "현재 사용되고 있는 rpm 버전을 표시합니다"
 
-#: lib/poptALL.c:325
+#: lib/poptALL.c:320
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "컴퓨터의 상태(state) 파일을 디버그 합니다"
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:322
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "컴퓨터의 상태(state) 파일을 디버그 합니다"
 
-#: lib/poptALL.c:329
+#: lib/poptALL.c:324
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "데이터 스트림 프로토콜을 디버그 합니다"
 
-#: lib/poptALL.c:331
+#: lib/poptALL.c:326
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:333
+#: lib/poptALL.c:328
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "데이터 스트림 프로토콜을 디버그 합니다"
 
-#: lib/poptALL.c:338
+#: lib/poptALL.c:333
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "인수 처리과정 (%d) 도중 내부 오류가 발생했습니다 :-(\n"
 
-#: lib/poptALL.c:343
+#: lib/poptALL.c:338
 #, fuzzy
 msgid "debug package state machine"
 msgstr "컴퓨터의 상태(state) 파일을 디버그 합니다"
 
-#: lib/poptALL.c:345
+#: lib/poptALL.c:340
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "컴퓨터의 상태(state) 파일을 디버그 합니다"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:354
 msgid "debug rpmio I/O"
 msgstr "rpmio 입/출력을 디버그 합니다"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:368
 msgid "debug URL cache handling"
 msgstr "URL 캐시 핸들링을 디버그 합니다"
 
 #. @-nullpass@
-#: lib/poptALL.c:443
+#: lib/poptALL.c:438
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -4042,60 +4037,60 @@ msgstr "%s 파일: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
 
-#: rpmio/rpmio.c:709
+#: rpmio/rpmio.c:673
 msgid "Success"
 msgstr "성공"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:676
 msgid "Bad server response"
 msgstr "잘못된 서버 응답입니다"
 
-#: rpmio/rpmio.c:715
+#: rpmio/rpmio.c:679
 msgid "Server I/O error"
 msgstr "서버 입/출력 오류입니다"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:682
 msgid "Server timeout"
 msgstr "서버 대기시간이 초과되었습니다"
 
-#: rpmio/rpmio.c:721
+#: rpmio/rpmio.c:685
 msgid "Unable to lookup server host address"
 msgstr "서버 호스트 주소를 검색할 수 없습니다"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:688
 msgid "Unable to lookup server host name"
 msgstr "서버 호스트 이름을 검색할 수 없습니다"
 
-#: rpmio/rpmio.c:727
+#: rpmio/rpmio.c:691
 msgid "Failed to connect to server"
 msgstr "서버에 접속하는데 실패했습니다"
 
-#: rpmio/rpmio.c:730
+#: rpmio/rpmio.c:694
 msgid "Failed to establish data connection to server"
 msgstr "서버에 데이터 접속을 시도하는데 실패했습니다"
 
-#: rpmio/rpmio.c:733
+#: rpmio/rpmio.c:697
 msgid "I/O error to local file"
 msgstr "로컬 파일에 입/출력 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:700
 msgid "Error setting remote server to passive mode"
 msgstr ""
 "원격 서버를 수동 모드(passive mode)로 설정하는 도중 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:739
+#: rpmio/rpmio.c:703
 msgid "File not found on server"
 msgstr "서버에서 파일을 찾을 수 없습니다"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:706
 msgid "Abort in progress"
 msgstr "진행이 중단되었습니다"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:710
 msgid "Unknown or unexpected error"
 msgstr "알 수 없는 혹은 예상치 못한 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:1440
+#: rpmio/rpmio.c:1404
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s에 %s(으)로 기록(logging)합니다, pw %s\n"
@@ -4275,6 +4270,10 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "disable use of libneon for HTTP"
+#~ msgstr "libio(3) API의 사용을 해제합니다"
 
 #~ msgid "Common options for all rpm modes:"
 #~ msgstr "모든 rpm 모드에서의 일반적인 옵션:"

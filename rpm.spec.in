@@ -368,10 +368,10 @@ exit 0
 
 %files libs
 %defattr(-,root,root)
-%{__libdir}/librpm-4.3.so
-%{__libdir}/librpmdb-4.3.so
-%{__libdir}/librpmio-4.3.so
-%{__libdir}/librpmbuild-4.3.so
+%{__libdir}/librpm-4.4.so
+%{__libdir}/librpmdb-4.4.so
+%{__libdir}/librpmio-4.4.so
+%{__libdir}/librpmbuild-4.4.so
 
 %files build
 %defattr(-,root,root)

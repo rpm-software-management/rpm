@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-11 13:11-0500\n"
+"POT-Creation-Date: 2004-11-19 12:42-0500\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -119,7 +119,7 @@ msgstr "Gemensamma flaggor för alla rpm-lägen och binärer:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:137 lib/poptALL.c:130
+#: rpmqv.c:137 lib/poptALL.c:127
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
@@ -1268,17 +1268,17 @@ msgstr "verifiera inte byggberoenden"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "generera pakethuvuden kompatibla med (äldre) rpm[23]-paketering"
 
-#: build/poptBT.c:229 lib/poptALL.c:275 lib/poptI.c:283 lib/poptQV.c:363
+#: build/poptBT.c:229 lib/poptALL.c:272 lib/poptI.c:283 lib/poptQV.c:363
 #: lib/poptQV.c:372 lib/poptQV.c:413
 msgid "don't verify package digest(s)"
 msgstr "verifiera inte paketkontrollsummor"
 
-#: build/poptBT.c:231 lib/poptALL.c:277 lib/poptI.c:285 lib/poptQV.c:366
+#: build/poptBT.c:231 lib/poptALL.c:274 lib/poptI.c:285 lib/poptQV.c:366
 #: lib/poptQV.c:374 lib/poptQV.c:416
 msgid "don't verify database header(s) when retrieved"
 msgstr "verifiera inte databashuvuden när de hämtas"
 
-#: build/poptBT.c:233 lib/poptALL.c:285 lib/poptI.c:287 lib/poptQV.c:369
+#: build/poptBT.c:233 lib/poptALL.c:280 lib/poptI.c:287 lib/poptQV.c:369
 #: lib/poptQV.c:376 lib/poptQV.c:418
 msgid "don't verify package signature(s)"
 msgstr "verifiera inte paketsignatur(er)"
@@ -1697,165 +1697,160 @@ msgstr "%s: headerRead misslyckades: %s"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
 
-#: lib/poptALL.c:232
+#: lib/poptALL.c:229
 #, fuzzy
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "följ kommandoradssymlänkar"
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:231
 #, fuzzy
 msgid "FTS_LOGICAL: logical walk"
 msgstr "genomlöp logiskt"
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:233
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "byt inte katalog"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:235
 #, fuzzy
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "hämta inte statusinfo"
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:237
 #, fuzzy
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "genomlöp fysiskt"
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:239
 #, fuzzy
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "returnera punkt som punkt-punkt"
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:241
 #, fuzzy
 msgid "FTS_XDEV: don't cross devices"
 msgstr "gå inte mellan enheter"
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:243
 #, fuzzy
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "returnera belyst information"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:259
 msgid "predefine MACRO with value EXPR"
 msgstr "fördefiniera MAKRO till värdet UTTR"
 
-#: lib/poptALL.c:263 lib/poptALL.c:266
+#: lib/poptALL.c:260 lib/poptALL.c:263
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO UTTR'"
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:262
 msgid "define MACRO with value EXPR"
 msgstr "definiera MAKRO till värdet UTTR"
 
-#: lib/poptALL.c:268
+#: lib/poptALL.c:265
 msgid "print macro expansion of EXPR"
 msgstr "skriv ut makroexpansion av UTTR"
 
-#: lib/poptALL.c:269
+#: lib/poptALL.c:266
 msgid "'EXPR'"
 msgstr "'UTTR'"
 
-#: lib/poptALL.c:271 lib/poptALL.c:292 lib/poptALL.c:296
+#: lib/poptALL.c:268 lib/poptALL.c:287 lib/poptALL.c:291
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "läs <FIL:...> istället för standardfil(er)"
 
-#: lib/poptALL.c:272 lib/poptALL.c:293 lib/poptALL.c:297
+#: lib/poptALL.c:269 lib/poptALL.c:288 lib/poptALL.c:292
 msgid "<FILE:...>"
 msgstr "<FIL:...>"
 
-#: lib/poptALL.c:280 lib/poptALL.c:316
+#: lib/poptALL.c:277 lib/poptALL.c:311
 msgid "disable use of libio(3) API"
 msgstr "inaktivera användningen av libio(3)-API:et"
 
 #: lib/poptALL.c:283
-#, fuzzy
-msgid "disable use of libneon for HTTP"
-msgstr "inaktivera användningen av libio(3)-API:et"
-
-#: lib/poptALL.c:288
 msgid "send stdout to CMD"
 msgstr "skicka standard ut till KMD"
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:284
 msgid "CMD"
 msgstr "KMD"
 
-#: lib/poptALL.c:300
+#: lib/poptALL.c:295
 msgid "use ROOT as top level directory"
 msgstr "använd ROT som toppnivåkatalog"
 
-#: lib/poptALL.c:301
+#: lib/poptALL.c:296
 msgid "ROOT"
 msgstr "ROT"
 
-#: lib/poptALL.c:304
+#: lib/poptALL.c:299
 msgid "display known query tags"
 msgstr "visa kända frågetaggar"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:301
 msgid "display final rpmrc and macro configuration"
 msgstr "visa slutliga rpmrc- och makrokonfigurationer"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:303
 msgid "provide less detailed output"
 msgstr "visa mindre detaljerad utdata"
 
-#: lib/poptALL.c:310
+#: lib/poptALL.c:305
 msgid "provide more detailed output"
 msgstr "visa mer detaljerad utdata"
 
-#: lib/poptALL.c:312
+#: lib/poptALL.c:307
 msgid "print the version of rpm being used"
 msgstr "visa vilken version av rpm som används"
 
-#: lib/poptALL.c:325
+#: lib/poptALL.c:320
 msgid "debug payload file state machine"
 msgstr "felsök lastfilstillståndsmaskin"
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:322
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "felsök lastfilstillståndsmaskin"
 
-#: lib/poptALL.c:329
+#: lib/poptALL.c:324
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "felsök protokolldataström"
 
-#: lib/poptALL.c:331
+#: lib/poptALL.c:326
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:333
+#: lib/poptALL.c:328
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "felsök protokolldataström"
 
-#: lib/poptALL.c:338
+#: lib/poptALL.c:333
 msgid "debug option/argument processing"
 msgstr "felsök flagg-/argumenthantering"
 
-#: lib/poptALL.c:343
+#: lib/poptALL.c:338
 msgid "debug package state machine"
 msgstr "felsök pakettillståndsmaskin"
 
-#: lib/poptALL.c:345
+#: lib/poptALL.c:340
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "felsök pakettillståndsmaskin"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:354
 msgid "debug rpmio I/O"
 msgstr "felsök rpmio I/O"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:368
 msgid "debug URL cache handling"
 msgstr "felsök cache-hanteringen av URL:ar"
 
 #. @-nullpass@
-#: lib/poptALL.c:443
+#: lib/poptALL.c:438
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: flaggtabell felkonfigurerad (%d)\n"
@@ -3995,59 +3990,59 @@ msgstr "Fil %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
 
-#: rpmio/rpmio.c:709
+#: rpmio/rpmio.c:673
 msgid "Success"
 msgstr "Lyckades"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:676
 msgid "Bad server response"
 msgstr "Konstigt svar från server"
 
-#: rpmio/rpmio.c:715
+#: rpmio/rpmio.c:679
 msgid "Server I/O error"
 msgstr "IO-fel mot server"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:682
 msgid "Server timeout"
 msgstr "Förbindelsen med servern dog ut (timeout)"
 
-#: rpmio/rpmio.c:721
+#: rpmio/rpmio.c:685
 msgid "Unable to lookup server host address"
 msgstr "Kunde inte slå upp serverns adress"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:688
 msgid "Unable to lookup server host name"
 msgstr "Kunde inte slå upp serverns namn"
 
-#: rpmio/rpmio.c:727
+#: rpmio/rpmio.c:691
 msgid "Failed to connect to server"
 msgstr "Misslyckades med att kontakta servern"
 
-#: rpmio/rpmio.c:730
+#: rpmio/rpmio.c:694
 msgid "Failed to establish data connection to server"
 msgstr "Misslyckades med att etablera en dataförbindelse till servern"
 
-#: rpmio/rpmio.c:733
+#: rpmio/rpmio.c:697
 msgid "I/O error to local file"
 msgstr "I/O-fel mot lokal fil"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:700
 msgid "Error setting remote server to passive mode"
 msgstr "Fel när fjärrservern sattes i passivt läge"
 
-#: rpmio/rpmio.c:739
+#: rpmio/rpmio.c:703
 msgid "File not found on server"
 msgstr "Filen fanns inte på servern"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:706
 msgid "Abort in progress"
 msgstr "Avbruten under gång"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:710
 msgid "Unknown or unexpected error"
 msgstr "Okänt eller oväntat fel"
 
-#: rpmio/rpmio.c:1440
+#: rpmio/rpmio.c:1404
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "loggar in på %s som %s, lösenord %s\n"
@@ -4228,6 +4223,10 @@ msgstr "använd databas i KATALOG"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
+
+#, fuzzy
+#~ msgid "disable use of libneon for HTTP"
+#~ msgstr "inaktivera användningen av libio(3)-API:et"
 
 #~ msgid "Common options for all rpm modes:"
 #~ msgstr "Gemensamma flaggor för alla rpm-lägen:"

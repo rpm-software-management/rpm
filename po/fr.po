@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-11 13:11-0500\n"
+"POT-Creation-Date: 2004-11-19 12:42-0500\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -130,7 +130,7 @@ msgstr "Options communes a tous les modes et executables rpm:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:137 lib/poptALL.c:130
+#: rpmqv.c:137 lib/poptALL.c:127
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
@@ -1297,17 +1297,17 @@ msgstr "ne pas vérifier les dépendances de construction"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "générer un(des) entête(s) compatible(s) avec l'emballage rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:275 lib/poptI.c:283 lib/poptQV.c:363
+#: build/poptBT.c:229 lib/poptALL.c:272 lib/poptI.c:283 lib/poptQV.c:363
 #: lib/poptQV.c:372 lib/poptQV.c:413
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: build/poptBT.c:231 lib/poptALL.c:277 lib/poptI.c:285 lib/poptQV.c:366
+#: build/poptBT.c:231 lib/poptALL.c:274 lib/poptI.c:285 lib/poptQV.c:366
 #: lib/poptQV.c:374 lib/poptQV.c:416
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier l'entête de la base de données à la récupération"
 
-#: build/poptBT.c:233 lib/poptALL.c:285 lib/poptI.c:287 lib/poptQV.c:369
+#: build/poptBT.c:233 lib/poptALL.c:280 lib/poptI.c:287 lib/poptQV.c:369
 #: lib/poptQV.c:376 lib/poptQV.c:418
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la(les) signature(s) du paquetage"
@@ -1732,165 +1732,160 @@ msgstr "%s: headerRead a échoué: %s"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread a échoué: %s\n"
 
-#: lib/poptALL.c:232
+#: lib/poptALL.c:229
 #, fuzzy
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "suivre les liens symboliques de la ligne de commande"
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:231
 #, fuzzy
 msgid "FTS_LOGICAL: logical walk"
 msgstr "marche logique"
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:233
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "ne pas modifier les répertoires"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:235
 #, fuzzy
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "ne pas prendre les info stat"
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:237
 #, fuzzy
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "marche physique"
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:239
 #, fuzzy
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "renvoyer point et point-point"
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:241
 #, fuzzy
 msgid "FTS_XDEV: don't cross devices"
 msgstr "ne mélanger pas les périphériques"
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:243
 #, fuzzy
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "ne pas renvoyer d'information"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:259
 msgid "predefine MACRO with value EXPR"
 msgstr "prédéfinir la MACRO avec l'EXPRression"
 
-#: lib/poptALL.c:263 lib/poptALL.c:266
+#: lib/poptALL.c:260 lib/poptALL.c:263
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:262
 msgid "define MACRO with value EXPR"
 msgstr "definit MACRO ayant pour valeur EXPR"
 
-#: lib/poptALL.c:268
+#: lib/poptALL.c:265
 msgid "print macro expansion of EXPR"
 msgstr "affiche la macro-expansion d'EXPR"
 
-#: lib/poptALL.c:269
+#: lib/poptALL.c:266
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:271 lib/poptALL.c:292 lib/poptALL.c:296
+#: lib/poptALL.c:268 lib/poptALL.c:287 lib/poptALL.c:291
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "Lire <FICHIER:...> au lieu du(des) fichier(s) par défaut"
 
-#: lib/poptALL.c:272 lib/poptALL.c:293 lib/poptALL.c:297
+#: lib/poptALL.c:269 lib/poptALL.c:288 lib/poptALL.c:292
 msgid "<FILE:...>"
 msgstr "<FICHIER:...>"
 
-#: lib/poptALL.c:280 lib/poptALL.c:316
+#: lib/poptALL.c:277 lib/poptALL.c:311
 msgid "disable use of libio(3) API"
 msgstr "utilisation de l'API libio(3) désactivée"
 
 #: lib/poptALL.c:283
-#, fuzzy
-msgid "disable use of libneon for HTTP"
-msgstr "utilisation de l'API libio(3) désactivée"
-
-#: lib/poptALL.c:288
 msgid "send stdout to CMD"
 msgstr "envoyer la sortie standard à CMD"
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:284
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:300
+#: lib/poptALL.c:295
 msgid "use ROOT as top level directory"
 msgstr "utiliser RACINE comme répertoire racine"
 
-#: lib/poptALL.c:301
+#: lib/poptALL.c:296
 msgid "ROOT"
 msgstr "RACINE"
 
-#: lib/poptALL.c:304
+#: lib/poptALL.c:299
 msgid "display known query tags"
 msgstr "afficher les tags de requête connus"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:301
 msgid "display final rpmrc and macro configuration"
 msgstr "afficher la configuration finale des macros et rpmrc"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:303
 msgid "provide less detailed output"
 msgstr "afficher moins de détails"
 
-#: lib/poptALL.c:310
+#: lib/poptALL.c:305
 msgid "provide more detailed output"
 msgstr "afficher plus de détails"
 
-#: lib/poptALL.c:312
+#: lib/poptALL.c:307
 msgid "print the version of rpm being used"
 msgstr "afficher la version de rpm utilisé"
 
-#: lib/poptALL.c:325
+#: lib/poptALL.c:320
 msgid "debug payload file state machine"
 msgstr "déboguer la machine à états du fichier de la charge utile"
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:322
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "déboguer la machine à états du fichier de la charge utile"
 
-#: lib/poptALL.c:329
+#: lib/poptALL.c:324
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "déboguer le flux de données du protocole"
 
-#: lib/poptALL.c:331
+#: lib/poptALL.c:326
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:333
+#: lib/poptALL.c:328
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "déboguer le flux de données du protocole"
 
-#: lib/poptALL.c:338
+#: lib/poptALL.c:333
 msgid "debug option/argument processing"
 msgstr "déboguer le traitement des options/arguments"
 
-#: lib/poptALL.c:343
+#: lib/poptALL.c:338
 msgid "debug package state machine"
 msgstr "déboguer la machine à état du paquetage"
 
-#: lib/poptALL.c:345
+#: lib/poptALL.c:340
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "déboguer la machine à état du paquetage"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:354
 msgid "debug rpmio I/O"
 msgstr "déboguer les E/S de rpmio"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:368
 msgid "debug URL cache handling"
 msgstr "déboguer la manipulation de cache d'URL"
 
 #. @-nullpass@
-#: lib/poptALL.c:443
+#: lib/poptALL.c:438
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: table d'option mal configurée (%d)\n"
@@ -4075,59 +4070,59 @@ msgstr "Fichier %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Le fichier %s est plus petit que %u octets\n"
 
-#: rpmio/rpmio.c:709
+#: rpmio/rpmio.c:673
 msgid "Success"
 msgstr "Succès"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:676
 msgid "Bad server response"
 msgstr "Mauvaise réponse du serveur"
 
-#: rpmio/rpmio.c:715
+#: rpmio/rpmio.c:679
 msgid "Server I/O error"
 msgstr "Erreur d'E/S avec le serveur"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:682
 msgid "Server timeout"
 msgstr "Timeout du serveur"
 
-#: rpmio/rpmio.c:721
+#: rpmio/rpmio.c:685
 msgid "Unable to lookup server host address"
 msgstr "Impossible de résoudre l'adresse IP du serveur"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:688
 msgid "Unable to lookup server host name"
 msgstr "Impossible de retrouver le nom d'hôte du serveur"
 
-#: rpmio/rpmio.c:727
+#: rpmio/rpmio.c:691
 msgid "Failed to connect to server"
 msgstr "Impossible de se connecter au serveur"
 
-#: rpmio/rpmio.c:730
+#: rpmio/rpmio.c:694
 msgid "Failed to establish data connection to server"
 msgstr "Impossible d'établir une connexion de données avec le serveur"
 
-#: rpmio/rpmio.c:733
+#: rpmio/rpmio.c:697
 msgid "I/O error to local file"
 msgstr "erreur d'E/S dans le fichier local"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:700
 msgid "Error setting remote server to passive mode"
 msgstr "Erreur en mettant le serveur distant en mode passif"
 
-#: rpmio/rpmio.c:739
+#: rpmio/rpmio.c:703
 msgid "File not found on server"
 msgstr "Fichier non trouvé sur le serveur"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:706
 msgid "Abort in progress"
 msgstr "Abandon en cours"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:710
 msgid "Unknown or unexpected error"
 msgstr "Erreur inconnue ou inattendue"
 
-#: rpmio/rpmio.c:1440
+#: rpmio/rpmio.c:1404
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "connexion à %s en tant que %s, mdp %s\n"
@@ -4313,6 +4308,10 @@ msgstr "utiliser la base de données dans REPERTOIRE"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "REPERTOIRE"
+
+#, fuzzy
+#~ msgid "disable use of libneon for HTTP"
+#~ msgstr "utilisation de l'API libio(3) désactivée"
 
 #~ msgid "Common options for all rpm modes:"
 #~ msgstr "Options communes à tous les modes de rpm:"

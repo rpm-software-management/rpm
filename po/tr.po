@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-11 13:11-0500\n"
+"POT-Creation-Date: 2004-11-19 12:42-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -123,7 +123,7 @@ msgstr "Tüm rpm kipleri için ortak seçenekler:"
 msgid "%s: %s\n"
 msgstr "dosya %s: %s\n"
 
-#: rpmqv.c:137 lib/poptALL.c:130
+#: rpmqv.c:137 lib/poptALL.c:127
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Sürüm %s\n"
@@ -1290,19 +1290,19 @@ msgstr "paket baðýmlýlýklarýný denetlemez"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "paket baþlýklarýný (eski) rpm[23] paketleme ile uyumlu üretir"
 
-#: build/poptBT.c:229 lib/poptALL.c:275 lib/poptI.c:283 lib/poptQV.c:363
+#: build/poptBT.c:229 lib/poptALL.c:272 lib/poptI.c:283 lib/poptQV.c:363
 #: lib/poptQV.c:372 lib/poptQV.c:413
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "paket baðýmlýlýklarý doðrulanmaz"
 
-#: build/poptBT.c:231 lib/poptALL.c:277 lib/poptI.c:285 lib/poptQV.c:366
+#: build/poptBT.c:231 lib/poptALL.c:274 lib/poptI.c:285 lib/poptQV.c:366
 #: lib/poptQV.c:374 lib/poptQV.c:416
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "paket mimarisi denetlenmez"
 
-#: build/poptBT.c:233 lib/poptALL.c:285 lib/poptI.c:287 lib/poptQV.c:369
+#: build/poptBT.c:233 lib/poptALL.c:280 lib/poptI.c:287 lib/poptQV.c:369
 #: lib/poptQV.c:376 lib/poptQV.c:418
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1730,165 +1730,160 @@ msgstr "%s: readLead baþarýsýz\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread baþarýsýz: %s\n"
 
-#: lib/poptALL.c:232
+#: lib/poptALL.c:229
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:231
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:233
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "%s dizini oluþturuluyor\n"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:235
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:237
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:239
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:241
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:243
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:259
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:263 lib/poptALL.c:266
+#: lib/poptALL.c:260 lib/poptALL.c:263
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:265
+#: lib/poptALL.c:262
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:268
+#: lib/poptALL.c:265
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "<ifade>+ için makro açýlýmýný gösterir"
 
-#: lib/poptALL.c:269
+#: lib/poptALL.c:266
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:271 lib/poptALL.c:292 lib/poptALL.c:296
+#: lib/poptALL.c:268 lib/poptALL.c:287 lib/poptALL.c:291
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "öntanýmlý makro dosyasý yerine <dosya:...> okunur"
 
-#: lib/poptALL.c:272 lib/poptALL.c:293 lib/poptALL.c:297
+#: lib/poptALL.c:269 lib/poptALL.c:288 lib/poptALL.c:292
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:280 lib/poptALL.c:316
+#: lib/poptALL.c:277 lib/poptALL.c:311
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API kullanýmýný iptal eder"
 
 #: lib/poptALL.c:283
 #, fuzzy
-msgid "disable use of libneon for HTTP"
-msgstr "libio(3) API kullanýmýný iptal eder"
-
-#: lib/poptALL.c:288
-#, fuzzy
 msgid "send stdout to CMD"
 msgstr "standart çýktýyý <KOMUT>'a gönderir"
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:284
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:300
+#: lib/poptALL.c:295
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "Üst düzey dizin olarak <dizin> kullanýlýr"
 
-#: lib/poptALL.c:301
+#: lib/poptALL.c:296
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:304
+#: lib/poptALL.c:299
 msgid "display known query tags"
 msgstr "tanýmlanmýþ sorgulama etiketlerini gösterir"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:301
 msgid "display final rpmrc and macro configuration"
 msgstr "son rpmrc ve makro yapýlandýrmasýný gösterir"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:303
 msgid "provide less detailed output"
 msgstr "daha az ayrýntýlý çýktý saðlar"
 
-#: lib/poptALL.c:310
+#: lib/poptALL.c:305
 msgid "provide more detailed output"
 msgstr "daha ayrýntýlý çýktý saðlar"
 
-#: lib/poptALL.c:312
+#: lib/poptALL.c:307
 msgid "print the version of rpm being used"
 msgstr "Kullanýlan RPM sürümünü verir"
 
-#: lib/poptALL.c:325
+#: lib/poptALL.c:320
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:322
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:329
+#: lib/poptALL.c:324
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "protokol veri akýþýnda hata kontrolu"
 
-#: lib/poptALL.c:331
+#: lib/poptALL.c:326
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:333
+#: lib/poptALL.c:328
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "protokol veri akýþýnda hata kontrolu"
 
-#: lib/poptALL.c:338
+#: lib/poptALL.c:333
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "(%d) argümaný iþlenirken iç hata oluþtu :-(\n"
 
-#: lib/poptALL.c:343
+#: lib/poptALL.c:338
 #, fuzzy
 msgid "debug package state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:345
+#: lib/poptALL.c:340
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:359
+#: lib/poptALL.c:354
 msgid "debug rpmio I/O"
 msgstr "rpmio G/Ç hata kontrolu"
 
-#: lib/poptALL.c:373
+#: lib/poptALL.c:368
 msgid "debug URL cache handling"
 msgstr "URL arabellek kullanýmý hata kontrolu"
 
 #. @-nullpass@
-#: lib/poptALL.c:443
+#: lib/poptALL.c:438
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -4058,59 +4053,59 @@ msgstr "%s dosyasý: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
 
-#: rpmio/rpmio.c:709
+#: rpmio/rpmio.c:673
 msgid "Success"
 msgstr "Baþarýlý"
 
-#: rpmio/rpmio.c:712
+#: rpmio/rpmio.c:676
 msgid "Bad server response"
 msgstr "Sunucudan kötü yanýt"
 
-#: rpmio/rpmio.c:715
+#: rpmio/rpmio.c:679
 msgid "Server I/O error"
 msgstr "Sunucu G/Ç hatasý"
 
-#: rpmio/rpmio.c:718
+#: rpmio/rpmio.c:682
 msgid "Server timeout"
 msgstr "Sunucu zaman aþýmý"
 
-#: rpmio/rpmio.c:721
+#: rpmio/rpmio.c:685
 msgid "Unable to lookup server host address"
 msgstr "Sunucu makina adresi bulunamadý"
 
-#: rpmio/rpmio.c:724
+#: rpmio/rpmio.c:688
 msgid "Unable to lookup server host name"
 msgstr "Sunucu makina ismi bulunamadý"
 
-#: rpmio/rpmio.c:727
+#: rpmio/rpmio.c:691
 msgid "Failed to connect to server"
 msgstr "Sunucuya baðlanýlamadý"
 
-#: rpmio/rpmio.c:730
+#: rpmio/rpmio.c:694
 msgid "Failed to establish data connection to server"
 msgstr "Sunucuya veri baðlantýsý kurulamadý"
 
-#: rpmio/rpmio.c:733
+#: rpmio/rpmio.c:697
 msgid "I/O error to local file"
 msgstr "Yerel dosyaya G/Ç hatasý"
 
-#: rpmio/rpmio.c:736
+#: rpmio/rpmio.c:700
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokma ayarlarýnda hata"
 
-#: rpmio/rpmio.c:739
+#: rpmio/rpmio.c:703
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:742
+#: rpmio/rpmio.c:706
 msgid "Abort in progress"
 msgstr "Kesme iþlemi sürüyor"
 
-#: rpmio/rpmio.c:746
+#: rpmio/rpmio.c:710
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1440
+#: rpmio/rpmio.c:1404
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"
@@ -4290,6 +4285,10 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "disable use of libneon for HTTP"
+#~ msgstr "libio(3) API kullanýmýný iptal eder"
 
 #~ msgid "Common options for all rpm modes:"
 #~ msgstr "Tüm rpm kipleri için ortak seçenekler:"

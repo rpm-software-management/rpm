@@ -7,7 +7,7 @@ LINT = splint
 EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	RPM-GPG-KEY RPM-PGP-KEY BETA-GPG-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	config.site db db3/configure gendiff installplatform neon platform* \
+	config.site db db3/configure gendiff installplatform platform* \
 	xmlspec/Makefile xmlspec/*.c xmlspec/*.h \
 	xmlspec/examples/*.sh xmlspec/examples/*.lst \
 	xmlspec/examples/*.xmlspec \
