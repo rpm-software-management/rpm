@@ -198,7 +198,7 @@ archive:
 	@sleep 5
 	@cvs -Q tag -F $(CVSTAG) .
 	@rm -rf /tmp/rpm-$(VERSION) /tmp/rpm
-	@cd /tmp; cvs -Q -d $(CVSROOT) export -r$(CVSTAG) rpm
+	@cd /tmp; cvs -Q -d $(CVSROOT) export -r$(CVSTAG) rpm || :
 	@mv /tmp/rpm /tmp/rpm-$(VERSION)
 	@rm /tmp/rpm-$(VERSION)/popt/popt.spec
 	@cd /tmp/rpm-$(VERSION); ./autogen.sh ; make depend; make distclean

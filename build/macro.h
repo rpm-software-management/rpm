@@ -1,25 +1,36 @@
-#ifndef _MACRO_H_
-#define _MACRO_H_
+#ifndef _MACRO_H
+#define	_MACRO_H
 
-/* macro.h - %macro handling */
+typedef struct MacroEntry {
+	struct MacroEntry *prev;
+	const char *name;	/* Macro name */
+	const char *opts;	/* Macro parameters (ala getopt) */
+	const char *body;	/* Macro body */
+	int	used;		/* No. of expansions */
+	int	level;
+} MacroEntry;
 
-struct MacroEntry {
-    char *name;
-    char *expansion;
-};
+typedef struct MacroContext {
+	MacroEntry **	macroTable;
+	int		macrosAllocated;
+	int		firstFree;
+} MacroContext;
 
-struct MacroContext {
-    struct MacroEntry *macroTable;
-    int macrosAllocated;
-    int firstFree;
-};
-
-void initMacros(struct MacroContext *mc, const char *macrofile);
-void freeMacros(struct MacroContext *mc);
-
-void addMacro(struct MacroContext *mc, const char *n, const char *o, const char *b, int depth);
-
-/* Expand all macros in buf, in place */
-int expandMacros(Spec spec, struct MacroContext *mc, char *sbuf, size_t sbuflen);
-
+#ifndef	__P
+#ifdef __STDC__
+#define	__P(protos)	protos
+#else
+#define	__P(protos)	()
 #endif
+#endif
+
+void	initMacros	__P((MacroContext *mc, const char *macrofile));
+void	freeMacros	__P((MacroContext *mc));
+
+void	addMacro	__P((MacroContext *mc, const char *n, const char *o, const char *b, int depth));
+void	delMacro	__P((MacroContext *mc, const char *n));
+int	expandMacros	__P((Spec spec, MacroContext *mc, char *sbuf, size_t sbuflen));
+
+const char *getMacroBody __P((MacroContext *mc, const char *name));
+
+#endif	/* _MACRO_H */
