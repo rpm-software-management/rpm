@@ -6,6 +6,7 @@
 #include <rpmbuild.h>
 #include <argv.h>
 #include <rpmfc.h>
+#include <rpmfile.h>
 
 #if HAVE_GELF_H
 #include <gelf.h>
@@ -13,7 +14,13 @@
 
 #include "debug.h"
 
-/*@notchecked@*/
+/*@unchecked@*/
+extern fmagic global_fmagic;
+
+/*@unchecked@*//*@observer@*/
+extern const char * default_magicfile;
+
+/*@unchecked@*/
 int _rpmfc_debug;
 
 static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
@@ -708,25 +715,25 @@ static int rpmfcELF(rpmfc fc)
 			    soname = xstrdup(s);
 			    auxoffset += aux->vda_next;
 			    /*@innercontinue@*/ continue;
-			}
-			buf[0] = '\0';
-			t = buf;
-			sprintf(t, "%08d%c ", fc->ix, deptype);
-			t += strlen(t);
-			depval = t;
-			t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
+			} else if (soname != NULL) {
+			    buf[0] = '\0';
+			    t = buf;
+			    sprintf(t, "%08d%c ", fc->ix, deptype);
+			    t += strlen(t);
+			    depval = t;
+			    t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
 
 #if !defined(__alpha__)
-			if (isElf64)
-			    t = stpcpy(t, "(64bit)");
+			    if (isElf64)
+				t = stpcpy(t, "(64bit)");
 #endif
 
-			/* Add to package provides. */
-			xx = rpmfcSaveArg(&fc->provides, depval);
+			    /* Add to package provides. */
+			    xx = rpmfcSaveArg(&fc->provides, depval);
 
-			/* Add to file dependencies. */
-			xx = rpmfcSaveArg(&fc->ddict, buf);
-
+			    /* Add to file dependencies. */
+			    xx = rpmfcSaveArg(&fc->ddict, buf);
+			}
 			auxoffset += aux->vda_next;
 		    }
 		    offset += def->vd_next;
@@ -759,26 +766,25 @@ static int rpmfcELF(rpmfc fc)
 			s = elf_strptr(elf, shdr->sh_link, aux->vna_name);
 			if (s == NULL)
 			    /*@innerbreak@*/ break;
-assert(soname != NULL);
-
-			buf[0] = '\0';
-			t = buf;
-			sprintf(t, "%08d%c ", fc->ix, deptype);
-			t += strlen(t);
-			depval = t;
-			t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
+			if (soname != NULL) {
+			    buf[0] = '\0';
+			    t = buf;
+			    sprintf(t, "%08d%c ", fc->ix, deptype);
+			    t += strlen(t);
+			    depval = t;
+			    t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
 
 #if !defined(__alpha__)
-			if (isElf64)
-			    t = stpcpy(t, "(64bit)");
+			    if (isElf64)
+				t = stpcpy(t, "(64bit)");
 #endif
 
-			/* Add to package requires. */
-			xx = rpmfcSaveArg(&fc->requires, depval);
+			    /* Add to package requires. */
+			    xx = rpmfcSaveArg(&fc->requires, depval);
 
-			/* Add to file dependencies. */
-			xx = rpmfcSaveArg(&fc->ddict, buf);
-
+			    /* Add to file dependencies. */
+			    xx = rpmfcSaveArg(&fc->ddict, buf);
+			}
 			auxoffset += aux->vna_next;
 		    }
 		    offset += need->vn_next;
@@ -845,93 +851,6 @@ exit:
 #else
     return -1;
 #endif
-}
-
-int rpmfcClassify(rpmfc fc, ARGV_t argv)
-{
-    char buf[BUFSIZ];
-    ARGV_t dav;
-    ARGV_t av;
-    const char * s, * se;
-    char * t;
-    int fcolor;
-    int xx;
-
-    if (fc == NULL || argv == NULL)
-	return 0;
-
-    fc->nfiles = argvCount(argv);
-
-    xx = argiAdd(&fc->fddictx, fc->nfiles-1, 0);
-    xx = argiAdd(&fc->fddictn, fc->nfiles-1, 0);
-
-    /* Set up the file class dictionary. */
-    xx = argvAdd(&fc->cdict, "");
-    xx = argvAdd(&fc->cdict, "directory");
-
-    av = argv;
-    while ((s = *av++) != NULL) {
-	for (se = s; *se; se++) {
-	    if (se[0] == ':' && se[1] == ' ')
-		/*@innerbreak@*/ break;
-	}
-	if (*se == '\0')
-	    return -1;
-
-	for (se++; *se; se++) {
-	    if (!(*se == ' ' || *se == '\t'))
-		/*@innerbreak@*/ break;
-	}
-	if (*se == '\0')
-	    return -1;
-
-	fcolor = rpmfcColoring(se);
-	if (fcolor == RPMFC_WHITE || !(fcolor & RPMFC_INCLUDE))
-	    continue;
-
-	xx = rpmfcSaveArg(&fc->cdict, se);
-    }
-
-    /* Classify files. */
-    fc->ix = 0;
-    fc->fknown = 0;
-    av = argv;
-    while ((s = *av++) != NULL) {
-	for (se = s; *se; se++) {
-	    if (se[0] == ':' && se[1] == ' ')
-		/*@innerbreak@*/ break;
-	}
-	if (*se == '\0')
-	    return -1;
-
-	t = stpncpy(buf, s, (se - s));
-	*t = '\0';
-
-	xx = argvAdd(&fc->fn, buf);
-
-	for (se++; *se; se++) {
-	    if (!(*se == ' ' || *se == '\t'))
-		/*@innerbreak@*/ break;
-	}
-	if (*se == '\0')
-	    return -1;
-
-	dav = argvSearch(fc->cdict, se, NULL);
-	if (dav) {
-	    xx = argiAdd(&fc->fcdictx, fc->ix, (dav - fc->cdict));
-	    fc->fknown++;
-	} else {
-	    xx = argiAdd(&fc->fcdictx, fc->ix, 0);
-	    fc->fwhite++;
-	}
-
-	fcolor = rpmfcColoring(se);
-	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
-
-	fc->ix++;
-    }
-
-    return 0;
 }
 
 typedef struct rpmfcApplyTbl_s {
@@ -1007,4 +926,76 @@ assert(dav != NULL);
 
     return 0;
 }
+
+int rpmfcClassify(rpmfc fc, ARGV_t argv)
+{
+    ARGV_t fcav = NULL;
+    ARGV_t dav;
+    const char * s, * se;
+    int fcolor;
+    int xx;
+fmagic fm = global_fmagic;
+int action = 0;
+int wid = 0;	/* XXX don't prepend filename: */
+
+    if (fc == NULL || argv == NULL)
+	return 0;
+
+    fc->nfiles = argvCount(argv);
+
+    /* Initialize the per-file dictionary indices. */
+    xx = argiAdd(&fc->fddictx, fc->nfiles-1, 0);
+    xx = argiAdd(&fc->fddictn, fc->nfiles-1, 0);
+
+    /* Build (sorted) file class dictionary. */
+    xx = argvAdd(&fc->cdict, "");
+    xx = argvAdd(&fc->cdict, "directory");
+
+    fm->magicfile = default_magicfile;
+    /* XXX TODO fm->flags = ??? */
+
+    xx = fmagicSetup(fm, fm->magicfile, action);
+    for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
+	s = argv[fc->ix];
+assert(s != NULL);
+	fm->obp = fm->obuf;
+	*fm->obp = '\0';
+	fm->nob = sizeof(fm->obuf);
+	xx = fmagicProcess(fm, s, wid);
+	se = fm->obuf;
+        rpmMessage(RPMMESS_DEBUG, "%s: %s\n", s, se);
+
+	xx = argvAdd(&fc->fn, s);
+	xx = argvAdd(&fcav, se);
+
+	/* Add (filtered) entry to sorted class dictionary. */
+	fcolor = rpmfcColoring(se);
+	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
+
+	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
+	    xx = rpmfcSaveArg(&fc->cdict, se);
+    }
+
+    /* Build per-file class index array. */
+    fc->fknown = 0;
+    for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
+	se = fcav[fc->ix];
+assert(se != NULL);
+
+	dav = argvSearch(fc->cdict, se, NULL);
+	if (dav) {
+	    xx = argiAdd(&fc->fcdictx, fc->ix, (dav - fc->cdict));
+	    fc->fknown++;
+	} else {
+	    xx = argiAdd(&fc->fcdictx, fc->ix, 0);
+	    fc->fwhite++;
+	}
+    }
+
+    fcav = argvFree(fcav);
+    /* XXX TODO dump fmagic baggage. */
+
+    return 0;
+}
+
 /*@=bounds@*/

@@ -493,6 +493,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Nov 26 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.13
+- bundle libfmagic into librpmbuild for now.
+
 * Wed Nov 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.12
 - use rpmdeps rather than find-{requires,provides}.
 

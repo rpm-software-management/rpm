@@ -19,6 +19,7 @@ configure
 depcomp
 install-sh
 libtool
+listobjs
 ltconfig
 ltmain.sh
 missing

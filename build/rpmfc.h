@@ -2,7 +2,9 @@
 #define _H_RPMFC_
 
 /*@notchecked@*/
+/*@-exportlocal@*/
 extern int _rpmfc_debug;
+/*@=exportlocal@*/
 
 typedef struct rpmfc_s * rpmfc;
 
@@ -88,8 +90,10 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
 
 /**
  */
+/*@-exportlocal@*/
 int rpmfcColoring(const char * fmstr)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  */

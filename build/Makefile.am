@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 INCLUDES = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
@@ -13,9 +15,11 @@ INCLUDES = -I. \
 
 LIBS =
 
+FILELOBJS = $(shell cat $(top_builddir)/file/listobjs)
+
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmbuild.h rpmspec.h
-noinst_HEADERS = argv.h buildio.h rpmfc.h
+pkginc_HEADERS = argv.h rpmbuild.h rpmfc.h rpmfile.h rpmspec.h
+noinst_HEADERS = buildio.h
 
 lib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \
@@ -24,6 +28,23 @@ librpmbuild_la_SOURCES = \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c
 librpmbuild_la_LDFLAGS = -release @VERSION@
+librpmbuild_la_LIBADD = $(FILELOBJS)
+librpmbuild_la_DEPENDENCIES = .created
+
+rpmfile.h:
+	@ln -sf $(top_builddir)/file/file.h $@
+
+$(top_builddir)/file/listobjs:
+	${MAKE} -C $(top_builddir)/file listobjs
+
+.created: rpmfile.h $(top_builddir)/file/listobjs
+	for lo in $(FILELOBJS); do \
+          [ -f $$lo ] || $(LN_S) $(top_builddir)/file/$$lo $$lo ; \
+	done
+	touch $@
+
+clean-local:
+	 rm -f $(FILELOBJS) *.o .created rpmfile.h
 
 # XXX Add internal libtool dependence
 install-data-local:
@@ -40,6 +61,6 @@ rpmbuild.lcd: Makefile.am ${librpmbuild_la_SOURCES} ${pkginc_HEADERS} ${noinst_H
 sources:
 	@echo $(librpmbuild_la_SOURCES:%=build/%)
 
-.PHONY:	lclint
-lclint:
-	lclint ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES}
+.PHONY:	lint
+lint:
+	$(LINT) ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES}

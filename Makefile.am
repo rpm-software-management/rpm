@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+LINT = splint
+
 EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	RPM-GPG-KEY RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
@@ -114,9 +116,9 @@ splint:
 	    -load popt/popt.lcd \
 		$(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES)
 
-.PHONY:	lclint
-lclint:
-	lclint -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
+.PHONY:	lint
+lint:
+	$(LINT) -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
 		`make -s sources -C build` \
 		`make -s sources -C lib` \
 		`make -s sources -C rpmdb` \

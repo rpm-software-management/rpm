@@ -301,7 +301,6 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 
 /**
  * Compare package name-version-release from header with a single dependency.
- * @deprecated Remove from API when obsoletes is correctly implemented.
  * @param h		header
  * @param req		dependency set
  * @param nopromote	Don't promote Epoch: in comparison?

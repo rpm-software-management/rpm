@@ -3,15 +3,8 @@
 #include <rpmbuild.h>
 #include <argv.h>
 #include <rpmfc.h>
-#include "file.h"
 
 #include "debug.h"
-
-/*@unchecked@*/
-extern fmagic global_fmagic;
-
-/*@unchecked@*//*@observer@*/
-extern const char * default_magicfile;
 
 /*@unchecked@*/
 char *progname;
@@ -45,17 +38,12 @@ int
 main(int argc, char *const argv[])
 {
     poptContext optCon;
-    ARGV_t xav;
     ARGV_t av = NULL;
     rpmfc fc;
     int ac = 0;
     int ec = 1;
     int xx;
 char buf[BUFSIZ];
-fmagic fm = global_fmagic;
-StringBuf sb_stdout;
-int action = 0;
-int wid = 1;
 int i;
 
 /*@-modobserver@*/
@@ -85,40 +73,12 @@ int i;
 	ac = argvCount(av);
     }
 
+    /* Make sure file names are sorted. */
     xx = argvSort(av, NULL);
-
-    wid = 1;
-    for (i = 0; i < ac; i++) {
-	size_t nw;
-	nw = strlen(av[i]);
-	if (nw > wid)
-	    wid = nw;
-    }
-
-    /* Output of file(1) in sb_stdout. */
-    sb_stdout = newStringBuf();
-    fm->magicfile = default_magicfile;
-    /* XXX TODO fm->flags = ??? */
-
-    xx = fmagicSetup(fm, fm->magicfile, action);
-
-    for (i = 0; i < ac; i++) {
-	fm->obp = fm->obuf;
-	*fm->obp = '\0';
-	fm->nob = sizeof(fm->obuf);
-	xx = fmagicProcess(fm, av[i], wid);
-
-	rpmMessage(RPMMESS_DEBUG, "%s\n", fm->obuf);
-
-	appendLineStringBuf(sb_stdout, fm->obuf);
-    }
-
-    xx = argvSplit(&xav, getStringBuf(sb_stdout), "\n");
-    sb_stdout = freeStringBuf(sb_stdout);
 
     /* Build file class dictionary. */
     fc = rpmfcNew();
-    xx = rpmfcClassify(fc, xav);
+    xx = rpmfcClassify(fc, av);
 
     /* Build file/package dependency dictionary. */
     xx = rpmfcApply(fc);
@@ -135,7 +95,6 @@ rpmfcPrint(buf, fc, NULL);
 
     fc = rpmfcFree(fc);
 
-    xav = argvFree(xav);
     ec = 0;
 
 exit:

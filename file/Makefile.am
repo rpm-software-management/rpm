@@ -5,7 +5,7 @@ LINT = splint
 EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime magic.mime \
 	Localstuff Header $(magic_FRAGMENTS) file.man magic.man
 
-BUILT_SOURCES = $(man_MANS) magic magic.mgc magic.mime.mgc
+BUILT_SOURCES = listobjs $(man_MANS) magic magic.mgc magic.mime.mgc
 
 noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h \
 		file.h

@@ -67,8 +67,10 @@ int argvCount(/*@null@*/ const ARGV_t argv)
  * @param b		2nd instance address
  * @return		result of comparison
  */
+/*@-exportlocal@*/
 int argvCmp(const void * a, const void * b)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Sort an argv array.
