@@ -452,9 +452,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	if (!alp->fd && fd)
 	    notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key, 
 		   notifyData);
-
-	freeFi(fi); /* XXX ==> LEAK */
-
     }
     NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 9, al->size, NULL, notifyData));
 
@@ -471,9 +468,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 				flags, fi->actions, ts->scriptFd))
 
 	    ourrc++;
-
-	freeFi(fi);	/* XXX ==> LEAK */
-
     }
 
     NOTIFY((NULL, RPMCALLBACK_UNINST_STOP, 0, ts->numRemovedPackages,
