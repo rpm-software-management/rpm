@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.38
+Release: 0.39
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -25,7 +25,7 @@ the package like its version, a description, etc.
 %package devel
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: popt
+Requires: rpm = %{version}, popt
 
 %description devel
 This package contains the RPM C library and header files.  These
@@ -37,6 +37,15 @@ to function.
 
 This package should be installed if you want to develop programs that
 will manipulate RPM packages and databases.
+
+%package build
+Summary: Scripts and executable programs used to build packages.
+Group: Development/Tools
+Requires: rpm = %{version}
+
+%description build
+This package contains scripts and executable programs that are used to
+build packages using RPM.
 
 %ifos linux
 %package python
@@ -128,7 +137,28 @@ fi
 /usr/bin/gendiff
 /usr/lib/librpm.so.*
 /usr/lib/librpmbuild.so.*
-/usr/lib/rpm
+
+/usr/lib/rpm/brp-compress
+/usr/lib/rpm/brp-strip
+/usr/lib/rpm/brp-strip-comment-note
+/usr/lib/rpm/config.guess
+/usr/lib/rpm/config.sub
+/usr/lib/rpm/convertrpmrc.sh
+/usr/lib/rpm/find-lang.sh
+/usr/lib/rpm/find-prov.pl
+/usr/lib/rpm/find-provides
+/usr/lib/rpm/find-req.pl
+/usr/lib/rpm/find-requires
+/usr/lib/rpm/freshen.sh
+/usr/lib/rpm/getpo.sh
+/usr/lib/rpm/macros
+/usr/lib/rpm/mkinstalldirs
+/usr/lib/rpm/rpmpopt
+/usr/lib/rpm/rpmrc
+/usr/lib/rpm/u_pkg.sh
+/usr/lib/rpm/vpkg-provides.sh
+/usr/lib/rpm/vpkg-provides2.sh
+
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS
@@ -140,6 +170,20 @@ fi
 /usr/man/man[18]/*.[18]*
 %lang(pl) /usr/man/pl/man[18]/*.[18]*
 %lang(ru) /usr/man/ru/man[18]/*.[18]*
+
+%files -n build
+%defattr(-,root,root)
+/usr/lib/rpm/check-prereqs
+/usr/lib/rpm/get_magic.pl
+/usr/lib/rpm/http.req
+/usr/lib/rpm/magic.prov
+/usr/lib/rpm/magic.req
+/usr/lib/rpm/perl.prov
+/usr/lib/rpm/perl.req
+/usr/lib/rpm/rpmdiff
+/usr/lib/rpm/rpmdiff.cgi
+/usr/lib/rpm/rpmgettext
+/usr/lib/rpm/rpmputtext
 
 %ifos linux
 %files python

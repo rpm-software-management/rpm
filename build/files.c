@@ -1495,7 +1495,11 @@ if (_debug)
 fprintf(stderr, "*** PSF fileName %s diskName %s\n", flp->fileURL, flp->diskURL);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
-	Stat(diskURL, &flp->fl_st);
+	if (Stat(diskURL, &flp->fl_st)) {
+	    rpmError(RPMERR_BADSPEC, _("Bad file: %s: %s"),
+		diskURL, strerror(errno));
+	    fl.processingFailed = 1;
+	}
 
 	flp->uname = getUname(flp->fl_uid);
 	flp->gname = getGname(flp->fl_gid);
@@ -1504,7 +1508,7 @@ fprintf(stderr, "*** PSF fileName %s diskName %s\n", flp->fileURL, flp->diskURL)
 	fl.totalFileSize += flp->fl_size;
 	
 	if (! (flp->uname && flp->gname)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s"), s);
+	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s"), diskURL);
 	    fl.processingFailed = 1;
 	}
 

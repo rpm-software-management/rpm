@@ -50,6 +50,8 @@
 	- fix: on --erase, segfault caused by "" prefix.
 	- explicitly expand file lists in writeRPM for rpmputtext.
 	- {Free,Open}BSD find-{provides,requires} (suzukis@file.phys.tohoku.ac.jp).
+	- new rpm-build package to isolate rpm dependencies on perl/bash2.
+	- always remove duplicate identical package entries on --rebuilddb.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

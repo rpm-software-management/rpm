@@ -820,7 +820,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		break;
 	    }
 
-	    if (ext) {
+	    if (ext && access(files[i].relativePath, F_OK) == 0) {
 		newpath = alloca(strlen(files[i].relativePath) + 20);
 		strcpy(newpath, files[i].relativePath);
 		strcat(newpath, ext);

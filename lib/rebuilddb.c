@@ -19,6 +19,7 @@ int rpmdbRebuild(const char * rootdir)
     int nocleanup = 1;
     int failed = 0;
     int rc = 0;
+    int unique = 1;	/* XXX always eliminate duplicate entries */
 
     tfn = rpmGetPath("%{_dbpath}", NULL);
     if (!(tfn && tfn[0] != '%')) {
@@ -90,9 +91,24 @@ int rpmdbRebuild(const char * rootdir)
 	    if (headerIsEntry(h, RPMTAG_NAME) &&
 		headerIsEntry(h, RPMTAG_VERSION) &&
 		headerIsEntry(h, RPMTAG_RELEASE) &&
-		headerIsEntry(h, RPMTAG_RELEASE) &&
 		headerIsEntry(h, RPMTAG_BUILDTIME)) {
-		if (rpmdbAdd(newdb, h)) {
+		dbiIndexSet matches;
+		int skip;
+
+		/* XXX always eliminate duplicate entries */
+		if (unique && !rpmdbFindByHeader(newdb, h, &matches)) {
+		    const char * name, * version, * release;
+		    headerNVR(h, &name, &version, &release);
+
+		    rpmError(RPMERR_INTERNAL,
+			_("duplicated database entry: %s-%s-%s -- skipping."),
+			name, version, release);
+		    skip = 1;
+		    dbiFreeIndexRecord(matches);
+		} else
+		    skip = 0;
+
+		if (skip == 0 && rpmdbAdd(newdb, h)) {
 		    rpmError(RPMERR_INTERNAL,
 			_("cannot add record originally at %d"), recnum);
 		    failed = 1;
@@ -100,7 +116,7 @@ int rpmdbRebuild(const char * rootdir)
 		}
 	    } else {
 		rpmError(RPMERR_INTERNAL,
-			_("record number %d in database is bad -- skipping it"), 
+			_("record number %d in database is bad -- skipping."), 
 			recnum);
 	    }
 
