@@ -421,8 +421,6 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 		sizefield, timefield, namefield);
 }
 
-extern	char *	specedit;
-
 static void
 printNewSpecfile(Spec spec)
 {

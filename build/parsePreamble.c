@@ -162,27 +162,6 @@ static int checkForValidArchitectures(Spec spec)
     return 0;
 }
 
-const char *tagName(int tag)
-{
-    int i = 0;
-    static char nameBuf[1024];
-    char *s;
-
-    strcpy(nameBuf, "(unknown)");
-    while (i < rpmTagTableSize) {
-	if (tag == rpmTagTable[i].val) {
-	    strcpy(nameBuf, rpmTagTable[i].name + 7);
-	    s = nameBuf+1;
-	    while (*s) {
-		*s = tolower(*s);
-		s++;
-	    }
-	}
-	i++;
-    }
-    return nameBuf;
-}
-
 static int checkForRequired(Header h, char *name)
 {
     int res = 0;

@@ -99,8 +99,6 @@ char *cleanFileName(const char *name);
 
 /* from build/parse.h */
 
-const char *tagName(int tag);
-
 int parseChangelog(Spec spec);
 int parseDescription(Spec spec);
 int parseFiles(Spec spec);
