@@ -165,13 +165,11 @@ archive:
 	@echo "This is version $(VERSION)."
 	@sleep 5
 	cvs tag -F $(CVSTAG) .
-	@rm -rf /tmp/rpm-$(VERSION)
-	@mkdir /tmp/rpm-$(VERSION)
-	@tar cSpf - * | (cd /tmp/rpm-$(VERSION); tar xSpf -)
+	@rm -rf /tmp/rpm-$(VERSION) /tmp/rpm
+	@cd /tmp; cvs export -r$(CVSTAG) rpm
+	mv /tmp/rpm /tmp/rpm-$(VERSION)
 	@cd /tmp/rpm-$(VERSION); \
-	    make distclean; \
-	    rm -f *.tar.gz; \
-	    rm -rf CVS */CVS
+	    autoconf
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
 	@rm -rf /tmp/rpm-$(VERSION)
 	@cp /tmp/rpm-$(VERSION).tar.gz .
