@@ -390,10 +390,13 @@ static int build(char *arg, int buildAmount, char *passPhrase,
 	/* Make the directory which contains the tarball the source 
 	   directory for this run */
 
-	/* XXX this is broken if PWD is near 1024 */
-	getcwd(buf, 1024);
-	strcat(buf, "/");
-	strcat(buf, arg);
+	if (*arg != '/') {
+	    /* XXX this is broken if PWD is near 1024 */
+	    getcwd(buf, 1024);
+	    strcat(buf, "/");
+	    strcat(buf, arg);
+	} else 
+	    strcpy(buf, arg);
 
 	cmd = buf + strlen(buf) - 1;
 	while (*cmd != '/') cmd--;
