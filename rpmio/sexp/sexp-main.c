@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 {
     poptContext optCon;
     int rc;
-    sexpObject *object;
+    sexpObject object;
     sexpInputStream is;
     sexpOutputStream os;
 

@@ -8,6 +8,7 @@
 #include "sexp.h"
 
 /*@access sexpInputStream @*/
+/*@access sexpObject @*/
 
 /**************************************/
 /* CHARACTER ROUTINES AND DEFINITIONS */
@@ -237,7 +238,7 @@ void skipChar(sexpInputStream is, int c)
 /* scanToken(is,ss)
  * scan one or more characters into simple string ss as a token.
  */
-void scanToken(sexpInputStream is, sexpSimpleString *ss)
+void scanToken(sexpInputStream is, sexpSimpleString ss)
 {
   skipWhiteSpace(is);
   while (isTokenChar(is->nextChar))
@@ -252,9 +253,9 @@ void scanToken(sexpInputStream is, sexpSimpleString *ss)
  * scan one or more characters (until EOF reached)
  * return an object that is just that string
  */
-sexpObject *scanToEOF(sexpInputStream is)
+sexpObject scanToEOF(sexpInputStream is)
 {
-  sexpSimpleString *ss = newSimpleString();
+  sexpSimpleString ss = newSimpleString();
   sexpString *s = newSexpString();
   setSexpStringString(s,ss);
   skipWhiteSpace(is);
@@ -263,7 +264,7 @@ sexpObject *scanToEOF(sexpInputStream is)
       appendCharToSimpleString(is->nextChar,ss);
       is->getChar(is);
     }
-  return (sexpObject *)s;
+  return (sexpObject)s;
 }
 
 /* scanDecimal(is)
@@ -284,7 +285,7 @@ unsigned long int scanDecimal(sexpInputStream is)
 /* scanVerbatimString(is,ss,length)
  * Reads verbatim string of given length into simple string ss.
  */
-void scanVerbatimString(sexpInputStream is, sexpSimpleString *ss, long int length)
+void scanVerbatimString(sexpInputStream is, sexpSimpleString ss, long int length)
 {
   long int i = 0L;
   skipWhiteSpace(is);
@@ -303,7 +304,7 @@ void scanVerbatimString(sexpInputStream is, sexpSimpleString *ss, long int lengt
  * Handles ordinary C escapes.
  * If of indefinite length, length is -1.
  */
-void scanQuotedString(sexpInputStream is, sexpSimpleString *ss, long int length)
+void scanQuotedString(sexpInputStream is, sexpSimpleString ss, long int length)
 {
   int c;
   skipChar(is,'"');
@@ -388,7 +389,7 @@ void scanQuotedString(sexpInputStream is, sexpSimpleString *ss, long int length)
  * Reads hexadecimal string into simple string ss.
  * String is of given length result, or length = -1 if indefinite length.
  */
-void scanHexString(sexpInputStream is, sexpSimpleString *ss, long int length)
+void scanHexString(sexpInputStream is, sexpSimpleString ss, long int length)
 { changeInputByteSize(is,4);
   skipChar(is,'#');
   while (is->nextChar != EOF && (is->nextChar != '#' || is->byteSize==4))
@@ -408,7 +409,7 @@ void scanHexString(sexpInputStream is, sexpSimpleString *ss, long int length)
  * Reads base64 string into simple string ss.
  * String is of given length result, or length = -1 if indefinite length.
  */
-void scanBase64String(sexpInputStream is, sexpSimpleString *ss, long int length)
+void scanBase64String(sexpInputStream is, sexpSimpleString ss, long int length)
 { changeInputByteSize(is,6);
   skipChar(is,'|');
   while (is->nextChar != EOF && (is->nextChar != '|' || is->byteSize == 6))
@@ -429,10 +430,10 @@ void scanBase64String(sexpInputStream is, sexpSimpleString *ss, long int length)
  * Determines type of simple string from the initial character, and
  * dispatches to appropriate routine based on that.
  */
-sexpSimpleString *scanSimpleString(sexpInputStream is)
+sexpSimpleString scanSimpleString(sexpInputStream is)
 {
   long int length;
-  sexpSimpleString *ss;
+  sexpSimpleString ss;
   ss = newSimpleString();
   skipWhiteSpace(is);
   /* Note that it is important in the following code to test for token-ness
@@ -467,7 +468,7 @@ sexpSimpleString *scanSimpleString(sexpInputStream is)
 sexpString *scanString(sexpInputStream is)
 {
   sexpString *s;
-  sexpSimpleString *ss;
+  sexpSimpleString ss;
   s = newSexpString();
   if (is->nextChar == '[')
     /* scan presentation hint */
@@ -489,7 +490,7 @@ sexpString *scanString(sexpInputStream is)
  */
 sexpList *scanList(sexpInputStream is)
 { sexpList *list;
-  sexpObject *object;
+  sexpObject object;
   skipChar(is,'(');
   skipWhiteSpace(is);
   list = newSexpList();
@@ -519,9 +520,9 @@ sexpList *scanList(sexpInputStream is)
 /* scanObject(is)
  * Reads and returns a sexpObject from the given input stream.
  */
-sexpObject *scanObject(sexpInputStream is)
+sexpObject scanObject(sexpInputStream is)
 {
-  sexpObject *object;
+  sexpObject object;
   skipWhiteSpace(is);
   if (is->nextChar == '{')
     {
@@ -533,9 +534,9 @@ sexpObject *scanObject(sexpInputStream is)
     }
   else
     { if (is->nextChar == '(')
-	object = (sexpObject *)scanList(is);
+	object = (sexpObject)scanList(is);
       else
-	object = (sexpObject *)scanString(is);
+	object = (sexpObject)scanString(is);
       return object;
     }
 }

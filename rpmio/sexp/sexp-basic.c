@@ -11,6 +11,8 @@
 #include "sexp.h"
 
 /*@access sexpIter @*/
+/*@access sexpSimpleString @*/
+/*@access sexpObject @*/
 
 /******************/
 /* ERROR MESSAGES */
@@ -66,10 +68,10 @@ char *sexpAlloc(int n)
  * Creates and initializes new sexpSimpleString object.
  * Allocates 16-character buffer to hold string.
  */
-sexpSimpleString *newSimpleString(void)
+sexpSimpleString newSimpleString(void)
 {
-  sexpSimpleString *ss;
-  ss = (sexpSimpleString *) sexpAlloc(sizeof(*ss));
+  sexpSimpleString ss;
+  ss = (sexpSimpleString) sexpAlloc(sizeof(*ss));
   ss->length = 0;
   ss->allocatedLength = 16;
   ss->string = (octet *)sexpAlloc(16);
@@ -79,20 +81,20 @@ sexpSimpleString *newSimpleString(void)
 /* simpleStringLength(ss)
  * returns length of simple string
  */
-long int simpleStringLength(sexpSimpleString *ss)
+long int simpleStringLength(sexpSimpleString ss)
 { return ss->length; }
 
 /* simpleStringString(ss)
  * returns pointer to character array of simple string
  */
-octet *simpleStringString(sexpSimpleString *ss)
+octet *simpleStringString(sexpSimpleString ss)
 { return ss->string; }
 
 /* reallocateSimpleString(ss)
  * Changes space allocated to ss.
  * Space allocated is set to roughly 3/2 the current string length, plus 16.
  */
-sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
+sexpSimpleString reallocateSimpleString(sexpSimpleString ss)
 {
   int newsize, i;
   octet *newstring;
@@ -120,7 +122,7 @@ sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
  * Appends the character c to the end of simple string ss.
  * Reallocates storage assigned to s if necessary to make room for c.
  */
-void appendCharToSimpleString(int c, sexpSimpleString *ss)
+void appendCharToSimpleString(int c, sexpSimpleString ss)
 {
   if (ss==NULL) {
     ss = newSimpleString();
@@ -157,25 +159,25 @@ sexpString *newSexpString(void)
 /* sexpStringPresentationHint()
  * returns presentation hint field of the string
  */
-sexpSimpleString *sexpStringPresentationHint(sexpString *s)
+sexpSimpleString sexpStringPresentationHint(sexpString *s)
 { return s->presentationHint; }
 
 /* setSexpStringPresentationHint()
  * assigns the presentation hint field of the string
  */
-void setSexpStringPresentationHint(sexpString *s, sexpSimpleString *ss)
+void setSexpStringPresentationHint(sexpString *s, sexpSimpleString ss)
 { s->presentationHint = ss; }
 
 /* setSexpStringString()
  * assigns the string field of the string
  */
-void setSexpStringString(sexpString *s, sexpSimpleString *ss)
+void setSexpStringString(sexpString *s, sexpSimpleString ss)
 { s->string = ss; }
 
 /* sexpStringString()
  * returns the string field of the string
  */
-sexpSimpleString *sexpStringString(sexpString *s)
+sexpSimpleString sexpStringString(sexpString *s)
 { return s->string; }
 
 /* closeSexpString()
@@ -206,7 +208,7 @@ sexpList *newSexpList(void)
 /* sexpAddSexpListObject()
  * add object to end of list
  */
-void sexpAddSexpListObject(sexpList *list, sexpObject *object)
+void sexpAddSexpListObject(sexpList *list, sexpObject object)
 {
   if (list->first == NULL)
     list->first = object;
@@ -253,7 +255,7 @@ sexpIter sexpIterNext(sexpIter iter)
 /* sexpIterObject ()
  * return object corresponding to current state of iterator
  */
-sexpObject *sexpIterObject(sexpIter iter)
+sexpObject sexpIterObject(sexpIter iter)
 { if (iter == NULL) return NULL;
   return ((sexpList *)iter)->first;
 }
@@ -262,12 +264,12 @@ sexpObject *sexpIterObject(sexpIter iter)
 /* SEXP OBJECT MANIPULATION */
 /****************************/
 
-int isObjectString(sexpObject *object)
+int isObjectString(sexpObject object)
 { if (((sexpString *)object)->type == SEXP_STRING) return TRUE;
   else                                             return FALSE;
 }
 
-int isObjectList(sexpObject *object)
+int isObjectList(sexpObject object)
 { if (((sexpList *)object)->type == SEXP_LIST) return TRUE;
   else                                         return FALSE;
 }
