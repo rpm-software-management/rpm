@@ -474,3 +474,4 @@ exit 0
 - upgrade to zlib-1.2.beta7.
 - pass structure pointer, not args, through headerSprintf call chain.
 - add ":xml" tag format modifier.
+- --queryformat '[%%{*:xml}\n]' to dump header content in XML.
