@@ -962,7 +962,7 @@ int rpmfcApply(rpmfc fc)
     const char * N;
     const char * EVR;
     int_32 Flags;
-    rpmfcApplyTbl fcat;
+    struct stat sb, * st = &sb;
     unsigned char deptype;
     int nddict;
     int previx;
@@ -974,6 +974,13 @@ int rpmfcApply(rpmfc fc)
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
+	rpmfcApplyTbl fcat;
+
+	/* Files with executable bit set only. */
+	if (stat(fc->fn[fc->ix], st) != 0
+	 || !(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
+	    continue;
+	    
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
 		/*@innercontinue@*/ continue;
@@ -1324,7 +1331,7 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 	return 0;
 
     /* If new-fangled dependency generation is disabled ... */
-    if (!rpmExpandNumeric("%{?_classify_file_types}")) {
+    if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 	/* ... then generate dependencies using %{__find_requires} et al. */
 	rc = rpmfcGenerateDependsHelper(spec, pkg, fi);
 /*@-noeffect@*/

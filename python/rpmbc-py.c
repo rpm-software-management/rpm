@@ -60,7 +60,7 @@ if (_rpmbc_debug)
 fprintf(stderr, "*** rpmbc_dealloc(%p)\n", s);
 
     mp32nfree(&s->n);
-    PyMem_DEL(s);
+    PyObject_DEL(s);
 }
 
 static int

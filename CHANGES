@@ -41,6 +41,8 @@
 	- use usrlib_LTLIBRARIES to install directly in /usr/lib64 instead.
 	- late rpmts reference causes premature free (#78862).
 	- internal automagic dependency generation (disabled for now).
+	- don't generate dependencies unless execute bit is set.
+	- enable internal automagic dependency generation as default.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
