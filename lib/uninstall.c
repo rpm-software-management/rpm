@@ -15,6 +15,9 @@
 #include "rpmerr.h"
 #include "rpmlib.h"
 
+static char * SCRIPT_PATH = "export PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
+			                 "/usr/X11R6/bin\n";
+
 enum fileActions { REMOVE, BACKUP, KEEP };
 
 static int sharedFileCmp(const void * one, const void * two);
@@ -278,6 +281,7 @@ int runScript(char * prefix, Header h, int tag) {
             error(RPMERR_SCRIPT, "error creating file for (un)install script");
 	    return 1;
 	}
+	write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
 	write(fd, script, strlen(script));
 	
 	/* run the script via /bin/sh - just feed the commands to the
