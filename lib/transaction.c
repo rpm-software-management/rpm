@@ -1753,13 +1753,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      * Free unused memory as soon as possible.
      */
 
-    for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++) {
+    tsi = tsInitIterator(ts);
+    while ((fi = tsNextIterator(tsi)) != NULL) {
 	if (fi->fc == 0)
 	    continue;
-	if (fi->fps) {
-	    free(fi->fps); fi->fps = NULL;
-	}
+	fi->fps = _free(fi->fps);
     }
+    tsi = tsFreeIterator(tsi);
 
     fpCacheFree(fpc);
     htFree(ht);
@@ -1785,8 +1785,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      * Save removed files before erasing.
      */
     if (ts->transFlags & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
-	for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++) {
-	    switch (ts->order[oc].type) {
+	tsi = tsInitIterator(ts);
+	while ((fi = tsNextIterator(tsi)) != NULL) {
+	    switch (fi->type) {
 	    case TR_ADDED:
 		break;
 	    case TR_REMOVED:
@@ -1795,6 +1796,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		break;
 	    }
 	}
+	tsi = tsFreeIterator(tsi);
     }
 
     /* ===============================================
@@ -1802,31 +1804,17 @@ int rpmRunTransactions(	rpmTransactionSet ts,
      */
 
     lastFailed = -2;	/* erased packages have -1 */
-#ifdef	DYING
-    for (oc = 0, fi = ts->flList; oc < ts->orderCount; oc++, fi++)
-#else
     tsi = tsInitIterator(ts);
-    while ((fi = tsNextIterator(tsi)) != NULL)
-#endif
-    {
+    while ((fi = tsNextIterator(tsi)) != NULL) {
 	int gotfd;
 
 	gotfd = 0;
-#ifdef	DYING
-	switch (ts->order[oc].type)
-#else
 	switch (fi->type)
-#endif
   	{
 	case TR_ADDED:
-#ifdef	DYING
-	    i = ts->order[oc].u.addedIndex;
-	    alp = ts->addedPackages.list + i;
-#else
 	    alp = tsGetAlp(tsi);
 assert(alp == fi->ap);
 	    i = alp - ts->addedPackages.list;
-#endif
 
 	    if (alp->fd == NULL) {
 		alp->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
@@ -1899,9 +1887,7 @@ if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
 	}
 	(void) rpmdbSync(ts->rpmdb);
     }
-#ifndef	DYING
     tsi = tsFreeIterator(tsi);
-#endif
 
     freeFl(ts, ts->flList);
 
