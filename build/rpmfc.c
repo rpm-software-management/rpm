@@ -6,7 +6,6 @@
 #include <rpmbuild.h>
 #include <argv.h>
 #include <rpmfc.h>
-#include <rpmfile.h>
 
 #if HAVE_GELF_H
 #include <gelf.h>
@@ -14,11 +13,7 @@
 
 #include "debug.h"
 
-/*@unchecked@*/
-extern fmagic global_fmagic;
-
-/*@unchecked@*//*@observer@*/
-extern const char * default_magicfile;
+/*@access fmagic @*/
 
 /*@unchecked@*/
 int _rpmfc_debug;
@@ -951,7 +946,9 @@ int wid = 0;	/* XXX don't prepend filename: */
     xx = argvAdd(&fc->cdict, "");
     xx = argvAdd(&fc->cdict, "directory");
 
+/*@-assignexpose@*/
     fm->magicfile = default_magicfile;
+/*@=assignexpose@*/
     /* XXX TODO fm->flags = ??? */
 
     xx = fmagicSetup(fm, fm->magicfile, action);

@@ -154,6 +154,16 @@ struct fmagic_s {
 
 typedef /*@abstract@*/ struct fmagic_s * fmagic;
 
+/*unchecked@*/
+extern fmagic global_fmagic;
+
+/*@unchecked@*//*@observer@*/
+extern const char * default_magicfile;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*@mayexit@*/
 extern int fmagicSetup(fmagic fm, const char *fn, int action)
 	/*@globals fileSystem, internalState @*/
@@ -203,5 +213,9 @@ extern uint32_t signextend(struct magic *m, uint32_t v)
 extern int pipe2file(int fd, void *startbuf, size_t nbytes)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __file_h__ */

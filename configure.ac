@@ -368,7 +368,9 @@ WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
 AC_CHECK_HEADER([libelf.h])
 AC_CHECK_HEADER([gelf.h], [
+	AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
 	AC_CHECK_LIB(elf, gelf_getvernaux, [
+	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
 	    WITH_LIBELF_LIB="/usr/lib/libelf.a"
 	])
     ], [
@@ -385,10 +387,11 @@ AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
 
 WITH_LIBDWARF_INCLUDE=
-AC_CHECK_HEADER([dwarf.h], [], [
+AC_CHECK_HEADER([dwarf.h], [
+	    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
+    ], [
 	if test -d elfutils/libdwarf ; then
 	    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
-	    AC_DEFINE(HAVE_LIBDWARF, 1, [Define to 1 if you have the `dwarf' library (-ldwarf).])
 	    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libdwarf"
 	fi
 ])

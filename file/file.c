@@ -34,12 +34,6 @@ FILE_RCSID("@(#)Id: file.c,v 1.66 2002/07/03 19:00:41 christos Exp ")
 
 /*@access fmagic @*/
 
-/*@unchecked@*/
-extern fmagic global_fmagic;
-
-/*@unchecked@*/ /*@observer@*/
-extern const char * default_magicfile;
-
 #ifdef S_IFLNK
 # define USAGE  "Usage: %s [-bciknsvzL] [-f namefile] [-m magicfiles] file...\n"
 #else

@@ -24,7 +24,6 @@ INCLUDES = \
 	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
-	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@
 
 myLDFLAGS = @LDFLAGS_STATIC@

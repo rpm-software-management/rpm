@@ -1,8 +1,10 @@
 #ifndef _H_RPMFC_
 #define _H_RPMFC_
 
-/*@notchecked@*/
+#include "rpmfile.h"
+
 /*@-exportlocal@*/
+/*@unchecked@*/
 extern int _rpmfc_debug;
 /*@=exportlocal@*/
 
@@ -115,7 +117,8 @@ rpmfc rpmfcNew(void)
  * Build file class dictionary and mappings.
  */
 int rpmfcClassify(rpmfc fc, ARGV_t argv)
-	/*@modifies fc @*/;
+	/*@globals global_fmagic, fileSystem, internalState @*/
+	/*@modifies fc, global_fmagic, fileSystem, internalState @*/;
 
 /**
  * BUild file/package dependency dictionary and mappings.
