@@ -108,7 +108,7 @@ static void freeFl(rpmTransactionSet ts, struct fileInfo *flList)
    happened */
 int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
-		       rpmProblemSet * newProbs, int flags)
+		       rpmProblemSet * newProbs, int flags, int ignoreSet)
 {
     int i, j;
     struct availableList * al = &ts->addedPackages;
@@ -135,7 +135,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     *newProbs = probs;
     hdrs = alloca(sizeof(*hdrs) * al->size);
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 1, al->size, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 1, al->size, NULL, notifyData));
 
     for (alp = al->list; (alp - al->list) < al->size; alp++) {
 	if (!archOkay(alp->h))
@@ -145,8 +145,8 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 1, al->size, NULL, notifyData));
 	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL);
 	}
 
-NOTIFY((alp->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
-    NULL, notifyData));
+        NOTIFY((alp->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
+		NULL, notifyData));
 
 	rc = rpmdbFindPackage(ts->db, alp->name, &dbi);
 	if (rc == 2) {
@@ -171,10 +171,10 @@ NOTIFY((alp->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
 	if (headerGetEntry(alp->h, RPMTAG_FILENAMES, NULL, NULL, &fileCount))
 	    totalFileCount += fileCount;
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 1, al->size, NULL, notifyData));
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 2, ts->numRemovedPackages,
-    NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 1, al->size, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 2, ts->numRemovedPackages,
+           NULL, notifyData));
 
     /* FIXME: it seems a bit silly to read in all of these headers twice */
     for (i = 0; i < ts->numRemovedPackages; i++) {
@@ -187,19 +187,19 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 2, ts->numRemovedPackages,
 	    headerFree(h);	/* XXX ==> LEAK */
 	}
 
-NOTIFY((h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
-    NULL, notifyData));
-
+        NOTIFY((h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
+    		NULL, notifyData));
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 2, ts->numRemovedPackages,
-    NULL, notifyData));
+
+    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 2, ts->numRemovedPackages,
+	NULL, notifyData));
 
     flEntries = al->size + ts->numRemovedPackages;
     flList = alloca(sizeof(*flList) * (flEntries));
 
     ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 3, al->size, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 3, al->size, NULL, notifyData));
 
     /* FIXME?: we'd be better off assembling one very large file list and
        calling fpLookupList only once. I'm not sure that the speedup is
@@ -220,8 +220,8 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 3, al->size, NULL, notifyData));
 	fi->h = hdrs[alp - al->list] = relocateFileList(alp, probs, alp->h, 
 						         fi->actions);
 
-NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
-    NULL, notifyData));
+	NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
+	    NULL, notifyData));
 
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILENAMES, NULL, 
 				     (void *) &fi->fl, &fi->fc);
@@ -242,10 +242,11 @@ NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
 	fi->ap = alp;
 	fi->replaced = NULL;
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 3, al->size, NULL, notifyData));
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 4, ts->numRemovedPackages,
-    NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 3, al->size, NULL, notifyData));
+
+    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 4, ts->numRemovedPackages,
+	    NULL, notifyData));
 
     for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
 
@@ -259,8 +260,8 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 4, ts->numRemovedPackages,
 	    continue;
 	}
 
-NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
-    NULL, notifyData));
+	NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
+	    NULL, notifyData));
 
 	if (!headerGetEntryMinMemory(fi->h, RPMTAG_FILENAMES, NULL, 
 				     (void *) &fi->fl, &fi->fc)) {
@@ -283,8 +284,9 @@ NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 4, ts->numRemovedPackages,
-    NULL, notifyData));
+
+    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 4, ts->numRemovedPackages,
+	NULL, notifyData));
 
     chptr = currentDirectory();
     currDir = alloca(strlen(chptr) + 1);
@@ -293,12 +295,12 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 4, ts->numRemovedPackages,
     chdir("/");
     chroot(ts->root);
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 5, flEntries, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 5, flEntries, NULL, notifyData));
 
     for (fi = flList; (fi - flList) < flEntries; fi++) {
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
-    NULL, notifyData));
+	NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
+	    NULL, notifyData));
 
 	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
 	for (i = 0; i < fi->fc; i++) {
@@ -306,13 +308,14 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
 	        htAddEntry(ht, fi->fps + i, fi);
 	}
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 5, flEntries, NULL, notifyData));
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 6, flEntries, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 5, flEntries, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 6, flEntries, NULL, notifyData));
 
     for (fi = flList; (fi - flList) < flEntries; fi++) {
-NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
-       NULL, notifyData));
+	NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
+	       NULL, notifyData));
+
 	matches = malloc(sizeof(*matches) * fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
 
@@ -363,14 +366,14 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
 
 	handleOverlappedFiles(fi, ht, probs);
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 6, flEntries, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 6, flEntries, NULL, notifyData));
 
     chroot(".");
     chdir(currDir);
 
     htFree(ht);
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 7, al->size, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 7, al->size, NULL, notifyData));
 
     for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
 		alp++, fi++) {
@@ -382,13 +385,16 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 7, al->size, NULL, notifyData));
 	    }
 	}
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 7, al->size, NULL, notifyData));
+
+    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 7, al->size, NULL, notifyData));
+
+    rpmProblemSetFilter(probs, ignoreSet);
 
     if ((flags & RPMTRANS_FLAG_BUILD_PROBS) || 
            (probs->numProblems && (!okProbs || psTrim(okProbs, probs)))) {
 	*newProbs = probs;
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 8, al->size, NULL, notifyData));
+	NOTIFY((NULL, RPMCALLBACK_TRANS_START, 8, al->size, NULL, notifyData));
 
 	for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
 			alp++, fi++) {
@@ -397,12 +403,13 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 8, al->size, NULL, notifyData));
 	    freeFi(fi); /* XXX ==> LEAK */
 	}
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 8, al->size, NULL, notifyData));
+	NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 8, al->size, NULL, notifyData));
+
 	freeFl(ts, flList);	/* XXX ==> LEAK */
 	return al->size + ts->numRemovedPackages;
     }
 
-NOTIFY((NULL, RPMCALLBACK_TRANS_START, 9, al->size, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_START, 9, al->size, NULL, notifyData));
 
     for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
 			alp++, fi++) {
@@ -449,16 +456,16 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 9, al->size, NULL, notifyData));
 	freeFi(fi); /* XXX ==> LEAK */
 
     }
-NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 9, al->size, NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 9, al->size, NULL, notifyData));
 
-NOTIFY((NULL, RPMCALLBACK_UNINST_START, 0, ts->numRemovedPackages,
-    NULL, notifyData));
+    NOTIFY((NULL, RPMCALLBACK_UNINST_START, 0, ts->numRemovedPackages,
+	    NULL, notifyData));
 
     /* fi is left at the first package which is to be removed */
     for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
 	
-NOTIFY((fi->h, RPMCALLBACK_UNINST_PROGRESS, i, ts->numRemovedPackages,
-    NULL, notifyData));
+    NOTIFY((fi->h, RPMCALLBACK_UNINST_PROGRESS, i, ts->numRemovedPackages,
+	NULL, notifyData));
 
 	if (removeBinaryPackage(ts->root, ts->db, ts->removedPackages[i], 
 				flags, fi->actions, ts->scriptFd))
@@ -468,8 +475,9 @@ NOTIFY((fi->h, RPMCALLBACK_UNINST_PROGRESS, i, ts->numRemovedPackages,
 	freeFi(fi);	/* XXX ==> LEAK */
 
     }
-NOTIFY((NULL, RPMCALLBACK_UNINST_STOP, 0, ts->numRemovedPackages,
-    NULL, notifyData));
+
+    NOTIFY((NULL, RPMCALLBACK_UNINST_STOP, 0, ts->numRemovedPackages,
+	NULL, notifyData));
 
     freeFl(ts, flList);	/* XXX ==> LEAK */
 
