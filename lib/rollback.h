@@ -18,7 +18,7 @@ typedef /*@abstract@*/ struct cpioHeader * FSM_t;
 #define	FSM_INTERNAL	0x8000
 #define	FSM_QUIET	0x4000
 #define	_fi(_a)		((_a) | FSM_INTERNAL)
-#define	_fq(_a)		((_a) | FSM_INTERNAL)
+#define	_fq(_a)		((_a) | FSM_QUIET)
 typedef enum fileStage_e {
     FSM_UNKNOWN =   0,
     FSM_INIT	=  _fq(1),
@@ -49,6 +49,9 @@ typedef enum fileStage_e {
     FSM_LINK	=  _fi(42),
     FSM_MKFIFO	=  _fi(43),
     FSM_MKNOD	=  _fi(44),
+    FSM_LSTAT	=  _fi(45),
+    FSM_STAT	=  _fi(46),
+    FSM_CHROOT	=  _fi(47),
 
     FSM_NEXT	=  _fi(65),
     FSM_EAT	=  _fi(66),
@@ -221,7 +224,7 @@ void freeFi(TFI_t fi)
 int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a);
 
 /**
- * Perform package install/remove actions.
+ * Perform package pre-install and remove actions.
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param a		file stage
@@ -239,6 +242,23 @@ int fsmSetup(FSM_t fsm, const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
  * @return		0 on success
  */
 int fsmTeardown(FSM_t fsm);
+
+/**
+ */
+/*@dependent@*/ rpmTransactionSet fsmGetTs(FSM_t fsm);
+
+/**
+ */
+/*@dependent@*/ TFI_t fsmGetFi(FSM_t fsm);
+
+/**
+ */
+int fsmGetIndex(FSM_t fsm);
+
+/**
+ */
+fileAction fsmAction(FSM_t fsm,
+	/*@out@*/ const char ** osuffix, /*@out@*/ const char ** suffix);
 
 /**
  * Archive extraction state machine.

@@ -816,9 +816,22 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 
 	setFileOwners(fi);
 
+#ifdef	DYING
 	rc = pkgActions(ts, fi, FSM_COMMIT);
 	if (rc)
 	    goto exit;
+#else
+    {	int i;
+
+	for (i = 0; i < fi->fc; i++) {
+	    if (fi->actions && fi->actions[i] == FA_CREATE)
+		continue;
+    rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
+		fi->dnl[fi->dil[i]], fi->bnl[i],
+		fileActionString((fi->actions ? fi->actions[i] : FA_UNKNOWN)) );
+	}
+    }
+#endif
 
 	rc = installArchive(ts, fi, 0);
 

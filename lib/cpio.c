@@ -30,7 +30,7 @@ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
     return NULL;
 }
 
-int _fsm_debug = 0;
+int _fsm_debug = 1;
 
 /** \ingroup payload
  * Defines a single file to be included in a cpio payload.
@@ -103,28 +103,25 @@ static void prtli(const char *msg, struct hardLink * li)
 
 /**
  */
-static int mapFlags(const void * this, cpioMapFlags mask) {
+static int mapFlags(/*@null@*/ const void * this, cpioMapFlags mask) {
     const struct cpioFileMapping * map = this;
     return (map ? (map->mapFlags & mask) : 0);
 }
 
 /**
  */
-static int mapCommit(const void * this) {
+static int mapCommit(/*@null@*/ const void * this) {
     const struct cpioFileMapping * map = this;
     return (map ? map->commit : 0);
 }
 
-/**
- */
-static int mapAction(const void * this) {
-    const struct cpioFileMapping * map = this;
-    return (map ? map->action : FA_UNKNOWN);
-}
+#define	SUFFIX_RPMORIG	".rpmorig"
+#define	SUFFIX_RPMSAVE	".rpmsave"
+#define	SUFFIX_RPMNEW	".rpmnew"
 
 /**
  */
-static /*@only@*/ const char * mapArchivePath(const void * this) {
+static /*@only@*/ const char * mapArchivePath(/*@null@*/ const void * this) {
     const struct cpioFileMapping * map = this;
     return (map ? xstrdup(map->archivePath) : NULL);
 }
@@ -133,8 +130,10 @@ static /*@only@*/ const char * mapArchivePath(const void * this) {
  * @param this
  * @param st			path mode type (dirs map differently)
  */
-static /*@only@*/ const char * mapFsPath(const void * this,
-	const struct stat * st, const char * subdir, const char * suffix)
+static /*@only@*//*@null@*/ const char * mapFsPath(/*@null@*/ const void * this,
+	/*@null@*/ const struct stat * st,
+	/*@null@*/ const char * subdir,
+	/*@null@*/ const char * suffix)
 {
     const struct cpioFileMapping * map = this;
     const char * s = NULL;
@@ -159,28 +158,29 @@ static /*@only@*/ const char * mapFsPath(const void * this,
 
 /**
  */
-static mode_t mapFinalMode(const void * this) {
+static mode_t mapFinalMode(/*@null@*/ const void * this) {
     const struct cpioFileMapping * map = this;
     return (map ? map->finalMode : 0);
 }
 
 /**
  */
-static uid_t mapFinalUid(const void * this) {
+static uid_t mapFinalUid(/*@null@*/ const void * this) {
     const struct cpioFileMapping * map = this;
     return (map ? map->finalUid : 0);
 }
 
 /**
  */
-static gid_t mapFinalGid(const void * this) {
+static gid_t mapFinalGid(/*@null@*/ const void * this) {
     const struct cpioFileMapping * map = this;
     return (map ? map->finalGid : 0);
 }
 
 /**
  */
-static /*@observer@*/ const char * const mapMd5sum(const void * this) {
+static /*@observer@*/ const char * const mapMd5sum(/*@null@*/ const void * this)
+{
     const struct cpioFileMapping * map = this;
     return (map ? map->md5sum : NULL);
 }
@@ -196,7 +196,7 @@ struct mapi {
 
 /**
  */
-static /*@null@*/ void * mapLink(const void * this) {
+static /*@only@*/ /*@null@*/ void * mapLink(const void * this) {
     const struct cpioFileMapping * omap = this;
     struct cpioFileMapping * nmap = NULL;
     if (omap) {
@@ -214,14 +214,14 @@ static inline /*@null@*/ void * mapFree(/*@only@*/ const void * this) {
 
 struct dnli {
 /*@dependent@*/ TFI_t fi;
-/*@only@*/ char * active;
+/*@only@*/ /*@null@*/ char * active;
     int dc;
     int i;
 };
 
 /**
  */
-static /*@null@*/ void * dnlFreeIterator(/*@only@*/ const void * this)
+static /*@null@*/ void * dnlFreeIterator(/*@only@*/ /*@null@*/ const void * this)
 {
     if (this) {
 	struct dnli * dnli = (void *)this;
@@ -250,7 +250,7 @@ static /*@only@*/ void * dnlInitIterator(/*@null@*/ const void * this)
     dnli = xcalloc(1, sizeof(*dnli));
     dnli->fi = fi;
     dnli->i = fi->dc;
-    dnli->active = xcalloc(fi->dc, sizeof(*dnli->active));
+    if (fi->dc) dnli->active = xcalloc(fi->dc, sizeof(*dnli->active));
     for (i = 0; i < fi->fc; i++)
         if (!XFA_SKIPPING(fi->actions[i])) dnli->active[fi->dil[i]] = 1;
     for (i = 0, dnli->dc = 0; i < fi->dc; i++)
@@ -335,9 +335,32 @@ static const void * mapNextIterator(void * this) {
     return map;
 }
 
-#define	SUFFIX_RPMORIG	".rpmorig"
-#define	SUFFIX_RPMSAVE	".rpmsave"
-#define	SUFFIX_RPMNEW	".rpmnew"
+static inline /*@null@*/ rpmTransactionSet mapGetTs(/*@null@*/ const void * this) {
+    rpmTransactionSet ts = NULL;
+    if (this) {
+	const struct mapi * mapi = this;
+	ts = mapi->ts;
+    }
+    return ts;
+}
+
+static inline /*@null@*/ TFI_t mapGetFi(/*@null@*/ const void * this) {
+    TFI_t fi = NULL;
+    if (this) {
+	const struct mapi * mapi = this;
+	fi = mapi->fi;
+    }
+    return fi;
+}
+
+static inline int mapGetIndex(/*@null@*/ const void * this) {
+    int i = -1;
+    if (this) {
+	const struct mapi * mapi = this;
+	i = mapi->i;
+    }
+    return i;
+}
 
 int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a)
 {
@@ -347,8 +370,26 @@ int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a)
     char * npath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
     char * n = (!ts->chrootDone ? stpcpy(npath, ts->rootDir) : npath);
     char * ext = NULL;
-    char * t;
     int rc = 0;
+
+    switch (fi->actions[i]) {
+    case FA_REMOVE:
+	break;
+    case FA_BACKUP:
+	if (fi->type == TR_REMOVED)
+	    break;
+	/*@fallthrough@*/
+    case FA_SKIP:
+    case FA_SKIPMULTILIB:
+    case FA_UNKNOWN:
+    case FA_SKIPNSTATE:
+    case FA_SKIPNETSHARED:
+    case FA_SAVE:
+    case FA_ALTNAME:
+    case FA_CREATE:
+	return 0;
+	/*@notreached@*/ break;
+    }
 
     rpmMessage(RPMMESS_DEBUG, _("   file: %s%s action: %s\n"),
 		fi->dnl[fi->dil[i]], fi->bnl[i],
@@ -358,43 +399,16 @@ int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a)
     case FA_SKIP:
     case FA_SKIPMULTILIB:
     case FA_UNKNOWN:
-	return 0;
-	/*@notreached@*/ break;
-
     case FA_CREATE:
-	assert(fi->type == TR_ADDED);
-	return 0;
-	/*@notreached@*/ break;
-
     case FA_SKIPNSTATE:
-	if (fi->type == TR_ADDED)
-	    fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
+    case FA_SKIPNETSHARED:
+    case FA_ALTNAME:
+    case FA_SAVE:
 	return 0;
 	/*@notreached@*/ break;
 
-    case FA_SKIPNETSHARED:
-	if (fi->type == TR_ADDED)
-		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
-	return 0;
-	/*@notreached@*/ break;
     case FA_BACKUP:
 	ext = (fi->type == TR_ADDED ? SUFFIX_RPMORIG : SUFFIX_RPMSAVE);
-	break;
-
-    case FA_ALTNAME:
-	assert(fi->type == TR_ADDED);
-	ext = SUFFIX_RPMNEW;
-	t = xmalloc(strlen(fi->bnl[i]) + strlen(ext) + 1);
-	(void)stpcpy(stpcpy(t, fi->bnl[i]), ext);
-	rpmMessage(RPMMESS_WARNING, _("%s: %s%s created as %s\n"),
-			fiTypeString(fi), fi->dnl[fi->dil[i]], fi->bnl[i], t);
-	fi->bnl[i] = t;		/* XXX memory leak iff i = 0 */
-	return 0;
-	/*@notreached@*/ break;
-
-    case FA_SAVE:
-	assert(fi->type == TR_ADDED);
-	ext = SUFFIX_RPMSAVE;
 	break;
 
     case FA_REMOVE:
@@ -561,6 +575,8 @@ struct cpioHeader {
 /*@owned@*/ short * dnlx;
 /*@shared@*/ const char * subdir;
     char subbuf[64];	/* XXX eliminate */
+/*@shared@*/ const char * osuffix;
+/*@shared@*/ const char * nsuffix;
 /*@shared@*/ const char * suffix;
     char sufbuf[64];	/* XXX eliminate */
 /*@only@*/ char * ldn;
@@ -572,6 +588,7 @@ struct cpioHeader {
     int rc;
     fileAction action;
     fileStage stage;
+    struct stat osb;
     struct stat sb;
 };
 
@@ -772,7 +789,9 @@ static int getNextHeader(FSM_t fsm, struct stat * st)
 
     /* this is unecessary fsm->path[nameSize] = '\0'; */
 
+#ifdef	DYING
     (void) fsmStage(fsm, FSM_POS);
+#endif
 
     return 0;
 }
@@ -795,7 +814,27 @@ static int expandRegular(FSM_t fsm)
     int rc = 0;
 
     filemd5 = mapMd5sum(fsm->map);
-    rc = fsmStage(fsm, FSM_VERIFY);
+
+    {
+	const char * opath = fsm->opath;
+	const char * path = fsm->path;
+
+	if (fsm->osuffix)
+	    fsm->path = mapFsPath(fsm->map, st, NULL, NULL);
+	rc = fsmStage(fsm, FSM_VERIFY);
+	if (rc == 0 && fsm->osuffix) {
+	    fsm->opath = fsm->path;
+	    fsm->path = mapFsPath(fsm->map, st, NULL, fsm->osuffix);
+	    (void) fsmStage(fsm, FSM_RENAME);
+rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
+	    fsm->path = _free(fsm->path);
+	    fsm->opath = _free(fsm->opath);
+	}
+
+	fsm->path = path;
+	fsm->opath = opath;
+    }
+
     if (rc != CPIOERR_LSTAT_FAILED) return rc;
     rc = 0;
 
@@ -848,22 +887,34 @@ static int expandRegular(FSM_t fsm)
 
 int fsmStage(FSM_t fsm, fileStage stage)
 {
+#ifdef	UNUSED
     fileStage prevStage = fsm->stage;
     const char * const prev = fileStageString(prevStage);
+#endif
     const char * const cur = fileStageString(stage);
     struct stat * st = &fsm->sb;
+    struct stat * ost = &fsm->osb;
+    int saveerrno = errno;
     int rc = fsm->rc;
     int i;
 
     if (stage & FSM_INTERNAL) {
-	if (_fsm_debug)
-	    rpmMessage(RPMMESS_DEBUG, _("%8x %s:%s\t%06o%s\n"), rc, prev, cur,
-		st->st_mode, fsm->path);
+	if (_fsm_debug && !(stage == FSM_VERIFY || stage == FSM_NOTIFY))
+	    rpmMessage(RPMMESS_DEBUG, _(" %8s %06o%3d (%4d,%4d)%10d %s %s\n"),
+		cur,
+		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
+		(fsm->path ? fsm->path : ""),
+		((fsm->action != FA_UNKNOWN && fsm->action != FA_CREATE)
+			? fileActionString(fsm->action) : ""));
     } else {
 	fsm->stage = stage;
 	if (_fsm_debug || !(stage & FSM_QUIET))
-	    rpmMessage(RPMMESS_DEBUG, _("%8x %s\t%06o %s\n"), rc, cur,
-		st->st_mode, fsm->path);
+	    rpmMessage(RPMMESS_DEBUG, _("%-8s  %06o%3d (%4d,%4d)%10d %s %s\n"),
+		cur,
+		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
+		(fsm->path ? fsm->path : ""),
+		((fsm->action != FA_UNKNOWN && fsm->action != FA_CREATE)
+			? fileActionString(fsm->action) : ""));
     }
 
     switch (stage) {
@@ -888,17 +939,26 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->subdir = NULL;
 	fsm->suffix = (fsm->sufbuf[0] != '\0' ? fsm->sufbuf : NULL);
 	fsm->action = FA_UNKNOWN;
-	rc = fsmStage(fsm, FSM_NEXT);
+	fsm->osuffix = NULL;
+	fsm->nsuffix = NULL;
+	if (fsm->cfd) {
+	    rc = fsmStage(fsm, FSM_POS);
+	    if (!rc)
+		rc = fsmStage(fsm, FSM_NEXT);
+	}
+	    /* FSM_INIT -> {FSM_PRE,FSM_DESTROY} */
 	break;
     case FSM_MAP:
-	if (fsm->mapi == NULL)
-	    break;
+	/* No map, nothing to do. */
+	/* @todo FA_ALTNAME rename still needs doing. */
+	if (fsm->mapi == NULL) break;
 	fsm->map = mapFind(fsm->mapi, fsm->path);
-	fsm->action = mapAction(fsm->map);
+	fsm->action = fsmAction(fsm, &fsm->osuffix, &fsm->nsuffix);
 
-	if (mapFlags(fsm->map, CPIO_MAP_PATH)) {
+	if (mapFlags(fsm->map, CPIO_MAP_PATH) || fsm->nsuffix) {
 	    fsm->path = _free(fsm->path);
-	    fsm->path = mapFsPath(fsm->map, st, fsm->subdir, fsm->suffix);
+	    fsm->path = mapFsPath(fsm->map, st, fsm->subdir,
+		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
 	}
 
 	if (mapFlags(fsm->map, CPIO_MAP_MODE))
@@ -952,7 +1012,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		    if (rc) break;
 		}
 	    }
-	    dnlFreeIterator(dnli);
+	    dnli = dnlFreeIterator(dnli);
 	    fsm->path = path;
 	    st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	}
@@ -984,11 +1044,14 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		    te--;
 		} while ((te - dn) > fsm->dnlx[dc]);
 	    }
-	    dnlFreeIterator(dnli);
+	    dnli = dnlFreeIterator(dnli);
 	    fsm->path = path;
 	}
 	break;
     case FSM_PRE:
+	/* Remap mode/uid/gid/name of file from archive. */
+	(void) fsmStage(fsm, FSM_MAP);
+
 	/*
 	 * This won't get hard linked symlinks right, but I can't seem
 	 * to create those anyway.
@@ -1018,20 +1081,34 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	{
 	    rc = fsmStage(fsm, FSM_MKLINKS);
 
+#ifdef	DYING
 	    /*
-	    * This only happens for cpio archives which contain
-	    * hardlinks w/ the contents of each hardlink being
-	    * listed (intead of the data being given just once. This
-	    * shouldn't happen, but I've made it happen w/ buggy
-	    * code, so what the heck? GNU cpio handles this well fwiw.
-	    */
+	     * This only happens for cpio archives which contain
+	     * hardlinks w/ the contents of each hardlink being
+	     * listed (intead of the data being given just once. This
+	     * shouldn't happen, but I've made it happen w/ buggy
+	     * code, so what the heck? GNU cpio handles this well fwiw.
+	     */
 	    (void) fsmStage(fsm, FSM_EAT);
+#endif
 	    fsm->postpone = 1;		/* defer file creation */
 	} else {
+	    /* @todo This makes all dir paths, only needs doing once. */
 	    rc = fsmStage(fsm, FSM_MKDIRS);
+	    fsm->postpone = XFA_SKIPPING(fsm->action);
 	}
+	if (fsm->postpone) {
+	    if (fsm->cfd) {
+		(void) fsmStage(fsm, FSM_POS);
+		(void) fsmStage(fsm, FSM_EAT);
+	    }
+	    /* FSM_PRE -> FSM_INIT */
+	}
+	    /* FSM_PRE -> FSM_PROCESS */
 	break;
     case FSM_PROCESS:
+	if (fsm->cfd)
+	    (void) fsmStage(fsm, FSM_POS);
 	if (fsm->postpone)
 	    break;
 	if (S_ISREG(st->st_mode)) {
@@ -1084,10 +1161,12 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	} else {
 	    rc = CPIOERR_UNKNOWN_FILETYPE;
 	}
+	    /* FSM_PROCESS -> FSM_POST */
 	break;
     case FSM_POST:
 	if (fsm->postpone)
 	    break;
+#ifdef	DYING
 	if (S_ISLNK(st->st_mode)) {
 	    if (!getuid())	rc = fsmStage(fsm, FSM_LCHOWN);
 	} else {
@@ -1095,17 +1174,20 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    if (!rc)		rc = fsmStage(fsm, FSM_CHMOD);
 	    if (!rc)		rc = fsmStage(fsm, FSM_UTIME);
 	}
+#endif
 	/* XXX nlink > 1, insure that path/createdPath is non-skipped. */
 	if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
 	    fsm->li->createdPath = --fsm->li->linksLeft;
 	    rc = fsmStage(fsm, FSM_MKLINKS);
 	}
+	    /* FSM_POST -> {FSM_COMMIT,FSM_UNDO} */
 	break;
     case FSM_MKLINKS:
 	{   const char * path = fsm->path;
 	    const char * opath = fsm->opath;
 
 	    rc = 0;
+	    fsm->opath = fsm->li->files[fsm->li->createdPath];
 	    for (i = 0; i < fsm->li->nlink; i++) {
 		if (i == fsm->li->createdPath) continue;
 		if (fsm->li->files[i] == NULL) continue;
@@ -1130,46 +1212,61 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	}
 	break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
-	{   struct mapi * mapi = fsm->mapi;
-	    if (mapi) {
-		rpmTransactionSet ts = mapi->ts;
-		TFI_t fi = mapi->fi;
-		if (ts && ts->notify)
-		    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
+	{   rpmTransactionSet ts = fsmGetTs(fsm);
+	    TFI_t fi = fsmGetFi(fsm);
+	    if (ts && ts->notify && fi)
+		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
 			fdGetCpioPos(fsm->cfd), fi->archiveSize,
 			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
-	    }
-	}
-	return rc;
-	/*@notreached@*/ break;
-    case FSM_UNDO:
-	{   int olderrno = errno;
-	    if (S_ISDIR(st->st_mode)) {
-		(void) fsmStage(fsm, FSM_RMDIR);
-	    } else {
-		(void) fsmStage(fsm, FSM_UNLINK);
-	    }
-	    if (fsm->dnlx)
-		(void) fsmStage(fsm, FSM_RMDIRS);
-	    errno = olderrno;
-	    if (fsm->failedFile && *fsm->failedFile == NULL)
-		*fsm->failedFile = xstrdup(fsm->path);
 	}
 	break;
-    case FSM_COMMIT:
-	if (mapCommit(fsm->map) && (fsm->subdir || fsm->suffix)) {
-	    fsm->opath = fsm->path;
-	    fsm->path = mapFsPath(fsm->map, st, NULL, NULL);
-	    rc = fsmStage(fsm, FSM_RENAME);
-	    fsm->opath = _free(fsm->opath);
+    case FSM_UNDO:
+	if (fsm->postpone)
+	    break;
+	if (S_ISDIR(st->st_mode)) {
+	    (void) fsmStage(fsm, FSM_RMDIR);
+	} else {
+	    (void) fsmStage(fsm, FSM_UNLINK);
 	}
-	/* Notify on success. */
-	if (!rc)	rc = fsmStage(fsm, FSM_NOTIFY);
+#ifdef	NOTYET	/* XXX remove only dirs just created, not all. */
+	if (fsm->dnlx)
+	    (void) fsmStage(fsm, FSM_RMDIRS);
+#endif
+	errno = saveerrno;
+	if (fsm->failedFile && *fsm->failedFile == NULL)
+	    *fsm->failedFile = xstrdup(fsm->path);
+	    /* FSM_UNDO -> FSM_INIT */
+	break;
+    case FSM_COMMIT:
+	if (fsm->postpone)
+	    break;
+	if (mapCommit(fsm->map)) {
+	    if (!S_ISDIR(st->st_mode) && (fsm->subdir || fsm->suffix)) {
+		fsm->opath = fsm->path;
+		fsm->path = mapFsPath(fsm->map, st, NULL, fsm->nsuffix);
+		rc = fsmStage(fsm, FSM_RENAME);
+if (!rc && fsm->nsuffix) {
+const char * opath = mapFsPath(fsm->map, st, NULL, opath);
+rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"), opath, fsm->path);
+opath = _free(opath);
+}
+		fsm->opath = _free(fsm->opath);
+	    }
+	    if (S_ISLNK(st->st_mode)) {
+		if (!rc && !getuid())	rc = fsmStage(fsm, FSM_LCHOWN);
+	    } else {
+		if (!rc && !getuid())	rc = fsmStage(fsm, FSM_CHOWN);
+		if (!rc)	rc = fsmStage(fsm, FSM_CHMOD);
+		if (!rc)	rc = fsmStage(fsm, FSM_UTIME);
+	    }
+	    /* Notify on success. */
+	    if (!rc)		rc = fsmStage(fsm, FSM_NOTIFY);
+	}
+	    /* FSM_COMMIT -> FSM_INIT */
 	break;
     case FSM_DESTROY:
 	fsm->path = _free(fsm->path);
 	/* Create any remaining links (if no error), and clean up. */
-	rc = fsm->rc;
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
@@ -1186,99 +1283,99 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->ldnalloc = fsm->ldnlen = 0;
 	break;
     case FSM_VERIFY:
-	{   struct stat sb;
-	    int saveerrno;
-
-	    saveerrno = errno;
-	    rc = lstat(fsm->path, &sb);
-	    if (rc < 0 && errno == ENOENT)
-		errno = saveerrno;
-	    if (rc < 0) return CPIOERR_LSTAT_FAILED;
+	rc = lstat(fsm->path, ost);
+	if (rc < 0 && errno == ENOENT)
+	    errno = saveerrno;
+	if (rc < 0) return CPIOERR_LSTAT_FAILED;
 
 	/* XXX handle upgrade actions right here? */
 
-	    if (S_ISREG(st->st_mode)) {
-		char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
-		(void) stpcpy( stpcpy(path, fsm->path), "-RPMDELETE");
-		/*
-		 * XXX HP-UX (and other os'es) don't permit unlink on busy
-		 * XXX files.
-		 */
-		fsm->opath = fsm->path;
-		fsm->path = path;
-		rc = fsmStage(fsm, FSM_RENAME);
-		if (!rc)
+	if (S_ISREG(st->st_mode)) {
+	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
+	    (void) stpcpy( stpcpy(path, fsm->path), "-RPMDELETE");
+	    /*
+	     * XXX HP-UX (and other os'es) don't permit unlink on busy
+	     * XXX files.
+	     */
+	    fsm->opath = fsm->path;
+	    fsm->path = path;
+	    rc = fsmStage(fsm, FSM_RENAME);
+	    if (!rc)
 		    (void) fsmStage(fsm, FSM_UNLINK);
-		else
+	    else
 		    rc = CPIOERR_UNLINK_FAILED;
-		fsm->path = fsm->opath;
-		fsm->opath = NULL;
-		return (rc ? rc : CPIOERR_LSTAT_FAILED);
-		break;
-	    } else if (S_ISDIR(st->st_mode)) {
-		if (S_ISDIR(sb.st_mode))		return 0;
-		if (S_ISLNK(sb.st_mode)) {
-		    saveerrno = errno;
-		    rc = stat(fsm->path, &sb);
-		    if (rc < 0 && errno != ENOENT)
-			return CPIOERR_STAT_FAILED;
-		    errno = saveerrno;
-		    if (S_ISDIR(sb.st_mode))	return 0;
-		}
-	    } else if (S_ISLNK(st->st_mode)) {
-		if (S_ISLNK(sb.st_mode)) {
-		    char buf[2048];
-		    saveerrno = errno;
-		    rc = readlink(fsm->path, buf, sizeof(buf) - 1);
-		    errno = saveerrno;
-		    if (rc > 0) {
-			buf[rc] = '\0';
-			if (!strcmp(fsm->opath, buf))	return 0;
-		    }
-		}
-	    } else if (S_ISFIFO(st->st_mode)) {
-		if (S_ISFIFO(sb.st_mode))		return 0;
-	    } else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
-		if ((S_ISCHR(sb.st_mode) || S_ISBLK(sb.st_mode)) &&
-			(sb.st_rdev == st->st_rdev))	return 0;
-	    } else if (S_ISSOCK(st->st_mode)) {
-		if (S_ISSOCK(sb.st_mode))		return 0;
+	    fsm->path = fsm->opath;
+	    fsm->opath = NULL;
+	    return (rc ? rc : CPIOERR_LSTAT_FAILED);
+	    break;
+	} else if (S_ISDIR(st->st_mode)) {
+	    if (S_ISDIR(ost->st_mode))		return 0;
+	    if (S_ISLNK(ost->st_mode)) {
+		rc = stat(fsm->path, ost);
+		if (rc < 0 && errno != ENOENT)
+		    return CPIOERR_STAT_FAILED;
+		errno = saveerrno;
+		if (S_ISDIR(ost->st_mode))	return 0;
 	    }
-	    /* XXX shouldn't do this with commit/undo. */
-	    rc = 0;
-	    if (stage == FSM_PROCESS) rc = fsmStage(fsm, FSM_UNLINK);
-	    if (rc == 0)	rc = CPIOERR_LSTAT_FAILED;
-	    return (rc ? rc : CPIOERR_LSTAT_FAILED);	/* XXX HACK */
+	} else if (S_ISLNK(st->st_mode)) {
+	    if (S_ISLNK(ost->st_mode)) {
+		char buf[2048];
+		rc = readlink(fsm->path, buf, sizeof(buf) - 1);
+		errno = saveerrno;
+		if (rc > 0) {
+		    buf[rc] = '\0';
+		    if (!strcmp(fsm->opath, buf))	return 0;
+		}
+	    }
+	} else if (S_ISFIFO(st->st_mode)) {
+	    if (S_ISFIFO(ost->st_mode))		return 0;
+	} else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
+	    if ((S_ISCHR(ost->st_mode) || S_ISBLK(ost->st_mode)) &&
+		(ost->st_rdev == st->st_rdev))	return 0;
+	} else if (S_ISSOCK(st->st_mode)) {
+	    if (S_ISSOCK(ost->st_mode))		return 0;
 	}
+	    /* XXX shouldn't do this with commit/undo. */
+	rc = 0;
+	if (stage == FSM_PROCESS) rc = fsmStage(fsm, FSM_UNLINK);
+	if (rc == 0)	rc = CPIOERR_LSTAT_FAILED;
+	return (rc ? rc : CPIOERR_LSTAT_FAILED);	/* XXX HACK */
 	break;
     case FSM_UNLINK:
 	rc = unlink(fsm->path);
+if (rc < 0) fprintf(stderr, "*** %s(%s) %m\n", cur, fsm->path);
 	if (rc < 0)	rc = CPIOERR_UNLINK_FAILED;
 	break;
     case FSM_RENAME:
 	rc = rename(fsm->opath, fsm->path);
+if (rc < 0) fprintf(stderr, "*** %s(%s,%s) %m\n", cur, fsm->opath, fsm->path);
 	if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
 	break;
     case FSM_MKDIR:
 	rc = mkdir(fsm->path, (st->st_mode & 07777));
+if (rc < 0) fprintf(stderr, "*** %s(%s,%o) %m\n", cur, fsm->path, (st->st_mode & 07777));
 	if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
 	break;
     case FSM_RMDIR:
 	rc = rmdir(fsm->path);
+if (rc < 0) fprintf(stderr, "*** %s(%s) %m\n", cur, fsm->path);
 	if (rc < 0)	rc = CPIOERR_RMDIR_FAILED;
 	break;
     case FSM_CHOWN:
 	rc = chown(fsm->path, st->st_uid, st->st_gid);
+if (rc < 0) fprintf(stderr, "*** %s(%s,%d,%d) %m\n", cur, fsm->path, st->st_uid, st->st_gid);
 	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
 	break;
     case FSM_LCHOWN:
 #if ! CHOWN_FOLLOWS_SYMLINK
 	rc = lchown(fsm->path, st->st_uid, st->st_gid);
+if (rc < 0) fprintf(stderr, "*** %s(%s,%d,%d) %m\n", cur, fsm->path, st->st_uid, st->st_gid);
 	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
 #endif
 	break;
     case FSM_CHMOD:
 	rc = chmod(fsm->path, (st->st_mode & 07777));
+if (rc < 0) fprintf(stderr, "*** %s(%s,%o) %m\n", cur, fsm->path, (st->st_mode & 07777));
 	if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
 	break;
     case FSM_UTIME:
@@ -1286,32 +1383,52 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    stamp.actime = st->st_mtime;
 	    stamp.modtime = st->st_mtime;
 	    rc = utime(fsm->path, &stamp);
+if (rc < 0) fprintf(stderr, "*** %s(%s,%x) %m\n", cur, fsm->path, (unsigned)st->st_mtime);
 	    if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
 	}
 	break;
     case FSM_SYMLINK:
 	rc = symlink(fsm->opath, fsm->path);
+if (rc < 0) fprintf(stderr, "*** %s(%s,%s) %m\n", cur, fsm->opath, fsm->path);
 	if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
 	break;
     case FSM_LINK:
 	rc = link(fsm->opath, fsm->path);
+if (rc < 0) fprintf(stderr, "*** %s(%s,%s) %m\n", cur, fsm->opath, fsm->path);
 	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
 	break;
     case FSM_MKFIFO:
 	rc = mkfifo(fsm->path, (st->st_mode & 07777));
+if (rc < 0) fprintf(stderr, "*** %s(%s,%o) %m\n", cur, fsm->path, (st->st_mode & 07777));
 	if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
 	break;
     case FSM_MKNOD:
 	/*@-unrecog@*/
-	rc = mknod(fsm->path, st->st_mode & (~0777), st->st_rdev);
+	rc = mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
+if (rc < 0) fprintf(stderr, "*** %s(%s,%o,%x) %m\n", cur, fsm->path, (st->st_mode & ~07777), (unsigned)st->st_rdev);
 	if (rc < 0)	rc = CPIOERR_MKNOD_FAILED;
 	/*@=unrecog@*/
 	break;
+    case FSM_LSTAT:
+	rc = lstat(fsm->path, ost);
+if (rc < 0 && errno != ENOENT) fprintf(stderr, "*** %s(%s,%p) %m\n", cur, fsm->path, ost);
+	if (rc < 0)	rc = CPIOERR_LSTAT_FAILED;
+	break;
+    case FSM_STAT:
+	rc = stat(fsm->path, ost);
+if (rc < 0 && errno != ENOENT) fprintf(stderr, "*** %s(%s,%p) %m\n", cur, fsm->path, ost);
+	if (rc < 0)	rc = CPIOERR_STAT_FAILED;
+	break;
+    case FSM_CHROOT:
+	break;
 
     case FSM_NEXT:
-	rc = getNextHeader(fsm, st);
-	if (!rc && !strcmp(fsm->path, TRAILER))
+	rc = getNextHeader(fsm, st);	/* Read next payload header. */
+	if (rc) break;
+	if (!strcmp(fsm->path, TRAILER)) { /* Detect end-of-payload. */
+	    fsm->path = _free(fsm->path);
 	    rc = CPIOERR_HDR_TRAILER;
+	}
 	break;
     case FSM_EAT:
 	{   char buf[BUFSIZ];		/* XXX add to fsm */
@@ -1334,7 +1451,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    int amount;
 
 	    amount = (modulo - fdGetCpioPos(fsm->cfd) % modulo) % modulo;
-	    (void)ourread(fsm->cfd, buf, amount);
+	    if (amount)
+		(void) ourread(fsm->cfd, buf, amount);
 	}
 	break;
     case FSM_PAD:
@@ -1344,8 +1462,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	break;
     }
 
-    if (!(stage & FSM_INTERNAL))
-	fsm->rc = rc;
+    if (!(stage & FSM_INTERNAL)) {
+	fsm->rc = (rc == CPIOERR_HDR_TRAILER ? 0 : rc);
+    }
     return rc;
 }
 
@@ -1354,8 +1473,10 @@ int fsmSetup(FSM_t fsm, const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 {
     int rc = fsmStage(fsm, FSM_CREATE);
 
-    fsm->cfd = fdLink(cfd, "persist (fsm)");
-    fdSetCpioPos(fsm->cfd, 0);
+    if (cfd) {
+	fsm->cfd = fdLink(cfd, "persist (fsm)");
+	fdSetCpioPos(fsm->cfd, 0);
+    }
     fsm->mapi = mapInitIterator(ts, fi);
     fsm->failedFile = failedFile;
     if (fsm->failedFile)
@@ -1368,38 +1489,110 @@ int fsmSetup(FSM_t fsm, const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
 int fsmTeardown(FSM_t fsm) {
     int rc = 0;
     fsm->mapi = mapFreeIterator(fsm->mapi);
-    fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
-    fsm->cfd = NULL;
+    if (fsm->cfd) {
+	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
+	fsm->cfd = NULL;
+    }
     fsm->failedFile = NULL;
     return rc;
+}
+
+rpmTransactionSet fsmGetTs(FSM_t fsm) {
+    return (fsm ? mapGetTs(fsm->mapi) : NULL);
+}
+
+TFI_t fsmGetFi(FSM_t fsm) {
+    return (fsm ? mapGetFi(fsm->mapi) : NULL);
+}
+
+int fsmGetIndex(FSM_t fsm) {
+    return (fsm ? mapGetIndex(fsm->mapi) : -1);
+}
+
+fileAction fsmAction(FSM_t fsm,
+	/*@out@*/ const char ** osuffix, /*@out@*/ const char ** nsuffix)
+{
+    const struct cpioFileMapping * map = fsm->map;
+    TFI_t fi = fsmGetFi(fsm);
+    int i = fsmGetIndex(fsm);
+    
+    fileAction action = FA_UNKNOWN;
+
+    if (map && fi && i >= 0 && i < fi->fc) {
+	action = fi->actions[i];
+	if (osuffix) *osuffix = NULL;
+	if (nsuffix) *nsuffix = NULL;
+	switch (action) {
+	case FA_SKIP:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    break;
+	case FA_SKIPMULTILIB:	/* XXX RPMFILE_STATE_MULTILIB? */
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    break;
+	case FA_UNKNOWN:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    break;
+
+	case FA_CREATE:
+	    assert(fi->type == TR_ADDED);
+	    break;
+
+	case FA_SKIPNSTATE:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    if (fi->type == TR_ADDED)
+		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
+	    break;
+
+	case FA_SKIPNETSHARED:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    if (fi->type == TR_ADDED)
+		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
+	    break;
+
+	case FA_BACKUP:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    switch (fi->type) {
+	    case TR_ADDED:
+		if (osuffix) *osuffix = SUFFIX_RPMORIG;
+		break;
+	    case TR_REMOVED:
+		if (osuffix) *osuffix = SUFFIX_RPMSAVE;
+		break;
+	    }
+	    break;
+
+	case FA_ALTNAME:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    assert(fi->type == TR_ADDED);
+	    if (nsuffix) *nsuffix = SUFFIX_RPMNEW;
+	    break;
+
+	case FA_SAVE:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    assert(fi->type == TR_ADDED);
+	    if (osuffix) *osuffix = SUFFIX_RPMSAVE;
+	    break;
+	case FA_REMOVE:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    assert(fi->type == TR_REMOVED);
+	    break;
+	default:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(action), fsm->path);
+	    break;
+	}
+    }
+    return action;
 }
 
 /** @todo Verify payload MD5 sum. */
 int cpioInstallArchive(FSM_t fsm)
 {
-#ifdef	DYING
-    FSM_t fsm = fi->fsm;
-#endif
     int rc = 0;
 
 #ifdef	NOTYET
     char * md5sum = NULL;
 
     fdInitMD5(cfd, 0);
-#endif
-
-#ifdef	DYING
-    /* Initialize fsm. */
-    rc = fsmStage(fsm, FSM_CREATE);
-
-    fsm->cfd = fdLink(cfd, "persist (cpioInstallArchive");
-    fdSetCpioPos(fsm->cfd, 0);
-    fsm->mapi = mapInitIterator(ts, fi);
-    fsm->failedFile = failedFile;
-    if (fsm->failedFile)
-	*fsm->failedFile = NULL;
-    if (ts->id > 0)
-	sprintf(fsm->sufbuf, ";%08x", ts->id);
 #endif
 
     do {
@@ -1414,15 +1607,17 @@ int cpioInstallArchive(FSM_t fsm)
 	}
 
 	/* Abort on error. */
-	if (rc)
-	    goto exit;
+	if (rc) goto exit;
 
+#ifdef	DYING
 	/* Remap mode/uid/gid/name of file from archive. */
 	(void) fsmStage(fsm, FSM_MAP);
 
 	if (fsm->mapi && fsm->map == NULL) {
 	    rc = fsmStage(fsm, FSM_EAT);
-	} else {
+	} else
+#endif
+	{
 	    /* Create any directories in path. */
 	    rc = fsmStage(fsm, FSM_PRE);
 
@@ -1433,8 +1628,10 @@ int cpioInstallArchive(FSM_t fsm)
 	    if (!rc)	rc = fsmStage(fsm, FSM_POST);
 	}
 
+#ifdef	DYING
 	/* Position to next item in payload. */
 	(void) fsmStage(fsm, FSM_POS);
+#endif
 
 	/* Notify on success. */
 	if (!rc)	(void) fsmStage(fsm, FSM_NOTIFY);
@@ -1453,11 +1650,6 @@ int cpioInstallArchive(FSM_t fsm)
 #endif
 
 exit:
-#ifdef	DYING
-    fsm->mapi = mapFreeIterator(fsm->mapi);
-    fsm->cfd = fdFree(fsm->cfd, "persist (cpioInstallArchive");
-    fsm->cfd = NULL;
-#endif
     return rc;
 }
 

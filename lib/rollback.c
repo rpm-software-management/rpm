@@ -11,6 +11,10 @@
 #include "debug.h"
 
 /*@access h@*/		/* compared with NULL */
+static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
+}
 
 void loadFi(Header h, TFI_t fi)
 {
@@ -60,7 +64,7 @@ void loadFi(Header h, TFI_t fi)
 
     /* actions is initialized earlier for added packages */
     if (fi->actions == NULL)
-	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
+	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
     switch (fi->type) {
     case TR_ADDED:
@@ -111,24 +115,12 @@ void loadFi(Header h, TFI_t fi)
 
 void freeFi(TFI_t fi)
 {
-    if (fi->name) {
-	free((void *)fi->name); fi->name = NULL;
-    }
-    if (fi->version) {
-	free((void *)fi->version); fi->version = NULL;
-    }
-    if (fi->release) {
-	free((void *)fi->release); fi->release = NULL;
-    }
-    if (fi->actions) {
-	free(fi->actions); fi->actions = NULL;
-    }
-    if (fi->replacedSizes) {
-	free(fi->replacedSizes); fi->replacedSizes = NULL;
-    }
-    if (fi->replaced) {
-	free(fi->replaced); fi->replaced = NULL;
-    }
+    fi->name = _free(fi->name);
+    fi->version = _free(fi->version);
+    fi->release = _free(fi->release);
+    fi->actions = _free(fi->actions);
+    fi->replacedSizes = _free(fi->replacedSizes);
+    fi->replaced = _free(fi->replaced);
 
     fi->bnl = headerFreeData(fi->bnl, -1);
     fi->dnl = headerFreeData(fi->dnl, -1);
@@ -140,18 +132,10 @@ void freeFi(TFI_t fi)
     fi->fgroup = headerFreeData(fi->fgroup, -1);
     fi->flangs = headerFreeData(fi->flangs, -1);
 
-    if (fi->apath) {
-	free(fi->apath); fi->apath = NULL;
-    }
-    if (fi->fuids) {
-	free(fi->fuids); fi->fuids = NULL;
-    }
-    if (fi->fgids) {
-	free(fi->fgids); fi->fgids = NULL;
-    }
-    if (fi->fmapflags) {
-	free(fi->fmapflags); fi->fmapflags = NULL;
-    }
+    fi->apath = _free(fi->apath);
+    fi->fuids = _free(fi->fuids);
+    fi->fgids = _free(fi->fgids);
+    fi->fmapflags = _free(fi->fmapflags);
 
     fi->fsm = freeFSM(fi->fsm);
 
@@ -182,12 +166,13 @@ void freeFi(TFI_t fi)
 
 /*@observer@*/ const char *const fileStageString(fileStage a) {
     switch(a) {
+    case FSM_UNKNOWN:	return "unknown";
     case FSM_CREATE:	return "create";
     case FSM_INIT:	return "init";
-    case FSM_MAP:	return "map ";
+    case FSM_MAP:	return "map";
     case FSM_MKDIRS:	return "mkdirs";
     case FSM_RMDIRS:	return "rmdirs";
-    case FSM_PRE:	return "pre ";
+    case FSM_PRE:	return "pre";
     case FSM_PROCESS:	return "process";
     case FSM_POST:	return "post";
     case FSM_MKLINKS:	return "mklinks";
@@ -209,12 +194,15 @@ void freeFi(TFI_t fi)
     case FSM_LINK:	return "link";
     case FSM_MKFIFO:	return "mkfifo";
     case FSM_MKNOD:	return "mknod";
+    case FSM_LSTAT:	return "lstat";
+    case FSM_STAT:	return "stat";
+    case FSM_CHROOT:	return "chroot";
 
     case FSM_NEXT:	return "next";
-    case FSM_EAT:	return "eat ";
-    case FSM_POS:	return "pos ";
-    case FSM_PAD:	return "pad ";
-    default:		return "??? ";
+    case FSM_EAT:	return "eat";
+    case FSM_POS:	return "pos";
+    case FSM_PAD:	return "pad";
+    default:		return "???";
     }
     /*@noteached@*/
 }
@@ -247,18 +235,26 @@ struct pkgIterator {
 /**
  */
 static /*@null@*/ void * pkgFreeIterator(/*@only@*/ /*@null@*/ void * this) {
-    if (this) free(this);
-    return NULL;
+    if (this) {
+	struct pkgIterator * pi = this;
+	TFI_t fi = pi->fi;
+    }
+    return _free(this);
 }
 
 /**
  */
-static /*@only@*/ void * pkgInitIterator(/*@kept@*/ TFI_t fi) {
-    struct pkgIterator *pi = xcalloc(sizeof(*pi), 1);
-    pi->fi = fi;
-    switch (fi->type) {
-    case TR_ADDED:	pi->i = 0;	break;
-    case TR_REMOVED:	pi->i = fi->fc;	break;
+static /*@only@*/ void * pkgInitIterator(/*@kept@*/ rpmTransactionSet ts,
+	/*@kept@*/ TFI_t fi)
+{
+    struct pkgIterator * pi = NULL;
+    if (ts && fi) {
+	pi = xcalloc(sizeof(*pi), 1);
+	pi->fi = fi;
+	switch (fi->type) {
+	case TR_ADDED:	pi->i = 0;	break;
+	case TR_REMOVED:	pi->i = fi->fc;	break;
+	}
     }
     return pi;
 }
@@ -266,7 +262,7 @@ static /*@only@*/ void * pkgInitIterator(/*@kept@*/ TFI_t fi) {
 /**
  */
 static int pkgNextIterator(/*@null@*/ void * this) {
-    struct pkgIterator *pi = this;
+    struct pkgIterator * pi = this;
     int i = -1;
 
     if (pi) {
@@ -288,17 +284,15 @@ static int pkgNextIterator(/*@null@*/ void * this) {
 int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a)
 {
     int rc = 0;
-    void * pi;
-    int i;
 
-    if (fi->actions == NULL)
-	return rc;
-
-    pi = pkgInitIterator(fi);
-    while ((i = pkgNextIterator(pi)) != -1) {
-	if (pkgAction(ts, fi, i, a))
-	    rc++;
+    if (fi->actions) {
+	void * pi = pkgInitIterator(ts, fi);
+	int i;
+	while ((i = pkgNextIterator(pi)) != -1) {
+	    if (pkgAction(ts, fi, i, a))
+		rc++;
+	}
+	pi = pkgFreeIterator(pi);
     }
-    pkgFreeIterator(pi);
     return rc;
 }
