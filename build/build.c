@@ -20,7 +20,6 @@
 #include "rpmlib.h"
 #include "messages.h"
 #include "stringbuf.h"
-#include "var.h"
 #include "misc.h"
 #include "pack.h"
 
@@ -502,8 +501,7 @@ static int checkSources(Spec s)
     while (source) {
 	sprintf(buf, "%s/%s", getVar(RPMVAR_SOURCEDIR), source->source);
 	if (access(buf, R_OK)) {
-	    error(RPMERR_BADSPEC, "missing source or patch: %s",
-		  source->source);
+	    error(RPMERR_BADSPEC, "missing source or patch: %s", buf);
 	    return RPMERR_BADSPEC;
 	}
 	source = source->next;
@@ -515,7 +513,7 @@ static int checkSources(Spec s)
 	if (package->icon) {
 	    sprintf(buf, "%s/%s", getVar(RPMVAR_SOURCEDIR), package->icon);
 	    if (access(buf, R_OK)) {
-		error(RPMERR_BADSPEC, "missing icon: %s", package->icon);
+		error(RPMERR_BADSPEC, "missing icon: %s", buf);
 		return RPMERR_BADSPEC;
 	    }
 	}
