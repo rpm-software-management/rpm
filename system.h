@@ -597,7 +597,7 @@ extern int glob_pattern_p (const char *__pattern, int __quote)
 /*@=constuse@*/
 #endif
 
-extern int fnmatch (const char *pattern, const char *string, int flags)
+extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 	/*@*/;
 /*@=declundef =incondefs @*/
 #endif

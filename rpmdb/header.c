@@ -2506,7 +2506,9 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
  * @param val		tag value to find
  * @return		tag name, NULL on not found
  */
+/*@observer@*/ /*@null@*/
 static const char * myTagName(headerTagTableEntry tbl, int val)
+	/*@*/
 {
     static char name[128];
     const char * s;
@@ -2535,6 +2537,7 @@ static const char * myTagName(headerTagTableEntry tbl, int val)
  * @return		tag value, 0 on not found
  */
 static int myTagValue(headerTagTableEntry tbl, const char * name)
+	/*@*/
 {
     for (; tbl->name != NULL; tbl++) {
 	if (!xstrcasecmp(tbl->name, name))
@@ -3343,11 +3346,14 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (isxml) {
 		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
 
-		need = strlen(tagN) + sizeof("  <rpmTag name=\"\">\n") - 1;
+		need = sizeof("  <rpmTag name=\"\">\n") - 1;
+		if (tagN != NULL)
+		    need += strlen(tagN);
 		t = hsaReserve(hsa, need);
 /*@-boundswrite@*/
 		te = stpcpy(t, "  <rpmTag name=\"");
-		te = stpcpy(te, tagN);
+		if (tagN != NULL)
+		    te = stpcpy(te, tagN);
 		te = stpcpy(te, "\">\n");
 /*@=boundswrite@*/
 		hsa->vallen += (te - t);

@@ -14,7 +14,7 @@
 /*@=noparams@*/
 #if defined(__LCLINT__)
 /*@-declundef -exportheader -redecl @*/ /* LCL: missing annotation */
-extern int fnmatch (const char *pattern, const char *string, int flags)
+extern int fnmatch (const char *__pattern, const char *__name, int __flags)
 	/*@*/;
 /*@=declundef =exportheader =redecl @*/
 #endif
@@ -65,6 +65,7 @@ int dbiTagsMax = 0;
 /* We use this to comunicate back to the the rpm transaction
  *  what their install instance was on a rpmdbAdd().
  */ 
+/*@unchecked@*/
 unsigned int myinstall_instance = 0;
 
 /* Bit mask macros. */
@@ -375,9 +376,11 @@ union _dbswap {
 };
 
 #define	_DBSWAP(_a) \
+/*@-bounds@*/ \
   { unsigned char _b, *_c = (_a).uc; \
     _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
     _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+/*@=bounds@*/ \
   }
 
 /**
