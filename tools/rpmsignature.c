@@ -26,12 +26,13 @@ int main(int argc, char **argv)
     readLead(fdi, &lead);
     rpmReadSignature(fdi, &sig, lead.signature_type);
     switch (lead.signature_type) {
-      case RPMSIG_NONE:
+    case RPMSIGTYPE_NONE:
 	fprintf(stderr, _("No signature available.\n"));
 	break;
-      default:
+    default:
 	fdo = Fopen("-", "w.ufdio");
 	rpmWriteSignature(fdo, sig);
+	break;
     }
     
     return 0;

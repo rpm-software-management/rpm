@@ -469,7 +469,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	lead.type = type;
 	lead.archnum = archnum;
 	lead.osnum = osnum;
-	lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
+	lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
 	{   const char *name, *version, *release;
 	    headerNVR(h, &name, &version, &release);

@@ -8,35 +8,37 @@
 
 #include <header.h>
 
+/** \ingroup signature
+ * Signature types stored in rpm lead.
+ */
+typedef	enum sigType_e {
+    RPMSIGTYPE_NONE	= 0,	/*!< unused, legacy. */
+    RPMSIGTYPE_PGP262_1024 = 1,	/*!< unused, legacy. */
+    RPMSIGTYPE_BAD	= 2,	/*!< Unknown signature type. */
+    RPMSIGTYPE_MD5	= 3,	/*!< unused, legacy. */
+    RPMSIGTYPE_MD5_PGP	= 4,	/*!< unused, legacy. */
+    RPMSIGTYPE_HEADERSIG= 5,	/*!< Header style signature */
+    RPMSIGTYPE_DISABLE	= 6,	/*!< Disable verification (debugging only) */
+} sigType;
+
+/** \ingroup signature
+ * Identify PGP versions.
+ * @note Greater than 0 is a valid PGP version.
+ */
+typedef enum pgpVersion_e {
+    PGP_NOTDETECTED	= -1,
+    PGP_UNKNOWN		= 0,
+    PGP_2		= 2,
+    PGP_5		= 5
+} pgpVersion;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**************************************************/
-/*                                                */
-/* Signature types                                */
-/*                                                */
-/* These are what goes in the Lead                */
-/*                                                */
-/**************************************************/
-
-#define RPMSIG_NONE		0  /* Do not change! */
-#define RPMSIG_BAD		2  /* Returned for unknown types */
-/* The following types are no longer generated */
-#define RPMSIG_PGP262_1024	1  /* No longer generated */
-#define RPMSIG_MD5		3
-#define RPMSIG_MD5_PGP		4
-
-/* These are the new-style signatures.  They are Header structures.    */
-/* Inside them we can put any number of any type of signature we like. */
-
-#define RPMSIG_HEADERSIG	5  /* New Header style signature */
-
-#define	RPMSIG_UNSIGNED		6
-
 /** \ingroup signature
  * Return new, empty (signature) header instance.
- * @return		new
+ * @return		signature header
  */
 Header rpmNewSignature(void);
 
@@ -48,7 +50,7 @@ Header rpmNewSignature(void);
  * @param sig_type	type of signature header to read (from lead).
  * @return		0 on success, 1 on error
  */
-int rpmReadSignature(FD_t fd, /*@out@*/ Header *header, short sig_type);
+int rpmReadSignature(FD_t fd, /*@out@*/ Header *header, sigType sig_type);
 
 /** \ingroup signature
  * Write signature header.
@@ -61,7 +63,7 @@ int rpmWriteSignature(FD_t fd, Header header);
 /** \ingroup signature
  *  Generate a signature of data in file, insert in header.
  */
-int rpmAddSignature(Header header, const char *file,
+int rpmAddSignature(Header h, const char *file,
 		    int_32 sigTag, const char *passPhrase);
 
 /******************************************************************/
@@ -79,23 +81,12 @@ int rpmLookupSignatureType(int action);
 /** \ingroup signature
  *  Read a pass phrase from the user.
  */
-char *rpmGetPassPhrase(const char *prompt, const int sigTag);
-
-/** \ingroup signature
- * Identify PGP versions.
- * @note Greater than 0 is a valid PGP version.
- */
-typedef enum pgpVersion_e {
-	PGP_NOTDETECTED = -1,
-	PGP_UNKNOWN = 0,
-	PGP_2 = 2,
-	PGP_5 = 5
-} pgpVersion;
+char * rpmGetPassPhrase(const char *prompt, const int sigTag);
 
 /** \ingroup signature
  *  Return path to pgp executable of given type, or NULL when not found.
  */
-const char *rpmDetectPGPVersion( /*@out@*/ pgpVersion *pgpVersion);
+/*@null@*/ const char * rpmDetectPGPVersion( /*@out@*/ pgpVersion *pgpVersion);
 
 #ifdef __cplusplus
 }

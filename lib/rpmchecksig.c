@@ -185,7 +185,7 @@ l = malloc(sizeof(*l));
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	    goto exit;
 
-	l->signature_type = RPMSIG_HEADERSIG;
+	l->signature_type = RPMSIGTYPE_HEADERSIG;
 	if (writeLead(ofd, l)) {
 	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), trpm,
 		Fstrerror(ofd));

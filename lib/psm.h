@@ -73,6 +73,7 @@ struct transactionFileInfo_s {
     int astriplen;
     int striplen;
     int scriptArg;
+    int chrootDone;
     unsigned int archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
     mode_t fperms;		/*!< File perms (0644) if not mapped. */

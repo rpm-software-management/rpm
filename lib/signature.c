@@ -43,7 +43,6 @@ int rpmLookupSignatureType(int action)
 	break;
     case RPMLOOKUPSIG_ENABLE:
 	disabled = 0;
-	/* fall through */
 	/*@fallthrough@*/
     case RPMLOOKUPSIG_QUERY:
 	if (disabled)
@@ -125,7 +124,7 @@ static inline int checkSize(FD_t fd, int siglen, int pad, int datalen)
     return ((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size);
 }
 
-int rpmReadSignature(FD_t fd, Header * headerp, short sigType)
+int rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 {
     byte buf[2048];
     int sigSize, pad;
@@ -139,15 +138,15 @@ int rpmReadSignature(FD_t fd, Header * headerp, short sigType)
 
     /* XXX Yuck, see ALPHA_LOSSAGE in lib/rpmchecksig.c */
 #ifdef	__alpha
-    if (sigType == RPMSIG_NONE) sigType = RPMSIG_HEADERSIG;
+    if (sig_type == RPMSIGTYPE_NONE) sig_type = RPMSIGTYPE_HEADERSIG;
 #endif
     
-    switch (sigType) {
-    case RPMSIG_NONE:
+    switch (sig_type) {
+    case RPMSIGTYPE_NONE:
 	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
 	rc = 0;
 	break;
-    case RPMSIG_PGP262_1024:
+    case RPMSIGTYPE_PGP262_1024:
 	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
 	/* These are always 256 bytes */
 	if (timedRead(fd, buf, 256) != 256)
@@ -156,13 +155,13 @@ int rpmReadSignature(FD_t fd, Header * headerp, short sigType)
 	headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
 	rc = 0;
 	break;
-    case RPMSIG_MD5:
-    case RPMSIG_MD5_PGP:
+    case RPMSIGTYPE_MD5:
+    case RPMSIGTYPE_MD5_PGP:
 	rpmError(RPMERR_BADSIGTYPE,
 	      _("Old (internal-only) signature!  How did you get that!?\n"));
 	break;
-    case RPMSIG_HEADERSIG:
-    case RPMSIG_UNSIGNED:
+    case RPMSIGTYPE_HEADERSIG:
+    case RPMSIGTYPE_DISABLE:
 	/* This is a new style signature */
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	if (h == NULL)
@@ -174,7 +173,7 @@ int rpmReadSignature(FD_t fd, Header * headerp, short sigType)
 	    sigSize -= (16 + 16);
 
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	if (sigType == RPMSIG_HEADERSIG) {
+	if (sig_type == RPMSIGTYPE_HEADERSIG) {
 	    if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type,
 				(void **)&archSize, &count))
 		break;

@@ -212,77 +212,6 @@ void freeFi(TFI_t fi)
     /*@notreached@*/
 }
 
-#ifdef	DYING
-/**
- */
-struct pkgIterator {
-/*@dependent@*/ /*@kept@*/ TFI_t fi;
-    int i;
-};
-
-/**
- */
-static /*@null@*/ void * pkgFreeIterator(/*@only@*/ /*@null@*/ void * this) {
-    return _free(this);
-}
-
-/**
- */
-static /*@only@*/ void * pkgInitIterator(/*@kept@*/ rpmTransactionSet ts,
-	/*@kept@*/ TFI_t fi)
-{
-    struct pkgIterator * pi = NULL;
-    if (ts && fi) {
-	pi = xcalloc(sizeof(*pi), 1);
-	pi->fi = fi;
-	switch (fi->type) {
-	case TR_ADDED:	pi->i = 0;	break;
-	case TR_REMOVED:	pi->i = fi->fc;	break;
-	}
-    }
-    return pi;
-}
-
-/**
- */
-static int pkgNextIterator(/*@null@*/ void * this) {
-    struct pkgIterator * pi = this;
-    int i = -1;
-
-    if (pi) {
-	TFI_t fi = pi->fi;
-	switch (fi->type) {
-	case TR_ADDED:
-	    if (pi->i < fi->fc)
-		i = pi->i++;
-	    break;
-	case TR_REMOVED:
-	    if (pi->i >= 0)
-		i = --pi->i;
-	    break;
-	}
-    }
-    return i;
-}
-
-int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a)
-{
-    int rc = 0;
-
-    if (fi->actions) {
-	void * pi = pkgInitIterator(ts, fi);
-	int i;
-	while ((i = pkgNextIterator(pi)) != -1) {
-	    if (pkgAction(ts, fi, i, a))
-		rc++;
-	}
-	pi = pkgFreeIterator(pi);
-    }
-    return rc;
-}
-#endif
-
-
 /**
  * Macros to be defined from per-header tag values.
  * @todo Should other macros be added from header when installing a package?
@@ -362,51 +291,6 @@ static void setFileOwners(TFI_t fi)
 	fi->fgids[i] = gid;
     }
 }
-
-#ifdef DYING
-/**
- * Truncate header changelog tag to configurable limit before installing.
- * @param h		header
- * @return		none
- */
-static void trimChangelog(TFI_t fi, Header h)
-{
-    HGE_t hge = (HGE_t)fi->hge;
-    HFD_t hfd = fi->hfd;
-    int * times;
-    const char ** names, ** texts;
-    int cnt, ctt;
-    long numToKeep = rpmExpandNumeric(
-		"%{?_instchangelog:%{_instchagelog}}%{!?_instchangelog:5}");
-    char * end;
-    int count;
-
-    if (numToKeep < 0) return;
-
-    if (!numToKeep) {
-	headerRemoveEntry(h, RPMTAG_CHANGELOGTIME);
-	headerRemoveEntry(h, RPMTAG_CHANGELOGNAME);
-	headerRemoveEntry(h, RPMTAG_CHANGELOGTEXT);
-	return;
-    }
-
-    if (!hge(h, RPMTAG_CHANGELOGTIME, NULL, (void **) &times, &count) ||
-	count < numToKeep) return;
-
-    hge(h, RPMTAG_CHANGELOGNAME, &cnt, (void **) &names, &count);
-    hge(h, RPMTAG_CHANGELOGTEXT, &ctt, (void **) &texts, &count);
-
-    headerModifyEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE, times,
-		      numToKeep);
-    headerModifyEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE, names,
-		      numToKeep);
-    headerModifyEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE, texts,
-		      numToKeep);
-
-    names = hfd(names, cnt);
-    texts = hfd(texts, ctt);
-}
-#endif	/* DYING */
 
 /**
  * Copy file data from h to newH.
@@ -984,6 +868,50 @@ exit:
 }
 
 /**
+ * Enter and leave a chroot.
+ * @param ts		transaction set
+ * @param fi		transaction element file info
+ * @return		0 on sucess or not performed, chroot(2) rc otherwise
+ */
+static int psmChroot(rpmTransactionSet ts, TFI_t fi, int enter)
+{
+    int rc = 0;
+
+    if (enter) {
+	/* Change root directory if requested and not already done. */
+	if (ts->rootDir && !ts->chrootDone && !fi->chrootDone) {
+	    static int _loaded = 0;
+
+	    /*
+	     * This loads all of the name services libraries, in case we
+	     * don't have access to them in the chroot().
+	     */
+	    if (!_loaded) {
+		(void)getpwnam("root");
+		endpwent();
+		_loaded++;
+	    }
+
+	    chdir("/");
+	    /*@-unrecog@*/
+	    rc = chroot(ts->rootDir);
+	    /*@=unrecog@*/
+	    fi->chrootDone = ts->chrootDone = 1;
+	}
+    } else {
+	/* Restore root directory if changed. */
+	if (fi->chrootDone) {
+	    /*@-unrecog@*/
+	    rc = chroot(".");
+	    /*@=unrecog@*/
+	    fi->chrootDone = ts->chrootDone = 0;
+	    chdir(ts->currDir);
+	}
+    }
+    return rc;
+}
+
+/**
  * @todo Packages w/o files never get a callback, hence don't get displayed
  * on install with -v.
  */
@@ -992,7 +920,6 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
     HGE_t hge = (HGE_t)fi->hge;
 /*@observer@*/ static char * stepName = " install";
     Header oldH = NULL;
-    int chrootDone = 0;
     int otherOffset = 0;
     int ec = 2;		/* assume error return */
     int rc;
@@ -1073,23 +1000,8 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	goto exit;
     }
 
-    if (ts->rootDir && !ts->chrootDone) {
-	static int _loaded = 0;
-
-	/*
-	 * This loads all of the name services libraries, in case we
-	 * don't have access to them in the chroot().
-	 */
-	if (!_loaded) {
-	    (void)getpwnam("root");
-	    endpwent();
-	    _loaded++;
-	}
-
-	chdir("/");
-	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
-	chrootDone = ts->chrootDone = 1;
-    }
+    /* Change root directory if requested and not already done. */
+    (void) psmChroot(ts, fi, 1);
 
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
 
@@ -1101,11 +1013,8 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	    goto exit;
     }
 
-    if (ts->rootDir && chrootDone) {
-	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
-	chrootDone = ts->chrootDone = 0;
-	chdir(ts->currDir);
-    }
+    /* Restore root directory if changed. */
+    (void) psmChroot(ts, fi, 0);
 
     if (fi->fc > 0 && fi->fstates) {
 	headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
@@ -1117,12 +1026,16 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 			&installTime, 1);
     }
 
-#ifdef	DYING
-    trimChangelog(fi, fi->h);
-#endif
+    /*
+     * Legacy: changelogs used to be trimmed to (configurable) lsat N entries
+     * here. This doesn't make sense now that headers have immutable regions,
+     * as trimming changelogs would only increase the size of the header.
+     */
 
-    /* if this package has already been installed, remove it from the database
-       before adding the new one */
+    /*
+     * If this package has already been installed, remove it from the database
+     * before adding the new one.
+     */
     if (otherOffset)
         rpmdbRemove(ts->rpmdb, ts->id, otherOffset);
 
@@ -1169,11 +1082,9 @@ int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
     ec = 0;
 
 exit:
-    if (ts->chrootDone) {
-	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
-	chdir(ts->currDir);
-	ts->chrootDone = 0;
-    }
+    /* Restore root directory if changed. */
+    (void) psmChroot(ts, fi, 0);
+
     if (oldH)
 	headerFree(oldH);
     return ec;
@@ -1183,7 +1094,6 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 {
 /*@observer@*/ static char * stepName = "   erase";
     Header h;
-    int chrootDone = 0;
     const char * failedFile = NULL;
     const void * pkgKey = NULL;
     int rc = 0;
@@ -1198,8 +1108,10 @@ assert(fi->type == TR_REMOVED);
      * versions of this package that will be installed when we are finished.
      */
     fi->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) - 1;
-    if (fi->scriptArg < 0)
-	return 1;
+    if (fi->scriptArg < 0) {
+	rc = 1;
+	goto exit;
+    }
 
     {	rpmdbMatchIterator mi = NULL;
 
@@ -1209,27 +1121,31 @@ assert(fi->type == TR_REMOVED);
 	h = rpmdbNextIterator(mi);
 	if (h == NULL) {
 	    rpmdbFreeIterator(mi);
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
 	h = headerLink(h);
 	rpmdbFreeIterator(mi);
     }
 
-    if (ts->rootDir && !ts->chrootDone) {
-	chdir("/");
-	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
-	chrootDone = ts->chrootDone = 1;
-    }
+    /* Change root directory if requested and not already done. */
+    (void) psmChroot(ts, fi, 1);
 
     if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
-	if (runImmedTriggers(ts, RPMSENSE_TRIGGERUN, h, -1))
-	    return 2;
+	rc = runImmedTriggers(ts, RPMSENSE_TRIGGERUN, h, -1);
+	if (rc) {
+	    rc = 2;
+	    goto exit;
+	}
 
 	/* run triggers which are set off by the removal of this package */
-	if (runTriggers(ts, RPMSENSE_TRIGGERUN, h, -1))
-	    return 1;
+	rc = runTriggers(ts, RPMSENSE_TRIGGERUN, h, -1);
+	if (rc) {
+	    rc = 1;
+	    goto exit;
+	}
     }
 
     rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
@@ -1237,8 +1153,10 @@ assert(fi->type == TR_REMOVED);
 
     rc = runInstScript(ts, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, fi->scriptArg,
 		          (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS));
-    if (rc)
-	return 1;
+    if (rc) {
+	rc = 1;
+	goto exit;
+    }
 
     if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
 
@@ -1253,31 +1171,33 @@ assert(fi->type == TR_REMOVED);
 	    (void)ts->notify(h, RPMCALLBACK_UNINST_STOP, 0, fi->fc,
 			pkgKey, ts->notifyData);
     }
+    /* XXX WTFO? erase failures are not cause for stopping. */
 
     rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
 		stepName, "post-erase");
 
     rc = runInstScript(ts, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
 		fi->scriptArg, (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS));
-    /* XXX postun failures are not cause for erasure failure. */
+    /* XXX WTFO? postun failures are not cause for erasure failure. */
 
     if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal. */
 	rc = runTriggers(ts, RPMSENSE_TRIGGERPOSTUN, h, -1);
-	if (rc)
-	    return 2;
+	if (rc) {
+	    rc = 2;
+	    goto exit;
+	}
     }
+    rc = 0;
 
-    if (ts->rootDir && chrootDone) {
-	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
-	chrootDone = ts->chrootDone = 0;
-	chdir(ts->currDir);
-    }
+exit:
+    /* Restore root directory if changed. */
+    (void) psmChroot(ts, fi, 0);
 
-    if (!(ts->transFlags & RPMTRANS_FLAG_TEST))
+    if (!rc && !(ts->transFlags & RPMTRANS_FLAG_TEST))
 	rpmdbRemove(ts->rpmdb, ts->id, fi->record);
 
-    return 0;
+    return rc;
 }
 
 int repackage(const rpmTransactionSet ts, TFI_t fi)
@@ -1290,7 +1210,6 @@ int repackage(const rpmTransactionSet ts, TFI_t fi)
     Header h = NULL;
     Header oh = NULL;
     char * rpmio_flags;
-    int chrootDone = 0;
     int saveerrno;
     int rc = 0;
 
@@ -1304,7 +1223,8 @@ assert(fi->type == TR_REMOVED);
 	h = rpmdbNextIterator(mi);
 	if (h == NULL) {
 	    rpmdbFreeIterator(mi);
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
 	h = headerLink(h);
 	rpmdbFreeIterator(mi);
@@ -1372,7 +1292,7 @@ assert(fi->type == TR_REMOVED);
 	lead.type = RPMLEAD_BINARY;
 	lead.archnum = archnum;
 	lead.osnum = osnum;
-	lead.signature_type = RPMSIG_UNSIGNED;
+	lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
 	{   char buf[256];
 	    sprintf(buf, "%s-%s-%s", fi->name, fi->version, fi->release);
@@ -1400,11 +1320,7 @@ assert(fi->type == TR_REMOVED);
     if (rc) goto exit;
 
     /* Change root directory if requested and not already done. */
-    if (ts->rootDir && !ts->chrootDone) {
-	chdir("/");
-	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
-	chrootDone = ts->chrootDone = 1;
-    }
+    (void) psmChroot(ts, fi, 1);
 
     /* Write the payload into the package. */
     {	FD_t cfd;
@@ -1430,11 +1346,7 @@ assert(fi->type == TR_REMOVED);
 
 exit:
     /* Restore root directory if changed. */
-    if (ts->rootDir && chrootDone) {
-	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
-	chrootDone = ts->chrootDone = 0;
-	chdir(ts->currDir);
-    }
+    (void) psmChroot(ts, fi, 0);
 
     if (h)	headerFree(h);
     if (oh)	headerFree(oh);
