@@ -6,7 +6,7 @@ use DynaLoader;
 use Data::Dumper;
 
 use vars qw/$VERSION/;
-$VERSION = '0.09';
+$VERSION = '0.10';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
