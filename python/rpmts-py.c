@@ -1265,6 +1265,8 @@ fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
 /*@null@*/
 static specObject *
 spec_Parse(rpmtsObject * s, PyObject * args)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     const char * specfile;
     Spec spec;
