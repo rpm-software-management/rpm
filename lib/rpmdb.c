@@ -197,13 +197,15 @@ INLINE int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp, size_t * keylenp,
 if (_debug < 0 || dbi->dbi_debug) {
 char keyval[32];
 int dataval = 0xdeadbeef;
-if (dbi->dbi_rpmtag == RPMDBI_PACKAGES && keypp && *keypp && keylenp && *keylenp >= sizeof(keyval)) {
-    int keyint;
+if (dbi->dbi_rpmtag == RPMDBI_PACKAGES && keypp && *keypp && keylenp && *keylenp <= sizeof(int)) {
+    int keyint = 0;
     memcpy(&keyint, *keypp, sizeof(keyint));
-    sprintf(keyval, "%d", keyint);
+    sprintf(keyval, "#%d", keyint);
 } else keyval[0] = '\0';
-if (rc == 0 && datapp && *datapp && datalenp && *datalenp >= sizeof(dataval))
+if (rc == 0 && datapp && *datapp && datalenp && *datalenp >= sizeof(dataval)) {
     memcpy(&dataval, *datapp, sizeof(dataval));
+    dataval = ntohl(dataval);
+}
 fprintf(stderr, "    Get %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n",
     tagName(dbi->dbi_rpmtag), *keypp, (long)*keylenp, *datapp, (long)*datalenp,
     (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)*keypp : keyval), (unsigned)dataval, rc);

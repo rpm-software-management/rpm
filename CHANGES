@@ -43,6 +43,7 @@
 	- still more boring lclint annotations and fiddles.
 	- enough lclint annotations and fiddles already.
 	- fix: specfile queries with BuildArch: (#27589).
+	- fix: debugging message displays header keys (#38454).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
