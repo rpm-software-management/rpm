@@ -10,8 +10,9 @@
 >>8	beshort		1		i386
 >>8	beshort		2		Alpha
 >>8	beshort		3		Sparc
->>8	beshort		4		MIPS
+>>8	beshort		4		MIPS big endian
 >>8	beshort		5		PowerPC
 >>8	beshort		6		68000
 >>8	beshort		7		SGI
+>>8	beshort		11		MIPS little endian
 >>10	string		x		%s

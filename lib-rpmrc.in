@@ -41,7 +41,7 @@ arch_canon: 	sun4m:	sparc	3
 arch_canon: 	sun4c:	sparc	3
 arch_canon:     sun4d:  sparc   3
 # This is really a place holder for MIPS.
-arch_canon:	mips:	mips	4
+arch_canon:	mipseb:	mipseb	4
 arch_canon:	ppc:	ppc	5
 arch_canon:	m68k:	m68k	6
 arch_canon:	IP:	sgi	7
@@ -50,6 +50,7 @@ arch_canon:     rs6000: rs6000  8
 arch_canon:    9000/712:       hppa1.1 9
 
 arch_canon:    sun4u:   usparc  10
+arch_canon:	mipsel:	mipsel	11
 
 #############################################################
 # Canonical OS names and numbers
@@ -118,10 +119,13 @@ arch_compat: usparc: sparc
 arch_compat: sparc: noarch
 
 arch_compat: ppc: noarch
-arch_compat: mips: noarch
+arch_compat: mipseb: noarch
+arch_compat: mipsel: noarch
 
 arch_compat: hppa1.1: hppa1.0
 arch_compat: hppa1.0: noarch
+# we used to call mipseb just mips -- let those packages still work
+arch_compat: mipseb: mips
 
 os_compat:   IRIX64: IRIX
 
@@ -137,4 +141,6 @@ buildarch_compat: sparc: noarch
 buildarch_compat: alpha: noarch
 buildarch_compat: m68k: noarch
 buildarch_compat: ppc: noarch
-buildarch_compat: mips: noarch
+buildarch_compat: mipsel: noarch
+buildarch_compat: mipseb: noarch
+

@@ -682,6 +682,14 @@ static void defaultMachine(char ** arch, char ** os) {
 	while (*chptr++)
 	    if (*chptr == '/') *chptr = '-';
 
+	#if defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL)
+	    /* little endian */
+	    strcpy(un.machine, "mipsel");
+	#elif defined(__MIPSEB__) || defined(__MIPSEB) || defined(_MIPSEB)
+	   /* big endian */
+		strcpy(un.machine, "mipseb");
+	#endif
+
 	#if defined(__hpux) && defined(_SC_CPU_VERSION)
 	{
 	    int cpu_version = sysconf(_SC_CPU_VERSION);
