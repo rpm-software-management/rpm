@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.7 2000/06/17 08:11:25 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.8 2000/06/17 08:39:32 rjray Exp $";
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -896,7 +896,7 @@ int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
                   "RPM::Header::rpmhdr_cmpver: Arg 1 has no header data");
         return 0;
     }
-    header_from_object(svp, two, self);
+    header_from_object(svp, two, other);
     if (! two)
     {
         rpm_error(aTHX_ RPMERR_BADARG,
@@ -904,6 +904,7 @@ int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
         return 0;
     }
 
+//    fprintf(stderr, "Before call: 0x%08x 0x%08x %d\n", (U32)one->hdr, (U32)two->hdr, rpmVersionCompare(one->hdr, two->hdr));
     return rpmVersionCompare(one->hdr, two->hdr);
 }
 
