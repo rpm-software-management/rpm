@@ -37,6 +37,7 @@
 	- added --ignoreos
 	- fixed error message given when a file is missing
 	- fixed hashing when multiple packages are being modified
+	- changed man page for readability (thanks to Joseph L. Hartmann, Jr)
 
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
