@@ -198,6 +198,8 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 	    break;
 	}
     }
+    pkgURL[i] = NULL;
+    tmppkgURL[numTmpPkgs] = NULL;
 
     sourceURL = alloca(sizeof(*sourceURL) * i);
 
