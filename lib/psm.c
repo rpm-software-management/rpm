@@ -589,17 +589,16 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 
     if (!rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
-	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
-	    xx = chdir("/");
+	xx = chdir("/");
 /*@-nullpass@*/
-	    rootFd = open(".", O_RDONLY, 0);
+	rootFd = open(".", O_RDONLY, 0);
 /*@=nullpass@*/
-	    if (rootFd >= 0) {
-		/*@-superuser -noeffect @*/
+	if (rootFd >= 0) {
+	    /*@-superuser -noeffect @*/
+	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 		xx = chroot(rootDir);
-		/*@=superuser =noeffect @*/
-		xx = rpmtsSetChrootDone(ts, 1);
-	    }
+	    /*@=superuser =noeffect @*/
+	    xx = rpmtsSetChrootDone(ts, 1);
 	}
     }
 
@@ -638,10 +637,12 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     rpmluaDelVar(lua, "arg");
 
     if (rootFd >= 0) {
+	const char *rootDir = rpmtsRootDir(ts);
 	xx = fchdir(rootFd);
 	xx = close(rootFd);
 	/*@-superuser -noeffect @*/
-	xx = chroot(".");
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	    xx = chroot(".");
 	/*@=superuser =noeffect @*/
 	xx = rpmtsSetChrootDone(ts, 0);
     }
@@ -937,7 +938,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    }
 	}
 
-	rootDir = rpmtsRootDir(ts);
+	rootDir = ts->rootDir;	/* HACK: rootDir = rpmtsRootDir(ts); instead */
 	if (rootDir  != NULL)	/* XXX can't happen */
 	switch(urlIsURL(rootDir)) {
 	case URL_IS_PATH:
@@ -2072,7 +2073,8 @@ psm->te->h = headerFree(psm->te->h);
 
 	    xx = chdir("/");
 	    /*@-superuser@*/
-	    rc = chroot(rootDir);
+	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+		rc = chroot(rootDir);
 	    /*@=superuser@*/
 	    psm->chrootDone = 1;
 	    (void) rpmtsSetChrootDone(ts, 1);
@@ -2081,9 +2083,11 @@ psm->te->h = headerFree(psm->te->h);
     case PSM_CHROOT_OUT:
 	/* Restore root directory if changed. */
 	if (psm->chrootDone) {
+	    const char * rootDir = rpmtsRootDir(ts);
 	    const char * currDir = rpmtsCurrDir(ts);
 	    /*@-superuser@*/
-	    rc = chroot(".");
+	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+		rc = chroot(".");
 	    /*@=superuser@*/
 	    psm->chrootDone = 0;
 	    (void) rpmtsSetChrootDone(ts, 0);

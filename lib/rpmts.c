@@ -933,7 +933,24 @@ int rpmtsUnorderedSuccessors(rpmts ts, int first)
 
 const char * rpmtsRootDir(rpmts ts)
 {
-    return (ts != NULL ? ts->rootDir : NULL);
+    const char * rootDir = NULL;
+
+    if (ts != NULL && ts->rootDir != NULL) {
+	urltype ut = urlPath(ts->rootDir, &rootDir);
+	switch (ut) {
+	case URL_IS_UNKNOWN:
+	case URL_IS_PATH:
+	    break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
+	case URL_IS_FTP:
+	case URL_IS_DASH:
+	default:
+	    rootDir = "/";
+	    break;
+	}
+    }
+    return rootDir;
 }
 
 void rpmtsSetRootDir(rpmts ts, const char * rootDir)

@@ -917,10 +917,28 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     if (perms >= 0)	db->db_perms = perms;
     if (flags >= 0)	db->db_flags = flags;
 
-    /*@-nullpass@*/
-    db->db_root = rpmGetPath( (root && *root ? root : _DB_ROOT), NULL);
+/*@-nullpass@*/
+    /* HACK: no URL's for root prefixed dbpath yet. */
+    if (root && *root) {
+	const char * rootpath = NULL;
+	urltype ut = urlPath(root, &rootpath);
+	switch (ut) {
+	case URL_IS_PATH:
+	case URL_IS_UNKNOWN:
+	    db->db_root = rpmGetPath(root, NULL);
+	    break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
+	case URL_IS_FTP:
+	case URL_IS_DASH:
+	default:
+	    db->db_root = rpmGetPath(_DB_ROOT, NULL);
+	    break;
+	}
+    } else
+	db->db_root = rpmGetPath(_DB_ROOT, NULL);
     db->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
-    /*@=nullpass@*/
+/*@=nullpass@*/
     if (!(db->db_home && db->db_home[0] != '%')) {
 	rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
 	db->db_root = _free(db->db_root);

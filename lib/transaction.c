@@ -1671,7 +1671,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	const char * rootDir = rpmtsRootDir(ts);
 	xx = chdir("/");
 	/*@-superuser -noeffect @*/
-	if (rootDir != NULL)
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 	    xx = chroot(rootDir);
 	/*@=superuser =noeffect @*/
 	(void) rpmtsSetChrootDone(ts, 1);
@@ -1843,9 +1843,11 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     ps = rpmpsFree(ps);
 
     if (rpmtsChrootDone(ts)) {
+	const char * rootDir = rpmtsRootDir(ts);
 	const char * currDir = rpmtsCurrDir(ts);
 	/*@-superuser -noeffect @*/
-	xx = chroot(".");
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	    xx = chroot(".");
 	/*@=superuser =noeffect @*/
 	(void) rpmtsSetChrootDone(ts, 0);
 	if (currDir != NULL)
