@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-FD_t		fadOpen		(const char * path, int flags, int perms);
+/*@null@*/ FD_t	fadOpen		(const char * path, int flags, int perms);
 unsigned int	fadAlloc	(FD_t fd, unsigned int size); /* 0 on failure */
 void		fadFree		(FD_t fd, unsigned int offset);
 

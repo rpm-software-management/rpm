@@ -80,7 +80,7 @@ FD_t fadOpen(const char * path, int flags, int perms)
 	}
     }
 
-    return fd;
+    /*@-refcounttrans@*/ return fd /*@=refcounttrans@*/ ;
 }
 
 /* returns 0 on failure */

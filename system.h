@@ -89,7 +89,7 @@ extern time_t timezone;
 char *memchr ();
 #endif
 
-#if !defined(HAVE_STPCPY)
+#if !defined(HAVE_STPCPY) || defined(__LCLINT__)
 char * stpcpy(char * dest, const char * src);
 #endif
 

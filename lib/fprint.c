@@ -30,8 +30,8 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
     return data[0];
 }
 
-static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
-			    const char * baseName, int scareMemory)
+static fingerPrint doLookup(fingerPrintCache cache,
+	const char * dirName, const char * baseName, int scareMemory)
 {
     char dir[PATH_MAX];
     char * end;
@@ -94,16 +94,10 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 	    if (fp.subDir[0] == '/' && fp.subDir[1] != '\0')
 		fp.subDir++;
 	    else
-		fp.subDir = "";
+		fp.subDir = NULL;
 	    fp.baseName = baseName;
-	    if (!scareMemory && fp.subDir != NULL) {
-		/* XXX memory leak, but how do we know we can free it? 
-		 * XXX Using the (new) cache would work if hash tables
-		 * XXX allowed traversal.
-		 */
+	    if (!scareMemory && fp.subDir != NULL)
 		fp.subDir = xstrdup(fp.subDir);
-		fp.baseName = xstrdup(fp.baseName);
-	    }
 	    return fp;
 	}
 

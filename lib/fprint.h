@@ -14,14 +14,14 @@ struct fprintCacheEntry_s {
     int isFake;
 };
 
-typedef struct fprintCache_s {
+typedef /*@abstract@*/ struct fprintCache_s {
     hashTable ht;		    /* hashed by dirName */
 } * fingerPrintCache;
 
 typedef struct fingerprint_s {
     const struct fprintCacheEntry_s * entry;
-    const char * subDir;
-    const char * baseName;
+    /*@owned@*/ /*@null@*/ const char * subDir;
+    /*@dependent@*/ const char * baseName;
 } fingerPrint;
 
 /* only if !scarceMemory */
@@ -30,9 +30,11 @@ typedef struct fingerprint_s {
 #define FP_EQUAL(a, b) ( \
 	(&(a) == &(b)) || ( \
 		((a).entry == (b).entry) && \
-		!strcmp((a).subDir, (b).subDir) && \
-		!strcmp((a).baseName, (b).baseName) \
-	))
+		!strcmp((a).baseName, (b).baseName) && \
+		(((a).subDir && (b).subDir && !strcmp((a).subDir, (b).subDir)) \
+			|| ((a).subDir == (b).subDir)) \
+		) \
+	)
 
 #define	FP_ENTRY_EQUAL(a, b) ( \
 	((a)->dev == (b)->dev) && \
@@ -41,17 +43,19 @@ typedef struct fingerprint_s {
 
 #define FP_EQUAL_DIFFERENT_CACHE(a, b) ( \
 	FP_ENTRY_EQUAL((a).entry, (b).entry) && \
-	!strcmp((a).subDir, (b).subDir) && \
-	!strcmp((a).baseName, (b).baseName))
+	!strcmp((a).baseName, (b).baseName) && \
+		(((a).subDir && (b).subDir && !strcmp((a).subDir, (b).subDir)) \
+			|| ((a).subDir == (b).subDir)) \
+	)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
-fingerPrintCache fpCacheCreate(int sizeHint);
-void fpCacheFree(fingerPrintCache cache);
-fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
+ /*@only@*/ fingerPrintCache fpCacheCreate(int sizeHint);
+void		fpCacheFree(/*@only@*/ fingerPrintCache cache);
+fingerPrint	fpLookup(fingerPrintCache cache, const char * dirName, 
 			const char * baseName, int scareMemory);
 
 /* Hash based on dev and inode only! */

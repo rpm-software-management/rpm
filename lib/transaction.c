@@ -135,7 +135,7 @@ static void freeFl(rpmTransactionSet ts, TFI_t *flList)
 
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
 {
-    ts->scriptFd = fd;
+    ts->scriptFd = (fd ? fdLink(fd, "rpmtransSetScriptFd") : NULL);
 }
 
 static rpmProblemSet psCreate(void)
@@ -150,8 +150,8 @@ static rpmProblemSet psCreate(void)
 }
 
 static void psAppend(rpmProblemSet probs, rpmProblemType type,
-		     const void * key, Header h, const char * str1,
-		     Header altH, unsigned long ulong1)
+		/*@dependent@*/ const void * key, Header h, const char * str1,
+		Header altH, unsigned long ulong1)
 {
     if (probs->numProblems == probs->numProblemsAlloced) {
 	if (probs->numProblemsAlloced)
@@ -180,8 +180,9 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 }
 
 static void psAppendFile(rpmProblemSet probs, rpmProblemType type,
-		     const void * key, Header h, const char * dirName,
-		     const char * baseName, Header altH, unsigned long ulong1)
+		/*@dependent@*/ const void * key, Header h,
+		const char * dirName, const char * baseName,
+		Header altH, unsigned long ulong1)
 {
     char * str = alloca(strlen(dirName) + strlen(baseName) + 1);
 
@@ -241,7 +242,7 @@ void rpmProblemSetFree(rpmProblemSet probs)
 
     for (i = 0; i < probs->numProblems; i++) {
 	headerFree(probs->probs[i].h);
-	if (probs->probs[i].str1) free(probs->probs[i].str1);
+	if (probs->probs[i].str1) xfree(probs->probs[i].str1);
 	if (probs->probs[i].altH) {
 	    headerFree(probs->probs[i].altH);
 	}
@@ -469,23 +470,23 @@ static Header relocateFileList(struct availablePackage * alp,
     /* Start off by relocating directories. */
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
-	    int len;
+	    int oplen;
 
-	    len = strlen(relocations[j].oldPath);
-	    if (strncmp(relocations[j].oldPath, dirNames[i], len))
+	    oplen = strlen(relocations[j].oldPath);
+	    if (strncmp(relocations[j].oldPath, dirNames[i], oplen))
 		continue;
 
 	    /* Only subdirectories or complete file paths may be relocated. We
 	       don't check for '\0' as our directory names all end in '/'. */
-	    if (!(dirNames[i][len] == '/'))
+	    if (!(dirNames[i][oplen] == '/'))
 		continue;
 
 	    if (relocations[j].newPath) { /* Relocate the path */
 		const char *s = relocations[j].newPath;
-		char *t = alloca(strlen(s) + strlen(dirNames[i]) - len + 1);
+		char *t = alloca(strlen(s) + strlen(dirNames[i]) - oplen + 1);
 
 		strcpy(t, s);
-		strcat(t, dirNames[i] + len);
+		strcat(t, dirNames[i] + oplen);
 		rpmMessage(RPMMESS_DEBUG, _("relocating directory %s to %s\n"),
 			dirNames[i], t);
 		dirNames[i] = t;
@@ -506,23 +507,26 @@ static Header relocateFileList(struct availablePackage * alp,
 	void * p;
 	int t;
 
+	p = NULL;
 	headerGetEntry(h, RPMTAG_COMPFILELIST, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGCOMPFILELIST, t, p, c);
 	xfree(p);
 
-	headerGetEntry(h, RPMTAG_COMPFILEDIRS, &t, &p, &c);
-	headerAddEntry(h, RPMTAG_ORIGCOMPFILEDIRS, t, p, c);
-	xfree(p);
-
+	p = NULL;
 	headerGetEntry(h, RPMTAG_COMPDIRLIST, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGCOMPDIRLIST, t, p, c);
+	xfree(p);
+
+	p = NULL;
+	headerGetEntry(h, RPMTAG_COMPFILEDIRS, &t, &p, &c);
+	headerAddEntry(h, RPMTAG_ORIGCOMPFILEDIRS, t, p, c);
 
 	headerModifyEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
-	headerModifyEntry(h, RPMTAG_COMPFILEDIRS, RPM_STRING_ARRAY_TYPE,
-			  dirIndexes, fileCount);
 	headerModifyEntry(h, RPMTAG_COMPDIRLIST, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
+	headerModifyEntry(h, RPMTAG_COMPFILEDIRS, RPM_INT32_TYPE,
+			  dirIndexes, fileCount);
     }
 
     free(baseNames);
@@ -1035,7 +1039,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 }
 
 static int ensureOlder(rpmdb db, Header new, int dbOffset, rpmProblemSet probs,
-		       const void * key)
+			/*@dependent@*/ const void * key)
 {
     Header old;
     int result, rc = 0;
@@ -1229,7 +1233,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		di[i].avail = sfb.f_blocks - sfb.f_bfree;
 #endif
 
-
 		stat(filesystems[i], &sb);
 		di[i].dev = sb.st_dev;
 	    }
@@ -1238,8 +1241,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	if (di) di[i].block = 0;
     }
 
-    probs = psCreate();
-    *newProbs = probs;
+    probs = *newProbs = psCreate();
     hdrs = alloca(sizeof(*hdrs) * ts->addedPackages.size);
 
     /* ===============================================
@@ -1256,9 +1258,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	if (!archOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL, 0);
 
-	if (!osOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREOS)) {
+	if (!osOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREOS))
 	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL, 0);
-	}
 
 	if (!(ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    rc = rpmdbFindPackage(ts->db, alp->name, &dbi);

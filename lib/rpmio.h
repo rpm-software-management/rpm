@@ -110,7 +110,7 @@ int	Closedir(DIR * dir);
 void	fdPush	(FD_t fd, FDIO_t io, void * fp, int fdno);
 void	fdPop	(FD_t fd);
 
-void *	fdGetFp	(FD_t fd);
+/*@dependent@*/ /*@null@*/ void *	fdGetFp	(FD_t fd);
 void	fdSetFdno(FD_t fd, int fdno);
 off_t	fdSize	(FD_t fd);
 void	fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie);
@@ -170,7 +170,7 @@ int	fdReadable(FD_t fd, int secs);
 
 int	ufdCopy(FD_t sfd, FD_t tfd);
 int	ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
-const char *const ftpStrerror(int errorNumber);
+/*@observer@*/ const char *const ftpStrerror(int errorNumber);
 
 #if 0
 #define	ufdRead		ufdio->read

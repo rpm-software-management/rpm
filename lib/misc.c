@@ -73,7 +73,7 @@ int rpmfileexists(const char * urlfn)
     case URL_IS_DASH:
     default:
 	return 0;
-	break;
+	/*@notreached@*/ break;
     }
 
     return 1;
@@ -440,8 +440,10 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 
     if (fnptr)
 	*fnptr = tempfn;
-    else if (tempfn)
+    else if (tempfn) {
 	xfree(tempfn);
+	tempfn = NULL;
+    }
     *fdptr = fd;
 
     return 0;

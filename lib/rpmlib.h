@@ -318,7 +318,7 @@ int rpmdbInit(const char * root, int perms);
 void rpmdbClose ( /*@only@*/ rpmdb db);
 /* Databases like this should only have rpmdb*RecNum and rpmdbGetRecord
    used on them. Anything else could fail! */
-int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp);
+int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * rpmdbp);
 
 int rpmdbFirstRecNum(rpmdb db);
 int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
@@ -391,11 +391,13 @@ struct rpmDependencyConflict {
    returns 0 on success, 1 on I/O error, 2 if the package needs capabilities
    which are not implemented */
 int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
-			const void * key, int update, rpmRelocation * relocs);
-void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key);
+		/*@owned@*/ const void * key, int update,
+		rpmRelocation * relocs);
+void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h,
+		/*@owned@*/ const void * key);
 void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
 void rpmtransFree( /*@only@*/ rpmTransactionSet rpmdep);
-void rpmtransSetScriptFd(rpmTransactionSet ts, /*@only@*/ FD_t fd);
+void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd);
 
 /* this checks for dependency satisfaction, but *not* ordering */
 int rpmdepCheck(rpmTransactionSet rpmdep,
@@ -432,10 +434,10 @@ typedef enum rpmProblemType_e { RPMPROB_BADARCH,
 
 typedef /*@abstract@*/ struct rpmProblem_s {
     Header h, altH;
-    const void * key;
+    /*@dependent@*/ const void * key;
     rpmProblemType type;
     int ignoreProblem;
-    char * str1;
+    /*@only@*/ const char * str1;
     unsigned long ulong1;
 } rpmProblem;
 

@@ -172,7 +172,8 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 #else
 	    {	char tfnbuf[64];
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
-		tfn = rpmGenPath(rootdir, "%{_tmppath}/", mktemp(tfnbuf));
+		/*@-unrecog@*/ mktemp(tfnbuf) /*@=unrecog@*/;
+		tfn = rpmGenPath(rootdir, "%{_tmppath}/", tfnbuf);
 	    }
 #endif
 

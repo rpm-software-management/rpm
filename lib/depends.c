@@ -96,7 +96,7 @@ static void alCreate( /*@out@*/ struct availableList * al)
     al->dirs = NULL;
 }
 
-static void alFree( /*@only@*/ struct availableList * al)
+static void alFree(struct availableList * al)
 {
     int i;
     rpmRelocation * r;
@@ -117,6 +117,8 @@ static void alFree( /*@only@*/ struct availableList * al)
 	    }
 	    free(al->list[i].relocs);
 	}
+	if (al->list[i].fd)
+	    al->list[i].fd = fdFree(al->list[i].fd, "alAddPackage (alFree)");
     }
 
     for (i = 0; i < al->numDirs; i++) {
@@ -142,8 +144,8 @@ static int dirInfoCompare(const void * one, const void * two) {
 }
 
 static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList * al,
-					      Header h, const void * key,
-			 		      FD_t fd, rpmRelocation * relocs)
+		Header h, /*@dependent@*/ const void * key,
+		FD_t fd, rpmRelocation * relocs)
 {
     struct availablePackage * p;
     rpmRelocation * r;
@@ -250,7 +252,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     }
 
     p->key = key;
-    p->fd = fd;
+    p->fd = (fd ? fdLink(fd, "alAddPackage") : NULL);
 
     if (relocs) {
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++);
@@ -325,7 +327,10 @@ static int intcmp(const void * a, const void *b)
     return 1;
 }
 
-static void parseEVR(char *evr, /*@exposed@*/ /*@out@*/const char **ep, /*@exposed@*/ /*@out@*/const char **vp, /*@exposed@*/ /*@out@*/const char **rp) /*@modifies evr,*ep,*vp,*rp @*/
+static void parseEVR(char *evr,
+	/*@exposed@*/ /*@out@*/ const char **ep,
+	/*@exposed@*/ /*@out@*/ const char **vp,
+	/*@exposed@*/ /*@out@*/const char **rp) /*@modifies evr,*ep,*vp,*rp @*/
 {
     const char *epoch;
     const char *version;		/* assume only version is present */
@@ -693,7 +698,8 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     return 0;
 }
 
-void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key)
+void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h,
+	const void * key)
 {
     struct availablePackage * al;
     al = alAddPackage(&rpmdep->availablePackages, h, key, NULL, NULL);
@@ -706,11 +712,16 @@ void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset)
 
 void rpmtransFree(rpmTransactionSet rpmdep)
 {
-    alFree(&rpmdep->addedPackages);
-    alFree(&rpmdep->availablePackages);
+    struct availableList * addedPackages = &rpmdep->addedPackages;
+    struct availableList * availablePackages = &rpmdep->availablePackages;
+
+    alFree(addedPackages);
+    alFree(availablePackages);
     free(rpmdep->removedPackages);
     xfree(rpmdep->root);
     free(rpmdep->order);
+    if (rpmdep->scriptFd)
+	rpmdep->scriptFd = fdFree(rpmdep->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
 
     free(rpmdep);
 }
@@ -733,8 +744,8 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
 }
 
 /*@dependent@*/ /*@null@*/ static struct availablePackage *
-alFileSatisfiesDepend(struct availableList * al, const char * keyType,
-			const char * fileName)
+alFileSatisfiesDepend(struct availableList * al,
+	const char * keyType, const char * fileName)
 {
     int i;
     const char * dirName;
@@ -770,13 +781,13 @@ alFileSatisfiesDepend(struct availableList * al, const char * keyType,
     return NULL;
 }
 
-static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(
+/*@dependent@*/ /*@null@*/ static struct availablePackage * alSatisfiesDepend(
 	struct availableList * al,
-	const char *keyType, const char *keyDepend,
+	const char * keyType, const char * keyDepend,
 	const char * keyName, const char * keyEVR, int keyFlags)
 {
     struct availableIndexEntry needle, * match;
-    struct availablePackage *p;
+    struct availablePackage * p;
     int i, rc;
 
     if (*keyName == '/')
@@ -831,7 +842,7 @@ static /*@exposed@*/ struct availablePackage * alSatisfiesDepend(
 /* 2 == error */
 /* 1 == dependency not satisfied */
 static int unsatisfiedDepend(rpmTransactionSet rpmdep,
-	const char *keyType, const char *keyDepend,
+	const char * keyType, const char * keyDepend,
 	const char * keyName, const char * keyEVR, int keyFlags,
 	/*@out@*/ struct availablePackage ** suggestion)
 {
@@ -951,7 +962,7 @@ exit:
 }
 
 static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
-		Header h, const char *keyName)
+		Header h, const char * keyName)
 {
     const char * name, * version, * release;
     const char ** requires, ** requiresEVR = NULL;
@@ -1094,7 +1105,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 /* Adding: check name/provides key against each conflict match. */
 /* Erasing: check name/provides/filename key against each requiredby match. */
 static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
-	const char *key, dbiIndexSet *matches)
+	const char * key, dbiIndexSet * matches)
 {
     Header h;
     int i;

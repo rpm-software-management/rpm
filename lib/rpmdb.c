@@ -239,7 +239,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
      return rc;
 }
 
-static int doRpmdbOpen (const char * prefix, rpmdb * rpmdbp,
+static int doRpmdbOpen (const char * prefix, /*@out@*/ rpmdb * rpmdbp,
 			int mode, int perms, int flags)
 {
     const char * dbpath = rpmGetPath("%{_dbpath}", NULL);

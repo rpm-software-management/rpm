@@ -12,11 +12,11 @@ struct availablePackage {
     /*@dependent@*/ const char * name;
     /*@dependent@*/ const char * version;
     /*@dependent@*/ const char * release;
-    /*@dependent@*/ int_32 *epoch;
+    /*@dependent@*/ int_32 * epoch;
     int providesCount, filesCount;
     /*@dependent@*/ const void * key;
     rpmRelocation * relocs;
-    /*@dependent@*/ FD_t fd;
+    /*@null@*/ FD_t fd;
 } ;
 
 enum indexEntryType { IET_NAME, IET_PROVIDES };
@@ -49,7 +49,7 @@ struct availableList {
     struct availableIndex index;
     int size, alloced;
     int numDirs;
-    struct dirInfo * dirs;			/* xmalloc'd */
+    /*@owned@*/ struct dirInfo * dirs;		/* xmalloc'd */
 };
 
 struct transactionElement {
@@ -64,14 +64,14 @@ struct transactionElement {
 };
 
 struct rpmTransactionSet_s {
-    /*@owned@*/rpmdb db;			/* may be NULL */
-    /*@only@*/int * removedPackages;
+    /*@owned@*/ /*@null@*/ rpmdb db;			/* may be NULL */
+    /*@only@*/ int * removedPackages;
     int numRemovedPackages, allocedRemovedPackages;
     struct availableList addedPackages, availablePackages;
-    /*@only@*/struct transactionElement * order;
+    /*@only@*/ struct transactionElement * order;
     int orderCount, orderAlloced;
-    /*@only@*/const char * root;
-    /*@only@*/ FD_t scriptFd;
+    /*@only@*/ const char * root;
+    /*@null@*/ FD_t scriptFd;
 };
 
 struct problemsSet {
