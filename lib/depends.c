@@ -1629,6 +1629,9 @@ static struct badDeps_s {
     { "modutils", "vixie-cron" },
     { "ypbind", "yp-tools" },
     { "ghostscript-fonts", "ghostscript" },
+    /* 7.2 only */
+    { "libgnomeprint15", "gnome-print" },
+    { "nautilus", "nautilus-mozilla" },
     /* 7.1 only */
     { "arts", "kdelibs-sound" },
     /* 7.0 only */
@@ -1977,7 +1980,7 @@ rescan:
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = q->tsi.tsi_suc) {
 
-	rpmMessage(RPMMESS_DEBUG, "%4d%4d%4d%4d %*s %s-%s-%s\n",
+	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%3d %*s %s-%s-%s\n",
 			orderingCount, q->npreds, q->tsi.tsi_qcnt, q->depth,
 			2*q->depth, "",
 			q->name, q->version, q->release);

@@ -226,6 +226,7 @@
 	- python: memory leaks in headerLoad/headerunload bindings.
 	- python: retrofit sha1 digest using RPMTAG_SHA1RHN.
 	- python: change rhnUnload bindings.
+	- python: teach rhnLoad about RPMTAG_SHA1RHN as well.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

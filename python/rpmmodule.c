@@ -447,11 +447,10 @@ static void mungeFilelist(Header h)
 
 /** 
  */
-static PyObject * rhnUnload(PyObject * self, PyObject * args) {
+static PyObject * rhnUnload(hdrObject * s, PyObject * args) {
     int len;
     char * uh;
     PyObject * rc;
-    hdrObject *s;
     Header h;
 
     if (!PyArg_ParseTuple(args, ""))
@@ -516,7 +515,7 @@ static struct PyMethodDef hdrMethods[] = {
 	{"expandFilelist",	(PyCFunction) hdrExpandFilelist,	1 },
 	{"compressFilelist",	(PyCFunction) hdrCompressFilelist,	1 },
 	{"fullFilelist",	(PyCFunction) hdrFullFilelist,	1 },
-	{"rhnUnload",	(PyCFunction) rhnUnload, 1 },
+	{"rhnUnload",	(PyCFunction) rhnUnload, METH_VARARGS },
 	{NULL,		NULL}		/* sentinel */
 };
 
@@ -1851,12 +1850,12 @@ static PyObject * hdrLoad(PyObject * self, PyObject * args) {
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
     
+    /* malloc is needed to avoid surprises from data swab in headerLoad(). */
     copy = malloc(len);
     if (copy == NULL) {
 	PyErr_SetString(pyrpmError, "out of memory");
 	return NULL;
     }
-
     memcpy (copy, obj, len);
 
     hdr = headerLoad(copy);
@@ -1888,12 +1887,12 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
     
+    /* malloc is needed to avoid surprises from data swab in headerLoad(). */
     copy = malloc(len);
     if (copy == NULL) {
 	PyErr_SetString(pyrpmError, "out of memory");
 	return NULL;
     }
-
     memcpy (copy, obj, len);
 
     hdr = headerLoad(copy);
@@ -1903,13 +1902,16 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
     }
     headerAllocated(hdr);
 
+    /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
     if (!headerIsEntry(hdr, RPMTAG_HEADERIMMUTABLE)) {
 	PyErr_SetString(pyrpmError, "bad header, not immutable");
 	headerFree(hdr);
 	return NULL;
     }
 
-    if (!headerIsEntry(hdr, RPMTAG_SHA1HEADER)) {
+    /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
+    if (!headerIsEntry(hdr, RPMTAG_SHA1HEADER)
+    &&  !headerIsEntry(hdr, RPMTAG_SHA1RHN)) {
 	PyErr_SetString(pyrpmError, "bad header, no digest");
 	headerFree(hdr);
 	return NULL;
