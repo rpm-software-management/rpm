@@ -1,6 +1,5 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 3.0.4\n"
 "POT-Creation-Date: 2000-07-26 12:22-0400\n"
 "PO-Revision-Date: 2000-07-24 22:14+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
@@ -16,12 +15,12 @@ msgstr "kan inte öppna %s/packages.rpm\n"
 
 #: build.c:35
 msgid "failed build dependencies:\n"
-msgstr "misslyckades bygga beroenden:\n"
+msgstr "ouppfyllda byggberoenden:\n"
 
 #: build.c:64
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr "Kan inte öppna spec-fil %s: %s\n"
+msgstr "Kan inte öppna spec-filen %s: %s\n"
 
 #: build.c:128 build.c:141
 #, c-format
@@ -58,7 +57,7 @@ msgstr "Bygger målplattformar: %s\n"
 #: build.c:299
 #, c-format
 msgid "Building for target %s\n"
-msgstr "Bygger för mål %s\n"
+msgstr "Bygger för målet %s\n"
 
 #: rpm.c:178 rpmqv.c:257
 #, c-format
@@ -336,8 +335,7 @@ msgstr "var mycket mångordig (för felsökning)"
 #: rpm.c:304
 msgid "   Install, upgrade and query (with -p) allow URL's to be used in place"
 msgstr ""
-"   Installation, uppgradering och fråga (med -p) tillåter ftp-URL:er att "
-"användas"
+"   Installation, uppgradering och fråga (med -p) tillåter URL:er att användas"
 
 #: rpm.c:305
 msgid "   of file names as well as the following options:"
@@ -357,7 +355,7 @@ msgstr "      --ftpport <port>    "
 
 #: rpm.c:309 rpmqv.c:421
 msgid "port number of ftp server (or proxy)"
-msgstr "ftpservers (eller ombuds (proxy)) portnummer"
+msgstr "ftp-servers (eller ombuds (proxy)) portnummer"
 
 #: rpm.c:310
 msgid "      --httpproxy <host>  "
@@ -373,7 +371,7 @@ msgstr "      --httpport <port>   "
 
 #: rpm.c:313 rpmqv.c:425
 msgid "port number of http server (or proxy)"
-msgstr "httpservers (eller ombuds) portnummer"
+msgstr "http-servers (eller ombuds) portnummer"
 
 #: rpm.c:317 rpmqv.c:445
 msgid "query mode"
@@ -590,7 +588,7 @@ msgstr "verifiera inte paketarkitektur"
 
 #: rpm.c:403 rpmqv.c:514
 msgid "don't check disk space before installing"
-msgstr "kontrollera inte skivutrymme före installation"
+msgstr "kontrollera inte diskutrymme före installation"
 
 #: rpm.c:405 rpmqv.c:516
 msgid "don't verify package operating system"
@@ -715,15 +713,15 @@ msgstr "gå direkt till angivet steg (endast för c,i)"
 
 #: lib/poptBT.c:145 rpm.c:474 rpmqv.c:587
 msgid "remove build tree when done"
-msgstr "tag bort tillverkningsträd efteråt"
+msgstr "ta bort tillverkningsträd efteråt"
 
 #: lib/poptBT.c:151 rpm.c:476 rpmqv.c:589
 msgid "remove sources when done"
-msgstr "tag bort källkod efteråt"
+msgstr "ta bort källkod efteråt"
 
 #: rpm.c:478 rpmqv.c:591
 msgid "remove spec file when done"
-msgstr "tag bort spec-fil efteråt"
+msgstr "ta bort spec-fil efteråt"
 
 #: rpm.c:480 rpmqv.c:593
 msgid "generate PGP/GPG signature"
@@ -879,7 +877,7 @@ msgstr "Internt fel i argumenthantering (%d) :-(\n"
 
 #: rpm.c:814 rpmqv.c:972
 msgid "one type of query/verify may be performed at a time"
-msgstr "en typ av undersökning/verifiering kan utföras åt gången"
+msgstr "endast en typ av undersökning/verifiering kan utföras åt gången"
 
 #: rpm.c:819 rpmqv.c:976
 msgid "unexpected query flags"
@@ -1076,7 +1074,7 @@ msgstr "oväntade argument till --querytags "
 
 #: rpm.c:1039 rpmqv.c:1493
 msgid "no packages given for signature check"
-msgstr "inga paket angivna för signatur kontroll"
+msgstr "inga paket angivna för signaturkontroll"
 
 #: rpm.c:1050 rpmqv.c:1504
 msgid "no packages given for signing"
@@ -1255,7 +1253,7 @@ msgstr "   --root <kat>           "
 msgid ""
 "  Install, upgrade and query (with -p) modes allow URL's to be used in place"
 msgstr ""
-"   Installera, uppgradera och fråga (med -p) tillåter ftp-URL:er att användas"
+"   Installera, uppgradera och fråga (med -p) tillåter URL:er att användas"
 
 #: rpmqv.c:417
 msgid "  of file names as well as the following options:"
@@ -1698,7 +1696,7 @@ msgstr "Letar upp %s: (använder %s)...\n"
 #: build/files.c:1847 build/files.c:1857
 #, c-format
 msgid "Failed to find %s:"
-msgstr "Misslyckades hitta %s:"
+msgstr "Misslyckades med att hitta %s:"
 
 #: build/files.c:1967
 #, c-format
@@ -1883,7 +1881,7 @@ msgstr "rad %d: Paketet existerar inte: %s"
 #: build/parseDescription.c:86
 #, c-format
 msgid "line %d: Second description"
-msgstr "rad %d: Andra beskrivning"
+msgstr "rad %d: En andra beskrivning"
 
 #: build/parseFiles.c:32
 msgid "line %d: Error parsing %%files: %s"
@@ -1891,7 +1889,7 @@ msgstr "rad %d: Fel i parsning av %%files: %s"
 
 #: build/parseFiles.c:74
 msgid "line %d: Second %%files list"
-msgstr "rad %d: Andra %%files-lista"
+msgstr "rad %d: En andra %%files-lista"
 
 #: build/parsePreamble.c:142
 #, c-format
@@ -2102,7 +2100,7 @@ msgstr "rad %d: skriptprogram måste börja med \"/\": %s"
 #: build/parseScript.c:205
 #, c-format
 msgid "line %d: Second %s"
-msgstr "rad %d: Andra %s"
+msgstr "rad %d: En andra %s"
 
 #: build/parseSpec.c:137
 #, c-format
@@ -2136,7 +2134,7 @@ msgstr "%s:%d: Fick ett %%endif utan något if"
 
 #: build/parseSpec.c:294 build/parseSpec.c:303
 msgid "malformed %%include statement"
-msgstr "felformatterad %%include-sats"
+msgstr "felformaterad %%include-sats"
 
 #: build/parseSpec.c:471
 msgid "No buildable architectures"
@@ -2547,12 +2545,12 @@ msgstr "   fil: %s åtgärd: %s\n"
 #: lib/install.c:168
 #, c-format
 msgid "user %s does not exist - using root"
-msgstr "användare %s finns inte - använder root"
+msgstr "användaren %s finns inte - använder root"
 
 #: lib/install.c:176
 #, c-format
 msgid "group %s does not exist - using root"
-msgstr "grupp %s finns inte - använder root"
+msgstr "gruppen %s finns inte - använder root"
 
 #: lib/install.c:205
 msgid "%%instchangelog value in macro file should be a number, but isn't"
@@ -2739,7 +2737,7 @@ msgstr "acceptera inte översatta \"msgstr\" från spec-filen"
 
 #: lib/poptBT.c:153
 msgid "remove specfile when done"
-msgstr "tag bort spec-fil efteråt"
+msgstr "ta bort spec-fil efteråt"
 
 #: lib/poptBT.c:157
 msgid "override target platform"
@@ -2866,7 +2864,7 @@ msgstr ""
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
-"fil %s från installation av %s-%s-%s står i konflikt med fil från paket "
+"filen %s från installation av %s-%s-%s står i konflikt med filen från paket "
 "%s-%s-%s"
 
 #: lib/problems.c:98
@@ -2989,7 +2987,7 @@ msgstr "fil %s: %s\n"
 #: lib/query.c:654
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "fil %s ägs inte av något paket\n"
+msgstr "filen %s ägs inte av något paket\n"
 
 #: lib/query.c:680
 #, c-format
@@ -3130,9 +3128,9 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"--> Rpmdatabasen är kan inte öppnas i db%d-format.\n"
-"    Om du nyss uppgraderat rpmpaketet behöver du konvertera din\n"
-"    databas till db%d-format genom att köra \"rpm --rebuilddb\" som root.\n"
+"--> Rpmdatabasen kan inte öppnas i db%d-format.\n"
+"    Om du nyss uppgraderat rpmpaketet måste du konvertera din databas\n"
+"    till db%d-format genom att köra \"rpm --rebuilddb\" som root.\n"
 "\n"
 
 #: lib/rpmdb.c:314
@@ -3374,7 +3372,7 @@ msgstr "fel vid läsning från fil %s\n"
 #: lib/rpminstall.c:323
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
-msgstr "fil %s behöver en nyare version av RPM\n"
+msgstr "filen %s behöver en nyare version av RPM\n"
 
 #: lib/rpminstall.c:340
 #, c-format
@@ -3467,7 +3465,7 @@ msgstr "Kan inte öppna %s för läsning: %s."
 #: lib/rpmrc.c:618
 #, c-format
 msgid "Failed to read %s: %s."
-msgstr "Misslyckades läsa %s: %s."
+msgstr "Misslyckades med att läsa %s: %s."
 
 #: lib/rpmrc.c:655
 #, c-format
@@ -3860,7 +3858,7 @@ msgstr "Fil %s: %s"
 #: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
-msgstr "Fil %s är mindre än %d byte"
+msgstr "Filen %s är mindre än %d byte"
 
 #: rpmio/messages.c:55
 msgid "warning: "
