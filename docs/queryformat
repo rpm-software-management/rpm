@@ -48,7 +48,7 @@ Additionally, using --queryformat implies -q, so you may omit the -q as well.
 The query format is similar to a C style printf string, which the printf(2)
 man page provides a good introduction to. However, as RPM already knows the
 type of data that is being printed, you must omit the type specifier. In
-its place put the tag name you with to print enclosed in curly braces
+its place put the tag name you wish to print enclosed in curly braces
 ({}). For example, the following RPM command prints the names and sizes
 of all of the packages installed on a system:
 
