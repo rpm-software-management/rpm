@@ -299,17 +299,23 @@ dnl for this macro (not LIBS=...), otherwise the check for dbopen
 dnl will fail.
 AC_CHECK_LIB(port, writev)
 
+libpthread=""
+AC_CHECK_LIB(pthread, pthread_mutex_trylock,[libpthread="-lpthread"])
+
 DBLIBOBJS=""
 libdb3=""
 libdb2=""
 libdb1=""
-PTHREAD=""
 dnl Check for Berkeley db3 API.
 AC_CHECK_FUNC(db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],
-  AC_CHECK_LIB(db-3.1, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c" ; libdb3="-ldb-3.1"],
-    AC_CHECK_LIB(db-3.0, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.0"],
-      AC_CHECK_LIB(db, db_create, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb"],,$PTHREAD)))
+  AC_CHECK_LIB(db-3.1, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.1"],
+    AC_CHECK_LIB(db-3.0, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.0"],
+      AC_CHECK_LIB(db, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb"],
+      ,$libpthread)
+    ,$libpthread)
+  ,$libpthread)
 )
+
 dnl Check for Berkeley db2 API.
 dnl AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],
 dnl   AC_CHECK_LIB(db, db_open, [LIBS="$LIBS"; DBLIBOBJS="$DBLIBOBJS db2.c" ; libdb2="-ldb"])
@@ -322,10 +328,21 @@ dnl )
 dnl Check for Berkeley db1 API in glibc.
 AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db3.c"],
   AC_CHECK_LIB(db1, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c falloc.c" ; libdb1="-ldb1"],
-    AC_CHECK_LIB(db, dbopen, [LIBS="$LIBS $PTHREAD"; DBLIBOBJS="$DBLIBOBJS db1.c falloc.c" ; libdb1="-ldb"],,)))
+    AC_CHECK_LIB(db, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c falloc.c" ; libdb1="-ldb"])
+  )
+)
 
 if test X"$DBLIBOBJS" = X; then
     AC_MSG_ERROR([sorry rpm requires libdb-3.x.a or libdb1.a (from the Berkeley db package)]) 
+fi
+
+if test -n "$libdb3" -a -n "$libpthread" ; then
+   AC_MSG_CHECKING(whether $libdb3 needs $libpthread)
+   saveLIBS="$LIBS"
+   LIBS="$LIBS $libdb3"
+   AC_TRY_LINK_FUNC(db_create, AC_MSG_RESULT(no),
+	[libdb3="$libdb3 $libpthread"; AC_MSG_RESULT(yes)])
+   LIBS="$saveLIBS"
 fi
 
 AC_SUBST(DBLIBOBJS)

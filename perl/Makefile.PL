@@ -8,7 +8,7 @@ WriteMakefile(
 	      'OBJECT'	=> 'rpm.o constant.o',
 	      'VERSION_FROM' => 'rpm.pm',		# finds $VERSION
 	      'MAKEFILE'=> 'PMakefile',
-	      'LIBS'	=> [' -L/usr/local/lib   -lz -lbz2'],			# e.g., '-lm' 
+	      'LIBS'	=> [' -L/usr/local/lib  -lz -lbz2'],			# e.g., '-lm' 
 	      'CCFLAGS' => '-g -O2 -D_GNU_SOURCE -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts',
 	      'OPTIMIZE'=> '-g',
 	      'DEFINE'	=> '-Dbool=char -DHAS_BOOL',
