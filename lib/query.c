@@ -568,16 +568,6 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
-    case RPMQV_WHATPROVIDES:
-	if (rpmdbFindByProvides(db, arg, &matches)) {
-	    fprintf(stderr, _("no package provides %s\n"), arg);
-	    retcode = 1;
-	} else {
-	    retcode = showMatches(qva, db, matches, showPackage);
-	    dbiFreeIndexRecord(matches);
-	}
-	break;
-
     case RPMQV_TRIGGEREDBY:
 	if (rpmdbFindByTriggeredBy(db, arg, &matches)) {
 	    fprintf(stderr, _("no package triggers %s\n"), arg);
@@ -598,6 +588,18 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	break;
 
+    case RPMQV_WHATPROVIDES:
+	if (arg[0] != '/') {
+	    if (rpmdbFindByProvides(db, arg, &matches)) {
+		fprintf(stderr, _("no package provides %s\n"), arg);
+		retcode = 1;
+	    } else {
+		retcode = showMatches(qva, db, matches, showPackage);
+		dbiFreeIndexRecord(matches);
+	    }
+	    break;
+	}
+	/*@fallthrough@*/
     case RPMQV_PATH:
 	if (rpmdbFindByFile(db, arg, &matches)) {
 	    int myerrno = 0;

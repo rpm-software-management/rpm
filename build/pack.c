@@ -530,7 +530,6 @@ static int addFileToArrayTag(Spec spec, char *file, Header h, int tag)
 static int processScriptFiles(Spec spec, Package pkg)
 {
     struct TriggerFileEntry *p;
-    char *bull = "";
     
     if (pkg->preInFile) {
 	if (addFileToTag(spec, pkg->preInFile, pkg->header, RPMTAG_PREIN)) {
@@ -569,8 +568,7 @@ static int processScriptFiles(Spec spec, Package pkg)
 	}
     }
 
-    p = pkg->triggerFiles;
-    while (p) {
+    for (p = pkg->triggerFiles; p != NULL; p = p->next) {
 	headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTPROG,
 			       RPM_STRING_ARRAY_TYPE, &(p->prog), 1);
 	if (p->script) {
@@ -587,11 +585,10 @@ static int processScriptFiles(Spec spec, Package pkg)
 	} else {
 	    /* This is dumb.  When the header supports NULL string */
 	    /* this will go away.                                  */
+	    char *bull = "";
 	    headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
 				   RPM_STRING_ARRAY_TYPE, &bull, 1);
 	}
-	
-	p = p->next;
     }
 
     return 0;

@@ -7,6 +7,7 @@
 	- fix: typo in error message (#6858).
 	- add/update dependency scripts (Ken Estes).
 	- use directory tokens internally to reduce memory usage.
+	- permit --whatprovides to lookup file dependencies.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
