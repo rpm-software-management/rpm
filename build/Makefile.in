@@ -28,7 +28,7 @@ $(PROGS): $(LIBOBJECTS)
 clean:
 	rm -f *.a *.o *~ $(PROGS)
 
-distclean:
+distclean: clean
 	rm -f .depend Makefile
 
 depend:
