@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-29 18:24-0500\n"
+"POT-Creation-Date: 2001-10-30 12:48-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -834,7 +834,7 @@ msgstr "Невозможно перезагрузить заголовок подписи.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:603 lib/psm.c:2114
+#: build/pack.c:603 lib/psm.c:2141
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -864,7 +864,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2380
+#: build/pack.c:683 lib/psm.c:2406
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -1456,11 +1456,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:232 lib/depends.c:838 lib/depends.c:971
+#: lib/depends.c:232 lib/depends.c:837 lib/depends.c:970
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:232 lib/depends.c:838 lib/depends.c:971
+#: lib/depends.c:232 lib/depends.c:837 lib/depends.c:970
 msgid "NO "
 msgstr "НЕT"
 
@@ -1469,57 +1469,57 @@ msgstr "НЕT"
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
-#: lib/depends.c:554
+#: lib/depends.c:553
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:559
+#: lib/depends.c:558
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "пакет %s уже установлен"
 
-#: lib/depends.c:564
+#: lib/depends.c:563
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:837
+#: lib/depends.c:836
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cached)\n"
 
-#: lib/depends.c:866
+#: lib/depends.c:865
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:883
+#: lib/depends.c:882
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:907
+#: lib/depends.c:906
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:920
+#: lib/depends.c:919
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:934
+#: lib/depends.c:933
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db package)\n"
 
-#: lib/depends.c:950
+#: lib/depends.c:949
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:971
+#: lib/depends.c:970
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
@@ -1527,44 +1527,44 @@ msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1044
+#: lib/depends.c:1043
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1123
+#: lib/depends.c:1122
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1377
+#: lib/depends.c:1376
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1533
+#: lib/depends.c:1532
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1598
+#: lib/depends.c:1597
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:1650
+#: lib/depends.c:1649
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1711
+#: lib/depends.c:1710
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1741
+#: lib/depends.c:1740
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
@@ -1668,7 +1668,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() допустим только один элемент типа RPM_STRING_TYPE\n"
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:930
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:948
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
@@ -2192,173 +2192,173 @@ msgstr "подписать пакет (удалив текущую подпись)"
 msgid "generate signature"
 msgstr "генерировать подпись"
 
-#: lib/problems.c:250
+#: lib/problems.c:208
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " нужен для %s-%s-%s\n"
 
-#: lib/problems.c:253
+#: lib/problems.c:211
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " конфликтует с %s-%s-%s\n"
 
-#: lib/problems.c:293
+#: lib/problems.c:251
 #, c-format
 msgid "package %s is for a different architecture"
 msgstr "пакет %s - для другой архитектуры"
 
-#: lib/problems.c:298
+#: lib/problems.c:256
 #, c-format
 msgid "package %s is for a different operating system"
 msgstr "пакет %s - для другой операционной системы"
 
-#: lib/problems.c:303
+#: lib/problems.c:261
 #, c-format
 msgid "package %s is already installed"
 msgstr "пакет %s уже установлен"
 
-#: lib/problems.c:308
+#: lib/problems.c:266
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "путь %s в пакете %s - не перемещаемый"
 
-#: lib/problems.c:313
+#: lib/problems.c:271
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "конфликт файла %s при попытках установки %s и %s"
 
-#: lib/problems.c:318
+#: lib/problems.c:276
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "файл %s из установленного пакета %s конфликтует с файлом из пакета %s"
 
-#: lib/problems.c:323
+#: lib/problems.c:281
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакет %s (который новее, чем %s) уже установлен"
 
-#: lib/problems.c:328
+#: lib/problems.c:286
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "для установки пакета %s нужно %ld%cb на файловой системе %s"
 
-#: lib/problems.c:338
+#: lib/problems.c:296
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "для установки пакета %s нужно %ld inodes на файловой системе %s"
 
-#: lib/problems.c:343
+#: lib/problems.c:301
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "пакет %s pre-transaction syscall(s): %s: ошибка: %s"
 
-#: lib/problems.c:350
+#: lib/problems.c:308
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
 
-#: lib/psm.c:246
+#: lib/psm.c:264
 msgid "========== relocations\n"
 msgstr "========== перемещений\n"
 
-#: lib/psm.c:250
+#: lib/psm.c:268
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d исключен %s\n"
 
-#: lib/psm.c:253
+#: lib/psm.c:271
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d перемещение %s -> %s\n"
 
-#: lib/psm.c:323
+#: lib/psm.c:341
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "исключается многобиблиотечный путь %s%s\n"
 
-#: lib/psm.c:389
+#: lib/psm.c:407
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "исключается %s %s\n"
 
-#: lib/psm.c:399
+#: lib/psm.c:417
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещается %s в %s\n"
 
-#: lib/psm.c:478
+#: lib/psm.c:496
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещается каталог %s в %s\n"
 
-#: lib/psm.c:1127
+#: lib/psm.c:1145
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "невозможно создать %%%s %s\n"
 
-#: lib/psm.c:1133
+#: lib/psm.c:1151
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "невозможно писать в %%%s %s\n"
 
-#: lib/psm.c:1173
+#: lib/psm.c:1191
 msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 
-#: lib/psm.c:1287
+#: lib/psm.c:1314
 msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
-#: lib/psm.c:1397
+#: lib/psm.c:1424
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "%s: выполняется сценарий %s (если есть)\n"
 
-#: lib/psm.c:1565
+#: lib/psm.c:1592
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, waitpid() возвратил %s\n"
 
-#: lib/psm.c:1572
+#: lib/psm.c:1599
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
-#: lib/psm.c:1919
+#: lib/psm.c:1946
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s содержит %d файлов, test = %d\n"
 
-#: lib/psm.c:2036
+#: lib/psm.c:2063
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr "%s: ошибка сценария %s (%d), %s-%s-%s пропускается\n"
 
-#: lib/psm.c:2151
+#: lib/psm.c:2177
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "пользователь %s не существует - используется root\n"
 
-#: lib/psm.c:2160
+#: lib/psm.c:2186
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "группа %s не существует - используется root\n"
 
-#: lib/psm.c:2201
+#: lib/psm.c:2227
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:2202
+#: lib/psm.c:2228
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:2388
+#: lib/psm.c:2414
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s ошибка на файле %s: %s\n"
 
-#: lib/psm.c:2391
+#: lib/psm.c:2417
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
@@ -2876,13 +2876,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
-#: lib/transaction.c:238
+#: lib/transaction.c:241
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:863
+#: lib/transaction.c:880
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"

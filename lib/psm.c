@@ -21,18 +21,15 @@
 /*@unchecked@*/
 int _fi_debug = 0;
 
-/*@access Header @*/		/* compared with NULL */
-/*@access rpmdbMatchIterator @*/ /* compared with NULL */
-/*@access FSM_t @*/		/* compared with NULL */
-/*@access FD_t @*/		/* compared with NULL */
-/*@access rpmdb @*/		/* compared with NULL */
+/*@access Header@*/		/* compared with NULL */
+/*@access rpmdbMatchIterator@*/ /* compared with NULL */
+/*@access FSM_t@*/		/* compared with NULL */
+/*@access FD_t@*/		/* compared with NULL */
+/*@access rpmdb@*/		/* compared with NULL */
 
-/*@access rpmTransactionSet @*/
-/*@access TFI_t @*/
-/*@access PSM_t @*/
-
-/*@access availablePackage@*/
-/*@access availableList@*/
+/*@access rpmTransactionSet@*/
+/*@access TFI_t@*/
+/*@access PSM_t@*/
 
 /*@-redecl -declundef -exportheadervar@*/
 /*@unchecked@*/
@@ -75,6 +72,27 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
+char * fiGetNVR(const TFI_t fi)
+{
+    char * pkgNVR;
+    char * t;
+
+    if (fi == NULL)
+	return xstrdup("--");
+
+    t = xcalloc(1, (fi->name != NULL ? strlen(fi->name) : 0) +
+		   (fi->version != NULL ? strlen(fi->version) : 0) +
+		   (fi->release != NULL ? strlen(fi->release) : 0) +
+		   sizeof("--"));
+    pkgNVR = t;
+    if (fi->name != NULL)	t = stpcpy(t, fi->name);
+    t = stpcpy(t, "-");
+    if (fi->version != NULL)	t = stpcpy(t, fi->version);
+    t = stpcpy(t, "-");
+    if (fi->release != NULL)	t = stpcpy(t, fi->release);
+    return pkgNVR;
+}
+
 /**
  */
 static /*@observer@*/ const char *const ftstring (fileTypes ft)
@@ -107,7 +125,6 @@ fileTypes whatis(uint_16 mode)
 #define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
-		availablePackage alp,
 		Header origH, fileAction * actions)
 {
     HGE_t hge = fi->hge;
@@ -116,7 +133,6 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
     int allowBadRelocate = (ts->ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
-    rpmRelocation * rawRelocations = alp->relocs;
     rpmRelocation * relocations = NULL;
     int numRelocations;
     const char ** validRelocations;
@@ -145,9 +161,9 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	numValid = 0;
 
     numRelocations = 0;
-    if (rawRelocations)
-	while (rawRelocations[numRelocations].newPath ||
-	       rawRelocations[numRelocations].oldPath)
+    if (fi->relocs)
+	while (fi->relocs[numRelocations].newPath ||
+	       fi->relocs[numRelocations].oldPath)
 	    numRelocations++;
 
     /*
@@ -156,7 +172,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
      * should be added, but, since relocateFileList() can be called more
      * than once for the same header, don't bother if already present.
      */
-    if (rawRelocations == NULL || numRelocations == 0) {
+    if (fi->relocs == NULL || numRelocations == 0) {
 	if (numValid) {
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
 		xx = hae(origH, RPMTAG_INSTPREFIXES,
@@ -179,11 +195,11 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	 * Default relocations (oldPath == NULL) are handled in the UI,
 	 * not rpmlib.
 	 */
-	if (rawRelocations[i].oldPath == NULL) continue; /* XXX can't happen */
+	if (fi->relocs[i].oldPath == NULL) continue; /* XXX can't happen */
 
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
-	t = alloca_strdup(rawRelocations[i].oldPath);
+	t = alloca_strdup(fi->relocs[i].oldPath);
 	/*@-branchstate@*/
 	relocations[i].oldPath = (t[0] == '/' && t[1] == '\0')
 	    ? t
@@ -191,10 +207,10 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	/*@=branchstate@*/
 
 	/* An old path w/o a new path is valid, and indicates exclusion */
-	if (rawRelocations[i].newPath) {
+	if (fi->relocs[i].newPath) {
 	    int del;
 
-	    t = alloca_strdup(rawRelocations[i].newPath);
+	    t = alloca_strdup(fi->relocs[i].newPath);
 	    /*@-branchstate@*/
 	    relocations[i].newPath = (t[0] == '/' && t[1] == '\0')
 		? t
@@ -207,9 +223,11 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		if (!strcmp(validRelocations[j], relocations[i].oldPath))
 		    /*@innerbreak@*/ break;
 	    /* XXX actions check prevents problem from being appended twice. */
-	    if (j == numValid && !allowBadRelocate && actions)
-		rpmProblemSetAppend(ts, ts->probs, RPMPROB_BADRELOCATE, alp,
-			 relocations[i].oldPath, NULL, NULL, 0);
+	    if (j == numValid && !allowBadRelocate && actions) {
+		rpmProblemSetAppend(ts->probs, RPMPROB_BADRELOCATE,
+			fiGetNVR(fi), fi->key,
+			relocations[i].oldPath, NULL, NULL, 0);
+	    }
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
 	    /*@=nullpass@*/
@@ -317,7 +335,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	 * If only adding libraries of different arch into an already
 	 * installed package, skip all other files.
 	 */
-	if (alp->multiLib && !isFileMULTILIB((fFlags[i]))) {
+	if (fi->multiLib && !isFileMULTILIB((fFlags[i]))) {
 	    if (actions) {
 		actions[i] = FA_SKIPMULTILIB;
 		rpmMessage(RPMMESS_DEBUG, _("excluding multilib path %s%s\n"), 
@@ -527,9 +545,9 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
 const void * rpmfiGetKey(TFI_t fi)
 {
-    /*@-kepttrans -retexpose -usereleased@*/
-/*@i@*/	return (fi->ap != NULL ? fi->ap->key : NULL);
-    /*@=kepttrans =retexpose =usereleased@*/
+/*@-compdef -retexpose -usereleased@*/
+    return fi->key;
+/*@=compdef =retexpose =usereleased@*/
 }
 
 TFI_t XrpmfiUnlink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
@@ -632,8 +650,8 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
 	/* 0 makes for noops */
 	fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-	if (ts != NULL && fi->ap != NULL && fi->h != NULL)
-	{   Header foo = relocateFileList(ts, fi, fi->ap, fi->h, fi->actions);
+	if (ts != NULL && fi->h != NULL)
+	{   Header foo = relocateFileList(ts, fi, fi->h, fi->actions);
 	    foo = headerFree(foo);
 	}
 
@@ -1177,19 +1195,28 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 
     (void) rpmtransAddPackage(ts, h, fd, NULL, 0, NULL);
 
+    fi->type = TR_ADDED;
+
+    fi->h = alGetHeader(ts->addedPackages, 0, 1);
     /* XXX can't happen */
-    if ((fi->ap = alGetPkg(ts->addedPackages, 0)) == NULL) {
+    if (fi->h == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
-    fi->type = TR_ADDED;
-    loadFi(ts, fi, h, 1);
+    fi->multiLib = alGetMultiLib(ts->addedPackages, 0);
+    /*@-kepttrans@*/
+    fi->key = alGetKey(ts->addedPackages, 0);
+    /*@=kepttrans@*/
+    fi->relocs = alGetRelocs(ts->addedPackages, 0);
+    fi->fd = alGetFd(ts->addedPackages, 0);
+
+    /* XXX header arg unused. */
+    loadFi(ts, fi, fi->h, 1);
     hge = fi->hge;
     hfd = (fi->hfd ? fi->hfd : headerFreeData);
     h = headerFree(h);	/* XXX reference held by transaction set */
 
-    if (fi->h != NULL)	/* XXX can't happen */
     (void) rpmInstallLoadMacros(fi, fi->h);
 
     memset(psm, 0, sizeof(*psm));
@@ -2134,7 +2161,6 @@ assert(psm->mi == NULL);
 	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    availablePackage alp = fi->ap;
 	    int i;
 
 	    if (fi->fc <= 0)				break;
@@ -2170,12 +2196,12 @@ assert(psm->mi == NULL);
 	    /* Retrieve type of payload compression. */
 	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
 
-	    if (alp->fd == NULL) {	/* XXX can't happen */
+	    if (fi->fd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
 		break;
 	    }
-	    /*@-nullpass@*/	/* LCL: alp->fd != NULL here. */
-	    psm->cfd = Fdopen(fdDup(Fileno(alp->fd)), psm->rpmio_flags);
+	    /*@-nullpass@*/	/* LCL: fi->fd != NULL here. */
+	    psm->cfd = Fdopen(fdDup(Fileno(fi->fd)), psm->rpmio_flags);
 	    /*@=nullpass@*/
 	    if (psm->cfd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
@@ -2429,7 +2455,7 @@ assert(psm->mi == NULL);
 	if (ts && ts->notify) {
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void) ts->notify(fi->h, psm->what, psm->amount, psm->total,
-		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+				fi->key, ts->notifyData);
 	    /*@=noeffectuncon @*/
 	}
 	break;

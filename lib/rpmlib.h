@@ -1055,12 +1055,13 @@ void rpmProblemSetPrint(FILE *fp, rpmProblemSet tsprobs)
 /**
  * Append problem to set.
  */
-void rpmProblemSetAppend(const rpmTransactionSet ts,
-		rpmProblemSet tsprobs, rpmProblemType type,
-		const availablePackage alp,
+void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
+		/*@only@*/ /*@null@*/ const char * pkgNEVR,
+		/*@exposed@*/ /*@null@*/ const void * key,
 		const char * dn, const char * bn,
-		Header altH, unsigned long ulong1)
-	/*@modifies tsprobs, alp @*/;
+		/*@only@*/ /*@null@*/ const char * altNEVR,
+		unsigned long ulong1)
+	/*@modifies tsprobs @*/;
 
 /**
  * Filter a problem set.

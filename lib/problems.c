@@ -11,15 +11,9 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@access Header@*/
 /*@access rpmProblem@*/
 /*@access rpmProblemSet@*/
 /*@access rpmDependencyConflict@*/
-/*@access rpmTransactionSet@*/	/* XXX ts->addedPackages */
-
-#if 0
-/*@access availablePackage@*/
-#endif
 
 rpmProblemSet rpmProblemSetCreate(void)
 {
@@ -48,11 +42,10 @@ void rpmProblemSetFree(rpmProblemSet tsprobs)
     tsprobs = _free(tsprobs);
 }
 
-void rpmProblemSetAppend(const rpmTransactionSet ts,
-		rpmProblemSet tsprobs, rpmProblemType type,
-		const availablePackage alp,
+void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
+		const char * pkgNEVR, const void * key,
 		const char * dn, const char * bn,
-		Header altH, unsigned long ulong1)
+		const char * altNEVR, unsigned long ulong1)
 {
     rpmProblem p;
     char *t;
@@ -69,22 +62,14 @@ void rpmProblemSetAppend(const rpmTransactionSet ts,
     p = tsprobs->probs + tsprobs->numProblems;
     tsprobs->numProblems++;
     memset(p, 0, sizeof(*p));
+
     p->type = type;
 
-#ifdef	DYING
-    /*@-assignexpose@*/
-    p->key = alp->key;
-    /*@=assignexpose@*/
-#else
-    p->key = alGetKey(ts->addedPackages, alGetPkgIndex(ts->addedPackages, alp));
-#endif
+    p->key = key;
 
     p->ulong1 = ulong1;
     p->ignoreProblem = 0;
     p->str1 = NULL;
-#ifdef	DYING
-    p->h = NULL;
-#endif
     p->pkgNEVR = NULL;
     p->altNEVR = NULL;
 
@@ -96,36 +81,9 @@ void rpmProblemSetAppend(const rpmTransactionSet ts,
 	if (bn != NULL) t = stpcpy(t, bn);
     }
 
-    if (alp != NULL) {
-#ifdef	DYING
-	p->h = headerLink(alp->h);
-#endif
-#ifdef	DYING
-	t = xcalloc(1,	strlen(alp->name) +
-			strlen(alp->version) +
-			strlen(alp->release) + sizeof("--"));
-	p->pkgNEVR = t;
-	t = stpcpy(t, alp->name);
-	t = stpcpy(t, "-");
-	t = stpcpy(t, alp->version);
-	t = stpcpy(t, "-");
-	t = stpcpy(t, alp->release);
-#else
-	p->pkgNEVR = alGetPkgNVR(ts->addedPackages, alp);
-#endif
-    }
+    p->pkgNEVR = pkgNEVR;
+    p->altNEVR = altNEVR;
 
-    if (altH != NULL) {
-	const char * n, * v, * r;
-	(void) headerNVR(altH, &n, &v, &r);
-	t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-	p->altNEVR = t;
-	t = stpcpy(t, n);
-	t = stpcpy(t, "-");
-	t = stpcpy(t, v);
-	t = stpcpy(t, "-");
-	t = stpcpy(t, r);
-    }
 }
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))

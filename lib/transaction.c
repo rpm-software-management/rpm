@@ -56,7 +56,10 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access TFI_t@*/
 /*@access PSM_t@*/
 
+#if 0
 /*@access availablePackage@*/
+#endif
+
 /*@access transactionElement@*/
 
 /**
@@ -384,9 +387,14 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 			fi->fmodes[fileNum],
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
+	    /*@-compdef@*/ /* FIX: *fi->replaced undefined */
 	    if (reportConflicts)
-		rpmProblemSetAppend(ts, ts->probs, RPMPROB_FILE_CONFLICT, fi->ap,
-			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum], h, 0);
+		rpmProblemSetAppend(ts->probs, RPMPROB_FILE_CONFLICT,
+			fiGetNVR(fi), fi->key,
+			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum],
+			hGetNVR(h, NULL),
+			0);
+	    /*@=compdef@*/
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
 		/*@-assignexpose@*/
@@ -589,11 +597,13 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 			recs[otherPkgNum]->flinks[otherFileNum],
 			fi->fmodes[i],
 			fi->fmd5s[i],
-			fi->flinks[i])) {
-		/*@-nullstate@*/ /* FIX: ts->di is possibly NULL */
-		rpmProblemSetAppend(ts, ts->probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap,
-				filespec, NULL, recs[otherPkgNum]->ap->h, 0);
-		/*@=nullstate@*/
+			fi->flinks[i]))
+	    {
+		rpmProblemSetAppend(ts->probs, RPMPROB_NEW_FILE_CONFLICT,
+			fiGetNVR(fi), fi->key,
+			filespec, NULL,
+			fiGetNVR(recs[otherPkgNum]),
+			0);
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
@@ -671,25 +681,32 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 	    ds->bneeded -= BLOCK_ROUND(fixupSize, ds->bsize);
 	}
     }
-    if (filespec) free(filespec);
+    filespec = _free(filespec);
 }
 
 /**
  */
-static int ensureOlder(rpmTransactionSet ts, availablePackage alp, Header old)
-	/*@modifies ts, alp @*/
+static int ensureOlder(rpmTransactionSet ts,
+		const Header h, /*@null@*/ const Header old,
+		/*@dependent@*/ /*@null@*/ const void * key)
+	/*@modifies ts @*/
 {
     int result, rc = 0;
 
     if (old == NULL) return 1;
 
-    result = rpmVersionCompare(old, alp->h);
+    result = rpmVersionCompare(old, h);
     if (result <= 0)
 	rc = 0;
     else if (result > 0) {
 	rc = 1;
-	rpmProblemSetAppend(ts, ts->probs, RPMPROB_OLDPACKAGE, alp,
-			NULL, NULL, old, 0);
+	/*@-evalorder@*/ /* LCL: is confused */
+	rpmProblemSetAppend(ts->probs, RPMPROB_OLDPACKAGE,
+		hGetNVR(h, NULL), key,
+		NULL, NULL,
+		hGetNVR(old, NULL),
+		0);
+	/*@=evalorder@*/
     }
 
     return rc;
@@ -897,31 +914,6 @@ static int tsGetOc(void * a)
 }
 
 /**
- * Return transaction element available package pointer.
- * @param a		transaction element iterator
- * @return		available package pointer
- */
-static /*@dependent@*/ availablePackage tsGetAlp(void * a)
-	/*@*/
-{
-    struct tsIterator_s * iter = a;
-    availablePackage alp = NULL;
-    int oc = iter->ocsave;
-
-    /*@-branchstate@*/
-    if (oc != -1) {
-	rpmTransactionSet ts = iter->ts;
-	TFI_t fi = ts->flList + oc;
-	if (fi->type == TR_ADDED)
-	    alp = alGetPkg(ts->addedPackages, ts->order[oc].u.addedIndex);
-    }
-    /*@=branchstate@*/
-    /*@-nullret@*/ /* FIX: alp can be NULL */
-    return alp;
-    /*@=nullret@*/
-}
-
-/**
  * Destroy transaction element iterator.
  * @param a		transaction element iterator
  * @return		NULL always
@@ -985,7 +977,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 {
     int i, j;
     int ourrc = 0;
-    availablePackage alp;
     int totalFileCount = 0;
     TFI_t fi;
     struct diskspaceInfo * dip;
@@ -1094,47 +1085,57 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * - count files.
      */
     /* The ordering doesn't matter here */
-    for (i = 0; i < alGetSize(ts->addedPackages); i++)
-    {
-	alp = alGetPkg(ts->addedPackages, i);
-	if (alp == NULL)
-	    break;
+    for (i = 0; i < alGetSize(ts->addedPackages); i++) {
+	const char * n, * v, * r;
+	const void * key;
+	rpmdbMatchIterator mi;
+	Header h;
 
-	if (!archOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
-	    rpmProblemSetAppend(ts, ts->probs, RPMPROB_BADARCH, alp,
+	h = alGetHeader(ts->addedPackages, i, 0);
+	if (h == NULL)	/* XXX can't happen */
+	    continue;
+
+	(void) headerNVR(h, &n, &v, &r);
+	key = alGetKey(ts->addedPackages, i);
+
+	if (!archOkay(h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
+	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
+			hGetNVR(h, NULL), key,
 			NULL, NULL, NULL, 0);
 
-	if (!osOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
-	    rpmProblemSetAppend(ts, ts->probs, RPMPROB_BADOS, alp,
+	if (!osOkay(h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
+	    rpmProblemSetAppend(ts->probs, RPMPROB_BADOS,
+			hGetNVR(h, NULL), key,
 			NULL, NULL, NULL, 0);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
-	    rpmdbMatchIterator mi;
 	    Header oldH;
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, alp->name, 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, n, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
-		xx = ensureOlder(ts, alp, oldH);
+		xx = ensureOlder(ts, h, oldH, key);
 	    mi = rpmdbFreeIterator(mi);
 	}
 
 	/* XXX multilib should not display "already installed" problems */
-	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !alp->multiLib) {
-	    rpmdbMatchIterator mi;
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, alp->name, 0);
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION,
-			RPMMIRE_DEFAULT, alp->version);
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE,
-			RPMMIRE_DEFAULT, alp->release);
+	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG)
+	 && !alGetMultiLib(ts->addedPackages, i))
+	{
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, n, 0);
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, v);
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, r);
 
 	    while (rpmdbNextIterator(mi) != NULL) {
-		rpmProblemSetAppend(ts, ts->probs, RPMPROB_PKG_INSTALLED, alp,
+		rpmProblemSetAppend(ts->probs, RPMPROB_PKG_INSTALLED,
+			hGetNVR(h, NULL), key,
 			NULL, NULL, NULL, 0);
 		/*@innerbreak@*/ break;
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	}
 
-	totalFileCount += alp->filesCount;
+	totalFileCount += alGetFilesCount(ts->addedPackages, i);
+
+	h = headerFree(h);
 
     }
 
@@ -1155,7 +1156,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     }
 
     /* ===============================================
-     * Initialize file list:
+     * Initialize transaction element file info for package:
      */
     ts->flEntries = alGetSize(ts->addedPackages) + ts->numRemovedPackages;
     ts->flList = xcalloc(ts->flEntries, sizeof(*ts->flList));
@@ -1170,16 +1171,28 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	oc = tsGetOc(tsi);
 	fi->magic = TFIMAGIC;
 
-	/* XXX watchout: fi->type must be set for tsGetAlp() to "work" */
 	fi->type = ts->order[oc].type;
+
 	/*@-branchstate@*/
 	switch (fi->type) {
 	case TR_ADDED:
-	    /* XXX watchout: fi->type must be set for tsGetAlp() to "work" */
-	    fi->ap = tsGetAlp(tsi);
 	    fi->record = 0;
-	    loadFi(ts, fi, fi->ap->h, keep_header);
-/* XXX free fi->ap->h here if/when possible */
+
+	    i = ts->order[oc].u.addedIndex;
+
+	    fi->h = alGetHeader(ts->addedPackages, i, 1);
+	    fi->multiLib = alGetMultiLib(ts->addedPackages, i);
+	    /*@-kepttrans@*/
+	    fi->key = alGetKey(ts->addedPackages, i);
+	    /*@=kepttrans@*/
+	    fi->relocs = alGetRelocs(ts->addedPackages, i);
+	    fi->fd = alGetFd(ts->addedPackages, i);
+
+	    /* XXX availablePackage can be dumped here XXX */
+
+	    /* XXX header arg unused. */
+	    loadFi(ts, fi, fi->h, keep_header);
+
 	    if (fi->fc == 0)
 		continue;
 
@@ -1187,7 +1200,6 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    skipFiles(ts, fi);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
-	    fi->ap = NULL;
 	    fi->record = ts->order[oc].u.removed.dboffset;
 	    /* Retrieve erased package header from the database. */
 	    {	rpmdbMatchIterator mi;
@@ -1367,12 +1379,14 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 		    /*@innercontinue@*/ continue;
 
 		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
-		    rpmProblemSetAppend(ts, ts->probs, RPMPROB_DISKSPACE, fi->ap,
+		    rpmProblemSetAppend(ts->probs, RPMPROB_DISKSPACE,
+				fiGetNVR(fi), fi->key,
 				ts->filesystems[i], NULL, NULL,
 	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
 
 		if (adj_fs_blocks(dip->ineeded) > dip->iavail)
-		    rpmProblemSetAppend(ts, ts->probs, RPMPROB_DISKNODES, fi->ap,
+		    rpmProblemSetAppend(ts->probs, RPMPROB_DISKNODES,
+				fiGetNVR(fi), fi->key,
 				ts->filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
 	    }
@@ -1428,8 +1442,9 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 
 	ts->flList = freeFl(ts, ts->flList);
 	ts->flEntries = 0;
-	/*@-nullstate@*/
-	psm->ts = rpmtsUnlink(psm->ts, "tsRun (problems)");
+	if (psm->ts != NULL)
+	    psm->ts = rpmtsUnlink(psm->ts, "tsRun (problems)");
+	/*@-nullstate@*/ /* FIX: ts->flList may be NULL */
 	return ts->orderCount;
 	/*@=nullstate@*/
     }
@@ -1467,50 +1482,53 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	Header h;
 	int gotfd;
 
+	oc = tsGetOc(tsi);
 	gotfd = 0;
 	psm->fi = rpmfiLink(fi, "tsInstall");
 	switch (fi->type) {
 	case TR_ADDED:
-	    alp = tsGetAlp(tsi);
-assert(alp == fi->ap);
-	    i = alGetPkgIndex(ts->addedPackages, alp);
+
+	    i = ts->order[oc].u.addedIndex;
 
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s-%s-%s\n",
 			fi->name, fi->version, fi->release);
 	    h = (fi->h ? headerLink(fi->h) : NULL);
 	    /*@-branchstate@*/
-	    if (alp->fd == NULL) {
-		alp->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-			    alp->key, ts->notifyData);
-		if (alp->fd) {
+	    if (fi->fd == NULL) {
+		/*@-noeffectuncon @*/ /* FIX: ??? */
+		fi->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
+				fi->key, ts->notifyData);
+		/*@=noeffectuncon @*/
+		if (fi->fd != NULL) {
 		    rpmRC rpmrc;
 
 		    h = headerFree(h);
 
 		    /*@-mustmod@*/	/* LCL: segfault */
-		    rpmrc = rpmReadPackageFile(ts, alp->fd,
+		    rpmrc = rpmReadPackageFile(ts, fi->fd,
 				"rpmRunTransactions", &h);
 		    /*@=mustmod@*/
 
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon @*/ /* FIX: check rc */
-			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
-					0, 0, alp->key, ts->notifyData);
+			(void) ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
+					0, 0,
+					fi->key, ts->notifyData);
 			/*@=noeffectuncon @*/
-			alp->fd = NULL;
+			fi->fd = NULL;
 			ourrc++;
 		    } else if (fi->h != NULL) {
-			Header foo = relocateFileList(ts, fi, alp, h, NULL);
+			Header foo = relocateFileList(ts, fi, h, NULL);
 			h = headerFree(h);
 			h = headerLink(foo);
 			foo = headerFree(foo);
 		    }
-		    if (alp->fd) gotfd = 1;
+		    if (fi->fd != NULL) gotfd = 1;
 		}
 	    }
 	    /*@=branchstate@*/
 
-	    if (alp->fd) {
+	    if (fi->fd != NULL) {
 		Header hsave = NULL;
 
 		if (fi->h) {
@@ -1520,24 +1538,37 @@ assert(alp == fi->ap);
 		} else {
 char * fstates = fi->fstates;
 fileAction * actions = fi->actions;
+uint_32 multiLib = fi->multiLib;
+const void * key = fi->key;
+rpmRelocation * relocs = fi->relocs;
+FD_t fd = fi->fd;
+
 fi->fstates = NULL;
 fi->actions = NULL;
+fi->key = NULL;
+fi->relocs = NULL;
+fi->fd = NULL;
 		    freeFi(fi);
 oc = tsGetOc(tsi);
 fi->magic = TFIMAGIC;
 fi->type = ts->order[oc].type;
-fi->ap = tsGetAlp(tsi);
 fi->record = 0;
 		    loadFi(ts, fi, h, 1);
 fi->fstates = _free(fi->fstates);
 fi->fstates = fstates;
 fi->actions = _free(fi->actions);
 fi->actions = actions;
+fi->multiLib = multiLib;
+fi->key = key;
+fi->relocs = relocs;
+/*@-newreftrans@*/
+/*@i@*/ fi->fd = fd;
+/*@=newreftrans@*/
+
 		}
-		if (alp->multiLib)
+		if (fi->multiLib)
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
-assert(alp == fi->ap);
 		if (psmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;
 		    lastFailed = i;
@@ -1557,9 +1588,9 @@ assert(alp == fi->ap);
 	    if (gotfd) {
 		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-			alp->key, ts->notifyData);
+			fi->key, ts->notifyData);
 		/*@=noeffectuncon @*/
-		alp->fd = NULL;
+		fi->fd = NULL;
 	    }
 	    freeFi(fi);
 	    /*@switchbreak@*/ break;
@@ -1587,7 +1618,7 @@ assert(alp == fi->ap);
 
     psm->ts = rpmtsUnlink(psm->ts, "tsRun");
 
-    /*@-nullstate@*/
+    /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
     if (ourrc)
     	return -1;
     else

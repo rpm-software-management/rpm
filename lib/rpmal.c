@@ -95,24 +95,12 @@ static void alFreeIndex(availableList al)
     }
 }
 
-int alGetSize(availableList al)
+int alGetSize(const availableList al)
 {
     return al->size;
 }
 
-const void * alGetKey(availableList al, int pkgNum)
-{
-    const void * key = NULL;
-    if (al != NULL && pkgNum >= 0 && pkgNum < al->size) {
-	if (al->list != NULL) {
-	    availablePackage alp = al->list + pkgNum;
-	    key = alp->key;
-	}
-    }
-    return key;
-}
-
-availablePackage alGetPkg(availableList al, int pkgNum)
+availablePackage alGetPkg(const availableList al, int pkgNum)
 {
     availablePackage alp = NULL;
     if (al != NULL && pkgNum >= 0 && pkgNum < al->size) {
@@ -126,7 +114,70 @@ fprintf(stderr, "*** alp[%d] %p\n", pkgNum, alp);
     return alp;
 }
 
-int alGetPkgIndex(availableList al, availablePackage alp)
+const void * alGetKey(const availableList al, int pkgNum)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    /*@-retexpose@*/
+    return (alp != NULL ? alp->key : NULL);
+    /*@=retexpose@*/
+}
+
+int alGetMultiLib(const availableList al, int pkgNum)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    return (alp != NULL ? alp->multiLib : 0);
+}
+
+int alGetFilesCount(const availableList al, int pkgNum)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    return (alp != NULL ? alp->filesCount : 0);
+}
+
+Header alGetHeader(availableList al, int pkgNum, int unlink)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    Header h = NULL;
+
+    if (alp != NULL && alp->h != NULL) {
+	h = headerLink(alp->h);
+	if (unlink) {
+	    alp->h = headerFree(alp->h);
+	    alp->h = NULL;
+	}
+    }
+    return h;
+}
+
+rpmRelocation * alGetRelocs(const availableList al, int pkgNum)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    rpmRelocation * relocs = NULL;
+
+    if (alp != NULL) {
+	relocs = alp->relocs;
+	alp->relocs = NULL;
+    }
+    return relocs;
+}
+
+FD_t alGetFd(availableList al, int pkgNum)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    FD_t fd = NULL;
+
+    if (alp != NULL) {
+	/*@-refcounttrans@*/
+	fd = alp->fd;
+	alp->fd = NULL;
+	/*@=refcounttrans@*/
+    }
+    /*@-refcounttrans@*/
+/*@i@*/ return fd;
+    /*@=refcounttrans@*/
+}
+
+int alGetPkgIndex(const availableList al, const availablePackage alp)
 {
     int pkgNum = -1;
     if (al != NULL) {
@@ -141,9 +192,9 @@ fprintf(stderr, "*** alp %p[%d]\n", alp, pkgNum);
     return pkgNum;
 }
 
-const char * alGetPkgNVR(availableList al, availablePackage alp)
+char * alGetPkgNVR(const availableList al, const availablePackage alp)
 {
-    const char * pkgNVR = NULL;
+    char * pkgNVR = NULL;
 
     if (al != NULL) {
 	if (al->list != NULL)
@@ -161,6 +212,15 @@ const char * alGetPkgNVR(availableList al, availablePackage alp)
 	    }
     }
     return pkgNVR;
+}
+
+void alProblemSetAppend(const availableList al, const availablePackage alp,
+		rpmProblemSet tsprobs, rpmProblemType type,
+		const char * dn, const char * bn,
+		const char * altNEVR, unsigned long ulong1)
+{
+    rpmProblemSetAppend(tsprobs, type, alGetPkgNVR(al, alp),
+		alp->key, dn, bn, altNEVR, ulong1);
 }
 
 availableList alCreate(int delta)

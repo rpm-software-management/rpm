@@ -6,13 +6,8 @@
  * Structures used for managing added/available package lists.
  */
 
-#if 0
-typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
-typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
-typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
-typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
-#endif
-
+/**
+ */
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 
 /** \ingroup rpmdep
@@ -72,7 +67,7 @@ extern "C" {
  * @param al		available list
  * @return		no. of packages in list
  */
-int alGetSize(availableList al)
+int alGetSize(const availableList al)
 	/*@*/;
 
 /**
@@ -82,8 +77,58 @@ int alGetSize(availableList al)
  * @return		available package key
  */
 /*@kept@*/ /*@null@*/
-const void * alGetKey(/*@null@*/ availableList al, int pkgNum)
+const void * alGetKey(/*@null@*/ const availableList al, int pkgNum)
 	/*@*/;
+
+/**
+ * Return available package multiLib flag.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package multiLib flag
+ */
+int alGetMultiLib(/*@null@*/ const availableList al, int pkgNum)
+	/*@*/;
+
+/**
+ * Return available package files count.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package files count
+ */
+int alGetFilesCount(/*@null@*/ const availableList al, int pkgNum)
+	/*@*/;
+
+/**
+ * Return available package header.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @param unlink	Should alp->h be unlinked?
+ * @return		available package header
+ */
+Header alGetHeader(/*@null@*/ availableList al, int pkgNum, int unlink)
+	/*@modifies al @*/;
+
+/**
+ * Return available package relocations.
+ * @warning alp->relocs set to NULL after call.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package relocations
+ */
+/*@null@*/
+rpmRelocation * alGetRelocs(/*@null@*/ availableList al, int pkgNum)
+	/*@modifies al @*/;
+
+/**
+ * Return available package file handle.
+ * @warning alp->fd set to NULL after call.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package file handle
+ */
+/*@null@*/
+FD_t alGetFd(/*@null@*/ availableList al, int pkgNum)
+	/*@modifies al @*/;
 
 /**
  * Return available package.
@@ -101,18 +146,31 @@ availablePackage alGetPkg(/*@null@*/ availableList al, int pkgNum)
  * @param alp		available package pointer
  * @return		available package index, -1 on failure
  */
-int alGetPkgIndex(/*@null@*/ availableList al, availablePackage alp)
+int alGetPkgIndex(/*@null@*/ const availableList al, const availablePackage alp)
 	/*@*/;
 
 /**
  * Return (malloc'd) available package name-version-release string.
  * @param al		available list
  * @param alp		available package pointer
- * @return		
+ * @return		name-version-release string
  */
+/*@-exportlocal@*/
 /*@only@*/ /*@null@*/
-const char * alGetPkgNVR(/*@null@*/ availableList al, availablePackage alp)
+char * alGetPkgNVR(/*@null@*/const availableList al, const availablePackage alp)
 	/*@*/;
+/*@=exportlocal@*/
+
+/**
+ * Append available package problem to set.
+ */
+/*@unused@*/
+void alProblemSetAppend(const availableList al, const availablePackage alp,
+		rpmProblemSet tsprobs, rpmProblemType type,
+		const char * dn, const char * bn,
+		/*@only@*/ /*@null@*/ const char * altNEVR,
+		unsigned long ulong1)
+	/*@modifies tsprobs @*/;
 
 /**
  * Initialize available packckages, items, and directory list.

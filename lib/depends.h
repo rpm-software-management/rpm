@@ -116,6 +116,15 @@ struct problemsSet_s {
 extern "C" {
 #endif
 
+/**
+ * Return (malloc'd) header name-version-release string.
+ * @param h		header
+ * @retval np		name tag value
+ * @return		name-version-release string
+ */
+/*@only@*/ const char * hGetNVR(Header h, /*@out@*/ const char ** np )
+	/*@modifies *np @*/;
+
 /** \ingroup rpmdep
  * Compare package name-version-release from header with dependency, looking
  * for overlap.

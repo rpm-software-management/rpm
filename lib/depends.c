@@ -500,8 +500,7 @@ static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
     return 0;
 }
 
-static /*@only@*/ const char * hNVRstr(Header h, /*@out@*/ const char ** np )
-	/*@modifies *np @*/
+const char * hGetNVR(Header h, const char ** np )
 {
     const char * NVR, * n, * v, * r;
     char * t;
@@ -524,7 +523,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char * name = NULL;
-    const char * addNVR = hNVRstr(h, &name);
+    const char * addNVR = hGetNVR(h, &name);
     const char * pkgNVR = NULL;
     rpmTagType ont, ovt;
     availablePackage p;
@@ -548,7 +547,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	if (strcmp(p->name, name))
 	    continue;
 	rc = rpmVersionCompare(p->h, h);
-	pkgNVR = hNVRstr(p->h, NULL);
+	pkgNVR = hGetNVR(p->h, NULL);
 	if (rc > 0) {
 	    rpmMessage(RPMMESS_WARNING,
 		_("newer package %s already added, skipping %s\n"),

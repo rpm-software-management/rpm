@@ -26,6 +26,38 @@ struct sharedFileInfo {
 /**
  */
 struct transactionFileInfo_s {
+/*@null@*/ Header h;		/*!< Package header */
+
+/*@owned@*/ const char * name;	/*!< Name: tag (malloc'd). */
+/*@owned@*/ const char * version; /*!< Version: tag (malloc'd). */
+/*@owned@*/ const char * release; /*!< Release: tag (malloc'd). */
+
+#ifdef	NOTYET
+/*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
+/*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
+/*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
+/*@owned@*//*@null@*/ const char ** requires;	/*!< Requires: name strings. */
+/*@owned@*//*@null@*/ const char ** requiresEVR;/*!< Requires: [epoch:]version[-release] strings. */
+/*@dependent@*//*@null@*/ int * requireFlags;	/*!< Requires: logical range qualifiers. */
+/*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
+/*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
+    int providesCount;			/*!< No. of Provide:'s in header. */
+    int requiresCount;			/*!< No. of Require:'s in header. */
+    int filesCount;			/*!< No. of files in header. */
+    int npreds;				/*!< No. of predecessors. */
+    int depth;				/*!< Max. depth in dependency tree. */
+    struct tsortInfo_s tsi;		/*!< Dependency tsort data. */
+#endif
+
+    uint_32 multiLib;		/* MULTILIB */
+/*@null@*/
+    const void * key;		/*!< Package notify key. */
+/*@null@*/
+    rpmRelocation * relocs;	/*!< Package file relocations. */
+/*@null@*/ FD_t fd;		/*!< Package file handle */
+
+/*=============================*/
+
   /* for all packages */
     enum rpmTransactionType type;
     fileAction action;		/*!< File disposition default. */
@@ -36,10 +68,6 @@ struct transactionFileInfo_s {
     HME_t hme;			/*!< Vector to headerModifyEntry() */
     HRE_t hre;			/*!< Vector to headerRemoveEntry() */
     HFD_t hfd;			/*!< Vector to headerFreeData() */
-/*@null@*/ Header h;		/*!< Package header */
-/*@owned@*/ const char * name;
-/*@owned@*/ const char * version;
-/*@owned@*/ const char * release;
     int_32 epoch;
     uint_32 flags;		/*!< File flag default. */
     const uint_32 * fflags;	/*!< File flag(s) (from header) */
@@ -77,19 +105,17 @@ struct transactionFileInfo_s {
     gid_t gid;
 /*@owned@*/ /*@null@*/ gid_t * fgids;	/*!< File gid(s) */
     int magic;
+
 #define	TFIMAGIC	0x09697923
 /*@owned@*/ FSM_t fsm;		/*!< File state machine data. */
 
     int keep_header;		/*!< Keep header? */
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 
-  /* these are for TR_ADDED packages */
-/*@dependent@*/ availablePackage ap;
-/*@owned@*/ struct sharedFileInfo * replaced;
-/*@owned@*/ uint_32 * replacedSizes;
+/*@owned@*/ struct sharedFileInfo * replaced;	/*!< (TR_ADDED) */
+/*@owned@*/ uint_32 * replacedSizes;	/*!< (TR_ADDED) */
 
-  /* for TR_REMOVED packages */
-    unsigned int record;
+    unsigned int record;	/*!< (TR_REMOVED) */
 };
 
 /**
@@ -174,6 +200,15 @@ extern "C" {
 #endif
 
 /**
+ * Return (malloc'd) transaction element name-version-release string.
+ * @param fi		transaction element file info
+ * @return		name-version-release string
+ */
+/*@only@*/ /*@null@*/
+char * fiGetNVR(/*@null@*/const TFI_t fi)
+	/*@*/;
+
+/**
  * Return file type from mode_t.
  * @param mode		file mode bits (from header)
  * @return		file type
@@ -186,15 +221,13 @@ fileTypes whatis(uint_16 mode)
  * @todo multilib file dispositions need to be checked.
  * @param ts		transaction set
  * @param fi		transaction element file info
- * @param alp		available package
  * @param origH		package header
  * @param actions	file dispositions
  * @return		header with relocated files
  */
 Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
-		availablePackage alp,
 		Header origH, fileAction * actions)
-	/*@modifies ts, fi, alp, origH, actions @*/;
+	/*@modifies ts, fi, origH, actions @*/;
 
 /**
  * Load data from header into transaction file element info.
