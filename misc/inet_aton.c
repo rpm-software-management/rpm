@@ -1,3 +1,5 @@
+#include "config.h"
+
 #ifdef HAVE_NETINET_IN_SYSTM_H
 # include <sys/types.h>
 # include <netinet/in_systm.h>
