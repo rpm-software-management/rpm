@@ -19,4 +19,7 @@
 /* Define as 1 if you have <libintl.h.h> */
 #define HAVE_LIBINTL_H 0
 
+/* Define as 1 if <netdb.h> defines h_errno */
+#define HAVE_HERRNO 0
+
 #endif
