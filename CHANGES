@@ -1,4 +1,9 @@
 2.3.1 -> 2.3.2:
+	- Ripped out header internals and redid them. Any compatibility 
+	  problems this causes are *bugs* as it should be completley 
+	  transparent. If this works the devil better buy some Prestone (TM).
+
+2.3.1 -> 2.3.2:
 	- fixed bug in new rpmVersionCompare() which made it worse then
 	  useless (thanks to Norbert Kiesel)
 	- fixed silly message
