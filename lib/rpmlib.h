@@ -429,6 +429,14 @@ typedef enum rpmTag_e {
     RPMTAG_POSTTRANS		= 1152,	/* s */
     RPMTAG_PRETRANSPROG		= 1153,	/* s */
     RPMTAG_POSTTRANSPROG	= 1154,	/* s */
+    RPMTAG_DISTTAG		= 1155,	/* s */
+    RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension placeholder */
+    RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension placeholder */
+    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i   extension placeholder */
+    RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder */
+    RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder */
+    RPMTAG_ENHANCESFLAGS	= 1161,	/* i   extension placeholder */
+    RPMTAG_PRIORITY		= 1162, /* i   extension placeholder */
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/

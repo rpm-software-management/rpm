@@ -30,6 +30,7 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_CHANGELOGTEXT,
     RPMTAG_PREFIXES,
     RPMTAG_RHNPLATFORM,
+    RPMTAG_DISTTAG,
     0
 };
 
@@ -458,8 +459,8 @@ extern int noLang;
 /**
  */
 /*@-boundswrite@*/
-static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
-			     const char *lang)
+static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
+		const char *macro, const char *lang)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies spec->macros, spec->st, spec->buildRootURL,
 		spec->sources, spec->numSources, spec->noSource,
@@ -513,6 +514,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     case RPMTAG_RELEASE:
     case RPMTAG_URL:
     case RPMTAG_RHNPLATFORM:
+    case RPMTAG_DISTTAG:
 	SINGLE_TOKEN_ONLY;
 	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
@@ -775,6 +777,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
     {RPMTAG_DOCDIR,		0, 0, "docdir"},
     {RPMTAG_RHNPLATFORM,	0, 0, "rhnplatform"},
+    {RPMTAG_DISTTAG,		0, 0, "disttag"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0}
     /*@=nullassign@*/
@@ -794,7 +797,7 @@ static inline void initPreambleList(void)
 /**
  */
 /*@-boundswrite@*/
-static int findPreambleTag(Spec spec, /*@out@*/int * tag,
+static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 		/*@null@*/ /*@out@*/ const char ** macro, /*@out@*/ char * lang)
 	/*@modifies *tag, *macro, *lang @*/
 {
@@ -855,7 +858,7 @@ static int findPreambleTag(Spec spec, /*@out@*/int * tag,
 int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;
-    int tag, rc, xx;
+    int rc, xx;
     char *name, *linep;
     int flag;
     Package pkg;
@@ -897,6 +900,8 @@ int parsePreamble(Spec spec, int initialPackage)
 	    return rc;
 	while (! (nextPart = isPart(spec->line))) {
 	    const char * macro;
+	    rpmTag tag;
+
 	    /* Skip blank lines */
 	    linep = spec->line;
 	    SKIPSPACE(linep);
