@@ -189,7 +189,7 @@ static void printVersion(void) {
 }
 
 static void printBanner(void) {
-    puts(_("Copyright (C) 1997 - Red Hat Software"));
+    puts(_("Copyright (C) 1998 - Red Hat Software"));
     puts(_("This may be freely redistributed under the terms of the GNU "
 	   "Public License"));
 }
