@@ -122,7 +122,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     int status;
     void *oldhandler;
 
-    message(MESS_VERBOSE, "Finding dependencies\n");
+    message(MESS_VERBOSE, "Finding dependencies...\n");
 
     pipe(toLdd);
     pipe(fromLdd);
@@ -287,6 +287,8 @@ int processReqProv(Header h, struct PackageRec *p)
 	    }
 	    rd = rd->next;
 	}
+	message(MESS_VERBOSE, "\n");
+
 	addEntry(h, RPMTAG_PROVIDES, STRING_ARRAY_TYPE, nameArray, p->numProv);
 	free(nameArray);
     }
@@ -296,7 +298,7 @@ int processReqProv(Header h, struct PackageRec *p)
 	nameArray = namePtr = malloc(p->numReq * sizeof(*nameArray));
 	versionArray = versionPtr = malloc(p->numReq * sizeof(*versionArray));
 	flagArray = flagPtr = malloc(p->numReq * sizeof(*flagArray));
-	message(MESS_VERBOSE, "\nRequires (%d):", p->numReq);
+	message(MESS_VERBOSE, "Requires (%d):", p->numReq);
 	while (rd) {
 	    if (! (rd->flags & REQUIRE_PROVIDES)) {
 		message(MESS_VERBOSE, " %s", rd->name);
