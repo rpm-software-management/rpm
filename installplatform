@@ -27,7 +27,7 @@ case "$arch" in
   *) SUBSTS=y___ ;;
 esac
 
-for SUBST in $SUBSTS 's_^[^-]*-_noarch_' ; do
+for SUBST in $SUBSTS 's_^[^-]*-_noarch-_' ; do
   ARCH=`echo $arch | sed -e $SUBST`
   TARGET_PLATFORM=`echo $target_platform | sed -e $SUBST`
   TARGET=`echo $target | sed -e $SUBST`
