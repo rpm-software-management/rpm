@@ -1,7 +1,6 @@
 2.90 -> 2.91
 	- fix: build of packages w/o BuildRoot segfault.
 	- permit substitution of I18N strings from PO meta-catalogues.
-	- rename file before unlinking to avoid EBUSY failures.
 	- add callbacks for installer updates while doing URL xfers.
 	- resurrect http queries/verifies.
 	- create rpmbzio.c to avoid implicit dependence on libbz2 for installer.
@@ -63,6 +62,8 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.6 -> 2.5.7:
+	- increase timeout in tread from 5 to 30 secs for slow links.
+	- rename file before unlinking to avoid EBUSY failures.
 	- headerGetEntry now returns count=0 if tag not found (Chris Blizzard).
 	- resurrect osf1 as canonical os name (Time Mooney).
 	- sub-packages should inheirit Prefixes tag (Ian Mortimer).
