@@ -73,5 +73,11 @@ rpm alias -F --freshen
 rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides
 rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatrequires
 
+# colon separated i18n domains to use as PO catalogue lookaside for
+* retrieving header group/description/summary.
+#
+# For Red Hat, value should be "redhat-dist:redhat-powertools".
+rpm alias --i18ndomains --define '_i18ndomains !#:+'
+
 # Build policies enabled from command line. Last policy applies.
 rpm alias --buildpolicy --define '__spec_install_post @RPMCONFIGDIR@/brp-!#:+'

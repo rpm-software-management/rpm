@@ -702,7 +702,6 @@ int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage);
 
 /*@observer@*/ const char *const tagName(int tag);
 extern int specedit;
-extern char * i18ndomains;
 extern struct poptOption rpmQueryPoptTable[];
 
 void rpmDisplayQueryTags(FILE * f);

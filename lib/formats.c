@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmmacro.h>	/* XXX for %_i18ndomains */
 #include "misc.h"
 
 static char * permsString(int mode)
@@ -352,15 +353,16 @@ static int filenamesTag(Header h, /*@out@*/ int_32 * type,
 
 /* I18N look aside diversions */
 
-char * i18ndomains = NULL;
-
 int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
 static const char * language = "LANGUAGE";
+
+static char * _macro_i18ndomains = "%{?_i18ndomains:%{_i18ndomains}}";
 
 static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 {
+    char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
 
     *type = RPM_STRING_TYPE;
@@ -368,8 +370,8 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
     *count = 0;
     *freeData = 0;
 
-    if (i18ndomains) {
-	char * dstring, *domain, *de;
+    if (dstring && *dstring) {
+	char *domain, *de;
 	const char * langval;
 	const char * msgkey;
 	const char * msgid;
@@ -389,7 +391,6 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	++_nl_msg_cat_cntr;
 
 	msgid = NULL;
-	dstring = xstrdup(i18ndomains);
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
@@ -409,11 +410,13 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	    *count = 1;
 	    *freeData = 1;
 	}
-	xfree(dstring);
+	xfree(dstring); dstring = NULL;
 	if (*data) {
 	    return 0;
 	}
     }
+
+    if (dstring) xfree(dstring);
 
     rc = headerGetEntry(h, tag, type, (void **)data, count);
 
