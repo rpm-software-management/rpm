@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.13 2000/11/10 08:49:57 rjray Exp $
+ * $Id: RPM.h,v 1.14 2001/02/27 07:34:00 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -196,7 +196,7 @@ extern int rpmhdr_scalar_tag(pTHX_ SV*, int);
 
 /* RPM/Database.xs: */
 extern RPM__Database rpmdb_TIEHASH(pTHX_ char *, SV *);
-extern RPM__Header rpmdb_FETCH(pTHX_ RPM__Database, SV *);
+extern SV* rpmdb_FETCH(pTHX_ RPM__Database, SV *);
 extern bool rpmdb_EXISTS(pTHX_ RPM__Database, SV *);
 
 /* RPM/Package.xs: */
