@@ -28,9 +28,14 @@
 	- bump popt version to 1.10.
 	- attempt dependency tree breadth, take 1.
 	- use external libneon for http/https transport.
-	- python: add python 2.4 support.
 	- add --delsign to purge packages of digital signatures.
+
+4.3.2 -> 4.3.3:
+	- bump micro version.
 	- make peace with libtool-1.5.10 and automake-1.9.3.
+	- python: add python 2.4 support.
+	- selinux: use rpm_execcon, not execv, to run scriptlets (#136848).
+	- fix: segfault on --verifydb (#138589).
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.

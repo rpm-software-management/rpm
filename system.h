@@ -301,14 +301,11 @@ typedef	char * security_context_t;
 #define	lsetfilecon(_fn, _c)	(-1)
 #define	fsetfilecon(_fd, _c)	(-1)
 
-#define	getcon(_c)		(-1)
-#define	getexeccon(_c)		(-1)
-#define	setexeccon(_c)		(-1)
-
 #define	security_check_context(_c)	(0)
-#define security_getenforce()		(0)
 
 #define	is_selinux_enabled()	(-1)
+
+#define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif
 
 #if defined(__LCLINT__)

@@ -862,13 +862,11 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 			(dbhome ? dbhome : ""),
 			(dbfile ? dbfile : tagName(dbi->dbi_rpmtag)));
 
-		xx = db->close(db, 0);
-		/* XXX ignore not found error messages. */
-		_printit = (xx == ENOENT ? 0 : _debug);
-		xx = cvtdberr(dbi, "db->close", xx, _printit);
+	        /*
+		 * The DB handle may not be accessed again after
+		 * DB->verify is called, regardless of its return.
+		 */
 		db = NULL;
-		if (rc == 0 && xx) rc = xx;
-
 		dbf = _free(dbf);
 	}
 	xx = dbenv->close(dbenv, 0);
