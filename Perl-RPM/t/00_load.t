@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Verify that the indivual modules will load
+# Verify that the individual modules will load
 
 @MODULES = qw(RPM RPM::Constants RPM::Database RPM::Header RPM::Error);
 
