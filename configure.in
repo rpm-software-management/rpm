@@ -335,7 +335,7 @@ done
 if test -z "$BZIP2LIB" ; then
   for bz2lib in bz2 ; do
    AC_CHECK_LIB(${bz2lib}, bzread, 
-	[LIBS="$LIBS ${bz2lib}"; break], 
+	[LIBS="$LIBS -l${bz2lib}"; break], 
 	[if test ${bz2lib} = bz2; then 
 	    AC_MSG_WARN([missing libbz2.a (from the bzip2 package)]) 
 	 fi]
@@ -611,8 +611,9 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
 					AC_DEFINE(HAVE_GETMNTINFO_R)],
                  LIBOBJS="$LIBOBJS getmntent.o")])])])
 
-AC_CHECK_FUNC(lchown)
-if test $ac_cv_func_lchown = no; then 
+LCHOWN=no
+AC_CHECK_FUNC(lchown, [LCHOWN=yes; AC_DEFINE(HAVE_LCHOWN)])
+if test "$LCHOWN" = no; then 
     dnl Does chown() follow symlinks? This should be a good enough test.
     AC_MSG_CHECKING(whether chown() follows symlinks)
     AC_ARG_ENABLE([broken-chown],
