@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-02-29 18:19-0500\n"
+"POT-Creation-Date: 2000-03-07 10:30-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3142,59 +3142,59 @@ msgstr "nie je mo¾né otvori» %s\n"
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:784
 msgid "Success"
 msgstr "Úspech"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:787
 msgid "Bad server response"
 msgstr "Chybná odpoveï servera"
 
-#: lib/rpmio.c:786
+#: lib/rpmio.c:790
 msgid "Server IO error"
 msgstr "Chyba vstupu/výstupu servera"
 
-#: lib/rpmio.c:789
+#: lib/rpmio.c:793
 msgid "Server timeout"
 msgstr "Prekroèenie èasového limitu servera"
 
-#: lib/rpmio.c:792
+#: lib/rpmio.c:796
 msgid "Unable to lookup server host address"
 msgstr "Nie je mo¾né vyhµada» adresu servera"
 
-#: lib/rpmio.c:795
+#: lib/rpmio.c:799
 msgid "Unable to lookup server host name"
 msgstr "Nie je mo¾né vyhµada» názov servera"
 
-#: lib/rpmio.c:798
+#: lib/rpmio.c:802
 msgid "Failed to connect to server"
 msgstr "Pripojenie k serveru zlyhalo"
 
-#: lib/rpmio.c:801
+#: lib/rpmio.c:805
 msgid "Failed to establish data connection to server"
 msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
 
-#: lib/rpmio.c:804
+#: lib/rpmio.c:808
 msgid "IO error to local file"
 msgstr "Chyba vstupu/výstupu lokálneho súboru"
 
-#: lib/rpmio.c:807
+#: lib/rpmio.c:811
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
 
-#: lib/rpmio.c:810
+#: lib/rpmio.c:814
 msgid "File not found on server"
 msgstr "Súbor sa na serveri nenachádza"
 
-#: lib/rpmio.c:813
+#: lib/rpmio.c:817
 msgid "Abort in progress"
 msgstr "Zru¹enie prebieha"
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:821
 msgid "Unknown or unexpected error"
 msgstr "Neznáma alebo neoèakávaná chyba"
 
-#: lib/rpmio.c:1350
+#: lib/rpmio.c:1354
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prihlasuje sa na %s ako %s, heslo %s\n"

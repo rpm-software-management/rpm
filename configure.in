@@ -287,7 +287,6 @@ AC_CHECK_FUNC(socket, [], [
 dnl Better not use fchmod at all.
 AC_CHECK_FUNC(fchmod)
 
-
 dnl Temporary hack for MiNT.  Some functions (writev, snprintf) are
 dnl not in the libc but in libport (for political reasons).  This check
 dnl can hopefully be removed soon.  Please use the default action
@@ -322,6 +321,9 @@ for zlib in z gz ; do
 	       )
 done
 
+dnl zlib-1.0.4 has not gzseek
+AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK)])
+
 for bz2lib in bz2 ; do
    AC_CHECK_LIB(${bz2lib}, bzread, 
 	[LIBS="$LIBS -l${bz2lib}"; break], 
@@ -330,6 +332,9 @@ for bz2lib in bz2 ; do
 	 fi]
 	       )
 done
+
+dnl Red Hat 4.x has not personality
+AC_CHECK_FUNC(personality, [AC_DEFINE(HAVE_PERSONALITY)])
 
 dnl XXX these are needed only by rpmgettext right now
 AM_FUNC_ERROR_AT_LINE

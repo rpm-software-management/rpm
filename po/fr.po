@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-02-29 18:19-0500\n"
+msgstr "POT-Creation-Date: 2000-03-07 10:30-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -3234,59 +3234,59 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:784
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:787
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:786
+#: lib/rpmio.c:790
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:789
+#: lib/rpmio.c:793
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:792
+#: lib/rpmio.c:796
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:795
+#: lib/rpmio.c:799
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:798
+#: lib/rpmio.c:802
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:801
+#: lib/rpmio.c:805
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:804
+#: lib/rpmio.c:808
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:807
+#: lib/rpmio.c:811
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:810
+#: lib/rpmio.c:814
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:813
+#: lib/rpmio.c:817
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:821
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1350
+#: lib/rpmio.c:1354
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

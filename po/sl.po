@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.12 2000/03/01 15:28:31 jbj Exp $
+# $Id: sl.po,v 1.13 2000/03/07 15:37:18 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-02-29 18:19-0500\n"
+"POT-Creation-Date: 2000-03-07 10:30-0500\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3126,59 +3126,59 @@ msgstr "ni mo¾no odpreti %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Name¹èamo %s\n"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:784
 msgid "Success"
 msgstr "Uspe¹no"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:787
 msgid "Bad server response"
 msgstr "Okvarjen odziv stre¾nika"
 
-#: lib/rpmio.c:786
+#: lib/rpmio.c:790
 msgid "Server IO error"
 msgstr "V/I napaka na stre¾niku"
 
-#: lib/rpmio.c:789
+#: lib/rpmio.c:793
 msgid "Server timeout"
 msgstr "Potekel èas na stre¾niku"
 
-#: lib/rpmio.c:792
+#: lib/rpmio.c:796
 msgid "Unable to lookup server host address"
 msgstr "Naslov stre¾nika ni ugotovljiv"
 
-#: lib/rpmio.c:795
+#: lib/rpmio.c:799
 msgid "Unable to lookup server host name"
 msgstr "Ime stre¾nika ni ugotovljivo"
 
-#: lib/rpmio.c:798
+#: lib/rpmio.c:802
 msgid "Failed to connect to server"
 msgstr "Neuspe¹en poskus prikljuèitve na stre¾nik"
 
-#: lib/rpmio.c:801
+#: lib/rpmio.c:805
 msgid "Failed to establish data connection to server"
 msgstr "Neuspe¹na vzpostavitev podatkovne povezave s stre¾nikom"
 
-#: lib/rpmio.c:804
+#: lib/rpmio.c:808
 msgid "IO error to local file"
 msgstr "V/I napaka na lokalni datoteki"
 
-#: lib/rpmio.c:807
+#: lib/rpmio.c:811
 msgid "Error setting remote server to passive mode"
 msgstr "Napaka pri nastavitvi oddaljenega stre¾nika v pasivni naèin"
 
-#: lib/rpmio.c:810
+#: lib/rpmio.c:814
 msgid "File not found on server"
 msgstr "Datoteke ni mo¾no najti na stre¾niku"
 
-#: lib/rpmio.c:813
+#: lib/rpmio.c:817
 msgid "Abort in progress"
 msgstr "Prekinitev v teku"
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:821
 msgid "Unknown or unexpected error"
 msgstr "Neznana ali neprièakovana napaka"
 
-#: lib/rpmio.c:1350
+#: lib/rpmio.c:1354
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "prijava na %s kot %s, geslo %s\n"

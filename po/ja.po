@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-02-29 18:19-0500\n"
+"POT-Creation-Date: 2000-03-07 10:30-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.27 2000/03/01 15:28:30 jbj Exp $
+# $Id: ja.po,v 1.28 2000/03/07 15:37:18 jbj Exp $
 #: rpm.c:199
 #, c-format
 msgid "rpm: %s\n"
@@ -3213,67 +3213,67 @@ msgstr "%s をオープンできません\n"
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
-#: lib/rpmio.c:780
+#: lib/rpmio.c:784
 msgid "Success"
 msgstr "成功"
 
-#: lib/rpmio.c:783
+#: lib/rpmio.c:787
 #, fuzzy
 msgid "Bad server response"
 msgstr "サーバから正常な応答がありません"
 
-#: lib/rpmio.c:786
+#: lib/rpmio.c:790
 #, fuzzy
 msgid "Server IO error"
 msgstr "サーバ IO エラー"
 
-#: lib/rpmio.c:789
+#: lib/rpmio.c:793
 #, fuzzy
 msgid "Server timeout"
 msgstr "サーバタイムアウト"
 
-#: lib/rpmio.c:792
+#: lib/rpmio.c:796
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません"
 
-#: lib/rpmio.c:795
+#: lib/rpmio.c:799
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません"
 
-#: lib/rpmio.c:798
+#: lib/rpmio.c:802
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "サーバへの接続に失敗しました"
 
-#: lib/rpmio.c:801
+#: lib/rpmio.c:805
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータコネクションの確立に失敗しました"
 
-#: lib/rpmio.c:804
+#: lib/rpmio.c:808
 msgid "IO error to local file"
 msgstr "ローカルファイルの IO エラー"
 
-#: lib/rpmio.c:807
+#: lib/rpmio.c:811
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバのパッシブモード設定エラー"
 
-#: lib/rpmio.c:810
+#: lib/rpmio.c:814
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません"
 
-#: lib/rpmio.c:813
+#: lib/rpmio.c:817
 msgid "Abort in progress"
 msgstr "処理中のアボート"
 
-#: lib/rpmio.c:817
+#: lib/rpmio.c:821
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "不明もしくは予期せぬエラー"
 
-#: lib/rpmio.c:1350
+#: lib/rpmio.c:1354
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s へ %s pw %s としてログイン中\n"
