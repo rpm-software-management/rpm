@@ -204,6 +204,10 @@ verifying compares the size, MD5 sum, permissions, type, owner and group
 of each file.  Any discrepencies are displayed.  The package specification
 options are the same as for package querying.
 
+Files that were not installed from the package, for example documentation
+files excluded on installation using the "\fB\-\-excludedocs\fP" option,
+will be silently ignored.
+
 The format of the output is a string of 8 characters, a possible "\fBc\fP"
 denoting a configuration file, and then the file name.  Each of the 8
 characters denotes the result of a comparison of one attribute of the file
