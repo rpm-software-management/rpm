@@ -27,7 +27,6 @@ fi
 AC_SUBST(TARGET)
 
 AC_CHECK_HEADERS(unistd.h alloca.h)
-AC_CHECK_FUNCS(mmap)
 AC_CHECK_FUNCS(strerror)
 
 AC_OUTPUT(Makefile)
