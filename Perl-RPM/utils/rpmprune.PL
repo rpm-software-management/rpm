@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 
 use Config;
 use File::Basename qw(&basename &dirname);
@@ -34,19 +34,20 @@ $Config{'startperl'}
 # In the following, perl variables are not expanded during extraction.
 
 print OUT <<'!NO!SUBS!';
+    eval 'exec perl -S $0 "$@"'
+        if 0;
 
 use strict;
-use vars qw($USAGE $VERSION $revision $cmd %opts %RPM $file $hdr $installed
-            $ret);
+use vars qw($USAGE $VERSION $revision $cmd %opts $file $hdr $installed $ret);
 
 use Getopt::Long;
 use File::Basename qw(basename);
 
-use RPM::Database;
+use RPM::Database qw(%RPM);
 use RPM::Header;
 
 $cmd = basename $0;
-$revision = q$Revision: 1.2 $;
+$revision = q$Revision: 1.3 $;
 $VERSION = sprintf("%d.%02d", $revision =~ /(\d+)\.(\d+)/);
 $USAGE = "USAGE:
     $cmd [ --newer ] [ --older ] [ --equal ] [ --uninst ]
@@ -83,8 +84,6 @@ if ($opts{invert})
     $opts{$_} = 1 - $opts{$_} for (qw(newer older equal uninst));
 }
 
-tie %RPM, "RPM::Database";
-
 for $file (@ARGV)
 {
     $hdr = new RPM::Header $file;
@@ -94,7 +93,7 @@ for $file (@ARGV)
         next;
     }
 
-    $installed = $RPM{$hdr->{name}->[0]};
+    $installed = $RPM{$hdr->{name}};
     unless ($installed)
     {
         # It isn't currently installed, so there is no conflict
@@ -200,5 +199,3 @@ Randy J. Ray <rjray@blackperl.com>
 close OUT or die "Can't close $file: $!";
 chmod 0755, $file or die "Can't reset permissions for $file: $!\n";
 exec("$Config{'eunicefix'} $file") if $Config{'eunicefix'} ne ':';
-
-=cut
