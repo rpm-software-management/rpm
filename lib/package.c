@@ -89,7 +89,11 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
     addEntry(dbentry, RPMTAG_VENDOR, STRING_TYPE, spec.vendor, 1);
     addEntry(dbentry, RPMTAG_SIZE, INT32_TYPE, &oldheader.size, 1);
     addEntry(dbentry, RPMTAG_COPYRIGHT, STRING_TYPE, spec.copyright, 1); 
-    addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, oldheader.group, 1);
+
+    if (oldheader.group)
+	addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, oldheader.group, 1);
+    else
+	addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, "Unknown", 1);
 
     if (spec.prein) 
 	addEntry(dbentry, RPMTAG_PREIN, STRING_TYPE, spec.prein, 1);
@@ -177,6 +181,8 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
 	free(fileRDevsList);
 	free(fileStatesList);
     }
+
+    oldhdrFree(&oldheader);
 
     return 0;
 }
