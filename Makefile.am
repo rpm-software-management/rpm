@@ -30,12 +30,12 @@ rpm_SOURCES =		build.c checksig.c ftp.c install.c rpm.c url.c \
 			verify.c
 rpm_LDADD =		-lrpmbuild -lpopt -lrpm @LIBMISC@
 
-rpm.o:	rpm.c
-	$(COMPILE) \
-		-DLOCALEDIR=\"$(LOCALEDIR)\" \
-		-DLIBRPMALIAS_FILENAME=\"$(LIBRPMALIAS_FILENAME)\" \
-		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
-		-c $<
+#rpm.o:	rpm.c
+#	$(COMPILE) \
+#		-DLOCALEDIR=\"$(LOCALEDIR)\" \
+#		-DLIBRPMALIAS_FILENAME=\"$(LIBRPMALIAS_FILENAME)\" \
+#		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
+#		-c $<
 
 include ./Makefile.inc
 

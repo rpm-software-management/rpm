@@ -77,7 +77,7 @@ static inline off_t saferead(CFD_t *cfd, void * vbuf, size_t amount) {
 			nb *= amount;
 		break;
 	case cpioIoTypeGzFd:
-		nb = gzread(cfd->cpioGzFd, buf, amount);
+		nb = gzdRead(cfd->cpioGzFd, buf, amount);
 		break;
 	}
 	if (nb <= 0)
@@ -132,7 +132,7 @@ static inline off_t safewrite(CFD_t *cfd, void * vbuf, size_t amount) {
 			nb *= amount;
 		break;
 	case cpioIoTypeGzFd:
-		nb = gzwrite(cfd->cpioGzFd, buf, amount);
+		nb = gzdWrite(cfd->cpioGzFd, buf, amount);
 		break;
 	}
 	if (nb <= 0)

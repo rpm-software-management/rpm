@@ -320,7 +320,7 @@ Header headerRead(FD_t fd, int magicp)
     return h;
 }
 
-void headerGzWrite(gzFile fd, Header h, int magicp)
+void headerGzWrite(FD_t fd, Header h, int magicp)
 {
     void * p;
     int length;
@@ -329,17 +329,17 @@ void headerGzWrite(gzFile fd, Header h, int magicp)
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	gzwrite(fd, header_magic, sizeof(header_magic));
+	gzdWrite(fd, header_magic, sizeof(header_magic));
 	l = htonl(0);
-	gzwrite(fd, &l, sizeof(l));
+	gzdWrite(fd, &l, sizeof(l));
     }
     
-    gzwrite(fd, p, length);
+    gzdWrite(fd, p, length);
 
     free(p);
 }
 
-Header headerGzRead(gzFile fd, int magicp)
+Header headerGzRead(FD_t fd, int magicp)
 {
     int_32 reserved;
     int_32 * p;
@@ -350,24 +350,24 @@ Header headerGzRead(gzFile fd, int magicp)
     int totalSize;
 
     if (magicp == HEADER_MAGIC_YES) {
-	if (gzread(fd, &magic, sizeof(magic)) != sizeof(magic))
+	if (gzdRead(fd, &magic, sizeof(magic)) != sizeof(magic))
 	    return NULL;
 	if (memcmp(&magic, header_magic, sizeof(magic))) {
 	    return NULL;
 	}
 
-	if (gzread(fd, &reserved, sizeof(reserved)) != sizeof(reserved))
+	if (gzdRead(fd, &reserved, sizeof(reserved)) != sizeof(reserved))
 	    return NULL;
     }
     
     /* First read the index length (count of index entries) */
-    if (gzread(fd, &il, sizeof(il)) != sizeof(il)) 
+    if (gzdRead(fd, &il, sizeof(il)) != sizeof(il)) 
 	return NULL;
 
     il = ntohl(il);
 
     /* Then read the data length (number of bytes) */
-    if (gzread(fd, &dl, sizeof(dl)) != sizeof(dl)) 
+    if (gzdRead(fd, &dl, sizeof(dl)) != sizeof(dl)) 
 	return NULL;
 
     dl = ntohl(dl);
@@ -380,7 +380,7 @@ Header headerGzRead(gzFile fd, int magicp)
     *p++ = htonl(dl);
 
     totalSize -= sizeof(int_32) + sizeof(int_32);
-    if (gzread(fd, p, totalSize) != totalSize)
+    if (gzdRead(fd, p, totalSize) != totalSize)
 	return NULL;
     
     h = headerLoad(block);

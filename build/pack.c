@@ -394,10 +394,10 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa) {
     char *failedFile;
 
     cfd->cpioIoType = cpioIoTypeGzFd;
-    cfd->cpioGzFd = gzdopen(dup(fdFileno(fdo)), "w9");
+    cfd->cpioGzFd = gzdFdopen(fdDup(fdFileno(fdo)), "w9");
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
-    gzclose(cfd->cpioGzFd);
+    gzdClose(cfd->cpioGzFd);
 
     if (rc) {
 	if (rc & CPIO_CHECK_ERRNO)

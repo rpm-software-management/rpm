@@ -90,6 +90,9 @@
 /* Define this to be whatever root's primary group is, in double quotes */
 #undef ROOT_GROUP
 
+/* Full path to rpm locale directory (usually /usr/share/locale) */
+#undef LOCALEDIR
+
 /* Full path to rpm configuration directory (usually /usr/lib/rpm) */
 #undef RPMCONFIGDIR
 

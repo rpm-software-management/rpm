@@ -43,7 +43,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/BUILD
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/${RPM_ARCH}
 mkdir -p $RPM_BUILD_ROOT/usr/src/redhat/RPMS/noarch
 
-make installprefix="$RPM_BUILD_ROOT" install
+make DESTDIR="$RPM_BUILD_ROOT" install
 
 %clean
 rm -rf $RPM_BUILD_ROOT

@@ -320,6 +320,16 @@ for zlib in z gz ; do
 	       )
 done
 
+BZ2LIB=
+for bz2lib in bz2 ; do
+   AC_CHECK_LIB(${bz2lib}, bzread, 
+	[LIBS="$LIBS -l${bz2lib}"; break], 
+	[if test ${bz2lib} = bz2; then 
+	    AC_MSG_WARN([missing libbz2.a (from the bzip2 package)]) 
+	 fi]
+	       )
+done
+
 dnl XXX these are needed only by rpmgettext right now
 AM_FUNC_ERROR_AT_LINE
 
@@ -344,6 +354,7 @@ AC_CHECK_HEADERS(netinet/in_systm.h)
 AC_CHECK_HEADERS(machine/types.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
+AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 
 AC_C_BIGENDIAN
 AC_C_INLINE
@@ -583,6 +594,9 @@ if test -n "$LIBOBJS" ; then
 	MISCPATH=misc/libmisc.a
 fi
 
+LOCALEDIR="`echo ${prefix}/share/locale`"
+AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR")
+AC_SUBST(LOCALEDIR)
 RPMCONFIGDIR="`echo ${prefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR")
 AC_SUBST(RPMCONFIGDIR)

@@ -72,8 +72,8 @@ extern const struct headerSprintfExtension headerDefaultFormats[];
 /* read and write a header from a file */
 Header headerRead(FD_t fd, int magicp);
 void headerWrite(FD_t fd, Header h, int magicp);
-Header headerGzRead(gzFile fd, int magicp);
-void headerGzWrite(gzFile fd, Header h, int magicp);
+Header headerGzRead(FD_t fd, int magicp);
+void headerGzWrite(FD_t fd, Header h, int magicp);
 unsigned int headerSizeof(Header h, int magicp);
 
 #define HEADER_MAGIC_NO   0

@@ -1009,12 +1009,12 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 
   { CFD_t cfdbuf, *cfd = &cfdbuf;
     cfd->cpioIoType = cpioIoTypeGzFd;
-    cfd->cpioGzFd = gzdopen(fdFileno(fd), "r");
+    cfd->cpioGzFd = gzdFdopen(fd, "r");		/* XXX cpioGzFd == fd */
     rc = cpioInstallArchive(cfd, map, mappedFiles, 
 			    ((notify && archiveSize) || specFile) ? 
 				callback : NULL, 
 			    &info, &failedFile);
-    gzclose(cfd->cpioGzFd);
+    gzdClose(cfd->cpioGzFd);
   }
 
     if (rc) {

@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     int rc, isSource;
     char buffer[1024];
     int ct;
-    gzFile stream;
+    FD_t gzdi;
     
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
@@ -35,32 +35,33 @@ int main(int argc, char **argv)
     fdo = fdDup(STDOUT_FILENO);
 
     rc = rpmReadPackageHeader(fdi, &hd, &isSource, NULL, NULL);
-    if (rc == 1) {
+    switch (rc) {
+    case 0:
+	break;
+    case 1:
 	fprintf(stderr, _("argument is not an RPM package\n"));
 	exit(EXIT_FAILURE);
-    } else if (rc) {
+	break;
+    default:
 	fprintf(stderr, _("error reading header from package\n"));
 	exit(EXIT_FAILURE);
+	break;
     }
 
-    stream = gzdopen(fdFileno(fdi), "r");
+    gzdi = gzdFdopen(fdi, "r");	/* XXX gzdi == fdi */
 
-    while ((ct = gzread(stream, &buffer, 1024)) > 0) {
+    while ((ct = gzdRead(gzdi, &buffer, sizeof(buffer))) > 0) {
 	fdWrite(fdo, &buffer, ct);
     }
-    if (ct < 0){
-        int zerror;
-       
-        gzerror (stream, &zerror);
-        if (zerror == Z_ERRNO){
-	    perror ("While uncompressing");
-	    gzclose(stream);
-	    return 1;
-	}
-        fprintf (stderr, "rpm2cpio: zlib: %s error\n", zlib_err [-zerror - 1]);
+
+    if (ct < 0) {
+        fprintf (stderr, "rpm2cpio: zlib: %s\n", gzdStrerror(gzdi));
+	rc = EXIT_FAILURE;
+    } else {
+	rc = EXIT_SUCCESS;
     }
 
-    gzclose(stream);
+    gzdClose(gzdi);
 
-    return 0;
+    return rc;
 }

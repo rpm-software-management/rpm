@@ -92,6 +92,7 @@ LIBRPMALIAS_FILENAME = @LIBRPMALIAS_FILENAME@
 LIBRPMRC_FILENAME = @LIBRPMRC_FILENAME@
 LIBS = @LIBS@
 LN_S = @LN_S@
+LOCALEDIR = @LOCALEDIR@
 MACROFILES = @MACROFILES@
 MAKEINFO = @MAKEINFO@
 MISCDIR = @MISCDIR@
@@ -682,12 +683,12 @@ clean-generic maintainer-clean-generic clean mostlyclean distclean \
 maintainer-clean
 
 
-rpm.o:	rpm.c
-	$(COMPILE) \
-		-DLOCALEDIR=\"$(LOCALEDIR)\" \
-		-DLIBRPMALIAS_FILENAME=\"$(LIBRPMALIAS_FILENAME)\" \
-		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
-		-c $<
+#rpm.o:	rpm.c
+#	$(COMPILE) \
+#		-DLOCALEDIR=\"$(LOCALEDIR)\" \
+#		-DLIBRPMALIAS_FILENAME=\"$(LIBRPMALIAS_FILENAME)\" \
+#		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
+#		-c $<
 
 include ./Makefile.inc
 

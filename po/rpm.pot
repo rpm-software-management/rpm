@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-11-20 14:56-0500\n"
+"POT-Creation-Date: 1998-11-22 14:35-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1353,11 +1353,11 @@ msgstr ""
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../rpm2cpio.c:39
+#: ../rpm2cpio.c:42
 msgid "argument is not an RPM package\n"
 msgstr ""
 
-#: ../rpm2cpio.c:42
+#: ../rpm2cpio.c:46
 msgid "error reading header from package\n"
 msgstr ""
 

@@ -60,7 +60,7 @@ typedef struct CFD {
 #define	cpioFd	_cfdu._cfdu_fd
 	FILE *	_cfdu_fp;
 #define	cpioFp	_cfdu._cfdu_fp
-	gzFile	_cfdu_gzfd;
+	FD_t	_cfdu_gzfd;
 #define	cpioGzFd	_cfdu._cfdu_gzfd
     } _cfdu;
     int		cpioPos;
