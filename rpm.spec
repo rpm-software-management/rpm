@@ -9,7 +9,7 @@ Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils sh-utils mktemp
-BuildRequires: bzip2 >= 0.9.0c-2
+#BuildRequires: bzip2 >= 0.9.0c-2
 #BuildRequires: python-devel = 1.5.1
 %endif
 BuildRoot: /var/tmp/%{name}-root
