@@ -158,13 +158,31 @@ static int getHostAddress(const char * host, struct in_addr * address) {
     return 0;
 }
 
-int ftpOpen(char * host, char * name, char * password) {
+int ftpOpen(char * host, char * name, char * password, char * proxy) {
     static int sock;
     /*static char * lastHost = NULL;*/
     struct in_addr serverAddress;
     struct sockaddr_in destPort;
     struct passwd * pw;
+    char * buf;
     int rc;
+
+    if (!name)
+	name = "anonymous";
+
+    if (!password) {
+	pw = getpwuid(getuid());
+	password = alloca(strlen(pw->pw_name) + 2);
+	strcpy(password, pw->pw_name);
+	strcat(password, "@");
+    }
+
+    if (proxy) {
+	buf = alloca(strlen(name) + strlen(host) + 5);
+	sprintf(buf, "%s@%s", name, host);
+	name = buf;
+	host = proxy;
+    }
 
     if ((rc = getHostAddress(host, &serverAddress))) return rc;
 
@@ -190,16 +208,6 @@ int ftpOpen(char * host, char * name, char * password) {
 
     if ((rc = ftpCheckResponse(sock, NULL))) {
         return rc;     
-    }
-
-    if (!name)
-	name = "anonymous";
-
-    if (!password) {
-	pw = getpwuid(getuid());
-	password = alloca(strlen(pw->pw_name) + 2);
-	strcpy(password, pw->pw_name);
-	strcat(password, "@");
     }
 
     if ((rc = ftpCommand(sock, "USER", name, NULL))) {

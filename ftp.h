@@ -14,7 +14,7 @@ const char * ftpStrerror(int ftpErrno);
 #define FTPERR_FAILED_DATA_CONNECT   -9
 #define FTPERR_UNKNOWN               -100
 
-int ftpOpen(char * host, char * name, char * password);
+int ftpOpen(char * host, char * name, char * password, char * proxy);
 int ftpGetFile(int sock, char * remotename, int dest);
 void ftpClose(int sock);
 
