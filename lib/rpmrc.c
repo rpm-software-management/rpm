@@ -990,24 +990,30 @@ static inline int RPMClass(void)
 	/*@modifies internalState @*/
 {
 	int cpu;
-	unsigned int tfms, junk, cap;
+	unsigned int tfms, junk, cap, capamd;
 	
 	signal(SIGILL, model3);
 	
-	if(sigsetjmp(jenv, 1))
+	if (sigsetjmp(jenv, 1))
 		return 3;
 		
-	if(cpuid_eax(0x000000000)==0)
+	if (cpuid_eax(0x000000000)==0)
 		return 4;
+
 	cpuid(0x000000001, &tfms, &junk, &junk, &cap);
+	cpuid(0x800000001, &junk, &junk, &junk, &capamd);
 	
 	cpu = (tfms>>8)&15;
 	
-	if(cpu < 6)
+	if (cpu < 6)
 		return cpu;
 		
-	if(cap & (1<<15))
+	if (cap & (1<<15)) {
+		/* CMOV supported? */
+		if (capamd & (1<<30))
+			return 7;	/* 3DNOWEXT supported */
 		return 6;
+	}
 		
 	return 5;
 }

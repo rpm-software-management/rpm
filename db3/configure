@@ -12,7 +12,7 @@ rm -f config.cache
 ARGS="`echo $* | sed -e 's% [^ ]*CFLAGS=[^ ]*%%' -e 's% -[^-][^ ]*%%g' -e 's%--cache-file=.*$%%'`"
 
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
-	--enable-shared --enable-static --enable-debug --enable-rpc \
+	--enable-shared --enable-static --enable-rpc \
 	--with-uniquename=_rpmdb --srcdir=$db_dist
 
 # XXX hack to get db-3.3.4 to configure properly
