@@ -6,6 +6,7 @@
 #include "fprint.h"
 #include "hash.h"
 #include "install.h"
+#include "lookup.h"
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"
@@ -35,7 +36,7 @@ struct sharedFileInfo {
 
 static rpmProblemSet psCreate(void);
 static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key, 
-		     Header h, char * str1);
+		     Header h, char * str1, Header altHeader);
 static int archOkay(Header h);
 static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
@@ -101,10 +102,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
 	if (!archOkay(alp->h))
-	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL);
+	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL);
 
 	if (!osOkay(alp->h)) {
-	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL);
+	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL);
 	}
 
 	rc = findMatches(ts->db, alp->name, alp->version, alp->release, &dbi);
@@ -112,7 +113,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    return -1;
 	} else if (!rc) {
 	    prob.key = alp->key;
-	    psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL);
+	    psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL, 
+		     NULL);
 	    dbiFreeIndexRecord(dbi);
 	}
 
@@ -316,7 +318,7 @@ static rpmProblemSet psCreate(void) {
 }
 
 static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key, 
-		     Header h, char * str1) {
+		     Header h, char * str1, Header altH) {
     if (probs->numProblems == probs->numProblemsAlloced) {
 	if (probs->numProblemsAlloced)
 	    probs->numProblemsAlloced *= 2;
@@ -333,6 +335,12 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key,
 	probs->probs[probs->numProblems].str1 = strdup(str1);
     else
 	probs->probs[probs->numProblems].str1 = NULL;
+
+    if (altH)
+	probs->probs[probs->numProblems].altH = headerLink(altH);
+    else
+	probs->probs[probs->numProblems].altH = NULL;
+
     probs->probs[probs->numProblems++].ignoreProblem = 0;
 }
 
@@ -439,7 +447,7 @@ static Header relocateFileList(struct availablePackage * alp,
 			relocations[i].oldPath)) break;
 	if (j == numValid)
 	    psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h, 
-		     relocations[i].oldPath);
+		     relocations[i].oldPath, NULL);
     }
 
     /* stupid bubble sort, but it's probably faster here */
@@ -734,9 +742,8 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
 			fi->fmodes[fileNum],
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
-		/* FIXME: we need to pass the conflicting header */
 		psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key, 
-			 fi->ap->h, fi->fl[fileNum]);
+			 fi->ap->h, fi->fl[fileNum], h);
 	    }
 
 	    if ((otherFlags[otherFileNum] | fi->fflags[fileNum])
@@ -840,7 +847,7 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 			fi->fmd5s[i],
 			fi->flinks[i])) {
 		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap->key, 
-			 fi->ap->h, fi->fl[i]);
+			 fi->ap->h, fi->fl[i], recs[otherPkgNum]->ap->h);
 	    }
 
 	    /* FIXME: is this right??? it locks us into the config
