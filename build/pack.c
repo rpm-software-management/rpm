@@ -651,7 +651,7 @@ int packageSource(Spec s, char *passPhrase)
 	    if (skip[skipi] == source->num) {
 		break;
 	    }
-	    skip--;
+	    skipi--;
 	}
 	sprintf(src, "%s/%s", getVar(RPMVAR_SOURCEDIR), source->source);
 	sprintf(dest, "%s/%s", tempdir, source->source);
