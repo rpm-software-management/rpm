@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-12 21:24-0400\n"
+"POT-Creation-Date: 2002-04-13 14:47-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -14,54 +14,54 @@ msgstr ""
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: EUC-JP\n"
 
-#: build.c:39
+#: build.c:38
 #, fuzzy
-msgid "failed build dependencies:\n"
+msgid "Failed build dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: build.c:71
+#: build.c:69
 #, fuzzy, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "spec ファイルをオープンできません: %s\n"
 
-#: build.c:151 build.c:163
+#: build.c:149 build.c:161
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar パイプのオープンに失敗: %s\n"
 
 #. Give up
-#: build.c:170
+#: build.c:168
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました\n"
 
-#: build.c:198
+#: build.c:196
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s を %s にする名前の変更に失敗しました: %s\n"
 
-#: build.c:238
+#: build.c:236
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat %s に失敗: %s"
 
-#: build.c:243
+#: build.c:241
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "普通のファイルではありません: %s\n"
 
-#: build.c:252
+#: build.c:250
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は スペックファイルではないようです。\n"
 
 #. parse up the build operators
-#: build.c:307
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "作成中ターゲットプラットフォーム: %s\n"
 
-#: build.c:322
+#: build.c:320
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
@@ -2163,90 +2163,90 @@ msgid "generate signature"
 msgstr "PGP/GPG 署名を生成します"
 
 #. @observer@
-#: lib/problems.c:226
+#: lib/problems.c:210
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:234
+#: lib/problems.c:218
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "パッケージ %s-%s-%s は異なるアーキテクチャ向けです"
 
-#: lib/problems.c:239
+#: lib/problems.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "パッケージ %s-%s-%s は異なる OS 向けです"
 
-#: lib/problems.c:244
+#: lib/problems.c:228
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/problems.c:249
+#: lib/problems.c:233
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/problems.c:254
+#: lib/problems.c:238
 #, fuzzy, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "ファイル %s は %s-%s-%s と %s-%s-%s のインストールのファイルと競合しています"
 
-#: lib/problems.c:259
+#: lib/problems.c:243
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "%s-%s-%s のインストールからのファイル %s はパッケージ %s-%s-%s からのファイル"
 "と競合しています"
 
-#: lib/problems.c:264
+#: lib/problems.c:248
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "パッケージ %s-%s-%s (%s-%s-%sよりも新しいもの) はすでにインストールされていま"
 "す"
 
-#: lib/problems.c:269
+#: lib/problems.c:253
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:279
+#: lib/problems.c:263
 #, fuzzy, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:284
+#: lib/problems.c:268
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:288
+#: lib/problems.c:272
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
-#: lib/problems.c:292
+#: lib/problems.c:276
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
-#: lib/problems.c:297
+#: lib/problems.c:281
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "conflicts with"
 msgstr " %s-%s-%s と競合します\n"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "is needed by"
 msgstr "は %s-%s-%s に必要とされています\n"
@@ -2332,7 +2332,7 @@ msgstr "%s のオープンに失敗: %s"
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
 
-#: lib/query.c:125 lib/rpmts.c:182
+#: lib/query.c:125 lib/rpmts.c:186
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
@@ -2377,7 +2377,7 @@ msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
 #: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -2461,7 +2461,7 @@ msgstr "パッケージレコード番号 %d\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:963 lib/rpminstall.c:678
+#: lib/query.c:963 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -2616,7 +2616,7 @@ msgstr "ファイル %s からの読み込みエラー "
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
 
-#: lib/rpminstall.c:486 lib/rpminstall.c:744
+#: lib/rpminstall.c:486 lib/rpminstall.c:743
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
@@ -2626,51 +2626,47 @@ msgstr "%s をインストールできません\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:540
+#: lib/rpminstall.c:538 lib/rpminstall.c:1076
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:547
+#: lib/rpminstall.c:545
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:577
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/rpminstall.c:681
+#: lib/rpminstall.c:678
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:705
+#: lib/rpminstall.c:703
 msgid "removing these packages would break dependencies:\n"
 msgstr "これらのパッケージを削除すると依存性を破壊します:\n"
 
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:730
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:736
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
-#: lib/rpminstall.c:1073
+#: lib/rpminstall.c:1070
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
-
-#: lib/rpminstall.c:1080
-msgid "failed dependencies:\n"
-msgstr "依存性の欠如:\n"
 
 #: lib/rpmlead.c:47
 #, fuzzy, c-format
@@ -2772,7 +2768,7 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"
 
-#: lib/rpmts.c:94 lib/rpmts.c:136
+#: lib/rpmts.c:95 lib/rpmts.c:137
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
@@ -2933,21 +2929,21 @@ msgstr "%s は missingok フラグのためスキップします\n"
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:1081
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 
-#: lib/verify.c:329
+#: lib/verify.c:330
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:424
+#: lib/verify.c:426
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: lib/verify.c:464
+#: lib/verify.c:466
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3553,6 +3549,9 @@ msgstr "url ポートは数字でなければなりません\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#~ msgid "failed dependencies:\n"
+#~ msgstr "依存性の欠如:\n"
 
 #, fuzzy
 #~ msgid "%9s: (%s, %s) added to Depends cache.\n"

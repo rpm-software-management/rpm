@@ -209,18 +209,19 @@ restart:
     if (numFailed) goto exit;
 
     if (!noDeps) {
-	rpmProblem conflicts = NULL;
-	int numConflicts = 0;
+	rpmProblemSet ps;
 
-	rc = rpmdepCheck(ts, &conflicts, &numConflicts);
+	rc = rpmdepCheck(ts);
 
-	if (conflicts) {
-	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
-	    printDepProblems(stderr, conflicts, numConflicts);
-	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	ps = rpmtsGetProblems(ts);
+	if (ps) {
+	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    printDepProblems(stderr, ps);
+	    ps = rpmProblemSetFree(ps);
 	    rc = -1;
 	    goto exit;
 	}
+	ps = rpmProblemSetFree(ps);
     }
 
     rc = rpmdepOrder(ts);

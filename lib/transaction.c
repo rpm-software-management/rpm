@@ -1030,7 +1030,7 @@ TFI_t teiGetFi(const teIterator tei)
 #define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmRunTransactions(	rpmTransactionSet ts,
-			rpmProblemSet okProbs, rpmProblemSet * newProbs,
+			rpmProblemSet okProbs,
 			rpmprobFilterFlags ignoreSet)
 {
     int i, j;
@@ -1061,7 +1061,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     ts->probs = rpmProblemSetFree(ts->probs);
     ts->probs = rpmProblemSetCreate();
-    *newProbs = rpmpsLink(ts->probs, "RunTransactions");
     ts->ignoreSet = ignoreSet;
     ts->currDir = _free(ts->currDir);
     ts->currDir = currentDirectory();

@@ -30,14 +30,11 @@ typedef enum tsStage_e {
  */
 struct rpmTransactionSet_s {
     rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
-/*@observer@*/ /*@null@*/
-    rpmCallbackFunction notify;	/*!< Callback function. */
-
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
 
 /*@null@*/
     int (*solve) (rpmTransactionSet ts, const rpmDepSet key)
-	/*@modifies ts @*/;	/*!< Search for NEVR key. */
+	/*@modifies ts @*/;	/*!< Search for NEVRA key. */
     int nsuggests;		/*!< No. of depCheck suggestions. */
 /*@only@*/ /*@null@*/
     const void ** suggests;	/*!< Possible depCheck suggestions. */
@@ -45,7 +42,10 @@ struct rpmTransactionSet_s {
     rpmdb sdb;			/*!< Available universe database handle. */
 
 /*@observer@*/ /*@null@*/
+    rpmCallbackFunction notify;	/*!< Callback function. */
+/*@observer@*/ /*@null@*/
     rpmCallbackData notifyData;	/*!< Callback private data. */
+
 /*@refcounted@*/ /*@null@*/
     rpmProblemSet probs;	/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;

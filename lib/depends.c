@@ -1595,8 +1595,7 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 }
 /*@=mustmod =type@*/
 
-int rpmdepCheck(rpmTransactionSet ts,
-		rpmProblem * dsprobs, int * numProbs)
+int rpmdepCheck(rpmTransactionSet ts)
 {
     rpmdbMatchIterator mi = NULL;
     teIterator pi = NULL; transactionElement p;
@@ -1611,10 +1610,8 @@ int rpmdepCheck(rpmTransactionSet ts,
 	closeatexit = 1;
     }
 
+    ts->probs = rpmProblemSetFree(ts->probs);
     ts->probs = rpmProblemSetCreate();
-
-    *dsprobs = NULL;
-    *numProbs = 0;
 
     alMakeIndex(ts->addedPackages);
     alMakeIndex(ts->availablePackages);
@@ -1720,13 +1717,6 @@ int rpmdepCheck(rpmTransactionSet ts,
     }
     pi = teFreeIterator(pi);
 
-/*@-type@*/ /* FIX: return refcounted rpmProblemSet */
-    if (ts->probs->numProblems) {
-	*dsprobs = ts->probs->probs;
-	ts->probs->probs = NULL;
-	*numProbs = ts->probs->numProblems;
-    }
-/*@=type@*/
     rc = 0;
 
 exit:
@@ -1738,6 +1728,5 @@ exit:
     else if (_cacheDependsRC)
 	xx = rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
     /*@=branchstate@*/
-    ts->probs = rpmProblemSetFree(ts->probs);
     return rc;
 }

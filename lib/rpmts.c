@@ -18,6 +18,7 @@
 
 #include "debug.h"
 
+/*@access rpmProblemSet @*/
 /*@access rpmTransactionSet @*/
 /*@access fnpyKey @*/
 
@@ -177,6 +178,9 @@ int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
     mi = rpmdbInitIterator(ts->sdb, rpmtag, keyp, keylen);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 
+	if (rpmtag == RPMTAG_PROVIDENAME && !rangeMatchesDepFlags(h, ds))
+	    continue;
+
 	str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (str == NULL) {
 	    rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
@@ -225,6 +229,19 @@ int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
 /*@=nullstate@*/
 }
 
+rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
+{
+    rpmProblemSet ps = NULL;
+    if (ts) {
+	if (ts->probs) {
+	    if (ts->probs->numProblems > 0)
+		ps = rpmpsLink(ts->probs, NULL);
+	    ts->probs = rpmpsUnlink(ts->probs, NULL);
+	}
+    }
+    return ps;
+}
+
 void rpmtransClean(rpmTransactionSet ts)
 {
     if (ts) {
@@ -241,6 +258,8 @@ void rpmtransClean(rpmTransactionSet ts)
 
 	ts->suggests = _free(ts->suggests);
 	ts->nsuggests = 0;
+
+	ts->probs = rpmProblemSetFree(ts->probs);
 
 	if (ts->sig != NULL)
 	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
@@ -359,6 +378,8 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->orderAlloced = 0;
     ts->orderCount = 0;
     ts->order = NULL;
+
+    ts->probs = NULL;
 
     ts->sig = NULL;
     ts->dig = NULL;

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2002-04-12 21:24-0400\n"
+"POT-Creation-Date: 2002-04-13 14:47-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -9,53 +9,53 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: build.c:39
-msgid "failed build dependencies:\n"
+#: build.c:38
+msgid "Failed build dependencies:\n"
 msgstr ""
 
-#: build.c:71
+#: build.c:69
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr ""
 
-#: build.c:151 build.c:163
+#: build.c:149 build.c:161
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr ""
 
 #. Give up
-#: build.c:170
+#: build.c:168
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: build.c:198
+#: build.c:196
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr ""
 
-#: build.c:238
+#: build.c:236
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr ""
 
-#: build.c:243
+#: build.c:241
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr ""
 
-#: build.c:252
+#: build.c:250
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: build.c:307
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:322
+#: build.c:320
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
@@ -2008,80 +2008,80 @@ msgid "generate signature"
 msgstr ""
 
 #. @observer@
-#: lib/problems.c:226
+#: lib/problems.c:210
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:234
+#: lib/problems.c:218
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr ""
 
-#: lib/problems.c:239
+#: lib/problems.c:223
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr ""
 
-#: lib/problems.c:244
+#: lib/problems.c:228
 #, c-format
 msgid "package %s is already installed"
 msgstr ""
 
-#: lib/problems.c:249
+#: lib/problems.c:233
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr ""
 
-#: lib/problems.c:254
+#: lib/problems.c:238
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:259
+#: lib/problems.c:243
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/problems.c:264
+#: lib/problems.c:248
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 
-#: lib/problems.c:269
+#: lib/problems.c:253
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:279
+#: lib/problems.c:263
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:284
+#: lib/problems.c:268
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:288
+#: lib/problems.c:272
 #, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr ""
 
-#: lib/problems.c:292
+#: lib/problems.c:276
 #, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr ""
 
-#: lib/problems.c:297
+#: lib/problems.c:281
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 msgid "conflicts with"
 msgstr ""
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 msgid "is needed by"
 msgstr ""
 
@@ -2163,7 +2163,7 @@ msgstr ""
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:125 lib/rpmts.c:182
+#: lib/query.c:125 lib/rpmts.c:186
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2207,7 +2207,7 @@ msgid "can't query %s: %s\n"
 msgstr ""
 
 #: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -2290,7 +2290,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:963 lib/rpminstall.c:678
+#: lib/query.c:963 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2438,7 +2438,7 @@ msgstr ""
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:486 lib/rpminstall.c:744
+#: lib/rpminstall.c:486 lib/rpminstall.c:743
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -2448,49 +2448,45 @@ msgstr ""
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:540
+#: lib/rpminstall.c:538 lib/rpminstall.c:1076
 msgid "Failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:547
+#: lib/rpminstall.c:545
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:577
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:599
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:681
+#: lib/rpminstall.c:678
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:705
+#: lib/rpminstall.c:703
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:730
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:736
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1073
+#: lib/rpminstall.c:1070
 #, c-format
 msgid "rollback %d packages to %s"
-msgstr ""
-
-#: lib/rpminstall.c:1080
-msgid "failed dependencies:\n"
 msgstr ""
 
 #: lib/rpmlead.c:47
@@ -2593,7 +2589,7 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
 
-#: lib/rpmts.c:94 lib/rpmts.c:136
+#: lib/rpmts.c:95 lib/rpmts.c:137
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
@@ -2744,21 +2740,21 @@ msgstr ""
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:1081
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/verify.c:329
+#: lib/verify.c:330
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:424
+#: lib/verify.c:426
 #, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr ""
 
-#: lib/verify.c:464
+#: lib/verify.c:466
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

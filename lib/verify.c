@@ -19,6 +19,7 @@
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
 
+/*@access rpmProblemSet @*/
 /*@access rpmProblem @*/
 /*@access rpmTransactionSet @*/
 /*@access PSM_t @*/	/* XXX for %verifyscript through psmStage() */
@@ -396,41 +397,42 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, h, fileSystem, internalState @*/
 {
-    rpmProblem conflicts;
-    int numConflicts;
+    rpmProblemSet ps;
     int rc = 0;		/* assume no problems */
+    int xx;
     int i;
 
     rpmtransClean(ts);
     (void) rpmtransAddPackage(ts, h, NULL, 0, NULL);
 
-    (void) rpmdepCheck(ts, &conflicts, &numConflicts);
+    xx = rpmdepCheck(ts);
+    ps = rpmtsGetProblems(ts);
 
     /*@-branchstate@*/
-    if (numConflicts) {
+    if (ps) {
 	const char * pkgNEVR, * altNEVR;
-	rpmProblem c;
+	rpmProblem p;
 	char * t, * te;
 	int nb = 512;
 
-	for (i = 0; i < numConflicts; i++) {
-	    c = conflicts + i;
-	    altNEVR = (c->altNEVR ? c->altNEVR : "? ?altNEVR?");
+	for (i = 0; i < ps->numProblems; i++) {
+	    p = ps->probs + i;
+	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
 	    nb += strlen(altNEVR+2) + sizeof(", ") - 1;
 	}
 	te = t = alloca(nb);
 	*te = '\0';
-	pkgNEVR = (conflicts->pkgNEVR ? conflicts->pkgNEVR : "?pkgNEVR?");
+	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
 	sprintf(te, _("Unsatisifed dependencies for %s: "), pkgNEVR);
 	te += strlen(te);
-	for (i = 0; i < numConflicts; i++) {
-	    c = conflicts + i;
-	    altNEVR = (c->altNEVR ? c->altNEVR : "? ?altNEVR?");
+	for (i = 0; i < ps->numProblems; i++) {
+	    p = ps->probs + i;
+	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
 	    if (i) te = stpcpy(te, ", ");
 	    /* XXX FIXME: should probably supply the "[R|C] " type prefix */
 	    te = stpcpy(te, altNEVR+2);
 	}
-	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	ps = rpmProblemSetFree(ps);
 
 	if (te > t) {
 	    *te++ = '\n';

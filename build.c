@@ -23,8 +23,7 @@ static int checkSpec(rpmTransactionSet ts, Header h)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, h, fileSystem, internalState @*/
 {
-    rpmProblem conflicts;
-    int numConflicts;
+    rpmProblemSet ps;
     int rc;
 
     if (!headerIsEntry(h, RPMTAG_REQUIRENAME)
@@ -33,15 +32,14 @@ static int checkSpec(rpmTransactionSet ts, Header h)
 
     rc = rpmtransAddPackage(ts, h, NULL, 0, NULL);
 
-    rc = rpmdepCheck(ts, &conflicts, &numConflicts);
-    /*@-branchstate@*/
-    if (rc == 0 && conflicts) {
-	rpmMessage(RPMMESS_ERROR, _("failed build dependencies:\n"));
-	printDepProblems(stderr, conflicts, numConflicts);
-	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+    rc = rpmdepCheck(ts);
+    ps = rpmtsGetProblems(ts);
+    if (rc == 0 && ps) {
+	rpmMessage(RPMMESS_ERROR, _("Failed build dependencies:\n"));
+	printDepProblems(stderr, ps);
 	rc = 1;
     }
-    /*@=branchstate@*/
+    ps = rpmProblemSetFree(ps);
 
     /* XXX nuke the added package. */
     rpmtransClean(ts);

@@ -370,18 +370,16 @@ if (!_debug) {
 
 #ifdef	NOTYET
 if (!_debug) {
-    {	rpmProblem conflicts = NULL;
-	int numConflicts = 0;
+    {	rpmProblemSet ps;
 
-	(void) rpmdepCheck(ts, &conflicts, &numConflicts);
+	xx = rpmdepCheck(ts);
 
-	/*@-branchstate@*/
-	if (conflicts) {
-	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
-	    printDepProblems(stderr, conflicts, numConflicts);
-	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	ps = rpmtsGetProblems(ts);
+	if (ps) {
+	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    printDepProblems(stderr, ps);
 	}
-	/*@=branchstate@*/
+	ps = rpmProblemSetFree(ts);
     }
 
     (void) rpmdepOrder(ts);

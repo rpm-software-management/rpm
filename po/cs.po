@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-12 21:24-0400\n"
+"POT-Creation-Date: 2002-04-13 14:47-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -9,53 +9,54 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:39
-msgid "failed build dependencies:\n"
+#: build.c:38
+#, fuzzy
+msgid "Failed build dependencies:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: build.c:71
+#: build.c:69
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Nelze otevøít spec soubor %s: %s\n"
 
-#: build.c:151 build.c:163
+#: build.c:149 build.c:161
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Nelze otevøít rouru pro tar: %m\n"
 
 #. Give up
-#: build.c:170
+#: build.c:168
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Nelze èíst spec soubor z %s\n"
 
-#: build.c:198
+#: build.c:196
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Nelze pøejmenovat %s na %s: %m\n"
 
-#: build.c:238
+#: build.c:236
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "nemohu zjistit stav %s: %m\n"
 
-#: build.c:243
+#: build.c:241
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Soubor %s není obyèejný soubor.\n"
 
-#: build.c:252
+#: build.c:250
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Nezdá se, ¾e by %s byl spec soubor.\n"
 
 #. parse up the build operators
-#: build.c:307
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Sestavuji cílové platformy: %s\n"
 
-#: build.c:322
+#: build.c:320
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Sestavuji pro cíl %s\n"
@@ -2067,81 +2068,81 @@ msgid "generate signature"
 msgstr "generovat PGP/GPG podpis"
 
 #. @observer@
-#: lib/problems.c:226
+#: lib/problems.c:210
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:234
+#: lib/problems.c:218
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "balíèek %s je pro jinou architekturu"
 
-#: lib/problems.c:239
+#: lib/problems.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "balíèek %s je pro jiný operaèní systém"
 
-#: lib/problems.c:244
+#: lib/problems.c:228
 #, c-format
 msgid "package %s is already installed"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/problems.c:249
+#: lib/problems.c:233
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/problems.c:254
+#: lib/problems.c:238
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "soubor %s zpùsobuje konflikt mezi instalovaným %s a %s"
 
-#: lib/problems.c:259
+#: lib/problems.c:243
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "soubor %s z instalace %s koliduje se souborem z balíèku %s"
 
-#: lib/problems.c:264
+#: lib/problems.c:248
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "balíèek %s (který je novìj¹í, ne¾ %s) je ji¾ nainstalován"
 
-#: lib/problems.c:269
+#: lib/problems.c:253
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld%cB na systému souborù %s"
 
-#: lib/problems.c:279
+#: lib/problems.c:263
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld inodù na systému souborù %s"
 
-#: lib/problems.c:284
+#: lib/problems.c:268
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "pøedtransakèní syscall v balíèku %s: %s selhalo: %s"
 
-#: lib/problems.c:288
+#: lib/problems.c:272
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
 
-#: lib/problems.c:292
+#: lib/problems.c:276
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
 
-#: lib/problems.c:297
+#: lib/problems.c:281
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "conflicts with"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "is needed by"
 msgstr " je nutné pro %s-%s-%s\n"
@@ -2224,7 +2225,7 @@ msgstr "nemohu otevøít %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s selhalo\n"
 
-#: lib/query.c:125 lib/rpmts.c:182
+#: lib/query.c:125 lib/rpmts.c:186
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "nesprávný formát: %s\n"
@@ -2268,7 +2269,7 @@ msgid "can't query %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
 #: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
@@ -2351,7 +2352,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:963 lib/rpminstall.c:678
+#: lib/query.c:963 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2503,7 +2504,7 @@ msgstr "chyba pøi ètení ze souboru %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "soubor %s vy¾aduje novìj¹í verzi RPM\n"
 
-#: lib/rpminstall.c:486 lib/rpminstall.c:744
+#: lib/rpminstall.c:486 lib/rpminstall.c:743
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nemù¾e být nainstalován\n"
@@ -2513,51 +2514,47 @@ msgstr "%s nemù¾e být nainstalován\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "nalezeno %d zdrojových a %d binárních balíèkù\n"
 
-#: lib/rpminstall.c:540
+#: lib/rpminstall.c:538 lib/rpminstall.c:1076
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "nevyøe¹ené závislosti:\n"
 
-#: lib/rpminstall.c:547
+#: lib/rpminstall.c:545
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:577
 msgid "installing binary packages\n"
 msgstr "instaluji binární balíèky\n"
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:599
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu otevøít soubor %s: %s\n"
 
-#: lib/rpminstall.c:681
+#: lib/rpminstall.c:678
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" urèuje více balíèkù\n"
 
-#: lib/rpminstall.c:705
+#: lib/rpminstall.c:703
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranìní tìchto balíèkù by poru¹ilo závislosti:\n"
 
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:730
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nemohu otevøít %s: %s\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:736
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaluji %s\n"
 
-#: lib/rpminstall.c:1073
+#: lib/rpminstall.c:1070
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
-
-#: lib/rpminstall.c:1080
-msgid "failed dependencies:\n"
-msgstr "nevyøe¹ené závislosti:\n"
 
 #: lib/rpmlead.c:47
 #, c-format
@@ -2659,7 +2656,7 @@ msgstr "Nemohu èíst %s, HOME je pøíli¹ velký.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nemohu otevøít %s pro ètení: %s.\n"
 
-#: lib/rpmts.c:94 lib/rpmts.c:136
+#: lib/rpmts.c:95 lib/rpmts.c:137
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nemohu otevøít databázi balíèkù v %s\n"
@@ -2814,21 +2811,21 @@ msgstr "%s pøeskoèeno, proto¾e chybí pøíznak\n"
 msgid "excluding directory %s\n"
 msgstr "vynechávám adresáø %s\n"
 
-#: lib/transaction.c:1081
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr "získávám seznam pøipojených systémù souborù\n"
 
-#: lib/verify.c:329
+#: lib/verify.c:330
 #, c-format
 msgid "missing    %s"
 msgstr "chybí      %s"
 
-#: lib/verify.c:424
+#: lib/verify.c:426
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 
-#: lib/verify.c:464
+#: lib/verify.c:466
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrola digestu v hlavièce selhala\n"
@@ -3418,6 +3415,9 @@ msgstr "url port musí být èíslo\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
+
+#~ msgid "failed dependencies:\n"
+#~ msgstr "nevyøe¹ené závislosti:\n"
 
 #, fuzzy
 #~ msgid "%9s: (%s, %s) added to Depends cache.\n"

@@ -1,60 +1,60 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-12 21:24-0400\n"
+"POT-Creation-Date: 2002-04-13 14:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
-#: build.c:39
+#: build.c:38
 #, fuzzy
-msgid "failed build dependencies:\n"
+msgid "Failed build dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
 
-#: build.c:71
+#: build.c:69
 #, fuzzy, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "En voi avata %s luettavaksi: %s."
 
-#: build.c:151 build.c:163
+#: build.c:149 build.c:161
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "%s:n avaus ep‰onnistui\n"
 
 #. Give up
-#: build.c:170
+#: build.c:168
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "En voi lukea %s: %s."
 
-#: build.c:198
+#: build.c:196
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "En voi lukea %s: %s."
 
-#: build.c:238
+#: build.c:236
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "en voinut avata %s: %s"
 
-#: build.c:243
+#: build.c:241
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s ei vaikuta RPM-paketilta\n"
 
-#: build.c:252
+#: build.c:250
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s ei vaikuta RPM-paketilta\n"
 
 #. parse up the build operators
-#: build.c:307
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:322
+#: build.c:320
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
@@ -2129,81 +2129,81 @@ msgid "generate signature"
 msgstr "generoi PGP-allekirjoitus"
 
 #. @observer@
-#: lib/problems.c:226
+#: lib/problems.c:210
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:234
+#: lib/problems.c:218
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/problems.c:239
+#: lib/problems.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/problems.c:244
+#: lib/problems.c:228
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/problems.c:249
+#: lib/problems.c:233
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/problems.c:254
+#: lib/problems.c:238
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:259
+#: lib/problems.c:243
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 
-#: lib/problems.c:264
+#: lib/problems.c:248
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/problems.c:269
+#: lib/problems.c:253
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:279
+#: lib/problems.c:263
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:284
+#: lib/problems.c:268
 #, fuzzy, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/problems.c:288
+#: lib/problems.c:272
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/problems.c:292
+#: lib/problems.c:276
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/problems.c:297
+#: lib/problems.c:281
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "conflicts with"
 msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "is needed by"
 msgstr "vaatii %s-%s-%s\n"
@@ -2287,7 +2287,7 @@ msgstr "en voinut avata %s: %s"
 msgid "%s failed: %s\n"
 msgstr "pgp ep‰onnistui"
 
-#: lib/query.c:125 lib/rpmts.c:182
+#: lib/query.c:125 lib/rpmts.c:186
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "virhe formaatissa: %s\n"
@@ -2333,7 +2333,7 @@ msgid "can't query %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
 #: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:887
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
@@ -2417,7 +2417,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:963 lib/rpminstall.c:678
+#: lib/query.c:963 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -2570,7 +2570,7 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:486 lib/rpminstall.c:744
+#: lib/rpminstall.c:486 lib/rpminstall.c:743
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "virhe: %s ei voida asentaa\n"
@@ -2580,52 +2580,48 @@ msgstr "virhe: %s ei voida asentaa\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/rpminstall.c:540
+#: lib/rpminstall.c:538 lib/rpminstall.c:1076
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
 
-#: lib/rpminstall.c:547
+#: lib/rpminstall.c:545
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:577
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "asenna paketti"
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpminstall.c:681
+#: lib/rpminstall.c:678
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: lib/rpminstall.c:705
+#: lib/rpminstall.c:703
 msgid "removing these packages would break dependencies:\n"
 msgstr "n‰iden pakettien poisto rikkoisi riippuvuuksia:\n"
 
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:730
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:736
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
 
-#: lib/rpminstall.c:1073
+#: lib/rpminstall.c:1070
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "poistolle ei m‰‰ritelty paketteja"
-
-#: lib/rpminstall.c:1080
-msgid "failed dependencies:\n"
-msgstr "puuttuvat riippuvuudet:\n"
 
 #: lib/rpmlead.c:47
 #, fuzzy, c-format
@@ -2727,7 +2723,7 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "En voi avata %s luettavaksi: %s."
 
-#: lib/rpmts.c:94 lib/rpmts.c:136
+#: lib/rpmts.c:95 lib/rpmts.c:137
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
@@ -2888,21 +2884,21 @@ msgstr ""
 msgid "excluding directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/transaction.c:1081
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/verify.c:329
+#: lib/verify.c:330
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "puuttuva '{' '%':n j‰lkeen"
 
-#: lib/verify.c:424
+#: lib/verify.c:426
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s:n tyydytt‰m‰ttˆm‰t riippuvuudet:"
 
-#: lib/verify.c:464
+#: lib/verify.c:466
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3501,6 +3497,9 @@ msgstr "virhe: ftpport pit‰‰ olla luku\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti ep‰onnistui\n"
+
+#~ msgid "failed dependencies:\n"
+#~ msgstr "puuttuvat riippuvuudet:\n"
 
 #, fuzzy
 #~ msgid "%9s: (%s, %s) added to Depends cache.\n"

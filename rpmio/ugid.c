@@ -32,7 +32,8 @@ int unameToUid(const char * thisUname, uid_t * uid)
 
     thisUnameLen = strlen(thisUname);
     if (lastUname == NULL || thisUnameLen != lastUnameLen ||
-	strcmp(thisUname, lastUname) != 0) {
+	strcmp(thisUname, lastUname) != 0)
+    {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
 	    lastUname = xrealloc(lastUname, lastUnameAlloced);	/* XXX memory leak */

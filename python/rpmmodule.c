@@ -232,20 +232,21 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
 /** \ingroup python
  */
 static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
-    rpmProblem conflicts, c;
-    int numConflicts;
+    rpmProblemSet ps;
+    rpmProblem p;
     PyObject * list, * cf;
     int i;
     int allSuggestions = 0;
 
     if (!PyArg_ParseTuple(args, "|i", &allSuggestions)) return NULL;
 
-    rpmdepCheck(s->ts, &conflicts, &numConflicts);
-    if (numConflicts) {
+    rpmdepCheck(s->ts);
+    ps = rpmtsGetProblems(s->ts);
+    if (ps) {
 	list = PyList_New(0);
 
 	/* XXX TODO: rpmlib >= 4.0.3 can return multiple suggested keys. */
-	for (i = 0; i < numConflicts; i++) {
+	for (i = 0; i < ps->numProblems; i++) {
 #ifdef	DYING
 	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName,
 			       conflicts[i].byVersion, conflicts[i].byRelease,
@@ -263,17 +264,17 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 	    int needsFlags, sense;
 	    fnpyKey key;
 	    
-	    c = conflicts + i;
+	    p = ps->probs + i;
 
-	    byName = c->pkgNEVR;
+	    byName = p->pkgNEVR;
 	    if ((byRelease = strrchr(byName, '-')) != NULL)
 		*byRelease++ = '\0';
 	    if ((byVersion = strrchr(byName, '-')) != NULL)
 		*byVersion++ = '\0';
 
-	    key = c->key;
+	    key = p->key;
 
-	    needsName = c->altNEVR;
+	    needsName = p->altNEVR;
 	    if (needsName[1] == ' ') {
 		sense = (needsName[0] == 'C')
 			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
@@ -301,7 +302,7 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 	    Py_DECREF(cf);
 	}
 
-	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	ps = rpmProblemSetFree(ps);
 
 	return list;
     }
@@ -408,11 +409,12 @@ static void * tsCallback(const void * hd, const rpmCallbackType what,
 
 /** \ingroup python
  */
-static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
+static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args)
+{
     int flags, ignoreSet;
     int rc, i;
-    PyObject * list, * prob;
-    rpmProblemSet probs;
+    PyObject * list;
+    rpmProblemSet ps;
     struct tsCallbackType cbInfo;
 
     if (!PyArg_ParseTuple(args, "iiOO", &flags, &ignoreSet, &cbInfo.cb,
@@ -424,11 +426,11 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
     (void) rpmtsSetNotifyCallback(s->ts, tsCallback, (void *) &cbInfo);
     (void) rpmtsSetFlags(s->ts, flags);
 
-    rc = rpmRunTransactions(s->ts, NULL, &probs, ignoreSet);
+    rc = rpmRunTransactions(s->ts, NULL, ignoreSet);
+    ps = rpmtsGetProblems(s->ts);
 
     if (cbInfo.pythonError) {
-	if (rc > 0)
-	    rpmProblemSetFree(probs);
+	ps = rpmProblemSetFree(ps);
 	return NULL;
     }
 
@@ -441,17 +443,17 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args) {
     }
 
     list = PyList_New(0);
-    for (i = 0; i < probs->numProblems; i++) {
-	rpmProblem myprob = probs->probs + i;
-	prob = Py_BuildValue("s(isN)", rpmProblemString(myprob),
-			     myprob->type,
-			     myprob->str1,
-			     PyLong_FromLongLong(myprob->ulong1));
+    for (i = 0; i < ps->numProblems; i++) {
+	rpmProblem p = ps->probs + i;
+	PyObject * prob = Py_BuildValue("s(isN)", rpmProblemString(p),
+			     p->type,
+			     p->str1,
+			     PyLong_FromLongLong(p->ulong1));
 	PyList_Append(list, prob);
 	Py_DECREF(prob);
     }
 
-    rpmProblemSetFree(probs);
+    ps = rpmProblemSetFree(ps);
 
     return list;
 }

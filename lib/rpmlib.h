@@ -1017,10 +1017,9 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 /**
  * Print a problem array.
  * @param fp		output file
- * @param probs		dependency problems
- * @param numProblems	no. of dependency problems
+ * @param ps		dependency problems
  */
-void printDepProblems(FILE * fp, rpmProblem probs, int numProblems)
+void printDepProblems(FILE * fp, /*@null@*/ const rpmProblemSet ps)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
@@ -1399,6 +1398,15 @@ int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/;
 
+/**
+ * Return (and clear) current transaction set problems.
+ * @param ts		transaction set
+ * @return		current problem set (or NULL)
+ */
+/*@null@*/
+rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
+	/*@modifies ts @*/;
+
 /** \ingroup rpmtrans
  * Re-create an empty transaction set.
  * @param ts		transaction set
@@ -1498,16 +1506,11 @@ int rpmtransGetKeys(rpmTransactionSet ts,
 /** \ingroup rpmtrans
  * Check that all dependencies can be resolved.
  * @param ts		transaction set
- * @retval dsprobs	dependency problems
- * @retval numProbs	no. of dependency problems
  * @return		0 on success
  */
-int rpmdepCheck(rpmTransactionSet ts,
-		/*@exposed@*/ /*@out@*/ rpmProblem * dsprobs,
-		/*@exposed@*/ /*@out@*/ int * numProbs)
+int rpmdepCheck(rpmTransactionSet ts)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, *dsprobs, *numProbs,
-		fileSystem, internalState @*/;
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
  * Determine package order in a transaction set according to dependencies.
@@ -1531,17 +1534,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 int rpmdepOrder(rpmTransactionSet ts)
 	/*@globals fileSystem, internalState@*/
 	/*@modifies ts, fileSystem, internalState @*/;
-
-/** \ingroup rpmtrans
- * Destroy reported problems.
- * @param probs		dependency problems
- * @param numProblems	no. of dependency problems
- * @retrun		NULL always
- */
-/*@null@*/
-rpmProblem rpmdepFreeConflicts(/*@only@*/ /*@null@*/ rpmProblem probs,
-		int numProblems)
-	/*@modifies probs @*/;
 
 /** \ingroup rpmtrans
  * Bit(s) to control rpmRunTransactions() operation.
@@ -1696,22 +1688,17 @@ int rpmtsSetNotifyCallback(rpmTransactionSet ts,
 /** \ingroup rpmtrans
  * Process all packages in a transaction set.
  *
- * @warning The value returned in *newProbs is now refcounted, and should
- * be free'd using rpmProblemSetFree().
- *
  * @param ts		transaction set
  * @param okProbs	previously known problems (or NULL)
- * @retval newProbs	address to return unfiltered problems (or NULL)
  * @param ignoreSet	bits to filter problem types
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
 int rpmRunTransactions(rpmTransactionSet ts,
 			rpmProblemSet okProbs,
-			/*@out@*/ rpmProblemSet * newProbs,
 			rpmprobFilterFlags ignoreSet)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies ts, *newProbs, rpmGlobalMacroContext,
+	/*@modifies ts, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /*@}*/

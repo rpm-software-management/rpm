@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-12 21:24-0400\n"
+"POT-Creation-Date: 2002-04-13 14:47-0400\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -11,53 +11,54 @@ msgstr ""
 "Date: 1999-04-03 12:20+0200\n"
 "X-Generator: KBabel 0.8\n"
 
-#: build.c:39
-msgid "failed build dependencies:\n"
+#: build.c:38
+#, fuzzy
+msgid "Failed build dependencies:\n"
 msgstr "неудовлетворенные зависимости сборки:\n"
 
-#: build.c:71
+#: build.c:69
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Ошибка открытия файла спецификации %s: %s\n"
 
-#: build.c:151 build.c:163
+#: build.c:149 build.c:161
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Ошибка открытия канала tar: %m\n"
 
 #. Give up
-#: build.c:170
+#: build.c:168
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Ошибка чтения файла спецификации из %s\n"
 
-#: build.c:198
+#: build.c:196
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Невозможно переименовать %s в %s: %m\n"
 
-#: build.c:238
+#: build.c:236
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "невозможно получить информацию о %s: %m\n"
 
-#: build.c:243
+#: build.c:241
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Не обычный файл: %s.\n"
 
-#: build.c:252
+#: build.c:250
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Файл %s не похож на файл спецификации.\n"
 
 #. parse up the build operators
-#: build.c:307
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Платформы для сборки: %s\n"
 
-#: build.c:322
+#: build.c:320
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Сборка для платформы %s\n"
@@ -2080,81 +2081,81 @@ msgid "generate signature"
 msgstr "генерировать подпись"
 
 #. @observer@
-#: lib/problems.c:226
+#: lib/problems.c:210
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:234
+#: lib/problems.c:218
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "пакет %s - для другой архитектуры"
 
-#: lib/problems.c:239
+#: lib/problems.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "пакет %s - для другой операционной системы"
 
-#: lib/problems.c:244
+#: lib/problems.c:228
 #, c-format
 msgid "package %s is already installed"
 msgstr "пакет %s уже установлен"
 
-#: lib/problems.c:249
+#: lib/problems.c:233
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "путь %s в пакете %s - не перемещаемый"
 
-#: lib/problems.c:254
+#: lib/problems.c:238
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "конфликт файла %s при попытках установки %s и %s"
 
-#: lib/problems.c:259
+#: lib/problems.c:243
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "файл %s из установленного пакета %s конфликтует с файлом из пакета %s"
 
-#: lib/problems.c:264
+#: lib/problems.c:248
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакет %s (который новее, чем %s) уже установлен"
 
-#: lib/problems.c:269
+#: lib/problems.c:253
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "для установки пакета %s нужно %ld%cb на файловой системе %s"
 
-#: lib/problems.c:279
+#: lib/problems.c:263
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "для установки пакета %s нужно %ld inodes на файловой системе %s"
 
-#: lib/problems.c:284
+#: lib/problems.c:268
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "пакет %s pre-transaction syscall(s): %s: ошибка: %s"
 
-#: lib/problems.c:288
+#: lib/problems.c:272
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
-#: lib/problems.c:292
+#: lib/problems.c:276
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
-#: lib/problems.c:297
+#: lib/problems.c:281
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "conflicts with"
 msgstr " конфликтует с %s-%s-%s\n"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "is needed by"
 msgstr " нужен для %s-%s-%s\n"
@@ -2237,7 +2238,7 @@ msgstr "%s ошибка на файле %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: lib/query.c:125 lib/rpmts.c:182
+#: lib/query.c:125 lib/rpmts.c:186
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ошибка в формате: %s\n"
@@ -2281,7 +2282,7 @@ msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
 #: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
@@ -2364,7 +2365,7 @@ msgstr "номер записи пакета: %u\n"
 msgid "record %u could not be read\n"
 msgstr "невозможно прочитать запись %u\n"
 
-#: lib/query.c:963 lib/rpminstall.c:678
+#: lib/query.c:963 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -2516,7 +2517,7 @@ msgstr "ошибка чтения из файла %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "для файла %s необходима более новая версия RPM\n"
 
-#: lib/rpminstall.c:486 lib/rpminstall.c:744
+#: lib/rpminstall.c:486 lib/rpminstall.c:743
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
@@ -2526,51 +2527,47 @@ msgstr "%s не может быть установлен\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:540
+#: lib/rpminstall.c:538 lib/rpminstall.c:1076
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
 
-#: lib/rpminstall.c:547
+#: lib/rpminstall.c:545
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:577
 msgid "installing binary packages\n"
 msgstr "устанавливаю бинарные пакеты\n"
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:599
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "невозможно открыть файл %s: %s\n"
 
-#: lib/rpminstall.c:681
+#: lib/rpminstall.c:678
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:705
+#: lib/rpminstall.c:703
 msgid "removing these packages would break dependencies:\n"
 msgstr "удаление этих пакетов нарушит зависимости:\n"
 
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:730
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:736
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
 
-#: lib/rpminstall.c:1073
+#: lib/rpminstall.c:1070
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
-
-#: lib/rpminstall.c:1080
-msgid "failed dependencies:\n"
-msgstr "неудовлетворенные зависимости:\n"
 
 #: lib/rpmlead.c:47
 #, c-format
@@ -2672,7 +2669,7 @@ msgstr "Невозможно прочитать %s, значение HOME слишком велико.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
 
-#: lib/rpmts.c:94 lib/rpmts.c:136
+#: lib/rpmts.c:95 lib/rpmts.c:137
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
@@ -2827,21 +2824,21 @@ msgstr "%s пропущен из-за флага missingok\n"
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
 
-#: lib/transaction.c:1081
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr "получение списка смонтированных файловых систем\n"
 
-#: lib/verify.c:329
+#: lib/verify.c:330
 #, c-format
 msgid "missing    %s"
 msgstr "отсутствует %s"
 
-#: lib/verify.c:424
+#: lib/verify.c:426
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: lib/verify.c:464
+#: lib/verify.c:466
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"
@@ -3435,6 +3432,9 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "failed dependencies:\n"
+#~ msgstr "неудовлетворенные зависимости:\n"
 
 #, fuzzy
 #~ msgid "%9s: (%s, %s) added to Depends cache.\n"

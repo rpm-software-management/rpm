@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-12 21:24-0400\n"
+"POT-Creation-Date: 2002-04-13 14:47-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -45,59 +45,59 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:39
+#: build.c:38
 #, fuzzy
-msgid "failed build dependencies:\n"
+msgid "Failed build dependencies:\n"
 msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
 # , c-format
-#: build.c:71
+#: build.c:69
 #, fuzzy, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
 
 # , c-format
-#: build.c:151 build.c:163
+#: build.c:149 build.c:161
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
 # , c-format
 #. Give up
-#: build.c:170
+#: build.c:168
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build.c:198
+#: build.c:196
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build.c:238
+#: build.c:236
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build.c:243
+#: build.c:241
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
-#: build.c:252
+#: build.c:250
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
 #. parse up the build operators
-#: build.c:307
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:322
+#: build.c:320
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
@@ -2246,85 +2246,85 @@ msgid "generate signature"
 msgstr "PGP-Signatur generieren"
 
 #. @observer@
-#: lib/problems.c:226
+#: lib/problems.c:210
 msgid "different"
 msgstr ""
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/problems.c:234
+#: lib/problems.c:218
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/problems.c:239
+#: lib/problems.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/problems.c:244
+#: lib/problems.c:228
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/problems.c:249
+#: lib/problems.c:233
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/problems.c:254
+#: lib/problems.c:238
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:259
+#: lib/problems.c:243
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr " steht im Konflikt mit %s-%s-%s\n"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/problems.c:264
+#: lib/problems.c:248
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/problems.c:269
+#: lib/problems.c:253
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:279
+#: lib/problems.c:263
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/problems.c:284
+#: lib/problems.c:268
 #, fuzzy, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/problems.c:288
+#: lib/problems.c:272
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/problems.c:292
+#: lib/problems.c:276
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: lib/problems.c:297
+#: lib/problems.c:281
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "conflicts with"
 msgstr " steht im Konflikt mit %s-%s-%s\n"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "is needed by"
 msgstr " wird von %s-%s-%s gebraucht\n"
@@ -2410,7 +2410,7 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "%s failed: %s\n"
 msgstr "pgp fehlgeschlagen"
 
-#: lib/query.c:125 lib/rpmts.c:182
+#: lib/query.c:125 lib/rpmts.c:186
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "Fehler beim Format %s\n"
@@ -2456,7 +2456,7 @@ msgid "can't query %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
 #: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:887
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
@@ -2543,7 +2543,7 @@ msgstr "ungültige Paket-Nummer: %s\n"
 msgid "record %u could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:963 lib/rpminstall.c:678
+#: lib/query.c:963 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
@@ -2698,7 +2698,7 @@ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:486 lib/rpminstall.c:744
+#: lib/rpminstall.c:486 lib/rpminstall.c:743
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "Fehler: %s kann nicht installiert werden\n"
@@ -2708,53 +2708,49 @@ msgstr "Fehler: %s kann nicht installiert werden\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/rpminstall.c:540
+#: lib/rpminstall.c:538 lib/rpminstall.c:1076
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#: lib/rpminstall.c:547
+#: lib/rpminstall.c:545
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:577
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "Paket installieren"
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:599
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/rpminstall.c:681
+#: lib/rpminstall.c:678
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" bezeichnet mehrere Pakete\n"
 
 # oder besser: "... verletzen" ?
-#: lib/rpminstall.c:705
+#: lib/rpminstall.c:703
 msgid "removing these packages would break dependencies:\n"
 msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
 
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:730
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:736
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
 
-#: lib/rpminstall.c:1073
+#: lib/rpminstall.c:1070
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
-
-#: lib/rpminstall.c:1080
-msgid "failed dependencies:\n"
-msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
 #: lib/rpmlead.c:47
 #, fuzzy, c-format
@@ -2859,7 +2855,7 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
 
-#: lib/rpmts.c:94 lib/rpmts.c:136
+#: lib/rpmts.c:95 lib/rpmts.c:137
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
@@ -3020,21 +3016,21 @@ msgstr ""
 msgid "excluding directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/transaction.c:1081
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/verify.c:329
+#: lib/verify.c:330
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "fehlende { nach %{"
 
-#: lib/verify.c:424
+#: lib/verify.c:426
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
 
-#: lib/verify.c:464
+#: lib/verify.c:466
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3643,6 +3639,9 @@ msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
+
+#~ msgid "failed dependencies:\n"
+#~ msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
 #, fuzzy
 #~ msgid "%9s: (%s, %s) added to Depends cache.\n"

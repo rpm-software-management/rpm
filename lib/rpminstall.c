@@ -217,6 +217,7 @@ int rpmInstall(rpmTransactionSet ts,
 		const char ** fileArgv)
 {
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
+    rpmProblemSet ps;
     rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
@@ -228,7 +229,6 @@ int rpmInstall(rpmTransactionSet ts,
     int i;
 
     if (fileArgv == NULL) goto exit;
-    /*@-branchstate@*/
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
     probFilter = ia->probFilter;
@@ -525,24 +525,22 @@ restart:
     if (eiu->numFailed) goto exit;
 
     if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NODEPS)) {
-	rpmProblem conflicts;
-	int numConflicts;
 
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
-	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
+	if (rpmdepCheck(ts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
 	/*@=nullstate@*/
 
-	/*@-branchstate@*/
-	if (!stopInstall && conflicts) {
+	ps = rpmtsGetProblems(ts);
+	if (!stopInstall && ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
-	    printDepProblems(stderr, conflicts, numConflicts);
-	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	    printDepProblems(stderr, ps);
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 
+	    /*@-branchstate@*/
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
 		rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
@@ -558,8 +556,9 @@ restart:
 		}
 		ts->suggests = _free(ts->suggests);
 	    }
+	    /*@=branchstate@*/
 	}
-	/*@=branchstate@*/
+	ps = rpmProblemSetFree(ps);
     }
 
     if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
@@ -572,23 +571,23 @@ restart:
     }
 
     if (eiu->numRPMS && !stopInstall) {
-	rpmProblemSet probs = NULL;
 
 	packagesTotal = eiu->numRPMS + eiu->numSRPMS;
 
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
-	rc = rpmRunTransactions(ts, NULL, &probs, probFilter);
+	rc = rpmRunTransactions(ts, NULL, probFilter);
 	/*@=nullstate@*/
+	ps = rpmtsGetProblems(ts);
 
 	if (rc < 0) {
 	    eiu->numFailed += eiu->numRPMS;
-	} else if (rc > 0) {
+	} else if (rc > 0 || ps) {
 	    eiu->numFailed += rc;
-	    rpmProblemSetPrint(stderr, probs);
+	    rpmProblemSetPrint(stderr, ps);
 	}
-	probs = rpmProblemSetFree(probs);
+	ps = rpmProblemSetFree(ps);
     }
 
     if (eiu->numSRPMS && !stopInstall) {
@@ -640,11 +639,9 @@ int rpmErase(rpmTransactionSet ts,
     int count;
     const char ** arg;
     int numFailed = 0;
-    rpmProblem conflicts;
-    int numConflicts;
     int stopUninstall = 0;
     int numPackages = 0;
-    rpmProblemSet probs;
+    rpmProblemSet ps;
 
     if (argv == NULL) return 0;
 
@@ -695,26 +692,28 @@ int rpmErase(rpmTransactionSet ts,
     }
 
     if (!(ia->eraseInterfaceFlags & UNINSTALL_NODEPS)) {
-	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
+
+	if (rpmdepCheck(ts)) {
 	    numFailed = numPackages;
 	    stopUninstall = 1;
 	}
 
-	/*@-branchstate@*/
-	if (!stopUninstall && conflicts) {
+	ps = rpmtsGetProblems(ts);
+	if (!stopUninstall && ps) {
 	    rpmMessage(RPMMESS_ERROR, _("removing these packages would break "
 			      "dependencies:\n"));
-	    printDepProblems(stderr, conflicts, numConflicts);
-	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	    printDepProblems(stderr, ps);
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}
-	/*@=branchstate@*/
+	ps = rpmProblemSetFree(ps);
     }
 
     if (!stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | RPMTRANS_FLAG_REVERSE));
-	numFailed += rpmRunTransactions(ts, NULL, &probs, 0);
+	numFailed += rpmRunTransactions(ts, NULL, 0);
+	ps = rpmtsGetProblems(ts);
+	ps = rpmProblemSetFree(ps);
     }
 
     return numFailed;
@@ -943,9 +942,7 @@ int rpmRollback(rpmTransactionSet ts,
 #ifdef	NOTYET
     rpmdb db = NULL;
     rpmTransactionSet ts = NULL;
-    rpmDependencyConflict conflicts = NULL;
-    int numConflicts = 0;
-    rpmProblemSet probs = NULL;
+    rpmProblemSet ps;
     int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
     unsigned thistid = 0xffffffff;
     unsigned prevtid;
@@ -1073,28 +1070,26 @@ int rpmRollback(rpmTransactionSet ts,
 	rpmMessage(RPMMESS_DEBUG, _("rollback %d packages to %s"),
 			packagesTotal, ctime(&tid));
 
-	conflicts = NULL;
-	numConflicts = 0;
-	rc = rpmdepCheck(ts, &conflicts, &numConflicts);
-	if (rc != 0) {
-	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
-	    printDepProblems(stderr, conflicts, numConflicts);
-	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
+	rc = rpmdepCheck(ts);
+	ps = rpmtsGetProblems(ts);
+	if (rc != 0 && ps) {
+	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    printDepProblems(stderr, ps);
+	    ps = rpmProblemSetFree(ps);
 	    goto exit;
 	}
+	ps = rpmProblemSetFree(ps);
 
 	rc = rpmdepOrder(ts);
 	if (rc != 0)
 	    goto exit;
 
-	probs = NULL;
-	rc = rpmRunTransactions(ts, NULL, &probs,
+	rc = rpmRunTransactions(ts, NULL,
 		(ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
-	if (rc > 0) {
-	    rpmProblemSetPrint(stderr, probs);
-	    if (probs != NULL) rpmProblemSetFree(probs);
-	    probs = NULL;
-	}
+	ps = rpmtsGetProblems(ts);
+	if (rc > 0)
+	    rpmProblemSetPrint(stderr, ps);
+	ps = rpmProblemSetFree(ps);
 	if (rc)
 	    goto exit;
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-12 21:24-0400\n"
+"POT-Creation-Date: 2002-04-13 14:47-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -9,53 +9,54 @@ msgstr ""
 "Content-Type: text/plain; charset=EUC-KR\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:39
-msgid "failed build dependencies:\n"
+#: build.c:38
+#, fuzzy
+msgid "Failed build dependencies:\n"
 msgstr "의존성 문제로 제작에 실패함:\n"
 
-#: build.c:71
+#: build.c:69
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "%s spec 파일을 열 수 없음: %s\n"
 
-#: build.c:151 build.c:163
+#: build.c:149 build.c:161
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar 파이프를 여는데 실패함: %m\n"
 
 #. Give up
-#: build.c:170
+#: build.c:168
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s 에서 spec 파일을 읽는데 실패했습니다\n"
 
-#: build.c:198
+#: build.c:196
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s 에서 %s (으)로 이름 변경하는데 실패함: %m\n"
 
-#: build.c:238
+#: build.c:236
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "%s 의 상태(stat)를 표시하는데 실패함: %m\n"
 
-#: build.c:243
+#: build.c:241
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s 파일은 정규(regular) 파일이 아닙니다.\n"
 
-#: build.c:252
+#: build.c:250
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s 파일은 spec 파일이 아닌 것 같습니다.\n"
 
 #. parse up the build operators
-#: build.c:307
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 
-#: build.c:322
+#: build.c:320
 #, c-format
 msgid "Building for target %s\n"
 msgstr "%s (을)를 제작하고 있습니다\n"
@@ -2061,87 +2062,87 @@ msgid "generate signature"
 msgstr "서명을 작성합니다"
 
 #. @observer@
-#: lib/problems.c:226
+#: lib/problems.c:210
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:234
+#: lib/problems.c:218
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "%s (은)는 다른 아키텍쳐를 위한 패키지입니다"
 
-#: lib/problems.c:239
+#: lib/problems.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "%s (은)는 다른 운영체제를 위한 패키지입니다"
 
-#: lib/problems.c:244
+#: lib/problems.c:228
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/problems.c:249
+#: lib/problems.c:233
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
-#: lib/problems.c:254
+#: lib/problems.c:238
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%2$s (와)과 %3$s 의 설치 과정에서 %1$s 파일이 서로 충돌합니다"
 
-#: lib/problems.c:259
+#: lib/problems.c:243
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%2$s 에서 설치되는 %1$s 파일은 %3$s 패키지의 파일과 충돌합니다"
 
-#: lib/problems.c:264
+#: lib/problems.c:248
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
-#: lib/problems.c:269
+#: lib/problems.c:253
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb (이)가 필요합"
 "니다"
 
-#: lib/problems.c:279
+#: lib/problems.c:263
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld 의 아이노드(inode)"
 "가 필요합니다"
 
-#: lib/problems.c:284
+#: lib/problems.c:268
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 "%s 패키지의 선(pre)-트랜잭션 시스템콜(syscall): %s (이)가 실패했습니다: %s"
 
-#: lib/problems.c:288
+#: lib/problems.c:272
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
-#: lib/problems.c:292
+#: lib/problems.c:276
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
-#: lib/problems.c:297
+#: lib/problems.c:281
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 "%2$s 패키지를 처리하는 과정에서 알 수 없는 오류 %1$d (이)가 발생했습니다"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "conflicts with"
 msgstr " %s-%s-%s (와)과 충돌합니다\n"
 
-#: lib/problems.c:377
+#: lib/problems.c:362
 #, fuzzy
 msgid "is needed by"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
@@ -2230,7 +2231,7 @@ msgstr "%2$s 파일의 %1$s (이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s (이)가 실패함: %s\n"
 
-#: lib/query.c:125 lib/rpmts.c:182
+#: lib/query.c:125 lib/rpmts.c:186
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
@@ -2274,7 +2275,7 @@ msgid "can't query %s: %s\n"
 msgstr "%s (을)를 질의할 수 없음: %s\n"
 
 #: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
-#: lib/rpminstall.c:888
+#: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s (을)를 여는데 실패함: %s\n"
@@ -2357,7 +2358,7 @@ msgstr "패키지 기록(record) 번호: %u\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u (은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:963 lib/rpminstall.c:678
+#: lib/query.c:963 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지는 설치되어 있지 않습니다\n"
@@ -2509,7 +2510,7 @@ msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s 파일이 최신 버전의 RPM을 필요로 합니다\n"
 
-#: lib/rpminstall.c:486 lib/rpminstall.c:744
+#: lib/rpminstall.c:486 lib/rpminstall.c:743
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s (은)는 설치될 수 없습니다\n"
@@ -2519,51 +2520,47 @@ msgstr "%s (은)는 설치될 수 없습니다\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 의 소스와 %d 의 바이너리 패키지를 찾았습니다\n"
 
-#: lib/rpminstall.c:540
+#: lib/rpminstall.c:538 lib/rpminstall.c:1076
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
 
-#: lib/rpminstall.c:547
+#: lib/rpminstall.c:545
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:579
+#: lib/rpminstall.c:577
 msgid "installing binary packages\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:600
+#: lib/rpminstall.c:599
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:681
+#: lib/rpminstall.c:678
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:705
+#: lib/rpminstall.c:703
 msgid "removing these packages would break dependencies:\n"
 msgstr "이 패키지들을 제거하면 의존성이 깨질 수 있음:\n"
 
-#: lib/rpminstall.c:731
+#: lib/rpminstall.c:730
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s (을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:737
+#: lib/rpminstall.c:736
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s (을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1073
+#: lib/rpminstall.c:1070
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
-
-#: lib/rpminstall.c:1080
-msgid "failed dependencies:\n"
-msgstr "의존성 문제로 인해 실패함:\n"
 
 #: lib/rpmlead.c:47
 #, c-format
@@ -2665,7 +2662,7 @@ msgstr "%s (을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s (을)를 열 수 없음: %s.\n"
 
-#: lib/rpmts.c:94 lib/rpmts.c:136
+#: lib/rpmts.c:95 lib/rpmts.c:137
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
@@ -2819,21 +2816,21 @@ msgstr "missingok 플래그로 인해 %s (을)를 생략합니다\n"
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"
 
-#: lib/transaction.c:1081
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr "마운트된 파일시스템의 목록을 수집하고 있습니다\n"
 
-#: lib/verify.c:329
+#: lib/verify.c:330
 #, c-format
 msgid "missing    %s"
 msgstr "다음을 찾을 수 없습니다    %s"
 
-#: lib/verify.c:424
+#: lib/verify.c:426
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s 에 의존성 문제 발생: "
 
-#: lib/verify.c:464
+#: lib/verify.c:466
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3432,6 +3429,9 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s (을)를 생성하는데 실패함: %s\n"
+
+#~ msgid "failed dependencies:\n"
+#~ msgstr "의존성 문제로 인해 실패함:\n"
 
 #, fuzzy
 #~ msgid "%9s: (%s, %s) added to Depends cache.\n"

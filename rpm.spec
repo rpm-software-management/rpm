@@ -521,6 +521,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Apr 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.07
+- merge conflicts into problems, handle as transaction set variable.
+
 * Fri Apr 12 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.06
 - use rpmdb-redhat to suggest dependency resolution(s).
 

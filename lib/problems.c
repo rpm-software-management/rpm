@@ -22,7 +22,7 @@ rpmProblemSet XrpmpsUnlink(rpmProblemSet ps, const char * msg,
 		const char * fn, unsigned ln)
 {
 /*@-modfilesystem@*/
-if (_ps_debug)
+if (_ps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     ps->nrefs--;
@@ -34,7 +34,7 @@ rpmProblemSet XrpmpsLink(rpmProblemSet ps, const char * msg,
 {
     ps->nrefs++;
 /*@-modfilesystem@*/
-if (_ps_debug)
+if (_ps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     /*@-refcounttrans@*/ return ps; /*@=refcounttrans@*/
@@ -50,22 +50,6 @@ rpmProblemSet rpmProblemSetCreate(void)
     ps->nrefs = 0;
 
     return rpmpsLink(ps, "create");
-}
-
-/* XXX FIXME: merge into problems */
-rpmProblem rpmdepFreeConflicts(rpmProblem probs, int numProblems)
-{
-    int i;
-
-    if (probs != NULL)
-    for (i = 0; i < numProblems; i++) {
-	rpmProblem p = probs + i;
-	p->pkgNEVR = _free(p->pkgNEVR);
-	p->altNEVR = _free(p->altNEVR);
-	p->str1 = _free(p->str1);
-    }
-    probs = _free(probs);
-    return NULL;
 }
 
 rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
@@ -349,21 +333,22 @@ static int sameProblem(const rpmProblem ap, const rpmProblem bp)
 }
 
 /* XXX FIXME: merge into rpmProblemSetPrint */
-void printDepProblems(FILE * fp, rpmProblem probs, int numProblems)
+void printDepProblems(FILE * fp, rpmProblemSet ps)
 {
-    const char * pkgNEVR, * altNEVR;
-    rpmProblem p;
     int i;
 
-    if (probs != NULL)
-    for (i = 0; i < numProblems; i++) {
+    if (ps && ps->probs != NULL)
+    for (i = 0; i < ps->numProblems; i++) {
+	const char * pkgNEVR;
+	const char * altNEVR;
+	rpmProblem p;
 	int j;
 
-	p = probs + i;
+	p = ps->probs + i;
 
 	/* Filter already displayed problems. */
 	for (j = 0; j < i; j++) {
-	    if (!sameProblem(p, probs + j))
+	    if (!sameProblem(p, ps->probs + j))
 		/*@innerbreak@*/ break;
 	}
 	if (j < i)
