@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-05-11 12:17-0400\n"
+"POT-Creation-Date: 1999-05-11 15:50-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2230,29 +2230,33 @@ msgstr ""
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:1000
+#: ../lib/cpio.c:999
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: ../lib/cpio.c:1003
+#: ../lib/cpio.c:1002
 msgid "Bad magic"
 msgstr ""
 
-#: ../lib/cpio.c:1004
+#: ../lib/cpio.c:1003
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: ../lib/cpio.c:1022
-msgid "Internal error"
-msgstr ""
-
-#: ../lib/cpio.c:1023
+#: ../lib/cpio.c:1021
 msgid "Header size too big"
 msgstr ""
 
-#: ../lib/cpio.c:1024
+#: ../lib/cpio.c:1022
 msgid "Unknown file type"
+msgstr ""
+
+#: ../lib/cpio.c:1023
+msgid "Missing hard link"
+msgstr ""
+
+#: ../lib/cpio.c:1024
+msgid "Internal error"
 msgstr ""
 
 #: ../lib/cpio.c:1033

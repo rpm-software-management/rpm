@@ -15,6 +15,7 @@
 	- add rpm prefix to MD5 routines to avoid name conflict on solaris.
 	- fix: resurrect -Vp, -Vf and -Vg functionality.
 	- colesce query and verify modes.
+	- better cpio error message if package contains missing hard links.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.

@@ -28,9 +28,10 @@
 #define CPIOERR_READLINK_FAILED	(17   | CPIOERR_CHECK_ERRNO)
 #define CPIOERR_READ_FAILED	(18   | CPIOERR_CHECK_ERRNO)
 #define CPIOERR_COPY_FAILED	(19   | CPIOERR_CHECK_ERRNO)
-#define CPIOERR_INTERNAL	(20			)
-#define CPIOERR_HDR_SIZE	(21			)
-#define CPIOERR_UNKNOWN_FILETYPE (22			)
+#define CPIOERR_HDR_SIZE	(20			)
+#define CPIOERR_UNKNOWN_FILETYPE (21			)
+#define CPIOERR_MISSING_HARDLINK (22			)
+#define CPIOERR_INTERNAL	(23			)
 
 
 /* Don't think this behaves just like standard cpio. It's pretty close, but

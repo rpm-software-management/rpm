@@ -583,7 +583,6 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 	       to create those anyway */
 
 	    if (S_ISREG(ch.mode) && ch.nlink > 1) {
-		li = links;
 		for (li = links; li; li = li->next) {
 		    if (li->inode == ch.inode && li->dev == ch.dev) break;
 		}
@@ -636,7 +635,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 			/* this mimicks cpio but probably isnt' right */
 			rc = expandFifo(cfd, &ch);
 		    } else {
-			rc = CPIOERR_INTERNAL;
+			rc = CPIOERR_UNKNOWN_FILETYPE;
 		    }
 		}
 
@@ -677,7 +676,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
     while (li && !rc) {
 	if (li->linksLeft) {
 	    if (li->createdPath == -1)
-		rc = CPIOERR_INTERNAL;
+		rc = CPIOERR_MISSING_HARDLINK;
 	    else 
 		rc = createLinks(li, failedFile);
 	}
@@ -1019,9 +1018,10 @@ const char * cpioStrerror(int rc)
     case CPIOERR_READ_FAILED:	s = "read";	break;
     case CPIOERR_COPY_FAILED:	s = "copy";	break;
 
-    case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
     case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
+    case CPIOERR_MISSING_HARDLINK: s = _("Missing hard link");	break;
+    case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     }
 
     l = sizeof(msg) - strlen(msg) - 1;
