@@ -545,6 +545,9 @@ void parseForDocFiles(Spec spec, char *line)
     }
 
     line += 4;
+    if ((*line != ' ') && (*line != '\t')) {
+	return;
+    }
     line += strspn(line, " \t\n");
     if ((! *line) || (*line == '/')) {
 	return;
