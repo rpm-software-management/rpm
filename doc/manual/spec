@@ -2,6 +2,23 @@
 
 A few additions have been made to the spec file format.
 
+Name
+
+The Name tag contains the proper name of the package. Names must not
+include whitespace and may include a hyphan '-' (unlike version and release
+tags). Names should not include any numeric operators ('<', '>','=') as
+future versions of rpm may need to reserve charcters other than '-'.
+
+By default subpackages are named by prepending `<main package>-' to
+the subpackages name(s). If you wish to change the name of a
+subpackage (most commonly this is to change the '-' to '.'), then you
+must specify the full name with the -n argument in the %package
+definition:
+
+\verbatim
+	%package -n newname
+\endverbatim
+
 <h2>Summary and Description</h2>
 
 The Summary: tag should be use to give a short (50 char or so) summary
@@ -59,6 +76,14 @@ address of the person who "maintains" the RPM package (which may be
 different from the person who actually maintains the program the
 package contains).
 
+<h2>BuildArchitectures</h2>
+
+This tag specifies the arctecture which the resulting binary package
+will run on.  Typically this is a CPU architecture like sparc,
+i386. The string 'noarch' is reserved for specifying that the
+resulting binary package is platform independent.  Typical platform
+independent packages are html, perl, python, java, and ps packages.
+
 <h2>Files Attributes</h2>
 
 A %ghost tag on a file indicates that this file is not to be included
@@ -73,8 +98,43 @@ removed when this package is removed.  This file is not required to
 exist at either install or uninstall time.
 
 The %config(noreplace) indicates that the file in the package should
-be installed with extension .rpmnew if there is already a file by
-the same name on the installed machine.
+be installed with extension .rpmnew if there is already a modified file
+with the same name on the installed machine.
+
+-The virtual file attribute token %verify tells `-V/--verify' to ignore
+certain features on files which may be modified by (say) a postinstall
+script so that false problems are not displayed during package verification.
+\verbatim
+	%verify(not size md5 mtime) %{prefix}/bin/javaswarm
+\endverbatim
+
+<h2>Shell Gobbing of %files</h2>
+
+The usual rules for shell globbing apply.  Most special characters can
+be escaped by prefixing them with a '\'.  Spaces are used to separate
+file names and so must be escaped by enclsing the file name with quotes.
+For example:
+
+\verbatim
+	/tmp/are\.you\|bob\?
+	/tmp/bob\'s\*htdocs\*
+	"/tmp/bob\'s htdocs"
+\endverbatim
+
+Names containing "%%" will be rpm macro expanded into "%".  When
+trying to escape large number of file names, it is often best to
+create a file with the complete list of escaped file names.  This is 
+easiest to do with a shell script like this:
+
+\verbatim
+	rm -f $RPM_BUILD_DIR/filelist.rpm 
+	echo '%defattr(-,root,root)' >> $RPM_BUILD_DIR/filelist.rpm 
+	find $RPM_BUILD_ROOT/%{_prefix} -type f -print | \
+	    sed "s!$RPM_BUILD_ROOT!!" |  perl -pe 's/([?|*.\'"])/\\$1/g' \
+		>> $RPM_BUILD_DIR/filelist.rpm 
+
+	%files -f filelist.rpm
+\endverbatim
 
 <h2>Fine Adjustment of Automatic Dependencies</h2>
 
@@ -98,5 +158,60 @@ in your spec file. Any and all requirements should be added manually using the
 \endverbatim
 
 in this case.
+
+Similarly there is an Autoprov tag to turn off the automatic provision
+generation and a Autoreqprov to turn off both the automatic provides and
+the automatic requires generation.
+
+<h2>nosrc rpms</h2>
+
+Files ending in .nosrc.rpm are generally source RPM packages whose spec
+files have one or more NoSource: or NoPatch: directives in them.  Both
+directives use the named source or patch file to build the resulting
+binary RPM package as usual, but they are not included in the source
+RPM package.
+
+The original intent of this ability of RPM was to allow proprietary or
+non-distributable software to be built using RPM, but to keep the
+proprietary or non-distributable parts out of the resulting source RPM
+package, so that they would not get distributed.
+
+They also have utility if you are building RPM packages for software
+which is archived at a well-known location and does not require that
+you distribute the source with the binary, for example, for an
+organization's internal use, where storing large quantities of source
+is not as meaningful.
+
+The end result of all this, though, is that you can't rebuild
+``no-source'' RPM packages using `rpm --rebuild' unless you also have
+the sources or patches which are not included in the .nosrc.rpm.
+
+<h2>BuildRequires</h2>
+
+Build dependencies are identical to install dependencies except:
+
+\verbatim
+  1) they are prefixed with build (e.g. BuildRequires: rather than Requires:)
+  2) they are resolved before building rather than before installing.
+\endverbatim
+
+So, if you were to write a specfile for a package that requires egcs to build,
+you would add
+\verbatim
+	BuildRequires: egcs
+\endverbatim
+to your spec file.
+
+If your package was like dump and could not be built w/o a specific vesion of
+the libraries to access an ext2 file system, you could express this as
+\verbatim
+	BuildRequires: e2fsprofs-devel = 1.17-1
+\endverbatim
+
+Finally, if your package used C++ and could not be built with gcc-2.7.2.1, you
+can express this as
+\verbatim
+	BuildConflicts: gcc <= 2.7.2.1
+\endverbatim
 
 */

@@ -148,4 +148,26 @@ the SOMETAG tag is present, and "missing" otherwise:
 Notice that the subformats "present" and "missing" must be inside of curly
 braces.
 
+<h2>Viewing the Verify Flags</h2>
+
+The follwing example query is run against dev becuase I know %verify
+is used there.
+\verbatim
+	rpm -q --qf '[%{filenames} %{fileverifyflags}\n]' dev
+\endverbatim
+
+The flags are defined in rpmlib.h (check there for changes):
+\verbatim
+	#define RPMVERIFY_MD5           (1 << 0)
+	#define RPMVERIFY_FILESIZE      (1 << 1)
+	#define RPMVERIFY_LINKTO        (1 << 2)
+	#define RPMVERIFY_USER          (1 << 3)
+	#define RPMVERIFY_GROUP         (1 << 4)
+	#define RPMVERIFY_MTIME         (1 << 5)
+	#define RPMVERIFY_MODE          (1 << 6)
+	#define RPMVERIFY_RDEV          (1 << 7)
+\endverbatim
+
+A 1 bit in the output of the query means the check is enabled.
+
 */

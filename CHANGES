@@ -2,7 +2,11 @@
 	- cpio mappings carry dirname/basename, not absolute path.
 	- fix: check waitpid return code.
 	- remove support for v1 src rpm's.
-	- reposition callbacks with ts/fi in cpio payload layer.
+	- re-position callbacks with ts/fi in cpio payload layer.
+	- state machines for packages (psm.c) and payloads (fsm.c)
+	- add --repackage option to put erased bits back into a package.
+	- update per-interpreter dependency scripts, add sql/tcl (#20295).
+	- fix: rpmvercmp("1.a", "1.") returned -1, not +1 (#21392).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

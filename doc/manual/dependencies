@@ -8,7 +8,7 @@ are satisfied whenever packages are installed, erased, or upgraded.
 
 <h2>Requiring Packages</h2>
 
-To require packages, use:
+To require the packages python and perl, use:
 
 \verbatim
 	Requires: python perl
@@ -22,30 +22,8 @@ needed to have a very recent version of python but any version of perl,
 \endverbatim
 
 would do the trick. Again, the ',' in the line is optional.  Instead of
-'>=', you may also use '<', '>', '<=', or '='.
-
-RPM uses an internal algorithm to determine version number orderings which
-works correctly most of the time. For example, it will know that
-1.9a is older then 1.9b. However, it will also be later then 1.9 which
-may or may not be correct as some programmers use letters in version numbers
-to indicate beta versions. 
-
-To work around this, you may specify an epoch number for a package like this:
-
-\verbatim
-	Epoch: 23
-\endverbatim
-
-If a Requires: line needs to include an epoch in the comparison, then
-the line should be written like
-
-\verbatim
-	Requires: somepackage = 23:version
-\endverbatim
-
-You can't continue a "Requires: " line. If you have multiple
-"Requires: " lines then the package requires all packages mentioned on
-all of the lines to be installed. Max line length is probably 8K.
+'>=', you may also use '<', '>', '<=', or '='.  Spaces are required
+around the numeric operator to separate the operator from the package name.
 
 The full syntax for specifying a dependency on an epoch, version and release
 is
@@ -59,15 +37,89 @@ where
 	release	(optional) can contain any character except '-'
 \endverbatim
 
+For example,
+
+\verbatim
+	Requires: perl >= 9:5.00502-3
+\endverbatim
+
+specifies
+
+\verbatim
+	epoch=9
+	version=5.00502
+	release=3
+\endverbatim
+
+The epoch (if present) is a monotonically inceasing integer, neither the
+version or the release can contain the '-' hyphen character, and the dependency
+parser does not permit white space within a definition.  Unspecified epoch
+and releases are assumed to be zero, and are interpreted as "providing all"
+or "requiring any" value.
+
+The release tag is usually incremented every time a package is rebuilt for
+any reason, even if the source code does not change. For example, changes
+to the specfile, compiler(s) used to build the package, and/or dependency
+changes should all be tracked by incrementing the release.  The version number,
+on the other hand, is usually set by the developer or upstream maintainer,
+and should not be casually modified by the packager.
+
+Version numbering should be kept simple so that it is easy to determine the
+version ordering for any set of packages.  If the packager needs to separate
+a release from all other releases that came before it, then the epoch, the
+most significant part of package ordering, can be changed.
+
+The algorithm that RPM uses to determine the version ordering of
+packages is simple and developers are encouraged not to rely on the
+details of its working.  Developers should keep their numbering scheme
+simple so any reasonable ordering algorithm would work.  The version
+comparison algorithm is in the routine rpmvercmp() and it is just a segmented
+strcmp(3).  First, the boundaries of the segments are found using
+isdigit(3)/isalpha(3).  Each segment is then compared in order with the
+right most segment being the least significant.  The alphabetical
+portions are compared using a lexical graphical ascii ordering, the
+digit segments strip leading zeroes's and compare the strlen before
+doing a strcmp. If both numerical strings are equal, the longer string
+is larger.  Notice that the algorithm has no knowledge of decimal fractions,
+and perl-5.6 is "older" than perl-5.00503 because the number 6 si less than
+the number 503.
+
+The concept of "newer" used by rpm to determine when a package should be
+upgraded can be broken if version format changes oddly, such as when the
+version segments cannot be meaningfully compared.
+
+Example of a bad format change: 2.1.7Ax to 19980531
+\verbatim
+  The date may be the older version, but it is numerically greater
+  2 so it is considered newer :(
+\endverbatim
+
+Example of a bad increment: 2.1.7a to 2.1.7A
+\verbatim
+  The 'a' (ASCII 97) is compared against 'A' (ASCII 65), making 2.1.7a
+  the newer version.
+\endverbatim
+
+Stick to major.minor.patchlevel using numbers for each if you can.
+Keeps life simple :-)
+
+If a Requires: line needs to include an epoch in the comparison, then
+the line should be written like
+
+\verbatim
+	Requires: somepackage = 23:version
+\endverbatim
+
+You can't continue a "Requires: " line. If you have multiple
+"Requires: " lines then the package requires all packages mentioned on
+all of the lines to be installed.
+
 <h2>Prereqs</h2>
 
-Prereqs are slightly different than requires. If multiple packages are
-given on a single command line, then RPM will rearrange the package
-order to ensure that the installation order obeys the requirements. A
-package's prereqs are guaranteed to be installed on the machine before
-the package itself is installed. Otherwise prereqs are identical to
-requires.
-
+Prereqs are different from requires only in that a PreReq is guaranteed
+to be installed before the package that contains the PreReq.  PreReq's
+are used only to order packages, otherwise PreReq's are exactly the same
+as a Requires: dependency.
 
 <h2>Virtual Packages</h2>
 
@@ -117,8 +169,44 @@ example, the libc-5.3.12 package has provides information added for
 libm.so.5 and libc.so.5. We expect this automatic dependency generation
 to eliminate the need for most packages to use explicit Requires: lines.
 
+<h2>Custom Automatic Dependency</h2>
 
-<h2>Interpreters and Shells (to be implemented)</h2>
+The automatic dependency programs are found via macro expansion.  Thus
+sites can very the amount of dependnecy processing that are performed
+locally, by changing the executable/script which is run.  Dependency
+processing can even be changed on a per-package basis if the macros's are
+defined in the spec file. To allow for maximum configurability the
+dependency programs are shell scripts which can be duplicated and edited
+for site specific needs.
+
+The macros: %__find_provides, %__find_prereq, %__find_requires,
+%__find_conflicts, %__find_obsoletes, if they exist, are expanded to
+the name of a program to exec. For each package, the program receives
+the glob'ed %files manifest on stdin and returns dependencies on stdout. The
+deiscovered dependencies are parsed exactly as if they were found after
+
+\verbatim
+	Provides:
+	PreReq:
+	Requires:
+	Conflicts:
+	Obsoletes:
+\endverbatim
+tokens in a spec file (i.e. the same parser is used), so items look like
+(comments added)
+\verbatim
+	/bin/sh			# file existence
+	libc.so.6		# soname existence
+	foo <= 1:2.3-4		# versioned package
+	perl5(Apache) <= 1.2	# versioned namespace
+\endverbatim
+
+The default rpm configuration has only
+	%__find_provides	/usr/lib/rpm/find-provides
+	%__find_requires	/usr/lib/rpm/find-requires
+which can be overridden (or even undefined) within a spec file.
+
+<h2>Interpreters and Shells</h2>
 
 Modules for interpreted languages like perl and tcl impose additional
 dependency requirements on packages. A script written for an interpreter
@@ -159,10 +247,11 @@ with appropriate per-interpreter hooks into
 	/usr/lib/rpm/find-{provides,requires}
 \endverbatim
 
-Notice that shell dependencies will require that all executable programs be
-tracked by the dependency processing system. Since a shell script depends on
-all the programs which it runs. In this way executables are much like shared
-libraries for shell scripts.
+@todo per-interpreter dependency generators are not located in subdiretories.
+
+Notice that shell dependencies will require that all %post et al scriptlets
+be processed by the find-requires. Since a shell script depends on all the
+programs which it runs.
 
 
 <h2>Installing and Erasing Packages with Dependencies</h2>
@@ -203,7 +292,7 @@ may codify this with a line like:
 The syntax of the "Conflicts" tag is identical to the syntax of the Requires
 tag and conflict checking may be overridden by using the --nodeps flag.
 
-<h2>Querying with Dependencies</h2>
+<h2>Querying for Dependencies</h2>
 
 Two new query information selection options are now available. The first, 
 --provides, prints a list of all of the capabilities a package provides. 
@@ -225,5 +314,57 @@ verification with the --nodeps. If you want RPM to verify just dependencies
 and not file attributes (including file existence), use the --nofiles
 flag. Note that "rpm -Va --nofiles --nodeps" will not verify anything at
 all, nor generate an error message.
+
+<h2>Branching Version</h2>
+
+It is quite common to need to branch a set of sources in version
+control. It is not so obvious how those branches should be repesented
+in the package version numbers. Here is one solution.
+
+You have a bag of features that are injected into a package in a
+non-ordered fashion, and you want to have the package
+name-version-release be able to:
+
+\verbatim
+	1) identify the "root version" of the source code.
+	2) identify the handful of features that are in that
+	   branch of the package.
+	3) preserve sufficient ordering so that packages upgrade
+	   without the use of --oldpackage.
+\endverbatim
+
+A simple (but possibly not adequate) scheme to achieve this is:
+
+\verbatim
+	Name: foo
+	Version: <the "root version" of the source code>
+	Release: <release instance>.<branch>
+\endverbatim
+
+where the release instance is something like YYYMMMDD or some linear
+record of the number of builds with the current tar file, it is used
+to preserve ordering when necessary.
+
+Another alternative scheme might be:
+
+\verbatim
+	Name: foo
+	Epoch: <branch>
+	Version: <the branch specific version of the code>
+	Release: <release instance>
+\endverbatim
+
+<h2>Build dependencies</h2>
+
+The following dependencies are availible at build time.  These are
+similar to the install time version but these apply only during
+package creation and are specified in the specfile not in the binary
+package.
+
+\verbatim
+	BuildRequires:
+	BuildConflicts:
+	BuildPreReq:
+\endverbatim
 
 */
