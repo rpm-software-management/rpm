@@ -92,6 +92,15 @@ rpm	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 rpm	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with colors"
 
+rpm	alias --filecontext --qf '[%{FILENAMES}\t%{FILECONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context from header"
+
+rpm	alias --fscontext --qf '[%{FILENAMES}\t%{FSCONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context from file system"
+
+rpm	alias --recontext --qf '[%{FILENAMES}\t%{RECONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context from policy RE"
+
 rpm	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
 	--POPTdesc=$"list file names with provides"
 
@@ -360,6 +369,15 @@ rpmq	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 rpmq	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with colors"
 
+rpmq	alias --filecontext --qf '[%{FILENAMES}\t%{FILECONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context"
+
+rpmq	alias --fscontext --qf '[%{FILENAMES}\t%{FSCONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context from file system"
+
+rpmq	alias --recontext --qf '[%{FILENAMES}\t%{RECONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context from policy RE"
+
 rpmq	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
 	--POPTdesc=$"list file names with provides"
 
@@ -444,6 +462,15 @@ rpmquery	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 
 rpmquery	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with colors"
+
+rpmquery	alias --filecontext --qf '[%{FILENAMES}\t%{FILECONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context"
+
+rpmquery	alias --fscontext --qf '[%{FILENAMES}\t%{FSCONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context from file system"
+
+rpmquery	alias --recontext --qf '[%{FILENAMES}\t%{RECONTEXTS}\n]' \
+	--POPTdesc=$"list file names with security context from policy RE"
 
 rpmquery	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
 	--POPTdesc=$"list file names with provides"

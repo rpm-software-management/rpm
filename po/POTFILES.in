@@ -45,6 +45,7 @@ lib/rpmlead.c
 lib/rpmlibprov.c
 lib/rpmps.c
 lib/rpmrc.c
+lib/rpmsx.c
 lib/rpmte.c
 lib/rpmts.c
 lib/rpmvercmp.c

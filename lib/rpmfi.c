@@ -16,6 +16,8 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
+#include "rpmsx.h"
+
 #define	_RPMTE_INTERNAL	/* relocations */
 #include "rpmte.h"
 #include "rpmts.h"
@@ -303,6 +305,19 @@ const char * rpmfiFClass(rpmfi fi)
 /*@=boundsread@*/
     }
     return fclass;
+}
+
+const char * rpmfiFContext(rpmfi fi)
+{
+    const char * fcontext = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
+	if (fi->fcontexts != NULL)
+	    fcontext = fi->fcontexts[fi->i];
+/*@=boundsread@*/
+    }
+    return fcontext;
 }
 
 int_32 rpmfiFDepends(rpmfi fi, const int_32 ** fddictp)
@@ -1135,6 +1150,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->obnl = hfd(fi->obnl, -1);
     fi->odnl = hfd(fi->odnl, -1);
 
+    fi->fcontexts = hfd(fi->fcontexts, -1);
+
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
     fi->replaced = _free(fi->replaced);
@@ -1183,6 +1200,10 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
     uint_32 * uip;
     int dnlmax, bnlmax;
     unsigned char * t;
+security_context_t scon;
+int * fcnb;
+char * fctxt;
+int fctxtlen;
     int len;
     int xx;
     int i;
@@ -1407,6 +1428,44 @@ if (fi->actions == NULL)
     fi->dperms = 0755;
     fi->fperms = 0644;
 
+    /* Retrieve file contexts into single contiguous buffer, saving sizes. */
+    fctxt = NULL;
+    fctxtlen = 0;
+    len = fi->fc * sizeof(*fcnb);
+    fcnb = memset(alloca(len), 0, len);
+    fi->fn = xmalloc(fi->fnlen);
+/*@-branchstate@*/
+    for (i = 0; i < fi->fc; i++) {
+/*@-boundswrite@*/
+	*fi->fn = '\0';
+	(void) stpcpy( stpcpy(fi->fn, fi->dnl[fi->dil[i]]), fi->bnl[i]);
+/*@=boundswrite@*/
+	fcnb[i] = lgetfilecon(fi->fn, &scon);
+	if (fcnb[i] <= 0)
+	    continue;
+
+	fctxt = xrealloc(fctxt, fctxtlen + fcnb[i]);
+	memcpy(fctxt+fctxtlen, scon, fcnb[i]);
+	fctxtlen += fcnb[i];
+	(void) freecon(scon);
+    }
+/*@=branchstate@*/
+
+    /* Initialize array ptrs into data following array. */
+    len = ((fi->fc+1) * sizeof(*fi->fcontexts)) + fctxtlen;
+    fi->fcontexts = xmalloc(len);
+    (void) memset(fi->fcontexts, 0, (fi->fc+1) * sizeof(*fi->fcontexts));
+    (void) memcpy(&fi->fcontexts[fi->fc+1], fctxt, fctxtlen);
+    fctxt = _free(fctxt);
+    fctxt = (char *) (&fi->fcontexts[fi->fc+1]);
+    for (i = 0; i < fi->fc; i++) {
+	if (fcnb[i] <= 0)
+	    continue;
+	fi->fcontexts[i] = fctxt;
+	fctxt += fcnb[i];
+    }
+    fi->fcontexts[fi->fc] = NULL;
+
 exit:
 /*@-modfilesys@*/
 if (_rpmfi_debug < 0)
@@ -1467,6 +1526,209 @@ exit:
     /*@-branchstate@*/
     if (fclassp)
 	*fclassp = av;
+    else
+	av = _free(av);
+    /*@=branchstate@*/
+    if (fcp) *fcp = ac;
+}
+
+void rpmfiBuildFContexts(Header h,
+	/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
+{
+    int scareMem = 1;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    const char * FContext;
+    const char ** av;
+    int ac;
+    size_t nb;
+    char * t;
+
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
+    }
+
+    /* Compute size of argv array blob. */
+    nb = (ac + 1) * sizeof(*av);
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	FContext = rpmfiFContext(fi);
+	if (FContext && *FContext != '\0')
+	    nb += strlen(FContext);
+	nb += 1;
+    }
+
+    /* Create and load argv array. */
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	FContext = rpmfiFContext(fi);
+	av[ac++] = t;
+	if (FContext && *FContext != '\0')
+	    t = stpcpy(t, FContext);
+	*t++ = '\0';
+    }
+    av[ac] = NULL;
+    /*@=branchstate@*/
+
+exit:
+    fi = rpmfiFree(fi);
+    /*@-branchstate@*/
+    if (fcontextp)
+	*fcontextp = av;
+    else
+	av = _free(av);
+    /*@=branchstate@*/
+    if (fcp) *fcp = ac;
+}
+
+void rpmfiBuildFSContexts(Header h,
+	/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
+{
+    int scareMem = 1;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    const char ** av;
+    int ac;
+    size_t nb;
+    char * t;
+    char * fctxt = NULL;
+    size_t fctxtlen = 0;
+    int * fcnb;
+
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
+    }
+
+    /* Compute size of argv array blob, concatenating file contexts. */
+    nb = ac * sizeof(*fcnb);
+    fcnb = memset(alloca(nb), 0, nb);
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	const char * fn = rpmfiFN(fi);
+	security_context_t scon;
+
+	fcnb[ac] = lgetfilecon(fn, &scon);
+/*@-branchstate@*/
+	if (fcnb[ac] > 0) {
+	    fctxt = xrealloc(fctxt, fctxtlen + fcnb[ac]);
+	    memcpy(fctxt+fctxtlen, scon, fcnb[ac]);
+	    fctxtlen += fcnb[ac];
+	    (void) freecon(scon);
+	}
+/*@=branchstate@*/
+	ac++;
+    }
+
+    /* Create and load argv array from concatenated file contexts. */
+    nb = (ac + 1) * sizeof(*av) + fctxtlen;
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    (void) memcpy(t, fctxt, fctxtlen);
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	av[ac] = NULL;
+	if (fcnb[ac] > 0) {
+	    av[ac] = t;
+	    t += fcnb[ac];
+	}
+	ac++;
+    }
+    av[ac] = NULL;
+
+exit:
+    fi = rpmfiFree(fi);
+    /*@-branchstate@*/
+    if (fcontextp)
+	*fcontextp = av;
+    else
+	av = _free(av);
+    /*@=branchstate@*/
+    if (fcp) *fcp = ac;
+}
+
+void rpmfiBuildREContexts(Header h,
+	/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
+{
+    int scareMem = 1;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    rpmsx sx = NULL;
+    const char ** av;
+    int ac;
+    size_t nb;
+    char * t;
+    char * fctxt = NULL;
+    size_t fctxtlen = 0;
+    int * fcnb;
+
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
+    }
+
+    /* Read security context patterns. */
+    sx = rpmsxNew(NULL);
+
+    /* Compute size of argv array blob, concatenating file contexts. */
+    nb = ac * sizeof(*fcnb);
+    fcnb = memset(alloca(nb), 0, nb);
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	const char * fn = rpmfiFN(fi);
+	mode_t fmode = rpmfiFMode(fi);
+	const char * scon;
+
+	scon = rpmsxFContext(sx, fn, fmode);
+	if (scon != NULL) {
+	    fcnb[ac] = strlen(scon) + 1;
+/*@-branchstate@*/
+	    if (fcnb[ac] > 0) {
+		fctxt = xrealloc(fctxt, fctxtlen + fcnb[ac]);
+		memcpy(fctxt+fctxtlen, scon, fcnb[ac]);
+		fctxtlen += fcnb[ac];
+	    }
+/*@=branchstate@*/
+	}
+	ac++;
+    }
+
+    /* Create and load argv array from concatenated file contexts. */
+    nb = (ac + 1) * sizeof(*av) + fctxtlen;
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    (void) memcpy(t, fctxt, fctxtlen);
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	av[ac] = NULL;
+	if (fcnb[ac] > 0) {
+	    av[ac] = t;
+	    t += fcnb[ac];
+	}
+	ac++;
+    }
+    av[ac] = NULL;
+
+exit:
+    fi = rpmfiFree(fi);
+    sx = rpmsxFree(sx);
+    /*@-branchstate@*/
+    if (fcontextp)
+	*fcontextp = av;
     else
 	av = _free(av);
     /*@=branchstate@*/

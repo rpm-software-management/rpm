@@ -82,6 +82,9 @@ struct rpmfi_s {
     const uint_32 * fcolors;	/*!< File color bits (header) */
 
 /*@only@*/ /*@null@*/
+    const char ** fcontexts;	/*! FIle security contexts. */
+
+/*@only@*/ /*@null@*/
     const char ** cdict;	/*!< File class dictionary (header) */
     int_32 ncdict;		/*!< No. of class entries. */
 /*@only@*/ /*@null@*/
@@ -396,6 +399,17 @@ extern const char * rpmfiFClass(/*@null@*/ rpmfi fi)
 /*@=exportlocal@*/
 
 /**
+ * Return current file security context from file info set.
+ * @param fi		file info set
+ * @return		current file context, 0 on invalid
+ */
+/*@-exportlocal@*/
+/*@observer@*/ /*@null@*/
+extern const char * rpmfiFContext(/*@null@*/ rpmfi fi)
+	/*@*/;
+/*@=exportlocal@*/
+
+/**
  * Return current file depends dictionary from file info set.
  * @param fi		file info set
  * @retval *fddictp	file depends dictionary array (or NULL)
@@ -512,6 +526,48 @@ void rpmfiBuildFClasses(Header h,
 		/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies h, *fclassp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
+
+/**
+ * Retrieve file security contexts from header.
+ *
+ * This function is used to retrieve file contexts from the header.
+ * 
+ * @param h		header
+ * @retval *fcontextp	array of file contexts
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildFContexts(Header h,
+		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
+
+/**
+ * Retrieve file security contexts from file system.
+ *
+ * This function is used to retrieve file contexts from the file system.
+ * 
+ * @param h		header
+ * @retval *fcontextp	array of file contexts
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildFSContexts(Header h,
+		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
+
+/**
+ * Retrieve file security contexts from policy RE's.
+ *
+ * This function is used to retrieve file contexts from policy RE's.
+ * 
+ * @param h		header
+ * @retval *fcontextp	array of file contexts
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildREContexts(Header h,
+		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
+	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
+	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Retrieve per-file dependencies from header.

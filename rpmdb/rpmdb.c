@@ -619,9 +619,11 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
 typedef struct miRE_s {
     rpmTag		tag;		/*!< header tag */
     rpmMireMode		mode;		/*!< pattern match mode */
-/*@only@*/ const char *	pattern;	/*!< pattern string */
+/*@only@*/
+    const char *	pattern;	/*!< pattern string */
     int			notmatch;	/*!< like "grep -v" */
-/*@only@*/ regex_t *	preg;		/*!< regex compiled pattern buffer */
+/*@only@*/
+    regex_t *		preg;		/*!< regex compiled pattern buffer */
     int			cflags;		/*!< regcomp(3) flags */
     int			eflags;		/*!< regexec(3) flags */
     int			fnflags;	/*!< fnmatch(3) flags */

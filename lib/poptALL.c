@@ -68,6 +68,9 @@ extern int _rpmps_debug;
 extern int _rpmsq_debug;
 
 /*@unchecked@*/
+extern int _rpmsx_debug;
+
+/*@unchecked@*/
 extern int _rpmte_debug;
 
 /*@unchecked@*/
@@ -95,8 +98,10 @@ rpmQueryFlags rpmcliQueryFlags;
 /*@-exportheadervar@*/
 /*@unchecked@*/
 extern int _ftp_debug;
+
 /*@unchecked@*/
 extern int noLibio;
+
 /*@unchecked@*/
 extern int _rpmio_debug;
 /*@=exportheadervar@*/
@@ -312,6 +317,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "rpmpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmps_debug, -1,
 	NULL, NULL},
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
+	NULL, NULL},
+ { "rpmsxdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsx_debug, -1,
 	NULL, NULL},
  { "rpmtedebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmte_debug, -1,
 	NULL, NULL},
