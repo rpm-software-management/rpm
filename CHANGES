@@ -2,6 +2,17 @@
 	- %{#TAG} in query format prints the array length
 	- cleanup up protoypes in rpmlib.h
 	- let -Vp work on URLs
+	- don't set umask(0) anymore -- that confused programs which
+	  link against rpmlib quite badly
+	- moved print out in "rpm -v -i" to occur after any warnings
+	  to pretty up the output a bit
+	- added default optflags for powerpc
+	- run shell for post/pre scripts in debug mode with -sx for
+	  some silly shells
+	- installing source packages with --root checked for the 
+	  sources/specs directory to exist outside of the root -- fixed
+	- modified toplevel Makefile to run dependency generation only
+	  against referenced sources
 
 2.3.3 -> 2.3.4:
 	- %changelog processing
