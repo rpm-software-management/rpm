@@ -541,7 +541,8 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 	    if ((ch.nlink > 1) && S_ISREG(ch.mode) && !ch.size &&
 		li->createdPath == -1) {
 		/* defer file creation */
-	    } else if ((ch.nlink > 1) && (li->createdPath != -1)) {
+	    } else if ((ch.nlink > 1) && S_ISREG(ch.mode) && 
+		       (li->createdPath != -1)) {
 		createLinks(li, failedFile);
 
 		/* this only happens for cpio archives which contain
