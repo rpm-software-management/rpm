@@ -708,7 +708,7 @@ restart:
 	} else if (*arg != '/') {
 	    const char *curDir = currentDirectory();
 	    fn = rpmGetPath(curDir, "/", arg, NULL);
-	    _free(curDir);
+	    curDir = _free(curDir);
 	} else
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);

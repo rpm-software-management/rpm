@@ -1384,6 +1384,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* If we are in test mode, there is no need to rollback on
      * failure, nor acquire the transaction lock.
      */
+/*@-branchstate@*/
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) {
 	rollbackOnFailure = 0;
     } else {
@@ -1391,6 +1392,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	if (lock == NULL)
 	    return -1;	/* XXX W2DO? */
     }
+/*@=branchstate@*/
 
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
