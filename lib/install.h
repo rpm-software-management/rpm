@@ -10,6 +10,12 @@ struct sharedFile {
     int secFileNumber;
 } ;
 
+struct sharedFileInfo {
+    int pkgFileNum;
+    int otherFileNum;
+    int otherPkg;
+};
+
 enum fileActions { UNKNOWN, CREATE, BACKUP, SAVE, SKIP, ALTNAME, REMOVE };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
@@ -26,7 +32,8 @@ int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		     int countCorrection);
 int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		         int flags, rpmNotifyFunction notify, 
-			 void * notifyData, enum fileActions * actions);
+			 void * notifyData, enum fileActions * actions,
+			 struct sharedFileInfo * sharedList);
 const char * fileActionString(enum fileActions a);
 
 #endif	/* H_INSTALL */
