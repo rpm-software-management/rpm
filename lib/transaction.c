@@ -396,19 +396,20 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	       have been removed before we got here. */
 	    for (j = 0; j < matches[i].count; j++) {
 		ro = matches[i].recs[j].recOffset;
-		if (ro == knownBad) continue;
-		for (k = 0; k < ts->orderCount; k++) {
-		    if (ts->order[k].type == TR_REMOVED &&
-			ts->order[k].u.removed.dboffset == ro) break;
-		}
-		if (k < ts->orderCount) {
-		    knownBad = ro;
-		    continue;
+		if (ro != knownBad) {
+		    for (k = 0; k < ts->orderCount; k++) {
+			if (ts->order[k].type == TR_REMOVED &&
+			    ts->order[k].u.removed.dboffset == ro) break;
+		    }
+		    if (k < ts->orderCount) {
+			knownBad = ro;
+		    }
 		}
 
 		shared->pkgFileNum = i;
 		shared->otherPkg = matches[i].recs[j].recOffset;
 		shared->otherFileNum = matches[i].recs[j].fileNumber;
+		shared->isRemoved = (knownBad == ro);
 		shared++;
 	    }
 	    dbiFreeIndexRecord(matches[i]);
@@ -1024,8 +1025,10 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
 		    psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap->key, 
 			     fi->ap->h, fi->fl[fileNum], h,0 );
 		if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
-			    & RPMFILE_CONFIG)
-		    fi->replaced[numReplaced++] = *shared;
+			    & RPMFILE_CONFIG) {
+		    if (!shared->isRemoved)
+			fi->replaced[numReplaced++] = *shared;
+		}
 	    }
 
 	    if ((otherFlags[otherFileNum] | fi->fflags[fileNum])

@@ -14,6 +14,7 @@ struct sharedFileInfo {
     int pkgFileNum;
     int otherFileNum;
     int otherPkg;
+    int isRemoved;
 };
 
 enum fileActions { FA_UNKNOWN = 0, FA_CREATE, FA_BACKUP, FA_SAVE, FA_SKIP, 
