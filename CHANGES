@@ -1,5 +1,6 @@
 4.0.3 -> 4.1:
 	- loosely wire beecrypt library into rpm.
+	- drop rpmio/base64.[ch] in favor of beecrypt versions.
 
 4.0.3 -> 4.0.4:
 

@@ -5,7 +5,6 @@
 #include "popt.h"
 #ifdef	ENABLE_BEECRYPT
 #define	BEEDLLAPI
-typedef unsigned char byte;
 #include "beecrypt.h"
 #include "md5.h"
 #include "fips180.h"

@@ -60,7 +60,6 @@ rpmdb/fprint.c
 rpmdb/poptDB.c
 rpmdb/rpmhash.c
 rpmdb/rpmdb.c
-rpmio/base64.c
 rpmio/digest.c
 rpmio/macro.c
 rpmio/rpmio.c

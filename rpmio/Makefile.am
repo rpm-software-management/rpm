@@ -2,16 +2,22 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = base64.c tdigest.c tficl.c tkey.c trpmio.c
+EXTRA_DIST = tdigest.c tficl.c tkey.c trpmio.c
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib \
+INCLUDES = \
+	-I$(top_srcdir)/beecrypt \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/popt @INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h \
 	ugid.h
-noinst_HEADERS = base64.h rpmio_internal.h
+noinst_HEADERS = rpmio_internal.h
+
+LIBS +=	-lrt -lpthread
 
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
@@ -52,17 +58,19 @@ lclint:
 trpmio.o: trpmio.c
 
 trpmio: librpmio.la trpmio.o
-	$(LINK) -o $@ trpmio.o librpmio.la $(top_builddir)/popt/libpopt.la
+	$(LINK) -o $@ trpmio.o librpmio.la $(top_builddir)/popt/libpopt.la $(LIBS)
 
 tkey.o: tkey.c
+	 $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -o $@ -c tkey.c 
+
 tkey: librpmio.la tkey.o
-	$(LINK) -o $@ tkey.o librpmio.la $(top_builddir)/popt/libpopt.la
+	$(LINK) -o $@ tkey.o librpmio.la $(top_builddir)/popt/libpopt.la $(LIBS)
 
 tdigest.o: tdigest.c
-	 $(CC) $(DEFS) -I/usr/include/beecrypt $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -o $@ -c tdigest.c 
+	 $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -o $@ -c tdigest.c 
 
 tdigest: librpmio.la tdigest.o
-	$(LINK) @LDFLAGS_STATIC@ -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la -lbeecrypt
+	$(LINK) @LDFLAGS_STATIC@ -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la $(LIBS)
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 

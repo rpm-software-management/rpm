@@ -410,8 +410,6 @@ INPUT                  = \
 	@top_srcdir@/rpmdb/rpmhash.h \
 	@top_srcdir@/rpmdb/rpmdb.c \
 	@top_srcdir@/rpmdb/rpmdb.h \
-	@top_srcdir@/rpmio/base64.c \
-	@top_srcdir@/rpmio/base64.h \
 	@top_srcdir@/rpmio/digest.c \
 	@top_srcdir@/rpmio/macro.c \
 	@top_srcdir@/rpmio/rpmlog.c \

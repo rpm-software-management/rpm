@@ -1,9 +1,9 @@
+.created
 .deps
 .depend
-.created
+.libs
 Makefile
 Makefile.in
-.libs
 db3lobjs
 *.la
 *.lo

@@ -512,3 +512,4 @@ fi
 * Mon Sep 24 2001 Jeff Johnson <jbj@redhat.com>
 - Start rpm-4.1.
 - loosely wire beecrypt library into rpm.
+- drop rpmio/base64.[ch] in favor of beecrypt versions.
