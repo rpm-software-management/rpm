@@ -10,6 +10,7 @@ libdir= $(prefix)/lib
 INSTALL= @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
+LIBRPMRC_FILENAME=$(libdir)/rpmrc
 #LIBEFENCE = -lefence
 
 #DEBUG = -g
@@ -25,7 +26,8 @@ VPATH = $(srcdir)
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS) -I$(srcdir) -I$(srcdir)/lib \
 	-I$(srcdir)/build -I$(srcdir)/misc -I$(srcdir)/.. -I$(srcdir)/../lib \
-	-I$(srcdir)/../build -I$(srcdir)/../misc -I/usr/include
+	-I$(srcdir)/../build -I$(srcdir)/../misc -I/usr/include \
+	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\"
 LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L../lib -L../build -L../misc
 AR = ar r
 RANLIB = ranlib
@@ -104,13 +106,14 @@ install: all
 	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(LIBDIR)
 	$(INSTALL) -s -m 755 -o 0 -g 0 rpm $(installprefix)/$(RPMBINDIR)
 	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/find-provides $(installprefix)/$(BINDIR)
 	$(INSTALL) -s -m 755 -o 0 -g 0 rpm2cpio $(installprefix)/$(BINDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
 	if [ ! -f $(installprefix)/$(ETCDIR)/rpmrc ]; then \
 		$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmrc $(installprefix)/$(ETCDIR)/rpmrc; \
 	fi
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/usr.lib.rpmrc $(installprefix)/$(LIBDIR)/rpmrc
+	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
 	(cd lib; make LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	(cd po; make NLSDIR=$(installprefix)/$(NLSDIR) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 
