@@ -1010,7 +1010,6 @@ int main(int argc, char ** argv) {
 
       case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
-	    argerror(_("no packages given for signature check"));
 	    argerror(_("no packages given for signing"));
 	exit(doReSign(addSign, passPhrase, poptGetArgs(optCon)));
 	
