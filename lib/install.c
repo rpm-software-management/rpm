@@ -85,16 +85,17 @@ static int installSources(Header h, char * rootdir, int fd,
 			  char ** specFilePtr, rpmNotifyFunction notify,
 			  char * labelFormat);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
-static int relocateFilelist(Header * hp, char * defaultPrefix, 
-			char * newPrefix, int * relocationSize);
 static int archOkay(Header h);
 static int osOkay(Header h);
 static int ensureOlder(rpmdb db, Header new, int dbOffset);
-static void assembleFileList(Header h, struct fileMemory * mem, 
-			     int * fileCountPtr, struct fileInfo ** files, 
-			     int stripPrefixLength);
+static int assembleFileList(Header h, struct fileMemory * mem, 
+			     int * fileCountPtr, struct fileInfo ** filesPtr, 
+			     int stripPrefixLength,
+			     struct rpmRelocation * rawRelocations,
+			     int allowRandomRelocations);
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount);
 static void freeFileMemory(struct fileMemory fileMem);
+static void trimChangelog(Header h);
 
 /* 0 success */
 /* 1 bad magic */
@@ -142,20 +143,134 @@ static void freeFileMemory(struct fileMemory fileMem) {
 }
 
 /* files should not be preallocated */
-static void assembleFileList(Header h, struct fileMemory * mem, 
+static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
-			     int stripPrefixLength) {
+			     int stripPrefixLength,
+			     struct rpmRelocation * rawRelocations,
+			     int allowRandomRelocations) {
     uint_32 * fileFlags;
     uint_32 * fileSizes;
     uint_16 * fileModes;
     struct fileInfo * files;
     struct fileInfo * file;
     int fileCount;
-    int i;
+    int i, j, numRelocations = 0, madeSwap, len, newLen;
+    struct rpmRelocation * relocations = NULL;
+    struct rpmRelocation tmpReloc;
+    struct rpmRelocation * nextReloc;
+    char ** validRelocations = NULL;
+    char * newName;
+    int rc;
+    int numValid;
+
+    if (rawRelocations) {
+	if (!headerGetEntry(h, RPMTAG_PREFIXES, NULL,
+			    (void **) validRelocations, &numValid)) {
+	    numValid = 0;
+	}
+
+	for (i = 0; rawRelocations[i].oldPath; i++) ;
+	numRelocations = i;
+	relocations = alloca(sizeof(*relocations) * numRelocations);
+
+/* XXX this code assumes the validRelocations array won't
+   have trailing /'s in it */
+
+	for (i = 0; i < numRelocations; i++) {
+	    if (!rawRelocations[i].oldPath) {
+		if (!numValid) {
+		    rpmError(RPMERR_NORELOCATE, 
+			     "package is not relocatable");
+		    return 1;
+		} else if (numValid != 1){
+		    rpmError(RPMERR_NORELOCATE, 
+			     "package has multiple relocatable components");
+		    return 1;
+		}
+		relocations[i].oldPath = 
+		    alloca(strlen(validRelocations[0]) + 1);
+		strcpy(relocations[i].oldPath, validRelocations[0]);
+	    } else {
+		relocations[i].oldPath = 
+		    alloca(strlen(rawRelocations[i].oldPath) + 1);
+		strcpy(relocations[i].oldPath, rawRelocations[i].oldPath);
+		stripTrailingSlashes(relocations[i].oldPath);
+	    }
+
+	    relocations[i].newPath = 
+		alloca(strlen(rawRelocations[i].newPath) + 1);
+	    strcpy(relocations[i].newPath, rawRelocations[i].newPath);
+	    stripTrailingSlashes(relocations[i].newPath);
+
+	    if (!allowRandomRelocations) {
+		for (j = 0; j < numValid; j++) 
+		    if (!strcmp(validRelocations[j],
+				relocations[i].oldPath)) break;
+		if (j == numValid) {
+		    rpmError(RPMERR_BADRELOCATE, "path %s is not relocatable",
+			     relocations[i].oldPath);
+		    return 1;
+		}
+	    }
+	}
+
+	/* stupid bubble sort, but it's probably faster here */
+	for (i = 0; i < numRelocations; i++) {
+	    madeSwap = 0;
+	    for (j = 1; j < numRelocations; j++) {
+		if (strcmp(relocations[j - 1].oldPath, 
+			   relocations[j].oldPath) > 0) {
+		    tmpReloc = relocations[j - 1];
+		    relocations[j - 1] = relocations[j];
+		    relocations[j] = tmpReloc;
+		    madeSwap = 1;
+		}
+	    }
+	    if (!madeSwap) break;
+	}
+    }
 
     headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
 		   fileCountPtr);
     fileCount = *fileCountPtr;
+
+    if (relocations) {
+	nextReloc = relocations;
+	len = strlen(nextReloc->oldPath);
+	newLen = strlen(nextReloc->newPath);
+	for (i = 0; i < fileCount && nextReloc; i++) {
+	    do {
+		rc = strncmp(nextReloc->oldPath, mem->names[i], len);
+		if (rc < 0) {
+		    nextReloc++;
+		    if ((nextReloc - relocations) >= numRelocations) {
+			nextReloc = NULL;
+		    } else {
+			len = strlen(nextReloc->oldPath);
+			newLen = strlen(nextReloc->newPath);
+		    }
+		}
+	    } while (rc < 0 && nextReloc);
+
+	    if (!rc) {
+		newName = alloca(newLen + strlen(mem->names[i]));
+		strcpy(newName, nextReloc->newPath);
+		strcat(newName, mem->names[i] + len);
+		rpmMessage(RPMMESS_DEBUG, "relocating %s to %s\n",
+			   mem->names[i], newName);
+		mem->names[i] = newName;
+	    } 
+	}
+
+	headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
+			  mem->names, fileCount);
+	/* make mem->names point to the new data in the header rather
+	   then the old (now modified) data */
+	free(mem->names);
+	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
+		       fileCountPtr);
+    }
+
     files = *filesPtr = mem->files = malloc(sizeof(*mem->files) * fileCount);
     
     headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &mem->md5s, NULL);
@@ -177,6 +292,8 @@ static void assembleFileList(Header h, struct fileMemory * mem,
 	file->size = fileSizes[i];
 	file->flags = fileFlags[i];
     }
+
+    return 0;
 }
 
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount) {
@@ -209,10 +326,51 @@ static void setFileOwners(Header h, struct fileInfo * files, int fileCount) {
     free(fileGroups);
 }
 
+static void trimChangelog(Header h) {
+    int * times;
+    char ** names, ** texts;
+    long numToKeep;
+    char * buf, * end;
+    int count;
+
+    buf = rpmGetVar(RPMVAR_INSTCHANGELOG);
+    if (!buf) return;
+
+    numToKeep = strtol(buf, &end, 10);
+    if (*end) {
+	rpmError(RPMERR_RPMRC, "instchangelog value in rpmrc should be a "
+		    "number, but isn't");
+	return;
+    }
+
+    if (numToKeep < 0) return;
+
+    if (!numToKeep) {
+	headerRemoveEntry(h, RPMTAG_CHANGELOGTIME);
+	headerRemoveEntry(h, RPMTAG_CHANGELOGNAME);
+	headerRemoveEntry(h, RPMTAG_CHANGELOGTEXT);
+	return;
+    }
+
+    if (!headerGetEntry(h, RPMTAG_CHANGELOGTIME, NULL, (void **) &times, 
+			&count) ||
+	count < numToKeep) return;
+    headerGetEntry(h, RPMTAG_CHANGELOGNAME, NULL, (void **) &names, &count);
+    headerGetEntry(h, RPMTAG_CHANGELOGTEXT, NULL, (void **) &texts, &count);
+
+    headerModifyEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE, times, 
+		      numToKeep);
+    headerModifyEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE, names, 
+		      numToKeep);
+    headerModifyEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE, texts, 
+		      numToKeep);
+}
+
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location, 
+int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
+		      struct rpmRelocation * relocations,
 		      int flags, rpmNotifyFunction notify, char * labelFormat,
 		      char * netsharedPath) {
     int rc, isSource, major, minor;
@@ -234,10 +392,10 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     int * toRemove = NULL;
     int toRemoveAlloced = 1;
     int * intptr = NULL;
-    char * archivePrefix, * tmpPath;
+    char * tmpPath;
     int scriptArg;
     int hasOthers = 0;
-    int relocationSize = 1;		/* strip at least first / for cpio */
+    int stripSize = 1;		/* strip at least first / for cpio */
     uint_32 * archiveSizePtr;
     struct fileMemory fileMem;
     int freeFileMem = 0;
@@ -276,19 +434,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
-    if (!headerGetEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *)
-			      &defaultPrefix, &fileCount)) {
-	defaultPrefix = NULL;
-    }
-
-    if (location && !defaultPrefix) {
-	rpmError(RPMERR_NORELOCATE, "package %s-%s-%s is not relocatable",
-		      name, version, release);
-	headerFree(h);
-	return 2;
-    } else if (!location && defaultPrefix)
-	location = defaultPrefix;
-
     /* We don't use these entries (and never have) and they are pretty
        misleading. Let's just get rid of them so they don't confuse
        anyone. */
@@ -297,17 +442,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     if (headerIsEntry(h, RPMTAG_FILEGROUPNAME))
 	headerRemoveEntry(h, RPMTAG_FILEGIDS);
     
-    if (location) {
-	relocateFilelist(&h, defaultPrefix, location, &relocationSize);
-        headerGetEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *) &defaultPrefix, 
-		&fileCount);
-	archivePrefix = alloca(strlen(rootdir) + strlen(location) + 2);
-	sprintf(archivePrefix, "%s/%s", rootdir, location);
-    } else {
-	archivePrefix = rootdir;
-	relocationSize = 1;
-    }
-
     if (!(flags & RPMINSTALL_NOARCH) && !archOkay(h)) {
 	rpmError(RPMERR_BADARCH, "package %s-%s-%s is for a different "
 	      "architecture", name, version, release);
@@ -448,8 +582,41 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	char ** netsharedPaths;
 	char ** nsp;
 
+	/* RPM used to allow only "fully relocateable packages", which
+	   were done by making the paths in cpio archive relative to the
+	   relocation point (as RPM just exec()d cpio then). If this is
+	   such a package, undo this and build a proper relocation entry
+	   for it. In any case, we still have to strip the leading / from
+	   the filename to get the one in the cpio archive, as they are
+	   always stored as relative paths */
+	   
+	if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (void *)
+				  &defaultPrefix, NULL)) {
+	    /* a trailing '/' in the defaultPrefix would confuse us */
+	    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), 
+				   defaultPrefix);
+	    stripTrailingSlashes(defaultPrefix);
+	    stripSize = strlen(defaultPrefix);
+
+	    headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
+			   &defaultPrefix, 1); 
+	} else {
+	    stripSize = 1;
+	    defaultPrefix = NULL;
+	}
+
+	if (assembleFileList(h, &fileMem, &fileCount, &files, stripSize,
+			     relocations, 1)) {
+			     /*relocations, flags & RPMINSTALL_FORCERELOCATE | 1)) {*/
+	    if (rootdir) {
+		chroot(".");
+		chdir(currDir);
+	    }
+	    if (replacedList) free(replacedList);
+	    return 1;
+	}
+
 	freeFileMem = 1;
-	assembleFileList(h, &fileMem, &fileCount, &files, relocationSize);
 
 	if (netsharedPath) 
 	    netsharedPaths = splitString(netsharedPath, 
@@ -678,6 +845,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	if (rc) return rc;
     }
+
+    trimChangelog(h);
 
     /* if this package has already been installed, remove it from the database
        before adding the new one */
@@ -1193,7 +1362,7 @@ static int installSources(Header h, char * rootdir, int fd,
 
     if (h && headerIsEntry(h, RPMTAG_FILENAMES)) {
 	/* we can't remap v1 packages */
-	assembleFileList(h, &fileMem, &fileCount, &files, 0);
+	assembleFileList(h, &fileMem, &fileCount, &files, 0, NULL, 0);
 
 	for (i = 0; i < fileCount; i++) {
 	    files[i].relativePath = files[i].relativePath;
@@ -1426,70 +1595,6 @@ enum fileTypes whatis(short mode) {
 	result = REG;
  
     return result;
-}
-
-static int relocateFilelist(Header * hp, char * defaultPrefix, 
-			    char * newPrefix, int * relocationLength) {
-    Header h = *hp;
-    char ** newFileList, ** fileList;
-    int fileCount, i;
-    int defaultPrefixLength;
-    int newPrefixLength;
-
-    /* a trailing '/' in the defaultPrefix or in the newPrefix would really
-       confuse us */
-    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), defaultPrefix);
-    stripTrailingSlashes(defaultPrefix);
-    newPrefix = strcpy(alloca(strlen(newPrefix) + 1), newPrefix);
-    stripTrailingSlashes(newPrefix);
-
-    rpmMessage(RPMMESS_DEBUG, "relocating files from %s to %s\n", defaultPrefix,
-			 newPrefix);
-
-    if (!strcmp(newPrefix, defaultPrefix)) {
-	headerAddEntry(h, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, 
-			defaultPrefix, 1);
-	*relocationLength = strlen(defaultPrefix) + 1;
-	return 0;
-    }
-
-    defaultPrefixLength = strlen(defaultPrefix);
-    newPrefixLength = strlen(newPrefix);
-
-    /* packages may have empty filelists */
-    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void *) &fileList, 
-			&fileCount))
-	return 0;
-    else if (!fileCount)
-	return 0;
-
-    newFileList = alloca(sizeof(char *) * fileCount);
-    for (i = 0; i < fileCount; i++) {
-	if (!strcmp(fileList[i], defaultPrefix)) {
-	    /* special case as there is no '/' on this */
-	    newFileList[i] = newPrefix;
-	} else if (!strncmp(fileList[i], defaultPrefix, defaultPrefixLength)) {
-	    newFileList[i] = alloca(strlen(fileList[i]) + newPrefixLength -
-				 defaultPrefixLength + 2);
-	    sprintf(newFileList[i], "%s/%s", newPrefix, 
-		    fileList[i] + defaultPrefixLength + 1);
-	} else {
-	    rpmMessage(RPMMESS_DEBUG, "BAD - unprefixed file in relocatable "
-			"package");
-	    newFileList[i] = alloca(strlen(fileList[i]) - 
-					defaultPrefixLength + 2);
-	    sprintf(newFileList[i], "/%s", fileList[i] + 
-			defaultPrefixLength + 1);
-	}
-    }
-
-    headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
-			newFileList, fileCount);
-    headerAddEntry(h, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, newPrefix, 1);
-
-    *relocationLength = newPrefixLength + 1;
-
-    return 0;
 }
 
 static int archOkay(Header h) {

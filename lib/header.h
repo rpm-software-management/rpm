@@ -95,6 +95,7 @@ char * headerSprintf(Header h, const char * fmt,
    arrays through this function, you probably don't mean to. See
    headerAddI18NString() instead */
 int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+/* if there are multiple entries with this tag, the first one gets replaced */
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
 /* A NULL lang is interpreted as the C locale.  Here are the rules:

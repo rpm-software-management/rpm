@@ -50,9 +50,10 @@ static void printPercent(const unsigned long amount, const unsigned long total)
     fflush(stdout);
 }
 
-static int installPackages(char * rootdir, char ** packages, char * location,
+static int installPackages(char * rootdir, char ** packages, 
 			    int numPackages, int installFlags, 
-			    int interfaceFlags, rpmdb db) {
+			    int interfaceFlags, rpmdb db,
+			    struct rpmRelocation * relocations) {
     int i, fd;
     int numFailed = 0;
     char ** filename;
@@ -98,8 +99,8 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 	    printf(_("Installing %s\n"), *filename);
 
 	if (db) {
-	    rc = rpmInstallPackage(rootdir, db, fd, location, installFlags, fn, 
-				   printFormat, netsharedPath);
+	    rc = rpmInstallPackage(rootdir, db, fd, relocations, installFlags, 
+				   fn, printFormat, netsharedPath);
 	} else {
 	    if (installFlags &= RPMINSTALL_TEST) {
 		rpmMessage(RPMMESS_DEBUG, "stopping source install as we're "
@@ -128,8 +129,8 @@ static int installPackages(char * rootdir, char ** packages, char * location,
     return numFailed;
 }
 
-int doInstall(char * rootdir, char ** argv, char * location, int installFlags, 
-	      int interfaceFlags) {
+int doInstall(char * rootdir, char ** argv, int installFlags, 
+	      int interfaceFlags, struct rpmRelocation * relocations) {
     rpmdb db;
     int fd, i;
     int mode, rc;
@@ -274,8 +275,9 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 
     if (!stopInstall) {
 	rpmMessage(RPMMESS_DEBUG, "installing binary packages\n");
-	numFailed += installPackages(rootdir, packages, location, numPackages, 
-				     installFlags, interfaceFlags, db);
+	numFailed += installPackages(rootdir, packages, numPackages, 
+				     installFlags, interfaceFlags, db,
+				     relocations);
     }
 
     for (i = 0; i < numTmpPackages; i++)

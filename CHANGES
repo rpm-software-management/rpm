@@ -4,6 +4,12 @@
           used for build scripts (default is /bin/sh)
 	- fix bug where macros were being improperly set for
 	  Patch: and Source: lines
+	- may use "instchangelog" in rpmrc to limit the maxmium number of 
+	  changelog entries that are stored in the database for each package
+	  (-1 means store all of them)
+	- default instchangelog is set to 5
+	- headerRemoveEntry() didn't free the item's data -- this led to
+  	  a slight memory leak when installing packages
 
 2.4.99 -> 2.4.100:
 	- fixed handling of --rebuild and --recompile

@@ -34,6 +34,7 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
     struct oldrpmlead * oldLead;
     int_8 arch;
     int isSource;
+    char * defaultPrefix;
     struct stat sb;
 
     hdr = hdrPtr ? hdrPtr : &hdrBlock;
@@ -43,7 +44,7 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 
     fstat(fd, &sb);
     /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
-    if (S_ISREG(sb.st_mode) && sb.st_size < 4) return 1;
+    if (S_ISREG(sb.st_mode) && sb.st_size < sizeof(*lead)) return 1;
 
     if (readLead(fd, lead)) {
 	return 2;
@@ -87,6 +88,19 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 	if (! *hdr) {
 	    if (sigs) headerFree(*sigs);
 	    return 2;
+	}
+
+	/* We switched the way we do relocateable packages. We fix some of
+	   it up here, though the install code still has to be a bit 
+	   careful. This fixup makes queries give the new values though,
+	   which is quite handy. */
+	if (headerGetEntry(*hdr, RPMTAG_DEFAULTPREFIX, NULL,
+			   (void **) &defaultPrefix, NULL)) {
+	    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), 
+				   defaultPrefix);
+	    stripTrailingSlashes(defaultPrefix);
+	    headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
+			   &defaultPrefix, 1); 
 	}
     } else {
 	rpmError(RPMERR_NEWPACKAGE, _("only packages with major numbers <= 3 "

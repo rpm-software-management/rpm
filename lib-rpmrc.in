@@ -8,6 +8,7 @@ gzipbin:	@GZIPBIN@
 defaultdocdir:  @prefix@/doc
 fixperms:	@FIXPERMS@
 rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
+intchangelog:	5
 
 #############################################################
 

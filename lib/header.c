@@ -1016,6 +1016,7 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
     return 0;
 }
 
+/* if there are multiple entries with this tag, the first one gets replaced */
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 {
     struct indexEntry *entry;
@@ -1023,9 +1024,13 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 
     /* First find the tag */
     entry = findEntry(h, tag, type);
-    if (! entry) {
+    if (!entry) {
 	return 0;
     }
+
+    /* make sure entry points to the first occurence of this tag */
+    while (entry > h->index && (entry - 1)->info.tag == tag)  
+	entry--;
 
     /* free after we've grabbed the new data in case the two are intertwined;
        that's a bad idea but at least we won't break */
@@ -1100,6 +1105,7 @@ int headerRemoveEntry(Header h, int_32 tag) {
 
     last = h->index + h->indexUsed;
     while (entry->info.tag == tag && entry < last) {
+	free(entry->data);
 	*(entry++) = *(--last);
     }
     h->indexUsed = last - h->index;

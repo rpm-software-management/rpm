@@ -44,6 +44,7 @@
 #define GETOPT_REBUILDDB        1013
 #define GETOPT_INSTALL		1014
 #define GETOPT_RMSOURCE		1015
+#define GETOPT_RELOCATE		1016
 
 char * version = VERSION;
 
@@ -409,6 +410,8 @@ int main(int argc, char ** argv) {
     int ec = 0;
     int status;
     int p[2];
+    struct rpmRelocation * relocations = NULL;
+    int numRelocations = 0;
     struct poptOption optionsTable[] = {
 	    { "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
 	    { "all", 'a', 0, 0, 'a' },
@@ -460,9 +463,10 @@ int main(int argc, char ** argv) {
 	    { "querytags", '\0', 0, &queryTags, 0 },
 	    { "quiet", '\0', 0, &quiet, 0 },
 	    { "rcfile", '\0', POPT_ARG_STRING, 0, 0 },
-	    { "recompile", '\0', 0, 0, GETOPT_RECOMPILE },
 	    { "rebuild", '\0', 0, 0, GETOPT_REBUILD },
 	    { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB },
+	    { "recompile", '\0', 0, 0, GETOPT_RECOMPILE },
+	    { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE },
 	    { "replacefiles", '\0', 0, &replaceFiles, 0 },
 	    { "replacepkgs", '\0', 0, &replacePackages, 0 },
 	    { "resign", '\0', 0, 0, GETOPT_RESIGN },
@@ -775,6 +779,20 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_REBUILDDB;
 	    break;
 
+	  case GETOPT_RELOCATE:
+	    if (*optArg != '/') 
+		argerror(_("relocations must begin with a /"));
+	    if (!(errString = strchr(optArg, '=')))
+		argerror(_("relocations must contain a ="));
+	    *errString++ = '\0';
+	    if (*errString != '/') 
+		argerror(_("relocations must have a / following the ="));
+	    relocations = realloc(relocations, 
+				  sizeof(*relocations) * (numRelocations + 1));
+	    relocations[numRelocations].oldPath = optArg;
+	    relocations[numRelocations++].newPath = errString;
+	    break;
+
 	  default:
 	    fprintf(stderr, "Internal error in argument processing :-(\n");
 	    exit(1);
@@ -833,6 +851,12 @@ int main(int argc, char ** argv) {
 
     if (bigMode != MODE_INSTALL && force)
 	argerror(_("only installation and upgrading may be forced"));
+
+    if (relocations && prefix)
+	argerror(_("only one of --prefix or --relocate may be used"));
+
+    if (bigMode != MODE_INSTALL && relocations)
+	argerror(_("--relocate may only be used when installing new packages"));
 
     if (bigMode != MODE_INSTALL && prefix)
 	argerror(_("--prefix may only be used when installing new packages"));
@@ -1153,8 +1177,21 @@ int main(int argc, char ** argv) {
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for install"));
 
-	ec += doInstall(rootdir, poptGetArgs(optCon), prefix, installFlags, 
-			interfaceFlags);
+	/* we've already ensured !(!prefix && !relocations) */
+	if (prefix) {
+	    relocations = alloca(2 * sizeof(*relocations));
+	    relocations[0].oldPath = NULL;   /* special case magic */
+	    relocations[0].newPath = prefix;
+	    relocations[1].oldPath = relocations[1].newPath = NULL;
+	} else if (relocations) {
+	    relocations = realloc(relocations, 
+				  sizeof(*relocations) * (numRelocations + 1));
+	    relocations[numRelocations].oldPath = NULL;
+	    relocations[numRelocations].newPath = NULL;
+	}
+
+	ec += doInstall(rootdir, poptGetArgs(optCon), installFlags, 
+			interfaceFlags, relocations);
 	break;
 
       case MODE_QUERY:

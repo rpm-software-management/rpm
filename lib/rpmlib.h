@@ -81,7 +81,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_CONFLICTFLAGS            1053
 #define RPMTAG_CONFLICTNAME             1054
 #define RPMTAG_CONFLICTVERSION          1055
-#define RPMTAG_DEFAULTPREFIX            1056
+#define RPMTAG_DEFAULTPREFIX            1056 /* internal */
 #define RPMTAG_BUILDROOT                1057
 #define RPMTAG_INSTALLPREFIX		1058
 #define RPMTAG_EXCLUDEARCH              1059
@@ -114,6 +114,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_FILEDEVICES              1095
 #define RPMTAG_FILEINODES               1096
 #define RPMTAG_FILELANGS                1097
+#define RPMTAG_PREFIXES                 1098
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 
@@ -143,6 +144,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMINSTALL_ALLFILES             (1 << 9)
 #define RPMINSTALL_JUSTDB               (1 << 10)
 #define RPMINSTALL_KEEPOBSOLETE         (1 << 11)
+#define RPMINSTALL_FORCERELOCATE        (1 << 12)
 
 #define RPMUNINSTALL_TEST               (1 << 0)
 #define RPMUNINSTALL_NOSCRIPTS          (1 << 1)
@@ -216,8 +218,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMVAR_RPMFILENAME     		37
 #define RPMVAR_PROVIDES     		38
 #define RPMVAR_BUILDSHELL               39
+#define RPMVAR_INSTCHANGELOG            40
 
-#define RPMVAR_NUM			40     /* number of RPMVAR entries */
+#define RPMVAR_NUM			41     /* number of RPMVAR entries */
 
 char * rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
@@ -273,10 +276,17 @@ int rpmdbFindByConflicts(rpmdb db, char * conflicts, dbiIndexSet * matches);
 int rpmdbFindByLabel(rpmdb db, char * label, dbiIndexSet * matches);
 int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
 
+/* we pass these aroung as an array with a sentinel */
+struct rpmRelocation {
+    char * oldPath;	/* NULL here evals to RPMTAG_DEFAULTPREFIX, this */
+    char * newPath;     /* odd behavior is only for backwards compatibility */
+};
+
 int rpmInstallSourcePackage(char * root, int fd, char ** specFile,
 			    rpmNotifyFunction notify, char * labelFormat,
 			    char ** cookie);
-int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
+int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
+		      struct rpmRelocation * relocations,
 		      int flags, rpmNotifyFunction notify, char * labelFormat,
 		      char * netsharedPath);
 int rpmVersionCompare(Header first, Header second);
@@ -409,7 +419,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define RPMERR_BADARCH          -29     /* bad architecture or arch mismatch */
 #define RPMERR_CREATE		-30	/* failed to create a file */
 #define RPMERR_NOSPACE		-31	/* out of disk space */
-#define RPMERR_NORELOCATE	-32	/* tried to relocate improper package */
+#define RPMERR_NORELOCATE	-32	/* tried to do improper relocatation */
 #define RPMERR_BADOS            -33     /* bad architecture or arch mismatch */
 #define RPMMESS_BACKUP          -34     /* backup made during [un]install */
 #define RPMERR_MTAB		-35	/* failed to read mount table */
@@ -417,6 +427,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define RPMERR_BADDEV		-37	/* file on device not listed in mtab */
 #define RPMMESS_ALTNAME         -38     /* file written as .rpmnew */
 #define RPMMESS_PREREQLOOP      -39     /* loop in prerequisites */
+#define RPMERR_BADRELOCATE      -40     /* bad relocation was specified */
 
 /* spec.c build.c pack.c */
 #define RPMERR_UNMATCHEDIF      -107    /* unclosed %ifarch or %ifos */
