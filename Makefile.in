@@ -113,7 +113,7 @@ install: all
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmpopt $(installprefix)/$(LIBDIR)/rpmrc
+	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	for d in $(INSTSUBDIRS); do \
 		(cd $$d; $(MAKE) installprefix=$(installprefix) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
