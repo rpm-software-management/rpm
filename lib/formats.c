@@ -177,7 +177,7 @@ static int instprefixTag(Header h, /*@out@*/ int_32 * type,
 {
     char ** array;
 
-    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, type, data, count)) {
+    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, type, (void **)data, count)) {
 	*freeData = 0;
 	return 0;
     } else if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) &array, 
@@ -359,9 +359,9 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ int * freeData)
 {
 #ifdef	NOTYET
-    const char * domains = "specs:powertools";
+    const char * rpm_query_domains = "specs:powertools";
 #else
-    const char * domains = NULL;
+    const char * rpm_query_domains = NULL;
 #endif
     int rc;
 
@@ -370,7 +370,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
     *count = 0;
     *freeData = 0;
 
-    if (domains) {
+    if (rpm_query_domains) {
 	char * dstring, *domain, *de;
 	const char * locale;
 	char * msgkey;
@@ -384,14 +384,14 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 
 	msgid = NULL;
 	locale = setlocale(LC_MESSAGES, "C");
-	dstring = xstrdup(domains);
+	dstring = xstrdup(rpm_query_domains);
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
 	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
 	    if (msgid != msgkey) break;
 	}
-	setlocale(LC_MESSAGES, locale);
+	(void) setlocale(LC_MESSAGES, locale);
 
 	if (domain && msgid) {
 	    *data = xstrdup(/*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/);
@@ -402,10 +402,10 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	return (*data ? 0 : 1);
     }
 
-    rc = headerGetEntry(h, tag, type, data, count);
+    rc = headerGetEntry(h, tag, type, (void **)data, count);
 
     if (rc) {
-	data = xstrdup(*data);
+	*data = xstrdup(*data);
 	*freeData = 1;
 	return 0;
     }

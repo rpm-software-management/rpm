@@ -83,7 +83,7 @@ struct extensionCache {
     int_32 count;
     int avail;
     int freeit;
-    void * data;
+    const void * data;
 };
 
 struct sprintfToken {
@@ -1143,7 +1143,7 @@ static void copyData(int_32 type, /*@out@*/void * dstPtr, const void * srcPtr, i
     }
 }
 
-static void * grabData(int_32 type, /*@out@*/const void * p, int_32 c, int * lengthPtr)
+static void * grabData(int_32 type, const void * p, int_32 c, int * lengthPtr)
 {
     int length;
     void * data;
@@ -1833,9 +1833,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
     return 0;
 }
 
-static int getExtension(Header h, headerTagTagFunction fn, /*@out@*/int_32 * typeptr,
-			/*@out@*/void ** data, /*@out@*/int_32 * countptr, 
-			struct extensionCache * ext)
+static int getExtension(Header h, headerTagTagFunction fn,
+	/*@out@*/ int_32 * typeptr, /*@out@*/ const void ** data,
+	/*@out@*/ int_32 * countptr, struct extensionCache * ext)
 {
     if (!ext->avail) {
 	if (fn(h, &ext->type, &ext->data, &ext->count, &ext->freeit))
@@ -1857,10 +1857,10 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     int len;
     char buf[20];
     int_32 count, type;
-    void * data;
+    const void * data;
     unsigned int intVal;
     char * val = NULL;
-    char ** strarray;
+    const char ** strarray;
     int mayfree = 0;
     int countBuf;
     headerTagFormatFunction tagtype = NULL;
@@ -1874,7 +1874,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	    data = "(none)";		/* XXX i18n? NO!, sez; gafton */
 	}
     } else {
-	if (!headerGetEntry(h, tag->tag, &type, &data, &count)){
+	if (!headerGetEntry(h, tag->tag, &type, (void **)&data, &count)){
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";		/* XXX i18n? NO!, sez; gafton */
@@ -1884,7 +1884,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     }
 
     if (tag->arrayCount) {
-	if (type == RPM_STRING_ARRAY_TYPE) free(data);
+	if (type == RPM_STRING_ARRAY_TYPE) free((void *)data);
 
 	countBuf = count;
 	data = &countBuf;
@@ -1913,7 +1913,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     
     switch (type) {
       case RPM_STRING_ARRAY_TYPE:
-	strarray = data;
+	strarray = (const char **)data;
 
 	if (tagtype) {
 	    val = tagtype(RPM_STRING_TYPE, strarray[element], buf, tag->pad, 0);
@@ -1927,7 +1927,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	    sprintf(val, buf, strarray[element]);
 	}
 
-	if (mayfree) free(data);
+	if (mayfree) free((void *)data);
 
 	break;
 
@@ -1987,7 +1987,6 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
     int i, j;
     int numElements;
     int type;
-    void * data;
     struct sprintfToken * condFormat;
     int condNumFormats;
 
@@ -2045,6 +2044,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 		token->u.array.format[i].u.tag.justOne) continue;
 
 	    if (token->u.array.format[i].u.tag.ext) {
+		const void * data;
 		if (getExtension(h, token->u.array.format[i].u.tag.ext,
 				 &type, &data, &numElements, 
 				 extCache + 
@@ -2113,7 +2113,7 @@ static void freeExtensionCache(const struct headerSprintfExtension * extensions,
     int i = 0;
 
     while (ext->type != HEADER_EXT_LAST) {
-	if (cache[i].freeit) free(cache[i].data);
+	if (cache[i].freeit) free((void *)cache[i].data);
 
 	i++;
 	if (ext->type == HEADER_EXT_MORE)

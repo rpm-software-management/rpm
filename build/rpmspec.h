@@ -179,7 +179,7 @@ struct PackageStruct {
 
     /*@only@*/ struct TriggerFileEntry *triggerFiles;
 
-    /*@only@*/ char *fileFile;
+    /*@only@*/ const char *fileFile;
     /*@only@*/ StringBuf fileList; /* If NULL, package will not be written */
 
     /*@dependent@*/ struct PackageStruct *next;

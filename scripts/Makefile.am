@@ -22,8 +22,3 @@ config_SCRIPTS = \
 	freshen.sh get_magic.pl getpo.sh http.req magic.prov magic.req \
 	perl.prov perl.req rpmdiff rpmdiff.cgi u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh
-
-brp-redhat: brp-redhat.in ../config.status
-	cd .. \
-	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= \
-		$(SHELL) ./config.status
