@@ -64,10 +64,13 @@ gelf_getphdr (Elf *elf, int ndx, GElf_Phdr *dst)
 	  goto out;
 	}
 
+      /* We know the result now.  */
+      result = dst;
+
       /* Now correct the pointer to point to the correct element.  */
       phdr += ndx;
 
-#define COPY(Name) dst->Name = phdr->Name
+#define COPY(Name) result->Name = phdr->Name
       COPY (p_type);
       COPY (p_offset);
       COPY (p_vaddr);
@@ -98,10 +101,8 @@ gelf_getphdr (Elf *elf, int ndx, GElf_Phdr *dst)
 	}
 
       /* We only have to copy the data.  */
-      memcpy (dst, phdr + ndx, sizeof (GElf_Phdr));
+      result = memcpy (dst, phdr + ndx, sizeof (GElf_Phdr));
     }
-
-  result = dst;
 
  out:
   rwlock_unlock (elf->lock);

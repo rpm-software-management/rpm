@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script. -*-m4-*-
 dnl Configure input file for elfutils.
 dnl
-dnl Copyright (C) 1996-2001, 2002 Red Hat, Inc.
+dnl Copyright (C) 1996-2002, 2003 Red Hat, Inc.
 dnl
 dnl This program is Open Source software; you can redistribute it and/or
 dnl modify it under the terms of the Open Software License version 1.0 as
@@ -13,13 +13,18 @@ dnl License version 1.0 from http://www.opensource.org/licenses/osl.php or
 dnl by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
 dnl 3001 King Ranch Road, Ukiah, CA 95482.
 dnl
-AC_INIT([elfutils],[0.63],[drepper@redhat.com],[elfutils])
+AC_INIT([elfutils],[0.76],[drepper@redhat.com],[elfutils])
 AM_INIT_AUTOMAKE([gnits 1.6.3 dist-bzip2])
-AC_COPYRIGHT([Copyright (C) 1996-2001, 2002 Red Hat, Inc.])
-AC_CONFIG_SRCDIR([libelf/elf_begin.c])
-AM_CONFIG_HEADER([config.h])
+AC_COPYRIGHT([Copyright (C) 1996-2002, 2003 Red Hat, Inc.])
+AC_CONFIG_SRCDIR([src/readelf.c])
+AC_CONFIG_HEADERS([config.h])
 AC_PREREQ(2.54)			dnl Minimum Autoconf version required.
 AC_CANONICAL_HOST
+
+AC_ARG_ENABLE([tls],
+[  --enable-tls            enable use of thread local storage],
+AC_DEFINE(USE_TLS))
+AH_TEMPLATE([USE_TLS], [Defined if thread local storage should be used.])
 
 ALL_LINGUAS=
 

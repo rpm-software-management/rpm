@@ -1,7 +1,7 @@
 ## Process this file with automake to create Makefile.in
 ## Configure input file for elfutils.
 ##
-## Copyright (C) 2000, 2001, 2002 Red Hat, Inc.
+## Copyright (C) 2000, 2001, 2002, 2003 Red Hat, Inc.
 ##
 ## This program is Open Source software; you can redistribute it and/or
 ## modify it under the terms of the Open Software License version 1.0 as
@@ -23,11 +23,11 @@ VERSION = 1
 PACKAGE_VERSION = @PACKAGE_VERSION@
 
 #lib_LIBRARIES = libebl.a
-modules = i386 sh mips x86_64 ia64 alpha arm
+modules = i386 sh mips x86_64 ia64 alpha arm sparc
 noinst_LIBRARIES = libebl.a libebl_pic.a \
 		   libebl_i386_pic.a libebl_sh_pic.a libebl_mips_pic.a \
 		   libebl_x86_64_pic.a libebl_ia64_pic.a libebl_alpha_pic.a \
-		   libebl_arm_pic.a
+		   libebl_arm_pic.a libebl_sparc_pic.a
 noinst_PROGRAMS = $(noinst_LIBRARIES:_pic.a=.so)
 
 #euincludedir = $(includedir)/elfutils
@@ -42,7 +42,7 @@ gen_SOURCES = eblopenbackend.c eblclosebackend.c eblstrtab.c \
 	      eblgstrtab.c eblosabiname.c eblmachineflagcheck.c \
 	      eblreloctypecheck.c ebldynamictagcheck.c \
 	      eblcorenotetypename.c eblobjnotetypename.c \
-	      eblcorenote.c eblobjnote.c
+	      eblcorenote.c eblobjnote.c ebldebugscnp.c
 
 libebl_a_SOURCES = $(gen_SOURCES)
 
@@ -131,6 +131,16 @@ libebl_arm_so_SOURCES =
 libebl_arm.so: libebl_arm_pic.a libebl_arm.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
 	      -Wl,--version-script,$(srcdir)/libebl_arm.map,--no-undefined
+
+
+sparc_SRCS = sparc_init.c sparc_destr.c sparc_symbol.c
+libebl_sparc_pic_a_SOURCES =
+am_libebl_sparc_pic_a_OBJECTS = $(sparc_SRCS:.c=.os)
+
+libebl_sparc_so_SOURCES =
+libebl_sparc.so: libebl_sparc_pic.a libebl_sparc.map
+	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
+	      -Wl,--version-script,$(srcdir)/libebl_sparc.map,--no-undefined
 
 
 %.os: %.c %.o

@@ -24,7 +24,7 @@ FUNDAMENTAL (XWORD, Xword, LIBELFBITS);
 FUNDAMENTAL (SXWORD, Sxword, LIBELFBITS);
 /*@=mods@*/
 
-/* The strctured types.  */
+/* The structured types.  */
 /*@-modunconnomods -noeffectuncon@*/
 TYPE (Ehdr, LIBELFBITS)
 TYPE (Phdr, LIBELFBITS)

@@ -17,7 +17,7 @@
 ## Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ##
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
-AM_CFLAGS = -Wall -Werror
+AM_CFLAGS = -Wall -Werror -Wshadow
 INCLUDES = -I. -I$(srcdir) -I$(srcdir)/../libelf -I.. -I$(srcdir)/../lib
 
 LINT = splint
@@ -31,13 +31,14 @@ noinst_PROGRAMS = $(noinst_LIBRARIES:_pic.a=.so)
 #euinclude_HEADERS = libdw.h
 
 libdw_a_SOURCES = dwarf_begin.c dwarf_begin_elf.c dwarf_end.c dwarf_get_elf.c \
+		  dwarf_get_pubnames.c \
 		  dwarf_error.c
 
 libdw_pic_a_SOURCES =
 am_libdw_pic_a_OBJECTS = $(libdw_a_SOURCES:.c=.os)
 
 libdw_so_SOURCES =
-libdw.so: libdw_pic.a libdw.map
+libdw.so: libdw_pic.a $(srcdir)/libdw.map
 	$(CC) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
 	      -Wl,--version-script,$(srcdir)/libdw.map,--no-undefined \
 	      -Wl,--soname,$@.$(VERSION) \

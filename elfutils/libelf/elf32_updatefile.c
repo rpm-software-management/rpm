@@ -32,6 +32,50 @@
 #endif
 
 
+static int
+compare_sections (const void *a, const void *b)
+{
+  const Elf_Scn **scna = (const Elf_Scn **) a;
+  const Elf_Scn **scnb = (const Elf_Scn **) b;
+
+  if ((*scna)->shdr.ELFW(e,LIBELFBITS)->sh_offset
+      < (*scnb)->shdr.ELFW(e,LIBELFBITS)->sh_offset)
+    return -1;
+
+  if ((*scna)->shdr.ELFW(e,LIBELFBITS)->sh_offset
+      > (*scnb)->shdr.ELFW(e,LIBELFBITS)->sh_offset)
+    return 1;
+
+  if ((*scna)->index < (*scnb)->index)
+    return -1;
+
+  if ((*scna)->index > (*scnb)->index)
+    return 1;
+
+  return 0;
+}
+
+
+/* Insert the sections in the list into the provided array and sort
+   them according to their start offsets.  For sections with equal
+   start offsets the section index is used.  */
+static void
+sort_sections (Elf_Scn **scns, Elf_ScnList *list)
+{
+  Elf_Scn **scnp = scns;
+  do
+    {
+      int cnt;
+
+      for (cnt = 0; cnt < list->cnt; ++cnt)
+	*scnp++ = &list->data[cnt];
+    }
+  while ((list = list->next) != NULL);
+
+  qsort (scns, scnp - scns, sizeof (*scns), compare_sections);
+}
+
+
 int
 internal_function
 __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
@@ -51,7 +95,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
       assert (sizeof (ElfW2(LIBELFBITS,Ehdr))
 	      == elf_typesize (LIBELFBITS, ELF_T_EHDR, 1));
 
-      if (change_bo)
+      if (unlikely (change_bo))
 	{
 	  /* Today there is only one version of the ELF header.  */
 #if EV_NUM != 2
@@ -88,7 +132,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 	memset (elf->map_address + elf->start_offset + ehdr->e_ehsize,
 		__libelf_fill_byte, ehdr->e_phoff - ehdr->e_ehsize);
 
-      if (change_bo)
+      if (unlikely (change_bo))
 	{
 	  /* Today there is only one version of the ELF header.  */
 #if EV_NUM != 2
@@ -101,7 +145,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 	  /* Do the real work.  */
 	  (*fctp) (elf->map_address + elf->start_offset + ehdr->e_phoff,
 		   elf->state.ELFW(elf,LIBELFBITS).phdr,
-		   sizeof (ElfW2(LIBELFBITS,Phdr)), ehdr->e_phnum);
+		   sizeof (ElfW2(LIBELFBITS,Phdr)) * ehdr->e_phnum, 1);
 	}
       else
 	memcpy (elf->map_address + elf->start_offset + ehdr->e_phoff,
@@ -123,6 +167,11 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
     {
       ElfW2(LIBELFBITS,Shdr) *shdr_dest;
       Elf_ScnList *list = &elf->state.ELFW(elf,LIBELFBITS).scns;
+      Elf_Scn **scns = (Elf_Scn **) alloca (shnum * sizeof (Elf_Scn *));
+      char *shdr_start = ((char *) elf->map_address + elf->start_offset
+			  + ehdr->e_shoff);
+      char *shdr_end = shdr_start + ehdr->e_shnum * ehdr->e_shentsize;
+      size_t cnt;
 
 #if EV_NUM != 2
       xfct_t shdr_fctp = __elf_xfctstom[__libelf_version - 1][EV_CURRENT - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][ELF_T_SHDR];
@@ -133,110 +182,113 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
       shdr_dest = (ElfW2(LIBELFBITS,Shdr) *)
 	((char *) elf->map_address + elf->start_offset + ehdr->e_shoff);
 
-      do
+      /* Get all sections into the array and sort them.  */
+      sort_sections (scns, list);
+
+      /* Iterate over all the section in the order in which they
+	 appear in the output file.  */
+      for (cnt = 0; cnt < shnum; ++cnt)
 	{
-	  int cnt;
+	  Elf_Scn *scn = scns[cnt];
+	  ElfW2(LIBELFBITS,Shdr) *shdr;
+	  char *scn_start;
+	  Elf_Data_List *dl;
 
-	  for (cnt = 0; cnt < list->cnt; ++cnt)
-	    {
-	      ElfW2(LIBELFBITS,Shdr) *shdr;
-	      char *scn_start;
-	      Elf_Data_List *dl;
+	  shdr = scn->shdr.ELFW(e,LIBELFBITS);
 
-	      shdr = list->data[cnt].shdr.ELFW(e,LIBELFBITS);
+	  scn_start = ((char *) elf->map_address
+		       + elf->start_offset + shdr->sh_offset);
+	  dl = &scn->data_list;
 
-	      scn_start = ((char *) elf->map_address
-			   + elf->start_offset + shdr->sh_offset);
-	      dl = &list->data[cnt].data_list;
-
-	      if (shdr->sh_type != SHT_NOBITS
-		  && list->data[cnt].data_list_rear != NULL)
-		do
+	  if (shdr->sh_type != SHT_NOBITS && scn->data_list_rear != NULL)
+	    do
+	      {
+		if ((scn->flags | dl->flags | elf->flags) & ELF_F_DIRTY)
 		  {
-		    if ((list->data[cnt].flags | dl->flags
-			 | elf->flags) & ELF_F_DIRTY)
+		    if (scn_start + dl->data.d.d_off != last_position)
 		      {
-			if (scn_start + dl->data.d.d_off != last_position)
+			if (scn_start + dl->data.d.d_off > last_position)
 			  {
-			    if (scn_start + dl->data.d.d_off > last_position)
-			      memset (last_position, __libelf_fill_byte,
-				      scn_start + dl->data.d.d_off
-				      - last_position);
+			    /* This code assumes that the data blocks for
+			       a section are ordered by offset.  */
+			    size_t written = 0;
+
+			    if (last_position < shdr_start)
+			      {
+				written = MIN (scn_start + dl->data.d.d_off
+					       - last_position,
+					       shdr_start - last_position);
+
+				memset (last_position, __libelf_fill_byte,
+					written);
+			      }
+
+			    if (last_position + written
+				!= scn_start + dl->data.d.d_off
+				&& shdr_end < scn_start + dl->data.d.d_off)
+			      memset (shdr_end, __libelf_fill_byte,
+				      scn_start + dl->data.d.d_off - shdr_end);
+
 			    last_position = scn_start + dl->data.d.d_off;
 			  }
+		      }
 
-			if (change_bo)
-			  {
-			    size_t recsize;
-
+		    if (unlikely (change_bo))
+		      {
 #if EV_NUM != 2
-			    fctp = __elf_xfctstom[__libelf_version - 1][dl->data.d.d_version - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][dl->data.d.d_type];
-			    recsize = __libelf_type_sizes[dl->d_version - 1][ELFW(ELFCLASS,LIBELFBITS) - 1][dl->data.d.d_type];
+			fctp = __elf_xfctstom[__libelf_version - 1][dl->data.d.d_version - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][dl->data.d.d_type];
 #else
 # undef fctp
-			    fctp = __elf_xfctstom[0][0][ELFW(ELFCLASS, LIBELFBITS) - 1][dl->data.d.d_type];
-			    recsize = __libelf_type_sizes[0][ELFW(ELFCLASS,LIBELFBITS) - 1][dl->data.d.d_type];
+			fctp = __elf_xfctstom[0][0][ELFW(ELFCLASS, LIBELFBITS) - 1][dl->data.d.d_type];
 #endif
 
-			    /* Make sure the data size matches the
-			       record size.  */
-			    assert (dl->data.d.d_size % recsize == 0);
+			/* Do the real work.  */
+			(*fctp) (last_position, dl->data.d.d_buf,
+				 dl->data.d.d_size, 1);
 
-			    /* Do the real work.  */
-			    (*fctp) (last_position, dl->data.d.d_buf, recsize,
-				     dl->data.d.d_size / recsize);
-
-			    last_position += dl->data.d.d_size;
-			  }
-			else
-			  last_position = mempcpy (last_position,
-						   dl->data.d.d_buf,
-						   dl->data.d.d_size);
+			last_position += dl->data.d.d_size;
 		      }
 		    else
-		      last_position += dl->data.d.d_size;
-
-		    dl->flags &= ~ELF_F_DIRTY;
-
-		    dl = dl->next;
+		      last_position = mempcpy (last_position,
+					       dl->data.d.d_buf,
+					       dl->data.d.d_size);
 		  }
-		while (dl != NULL);
+		else
+		  last_position += dl->data.d.d_size;
 
-	      /* Write the section header table entry if necessary.  */
-	      if ((list->data[cnt].shdr_flags | elf->flags) & ELF_F_DIRTY)
-		{
-		  if (change_bo)
-		    (*shdr_fctp) (shdr_dest,
-				  list->data[cnt].shdr.ELFW(e,LIBELFBITS),
-				  sizeof (ElfW2(LIBELFBITS,Shdr)), 1);
-		  else
-		    memcpy (shdr_dest, list->data[cnt].shdr.ELFW(e,LIBELFBITS),
-			    sizeof (ElfW2(LIBELFBITS,Shdr)));
+		dl->flags &= ~ELF_F_DIRTY;
 
-		  list->data[cnt].shdr_flags  &= ~ELF_F_DIRTY;
-		}
-	      ++shdr_dest;
+		dl = dl->next;
+	      }
+	    while (dl != NULL);
 
-	      list->data[cnt].flags &= ~ELF_F_DIRTY;
+	  /* Write the section header table entry if necessary.  */
+	  if ((scn->shdr_flags | elf->flags) & ELF_F_DIRTY)
+	    {
+	      if (unlikely (change_bo))
+		(*shdr_fctp) (&shdr_dest[scn->index],
+			      scn->shdr.ELFW(e,LIBELFBITS),
+			      sizeof (ElfW2(LIBELFBITS,Shdr)), 1);
+	      else
+		memcpy (&shdr_dest[scn->index],
+			scn->shdr.ELFW(e,LIBELFBITS),
+			sizeof (ElfW2(LIBELFBITS,Shdr)));
+
+	      scn->shdr_flags  &= ~ELF_F_DIRTY;
 	    }
 
-	  assert (list->next == NULL || list->cnt == list->max);
+	  scn->flags &= ~ELF_F_DIRTY;
 	}
-      while ((list = list->next) != NULL);
 
 
       /* Fill the gap between last section and section header table if
 	 necessary.  */
       if ((elf->flags & ELF_F_DIRTY)
-	  && last_position != ((char *) elf->map_address + elf->start_offset
+	  && last_position < ((char *) elf->map_address + elf->start_offset
 			       + ehdr->e_shoff))
-	{
-	  assert ((char *) elf->map_address + elf->start_offset + ehdr->e_shoff
-		  > last_position);
-	  memset (last_position, __libelf_fill_byte,
-		  (char *) elf->map_address + elf->start_offset + ehdr->e_shoff
-		  - last_position);
-	}
+	memset (last_position, __libelf_fill_byte,
+		(char *) elf->map_address + elf->start_offset + ehdr->e_shoff
+		- last_position);
     }
 
   /* That was the last part.  Clear the overall flag.  */
@@ -297,9 +349,7 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
   char fillbuf[FILLBUFSIZE];
   size_t filled = 0;
   ElfW2(LIBELFBITS,Ehdr) *ehdr;
-#if EV_NUM != 2
   xfct_t fctp;
-#endif
   off_t last_offset;
 
   /* We need the ELF header several times.  */
@@ -316,7 +366,7 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
       assert (sizeof (ElfW2(LIBELFBITS,Ehdr))
 	      == elf_typesize (LIBELFBITS, ELF_T_EHDR, 1));
 
-      if (change_bo)
+      if (unlikely (change_bo))
 	{
 	  /* Today there is only one version of the ELF header.  */
 #if EV_NUM != 2
@@ -355,7 +405,7 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
       && ((elf->state.ELFW(elf,LIBELFBITS).phdr_flags | elf->flags)
 	  & ELF_F_DIRTY))
     {
-      ElfW2(LIBELFBITS,Phdr) tmp_phdr;
+      ElfW2(LIBELFBITS,Phdr) *tmp_phdr = NULL;
       ElfW2(LIBELFBITS,Phdr) *out_phdr = elf->state.ELFW(elf,LIBELFBITS).phdr;
 
       /* Maybe the user wants a gap between the ELF header and the program
@@ -366,7 +416,7 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 		       != 0))
 	return 1;
 
-      if (change_bo)
+      if (unlikely (change_bo))
 	{
 	  /* Today there is only one version of the ELF header.  */
 #if EV_NUM != 2
@@ -376,12 +426,21 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 # define fctp __elf_xfctstom[0][EV_CURRENT - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][ELF_T_PHDR]
 #endif
 
+	  /* Allocate sufficient memory.  */
+	  tmp_phdr = (ElfW2(LIBELFBITS,Phdr) *)
+	    malloc (sizeof (ElfW2(LIBELFBITS,Phdr)) * ehdr->e_phnum);
+	  if (tmp_phdr == NULL)
+	    {
+	      __libelf_seterrno (ELF_E_NOMEM);
+	      return 1;
+	    }
+
 	  /* Write the converted ELF header in a temporary buffer.  */
-	  (*fctp) (&tmp_phdr, elf->state.ELFW(elf,LIBELFBITS).phdr,
-		   sizeof (ElfW2(LIBELFBITS,Phdr)), ehdr->e_phnum);
+	  (*fctp) (tmp_phdr, elf->state.ELFW(elf,LIBELFBITS).phdr,
+		   sizeof (ElfW2(LIBELFBITS,Phdr)) * ehdr->e_phnum, 1);
 
 	  /* This is the buffer we want to write.  */
-	  out_phdr = &tmp_phdr;
+	  out_phdr = tmp_phdr;
 	}
 
       /* Write out the ELF header.  */
@@ -393,6 +452,9 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 	  __libelf_seterrno (ELF_E_WRITE_ERROR);
 	  return 1;
 	}
+
+      /* This is a no-op we we have not allocated any memory.  */
+      free (tmp_phdr);
 
       elf->state.ELFW(elf,LIBELFBITS).phdr_flags &= ~ELF_F_DIRTY;
     }
@@ -406,15 +468,15 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
   if (shnum > 0)
     {
       off_t shdr_offset;
-      xfct_t shdr_fctp;
       Elf_ScnList *list = &elf->state.ELFW(elf,LIBELFBITS).scns;
       ElfW2(LIBELFBITS,Shdr) *shdr_data;
-      ElfW2(LIBELFBITS,Shdr) *shdr_data_begin;
+      Elf_Scn **scns = (Elf_Scn **) alloca (shnum * sizeof (Elf_Scn *));
       int shdr_flags;
+      size_t cnt;
 
       shdr_offset = elf->start_offset + ehdr->e_shoff;
 #if EV_NUM != 2
-      shdr_fctp = __elf_xfctstom[__libelf_version - 1][EV_CURRENT - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][ELF_T_SHDR];
+      xfct_t shdr_fctp = __elf_xfctstom[__libelf_version - 1][EV_CURRENT - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][ELF_T_SHDR];
 #else
 # undef shdr_fctp
 # define shdr_fctp __elf_xfctstom[0][EV_CURRENT - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][ELF_T_SHDR]
@@ -425,127 +487,110 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 	  alloca (shnum * sizeof (ElfW2(LIBELFBITS,Shdr)));
       else
 	shdr_data = elf->state.ELFW(elf,LIBELFBITS).shdr;
-      shdr_data_begin = shdr_data;
       shdr_flags = elf->flags;
 
-      do
+      /* Get all sections into the array and sort them.  */
+      sort_sections (scns, list);
+
+      for (cnt = 0; cnt < shnum; ++cnt)
 	{
-	  int cnt;
+	  Elf_Scn *scn = scns[cnt];
+	  ElfW2(LIBELFBITS,Shdr) *shdr;
+	  off_t scn_start;
+	  Elf_Data_List *dl;
 
-	  for (cnt = 0; cnt < list->cnt; ++cnt)
-	    {
-	      ElfW2(LIBELFBITS,Shdr) *shdr;
-	      off_t scn_start;
-	      Elf_Data_List *dl;
+	  shdr = scn->shdr.ELFW(e,LIBELFBITS);
 
-	      shdr = list->data[cnt].shdr.ELFW(e,LIBELFBITS);
+	  scn_start = elf->start_offset + shdr->sh_offset;
+	  dl = &scn->data_list;
 
-	      scn_start = elf->start_offset + shdr->sh_offset;
-	      dl = &list->data[cnt].data_list;
-
-	      if (shdr->sh_type != SHT_NOBITS
-		  && list->data[cnt].data_list_rear != NULL
-		  && list->data[cnt].index != 0)
-		do
+	  if (shdr->sh_type != SHT_NOBITS && scn->data_list_rear != NULL
+	      && scn->index != 0)
+	    do
+	      {
+		if ((scn->flags | dl->flags | elf->flags) & ELF_F_DIRTY)
 		  {
-		    if ((list->data[cnt].flags | dl->flags
-			 | elf->flags) & ELF_F_DIRTY)
+		    char tmpbuf[MAX_TMPBUF];
+		    void *buf = dl->data.d.d_buf;
+
+		    if (scn_start + dl->data.d.d_off != last_offset)
 		      {
-			char tmpbuf[MAX_TMPBUF];
-			void *buf = dl->data.d.d_buf;
+			assert (last_offset < scn_start + dl->data.d.d_off);
 
-			if (scn_start + dl->data.d.d_off != last_offset)
-			  {
-			    assert (last_offset
-				    < scn_start + dl->data.d.d_off);
+			if (unlikely (fill (elf->fildes, last_offset,
+					    (scn_start + dl->data.d.d_off)
+					    - last_offset, fillbuf,
+					    &filled) != 0))
+			  return 1;
 
-			    if (unlikely (fill (elf->fildes, last_offset,
-						(scn_start + dl->data.d.d_off)
-						- last_offset, fillbuf,
-						&filled) != 0))
-			      return 1;
-
-			    last_offset = scn_start + dl->data.d.d_off;
-			  }
-
-			if (change_bo)
-			  {
-			    size_t recsize;
-
-#if EV_NUM != 2
-			    fctp = __elf_xfctstom[__libelf_version - 1][dl->data.d.d_version - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][dl->data.d.d_type];
-			    recsize = __libelf_type_sizes[dl->d_version - 1][ELFW(ELFCLASS,LIBELFBITS) - 1][dl->data.d.d_type];
-#else
-			    fctp = __elf_xfctstom[0][0][ELFW(ELFCLASS, LIBELFBITS) - 1][dl->data.d.d_type];
-			    recsize = __libelf_type_sizes[0][ELFW(ELFCLASS,LIBELFBITS) - 1][dl->data.d.d_type];
-#endif
-
-			    /* Make sure the data size matches the
-			       record size.  */
-			    assert (dl->data.d.d_size % recsize == 0);
-
-			    buf = tmpbuf;
-			    if (dl->data.d.d_size > MAX_TMPBUF)
-			      {
-				buf = malloc (dl->data.d.d_size);
-				if (buf == NULL)
-				  {
-				    __libelf_seterrno (ELF_E_NOMEM);
-				    return 1;
-				  }
-			      }
-
-			    /* Do the real work.  */
-			    (*fctp) (buf, dl->data.d.d_buf, recsize,
-				     dl->data.d.d_size / recsize);
-			  }
-
-			if (unlikely (pwrite (elf->fildes, buf,
-					      dl->data.d.d_size, last_offset)
-				      != dl->data.d.d_size))
-			  {
-			    if (buf != dl->data.d.d_buf && buf != tmpbuf)
-			      free (buf);
-
-			    __libelf_seterrno (ELF_E_WRITE_ERROR);
-			    return 1;
-			  }
-
-			if (buf != dl->data.d.d_buf && buf != tmpbuf)
-			  free (buf);
+			last_offset = scn_start + dl->data.d.d_off;
 		      }
 
-		    last_offset += dl->data.d.d_size;
+		    if (unlikely (change_bo))
+		      {
+#if EV_NUM != 2
+			fctp = __elf_xfctstom[__libelf_version - 1][dl->data.d.d_version - 1][ELFW(ELFCLASS, LIBELFBITS) - 1][dl->data.d.d_type];
+#else
+# undef fctp
+			fctp = __elf_xfctstom[0][0][ELFW(ELFCLASS, LIBELFBITS) - 1][dl->data.d.d_type];
+#endif
 
-		    dl->flags &= ~ELF_F_DIRTY;
+			buf = tmpbuf;
+			if (dl->data.d.d_size > MAX_TMPBUF)
+			  {
+			    buf = malloc (dl->data.d.d_size);
+			    if (buf == NULL)
+			      {
+				__libelf_seterrno (ELF_E_NOMEM);
+				return 1;
+			      }
+			  }
 
-		    dl = dl->next;
+			/* Do the real work.  */
+			(*fctp) (buf, dl->data.d.d_buf, dl->data.d.d_size, 1);
+		      }
+
+		    if (unlikely (pwrite (elf->fildes, buf,
+					  dl->data.d.d_size, last_offset)
+				  != dl->data.d.d_size))
+		      {
+			if (buf != dl->data.d.d_buf && buf != tmpbuf)
+			  free (buf);
+
+			__libelf_seterrno (ELF_E_WRITE_ERROR);
+			return 1;
+		      }
+
+		    if (buf != dl->data.d.d_buf && buf != tmpbuf)
+		      free (buf);
 		  }
-		while (dl != NULL);
 
-	      /* Collect the section header table information.  */
-	      if (change_bo)
-		(*shdr_fctp) (shdr_data++,
-			      list->data[cnt].shdr.ELFW(e,LIBELFBITS),
-			      sizeof (ElfW2(LIBELFBITS,Shdr)), 1);
-	      else if (elf->state.ELFW(elf,LIBELFBITS).shdr == NULL)
-		shdr_data = mempcpy (shdr_data,
-				     list->data[cnt].shdr.ELFW(e,LIBELFBITS),
-				     sizeof (ElfW2(LIBELFBITS,Shdr)));
+		last_offset += dl->data.d.d_size;
 
-	      shdr_flags |= list->data[cnt].shdr_flags;
-	      list->data[cnt].shdr_flags  &= ~ELF_F_DIRTY;
-	    }
+		dl->flags &= ~ELF_F_DIRTY;
+
+		dl = dl->next;
+	      }
+	    while (dl != NULL);
+	  else if (shdr->sh_type != SHT_NOBITS && scn->index != 0)
+	    last_offset = scn_start + shdr->sh_size;
+
+	  /* Collect the section header table information.  */
+	  if (unlikely (change_bo))
+	    (*shdr_fctp) (&shdr_data[scn->index],
+			  scn->shdr.ELFW(e,LIBELFBITS),
+			  sizeof (ElfW2(LIBELFBITS,Shdr)), 1);
+	  else if (elf->state.ELFW(elf,LIBELFBITS).shdr == NULL)
+	    memcpy (&shdr_data[scn->index], scn->shdr.ELFW(e,LIBELFBITS),
+		    sizeof (ElfW2(LIBELFBITS,Shdr)));
+
+	  shdr_flags |= scn->shdr_flags;
+	  scn->shdr_flags  &= ~ELF_F_DIRTY;
 	}
-      while ((list = list->next) != NULL);
-
-
-      if (change_bo || elf->state.ELFW(elf,LIBELFBITS).shdr == NULL)
-	assert (shdr_data == &shdr_data_begin[shnum]);
 
       /* Write out the section header table.  */
       if (shdr_flags & ELF_F_DIRTY
-	  && unlikely (pwrite (elf->fildes, shdr_data_begin,
+	  && unlikely (pwrite (elf->fildes, shdr_data,
 			       sizeof (ElfW2(LIBELFBITS,Shdr)) * shnum,
 			       shdr_offset)
 		       != sizeof (ElfW2(LIBELFBITS,Shdr)) * shnum))

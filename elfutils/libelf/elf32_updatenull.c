@@ -24,6 +24,7 @@
 #include <sys/param.h>
 
 #include "libelfP.h"
+#include "../libebl/elf-knowledge.h"
 
 #ifndef LIBELFBITS
 # define LIBELFBITS 32
@@ -194,9 +195,11 @@ __elfw2(LIBELFBITS,updatenull) (Elf *elf, int *change_bop, size_t shnum)
 		      return -1;
 		    }
 		  /* FALLTHROUGH */
-		case SHT_HASH:
 		case SHT_SYMTAB_SHNDX:
 		  sh_entsize = elf_typesize (32, ELF_T_WORD, 1);
+		  break;
+		case SHT_HASH:
+		  sh_entsize = SH_ENTSIZE_HASH (ehdr);
 		  break;
 		case SHT_DYNAMIC:
 		  sh_entsize = elf_typesize (LIBELFBITS, ELF_T_DYN, 1);
@@ -275,7 +278,10 @@ __elfw2(LIBELFBITS,updatenull) (Elf *elf, int *change_bop, size_t shnum)
 
 	      if (elf->flags & ELF_F_LAYOUT)
 		{
-		  size = MAX (size, shdr->sh_offset + shdr->sh_size);
+		  size = MAX (size,
+			      shdr->sh_offset
+			      + (shdr->sh_type != SHT_NOBITS
+				 ? shdr->sh_size : 0));
 
 		  /* The alignment must be a power of two.  This is a
 		     requirement from the ELF specification.  Additionally
@@ -310,7 +316,8 @@ __elfw2(LIBELFBITS,updatenull) (Elf *elf, int *change_bop, size_t shnum)
 	      /* Check that the section size is actually a multiple of
 		 the entry size.  */
 	      if (shdr->sh_entsize != 0
-		  && unlikely (shdr->sh_size % shdr->sh_entsize != 0))
+		  && unlikely (shdr->sh_size % shdr->sh_entsize != 0)
+		  && (elf->flags & ELF_F_PERMISSIVE) == 0)
 		{
 		  __libelf_seterrno (ELF_E_INVALID_SHENTSIZE);
 		  return -1;

@@ -25,6 +25,10 @@
 #include "libelfP.h"
 
 
+#ifdef USE_TLS
+/* The error number.  */
+static __thread int global_error;
+#else
 /* This is the key for the thread specific memory.  */
 /*@unchecked@*/ /*@null@*/
 static tls_key_t key;
@@ -53,6 +57,7 @@ elf_errno (void)
 {
   int result;
 
+#ifndef USE_TLS
   /* If we have not yet initialized the buffer do it now.  */
   once_execute (once, init);
 
@@ -65,28 +70,11 @@ elf_errno (void)
       setspecific (key, (void *) (intptr_t) ELF_E_NOERROR);
       return result;
     }
+#endif	/* TLS */
 
   result = global_error;
   global_error = ELF_E_NOERROR;
   return result;
-}
-/*@=mods@*/
-
-
-/*@-mods@*/
-void
-internal_function
-__libelf_seterrno (int value)
-{
-  /* If we have not yet initialized the buffer do it now.  */
-  once_execute (once, init);
-
-  if (threaded)
-    /* We do not allocate memory for the data.  It is only a word.
-       We can store it in place of the pointer.  */
-    setspecific (key, (void *) (intptr_t) value);
-
-  global_error = value;
 }
 /*@=mods@*/
 
@@ -98,7 +86,11 @@ static const char msgstr[] =
 #define ELF_E_NOERROR_IDX 0
   N_("no error")
   "\0"
-#define ELF_E_UNKNOWN_VERSION_IDX (ELF_E_NOERROR_IDX + sizeof "no error")
+#define ELF_E_UNKNOWN_ERROR_IDX (ELF_E_NOERROR_IDX + sizeof "no error")
+  N_("unknown error")
+  "\0"
+#define ELF_E_UNKNOWN_VERSION_IDX \
+  (ELF_E_UNKNOWN_ERROR_IDX + sizeof "unknown error")
   N_("unknown version")
   "\0"
 #define ELF_E_UNKNOWN_TYPE_IDX \
@@ -260,6 +252,7 @@ static const char msgstr[] =
 static const uint_fast16_t msgidx[ELF_E_NUM] =
 {
   [ELF_E_NOERROR] = ELF_E_NOERROR_IDX,
+  [ELF_E_UNKNOWN_ERROR] = ELF_E_UNKNOWN_ERROR_IDX,
   [ELF_E_UNKNOWN_VERSION] = ELF_E_UNKNOWN_VERSION_IDX,
   [ELF_E_UNKNOWN_TYPE] = ELF_E_UNKNOWN_TYPE_IDX,
   [ELF_E_INVALID_HANDLE] = ELF_E_INVALID_HANDLE_IDX,
@@ -300,6 +293,25 @@ static const uint_fast16_t msgidx[ELF_E_NUM] =
   [ELF_E_GROUP_NOT_REL] = ELF_E_GROUP_NOT_REL_IDX,
   [ELF_E_INVALID_PHDR] = ELF_E_INVALID_PHDR_IDX
 };
+#define nmsgidx ((int) (sizeof (msgidx) / sizeof (msgidx[0])))
+
+
+void
+__libelf_seterrno (value)
+     int value;
+{
+#ifndef USE_TLS
+  /* If we have not yet initialized the buffer do it now.  */
+  once_execute (once, init);
+
+  if (threaded)
+    /* We do not allocate memory for the data.  It is only a word.
+       We can store it in place of the pointer.  */
+    setspecific (key, (void *) (intptr_t) value);
+#endif	/* TLS */
+
+  global_error = value >= 0 && value < nmsgidx ? value : ELF_E_UNKNOWN_ERROR;
+}
 
 
 /*@-mods@*/
@@ -308,6 +320,7 @@ elf_errmsg (int error)
 {
   int last_error;
 
+#ifndef USE_TLS
   /* If we have not yet initialized the buffer do it now.  */
   once_execute (once, init);
 
@@ -316,6 +329,7 @@ elf_errmsg (int error)
        We can store it in place of the pointer.  */
     last_error = (intptr_t) getspecific (key);
   else
+#endif	/* TLS */
     last_error = global_error;
 
   if (error == 0)
@@ -323,8 +337,8 @@ elf_errmsg (int error)
       assert (msgidx[last_error] < sizeof (msgstr));
       return last_error != 0 ? _(msgstr + msgidx[last_error]) : NULL;
     }
-  else if (error < -1)
-    return _("Unknown error");
+  else if (error < -1 || error >= nmsgidx)
+    return _(msgstr + ELF_E_UNKNOWN_ERROR_IDX);
 
   assert (msgidx[error == -1 ? last_error : error] < sizeof (msgstr));
   return _(msgstr + msgidx[error == -1 ? last_error : error]);
@@ -332,6 +346,7 @@ elf_errmsg (int error)
 /*@=mods@*/
 
 
+#ifndef USE_TLS
 /* Free the thread specific data, this is done if a thread terminates.  */
 static void
 free_key_mem (void *mem)
@@ -348,3 +363,4 @@ init (void)
     /* Creating the key succeeded.  */
     threaded = true;
 }
+#endif	/* TLS */

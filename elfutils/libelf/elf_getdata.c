@@ -22,6 +22,7 @@
 
 #include "libelfP.h"
 #include "common.h"
+#include "../libebl/elf-knowledge.h"
 
 #if _STRING_ARCH_unaligned
 # define ALLOW_ALIGNED 1
@@ -212,11 +213,22 @@ __libelf_set_rawdata (Elf_Scn *scn)
   if (size != 0 && type != SHT_NOBITS)
     {
       /* First a test whether the section is valid at all.  */
+      size_t entsize;
+
+      if (type == SHT_HASH)
+	{
+	  GElf_Ehdr ehdr_mem;
+
+	  entsize = SH_ENTSIZE_HASH (gelf_getehdr (elf, &ehdr_mem));
+	}
+      else
+	{
 #if EV_NUM != 2
-      size_t entsize = shtype_map[__libelf_version - 1][elf->class - 1][TYPEIDX (type)].size;
+	  entsize = shtype_map[__libelf_version - 1][elf->class - 1][TYPEIDX (type)].size;
 #else
-      size_t entsize = shtype_map[0][elf->class - 1][TYPEIDX (type)].size;
+	  entsize = shtype_map[0][elf->class - 1][TYPEIDX (type)].size;
 #endif
+	}
 
       /* We assume it is an array of bytes if it is none of the structured
 	 sections we know of.  */
@@ -276,12 +288,25 @@ __libelf_set_rawdata (Elf_Scn *scn)
     }
 
   scn->rawdata.d.d_size = size;
+  /* Some broken ELF ABI for 64-bit machines use the wrong hash table
+     entry size.  See elf-knowledge.h for more information.  */
+  if (type == SHT_HASH && elf->class == ELFCLASS64)
+    {
+      GElf_Ehdr ehdr_mem;
+
+      scn->rawdata.d.d_type = (SH_ENTSIZE_HASH (gelf_getehdr (elf, &ehdr_mem))
+			       == 4 ? ELF_T_WORD : ELF_T_XWORD);
+    }
+  else
+    {
 #if EV_NUM != 2
-  scn->rawdata.d.d_type =
-    shtype_map[__libelf_version - 1][elf->class - 1][TYPEIDX (type)].type;
+      scn->rawdata.d.d_type =
+	shtype_map[__libelf_version - 1][elf->class - 1][TYPEIDX (type)].type;
 #else
-  scn->rawdata.d.d_type = shtype_map[0][elf->class - 1][TYPEIDX (type)].type;
+      scn->rawdata.d.d_type =
+	shtype_map[0][elf->class - 1][TYPEIDX (type)].type;
 #endif
+    }
   scn->rawdata.d.d_off = 0;
   scn->rawdata.d.d_align = align;
   if (elf->class == ELFCLASS32

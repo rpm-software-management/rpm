@@ -18,6 +18,8 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
@@ -89,9 +91,15 @@ get_shnum (/*@null@*/ void *map_address, unsigned char *e_ident, int fildes,
       if (e_ident[EI_DATA] != MY_ELFDATA)
 	{
 	  if (is32)
-	    CONVERT (ehdr.e32->e_shnum);
+	    {
+	      CONVERT (ehdr.e32->e_shnum);
+	      CONVERT (ehdr.e32->e_shoff);
+	    }
 	  else
-	    CONVERT (ehdr.e64->e_shnum);
+	    {
+	      CONVERT (ehdr.e64->e_shnum);
+	      CONVERT (ehdr.e64->e_shoff);
+	    }
 	}
     }
 
@@ -985,7 +993,7 @@ elf_begin (int fildes, Elf_Cmd cmd, Elf *ref)
   if (ref != NULL)
     /* Make sure the descriptor is not suddenly going away.  */
     rwlock_rdlock (ref->lock);
-  else if (fildes == -1)
+  else if (fcntl (fildes, F_GETFL) == -1 && errno == EBADF)
     {
       /* We cannot do anything productive without a file descriptor.  */
       __libelf_seterrno (ELF_E_INVALID_FILE);

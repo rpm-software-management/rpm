@@ -31,6 +31,11 @@
 #endif
 
 
+/* The SECTION_STRIP_P macro wants to call into libebl which we cannot
+   do and do not have to do here.  Provide a dummy replacement.  */
+#define ebl_debugscn_p(ebl, name) true
+
+
 #define process_block(crc, data) \
   __libelf_crc32 (crc, data->d_buf, data->d_size)
 
@@ -79,8 +84,9 @@ elfw2(LIBELFBITS,checksum) (Elf *elf)
 	  return -1l;
 	}
 
-      if (SECTION_STRIP_P (shdr, elf_strptr (elf, shstrndx, shdr->sh_name),
-			   true))
+      if (SECTION_STRIP_P (NULL, NULL, NULL, shdr,
+			   elf_strptr (elf, shstrndx, shdr->sh_name),
+			   true, false))
 	/* The section can be stripped.  Don't use it.  */
 	continue;
 
