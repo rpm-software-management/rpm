@@ -27,7 +27,7 @@ rpmdb
 rpm[a-z]
 rpm2cpio
 rpmconvert
-rpmpopt
+rpmpopt*
 rpmrc
 stamp-h
 stamp-h.in
