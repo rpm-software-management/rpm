@@ -1,3 +1,9 @@
+2.4.103 -> 2.4.104:
+	- fixed popt/Makefile.in to use CPP from configure
+	- use tmppath from rpmrc to for ftp'd files (rather then /var/tmp)
+	- autoconf files and .depend files weren't created properly during
+	  make archive
+
 2.4.102 -> 2.4.103:
 	- need to create popt/configure during make archive
 	- added comments about modifictation to base popt and rpmrc files
