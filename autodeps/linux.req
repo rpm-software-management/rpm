@@ -4,9 +4,9 @@
 
 ulimit -c 0
 
-filelist=`xargs -r file | fgrep executable | cut -d: -f1 `
+filelist=`| sed "s/['\"]/\\\&/g" | xargs -r file | fgrep executable | cut -d: -f1 `
 
 for f in $filelist; do
     ldd $f | awk '/=>/ { print $1 }'
-done | sort -u | | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | sort -u
+done | sort -u | sed "s/['\"]/\\\&/g" | xargs -r -n 1 basename | sort -u
 
