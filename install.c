@@ -41,8 +41,18 @@ static void * showProgress(const Header h, const rpmCallbackType what,
     char * s;
     int flags = (int) data;
     void * rc = NULL;
+    const char * filename = pkgKey;
+    static FD_t fd;
 
     switch (what) {
+      case RPMCALLBACK_INST_OPEN_FILE:
+	fd = fdOpen(filename, O_RDONLY, 0);
+	return fd;
+
+      case RPMCALLBACK_INST_CLOSE_FILE:
+	fdClose(fd);
+	break;
+
       case RPMCALLBACK_INST_START:
 	hashesPrinted = 0;
 	if (flags & INSTALL_LABEL) {
@@ -70,9 +80,14 @@ static void * showProgress(const Header h, const rpmCallbackType what,
 	}
 	break;
 
-      case RPMCALLBACK_INST_OPEN_FILE:	/* shouldn't happen */
-      case RPMCALLBACK_INST_CLOSE_FILE:	/* shouldn't happen */
-	abort();
+      case RPMCALLBACK_TRANS_PROGRESS:
+      case RPMCALLBACK_TRANS_START:
+      case RPMCALLBACK_TRANS_STOP:
+      case RPMCALLBACK_UNINST_PROGRESS:
+      case RPMCALLBACK_UNINST_START:
+      case RPMCALLBACK_UNINST_STOP:
+	/* ignore */
+	break;
     }
 
     return rc;
@@ -208,10 +223,10 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
 		    dbIsOpen = 1;
 		}
 
-		rpmtransAddPackage(rpmdep, h, fd,
-			       packages[i], 
+		rpmtransAddPackage(rpmdep, h, NULL, *filename,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
+		fdClose(fd);
 		numBinaryPackages++;
 	    }
 	    break;
