@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-05 17:24+0000\n"
+"POT-Creation-Date: 2004-01-12 16:27+0000\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -522,7 +522,7 @@ msgstr "파일을 찾을 수 없음: %s\n"
 
 #: build/files.c:1772
 #, c-format
-msgid "%s: can't load unknwon tag (%d).\n"
+msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
 #: build/files.c:1778
@@ -2641,10 +2641,20 @@ msgstr "%s(을)를 생략합니다 - 전송(transfer)에 실패함 - %s\n"
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
 
+#: lib/rpminstall.c:512
+#, fuzzy, c-format
+msgid "\tadded source package [%d]\n"
+msgstr "<소스 패키지>"
+
 #: lib/rpminstall.c:537
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
+
+#: lib/rpminstall.c:582
+#, fuzzy, c-format
+msgid "\tadded binary package [%d]\n"
+msgstr "바이너리 패키지를 설치합니다\n"
 
 #: lib/rpminstall.c:587
 #, c-format

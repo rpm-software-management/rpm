@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-05 17:24+0000\n"
+"POT-Creation-Date: 2004-01-12 16:27+0000\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -553,7 +553,7 @@ msgstr "ファイルが見つかりません: %s"
 
 #: build/files.c:1772
 #, c-format
-msgid "%s: can't load unknwon tag (%d).\n"
+msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
 #: build/files.c:1778
@@ -2746,10 +2746,20 @@ msgstr "%s をスキップします - 転送失敗 - %s\n"
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
 
+#: lib/rpminstall.c:512
+#, fuzzy, c-format
+msgid "\tadded source package [%d]\n"
+msgstr "%d 個のパッケージを見つけました\n"
+
 #: lib/rpminstall.c:537
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "パッケージ %s は再配置できません"
+
+#: lib/rpminstall.c:582
+#, fuzzy, c-format
+msgid "\tadded binary package [%d]\n"
+msgstr "古いスタイルのバイナリパッケージ\n"
 
 #: lib/rpminstall.c:587
 #, fuzzy, c-format
@@ -4901,9 +4911,6 @@ msgstr ""
 
 #~ msgid "archive offset is %d\n"
 #~ msgstr "アーカイブオフセットは %d\n"
-
-#~ msgid "old style binary package\n"
-#~ msgstr "古いスタイルのバイナリパッケージ\n"
 
 #, fuzzy
 #~ msgid "%s: %-45s YES (rpmlib version)\n"

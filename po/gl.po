@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-05 17:24+0000\n"
+"POT-Creation-Date: 2004-01-12 16:27+0000\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -508,7 +508,7 @@ msgstr ""
 
 #: build/files.c:1772
 #, c-format
-msgid "%s: can't load unknwon tag (%d).\n"
+msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
 #: build/files.c:1778
@@ -2562,9 +2562,19 @@ msgstr ""
 msgid "%s cannot be installed\n"
 msgstr ""
 
+#: lib/rpminstall.c:512
+#, c-format
+msgid "\tadded source package [%d]\n"
+msgstr ""
+
 #: lib/rpminstall.c:537
 #, c-format
 msgid "package %s is not relocatable\n"
+msgstr ""
+
+#: lib/rpminstall.c:582
+#, c-format
+msgid "\tadded binary package [%d]\n"
 msgstr ""
 
 #: lib/rpminstall.c:587

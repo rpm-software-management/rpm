@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-05 17:24+0000\n"
+"POT-Creation-Date: 2004-01-12 16:27+0000\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -530,7 +530,7 @@ msgstr "Ficheiro não encontrado: %s\n"
 
 #: build/files.c:1772
 #, c-format
-msgid "%s: can't load unknwon tag (%d).\n"
+msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
 #: build/files.c:1778
@@ -2653,10 +2653,20 @@ msgstr "a ignorar o %s - a transferência falhou - %s\n"
 msgid "%s cannot be installed\n"
 msgstr "o %s não pode ser instalado\n"
 
+#: lib/rpminstall.c:512
+#, fuzzy, c-format
+msgid "\tadded source package [%d]\n"
+msgstr "<pacote de código>"
+
 #: lib/rpminstall.c:537
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "o pacote %s não pode ser mudado de sítio\n"
+
+#: lib/rpminstall.c:582
+#, fuzzy, c-format
+msgid "\tadded binary package [%d]\n"
+msgstr "a instalar os pacotes binários\n"
 
 #: lib/rpminstall.c:587
 #, c-format

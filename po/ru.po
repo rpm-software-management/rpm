@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-05 17:24+0000\n"
+"POT-Creation-Date: 2004-01-12 16:27+0000\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -529,7 +529,7 @@ msgstr "Файл не найден: %s\n"
 
 #: build/files.c:1772
 #, c-format
-msgid "%s: can't load unknwon tag (%d).\n"
+msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
 #: build/files.c:1778
@@ -2620,10 +2620,20 @@ msgstr "%s пропускается - ошибка передачи - %s\n"
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
 
+#: lib/rpminstall.c:512
+#, fuzzy, c-format
+msgid "\tadded source package [%d]\n"
+msgstr "<исходный пакет>"
+
 #: lib/rpminstall.c:537
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакет %s - не перемещаемый\n"
+
+#: lib/rpminstall.c:582
+#, fuzzy, c-format
+msgid "\tadded binary package [%d]\n"
+msgstr "устанавливаю бинарные пакеты\n"
 
 #: lib/rpminstall.c:587
 #, c-format

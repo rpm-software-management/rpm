@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-05 17:24+0000\n"
+"POT-Creation-Date: 2004-01-12 16:27+0000\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -523,7 +523,7 @@ msgstr "Fil ikke fundet: %s\n"
 
 #: build/files.c:1772
 #, c-format
-msgid "%s: can't load unknwon tag (%d).\n"
+msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
 #: build/files.c:1778
@@ -2663,10 +2663,20 @@ msgstr "overspringer %s - overførsel mislykkedes - %s\n"
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
 
+#: lib/rpminstall.c:512
+#, fuzzy, c-format
+msgid "\tadded source package [%d]\n"
+msgstr "<kildepakke>"
+
 #: lib/rpminstall.c:537
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "pakke %s kan ikke omrokeres\n"
+
+#: lib/rpminstall.c:582
+#, fuzzy, c-format
+msgid "\tadded binary package [%d]\n"
+msgstr "installerer binærpakker\n"
 
 #: lib/rpminstall.c:587
 #, c-format
