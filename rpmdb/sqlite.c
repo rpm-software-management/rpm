@@ -210,7 +210,6 @@ fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
 static int sql_step(SCP_t scp)
 	/*@modifies scp @*/
 {
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *) scp->dbp;
     const char * cname;
     const char * vtype;
     size_t nb;
@@ -237,17 +236,10 @@ static int sql_step(SCP_t scp)
 	scp->avlen = xrealloc(scp->avlen, scp->nalloc * sizeof(*scp->avlen));
     }
 
-assert(scp->av != NULL);
-assert(scp->avlen != NULL);
-
     if (scp->nr == 0) {
-if (noisy)
-fprintf(stderr, "*** nc %d\n", scp->nc);
 	for (i = 0; i < scp->nc; i++) {
 	    scp->av[scp->ac] = xstrdup(sqlite3_column_name(scp->pStmt, i));
 	    if (scp->avlen) scp->avlen[scp->ac] = strlen(scp->av[scp->ac]) + 1;
-if (noisy)
-fprintf(stderr, "\t%d %s\n", i, scp->av[scp->ac]);
 	    scp->ac++;
 assert(scp->ac <= scp->nalloc);
 	}
@@ -400,7 +392,7 @@ static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 static int sql_bind_data(dbiIndex dbi, SCP_t scp, int pos, DBT * data)
 	/*@modifies scp @*/
 {
-    int rc = 0;
+    int rc;
 
     rc = sqlite3_bind_blob(scp->pStmt, 2, data->data, data->size, SQLITE_STATIC);
 
@@ -496,18 +488,8 @@ fprintf(stderr, "Commit %s SQL transaction(s) %s (%d)\n",
     return rc;
 }
 
-/*
- * Allocate a temporary buffer
- *
- * Life span of memory in db3 is apparently a db_env,
- * this works for db3 because items are mmaped from
- * the database.. however we can't do that...
- *
- * Life span has been changed to the life of a cursor.
- *
- * Minor changes were required to RPM for this to work
- * valgrind was used to verify...
- *
+/**
+ * Allocate a temporary buffer.
  */
 static void * allocTempBuffer(DBC * dbcursor, size_t len)
 	/*@*/
@@ -562,10 +544,12 @@ static int sql_initDB(dbiIndex dbi)
     rc = sqlite3_get_table(sqldb->db, cmd,
 	&scp->av, &scp->nr, &scp->nc, (char **)&scp->pzErrmsg);
 /*@=nullstate@*/
+    if (rc)
+	goto exit;
 
-    if ( rc == 0 && scp->nr < 1 ) {
-	const char * keytype = "blob UNIQUE";
+    if (scp->nr < 1) {
 	const char * valtype = "blob";
+	const char * keytype;
 
 	switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
@@ -577,6 +561,7 @@ static int sql_initDB(dbiIndex dbi)
 	    case RPM_NULL_TYPE:
 	    case RPM_BIN_TYPE:
 	    default:
+		keytype = "blob UNIQUE";
 		/*@innerbreak@*/ break;
 	    case RPM_CHAR_TYPE:
 	    case RPM_INT8_TYPE:
@@ -597,21 +582,24 @@ fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi-
 	sprintf(cmd, "CREATE TABLE '%s' (key %s, value %s)",
 			dbi->dbi_subfile, keytype, valtype);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	if (rc)
+	    goto exit;
 
-	if ( rc == 0 ) {
-	    sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT)");
-	    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
-	}
+	sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT)");
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	if (rc)
+	    goto exit;
 
-	if ( rc == 0 ) {
-	    sprintf(cmd, "INSERT INTO 'db_info' values('%d')", ((union _dbswap *)&endian)->uc[0]);
-	    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
-	}
+	sprintf(cmd, "INSERT INTO 'db_info' values('%d')", ((union _dbswap *)&endian)->uc[0]);
+	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	if (rc)
+	    goto exit;
     }
 
     sprintf(cmd, "PRAGMA synchronous = OFF;");
     rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
 
+exit:
     if (rc)
 	rpmMessage(RPMMESS_WARNING, "Unable to initDB %s (%d)\n",
 		scp->pzErrmsg, rc);
@@ -683,9 +671,6 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 	/* Commit, don't open a new one */
 	rc = sql_commitTransaction(dbi, 1);
 
-	/* close all cursors */
-	/* HACK: unlear whether sqlite cursors need to be chained and closed. */
-
 	(void) sqlite3_close(sqldb->db);
 
 	rpmMessage(RPMMESS_DEBUG, _("closed   sql db         %s\n"),
@@ -698,7 +683,7 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 
     dbi = _free(dbi);
 
-    return 0;
+    return rc;
 }
 
 /**
@@ -722,37 +707,24 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     const char * dbfile;  
     const char * dbfname;
     const char * sql_errcode;
-    dbiIndex dbi = xcalloc(1, sizeof(*dbi));
+    dbiIndex dbi;
     SQL_DB * sqldb;
     size_t len;
     int rc = 0;
     int xx;
     
-/*@-assignexpose -newreftrans@*/
-/*@i@*/ dbi->dbi_rpmdb = rpmdb;
-/*@=assignexpose =newreftrans@*/
-    dbi->dbi_rpmtag = rpmtag;
-    dbi->dbi_api = 4;
-
-    /* 
-     * Inverted lists have join length of 2, primary data has join length of 1.
-     */
-    /*@-sizeoftype@*/
-    switch (dbi->dbi_rpmtag) {
-    case RPMDBI_PACKAGES:
-    case RPMDBI_DEPENDS:   
-	dbi->dbi_jlen = 1 * sizeof(int_32);
-	break;
-    default:
-	dbi->dbi_jlen = 2 * sizeof(int_32);
-	break;
-    }  
-    /*@=sizeoftype@*/
-
-    dbi->dbi_byteswapped = -1;
-  
     if (dbip)
 	*dbip = NULL;
+
+    /*
+     * Parse db configuration parameters.
+     */
+    /*@-mods@*/
+    if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
+	/*@-nullstate@*/
+	return 1;
+	/*@=nullstate@*/
+    /*@=mods@*/
 
    /*
      * Get the prefix/root component and directory path
@@ -762,8 +734,8 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 	root = NULL;
     home = rpmdb->db_home;
     
-    dbi->dbi_root=root;
-    dbi->dbi_home=home;
+    dbi->dbi_root = root;
+    dbi->dbi_home = home;
       
     dbfile = tagName(dbi->dbi_rpmtag);
 
@@ -876,7 +848,6 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 
 if (_debug)
 fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), scp);
-
 
     /* If we're going to write, start a transaction (lock the DB) */
     if (flags == DB_WRITECURSOR)
@@ -1026,9 +997,8 @@ fprintf(stderr, "\tcget(%s) got %d rows, %d columns\n",
     if (rc != 0)
 	goto exit;
 
-	
     /* If we're looking at the whole db, return the key */
-    if ( scp->all ) {
+    if (scp->all) {
 	int ix = (2 * scp->rx) + 0;
 	void * v;
 	int nb;
@@ -1159,10 +1129,6 @@ assert(scp->av != NULL);
 	else
 	    rc = 1; /* swapped */
 
-#if 0
-      rpmMessage(RPMMESS_DEBUG, "DB Endian %ld ?= %d = %d\n",
-		db_endian.uc[0], ((union _dbswap *)&endian)->uc[0], rc);
-#endif
     } else {
 	if ( sql_rc ) {
 	    rpmMessage(RPMMESS_DEBUG, "db_info failed %s (%d)\n",
@@ -1326,51 +1292,6 @@ assert(scp->av != NULL);
     return rc;
 }
 
-/**
- * Compile SQL statement.
- * @param dbi           index database handle
- * @param flags         (unused)
- * @return              0 on success
- */
-static int sql_compile (dbiIndex dbi, /*@unused@*/ unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
-    return EINVAL;
-}
-
-/**
- * Bind arguments to SQL statement.
- * @param dbi           index database handle
- * @param flags         (unused)
- * @return              0 on success
- */
-static int sql_bind (dbiIndex dbi, /*@unused@*/ unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
-    return EINVAL;
-}
-
-/**
- * Exec SQL statement.
- * @param dbi           index database handle
- * @param flags         (unused)
- * @return              0 on success
- */
-static int sql_exec (dbiIndex dbi, /*@unused@*/ unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
-    return EINVAL;
-}
-
 /* Major, minor, patch version of DB.. we're not using db.. so set to 0 */
 /* open, close, sync, associate, join */
 /* cursor_open, cursor_close, cursor_dup, cursor_delete, cursor_get, */
@@ -1393,10 +1314,7 @@ struct _dbiVec sqlitevec = {
     sql_cput,
     sql_ccount,
     sql_byteswapped,
-    sql_stat,
-    sql_compile,
-    sql_bind,
-    sql_exec
+    sql_stat
 };
 
 /*@=evalorderuncon@*/

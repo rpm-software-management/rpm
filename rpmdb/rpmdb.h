@@ -263,37 +263,6 @@ struct _dbiVec {
     int (*stat) (dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/;
-
-/** \ingroup dbi
- * Compile SQL method.
- * @param dbi		index database handle
- * @param flags		retrieve statistics that don't require traversal?
- * @return		0 on success
- */
-    int (*compile) (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/;
-
-/** \ingroup dbi
- * Bind SQL method.
- * @param dbi		index database handle
- * @param flags		retrieve statistics that don't require traversal?
- * @return		0 on success
- */
-    int (*bind) (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/;
-
-/** \ingroup dbi
- * Exec SQL method.
- * @param dbi		index database handle
- * @param flags		retrieve statistics that don't require traversal?
- * @return		0 on success
- */
-    int (*exec) (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/;
-
 };
 
 /** \ingroup dbi
