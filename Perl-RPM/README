@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.30 (tenth alpha)
+Version 0.31 (alpha eleven)
 
 
 WHAT IS IT
@@ -49,9 +49,10 @@ There is now a mailing list for Perl-RPM. For details, see:
 
 CHANGES
 
-This is the tenth release. For detailed changes, see the file ChangeLog.
-Among the bugs addressed in this version are memory leaks and a core-dumping
-problem with newer rpm 4.0 versions.
+This is the eleventh release. For detailed changes, see the file ChangeLog.
+This release is primarily to provide a version that will compile against
+Red Hat Linux 7.1 and/or rpm 4.0.2 (which ships with RHL 7.1). Some internal
+changes affected the handling of exported constants.
 
 
 LICENSE

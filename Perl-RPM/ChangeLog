@@ -211,3 +211,11 @@ Revision history for Perl extension RPM.
 	The current state of the module will be released to allow for use by
 	other parties, without the wait for any ongoing development milestones
 	on my part.
+
+0.31	Fri Apr 27 01:45:37 PDT 2001
+	- alpha eleven
+
+	Re-worked most of RPM/Constants.xs to accomodate the change from
+	#define to enum values in 4.0.2. This will be released as an
+	interim version, since Red Hat is shipping 7.1 with this version of
+	rpm.
