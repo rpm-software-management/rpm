@@ -16,4 +16,6 @@ void dumpSpec(Spec s, FILE *f);
 char *getSource(Spec s, int ispatch, int num);
 char *getFullSource(Spec s, int ispatch, int num);
 
+int verifySpec(Spec s);
+
 #endif _spec_h
