@@ -25,6 +25,9 @@ class BasicTestCase(unittest.TestCase):
     a = 0x0000000987654321L
     b = 0x0000000000000010L
     c = 0x0fedcba000000000L
+    lo = 2
+    hi = 200
+    t = 10
 
     def setUp(self):
 	rpm.mpw().Debug(0)
@@ -48,23 +51,21 @@ class BasicTestCase(unittest.TestCase):
 	wa = rpm.mpw(self.a)
 	wb = rpm.mpw(self.b)
 	wc = rpm.mpw(self.c)
-	za = mpz.mpz(self.a)
-	zb = mpz.mpz(self.b)
-	zc = mpz.mpz(self.c)
+	za = long(self.a)
+	zb = long(self.b)
+	zc = long(self.c)
 
 	print "__int__:\t", int(wb), "\t",  int(zb)
 	assert int(wb) == int(zb)
 	print "__long__:\t", long(wa), "\t",  long(za)
-#	assert str(long(wb)) == str(long(zb))
+	assert long(wb) == long(zb)
 	print "__float__:\t", float(wa), "\t",  float(za)
 	assert float(wb) == float(zb)
 
 	zs = hex(za)
-	zs = zs[4:len(zs)-1]
 	print "__hex__:\t", hex(wa), "\t", zs
 	assert hex(wa) == zs
 	zs = oct(za)
-	zs = zs[4:len(zs)-1]
 	print "__oct__:\t", oct(wa), "\t", zs
 	assert oct(wa) == zs
 
@@ -104,6 +105,78 @@ class BasicTestCase(unittest.TestCase):
 	pass
 
     #----------------------------------------
+    def test02_KnuthPoly(self):
+	self.t = 8
+	tfmt = "%o"
+        if verbose:
+            print '\n', '-=' * 30
+            print "Running %s.test02_KnuthPoly..." % \
+                  self.__class__.__name__
+	    print "\t(%d**m - 1) * (%d**n - 1), m,n in [%d,%d)" % (self.t,self.t,self.lo,self.hi)
+	tm1 = tfmt % (self.t - 1)
+	tm2 = tfmt % (self.t - 2)
+	for m in range(self.lo,self.hi):
+	    for n in range(m+1,self.hi+1):
+		wt = rpm.mpw(self.t)
+		wa = (wt**m - 1) * (wt**n - 1)
+		ws = tfmt % long(wa)
+		zs = tm1 * (m - 1) + tm2 + tm1 * (n - m) + "0" * (m - 1) + "1"
+		if ws != zs:
+		    print "(%d**%d - 1) * (%d**%d - 1)\t%s" % (self.t,m,self.t,n,ws)
+		assert ws == zs
+
+	self.t = 10
+	tfmt = "%d"
+        if verbose:
+	    print "\t(%d**m - 1) * (%d**n - 1), m,n in [%d,%d)" % (self.t,self.t,self.lo,self.hi)
+	tm1 = tfmt % (self.t - 1)
+	tm2 = tfmt % (self.t - 2)
+	for m in range(self.lo,self.hi):
+	    for n in range(m+1,self.hi+1):
+		wt = rpm.mpw(self.t)
+		wa = (wt**m - 1) * (wt**n - 1)
+		ws = tfmt % long(wa)
+		zs = tm1 * (m - 1) + tm2 + tm1 * (n - m) + "0" * (m - 1) + "1"
+		if ws != zs:
+		    print "(%d**%d - 1) * (%d**%d - 1)\t%s" % (self.t,m,self.t,n,ws)
+		assert ws == zs
+
+	self.t = 16
+	tfmt = "%x"
+        if verbose:
+	    print "\t(%d**m - 1) * (%d**n - 1), m,n in [%d,%d)" % (self.t,self.t,self.lo,self.hi)
+	tm1 = tfmt % (self.t - 1)
+	tm2 = tfmt % (self.t - 2)
+	for m in range(self.lo,self.hi):
+	    for n in range(m+1,self.hi+1):
+		wt = rpm.mpw(self.t)
+		wa = (wt**m - 1) * (wt**n - 1)
+		ws = tfmt % long(wa)
+		zs = tm1 * (m - 1) + tm2 + tm1 * (n - m) + "0" * (m - 1) + "1"
+		if ws != zs:
+		    print "(%d**%d - 1) * (%d**%d - 1)\t%s" % (self.t,m,self.t,n,ws)
+		assert ws == zs
+	pass
+
+    #----------------------------------------
+    def test03_IterativePowers(self):
+        if verbose:
+            print '\n', '-=' * 30
+            print "Running %s.test03_IterativePowers..." % \
+                  self.__class__.__name__
+	    print "\t(m**n)/(m**(n-1)) == m for m,n in [%d,%d)" % (self.lo,self.hi)
+	for m in range(self.lo,self.hi):
+	    wa = rpm.mpw(m)
+	    wd = wa
+	    for n in range(self.lo,self.hi):
+		wc = wa**n
+		we = wc/wd
+		if we != m:
+		    print m, '^', n, '=', we
+		assert we == m
+		if wc != 0:
+		    wd = wc
+	pass
 
 #----------------------------------------------------------------------
 #----------------------------------------------------------------------

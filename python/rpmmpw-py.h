@@ -35,7 +35,7 @@ mpwObject * mpw_New(int ob_size)
 
 /**
  */
-mpwObject * mpw_FromMPW(size_t size, mpw* data)
+mpwObject * mpw_FromMPW(size_t size, mpw* data, int normalize)
 	/*@*/;
 
 #endif

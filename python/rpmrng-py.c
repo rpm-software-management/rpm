@@ -236,7 +236,7 @@ rng_Prime(rngObject * s, PyObject * args)
     mpprndsafe_w(b, rc, pbits, trials, temp);
 #endif
 
-    z = mpw_FromMPW(b->size, b->modl);
+    z = mpw_FromMPW(b->size, b->modl, 1);
 if (z != NULL && _rng_debug)
 fprintf(stderr, "*** rng_Prime(%p) %p[%d]\t", s, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 

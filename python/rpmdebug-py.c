@@ -31,6 +31,9 @@ static const char * lbl(void * s)
 
     if (o == NULL)	return "null";
 
+    if (o == Py_None)	return "None";
+ 
+
     if (o->ob_type == &PyType_Type)	return o->ob_type->tp_name;
 
     if (o->ob_type == &PyBaseObject_Type)	return "BaseObj";
