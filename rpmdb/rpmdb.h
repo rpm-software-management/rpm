@@ -47,6 +47,7 @@ struct _dbiIndexSet {
 
 /* XXX hack to get prototypes correct */
 #if !defined(DB_VERSION_MAJOR)
+#define	DB	void
 #define	DB_ENV	void
 #define	DBC	void
 #define	DBT	void
@@ -131,8 +132,8 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*cget) (dbiIndex dbi, DBC * dbcursor,
-			/*@out@*/ void ** keypp, /*@out@*/ size_t * keylenp,
-			/*@out@*/ void ** datapp, /*@out@*/ size_t * datalenp,
+			/*@null@*/ void ** keypp, /*@null@*/ size_t * keylenp,
+			/*@null@*/ void ** datapp, /*@null@*/ size_t * datalenp,
 			unsigned int flags)
 	/*@modifies *dbcursor, *keypp, *keylenp, *datapp, *datalenp,
 		fileSystem @*/;
@@ -212,6 +213,7 @@ struct _dbiIndex {
     int			dbi_tear_down;	/*!< tear down dbenv on close */
     int			dbi_use_cursors;/*!< access with cursors? (always) */
     int			dbi_use_dbenv;	/*!< use db environment? */
+    int			dbi_permit_dups;/*!< permit duplicate entries? */
     int			dbi_get_rmw_cursor;
     int			dbi_no_fsync;	/*!< no-op fsync for db */
     int			dbi_no_dbsync;	/*!< don't call dbiSync */
@@ -257,21 +259,16 @@ struct _dbiIndex {
 	/*@*/;
 	/* hash access parameters */
     unsigned int	dbi_h_ffactor;	/*!< */
-/*@unused@*/ /*@null@*/ unsigned int	(*dbi_h_hash_fcn) (const void *bytes, unsigned int length)
-	/*@modifies internalState @*/;
+/*@null@*/ unsigned int	(*dbi_h_hash_fcn) (DB *, const void *bytes, unsigned int length) /*@*/;
     unsigned int	dbi_h_nelem;	/*!< */
     unsigned int	dbi_h_flags;	/*!< DB_DUP, DB_DUPSORT */
-/*@unused@*/ /*@null@*/ int		(*dbi_h_dup_compare_fcn) (const DBT *, const DBT *)
-	/*@modifies internalState @*/;
+/*@null@*/ int		(*dbi_h_dup_compare_fcn) (DB *, const DBT *, const DBT *) /*@*/;
 	/* btree access parameters */
     int			dbi_bt_flags;
-/*@unused@*/ int	dbi_bt_minkey;
-/*@unused@*/ /*@null@*/ int		(*dbi_bt_compare_fcn) (const DBT *, const DBT *)
-	/*@modifies internalState @*/;
-/*@unused@*/ /*@null@*/ int		(*dbi_bt_dup_compare_fcn) (const DBT *, const DBT *)
-	/*@modifies internalState @*/;
-/*@unused@*/ /*@null@*/ size_t	(*dbi_bt_prefix_fcn) (const DBT *, const DBT *)
-	/*@modifies internalState @*/;
+    int			dbi_bt_minkey;
+/*@null@*/ int		(*dbi_bt_compare_fcn) (DB *, const DBT *, const DBT *) /*@*/;
+/*@null@*/ int		(*dbi_bt_dup_compare_fcn) (DB *, const DBT *, const DBT *) /*@*/;
+/*@null@*/ size_t	(*dbi_bt_prefix_fcn) (DB *, const DBT *, const DBT *) /*@*/;
 	/* recno access parameters */
     int			dbi_re_flags;
     int			dbi_re_delim;
@@ -523,8 +520,9 @@ int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint * fpList,
 /** \ingroup dbi
  * Destroy set of index database items.
  * @param set	set of index database items
+ * @return	NULL always
  */
-void dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set)
+/*@null@*/ dbiIndexSet dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set)
 	/*@modifies set @*/;
 
 /** \ingroup dbi

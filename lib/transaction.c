@@ -1825,10 +1825,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		shared->isRemoved = (knownBad == ro);
 		shared++;
 	    }
-	    if (matches[i]) {
-		dbiFreeIndexSet(matches[i]);
-		matches[i] = NULL;
-	    }
+	    matches[i] = dbiFreeIndexSet(matches[i]);
 	}
 	numShared = shared - sharedList;
 	shared->otherPkg = -1;

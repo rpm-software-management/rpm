@@ -78,6 +78,7 @@
 	- automagically generate perl module dependencies always.
 	- fix: lclint fiddles broke uCache initialization (#43139).
 	- always use db cursors.
+	- permit duplicates for btree indices.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

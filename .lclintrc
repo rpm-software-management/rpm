@@ -27,7 +27,7 @@
 
 #+mod-uncon-nomods	# ~118 occurences
 #+mod-internal-strict
-#+mod-file-sys		# 102 occurences
+#+mod-file-sys		# 153 occurences
 #+globnoglobs		# 1 occurence
 #+internalglobs		# 38 occurences
 #+internalglobnoglobs		# ???
@@ -40,10 +40,10 @@
 #+strictbranchstate
 #+strictdestroy
 #+modobserveruncon	# 192 occurences
-#+macroempty
++macroempty
 #+ansi-reserved-internal
 #+evalorderuncon	# 32 occurences
-#+elseifcomplete
+#+elseifcomplete	# 95 occurences
 #+loopswitchbreak	# 286 occurences
 #+switchswitchbreak	# 32 occurences
 #+looploopcontinue	# 86 occurences
@@ -54,9 +54,8 @@
 #+noeffectuncon		# 228 occurences
 +topuse
 #+unusedspecial
-#+export-local
 +oldstyle
-#+sys-dir-errors
+#+sys-dir-errors	# 749
 #controlnestdepth 15
 #stringliterallen 509
 #numstructfields 127

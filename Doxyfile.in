@@ -104,7 +104,7 @@ FULL_PATH_NAMES        = YES
 # only done if one of the specified strings matches the left-hand part of 
 # the path. It is allowed to use relative paths in the argument list.
 
-STRIP_FROM_PATH        = @TOP_SOURCEDIR@/
+STRIP_FROM_PATH        = @top_sourcedir@/
 
 # The INTERNAL_DOCS tag determines if documentation 
 # that is typed after a \internal command is included. If the tag is set 
@@ -473,7 +473,7 @@ EXCLUDE_PATTERNS       =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = @TOP_SOURCEDIR@/doc/manual
+EXAMPLE_PATH           = @top_sourcedir@/doc/manual
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

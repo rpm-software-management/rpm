@@ -591,8 +591,8 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor,
 }
 
 static int db3cget(dbiIndex dbi, DBC * dbcursor,
-		void ** keyp, size_t * keylen,
-		void ** datap, size_t * datalen,
+		/*@null@*/ void ** keyp, /*@null@*/ size_t * keylen,
+		/*@null@*/ void ** datap, /*@null@*/ size_t * datalen,
 		/*@unused@*/ unsigned int flags)
 	/*@modifies *keyp, *keylen, *datap, *datalen, fileSystem @*/
 {
@@ -996,13 +996,6 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 			rc = cvtdberr(dbi, "db->set_h_ffactor", rc, _debug);
 			if (rc) break;
 		    }
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR < 2
-		    if (dbi->dbi_h_hash_fcn) {
-			rc = db->set_h_hash(db, dbi->dbi_h_hash_fcn);
-			rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
-			if (rc) break;
-		    }
-#endif
 		    if (dbi->dbi_h_nelem) {
 			rc = db->set_h_nelem(db, dbi->dbi_h_nelem);
 			rc = cvtdberr(dbi, "db->set_h_nelem", rc, _debug);
@@ -1013,8 +1006,13 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 			rc = cvtdberr(dbi, "db->set_h_flags", rc, _debug);
 			if (rc) break;
 		    }
-/* XXX db-3.2.9 has added a DB arg to the callback. */
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR < 2
+/* XXX db-3.2.9 has added a DB arg to the call. */
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR > 2
+		    if (dbi->dbi_h_hash_fcn) {
+			rc = db->set_h_hash(db, dbi->dbi_h_hash_fcn);
+			rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
+			if (rc) break;
+		    }
 		    if (dbi->dbi_h_dup_compare_fcn) {
 			rc = db->set_dup_compare(db, dbi->dbi_h_dup_compare_fcn);
 			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
@@ -1023,6 +1021,34 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 #endif
 		    break;
 		case DB_BTREE:
+		    if (dbi->dbi_bt_flags) {
+			rc = db->set_flags(db, dbi->dbi_bt_flags);
+			rc = cvtdberr(dbi, "db->set_bt_flags", rc, _debug);
+			if (rc) break;
+		    }
+		    if (dbi->dbi_bt_minkey) {
+			rc = db->set_bt_minkey(db, dbi->dbi_bt_minkey);
+			rc = cvtdberr(dbi, "db->set_bt_minkey", rc, _debug);
+			if (rc) break;
+		    }
+/* XXX db-3.2.9 has added a DB arg to the call. */
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR > 2
+		    if (dbi->dbi_bt_compare_fcn) {
+			rc = db->set_bt_compare(db, dbi->dbi_bt_compare_fcn);
+			rc = cvtdberr(dbi, "db->set_bt_compare", rc, _debug);
+			if (rc) break;
+		    }
+		    if (dbi->dbi_bt_dup_compare_fcn) {
+			rc = db->set_dup_compare(db, dbi->dbi_bt_dup_compare_fcn);
+			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
+			if (rc) break;
+		    }
+		    if (dbi->dbi_bt_prefix_fcn) {
+			rc = db->set_bt_prefix(db, dbi->dbi_bt_prefix_fcn);
+			rc = cvtdberr(dbi, "db->set_bt_prefix", rc, _debug);
+			if (rc) break;
+		    }
+#endif
 		    break;
 		case DB_RECNO:
 		    if (dbi->dbi_re_delim) {

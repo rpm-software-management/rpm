@@ -487,6 +487,9 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
     dbi->dbi_use_cursors = 1;		/* Cursors are always used now. */
 
+    if ((dbi->dbi_bt_flags | dbi->dbi_h_flags) & DB_DUP)
+	dbi->dbi_permit_dups = 1;
+
     return dbi;
 }
 

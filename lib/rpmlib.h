@@ -731,6 +731,7 @@ int rpmdbAppendIterator(/*@null@*/ rpmdbMatchIterator mi,
 
 /** \ingroup rpmdb
  * Remove items from set of package instances to iterate.
+ * @note Sorted hdrNums are always passed in rpmlib.
  * @param mi		rpm database iterator
  * @param hdrNums	array of package instances
  * @param nHdrNums	number of elements in array
@@ -739,7 +740,7 @@ int rpmdbAppendIterator(/*@null@*/ rpmdbMatchIterator mi,
  */
 int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
 		/*@null@*/ int * hdrNums, int nHdrNums, int sorted)
-	/*@modifies mi, *hdrNums @*/;
+	/*@modifies mi, hdrNums @*/;
 
 /** \ingroup rpmdb
  * Modify iterator to filter out headers that do not match version.
@@ -763,7 +764,7 @@ void rpmdbSetIteratorRelease(/*@null@*/ rpmdbMatchIterator mi,
 
 /** \ingroup rpmdb
  * Prepare iterator for lazy writes.
- * @note: must be called before rpmdbNextIterator() in CDB model database.
+ * @note Must be called before rpmdbNextIterator() in CDB model database.
  * @param mi		rpm database iterator
  * @param rewrite	new value of rewrite
  * @return		previous value

@@ -195,7 +195,7 @@ static int isMemberInEntry(Header h, const char *name, int tag)
     const char ** names;
     int type, count;
 
-    if (!hge(h, tag, &type, &names, &count))
+    if (!hge(h, tag, &type, (void **)&names, &count))
 	return -1;
     while (count--) {
 	if (!xstrcasecmp(names[count], name))

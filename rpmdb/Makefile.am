@@ -58,5 +58,8 @@ sources:
 lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES)
 
+tdbi: librpmdb.la tdbi.o
+	$(LINK) -all-static $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+
 tfalloc: librpmdb.la tfalloc.o
 	$(LINK) -all-static $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
