@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-10 11:56-0400\n"
+"POT-Creation-Date: 1999-07-10 16:50-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2187,11 +2187,11 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:852
+#: ../lib/depends.c:869
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:904
+#: ../lib/depends.c:921
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""

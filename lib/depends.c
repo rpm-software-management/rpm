@@ -788,47 +788,64 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 }
 
 int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags) {
-    const char * name, * version, * release, * chptr;
+    const char * epoch, * version, * release;
+    const char * reqEpoch = "0";
     const char * reqVersion = reqInfo;
     const char * reqRelease = NULL;
+    const char *s, *se;
     int type, count;
-    int_32 * epoch;
+    int_32 * epochval;
     char buf[20];
     int result = 0;
     int sense;
 
-    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-
-    if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqInfo || !strlen(reqInfo)) {
+    if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqInfo || !strlen(reqInfo))
 	return 1;
-    }
 
-    if (reqFlags & RPMSENSE_SERIAL) {
-	if (!headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epoch, &count)) {
+    /* Get package information from header */
+    headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epochval, &count);
+    if (epochval == NULL) {
+	/* XXX old behavior looks fishy */
+	if (reqFlags & RPMSENSE_SERIAL)
 	    return 0;
-	}
-	sprintf(buf, "%d", *epoch);
-	version = buf;
+	epoch = "0";
     } else {
-	headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
-	chptr = strrchr(reqInfo, '-');
-	if (chptr) {
-	    char *rv = alloca(strlen(reqInfo) + 1);
-	    strcpy(rv, reqInfo);
-	    rv[chptr - reqInfo] = '\0';
+	sprintf(buf, "%d", *epochval);
+	epoch = buf;
+    }
+    headerGetEntry(h, RPMTAG_VERSION, &type, (void **)&version, &count);
+    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **)&release, &count);
+
+    /* Parse requires version into components */
+    s = reqInfo;
+    while (*s && isdigit(*s)) s++;	/* s points to epoch terminator */
+    se = strrchr(s, '-');		/* se points to version terminator */
+
+    if (*s == ':' || se) {
+	char *rv = alloca(strlen(reqInfo) + 1);
+	strcpy(rv, reqInfo);
+	if (*s == ':') {
+	    reqEpoch = rv;
+	    rv[s - reqInfo] = '\0';
+	    reqVersion = rv + (s - reqInfo) + 1;
+	   if (*reqEpoch == '\0') reqEpoch = "0";
+	} else {
+	    reqEpoch = "0";
 	    reqVersion = rv;
-	    reqRelease = reqVersion + (chptr - reqInfo) + 1;
-	    if (*reqRelease) 
-		headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
-	    else
-		reqRelease = NULL;
+	}
+	if (se) {
+	    rv[se - reqInfo] = '\0';
+	    reqRelease = rv + (se - reqInfo) + 1;
 	}
     }
 
-    sense = rpmvercmp(version, reqVersion);
-    if (!sense && reqRelease) {
-	/* if a release number is given, use it to break ties */
-	sense = rpmvercmp(release, reqRelease);
+    /* Compare {package,rquires} epoch:version[-release] */
+    sense = rpmvercmp(epoch, reqEpoch);
+    if (sense == 0) {
+	sense = rpmvercmp(version, reqVersion);
+	if (sense == 0 && reqRelease && *reqRelease) {
+	    sense = rpmvercmp(release, reqRelease);
+	}
     }
 
     if ((reqFlags & RPMSENSE_LESS) && sense < 0) {
