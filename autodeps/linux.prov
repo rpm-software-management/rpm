@@ -46,16 +46,16 @@ done | sort -u
 #
 # --- Perl modules.
 [ -x /usr/lib/rpm/perl.prov ] &&
-    echo $filelist | tr [:blank:] \\n | grep '\.pm$' | /usr/lib/rpm/perl.prov | sort -u
+    echo $filelist | tr '[:blank:]' \\n | grep '\.pm$' | /usr/lib/rpm/perl.prov | sort -u
 
 #
 # --- Python modules.
 [ -x /usr/lib/rpm/python.prov -a -n "$pythonlist" ] &&
-    echo $pythonlist | tr [:blank:] \\n | /usr/lib/rpm/python.prov | sort -u
+    echo $pythonlist | tr '[:blank:]' \\n | /usr/lib/rpm/python.prov | sort -u
 
 #
 # --- Tcl modules.
 [ -x /usr/lib/rpm/tcl.prov -a -n "$tcllist" ] &&
-    echo $tcllist | tr [:blank:] \\n | /usr/lib/rpm/tcl.prov | sort -u
+    echo $tcllist | tr '[:blank:]' \\n | /usr/lib/rpm/tcl.prov | sort -u
 
 exit 0

@@ -9,11 +9,6 @@
 
 static int _debug = 0;
 
-/*@unchecked@*/
-extern int _ftp_debug;
-/*@unchecked@*/
-extern int _rpmio_debug;
-
 #define	FTPPATH		"ftp://porkchop/mnt/redhat/beehive/comps/dist/7.2-rpm"
 #define	DIRPATH		"/mnt/redhat/beehive/comps/dist/7.2-rpm"
 static char * dirpath = DIRPATH;

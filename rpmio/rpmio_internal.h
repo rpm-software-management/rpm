@@ -150,6 +150,10 @@ struct _FD_s {
 extern int _rpmio_debug;
 /*@=redecl@*/
 
+/*@-redecl@*/
+extern int _ftp_debug;
+/*@=redecl@*/
+
 #define DBG(_f, _m, _x) \
     if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x
 
