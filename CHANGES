@@ -25,6 +25,7 @@
 	- installs with --root use the /etc/passwd and /etc/group from
 	  the target directory
 	- added --initdb to aid in database initialization
+	- --queryformat can print items of type INT8
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
