@@ -9,6 +9,7 @@
 	- fix bug packing /usr/doc when last file was %dir
 	- added --last alias
 	- fix :depflags query format
+	- Group: i18n (like Summary:)
 	
 2.5 -> 2.5.1:
 	- fail if sources are not regular files

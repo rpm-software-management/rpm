@@ -342,7 +342,6 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
       case RPMTAG_RELEASE:
       case RPMTAG_URL:
 	SINGLE_TOKEN_ONLY;
-      case RPMTAG_GROUP:
 	/* These are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
 	    addMacro(&spec->macros, "PACKAGE_VERSION", field);
@@ -350,6 +349,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	    addMacro(&spec->macros, "PACKAGE_RELEASE", field);
 	}
 	/* fall through */
+      case RPMTAG_GROUP:
       case RPMTAG_SUMMARY:
       case RPMTAG_DISTRIBUTION:
       case RPMTAG_VENDOR:
@@ -513,7 +513,7 @@ static struct PreambleRec {
     {RPMTAG_COPYRIGHT,     0, 0, "license"},
     {RPMTAG_DISTRIBUTION,  0, 0, "distribution"},
     {RPMTAG_VENDOR,        0, 0, "vendor"},
-    {RPMTAG_GROUP,         0, 0, "group"},
+    {RPMTAG_GROUP,         0, 1, "group"},
     {RPMTAG_PACKAGER,      0, 0, "packager"},
     {RPMTAG_URL,           0, 0, "url"},
 /*    {RPMTAG_ROOT,          0, "root"}, */
