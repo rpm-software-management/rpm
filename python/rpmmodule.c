@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <glob.h>	/* XXX rpmio.h */
 #include <dirent.h>	/* XXX rpmio.h */
+#include <locale.h>
 
 #include "Python.h"
 #include "rpmlib.h"
@@ -28,8 +29,10 @@ typedef struct hdrObject_s hdrObject;
 /* rpmdb functions */
 static void rpmdbDealloc(rpmdbObject * s);
 static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name);
+#ifdef DYING
 static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args);
+#endif
 static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args);
@@ -87,31 +90,9 @@ static int rpmtransSetAttr(rpmtransObject * o, char * name,
 
 /* internal functions */
 static long tagNumFromPyObject (PyObject *item);
+static void mungeFilelist(Header h);
 
 /* Types */
-
-static PyMethodDef rpmModuleMethods[] = {
-    { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
-    { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS, NULL },
-    { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS, NULL },
-    { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
-    { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
-    { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
-    { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS, NULL },
-    { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
-    { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS, NULL },
-    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },
-    { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS, NULL },
-    { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS, NULL },
-    { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },
-    { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
-    { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
-    /* don't use me yet
-    { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL },
-    */
-    { NULL }
-} ;
-
 struct rpmdbObject_s {
     PyObject_HEAD;
     rpmdb db;
@@ -146,6 +127,26 @@ struct hdrObject_s {
 /* Data */
 
 static PyObject * pyrpmError;
+
+static PyMethodDef rpmModuleMethods[] = {
+    { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
+    { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS, NULL },
+    { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS, NULL },
+    { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
+    { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
+    { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
+    { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS, NULL },
+    { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
+    { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS, NULL },
+    { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },
+    { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS, NULL },
+    { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS, NULL },
+    { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },
+    { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
+    { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
+    { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL },
+    { NULL }
+} ;
 
 static PyMappingMethods hdrAsMapping = {
 	(inquiry) 0,			/* mp_length */
@@ -282,9 +283,7 @@ void initrpm(void) {
     const struct headerSprintfExtension * extensions = rpmHeaderFormats;
     struct headerSprintfExtension * ext;
 
-/*      i18ndomains = "redhat-dist"; */
-   
-/*      _rpmio_debug = -1;  */
+/*      _rpmio_debug = -1; */
     rpmReadConfigFiles(NULL, NULL);
 
     m = Py_InitModule("rpm", rpmModuleMethods);
@@ -420,7 +419,7 @@ void initrpm(void) {
 }
 
 /* make a header with _all_ the tags we need */
-void mungeFilelist(Header h)
+static void mungeFilelist(Header h)
 {
     const char ** fileNames = NULL;
     int count = 0;
@@ -1051,7 +1050,7 @@ rpmdbMINext(rpmdbMIObject * s, PyObject * args) {
     ho->uids = ho->gids = ho->mtimes = ho->fileSizes = NULL;
     ho->modes = ho->rdevs = NULL;
     
-    return ho;
+    return (PyObject *) ho;
 }
 
 /* methods for rpmdbMatchIterator object */
@@ -1771,6 +1770,7 @@ typedef struct FDlist_t FDlist;
 struct FDlist_t {
     FILE *f;
     FD_t fd;
+    char *note;
     FDlist *next;
 } ;
 
@@ -1780,6 +1780,8 @@ static FDlist *fdtail = NULL;
 static int closeCallback(FILE * f) {
     FDlist *node, *last;
 
+    printf ("close callback on %p\n", f);
+    
     node = fdhead;
     last = NULL;
     while (node) {
@@ -1793,7 +1795,8 @@ static int closeCallback(FILE * f) {
             last->next = node->next;
         else
             fdhead = node->next;
-        printf ("closing\n");
+        printf ("closing %s %p\n", node->note, node->fd);
+	free (node->note);
         node->fd = fdLink(node->fd, "closeCallback");
         Fclose (node->fd);
         while (node->fd)
@@ -1814,7 +1817,8 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
     
     node->fd = Fopen(path, mode);
     node->fd = fdLink(node->fd, "doFopen");
-    
+    node->note = strdup (path);
+
     if (!node->fd) {
 	PyErr_SetFromErrno(pyrpmError);
         free (node);
@@ -1830,6 +1834,7 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
 	}
     }
     node->f = fdGetFp(node->fd);
+    printf ("opening %s fd = %p f = %p\n", node->note, node->fd, node->f);
     if (!node->f) {
 	PyErr_SetString(pyrpmError, "FD_t has no FILE*");
         free(node);
@@ -1837,7 +1842,9 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
     }
 
     node->next = NULL;
-    if (fdtail) {
+    if (!fdhead) {
+	fdhead = fdtail = node;
+    } else if (fdtail) {
         fdtail->next = node;
     } else {
         fdhead = node;

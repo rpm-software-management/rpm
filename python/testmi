@@ -5,7 +5,7 @@ def printresult (name, mi):
     print name
     h = mi.next()
     while h:
-        print "\t%s-%s-%s" % (h['name'], h['version'], h['release'])
+        print "\t%(name)s-%(version)s-%(release)s" % h
         h = mi.next()    
 
 db = rpm.opendb(0)
