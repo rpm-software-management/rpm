@@ -83,6 +83,9 @@ rm -rf \$RPM_BUILD_ROOT
 eval `perl '-V:installarchlib'`
 mkdir -p \$RPM_BUILD_ROOT/\$installarchlib
 make PREFIX=\$RPM_BUILD_ROOT/usr install
+
+[ -x /usr/lib/rpm/brp-compress ] && /usr/lib/rpm/brp-compress
+
 find \$RPM_BUILD_ROOT/usr -type f -print | \
 	sed \"s\@^\$RPM_BUILD_ROOT\@\@g\" | \
 	grep -v perllocal.pod | \
