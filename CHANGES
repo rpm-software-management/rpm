@@ -11,6 +11,9 @@
 	- add Disttag: syntax to spec file parser and header content.
 	- define Suggests:/Enhances: and Priority: tag values.
 	- prevent RPMSENSE_PREREQ from being set or tested.
+	- python: add rpm.ps() object to carry problem set info.
+	- python: permit rpm.ds() analogue to hdr.dsFromHeader() creator.
+	- python: permit rpm.fi() analogue to hdr.fiFromHeader() creator.
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.
