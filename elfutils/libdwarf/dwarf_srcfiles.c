@@ -43,8 +43,10 @@ struct filelist
 
 
 static int
-read_file_names (Dwarf_Debug dbg, char *comp_dir, Dwarf_Small **linepp,
-		 char ***result, Dwarf_Signed *nresult, Dwarf_Error *error)
+read_file_names (Dwarf_Debug dbg, /*@null@*/ char *comp_dir,
+		 Dwarf_Small **linepp, char ***result, Dwarf_Signed *nresult,
+		 Dwarf_Error *error)
+	/*@modifies *linepp, *result, *nresult, *error @*/
 {
   Dwarf_Small *linep = *linepp;
   struct dirlist comp_dir_elem;
@@ -169,11 +171,8 @@ read_file_names (Dwarf_Debug dbg, char *comp_dir, Dwarf_Small **linepp,
 
 
 int
-dwarf_srcfiles (die, srcfiles, srcfilecount, error)
-     Dwarf_Die die;
-     char ***srcfiles;
-     Dwarf_Signed *srcfilecount;
-     Dwarf_Error *error;
+dwarf_srcfiles (Dwarf_Die die, char ***srcfiles, Dwarf_Signed *srcfilecount,
+		Dwarf_Error *error)
 {
   Dwarf_CU_Info cu = die->cu;
   Dwarf_Debug dbg = cu->dbg;

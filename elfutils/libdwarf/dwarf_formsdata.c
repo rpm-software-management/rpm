@@ -25,10 +25,8 @@
 
 
 int
-dwarf_formsdata (attr, return_sval, error)
-     Dwarf_Attribute attr;
-     Dwarf_Signed *return_sval;
-     Dwarf_Error *error;
+dwarf_formsdata (Dwarf_Attribute attr, Dwarf_Signed *return_sval,
+		Dwarf_Error *error)
 {
   Dwarf_Signed u128;
 

@@ -83,5 +83,5 @@ EXTRA_DIST = libelf.map
 
 .PSEUDO: lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(GCC_INCLUDE) -f $(top_srcdir)/splint.rc \
+	$(LINT) $(DEFS) $(INCLUDES) $(GCC_INCLUDE) \
 		$(addprefix $(srcdir)/,$(libelf_la_SOURCES))

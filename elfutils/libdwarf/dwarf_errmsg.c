@@ -25,6 +25,7 @@
 /* Map error values to strings.  */
 /* XXX This table should avoid string pointers.  Fixing it can wait
    until the code is stable.  */
+/*@unchecked@*/
 static const char *msgs[] =
 {
   [DW_E_NOERROR] = N_("no error"),
@@ -53,6 +54,7 @@ static const char *msgs[] =
   [DW_E_VERSION_ERROR] = N_("version mismatch"),
   [DW_E_INVALID_DIR_IDX] = N_("invalid directory index"),
   [DW_E_INVALID_ADDR] = N_("invalid address"),
+  [DW_E_NO_ABBR] = N_("no valid abbreviation"),
 };
 #define nmsgs (sizeof (msgs) / sizeof (msgs[0]))
 

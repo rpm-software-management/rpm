@@ -25,11 +25,8 @@
 
 
 int
-dwarf_attr (die, attr, return_attr, error)
-     Dwarf_Die die;
-     Dwarf_Half attr;
-     Dwarf_Attribute *return_attr;
-     Dwarf_Error *error;
+dwarf_attr (Dwarf_Die die, Dwarf_Half attr, Dwarf_Attribute *return_attr,
+		Dwarf_Error *error)
 {
   Dwarf_Debug dbg = die->cu->dbg;
   Dwarf_Small *die_addr;

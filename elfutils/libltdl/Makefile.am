@@ -9,6 +9,8 @@ else
 noinst_HEADERS = ltdl.h
 endif
 
+LINT = splint
+
 if CONVENIENCE_LTDL
 noinst_LTLIBRARIES = libltdlc.la
 endif
@@ -46,3 +48,8 @@ local-install-files: $(DISTFILES)
 	    || cp $$d/$$file $(DESTDIR)$(datadir)/libtool/libltdl/$$file || :; \
 	  fi; \
 	done
+
+.PSEUDO: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(GCC_INCLUDE) -f $(top_srcdir)/splint.rc \
+		$(addprefix $(srcdir)/,$(libltdl_la_SOURCES))

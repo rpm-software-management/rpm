@@ -23,12 +23,9 @@
 
 
 int
-dwarf_get_arange_info (arange, start, length, cu_die_offset, error)
-     Dwarf_Arange arange;
-     Dwarf_Addr *start;
-     Dwarf_Unsigned *length;
-     Dwarf_Off *cu_die_offset;
-     Dwarf_Error *error;
+dwarf_get_arange_info (Dwarf_Arange arange, Dwarf_Addr *start,
+		Dwarf_Unsigned *length, Dwarf_Off *cu_die_offset,
+		Dwarf_Error *error)
 {
   Dwarf_Small *cu_header;
   unsigned int offset_size;

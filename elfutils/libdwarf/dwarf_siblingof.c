@@ -26,11 +26,8 @@
 
 
 int
-dwarf_siblingof (dbg, die, return_sub, error)
-     Dwarf_Debug dbg;
-     Dwarf_Die die;
-     Dwarf_Die *return_sub;
-     Dwarf_Error *error;
+dwarf_siblingof (Dwarf_Debug dbg, Dwarf_Die die, Dwarf_Die *return_sub,
+		Dwarf_Error *error)
 {
   Dwarf_Small *die_addr;
   Dwarf_CU_Info cu;
@@ -44,7 +41,7 @@ dwarf_siblingof (dbg, die, return_sub, error)
     {
       Dwarf_Unsigned die_offset;
 
-      /* We are supposedto return the DW_TAG_compile_unit die for the
+      /* We are supposed to return the DW_TAG_compile_unit die for the
 	 current compile unit.  For this to succeed the user must have
 	 looked for the compile unit before.  */
       if (dbg->cu_list_current == NULL)

@@ -25,10 +25,7 @@
 
 
 int
-dwarf_child (die, return_kid, error)
-     Dwarf_Die die;
-     Dwarf_Die *return_kid;
-     Dwarf_Error *error;
+dwarf_child (Dwarf_Die die, Dwarf_Die *return_kid, Dwarf_Error *error)
 {
   Dwarf_Debug dbg = die->cu->dbg;
   Dwarf_Abbrev abbrev;

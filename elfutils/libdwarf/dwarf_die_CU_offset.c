@@ -23,10 +23,8 @@
 
 
 int
-dwarf_die_CU_offset (die, return_offset, error)
-     Dwarf_Die die;
-     Dwarf_Off *return_offset;
-     Dwarf_Error *error;
+dwarf_die_CU_offset (Dwarf_Die die, Dwarf_Off *return_offset,
+		Dwarf_Error *error)
 {
   *return_offset =
     (die->addr

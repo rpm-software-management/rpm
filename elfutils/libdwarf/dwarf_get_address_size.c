@@ -23,10 +23,8 @@
 
 
 int
-dwarf_get_address_size (dbg, addr_size, error)
-     Dwarf_Debug dbg;
-     Dwarf_Half *addr_size;
-     Dwarf_Error *error;
+dwarf_get_address_size (Dwarf_Debug dbg, Dwarf_Half *addr_size,
+		Dwarf_Error *error)
 {
   *addr_size = elf_getident (dbg->elf, NULL)[EI_CLASS] == ELFCLASS64 ? 8 : 4;
   return DW_DLV_OK;

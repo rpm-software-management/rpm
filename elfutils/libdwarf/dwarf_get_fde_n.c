@@ -23,11 +23,8 @@
 
 
 int
-dwarf_get_fde_n (fde_data, fde_index, returned_fde, error)
-     Dwarf_Fde *fde_data;
-     Dwarf_Unsigned fde_index;
-     Dwarf_Fde *returned_fde;
-     Dwarf_Error *error;
+dwarf_get_fde_n (Dwarf_Fde *fde_data, Dwarf_Unsigned fde_index,
+		Dwarf_Fde *returned_fde, Dwarf_Error *error)
 {
   Dwarf_Debug dbg = fde_data[0]->cie->dbg;
 

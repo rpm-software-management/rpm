@@ -26,11 +26,9 @@
 
 
 Dwarf_Abbrev
-__libdwarf_get_abbrev (dbg, cu, code, error)
-     Dwarf_Debug dbg;
-     Dwarf_CU_Info cu;
-     Dwarf_Word code;
-     Dwarf_Error *error;
+internal_function
+__libdwarf_get_abbrev (Dwarf_Debug dbg, Dwarf_CU_Info cu, Dwarf_Word code,
+		Dwarf_Error *error)
 {
   Dwarf_Abbrev ent;
 
@@ -71,5 +69,6 @@ __libdwarf_get_abbrev (dbg, cu, code, error)
     }
 
   /* If we come here we haven't found anything.  */
+  __libdwarf_error (dbg, error, DW_E_NO_ABBR);
   return NULL;
 }

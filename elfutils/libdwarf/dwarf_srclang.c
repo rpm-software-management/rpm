@@ -25,10 +25,7 @@
 
 
 int
-dwarf_srclang (die, return_lang, error)
-     Dwarf_Die die;
-     Dwarf_Unsigned *return_lang;
-     Dwarf_Error *error;
+dwarf_srclang (Dwarf_Die die, Dwarf_Unsigned *return_lang, Dwarf_Error *error)
 {
   return __libdwarf_getconstant (die, DW_AT_language, return_lang, error);
 }

@@ -25,10 +25,8 @@
 
 
 int
-dwarf_bitoffset (die, return_size, error)
-     Dwarf_Die die;
-     Dwarf_Unsigned *return_size;
-     Dwarf_Error *error;
+dwarf_bitoffset (Dwarf_Die die, Dwarf_Unsigned *return_size,
+		Dwarf_Error *error)
 {
   return __libdwarf_getconstant (die, DW_AT_bit_offset, return_size, error);
 }

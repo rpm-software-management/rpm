@@ -25,10 +25,8 @@
 
 
 int
-dwarf_global_formref (attr, return_offset, error)
-     Dwarf_Attribute attr;
-     Dwarf_Off *return_offset;
-     Dwarf_Error *error;
+dwarf_global_formref (Dwarf_Attribute attr, Dwarf_Off *return_offset,
+		Dwarf_Error *error)
 {
   switch (attr->form)
     {

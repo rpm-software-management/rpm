@@ -176,7 +176,7 @@ extern off_t elf_getbase (Elf *__elf)
 
 
 /* Retrieve file identification data.  */
-extern char *elf_getident (Elf *__elf, size_t *ptr)
+extern char *elf_getident (Elf *__elf, /*@null@*/ size_t *ptr)
 	/*@modifies *ptr @*/;
 
 /* Retrieve class-dependent object file header.  */
@@ -219,7 +219,7 @@ extern size_t elf_ndxscn (Elf_Scn *__scn)
 	/*@*/;
 
 /* Get section with next section index.  */
-extern Elf_Scn *elf_nextscn (Elf *__elf, Elf_Scn *__scn)
+extern Elf_Scn *elf_nextscn (Elf *__elf, /*@null@*/ Elf_Scn *__scn)
 	/*@*/;
 
 /* Create a new section and append it at the end of the table.  */

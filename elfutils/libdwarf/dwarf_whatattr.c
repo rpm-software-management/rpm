@@ -23,10 +23,8 @@
 
 
 int
-dwarf_whatattr (attr, return_attr, error)
-     Dwarf_Attribute attr;
-     Dwarf_Half *return_attr;
-     Dwarf_Error *error;
+dwarf_whatattr (Dwarf_Attribute attr, Dwarf_Half *return_attr,
+		Dwarf_Error *error)
 {
   *return_attr = attr->code;
   return DW_DLV_OK;

@@ -23,12 +23,9 @@
 
 
 int
-dwarf_get_arange (aranges, arange_count, address, return_arange, error)
-     Dwarf_Arange *aranges;
-     Dwarf_Unsigned arange_count;
-     Dwarf_Addr address;
-     Dwarf_Arange *return_arange;
-     Dwarf_Error *error;
+dwarf_get_arange (Dwarf_Arange *aranges, Dwarf_Unsigned arange_count,
+		Dwarf_Addr address, Dwarf_Arange *return_arange,
+		Dwarf_Error *error)
 {
   Dwarf_Unsigned cnt;
 

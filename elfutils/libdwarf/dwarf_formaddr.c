@@ -25,10 +25,8 @@
 
 
 int
-dwarf_formaddr (attr, return_addr, error)
-     Dwarf_Attribute attr;
-     Dwarf_Addr *return_addr;
-     Dwarf_Error *error;
+dwarf_formaddr (Dwarf_Attribute attr, Dwarf_Addr *return_addr,
+		Dwarf_Error *error)
 {
   if (unlikely (attr->form != DW_FORM_addr))
     {

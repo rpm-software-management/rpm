@@ -23,10 +23,7 @@
 
 
 int
-dwarf_get_elf_init (dbg, elf, error)
-     Dwarf_Debug dbg;
-     Elf **elf;
-     Dwarf_Error *error;
+dwarf_get_elf_init (Dwarf_Debug dbg, Elf **elf, Dwarf_Error *error)
 {
   if (dbg == NULL)
     return DW_DLV_ERROR;

@@ -25,12 +25,10 @@
 
 
 int
-dwarf_formref (attr, return_offset, error)
-     Dwarf_Attribute attr;
-     Dwarf_Off *return_offset;
-     Dwarf_Error *error;
+dwarf_formref (Dwarf_Attribute attr, Dwarf_Off *return_offset,
+		Dwarf_Error *error)
 {
-  switch (attr->code)
+  switch (attr->form)
     {
     case DW_FORM_ref1:
       *return_offset = *attr->valp;

@@ -25,10 +25,7 @@
 
 
 int
-dwarf_linesrc (line, return_linesrc, error)
-     Dwarf_Line line;
-     char **return_linesrc;
-     Dwarf_Error *error;
+dwarf_linesrc (Dwarf_Line line, char **return_linesrc, Dwarf_Error *error)
 {
   if (unlikely (line->file >= line->files->nfiles))
     {

@@ -23,10 +23,8 @@
 
 
 int
-dwarf_get_cu_die_offset (arange, return_offset, error)
-     Dwarf_Arange arange;
-     Dwarf_Off *return_offset;
-     Dwarf_Error *error;
+dwarf_get_cu_die_offset (Dwarf_Arange arange, Dwarf_Off *return_offset,
+		Dwarf_Error *error)
 {
   Dwarf_Small *cu_header;
   unsigned int offset_size;

@@ -23,13 +23,9 @@
 
 
 int
-dwarf_get_fde_at_pc (fde_data, pc_of_interest, returned_fde, lopc, hipc, error)
-     Dwarf_Fde *fde_data;
-     Dwarf_Addr pc_of_interest;
-     Dwarf_Fde *returned_fde;
-     Dwarf_Addr *lopc;
-     Dwarf_Addr *hipc;
-     Dwarf_Error *error;
+dwarf_get_fde_at_pc (Dwarf_Fde *fde_data, Dwarf_Addr pc_of_interest,
+		Dwarf_Fde *returned_fde, Dwarf_Addr *lopc, Dwarf_Addr *hipc,
+		Dwarf_Error *error)
 {
   Dwarf_Debug dbg = fde_data[0]->cie->dbg;
   int low = 0;

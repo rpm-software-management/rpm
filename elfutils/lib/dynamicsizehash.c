@@ -32,10 +32,8 @@
 
 
 static size_t
-lookup (htab, hval, val)
-     NAME *htab;
-     unsigned long int hval;
-     TYPE val;
+lookup (NAME *htab, unsigned long int hval, /*@null@*/ TYPE val)
+	/*@*/
 {
   /* First hash function: simply take the modul but prevent zero.  */
   size_t idx = 1 + hval % htab->size;
@@ -71,6 +69,7 @@ lookup (htab, hval, val)
 
 static void
 insert_entry_2 (NAME *htab, unsigned long int hval, size_t idx, TYPE data)
+	/*@modifies htab @*/
 {
 #ifdef ITERATE
   if (htab->table[idx].hashval == 0)
@@ -117,7 +116,7 @@ insert_entry_2 (NAME *htab, unsigned long int hval, size_t idx, TYPE data)
       first = htab->first;
       htab->first = NULL;
 #endif
-      htab->table = xcalloc ((1 + htab->size), sizeof (htab->table[0]));
+      htab->table = calloc ((1 + htab->size), sizeof (htab->table[0]));
       if (htab->table == NULL)
 	{
 	  /* We cannot enlarge the table.  Live with what we got.  This
@@ -163,9 +162,7 @@ int
 #define INIT(name) _INIT (name)
 #define _INIT(name) \
   name##_init
-INIT(NAME) (htab, init_size)
-     NAME *htab;
-     unsigned long int init_size;
+INIT(NAME) (NAME *htab, unsigned long int init_size)
 {
   /* We need the size to be a prime.  */
   init_size = next_prime (init_size);
@@ -176,7 +173,7 @@ INIT(NAME) (htab, init_size)
 #ifdef ITERATE
   htab->first = NULL;
 #endif
-  htab->table = (void *) xcalloc ((init_size + 1), sizeof (htab->table[0]));
+  htab->table = (void *) calloc ((init_size + 1), sizeof (htab->table[0]));
   if (htab->table == NULL)
     return -1;
 
@@ -188,8 +185,7 @@ int
 #define FREE(name) _FREE (name)
 #define _FREE(name) \
   name##_free
-FREE(NAME) (htab)
-     NAME *htab;
+FREE(NAME) (NAME *htab)
 {
   free (htab->table);
   return 0;
@@ -200,15 +196,12 @@ int
 #define INSERT(name) _INSERT (name)
 #define _INSERT(name) \
   name##_insert
-INSERT(NAME) (htab, hval, data)
-     NAME *htab;
-     unsigned long int hval;
-     TYPE data;
+INSERT(NAME) (NAME *htab, unsigned long int hval, TYPE data)
 {
   size_t idx;
 
   /* Make the hash value nonzero.  */
-  hval = hval ?: 1;
+  hval = hval ? hval : 1;
 
   idx = lookup (htab, hval, data);
 
@@ -227,15 +220,12 @@ int
 #define INSERT(name) _INSERT (name)
 #define _INSERT(name) \
   name##_overwrite
-INSERT(NAME) (htab, hval, data)
-     NAME *htab;
-     unsigned long int hval;
-     TYPE data;
+INSERT(NAME) (NAME *htab, unsigned long int hval, TYPE data)
 {
   size_t idx;
 
   /* Make the hash value nonzero.  */
-  hval = hval ?: 1;
+  hval = hval ? hval : 1;
 
   idx = lookup (htab, hval, data);
 
@@ -250,15 +240,12 @@ TYPE
 #define FIND(name) _FIND (name)
 #define _FIND(name) \
   name##_find
-FIND(NAME) (htab, hval, val)
-     NAME *htab;
-     unsigned long int hval;
-     TYPE val;
+FIND(NAME) (NAME *htab, unsigned long int hval, TYPE val)
 {
   size_t idx;
 
   /* Make the hash value nonzero.  */
-  hval = hval ?: 1;
+  hval = hval ? hval : 1;
 
   idx = lookup (htab, hval, val);
 
@@ -274,9 +261,7 @@ FIND(NAME) (htab, hval, val)
 # define _ITERATEFCT(name) \
   name##_iterate
 TYPE
-ITERATEFCT(NAME) (htab, ptr)
-     NAME *htab;
-     void **ptr;
+ITERATEFCT(NAME) (NAME *htab, void **ptr)
 {
 # define TYPENAME(name) _TYPENAME (name)
 # define _TYPENAME(name) \

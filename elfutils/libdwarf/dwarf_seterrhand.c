@@ -23,9 +23,7 @@
 
 
 Dwarf_Handler
-dwarf_seterrhand (dbg, errhand)
-     Dwarf_Debug dbg;
-     Dwarf_Handler errhand;
+dwarf_seterrhand (Dwarf_Debug dbg, Dwarf_Handler errhand)
 {
   Dwarf_Handler old = dbg->dbg_errhand;
   dbg->dbg_errhand = errhand;

@@ -23,8 +23,7 @@
 
 
 char *
-dwarf_find_macro_value_start (macro_string)
-     char *macro_string;
+dwarf_find_macro_value_start (char *macro_string)
 {
   int with_paren = 0;
 

@@ -84,6 +84,7 @@ struct Dwarf_Debug_s
     {
       /* This is the information the 'dwarf_next_cu_header' function
 	 is supposed to return.  */
+      Dwarf_Unsigned header_length;
       Dwarf_Unsigned length;
       Dwarf_Unsigned abbrev_offset;
       Dwarf_Half version_stamp;
@@ -100,9 +101,12 @@ struct Dwarf_Debug_s
 
       Dwarf_Debug dbg;
 
+/*@relnull@*/
       struct Dwarf_CU_Info_s *next;
     } *cu_list;
+/*@relnull@*/
     struct Dwarf_CU_Info_s *cu_list_current;
+/*@relnull@*/
     struct Dwarf_CU_Info_s *cu_list_tail;
 
     Dwarf_Unsigned cie_cnt;
@@ -113,7 +117,7 @@ typedef struct Dwarf_CU_Info_s *Dwarf_CU_Info;
 
 /* Memory access macros.  We have to define it here since code in the
    header needs to know the structure of Dwarf_Debug.  */
-#include <memory-access.h>
+#include "memory-access.h"
 
 
 /* DWARF die representation.  */
@@ -281,110 +285,43 @@ enum
     DW_E_VERSION_ERROR,
     DW_E_INVALID_DIR_IDX,
     DW_E_INVALID_ADDR,
+    DW_E_NO_ABBR,
   };
 
 
 /* Handle error according to user's wishes.  */
-extern void __libdwarf_error (Dwarf_Debug dbg, Dwarf_Error *error, int errval)
-     internal_function;
+extern void __libdwarf_error (Dwarf_Debug dbg, Dwarf_Error *err, int errval)
+     internal_function
+	/*@modifies *err @*/;
 
 
 /* Find CU at given offset.  */
 extern int __libdwarf_get_cu_at_offset (Dwarf_Debug dbg, Dwarf_Unsigned offset,
 					Dwarf_CU_Info *result_cu,
-					Dwarf_Error *error) internal_function;
+					Dwarf_Error *err) internal_function
+	/*@modifies dbg, *result_cu, *err @*/;
 
 /* Find abbreviation.  */
+/*@null@*/
 extern Dwarf_Abbrev __libdwarf_get_abbrev (Dwarf_Debug dbg,
 					   Dwarf_CU_Info cu,
 					   Dwarf_Word code,
-					   Dwarf_Error *error)
-     internal_function;
+					   Dwarf_Error *err)
+     internal_function
+	/*@modifies cu, *err @*/;
 
 /* Get constant type attribute value.  */
 extern int __libdwarf_getconstant (Dwarf_Die die, Dwarf_Half name,
 				   Dwarf_Unsigned *return_size,
-				   Dwarf_Error *error) internal_function;
+				   Dwarf_Error *err) internal_function
+	/*@modifies die, *return_size, *err @*/;
 
 /* Determine length of form parameters.  */
 extern int __libdwarf_form_val_len (Dwarf_Debug dbg, Dwarf_CU_Info cu,
 				    Dwarf_Word form, Dwarf_Small *valp,
-				    size_t *len, Dwarf_Error *error)
-     internal_function;
-
-
-/* Number decoding macros.  See 7.6 Variable Length Data.  */
-#define get_uleb128(var, addr) \
-  do {									      \
-    Dwarf_Small __b = *addr++;						      \
-    var = __b & 0x7f;							      \
-    if (__b & 0x80)							      \
-      {									      \
-	__b = *addr++;							      \
-	var |= (__b & 0x7f) << 7;					      \
-	if (__b & 0x80)							      \
-	  {								      \
-	    __b = *addr++;						      \
-	    var |= (__b & 0x7f) << 14;					      \
-	    if (__b & 0x80)						      \
-	      {								      \
-		__b = *addr++;						      \
-		var |= (__b & 0x7f) << 21;				      \
-		if (__b & 0x80)						      \
-		  /* Other implementation set VALUE to UINT_MAX in this	      \
-		     case.  So we better do this as well.  */		      \
-		  var = UINT_MAX;					      \
-	      }								      \
-	  }								      \
-      }									      \
-  } while (0)
-
-/* The signed case is a big more complicated.  */
-#define get_sleb128(var, addr) \
-  do {									      \
-    Dwarf_Small __b = *addr++;						      \
-    int32_t __res = __b & 0x7f;						      \
-    if ((__b & 0x80) == 0)						      \
-      {									      \
-	if (__b & 0x40)							      \
-	  __res |= 0xffffff80;						      \
-      }									      \
-    else								      \
-      {									      \
-	__b = *addr++;							      \
-	__res |= (__b & 0x7f) << 7;					      \
-	if ((__b & 0x80) == 0)						      \
-	  {								      \
-	    if (__b & 0x40)						      \
-	      __res |= 0xffffc000;					      \
-	  }								      \
-	else								      \
-	  {								      \
-	    __b = *addr++;						      \
-	    __res |= (__b & 0x7f) << 14;				      \
-	    if ((__b & 0x80) == 0)					      \
-	      {								      \
-		if (__b & 0x40)						      \
-		  __res |= 0xffe00000;					      \
-	      }								      \
-	    else							      \
-	      {								      \
-		__b = *addr++;						      \
-		__res |= (__b & 0x7f) << 21;				      \
-		if ((__b & 0x80) == 0)					      \
-		  {							      \
-		    if (__b & 0x40)					      \
-		      __res |= 0xf0000000;				      \
-		  }							      \
-		else							      \
-		  /* Other implementation set VALUE to INT_MAX in this	      \
-		     case.  So we better do this as well.  */		      \
-		  __res = INT_MAX;					      \
-	      }								      \
-	  }								      \
-      }									      \
-    var = __res;							      \
-  } while (0)
+				    size_t *len, Dwarf_Error *err)
+     internal_function
+	/*@modifies *valp, *len, *err @*/;
 
 
 /* gettext helper macros.  */

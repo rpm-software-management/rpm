@@ -27,8 +27,10 @@
 
 /* XXX This function will have to be optimized.  The search is too linear
    to be performed too often -> O(n²).  */
+/*@null@*/
 static Dwarf_CU_Info
 find_cu (Dwarf_Debug dbg, Dwarf_Off offset, Dwarf_Error *error)
+	/*@modifies dbg, *error @*/
 {
   Dwarf_CU_Info cu;
   Dwarf_Word cu_offset;
@@ -65,11 +67,8 @@ find_cu (Dwarf_Debug dbg, Dwarf_Off offset, Dwarf_Error *error)
 
 
 int
-dwarf_offdie (dbg, offset, return_die, error)
-     Dwarf_Debug dbg;
-     Dwarf_Off offset;
-     Dwarf_Die *return_die;
-     Dwarf_Error *error;
+dwarf_offdie (Dwarf_Debug dbg, Dwarf_Off offset, Dwarf_Die *return_die,
+		Dwarf_Error *error)
 {
   Dwarf_CU_Info cu;
   Dwarf_Die new_die;

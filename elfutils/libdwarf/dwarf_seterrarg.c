@@ -23,9 +23,7 @@
 
 
 Dwarf_Ptr
-dwarf_seterrarg (dbg, errarg)
-     Dwarf_Debug dbg;
-     Dwarf_Ptr errarg;
+dwarf_seterrarg (Dwarf_Debug dbg, Dwarf_Ptr errarg)
 {
   Dwarf_Ptr old = dbg->dbg_errarg;
   dbg->dbg_errarg = errarg;

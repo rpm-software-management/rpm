@@ -26,12 +26,8 @@
 
 
 int
-dwarf_global_name_offsets (global, return_name, die_offset, cu_offset, error)
-     Dwarf_Global global;
-     char **return_name;
-     Dwarf_Off *die_offset;
-     Dwarf_Off *cu_offset;
-     Dwarf_Error *error;
+dwarf_global_name_offsets (Dwarf_Global global, char **return_name,
+		Dwarf_Off *die_offset, Dwarf_Off *cu_offset, Dwarf_Error *error)
 {
   if (return_name != NULL)
     {

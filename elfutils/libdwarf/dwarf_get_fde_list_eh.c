@@ -41,14 +41,9 @@ struct fdelist
 
 
 int
-dwarf_get_fde_list_eh (dbg, cie_data, cie_element_count, fde_data,
-		       fde_element_count, error)
-     Dwarf_Debug dbg;
-     Dwarf_Cie **cie_data;
-     Dwarf_Signed *cie_element_count;
-     Dwarf_Fde **fde_data;
-     Dwarf_Signed *fde_element_count;
-     Dwarf_Error *error;
+dwarf_get_fde_list_eh (Dwarf_Debug dbg, Dwarf_Cie **cie_data,
+		Dwarf_Signed *cie_element_count, Dwarf_Fde **fde_data,
+		Dwarf_Signed *fde_element_count, Dwarf_Error *error)
 {
   Dwarf_Small *readp;
   Dwarf_Small *readendp;

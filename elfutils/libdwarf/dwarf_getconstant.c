@@ -25,11 +25,9 @@
 
 
 int
-__libdwarf_getconstant (die, name, return_size, error)
-     Dwarf_Die die;
-     Dwarf_Half name;
-     Dwarf_Unsigned *return_size;
-     Dwarf_Error *error;
+internal_function
+__libdwarf_getconstant (Dwarf_Die die, Dwarf_Half name,
+		Dwarf_Unsigned *return_size, Dwarf_Error *error)
 {
   Dwarf_Debug dbg = die->cu->dbg;
   Dwarf_Small *die_addr;

@@ -1,0 +1,88 @@
++partial
++forcehints
+
+-warnunixlib
+-warnposix
+
+#+unixlib
++posixlib
+
++strict			# lclint level
+
+# --- in progress
+-branchstate
+-compdef		# 34
+-compmempass		# 17
+-internalglobs
+-moduncon		# 3
+-noeffect		# 1
+-noeffectuncon		# 19
+-nullderef		# 2
+-nullpass		# 1
+-nullptrarith		# 16
+-nullstate		# 11
+-paramuse
+-protoparammatch
+-retalias		# 12
+-retvalint
+-shadow			# 2
+-sysunrecog
+-type
+-unrecog		# 8
+-usereleased		# 21
+
+-dependenttrans		# 7
+-immediatetrans		# 35
+-kepttrans		# 13
+-onlytrans		# 2
+-temptrans		# 15
+-unqualifiedtrans	# 6
+
+-casebreak
+-ifempty
+-loopswitchbreak
+-sizeoftype
+
+# --- +partial artifacts
+-declundef
+-exportheader
+-exportheadervar
+-exportlocal
+
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
+
+# --- not-yet at strict level
+-bitwisesigned
+-elseifcomplete
+-exportconst
+-exportfcn
+-exporttype
+-exportvar
+-fielduse
+-forblock               # tedious
+-ifblock                # tedious
+-namechecks             # tedious ANSI compliance checks
+-ptrarith               # tedious
+
+-compdestroy
+-mustdefine
+-sys-dir-errors
+
+-strictops
+-whileblock             # tedious
+
+# --- not-yet at checks level
++enumint
+-mustfree
+-predboolptr
+-usedef
+
+# --- not-yet at standard level
+-boolops
++boolint
++charint
++ignorequals
++matchanyintegral

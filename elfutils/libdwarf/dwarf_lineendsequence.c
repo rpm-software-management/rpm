@@ -23,10 +23,8 @@
 
 
 int
-dwarf_lineendsequence (line, return_bool, error)
-     Dwarf_Line line;
-     Dwarf_Bool *return_bool;
-     Dwarf_Error *error;
+dwarf_lineendsequence (Dwarf_Line line, Dwarf_Bool *return_bool,
+		Dwarf_Error *error)
 {
   *return_bool = line->end_sequence;
   return DW_DLV_OK;

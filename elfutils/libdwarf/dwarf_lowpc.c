@@ -25,10 +25,7 @@
 
 
 int
-dwarf_lowpc (die, return_lowpc, error)
-     Dwarf_Die die;
-     Dwarf_Addr *return_lowpc;
-     Dwarf_Error *error;
+dwarf_lowpc (Dwarf_Die die, Dwarf_Addr *return_lowpc, Dwarf_Error *error)
 {
   Dwarf_Debug dbg = die->cu->dbg;
   Dwarf_Small *die_addr;

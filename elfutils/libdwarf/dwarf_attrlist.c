@@ -32,11 +32,8 @@ struct attrlist
 
 
 int
-dwarf_attrlist (die, attrbuf, attrcount, error)
-     Dwarf_Die die;
-     Dwarf_Attribute **attrbuf;
-     Dwarf_Signed *attrcount;
-     Dwarf_Error *error;
+dwarf_attrlist (Dwarf_Die die, Dwarf_Attribute **attrbuf,
+		Dwarf_Signed *attrcount, Dwarf_Error *error)
 {
   Dwarf_Debug dbg = die->cu->dbg;
   Dwarf_Small *die_addr;
@@ -149,7 +146,11 @@ dwarf_attrlist (die, attrbuf, attrcount, error)
     }
 
   if (nattr == 0)
-    return DW_DLV_NO_ENTRY;
+    {
+      *attrcount = 0;
+      *attrbuf = NULL;
+      return DW_DLV_NO_ENTRY;
+    }
 
   /* Allocate the array for the result.  */
   result = (Dwarf_Attribute *) malloc (nattr * sizeof (Dwarf_Attribute));

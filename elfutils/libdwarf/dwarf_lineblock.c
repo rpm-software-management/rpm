@@ -23,10 +23,7 @@
 
 
 int
-dwarf_lineblock (line, return_bool, error)
-     Dwarf_Line line;
-     Dwarf_Bool *return_bool;
-     Dwarf_Error *error;
+dwarf_lineblock (Dwarf_Line line, Dwarf_Bool *return_bool, Dwarf_Error *error)
 {
   *return_bool = line->basic_block;
   return DW_DLV_OK;

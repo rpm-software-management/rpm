@@ -23,20 +23,14 @@
 
 
 int
-dwarf_get_cie_info (cie, bytes_in_cie, version, augmenter,
-		    code_alignment_factor, data_alignment_factor,
-		    return_address_register, initial_instructions,
-		    initial_instructions_length, error)
-     Dwarf_Cie cie;
-     Dwarf_Unsigned *bytes_in_cie;
-     Dwarf_Small *version;
-     char **augmenter;
-     Dwarf_Unsigned *code_alignment_factor;
-     Dwarf_Signed *data_alignment_factor;
-     Dwarf_Half *return_address_register;
-     Dwarf_Ptr *initial_instructions;
-     Dwarf_Unsigned *initial_instructions_length;
-     Dwarf_Error *error;
+dwarf_get_cie_info (Dwarf_Cie cie, Dwarf_Unsigned *bytes_in_cie,
+		Dwarf_Small *version, char **augmenter,
+		Dwarf_Unsigned *code_alignment_factor,
+		Dwarf_Signed *data_alignment_factor,
+		Dwarf_Half *return_address_register,
+		Dwarf_Ptr *initial_instructions,
+		Dwarf_Unsigned *initial_instructions_length,
+		Dwarf_Error *error)
 {
   *bytes_in_cie = cie->length;
 

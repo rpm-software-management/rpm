@@ -21,6 +21,8 @@ AM_CFLAGS = -Wall -Werror -DOBJDIR=\"$(shell pwd)\"
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/libelf -I$(top_srcdir)/lib -I.. \
 	   $(INCLTDL)
 
+LINT = splint
+
 #lib_LTLIBRARIES = libebl.la
 #pkglib_LTLIBRARIES = libebl_i386.la libebl_sh.la libebl_mips.la
 noinst_LTLIBRARIES = libebl.la \
@@ -59,3 +61,8 @@ libebl_sh_la_DEPENDENCIES = libebl_sh.map
 libebl_mips_la_SOURCES = mips_init.c mips_destr.c mips_symbol.c
 libebl_mips_la_LDFLAGS = -module -Wl,--version-script,$(srcdir)/libebl_mips.map
 libebl_mips_la_DEPENDENCIES = libebl_mips.map
+
+.PSEUDO: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(GCC_INCLUDE) -f $(top_srcdir)/splint.rc \
+		$(addprefix $(srcdir)/,$(libebl_la_SOURCES))

@@ -25,10 +25,8 @@
 
 
 int
-dwarf_global_die_offset (global, return_offset, error)
-     Dwarf_Global global;
-     Dwarf_Off *return_offset;
-     Dwarf_Error *error;
+dwarf_global_die_offset (Dwarf_Global global, Dwarf_Off *return_offset,
+		Dwarf_Error *error)
 {
   *return_offset = global->info->offset + global->offset;
 

@@ -22,10 +22,8 @@
 #include "libdwarfP.h"
 
 
-int dwarf_get_abbrev_code (abbrev, return_code, error)
-     Dwarf_Abbrev abbrev;
-     Dwarf_Unsigned *return_code;
-     Dwarf_Error *error;
+int dwarf_get_abbrev_code (Dwarf_Abbrev abbrev, Dwarf_Unsigned *return_code,
+		Dwarf_Error *error)
 {
   *return_code = abbrev->code;
   return DW_DLV_OK;

@@ -23,11 +23,8 @@
 
 
 int
-dwarf_get_fde_instr_bytes (fde, outinstrs, outlen, error)
-     Dwarf_Fde fde;
-     Dwarf_Ptr *outinstrs;
-     Dwarf_Unsigned *outlen;
-     Dwarf_Error *error;
+dwarf_get_fde_instr_bytes (Dwarf_Fde fde, Dwarf_Ptr *outinstrs,
+		Dwarf_Unsigned *outlen, Dwarf_Error *error)
 {
   *outinstrs = fde->instructions;
   *outlen = fde->instructions_length;

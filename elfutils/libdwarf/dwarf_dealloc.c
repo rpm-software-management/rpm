@@ -25,10 +25,7 @@
 
 
 void
-dwarf_dealloc (dbg, space, alloc_type)
-     Dwarf_Debug dbg;
-     Dwarf_Ptr space;
-     Dwarf_Unsigned alloc_type;
+dwarf_dealloc (Dwarf_Debug dbg, Dwarf_Ptr space, Dwarf_Unsigned alloc_type)
 {
   /* XXX For now we don't do anything fancy.  */
   free (space);

@@ -25,10 +25,8 @@
 
 
 int
-dwarf_formflag (attr, return_bool, error)
-     Dwarf_Attribute attr;
-     Dwarf_Bool *return_bool;
-     Dwarf_Error *error;
+dwarf_formflag (Dwarf_Attribute attr, Dwarf_Bool *return_bool,
+		Dwarf_Error *error)
 {
   if (unlikely (attr->form != DW_FORM_flag))
     {

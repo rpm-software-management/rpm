@@ -130,7 +130,12 @@ __libdwarf_get_cu_at_offset (Dwarf_Debug dbg, Dwarf_Unsigned offset,
   cu->last_abbrev_offset = cu->abbrev_offset;
 
   /* The address size.  Always an 8-bit value.  */
-  cu->address_size = *cu_bytes;
+  cu->address_size = *cu_bytes++;
+
+  /* Store the header length.  */
+  cu->header_length = (cu_bytes
+		       - ((Dwarf_Small *) dbg->sections[IDX_debug_info].addr
+			  + offset));
 
   /* Initilize a few more members.  */
   if (unlikely (Dwarf_Abbrev_Hash_init (&cu->abbrev_hash,
@@ -162,15 +167,10 @@ __libdwarf_get_cu_at_offset (Dwarf_Debug dbg, Dwarf_Unsigned offset,
 
 
 int
-dwarf_next_cu_header (dbg, cu_header_length, version_stamp, abbrev_offset,
-		      address_size, next_cu_header, error)
-     Dwarf_Debug dbg;
-     Dwarf_Unsigned *cu_header_length;
-     Dwarf_Half *version_stamp;
-     Dwarf_Unsigned *abbrev_offset;
-     Dwarf_Half *address_size;
-     Dwarf_Unsigned *next_cu_header;
-     Dwarf_Error *error;
+dwarf_next_cu_header (Dwarf_Debug dbg, Dwarf_Unsigned *cu_header_length,
+	Dwarf_Half *version_stamp, Dwarf_Unsigned *abbrev_offset,
+	Dwarf_Half *address_size, Dwarf_Unsigned *next_cu_header,
+	Dwarf_Error *error)
 {
   Dwarf_Unsigned offset_next_cu;
   Dwarf_CU_Info cu;
@@ -217,7 +217,7 @@ dwarf_next_cu_header (dbg, cu_header_length, version_stamp, abbrev_offset,
 
   /* Extract the information and put it where the user wants it.  */
   if (cu_header_length != NULL)
-    *cu_header_length = cu->length;
+    *cu_header_length = cu->header_length;
 
   if (version_stamp != NULL)
     *version_stamp = cu->version_stamp;

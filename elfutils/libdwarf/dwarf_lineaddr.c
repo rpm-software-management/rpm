@@ -23,10 +23,8 @@
 
 
 int
-dwarf_lineaddr (line, return_lineaddr, error)
-     Dwarf_Line line;
-     Dwarf_Addr *return_lineaddr;
-     Dwarf_Error *error;
+dwarf_lineaddr (Dwarf_Line line, Dwarf_Addr *return_lineaddr,
+		Dwarf_Error *error)
 {
   *return_lineaddr = line->addr;
   return DW_DLV_OK;

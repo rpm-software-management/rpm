@@ -22,10 +22,8 @@
 #include "libdwarfP.h"
 
 
-int dwarf_get_abbrev_children_flag (abbrev, return_flag, error)
-     Dwarf_Abbrev abbrev;
-     Dwarf_Signed *return_flag;
-     Dwarf_Error *error;
+int dwarf_get_abbrev_children_flag (Dwarf_Abbrev abbrev,
+		Dwarf_Signed *return_flag, Dwarf_Error *error)
 {
   *return_flag = abbrev->has_children;
   return DW_DLV_OK;

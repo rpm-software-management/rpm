@@ -26,13 +26,9 @@
 
 
 int
-dwarf_get_abbrev (dbg, offset, return_abbrev, length, attr_count, error)
-     Dwarf_Debug dbg;
-     Dwarf_Unsigned offset;
-     Dwarf_Abbrev *return_abbrev;
-     Dwarf_Unsigned *length;
-     Dwarf_Unsigned *attr_count;
-     Dwarf_Error *error;
+dwarf_get_abbrev (Dwarf_Debug dbg, Dwarf_Unsigned offset,
+		Dwarf_Abbrev *return_abbrev, Dwarf_Unsigned *length,
+		Dwarf_Unsigned *attr_count, Dwarf_Error *error)
 {
   Dwarf_Abbrev ent;
   Dwarf_Small *abbrevp;

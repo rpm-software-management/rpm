@@ -23,10 +23,8 @@
 
 
 int
-dwarf_lineprologueend (line, return_bool, error)
-     Dwarf_Line line;
-     Dwarf_Bool *return_bool;
-     Dwarf_Error *error;
+dwarf_lineprologueend (Dwarf_Line line, Dwarf_Bool *return_bool,
+		Dwarf_Error *error)
 {
   *return_bool = line->prologue_end;
   return DW_DLV_OK;

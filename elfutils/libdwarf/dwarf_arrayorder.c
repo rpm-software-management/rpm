@@ -25,10 +25,8 @@
 
 
 int
-dwarf_arrayorder (die, return_order, error)
-     Dwarf_Die die;
-     Dwarf_Unsigned *return_order;
-     Dwarf_Error *error;
+dwarf_arrayorder (Dwarf_Die die, Dwarf_Unsigned *return_order,
+		Dwarf_Error *error)
 {
   return __libdwarf_getconstant (die, DW_AT_ordering, return_order, error);
 }

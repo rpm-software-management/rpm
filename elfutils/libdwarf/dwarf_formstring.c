@@ -26,10 +26,8 @@
 
 
 int
-dwarf_formstring (attr, return_string, error)
-     Dwarf_Attribute attr;
-     char **return_string;
-     Dwarf_Error *error;
+dwarf_formstring (Dwarf_Attribute attr, char **return_string,
+		Dwarf_Error *error)
 {
   char *result;
 

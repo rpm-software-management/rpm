@@ -25,10 +25,8 @@
 
 
 int
-dwarf_global_cu_offset (global, return_offset, error)
-     Dwarf_Global global;
-     Dwarf_Off *return_offset;
-     Dwarf_Error *error;
+dwarf_global_cu_offset (Dwarf_Global global, Dwarf_Off *return_offset,
+		Dwarf_Error *error)
 {
   Dwarf_Small *cu_header;
   unsigned int offset_size;

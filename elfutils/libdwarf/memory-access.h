@@ -22,15 +22,83 @@
 #include <stdint.h>
 
 
-/* Which architectures support unaligned memory access?  */
-#ifdef __i386__
-# define USE_UNALIGNED_MEMORY_ACCESS
-#endif
+/* Number decoding macros.  See 7.6 Variable Length Data.  */
+#define get_uleb128(var, addr) \
+  do {									      \
+    Dwarf_Small __b = *addr++;						      \
+    var = __b & 0x7f;							      \
+    if (__b & 0x80)							      \
+      {									      \
+	__b = *addr++;							      \
+	var |= (__b & 0x7f) << 7;					      \
+	if (__b & 0x80)							      \
+	  {								      \
+	    __b = *addr++;						      \
+	    var |= (__b & 0x7f) << 14;					      \
+	    if (__b & 0x80)						      \
+	      {								      \
+		__b = *addr++;						      \
+		var |= (__b & 0x7f) << 21;				      \
+		if (__b & 0x80)						      \
+		  /* Other implementation set VALUE to UINT_MAX in this	      \
+		     case.  So we better do this as well.  */		      \
+		  var = UINT_MAX;					      \
+	      }								      \
+	  }								      \
+      }									      \
+  } while (0)
+
+/* The signed case is a big more complicated.  */
+#define get_sleb128(var, addr) \
+  do {									      \
+    Dwarf_Small __b = *addr++;						      \
+    int32_t __res = __b & 0x7f;						      \
+    if ((__b & 0x80) == 0)						      \
+      {									      \
+	if (__b & 0x40)							      \
+	  __res |= 0xffffff80;						      \
+      }									      \
+    else								      \
+      {									      \
+	__b = *addr++;							      \
+	__res |= (__b & 0x7f) << 7;					      \
+	if ((__b & 0x80) == 0)						      \
+	  {								      \
+	    if (__b & 0x40)						      \
+	      __res |= 0xffffc000;					      \
+	  }								      \
+	else								      \
+	  {								      \
+	    __b = *addr++;						      \
+	    __res |= (__b & 0x7f) << 14;				      \
+	    if ((__b & 0x80) == 0)					      \
+	      {								      \
+		if (__b & 0x40)						      \
+		  __res |= 0xffe00000;					      \
+	      }								      \
+	    else							      \
+	      {								      \
+		__b = *addr++;						      \
+		__res |= (__b & 0x7f) << 21;				      \
+		if ((__b & 0x80) == 0)					      \
+		  {							      \
+		    if (__b & 0x40)					      \
+		      __res |= 0xf0000000;				      \
+		  }							      \
+		else							      \
+		  /* Other implementation set VALUE to INT_MAX in this	      \
+		     case.  So we better do this as well.  */		      \
+		  __res = INT_MAX;					      \
+	      }								      \
+	  }								      \
+      }									      \
+    var = __res;							      \
+  } while (0)
 
 
 /* We use simple memory access functions in case the hardware allows it.
    The caller has to make sure we don't have alias problems.  */
-#ifdef USE_UNALIGNED_MEMORY_ACCESS
+#if ALLOW_UNALIGNED
 
 # define read_2ubyte_unaligned(Dbg, Addr) \
   ((Dbg)->other_byte_order						      \
@@ -78,6 +146,7 @@ union unaligned
 
 static inline uint16_t
 read_2ubyte_unaligned (Dwarf_Debug dbg, void *p)
+	/*@*/
 {
   union unaligned *up = p;
   if (dbg->other_byte_order)
@@ -86,6 +155,7 @@ read_2ubyte_unaligned (Dwarf_Debug dbg, void *p)
 }
 static inline int16_t
 read_2sbyte_unaligned (Dwarf_Debug dbg, void *p)
+	/*@*/
 {
   union unaligned *up = p;
   if (dbg->other_byte_order)
@@ -95,12 +165,14 @@ read_2sbyte_unaligned (Dwarf_Debug dbg, void *p)
 
 static inline uint32_t
 read_4ubyte_unaligned_noncvt (void *p)
+	/*@*/
 {
   union unaligned *up = p;
   return up->u4;
 }
 static inline uint32_t
 read_4ubyte_unaligned (Dwarf_Debug dbg, void *p)
+	/*@*/
 {
   union unaligned *up = p;
   if (dbg->other_byte_order)
@@ -109,6 +181,7 @@ read_4ubyte_unaligned (Dwarf_Debug dbg, void *p)
 }
 static inline int32_t
 read_4sbyte_unaligned (Dwarf_Debug dbg, void *p)
+	/*@*/
 {
   union unaligned *up = p;
   if (dbg->other_byte_order)
@@ -118,6 +191,7 @@ read_4sbyte_unaligned (Dwarf_Debug dbg, void *p)
 
 static inline uint64_t
 read_8ubyte_unaligned (Dwarf_Debug dbg, void *p)
+	/*@*/
 {
   union unaligned *up = p;
   if (dbg->other_byte_order)
@@ -126,6 +200,7 @@ read_8ubyte_unaligned (Dwarf_Debug dbg, void *p)
 }
 static inline int64_t
 read_8sbyte_unaligned (Dwarf_Debug dbg, void *p)
+	/*@*/
 {
   union unaligned *up = p;
   if (dbg->other_byte_order)

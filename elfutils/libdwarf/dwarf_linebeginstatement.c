@@ -23,10 +23,8 @@
 
 
 int
-dwarf_linebeginstatement (line, return_bool, error)
-     Dwarf_Line line;
-     Dwarf_Bool *return_bool;
-     Dwarf_Error *error;
+dwarf_linebeginstatement (Dwarf_Line line, Dwarf_Bool *return_bool,
+		Dwarf_Error *error)
 {
   *return_bool = line->is_stmt;
   return DW_DLV_OK;

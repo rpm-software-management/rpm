@@ -34,11 +34,8 @@ struct globallist
 
 /* Read the whole given section.  */
 int
-dwarf_get_globals (dbg, globals, return_count, error)
-     Dwarf_Debug dbg;
-     Dwarf_Global **globals;
-     Dwarf_Signed *return_count;
-     Dwarf_Error *error;
+dwarf_get_globals (Dwarf_Debug dbg, Dwarf_Global **globals,
+		Dwarf_Signed *return_count, Dwarf_Error *error)
 {
   Dwarf_Small *readp;
   Dwarf_Small *readendp;

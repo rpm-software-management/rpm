@@ -25,10 +25,7 @@
 
 
 int
-dwarf_globname (global, return_name, error)
-     Dwarf_Global global;
-     char **return_name;
-     Dwarf_Error *error;
+dwarf_globname (Dwarf_Global global, char **return_name, Dwarf_Error *error)
 {
   *return_name = strdup (global->name);
   if (*return_name == NULL)

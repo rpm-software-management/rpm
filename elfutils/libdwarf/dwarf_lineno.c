@@ -23,10 +23,8 @@
 
 
 int
-dwarf_lineno (line, return_lineno, error)
-     Dwarf_Line line;
-     Dwarf_Unsigned *return_lineno;
-     Dwarf_Error *error;
+dwarf_lineno (Dwarf_Line line, Dwarf_Unsigned *return_lineno,
+		Dwarf_Error *error)
 {
   *return_lineno = line->line;
   return DW_DLV_OK;

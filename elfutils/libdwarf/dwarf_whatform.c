@@ -23,10 +23,8 @@
 
 
 int
-dwarf_whatform (attr, return_form, error)
-     Dwarf_Attribute attr;
-     Dwarf_Half *return_form;
-     Dwarf_Error *error;
+dwarf_whatform (Dwarf_Attribute attr, Dwarf_Half *return_form,
+		Dwarf_Error *error)
 {
   *return_form = attr->form;
   return DW_DLV_OK;

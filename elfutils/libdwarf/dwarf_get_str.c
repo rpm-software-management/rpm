@@ -25,12 +25,8 @@
 
 
 int
-dwarf_get_str (dbg, offset, string, returned_str_len, error)
-     Dwarf_Debug dbg;
-     Dwarf_Off offset;
-     char **string;
-     Dwarf_Signed *returned_str_len;
-     Dwarf_Error *error;
+dwarf_get_str (Dwarf_Debug dbg, Dwarf_Off offset, char **string,
+		Dwarf_Signed *returned_str_len, Dwarf_Error *error)
 {
   *string = (char *) dbg->sections[IDX_debug_str].addr;
   if (*string == NULL)

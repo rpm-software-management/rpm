@@ -23,10 +23,7 @@
 
 
 int
-dwarf_get_cie_of_fde (fde, return_cie, error)
-     Dwarf_Fde fde;
-     Dwarf_Cie *return_cie;
-     Dwarf_Error *error;
+dwarf_get_cie_of_fde (Dwarf_Fde fde, Dwarf_Cie *return_cie, Dwarf_Error *error)
 {
   *return_cie = fde->cie;
   return DW_DLV_OK;

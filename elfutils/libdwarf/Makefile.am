@@ -20,6 +20,8 @@ DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -DDWARF_DEBUG
 AM_CFLAGS = -Wall -Werror
 INCLUDES = -I. -I$(srcdir) -I$(srcdir)/../libelf -I.. -I$(srcdir)/../lib
 
+LINT = splint
+
 #lib_LTLIBRARIES = libdwarf.la
 noinst_LTLIBRARIES = libdwarf.la
 
@@ -74,3 +76,9 @@ EXTRA_DIST = AVAILABLE libdwarf.map
 libdwarf_la_LDFLAGS = -Wl,--version-script,$(srcdir)/libdwarf.map
 libdwarf_la_LIBADD = ../lib/libeu.la ../libelf/libelf.la
 libdwarf_la_DEPENDENCIES = $(libdwarf_la_LIBADD) libdwarf.map
+
+.PSEUDO: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(GCC_INCLUDE) \
+		$(addprefix $(srcdir)/,$(libdwarf_la_SOURCES))
+

@@ -23,10 +23,7 @@
 
 
 int
-dwarf_dieoffset (die, return_offset, error)
-     Dwarf_Die die;
-     Dwarf_Off *return_offset;
-     Dwarf_Error *error;
+dwarf_dieoffset (Dwarf_Die die, Dwarf_Off *return_offset, Dwarf_Error *error)
 {
   *return_offset =
     (die->addr - (Dwarf_Small *) die->cu->dbg->sections[IDX_debug_info].addr);

@@ -23,17 +23,11 @@
 
 
 int
-dwarf_get_fde_range (fde, low_pc, func_length, fde_bytes, fde_byte_length,
-		     cie_offset, cie_index, fde_offset, error)
-     Dwarf_Fde fde;
-     Dwarf_Addr *low_pc;
-     Dwarf_Unsigned *func_length;
-     Dwarf_Ptr *fde_bytes;
-     Dwarf_Unsigned *fde_byte_length;
-     Dwarf_Off *cie_offset;
-     Dwarf_Signed *cie_index;
-     Dwarf_Off *fde_offset;
-     Dwarf_Error *error;
+dwarf_get_fde_range (Dwarf_Fde fde, Dwarf_Addr *low_pc,
+		Dwarf_Unsigned *func_length, Dwarf_Ptr *fde_bytes,
+		Dwarf_Unsigned *fde_byte_length, Dwarf_Off *cie_offset,
+		Dwarf_Signed *cie_index, Dwarf_Off *fde_offset,
+		Dwarf_Error *error)
 {
   *low_pc = fde->initial_location;
   *func_length = fde->address_range;

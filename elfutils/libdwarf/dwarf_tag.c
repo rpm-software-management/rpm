@@ -23,10 +23,7 @@
 
 
 int
-dwarf_tag (die, tagval, error)
-     Dwarf_Die die;
-     Dwarf_Half *tagval;
-     Dwarf_Error *error;
+dwarf_tag (Dwarf_Die die, Dwarf_Half *tagval, Dwarf_Error *error)
 {
   *tagval = die->abbrev->tag;
   return DW_DLV_OK;

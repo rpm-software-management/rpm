@@ -70,19 +70,25 @@ DYNHASHTYPE (NAME);
 
 #define _FUNCTIONS(name) \
 /* Initialize the hash table.  */					      \
-extern int name##_init (name *htab, unsigned long int init_size);	      \
+extern int name##_init (name *htab, unsigned long int init_size)	      \
+	/*@modifies htab @*/;						      \
 									      \
 /* Free resources allocated for hash table.  */				      \
-extern int name##_free (name *htab);					      \
+extern int name##_free (name *htab)					      \
+	/*@modifies htab @*/;						      \
 									      \
 /* Insert new entry.  */						      \
-extern int name##_insert (name *htab, unsigned long int hval, TYPE data);     \
+extern int name##_insert (name *htab, unsigned long int hval, /*@null@*/ TYPE data) \
+	/*@modifies htab @*/;						      \
 									      \
 /* Insert new entry, possibly overwrite old entry.  */			      \
-extern int name##_overwrite (name *htab, unsigned long int hval, TYPE data);  \
+extern int name##_overwrite (name *htab, unsigned long int hval, TYPE data)   \
+	/*@*/;								      \
 									      \
 /* Find entry in hash table.  */					      \
-extern TYPE name##_find (name *htab, unsigned long int hval, TYPE val);
+/*@null@*/								      \
+extern TYPE name##_find (name *htab, unsigned long int hval, /*@null@*/ TYPE val) \
+	/*@*/;
 #define FUNCTIONS(name) _FUNCTIONS (name)
 FUNCTIONS (NAME)
 
@@ -90,7 +96,8 @@ FUNCTIONS (NAME)
 #ifdef ITERATE
 # define _XFUNCTIONS(name) \
 /* Get next element in table.  */					      \
-extern TYPE name##_iterate (name *htab, void **ptr);
+extern TYPE name##_iterate (name *htab, void **ptr)			      \
+	/*@*/;
 # define XFUNCTIONS(name) _XFUNCTIONS (name)
 XFUNCTIONS (NAME)
 #endif

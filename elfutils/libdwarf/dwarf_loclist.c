@@ -45,11 +45,8 @@ struct locdesclist
 
 
 int
-dwarf_loclist (attr, llbuf, listlen, error)
-     Dwarf_Attribute attr;
-     Dwarf_Locdesc **llbuf;
-     Dwarf_Signed *listlen;
-     Dwarf_Error *error;
+dwarf_loclist (Dwarf_Attribute attr, Dwarf_Locdesc **llbuf,
+		Dwarf_Signed *listlen, Dwarf_Error *error)
 {
   Dwarf_CU_Info cu = attr->cu;
   Dwarf_Debug dbg = cu->dbg;
@@ -264,7 +261,7 @@ dwarf_loclist (attr, llbuf, listlen, error)
 	    case DW_OP_reg31:
 	    case DW_OP_nop:
 	    case DW_OP_push_object_address:
-	    case DW_OP_calli:
+	    case DW_OP_call_ref:
 	      /* No operand.  */
 	      break;
 

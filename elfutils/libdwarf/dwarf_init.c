@@ -26,13 +26,8 @@
 
 
 int
-dwarf_init (fd, access, errhand, errarg, dbg, error)
-     int fd;
-     Dwarf_Unsigned access;
-     Dwarf_Handler errhand;
-     Dwarf_Ptr errarg;
-     Dwarf_Debug *dbg;
-     Dwarf_Error *error;
+dwarf_init (int fd, Dwarf_Unsigned access, Dwarf_Handler errhand,
+		Dwarf_Ptr errarg, Dwarf_Debug *dbg, Dwarf_Error *error)
 {
   Elf *elf;
   Elf_Cmd cmd;

@@ -80,11 +80,8 @@ struct linelist
 
 
 int
-dwarf_srclines (die, linebuf, linecount, error)
-     Dwarf_Die die;
-     Dwarf_Line **linebuf;
-     Dwarf_Signed *linecount;
-     Dwarf_Error *error;
+dwarf_srclines (Dwarf_Die die, Dwarf_Line **linebuf, Dwarf_Signed *linecount,
+		Dwarf_Error *error)
 {
   Dwarf_CU_Info cu = die->cu;
   Dwarf_Debug dbg = cu->dbg;

@@ -23,11 +23,9 @@
 
 
 int
-dwarf_lineoff (line, return_lineoff, error)
-     Dwarf_Line line;
-     Dwarf_Signed *return_lineoff;
-     Dwarf_Error *error;
+dwarf_lineoff (Dwarf_Line line, Dwarf_Signed *return_lineoff,
+		Dwarf_Error *error)
 {
-  *return_lineoff = line->column ?: -1;
+  *return_lineoff = line->column ? line->column : -1;
   return DW_DLV_OK;
 }

@@ -26,13 +26,9 @@
 
 
 int
-dwarf_get_abbrev_entry (abbrev, idx, attr_num, form, offset, error)
-     Dwarf_Abbrev abbrev;
-     Dwarf_Signed idx;
-     Dwarf_Half *attr_num;
-     Dwarf_Signed *form;
-     Dwarf_Off *offset;
-     Dwarf_Error *error;
+dwarf_get_abbrev_entry (Dwarf_Abbrev abbrev, Dwarf_Signed idx,
+		Dwarf_Half *attr_num, Dwarf_Signed *form, Dwarf_Off *offset,
+		Dwarf_Error *error)
 {
   Dwarf_Small *attrp;
   Dwarf_Small *start_attrp;

@@ -23,11 +23,8 @@
 
 
 int
-dwarf_hasform (attr, form, return_hasform, error)
-     Dwarf_Attribute attr;
-     Dwarf_Half form;
-     Dwarf_Bool *return_hasform;
-     Dwarf_Error *error;
+dwarf_hasform (Dwarf_Attribute attr, Dwarf_Half form,
+		Dwarf_Bool *return_hasform, Dwarf_Error *error)
 {
   *return_hasform = attr->form == form;
   return DW_DLV_OK;

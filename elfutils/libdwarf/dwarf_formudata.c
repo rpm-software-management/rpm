@@ -25,10 +25,8 @@
 
 
 int
-dwarf_formudata (attr, return_uval, error)
-     Dwarf_Attribute attr;
-     Dwarf_Unsigned *return_uval;
-     Dwarf_Error *error;
+dwarf_formudata (Dwarf_Attribute attr, Dwarf_Unsigned *return_uval,
+		Dwarf_Error *error)
 {
   Dwarf_Unsigned u128;
 

@@ -25,9 +25,7 @@
 
 
 int
-dwarf_finish (dbg, error)
-     Dwarf_Debug dbg;
-     Dwarf_Error *error;
+dwarf_finish (Dwarf_Debug dbg, Dwarf_Error *error)
 {
   if (dbg == NULL)
     return DW_DLV_ERROR;

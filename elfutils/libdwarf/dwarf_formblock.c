@@ -26,10 +26,8 @@
 
 
 int
-dwarf_formblock (attr, return_block, error)
-     Dwarf_Attribute attr;
-     Dwarf_Block **return_block;
-     Dwarf_Error *error;
+dwarf_formblock (Dwarf_Attribute attr, Dwarf_Block **return_block,
+		Dwarf_Error *error)
 {
   Dwarf_Small *attrp = attr->valp;
   Dwarf_Unsigned len;

@@ -26,10 +26,7 @@
 
 
 int
-dwarf_diename (die, return_name, error)
-     Dwarf_Die die;
-     char **return_name;
-     Dwarf_Error *error;
+dwarf_diename (Dwarf_Die die, char **return_name, Dwarf_Error *error)
 {
   Dwarf_Debug dbg = die->cu->dbg;
   Dwarf_Small *die_addr;

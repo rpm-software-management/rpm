@@ -23,10 +23,8 @@
 
 
 int
-dwarf_lineepiloguebegin (line, return_bool, error)
-     Dwarf_Line line;
-     Dwarf_Bool *return_bool;
-     Dwarf_Error *error;
+dwarf_lineepiloguebegin (Dwarf_Line line, Dwarf_Bool *return_bool,
+		Dwarf_Error *error)
 {
   *return_bool = line->epilogue_begin;
   return DW_DLV_OK;

@@ -29,6 +29,7 @@
 
 
 /* Section names.  */
+/*@unchecked@*/
 static const char dwarf_scnnames[IDX_last][17] =
 {
   [IDX_debug_info] = ".debug_info",
@@ -50,13 +51,8 @@ static const char dwarf_scnnames[IDX_last][17] =
 
 
 int
-dwarf_elf_init (elf, access, errhand, errarg, dbg, error)
-     Elf *elf;
-     Dwarf_Unsigned access;
-     Dwarf_Handler errhand;
-     Dwarf_Ptr errarg;
-     Dwarf_Debug *dbg;
-     Dwarf_Error *error;
+dwarf_elf_init (Elf *elf, Dwarf_Unsigned access, Dwarf_Handler errhand,
+		Dwarf_Ptr errarg, Dwarf_Debug *dbg, Dwarf_Error *error)
 {
   int result = DW_DLV_ERROR;
   Dwarf_Debug newdbg;

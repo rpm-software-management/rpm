@@ -25,10 +25,7 @@
 
 
 int
-dwarf_bytesize (die, return_size, error)
-     Dwarf_Die die;
-     Dwarf_Unsigned *return_size;
-     Dwarf_Error *error;
+dwarf_bytesize (Dwarf_Die die, Dwarf_Unsigned *return_size, Dwarf_Error *error)
 {
   return __libdwarf_getconstant (die, DW_AT_byte_size, return_size, error);
 }

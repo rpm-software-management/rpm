@@ -32,11 +32,8 @@ struct arangelist
 
 
 int
-dwarf_get_aranges (dbg, aranges, return_count, error)
-     Dwarf_Debug dbg;
-     Dwarf_Arange **aranges;
-     Dwarf_Signed *return_count;
-     Dwarf_Error *error;
+dwarf_get_aranges (Dwarf_Debug dbg, Dwarf_Arange **aranges,
+		Dwarf_Signed *return_count, Dwarf_Error *error)
 {
   Dwarf_Small *readp;
   Dwarf_Small *readendp;

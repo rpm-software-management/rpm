@@ -23,11 +23,8 @@
 
 
 int
-dwarf_hasattr (die, attr, return_bool, error)
-     Dwarf_Die die;
-     Dwarf_Half attr;
-     Dwarf_Bool *return_bool;
-     Dwarf_Error *error;
+dwarf_hasattr (Dwarf_Die die, Dwarf_Half attr, Dwarf_Bool *return_bool,
+		Dwarf_Error *error)
 {
   Dwarf_Debug dbg = die->cu->dbg;
   Dwarf_Small *die_addr;

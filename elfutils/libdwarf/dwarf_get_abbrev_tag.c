@@ -22,10 +22,8 @@
 #include "libdwarfP.h"
 
 
-int dwarf_get_abbrev_tag (abbrev, return_tag, error)
-     Dwarf_Abbrev abbrev;
-     Dwarf_Half *return_tag;
-     Dwarf_Error *error;
+int dwarf_get_abbrev_tag (Dwarf_Abbrev abbrev, Dwarf_Half *return_tag,
+		Dwarf_Error *error)
 {
   *return_tag = abbrev->tag;
   return DW_DLV_OK;
