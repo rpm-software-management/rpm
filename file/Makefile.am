@@ -230,6 +230,9 @@ Magdir/xenix \
 Magdir/zilog \
 Magdir/zyxel
 
+listobjs:
+	@echo $(libfmagic_la_SOURCES:.c=.lo) > $@
+
 .PHONY: lint
 lint:
 	$(LINT)  $(DEFS) $(INCLUDES) $(file_SOURCES) $(libfmagic_la_SOURCES) $(pkginc_HEADERS) $(noinst_HEADERS)

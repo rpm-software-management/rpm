@@ -804,7 +804,7 @@ apprentice_file(fmagic fm, /*@out@*/ struct magic **magicp,
 		if (errno != ENOENT)
 			(void) fprintf(stderr,
 			    "%s: can't read magic file %s (%s)\n", 
-			    progname, fn, strerror(errno));
+			    __progname, fn, strerror(errno));
 		return -1;
 	}
 
@@ -856,26 +856,26 @@ apprentice_compile(/*@unused@*/ const fmagic fm,
 
 	if ((fd = open(dbname, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 		(void)fprintf(stderr, "%s: Cannot open `%s' (%s)\n",
-		    progname, dbname, strerror(errno));
+		    __progname, dbname, strerror(errno));
 		return -1;
 	}
 
 	if (write(fd, ar, sizeof(ar)) != sizeof(ar)) {
 		(void)fprintf(stderr, "%s: error writing `%s' (%s)\n",
-		    progname, dbname, strerror(errno));
+		    __progname, dbname, strerror(errno));
 		return -1;
 	}
 
 	if (lseek(fd, sizeof(**magicp), SEEK_SET) != sizeof(**magicp)) {
 		(void)fprintf(stderr, "%s: error seeking `%s' (%s)\n",
-		    progname, dbname, strerror(errno));
+		    __progname, dbname, strerror(errno));
 		return -1;
 	}
 
 	if (write(fd, *magicp,  sizeof(**magicp) * *nmagicp) 
 	    != sizeof(**magicp) * *nmagicp) {
 		(void)fprintf(stderr, "%s: error writing `%s' (%s)\n",
-		    progname, dbname, strerror(errno));
+		    __progname, dbname, strerror(errno));
 		return -1;
 	}
 
@@ -909,7 +909,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 
 	if (fstat(fd, &st) == -1) {
 		(void)fprintf(stderr, "%s: Cannot stat `%s' (%s)\n",
-		    progname, dbname, strerror(errno));
+		    __progname, dbname, strerror(errno));
 		goto errxit;
 	}
 
@@ -917,13 +917,13 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	if ((mm = mmap(0, (size_t)st.st_size, PROT_READ|PROT_WRITE,
 	    MAP_PRIVATE|MAP_FILE, fd, (off_t)0)) == MAP_FAILED) {
 		(void)fprintf(stderr, "%s: Cannot map `%s' (%s)\n",
-		    progname, dbname, strerror(errno));
+		    __progname, dbname, strerror(errno));
 		goto errxit;
 	}
 #else
 	mm = xmalloc((size_t)st.st_size);
 	if (read(fd, mm, (size_t)st.st_size) != (size_t)st.st_size) {
-		(void) fprintf(stderr, "%s: Read failed (%s).\n", progname,
+		(void) fprintf(stderr, "%s: Read failed (%s).\n", __progname,
 		    strerror(errno));
 		goto errxit;
 	}
@@ -935,7 +935,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	if (*ptr != MAGICNO) {
 		if (swap4(*ptr) != MAGICNO) {
 			(void)fprintf(stderr, "%s: Bad magic in `%s'\n",
-			    progname, dbname);
+			    __progname, dbname);
 			goto errxit;
 		}
 		needsbyteswap = 1;
@@ -948,7 +948,7 @@ apprentice_map(/*@unused@*/ const fmagic fm,
 	if (version != VERSIONNO) {
 		(void)fprintf(stderr, 
 		    "%s: version mismatch (%d != %d) in `%s'\n",
-		    progname, version, VERSIONNO, dbname);
+		    __progname, version, VERSIONNO, dbname);
 		goto errxit;
 	}
 	*nmagicp = (st.st_size / sizeof(**magicp)) - 1;
@@ -999,7 +999,7 @@ apprentice_1(fmagic fm, const char *fn, int action)
 #ifndef COMPILE_ONLY
 	if ((rv = apprentice_map(fm, &magic, &nmagic, fn, action)) != 0)
 		(void)fprintf(stderr, "%s: Using regular magic file `%s'\n",
-		    progname, fn);
+		    __progname, fn);
 		
 	if (rv != 0)
 		rv = apprentice_file(fm, &magic, &nmagic, fn, action);
@@ -1062,7 +1062,7 @@ fmagicSetup(fmagic fm, const char *fn, int action)
 /*@=branchstate@*/
 	if (errs == -1)
 		(void) fprintf(stderr, "%s: couldn't find any magic files!\n",
-		    progname);
+		    __progname);
 	if (action == CHECK && errs)
 		exit(EXIT_FAILURE);
 
@@ -1081,13 +1081,10 @@ main(int argc, char *argv[])
 	fmagic fm = &myfmagic;
 	int ret;
 
-	if ((progname = strrchr(argv[0], '/')) != NULL)
-		progname++;
-	else
-		progname = argv[0];
+	setprogname(argv[0]);       /* Retrofit glibc __progname */
 
 	if (argc != 2) {
-		(void)fprintf(stderr, "usage: %s file\n", progname);
+		(void)fprintf(stderr, "usage: %s file\n", __progname);
 		exit(1);
 	}
 	fm->magicfile = argv[1];

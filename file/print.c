@@ -143,8 +143,8 @@ error(int status, /*@unused@*/ int errnum, const char * format, ...)
 	/* cuz we use stdout for most, stderr here */
 	(void) fflush(stdout); 
 
-	if (progname != NULL) 
-		(void) fprintf(stderr, "%s: ", progname);
+	if (__progname != NULL) 
+		(void) fprintf(stderr, "%s: ", __progname);
 	(void) vfprintf(stderr,  format, va);
 	va_end(va);
 #if NOTYET
@@ -165,9 +165,9 @@ magwarn(const char *f, ...)
 	/* cuz we use stdout for most, stderr here */
 	(void) fflush(stdout); 
 
-	if (progname != NULL) 
+	if (__progname != NULL) 
 		(void) fprintf(stderr, "%s: %s, %d: ", 
-			       progname, fm->magicfile, fm->lineno);
+			       __progname, fm->magicfile, fm->lineno);
 	(void) vfprintf(stderr, f, va);
 	va_end(va);
 	(void) fputc('\n', stderr);

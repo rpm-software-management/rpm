@@ -199,7 +199,7 @@ uncompressgzipped(const unsigned char *old,
 	rc = inflateInit2(&z, -15);
 /*@=type@*/
 	if (rc != Z_OK) {
-		(void) fprintf(stderr,"%s: zlib: %s\n", progname, z.msg);
+		(void) fprintf(stderr,"%s: zlib: %s\n", __progname, z.msg);
 		return 0;
 	}
 
@@ -207,7 +207,7 @@ uncompressgzipped(const unsigned char *old,
 	rc = inflate(&z, Z_SYNC_FLUSH);
 /*@=type@*/
 	if (rc != Z_OK && rc != Z_STREAM_END) {
-		fprintf(stderr,"%s: zlib: %s\n", progname, z.msg);
+		fprintf(stderr,"%s: zlib: %s\n", __progname, z.msg);
 		return 0;
 	}
 

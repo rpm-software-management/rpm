@@ -289,6 +289,22 @@ extern void muntrace (void) __THROW
 #define	xstrdup(_str)	(strcpy(xmalloc(strlen(_str)+1), (_str)))
 #endif
 
+/* Retrofit glibc __progname */
+#if defined __GLIBC__ && __GLIBC__ >= 2
+#if __GLIBC_MINOR__ >= 1
+#define __progname      __assert_program_name
+#endif
+#define setprogname(pn)
+#else
+#define __progname      program_name
+#define setprogname(pn) \
+  { if ((__progname = strrchr(pn, '/')) != NULL) __progname++; \
+    else __progname = pn;               \
+  }
+#endif
+/*@unchecked@*/
+const char *__progname;
+
 #if HAVE_LOCALE_H
 # include <locale.h>
 #endif

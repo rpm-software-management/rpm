@@ -59,9 +59,6 @@ int os2_apptype (const char *fn, char *buf, int nb);
 /*@unchecked@*/
 static	int	nobuffer = 0;   /* Do not buffer stdout */
 
-/*@unchecked@*/
-char *progname;		/* used throughout 			*/
-
 /*
  * unwrap -- read a file of filenames, do each one.
  */
@@ -113,8 +110,8 @@ usage(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-	(void)fprintf(stderr, USAGE, progname);
-	(void)fprintf(stderr, "Usage: %s -C [-m magic]\n", progname);
+	(void)fprintf(stderr, USAGE, __progname);
+	(void)fprintf(stderr, "Usage: %s -C [-m magic]\n", __progname);
 #ifdef HAVE_GETOPT_H
 	(void)fputs("Try `file --help' for more information.\n", stderr);
 #endif
@@ -159,10 +156,10 @@ help(void)
 int
 main(int argc, char **argv)
 	/*@globals global_fmagic, nobuffer,
-		default_magicfile, optind, progname,
+		default_magicfile, optind,
 		fileSystem, internalState @*/
-	/*@modifies argv, global_fmagic, nobuffer,
-		default_magicfile, optind, progname,
+	/*@modifies global_fmagic, nobuffer,
+		default_magicfile, optind,
 		fileSystem, internalState @*/
 {
 	int xx;
@@ -212,13 +209,6 @@ main(int argc, char **argv)
 	/* sh-like wildcard expansion! Shouldn't hurt at least ... */
 	_wildcard(&argc, &argv);
 #endif
-
-/*@-modobserver@*/
-	if ((progname = strrchr(argv[0], '/')) != NULL)
-		progname++;
-	else
-		progname = argv[0];
-/*@=modobserver@*/
 
 /*@-assignexpose@*/
 	fm->magicfile = default_magicfile;
@@ -298,7 +288,7 @@ main(int argc, char **argv)
 			fm->flags |= FMAGIC_FLAGS_SPECIAL;
 			/*@switchbreak@*/ break;
 		case 'v':
-			(void) fprintf(stdout, "%s-%d.%d\n", progname,
+			(void) fprintf(stdout, "%s-%d.%d\n", __progname,
 				       FILE_VERSION_MAJOR, patchlevel);
 			(void) fprintf(stdout, "magic file from %s\n",
 				       fm->magicfile);

@@ -114,10 +114,6 @@ struct mlist {
 	struct mlist *prev;
 };
 
-/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
-extern char *progname;		/* the program name 			*/
-/*@unchecked@*/
-
 enum fmagicFlags_e {
 /*@-enummemuse@*/
     FMAGIC_FLAGS_NONE		= 0,
