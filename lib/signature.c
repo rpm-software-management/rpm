@@ -534,8 +534,21 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     if (pgpVer == PGP_5)
 	res = RPMSIG_BAD;
 
-    if (rpmIsVerbose())
-	(void) pgpPrtPkt(sig);
+if (rpmIsVerbose())
+{   static const char * pubkey = NULL;
+    static unsigned int pklen = 0;
+
+    if (pubkey == NULL) {
+	if (!b64decode(redhatPubKeyRSA, (void **)&pubkey, &pklen)) {
+fprintf(stderr, "========================= Red Hat RSA Public Key\n");
+	    (void) pgpPrtPkts(pubkey, pklen);
+	}
+    }
+fprintf(stderr, "========================= Package RSA Signature\n");
+    (void) pgpPrtPkts(sig, count);
+
+    pubkey = _free(pubkey);
+}
 
     /* Write out the signature */
 #ifdef	DYING
@@ -649,8 +662,21 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     FILE *file;
     int res = RPMSIG_OK;
   
-    if (rpmIsVerbose())
-	(void) pgpPrtPkt(sig);
+if (rpmIsVerbose())
+{   static const char * pubkey = NULL;
+    static unsigned int pklen = 0;
+
+    if (pubkey == NULL) {
+	if (!b64decode(redhatPubKeyDSA, (void **)&pubkey, &pklen)) {
+fprintf(stderr, "========================= Red Hat DSA Public Key\n");
+	    (void) pgpPrtPkts(pubkey, pklen);
+	}
+    }
+fprintf(stderr, "========================= Package DSA Signature\n");
+    (void) pgpPrtPkts(sig, count);
+
+    pubkey = _free(pubkey);
+}
 
     /* Write out the signature */
 #ifdef	DYING

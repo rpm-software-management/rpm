@@ -108,6 +108,38 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
     return val;
 }
 
+#ifdef	NOTYET
+/**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static /*@only@*/ char * base64Format(int_32 type, const void * data, 
+	char * formatPrefix, int padding, /*@unused@*/ int element)
+		/*@modifies formatPrefix @*/
+{
+    char * val;
+    char buf[10];
+
+    if (type != RPM_BIN_TYPE) {
+	val = xstrdup(_("(not a blob)"));
+    } else {
+	buf[0] = '\0';
+
+	val = xmalloc(5 + padding);
+	strcat(formatPrefix, "s");
+	/*@-formatconst@*/
+	sprintf(val, formatPrefix, buf);
+	/*@=formatconst@*/
+    }
+
+    return val;
+}
+#endif
+
 /**
  * @param type		tag type
  * @param data		tag value
@@ -556,6 +588,9 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS", { triggercondsTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE", { triggertypeTag } },
+#ifdef	NOTYET
+    { HEADER_EXT_FORMAT, "base64", { base64Format } },
+#endif
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms", { permsFormat } },

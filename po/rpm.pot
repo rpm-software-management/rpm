@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-09-29 13:34-0400\n"
+"POT-Creation-Date: 2001-10-01 13:31-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2168,9 +2168,13 @@ msgstr ""
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:128
+#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:160
 #: lib/header.c:2623 lib/header.c:2644 lib/header.c:2666
 msgid "(not a number)"
+msgstr ""
+
+#: lib/formats.c:128
+msgid "(not a blob)"
 msgstr ""
 
 #: lib/fs.c:70
@@ -2983,86 +2987,86 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:40
+#: lib/rpmchecksig.c:41
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:52
+#: lib/rpmchecksig.c:53
 msgid "makeTempFile failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:86
+#: lib/rpmchecksig.c:90
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:92
+#: lib/rpmchecksig.c:96
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:128 lib/rpmchecksig.c:260
+#: lib/rpmchecksig.c:141 lib/rpmchecksig.c:274
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:133
+#: lib/rpmchecksig.c:146
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:137
+#: lib/rpmchecksig.c:150
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:146 lib/rpmchecksig.c:276
+#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:290
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:281
+#: lib/rpmchecksig.c:163 lib/rpmchecksig.c:295
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:183
+#: lib/rpmchecksig.c:196
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:189
+#: lib/rpmchecksig.c:202
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:266
+#: lib/rpmchecksig.c:280
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:431
+#: lib/rpmchecksig.c:445
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:432 lib/rpmchecksig.c:446
+#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
+#: lib/rpmchecksig.c:448 lib/rpmchecksig.c:462
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:435 lib/rpmchecksig.c:449
+#: lib/rpmchecksig.c:449 lib/rpmchecksig.c:463
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:451 lib/rpmchecksig.c:465
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:445
+#: lib/rpmchecksig.c:459
 msgid "OK"
 msgstr ""
 
@@ -3318,7 +3322,7 @@ msgstr ""
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:366 lib/signature.c:760
+#: lib/signature.c:366 lib/signature.c:786
 msgid "Couldn't exec gpg\n"
 msgstr ""
 
@@ -3350,31 +3354,31 @@ msgstr ""
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:526 lib/signature.c:604
+#: lib/signature.c:526 lib/signature.c:617
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 
-#: lib/signature.c:697
+#: lib/signature.c:723
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 
-#: lib/signature.c:789
+#: lib/signature.c:815
 msgid "Couldn't exec pgp\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:793 lib/signature.c:846
+#: lib/signature.c:819 lib/signature.c:872
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:826
+#: lib/signature.c:852
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:838
+#: lib/signature.c:864
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""

@@ -11,6 +11,7 @@
  */
 
 #include "beecrypt.h"
+#include "base64.h"
 
 /*@-typeuse -fielduse@*/
 /**
@@ -43,10 +44,14 @@ typedef enum pgpPkt_e {
     PGPPKT_TRUST		= 12, /*!< Trust */
     PGPPKT_USER_ID		= 13, /*!< User ID */
     PGPPKT_PUBLIC_SUBKEY	= 14, /*!< Public Subkey */
+    PGPPKT_COMMENT_OLD		= 16, /*!< Comment (from OpenPGP draft) */
+    PGPPKT_PHOTOID		= 17, /*!< PGP's photo ID */
+    PGPPKT_ENCRYPTED_MDC	= 18, /*!< Integrity protected encrypted data */
+    PGPPKT_MDC			= 19, /*!< Manipulaion detection code packet */
     PGPPKT_PRIVATE_60		= 60, /*!< Private or Experimental Values */
-    PGPPKT_PRIVATE_61		= 61, /*!< Private or Experimental Values */
+    PGPPKT_COMMENT		= 61, /*!< Comment */
     PGPPKT_PRIVATE_62		= 62, /*!< Private or Experimental Values */
-    PGPPKT_PRIVATE_63		= 63, /*!< Private or Experimental Values */
+    PGPPKT_CONTROL		= 63, /*!< Control (GPG) */
 } pgpPkt;
 
 /**
@@ -194,7 +199,7 @@ extern struct pgpValTbl_s pgpPubkeyTbl[];
 typedef enum pgpSymkeyAlgo_e {
     PGPSYMKEYALGO_PLAINTEXT	=  0,	/*!< Plaintext */
     PGPSYMKEYALGO_IDEA		=  1,	/*!< IDEA */
-    PGPSYMKEYALGO_TRIPLE_DES	=  2,	/*!< Triple-DES */
+    PGPSYMKEYALGO_TRIPLE_DES	=  2,	/*!< 3DES */
     PGPSYMKEYALGO_CAST5		=  3,	/*!< CAST5 */
     PGPSYMKEYALGO_BLOWFISH	=  4,	/*!< BLOWFISH */
     PGPSYMKEYALGO_SAFER		=  5,	/*!< SAFER */
@@ -868,6 +873,24 @@ unsigned int pgpGrab(const byte *s, int nbytes)
 /**
  */
 /*@unused@*/ static inline
+int pgpLen(const byte *s, unsigned int *lenp)
+	/*@*/
+{
+    if (*s < 192) {
+	(*lenp) = *s++;
+	return 1;
+    } else if (*s < 255) {
+	(*lenp) = ((s[0] - 192) << 8) + s[1] + 192;
+	return 2;
+    } else {
+	(*lenp) = pgpGrab(s+1, 4);
+	return 5;
+    }
+}
+
+/**
+ */
+/*@unused@*/ static inline
 unsigned int pgpMpiBits(const byte *p)
 	/*@*/
 {
@@ -985,6 +1008,16 @@ int pgpPrtKey(pgpPkt pkt, const byte *h, unsigned int hlen)
 int pgpPrtUserID(pgpPkt pkt, const byte *h, unsigned int hlen)
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
+
+/**
+ */
+int pgpPrtComment(pgpPkt pkt, const byte *h, unsigned int hlen)
+	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpPrtPkts(const byte *pkts, unsigned int plen)
+	/*@modifies fileSystem @*/;
 
 /**
  */

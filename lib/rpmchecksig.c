@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include "rpmio_internal.h"
 #include <rpmcli.h>
 
 #include "rpmlead.h"
@@ -69,8 +70,8 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 }
 
 static int copyFile(FD_t *sfdp, const char **sfnp,
-	FD_t *tfdp, const char **tfnp)
-	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, fileSystem @*/
+	FD_t *tfdp, const char **tfnp, void **sdigest)
+	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, *sidgest, fileSystem @*/
 {
     unsigned char buffer[BUFSIZ];
     ssize_t count;
@@ -80,6 +81,9 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 	goto exit;
     if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	goto exit;
+
+    if (sdigest != NULL)
+	(void) fdInitSHA1(*sfdp, 0);
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
 	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) != count) {
@@ -91,6 +95,15 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     if (count < 0) {
 	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
 	goto exit;
+    }
+
+    if (sdigest != NULL) {
+	(void) fdFiniSHA1(*sfdp, sdigest, NULL, 1);
+if (rpmIsVerbose()) {
+fprintf(stderr, "========================= Package SHA1 Digest\n");
+fprintf(stderr, "%s\n", (const char *) (*sdigest));
+}
+	*sdigest = _free(*sdigest);
     }
 
     rc = 0;
@@ -153,7 +166,7 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (copyFile(&fd, &rpm, &ofd, &sigtarget))
+	if (copyFile(&fd, &rpm, &ofd, &sigtarget, NULL))
 	    goto exit;
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
@@ -193,7 +206,7 @@ int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 
 	/* Append the header and archive from the temp file */
 	/* ASSERT: fd == NULL && ofd != NULL */
-	if (copyFile(&fd, &sigtarget, &ofd, &trpm))
+	if (copyFile(&fd, &sigtarget, &ofd, &trpm, NULL))
 	    goto exit;
 	/* Both fd and ofd are now closed. */
 	/* ASSERT: fd == NULL && ofd == NULL */
@@ -245,6 +258,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     int_32 tag, type, count;
     const void * ptr;
     int res = 0;
+    void * sdigest = NULL;
     rpmRC rc;
 
     if (argv)
@@ -284,7 +298,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	}
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (copyFile(&fd, &rpm, &ofd, &sigtarget)) {
+	if (copyFile(&fd, &rpm, &ofd, &sigtarget, &sdigest)) {
 	    res++;
 	    goto bottom;
 	}
@@ -459,7 +473,9 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    (void) unlink(sigtarget);
 	    sigtarget = _free(sigtarget);
 	}
+	sdigest = _free(sdigest);
     }
 
+    sdigest = _free(sdigest);
     return res;
 }
