@@ -10,6 +10,11 @@
 	- fixed checking of popt stack overflow
 	- --requires shouldn't imply -q
 	- fixed error message issued when a groupname does not exist
+	- fixed but in changelog processing which made it hang on '*' in a
+	  changelog entry
+	- generate S_ISSOCK and S_ISLNK macros on systems w/o them
+	- "rpm --erase" wasn't returning proper error codes w/ package
+	  removal failed
 
 2.3.6 -> 2.3.7:
 	- fixed nasty memory link in -Va
