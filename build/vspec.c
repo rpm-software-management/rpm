@@ -119,8 +119,9 @@ static int checkHeaderTags(Header inh, struct packageFieldsRec *pfr)
     void *ptr;
     struct packageFieldsRec *p;
 
-    /* This actually sorts the index, so it'll be easy to catch dups */
+    /* Sort the index, so it'll be easy to catch dups */
     h = headerCopy(inh);
+    headerSort(h);
 
     headerIter = headerInitIterator(h);
     lastTag = 0;
