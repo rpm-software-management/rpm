@@ -142,7 +142,7 @@ char *getVar(int var);
 int getBooleanVar(int var);
 void setVar(int var, char *val);
 
-int readConfigFiles(void);
+int readConfigFiles(char * fn);
 
 typedef struct rpmdb * rpmdb;
 
