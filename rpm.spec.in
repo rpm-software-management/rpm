@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version @VERSION@
 Version: %{version}
-Release: 0.20
+Release: 0.21
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jan 10 2001 Jeff Johnson <jbj@redhat.com>
+- successors from tsort are processed in presentation order.
+
 * Tue Jan  9 2001 Jeff Johnson <jbj@redhat.com>
 - fix: digests on input FD_t dinna work.
 - fix: remove rebuilddb debugging leakage.

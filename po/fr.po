@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2001-01-09 16:35-0500\n"
+msgstr "POT-Creation-Date: 2001-01-10 15:41-0500\n"
 
 #: build.c:26
 #, fuzzy, c-format
@@ -2585,20 +2585,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1662
+#: lib/depends.c:1660
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1712
+#: lib/depends.c:1710
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1816
+#: lib/depends.c:1760
+msgid "========== successors only (presentation order\n"
+msgstr ""
+
+#: lib/depends.c:1830
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1847
+#: lib/depends.c:1861
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

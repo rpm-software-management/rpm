@@ -1648,8 +1648,6 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     struct orderListIndex * orderList;
     int nrescans = 10;
     int qlen;
-    int qd = 0x10000;
-    int qcnt;
     int i, j;
 
     alMakeIndex(&rpmdep->addedPackages);
@@ -1713,30 +1711,25 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 
 rescan:
     q = r = NULL;
-    qlen = 0;
+    npkgs = qlen = 0;
     for (i = 0, p = rpmdep->addedPackages.list;
 	     i < rpmdep->addedPackages.size;
 	     i++, p++)
     {
-	    if (p->tsi.tsi_count != 0)
-		continue;
-	    p->tsi.tsi_suc = NULL;
-	    addQ(p, &q, &r);
-	    qlen++;
+	if (p->tsi.tsi_count != 0)
+	    continue;
+	p->tsi.tsi_suc = NULL;
+	addQ(p, &q, &r);
+	qlen++;
     }
 
-    /* Mark all the roots in the forest with a tree id for sorting. */
-    for (qcnt = qd * (qlen+1), p = q; p != NULL; qcnt -= qd, p = p->tsi.tsi_suc)
-	p->tsi.tsi_qcnt = qcnt;
-
-    /* T5. Output fromt of queue (T7. Remove from queue.) */
+    /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = q->tsi.tsi_suc) {
 
-	rpmMessage(RPMMESS_DEBUG, "%5d (%d) %s-%s-%s\n", orderingCount,
-			qlen, q->name, q->version, q->release);
-	qlen--;
-
+	rpmMessage(RPMMESS_DEBUG, "%5d (%d,%d) %s-%s-%s\n", orderingCount,
+			qlen, q->tsi.tsi_qcnt, q->name, q->version, q->release);
 	ordering[orderingCount++] = q - rpmdep->addedPackages.list;
+	qlen--;
 	loopcheck--;
 
 	/* T6. Erase relations. */
@@ -1749,13 +1742,34 @@ rescan:
 	    if ((--p->tsi.tsi_count) <= 0) {
 		/* XXX FIXME: add control bit. */
 		p->tsi.tsi_suc = NULL;
-		/* Inherit parent's sort factor. */
-		if (p->tsi.tsi_qcnt < q->tsi.tsi_qcnt)
-		    p->tsi.tsi_qcnt = q->tsi.tsi_qcnt - 1;
 		addQ(p, &q->tsi.tsi_suc, &r);
 		qlen++;
 	    }
 	    free(tsi);
+	}
+	q->tsi.tsi_qcnt = -1234;
+
+	/* Have all predecessors been dealt with? */
+	if (loopcheck == qlen)
+	    break;
+    }
+
+    /* If no predecessors remain, dump successors in presentation order. */
+    if (loopcheck == qlen) {
+	rpmMessage(RPMMESS_DEBUG,
+		_("========== successors only (presentation order\n"));
+
+	for (i = 0, q = rpmdep->addedPackages.list;
+	     i < rpmdep->addedPackages.size;
+	     i++, q++)
+	{
+	    if (q->tsi.tsi_qcnt == -1234)
+		continue;
+	    rpmMessage(RPMMESS_DEBUG, "%5d (%d,%d) %s-%s-%s\n", orderingCount,
+			qlen, q->tsi.tsi_qcnt, q->name, q->version, q->release);
+	    ordering[orderingCount++] = q - rpmdep->addedPackages.list;
+	    qlen--;
+	    loopcheck--;
 	}
     }
 

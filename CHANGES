@@ -98,6 +98,7 @@
 	- fix: resurrect --excludepath (#19666).
 	- fix: digests on input FD_t dinna work.
 	- fix: remove rebuilddb debugging leakage.
+	- successors from tsort are processed in presentation order.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

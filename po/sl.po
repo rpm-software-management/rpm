@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.129 2001/01/09 21:46:23 jbj Exp $
+# $Id: sl.po,v 1.130 2001/01/10 20:42:37 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-09 16:35-0500\n"
+"POT-Creation-Date: 2001-01-10 15:41-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2527,20 +2527,24 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1662
+#: lib/depends.c:1660
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1712
+#: lib/depends.c:1710
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1816
+#: lib/depends.c:1760
+msgid "========== successors only (presentation order\n"
+msgstr ""
+
+#: lib/depends.c:1830
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1847
+#: lib/depends.c:1861
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

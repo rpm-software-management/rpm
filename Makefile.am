@@ -129,6 +129,7 @@ install-data-local:
 	sparc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparcv9;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc64 ;;\
+	ia64*)	$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/ia64 ;;\
 	powerpc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/ppc ;;\
 	esac
 	@case "@build_os@" in \
