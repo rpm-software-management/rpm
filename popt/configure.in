@@ -2,8 +2,27 @@ AC_INIT(popt.h)
 
 AC_PROG_CC
 AC_GCC_TRADITIONAL
+AC_PROG_RANLIB
+AC_PROG_INSTALL
 
-AC_CHECK_HEADER(unistd.h)
+dnl
+dnl if CC is gcc, we can rebuild the dependencies (since the depend rule
+dnl requires gcc).  If it's not, don't rebuild dependencies -- use what was
+dnl shipped with RPM.
+dnl
+if test X"$GCC" = Xyes ; then
+    TARGET="depend allprogs"
+else
+    TARGET="everything"
+    #
+    # let the Makefile know that we're done with `depend', since we don't
+    # have gcc we're not going to rebuild our dependencies at all.
+    #
+    echo > .depend-done
+fi
+AC_SUBST(TARGET)
+
+AC_CHECK_HEADERS(unistd.h alloca.h)
 AC_CHECK_FUNCS(mmap)
 AC_CHECK_FUNCS(strerror)
 

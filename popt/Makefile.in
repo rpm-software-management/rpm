@@ -1,51 +1,56 @@
 srcdir = @srcdir@
-VPATH = $(srcdir)
+top_srcdir = @top_srcdir@
+VPATH = @srcdir
 
 LIBOBJECTS = 	popt.o
-
-WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 
 SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS)))
 LIBPOPT = libpopt.a
 
+RANLIB=@RANLIB@
+INSTALL=@INSTALL@
+INSTALL_PREOGRAM=@INSTALL_PREOGRAM@
+INSTALL_DATA=@INSTALL_DATA@
 prefix=@prefix@
 LIBS=$(prefix)/lib
 INCLUDE=$(prefix)/include
 
 # -----------------------------------------------------------------------
 
-CFLAGS = @CFLAGS@ @DEFS@ $(WARNINGS) $(OPTS)
+CFLAGS = @CFLAGS@ @DEFS@ $(OPTS)
 
 ifeq ($(RANLIB),)
 RANLIB=ranlib
 endif
 
-ifeq (.depend,$(wildcard .depend))
+ifeq (.depend,$(wildcard .depend-done))
 TARGET=allprogs
 else
-TARGET=depend allprogs
+TARGET=@TARGET@
 endif
 
 $(LIBPOPT): $(LIBPOPT)($(LIBOBJECTS))
 	$(RANLIB) $@
 
 distclean: clean
-	rm -f Makefile config.h config.cache config.status config.log
+	rm -f Makefile .depend-done
 
 clean:
 	rm -f *.a *.o *~ $(PROGS) test.out tagtable.c
 
-squeaky: clean
+squeaky: distclean
 	rm -f .depend
 
 depend:
-	$(CPP) $(CFLAGS) -M $(SOURCES) > .depend
+	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
+	    $(CPP) $(CFLAGS) -MM $(SOURCES) | \
+		sed s+$$topdir_path+$(top_srcdir)+g > .depend
 
 install:
 	mkdir -p $(PREFIX)/$(INCLUDE)
 	mkdir -p $(PREFIX)/$(LIBS)
-	install -m 644 popt.h $(PREFIX)/$(INCLUDE)/popt.h
-	install -m 644 $(LIBPOPT) $(PREFIX)/$(LIBS)/$(LIBPOPT)
+	$INSTALL_DATA) -m 644 popt.h $(PREFIX)/$(INCLUDE)/popt.h
+	$INSTALL_DATA) -m 644 $(LIBPOPT) $(PREFIX)/$(LIBS)/$(LIBPOPT)
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
