@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 {
     int fd;
     char buffer[1024];
+    struct rpmlead lead;
     Header hd;
     int ct;
     
@@ -21,6 +22,7 @@ int main(int argc, char **argv)
     }
 
     read(fd, &buffer, RPMLEAD_SIZE);
+    readLead(fd, &lead);
     hd = readHeader(fd);
 
     while ((ct = read(fd, &buffer, 1024))) {

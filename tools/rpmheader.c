@@ -10,7 +10,7 @@
 int main(int argc, char **argv)
 {
     int fd;
-    char buffer[1024];
+    struct rpmlead lead;
     Header hd;
     
     if (argc == 1) {
@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 	fd = open(argv[1], O_RDONLY, 0644);
     }
 
-    read(fd, &buffer, RPMLEAD_SIZE);
+    readLead(fd, &lead);
     hd = readHeader(fd);
     writeHeader(1, hd);
     
