@@ -53,10 +53,11 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 
 	    *hdr = NULL;
 	} else {
-	    if (!readSignature(fd, lead.signature_type, NULL)) {
+	    if (readSignature(fd, NULL, lead.signature_type)) {
 	       return 2;
 	    }
-	    *hdr = readHeader(fd);
+	    *hdr = readHeader(fd, (lead.major >= 3) ?
+			      HEADER_MAGIC : NO_HEADER_MAGIC);
 	    if (! *hdr) return 2;
 	}
     } else {
@@ -70,10 +71,11 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
 			" are supported by this version of RPM");
 		return 2;
 	    }
-	    if (!readSignature(fd, lead.signature_type, NULL)) {
+	    if (readSignature(fd, NULL, lead.signature_type)) {
 	       return 2;
 	    }
-	    *hdr = readHeader(fd);
+	    *hdr = readHeader(fd, (lead.major >= 3) ?
+			      HEADER_MAGIC : NO_HEADER_MAGIC);
 	    if (! *hdr) return 2;
 	} else {
 	    error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 2 are"
