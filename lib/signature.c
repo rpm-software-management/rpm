@@ -7,12 +7,17 @@
  * A PGP 2.6.2  768 bit key generates a 120 byte signature
  *
  * This code only only works with 1024 bit keys!
+ *
+ * Sometimes we get 151 byte signatures.  Not sure why, but if we
+ * do, we toss it and try once more to get a 152 bytes signature.
+ * If we still get a 151 byte sig, fail.  :-(
  */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <strings.h>
 
@@ -50,9 +55,15 @@ int readSignature(int fd, short sig_type, void **sig)
 
 int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
 {
+    int res;
+    
     switch (sig_type) {
     case RPMSIG_PGP262_1024:
-        return makePGPSignature(file, ofd, passPhrase);
+	if ((res = makePGPSignature(file, ofd, passPhrase)) == -1) {
+	    /* This is the 151 byte sig hack */
+	    return makePGPSignature(file, ofd, passPhrase);
+	}
+        return res;
 	break;
     case RPMSIG_NONE:
     }
@@ -152,6 +163,7 @@ static int makePGPSignature(char *file, int ofd, char *passPhrase)
     int fd, inpipe[2];
     unsigned char sigbuf[256];   /* 1024bit sig is 152 bytes */
     FILE *fpipe;
+    struct stat statbuf;
 
     sprintf(name, "+myname=\"%s\"", getVar(RPMVAR_PGP_NAME));
     sprintf(secring, "+secring=\"%s\"", getVar(RPMVAR_PGP_SECRING));
@@ -188,9 +200,21 @@ static int makePGPSignature(char *file, int ofd, char *passPhrase)
 	return 1;
     }
 
+    if (stat(sigfile, &statbuf)) {
+	/* PGP failed to write signature */
+	unlink(sigfile);  /* Just in case */
+	error(RPMERR_SIGGEN, "pgp failed to write signature");
+	return 1;
+    }
+    if (statbuf.st_size != 152) {
+	/* 151 byte sig hack */
+	unlink(sigfile);
+	error(RPMERR_SIGGEN, "pgp failed to write 152 byte signature");
+	return -1;
+    }
+    
     fd = open(sigfile, O_RDONLY);
     if (read(fd, sigbuf, 152) != 152) {       /* signature is 152 bytes */
-        perror("bad sigfile:");
 	unlink(sigfile);
 	close(fd);
 	error(RPMERR_SIGGEN, "unable to read 152 bytes of signature");
