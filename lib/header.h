@@ -31,6 +31,7 @@ typedef struct headerToken *Header;
 Header readHeader(int fd);
 Header mmapHeader(int fd, long offset);
 void writeHeader(int fd, Header h);
+unsigned int sizeofHeader(Header h);
 
 /* load and unload a header from a chunk of memory */
 Header loadHeader(void *p);
