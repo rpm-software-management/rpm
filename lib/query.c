@@ -550,6 +550,23 @@ int showMatches(QVA_t qva, rpmTransactionSet ts)
     return ec;
 }
 
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static inline unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (c - 'A') + 10;
+    if (c >= 'a' && c <= 'f')
+	return (c - 'a') + 10;
+    return 0;
+}
+
 /*@-redecl@*/
 /**
  * @todo Eliminate linkage loop into librpmbuild.a
@@ -570,6 +587,8 @@ int rpmQueryVerify(QVA_t qva, rpmTransactionSet ts, const char * arg)
     Header h;
     int rc;
     int xx;
+    const char * s;
+    int i;
 
     if (qva->qva_showPackage == NULL)
 	return 1;
@@ -580,7 +599,6 @@ int rpmQueryVerify(QVA_t qva, rpmTransactionSet ts, const char * arg)
     {	int ac = 0;
 	const char * fileURL = NULL;
 	rpmRC rpmrc;
-	int i;
 
 	rc = rpmGlob(arg, &ac, &av);
 	if (rc) return 1;
@@ -746,6 +764,96 @@ restart:
 	}
 	break;
 
+    case RPMQV_PKGID:
+    {	unsigned char md5[16];
+	unsigned char * t;
+
+	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
+	    {};
+	if (i != 32) {
+	    rpmError(RPMERR_QUERYINFO, _("malformed %s: %s\n"), "pkgid", arg);
+	    return 1;
+	}
+
+        for (i = 0, t = md5, s = arg; i < 16; i++, t++, s += 2)
+            *t = (nibble(s[0]) << 4) | nibble(s[1]);
+	
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5, 16);
+	if (qva->qva_mi == NULL) {
+	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
+			"pkgid", arg);
+	    res = 1;
+	} else {
+	    res = showMatches(qva, ts);
+	}
+    }	break;
+
+    case RPMQV_HDRID:
+	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
+	    {};
+	if (i != 40) {
+	    rpmError(RPMERR_QUERYINFO, _("malformed %s: %s\n"), "hdrid", arg);
+	    return 1;
+	}
+
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SHA1HEADER, arg, 0);
+	if (qva->qva_mi == NULL) {
+	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
+			"hdrid", arg);
+	    res = 1;
+	} else {
+	    res = showMatches(qva, ts);
+	}
+	break;
+
+    case RPMQV_FILEID:
+	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
+	    {};
+	if (i != 32) {
+	    rpmError(RPMERR_QUERY, _("malformed %s: %s\n"), "fileid", arg);
+	    return 1;
+	}
+
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEMD5S, arg, 0);
+	if (qva->qva_mi == NULL) {
+	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
+			"fileid", arg);
+	    res = 1;
+	} else {
+	    res = showMatches(qva, ts);
+	}
+	break;
+
+    case RPMQV_TID:
+    {	int mybase = 10;
+	const char * myarg = arg;
+	char * end = NULL;
+	unsigned iid;
+
+	/* XXX should be in strtoul */
+	if (*myarg == '0') {
+	    myarg++;
+	    mybase = 8;
+	    if (*myarg == 'x') {
+		myarg++;
+		mybase = 16;
+	    }
+	}
+	iid = strtoul(myarg, &end, mybase);
+	if ((*end) || (end == arg) || (iid == ULONG_MAX)) {
+	    rpmError(RPMERR_QUERY, _("malformed %s: %s\n"), "tid", arg);
+	    return 1;
+	}
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_INSTALLTID, &iid, sizeof(iid));
+	if (qva->qva_mi == NULL) {
+	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
+			"tid", arg);
+	    res = 1;
+	} else {
+	    res = showMatches(qva, ts);
+	}
+    }	break;
+
     case RPMQV_WHATREQUIRES:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
 	if (qva->qva_mi == NULL) {
@@ -769,8 +877,7 @@ restart:
 	}
 	/*@fallthrough@*/
     case RPMQV_PATH:
-    {   const char * s;
-	char * fn;
+    {   char * fn;
 
 	for (s = arg; *s != '\0'; s++)
 	    if (!(*s == '.' || *s == '/'))
@@ -826,14 +933,14 @@ restart:
 	}
 	recOffset = strtoul(myarg, &end, mybase);
 	if ((*end) || (end == arg) || (recOffset == ULONG_MAX)) {
-	    rpmError(RPMERR_QUERY, _("invalid package number: %s\n"), arg);
+	    rpmError(RPMERR_QUERYINFO, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
 	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
 	/* RPMDBI_PACKAGES */
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERY,
+	    rpmError(RPMERR_QUERYINFO,
 		_("record %u could not be read\n"), recOffset);
 	    res = 1;
 	} else {

@@ -23,6 +23,10 @@ int specedit = 0;
 #define POPT_TRIGGEREDBY	-1004
 #define POPT_DUMP		-1005
 #define POPT_SPECFILE		-1006
+#define POPT_QUERYBYPKGID	-1007
+#define POPT_QUERYBYHDRID	-1008
+#define POPT_QUERYBYFILEID	-1009
+#define POPT_QUERYBYTID		-1010
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
@@ -52,11 +56,19 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
     case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
     case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
-			      qva->qva_sourceCount++; break;
+				qva->qva_sourceCount++; break;
     case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
-			      qva->qva_sourceCount++; break;
+				qva->qva_sourceCount++; break;
     case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
-			      qva->qva_sourceCount++; break;
+				qva->qva_sourceCount++; break;
+    case POPT_QUERYBYPKGID: qva->qva_source |= RPMQV_PKGID;
+				qva->qva_sourceCount++; break;
+    case POPT_QUERYBYHDRID: qva->qva_source |= RPMQV_HDRID;
+				qva->qva_sourceCount++; break;
+    case POPT_QUERYBYFILEID: qva->qva_source |= RPMQV_FILEID;
+				qva->qva_sourceCount++; break;
+    case POPT_QUERYBYTID: qva->qva_source |= RPMQV_TID;
+				qva->qva_sourceCount++; break;
 
 /* XXX SPECFILE is not verify sources */
     case POPT_SPECFILE:
@@ -85,10 +97,16 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("rpm checksig mode"), NULL },
  { "file", 'f', 0, 0, 'f',
 	N_("query/verify package(s) owning file"), "FILE" },
+ { "fileid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYFILEID,
+	N_("query/verify package(s) with file identifier"), "MD5" },
  { "group", 'g', 0, 0, 'g',
 	N_("query/verify package(s) in group"), "GROUP" },
+ { "hdrid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYHDRID,
+	N_("query/verify package(s) with header identifier"), "SHA1" },
  { "package", 'p', 0, 0, 'p',
 	N_("query/verify a package file (i.e. a binary *.rpm file)"), NULL },
+ { "pkgid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYPKGID,
+	N_("query/verify package(s) with package identifier"), "MD5" },
  { "query", 'q', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'q',
 	N_("rpm query mode"), NULL },
  { "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
@@ -97,6 +115,8 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("display known query tags"), NULL },
  { "specfile", '\0', 0, 0, POPT_SPECFILE,
 	N_("query a spec file"), N_("<spec>") },
+ { "tid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYTID,
+	N_("query/verify package(s) from install transaction"), "TID" },
  { "triggeredby", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_TRIGGEREDBY, 
 	N_("query the package(s) triggered by the package"), "PACKAGE" },
  { "verify", 'V', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',

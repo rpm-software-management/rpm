@@ -10,6 +10,8 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
+#undef PACKAGE
+#undef VERSION
 #include "base64.h"
 #include "dsa.h"
 #include "endianness.h"

@@ -2485,29 +2485,24 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 
 	  dbi = dbiOpen(db, rpmtag, 0);
 	  if (dbi != NULL) {
-	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
+	    int printed;
 
 	    if (rpmtype == RPM_STRING_TYPE) {
-
-		rpmMessage(RPMMESS_DEBUG, _("removing \"%s\" from %s index.\n"), 
-			(const char *)rpmvals, tagName(dbi->dbi_rpmtag));
-
 		/* XXX force uniform headerGetEntry return */
 		av[0] = (const char *) rpmvals;
 		rpmvals = av;
 		rpmcnt = 1;
-	    } else {
-
-		rpmMessage(RPMMESS_DEBUG, _("removing %d entries from %s index.\n"), 
-			rpmcnt, tagName(dbi->dbi_rpmtag));
-
 	    }
 
+	    printed = 0;
+	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
 	    for (i = 0; i < rpmcnt; i++) {
 		const void * valp;
 		size_t vallen;
+		int stringvalued;
 
 		/* Identify value pointer and length. */
+		stringvalued = 0;
 		switch (rpmtype) {
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
@@ -2535,7 +2530,21 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 		default:
 		    vallen = strlen(rpmvals[i]);
 		    valp = rpmvals[i];
+		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
+		}
+
+		if (!printed) {
+		    if (rpmcnt == 1 && stringvalued) {
+			rpmMessage(RPMMESS_DEBUG,
+				_("removing \"%s\" from %s index.\n"),
+				valp, tagName(dbi->dbi_rpmtag));
+		    } else {
+			rpmMessage(RPMMESS_DEBUG,
+				_("removing %d entries from %s index.\n"),
+				rpmcnt, tagName(dbi->dbi_rpmtag));
+		    }
+		    printed++;
 		}
 
 		/*
@@ -2554,7 +2563,8 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 		xx = dbiSync(dbi, 0);
 	  }
 
-	    rpmvals = hfd(rpmvals, rpmtype);
+	    if (rpmtype != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
+		rpmvals = hfd(rpmvals, rpmtype);
 	    rpmtype = 0;
 	    rpmcnt = 0;
 	}
@@ -2779,28 +2789,23 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 
 	  dbi = dbiOpen(db, rpmtag, 0);
 	  if (dbi != NULL) {
+	    int printed;
 
-	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
 	    if (rpmtype == RPM_STRING_TYPE) {
-		rpmMessage(RPMMESS_DEBUG, _("adding \"%s\" to %s index.\n"), 
-			(const char *)rpmvals, tagName(dbi->dbi_rpmtag));
-
 		/* XXX force uniform headerGetEntry return */
 		/*@-observertrans@*/
 		av[0] = (const char *) rpmvals;
 		/*@=observertrans@*/
 		rpmvals = av;
 		rpmcnt = 1;
-	    } else {
-
-		rpmMessage(RPMMESS_DEBUG, _("adding %d entries to %s index.\n"), 
-			rpmcnt, tagName(dbi->dbi_rpmtag));
-
 	    }
 
+	    printed = 0;
+	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
 	    for (i = 0; i < rpmcnt; i++) {
 		const void * valp;
 		size_t vallen;
+		int stringvalued;
 
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
@@ -2830,6 +2835,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 		}
 
 		/* Identify value pointer and length. */
+		stringvalued = 0;
 		switch (rpmtype) {
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
@@ -2857,9 +2863,22 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 		default:
 		    valp = rpmvals[i];
 		    vallen = strlen(rpmvals[i]);
+		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
 		}
 
+		if (!printed) {
+		    if (rpmcnt == 1 && stringvalued) {
+			rpmMessage(RPMMESS_DEBUG,
+				_("adding \"%s\" to %s index.\n"),
+				valp, tagName(dbi->dbi_rpmtag));
+		    } else {
+			rpmMessage(RPMMESS_DEBUG,
+				_("adding %d entries to %s index.\n"),
+				rpmcnt, tagName(dbi->dbi_rpmtag));
+		    }
+		    printed++;
+		}
 		rc += addIndexEntry(dbi, dbcursor, valp, vallen, rec);
 	    }
 	    xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
@@ -2870,7 +2889,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	  }
 
 	/*@-observertrans@*/
-	    rpmvals = hfd(rpmvals, rpmtype);
+	    if (rpmtype != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
+		rpmvals = hfd(rpmvals, rpmtype);
 	/*@=observertrans@*/
 	    rpmtype = 0;
 	    rpmcnt = 0;

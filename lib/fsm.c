@@ -708,8 +708,6 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
     if (rc)
 	goto exit;
 
-    /* XXX md5sum's will break on repackaging that includes modified files. */
-
     if (st->st_size > 0 && (fsm->fmd5sum || fsm->md5sum))
 	fdInitDigest(fsm->wfd, PGPHASHALGO_MD5, 0);
 

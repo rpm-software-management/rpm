@@ -757,6 +757,11 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     return NULL;
 }
 
+/**
+ * Convert hex to binary nibble.
+ * @param c		hex character
+ * @return		binary nibble
+ */
 static inline unsigned char nibble(char c)
 	/*@*/
 {

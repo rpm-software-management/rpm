@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-02-04 10:09-0500\n"
+"POT-Creation-Date: 2002-02-04 18:15-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1547,37 +1547,37 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1193
+#: lib/fsm.c:1191
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1478
+#: lib/fsm.c:1476
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1599 lib/fsm.c:1729
+#: lib/fsm.c:1597 lib/fsm.c:1727
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1755
+#: lib/fsm.c:1753
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1761
+#: lib/fsm.c:1759
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1771
+#: lib/fsm.c:1769
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1793
+#: lib/fsm.c:1791
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -1834,182 +1834,198 @@ msgstr ""
 msgid "upgrade package(s)"
 msgstr ""
 
-#: lib/poptQV.c:83
+#: lib/poptQV.c:95
 msgid "query/verify all packages"
 msgstr ""
 
-#: lib/poptQV.c:85
+#: lib/poptQV.c:97
 msgid "rpm checksig mode"
 msgstr ""
 
-#: lib/poptQV.c:87
+#: lib/poptQV.c:99
 msgid "query/verify package(s) owning file"
 msgstr ""
 
-#: lib/poptQV.c:89
-msgid "query/verify package(s) in group"
-msgstr ""
-
-#: lib/poptQV.c:91
-msgid "query/verify a package file (i.e. a binary *.rpm file)"
-msgstr ""
-
-#: lib/poptQV.c:93
-msgid "rpm query mode"
-msgstr ""
-
-#: lib/poptQV.c:97
-msgid "display known query tags"
-msgstr ""
-
-#: lib/poptQV.c:99
-msgid "query a spec file"
-msgstr ""
-
-#: lib/poptQV.c:99
-msgid "<spec>"
-msgstr ""
-
 #: lib/poptQV.c:101
-msgid "query the package(s) triggered by the package"
+msgid "query/verify package(s) with file identifier"
 msgstr ""
 
 #: lib/poptQV.c:103
+msgid "query/verify package(s) in group"
+msgstr ""
+
+#: lib/poptQV.c:105
+msgid "query/verify package(s) with header identifier"
+msgstr ""
+
+#: lib/poptQV.c:107
+msgid "query/verify a package file (i.e. a binary *.rpm file)"
+msgstr ""
+
+#: lib/poptQV.c:109
+msgid "query/verify package(s) with package identifier"
+msgstr ""
+
+#: lib/poptQV.c:111
+msgid "rpm query mode"
+msgstr ""
+
+#: lib/poptQV.c:115
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:117
+msgid "query a spec file"
+msgstr ""
+
+#: lib/poptQV.c:117
+msgid "<spec>"
+msgstr ""
+
+#: lib/poptQV.c:119
+msgid "query/verify package(s) from install transaction"
+msgstr ""
+
+#: lib/poptQV.c:121
+msgid "query the package(s) triggered by the package"
+msgstr ""
+
+#: lib/poptQV.c:123
 msgid "rpm verify mode"
 msgstr ""
 
-#: lib/poptQV.c:106
+#: lib/poptQV.c:126
 msgid "rpm verify mode (legacy)"
 msgstr ""
 
-#: lib/poptQV.c:108
+#: lib/poptQV.c:128
 msgid "query/verify the package(s) which require a dependency"
 msgstr ""
 
-#: lib/poptQV.c:110
+#: lib/poptQV.c:130
 msgid "query/verify the package(s) which provide a dependency"
 msgstr ""
 
-#: lib/poptQV.c:170
+#: lib/poptQV.c:190
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/poptQV.c:172
+#: lib/poptQV.c:192
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/poptQV.c:174
+#: lib/poptQV.c:194
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/poptQV.c:176
+#: lib/poptQV.c:196
 msgid "list files in package"
 msgstr ""
 
-#: lib/poptQV.c:181
+#: lib/poptQV.c:201
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:185
+#: lib/poptQV.c:205
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:188
+#: lib/poptQV.c:208
 #, c-format
 msgid "skip %%readme files"
 msgstr ""
 
-#: lib/poptQV.c:194
+#: lib/poptQV.c:214
 msgid "use the following query format"
 msgstr ""
 
-#: lib/poptQV.c:196
+#: lib/poptQV.c:216
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/poptQV.c:198
+#: lib/poptQV.c:218
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:200
+#: lib/poptQV.c:220
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/poptQV.c:220 lib/poptQV.c:262 lib/poptQV.c:296
+#: lib/poptQV.c:240 lib/poptQV.c:282 lib/poptQV.c:316
 msgid "don't verify MD5 digest of files"
 msgstr ""
 
-#: lib/poptQV.c:223
+#: lib/poptQV.c:243
 msgid "don't verify size of files"
 msgstr ""
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:246
 msgid "don't verify symlink path of files"
 msgstr ""
 
-#: lib/poptQV.c:229
+#: lib/poptQV.c:249
 msgid "don't verify owner of files"
 msgstr ""
 
-#: lib/poptQV.c:232
+#: lib/poptQV.c:252
 msgid "don't verify group of files"
 msgstr ""
 
-#: lib/poptQV.c:235
+#: lib/poptQV.c:255
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:238 lib/poptQV.c:241
+#: lib/poptQV.c:258 lib/poptQV.c:261
 msgid "don't verify mode of files"
 msgstr ""
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:264
 msgid "don't verify files in package"
 msgstr ""
 
-#: lib/poptQV.c:246
+#: lib/poptQV.c:266
 msgid "don't verify package dependencies"
 msgstr ""
 
-#: lib/poptQV.c:248 lib/poptQV.c:252
+#: lib/poptQV.c:268 lib/poptQV.c:272
 msgid "don't execute verify script(s)"
 msgstr ""
 
-#: lib/poptQV.c:255
+#: lib/poptQV.c:275
 msgid "don't verify digest(s)"
 msgstr ""
 
-#: lib/poptQV.c:258
+#: lib/poptQV.c:278
 msgid "don't verify signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:266 lib/poptQV.c:300
+#: lib/poptQV.c:286 lib/poptQV.c:320
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:269 lib/poptQV.c:303
+#: lib/poptQV.c:289 lib/poptQV.c:323
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:304
 msgid "sign a package, preserving other existing signatures"
 msgstr ""
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:306
 msgid "verify package signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:308
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:290
+#: lib/poptQV.c:310
 msgid "sign a package, discarding all current signatures"
 msgstr ""
 
-#: lib/poptQV.c:292
+#: lib/poptQV.c:312
 msgid "generate signature"
 msgstr ""
 
@@ -2212,81 +2228,91 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:599 lib/query.c:637 lib/rpminstall.c:333 lib/rpminstall.c:475
+#: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:333 lib/rpminstall.c:475
 #: lib/rpminstall.c:845
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:615
+#: lib/query.c:633
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:621
+#: lib/query.c:639
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:647 lib/rpminstall.c:488
+#: lib/query.c:665 lib/rpminstall.c:488
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
 
-#: lib/query.c:691
+#: lib/query.c:709
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:712
+#: lib/query.c:730
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:732
+#: lib/query.c:750
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:742
+#: lib/query.c:760
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:752
+#: lib/query.c:774 lib/query.c:795 lib/query.c:813 lib/query.c:844
+#, c-format
+msgid "malformed %s: %s\n"
+msgstr ""
+
+#: lib/query.c:783 lib/query.c:801 lib/query.c:819 lib/query.c:849
+#, c-format
+msgid "no package matches %s: %s\n"
+msgstr ""
+
+#: lib/query.c:860
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:763
+#: lib/query.c:871
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:798
+#: lib/query.c:905
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:802
+#: lib/query.c:909
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:829
+#: lib/query.c:936
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:832
+#: lib/query.c:939
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:837
+#: lib/query.c:944
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:848 lib/rpminstall.c:633
+#: lib/query.c:955 lib/rpminstall.c:633
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3011,7 +3037,7 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2097 rpmdb/rpmdb.c:3352
+#: rpmdb/rpmdb.c:2097 rpmdb/rpmdb.c:3372
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
@@ -3026,94 +3052,94 @@ msgstr ""
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2492
+#: rpmdb/rpmdb.c:2540
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2501
+#: rpmdb/rpmdb.c:2544
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2704
+#: rpmdb/rpmdb.c:2714
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2785
+#: rpmdb/rpmdb.c:2873
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2796
+#: rpmdb/rpmdb.c:2877
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3238
+#: rpmdb/rpmdb.c:3258
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3291
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3298
+#: rpmdb/rpmdb.c:3318
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3302
+#: rpmdb/rpmdb.c:3322
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3308
+#: rpmdb/rpmdb.c:3328
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3310
+#: rpmdb/rpmdb.c:3330
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3317
+#: rpmdb/rpmdb.c:3337
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3328
+#: rpmdb/rpmdb.c:3348
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3392
+#: rpmdb/rpmdb.c:3412
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3410
+#: rpmdb/rpmdb.c:3430
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3418
+#: rpmdb/rpmdb.c:3438
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3420
+#: rpmdb/rpmdb.c:3440
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3430
+#: rpmdb/rpmdb.c:3450
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3432
+#: rpmdb/rpmdb.c:3452
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

@@ -117,6 +117,12 @@
 	- a couple more perl.{prov,req} fiddles.
 	- macro for %files, always include %defattr(), redhat config only.
 	- fix: drop header region when writing repackaged legacy header.
+        - bail on %files macro.
+	- transaction rollbacks are functional.
+	- generate index for pkgid (aka Sigmd5) tag, query/verify by pkgid.
+	- generate index for hdrid (aka Sha1header) tag, query/verify by hdrid.
+	- generate index for fileid (aka Filemd5s) tag, query/verify by fileid.
+	- query/verify by install transaction id.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
