@@ -17,3 +17,8 @@ usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = libexpat.la
 libexpat_la_SOURCES = xmlparse.c xmlrole.c xmltok.c 
 libexpat_la_LDFLAGS = -no-undefined -version-info @LIBCURRENT@:@LIBREVISION@:@LIBAGE@
+
+.PHONY: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(libexpat_la_SOURCES)
+

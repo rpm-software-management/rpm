@@ -1,0 +1,102 @@
+-I. -I.. -DHAVE_CONFIG_H
+
++partial
++forcehints
+
+-warnunixlib
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
++bounds
+
+-fielduse
+-exportfcn
+-exportheader		# 50
+-exporttype
+
+-aliasunique
+-boolops
+-boundsread
+-boundswrite
+-branchstate
+-casebreak
+-compdef
+-compmempass
+-dependenttrans
++enumindex
++enumint
+-enummemuse
+-exportconst
+-fcnuse
+-forempty
+-fullinitblock
+-globs
+-ifempty
+-immediatetrans
+-infloops
+-infloopsuncon
+-keep
+-kepttrans
+-looploopbreak
+-looploopcontinue
+-loopswitchbreak
+-modnomods
+-modunconnomods
+-noeffectuncon
+-nullassign
+-nullderef
+-nullpass
+-nullret
+-nullstate
+-observertrans
+-paramuse
+-predboolothers
+-predboolptr
+-protoparammatch
++ptrnegate
+-readonlytrans
+-retalias
+-retvalint
+-shadow
+-shiftnegative
+-sizeoftype
+-statictrans
+-strictbranchstate
+-switchloopbreak
+-switchswitchbreak
+-temptrans
+-type
+-unqualifiedtrans
+-usereleased
+-whileempty
+
+# --- not-yet at strict level
+-bitwisesigned		# 86
+-elseifcomplete		# 2
+-forblock		# 6
+-ifblock		# 231
+-incondefs		# 64
+-namechecks		# tedious ANSI compliance checks
+-ptrarith		# tedious
+
+-mustdefine		# 25
+-shiftimplementation	# 148 ctype.h
+
+-strictops		# 37
+-whileblock		# 16
+
+# --- not-yet at checks level
+-mustfree		# 26
+-usedef			# 31
+
+# --- not-yet at standard level
++boolint		# 38
++charint		# 147
++ignorequals		# 49
++matchanyintegral	# 77
