@@ -99,3 +99,6 @@ th: th.c librpm.la
 
 trb: trb.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trb.o $(mylibs) $(LIBS)
+
+trhn: trhn.o librpm.la
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trhn.o $(mylibs) $(LIBS)
