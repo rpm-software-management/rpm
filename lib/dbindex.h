@@ -90,10 +90,13 @@ struct _dbiVec {
  */
 struct _dbiIndex {
     const char * dbi_basename;		/*<! last component of name */
+    int dbi_rpmtag;			/*<! rpm tag used for index */
+
     DBI_TYPE dbi_type;			/*<! type of access */
     int dbi_flags;			/*<! flags to use on open */
     int dbi_perms;			/*<! file permission to use on open */
     int dbi_major;			/*<! Berkeley db version major */
+
     const char * dbi_file;		/*<! name of index database */
     void * dbi_db;			/*<! Berkeley db[123] handle */
     void * dbi_dbenv;
@@ -112,12 +115,11 @@ extern "C" {
  * Return handle for an index database.
  * @param filename	file name of database
  * @param flags		type of open
- * @param perm		permissions on database file
- * @param type		one of { DBI_BTREE, DBI_HASH, DBI_RECNO }
+ * @param dbiTemplate	template to initialize new dbiIndex
  * @return		index database handle
  */
-/*@only@*/ dbiIndex dbiOpenIndex(const char * filename, int flags, int perms,
-		DBI_TYPE type);
+/*@only@*/ dbiIndex dbiOpenIndex(const char * filename, int flags,
+		const dbiIndex dbiTemplate);
 
 /**
  * Close index database.
@@ -155,7 +157,7 @@ int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set);
  * @param rec	item to append to set
  * @return	0 success (always)
  */
-int dbiAppendIndexRecord( /*@out@*/ dbiIndexSet set, unsigned int recOffset, unsigned int fileNumber);
+int dbiAppendIndexRecord( /*@out@*/ dbiIndexSet set, dbiIndexRecord rec);
 
 /**
  * Create empty set of index database items.

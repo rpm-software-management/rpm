@@ -916,7 +916,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     rpmMessage(RPMMESS_DEBUG, _("running postinstall scripts (if any)\n"));
 
     if (runInstScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
-		      flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
+		      (flags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd)) {
 	rc = 2;
 	goto exit;
     }

@@ -489,7 +489,11 @@ static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
     } else
 #endif
     rc = db->get(db, NULL, &key, &data, 0);
+#if 0
     _printit = (rc == DB_NOTFOUND ? 0 : _debug);
+#else
+    _printit = _debug;
+#endif
     rc = cvtdberr(dbi, "db->get", rc, _printit);
 #else
     rc = db->get(db, &key, &data, 0);
@@ -580,11 +584,11 @@ static int db3open(dbiIndex dbi)
     int rc = 0;
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
-    char * dbhome = NULL;
-    char * dbfile = NULL;
     DB * db = NULL;
-    DB_ENV * dbenv = NULL;
+    char * dbhome;
+    char * dbfile;
     u_int32_t dbflags;
+    DB_ENV * dbenv = NULL;
     int __do_dbcursor_rmw = 0;
 
     dbhome = alloca(strlen(dbi->dbi_file) + 1);

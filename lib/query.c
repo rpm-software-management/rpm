@@ -634,7 +634,17 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	break;
 
     case RPMQV_DBOFFSET:
-	recNumber = strtoul(arg, &end, 10);
+    {	int mybase = 10;
+	const char * myarg = arg;
+	if (*myarg == '0') {
+	    myarg++;
+	    mybase = 8;
+	    if (*myarg == 'x') {
+		myarg++;
+		mybase = 16;
+	    }
+	}
+	recNumber = strtoul(myarg, &end, mybase);
 	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
 	    fprintf(stderr, _("invalid package number: %s\n"), arg);
 	    return 1;
@@ -648,7 +658,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    retcode = showPackage(qva, db, h);
 	    headerFree(h);
 	}
-	break;
+    }	break;
 
     case RPMQV_PACKAGE:
 	rc = rpmdbFindByLabel(db, arg, &matches);

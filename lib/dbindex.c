@@ -63,8 +63,12 @@ void dbiIndexRecordOffsetSave(dbiIndexSet set, int recno, unsigned int recoff) {
     set->recs[recno].recOffset = recoff;
 }
 
-static dbiIndex newDBI(void) {
+static dbiIndex newDBI(const dbiIndex dbiTemplate) {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
+    
+    *dbi = *dbiTemplate;	/* structure assignment */
+    if (dbiTemplate->dbi_basename)
+	dbi->dbi_basename = xstrdup(dbiTemplate->dbi_basename);
     return dbi;
 }
 
@@ -73,6 +77,7 @@ static void freeDBI( /*@only@*/ /*@null@*/ dbiIndex dbi) {
 	if (dbi->dbi_dbenv)	free(dbi->dbi_dbenv);
 	if (dbi->dbi_dbinfo)	free(dbi->dbi_dbinfo);
 	if (dbi->dbi_file)	xfree(dbi->dbi_file);
+	if (dbi->dbi_basename)	xfree(dbi->dbi_basename);
 	xfree(dbi);
     }
 }
@@ -83,7 +88,8 @@ static struct _dbiVec *mydbvecs[] = {
     DB0vec, DB1vec, DB2vec, DB3vec, NULL
 };
 
-dbiIndex dbiOpenIndex(const char * urlfn, int flags, int perms, DBI_TYPE type) {
+dbiIndex dbiOpenIndex(const char * urlfn, int flags, const dbiIndex dbiTemplate)
+{
     dbiIndex dbi;
     const char * filename;
     int rc = 0;
@@ -94,12 +100,9 @@ dbiIndex dbiOpenIndex(const char * urlfn, int flags, int perms, DBI_TYPE type) {
 	return NULL;
     }
 
-    dbi = newDBI();
+    dbi = newDBI(dbiTemplate);
     dbi->dbi_file = xstrdup(filename);
     dbi->dbi_flags = flags;
-    dbi->dbi_perms = perms;
-    dbi->dbi_type = type;
-    dbi->dbi_openinfo = NULL;
     dbi->dbi_major = _useDbiMajor;
 
     switch (dbi->dbi_major) {
@@ -213,8 +216,7 @@ int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
     return rc;
 }
 
-int dbiAppendIndexRecord(dbiIndexSet set,
-	unsigned int recOffset, unsigned int fileNumber)
+int dbiAppendIndexRecord(dbiIndexSet set, dbiIndexRecord rec)
 {
     set->count++;
 
@@ -223,8 +225,8 @@ int dbiAppendIndexRecord(dbiIndexSet set,
     } else {
 	set->recs = xrealloc(set->recs, set->count * sizeof(*(set->recs)));
     }
-    set->recs[set->count - 1].recOffset = recOffset;
-    set->recs[set->count - 1].fileNumber = fileNumber;
+    set->recs[set->count - 1].recOffset = rec->recOffset;
+    set->recs[set->count - 1].fileNumber = rec->fileNumber;
 
     return 0;
 }
