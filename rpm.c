@@ -1,5 +1,4 @@
 #include <ctype.h>
-#include <getopt.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,15 +6,16 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include "build/build.h"
+#include "checksig.h"
 #include "install.h"
 #include "intl.h"
 #include "lib/messages.h"
 #include "lib/signature.h"
+#include "misc/popt.h"
 #include "query.h"
-#include "verify.h"
-#include "checksig.h"
 #include "rpmlib.h"
-#include "build/build.h"
+#include "verify.h"
 
 #define GETOPT_QUERYFORMAT	1000
 #define GETOPT_WHATREQUIRES	1001
@@ -33,6 +33,7 @@
 #define GETOPT_REBUILDDB        1013
 #define GETOPT_FTPPORT          1014
 #define GETOPT_FTPPROXY         1015
+#define GETOPT_INFO             1016
 
 char * version = VERSION;
 
@@ -376,7 +377,6 @@ int build(char *arg, int buildAmount, char *passPhrase,
 }
 
 int main(int argc, char ** argv) {
-    int long_index;
     enum modes bigMode = MODE_UNKNOWN;
     enum querysources querySource = QUERY_PACKAGE;
     enum verifysources verifySource = VERIFY_PACKAGE;
@@ -385,7 +385,7 @@ int main(int argc, char ** argv) {
     int quiet = 0, replaceFiles = 0, replacePackages = 0, showPercents = 0;
     int showHash = 0, installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
-    int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
+    int shortCircuit = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
@@ -401,83 +401,88 @@ int main(int argc, char ** argv) {
     char *arch = NULL;
     char * ftpProxy = NULL, * ftpPort = NULL;
     char *os = NULL;
+    char * optArg;
+    char * pkg;
     char * smallArgv[2] = { NULL, NULL };
     char ** currarg;
+    poptContext optCon;
     int ec = 0;
-    struct option optionsTable[] = {
-	    { "addsign", 0, 0, GETOPT_ADDSIGN },
-	    { "all", 0, 0, 'a' },
-	    { "build", 1, 0, 'b' },
-	    { "buildarch", 1, 0, 0 },
-	    { "buildos", 1, 0, 0 },
-	    { "buildroot", 1, 0, GETOPT_BUILDROOT },
-	    { "checksig", 0, 0, 'K' },
-	    { "clean", 0, &clean, 0 },
-	    { "configfiles", 0, 0, 'c' },
-	    { "dbpath", 1, 0, GETOPT_DBPATH },
-	    { "docfiles", 0, 0, 'd' },
-	    { "dump", 0, &dump, 0 },
-	    { "erase", 0, 0, 'e' },
-            { "excludedocs", 0, &excldocs, 0},
-	    { "file", 0, 0, 'f' },
-	    { "force", 0, &force, 0 },
-	    { "ftpport", 1, 0, GETOPT_FTPPORT },
-	    { "ftpproxy", 1, 0, GETOPT_FTPPROXY },
-	    { "group", 0, 0, 'g' },
-	    { "hash", 0, &showHash, 'h' },
-	    { "help", 0, &help, 0 },
-	    { "ignorearch", 0, &ignoreArch, 0 },
-	    { "ignoreos", 0, &ignoreOs, 0 },
-	    { "info", 0, 0, 'i' },
-            { "includedocs", 0, &incldocs, 0},
-	    { "initdb", 0, &initdb, 0 },
-	    { "install", 0, 0, 'i' },
-	    { "list", 0, 0, 'l' },
-	    { "nodeps", 0, &noDeps, 0 },
-	    { "nofiles", 0, &noFiles, 0 },
-	    { "nopgp", 0, &noPgp, 0 },
-	    { "noscripts", 0, &noScripts, 0 },
-	    { "oldpackage", 0, &oldPackage, 0 },
-	    { "package", 0, 0, 'p' },
-	    { "percent", 0, &showPercents, 0 },
-	    { "prefix", 1, 0, GETOPT_PREFIX },
-	    { "provides", 0, 0, GETOPT_PROVIDES },
-	    { "qf", 1, 0, GETOPT_QUERYFORMAT },
-	    { "query", 0, 0, 'q' },
-	    { "querybynumber", 0, 0, GETOPT_QUERYBYNUMBER },
-	    { "queryformat", 1, 0, GETOPT_QUERYFORMAT },
-	    { "querytags", 0, &queryTags, 0 },
-	    { "quiet", 0, &quiet, 0 },
-	    { "rcfile", 1, 0, 0 },
-	    { "recompile", 0, 0, GETOPT_RECOMPILE },
-	    { "rebuild", 0, 0, GETOPT_REBUILD },
-	    { "rebuilddb", 0, 0, GETOPT_REBUILDDB },
-	    { "replacefiles", 0, &replaceFiles, 0 },
-	    { "replacepkgs", 0, &replacePackages, 0 },
-	    { "resign", 0, 0, GETOPT_RESIGN },
-	    { "requires", 0, 0, 'R' },
-	    { "root", 1, 0, 'r' },
-	    { "scripts", 0, &queryScripts, 0 },
-	    { "short-circuit", 0, &shortCircuit, 0 },
-	    { "showrc", 0, 0, 0 },
-	    { "sign", 0, &signIt, 0 },
-	    { "state", 0, 0, 's' },
-	    { "stdin-files", 0, 0, 'F' },
-	    { "stdin-group", 0, 0, 'G' },
-	    { "stdin-packages", 0, 0, 'P' },
-	    { "stdin-query", 0, 0, 'Q' },
-	    { "test", 0, &test, 0 },
-	    { "timecheck", 1, 0, GETOPT_TIMECHECK },
-	    { "upgrade", 0, 0, 'U' },
-	    { "uninstall", 0, 0, 'u' },
-	    { "verbose", 0, 0, 'v' },
-	    { "verify", 0, 0, 'V' },
-	    { "version", 0, &version, 0 },
-	    { "whatrequires", 0, 0, GETOPT_WHATREQUIRES },
-	    { "whatprovides", 0, 0, GETOPT_WHATPROVIDES },
-	    { 0, 0, 0, 0 } 
+    struct poptOption optionsTable[] = {
+	    { "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
+	    { "all", 'a', 0, 0, 'a' },
+	    { "build", 'b', POPT_ARG_YES, 0, 'b' },
+	    { "buildarch", '\0', POPT_ARG_YES, 0, 0 },
+	    { "buildos", '\0', POPT_ARG_YES, 0, 0 },
+	    { "buildroot", '\0', POPT_ARG_YES, 0, GETOPT_BUILDROOT },
+	    { "checksig", 'K', 0, 0, 'K' },
+	    { "clean", '\0', 0, &clean, 0 },
+	    { "configfiles", 'c', 0, 0, 'c' },
+	    { "dbpath", '\0', POPT_ARG_YES, 0, GETOPT_DBPATH },
+	    { "docfiles", 'd', 0, 0, 'd' },
+	    { "dump", '\0', 0, &dump, 0 },
+	    { "erase", 'e', 0, 0, 'e' },
+            { "excludedocs", '\0', 0, &excldocs, 0},
+	    { "file", 'f', 0, 0, 'f' },
+	    { "force", '\0', 0, &force, 0 },
+	    { "ftpport", '\0', POPT_ARG_YES, 0, GETOPT_FTPPORT },
+	    { "ftpproxy", '\0', POPT_ARG_YES, 0, GETOPT_FTPPROXY },
+	    { "group", 'g', 0, 0, 'g' },
+	    { "hash", 'h', 0, &showHash, 'h' },
+	    { "help", '\0', 0, &help, 0 },
+	    { "ignorearch", '\0', 0, &ignoreArch, 0 },
+	    { "ignoreos", '\0', 0, &ignoreOs, 0 },
+	/* info and install both using 'i' is dumb */
+	    { "info", '\0', 0, 0, GETOPT_INFO },
+            { "includedocs", '\0', 0, &incldocs, 0},
+	    { "initdb", '\0', 0, &initdb, 0 },
+	    { "install", 'i', 0, 0, 'i' },
+	    { "list", 'l', 0, 0, 'l' },
+	    { "nodeps", '\0', 0, &noDeps, 0 },
+	    { "nofiles", '\0', 0, &noFiles, 0 },
+	    { "nopgp", '\0', 0, &noPgp, 0 },
+	    { "noscripts", '\0', 0, &noScripts, 0 },
+	    { "oldpackage", '\0', 0, &oldPackage, 0 },
+	    { "package", 'p', 0, 0, 'p' },
+	    { "percent", '\0', 0, &showPercents, 0 },
+	    { "prefix", '\0', POPT_ARG_YES, 0, GETOPT_PREFIX },
+	    { "provides", '\0', 0, 0, GETOPT_PROVIDES },
+	    { "qf", '\0', POPT_ARG_YES, 0, GETOPT_QUERYFORMAT },
+	    { "query", 'q', 0, 0, 'q' },
+	    { "querybynumber", '\0', 0, 0, GETOPT_QUERYBYNUMBER },
+	    { "queryformat", '\0', POPT_ARG_YES, 0, GETOPT_QUERYFORMAT },
+	    { "querytags", '\0', 0, &queryTags, 0 },
+	    { "quiet", '\0', 0, &quiet, 0 },
+	    { "rcfile", '\0', POPT_ARG_YES, 0, 0 },
+	    { "recompile", '\0', 0, 0, GETOPT_RECOMPILE },
+	    { "rebuild", '\0', 0, 0, GETOPT_REBUILD },
+	    { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB },
+	    { "replacefiles", '\0', 0, &replaceFiles, 0 },
+	    { "replacepkgs", '\0', 0, &replacePackages, 0 },
+	    { "resign", '\0', 0, 0, GETOPT_RESIGN },
+	    { "requires", 'R', 0, 0, 'R' },
+	    { "root", 'r', POPT_ARG_YES, 0, 'r' },
+	    { "scripts", '\0', 0, &queryScripts, 0 },
+	    { "short-circuit", '\0', 0, &shortCircuit, 0 },
+	    { "showrc", '\0', 0, 0, 0 },
+	    { "sign", '\0', 0, &signIt, 0 },
+	    { "state", 's', 0, 0, 's' },
+	    { "stdin-files", 'F', 0, 0, 'F' },
+	    { "stdin-group", 'G', 0, 0, 'G' },
+	    { "stdin-packages", 'P', 0, 0, 'P' },
+	    { "stdin-query", 'Q', 0, 0, 'Q' },
+	    { "stdin-verify", 'Y', 0, 0, 'Y' },
+	    { "test", '\0', 0, &test, 0 },
+	    { "timecheck", '\0', POPT_ARG_YES, 0, GETOPT_TIMECHECK },
+	    { "upgrade", 'U', 0, 0, 'U' },
+	    { "uninstall", 'u', 0, 0, 'u' },
+	    { "verbose", 'v', 0, 0, 'v' },
+	    { "verify", 'V', 0, 0, 'V' },
+	    {  NULL, 'y', 0, 0, 'V' },
+	    { "version", '\0', 0, &version, 0 },
+	    { "whatrequires", '\0', 0, 0, GETOPT_WHATREQUIRES },
+	    { "whatprovides", '\0', 0, 0, GETOPT_WHATPROVIDES },
+	    { 0, 0, 0, 0, 0 } 
 	} ;
-    struct option * options = optionsTable;
 
     /* set up the correct locale */
     setlocale(LC_ALL, "" );
@@ -516,18 +521,12 @@ int main(int argc, char ** argv) {
 	exit(0);
     }
 
-    while (1) {
-	long_index = 0;
+    optCon = poptGetContext("RPM", argc, argv, optionsTable, 0);
 
-	arg = getopt_long(argc, argv, "RQqVyUYhpvKPfFilseagGDducr:b:", options, 
-			  &long_index);
-	if (arg == -1) break;
+    while ((arg = poptGetNextOpt(optCon)) > 0) {
+	optArg = poptGetOptArg(optCon);
 
 	switch (arg) {
-	  case '?':
-	    badOption = 1;
-	    break;
-
 	  case 'K':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_CHECKSIG)
 		argerror(_("only one major mode may be specified"));
@@ -580,11 +579,11 @@ int main(int argc, char ** argv) {
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_BUILD;
 
-	    if (strlen(optarg) > 1)
+	    if (strlen(optArg) > 1) 
 		argerror(_("--build (-b) requires one of a,b,i,c,p,l as "
 			 "its sole argument"));
 
-	    buildChar = optarg[0];
+	    buildChar = optArg[0];
 	    switch (buildChar) {
 	      case 'a':
 	      case 'b':
@@ -605,19 +604,19 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case 'i':
-	    if (!long_index) {
-		if (bigMode == MODE_QUERY)
-		    queryFor |= QUERY_FOR_INFO;
-		else if (bigMode == MODE_INSTALL)
-		    /* ignore it */ ;
-		else if (bigMode == MODE_UNKNOWN)
-		    bigMode = MODE_INSTALL;
-	    }
-	    else if (!strcmp(options[long_index].name, "info"))
+	    if (bigMode == MODE_QUERY)
 		queryFor |= QUERY_FOR_INFO;
-	    else 
+	    else if (bigMode == MODE_INSTALL)
+		/* ignore it */ ;
+	    else if (bigMode == MODE_UNKNOWN)
 		bigMode = MODE_INSTALL;
-		
+	    break;
+
+	  case GETOPT_INFO:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
+		argerror(_("only one major mode may be specified"));
+	    queryFor |= QUERY_FOR_INFO;
+	    bigMode = MODE_QUERY;
 	    break;
 
 	  case 'U':
@@ -707,22 +706,22 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case 'r':
-	    if (optarg[0] != '/') 
+	    if (optArg[0] != '/') 
 		argerror(_("arguments to --root (-r) must begin with a /"));
-	    rootdir = optarg;
+	    rootdir = optArg;
 	    break;
 
 	  case GETOPT_PREFIX:
-	    if (optarg[0] != '/') 
+	    if (optArg[0] != '/') 
 		argerror(_("arguments to --prefix must begin with a /"));
-	    prefix = optarg;
+	    prefix = optArg;
 	    break;
 
 	  case GETOPT_QUERYFORMAT:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_QUERY;
-	    queryFormat = optarg;
+	    queryFormat = optArg;
 	    queryFor |= QUERY_FOR_INFO;
 	    break;
 
@@ -758,7 +757,7 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN &&
 		bigMode != MODE_BUILD && bigMode != MODE_REBUILD)
 		argerror(_("only one major mode may be specified"));
-	    buildRootOverride = optarg;
+	    buildRootOverride = optArg;
 	    break;
 
 	  case GETOPT_RESIGN:
@@ -782,9 +781,9 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case GETOPT_DBPATH:
-            if (optarg[0] != '/')
+            if (optArg[0] != '/')
                 argerror(_("arguments to --dbpath must begin with a /"));
-	    rpmSetVar(RPMVAR_DBPATH, optarg);
+	    rpmSetVar(RPMVAR_DBPATH, optArg);
 	    gotDbpath = 1;
 	    break;
 
@@ -798,11 +797,11 @@ int main(int argc, char ** argv) {
 
 	  case GETOPT_TIMECHECK:
 	    tce = NULL;
-	    timeCheck = strtoul(optarg, &tce, 10);
-	    if ((*tce) || (tce == optarg) || (timeCheck == ULONG_MAX)) {
+	    timeCheck = strtoul(optArg, &tce, 10);
+	    if ((*tce) || (tce == optArg) || (timeCheck == ULONG_MAX)) {
 		argerror("Argument to --timecheck must be integer");
 	    }
-	    rpmSetVar(RPMVAR_TIMECHECK, optarg);
+	    rpmSetVar(RPMVAR_TIMECHECK, optArg);
 	    break;
 
 	  case GETOPT_REBUILDDB:
@@ -812,17 +811,16 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case GETOPT_FTPPORT:
-	    ftpPort = optarg;
+	    ftpPort = optArg;
 	    break;
 
 	  case GETOPT_FTPPROXY:
-	    ftpProxy = optarg;
+	    ftpProxy = optArg;
 	    break;
 	    
 	  default:
-	    if (options[long_index].flag) {
-		*options[long_index].flag = 1;
-	    }
+	    fprintf(stderr, "Internal error :-(\n");
+	    exit(1);
 	}
     }
 
@@ -832,8 +830,10 @@ int main(int argc, char ** argv) {
     if (version) printVersion();
     if (help) printHelp();
 
-    if (badOption)
+    if (arg < -1) {
+	fprintf(stderr, "bad option\n");	
 	exit(1);
+    }
 
     if (queryScripts) {
 	queryFor |= QUERY_FOR_SCRIPTS;
@@ -970,7 +970,7 @@ int main(int argc, char ** argv) {
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_RESIGN) {
-            if (optind != argc) {
+            if (poptPeekArg(optCon)) {
 		switch (rpmLookupSignatureType()) {
 		  case RPMSIGTAG_PGP:
 		    if (!(passPhrase = rpmGetPassPhrase("Enter pass phrase: "))) {
@@ -1017,21 +1017,22 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_CHECKSIG:
-	if (optind == argc) 
+	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signature check"));
-	exit(doCheckSig(1-noPgp, argv + optind));
+	exit(doCheckSig(1-noPgp, poptGetArgs(optCon)));
 
       case MODE_RESIGN:
-	if (optind == argc) 
+	if (!poptPeekArg(optCon))
+	    argerror(_("no packages given for signature check"));
 	    argerror(_("no packages given for signing"));
-	exit(doReSign(addSign, passPhrase, argv + optind));
+	exit(doReSign(addSign, passPhrase, poptGetArgs(optCon)));
 	
       case MODE_REBUILD:
       case MODE_RECOMPILE:
         if (rpmGetVerbosity() == RPMMESS_NORMAL)
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
 
-        if (optind == argc) 
+	if (!poptPeekArg(optCon))
 	    argerror(_("no packages files given for rebuild"));
 
 	buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL |
@@ -1040,8 +1041,8 @@ int main(int argc, char ** argv) {
 	    buildAmount |= RPMBUILD_BINARY;
 	}
 
-	while (optind < argc) {
-	    if (doSourceInstall("/", argv[optind++], &specFile))
+	while ((pkg = poptGetArg(optCon))) {
+	    if (doSourceInstall("/", pkg, &specFile))
 		exit(1);
 
 	    if (build(specFile, buildAmount, passPhrase, buildRootOverride)) {
@@ -1083,25 +1084,24 @@ int main(int argc, char ** argv) {
 	if (test)
 	    buildAmount |= RPMBUILD_TEST;
 
-	if (optind == argc) 
+	if (!poptPeekArg(optCon))
 	    argerror(_("no spec files given for build"));
 
-	while (optind < argc) 
-	    if (build(argv[optind++], buildAmount,
-		      passPhrase, buildRootOverride)) {
+	while ((pkg = poptGetArg(optCon)))
+	    if (build(pkg, buildAmount, passPhrase, buildRootOverride)) {
 		exit(1);
 	    }
 	break;
 
       case MODE_UNINSTALL:
-	if (optind == argc) 
+	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for uninstall"));
 
 	if (noScripts) uninstallFlags |= RPMUNINSTALL_NOSCRIPTS;
 	if (test) uninstallFlags |= RPMUNINSTALL_TEST;
 	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
 
-	ec = doUninstall(rootdir, argv + optind, uninstallFlags, 
+	ec = doUninstall(rootdir, poptGetArgs(optCon), uninstallFlags, 
 		interfaceFlags);
 	break;
 
@@ -1126,10 +1126,10 @@ int main(int argc, char ** argv) {
 		installFlags |= RPMINSTALL_NODOCS;
 	}
 
-	if (optind == argc) 
+	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for install"));
 
-	ec += doInstall(rootdir, argv + optind, prefix, installFlags, 
+	ec += doInstall(rootdir, poptGetArgs(optCon), prefix, installFlags, 
 			interfaceFlags);
 	break;
 
@@ -1137,7 +1137,7 @@ int main(int argc, char ** argv) {
 	if (dump) queryFor |= QUERY_FOR_DUMPFILES;
 
 	if (querySource == QUERY_ALL) {
-	    if (optind != argc) 
+	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for query of all packages"));
 
 	    ec = doQuery(rootdir, QUERY_ALL, queryFor, NULL, queryFormat);
@@ -1155,11 +1155,10 @@ int main(int argc, char ** argv) {
 				  queryFormat);
 	    }
 	} else {
-	    if (optind == argc) 
+	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));
-	    while (optind < argc) 
-		ec = doQuery(rootdir, querySource, queryFor, argv[optind++], 
-			     queryFormat);
+	    while ((pkg = poptGetArg(optCon)))
+		ec = doQuery(rootdir, querySource, queryFor, pkg, queryFormat);
 	}
 	break;
 
@@ -1185,12 +1184,14 @@ int main(int argc, char ** argv) {
 		    doVerify(rootdir, verifySource, smallArgv, verifyFlags);
 	    }
 	} else {
-	    if (optind == argc) 
+	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for verify"));
-	    doVerify(rootdir, verifySource, argv + optind, verifyFlags);
+	    doVerify(rootdir, verifySource, poptGetArgs(optCon), verifyFlags);
 	}
 	break;
     }
+
+    poptFreeContext(optCon);
 
     return ec;
 }
