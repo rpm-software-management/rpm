@@ -412,7 +412,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	if (di && fi->type == TR_ADDED) {
 	    for (i = 0; i < filesystemCount; i++) {
-		if (di[i].needed > di[i].avail) {
+		if (((di[i].needed * 20) / 19)> di[i].avail) {
 		    psAppend(probs, RPMPROB_DISKSPACE, fi->ap->key, fi->ap->h,
 			     filesystems[i], NULL, 
 			     (di[i].needed - di[i].avail) * di[i].block);
