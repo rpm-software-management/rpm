@@ -21,7 +21,8 @@
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 /*@access rpmTransactionSet@*/
-/*@access Header@*/		/* XXX compared with NULL */
+/*@access Header @*/		/* XXX compared with NULL */
+/*@access FD_t @*/		/* XXX stealing digests */
 
 /*@unchecked@*/
 static int _print_pkts = 0;
@@ -35,9 +36,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
     const void * ptr;
     int xx;
 
-    /*@-mods@*/ /* FIX: undocumented modification of sig */
     for (hi = headerInitIterator(sig);
-    /*@=mods@*/
         headerNextIterator(hi, &tag, &type, &ptr, &count);
         ptr = hfd(ptr, type))
     {
@@ -91,9 +90,7 @@ Header headerRegenSigHeader(const Header h)
     const void * ptr;
     int xx;
 
-    /*@-mods@*/ /* FIX: undocumented modification of h */
     for (hi = headerInitIterator(h);
-    /*@=mods@*/
         headerNextIterator(hi, &tag, &type, &ptr, &count);
         ptr = hfd(ptr, type))
     {
@@ -442,31 +439,37 @@ fprintf(stderr, "*** RPF: legacy %d nodigests %d nosignatures %d sigtag %d\n", t
 	ts->dig->nbytes += count;
 
 	/* XXX Steal the digest-in-progress from the file handle. */
-	/*@-type@*/ /* FIX: cast? */
 	for (i = fd->ndigests - 1; i >= 0; i--) {
 	    FDDIGEST_t fddig = fd->digests + i;
 	    if (fddig->hashctx == NULL)
 		continue;
 	    if (fddig->hashalgo == PGPHASHALGO_MD5) {
+#ifdef	DYING
 		/*@-branchstate@*/
 		if (ts->dig->md5ctx != NULL)
 		    (void) rpmDigestFinal(ts->dig->md5ctx, NULL, NULL, 0);
 		/*@=branchstate@*/
+#else
+assert(ts->dig->md5ctx != NULL);
+#endif
 		ts->dig->md5ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
 		continue;
 	    }
 	    if (fddig->hashalgo == PGPHASHALGO_SHA1) {
+#ifdef	DYING
 		/*@-branchstate@*/
 		if (ts->dig->sha1ctx != NULL)
 		    (void) rpmDigestFinal(ts->dig->sha1ctx, NULL, NULL, 0);
 		/*@=branchstate@*/
+#else
+assert(ts->dig->sha1ctx != NULL);
+#endif
 		ts->dig->sha1ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
 		continue;
 	    }
 	}
-	/*@=type@*/
 	break;
     }
 

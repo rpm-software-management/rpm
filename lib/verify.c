@@ -363,8 +363,8 @@ int rpmVerifyDigest(Header h)
  * @return		0 no problems, 1 problems found
  */
 static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
-	/*@globals fileSystem@*/
-	/*@modifies h, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies h, fileSystem, internalState  @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char buf[BUFSIZ];
@@ -390,7 +390,8 @@ static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 
     rpmBuildFileList(h, &fileNames, &count);
 
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+    {
 	rpmfileAttrs fileAttrs;
 	int rc;
 
@@ -403,13 +404,11 @@ static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 
 	rc = rpmVerifyFile(ts->rootDir, h, i, &verifyResult, omitMask);
 	if (rc) {
-	    /*@-internalglobs@*/ /* FIX: shrug */
 	    if (!(fileAttrs & RPMFILE_MISSINGOK) || rpmIsVerbose()) {
 		sprintf(te, _("missing    %s"), fileNames[i]);
 		te += strlen(te);
 		ec = rc;
 	    }
-	    /*@=internalglobs@*/
 	} else if (verifyResult) {
 	    const char * size, * md5, * link, * mtime, * mode;
 	    const char * group, * user, * rdev;

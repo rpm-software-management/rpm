@@ -119,8 +119,8 @@ typedef enum rpmVerifyAttrs_e {
  * @todo Merge rpmQueryFlags, rpmVerifyFlags, and rpmVerifyAttrs?.
  */
 typedef enum rpmQueryFlags_e {
-    QUERY_FOR_DEFAULT	= 0,		/*!< */
 /*@-enummemuse@*/
+    QUERY_FOR_DEFAULT	= 0,		/*!< */
     QUERY_MD5		= (1 << 0),	/*!< from --nomd5 */
     QUERY_SIZE		= (1 << 1),	/*!< from --nosize */
     QUERY_LINKTO	= (1 << 2),	/*!< from --nolink */

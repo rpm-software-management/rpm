@@ -22,9 +22,9 @@
 /*@access DIGEST_CTX@*/		/* XXX compared with NULL */
 /*@access pgpDig@*/
 
-/*@-mustmod@*/ /* FIX: internalState not modified? */
 int rpmLookupSignatureType(int action)
 {
+    /*@unchecked@*/
     static int disabled = 0;
     int rc = 0;
 
@@ -56,7 +56,6 @@ int rpmLookupSignatureType(int action)
     }
     return rc;
 }
-/*@=mustmod@*/
 
 /* rpmDetectPGPVersion() returns the absolute path to the "pgp"  */
 /* executable of the requested version, or NULL when none found. */
@@ -156,10 +155,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     case RPMSIGTYPE_PGP262_1024:
 	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
 	/* These are always 256 bytes */
-	/*@-type@*/ /* FIX: eliminate timedRead @*/
 	if (timedRead(fd, buf, 256) != 256)
 	    break;
-	/*@=type@*/
 	h = headerNew();
 	(void) headerAddEntry(h, RPMSIGTAG_PGP, RPM_BIN_TYPE, buf, 152);
 	rc = RPMRC_OK;
@@ -190,19 +187,17 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 		break;
 	    rc = checkSize(fd, sigSize, pad, *archSize);
 	}
-	/*@-type@*/ /* FIX: eliminate timedRead @*/
 	if (pad && timedRead(fd, buf, pad) != pad)
 	    rc = RPMRC_SHORTREAD;
-	/*@=type@*/
 	break;
     default:
 	break;
     }
 
     if (headerp && rc == 0)
-	*headerp = h;
-    else
-	h = headerFree(h, "ReadSignature");
+	*headerp = headerLink(h, NULL);
+
+    h = headerFree(h, NULL);
 
     return rc;
 }
@@ -248,8 +243,8 @@ Header rpmFreeSignature(Header h)
  */
 static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 		/*@out@*/ int_32 * pktlen, /*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies *pkt, *pktlen, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals errno, rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies errno, *pkt, *pktlen, rpmGlobalMacroContext, fileSystem @*/
 {
     char * sigfile = alloca(1024);
     int pid, status;
@@ -298,9 +293,7 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 		break;
 	    case PGP_UNKNOWN:
 	    case PGP_NOTDETECTED:
-		/*@-mods@*/ /* FIX: shrug */
 		errno = ENOENT;
-		/*@=mods@*/
 		break;
 	    }
 	}
@@ -340,9 +333,7 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    /*@-type@*/ /* FIX: eliminate timedRead @*/
 	    rc = timedRead(fd, *pkt, *pktlen);
-	    /*@=type@*/
 	    if (sigfile) (void) unlink(sigfile);
 	    (void) Fclose(fd);
 	}
@@ -440,9 +431,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    /*@-type@*/ /* FIX: eliminate timedRead @*/
 	    rc = timedRead(fd, *pkt, *pktlen);
-	    /*@=type@*/
 	    if (sigfile) (void) unlink(sigfile);
 	    (void) Fclose(fd);
 	}
@@ -629,38 +618,35 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
 }
 
 static int checkPassPhrase(const char * passPhrase, const int sigTag)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
-	/*@modifies rpmGlobalMacroContext,
-		fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int passPhrasePipe[2];
     int pid, status;
-    int fd;
-    const char * cmd;
-    char *const *av;
     int rc;
+    int xx;
 
     passPhrasePipe[0] = passPhrasePipe[1] = 0;
-    (void) pipe(passPhrasePipe);
+    xx = pipe(passPhrasePipe);
     if (!(pid = fork())) {
-	(void) close(STDIN_FILENO);
-	(void) close(STDOUT_FILENO);
-	(void) close(passPhrasePipe[1]);
-	/*@-internalglobs@*/ /* FIX: shrug */
-	if (! rpmIsVerbose()) {
-	    (void) close(STDERR_FILENO);
+	const char * cmd;
+	char *const *av;
+	int fdno;
+
+	xx = close(STDIN_FILENO);
+	xx = close(STDOUT_FILENO);
+	xx = close(passPhrasePipe[1]);
+	if (! rpmIsVerbose())
+	    xx = close(STDERR_FILENO);
+	if ((fdno = open("/dev/null", O_RDONLY)) != STDIN_FILENO) {
+	    xx = dup2(fdno, STDIN_FILENO);
+	    xx = close(fdno);
 	}
-	/*@=internalglobs@*/
-	if ((fd = open("/dev/null", O_RDONLY)) != STDIN_FILENO) {
-	    (void) dup2(fd, STDIN_FILENO);
-	    (void) close(fd);
+	if ((fdno = open("/dev/null", O_WRONLY)) != STDOUT_FILENO) {
+	    xx = dup2(fdno, STDOUT_FILENO);
+	    xx = close(fdno);
 	}
-	if ((fd = open("/dev/null", O_WRONLY)) != STDOUT_FILENO) {
-	    (void) dup2(fd, STDOUT_FILENO);
-	    (void) close(fd);
-	}
-	(void) dup2(passPhrasePipe[0], 3);
+	xx = dup2(passPhrasePipe[0], 3);
 
 	switch (sigTag) {
 	case RPMSIGTAG_DSA:
@@ -687,7 +673,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 
 	    (void) dosetenv("PGPPASSFD", "3", 1);
 	    if (pgp_path && *pgp_path != '\0')
-		(void) dosetenv("PGPPATH", pgp_path, 1);
+		xx = dosetenv("PGPPATH", pgp_path, 1);
 
 	    if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
 		switch(pgpVer) {
@@ -719,18 +705,14 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	}
     }
 
-    (void) close(passPhrasePipe[0]);
-    (void) write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
-    (void) write(passPhrasePipe[1], "\n", 1);
-    (void) close(passPhrasePipe[1]);
+    xx = close(passPhrasePipe[0]);
+    xx = write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
+    xx = write(passPhrasePipe[1], "\n", 1);
+    xx = close(passPhrasePipe[1]);
 
-    (void)waitpid(pid, &status, 0);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	return 1;
-    }
+    (void) waitpid(pid, &status, 0);
 
-    /* passPhrase is good */
-    return 0;
+    return ((!WIFEXITED(status) || WEXITSTATUS(status)) ? 1 : 0);
 }
 
 char * rpmGetPassPhrase(const char * prompt, const int sigTag)
@@ -790,8 +772,8 @@ static /*@observer@*/ const char * rpmSigString(rpmVerifySignatureReturn res)
     case RPMSIG_BAD:		str = "BAD";		break;
     case RPMSIG_NOKEY:		str = "NOKEY";		break;
     case RPMSIG_NOTTRUSTED:	str = "NOTRUSTED";	break;
-    case RPMSIG_UNKNOWN:
-    default:			str = "UNKNOWN";	break;
+    default:
+    case RPMSIG_UNKNOWN: 	str = "UNKNOWN";	break;
     }
     return str;
 }
@@ -806,17 +788,15 @@ verifySizeSignature(const rpmTransactionSet ts, /*@out@*/ char * t)
     *t = '\0';
     t = stpcpy(t, _("Header+Payload size: "));
 
-    if (ts->sig == NULL || ts->dig == NULL) {
+    if (ts->sig == NULL || ts->dig == NULL || ts->dig->nbytes == 0) {
+	res = RPMSIG_NOKEY;		/* XXX RPMSIG_ARGS */
 	res = RPMSIG_NOKEY;
 	t = stpcpy(t, rpmSigString(res));
 	goto exit;
     }
 
-/*@=nullpass =nullderef@*/ /* FIX: ts->{sig,dig} can be NULL */
     memcpy(&size, ts->sig, sizeof(size));
 
-    /*@-type@*/
-    /*@-nullderef@*/ /* FIX: ts->dig can be NULL */
     if (size != ts->dig->nbytes) {
 	res = RPMSIG_BAD;
 	t = stpcpy(t, rpmSigString(res));
@@ -826,8 +806,6 @@ verifySizeSignature(const rpmTransactionSet ts, /*@out@*/ char * t)
 	t = stpcpy(t, rpmSigString(res));
 	sprintf(t, " (%d)", ts->dig->nbytes);
     }
-    /*@=type@*/
-/*@=nullpass =nullderef@*/
 
 exit:
     t = stpcpy(t, "\n");
@@ -836,7 +814,7 @@ exit:
 
 static rpmVerifySignatureReturn
 verifyMD5Signature(const rpmTransactionSet ts, /*@out@*/ char * t,
-		DIGEST_CTX md5ctx)
+		/*@null@*/ DIGEST_CTX md5ctx)
 	/*@modifies *t @*/
 {
     rpmVerifySignatureReturn res;
@@ -846,25 +824,14 @@ verifyMD5Signature(const rpmTransactionSet ts, /*@out@*/ char * t,
     *t = '\0';
     t = stpcpy(t, _("MD5 digest: "));
 
-    if (ts->sig == NULL || ts->dig == NULL) {
-	res = RPMSIG_NOKEY;
+    if (md5ctx == NULL || ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;		/* XXX RPMSIG_ARGS */
 	t = stpcpy(t, rpmSigString(res));
 	goto exit;
     }
 
-if (md5ctx == NULL) {
-/*@-modfilesys@*/
-fprintf(stderr, "*** MD5 md5ctx %p\n", md5ctx);
-/*@=modfilesys@*/
-res = RPMSIG_NOKEY;
-t = stpcpy(t, rpmSigString(res));
-goto exit;
-}
-
-    /*@-type@*/
     (void) rpmDigestFinal(rpmDigestDup(md5ctx),
 		(void **)&md5sum, &md5len, 0);
-    /*@=type@*/
 
     if (md5len != ts->siglen || memcmp(md5sum, ts->sig, md5len)) {
 	res = RPMSIG_BAD;
@@ -896,7 +863,7 @@ exit:
  */
 static rpmVerifySignatureReturn
 verifySHA1Signature(const rpmTransactionSet ts, /*@out@*/ char * t,
-		DIGEST_CTX sha1ctx)
+		/*@null@*/ DIGEST_CTX sha1ctx)
 	/*@modifies *t @*/
 {
     rpmVerifySignatureReturn res;
@@ -905,25 +872,14 @@ verifySHA1Signature(const rpmTransactionSet ts, /*@out@*/ char * t,
     *t = '\0';
     t = stpcpy(t, _("Header SHA1 digest: "));
 
-    if (ts->sig == NULL || ts->dig == NULL) {
-	res = RPMSIG_NOKEY;
+    if (sha1ctx == NULL || ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;		/* XXX RPMSIG_ARGS */
 	t = stpcpy(t, rpmSigString(res));
 	goto exit;
     }
 
-if (sha1ctx == NULL) {
-/*@-modfilesys@*/
-fprintf(stderr, "*** SHA1 sha1ctx %p\n", sha1ctx);
-/*@=modfilesys@*/
-res = RPMSIG_NOKEY;
-t = stpcpy(t, rpmSigString(res));
-goto exit;
-}
-
-    /*@-type@*/
     (void) rpmDigestFinal(rpmDigestDup(sha1ctx),
 		(void **)&sha1, NULL, 1);
-    /*@=type@*/
 
     if (sha1 == NULL || strlen(sha1) != strlen(ts->sig)) {
 	res = RPMSIG_BAD;
@@ -953,7 +909,8 @@ exit:
  */
 static rpmVerifySignatureReturn
 rpmtsFindPubkey(rpmTransactionSet ts)
-	/*@modifies ts */
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState */
 {
     struct pgpDigParams_s * sigp = NULL;
     rpmVerifySignatureReturn res;
@@ -968,7 +925,6 @@ rpmtsFindPubkey(rpmTransactionSet ts)
     }
     sigp = &ts->dig->signature;
 
-    /*@-globs -internalglobs -mods -modfilesys@*/
     if (pkpkt == NULL || memcmp(sigp->signid, pksignid, sizeof(pksignid))) {
 	int ix = -1;
 	rpmdbMatchIterator mi;
@@ -1049,7 +1005,6 @@ rpmtsFindPubkey(rpmTransactionSet ts)
 
     /* Retrieve parameters from pubkey packet(s). */
     xx = pgpPrtPkts(pkpkt, pkpktlen, ts->dig, 0);
-    /*@=globs =internalglobs =mods =modfilesys@*/
 
     /* Do the parameters match the signature? */
     if (ts->dig->signature.pubkey_algo == ts->dig->pubkey.pubkey_algo
@@ -1091,8 +1046,10 @@ static inline unsigned char nibble(char c)
  * @return 		RPMSIG_OK on success
  */
 static rpmVerifySignatureReturn
-verifyPGPSignature(rpmTransactionSet ts, /*@out@*/ char * t, DIGEST_CTX md5ctx)
-	/*@modifies ts, *t */
+verifyPGPSignature(rpmTransactionSet ts, /*@out@*/ char * t,
+		/*@null@*/ DIGEST_CTX md5ctx)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, *t, fileSystem, internalState */
 {
     struct pgpDigParams_s * sigp = NULL;
     rpmVerifySignatureReturn res;
@@ -1101,8 +1058,8 @@ verifyPGPSignature(rpmTransactionSet ts, /*@out@*/ char * t, DIGEST_CTX md5ctx)
     *t = '\0';
     t = stpcpy(t, _("V3 RSA/MD5 signature: "));
 
-    if (ts->sig == NULL || ts->dig == NULL) {
-	res = RPMSIG_NOKEY;
+    if (md5ctx == NULL || ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;		/* XXX RPMSIG_ARGS */
 	goto exit;
     }
     sigp = &ts->dig->signature;
@@ -1116,15 +1073,6 @@ verifyPGPSignature(rpmTransactionSet ts, /*@out@*/ char * t, DIGEST_CTX md5ctx)
 	goto exit;
     }
 
-if (md5ctx == NULL) {
-/*@-modfilesys@*/
-fprintf(stderr, "*** RSA md5ctx %p\n", md5ctx);
-/*@=modfilesys@*/
-res = RPMSIG_NOKEY;
-goto exit;
-}
-
-    /*@-type@*/ /* FIX: cast? */
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
 	byte signhash16[2];
 	const char * s;
@@ -1132,7 +1080,7 @@ goto exit;
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
-#ifdef	NOTYET	/* XXX not for binary/text doccument signatures. */
+#ifdef	NOTYET	/* XXX not for binary/text document signatures. */
 	if (sigp->sigtype == 4) {
 	    int nb = ts->dig->nbytes + sigp->hashlen;
 	    byte trailer[6];
@@ -1156,7 +1104,6 @@ goto exit;
 	}
 
     }
-    /*@=type@*/
 
     {	const char * prefix = "3020300c06082a864886f70d020505000410";
 	unsigned int nbits = 1024;
@@ -1184,12 +1131,10 @@ goto exit;
     if (res != RPMSIG_OK)
 	goto exit;
 
-    /*@-type@*/
     if (rsavrfy(&ts->dig->rsa_pk, &ts->dig->rsahm, &ts->dig->c))
 	res = RPMSIG_OK;
     else
 	res = RPMSIG_BAD;
-    /*@=type@*/
 
 exit:
     t = stpcpy(t, rpmSigString(res));
@@ -1209,8 +1154,10 @@ exit:
  * @return 		RPMSIG_OK on success
  */
 static rpmVerifySignatureReturn
-verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t, DIGEST_CTX sha1ctx)
-	/*@modifies ts, *t @*/
+verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t,
+		/*@null@*/ DIGEST_CTX sha1ctx)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, *t, fileSystem, internalState */
 {
     struct pgpDigParams_s * sigp = NULL;
     rpmVerifySignatureReturn res;
@@ -1221,8 +1168,8 @@ verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t, DIGEST_CTX sha1ctx)
 	t = stpcpy(t, _("Header "));
     t = stpcpy(t, _("V3 DSA signature: "));
 
-    if (ts->sig == NULL || ts->dig == NULL) {
-	res = RPMSIG_NOKEY;
+    if (sha1ctx == NULL || ts->sig == NULL || ts->dig == NULL) {
+	res = RPMSIG_NOKEY;		/* XXX RPMSIG_ARGS */
 	goto exit;
     }
     sigp = &ts->dig->signature;
@@ -1236,22 +1183,13 @@ verifyGPGSignature(rpmTransactionSet ts, /*@out@*/ char * t, DIGEST_CTX sha1ctx)
 	goto exit;
     }
 
-if (sha1ctx == NULL) {
-/*@-modfilesys@*/
-fprintf(stderr, "*** DSA sha1ctx %p\n", sha1ctx);
-/*@=modfilesys@*/
-res = RPMSIG_NOKEY;
-goto exit;
-}
-
-    /*@-type@*/ /* FIX: cast? */
     {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
 	byte signhash16[2];
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
-#ifdef	NOTYET	/* XXX not for binary/text doccument signatures. */
+#ifdef	NOTYET	/* XXX not for binary/text document signatures. */
 	if (sigp->sigtype == 4) {
 	    int nb = ts->dig->nbytes + sigp->hashlen;
 	    byte trailer[6];
@@ -1264,11 +1202,9 @@ goto exit;
 #endif
 	xx = rpmDigestFinal(ctx, (void **)&ts->dig->sha1, &ts->dig->sha1len, 1);
 
-	/* XXX compare leading 16 bits of digest for quick check. */
-
 	mp32nzero(&ts->dig->hm);	mp32nsethex(&ts->dig->hm, ts->dig->sha1);
 
-	/* XXX compare leading 16 bits of digest for quick check. */
+	/* Compare leading 16 bits of digest for quick check. */
 	signhash16[0] = (*ts->dig->hm.data >> 24) & 0xff;
 	signhash16[1] = (*ts->dig->hm.data >> 16) & 0xff;
 	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
@@ -1276,20 +1212,17 @@ goto exit;
 	    goto exit;
 	}
     }
-    /*@=type@*/
 
     /* Retrieve the matching public key. */
     res = rpmtsFindPubkey(ts);
     if (res != RPMSIG_OK)
 	goto exit;
 
-    /*@-type@*/
     if (dsavrfy(&ts->dig->p, &ts->dig->q, &ts->dig->g,
 		&ts->dig->hm, &ts->dig->y, &ts->dig->r, &ts->dig->s))
 	res = RPMSIG_OK;
     else
 	res = RPMSIG_BAD;
-    /*@=type@*/
 
 exit:
     t = stpcpy(t, rpmSigString(res));

@@ -112,19 +112,21 @@ int headerNVR(Header h,
 
 /** \ingroup header
  * Translate and merge legacy signature tags into header.
+ * @todo Remove headerSort() through headerInitIterator() modifies sig.
  * @param h		header
  * @param sig		signature header
  */
 void headerMergeLegacySigs(Header h, const Header sig)
-	/*@modifies h @*/;
+	/*@modifies h, sig @*/;
 
 /** \ingroup header
  * Regenerate signature header.
+ * @todo Remove headerSort() through headerInitIterator() modifies h.
  * @param h		header
  * @return		regenerated signature header
  */
 Header headerRegenSigHeader(const Header h)
-	/*@*/;
+	/*@modifies h @*/;
 
 /**
  * Retrieve file names from header.
@@ -1814,7 +1816,7 @@ typedef enum rpmVerifySignatureReturn_e {
  *	- ts->sigtag	type of signature
  *	- ts->sig	signature itself (from signature header)
  *	- ts->siglen	no. of bytes in signature
- *	- ts->dig	signature parameters (malloc'd workspace)
+ *	- ts->dig	signature/pubkey parameters (malloc'd workspace)
  *
  * @param ts		transaction set
  * @retval result	detailed text result of signature verification
@@ -1822,7 +1824,8 @@ typedef enum rpmVerifySignatureReturn_e {
  */
 rpmVerifySignatureReturn rpmVerifySignature(const rpmTransactionSet ts,
 		/*@out@*/ char * result)
-	/*@modifies ts, *result @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, *result, fileSystem, internalState @*/;
 
 /** \ingroup signature
  * Destroy signature header from package.

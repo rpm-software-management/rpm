@@ -526,6 +526,7 @@ fi
 %changelog
 * Sun Mar 10 2002 Jeff Johnson <jbj@redhat.com>
 - make --addsign and --resign behave exactly the same.
+- splint annotationsm, signature cleanup.
 
 * Mon Sep 24 2001 Jeff Johnson <jbj@redhat.com>
 - Start rpm-4.1.

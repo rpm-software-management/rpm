@@ -107,8 +107,8 @@ int rpmLookupSignatureType(int action)
  */
 /*@null@*/ char * rpmGetPassPhrase(/*@null@*/ const char * prompt,
 		const int sigTag)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup signature
  * Return path to pgp executable of given type, or NULL when not found.

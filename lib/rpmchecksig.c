@@ -18,7 +18,7 @@
 
 /*@access rpmTransactionSet @*/	/* ts->rpmdb, ts->id */
 /*@access Header @*/		/* XXX compared with NULL */
-/*@access FD_t @*/
+/*@access FD_t @*/		/* XXX stealing digests */
 /*@access pgpDig @*/
 
 /*@unchecked@*/
@@ -148,6 +148,7 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
     int_32 uht, uhc;
     int res = EXIT_FAILURE;
     rpmRC rc;
+    int xx;
     
     tmprpm[0] = '\0';
     /*@-branchstate@*/
@@ -206,32 +207,32 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	}
 
 	/* Eliminate broken digest values. */
-	(void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
-	(void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
-	(void) headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_1);
-	(void) headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_2);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_1);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_2);
 
 	/* Toss and recalculate header+payload size and digests. */
-	(void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
-	(void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
-	(void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
-	(void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
-	(void) headerRemoveEntry(sig, RPMSIGTAG_SHA1);
-	(void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_SIZE);
+	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_MD5);
+	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
+	xx = headerRemoveEntry(sig, RPMSIGTAG_SHA1);
+	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
 
 	/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
 	    switch (sigtag) {
 	    case RPMSIGTAG_GPG:
-		(void) headerRemoveEntry(sig, RPMSIGTAG_DSA);
+		xx = headerRemoveEntry(sig, RPMSIGTAG_DSA);
 		/*@fallthrough@*/
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
-		(void) headerRemoveEntry(sig, RPMSIGTAG_RSA);
-		break;
+		xx = headerRemoveEntry(sig, RPMSIGTAG_RSA);
+		/*@switchbreak@*/ break;
 	    }
-	    (void) headerRemoveEntry(sig, sigtag);
-	    (void) rpmAddSignature(sig, sigtarget, sigtag, qva->passPhrase);
+	    xx = headerRemoveEntry(sig, sigtag);
+	    xx = rpmAddSignature(sig, sigtarget, sigtag, qva->passPhrase);
 	}
 
 	/* Reallocate the signature into one contiguous region. */
@@ -269,12 +270,12 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Clean up intermediate target */
-	(void) unlink(sigtarget);
+	xx = unlink(sigtarget);
 	sigtarget = _free(sigtarget);
 
 	/* Move final target into place. */
-	(void) unlink(rpm);
-	(void) rename(trpm, rpm);
+	xx = unlink(rpm);
+	xx = rename(trpm, rpm);
 	tmprpm[0] = '\0';
     }
     /*@=branchstate@*/
@@ -288,11 +289,11 @@ exit:
     sig = rpmFreeSignature(sig);
 
     if (sigtarget) {
-	(void) unlink(sigtarget);
+	xx = unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
     if (tmprpm[0] != '\0') {
-	(void) unlink(tmprpm);
+	xx = unlink(tmprpm);
 	tmprpm[0] = '\0';
     }
 
@@ -310,7 +311,7 @@ static int rpmImportPubkey(rpmTransactionSet ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
 	/*@globals RPMVERSION, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/
 {
     const char * fn;
     int res = 0;
@@ -427,9 +428,7 @@ static int rpmImportPubkey(rpmTransactionSet ts,
 #endif
 
 	/* Add header to database. */
-	/*@-mods@*/ /* FIX: ts->rpmdb is modified */
 	xx = rpmdbAdd(ts->rpmdb, ts->id, h);
-	/*@=mods@*/
 
 bottom:
 	/* Clean up. */
@@ -459,8 +458,7 @@ static unsigned char header_magic[8] = {
  */
 static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, *dig,
-		fileSystem, internalState @*/
+	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
     byte buf[4*BUFSIZ];
     ssize_t count;
@@ -507,7 +505,6 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     }
 
     /* XXX Steal the digest-in-progress from the file handle. */
-    /*@-type@*/ /* FIX: cast? */
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
@@ -525,7 +522,6 @@ assert(dig->sha1ctx == NULL);
 	    continue;
 	}
     }
-    /*@=type@*/
 
     rc = 0;
 
@@ -609,12 +605,10 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	ts->dig = pgpNewDig();
 
 	/* Read the file, generating digest(s) on the fly. */
-	/*@-mods@*/ /* FIX: double indirection */
 	if (readFile(fd, fn, ts->dig)) {
 	    res++;
 	    goto bottom;
 	}
-	/*@=mods@*/
 
 	res2 = 0;
 	b = buf;		*b = '\0';
