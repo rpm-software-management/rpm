@@ -481,6 +481,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Nov 16 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.11
+- fix: option conflict error message (#77373).
+
 * Fri Nov 15 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.10
 - update to elfutils-0.56.
 - have debug sub-subpackage use external, not internal, elfutils.

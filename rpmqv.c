@@ -421,7 +421,7 @@ int main(int argc, const char ** argv)
 	argerror(_("files may only be relocated during package installation"));
 
     if (ia->relocations && ia->prefix)
-	argerror(_("only one of --prefix or --relocate may be used"));
+	argerror(_("cannot use --prefix with --relocate or --excludepath"));
 
     if (bigMode != MODE_INSTALL && ia->relocations)
 	argerror(_("--relocate and --excludepath may only be used when installing new packages"));
