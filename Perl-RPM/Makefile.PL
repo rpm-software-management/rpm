@@ -1,9 +1,12 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.11 2000/10/10 08:28:10 rjray Exp $
+# $Id: Makefile.PL,v 1.12 2000/10/12 05:08:08 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
+use Cwd 'cwd';
+
+$cwd = cwd;
 
 %XS = qw(
          RPM.xs             RPM.c
@@ -32,7 +35,8 @@ symlink '../typemap', 'RPM/typemap';
 
 # Cruft that MakeMaker wouldn't inherently know about
 $CLEAN = join(' ', values %XS) . " $OBJECT";
-$CLEAN .= ' pod2html-* */pod2html-* *.html */*.html RPM/typemap';
+$CLEAN .= ' Perl-RPM.spec pod2html-* */pod2html-* *.html */*.html RPM/typemap';
+$CLEAN .= ' rpmrc rpmmacro Perl-RPM-*';
 
 #
 # Check for non-Perl dependancies:
@@ -78,7 +82,7 @@ for (qw(/usr/include /usr/local/include /opt/include /opt/rpm/include))
 }
 die "Header file 'rpmlib.h' not found. This is needed for compiling the XS glue
 code. If this is present, edit $0 and add the correct directory to the search
-list near line 75. Stopped"
+list near line 78. Stopped"
     unless $rpm_libdir;
 
 WriteMakefile(
@@ -94,8 +98,10 @@ WriteMakefile(
               INC          => "-I. -I$rpm_libdir",
               DIR          => [],
               dist         => { COMPRESS => 'gzip -9f' },
-              clean        => { FILES => $CLEAN },
+              clean        => { FILES => $CLEAN }
              );
+
+exit;
 
 sub MY::c_o
 {
@@ -108,10 +114,158 @@ sub MY::c_o
     $text;
 }
 
+sub MY::tools_other
+{
+    package MY;
+
+    my $text = shift->SUPER::tools_other(@_);
+
+    "$text\nECHO=\@echo\nRPM=$::rpm_binary\n";
+}
+
+sub MY::post_constants
+{
+    my $self = shift;
+
+    "SPECFILE=$self->{DISTNAME}.spec";
+}
+
 sub MY::postamble
 {
-    join("\n",
-         '',
-         (map { "$_: RPM.h\n" } @OBJECT),
-         '');
+    my $self = shift;
+
+    my @text;
+
+    #
+    # Generate the spec file from <DATA> with substitutions
+    #
+    print "Generating $self->{DISTNAME}.spec...\n";
+    $self->{RELEASE} = 1 unless $self->{RELEASE};
+    $self->{INSTALLDIR} = $Config{installsitearch} unless $self->{INSTALLDIR};
+    open(SPEC, "> $self->{DISTNAME}.spec");
+    if ($?)
+    {
+        die "Error creating spec file: $!, stopped";
+    }
+    else
+    {
+        for (<DATA>)
+        {
+            s/(SPEC_(\w+))/$self->{$2}/eg;
+            print SPEC $_;
+        }
+        close(SPEC);
+    }
+    print "Generating rpmrc...\n";
+    open(RPMRC, "> rpmrc");
+    if ($?)
+    {
+        die "Error creating rpmrc file: $!, stopped";
+    }
+    else
+    {
+        print RPMRC <<END_rpmrc;
+include: /usr/lib/rpm/rpmrc
+macrofiles: /usr/lib/rpm/macros:rpmmacro
+END_rpmrc
+        close(RPMRC);
+    }
+    print "Generating rpmmacros...\n";
+    open(MACRO, "> rpmmacro");
+    if ($?)
+    {
+        die "Error creating macro file: $!, stopped";
+    }
+    else
+    {
+        print MACRO <<END_macro;
+%_rpmfilename           %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+%_builddir              %{_topdir}
+%_sourcedir             %{_topdir}
+%_specdir               %{_topdir}
+%_srcrpmdir             %{_topdir}
+%_rpmdir                %{_topdir}
+%_topdir                $cwd
+END_macro
+        close(MACRO);
+    }
+
+    # Create the rules that create RPM and SRPM files
+    push(@text, qq{
+rpm: \$(SPECFILE) \$(DISTVNAME).tar\$(SUFFIX)
+\t\$(RPM) -bb --clean --rcfile rpmrc \$(SPECFILE)
+
+srpm: \$(SPECFILE) \$(DISTVNAME).tar\$(SUFFIX)
+\t\$(RPM) -bs --clean --rcfile rpmrc \$(SPECFILE)
+});
+
+    # Create per-object-file dependancy on RPM.h
+    push(@text, ('',
+                 (map { "$_: RPM.h\n" } @OBJECT),
+                 ''));
+
+    join("\n", @text);
 }
+
+__DATA__
+Summary: Perl bindings to the rpmlib API
+Name: SPEC_DISTNAME
+Version: SPEC_VERSION
+Release: SPEC_RELEASE
+Vendor: Randy J. Ray
+Copyright: distributable
+Group: Applications/CPAN
+Source: SPEC_DISTNAME-SPEC_VERSION.tar.gz
+Url: http://www.blackperl.com/SPEC_DISTNAME
+BuildRequires: perl >= 0:5.00503
+Requires: perl >= 0:5.00503
+Provides: SPEC_DISTNAME = SPEC_VERSION
+BuildRoot: %{_tmppath}/%{name}-root
+
+%description
+Native Bindings to the RPM API for Perl 5.005 and later. Uses a combination
+of Perl and C/XS (compiled) code to provide access to the RPM database,
+headers of installed packages, and more.
+
+# Provide perl-specific find-{provides,requires}.
+%define __find_provides /usr/lib/rpm/find-provides.perl
+%define __find_requires /usr/lib/rpm/find-requires.perl
+
+%prep
+%setup -q -n SPEC_DISTNAME-%{version} 
+
+%build
+CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL
+
+%clean 
+rm -rf $RPM_BUILD_ROOT
+
+%install
+rm -rf $RPM_BUILD_ROOT
+install_dir=SPEC_INSTALLDIR
+mkdir -p $RPM_BUILD_ROOT/$installdir
+make PREFIX=$RPM_BUILD_ROOT/usr install
+
+[ -x /usr/lib/rpm/brp-compress ] && /usr/lib/rpm/brp-compress
+
+find $RPM_BUILD_ROOT/usr -type f -print |
+        sed "s@^$RPM_BUILD_ROOT@@g" |
+        grep -v perllocal.pod |
+        grep -v "\.packlist" > SPEC_DISTNAME-SPEC_VERSION-filelist
+if [ "$(cat SPEC_DISTNAME-SPEC_VERSION-filelist)X" = "X" ] ; then
+    echo "ERROR: EMPTY FILE LIST"
+    exit -1
+fi
+
+%files -f SPEC_DISTNAME-SPEC_VERSION-filelist
+%defattr(-,root,root)
+
+%changelog
+* Tue Oct 10 2000 Randy J. Ray <rjray@blackperl.com>
+- Turned into a meta-file that gets filled in by MakeMaker
+
+* Tue Oct  3 2000 Jeff Johnson <jbj@redhat.com>
+- update to 0.28.
+
+* Mon Oct  2 2000 root <root@redhat.com>
+- Spec file was autogenerated.
