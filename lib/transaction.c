@@ -655,6 +655,7 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
     enum fileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int i, rc;
+    int save = (newFlags & RPMFILE_NOREPLACE) ? ALTNAME : SAVE;
 
     if (lstat(filespec, &sb)) {
 	/* the file doesn't exist on the disk create it unless the new
@@ -677,9 +678,9 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
 	return CREATE;
 
     if (diskWhat != newWhat) {
-	return SAVE;
+	return save;
     } else if (newWhat != dbWhat && diskWhat != dbWhat) {
-	return SAVE;
+	return save;
     } else if (dbWhat != newWhat) {
 	return CREATE;
     } else if (dbWhat != LINK && dbWhat != REG) {
@@ -728,7 +729,7 @@ static enum fileActions decideFileFate(char * filespec, short dbMode,
        be nice if RPM was smart enough to at least try and
        merge the difference ala CVS, but... */
 	    
-    return SAVE;
+    return save;
 }
 
 enum fileTypes whatis(short mode) {
@@ -905,8 +906,6 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	}
 
 	if (fi->type == ADDED && otherPkgNum < 0) {
-	    /* If it isn't in the database, install it. 
-	       FIXME: check for config files here for .rpmorig purporses! */
 	    if (fi->actions[i] == UNKNOWN) {
 		if ((fi->fflags[i] & RPMFILE_CONFIG) && 
 			    !lstat(fi->fl[i], &sb))

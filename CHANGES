@@ -12,6 +12,7 @@
 	- augment linux provides/requires for glibc 2.1 backward compatibility.
 	- fixed --noscript, --notriggers, --excludedocs, and a bunch
 	  of other install/remove flags
+	- fixed noreplace handling
 
 2.5.x -> 2.90
 	- added --excludepath
