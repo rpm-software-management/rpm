@@ -259,7 +259,7 @@ typedef enum rpmTag_e {
     RPMTAG_CONFLICTNAME		= 1054,
     RPMTAG_CONFLICTVERSION	= 1055,
     RPMTAG_DEFAULTPREFIX	= 1056, /*!< internal - deprecated */
-    RPMTAG_BUILDROOT		= 1057,
+    RPMTAG_BUILDROOT		= 1057, /*!< internal */
     RPMTAG_INSTALLPREFIX	= 1058, /*!< internal - deprecated */
     RPMTAG_EXCLUDEARCH		= 1059,
     RPMTAG_EXCLUDEOS		= 1060,
