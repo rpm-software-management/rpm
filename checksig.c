@@ -23,6 +23,7 @@ int doReSign(int add, char *passPhrase, char **argv)
     
     while (*argv) {
 	rpm = *argv++;
+	printf("%s:\n", rpm);
 	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
 	    fprintf(stderr, "%s: Open failed\n", rpm);
 	    exit(1);
