@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-03 11:41-0500\n"
+"POT-Creation-Date: 1999-04-05 11:47-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2291,31 +2291,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:374 ../lib/depends.c:533
+#: ../lib/depends.c:412 ../lib/depends.c:571
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:439
+#: ../lib/depends.c:477
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:627
+#: ../lib/depends.c:665
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:670
+#: ../lib/depends.c:708
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:770
+#: ../lib/depends.c:808
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:822
+#: ../lib/depends.c:860
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -3193,17 +3193,17 @@ msgstr ""
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/transaction.c:757
+#: ../lib/transaction.c:735
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:763
+#: ../lib/transaction.c:741
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:851
+#: ../lib/transaction.c:829
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
