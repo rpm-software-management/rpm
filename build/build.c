@@ -21,6 +21,7 @@
 #include "messages.h"
 #include "stringbuf.h"
 #include "misc.h"
+#include "miscfn.h"
 #include "pack.h"
 #include "popt.h"
 

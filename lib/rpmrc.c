@@ -6,6 +6,7 @@
 
 #include "messages.h"
 #include "misc.h"
+#include "miscfn.h"
 #include "rpmlib.h"
 
 /* the rpmrc is read from /etc/rpmrc or $HOME/.rpmrc - it is not affected

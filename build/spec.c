@@ -25,6 +25,7 @@ TODO:
 #include "rpmlib.h"
 #include "stringbuf.h"
 #include "misc.h"
+#include "miscfn.h"
 #include "reqprov.h"
 #include "trigger.h"
 #include "macro.h"
