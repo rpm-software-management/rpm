@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-06 15:54-0400\n"
+"POT-Creation-Date: 2000-06-07 14:46-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2598,7 +2598,7 @@ msgstr "%s açýlamadý: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/db1.c:430 lib/url.c:445
+#: lib/db1.c:430 rpmio/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s"
@@ -3794,71 +3794,6 @@ msgstr "hata: %s eriþilemiyor\n"
 msgid "Installing %s\n"
 msgstr "%s yükleniyor\n"
 
-#: lib/rpmio.c:796
-msgid "Success"
-msgstr ""
-
-#: lib/rpmio.c:799
-#, fuzzy
-msgid "Bad server response"
-msgstr "FTP sunucusundan kötü yanýt"
-
-#: lib/rpmio.c:802
-#, fuzzy
-msgid "Server IO error"
-msgstr "FTP I/O hatasý"
-
-#: lib/rpmio.c:805
-#, fuzzy
-msgid "Server timeout"
-msgstr "FTP sunucusu zaman aþýmý"
-
-#: lib/rpmio.c:808
-#, fuzzy
-msgid "Unable to lookup server host address"
-msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
-
-#: lib/rpmio.c:811
-#, fuzzy
-msgid "Unable to lookup server host name"
-msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
-
-#: lib/rpmio.c:814
-#, fuzzy
-msgid "Failed to connect to server"
-msgstr "FTP sunucusuna baðlanýlamadý"
-
-#: lib/rpmio.c:817
-#, fuzzy
-msgid "Failed to establish data connection to server"
-msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
-
-#: lib/rpmio.c:820
-msgid "IO error to local file"
-msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
-
-#: lib/rpmio.c:823
-msgid "Error setting remote server to passive mode"
-msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
-
-#: lib/rpmio.c:826
-msgid "File not found on server"
-msgstr "Dosya sunucuda bulunamadý"
-
-#: lib/rpmio.c:829
-msgid "Abort in progress"
-msgstr ""
-
-#: lib/rpmio.c:833
-#, fuzzy
-msgid "Unknown or unexpected error"
-msgstr "FTP bilinmeyen ya da beklenmeyen hata"
-
-#: lib/rpmio.c:1366
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr ""
-
 #: lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)"
@@ -4156,42 +4091,6 @@ msgstr ""
 msgid "execution of script failed"
 msgstr "betik (script) çalýþtýrýlamadý "
 
-#: lib/url.c:88
-#, c-format
-msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:105
-#, c-format
-msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:132
-#, c-format
-msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:218
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "%s'%s için parola"
-
-#: lib/url.c:243 lib/url.c:269
-#, fuzzy, c-format
-msgid "error: %sport must be a number\n"
-msgstr "hata: ftpport bir sayý olmalý\n"
-
-#: lib/url.c:405
-#, fuzzy
-msgid "url port must be a number\n"
-msgstr "hata: ftpport bir sayý olmalý\n"
-
-#. XXX Fstrerror
-#: lib/url.c:462
-#, fuzzy, c-format
-msgid "failed to create %s: %s\n"
-msgstr "%s yaratýlamýyor\n"
-
 #: lib/verify.c:39
 #, fuzzy
 msgid "don't verify files in package"
@@ -4214,6 +4113,107 @@ msgstr "% den sonra eksik {"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
+
+#: rpmio/rpmio.c:796
+msgid "Success"
+msgstr ""
+
+#: rpmio/rpmio.c:799
+#, fuzzy
+msgid "Bad server response"
+msgstr "FTP sunucusundan kötü yanýt"
+
+#: rpmio/rpmio.c:802
+#, fuzzy
+msgid "Server IO error"
+msgstr "FTP I/O hatasý"
+
+#: rpmio/rpmio.c:805
+#, fuzzy
+msgid "Server timeout"
+msgstr "FTP sunucusu zaman aþýmý"
+
+#: rpmio/rpmio.c:808
+#, fuzzy
+msgid "Unable to lookup server host address"
+msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
+
+#: rpmio/rpmio.c:811
+#, fuzzy
+msgid "Unable to lookup server host name"
+msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
+
+#: rpmio/rpmio.c:814
+#, fuzzy
+msgid "Failed to connect to server"
+msgstr "FTP sunucusuna baðlanýlamadý"
+
+#: rpmio/rpmio.c:817
+#, fuzzy
+msgid "Failed to establish data connection to server"
+msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
+
+#: rpmio/rpmio.c:820
+msgid "IO error to local file"
+msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
+
+#: rpmio/rpmio.c:823
+msgid "Error setting remote server to passive mode"
+msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
+
+#: rpmio/rpmio.c:826
+msgid "File not found on server"
+msgstr "Dosya sunucuda bulunamadý"
+
+#: rpmio/rpmio.c:829
+msgid "Abort in progress"
+msgstr ""
+
+#: rpmio/rpmio.c:833
+#, fuzzy
+msgid "Unknown or unexpected error"
+msgstr "FTP bilinmeyen ya da beklenmeyen hata"
+
+#: rpmio/rpmio.c:1366
+#, c-format
+msgid "logging into %s as %s, pw %s\n"
+msgstr ""
+
+#: rpmio/url.c:88
+#, c-format
+msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:105
+#, c-format
+msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:132
+#, c-format
+msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:218
+#, c-format
+msgid "Password for %s@%s: "
+msgstr "%s'%s için parola"
+
+#: rpmio/url.c:243 rpmio/url.c:269
+#, fuzzy, c-format
+msgid "error: %sport must be a number\n"
+msgstr "hata: ftpport bir sayý olmalý\n"
+
+#: rpmio/url.c:405
+#, fuzzy
+msgid "url port must be a number\n"
+msgstr "hata: ftpport bir sayý olmalý\n"
+
+#. XXX Fstrerror
+#: rpmio/url.c:462
+#, fuzzy, c-format
+msgid "failed to create %s: %s\n"
+msgstr "%s yaratýlamýyor\n"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

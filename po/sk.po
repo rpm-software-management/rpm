@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-06-06 15:54-0400\n"
+"POT-Creation-Date: 2000-06-07 14:46-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2544,7 +2544,7 @@ msgstr "chybný stav súboru: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/db1.c:430 lib/url.c:445
+#: lib/db1.c:430 rpmio/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
@@ -3717,63 +3717,6 @@ msgstr "nie je mo¾né otvori» %s\n"
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpmio.c:796
-msgid "Success"
-msgstr "Úspech"
-
-#: lib/rpmio.c:799
-msgid "Bad server response"
-msgstr "Chybná odpoveï servera"
-
-#: lib/rpmio.c:802
-msgid "Server IO error"
-msgstr "Chyba vstupu/výstupu servera"
-
-#: lib/rpmio.c:805
-msgid "Server timeout"
-msgstr "Prekroèenie èasového limitu servera"
-
-#: lib/rpmio.c:808
-msgid "Unable to lookup server host address"
-msgstr "Nie je mo¾né vyhµada» adresu servera"
-
-#: lib/rpmio.c:811
-msgid "Unable to lookup server host name"
-msgstr "Nie je mo¾né vyhµada» názov servera"
-
-#: lib/rpmio.c:814
-msgid "Failed to connect to server"
-msgstr "Pripojenie k serveru zlyhalo"
-
-#: lib/rpmio.c:817
-msgid "Failed to establish data connection to server"
-msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
-
-#: lib/rpmio.c:820
-msgid "IO error to local file"
-msgstr "Chyba vstupu/výstupu lokálneho súboru"
-
-#: lib/rpmio.c:823
-msgid "Error setting remote server to passive mode"
-msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
-
-#: lib/rpmio.c:826
-msgid "File not found on server"
-msgstr "Súbor sa na serveri nenachádza"
-
-#: lib/rpmio.c:829
-msgid "Abort in progress"
-msgstr "Zru¹enie prebieha"
-
-#: lib/rpmio.c:833
-msgid "Unknown or unexpected error"
-msgstr "Neznáma alebo neoèakávaná chyba"
-
-#: lib/rpmio.c:1366
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr "prihlasuje sa na %s ako %s, heslo %s\n"
-
 #: lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)"
@@ -4061,41 +4004,6 @@ msgstr "vykonávajú sa postdein¹talaèné skripty (ak existujú)\n"
 msgid "execution of script failed"
 msgstr "vykonanie skriptu zlyhalo"
 
-#: lib/url.c:88
-#, c-format
-msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:105
-#, c-format
-msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:132
-#, c-format
-msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:218
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "Heslo pre %s@%s: "
-
-#: lib/url.c:243 lib/url.c:269
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "chyba: %sport musí by» èíslo\n"
-
-#: lib/url.c:405
-msgid "url port must be a number\n"
-msgstr "url port musí by» èíslo\n"
-
-#. XXX Fstrerror
-#: lib/url.c:462
-#, fuzzy, c-format
-msgid "failed to create %s: %s\n"
-msgstr "nepodarilo sa vytvori» %s\n"
-
 #: lib/verify.c:39
 #, fuzzy
 msgid "don't verify files in package"
@@ -4122,6 +4030,98 @@ msgstr "chýbajúce    %s\n"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
+
+#: rpmio/rpmio.c:796
+msgid "Success"
+msgstr "Úspech"
+
+#: rpmio/rpmio.c:799
+msgid "Bad server response"
+msgstr "Chybná odpoveï servera"
+
+#: rpmio/rpmio.c:802
+msgid "Server IO error"
+msgstr "Chyba vstupu/výstupu servera"
+
+#: rpmio/rpmio.c:805
+msgid "Server timeout"
+msgstr "Prekroèenie èasového limitu servera"
+
+#: rpmio/rpmio.c:808
+msgid "Unable to lookup server host address"
+msgstr "Nie je mo¾né vyhµada» adresu servera"
+
+#: rpmio/rpmio.c:811
+msgid "Unable to lookup server host name"
+msgstr "Nie je mo¾né vyhµada» názov servera"
+
+#: rpmio/rpmio.c:814
+msgid "Failed to connect to server"
+msgstr "Pripojenie k serveru zlyhalo"
+
+#: rpmio/rpmio.c:817
+msgid "Failed to establish data connection to server"
+msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
+
+#: rpmio/rpmio.c:820
+msgid "IO error to local file"
+msgstr "Chyba vstupu/výstupu lokálneho súboru"
+
+#: rpmio/rpmio.c:823
+msgid "Error setting remote server to passive mode"
+msgstr "Chyba pri nastavení vzdialeného servera do pasívneho re¾imu"
+
+#: rpmio/rpmio.c:826
+msgid "File not found on server"
+msgstr "Súbor sa na serveri nenachádza"
+
+#: rpmio/rpmio.c:829
+msgid "Abort in progress"
+msgstr "Zru¹enie prebieha"
+
+#: rpmio/rpmio.c:833
+msgid "Unknown or unexpected error"
+msgstr "Neznáma alebo neoèakávaná chyba"
+
+#: rpmio/rpmio.c:1366
+#, c-format
+msgid "logging into %s as %s, pw %s\n"
+msgstr "prihlasuje sa na %s ako %s, heslo %s\n"
+
+#: rpmio/url.c:88
+#, c-format
+msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:105
+#, c-format
+msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:132
+#, c-format
+msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:218
+#, c-format
+msgid "Password for %s@%s: "
+msgstr "Heslo pre %s@%s: "
+
+#: rpmio/url.c:243 rpmio/url.c:269
+#, c-format
+msgid "error: %sport must be a number\n"
+msgstr "chyba: %sport musí by» èíslo\n"
+
+#: rpmio/url.c:405
+msgid "url port must be a number\n"
+msgstr "url port musí by» èíslo\n"
+
+#. XXX Fstrerror
+#: rpmio/url.c:462
+#, fuzzy, c-format
+msgid "failed to create %s: %s\n"
+msgstr "nepodarilo sa vytvori» %s\n"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

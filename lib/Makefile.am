@@ -2,20 +2,21 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/popt @INCPATH@
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/popt @INCPATH@
 
 EXTRA_DIST = falloc.c db1.c db2.c db3.c
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	header.h misc.h rpmio.h rpmlib.h rpmmacro.h rpmurl.h stringbuf.h
+	header.h misc.h rpmlib.h rpmmacro.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
 	md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
 	rpmdb.h rpmlead.h signature.h
 
-mylibpaths= -L$(top_builddir)/lib -L$(top_builddir)/popt
-mylibs=	-lrpm -lpopt @INTLLIBS@ @LIBMISC@
+mylibpaths =	-L$(top_builddir)/lib -L$(top_builddir)/popt
+mylibs =	-lrpm -lrpmio -lpopt @INTLLIBS@ @LIBMISC@
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
@@ -25,11 +26,19 @@ librpm_la_SOURCES = \
 	messages.c misc.c oldheader.c package.c problems.c \
 	poptBT.c poptQV.c query.c \
 	rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \
-	rpmio.c rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
-	tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
-librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS)) -lpopt
+	rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
+	tagName.c tagtable.c transaction.c uninstall.c verify.c
+librpm_la_LDFLAGS = -L$(top_builddir)/rpmio/.libs -lrpmio
+#	-L$(top_builddir)/popt -lpopt
+librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 
-falloc.lo: falloc.c $(top_srcdir)/system.h rpmio.h falloc.h
+# XXX Drill out -L ldflags remnants until libtool-1.4 appears
+install-data-local:
+	@cd $(libdir) && \
+	sed -e "s|-L$(top_builddir)/rpmio/.libs ||" < librpm.la > .librpm.la && \
+	mv .librpm.la librpm.la
+
+falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
 db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h rpmdb.h

@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.113 $
+# $Revision: 1.114 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-06 15:54-0400\n"
+"POT-Creation-Date: 2000-06-07 14:46-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2513,7 +2513,7 @@ msgstr "felaktig filstatus: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "öppnar databas med rättighet 0x%x i %s\n"
 
-#: lib/db1.c:430 lib/url.c:445
+#: lib/db1.c:430 rpmio/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunde inte öppna %s: %s\n"
@@ -3689,63 +3689,6 @@ msgstr "kan inte öppna %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpmio.c:796
-msgid "Success"
-msgstr "Lyckades"
-
-#: lib/rpmio.c:799
-msgid "Bad server response"
-msgstr "Konstigt svar från server"
-
-#: lib/rpmio.c:802
-msgid "Server IO error"
-msgstr "IO-fel mot server"
-
-#: lib/rpmio.c:805
-msgid "Server timeout"
-msgstr "Förbindelsen med servern dog ut (timeout)"
-
-#: lib/rpmio.c:808
-msgid "Unable to lookup server host address"
-msgstr "Kunde inte slå upp serverns adress"
-
-#: lib/rpmio.c:811
-msgid "Unable to lookup server host name"
-msgstr "Kunde inte slå upp serverns namn"
-
-#: lib/rpmio.c:814
-msgid "Failed to connect to server"
-msgstr "Misslyckades med att kontakta servern"
-
-#: lib/rpmio.c:817
-msgid "Failed to establish data connection to server"
-msgstr "Misslyckades med att etablera en dataförbindelse till servern"
-
-#: lib/rpmio.c:820
-msgid "IO error to local file"
-msgstr "IO-fel mot lokal fil"
-
-#: lib/rpmio.c:823
-msgid "Error setting remote server to passive mode"
-msgstr "Fel när den fjärrservern sattes i passivt läge"
-
-#: lib/rpmio.c:826
-msgid "File not found on server"
-msgstr "Filen fanns inte på servern"
-
-#: lib/rpmio.c:829
-msgid "Abort in progress"
-msgstr "Avbruten under gång"
-
-#: lib/rpmio.c:833
-msgid "Unknown or unexpected error"
-msgstr "Okänt eller oväntat fel"
-
-#: lib/rpmio.c:1366
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr "loggar in på %s som %s, lösenord %s\n"
-
 #: lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)"
@@ -4031,41 +3974,6 @@ msgstr "kör (eventuellt) postavinstallationsskript\n"
 msgid "execution of script failed"
 msgstr "skriptkörning misslyckades"
 
-#: lib/url.c:88
-#, c-format
-msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr "varning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-
-#: lib/url.c:105
-#, c-format
-msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr "varning: u %p data %p nrefs != 0 (%s %s)\n"
-
-#: lib/url.c:132
-#, c-format
-msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr "varning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-
-#: lib/url.c:218
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "Lösenord för %s@%s: "
-
-#: lib/url.c:243 lib/url.c:269
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "fel: %s-port måste vara ett tal\n"
-
-#: lib/url.c:405
-msgid "url port must be a number\n"
-msgstr "url-port måste vara ett tal\n"
-
-#. XXX Fstrerror
-#: lib/url.c:462
-#, c-format
-msgid "failed to create %s: %s\n"
-msgstr "kunde inte skapa %s: %s\n"
-
 #: lib/verify.c:39
 msgid "don't verify files in package"
 msgstr "verifiera inte filerna i paketet"
@@ -4089,6 +3997,98 @@ msgstr "saknas     %s\n"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
+
+#: rpmio/rpmio.c:796
+msgid "Success"
+msgstr "Lyckades"
+
+#: rpmio/rpmio.c:799
+msgid "Bad server response"
+msgstr "Konstigt svar från server"
+
+#: rpmio/rpmio.c:802
+msgid "Server IO error"
+msgstr "IO-fel mot server"
+
+#: rpmio/rpmio.c:805
+msgid "Server timeout"
+msgstr "Förbindelsen med servern dog ut (timeout)"
+
+#: rpmio/rpmio.c:808
+msgid "Unable to lookup server host address"
+msgstr "Kunde inte slå upp serverns adress"
+
+#: rpmio/rpmio.c:811
+msgid "Unable to lookup server host name"
+msgstr "Kunde inte slå upp serverns namn"
+
+#: rpmio/rpmio.c:814
+msgid "Failed to connect to server"
+msgstr "Misslyckades med att kontakta servern"
+
+#: rpmio/rpmio.c:817
+msgid "Failed to establish data connection to server"
+msgstr "Misslyckades med att etablera en dataförbindelse till servern"
+
+#: rpmio/rpmio.c:820
+msgid "IO error to local file"
+msgstr "IO-fel mot lokal fil"
+
+#: rpmio/rpmio.c:823
+msgid "Error setting remote server to passive mode"
+msgstr "Fel när den fjärrservern sattes i passivt läge"
+
+#: rpmio/rpmio.c:826
+msgid "File not found on server"
+msgstr "Filen fanns inte på servern"
+
+#: rpmio/rpmio.c:829
+msgid "Abort in progress"
+msgstr "Avbruten under gång"
+
+#: rpmio/rpmio.c:833
+msgid "Unknown or unexpected error"
+msgstr "Okänt eller oväntat fel"
+
+#: rpmio/rpmio.c:1366
+#, c-format
+msgid "logging into %s as %s, pw %s\n"
+msgstr "loggar in på %s som %s, lösenord %s\n"
+
+#: rpmio/url.c:88
+#, c-format
+msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
+msgstr "varning: u %p ctrl %p nrefs != 0 (%s %s)\n"
+
+#: rpmio/url.c:105
+#, c-format
+msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
+msgstr "varning: u %p data %p nrefs != 0 (%s %s)\n"
+
+#: rpmio/url.c:132
+#, c-format
+msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgstr "varning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+
+#: rpmio/url.c:218
+#, c-format
+msgid "Password for %s@%s: "
+msgstr "Lösenord för %s@%s: "
+
+#: rpmio/url.c:243 rpmio/url.c:269
+#, c-format
+msgid "error: %sport must be a number\n"
+msgstr "fel: %s-port måste vara ett tal\n"
+
+#: rpmio/url.c:405
+msgid "url port must be a number\n"
+msgstr "url-port måste vara ett tal\n"
+
+#. XXX Fstrerror
+#: rpmio/url.c:462
+#, c-format
+msgid "failed to create %s: %s\n"
+msgstr "kunde inte skapa %s: %s\n"
 
 #, fuzzy
 #~ msgid "cannot retrieve package \"%s\" from db"

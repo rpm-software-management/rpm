@@ -53,12 +53,12 @@ lib/rpmchecksig.c
 lib/rpmdb.c
 lib/rpmerr.c
 lib/rpminstall.c
-lib/rpmio.c
 lib/rpmlead.c
 lib/rpmrc.c
 lib/signature.c
 lib/stringbuf.c
 lib/transaction.c
 lib/uninstall.c
-lib/url.c
 lib/verify.c
+rpmio/rpmio.c
+rpmio/url.c

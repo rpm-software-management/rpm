@@ -13,20 +13,23 @@ EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL \
 EXTRA_PROGRAMS = rpmconvert
 
 # XXX TODO: python perl
-SUBDIRS = intl po popt lib build misc tools scripts tests doc .
+SUBDIRS = intl po popt rpmio lib build misc tools scripts tests doc .
 
-INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/popt \
-	@INCPATH@
+INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/popt @INCPATH@
 
-myLDFLAGS = -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
+myLDFLAGS = -L$(top_builddir)/build/.libs -L$(top_builddir)/lib/.libs \
+	-L$(top_builddir)/rpmio/.libs -L$(top_builddir)/popt/.libs
 
 # XXX libtool can/should generate dependent libs.
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
+# XXX top_builddir ldpaths are wrong building in tree
 myLDADD = \
-	$(top_builddir)/popt/libpopt.la \
-	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/build/librpmbuild.la \
-	@INTLLIBS@ @LIBMISC@
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la \
+	@INTLLIBS@
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
@@ -47,39 +50,45 @@ noinst_HEADERS = \
 
 rpm_SOURCES =		rpm.c
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
-rpm_LDADD =		$(myLDADD)
+rpm_LDADD =		$(myLDADD) @LIBMISC@
 
 rpmb_SOURCES =		build.c
+rpmb_LDFLAGS =		$(myLDFLAGS)
 rpmb_LDADD =		rpmb.o $(myLDADD)
 rpmb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c $<
 
 rpmdb_SOURCES =
+rpmdb_LDFLAGS =		$(myLDFLAGS)
 rpmdb_LDADD =		rpmdb.o $(myLDADD)
 rpmdb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c $<
 
 rpmi_SOURCES =
+rpmi_LDFLAGS =		$(myLDFLAGS)
 rpmi_LDADD =		rpmi.o $(myLDADD)
 rpmi.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMEIU -o $@ -c $<
 
 rpmk_SOURCES =
+rpmk_LDFLAGS =		$(myLDFLAGS)
 rpmk_LDADD =		rpmk.o $(myLDADD)
 rpmk.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMK -o $@ -c $<
 
 rpmq_SOURCES =
+rpmq_LDFLAGS =		$(myLDFLAGS)
 rpmq_LDADD =		rpmq.o $(myLDADD)
 rpmq.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMQV -o $@ -c $<
 
 rpm2cpio_SOURCES =	rpm2cpio.c
 rpm2cpio_LDFLAGS =	@LDFLAGS_STATIC@ $(myLDFLAGS)
-rpm2cpio_LDADD =	$(myLDADD)
+rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
 rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
 ## Libmisc.a is required for rpmconvert.
+rpmconvert_LDFLAGS =	$(myLDFLAGS)
 rpmconvert_LDADD =	$(myLDADD) -lgdbm
 
 $(PROGRAMS): 		$(myLDADD)

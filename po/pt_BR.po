@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-06-06 15:54-0400\n"
+msgstr "POT-Creation-Date: 2000-06-07 14:46-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:422
 #, c-format
@@ -2662,7 +2662,7 @@ msgid "opening db file        %s mode 0x%x\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
 # , c-format
-#: lib/db1.c:430 lib/url.c:445
+#: lib/db1.c:430 rpmio/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "Não consegui abrir: %s\n"
@@ -3890,63 +3890,6 @@ msgstr "Não consegui abrir: %s\n"
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:796
-msgid "Success"
-msgstr ""
-
-#: lib/rpmio.c:799
-msgid "Bad server response"
-msgstr ""
-
-#: lib/rpmio.c:802
-msgid "Server IO error"
-msgstr ""
-
-#: lib/rpmio.c:805
-msgid "Server timeout"
-msgstr ""
-
-#: lib/rpmio.c:808
-msgid "Unable to lookup server host address"
-msgstr ""
-
-#: lib/rpmio.c:811
-msgid "Unable to lookup server host name"
-msgstr ""
-
-#: lib/rpmio.c:814
-msgid "Failed to connect to server"
-msgstr ""
-
-#: lib/rpmio.c:817
-msgid "Failed to establish data connection to server"
-msgstr ""
-
-#: lib/rpmio.c:820
-msgid "IO error to local file"
-msgstr ""
-
-#: lib/rpmio.c:823
-msgid "Error setting remote server to passive mode"
-msgstr ""
-
-#: lib/rpmio.c:826
-msgid "File not found on server"
-msgstr ""
-
-#: lib/rpmio.c:829
-msgid "Abort in progress"
-msgstr ""
-
-#: lib/rpmio.c:833
-msgid "Unknown or unexpected error"
-msgstr ""
-
-#: lib/rpmio.c:1366
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr ""
-
 #: lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)"
@@ -4260,42 +4203,6 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
-#: lib/url.c:88
-#, c-format
-msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:105
-#, c-format
-msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:132
-#, c-format
-msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr ""
-
-#: lib/url.c:218
-#, c-format
-msgid "Password for %s@%s: "
-msgstr ""
-
-#: lib/url.c:243 lib/url.c:269
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr ""
-
-#: lib/url.c:405
-msgid "url port must be a number\n"
-msgstr ""
-
-# , c-format
-#. XXX Fstrerror
-#: lib/url.c:462
-#, fuzzy, c-format
-msgid "failed to create %s: %s\n"
-msgstr "Não consegui abrir o pipe tar: %s\n"
-
 #: lib/verify.c:39
 #, fuzzy
 msgid "don't verify files in package"
@@ -4318,6 +4225,99 @@ msgstr ""
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
+
+#: rpmio/rpmio.c:796
+msgid "Success"
+msgstr ""
+
+#: rpmio/rpmio.c:799
+msgid "Bad server response"
+msgstr ""
+
+#: rpmio/rpmio.c:802
+msgid "Server IO error"
+msgstr ""
+
+#: rpmio/rpmio.c:805
+msgid "Server timeout"
+msgstr ""
+
+#: rpmio/rpmio.c:808
+msgid "Unable to lookup server host address"
+msgstr ""
+
+#: rpmio/rpmio.c:811
+msgid "Unable to lookup server host name"
+msgstr ""
+
+#: rpmio/rpmio.c:814
+msgid "Failed to connect to server"
+msgstr ""
+
+#: rpmio/rpmio.c:817
+msgid "Failed to establish data connection to server"
+msgstr ""
+
+#: rpmio/rpmio.c:820
+msgid "IO error to local file"
+msgstr ""
+
+#: rpmio/rpmio.c:823
+msgid "Error setting remote server to passive mode"
+msgstr ""
+
+#: rpmio/rpmio.c:826
+msgid "File not found on server"
+msgstr ""
+
+#: rpmio/rpmio.c:829
+msgid "Abort in progress"
+msgstr ""
+
+#: rpmio/rpmio.c:833
+msgid "Unknown or unexpected error"
+msgstr ""
+
+#: rpmio/rpmio.c:1366
+#, c-format
+msgid "logging into %s as %s, pw %s\n"
+msgstr ""
+
+#: rpmio/url.c:88
+#, c-format
+msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:105
+#, c-format
+msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:132
+#, c-format
+msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgstr ""
+
+#: rpmio/url.c:218
+#, c-format
+msgid "Password for %s@%s: "
+msgstr ""
+
+#: rpmio/url.c:243 rpmio/url.c:269
+#, c-format
+msgid "error: %sport must be a number\n"
+msgstr ""
+
+#: rpmio/url.c:405
+msgid "url port must be a number\n"
+msgstr ""
+
+# , c-format
+#. XXX Fstrerror
+#: rpmio/url.c:462
+#, fuzzy, c-format
+msgid "failed to create %s: %s\n"
+msgstr "Não consegui abrir o pipe tar: %s\n"
 
 # , c-format
 #, fuzzy

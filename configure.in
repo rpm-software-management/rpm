@@ -963,7 +963,8 @@ dnl export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt)
 AC_OUTPUT([Doxyfile Makefile rpmrc macros platform rpmpopt scripts/brp-redhat
-	lib/Makefile build/Makefile tools/Makefile scripts/Makefile
+	rpmio/Makefile lib/Makefile build/Makefile tools/Makefile
+	scripts/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile
 	doc/Makefile doc/manual/Makefile

@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.33
+Release: 0.34
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -153,6 +153,7 @@ fi
 %{__prefix}/bin/rpmdb
 %{__prefix}/bin/rpm[eiukqv]
 %{__prefix}/lib/librpm.so.*
+%{__prefix}/lib/librpmio.so.*
 %{__prefix}/lib/librpmbuild.so.*
 
 %{__prefix}/lib/rpm/brp-*
@@ -234,6 +235,9 @@ fi
 %{__prefix}/lib/librpm.a
 %{__prefix}/lib/librpm.la
 %{__prefix}/lib/librpm.so
+%{__prefix}/lib/librpmio.a
+%{__prefix}/lib/librpmio.la
+%{__prefix}/lib/librpmio.so
 %{__prefix}/lib/librpmbuild.a
 %{__prefix}/lib/librpmbuild.la
 %{__prefix}/lib/librpmbuild.so
@@ -251,6 +255,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jun  7 2000 Jeff Johnson <jbj@redhat.com>
+- create rpmio directory for librpmio.
+
 * Tue Jun  6 2000 Jeff Johnson <jbj@redhat.com>
 - require db3 in default configuration.
 
