@@ -2,10 +2,10 @@
 
 TYPEMAP
 
-const char *		T_PTROBJ
-RPM			T_PTROBJ
-RPM::Database		O_RPM_Database
-RPM::Header		O_RPM_Header
+const char *            T_PTROBJ
+RPM                     T_PTROBJ
+RPM::Database           O_RPM_Database
+RPM::Header             O_RPM_Header
 
 #
 # The following mappings for O_HvRV are taken directly from Dean Roehrich's
@@ -15,31 +15,45 @@ RPM::Header		O_RPM_Header
 OUTPUT
 
 O_RPM_Database
-	$arg = sv_bless(newRV_noinc((SV*)$var),
-			gv_stashpv("RPM::Database", TRUE));
-	hv_magic($var, (GV *)Nullhv, 'P');
+        if ($var != Null(RPM__Database))
+        {
+            $arg = sv_bless(newRV_noinc((SV*)$var),
+                            gv_stashpv("RPM::Database", TRUE));
+            hv_magic($var, (GV *)Nullhv, 'P');
+        }
+        else
+        {
+            $arg = newSVsv(&PL_sv_undef);
+        }
 
 O_RPM_Header
-	$arg = sv_bless(newRV_noinc((SV*)$var),
-			gv_stashpv("RPM::Header", TRUE));
-	hv_magic($var, (GV *)Nullhv, 'P');
+        if ($var != Null(RPM__Header))
+        {
+            $arg = sv_bless(newRV_noinc((SV*)$var),
+                            gv_stashpv("RPM::Header", TRUE));
+            hv_magic($var, (GV *)Nullhv, 'P');
+        }
+        else
+        {
+            $arg = newSVsv(&PL_sv_undef);
+        }
 
 INPUT
 
 O_RPM_Database
-	if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVHV))
-	    $var = (HV*)SvRV($arg);
+        if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVHV))
+            $var = (HV*)SvRV($arg);
         else
-	{
-	    warn(\"${Package}::$func_name() -- $var is not a blessed HV reference\");
-	    XSRETURN_UNDEF;
-	}
+        {
+            warn(\"${Package}::$func_name() -- $var is not a blessed HV reference\");
+            XSRETURN_UNDEF;
+        }
 
 O_RPM_Header
-	if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVHV))
-	    $var = (HV*)SvRV($arg);
+        if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVHV))
+            $var = (HV*)SvRV($arg);
         else
-	{
-	    warn(\"${Package}::$func_name() -- $var is not a blessed HV reference\");
-	    XSRETURN_UNDEF;
-	}
+        {
+            warn(\"${Package}::$func_name() -- $var is not a blessed HV reference\");
+            XSRETURN_UNDEF;
+        }
