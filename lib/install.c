@@ -78,6 +78,8 @@ int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile) {
 	return 2;
     }
 
+    if (h) freeHeader(h);
+
     return installSources(prefix, fd, specFile);
 }
 
@@ -124,13 +126,15 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	/* We deal with source packages pretty badly. They should end
 	   up in the database, and we should be smarter about installing
 	   them. Old source packages are broken though, and this hack
-	   is the easiest way. It's to bad the notify stuff doesn't work
+	   is the easiest way. It's too bad the notify stuff doesn't work
 	   though  */
 
 	if (flags & INSTALL_TEST) {
 	    message(MESS_DEBUG, "stopping install as we're running --test\n");
 	    return 0;
 	}
+
+	if (h) freeHeader(h);
 
 	return installSources(prefix, fd, NULL);
     }
