@@ -36,7 +36,7 @@ run test1 "test1 - 11" "arg1: 0 arg2: bar" -T bar
 run test1 "test1 - 12" "arg1: 1 arg2: (none)" -O 
 run test1 "test1 - 13" "arg1: 1 arg2: foo" -OT foo
 run test1 "test1 - 14" "arg1: 0 arg2: (none) inc: 1" --inc
-run test1 "test1 - 15" "arg1: 0 arg2: foo inc: 1" -i --arg2 foo
+run test1 "test1 - 15" "arg1: 0 arg2: foo inc: 1" -I --arg2 foo
 POSIX_ME_HARDER=1 ; export POSIX_ME_HARDER
 run test1 "test1 - 16" "arg1: 1 arg2: (none) rest: foo --arg2 something" --arg1 foo --arg2 something
 unset POSIX_ME_HARDER
@@ -49,8 +49,8 @@ run test1 "test1 - 20" "--arg1" --echo-args --arg1
 run test1 "test1 - 21" "--arg2 something" -T something -e
 run test1 "test1 - 22" "--arg2 something more args" -T something -a more args
 run test1 "test1 - 23" "--echo-args -a" --echo-args -e -a
-run test1 "test1 - 24" "arg1: 0 arg2: (none) short: 1" -shortoption
-run test1 "test1 - 25" "arg1: 0 arg2: (none) short: 1" --shortoption
+run test1 "test1 - 24" "arg1: 0 arg2: (none) short: 1" -onedash
+run test1 "test1 - 25" "arg1: 0 arg2: (none) short: 1" --onedash
 run test1 "test1 - 26" "callback: c arg for cb2 foo arg1: 0 arg2: (none)" --cb2 foo
 run test1 "test1 - 27" "arg1: 0 arg2: (none) -" -
 run test1 "test1 - 28" "arg1: 0 arg2: foo -" - -2 foo
@@ -62,11 +62,11 @@ run test1 "test1 - 32" "arg1: 0 arg2: (none) aFloat: 10.1" -f 10.1
 run test1 "test1 - 33" "arg1: 0 arg2: (none) aFloat: 10.1" --float 10.1
 run test1 "test1 - 34" "arg1: 0 arg2: (none) aDouble: 10.1" -d 10.1
 run test1 "test1 - 35" "arg1: 0 arg2: (none) aDouble: 10.1" --double 10.1
-run test1 "test1 - 36" "arg1: 0 arg2: (none) oStr: (none)" --ostr
-run test1 "test1 - 37" "arg1: 0 arg2: (none) oStr: yadda" --ostr=yadda
-run test1 "test1 - 38" "arg1: 0 arg2: (none) oStr: yadda" --ostr yadda
-run test1 "test1 - 39" "arg1: 0 arg2: (none) oStr: ping rest: pong" --ostr=ping pong
-run test1 "test1 - 40" "arg1: 0 arg2: (none) oStr: ping rest: pong" --ostr ping pong
+run test1 "test1 - 36" "arg1: 0 arg2: (none) oStr: (none)" --optional
+run test1 "test1 - 37" "arg1: 0 arg2: (none) oStr: yadda" --optional=yadda
+run test1 "test1 - 38" "arg1: 0 arg2: (none) oStr: yadda" --optional yadda
+run test1 "test1 - 39" "arg1: 0 arg2: (none) oStr: ping rest: pong" --optional=ping pong
+run test1 "test1 - 40" "arg1: 0 arg2: (none) oStr: ping rest: pong" --optional ping pong
 
 echo ""
 echo "Passed."

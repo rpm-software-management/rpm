@@ -23,7 +23,7 @@ extern "C" {
 
 /**
  */
-void	freeSplitString( /*@only@*/ char ** list)
+void freeSplitString( /*@only@*/ char ** list)
 	/*@modifies list @*/;
 
 /**
@@ -80,7 +80,7 @@ int doputenv(const char * str)
  * @retval fdptr	temp file handle
  * @return		0 on success
  */
-int	makeTempFile(/*@null@*/ const char * prefix,
+int makeTempFile(/*@null@*/ const char * prefix,
 		/*@null@*/ /*@out@*/ const char ** fnptr,
 		/*@out@*/ FD_t * fdptr)
 	/*@modifies *fnptr, *fdptr, fileSystem @*/;

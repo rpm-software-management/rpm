@@ -23,11 +23,18 @@ static void displayArgs(poptContext con,
     exit(0);
 }
 
+#ifdef	NOTYET
+static int show_option_defaults = 0;
+#endif
 /*@-castfcnptr@*/
 struct poptOption poptHelpOptions[] = {
-    { NULL, '\0', POPT_ARG_CALLBACK, (void *)&displayArgs, '\0', NULL, NULL },
-    { "help", '?', 0, NULL, '?', N_("Show this help message"), NULL },
-    { "usage", '\0', 0, NULL, 'u', N_("Display brief usage message"), NULL },
+  { NULL, '\0', POPT_ARG_CALLBACK, (void *)&displayArgs, '\0', NULL, NULL },
+  { "help", '?', 0, NULL, '?', N_("Show this help message"), NULL },
+  { "usage", '\0', 0, NULL, 'u', N_("Display brief usage message"), NULL },
+#ifdef	NOTYET
+  { "defaults", '\0', POPT_ARG_NONE, &show_option_defaults, 0,
+	N_("Display option defaults in message"), NULL },
+#endif
     POPT_TABLEEND
 } ;
 /*@=castfcnptr@*/
@@ -72,6 +79,63 @@ getArgDescrip(const struct poptOption * opt,
     }
 }
 
+static /*@only@*/ /*@null@*/ char * singleOptionDefaultValue(int lineLength,
+		const struct poptOption * opt,
+		/*@null@*/ const char *translation_domain)
+	/*@*/
+{
+    const char * defstr = D_(translation_domain, "default");
+    char * l = malloc(4*lineLength + 1);
+    char * le = l;
+
+    if (l == NULL) return l;	/* XXX can't happen */
+    *le++ = '(';
+    le = stpcpy(le, defstr);
+    *le++ = ':';
+    *le++ = ' ';
+    switch (opt->argInfo & POPT_ARG_MASK) {
+    case POPT_ARG_VAL:
+    case POPT_ARG_INT:
+    {	long aLong = *((int *)opt->arg);
+	le += sprintf(le, "%ld", aLong);
+    }	break;
+    case POPT_ARG_LONG:
+    {	long aLong = *((long *)opt->arg);
+	le += sprintf(le, "%ld", aLong);
+    }	break;
+    case POPT_ARG_FLOAT:
+    {	double aDouble = *((float *)opt->arg);
+	le += sprintf(le, "%g", aDouble);
+    }	break;
+    case POPT_ARG_DOUBLE:
+    {	double aDouble = *((double *)opt->arg);
+	le += sprintf(le, "%g", aDouble);
+    }	break;
+    case POPT_ARG_STRING:
+    {	const char * s = *(const char **)opt->arg;
+	if (s == NULL)
+	    le = stpcpy(le, "null");
+	else {
+	    size_t slen = 4*lineLength - (le - l) - sizeof("\"...\")");
+	    *le++ = '"';
+	    le = stpncpy(le, s, slen);
+	    if (slen < strlen(s))
+		le = stpcpy(le, "...");
+	    *le++ = '"';
+	}
+    }	break;
+    case POPT_ARG_NONE:
+    default:
+	l = _free(l);
+	return NULL;
+	break;
+    }
+    *le++ = ')';
+    *le = '\0';
+
+    return l;
+}
+
 static void singleOptionHelp(FILE * fp, int maxLeftCol, 
 		const struct poptOption * opt,
 		/*@null@*/ const char *translation_domain)
@@ -82,6 +146,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     const char * help = D_(translation_domain, opt->descrip);
     const char * argDescrip = getArgDescrip(opt, translation_domain);
     int helpLength;
+    char * defs = NULL;
     char * left;
     int nb = maxLeftCol + 1;
 
@@ -107,42 +172,62 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     if (!*left) goto out;
     if (argDescrip) {
 	char * le = left + strlen(left);
+
 	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL)
 	    *le++ = '[';
+
+	/* Choose type of output */
+	if (opt->argInfo & POPT_ARGFLAG_SHOW_DEFAULT) {
+	    defs = singleOptionDefaultValue(lineLength, opt, translation_domain);
+	    if (defs) {
+		char * t = malloc(strlen(help) + strlen(defs) + sizeof(" "));
+		if (t) {
+		    (void) stpcpy( stpcpy( stpcpy(t, help), " "), defs);
+		    defs = _free(defs);
+		}
+		defs = t;
+	    }
+	}
+
 	if (opt->argDescrip == NULL) {
 	    switch (opt->argInfo & POPT_ARG_MASK) {
 	    case POPT_ARG_NONE:
-		sprintf(le, "[true]");
 		break;
 	    case POPT_ARG_VAL:
-	    {   long aLong = opt->val;
+	    {	long aLong = opt->val;
+		int ops = (opt->argInfo & POPT_ARGFLAG_LOGICALOPS);
+		int negate = (opt->argInfo & POPT_ARGFLAG_NOT);
 
-		if (opt->argInfo & POPT_ARGFLAG_NOT) aLong = ~aLong;
-		switch (opt->argInfo & POPT_ARGFLAG_LOGICALOPS) {
-		case POPT_ARGFLAG_OR:
-		    sprintf(le, "[|=0x%lx]", (unsigned long)aLong);	break;
-		case POPT_ARGFLAG_AND:
-		    sprintf(le, "[&=0x%lx]", (unsigned long)aLong);	break;
-		case POPT_ARGFLAG_XOR:
-		    sprintf(le, "[^=0x%lx]", (unsigned long)aLong);	break;
-		default:
-		    if (!(aLong == 0L || aLong == 1L || aLong == -1L))
-			sprintf(le, "[=%ld]", aLong);
+		/* Don't bother displaying typical values */
+		if (!ops && (aLong == 0L || aLong == 1L || aLong == -1L))
 		    break;
+		*le++ = '[';
+		switch (ops) {
+		case POPT_ARGFLAG_OR:	*le++ = '|';	break;
+		case POPT_ARGFLAG_AND:	*le++ = '&';	break;
+		case POPT_ARGFLAG_XOR:	*le++ = '^';	break;
+		default:				break;
 		}
+		*le++ = '=';
+		if (negate) *le++ = '~';
+		le += sprintf(le, (ops ? "0x%lx" : "%ld"), aLong);
+		*le++ = ']';
 	    }	break;
 	    case POPT_ARG_INT:
 	    case POPT_ARG_LONG:
-	    case POPT_ARG_STRING:
 	    case POPT_ARG_FLOAT:
 	    case POPT_ARG_DOUBLE:
-		sprintf(le, "=%s", argDescrip);
+	    case POPT_ARG_STRING:
+		*le++ = '=';
+		le = stpcpy(le, argDescrip);
+		break;
+	    default:
 		break;
 	    }
 	} else {
-	    sprintf(le, "=%s", argDescrip);
+	    *le++ = '=';
+	    le = stpcpy(le, argDescrip);
 	}
-	le += strlen(le);
 	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL)
 	    *le++ = ']';
 	*le = '\0';
@@ -153,6 +238,11 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     else {
 	fprintf(fp,"  %s\n", left); 
 	goto out;
+    }
+
+    left = _free(left);
+    if (defs) {
+	help = defs; defs = NULL;
     }
 
     helpLength = strlen(help);
@@ -176,6 +266,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     if (helpLength) fprintf(fp, "%s\n", help);
 
 out:
+    defs = _free(defs);
     left = _free(left);
 }
 

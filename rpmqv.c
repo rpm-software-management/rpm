@@ -112,7 +112,7 @@ static struct poptOption rpmAllPoptTable[] = {
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &pipeOutput, 0,
 	N_("send stdout to <cmd>"),
 	N_("<cmd>") },
- { "root", 'r', POPT_ARG_STRING, &rootdir, 0,
+ { "root", 'r', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &rootdir, 0,
 	N_("use <dir> as the top level directory"),
 	N_("<dir>") },
  { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,

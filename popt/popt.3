@@ -136,7 +136,9 @@ For numeric values, if the \fIargInfo\fR value is bitwise or'd with one of
 \fBPOPT_ARGFLAG_OR\fR, \fBPOPT_ARGFLAG_AND\fR, or \fBPOPT_ARGFLAG_XOR\fR,
 the value is saved by performing an OR, AND, or XOR.
 If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_NOT\fR,
-the value will be negated before saving.
+the value will be negated before saving. For the common operations of
+setting and/or clearing bits, \fBPOPT_BIT_SET\fR and \fBPOPT_BIT_CLR\fR
+have the appropriate flags set to perform bit operations.
 .sp
 If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_ONEDASH\fR,
 the long argument may be given with a single - instead of two. For example,
@@ -201,9 +203,12 @@ a different way, you need to explicitly add the option entries to your programs
 If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_DOC_HIDDEN\fR,
 the argument will not be shown in help output.
 .sp
+If the \fIargInfo\fR value is bitwise or'd with \fBPOPT_ARGFLAG_SHOW_DEFAULT\fR,
+the inital value of the arg will be shown in help output.
+.sp
 The final structure in the table should have all the pointer values set
 .RB "to " NULL " and all the arithmetic values set to 0, marking the "
-end of the table.
+.RB "end of the table. The macro " POPT_TABLEEND " is provided to do that.
 .sp
 There are two types of option table entries which do not specify command
 line options. When either of these types of entries are used, the

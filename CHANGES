@@ -113,6 +113,7 @@
 	- add "rpmlib(ScriptletInterpreterArgs)" to track
 	    %post -p "/sbin/ldconfig -n /usr/lib"
 	  incompatibilities.
+	- popt: add POPT_ARGFLAG_SHOW_DEFAULT to display initial values(#32558).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

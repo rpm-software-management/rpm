@@ -58,6 +58,14 @@ extern "C" {
 #define	POPT_ARGFLAG_NOT	0x01000000  /*!< arg will be negated */
 #define POPT_ARGFLAG_LOGICALOPS \
         (POPT_ARGFLAG_OR|POPT_ARGFLAG_AND|POPT_ARGFLAG_XOR)
+
+#define	POPT_BIT_SET	(POPT_ARG_VAL|POPT_ARGFLAG_OR)
+					/*!< set arg bit(s) */
+#define	POPT_BIT_CLR	(POPT_ARG_VAL|POPT_ARGFLAG_NAND)
+					/*!< clear arg bit(s) */
+
+#define	POPT_ARGFLAG_SHOW_DEFAULT 0x00800000 /*!< show default value in --help */
+
 /*@}*/
 
 /** \ingroup popt

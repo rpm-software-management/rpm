@@ -17,52 +17,100 @@ char * arg2 = "(none)";
 int arg3 = 0;
 int inc = 0;
 int shortopt = 0;
-float aFloat = 0.0;
-double aDouble = 0.0;
-char * oStr = (char *)-1;
+
+int aVal = 141421;
+int bVal = 141421;
+int aFlag = 0;
+int bFlag = 0;
+
+int aInt = 271828;
+int bInt = 271828;
+long aLong = 738905609L;
+long bLong = 738905609L;
+float aFloat = 3.1415926535;
+float bFloat = 3.1415926535;
+double aDouble = 9.86960440108935861883;
+double bDouble = 9.86960440108935861883;
+char * oStr = (char *) -1;
 int singleDash = 0;
 
+char * lStr = "This tests default strings and exceeds the ... limit. "
+"123456789+123456789+123456789+123456789+123456789+ "
+"123456789+123456789+123456789+123456789+123456789+ "
+"123456789+123456789+123456789+123456789+123456789+ "
+"123456789+123456789+123456789+123456789+123456789+ ";
+char * nStr = NULL; 
+
 static struct poptOption moreCallbackArgs[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
-		(void *)option_callback, 0, NULL },
-	{ "cb2", 'c', POPT_ARG_STRING, NULL, 'c', "Test argument callbacks" },
-	{ NULL, '\0', 0, NULL, 0 }
+  { NULL, '\0', POPT_ARG_CALLBACK|POPT_CBFLAG_INC_DATA,
+	(void *)option_callback, 0,
+	NULL, NULL },
+  { "cb2", 'c', POPT_ARG_STRING, NULL, 'c',
+	"Test argument callbacks", NULL },
+  POPT_TABLEEND
 };
+
 static struct poptOption callbackArgs[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK, (void *)option_callback, 0, "sampledata" },
-	{ "cb", 'c', POPT_ARG_STRING, NULL, 'c', "Test argument callbacks" },
-	{ "long", '\0', 0, NULL, 'l', "Unused option for help testing" },
-	{ NULL, '\0', 0, NULL, 0 }
+  { NULL, '\0', POPT_ARG_CALLBACK, (void *)option_callback, 0, "sampledata" },
+  { "cb", 'c', POPT_ARG_STRING, NULL, 'c',
+	"Test argument callbacks", NULL },
+  { "longopt", '\0', 0, NULL, 'l',
+	"Unused option for help testing", NULL },
+  POPT_TABLEEND
 };
+
 static struct poptOption moreArgs[] = {
-	{ "inc", 'i', 0, &inc, 0, "An included argument" },
-	{ NULL, '\0', 0, NULL, 0 }
+  { "inc", 'I', 0, &inc, 0, "An included argument" },
+  POPT_TABLEEND
 };
+
 static struct poptOption options[] = {
-	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreCallbackArgs, 0, "arg for cb2" },
-	{ "arg1", '\0', 0, &arg1, 0, "First argument with a really long"
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreCallbackArgs, 0, "arg for cb2" },
+  { "arg1", '\0', 0, &arg1, 0, "First argument with a really long"
 	    " description. After all, we have to test argument help"
 	    " wrapping somehow, right?", NULL },
-	{ "arg2", '2', POPT_ARG_STRING, &arg2, 0, "Another argument", "ARG" },
-	{ "arg3", '3', POPT_ARG_INT, &arg3, 0, "A third argument", "ANARG" },
-	{ "shortoption", '\0', POPT_ARGFLAG_ONEDASH, &shortopt, 0,
-		"Needs a single -", NULL },
-	{ "hidden", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, NULL, 0,
-		"This shouldn't show up", NULL },
-	{ "unused", '\0', POPT_ARG_STRING, NULL, 0,
-	    "Unused option for help testing", "UNUSED" },
-	{ "float", 'f', POPT_ARG_FLOAT, &aFloat, 0,
-	    "A float argument", "FLOAT" },
-	{ "double", 'd', POPT_ARG_DOUBLE, &aDouble, 0,
-	    "A double argument", "DOUBLE" },
-	{ "ostr", '\0', POPT_ARG_STRING|POPT_ARGFLAG_OPTIONAL, &oStr, 0,
-	    "An optional str", "ARG" },
+  { "arg2", '2', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &arg2, 0,
+	"Another argument", "ARG" },
+  { "arg3", '3', POPT_ARG_INT, &arg3, 0,
+	"A third argument", "ANARG" },
+  { "onedash", '\0', POPT_ARGFLAG_ONEDASH, &shortopt, 0,
+	"POPT_ARGFLAG_ONEDASH: Option takes a single -", NULL },
+  { "hidden", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, NULL, 0,
+	"POPT_ARGFLAG_HIDDEN: A hidden option (--help shouldn't display)",
+	NULL },
+  { "optional", '\0', POPT_ARG_STRING | POPT_ARGFLAG_OPTIONAL, &oStr, 0,
+	"POPT_ARGFLAG_OPTIONAL: Takes an optional string argument", NULL },
 
-	{ NULL, '-', POPT_ARG_NONE | POPT_ARGFLAG_DOC_HIDDEN, &singleDash, 0 },
-	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreArgs, 0, NULL },
-	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &callbackArgs, 0, "Callback arguments" },
-	POPT_AUTOHELP
-	{ NULL, '\0', 0, NULL, 0 }
+  { "val", '\0', POPT_ARG_VAL | POPT_ARGFLAG_SHOW_DEFAULT, &aVal, 125992,
+	"POPT_ARG_VAL: 125992 141421", 0},
+
+  { "int", 'i', POPT_ARG_INT | POPT_ARGFLAG_SHOW_DEFAULT, &aInt, 0,
+	"POPT_ARG_INT: 271828", NULL },
+  { "long", 'l', POPT_ARG_LONG | POPT_ARGFLAG_SHOW_DEFAULT, &aLong, 0,
+	"POPT_ARG_LONG: 738905609", NULL },
+  { "float", 'f', POPT_ARG_FLOAT | POPT_ARGFLAG_SHOW_DEFAULT, &aFloat, 0,
+	"POPT_ARG_FLOAT: 3.14159", NULL },
+  { "double", 'd', POPT_ARG_DOUBLE | POPT_ARGFLAG_SHOW_DEFAULT, &aDouble, 0,
+	"POPT_ARG_DOUBLE: 9.8696", NULL },
+
+  { "bitset", '\0', POPT_BIT_SET | POPT_ARGFLAG_SHOW_DEFAULT, &aFlag, 0x4321,
+	"POPT_BIT_SET: |= 0x4321", 0},
+  { "bitclr", '\0', POPT_BIT_CLR | POPT_ARGFLAG_SHOW_DEFAULT, &aFlag, 0x1234,
+	"POPT_BIT_CLR: &= ~0x1234", 0},
+
+  { "nstr", '\0', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &nStr, 0,
+	"POPT_ARG_STRING: (null)", NULL},
+  { "lstr", '\0', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &lStr, 0,
+	"POPT_ARG_STRING: \"123456789...\"", NULL},
+
+  { NULL, '-', POPT_ARG_NONE | POPT_ARGFLAG_DOC_HIDDEN, &singleDash, 0,
+	NULL, NULL },
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreArgs, 0,
+	NULL, NULL },
+  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, &callbackArgs, 0,
+	"Callback arguments", NULL },
+  POPT_AUTOHELP
+  POPT_TABLEEND
 };
 
 static void resetVars(void)
@@ -72,8 +120,17 @@ static void resetVars(void)
     arg3 = 0;
     inc = 0;
     shortopt = 0;
-    aFloat = 0.0;
-    aDouble = 0.0;
+
+    aVal = bVal;
+    aFlag = bFlag;
+
+    aInt = bInt;
+    aLong = bLong;
+    aFloat = bFloat;
+    aDouble = bDouble;
+
+    oStr = (char *) -1;
+
     singleDash = 0;
     pass2 = 0;
 }
@@ -128,9 +185,17 @@ int main(int argc, const char ** argv) {
 	fprintf(stdout, " inc: %d", inc);
     if (shortopt)
 	fprintf(stdout, " short: %d", shortopt);
-    if (aFloat != 0.0)
+    if (aVal != bVal)
+	fprintf(stdout, " aVal: %d", aVal);
+    if (aFlag != bFlag)
+	fprintf(stdout, " aFlag: %d", aFlag);
+    if (aInt != bInt)
+	fprintf(stdout, " aInt: %d", aInt);
+    if (aLong != bLong)
+	fprintf(stdout, " aLong: %ld", aLong);
+    if (aFloat != bFloat)
 	fprintf(stdout, " aFloat: %g", aFloat);
-    if (aDouble != 0.0)
+    if (aDouble != bDouble)
 	fprintf(stdout, " aDouble: %g", aDouble);
     if (oStr != (char *)-1)
 	fprintf(stdout, " oStr: %s", (oStr ? oStr : "(none)"));
