@@ -1,9 +1,18 @@
 # German messages for RPM
-# Revised by Karl Eichwalder <ke@ke.Central.DE>, 1997.
+# Revised by Karl Eichwalder <ke@SuSE.DE>, 1997.
 #
 # Verbesserungen willkommen!
 #
 # Status:
+#
+# 1997-07-20 16:13:20 CEST
+# Update für 2.4.3
+# -ke-
+#
+# 1997-06-27 08:19:09 MET DST
+# Update für 2.4.2
+# -ke-
+#
 # 1997-05-28 15:04:05 MET DST
 # Update für 2.4.1; Korrekturlesen weiterhin erwünscht!
 # -ke-
@@ -19,333 +28,340 @@
 # ### sollte »query« nicht besser mit Abfrage üs werden (statt Anfrage)? -ke-
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm-2.4.1\n"
-"POT-Creation-Date: 1997-05-28 14:50+0200\n"
-"PO-Revision-Date: 1997-05-29 08:29 MET DST\n"
-"Last-Translator: Karl Eichwalder <ke@ke.Central.DE>\n"
+"Project-Id-Version: rpm-2.4.3\n"
+"POT-Creation-Date: 1997-07-20 16:09+0200\n"
+"PO-Revision-Date: 1997-07-20 16:15 CEST\n"
+"Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:69
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:69
 #, c-format
 msgid "RPM version %s\n"
-msgstr "RPM version %s\n"
+msgstr "RPM Version %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:73
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:73
 msgid "Copyright (C) 1997 - Red Hat Software"
 msgstr "Copyright © 1997 - Red Hat Software"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:74
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:74
 msgid ""
 "This may be freely redistributed under the terms of the GNU Public License"
 msgstr ""
 "Dies darf unter den Bedingungen der »GNU Public License« frei verteilt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:83
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:83
 msgid "usage: rpm {--help}"
 msgstr "Benutzung: rpm {--help}"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:84
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:84
 msgid "       rpm {--version}"
 msgstr ""
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:85
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:85
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
 msgstr "       rpm {--initdb}   [--dbpath <VERZ>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:86
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:86
 msgid ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:87
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:87
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
 "                        [--replacepkgs] [--replacefiles] [--root <VERZ>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:88
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:88
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr ""
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:89
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:89
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 "                        [--rcfile <DATEI>] [--ignorearch] [--dbpath <VERZ>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:90
-msgid "                        [--prefix <dir>] [--ignoreos] [--nodeps]"
-msgstr "                        [--prefix <VERZ>] [--ignoreos] [--nodeps]"
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:90
+msgid ""
+"                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
+msgstr ""
+"                        [--prefix <VERZ>] [--ignoreos] [--nodeps] "
+"[--allfiles]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:91
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:97
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:91 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:97
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <HOST>] [--ftpport <PORT>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:92
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:92 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:99
 msgid "                        file1.rpm ... fileN.rpm"
 msgstr "                        DATEI1.rpm ... DATEIn.rpm"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:93
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:93
 msgid ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:94
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:94
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <VERZ>] [--noscripts]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:95
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:95
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
 "                        [--excludedocs] [--includedocs] [--rcfile <DATEI>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:96
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:96
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <VERZ>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:98
-msgid "                        [--ignoreos] [--nodeps] file1.rpm ... fileN.rpm"
-msgstr ""
-"                        [--ignoreos] [--nodeps] DATEI1.rpm ... DATEIn.rpm"
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:98
+msgid "                        [--ignoreos] [--nodeps] [--allfiles]"
+msgstr "                        [--ignoreos] [--nodeps] [--allfiles]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:99
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:100
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr ""
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:100
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:101
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr "                        [--scripts] [--root <VERZ>] [--rcfile <DATEI>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:101
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:102
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:102
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:103
 msgid ""
 "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
 msgstr ""
 "                        [--ftpuseport] [--ftpproxy <HOST>] [--ftpport <PORT>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:103
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:104
 msgid ""
-"                        [--provides] [--dump] [--dbpath <dir>] [targets]"
+"                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"
 msgstr ""
-"                        [--provides] [--dump] [--dbpath <VERZ>] [ZIELE]"
+"                        [--provides] [--dump] [--dbpath <VERZ>] [--changelog]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:104
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:105
+msgid "                        [targets]"
+msgstr "                        [ZIELE]"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:106
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr "       rpm {--verify -V -y} [-afpg] [--root <VERZ>] [--rcfile <DATEI>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:105
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:107
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
 "                        [--dbpath <VERZ>] [--nodeps] [--nofiles] "
 "[--noscripts]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:106
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:108
 msgid "                        [--nomd5] [targets]"
 msgstr "                        [--nomd5] [ZIELE]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:107
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:109
 msgid "       rpm {--setperms} [-afpg] [target]"
 msgstr "       rpm {--setperms} [-afpg] [ZIEL]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:108
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:110
 msgid "       rpm {--setugids} [-afpg] [target]"
 msgstr "       rpm {--setugids} [-afpg] [ZIEL]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:109
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:111
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
-msgstr "       rpm {--erase -e] [--root <VERZ>] [--noscripts] [--rcfile <DATEI>]"
+msgstr ""
+"       rpm {--erase -e] [--root <VERZ>] [--noscripts] [--rcfile <DATEI>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:110
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:112
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <VERZ>] [--nodeps] [--allmatches]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:111
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:113
 msgid "                        package1 ... packageN"
 msgstr "                        PAKET1 ... PAKETn"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:112
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:114
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<DATEI>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:113
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:115
 msgid ""
-"                        [--sign] [--test] [--timecheck <s>] [--buildos <os>"
-msgstr "                        [--sign] [--test] [--timecheck <S>] [--buildos <BS>]"
+"                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
+msgstr ""
+"                        [--sign] [--test] [--timecheck <S>] [--buildos <BS>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:114
-msgid "                        [--buildarch <arch] specfile"
-msgstr "                        [--buildarch <arch>] SPEC-DATEI"
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:116
+msgid "                        [--buildarch <arch>] specfile"
+msgstr "                        [--buildarch <ARCH>] SPEC-DATEI"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:115
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:117
 msgid ""
 "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--rebuild} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:116
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:118
 msgid ""
 "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--recompile} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:117
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:119
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--resign} [--rcfile <DATEI>] PAKET1 PAKET2 ... PAKETn"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:118
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:120
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr "       rpm {--addsign} [--rcfile <DATEI>] PAKET1 PAKET2 ... PAKETn"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:119
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:121
 msgid "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <file>]"
 msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <DATEI>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:120
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:122
 msgid "                           package1 ... packageN"
 msgstr "                           PAKET1 ... PAKETn"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:121
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:123
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <DATEI>] [--dbpath <VERZ>]"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:122
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:124
 msgid "       rpm {--querytags}"
 msgstr ""
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:156
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:158
 msgid "usage:"
 msgstr "Benutzung:"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:158
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:160
 msgid "print this message"
 msgstr "Gibt diesen Text aus"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:160
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:162
 msgid "print the version of rpm being used"
 msgstr "Die benutzte RPM-Version anzeigen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:161
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:163
 msgid "   all modes support the following arguments:"
 msgstr "   alle Modi unterstützen folgende Argumente:"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:163
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:165
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "<DATEI> anstelle von /etc/rpmrc und $HOME/.rpmrc benutzen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:165
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:167
 msgid "be a little more verbose"
 msgstr "Ausgabe etwas ausführlicher gestalten"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:167
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:169
 msgid "be incredibly verbose (for debugging)"
 msgstr "extrem ausführliche Ausgabe (um Programm-Fehler zu finden)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:169
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:171
 msgid "query mode"
 msgstr "Anfrage-Modus"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:171
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:223
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:270
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:292
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:350
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:173 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:227
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:277 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:299
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:357
 msgid "use <dir> as the top level directory"
 msgstr "<VERZ> als Stammverzeichnis benutzen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:173
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:221
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:245
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:286
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:348
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:175 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:225
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:249 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:293
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:355
 msgid "use <dir> as the directory for the database"
 msgstr "<VERZ> als Datenbankverzeichnis benutzen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:175
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:177
 msgid "use s as the header format (implies -i)"
 msgstr "S als Kopfzeilen-Format benutzen (impliziert -i)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:176
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:178
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
 "   Installieren, Aktualisieren und Anfragen (mit -p) erlauben es, ftp-URLs"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:177
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:179
 msgid "   of file names as well as the following options:\n"
 msgstr ""
 "   anstelle von Dateinamen zu benutzen. Außerdem die folgenden Optionen:\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:179
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:181
 msgid "hostname or IP of ftp proxy"
 msgstr "Hostname oder IP des ftp-Proxys"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:181
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:183
 msgid "port number of ftp server (or proxy)"
 msgstr "Portnummer des ftp-Servers (oder -Proxys)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:182
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:184
 msgid "      Package specification options:"
 msgstr "      Optionen der Paketauswahl:"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:184
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:186
 msgid "query all packages"
 msgstr "Anfrage an alle Pakete"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:186
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:188
 msgid "query package owning <file>"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:188
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:190
 msgid "query (uninstalled) package <packagefile>"
 msgstr "Anfrage nach (nicht installiertem) Paket <PAKET-DATEI>"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:190
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:192
 msgid "query packages which provide <i> capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:192
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:194
 msgid "query packages which require <i> capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:193
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:195
 msgid "      Information selection options:"
 msgstr "      Optionen der Informationsauswahl:"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:195
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:197
 msgid "display package information"
 msgstr "Paketinformationen anzeigen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:197
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:199
+msgid "display the package's change log"
+msgstr "Changelog des Pakets anzeigen"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:201
 msgid "display package file list"
 msgstr "Dateiliste des Pakets anzeigen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:199
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:203
 msgid "show file states (implies -l)"
 msgstr "Status der Dateien anzeigen (impliziert -l)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:201
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:205
 msgid "list only documentation files (implies -l)"
 msgstr "Nur Dokumentationsdateien auflisten (impliziert -l)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:203
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:207
 msgid "list only configuration files (implies -l)"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:205
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:209
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
@@ -353,49 +369,48 @@ msgstr ""
 "Alle überprüfbaren Infos zu jeder Datei anzeigen (mit -l, -c oder -d "
 "benutzen!)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:207
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:211
 msgid "list capabilities package provides"
 msgstr "Fähigkeiten des Pakets auflisten"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:208
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:212
 msgid "        --requires"
 msgstr ""
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:210
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:214
 msgid "list package dependencies"
 msgstr "Paket-Abhängigkeiten ausgeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:212
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:216
 msgid "print the various [un]install scripts"
 msgstr "Die diversen (De-)Installations-Skripte ausgeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:217
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:221
 msgid "send stdout to <cmd>"
 msgstr "Standard-Ausgabe nach <BEFEHL> umleiten"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:219
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:223
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr ""
 "Ein Paket mit denselben Paketspezifikations-Optionen wie bei -q überprüfen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:225
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:260
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:288
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:229 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:267
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:295
 msgid "do not verify package dependencies"
 msgstr "Dateiabhängigkeiten nicht überprüfen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:227
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:231
 msgid "do not verify file md5 checksums"
 msgstr "md5-Prüfsumme der Datei nicht überprüfen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:229
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:233
 msgid "do not verify file attributes"
 msgstr "Dateiattribute nicht überprüfen"
 
 # Was ist gemeint?
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:232
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:236
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
@@ -404,7 +419,7 @@ msgstr ""
 "Paketspezifikationsoptionen wie bei -q benutzt würden"
 
 # Was ist gemeint?
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:235
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:239
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
@@ -412,64 +427,70 @@ msgstr ""
 "Datei-Eigentümer und -Gruppe gemäß deren in der Paketdatenbank setzen, wie "
 "wenn dieselben Paketspezifikationsoptionen wie bei -q benutzt würden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:241
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:245
 msgid "install package"
 msgstr "Paket installieren"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:243
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:247
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 "Verschiebe das Paket, wenn es verschiebbar ist, in das Verzeichnis <VERZ>"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:247
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:251
 msgid "do not install documentation"
 msgstr "Dokumentation nicht installieren"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:249
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:253
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "Abkürzung für --replacepkgs --replacefiles"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:252
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:256
 msgid "print hash marks as package installs (good with -v)"
 msgstr "Fortschrittsanzeige bei der Paketinstallation (gut zusammen mit -v)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:254
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:258
+msgid "install all files, even configurations which might otherwise be skipped"
+msgstr ""
+"alle Dateien installieren, auch die config-Dateien, die sonst übergangen "
+"würden"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:261
 msgid "don't verify package architecture"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:256
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:263
 msgid "don't verify package operating system"
 msgstr "Paket-Betriebssystem nicht überprüfen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:258
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:265
 msgid "install documentation"
 msgstr "Dokumentation installieren"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:262
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:269
 msgid "don't execute any installation scripts"
 msgstr "Keine Installations-Skripte ausführen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:264
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:271
 msgid "print percentages as package installs"
 msgstr "Prozentangabe bei der Paketinstallation ausgeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:266
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:273
 msgid "install even if the package replaces installed files"
 msgstr "Auch dann installieren, wenn das Paket installierte Dateien ersetzt"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:268
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:275
 msgid "reinstall if the package is already present"
 msgstr "Neuinstallation, wenn das Paket schon vorhanden ist"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:272
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:279
 msgid "don't install, but tell if it would work or not"
 msgstr "Nicht installieren - nur anzeigen, ob es funktionieren würde"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:276
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:283
 msgid "upgrade package (same options as --install, plus)"
 msgstr "Paket aktualisieren (dieselben Optionen wie --install, außerdem)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:278
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:285
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -477,11 +498,11 @@ msgstr ""
 "Aktualisierung auf eine alte Version des Pakets (--force macht das bei "
 "Aktualisierungen automatisch)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:282
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:289
 msgid "erase (uninstall) package"
 msgstr "Paket löschen (deinstallieren)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:284
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:291
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -489,80 +510,80 @@ msgstr ""
 "Alle Pakete entfernen, die mit <PAKET> übereinstimmen (normalerweise wird "
 "ein Fehler angezeigt, wenn <PAKET> mehrere Pakete bezeichnet)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:290
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:297
 msgid "do not execute any package specific scripts"
 msgstr "Keine paketspezifischen Skripte ausführen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:294
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:301
 msgid "    -b<stage> <spec>      "
 msgstr "    -b<STUFE> <SPEC>      "
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:296
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:303
 msgid "build package, where <stage> is one of:"
 msgstr "Paket erstellen, <STUFE> ist einer der Buchstaben:"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:298
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:305
 msgid "prep (unpack sources and apply patches)"
 msgstr "präparieren (Quellen entpacken und Patch-Dateien anwenden"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:300
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:307
 #, c-format
 msgid "list check (do some cursory checks on %files)"
 msgstr "kontrollieren (oberflächliche Überprüfung der %files)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:302
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:309
 msgid "compile (prep and compile)"
 msgstr "kompilieren (präparieren und kompilieren)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:304
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:311
 msgid "install (prep, compile, install)"
 msgstr "installieren (präparieren, kompilieren, installieren)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:306
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:313
 msgid "binary package (prep, compile, install, package)"
 msgstr ""
 "Binärpaket erstellen (präparieren, kompilieren, installieren und paketieren)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:308
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:315
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
 "Binär- und Quellpaket erstellen (präparieren, kompilieren, installieren und "
 "Paketieren"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:310
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:317
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "Direkt zur angegeben Stufe springen (nur für c und i)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:312
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:319
 msgid "remove build tree when done"
 msgstr "Erstellungsdateibaum nach Beendigung löschen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:314
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:321
 msgid "generate PGP signature"
 msgstr "PGP-Signatur generieren"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:316
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:323
 msgid "use <dir> as the build root"
 msgstr "Benutze <VERZ> als Stammverzeichnis beim Erstellen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:318
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:325
 msgid "build the packages for architecture <arch>"
 msgstr "Erstelle die Pakete für die Architektur <ARCH>"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:320
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:327
 msgid "build the packages for ositecture <os>"
 msgstr "Erstelle die Pakete für das Betriebssystem <BS>"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:322
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:329
 msgid "do not execute any stages"
 msgstr "Keine Stufen ausführen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:324
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:331
 msgid "set the time check to S seconds (0 disables it)"
 msgstr "Die Zeitüberprüfung auf S Sekunden setzen (mit 0 ausschalten)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:327
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:334
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
@@ -570,199 +591,190 @@ msgstr ""
 "Quellpaket installieren, Binarypaket erstellen und spec-Datei, Quellen, "
 "Patch-Dateien und Icons löschen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:329
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:336
 msgid "like --rebuild, but don't build any package"
 msgstr "wie --rebuild aber kein Paket erstellen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:331
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:338
 msgid "sign a package (discard current signature)"
 msgstr "Ein Paket signieren (die aktuelle Signature wird verworfen)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:333
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:340
 msgid "add a signature to a package"
 msgstr "Signatur einem Paket hinzufügen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:336
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:343
 msgid "verify package signature"
 msgstr "Paketsignatur überprüfen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:338
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:345
 msgid "skip any PGP signatures"
 msgstr "alle PGP-Signaturen überspringen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:340
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:347
 msgid "skip any MD5 signatures"
 msgstr "alle MD5-Signaturen überspringen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:342
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:349
 msgid "list the tags that can be used in a query format"
 msgstr "Tags auflisten, die im Anfrageformat benutzt werden können"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:344
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:351
 msgid "make sure a valid database exists"
 msgstr "Sicherstellen, daß eine gültige Datenbank vorhanden ist"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:346
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:353
 msgid "rebuild database from existing database"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:374
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:381
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "tar-Pipe zu öffnen, ist fehlgeschlagen: %s\n"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:379
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:386
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "spec-Datei von %s zu lesen, ist fehlgeschlagen\n"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:440
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:447
 #, c-format
 msgid "unable to open: %s\n"
 msgstr "Datei kann nicht geöffnet werden: %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:453
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:464
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:460 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:471
 msgid "Build failed.\n"
 msgstr "Die Erstellung ist fehlgeschlagen.\n"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:462
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:469
 #, c-format
 msgid "%s doesn't build on this architecture\n"
 msgstr "%s läßt sich auf dieser Architektur nicht erstellen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:635
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:641
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:648
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:654
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:663
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:670
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:715
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:721
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:802
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:808
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:815
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:821
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:829
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:861
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:886
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:892
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:643 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:649
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:656 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:662
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:671 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:678
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:723 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:729
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:810 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:816
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:823 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:829
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:837 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:869
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:894 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:900
 msgid "only one major mode may be specified"
 msgstr "Es darf nur ein Hauptmodus angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:656
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:664
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u und --uninstall sind veraltet und funktionieren nicht mehr.\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:658
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:666
 msgid "Use -e or --erase instead.\n"
 msgstr "Benutzen Sie stattdessen -e oder --erase\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:674
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:682
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--build (-b) benötigt einen Buchstaben aus a,b,i,c,p,l als einziges Argument"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:678
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:686
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
 msgstr ""
 "--tarbuild (-t) benötigt einen Buchstaben aus a,b,i,c,p,l als einziges "
 "Argument"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:744
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:751
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:759
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:767
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:787
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:795
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:752 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:759
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:767 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:775
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:795 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:803
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 "Nur nur eine Art der Anfrage/Überprüfung kann pro Programmlauf durchgeführt "
 "werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:837
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:845
 msgid "arguments to --dbpath must begin with a /"
 msgstr "Argumente zu --dbpath müssen mit einem / beginnen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:844
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:852
 msgid "one type of query may be performed at a time"
 msgstr "Nur eine Art der Anfrage kann pro Programmlauf durchgeführt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:904
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:912
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath wurde für eine Operation angeben, die keine Datenbank benutzt"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:909
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:917
 msgid "--timecheck may only be used during package builds"
 msgstr "--clean darf nur während der Paketerstellung benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:912
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:915
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:920 /usr/src/ke/rpm/rpm-2.4.3/rpm.c:923
 msgid "unexpected query specifiers"
 msgstr "Unerwartete Angaben für die Anfrage"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:919
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:927
 msgid "unexpected query source"
 msgstr "Unerwartete Quelle der Anfrage"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:922
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:930
 msgid "only installation and upgrading may be forced"
 msgstr "nur die Installation und Aktualisierung darf erzwungen werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:925
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:933
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix darf nur bei der Installation neuer Pakete benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:928
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:936
 msgid "arguments to --prefix must begin with a /"
 msgstr "Argumente zu --prefix müssen mit einem / beginnen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:931
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:939
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:935
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:943
 msgid "--percent may only be specified during package installation"
 msgstr "--percent darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:939
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:947
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:943
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:951
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:947
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:955
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:951
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:959
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:955
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:963
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "nur eines der Argumente --excludedocs und --includedocs darf angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:959
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:967
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:963
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:971
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:967
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:975
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches darf nur während der Paketdeinstallaiton angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:972
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:979
+msgid "--allfiles may only be specified during package installation"
+msgstr "--allfiles darf nur während der Paketinstallation angegeben werden"
+
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:984
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -770,7 +782,7 @@ msgstr ""
 "--noscripts darf nur während der Paketinstallation, -deinstallation und "
 "-überprüfung angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:977
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:989
 msgid ""
 "--nodeps may only be specified during package installation, erasure, and "
 "verification"
@@ -778,11 +790,11 @@ msgstr ""
 "--nodeps darf nur während der Paketinstallation, -deinstallation und "
 "-überprüfung angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:981
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:993
 msgid "--nofiles may only be specified during package verification"
 msgstr "--nofiles darf nur während der Paketüberprüfung angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:986
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:998
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -790,7 +802,7 @@ msgstr ""
 "--test darf nur während der Paketinstallation, -deinstallation und "
 "-erstellung angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:991
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1003
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -798,478 +810,452 @@ msgstr ""
 "--root (-r) darf nur während der Paketinstallation, -deinstallation, "
 "-anfrage und Datenbankneuerstellungen angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:996
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1008
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "Argumente zu --root (-r) müssen mit einem / beginnen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:999
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1011
 msgid "--clean may only be used during package building"
 msgstr "--clean darf nur während der Paketerstellung benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1002
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1014
 msgid "--short-circuit may only be used during package building"
 msgstr "--short-circuit darf nur während der Paketerstellung benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1005
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1017
 msgid "--short-circuit may only be used with -bc, -bi, -tc or -ti"
 msgstr ""
 "--short-circuit darf nur zusammen mit -bc, bi, -tc oder -ti benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1010
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1022
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage darf nur während Aktualisierungen benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1013
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1025
 msgid "--dump may only be used during queries"
 msgstr "--dump darf nur während Anfragen benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1016
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1028
 msgid "--dump of queries must be used with -l, -c, or -d"
 msgstr "--dump der Anfragen muß zusammen mit  -l, -c, or -d benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1021
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1033
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "ftp-Optionen können nur während Paketanfragen, -installationen und "
 "-aktualisierungen benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1028
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1040
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp darf nur während der Signatur-Überprüfung benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1031
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1043
 msgid ""
 "--nopgp may only be used during signature checking and package verification"
 msgstr ""
 "--nopgp darf nur während der Signatur- und Paketüberprüfung angegeben werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1044
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1056
 msgid "Pass phrase check failed\n"
 msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1047
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1059
 msgid "Pass phrase is good.\n"
 msgstr "Das Passwort ist richtig.\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1059
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1071
 msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paketerstellung benutzt werden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1093
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1105
 msgid "unexpected arguments to --querytags "
 msgstr "Unerwartete Argumente zu --querytags "
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1104
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1116
 msgid "no packages given for signature check"
 msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1111
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1123
 msgid "no packages given for signing"
 msgstr "Es wurden keine Pakete für die Signatur angeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1120
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1132
 msgid "no packages files given for rebuild"
 msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1175
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1187
 msgid "no spec files given for build"
 msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1177
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1189
 msgid "no tar files given for build"
 msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1188
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1200
 msgid "no packages given for uninstall"
 msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1221
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1234
 msgid "no packages given for install"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1232
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1245
 msgid "extra arguments given for query of all packages"
 msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1237
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1250
 msgid "no arguments given for query"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/rpm.c:1254
+#: /usr/src/ke/rpm/rpm-2.4.3/rpm.c:1267
 msgid "no arguments given for verify"
 msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:97
-msgid "(parallel array size mismatch)"
-msgstr "(parallele Array-Größe stimmt nicht überein)"
-
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:104
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:112
-msgid "(unexpected ']')"
-msgstr "(nicht erwartete ']')"
-
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:181
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:190
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:199
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:203
-#, c-format
-msgid "bad query format - %s\n"
-msgstr "nicht richtiges Anfrageformat - %s\n"
-
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:222
-msgid "query tag too long\n"
-msgstr "Anfrage-Tag ist zu lang\n"
-
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:236
-#, c-format
-msgid "unknown tag %s\n"
-msgstr "unbekanntes Tag %s\n"
-
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:388
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:77
 msgid "(contains no files)"
 msgstr "(beinhaltet keine Dateien)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:642
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:882
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:127
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:331
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:127
 msgid "error: could not read database record\n"
 msgstr "Fehler: konnte Datenbank-Eintrag nicht lesen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:678
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:685
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:179
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:186
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:367 /usr/src/ke/rpm/rpm-2.4.3/query.c:374
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:179
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:186
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:701
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:390
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:710
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:399
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:714
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:403
 #, c-format
 msgid "query of %s failed\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:727
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:163
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:416
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:163
 msgid "could not read database record!\n"
 msgstr "kann Datenbank-Eintrag nicht lesen!\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:738
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:209
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:427
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:209
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
 # oder besser: ... listet %s auf? -ke-
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:748
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:437
 #, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:758
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:447
 #, c-format
 msgid "no package requires %s\n"
 msgstr "kein Paket verlangt %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:772
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:223
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:461
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:223
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "Datei %s gehört zu keinem anderen Paket\n"
+msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:783
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:472
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:786
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:475
 #, c-format
 msgid "showing package: %d\n"
 msgstr "zeige Paket an: %d\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:790
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:479
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:322
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:802
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:234
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:332
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:491
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:234
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/query.c:805
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:236
+#: /usr/src/ke/rpm/rpm-2.4.3/query.c:494
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:236
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:81
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:195
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:81
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:196
 #, c-format
 msgid "error: cannot open file %s\n"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:98
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:98
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:116
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:208
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:116
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:209
 #, c-format
 msgid "error: %s does not appear to be a RPM package\n"
 msgstr "Fehler: %s scheint zu keinem RPM-Paket zu gehören\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:121
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:213
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:411
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:121
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:214
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:421
 #, c-format
 msgid "error: %s cannot be installed\n"
 msgstr "Fehler: %s kann nicht installiert werden\n"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:168
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:168
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hole %s heraus\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:177
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:178
 #, c-format
 msgid "error: skipping %s - transfer failed - %s\n"
 msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:254
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:255
 msgid "failed dependencies:\n"
 msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:312
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:322
 #, c-format
 msgid "cannot open %s%s/packages.rpm\n"
 msgstr "kann %s%s/packages.rpm nicht öffnen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:325
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:335
 #, c-format
 msgid "error searching for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:333
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:343
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" bezeichnet mehrere Pakete\n"
 
 # oder besser: "... verletzen" ?
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:370
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:380
 msgid "removing these packages would break dependencies:\n"
 msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:402
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:412
 #, c-format
 msgid "error: cannot open %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:448
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:458
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " wird von %s-%s-%s gebraucht\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/install.c:451
+#: /usr/src/ke/rpm/rpm-2.4.3/install.c:461
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " steht im Konflikt mit %s-%s-%s\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/verify.c:90
+#: /usr/src/ke/rpm/rpm-2.4.3/verify.c:90
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:30
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:153
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:30
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:153
 #, c-format
 msgid "%s: Open failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:34
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:158
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:34
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:158
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: »readLead« fehlgeschlagen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:38
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:38
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Kann v1.0-RPM nicht signieren\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:42
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:42
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Kann v2.0-RPM nicht erneuert signieren\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:46
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:168
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:46
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:168
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: »rpmReadSignature« fehlgeschlagen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:58
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:182
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:58
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:182
 msgid "Couldn't read the header/archive"
 msgstr "Konnte Kopfzeilen/Archiv nicht lesen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:64
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:64
 msgid "Couldn't write header/archive to temp file"
 msgstr "Konnte Kopfzeilen/Archiv nicht in eine temporäre Datei schreiben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:109
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:109
 msgid "Couldn't read sigtarget"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:117
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:117
 msgid "Couldn't write package"
 msgstr "Konnte Paket nicht schreiben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:163
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:163
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Keine Signatur verfügbar (v1.0 RPM)\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:173
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:173
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Keine Signatur verfügbar\n"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:188
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:188
 #, c-format
 msgid "Unable to write %s"
 msgstr "Nicht möglich %s zu schreiben"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:278
-#: /usr/src/redhat/BUILD/rpm-2.4.1/checksig.c:285
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:278
+#: /usr/src/ke/rpm/rpm-2.4.3/checksig.c:285
 msgid " (MISSING KEYS)"
 msgstr " (FEHLENDE SCHLüSSEL)"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:345
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/uninstall.c:131
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:345
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:131
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Deinstallation durchzuführen"
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/uninstall.c:144
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:144
 #, c-format
 msgid "package %s-%s-%s contain shared files\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/uninstall.c:345
-msgid "error creating file for (un)install script"
-msgstr "Fehler beim Anlegen der Datei für das (De-)Installations-Skript"
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:381
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:387
+#, c-format
+msgid "error creating file %s for (un)install script"
+msgstr "Fehler beim Anlegen der Datei %s für das (De-)Installations-Skript"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/uninstall.c:379
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:439
 msgid "execution of script failed"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/uninstall.c:435
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:494
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/uninstall.c:449
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:508
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/uninstall.c:452
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:511
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "Entfernen von %s fehlgeschlagen: %s"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/uninstall.c:460
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/uninstall.c:519
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:108
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:108
 #, c-format
 msgid "failed to open %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:121
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:128
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:121
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:128
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:122
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:122
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:129
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:129
 msgid "shared"
 msgstr "geteilt"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:311
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:311
 #, c-format
 msgid "package %s not listed in %s"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:322
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:322
 #, c-format
 msgid "package %s not found in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:353
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:353
 msgid "package has no name"
 msgstr "Paket hat keinen Namen"
 
 # reservieren???
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:488
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:488
 msgid "cannot allocate space for database"
 msgstr "kann keinen Platz für die Datenbank bekommen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/rpmdb.c:546
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/rpmdb.c:546
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/signature.c:99
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:99
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Alte Signatur (nur intern)!  Wie bist du daran gekommen!?"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/signature.c:222
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/signature.c:479
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:222
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:479
 msgid "Couldn't exec pgp"
 msgstr "Konnte pgp nicht durchführen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/signature.c:233
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:233
 msgid "pgp failed"
 msgstr "pgp fehlgeschlagen"
 
 #. PGP failed to write signature
 #. Just in case
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/signature.c:240
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:240
 msgid "pgp failed to write signature"
 msgstr "pgp fehlgeschlagen beim Schreiben der Signatur"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/signature.c:253
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:253
 msgid "unable to read the signature"
 msgstr "nicht möglich, die Signatur zu lesen"
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/signature.c:396
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:396
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Konnte pgp nicht aufrufen.  Überspring die PGP-Checks mit --nopgp."
 
-#: /usr/src/redhat/BUILD/rpm-2.4.1/lib/signature.c:430
+#: /usr/src/ke/rpm/rpm-2.4.3/lib/signature.c:430
 msgid "You must set \"pgp_name:\" in your rpmrc file"
 msgstr "\"pgp_name:\" muss in der rpmrc-Datei gesetzt sein"
