@@ -48,11 +48,13 @@ was present using "%{-f:X}". This macro expands to (the expansion of) X
 if the flag was present. The negative form, "%{!-f:Y}", expanding to (the
 expansion of) Y if -f was *not* present, is also supported.
 
-In addition to the "%{...}" form, shell expansion can be performed using
-"%(shell command)". The expansion of "%(...)" is the output of (the expansion
-of) ... fed to /bin/sh. For example, "%(date +%%y%%m%%d)" expands to the
-string "YYMMDD" (final newline is deleted). Note the 2nd % needed to escape
-the arguments to /bin/date.  
+In addition to the "%{...}" form, shell expansion can be performed
+using "%(shell command)". The expansion of "%(...)" is the output of
+(the expansion of) ... fed to /bin/sh. For example, "%(date
++%%y%%m%%d)" expands to the string "YYMMDD" (final newline is
+deleted). Note the 2nd % needed to escape the arguments to /bin/date.
+There is currently an 8K limit on the size that this macro can expand
+to.
 
 Builtin Macros
 --------------

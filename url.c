@@ -177,7 +177,7 @@ int urlSplit(const char * url, urlinfo **uret)
     if (u->port < 0 && u->service != NULL) {
 	struct servent *se;
 	if ((se = getservbyname(u->service, "tcp")) != NULL)
-	    u->port = se->s_port;
+	    u->port = ntohs(se->s_port);
 	else if (!strcasecmp(u->service, "ftp"))
 	    u->port = IPPORT_FTP;
 	else if (!strcasecmp(u->service, "http"))

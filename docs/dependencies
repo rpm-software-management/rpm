@@ -37,6 +37,11 @@ instead of a version number, you would do this:
 
 	Requires: somepackage =S 23
 
+You can't continue a "Requires: " line. If you have multiple
+"Requires: " lines then the package requires all pacakges mentioned on
+all lines to be installed. Max line length is probably 8K.
+
+
 Virtual Packages
 ----------------
 
@@ -74,6 +79,42 @@ equivalent) and that soname is automatically provided by the package. For
 example, the libc-5.3.12 package has provides information added for
 libm.so.5 and libc.so.5. We expect this automatic dependency generation
 to eliminate the need for most packages to use explicit Requires: lines.
+
+
+Interpreters and Shells (to be implemented)
+-----------------------
+
+Modules for interpreted languages like perl and tcl impose additional
+dependency requirements on packages. A script written for an interpreter
+often requires language specfic modules to be installed in order to execute
+correctly. In order to automatically detect langiage specific modules, each
+interpreter may have its own find-provides and find-requires. To prevent
+module name collisions between interpreters, module names are enclosed within
+parentheses and a conventional interpreter specific identifier is pre-pended:
+
+
+  Provides: perl(MIME-Base64), perl(Mail-Header)-1-09
+
+  Requires: perl(Carp), perl(IO-Wrap) = 4.5
+
+
+The output of a per-interpreter find-requires (notice in this example the
+first requirement is a package and the rest are langague specific modules)
+
+	Mail-Header >= 1.01
+	perl(Carp) >= 3.2
+	perl(IO-Wrap) == 4.5 or perl(IO-Wrap)-4.5
+
+the output from find-provides is
+	Foo-0.9
+	perl(Widget)-0-1
+
+
+The per-interpreter automatic module detectors will normally be located in
+	/usr/lib/rpm/{perl,tcl}/find-{provides,requires}
+with appropriate per-interpreter hooks into
+	/usr/lib/rpm/find-{provides,requires}
+
 
 Installing and Erasing Packages with Dependencies
 -------------------------------------------------

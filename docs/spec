@@ -57,3 +57,22 @@ of this.  The Packager: tag is meant to contain the name and email
 address of the person who "maintains" the RPM package (which may be
 different from the person who actually maintains the program the
 package contains).
+
+Files attributes
+---------------
+
+A %ghost tag on a file indicates that this file is not to be included
+in the package.  It is typically used when the attributes of the file
+are important while the contents is not (e.g. a log file).
+
+The %config(missingok) indicates that the file need not exist on the
+installed machine. The %config(missingok) is frequently used for files
+like /etc/rc.d/rc2.d/S55named where the (non-)existence of the symlink
+is part of the configuration in %post, and the file may need to be
+removed when this package is removed.  This file is not required to
+exist at either install or uninstall time.
+
+The %config(noreplace) indicates that the file in the package should
+be installed with extension .rpmnew if there is already a file by
+the same name on the installed machine.
+
