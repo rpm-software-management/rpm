@@ -153,20 +153,20 @@ varprefix = @varprefix@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST =  	brp-compress brp-strip brp-strip-comment-note 	check-prereqs convertrpmrc.sh find-lang.sh find-prov.pl find-req.pl 	cpanflute find-provides.perl find-requires.perl 	freshen.sh get_magic.pl getpo.sh http.req magic.prov magic.req 	perl.prov perl.req rpmdiff rpmdiff.cgi u_pkg.sh 	vpkg-provides.sh vpkg-provides2.sh
+EXTRA_DIST =  	brp-compress brp-redhat brp-strip brp-strip-comment-note 	check-prereqs convertrpmrc.sh find-lang.sh find-prov.pl find-req.pl 	cpanflute find-provides.perl find-requires.perl 	freshen.sh get_magic.pl getpo.sh http.req magic.prov magic.req 	perl.prov perl.req rpmdiff rpmdiff.cgi u_pkg.sh 	vpkg-provides.sh vpkg-provides2.sh
 
 
 installprefix = $(DESTDIR)
 
 configdir = ${prefix}/lib/rpm
-config_SCRIPTS =  	brp-compress brp-strip brp-strip-comment-note 	check-prereqs convertrpmrc.sh find-lang.sh find-prov.pl find-req.pl 	cpanflute find-provides.perl find-requires.perl 	freshen.sh get_magic.pl getpo.sh http.req magic.prov magic.req 	perl.prov perl.req rpmdiff rpmdiff.cgi u_pkg.sh 	vpkg-provides.sh vpkg-provides2.sh
+config_SCRIPTS =  	brp-compress brp-redhat brp-strip brp-strip-comment-note 	check-prereqs convertrpmrc.sh find-lang.sh find-prov.pl find-req.pl 	cpanflute find-provides.perl find-requires.perl 	freshen.sh get_magic.pl getpo.sh http.req magic.prov magic.req 	perl.prov perl.req rpmdiff rpmdiff.cgi u_pkg.sh 	vpkg-provides.sh vpkg-provides2.sh
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
-CONFIG_CLEAN_FILES = 
+CONFIG_CLEAN_FILES =  brp-redhat
 SCRIPTS =  $(config_SCRIPTS)
 
-DIST_COMMON =  Makefile.am Makefile.in
+DIST_COMMON =  Makefile.am Makefile.in brp-redhat.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -182,6 +182,8 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
+brp-redhat: $(top_builddir)/config.status brp-redhat.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 install-configSCRIPTS: $(config_SCRIPTS)
 	@$(NORMAL_INSTALL)
@@ -289,6 +291,11 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 all:
+
+brp-redhat: brp-redhat.in ../config.status
+	cd .. \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= \
+		$(SHELL) ./config.status
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

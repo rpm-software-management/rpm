@@ -5,8 +5,6 @@
 
 #include "system.h"
 
-static int _debug = 0;
-
 #define	MYALLPERMS	07777
 
 #include <regex.h>
@@ -942,8 +940,6 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
 	const char *prefixPtr = fl->prefix;
 
 	(void) urlPath(fileURL, &prefixTest);
-if (_debug)
-fprintf(stderr, "*** AF prefixTest %s prefixPtr %s\n", prefixTest, prefixPtr);
 	while (*prefixPtr && *prefixTest && (*prefixTest == *prefixPtr)) {
 	    prefixPtr++;
 	    prefixTest++;
@@ -1035,8 +1031,6 @@ fprintf(stderr, "*** AF prefixTest %s prefixPtr %s\n", prefixTest, prefixPtr);
 
 	flp->fileURL = xstrdup(fileURL);
 	flp->diskURL = xstrdup(diskURL);
-if (_debug)
-fprintf(stderr, "*** AF SAVE buildRootURL %s fileURL %s diskURL %s\n", fl->buildRootURL, fileURL, diskURL);
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
@@ -1081,9 +1075,6 @@ static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
     const char *diskURL = NULL;
     int rc = 0;
     
-if (_debug)
-fprintf(stderr, "*** PBF fileURL %s\n", fileURL);
-
     doGlob = myGlobPatternP(fileURL);
 
     /* Check that file starts with leading "/" */
@@ -1152,10 +1143,15 @@ static int processPackageFiles(Spec spec, Package pkg,
 	const char *ffn;
 	FD_t fd;
 
-	/* XXX FIXME: add %{_buildsubdir} */
-	ffn = rpmGetPath("%{_builddir}/",
-	    (spec->buildSubdir ? spec->buildSubdir : "") ,
-	    "/", pkg->fileFile, NULL);
+	/* XXX W2DO? urlPath might be useful here. */
+	if (*pkg->fileFile == '/') {
+	    ffn = rpmGetPath(pkg->fileFile, NULL);
+	} else {
+	    /* XXX FIXME: add %{_buildsubdir} */
+	    ffn = rpmGetPath("%{_builddir}/",
+		(spec->buildSubdir ? spec->buildSubdir : "") ,
+		"/", pkg->fileFile, NULL);
+	}
 	fd = Fopen(ffn, "r.fpio");
 	xfree(ffn);
 
@@ -1491,8 +1487,6 @@ int processSourceFiles(Spec spec)
 	    diskPath = diskURL;
 
 	flp->fileURL = xstrdup(diskPath);
-if (_debug)
-fprintf(stderr, "*** PSF fileName %s diskName %s\n", flp->fileURL, flp->diskURL);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
 	if (Stat(diskURL, &flp->fl_st)) {

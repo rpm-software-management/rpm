@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-02-17 15:48-0500\n"
+"POT-Creation-Date: 2000-02-21 12:02-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1494,58 +1494,58 @@ msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 msgid "File not found by glob: %s"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1164
+#: build/files.c:1169
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: build/files.c:1171 build/pack.c:99
+#: build/files.c:1176 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "riadok: %s"
 
-#: build/files.c:1499
+#: build/files.c:1504
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "súbor %s: %s\n"
 
-#: build/files.c:1511 build/parsePrep.c:34
+#: build/files.c:1516 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Chybný vlastník/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1566
+#: build/files.c:1571
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: build/files.c:1571
+#: build/files.c:1576
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: build/files.c:1653
+#: build/files.c:1658
 #, c-format
 msgid "%s failed"
 msgstr "%s zlyhalo"
 
-#: build/files.c:1657
+#: build/files.c:1662
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: build/files.c:1747
+#: build/files.c:1752
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: build/files.c:1775 build/files.c:1784
+#: build/files.c:1780 build/files.c:1789
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/files.c:1891
+#: build/files.c:1896
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
@@ -1710,7 +1710,7 @@ msgstr "¾iadny popis v %%changelog"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "riadok %d: Chyba pri analýze %%description: %s"
 
-#: build/parseDescription.c:51 build/parseFiles.c:45 build/parseScript.c:173
+#: build/parseDescription.c:51 build/parseFiles.c:46 build/parseScript.c:173
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "riadok %d: Chybná voµba %s: %s"
@@ -1720,7 +1720,7 @@ msgstr "riadok %d: Chybná voµba %s: %s"
 msgid "line %d: Too many names: %s"
 msgstr "riadok %d: Priveµa názvov: %s"
 
-#: build/parseDescription.c:74 build/parseFiles.c:68 build/parseScript.c:196
+#: build/parseDescription.c:74 build/parseFiles.c:67 build/parseScript.c:196
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "riadok %d: Balík neexistuje: %s"
@@ -1734,7 +1734,7 @@ msgstr "riadok %d: Druhý popis"
 msgid "line %d: Error parsing %%files: %s"
 msgstr "riadok %d: Chyba pri analýze %%files: %s"
 
-#: build/parseFiles.c:76
+#: build/parseFiles.c:74
 msgid "line %d: Second %%files list"
 msgstr "riadok %d: Druhý %%files zoznam"
 

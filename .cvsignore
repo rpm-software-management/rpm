@@ -24,6 +24,7 @@ macros
 rpm
 rpm2cpio
 rpmconvert
+rpmpopt
 rpmrc
 stamp-h
 stamp-h.in

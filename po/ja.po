@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-02-17 15:48-0500\n"
+"POT-Creation-Date: 2000-02-21 12:02-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.17 2000/02/17 21:00:07 jbj Exp $
+# $Id: ja.po,v 1.18 2000/02/22 03:09:53 jbj Exp $
 #: rpm.c:197
 #, c-format
 msgid "rpm: %s\n"
@@ -1525,58 +1525,58 @@ msgstr "ファイルは先頭に \"/\" が必要です: %s"
 msgid "File not found by glob: %s"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1164
+#: build/files.c:1169
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1171 build/pack.c:99
+#: build/files.c:1176 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1499
+#: build/files.c:1504
 #, fuzzy, c-format
 msgid "Bad file: %s: %s"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1511 build/parsePrep.c:34
+#: build/files.c:1516 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1566
+#: build/files.c:1571
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1571
+#: build/files.c:1576
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1653
+#: build/files.c:1658
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1657
+#: build/files.c:1662
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1747
+#: build/files.c:1752
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1775 build/files.c:1784
+#: build/files.c:1780 build/files.c:1789
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:1891
+#: build/files.c:1896
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -1741,7 +1741,7 @@ msgstr "%%changelog 中に説明がありません"
 msgid "line %d: Error parsing %%description: %s"
 msgstr "%d 行目: %%description の解析エラー: %s"
 
-#: build/parseDescription.c:51 build/parseFiles.c:45 build/parseScript.c:173
+#: build/parseDescription.c:51 build/parseFiles.c:46 build/parseScript.c:173
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "%d 行目: 不正なオプション %s:%s"
@@ -1751,7 +1751,7 @@ msgstr "%d 行目: 不正なオプション %s:%s"
 msgid "line %d: Too many names: %s"
 msgstr "%d 行目: 名前が多すぎます: %s"
 
-#: build/parseDescription.c:74 build/parseFiles.c:68 build/parseScript.c:196
+#: build/parseDescription.c:74 build/parseFiles.c:67 build/parseScript.c:196
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "%d 行目: パッケージが存在しません: %s"
@@ -1765,7 +1765,7 @@ msgstr "%d 行目: 2番目の説明"
 msgid "line %d: Error parsing %%files: %s"
 msgstr "%d 行目: %%files の解析エラー: %s"
 
-#: build/parseFiles.c:76
+#: build/parseFiles.c:74
 msgid "line %d: Second %%files list"
 msgstr "%d 行目: 2番目の %%files リスト"
 

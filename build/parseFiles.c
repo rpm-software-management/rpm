@@ -31,7 +31,8 @@ int parseFiles(Spec spec)
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%files: %s"),
 		 spec->lineNum, poptStrerror(rc));
-	return RPMERR_BADSPEC;
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
@@ -46,9 +47,8 @@ int parseFiles(Spec spec)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
-	FREE(argv);
-	poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
 
     if (poptPeekArg(optCon)) {
@@ -58,53 +58,54 @@ int parseFiles(Spec spec)
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s"),
 		     spec->lineNum,
 		     spec->line);
-	    FREE(argv);
-	    poptFreeContext(optCon);
-	    return RPMERR_BADSPEC;
+	    rc = RPMERR_BADSPEC;
+	    goto exit;
 	}
     }
 
     if (lookupPackage(spec, name, flag, &pkg)) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s"),
 		 spec->lineNum, spec->line);
-	FREE(argv);
-	poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
 
     if (pkg->fileList != NULL) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Second %%files list"),
 		 spec->lineNum);
-	FREE(argv);
-	poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	rc = RPMERR_BADSPEC;
+	goto exit;
     }
 
-    if (file) {
-	pkg->fileFile = xstrdup(file);
+    if (file)  {
+    /* XXX not necessary as readline has expanded already, but won't hurt.  */
+	pkg->fileFile = rpmGetPath(file, NULL);
     }
+
     pkg->fileList = newStringBuf();
     
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else {
-	if (rc) {
-	    return rc;
-	}
+	if (rc)
+	    goto exit;
 	while (! (nextPart = isPart(spec->line))) {
 	    appendStringBuf(pkg->fileList, spec->line);
 	    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;
 	    }
-	    if (rc) {
-		return rc;
-	    }
+	    if (rc)
+		goto exit;
 	}
     }
+    rc = nextPart;
 
-    FREE(argv);
-    poptFreeContext(optCon);
+exit:
+    if (argv)
+	FREE(argv);
+    if (optCon)
+	poptFreeContext(optCon);
 	
-    return nextPart;
+    return rc;
 }
