@@ -254,20 +254,10 @@ rpmds_iternext(rpmdsObject * s)
     if (rpmdsNext(s->ds) >= 0) {
 	const char * N = rpmdsN(s->ds);
 	const char * EVR = rpmdsEVR(s->ds);
+	int tagN = rpmdsTagN(s->ds);
 	int Flags = rpmdsFlags(s->ds);
 
-	result = PyTuple_New(3);
-	PyTuple_SET_ITEM(result, 0, Py_BuildValue("s", N));
-	if (EVR == NULL) {
-	    Py_INCREF(Py_None);
-	    PyTuple_SET_ITEM(result, 1, Py_None);
-	    Py_INCREF(Py_None);
-	    PyTuple_SET_ITEM(result, 2, Py_None);
-	} else {
-	    PyTuple_SET_ITEM(result, 1, Py_BuildValue("s", EVR));
-	    PyTuple_SET_ITEM(result, 2, PyInt_FromLong(Flags));
-	}
-
+       result = rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
 
