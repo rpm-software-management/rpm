@@ -142,8 +142,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
     dbiIndexSet matches;
     char * arg;
 
-    if ((source == VERIFY_SRPM || source == VERIFY_RPM) && 
-	!(verifyFlags & VERIFY_DEPS)) {
+    if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {
 	db = NULL;
     } else {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
@@ -168,7 +167,6 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 	    arg = *argv++;
 
 	    switch (source) {
-	      case VERIFY_SRPM:
 	      case VERIFY_RPM:
 		fd = open(arg, O_RDONLY);
 		if (fd < 0) {
@@ -189,7 +187,6 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 			
 		break;
 
-	      case VERIFY_SGROUP:
 	      case VERIFY_GRP:
 		if (rpmdbFindByGroup(db, arg, &matches)) {
 		    fprintf(stderr, "group %s does not contain any pacakges\n", 
@@ -200,7 +197,6 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		}
 		break;
 
-	      case VERIFY_SPATH:
 	      case VERIFY_PATH:
 		if (rpmdbFindByFile(db, arg, &matches)) {
 		    fprintf(stderr, "file %s is not owned by any package\n", 
@@ -211,7 +207,6 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		}
 		break;
 
-	      case VERIFY_SPACKAGE:
 	      case VERIFY_PACKAGE:
 		rc = findPackageByLabel(db, arg, &matches);
 		if (rc == 1) 
@@ -230,7 +225,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 	}
     }
    
-    if (source != VERIFY_SRPM && source != VERIFY_RPM) {
+    if (source != VERIFY_RPM) {
 	rpmdbClose(db);
     }
 }
