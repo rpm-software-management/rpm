@@ -4,6 +4,9 @@
 	  scripts (Donnie Barnes)
 	- didn't package / properly
 	- pre/post script processing had some erroneous free() calls
+	- fixed typos for HP archs in lib/rpmrc.c
+	- uname() results should go through *_canon tables before anything
+	  else happens
 
 2.4.5 -> 2.4.6:
 	- added os_canon entries for BSD/OS and NextStep

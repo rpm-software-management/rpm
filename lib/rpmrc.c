@@ -661,6 +661,7 @@ static void defaultMachine(char ** arch, char ** os) {
     static struct utsname un;
     static int gotDefaults = 0;
     char * chptr;
+    struct canonEntry * canon;
 
     if (!gotDefaults) {
 	uname(&un);
@@ -681,31 +682,44 @@ static void defaultMachine(char ** arch, char ** os) {
 
 	    #if defined(CPU_HP_MC68020)
 		if (cpu_version == CPU_HP_MC68020)
-		    strcpy(us.machine, "m68k");
+		    strcpy(un.machine, "m68k");
 	    #endif
 	    #if defined(CPU_HP_MC68030)
 		if (cpu_version == CPU_HP_MC68030)
-		    strcpy(us.machine, "m68k");
+		    strcpy(un.machine, "m68k");
 	    #endif
 	    #if defined(CPU_HP_MC68040)
 		if (cpu_version == CPU_HP_MC68040)
-		    strcpy(us.machine, "m68k");
+		    strcpy(un.machine, "m68k");
 	    #endif
 
 	    #if defined(CPU_PA_RISC1_0)
 		if (cpu_version == CPU_PA_RISC1_0)
-		    strcpy(us.machine, "parisc");
+		    strcpy(un.machine, "parisc");
 	    #endif
 	    #if defined(CPU_PA_RISC1_1)
 		if (cpu_version == CPU_PA_RISC1_1)
-		    strcpy(us.machine, "parisc");
+		    strcpy(un.machine, "parisc");
 	    #endif
 	    #if defined(CPU_PA_RISC1_2)
 		if (cpu_version == CPU_PA_RISC1_2)
-		    strcpy(us.machine, "parisc");
+		    strcpy(un.machine, "parisc");
 	    #endif
 	}
 	#endif
+
+	/* the uname() result goes through the arch_canon table */
+	canon = lookupInCanonTable(un.machine,
+				   tables[RPM_MACHTABLE_INSTARCH].canons,
+				   tables[RPM_MACHTABLE_INSTARCH].canonsLength);
+	if (canon)
+	    strcpy(un.machine, canon->short_name);
+
+	canon = lookupInCanonTable(un.sysname,
+				   tables[RPM_MACHTABLE_INSTOS].canons,
+				   tables[RPM_MACHTABLE_INSTOS].canonsLength);
+	if (canon)
+	    strcpy(un.sysname, canon->short_name);
     }
 
     if (arch) *arch = un.machine;
