@@ -47,3 +47,8 @@ rpc_server_ext.h
 tcl_ext.h
 txn_ext.h
 xa_ext.h
+gen_db_server.c
+db_server_xdr.c
+db_server_svc.c
+db_server_clnt.c
+
