@@ -1,14 +1,43 @@
 #!/usr/bin/perl
 
+# RPM (and it's source code) is covered under two separate licenses. 
+
+# The entire code base may be distributed under the terms of the GNU
+# General Public License (GPL), which appears immediately below.
+# Alternatively, all of the source code in the lib subdirectory of the
+# RPM source code distribution as well as any code derived from that
+# code may instead be distributed under the GNU Library General Public
+# License (LGPL), at the choice of the distributor. The complete text
+# of the LGPL appears at the bottom of this file.
+
+# This alternatively is allowed to enable applications to be linked
+# against the RPM library (commonly called librpm) without forcing
+# such applications to be distributed under the GPL.
+
+# Any questions regarding the licensing of RPM should be addressed to
+# Erik Troan <ewt@redhat.com>.
+
 # a simple makedepends like script for perl.
+ 
+# To save development time I do not parse the perl grammmar but
+# instead just lex it looking for what I want.  I take special care to
+# ignore comments and pod's.
+
+# It would be much better if perl could tell us the dependencies of a
+# given script.
+
+# The filenames to scan are either passed on the command line or if
+# that is empty they are passed via stdin.
+
+# If there are strings in the file which match the pattern
+#     m/^\s*\$RPM_Requires\s*=\s*["'](.*)['"]/i
+# then these are treated as additional names which are required by the
+# file and are printed as well.
 
 # I plan to rewrite this in C so that perl is not required by RPM at
 # build time.
 
 # by Ken Estes Mail.com kestes@staff.mail.com
-
-# it would be much better if perl could tell us the dependencies of a
-# given script.
 
 if ("@ARGV") {
   foreach (@ARGV) {
@@ -29,7 +58,12 @@ foreach $module (sort keys %require) {
   if (length($require{$module}) == 0) {
     print "perl($module)\n";
   } else {
-    print "perl($module)>=$require{$module}\n";
+
+    # I am not using rpm3.0 so I do not want spaces arround my
+    # operators. Also I will need to change the processing of the
+    # $RPM_* vairable when I upgrage.
+
+    print "perl($module) >= $require{$module}\n";
   }
 }
 
@@ -48,6 +82,11 @@ sub process_file {
   while (<FILE>) {
     
     # skip the documentation
+
+    # we should not need to have item in this if statement (it
+    # properly belongs in the over/back section) but people do not
+    # read the perldoc.
+
     if ( (m/^=(head1|head2|pod|item)/) .. (m/^=(cut)/) ) {
       next;
     }
@@ -91,19 +130,6 @@ sub process_file {
        ) {
       my ($module, $version) = ($2,$3);
 
-      # trim off trailing parenthesis if any.  Sometimes people pass
-      # the module an empty list.
-
-      $module =~ s/\(\s*\)$//;
-
-      if ( $module =~ m/^[0-9._]+$/ ) {
-      # if module is a number then both require and use interpret that
-      # to mean that a particular version of perl is specified
-
-	print "perl>$module\n";
-	next;
-      };
-
       # if there is some interpolation of variables just skip this
       # dependency, we do not want
       #        do "$ENV{LOGDIR}/$rcfile";
@@ -115,6 +141,34 @@ sub process_file {
       # stuff.' there are several of these in the perl distribution
 
       ($module  =~ m/[,>]$/) && next;
+
+      # if the module name starts in a dot it is not a module name.
+      # Is this necessary?  Please give me an example if you turn this
+      # back on.
+
+      #      ($module =~ m/^\./) && next;
+
+      # if the module ends with .pm strip it to leave only basename.
+
+      $module =~ s/\.pm$//;
+
+      # some perl programmers write 'require URI/URL;' when 
+      # they mean 'require URI::URL;'
+
+      $module =~ s/\//::/;
+
+      # trim off trailing parenthesis if any.  Sometimes people pass
+      # the module an empty list.
+
+      $module =~ s/\(\s*\)$//;
+
+      if ( $module =~ m/^[0-9._]+$/ ) {
+      # if module is a number then both require and use interpret that
+      # to mean that a particular version of perl is specified
+
+	print "perl > $module\n";
+	next;
+      };
 
       # ph files do not use the package name inside the file.
       # perlmodlib  documentation says:

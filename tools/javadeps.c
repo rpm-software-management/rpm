@@ -1,3 +1,22 @@
+/*
+RPM and it's source code are covered under two separate licenses. 
+
+The entire code base may be distributed under the terms of the GNU General
+Public License (GPL), which appears immediately below.  Alternatively,
+all of the source code in the lib subdirectory of the RPM source code
+distribution as well as any code derived from that code may instead be
+distributed under the GNU Library General Public License (LGPL), at the
+choice of the distributor. The complete text of the LGPL appears
+at the bottom of this file.
+
+This alternatively is allowed to enable applications to be linked against
+the RPM library (commonly called librpm) without forcing such applications
+to be distributed under the GPL. 
+
+Any questions regarding the licensing of RPM should be addressed to
+marc@redhat.com and ewt@redhat.com.
+*/
+
 /* 
    Simple progam for pullng all the referenced java classes out of a
    class file.  Java files are supposed to be platform independent, so
@@ -32,6 +51,17 @@
 */
 
 #include "system.h"
+
+/*
+  these includes are for my use, rpm will use #include "system.h"*
+*/
+
+/*
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+*/
 
 #include <stdarg.h>
 
@@ -106,6 +136,7 @@ size_t my_fread(void *ptr, size_t size, size_t nitems, FILE *stream);
 void check_range(short value, short poolSize);
 char *is_lower_equal (char *string, char *pattern);
 int findJavaMagic (FILE *fileHandle);
+int my_strcmp (const void *a, const void *b);
 void print_table_flush(void);
 void print_table_add(char *str);
 char *formatClassName(char *pSomeString, char terminator, char print_star);
@@ -212,7 +243,7 @@ usage (void)
 	 "assumed to be zero. \n\n"
 	 "");
   printf("EXAMPLES (Java Keywords): \n\n"
-	 "\t public static final String REVISION = \"$Revision: 2.5 $\";\n"
+	 "\t public static final String REVISION = \"$Revision: 2.6 $\";\n"
 	 "\t public static final String EPOCH = \"4\";\n"
 	 "\t public static final String REQUIRES = \"RPM_Requires: "
 	 "java(gnu.regexp.RE) java(com.ibm.site.util.Options)>=1.5\";\n"
@@ -228,6 +259,9 @@ usage (void)
 	 "\tcat filename2.class | javadeps --requires -- filename1.class -\n\n"
 	 "\tunzip -p filename.jar | javadeps --requires -- - \n\n"
 	 "");
+  printf("This program is distributed with RPM the Redhat Package \n"
+	 "Managment system.  Further information about RPM can be found at \n"
+	 "\thttp://www.rpm.org/\n\n");
   printf("\n\n");
   exit(-1);
 }
@@ -418,7 +452,7 @@ int findJavaMagic (FILE *fileHandle)
 #undef mod4
 
 
-static int
+int
 my_strcmp (const void *a, const void *b) {
 char **a1; char **b1;
 int ret;
@@ -487,11 +521,24 @@ print_table_add(char *str) {
 }
 
 
-/* Given a list separated by whitespace, put each element in the print
+void 
+print_list(char *in_string) {
+
+  /* This function is no longer needed due to fixes in RPM's
+     processing of dependencies.  Keep the code until I get a chance
+     to use RPM3.0 personally */
+
+  if (in_string) {
+    printf("%s\n", in_string);
+  }
+
+/* 
+   Old function did:
+
+   Given a list separated by whitespace, put each element in the print
    table with an added "\n" */
 
-static void 
-print_list(char *in_string) {
+ /*
   char *WhiteSpace_Set = "\t\v\n\r\f ";
   char *newEnd, *out_string;
   int copy_len;
@@ -527,7 +574,8 @@ print_list(char *in_string) {
     in_string += strspn(in_string+copy_len, WhiteSpace_Set);
   }
 
-  return ;
+ */
+ return ;
 }
 
 
@@ -628,8 +676,8 @@ char
   if(ARG_RPMFORMAT) {
     strcat(out_string, ")");
   }
-  strcat(out_string, "\n");
 
+  strcat(out_string, "\n");
   free(ClassName_Break_Set);
   return out_string;
 }
@@ -933,11 +981,6 @@ findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
 
   out_string = formatClassName(symbolTable->stringList[class], '\0', 0);
 
-  newline = strchr(out_string, '\n');
-  if (newline) {
-    *newline ='\0';
-  }
-
   {
     int len = 10;
 
@@ -957,26 +1000,50 @@ findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
     out_string = realloc(out_string, len );
   }
 
-  if (! out_string ){
+  if (!out_string){
     outofmemory();
   }
   
   if( KEYWORD_VERSION || KEYWORD_REVISION ){
-    strcat(out_string, "=");
+    /* It is easier to remove the extra new line here in one place
+       then to try and add a newline every where that formatClassName
+       is called */
+    char *newline;
+
+    /* I am not using rpm 3.0 yet so I need both the dependencies with
+       and without the version numbers, when I upgrade I will remove
+       this block (with copy_string) and change the "=" to " = " ten
+       lines down.*/
+    {
+      char *copy_string;
+      copy_string = (char*) malloc(strlen(out_string));
+      if (!copy_string){
+	outofmemory();
+      }
+      copy_string = strcpy(copy_string, out_string);
+      print_table_add(copy_string);
+    }
+
+    newline = strrchr(out_string, '\n');
+    if (newline) {
+      newline[0] = '\0';
+    }
+    strcat(out_string, " = ");
     if(KEYWORD_EPOCH){
       strcat(out_string, KEYWORD_EPOCH);
       strcat(out_string, ":");
     }
-    if( KEYWORD_VERSION ){
+    if(KEYWORD_VERSION){
       strcat(out_string, KEYWORD_VERSION);
-      } else {
-	strcat(out_string, KEYWORD_REVISION);
-      }
+    } else {
+      strcat(out_string, KEYWORD_REVISION);
+    }
     strcat(out_string, "\n");
-    print_table_add(out_string);
-    out_string=NULL;
   }
   
+  print_table_add(out_string);
+  out_string=NULL;
+
   /* Provide the star version of this class for jhtml
      dependencies. This option is deprecated since jhtml is
      deprecated. */

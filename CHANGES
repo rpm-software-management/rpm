@@ -45,6 +45,7 @@
 	- fix: resurrect relative path's in fprint lookup queries.
 	- extract spec files from bzip'ped tarballs too on tar builds.
 	- add %_rebuilddbpath macro to permit rebuilding db in new location.
+	- updated perl scripts (Ken Estes).
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

@@ -6,7 +6,8 @@ EXTRA_DIST = \
 	brp-compress brp-strip brp-strip-comment-note \
 	check-prereqs convertrpmrc.sh find-lang.sh find-prov.pl find-req.pl \
 	freshen.sh get_magic.pl getpo.sh http.req magic.prov magic.req \
-	perl.prov perl.req rpmdiff u_pkg.sh vpkg-provides.sh vpkg-provides2.sh
+	perl.prov perl.req rpmdiff rpmdiff.cgi u_pkg.sh \
+	vpkg-provides.sh vpkg-provides2.sh
 
 installprefix = $(DESTDIR)
 
@@ -17,4 +18,5 @@ config_SCRIPTS = \
 	brp-compress brp-strip brp-strip-comment-note \
 	check-prereqs convertrpmrc.sh find-lang.sh find-prov.pl find-req.pl \
 	freshen.sh get_magic.pl getpo.sh http.req magic.prov magic.req \
-	perl.prov perl.req rpmdiff u_pkg.sh vpkg-provides.sh vpkg-provides2.sh
+	perl.prov perl.req rpmdiff rpmdiff.cgi u_pkg.sh \
+	vpkg-provides.sh vpkg-provides2.sh
