@@ -380,7 +380,7 @@ static int build(char *arg, int buildAmount, char *passPhrase,
 	    unlink(tmpSpecFile);
 	    return 1;
 	}
-	fclose(f);
+	pclose(f);
 
 	cmd = specfile = buf;
 	while (*cmd) {
