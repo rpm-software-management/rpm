@@ -758,7 +758,7 @@ static int doReadRC(FD_t fd, const char * filename) {
 
 		strcpy(buf, start);
 		if (expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
-		    rpmError(RPMERR_RPMRC, _("expansion failed at %s:d \"%s\""),
+		    rpmError(RPMERR_RPMRC, _("expansion failed at %s:%d \"%s\""),
 			filename, linenum, start);
 		    return 1;
 		}
@@ -1034,17 +1034,16 @@ char *rpmGetVar(int var)
 int rpmGetBooleanVar(int var) {
     char * val;
     int num;
-    char * chptr;
+    char * end;
 
     val = rpmGetVar(var);
     if (!val) return 0;
 
     if (val[0] == 'y' || val[0] == 'Y') return 1;
 
-    num = strtol(val, &chptr, 0);
-    if (chptr && *chptr == '\0') {
+    num = strtol(val, &end, 0);
+    if (end && *end == '\0')
 	return num != 0;
-    }
 
     return 0;
 }

@@ -43,8 +43,13 @@ int rpmAddSignature(Header header, const char *file,
 
 /******************************************************************/
 
+/* Possible actions for rpmLookupSignatureType() */
+#define RPMLOOKUPSIG_QUERY	0	/* Lookup type in effect          */
+#define RPMLOOKUPSIG_DISABLE	1	/* Disable (--sign was not given) */
+#define RPMLOOKUPSIG_ENABLE	2	/* Re-enable %_signature          */
+
 /* Return type of signature in effect for building */
-int rpmLookupSignatureType(void);
+int rpmLookupSignatureType(int action);
 
 /* Utility to read a pass phrase from the user */
 char *rpmGetPassPhrase(const char *prompt, const int sigTag);

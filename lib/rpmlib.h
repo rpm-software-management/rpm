@@ -480,7 +480,7 @@ struct oldrpmlead {		/* for version 1 packages */
 
 typedef void (*rpmErrorCallBackType)(void);
 
-void rpmError(int code, char * format, ...);
+void rpmError(int code, char * format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
 int rpmErrorCode(void);
 char *rpmErrorCodeString(void);
 char *rpmErrorString(void);

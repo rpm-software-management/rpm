@@ -36,25 +36,41 @@ static int verifyGPGSignature(const char *datafile, void *sig,
 			      int count, char *result);
 static int checkPassPhrase(const char *passPhrase, const int sigTag);
 
-int rpmLookupSignatureType(void)
+int rpmLookupSignatureType(int action)
 {
-    const char *name = rpmExpand("%{_signature}", NULL);
-    int rc;
+    static int rc = 0;
 
-    if (!(name && *name != '%'))
-	rc = 0;
-    else if (!strcasecmp(name, "none"))
-	rc = 0;
-    else if (!strcasecmp(name, "pgp"))
-	rc = RPMSIGTAG_PGP;
-    else if (!strcasecmp(name, "pgp5"))
-	rc = RPMSIGTAG_PGP5;
-    else if (!strcasecmp(name, "gpg"))
-	rc = RPMSIGTAG_GPG;
-    else
-	rc = -1;
+    switch (action)
+    {
+	case RPMLOOKUPSIG_DISABLE:
+	    rc = -2;
+	    return 0;
+        case RPMLOOKUPSIG_ENABLE:
+	    rc = 0;
+	    /* fall through */
+        case RPMLOOKUPSIG_QUERY:
+	    if (rc == -2)
+	        return 0;	/* Disabled */
+            else
+	    {
+		const char *name = rpmExpand("%{_signature}", NULL);
+		if (!(name && *name != '%'))
+		    rc = 0;
+		else if (!strcasecmp(name, "none"))
+		    rc = 0;
+		else if (!strcasecmp(name, "pgp"))
+		    rc = RPMSIGTAG_PGP;
+		else if (!strcasecmp(name, "pgp5"))
+		    rc = RPMSIGTAG_PGP5;
+		else if (!strcasecmp(name, "gpg"))
+		    rc = RPMSIGTAG_GPG;
+		else
+		    rc = -1;	/* Invalid %_signature spec in macro file */
+		xfree(name);
+	    }
+	    break;
+    }
 
-    xfree(name);
     return rc;
 }
 
@@ -65,7 +81,7 @@ const char * rpmDetectPGPVersion(int sigTag)
 {
     /* Actually this should support having more then one pgp version. */ 
     /* At the moment only one version is possible since we only       */
-    /* have one %__pgp and one pgp_path.                              */
+    /* have one %_pgpbin and one %_pgp_path.                          */
 
     static int pgp_version;
     const char *pgpbin = rpmGetPath("%{_pgpbin}", NULL);
@@ -216,29 +232,34 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
     int_32 size;
     unsigned char buf[16];
     void *sig;
+    int ret = -1;
     
     switch (sigTag) {
       case RPMSIGTAG_SIZE:
 	stat(file, &statbuf);
 	size = statbuf.st_size;
+	ret = 0;
 	headerAddEntry(header, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1);
 	break;
       case RPMSIGTAG_MD5:
-	mdbinfile(file, buf);
-	headerAddEntry(header, sigTag, RPM_BIN_TYPE, buf, 16);
+	ret = mdbinfile(file, buf);
+	if (ret == 0)
+	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, buf, 16);
 	break;
       case RPMSIGTAG_PGP:
       case RPMSIGTAG_PGP5:
-	makePGPSignature(file, &sig, &size, passPhrase, sigTag);
-	headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
+	ret = makePGPSignature(file, &sig, &size, passPhrase, sigTag);
+	if (ret == 0)
+	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
       case RPMSIGTAG_GPG:
-	makeGPGSignature(file, &sig, &size, passPhrase);
-	headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
+        ret = makeGPGSignature(file, &sig, &size, passPhrase);
+	if (ret == 0)
+	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
     }
 
-    return 0;
+    return ret;
 }
 
 static int makePGPSignature(const char *file, void **sig, int_32 *size,
@@ -710,7 +731,7 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
 	/* Currently the calling function (rpm.c:main) is checking this and
 	 * doing a better job.  This section should never be accessed.
 	 */
-	rpmError(RPMERR_SIGGEN, _("Invalid signature spec in rc file"));
+	rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file"));
 	return NULL;
     }
 
@@ -790,7 +811,7 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
 	    _exit(RPMERR_EXEC);
 	}   break;
 	default: /* This case should have been screened out long ago. */
-	    rpmError(RPMERR_SIGGEN, _("Invalid signature spec in rc file"));
+	    rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file"));
 	    _exit(RPMERR_SIGGEN);
 	    break;
 	}

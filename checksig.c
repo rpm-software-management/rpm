@@ -87,7 +87,7 @@ int doReSign(int add, char *passPhrase, const char **argv)
 	}
 
 	/* Generate the signature */
-	sigtype = rpmLookupSignatureType();
+	sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
 	rpmMessage(RPMMESS_VERBOSE, _("Generating signature: %d\n"), sigtype);
 	if (add != ADD_SIGNATURE) {
 	    sig = rpmNewSignature();

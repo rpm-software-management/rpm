@@ -1046,7 +1046,7 @@ static int processBinaryFile(Package pkg, struct FileList *fl, const char *fileN
     
     /* check that file starts with leading "/" */
     if (*fileName != '/') {
-	rpmError(RPMERR_BADSPEC, _("File needs leading \"/\": %s"), *fileName);
+	rpmError(RPMERR_BADSPEC, _("File needs leading \"/\": %s"), fileName);
 	fl->processingFailed = 1;
 	return 1;
     }

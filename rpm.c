@@ -1100,7 +1100,7 @@ int main(int argc, char ** argv) {
 	    if (errors) return errors;
 
             if (poptPeekArg(optCon)) {
-		switch (sigTag = rpmLookupSignatureType()) {
+		switch (sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) {
 		  case 0:
 		    break;
 		  case RPMSIGTAG_GPG:
@@ -1111,7 +1111,7 @@ int main(int argc, char ** argv) {
 		        fprintf(stderr, _("pgp not found: "));
 			if (rpmDetectPGPVersion(RPMSIGTAG_PGP5)) {
 			    fprintf(stderr,
-	_("Use `signature: pgp5' instead of `signature: pgp' in spec file.\n"));
+  _("Use `%%_signature pgp5' instead of `%%_signature pgp' in macro file.\n"));
 			    exit(EXIT_FAILURE);
 		        }
 			/* Fall through to default: */
@@ -1121,7 +1121,7 @@ int main(int argc, char ** argv) {
 		        fprintf(stderr, _("pgp version 5 not found: "));
 			if (rpmDetectPGPVersion(RPMSIGTAG_PGP)) {
 			    fprintf(stderr,
-	_("Use `signature: pgp' instead of `signature: pgp5' in spec file.\n"));
+  _("Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"));
 			    exit(EXIT_FAILURE);
 		        }
 			/* Fall through to default: */
@@ -1137,16 +1137,19 @@ int main(int argc, char ** argv) {
 		    }
 		    /* Fall through */
 		  default:
-		    fprintf(stderr, _("Invalid signature spec in rc file.\n"));
+		    fprintf(stderr,
+		            _("Invalid %%_signature spec in macro file.\n"));
 		    exit(EXIT_FAILURE);
 		}
 	    }
 	} else {
 	    argerror(_("--sign may only be used during package building"));
 	}
-    } else {
-        /* Override any rpmrc setting */
-	addMacro(&globalMacroContext, "_signature", NULL, "none", RMIL_CMDLINE);
+    }
+    else
+    {
+    	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
+        rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }
 
     if (pipeOutput) {

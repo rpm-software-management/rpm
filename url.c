@@ -267,7 +267,7 @@ int urlSplit(const char * url, urlinfo **uret)
 	if (u->portstr != NULL && u->portstr[0] != '\0') {
 	    char *end;
 	    u->port = strtol(u->portstr, &end, 0);
-	    if (*end) {
+	    if (!(end && *end == '\0')) {
 		rpmMessage(RPMMESS_ERROR, _("url port must be a number\n"));
 		if (myurl) free(myurl);
 		freeUrlinfo(u);

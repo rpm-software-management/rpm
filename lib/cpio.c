@@ -359,7 +359,7 @@ static int expandRegular(CFD_t * cfd, struct cpioHeader * hdr,
 	strcpy(buf, hdr->path);
 	strcat(buf, "-RPMDELETE");
 	if (rename(hdr->path, buf)) {
-	    fprintf(stderr, _("can't rename %s to %x: %s\n"),
+	    fprintf(stderr, _("can't rename %s to %s: %s\n"),
 		hdr->path, buf, strerror(errno));
             return CPIOERR_UNLINK_FAILED;
 	}

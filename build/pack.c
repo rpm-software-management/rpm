@@ -340,7 +340,7 @@ int writeRPM(Header header, const char *fileName, int type,
     }
 
     /* Generate the signature */
-    sigtype = rpmLookupSignatureType();
+    sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
     fflush(stdout);
     sig = rpmNewSignature();
     rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);

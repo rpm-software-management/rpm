@@ -205,9 +205,9 @@ static void trimChangelog(Header h) {
 	xfree(buf);
     }
 
-    if (*end) {
-	rpmError(RPMERR_RPMRC, _("instchangelog value in rpmrc should be a "
-		    "number, but isn't"));
+    if (!(end && *end == '\0')) {
+	rpmError(RPMERR_RPMRC, _("%%instchangelog value in macro file should "
+		    "be a number, but isn't"));
 	return;
     }
 

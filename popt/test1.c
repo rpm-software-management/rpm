@@ -7,7 +7,7 @@
 
 #include "popt.h"
 
-void option_callback(poptContext con, enum poptCallbackReason reason,
+static void option_callback(poptContext con, enum poptCallbackReason reason,
 		     const struct poptOption * opt, 
 		     char * arg, void * data) {
     fprintf(stdout, "callback: %c %s %s ", opt->val, (char *) data, arg);    

@@ -407,7 +407,7 @@ int poptGetNextOpt(poptContext con) {
 		  case POPT_ARG_INT:
 		  case POPT_ARG_LONG:
 		    aLong = strtol(con->os->nextArg, &end, 0);
-		    if (*end) 
+		    if (!(end && *end == '\0')) 
 			return POPT_ERROR_BADNUMBER;
 
 		    if (aLong == LONG_MIN || aLong == LONG_MAX)
