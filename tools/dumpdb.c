@@ -16,6 +16,8 @@ void main(int argc, char ** argv)
     int blockNum = 0;
     rpmdb db;
 
+    rpmReadConfigFiles(NULL, NULL, NULL, 0);
+
     if (argc == 2) {
 	dspBlockNum = atoi(argv[1]);
     } else if (argc != 1) {
@@ -23,7 +25,7 @@ void main(int argc, char ** argv)
 	exit(1);
     }
 
-    if (rpmdbOpen("", &db, O_RDONLY, 0644) != 0) {
+    if (rpmdbOpen("", &db, O_RDONLY, 0644)) {
 	fprintf(stderr, "cannot open /var/lib/rpm/packages.rpm\n");
 	exit(1);
     }
@@ -39,7 +41,7 @@ void main(int argc, char ** argv)
 		exit(1);
 	    }
 	  
-	    headerDump(h, stdout, 1);
+	    headerDump(h, stdout, 1, rpmTagTable);
 	    printf("Offset: %d\n", offset);
 	    headerFree(h);
 	}
