@@ -30,6 +30,7 @@ int _fi_debug = 0;
 /*@access rpmTransactionSet@*/
 /*@access TFI_t@*/
 /*@access PSM_t@*/
+/*@access rpmDepSet@*/
 
 /*@-redecl -declundef -exportheadervar@*/
 /*@unchecked@*/
@@ -1686,52 +1687,50 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    const char ** triggerNames;
-    const char ** triggerEVR;
+    rpmDepSet trigger = memset(alloca(sizeof(*trigger)), 0, sizeof(*trigger));
     const char ** triggerScripts;
     const char ** triggerProgs;
-    int_32 * triggerFlags;
     int_32 * triggerIndices;
     rpmTagType tnt, tvt, tft;
     const char * triggerPackageName;
     const char * sourceName;
-    int numTriggers;
     rpmRC rc = RPMRC_OK;
-    int i, xx;
+    int xx;
     int skip;
 
     if (!(	hge(triggeredH, RPMTAG_TRIGGERNAME, &tnt, 
-			(void **) &triggerNames, &numTriggers) &&
+			(void **) &trigger->N, &trigger->Count) &&
 		hge(triggeredH, RPMTAG_TRIGGERFLAGS, &tft,
-			(void **) &triggerFlags, NULL) &&
+			(void **) &trigger->Flags, NULL) &&
 		hge(triggeredH, RPMTAG_TRIGGERVERSION, &tvt,
-			(void **) &triggerEVR, NULL))
+			(void **) &trigger->EVR, NULL))
 	)
 	return 0;
 
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
 
-    for (i = 0; i < numTriggers; i++) {
+    for (trigger->i = 0; trigger->i < trigger->Count; trigger->i++) {
 	rpmTagType tit, tst, tpt;
 
-	if (!(triggerFlags[i] & psm->sense)) continue;
-	if (strcmp(triggerNames[i], sourceName)) continue;
+	if (!(trigger->Flags[trigger->i] & psm->sense)) continue;
+	if (strcmp(trigger->N[trigger->i], sourceName)) continue;
 
+#ifdef	LEGACY
 	/*
 	 * For some reason, the TRIGGERVERSION stuff includes the name of
 	 * the package which the trigger is based on. We need to skip
 	 * over that here. I suspect that we'll change our minds on this
 	 * and remove that, so I'm going to just 'do the right thing'.
 	 */
-	skip = strlen(triggerNames[i]);
-	if (!strncmp(triggerEVR[i], triggerNames[i], skip) &&
-	    (triggerEVR[i][skip] == '-'))
+	skip = strlen(trigger->N[trigger->i]);
+	if (!strncmp(trigger->EVR[trigger->i], trigger->N[trigger->i], skip) &&
+	    (trigger->EVR[trigger->i][skip] == '-'))
 	    skip++;
 	else
+#endif
 	    skip = 0;
 
-	if (!headerMatchesDepFlags(sourceH, triggerNames[i],
-		triggerEVR[i] + skip, triggerFlags[i]))
+	if (!headerMatchesDepFlags(sourceH, trigger))
 	    continue;
 
 	if (!(	hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
@@ -1754,7 +1753,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 		rc = RPMRC_FAIL;
 	    } else {
 		arg1 += psm->countCorrection;
-		index = triggerIndices[i];
+		index = triggerIndices[trigger->i];
 		if (triggersAlreadyRun == NULL ||
 		    triggersAlreadyRun[index] == 0)
 		{
@@ -1778,9 +1777,9 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 	break;
     }
 
-    triggerNames = hfd(triggerNames, tnt);
-    triggerFlags = hfd(triggerFlags, tft);
-    triggerEVR = hfd(triggerEVR, tvt);
+    trigger->N = hfd(trigger->N, tnt);
+    trigger->Flags = hfd(trigger->Flags, tft);
+    trigger->EVR = hfd(trigger->EVR, tvt);
 
     return rc;
 }

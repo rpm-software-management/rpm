@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-30 12:48-0500\n"
+"POT-Creation-Date: 2001-10-30 22:54-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -833,7 +833,7 @@ msgstr "Ne mogu da upi¹em %s"
 msgid "Could not open %s: %s\n"
 msgstr "neuspelo otvaranje %s\n"
 
-#: build/pack.c:603 lib/psm.c:2141
+#: build/pack.c:603 lib/psm.c:2140
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ne mogu da upi¹em %s"
@@ -863,7 +863,7 @@ msgstr "Ne mogu da upi¹em %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:683 lib/psm.c:2406
+#: build/pack.c:683 lib/psm.c:2405
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1450,82 +1450,82 @@ msgid " failed - "
 msgstr "PGP omanuo"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:202
+#: lib/depends.c:184
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:231
+#: lib/depends.c:213
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:232 lib/depends.c:837 lib/depends.c:970
+#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:232 lib/depends.c:837 lib/depends.c:970
+#: lib/depends.c:214 lib/depends.c:791 lib/depends.c:923
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:371
+#: lib/depends.c:356
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/depends.c:553
+#: lib/depends.c:544
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:558
+#: lib/depends.c:549
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/depends.c:563
+#: lib/depends.c:554
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:790
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:865
+#: lib/depends.c:819
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:882
+#: lib/depends.c:836
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:906
+#: lib/depends.c:859
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:919
+#: lib/depends.c:872
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:933
+#: lib/depends.c:886
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:949
+#: lib/depends.c:902
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:970
+#: lib/depends.c:923
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
@@ -1533,42 +1533,42 @@ msgstr "datoteka %s ne pripada nijednom paketu\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1043
+#: lib/depends.c:989
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s nije naveden u %s"
 
 #. conflicts exist.
-#: lib/depends.c:1122
+#: lib/depends.c:1067
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: lib/depends.c:1376
+#: lib/depends.c:1319
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
 #. Record all relations.
-#: lib/depends.c:1532
+#: lib/depends.c:1475
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1597
+#: lib/depends.c:1543
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1649
+#: lib/depends.c:1595
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1710
+#: lib/depends.c:1656
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1740
+#: lib/depends.c:1686
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -1671,7 +1671,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:948
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:949
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2294,109 +2294,109 @@ msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:264
+#: lib/psm.c:265
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:268
+#: lib/psm.c:269
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/psm.c:271
+#: lib/psm.c:272
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/psm.c:341
+#: lib/psm.c:342
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/psm.c:407
+#: lib/psm.c:408
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/psm.c:417
+#: lib/psm.c:418
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:496
+#: lib/psm.c:497
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/psm.c:1145
+#: lib/psm.c:1146
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/psm.c:1151
+#: lib/psm.c:1152
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/psm.c:1191
+#: lib/psm.c:1192
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1314
+#: lib/psm.c:1315
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/psm.c:1424
+#: lib/psm.c:1425
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "nemoj izvr¹iti nijednu fazu"
 
-#: lib/psm.c:1592
+#: lib/psm.c:1593
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "neuspelo izvr¹avanje skripta"
 
-#: lib/psm.c:1599
+#: lib/psm.c:1600
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "neuspelo izvr¹avanje skripta"
 
-#: lib/psm.c:1946
+#: lib/psm.c:1945
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-#: lib/psm.c:2063
+#: lib/psm.c:2062
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2177
+#: lib/psm.c:2176
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2186
+#: lib/psm.c:2185
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/psm.c:2227
+#: lib/psm.c:2226
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
 
-#: lib/psm.c:2228
+#: lib/psm.c:2227
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2414
+#: lib/psm.c:2413
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/psm.c:2417
+#: lib/psm.c:2416
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "PGP omanuo"

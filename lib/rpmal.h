@@ -38,22 +38,8 @@ struct availablePackage_s {
 /*@dependent@*/ const char * name;	/*!< Header name. */
 /*@dependent@*/ const char * version;	/*!< Header version. */
 /*@dependent@*/ const char * release;	/*!< Header release. */
-#ifdef DYING
-/*@owned@*/ const char ** provides;	/*!< Provides: name strings. */
-/*@owned@*/ const char ** providesEVR;	/*!< Provides: [epoch:]version[-release] strings. */
-/*@dependent@*/ int * provideFlags;	/*!< Provides: logical range qualifiers. */
-    int providesCount;			/*!< No. of Provide:'s in header. */
-#else
     struct rpmDepSet_s provides;	/*!< Provides: dependencies. */
-#endif
-#ifdef	DYING
-/*@owned@*//*@null@*/ const char ** requires;	/*!< Requires: name strings. */
-/*@owned@*//*@null@*/ const char ** requiresEVR;/*!< Requires: [epoch:]version[-release] strings. */
-/*@dependent@*//*@null@*/ int * requireFlags;	/*!< Requires: logical range qualifiers. */
-    int requiresCount;			/*!< No. of Require:'s in header. */
-#else
     struct rpmDepSet_s requires;	/*!< Requires: dependencies. */
-#endif
 /*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
 /*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
     int filesCount;			/*!< No. of files in header. */
@@ -104,6 +90,33 @@ int alGetMultiLib(/*@null@*/ const availableList al, int pkgNum)
  * @return		available package files count
  */
 int alGetFilesCount(/*@null@*/ const availableList al, int pkgNum)
+	/*@*/;
+
+/**
+ * Return available package provides.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package provides
+ */
+rpmDepSet alGetProvides(/*@null@*/ const availableList al, int pkgNum)
+	/*@*/;
+
+/**
+ * Return available package requires.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package requires
+ */
+rpmDepSet alGetRequires(/*@null@*/ const availableList al, int pkgNum)
+	/*@*/;
+
+/**
+ * Return available package tsort info.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package tsort info
+ */
+tsortInfo alGetTSI(/*@null@*/ const availableList al, int pkgNum)
 	/*@*/;
 
 /**
@@ -160,15 +173,14 @@ int alGetPkgIndex(/*@null@*/ const availableList al, const availablePackage alp)
 /**
  * Return (malloc'd) available package name-version-release string.
  * @param al		available list
- * @param alp		available package pointer
+ * @param pkgNum	available package index
  * @return		name-version-release string
  */
-/*@-exportlocal@*/
 /*@only@*/ /*@null@*/
-char * alGetPkgNVR(/*@null@*/const availableList al, const availablePackage alp)
+char * alGetNVR(/*@null@*/const availableList al, int pkgNum)
 	/*@*/;
-/*@=exportlocal@*/
 
+#ifdef	DYING
 /**
  * Append available package problem to set.
  */
@@ -179,6 +191,7 @@ void alProblemSetAppend(const availableList al, const availablePackage alp,
 		/*@only@*/ /*@null@*/ const char * altNEVR,
 		unsigned long ulong1)
 	/*@modifies tsprobs @*/;
+#endif
 
 /**
  * Initialize available packckages, items, and directory list.
@@ -250,15 +263,28 @@ availablePackage * alAllFileSatisfiesDepend(const availableList al,
  * @param al		available list
  * @param keyType	type of dependency
  * @param keyDepend	dependency string representation
- * @param keyName	dependency name string
- * @param keyEVR	dependency [epoch:]version[-release] string
- * @param keyFlags	dependency logical range qualifiers
+ * @param key		dependency
  * @return		available package pointer
  */
 /*@only@*/ /*@null@*/
 availablePackage * alAllSatisfiesDepend(const availableList al,
 		const char * keyType, const char * keyDepend,
-		const char * keyName, const char * keyEVR, int keyFlags)
+		const rpmDepSet key)
+	/*@*/;
+
+/**
+ * Check added package file lists for first package that has a provide.
+ * @todo Eliminate.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param keyDepend	dependency string representation
+ * @param key		dependency
+ * @return		available package pointer
+ */
+/*@only@*/ /*@null@*/
+availablePackage alSatisfiesDepend(const availableList al,
+		const char * keyType, const char * keyDepend,
+		const rpmDepSet key)
 	/*@*/;
 
 #ifdef __cplusplus

@@ -64,6 +64,8 @@ struct rpmTransactionSet_s * rpmTransactionSet;
  */
 typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
 
+typedef /*@abstract@*/ struct rpmDepSet_s * rpmDepSet;
+
 /** \ingroup header
  * Return name, version, release strings from header.
  * @param h		header
@@ -1588,27 +1590,20 @@ int rpmvercmp(const char * a, const char * b)
 
 /** \ingroup rpmtrans
  * Compare two versioned dependency ranges, looking for overlap.
- * @param AName		1st dependncy name string
- * @param AEVR		1st dependency [epoch:]version[-release] string
- * @param AFlags	1st dependency logical range qualifiers
- * @param BName		2nd dependncy name string
- * @param BEVR		2nd dependency [epoch:]version[-release] string
- * @param BFlags	2nd dependency logical range qualifiers
+ * @param A		1st dependency
+ * @param B		2nd dependency
  * @return		1 if dependencies overlap, 0 otherwise
  */
-int rpmRangesOverlap(const char * AName, const char * AEVR, int AFlags,
-			const char * BName, const char * BEVR, int BFlags)
+int rpmRangesOverlap(const rpmDepSet A, const rpmDepSet B)
 	/*@*/;
 
 /** \ingroup rpmtrans
  * Check dependency against internal rpmlib feature provides.
- * @param keyName	dependency name string
- * @param keyEVR	dependency [epoch:]version[-release] string
- * @param keyFlags	dependency logical range qualifiers
+ * @param key		dependency
  * @return		1 if dependency overlaps, 0 otherwise
  */
-int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
-	int keyFlags)	/*@*/;
+int rpmCheckRpmlibProvides(const rpmDepSet key)
+	/*@*/;
 
 /** \ingroup rpmcli
  * Display current rpmlib feature provides.

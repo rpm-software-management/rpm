@@ -14,8 +14,6 @@
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
-/*@access availablePackage@*/
-
 typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
 typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
 typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
@@ -26,6 +24,10 @@ typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
 /*@access fileIndexEntry@*/
 /*@access dirInfo@*/
 /*@access availableList@*/
+
+/*@access availablePackage@*/
+
+/*@access rpmDepSet@*/
 
 /** \ingroup rpmdep
  * A single available item (e.g. a Provides: dependency).
@@ -134,6 +136,30 @@ int alGetFilesCount(const availableList al, int pkgNum)
     return (alp != NULL ? alp->filesCount : 0);
 }
 
+rpmDepSet alGetProvides(const availableList al, int pkgNum)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    /*@-immediatetrans -retexpose@*/
+    return (alp != NULL ? &alp->provides : 0);
+    /*@=immediatetrans =retexpose@*/
+}
+
+rpmDepSet alGetRequires(const availableList al, int pkgNum)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    /*@-immediatetrans -retexpose@*/
+    return (alp != NULL ? &alp->requires : 0);
+    /*@=immediatetrans =retexpose@*/
+}
+
+tsortInfo alGetTSI(const availableList al, int pkgNum)
+{
+    availablePackage alp = alGetPkg(al, pkgNum);
+    /*@-immediatetrans -retexpose@*/
+    return (alp != NULL ? &alp->tsi : 0);
+    /*@=immediatetrans =retexpose@*/
+}
+
 Header alGetHeader(availableList al, int pkgNum, int unlink)
 {
     availablePackage alp = alGetPkg(al, pkgNum);
@@ -192,36 +218,36 @@ fprintf(stderr, "*** alp %p[%d]\n", alp, pkgNum);
     return pkgNum;
 }
 
-char * alGetPkgNVR(const availableList al, const availablePackage alp)
+char * alGetNVR(const availableList al, int pkgNum)
 {
+    availablePackage alp = alGetPkg(al, pkgNum);
     char * pkgNVR = NULL;
 
-    if (al != NULL) {
-	if (al->list != NULL)
-	    if (alp != NULL && alp >= al->list && alp < (al->list + al->size)) {
-		char * t;
-		t = xcalloc(1,	strlen(alp->name) +
-				strlen(alp->version) +
-				strlen(alp->release) + sizeof("--"));
-		pkgNVR = t;
-		t = stpcpy(t, alp->name);
-		t = stpcpy(t, "-");
-		t = stpcpy(t, alp->version);
-		t = stpcpy(t, "-");
-		t = stpcpy(t, alp->release);
-	    }
+    if (alp != NULL) {
+	char * t;
+	t = xcalloc(1,	strlen(alp->name) +
+			strlen(alp->version) +
+			strlen(alp->release) + sizeof("--"));
+	pkgNVR = t;
+	t = stpcpy(t, alp->name);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, alp->version);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, alp->release);
     }
     return pkgNVR;
 }
 
+#ifdef	DYING
 void alProblemSetAppend(const availableList al, const availablePackage alp,
 		rpmProblemSet tsprobs, rpmProblemType type,
 		const char * dn, const char * bn,
 		const char * altNEVR, unsigned long ulong1)
 {
-    rpmProblemSetAppend(tsprobs, type, alGetPkgNVR(al, alp),
+    rpmProblemSetAppend(tsprobs, type, alGetNVR(al, alp),
 		alp->key, dn, bn, altNEVR, ulong1);
 }
+#endif
 
 availableList alCreate(int delta)
 {
@@ -772,16 +798,16 @@ alFileSatisfiesDepend(const availableList al,
 availablePackage *
 alAllSatisfiesDepend(const availableList al,
 		const char * keyType, const char * keyDepend,
-		const char * keyName, const char * keyEVR, int keyFlags)
+		const rpmDepSet key)
 {
     availableIndexEntry needle =
 		memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
     availableIndexEntry match;
     availablePackage p, * ret = NULL;
-    int i, rc, found;
+    int rc, found;
 
-    if (*keyName == '/') {
-	ret = alAllFileSatisfiesDepend(al, keyType, keyName);
+    if (*key->N[key->i] == '/') {
+	ret = alAllFileSatisfiesDepend(al, keyType, key->N[key->i]);
 	/* XXX Provides: /path was broken with added packages (#52183). */
 	if (ret != NULL && *ret != NULL)
 	    return ret;
@@ -791,9 +817,9 @@ alAllSatisfiesDepend(const availableList al,
 
     /*@-assignexpose@*/
     /*@-temptrans@*/
-    needle->entry = keyName;
+    needle->entry = key->N[key->i];
     /*@=temptrans@*/
-    needle->entryLen = strlen(keyName);
+    needle->entryLen = strlen(key->N[key->i]);
     match = bsearch(needle, al->index.index, al->index.size,
 		    sizeof(*al->index.index), indexcmp);
     /*@=assignexpose@*/
@@ -809,23 +835,23 @@ alAllSatisfiesDepend(const availableList al,
 		indexcmp(match, needle) == 0;
 	 match++)
     {
+	int isave;
 
 	p = match->package;
 	rc = 0;
+	isave = p->provides.i;	/* XXX hack */
 	switch (match->type) {
 	case IET_PROVIDES:
-	    for (i = 0; i < p->provides.Count; i++) {
-		const char * proEVR;
-		int proFlags;
+	    for (p->provides.i = 0;
+		 p->provides.i < p->provides.Count;
+		 p->provides.i++)
+	    {
 
 		/* Filter out provides that came along for the ride. */
-		if (strcmp(p->provides.N[i], keyName))
+		if (strcmp(p->provides.N[p->provides.i], key->N[key->i]))
 		    /*@innercontinue@*/ continue;
 
-		proEVR = (p->provides.EVR ? p->provides.EVR[i] : NULL);
-		proFlags = (p->provides.Flags ? p->provides.Flags[i] : 0);
-		rc = rpmRangesOverlap(p->provides.N[i], proEVR, proFlags,
-				keyName, keyEVR, keyFlags);
+		rc = rpmRangesOverlap(&p->provides, key);
 		if (rc)
 		    /*@innerbreak@*/ break;
 	    }
@@ -834,6 +860,7 @@ alAllSatisfiesDepend(const availableList al,
 				keyType, keyDepend+2);
 	    /*@switchbreak@*/ break;
 	}
+	p->provides.i = isave;	/* XXX hack */
 
 	/*@-branchstate@*/
 	if (rc) {
@@ -848,4 +875,19 @@ alAllSatisfiesDepend(const availableList al,
 	ret[found] = NULL;
 
     return ret;
+}
+
+availablePackage alSatisfiesDepend(const availableList al,
+		const char * keyType, const char * keyDepend,
+		const rpmDepSet key)
+{
+    availablePackage ret;
+    availablePackage * tmp = alAllSatisfiesDepend(al, keyType, keyDepend, key);
+
+    if (tmp) {
+	ret = tmp[0];
+	tmp = _free(tmp);
+	return ret;
+    }
+    return NULL;
 }

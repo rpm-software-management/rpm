@@ -5,7 +5,10 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include "depends.h"
 #include "debug.h"
+
+/*@access rpmDepSet@*/
 
 struct rpmlibProvides_s {
 /*@observer@*/ /*@null@*/ const char * featureName;
@@ -54,16 +57,21 @@ void rpmShowRpmlibProvides(FILE * fp)
     }
 }
 
-int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
-	int keyFlags)
+int rpmCheckRpmlibProvides(const rpmDepSet key)
 {
     const struct rpmlibProvides_s * rlp;
     int rc = 0;
+    rpmDepSet pro = memset(alloca(sizeof(*pro)), 0, sizeof(*pro));
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
-	if (rlp->featureEVR && rlp->featureFlags)
-	    rc = rpmRangesOverlap(keyName, keyEVR, keyFlags,
-		rlp->featureName, rlp->featureEVR, rlp->featureFlags);
+	if (rlp->featureEVR && rlp->featureFlags) {
+	    pro->N = (const char **) &rlp->featureName;
+	    pro->EVR = (const char **) &rlp->featureEVR;
+	    pro->Flags = &rlp->featureFlags;
+	    pro->Count = 1;
+	    pro->i = 0;
+	    rc = rpmRangesOverlap(key, pro);
+	}
 	if (rc)
 	    break;
     }

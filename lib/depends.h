@@ -14,8 +14,6 @@ typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
 typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
 typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
 
-typedef /*@abstract@*/ struct rpmDepSet_s *		rpmDepSet;
-
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _ts_debug;
@@ -50,13 +48,14 @@ struct transactionElement_s {
  * A package dependency set.
  */
 struct rpmDepSet_s {
-/*@owned@*/
+/*@shared@*/
     const char ** N;
-/*@owned@*/
+/*@shared@*/
     const char ** EVR;
+/*@shared@*/
     const int_32 * Flags;
     int Count;
-    int Index;
+    int i;
 };
 
 /** \ingroup rpmdep
@@ -145,13 +144,10 @@ extern "C" {
  * for overlap.
  * @deprecated Remove from API when obsoletes is correctly implemented.
  * @param h		header
- * @param reqName	dependency name
- * @param reqEVR	dependency [epoch:]version[-release]
- * @param reqFlags	dependency logical range qualifiers
+ * @param req		dependency
  * @return		1 if dependency overlaps, 0 otherwise
  */
-int headerMatchesDepFlags(Header h,
-	const char * reqName, const char * reqEVR, int reqFlags)
+int headerMatchesDepFlags(Header h, const rpmDepSet req)
 		/*@*/;
 
 #ifdef __cplusplus

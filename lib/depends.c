@@ -22,13 +22,14 @@
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
 
+/*@access rpmDepSet@*/
 /*@access rpmDependencyConflict@*/
 /*@access problemsSet@*/
 
 /*@access orderListIndex@*/
 /*@access tsortInfo@*/
 
-#ifdef DYING
+#ifndef DYING
 /*@access availablePackage@*/
 #endif
 
@@ -41,13 +42,10 @@ int _ts_debug = 0;
 /**
  * Return formatted dependency string.
  * @param depend	type of dependency ("R" == Requires, "C" == Conflcts)
- * @param key		dependency name string
- * @param keyEVR	dependency [epoch:]version[-release] string
- * @param keyFlags	dependency logical range qualifiers
+ * @param key		dependency
  * @return		formatted dependency (malloc'ed)
  */
-static /*@only@*/ char * printDepend(const char * depend, const char * key,
-		const char * keyEVR, int keyFlags)
+static /*@only@*/ char * printDepend(const char * depend, const rpmDepSet key)
 	/*@*/
 {
     char * tbuf, * t;
@@ -55,56 +53,38 @@ static /*@only@*/ char * printDepend(const char * depend, const char * key,
 
     nb = 0;
     if (depend)	nb += strlen(depend) + 1;
-    if (key)	nb += strlen(key);
-    if (keyFlags & RPMSENSE_SENSEMASK) {
+    if (key->N[key->i])	nb += strlen(key->N[key->i]);
+    if (key->Flags[key->i] & RPMSENSE_SENSEMASK) {
 	if (nb)	nb++;
-	if (keyFlags & RPMSENSE_LESS)	nb++;
-	if (keyFlags & RPMSENSE_GREATER) nb++;
-	if (keyFlags & RPMSENSE_EQUAL)	nb++;
+	if (key->Flags[key->i] & RPMSENSE_LESS)	nb++;
+	if (key->Flags[key->i] & RPMSENSE_GREATER) nb++;
+	if (key->Flags[key->i] & RPMSENSE_EQUAL)	nb++;
     }
-    if (keyEVR && *keyEVR) {
+    if (key->EVR[key->i] && *key->EVR[key->i]) {
 	if (nb)	nb++;
-	nb += strlen(keyEVR);
+	nb += strlen(key->EVR[key->i]);
     }
 
     t = tbuf = xmalloc(nb + 1);
     if (depend) {
-	while(*depend != '\0')	*t++ = *depend++;
+	t = stpcpy(t, depend);
 	*t++ = ' ';
     }
-    if (key)
-	while(*key != '\0')	*t++ = *key++;
-    if (keyFlags & RPMSENSE_SENSEMASK) {
+    if (key->N[key->i])
+	t = stpcpy(t, key->N[key->i]);
+    if (key->Flags[key->i] & RPMSENSE_SENSEMASK) {
 	if (t != tbuf)	*t++ = ' ';
-	if (keyFlags & RPMSENSE_LESS)	*t++ = '<';
-	if (keyFlags & RPMSENSE_GREATER) *t++ = '>';
-	if (keyFlags & RPMSENSE_EQUAL)	*t++ = '=';
+	if (key->Flags[key->i] & RPMSENSE_LESS)	*t++ = '<';
+	if (key->Flags[key->i] & RPMSENSE_GREATER) *t++ = '>';
+	if (key->Flags[key->i] & RPMSENSE_EQUAL)	*t++ = '=';
     }
-    if (keyEVR && *keyEVR) {
+    if (key->EVR[key->i] && *key->EVR[key->i]) {
 	if (t != tbuf)	*t++ = ' ';
-	while(*keyEVR != '\0')	*t++ = *keyEVR++;
+	t = stpcpy(t, key->EVR[key->i]);
     }
     *t = '\0';
     return tbuf;
 }
-
-#ifdef	UNUSED
-static /*@only@*/ const char *buildEVR(int_32 *e, const char *v, const char *r)
-{
-    const char *pEVR;
-    char *p;
-
-    pEVR = p = xmalloc(21 + strlen(v) + 1 + strlen(r) + 1);
-    *p = '\0';
-    if (e) {
-	sprintf(p, "%d:", *e);
-	while (*p)
-	    p++;
-    }
-    (void) stpcpy( stpcpy( stpcpy(p, v) , "-") , r);
-    return pEVR;
-}
-#endif
 
 /**
  * Split EVR into epoch, version, and release components.
@@ -162,38 +142,37 @@ const char *rpmEVR = VERSION;
 int rpmFLAGS = RPMSENSE_EQUAL;
 /*@=exportheadervar@*/
 
-int rpmRangesOverlap(const char * AName, const char * AEVR, int AFlags,
-	const char * BName, const char * BEVR, int BFlags)
+int rpmRangesOverlap(const rpmDepSet A, const rpmDepSet B)
 {
-    const char *aDepend = printDepend(NULL, AName, AEVR, AFlags);
-    const char *bDepend = printDepend(NULL, BName, BEVR, BFlags);
+    const char *aDepend = printDepend(NULL, A);
+    const char *bDepend = printDepend(NULL, B);
     char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
     int result;
     int sense;
 
     /* Different names don't overlap. */
-    if (strcmp(AName, BName)) {
+    if (strcmp(A->N[A->i], B->N[B->i])) {
 	result = 0;
 	goto exit;
     }
 
     /* Same name. If either A or B is an existence test, always overlap. */
-    if (!((AFlags & RPMSENSE_SENSEMASK) && (BFlags & RPMSENSE_SENSEMASK))) {
+    if (!((A->Flags[A->i] & RPMSENSE_SENSEMASK) && (B->Flags[B->i] & RPMSENSE_SENSEMASK))) {
 	result = 1;
 	goto exit;
     }
 
     /* If either EVR is non-existent or empty, always overlap. */
-    if (!(AEVR && *AEVR && BEVR && *BEVR)) {
+    if (!(A->EVR[A->i] && *A->EVR[A->i] && B->EVR[B->i] && *B->EVR[B->i])) {
 	result = 1;
 	goto exit;
     }
 
     /* Both AEVR and BEVR exist. */
-    aEVR = xstrdup(AEVR);
+    aEVR = xstrdup(A->EVR[A->i]);
     parseEVR(aEVR, &aE, &aV, &aR);
-    bEVR = xstrdup(BEVR);
+    bEVR = xstrdup(B->EVR[B->i]);
     parseEVR(bEVR, &bE, &bV, &bR);
 
     /* Compare {A,B} [epoch:]version[-release] */
@@ -219,14 +198,14 @@ int rpmRangesOverlap(const char * AName, const char * AEVR, int AFlags,
 
     /* Detect overlap of {A,B} range. */
     result = 0;
-    if (sense < 0 && ((AFlags & RPMSENSE_GREATER) || (BFlags & RPMSENSE_LESS))) {
+    if (sense < 0 && ((A->Flags[A->i] & RPMSENSE_GREATER) || (B->Flags[B->i] & RPMSENSE_LESS))) {
 	result = 1;
-    } else if (sense > 0 && ((AFlags & RPMSENSE_LESS) || (BFlags & RPMSENSE_GREATER))) {
+    } else if (sense > 0 && ((A->Flags[A->i] & RPMSENSE_LESS) || (B->Flags[B->i] & RPMSENSE_GREATER))) {
 	result = 1;
     } else if (sense == 0 &&
-	(((AFlags & RPMSENSE_EQUAL) && (BFlags & RPMSENSE_EQUAL)) ||
-	 ((AFlags & RPMSENSE_LESS) && (BFlags & RPMSENSE_LESS)) ||
-	 ((AFlags & RPMSENSE_GREATER) && (BFlags & RPMSENSE_GREATER)))) {
+	(((A->Flags[A->i] & RPMSENSE_EQUAL) && (B->Flags[B->i] & RPMSENSE_EQUAL)) ||
+	 ((A->Flags[A->i] & RPMSENSE_LESS) && (B->Flags[B->i] & RPMSENSE_LESS)) ||
+	 ((A->Flags[A->i] & RPMSENSE_GREATER) && (B->Flags[B->i] & RPMSENSE_GREATER)))) {
 	result = 1;
     }
 
@@ -238,25 +217,17 @@ exit:
     return result;
 }
 
-static int rangeMatchesDepFlags (Header h,
-		const char * reqName, const char * reqEVR, int reqFlags)
+static int rangeMatchesDepFlags (Header h, const rpmDepSet req)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmTagType pnt, pvt;
-#ifdef	DYING
-    const char ** provides;
-    const char ** providesEVR;
-    int_32 * provideFlags;
-    int providesCount;
-#else
-    struct rpmDepSet_s provides;
-#endif
+    rpmDepSet provides = memset(alloca(sizeof(*provides)), 0, sizeof(*provides));
     int result;
-    int i, xx;
+    int xx;
 
-    if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqEVR || !strlen(reqEVR))
+    if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
 	return 1;
 
     /* Get provides information from header */
@@ -265,49 +236,48 @@ static int rangeMatchesDepFlags (Header h,
      * If no provides version info is available, match any requires.
      */
     if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt,
-		(void **) &provides.EVR, &provides.Count))
+		(void **) &provides->EVR, &provides->Count))
 	return 1;
 
-    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provides.Flags, NULL);
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provides->Flags, NULL);
 
-    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides.N, &provides.Count))
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides->N, &provides->Count))
     {
-	provides.EVR = hfd(provides.EVR, pvt);
+	provides->EVR = hfd(provides->EVR, pvt);
 	return 0;	/* XXX should never happen */
     }
 
     result = 0;
-    for (i = 0; i < provides.Count; i++) {
+    for (provides->i = 0; provides->i < provides->Count; provides->i++) {
 
 	/* Filter out provides that came along for the ride. */
-	if (strcmp(provides.N[i], reqName))
+	if (strcmp(provides->N[provides->i], req->N[req->i]))
 	    continue;
 
-	result = rpmRangesOverlap(provides.N[i], provides.EVR[i], provides.Flags[i],
-			reqName, reqEVR, reqFlags);
+	result = rpmRangesOverlap(provides, req);
 
 	/* If this provide matches the require, we're done. */
 	if (result)
 	    break;
     }
 
-    provides.N = hfd(provides.N, pnt);
-    provides.EVR = hfd(provides.EVR, pvt);
+    provides->N = hfd(provides->N, pnt);
+    provides->EVR = hfd(provides->EVR, pvt);
 
     return result;
 }
 
-int headerMatchesDepFlags(Header h,
-		const char * reqName, const char * reqEVR, int reqFlags)
+int headerMatchesDepFlags(Header h, const rpmDepSet req)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char *name, *version, *release;
     int_32 * epoch;
-    const char *pkgEVR;
-    char *p;
-    int pkgFlags = RPMSENSE_EQUAL;
+    const char * pkgEVR;
+    char * p;
+    int_32 pkgFlags = RPMSENSE_EQUAL;
+    rpmDepSet pkg = memset(alloca(sizeof(*pkg)), 0, sizeof(*pkg));
 
-    if (!((reqFlags & RPMSENSE_SENSEMASK) && reqEVR && *reqEVR))
+    if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))
 	return 1;
 
     /* Get package information from header */
@@ -322,7 +292,15 @@ int headerMatchesDepFlags(Header h,
     }
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
-    return rpmRangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
+    pkg->N = &name;
+    pkg->EVR = &pkgEVR;
+    pkg->Flags = &pkgFlags;
+    pkg->Count = 1;
+    pkg->i = 0;
+
+    /*@-compmempass@*/ /* FIX: move pkg immediate variables from stack */
+    return rpmRangesOverlap(pkg, req);
+    /*@=compmempass@*/
 }
 
 rpmTransactionSet XrpmtsUnlink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
@@ -534,8 +512,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     const char * pkgNVR = NULL;
     rpmTagType ont, ovt;
     availablePackage p;
-    int count;
-    const char ** obsoletes;
+    rpmDepSet obsoletes = memset(alloca(sizeof(*obsoletes)), 0, sizeof(*obsoletes));
     int alNum;
     int xx;
     int ec = 0;
@@ -547,14 +524,21 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
      */
     i = ts->orderCount;
     for (i = 0; i < ts->orderCount; i++) {
+	Header ph;
 
 	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
 	    break;
 
 	if (strcmp(p->name, name))
 	    continue;
-	rc = rpmVersionCompare(p->h, h);
-	pkgNVR = hGetNVR(p->h, NULL);
+	pkgNVR = alGetNVR(ts->addedPackages, i);
+	if (pkgNVR == NULL)	/* XXX can't happen */
+	    continue;
+
+	ph = alGetHeader(ts->addedPackages, i, 0);
+	rc = rpmVersionCompare(ph, h);
+	ph = headerFree(ph);
+
 	if (rc > 0) {
 	    rpmMessage(RPMMESS_WARNING,
 		_("newer package %s already added, skipping %s\n"),
@@ -635,26 +619,23 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	mi = rpmdbFreeIterator(mi);
     }
 
-    if (hge(h, RPMTAG_OBSOLETENAME, &ont, (void **) &obsoletes, &count)) {
-	const char ** obsoletesEVR;
-	int_32 * obsoletesFlags;
-	int j;
+    if (hge(h, RPMTAG_OBSOLETENAME, &ont, (void **) &obsoletes->N, &obsoletes->Count)) {
 
-	xx = hge(h, RPMTAG_OBSOLETEVERSION, &ovt, (void **) &obsoletesEVR,
+	xx = hge(h, RPMTAG_OBSOLETEVERSION, &ovt, (void **) &obsoletes->EVR,
 			NULL);
-	xx = hge(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletesFlags,
+	xx = hge(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletes->Flags,
 			NULL);
 
-	for (j = 0; j < count; j++) {
+	for (obsoletes->i = 0; obsoletes->i < obsoletes->Count; obsoletes->i++) {
 
 	    /* XXX avoid self-obsoleting packages. */
-	    if (!strcmp(name, obsoletes[j]))
+	    if (!strcmp(name, obsoletes->N[obsoletes->i]))
 		continue;
 
 	  { rpmdbMatchIterator mi;
 	    Header h2;
 
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, obsoletes[j], 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, obsoletes->N[obsoletes->i], 0);
 
 	    xx = rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
@@ -665,20 +646,17 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		 * If no obsoletes version info is available, match all names.
 		 */
 		/*@-branchstate@*/
-		if (obsoletesEVR == NULL ||
-		    headerMatchesDepFlags(h2,
-			obsoletes[j], obsoletesEVR[j], obsoletesFlags[j]))
-		{
+		if (obsoletes->EVR == NULL
+		 || headerMatchesDepFlags(h2, obsoletes))
 		    xx = removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
-		}
 		/*@=branchstate@*/
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	  }
 	}
 
-	obsoletesEVR = hfd(obsoletesEVR, ovt);
-	obsoletes = hfd(obsoletes, ont);
+	obsoletes->EVR = hfd(obsoletes->EVR, ovt);
+	obsoletes->N = hfd(obsoletes->N, ont);
     }
     ec = 0;
 
@@ -767,49 +745,18 @@ rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
 }
 
 /**
- * Check added package file lists for first package that has a provide.
- * @todo Eliminate.
- * @param al		available list
- * @param keyType	type of dependency
- * @param keyDepend	dependency string representation
- * @param keyName	dependency name string
- * @param keyEVR	dependency [epoch:]version[-release] string
- * @param keyFlags	dependency logical range qualifiers
- * @return		available package pointer
- */
-static inline /*@only@*/ /*@null@*/ availablePackage
-alSatisfiesDepend(const availableList al,
-		const char * keyType, const char * keyDepend,
-		const char * keyName, const char * keyEVR, int keyFlags)
-	/*@*/
-{
-    availablePackage ret;
-    availablePackage * tmp =
-	alAllSatisfiesDepend(al, keyType, keyDepend, keyName, keyEVR, keyFlags);
-
-    if (tmp) {
-	ret = tmp[0];
-	tmp = _free(tmp);
-	return ret;
-    }
-    return NULL;
- }
-
-/**
  * Check key for an unsatisfied dependency.
  * @todo Eliminate rpmrc provides.
  * @param al		available list
  * @param keyType	type of dependency
  * @param keyDepend	dependency string representation
- * @param keyName	dependency name string
- * @param keyEVR	dependency [epoch:]version[-release] string
- * @param keyFlags	dependency logical range qualifiers
+ * @param key		dependency
  * @retval suggestion	possible package(s) to resolve dependency
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
 static int unsatisfiedDepend(rpmTransactionSet ts,
 		const char * keyType, const char * keyDepend,
-		const char * keyName, const char * keyEVR, int keyFlags,
+		rpmDepSet key,
 		/*@null@*/ /*@out@*/ availablePackage ** suggestion)
 	/*@globals _cacheDependsRC, fileSystem @*/
 	/*@modifies ts, *suggestion, _cacheDependsRC, fileSystem @*/
@@ -846,7 +793,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 
 		if (suggestion && rc == 1)
 		    *suggestion = alAllSatisfiesDepend(ts->availablePackages,
-				NULL, NULL, keyName, keyEVR, keyFlags);
+				NULL, NULL, key);
 
 		return rc;
 	    }
@@ -863,10 +810,10 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
     if (rcProvidesString == noProvidesString)
 	rcProvidesString = rpmGetVar(RPMVAR_PROVIDES);
 
-    if (rcProvidesString != NULL && !(keyFlags & RPMSENSE_SENSEMASK)) {
-	i = strlen(keyName);
+    if (rcProvidesString != NULL && !(key->Flags[key->i] & RPMSENSE_SENSEMASK)) {
+	i = strlen(key->N[key->i]);
 	/*@-observertrans -mayaliasunique@*/
-	while ((start = strstr(rcProvidesString, keyName))) {
+	while ((start = strstr(rcProvidesString, key->N[key->i]))) {
 	/*@=observertrans =mayaliasunique@*/
 	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmrc provides)\n"),
@@ -884,8 +831,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
      * Check those dependencies now.
      */
-    if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
-	if (rpmCheckRpmlibProvides(keyName, keyEVR, keyFlags)) {
+    if (!strncmp(key->N[key->i], "rpmlib(", sizeof("rpmlib(")-1)) {
+	if (rpmCheckRpmlibProvides(key)) {
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib provides)\n"),
 			keyType, keyDepend+2);
 	    goto exit;
@@ -893,18 +840,17 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	goto unsatisfied;
     }
 
-    if (alSatisfiesDepend(ts->addedPackages, keyType, keyDepend,
-		keyName, keyEVR, keyFlags))
+    if (alSatisfiesDepend(ts->addedPackages, keyType, keyDepend, key) != NULL)
     {
 	goto exit;
     }
 
     /* XXX only the installer does not have the database open here. */
     if (ts->rpmdb != NULL) {
-	if (*keyName == '/') {
+	if (*key->N[key->i] == '/') {
 	    /* keyFlags better be 0! */
 
-	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, keyName, 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, key->N[key->i], 0);
 
 	    (void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
@@ -918,11 +864,11 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	    mi = rpmdbFreeIterator(mi);
 	}
 
-	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, keyName, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, key->N[key->i], 0);
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
+	    if (rangeMatchesDepFlags(h, key)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db provides)\n"),
 			keyType, keyDepend+2);
 		mi = rpmdbFreeIterator(mi);
@@ -932,11 +878,11 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	mi = rpmdbFreeIterator(mi);
 
 #if defined(DYING) || defined(__LCLINT__)
-	mi = rpmtsInitIterator(ts, RPMTAG_NAME, keyName, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_NAME, key->N[key->i], 0);
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
+	    if (rangeMatchesDepFlags(h, key)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db package)\n"),
 			keyType, keyDepend+2);
 		mi = rpmdbFreeIterator(mi);
@@ -950,7 +896,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 
     if (suggestion)
 	*suggestion = alAllSatisfiesDepend(ts->availablePackages, NULL, NULL,
-				keyName, keyEVR, keyFlags);
+				key);
 
 unsatisfied:
     rpmMessage(RPMMESS_DEBUG, _("%s: %-45s NO\n"), keyType, keyDepend+2);
@@ -1001,55 +947,40 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     rpmTagType rnt, rvt;
     rpmTagType cnt, cvt;
     const char * name, * version, * release;
-#ifdef	DYING
-    const char ** requires;
-    const char ** requiresEVR = NULL;
-    int_32 * requireFlags = NULL;
-    int requiresCount = 0;
-#else
-    struct rpmDepSet_s requires;
-#endif
-#ifdef	DYING
-    const char ** conflicts;
-    const char ** conflictsEVR = NULL;
-    int_32 * conflictFlags = NULL;
-    int conflictsCount = 0;
-#else
-    struct rpmDepSet_s conflicts;
-#endif
+    rpmDepSet requires = memset(alloca(sizeof(*requires)), 0, sizeof(*requires));
+    rpmDepSet conflicts = memset(alloca(sizeof(*conflicts)), 0, sizeof(*conflicts));
     rpmTagType type;
-    int i, rc, xx;
+    int rc, xx;
     int ourrc = 0;
     availablePackage * suggestion;
 
     xx = headerNVR(h, &name, &version, &release);
 
-    if (!hge(h, RPMTAG_REQUIRENAME, &rnt, (void **) &requires.N, &requires.Count))
+    if (!hge(h, RPMTAG_REQUIRENAME, &rnt, (void **) &requires->N, &requires->Count))
     {
-	requires.Count = 0;
+	requires->Count = 0;
 	rvt = RPM_STRING_ARRAY_TYPE;
     } else {
-	xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **) &requires.Flags, NULL);
-	xx = hge(h, RPMTAG_REQUIREVERSION, &rvt, (void **) &requires.EVR, NULL);
+	xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **) &requires->Flags, NULL);
+	xx = hge(h, RPMTAG_REQUIREVERSION, &rvt, (void **) &requires->EVR, NULL);
     }
 
-    for (i = 0; i < requires.Count && !ourrc; i++) {
+    for (requires->i = 0; requires->i < requires->Count && !ourrc; requires->i++) {
 	const char * keyDepend;
 
 	/* Filter out requires that came along for the ride. */
-	if (keyName && strcmp(keyName, requires.N[i]))
+	if (keyName && strcmp(keyName, requires->N[requires->i]))
 	    continue;
 
 	/* If this requirement comes from the core package only, not libraries,
 	   then if we're installing the libraries only, don't count it in. */
-	if (multiLib && !isDependsMULTILIB(requires.Flags[i]))
+	if (multiLib && !isDependsMULTILIB(requires->Flags[requires->i]))
 	    continue;
 
-	keyDepend = printDepend("R",
-		requires.N[i], requires.EVR[i], requires.Flags[i]);
+	keyDepend = printDepend("R", requires);
 
-	rc = unsatisfiedDepend(ts, " Requires", keyDepend,
-		requires.N[i], requires.EVR[i], requires.Flags[i], &suggestion);
+	rc = unsatisfiedDepend(ts, " Requires", keyDepend, requires,
+			&suggestion);
 
 	switch (rc) {
 	case 0:		/* requirements are satisfied. */
@@ -1069,18 +1000,18 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		pp->byName = xstrdup(name);
 		pp->byVersion = xstrdup(version);
 		pp->byRelease = xstrdup(release);
-		pp->needsName = xstrdup(requires.N[i]);
-		pp->needsVersion = xstrdup(requires.EVR[i]);
-		pp->needsFlags = requires.Flags[i];
+		pp->needsName = xstrdup(requires->N[requires->i]);
+		pp->needsVersion = xstrdup(requires->EVR[requires->i]);
+		pp->needsFlags = requires->Flags[requires->i];
 		pp->sense = RPMDEP_SENSE_REQUIRES;
 
-		if (suggestion) {
+		if (suggestion != NULL) {
 		    int j;
-		    for (j = 0; suggestion[j]; j++)
+		    for (j = 0; suggestion[j] != NULL; j++)
 			{};
 		    pp->suggestedPackages =
 			xmalloc( (j + 1) * sizeof(*pp->suggestedPackages) );
-		    for (j = 0; suggestion[j]; j++)
+		    for (j = 0; suggestion[j] != NULL; j++)
 			pp->suggestedPackages[j] = suggestion[j]->key;
 		    pp->suggestedPackages[j] = NULL;
 		} else {
@@ -1098,38 +1029,37 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	keyDepend = _free(keyDepend);
     }
 
-    if (requires.Count) {
-	requires.EVR = hfd(requires.EVR, rvt);
-	requires.N = hfd(requires.N, rnt);
+    if (requires->Count) {
+	requires->EVR = hfd(requires->EVR, rvt);
+	requires->N = hfd(requires->N, rnt);
     }
 
-    if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **)&conflicts.N, &conflicts.Count))
+    if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **)&conflicts->N, &conflicts->Count))
     {
-	conflicts.Count = 0;
+	conflicts->Count = 0;
 	cvt = RPM_STRING_ARRAY_TYPE;
     } else {
 	xx = hge(h, RPMTAG_CONFLICTFLAGS, &type,
-		(void **) &conflicts.Flags, &conflicts.Count);
+		(void **) &conflicts->Flags, &conflicts->Count);
 	xx = hge(h, RPMTAG_CONFLICTVERSION, &cvt,
-		(void **) &conflicts.EVR, &conflicts.Count);
+		(void **) &conflicts->EVR, &conflicts->Count);
     }
 
-    for (i = 0; i < conflicts.Count && !ourrc; i++) {
+    for (conflicts->i = 0; conflicts->i < conflicts->Count && !ourrc; conflicts->i++) {
 	const char * keyDepend;
 
 	/* Filter out conflicts that came along for the ride. */
-	if (keyName && strcmp(keyName, conflicts.N[i]))
+	if (keyName && strcmp(keyName, conflicts->N[conflicts->i]))
 	    continue;
 
 	/* If this requirement comes from the core package only, not libraries,
 	   then if we're installing the libraries only, don't count it in. */
-	if (multiLib && !isDependsMULTILIB(conflicts.Flags[i]))
+	if (multiLib && !isDependsMULTILIB(conflicts->Flags[conflicts->i]))
 	    continue;
 
-	keyDepend = printDepend("C", conflicts.N[i], conflicts.EVR[i], conflicts.Flags[i]);
+	keyDepend = printDepend("C", conflicts);
 
-	rc = unsatisfiedDepend(ts, "Conflicts", keyDepend,
-		conflicts.N[i], conflicts.EVR[i], conflicts.Flags[i], NULL);
+	rc = unsatisfiedDepend(ts, "Conflicts", keyDepend, conflicts, NULL);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
@@ -1148,9 +1078,9 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		pp->byName = xstrdup(name);
 		pp->byVersion = xstrdup(version);
 		pp->byRelease = xstrdup(release);
-		pp->needsName = xstrdup(conflicts.N[i]);
-		pp->needsVersion = xstrdup(conflicts.EVR[i]);
-		pp->needsFlags = conflicts.Flags[i];
+		pp->needsName = xstrdup(conflicts->N[conflicts->i]);
+		pp->needsVersion = xstrdup(conflicts->EVR[conflicts->i]);
+		pp->needsFlags = conflicts->Flags[conflicts->i];
 		pp->sense = RPMDEP_SENSE_CONFLICTS;
 		pp->suggestedPackages = NULL;
 	    }
@@ -1167,9 +1097,9 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	keyDepend = _free(keyDepend);
     }
 
-    if (conflicts.Count) {
-	conflicts.EVR = hfd(conflicts.EVR, cvt);
-	conflicts.N = hfd(conflicts.N, cnt);
+    if (conflicts->Count) {
+	conflicts->EVR = hfd(conflicts->EVR, cvt);
+	conflicts->N = hfd(conflicts->N, cnt);
     }
 
     return ourrc;
@@ -1355,9 +1285,9 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
  */
 static /*@owned@*/ /*@null@*/ const char *
-zapRelation(availablePackage q, availablePackage p,
+zapRelation(availablePackage q, availablePackage p, rpmDepSet requires,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps)
-	/*@modifies q, p, *nzaps @*/
+	/*@modifies q, p, *nzaps, requires @*/
 {
     tsortInfo tsi_prev;
     tsortInfo tsi;
@@ -1370,23 +1300,21 @@ zapRelation(availablePackage q, availablePackage p,
 	 tsi_prev = tsi, tsi = tsi->tsi_next)
 	/*@=nullderef@*/
     {
-	int j;
-
 	if (tsi->tsi_suc != p)
 	    continue;
-	if (p->requires.N == NULL) continue;	/* XXX can't happen */
-	if (p->requires.EVR == NULL) continue;	/* XXX can't happen */
-	if (p->requires.Flags == NULL) continue;/* XXX can't happen */
 
-	j = tsi->tsi_reqx;
-	dp = printDepend( identifyDepend(p->requires.Flags[j]),
-		p->requires.N[j], p->requires.EVR[j], p->requires.Flags[j]);
+	if (requires->N == NULL) continue;	/* XXX can't happen */
+	if (requires->EVR == NULL) continue;	/* XXX can't happen */
+	if (requires->Flags == NULL) continue;/* XXX can't happen */
+
+	requires->i = tsi->tsi_reqx;	/* XXX hack */
+	dp = printDepend( identifyDepend(requires->Flags[requires->i]), requires);
 
 	/*
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	/*@-branchstate@*/
-	if (zap && !(p->requires.Flags[j] & RPMSENSE_PREREQ)) {
+	if (zap && !(requires->Flags[requires->i] & RPMSENSE_PREREQ)) {
 	    rpmMessage(RPMMESS_DEBUG,
 			_("removing %s-%s-%s \"%s\" from tsort relations.\n"),
 			p->name, p->version, p->release, dp);
@@ -1415,26 +1343,26 @@ zapRelation(availablePackage q, availablePackage p,
  * @param j		relation index
  * @return		0 always
  */
-static inline int addRelation( const rpmTransactionSet ts,
-		availablePackage p, unsigned char * selected, int j)
+static inline int addRelation(const rpmTransactionSet ts,
+		availablePackage p, unsigned char * selected,
+		rpmDepSet requires)
 	/*@modifies p, *selected @*/
 {
     availablePackage q;
     tsortInfo tsi;
     int matchNum;
 
-    if (!p->requires.N || !p->requires.EVR || !p->requires.Flags)
+    if (!requires->N || !requires->EVR || !requires->Flags)
 	return 0;
 
-    q = alSatisfiesDepend(ts->addedPackages, NULL, NULL,
-		p->requires.N[j], p->requires.EVR[j], p->requires.Flags[j]);
+    q = alSatisfiesDepend(ts->addedPackages, NULL, NULL, requires);
 
     /* Ordering depends only on added package relations. */
     if (q == NULL)
 	return 0;
 
     /* Avoid rpmlib feature dependencies. */
-    if (!strncmp(p->requires.N[j], "rpmlib(", sizeof("rpmlib(")-1))
+    if (!strncmp(requires->N[requires->i], "rpmlib(", sizeof("rpmlib(")-1))
 	return 0;
 
 #if defined(DEPENDENCY_WHITEOUT)
@@ -1459,7 +1387,7 @@ static inline int addRelation( const rpmTransactionSet ts,
     /*@-assignexpose@*/
     tsi->tsi_suc = p;
     /*@=assignexpose@*/
-    tsi->tsi_reqx = j;
+    tsi->tsi_reqx = requires->i;
     tsi->tsi_next = q->tsi.tsi_next;
     q->tsi.tsi_next = tsi;
     q->tsi.tsi_qcnt++;			/* bump q successor count */
@@ -1546,12 +1474,15 @@ int rpmdepOrder(rpmTransactionSet ts)
     /* Record all relations. */
     rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
     for (i = 0; i < npkgs; i++) {
+	rpmDepSet requires;
 	int matchNum;
 
 	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
 	    break;
 
-	if (p->requires.Count <= 0)
+	requires = alGetRequires(ts->addedPackages, i);
+
+	if (requires->Count <= 0)
 	    continue;
 
 	memset(selected, 0, sizeof(*selected) * npkgs);
@@ -1563,38 +1494,38 @@ int rpmdepOrder(rpmTransactionSet ts)
 	/* T2. Next "q <- p" relation. */
 
 	/* First, do pre-requisites. */
-	for (j = 0; j < p->requires.Count; j++) {
+	for (requires->i = 0; requires->i < requires->Count; requires->i++) {
 
-	    if (p->requires.Flags == NULL) /* XXX can't happen */
+	    if (requires->Flags == NULL) /* XXX can't happen */
 		/*@innercontinue@*/ continue;
 
 	    /* Skip if not %pre/%post requires or legacy prereq. */
 
-	    if (isErasePreReq(p->requires.Flags[j]) ||
-		!( isInstallPreReq(p->requires.Flags[j]) ||
-		   isLegacyPreReq(p->requires.Flags[j]) ))
+	    if (isErasePreReq(requires->Flags[requires->i]) ||
+		!( isInstallPreReq(requires->Flags[requires->i]) ||
+		   isLegacyPreReq(requires->Flags[requires->i]) ))
 		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, p, selected, j);
+	    (void) addRelation(ts, p, selected, requires);
 
 	}
 
 	/* Then do co-requisites. */
-	for (j = 0; j < p->requires.Count; j++) {
+	for (requires->i = 0; requires->i < requires->Count; requires->i++) {
 
-	    if (p->requires.Flags == NULL) /* XXX can't happen */
+	    if (requires->Flags == NULL) /* XXX can't happen */
 		/*@innercontinue@*/ continue;
 
 	    /* Skip if %pre/%post requires or legacy prereq. */
 
-	    if (isErasePreReq(p->requires.Flags[j]) ||
-		 ( isInstallPreReq(p->requires.Flags[j]) ||
-		   isLegacyPreReq(p->requires.Flags[j]) ))
+	    if (isErasePreReq(requires->Flags[requires->i]) ||
+		 ( isInstallPreReq(requires->Flags[requires->i]) ||
+		   isLegacyPreReq(requires->Flags[requires->i]) ))
 		/*@innercontinue@*/ continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, p, selected, j);
+	    (void) addRelation(ts, p, selected, requires);
 
 	}
     }
@@ -1727,7 +1658,7 @@ rescan:
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
-		dp = zapRelation(q, p, 1, &nzaps);
+		dp = zapRelation(q, p, &p->requires, 1, &nzaps);
 
 		/* Print next member of loop. */
 		sprintf(buf, "%s-%s-%s", p->name, p->version, p->release);
@@ -1890,27 +1821,48 @@ int rpmdepCheck(rpmTransactionSet ts,
      */
     for (i = 0; i < npkgs; i++)
     {
+	char * pkgNVR, * n, * v, * r;
+	rpmDepSet provides;
+	uint_32 multiLib;
+
 	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
 	    break;
 
-        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s-%s-%s\n" ,
-		p->name, p->version, p->release);
-	rc = checkPackageDeps(ts, ps, p->h, NULL, p->multiLib);
-	if (rc)
+	pkgNVR = alGetNVR(ts->addedPackages, i);
+	if (pkgNVR == NULL)	/* XXX can't happen */
+	    break;
+	multiLib = alGetMultiLib(ts->addedPackages, i);
+
+        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , pkgNVR);
+	h = alGetHeader(ts->addedPackages, i, 0);
+	rc = checkPackageDeps(ts, ps, h, NULL, multiLib);
+	h = headerFree(h);
+	if (rc) {
+	    pkgNVR = _free(pkgNVR);
 	    goto exit;
+	}
 
 	/* Adding: check name against conflicts matches. */
-	rc = checkDependentConflicts(ts, ps, p->name);
+
+	if ((r = strrchr(pkgNVR, '-')) != NULL)
+	    *r++ = '\0';
+	if ((v = strrchr(pkgNVR, '-')) != NULL)
+	    *v++ = '\0';
+	n = pkgNVR;
+
+	rc = checkDependentConflicts(ts, ps, n);
+	pkgNVR = _free(pkgNVR);
 	if (rc)
 	    goto exit;
 
-	if (p->provides.Count == 0 || p->provides.N == NULL)
+	provides = alGetProvides(ts->addedPackages, i);
+	if (provides->Count == 0 || provides->N == NULL)
 	    continue;
 
 	rc = 0;
-	for (j = 0; j < p->provides.Count; j++) {
+	for (provides->i = 0; provides->i < provides->Count; provides->i++) {
 	    /* Adding: check provides key against conflicts matches. */
-	    if (!checkDependentConflicts(ts, ps, p->provides.N[j]))
+	    if (!checkDependentConflicts(ts, ps, provides->N[provides->i]))
 		/*@innercontinue@*/ continue;
 	    rc = 1;
 	    /*@innerbreak@*/ break;
@@ -1924,12 +1876,14 @@ int rpmdepCheck(rpmTransactionSet ts,
      */
     /*@-branchstate@*/
     if (ts->numRemovedPackages > 0) {
+      rpmDepSet provides = memset(alloca(sizeof(*provides)), 0, sizeof(*provides));
       mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
       xx = rpmdbAppendIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages);
       while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	{   const char * name, * version, * release;
+
 	    xx = headerNVR(h, &name, &version, &release);
 	    rpmMessage(RPMMESS_DEBUG,  "========== --- %s-%s-%s\n" ,
 		name, version, release);
@@ -1941,26 +1895,20 @@ int rpmdepCheck(rpmTransactionSet ts,
 	}
 
 	{
-#ifdef	DYING
-	    const char ** provides;
-	    int providesCount;
-#else
-	    struct rpmDepSet_s provides;
-#endif
 	    rpmTagType pnt;
 
-	    if (hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides.N,
-				&provides.Count))
+	    if (hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides->N,
+				&provides->Count))
 	    {
 		rc = 0;
-		for (j = 0; j < provides.Count; j++) {
+		for (provides->i = 0; provides->i < provides->Count; provides->i++) {
 		    /* Erasing: check provides against requiredby matches. */
-		    if (!checkDependentPackages(ts, ps, provides.N[j]))
+		    if (!checkDependentPackages(ts, ps, provides->N[provides->i]))
 			/*@innercontinue@*/ continue;
 		    rc = 1;
 		    /*@innerbreak@*/ break;
 		}
-		provides.N = hfd(provides.N, pnt);
+		provides->N = hfd(provides->N, pnt);
 		if (rc)
 		    goto exit;
 	    }
