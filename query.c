@@ -1,4 +1,3 @@
-#include <alloca.h>
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -9,6 +8,10 @@
 #include <time.h>
 #include <sys/param.h>
 #include <unistd.h>
+
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
 
 #include "lib/messages.h"
 #include "rpmlib.h"

@@ -1,10 +1,13 @@
-#include <alloca.h>
 #include <fcntl.h>
 #include <pwd.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
 
 #include "ftp.h"
 #include "messages.h"

@@ -1,9 +1,12 @@
-#include <alloca.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/stat.h>	/* for mkdir(2) !?! */
 #include <unistd.h>
+
+#ifndef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 
 #include "messages.h"
 #include "rpmdb.h"
