@@ -6,8 +6,6 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <grp.h>
-#include <pwd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
@@ -903,56 +901,30 @@ static int setFileOwnerships(char * rootdir, char ** fileList,
 
 static int setFileOwner(char * file, char * owner, char * group, 
 			int_16 mode ) {
-    static char * lastOwner = NULL, * lastGroup = NULL;
-    static uid_t lastUID;
-    static gid_t lastGID;
-    uid_t uid = 0;
-    gid_t gid = 0;
-    struct passwd * pwent;
-    struct group * grent;
+    uid_t uid;
+    gid_t gid;
 
-    if (!strcmp(owner, "root"))
+    if ((uid = unameToUid(owner)) == -1) {
+	rpmError(RPMERR_NOUSER, "user %s does not exist - using root", owner);
 	uid = 0;
-    else if (lastOwner && !strcmp(lastOwner, owner))
-	uid = lastUID;
-    else {
-	pwent = getpwnam(owner);
-	if (!pwent) {
-	    rpmError(RPMERR_NOUSER, "user %s does not exist - using root", owner);
-	    uid = 0;
-	} else {
-	    uid = pwent->pw_uid;
-	    if (lastOwner) free(lastOwner);
-	    lastOwner = strdup(owner);
-	    lastUID = uid;
-	}
-    }
-
-    if (!strcmp(group, "root"))
-	gid = 0;
-    else if (lastGroup && !strcmp(lastGroup, group))
-	gid = lastGID;
-    else {
-	grent = getgrnam(group);
-	if (!grent) {
-	    rpmError(RPMERR_NOGROUP, "group %s does not exist - using root", 
-			group);
-	    gid = 0;
-	} else {
-	    gid = grent->gr_gid;
-	    if (lastGroup) free(lastGroup);
-	    lastGroup = strdup(group);
-	    lastGID = gid;
-	}
-    }
+	/* turn off the suid bit */
+	mode &= ~S_ISUID;
+    } 
 	
+    if ((gid = gnameToGid(group)) == -1) {
+	rpmError(RPMERR_NOUSER, "user %s does not exist - using root", group);
+	gid = 0;
+	/* turn off the sgid bit */
+	mode &= ~S_ISGID;
+    } 
+
     rpmMessage(RPMMESS_DEBUG, "%s owned by %s (%d), group %s (%d) mode %o\n",
 		file, owner, uid, group, gid, mode & 07777);
     if (chown(file, uid, gid)) {
 	rpmError(RPMERR_CHOWN, "cannot set owner and group for %s - %s",
 		file, strerror(errno));
 	/* screw with the permissions so it's not SUID and 0.0 */
-	chmod(file, 0644);
+	chmod(file, mode & ~S_ISUID & ~S_ISGID);
 	return 1;
     }
     /* Also set the mode according to what is stored in the header */
@@ -960,8 +932,8 @@ static int setFileOwner(char * file, char * owner, char * group,
 	if (chmod(file, mode & 07777)) {
 	    rpmError(RPMERR_CHOWN, "cannot change mode for %s - %s",
 		  file, strerror(errno));
-	    /* screw with the permissions so it's not SUID and 0.0 */
-	    chmod(file, 0644);
+	    /* try to screw with the permissions so it's not SUID and 0.0 */
+	    chmod(file, mode & ~S_ISUID & ~S_ISGID);
 	    return 1;
 	}
     }
