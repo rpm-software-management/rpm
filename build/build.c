@@ -1,7 +1,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #include "misc.h"
 #include "spec.h"
