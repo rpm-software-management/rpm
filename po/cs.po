@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-10 10:36-0500\n"
+"POT-Creation-Date: 1999-12-10 16:04-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -2970,7 +2970,7 @@ msgstr "OK"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "probíhá otevírání databázového re¾imu: 0%o\n"
 
-#: lib/rpmdb.c:157 lib/url.c:451
+#: lib/rpmdb.c:157 lib/url.c:449
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nelze otevøít %s: %s"
@@ -3054,16 +3054,16 @@ msgstr "odstraòuje se rejstøík souborù pro %s\n"
 msgid "package has no files\n"
 msgstr "balíèek neobsahuje soubory\n"
 
-#: lib/rpmdb.c:688
+#: lib/rpmdb.c:692
 msgid "cannot allocate space for database"
 msgstr "nelze alokovat prostor pro databázi"
 
-#: lib/rpmdb.c:747
+#: lib/rpmdb.c:751
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nelze èíst hlavièku u %d pro inovaci"
 
-#: lib/rpmdb.c:759
+#: lib/rpmdb.c:764
 msgid "header changed size!"
 msgstr "hlavièka zmìnila velikost!"
 
@@ -3164,67 +3164,67 @@ msgstr "chyba: nelze otevøít %s\n"
 msgid "Installing %s\n"
 msgstr "Probíhá instalace %s\n"
 
-#: lib/rpmio.c:763
+#: lib/rpmio.c:769
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:766
+#: lib/rpmio.c:772
 #, fuzzy
 msgid "Bad server response"
 msgstr "Chybná odezva serveru FTP"
 
-#: lib/rpmio.c:769
+#: lib/rpmio.c:775
 #, fuzzy
 msgid "Server IO error"
 msgstr "V/V chyba FTP"
 
-#: lib/rpmio.c:772
+#: lib/rpmio.c:778
 #, fuzzy
 msgid "Server timeout"
 msgstr "Promlka serveru FTP"
 
-#: lib/rpmio.c:775
+#: lib/rpmio.c:781
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Nelze vyhledat adresu hostitelského serveru FTP"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:784
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Nelze vyhledat název hostitelského serveru FTP"
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:787
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "K serveru FTP se nelze pøipojit"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:790
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Se serverem FTP nelze navázat datové spojení"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:793
 msgid "IO error to local file"
 msgstr "V/V chyba na místní soubor"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:796
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pøi nastavení vzdáleného serveru na pasivní re¾im"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:799
 msgid "File not found on server"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:802
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:800
+#: lib/rpmio.c:806
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neznámá nebo neèekaná chyba FTP"
 
-#: lib/rpmio.c:1323
+#: lib/rpmio.c:1329
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "probíhá pøihla¹ování na %s jako %s, h. %s\n"
@@ -3546,23 +3546,23 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:227
+#: lib/url.c:225
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Heslo pro %s@%s: "
 
-#: lib/url.c:252 lib/url.c:278
+#: lib/url.c:250 lib/url.c:276
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "chyba: ftpport musí být èíslo\n"
 
-#: lib/url.c:415
+#: lib/url.c:413
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "chyba: ftpport musí být èíslo\n"
 
 #. XXX Fstrerror
-#: lib/url.c:474
+#: lib/url.c:472
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s nelze vytvoøit\n"
