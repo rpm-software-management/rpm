@@ -1,4 +1,5 @@
-Makefile .depend
+Makefile
+.depend
 rpmlead
 dump
 rpmheader
