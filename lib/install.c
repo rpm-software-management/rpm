@@ -567,12 +567,14 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     
     args = alloca(sizeof(char *) * (fileCount + 10));
 
-    args[i++] = "cpio";
+    args[i++] = getVar(RPMVAR_CPIOBIN);
     args[i++] = "--extract";
     args[i++] = "--unconditional";
     args[i++] = "--preserve-modification-time";
     args[i++] = "--make-directories";
     args[i++] = "--quiet";
+
+    if (!args[0]) args[0] = "cpio";
 
     if (needSecondPipe)
 	args[i++] = "--verbose";
