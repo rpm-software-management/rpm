@@ -32,7 +32,7 @@ echo "
 *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
 *       cd rpm                                                             *
 *                                                                          *
-* Here's the rpm-4_2 branch, latest is rpm-4.2:                            *
+* Here's the rpm-4_2 branch, latest is rpm-4.2.1:                          *
 *       cvs up -r rpm-4_2                                                  *
 *                                                                          *
 * Here's the rpm-4_1 branch, latest is rpm-4.1.1:                          *
