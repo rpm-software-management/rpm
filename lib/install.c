@@ -80,7 +80,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		      notifyFunction notify, char * labelFormat) {
     int rc, isSource;
     char * name, * version, * release;
-    Header h, h2;
+    Header h;
     int fileCount, type;
     char ** fileList;
     char ** fileOwners, ** fileGroups, ** fileMd5s;
@@ -103,7 +103,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     dbIndexSet matches;
     int * oldVersions;
     int * intptr;
-    int_8 thisArch, pkgArch;
+    int_8 thisArch, * pkgArch;
 
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
@@ -132,8 +132,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
     /* make sure we're trying to install this on the proper architecture */
     thisArch = getArchNum();
-    getEntry(h, RPMTAG_ARCH, &type, &pkgArch, &fileCount);
-    if (thisArch != pkgArch) {
+    getEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &fileCount);
+    if (thisArch != *pkgArch) {
 	error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
 	      "architecture", name, version, release);
 	freeHeader(h);
