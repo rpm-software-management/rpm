@@ -28,4 +28,5 @@ stamp-h.in
 *.lcd
 *.lo
 *.swp
+sexp
 sexp-*.tar.gz

@@ -2,9 +2,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = sexp-sample-a sexp-sample-b sexp-sample-c
-
-EXTRA_PROGRAMS = 
+SUBDIRS=tests
 
 INCLUDES = -I.
 

@@ -22,4 +22,6 @@ fi
 dnl XXX lose rpm libs
 LIBS=
 
-AC_OUTPUT([Makefile])
+AC_CONFIG_FILES([Makefile tests/Makefile])
+
+AC_OUTPUT
