@@ -3,13 +3,19 @@
 #endif
 
 #include <errno.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include "md5.h"
+#include "messages.h"
 #include "rpmlib.h"
+
+static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
+			                 "/usr/X11R6/bin\nexport PATH\n";
 
 int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
     char ** fileList, ** md5List, ** linktoList;
@@ -124,6 +130,82 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 	headerGetEntry(h, RPMTAG_FILEGIDS, &type, (void **) &gidList, &count);
 	if (gidList[filenum] != sb.st_gid)
 	    *result |= RPMVERIFY_GROUP;
+    }
+
+    return 0;
+}
+
+int rpmVerifyScript(char * root, Header h, int err) {
+    int out, fd;
+    char * script;
+    char * fn;
+    char * tmpdir = rpmGetVar(RPMVAR_TMPPATH);
+    int status;
+
+    if (!headerGetEntry(h, RPMTAG_VERIFYSCRIPT, NULL, (void **) &script, 
+			NULL)) {
+	return 0;
+    }
+
+    if (rpmIsVerbose()) {
+	out = err;
+    } else {
+	out = open("/dev/null", O_APPEND);
+	if (out < 0) {
+	    out = err;
+	}
+    }
+
+    fn = alloca(strlen(tmpdir) + 20);
+    sprintf(fn, "%s/rpm-%d.vscript", tmpdir, getpid());
+
+    rpmMessage(RPMMESS_DEBUG, "verify script found - "
+		"running from file %s\n", fn);
+
+    fd = open(fn, O_CREAT | O_RDWR);
+    unlink(fn);
+    if (fd < 0) {
+	rpmError(RPMERR_SCRIPT, "error creating file for verify script");
+	return 1;
+    }
+    write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
+    write(fd, script, strlen(script));
+    lseek(fd, 0, SEEK_SET);
+
+    if (!fork()) {
+	dup2(fd, 0);
+	close(fd);
+
+	if (err != 2) dup2(err, 2);
+        if (out != 1) dup2(out, 1);
+
+	/* make sure we don't close stdin/stderr/stdout by mistake! */
+	if (err > 2) close (err);
+	if (out > 2 && out != err) close (out);
+
+	if (strcmp(root, "/")) {
+	    rpmMessage(RPMMESS_DEBUG, "performing chroot(%s)\n", root);
+	    chroot(root);
+	    chdir("/");
+	}
+
+	if (rpmIsDebug())
+	    execl("/bin/sh", "/bin/sh", "-x", "-s", NULL);
+	else
+	    execl("/bin/sh", "/bin/sh", "-s", NULL);
+	exit(-1);
+    }
+
+    close(out);
+    close(err);
+    close(fd);
+    if (!rpmIsVerbose()) close(out);
+
+    wait(&status);
+
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	rpmError(RPMERR_SCRIPT, "execution of verify script failed");
+	return 1;
     }
 
     return 0;

@@ -235,6 +235,7 @@ int rpmEnsureOlder(rpmdb db, char * name, char * newVersion,
 		char * newRelease, int dbOffset);
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
 int rpmVerifyFile(char * prefix, Header h, int filenum, int * result);
+int rpmVerifyScript(char * root, Header h, int err);
 int rpmdbRebuild(char * prefix);
 
 typedef struct rpmDependencyCheck * rpmDependencies;
