@@ -68,6 +68,10 @@ static int headerMatchesDepFlags(Header h, char * reqVersion, int reqFlags);
 struct availablePackage * alSatisfiesDepend(struct availableList * al, 
 					    char * reqName, char * reqVersion, 
 					    int reqFlags);
+static int checkDependentConflicts(rpmDependencies rpmdep, 
+			    struct problemsSet * psp, char * package);
+static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp, 
+			    char * package, dbIndexSet * matches);
 
 static void alCreate(struct availableList * al) {
     al->list = malloc(sizeof(*al->list) * 5);
@@ -307,6 +311,20 @@ int rpmdepCheck(rpmDependencies rpmdep,
 	    free(ps.problems);
 	    return 1;
 	}
+	if (checkDependentConflicts(rpmdep, &ps, p->name)) {
+	    free(ps.problems);
+	    return 1;
+	}
+
+	if (getEntry(h, RPMTAG_PROVIDES, &type, (void **) &provides, 
+		 &providesCount)) {
+	    for (j = 0; j < providesCount; j++) {
+		if (checkDependentConflicts(rpmdep, &ps, provides[j])) {
+		    free(ps.problems);
+		    return 1;
+		}
+	    }
+	}
     }
 
     /* now look at the removed packages and make sure they aren't critical */
@@ -402,35 +420,31 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 	}
     }
 
-    *suggestion = alSatisfiesDepend(&rpmdep->availablePackages, reqName, 
-				    reqVersion, reqFlags);
+    if (suggestion) 
+	*suggestion = alSatisfiesDepend(&rpmdep->availablePackages, reqName, 
+					reqVersion, reqFlags);
 
     return 1;
 }
 
-static int checkDependentPackages(rpmDependencies rpmdep, 
-			    struct problemsSet * psp, char * requires) {
-    dbIndexSet matches;
-    Header h;
+static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp, 
+			    char * package, dbIndexSet * matches) {
     int i;
+    Header h;
 
-    if (rpmdbFindByRequiredBy(rpmdep->db, requires, &matches))  {
-	return 0;
-    }
-
-    for (i = 0; i < matches.count; i++) {
-	if (bsearch(&matches.recs[i].recOffset, rpmdep->removedPackages, 
+    for (i = 0; i < matches->count; i++) {
+	if (bsearch(&matches->recs[i].recOffset, rpmdep->removedPackages, 
 		    rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
 	    continue;
 
-	h = rpmdbGetRecord(rpmdep->db, matches.recs[i].recOffset);
+	h = rpmdbGetRecord(rpmdep->db, matches->recs[i].recOffset);
 	if (!h) {
 	    error(RPMERR_DBCORRUPT, "cannot read header at %d for dependency "
 		  "check", rpmdep->removedPackages[i]);
 	    return 1;
 	}
 
-	if (checkPackageDeps(rpmdep, psp, h, requires)) {
+	if (checkPackageDeps(rpmdep, psp, h, package)) {
 	    freeHeader(h);
 	    return 1;
 	}
@@ -441,25 +455,69 @@ static int checkDependentPackages(rpmDependencies rpmdep,
     return 0;
 }
 
+static int checkDependentPackages(rpmDependencies rpmdep, 
+			    struct problemsSet * psp, char * package) {
+    dbIndexSet matches;
+    int rc;
+
+    if (rpmdbFindByRequiredBy(rpmdep->db, package, &matches))  {
+	return 0;
+    }
+
+    rc = checkPackageSet(rpmdep, psp, package, &matches);
+    freeDBIndexRecord(matches);
+
+    return rc;
+}
+
+static int checkDependentConflicts(rpmDependencies rpmdep, 
+			    struct problemsSet * psp, char * package) {
+    dbIndexSet matches;
+    int rc;
+
+    if (rpmdbFindByConflicts(rpmdep->db, package, &matches))  {
+	return 0;
+    }
+
+    rc = checkPackageSet(rpmdep, psp, package, &matches);
+    freeDBIndexRecord(matches);
+
+    return rc;
+}
+
 static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 			Header h, const char * requirement) {
     char ** requires, ** requiresVersion;
     char * name, * version, * release;
-    int requiresCount;
+    char ** conflicts, ** conflictsVersion;
+    int requiresCount = 0, conflictsCount;
     int type, count;
     int i, rc;
-    int * requireFlags;
+    int ourrc = 0;
+    int * requireFlags, * conflictsFlags;
     struct availablePackage * suggestion;
 
     if (!getEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requires, 
-	     &requiresCount)) return 0;
-    if (!getEntry(h, RPMTAG_REQUIREFLAGS, &type, (void **) &requireFlags, 
-	     &requiresCount)) return 0;
-    if (!getEntry(h, RPMTAG_REQUIREVERSION, &type, (void **) &requiresVersion, 
-	     &requiresCount)) return 0;
-    if (!requiresCount) return 0;
+	     &requiresCount)) {
+	requiresCount = 0;
+    } else {
+	getEntry(h, RPMTAG_REQUIREFLAGS, &type, (void **) &requireFlags, 
+		 &requiresCount);
+	getEntry(h, RPMTAG_REQUIREVERSION, &type, (void **) &requiresVersion, 
+		 &requiresCount);
+    }
 
-    for (i = 0; i < requiresCount; i++) {
+    if (!getEntry(h, RPMTAG_CONFLICTNAME, &type, (void **) &conflicts,
+	     &conflictsCount)) {
+	conflictsCount = 0;
+    } else {
+	getEntry(h, RPMTAG_CONFLICTFLAGS, &type, (void **) &conflictsFlags, 
+		 &conflictsCount);
+	getEntry(h, RPMTAG_CONFLICTVERSION, &type,(void **) &conflictsVersion, 
+		 &conflictsCount);
+    }
+
+    for (i = 0; i < requiresCount && !ourrc; i++) {
 	if (requirement && strcmp(requirement, requires[i])) continue;
 
 	rc = unsatisfiedDepend(rpmdep, requires[i], requiresVersion[i], 
@@ -491,18 +549,59 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 		psp->problems[psp->num].suggestedPackage = NULL;
 
 	    psp->num++;
-	} else if (rc) {
+	} else if (rc == 2) {
 	    /* something went wrong! */
-	    free(requiresVersion);
-	    free(requires);
-	    return 1;
+	    ourrc = 1;
 	}
     }
 
-    free(requiresVersion);
-    free(requires);
+    for (i = 0; i < conflictsCount && !ourrc; i++) {
+	if (requirement && strcmp(requirement, conflicts[i])) continue;
 
-    return 0;
+	rc = unsatisfiedDepend(rpmdep, conflicts[i], conflictsVersion[i], 
+			       conflictsFlags[i], NULL);
+
+	/* 1 == unsatisfied, 0 == satsisfied */
+	if (rc == 0) {
+	    getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
+	    getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
+	    getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
+
+	    message(MESS_DEBUG, "package %s conflicts: %s\n",
+		    name, conflicts[i]);
+	    
+	    if (psp->num == psp->alloced) {
+		psp->alloced += 5;
+		psp->problems = realloc(psp->problems, sizeof(*psp->problems) * 
+			    psp->alloced);
+	    }
+	    psp->problems[psp->num].byName = strdup(name);
+	    psp->problems[psp->num].byVersion = strdup(version);
+	    psp->problems[psp->num].byRelease = strdup(release);
+	    psp->problems[psp->num].needsName = strdup(conflicts[i]);
+	    psp->problems[psp->num].needsVersion = strdup(conflictsVersion[i]);
+	    psp->problems[psp->num].needsFlags = conflictsFlags[i];
+	    psp->problems[psp->num].sense = RPMDEP_SENSE_CONFLICTS;
+	    psp->problems[psp->num].suggestedPackage = NULL;
+
+	    psp->num++;
+	} else if (rc == 2) {
+	    /* something went wrong! */
+	    ourrc = 1;
+	}
+    }
+
+    if (conflictsCount) {
+	free(conflictsVersion);
+	free(conflicts);
+    }
+
+    if (requiresCount) {
+	free(requiresVersion);
+	free(requires);
+    }
+
+    return ourrc;
 }
 
 static int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
