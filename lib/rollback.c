@@ -11,7 +11,7 @@
 #include "debug.h"
 
 /*@access h@*/		/* compared with NULL */
-static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
     if (this)   free((void *)this);
     return NULL;
 }
@@ -132,7 +132,9 @@ void freeFi(TFI_t fi)
     fi->fgroup = headerFreeData(fi->fgroup, -1);
     fi->flangs = headerFreeData(fi->flangs, -1);
 
+#ifdef	HACK_ALERT	/* XXX something's fubar here. */
     fi->apath = _free(fi->apath);
+#endif
     fi->fuids = _free(fi->fuids);
     fi->fgids = _free(fi->fgids);
     fi->fmapflags = _free(fi->fmapflags);
@@ -179,6 +181,7 @@ void freeFi(TFI_t fi)
     case FSM_NOTIFY:	return "notify";
     case FSM_UNDO:	return "undo";
     case FSM_COMMIT:	return "commit";
+    case FSM_FINALIZE:	return "finalize";
     case FSM_DESTROY:	return "destroy";
     case FSM_VERIFY:	return "verify";
 

@@ -36,6 +36,7 @@ typedef enum fileStage_e {
     FSM_NOTIFY	=  _fi(22),
     FSM_DESTROY	=  _fi(23),
     FSM_VERIFY	=  _fi(24),
+    FSM_FINALIZE=  _fi(25),
 
     FSM_UNLINK	=  _fi(33),
     FSM_RENAME	=  _fi(34),

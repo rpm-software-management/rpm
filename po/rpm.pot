@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-30 17:59-0500\n"
+"POT-Creation-Date: 2001-02-01 15:13-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2185,90 +2185,103 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:394 lib/install.c:829
+#: lib/cpio.c:304
+msgid "========= Directories not explictly included in package:\n"
+msgstr ""
+
+#: lib/cpio.c:306
+#, c-format
+msgid "%9d %s\n"
+msgstr ""
+
+#: lib/cpio.c:309
+msgid "=========\n"
+msgstr ""
+
+#: lib/cpio.c:448 lib/install.c:829
 #, c-format
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/cpio.c:429
+#: lib/cpio.c:483
 #, c-format
 msgid "%s: cannot remove %s - directory not empty\n"
 msgstr ""
 
-#: lib/cpio.c:434
+#: lib/cpio.c:488
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:445
+#: lib/cpio.c:499
 #, c-format
 msgid "%s removal of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:460
+#: lib/cpio.c:514
 #, c-format
 msgid "%s: %s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:466
+#: lib/cpio.c:520
 #, c-format
 msgid "%s rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:829
+#: lib/cpio.c:888
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:903
+#: lib/cpio.c:1031
 #, c-format
 msgid " %8s %06o%3d (%4d,%4d)%10d %s %s\n"
 msgstr ""
 
-#: lib/cpio.c:912
+#: lib/cpio.c:1040
 #, c-format
 msgid "%-8s  %06o%3d (%4d,%4d)%10d %s %s\n"
 msgstr ""
 
-#: lib/cpio.c:1250
+#: lib/cpio.c:1459
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
 
-#: lib/cpio.c:2003
+#: lib/cpio.c:2207
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:2006
+#: lib/cpio.c:2210
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:2007
+#: lib/cpio.c:2211
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:2028
+#: lib/cpio.c:2232
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:2029
+#: lib/cpio.c:2233
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:2030
+#: lib/cpio.c:2234
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:2031
+#: lib/cpio.c:2235
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:2032
+#: lib/cpio.c:2236
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:2041
+#: lib/cpio.c:2245
 msgid " failed - "
 msgstr ""
 
