@@ -177,8 +177,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    continue;
 
 	/* XXX Never check source headers. */
+/*@-type @*/
 	if (p->isSource)
 	    continue;
+/*@=type @*/
 
 	if (tscolor) {
 	    if (arch == NULL || (parch = rpmteA(p)) == NULL)

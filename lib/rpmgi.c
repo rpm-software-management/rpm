@@ -17,7 +17,10 @@
 
 #include "debug.h"
 
+/*@access fnpyKey @*/
 /*@access rpmdbMatchIterator @*/
+/*@access rpmts @*/
+/*@access rpmps @*/
 
 /*@unchecked@*/
 int _rpmgi_debug = 0;
@@ -196,8 +199,7 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
  */
 /*@null@*/
 static rpmRC rpmgiWalkPathFilter(rpmgi gi)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@*/
 {
     FTSENT * fts = gi->fts;
     rpmRC rpmrc = RPMRC_NOTFOUND;
@@ -260,8 +262,10 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 
     if (rpmrc == RPMRC_OK) {
 	Header h = NULL;
-	if (!(gi->flags & RPMGI_NOHEADER))
-	    h = rpmgiReadHeader(gi, gi->fts->fts_path);
+	if (!(gi->flags & RPMGI_NOHEADER)) {
+	    if (gi->fts != NULL)	/* XXX can't happen */
+		h = rpmgiReadHeader(gi, gi->fts->fts_path);
+	}
 	if (h != NULL)
 	    gi->h = headerLink(h);
 	h = headerFree(h);
@@ -292,7 +296,9 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
 	if (argv != NULL) {
 	    while (argv[ac] != NULL)
 		ac++;
+/*@-nullstate@*/ /* XXX argv is not NULL */
 	    xx = argvAppend(&gi->argv, argv);
+/*@=nullstate@*/
 	}
 	gi->argc = ac;
 	return rpmrc;
@@ -317,7 +323,8 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
  * @returns		RPMRC_OK on success
  */
 static rpmRC rpmgiInitFilter(rpmgi gi)
-	/*@modifies gi @*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     rpmRC rpmrc = RPMRC_OK;
     ARGV_t av;
@@ -338,6 +345,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 	tag = RPMTAG_NAME;
 
 	/* Parse for "tag=pattern" args. */
+/*@-branchstate@*/
 	if ((ae = strchr(a, '=')) != NULL) {
 	    *ae++ = '\0';
 	    tag = tagValue(a);
@@ -347,6 +355,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 	    }
 	    pat = ae;
 	}
+/*@=branchstate@*/
 
 	if (!res) {
 if (_rpmgi_debug  < 0)
@@ -435,7 +444,9 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 
     gi->ts = rpmtsLink(ts, __FUNCTION__);
     gi->tag = tag;
+/*@-assignexpose@*/
     gi->keyp = keyp;
+/*@=assignexpose@*/
     gi->keylen = keylen;
 
     gi->flags = 0;
@@ -607,9 +618,8 @@ enditer:
 /*@=branchstate@*/
 
 	}
-	rpmpsFree(ps);
-	rpmpsFree(ts->probs);	/* XXX hackery */
-	ts->probs = NULL;
+	ps = rpmpsFree(ps);
+	ts->probs = rpmpsFree(ts->probs);	/* XXX hackery */
 
 	xx = rpmtsOrder(ts);
 

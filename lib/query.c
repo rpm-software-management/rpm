@@ -25,6 +25,8 @@
 
 #include "debug.h"
 
+/*@access rpmgi @*/
+
 /**
  */
 static void printFileInfo(char * te, const char * name,
@@ -361,6 +363,8 @@ void rpmDisplayQueryTags(FILE * fp)
 }
 
 static int rpmgiShowMatches(QVA_t qva, rpmts ts)
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+        /*@modifies qva, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     rpmgi gi = qva->qva_gi;
     int ec = 0;
@@ -370,7 +374,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	int rc;
 
 	/* XXX delayed spewage. */
-	if (gi->flags & RPMGI_TSADD)
+	if (gi != NULL && gi->flags & RPMGI_TSADD)
 	    continue;
 
 	h = rpmgiHeader(gi);
@@ -718,9 +722,9 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	rpmtsEmpty(ts);
 	break;
     default:
-	giFlags |= (RPMGI_NOGLOB|RPMGI_NOHEADER);
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0, giFlags);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
+		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
 	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
 	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));
 	    rpmtsEmpty(ts);

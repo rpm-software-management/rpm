@@ -38,6 +38,7 @@ struct rpmgi_s {
 /*@refcounted@*/
     rpmts ts;			/*!< Iterator transaction set. */
     int tag;			/*!< Iterator type. */
+/*@kept@*/ /*@relnull@*/
     const void * keyp;		/*!< Iterator key. */
     size_t keylen;		/*!< Iterator key length. */
 
@@ -61,7 +62,7 @@ struct rpmgi_s {
     int ftsOpts;
 /*@null@*/
     FTS * ftsp;
-/*@null@*/
+/*@relnull@*/
     FTSENT * fts;
 
 /*@refs@*/
@@ -128,7 +129,8 @@ rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
  * @return		new iterator
  */
 /*@null@*/
-rpmgi rpmgiNew(rpmts ts, int tag, /*@null@*/ const void * keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, int tag, /*@kept@*/ /*@null@*/ const void * keyp,
+		size_t keylen)
 	/*@globals internalState @*/
 	/*@modifies ts, internalState @*/;
 
@@ -178,7 +180,8 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
  */
 rpmRC rpmgiSetArgs(rpmgi gi, /*@null@*/ ARGV_t argv,
 		int ftsOpts, rpmgiFlags flags)
-	/*@modifies gi @*/;
+	/*@globals internalState @*/
+	/*@modifies gi, internalState @*/;
 
 #ifdef __cplusplus
 }
