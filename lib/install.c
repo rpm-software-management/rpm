@@ -18,7 +18,15 @@
 #include "rpmerr.h"
 #include "rpmlib.h"
 
-static int installArchive(char * prefix, int fd);
+enum instActions { CREATE, BACKUP, SAVE };
+
+struct fileToInstall {
+    char * fileName;
+    int size;
+} ;
+
+static int installArchive(char * prefix, int fd, struct fileToInstall * files,
+			  int fileCount, notifyFunction notify);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
 				   char * release, int flags);
 static int setFileOwnerships(char * prefix, char ** fileList, 
@@ -28,17 +36,28 @@ static int setFileOwner(char * prefix, char * file, char * owner,
 			char * group);
 static int createDirectories(char * prefix, char ** fileList, int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
+static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
+			         char ** fileMd5List, int fileCount, 
+			         enum instActions * instActions);
+static int fileCompare(const void * one, const void * two);
 
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, int test) {
+int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
+		      notifyFunction notify) {
     int rc, isSource;
     char * name, * version, * release;
     Header h;
     int fileCount, type;
     char ** fileList;
-    char ** fileOwners, ** fileGroups;
+    char ** fileOwners, ** fileGroups, ** fileMd5s;
+    uint_32 * fileFlagsList;
+    uint_32 * fileSizesList;
+    char * fileStatesList;
+    struct fileToInstall * files;
+    enum instActions * instActions;
+    int i;
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
@@ -48,25 +67,49 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, int test) {
     getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
     message(MESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
-		name, version, release, test);
+		name, version, release, flags & INSTALL_TEST);
 
     if (packageAlreadyInstalled(db, name, version, release, flags)) {
 	freeHeader(h);
 	return 2;
     }
+
+    fileList = NULL;
+    if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+		 &fileCount)) {
+
+	instActions = alloca(sizeof(enum instActions) * fileCount);
+	memset(instActions, CREATE, sizeof(instActions));
+
+	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
+	getEntry(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, 
+		 &fileCount);
+	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
+		 &fileCount);
+
+	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, 
+				   fileCount, instActions);
+
+	free(fileMd5s);
+	if (rc) {
+	    free(fileList);
+	    return 1;
+	}
+    }
     
-    if (test) {
+    if (flags & INSTALL_TEST) {
 	message(MESS_DEBUG, "stopping install as we're running --test\n");
+	free(fileList);
 	return 0;
     }
 
     message(MESS_DEBUG, "running preinstall script (if any)\n");
     if (runScript(prefix, h, RPMTAG_PREIN)) {
+	free(fileList);
 	return 2;
     }
 
-    if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
-		 &fileCount)) {
+    if (fileList) {
 
 	if (createDirectories(prefix, fileList, fileCount)) {
 	    freeHeader(h);
@@ -74,8 +117,17 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, int test) {
 	    return 2;
 	}
 
+	getEntry(h, RPMTAG_FILESIZES, &type, (void **) &fileSizesList, 
+		 &fileCount);
+
+	files = alloca(sizeof(struct fileToInstall) * fileCount);
+	for (i = 0; i < fileCount; i++) {
+	    files[i].fileName = fileList[i] + 1; /* +1 cuts off leading / */
+	    files[i].size = fileSizesList[i];
+	}
+
 	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(prefix, fd)) {
+	if (installArchive(prefix, fd, files, fileCount, notify)) {
 	    freeHeader(h);
 	    free(fileList);
 	    return 2;
@@ -115,43 +167,84 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, int test) {
 
 #define BLOCKSIZE 1024
 
-static int installArchive(char * prefix, int fd) {
+static int installArchive(char * prefix, int fd, struct fileToInstall * files,
+			  int fileCount, notifyFunction notify) {
     gzFile stream;
     char buf[BLOCKSIZE];
     pid_t child;
     int p[2];
+    int statusPipe[2];
     int bytesRead;
+    int bytes;
     int status;
     int cpioFailed = 0;
     void * oldhandler;
+    char * cpioBinary;
+    int needSecondPipe;
+    char line[1024];
+    int i;
+    unsigned long totalSize = 0;
+    unsigned long sizeInstalled = 0;
+    struct fileToInstall fileInstalled;
+    struct fileToInstall * file;
+    char * chptr;
 
     /* fd should be a gzipped cpio archive */
+
+    needSecondPipe = (notify != NULL);
     
     stream = gzdopen(fd, "r");
     pipe(p);
 
-    if (access("/bin/cpio",  X_OK))  {
-	error(RPMERR_CPIO, "/bin/cpio does not exist");
-	return 1;
+    if (needSecondPipe) {
+	pipe(statusPipe);
+	for (i = 0; i < fileCount; i++)
+	    totalSize += files[i].size;
+	qsort(files, fileCount, sizeof(struct fileToInstall), fileCompare);
     }
+
+    if (access("/bin/cpio",  X_OK))  {
+	if (access("/usr/bin/cpio",  X_OK))  {
+	    error(RPMERR_CPIO, "cpio cannot be found in /bin or /usr/sbin");
+	    return 1;
+	} else 
+	    cpioBinary = "/usr/bin/cpio";
+    } else
+	cpioBinary = "/bin/cpio";
 
     oldhandler = signal(SIGPIPE, SIG_IGN);
 
     child = fork();
     if (!child) {
+	chdir(prefix);
+
 	close(p[1]);   /* we don't need to write to it */
 	close(0);      /* stdin will come from the pipe instead */
 	dup2(p[0], 0);
 	close(p[0]);
 
-	chdir(prefix);
-	execl("/bin/cpio", "/bin/cpio", "--extract", "--verbose",
-	      "--unconditional", "--preserve-modification-time",
-	      "--make-directories", "--quiet", /*"-t",*/ NULL);
+	if (needSecondPipe) {
+	    close(statusPipe[0]);   /* we don't need to read from it*/
+	    close(2);      	    /* stderr will go to a pipe instead */
+	    dup2(statusPipe[1], 2);
+	    close(statusPipe[1]);
+	    execl(cpioBinary, cpioBinary, "--extract", "--verbose",
+		  "--unconditional", "--preserve-modification-time",
+		  "--make-directories", "--quiet", NULL);
+	} else {
+	    execl(cpioBinary, cpioBinary, "--extract", "--unconditional", 
+		  "--preserve-modification-time", "--make-directories", 
+		  "--quiet", NULL);
+	}
+
 	exit(-1);
     }
 
     close(p[0]);
+    if (needSecondPipe) {
+	close(statusPipe[1]);
+	fcntl(statusPipe[0], F_SETFL, O_NONBLOCK);
+    }
 
     do {
 	bytesRead = gzread(stream, buf, sizeof(buf));
@@ -159,10 +252,35 @@ static int installArchive(char * prefix, int fd) {
 	     cpioFailed = 1;
 	     kill(SIGTERM, child);
 	}
+
+	if (needSecondPipe) {
+	    bytes = read(statusPipe[0], line, sizeof(line));
+	    while (bytes != -1) {
+		fileInstalled.fileName = line;
+
+		while ((chptr = (strchr(fileInstalled.fileName, '\n')))) {
+		    *chptr = '\0';
+
+		    message(MESS_DEBUG, "file \"%s\" complete\n", line);
+
+		    file = bsearch(&fileInstalled, files, fileCount, 
+				   sizeof(struct fileToInstall), fileCompare);
+		    if (file) {
+			sizeInstalled += file->size;
+			notify(sizeInstalled, totalSize);
+		    }
+		 
+		    fileInstalled.fileName = chptr + 1;
+		}
+
+		bytes = read(statusPipe[0], line, sizeof(line));
+	    }
+	}
     } while (bytesRead);
 
     gzclose(stream);
     close(p[1]);
+    if (needSecondPipe) close(statusPipe[0]);
     signal(SIGPIPE, oldhandler);
     waitpid(child, &status, 0);
 
@@ -172,6 +290,8 @@ static int installArchive(char * prefix, int fd) {
 	error(RPMERR_CPIO, "unpacking of archive failed");
 	return 1;
     }
+
+    notify(totalSize, totalSize);
 
     return 0;
 }
@@ -391,4 +511,88 @@ static int mkdirIfNone(char * directory, mode_t perms) {
 	  strerror(errno));
 
     return errno;
+}
+
+/* return 0: okay, continue install */
+/* return 1: problem, halt install */
+
+static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
+			         char ** fileMd5List, int fileCount, 
+			         enum instActions * instActions) {
+    struct sharedFile * sharedList;
+    int sharedCount;
+    int i, type;
+    Header sech;
+    int secOffset = 0;
+    int secFileCount;
+    char ** secFileMd5List, ** secFileList;
+    char * secFileStatesList;
+    char * name, * version, * release;
+    int rc = 0;
+
+    if (findSharedFiles(db, 0, fileList, fileCount, &sharedList, 
+			&sharedCount)) {
+	return 1;
+    }
+    
+    for (i = 0; i < sharedCount; i++) {
+	if (secOffset == ignoreOffset) continue;
+
+	if (secOffset != sharedList[i].secRecOffset) {
+	    if (secOffset) {
+		free(secFileMd5List);
+		free(secFileList);
+	    }
+
+	    secOffset = sharedList[i].secRecOffset;
+	    sech = rpmdbGetRecord(db, secOffset);
+	    if (!sech) {
+		error(RPMERR_DBCORRUPT, "cannot read header at %d for "
+		      "uninstall", secOffset);
+		rc = 1;
+		break;
+	    }
+
+	    getEntry(sech, RPMTAG_NAME, &type, (void **) &name, 
+		     &secFileCount);
+	    getEntry(sech, RPMTAG_VERSION, &type, (void **) &version, 
+		     &secFileCount);
+	    getEntry(sech, RPMTAG_RELEASE, &type, (void **) &release, 
+		     &secFileCount);
+
+	    message(MESS_DEBUG, "package %s-%s-%s contain shared files\n", 
+		    name, version, release);
+
+	    if (!getEntry(sech, RPMTAG_FILENAMES, &type, 
+			  (void **) &secFileList, &secFileCount)) {
+		error(RPMERR_DBCORRUPT, "package %s contains no files\n",
+		      name);
+		freeHeader(sech);
+		rc = 1;
+		break;
+	    }
+
+	    getEntry(sech, RPMTAG_FILESTATES, &type, 
+		     (void **) &secFileStatesList, &secFileCount);
+	    getEntry(sech, RPMTAG_FILEMD5S, &type, 
+		     (void **) &secFileMd5List, &secFileCount);
+
+	    freeHeader(sech);
+	}
+
+    }
+
+    if (secOffset) {
+	free(secFileMd5List);
+	free(secFileList);
+    }
+
+    free(sharedList);
+
+    return rc;
+}
+
+static int fileCompare(const void * one, const void * two) {
+    return strcmp(((struct fileToInstall *) one)->fileName,
+		  ((struct fileToInstall *) two)->fileName);
 }
