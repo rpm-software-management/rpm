@@ -393,6 +393,8 @@ typedef enum rpmTag_e {
     RPMTAG_CACHEPKGPATH		= 1137,
     RPMTAG_CACHEPKGSIZE		= 1138,
     RPMTAG_CACHEPKGMTIME	= 1139,
+    RPMTAG_FILECOLOR		= 1140,
+    RPMTAG_FILECLASS		= 1141,
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/

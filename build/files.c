@@ -1759,7 +1759,6 @@ fprintf(stderr, "*** flp->flags |= 0x%x\n", multiLib);
  * Add directory (and all of its files) to the package manifest.
  * @param fl		package file tree walk data
  * @param diskURL	path to file
- * @param statp		file stat (possibly NULL)
  * @return		0 on success
  */
 static int recurseDir(FileList fl, const char * diskURL)

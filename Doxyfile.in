@@ -399,8 +399,6 @@ INPUT                  = \
 	@top_srcdir@/build/expression.c \
 	@top_srcdir@/build/files.c \
 	@top_srcdir@/build/misc.c \
-	@top_srcdir@/build/myftw.c \
-	@top_srcdir@/build/myftw.h \
 	@top_srcdir@/build/names.c \
 	@top_srcdir@/build/pack.c \
 	@top_srcdir@/build/parseBuildInstallClean.c \
