@@ -30,6 +30,9 @@ noinst_LIBRARIES = libebl.a libebl_pic.a \
 		   libebl_arm_pic.a
 noinst_PROGRAMS = $(noinst_LIBRARIES:_pic.a=.so)
 
+#euincludedir = $(includedir)/elfutils
+#euinclude_HEADERS = libebl.h elf-knowledge.h
+
 gen_SOURCES = eblopenbackend.c eblclosebackend.c eblstrtab.c \
 	      eblreloctypename.c eblsegmenttypename.c \
 	      eblsectiontypename.c eblmachineflagname.c \
@@ -160,7 +163,9 @@ uninstall: uninstall-am
 #	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libdir)/elfutils
 #	rmdir --ignore-fail-on-non-empty $(DESTDIR)$(includedir)/elfutils
 
-noinst_HEADERS = libeblP.h $(noinst_LIBRARIES:%_pic.a=%.h)
+noinst_HEADERS = libeblP.h $(noinst_LIBRARIES:%_pic.a=%.h) \
+	libebl.h elf-knowledge.h
+
 EXTRA_DIST = libebl.map $(noinst_LIBRARIES:%_pic.a=%.map) \
 	     $(foreach m,$(modules),$($(m)_SRCS))
 

@@ -23,8 +23,9 @@
 #include "libelfP.h"
 #include "common.h"
 
-
-#if !defined(ALLOW_ALIGNED)
+#if _STRING_ARCH_unaligned
+# define ALLOW_ALIGNED 1
+#else
 # define ALLOW_ALIGNED	0
 #endif
 
