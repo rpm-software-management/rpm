@@ -48,7 +48,7 @@ struct headerToken {
     int indexAlloced;
 
     int sorted;  
-    int usageCount;
+    /*@refs@*/int usageCount;
 };
 
 struct entryInfo {
@@ -61,7 +61,7 @@ struct entryInfo {
 
 struct indexEntry {
     struct entryInfo info;
-    void * data; 
+    /*@owned@*/ void * data; 
     int length;			/* Computable, but why bother? */
 };
 
@@ -105,9 +105,8 @@ struct sprintfToken {
     } u;
 };
 
-static void copyEntry(struct indexEntry * entry, 
-			int_32 *type, void **p, int_32 *c,
-			int minimizeMemory)
+static void copyEntry(struct indexEntry * entry, /*@out@*/int_32 *type,
+	/*@out@*/void **p, /*@out@*/int_32 *c, int minimizeMemory)
 {
     int i, tableSize;
     char ** ptrEntry;
@@ -117,7 +116,7 @@ static void copyEntry(struct indexEntry * entry,
 	*type = entry->info.type;
     if (c) 
 	*c = entry->info.count;
-    if (!p)
+    if (p == NULL)
 	return;
 
     /* Now look it up */
@@ -127,7 +126,7 @@ static void copyEntry(struct indexEntry * entry,
 	    *p = entry->data;
 	    break;
 	}
-	/* fallthrough */
+	/*@fallthrough@*/
       case RPM_STRING_ARRAY_TYPE:
       case RPM_I18NSTRING_TYPE:
 	i = entry->info.count;
@@ -149,10 +148,11 @@ static void copyEntry(struct indexEntry * entry,
 
       default:
 	*p = entry->data;
+	break;
     }
 }
 
-static int dataLength(int_32 type, void * p, int_32 count, int onDisk)
+static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 {
     int thisLen, length, i;
     char ** src, * chptr;
@@ -167,7 +167,8 @@ static int dataLength(int_32 type, void * p, int_32 count, int onDisk)
 	}
         /* This should not be allowed */
 	fprintf(stderr, _("grabData() RPM_STRING_TYPE count must be 1.\n"));
-	exit(1);
+	exit(EXIT_FAILURE);
+	/*@notreached@*/ break;
 
       case RPM_STRING_ARRAY_TYPE:
       case RPM_I18NSTRING_TYPE:
@@ -197,8 +198,10 @@ static int dataLength(int_32 type, void * p, int_32 count, int onDisk)
 	    length = typeSizes[type] * count;
 	else {
 	    fprintf(stderr, _("Data type %d not supported\n"), (int) type);
-	    exit(1);
+	    exit(EXIT_FAILURE);
+	    /*@notreached@*/
 	}
+	break;
     }
 
     return length;
@@ -221,13 +224,14 @@ HeaderIterator headerInitIterator(Header h)
 
     headerSort(h);
 
-    hi->h = h;
+    hi->h = headerLink(h);
     hi->next_index = 0;
     return hi;
 }
 
 void headerFreeIterator(HeaderIterator iter)
 {
+    headerFree(iter->h);
     free(iter);
 }
 
@@ -311,11 +315,12 @@ Header headerLoad(void *pv)
 {
     int_32 il;			/* index length, data length */
     char *p = pv;
-    char * dataStart;
+    const char * dataStart;
     struct entryInfo * pe;
     struct indexEntry * entry; 
     struct headerToken *h = malloc(sizeof(struct headerToken));
-    char * src, * dst;
+    const char * src;
+    char * dst;
     int i;
     int count;
 
@@ -373,13 +378,14 @@ Header headerLoad(void *pv)
 
 	  default:
 	    memcpy(dst, src, entry->length);
+	    break;
 	}
     }
 
     return h;
 }
 
-static void *doHeaderUnload(Header h, int * lengthPtr)
+static void *doHeaderUnload(Header h, /*@out@*/int * lengthPtr)
 {
     int i;
     int type, diff;
@@ -446,6 +452,7 @@ static void *doHeaderUnload(Header h, int * lengthPtr)
 	  default:
 	    memcpy(chptr, entry->data, entry->length);
 	    chptr += entry->length;
+	    break;
 	}
     }
    
@@ -554,23 +561,37 @@ Header headerRead(FD_t fd, int magicp)
     return h;
 }
 
-void headerGzWrite(FD_t fd, Header h, int magicp)
+int headerGzWrite(FD_t fd, Header h, int magicp)
 {
     void * p;
     int length;
     int_32 l;
+    ssize_t nb;
 
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	gzdWrite(fd, header_magic, sizeof(header_magic));
+	nb = gzdWrite(fd, header_magic, sizeof(header_magic));
+	if (nb != sizeof(header_magic)) {
+	    free(p);
+	    return 1;
+	}
 	l = htonl(0);
-	gzdWrite(fd, &l, sizeof(l));
+	nb = gzdWrite(fd, &l, sizeof(l));
+	if (nb != sizeof(l)) {
+	    free(p);
+	    return 1;
+	}
     }
     
-    gzdWrite(fd, p, length);
+    nb = gzdWrite(fd, p, length);
+    if (nb != length) {
+	free(p);
+	return 1;
+    }
 
     free(p);
+    return 0;
 }
 
 Header headerGzRead(FD_t fd, int magicp)
@@ -636,7 +657,8 @@ void headerDump(Header h, FILE *f, int flags,
     int i;
     struct indexEntry *p;
     const struct headerTagTableEntry * tage;
-    char *type, *tag;
+    const char *tag;
+    char *type;
 
     /* First write out the length of the index (count of index entries) */
     fprintf(f, "Entry count: %d\n", h->indexUsed);
@@ -705,18 +727,18 @@ void headerDump(Header h, FILE *f, int flags,
 		}
 		break;
 	    case RPM_BIN_TYPE:
-	      while (c > 0) {
-		  fprintf(f, "       Data: %.3d ", ct);
-		  while (c--) {
-		      fprintf(f, "%02x ", (unsigned) (*(int_8 *)dp & 0xff));
-		      ct++;
-		      dp += sizeof(int_8);
-		      if (! (ct % 8)) {
-			  break;
-		      }
-		  }
-		  fprintf(f, "\n");
-	      }
+		while (c > 0) {
+		    fprintf(f, "       Data: %.3d ", ct);
+		    while (c--) {
+			fprintf(f, "%02x ", (unsigned) (*(int_8 *)dp & 0xff));
+			ct++;
+			dp += sizeof(int_8);
+			if (! (ct % 8)) {
+			    break;
+			}
+		    }
+		    fprintf(f, "\n");
+		}
 		break;
 	    case RPM_CHAR_TYPE:
 		while (c--) {
@@ -724,7 +746,7 @@ void headerDump(Header h, FILE *f, int flags,
 		    fprintf(f, "       Data: %.3d 0x%2x %c (%d)\n", ct++,
 			    (unsigned)(ch & 0xff),
 			    (isprint(ch) ? ch : ' '),
-			    (char) *((char *) dp));
+			    (int) *((char *) dp));
 		    dp += sizeof(char);
 		}
 		break;
@@ -740,7 +762,8 @@ void headerDump(Header h, FILE *f, int flags,
 	    default:
 		fprintf(stderr, _("Data type %d not supprted\n"), 
 			(int) p->info.type);
-		exit(1);
+		exit(EXIT_FAILURE);
+		/*@notreached@*/ break;
 	    }
 	}
 	p++;
@@ -921,7 +944,7 @@ static char *headerFindI18NString(Header h, struct indexEntry *entry)
     return entry->data;
 }
 
-static int intGetEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c,
+static int intGetEntry(Header h, int_32 tag, /*@out@*/int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c,
 		       int minMem)
 {
     struct indexEntry * entry;
@@ -1029,10 +1052,11 @@ unsigned int headerSizeof(Header h, int magicp)
     return size;
 }
 
-static void copyData(int_32 type, void * dstPtr, void * srcPtr, int_32 c, 
+static void copyData(int_32 type, /*@out@*/void * dstPtr, const void * srcPtr, int_32 c, 
 			int dataLength)
 {
-    char ** src, * dst;
+    const char ** src;
+    char * dst;
     int i, len;
 
     switch (type) {
@@ -1040,7 +1064,7 @@ static void copyData(int_32 type, void * dstPtr, void * srcPtr, int_32 c,
       case RPM_I18NSTRING_TYPE:
 	/* Otherwise, p is char** */
 	i = c;
-	src = (char **) srcPtr;
+	src = (const char **) srcPtr;
 	dst = dstPtr;
 	while (i--) {
 	    len = *src ? strlen(*src) + 1 : 0;
@@ -1052,10 +1076,11 @@ static void copyData(int_32 type, void * dstPtr, void * srcPtr, int_32 c,
 
       default:
 	memcpy(dstPtr, srcPtr, dataLength);
+	break;
     }
 }
 
-static void * grabData(int_32 type, void * p, int_32 c, int * lengthPtr)
+static void * grabData(int_32 type, /*@out@*/const void * p, int_32 c, int * lengthPtr)
 {
     int length;
     void * data;
@@ -1075,7 +1100,7 @@ static void * grabData(int_32 type, void * p, int_32 c, int * lengthPtr)
 /*                                                                  */
 /********************************************************************/
 
-int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
+int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
 {
     struct indexEntry *entry;
 
@@ -1083,7 +1108,8 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 
     if (c <= 0) {
 	fprintf(stderr, _("Bad count for headerAddEntry(): %d\n"), (int) c);
-	exit(1);
+	exit(EXIT_FAILURE);
+	/*@notreached@*/
     }
 
     /* Allocate more index space if necessary */
@@ -1346,7 +1372,7 @@ static char escapedChar(const char ch)
     }
 }
 
-static void freeFormat(struct sprintfToken * format, int num)
+static void freeFormat(/*@only@*/struct sprintfToken * format, int num)
 {
     int i;
 
@@ -1365,8 +1391,8 @@ static void freeFormat(struct sprintfToken * format, int num)
 
 static void findTag(char * name, const struct headerTagTableEntry * tags, 
 		    const struct headerSprintfExtension * extensions,
-		    const struct headerTagTableEntry ** tagMatch,
-		    const struct headerSprintfExtension ** extMatch)
+		    /*@out@*/const struct headerTagTableEntry ** tagMatch,
+		    /*@out@*/const struct headerSprintfExtension ** extMatch)
 {
     const struct headerTagTableEntry * entry;
     const struct headerSprintfExtension * ext;
@@ -1412,14 +1438,14 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
 
 /* forward ref */
 static int parseExpression(struct sprintfToken * token, char * str, 
-		           const struct headerTagTableEntry * tags, 
-		           const struct headerSprintfExtension * extensions,
-		           char ** endPtr, char ** error);
+	const struct headerTagTableEntry * tags, 
+	const struct headerSprintfExtension * extensions,
+	/*@out@*/char ** endPtr, /*@out@*/const char ** error);
 
 static int parseFormat(char * str, const struct headerTagTableEntry * tags,
-		       const struct headerSprintfExtension * extensions,
-		       struct sprintfToken ** formatPtr, int * numTokensPtr,
-		       char ** endPtr, int state, char ** error)
+	const struct headerSprintfExtension * extensions,
+	/*@out@*/struct sprintfToken ** formatPtr, /*@out@*/int * numTokensPtr,
+	/*@out@*/char ** endPtr, int state, /*@out@*/const char ** error)
 {
     char * chptr, * start, * next, * dst;
     struct sprintfToken * format;
@@ -1613,6 +1639,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    } else {
 		*dst++ = *start++;
 	    }
+	    break;
 	}
     }
 
@@ -1631,9 +1658,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 }
 
 static int parseExpression(struct sprintfToken * token, char * str, 
-		           const struct headerTagTableEntry * tags, 
-		           const struct headerSprintfExtension * extensions,
-		           char ** endPtr, char ** error)
+	const struct headerTagTableEntry * tags, 
+	const struct headerSprintfExtension * extensions,
+	/*@out@*/char ** endPtr, /*@out@*/const char ** error)
 {
     char * chptr, * end;
     const struct headerTagTableEntry * tag;
@@ -1728,8 +1755,8 @@ static int parseExpression(struct sprintfToken * token, char * str,
     return 0;
 }
 
-static int getExtension(Header h, headerTagTagFunction fn, int_32 * typeptr,
-			void ** data, int_32 * countptr, 
+static int getExtension(Header h, headerTagTagFunction fn, /*@out@*/int_32 * typeptr,
+			/*@out@*/void ** data, /*@out@*/int_32 * countptr, 
 			struct extensionCache * ext)
 {
     if (!ext->avail) {
@@ -1867,6 +1894,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
       default:
 	val = malloc(20);
 	strcpy(val, _("(unknown type)"));
+	break;
     }
 
     return val;
@@ -2003,7 +2031,7 @@ static struct extensionCache * allocateExtensionCache(
 }
 
 static void freeExtensionCache(const struct headerSprintfExtension * extensions,
-		        struct extensionCache * cache)
+		        /*@only@*/struct extensionCache * cache)
 {
     const struct headerSprintfExtension * ext = extensions;
     int i = 0;
@@ -2024,7 +2052,7 @@ static void freeExtensionCache(const struct headerSprintfExtension * extensions,
 char * headerSprintf(Header h, const char * origFmt, 
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extensions,
-		     char ** error)
+		     const char ** error)
 {
     char * fmtString;
     struct sprintfToken * format;
@@ -2076,7 +2104,7 @@ char * headerSprintf(Header h, const char * origFmt,
 }
 
 static char * octalFormat(int_32 type, const void * data, 
-		          char * formatPrefix, int padding, int element)
+		char * formatPrefix, int padding, /*@unused@*/int element)
 {
     char * val;
 
@@ -2093,7 +2121,7 @@ static char * octalFormat(int_32 type, const void * data,
 }
 
 static char * hexFormat(int_32 type, const void * data, 
-		          char * formatPrefix, int padding, int element)
+		char * formatPrefix, int padding, /*@unused@*/int element)
 {
     char * val;
 
@@ -2110,8 +2138,8 @@ static char * hexFormat(int_32 type, const void * data,
 }
 
 static char * realDateFormat(int_32 type, const void * data, 
-			     char * formatPrefix, int padding, int element,
-			     char * strftimeFormat)
+		char * formatPrefix, int padding, /*@unused@*/int element,
+		char * strftimeFormat)
 {
     char * val;
     struct tm * tstruct;
@@ -2149,7 +2177,7 @@ static char * dayFormat(int_32 type, const void * data,
 }
 
 static char * shescapeFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element)
+		char * formatPrefix, int padding, /*@unused@*/int element)
 {
     char * result, * dst, * src, * buf;
 

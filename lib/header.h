@@ -102,7 +102,7 @@ char * headerSprintf(Header h, const char * fmt,
    exceptions noted below). While you are allowed to add i18n string
    arrays through this function, you probably don't mean to. See
    headerAddI18NString() instead */
-int headerAddEntry(Header h, int_32 tag, int_32 type, /*@out@*/void *p, int_32 c);
+int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c);
 /* if there are multiple entries with this tag, the first one gets replaced */
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
