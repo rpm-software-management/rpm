@@ -744,6 +744,7 @@ static int read_line(FILE *f, char *line)
     static struct read_level_entry *rl;
     int gotline;
     char *r;
+    char *firstChar;
 
     do {
         gotline = 0;
@@ -756,21 +757,25 @@ static int read_line(FILE *f, char *line)
 	        return 0;
 	    }
 	}
-	if ((! strncmp("%ifarch", line, 7)) ||
-	    (! strncmp("%ifnarch", line, 8))) {
+	firstChar = line;
+	while (*firstChar && isspace(*firstChar)) {
+	    firstChar++;
+	}
+	if ((! strncmp("%ifarch", firstChar, 7)) ||
+	    (! strncmp("%ifnarch", firstChar, 8))) {
 	    expandMacros(line);
 	    rl = malloc(sizeof(struct read_level_entry));
 	    rl->next = read_level;
 	    rl->reading = read_level->reading && match_arch(line);
 	    read_level = rl;
-	} else if ((! strncmp("%ifos", line, 5)) ||
-		   (! strncmp("%ifnos", line, 6))) {
+	} else if ((! strncmp("%ifos", firstChar, 5)) ||
+		   (! strncmp("%ifnos", firstChar, 6))) {
 	    expandMacros(line);
 	    rl = malloc(sizeof(struct read_level_entry));
 	    rl->next = read_level;
 	    rl->reading = read_level->reading && match_os(line);
 	    read_level = rl;
-	} else if (! strncmp("%else", line, 5)) {
+	} else if (! strncmp("%else", firstChar, 5)) {
 	    expandMacros(line);
 	    if (! read_level->next) {
 	        /* Got an else with no %if ! */
@@ -779,7 +784,7 @@ static int read_line(FILE *f, char *line)
 	    }
 	    read_level->reading =
 	        read_level->next->reading && ! read_level->reading;
-	} else if (! strncmp("%endif", line, 6)) {
+	} else if (! strncmp("%endif", firstChar, 6)) {
 	    expandMacros(line);
 	    if (! read_level->next) {
 		rpmError(RPMERR_UNMATCHEDIF, "Got a %%endif with no if");
@@ -843,6 +848,8 @@ struct preamble_line {
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
     {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
     {RPMTAG_BUILDROOT,     0, "buildroot"},
+    {RPMTAG_BUILDARCH,     0, "buildarch"},
+    {RPMTAG_BUILDOS,       0, "buildos"},
     {RPMTAG_AUTOREQPROV,   0, "autoreqprov"},
     {0, 0, 0}
 };
@@ -1301,6 +1308,12 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		  case RPMTAG_SERIAL:
 		    serial = atoi(s);
 		    headerAddEntry(cur_package->header, tag, RPM_INT32_TYPE, &serial, 1);
+		    break;
+		  case RPMTAG_BUILDARCH:
+		    setArch(s, 1);
+		    break;
+		  case RPMTAG_BUILDOS:
+		    setOs(s, 1);
 		    break;
 		  case RPMTAG_DESCRIPTION:
 		    /* Special case -- need to handle backslash */
