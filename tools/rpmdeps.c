@@ -87,6 +87,14 @@ int i;
 
     xx = argvSort(av, NULL);
 
+    wid = 1;
+    for (i = 0; i < ac; i++) {
+	size_t nw;
+	nw = strlen(av[i]);
+	if (nw > wid)
+	    wid = nw;
+    }
+
     /* Output of file(1) in sb_stdout. */
     sb_stdout = newStringBuf();
     fm->magicfile = default_magicfile;
@@ -99,6 +107,9 @@ int i;
 	*fm->obp = '\0';
 	fm->nob = sizeof(fm->obuf);
 	xx = fmagicProcess(fm, av[i], wid);
+
+	rpmMessage(RPMMESS_DEBUG, "%s\n", fm->obuf);
+
 	appendLineStringBuf(sb_stdout, fm->obuf);
     }
 
@@ -125,6 +136,7 @@ rpmfcPrint(buf, fc, NULL);
     fc = rpmfcFree(fc);
 
     xav = argvFree(xav);
+    ec = 0;
 
 exit:
     optCon = rpmcliFini(optCon);

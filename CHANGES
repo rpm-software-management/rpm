@@ -27,6 +27,7 @@
 	- fix: option conflict error message (#77373).
 	- add AC_SYS_LARGFILE throughout.
 	- statically link rpmdeps against (internal) libfmagic.
+	- use rpmdeps rather than find-{requires,provides}.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

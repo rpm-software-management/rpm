@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.11
+Release: 0.12
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -483,6 +483,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Nov 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.12
+- use rpmdeps rather than find-{requires,provides}.
+
 * Tue Nov 19 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.11
 - fix: option conflict error message (#77373).
 - add AC_SYS_LARGFILE throughout.

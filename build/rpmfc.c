@@ -51,7 +51,7 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
         /*@globals fileSystem, internalState@*/
         /*@modifies fileSystem, internalState@*/
 {
-    int progPID;
+    pid_t child, reaped;
     int toProg[2];
     int fromProg[2];
     int status;
@@ -68,7 +68,7 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     fromProg[0] = fromProg[1] = 0;
     (void) pipe(fromProg);
     
-    if (!(progPID = fork())) {
+    if (!(child = fork())) {
 	(void) close(toProg[1]);
 	(void) close(fromProg[0]);
 	
@@ -82,6 +82,9 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
 	    (void) chdir(dir);
 	}
 	
+	rpmMessage(RPMMESS_DEBUG, _("\texecv(%s) pid %d\n"),
+                        argv[0], (unsigned)getpid());
+
 	unsetenv("MALLOC_CHECK_");
 	(void) execvp(argv[0], (char *const *)argv);
 	/* XXX this error message is probably not seen. */
@@ -89,7 +92,7 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
 		argv[0], strerror(errno));
 	_exit(RPMERR_EXEC);
     }
-    if (progPID < 0) {
+    if (child < 0) {
 	rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"),
 		argv[0], strerror(errno));
 	return NULL;
@@ -172,7 +175,10 @@ top:
     /*@=type@*/
 
     /* Collect status from prog */
-    (void)waitpid(progPID, &status, 0);
+    reaped = waitpid(child, &status, 0);
+    rpmMessage(RPMMESS_DEBUG, _("\twaitpid(%d) rc %d status %x\n"),
+        (unsigned)child, (unsigned)reaped, status);
+
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	rpmError(RPMERR_EXEC, _("%s failed\n"), argv[0]);
 	return NULL;
