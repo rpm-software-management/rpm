@@ -210,7 +210,7 @@ static int mapNextIterator(void * this) {
 	if (!((i = iter->i) < fi->fc))
 	    return -1;
 	iter->i++;
-    } while (fi->actions && XFA_SKIPPING(fi->actions[i]));
+    } while (0);
 
     iter->isave = i;
 
@@ -902,6 +902,7 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    break;
 
 	case FA_SKIPNETSHARED:
+if (_fsm_debug)
 fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
 	    if (fi->type == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
@@ -1351,16 +1352,13 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    }
 
 	    /* Read next header from payload. */
-	    rc = fsmStage(fsm, FSM_POS);
-	    if (!rc)
-		rc = fsmStage(fsm, FSM_NEXT);
+	    rc = fsmStage(fsm, FSM_NEXT);
 	}
+	if (rc) break;
 
 	/* Generate file path. */
-	if (!rc)
-	    rc = fsmMapPath(fsm);
-	if (rc)
-	    break;
+	rc = fsmMapPath(fsm);
+	if (rc) break;
 
 	/* Perform lstat/stat for disk file. */
 	rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
@@ -1373,12 +1371,14 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    fsm->exists = 1;
 	}
 	fsm->diskchecked = 1;
+	if (rc) break;
 
 	/* On build, the disk file stat is what's remapped. */
 	if (fsm->goal == FSM_BUILD)
 	    *st = *ost;			/* structure assignment */
 
-	(void) fsmMapAttrs(fsm);
+	rc = fsmMapAttrs(fsm);
+	if (rc) break;
 
 	fsm->postpone = XFA_SKIPPING(fsm->action);
 	if (fsm->goal == FSM_INSTALL || fsm->goal == FSM_BUILD) {
@@ -1502,9 +1502,13 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	}
 	break;
     case FSM_PROCESS:
+	if (fsm->postpone) {
+	    if (fsm->goal == FSM_INSTALL)
+		rc = fsmStage(fsm, FSM_EAT);
+	    break;
+	}
+
 	if (fsm->goal == FSM_BUILD) {
-	    if (fsm->postpone)
-		break;
 	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
 		struct hardLink * li, * prev;
 		rc = writeLinkedFile(fsm);
@@ -1527,12 +1531,6 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	if (fsm->goal != FSM_INSTALL)
 	    break;
-
-	(void) fsmStage(fsm, FSM_POS);
-	if (fsm->postpone) {
-	    (void) fsmStage(fsm, FSM_EAT);
-	    break;
-	}
 
 	if (S_ISREG(st->st_mode)) {
 	    const char * path = fsm->path;
@@ -1617,7 +1615,9 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	}
 	break;
     case FSM_UNDO:
-	if (fsm->goal == FSM_INSTALL && !fsm->postpone) {
+	if (fsm->postpone)
+	    break;
+	if (fsm->goal == FSM_INSTALL) {
 	    (void) fsmStage(fsm,
 		(S_ISDIR(st->st_mode) ? FSM_RMDIR : FSM_UNLINK));
 
@@ -1631,16 +1631,13 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	    *fsm->failedFile = xstrdup(fsm->path);
 	break;
     case FSM_FINI:
-	if (fsm->goal == FSM_INSTALL) {
-	    if (!fsm->postpone && fsm->commit) {
-		if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
-		    rc = fsmCommitLinks(fsm);
-		} else {
-		    rc = fsmStage(fsm, FSM_COMMIT);
-		}
-	    }
+	if (!fsm->postpone) {
+	    if (fsm->goal == FSM_INSTALL && fsm->commit)
+		rc = ((!S_ISDIR(st->st_mode) && st->st_nlink > 1)
+			? fsmCommitLinks(fsm) : fsmStage(fsm, FSM_COMMIT));
 	}
 	fsm->path = _free(fsm->path);
+	fsm->opath = _free(fsm->opath);
 	memset(st, 0, sizeof(*st));
 	memset(ost, 0, sizeof(*ost));
 	break;
@@ -1769,7 +1766,7 @@ opath = _free(opath);
     case FSM_MKDIR:
 	rc = Mkdir(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%o) %s\n", cur,
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
@@ -1802,7 +1799,7 @@ opath = _free(opath);
     case FSM_CHMOD:
 	rc = chmod(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%o) %s\n", cur,
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
@@ -1836,7 +1833,7 @@ opath = _free(opath);
     case FSM_MKFIFO:
 	rc = mkfifo(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%o) %s\n", cur,
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
@@ -1888,6 +1885,8 @@ opath = _free(opath);
 	    fsm->path = _free(fsm->path);
 	    rc = CPIOERR_HDR_TRAILER;
 	}
+	if (!rc)
+	    rc = fsmStage(fsm, FSM_POS);
 	break;
     case FSM_EAT:
 	for (left = st->st_size; left > 0; left -= fsm->rdnb) {
@@ -1916,10 +1915,12 @@ opath = _free(opath);
 	rc = cpioTrailerWrite(fsm);
 	break;
     case FSM_HREAD:
-	rc = cpioHeaderRead(fsm, st);	/* Read next payload header. */
+	rc = fsmStage(fsm, FSM_POS);
+	if (!rc)
+	    rc = cpioHeaderRead(fsm, st);	/* Read next payload header. */
 	break;
     case FSM_HWRITE:
-	rc = cpioHeaderWrite(fsm, st);	/* Write next payload header. */
+	rc = cpioHeaderWrite(fsm, st);		/* Write next payload header. */
 	break;
     case FSM_DREAD:
 	fsm->rdnb = Fread(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->wrlen, fsm->cfd);

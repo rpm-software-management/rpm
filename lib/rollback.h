@@ -64,7 +64,7 @@ typedef enum fileStage_e {
     FSM_CHROOT	=  _fs(48),
 
     FSM_NEXT	=  _fd(65),
-    FSM_EAT	=  _fi(66),
+    FSM_EAT	=  _fd(66),
     FSM_POS	=  _fd(67),
     FSM_PAD	=  _fd(68),
     FSM_TRAILER	=  _fd(69),
