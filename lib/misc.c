@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <sys/utsname.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "misc.h"
 
@@ -119,13 +120,25 @@ static void init_arch_os(void)
     } else if (!strcmp(un.machine, "alpha")) {
 	archnum = 2;
 	archname = "axp";
-    } else if (!strcmp(un.machine, "sparc")) {
-       archnum = 3;
-       archname = "sparc";
+    } else if ((!strcmp(un.machine, "sparc")) ||
+	       (!strncmp(un.machine, "sun4", 4))) {
+	archnum = 3;
+	archname = "sparc";
+    } else if (!strcmp(un.machine, "mips")) {
+	/* This is just a place holder for MIPS */
+       archnum = 4;
+       archname = "mips";
     } else if ((!strcmp(un.machine, "osfmach3_ppc")) ||
 	       (!strcmp(un.machine, "ppc"))) {
        archnum = 5;
        archname = "ppc";
+    } else if ((!strncmp(un.machine, "68000", 5))) {
+	/* This is just a place holder for 68k */
+	archnum = 6;
+	archname = "68k";
+    } else if ((!strncmp(un.machine, "IP", 2))) {
+	archnum = 7;
+	archname = "sgi";
     } else {
 	/* unknown arch */
 	fprintf(stderr, "Unknown arch: %s\n", un.machine);
@@ -136,6 +149,17 @@ static void init_arch_os(void)
     if (!strcmp(un.sysname, "Linux")) {
 	osnum = 1;
 	osname = "Linux";
+    } else if ((!strcmp(un.sysname, "IRIX"))) {
+	osnum = 2;
+	osname = "Irix";
+    } else if ((!strcmp(un.sysname, "SunOS")) &&
+	       (!strncmp(un.release, "5.", 2))) {
+	osnum = 3;
+	osname = "Solaris";
+    } else if ((!strcmp(un.sysname, "SunOS")) &&
+	       (!strncmp(un.release, "4.", 2))) {
+	osnum = 4;
+	osname = "SunOS";
     } else {
 	/* unknown os */
 	fprintf(stderr, "Unknown OS: %s\n", un.sysname);
