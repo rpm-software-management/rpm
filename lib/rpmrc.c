@@ -72,6 +72,7 @@ static struct archosEquivInfo * archosEquivSearch(
 struct option optionTable[] = {
     { "builddir",		RPMVAR_BUILDDIR,		0 },
     { "buildroot",              RPMVAR_BUILDROOT,               0 },
+    { "cpiobin",                RPMVAR_CPIOBIN,                 0 },
     { "dbpath",			RPMVAR_DBPATH,			0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0 },
     { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0 },
