@@ -774,18 +774,21 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
-	count = rpmdbGetIteratorCount(mi);
-	if (count <= 0) {
+	if (mi == NULL) {
 	    rpmMessage(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
-	    numFailed++;
-	} else if (!(count == 1 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES))) {
-	    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
-			*arg);
 	    numFailed++;
 	} else {
 	    Header h;	/* XXX iterator owns the reference */
+	    count = 0;
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
+
+		if (!(count++ == 0 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES))) {
+		    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
+			*arg);
+		    numFailed++;
+		    break;
+		}
 		if (recOffset) {
 		    (void) rpmtsAddEraseElement(ts, h, recOffset);
 		    numPackages++;

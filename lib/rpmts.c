@@ -185,15 +185,113 @@ int rpmtsVerifyDB(rpmts ts)
     return rpmdbVerify(ts->rootDir);
 }
 
+static int isArch(const char * arch)
+	/*@*/
+{
+    const char ** av;
+    static const char *arches[] = {
+	"i386", "i486", "i586", "i686", "athlon", "x86_64",
+	"alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
+	"sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv9",
+	"sparc64", "sun4u",
+	"mips", "mipsel", "IP",
+	"ppc", "ppciseries", "ppcpseries",
+	"ppc64", "ppc64iseries", "ppc64pseries",
+	"m68k",
+	"rs6000",
+	"ia64",
+	"armv3l", "armv4b", "armv4l",
+	"s390", "i370", "s390x",
+	"sh", "xtensa",
+	"noarch",
+	NULL,
+    };
+
+    for (av = arches; *av != NULL; av++) {
+	if (!strcmp(arch, *av))
+	    return 1;
+    }
+    return 0;
+}
+
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi;
+    const char * arch = NULL;
+    int xx;
+
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
 	return NULL;
+
+    /* Parse out "N(EVR).A" tokens from a label key. */
+/*@-branchstate@*/
+    if (rpmtag == RPMDBI_LABEL && keyp != NULL) {
+	const char * s = keyp;
+	const char *se;
+	size_t slen = strlen(s);
+	char *t = alloca(slen+1);
+	int level = 0;
+	int c;
+
+	keyp = t;
+	while ((c = *s++) != '\0') {
+	    switch (c) {
+	    default:
+		*t++ = c;
+		break;
+	    case '(':
+		/* XXX Fail if nested parens. */
+		if (level++ != 0) {
+		    rpmError(RPMERR_QFMT, _("extra '(' in package label: %s\n"), keyp);
+		    return NULL;
+		}
+		/* Parse explicit epoch. */
+		for (se = s; *se && xisdigit(*se); se++)
+		    ;
+		if (*se == ':') {
+		    /* XXX skip explicit epoch's (for now) */
+		    *t++ = '-';
+		    s = se + 1;
+		} else {
+		    /* No Epoch: found. Convert '(' to '-' and chug. */
+		    *t++ = '-';
+		}
+		break;
+	    case ')':
+		/* XXX Fail if nested parens. */
+		if (--level != 0) {
+		    rpmError(RPMERR_QFMT, _("missing '(' in package label: %s\n"), keyp);
+		    return NULL;
+		}
+		/* Don't copy trailing ')' */
+		break;
+	    }
+	}
+	if (level) {
+	    rpmError(RPMERR_QFMT, _("missing ')' in package label: %s\n"), keyp);
+	    return NULL;
+	}
+	*t = '\0';
+	t = (char *) keyp;
+	t = strrchr(t, '.');
+	/* Is this a valid ".arch" suffix? */
+	if (t != NULL && isArch(t+1)) {
+	   *t++ = '\0';
+	   arch = t;
+	}
+    }
+/*@=branchstate@*/
+
     mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
+
+    /* Verify header signature/digest during retrieve (if not disabled). */
     if (mi && !(ts->vsflags & RPMVSF_NOHDRCHK))
 	(void) rpmdbSetHdrChk(mi, ts, headerCheck);
+
+    /* Select specified arch only. */
+    if (arch != NULL)
+	xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
     return mi;
 }
 

@@ -501,7 +501,7 @@ ssize_t	fdWrite(void * cookie, const char * buf, size_t count)
 int fdClose( /*@only@*/ void * cookie)
 	/*@globals errno, fileSystem, systemState, internalState @*/
 	/*@modifies *cookie, errno, fileSystem, systemState, internalState @*/;
-#define	fdCLose(_fd)		fdio->close(_fd)
+#define	fdClose(_fd)		fdio->close(_fd)
 
 /**
  */
