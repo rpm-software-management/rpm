@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   $Id: Error.pm,v 1.3 2000/08/02 08:45:16 rjray Exp $
+#   $Id: Error.pm,v 1.4 2000/08/16 09:38:05 rjray Exp $
 #
 #   Description:    Error-management support that cooperates with the primary
 #                   Perl/C error glue.
@@ -33,8 +33,8 @@ require RPM;
 
 @ISA = qw(Exporter);
 
-$VERSION = '0.27';
-$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = '0.28';
+$revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(clear_errors set_error_callback rpm_error);
 @EXPORT_OK = @EXPORT;
