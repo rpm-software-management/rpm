@@ -254,7 +254,6 @@ int rpmGetFilesystemUsage(char ** fileList, int_32 * fssizes, int numFiles,
 
 		/* cut off last directory part, because it was not found. */
 		while (*chptr != '/') chptr--;
-		    *chptr-- = '\0';
 
 		if (chptr == dirName)
 		    dirName[1] = '\0';
