@@ -19,14 +19,17 @@
 extern "C" {
 #endif
 
+#ifdef	DYING
 void addOrAppendListEntry(Header h, int_32 tag, char *line);
 int parseSimplePart(char *line, char **name, int *flag);
 char *findLastChar(char *s);
 int parseYesNo(char *s);
-int parseNum(char *line, int *res);
 StringBuf getOutputFrom(char *dir, char *argv[],
 			char *writePtr, int writeBytesLeft,
 			int failNonZero);
+#endif	/* DYING */
+
+int parseNum(char *line, int *res);
 char *cleanFileName(char *name);
 
 #ifdef __cplusplus

@@ -1,13 +1,5 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
-
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "depends.h"
 #include "intl.h"

@@ -1,15 +1,4 @@
-#include "config.h"
-
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>	/* for mkdir(2) !?! */
-#include <unistd.h>
-
-#if HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
+#include "system.h"
 
 #include "intl.h"
 #include "messages.h"

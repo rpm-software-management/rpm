@@ -1,15 +1,7 @@
+#include "system.h"
 #include "miscfn.h"
 
-#include <fcntl.h>
 #include <pwd.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
 
 #include "ftp.h"
 #include "intl.h"

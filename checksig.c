@@ -1,10 +1,6 @@
 /* checksig.c: verify the signature of an RPM */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
+#include "system.h"
 
 #include "checksig.h"
 #include "intl.h"

@@ -1,14 +1,11 @@
 /* names.c -- user/group name/id cache (plus hostname and buildtime) */
 
-#include <stdio.h>
-#include <sys/types.h>
+#include "system.h"
+
 #include <pwd.h>
 #include <grp.h>
-#include <string.h>
 #include <time.h>
-#include <unistd.h>
 #include <netdb.h>
-#include <errno.h>
 
 #include "names.h"
 #include "rpmlib.h"

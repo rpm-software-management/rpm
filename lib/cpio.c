@@ -1,27 +1,9 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <utime.h>
 
 #include "cpio.h"
-
-#if MAJOR_IN_SYSMACROS 
-#include <sys/sysmacros.h>
-#elif MAJOR_IN_MKDEV 
-#include <sys/mkdev.h>
-#endif
 
 #define CPIO_NEWC_MAGIC	"070701"
 #define CPIO_CRC_MAGIC	"070702"
@@ -81,13 +63,13 @@ static inline off_t saferead(CFD_t *cfd, void * vbuf, size_t amount) {
 	switch (cfd->cpioIoType) {
 	default:
 #ifdef	PARANOID
-		fprintf(stderr, "\tsaferead(%x,%x,%x)\n", cfd, vbuf, amount);
+		fprintf(stderr, "\tsaferead(%p,%p,%x)\n", cfd, vbuf, amount);
 		exit(1);
 		break;
 #endif
 	case cpioIoTypeDebug:
 		nb = amount;
-		fprintf(stderr, "\tsaferead(%x,%x,%x)\n", cfd, vbuf, amount);
+		fprintf(stderr, "\tsaferead(%p,%p,%x)\n", cfd, vbuf, amount);
 		break;
 	case cpioIoTypeFd:
 		nb = read(cfd->cpioFd, buf, amount);
@@ -136,13 +118,13 @@ static inline off_t safewrite(CFD_t *cfd, void * vbuf, size_t amount) {
 	switch (cfd->cpioIoType) {
 	default:
 #ifdef	PARANOID
-		fprintf(stderr, "\tsafewrite(%x,%x,%x)\n", cfd, vbuf, amount);
+		fprintf(stderr, "\tsafewrite(%p,%p,%x)\n", cfd, vbuf, amount);
 		exit(1);
 		break;
 #endif
 	case cpioIoTypeDebug:
 		nb = amount;
-		fprintf(stderr, "\tsafewrite(%x,%x,%x)\n", cfd, vbuf, amount);
+		fprintf(stderr, "\tsafewrite(%p,%p,%x)\n", cfd, vbuf, amount);
 		break;
 	case cpioIoTypeFd:
 		nb = write(cfd->cpioFd, buf, amount);

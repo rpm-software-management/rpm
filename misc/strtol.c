@@ -17,25 +17,13 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #ifdef _LIBC
 # define USE_NUMBER_GROUPING
 # define STDC_HEADERS
 # define HAVE_LIMITS_H
 #endif
 
-#include <ctype.h>
-#include <errno.h>
-#ifndef errno
-extern int errno;
-#endif
-
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
+#include "system.h"
 
 #ifdef STDC_HEADERS
 # include <stddef.h>

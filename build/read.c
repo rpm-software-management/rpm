@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
+#include "system.h"
 
 #include "spec.h"
 #include "rpmlib.h"
@@ -9,11 +7,24 @@
 #include "misc.h"
 #include "read.h"
 
+#ifdef	DYING
 static int matchTok(char *token, char *line);
+#endif
 
-/* returns 0 - success */
-/*         1 - EOF     */
-/*        <0 - error   */
+static int matchTok(char *token, char *line)
+{
+    char buf[BUFSIZ], *tok;
+
+    strcpy(buf, line);
+    strtok(buf, " \n\t");
+    while ((tok = strtok(NULL, " \n\t"))) {
+	if (! strcmp(tok, token)) {
+	    return 1;
+	}
+    }
+
+    return 0;
+}
 
 void handleComments(char *s)
 {
@@ -23,9 +34,13 @@ void handleComments(char *s)
     }
 }
 
+/* returns 0 - success */
+/*         1 - EOF     */
+/*        <0 - error   */
+
 int readLine(Spec spec, int strip)
 {
-    char *from, *to, *first, *last, *s, *arch, *os;
+    char *from, *to, *last, *s, *arch, *os;
     int match;
     char ch;
     struct ReadLevelEntry *rl;
@@ -127,21 +142,6 @@ int readLine(Spec spec, int strip)
 
     if (! spec->readStack->reading) {
 	spec->line[0] = '\0';
-    }
-
-    return 0;
-}
-
-static int matchTok(char *token, char *line)
-{
-    char buf[BUFSIZ], *tok;
-
-    strcpy(buf, line);
-    strtok(buf, " \n\t");
-    while ((tok = strtok(NULL, " \n\t"))) {
-	if (! strcmp(tok, token)) {
-	    return 1;
-	}
     }
 
     return 0;

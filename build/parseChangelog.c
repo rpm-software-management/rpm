@@ -1,14 +1,6 @@
-#include "config.h"
+#include "system.h"
 
-#include <stdlib.h>
 #include <time.h>
-#include <string.h>
-#include <sys/types.h>
-
-#ifdef HAVE_ALLOCA_H
-#  include <alloca.h>
-#endif
-
 
 #include "read.h"
 #include "part.h"

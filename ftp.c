@@ -1,5 +1,6 @@
+#include "system.h"
+
 #if HAVE_CONFIG_H
-# include "config.h"
 # include "miscfn.h"
 #else
 #define HAVE_MACHINE_TYPES_H 1
@@ -12,14 +13,6 @@
 # include <machine/types.h>
 #endif
 
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#if HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-
 #if HAVE_NETINET_IN_SYSTM_H
 # include <sys/types.h>
 # include <netinet/in_systm.h>
@@ -29,19 +22,11 @@
 extern int h_errno;
 #endif
 
-#include <ctype.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <netdb.h>
 #include <pwd.h>
 #include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
+
 #include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include <netinet/in.h>
 #include <netinet/ip.h>

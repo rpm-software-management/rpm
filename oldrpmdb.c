@@ -1,7 +1,5 @@
+#include "system.h"
 #include "miscfn.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "rpmlib.h"
 #include "rpm_malloc.h"

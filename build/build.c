@@ -1,13 +1,4 @@
-#include "config.h"
-
-#ifdef HAVE_ALLOCA_A
-#include <alloca.h>
-#endif
-
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <stdlib.h>
+#include "system.h"
 
 #include "misc.h"
 #include "spec.h"
@@ -18,84 +9,80 @@
 #include "pack.h"
 #include "files.h"
 
+#ifdef	DYING
 static void doRmSource(Spec spec);
 static int writeVars(Spec spec, FILE *f);
+#endif
 
-int buildSpec(Spec spec, int what, int test)
+static void doRmSource(Spec spec)
 {
-    int x, rc;
+    struct Source *p;
+    Package pkg;
+    char buf[BUFSIZ];
+    
+    unlink(spec->specFile);
 
-    if (!spec->inBuildArchitectures && spec->buildArchitectureCount) {
-	/* When iterating over buildArchitectures, do the source    */
-	/* packaging on the first run, and skip RMSOURCE altogether */
-	x = 0;
-	while (x < spec->buildArchitectureCount) {
-	    if ((rc = buildSpec(spec->buildArchitectureSpecs[x],
-				(what & ~RPMBUILD_RMSOURCE) |
-				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
-				test))) {
-		return rc;
-	    }
-	    x++;
+    p = spec->sources;
+    while (p) {
+	if (! (p->flags & RPMBUILD_ISNO)) {
+	    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+	    unlink(buf);
 	}
-    } else {
-	if (what & RPMBUILD_PREP) {
-	    if ((rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test))) {
-		return rc;
-	    }
-	}
-	if (what & RPMBUILD_BUILD) {
-	    if ((rc = doScript(spec, RPMBUILD_BUILD, NULL, NULL, test))) {
-		return rc;
-	    }
-	}
-	if (what & RPMBUILD_INSTALL) {
-	    if ((rc = doScript(spec, RPMBUILD_INSTALL, NULL, NULL, test))) {
-		return rc;
-	    }
-	}
-
-	if (what & RPMBUILD_PACKAGESOURCE) {
-	    if ((rc = processSourceFiles(spec))) {
-		return rc;
-	    }
-	}
-
-	if ((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
-	    (what & RPMBUILD_FILECHECK)) {
-	    if ((rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL,
-					 test))) {
-		return rc;
-	    }
-	}
-
-	if (what & RPMBUILD_PACKAGESOURCE && !test) {
-	    if ((rc = packageSources(spec))) {
-		return rc;
-	    }
-	}
-	if (what & RPMBUILD_PACKAGEBINARY && !test) {
-	    if ((rc = packageBinaries(spec))) {
-		return rc;
-	    }
-	}
-	
-	if (what & RPMBUILD_CLEAN) {
-	    if ((rc = doScript(spec, RPMBUILD_CLEAN, NULL, NULL, test))) {
-		return rc;
-	    }
-	}
-	if (what & RPMBUILD_RMBUILD) {
-	    if ((rc = doScript(spec, RPMBUILD_RMBUILD, NULL, NULL, test))) {
-		return rc;
-	    }
-	}
+	p = p->next;
     }
 
-    if (what & RPMBUILD_RMSOURCE) {
-	doRmSource(spec);
+    pkg = spec->packages;
+    while (pkg) {
+	p = pkg->icon;
+	while (p) {
+	    if (! (p->flags & RPMBUILD_ISNO)) {
+		sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
+		unlink(buf);
+	    }
+	    p = p->next;
+	}
+	pkg = pkg->next;
+    }
+}
+
+static int writeVars(Spec spec, FILE *f)
+{
+    char *arch, *os, *s;
+    
+    rpmGetArchInfo(&arch, NULL);
+    rpmGetOsInfo(&os, NULL);
+
+    fprintf(f, "RPM_SOURCE_DIR=\"%s\"\n", rpmGetVar(RPMVAR_SOURCEDIR));
+    fprintf(f, "RPM_BUILD_DIR=\"%s\"\n", rpmGetVar(RPMVAR_BUILDDIR));
+    fprintf(f, "RPM_DOC_DIR=\"%s\"\n", spec->docDir);
+    fprintf(f, "RPM_OPT_FLAGS=\"%s\"\n", rpmGetVar(RPMVAR_OPTFLAGS));
+    fprintf(f, "RPM_ARCH=\"%s\"\n", arch);
+    fprintf(f, "RPM_OS=\"%s\"\n", os);
+    fprintf(f, "export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_DOC_DIR "
+	    "RPM_OPT_FLAGS RPM_ARCH RPM_OS\n");
+
+    if (spec->buildRoot) {
+	fprintf(f, "RPM_BUILD_ROOT=\"%s\"\n", spec->buildRoot);
+	fprintf(f, "export RPM_BUILD_ROOT\n");
+	/* This could really be checked internally */
+	fprintf(f, "if [ -z \"$RPM_BUILD_ROOT\" -o -z \"`echo $RPM_BUILD_ROOT | sed -e 's#/##g'`\" ]; then\n");
+	fprintf(f, "  echo 'Warning: Spec contains BuildRoot: tag that is either empty or is set to \"/\"'\n");
+	fprintf(f, "  exit 1\n");
+	fprintf(f, "fi\n");
     }
 
+    headerGetEntry(spec->packages->header, RPMTAG_NAME,
+		   NULL, (void **)&s, NULL);
+    fprintf(f, "RPM_PACKAGE_NAME=\"%s\"\n", s);
+    headerGetEntry(spec->packages->header, RPMTAG_VERSION,
+		   NULL, (void **)&s, NULL);
+    fprintf(f, "RPM_PACKAGE_VERSION=\"%s\"\n", s);
+    headerGetEntry(spec->packages->header, RPMTAG_RELEASE,
+		   NULL, (void **)&s, NULL);
+    fprintf(f, "RPM_PACKAGE_RELEASE=\"%s\"\n", s);
+    fprintf(f, "export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION "
+	    "RPM_PACKAGE_RELEASE\n");
+    
     return 0;
 }
 
@@ -198,74 +185,80 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     return 0;
 }
 
-static int writeVars(Spec spec, FILE *f)
+int buildSpec(Spec spec, int what, int test)
 {
-    char *arch, *os, *s;
-    
-    rpmGetArchInfo(&arch, NULL);
-    rpmGetOsInfo(&os, NULL);
+    int x, rc;
 
-    fprintf(f, "RPM_SOURCE_DIR=\"%s\"\n", rpmGetVar(RPMVAR_SOURCEDIR));
-    fprintf(f, "RPM_BUILD_DIR=\"%s\"\n", rpmGetVar(RPMVAR_BUILDDIR));
-    fprintf(f, "RPM_DOC_DIR=\"%s\"\n", spec->docDir);
-    fprintf(f, "RPM_OPT_FLAGS=\"%s\"\n", rpmGetVar(RPMVAR_OPTFLAGS));
-    fprintf(f, "RPM_ARCH=\"%s\"\n", arch);
-    fprintf(f, "RPM_OS=\"%s\"\n", os);
-    fprintf(f, "export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_DOC_DIR "
-	    "RPM_OPT_FLAGS RPM_ARCH RPM_OS\n");
-
-    if (spec->buildRoot) {
-	fprintf(f, "RPM_BUILD_ROOT=\"%s\"\n", spec->buildRoot);
-	fprintf(f, "export RPM_BUILD_ROOT\n");
-	/* This could really be checked internally */
-	fprintf(f, "if [ -z \"$RPM_BUILD_ROOT\" -o -z \"`echo $RPM_BUILD_ROOT | sed -e 's#/##g'`\" ]; then\n");
-	fprintf(f, "  echo 'Warning: Spec contains BuildRoot: tag that is either empty or is set to \"/\"'\n");
-	fprintf(f, "  exit 1\n");
-	fprintf(f, "fi\n");
-    }
-
-    headerGetEntry(spec->packages->header, RPMTAG_NAME,
-		   NULL, (void **)&s, NULL);
-    fprintf(f, "RPM_PACKAGE_NAME=\"%s\"\n", s);
-    headerGetEntry(spec->packages->header, RPMTAG_VERSION,
-		   NULL, (void **)&s, NULL);
-    fprintf(f, "RPM_PACKAGE_VERSION=\"%s\"\n", s);
-    headerGetEntry(spec->packages->header, RPMTAG_RELEASE,
-		   NULL, (void **)&s, NULL);
-    fprintf(f, "RPM_PACKAGE_RELEASE=\"%s\"\n", s);
-    fprintf(f, "export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION "
-	    "RPM_PACKAGE_RELEASE\n");
-    
-    return 0;
-}
-
-static void doRmSource(Spec spec)
-{
-    struct Source *p;
-    Package pkg;
-    char buf[BUFSIZ];
-    
-    unlink(spec->specFile);
-
-    p = spec->sources;
-    while (p) {
-	if (! (p->flags & RPMBUILD_ISNO)) {
-	    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
-	    unlink(buf);
-	}
-	p = p->next;
-    }
-
-    pkg = spec->packages;
-    while (pkg) {
-	p = pkg->icon;
-	while (p) {
-	    if (! (p->flags & RPMBUILD_ISNO)) {
-		sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
-		unlink(buf);
+    if (!spec->inBuildArchitectures && spec->buildArchitectureCount) {
+	/* When iterating over buildArchitectures, do the source    */
+	/* packaging on the first run, and skip RMSOURCE altogether */
+	x = 0;
+	while (x < spec->buildArchitectureCount) {
+	    if ((rc = buildSpec(spec->buildArchitectureSpecs[x],
+				(what & ~RPMBUILD_RMSOURCE) |
+				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
+				test))) {
+		return rc;
 	    }
-	    p = p->next;
+	    x++;
 	}
-	pkg = pkg->next;
+    } else {
+	if (what & RPMBUILD_PREP) {
+	    if ((rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test))) {
+		return rc;
+	    }
+	}
+	if (what & RPMBUILD_BUILD) {
+	    if ((rc = doScript(spec, RPMBUILD_BUILD, NULL, NULL, test))) {
+		return rc;
+	    }
+	}
+	if (what & RPMBUILD_INSTALL) {
+	    if ((rc = doScript(spec, RPMBUILD_INSTALL, NULL, NULL, test))) {
+		return rc;
+	    }
+	}
+
+	if (what & RPMBUILD_PACKAGESOURCE) {
+	    if ((rc = processSourceFiles(spec))) {
+		return rc;
+	    }
+	}
+
+	if ((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
+	    (what & RPMBUILD_FILECHECK)) {
+	    if ((rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL,
+					 test))) {
+		return rc;
+	    }
+	}
+
+	if (what & RPMBUILD_PACKAGESOURCE && !test) {
+	    if ((rc = packageSources(spec))) {
+		return rc;
+	    }
+	}
+	if (what & RPMBUILD_PACKAGEBINARY && !test) {
+	    if ((rc = packageBinaries(spec))) {
+		return rc;
+	    }
+	}
+	
+	if (what & RPMBUILD_CLEAN) {
+	    if ((rc = doScript(spec, RPMBUILD_CLEAN, NULL, NULL, test))) {
+		return rc;
+	    }
+	}
+	if (what & RPMBUILD_RMBUILD) {
+	    if ((rc = doScript(spec, RPMBUILD_RMBUILD, NULL, NULL, test))) {
+		return rc;
+	    }
+	}
     }
+
+    if (what & RPMBUILD_RMSOURCE) {
+	doRmSource(spec);
+    }
+
+    return 0;
 }

@@ -1,4 +1,4 @@
-#include <string.h>
+#include "system.h"
 
 #include "part.h"
 

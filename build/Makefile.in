@@ -33,7 +33,7 @@ $(PROGS): $(LIBOBJECTS)
 pack.o: pack.c
 	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" -o $@ -c $<
 
-reqprov.o: reqprov.c
+files.o: files.c
 	$(CC) $(CFLAGS) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<
 
 spec.o: spec.c

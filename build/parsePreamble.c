@@ -1,9 +1,4 @@
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include "system.h"
 
 #include "read.h"
 #include "part.h"
@@ -44,6 +39,7 @@ static int requiredTags[] = {
     0
 };
 
+#ifdef DYING
 static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 			     char *lang);
 static void initPreambleList(void);
@@ -56,107 +52,77 @@ static char *tagName(int tag);
 static int checkForValidArchitectures(Spec spec);
 static int isMemberInEntry(Header header, char *name, int tag);
 static int readIcon(Header h, char *file);
+#endif	/* DYING */
     
-int parsePreamble(Spec spec, int initialPackage)
+static void addOrAppendListEntry(Header h, int_32 tag, char *line)
 {
-    int nextPart;
-    int tag, rc;
-    char *name, *mainName, *linep, *macro;
-    int flag;
-    Package pkg;
-    char fullName[BUFSIZ];
-    char lang[BUFSIZ];
+    int argc;
+    char **argv;
 
-    strcpy(fullName, "(main package)");
-
-    pkg = newPackage(spec);
-	
-    if (! initialPackage) {
-	/* There is one option to %package: <pkg> or -n <pkg> */
-	if (parseSimplePart(spec->line, &name, &flag)) {
-	    rpmError(RPMERR_BADSPEC, "Bad package specification: %s",
-		     spec->line);
-	    return RPMERR_BADSPEC;
-	}
-	
-	if (!lookupPackage(spec, name, flag, NULL)) {
-	    rpmError(RPMERR_BADSPEC, "Package already exists: %s", spec->line);
-	    return RPMERR_BADSPEC;
-	}
-	
-	/* Construct the package */
-	if (flag == PART_SUBNAME) {
-	    headerGetEntry(spec->packages->header, RPMTAG_NAME,
-			   NULL, (void *) &mainName, NULL);
-	    sprintf(fullName, "%s-%s", mainName, name);
-	} else {
-	    strcpy(fullName, name);
-	}
-	headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, fullName, 1);
+    poptParseArgvString(line, &argc, &argv);
+    if (argc) {
+	headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
     }
+    FREE(argv);
+}
 
-    if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
-	nextPart = PART_NONE;
-    } else {
-	if (rc) {
-	    return rc;
-	}
-	while (! (nextPart = isPart(spec->line))) {
-	    /* Skip blank lines */
-	    linep = spec->line;
-	    SKIPSPACE(linep);
-	    if (*linep) {
-		if (findPreambleTag(spec, &tag, &macro, lang)) {
-		    rpmError(RPMERR_BADSPEC, "line %d: Unknown tag: %s",
-			     spec->lineNum, spec->line);
-		    return RPMERR_BADSPEC;
-		}
-		if (handlePreambleTag(spec, pkg, tag, macro, lang)) {
-		    return RPMERR_BADSPEC;
-		}
-		if (spec->buildArchitectures && !spec->inBuildArchitectures) {
-		    return PART_BUILDARCHITECTURES;
-		}
-	    }
-	    if ((rc =
-		 readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
-		nextPart = PART_NONE;
-		break;
-	    }
-	    if (rc) {
-		return rc;
-	    }
-	}
-    }
+/* Parse a simple part line that only take -n <pkg> or <pkg> */
+/* <pkg> is return in name as a pointer into a static buffer */
 
-    /* Do some final processing on the header */
+static int parseSimplePart(char *line, char **name, int *flag)
+{
+    char *tok;
+    char linebuf[BUFSIZ];
+    static char buf[BUFSIZ];
+
+    strcpy(linebuf, line);
+
+    /* Throw away the first token (the %xxxx) */
+    strtok(linebuf, " \t\n");
     
-    if (!spec->gotBuildRoot && spec->buildRoot) {
-	rpmError(RPMERR_BADSPEC, "Spec file can't use BuildRoot");
-	return RPMERR_BADSPEC;
+    if (!(tok = strtok(NULL, " \t\n"))) {
+	*name = NULL;
+	return 0;
+    }
+    
+    if (!strcmp(tok, "-n")) {
+	if (!(tok = strtok(NULL, " \t\n"))) {
+	    return 1;
+	}
+	*flag = PART_NAME;
+    } else {
+	*flag = PART_SUBNAME;
+    }
+    strcpy(buf, tok);
+    *name = buf;
+
+    return (strtok(NULL, " \t\n")) ? 1 : 0;
+}
+
+static int parseYesNo(char *s)
+{
+    if (!s || (s[0] == 'n' || s[0] == 'N') ||
+	!strcasecmp(s, "false") ||
+	!strcasecmp(s, "off") ||
+	!strcmp(s, "0")) {
+	return 0;
     }
 
-    if (checkForValidArchitectures(spec)) {
-	return RPMERR_BADSPEC;
+    return 1;
+}
+
+static char *findLastChar(char *s)
+{
+    char *res = s;
+
+    while (*s) {
+	if (! isspace(*s)) {
+	    res = s;
+	}
+	s++;
     }
 
-    if (pkg == spec->packages) {
-	fillOutMainPackage(pkg->header);
-    }
-
-    if (checkForDuplicates(pkg->header, fullName)) {
-	return RPMERR_BADSPEC;
-    }
-
-    if (pkg != spec->packages) {
-	copyFromMain(spec, pkg);
-    }
-
-    if (checkForRequired(pkg->header, fullName)) {
-	return RPMERR_BADSPEC;
-    }
-
-    return nextPart;
+    return res;
 }
 
 static int isMemberInEntry(Header header, char *name, int tag)
@@ -207,6 +173,28 @@ static int checkForValidArchitectures(Spec spec)
     }
 
     return 0;
+}
+
+static char *tagName(int tag)
+{
+    int i = 0;
+    static char nameBuf[1024];
+    char *s;
+
+    strcpy(nameBuf, "(unknown)");
+    while (i < rpmTagTableSize) {
+	if (tag == rpmTagTable[i].val) {
+	    strcpy(nameBuf, rpmTagTable[i].name + 7);
+	    s = nameBuf+1;
+	    while (*s) {
+		*s = tolower(*s);
+		s++;
+	    }
+	}
+	i++;
+    }
+
+    return nameBuf;
 }
 
 static int checkForRequired(Header h, char *name)
@@ -291,6 +279,39 @@ static void fillOutMainPackage(Header h)
 			   rpmGetVar(RPMVAR_DISTRIBUTION), 1);
 	}
     }
+}
+
+static int readIcon(Header h, char *file)
+{
+    char buf[BUFSIZ], *icon;
+    struct stat statbuf;
+    int fd;
+
+    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), file);
+    if (stat(buf, &statbuf)) {
+	rpmError(RPMERR_BADSPEC, "Unable to read icon: %s", file);
+	return RPMERR_BADSPEC;
+    }
+    icon = malloc(statbuf.st_size);
+    fd = open(buf, O_RDONLY);
+    if (read(fd, icon, statbuf.st_size) != statbuf.st_size) {
+	close(fd);
+	rpmError(RPMERR_BADSPEC, "Unable to read icon: %s", file);
+	return RPMERR_BADSPEC;
+    }
+    close(fd);
+
+    if (! strncmp(icon, "GIF", 3)) {
+	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, statbuf.st_size);
+    } else if (! strncmp(icon, "/* XPM", 6)) {
+	headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, statbuf.st_size);
+    } else {
+	rpmError(RPMERR_BADSPEC, "Unknown icon type: %s", file);
+	return RPMERR_BADSPEC;
+    }
+    free(icon);
+    
+    return 0;
 }
 
 #define SINGLE_TOKEN_ONLY \
@@ -609,57 +630,104 @@ static int findPreambleTag(Spec spec, int *tag, char **macro, char *lang)
     return 0;
 }
 
-static char *tagName(int tag)
+int parsePreamble(Spec spec, int initialPackage)
 {
-    int i = 0;
-    static char nameBuf[1024];
-    char *s;
+    int nextPart;
+    int tag, rc;
+    char *name, *mainName, *linep, *macro;
+    int flag;
+    Package pkg;
+    char fullName[BUFSIZ];
+    char lang[BUFSIZ];
 
-    strcpy(nameBuf, "(unknown)");
-    while (i < rpmTagTableSize) {
-	if (tag == rpmTagTable[i].val) {
-	    strcpy(nameBuf, rpmTagTable[i].name + 7);
-	    s = nameBuf+1;
-	    while (*s) {
-		*s = tolower(*s);
-		s++;
+    strcpy(fullName, "(main package)");
+
+    pkg = newPackage(spec);
+	
+    if (! initialPackage) {
+	/* There is one option to %package: <pkg> or -n <pkg> */
+	if (parseSimplePart(spec->line, &name, &flag)) {
+	    rpmError(RPMERR_BADSPEC, "Bad package specification: %s",
+		     spec->line);
+	    return RPMERR_BADSPEC;
+	}
+	
+	if (!lookupPackage(spec, name, flag, NULL)) {
+	    rpmError(RPMERR_BADSPEC, "Package already exists: %s", spec->line);
+	    return RPMERR_BADSPEC;
+	}
+	
+	/* Construct the package */
+	if (flag == PART_SUBNAME) {
+	    headerGetEntry(spec->packages->header, RPMTAG_NAME,
+			   NULL, (void *) &mainName, NULL);
+	    sprintf(fullName, "%s-%s", mainName, name);
+	} else {
+	    strcpy(fullName, name);
+	}
+	headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, fullName, 1);
+    }
+
+    if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
+	nextPart = PART_NONE;
+    } else {
+	if (rc) {
+	    return rc;
+	}
+	while (! (nextPart = isPart(spec->line))) {
+	    /* Skip blank lines */
+	    linep = spec->line;
+	    SKIPSPACE(linep);
+	    if (*linep) {
+		if (findPreambleTag(spec, &tag, &macro, lang)) {
+		    rpmError(RPMERR_BADSPEC, "line %d: Unknown tag: %s",
+			     spec->lineNum, spec->line);
+		    return RPMERR_BADSPEC;
+		}
+		if (handlePreambleTag(spec, pkg, tag, macro, lang)) {
+		    return RPMERR_BADSPEC;
+		}
+		if (spec->buildArchitectures && !spec->inBuildArchitectures) {
+		    return PART_BUILDARCHITECTURES;
+		}
+	    }
+	    if ((rc =
+		 readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
+		nextPart = PART_NONE;
+		break;
+	    }
+	    if (rc) {
+		return rc;
 	    }
 	}
-	i++;
     }
 
-    return nameBuf;
-}
-
-static int readIcon(Header h, char *file)
-{
-    char buf[BUFSIZ], *icon;
-    struct stat statbuf;
-    int fd;
-
-    sprintf(buf, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), file);
-    if (stat(buf, &statbuf)) {
-	rpmError(RPMERR_BADSPEC, "Unable to read icon: %s", file);
-	return RPMERR_BADSPEC;
-    }
-    icon = malloc(statbuf.st_size);
-    fd = open(buf, O_RDONLY);
-    if (read(fd, icon, statbuf.st_size) != statbuf.st_size) {
-	close(fd);
-	rpmError(RPMERR_BADSPEC, "Unable to read icon: %s", file);
-	return RPMERR_BADSPEC;
-    }
-    close(fd);
-
-    if (! strncmp(icon, "GIF", 3)) {
-	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, statbuf.st_size);
-    } else if (! strncmp(icon, "/* XPM", 6)) {
-	headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, statbuf.st_size);
-    } else {
-	rpmError(RPMERR_BADSPEC, "Unknown icon type: %s", file);
-	return RPMERR_BADSPEC;
-    }
-    free(icon);
+    /* Do some final processing on the header */
     
-    return 0;
+    if (!spec->gotBuildRoot && spec->buildRoot) {
+	rpmError(RPMERR_BADSPEC, "Spec file can't use BuildRoot");
+	return RPMERR_BADSPEC;
+    }
+
+    if (checkForValidArchitectures(spec)) {
+	return RPMERR_BADSPEC;
+    }
+
+    if (pkg == spec->packages) {
+	fillOutMainPackage(pkg->header);
+    }
+
+    if (checkForDuplicates(pkg->header, fullName)) {
+	return RPMERR_BADSPEC;
+    }
+
+    if (pkg != spec->packages) {
+	copyFromMain(spec, pkg);
+    }
+
+    if (checkForRequired(pkg->header, fullName)) {
+	return RPMERR_BADSPEC;
+    }
+
+    return nextPart;
 }

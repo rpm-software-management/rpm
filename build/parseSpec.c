@@ -1,8 +1,4 @@
-#include <ctype.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
+#include "system.h"
 
 #include "header.h"
 #include "rpmlib.h"

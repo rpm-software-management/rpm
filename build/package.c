@@ -1,10 +1,10 @@
+#include "system.h"
+
 #include "spec.h"
 #include "package.h"
 #include "misc.h"
 #include "rpmlib.h"
 #include "files.h"
-
-#include <stdlib.h>
 
 static void freeTriggerFiles(struct TriggerFileEntry *p);
     

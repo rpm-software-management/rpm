@@ -11,9 +11,12 @@ extern "C" {
 
 int addReqProv(Spec spec, Package pkg,
 	       int flag, char *name, char *version, int index);
+
+#ifdef	DYING
 int generateAutoReqProv(Spec spec, Package pkg,
 			struct cpioFileMapping *cpioList, int cpioCount);
 void printReqs(Spec spec, Package pkg);
+#endif
 
 #ifdef __cplusplus
 }

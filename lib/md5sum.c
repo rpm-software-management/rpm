@@ -10,9 +10,7 @@
  * Modified June 1993 by Colin Plumb for altered md5.c.
  * Modified October 1995 by Erik Troan for RPM
  */
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
+#include "system.h"
 
 #include "md5.h"
 #include "messages.h"

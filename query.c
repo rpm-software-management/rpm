@@ -1,23 +1,7 @@
-#include "config.h"
+#include "system.h"
 
-#include <ctype.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
 #include <time.h>
 #include <sys/param.h>
-#include <unistd.h>
-
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#if HAVE_LIMITS_H
-# include <limits.h>
-#endif
 
 #ifndef PATH_MAX
 # define PATH_MAX 255

@@ -1,13 +1,4 @@
-#include "config.h"
-
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "system.h"
 
 #include "falloc.h"
 

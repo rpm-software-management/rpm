@@ -1,23 +1,11 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <errno.h>
-#include <fcntl.h>
 #include <pwd.h>
-#include <stdlib.h>
-#include <string.h>
 #include <signal.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <sys/stat.h>		/* needed for mkdir(2) prototype! */
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <time.h>
-#include <unistd.h>
 #include <utime.h>
 #include <zlib.h>
 

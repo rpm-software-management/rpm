@@ -1,20 +1,8 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif 
-
-#include <errno.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
 
 #include "dbindex.h"
 #include "depends.h"
@@ -730,7 +718,7 @@ int runTriggers(char * root, rpmdb db, int sense, Header h,
     Header triggeredH;
     int numPackage;
     int rc;
-    int i, j;
+    int i;
 
     headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &packageName, NULL);
 

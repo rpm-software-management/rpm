@@ -9,13 +9,7 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
+#include "system.h"
 
 #if defined(HAVE_STDLIB_H) || defined(STDC_HEADERS)
 # include <stdlib.h>

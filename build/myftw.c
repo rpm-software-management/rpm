@@ -19,20 +19,7 @@ License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
-#include "config.h"
-
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <sys/types.h>
-#include <errno.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h>
-#include <stdio.h>
-#include <sys/stat.h>
+#include "system.h"
 
 #ifndef NAMLEN
 #define NAMLEN(a) strlen((a)->d_name)

@@ -1,16 +1,8 @@
-#include "config.h"
+#include "system.h"
 
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/signal.h>
-#include <unistd.h>
 
 #include "dbindex.h"
 #include "falloc.h"

@@ -1,22 +1,9 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <errno.h>
-#include <ctype.h>
-#include <fcntl.h>
 #include <grp.h>
 #include <pwd.h>
-#include <stdlib.h>
 #include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
 
 #include "intl.h"
 #include "misc.h"

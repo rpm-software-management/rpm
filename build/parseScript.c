@@ -1,5 +1,4 @@
-#include <malloc.h>
-#include <string.h>
+#include "system.h"
 
 #include "header.h"
 #include "read.h"
@@ -9,6 +8,7 @@
 #include "popt/popt.h"
 #include "reqprov.h"
 #include "package.h"
+#include "parse.h"
 
 static int addTriggerIndex(Package pkg, char *file, char *script, char *prog);
 

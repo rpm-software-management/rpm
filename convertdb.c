@@ -1,8 +1,6 @@
 /* This converts an old style (rpm 1.x) database to the new style */
 
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "system.h"
 
 #include "dbindex.h"
 #include "falloc.h"

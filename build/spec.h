@@ -131,13 +131,16 @@ typedef struct PackageStruct *Package;
 extern "C" {
 #endif
 
+#ifdef	DYING
+char *getSource(Spec spec, int num, int flag);
+char *getFullSource(Spec spec, int num, int flag);
+void freeSources(Spec spec);
+#endif
+
 Spec newSpec(void);
 void freeSpec(Spec spec);
 
 int addSource(Spec spec, Package pkg, char *field, int tag);
-char *getSource(Spec spec, int num, int flag);
-char *getFullSource(Spec spec, int num, int flag);
-void freeSources(Spec spec);
 int parseNoSource(Spec spec, char *field, int tag);
 
 #ifdef __cplusplus

@@ -1,17 +1,11 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
 #if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
 #endif
 
-#include <sys/types.h>
 #include <netinet/in.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
 
 #include "rpmlib.h"
 #include "rpmlead.h"

@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include "system.h"
 
 #include "spec.h"
 #include "header.h"

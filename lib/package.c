@@ -1,17 +1,7 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
-#ifdef HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <errno.h>
-#include <fcntl.h>
 #include <netinet/in.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include "header.h"
 #include "intl.h"

@@ -1,9 +1,5 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
-
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
 
 #include "stringbuf.h"
 

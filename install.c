@@ -1,14 +1,4 @@
-#include "config.h"
-
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
+#include "system.h"
 
 #include "miscfn.h"
 #include "install.h"

@@ -1,4 +1,4 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
 #ifdef HAVE_DB_185_H
@@ -6,9 +6,6 @@
 #else
 #include <db.h>
 #endif
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "dbindex.h"
 #include "intl.h"

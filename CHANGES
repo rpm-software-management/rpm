@@ -1,4 +1,6 @@
 2.5.3 -> 3.0
+	- aggregate system includes into system.h.
+	- rearrange functions to minimize exported routines in librpmbuild API.
 	- generalize cpio I/O to eliminate pipe to exec'd gzip on install.
 	- better query semantics with symlinks (Tim Mooney)
 	- finish planting /usr/lib/rpm (remove compatibility symlinks)

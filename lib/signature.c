@@ -7,22 +7,15 @@
  * size key you like).  We also honor PGPPATH finally.
  */
 
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
 #if HAVE_ASM_BYTEORDER_H
 #include <asm/byteorder.h>
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <string.h>
 
 #include "intl.h"
 #include "md5.h"

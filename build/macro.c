@@ -1,9 +1,6 @@
+#include "system.h"
+
 #include <assert.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
@@ -73,7 +70,6 @@ compareMacroName(const void *ap, const void *bp)
 static void
 expandMacroTable(MacroContext *mc)
 {
-	int i;
 	if (mc->macroTable == NULL) {
 		mc->macrosAllocated = MACRO_CHUNK_SIZE;
 		mc->macroTable = (MacroEntry **)malloc(sizeof(*(mc->macroTable)) *
@@ -493,9 +489,9 @@ dumpME(const char *msg, MacroEntry *me)
 {
 	if (msg)
 		fprintf(stderr, "%s", msg);
-	fprintf(stderr, "\tme %x", me);
+	fprintf(stderr, "\tme %p", me);
 	if (me)
-		fprintf(stderr,"\tname %x(%s) prev %x",
+		fprintf(stderr,"\tname %p(%s) prev %p",
 			me->name, me->name, me->prev);
 	fprintf(stderr, "\n");
 }
@@ -585,7 +581,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
     /* Copy args into buf until newline */
     *be++ = ' ';
     b = be;	/* Save beginning of args */
-    while (c = *se) {
+    while ((c = *se) != 0) {
 	char *a;
 	se++;
 	if (c == '\n')
@@ -1038,7 +1034,6 @@ expandMacros(Spec spec, MacroContext *mc, char *s, size_t slen)
 {
 	MacroBuf macrobuf, *mb = &macrobuf;
 	char *tbuf;
-	int c;
 	int rc;
 
 	if (s == NULL || slen <= 0)

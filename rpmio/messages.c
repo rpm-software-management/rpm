@@ -1,5 +1,6 @@
+#include "system.h"
+
 #include <stdarg.h>
-#include <stdio.h>
 
 #include "intl.h"
 #include "messages.h"

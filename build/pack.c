@@ -1,13 +1,7 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <malloc.h>
-#include <string.h>
-#include <errno.h>
+#include "system.h"
+
 #include <signal.h>
 #include <time.h>
-#include <stdlib.h>
 
 #include "spec.h"
 #include "header.h"
@@ -348,7 +342,6 @@ static int cpio_copy(int fdo, CSA_t *csa) {
 
 static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb)
 {
-    char *s;
     char buf[BUFSIZ];
     FILE *f;
 

@@ -7,22 +7,12 @@
 /* Data read from file descriptors is expected to be in          */
 /* network byte order and is converted on the fly to host order. */
 
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
 #include <zlib.h>
 
-#if HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
-
-#include <stdlib.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <netinet/in.h>
 
 #include "header.h"
@@ -784,7 +774,6 @@ int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 {
     struct indexEntry * entry;
     char * chptr;
-    int i;
 
     if (!p) return headerIsEntry(h, tag);
 

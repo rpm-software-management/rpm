@@ -1,8 +1,6 @@
 #ifndef _H_INSTALL
 #define _H_INSTALL
 
-#include <stdio.h>
-
 #include "lib/rpmlib.h"
 
 #define INSTALL_PERCENT         (1 << 0)

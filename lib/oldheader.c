@@ -1,14 +1,7 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
 
-#include <errno.h>
-#include <fcntl.h>
 #include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <unistd.h>
 
 #include "misc.h"
 #include "oldheader.h"

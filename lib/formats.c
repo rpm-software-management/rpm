@@ -1,9 +1,5 @@
-#include "config.h"
+#include "system.h"
 #include "miscfn.h"
-
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
 
 #include "header.h"
 #include "intl.h"
@@ -326,7 +322,6 @@ static int triggertypeTag(Header h, int_32 * type, void ** data,
     int_32 * indices, * flags;
     char ** conds, ** s;
     int i, j;
-    char buf[5];
     int numScripts, numNames;
 
     if (!headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, 
