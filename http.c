@@ -4,7 +4,6 @@
  * Written by Alex deVries <puffin@redhat.com>
  * 
  * To do:
- *  - better HTTP response code handling
  *  - HTTP proxy authentication
  *  - non-peek parsing of the header so that querying works
  */
@@ -18,8 +17,6 @@
 #include "ftp.h"
 #include "http.h"
 
-static int httpDebug = 0;
-
 int httpProxySetup(const char * url, urlinfo ** uret)
 {
     urlinfo *u;
@@ -32,19 +29,20 @@ int httpProxySetup(const char * url, urlinfo ** uret)
 	char *proxy;
 	char *proxyport;
 
-	rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"),
+	rpmMessage(RPMMESS_DEBUG, _("logging into %s as pw %s\n"),
 		u->host,
-		u->user ? u->user : "ftp",
-		u->password ? u->password : "(username)");
+		u->user ? u->user : "(none)",
+		u->password ? u->password : "(none)");
 
 	if ((proxy = rpmGetVar(RPMVAR_HTTPPROXY)) != NULL) {
-            newpath = malloc(strlen((*uret)->host)+
-                             strlen((*uret)->path) + 7 + 6 + 1 );
+            if ((newpath = malloc(strlen((*uret)->host)+
+                             strlen((*uret)->path) + 7 + 6 + 1 )) == NULL)
+               return HTTPERR_UNKNOWN_ERROR;
 
             sprintf(newpath,"http://%s:%i%s",
                  (*uret)->host,(*uret)->port,(*uret)->path);
 	    u->host = strdup(proxy);
-            free(u->path);
+            free(u->path);   /* Get rid of the old one */
             u->path = newpath;
 	}
 
@@ -54,15 +52,18 @@ int httpProxySetup(const char * url, urlinfo ** uret)
 	    port = strtol(proxyport, &end, 0);
 	    if (*end) {
 		fprintf(stderr, _("error: httport must be a number\n"));
-		return -1;
+		return HTTPERR_INVALID_PORT;
 	    }
             u->port=port;
 	}
+    } else {
+      *uret = NULL;
+      return HTTPERR_UNSUPPORTED_PROTOCOL;
     }
 
     if (uret != NULL)
 	*uret = u;
-    return 0;
+    return HTTPERR_OKAY;
 }
 
 int httpOpen(urlinfo *u)
@@ -84,19 +85,24 @@ int httpOpen(urlinfo *u)
 
     len = strlen(u->path) + sizeof("GET  HTTP 1.0\r\n\r\n"); 
     buf = alloca(len);
+    sprintf(buf,"GET %s HTTP 1.0\r\n\r\n",u->path);
+/*
     strcpy(buf, "GET ");
     strcat(buf, u->path);
     strcat(buf, " HTTP 1.0\r\n"); 
     strcat(buf,"\r\n");
+*/
 
-    sockfile = fdopen(sock,"r+");
+    if(!(sockfile = fdopen(sock,"r+"))) {
+        return HTTPERR_SERVER_IO_ERROR;
+    }
 
     if (write(sock, buf, len) != len) {
         close(sock);
         return HTTPERR_SERVER_IO_ERROR;
     }
-    
-    if (httpDebug) fprintf(stderr, "-> %s", buf);
+
+    rpmMessage(RPMMESS_DEBUG, _("Buffer: %s\n"), buf);
 
     return sock;
 }
@@ -114,6 +120,7 @@ int httpSkipHeader(FD_t sfd, char *buf,int * bytesRead, char ** start) {
     struct timeval timeout;
     int rc = 0;
     int bufLength = 0;
+    unsigned int response;
 
     errorCode[0] = '\0';
 
@@ -129,14 +136,18 @@ int httpSkipHeader(FD_t sfd, char *buf,int * bytesRead, char ** start) {
 	rc = select(sfd->fd_fd+1, &readSet, &emptySet, &emptySet, &timeout);
 	if (rc < 1) {
 	    if (rc==0) 
-		return HTTPERR_BAD_SERVER_RESPONSE;
+		return HTTPERR_SERVER_TIMEOUT;
 	    else
-		rc = HTTPERR_UNKNOWN;
+                return HTTPERR_SERVER_IO_ERROR;
 	} else
 	    rc = 0;
 
 	*bytesRead = read(sfd->fd_fd, buf + bufLength, 
              *bytesRead - bufLength - 1);
+
+        if (*bytesRead == -1) {
+                return HTTPERR_SERVER_IO_ERROR;
+        }
 
 	bufLength += (*bytesRead);
 
@@ -155,12 +166,14 @@ int httpSkipHeader(FD_t sfd, char *buf,int * bytesRead, char ** start) {
 		   *chptr = '\0';
 		if (*(chptr - 1) == '\r') *(chptr - 1) = '\0';
 
-                if ((!strncmp(*start,"HTTP",4)) && 
-                    (strchr(*start,' '))) {
-                   *start = strchr(*start,' ')+1;
-                   if (!strncmp(*start,"200",3))  {
-			doesContinue = 1;
+                if ((!strncmp(*start,"HTTP",4))) {
+                   char *end;
+                   *start = strchr(*start,' ');
+                   response = strtol (*start,&end,0);
+                   if ((*end != '\0') && (*end != ' ')) {
+                      return HTTPERR_INVALID_SERVER_RESPONSE;
                    }
+                   doesContinue = 1;
 		} else {
                     if (**start == '\0')  {
 			dataHere = 1;
@@ -174,32 +187,34 @@ int httpSkipHeader(FD_t sfd, char *buf,int * bytesRead, char ** start) {
 	  } while (chptr && !dataHere);
         }
     } while (doesContinue && !rc && !dataHere);
-    return 0;
+
+    switch (response) {
+      case HTTP_OK:
+          return 0;
+      default:
+          return HTTPERR_FILE_UNAVAILABLE;
+    }
 }
 
 int httpGetFile(FD_t sfd, FD_t tfd) {
 
     static char buf[BUFFER_SIZE + 1];
-    int bufLength = 0; 
     int bytesRead = BUFFER_SIZE, rc = 0;
     char * start;
 
-    httpSkipHeader(sfd,buf,&bytesRead,&start); 
+    if ((rc = httpSkipHeader(sfd,buf,&bytesRead,&start)) != HTTPERR_OKAY)
+            return rc;
     
     /* Write the buffer out to tfd */
 
-    if (write (tfd->fd_fd,start,bytesRead-(start-buf))<0) {
+    if (write (tfd->fd_fd,start,bytesRead-(start-buf))<0) 
         return HTTPERR_SERVER_IO_ERROR;
-    }
-
-    while (1) {
+    do {
 	bytesRead = read(sfd->fd_fd, buf, 
              sizeof(buf)-1);
-        if (!bytesRead)  return 0;
-        if (write (tfd->fd_fd,buf,bytesRead)<0) {
+        if (write (tfd->fd_fd,buf,bytesRead)<0) 
            return HTTPERR_SERVER_IO_ERROR;
-         }
-    }    
-    return 0;
+    } while (bytesRead);
+    return HTTPERR_OKAY;
 }
 

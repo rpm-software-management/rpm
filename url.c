@@ -300,7 +300,8 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 	    break;
 	if ((fd = fdNew()) == NULL)
 	    break;
-        httpProxySetup(url,&u);
+        if (httpProxySetup(url,&u)) 
+	    break;
 	fd->fd_url = u;
 	fd->fd_fd = httpOpen(u);
 	break;
