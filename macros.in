@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.31 1999/05/14 18:59:43 jbj Exp $
+# $Id: macros.in,v 1.32 1999/07/23 19:19:15 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -62,6 +62,12 @@
 %_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
 %_defaultdocdir		%{_usr}/doc
+#
+%__find_provides	@FINDPROVIDES@
+%__find_requires	@FINDREQUIRES@
+#%__find_prereq		???
+#%__find_conflicts	???
+#%__find_obsoletes	???
 #
 # XXX fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
 %_fixowner		[ `%{__id} -u` = '0' ] && %{__chown} -Rf root

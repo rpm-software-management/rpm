@@ -1490,7 +1490,7 @@ int processSourceFiles(Spec spec)
 }
 
 static StringBuf getOutputFrom(char *dir, char *argv[],
-			char *writePtr, int writeBytesLeft,
+			const char *writePtr, int writeBytesLeft,
 			int failNonZero)
 {
     int progPID;
@@ -1615,22 +1615,50 @@ top:
     return readBuff;
 }
 
-static int generateAutoReqProv(Spec spec, Package pkg,
+typedef struct {
+    const char *msg;
+    const char *argv[4];
+    int ntag;
+    int vtag;
+    int ftag;
+    int mask;
+    int xor;
+} DepMsg_t;
+
+DepMsg_t depMsgs[] = {
+  { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
+	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
+	0, -1 },
+  { "PreReq",		{ "%{__find_prereq}", NULL, NULL, NULL },
+	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
+	RPMSENSE_PREREQ, 0 },
+  { "Requires",		{ "%{__find_requires}", NULL, NULL, NULL },
+	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
+	RPMSENSE_PREREQ, RPMSENSE_PREREQ },
+  { "Conflicts",	{ "%{__find_conflicts}", NULL, NULL, NULL },
+	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
+	0, -1 },
+  { "Obsoletes",	{ "%{__find_obsoletes}", NULL, NULL, NULL },
+	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS,
+	0, -1 },
+  { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
+};
+
+static int generateDepends(Spec spec, Package pkg,
 			struct cpioFileMapping *cpioList, int cpioCount)
 {
     StringBuf writeBuf;
     int writeBytes;
     StringBuf readBuf;
-    char *argv[2];
-    char **f, **fsave;
+    DepMsg_t *dm;
+    char *myargv[4];
+    int rc = 0;
 
-    if (!cpioCount) {
+    if (cpioCount <= 0)
 	return 0;
-    }
 
-    if (! (pkg->autoReq || pkg->autoProv)) {
+    if (! (pkg->autoReq || pkg->autoProv))
 	return 0;
-    }
     
     writeBuf = newStringBuf();
     writeBytes = 0;
@@ -1640,92 +1668,78 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 	cpioList++;
     }
 
-    /*** Do Provides ***/
+    for (dm = depMsgs; dm->msg != NULL; dm++) {
+	int i, tag, failnonzero;
 
-    if (pkg->autoProv) {
-	rpmMessage(RPMMESS_NORMAL, _("Finding provides...\n"));
-    
-	argv[0] = FINDPROVIDES;
-	argv[1] = NULL;
-	readBuf = getOutputFrom(NULL, argv,
-				getStringBuf(writeBuf), writeBytes, 1);
+	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
+
+	switch(tag) {
+	case RPMTAG_PROVIDEFLAGS:
+	    if (!pkg->autoProv)
+		continue;
+	    failnonzero = 1;
+	    break;
+	case RPMTAG_REQUIREFLAGS:
+	    if (!pkg->autoReq)
+		continue;
+	    failnonzero = 0;
+	    break;
+	default:
+	    continue;
+	    break;
+	}
+
+	/* Get the script name to run */
+	myargv[0] = rpmExpand(dm->argv[0], NULL);
+
+	if (!(myargv[0] && *myargv[0] != '%'))
+	    continue;
+
+	rpmMessage(RPMMESS_NORMAL, _("Finding  %s: (using %s)...\n"),
+		dm->msg, myargv[0]);
+
+#if 0
+	if (*myargv[0] != '/') {	/* XXX FIXME: stat script here */
+	    free(myargv[0]);
+	    myargv[0] = NULL;
+	    continue;
+	}
+#endif
+
+	/* Expand rest of script arguments (if any) */
+	for (i = 1; i < 4; i++) {
+	    myargv[i] = dm->argv[i] ? rpmExpand(dm->argv[i], NULL) : NULL;
+	}
+
+	readBuf = getOutputFrom(NULL, myargv,
+			getStringBuf(writeBuf), writeBytes, failnonzero);
+
+	/* Free expanded args */
+	for (i = 0; i < 4; i++) {
+	    if (myargv[i] == NULL) continue;
+	    free(myargv[i]);
+	    myargv[i] = NULL;
+	}
+
 	if (readBuf == NULL) {
-	    rpmError(RPMERR_EXEC, _("Failed to find provides"));
-	    freeStringBuf(writeBuf);
-	    return RPMERR_EXEC;
+	    rc = RPMERR_EXEC;
+	    rpmError(rc, _("Failed to find %s:"), dm->msg);
+	    break;
 	}
-	
-	fsave = splitString(getStringBuf(readBuf),
-				strlen(getStringBuf(readBuf)), '\n');
+
+	/* Parse dependencies into header */
+	rc = parseRCPOT(spec, pkg, getStringBuf(readBuf), tag, 0);
 	freeStringBuf(readBuf);
-	for (f = fsave; *f != NULL; f++) {
-	    if (**f) {
-		addReqProv(spec, pkg->header, RPMSENSE_PROVIDES, *f, NULL, 0);
-	    }
+
+	if (rc) {
+	    rpmError(rc, _("Failed to find %s:"), dm->msg);
+	    break;
 	}
-	freeSplitString(fsave);
     }
-
-    /*** Do Requires ***/
-
-    if (pkg->autoReq) {
-	rpmMessage(RPMMESS_NORMAL, _("Finding requires...\n"));
-
-	argv[0] = FINDREQUIRES;
-	argv[1] = NULL;
-	readBuf = getOutputFrom(NULL, argv,
-				getStringBuf(writeBuf), writeBytes, 0);
-	if (readBuf == NULL) {
-	    rpmError(RPMERR_EXEC, _("Failed to find requires"));
-	    freeStringBuf(writeBuf);
-	    return RPMERR_EXEC;
-	}
-
-	fsave = splitString(getStringBuf(readBuf),
-				strlen(getStringBuf(readBuf)), '\n');
-	freeStringBuf(readBuf);
-	for (f = fsave; *f != NULL; f++) {
-	    if (**f) {
-		addReqProv(spec, pkg->header, RPMSENSE_ANY, *f, NULL, 0);
-	    }
-	}
-	freeSplitString(fsave);
-    }
-
-    /*** Clean Up ***/
 
     freeStringBuf(writeBuf);
-
-    return 0;
+    return rc;
 }
-
-typedef struct {
-    const char *msg;
-    int ntag;
-    int vtag;
-    int ftag;
-    int mask;
-    int xor;
-} DepMsg_t;
-
-DepMsg_t depMsgs[] = {
-  { "Provides",
-	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
-	0, -1 },
-  { "PreReq",
-	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
-	RPMSENSE_PREREQ, 0 },
-  { "Requires",
-	-1, -1, -1,	/* XXX inherit previous arrays */
-	RPMSENSE_PREREQ, RPMSENSE_PREREQ },
-  { "Conflicts",
-	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
-	0, -1 },
-  { "Obsoletes",
-	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS,
-	0, -1 },
-  { NULL, 0, 0, 0, 0, 0 }
-};
 
 static void printDepMsg(DepMsg_t *dm, int count, const char **names,
 	const char **versions, int *flags)
@@ -1830,7 +1844,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	    res = rc;
 	}
 
-	generateAutoReqProv(spec, pkg, pkg->cpioList, pkg->cpioCount);
+	generateDepends(spec, pkg, pkg->cpioList, pkg->cpioCount);
 	printDeps(pkg->header);
 	
     }

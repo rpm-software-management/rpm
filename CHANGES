@@ -16,6 +16,7 @@
 	- print all dependencies for each package at end of build.
 	- the death of RPMSENSE_SERIAL, use [epoch:]version[-release] instead.
 	- add _mandir/_infodir macro expansions to docdirs (Tomasz Kloczko).
+	- add post install configurable dependency checking.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).
