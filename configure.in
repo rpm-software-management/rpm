@@ -7,7 +7,7 @@ dnl it, why check it?
 AC_INIT(rpm.c)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(rpm, 4.0.3)
+AM_INIT_AUTOMAKE(rpm, 4.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
@@ -344,18 +344,18 @@ dnl )
 AC_MSG_CHECKING(whether to enable DB1 support)
 
 AC_ARG_ENABLE(db1,
-[  --disable-db1           Disable DB1 support ],
+[  --enable-db1            Enable DB1 support ],
 [
-if test "$enableval" = "yes"; then
-   AC_MSG_RESULT(yes)
-   usedb1=yes
-else
+if test "$enableval" = "no"; then
    AC_MSG_RESULT(no)
    usedb1=no
+else
+   AC_MSG_RESULT(yes)
+   usedb1=yes
 fi
 ],[
-AC_MSG_RESULT(yes)
-usedb1=yes
+AC_MSG_RESULT(no)
+usedb1=no
 ])
 
 if test "$usedb1" = "yes"; then
@@ -368,7 +368,7 @@ if test "$usedb1" = "yes"; then
 fi
 
 if test X"$DBLIBSRCS" = X; then
-    AC_MSG_ERROR([sorry rpm requires libdb-3.x.a or libdb1.a (from the Berkeley db package)]) 
+    AC_MSG_ERROR([sorry rpm requires libdb-3.x.a (from the Berkeley db package)]) 
 fi
 
 if test -n "$libdb3" -a -n "$libthread" ; then

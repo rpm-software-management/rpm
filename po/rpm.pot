@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-15 09:21-0500\n"
+"POT-Creation-Date: 2001-03-15 12:09-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2521,32 +2521,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1042
+#: lib/fsm.c:1041
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1344 lib/fsm.c:1461
+#: lib/fsm.c:1343 lib/fsm.c:1460
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1486
+#: lib/fsm.c:1485
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1491
+#: lib/fsm.c:1490
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1500
+#: lib/fsm.c:1499
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1517
+#: lib/fsm.c:1516
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""

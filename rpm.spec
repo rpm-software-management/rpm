@@ -11,7 +11,7 @@
 
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 4.0.3
+%define version 4.1
 Version: %{version}
 Release: 0.1
 Group: System Environment/Base
@@ -96,7 +96,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.6.2
+Version: 1.7
 
 %description -n popt
 Popt is a C library for parsing command line parameters.  Popt was

@@ -538,7 +538,6 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    break;
 
 	case FA_BACKUP:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    switch (fi->type) {
 	    case TR_ADDED:
 		fsm->osuffix = SUFFIX_RPMORIG;
