@@ -1,7 +1,7 @@
 LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o falloc.o \
 	     convertdb.o var.o md5.o md5sum.o dbindex.o \
 	     rpmdb.o stringbuf.o rpmlead.o package.o uninstall.o \
-	     oldheader.o
+	     oldheader.o install.o 
 LIBRPM = librpm.a
 LOADLIBES = -lrpm -lgdbm -ldb $(LIBEFENCE)
 PROGS = test dump dumpdb
