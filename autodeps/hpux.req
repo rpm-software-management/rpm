@@ -1,0 +1,72 @@
+#! /usr/bin/ksh
+
+# Original Author: Tim Mooney (mooney@plains.nodak.edu)
+# This file is distributed under the terms of the GNU Public License
+#
+# find-requires is part of RPM, the RedHat Package Manager.  find-requires
+# reads a list of full pathnames (in a package) on stdin, and outputs all
+# shared libraries the package requires to run correctly.
+#
+# On HP-UX, use `chatr' to find the library dependencies for an executable
+#
+# Example chatr output:
+#
+#$chatr /usr/bin/chatr
+#/usr/bin/chatr: 
+#         shared executable 
+#         shared library dynamic path search:
+#             SHLIB_PATH     disabled  second 
+#             embedded path  disabled  first  Not Defined
+#         internal name:
+#             chatr
+#         shared library list:
+#             dynamic   /usr/lib/libc.1
+#         shared library binding:
+#             deferred 
+#         static branch prediction disabled
+#         kernel assisted branch predictionenabled
+#         lazy swap allocationdisabled
+#         text segment lockingdisabled
+#         data segment lockingdisabled
+#         data page size: 4K
+#         instruction page size: 4K
+
+#
+# TVM: it might be better to re-write this so that `file' isn't used, since
+# it can all be done with `chatr' (note the second line of chatr output tells
+# whether it's a shared executable or not), but this works.
+#
+filelist=`sed "s/['\"]/\\\&/g" | xargs file | grep executable | cut -d: -f1`
+
+for f in $filelist
+do
+	chatr $f | awk '
+
+		#
+		# For you non-awk-ers, no single quotes in comments -- the shell
+		# sees them and things get hosed.
+		#
+
+		BEGIN { 
+			in_shlib_list = 0;
+			FS = " ";
+			RS = "\n";
+		}
+
+		in_shlib_list == 1 && /dynamic[ 	]+\// {
+		
+			# split the line on "/" and print out the last element
+			numfields = split($0,fields,"/")
+			print fields[numfields]
+
+		}
+
+		/^ +shared library list: *$/ {
+			in_shlib_list = 1
+		}
+
+		/^ +shared library binding: *$/ {
+			exit
+		}
+	' # end of awk
+done | sort -u
