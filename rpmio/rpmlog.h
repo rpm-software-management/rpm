@@ -102,7 +102,7 @@ typedef	enum rpmlogFac_e {
 
 
 #ifdef RPMLOG_NAMES
-CODE facilitynames[] =
+RPMCODE facilitynames[] =
   {
     { "auth",	RPMLOG_AUTH },
     { "authpriv",RPMLOG_AUTHPRIV },
@@ -158,7 +158,8 @@ typedef void (*rpmlogCallback) (void);
  */
 typedef /*@abstract@*/ struct rpmlogRec_s {
     int		code;
-/*@owned@*/ /*@null@*/ const char * message;
+/*@owned@*/ /*@null@*/
+    const char * message;
 } * rpmlogRec;
 
 #ifdef __cplusplus
@@ -198,6 +199,8 @@ void rpmlogOpen (const char * ident, int option, int facility)
 
 /**
  * Set the log mask level.
+ * @param mask		log mask (0 is no operation)
+ * @return		previous log mask
  */
 int rpmlogSetMask (int mask)
 	/*@globals internalState@*/
@@ -215,7 +218,8 @@ int rpmlogSetMask (int mask)
  * @return		text of last message
  */
 /*@-redecl@*/
-/*@observer@*/ /*@null@*/ const char * rpmlogMessage(void)	/*@*/;
+/*@observer@*/ /*@null@*/ const char * rpmlogMessage(void)
+	/*@*/;
 /*@=redecl@*/
 
 /**
@@ -225,12 +229,25 @@ int rpmlogSetMask (int mask)
  *	and parsed IMHO.
  * @return		code from last message
  */
-int rpmlogCode(void)	/*@*/;
+int rpmlogCode(void)
+	/*@*/;
 
 /**
  * Set rpmlog callback function.
+ * @param cb		rpmlog callback function
+ * @return		previous rpmlog callback function
  */
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
+	/*@globals internalState@*/
+	/*@modifies internalState @*/;
+
+/**
+ * Set rpmlog file handle.
+ * @param fp		rpmlog file handle (NULL uses stdout/stderr)
+ * @return		previous rpmlog file handle
+ */
+/*@null@*/
+FILE * rpmlogSetFile(/*@null@*/ FILE * fp)
 	/*@globals internalState@*/
 	/*@modifies internalState @*/;
 /*@=exportlocal@*/
@@ -248,7 +265,8 @@ extern rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
  * @deprecated Perl-RPM needs, use rpmlogCode() instead.
  * @return		code from last message
  */
-extern int rpmErrorCode(void)	/*@*/;
+extern int rpmErrorCode(void)
+	/*@*/;
 
 /**
  * Return text of last rpmError() message.

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-27 12:37-0500\n"
+"POT-Creation-Date: 2003-01-28 12:11-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2603,7 +2603,7 @@ msgstr "wy³±czanie %s\n"
 msgid "relocating %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
 
-#: lib/rpmfi.c:877
+#: lib/rpmfi.c:885
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "przesuwanie %s do %s\n"
@@ -3702,17 +3702,17 @@ msgid "(no error)"
 msgstr "(b³±d 0x%x)"
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:130 rpmio/rpmlog.c:131 rpmio/rpmlog.c:132
+#: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatalny b³±d: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:133
+#: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "b³±d: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:134
+#: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "ostrze¿enie: "
 

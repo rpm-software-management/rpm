@@ -57,208 +57,28 @@ static PyObject * archScore(PyObject * self, PyObject * args)
     return Py_BuildValue("i", score);
 }
 
-#ifdef	DYING
 /**
  */
-static int psGetArchScore(Header h)
+static PyObject * setLogFile (PyObject * self, PyObject * args)
 {
-    void * pkgArch;
-    int type, count;
+    PyObject * fop = NULL;
+    FILE * fp = NULL;
 
-    if (!headerGetEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count) ||
-        type == RPM_INT8_TYPE)
-       return 150;
-    else
-        return rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch);
-}
-
-/**
- */
-static int pkgCompareVer(void * first, void * second)
-{
-    struct packageInfo ** a = first;
-    struct packageInfo ** b = second;
-    int ret, score1, score2;
-
-    /* put packages w/o names at the end */
-    if (!(*a)->name) return 1;
-    if (!(*b)->name) return -1;
-
-    ret = xstrcasecmp((*a)->name, (*b)->name);
-    if (ret) return ret;
-    score1 = psGetArchScore((*a)->h);
-    if (!score1) return 1;
-    score2 = psGetArchScore((*b)->h);
-    if (!score2) return -1;
-    if (score1 < score2) return -1;
-    if (score1 > score2) return 1;
-    return rpmVersionCompare((*b)->h, (*a)->h);
-}
-
-/**
- */
-static void pkgSort(struct pkgSet * psp)
-{
-    int i;
-    char *name;
-
-    if (psp->numPackages <= 0)
-	return;
-
-    qsort(psp->packages, psp->numPackages, sizeof(*psp->packages),
-	 (void *) pkgCompareVer);
-
-    name = psp->packages[0]->name;
-    if (!name) {
-       psp->numPackages = 0;
-       return;
-    }
-    for (i = 1; i < psp->numPackages; i++) {
-       if (!psp->packages[i]->name) break;
-       if (!strcmp(psp->packages[i]->name, name))
-	   psp->packages[i]->name = NULL;
-       else
-	   name = psp->packages[i]->name;
-    }
-
-    qsort(psp->packages, psp->numPackages, sizeof(*psp->packages),
-	 (void *) pkgCompareVer);
-
-    for (i = 0; i < psp->numPackages; i++)
-       if (!psp->packages[i]->name) break;
-    psp->numPackages = i;
-}
-
-/**
- */
-static PyObject * findUpgradeSet(PyObject * self, PyObject * args)
-{
-    PyObject * hdrList, * result;
-    char * root = "/";
-    int i;
-    struct pkgSet list;
-    hdrObject * hdr;
-
-    if (!PyArg_ParseTuple(args, "O|s", &hdrList, &root)) return NULL;
-
-    if (!PyList_Check(hdrList)) {
-	PyErr_SetString(PyExc_TypeError, "list of headers expected");
+    if (!PyArg_ParseTuple(args, "|O:logSetFile", &fop))
 	return NULL;
-    }
 
-    list.numPackages = PyList_Size(hdrList);
-    list.packages = alloca(sizeof(list.packages) * list.numPackages);
-    for (i = 0; i < list.numPackages; i++) {
-	hdr = (hdrObject *) PyList_GetItem(hdrList, i);
-	if (((PyObject *) hdr)->ob_type != &hdr_Type) {
-	    PyErr_SetString(PyExc_TypeError, "list of headers expected");
+    if (fop) {
+	if (!PyFile_Check(fop)) {
+	    PyErr_SetString(pyrpmError, "requires file object");
 	    return NULL;
 	}
-	list.packages[i] = alloca(sizeof(struct packageInfo));
-	list.packages[i]->h = hdrGetHeader(hdr);
-	list.packages[i]->selected = 0;
-	list.packages[i]->data = hdr;
-
-	headerGetEntry(list.packages[i]->h, RPMTAG_NAME, NULL,
-		      (void **) &list.packages[i]->name, NULL);
+	fp = PyFile_AsFile(fop);
     }
 
-    pkgSort (&list);
+    (void) rpmlogSetFile(fp);
 
-    if (ugFindUpgradePackages(&list, root)) {
-	PyErr_SetString(pyrpmError, "error during upgrade check");
-	return NULL;
-    }
-
-    result = PyList_New(0);
-    for (i = 0; i < list.numPackages; i++) {
-	if (list.packages[i]->selected) {
-	    PyList_Append(result, list.packages[i]->data);
-/*  	    Py_DECREF(list.packages[i]->data); */
-	}
-    }
-
-    return result;
-}
-#endif
-
-/**
- */
-static PyObject * errorCB = NULL;
-static PyObject * errorData = NULL;
-static PyThreadState * errorThread = NULL;
-
-/**
- */
-static void errorcb (void)
-{
-    PyObject * result, * args = NULL;
-
-    PyEval_RestoreThread(errorThread);
-
-    if (errorData)
-	args = Py_BuildValue("(O)", errorData);
-
-    result = PyEval_CallObject(errorCB, args);
-    Py_XDECREF(args);
-
-    if (result == NULL) {
-	PyErr_Print();
-	PyErr_Clear();
-    }
-
-    errorThread = PyEval_SaveThread();
-
-    Py_DECREF (result);
-}
-
-/**
- */
-static PyObject * errorSetCallback (PyObject * self, PyObject * args)
-{
-    PyObject *newCB = NULL, *newData = NULL;
-
-    if (!PyArg_ParseTuple(args, "O|O", &newCB, &newData)) return NULL;
-
-    /* if we're getting a void*, set the error callback to this. */
-    /* also, we can possibly decref any python callbacks we had  */
-    /* and set them to NULL.                                     */
-    if (PyCObject_Check (newCB)) {
-	rpmErrorSetCallback (PyCObject_AsVoidPtr(newCB));
-
-	Py_XDECREF (errorCB);
-	Py_XDECREF (errorData);
-
-	errorCB   = NULL;
-	errorData = NULL;
-	
-	Py_INCREF(Py_None);
-	return Py_None;
-    }
-    
-    if (!PyCallable_Check (newCB)) {
-	PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-	return NULL;
-    }
-
-    Py_XDECREF(errorCB);
-    Py_XDECREF(errorData);
-
-    errorCB = newCB;
-    errorData = newData;
-    errorThread = PyEval_SaveThread();
-    
-    Py_INCREF (errorCB);
-    Py_XINCREF (errorData);
-
-    return PyCObject_FromVoidPtr(rpmErrorSetCallback (errorcb), NULL);
-}
-
-/**
- */
-static PyObject * errorString (PyObject * self, PyObject * args)
-{
-    return PyString_FromString(rpmErrorString ());
+    Py_INCREF(Py_None);
+    return (PyObject *) Py_None;
 }
 
 /**
@@ -304,10 +124,7 @@ static PyMethodDef rpmModuleMethods[] = {
 
     { "archscore", (PyCFunction) archScore, METH_VARARGS,
 	NULL },
-#ifdef	DYING
-    { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS,
-	NULL },
-#endif
+
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS,
 	NULL },
     { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS,
@@ -318,10 +135,10 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS,
 	NULL },
-    { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS,
+
+    { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS,
 	NULL },
-    { "errorString", (PyCFunction) errorString, METH_VARARGS,
-	NULL },
+
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS,
 	NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS,
@@ -330,6 +147,7 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "setEpochPromote", (PyCFunction) setEpochPromote, METH_VARARGS,
 	NULL },
+
     { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS,
 "rpm.dsSingle(TagN, N, [EVR, [Flags]] -> ds\n\
 - Create a single element dependency set.\n" },

@@ -114,6 +114,8 @@
 	- fix: debugedit.c problem.
 	- permit anaconda to choose "presentation order".
 	- fix: more debugedit.c problems.
+	- fix: clean relocation path for --prefix=/.
+	- python: permit stdout/stderr to be remapped to install.log.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

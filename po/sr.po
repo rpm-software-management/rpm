@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-27 12:37-0500\n"
+"POT-Creation-Date: 2003-01-28 12:11-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2594,7 +2594,7 @@ msgstr "Pribavljam %s\n"
 msgid "relocating %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmfi.c:877
+#: lib/rpmfi.c:885
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
@@ -3697,17 +3697,17 @@ msgid "(no error)"
 msgstr "gre¹ka: "
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:130 rpmio/rpmlog.c:131 rpmio/rpmlog.c:132
+#: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatalna gre¹ka: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:133
+#: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "gre¹ka: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:134
+#: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "upozorenje: "
 

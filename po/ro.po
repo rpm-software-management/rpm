@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-27 12:37-0500\n"
+"POT-Creation-Date: 2003-01-28 12:11-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -2465,7 +2465,7 @@ msgstr ""
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:877
+#: lib/rpmfi.c:885
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
@@ -3540,17 +3540,17 @@ msgid "(no error)"
 msgstr ""
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:130 rpmio/rpmlog.c:131 rpmio/rpmlog.c:132
+#: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr ""
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:133
+#: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr ""
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:134
+#: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr ""
 

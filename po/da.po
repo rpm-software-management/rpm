@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-27 12:37-0500\n"
+"POT-Creation-Date: 2003-01-28 12:11-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2560,7 +2560,7 @@ msgstr "ekskluderer %s %s\n"
 msgid "relocating %s to %s\n"
 msgstr "omrokerer %s til %s\n"
 
-#: lib/rpmfi.c:877
+#: lib/rpmfi.c:885
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "omrokerer kataloget %s til %s\n"
@@ -3656,17 +3656,17 @@ msgid "(no error)"
 msgstr "(ingen fejl)"
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:130 rpmio/rpmlog.c:131 rpmio/rpmlog.c:132
+#: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "fatal fejl: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:133
+#: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "fejl: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:134
+#: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "advarsel: "
 

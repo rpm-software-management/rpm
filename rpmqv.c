@@ -847,9 +847,10 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_ERASE:
 #endif
     case MODE_UNKNOWN:
-	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose())
+	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose()) {
 	    printUsage(optCon, stdout, 0);
-	ec = argc;
+	    ec = argc;
+	}
 	break;
     }
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-27 12:37-0500\n"
+"POT-Creation-Date: 2003-01-28 12:11-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2564,7 +2564,7 @@ msgstr "%s %s dýþlanýyor\n"
 msgid "relocating %s to %s\n"
 msgstr "%s %s'e konumlanýyor\n"
 
-#: lib/rpmfi.c:877
+#: lib/rpmfi.c:885
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizini %s de yeniden konumlanýyor\n"
@@ -3652,17 +3652,17 @@ msgid "(no error)"
 msgstr "(hata yok)"
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:130 rpmio/rpmlog.c:131 rpmio/rpmlog.c:132
+#: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "ölümcül hata: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:133
+#: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "hata: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:134
+#: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "uyarý: "
 

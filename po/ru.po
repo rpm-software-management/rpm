@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-27 12:37-0500\n"
+"POT-Creation-Date: 2003-01-28 12:11-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2516,7 +2516,7 @@ msgstr "исключается %s %s\n"
 msgid "relocating %s to %s\n"
 msgstr "перемещается %s в %s\n"
 
-#: lib/rpmfi.c:877
+#: lib/rpmfi.c:885
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещается каталог %s в %s\n"
@@ -3600,17 +3600,17 @@ msgid "(no error)"
 msgstr "(нет ошибки)"
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:130 rpmio/rpmlog.c:131 rpmio/rpmlog.c:132
+#: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "фатальная ошибка: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:133
+#: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "ошибка: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:134
+#: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "предупреждение: "
 

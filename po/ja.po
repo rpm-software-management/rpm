@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-27 12:37-0500\n"
+"POT-Creation-Date: 2003-01-28 12:11-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2642,7 +2642,7 @@ msgstr "ファイルの除外: %s%s\n"
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/rpmfi.c:877
+#: lib/rpmfi.c:885
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
@@ -3757,17 +3757,17 @@ msgid "(no error)"
 msgstr "(エラー 0x%x)"
 
 #. !< RPMLOG_EMERG
-#: rpmio/rpmlog.c:130 rpmio/rpmlog.c:131 rpmio/rpmlog.c:132
+#: rpmio/rpmlog.c:142 rpmio/rpmlog.c:143 rpmio/rpmlog.c:144
 msgid "fatal error: "
 msgstr "致命的なエラー: "
 
 #. !< RPMLOG_CRIT
-#: rpmio/rpmlog.c:133
+#: rpmio/rpmlog.c:145
 msgid "error: "
 msgstr "エラー: "
 
 #. !< RPMLOG_ERR
-#: rpmio/rpmlog.c:134
+#: rpmio/rpmlog.c:146
 msgid "warning: "
 msgstr "警告: "
 

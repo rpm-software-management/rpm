@@ -870,8 +870,16 @@ assert(p != NULL);
 	    if (relocations[j].newPath) { /* Relocate the path */
 		const char * s = relocations[j].newPath;
 		char * t = alloca(strlen(s) + strlen(dirNames[i]) - len + 1);
+		size_t slen;
 
 		(void) stpcpy( stpcpy(t, s) , dirNames[i] + len);
+
+		/* Unfortunatly rpmCleanPath strips the trailing slash.. */
+		(void) rpmCleanPath(t);
+		slen = strlen(t);
+		t[slen] = '/';
+		t[slen+1] = '\0';
+
 		if (actions)
 		    rpmMessage(RPMMESS_DEBUG,
 			_("relocating directory %s to %s\n"), dirNames[i], t);
