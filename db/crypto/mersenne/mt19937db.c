@@ -142,11 +142,10 @@ static unsigned long
 __db_genrand(dbenv)
 	DB_ENV *dbenv;
 {
-    unsigned long i, s, y;
+    unsigned long y;
     static unsigned long mag01[2]={0x0, MATRIX_A};
     /* mag01[x] = x * MATRIX_A  for x=0,1 */
-    u_int32_t secs, usecs;
-    u_int8_t mac[DB_MAC_KEY];
+    u_int32_t secs, seed, usecs;
 
     /*
      * We are called with the mt_mutexp locked
@@ -157,19 +156,15 @@ __db_genrand(dbenv)
         if (dbenv->mti == N+1) {  /* if sgenrand() has not been called, */
 		/*
 		 * Seed the generator with the hashed time.  The __db_mac
-		 * function returns a 20 byte value, but we can safely
-		 * just use the first 4 bytes for the seed.
+		 * function will return 4 bytes if we don't send in a key.
 		 */
 		do {
 			if (__os_clock(dbenv, &secs, &usecs) != 0)
 				return (0); /* 0 is the only invalid return */
-			__db_chksum((u_int8_t *)&secs, sizeof(secs), NULL, mac);
-			s = 0;
-			for (i = 0; i < DB_MAC_KEY && s == 0;
-			    i += sizeof(unsigned long))
-				s = mac[i];
-		} while (s == 0);
-        	__db_sgenrand(s, dbenv->mt, &dbenv->mti); 
+			__db_chksum((u_int8_t *)&secs, sizeof(secs), NULL,
+			    (u_int8_t *)&seed);
+		} while (seed == 0);
+        	__db_sgenrand((long)seed, dbenv->mt, &dbenv->mti); 
 	}
 
         for (kk=0;kk<N-M;kk++) {
