@@ -18,7 +18,6 @@ static void printHeader(Header h, int queryFlags, char * queryFormat);
 static void queryHeader(Header h, const char * incomingFormat);
 static void escapedChar(char ch);
 static const char * handleFormat(Header h, const char * chptr);
-static char * getString(Header h, int tag, char * def);    
 static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags, 
 			char * queryFormat);
 static int findMatches(rpmdb db, char * name, char * version, char * release,
@@ -28,16 +27,14 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  char * owner, char * group, int uid, int gid,
 			  char * linkto);
 
-static char * getString(Header h, int tag, char * def) {
-    char * str;
-    int count, type;
-   
-    if (!getEntry(h, tag, &type, (void **) &str, &count)) {
-	return def;
-    } 
- 
-    return str;
-}
+static char * defaultQueryFormat = 
+	    "Name        : %-27{NAME} Distribution: %{DISTRIBUTION}\n"
+	    "Version     : %-27{VERSION}       Vendor: %{VENDOR}\n"
+	    "Release     : %-27{RELEASE}   Build Date: %{-BUILDTIME}\n"
+	    "Install date: %-27{-INSTALLTIME}   Build Host: %{BUILDHOST}\n"
+	    "Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n"
+	    "Size        : %{SIZE}\n"
+	    "Description : %{DESCRIPTION}\n";
 
 static void queryHeader(Header h, const char * chptr) {
     while (chptr && *chptr) {
@@ -174,18 +171,10 @@ static void escapedChar(const char ch) {
 
 static void printHeader(Header h, int queryFlags, char * queryFormat) {
     char * name, * version, * release;
-    char * distribution, * vendor, * group, *description, * buildHost;
-    uint_32 * size;
     int_32 count, type;
-    int_32 * pBuildDate, * pInstallDate;
-    time_t buildDate, installDate;
     char * prefix = NULL;
-    char buildDateStr[100];
-    char installDateStr[100];
-    struct tm * tstruct;
     char ** fileList;
     char * fileStatesList;
-    char * sourcePackage;
     char ** fileOwnerList, ** fileGroupList;
     char ** fileLinktoList;
     int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
@@ -202,56 +191,11 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	printf("%s-%s-%s\n", name, version, release);
     } else {
 	if (queryFlags & QUERY_FOR_INFO) {
-	    if (queryFormat) {
-		queryHeader(h, queryFormat);
-	    } else {
-		distribution = getString(h, RPMTAG_DISTRIBUTION, "");
-		description = getString(h, RPMTAG_DESCRIPTION, "");
-		buildHost = getString(h, RPMTAG_BUILDHOST, "");
-		vendor = getString(h, RPMTAG_VENDOR, "");
-		group = getString(h, RPMTAG_GROUP, "Unknown");
-		sourcePackage = getString(h, RPMTAG_SOURCERPM, "Unknown");
-		if (!getEntry(h, RPMTAG_SIZE, &type, (void **) &size, &count)) 
-		    size = NULL;
+	    if (!queryFormat) {
+		queryFormat = defaultQueryFormat;
+	    } 
 
-		if (getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, 
-			     &count)) {
-		    /* this is important if sizeof(int_32) ! sizeof(time_t) */
-		    buildDate = *pBuildDate; 
-		    tstruct = localtime(&buildDate);
-		    strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", 
-			     tstruct);
-		} else
-		    strcpy(buildDateStr, "(unknown)");
-
-		if (getEntry(h, RPMTAG_INSTALLTIME, &type, 
-			     (void **) &pInstallDate, 
-		    &count)) {
-		    /* this is important if sizeof(int_32) ! sizeof(time_t) */
-		    installDate = *pInstallDate; 
-		    tstruct = localtime(&installDate);
-		    strftime(installDateStr, sizeof(installDateStr) - 1, "%c", 
-			     tstruct);
-		} else 
-		    strcpy(installDateStr, "(unknown)");
-	       
-		printf("Name        : %-27s Distribution: %s\n", 
-		       name, distribution);
-		printf("Version     : %-27s       Vendor: %s\n", version, 
-			vendor);
-		printf("Release     : %-27s   Build Date: %s\n", release,
-		       buildDateStr); 
-		printf("Install date: %-27s   Build Host: %s\n", 
-			installDateStr, buildHost);
-		printf("Group       : %-27s   Source RPM: %s\n", group, 
-		       sourcePackage);
-		if (size) 
-		    printf("Size        : %d\n", *size);
-		else 
-		    printf("Size        : (unknown)\n");
-		printf("Description : %s\n", description);
-		prefix = "    ";
-	    }
+	    queryHeader(h, queryFormat);
 	}
 
 	if (queryFlags & QUERY_FOR_LIST) {
@@ -457,7 +401,7 @@ static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags,
     }
 }
 
-void doQuery(char * prefix, enum querysources source, int queryFlags, 
+int doQuery(char * prefix, enum querysources source, int queryFlags, 
 	     char * arg, char * queryFormat) {
     Header h;
     int offset;
@@ -467,6 +411,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
     rpmdb db;
     dbIndexSet matches;
     int recNumber;
+    int retcode = 0;
 
     if (source != QUERY_SRPM && source != QUERY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
@@ -495,6 +440,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 		    break;
 		case 1:
 		    fprintf(stderr, "%s is not an RPM\n", arg);
+		    retcode = 1;
 	    }
 
 	}
@@ -507,7 +453,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 	    h = rpmdbGetRecord(db, offset);
 	    if (!h) {
 		fprintf(stderr, "could not read database record!\n");
-		exit(1);
+		return 1;
 	    }
 	    printHeader(h, queryFlags, queryFormat);
 	    freeHeader(h);
@@ -519,6 +465,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
       case QUERY_GROUP:
 	if (rpmdbFindByGroup(db, arg, &matches)) {
 	    fprintf(stderr, "group %s does not contain any pacakges\n", arg);
+	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
 	    freeDBIndexRecord(matches);
@@ -529,6 +476,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
       case QUERY_PATH:
 	if (rpmdbFindByFile(db, arg, &matches)) {
 	    fprintf(stderr, "file %s is not owned by any package\n", arg);
+	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
 	    freeDBIndexRecord(matches);
@@ -542,17 +490,20 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 	    message(MESS_DEBUG, "showing package: %d\n", recNumber);
 	    h = rpmdbGetRecord(db, recNumber);
 
-	    if (!h) 
+	    if (!h)  {
 		fprintf(stderr, "record %d could not be read\n", recNumber);
-	    else {
+		retcode = 1;
+	    } else {
 		printHeader(h, queryFlags, queryFormat);
 		freeHeader(h);
 	    }
 	} else {
 	    rc = findPackageByLabel(db, arg, &matches);
-	    if (rc == 1) 
+	    if (rc == 1) {
+		retcode = 1;
 		fprintf(stderr, "package %s is not installed\n", arg);
-	    else if (rc == 2) {
+	    } else if (rc == 2) {
+		retcode = 1;
 		fprintf(stderr, "error looking for package %s\n", arg);
 	    } else {
 		showMatches(db, matches, queryFlags, queryFormat);
@@ -565,6 +516,8 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
     if (source != QUERY_SRPM && source != QUERY_RPM) {
 	rpmdbClose(db);
     }
+
+    return retcode;
 }
 
 /* 0 found matches */
@@ -655,4 +608,13 @@ int findMatches(rpmdb db, char * name, char * version, char * release,
     }
     
     return 0;
+}
+
+void queryPrintTags(void) {
+    const struct rpmTagTableEntry * t;
+    int i;
+
+    for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
+	printf("%s\n", t->name);
+    }
 }
