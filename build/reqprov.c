@@ -228,11 +228,9 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     writeBytes = 0;
     while (count--) {
         s = *f++;
-	if (S_ISREG(*modes++)) {
-	    /* We skip the leading "/" (already normalized) */
-	    writeBytes += strlen(s);
-	    appendLineStringBuf(writeBuff, s + 1);
-	}
+	/* We skip the leading "/" (already normalized) */
+	writeBytes += strlen(s);
+	appendLineStringBuf(writeBuff, s + 1);
     }
     if (fsave) {
 	free(fsave);
