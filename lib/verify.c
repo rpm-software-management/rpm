@@ -19,7 +19,10 @@
 /*@access rpmdb*/	/* XXX compared with NULL */
 
 static int _ie = 0x44332211;
-static union _vendian { int i; char b[4]; } *_endian = (union _vendian *)&_ie;
+static union _vendian {
+/*@unused@*/ int i;
+    char b[4];
+} *_endian = (union _vendian *)&_ie;
 #define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
 #define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
 

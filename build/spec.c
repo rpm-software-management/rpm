@@ -9,8 +9,12 @@
 #include "buildio.h"
 #include "debug.h"
 
+/*@-redecl@*/
 extern int specedit;
+/*@=redecl@*/
+/*@-exportheadervar@*/
 extern struct MacroContext_s rpmGlobalMacroContext;
+/*@=exportheadervar@*/
 
 #define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}

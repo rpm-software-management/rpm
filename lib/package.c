@@ -101,7 +101,6 @@ static rpmRC readPackageHeaders(FD_t fd,
     struct rpmlead * lead;
     char * defaultPrefix;
     struct stat sb;
-    int_32 true = 1;
     rpmRC rc;
 
     hdr = hdrPtr ? hdrPtr : &hdrBlock;
@@ -175,9 +174,10 @@ static rpmRC readPackageHeaders(FD_t fd,
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
         if (lead->type == RPMLEAD_SOURCE) {
+	    int_32 one = 1;
 	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
 	    	(void)headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
-				&true, 1);
+				&one, 1);
 	} else if (lead->major < 4) {
 	    /* Retrofit "Provide: name = EVR" for binary packages. */
 	    providePackageNVR(*hdr);

@@ -1388,17 +1388,23 @@ struct tsIterator_s {
 };
 
 /**
+ * Return transaction element order count.
+ * @param a		transaction element iterator
+ * @return		element order count
  */
-static int tsGetOc(void * this) {
-    struct tsIterator_s * iter = this;
+static int tsGetOc(void * a) {
+    struct tsIterator_s * iter = a;
     int oc = iter->ocsave;
     return oc;
 }
 
 /**
+ * Return transaction element available package pointer.
+ * @param a		transaction element iterator
+ * @return		available package pointer
  */
-static /*@dependent@*/ struct availablePackage * tsGetAlp(void * this) {
-    struct tsIterator_s * iter = this;
+static /*@dependent@*/ struct availablePackage * tsGetAlp(void * a) {
+    struct tsIterator_s * iter = a;
     struct availablePackage * alp = NULL;
     int oc = iter->ocsave;
 
@@ -1413,22 +1419,22 @@ static /*@dependent@*/ struct availablePackage * tsGetAlp(void * this) {
 
 /**
  * Destroy transaction element iterator.
- * @param this		transaction element iterator
+ * @param a		transaction element iterator
  * @return		NULL always
  */
-static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ const void * this)
+static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ const void * a)
 {
-    return _free(this);
+    return _free(a);
 }
 
 /**
  * Create transaction element iterator.
- * @param this		transaction set
+ * @param a		transaction set
  * @return		transaction element iterator
  */
-static void * tsInitIterator(/*@kept@*/ const void * this)
+static void * tsInitIterator(/*@kept@*/ const void * a)
 {
-    rpmTransactionSet ts = (void *)this;
+    rpmTransactionSet ts = (void *)a;
     struct tsIterator_s * iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
@@ -1441,11 +1447,11 @@ static void * tsInitIterator(/*@kept@*/ const void * this)
 
 /**
  * Return next transaction element's file info.
- * @param this		file info iterator
+ * @param a		file info iterator
  * @return		next index, -1 on termination
  */
-static /*@dependent@*/ TFI_t tsNextIterator(void * this) {
-    struct tsIterator_s * iter = this;
+static /*@dependent@*/ TFI_t tsNextIterator(void * a) {
+    struct tsIterator_s * iter = a;
     rpmTransactionSet ts = iter->ts;
     TFI_t fi = NULL;
     int oc = -1;
@@ -1526,7 +1532,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 #else
 	    struct statfs sfb;
 #  if STAT_STATFS4
-/* this platform has the 4-argument version of the statfs call.  The last two
+/* This platform has the 4-argument version of the statfs call.  The last two
  * should be the size of struct statfs and 0, respectively.  The 0 is the
  * filesystem type, and is always 0 when statfs is called on a mounted
  * filesystem, as we're doing.

@@ -399,9 +399,9 @@ static int filenamesTag(Header h, /*@out@*/ int_32 * type,
 
 /* I18N look aside diversions */
 
-/*@-exportlocal@*/
+/*@-exportlocal -exportheadervar@*/
 int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
-/*@=exportlocal@*/
+/*@=exportlocal =exportheadervar@*/
 static const char * language = "LANGUAGE";
 
 static char * _macro_i18ndomains = "%{?_i18ndomains:%{_i18ndomains}}";

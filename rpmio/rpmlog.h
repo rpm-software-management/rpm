@@ -19,6 +19,7 @@
  *
  * priorities (these are ordered)
  */
+/*@-typeuse@*/
 typedef enum rpmlogLvl_e {
     RPMLOG_EMERG	= 0,	/*!< system is unusable */
     RPMLOG_ALERT	= 1,	/*!< action must be taken immediately */
@@ -29,6 +30,7 @@ typedef enum rpmlogLvl_e {
     RPMLOG_INFO		= 6,	/*!< informational */
     RPMLOG_DEBUG	= 7	/*!< debug-level messages */
 } rpmlogLvl;
+/*@=typeuse@*/
 
 #define	RPMLOG_PRIMASK	0x07	/* mask to extract priority part (internal) */
 				/* extract priority */
@@ -65,6 +67,7 @@ RPMCODE rpmprioritynames[] =
 /**
  * facility codes
  */
+/*@-enummemuse -typeuse@*/
 typedef	enum rpmlogFac_e {
     RPMLOG_KERN		= (0<<3),	/*!< kernel messages */
     RPMLOG_USER		= (1<<3),	/*!< random user-level messages */
@@ -92,6 +95,7 @@ typedef	enum rpmlogFac_e {
 #define	RPMLOG_NFACILITIES 24	/*!< current number of facilities */
     RPMLOG_ERRMSG	= (((unsigned)(RPMLOG_NFACILITIES+0))<<3)
 } rpmlogFac;
+/*@=enummemuse =typeuse@*/
 
 #define	RPMLOG_FACMASK	0x03f8	/*!< mask to extract facility part */
 #define	RPMLOG_FAC(p)	(((p) & RPMLOG_FACMASK) >> 3)
@@ -165,42 +169,51 @@ extern "C" {
  * Return number of rpmError() ressages.
  * @return		number of messages
  */
-int rpmlogGetNrecs(void);
+int rpmlogGetNrecs(void)	/*@*/;
 
 /**
  * Print all rpmError() messages.
  * @param f		file handle (NULL uses stderr)
  */
-void rpmlogPrint(FILE *f);
+void rpmlogPrint(FILE *f)
+	/*@modifies *f @*/;
 
 /**
  * Close desriptor used to write to system logger.
  * @todo Implement.
  */
-void rpmlogClose (void);
+/*@unused@*/
+void rpmlogClose (void)
+	/*@modifies internalState @*/;
 
 /**
  * Open connection to system logger.
  * @todo Implement.
  */
-void rpmlogOpen (const char *ident, int option, int facility);
+/*@unused@*/
+void rpmlogOpen (const char * ident, int option, int facility)
+	/*@modifies internalState @*/;
 
 /**
  * Set the log mask level.
  */
-int rpmlogSetMask (int mask);
+int rpmlogSetMask (int mask)
+	/*@modifies internalState @*/;
 
 /**
  * Generate a log message using FMT string and option arguments.
  */
-/*@mayexit@*/ /*@printflike@*/ void rpmlog (int pri, const char *fmt, ...);
+/*@mayexit@*/ /*@printflike@*/ void rpmlog (int pri, const char *fmt, ...)
+	/*@modifies internalState @*/;
 
 /*@-exportlocal@*/
 /**
  * Return text of last rpmError() message.
  * @return		text of last message
  */
-/*@observer@*/ /*@null@*/ const char * rpmlogMessage(void);
+/*@-redecl@*/
+/*@observer@*/ /*@null@*/ const char * rpmlogMessage(void)	/*@*/;
+/*@=redecl@*/
 
 /**
  * Return error code from last rpmError() message.
@@ -209,33 +222,37 @@ int rpmlogSetMask (int mask);
  *	and parsed IMHO.
  * @return		code from last message
  */
-int rpmlogCode(void);
+int rpmlogCode(void)	/*@*/;
 
 /**
  * Set rpmlog callback function.
  */
-rpmlogCallback rpmlogSetCallback(rpmlogCallback cb);
+rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
+	/*@modifies internalState @*/;
 /*@=exportlocal@*/
 
 /**
  * Set rpmlog callback function.
  * @deprecated gnorpm needs, use rpmlogSetCallback() instead.
  */
-extern rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb);
+extern rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
+	/*@modifies internalState @*/;
 
 /**
  * Return error code from last rpmError() message.
  * @deprecated Perl-RPM needs, use rpmlogCode() instead.
  * @return		code from last message
  */
-extern int rpmErrorCode(void);
+extern int rpmErrorCode(void)	/*@*/;
 
 /**
  * Return text of last rpmError() message.
  * @deprecated gnorpm needs, use rpmlogMessage() instead.
  * @return		text of last message
  */
-/*@observer@*/ /*@null@*/ extern const char * rpmErrorString(void);
+/*@-redecl@*/
+/*@observer@*/ /*@null@*/ extern const char * rpmErrorString(void)	/*@*/;
+/*@=redecl@*/
 
 #ifdef __cplusplus
 }

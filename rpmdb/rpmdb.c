@@ -24,13 +24,15 @@ static int _debug = 0;
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
 
+/*@-redecl@*/
 extern int _noDirTokens;
+/*@=redecl@*/
 static int _rebuildinprogress = 0;
 static int _db_filter_dups = 1;
 
-/*@-exportlocal@*/
+/*@-exportlocal -exportheadervar@*/
 int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
-/*@=exportlocal@*/
+/*@=exportlocal =exportheadervar@*/
 
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
@@ -114,6 +116,7 @@ static void dbiTagsInit(void)
     dbiTagStr = _free(dbiTagStr);
 }
 
+/*@-redecl@*/
 #if USE_DB1
 extern struct _dbiVec db1vec;
 #define	DB1vec		&db1vec
@@ -134,6 +137,7 @@ extern struct _dbiVec db3vec;
 #else
 #define	DB3vec		NULL
 #endif
+/*@=redecl@*/
 
 /*@-nullassign@*/
 static struct _dbiVec *mydbvecs[] = {
@@ -998,7 +1002,9 @@ int rpmdbVerify(const char * prefix)
 	    /*@=unqualifiedtrans@*/
 	}
 
+	/*@-nullstate@*/	/* FIX: rpmdb->_dbi[] may be NULL. */
 	xx = rpmdbClose(rpmdb);
+	/*@=nullstate@*/
 	if (xx && rc == 0) rc = xx;
 	rpmdb = NULL;
     }
@@ -1742,6 +1748,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     mi->mi_dbc = NULL;
     mi->mi_set = set;
     mi->mi_setx = 0;
+    mi->mi_ndups = 0;
     mi->mi_h = NULL;
     mi->mi_sorted = 0;
     mi->mi_cflags = 0;

@@ -19,9 +19,9 @@
 #if DB_VERSION_MAJOR == 3
 #define	__USE_DB3	1
 
-/*@-exportlocal@*/
+/*@-exportlocal -exportheadervar@*/
 struct _dbiIndex db3dbi;
-/*@=exportlocal@*/
+/*@=exportlocal =exportheadervar@*/
 
 /** \ingroup db3
  *  Analogue to struct poptOption
@@ -39,7 +39,7 @@ struct dbOption {
 #define	_POPT_SET_BIT	(POPT_ARG_VAL|POPT_ARGFLAG_OR)
 #define	_POPT_UNSET_BIT	(POPT_ARG_VAL|POPT_ARGFLAG_NAND)
 
-/*@-immediatetrans -exportlocal@*/
+/*@-immediatetrans -exportlocal -exportheadervar@*/
 /** \ingroup db3
  */
 struct dbOption rdbOptions[] = {
@@ -247,7 +247,7 @@ struct dbOption rdbOptions[] = {
 
  { NULL, 0,0, NULL, 0, NULL, NULL }
 };
-/*@=immediatetrans =exportlocal@*/
+/*@=immediatetrans =exportlocal =exportheadervar@*/
 
 static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong) {
     if (argInfo & POPT_ARGFLAG_NOT)
@@ -314,6 +314,7 @@ dbiIndex db3Free(dbiIndex dbi) {
     return dbi;
 }
 
+/** @todo Set a reasonable "last gasp" default db config. */
 static const char *db3_config_default =
     "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:mp_size=512Kb:pagesize=512:perms=0644";
 

@@ -23,18 +23,18 @@
 #include "debug.h"
 
 static int _ie = 0x44332211;
-static union _mendian { int i; char b[4]; } *_endian = (union _mendian *)&_ie;
+static union _mendian {
+/*@unused@*/ int i;
+    char b[4];
+} *_endian = (union _mendian *)&_ie;
 #define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
 #define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
-
-/*@-exportlocal@*/
-void byteReverse(unsigned char *buf, unsigned longs);
-/*@=exportlocal@*/
 
 /*
  * Note: this code is harmless on little-endian machines.
  */
-void byteReverse(unsigned char *buf, unsigned longs)
+static void byteReverse(unsigned char *buf, unsigned longs)
+	/*@modifies *buf @*/
 {
     uint32 t;
     do {

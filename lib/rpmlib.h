@@ -33,10 +33,12 @@ extern "C" {
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
+ * @param p		memory to free
  * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * p) {
+/*@unused@*/ static inline /*@null@*/ void *
+_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
+{
     if (p != NULL)	free((void *)p);
     return NULL;
 }
@@ -146,10 +148,12 @@ int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  * @retval c		address of number of values
  * @return		0 on success, 1 on bad magic, 2 on error
  */
+/*@unused@*/
 int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
         int_32 tag, int_32 *type, void **p, int_32 *c)
 		/*@modifies *type, *p, *c @*/;
 
+/*@-redecl@*/
 /**
  * Automatically generated table of tag name/value pairs.
  */
@@ -165,6 +169,7 @@ extern const int rpmTagTableSize;
  * @note Chains to headerDefaultFormats[].
  */
 extern const struct headerSprintfExtension rpmHeaderFormats[];
+/*@=redecl@*/
 
 /**
  * Pseudo-tags used by the rpmdb iterator API.
@@ -180,6 +185,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
  * Tags identify data in package headers.
  * @note tags should not have value 0!
  */
+/*@-enummemuse -typeuse@*/
 typedef enum rpmTag_e {
 
     RPMTAG_HEADERIMAGE		= HEADER_IMAGE,		/*!< Current image. */
@@ -328,26 +334,32 @@ typedef enum rpmTag_e {
     RPMTAG_REMOVETID		= 1129,
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
+/*@=enummemuse =typeuse@*/
 
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 /**
  * File States (when installed).
  */
+/*@-typeuse@*/
 typedef enum rpmfileStates_e {
     RPMFILE_STATE_NORMAL 	= 0,
     RPMFILE_STATE_REPLACED 	= 1,
     RPMFILE_STATE_NOTINSTALLED	= 2,
     RPMFILE_STATE_NETSHARED	= 3
 } rpmfileStates;
+/*@=typeuse@*/
 
 /**
  * File Attributes.
  */
+/*@-typeuse@*/
 typedef	enum rpmfileAttrs_e {
     RPMFILE_CONFIG	= (1 << 0),	/*!< from %%config */
     RPMFILE_DOC		= (1 << 1),	/*!< from %%doc */
+/*@-enummemuse@*/
     RPMFILE_DONOTUSE	= (1 << 2),	/*!< @todo (unimplemented) from %donotuse. */
+/*@=enummemuse@*/
     RPMFILE_MISSINGOK	= (1 << 3),	/*!< from %%config(missingok) */
     RPMFILE_NOREPLACE	= (1 << 4),	/*!< from %%config(noreplace) */
     RPMFILE_SPECFILE	= (1 << 5),	/*!< @todo (unnecessary) marks 1st file in srpm. */
@@ -356,6 +368,7 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_README	= (1 << 8),	/*!< from %%readme */
     RPMFILE_EXCLUDE	= (1 << 9)	/*!< from %%exclude */
 } rpmfileAttrs;
+/*@=typeuse@*/
 #define	RPMFILE_MULTILIB_SHIFT		9
 #define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
 #define	RPMFILE_MULTILIB_MASK		RPMFILE_MULTILIB(7)
@@ -368,7 +381,9 @@ typedef	enum rpmfileAttrs_e {
  */
 typedef	enum rpmsenseFlags_e {
     RPMSENSE_ANY	= 0,
+/*@-enummemuse@*/
     RPMSENSE_SERIAL	= (1 << 0),	/*!< @todo Legacy. */
+/*@=enummemuse@*/
     RPMSENSE_LESS	= (1 << 1),
     RPMSENSE_GREATER	= (1 << 2),
     RPMSENSE_EQUAL	= (1 << 3),
@@ -394,7 +409,9 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
     RPMSENSE_SCRIPT_CLEAN = (1 << 23),	/*!< %clean build dependency. */
     RPMSENSE_RPMLIB	= ((1 << 24) | RPMSENSE_PREREQ), /*!< rpmlib(feature) dependency. */
+/*@-enummemuse@*/
     RPMSENSE_TRIGGERPREIN = (1 << 25)	/*!< @todo Implement %triggerprein. */
+/*@=enummemuse@*/
 
 } rpmsenseFlags;
 
@@ -447,7 +464,9 @@ typedef	enum rpmsenseFlags_e {
  * @deprecated Use rpmExpand() with appropriate macro expression.
  * @todo Eliminate from API.
  */
+/*@-redecl@*/
 /*@observer@*/ /*@null@*/ extern const char * rpmGetVar(int var)	/*@*/;
+/*@=redecl@*/
 
 /** \ingroup rpmrc
  * Set value of an rpmrc variable.
@@ -461,7 +480,9 @@ void rpmSetVar(int var, const char *val);
  * This is a colon separated list of files. URI's are permitted as well,
  * identified by the token '://', so file paths must not begin with '//'.
  */
+/*@-redecl@*/
 extern const char * macrofiles;
+/*@=redecl@*/
 
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.
@@ -561,6 +582,7 @@ void rpmSetMachine(/*@null@*/ const char * arch, /*@null@*/ const char * os);
  * @retval arch		address of arch name (or NULL)
  * @retval os		address of os name (or NULL)
  */
+/*@unused@*/
 void rpmGetMachine( /*@null@*/ /*@out@*/ const char **arch,
 	/*@null@*/ /*@out@*/ const char **os)
 		/*@modifies *arch, *os @*/;
@@ -630,11 +652,11 @@ int rpmdbSync (/*@null@*/ rpmdb rpmdb)
 
 /** \ingroup rpmdb
  * Open all database indices.
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @return		0 on success
  */
-int rpmdbOpenAll (/*@null@*/ rpmdb rpmdb)
-		/*@modifies fileSystem @*/;
+int rpmdbOpenAll (/*@null@*/ rpmdb db)
+		/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Return number of instances of package in rpm database.
@@ -643,7 +665,7 @@ int rpmdbOpenAll (/*@null@*/ rpmdb rpmdb)
  * @return		number of instances
  */
 int rpmdbCountPackages(rpmdb db, const char * name)
-		/*@*/;
+		/*@modifies db @*/;
 
 /** \ingroup rpmdb
  */
@@ -758,36 +780,36 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
 
 /** \ingroup rpmdb
  * Return database iterator.
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @param rpmtag	rpm tag
  * @param keyp		key data (NULL for sequential access)
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
-			/*@kept@*/ /*@null@*/ rpmdb rpmdb, int rpmtag,
+			/*@kept@*/ /*@null@*/ rpmdb db, int rpmtag,
 			/*@null@*/ const void * key, size_t keylen)
-		/*@modifies fileSystem @*/;
+		/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @param iid		install transaction id (or -1 to skip)
  * @param h		header
  * @return		0 on success
  */
-int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
-		/*@modifies h, fileSystem @*/;
+int rpmdbAdd(rpmdb db, int iid, Header h)
+		/*@modifies db, h, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @param rid		remove transaction id (or -1 to skip)
  * @param offset	location in Packages dbi
  * @return		0 on success
  */
-int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int offset)
-		/*@modifies fileSystem @*/;
+int rpmdbRemove(rpmdb db, int rid, unsigned int offset)
+		/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.
@@ -882,7 +904,9 @@ void printDepProblems(FILE * fp, const rpmDependencyConflict conflicts,
  * @param prob		rpm problem
  * @return		formatted string
  */
+/*@-redecl@*/
 /*@only@*/ extern const char * rpmProblemString(const rpmProblem prob)	/*@*/;
+/*@=redecl@*/
 
 /**
  * Output formatted string representation of problem to file handle.
@@ -914,14 +938,16 @@ void rpmProblemSetFree( /*@only@*/ rpmProblemSet probs);
  * Prototype for headerFreeData() vector.
  */
 typedef /*@null@*/
-    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type);
+    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
+	/*@modifies data @*/;
 
 /**
  * Prototype for headerGetEntry() vector.
  */
-typedef int (*HGE_t) (Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 * type,
+typedef int (*HGE_t) (Header h, int_32 tag,
+			/*@null@*/ /*@out@*/ int_32 * type,
 			/*@null@*/ /*@out@*/ void ** p,
-			/*@null@*/ /*@out@*/int_32 * c)
+			/*@null@*/ /*@out@*/ int_32 * c)
 				/*@modifies *type, *p, *c @*/;
 
 /**
@@ -1062,6 +1088,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, /*@null@*/ FD_t fd,
  * @param h		header
  * @param key		package private data
  */
+/*@unused@*/
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
 		/*@null@*/ /*@owned@*/ const void * key)
 	/*@modifies h, ts @*/;
@@ -1086,6 +1113,7 @@ void rpmtransFree( /*@only@*/ rpmTransactionSet ts)
  * @param ts		transaction set
  * @param fd		file handle
  */
+/*@unused@*/
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
 	/*@modifies ts, fd @*/;
 
@@ -1097,6 +1125,7 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
  * @retval nep		address of no. of returned elements (or NULL)
  * @return		0 always
  */
+/*@unused@*/
 int rpmtransGetKeys(const rpmTransactionSet ts,
 	/*@null@*/ /*@out@*/ const void *** ep, /*@null@*/ /*@out@*/ int * nep)
 		/*@modifies ep, nep @*/;
@@ -1157,15 +1186,21 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
     RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
     RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
+/*@-enummemuse@*/
     RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
+/*@=enummemuse@*/
     RPMTRANS_FLAG_MULTILIB	= (1 <<  8),	/*!< @todo Document. */
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
 
     RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),
+/*@-enummemuse@*/
     RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
+/*@=enummemuse@*/
     RPMTRANS_FLAG_COMMIT	= (1 << 13),
+/*@-enummemuse@*/
     RPMTRANS_FLAG_UNDO		= (1 << 14),
+/*@=enummemuse@*/
     RPMTRANS_FLAG_REVERSE	= (1 << 15),
 
     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),
@@ -1176,7 +1211,9 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOPREUN	= (1 << 21),
     RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),
     RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),
+/*@-enummemuse@*/
     RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
+/*@=enummemuse@*/
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
     RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
@@ -1203,6 +1240,7 @@ typedef enum rpmtransFlags_e {
  * @retval		address of array of rpmlib internal provide versions
  * @return		no. of entries
  */
+/*@unused@*/
 int rpmGetRpmlibProvides(/*@out@*/ const char *** provNames,
 	/*@out@*/ int ** provFlags, /*@out@*/ const char *** provVersions)
 		/*@ modifies *provNames, *provFlags, *provVersions @*/;
@@ -1280,7 +1318,9 @@ int rpmRunTransactions(rpmTransactionSet ts,
  * @param tag		tag value
  * @return		name of tag
  */
+/*@-redecl@*/
 /*@observer@*/ extern const char *const tagName(int tag)	/*@*/;
+/*@=redecl@*/
 
 /**
  * Return value of tag from name.
@@ -1313,7 +1353,7 @@ struct rpmlead {
     char name[66];
     short osnum;
     short signature_type;	/*!< Signature header type (RPMSIG_HEADERSIG) */
-    char reserved[16];		/*!< Pad to 96 bytes -- 8 byte aligned! */
+/*@unused@*/ char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
 } ;
 
 /**
@@ -1445,6 +1485,7 @@ typedef enum rpmQVSources_e {
 /** \ingroup rpmcli
  * Bit(s) to control rpmQuery() operation, stored in qva_flags.
  */
+/*@-typeuse@*/
 typedef enum rpmQueryFlags_e {
     QUERY_FOR_LIST	= (1 << 1),	/*!< from --list */
     QUERY_FOR_STATE	= (1 << 2),	/*!< from --state */
@@ -1452,16 +1493,19 @@ typedef enum rpmQueryFlags_e {
     QUERY_FOR_CONFIG	= (1 << 4),	/*!< from --configfiles */
     QUERY_FOR_DUMPFILES	= (1 << 8)	/*!< from --dump */
 } rpmQueryFlags;
+/*@=typeuse@*/
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmVerify() operation, stored in qva_flags.
  */
+/*@-typeuse@*/
 typedef enum rpmVerifyFlags_e {
     VERIFY_FILES	= (1 <<  9),	/*!< from --nofiles */
     VERIFY_DEPS		= (1 << 10),	/*!< from --nodeps */
     VERIFY_SCRIPT	= (1 << 11),	/*!< from --noscripts */
     VERIFY_MD5		= (1 << 12)	/*!< from --nomd5 */
 } rpmVerifyFlags;
+/*@=typeuse@*/
 
 /** \ingroup rpmcli
  * Describe query/verify command line request.
@@ -1470,7 +1514,7 @@ typedef struct rpmQVArguments_s {
     rpmQVSources qva_source;	/*!< Identify CLI arg type. */
     int 	qva_sourceCount;/*!< Exclusive check (>1 is error). */
     int		qva_flags;	/*!< Bit(s) to control operation. */
-    int		qva_verbose;	/*!< (unused) */
+/*@unused@*/ int qva_verbose;	/*!< (unused) */
 /*@only@*/ /*@null@*/ const char * qva_queryFormat; /*!< Format for headerSprintf(). */
 /*@dependent@*/ /*@null@*/ const char * qva_prefix; /*!< Path to top of install tree. */
     char	qva_mode;	/*!< 'q' is query, 'v' is verify mode. */
@@ -1490,7 +1534,8 @@ extern struct poptOption rpmQVSourcePoptTable[];
  * @param db		rpm database
  * @param h		header to use for query/verify
  */
-typedef	int (*QVF_t) (QVA_t qva, rpmdb db, Header h);
+typedef	int (*QVF_t) (QVA_t qva, rpmdb db, Header h)
+	/*@modifies db @*/;
 
 /** \ingroup rpmcli
  * Display query/verify information for each header in iterator.
@@ -1500,7 +1545,8 @@ typedef	int (*QVF_t) (QVA_t qva, rpmdb db, Header h);
  * @return		result of last non-zero showPackage() return
  */
 int showMatches(QVA_t qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
-	QVF_t showPackage);
+	QVF_t showPackage)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmcli
  */
@@ -1514,30 +1560,31 @@ extern struct poptOption rpmQueryPoptTable[];
  * Display list of tags that can be used in --queryformat.
  * @param f	file handle to use for display
  */
-void rpmDisplayQueryTags(FILE * f)	/*@modifies f@*/;
+void rpmDisplayQueryTags(FILE * f)	/*@modifies f @*/;
 
 /** \ingroup rpmcli
  * Common query/verify source interface, called once for each CLI arg.
  * @param qva		parsed query/verify options
  * @param source	type of source to query/verify
  * @param arg		name of source to query/verify
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @param showPackage	query/verify specific display routine
  * @return		showPackage() result, 1 if rpmdbInitIterator() is NULL
  */
 int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
-	rpmdb rpmdb, QVF_t showPackage)
-		/*@modifies fileSystem@*/;
+	rpmdb db, QVF_t showPackage)
+		/*@modifies db, fileSystem@*/;
 
 /** \ingroup rpmcli
  * Display results of package query.
  * @todo Devise a meaningful return code.
  * @param qva		parsed query/verify options
- * @param rpmdb		rpm database (unused for queries)
+ * @param db		rpm database (unused for queries)
  * @param h		header to use for query
  * @return		0 always
  */
-int showQueryPackage(QVA_t qva, rpmdb rpmdb, Header h);
+int showQueryPackage(QVA_t qva, rpmdb db, Header h)
+	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Display package information.
@@ -1556,12 +1603,12 @@ extern struct poptOption rpmVerifyPoptTable[];
 /** \ingroup rpmcli
  * Display results of package verify.
  * @param qva		parsed query/verify options
- * @param rpmdb		rpm database
+ * @param db		rpm database
  * @param h		header to use for verify
  * @return		result of last non-zero verify return
  */
-int showVerifyPackage(QVA_t qva, /*@only@*/ rpmdb rpmdb, Header h)
-		/*@modifies fileSystem@*/;
+int showVerifyPackage(QVA_t qva, /*@only@*/ rpmdb db, Header h)
+		/*@modifies db, fileSystem@*/;
 
 /** \ingroup rpmcli
  * Verify package install.
@@ -1653,6 +1700,7 @@ int rpmErase(/*@null@*/ const char * rootdir, /*@null@*/ const char ** argv,
 /** \ingroup signature
  * Tags found in signature header from package.
  */
+/*@-enummemuse@*/
 enum rpmtagSignature {
     RPMSIGTAG_SIZE	= 1000,	/*!< Size in bytes. */
 /* the md5 sum was broken *twice* on big endian machines */
@@ -1684,6 +1732,7 @@ enum rpmtagSignature {
     RPMTAG_HASH_TIGER192= RPMTAG_HASH_BASE+6,	/*!< (unused) */
     RPMTAG_HASH_HAVAL_5_160= RPMTAG_HASH_BASE+7	/*!< (unused) */
 };
+/*@=enummemuse@*/
 
 /**
  *  Return codes from verifySignature().

@@ -139,8 +139,8 @@ void * showProgress(/*@null@*/ const void * arg, const rpmCallbackType what,
     case RPMCALLBACK_TRANS_PROGRESS:
     case RPMCALLBACK_INST_PROGRESS:
 	if (flags & INSTALL_PERCENT)
-	    fprintf(stdout, "%%%% %f\n", (total
-				? ((float) ((((float) amount) / total) * 100))
+	    fprintf(stdout, "%%%% %f\n", (double) (total
+				? ((((float) amount) / total) * 100)
 				: 100.0));
 	else if (flags & INSTALL_HASH)
 	    printHash(amount, total);

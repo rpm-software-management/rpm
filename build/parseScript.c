@@ -13,9 +13,10 @@
 
 /**
  */
-static int addTriggerIndex(Package pkg, const char *file, const char *script, const char *prog)
+static int addTriggerIndex(Package pkg, const char *file,
+	const char *script, const char *prog)
 {
-    struct TriggerFileEntry *new;
+    struct TriggerFileEntry *tfe;
     struct TriggerFileEntry *list = pkg->triggerFiles;
     struct TriggerFileEntry *last = NULL;
     int index = 0;
@@ -29,18 +30,18 @@ static int addTriggerIndex(Package pkg, const char *file, const char *script, co
 	index = last->index + 1;
     }
 
-    new = xmalloc(sizeof(*new));
+    tfe = xmalloc(sizeof(*tfe));
 
-    new->fileName = (file) ? xstrdup(file) : NULL;
-    new->script = (script && *script != '\0') ? xstrdup(script) : NULL;
-    new->prog = xstrdup(prog);
-    new->index = index;
-    new->next = NULL;
+    tfe->fileName = (file) ? xstrdup(file) : NULL;
+    tfe->script = (script && *script != '\0') ? xstrdup(script) : NULL;
+    tfe->prog = xstrdup(prog);
+    tfe->index = index;
+    tfe->next = NULL;
 
     if (last) {
-	last->next = new;
+	last->next = tfe;
     } else {
-	pkg->triggerFiles = new;
+	pkg->triggerFiles = tfe;
     }
 
     return index;

@@ -157,8 +157,10 @@ char *	rpmExpand	(/*@null@*/ const char * arg, ...)
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */
+/*@-redecl@*/
 const char * rpmGetPath	(/*@null@*/ const char * path, ...)
 	/*@*/;
+/*@=redecl@*/
 
 /**
  * Merge 3 args into path, any or all of which may be a url.
@@ -170,10 +172,12 @@ const char * rpmGetPath	(/*@null@*/ const char * path, ...)
  * @param file		file URL (often a file, or NULL)
  * @return		expanded, merged, canonicalized path (malloc'ed)
  */
+/*@-redecl@*/
 const char * rpmGenPath	(/*@null@*/ const char * root,
 			/*@null@*/ const char * mdir,
 			/*@null@*/ const char * file)
 	/*@*/;
+/*@=redecl@*/
 
 /**
  * Return macro expansion as a numeric value.

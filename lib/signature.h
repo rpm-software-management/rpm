@@ -14,7 +14,9 @@
 typedef	enum sigType_e {
     RPMSIGTYPE_NONE	= 0,	/*!< unused, legacy. */
     RPMSIGTYPE_PGP262_1024 = 1,	/*!< unused, legacy. */
+/*@-enummemuse@*/
     RPMSIGTYPE_BAD	= 2,	/*!< Unknown signature type. */
+/*@=enummemuse@*/
     RPMSIGTYPE_MD5	= 3,	/*!< unused, legacy. */
     RPMSIGTYPE_MD5_PGP	= 4,	/*!< unused, legacy. */
     RPMSIGTYPE_HEADERSIG= 5,	/*!< Header style signature */
@@ -92,9 +94,11 @@ int rpmLookupSignatureType(int action)
 /** \ingroup signature
  *  Return path to pgp executable of given type, or NULL when not found.
  */
+/*@-redecl@*/
 /*@null@*/ const char * rpmDetectPGPVersion(
 			/*@null@*/ /*@out@*/ pgpVersion * pgpVer)
 	/*@modifies *pgpVer, fileSystem @*/;
+/*@=redecl@*/
 
 #ifdef __cplusplus
 }

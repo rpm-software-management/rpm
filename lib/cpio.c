@@ -16,7 +16,9 @@
 
 /*@access FSM_t @*/
 
+/*@-exportheadervar@*/
 extern int _fsm_debug;
+/*@=exportheadervar@*/
 
 /**
  * Convert string to unsigned integer (with buffer size check).

@@ -477,7 +477,7 @@ findOption(const struct poptOption * opt, /*@null@*/ const char * longName,
 }
 
 static const char * findNextArg(/*@special@*/ poptContext con,
-		unsigned argx, int delete)
+		unsigned argx, int delete_arg)
 	/*@uses con->optionStack, con->os,
 		con->os->next, con->os->argb, con->os->argc, con->os->argv @*/
 {
@@ -495,7 +495,7 @@ static const char * findNextArg(/*@special@*/ poptContext con,
 	    if (*os->argv[i] == '-') continue;
 	    if (--argx > 0) continue;
 	    arg = os->argv[i];
-	    if (delete) {
+	    if (delete_arg) {
 		if (os->argb == NULL) os->argb = PBM_ALLOC(os->argc);
 		if (os->argb != NULL)	/* XXX can't happen */
 		PBM_SET(i, os->argb);

@@ -67,6 +67,7 @@ typedef /*@only@*/ /*@null@*/
 
 /**
  */
+/*@unused@*/
 void urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
 		int notifyCount);
 

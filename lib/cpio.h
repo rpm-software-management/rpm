@@ -102,14 +102,16 @@ extern "C" {
  * @retval fsm		file path and stat info
  * @return		0 on success
  */
-int cpioTrailerWrite(FSM_t fsm);
+int cpioTrailerWrite(FSM_t fsm)
+	/*@modifies fsm, fileSystem @*/;
 
 /**
  * Write cpio header.
  * @retval fsm		file path and stat info
  * @return		0 on success
  */
-int cpioHeaderWrite(FSM_t fsm, struct stat * st);
+int cpioHeaderWrite(FSM_t fsm, struct stat * st)
+	/*@modifies fsm, fileSystem @*/;
 
 /**
  * Read cpio header.

@@ -155,7 +155,7 @@ struct headerSprintfExtension {
     enum headerSprintfExtenstionType type;	/*!< Type of extension. */
     char * name;				/*!< Name of extension. */
     union {
-	void * generic;				/*!< Private extension. */
+/*@unused@*/ void * generic;			/*!< Private extension. */
 	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
 	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
 	struct headerSprintfExtension * more;	/*!< Chained table extension. */
@@ -165,7 +165,9 @@ struct headerSprintfExtension {
 /** \ingroup header
  * Supported default header tag output formats.
  */
+/*@-redecl@*/
 extern const struct headerSprintfExtension headerDefaultFormats[];
+/*@=redecl@*/
 
 /** \ingroup header
  * Include calculation for 8 bytes of (magic, 0)?
@@ -209,7 +211,8 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  * @return		header
  */
 /*@-exportlocal@*/
-/*@null@*/ Header headerLoad(/*@kept@*/ void * uh)	/*@*/;
+/*@null@*/ Header headerLoad(/*@kept@*/ void * uh)
+	/*@modifies uh @*/;
 /*@=exportlocal@*/
 
 /** \ingroup header
@@ -217,7 +220,8 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
-/*@null@*/ Header headerCopyLoad(void * uh)	/*@*/;
+/*@null@*/ Header headerCopyLoad(void * uh)
+	/*@modifies uh @*/;
 
 /** \ingroup header
  * Convert header to on-disk representation.
@@ -256,13 +260,15 @@ Header headerLink(Header h)
  * @param h		header
  * @return		NULL always
  */
-/*@null@*/ Header headerFree( /*@null@*/ /*@killref@*/ Header h);
+/*@null@*/ Header headerFree( /*@null@*/ /*@killref@*/ Header h)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Return header reference count.
  * @param h		header
  * @return		no. of references
  */
+/*@unused@*/
 int headerUsageCount(Header h)	/*@*/;
 
 /** \ingroup header
@@ -271,6 +277,7 @@ int headerUsageCount(Header h)	/*@*/;
  * @param flags		0 or HEADER_DUMP_LINLINE
  * @param tags		array of tag name/value pairs
  */
+/*@unused@*/
 void headerDump(Header h, FILE *f, int flags,
 		const struct headerTagTableEntry * tags);
 #define HEADER_DUMP_INLINE   1
@@ -333,6 +340,7 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
  * @param h		header
  * @return		array of locales (or NULL on error)
  */
+/*@unused@*/
 /*@only@*/ /*@null@*/ char ** headerGetLangs(Header h)	/*@*/;
 
 /** \ingroup header
@@ -397,13 +405,15 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
+ * @retval type		address of tag value data type (or NULL)
+ * @retval p		address of pointer to tag value(s) (or NULL)
+ * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 *type,
-	/*@null@*/ /*@out@*/ void **p, /*@null@*/ /*@out@*/int_32 *c)
+int headerGetEntry(Header h, int_32 tag,
+	/*@null@*/ /*@out@*/ int_32 * type,
+	/*@null@*/ /*@out@*/ void ** p,
+	/*@null@*/ /*@out@*/int_32 *c)
 		/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
@@ -413,13 +423,15 @@ int headerGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 *type,
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
+ * @retval type		address of tag value data type (or NULL)
+ * @retval p		address of pointer to tag value(s) (or NULL)
+ * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntryMinMemory(Header h, int_32 tag, /*@out@*/ int_32 *type,
-	/*@out@*/ const void **p, /*@out@*/ int_32 *c)
+int headerGetEntryMinMemory(Header h, int_32 tag,
+	/*@null@*/ /*@out@*/ int_32 * type,
+	/*@null@*/ /*@out@*/ const void ** p,
+	/*@null@*/ /*@out@*/ int_32 * c)
 		/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
@@ -429,14 +441,16 @@ int headerGetEntryMinMemory(Header h, int_32 tag, /*@out@*/ int_32 *type,
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type
- * @retval p		address of pointer to tag value(s)
- * @retval c		address of number of values
+ * @retval type		address of tag value data type (or NULL)
+ * @retval p		address of pointer to tag value(s) (or NULL)
+ * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
 /*@-exportlocal@*/
-int headerGetRawEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
-	/*@out@*/ const void **p, /*@out@*/ int_32 *c)
+int headerGetRawEntry(Header h, int_32 tag,
+	/*@null@*/ /*@out@*/ int_32 * type,
+	/*@null@*/ /*@out@*/ const void ** p, 
+	/*@null@*/ /*@out@*/ int_32 * c)
 		/*@modifies *type, *p, *c @*/;
 /*@=exportlocal@*/
 
@@ -542,16 +556,17 @@ typedef enum rpmTagType_e {
 
 /** \ingroup header
  * Free data allocated when retrieved from header.
- * @param data		address of data
- * @param type		type of data
+ * @param data		address of data (or NULL)
+ * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
 /*@unused@*/ static inline /*@null@*/
 void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
+	/*@modifies data @*/
 {
     if (data) {
 	/*@-branchstate@*/
-	if (type < 0 ||
+	if (type == -1 ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
 	    type == RPM_BIN_TYPE)
@@ -569,6 +584,7 @@ void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
  * value of the tag a 16 byte image of what should/will be in the header index,
  * followed by per-tag private data.
  */
+/*@-enummemuse -typeuse @*/
 typedef enum rpmSubTagType_e {
 	RPM_REGION_TYPE		= -10,
 	RPM_BIN_ARRAY_TYPE	= -11,
@@ -578,6 +594,7 @@ typedef enum rpmSubTagType_e {
   /*!<@todo Implement, intent is to to carry a (???,tagNum,valNum) cross
 	reference to retrieve data from other tags. */
 } rpmSubTagType;
+/*@=enummemuse =typeuse @*/
 
 /**
  * Header private tags.

@@ -481,7 +481,8 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     return rc;
 }
 
-static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag,
+	/*@out@*/ dbiIndex * dbip)
 {
     /*@-nestedextern@*/
     extern struct _dbiVec db1vec;
@@ -571,8 +572,10 @@ exit:
 
 /** \ingroup db1
  */
+/*@-exportheadervar@*/
 struct _dbiVec db1vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db1open, db1close, db1sync, db1copen, db1cclose, db1cdel, db1cget, db1cput,
     db1ccount, db1byteswapped, db1stat
 };
+/*@=exportheadervar@*/

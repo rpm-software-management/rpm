@@ -154,6 +154,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
     const char ** fileOwnerList = NULL;
     const char ** fileGroupList = NULL;
     const char ** fileLinktoList = NULL;
+    int m5t, fot, fgt, ltt;
     const char * fileStatesList;
     int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
     int_32 * fileUIDList = NULL;
@@ -203,33 +204,36 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	te = stpcpy(te, _("(contains no files)"));
 	goto exit;
     }
-    if (!hge(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, &count)) {
+    if (!hge(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, &count))
 	fileStatesList = NULL;
-    }
-    (void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-    (void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    (void) hge(h, RPMTAG_FILEFLAGS, &type, (void **)&fileFlagsList, &count);
-    (void) hge(h, RPMTAG_FILESIZES, &type, (void **) &fileSizeList, &count);
-    (void) hge(h, RPMTAG_FILEMODES, &type, (void **) &fileModeList, &count);
-    (void) hge(h, RPMTAG_FILEMTIMES, &type, (void **)&fileMTimeList,&count);
-    (void) hge(h, RPMTAG_FILERDEVS, &type, (void **) &fileRdevList, &count);
-    (void) hge(h, RPMTAG_FILEINODES, &type, (void **)&fileInodeList,&count);
-    (void) hge(h, RPMTAG_FILELINKTOS,&type,(void **)&fileLinktoList,&count);
-    (void) hge(h, RPMTAG_FILEMD5S, &type, (void **) &fileMD5List, &count);
-
-    if (!hge(h, RPMTAG_FILEUIDS, &type, (void **) &fileUIDList, &count)) {
+    if (!hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL))
+	dirNames = NULL;
+    if (!hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL))
+	dirIndexes = NULL;
+    if (!hge(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, &count))
+	fileFlagsList = NULL;
+    if (!hge(h, RPMTAG_FILESIZES, &type, (void **) &fileSizeList, &count))
+	fileSizeList = NULL;
+    if (!hge(h, RPMTAG_FILEMODES, &type, (void **) &fileModeList, &count))
+	fileModeList = NULL;
+    if (!hge(h, RPMTAG_FILEMTIMES, &type, (void **) &fileMTimeList, &count))
+	fileMTimeList = NULL;
+    if (!hge(h, RPMTAG_FILERDEVS, &type, (void **) &fileRdevList, &count))
+	fileRdevList = NULL;
+    if (!hge(h, RPMTAG_FILEINODES, &type, (void **) &fileInodeList, &count))
+	fileInodeList = NULL;
+    if (!hge(h, RPMTAG_FILELINKTOS, &ltt, (void **) &fileLinktoList, NULL))
+	fileLinktoList = NULL;
+    if (!hge(h, RPMTAG_FILEMD5S, &m5t, (void **) &fileMD5List, NULL))
+	fileMD5List = NULL;
+    if (!hge(h, RPMTAG_FILEUIDS, &type, (void **) &fileUIDList, &count))
 	fileUIDList = NULL;
-    } else if (!hge(h, RPMTAG_FILEGIDS, &type, 
-			     (void **) &fileGIDList, &count)) {
+    if (!hge(h, RPMTAG_FILEGIDS, &type, (void **) &fileGIDList, &count))
 	fileGIDList = NULL;
-    }
-
-    if (!hge(h, RPMTAG_FILEUSERNAME, &type, (void **) &fileOwnerList, &count)) {
+    if (!hge(h, RPMTAG_FILEUSERNAME, &fot, (void **) &fileOwnerList, NULL))
 	fileOwnerList = NULL;
-    } else
-    if (!hge(h, RPMTAG_FILEGROUPNAME, &type, (void **) &fileGroupList, &count)) {
+    if (!hge(h, RPMTAG_FILEGROUPNAME, &fgt, (void **) &fileGroupList, NULL))
 	fileGroupList = NULL;
-    }
 
     for (i = 0; i < count; i++) {
 	/* If querying only docs, skip non-doc files. */
@@ -269,7 +273,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	    sprintf(te, "%s%s %d %d %s 0%o ", 
 				   dirNames[dirIndexes[i]], baseNames[i],
 				   fileSizeList[i], fileMTimeList[i],
-				   fileMD5List[i], fileModeList[i]);
+				   fileMD5List[i], (unsigned) fileModeList[i]);
 	    te += strlen(te);
 
 	    if (fileOwnerList && fileGroupList) {
@@ -286,7 +290,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	    sprintf(te, " %s %s %u ", 
 				 fileFlagsList[i] & RPMFILE_CONFIG ? "1" : "0",
 				 fileFlagsList[i] & RPMFILE_DOC ? "1" : "0",
-				 (unsigned)fileRdevList[i]);
+				 (unsigned) fileRdevList[i]);
 	    te += strlen(te);
 
 	    if (strlen(fileLinktoList[i]))
@@ -352,10 +356,10 @@ exit:
     t = _free(t);
     dirNames = hfd(dirNames, dnt);
     baseNames = hfd(baseNames, bnt);
-    fileLinktoList = hfd(fileLinktoList, -1);
-    fileMD5List = hfd(fileMD5List, -1);
-    fileOwnerList = hfd(fileOwnerList, -1);
-    fileGroupList = hfd(fileGroupList, -1);
+    fileLinktoList = hfd(fileLinktoList, ltt);
+    fileMD5List = hfd(fileMD5List, m5t);
+    fileOwnerList = hfd(fileOwnerList, fot);
+    fileGroupList = hfd(fileGroupList, fgt);
     return rc;
 }
 
@@ -469,6 +473,7 @@ int showMatches(QVA_t qva, rpmdbMatchIterator mi, QVF_t showPackage)
     return ec;
 }
 
+/*@-redecl@*/
 /**
  * @todo Eliminate linkage loop into librpmbuild.a
  */
@@ -479,6 +484,7 @@ int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
  * @todo Eliminate linkage loop into librpmbuild.a
  */
 /*@null@*/ Spec	(*freeSpecVec) (Spec spec) = NULL;
+/*@=redecl@*/
 
 int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
 	rpmdb rpmdb, QVF_t showPackage)

@@ -22,8 +22,9 @@
 
 #include "debug.h"
 
-/* XXX avoid rpmlib.h, need for debugging. */
+/*@-redecl@*/	/* FIX: avoid rpmlib.h, need for debugging. */
 /*@observer@*/ const char *const tagName(int tag)	/*@*/;
+/*@=redecl@*/
 
 /*
  * Teach header.c about legacy tags.
@@ -151,10 +152,12 @@ struct sprintfToken {
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
+ * @param p		memory to free
  * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * p) {
+/*@unused@*/ static inline /*@null@*/ void *
+_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies *p @*/
+{
     if (p != NULL)	free((void *)p);
     return NULL;
 }
@@ -250,6 +253,7 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
  */
 static int regionSwab(/*@null@*/ struct indexEntry * entry, int il, int dl,
 		const struct entryInfo * pe, char * dataStart, int regionid)
+	/*@modifies *entry, *dataStart @*/
 {
     char * tprev = NULL;
     char * t = NULL;
@@ -1185,6 +1189,7 @@ void headerDump(Header h, FILE *f, int flags,
  */
 static /*@null@*/
 struct indexEntry * findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
+	/*@modifies h @*/
 {
     struct indexEntry * entry, * entry2, * last;
     struct indexEntry key;
@@ -1221,7 +1226,9 @@ struct indexEntry * findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
 
 int headerIsEntry(Header h, int_32 tag)
 {
+    /*@-mods@*/		/*@ FIX: h modified by sort. */
     return (findEntry(h, tag, RPM_NULL_TYPE) ? 1 : 0);
+    /*@=mods@*/	
 }
 
 int headerGetRawEntry(Header h, int_32 tag, int_32 * type, const void ** p,
@@ -1233,7 +1240,9 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 * type, const void ** p,
     if (p == NULL) return headerIsEntry(h, tag);
 
     /* First find the tag */
+    /*@-mods@*/		/*@ FIX: h modified by sort. */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
+    /*@=mods@*/
     if (!entry) {
 	if (p) *p = NULL;
 	if (c) *c = 0;
@@ -1398,7 +1407,9 @@ static int intGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 * type,
     int rc;
 
     /* First find the tag */
+    /*@-mods@*/		/*@ FIX: h modified by sort. */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
+    /*@mods@*/
     if (entry == NULL) {
 	if (type) type = 0;
 	if (p) *p = NULL;
@@ -1917,6 +1928,7 @@ static char escapedChar(const char ch)	/*@*/
  */
 static /*@null@*/ struct sprintfToken *
 freeFormat( /*@only@*/ /*@null@*/ struct sprintfToken * format, int num)
+	/*@modifies *format @*/
 {
     int i;
 

@@ -16,7 +16,9 @@ static int _debug = 0;
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
-char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
+/*@-exportheadervar@*/
+/*@unused@*/ char * RPMVERSION = VERSION; /* just to put a marker in librpm.a */
+/*@=exportheadervar@*/
 
 char ** splitString(const char * str, int length, char sep)
 {

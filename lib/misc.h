@@ -18,11 +18,13 @@ extern "C" {
 
 /**
  */
-/*@only@*/ char ** splitString(const char * str, int length, char sep);
+/*@only@*/ char ** splitString(const char * str, int length, char sep)
+	/*@*/;
 
 /**
  */
-void	freeSplitString( /*@only@*/ char ** list);
+void	freeSplitString( /*@only@*/ char ** list)
+	/*@modifies list @*/;
 
 /**
  * Remove occurences of trailing character from string.
@@ -42,11 +44,13 @@ void	freeSplitString( /*@only@*/ char ** list);
 
 /**
  */
-int	rpmfileexists(const char * urlfn)	/*@*/;
+int rpmfileexists(const char * urlfn)
+	/*@modifies fileSystem @*/;
 
 /**
  */
-int	rpmvercmp(const char * a, const char * b);
+int rpmvercmp(const char * a, const char * b)
+	/*@*/;
 
 /*
  * These are like the libc functions, but they malloc() the space which
@@ -55,34 +59,42 @@ int	rpmvercmp(const char * a, const char * b);
 
 /**
  */
-int	dosetenv(const char * name, const char * value, int overwrite);
+int dosetenv(const char * name, const char * value, int overwrite)
+	/*@modifies fileSystem @*/;
 
 /**
  */
-int	doputenv(const char * str);
+int doputenv(const char * str)
+	/*@modifies fileSystem @*/;
 
 /**
  */
-int	makeTempFile(const char * prefix, /*@out@*/ const char ** fnptr,
-			/*@out@*/ FD_t * fdptr);
+int	makeTempFile(const char * prefix,
+		/*@null@*/ /*@out@*/ const char ** fnptr,
+		/*@out@*/ FD_t * fdptr)
+	/*@modifies *fnptr, *fdptr, fileSystem @*/;
 
 /**
  * @return		cureent working directory (malloc'ed)
  */
-/*@only@*/ char * currentDirectory(void);
+/*@only@*/ char * currentDirectory(void)
+	/*@modifies fileSystem @*/;
 
 /**
  */
-void	compressFilelist(Header h);
+void compressFilelist(Header h)
+	/*@modifies h @*/;
 
 /**
  */
-void	expandFilelist(Header h);
+void expandFilelist(Header h)
+	/*@modifies h @*/;
 
 /**
  */
-void	buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
-			/*@out@*/ int * fileCountPtr);
+void buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
+			/*@out@*/ int * fileCountPtr)
+	/*@modifies *fileListPtr, *fileCountPtr @*/;
 
 /**
  */
@@ -96,7 +108,8 @@ int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
 
 /**
  */
-void providePackageNVR(Header h);
+void providePackageNVR(Header h)
+	/*@modifies h @*/;
 
 #ifdef __cplusplus
 }

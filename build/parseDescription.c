@@ -8,7 +8,9 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-extern int noLang;		/* XXX FIXME: pass as arg */
+/*@-exportheadervar@*/
+extern int noLang;
+/*@=exportheadervar@*/
 
 /* These have to be global scope to make up for *stupid* compilers */
     /*@observer@*/ /*@null@*/ static const char *name = NULL;

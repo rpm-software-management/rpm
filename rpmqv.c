@@ -88,17 +88,23 @@ enum modes {
 #define	MODES_FOR_TEST		(MODES_BT | MODES_IE)
 #define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
 
+/*@-exportheadervar@*/
 extern int _ftp_debug;
 extern int noLibio;
 extern int _rpmio_debug;
 extern int _url_debug;
 extern int _noDirTokens;
 
+/*@-varuse@*/
 extern const char * rpmNAME;
+/*@=varuse@*/
 extern const char * rpmEVR;
+/*@-varuse@*/
 extern int rpmFLAGS;
+/*@=varuse@*/
 
 extern struct MacroContext_s rpmCLIMacroContext;
+/*@=exportheadervar@*/
 
 /* options for all executables */
 

@@ -43,8 +43,10 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_TP			0x7470
 #define	POPT_TS			0x7473
 
+/*@-redecl@*/
 extern int _noDirTokens;
 extern int _fsm_debug;
+/*@=redecl@*/
 static int force = 0;
 int noLang = 0;
 static int noBuild = 0;

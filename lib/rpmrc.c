@@ -54,8 +54,11 @@ struct rpmvarValue {
 struct rpmOption {
     const char * name;
     int var;
-    int archSpecific, required, macroize, localize;
-    struct rpmOptionValue * value;
+    int archSpecific;
+/*@unused@*/ int required;
+    int macroize;
+    int localize;
+/*@unused@*/ struct rpmOptionValue * value;
 };
 
 typedef struct defaultEntry_s {
@@ -1530,12 +1533,12 @@ void rpmFreeRpmrc(void)
     }
 
     for (i = 0; i < RPMVAR_NUM; i++) {
-	struct rpmvarValue *this;
-	while ((this = values[i].next) != NULL) {
-	    values[i].next = this->next;
-	    this->value = _free(this->value);
-	    this->arch = _free(this->arch);
-	    this = _free(this);
+	struct rpmvarValue * vp;
+	while ((vp = values[i].next) != NULL) {
+	    values[i].next = vp->next;
+	    vp->value = _free(vp->value);
+	    vp->arch = _free(vp->arch);
+	    vp = _free(vp);
 	}
 	values[i].value = _free(values[i].value);
 	values[i].arch = _free(values[i].arch);

@@ -38,6 +38,12 @@
 extern time_t timezone;
 #endif
 
+#ifdef	__LCLINT__
+typedef	unsigned int u_int32_t;
+typedef	unsigned short u_int16_t;
+typedef	unsigned char u_int8_t;
+typedef	int int32_t;
+#endif
 
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
 #if MAJOR_IN_MKDEV
@@ -77,16 +83,22 @@ char *memchr ();
 #endif
 
 #if !defined(HAVE_STPCPY) || defined(__LCLINT__)
-char * stpcpy(char * dest, const char * src);
+/*@-declundef@*/
+char * stpcpy(char * dest, const char * src)	/*@modifies *dest @*/;
+/*@=declundef@*/
 #endif
 
 #if !defined(HAVE_STPNCPY) || defined(__LCLINT__)
-char * stpncpy(char * dest, const char * src, size_t n);
+/*@-declundef@*/
+char * stpncpy(char * dest, const char * src, size_t n)	/*@modifies *dest @*/;
+/*@=declundef@*/
 #endif
 
 #include <errno.h>
 #ifndef errno
+/*@-declundef @*/
 extern int errno;
+/*@=declundef @*/
 #endif
 
 #ifdef STDC_HEADERS
@@ -112,12 +124,12 @@ char *getenv (const char *name);
 #include <sys/file.h>
 #endif
 
-#ifndef SEEK_SET
+#if !defined(SEEK_SET) && !defined(__LCLINT__)
 #define SEEK_SET 0
 #define SEEK_CUR 1
 #define SEEK_END 2
 #endif
-#ifndef F_OK
+#if !defined(F_OK) && !defined(__LCLINT__)
 #define F_OK 0
 #define X_OK 1
 #define W_OK 2
@@ -194,11 +206,14 @@ char *alloca ();
 #include <malloc.h>
 #endif
 
-/*@only@*/ void * xmalloc (size_t size);
-/*@only@*/ void * xcalloc (size_t nmemb, size_t size);
-/*@only@*/ void * xrealloc (/*@only@*/ /*@null@*/ void * ptr, size_t size);
-/*@only@*/ char * xstrdup (const char *str);
-/*@only@*/ void *vmefail(size_t size);
+/*@-declundef@*/
+/*@mayexit@*/ /*@only@*/ void * xmalloc (size_t size)			/*@*/;
+/*@mayexit@*/ /*@only@*/ void * xcalloc (size_t nmemb, size_t size)	/*@*/;
+/*@mayexit@*/ /*@only@*/ void * xrealloc (/*@only@*//*@null@*/ void * ptr,
+					size_t size) /*@*/;
+/*@mayexit@*/ /*@only@*/ char * xstrdup (const char *str)		/*@*/;
+/*@=declundef@*/
+/*@unused@*/ /*@exits@*/ /*@only@*/ void * vmefail(size_t size);
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>

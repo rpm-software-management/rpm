@@ -17,6 +17,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <rpmurl.h>	/* XXX urlPath proto */
 
 #include "rpmdb.h"
+
 #include "debug.h"
 
 /*@access rpmdb@*/
@@ -26,6 +27,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 /** \ingroup dbi
  * Hash database statistics.
  */
+/*@-fielduse@*/
 struct dbiHStats_s {
     unsigned int hash_magic;	/*!< hash database magic number. */
     unsigned int hash_version;	/*!< version of the hash database. */
@@ -68,6 +70,7 @@ struct dbiBStats_s {
     unsigned int bt_dup_pgfree;	/*!< no. of bytes free in duplicate pages. */
     unsigned int bt_over_pgfree;/*!< no. of bytes free in overflow pages. */
 };
+/*@=fielduse@*/
 
 #if DB_VERSION_MAJOR == 3
 #define	__USE_DB3	1
@@ -1172,10 +1175,12 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 /** \ingroup db3
  */
+/*@-exportheadervar@*/
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3copen, db3cclose, db3cdel, db3cget, db3cput,
     db3ccount, db3byteswapped, db3stat
 };
+/*@=exportheadervar@*/
 
 #endif	/* DB_VERSION_MAJOR == 3 */

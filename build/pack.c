@@ -14,7 +14,9 @@
 #include "rpmlead.h"
 #include "debug.h"
 
+/*@-redecl@*/
 extern int _noDirTokens;
+/*@=redecl@*/
 
 /*@access StringBuf @*/	/* compared with NULL */
 /*@access TFI_t @*/	/* compared with NULL */
@@ -45,7 +47,7 @@ static inline int genSourceRpmName(Spec spec)
  */
 static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		const char * fmodeMacro)
-	/*@modifies csa, fileSystem @*/
+	/*@modifies fdo, csa, fileSystem @*/
 {
     const char * rootDir = "/";
     rpmdb rpmdb = NULL;
@@ -86,7 +88,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 /**
  */
 static int cpio_copy(FD_t fdo, CSA_t csa)
-	/*@modifies csa, fileSystem @*/
+	/*@modifies fdo, csa, fileSystem @*/
 {
     char buf[BUFSIZ];
     size_t nb;

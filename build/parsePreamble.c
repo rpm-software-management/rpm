@@ -408,7 +408,9 @@ if (multiToken) { \
     return RPMERR_BADSPEC; \
 }
 
-extern int noLang;	/* XXX FIXME: pass as arg */
+/*@-redecl@*/
+extern int noLang;
+/*@=redecl@*/
 
 /**
  */

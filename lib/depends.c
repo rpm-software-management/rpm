@@ -2,7 +2,9 @@
  * \file lib/depends.c
  */
 
-int _depends_debug = 0;
+/*@-exportheadervar@*/
+/*@unused@*/ int _depends_debug = 0;
+/*@=exportheadervar@*/
 
 #include "system.h"
 
@@ -592,7 +594,9 @@ exit:
     return result;
 }
 
+/*@-typeuse@*/
 typedef int (*dbrecMatch_t) (Header h, const char *reqName, const char * reqEVR, int reqFlags);
+/*@=typeuse@*/
 
 static int rangeMatchesDepFlags (Header h,
 		const char * reqName, const char * reqEVR, int reqFlags)
@@ -1165,7 +1169,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 		const char * keyType, const char * keyDepend,
 		const char * keyName, const char * keyEVR, int keyFlags,
 		/*@null@*/ /*@out@*/ struct availablePackage *** suggestion)
-	/*@modifies *suggestion @*/
+	/*@modifies ts, *suggestion @*/
 {
     static int _cacheDependsRC = 1;
     rpmdbMatchIterator mi;
@@ -1189,7 +1193,9 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	    size_t datalen = 0;
 	    int xx;
 	    xx = dbiCopen(dbi, &dbcursor, 0);
+	    /*@-mods@*/		/* FIX: keyDepends mod undocumented. */
 	    xx = dbiGet(dbi, dbcursor, (void **)&keyDepend, &keylen, &datap, &datalen, 0);
+	    /*@=mods@*/
 	    if (xx == 0 && datap && datalen == 4) {
 		memcpy(&rc, datap, datalen);
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s %-s (cached)\n"),
@@ -1345,7 +1351,7 @@ exit:
  */
 static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		Header h, const char * keyName, uint_32 multiLib)
-	/*@modifies h, psp */
+	/*@modifies ts, h, psp */
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -1533,7 +1539,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
  */
 static int checkPackageSet(rpmTransactionSet ts, problemsSet psp,
 		const char * key, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
-	/*@modifies mi, psp @*/
+	/*@modifies ts, mi, psp @*/
 {
     Header h;
     int rc = 0;
@@ -1560,7 +1566,7 @@ static int checkPackageSet(rpmTransactionSet ts, problemsSet psp,
  */
 static int checkDependentPackages(rpmTransactionSet ts,
 			problemsSet psp, const char * key)
-	/*@modifies psp @*/
+	/*@modifies ts, psp @*/
 {
     rpmdbMatchIterator mi;
     mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_REQUIRENAME, key, 0);
@@ -1576,7 +1582,7 @@ static int checkDependentPackages(rpmTransactionSet ts,
  */
 static int checkDependentConflicts(rpmTransactionSet ts,
 		problemsSet psp, const char * key)
-	/*@modifies psp @*/
+	/*@modifies ts, psp @*/
 {
     int rc = 0;
 

@@ -135,7 +135,7 @@ struct fsm_s {
 /*@kept@*/ /*@null@*/ unsigned int * archiveSize;	/*!< Pointer to archive size. */
 /*@kept@*/ /*@null@*/ const char ** failedFile;	/*!< First file name that failed. */
 /*@shared@*/ const char * subdir;	/*!< Current file sub-directory. */
-    char subbuf[64];	/* XXX eliminate */
+/*@unused@*/ char subbuf[64];	/* XXX eliminate */
 /*@observer@*/ const char * osuffix;	/*!< Old, preserved, file suffix. */
 /*@observer@*/ const char * nsuffix;	/*!< New, created, file suffix. */
 /*@shared@*/ const char * suffix;	/*!< Current file suffix. */

@@ -728,6 +728,7 @@ AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
 
 if test $rpm_cv_glob = no ; then
     AC_MSG_CHECKING(for GNU extensions to glob)
+    rm -f t
     mkdir t
     mkdir t/p
     touch t/p/foo.8

@@ -42,9 +42,9 @@ char *alloca ();
 #define alloca __builtin_alloca
 #endif
 
+#if !defined(__LCLINT__)
 /*@only@*/ char * xstrdup (const char *str);
 
-#if !defined(__LCLINT__)
 #if HAVE_MCHECK_H && defined(__GNUC__)
 #define	vmefail()	(fprintf(stderr, "virtual memory exhausted.\n"), exit(EXIT_FAILURE), NULL)
 #define xstrdup(_str)   (strcpy((malloc(strlen(_str)+1) ? : vmefail()), (_str)))

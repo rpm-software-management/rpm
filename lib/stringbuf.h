@@ -15,23 +15,29 @@ extern "C" {
 
 /**
  */
-/*@only@*/ StringBuf newStringBuf(void);
+/*@only@*/ StringBuf newStringBuf(void)
+	/*@*/;
 
 /**
  */
-/*@null@*/ StringBuf freeStringBuf( /*@only@*/ /*@null@*/ StringBuf sb);
+/*@null@*/ StringBuf freeStringBuf( /*@only@*/ /*@null@*/ StringBuf sb)
+	/*@modifies sb @*/;
 
 /**
  */
-void truncStringBuf(StringBuf sb);
+/*@unused@*/
+void truncStringBuf(StringBuf sb)
+	/*@modifies sb @*/;
 
 /**
  */
-/*@observer@*/ char *getStringBuf(StringBuf sb);
+/*@observer@*/ char * getStringBuf(StringBuf sb)
+	/*@*/;
 
 /**
  */
-void stripTrailingBlanksStringBuf(StringBuf sb);
+void stripTrailingBlanksStringBuf(StringBuf sb)
+	/*@modifies sb @*/;
 
 /**
  */
@@ -43,7 +49,8 @@ void stripTrailingBlanksStringBuf(StringBuf sb);
 
 /**
  */
-void appendStringBufAux(StringBuf sb, const char *s, int nl);
+void appendStringBufAux(StringBuf sb, const char * s, int nl)
+	/*@modifies sb @*/;
 
 #ifdef __cplusplus
 }

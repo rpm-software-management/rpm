@@ -20,9 +20,9 @@
 int _fsm_debug = 0;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
-/*@-exportlocal@*/
+/*@-exportlocal -exportheadervar@*/
 int strict_erasures = 0;
-/*@=exportlocal@*/
+/*@=exportlocal =exportheadervar@*/
 
 rpmTransactionSet fsmGetTs(const FSM_t fsm) {
     const FSMI_t iter = fsm->iter;
@@ -78,25 +78,25 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
 
 /** \ingroup payload
  * Destroy file info iterator.
- * @param this		file info iterator
+ * @param p		file info iterator
  * @retval		NULL always
  */
-static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * this)
+static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * p)
 {
-    return _free((void *)this);
+    return _free((void *)p);
 }
 
 /** \ingroup payload
  * Create file info iterator.
- * @param this		transaction set
- * @param that		transaction element file info
+ * @param a		transaction set
+ * @param b		transaction element file info
  * @return		file info iterator
  */
 static void *
-mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
+mapInitIterator(/*@kept@*/ const void * a, /*@kept@*/ const void * b)
 {
-    rpmTransactionSet ts = (void *)this;
-    TFI_t fi = (void *)that;
+    rpmTransactionSet ts = (void *)a;
+    TFI_t fi = (void *)b;
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
@@ -110,11 +110,11 @@ mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
 
 /** \ingroup payload
  * Return next index into file info.
- * @param this		file info iterator
+ * @param a		file info iterator
  * @return		next index, -1 on termination
  */
-static int mapNextIterator(void * this) {
-    FSMI_t iter = this;
+static int mapNextIterator(void * a) {
+    FSMI_t iter = a;
     const TFI_t fi = iter->fi;
     int i = -1;
 
@@ -148,14 +148,14 @@ static int cpioStrCmp(const void * a, const void * b)
 
 /** \ingroup payload
  * Locate archive path in file info.
- * @param this		file info iterator
+ * @param a		file info iterator
  * @param fsmPath	archive path
  * @return		index into file info, -1 if archive path was not found
  */
-static int mapFind(void * this, const char * fsmPath)
+static int mapFind(void * a, const char * fsmPath)
 	/*@*/
 {
-    FSMI_t iter = this;
+    FSMI_t iter = a;
     const TFI_t fi = iter->fi;
     int ix = -1;
 
@@ -188,16 +188,16 @@ typedef struct dnli_s {
 
 /** \ingroup payload
  * Destroy directory name iterator.
- * @param this		file info iterator
+ * @param a		directory name iterator
  * @retval		NULL always
  */
-static /*@null@*/ void * dnlFreeIterator(/*@only@*//*@null@*/ const void * this)
+static /*@null@*/ void * dnlFreeIterator(/*@only@*//*@null@*/ const void * a)
 {
-    if (this) {
-	DNLI_t dnli = (void *)this;
+    if (a) {
+	DNLI_t dnli = (void *)a;
 	if (dnli->active) free(dnli->active);
     }
-    return _free(this);
+    return _free(a);
 }
 
 /** \ingroup payload

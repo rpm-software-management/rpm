@@ -23,7 +23,9 @@
 /*@access PSM_t @*/		/* compared with NULL */
 /*@access FD_t @*/		/* compared with NULL */
 
+/*@-redecl@*/
 extern int _fsm_debug;
+/*@=redecl@*/
 
 int rpmVersionCompare(Header first, Header second)
 {

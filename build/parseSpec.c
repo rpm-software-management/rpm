@@ -352,7 +352,9 @@ void closeSpec(Spec spec)
     }
 }
 
+/*@-redecl@*/
 extern int noLang;		/* XXX FIXME: pass as arg */
+/*@=redecl@*/
 
 /*@todo Skip parse recursion if os is not compatible. @*/
 int parseSpec(Spec *specp, const char *specFile, const char *rootURL,

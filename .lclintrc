@@ -7,24 +7,97 @@
 
 +unixlib
 
-# XXX ignore doxygen markings
--unrecogcomments
+-unrecogcomments	# XXX ignore doxygen markings
 
-#+mustmod		# segfault in psm.c:597
 #+proto-param-match
 
-#-cpp-names
-#-declundef		# db3 is noisy
-#-deepbreak		# 485 cases
-#-export-local
-#-export-header
-#-export-header-var
+#-deepbreak		# shortcut 485 cases
+
+# --- not-yet at strict level
+#+ptrarith
+#+bitwisesigned
+#+strictops
+#+sizeoftype
+
+#+mod-uncon		# shortcut alloca is painful
+#+mod-nomods
+#+modglobsnomods
+#+modstrictglobsnomods
+
+#+mod-uncon-nomods
+#+mod-internal-strict
+#+mod-file-sys
+#+globnoglobs
+#+internalglobs
+#+internalglobnoglobs
+#+modglobsunchecked
+#+warnmissingglobs
+#+warnmissingglobsnomods
+#+impcheckedstrictglobs
+#+impcheckedstrictstatics
+#+strictusereleas
+#+strictbranchstate
+#+strictdestroy
+#+modobserveruncon
+#+macroempty
+#+ansi-reserved-internal
+#+evalorderuncon
+#+elseifcomplete
+#+loopswitchbreak
+#+switchswitchbreak
+#+looploopcontinue
+#+whileblock
+#+forempty
+#+forblock
+#+ifblock
+#+noeffectuncon
++topuse
+#+unusedspecial
+#+export-local
+#+oldstyle
+#+sys-dir-errors
+#controlnestdepth 15
+#stringliterallen 509
+#numstructfields 127
+#numenummembers 127
+
+# --- not-yet at checks level
+#+predboolptr
+-ptrnegate
+#-enumint
+-relaxquals
+#+mustmod		# segfault in psm.c:597
+#+allglobs
+#+impcheckmodinternals
+#+uncheckedglobalias
+#+deparrays
+#+onlyunqglobaltrans 
+#+staticinittrans
+#+unqualifiedinittrans
+#+retalias
+#+assignexpose
+#+castexpose
+#+retexpose
+#+readonlytrans
+#+sefuncon
+#+ansi-reserved
++cpp-names		# check for c++ names
+#+infloopsuncon
+#+looploopbreak
+#+switchloopbreak
+#+whileempty
++declundef
++export-header
++export-header-var
++redecl
++noparams
+#includenest 8
 
 # don't-bother-me-yet parameters
 -branchstate		# painful
 -mustfree		# alloca is painful
 
-# not-yet normal parameters
+# --- not-yet at standard level
 -boolops		# w->n
 -predboolint		# w->n
 -type			#

@@ -180,30 +180,30 @@ static int maxArgWidth(const struct poptOption * opt,
 		       /*@null@*/ const char * translation_domain)
 {
     int max = 0;
-    int this = 0;
+    int len = 0;
     const char * s;
     
     if (opt != NULL)
     while (opt->longName || opt->shortName || opt->arg) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    if (opt->arg)	/* XXX program error */
-	    this = maxArgWidth(opt->arg, translation_domain);
-	    if (this > max) max = this;
+	    len = maxArgWidth(opt->arg, translation_domain);
+	    if (len > max) max = len;
 	} else if (!(opt->argInfo & POPT_ARGFLAG_DOC_HIDDEN)) {
-	    this = sizeof("  ")-1;
-	    if (opt->shortName != '\0') this += sizeof("-X")-1;
-	    if (opt->shortName != '\0' && opt->longName) this += sizeof(", ")-1;
+	    len = sizeof("  ")-1;
+	    if (opt->shortName != '\0') len += sizeof("-X")-1;
+	    if (opt->shortName != '\0' && opt->longName) len += sizeof(", ")-1;
 	    if (opt->longName) {
-		this += ((opt->argInfo & POPT_ARGFLAG_ONEDASH)
+		len += ((opt->argInfo & POPT_ARGFLAG_ONEDASH)
 			? sizeof("-")-1 : sizeof("--")-1);
-		this += strlen(opt->longName);
+		len += strlen(opt->longName);
 	    }
 
 	    s = getArgDescrip(opt, translation_domain);
 	    if (s)
-		this += sizeof("=")-1 + strlen(s);
-	    if (opt->argInfo & POPT_ARGFLAG_OPTIONAL) this += sizeof("[]")-1;
-	    if (this > max) max = this;
+		len += sizeof("=")-1 + strlen(s);
+	    if (opt->argInfo & POPT_ARGFLAG_OPTIONAL) len += sizeof("[]")-1;
+	    if (len > max) max = len;
 	}
 
 	opt++;

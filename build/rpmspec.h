@@ -41,10 +41,12 @@ struct Source {
 
 /** \ingroup rpmbuild
  */
+/*@-typeuse@*/
 typedef struct ReadLevelEntry {
     int reading;
 /*@dependent@*/ struct ReadLevelEntry * next;
 } RLE_t;
+/*@=typeuse@*/
 
 /** \ingroup rpmbuild
  */
@@ -192,8 +194,10 @@ extern "C" {
  * @param spec		spec file control structure
  * @return		NULL always
  */
+/*@-declundef@*/
 extern /*@null@*/ Spec (*freeSpecVec) (Spec spec)	/* XXX FIXME */
 	/*@modifies spec @*/;
+/*@=declundef@*/
 
 /** \ingroup rpmbuild
  */

@@ -16,6 +16,7 @@ extern "C" {
  * @retval lenp		address of no. bytes of binary data
  * @return		0 on success
  */
+/*@unused@*/
 int B64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ size_t *lenp);
 
 /**
@@ -24,6 +25,7 @@ int B64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ size_t *lenp);
  * @param ns		no. bytes of data (0 uses strlen(data))
  * @return		(malloc'd) base64 string
  */
+/*@unused@*/
 char * B64encode (const void * data, size_t ns);
 
 #ifdef __cplusplus

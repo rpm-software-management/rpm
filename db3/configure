@@ -26,10 +26,14 @@ db3_install: all install_setip \\' > Makefile
 
 mv db.h db.h.orig
 cat db.h.orig | sed \
-	-e '/^struct __db;/i\
-/*@-incondefs@*/' \
+	-e '/^typedef	u_int32_t	db_pgno_t;/i\
+/*@-incondefs -fielduse -enummemuse -typeuse @*/' \
 	-e '/^struct __key_range;/a\
-/*@=incondefs@*/' > db.h
+/*@=incondefs@*/' \
+	-e '/^#define	db_create/i\
+/*@-declundef -noparams -fcnuse@*/' \
+	-e '/^#define db_xa_switch/a\
+/*@=declundef =noparams =fcnuse =fielduse =enummemuse =typeuse @*/' > db.h
 
 # Generate manifest for rpmdb.
 make -s listobjs > db3lobjs

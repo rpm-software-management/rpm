@@ -361,7 +361,10 @@ MD5Transform(DIGEST_CTX ctx)
 
 static int _ie = 0x44332211;
 /*@-redef@*/
-static union _mendian { int i; char b[4]; } *_endian = (union _mendian *)&_ie;
+static union _mendian {
+/*@unused@*/ int i;
+    char b[4];
+} *_endian = (union _mendian *)&_ie;
 /*@=redef@*/
 #define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
 #define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')

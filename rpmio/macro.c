@@ -76,7 +76,7 @@ typedef struct MacroBuf {
 
 static int expandMacro(MacroBuf *mb);
 
-/*@-exportlocal@*/
+/*@-exportlocal -exportheadervar@*/
 #define	MAX_MACRO_DEPTH	16
 int max_macro_depth = MAX_MACRO_DEPTH;
 
@@ -87,17 +87,19 @@ int print_expand_trace = 0;
 int print_macro_trace = 0;
 int print_expand_trace = 0;
 #endif
-/*@=exportlocal@*/
+/*@=exportlocal =exportheadervar@*/
 
 #define	MACRO_CHUNK_SIZE	16
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
+ * @param p		memory to free
  * @retval		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this != NULL)	free((void *)this);
+/*@unused@*/ static inline /*@null@*/ void *
+_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
+{
+    if (p != NULL)	free((void *)p);
     return NULL;
 }
 

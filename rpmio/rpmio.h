@@ -115,9 +115,11 @@ typedef int fdio_chdir_function_t (const char * path);
 typedef int fdio_rmdir_function_t (const char * path);
 typedef int fdio_rename_function_t (const char * oldpath, const char * newpath);
 typedef int fdio_unlink_function_t (const char * path);
+/*@-typeuse@*/
 typedef int fdio_stat_function_t (const char * path, struct stat * st);
 typedef int fdio_lstat_function_t (const char * path, struct stat * st);
 typedef int fdio_access_function_t (const char * path, int amode);
+/*@=typeuse@*/
 /*@}*/
 
 
@@ -155,69 +157,84 @@ struct FDIO_s {
 /** \ingroup rpmio
  * strerror(3) clone.
  */
-/*@observer@*/ const char * Fstrerror(/*@null@*/ FD_t fd);
+/*@-redecl@*/
+/*@observer@*/ const char * Fstrerror(/*@null@*/ FD_t fd)
+	/*@*/;
+/*@=redecl@*/
 
 /** \ingroup rpmio
  * fread(3) clone.
  */
-size_t	Fread	(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd);
+size_t Fread(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd)
+	/*@modifies fd, *buf, fileSystem @*/;
 
 /** \ingroup rpmio
  * fwrite(3) clone.
  */
-size_t	Fwrite	(const void * buf, size_t size, size_t nmemb, FD_t fd);
-
+size_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd)
+	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup rpmio
  * fseek(3) clone.
  */
-int	Fseek	(FD_t fd, _libio_off_t offset, int whence);
+int Fseek(FD_t fd, _libio_off_t offset, int whence)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmio
  * fclose(3) clone.
  */
-int	Fclose	( /*@killref@*/ FD_t fd);
+int Fclose( /*@killref@*/ FD_t fd)
+	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup rpmio
  */
-/*@null@*/ FD_t	Fdopen	(FD_t fd, const char * fmode);
+/*@null@*/ FD_t	Fdopen(FD_t fd, const char * fmode)
+	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup rpmio
  * fopen(3) clone.
  */
-/*@null@*/ FD_t	Fopen	(/*@null@*/ const char * path, /*@null@*/ const char * fmode);
+/*@null@*/ FD_t	Fopen(/*@null@*/ const char * path,
+			/*@null@*/ const char * fmode)
+	/*@modifies fileSystem @*/;
 
 
 /** \ingroup rpmio
  * fflush(3) clone.
  */
-int	Fflush	(/*@null@*/ FD_t fd);
+int Fflush(/*@null@*/ FD_t fd)
+	/*@modifies fd, fileSystem @*/;
 
 /** \ingroup rpmio
  * ferror(3) clone.
  */
-int	Ferror	(/*@null@*/ FD_t fd);
+int Ferror(/*@null@*/ FD_t fd)
+	/*@*/;
 
 /** \ingroup rpmio
  * fileno(3) clone.
  */
-int	Fileno	(FD_t fd);
-
+int Fileno(FD_t fd)
+	/*@*/;
 
 /** \ingroup rpmio
  * fcntl(2) clone.
  */
-int	Fcntl	(FD_t fd, int op, void *lip);
+int Fcntl(FD_t fd, int op, void *lip)
+	/*@modifies fd, *lip, fileSystem @*/;
 
 /** \ingroup rpmio
  * pread(2) clone.
  */
-ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset);
+ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset)
+	/*@modifies fd, *buf, fileSystem @*/;
 
 /** \ingroup rpmio
  * pwrite(2) clone.
  */
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset);
+ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset)
+	/*@modifies fd, fileSystem @*/;
+
 /*@}*/
 
 /** \ingroup rpmrpc
@@ -228,81 +245,97 @@ ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset);
 /** \ingroup rpmrpc
  * mkdir(2) clone.
  */
-int	Mkdir	(const char * path, mode_t mode);
+int Mkdir(const char * path, mode_t mode)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrpc
  * chdir(2) clone.
  */
-int	Chdir	(const char * path);
+int Chdir(const char * path)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrpc
  * rmdir(2) clone.
  */
-int	Rmdir	(const char * path);
+int Rmdir(const char * path)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrpc
  * rename(2) clone.
  */
-int	Rename	(const char * oldpath, const char * newpath);
+int Rename(const char * oldpath, const char * newpath)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrpc
  * link(2) clone.
  */
-int	Link	(const char * oldpath, const char * newpath);
+int Link(const char * oldpath, const char * newpath)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrpc
  * unlink(2) clone.
  */
-int	Unlink	(const char * path);
+int Unlink(const char * path)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrpc
  * readlink(2) clone.
  */
-int	Readlink(const char * path, char * buf, size_t bufsiz);
-
+int Readlink(const char * path, char * buf, size_t bufsiz)
+	/*@modifies *buf, fileSystem @*/;
 
 /** \ingroup rpmrpc
  * stat(2) clone.
  */
-int	Stat	(const char * path, /*@out@*/ struct stat * st);
+int Stat(const char * path, /*@out@*/ struct stat * st)
+	/*@modifies *st, fileSystem @*/;
 
 /** \ingroup rpmrpc
  * lstat(2) clone.
  */
-int	Lstat	(const char * path, /*@out@*/ struct stat * st);
+int Lstat(const char * path, /*@out@*/ struct stat * st)
+	/*@modifies *st, fileSystem @*/;
 
 /** \ingroup rpmrpc
  * access(2) clone.
  */
-int	Access	(const char * path, int amode);
+int Access(const char * path, int amode)
+	/*@modifies fileSystem @*/;
 
 
 /** \ingroup rpmrpc
  * glob(3) clone.
  */
-int	Glob	(const char * pattern, int flags,
-		int errfunc(const char * epath, int eerrno), /*@out@*/ glob_t * pglob);
+int Glob(const char * pattern, int flags,
+		int errfunc(const char * epath, int eerrno),
+		/*@out@*/ glob_t * pglob)
+	/*@modifies *pglob @*/;
 
 /** \ingroup rpmrpc
  * globfree(3) clone.
  */
-void	Globfree( /*@only@*/ glob_t * pglob);
+void Globfree( /*@only@*/ glob_t * pglob)
+	/*@modifies *pglob @*/;
 
 
 /** \ingroup rpmrpc
  * opendir(3) clone.
  */
-/*@null@*/ DIR *	Opendir	(const char * name);
+/*@null@*/ DIR * Opendir(const char * name)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmrpc
  * readdir(3) clone.
  */
-/*@null@*/ struct dirent *	Readdir	(DIR * dir);
+/*@null@*/ struct dirent * Readdir(DIR * dir)
+	/*@modifies *dir, fileSystem @*/;
 
 /** \ingroup rpmrpc
  * closedir(3) clone.
  */
-int	Closedir(/*@only@*/ DIR * dir);
+int	Closedir(/*@only@*/ DIR * dir)
+	/*@modifies *dir, fileSystem @*/;
+
 /*@}*/
 
 
@@ -313,11 +346,14 @@ int	Closedir(/*@only@*/ DIR * dir);
 
 /** \ingroup rpmio
  */
-off_t	fdSize	(FD_t fd);
+off_t	fdSize(FD_t fd)
+	/*@modifies fd, fileSystem@*/;
 
 /** \ingroup rpmio
  */
-/*@null@*/ FD_t fdDup(int fdno);
+/*@null@*/ FD_t fdDup(int fdno)
+	/*@modifies fileSystem@*/;
+
 #ifdef UNUSED
 /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #endif
@@ -326,27 +362,32 @@ off_t	fdSize	(FD_t fd);
 
 /** \ingroup rpmio
  */
-/*@-shadow@*/
-int	fdFileno(void * cookie);
-/*@=shadow@*/
+/*@-shadow -declundef -fcnuse@*/
+int fdFileno(void * cookie)
+	/*@*/;
+/*@=shadow =declundef =fcnuse@*/
 
 
 /*@-exportlocal@*/
 /** \ingroup rpmio
  */
-/*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode);
+/*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
+	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmio
  */
-ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count);
+ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
+	/*@modifies *cookie, *buf, fileSystem @*/;
 
 /** \ingroup rpmio
  */
-ssize_t	fdWrite(void * cookie, const char * buf, size_t count);
+ssize_t	fdWrite(void * cookie, const char * buf, size_t count)
+	/*@modifies *cookie, fileSystem @*/;
 
 /** \ingroup rpmio
  */
-int	fdClose( /*@only@*/ void * cookie);
+int fdClose( /*@only@*/ void * cookie)
+	/*@modifies *cookie, fileSystem @*/;
 
 /* XXX FD_t reference count debugging wrappers */
 #define	fdLink(_fd, _msg)	fdio->_fdref(_fd, _msg, __FILE__, __LINE__)
@@ -356,16 +397,19 @@ int	fdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-int	fdWritable(FD_t fd, int secs);
+int fdWritable(FD_t fd, int secs)
+	/*@modifies fd @*/;
 
 /** \ingroup rpmio
  */
-int	fdReadable(FD_t fd, int secs);
+int fdReadable(FD_t fd, int secs)
+	/*@modifies fd @*/;
 /*@=exportlocal@*/
 
 /** \ingroup rpmio
  * FTP and HTTP error codes.
  */
+/*@-typeuse@*/
 typedef enum ftperrCode_e {
     FTPERR_BAD_SERVER_RESPONSE	= -1,	/*!< Bad server response */
     FTPERR_SERVER_IO_ERROR	= -2,	/*!< Server I/O error */
@@ -380,32 +424,42 @@ typedef enum ftperrCode_e {
     FTPERR_NIC_ABORT_IN_PROGRESS= -11,	/*!< Abort in progress */
     FTPERR_UNKNOWN		= -100	/*!< Unknown or unexpected error */
 } ftperrCode;
+/*@=typeuse@*/
 
 /** \ingroup rpmio
  */
-/*@observer@*/ const char *const ftpStrerror(int errorNumber);
+/*@-redecl@*/
+/*@observer@*/ const char *const ftpStrerror(int errorNumber)	/*@*/;
+/*@=redecl@*/
 
 /** \ingroup rpmio
  */
-/*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
+/*@unused@*/
+/*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd)	/*@*/;
 
 /** \ingroup rpmio
  */
-/*@observer@*/ const char * urlStrerror(const char * url);
+/*@-redecl@*/
+/*@unused@*/
+/*@observer@*/ const char * urlStrerror(const char * url)	/*@*/;
+/*@=redecl@*/
 
 /** \ingroup rpmio
  */
 /*@-exportlocal@*/
-int	ufdCopy(FD_t sfd, FD_t tfd);
+int ufdCopy(FD_t sfd, FD_t tfd)
+	/*@modifies sfd, tfd, fileSystem @*/;
 /*@=exportlocal@*/
 
 /** \ingroup rpmio
  */
-int	ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
+int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
+	/*@modifies sfd, tfd, fileSystem @*/;
 
 /** \ingroup rpmio
  */
-int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
+int timedRead(FD_t fd, /*@out@*/ void * bufptr, int length)
+	/*@modifies fd, *bufptr, fileSystem @*/;
 #define	timedRead	ufdio->read
 
 
@@ -436,31 +490,39 @@ int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 /*@=exportlocal@*/
 /*@}*/
 
-/*@unused@*/ static inline int xislower(int c) {return (c >= 'a' && c <= 'z');}
-/*@unused@*/ static inline int xisupper(int c) {return (c >= 'A' && c <= 'Z');}
-/*@unused@*/ static inline int xisalpha(int c) {
+/*@unused@*/ static inline int xislower(int c) /*@*/ {
+    return (c >= 'a' && c <= 'z');
+}
+/*@unused@*/ static inline int xisupper(int c) /*@*/ {
+    return (c >= 'A' && c <= 'Z');
+}
+/*@unused@*/ static inline int xisalpha(int c) /*@*/ {
     return (xislower(c) || xisupper(c));
 }
-/*@unused@*/ static inline int xisdigit(int c) {return (c >= '0' && c <= '9');}
-/*@unused@*/ static inline int xisalnum(int c) {
+/*@unused@*/ static inline int xisdigit(int c) /*@*/ {
+    return (c >= '0' && c <= '9');
+}
+/*@unused@*/ static inline int xisalnum(int c) /*@*/ {
     return (xisalpha(c) || xisdigit(c));
 }
-/*@unused@*/ static inline int xisblank(int c) {return (c == ' ' || c == '\t');}
-/*@unused@*/ static inline int xisspace(int c) {
+/*@unused@*/ static inline int xisblank(int c) /*@*/ {
+    return (c == ' ' || c == '\t');
+}
+/*@unused@*/ static inline int xisspace(int c) /*@*/ {
     return (xisblank(c) || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
 
-/*@unused@*/ static inline int xtolower(int c) {
+/*@unused@*/ static inline int xtolower(int c) /*@*/ {
     return ((xisupper(c)) ? (c | ('a' - 'A')) : c);
 }
-/*@unused@*/ static inline int xtoupper(int c) {
+/*@unused@*/ static inline int xtoupper(int c) /*@*/ {
     return ((xislower(c)) ? (c & ~('a' - 'A')) : c);
 }
 
 /** \ingroup rpmio
  * Locale insensitive strcasecmp(3).
  */
-int xstrcasecmp(const char *s1, const char * s2)		/*@*/;
+int xstrcasecmp(const char * s1, const char * s2)		/*@*/;
 
 /** \ingroup rpmio
  * Locale insensitive strncasecmp(3).

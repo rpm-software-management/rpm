@@ -32,15 +32,17 @@ extern "C" {
  * @param csa
  * @return		0 on success
  */
-int readRPM(/*@null@*/ const char * fileName, /*@out@*/ Spec * specp,
-		/*@out@*/ struct rpmlead * lead, /*@out@*/ Header * sigs,
+/*@unused@*/ int readRPM(/*@null@*/ const char * fileName,
+		/*@out@*/ Spec * specp,
+		/*@out@*/ struct rpmlead * lead,
+		/*@out@*/ Header * sigs,
 		CSA_t csa)
-	/*@modifies *specp, *sigs, csa, csa->cpioFdIn @*/;
+	/*@modifies *specp, *lead, *sigs, csa, csa->cpioFdIn @*/;
 
 /**
  * Write rpm package to file.
  *
- * @warning The first header argument is now passed by reference in order to
+ * @warning The first argument (header) is now passed by reference in order to
  * return a reloaded contiguous header to the caller.
  *
  * @retval hdrp		header to write (final header is returned).
@@ -51,8 +53,11 @@ int readRPM(/*@null@*/ const char * fileName, /*@out@*/ Spec * specp,
  * @retval cookie	generated cookie (i.e build host/time)
  * @return		0 on success
  */
-int writeRPM(Header * hdrp, const char * fileName, int type,
-		CSA_t csa, /*@null@*/ char * passPhrase,
+int writeRPM(Header * hdrp,
+		const char * fileName,
+		int type,
+		CSA_t csa,
+		/*@null@*/ char * passPhrase,
 		/*@out@*/ const char ** cookie)
 	/*@modifies *hdrp, *cookie, csa, csa->cpioArchiveSize @*/;
 

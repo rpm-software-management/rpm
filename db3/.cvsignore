@@ -5,6 +5,7 @@ Makefile.in
 .libs
 *.la
 *.lo
+db3lobjs
 config.cache
 config.log
 db_config.h

@@ -113,8 +113,8 @@ struct transactionElement {
 	TR_REMOVED	/*!< Package will be removed. */
     } type;		/*!< Package disposition (installed/removed). */
     union { 
-	int addedIndex;
-	struct {
+/*@unused@*/ int addedIndex;
+/*@unused@*/ struct {
 	    int dboffset;
 	    int dependsOnIndex;
 	} removed;

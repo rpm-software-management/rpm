@@ -22,6 +22,7 @@
 /**
  * Tokens used by rpmError().
  */
+/*@-enummemuse -typeuse @*/
 typedef enum rpmerrCode_e {
     RPMERR_GDBMOPEN	= _em(2),   /*!< gdbm open failed */
     RPMERR_GDBMREAD	= _em(3),   /*!< gdbm read failed */
@@ -106,6 +107,7 @@ typedef enum rpmerrCode_e {
     RPMWARN_RMDIR	= _wm(512u+17),  /*!< rmdir(2) failed */
     RPMWARN_FLOCK	= _wm(512u+27)   /*!< locking the database failed */
 } rpmerrCode;
+/*@=enummemuse =typeuse @*/
 
 /**
  * Retrofit rpmError() onto rpmlog sub-system.
@@ -114,7 +116,9 @@ typedef enum rpmerrCode_e {
 #define	rpmErrorCode()			rpmlogCode()
 #define	rpmErrorString()		rpmlogMessage()
 #define	rpmErrorSetCallback(_cb)	rpmlogSetCallback(_cb)
+/*@-typeuse@*/
 typedef rpmlogCallback rpmErrorCallBackType;
+/*@=typeuse@*/
 
 
 #endif  /* H_RPMERR */

@@ -11,7 +11,9 @@
 /*@access FD_t@*/
 /*@access urlinfo@*/
 
+/*@-redecl@*/
 extern int _rpmio_debug;
+/*@=redecl@*/
 
 /* =============================================================== */
 static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode) {

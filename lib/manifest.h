@@ -15,7 +15,8 @@ extern "C" {
  * @param mode		file mode
  * @return		(malloc'd) formatted mode string
  */
-char * rpmPermsString(int mode);
+char * rpmPermsString(int mode)	
+	/*@*/;
 
 /**
  * Read manifest, glob items, and append to existing args.
@@ -23,7 +24,8 @@ char * rpmPermsString(int mode);
  * @retval argcPtr		no. of args
  * @retval argvPtr		args themselves
  */
-int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr);
+int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
+	/*@modifies fd, *argcPtr, *argvPtr @*/;
 
 #ifdef __cplusplus
 }

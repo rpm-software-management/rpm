@@ -31,7 +31,9 @@
 
 #define MAXDOCDIR 1024
 
+/*@-redecl@*/
 extern int _noDirTokens;
+/*@=redecl@*/
 
 /**
  */
@@ -272,7 +274,7 @@ typedef struct VFA {
 
 /**
  */
-/*@-exportlocal@*/
+/*@-exportlocal -exportheadervar@*/
 VFA_t verifyAttrs[] = {
 	{ "md5",	RPMVERIFY_MD5 },
 	{ "size",	RPMVERIFY_FILESIZE },
@@ -284,7 +286,7 @@ VFA_t verifyAttrs[] = {
 	{ "rdev",	RPMVERIFY_RDEV },
 	{ NULL, 0 }
 };
-/*@=exportlocal@*/
+/*@=exportlocal =exportheadervar@*/
 
 /**
  * @param fl		package file tree walk data
@@ -297,7 +299,7 @@ static int parseForVerify(char * buf, FileList fl)
     char *p, *pe, *q;
     const char *name;
     int *resultVerify;
-    int not;
+    int negated;
     int verifyFlags;
     specdFlags * specdFlags;
 
@@ -339,7 +341,7 @@ static int parseForVerify(char * buf, FileList fl)
     while (p <= pe)
 	*p++ = ' ';
 
-    not = 0;
+    negated = 0;
     verifyFlags = RPMVERIFY_NONE;
 
     for (p = q; *p != '\0'; p = pe) {
@@ -363,7 +365,7 @@ static int parseForVerify(char * buf, FileList fl)
 	}
 
 	if (!strcmp(p, "not")) {
-	    not ^= 1;
+	    negated ^= 1;
 	} else {
 	    rpmError(RPMERR_BADSPEC, _("Invalid %s token: %s\n"), name, p);
 	    fl->processingFailed = 1;
@@ -371,7 +373,7 @@ static int parseForVerify(char * buf, FileList fl)
 	}
     }
 
-    *resultVerify = not ? ~(verifyFlags) : verifyFlags;
+    *resultVerify = negated ? ~(verifyFlags) : verifyFlags;
     *specdFlags |= SPECD_VERIFY;
 
     return 0;
@@ -740,7 +742,7 @@ static int parseForRegexMultiLib(const char *fileName)	/*@*/
 
 /**
  */
-/*@-exportlocal@*/
+/*@-exportlocal -exportheadervar@*/
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	RPMFILE_DOC },
@@ -760,7 +762,7 @@ VFA_t virtualFileAttributes[] = {
 
 	{ NULL, 0 }
 };
-/*@=exportlocal@*/
+/*@=exportlocal =exportheadervar@*/
 
 /**
  * @param fl		package file tree walk data
@@ -1547,7 +1549,7 @@ exit:
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
 	/*@modifies spec->macros,
-		pkg->cpioList, pkg->specialDoc, pkg->header */
+		pkg->cpioList, pkg->fileList, pkg->specialDoc, pkg->header */
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     struct FileList_s fl;
@@ -2126,7 +2128,7 @@ typedef struct {
 
 /**
  */
-/*@-exportlocal@*/
+/*@-exportlocal -exportheadervar@*/
 DepMsg_t depMsgs[] = {
   { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
@@ -2166,7 +2168,7 @@ DepMsg_t depMsgs[] = {
 	0, -1 },
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
-/*@=exportlocal@*/
+/*@=exportlocal =exportheadervar@*/
 
 /**
  */

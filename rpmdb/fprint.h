@@ -126,6 +126,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
  * @param h		package header
  * @retval fpList	pointer to array of finger prints
  */
+/*@unused@*/
 void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
 	/*@modifies h, cache, *fpList @*/;
 

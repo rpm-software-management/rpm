@@ -18,8 +18,11 @@
 /** \ingroup rpmbuild
  * Bit(s) to control buildSpec() operation.
  */
+/*@-typeuse@*/
 typedef enum rpmBuildFlags_e {
+/*@-enummemuse@*/
     RPMBUILD_NONE	= 0,
+/*@=enummemuse@*/
     RPMBUILD_PREP	= (1 << 0),	/*!< Execute %%prep. */
     RPMBUILD_BUILD	= (1 << 1),	/*!< Execute %%build. */
     RPMBUILD_INSTALL	= (1 << 2),	/*!< Execute %%install. */
@@ -32,6 +35,7 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_STRINGBUF	= (1 << 9),	/*!< only for doScript() */
     RPMBUILD_RMSPEC	= (1 << 10)	/*!< Remove spec file. */
 } rpmBuildFlags;
+/*@=typeuse@*/
 
 #include <ctype.h>
 
@@ -263,17 +267,6 @@ int parseScript(Spec spec, int parsePart)
 		spec->sl @*/;
 
 /** \ingroup rpmbuild
- * Parse %%trigger et al scriptlets from a spec file.
- * @param spec		spec file control structure
- * @param pkg		package control structure
- * @param field
- * @param tag
- * @return
- */
-int parseTrigger(Spec spec, Package pkg, char * field, int tag)
-	/*@modifies nothing @*/;
-
-/** \ingroup rpmbuild
  * Evaluate boolean expression.
  * @param spec		spec file control structure
  * @param expr		expression to parse
@@ -287,6 +280,7 @@ int parseExpressionBoolean(Spec spec, const char * expr)	/*@*/;
  * @param expr		expression to parse
  * @return
  */
+/*@unused@*/
 char * parseExpressionString(Spec spec, const char * expr)
 	/*@modifies nothing @*/;
 
@@ -372,9 +366,9 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
  * @return		0 on success
  */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
-	/*@modifies spec->packages->cpioList, spec->packages->specialDoc,
-		spec->macros,
-		spec->packages->header @*/;
+	/*@modifies spec->macros,
+		spec->packages->cpioList, spec->packages->fileList,
+		spec->packages->specialDoc, spec->packages->header @*/;
 
 /** \ingroup rpmbuild
  * Create and initialize header for source package.
@@ -431,6 +425,7 @@ int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
  * @param force
  * @return
  */
+/*@-declundef@*/
 extern int (*parseSpecVec) (Spec * specp, const char * specFile,
 		const char * rootdir,
 		/*@null@*/ const char * buildRoot,
@@ -439,6 +434,7 @@ extern int (*parseSpecVec) (Spec * specp, const char * specFile,
 		/*@null@*/ char * cookie,
 		int anyarch, int force)
 	/*@modifies *specp @*/;
+/*@=declundef@*/
 
 /** \ingroup rpmbuild
  * Build stages state machine driver.
@@ -452,8 +448,8 @@ int buildSpec(Spec spec, int what, int test)
 		spec->sourceRpmName, spec->macros,
 		spec->BASpecs,
 		spec->buildRestrictions, spec->BANames,
-		spec->packages->cpioList, spec->packages->specialDoc,
-		spec->packages->header @*/;
+		spec->packages->cpioList, spec->packages->fileList,
+		spec->packages->specialDoc, spec->packages->header @*/;
 
 /** \ingroup rpmbuild
  * Generate binary package(s).

@@ -12,14 +12,6 @@
 
 /**
  */
-struct sharedFile {
-    int mainFileNumber;
-    int secRecOffset;
-    int secFileNumber;
-} ;
-
-/**
- */
 struct sharedFileInfo {
     int pkgFileNum;
     int otherFileNum;
@@ -51,7 +43,7 @@ struct transactionFileInfo_s {
     int_32 * dil;		/*!< Directory indice(s) (from header) */
 /*@owned@*/ const char ** obnl;	/*!< Original base name(s) (from header) */
 /*@owned@*/ const char ** odnl;	/*!< Original directory name(s) (from header) */
-    int_32 * odil;	/*!< Original directory indice(s) (from header) */
+/*@unused@*/ int_32 * odil;	/*!< Original directory indice(s) (from header) */
 /*@owned@*/ const char ** fmd5s;/*!< File MD5 sum(s) (from header) */
 /*@owned@*/ const char ** flinks;	/*!< File link(s) (from header) */
 /* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
@@ -161,7 +153,7 @@ struct psm_s {
     unsigned long total;	/*!< Callback total. */
     rpmRC rc;
     pkgStage goal;
-    pkgStage stage;
+/*@unused@*/ pkgStage stage;
 };
 
 #ifdef __cplusplus
