@@ -56,6 +56,8 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
 
+/*@access availablePackage@*/
+
 /**
  */
 struct diskspaceInfo {
@@ -88,11 +90,11 @@ static /*@null@*/ void * freeFl(rpmTransactionSet ts,
 	TFI_t fi;
 	int oc;
 
-	/*@-usereleased@*/
+	/*@-usereleased -onlytrans @*/ /* FIX: fi needs to be only */
 	for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++)
 	    freeFi(fi);
 	flList = _free(flList);
-	/*@=usereleased@*/
+	/*@=usereleased =onlytrans @*/
     }
     return NULL;
 }
@@ -118,7 +120,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
 		if (ts->addedPackages.list) {
-		    struct availablePackage * alp;
+		    availablePackage alp;
 		    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 		    *e = alp->key;
 		    /*@switchbreak@*/ break;
@@ -748,7 +750,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 
 /**
  */
-static int ensureOlder(struct availablePackage * alp, Header old,
+static int ensureOlder(availablePackage alp, Header old,
 		rpmProblemSet probs)
 	/*@modifies alp, probs @*/
 {
@@ -973,11 +975,11 @@ static int tsGetOc(void * a)
  * @param a		transaction element iterator
  * @return		available package pointer
  */
-static /*@dependent@*/ struct availablePackage * tsGetAlp(void * a)
+static /*@dependent@*/ availablePackage tsGetAlp(void * a)
 	/*@*/
 {
     struct tsIterator_s * iter = a;
-    struct availablePackage * alp = NULL;
+    availablePackage alp = NULL;
     int oc = iter->ocsave;
 
     /*@-branchstate@*/
@@ -1001,7 +1003,7 @@ static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ void * a)
 {
     struct tsIterator_s * iter = a;
     if (iter)
-	iter->ts = rpmtsUnlink(iter->ts);
+	iter->ts = rpmtsUnlink(iter->ts, "tsIterator");
     return _free(a);
 }
 
@@ -1016,7 +1018,7 @@ static void * tsInitIterator(rpmTransactionSet ts)
     struct tsIterator_s * iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = rpmtsLink(ts);
+    iter->ts = rpmtsLink(ts, "tsIterator");
     iter->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
     iter->oc = (iter->reverse ? (ts->orderCount - 1) : 0);
     iter->ocsave = iter->oc;
@@ -1028,7 +1030,7 @@ static void * tsInitIterator(rpmTransactionSet ts)
  * @param a		file info iterator
  * @return		next index, -1 on termination
  */
-static /*@dependent@*/ TFI_t tsNextIterator(void * a)
+static TFI_t tsNextIterator(void * a)
 	/*@*/
 {
     struct tsIterator_s * iter = a;
@@ -1055,7 +1057,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 {
     int i, j;
     int ourrc = 0;
-    struct availablePackage * alp;
+    availablePackage alp;
     int totalFileCount = 0;
     TFI_t fi;
     struct diskspaceInfo * dip;
@@ -1069,6 +1071,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     PSM_t psm = &psmbuf;
     void * tsi;
     int xx;
+int scareMem = 0;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -1096,7 +1099,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     memset(psm, 0, sizeof(*psm));
     /*@-assignexpose@*/
-    psm->ts = rpmtsLink(ts);
+    psm->ts = rpmtsLink(ts, "tsRun");
     /*@=assignexpose@*/
 
     /* Get available space on mounted file systems. */
@@ -1244,7 +1247,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    /* XXX watchout: fi->type must be set for tsGetAlp() to "work" */
 	    fi->ap = tsGetAlp(tsi);
 	    fi->record = 0;
-	    loadFi(ts, fi, fi->ap->h, 1);
+	    loadFi(ts, fi, fi->ap->h, scareMem);
 /* XXX free fi->ap->h here if/when possible */
 	    if (fi->fc == 0)
 		continue;
@@ -1335,7 +1338,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(fi->fc, sizeof(*matches));
 	if (rpmdbFindFpList(ts->rpmdb, fi->fps, matches, fi->fc)) {
-	    psm->ts = rpmtsUnlink(ts);
+	    psm->ts = rpmtsUnlink(ts, "tsRun (rpmFindFpList fail)");
 	    return 1;	/* XXX WTFO? */
 	}
 
@@ -1472,7 +1475,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     tsi = tsInitIterator(ts);
     while ((fi = tsNextIterator(tsi)) != NULL) {
-	psm->fi = fi;
 	if (fi->fc == 0)
 	    continue;
 	fi->fps = _free(fi->fps);
@@ -1494,7 +1496,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	ts->flList = freeFl(ts, ts->flList);
 	ts->flEntries = 0;
 	/*@-nullstate@*/
-	psm->ts = rpmtsUnlink(psm->ts);
+	psm->ts = rpmtsUnlink(psm->ts, "tsRun (problems)");
 	return ts->orderCount;
 	/*@=nullstate@*/
     }
@@ -1505,13 +1507,16 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     if (ts->transFlags & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
 	tsi = tsInitIterator(ts);
 	while ((fi = tsNextIterator(tsi)) != NULL) {
-	    psm->fi = fi;
 	    switch (fi->type) {
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
-		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE)
+		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE) {
+		    psm->fi = rpmfiLink(fi, "tsRepackage");
 		    xx = psmStage(psm, PSM_PKGSAVE);
+		    (void) rpmfiUnlink(fi, "tsRepackage");
+		    psm->fi = NULL;
+		}
 		/*@switchbreak@*/ break;
 	    }
 	}
@@ -1524,12 +1529,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     lastFailed = -2;	/* erased packages have -1 */
     tsi = tsInitIterator(ts);
+    /*@-branchstate@*/ /* FIX: fi reload needs work */
     while ((fi = tsNextIterator(tsi)) != NULL) {
 	Header h;
 	int gotfd;
 
 	gotfd = 0;
-	psm->fi = fi;
+	psm->fi = rpmfiLink(fi, "tsInstall");
 	switch (fi->type) {
 	case TR_ADDED:
 	    alp = tsGetAlp(tsi);
@@ -1637,13 +1643,16 @@ assert(alp == fi->ap);
 	    /*@switchbreak@*/ break;
 	}
 	xx = rpmdbSync(ts->rpmdb);
+	(void) rpmfiUnlink(fi, "tsInstall");
+	psm->fi = NULL;
     }
+    /*@=branchstate@*/
     tsi = tsFreeIterator(tsi);
 
     ts->flList = freeFl(ts, ts->flList);
     ts->flEntries = 0;
 
-    psm->ts = rpmtsUnlink(psm->ts);
+    psm->ts = rpmtsUnlink(psm->ts, "tsRun");
 
     /*@-nullstate@*/
     if (ourrc)

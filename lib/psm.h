@@ -9,6 +9,11 @@
 #include "fsm.h"
 #include "depends.h"
 
+/*@unchecked@*/
+/*@-exportlocal@*/
+extern int _fi_debug;
+/*@=exportlocal@*/
+
 /**
  */
 struct sharedFileInfo {
@@ -75,8 +80,11 @@ struct transactionFileInfo_s {
 #define	TFIMAGIC	0x09697923
 /*@owned@*/ FSM_t fsm;		/*!< File state machine data. */
 
+    int scareMem;		/*!< Keep header? */
+/*@refs@*/ int nrefs;		/*!< Reference count. */
+
   /* these are for TR_ADDED packages */
-/*@dependent@*/ struct availablePackage * ap;
+/*@dependent@*/ availablePackage ap;
 /*@owned@*/ struct sharedFileInfo * replaced;
 /*@owned@*/ uint_32 * replacedSizes;
 
@@ -135,7 +143,7 @@ typedef enum pkgStage_e {
 struct psm_s {
 /*@refcounted@*/
     rpmTransactionSet ts;	/*!< transaction set */
-/*@kept@*/
+/*@refcounted@*/
     TFI_t fi;			/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
     FD_t fd;			/*!< Repackage file handle. */
@@ -175,7 +183,7 @@ rpmProblemSet psCreate(void)
  * Append problem to set.
  */
 void psAppend(rpmProblemSet probs, rpmProblemType type,
-		const struct availablePackage * alp,
+		const availablePackage alp,
 		const char * dn, const char * bn,
 		Header altH, unsigned long ulong1)
 	/*@modifies probs, alp @*/;
@@ -199,7 +207,7 @@ fileTypes whatis(uint_16 mode)
  * @return		header with relocated files
  */
 Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
-		struct availablePackage * alp,
+		availablePackage alp,
 		Header origH, fileAction * actions)
 	/*@modifies ts, fi, alp, origH, actions @*/;
 
@@ -212,8 +220,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
  */
 void loadFi(/*@null@*/ const rpmTransactionSet ts, TFI_t fi,
 		Header h, int scareMem)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fi, h, fileSystem @*/;
+	/*@modifies ts, fi, h @*/;
 
 /**
  * Destroy transaction element file info.

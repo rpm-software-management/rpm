@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-27 18:27-0400\n"
+"POT-Creation-Date: 2001-10-28 17:05-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -18,44 +18,44 @@ msgstr ""
 msgid "Unable to open spec file %s: %s\n"
 msgstr ""
 
-#: build.c:143 build.c:155
+#: build.c:144 build.c:156
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr ""
 
 #. Give up
-#: build.c:162
+#: build.c:163
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: build.c:190
+#: build.c:191
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr ""
 
-#: build.c:229
+#: build.c:230
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr ""
 
-#: build.c:234
+#: build.c:235
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr ""
 
-#: build.c:243
+#: build.c:244
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: build.c:298
+#: build.c:299
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:313
+#: build.c:314
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
@@ -811,7 +811,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:2154
+#: build/pack.c:603 lib/psm.c:2180
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -841,7 +841,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:683 lib/psm.c:2420
+#: build/pack.c:683 lib/psm.c:2446
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1349,17 +1349,17 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: build/spec.c:227
+#: build/spec.c:230
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr ""
 
-#: build/spec.c:233
+#: build/spec.c:236
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr ""
 
-#: build/spec.c:294
+#: build/spec.c:297
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
@@ -1406,92 +1406,92 @@ msgid " failed - "
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:668
+#: lib/depends.c:687
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:697
+#: lib/depends.c:716
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:698 lib/depends.c:1475 lib/depends.c:1608
+#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:698 lib/depends.c:1475 lib/depends.c:1608
+#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:828
+#: lib/depends.c:856
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/depends.c:1008
+#: lib/depends.c:1038
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:1013
+#: lib/depends.c:1043
 #, c-format
 msgid "package %s already added, ignoring\n"
 msgstr ""
 
-#: lib/depends.c:1018
+#: lib/depends.c:1048
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1307
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1380
+#: lib/depends.c:1423
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1474
+#: lib/depends.c:1517
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1503
+#: lib/depends.c:1546
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1520
+#: lib/depends.c:1563
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1544
+#: lib/depends.c:1587
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1557
+#: lib/depends.c:1600
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1571
+#: lib/depends.c:1614
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1587
+#: lib/depends.c:1630
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1608
+#: lib/depends.c:1651
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
@@ -1499,42 +1499,42 @@ msgstr ""
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1681
+#: lib/depends.c:1724
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1760
+#: lib/depends.c:1803
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:2013
+#: lib/depends.c:2058
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:2163
+#: lib/depends.c:2212
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2223
+#: lib/depends.c:2272
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2273
+#: lib/depends.c:2322
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2326
+#: lib/depends.c:2375
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2356
+#: lib/depends.c:2405
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -1584,46 +1584,46 @@ msgstr ""
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:300
+#: lib/fsm.c:308
 msgid "========== Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:302
+#: lib/fsm.c:310
 #, c-format
 msgid "%10d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1162
+#: lib/fsm.c:1171
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1443
+#: lib/fsm.c:1452
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1564 lib/fsm.c:1692
+#: lib/fsm.c:1573 lib/fsm.c:1701
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1718
+#: lib/fsm.c:1727
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1724
+#: lib/fsm.c:1733
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1734
+#: lib/fsm.c:1743
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1753
+#: lib/fsm.c:1762
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -1635,7 +1635,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:973
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:997
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2207,108 +2207,108 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:315
+#: lib/psm.c:320
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:319
+#: lib/psm.c:324
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/psm.c:322
+#: lib/psm.c:327
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/psm.c:392
+#: lib/psm.c:397
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/psm.c:458
+#: lib/psm.c:463
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/psm.c:468
+#: lib/psm.c:473
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:547
+#: lib/psm.c:552
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:1170
+#: lib/psm.c:1194
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:1176
+#: lib/psm.c:1200
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:1216
+#: lib/psm.c:1240
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1329
+#: lib/psm.c:1353
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:1437
+#: lib/psm.c:1463
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:1605
+#: lib/psm.c:1631
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1612
+#: lib/psm.c:1638
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1959
+#: lib/psm.c:1985
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:2076
+#: lib/psm.c:2102
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2191
+#: lib/psm.c:2217
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2200
+#: lib/psm.c:2226
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2241
+#: lib/psm.c:2267
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2242
+#: lib/psm.c:2268
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2428
+#: lib/psm.c:2454
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2431
+#: lib/psm.c:2457
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2822,13 +2822,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:309
+#: lib/transaction.c:311
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:935
+#: lib/transaction.c:937
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
@@ -2841,17 +2841,17 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:418
+#: lib/verify.c:420
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:515
+#: lib/verify.c:517
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: lib/verify.c:560
+#: lib/verify.c:562
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -2999,155 +2999,155 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:126
+#: rpmdb/rpmdb.c:129
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:380
+#: rpmdb/rpmdb.c:383
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:402
+#: rpmdb/rpmdb.c:405
 #, c-format
 msgid "cannot open %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:494
+#: rpmdb/rpmdb.c:497
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:625
+#: rpmdb/rpmdb.c:628
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:635
+#: rpmdb/rpmdb.c:638
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:892
+#: rpmdb/rpmdb.c:902
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1034
+#: rpmdb/rpmdb.c:1046
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr ""
 
 #. error
-#: rpmdb/rpmdb.c:1291
+#: rpmdb/rpmdb.c:1311
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2068 rpmdb/rpmdb.c:3321
+#: rpmdb/rpmdb.c:2088 rpmdb/rpmdb.c:3341
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2121
+#: rpmdb/rpmdb.c:2141
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2391
+#: rpmdb/rpmdb.c:2411
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2463
+#: rpmdb/rpmdb.c:2483
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2472
+#: rpmdb/rpmdb.c:2492
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2673
+#: rpmdb/rpmdb.c:2693
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2754
+#: rpmdb/rpmdb.c:2774
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2765
+#: rpmdb/rpmdb.c:2785
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3207
+#: rpmdb/rpmdb.c:3227
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3240
+#: rpmdb/rpmdb.c:3260
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3267
+#: rpmdb/rpmdb.c:3287
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3291
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3277
+#: rpmdb/rpmdb.c:3297
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3279
+#: rpmdb/rpmdb.c:3299
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3286
+#: rpmdb/rpmdb.c:3306
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3297
+#: rpmdb/rpmdb.c:3317
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3361
+#: rpmdb/rpmdb.c:3381
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3379
+#: rpmdb/rpmdb.c:3399
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3387
+#: rpmdb/rpmdb.c:3407
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3389
+#: rpmdb/rpmdb.c:3409
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3399
+#: rpmdb/rpmdb.c:3419
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3401
+#: rpmdb/rpmdb.c:3421
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

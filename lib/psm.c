@@ -17,6 +17,9 @@
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
 
+/*@unchecked@*/
+int _fi_debug = 0;
+
 /*@access Header @*/		/* compared with NULL */
 /*@access rpmdbMatchIterator @*/ /* compared with NULL */
 /*@access FSM_t @*/		/* compared with NULL */
@@ -28,6 +31,8 @@
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
 /*@access PSM_t @*/
+
+/*@access availablePackage@*/
 
 /*@-redecl -declundef -exportheadervar@*/
 /*@unchecked@*/
@@ -82,7 +87,7 @@ rpmProblemSet psCreate(void)
 }
 
 void psAppend(rpmProblemSet probs, rpmProblemType type,
-		const struct availablePackage * alp,
+		const availablePackage alp,
 		const char * dn, const char * bn,
 		Header altH, unsigned long ulong1)
 {
@@ -176,7 +181,7 @@ fileTypes whatis(uint_16 mode)
 #define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
-		struct availablePackage * alp,
+		availablePackage alp,
 		Header origH, fileAction * actions)
 {
     HGE_t hge = fi->hge;
@@ -594,6 +599,26 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     return h;
 }
 
+TFI_t XrpmfiUnlink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
+{
+/*@-modfilesys@*/
+if (_fi_debug)
+fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    fi->nrefs--;
+    return NULL;
+}
+
+TFI_t XrpmfiLink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
+{
+    fi->nrefs++;
+/*@-modfilesys@*/
+if (_fi_debug)
+fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
+}
+
 void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
 {
     HGE_t hge;
@@ -658,6 +683,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
     if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
+    fi->scareMem = scareMem;
     switch (fi->type) {
     case TR_ADDED:
 	fi->mapflags =
@@ -679,8 +705,6 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
 	}
 
     if (!scareMem) {
-
-fprintf(stderr, "*** %s-%s-%s scareMem\n", fi->name, fi->version, fi->release);
 	fi->fmtimes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmtimes)),
 				fi->fmtimes, fi->fc * sizeof(*fi->fmtimes));
 	fi->frdevs = memcpy(xmalloc(fi->fc * sizeof(*fi->frdevs)),
@@ -750,33 +774,9 @@ void freeFi(TFI_t fi)
 {
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
 
-    fi->name = _free(fi->name);
-    fi->version = _free(fi->version);
-    fi->release = _free(fi->release);
-    fi->actions = _free(fi->actions);
-    fi->replacedSizes = _free(fi->replacedSizes);
-    fi->replaced = _free(fi->replaced);
-
-    fi->bnl = hfd(fi->bnl, -1);
-    fi->dnl = hfd(fi->dnl, -1);
-    fi->obnl = hfd(fi->obnl, -1);
-    fi->odnl = hfd(fi->odnl, -1);
-    fi->flinks = hfd(fi->flinks, -1);
-    fi->fmd5s = hfd(fi->fmd5s, -1);
-    fi->fuser = hfd(fi->fuser, -1);
-    fi->fgroup = hfd(fi->fgroup, -1);
-    fi->flangs = hfd(fi->flangs, -1);
-
-    fi->apath = _free(fi->apath);
-    fi->fuids = _free(fi->fuids);
-    fi->fgids = _free(fi->fgids);
-    fi->fmapflags = _free(fi->fmapflags);
-
-    fi->fsm = freeFSM(fi->fsm);
-
     switch (fi->type) {
     case TR_ADDED:
-	if (fi->h == NULL) {
+	if (!fi->scareMem) {
 	    fi->fmtimes = hfd(fi->fmtimes, -1);
 	    fi->frdevs = hfd(fi->frdevs, -1);
 	    fi->fsizes = hfd(fi->fsizes, -1);
@@ -794,6 +794,30 @@ void freeFi(TFI_t fi)
 	fi->dil = hfd(fi->dil, -1);
 	break;
     }
+
+    fi->fsm = freeFSM(fi->fsm);
+
+    fi->apath = _free(fi->apath);
+    fi->fuids = _free(fi->fuids);
+    fi->fgids = _free(fi->fgids);
+    fi->fmapflags = _free(fi->fmapflags);
+
+    fi->bnl = hfd(fi->bnl, -1);
+    fi->dnl = hfd(fi->dnl, -1);
+    fi->obnl = hfd(fi->obnl, -1);
+    fi->odnl = hfd(fi->odnl, -1);
+    fi->flinks = hfd(fi->flinks, -1);
+    fi->fmd5s = hfd(fi->fmd5s, -1);
+    fi->fuser = hfd(fi->fuser, -1);
+    fi->fgroup = hfd(fi->fgroup, -1);
+    fi->flangs = hfd(fi->flangs, -1);
+
+    fi->name = _free(fi->name);
+    fi->version = _free(fi->version);
+    fi->release = _free(fi->release);
+    fi->actions = _free(fi->actions);
+    fi->replacedSizes = _free(fi->replacedSizes);
+    fi->replaced = _free(fi->replaced);
 
     fi->h = headerFree(fi->h);
 
@@ -1236,7 +1260,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 
     memset(psm, 0, sizeof(*psm));
     /*@-assignexpose@*/
-    psm->ts = rpmtsLink(ts);
+    psm->ts = rpmtsLink(ts, "InstallSourcePackage");
     psm->fi = fi;
     /*@=assignexpose@*/
 
@@ -1354,10 +1378,12 @@ exit:
 
     if (fi) {
 	freeFi(fi);
+	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
 	fi = _free(fi);
+	/*@=refcounttrans@*/
     }
 
-    psm->ts = rpmtsUnlink(ts);
+    psm->ts = rpmtsUnlink(ts, "InstallSourcePackage");
 
     return rc;
 }
@@ -2174,7 +2200,7 @@ assert(psm->mi == NULL);
 	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    struct availablePackage * alp = fi->ap;
+	    availablePackage alp = fi->ap;
 	    int i;
 
 	    if (fi->fc <= 0)				break;

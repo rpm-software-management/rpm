@@ -778,7 +778,9 @@ int packageBinaries(Spec spec)
 	csa->cpioArchiveSize = 0;
 	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
-	csa->cpioList = pkg->cpioList;
+	/*@-assignexpose -newreftrans@*/
+/*@i@*/	csa->cpioList = pkg->cpioList;
+	/*@=assignexpose =newreftrans@*/
 
 	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
@@ -817,7 +819,9 @@ int packageSources(Spec spec)
 	csa->cpioArchiveSize = 0;
 	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageSources)");
-	csa->cpioList = spec->sourceCpioList;
+	/*@-assignexpose -newreftrans@*/
+/*@i@*/	csa->cpioList = spec->sourceCpioList;
+	/*@=assignexpose =newreftrans@*/
 
 	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));

@@ -538,5 +538,8 @@ fi
 - lazy rpmdb open/close through transaction methods (mostly anyways).
 - no-brainer refcounts for rpmdb object.
 - check added header against transaction set, replace if newer.
-- transaction sets cerated in cli main.
+- transaction sets created in cli main.
 - no-brainer refcounts for ts object.
+- memory indices for dependency check are typedef'd and abstract'd.
+- no-brainer refcounts for fi object, debug the mess.
+- dump the header early in transaction, recreate fi before installing.

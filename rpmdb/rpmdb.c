@@ -6,6 +6,9 @@
 #include "system.h"
 
 /*@unchecked@*/
+static int _rpmdb_debug = 0;
+
+/*@unchecked@*/
 static int _debug = 0;
 #define	INLINE
 
@@ -817,7 +820,13 @@ int rpmdbClose(rpmdb db)
     int dbix;
     int rc = 0;
 
-    if (db == NULL || --db->nrefs > 0)
+    if (db == NULL)
+	return 0;
+
+    (void) rpmdbUnlink(db, "rpmdbClose");
+
+    /*@-usereleased@*/
+    if (db->nrefs > 0)
 	return 0;
 
     if (db->_dbi)
@@ -836,6 +845,7 @@ int rpmdbClose(rpmdb db)
     db->db_home = _free(db->db_home);
     db->_dbi = _free(db->_dbi);
     /*@-refcounttrans@*/ db = _free(db); /*@=refcounttrans@*/
+    /*@=usereleased@*/
     return rc;
 }
 
@@ -902,8 +912,10 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     db->db_filter_dups = _db_filter_dups;
     db->db_ndbi = dbiTagsMax;
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
-    db->nrefs = 1;
-    /*@-globstate@*/ return db; /*@=globstate@*/
+    db->nrefs = 0;
+    /*@-globstate@*/
+    return rpmdbLink(db, "rpmdbCreate");
+    /*@=globstate@*/
 }
 /*@=mods@*/
 
@@ -1054,16 +1066,24 @@ exit:
     return rc;
 }
 
-rpmdb rpmdbLink(rpmdb db)
+rpmdb XrpmdbUnlink(rpmdb db, const char * msg, const char * fn, unsigned ln)
 {
-    db->nrefs++;
-    /*@-refcounttrans@*/ return db; /*@=refcounttrans@*/
-}
-
-rpmdb rpmdbUnlink(rpmdb db)
-{
+/*@-modfilesys@*/
+if (_rpmdb_debug)
+fprintf(stderr, "--> db %p -- %d %s at %s:%u\n", db, db->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
     db->nrefs--;
     return NULL;
+}
+
+rpmdb XrpmdbLink(rpmdb db, const char * msg, const char * fn, unsigned ln)
+{
+    db->nrefs++;
+/*@-modfilesys@*/
+if (_rpmdb_debug)
+fprintf(stderr, "--> db %p ++ %d %s at %s:%u\n", db, db->nrefs, msg, fn, ln);
+/*@=modfilesys@*/
+    /*@-refcounttrans@*/ return db; /*@=refcounttrans@*/
 }
 
 /* XXX python/rpmmodule.c */
@@ -1602,7 +1622,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_dbc = NULL;
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
-    mi->mi_db = rpmdbUnlink(mi->mi_db);
+    mi->mi_db = rpmdbUnlink(mi->mi_db, "matchIterator");
     mi = _free(mi);
     return mi;
 }
@@ -2305,7 +2325,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     mi->mi_keylen = keylen;
 
     /*@-assignexpose@*/
-    mi->mi_db = rpmdbLink(db);
+    mi->mi_db = rpmdbLink(db, "matchIterator");
     /*@=assignexpose@*/
     mi->mi_rpmtag = rpmtag;
 

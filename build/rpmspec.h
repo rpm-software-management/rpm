@@ -124,8 +124,9 @@ struct SpecStruct {
     int numSources;
     int noSource;
 
-/*@refcounted@*/ Header sourceHeader;
-/*@owned@*/ void * sourceCpioList;
+/*@refcounted@*/
+    Header sourceHeader;
+    TFI_t sourceCpioList;
 
 /*@dependent@*/ /*@null@*/ MacroContext macros;
 
@@ -141,9 +142,9 @@ struct SpecStruct {
  * The structure used to store values for a package.
  */
 struct PackageStruct {
-/*@refcounted@*/ Header header;
-
-/*@owned@*/ void * cpioList;
+/*@refcounted@*/
+    Header header;
+    TFI_t cpioList;
 
 /*@owned@*/ struct Source * icon;
 

@@ -15,6 +15,8 @@
 /*@access FSMI_t @*/
 /*@access FSM_t @*/
 
+/*@access availablePackage@*/	/* XXX fi->ap->key on callbacks */
+
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 /*@unchecked@*/
@@ -36,7 +38,9 @@ rpmTransactionSet fsmGetTs(const FSM_t fsm) {
 TFI_t fsmGetFi(const FSM_t fsm)
 {
     const FSMI_t iter = fsm->iter;
+    /*@-compdef -refcounttrans -retexpose -usereleased @*/
     return (iter ? iter->fi : NULL);
+    /*@=compdef =refcounttrans =retexpose =usereleased @*/
 }
 
 #define	SUFFIX_RPMORIG	".rpmorig"
@@ -88,8 +92,10 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
 	/*@*/
 {
     FSMI_t iter = p;
-    if (iter)
-	iter->ts = rpmtsUnlink(iter->ts);
+    if (iter) {
+	iter->ts = rpmtsUnlink(iter->ts, "mapIterator");
+	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
+    }
     return _free(p);
 }
 
@@ -100,15 +106,14 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/ void * p)
  * @return		file info iterator
  */
 static void *
-mapInitIterator(rpmTransactionSet ts, /*@kept@*/ const void * b)
-	/*@modifies ts @*/
+mapInitIterator(rpmTransactionSet ts, TFI_t fi)
+	/*@modifies ts, fi @*/
 {
-    TFI_t fi = (void *)b;
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = rpmtsLink(ts);
-    iter->fi = fi;
+    iter->ts = rpmtsLink(ts, "mapIterator");
+    iter->fi = rpmfiLink(fi, "mapIterator");
     iter->reverse = (fi->type == TR_REMOVED && fi->action != FA_COPYOUT);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
@@ -189,7 +194,7 @@ static int mapFind(/*@null@*/ FSMI_t iter, const char * fsmPath)
  * Directory name iterator.
  */
 typedef struct dnli_s {
-/*@dependent@*/ TFI_t fi;
+    TFI_t fi;
 /*@only@*/ /*@null@*/ char * active;
     int reverse;
     int isave;
@@ -233,6 +238,7 @@ static inline int dnlIndex(const DNLI_t dnli)
  * @param reverse	traverse directory names in reverse order?
  * @return		directory name iterator
  */
+/*@-usereleased@*/
 static /*@only@*/ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
 		int reverse)
 	/*@uses fsm->iter @*/ 
@@ -247,7 +253,9 @@ static /*@only@*/ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
     dnli = xcalloc(1, sizeof(*dnli));
     dnli->fi = fi;
     dnli->reverse = reverse;
+    /*@-branchstate@*/
     dnli->i = (reverse ? fi->dc : 0);
+    /*@=branchstate@*/
 
     if (fi->dc) {
 	dnli->active = xcalloc(fi->dc, sizeof(*dnli->active));
@@ -307,6 +315,7 @@ static /*@only@*/ void * dnlInitIterator(/*@special@*/ const FSM_t fsm,
     }
     return dnli;
 }
+/*@=usereleased@*/
 
 /** \ingroup payload
  * Return next directory name (from file info).

@@ -288,7 +288,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
     int rc;
 
-    psm->ts = rpmtsLink(ts);
+    psm->ts = rpmtsLink(ts, "rpmVerifyScript");
 
     if (scriptFd != NULL) {
 	/*@-type@*/ /* FIX: ??? */
@@ -306,7 +306,9 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
     rc = psmStage(psm, PSM_SCRIPT);
     freeFi(fi);
+    /*@-refcounttrans@*/ /* FIX: fi needs to be only */
     fi = _free(fi);
+    /*@=refcounttrans@*/
 
     if (scriptFd != NULL) {
 	/*@-type@*/ /* FIX: ??? */
@@ -317,7 +319,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 
     rpmtransClean(ts);	/* XXX this is sure to cause heartburn */
 
-    psm->ts = rpmtsUnlink(ts);
+    psm->ts = rpmtsUnlink(ts, "rpmVerifyScript");
 
     return rc;
 }
@@ -484,8 +486,8 @@ exit:
  */
 static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 		Header h)
-	/*@globals fileSystem@*/
-	/*@modifies ts, h, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, h, fileSystem, internalState @*/
 {
     rpmDependencyConflict conflicts;
     int numConflicts;

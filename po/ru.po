@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-27 18:27-0400\n"
+"POT-Creation-Date: 2001-10-28 17:05-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -20,44 +20,44 @@ msgstr "неудовлетворенные зависимости сборки:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Ошибка открытия файла спецификации %s: %s\n"
 
-#: build.c:143 build.c:155
+#: build.c:144 build.c:156
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Ошибка открытия канала tar: %m\n"
 
 #. Give up
-#: build.c:162
+#: build.c:163
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Ошибка чтения файла спецификации из %s\n"
 
-#: build.c:190
+#: build.c:191
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Невозможно переименовать %s в %s: %m\n"
 
-#: build.c:229
+#: build.c:230
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "невозможно получить информацию о %s: %m\n"
 
-#: build.c:234
+#: build.c:235
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Не обычный файл: %s.\n"
 
-#: build.c:243
+#: build.c:244
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Файл %s не похож на файл спецификации.\n"
 
 #. parse up the build operators
-#: build.c:298
+#: build.c:299
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Платформы для сборки: %s\n"
 
-#: build.c:313
+#: build.c:314
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Сборка для платформы %s\n"
@@ -834,7 +834,7 @@ msgstr "Невозможно перезагрузить заголовок подписи.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:603 lib/psm.c:2154
+#: build/pack.c:603 lib/psm.c:2180
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -864,7 +864,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2420
+#: build/pack.c:683 lib/psm.c:2446
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -1385,17 +1385,17 @@ msgstr "переопределить целевую платформу"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "искать строки I18N в каталоге файла спецификации"
 
-#: build/spec.c:227
+#: build/spec.c:230
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "строка %d: Неверное число: %s\n"
 
-#: build/spec.c:233
+#: build/spec.c:236
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "строка %d: Неверное число no%s: %d\n"
 
-#: build/spec.c:294
+#: build/spec.c:297
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "строка %d: Неверное число %s: %s\n"
@@ -1442,7 +1442,7 @@ msgid " failed - "
 msgstr "не удалось - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:668
+#: lib/depends.c:687
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -1451,85 +1451,85 @@ msgstr ""
 "для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:697
+#: lib/depends.c:716
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:698 lib/depends.c:1475 lib/depends.c:1608
+#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:698 lib/depends.c:1475 lib/depends.c:1608
+#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/depends.c:828
+#: lib/depends.c:856
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
-#: lib/depends.c:1008
+#: lib/depends.c:1038
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:1013
+#: lib/depends.c:1043
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "пакет %s уже установлен"
 
-#: lib/depends.c:1018
+#: lib/depends.c:1048
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1307
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:1380
+#: lib/depends.c:1423
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:1474
+#: lib/depends.c:1517
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cached)\n"
 
-#: lib/depends.c:1503
+#: lib/depends.c:1546
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:1520
+#: lib/depends.c:1563
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:1544
+#: lib/depends.c:1587
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1557
+#: lib/depends.c:1600
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:1571
+#: lib/depends.c:1614
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db package)\n"
 
-#: lib/depends.c:1587
+#: lib/depends.c:1630
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1608
+#: lib/depends.c:1651
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
@@ -1537,44 +1537,44 @@ msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1681
+#: lib/depends.c:1724
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1760
+#: lib/depends.c:1803
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:2013
+#: lib/depends.c:2058
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:2163
+#: lib/depends.c:2212
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2223
+#: lib/depends.c:2272
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:2273
+#: lib/depends.c:2322
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:2326
+#: lib/depends.c:2375
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:2356
+#: lib/depends.c:2405
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
@@ -1626,47 +1626,47 @@ msgstr "невозможно открыть %s: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "файл %s - на неизвестном устройстве\n"
 
-#: lib/fsm.c:300
+#: lib/fsm.c:308
 #, fuzzy
 msgid "========== Directories not explictly included in package:\n"
 msgstr "========= Каталоги, которые не включены в пакет явно:\n"
 
-#: lib/fsm.c:302
+#: lib/fsm.c:310
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1162
+#: lib/fsm.c:1171
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "каталог %s создан с правами доступа %04o.\n"
 
-#: lib/fsm.c:1443
+#: lib/fsm.c:1452
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "файл архива %s не найден в списке файлов заголовка\n"
 
-#: lib/fsm.c:1564 lib/fsm.c:1692
+#: lib/fsm.c:1573 lib/fsm.c:1701
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s сохранен как %s\n"
 
-#: lib/fsm.c:1718
+#: lib/fsm.c:1727
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s невозможно удалить %s: каталог не пуст\n"
 
-#: lib/fsm.c:1724
+#: lib/fsm.c:1733
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s ошибка удаления каталога %s: %s\n"
 
-#: lib/fsm.c:1734
+#: lib/fsm.c:1743
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s невозможно удалить %s: %s\n"
 
-#: lib/fsm.c:1753
+#: lib/fsm.c:1762
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s создан как %s\n"
@@ -1678,7 +1678,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() допустим только один элемент типа RPM_STRING_TYPE\n"
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:973
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:997
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
@@ -2267,108 +2267,108 @@ msgstr "пакет %s pre-transaction syscall(s): %s: ошибка: %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
 
-#: lib/psm.c:315
+#: lib/psm.c:320
 msgid "========== relocations\n"
 msgstr "========== перемещений\n"
 
-#: lib/psm.c:319
+#: lib/psm.c:324
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d исключен %s\n"
 
-#: lib/psm.c:322
+#: lib/psm.c:327
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d перемещение %s -> %s\n"
 
-#: lib/psm.c:392
+#: lib/psm.c:397
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "исключается многобиблиотечный путь %s%s\n"
 
-#: lib/psm.c:458
+#: lib/psm.c:463
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "исключается %s %s\n"
 
-#: lib/psm.c:468
+#: lib/psm.c:473
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещается %s в %s\n"
 
-#: lib/psm.c:547
+#: lib/psm.c:552
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещается каталог %s в %s\n"
 
-#: lib/psm.c:1170
+#: lib/psm.c:1194
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "невозможно создать %%%s %s\n"
 
-#: lib/psm.c:1176
+#: lib/psm.c:1200
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "невозможно писать в %%%s %s\n"
 
-#: lib/psm.c:1216
+#: lib/psm.c:1240
 msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 
-#: lib/psm.c:1329
+#: lib/psm.c:1353
 msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
-#: lib/psm.c:1437
+#: lib/psm.c:1463
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "%s: выполняется сценарий %s (если есть)\n"
 
-#: lib/psm.c:1605
+#: lib/psm.c:1631
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, waitpid() возвратил %s\n"
 
-#: lib/psm.c:1612
+#: lib/psm.c:1638
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1985
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s содержит %d файлов, test = %d\n"
 
-#: lib/psm.c:2076
+#: lib/psm.c:2102
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr "%s: ошибка сценария %s (%d), %s-%s-%s пропускается\n"
 
-#: lib/psm.c:2191
+#: lib/psm.c:2217
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "пользователь %s не существует - используется root\n"
 
-#: lib/psm.c:2200
+#: lib/psm.c:2226
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "группа %s не существует - используется root\n"
 
-#: lib/psm.c:2241
+#: lib/psm.c:2267
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:2242
+#: lib/psm.c:2268
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:2428
+#: lib/psm.c:2454
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s ошибка на файле %s: %s\n"
 
-#: lib/psm.c:2431
+#: lib/psm.c:2457
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
@@ -2886,13 +2886,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
-#: lib/transaction.c:309
+#: lib/transaction.c:311
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:935
+#: lib/transaction.c:937
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
@@ -2909,17 +2909,17 @@ msgstr ""
 "в пакете нет ни имен групп, ни списка их идентификаторов (такого не должно "
 "быть)\n"
 
-#: lib/verify.c:418
+#: lib/verify.c:420
 #, c-format
 msgid "missing    %s"
 msgstr "отсутствует %s"
 
-#: lib/verify.c:515
+#: lib/verify.c:517
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: lib/verify.c:560
+#: lib/verify.c:562
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"
@@ -3075,41 +3075,41 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "создать заголовки, совместимые с (устаревшими) пакетами rpm[23]"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:126
+#: rpmdb/rpmdb.c:129
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: имя ключа \"%s\" не известно, игнорируется\n"
 
-#: rpmdb/rpmdb.c:380
+#: rpmdb/rpmdb.c:383
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "невозможно открыть индекс %s используя db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:402
+#: rpmdb/rpmdb.c:405
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "невозможно открыть индекс %s\n"
 
-#: rpmdb/rpmdb.c:494
+#: rpmdb/rpmdb.c:497
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "ошибка(%d) получения записей \"%s\" из индекса %s\n"
 
-#: rpmdb/rpmdb.c:625
+#: rpmdb/rpmdb.c:628
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "ошибка(%d) записи записи %s в %s\n"
 
-#: rpmdb/rpmdb.c:635
+#: rpmdb/rpmdb.c:638
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "ошибка(%d) удаления записи %s из %s\n"
 
-#: rpmdb/rpmdb.c:892
+#: rpmdb/rpmdb.c:902
 msgid "no dbpath has been set\n"
 msgstr "параметер dbpath не установлен\n"
 
-#: rpmdb/rpmdb.c:1034
+#: rpmdb/rpmdb.c:1046
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3118,115 +3118,115 @@ msgstr ""
 "базы данных нового формата\n"
 
 #. error
-#: rpmdb/rpmdb.c:1291
+#: rpmdb/rpmdb.c:1311
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "ошибка(%d) при подсчёте пакетов\n"
 
-#: rpmdb/rpmdb.c:2068 rpmdb/rpmdb.c:3321
+#: rpmdb/rpmdb.c:2088 rpmdb/rpmdb.c:3341
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "запись номер %u в базе данных неверна, пропускается.\n"
 
-#: rpmdb/rpmdb.c:2121
+#: rpmdb/rpmdb.c:2141
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: получен поврежденный заголовок #%u, пропускается.\n"
 
-#: rpmdb/rpmdb.c:2391
+#: rpmdb/rpmdb.c:2411
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x\n"
 
-#: rpmdb/rpmdb.c:2463
+#: rpmdb/rpmdb.c:2483
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:2472
+#: rpmdb/rpmdb.c:2492
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: rpmdb/rpmdb.c:2673
+#: rpmdb/rpmdb.c:2693
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета\n"
 
-#: rpmdb/rpmdb.c:2754
+#: rpmdb/rpmdb.c:2774
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: rpmdb/rpmdb.c:2765
+#: rpmdb/rpmdb.c:2785
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: rpmdb/rpmdb.c:3207
+#: rpmdb/rpmdb.c:3227
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "удаляется %s после успешного завершения переиндекации базы в db3.\n"
 
-#: rpmdb/rpmdb.c:3240
+#: rpmdb/rpmdb.c:3260
 msgid "no dbpath has been set"
 msgstr "параметер dbpath не установлен"
 
-#: rpmdb/rpmdb.c:3267
+#: rpmdb/rpmdb.c:3287
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3291
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "временная база данных %s уже существует\n"
 
-#: rpmdb/rpmdb.c:3277
+#: rpmdb/rpmdb.c:3297
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: rpmdb/rpmdb.c:3279
+#: rpmdb/rpmdb.c:3299
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "создаётся каталог %s: %s\n"
 
-#: rpmdb/rpmdb.c:3286
+#: rpmdb/rpmdb.c:3306
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3297
+#: rpmdb/rpmdb.c:3317
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3361
+#: rpmdb/rpmdb.c:3381
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "невозможно добавить запись (первоначально в %u)\n"
 
-#: rpmdb/rpmdb.c:3379
+#: rpmdb/rpmdb.c:3399
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: rpmdb/rpmdb.c:3387
+#: rpmdb/rpmdb.c:3407
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: rpmdb/rpmdb.c:3389
+#: rpmdb/rpmdb.c:3409
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: rpmdb/rpmdb.c:3399
+#: rpmdb/rpmdb.c:3419
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: rpmdb/rpmdb.c:3401
+#: rpmdb/rpmdb.c:3421
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"

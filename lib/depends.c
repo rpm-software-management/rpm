@@ -21,13 +21,24 @@
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
 /*@access rpmDependencyConflict@*/
+
+/*@access availablePackage@*/
+/*@access availableIndexEntry@*/
+/*@access availableIndex@*/
+/*@access fileIndexEntry@*/
+/*@access dirInfo@*/
 /*@access availableList@*/
+/*@access problemsSet@*/
+/*@access orderListIndex@*/
 
 /*@unchecked@*/
 static int _debug = 0;
 
 /*@unchecked@*/
 static int _cacheDependsRC = 1;
+
+/*@unchecked@*/
+int _ts_debug = 0;
 
 /**
  * Return formatted dependency string.
@@ -97,11 +108,6 @@ static /*@only@*/ const char *buildEVR(int_32 *e, const char *v, const char *r)
 }
 #endif
 
-struct orderListIndex {
-    int alIndex;
-    int orIndex;
-};
-
 /**
  * Destroy available item index.
  * @param al		available list
@@ -141,7 +147,7 @@ static void alFree(availableList al)
 	/*@modifies al @*/
 {
     HFD_t hfd = headerFreeData;
-    struct availablePackage * p;
+    availablePackage p;
     rpmRelocation * r;
     int i;
 
@@ -197,8 +203,10 @@ static void alFree(availableList al)
  */
 static int dirInfoCompare(const void * one, const void * two)	/*@*/
 {
+    /*@-castexpose@*/
     const dirInfo a = (const dirInfo) one;
     const dirInfo b = (const dirInfo) two;
+    /*@=castexpose@*/
     int lenchk = a->dirNameLen - b->dirNameLen;
 
     if (lenchk)
@@ -219,7 +227,7 @@ alDelPackage(availableList al, int pkgNum)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    struct availablePackage * p;
+    availablePackage p;
 
     /*@-nullptrarith@*/ /* FIX: al->list might be NULL */
     p = al->list + pkgNum;
@@ -251,7 +259,8 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 	int_32 numDirs;
 	rpmTagType dnt;
 	int dirNum;
-	struct dirInfo_s dirNeedle;
+	dirInfo dirNeedle =
+		memset(alloca(sizeof(*dirNeedle)), 0, sizeof(*dirNeedle));
 	dirInfo dirMatch;
 	int last;
 	int i, xx;
@@ -262,10 +271,10 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 
 	if (al->dirs != NULL)
 	for (dirNum = al->numDirs - 1; dirNum >= 0; dirNum--) {
-	    dirNeedle.dirName = (char *) dirNames[dirNum];
-	    dirNeedle.dirNameLen = strlen(dirNames[dirNum]);
-	    dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
-			       sizeof(dirNeedle), dirInfoCompare);
+	    dirNeedle->dirName = (char *) dirNames[dirNum];
+	    dirNeedle->dirNameLen = strlen(dirNames[dirNum]);
+	    dirMatch = bsearch(dirNeedle, al->dirs, al->numDirs,
+			       sizeof(*dirNeedle), dirInfoCompare);
 	    if (dirMatch == NULL)
 		continue;
 	    last = dirMatch->numFiles;
@@ -318,7 +327,7 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
  * @param relocs	package file relocations
  * @return		available package pointer
  */
-static /*@exposed@*/ struct availablePackage *
+static /*@exposed@*/ availablePackage
 alAddPackage(availableList al, int pkgNum,
 		Header h, /*@null@*/ /*@dependent@*/ const void * key,
 		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
@@ -327,7 +336,7 @@ alAddPackage(availableList al, int pkgNum,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmTagType dnt, bnt;
-    struct availablePackage * p;
+    availablePackage p;
     int i, xx;
     uint_32 multiLibMask = 0;
     uint_32 * pp = NULL;
@@ -418,7 +427,8 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 	int_32 numDirs;
 	uint_32 * fileFlags = NULL;
 	int * dirMapping;
-	struct dirInfo_s dirNeedle;
+	dirInfo dirNeedle =
+		memset(alloca(sizeof(*dirNeedle)), 0, sizeof(*dirNeedle));
 	dirInfo dirMatch;
 	int first, last, fileNum, dirNum;
 	int origNumDirs;
@@ -438,10 +448,10 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 	origNumDirs = al->numDirs;
 
 	for (dirNum = 0; dirNum < numDirs; dirNum++) {
-	    dirNeedle.dirName = (char *) dirNames[dirNum];
-	    dirNeedle.dirNameLen = strlen(dirNames[dirNum]);
-	    dirMatch = bsearch(&dirNeedle, al->dirs, origNumDirs,
-			       sizeof(dirNeedle), dirInfoCompare);
+	    dirNeedle->dirName = (char *) dirNames[dirNum];
+	    dirNeedle->dirNameLen = strlen(dirNames[dirNum]);
+	    dirMatch = bsearch(dirNeedle, al->dirs, origNumDirs,
+			       sizeof(*dirNeedle), dirInfoCompare);
 	    if (dirMatch) {
 		dirMapping[dirNum] = dirMatch - al->dirs;
 	    } else {
@@ -469,8 +479,10 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 			sizeof(*dirMatch->files));
 	    if (p->baseNames != NULL)	/* XXX can't happen */
 	    for (fileNum = first; fileNum <= last; fileNum++) {
+		/*@-assignexpose@*/
 		dirMatch->files[dirMatch->numFiles].baseName =
 		    p->baseNames[fileNum];
+		/*@=assignexpose@*/
 		dirMatch->files[dirMatch->numFiles].pkgNum = pkgNum;
 		dirMatch->files[dirMatch->numFiles].fileFlags =
 				fileFlags[fileNum];
@@ -478,12 +490,15 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
 	    }
 	}
 
+	/* XXX should we realloc to smaller size? */
 	if (origNumDirs + al->numDirs)
-	    qsort(al->dirs, al->numDirs, sizeof(dirNeedle), dirInfoCompare);
+	    qsort(al->dirs, al->numDirs, sizeof(*al->dirs), dirInfoCompare);
 
     }
 
+    /*@-assignexpose@*/
     p->key = key;
+    /*@=assignexpose@*/
     /*@-type@*/ /* FIX: cast? */
     p->fd = (fd != NULL ? fdLink(fd, "alAddPackage") : NULL);
     /*@=type@*/
@@ -518,8 +533,10 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
  */
 static int indexcmp(const void * one, const void * two)		/*@*/
 {
-    const struct availableIndexEntry * a = one;
-    const struct availableIndexEntry * b = two;
+    /*@-castexpose@*/
+    const availableIndexEntry a = (const availableIndexEntry) one;
+    const availableIndexEntry b = (const availableIndexEntry) two;
+    /*@=castexpose@*/
     int lenchk = a->entryLen - b->entryLen;
 
     if (lenchk)
@@ -535,7 +552,7 @@ static int indexcmp(const void * one, const void * two)		/*@*/
 static void alMakeIndex(availableList al)
 	/*@modifies al @*/
 {
-    struct availableIndex * ai = &al->index;
+    availableIndex ai = &al->index;
     int i, j, k;
 
     if (ai->size || al->list == NULL) return;
@@ -558,7 +575,9 @@ static void alMakeIndex(availableList al)
 		}
 
 		ai->index[k].package = al->list + i;
+		/*@-assignexpose@*/
 		ai->index[k].entry = al->list[i].provides[j];
+		/*@=assignexpose@*/
 		ai->index[k].entryLen = strlen(al->list[i].provides[j]);
 		ai->index[k].type = IET_PROVIDES;
 		k++;
@@ -784,19 +803,26 @@ int headerMatchesDepFlags(Header h,
     return rpmRangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
 }
 
-rpmTransactionSet rpmtsLink(rpmTransactionSet ts)
+rpmTransactionSet XrpmtsUnlink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
 {
-    ts->nrefs++;
-    /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
-}
-
-rpmTransactionSet rpmtsUnlink(rpmTransactionSet ts)
-{
+/*@-modfilesystem@*/
+if (_ts_debug)
+fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
+/*@=modfilesystem@*/
     ts->nrefs--;
     return NULL;
 }
 
+rpmTransactionSet XrpmtsLink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
+{
+    ts->nrefs++;
 /*@-modfilesystem@*/
+if (_ts_debug)
+fprintf(stderr, "--> ts %p ++ %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
+/*@=modfilesystem@*/
+    /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
+}
+
 int rpmtsCloseDB(rpmTransactionSet ts)
 {
     int rc = 0;
@@ -812,10 +838,12 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
 {
     int rc = 0;
 
-    if (ts->rpmdb != NULL) {
-	if ((rc = rpmtsCloseDB(ts)) != 0)
-	    return rc;
-    }
+    if (ts->rpmdb != NULL && ts->dbmode == dbmode)
+	return 0;
+
+    (void) rpmtsCloseDB(ts);
+
+    /* XXX there's a lock race here. */
 
     ts->dbmode = dbmode;
     rc = rpmdbOpen(ts->rootDir, &ts->rpmdb, ts->dbmode, 0644);
@@ -854,7 +882,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->di = NULL;
     if (db != NULL) {
 	/*@-assignexpose@*/
-	ts->rpmdb = rpmdbLink(db);
+	ts->rpmdb = rpmdbLink(db, "tsCreate");
 	/*@=assignexpose@*/
 	ts->dbmode = db->db_mode;
     } else {
@@ -897,7 +925,9 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->sig = NULL;
     ts->dig = NULL;
 
-    return ts;
+    ts->nrefs = 0;
+
+    return rpmtsLink(ts, "tsCreate");
 }
 
 /**
@@ -983,7 +1013,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     const char * addNVR = hNVRstr(h, &name);
     const char * pkgNVR = NULL;
     rpmTagType ont, ovt;
-    struct availablePackage * p;
+    availablePackage p;
     int count;
     const char ** obsoletes;
     int alNum;
@@ -1131,7 +1161,7 @@ exit:
 
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, const void * key)
 {
-    struct availablePackage * al;
+    availablePackage al;
     al = alAddPackage(&ts->availablePackages, -1, h, key, NULL, NULL);
 }
 
@@ -1154,7 +1184,13 @@ void rpmtransClean(rpmTransactionSet ts)
 
 rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 {
-    if (ts && --ts->nrefs > 0) {
+    if (ts) {
+
+	(void) rpmtsUnlink(ts, "tsCreate");
+
+	/*@-usereleased@*/
+	if (ts->nrefs > 0)
+	    return NULL;
 
 	alFree(&ts->addedPackages);
 	alFree(&ts->availablePackages);
@@ -1176,6 +1212,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	(void) rpmtsCloseDB(ts);
 
 	/*@-refcounttrans@*/ ts = _free(ts); /*@=refcounttrans@*/
+	/*@=usereleased@*/
     }
     return NULL;
 }
@@ -1207,7 +1244,7 @@ rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
  * @param fileName	file name to search for
  * @return		available package pointer
  */
-static /*@only@*/ /*@null@*/ struct availablePackage **
+static /*@only@*/ /*@null@*/ availablePackage *
 alAllFileSatisfiesDepend(const availableList al,
 		const char * keyType, const char * fileName)
 	/*@*/
@@ -1215,9 +1252,10 @@ alAllFileSatisfiesDepend(const availableList al,
     int i, found = 0;
     const char * dirName;
     const char * baseName;
-    struct dirInfo_s dirNeedle;
+    dirInfo dirNeedle =
+		memset(alloca(sizeof(*dirNeedle)), 0, sizeof(*dirNeedle));
     dirInfo dirMatch;
-    struct availablePackage ** ret = NULL;
+    availablePackage * ret = NULL;
 
     /* Solaris 2.6 bsearch sucks down on this. */
     if (al->numDirs == 0 || al->dirs == NULL || al->list == NULL)
@@ -1231,15 +1269,15 @@ alAllFileSatisfiesDepend(const availableList al,
 	}
     }
 
-    dirNeedle.dirName = (char *) dirName;
-    dirNeedle.dirNameLen = strlen(dirName);
-    dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
-		       sizeof(dirNeedle), dirInfoCompare);
+    dirNeedle->dirName = (char *) dirName;
+    dirNeedle->dirNameLen = strlen(dirName);
+    dirMatch = bsearch(dirNeedle, al->dirs, al->numDirs,
+		       sizeof(*dirNeedle), dirInfoCompare);
     if (dirMatch == NULL)
 	goto exit;
 
     /* rewind to the first match */
-    while (dirMatch > al->dirs && dirInfoCompare(dirMatch-1, &dirNeedle) == 0)
+    while (dirMatch > al->dirs && dirInfoCompare(dirMatch-1, dirNeedle) == 0)
 	dirMatch--;
 
     if ((baseName = strrchr(fileName, '/')) == NULL)
@@ -1248,7 +1286,7 @@ alAllFileSatisfiesDepend(const availableList al,
 
     for (found = 0, ret = NULL;
 	 dirMatch <= al->dirs + al->numDirs &&
-		dirInfoCompare(dirMatch, &dirNeedle) == 0;
+		dirInfoCompare(dirMatch, dirNeedle) == 0;
 	 dirMatch++)
     {
 	/* XXX FIXME: these file lists should be sorted and bsearched */
@@ -1293,14 +1331,13 @@ exit:
  * @param fileName	file name to search for
  * @return		available package pointer
  */
-/*@unused@*/ static /*@dependent@*/ /*@null@*/ struct availablePackage *
+/*@unused@*/ static /*@dependent@*/ /*@null@*/ availablePackage
 alFileSatisfiesDepend(const availableList al,
 		const char * keyType, const char * fileName)
 	/*@*/
 {
-    struct availablePackage * ret;
-    struct availablePackage ** tmp =
-		alAllFileSatisfiesDepend(al, keyType, fileName);
+    availablePackage ret;
+    availablePackage * tmp = alAllFileSatisfiesDepend(al, keyType, fileName);
 
     if (tmp) {
 	ret = tmp[0];
@@ -1321,14 +1358,16 @@ alFileSatisfiesDepend(const availableList al,
  * @param keyFlags	dependency logical range qualifiers
  * @return		available package pointer
  */
-static /*@only@*/ /*@null@*/ struct availablePackage **
+static /*@only@*/ /*@null@*/ availablePackage *
 alAllSatisfiesDepend(const availableList al,
 		const char * keyType, const char * keyDepend,
 		const char * keyName, const char * keyEVR, int keyFlags)
 	/*@*/
 {
-    struct availableIndexEntry needle, * match;
-    struct availablePackage * p, ** ret = NULL;
+    availableIndexEntry needle =
+		memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
+    availableIndexEntry match;
+    availablePackage p, * ret = NULL;
     int i, rc, found;
 
     if (*keyName == '/') {
@@ -1340,20 +1379,24 @@ alAllSatisfiesDepend(const availableList al,
 
     if (!al->index.size || al->index.index == NULL) return NULL;
 
-    needle.entry = keyName;
-    needle.entryLen = strlen(keyName);
-    match = bsearch(&needle, al->index.index, al->index.size,
+    /*@-assignexpose@*/
+    /*@-temptrans@*/
+    needle->entry = keyName;
+    /*@=temptrans@*/
+    needle->entryLen = strlen(keyName);
+    match = bsearch(needle, al->index.index, al->index.size,
 		    sizeof(*al->index.index), indexcmp);
+    /*@=assignexpose@*/
 
     if (match == NULL) return NULL;
 
     /* rewind to the first match */
-    while (match > al->index.index && indexcmp(match-1,&needle) == 0)
+    while (match > al->index.index && indexcmp(match-1, needle) == 0)
 	match--;
 
     for (ret = NULL, found = 0;
 	 match <= al->index.index + al->index.size &&
-		indexcmp(match,&needle) == 0;
+		indexcmp(match, needle) == 0;
 	 match++)
     {
 
@@ -1408,14 +1451,14 @@ alAllSatisfiesDepend(const availableList al,
  * @param keyFlags	dependency logical range qualifiers
  * @return		available package pointer
  */
-static inline /*@only@*/ /*@null@*/ struct availablePackage *
+static inline /*@only@*/ /*@null@*/ availablePackage
 alSatisfiesDepend(const availableList al,
 		const char * keyType, const char * keyDepend,
 		const char * keyName, const char * keyEVR, int keyFlags)
 	/*@*/
 {
-    struct availablePackage * ret;
-    struct availablePackage ** tmp =
+    availablePackage ret;
+    availablePackage * tmp =
 	alAllSatisfiesDepend(al, keyType, keyDepend, keyName, keyEVR, keyFlags);
 
     if (tmp) {
@@ -1441,7 +1484,7 @@ alSatisfiesDepend(const availableList al,
 static int unsatisfiedDepend(rpmTransactionSet ts,
 		const char * keyType, const char * keyDepend,
 		const char * keyName, const char * keyEVR, int keyFlags,
-		/*@null@*/ /*@out@*/ struct availablePackage *** suggestion)
+		/*@null@*/ /*@out@*/ availablePackage ** suggestion)
 	/*@globals _cacheDependsRC, fileSystem @*/
 	/*@modifies ts, *suggestion, _cacheDependsRC, fileSystem @*/
 {
@@ -1643,7 +1686,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     rpmTagType type;
     int i, rc, xx;
     int ourrc = 0;
-    struct availablePackage ** suggestion;
+    availablePackage * suggestion;
 
     xx = headerNVR(h, &name, &version, &release);
 
@@ -1906,8 +1949,8 @@ static struct badDeps_s {
     { NULL, NULL }
 };
 
-static int ignoreDep(const struct availablePackage * p,
-		const struct availablePackage * q)
+static int ignoreDep(const availablePackage p,
+		const availablePackage q)
 	/*@*/
 {
     struct badDeps_s * bdp = badDeps;
@@ -1927,18 +1970,20 @@ static int ignoreDep(const struct availablePackage * p,
  * @param q		predecessor
  */
 static void markLoop(/*@special@*/ struct tsortInfo * tsi,
-		struct availablePackage * q)
+		availablePackage q)
 	/*@globals internalState @*/
 	/*@uses tsi @*/
 	/*@modifies internalState @*/
 {
-    struct availablePackage * p;
+    availablePackage p;
 
     while (tsi != NULL && (p = tsi->tsi_suc) != NULL) {
 	tsi = tsi->tsi_next;
 	if (p->tsi.tsi_pkg != NULL)
 	    continue;
+	/*@-assignexpose@*/
 	p->tsi.tsi_pkg = q;
+	/*@=assignexpose@*/
 	if (p->tsi.tsi_next != NULL)
 	    markLoop(p->tsi.tsi_next, p);
     }
@@ -1977,7 +2022,7 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
  */
 static /*@owned@*/ /*@null@*/ const char *
-zapRelation(struct availablePackage * q, struct availablePackage * p,
+zapRelation(availablePackage q, availablePackage p,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps)
 	/*@modifies q, p, *nzaps @*/
 {
@@ -2038,10 +2083,10 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
  * @return		0 always
  */
 static inline int addRelation( const rpmTransactionSet ts,
-		struct availablePackage * p, unsigned char * selected, int j)
-	/*@modifies p->tsi.tsi_u.count, p->depth, *selected @*/
+		availablePackage p, unsigned char * selected, int j)
+	/*@modifies p, *selected @*/
 {
-    struct availablePackage * q;
+    availablePackage q;
     struct tsortInfo * tsi;
     int matchNum;
 
@@ -2094,8 +2139,10 @@ static inline int addRelation( const rpmTransactionSet ts,
  */
 static int orderListIndexCmp(const void * one, const void * two)	/*@*/
 {
-    int a = ((const struct orderListIndex *)one)->alIndex;
-    int b = ((const struct orderListIndex *)two)->alIndex;
+    /*@-castexpose@*/
+    int a = ((const orderListIndex)one)->alIndex;
+    int b = ((const orderListIndex)two)->alIndex;
+    /*@=castexpose@*/
     return (a - b);
 }
 
@@ -2105,12 +2152,12 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
  * @retval qp		address of first element
  * @retval rp		address of last element
  */
-static void addQ(struct availablePackage * p,
-		/*@in@*/ /*@out@*/ struct availablePackage ** qp,
-		/*@in@*/ /*@out@*/ struct availablePackage ** rp)
-	/*@modifies p->tsi, *qp, *rp @*/
+static void addQ(availablePackage p,
+		/*@in@*/ /*@out@*/ availablePackage * qp,
+		/*@in@*/ /*@out@*/ availablePackage * rp)
+	/*@modifies p, *qp, *rp @*/
 {
-    struct availablePackage *q, *qprev;
+    availablePackage q, qprev;
 
     if ((*rp) == NULL) {	/* 1st element */
 	(*rp) = (*qp) = p;
@@ -2120,6 +2167,7 @@ static void addQ(struct availablePackage * p,
 	if (q->tsi.tsi_qcnt <= p->tsi.tsi_qcnt)
 	    break;
     }
+    /*@-assignexpose@*/
     if (qprev == NULL) {	/* insert at beginning of list */
 	p->tsi.tsi_suc = q;
 	(*qp) = p;		/* new head */
@@ -2130,15 +2178,16 @@ static void addQ(struct availablePackage * p,
 	p->tsi.tsi_suc = q;
 	qprev->tsi.tsi_suc = p;
     }
+    /*@=assignexpose@*/
 }
 
 int rpmdepOrder(rpmTransactionSet ts)
 {
     int npkgs = ts->addedPackages.size;
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
-    struct availablePackage * p;
-    struct availablePackage * q;
-    struct availablePackage * r;
+    availablePackage p;
+    availablePackage q;
+    availablePackage r;
     struct tsortInfo * tsi;
     struct tsortInfo * tsi_next;
     int * ordering = alloca(sizeof(*ordering) * (npkgs + 1));
@@ -2147,7 +2196,7 @@ int rpmdepOrder(rpmTransactionSet ts)
     int loopcheck;
     struct transactionElement * newOrder;
     int newOrderCount = 0;
-    struct orderListIndex * orderList;
+    orderListIndex orderList;
     int nrescans = 10;
     int _printed = 0;
     int qlen;
@@ -2379,7 +2428,8 @@ rescan:
 
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
     for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
-	struct orderListIndex * needle, key;
+	struct orderListIndex_s key;
+	orderListIndex needle;
 
 	key.alIndex = ordering[i];
 	needle = bsearch(&key, orderList, npkgs, sizeof(key),orderListIndexCmp);
@@ -2451,7 +2501,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
-    struct availablePackage * p;
+    availablePackage p;
     problemsSet ps = NULL;
     int npkgs;
     int closeatexit = 0;

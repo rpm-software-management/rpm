@@ -9,6 +9,20 @@
 #include <header.h>
 #include <rpmhash.h>
 
+typedef /*@abstract@*/ struct availablePackage_s *	availablePackage;
+typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
+typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
+typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
+typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
+typedef /*@abstract@*/ struct availableList_s *		availableList;
+typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
+typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
+
+/*@unchecked@*/
+/*@-exportlocal@*/
+extern int _ts_debug;
+/*@=exportlocal@*/
+
 /** \ingroup rpmdep
  * Dependncy ordering information.
  */
@@ -16,12 +30,12 @@
 struct tsortInfo {
     union {
 	int	count;
-	/*@kept@*/ /*@null@*/ struct availablePackage * suc;
+	/*@kept@*/ /*@null@*/ availablePackage suc;
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
 /*@owned@*/ /*@null@*/ struct tsortInfo * tsi_next;
-/*@kept@*/ /*@null@*/ struct availablePackage * tsi_pkg;
+/*@kept@*/ /*@null@*/ availablePackage tsi_pkg;
     int		tsi_reqx;
     int		tsi_qcnt;
 } ;
@@ -30,7 +44,7 @@ struct tsortInfo {
 /** \ingroup rpmdep
  * Info about a single package to be installed.
  */
-struct availablePackage {
+struct availablePackage_s {
     Header h;				/*!< Package header. */
 /*@dependent@*/ const char * name;	/*!< Header name. */
 /*@dependent@*/ const char * version;	/*!< Header version. */
@@ -58,8 +72,8 @@ struct availablePackage {
 /** \ingroup rpmdep
  * A single available item (e.g. a Provides: dependency).
  */
-struct availableIndexEntry {
-/*@dependent@*/ struct availablePackage * package; /*!< Containing package. */
+struct availableIndexEntry_s {
+/*@dependent@*/ availablePackage package; /*!< Containing package. */
 /*@dependent@*/ const char * entry;	/*!< Available item name. */
     size_t entryLen;			/*!< No. of bytes in name. */
     enum indexEntryType {
@@ -70,15 +84,15 @@ struct availableIndexEntry {
 /** \ingroup rpmdep
  * Index of all available items.
  */
-struct availableIndex {
-/*@null@*/ struct availableIndexEntry * index; /*!< Array of available items. */
+struct availableIndex_s {
+/*@null@*/ availableIndexEntry index;	/*!< Array of available items. */
     int size;				/*!< No. of available items. */
 } ;
 
 /** \ingroup rpmdep
  * A file to be installed/removed.
  */
-struct fileIndexEntry {
+struct fileIndexEntry_s {
     int pkgNum;				/*!< Containing package number. */
     int fileFlags;	/* MULTILIB */
 /*@dependent@*/ /*@null@*/ const char * baseName;	/*!< File basename. */
@@ -87,25 +101,31 @@ struct fileIndexEntry {
 /** \ingroup rpmdep
  * A directory to be installed/removed.
  */
-typedef struct dirInfo_s {
+struct dirInfo_s {
 /*@owned@*/ const char * dirName;	/*!< Directory path (+ trailing '/'). */
     int dirNameLen;			/*!< No. bytes in directory path. */
-/*@owned@*/ struct fileIndexEntry * files; /*!< Array of files in directory. */
+/*@owned@*/ fileIndexEntry files;	/*!< Array of files in directory. */
     int numFiles;			/*!< No. files in directory. */
-} * dirInfo ;
+} ;
 
 /** \ingroup rpmdep
  * Set of available packages, items, and directories.
  */
-typedef /*@abstract@*/ struct availableList_s {
-/*@owned@*/ /*@null@*/ struct availablePackage * list;	/*!< Set of packages. */
-    struct availableIndex index;	/*!< Set of available items. */
+struct availableList_s {
+/*@owned@*/ /*@null@*/ availablePackage list;	/*!< Set of packages. */
+    struct availableIndex_s index;	/*!< Set of available items. */
     int delta;				/*!< Delta for pkg list reallocation. */
     int size;				/*!< No. of pkgs in list. */
     int alloced;			/*!< No. of pkgs allocated for list. */
     int numDirs;			/*!< No. of directories. */
 /*@owned@*/ /*@null@*/ dirInfo dirs;	/*!< Set of directories. */
-} * availableList;
+} ;
+
+struct orderListIndex_s {
+    int alIndex;
+    int orIndex;
+};
+
 
 /** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.
@@ -187,11 +207,11 @@ struct rpmTransactionSet_s {
 /** \ingroup rpmdep
  * Problems encountered while checking dependencies.
  */
-typedef /*@abstract@*/ struct problemsSet_s {
+struct problemsSet_s {
     rpmDependencyConflict problems;	/*!< Problems encountered. */
     int num;			/*!< No. of problems found. */
     int alloced;		/*!< No. of problems allocated. */
-} * problemsSet;
+} ;
 
 #ifdef __cplusplus
 extern "C" {

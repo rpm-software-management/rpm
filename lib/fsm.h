@@ -106,7 +106,6 @@ struct hardLink {
  */
 struct fsmIterator_s {
     rpmTransactionSet ts;	/*!< transaction set. */
-/*@kept@*/ /*@exposed@*/
     TFI_t fi;			/*!< transaction element file info. */
     int reverse;		/*!< reversed traversal? */
     int isave;			/*!< last returned iterator index. */
@@ -214,12 +213,12 @@ extern "C" {
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
 		const rpmTransactionSet ts,
-		/*@kept@*/ const TFI_t fi,
+		const TFI_t fi,
 		FD_t cfd,
 		/*@out@*/ unsigned int * archiveSize,
 		/*@out@*/ const char ** failedFile)
 	/*@globals fileSystem @*/
-	/*@modifies fsm, ts, *archiveSize, *failedFile, fileSystem  @*/;
+	/*@modifies fsm, ts, fi, *archiveSize, *failedFile, fileSystem  @*/;
 
 /**
  * Clean file state machine.
@@ -244,7 +243,7 @@ rpmTransactionSet fsmGetTs(const FSM_t fsm)
  * @param fsm		file state machine data
  * @return		transaction element file info
  */
-/*@kept@*/ /*@exposed@*/ TFI_t fsmGetFi(/*@partial@*/const FSM_t fsm)
+TFI_t fsmGetFi(/*@partial@*/ const FSM_t fsm)
 	/*@*/;
 
 /**

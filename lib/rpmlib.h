@@ -613,19 +613,34 @@ extern int dbiTagsMax;
 
 /** \ingroup rpmdb
  * Unreference a database instance.
- * @retval db		rpm database
+ * @param db		rpm database
  * @return		NULL always
  */
-/*@null@*/ rpmdb rpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db)
+/*@unused@*/ /*@null@*/
+rpmdb rpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg)
 	/*@modifies db @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@null@*/
+rpmdb XrpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg,
+		const char * fn, unsigned ln)
+	/*@modifies db @*/;
+#define	rpmdbUnlink(_db, _msg)	XrpmdbUnlink(_db, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmdb
  * Reference a database instance.
  * @param db		rpm database
  * @return		new rpm database reference
  */
-rpmdb rpmdbLink (rpmdb db)
+/*@unused@*/
+rpmdb rpmdbLink (rpmdb db, const char * msg)
 	/*@modifies db @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+rpmdb XrpmdbLink (rpmdb db, const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies db @*/;
+#define	rpmdbLink(_db, _msg)	XrpmdbLink(_db, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmdb
  * Open rpm database.
@@ -637,7 +652,7 @@ rpmdb rpmdbLink (rpmdb db)
  */
 int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
 		int mode, int perms)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *dbp, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -647,7 +662,7 @@ int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
  * @return		0 on success
  */
 int rpmdbInit(/*@null@*/ const char * prefix, int perms)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -656,7 +671,7 @@ int rpmdbInit(/*@null@*/ const char * prefix, int perms)
  * @return		0 on success
  */
 int rpmdbVerify(/*@null@*/ const char * prefix)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -665,7 +680,7 @@ int rpmdbVerify(/*@null@*/ const char * prefix)
  * @return		0 on success
  */
 int rpmdbClose (/*@killref@*/ /*@only@*/ /*@null@*/ rpmdb db)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -674,7 +689,7 @@ int rpmdbClose (/*@killref@*/ /*@only@*/ /*@null@*/ rpmdb db)
  * @return		0 on success
  */
 int rpmdbSync (/*@null@*/ rpmdb db)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -692,7 +707,7 @@ int rpmdbOpenAll (/*@null@*/ rpmdb db)
  * @return		number of instances
  */
 int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -706,7 +721,7 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
  */
 /*@null@*/ rpmdbMatchIterator rpmdbFreeIterator(
 		/*@only@*//*@null@*/rpmdbMatchIterator mi)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies mi, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -826,14 +841,14 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @return		NULL on end of iteration.
  */
 /*@null@*/ Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies mi, fileSystem @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@unused@*/
 /*@null@*/ Header XrpmdbNextIterator(rpmdbMatchIterator mi,
 		const char * f, unsigned int l)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies mi, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -847,7 +862,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
 			/*@null@*/ rpmdb db, int rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -858,7 +873,7 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @return		0 on success
  */
 int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies db, h, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -869,7 +884,7 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h)
  * @return		0 on success
  */
 int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/;
 
 /** \ingroup rpmdb
@@ -928,7 +943,7 @@ typedef /*@abstract@*/ struct rpmProblemSet_s {
 /**
  */
 void printDepFlags(FILE *fp, const char *version, int flags)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
@@ -961,7 +976,7 @@ typedef /*@abstract@*/ struct rpmDependencyConflict_s {
  */
 void printDepProblems(FILE * fp, const rpmDependencyConflict conflicts,
 			int numConflicts)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**
@@ -982,7 +997,7 @@ void printDepProblems(FILE * fp, const rpmDependencyConflict conflicts,
  * @param prob		rpm problem
  */
 void rpmProblemPrint(FILE *fp, rpmProblem prob)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies prob, *fp, fileSystem @*/;
 
 /**
@@ -991,7 +1006,7 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
  * @param probs		problem set
  */
 void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies probs, *fp, fileSystem @*/;
 
 /**
@@ -1153,7 +1168,7 @@ typedef /*@abstract@*/ struct psm_s * PSM_t;
 
 /** \ingroup rpmtrans
  */
-typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
+typedef /*@abstract@*/ /*@refcounted@*/ struct transactionFileInfo_s * TFI_t;
 
 /** \ingroup rpmtrans
  * The RPM Transaction Set.
@@ -1197,20 +1212,67 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
+ * Unreference a transaction element file info instance.
+ * @param fi		transaction element file info
+ * @return		NULL always
+ */
+/*@unused@*/ /*@null@*/
+TFI_t rpmfiUnlink (/*@killref@*/ /*@only@*/ TFI_t fi, const char * msg)
+	/*@modifies fi @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@null@*/
+TFI_t XrpmfiUnlink (/*@killref@*/ /*@only@*/ TFI_t fi, const char * msg,
+		const char * fn, unsigned ln)
+	/*@modifies fi @*/;
+#define	rpmfiUnlink(_fi, _msg)	XrpmfiUnlink(_fi, _msg, __FILE__, __LINE__)
+
+/** \ingroup rpmtrans
+ * Reference a transaction element file info instance.
+ * @param fi		transaction element file info
+ * @return		new transaction element file info reference
+ */
+/*@unused@*/
+TFI_t rpmfiLink (TFI_t fi, const char * msg)
+	/*@modifies fi @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+TFI_t XrpmfiLink (TFI_t fi, const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies fi @*/;
+#define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
+
+/** \ingroup rpmtrans
  * Unreference a transaction instance.
  * @param ts		transaction set
  * @return		NULL always
  */
-/*@null@*/ rpmTransactionSet rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts)
+/*@unused@*/ /*@null@*/
+rpmTransactionSet rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
+		const char * msg)
 	/*@modifies ts @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@null@*/
+rpmTransactionSet XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies ts @*/;
+#define	rpmtsUnlink(_ts, _msg)	XrpmtsUnlink(_ts, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmtrans
  * Reference a transaction set instance.
  * @param ts		transaction set
  * @return		new transaction set reference
  */
-rpmTransactionSet rpmtsLink (rpmTransactionSet ts)
+/*@unused@*/
+rpmTransactionSet rpmtsLink (rpmTransactionSet ts, const char * msg)
 	/*@modifies ts @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+rpmTransactionSet XrpmtsLink (rpmTransactionSet ts,
+		const char * msg, const char * fn, unsigned ln)
+        /*@modifies ts @*/;
+#define	rpmtsLink(_ts, _msg)	XrpmtsLink(_ts, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmtrans
  * Close the database used by the transaction.
@@ -1218,7 +1280,8 @@ rpmTransactionSet rpmtsLink (rpmTransactionSet ts)
  * @return		0 on success
  */
 int rpmtsCloseDB(rpmTransactionSet ts)
-	/*@modifies ts @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmtrans
  * Open the database used by the transaction.
@@ -1227,7 +1290,8 @@ int rpmtsCloseDB(rpmTransactionSet ts)
  * @return		0 on success
  */
 int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
-	/*@modifies ts @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
  * Return transaction database iterator.
@@ -1273,8 +1337,8 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, /*@null@*/ FD_t fd,
 		/*@null@*/ /*@owned@*/ const void * key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals fileSystem@*/
-	/*@modifies fd, h, ts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fd, h, ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
  * Add package to universe of possible packages to install in transaction set.
@@ -1310,7 +1374,8 @@ void rpmtransClean(rpmTransactionSet ts)
  */
 /*@null@*/ rpmTransactionSet
 rpmtransFree(/*@killref@*/ /*@only@*//*@null@*/ rpmTransactionSet ts)
-	/*@modifies ts @*/;
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmtrans
  * Save file handle to be used as stderr when running package scripts.
@@ -1345,8 +1410,9 @@ int rpmtransGetKeys(const rpmTransactionSet ts,
 int rpmdepCheck(rpmTransactionSet ts,
 		/*@exposed@*/ /*@out@*/ rpmDependencyConflict * conflicts,
 		/*@exposed@*/ /*@out@*/ int * numConflicts)
-	/*@globals fileSystem@*/
-	/*@modifies ts, *conflicts, *numConflicts, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, *conflicts, *numConflicts,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
  * Determine package order in a transaction set according to dependencies.
@@ -1493,7 +1559,7 @@ int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
  * @param fp		output file handle
  */
 void rpmShowRpmlibProvides(FILE * fp)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 
 /**

@@ -16,6 +16,7 @@ extern int specedit;
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
 /*@access Header @*/	/* compared with NULL */
+/*@access TFI_t @*/	/* compared with NULL */
 
 /**
  * @return		NULL always
@@ -159,10 +160,12 @@ Package freePackage(Package pkg)
     pkg->fileList = freeStringBuf(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList) {
-	void * fi = pkg->cpioList;
+	TFI_t fi = pkg->cpioList;
 	pkg->cpioList = NULL;
-/*@i@*/	freeFi((TFI_t)fi);
+	freeFi(fi);
+	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
 	fi = _free(fi);
+	/*@=refcounttrans@*/
     }
 
     pkg->specialDoc = freeStringBuf(pkg->specialDoc);
@@ -505,10 +508,12 @@ Spec freeSpec(Spec spec)
     spec->sourceHeader = headerFree(spec->sourceHeader);
 
     if (spec->sourceCpioList) {
-	void * fi = spec->sourceCpioList;
+	TFI_t fi = spec->sourceCpioList;
 	spec->sourceCpioList = NULL;
-/*@i@*/	freeFi(fi);
+	freeFi(fi);
+	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
 	fi = _free(fi);
+	/*@=refcounttrans@*/
     }
     
     spec->buildRestrictions = headerFree(spec->buildRestrictions);

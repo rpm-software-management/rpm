@@ -17,8 +17,8 @@
 /**
  */
 static int checkSpec(rpmTransactionSet ts, Header h)
-	/*@globals fileSystem @*/
-	/*@modifies ts, h, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, h, fileSystem, internalState @*/
 {
     rpmDependencyConflict conflicts;
     int numConflicts;
@@ -92,7 +92,8 @@ static int isSpecFile(const char * specfile)
 static int buildForTarget(rpmTransactionSet ts, const char * arg, BTA_t ba)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;

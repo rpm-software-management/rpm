@@ -9,28 +9,24 @@
 
 #include "debug.h"
 
-static int _debug = 0;
+static int _debug = 1;
 
 #define	BHPATH	"/mnt/redhat/beehive/comps/dist"
 #define	BHCOLL	"7.2"
 
-#if 0
-#define	BHN	"{basesystem,bash,filesystem,glibc-common,glibc,ldconfig,libtermcap,mktemp,setup,termcap}"
-#else
-#define	BHN	"setup"
-#endif
+#define	BHN	"@(basesystem|bash|filesystem|glibc-common|glibc|ldconfig|libtermcap|mktemp|setup|termcap)"
 
 #define	BHVR	"*"
-#define	BHA	"*"
+#define	BHA	"@(i[3456]86|noarch)"
 
 const char * bhpath = BHPATH;
 int bhpathlen = sizeof(BHPATH)-1;
-const char * bhcoll = BHCOLL;
-const char * bhn = BHN;
-const char * bhvr = BHVR;
-const char * bha = BHA;
 
 int bhlvl = -1;
+
+static char * const ftsSet[] = {
+    BHPATH, NULL,
+};
 
 struct ftsglob_s {
     const char ** patterns;
@@ -38,54 +34,31 @@ struct ftsglob_s {
 };
 
 const char * lvl0[] = {
-    NULL, NULL
+    BHPATH, NULL
 };
 
 const char * lvl1[] = {
-    NULL, NULL
+    BHCOLL, NULL
 };
 
 const char * lvl2[] = {
-    NULL, NULL
+    BHN, NULL
 };
 
 const char * lvl3[] = {
-    NULL, NULL
+    BHVR, NULL
 };
 
 const char * lvl4[] = {
-    NULL, NULL
-};
-
-const char * lvl5[] = {
-    NULL, NULL
-};
-
-const char * lvl6[] = {
-    NULL, NULL
-};
-
-const char * lvl7[] = {
-    NULL, NULL
+    BHA, NULL
 };
 
 static struct ftsglob_s bhglobs[] = {
-#if	0
-    { BHPATH "/" BHCOLL "/" BHN "/" BHVR "/" BHA "/*",	0 },
-    { BHCOLL,	FNM_PERIOD },
-    { BHN,	FNM_PERIOD },
-    { BHVR,	FNM_PERIOD },
-    { BHA,	FNM_PERIOD },
-#else
-    { lvl0, 	FNM_PERIOD },
-    { lvl1, 	FNM_PERIOD },
-    { lvl2, 	FNM_PERIOD },
-    { lvl3, 	FNM_PERIOD },
-    { lvl4, 	FNM_PERIOD },
-    { lvl5, 	FNM_PERIOD },
-    { lvl6, 	FNM_PERIOD },
-    { lvl7, 	FNM_PERIOD },
-#endif
+    { lvl0,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
+    { lvl1,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
+    { lvl2,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
+    { lvl3,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
+    { lvl4,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
 };
 static int nbhglobs = sizeof(bhglobs)/sizeof(bhglobs[0]);
 
@@ -140,36 +113,8 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
 		break;
 	}
 	lvl = fts->fts_level - bhlvl;
-#ifdef DYING
-	if (lvl <= 0) {
-	    break;
-	} else if (lvl == 1) {
-	    /* Skip collections we're not interested in. */
-	    if (!strcmp(fts->fts_name, bhcoll))
-		break;
-	    xx = fts_set(ftsp, fts, FTS_SKIP);
-	    break;
-	} else if (lvl == 2) {
-	    /* Skip names we're not interested in. */
-	    if (!strcmp(fts->fts_name, bhn))
-		break;
-	    xx = fts_set(ftsp, fts, FTS_SKIP);
-	    break;
-	} else if (lvl == 3) {
-	    /* Skip version-release we're not interested in. */
-	    if (!strcmp(fts->fts_name, bhvr))
-		break;
-	    xx = fts_set(ftsp, fts, FTS_SKIP);
-	    break;
-	} else if (lvl == 4) {
-	    /* Skip arch we're not interested in. */
-	    if (!strcmp(fts->fts_name, bha))
-		break;
-	    xx = fts_set(ftsp, fts, FTS_SKIP);
-	    break;
-	}
-#else
-	if (lvl < 0 || lvl >= nbhglobs)
+
+	if (lvl < 0)
 	    break;
 
 #if 0
@@ -192,7 +137,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
 	}
 
 	/* Level specific glob expression check(s). */
-	if (lvl == 0)
+	if (lvl == 0 || lvl >= nbhglobs)
 	    break;
 	bhg += lvl;
 
@@ -207,7 +152,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
 	    else
 		xx = fts_set(ftsp, fts, FTS_SKIP);
 	}
-#endif
+
 	break;
     case FTS_DP:	/* postorder directory */
 #if 0
@@ -239,7 +184,10 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
 	fprintf(stderr, "\t%*s %s-%s-%s\n",
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		n, v, r);
+#ifdef NOTYET
 	xx = rpmtransAddPackage(ts, h, NULL, fts->fts_path, 1, NULL);
+#endif
+
 	break;
     case FTS_NS:	/* stat(2) failed */
     case FTS_DNR:	/* unreadable directory */
@@ -269,10 +217,66 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
     return 0;
 }
 
-static char * const ftsSet[] = {
-    BHPATH, NULL,
-};
+static int depth;
+static int level;
+static int globx;
 
+static void go (const char * sb, const char * se)
+{
+    const char * s = sb;
+    int blvl = 0;
+    int plvl = 0;
+    int c;
+
+    globx = -1;
+    while ( s < se && (c = *s) != '\0' ) {
+	s++;
+	switch (c) {
+	case '+':
+	case '@':
+	case '!':
+	    continue;
+	case '?':
+	case '*':
+	    if (*s == '(')
+		continue;
+	    if (globx < 0)
+		globx = (s - sb - 1);
+	    continue;
+	case '[':
+	    blvl++;
+	    continue;
+	case ']':
+	    if (!blvl)
+		continue;
+	    --blvl;
+	    if (!blvl && globx < 0)
+		globx = (s - sb - 1);
+	    continue;
+	case '(':
+	    plvl++;
+	    continue;
+	case '|':
+	    continue;
+	case ')':
+	    if (!plvl)
+		continue;
+	    --plvl;
+	    if (!plvl && globx < 0)
+		globx = (s - sb - 1);
+	    continue;
+	case '\\':
+	    if (*s)
+		s++;
+	    continue;
+	case '/':
+	    depth++;
+	    continue;
+	default:
+	    continue;
+	}
+    }
+}
 
 static struct poptOption optionsTable[] = {
  { "verbose", 'v', 0, 0, 'v',				NULL, NULL },
@@ -280,7 +284,6 @@ static struct poptOption optionsTable[] = {
   POPT_AUTOHELP
   POPT_TABLEEND
 };
-
 
 int
 main(int argc, const char *argv[])
@@ -312,41 +315,60 @@ main(int argc, const char *argv[])
 
     rpmReadConfigFiles(NULL, NULL);
 
+    if (_debug) {
+	rpmIncreaseVerbosity();
+	rpmIncreaseVerbosity();
+    }
+
     ts = rpmtransCreateSet(db, rootDir);
     (void) rpmtsOpenDB(ts, O_RDONLY);
 
     args = poptGetArgs(optCon);
-    if (args)
-    while ((arg = *args++) != NULL) {
     
-	t = buf;
-	*t = '\0';
-	t = stpcpy(t, BHPATH);
-	*t++ = '/';
-	t = stpcpy(t, BHCOLL);
-	*t++ = '/';
-	t = stpcpy(t, arg);
-	*t++ = '/';
-	t = stpcpy(t, "*");
-	*t++ = '/';
-	t = stpcpy(t, "i386");
-	*t++ = '/';
-	t = stpcpy(t, "*.rpm");
+    t = buf;
+    *t = '\0';
+    t = stpcpy(t, BHPATH);
+    *t++ = '/';
+    t = stpcpy(t, BHCOLL);
+    *t++ = '/';
 
-fprintf(stderr, "*** \"%s\"\n", buf);
-	lvl0[0] = buf;
-	lvl1[0] = BHCOLL;
-	lvl2[0] = arg;
-
-if (!_debug) {
-	ftsp = fts_open(ftsSet, ftsOpts, NULL);
-	while((fts = fts_read(ftsp)) != NULL)
-	    xx = ftsPrint(ftsp, fts, ts);
-	xx = fts_close(ftsp);
-}
-
+    if (args == NULL)
+	t = stpcpy(t, BHN);
+    else {
+	t = stpcpy(t, "@(");
+	while ((arg = *args++) != NULL) {
+	    t = stpcpy(t, arg);
+	    *t++ = '|';
+	}
+	t[-1] = ')';
     }
 
+    *t++ = '/';
+    t = stpcpy(t, BHVR);
+    *t++ = '/';
+    t = stpcpy(t, BHA);
+
+fprintf(stderr, "*** \"%s\"\n", buf);
+
+    level = 0;
+    depth = (buf[0] == '/') ? -1 : 0;
+    globx = -1;
+    go(buf, buf+strlen(buf));
+
+fprintf(stderr, "*** \"%s/%s/%s/%s/%s\"\n", *lvl0, *lvl1, *lvl2, *lvl3, *lvl4);
+
+#if 0
+    lvl0[0] = buf;
+#endif
+
+if (!_debug) {
+    ftsp = fts_open(ftsSet, ftsOpts, NULL);
+    while((fts = fts_read(ftsp)) != NULL)
+	xx = ftsPrint(ftsp, fts, ts);
+    xx = fts_close(ftsp);
+}
+
+#ifdef	NOTYET
 if (!_debug) {
     {	rpmDependencyConflict conflicts = NULL;
 	int numConflicts = 0;
@@ -364,6 +386,7 @@ if (!_debug) {
 
     (void) rpmdepOrder(ts);
 }
+#endif
 
 exit:
     ts = rpmtransFree(ts);

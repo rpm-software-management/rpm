@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-27 18:27-0400\n"
+"POT-Creation-Date: 2001-10-28 17:05-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -18,44 +18,44 @@ msgstr "의존성 문제로 제작에 실패함:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "%s spec 파일을 열 수 없음: %s\n"
 
-#: build.c:143 build.c:155
+#: build.c:144 build.c:156
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar 파이프를 여는데 실패함: %m\n"
 
 #. Give up
-#: build.c:162
+#: build.c:163
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s 에서 spec 파일을 읽는데 실패했습니다\n"
 
-#: build.c:190
+#: build.c:191
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s 에서 %s (으)로 이름 변경하는데 실패함: %m\n"
 
-#: build.c:229
+#: build.c:230
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "%s 의 상태(stat)를 표시하는데 실패함: %m\n"
 
-#: build.c:234
+#: build.c:235
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s 파일은 정규(regular) 파일이 아닙니다.\n"
 
-#: build.c:243
+#: build.c:244
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s 파일은 spec 파일이 아닌 것 같습니다.\n"
 
 #. parse up the build operators
-#: build.c:298
+#: build.c:299
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 
-#: build.c:313
+#: build.c:314
 #, c-format
 msgid "Building for target %s\n"
 msgstr "%s (을)를 제작하고 있습니다\n"
@@ -822,7 +822,7 @@ msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s (을)를 열 수 없음: %s\n"
 
-#: build/pack.c:603 lib/psm.c:2154
+#: build/pack.c:603 lib/psm.c:2180
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
@@ -852,7 +852,7 @@ msgstr "%s 의 payload를 읽을 수 없음: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s 에 payload를 작성할 수 없음: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2420
+#: build/pack.c:683 lib/psm.c:2446
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
@@ -1367,17 +1367,17 @@ msgstr "목표대상(target) 플랫폼을 교체(override)합니다"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "spec파일 목록(catalog)에서 i18N 문자열을 찾습니다"
 
-#: build/spec.c:227
+#: build/spec.c:230
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "%d 번째 줄: 잘못된 숫자입니다: %s\n"
 
-#: build/spec.c:233
+#: build/spec.c:236
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "%d 번째 줄: 잘못된 no%s 숫자입니다: %d\n"
 
-#: build/spec.c:294
+#: build/spec.c:297
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "%d 번째 줄: 잘못된 %s 숫자입니다: %s\n"
@@ -1424,7 +1424,7 @@ msgid " failed - "
 msgstr " 실패함 - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:668
+#: lib/depends.c:687
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -1433,85 +1433,85 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:697
+#: lib/depends.c:716
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:698 lib/depends.c:1475 lib/depends.c:1608
+#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
 msgid "YES"
 msgstr "예"
 
-#: lib/depends.c:698 lib/depends.c:1475 lib/depends.c:1608
+#: lib/depends.c:717 lib/depends.c:1518 lib/depends.c:1651
 msgid "NO "
 msgstr "아니오"
 
-#: lib/depends.c:828
+#: lib/depends.c:856
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/depends.c:1008
+#: lib/depends.c:1038
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:1013
+#: lib/depends.c:1043
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:1018
+#: lib/depends.c:1048
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:1269
+#: lib/depends.c:1307
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s 예 (파일이 추가됨)\n"
 
-#: lib/depends.c:1380
+#: lib/depends.c:1423
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s 예 (제공이 추가됨)\n"
 
-#: lib/depends.c:1474
+#: lib/depends.c:1517
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (캐시됨)\n"
 
-#: lib/depends.c:1503
+#: lib/depends.c:1546
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:1520
+#: lib/depends.c:1563
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:1544
+#: lib/depends.c:1587
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s 예 (db 파일)\n"
 
-#: lib/depends.c:1557
+#: lib/depends.c:1600
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:1571
+#: lib/depends.c:1614
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s 예 (db 패키지)\n"
 
-#: lib/depends.c:1587
+#: lib/depends.c:1630
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s 아니오\n"
 
-#: lib/depends.c:1608
+#: lib/depends.c:1651
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) 의존(Depends) 캐시에 추가되었습니다.\n"
@@ -1519,43 +1519,43 @@ msgstr "%s: (%s, %s) 의존(Depends) 캐시에 추가되었습니다.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1681
+#: lib/depends.c:1724
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1760
+#: lib/depends.c:1803
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "패키지 %s (이)가 충돌함: %s\n"
 
-#: lib/depends.c:2013
+#: lib/depends.c:2058
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\" (을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:2163
+#: lib/depends.c:2212
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2223
+#: lib/depends.c:2272
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 깊이[depth])\n"
 
-#: lib/depends.c:2273
+#: lib/depends.c:2322
 msgid "========== successors only (presentation order)\n"
 msgstr "========== 후임자 [successors only] (표현 순)\n"
 
-#: lib/depends.c:2326
+#: lib/depends.c:2375
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:2356
+#: lib/depends.c:2405
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
@@ -1607,47 +1607,47 @@ msgstr "%s (을)를 여는데 실패함: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "%s 파일이 알 수 없는 장치 상에 존재합니다\n"
 
-#: lib/fsm.c:300
+#: lib/fsm.c:308
 #, fuzzy
 msgid "========== Directories not explictly included in package:\n"
 msgstr "========= 패키지에 디렉토리가 포함되어 있지 않음:\n"
 
-#: lib/fsm.c:302
+#: lib/fsm.c:310
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1162
+#: lib/fsm.c:1171
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%04o 허가권(perms)의 %s 디렉토리가 생성되었습니다.\n"
 
-#: lib/fsm.c:1443
+#: lib/fsm.c:1452
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "헤더 파일 목록에서 아카이브 파일 %s (을)를 찾을 수 없습니다\n"
 
-#: lib/fsm.c:1564 lib/fsm.c:1692
+#: lib/fsm.c:1573 lib/fsm.c:1701
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s (이)가 %s (으)로 저장되었습니다\n"
 
-#: lib/fsm.c:1718
+#: lib/fsm.c:1727
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리를 삭제하는데 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:1724
+#: lib/fsm.c:1733
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: lib/fsm.c:1734
+#: lib/fsm.c:1743
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s %s 링크를 해제하는데 실패함: %s\n"
 
-#: lib/fsm.c:1753
+#: lib/fsm.c:1762
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s (이)가 %s (으)로 생성되었습니다\n"
@@ -1659,7 +1659,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE 카운트는 반드시 '1' 이어야 합니다.\n"
 
 #. @-modfilesys@
-#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:973
+#: lib/header.c:351 lib/header_internal.c:161 lib/psm.c:997
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "%d 데이터 유형은 사용하실 수 없습니다\n"
@@ -2254,114 +2254,114 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 "%2$s 패키지를 처리하는 과정에서 알 수 없는 오류 %1$d (이)가 발생했습니다"
 
-#: lib/psm.c:315
+#: lib/psm.c:320
 msgid "========== relocations\n"
 msgstr "========== 재배치\n"
 
-#: lib/psm.c:319
+#: lib/psm.c:324
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 제외(exclude)  %s\n"
 
-#: lib/psm.c:322
+#: lib/psm.c:327
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 재배치 %s -> %s\n"
 
-#: lib/psm.c:392
+#: lib/psm.c:397
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "%s%s multilib 경로를 제외시킵니다\n"
 
-#: lib/psm.c:458
+#: lib/psm.c:463
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s (을)를 제외시킵니다\n"
 
-#: lib/psm.c:468
+#: lib/psm.c:473
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s 에서 %s (으)로 재배치 합니다\n"
 
-#: lib/psm.c:547
+#: lib/psm.c:552
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s (으)로 재배치 합니다\n"
 
-#: lib/psm.c:1170
+#: lib/psm.c:1194
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "%%%s %s (을)를 생성할 수 없습니다\n"
 
-#: lib/psm.c:1176
+#: lib/psm.c:1200
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%%%s %s (을)를 작성할 수 없습니다\n"
 
-#: lib/psm.c:1216
+#: lib/psm.c:1240
 msgid "source package expected, binary found\n"
 msgstr "소스 패키지가 요구됩니다, 바이너리를 찾았습니다\n"
 
-#: lib/psm.c:1329
+#: lib/psm.c:1353
 msgid "source package contains no .spec file\n"
 msgstr "소스 패키지에 .spec 파일이 포함되어 있지 않습니다\n"
 
-#: lib/psm.c:1437
+#: lib/psm.c:1463
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "%s: %s 스크립트를 실행합니다 (있을 경우)\n"
 
-#: lib/psm.c:1605
+#: lib/psm.c:1631
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 "%2$s-%3$s-%4$s 의 %1$s 스크립트릿(scriptlet) 실행에 실패했습니다, waitpid가 %"
 "5$s (을)를 반환하였습니다 \n"
 
-#: lib/psm.c:1612
+#: lib/psm.c:1638
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 "%2$s-%3$s-%4$s 의 %1$s 스크립트릿(scriptlet) 실행에 실패했습니다, 종료 상황 %"
 "5$d\n"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1985
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s (이)가 %d 의 파일을 갖고 있습니다, 테스트 = %d\n"
 
-#: lib/psm.c:2076
+#: lib/psm.c:2102
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 "%s: %s 스크립트릿(scriptlet)가 실패했습니다 (%d), %s-%s-%s (을)를 생략합니"
 "다\n"
 
-#: lib/psm.c:2191
+#: lib/psm.c:2217
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "%s 사용자가 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/psm.c:2200
+#: lib/psm.c:2226
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "%s 그룹이 존재하지 않습니다 - root를 이용합니다\n"
 
-#: lib/psm.c:2241
+#: lib/psm.c:2267
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "아카이브를 푸는데 실패함%s%s: %s\n"
 
-#: lib/psm.c:2242
+#: lib/psm.c:2268
 msgid " on file "
 msgstr " 다음 파일에 "
 
-#: lib/psm.c:2428
+#: lib/psm.c:2454
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%2$s 파일의 %1$s (이)가 실패함: %3$s\n"
 
-#: lib/psm.c:2431
+#: lib/psm.c:2457
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s (이)가 실패함: %s\n"
@@ -2878,13 +2878,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/transaction.c:309
+#: lib/transaction.c:311
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "missingok 플래그로 인해 %s (을)를 생략합니다\n"
 
 #. @innercontinue@
-#: lib/transaction.c:935
+#: lib/transaction.c:937
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"
@@ -2899,17 +2899,17 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "패키지에 그룹 이름과 id 목록이 없습니다 (절대 이렇게 되어서는 안됩니다)\n"
 
-#: lib/verify.c:418
+#: lib/verify.c:420
 #, c-format
 msgid "missing    %s"
 msgstr "다음을 찾을 수 없습니다    %s"
 
-#: lib/verify.c:515
+#: lib/verify.c:517
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 에 의존성 문제 발생: "
 
-#: lib/verify.c:560
+#: lib/verify.c:562
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3066,44 +3066,44 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "(기존의) rpm[23] 패키징과 호환하는 헤더를 생성합니다"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:126
+#: rpmdb/rpmdb.c:129
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 "DB 태그 초기화[dbiTagsInit]: 인증되지 않은 태그 이름: \"%s\" (은)는 무시됩니"
 "다\n"
 
-#: rpmdb/rpmdb.c:380
+#: rpmdb/rpmdb.c:383
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "db%2$d (을)를 이용하여 %1$s 인덱스를 열 수 없습니다 - %3$s (%4$d)\n"
 
-#: rpmdb/rpmdb.c:402
+#: rpmdb/rpmdb.c:405
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "%s 인덱스를 열 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:494
+#: rpmdb/rpmdb.c:497
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:625
+#: rpmdb/rpmdb.c:628
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "%3$s (으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:635
+#: rpmdb/rpmdb.c:638
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "%3$s 에서 %2$s 레코드를 삭제하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:892
+#: rpmdb/rpmdb.c:902
 msgid "no dbpath has been set\n"
 msgstr "db경로가 설정되어 있지 않습니다\n"
 
-#: rpmdb/rpmdb.c:1034
+#: rpmdb/rpmdb.c:1046
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
@@ -3112,115 +3112,115 @@ msgstr ""
 "려면 --rebuilddb 옵션을 이용하십시요\n"
 
 #. error
-#: rpmdb/rpmdb.c:1291
+#: rpmdb/rpmdb.c:1311
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "패키지의 수를 세는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2068 rpmdb/rpmdb.c:3321
+#: rpmdb/rpmdb.c:2088 rpmdb/rpmdb.c:3341
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u (이)가 잘못되었습니다 -- 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2121
+#: rpmdb/rpmdb.c:2141
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u (이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2391
+#: rpmdb/rpmdb.c:2411
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x 의 헤더를 읽을 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:2463
+#: rpmdb/rpmdb.c:2483
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%2$s 인덱스에서 \"%1$s\" (을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2472
+#: rpmdb/rpmdb.c:2492
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%2$s 인덱스에서 %1$d 항목들(entries)을 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2673
+#: rpmdb/rpmdb.c:2693
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2754
+#: rpmdb/rpmdb.c:2774
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%2$s 인덱스에 \"%1$s\" (을)를 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:2765
+#: rpmdb/rpmdb.c:2785
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3207
+#: rpmdb/rpmdb.c:3227
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3를 재구축 한 후에 %s (을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:3240
+#: rpmdb/rpmdb.c:3260
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
 
-#: rpmdb/rpmdb.c:3267
+#: rpmdb/rpmdb.c:3287
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%2$s 에 데이터베이스 %1$s (을)를 재구축 합니다\n"
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3291
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "임시 데이터베이스 %s (이)가 이미 존재합니다\n"
 
-#: rpmdb/rpmdb.c:3277
+#: rpmdb/rpmdb.c:3297
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: rpmdb/rpmdb.c:3279
+#: rpmdb/rpmdb.c:3299
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s 디렉토리를 생성함: %s\n"
 
-#: rpmdb/rpmdb.c:3286
+#: rpmdb/rpmdb.c:3306
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "dbapi %d (을)를 통해 이전 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3297
+#: rpmdb/rpmdb.c:3317
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "dbapi %d (을)를 통해 새로운 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3361
+#: rpmdb/rpmdb.c:3381
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%u 에 레코드를 추가할 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:3379
+#: rpmdb/rpmdb.c:3399
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "데이터베이스를 재구축하는데 실패함: 원본 데이터베이스는 그대로 유지됩니다\n"
 
-#: rpmdb/rpmdb.c:3387
+#: rpmdb/rpmdb.c:3407
 msgid "failed to replace old database with new database!\n"
 msgstr "이전 데이터베이스를 새로운 데이터베이스로 교체하는데 실패했습니다!\n"
 
-#: rpmdb/rpmdb.c:3389
+#: rpmdb/rpmdb.c:3409
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "복구하기 위해 $2$s 의 파일을 $1$s 의 파일로 교체합니다"
 
-#: rpmdb/rpmdb.c:3399
+#: rpmdb/rpmdb.c:3419
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: rpmdb/rpmdb.c:3401
+#: rpmdb/rpmdb.c:3421
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
