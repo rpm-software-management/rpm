@@ -17,6 +17,16 @@
 extern int _rpmgi_debug;
 /*@=exportlocal@*/
 
+/**
+ */
+typedef enum rpmgiFlags_e {
+    RPMGI_TSADD		= (1 << 0),
+    RPMGI_TSORDER	= (1 << 1),
+    RPMGI_NOGLOB	= (1 << 2),
+    RPMGI_NOMANIFEST	= (1 << 3),
+    RPMGI_NOHEADER	= (1 << 4)
+} rpmgiFlags;
+
 #if defined(_RPMGI_INTERNAL)
 /** \ingroup rpmio
  */
@@ -27,7 +37,7 @@ struct rpmgi_s {
     const void * keyp;		/*!< Iterator key. */
     size_t keylen;		/*!< Iterator key length. */
 
-    int flags;			/*!< Iterator control bits. */
+    rpmgiFlags flags;		/*!< Iterator control bits. */
     int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
 /*@null@*/
@@ -157,11 +167,12 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
 /**
  * Load iterator args.
  * @param gi		generalized iterator
+ * @param argv		arg list
  * @param ftsOpts	fts(3) flags
  * @param flags		iterator flags
- * @returns		RPMRC_OK
+ * @returns		RPMRC_OK on success
  */
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t, int ftsOpts, int flags)
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
 	/*@modifies gi @*/;
 
 #ifdef __cplusplus

@@ -537,19 +537,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
     }
 
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
-    if (qva->qva_source == RPMQV_ALL) {
-	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
-	ec = rpmQueryVerify(qva, ts, (const char *) argv);
-	/*@=nullpass@*/
-    } else {
-/*@-boundsread@*/
-	if (argv != NULL)
-	while ((arg = *argv++) != NULL) {
-	    ec += rpmQueryVerify(qva, ts, arg);
-	    rpmtsEmpty(ts);
-	}
-/*@=boundsread@*/
-    }
+    ec = rpmcliArgIter(ts, qva, argv);
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
 
     if (qva->qva_showPackage == showVerifyPackage)

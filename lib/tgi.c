@@ -15,17 +15,19 @@
 static const char * gitagstr = "packages";
 static const char * gikeystr = NULL;
 static rpmtransFlags transFlags = 0;
-static int giflags = 0x3;
+static rpmgiFlags giflags = 0;
 static int ftsOpts = 0;
 
 static const char * queryFormat = NULL;
+static const char * defaultQueryFormat =
+	"%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|";
 
 /*@only@*/ /*@null@*/
 static const char * rpmgiPathOrQF(const rpmgi gi)
 	/*@*/
 {
     const char * fmt = ((queryFormat != NULL)
-	? queryFormat : "%{name}-%{version}-%{release}.%{arch}");
+	? queryFormat : defaultQueryFormat);
     const char * val = NULL;
     Header h = rpmgiHeader(gi);
 
@@ -51,6 +53,17 @@ static struct poptOption optionsTable[] = {
  { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
  	&transFlags, RPMTRANS_FLAG_ANACONDA|RPMTRANS_FLAG_DEPLOOPS,
 	N_("use anaconda \"presentation order\""), NULL},
+
+ { "transaction", 'T', POPT_BIT_SET, &giflags, (RPMGI_TSADD|RPMGI_TSORDER),
+	N_("do not create transaction set"), NULL},
+ { "noorder", '\0', POPT_BIT_CLR, &giflags, RPMGI_TSORDER,
+	N_("do not order transaction set"), NULL},
+ { "noglob", '\0', POPT_BIT_SET, &giflags, RPMGI_NOGLOB,
+	N_("do not glob arguments"), NULL},
+ { "nomanifest", '\0', POPT_BIT_SET, &giflags, RPMGI_NOMANIFEST,
+	N_("do not process arg manifests"), NULL},
+ { "noheader", '\0', POPT_BIT_SET, &giflags, RPMGI_NOHEADER,
+	N_("do not read headers"), NULL},
 
  { "qf", '\0', POPT_ARG_STRING, &queryFormat, 0,
         N_("use the following query format"), "QUERYFORMAT" },
@@ -143,18 +156,19 @@ main(int argc, char *const argv[])
 	    int xx;
 #endif
 
-	    fprintf(stderr, "%5d %s\n", ac, arg);
+	    if (!(giflags & RPMGI_TSADD))
+	        fprintf(stdout, "%5d %s\n", ac, arg);
 	    arg = _free(arg);
 	}
 	ac++;
     }
 
-    if (giflags & 0x3) {
+    if (giflags & RPMGI_TSADD) {
 	rpmtsi tsi;
 	rpmte q;
 	int i;
 	
-fprintf(stderr, "======================= ordered %d elements\n\
+fprintf(stdout, "======================= %d transaction elements\n\
     # Tree Depth Degree Package\n\
 =======================\n", rpmtsNElements(ts));
 
@@ -164,10 +178,10 @@ fprintf(stderr, "======================= ordered %d elements\n\
 	    char deptypechar;
 
 	    if (i == rpmtsUnorderedSuccessors(ts, -1))
-		fprintf(stderr, "======================= leaf nodes only:\n");
+		fprintf(stdout, "======================= leaf nodes only:\n");
 
 	    deptypechar = (rpmteType(q) == TR_REMOVED ? '-' : '+');
-	    fprintf(stderr, "%5d%5d%6d%7d %*s%c%s\n",
+	    fprintf(stdout, "%5d%5d%6d%7d %*s%c%s\n",
 		i, rpmteTree(q), rpmteDepth(q), rpmteDegree(q),
 		(2 * rpmteDepth(q)), "",
 		deptypechar, rpmteNEVRA(q));

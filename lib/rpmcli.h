@@ -8,6 +8,7 @@
 #include "rpmlib.h"
 #include "rpmurl.h"
 #include "rpmmacro.h"
+#include "argv.h"
 
 /** \ingroup rpmcli
  * Should version 3 packages be produced?
@@ -259,7 +260,9 @@ struct rpmQVKArguments_s {
 /*@only@*/ /*@null@*/
     rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
 /*@refccounted@*/ /*@null@*/
-    rpmdbMatchIterator qva_gi;	/*!< Generalized iterator on selected headers. */
+    rpmgi qva_gi;		/*!< Generalized iterator on args. */
+    rpmRC qva_rc;		/*!< Current return code. */
+
 /*@null@*/
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
 /*@null@*/
@@ -363,6 +366,19 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
+ * Iterate over query/verify arg list.
+ * @param ts		transaction set
+ * @param qva		parsed query/verify options
+ * @param argv		query argument(s) (or NULL)
+ * @return		0 on success, else no. of failures
+ */
+int rpmcliArgIter(rpmts ts, QVA_t qva, /*@null@*/ ARGV_t argv)
+	/*@globals rpmGlobalMacroContext, h_errno,
+		fileSystem, internalState @*/
+	/*@modifies ts, qva, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Display package information.

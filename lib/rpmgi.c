@@ -151,10 +151,13 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 
 	fn = gi->argv[gi->i];
 	h = rpmgiReadHeader(gi, fn);
-	if (h != NULL) {
+	if (h != NULL || (gi->flags & RPMGI_NOHEADER)) {
 	    rpmrc = RPMRC_OK;
 	    break;
 	}
+
+	if (gi->flags & RPMGI_NOMANIFEST)
+	    break;
 
 	/* Not a header, so try for a manifest. */
 	gi->argv[gi->i] = NULL;		/* HACK */
@@ -166,7 +169,7 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	fn = _free(fn);
     } while (1);
 
-    if (rpmrc == RPMRC_OK && h != NULL)
+    if (rpmrc == RPMRC_OK && h != NULL && !(gi->flags & RPMGI_NOHEADER))
 	gi->h = headerLink(h);
     h = headerFree(h);
 
@@ -185,6 +188,7 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
     Header h = NULL;
+    int bingo = 0;
 
     if (gi->ftsp != NULL)
     while ((gi->fts = Fts_read(gi->ftsp)) != NULL) {
@@ -201,13 +205,15 @@ fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 	case FTS_SL:
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->ftsp, gi->i, fts->fts_path);
-	    h = rpmgiReadHeader(gi, fts->fts_path);
+	    bingo = 1;
 	    /*@switchbreak@*/ break;
 	default:
 	    /*@switchbreak@*/ break;
 	}
 /*@=branchstate@*/
-	if (h != NULL) {
+	if (bingo) {
+	    if (!(gi->flags & RPMGI_NOHEADER))
+		h = rpmgiReadHeader(gi, fts->fts_path);
 	    rpmrc = RPMRC_OK;
 	    break;
 	}
@@ -232,12 +238,20 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_t argv)
 {
     const char * arg;
     rpmRC rpmrc = RPMRC_OK;
+    int ac = 0;
+    int xx;
+
+    if (gi->flags & RPMGI_NOGLOB) {
+	while (argv[ac] != NULL)
+	    ac++;
+	xx = argvAppend(&gi->argv, argv);
+	gi->argc = ac;
+	return rpmrc;
+    }
 
     if (argv != NULL)
     while ((arg = *argv++) != NULL) {
 	ARGV_t av = NULL;
-	int ac = 0;
-	int xx;
 
 	xx = rpmGlob(arg, &ac, &av);
 	xx = argvAppend(&gi->argv, av);
@@ -370,11 +384,14 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	if (gi->mi != NULL) {	/* XXX unnecessary */
 	    Header h = rpmdbNextIterator(gi->mi);
 	    if (h != NULL) {
-		gi->h = headerLink(h);
+		if (!(gi->flags & RPMGI_NOHEADER))
+		    gi->h = headerLink(h);
 		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
+		rpmrc = RPMRC_OK;
+		/* XXX header reference held by iterator, so no headerFree */
 	    }
 	}
-	if (gi->h == NULL) {
+	if (rpmrc != RPMRC_OK) {
 	    gi->mi = rpmdbFreeIterator(gi->mi);
 	    goto enditer;
 	}
@@ -387,11 +404,15 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	    gi->active = 1;
 	}
 	if (gi->fd != NULL) {
-	    gi->h = headerRead(gi->fd, HEADER_MAGIC_YES);
+	    Header h = headerRead(gi->fd, HEADER_MAGIC_YES);
+	    if (h != NULL && !(gi->flags & RPMGI_NOHEADER))
+		gi->h = headerLink(h);
 	    sprintf(hnum, "%u", (unsigned)gi->i);
+	    rpmrc = RPMRC_OK;
+	    h = headerFree(h);
 	}
 
-	if (gi->h == NULL) {
+	if (rpmrc != RPMRC_OK) {
 	    if (gi->fd != NULL) (void) Fclose(gi->fd);
 	    gi->fd = NULL;
 	    goto enditer;
@@ -425,7 +446,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	/* Read next header, lazily walking file tree. */
 	rpmrc = rpmgiWalkReadHeader(gi);
 
-	if (gi->h == NULL || rpmrc != RPMRC_OK) {
+	if (rpmrc != RPMRC_OK) {
 	    xx = Fts_close(gi->ftsp);
 	    gi->ftsp = NULL;
 	    goto enditer;
@@ -437,15 +458,14 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
     }
 /*@=branchstate@*/
 
-    if (gi->flags & 0x1) {
+    if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 0, NULL);
-	/* TODO save header and path in rpmte. */
     }
 
-    return RPMRC_OK;
+    return rpmrc;
 
 enditer:
-    if (gi->flags & 0x2) {
+    if (gi->flags & RPMGI_TSORDER) {
 	xx = rpmtsCheck(gi->ts);
 	xx = rpmtsOrder(gi->ts);
     }
@@ -475,12 +495,11 @@ rpmts rpmgiTs(rpmgi gi)
 /*@=compdef =refcounttrans =retexpose =usereleased@*/
 }
 
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, int flags)
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
 {
-    rpmRC rpmrc = rpmgiGlobArgv(gi, argv);
     gi->ftsOpts = ftsOpts;
     gi->flags = flags;
-    return rpmrc;
+    return rpmgiGlobArgv(gi, argv);
 }
 
 /*@=modfilesys@*/

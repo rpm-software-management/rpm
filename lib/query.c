@@ -15,6 +15,7 @@
 
 #include "rpmdb.h"
 #include "rpmfi.h"
+#include "rpmgi.h"
 #include "rpmts.h"
 
 #include "manifest.h"
@@ -781,9 +782,40 @@ restart:
 }
 /*@=bounds@*/
 
-int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
+int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 {
     const char * arg;
+    int ftsOpts = 0;
+    rpmgiFlags giflags = RPMGI_NOGLOB;
+    int ec = 0;
+
+    qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
+    qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giflags);
+
+    switch (qva->qva_source) {
+    case RPMQV_ALL:
+	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	ec = rpmQueryVerify(qva, ts, (const char *) argv);
+	/*@=nullpass@*/
+	break;
+    default:
+/*@-boundsread@*/
+	if (argv != NULL)
+	while ((arg = *argv++) != NULL) {
+	    ec += rpmQueryVerify(qva, ts, arg);
+	    rpmtsEmpty(ts);
+	}
+/*@=boundsread@*/
+	break;
+    }
+
+    qva->qva_gi = rpmgiFree(qva->qva_gi);
+
+    return ec;
+}
+
+int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
+{
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 
@@ -824,19 +856,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 #endif
 
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
-    if (qva->qva_source == RPMQV_ALL) {
-	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
-	ec = rpmQueryVerify(qva, ts, (const char *) argv);
-	/*@=nullpass@*/
-    } else {
-/*@-boundsread@*/
-	if (argv != NULL)
-	while ((arg = *argv++) != NULL) {
-	    ec += rpmQueryVerify(qva, ts, arg);
-	    rpmtsEmpty(ts);
-	}
-/*@=boundsread@*/
-    }
+    ec = rpmcliArgIter(ts, qva, argv);
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
 
     if (qva->qva_showPackage == showQueryPackage)
