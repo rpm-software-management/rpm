@@ -12,8 +12,6 @@ static struct fsinfo * filesystems;
 static const char ** fsnames;
 static int numFilesystems;
 
-static int getFilesystemList(void);
-
 #if HAVE_MNTCTL
 
 /* modeled after sample code from Till Bubeck */
@@ -27,7 +25,8 @@ static int getFilesystemList(void);
  */
 int mntctl(int command, int size, char *buffer);
 
-static int getFilesystemList(void) {
+static int getFilesystemList(void)
+{
     int size;
     void * buf;
     struct vmount * vm;
@@ -96,7 +95,8 @@ static int getFilesystemList(void) {
     return 0;
 }
 #else 
-static int getFilesystemList(void) {
+static int getFilesystemList(void)
+{
     int numAlloced = 10;
     int num = 0;
     struct stat sb;
@@ -181,7 +181,8 @@ static int getFilesystemList(void) {
 }
 #endif
 
-int rpmGetFilesystemList(const char *** listptr, int * num) {
+int rpmGetFilesystemList(const char *** listptr, int * num)
+{
     if (!fsnames) 
 	if (getFilesystemList())
 	    return 1;
@@ -193,13 +194,15 @@ int rpmGetFilesystemList(const char *** listptr, int * num) {
 }
 
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles,
-			  uint_32 ** usagesPtr, int flags) {
+			  uint_32 ** usagesPtr, int flags)
+{
     int_32 * usages;
     int i, len, j;
     char * buf, * dirName;
     char * chptr;
     int maxLen;
-    char * lastDir, * sourceDir;
+    char * lastDir;
+    const char * sourceDir;
     int lastfs = 0;
     int lastDev = -1;		/* I hope nobody uses -1 for a st_dev */
     struct stat sb;
@@ -210,7 +213,9 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
     usages = calloc(numFilesystems, sizeof(usages));
 
-    maxLen = 0;
+    sourceDir = rpmGetPath("", "/%{_sourcedir}", NULL);
+
+    maxLen = strlen(sourceDir);
     for (i = 0; i < numFiles; i++) {
 	len = strlen(fileList[i]);
 	if (maxLen < len) maxLen = len;
@@ -220,8 +225,6 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
     lastDir = alloca(maxLen + 1);
     dirName = alloca(maxLen + 1);
     *lastDir = '\0';
-
-    sourceDir = rpmGetPath("", "/%{_sourcedir}", NULL);
 
     /* cut off last filename */
     for (i = 0; i < numFiles; i++) {
@@ -235,7 +238,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 		*chptr-- = '\0';
 	} else {
 	    /* this should only happen for source packages (gulp) */
-	    buf = sourceDir;
+	    strcpy(buf,  sourceDir);
 	}
 
 	if (strcmp(lastDir, buf)) {
@@ -278,7 +281,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	usages[lastfs] += fssizes[i];
     }
 
-    if (sourceDir) free(sourceDir);
+    if (sourceDir) xfree(sourceDir);
 
     *usagesPtr = usages;
 
