@@ -526,6 +526,12 @@ Header headerRead(FD_t fd, int magicp)
     totalSize = sizeof(int_32) + sizeof(int_32) + 
 		(il * sizeof(struct entryInfo)) + dl;
 
+    /*
+     * XXX Limit total size of header to 32Mb (~16 times largest known size).
+     */
+    if (totalSize > (32*1024*1024))
+	return NULL;
+
     dataBlock = p = malloc(totalSize);
     *p++ = htonl(il);
     *p++ = htonl(dl);
