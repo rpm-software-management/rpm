@@ -19,6 +19,13 @@
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H -Wall -Wshadow
 INCLUDES = -I$(srcdir)
 
+LINT = splint
+
 noinst_LTLIBRARIES = libcpu_i386.la
 
 libcpu_i386_la_SOURCES = i386_dis.c
+
+.PSEUDO: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(GCC_INCLUDE) \
+		$(addprefix $(srcdir)/,$(libcpu_la_SOURCES))

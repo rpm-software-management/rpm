@@ -164,8 +164,11 @@ AC_CONFIG_FILES([Makefile
 	   libelf/Makefile
 	   libebl/Makefile
 	   libdwarf/Makefile
+	   libcpu/Makefile
+	   libasm/Makefile
 	   libelf-po/Makefile.in
 	   libebl-po/Makefile.in
 	   libdwarf-po/Makefile.in
+	   libasm-po/Makefile.in
 	   po/Makefile.in])
 AC_OUTPUT

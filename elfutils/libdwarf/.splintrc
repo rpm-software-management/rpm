@@ -14,7 +14,7 @@
 # --- in progress
 -branchstate
 -compdef
-#-compmempass
+-compmempass
 -internalglobs
 -modobserveruncon
 -moduncon		# 1 dgettext
