@@ -11,6 +11,13 @@
 
 #include "rpmal.h"
 
+typedef enum rpmTransactionType_e {
+    TR_ADDED,		/*!< Package will be installed. */
+    TR_REMOVED		/*!< Package will be removed. */
+} rpmTransactionType;
+
+#include "rpmds.h"
+
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
 
@@ -66,10 +73,14 @@ struct tsortInfo_s {
  * A single package instance to be installed/removed atomically.
  */
 struct transactionElement_s {
+#ifdef	DYING
     enum rpmTransactionType {
 	TR_ADDED,	/*!< Package will be installed. */
 	TR_REMOVED	/*!< Package will be removed. */
     } type;		/*!< Package disposition (installed/removed). */
+#else
+    rpmTransactionType type;	/*!< Package disposition (installed/removed). */
+#endif
 
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Package header. */
@@ -278,10 +289,11 @@ transactionElement teNextIterator(teIterator tei)
 /**
  * Return next transaction element of type.
  * @param tei		transaction element iterator
+ * @param type		transaction element type selector
  * @return		next transaction element of type, NULL on termination
  */
 /*@unused@*/ static inline /*@dependent@*/ /*@null@*/
-transactionElement teNext(teIterator tei, enum rpmTransactionType type)
+transactionElement teNext(teIterator tei, rpmTransactionType type)
         /*@modifies tei @*/
 {
     transactionElement p;

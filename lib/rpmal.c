@@ -6,9 +6,7 @@
 
 #include <rpmlib.h>
 
-#include "rpmds.h"
 #include "depends.h"
-#include "rpmal.h"
 
 #include "debug.h"
 
@@ -136,6 +134,7 @@ static void alFreeIndex(availableList al)
     }
 }
 
+#ifdef	DYING
 /**
  * Return number of packages in list.
  * @param al		available list
@@ -146,6 +145,7 @@ static int alGetSize(/*@null@*/ const availableList al)
 {
     return (al != NULL ? al->size : 0);
 }
+#endif
 
 static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const availableList al,
 		/*@null@*/ alKey pkgKey)

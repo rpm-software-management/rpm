@@ -4,7 +4,11 @@
 #include "system.h"
 #include <rpmlib.h>
 
+#ifdef	DYING
 #include "rpmds.h"
+#else
+#include "depends.h"		/* XXX rpmTransactionType */
+#endif
 
 #include "debug.h"
 
@@ -167,7 +171,9 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fns, fns->Type, fns->fc);
     /*@=branchstate@*/
 
 exit:
+    /*@-nullstate@*/ /* FIX: TFI/rpmFNSet null annotations */
     return rpmfnsLink(fns, (fns ? fns->Type : NULL));
+    /*@=nullstate@*/
 }
 
 /*@access rpmDepSet @*/

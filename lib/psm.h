@@ -8,12 +8,14 @@
 
 #include "fsm.h"
 #include "depends.h"
+#include "rpmds.h"
 
 /*@unchecked@*/
 /*@-exportlocal@*/
 extern int _fi_debug;
 /*@=exportlocal@*/
 
+#ifdef	DYING
 /**
  */
 struct sharedFileInfo {
@@ -107,6 +109,7 @@ struct transactionFileInfo_s {
 
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 };
+#endif	/* DYING */
 
 /**
  */
@@ -268,4 +271,4 @@ int psmStage(PSM_t psm, pkgStage stage)
 }
 #endif
 
-#endif	/* H_ROLLBACK */
+#endif	/* H_PSM */

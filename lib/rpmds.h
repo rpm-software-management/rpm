@@ -7,6 +7,19 @@
  */
 
 /**
+ */
+typedef struct sharedFileInfo_s *		sharedFileInfo;
+
+/**
+ */
+struct sharedFileInfo_s {
+    int pkgFileNum;
+    int otherFileNum;
+    int otherPkg;
+    int isRemoved;
+};
+
+/**
  * A package filename set.
  */
 struct rpmFNSet_s {
@@ -19,29 +32,29 @@ struct rpmFNSet_s {
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for file name set (or NULL) */
 
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
     const char ** bnl;		/*!< Base name(s) (from header) */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
     const char ** fmd5s;	/*!< File MD5 sum(s) (from header) */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
     const char ** flinks;	/*!< File link(s) (from header) */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
     const char ** flangs;	/*!< File lang(s) */
 
-/*@only@*/ /*@null@*/
-    const uint_32 * dil;	/*!< Directory indice(s) (from header) */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
+          uint_32 * dil;	/*!< Directory indice(s) (from header) */
+/*@only@*/ /*?null?*/
     const uint_32 * fflags;	/*!< File flag(s) (from header) */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
     const uint_32 * fsizes;	/*!< File size(s) (from header) */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
     const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
-/*@only@*/ /*@null@*/
-    const uint_16 * fmodes;	/*!< File mode(s) (from header) */
-/*@only@*/ /*@null@*/
+/*@only@*/ /*?null?*/
+          uint_16 * fmodes;	/*!< File mode(s) (from header) */
+/*@only@*/ /*?null?*/
     const uint_16 * frdevs;	/*!< File rdev(s) (from header) */
 
 /*@only@*/ /*@null@*/
@@ -58,6 +71,67 @@ struct rpmFNSet_s {
 
     int_32 dc;			/*!< No. of directories. */
     int_32 fc;			/*!< No. of files. */
+
+/*=============================*/
+/*@owned@*/
+    const char * name;		/*!< Name: tag (malloc'd). */
+/*@owned@*/
+    const char * version;	/*!< Version: tag (malloc'd). */
+/*@owned@*/
+    const char * release;	/*!< Release: tag (malloc'd). */
+    uint_32 multiLib;		/* MULTILIB */
+/*@null@*/
+    fnpyKey key;		/*!< Package notify key. */
+/*@null@*/ /*@dependent@*/
+    rpmRelocation * relocs;	/*!< Package file relocations. */
+/*@null@*/
+    FD_t fd;			/*!< Package file handle */
+    rpmTransactionType type;
+    HGE_t hge;			/*!< Vector to headerGetEntry() */
+    HAE_t hae;			/*!< Vector to headerAddEntry() */
+    HME_t hme;			/*!< Vector to headerModifyEntry() */
+    HRE_t hre;			/*!< Vector to headerRemoveEntry() */
+    HFD_t hfd;			/*!< Vector to headerFreeData() */
+    int_32 epoch;
+/*-----------------------------*/
+    uid_t uid;			/*!< File uid (default). */
+    gid_t gid;			/*!< File gid (default). */
+    uint_32 flags;		/*!< File flags (default). */
+    fileAction action;		/*!< File disposition (default). */
+/*@owned@*/
+    fileAction * actions;	/*!< File disposition(s). */
+/*@owned@*/
+    struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
+/*@owned@*/
+    const char ** obnl;		/*!< Original basename(s) (from header) */
+/*@owned@*/
+    const char ** odnl;		/*!< Original dirname(s) (from header) */
+/*@unused@*/
+    int_32 * odil;		/*!< Original dirindex(s) (from header) */
+    int bnlmax;			/*!< Length (in bytes) of longest basename. */
+    int dnlmax;			/*!< Length (in bytes) of longest dirname. */
+    int astriplen;
+    int striplen;
+    unsigned int archiveSize;
+    mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
+    mode_t fperms;		/*!< File perms (0644) if not mapped. */
+/*@only@*/ /*@null@*/
+    const char ** apath;
+    int mapflags;
+/*@owned@*/ /*@null@*/
+    int * fmapflags;
+/*@owned@*/
+    FSM_t fsm;			/*!< File state machine data. */
+    int keep_header;		/*!< Keep header? */
+/*@owned@*/
+    sharedFileInfo replaced;	/*!< (TR_ADDED) */
+/*@owned@*/
+    uint_32 * replacedSizes;	/*!< (TR_ADDED) */
+    unsigned int record;	/*!< (TR_REMOVED) */
+    int magic;
+#define	TFIMAGIC	0x09697923
+/*=============================*/
+
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 

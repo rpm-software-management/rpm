@@ -9,7 +9,6 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
-#include "rpmds.h"
 #include "depends.h"
 
 #include "rpmlead.h"		/* writeLead proto */
@@ -1053,8 +1052,8 @@ static int markReplacedFiles(const PSM_t psm)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
-    const struct sharedFileInfo * replaced = fi->replaced;
-    const struct sharedFileInfo * sfi;
+    sharedFileInfo replaced = fi->replaced;
+    sharedFileInfo sfi;
     rpmdbMatchIterator mi;
     Header h;
     unsigned int * offsets;

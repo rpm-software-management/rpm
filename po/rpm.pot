@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-10 22:08-0500\n"
+"POT-Creation-Date: 2001-11-11 07:35-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -596,88 +596,88 @@ msgstr ""
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1495
+#: build/files.c:1499
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1519
+#: build/files.c:1523
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1562 build/files.c:2174 build/parsePrep.c:50
+#: build/files.c:1566 build/files.c:2178 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1574
+#: build/files.c:1578
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1678
+#: build/files.c:1682
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1701
+#: build/files.c:1705
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:1716
+#: build/files.c:1720
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1778
+#: build/files.c:1782
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1789 build/pack.c:146
+#: build/files.c:1793 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:2162
+#: build/files.c:2166
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2236
+#: build/files.c:2240
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:2241
+#: build/files.c:2245
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:2325
+#: build/files.c:2329
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:2329
+#: build/files.c:2333
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2465
+#: build/files.c:2469
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2491 build/files.c:2505
+#: build/files.c:2495 build/files.c:2509
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2626
+#: build/files.c:2630
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:2139
+#: build/pack.c:603 lib/psm.c:2138
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -846,7 +846,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:683 lib/psm.c:2404
+#: build/pack.c:683 lib/psm.c:2403
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1410,83 +1410,83 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:114
+#: lib/depends.c:112
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/depends.c:416
+#: lib/depends.c:414
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:685
+#: lib/depends.c:683
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:710
+#: lib/depends.c:708
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:726
+#: lib/depends.c:724
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:747
+#: lib/depends.c:745
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:759
+#: lib/depends.c:757
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:772
+#: lib/depends.c:770
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:811
+#: lib/depends.c:809
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:813 lib/rpmds.c:563 lib/rpmds.c:721
+#: lib/depends.c:811 lib/rpmds.c:569 lib/rpmds.c:727
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:813 lib/rpmds.c:563 lib/rpmds.c:721
+#: lib/depends.c:811 lib/rpmds.c:569 lib/rpmds.c:727
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1155
+#: lib/depends.c:1153
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1388
+#: lib/depends.c:1386
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1459
+#: lib/depends.c:1457
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1534
+#: lib/depends.c:1532
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1594
+#: lib/depends.c:1592
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1629
+#: lib/depends.c:1627
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1634
+#: lib/depends.c:1632
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1588,7 +1588,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:955
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:954
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2173,108 +2173,108 @@ msgstr ""
 msgid "is needed by"
 msgstr ""
 
-#: lib/psm.c:271
+#: lib/psm.c:270
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:275
+#: lib/psm.c:274
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/psm.c:278
+#: lib/psm.c:277
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/psm.c:348
+#: lib/psm.c:347
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/psm.c:414
+#: lib/psm.c:413
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/psm.c:424
+#: lib/psm.c:423
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:503
+#: lib/psm.c:502
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:1152
+#: lib/psm.c:1151
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:1158
+#: lib/psm.c:1157
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:1198
+#: lib/psm.c:1197
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1317
+#: lib/psm.c:1316
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:1427
+#: lib/psm.c:1426
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:1595
+#: lib/psm.c:1594
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1602
+#: lib/psm.c:1601
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1944
+#: lib/psm.c:1943
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:2061
+#: lib/psm.c:2060
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2175
+#: lib/psm.c:2174
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2184
+#: lib/psm.c:2183
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2225
+#: lib/psm.c:2224
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2226
+#: lib/psm.c:2225
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2412
+#: lib/psm.c:2411
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:2415
+#: lib/psm.c:2414
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2473,20 +2473,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:691
+#: lib/rpmds.c:697
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:720
+#: lib/rpmds.c:726
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:744
+#: lib/rpmds.c:750
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -2815,13 +2815,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:206
+#: lib/transaction.c:204
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:876
+#: lib/transaction.c:874
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

@@ -10,8 +10,6 @@
 #define _NEED_TEITERATOR	1
 #include "psm.h"
 
-#include "rpmds.h"
-
 #include "fprint.h"
 #include "legacy.h"	/* XXX mdfile */
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
@@ -165,8 +163,8 @@ static int osOkay(/*@null@*/ const char * pkgOs)
 static int sharedCmp(const void * one, const void * two)
 	/*@*/
 {
-    const struct sharedFileInfo * a = one;
-    const struct sharedFileInfo * b = two;
+    sharedFileInfo a = (sharedFileInfo) one;
+    sharedFileInfo b = (sharedFileInfo) two;
 
     if (a->otherPkg < b->otherPkg)
 	return -1;
@@ -296,7 +294,7 @@ static int filecmp(short mode1, const char * md51, const char * link1,
  */
 /* XXX only ts->{probs,rpmdb} modified */
 static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
-		struct sharedFileInfo * shared,
+		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fi, fileSystem @*/
@@ -407,7 +405,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
  */
 /* XXX only ts->rpmdb modified */
 static int handleRmvdInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
-		struct sharedFileInfo * shared, int sharedCount)
+		sharedFileInfo shared, int sharedCount)
 	/*@globals fileSystem @*/
 	/*@modifies fi, fileSystem @*/
 {
@@ -916,7 +914,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     int totalFileCount = 0;
     TFI_t fi;
     struct diskspaceInfo * dip;
-    struct sharedFileInfo * shared, * sharedList;
+    sharedFileInfo shared, sharedList;
     int numShared;
     int nexti;
     alKey pkgKey, lastKey;

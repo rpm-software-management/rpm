@@ -1267,7 +1267,11 @@ typedef /*@abstract@*/ struct psm_s * PSM_t;
 
 /** \ingroup rpmtrans
  */
+#ifdef	DYING
 typedef /*@abstract@*/ /*@refcounted@*/ struct transactionFileInfo_s * TFI_t;
+#else
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmFNSet_s * TFI_t;
+#endif
 
 /**
  * Return package header from file handle.

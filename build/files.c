@@ -1340,7 +1340,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     char * a, * d;
 
     fi->type = TR_ADDED;
-    /* XXX add trnsaction set */
+    /* XXX add transaction set */
     loadFi(NULL, fi, h, 1);
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
@@ -1350,7 +1350,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     *d = '\0';
 
     fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
+    /*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
     fi->dil = (int *)(fi->bnl + fi->fc);
+    /*@=dependenttrans@*/
 
     fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen);
     a = (char *)(fi->apath + fi->fc);
@@ -1378,7 +1380,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
+	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
+	/*@=dependenttrans@*/
 	d = stpcpy(d, flp->diskURL);
 
 	/* Make room for the dirName NUL, find start of baseName. */

@@ -10,8 +10,6 @@
 #include <rpmmacro.h>		/* XXX rpmGetPath */
 #include <rpmpgp.h>		/* XXX pgpFreeDig */
 
-#include "rpmds.h"
-
 #define _NEED_TEITERATOR	1
 #include "depends.h"
 

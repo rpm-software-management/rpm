@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-09 20:32-0500\n"
+"POT-Creation-Date: 2001-11-11 07:35-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -612,88 +612,88 @@ msgstr "Dosya iki kere gösterildi: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bað BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1495
+#: build/files.c:1499
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1519
+#: build/files.c:1523
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1562 build/files.c:2174 build/parsePrep.c:50
+#: build/files.c:1566 build/files.c:2178 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
 
-#: build/files.c:1574
+#: build/files.c:1578
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Dosya %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1678
+#: build/files.c:1682
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:1701
+#: build/files.c:1705
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
 
-#: build/files.c:1716
+#: build/files.c:1720
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
 
-#: build/files.c:1778
+#: build/files.c:1782
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 
-#: build/files.c:1789 build/pack.c:146
+#: build/files.c:1793 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
 
-#: build/files.c:2162
+#: build/files.c:2166
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalý: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2236
+#: build/files.c:2240
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: build/files.c:2241
+#: build/files.c:2245
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s ayrýlamadý: %s\n"
 
-#: build/files.c:2325
+#: build/files.c:2329
 #, c-format
 msgid "%s failed\n"
 msgstr "%s baþarýsýz\n"
 
-#: build/files.c:2329
+#: build/files.c:2333
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "tüm veri %s içine yazýlamadý\n"
 
-#: build/files.c:2465
+#: build/files.c:2469
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s aranýyor: (%s kullanarak)...\n"
 
-#: build/files.c:2491 build/files.c:2505
+#: build/files.c:2495 build/files.c:2509
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s bulunamadý:\n"
 
-#: build/files.c:2626
+#: build/files.c:2630
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Ýþlenen dosyalar: %s-%s-%s\n"
@@ -836,7 +836,7 @@ msgstr "%s'den baþlýk okunamadý: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: build/pack.c:603 lib/psm.c:2146
+#: build/pack.c:603 lib/psm.c:2138
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "paket yazýlamadý: %s\n"
@@ -866,7 +866,7 @@ msgstr "%s'den payload okunamadý: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s'e payload yazýlamadý: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2411
+#: build/pack.c:683 lib/psm.c:2403
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Yazýldý: %s\n"
@@ -1446,105 +1446,95 @@ msgstr ""
 msgid " failed - "
 msgstr " baþarýsýz - "
 
-#: lib/depends.c:114
+#: lib/depends.c:112
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabaný açýlamadý\n"
 
-#: lib/depends.c:354
-#, c-format
-msgid "newer package %s already added, skipping %s\n"
-msgstr ""
-
-#: lib/depends.c:359
+#: lib/depends.c:414
 #, fuzzy, c-format
-msgid "package %s already added, ignoring\n"
+msgid "package %s was already added, replacing with %s\n"
 msgstr "%s zaten kurulu"
 
-#: lib/depends.c:364
-#, c-format
-msgid "older package %s already added, replacing with %s\n"
-msgstr ""
-
-#: lib/depends.c:716
+#: lib/depends.c:683
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:741
+#: lib/depends.c:708
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:757
+#: lib/depends.c:724
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:778
+#: lib/depends.c:745
 #, fuzzy
 msgid "(db files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/depends.c:790
+#: lib/depends.c:757
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:803
+#: lib/depends.c:770
 #, fuzzy
 msgid "(db package)"
 msgstr "paket yok\n"
 
-#: lib/depends.c:842
+#: lib/depends.c:809
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
 
-#: lib/depends.c:844 lib/rpmds.c:468 lib/rpmds.c:625
+#: lib/depends.c:811 lib/rpmds.c:569 lib/rpmds.c:727
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/depends.c:844 lib/rpmds.c:468 lib/rpmds.c:625
+#: lib/depends.c:811 lib/rpmds.c:569 lib/rpmds.c:727
 msgid "YES"
 msgstr "EVET"
 
-#: lib/depends.c:1178
+#: lib/depends.c:1153
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1424
+#: lib/depends.c:1386
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1497
+#: lib/depends.c:1457
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1572
+#: lib/depends.c:1532
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1633
+#: lib/depends.c:1592
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1668
+#: lib/depends.c:1627
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1673
+#: lib/depends.c:1632
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2962 lib/header.c:2983 lib/header.c:3005
+#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -1638,88 +1628,88 @@ msgstr "%s %s olarak oluþturuldu\n"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:346
+#: lib/header.c:347
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE sayýsý 1 olmalý.\n"
 
 #. @-modfilesys@
-#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:956
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:954
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "%d veri türü desteklenmiyor\n"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2219
+#: lib/header.c:2220
 #, c-format
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2249
+#: lib/header.c:2250
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2263
+#: lib/header.c:2264
 msgid "empty tag format"
 msgstr "etiket biçemi boþ"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2277
+#: lib/header.c:2278
 msgid "empty tag name"
 msgstr "etiket ismi boþ"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2294
+#: lib/header.c:2295
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2321
+#: lib/header.c:2322
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2339
+#: lib/header.c:2340
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2343
+#: lib/header.c:2344
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2409
+#: lib/header.c:2410
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2418
+#: lib/header.c:2419
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2431 lib/header.c:2473
+#: lib/header.c:2432 lib/header.c:2474
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2441
+#: lib/header.c:2442
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2458
+#: lib/header.c:2459
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2483
+#: lib/header.c:2484
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
-#: lib/header.c:2706
+#: lib/header.c:2707
 msgid "(unknown type)"
 msgstr "(bilinmeyen tür)"
 
@@ -2250,108 +2240,108 @@ msgstr " %s-%s-%s ile çeliþiyor\n"
 msgid "is needed by"
 msgstr " %s-%s-%s için gerekli\n"
 
-#: lib/psm.c:272
+#: lib/psm.c:270
 msgid "========== relocations\n"
 msgstr "========== yeniden konumlama\n"
 
-#: lib/psm.c:276
+#: lib/psm.c:274
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d %s'i dýþlýyor\n"
 
-#: lib/psm.c:279
+#: lib/psm.c:277
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d yeniden konumlandýrýlýyor: %s -> %s\n"
 
-#: lib/psm.c:349
+#: lib/psm.c:347
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "multilib dosya yolu dýþlanýyor %s%s\n"
 
-#: lib/psm.c:415
+#: lib/psm.c:413
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s dýþlanýyor\n"
 
-#: lib/psm.c:425
+#: lib/psm.c:423
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s %s'e konumlanýyor\n"
 
-#: lib/psm.c:504
+#: lib/psm.c:502
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizini %s de yeniden konumlanýyor\n"
 
-#: lib/psm.c:1153
+#: lib/psm.c:1151
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "%%%s dosyasý oluþturulamýyor: %s\n"
 
-#: lib/psm.c:1159
+#: lib/psm.c:1157
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%%%s dosyasýna yazýlamaz %s\n"
 
-#: lib/psm.c:1200
+#: lib/psm.c:1197
 msgid "source package expected, binary found\n"
 msgstr "kaynak paketi gerekirken çalýþtýrýlabilir paketi bulundu\n"
 
-#: lib/psm.c:1324
+#: lib/psm.c:1316
 msgid "source package contains no .spec file\n"
 msgstr "kaynak paketi .spec dosyasý içermiyor\n"
 
-#: lib/psm.c:1434
+#: lib/psm.c:1426
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "%s: %s betiði çalýþtýrýlýyor (varsa)\n"
 
-#: lib/psm.c:1602
+#: lib/psm.c:1594
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, waitpid sonucu %s\n"
 
-#: lib/psm.c:1609
+#: lib/psm.c:1601
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, çýkýþta durum %d\n"
 
-#: lib/psm.c:1951
+#: lib/psm.c:1943
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s %d dosya içeriyor, test = %d\n"
 
-#: lib/psm.c:2068
+#: lib/psm.c:2060
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr "%s: %s betiði baþarýsýz (%d), %s-%s-%s atlanýyor\n"
 
-#: lib/psm.c:2182
+#: lib/psm.c:2174
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "kullanýcý %s yok - root kullanýlacak\n"
 
-#: lib/psm.c:2191
+#: lib/psm.c:2183
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grup %s yok - root kullanýlacak\n"
 
-#: lib/psm.c:2232
+#: lib/psm.c:2224
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "arþiv paketi açýlýrken baþarýsýz%s%s: %s\n"
 
-#: lib/psm.c:2233
+#: lib/psm.c:2225
 msgid " on file "
 msgstr " dosyada "
 
-#: lib/psm.c:2419
+#: lib/psm.c:2411
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/psm.c:2422
+#: lib/psm.c:2414
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s baþarýsýz\n"
@@ -2478,12 +2468,12 @@ msgstr "%u. kayýt okunamadý\n"
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu deðil\n"
 
-#: lib/rpmal.c:695
+#: lib/rpmal.c:656
 #, fuzzy
 msgid "(added files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/rpmal.c:794
+#: lib/rpmal.c:755
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
@@ -2552,7 +2542,7 @@ msgid "OK"
 msgstr "Tamam"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:595
+#: lib/rpmds.c:697
 #, fuzzy, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2561,13 +2551,13 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:624
+#: lib/rpmds.c:726
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:649
+#: lib/rpmds.c:750
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
@@ -2899,13 +2889,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
 
-#: lib/transaction.c:252
+#: lib/transaction.c:204
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "missingok flamasýndan dolayý %s atlandý\n"
 
 #. @innercontinue@
-#: lib/transaction.c:905
+#: lib/transaction.c:874
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s dizini dýþlanýyor\n"
@@ -2928,7 +2918,7 @@ msgstr "eksik      %s"
 
 #: lib/verify.c:518
 #, fuzzy, c-format
-msgid "Unsatisifed dependencies for %s:"
+msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s için tatmin edici olmayan baðýmlýlýklar: "
 
 #: lib/verify.c:556

@@ -570,3 +570,4 @@ fi
 - header tag sets are per-transactionElement, not per-availablePackage.
 - no-brainer refcounts for rpmDepSet and rpmFNSet objects.
 - strip header tags for erased as well as installed transactionElements.
+- common structure elements for unification of TFI_t and rpmFNSet.

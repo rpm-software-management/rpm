@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-09 20:32-0500\n"
+"POT-Creation-Date: 2001-11-11 07:35-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -609,88 +609,88 @@ msgstr "Neuspelo èitanje %s: %s."
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1495
+#: build/files.c:1499
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/files.c:1519
+#: build/files.c:1523
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1562 build/files.c:2174 build/parsePrep.c:50
+#: build/files.c:1566 build/files.c:2178 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1574
+#: build/files.c:1578
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:1678
+#: build/files.c:1682
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/files.c:1701
+#: build/files.c:1705
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: build/files.c:1716
+#: build/files.c:1720
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1778
+#: build/files.c:1782
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/files.c:1789 build/pack.c:146
+#: build/files.c:1793 build/pack.c:146
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:2162
+#: build/files.c:2166
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2236
+#: build/files.c:2240
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: build/files.c:2241
+#: build/files.c:2245
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Ne mogu da proèitam 'sigtarget'"
 
-#: build/files.c:2325
+#: build/files.c:2329
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "PGP omanuo"
 
-#: build/files.c:2329
+#: build/files.c:2333
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:2465
+#: build/files.c:2469
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2491 build/files.c:2505
+#: build/files.c:2495 build/files.c:2509
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:2626
+#: build/files.c:2630
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -833,7 +833,7 @@ msgstr "Ne mogu da upi¹em %s"
 msgid "Could not open %s: %s\n"
 msgstr "neuspelo otvaranje %s\n"
 
-#: build/pack.c:603 lib/psm.c:2146
+#: build/pack.c:603 lib/psm.c:2138
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ne mogu da upi¹em %s"
@@ -863,7 +863,7 @@ msgstr "Ne mogu da upi¹em %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:683 lib/psm.c:2411
+#: build/pack.c:683 lib/psm.c:2403
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1449,104 +1449,94 @@ msgstr ""
 msgid " failed - "
 msgstr "PGP omanuo"
 
-#: lib/depends.c:114
+#: lib/depends.c:112
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/depends.c:354
-#, c-format
-msgid "newer package %s already added, skipping %s\n"
-msgstr ""
-
-#: lib/depends.c:359
+#: lib/depends.c:414
 #, fuzzy, c-format
-msgid "package %s already added, ignoring\n"
+msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/depends.c:364
-#, c-format
-msgid "older package %s already added, replacing with %s\n"
-msgstr ""
-
-#: lib/depends.c:716
+#: lib/depends.c:683
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:741
+#: lib/depends.c:708
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:757
+#: lib/depends.c:724
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:778
+#: lib/depends.c:745
 #, fuzzy
 msgid "(db files)"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/depends.c:790
+#: lib/depends.c:757
 #, fuzzy
 msgid "(db provides)"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:803
+#: lib/depends.c:770
 #, fuzzy
 msgid "(db package)"
 msgstr "upit nad svim paketima"
 
-#: lib/depends.c:842
+#: lib/depends.c:809
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:844 lib/rpmds.c:468 lib/rpmds.c:625
+#: lib/depends.c:811 lib/rpmds.c:569 lib/rpmds.c:727
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:844 lib/rpmds.c:468 lib/rpmds.c:625
+#: lib/depends.c:811 lib/rpmds.c:569 lib/rpmds.c:727
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1178
+#: lib/depends.c:1153
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
 #. Record all relations.
-#: lib/depends.c:1424
+#: lib/depends.c:1386
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1497
+#: lib/depends.c:1457
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1572
+#: lib/depends.c:1532
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1633
+#: lib/depends.c:1592
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1668
+#: lib/depends.c:1627
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1673
+#: lib/depends.c:1632
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: lib/header.c:2962 lib/header.c:2983 lib/header.c:3005
+#: lib/header.c:2963 lib/header.c:2984 lib/header.c:3006
 msgid "(not a number)"
 msgstr "(nije broj)"
 
@@ -1639,90 +1629,90 @@ msgstr "Ne mogu da otvorim datoteku %s: "
 
 #. This should not be allowed
 #. @-modfilesys@
-#: lib/header.c:346
+#: lib/header.c:347
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:956
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:954
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2219
+#: lib/header.c:2220
 #, c-format
 msgid "missing { after %"
 msgstr "nedostaje { posle %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2249
+#: lib/header.c:2250
 msgid "missing } after %{"
 msgstr "nedostaje } posle %"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2263
+#: lib/header.c:2264
 msgid "empty tag format"
 msgstr "prazan 'tag' format'"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2277
+#: lib/header.c:2278
 msgid "empty tag name"
 msgstr "prazno ime tag-a"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2294
+#: lib/header.c:2295
 msgid "unknown tag"
 msgstr "nepoznat tag"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2321
+#: lib/header.c:2322
 msgid "] expected at end of array"
 msgstr "] oèekivano na kraju niza"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2339
+#: lib/header.c:2340
 msgid "unexpected ]"
 msgstr "neoèekivano ]"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2343
+#: lib/header.c:2344
 msgid "unexpected }"
 msgstr "neoèekivano }"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2409
+#: lib/header.c:2410
 msgid "? expected in expression"
 msgstr "oèekivan znak ? u izrazu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2418
+#: lib/header.c:2419
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ oèekivano posle ? u izrazu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2431 lib/header.c:2473
+#: lib/header.c:2432 lib/header.c:2474
 msgid "} expected in expression"
 msgstr "} oèekivano u izrazu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2441
+#: lib/header.c:2442
 msgid ": expected following ? subexpression"
 msgstr "oèekivano : praæeno ? podizrazom"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2458
+#: lib/header.c:2459
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ oèekivano posle : u izrazu"
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2483
+#: lib/header.c:2484
 msgid "| expected at end of expression"
 msgstr "| oèekivano na kraju izraza"
 
-#: lib/header.c:2706
+#: lib/header.c:2707
 msgid "(unknown type)"
 msgstr "(nepoznat tip)"
 
@@ -2282,109 +2272,109 @@ msgstr " se sudara sa %s-%s-%s\n"
 msgid "is needed by"
 msgstr " je potreban paketu %s-%s-%s\n"
 
-#: lib/psm.c:272
+#: lib/psm.c:270
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/psm.c:276
+#: lib/psm.c:274
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/psm.c:279
+#: lib/psm.c:277
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/psm.c:349
+#: lib/psm.c:347
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/psm.c:415
+#: lib/psm.c:413
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/psm.c:425
+#: lib/psm.c:423
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/psm.c:504
+#: lib/psm.c:502
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/psm.c:1153
+#: lib/psm.c:1151
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/psm.c:1159
+#: lib/psm.c:1157
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/psm.c:1200
+#: lib/psm.c:1197
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1324
+#: lib/psm.c:1316
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/psm.c:1434
+#: lib/psm.c:1426
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "nemoj izvr¹iti nijednu fazu"
 
-#: lib/psm.c:1602
+#: lib/psm.c:1594
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "neuspelo izvr¹avanje skripta"
 
-#: lib/psm.c:1609
+#: lib/psm.c:1601
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "neuspelo izvr¹avanje skripta"
 
-#: lib/psm.c:1951
+#: lib/psm.c:1943
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-#: lib/psm.c:2068
+#: lib/psm.c:2060
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:2182
+#: lib/psm.c:2174
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:2191
+#: lib/psm.c:2183
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/psm.c:2232
+#: lib/psm.c:2224
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
 
-#: lib/psm.c:2233
+#: lib/psm.c:2225
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:2419
+#: lib/psm.c:2411
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/psm.c:2422
+#: lib/psm.c:2414
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "PGP omanuo"
@@ -2514,12 +2504,12 @@ msgstr "ne mogu da proèitam slog %d\n"
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/rpmal.c:695
+#: lib/rpmal.c:656
 #, fuzzy
 msgid "(added files)"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpmal.c:794
+#: lib/rpmal.c:755
 #, fuzzy
 msgid "(added provide)"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
@@ -2590,20 +2580,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:595
+#: lib/rpmds.c:697
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:624
+#: lib/rpmds.c:726
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:649
+#: lib/rpmds.c:750
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s nije naveden u %s"
@@ -2948,13 +2938,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:252
+#: lib/transaction.c:204
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:905
+#: lib/transaction.c:874
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
@@ -2974,7 +2964,7 @@ msgstr "nedostaje { posle %"
 
 #: lib/verify.c:518
 #, fuzzy, c-format
-msgid "Unsatisifed dependencies for %s:"
+msgid "Unsatisifed dependencies for %s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
 
 #: lib/verify.c:556
