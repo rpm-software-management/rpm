@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.19
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -238,6 +238,7 @@ fi
 %changelog
 * Tue May 16 2000 Matt Wilson <msw@redhat.com>
 - build against bzip2 1.0
+- use the new fopencookie API in glibc 2.2
 
 * Fri May 12 2000 Jeff Johnson <jbj@redhat.com>
 - fix stupid mistakes (alpha segfaults).
