@@ -1584,7 +1584,7 @@ int rpmVersionCompare(Header first, Header second) {
     int_32 * epochOne, * epochTwo;
     int rc;
 
-    if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &serialOne, NULL))
+    if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &epochOne, NULL))
 	epochOne = NULL;
     if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (void **) &epochTwo, 
 			NULL))
