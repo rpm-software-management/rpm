@@ -65,13 +65,13 @@
 # define reg31	%r31
 #endif
 
-	.equ	K00,	0x5a827999
-	.equ	K20,	0x6ed9eba1
-	.equ	K40,	0x8f1bbcdc
-	.equ	K60,	0xca62c1d6
+#define K00	0x5a827999
+#define K20	0x6ed9eba1
+#define K40	0x8f1bbcdc
+#define K60	0xca62c1d6
 
-	.equ	PARAM_H,		0
-	.equ	PARAM_DATA,		20
+#define PARAM_H		0
+#define PARAM_DATA	20
 
 /* sha1Param: param in reg3 */
 
