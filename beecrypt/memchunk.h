@@ -39,14 +39,22 @@ typedef struct
 extern "C" {
 #endif
 
+/**
+ */
 BEEDLLAPI /*@only@*/ /*@null@*/
-memchunk*	memchunkAlloc(int size)
+memchunk* memchunkAlloc(int size)
 	/*@*/;
+
+/**
+ */
 BEEDLLAPI
-void		memchunkFree(/*@only@*/ /*@null@*/memchunk* m)
+/*@unused@*/ void memchunkFree(/*@only@*/ /*@null@*/memchunk* m)
 	/*@*/;
+
+/**
+ */
 BEEDLLAPI /*@only@*/ /*@null@*/
-memchunk*	memchunkResize(/*@only@*/ /*@null@*/memchunk* m, int size)
+memchunk* memchunkResize(/*@only@*/ /*@null@*/memchunk* m, int size)
 	/*@*/;
 
 #ifdef __cplusplus

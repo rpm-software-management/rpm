@@ -44,7 +44,8 @@
  * @param size		no. of ints of data
  * @return		0 on success, -1 on failure
  */
-typedef int (*entropyNext) (uint32* data, int size);
+typedef int (*entropyNext) (/*@out@*/ uint32* data, int size)
+	/*@modifies data @*/;
 
 /** \ingroup ES_m
  * Methods and parameters for entropy sources.
@@ -52,7 +53,7 @@ typedef int (*entropyNext) (uint32* data, int size);
  */
 typedef struct
 {
-/*@unused@*/ const char* name;		/*!< entropy source name */
+/*@observer@*/ const char* name;	/*!< entropy source name */
 /*@unused@*/ const entropyNext next;	/*!< return entropy function */
 } entropySource;
 
@@ -73,7 +74,7 @@ int entropySourceCount(void)
  * @param index		entropy source index
  * @return		entropy source pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const entropySource* entropySourceGet(int index)
 	/*@*/;
 
@@ -82,9 +83,11 @@ const entropySource* entropySourceGet(int index)
  * @param name		entropy source name
  * @return		entropy source pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+/*@-exportlocal@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const entropySource* entropySourceFind(const char* name)
 	/*@*/;
+/*@=exportlocal@*/
 
 /** \ingroup ES_m
  * Retrieve the default entropy source.
@@ -92,7 +95,7 @@ const entropySource* entropySourceFind(const char* name)
  * entropy source. Otherwise, use the 1st entry in the internal table.
  * @return		entropy source pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const entropySource* entropySourceDefault(void)
 	/*@*/;
 
@@ -127,7 +130,7 @@ typedef void randomGeneratorParam;
  * @return		0 on success, -1 on failure
  */
 typedef int (*randomGeneratorSetup) (randomGeneratorParam* param)
-	/*@modifies param @*/;
+	/*@modifies *param @*/;
 
 /** \ingroup PRNG_m
  * Re-seed the random generator with user-provided entropy.
@@ -138,7 +141,7 @@ typedef int (*randomGeneratorSetup) (randomGeneratorParam* param)
  * @return		0 on success, -1 on failure
  */
 typedef int (*randomGeneratorSeed) (randomGeneratorParam* param, const uint32* data, int size)
-	/*@modifies param @*/;
+	/*@modifies *param @*/;
 
 /** \ingroup PRNG_m
  * Return an array of 32-bit unsigned integers of given size with
@@ -149,8 +152,8 @@ typedef int (*randomGeneratorSeed) (randomGeneratorParam* param, const uint32* d
  * @param size		no. of ints of data
  * @return		0 on success, -1 on failure
  */
-typedef int (*randomGeneratorNext) (randomGeneratorParam* param, uint32* data, int size)
-	/*@modifies param, data @*/;
+typedef int (*randomGeneratorNext) (randomGeneratorParam* param, /*@out@*/ uint32* data, int size)
+	/*@modifies *param, *data @*/;
 
 /** \ingroup PRNG_m
  * Cleanup after using a generator.
@@ -159,7 +162,7 @@ typedef int (*randomGeneratorNext) (randomGeneratorParam* param, uint32* data, i
  * @return		0 on success, -1 on failure
  */
 typedef int (*randomGeneratorCleanup) (randomGeneratorParam* param)
-	/*@modifies param @*/;
+	/*@modifies *param @*/;
 
 /** \ingroup PRNG_m
  * Methods and parameters for random generators.
@@ -177,7 +180,7 @@ typedef int (*randomGeneratorCleanup) (randomGeneratorParam* param)
  */
 typedef struct
 {
-    const char* name;		/*!< random generator name */
+/*@observer@*/ const char* name;	/*!< random generator name */
     const unsigned int paramsize;
     const randomGeneratorSetup setup;
     const randomGeneratorSeed seed;
@@ -202,7 +205,7 @@ int randomGeneratorCount(void)
  * @param index		generator index
  * @return		generator pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const randomGenerator* randomGeneratorGet(int index)
 	/*@*/;
 
@@ -211,9 +214,11 @@ const randomGenerator* randomGeneratorGet(int index)
  * @param name		generator name
  * @return		generator pointer (or NULL)
  */
-BEEDLLAPI
+/*@-exportlocal@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const randomGenerator* randomGeneratorFind(const char* name)
 	/*@*/;
+/*@=exportlocal@*/
 
 /** \ingroup PRNG_m
  * Retrieve the default generator.
@@ -221,7 +226,7 @@ const randomGenerator* randomGeneratorFind(const char* name)
  * generator. Otherwise, use "fips186prng".
  * @return		generator pointer
  */
-BEEDLLAPI
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const randomGenerator* randomGeneratorDefault(void)
 	/*@*/;
 
@@ -235,7 +240,7 @@ const randomGenerator* randomGeneratorDefault(void)
 typedef struct
 {
     const randomGenerator* rng;		/*!< global functions and parameters */
-    randomGeneratorParam* param;	/*!< specific parameters */
+/*@only@*/ randomGeneratorParam* param;	/*!< specific parameters */
 } randomGeneratorContext;
 
 #ifdef __cplusplus
@@ -243,18 +248,18 @@ extern "C" {
 #endif
 
 /** \ingroup PRNG_m
- * Initialize a rendomGenerator instance.
+ * Initialize a randomGenerator instance.
  */
 BEEDLLAPI
 int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerator* rng)
-	/*@modifies ctxt @*/;
+	/*@modifies ctxt->rng, ctxt->param @*/;
 
 /** \ingroup PRNG_m
- * Destroy a rendomGenerator instance.
+ * Destroy a randomGenerator instance.
  */
 BEEDLLAPI
 int randomGeneratorContextFree(randomGeneratorContext* ctxt)
-	/*@modifies ctxt @*/;
+	/*@modifies ctxt->rng, ctxt->param @*/;
 
 #ifdef __cplusplus
 }
@@ -276,7 +281,7 @@ typedef void hashFunctionParam;
  * @return		0 on success, -1 on failure
  */
 typedef int (*hashFunctionReset) (hashFunctionParam* param)
-	/*@modifies param @*/;
+	/*@modifies *param @*/;
 
 /** \ingroup HASH_m
  * Update the hash function with an array of bytes.
@@ -287,7 +292,7 @@ typedef int (*hashFunctionReset) (hashFunctionParam* param)
  * @return		0 on success, -1 on failure
  */
 typedef int (*hashFunctionUpdate) (hashFunctionParam* param, const byte* data, int size)
-	/*@modifies param @*/;
+	/*@modifies *param @*/;
 
 /** \ingroup HASH_m
  * Compute the digest of all the data passed to the hash function, and return
@@ -303,8 +308,8 @@ typedef int (*hashFunctionUpdate) (hashFunctionParam* param, const byte* data, i
  * @retval data		digest
  * @return		0 on success, -1 on failure
  */
-typedef int (*hashFunctionDigest) (hashFunctionParam* param, uint32* data)
-	/*@modifies param, data @*/;
+typedef int (*hashFunctionDigest) (hashFunctionParam* param, /*@out@*/ uint32* data)
+	/*@modifies *param, *data @*/;
 
 /** \ingroup HASH_m
  * Methods and parameters for hash functions.
@@ -312,7 +317,7 @@ typedef int (*hashFunctionDigest) (hashFunctionParam* param, uint32* data)
  */
 typedef struct
 {
-    const char* name;			/*!< hash function name */
+/*@observer@*/ const char* name;	/*!< hash function name */
     const unsigned int paramsize;	/*!< in bytes */
     const unsigned int blocksize;	/*!< in bytes */
     const unsigned int digestsize;	/*!< in bytes */
@@ -338,7 +343,7 @@ int hashFunctionCount(void)
  * @param index		hash function index
  * @return		hash function pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const hashFunction* hashFunctionGet(int index)
 	/*@*/;
 
@@ -347,17 +352,19 @@ const hashFunction* hashFunctionGet(int index)
  * @param name		hash function name
  * @return		hash function pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+/*@-exportlocal@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const hashFunction* hashFunctionFind(const char* name)
 	/*@*/;
+/*@=exportlocal@*/
 
 /** \ingroup HASH_m
  * Retrieve the default hash function.
  * If the BEECRYPT_HASH environment variable is set, use that
  * hash function. Otherwise, use "sha1".
- * @return		hash function pointer
+ * @return		hash function pointer (or NULL)
  */
-BEEDLLAPI
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const hashFunction* hashFunctionDefault(void)
 	/*@*/;
 
@@ -406,7 +413,7 @@ int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, int s
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
 	/*@modifies ctxt */;
 
@@ -420,11 +427,11 @@ int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n
  */
 BEEDLLAPI
 int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number* dig)
-	/*@modifies ctxt */;
+	/*@modifies ctxt, *dig */;
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number* match)
 	/*@modifies ctxt */;
 
@@ -453,7 +460,7 @@ typedef void keyedHashFunctionParam;
  * @return		0 on success, -1 on failure
  */
 typedef int (*keyedHashFunctionSetup) (keyedHashFunctionParam* param, const uint32* key, int keybits)
-	/*@modifies param @*/;
+	/*@modifies *param @*/;
 
 /** \ingroup HMAC_m
  * Re-initialize the parameters of a keyed hash function.
@@ -462,7 +469,7 @@ typedef int (*keyedHashFunctionSetup) (keyedHashFunctionParam* param, const uint
  * @return		0 on success, -1 on failure
  */
 typedef int (*keyedHashFunctionReset) (keyedHashFunctionParam* param)
-	/*@modifies param @*/;
+	/*@modifies *param @*/;
 
 /** \ingroup HMAC_m
  * Update the keyed hash function with an array of bytes.
@@ -473,7 +480,7 @@ typedef int (*keyedHashFunctionReset) (keyedHashFunctionParam* param)
  * @return		0 on success, -1 on failure
  */
 typedef int (*keyedHashFunctionUpdate) (keyedHashFunctionParam* param, const byte* data, int size)
-	/*@modifies param @*/;
+	/*@modifies *param @*/;
 
 /** \ingroup HMAC_m
  * Compute the digest (or authentication code) of all the data passed to
@@ -490,7 +497,7 @@ typedef int (*keyedHashFunctionUpdate) (keyedHashFunctionParam* param, const byt
  * @return		0 on success, -1 on failure
  */
 typedef int (*keyedHashFunctionDigest) (keyedHashFunctionParam* param, /*@out@*/ uint32* data)
-	/*@modifies param, data @*/;
+	/*@modifies *param, *data @*/;
 
 /** \ingroup HMAC_m
  * Methods and parameters for keyed hash functions.
@@ -498,7 +505,7 @@ typedef int (*keyedHashFunctionDigest) (keyedHashFunctionParam* param, /*@out@*/
  */
 typedef struct
 {
-    const char* name;			/*!< keyed hash function name */
+/*@observer@*/ const char* name;	/*!< keyed hash function name */
     const unsigned int paramsize;	/*!< in bytes */
     const unsigned int blocksize;	/*!< in bytes */
     const unsigned int digestsize;	/*!< in bytes */
@@ -528,7 +535,7 @@ int keyedHashFunctionCount(void)
  * @param index		keyed hash function index
  * @return		keyed hash function pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const keyedHashFunction* keyedHashFunctionGet(int index)
 	/*@*/;
 
@@ -537,9 +544,11 @@ const keyedHashFunction* keyedHashFunctionGet(int index)
  * @param name		keyed hash function name
  * @return		keyed hash function pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+/*@-exportlocal@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const keyedHashFunction* keyedHashFunctionFind(const char* name)
 	/*@*/;
+/*@=exportlocal@*/
 
 /** \ingroup HMAC_m
  * Retrieve the default keyed hash function.
@@ -547,7 +556,7 @@ const keyedHashFunction* keyedHashFunctionFind(const char* name)
  * hash function. Otherwise, use "hmacsha1".
  * @return		keyed hash function pointer
  */
-BEEDLLAPI
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const keyedHashFunction* keyedHashFunctionDefault(void)
 	/*@*/;
 
@@ -590,13 +599,13 @@ int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const uint32* 
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int keyedHashFunctionContextReset(keyedHashFunctionContext* ctxt)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int keyedHashFunctionContextUpdate(keyedHashFunctionContext* ctxt, const byte* data, int size)
 	/*@modifies ctxt @*/;
 
@@ -608,7 +617,7 @@ int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memch
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp32number* n)
 	/*@modifies ctxt @*/;
 
@@ -616,7 +625,7 @@ int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp3
  */
 BEEDLLAPI
 int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mp32number* dig)
-	/*@modifies ctxt @*/;
+	/*@modifies ctxt, *dig @*/;
 
 /** \ingroup HMAC_m
  */
@@ -664,7 +673,7 @@ typedef enum
  * @return		0 on success, -1 on failure
  */
 typedef int (*blockModeEncrypt) (blockCipherParam* param, int count, uint32* dst, const uint32* src)
-	/*@modifies param, dst @*/;
+	/*@modifies *param, *dst @*/;
 
 /** \ingroup BC_m
  * @param param		blockcipher parameters
@@ -674,7 +683,7 @@ typedef int (*blockModeEncrypt) (blockCipherParam* param, int count, uint32* dst
  * @return		0 on success, -1 on failure
  */
 typedef int (*blockModeDecrypt) (blockCipherParam* param, int count, uint32* dst, const uint32* src)
-	/*@modifies param, dst @*/;
+	/*@modifies *param, *dst @*/;
 
 /** \ingroup BC_m
  */
@@ -698,7 +707,7 @@ typedef struct
  * @return		0 on success, -1 on failure
  */
 typedef int (*blockCipherSetup) (blockCipherParam* param, const uint32* key, int keybits, cipherOperation cipherOperation)
-	/*@*/;
+	/*@modifies param @*/;
 
 /** \ingroup BC_m
  * Initialize IV for blockcipher.
@@ -707,7 +716,7 @@ typedef int (*blockCipherSetup) (blockCipherParam* param, const uint32* key, int
  * @return		0 on success, -1 on failure
  */
 typedef int (*blockCipherSetIV) (blockCipherParam* param, const uint32* data)
-	/*@*/;
+	/*@modifies param @*/;
 
 /** \ingroup BC_m
  * Encrypt one block of data (with bit size chosen by the blockcipher).
@@ -719,7 +728,7 @@ typedef int (*blockCipherSetIV) (blockCipherParam* param, const uint32* data)
  * @return		0 on success, -1 on failure
  */
 typedef int (*blockCipherEncrypt) (blockCipherParam* param, uint32* dst, const uint32* src)
-	/*@modifies dst @*/;
+	/*@modifies param, dst @*/;
 
 /** \ingroup BC_m
  * Decrypt one block of data (with bit size chosen by the blockcipher).
@@ -731,7 +740,7 @@ typedef int (*blockCipherEncrypt) (blockCipherParam* param, uint32* dst, const u
  * @return		0 on success, -1 on failure
  */
 typedef int (*blockCipherDecrypt) (blockCipherParam* param, uint32* dst, const uint32* src)
-	/*@modifies dst @*/;
+	/*@modifies param, dst @*/;
 
 /** \ingroup BC_m
  * Methods and parameters for block ciphers.
@@ -739,7 +748,7 @@ typedef int (*blockCipherDecrypt) (blockCipherParam* param, uint32* dst, const u
  */
 typedef struct
 {
-    const char* name;			/*!< block cipher name */
+/*@observer@*/ const char* name;	/*!< block cipher name */
     const unsigned int paramsize;	/*!< in bytes */
     const unsigned int blocksize;	/*!< in bytes */
     const unsigned int keybitsmin;	/*!< min keysize in bits */
@@ -769,7 +778,7 @@ int blockCipherCount(void)
  * @param index		blockcipher index
  * @return		blockcipher pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const blockCipher* blockCipherGet(int index)
 	/*@*/;
 
@@ -778,9 +787,11 @@ const blockCipher* blockCipherGet(int index)
  * @param name		blockcipher name
  * @return		blockcipher pointer (or NULL)
  */
-BEEDLLAPI /*@null@*/
+/*@-exportlocal@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/
 const blockCipher* blockCipherFind(const char* name)
 	/*@*/;
+/*@=exportlocal@*/
 
 /** \ingroup BC_m
  * Retrieve the default blockcipher.
@@ -788,7 +799,7 @@ const blockCipher* blockCipherFind(const char* name)
  * Otherwise, use "blowfish".
  * @return		blockcipher pointer
  */
-BEEDLLAPI
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const blockCipher* blockCipherDefault(void)
 	/*@*/;
 
@@ -824,7 +835,7 @@ int blockCipherContextSetup(blockCipherContext* ctxt, const uint32* key, int key
 
 /** \ingroup BC_m
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int blockCipherContextSetIV(blockCipherContext* ctxt, const uint32* iv)
 	/*@modifies ctxt @*/;
 

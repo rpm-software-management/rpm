@@ -134,7 +134,7 @@ memchunk* b64dec(const char* string)
 					for (i = 0; i < vrfy; i++)
 					{
 						if (isspace(tmp[i]))
-							continue;
+							/*@innercontinue@*/ continue;
 
 						if (tmp[i] == '=')
 						{
@@ -146,7 +146,7 @@ memchunk* b64dec(const char* string)
 								return 0;
 
 							/* end-of-message recognized */
-							break;
+							/*@innerbreak@*/ break;
 						}
 						else
 						{
@@ -198,23 +198,25 @@ memchunk* b64dec(const char* string)
 						}
 						else if (ch == '=')
 							break;
+						else
+							{};
 
 						switch (qw++)
 						{
 						case 0:
 							data[tw+0] = (bits << 2) & 0xfc;
-							break;
+							/*@switchbreak@*/ break;
 						case 1:
 							data[tw+0] |= (bits >> 4) & 0x03;
 							data[tw+1] = (bits << 4) & 0xf0;
-							break;
+							/*@switchbreak@*/ break;
 						case 2:
 							data[tw+1] |= (bits >> 2) & 0x0f;
 							data[tw+2] = (bits << 6) & 0xc0;
-							break;
+							/*@switchbreak@*/ break;
 						case 3:
 							data[tw+2] |= bits & 0x3f;
-							break;
+							/*@switchbreak@*/ break;
 						}
 
 						if (qw == 4)

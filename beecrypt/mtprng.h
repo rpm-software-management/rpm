@@ -1,8 +1,10 @@
+/**
+ * \file mtprng.h
+ *
+ * Mersenne twister pseudo-random number generator, header.
+ */
+
 /*
- * mtprng.h
- *
- * Mersenne twister pseudo-random number generator, header
- *
  * Copyright (c) 1998, 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -41,12 +43,12 @@
 # endif
 #endif
 
-#include "beecrypt.h"
-
 #define N	624
 #define M	397
 #define K	0x9908B0DF
 
+/**
+ */
 typedef struct
 {
 	#ifdef _REENTRANT
@@ -64,27 +66,48 @@ typedef struct
 	#endif
 	uint32	state[N+1];
 	uint32	left;
-	uint32*	nextw;
+/*@kept@*/ uint32*	nextw;
 } mtprngParam;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ */
 extern BEEDLLAPI const randomGenerator mtprng;
 
+/**
+ */
+/*@-exportlocal@*/
 BEEDLLAPI
 int mtprngSetup  (mtprngParam* mp)
 	/*@modifies mp @*/;
+/*@=exportlocal@*/
+
+/**
+ */
+/*@-exportlocal@*/
 BEEDLLAPI
 int mtprngSeed   (mtprngParam* mp, const uint32* data, int size)
 	/*@modifies mp @*/;
+/*@=exportlocal@*/
+
+/**
+ */
+/*@-exportlocal@*/
 BEEDLLAPI
 int mtprngNext   (mtprngParam* mp, uint32* data, int size)
 	/*@modifies mp, data @*/;
+/*@=exportlocal@*/
+
+/**
+ */
+/*@-exportlocal@*/
 BEEDLLAPI
 int mtprngCleanup(mtprngParam* mp)
 	/*@modifies mp @*/;
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 }

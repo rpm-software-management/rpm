@@ -32,30 +32,52 @@
 
 #define SMALL_PRIMES_PRODUCT_MAX	64
 
+/**
+ */
+/*@-exportlocal@*/
 extern uint32* mp32spprod[SMALL_PRIMES_PRODUCT_MAX];
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ */
 BEEDLLAPI
 int  mp32ptrials     (uint32 bits)
 	/*@*/;
+
+/**
+ */
 BEEDLLAPI
-int  mp32pmilrab_w   (const mp32barrett* p, randomGeneratorContext* rc, int t, uint32* wksp)
+int  mp32pmilrab_w   (const mp32barrett* p, randomGeneratorContext* rc, int t, /*@out@*/ uint32* wksp)
 	/*@modifies wksp @*/;
 
+/**
+ */
 BEEDLLAPI
-void mp32prnd_w      (mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@null@*/ const mp32number* f, uint32* wksp)
+void mp32prnd_w      (mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@null@*/ const mp32number* f, /*@out@*/ uint32* wksp)
 	/*@modifies p, rc, wksp @*/;
+
+/**
+ */
 BEEDLLAPI
-void mp32prndsafe_w  (mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, uint32* wksp)
+void mp32prndsafe_w  (mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, /*@out@*/ uint32* wksp)
 	/*@modifies p, rc, wksp @*/;
-BEEDLLAPI
-void mp32prndcon_w   (mp32barrett* p, randomGeneratorContext* rc, uint32, int, const mp32number*, const mp32number*, const mp32number*, mp32number*, uint32* wksp)
+
+#ifdef	NOTYET
+/**
+ */
+BEEDLLAPI /*@unused@*/
+void mp32prndcon_w   (mp32barrett* p, randomGeneratorContext* rc, uint32, int, const mp32number*, const mp32number*, const mp32number*, mp32number*, /*@out@*/ uint32* wksp)
 	/*@modifies wksp @*/;
+#endif
+
+/**
+ */
 BEEDLLAPI
-void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, /*@null@*/ const mp32number* f, mp32number* r, int cofactor, uint32* wksp)
+void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, /*@null@*/ const mp32number* f, mp32number* r, int cofactor, /*@out@*/ uint32* wksp)
 	/*@modifies p, rc, r, wksp @*/;
 
 #ifdef __cplusplus

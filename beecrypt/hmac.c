@@ -92,7 +92,9 @@ int hmacDigest(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param
 		return -1;
 
 	/* digestsize is in bytes; divide by 4 to get the number of words */
+	/*@-compdef@*/ /* FIX: *data undef ??? Code looks bogus ... */
 	(void) encodeInts((const javaint*) data, (byte*) data, hash->digestsize >> 2);
+	/*@=compdef@*/
 
 	if (hash->update(param, (const byte*) data, hash->digestsize))
 		return -1;

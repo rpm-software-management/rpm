@@ -63,28 +63,28 @@ int entropy_dev_audio (uint32* data, int size)
 /** \ingroup ES_dsp_m ES_m
  */
 int entropy_dev_dsp   (uint32* data, int size)
-	/*@modifies data */;
+	/*@modifies data, internalState @*/;
 #endif
 
 #if HAVE_DEV_RANDOM
 /** \ingroup ES_random_m ES_m
  */
 int entropy_dev_random(uint32* data, int size)
-	/*@modifies data */;
+	/*@modifies data, internalState @*/;
 #endif
 
 #if HAVE_DEV_URANDOM
 /** \ingroup ES_urandom_m ES_m
  */
 int entropy_dev_urandom(uint32* data, int size)
-	/*@modifies data */;
+	/*@modifies data, internalState @*/;
 #endif
 
 #if HAVE_DEV_TTY
 /** \ingroup ES_tty_m ES_m
  */
 int entropy_dev_tty   (uint32* data, int size)
-	/*@modifies data */;
+	/*@modifies data, internalState @*/;
 #endif
 #endif
 

@@ -92,7 +92,7 @@ void mp32bfree(mp32barrett* b)
 }
 /*@=nullstate@*/
 
-/*@-nullstate@*/	/* b->mu may be null @*/
+/*@-nullstate -compdef @*/	/* b->mu may be null @*/
 void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
 {
 	register uint32 size = copy->size;
@@ -126,10 +126,12 @@ void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
 		b->modl = (uint32*) 0;
 		b->mu = (uint32*) 0;
 	}
+	else
+		{};
 }
-/*@=nullstate@*/
+/*@=nullstate =compdef @*/
 
-/*@-nullstate@*/	/* b->mu may be null @*/
+/*@-nullstate -compdef @*/	/* b->mu may be null @*/
 /**
  * mp32bset
  */
@@ -165,9 +167,9 @@ void mp32bset(mp32barrett* b, uint32 size, const uint32 *data)
 		}
 	}
 }
-/*@=nullstate@*/
+/*@=nullstate =compdef @*/
 
-/*@-nullstate@*/	/* b->mu may be null @*/
+/*@-nullstate -compdef @*/	/* b->mu may be null @*/
 void mp32bsethex(mp32barrett* b, const char* hex)
 {
 	uint32 length = strlen(hex);
@@ -202,6 +204,8 @@ void mp32bsethex(mp32barrett* b, const char* hex)
 				val += (ch - 'A') + 10;
 			else if (ch >= 'a' && ch <= 'f')
 				val += (ch - 'a') + 10;
+			else
+				{};
 
 			if ((length & 0x7) == 0)
 			{
@@ -224,11 +228,10 @@ void mp32bsethex(mp32barrett* b, const char* hex)
 		b->mu = 0;
 	}
 }
-/*@=nullstate@*/
+/*@=nullstate =compdef @*/
 
 /**
- * mp32bmu_w
- *  computes the Barrett 'mu' coefficient
+ *  Computes the Barrett 'mu' coefficient.
  *  needs workspace of (6*size+4) words
  */
 void mp32bmu_w(mp32barrett* b, uint32* wksp)
@@ -251,8 +254,7 @@ void mp32bmu_w(mp32barrett* b, uint32* wksp)
 }
 
 /**
- * mp32brnd_w
- *  generates a random number in the range 1 < r < b-1
+ *  Generates a random number in the range 1 < r < b-1.
  *  need workspace of (size) words
  */
 void mp32brnd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result, uint32* wksp)
@@ -264,7 +266,9 @@ void mp32brnd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result
 
 	do
 	{
+		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rc->rng->next(rc->param, result, b->size);
+		/*@=noeffectuncon@*/
 
 		/*@-shiftsigned -usedef@*/
 		result[0] &= (0xffffffff >> msz);
@@ -276,8 +280,7 @@ void mp32brnd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result
 }
 
 /**
- * mp32brndodd_w
- *  generates a random odd number in the range 1 < r < b-1
+ *  Generates a random odd number in the range 1 < r < b-1.
  *  needs workspace of (size) words
  */
 void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result, uint32* wksp)
@@ -289,7 +292,9 @@ void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* res
 
 	do
 	{
+		/*@-noeffectuncon@*/ /* LCL: ??? */
 		(void) rc->rng->next(rc->param, result, b->size);
+		/*@=noeffectuncon@*/
 
 		/*@-shiftsigned -usedef@*/
 		result[0] &= (0xffffffff >> msz);
@@ -305,8 +310,7 @@ void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* res
 }
 
 /**
- * mp32brndinv_w
- *  generates a random invertible (modulo b) in the range 1 < r < b-1
+ *  Generates a random invertible (modulo b) in the range 1 < r < b-1.
  *  needs workspace of (6*size+6) words
  */
 void mp32brndinv_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result, uint32* inverse, uint32* wksp)
@@ -324,8 +328,7 @@ void mp32brndinv_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* res
 }
 
 /**
- * mp32bmod_w
- *  computes the barrett modular reduction of a number x, which has twice the size of b
+ *  Computes the barrett modular reduction of a number x, which has twice the size of b.
  *  needs workspace of (2*size+2) words
  */
 void mp32bmod_w(const mp32barrett* b, const uint32* xdata, uint32* result, uint32* wksp)
@@ -386,8 +389,7 @@ void mp32bmod_w(const mp32barrett* b, const uint32* xdata, uint32* result, uint3
 }
 
 /**
- * mp32bsubone
- *  copies (b-1) into result
+ *  Copies (b-1) into result.
  */
 void mp32bsubone(const mp32barrett* b, uint32* result)
 {
@@ -398,8 +400,7 @@ void mp32bsubone(const mp32barrett* b, uint32* result)
 }
 
 /**
- * mp32bneg
- *  computes the negative (modulo b) of x, where x must contain a value between 0 and b-1
+ *  Computes the negative (modulo b) of x, where x must contain a value between 0 and b-1.
  */
 void mp32bneg(const mp32barrett* b, const uint32* xdata, uint32* result)
 {
@@ -411,8 +412,7 @@ void mp32bneg(const mp32barrett* b, const uint32* xdata, uint32* result)
 }
 
 /**
- * mp32baddmod_w
- *  computes the sum (modulo b) of x and y
+ *  Computes the sum (modulo b) of x and y.
  *  needs a workspace of (4*size+2) words
  */
 void mp32baddmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, uint32* result, uint32* wksp)
@@ -428,8 +428,7 @@ void mp32baddmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 }
 
 /**
- * mp32bsubmod_w
- *  computes the difference (modulo b) of x and y
+ *  Computes the difference (modulo b) of x and y.
  *  needs a workspace of (4*size+2) words
  */
 void mp32bsubmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, uint32* result, uint32* wksp)
@@ -446,8 +445,7 @@ void mp32bsubmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 }
 
 /**
- * mp32mulmod_w
- *  computes the product (modulo b) of x and y
+ *  Computes the product (modulo b) of x and y.
  *  needs a workspace of (4*size+2) words
  */
 void mp32bmulmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, uint32* result, uint32* wksp)
@@ -465,8 +463,7 @@ void mp32bmulmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 }
 
 /**
- * mp32bsqrmod_w
- *  computes the square (modulo b) of x
+ *  Computes the square (modulo b) of x.
  *  needs a workspace of (4*size+2) words
  */
 void mp32bsqrmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
@@ -483,7 +480,10 @@ void mp32bsqrmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 	mp32bmod_w(b, temp, result, wksp);
 }
 
-/*
+/**
+ *  Precomputes the sliding window table for computing powers of x modulo b.
+ *  needs workspace (4*size+2)
+ *
  * Sliding Window Exponentiation technique, slightly altered from the method Applied Cryptography:
  *
  * First of all, the table with the powers of g can be reduced by about half; the even powers don't
@@ -496,31 +496,29 @@ void mp32bsqrmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
  *
  * This table can be used for K=2,3,4 and can be extended
  *  
- *     0 : - | -       | -
- *     1 : 1 |  g1 @ 0 | 0
- *    10 : 1 |  g1 @ 0 | 1
- *    11 : 2 |  g3 @ 1 | 0
- *   100 : 1 |  g1 @ 0 | 2
- *   101 : 3 |  g5 @ 2 | 0
- *   110 : 2 |  g3 @ 1 | 1
- *   111 : 3 |  g7 @ 3 | 0
- *  1000 : 1 |  g1 @ 0 | 3
- *  1001 : 4 |  g9 @ 4 | 0
- *  1010 : 3 |  g5 @ 2 | 1
- *  1011 : 4 | g11 @ 5 | 0
- *  1100 : 2 |  g3 @ 1 | 2
- *  1101 : 4 | g13 @ 6 | 0
- *  1110 : 3 |  g7 @ 3 | 1
- *  1111 : 4 | g15 @ 7 | 0
+ *
+\verbatim
+	   0 : - | -       | -
+	   1 : 1 |  g1 @ 0 | 0
+	  10 : 1 |  g1 @ 0 | 1
+	  11 : 2 |  g3 @ 1 | 0
+	 100 : 1 |  g1 @ 0 | 2
+	 101 : 3 |  g5 @ 2 | 0
+	 110 : 2 |  g3 @ 1 | 1
+	 111 : 3 |  g7 @ 3 | 0
+	1000 : 1 |  g1 @ 0 | 3
+	1001 : 4 |  g9 @ 4 | 0
+	1010 : 3 |  g5 @ 2 | 1
+	1011 : 4 | g11 @ 5 | 0
+	1100 : 2 |  g3 @ 1 | 2
+	1101 : 4 | g13 @ 6 | 0
+	1110 : 3 |  g7 @ 3 | 1
+	1111 : 4 | g15 @ 7 | 0
+\endverbatim
  *
  */
-
-/**
- * mp32bslide_w
- *  precomputes the sliding window table for computing powers of x modulo b
- *  needs workspace (4*size+2)
- */
-void mp32bslide_w(const mp32barrett* b, const uint32 xsize, const uint32* xdata, uint32* slide, uint32* wksp)
+static void mp32bslide_w(const mp32barrett* b, const uint32 xsize, const uint32* xdata, /*@out@*/ uint32* slide, /*@out@*/ uint32* wksp)
+	/*@modifies slide, wksp @*/
 {
 	register uint32 size = b->size;
 	mp32bsqrmod_w(b, xsize, xdata,                     slide       , wksp); /* x^2 mod b, temp */
@@ -544,6 +542,7 @@ void mp32bslide_w(const mp32barrett* b, const uint32 xsize, const uint32* xdata,
 { 0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0 };
 
 /**
+ * mp32bpowmod_w
  * needs workspace of 4*size+2 words
  */
 void mp32bpowmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 psize, const uint32* pdata, uint32* result, uint32* wksp)
@@ -631,6 +630,8 @@ void mp32bpowmodsld_w(const mp32barrett* b, const uint32* slide, uint32 psize, c
 						l++;
 					else if (bit != 0)
 						l = 1;
+					else
+						{};
 
 					if (l == 4)
 					{
@@ -747,10 +748,9 @@ void mp32btwopowmod_w(const mp32barrett* b, uint32 psize, const uint32* pdata, u
 }
 
 /**
- * mp32binv_w
- *  computes the inverse (modulo b) of x, and returns 1 if x was invertible
+ *  Computes the inverse (modulo b) of x, and returns 1 if x was invertible.
  *  needs workspace of (6*size+6) words
- *  note: xdata and result cannot point to the same area
+ *  @note xdata and result cannot point to the same area
  */
 int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* result, uint32* wksp)
 {
@@ -901,7 +901,7 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 /**
  * needs workspace of (7*size+2) words
  */
-int mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* r, int t, uint32* wksp)
+int mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* rc, int t, uint32* wksp)
 {
 	/*
 	 * This test works for candidate probable primes >= 3, which are also not small primes.
@@ -929,7 +929,9 @@ int mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* r, int t, uint32
 		if (size > SMALL_PRIMES_PRODUCT_MAX)
 		{
 			mp32setx(size, wksp+size, SMALL_PRIMES_PRODUCT_MAX, mp32spprod[SMALL_PRIMES_PRODUCT_MAX-1]);
+			/*@-compdef@*/ /* LCL: wksp+size */
 			mp32gcd_w(size, b->modl, wksp+size, wksp, wksp+2*size);
+			/*@=compdef@*/
 		}
 		else
 		{
@@ -938,7 +940,7 @@ int mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* r, int t, uint32
 
 		if (mp32isone(size, wksp))
 		{
-			return mp32pmilrab_w(b, r, t, wksp);
+			return mp32pmilrab_w(b, rc, t, wksp);
 		}
 	}
 

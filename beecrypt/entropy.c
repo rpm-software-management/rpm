@@ -402,7 +402,9 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			if (errno == EAGAIN)
 			{
 				/* certain linux glibc versions are buggy and don't aio_suspend properly */
+				/*@-unrecog -noeffectuncon @*/
 				nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+				/*@=unrecog =noeffectuncon @*/
 
 				my_aiocb_timeout.tv_sec = (timeout / 1000);
 				my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
@@ -425,7 +427,9 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 					my_aiocb_timeout.tv_sec = (timeout / 1000);
 					my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
+					/*@-unrecog -noeffectuncon @*/
 					nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+					/*@=unrecog =noeffectuncon @*/
 				}
 
 				if (rc < 0)
@@ -618,7 +622,7 @@ int entropy_wavein(uint32* data, int size)
 	rc = waveInOpen(&wavein, WAVE_MAPPER, &waveformatex, (DWORD) entropy_wavein_event, (DWORD) 0, CALLBACK_EVENT);
 	if (rc != MMSYSERR_NOERROR)
 	{
-		fprintf(stderr, "waveInOpen failed!\n"); fflush(stderr);
+		fprintf(stderr, "waveInOpen failed!\n"); (void) fflush(stderr);
 		ReleaseMutex(entropy_wavein_lock);
 		return -1;
 	}
@@ -649,21 +653,21 @@ int entropy_console(uint32* data, int size)
 		return -1;
 	}
 
-	printf("please press random keys on your keyboard\n"); fflush(stdout);
+	printf("please press random keys on your keyboard\n"); (void) fflush(stdout);
 
 	while (randombits)
 	{
 		if (!ReadConsoleInput(hStdin, &inEvent, 1, &inRet))
 		{
-			fprintf(stderr, "ReadConsoleInput failed\n"); fflush(stderr);
+			fprintf(stderr, "ReadConsoleInput failed\n"); (void) fflush(stderr);
 			return -1;
 		}
 		if ((inRet == 1) && (inEvent.EventType == KEY_EVENT) && inEvent.Event.KeyEvent.bKeyDown)
 		{
-			printf("."); fflush(stdout);
+			printf("."); (void) fflush(stdout);
 			if (!QueryPerformanceCounter(&hrtsample))
 			{
-				fprintf(stderr, "QueryPerformanceCounter failed\n"); fflush(stderr);
+				fprintf(stderr, "QueryPerformanceCounter failed\n"); (void) fflush(stderr);
 				return -1;
 			}
 
@@ -684,7 +688,7 @@ int entropy_console(uint32* data, int size)
 	
 	if (!FlushConsoleInputBuffer(hStdin))
 	{
-		fprintf(stderr, "FlushConsoleInputBuffer failed\n"); fflush(stderr);
+		fprintf(stderr, "FlushConsoleInputBuffer failed\n"); (void) fflush(stderr);
 		return -1;
 	}
 
@@ -888,10 +892,10 @@ static int opendevice(const char *device)
  * @return
  */
 static int entropy_randombits(int fd, int timeout, uint32* data, int size)
-	/*@modifies data @*/
+	/*@modifies fileSystem @*/
 {
 	register byte* bytedata = (byte*) data;
-	register int   bytesize = (size << 2);
+	register int   bytesize = (((unsigned)size) << 2);
 	register int rc;
 
 	#if ENABLE_AIO
@@ -904,9 +908,12 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 	# endif
 
 	memset(&my_aiocb, 0, sizeof(struct aiocb));
+	memset(&my_aiocb_timeout, 0, sizeof(struct timespec));
 
 	my_aiocb.aio_fildes = fd;
+	/*@-unrecog@*/
 	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
+	/*@=unrecog@*/
 	#endif
 
 	while (bytesize)
@@ -915,7 +922,9 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 		my_aiocb.aio_buf = bytedata;
 		my_aiocb.aio_nbytes = bytesize;
 
+		/*@-moduncon@*/
 		rc = aio_read(&my_aiocb);
+		/*@=moduncon@*/
 		#else
 		rc = read(fd, bytedata, bytesize);
 		#endif
@@ -927,7 +936,9 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 		my_aiocb_timeout.tv_sec = (timeout / 1000);
 		my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
+		/*@-compdef -moduncon @*/
 		rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
+		/*@=compdef =moduncon @*/
 
 		if (rc < 0)
 		{
@@ -935,13 +946,17 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 			if (errno == EAGAIN)
 			{
 				/* certain linux glibc versions are buggy and don't aio_suspend properly */
+				/*@-unrecog -noeffectuncon @*/
 				nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+				/*@=unrecog =noeffectuncon @*/
 
 				my_aiocb_timeout.tv_sec = 0;
 				my_aiocb_timeout.tv_nsec = 0;
 
 				/* and try again */
+				/*@-compdef -moduncon @*/
 				rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
+				/*@=compdef =moduncon @*/
 			}
 			#endif
 		}
@@ -951,29 +966,37 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 			/* cancel any remaining reads */
 			while (rc != AIO_ALLDONE)
 			{
+				/*@-nullpass -moduncon @*/
 				rc = aio_cancel(fd, (struct aiocb*) 0);
+				/*@=nullpass =moduncon @*/
 
 				if (rc == AIO_NOTCANCELED)
 				{
 					my_aiocb_timeout.tv_sec = (timeout / 1000);
 					my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
+					/*@-unrecog -noeffectuncon @*/
 					nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+					/*@=unrecog =noeffectuncon @*/
 				}
 
 				if (rc < 0)
-					break;
+					/*@innerbreak@*/ break;
 			}
 
 			return -1;
 		}
 
+		/*@-moduncon@*/
 		rc = aio_error(&my_aiocb);
+		/*@=moduncon@*/
 
 		if (rc < 0)
 			return -1;
 
+		/*@-moduncon@*/
 		rc = aio_return(&my_aiocb);
+		/*@=moduncon@*/
 
 		if (rc < 0)
 			return -1;
@@ -994,9 +1017,9 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
  * @return
  */
 static int entropy_ttybits(int fd, uint32* data, int size)
-	/*@modifies data @*/
+	/*@modifies fileSystem @*/
 {
-	uint32 randombits = size << 5;
+	uint32 randombits = ((uint32)size) << 5;
 	uint32 temp = 0;
 	byte dummy;
 
@@ -1027,8 +1050,10 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 	}
 
 	tio_set = tio_save;
+	/*@-noeffect@*/	/* LCL: dunno @*/
 	tio_set.c_cc[VMIN] = 1;				/* read 1 tty character at a time */
 	tio_set.c_cc[VTIME] = 0;			/* don't timeout the read */
+	/*@=noeffect@*/
 	tio_set.c_iflag |= IGNBRK;			/* ignore <ctrl>-c */
 	tio_set.c_lflag &= ~(ECHO|ICANON);	/* don't echo characters */
 
@@ -1076,7 +1101,7 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 			#endif
 			return -1;
 		}
-		printf("."); fflush(stdout);
+		printf("."); (void) fflush(stdout);
 		#if HAVE_GETHRTIME
 		hrtsample = gethrtime();
 		/* get 16 bits from the sample */
@@ -1086,10 +1111,10 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 		randombits -= 16;
 		#elif HAVE_GETTIMEOFDAY
 		/* discard the 4 lowest bits i.e. 4 microseconds */
-		gettimeofday(&tvsample, 0);
+		(void) gettimeofday(&tvsample, 0);
 		/* get 8 bits from the sample */
 		temp <<= 8;
-		temp |= (uint8)(tvsample.tv_usec >> 2);
+		temp |= (uint8)(((unsigned)tvsample.tv_usec) >> 2);
 		randombits -= 8;
 		#else
 		# error Need alternative high-precision timer sample
@@ -1101,7 +1126,7 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 	printf("\nthanks\n");
 
 	/* give the user 1 second to stop typing */
-	sleep(1);
+	(void) sleep(1);
 
 	#if HAVE_TERMIOS_H
 	/* change the tty settings, and flush input characters */
@@ -1183,7 +1208,7 @@ int entropy_dev_audio(uint32 *data, int size)
 					#if HAVE_ERRNO_H
 					perror("ioctl AUDIO_SETINFO failed");
 					#endif
-					close(dev_audio_fd);
+					(void) close(dev_audio_fd);
 
 					goto dev_audio_end;
 				}
@@ -1193,7 +1218,7 @@ int entropy_dev_audio(uint32 *data, int size)
 				#if HAVE_ERRNO_H
 				perror("ioctl AUDIO_SETINFO failed");
 				#endif
-				close(dev_audio_fd);
+				(void) close(dev_audio_fd);
 
 				goto dev_audio_end;
 			}
@@ -1205,7 +1230,7 @@ int entropy_dev_audio(uint32 *data, int size)
 	# error Unknown type of /dev/audio interface
 	#endif
 
-	close(dev_audio_fd);
+	(void) close(dev_audio_fd);
 
 dev_audio_end:
 	#ifdef _REENTRANT
@@ -1221,6 +1246,7 @@ dev_audio_end:
 
 #if HAVE_DEV_DSP
 int entropy_dev_dsp(uint32 *data, int size)
+	/*@modifies dev_dsp_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_DSP_TIMEOUT");
 
@@ -1253,7 +1279,7 @@ int entropy_dev_dsp(uint32 *data, int size)
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_GETFMTS failed");
 			#endif
-			close (dev_dsp_fd);
+			(void) close (dev_dsp_fd);
 
 			goto dev_dsp_end;
 		}
@@ -1296,7 +1322,7 @@ int entropy_dev_dsp(uint32 *data, int size)
 			/* No linear audio format available */
 			rc = -1;
 
-			close(dev_dsp_fd);
+			(void) close(dev_dsp_fd);
 
 			goto dev_dsp_end;
 		}
@@ -1306,7 +1332,7 @@ int entropy_dev_dsp(uint32 *data, int size)
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_SETFMT failed");
 			#endif
-			close(dev_dsp_fd);
+			(void) close(dev_dsp_fd);
 
 			goto dev_dsp_end;
 		}
@@ -1324,7 +1350,7 @@ int entropy_dev_dsp(uint32 *data, int size)
 	# error Unknown type of /dev/dsp interface
 	#endif
 
-	close(dev_dsp_fd);
+	(void) close(dev_dsp_fd);
 
 dev_dsp_end:
 	#ifdef _REENTRANT
@@ -1341,6 +1367,7 @@ dev_dsp_end:
 
 #if HAVE_DEV_RANDOM
 int entropy_dev_random(uint32* data, int size)
+	/*@modifies dev_random_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_RANDOM_TIMEOUT");
 
@@ -1367,7 +1394,7 @@ int entropy_dev_random(uint32* data, int size)
 	/* collect entropy, with timeout */
 	rc = entropy_randombits(dev_random_fd, timeout_env ? atoi(timeout_env) : 1000, data, size);
 
-	close(dev_random_fd);
+	(void) close(dev_random_fd);
 
 dev_random_end:
 	#ifdef _REENTRANT
@@ -1383,6 +1410,7 @@ dev_random_end:
 
 #if HAVE_DEV_URANDOM
 int entropy_dev_urandom(uint32* data, int size)
+	/*@modifies dev_urandom_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_URANDOM_TIMEOUT");
 
@@ -1409,7 +1437,7 @@ int entropy_dev_urandom(uint32* data, int size)
 	/* collect entropy, with timeout */
 	rc = entropy_randombits(dev_urandom_fd, timeout_env ? atoi(timeout_env) : 1000, data, size);
 
-	close(dev_urandom_fd);
+	(void) close(dev_urandom_fd);
 
 dev_urandom_end:
 	#ifdef _REENTRANT
@@ -1425,6 +1453,7 @@ dev_urandom_end:
 
 #if HAVE_DEV_TTY
 int entropy_dev_tty(uint32* data, int size)
+	/*@modifies dev_tty_fd @*/
 {
 	register int rc;
 
@@ -1448,7 +1477,7 @@ int entropy_dev_tty(uint32* data, int size)
 
 	rc = entropy_ttybits(dev_tty_fd, data, size);
 
-	close(dev_tty_fd);
+	(void) close(dev_tty_fd);
 
 dev_tty_end:
 	#ifdef _REENTRANT

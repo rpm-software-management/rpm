@@ -965,9 +965,9 @@ void mp32gcd_w(uint32 size, const uint32* xdata, const uint32* ydata, uint32* re
 #endif
 
 #ifndef ASM_MP32NMODW
-uint32 mp32nmodw(uint32* result, uint32 xsize, const uint32* xdata, uint32 y, uint32* workspace)
+uint32 mp32nmodw(uint32* result, uint32 xsize, const uint32* xdata, uint32 y, uint32* wksp)
 {
-	/* result size xsize, workspace size xsize+1 */
+	/* result size xsize, wksp size xsize+1 */
 	register uint64 temp;
 	register uint32 q;
 	uint32 qsize = xsize-1;
@@ -994,26 +994,26 @@ uint32 mp32nmodw(uint32* result, uint32 xsize, const uint32* xdata, uint32 y, ui
 		temp /= y;
 		/*
 			temp *= y;
-			workspace[0] = (uint32) (temp >> 32);
-			workspace[1] = (uint32) (temp);
+			wksp[0] = (uint32) (temp >> 32);
+			wksp[1] = (uint32) (temp);
 		*/
 		q = (uint32) temp;
 
 		/* printf("q = %08x\n", q); */
 		/*@-evalorder@*/
-		*workspace = mp32setmul(1, workspace+1, &y, q);
+		*wksp = mp32setmul(1, wksp+1, &y, q);
 		/*@=evalorder@*/
 
-		/* printf("mplt "); mp32print(2, rdata); printf(" < "); mp32println(2, workspace); */
-		while (mp32lt(2, rdata, workspace))
+		/* printf("mplt "); mp32print(2, rdata); printf(" < "); mp32println(2, wksp); */
+		while (mp32lt(2, rdata, wksp))
 		{
-			/* printf("mp32lt! "); mp32print(2, rdata); printf(" < "); mp32println(2, workspace); */
+			/* printf("mp32lt! "); mp32print(2, rdata); printf(" < "); mp32println(2, wksp); */
 			/* printf("decreasing q\n"); */
-			(void) mp32subx(2, workspace, 1, &y);
+			(void) mp32subx(2, wksp, 1, &y);
 			/* q--; */
 		}
 		/* printf("subtracting\n"); */
-		(void) mp32sub(2, rdata, workspace);
+		(void) mp32sub(2, rdata, wksp);
 		rdata++;
 	}
 
@@ -1022,9 +1022,9 @@ uint32 mp32nmodw(uint32* result, uint32 xsize, const uint32* xdata, uint32 y, ui
 #endif
 
 #ifndef ASM_MP32NMOD
-void mp32nmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, uint32* workspace)
+void mp32nmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, uint32* wksp)
 {
-	/* result size xsize, workspace size xsize+1 */
+	/* result size xsize, wksp size xsize+1 */
 	register uint64 temp;
 	register uint32 q;
 	uint32 msw = *ydata;
@@ -1050,29 +1050,29 @@ void mp32nmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize, c
 
 		/* printf("q = %08x\n", q); */
 		/*@-evalorder@*/
-		*workspace = mp32setmul(ysize, workspace+1, ydata, q);
+		*wksp = mp32setmul(ysize, wksp+1, ydata, q);
 		/*@=evalorder@*/
 
-		/* printf("mp32lt "); mp32print(ysize+1, rdata); printf(" < "); mp32println(ysize+1, workspace); */
-		while (mp32lt(ysize+1, rdata, workspace))
+		/* printf("mp32lt "); mp32print(ysize+1, rdata); printf(" < "); mp32println(ysize+1, wksp); */
+		while (mp32lt(ysize+1, rdata, wksp))
 		{
-			/* printf("mp32lt! "); mp32print(ysize+1, rdata); printf(" < "); mp32println(ysize+1, workspace); */
+			/* printf("mp32lt! "); mp32print(ysize+1, rdata); printf(" < "); mp32println(ysize+1, wksp); */
 			/* printf("decreasing q\n"); */
-			(void) mp32subx(ysize+1, workspace, ysize, ydata);
+			(void) mp32subx(ysize+1, wksp, ysize, ydata);
 			q--;
 		}
 		/* printf("subtracting\n"); */
-		(void) mp32sub(ysize+1, rdata, workspace);
+		(void) mp32sub(ysize+1, rdata, wksp);
 		rdata++;
 	}
 }
 #endif
 
 #ifndef ASM_MP32NDIVMOD
-void mp32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, register uint32* workspace)
+void mp32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, register uint32* wksp)
 {
 	/* result must be xsize+1 in length */
-	/* workspace must be ysize+1 in length */
+	/* wksp must be ysize+1 in length */
 	/* expect ydata to be normalized */
 	register uint64 temp;
 	register uint32 q;
@@ -1080,6 +1080,7 @@ void mp32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize
 	uint32 qsize = xsize-ysize;
 
 	mp32copy(xsize, result+1, xdata);
+	/*@-compdef@*/ /* LCL: result+1 undefined */
 	if (mp32ge(ysize, result+1, ydata))
 	{
 		/* printf("subtracting\n"); */
@@ -1088,6 +1089,7 @@ void mp32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize
 	}
 	else
 		*(result++) = 0;
+	/*@=compdef@*/
 
 	/*@-usedef@*/	/* LCL: result[0] is set */
 	while (qsize--)
@@ -1106,19 +1108,19 @@ void mp32ndivmod(uint32* result, uint32 xsize, const uint32* xdata, uint32 ysize
 		/* printf("q = %08x\n", q); */
 
 		/*@-evalorder@*/
-		*workspace = mp32setmul(ysize, workspace+1, ydata, q);
+		*wksp = mp32setmul(ysize, wksp+1, ydata, q);
 		/*@=evalorder@*/
 
-		/* printf("mp32lt "); mp32print(ysize+1, result); printf(" < "); mp32println(ysize+1, workspace); */
-		while (mp32lt(ysize+1, result, workspace))
+		/* printf("mp32lt "); mp32print(ysize+1, result); printf(" < "); mp32println(ysize+1, wksp); */
+		while (mp32lt(ysize+1, result, wksp))
 		{
-			/* printf("mp32lt! "); mp32print(ysize+1, result); printf(" < "); mp32println(ysize+1, workspace); */
+			/* printf("mp32lt! "); mp32print(ysize+1, result); printf(" < "); mp32println(ysize+1, wksp); */
 			/* printf("decreasing q\n"); */
-			(void) mp32subx(ysize+1, workspace, ysize, ydata);
+			(void) mp32subx(ysize+1, wksp, ysize, ydata);
 			q--;
 		}
 		/* printf("subtracting\n"); */
-		(void) mp32sub(ysize+1, result, workspace);
+		(void) mp32sub(ysize+1, result, wksp);
 		*(result++) = q;
 	}
 	/*@=usedef@*/

@@ -48,9 +48,6 @@
  * g is either a generator of a subgroup of order q, or a generator of order
  *  n = (p-1)
  */
-
-/**
- */
 typedef struct
 {
 	mp32barrett p;
@@ -88,13 +85,13 @@ int dldp_pCopy(dldp_p* dst, const dldp_p* src)
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x)
 	/*@modifies rgc, x */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dldp_pPublic (const dldp_p* dp, const mp32number* x, mp32number* y)
 	/*@modifies y */;
 
@@ -128,13 +125,13 @@ int dldp_pgoqMake     (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, ui
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dldp_pgoqMakeSafe (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	/*@modifies dp, rgc */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 	/*@modifies dp, rgc */;
 
@@ -157,13 +154,13 @@ int dldp_pgonMake     (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, ui
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dldp_pgonMakeSafe (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	/*@modifies dp, rgc */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 	/*@modifies dp, rgc */;
 

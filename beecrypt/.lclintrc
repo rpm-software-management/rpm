@@ -1,6 +1,6 @@
--I. -I./build -I./lib -I./rpmdb -I./rpmio -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I/usr/lib/gcc-lib/i386-redhat-linux/2.96/include -DHAVE_CONFIG_H -D_GNU_SOURCE
 
-+partial
+#+partial
 #+forcehints
 
 -warnunixlib
@@ -10,80 +10,53 @@
 
 -unrecogcomments	# XXX ignore doxygen markings
 
-#-deepbreak		# shortcut 485 occurences
-
-+standard		# lclint level
++strict			# lclint level
 
 # --- not-yet at strict level
-#+ptrarith
-#+bitwisesigned
-#+strictops
-#+sizeoftype
+-exportconst
+-exportfcn
+-exporttype
+-exportvar
+-warnmissingglobs
+-internalglobs
+-protoparamname
 
-#+mod-uncon		# shortcut alloca is painful
-#+mod-nomods
-+modglobsnomods
-+modstrictglobsnomods
+-ansi-reserved-internal	# goofy
 
-#+mod-uncon-nomods
-#+mod-internal-strict
-#+mod-file-sys
-#+globnoglobs
-#+internalglobs
-#+internalglobnoglobs
-#+modglobsunchecked
-+warnmissingglobs
-#+warnmissingglobsnomods
-#+impcheckedstrictglobs
-#+impcheckedstrictstatics
-#+strictusereleas
-#+strictbranchstate
-#+strictdestroy
-#+modobserveruncon
-+macroempty
-#+ansi-reserved-internal
-#+evalorderuncon
-#+elseifcomplete
-#+loopswitchbreak
-#+switchswitchbreak
-#+looploopcontinue
-#+whileblock
-+forempty
-#+forblock
-#+ifblock
-#+noeffectuncon
-+topuse
-#+unusedspecial
-+oldstyle
-#+sys-dir-errors
-#controlnestdepth 15
-#stringliterallen 509
-#numstructfields 127
-#numenummembers 127
+-ptrarith
+-bitwisesigned
+-strictops
+-sizeoftype
+
+-mod-file-sys
+
+-impcheckedstrictglobs
+-impcheckedstrictstatics
+-strictbranchstate
+-strictdestroy
+
+-forblock
+-ifblock
+-whileblock
+-sys-dir-errors		# 30 occurences
 
 # --- not-yet at checks level
-#-predboolptr	
-#+enumint
-#-allglobs
-#-ansi-reserved		# goofy
-#-infloopsuncon		# goofy
-
-#-proto-param-match
+-predboolptr	
++enumint
+-allglobs		# painful
+-ansi-reserved		# goofy
+-infloopsuncon		# goofy
 
 # don't-bother-me-yet parameters
--branchstate		# painful
+-branchstate		# 6 occurences
 -mustfree		# alloca is painful
 
--exportlocal		# 59 occurences
--fcnuse			# 131 occurences
--compdef		# 52 occurences
-
 # --- not-yet at standard level
--boolops		# w->n
--predboolint		# w->n
--type			#
+-boolops
+-predboolint
+-type
 
-# -weak paramaters
+# --- not-yet at weak level
 #+boolint
 #-boolops
 #+ignorequals

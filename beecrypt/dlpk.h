@@ -44,37 +44,37 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dlpk_pInit(dlpk_p* pk)
 	/*@modifies pk */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dlpk_pFree(dlpk_p* pk)
 	/*@modifies pk */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
 	/*@modifies dst */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int  dlpk_pEqual(const dlpk_p* a, const dlpk_p* b)
 	/*@*/;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int  dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofactor)
 	/*@modifies rgc @*/;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int  dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
 	/*@modifies rgc @*/;
 

@@ -1,8 +1,10 @@
+/**
+ * \file beecrypt.c
+ *
+ * BeeCrypt library hooks & stubs, code.
+ */
+
 /*
- * beecrypt.c
- *
- * BeeCrypt library hooks & stubs, code
- *
  * Copyright (c) 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -38,6 +40,15 @@
 #endif
 #if WIN32
 # include <windows.h>
+#endif
+
+#if defined(__LCLINT__)
+/* XXX from /usr/include/bits/sigest.h in glibc-2.2.4 */
+# define _SIGSET_NWORDS (1024 / (8 * sizeof (unsigned long int)))
+typedef struct
+  {
+    unsigned long int __val[_SIGSET_NWORDS];
+  } __sigset_t;
 #endif
 
 #include "endianness.h"
@@ -112,14 +123,11 @@ const entropySource* entropySourceDefault()
 	const char* selection = getenv("BEECRYPT_ENTROPY");
 
 	if (selection)
-	{
 		return entropySourceFind(selection);
-	}
 	else if (ENTROPYSOURCES)
-	{
 		return entropySourceList+0;
-	}
-	return (const entropySource*) 0;
+	else
+		return (const entropySource*) 0;
 }
 
 int entropyGatherNext(uint32* data, int size)
@@ -164,7 +172,9 @@ const randomGenerator* randomGeneratorGet(int index)
 	if ((index < 0) || (index >= RANDOMGENERATORS))
 		return (const randomGenerator*) 0;
 
+	/*@-compmempass@*/
 	return randomGeneratorList[index];
+	/*@=compmempass@*/
 }
 
 const randomGenerator* randomGeneratorFind(const char* name)
@@ -174,7 +184,9 @@ const randomGenerator* randomGeneratorFind(const char* name)
 	for (index = 0; index < RANDOMGENERATORS; index++)
 	{
 		if (strcmp(name, randomGeneratorList[index]->name) == 0)
+			/*@-compmempass@*/
 			return randomGeneratorList[index];
+			/*@=compmempass@*/
 	}
 	return (const randomGenerator*) 0;
 }
@@ -197,13 +209,17 @@ int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerat
 	if (rng == (randomGenerator*) 0)
 		return -1;
 
+	/*@-temptrans@*/
 	ctxt->rng = rng;
+	/*@=temptrans@*/
 	ctxt->param = (randomGeneratorParam*) calloc(rng->paramsize, 1);
 
+	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	if (ctxt->param == (randomGeneratorParam*) 0)
 		return -1;
 
 	return ctxt->rng->setup(ctxt->param);
+	/*@=nullstate@*/
 }
 
 int randomGeneratorContextFree(randomGeneratorContext* ctxt)
@@ -225,7 +241,9 @@ int randomGeneratorContextFree(randomGeneratorContext* ctxt)
 
 	ctxt->param = (randomGeneratorParam*) 0;
 
+	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	return rc;
+	/*@=nullstate@*/
 }
 
 /*@observer@*/ static const hashFunction* hashFunctionList[] =
@@ -257,7 +275,9 @@ const hashFunction* hashFunctionGet(int index)
 	if ((index < 0) || (index >= HASHFUNCTIONS))
 		return (const hashFunction*) 0;
 
+	/*@-compmempass@*/
 	return hashFunctionList[index];
+	/*@=compmempass@*/
 }
 
 const hashFunction* hashFunctionFind(const char* name)
@@ -267,7 +287,9 @@ const hashFunction* hashFunctionFind(const char* name)
 	for (index = 0; index < HASHFUNCTIONS; index++)
 	{
 		if (strcmp(name, hashFunctionList[index]->name) == 0)
+			/*@-compmempass@*/
 			return hashFunctionList[index];
+			/*@=compmempass@*/
 	}
 	return (const hashFunction*) 0;
 }
@@ -280,13 +302,17 @@ int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
 	if (hash == (hashFunction*) 0)
 		return -1;
 
+	/*@-temptrans@*/
 	ctxt->algo = hash;
+	/*@=temptrans@*/
 	ctxt->param = (hashFunctionParam*) calloc(hash->paramsize, 1);
 
+	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	if (ctxt->param == (hashFunctionParam*) 0)
 		return -1;
 
 	return ctxt->algo->reset(ctxt->param);
+	/*@=nullstate@*/
 }
 
 int hashFunctionContextFree(hashFunctionContext* ctxt)
@@ -301,7 +327,9 @@ int hashFunctionContextFree(hashFunctionContext* ctxt)
 
 	ctxt->param = (hashFunctionParam*) 0;
 
+	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	return 0;
+	/*@=nullstate@*/
 }
 
 int hashFunctionContextReset(hashFunctionContext* ctxt)
@@ -368,18 +396,20 @@ int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n
 		register int rc = -1;
 		register byte* temp = (byte*) malloc((n->size << 2) + 1);
 
+		/*@-nullpass -nullderef -nullptrarith @*/ /* FIX: temp may be NULL */
 		if (mp32msbset(n->size, n->data))
 		{
 			temp[0] = 0;
-			encodeInts((javaint*) n->data, temp+1, n->size);
+			(void) encodeInts((javaint*) n->data, temp+1, n->size);
 			rc = ctxt->algo->update(ctxt->param, temp, (n->size << 2) + 1);
 		}
 		else
 		{
-			encodeInts((javaint*) n->data, temp, n->size);
+			(void) encodeInts((javaint*) n->data, temp, n->size);
 			rc = ctxt->algo->update(ctxt->param, temp, n->size << 2);
 		}
 		free(temp);
+		/*@=nullpass =nullderef =nullptrarith @*/
 
 		return rc;
 	}
@@ -452,7 +482,9 @@ const keyedHashFunction* keyedHashFunctionGet(int index)
 	if ((index < 0) || (index >= KEYEDHASHFUNCTIONS))
 		return (const keyedHashFunction*) 0;
 
+	/*@-compmempass@*/
 	return keyedHashFunctionList[index];
+	/*@=compmempass@*/
 }
 
 const keyedHashFunction* keyedHashFunctionFind(const char* name)
@@ -462,7 +494,9 @@ const keyedHashFunction* keyedHashFunctionFind(const char* name)
 	for (index = 0; index < KEYEDHASHFUNCTIONS; index++)
 	{
 		if (strcmp(name, keyedHashFunctionList[index]->name) == 0)
+			/*@-compmempass@*/
 			return keyedHashFunctionList[index];
+			/*@=compmempass@*/
 	}
 	return (const keyedHashFunction*) 0;
 }
@@ -475,13 +509,17 @@ int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHash
 	if (mac == (keyedHashFunction*) 0)
 		return -1;
 
+	/*@-temptrans@*/
 	ctxt->algo = mac;
+	/*@=temptrans@*/
 	ctxt->param = (keyedHashFunctionParam*) calloc(mac->paramsize, 1);
 
+	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	if (ctxt->param == (keyedHashFunctionParam*) 0)
 		return -1;
 
 	return ctxt->algo->reset(ctxt->param);
+	/*@=nullstate@*/
 }
 
 int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
@@ -499,7 +537,9 @@ int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
 
 	ctxt->param = (keyedHashFunctionParam*) 0;
 
+	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	return 0;
+	/*@=nullstate@*/
 }
 
 int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const uint32* key, int keybits)
@@ -583,18 +623,20 @@ int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp3
 		register int rc;
 		register byte* temp = (byte*) malloc((n->size << 2) + 1);
 
+		/*@-nullpass -nullderef -nullptrarith @*/ /* FIX: temp may be NULL */
 		if (mp32msbset(n->size, n->data))
 		{
 			temp[0] = 0;
-			encodeInts((javaint*) n->data, temp+1, n->size);
+			(void) encodeInts((javaint*) n->data, temp+1, n->size);
 			rc = ctxt->algo->update(ctxt->param, temp, (n->size << 2) + 1);
 		}
 		else
 		{
-			encodeInts((javaint*) n->data, temp, n->size);
+			(void) encodeInts((javaint*) n->data, temp, n->size);
 			rc = ctxt->algo->update(ctxt->param, temp, n->size << 2);
 		}
 		free(temp);
+		/*@=nullpass =nullderef =nullptrarith @*/
 
 		return rc;
 	}
@@ -667,7 +709,9 @@ const blockCipher* blockCipherGet(int index)
 	if ((index < 0) || (index >= BLOCKCIPHERS))
 		return (const blockCipher*) 0;
 
+	/*@-compmempass@*/
 	return blockCipherList[index];
+	/*@=compmempass@*/
 }
 
 const blockCipher* blockCipherFind(const char* name)
@@ -677,7 +721,9 @@ const blockCipher* blockCipherFind(const char* name)
 	for (index = 0; index < BLOCKCIPHERS; index++)
 	{
 		if (strcmp(name, blockCipherList[index]->name) == 0)
+			/*@-compmempass@*/
 			return blockCipherList[index];
+			/*@=compmempass@*/
 	}
 
 	return (const blockCipher*) 0;
@@ -691,13 +737,17 @@ int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
 	if (ciph == (blockCipher*) 0)
 		return -1;
 
+	/*@-temptrans@*/
 	ctxt->algo = ciph;
+	/*@=temptrans@*/
 	ctxt->param = (blockCipherParam*) calloc(ciph->paramsize, 1);
 
+	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
 	if (ctxt->param == (blockCipherParam*) 0)
 		return -1;
 
 	return 0;
+	/*@=nullstate@*/
 }
 
 int blockCipherContextSetup(blockCipherContext* ctxt, const uint32* key, int keybits, cipherOperation op)
@@ -745,7 +795,9 @@ int blockCipherContextFree(blockCipherContext* ctxt)
 
 	ctxt->param = (blockCipherParam*) 0;
 
+	/*@-nullstate@*/ /* FIX: ctxt->param is NULL */
 	return 0;
+	/*@=nullstate@*/
 }
 
 #if WIN32

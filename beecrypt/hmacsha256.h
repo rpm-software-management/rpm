@@ -46,31 +46,43 @@ extern "C" {
 
 /** \ingroup HMAC_sha256_m
  */
-/*@unused@*/ extern BEEDLLAPI const keyedHashFunction hmacsha256;
+/*@observer@*/ /*@checkedstrict@*/ extern BEEDLLAPI const keyedHashFunction hmacsha256;
 
 /** \ingroup HMAC_sha256_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int hmacsha256Setup (hmacsha256Param* sp, const uint32* key, int keybits)
+	/*@globals sha256 @*/
 	/*@modifies sp @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HMAC_sha256_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int hmacsha256Reset (hmacsha256Param* sp)
+	/*@globals sha256 @*/
 	/*@modifies sp @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HMAC_sha256_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int hmacsha256Update(hmacsha256Param* sp, const byte* data, int size)
+	/*@globals sha256 @*/
 	/*@modifies sp @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HMAC_sha256_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int hmacsha256Digest(hmacsha256Param* sp, uint32* data)
+	/*@globals sha256 @*/
 	/*@modifies sp, data @*/;
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 }

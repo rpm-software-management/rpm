@@ -1,8 +1,10 @@
+/** \ingroup JAVA_m
+ * \file timestamp.h
+ *
+ * Java-compatible 64 bit timestamp, header.
+ */
+
 /*
- * timestamp.h
- *
- * Java-compatible 64 bit timestamp, header
- *
  * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -46,7 +48,9 @@
 extern "C" {
 #endif
 
-BEEDLLAPI
+/**
+ */
+BEEDLLAPI /*@unused@*/
 javalong timestamp(void);
 
 #ifdef __cplusplus

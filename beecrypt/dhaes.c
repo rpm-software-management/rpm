@@ -8,6 +8,23 @@
  * "DHAES: An Encryption Scheme Based on the Diffie-Hellman Problem"
  * Michel Abdalla, Mihir Bellare, Phillip Rogaway
  * September 1998
+ *
+ * Good combinations will be:
+ *
+ * - For 64-bit encryption:
+ *	- DHAES(MD5, Blowfish, HMAC-MD5) <- best candidate
+ *	- DHAES(MD5, Blowfish, HMAC-SHA-1)
+ *	- DHAES(MD5, Blowfish, HMAC-SHA-256)
+ *
+ * - For 96-bit encryption with 64-bit mac:
+ *	- DHAES(SHA-1, Blowfish, HMAC-MD5, 96)
+ *	- DHAES(SHA-1, Blowfish, HMAC-SHA-1, 96) <- best candidate
+ *	- DHAES(SHA-1, Blowfish, HMAC-SHA-256, 96) <- best candidate
+ *
+ * - For 128-bit encryption:
+ *	- DHAES(SHA-256, Blowfish, HMAC-MD5)
+ *	- DHAES(SHA-256, Blowfish, HMAC-SHA-1)
+ *	- DHAES(SHA-256, Blowfish, HMAC-SHA-256)
  */
 
 /*
@@ -44,25 +61,6 @@
 #if HAVE_MALLOC_H
 # include <malloc.h>
 #endif
-
-/**
- * Good combinations will be:
- *
- * - For 64-bit encryption:
- *	- DHAES(MD5, Blowfish, HMAC-MD5) <- best candidate
- *	- DHAES(MD5, Blowfish, HMAC-SHA-1)
- *	- DHAES(MD5, Blowfish, HMAC-SHA-256)
- *
- * - For 96-bit encryption with 64-bit mac:
- *	- DHAES(SHA-1, Blowfish, HMAC-MD5, 96)
- *	- DHAES(SHA-1, Blowfish, HMAC-SHA-1, 96) <- best candidate
- *	- DHAES(SHA-1, Blowfish, HMAC-SHA-256, 96) <- best candidate
- *
- * - For 128-bit encryption:
- *	- DHAES(SHA-256, Blowfish, HMAC-MD5)
- *	- DHAES(SHA-256, Blowfish, HMAC-SHA-1)
- *	- DHAES(SHA-256, Blowfish, HMAC-SHA-256)
- */
 
 int dhaes_pUsable(const dhaes_pParameters* params)
 {
@@ -190,7 +188,7 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 
 /**
  */
-static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* private, const mp32number* public, const mp32number* message, cipherOperation op)
+static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* privkey, const mp32number* pubkey, const mp32number* message, cipherOperation op)
 	/*@modifies ctxt @*/
 {
 	register int rc;
@@ -200,7 +198,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* private, 
 
 	/* compute the shared secret, Diffie-Hellman style */
 	mp32nzero(&secret);
-	if (dlsvdp_pDHSecret(&ctxt->param, private, public, &secret))
+	if (dlsvdp_pDHSecret(&ctxt->param, privkey, pubkey, &secret))
 		return -1;
 
 	/* compute the hash of the message (ephemeral public) key and the shared secret */
@@ -351,5 +349,7 @@ memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemera
 
 decrypt_end:
 
+	/*@-usereleased@*/ /* LCL: cleartext released??? */
 	return cleartext;
+	/*@=usereleased@*/
 }

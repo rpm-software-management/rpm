@@ -44,7 +44,7 @@ extern "C" {
  * @return		0 on success, -1 on failure
  */
 BEEDLLAPI
-int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src)
+int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, /*@out@*/ uint32* dst, const uint32* src)
 	/*@modifies bp, dst @*/;
 
 /**
@@ -57,7 +57,7 @@ int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, i
  * @return		0 on success, -1 on failure
  */
 BEEDLLAPI
-int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src)
+int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, /*@out@*/ uint32* dst, const uint32* src)
 	/*@modifies bp, dst @*/;
 
 #ifdef __cplusplus

@@ -40,9 +40,9 @@ extern "C" {
  * @param tmp		buffer to pad
  * @return		buffer with pad added
  */
-BEEDLLAPI /*@only@*/ /*@null@*/
+BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk* pkcs5Pad  (int blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
-	/*@modifies tmp */;
+	/*@*/;
 
 /**
  * Shrink buffer to boundary.
@@ -51,7 +51,7 @@ memchunk* pkcs5Pad  (int blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
  * @return		buffer with pad removed
  */
 BEEDLLAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5Unpad(int blockbytes, /*@null@*/ memchunk* tmp)
+memchunk* pkcs5Unpad(int blockbytes, /*@returned@*/ /*@null@*/ memchunk* tmp)
 	/*@modifies tmp */;
 
 /**
@@ -70,7 +70,7 @@ memchunk* pkcs5PadCopy  (int blockbytes, const memchunk* src)
  * @param tmp		buffer to unpad
  * @return		copy of buffer with pad removed
  */
-BEEDLLAPI /*@only@*/ /*@null@*/
+BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk* pkcs5UnpadCopy(int blockbytes, const memchunk* src)
 	/*@*/;
 

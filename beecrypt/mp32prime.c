@@ -998,7 +998,7 @@ int mp32ptrials(uint32 bits)
 /**
  */
 static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGeneratorContext* rc)
-	/*@modifies p, rc @*/
+	/*@modifies p @*/
 {
 	register uint32 size;
 
@@ -1006,7 +1006,9 @@ static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGener
 		return;
 
 	size = p->size;
+	/*@-noeffectuncon@*/ /* LCL: ??? */
 	(void) rc->rng->next(rc->param, p->modl, size);
+	/*@=noeffectuncon@*/
 
 	if (msbclr != 0)
 		p->modl[0] &= (((uint32)0xffffffff) >> msbclr);
@@ -1021,7 +1023,9 @@ static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGener
  * mp32psppdiv_w
  *  needs workspace of (3*size) words
  */
-int mp32psppdiv_w(const mp32barrett* p, uint32* wksp)
+static int mp32psppdiv_w(const mp32barrett* p, /*@out@*/ uint32* wksp)
+	/*@globals mp32spprod @*/
+	/*@modifies wksp @*/
 {
 	/* small prime product trial division test */
 	register uint32 size = p->size;
@@ -1029,7 +1033,9 @@ int mp32psppdiv_w(const mp32barrett* p, uint32* wksp)
 	if (size > SMALL_PRIMES_PRODUCT_MAX)
 	{
 		mp32setx(size, wksp+size, SMALL_PRIMES_PRODUCT_MAX, mp32spprod[SMALL_PRIMES_PRODUCT_MAX-1]);
+		/*@-compdef@*/ /* LCL: wksp+size undef */
 		mp32gcd_w(size, p->modl, wksp+size, wksp, wksp+2*size);
+		/*@=compdef@*/
 	}
 	else
 	{
@@ -1040,9 +1046,11 @@ int mp32psppdiv_w(const mp32barrett* p, uint32* wksp)
 }
 
 /**
+ * mp32pmilrabtwo_w
  * needs workspace of (5*size+2)
  */
-int mp32pmilrabtwo_w(const mp32barrett* p, uint32 s, const uint32* rdata, const uint32* ndata, uint32* wksp)
+static int mp32pmilrabtwo_w(const mp32barrett* p, uint32 s, const uint32* rdata, const uint32* ndata, /*@out@*/ uint32* wksp)
+	/*@modifies wksp @*/
 {
 	register uint32 size = p->size;
 	register uint32 j = 0;
@@ -1065,9 +1073,11 @@ int mp32pmilrabtwo_w(const mp32barrett* p, uint32 s, const uint32* rdata, const 
 }
 
 /**
+ * mp32pmilraba_w
  * needs workspace of (5*size+2) words
  */
-int mp32pmilraba_w(const mp32barrett* p, const uint32* adata, uint32 s, const uint32* rdata, const uint32* ndata, uint32* wksp)
+static int mp32pmilraba_w(const mp32barrett* p, const uint32* adata, uint32 s, const uint32* rdata, const uint32* ndata, /*@out@*/ uint32* wksp)
+	/*@modifies wksp @*/
 {
 	register uint32 size = p->size;
 	register uint32 j = 0;
@@ -1246,6 +1256,8 @@ void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, i
 			{
 				mp32setlsb(s.size, s.modl);
 			}
+			else
+				{};
 
 			if (cofactor == 2)
 			{

@@ -96,131 +96,246 @@ inline int64 swap64(int64 n)
 	#endif
 }
 #else
+/*@-exportlocal@*/
+
+/**
+ */
  int16 swap16 (int16 n)
 	/*@*/;
+
+/**
+ */
 uint16 swapu16(uint16 n)
 	/*@*/;
+
+/**
+ */
  int32 swap32 (int32 n)
 	/*@*/;
+
+/**
+ */
 uint32 swapu32(uint32 n)
 	/*@*/;
+
+/**
+ */
  int64 swap64 (int64 n)
 	/*@*/;
+/*@=exportlocal@*/
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-BEEDLLAPI
-int encodeByte(javabyte b, byte* data)
-	/*@modifies data */;
-BEEDLLAPI
-int encodeShort(javashort s, byte* data)
-	/*@modifies data */;
-BEEDLLAPI
-int encodeInt(javaint i, byte* data)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeByte(javabyte b, /*@out@*/ byte* data)
 	/*@modifies data */;
 
-BEEDLLAPI
-int encodeLong(javalong l, byte* data)
-	/*@modifies data */;
-BEEDLLAPI
-int encodeChar(javachar c, byte* data)
-	/*@modifies data */;
-BEEDLLAPI
-int encodeFloat(javafloat f, byte* data)
-	/*@modifies data */;
-BEEDLLAPI
-int encodeDouble(javadouble d, byte* data)
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeShort(javashort s, /*@out@*/ byte* data)
 	/*@modifies data */;
 
-BEEDLLAPI
-int encodeInts(const javaint* i, byte* data, int count)
-	/*@modifies data */;
-BEEDLLAPI
-int encodeIntsPartial(const javaint* i, byte* data, int bytecount)
-	/*@modifies data */;
-BEEDLLAPI
-int encodeChars(const javachar* c, byte* data, int count)
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeInt(javaint i, /*@out@*/ byte* data)
 	/*@modifies data */;
 
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeLong(javalong l, /*@out@*/ byte* data)
+	/*@modifies data */;
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeChar(javachar c, /*@out@*/ byte* data)
+	/*@modifies data */;
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeFloat(javafloat f, /*@out@*/ byte* data)
+	/*@modifies data */;
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeDouble(javadouble d, /*@out@*/ byte* data)
+	/*@modifies data */;
+
+/**
+ */
 BEEDLLAPI
-int decodeByte(javabyte* b, const byte* data)
+int encodeInts(const javaint* i, /*@out@*/ byte* data, int count)
+	/*@modifies data */;
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeIntsPartial(const javaint* i, /*@out@*/ byte* data, int bytecount)
+	/*@modifies data */;
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int encodeChars(const javachar* c, /*@out@*/ byte* data, int count)
+	/*@modifies data */;
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeByte(/*@out@*/ javabyte* b, const byte* data)
 	/*@modifies b */;
-BEEDLLAPI
-int decodeShort(javashort* s, const byte* data)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeShort(/*@out@*/ javashort* s, const byte* data)
 	/*@modifies s */;
-BEEDLLAPI
-int decodeInt(javaint* i, const byte* data)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeInt(/*@out@*/ javaint* i, const byte* data)
 	/*@modifies i */;
-BEEDLLAPI
-int decodeLong(javalong* l, const byte* data)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeLong(/*@out@*/ javalong* l, const byte* data)
 	/*@modifies l */;
-BEEDLLAPI
-int decodeChar(javachar* c, const byte* data)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeChar(/*@out@*/ javachar* c, const byte* data)
 	/*@modifies c */;
-BEEDLLAPI
-int decodeFloat(javafloat* f, const byte* data)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeFloat(/*@out@*/ javafloat* f, const byte* data)
 	/*@modifies f */;
-BEEDLLAPI
-int decodeDouble(javadouble* d, const byte* data)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeDouble(/*@out@*/ javadouble* d, const byte* data)
 	/*@modifies d */;
 
-BEEDLLAPI
-int decodeInts(javaint* i, const byte* data, int count)
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeInts(/*@out@*/ javaint* i, const byte* data, int count)
 	/*@modifies i */;
+
+/**
+ */
 BEEDLLAPI
-int decodeIntsPartial(javaint* i, const byte* data, int bytecount)
+int decodeIntsPartial(/*@out@*/ javaint* i, const byte* data, int bytecount)
 	/*@modifies i */;
-BEEDLLAPI
-int decodeChars(javachar* c, const byte* data, int count)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int decodeChars(/*@out@*/ javachar* c, const byte* data, int count)
 	/*@modifies c */;
 
-BEEDLLAPI
+/**
+ */
+BEEDLLAPI /*@unused@*/
 int writeByte(javabyte b, FILE* ofp)
 	/*@modifies ofp, fileSystem */;
-BEEDLLAPI
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
 int writeShort(javashort s, FILE* ofp)
 	/*@modifies ofp, fileSystem */;
+
+/**
+ */
+/*@-exportlocal@*/
 BEEDLLAPI
 int writeInt(javaint i, FILE* ofp)
 	/*@modifies ofp, fileSystem */;
-BEEDLLAPI
+/*@=exportlocal@*/
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
 int writeLong(javalong l, FILE* ofp)
 	/*@modifies ofp, fileSystem */;
+
+/**
+ */
+/*@-exportlocal@*/
 BEEDLLAPI
 int writeChar(javachar c, FILE* ofp)
 	/*@modifies ofp, fileSystem */;
+/*@=exportlocal@*/
 
-BEEDLLAPI
+/**
+ */
+BEEDLLAPI /*@unused@*/
 int writeInts(const javaint* i, FILE* ofp, int count)
 	/*@modifies ofp, fileSystem */;
-BEEDLLAPI
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
 int writeChars(const javachar* c, FILE* ofp, int count)
 	/*@modifies ofp, fileSystem */;
 
-BEEDLLAPI
-int readByte(javabyte* b, FILE* ifp)
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int readByte(/*@out@*/ javabyte* b, FILE* ifp)
 	/*@modifies b, ifp, fileSystem */;
-BEEDLLAPI
-int readShort(javashort* s, FILE* ifp)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int readShort(/*@out@*/ javashort* s, FILE* ifp)
 	/*@modifies s, ifp, fileSystem */;
-BEEDLLAPI
-int readInt(javaint* i, FILE* ifp)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int readInt(/*@out@*/ javaint* i, FILE* ifp)
 	/*@modifies i, ifp, fileSystem */;
-BEEDLLAPI
-int readLong(javalong* l, FILE* ifp)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int readLong(/*@out@*/ javalong* l, FILE* ifp)
 	/*@modifies l, ifp, fileSystem */;
-BEEDLLAPI
-int readChar(javachar* c, FILE* ifp)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int readChar(/*@out@*/ javachar* c, FILE* ifp)
 	/*@modifies c, ifp, fileSystem */;
 
-BEEDLLAPI
-int readInts(javaint* i, FILE* ifp, int count)
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int readInts(/*@out@*/ javaint* i, FILE* ifp, int count)
 	/*@modifies i, ifp, fileSystem */;
-BEEDLLAPI
-int readChars(javachar* c, FILE* ifp, int count)
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
+int readChars(/*@out@*/ javachar* c, FILE* ifp, int count)
 	/*@modifies c, ifp, fileSystem */;
 
 #ifdef __cplusplus

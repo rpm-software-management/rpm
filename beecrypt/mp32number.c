@@ -46,7 +46,7 @@ void mp32nzero(mp32number* n)
 }
 /*@=nullstate@*/
 
-/*@-nullstate@*/	/* n->data may be NULL */
+/*@-nullstate -compdef @*/	/* n->data may be NULL */
 void mp32nsize(mp32number* n, uint32 size)
 {
 	if (size)
@@ -59,20 +59,25 @@ void mp32nsize(mp32number* n, uint32 size)
 		else
 			n->data = (uint32*) malloc(size * sizeof(uint32));
 
-		if (n->data == (uint32*) 0)
-			n->size = 0;
-		else
+		if (n->data)
 			n->size = size;
+		else
+		{
+			n->size = 0;
+			n->data = (uint32*) 0;
+		}
 
 	}
 	else if (n->data)
 	{
 		free(n->data);
-		n->data = (uint32*) 0;
 		n->size = 0;
+		n->data = (uint32*) 0;
 	}
+	else
+		{};
 }
-/*@=nullstate@*/
+/*@=nullstate =compdef @*/
 
 /*@-nullstate@*/	/* n->data may be NULL */
 void mp32ninit(mp32number* n, uint32 size, const uint32* data)
@@ -99,7 +104,9 @@ void mp32nfree(mp32number* n)
 
 void mp32ncopy(mp32number* n, const mp32number* copy)
 {
+	/*@-compdef@*/
 	mp32nset(n, copy->size, copy->data);
+	/*@=compdef@*/
 }
 
 void mp32nwipe(mp32number* n)
@@ -126,7 +133,10 @@ void mp32nset(mp32number* n, uint32 size, const uint32* data)
 			mp32copy(n->size = size, n->data, data);
 			/*@=nullpass@*/
 		else
+		{
 			n->size = 0;
+			n->data = (uint32*) 0;
+		}
 	}
 	else if (n->data)
 	{
@@ -134,6 +144,8 @@ void mp32nset(mp32number* n, uint32 size, const uint32* data)
 		n->data = (uint32*) 0;
 		n->size = 0;
 	}
+	else
+		{};
 }
 /*@=nullstate@*/
 
@@ -154,11 +166,14 @@ void mp32nsetw(mp32number* n, uint32 val)
 		n->data[0] = val;
 	}
 	else
+	{
 		n->size = 0;
+		n->data = (uint32*) 0;
+	}
 }
 /*@=nullstate@*/
 
-/*@-nullstate@*/	/* n->data may be NULL */
+/*@-nullstate -compdef @*/	/* n->data may be NULL */
 void mp32nsethex(mp32number* n, const char* hex)
 {
 	uint32 length = strlen(hex);
@@ -191,6 +206,8 @@ void mp32nsethex(mp32number* n, const char* hex)
 				val += (ch - 'A') + 10;
 			else if (ch >= 'a' && ch <= 'f')
 				val += (ch - 'a') + 10;
+			else
+				{};
 
 			if ((length & 0x7) == 0)
 			{
@@ -201,7 +218,9 @@ void mp32nsethex(mp32number* n, const char* hex)
 		if (rem != 0)
 			*dst = val;
 	}
-	else
+	else {
 		n->size = 0;
+		n->data = (uint32*)0;
+	}
 }
-/*@=nullstate@*/
+/*@=nullstate =compdef @*/

@@ -63,44 +63,48 @@ extern "C" {
 
 /**
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int dhaes_pUsable(const dhaes_pParameters* params)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int dhaes_pContextInit       (dhaes_pContext* ctxt, const dhaes_pParameters* params)
 	/*@modifies ctxt */;
+/*@=exportlocal@*/
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pri)
 	/*@modifies ctxt */;
 
 /**
  */
-BEEDLLAPI
-int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pri)
+BEEDLLAPI /*@unused@*/
+int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pub)
 	/*@modifies ctxt */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dhaes_pContextFree       (/*@only@*/ dhaes_pContext* ctxt)
 	/*@modifies ctxt */;
 
 
 /**
  */
-BEEDLLAPI /*@only@*/ /*@null@*/
+BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt,       mp32number* ephemeralPublicKey,       mp32number* mac, const memchunk* cleartext, randomGeneratorContext* rng)
 	/*@modifies ctxt, ephemeralPublicKey, mac, rng */;
 
 /**
  */
-BEEDLLAPI /*@only@*/ /*@null@*/
+BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemeralPublicKey, const mp32number* mac, const memchunk* ciphertext)
 	/*@modifies ctxt */;
 

@@ -54,7 +54,7 @@ int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)
 	return -1;
 }
 
-/*@-nullpass@*/
+/*@-nullpass -nullptrarith @*/ /* temp may be NULL */
 /* this routine doesn't work yet: needs debugging! */
 int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 {
@@ -68,7 +68,9 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 	if (mp32gex(psize, kp->p.modl, m->size, m->data))
 	{
 		mp32setx(nsize, temp+psize+qsize, m->size, m->data);
+		/*@-compdef@*/ /* LCL: temp+psize+qsize */
 		mp32bmod_w(&kp->p, temp+psize+qsize, temp, wksp);
+		/*@=compdef@*/
 	}
 	else
 		mp32setx(psize, temp, m->size, m->data);
@@ -79,7 +81,9 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 	if (mp32gex(qsize, kp->q.modl, m->size, m->data))
 	{
 		mp32setx(nsize, temp+psize+qsize, m->size, m->data);
+		/*@-compdef@*/ /* LCL: temp+psize+qsize */
 		mp32bmod_w(&kp->q, temp+psize+qsize, temp+psize, wksp);
+		/*@=compdef@*/
 	}
 	else
 		mp32setx(qsize, temp+psize, m->size, m->data);
@@ -103,7 +107,7 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 
 	return -1;
 }
-/*@=nullpass@*/
+/*@=nullpass =nullptrarith @*/
 
 /**
  * returns: 1 if signature verifies

@@ -1,7 +1,7 @@
-/*
- * mtprng.c
+/**
+ * \file mtprng.c
  *
- * Mersenne Twister pseudo-random number generator
+ * Mersenne Twister pseudo-random number generator, code.
  *
  * Developed by Makoto Matsumoto and Takuji Nishimura
  *
@@ -13,7 +13,9 @@
  * Note: this generator has a very long period, passes statistical test, but
  * needs more study to determine whether it is cryptographically strong enough.
  *
- * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
+ */
+
+/* Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -53,12 +55,16 @@
 
 const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (randomGeneratorSetup) mtprngSetup, (randomGeneratorSeed) mtprngSeed, (randomGeneratorNext) mtprngNext, (randomGeneratorCleanup) mtprngCleanup };
 
+/**
+ */
 static void mtprngReload(mtprngParam* mp)
 	/*@modifies mp @*/
 {
-    register uint32* p0 = mp->state, *p2=p0+2, *pM = p0+M, s0, s1;
+    register uint32* p0 = mp->state;
+    register uint32* p2=p0+2, *pM = p0+M, s0, s1;
     register int j;
 
+    /*@-shiftsigned@*/
     for (s0=mp->state[0], s1=mp->state[1], j=N-M+1; --j; s0=s1, s1=*(p2++))
         *(p0++) = *(pM++) ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0);
 
@@ -66,6 +72,7 @@ static void mtprngReload(mtprngParam* mp)
         *(p0++) = *(pM++) ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0);
 
     s1 = mp->state[0], *p0 = *pM ^ (mixBits(s0, s1) >> 1) ^ (loBit(s1) ? K : 0);
+    /*@=shiftsigned@*/
 
     mp->left = N;
     mp->nextw = mp->state;

@@ -30,6 +30,8 @@
 
 #include "mp32barrett.h"
 
+/**
+ */
 typedef struct
 {
 	mp32barrett n;
@@ -40,13 +42,21 @@ typedef struct
 extern "C" {
 #endif
 
-BEEDLLAPI
+/**
+ */
+BEEDLLAPI /*@unused@*/
 int rsapkInit(rsapk* pk)
 	/*@modifies pk @*/;
-BEEDLLAPI
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
 int rsapkFree(rsapk* pk)
 	/*@modifies pk @*/;
-BEEDLLAPI
+
+/**
+ */
+BEEDLLAPI /*@unused@*/
 int rsapkCopy(rsapk* dst, const rsapk* src)
 	/*@modifies dst @*/;
 

@@ -1,5 +1,5 @@
 /** \ingroup ELGAMAL_m
- * elgamal.c
+ * \file elgamal.c
  *
  * ElGamal signature scheme, code
  *

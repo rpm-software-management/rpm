@@ -46,13 +46,15 @@ extern "C" {
 
 /** \ingroup HASH_sha256_m
  */
-extern BEEDLLAPI const hashFunction sha256;
+/*@observer@*/ /*@checkedstrict@*/ extern BEEDLLAPI const hashFunction sha256;
 
 /** \ingroup HASH_sha256_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 void sha256Process(sha256Param* p)
-	/*@modifies p @*/;
+	/*@modifies p, internalState @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HASH_sha256_m
  */
@@ -69,7 +71,7 @@ int  sha256Update (sha256Param* p, const byte* data, int size)
 /** \ingroup HASH_sha256_m
  */
 BEEDLLAPI
-int  sha256Digest (sha256Param* p, uint32* data)
+int  sha256Digest (sha256Param* p, /*@out@*/ uint32* data)
 	/*@modifies p, data @*/;
 
 #ifdef __cplusplus

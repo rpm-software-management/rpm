@@ -1,8 +1,10 @@
+/** \ingroup BC_blowfish_m BC_m
+ * \file blowfishopt.h
+ *
+ * Blowfish block cipher assembler-optimized routines, header.
+ */
+
 /*
- * blowfishopt.h
- *
- * Blowfish block cipher assembler-optimized routines, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -34,14 +36,24 @@ extern "C" {
 #endif
 
 #if WIN32
-#if __INTEL__ && __MWERKS__
-#define ASM_BLOWFISHENCRYPT
-#define ASM_BLOWFISHDECRYPT
-#endif
+# if defined(_MSC_VER) && defined(_M_IX86)
+#  define ASM_BLOWFISHENCRYPT
+#  define ASM_BLOWFISHDECRYPT
+# elif __INTEL__ && __MWERKS__
+#  define ASM_BLOWFISHENCRYPT
+#  define ASM_BLOWFISHDECRYPT
+# endif
 #endif
 
-#ifdef __GNUC__
-#if defined(i586) || defined(i686)
+#if defined(__GNUC__)
+# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
+#  define ASM_BLOWFISHENCRYPT
+#  define ASM_BLOWFISHDECRYPT
+# endif
+#endif
+
+#if defined(__SUNPRO_C) || defined(__SUNPRO_CC)
+#if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
 #define ASM_BLOWFISHENCRYPT
 #define ASM_BLOWFISHDECRYPT
 #endif

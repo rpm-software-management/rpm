@@ -1,7 +1,7 @@
 /** \ingroup PRNG_fips186_m DSA_m
  * \file fips186.c
  *
- * NIST FIPS 186 pseudo-random generator, code.
+ * NIST FIPS-186 pseudo-random generator, code.
  */
 
 /*

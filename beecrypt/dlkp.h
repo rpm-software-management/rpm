@@ -47,25 +47,25 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p* param)
 	/*@modifies kp, rgc */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dlkp_pInit(dlkp_p* kp)
 	/*@modifies kp */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dlkp_pFree(dlkp_p* kp)
 	/*@modifies kp */;
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)
 	/*@modifies dst */;
 

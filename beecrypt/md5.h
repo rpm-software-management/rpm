@@ -50,27 +50,35 @@ extern BEEDLLAPI const hashFunction md5;
 
 /** \ingroup HASH_md5_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 void md5Process(md5Param* p)
 	/*@modifies p @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int md5Reset   (md5Param* p)
 	/*@modifies p @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int md5Update  (md5Param* p, const byte* data, int size)
 	/*@modifies p @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
-int md5Digest  (md5Param* p, uint32* data)
+int md5Digest  (md5Param* p, /*@out@*/ uint32* data)
 	/*@modifies p, data @*/;
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 }

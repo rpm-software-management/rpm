@@ -1,7 +1,7 @@
 /** \ingroup PRNG_fips186_m DSA_m
  * \file fips186.h
  *
- * FIPS186 pseudo-random generator, with SHA-1 as H function, header.
+ * NIST FIPS-186 pseudo-random generator, with SHA-1 as H function, header.
  */
 
 /*
@@ -78,31 +78,39 @@ extern "C" {
 
 /**
  */
-/*@unused@*/ extern BEEDLLAPI const randomGenerator fips186prng;
+extern BEEDLLAPI const randomGenerator fips186prng;
 
 /**
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int fips186Setup  (fips186Param* fp)
 	/*@modifies fp */;
+/*@=exportlocal@*/
 
 /**
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int fips186Seed   (fips186Param* fp, const uint32* data, int size)
 	/*@modifies fp */;
+/*@=exportlocal@*/
 
 /**
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int fips186Next   (fips186Param* fp, uint32* data, int size)
 	/*@modifies fp, data */;
+/*@=exportlocal@*/
 
 /**
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int fips186Cleanup(fips186Param* fp)
 	/*@modifies fp */;
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 }

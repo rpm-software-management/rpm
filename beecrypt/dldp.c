@@ -42,13 +42,13 @@
 
 /**
  */
-static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
-	/*@modifies dp, rgc, wksp @*/;
+static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ uint32* wksp)
+	/*@modifies dp, wksp @*/;
 
 /**
  */
-static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
-	/*@modifies dp, rgc, wksp @*/;
+static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ uint32* wksp)
+	/*@modifies dp, wksp @*/;
 
 int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x)
 {
@@ -96,7 +96,8 @@ int dldp_pEqual(const dldp_p* a, const dldp_p* b)
 /**
  * needs to make workspace of 8*size+2
  */
-int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
+static int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
+	/*@*/
 {
 	register uint32  size = dp->p.size;
 	register uint32* temp = (uint32*) malloc((8*size+2) * sizeof(uint32));

@@ -347,14 +347,14 @@ int decodeChars(javachar* c, const byte* data, int count)
 	return rc;
 }
 
-int readByte(javabyte* b, FILE* in)
+int readByte(javabyte* b, FILE* ifp)
 {
-	return fread(b, 1, 1, in);
+	return fread(b, 1, 1, ifp);
 }
 
-int readShort(javashort* s, FILE* in)
+int readShort(javashort* s, FILE* ifp)
 {
-	register int rc = fread(s, 2, 1, in);
+	register int rc = fread(s, 2, 1, ifp);
 	#if !(WORDS_BIGENDIAN)
 	if (rc == 1)
 	{
@@ -365,9 +365,9 @@ int readShort(javashort* s, FILE* in)
 	return rc;
 }
 
-int readInt(javaint* i, FILE* in)
+int readInt(javaint* i, FILE* ifp)
 {
-	register int rc = fread(i, 4, 1, in);
+	register int rc = fread(i, 4, 1, ifp);
 	#if !(WORDS_BIGENDIAN)
 	if (rc == 1)
 	{
@@ -378,9 +378,9 @@ int readInt(javaint* i, FILE* in)
 	return rc;
 }
 
-int readLong(javalong* l, FILE* in)
+int readLong(javalong* l, FILE* ifp)
 {
-	register int rc = fread(l, 8, 1, in);
+	register int rc = fread(l, 8, 1, ifp);
 	#if !(WORDS_BIGENDIAN)
 	if (rc == 1)
 	{
@@ -391,9 +391,9 @@ int readLong(javalong* l, FILE* in)
 	return rc;
 }
 
-int readChar(javachar* c, FILE* in)
+int readChar(javachar* c, FILE* ifp)
 {
-	register int rc = fread(c, 2, 1, in);
+	register int rc = fread(c, 2, 1, ifp);
 	#if !(WORDS_BIGENDIAN)
 	if (rc == 1)
 	{
@@ -404,9 +404,9 @@ int readChar(javachar* c, FILE* in)
 	return rc;
 }
 
-int readInts(javaint* i, FILE* in, int count)
+int readInts(javaint* i, FILE* ifp, int count)
 {
-	register int rc = fread(i, 4, count, in);
+	register int rc = fread(i, 4, count, ifp);
 	#if !(WORDS_BIGENDIAN)
 	if (rc == count)
 	{
@@ -421,9 +421,9 @@ int readInts(javaint* i, FILE* in, int count)
 	return rc;
 }
 
-int readChars(javachar* c, FILE* in, int count)
+int readChars(javachar* c, FILE* ifp, int count)
 {
-	register int rc = fread(c, 2, count, in);
+	register int rc = fread(c, 2, count, ifp);
 	#if !(WORDS_BIGENDIAN)
 	if (rc == count)
 	{
@@ -438,52 +438,52 @@ int readChars(javachar* c, FILE* in, int count)
 	return rc;
 }
 
-int writeByte(javabyte b, FILE* out)
+int writeByte(javabyte b, FILE* ofp)
 {
-	return fwrite(&b, 1, 1, out);
+	return fwrite(&b, 1, 1, ofp);
 }
 
-int writeShort(javashort s, FILE* out)
+int writeShort(javashort s, FILE* ofp)
 {
 	#if !(WORDS_BIGENDIAN)
 	s = swap16(s);
 	#endif
-	return fwrite(&s, 2, 1, out);
+	return fwrite(&s, 2, 1, ofp);
 }
 
-int writeInt(javaint i, FILE* out)
+int writeInt(javaint i, FILE* ofp)
 {
 	#if !(WORDS_BIGENDIAN)
 	i = swap32(i);
 	#endif
-	return fwrite(&i, 4, 1, out);
+	return fwrite(&i, 4, 1, ofp);
 }
 
-int writeLong(javalong l, FILE* out)
+int writeLong(javalong l, FILE* ofp)
 {
 	#if !(WORDS_BIGENDIAN)
 	l = swap64(l);
 	#endif
-	return fwrite(&l, 8, 1, out);
+	return fwrite(&l, 8, 1, ofp);
 }
 
-int writeChar(javachar c, FILE* out)
+int writeChar(javachar c, FILE* ofp)
 {
 	#if !(WORDS_BIGENDIAN)
 	c = swap16(c);
 	#endif
-	return fwrite(&c, 2, 1, out);
+	return fwrite(&c, 2, 1, ofp);
 }
 
-int writeInts(const javaint* i, FILE* out, int count)
+int writeInts(const javaint* i, FILE* ofp, int count)
 {
 	#if WORDS_BIGENDIAN
-	return fwrite(i, 4, count, out);
+	return fwrite(i, 4, count, ofp);
 	#else
 	register int total = 0;
 	while (count-- > 0)
 	{
-		register int rc = writeInt(*(i++), out);
+		register int rc = writeInt(*(i++), ofp);
 		if (rc < 0)
 			break;
 		total += rc;
@@ -492,15 +492,15 @@ int writeInts(const javaint* i, FILE* out, int count)
 	#endif
 }
 
-int writeChars(const javachar* c, FILE* out, int count)
+int writeChars(const javachar* c, FILE* ofp, int count)
 {
 	#if WORDS_BIGENDIAN
-	return fwrite(c, 2, count, out);
+	return fwrite(c, 2, count, ofp);
 	#else
 	register int total = 0;
 	while (count-- > 0)
 	{
-		register int rc = writeChar(*(c++), out);
+		register int rc = writeChar(*(c++), ofp);
 		if (rc < 0)
 			break;
 		total += rc;

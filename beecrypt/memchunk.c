@@ -34,6 +34,7 @@
 # include <malloc.h>
 #endif
 
+/*@-compdef@*/	/* tmp-?data is undefined */
 memchunk* memchunkAlloc(int size)
 {
 	memchunk* tmp = (memchunk*) calloc(1, sizeof(memchunk));
@@ -52,6 +53,7 @@ memchunk* memchunkAlloc(int size)
 
 	return tmp;
 }
+/*@=compdef@*/
 
 void memchunkFree(memchunk* m)
 {
@@ -88,7 +90,7 @@ memchunk* memchunkResize(memchunk* m, int size)
 			/*@=nullderef@*/
 	}
 
-	/*@-nullret@*/	/* LCL: m->data might ve NULL */
+	/*@-nullret -compdef @*/	/* LCL: m->data might be NULL */
 	return m;
-	/*@=nullret@*/
+	/*@=nullret =compdef@*/
 }

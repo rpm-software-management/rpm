@@ -1,8 +1,10 @@
+/** \ingroup HASH_sha1_m HASH_m
+ * \file fips180opt.h
+ *
+ * SHA-1 assembler-optimized routines, header.
+ */
+
 /*
- * fips180opt.h
- *
- * SHA-1 assembler-optimized routines, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -34,15 +36,23 @@ extern "C" {
 #endif
 
 #if WIN32
-#if __INTEL__ && __MWERKS__
-#define ASM_SHA1PROCESS
-#endif
+# if defined(_MSC_VER) && defined(_M_IX86)
+#  define ASM_SHA1PROCESS
+# elif __INTEL__ && __MWERKS__
+#  define ASM_SHA1PROCESS
+# endif
 #endif
 
 #ifdef __GNUC__
-#if defined(i586) || defined(i686)
-#define ASM_SHA1PROCESS
+# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
+#  define ASM_SHA1PROCESS
+# endif
 #endif
+
+#if defined(__SUNPRO_C) || defined(__SUNPRO_CC)
+# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
+#  define ASM_SHA1PROCESS
+# endif
 #endif
 
 #ifdef __cplusplus

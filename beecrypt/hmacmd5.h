@@ -46,31 +46,43 @@ extern "C" {
 
 /** \ingroup HMAC_md5_m
  */
-/*@unused@*/ extern BEEDLLAPI const keyedHashFunction hmacmd5;
+extern BEEDLLAPI const keyedHashFunction hmacmd5;
 
 /** \ingroup HMAC_md5_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int hmacmd5Setup (hmacmd5Param* sp, const uint32* key, int keybits)
+	/*@globals md5 @*/
 	/*@modifies sp @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HMAC_md5_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int hmacmd5Reset (hmacmd5Param* sp)
+	/*@globals md5 @*/
 	/*@modifies sp @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HMAC_md5_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int hmacmd5Update(hmacmd5Param* sp, const byte* data, int size)
+	/*@globals md5 @*/
 	/*@modifies sp @*/;
+/*@=exportlocal@*/
 
 /** \ingroup HMAC_md5_m
  */
+/*@-exportlocal@*/
 BEEDLLAPI
 int hmacmd5Digest(hmacmd5Param* sp, uint32* data)
+	/*@globals md5 @*/
 	/*@modifies sp, data @*/;
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 }
