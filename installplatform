@@ -68,14 +68,32 @@ for SUBST in $SUBSTS ; do
     MULTILIBSED='-e /^@MULTILIBSTART@/,/^@MULTILIBEND@/d'
   fi
 
-  cat $PLATFORM | \
-    sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
+  case $VENDOR in
+  pld)
+    VENDORSED='-e s,^@pld@,,'
+    ;;
+  mandrake)
+    VENDORSED='-e s,^@mandrake@,,'
+    RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e s/i386/i686/`"
+    ;;
+  conectiva)
+    VENDORSED='-e s,^@conectiva@,,'
+    ;;
+  redhat)
+    VENDORSED='-e s,^@redhat@,,'
+    ;;
+  esac
+
+  cat $PLATFORM \
+  | sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
 	-e "s,@RPMRC_ARCH@,$base_arch," \
 	-e "s,@LIB@,$LIB," \
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
 	-e "s,@DEFAULTDOCDIR@,$DEFAULTDOCDIR," \
 	-e 's,\${,%{_,' \
 	$MULTILIBSED \
+	$VENDORSED \
+  | grep -v '^@' \
   > ${PPD}/macros
 
   #

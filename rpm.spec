@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jan 17 2001 Jeff Johnson <jbj@redhat.com>
+- 1st crack at Mandrake specific per-platform macros.
+
 * Tue Jan 16 2001 Jeff Johnson <jbj@redhat.com>
 - tsort prefers presentation order.
 

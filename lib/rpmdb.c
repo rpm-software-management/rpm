@@ -1623,6 +1623,12 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	return 1;
     }
 
+    /* Add remove transaction id to header. */
+    if (rid > 0) {
+	int_32 tid = rid;
+	headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
+    }
+
     {	const char *n, *v, *r;
 	headerNVR(h, &n, &v, &r);
 	rpmMessage(RPMMESS_DEBUG, "  --- %10d %s-%s-%s\n", hdrNum, n, v, r);
@@ -1766,6 +1772,12 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     unsigned int hdrNum;
     int rc = 0;
     int xx;
+
+    if (iid > 0) {
+	int_32 tid = iid;
+	headerRemoveEntry(h, RPMTAG_REMOVETID);
+	headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
+    }
 
     /*
      * If old style filename tags is requested, the basenames need to be

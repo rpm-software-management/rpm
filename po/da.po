@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-16 12:32-0500\n"
+"POT-Creation-Date: 2001-01-17 10:57-0500\n"
 "PO-Revision-Date: 2000-03-07 05:17+01:00\n"
 "Last-Translator: K. Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish/Dansk <dansk@klid.dk>\n"
@@ -2405,26 +2405,36 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1522
+#: lib/depends.c:1523
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
+#. T3. Record next "q <- p" relation (i.e. "p" requires "q").
+#: lib/depends.c:1580
+#, c-format
+msgid "========== %s <- %s\n"
+msgstr ""
+
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1710
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1796
+#: lib/depends.c:1755
+msgid "========== successors only (presentation order)\n"
+msgstr ""
+
+#: lib/depends.c:1804
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1827
+#: lib/depends.c:1835
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3329,99 +3339,99 @@ msgstr ""
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: lib/rpmdb.c:1680
+#: lib/rpmdb.c:1686
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1689
+#: lib/rpmdb.c:1695
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1824
+#: lib/rpmdb.c:1836
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: lib/rpmdb.c:1898
+#: lib/rpmdb.c:1910
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1907
+#: lib/rpmdb.c:1919
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2243
+#: lib/rpmdb.c:2255
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2269
+#: lib/rpmdb.c:2281
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:2294
+#: lib/rpmdb.c:2306
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2298
+#: lib/rpmdb.c:2310
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "RPM-database eksisterer allerede"
 
-#: lib/rpmdb.c:2304
+#: lib/rpmdb.c:2316
 #, c-format
 msgid "creating directory %s\n"
 msgstr "opretter kataloget %s\n"
 
-#: lib/rpmdb.c:2306
+#: lib/rpmdb.c:2318
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s\n"
 
-#: lib/rpmdb.c:2313
+#: lib/rpmdb.c:2325
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2324
+#: lib/rpmdb.c:2336
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2347
+#: lib/rpmdb.c:2359
 #, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2384
+#: lib/rpmdb.c:2396
 #, c-format
 msgid "cannot add record originally at %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2402
+#: lib/rpmdb.c:2414
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2410
+#: lib/rpmdb.c:2422
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2412
+#: lib/rpmdb.c:2424
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2422
+#: lib/rpmdb.c:2434
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjener kataloget %s\n"
 
-#: lib/rpmdb.c:2424
+#: lib/rpmdb.c:2436
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

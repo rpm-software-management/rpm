@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.136 2001/01/16 17:34:02 jbj Exp $
+# $Id: sl.po,v 1.137 2001/01/17 16:00:43 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-16 12:32-0500\n"
+"POT-Creation-Date: 2001-01-17 10:57-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2559,26 +2559,36 @@ msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s jw v sporu z: %s\n"
 
-#: lib/depends.c:1522
+#: lib/depends.c:1523
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
+#. T3. Record next "q <- p" relation (i.e. "p" requires "q").
+#: lib/depends.c:1580
+#, c-format
+msgid "========== %s <- %s\n"
+msgstr ""
+
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1710
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1796
+#: lib/depends.c:1755
+msgid "========== successors only (presentation order)\n"
+msgstr ""
+
+#: lib/depends.c:1804
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1827
+#: lib/depends.c:1835
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3523,102 +3533,102 @@ msgstr "napaka(%d) pri ¹tetju paketov"
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ni mo¾no prebrati glave pri 0x%x"
 
-#: lib/rpmdb.c:1680
+#: lib/rpmdb.c:1686
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstranjevanje \"%s\" iz kazala %s.\n"
 
-#: lib/rpmdb.c:1689
+#: lib/rpmdb.c:1695
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstranjevanje %d vnosov iz kazala %s\n"
 
-#: lib/rpmdb.c:1824
+#: lib/rpmdb.c:1836
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "napaka(%d) pri iskanju paketa %s\n"
 
-#: lib/rpmdb.c:1898
+#: lib/rpmdb.c:1910
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "dodajanje \"%s\" v kazalo %s.\n"
 
-#: lib/rpmdb.c:1907
+#: lib/rpmdb.c:1919
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "dodajanje %d vnosov v kazalo %s.\n"
 
-#: lib/rpmdb.c:2243
+#: lib/rpmdb.c:2255
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2269
+#: lib/rpmdb.c:2281
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
-#: lib/rpmdb.c:2294
+#: lib/rpmdb.c:2306
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
-#: lib/rpmdb.c:2298
+#: lib/rpmdb.c:2310
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "zaèasna podatkovna zbirka %s ¾e obstaja"
 
-#: lib/rpmdb.c:2304
+#: lib/rpmdb.c:2316
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ustvarjanje imenika: %s\n"
 
-#: lib/rpmdb.c:2306
+#: lib/rpmdb.c:2318
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ustvarjanje imenika: %s\n"
 
-#: lib/rpmdb.c:2313
+#: lib/rpmdb.c:2325
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "odpiranje stare podatkovne zbirke\n"
 
-#: lib/rpmdb.c:2324
+#: lib/rpmdb.c:2336
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "odpiramo nove podatkovne zbirke z dbapi %d\n"
 
-#: lib/rpmdb.c:2347
+#: lib/rpmdb.c:2359
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr "zapis ¹t. %d v zbirki je po¹kodovan -- preskoèeno."
 
-#: lib/rpmdb.c:2384
+#: lib/rpmdb.c:2396
 #, fuzzy, c-format
 msgid "cannot add record originally at %d\n"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: lib/rpmdb.c:2402
+#: lib/rpmdb.c:2414
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke je bila neuspe¹na; stara ostaja na\n"
 "istem mestu\n"
 
-#: lib/rpmdb.c:2410
+#: lib/rpmdb.c:2422
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo je bila neuspe¹na!\n"
 
-#: lib/rpmdb.c:2412
+#: lib/rpmdb.c:2424
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "poskus povrnitve z nadomestitvijo datotek v %s z datotekami v %s"
 
-#: lib/rpmdb.c:2422
+#: lib/rpmdb.c:2434
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "odstranjevanje imenika: %s\n"
 
-#: lib/rpmdb.c:2424
+#: lib/rpmdb.c:2436
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"

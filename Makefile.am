@@ -91,58 +91,61 @@ lclint:
 
 CVSTAG = r$(subst .,-,$(VERSION))
 
+pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
+
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
-	@rm -f $(DESTDIR)/$(libdir)/rpmrc
-	@@LN_S@ rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
-	@rm -f $(DESTDIR)/$(libdir)/rpmpopt
-	@@LN_S@ rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
-	@rm -f $(DESTDIR)/$(libdir)/rpm/rpmt
-	@@LN_S@ rpmb $(DESTDIR)/$(libdir)/rpm/rpmt
-	@rm -f $(DESTDIR)/$(libdir)/rpm/rpme
-	@@LN_S@ rpmi $(DESTDIR)/$(libdir)/rpm/rpme
-	@rm -f $(DESTDIR)/$(libdir)/rpm/rpmu
-	@@LN_S@ rpmi $(DESTDIR)/$(libdir)/rpm/rpmu
-	@rm -f $(DESTDIR)/$(libdir)/rpm/rpmv
-	@@LN_S@ rpmq $(DESTDIR)/$(libdir)/rpm/rpmv
-	rm -f $(DESTDIR)/$(bindir)/rpmbuild
-	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)/$(bindir)/rpmbuild
-	rm -f $(DESTDIR)/$(bindir)/rpmquery
-	@LN_S@ ../lib/rpm/rpmq $(DESTDIR)/$(bindir)/rpmquery
-	rm -f $(DESTDIR)/$(bindir)/rpmverify
-	@LN_S@ ../lib/rpm/rpmv $(DESTDIR)/$(bindir)/rpmverify
-	rm -f $(DESTDIR)/$(bindir)/rpmsign
-	@LN_S@ ../lib/rpm/rpmk $(DESTDIR)/$(bindir)/rpmsign
+	@rm -f $(DESTDIR)$(libdir)/rpmrc
+	@@LN_S@ rpm/rpmrc $(DESTDIR)$(libdir)/rpmrc
+	@rm -f $(DESTDIR)$(libdir)/rpmpopt
+	@@LN_S@ rpm/rpmpopt $(DESTDIR)$(libdir)/rpmpopt
+	@rm -f $(DESTDIR)$(libdir)/rpm/rpmt
+	@@LN_S@ rpmb $(DESTDIR)$(libdir)/rpm/rpmt
+	@rm -f $(DESTDIR)$(libdir)/rpm/rpme
+	@@LN_S@ rpmi $(DESTDIR)$(libdir)/rpm/rpme
+	@rm -f $(DESTDIR)$(libdir)/rpm/rpmu
+	@@LN_S@ rpmi $(DESTDIR)$(libdir)/rpm/rpmu
+	@rm -f $(DESTDIR)$(libdir)/rpm/rpmv
+	@@LN_S@ rpmq $(DESTDIR)$(libdir)/rpm/rpmv
+	rm -f $(DESTDIR)$(bindir)/rpmbuild
+	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)$(bindir)/rpmbuild
+	rm -f $(DESTDIR)$(bindir)/rpmquery
+	@LN_S@ ../lib/rpm/rpmq $(DESTDIR)$(bindir)/rpmquery
+	rm -f $(DESTDIR)$(bindir)/rpmverify
+	@LN_S@ ../lib/rpm/rpmv $(DESTDIR)$(bindir)/rpmverify
+	rm -f $(DESTDIR)$(bindir)/rpmsign
+	@LN_S@ ../lib/rpm/rpmk $(DESTDIR)$(bindir)/rpmsign
 	for bf in db e i u ; do \
-	    rm -f $(DESTDIR)/$(bindir)/rpm$$bf ; \
-	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)/$(bindir)/rpm$$bf ; \
+	    rm -f $(DESTDIR)$(bindir)/rpm$$bf ; \
+	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)$(bindir)/rpm$$bf ; \
 	done
-	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
+	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/BUILD
 	@case "@build_cpu@" in \
-	*86)	$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i386;\
-		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i486;\
-		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i586;\
-		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i686;\
-		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/athlon ;;\
-	alpha*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alpha;\
-		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alphaev6 ;;\
-	sparc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc;\
-		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparcv9;\
-		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc64 ;;\
-	ia64*)	$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/ia64 ;;\
-	powerpc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/ppc ;;\
+	*86)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i386;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i486;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i586;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i686;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;;\
+	alpha*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
+	sparc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;;\
+	ia64*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
+	s390*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
+	powerpc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;;\
 	esac
 	@case "@build_os@" in \
-	mint) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/m68kmint ;;\
+	mint) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
 	solaris*|linux*) \
 	   chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ; \
-	   $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
-	*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
+	   $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@build_cpu@ ;;\
+	*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@build_cpu@ ;;\
 	esac
-	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
-	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SOURCES
-	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS
-	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS
+	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
+	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/SOURCES
+	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/SPECS
+	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/SRPMS
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
 .PHONY: tar

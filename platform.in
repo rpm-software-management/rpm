@@ -27,6 +27,7 @@
 %_oldincludedir		@oldincludedir@
 %_infodir		@infodir@
 %_mandir		@mandir@
+%_initrddir		%{_sysconfdir}/rc.d/init.d
 
 %_defaultdocdir		@DEFAULTDOCDIR@
 
@@ -62,7 +63,68 @@
 
 @MULTILIBSTART@
 #------------------------------------------------------------------------
-#       Multilibs
+#	Multilibs
 %_multilibno		@MULTILIBNO@
 %_multilibpatt		(/%{_lib}|/usr/%{_lib}(|/gconv)|/usr/local/%{_lib}|/usr/X11R6/%{_lib}|/opt/%{_lib})/[^/]*\\.([oa]|la|so[0-9.]*)$
 @MULTILIBEND@
+
+@mandrake@#------------------------------------------------------------------------
+@mandrake@#	Mandrake vendor specific macros
+@mandrake@# XXX Add a support e-mail address here, please.
+@mandrake@#
+@mandrake@#
+@mandrake@# XXX These values, particularly vendor, need to be regularized, please.
+@mandrake@%_vendor		MandrakeSoft
+@mandrake@%_real_vendor		mandrake
+@mandrake@%_target_platform	%{_target_cpu}-%{_real_vendor}-%{_target_os}
+@mandrake@
+@mandrake@# XXX I'll make these the default linux values soon as I can.
+@mandrake@%_libexecdir		%{_libdir}
+@mandrake@%_localstatedir		%{_var}/lib
+@mandrake@
+@mandrake@# XXX A copy of brp-mandrake, please. I'd suggest break down by
+@mandrake@#     functionality rather than vendor <shrug>.
+@mandrake@%__os_install_post    \
+@mandrake@    /usr/lib/rpm/brp-mandrake \
+@mandrake@%{nil}
+@mandrake@
+@mandrake@# make
+@mandrake@%_make_bin make
+@mandrake@%make if [ -z "$NPROCS" -a -f /proc/stat ]; then NPROCS=`egrep -c ^cpu[0-9]+ /proc/stat || :`; fi \
+@mandrake@if [ -z "$NPROCS" -o "$NPROCS" -le "0" ]; then \
+@mandrake@  NPROCS=1 \
+@mandrake@fi \
+@mandrake@%{_make_bin} -j$NPROCS
+@mandrake@
+@mandrake@# Menu directories
+@mandrake@%_menudir %{_libdir}/menu
+@mandrake@%_iconsdir %{_datadir}/icons
+@mandrake@%_miconsdir %{_datadir}/icons/mini
+@mandrake@%_liconsdir %{_datadir}/icons/large
+@mandrake@
+@mandrake@# Update Menu
+@mandrake@%_update_menus_bin %{_bindir}/update-menus
+@mandrake@%update_menus if [ -x %{_update_menus_bin} ]; then %{_update_menus_bin} || true ; fi
+@mandrake@
+@mandrake@# Clean Menu
+@mandrake@%clean_menus if [ "$1" = "0" -a -x %{_update_menus_bin} ]; then %{_update_menus_bin} || true ; fi
+@mandrake@
+@mandrake@# Update Window Managers session.
+@mandrake@%_fndsession_bin %{_sbindir}/fndSession
+@mandrake@%make_session if [ -x %{_fndsession_bin} ]; then %{_fndsession_bin} || true ; fi
+@mandrake@
+@mandrake@#	Where install-info is located
+@mandrake@%__install_info		/sbin/install-info
+@mandrake@
+@mandrake@#	Macros to install info-files.
+@mandrake@%_install_info()	%{__install_info} %{_infodir}/%{1}%{_extension} --dir=%{_infodir}/dir\;
+@mandrake@
+@mandrake@#	Macros to remove info-files. (keep the "alone on its line ';'")
+@mandrake@%_remove_install_info() if [ "$1" = "0" ]; then %{__install_info} \\\
+@mandrake@ %{_infodir}/%{1}%{_extension} --dir=%{_infodir}/dir --remove ; fi\
+@mandrake@%{nil}
+@mandrake@
+@mandrake@# Games macros
+@mandrake@%_gamesdir	games
+@mandrake@%_gamesbindir   %{_prefix}/%{_gamesdir}
+@mandrake@%_gamesdatadir  %{_datadir}/%{_gamesdir}

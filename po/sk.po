@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-16 12:32-0500\n"
+"POT-Creation-Date: 2001-01-17 10:57-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2570,26 +2570,36 @@ msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 msgid "package %s conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/depends.c:1522
+#: lib/depends.c:1523
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstraòuje sa index skupín\n"
 
+#. T3. Record next "q <- p" relation (i.e. "p" requires "q").
+#: lib/depends.c:1580
+#, c-format
+msgid "========== %s <- %s\n"
+msgstr ""
+
 #. Record all relations.
-#: lib/depends.c:1660
+#: lib/depends.c:1663
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1707
+#: lib/depends.c:1710
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1796
+#: lib/depends.c:1755
+msgid "========== successors only (presentation order)\n"
+msgstr ""
+
+#: lib/depends.c:1804
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1827
+#: lib/depends.c:1835
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3529,100 +3539,100 @@ msgstr "chyba pri hµadaní balíka %s\n"
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: lib/rpmdb.c:1680
+#: lib/rpmdb.c:1686
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:1689
+#: lib/rpmdb.c:1695
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:1824
+#: lib/rpmdb.c:1836
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: lib/rpmdb.c:1898
+#: lib/rpmdb.c:1910
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:1907
+#: lib/rpmdb.c:1919
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:2243
+#: lib/rpmdb.c:2255
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2269
+#: lib/rpmdb.c:2281
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: lib/rpmdb.c:2294
+#: lib/rpmdb.c:2306
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rpmdb.c:2298
+#: lib/rpmdb.c:2310
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rpmdb.c:2304
+#: lib/rpmdb.c:2316
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2306
+#: lib/rpmdb.c:2318
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2313
+#: lib/rpmdb.c:2325
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rpmdb.c:2324
+#: lib/rpmdb.c:2336
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rpmdb.c:2347
+#: lib/rpmdb.c:2359
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rpmdb.c:2384
+#: lib/rpmdb.c:2396
 #, fuzzy, c-format
 msgid "cannot add record originally at %d\n"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rpmdb.c:2402
+#: lib/rpmdb.c:2414
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rpmdb.c:2410
+#: lib/rpmdb.c:2422
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rpmdb.c:2412
+#: lib/rpmdb.c:2424
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rpmdb.c:2422
+#: lib/rpmdb.c:2434
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2424
+#: lib/rpmdb.c:2436
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
