@@ -15,12 +15,6 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
-#if defined HAVE_ENDIAN_H
-#include <endian.h>
-#elif defined HAVE_MACHINE_ENDIAN_H
-#include <machine/endian.h>
-#endif
-
 #include <string.h>		/* for memcpy() */
 #include "md5.h"
 
@@ -54,7 +48,7 @@ void MD5Init(struct MD5Context *ctx, int brokenEndian)
     ctx->bits[0] = 0;
     ctx->bits[1] = 0;
 
-    #if BYTE_ORDER == BIG_ENDIAN
+    #ifdef WORDS_BIGENDIAN
 	if (brokenEndian) {
 	    ctx->doByteReverse = 0;
 	} else {
