@@ -687,7 +687,7 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
 int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags)
 {
     const char * epoch, * version, * release;
-    const char * reqEpoch = "0";
+    const char * reqEpoch = NULL;
     const char * reqVersion = reqInfo;
     const char * reqRelease = NULL;
     const char *s, *se;
@@ -708,7 +708,7 @@ int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags)
 	if (reqFlags & RPMSENSE_SERIAL)
 	    return 0;
 #endif	/* RPMSENSE_SERIAL */
-	epoch = "0";
+	epoch = "0";	/* assume package is epoch 0 */
     } else {
 	sprintf(buf, "%d", *epochval);
 	epoch = buf;
@@ -730,7 +730,7 @@ int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags)
 	    reqVersion = rv + (s - reqInfo) + 1;
 	   if (*reqEpoch == '\0') reqEpoch = "0";
 	} else {
-	    reqEpoch = "0";
+	    reqEpoch = epoch;	/* XXX assume same epoch as package */
 	    reqVersion = rv;
 	}
 	if (se) {
@@ -739,8 +739,8 @@ int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags)
 	}
     }
 
-    /* Compare {package,rquires} epoch:version[-release] */
-    sense = rpmvercmp(epoch, reqEpoch);
+    /* Compare {package,requires} [epoch:]version[-release] */
+    sense = ((reqEpoch != NULL) ? rpmvercmp(epoch, reqEpoch) : 0);
     if (sense == 0) {
 	sense = rpmvercmp(version, reqVersion);
 	if (sense == 0 && reqRelease && *reqRelease) {
