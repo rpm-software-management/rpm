@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-13 14:24-0500\n"
+"POT-Creation-Date: 1999-12-15 10:33-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2145,85 +2145,85 @@ msgid "error removing record %s into %s"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:411
+#: lib/depends.c:417
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:440
+#: lib/depends.c:446
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:532
+#: lib/depends.c:538
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:777
+#: lib/depends.c:784
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:816
+#: lib/depends.c:823
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:833
+#: lib/depends.c:840
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:864
+#: lib/depends.c:871
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:892
+#: lib/depends.c:899
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:921
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:936
+#: lib/depends.c:943
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:949
+#: lib/depends.c:956
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:959
+#: lib/depends.c:966
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1007
+#: lib/depends.c:1014
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
 #. conflicts exist.
-#: lib/depends.c:1069
+#: lib/depends.c:1076
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/depends.c:1124 lib/depends.c:1423
+#: lib/depends.c:1131 lib/depends.c:1430
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "en voi lukea headeria %d:ss‰ riippuvuutta tarkistaessa"
 
-#: lib/depends.c:1219
+#: lib/depends.c:1226
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "silmukka edellytysten ketjussa: %s"
