@@ -499,20 +499,31 @@ static int parseForVerify(char *buf, int *verify_flags)
 {
     char *p, *start, *end;
     char ourbuf[1024];
+    int not;
 
     if (!(p = start = strstr(buf, "%verify"))) {
 	return 1;
     }
 
     p += 7;
-    while (*p != '(') {
+    while (*p && *p == ' ' && *p == '\t') {
 	p++;
+    }
+
+    if (*p != '(') {
+	error(RPMERR_BADSPEC, "Bad %%verify() syntax: %s", buf);
+	return 0;
     }
     p++;
 
     end = p;
-    while (*end != ')') {
+    while (*end && *end != ')') {
 	end++;
+    }
+
+    if (! *end) {
+	error(RPMERR_BADSPEC, "Bad %%verify() syntax: %s", buf);
+	return 0;
     }
 
     strncpy(ourbuf, p, end-p);
@@ -521,14 +532,40 @@ static int parseForVerify(char *buf, int *verify_flags)
     }
 
     p = strtok(ourbuf, " \n\t");
+    not = 0;
+    *verify_flags = VERIFY_NONE;
     while (p) {
-	if (!strcmp(p, "md5")) {
+	if (!strcmp(p, "not")) {
+	    not = 1;
 	} else if (!strcmp(p, "md5")) {
+	    *verify_flags |= VERIFY_MD5;
+	} else if (!strcmp(p, "size")) {
+	    *verify_flags |= VERIFY_FILESIZE;
+	} else if (!strcmp(p, "link")) {
+	    *verify_flags |= VERIFY_LINKTO;
+	} else if (!strcmp(p, "uid")) {
+	    *verify_flags |= VERIFY_UID;
+	} else if (!strcmp(p, "gid")) {
+	    *verify_flags |= VERIFY_GID;
+	} else if (!strcmp(p, "username")) {
+	    *verify_flags |= VERIFY_USERNAME;
+	} else if (!strcmp(p, "groupname")) {
+	    *verify_flags |= VERIFY_GROUPNAME;
+	} else if (!strcmp(p, "mtime")) {
+	    *verify_flags |= VERIFY_MTIME;
+	} else if (!strcmp(p, "mode")) {
+	    *verify_flags |= VERIFY_MODE;
+	} else if (!strcmp(p, "rdev")) {
+	    *verify_flags |= VERIFY_RDEV;
 	} else {
-	    error(RPMERR_BADSPEC, "Invalid %verify token: %s", p);
+	    error(RPMERR_BADSPEC, "Invalid %%verify token: %s", p);
 	    return 0;
 	}
 	p = strtok(NULL, " \n\t");
+    }
+
+    if (not) {
+	*verify_flags = ~(*verify_flags);
     }
 
     return 1;
