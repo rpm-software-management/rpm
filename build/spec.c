@@ -848,8 +848,6 @@ struct preamble_line {
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
     {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
     {RPMTAG_BUILDROOT,     0, "buildroot"},
-    {RPMTAG_BUILDARCH,     0, "buildarch"},
-    {RPMTAG_BUILDOS,       0, "buildos"},
     {RPMTAG_AUTOREQPROV,   0, "autoreqprov"},
     {0, 0, 0}
 };
@@ -1314,12 +1312,6 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		  case RPMTAG_SERIAL:
 		    serial = atoi(s);
 		    headerAddEntry(cur_package->header, tag, RPM_INT32_TYPE, &serial, 1);
-		    break;
-		  case RPMTAG_BUILDARCH:
-		    setArch(s, 1);
-		    break;
-		  case RPMTAG_BUILDOS:
-		    setOs(s, 1);
 		    break;
 		  case RPMTAG_DESCRIPTION:
 		    /* Special case -- need to handle backslash */
