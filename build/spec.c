@@ -6,6 +6,8 @@
 /*****************************
 TODO:
 
+. skip blank lines
+. strip leading/trailing spaces in %preamble and %files
 . multiline descriptions (general backslash processing)
 . real arch/os checking
 . %exclude
@@ -24,6 +26,7 @@ TODO:
 
 #include "header.h"
 #include "spec.h"
+#include "specP.h"
 #include "rpmerr.h"
 #include "messages.h"
 #include "rpmlib.h"
@@ -31,28 +34,6 @@ TODO:
 
 #define LINE_BUF_SIZE 1024
 #define FREE(x) { if (x) free(x); }
-
-struct SpecRec {
-    char *name;      /* package base name */
-    StringBuf prep;
-    StringBuf build;
-    StringBuf install;
-    StringBuf clean;
-    struct PackageRec *packages;
-    /* The first package record is the "main" package and contains
-     * the bulk of the preamble information.  Subsequent package
-     * records "inherit" from the main record.  Note that the
-     * "main" package may be, in pre-rpm-2.0 terms, a "subpackage".
-     */
-};
-
-struct PackageRec {
-    char *subname;   /* If both of these are NULL, then this is      */
-    char *newname;   /* the main package.  subname concats with name */
-    Header header;
-    StringBuf filelist;
-    struct PackageRec *next;
-};
 
 static struct PackageRec *new_packagerec(void);
 static int read_line(FILE *f, char *line);
@@ -62,6 +43,56 @@ static void free_packagerec(struct PackageRec *p);
 static void reset_spec(void);
 static int find_preamble_line(char *line, char **s);
 static int check_part(char *line, char **s);
+int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags);
+static void dumpPackage(struct PackageRec *p, FILE *f);
+char *chop_line(char *s);
+
+/**********************************************************************/
+/*                                                                    */
+/* Spec and package structure creation/deletion/lookup                */
+/*                                                                    */
+/**********************************************************************/
+
+void dumpSpec(Spec s, FILE *f)
+{
+    struct PackageRec *p;
+    
+    fprintf(f, "########################################################\n");
+    fprintf(f, "SPEC NAME = (%s)\n", s->name);
+    fprintf(f, "PREP =v\n");
+    fprintf(f, "%s", getStringBuf(s->prep));
+    fprintf(f, "PREP =^\n");
+    fprintf(f, "BUILD =v\n");
+    fprintf(f, "%s", getStringBuf(s->build));
+    fprintf(f, "BUILD =^\n");
+    fprintf(f, "INSTALL =v\n");
+    fprintf(f, "%s", getStringBuf(s->install));
+    fprintf(f, "INSTALL =^\n");
+    fprintf(f, "CLEAN =v\n");
+    fprintf(f, "%s", getStringBuf(s->clean));
+    fprintf(f, "CLEAN =^\n");
+
+    p = s->packages;
+    while (p) {
+	dumpPackage(p, f);
+	p = p->next;
+    }
+}
+
+static void dumpPackage(struct PackageRec *p, FILE *f)
+{
+    fprintf(f, "_________________________________________________________\n");
+    fprintf(f, "SUBNAME = (%s)\n", p->subname);
+    fprintf(f, "NEWNAME = (%s)\n", p->newname);
+    fprintf(f, "FILES = %d\n", p->files);
+    fprintf(f, "FILES =v\n");
+    fprintf(f, "%s", getStringBuf(p->filelist));
+    fprintf(f, "FILES =^\n");
+    fprintf(f, "HEADER =v\n");
+    dumpHeader(p->header, f, 1);
+    fprintf(f, "HEADER =^\n");
+
+}
 
 static struct PackageRec *new_packagerec(void)
 {
@@ -71,6 +102,7 @@ static struct PackageRec *new_packagerec(void)
     p->newname = NULL;
     p->header = newHeader();
     p->filelist = newStringBuf();
+    p->files = 0;
     p->next = NULL;
 
     return p;
@@ -98,6 +130,81 @@ void freeSpec(Spec s)
     free_packagerec(s->packages);
     free(s);
 }
+
+#define LP_CREATE           1
+#define LP_FAIL_EXISTS     (1 << 1)
+#define LP_SUBNAME         (1 << 2)
+#define LP_NEWNAME         (1 << 3)
+
+int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
+{
+    struct PackageRec *package;
+    struct PackageRec **ppp;
+
+    package = s->packages;
+    while (package) {
+	if (flags & (LP_SUBNAME | LP_NEWNAME)) {
+	    if ((! package->newname) & (! package->subname)) {
+		package = package->next;
+		continue;
+	    }
+	}
+	if (flags & LP_SUBNAME) {
+	    if (! strcmp(package->subname, name)) {
+		break;
+	    }
+	} else if (flags & LP_NEWNAME) {
+	    if (! strcmp(package->newname, name)) {
+		break;
+	    }
+	} else {
+	    /* Base package */
+	    if ((! package->newname) & (! package->subname)) {
+		break;
+	    }
+	}
+	package = package->next;
+    }
+    
+    if (package && (flags & LP_FAIL_EXISTS)) {
+	return 0;
+    }
+
+    if (package) {
+	*pr = package;
+	return 1;
+    }
+
+    /* At this point the package does not exist */
+
+    if (! (flags & LP_CREATE)) {
+	return 0;
+    }
+
+    /* Create it */
+    package = new_packagerec();
+    if (flags & LP_SUBNAME) {
+	package->subname = strdup(name);
+    } else if (flags & LP_NEWNAME) {
+	package->newname = strdup(name);
+    }
+
+    /* Link it in to the spec */
+    ppp = &(s->packages);
+    while (*ppp) {
+	ppp = &((*ppp)->next);
+    }
+    *ppp = package;
+
+    *pr = package;
+    return 1;
+}
+
+/**********************************************************************/
+/*                                                                    */
+/* Line reading                                                       */
+/*                                                                    */
+/**********************************************************************/
 
 static int match_arch(char *s)
 {
@@ -170,6 +277,12 @@ static int read_line(FILE *f, char *line)
     }
     return 1;
 }
+
+/**********************************************************************/
+/*                                                                    */
+/* Line parsing                                                       */
+/*                                                                    */
+/**********************************************************************/
 
 struct preamble_line {
     int tag;
@@ -249,15 +362,37 @@ static int check_part(char *line, char **s)
     return p->part;
 }
 
+char *chop_line(char *s)
+{
+    char *p, *e;
+
+    p = s;
+    p += strspn(s, " \t");
+    if (*p == '\0') {
+	return NULL;
+    }
+    e = s + strlen(s) - 1;
+    while (index(" \t", *e)) {
+	e--;
+    }
+    return p;
+}
+
+/**********************************************************************/
+/*                                                                    */
+/* Main specfile parsing routine                                      */
+/*                                                                    */
+/**********************************************************************/
+
 Spec parseSpec(FILE *f)
 {
     char line[LINE_BUF_SIZE];
     int x, tag, cur_part, t1;
+    int lookupopts;
     StringBuf sb;
-    char *s;
+    char *s = NULL;
 
     struct PackageRec *cur_package = NULL;
-    struct PackageRec *tail_package = NULL;
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
 
     spec->name = NULL;
@@ -272,18 +407,9 @@ Spec parseSpec(FILE *f)
     
     cur_part = PREAMBLE_PART;
     while ((x = read_line(f, line)) > 0) {
+	s = NULL;
         if ((tag = check_part(line, &s))) {
-	    printf("Switching to: %d\n", tag);
-	    if (s) {
-	        switch (tag) {
-		  case PREP_PART:
-		  case BUILD_PART:
-		  case INSTALL_PART:
-		  case CLEAN_PART:
-		    error(RPMERR_BADARG, "Tag takes no arguments: %s", s);
-	        }
-	        printf("Subname: %s\n", s);
-	    }
+	    printf("Switching to part: %d\n", tag);
 	    switch (cur_part) {
 	      case PREIN_PART:
 		t1 = RPMTAG_PREIN;
@@ -299,14 +425,54 @@ Spec parseSpec(FILE *f)
 	    }
 	    cur_part = tag;
 	    truncStringBuf(sb);
+
+	    /* Now switch the current package to s */
+	    lookupopts = (s) ? LP_SUBNAME : 0;
+	    if (tag == PREAMBLE_PART) {
+		lookupopts |= LP_CREATE | LP_FAIL_EXISTS;
+	    }
+	    if (s) {
+	        switch (tag) {
+		  case PREP_PART:
+		  case BUILD_PART:
+		  case INSTALL_PART:
+		  case CLEAN_PART:
+		    error(RPMERR_BADARG, "Tag takes no arguments: %s", s);
+		    fprintf(stderr, "Tag takes no arguments: %s\n", s);
+		    exit(RPMERR_BADARG);
+	        }
+	    }
+
+	    if (! lookup_package(spec, &cur_package, s, lookupopts)) {
+		error(RPMERR_INTERNAL, "Package lookup failed!");
+		exit(RPMERR_INTERNAL);
+	    }
+
+	    printf("Switched to package: %s\n", s);
 	    continue;
         }
-      
+
+	/* Check for implicit "base" package */
+	if (! cur_package) {
+	    lookupopts = 0;
+	    if (cur_part == PREAMBLE_PART) {
+		lookupopts = LP_CREATE | LP_FAIL_EXISTS;
+	    }
+	    if (! lookup_package(spec, &cur_package, NULL, lookupopts)) {
+		error(RPMERR_INTERNAL, "Base package lookup failed!");
+		exit(RPMERR_INTERNAL);
+	    }
+	    printf("Switched to BASE package\n");
+	}
+	
         switch (cur_part) {
 	  case PREAMBLE_PART:
 	    if ((tag = find_preamble_line(line, &s))) {
 	        switch (tag) {
 		  case RPMTAG_NAME:
+		    if (!spec->name) {
+			spec->name = strdup(s);
+		    }
 		  case RPMTAG_VERSION:
 		  case RPMTAG_RELEASE:
 		  case RPMTAG_SERIAL:
@@ -318,7 +484,6 @@ Spec parseSpec(FILE *f)
 		  case RPMTAG_PACKAGER:
 		  case RPMTAG_GROUP:
 		  case RPMTAG_URL:
-		    printf("%d: %s\n", tag, s);
 		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
 		    break;
 		  default:
@@ -348,12 +513,14 @@ Spec parseSpec(FILE *f)
 	    appendLineStringBuf(sb, line);
 	    break;
 	  case FILES_PART:
+	    cur_package->files++;
 	    appendLineStringBuf(cur_package->filelist, line);
 	    break;
 	  default:
-	    error(RPMERR_INTERNALBADPART, "Internal error");
+	    error(RPMERR_INTERNAL, "Bad part");
 	    printf("%s\n", line);
-	}
+	    exit(RPMERR_INTERNAL);
+	} /* switch */
     }
     if (x < 0) {
         fprintf(stderr, "ERROR\n");
@@ -363,6 +530,12 @@ Spec parseSpec(FILE *f)
 
     return spec;
 }
+
+/**********************************************************************/
+/*                                                                    */
+/* Resets the parser                                                  */
+/*                                                                    */
+/**********************************************************************/
 
 static void reset_spec()
 {
