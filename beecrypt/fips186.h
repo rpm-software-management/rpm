@@ -64,13 +64,17 @@ extern "C" {
 extern BEECRYPTAPI const randomGenerator fips186prng;
 
 BEECRYPTAPI
-int fips186Setup  (fips186Param*);
+int fips186Setup  (fips186Param*)
+	/*@*/;
 BEECRYPTAPI
-int fips186Seed   (fips186Param*, const byte*, size_t);
+int fips186Seed   (fips186Param*, const byte*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int fips186Next   (fips186Param*, byte*, size_t);
+int fips186Next   (fips186Param*, byte*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int fips186Cleanup(fips186Param*);
+int fips186Cleanup(fips186Param*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

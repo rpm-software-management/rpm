@@ -68,7 +68,8 @@ extern const BEECRYPTAPI blockCipher aes;
  * \retval -1 on failure.
  */
 BEECRYPTAPI
-int			aesSetup   (aesParam* ap, const byte* key, size_t keybits, cipherOperation op);
+int			aesSetup   (aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
+	/*@*/;
 
 /*!\fn int aesSetIV(aesParam* ap, const byte* iv)
  * \brief This function sets the Initialization Vector.
@@ -78,7 +79,8 @@ int			aesSetup   (aesParam* ap, const byte* key, size_t keybits, cipherOperation
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int			aesSetIV   (aesParam* ap, const byte* iv);
+int			aesSetIV   (aesParam* ap, const byte* iv)
+	/*@*/;
 
 /*!\fn aesEncrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
  * \brief This function performs the raw AES encryption; it encrypts one block
@@ -89,7 +91,8 @@ int			aesSetIV   (aesParam* ap, const byte* iv);
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int			aesEncrypt (aesParam* ap, uint32_t* dst, const uint32_t* src);
+int			aesEncrypt (aesParam* ap, uint32_t* dst, const uint32_t* src)
+	/*@*/;
 
 /*!\fn aesDecrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
  * \brief This function performs the raw AES decryption; it decrypts one block
@@ -100,10 +103,12 @@ int			aesEncrypt (aesParam* ap, uint32_t* dst, const uint32_t* src);
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int			aesDecrypt (aesParam* ap, uint32_t* dst, const uint32_t* src);
+int			aesDecrypt (aesParam* ap, uint32_t* dst, const uint32_t* src)
+	/*@*/;
 
 BEECRYPTAPI
-uint32_t*	aesFeedback(aesParam* ap);
+uint32_t*	aesFeedback(aesParam* ap)
+	/*@*/;
 
 #ifdef __cplusplus
 }

@@ -44,7 +44,8 @@
  * \brief Prototype definition for an entropy-generating function.
  * \ingroup ES_m
  */
-typedef int (*entropyNext)(byte*, size_t);
+typedef int (*entropyNext)(byte*, size_t)
+	/*@*/;
 
 /*!\brief This struct holds information and pointers to code specific to each
  *  source of entropy.
@@ -80,7 +81,8 @@ extern "C" {
  * \return The number of implemented entropy sources.
  */
 BEECRYPTAPI
-int						entropySourceCount(void);
+int						entropySourceCount(void)
+	/*@*/;
 
 /*!\fn const entropySource* entropySourceGet(int n)
  * \brief This function returns the \a n -th entropy source implemented by
@@ -91,7 +93,8 @@ int						entropySourceCount(void);
  *  range.
  */
 BEECRYPTAPI
-const entropySource*	entropySourceGet(int n);
+const entropySource*	entropySourceGet(int n)
+	/*@*/;
 
 /*!\fn const entropySource* entropySourceFind(const char* name)
  * \brief This function returns the entropy source specified by the given name.
@@ -99,7 +102,8 @@ const entropySource*	entropySourceGet(int n);
  * \return A pointer to an entropy source or null, if the name wasn't found.
  */
 BEECRYPTAPI
-const entropySource*	entropySourceFind(const char* name);
+const entropySource*	entropySourceFind(const char* name)
+	/*@*/;
 
 /*!\fn const entropySource* entropySourceDefault()
  * \brief This functions returns the default entropy source; the default value
@@ -107,7 +111,8 @@ const entropySource*	entropySourceFind(const char* name);
  * \return A pointer to an entropy source or null, in case an error occured.
  */
 BEECRYPTAPI
-const entropySource*	entropySourceDefault(void);
+const entropySource*	entropySourceDefault(void)
+	/*@*/;
 
 /*!\fn int entropyGatherNext(byte* data, size_t size)
  * \brief This function gathers \a size bytes of entropy into \a data.
@@ -121,7 +126,8 @@ const entropySource*	entropySourceDefault(void);
  * \retval -1 On failure.
  */
 BEECRYPTAPI
-int						entropyGatherNext(byte*, size_t);
+int						entropyGatherNext(byte*, size_t)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -133,10 +139,14 @@ int						entropyGatherNext(byte*, size_t);
 
 typedef void randomGeneratorParam;
 
-typedef int (*randomGeneratorSetup  )(randomGeneratorParam*);
-typedef int (*randomGeneratorSeed   )(randomGeneratorParam*, const byte*, size_t);
-typedef int (*randomGeneratorNext   )(randomGeneratorParam*, byte*, size_t);
-typedef int (*randomGeneratorCleanup)(randomGeneratorParam*);
+typedef int (*randomGeneratorSetup  )(randomGeneratorParam*)
+	/*@*/;
+typedef int (*randomGeneratorSeed   )(randomGeneratorParam*, const byte*, size_t)
+	/*@*/;
+typedef int (*randomGeneratorNext   )(randomGeneratorParam*, byte*, size_t)
+	/*@*/;
+typedef int (*randomGeneratorCleanup)(randomGeneratorParam*)
+	/*@*/;
 
 /*
  * The struct 'randomGenerator' holds information and pointers to code specific
@@ -215,13 +225,17 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int						randomGeneratorCount(void);
+int						randomGeneratorCount(void)
+	/*@*/;
 BEECRYPTAPI
-const randomGenerator*	randomGeneratorGet(int);
+const randomGenerator*	randomGeneratorGet(int)
+	/*@*/;
 BEECRYPTAPI
-const randomGenerator*	randomGeneratorFind(const char*);
+const randomGenerator*	randomGeneratorFind(const char*)
+	/*@*/;
 BEECRYPTAPI
-const randomGenerator*	randomGeneratorDefault(void);
+const randomGenerator*	randomGeneratorDefault(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -263,13 +277,17 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int randomGeneratorContextInit(randomGeneratorContext*, const randomGenerator*);
+int randomGeneratorContextInit(randomGeneratorContext*, const randomGenerator*)
+	/*@*/;
 BEECRYPTAPI
-int randomGeneratorContextFree(randomGeneratorContext*);
+int randomGeneratorContextFree(randomGeneratorContext*)
+	/*@*/;
 BEECRYPTAPI
-int randomGeneratorContextNext(randomGeneratorContext*, byte*, size_t);
+int randomGeneratorContextNext(randomGeneratorContext*, byte*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int randomGeneratorContextSeed(randomGeneratorContext*, const byte*, size_t);
+int randomGeneratorContextSeed(randomGeneratorContext*, const byte*, size_t)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -284,9 +302,12 @@ int randomGeneratorContextSeed(randomGeneratorContext*, const byte*, size_t);
  */
 typedef void hashFunctionParam;
 
-typedef int (*hashFunctionReset )(hashFunctionParam*);
-typedef int (*hashFunctionUpdate)(hashFunctionParam*, const byte*, size_t);
-typedef int (*hashFunctionDigest)(hashFunctionParam*, byte*);
+typedef int (*hashFunctionReset )(hashFunctionParam*)
+	/*@*/;
+typedef int (*hashFunctionUpdate)(hashFunctionParam*, const byte*, size_t)
+	/*@*/;
+typedef int (*hashFunctionDigest)(hashFunctionParam*, byte*)
+	/*@*/;
 
 /*
  * The struct 'hashFunction' holds information and pointers to code specific
@@ -336,13 +357,17 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int					hashFunctionCount(void);
+int					hashFunctionCount(void)
+	/*@*/;
 BEECRYPTAPI
-const hashFunction*	hashFunctionGet(int);
+const hashFunction*	hashFunctionGet(int)
+	/*@*/;
 BEECRYPTAPI
-const hashFunction*	hashFunctionFind(const char*);
+const hashFunction*	hashFunctionFind(const char*)
+	/*@*/;
 BEECRYPTAPI
-const hashFunction*	hashFunctionDefault(void);
+const hashFunction*	hashFunctionDefault(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -383,23 +408,32 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int hashFunctionContextInit(hashFunctionContext*, const hashFunction*);
+int hashFunctionContextInit(hashFunctionContext*, const hashFunction*)
+	/*@*/;
 BEECRYPTAPI
-int hashFunctionContextFree(hashFunctionContext*);
+int hashFunctionContextFree(hashFunctionContext*)
+	/*@*/;
 BEECRYPTAPI
-int hashFunctionContextReset(hashFunctionContext*);
+int hashFunctionContextReset(hashFunctionContext*)
+	/*@*/;
 BEECRYPTAPI
-int hashFunctionContextUpdate(hashFunctionContext*, const byte*, size_t);
+int hashFunctionContextUpdate(hashFunctionContext*, const byte*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int hashFunctionContextUpdateMC(hashFunctionContext*, const memchunk*);
+int hashFunctionContextUpdateMC(hashFunctionContext*, const memchunk*)
+	/*@*/;
 BEECRYPTAPI
-int hashFunctionContextUpdateMP(hashFunctionContext*, const mpnumber*);
+int hashFunctionContextUpdateMP(hashFunctionContext*, const mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int hashFunctionContextDigest(hashFunctionContext*, byte*);
+int hashFunctionContextDigest(hashFunctionContext*, byte*)
+	/*@*/;
 BEECRYPTAPI
-int hashFunctionContextDigestMP(hashFunctionContext*, mpnumber*);
+int hashFunctionContextDigestMP(hashFunctionContext*, mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int hashFunctionContextDigestMatch(hashFunctionContext*, const mpnumber*);
+int hashFunctionContextDigestMatch(hashFunctionContext*, const mpnumber*)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -414,10 +448,14 @@ int hashFunctionContextDigestMatch(hashFunctionContext*, const mpnumber*);
  */
 typedef void keyedHashFunctionParam;
 
-typedef int (*keyedHashFunctionSetup  )(keyedHashFunctionParam*, const byte*, size_t);
-typedef int (*keyedHashFunctionReset  )(keyedHashFunctionParam*);
-typedef int (*keyedHashFunctionUpdate )(keyedHashFunctionParam*, const byte*, size_t);
-typedef int (*keyedHashFunctionDigest )(keyedHashFunctionParam*, byte*);
+typedef int (*keyedHashFunctionSetup  )(keyedHashFunctionParam*, const byte*, size_t)
+	/*@*/;
+typedef int (*keyedHashFunctionReset  )(keyedHashFunctionParam*)
+	/*@*/;
+typedef int (*keyedHashFunctionUpdate )(keyedHashFunctionParam*, const byte*, size_t)
+	/*@*/;
+typedef int (*keyedHashFunctionDigest )(keyedHashFunctionParam*, byte*)
+	/*@*/;
 
 /*
  * The struct 'keyedHashFunction' holds information and pointers to code
@@ -475,13 +513,17 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int							keyedHashFunctionCount(void);
+int							keyedHashFunctionCount(void)
+	/*@*/;
 BEECRYPTAPI
-const keyedHashFunction*	keyedHashFunctionGet(int);
+const keyedHashFunction*	keyedHashFunctionGet(int)
+	/*@*/;
 BEECRYPTAPI
-const keyedHashFunction*	keyedHashFunctionFind(const char*);
+const keyedHashFunction*	keyedHashFunctionFind(const char*)
+	/*@*/;
 BEECRYPTAPI
-const keyedHashFunction*	keyedHashFunctionDefault(void);
+const keyedHashFunction*	keyedHashFunctionDefault(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -522,25 +564,35 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int keyedHashFunctionContextInit(keyedHashFunctionContext*, const keyedHashFunction*);
+int keyedHashFunctionContextInit(keyedHashFunctionContext*, const keyedHashFunction*)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextFree(keyedHashFunctionContext*);
+int keyedHashFunctionContextFree(keyedHashFunctionContext*)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextSetup(keyedHashFunctionContext*, const byte*, size_t);
+int keyedHashFunctionContextSetup(keyedHashFunctionContext*, const byte*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextReset(keyedHashFunctionContext*);
+int keyedHashFunctionContextReset(keyedHashFunctionContext*)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextUpdate(keyedHashFunctionContext*, const byte*, size_t);
+int keyedHashFunctionContextUpdate(keyedHashFunctionContext*, const byte*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext*, const memchunk*);
+int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext*, const memchunk*)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext*, const mpnumber*);
+int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext*, const mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextDigest(keyedHashFunctionContext*, byte*);
+int keyedHashFunctionContextDigest(keyedHashFunctionContext*, byte*)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextDigestMP(keyedHashFunctionContext*, mpnumber*);
+int keyedHashFunctionContextDigestMP(keyedHashFunctionContext*, mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext*, const mpnumber*);
+int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext*, const mpnumber*)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -571,7 +623,8 @@ typedef void blockCipherParam;
 /*!\brief Prototype definition for a setup function.
  * \ingroup BC_m
  */
-typedef int (*blockCipherSetup  )(blockCipherParam*, const byte*, size_t, cipherOperation);
+typedef int (*blockCipherSetup  )(blockCipherParam*, const byte*, size_t, cipherOperation)
+	/*@*/;
 
 /*!\typedef int (*blockCipherSetIV)(blockCipherPatam* bp, const byte* iv)
  * \brief Prototype definition for an initialization vector setup function.
@@ -582,7 +635,8 @@ typedef int (*blockCipherSetup  )(blockCipherParam*, const byte*, size_t, cipher
  * \retval -1 on failure.
  * \ingroup BC_m
  */
-typedef int (*blockCipherSetIV  )(blockCipherParam*, const byte*);
+typedef int (*blockCipherSetIV  )(blockCipherParam*, const byte*)
+	/*@*/;
 
 /*!\typedef int (*blockCipherRawcrypt)(blockCipherParam* bp, uint32_t* dst, const uint32_t* src)
  * \brief Prototype for a \e raw encryption or decryption function.
@@ -593,7 +647,8 @@ typedef int (*blockCipherSetIV  )(blockCipherParam*, const byte*);
  * \retval -1 on failure.
  * \ingroup BC_m
  */
-typedef int (*blockCipherRawcrypt)(blockCipherParam*, uint32_t*, const uint32_t*);
+typedef int (*blockCipherRawcrypt)(blockCipherParam*, uint32_t*, const uint32_t*)
+	/*@*/;
 
 /*!\typedef int (*blockCipherModcrypt)(blockCipherParam* bp, uint32_t* dst, const uint32_t* src, unsigned int nblocks)
  * \brief Prototype for a \e encryption or decryption function which operates
@@ -606,9 +661,11 @@ typedef int (*blockCipherRawcrypt)(blockCipherParam*, uint32_t*, const uint32_t*
  * \retval -1 on failure.
  * \ingroup BC_m
  */
-typedef int (*blockCipherModcrypt)(blockCipherParam*, uint32_t*, const uint32_t*, unsigned int);
+typedef int (*blockCipherModcrypt)(blockCipherParam*, uint32_t*, const uint32_t*, unsigned int)
+	/*@*/;
 
-typedef uint32_t* (*blockCipherFeedback)(blockCipherParam*);
+typedef uint32_t* (*blockCipherFeedback)(blockCipherParam*)
+	/*@*/;
 
 typedef struct
 {
@@ -697,7 +754,8 @@ extern "C" {
  * \return The number of implemented blockciphers.
  */
 BEECRYPTAPI
-int						blockCipherCount(void);
+int						blockCipherCount(void)
+	/*@*/;
 
 /*!\fn const blockCipher* blockCipherGet(int n)
  * \brief This function returns the \a n -th blockcipher implemented by
@@ -708,7 +766,8 @@ int						blockCipherCount(void);
  *  range.
  */
 BEECRYPTAPI
-const blockCipher*		blockCipherGet(int);
+const blockCipher*		blockCipherGet(int)
+	/*@*/;
 
 /*!\fn const blockCIiher* blockCipherFind(const char* name)
  * \brief This function returns the blockcipher specified by the given name.
@@ -716,7 +775,8 @@ const blockCipher*		blockCipherGet(int);
  * \return A pointer to a blockcipher or null, if the name wasn't found.
  */
 BEECRYPTAPI
-const blockCipher*		blockCipherFind(const char*);
+const blockCipher*		blockCipherFind(const char*)
+	/*@*/;
 
 /*!\fn const blockCipher* blockCipherDefault()
  * \brief This functions returns the default blockcipher; the default value
@@ -724,7 +784,8 @@ const blockCipher*		blockCipherFind(const char*);
  * \return A pointer to a blockcipher or null, in case an error occured.
  */
 BEECRYPTAPI
-const blockCipher*		blockCipherDefault(void);
+const blockCipher*		blockCipherDefault(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }
@@ -774,22 +835,28 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int blockCipherContextInit(blockCipherContext*, const blockCipher*);
+int blockCipherContextInit(blockCipherContext*, const blockCipher*)
+	/*@*/;
 
 BEECRYPTAPI
-int blockCipherContextSetup(blockCipherContext*, const byte*, size_t, cipherOperation);
+int blockCipherContextSetup(blockCipherContext*, const byte*, size_t, cipherOperation)
+	/*@*/;
 
 BEECRYPTAPI
-int blockCipherContextSetIV(blockCipherContext*, const byte*);
+int blockCipherContextSetIV(blockCipherContext*, const byte*)
+	/*@*/;
 
 BEECRYPTAPI
-int blockCipherContextFree(blockCipherContext*);
+int blockCipherContextFree(blockCipherContext*)
+	/*@*/;
 
 BEECRYPTAPI
-int blockCipherContextECB(blockCipherContext*, uint32_t*, const uint32_t*, int);
+int blockCipherContextECB(blockCipherContext*, uint32_t*, const uint32_t*, int)
+	/*@*/;
 
 BEECRYPTAPI
-int blockCipherContextCBC(blockCipherContext*, uint32_t*, const uint32_t*, int);
+int blockCipherContextCBC(blockCipherContext*, uint32_t*, const uint32_t*, int)
+	/*@*/;
 
 #ifdef __cplusplus
 }

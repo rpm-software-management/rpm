@@ -62,22 +62,26 @@ extern BEECRYPTAPI const randomGenerator mtprng;
 /*
  */
 BEECRYPTAPI
-int mtprngSetup  (mtprngParam* mp);
+int mtprngSetup  (mtprngParam* mp)
+	/*@*/;
 
 /*
  */
 BEECRYPTAPI
-int mtprngSeed   (mtprngParam* mp, const byte* data, size_t size);
+int mtprngSeed   (mtprngParam* mp, const byte* data, size_t size)
+	/*@*/;
 
 /*
  */
 BEECRYPTAPI
-int mtprngNext   (mtprngParam* mp, byte* data, size_t size);
+int mtprngNext   (mtprngParam* mp, byte* data, size_t size)
+	/*@*/;
 
 /*
  */
 BEECRYPTAPI
-int mtprngCleanup(mtprngParam* mp);
+int mtprngCleanup(mtprngParam* mp)
+	/*@*/;
 
 #ifdef __cplusplus
 }

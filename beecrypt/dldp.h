@@ -104,59 +104,76 @@ extern "C" {
  */
 
 BEECRYPTAPI
-int dldp_pInit(dldp_p*);
+int dldp_pInit(dldp_p*)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pFree(dldp_p*);
+int dldp_pFree(dldp_p*)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pCopy(dldp_p*, const dldp_p*);
+int dldp_pCopy(dldp_p*, const dldp_p*)
+	/*@*/;
 
 /*
  * Functions for generating keys
  */
 
 BEECRYPTAPI
-int dldp_pPrivate  (const dldp_p*, randomGeneratorContext*, mpnumber*);
+int dldp_pPrivate  (const dldp_p*, randomGeneratorContext*, mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pPrivate_s(const dldp_p*, randomGeneratorContext*, mpnumber*, size_t);
+int dldp_pPrivate_s(const dldp_p*, randomGeneratorContext*, mpnumber*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pPublic   (const dldp_p*, const mpnumber*, mpnumber*);
+int dldp_pPublic   (const dldp_p*, const mpnumber*, mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pPair     (const dldp_p*, randomGeneratorContext*, mpnumber*, mpnumber*);
+int dldp_pPair     (const dldp_p*, randomGeneratorContext*, mpnumber*, mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pPair_s   (const dldp_p*, randomGeneratorContext*, mpnumber*, mpnumber*, size_t);
+int dldp_pPair_s   (const dldp_p*, randomGeneratorContext*, mpnumber*, mpnumber*, size_t)
+	/*@*/;
 
 /*
  * Function for comparing domain parameters
  */
 
 BEECRYPTAPI
-int  dldp_pEqual  (const dldp_p*, const dldp_p*);
+int  dldp_pEqual  (const dldp_p*, const dldp_p*)
+	/*@*/;
 
 /*
  * Functions for generating and validating dldp_pgoq variant domain parameters
  */
 
 BEECRYPTAPI
-int dldp_pgoqMake     (dldp_p*, randomGeneratorContext*, size_t, size_t, int);
+int dldp_pgoqMake     (dldp_p*, randomGeneratorContext*, size_t, size_t, int)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pgoqMakeSafe (dldp_p*, randomGeneratorContext*, size_t);
+int dldp_pgoqMakeSafe (dldp_p*, randomGeneratorContext*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pgoqGenerator(dldp_p*, randomGeneratorContext*);
+int dldp_pgoqGenerator(dldp_p*, randomGeneratorContext*)
+	/*@*/;
 BEECRYPTAPI
-int  dldp_pgoqValidate (const dldp_p*, randomGeneratorContext*, int);
+int  dldp_pgoqValidate (const dldp_p*, randomGeneratorContext*, int)
+	/*@*/;
 
 /*
  * Functions for generating and validating dldp_pgon variant domain parameters
  */
 
 BEECRYPTAPI
-int dldp_pgonMake     (dldp_p*, randomGeneratorContext*, size_t, size_t);
+int dldp_pgonMake     (dldp_p*, randomGeneratorContext*, size_t, size_t)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pgonMakeSafe (dldp_p*, randomGeneratorContext*, size_t);
+int dldp_pgonMakeSafe (dldp_p*, randomGeneratorContext*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pgonGenerator(dldp_p*, randomGeneratorContext*);
+int dldp_pgonGenerator(dldp_p*, randomGeneratorContext*)
+	/*@*/;
 BEECRYPTAPI
-int dldp_pgonValidate (const dldp_p*, randomGeneratorContext*);
+int dldp_pgonValidate (const dldp_p*, randomGeneratorContext*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

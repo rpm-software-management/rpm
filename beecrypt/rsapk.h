@@ -52,11 +52,14 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int rsapkInit(rsapk*);
+int rsapkInit(rsapk*)
+	/*@*/;
 BEECRYPTAPI
-int rsapkFree(rsapk*);
+int rsapkFree(rsapk*)
+	/*@*/;
 BEECRYPTAPI
-int rsapkCopy(rsapk*, const rsapk*);
+int rsapkCopy(rsapk*, const rsapk*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

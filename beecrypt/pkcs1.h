@@ -18,7 +18,8 @@ extern "C" {
  * \param emsize
  */
 BEECRYPTAPI
-int pkcs1_emsa_encode_digest(hashFunctionContext* ctxt, byte* emdata, size_t emsize);
+int pkcs1_emsa_encode_digest(hashFunctionContext* ctxt, byte* emdata, size_t emsize)
+	/*@*/;
 
 #ifdef __cplusplus
 }

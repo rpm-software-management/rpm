@@ -176,6 +176,7 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 }
 
 static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* private, const mpnumber* public, const mpnumber* message, cipherOperation op)
+	/*@*/
 {
 	register int rc;
 

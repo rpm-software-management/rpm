@@ -101,6 +101,7 @@ int entropy_provider_cleanup()
  * return an error in case they are all zeroes or ones.
  */
 static int entropy_noise_filter(void* sampledata, int samplecount, int samplesize, int channels, int swap)
+	/*@*/
 {
 	register int rc = 0, i;
 
@@ -283,6 +284,7 @@ static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, in
 #else
 static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, byte* data, size_t size)
 #endif
+	/*@*/
 {
 	size_t randombits = size << 3;
 	byte temp = 0;
@@ -789,6 +791,7 @@ static pthread_mutex_t dev_tty_lock = PTHREAD_MUTEX_INITIALIZER;
 
 #if HAVE_SYS_STAT_H
 static int statdevice(const char *device)
+	/*@*/
 {
 	struct stat s;
 
@@ -809,6 +812,7 @@ static int statdevice(const char *device)
 #endif
 
 static int opendevice(const char *device)
+	/*@*/
 {
 	register int fd;
 
@@ -828,6 +832,7 @@ static int opendevice(const char *device)
 /*!\ingroup ES_random_m ES_urandom_m
  */
 static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
+	/*@*/
 {
 	register int rc;
 
@@ -927,6 +932,7 @@ static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
 /*!\ingroup ES_tty_m
  */
 static int entropy_ttybits(int fd, byte* data, size_t size)
+	/*@*/
 {
 	byte dummy;
 

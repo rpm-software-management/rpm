@@ -50,19 +50,24 @@ BEECRYPTAPI
 int entropy_wincrypt(byte*, size_t);
 #else
 #if HAVE_DEV_AUDIO
-int entropy_dev_audio  (byte*, size_t);
+int entropy_dev_audio  (byte*, size_t)
+	/*@*/;
 #endif
 #if HAVE_DEV_DSP
-int entropy_dev_dsp    (byte*, size_t);
+int entropy_dev_dsp    (byte*, size_t)
+	/*@*/;
 #endif
 #if HAVE_DEV_RANDOM
-int entropy_dev_random (byte*, size_t);
+int entropy_dev_random (byte*, size_t)
+	/*@*/;
 #endif
 #if HAVE_DEV_URANDOM
-int entropy_dev_urandom(byte*, size_t);
+int entropy_dev_urandom(byte*, size_t)
+	/*@*/;
 #endif
 #if HAVE_DEV_TTY
-int entropy_dev_tty    (byte*, size_t);
+int entropy_dev_tty    (byte*, size_t)
+	/*@*/;
 #endif
 #endif
 

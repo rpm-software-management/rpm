@@ -73,37 +73,50 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-void mpnzero(mpnumber*);
+void mpnzero(mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-void mpnsize(mpnumber*, size_t);
+void mpnsize(mpnumber*, size_t)
+	/*@*/;
 BEECRYPTAPI
-void mpninit(mpnumber*, size_t, const mpw*);
+void mpninit(mpnumber*, size_t, const mpw*)
+	/*@*/;
 BEECRYPTAPI
-void mpnfree(mpnumber*);
+void mpnfree(mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-void mpncopy(mpnumber*, const mpnumber*);
+void mpncopy(mpnumber*, const mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-void mpnwipe(mpnumber*);
+void mpnwipe(mpnumber*)
+	/*@*/;
 
 BEECRYPTAPI
-void mpnset   (mpnumber*, size_t, const mpw*);
+void mpnset   (mpnumber*, size_t, const mpw*)
+	/*@*/;
 BEECRYPTAPI
-void mpnsetw  (mpnumber*, mpw);
+void mpnsetw  (mpnumber*, mpw)
+	/*@*/;
 
 BEECRYPTAPI
-int mpnsetbin(mpnumber*, const byte*, size_t);
+int mpnsetbin(mpnumber*, const byte*, size_t)
+	/*@*/;
 BEECRYPTAPI
-int mpnsethex(mpnumber*, const char*);
+int mpnsethex(mpnumber*, const char*)
+	/*@*/;
 
 BEECRYPTAPI
-int  mpninv(mpnumber*, const mpnumber*, const mpnumber*);
+int  mpninv(mpnumber*, const mpnumber*, const mpnumber*)
+	/*@*/;
 
 /*!\brief Truncate the mpnumber to the specified number of (least significant) bits.
  */
 BEECRYPTAPI
-size_t mpntrbits(mpnumber*, size_t);
+size_t mpntrbits(mpnumber*, size_t)
+	/*@*/;
 BEECRYPTAPI
-size_t mpnbits(const mpnumber*);
+size_t mpnbits(const mpnumber*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

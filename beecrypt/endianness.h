@@ -69,11 +69,16 @@ inline int64_t swap64(int64_t n)
 				((n & ((int64_t) 0xff) << 56) >> 56) );
 }
 #else
- int16_t swap16 (int16_t);
-uint16_t swapu16(uint16_t);
- int32_t swap32 (int32_t);
-uint32_t swapu32(uint32_t);
- int64_t swap64 (int64_t);
+ int16_t swap16 (int16_t)
+	/*@*/;
+uint16_t swapu16(uint16_t)
+	/*@*/;
+ int32_t swap32 (int32_t)
+	/*@*/;
+uint32_t swapu32(uint32_t)
+	/*@*/;
+ int64_t swap64 (int64_t)
+	/*@*/;
 #endif
 
 #ifdef __cplusplus

@@ -710,6 +710,7 @@ int mpptrials(size_t bits)
  * needs workspace of (size*2) words
  */
 static void mpprndbits(mpbarrett* p, size_t bits, size_t lsbset, const mpnumber* min, const mpnumber* max, randomGeneratorContext* rc, mpw* wksp)
+	/*@*/
 {
 	register size_t size = p->size;
 	register size_t msbclr = MP_WORDS_TO_BITS(size) - bits;

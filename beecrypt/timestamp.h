@@ -49,7 +49,8 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-javalong timestamp(void);
+javalong timestamp(void)
+	/*@*/;
 
 #ifdef __cplusplus
 }

@@ -54,19 +54,25 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int dlpk_pInit(dlpk_p*);
+int dlpk_pInit(dlpk_p*)
+	/*@*/;
 BEECRYPTAPI
-int dlpk_pFree(dlpk_p*);
+int dlpk_pFree(dlpk_p*)
+	/*@*/;
 BEECRYPTAPI
-int dlpk_pCopy(dlpk_p*, const dlpk_p*);
+int dlpk_pCopy(dlpk_p*, const dlpk_p*)
+	/*@*/;
 
 BEECRYPTAPI
-int  dlpk_pEqual(const dlpk_p*, const dlpk_p*);
+int  dlpk_pEqual(const dlpk_p*, const dlpk_p*)
+	/*@*/;
 
 BEECRYPTAPI
-int  dlpk_pgoqValidate(const dlpk_p*, randomGeneratorContext*, int cofactor);
+int  dlpk_pgoqValidate(const dlpk_p*, randomGeneratorContext*, int cofactor)
+	/*@*/;
 BEECRYPTAPI
-int  dlpk_pgonValidate(const dlpk_p*, randomGeneratorContext*);
+int  dlpk_pgonValidate(const dlpk_p*, randomGeneratorContext*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

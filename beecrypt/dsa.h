@@ -62,7 +62,8 @@ extern "C" {
  * \retval -1 on failure.
  */
 BEECRYPTAPI
-int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s);
+int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+	/*@*/;
 
 /*!\fn int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
  * \brief This function performs a raw DSA verification.
@@ -86,7 +87,8 @@ int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGen
  * \retval 0 on failure.
  */
 BEECRYPTAPI
-int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s);
+int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+	/*@*/;
 
 /*!\fn int dsaparamMake(dsaparam* dp, randomGeneratorContext* rgc, size_t psize)
  * \brief This function generates a set of DSA parameters.
@@ -101,7 +103,8 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
  * \retval -1 on failure.
  */
 BEECRYPTAPI
-int dsaparamMake(dsaparam*, randomGeneratorContext*, size_t);
+int dsaparamMake(dsaparam*, randomGeneratorContext*, size_t)
+	/*@*/;
 
 #ifdef __cplusplus
 }

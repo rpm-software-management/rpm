@@ -56,13 +56,17 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int dlkp_pPair(dlkp_p*, randomGeneratorContext*, const dldp_p*);
+int dlkp_pPair(dlkp_p*, randomGeneratorContext*, const dldp_p*)
+	/*@*/;
 BEECRYPTAPI
-int dlkp_pInit(dlkp_p*);
+int dlkp_pInit(dlkp_p*)
+	/*@*/;
 BEECRYPTAPI
-int dlkp_pFree(dlkp_p*);
+int dlkp_pFree(dlkp_p*)
+	/*@*/;
 BEECRYPTAPI
-int dlkp_pCopy(dlkp_p*, const dlkp_p*);
+int dlkp_pCopy(dlkp_p*, const dlkp_p*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

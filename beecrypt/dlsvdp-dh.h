@@ -37,7 +37,8 @@ typedef dldp_p dhparam;
 typedef dlkp_p dhkp;
 
 BEECRYPTAPI
-int dlsvdp_pDHSecret(const dhparam*, const mpnumber*, const mpnumber*, mpnumber*);
+int dlsvdp_pDHSecret(const dhparam*, const mpnumber*, const mpnumber*, mpnumber*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

@@ -63,21 +63,28 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int dhaes_pUsable(const dhaes_pParameters*);
+int dhaes_pUsable(const dhaes_pParameters*)
+	/*@*/;
 
 BEECRYPTAPI
-int dhaes_pContextInit       (dhaes_pContext*, const dhaes_pParameters*);
+int dhaes_pContextInit       (dhaes_pContext*, const dhaes_pParameters*)
+	/*@*/;
 BEECRYPTAPI
-int dhaes_pContextInitDecrypt(dhaes_pContext*, const dhaes_pParameters*, const mpnumber*);
+int dhaes_pContextInitDecrypt(dhaes_pContext*, const dhaes_pParameters*, const mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int dhaes_pContextInitEncrypt(dhaes_pContext*, const dhaes_pParameters*, const mpnumber*);
+int dhaes_pContextInitEncrypt(dhaes_pContext*, const dhaes_pParameters*, const mpnumber*)
+	/*@*/;
 BEECRYPTAPI
-int dhaes_pContextFree       (dhaes_pContext*);
+int dhaes_pContextFree       (dhaes_pContext*)
+	/*@*/;
 
 BEECRYPTAPI
-memchunk* dhaes_pContextEncrypt(dhaes_pContext*,       mpnumber*,       mpnumber*, const memchunk*, randomGeneratorContext*);
+memchunk* dhaes_pContextEncrypt(dhaes_pContext*,       mpnumber*,       mpnumber*, const memchunk*, randomGeneratorContext*)
+	/*@*/;
 BEECRYPTAPI
-memchunk* dhaes_pContextDecrypt(dhaes_pContext*, const mpnumber*, const mpnumber*, const memchunk*);
+memchunk* dhaes_pContextDecrypt(dhaes_pContext*, const mpnumber*, const mpnumber*, const memchunk*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

@@ -34,6 +34,8 @@ LIBBEECRYPT_LT_REVISION = 0
 
 AUTOMAKE_OPTIONS = gnu check-news no-dependencies
 
+LINT = splint
+
 SUBDIRS = . $(MAYBE_SUB) tests docs gas masm
 
 SUFFIXES = .s
@@ -64,3 +66,28 @@ DISTCLEANFILES = mpopt.s aesopt.s blowfishopt.s sha1opt.s
 
 bench:
 	(cd tests && $(MAKE) $(AM_MAKEFLAGS) bench)
+
+beecrypt.lcd: Makefile.am ${libbeecrypt_la_SOURCES} ${pkginclude_HEADERS} ${noinst_HEADERS}
+	$(LINT) $(DEFS) $(INCLUDES) ${libbeecrypt_la_SOURCES} -dump $@
+                                                                                
+# XXX don't bite into gcj java dependencies (yet)
+libbeecrypt_splint_SOURCES = aes.c base64.c beecrypt.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c dsa.c elgamal.c endianness.c entropy.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c md5.c memchunk.c mp.c mpbarrett.c mpnumber.c mpprime.c mtprng.c pkcs1.c pkcs12.c rsa.c rsakp.c rsapk.c sha1.c sha256.c timestamp.c # cppglue.cxx
+
+.PHONY: sources
+sources:
+	@echo $(libbeecrypt_splint_SOURCES:%=beecrypt/%) | sed -e 's,beecrypt/javaglue.c,,'
+                                                                                
+# XXX don't bite into javaglue.c (yet)
+.PHONY: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(libbeecrypt_splint_SOURCES:javaglue.c=) # tests/beetest.c
+                                                                                
+.PHONY: listobjs
+listobjs:
+	@echo $(BEECRYPT_OBJECTS) > $@
+
+DOXYGEN = /usr/bin/doxygen .PHONY: doxygen
+doxygen apidocs: Doxyfile Doxyheader
+	rm -rf $@
+	mkdir -p $@
+	- [ -x ${DOXYGEN} ] && ${DOXYGEN}

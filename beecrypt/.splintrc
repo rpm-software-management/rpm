@@ -1,0 +1,115 @@
+-I. -I/usr/lib/gcc-lib/i386-redhat-linux/3.1/include -DHAVE_CONFIG_H -D_GNU_SOURCE -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
+
++partial
++forcehints
+
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
++likelybounds
+-bufferoverflowhigh
+
+-aliasunique
+-bitwisesigned
+-boolops
+-branchstate
+-castfcnptr
+-compdef
+-compdestroy
+-compmempass
+-evalorderuncon
+-globs
+-globstate
+-infloops
+-infloopsuncon		# 2
+-internalglobs
+-mayaliasunique
+-mods
+-modobserveruncon
+-moduncon
+-mustfreefresh
+-mustfreeonly
+-namechecks
+-noeffect
+-noeffectuncon
+-nullderef
+-nullpass
+-nullptrarith
+-nullret
+-nullstate
+-paramuse
+-protoparammatch
++ptrnegate
+-retalias
+-retvalint
+-retvalother
+-shadow
+-shiftimplementation
+-shiftnegative
+-sizeoftype
+-type
+-unreachable
+-usedef
+-usereleased
+
+-dependenttrans
+-immediatetrans
+-observertrans
+-readonlytrans
+-statictrans
+-temptrans
+-unqualifiedtrans
+
+-looploopbreak
+-looploopcontinue
+-loopswitchbreak
+-switchswitchbreak
+
+-declundef
+-exportheader
+-exportheadervar
+-exportlocal
+-fcnuse
+-typeuse
+
+
+-elseifcomplete
+-whileempty
+
+# --- not-yet at strict level
+-exportconst		# 3
+-exportfcn		# 308
+-exporttype		# 53
+-exportvar		# 14
+-protoparamname		# 826
+
+-ansi-reserved-internal	# goofy
+
+-ptrarith		# 212
+
+-mustdefine		# 64
+-strictops		# 23
+
+-impcheckedstrictglobs
+-impcheckedstrictstatics
+-strictbranchstate
+
+-forblock		# 15
+-ifblock		# 455
+-whileblock		# 25
+-sys-dir-errors		# 1296
+
+# --- not-yet at checks level
+-predboolptr		# 88
+-ansi-reserved		# goofy
+
+# --- not-yet at standard level
++boolint		# 329
++charint		# 3
++matchanyintegral	# 573

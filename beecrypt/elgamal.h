@@ -66,7 +66,8 @@ randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r,
  * \retval -1 on failure.
  */
 BEECRYPTAPI
-int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s);
+int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+	/*@*/;
 
 /*!\fn int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
  * \brief This function performs raw ElGamal verification, variant 1.
@@ -89,7 +90,8 @@ int elgv1sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomG
  * \retval 0 on failure.
  */
 BEECRYPTAPI
-int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s);
+int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
+	/*@*/;
 
 /*!\fn int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
  * \brief This function performs raw ElGamal signing, variant 3.
@@ -111,7 +113,8 @@ int elgv3sign(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, randomG
  * \retval -1 on failure.
  */
 BEECRYPTAPI
-int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s);
+int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+	/*@*/;
 
 /*!\fn int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
  * \brief This function performs raw ElGamal verification, variant 3.
@@ -134,7 +137,8 @@ int elgv1vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const m
  * \retval 0 on failure.
  */
 BEECRYPTAPI
-int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s);
+int elgv3vrfy(const mpbarrett* p, const mpbarrett* n, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
+	/*@*/;
 
 #ifdef __cplusplus
 }

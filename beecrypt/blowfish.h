@@ -80,7 +80,8 @@ extern const BEECRYPTAPI blockCipher blowfish;
  * \retval -1 on failure.
  */
 BEECRYPTAPI
-int		blowfishSetup   (blowfishParam*, const byte*, size_t, cipherOperation);
+int		blowfishSetup   (blowfishParam*, const byte*, size_t, cipherOperation)
+	/*@*/;
 
 /*!\fn int blowfishSetIV(blowfishParam* bp, const byte* iv)
  * \brief This function sets the Initialization Vector.
@@ -90,7 +91,8 @@ int		blowfishSetup   (blowfishParam*, const byte*, size_t, cipherOperation);
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int		blowfishSetIV   (blowfishParam*, const byte*);
+int		blowfishSetIV   (blowfishParam*, const byte*)
+	/*@*/;
 
 /*!\fn blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
  * \brief This function performs the Blowfish encryption; it encrypts one block
@@ -101,7 +103,8 @@ int		blowfishSetIV   (blowfishParam*, const byte*);
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int		blowfishEncrypt (blowfishParam*, uint32_t*, const uint32_t*);
+int		blowfishEncrypt (blowfishParam*, uint32_t*, const uint32_t*)
+	/*@*/;
 
 /*!\fn blowfishDecrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
  * \brief This function performs the Blowfish decryption; it Rderypts one block
@@ -112,10 +115,12 @@ int		blowfishEncrypt (blowfishParam*, uint32_t*, const uint32_t*);
  * \retval 0 on success.
  */
 BEECRYPTAPI
-int		blowfishDecrypt (blowfishParam*, uint32_t*, const uint32_t*);
+int		blowfishDecrypt (blowfishParam*, uint32_t*, const uint32_t*)
+	/*@*/;
 
 BEECRYPTAPI
-uint32_t*	blowfishFeedback(blowfishParam*);
+uint32_t*	blowfishFeedback(blowfishParam*)
+	/*@*/;
 
 #ifdef __cplusplus
 }

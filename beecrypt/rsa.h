@@ -49,7 +49,8 @@ extern "C" {
  */
 BEECRYPTAPI
 int rsapub(const mpbarrett* n, const mpnumber* e,
-           const mpnumber* m, mpnumber* c);
+           const mpnumber* m, mpnumber* c)
+	/*@*/;
 
 /*!\fn int rsapri(const mpbarrett* n, const mpnumber* d, const mpnumber* c, mpnumber* m)
  * \brief This function performs a raw RSA private key operation.
@@ -68,7 +69,8 @@ int rsapub(const mpbarrett* n, const mpnumber* e,
  */
 BEECRYPTAPI
 int rsapri(const mpbarrett* n, const mpnumber* d,
-           const mpnumber* c, mpnumber* m);
+           const mpnumber* c, mpnumber* m)
+	/*@*/;
 
 /*!\fn int rsapricrt(const mpbarrett* n, const mpbarrett* p, const mpbarrett* q, const mpnumber* dp, const mpnumber* dq, const mpnumber* qi, const mpnumber* c, mpnumber* m)
  *
@@ -95,7 +97,8 @@ int rsapri(const mpbarrett* n, const mpnumber* d,
 BEECRYPTAPI
 int rsapricrt(const mpbarrett* n, const mpbarrett* p, const mpbarrett* q,
               const mpnumber* dp, const mpnumber* dq, const mpnumber* qi,
-              const mpnumber* c, mpnumber* m);
+              const mpnumber* c, mpnumber* m)
+	/*@*/;
 
 /*!\fn int rsavrfy(const mpbarrett* n, const mpnumber* e, const mpnumber* m, const mpnumber* c)
  * \brief This function performs a raw RSA verification.
@@ -112,7 +115,8 @@ int rsapricrt(const mpbarrett* n, const mpbarrett* p, const mpbarrett* q,
  */
 BEECRYPTAPI
 int rsavrfy(const mpbarrett* n, const mpnumber* e,
-            const mpnumber* m, const mpnumber* c);
+            const mpnumber* m, const mpnumber* c)
+	/*@*/;
 
 #ifdef __cplusplus
 }
