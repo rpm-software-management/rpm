@@ -117,7 +117,8 @@ int poptGetNextOpt(poptContext con) {
 			strcmp(con->aliases[i].longName, optString))) i--;
 
 		    if (i >= 0) {
-			if ((con->os - con->optionStack) == POPT_OPTION_DEPTH)
+			if ((con->os - con->optionStack + 1) 
+				== POPT_OPTION_DEPTH)
 			    return POPT_ERROR_OPTSTOODEEP;
 
 			con->os++;
@@ -162,7 +163,7 @@ int poptGetNextOpt(poptContext con) {
 		    con->aliases[i].shortName != *origOptString) i--;
 
 		if (i >= 0) {
-		    if ((con->os - con->optionStack) == POPT_OPTION_DEPTH)
+		    if ((con->os - con->optionStack + 1) == POPT_OPTION_DEPTH)
 			return POPT_ERROR_OPTSTOODEEP;
 
 		    /* We'll need this on the way out */
