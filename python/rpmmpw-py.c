@@ -11,6 +11,7 @@
 #endif
 
 #include "rpmmpw-py.h"
+#include "rpmrng-py.h"
 
 #include "rpmdebug-py.c"
 
@@ -1182,6 +1183,13 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpprintln(stderr, m->n
 	mpnsize(&z->n, m->n.size);
 	mpbinv_w(&b, x->n.size, x->n.data, z->n.data, wksp);
 	break;
+    case 'R':
+    {	rngObject * r = ((rngObject *)x);
+	wksp = alloca(m->n.size*sizeof(*wksp));
+	mpbset(&b, m->n.size, m->n.data);
+	mpnsize(&z->n, m->n.size);
+	mpbrnd_w(&b, &r->rngc, z->n.data, wksp);
+    }	break;
     case 'S':
 	wksp = alloca((4*m->n.size+2)*sizeof(*wksp));
 	mpbset(&b, m->n.size, m->n.data);
@@ -1382,6 +1390,23 @@ mpw_Powm(mpwObject * s, PyObject * args)
 		mpw_i2mpw(xo), mpw_i2mpw(yo), mpw_i2mpw(mo));
 }
 
+/** \ingroup py_c
+ * Return random number 1 < r < b-1.
+ */
+static PyObject *
+mpw_Rndm(mpwObject * s, PyObject * args)
+        /*@*/
+{
+    PyObject * xo, * mo;
+
+    if (!PyArg_ParseTuple(args, "OO:Rndm", &mo, &xo)) return NULL;
+    if (!is_rng(xo)) {
+	PyErr_SetString(PyExc_TypeError, "mpw.rndm() requires rng_Type argument");
+	return NULL;
+    }
+    return mpw_ops2("Rndm", 'R', (mpwObject*)xo, mpw_i2mpw(mo));
+}
+
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef mpw_methods[] = {
@@ -1400,6 +1425,8 @@ static struct PyMethodDef mpw_methods[] = {
  {"mulm",	(PyCFunction)mpw_Mulm,	METH_VARARGS,
 	NULL},
  {"powm",	(PyCFunction)mpw_Powm,	METH_VARARGS,
+	NULL},
+ {"rndm",	(PyCFunction)mpw_Rndm,	METH_VARARGS,
 	NULL},
  {NULL,		NULL}		/* sentinel */
 };

@@ -19,5 +19,6 @@ typedef struct rngObject_s {
  */
 /*@unchecked@*/
 extern PyTypeObject rng_Type;
+#define is_rng(o)	((o)->ob_type == &rng_Type)
 
 #endif

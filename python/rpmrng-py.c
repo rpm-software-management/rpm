@@ -19,8 +19,6 @@
 /*@unchecked@*/
 static int _rng_debug = 0;
 
-#define is_rng(o)	((o)->ob_type == &rng_Type)
-
 /*@unchecked@*/ /*@observer@*/
 static const char initialiser_name[] = "rpm.rng";
 
