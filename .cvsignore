@@ -21,7 +21,7 @@ config.sub
 configure
 libtool
 stamp-h
-stamp-h-in
+stamp-h.in
 ltconfig
 ltmain.sh
 *.tar.gz
