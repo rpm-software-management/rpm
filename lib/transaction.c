@@ -1138,10 +1138,12 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	if (fi->type == TR_ADDED && otherPkgNum < 0) {
 	    if (fi->actions[i] == FA_UNKNOWN) {
 		if ((fi->fflags[i] & RPMFILE_CONFIG) && 
-			    !lstat(fi->fl[i], &sb))
-		    fi->actions[i] = FA_BACKUP;
-		else
+			    !lstat(fi->fl[i], &sb)) {
+		    fi->actions[i] = (fi->flags[i] & RPMFILE_NOREPLACE)
+			? FA_ALTNAME : FA_BACKUP;
+		} else {
 		    fi->actions[i] = FA_CREATE;
+		}
 	    }
 	} else if (fi->type == TR_ADDED) {
 	    if (probs && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
