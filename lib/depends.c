@@ -12,6 +12,10 @@ int _depends_debug = 0;
 #include "rpmdb.h"
 #include "misc.h"
 
+/*@access dbiIndex@*/		/* XXX compared with NULL */
+/*@access dbiIndexSet@*/	/* XXX compared with NULL */
+/*@access Header@*/		/* XXX compared with NULL */
+/*@access rpmdb@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)

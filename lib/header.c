@@ -1,8 +1,9 @@
 /** \ingroup header
  * \file lib/header.c
+ *
  */
 
-/* RPM - Copyright (C) 1995 Red Hat Software */
+/* RPM - Copyright (C) 1995-2000 Red Hat Software */
 
 /* Data written to file descriptors is in network byte order.    */
 /* Data read from file descriptors is expected to be in          */
@@ -584,6 +585,7 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     int totalSize;
     int i;
 
+    memset(block, 0, sizeof(block));
     i = 2;
     if (magicp == HEADER_MAGIC_YES)
 	i += 2;
@@ -1171,9 +1173,13 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
 	errmsg_t charArray[2];
 	int count = 0;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
+	    /*@-observertrans@*/
 	    charArray[count++] = "C";
+	    /*@=observertrans@*/
 	} else {
+	    /*@-observertrans@*/
 	    charArray[count++] = "C";
+	    /*@=observertrans@*/
 	    charArray[count++] = lang;
 	}
 	if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
@@ -1470,6 +1476,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
     format = xcalloc(numTokens, sizeof(*format));
     if (endPtr) *endPtr = NULL;
 
+    /*@-infloops@*/
     dst = start = str;
     currToken = -1;
     while (*start) {
@@ -1515,7 +1522,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    chptr = start;
 	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
 	    if (!*chptr || *chptr == '%') {
+		/*@-observertrans@*/
 		*errmsg = _("missing { after %");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1543,7 +1552,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    next = start;
 	    while (*next && *next != '}') next++;
 	    if (!*next) {
+		/*@-observertrans@*/
 		*errmsg = _("missing } after %{");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1555,7 +1566,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if (*chptr) {
 		*chptr++ = '\0';
 		if (!*chptr) {
+		    /*@-observertrans@*/
 		    *errmsg = _("empty tag format");
+		    /*@=observertrans@*/
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
@@ -1565,7 +1578,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    }
 	    
 	    if (!*start) {
+		/*@-observertrans@*/
 		*errmsg = _("empty tag name");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1580,7 +1595,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		format[currToken].u.tag.ext = ext->u.tagFunction;
 		format[currToken].u.tag.extNum = ext - extensions;
 	    } else {
+		/*@-observertrans@*/
 		*errmsg = _("unknown tag");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1605,7 +1622,9 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    }
 
 	    if (!start) {
+		/*@-observertrans@*/
 		*errmsg = _("] expected at end of array");
+		/*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1621,9 +1640,13 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    if ((*start == ']' && state != PARSER_IN_ARRAY) ||
 	        (*start == '}' && state != PARSER_IN_EXPR)) {
 		if (*start == ']')
+		    /*@-observertrans@*/
 		    *errmsg = _("unexpected ]");
+		    /*@=observertrans@*/
 		else
+		    /*@-observertrans@*/
 		    *errmsg = _("unexpected }");
+		    /*@=observertrans@*/
 		freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -1650,6 +1673,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	if (done)
 	    break;
     }
+    /*@=infloops@*/
 
     *dst = '\0';
 
@@ -1669,7 +1693,6 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	const struct headerTagTableEntry * tags, 
 	const struct headerSprintfExtension * extensions,
 	/*@out@*/ char ** endPtr, /*@out@*/ errmsg_t * errmsg)
-		/*@modifies str, *str, *token, *endPtr, *errmsg @*/
 {
     const struct headerTagTableEntry * tag;
     const struct headerSprintfExtension * ext;
@@ -1681,14 +1704,18 @@ static int parseExpression(struct sprintfToken * token, char * str,
     while (*chptr && *chptr != '?') chptr++;
 
     if (*chptr != '?') {
+	/*@-observertrans@*/
 	*errmsg = _("? expected in expression");
+	/*@=observertrans@*/
 	return 1;
     }
 
     *chptr++ = '\0';;
 
     if (*chptr != '{') {
+	/*@-observertrans@*/
 	*errmsg = _("{ expected after ? in expression");
+	/*@=observertrans@*/
 	return 1;
     }
 
@@ -1699,7 +1726,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	return 1;
 
     if (!*end) {
+	/*@-observertrans@*/
 	*errmsg = _("} expected in expression");
+	/*@=observertrans@*/
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	token->u.cond.ifFormat = NULL;
 	return 1;
@@ -1707,7 +1736,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
     chptr = end;
     if (*chptr != ':' && *chptr != '|') {
+	/*@-observertrans@*/
 	*errmsg = _(": expected following ? subexpression");
+	/*@=observertrans@*/
 	freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	token->u.cond.ifFormat = NULL;
 	return 1;
@@ -1721,7 +1752,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 	chptr++;
 
 	if (*chptr != '{') {
+	    /*@-observertrans@*/
 	    *errmsg = _("{ expected after : in expression");
+	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
 	    return 1;
@@ -1734,7 +1767,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 			errmsg)) 
 	    return 1;
 	if (!*end) {
+	    /*@-observertrans@*/
 	    *errmsg = _("} expected in expression");
+	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
 	    return 1;
@@ -1742,7 +1777,9 @@ static int parseExpression(struct sprintfToken * token, char * str,
 
 	chptr = end;
 	if (*chptr != '|') {
+	    /*@-observertrans@*/
 	    *errmsg = _("| expected at end of expression");
+	    /*@=observertrans@*/
 	    freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
 	    token->u.cond.ifFormat = NULL;
 	    freeFormat(token->u.cond.elseFormat, token->u.cond.numElseTokens);
@@ -1826,7 +1863,9 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     }
 
     if (tag->arrayCount) {
+	/*@-observertrans -modobserver@*/
 	if (type == RPM_STRING_ARRAY_TYPE) free((void *)data);
+	/*@=observertrans =modobserver@*/
 
 	countBuf = count;
 	data = &countBuf;
@@ -1868,7 +1907,9 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	    sprintf(val, buf, strarray[element]);
 	}
 
+	/*@-observertrans -modobserver@*/
 	if (mayfree) free((void *)data);
+	/*@=observertrans =modobserver@*/
 
 	break;
 
@@ -1894,7 +1935,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	case RPM_INT8_TYPE:	intVal = *(((int_8 *) data) + element); break;
 	case RPM_INT16_TYPE:	intVal = *(((uint_16 *) data) + element); break;
 	default:		/* keep -Wall quiet */
-	case RPM_INT32_TYPE:	intVal = *(((int_32 *) data) + element);
+	case RPM_INT32_TYPE:	intVal = *(((int_32 *) data) + element); break;
 	}
 
 	if (tagtype)

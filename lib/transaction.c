@@ -33,6 +33,9 @@
 # endif
 #endif
 
+/*@access FD_t@*/		/* XXX compared with NULL */
+/*@access Header@*/		/* XXX compared with NULL */
+/*@access dbiIndexSet@*/
 /*@access rpmdb@*/
 /*@access rpmTransactionSet@*/
 /*@access rpmProblemSet@*/
@@ -1296,7 +1299,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	if (di) di[i].bsize = 0;
     }
 
-    *newProbs = ts->probs = psCreate();
+    ts->probs = *newProbs = psCreate();
     hdrs = alloca(sizeof(*hdrs) * ts->addedPackages.size);
 
     /* ===============================================

@@ -342,7 +342,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     return dbi;
 }
 
-static const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
+static /*@exposed@*/ const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
     static char buf[256];
     struct dbOption *opt;
@@ -822,8 +822,8 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor,
 }
 
 static int db3cget(dbiIndex dbi, DBC * dbcursor,
-		/*@out@*/ void ** keyp, /*@out@*/ size_t * keylen,
-		/*@out@*/ void ** datap, /*@out@*/ size_t * datalen,
+		void ** keyp, size_t * keylen,
+		void ** datap, size_t * datalen,
 		/*@unused@*/ unsigned int flags)
 {
     DB * db = dbi->dbi_db;

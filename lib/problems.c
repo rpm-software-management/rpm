@@ -85,7 +85,7 @@ void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
     }
 }
 
-const char * rpmProblemString(rpmProblem prob)
+const char * rpmProblemString(rpmProblem prob) /*@modifies prob@*/
 {
     const char * name, * version, * release;
     const char * altName = NULL, * altVersion = NULL, * altRelease = NULL;
@@ -150,7 +150,7 @@ const char * rpmProblemString(rpmProblem prob)
       case RPMPROB_DISKNODES:
 	sprintf(buf, _("installing package %s-%s-%s needs %ld inodes on the %s"
 		       " filesystem"), name, version, release, 
-			prob->ulong1,
+			(long)prob->ulong1,
 			prob->str1);
 	break;
 

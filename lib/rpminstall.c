@@ -10,6 +10,9 @@
 
 #include "misc.h"
 
+/*@access Header@*/		/* XXX compared with NULL */
+/*@access FD_t@*/		/* XXX compared with NULL */
+
 static int hashesPrinted = 0;
 
 static void printHash(const unsigned long amount, const unsigned long total)

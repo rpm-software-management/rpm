@@ -57,7 +57,7 @@ typedef struct {
     void (*Transform) (void * private);
 } FDHASH_t;
 
-extern FDHASH_t rpmio_md5hash;
+/*@observer@*/ extern FDHASH_t rpmio_md5hash;
 
 /** \ingroup rpmio
  * The FD_t File Handle data structure.
@@ -84,7 +84,7 @@ struct _FD_s {
 /*@observer@*/ const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
 	FDSTAT_t	*stats;		/* I/O statistics */
-	FDHASH_t	*hash;		/* Hash vectors */
+/*@owned@*/ FDHASH_t	*hash;		/* Hash vectors */
 
 	int		ftpFileDoneNeeded; /* ufdio: (FTP) */
 	unsigned int	firstFree;	/* fadio: */
@@ -316,8 +316,10 @@ int ufdClose( /*@only@*/ void * cookie);
  */
 /*@unused@*/ static inline void fdInitMD5(FD_t fd) {
     fd->hash = xcalloc(1, sizeof(*fd->hash));
+    /*@-globstate@*/
     *fd->hash = rpmio_md5hash;	/* structure assignment */
     fd->hash->private = (*fd->hash->Init) (0);
+    /*@=globstate@*/
 }
 
 /** \ingroup rpmio

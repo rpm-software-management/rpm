@@ -189,11 +189,7 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, fd, fdbg(fd)));
     /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
-#ifdef USE_COOKIE_SEEK_POINTER
-static inline int fdSeekNot(void * cookie,  /*@unused@*/ _IO_off64_t *pos,  /*@unused@*/ int whence) {
-#else
-static inline int fdSeekNot(void * cookie,  /*@unused@*/ off_t pos,  /*@unused@*/ int whence) {
-#endif
+static inline int fdSeekNot(void * cookie,  /*@unused@*/ _libio_pos_t pos,  /*@unused@*/ int whence) {
     FD_t fd = c2f(cookie);
     FDSANE(fd);		/* XXX keep gcc quiet */
     return -2;
@@ -336,11 +332,11 @@ DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)cou
     return rc;
 }
 
+static inline int fdSeek(void * cookie, _libio_pos_t pos, int whence) {
 #ifdef USE_COOKIE_SEEK_POINTER
-static inline int fdSeek(void * cookie, _IO_off64_t *pos, int whence) {
     _IO_off64_t p = *pos;
 #else
-static inline int fdSeek(void * cookie, off_t p, int whence) {
+    off_t p = pos;
 #endif
     FD_t fd = c2f(cookie);
     off_t rc;
@@ -1558,11 +1554,7 @@ fprintf(stderr, "*** write: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(err
     return count;
 }
 
-#ifdef USE_COOKIE_SEEK_POINTER
-static inline int ufdSeek(void * cookie, _IO_off64_t *pos, int whence) {
-#else
-static inline int ufdSeek(void * cookie, off_t pos, int whence) {
-#endif
+static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence) {
     FD_t fd = c2f(cookie);
 
     switch (fd->urlType) {
@@ -1960,11 +1952,11 @@ DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
 }
 
 /* XXX zlib-1.0.4 has not */
+static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence) {
 #ifdef USE_COOKIE_SEEK_POINTER
-static inline int gzdSeek(void * cookie, _IO_off64_t *pos, int whence) {
     _IO_off64_t p = *pos;
 #else
-static inline int gzdSeek(void * cookie, off_t p, int whence) {
+    off_t p = pos;
 #endif
     int rc;
 #if HAVE_GZSEEK
@@ -2139,11 +2131,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count) {
     return rc;
 }
 
-#ifdef USE_COOKIE_SEEK_POINTER
-static inline int bzdSeek(void * cookie, _IO_off64_t *pos, int whence) {
-#else
-static inline int bzdSeek(void * cookie, off_t p, int whence) {
-#endif
+static inline int bzdSeek(void * cookie, _libio_pos_t pos, int whence) {
     FD_t fd = c2f(cookie);
 
     BZDONLY(fd);
@@ -2263,12 +2251,15 @@ DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigne
     return rc;
 }
 
-#ifdef USE_COOKIE_SEEK_POINTER
-int Fseek(FD_t fd, _IO_off64_t offset, int whence) {
-#else 
-int Fseek(FD_t fd, off_t offset, int whence) {
-#endif
+int Fseek(FD_t fd, _libio_off_t offset, int whence) {
     fdio_seek_function_t *_seek;
+#ifdef USE_COOKIE_SEEK_POINTER
+    _IO_off64_t o64 = offset;
+    _libio_pos_t pos = &o64;
+#else
+    _libio_pos_t pos = offset;
+#endif
+
     long int rc;
 
     FDSANE(fd);
@@ -2284,11 +2275,7 @@ DBGIO(fd, (stderr, "==> Fseek(%p,%ld,%d) %s\n", fd, (long)offset, whence, fdbg(f
 
     _seek = FDIOVEC(fd, seek);
 
-#ifdef USE_COOKIE_SEEK_POINTER
-    rc = (_seek ? _seek(fd, &offset, whence) : -2);
-#else
-    rc = (_seek ? _seek(fd, offset, whence) : -2);
-#endif
+    rc = (_seek ? _seek(fd, pos, whence) : -2);
     return rc;
 }
 
@@ -2644,21 +2631,13 @@ int Fcntl(FD_t fd, int op, void *lip) {
  */
 
 /* XXX falloc.c: analogues to pread(3)/pwrite(3). */
-#ifdef USE_COOKIE_SEEK_POINTER
-ssize_t Pread(FD_t fd, void * buf, size_t count, _IO_off64_t offset) {
-#else
-ssize_t Pread(FD_t fd, void * buf, size_t count, off_t offset) {
-#endif
+ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset) {
     if (Fseek(fd, offset, SEEK_SET) < 0)
 	return -1;
     return Fread(buf, sizeof(char), count, fd);
 }
 
-#ifdef USE_COOKIE_SEEK_POINTER
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _IO_off64_t offset) {
-#else
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, off_t offset) {
-#endif
+ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset) {
     if (Fseek(fd, offset, SEEK_SET) < 0)
 	return -1;
     return Fwrite(buf, sizeof(char), count, fd);

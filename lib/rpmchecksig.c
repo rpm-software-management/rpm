@@ -11,6 +11,9 @@
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */
 
+/*@access Header@*/		/* XXX compared with NULL */
+/*@access FD_t@*/		/* XXX compared with NULL */
+
 static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 {
     const char *fn;

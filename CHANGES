@@ -17,6 +17,9 @@
 	- pass rpmTransactionSet, not elements, to installBinaryPackage et al.
 	- verify MD5 sums of payload files when unpacking archive.
 	- fix: runTriggers was not adding countCorrection.
+	- add cscope/ctags (Rodrigo Barbosa<rodrigob@conectiva.com.br>).
+	- remove getMacroBody() from rpmio API.
+	- hide libio lossage in prototype, not API.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

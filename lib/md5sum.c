@@ -30,6 +30,7 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
     MD5_CTX ctx;
     int n;
 
+    memset(bindigest, 0, sizeof(bindigest));
     fp = fopen(fn, "r");
     if (!fp) {
 	return 1;
@@ -49,10 +50,22 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
     } else {
 	sprintf(digest, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
 			"%02x%02x%02x%02x%02x",
-		bindigest[0],  bindigest[1],  bindigest[2],  bindigest[3],
-		bindigest[4],  bindigest[5],  bindigest[6],  bindigest[7],
-		bindigest[8],  bindigest[9],  bindigest[10], bindigest[11],
-		bindigest[12], bindigest[13], bindigest[14], bindigest[15]);
+		(unsigned)bindigest[0],
+		(unsigned)bindigest[1],
+		(unsigned)bindigest[2],
+		(unsigned)bindigest[3],
+		(unsigned)bindigest[4],
+		(unsigned)bindigest[5],
+		(unsigned)bindigest[6],
+		(unsigned)bindigest[7],
+		(unsigned)bindigest[8],
+		(unsigned)bindigest[9],
+		(unsigned)bindigest[10],
+		(unsigned)bindigest[11],
+		(unsigned)bindigest[12],
+		(unsigned)bindigest[13],
+		(unsigned)bindigest[14],
+		(unsigned)bindigest[15]);
 
     }
     fclose(fp);

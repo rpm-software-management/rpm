@@ -10,6 +10,7 @@
 #include "system.h"
 
 #include "cpio.h"
+/*@access FD_t@*/
 
 #define	xfree(_p)	free((void *)_p)
 
@@ -487,16 +488,18 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
     }
 
     if (filemd5) {
-	const char * md5sum;
+	const char * md5sum = NULL;
 
 	Fflush(ofd);
 	fdFiniMD5(ofd, (void **)&md5sum, NULL, 1);
 
-	if (strcmp(md5sum, filemd5))
+	if (md5sum == NULL) {
 	    rc = CPIOERR_MD5SUM_MISMATCH;
-
-	if (md5sum)
+	} else {
+	    if (strcmp(md5sum, filemd5))
+		rc = CPIOERR_MD5SUM_MISMATCH;
 	    xfree(md5sum);
+	}
     }
 
     Fclose(ofd);

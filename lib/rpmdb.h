@@ -184,7 +184,7 @@ struct _dbiIndex {
 	/* dbenv parameters */
     int			dbi_lorder;
     void		(*db_errcall) (const char *db_errpfx, char *buffer);
-    FILE *		dbi_errfile;
+/*@shared@*/ FILE *	dbi_errfile;
     const char *	dbi_errpfx;
     int			dbi_verbose;
     int			dbi_region_init;
@@ -262,7 +262,7 @@ struct rpmdb_s {
     const char *	db_errpfx;
 
     void		(*db_errcall) (const char *db_errpfx, char *buffer);
-    FILE *		db_errfile;
+/*@shared@*/ FILE *	db_errfile;
     void *		(*db_malloc) (size_t nbytes);
 
     int			db_ndbi;

@@ -49,13 +49,13 @@ static Value valueMakeInteger(int i)
   return v;
 }
 
-static Value valueMakeString(const char *s)
+static Value valueMakeString(/*@only@*/ const char *s)
 {
   Value v;
 
   v = (Value) xmalloc(sizeof(struct _value));
   v->type = VALUE_TYPE_STRING;
-  v->data.s = xstrdup(s);
+  v->data.s = s;
   return v;
 }
 
@@ -269,7 +269,7 @@ static int rdToken(ParseState state)
       p--;
 
       token = TOK_IDENTIFIER;
-      v = valueMakeString(temp);
+      v = valueMakeString( xstrdup(temp) );
 
     } else if (*p == '\"') {
       char temp[EXPRBUFSIZ], *t = temp;
@@ -279,10 +279,8 @@ static int rdToken(ParseState state)
 	*t++ = *p++;
       *t++ = '\0';
 
-      expandMacros(state->spec, state->spec->macros, temp, sizeof(temp));
-
       token = TOK_STRING;
-      v = valueMakeString(temp);
+      v = valueMakeString( rpmExpand(temp, NULL) );
 
     } else {
       rpmError(RPMERR_BADSPEC, _("parse error in expression"));
@@ -328,15 +326,8 @@ static Value doPrimary(ParseState state)
 
   case TOK_IDENTIFIER: {
     char *name = state->tokenValue->data.s;
-    const char *body;
 
-    body = getMacroBody(state->spec->macros, name);
-    if (!body) {
-      rpmError(RPMERR_BADSPEC, _("undefined identifier"));
-      return NULL;
-    }
-
-    v = valueMakeString(body);
+    v = valueMakeString( rpmExpand(name, NULL) );
     if (rdToken(state))
       return NULL;
     break;
@@ -472,12 +463,10 @@ static Value doAddSubtract(ParseState state)
       }
 
       copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
-      strcpy(copy, v1->data.s);
-      strcat(copy, v2->data.s);
+      (void) stpcpy( stpcpy(copy, v1->data.s), v2->data.s);
 
       valueFree(v1);
       v1 = valueMakeString(copy);
-      free(copy);
     }
   }
 

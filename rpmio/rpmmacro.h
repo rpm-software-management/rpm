@@ -47,16 +47,6 @@ extern "C" {
 void	rpmDumpMacroTable	(MacroContext * mc, FILE * fp);
 
 /**
- * Return value of macro.
- * @deprecated Used only in build/expression.c.
- * @todo Eliminate.
- * @param mc		macro context (NULL uses global context).
- * @param name		macro name
- * @return		macro body
- */
-const char *getMacroBody (MacroContext *mc, const char *name);
-
-/**
  * Expand macro into buffer.
  * @deprecated Use rpmExpand().
  * @todo Eliminate from API.
@@ -93,6 +83,7 @@ void	delMacro	(MacroContext * mc, const char * n);
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name, options, body
  * @param level		macro recursion level (0 is entry API)
+ * @return		@todo Document.
  */
 int	rpmDefineMacro	(MacroContext * mc, const char * macro, int level);
 

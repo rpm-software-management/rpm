@@ -1,16 +1,71 @@
 #ifndef H_HEADER
 #define H_HEADER
 
-/** \file lib/header.h
+/** \ingroup header
+ * \file lib/header.h
  *
+ * An rpm header carries all information about a package. A header is
+ * a collection of data elements called tags. Each tag has a data type,
+ * and includes 1 or more values.
+ * 
+ * \par Historical Issues
+ *
+ * Here's a brief description of features/incompatibilities that
+ * have been added to headers and tags.
+ *
+ * - version 1
+ *	- Support for version 1 headers was removed in rpm-4.0.
+ *
+ * - version 2
+ *	- (Before my time, sorry.)
+ *
+ * - version 3	(added in rpm-3.0)
+ *	- added RPM_I18NSTRING_TYPE as an associative array reference
+ *	  for i18n locale dependent single element tags (i.e Group).
+ *	- added an 8 byte magic string to headers in packages on-disk. The
+ *	  magic string was not added to headers in the database.
+ *
+ * - version 4	(added in rpm-4.0)
+ *	- represent file names as a (dirname/basename/dirindex) triple
+ *	  rather than as an absolute path name. Legacy package headers are
+ *	  converted when the header is read. Legacy database headers are
+ *	  converted when the database is rebuilt.
+ *	- Simplify dependencies by eliminating the implict check on
+ *	  package name/version/release in favor of an explict check
+ *	  on package provides. Legacy package headers are converted
+ *	  when the header is read. Legacy database headers are
+ *        converted when the database is rebuilt.
+ *
+ * .
+ *
+ * \par Development Issues
+ *
+ * Here's a brief description of future features/incompatibilities that
+ * will be added to headers.
+ *
+ * - Signature tags
+ *	- Signatures are stored in A header, but not THE header
+ *	  of a package. That means that signatures are discarded
+ *	  when a package is installed, preventing verification
+ *	  of header contents after install. All signature tags
+ *	  will be added to THE package header so that they are
+ *	  saved in the rpm database for later retrieval and verification.
+ *	  Adding signatures to THE header will also permit signatures to
+ *	  be accessed by Red Hat Network, i.e. retrieval by existing
+ *	  Python bindings.
+ *	- Signature tag values collide with existing rpm tags, and will
+ *	  have to be renumbered. Part of this renumbering was accomplished
+ *	  in rpm-4.0, but more remains to be done.
+ *	- Signatures, because they involve MD5 and other 1-way hashes on
+ *	  immutable data, will cause the header to be reconstituted as a
+ *	  immutable section and a mutable section.
  */
 
-/* RPM - Copyright (C) 1995 Red Hat Software */
+/* RPM - Copyright (C) 1995-2000 Red Hat Software */
 
 /* WARNING: 1 means success, 0 means failure (yes, this is backwards) */
 
 #include <stdio.h>
-#include <zlib.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,11 +93,11 @@ typedef unsigned int uint_32;
 typedef unsigned short uint_16;
 #endif
 
-/** !ingroup header
+/** \ingroup header
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken *Header;
 
-/** !ingroup header
+/** \ingroup header
  */
 typedef /*@abstract@*/ struct headerIteratorS *HeaderIterator;
 
@@ -198,7 +253,7 @@ void headerDump(Header h, FILE *f, int flags,
 		const struct headerTagTableEntry * tags);
 #define HEADER_DUMP_INLINE   1
 
-typedef /*@observer@*/ const char * errmsg_t;
+typedef const char * errmsg_t;
 
 /** \ingroup header
  * Return formatted output string from header tags.
@@ -431,14 +486,11 @@ void headerSort(Header h)
 void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy)
 	/*@modifies headerFrom, headerTo @*/;
 
-/* Entry Types */
-
-#define	RPM_MIN_TYPE		0
-
-/**
+/** \ingroup header
  * @todo Add RPM_XREF_TYPE to carry (hdrNum,tagNum,valNum) cross reference.
  */
 typedef enum rpmTagType_e {
+#define	RPM_MIN_TYPE		0
 	RPM_NULL_TYPE		= 0,
 	RPM_CHAR_TYPE		= 1,
 	RPM_INT8_TYPE		= 2,
@@ -449,9 +501,9 @@ typedef enum rpmTagType_e {
 	RPM_BIN_TYPE		= 7,
 	RPM_STRING_ARRAY_TYPE	= 8,
 	RPM_I18NSTRING_TYPE	= 9
+#define	RPM_MAX_TYPE		9
 } rpmTagType;
 
-#define	RPM_MAX_TYPE		9
 
 /* Tags -- general use tags should start at 1000 (RPM's tag space starts
    there) */

@@ -182,3 +182,11 @@ doxygen: Doxyfile
 	rm -rf doxygen
 	mkdir -p doxygen
 	doxygen
+
+ctags:
+	find . -type f -name "*.[ch]*" | xargs @CTAGS@
+
+cscope:
+	@CSCOPE@ -b -R
+
+cref: ctags cscope

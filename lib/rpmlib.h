@@ -28,7 +28,7 @@ extern "C" {
  * @return		0 on success, 1 on bad magic, 2 on error
  */
 int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
-	/*@out@*/ Header * hdr) /*@modifies *signatures, *hdr @*/;
+	/*@out@*/ Header * hdr) /*@modifies fd, *signatures, *hdr @*/;
 
 /**
  * Return package header and lead info from file handle.
@@ -41,7 +41,8 @@ int rpmReadPackageInfo(FD_t fd, /*@out@*/ Header * signatures,
  */
 int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
 	/*@out@*/ int * isSource, /*@out@*/ int * major,
-	/*@out@*/ int * minor) /*@modifies *hdr, *isSource, *major, *minor @*/;
+	/*@out@*/ int * minor)
+		/*@modifies fd, *hdr, *isSource, *major, *minor @*/;
 
 /**
  * Return name, version, release strings from header.
@@ -52,7 +53,7 @@ int rpmReadPackageHeader(FD_t fd, /*@out@*/ Header * hdr,
  * @return		0 always
  */
 int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
-	/*@out@*/ const char **rp) /*@modifies *np, *vp, *rp @*/;
+	/*@out@*/ const char **rp) /*@modifies h, *np, *vp, *rp @*/;
 
 /**
  * Retrieve file names from header.
@@ -86,7 +87,7 @@ void rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
  */
 int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
         /*@out@*/ void **p, /*@out@*/ int_32 *c)
-		/*@modifies *type, *p, *c @*/;
+		/*@modifies h, *type, *p, *c @*/;
 
 /**
  * Retrieve tag info from header.
@@ -103,7 +104,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  */
 int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
         int_32 tag, int_32 *type, void **p, int_32 *c)
-		/*@modifies *type, *p, *c @*/;
+		/*@modifies sigs, h, *type, *p, *c @*/;
 
 /**
  * Automatically generated table of tag name/value pairs.
@@ -621,7 +622,7 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
-			/*@kept@*/ rpmdb rpmdb, int rpmtag,
+			rpmdb rpmdb, int rpmtag,
 			const void * key, size_t keylen);
 
 /** \ingroup rpmdb
@@ -724,7 +725,7 @@ void printDepProblems(FILE *fp, struct rpmDependencyConflict *conflicts,
  * @param prob		rpm problem
  * @return		formatted string
  */
-/*@only@*/ const char * rpmProblemString(rpmProblem prob)	/*@*/;
+/*@only@*/ const char * rpmProblemString(rpmProblem prob) /*@modifies prob @*/;
 
 /**
  * Output formatted string representation of problem to file handle.
@@ -732,14 +733,15 @@ void printDepProblems(FILE *fp, struct rpmDependencyConflict *conflicts,
  * @param fp		file handle
  * @param prob		rpm problem
  */
-void rpmProblemPrint(FILE *fp, rpmProblem prob)	/*@modifies *fp @*/;
+void rpmProblemPrint(FILE *fp, rpmProblem prob)	/*@modifies *fp, prob @*/;
 
 /**
  * Print problems to file handle.
  * @param fp		file handle
  * @param probs		problem set
  */
-void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)	/*@modifies *fp @*/;
+void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)
+		/*@modifies *fp, probs @*/;
 
 /**
  * Destroy problem set.
@@ -767,9 +769,10 @@ typedef struct rpmRelocation_s {
  * @retval cooke	address of cookie pointer
  * @return		0 on success, 1 on bad magic, 2 on error
  */
-int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
+int rpmInstallSourcePackage(const char * root, FD_t fd,
+			/*@out@*/ const char ** specFile,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
-			char ** cookie);
+			/*@out@*/ char ** cookie);
 
 /**
  * Compare headers to determine which header is "newer".
@@ -793,7 +796,7 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
  * @param rootdir	path to top of install tree
  * @return		rpm transaction set
  */
-/*@only@*/ rpmTransactionSet rpmtransCreateSet( /*@only@*/ rpmdb rpmdb,
+/*@only@*/ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb,
 	const char * rootdir);
 
 /** \ingroup rpmtrans
@@ -958,7 +961,8 @@ typedef enum rpmprobFilterFlags_e {
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
 int rpmRunTransactions(rpmTransactionSet ts,
-			rpmCallbackFunction notify, rpmCallbackData notifyData,
+			rpmCallbackFunction notify,
+			/*@owned@*/ rpmCallbackData notifyData,
 			rpmProblemSet okProbs,
 			/*@out@*/ rpmProblemSet * newProbs,
 			rpmtransFlags transFlags,

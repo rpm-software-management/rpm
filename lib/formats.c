@@ -236,7 +236,7 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
 static int instprefixTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies h, *type, *data, *count, *freeData @*/
 {
     char ** array;
 
@@ -266,7 +266,7 @@ static int instprefixTag(Header h, /*@out@*/ int_32 * type,
 static int fssizesTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies h, *type, *data, *count, *freeData @*/
 {
     const char ** filenames;
     int_32 * filesizes;
@@ -317,7 +317,7 @@ static int fssizesTag(Header h, /*@out@*/ int_32 * type,
 static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies h, *type, *data, *count, *freeData @*/
 {
     int_32 * indices, * flags;
     char ** names, ** versions;
@@ -387,7 +387,7 @@ static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
 static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies h, *type, *data, *count, *freeData @*/
 {
     int_32 * indices, * flags;
     char ** conds, ** s;
@@ -468,7 +468,7 @@ static char * _macro_i18ndomains = "%{?_i18ndomains:%{_i18ndomains}}";
 static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies h, *type, *data, *count, *freeData @*/
 {
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
@@ -552,7 +552,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 static int summaryTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies h, *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
@@ -568,7 +568,7 @@ static int summaryTag(Header h, /*@out@*/ int_32 * type,
 static int descriptionTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies h, *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
@@ -584,7 +584,7 @@ static int descriptionTag(Header h, /*@out@*/ int_32 * type,
 static int groupTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies *type, *data, *count, *freeData @*/
+		/*@modifies h, *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }

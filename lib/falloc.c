@@ -42,7 +42,7 @@ struct faFooter {
 /* =============================================================== */
 static struct FDIO_s fadio_s = {
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  fadOpen, NULL, NULL,	NULL, NULL, NULL, NULL, NULL
+  fadOpen, NULL, NULL,	NULL, NULL, NULL, NULL, NULL, NULL
 };
 FDIO_t fadio = /*@-compmempass@*/ &fadio_s /*@=compmempass@*/ ;
 /* =============================================================== */

@@ -16,8 +16,10 @@ static int _debug = 0;
 #include <rpmmacro.h>	/* XXX for rpmGetPath/rpmGenPath */
 
 #include "rpmdb.h"
+
 /*@access dbiIndexSet@*/
 /*@access dbiIndexItem@*/
+/*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
 
 #include "fprint.h"
@@ -690,7 +692,7 @@ int rpmdbOpenAll (rpmdb rpmdb)
     for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	if (rpmdb->_dbi[dbix] != NULL)
 	    continue;
-    	dbiOpen(rpmdb, dbiTags[dbix], rpmdb->db_flags);
+	(void) dbiOpen(rpmdb, dbiTags[dbix], rpmdb->db_flags);
     }
     return 0;
 }

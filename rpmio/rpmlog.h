@@ -33,7 +33,7 @@ typedef enum rpmlogLvl_e {
 #define	RPMLOG_PRIMASK	0x07	/* mask to extract priority part (internal) */
 				/* extract priority */
 #define	RPMLOG_PRI(p)	((p) & RPMLOG_PRIMASK)
-#define	RPMLOG_MAKEPRI(fac, pri)	(((fac) << 3) | (pri))
+#define	RPMLOG_MAKEPRI(fac, pri)	((((unsigned)(fac)) << 3) | (pri))
 
 #ifdef RPMLOG_NAMES
 #define	_RPMLOG_NOPRI	0x10	/* the "no priority" priority */
@@ -90,7 +90,7 @@ typedef	enum rpmlogFac_e {
     RPMLOG_LOCAL7	= (23<<3),	/*!< reserved for local use */
 
 #define	RPMLOG_NFACILITIES 24	/*!< current number of facilities */
-    RPMLOG_ERRMSG	= ((RPMLOG_NFACILITIES+0)<<3)
+    RPMLOG_ERRMSG	= (((unsigned)(RPMLOG_NFACILITIES+0))<<3)
 } rpmlogFac;
 
 #define	RPMLOG_FACMASK	0x03f8	/*!< mask to extract facility part */

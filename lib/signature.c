@@ -25,6 +25,8 @@
 #include "rpmlead.h"
 #include "signature.h"
 
+/*@access Header@*/		/* XXX compared with NULL */
+
 typedef int (*md5func)(const char * fn, /*@out@*/unsigned char * digest);
 
 int rpmLookupSignatureType(int action)
@@ -78,12 +80,13 @@ const char * rpmDetectPGPVersion(pgpVersion *pgpVer)
 	char *pgpvbin;
 	struct stat statbuf;
 	
-	if (!(pgpbin && pgpbin[0] != '%') || ! (pgpvbin = (char *)alloca(strlen(pgpbin) + 2))) {
+	if (!(pgpbin && pgpbin[0] != '%')) {
 	  if (pgpbin) xfree(pgpbin);
 	  saved_pgp_version = -1;
 	  return NULL;
 	}
-	sprintf(pgpvbin, "%sv", pgpbin);
+	pgpvbin = (char *)alloca(strlen(pgpbin) + sizeof("v"));
+	(void)stpcpy(stpcpy(pgpvbin, pgpbin), "v");
 
 	if (stat(pgpvbin, &statbuf) == 0)
 	  saved_pgp_version = PGP_5;

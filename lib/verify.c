@@ -255,9 +255,10 @@ static int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scr
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
     int rc;
 
-    ts->scriptFd = scriptFd;
+    ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
     rc = runInstScript(ts, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
 		     0, 0);
+    ts->scriptFd = fdFree(ts->scriptFd, "rpmVerifyScript");
     rpmtransFree(ts);
     return rc;
 }
@@ -328,7 +329,7 @@ static int verifyHeader(QVA_t *qva, Header h)
     return ec;
 }
 
-static int verifyDependencies(/*@only@*/ rpmdb rpmdb, Header h) {
+static int verifyDependencies(rpmdb rpmdb, Header h) {
     rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;

@@ -30,6 +30,9 @@ AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 
+AC_PATH_PROG(CTAGS, ctags, /bin/true)
+AC_PATH_PROG(CSCOPE, cscope, /bin/true)
+
 dnl
 dnl This now uses libtool. Put
 dnl	LDFLAGS_STATIC="-all"

@@ -14,6 +14,8 @@
 #include "misc.h"
 #include <assert.h>
 
+/*@access Header@*/		/* XXX compared with NULL */
+
 /**
  * Private data for cpio callback.
  */
@@ -901,7 +903,7 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-const char *const fileActionString(enum fileActions a)
+/*@obserever@*/ const char *const fileActionString(enum fileActions a)
 {
     switch (a) {
       case FA_UNKNOWN: return "unknown";

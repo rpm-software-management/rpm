@@ -17,7 +17,7 @@ struct tsortInfo {
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
-/*@owned@*/ struct tsortInfo *tsi_next;
+/*@owned@*/ struct tsortInfo * tsi_next;
 /*@dependent@*/ struct availablePackage * tsi_pkg;
     int		tsi_reqx;
 };
@@ -122,8 +122,8 @@ struct transactionElement {
 struct rpmTransactionSet_s {
     rpmtransFlags transFlags;		/*!< Bit(s) to control operation. */
     rpmCallbackFunction notify;		/*!< Callback function. */
-    rpmCallbackData notifyData;		/*!< Callback private data. */
-    rpmProblemSet probs;		/*!< Current problems in transaction. */
+/*@observer@*/ rpmCallbackData notifyData;/*!< Callback private data. */
+/*@dependent@*/ rpmProblemSet probs;	/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;	/*!< Bits to filter current problems. */
 /*@owned@*/ /*@null@*/ rpmdb rpmdb;	/*!< Database handle. */
 /*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */

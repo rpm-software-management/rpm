@@ -14,10 +14,23 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 2
+/** \ingroup rpmio
+ * Hide libio API lossage.
+ * The libio interface changed after glibc-2.1.3 to pass the seek offset
+ * argument as a pointer rather than as an off_t. The snarl below defines
+ * typedefs to isolate the lossage.
+ * API unchanged.
+ */
+/*@{*/
+#if !defined(__LCLINT__) && defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 2
 #define USE_COOKIE_SEEK_POINTER 1
+typedef _IO_off64_t 	_libio_off_t;
+typedef _libio_off_t *	_libio_pos_t;
+#else
+typedef off_t 		_libio_off_t;
+typedef off_t 		_libio_pos_t;
 #endif
-
+/*@}*/
 
 /** \ingroup rpmio
  */
@@ -46,11 +59,7 @@ typedef ssize_t fdio_write_function_t (void *cookie, const char *buf, size_t nby
 
 /** \ingroup rpmio
  */
-#ifdef USE_COOKIE_SEEK_POINTER
-typedef int fdio_seek_function_t (void *cookie, _IO_off64_t * offset, int whence);
-#else
-typedef int fdio_seek_function_t (void *cookie, off_t offset, int whence);
-#endif
+typedef int fdio_seek_function_t (void *cookie, _libio_pos_t pos, int whence);
 
 /** \ingroup rpmio
  */
@@ -187,11 +196,7 @@ size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
 /** \ingroup rpmio
  * fseek(3) clone.
  */
-#ifdef USE_COOKIE_SEEK_POINTER
-int	Fseek	(FD_t fd, _IO_off64_t offset, int whence);
-#else
-int	Fseek	(FD_t fd, off_t offset, int whence);
-#endif
+int	Fseek	(FD_t fd, _libio_off_t offset, int whence);
 
 /** \ingroup rpmio
  * fclose(3) clone.
@@ -232,20 +237,12 @@ int	Fcntl	(FD_t fd, int op, void *lip);
 /** \ingroup rpmio
  * pread(2) clone.
  */
-#ifdef USE_COOKIE_SEEK_POINTER
-ssize_t Pread(FD_t fd, void * buf, size_t count, _IO_off64_t offset);
-#else
-ssize_t Pread(FD_t fd, void * buf, size_t count, off_t offset);
-#endif
+ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset);
 
 /** \ingroup rpmio
  * pwrite(2) clone.
  */
-#ifdef USE_COOKIE_SEEK_POINTER
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _IO_off64_t offset);
-#else
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, off_t offset);
-#endif
+ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset);
 /*@}*/
 
 /** \ingroup rpmrpc

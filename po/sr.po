@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-10-26 11:14-0400\n"
+"POT-Creation-Date: 2000-10-28 12:51-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
 "Xgettext-Options: --default-domain=rpm --add-comments --keyword=_ "
 "--keyword=N_\n"
 
-#: build.c:25 lib/rpminstall.c:460
+#: build.c:25 lib/rpminstall.c:463
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
@@ -1681,45 +1681,41 @@ msgstr "oèekivan znak ? u izrazu"
 msgid "syntax error while parsing ||"
 msgstr "oèekivan znak ? u izrazu"
 
-#: build/expression.c:288
+#: build/expression.c:286
 #, fuzzy
 msgid "parse error in expression"
 msgstr "oèekivan znak ? u izrazu"
 
-#: build/expression.c:317
+#: build/expression.c:315
 msgid "unmatched ("
 msgstr ""
 
-#: build/expression.c:335
-msgid "undefined identifier"
-msgstr ""
-
-#: build/expression.c:354
+#: build/expression.c:345
 msgid "- only on numbers"
 msgstr ""
 
-#: build/expression.c:370
+#: build/expression.c:361
 msgid "! only on numbers"
 msgstr ""
 
-#: build/expression.c:409 build/expression.c:454 build/expression.c:511
-#: build/expression.c:598
+#: build/expression.c:400 build/expression.c:445 build/expression.c:500
+#: build/expression.c:587
 msgid "types must match"
 msgstr ""
 
-#: build/expression.c:422
+#: build/expression.c:413
 msgid "* / not suported for strings"
 msgstr ""
 
-#: build/expression.c:470
+#: build/expression.c:461
 msgid "- not suported for strings"
 msgstr ""
 
-#: build/expression.c:611
+#: build/expression.c:600
 msgid "&& and || not suported for strings"
 msgstr ""
 
-#: build/expression.c:645 build/expression.c:693
+#: build/expression.c:634 build/expression.c:682
 #, fuzzy
 msgid "syntax error in expression"
 msgstr "oèekivan znak ? u izrazu"
@@ -2362,151 +2358,151 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/cpio.c:443
+#: lib/cpio.c:444
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/cpio.c:449
+#: lib/cpio.c:450
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:753
+#: lib/cpio.c:756
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1239
+#: lib/cpio.c:1242
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "gre¹ka: "
 
-#: lib/cpio.c:1242
+#: lib/cpio.c:1245
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1243
+#: lib/cpio.c:1246
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1261
-msgid "Header size too big"
-msgstr ""
-
-#: lib/cpio.c:1262
-#, fuzzy
-msgid "Unknown file type"
-msgstr "(nepoznat tip)"
-
-#: lib/cpio.c:1263
-msgid "Missing hard link"
-msgstr ""
-
 #: lib/cpio.c:1264
-msgid "MD5 sum mismatch"
+msgid "Header size too big"
 msgstr ""
 
 #: lib/cpio.c:1265
 #, fuzzy
+msgid "Unknown file type"
+msgstr "(nepoznat tip)"
+
+#: lib/cpio.c:1266
+msgid "Missing hard link"
+msgstr ""
+
+#: lib/cpio.c:1267
+msgid "MD5 sum mismatch"
+msgstr ""
+
+#: lib/cpio.c:1268
+#, fuzzy
 msgid "Internal error"
 msgstr "fatalna gre¹ka: "
 
-#: lib/cpio.c:1274
+#: lib/cpio.c:1277
 #, fuzzy
 msgid " failed - "
 msgstr "PGP omanuo"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:549
+#: lib/depends.c:553
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:578
+#: lib/depends.c:582
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:932
+#: lib/depends.c:936
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:991
+#: lib/depends.c:995
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1043
+#: lib/depends.c:1047
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1062
+#: lib/depends.c:1066
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1079
+#: lib/depends.c:1083
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/depends.c:1100
+#: lib/depends.c:1104
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1113
+#: lib/depends.c:1117
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1126
+#: lib/depends.c:1130
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1147
+#: lib/depends.c:1151
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1205
+#: lib/depends.c:1209
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s nije naveden u %s"
 
 #. conflicts exist.
-#: lib/depends.c:1272
+#: lib/depends.c:1276
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: lib/depends.c:1458
+#: lib/depends.c:1462
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
 #. Record all relations.
-#: lib/depends.c:1511
+#: lib/depends.c:1515
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1568
+#: lib/depends.c:1572
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1671
+#: lib/depends.c:1675
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1702
+#: lib/depends.c:1706
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2645,7 +2641,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2133 lib/header.c:2150 lib/header.c:2170
+#: lib/header.c:2174 lib/header.c:2191 lib/header.c:2211
 msgid "(not a number)"
 msgstr "(nije broj)"
 
@@ -2674,201 +2670,215 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:244
+#: lib/header.c:245
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:275 lib/header.c:745 lib/install.c:378
+#: lib/header.c:276 lib/header.c:747 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1108
+#: lib/header.c:1110
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1518
+#. @-observertrans@
+#: lib/header.c:1526
 #, c-format
 msgid "missing { after %"
 msgstr "nedostaje { posle %"
 
-#: lib/header.c:1546
+#. @-observertrans@
+#: lib/header.c:1556
 msgid "missing } after %{"
 msgstr "nedostaje } posle %"
 
-#: lib/header.c:1558
+#. @-observertrans@
+#: lib/header.c:1570
 msgid "empty tag format"
 msgstr "prazan 'tag' format'"
 
-#: lib/header.c:1568
+#. @-observertrans@
+#: lib/header.c:1582
 msgid "empty tag name"
 msgstr "prazno ime tag-a"
 
-#: lib/header.c:1583
+#. @-observertrans@
+#: lib/header.c:1599
 msgid "unknown tag"
 msgstr "nepoznat tag"
 
-#: lib/header.c:1608
+#. @-observertrans@
+#: lib/header.c:1626
 msgid "] expected at end of array"
 msgstr "] oèekivano na kraju niza"
 
-#: lib/header.c:1624
+#. @-observertrans@
+#: lib/header.c:1644
 msgid "unexpected ]"
 msgstr "neoèekivano ]"
 
-#: lib/header.c:1626
+#. @-observertrans@
+#: lib/header.c:1648
 msgid "unexpected }"
 msgstr "neoèekivano }"
 
-#: lib/header.c:1684
+#. @-observertrans@
+#: lib/header.c:1708
 msgid "? expected in expression"
 msgstr "oèekivan znak ? u izrazu"
 
-#: lib/header.c:1691
+#. @-observertrans@
+#: lib/header.c:1717
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ oèekivano posle ? u izrazu"
 
-#: lib/header.c:1702 lib/header.c:1737
+#. @-observertrans@
+#: lib/header.c:1730 lib/header.c:1771
 msgid "} expected in expression"
 msgstr "} oèekivano u izrazu"
 
-#: lib/header.c:1710
+#. @-observertrans@
+#: lib/header.c:1740
 msgid ": expected following ? subexpression"
 msgstr "oèekivano : praæeno ? podizrazom"
 
-#: lib/header.c:1724
+#. @-observertrans@
+#: lib/header.c:1756
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ oèekivano posle : u izrazu"
 
-#: lib/header.c:1745
+#. @-observertrans@
+#: lib/header.c:1781
 msgid "| expected at end of expression"
 msgstr "| oèekivano na kraju izraza"
 
-#: lib/header.c:1912
+#: lib/header.c:1953
 msgid "(unknown type)"
 msgstr "(nepoznat tip)"
 
-#: lib/install.c:188 lib/uninstall.c:191
+#: lib/install.c:190 lib/uninstall.c:193
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/install.c:212
+#: lib/install.c:214
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: lib/install.c:220
+#: lib/install.c:222
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: lib/install.c:253
+#: lib/install.c:255
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:655
+#: lib/install.c:657
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:656
+#: lib/install.c:658
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:705
+#: lib/install.c:707
 #, fuzzy
 msgid "installing a source package\n"
 msgstr "instaliraj paket"
 
-#: lib/install.c:725
+#: lib/install.c:727
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/install.c:731 lib/install.c:761
+#: lib/install.c:733 lib/install.c:763
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/install.c:735
+#: lib/install.c:737
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:755
+#: lib/install.c:757
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/install.c:765
+#: lib/install.c:767
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/install.c:797 lib/install.c:825
+#: lib/install.c:799 lib/install.c:827
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/install.c:843
+#: lib/install.c:845
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:845 lib/install.c:1117 lib/uninstall.c:40
+#: lib/install.c:847 lib/install.c:1119 lib/uninstall.c:42
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "preimenovanje %s u %s nije uspelo: %s"
 
-#: lib/install.c:935
+#: lib/install.c:937
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:980
+#: lib/install.c:982
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-#: lib/install.c:1040
+#: lib/install.c:1042
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:1045
+#: lib/install.c:1047
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1077
+#: lib/install.c:1079
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:1113
+#: lib/install.c:1115
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:1202
+#: lib/install.c:1204
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:277 lib/misc.c:282 lib/misc.c:288
+#: lib/misc.c:280 lib/misc.c:285 lib/misc.c:291
 #, fuzzy, c-format
 msgid "error creating temporary file %s"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/package.c:60
+#: lib/package.c:62
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "samo paketi sa glavnim brojevima <= 3 su podr¾ani u ovoj verziji RPM-a"
 
-#: lib/package.c:120
+#: lib/package.c:122
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
@@ -3136,221 +3146,221 @@ msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""
 
-#: lib/query.c:143
+#: lib/query.c:150
 #, c-format
 msgid "error in format: %s\n"
 msgstr "gre¹ka u formatu: %s\n"
 
-#: lib/query.c:205
+#: lib/query.c:212
 msgid "(contains no files)"
 msgstr "(nema datoteka)"
 
-#: lib/query.c:264
+#: lib/query.c:271
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:266
+#: lib/query.c:273
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:268
+#: lib/query.c:275
 #, fuzzy
 msgid "not installed "
 msgstr "paket %s nije instaliran\n"
 
-#: lib/query.c:270
+#: lib/query.c:277
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:272
+#: lib/query.c:279
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(nepoznat tip)"
 
-#: lib/query.c:276
+#: lib/query.c:283
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:293 lib/query.c:336
+#: lib/query.c:300 lib/query.c:343
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:380
+#: lib/query.c:387
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:496
+#: lib/query.c:503
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
 
-#: lib/query.c:514
+#: lib/query.c:521
 msgid "old format source packages cannot be queried\n"
 msgstr "Upit se ne mo¾e izvesti nad izvorni paketima u starom formatu\n"
 
-#: lib/query.c:523 lib/rpminstall.c:242
+#: lib/query.c:530 lib/rpminstall.c:245
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s ne lièi na RPM paket\n"
 
-#: lib/query.c:527
+#: lib/query.c:534
 #, c-format
 msgid "query of %s failed\n"
 msgstr "upit nad %s neuspeo\n"
 
-#: lib/query.c:560
+#: lib/query.c:567
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "upit nad %s neuspeo\n"
 
-#: lib/query.c:583
+#: lib/query.c:590
 #, fuzzy
 msgid "no packages\n"
 msgstr "upit nad svim paketima"
 
-#: lib/query.c:593
+#: lib/query.c:600
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/query.c:603
+#: lib/query.c:610
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:613
+#: lib/query.c:620
 #, c-format
 msgid "no package requires %s\n"
 msgstr "nijedan paket ne zahteva %s\n"
 
-#: lib/query.c:624
+#: lib/query.c:631
 #, c-format
 msgid "no package provides %s\n"
 msgstr "nijedan paket ne obezbeðuje %s\n"
 
-#: lib/query.c:654
+#: lib/query.c:661
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/query.c:657
+#: lib/query.c:664
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/query.c:683
+#: lib/query.c:690
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:686
+#: lib/query.c:693
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:690
+#: lib/query.c:697
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:701 lib/rpminstall.c:473
+#: lib/query.c:708 lib/rpminstall.c:476
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/rpmchecksig.c:34
+#: lib/rpmchecksig.c:37
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: Neuspelo otvaranje\n"
 
-#: lib/rpmchecksig.c:45
+#: lib/rpmchecksig.c:48
 #, fuzzy
 msgid "makeTempFile failed\n"
 msgstr "%s: Neuspelo otvaranje\n"
 
-#: lib/rpmchecksig.c:77
+#: lib/rpmchecksig.c:80
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: lib/rpmchecksig.c:83
+#: lib/rpmchecksig.c:86
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: lib/rpmchecksig.c:116 lib/rpmchecksig.c:246
+#: lib/rpmchecksig.c:119 lib/rpmchecksig.c:249
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: lib/rpmchecksig.c:121
+#: lib/rpmchecksig.c:124
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Ne mogu da potpi¹em v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:125
+#: lib/rpmchecksig.c:128
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Ne mogu da ponovo potpi¹em v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:133 lib/rpmchecksig.c:260
+#: lib/rpmchecksig.c:136 lib/rpmchecksig.c:263
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: Neuspelo 'rpmReadSignature'\n"
 
-#: lib/rpmchecksig.c:137 lib/rpmchecksig.c:265
+#: lib/rpmchecksig.c:140 lib/rpmchecksig.c:268
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Potpis nije na raspolaganju\n"
 
-#: lib/rpmchecksig.c:170
+#: lib/rpmchecksig.c:173
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: lib/rpmchecksig.c:176
+#: lib/rpmchecksig.c:179
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: Neuspelo 'rpmReadSignature'\n"
 
-#: lib/rpmchecksig.c:252
+#: lib/rpmchecksig.c:255
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Potpis nije na raspolaganju (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:415
+#: lib/rpmchecksig.c:418
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:416 lib/rpmchecksig.c:430
+#: lib/rpmchecksig.c:419 lib/rpmchecksig.c:433
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (NEDOSTAJUÆI KLJUÈEVI)"
 
-#: lib/rpmchecksig.c:418 lib/rpmchecksig.c:432
+#: lib/rpmchecksig.c:421 lib/rpmchecksig.c:435
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:419 lib/rpmchecksig.c:433
+#: lib/rpmchecksig.c:422 lib/rpmchecksig.c:436
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:421 lib/rpmchecksig.c:435
+#: lib/rpmchecksig.c:424 lib/rpmchecksig.c:438
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:429
+#: lib/rpmchecksig.c:432
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:99
+#: lib/rpmdb.c:101
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:262
+#: lib/rpmdb.c:264
 msgid ""
 "\n"
 "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
@@ -3359,17 +3369,17 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:277
+#: lib/rpmdb.c:279
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpmdb.c:297
+#: lib/rpmdb.c:299
 #, fuzzy, c-format
 msgid "cannot open %s index"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpmdb.c:312
+#: lib/rpmdb.c:314
 #, c-format
 msgid ""
 "\n"
@@ -3379,7 +3389,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:325
+#: lib/rpmdb.c:327
 msgid ""
 "\n"
 "--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n"
@@ -3389,7 +3399,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:340
+#: lib/rpmdb.c:342
 msgid ""
 "\n"
 "--> The rpm database is in db%d format, not the suggested db%d format.\n"
@@ -3400,241 +3410,241 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:408
+#: lib/rpmdb.c:410
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index"
 msgstr "gre¹ka kod uzimanja sloga %s iz %s"
 
-#: lib/rpmdb.c:526
+#: lib/rpmdb.c:528
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s"
 msgstr "gre¹ka zapisivanja sloga %s u %s"
 
-#: lib/rpmdb.c:535
+#: lib/rpmdb.c:537
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:770 lib/rpmdb.c:2303
+#: lib/rpmdb.c:772 lib/rpmdb.c:2305
 msgid "no dbpath has been set"
 msgstr "dbpath nije odreðen"
 
-#: lib/rpmdb.c:869
+#: lib/rpmdb.c:871
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:1080
+#: lib/rpmdb.c:1082
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: lib/rpmdb.c:1139 lib/rpmdb.c:1673
+#: lib/rpmdb.c:1141 lib/rpmdb.c:1675
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "ne mogu da proèitam zaglavlje na %d za proveru"
 
-#: lib/rpmdb.c:1726
+#: lib/rpmdb.c:1728
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1737
+#: lib/rpmdb.c:1739
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:1746
+#: lib/rpmdb.c:1748
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:1888
+#: lib/rpmdb.c:1890
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: lib/rpmdb.c:1945
+#: lib/rpmdb.c:1947
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1961
+#: lib/rpmdb.c:1963
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1970
+#: lib/rpmdb.c:1972
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2330
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2332
+#: lib/rpmdb.c:2334
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: lib/rpmdb.c:2338
+#: lib/rpmdb.c:2340
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:2340
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:2347
+#: lib/rpmdb.c:2349
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2358
+#: lib/rpmdb.c:2360
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2381
+#: lib/rpmdb.c:2383
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "slog broj %d u bazi podataka je neispravan -- preskaèem ga"
 
-#: lib/rpmdb.c:2413
+#: lib/rpmdb.c:2415
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "ne mogu da dodam slog originalno na %d"
 
-#: lib/rpmdb.c:2431
+#: lib/rpmdb.c:2433
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2439
+#: lib/rpmdb.c:2441
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2441
+#: lib/rpmdb.c:2443
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2451
+#: lib/rpmdb.c:2453
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:2453
+#: lib/rpmdb.c:2455
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpminstall.c:136
+#: lib/rpminstall.c:139
 #, fuzzy
 msgid "counting packages to install\n"
 msgstr "nedostaje paket za instalaciju"
 
-#: lib/rpminstall.c:140
+#: lib/rpminstall.c:143
 #, fuzzy, c-format
 msgid "found %d packages\n"
 msgstr "upit nad svim paketima"
 
-#: lib/rpminstall.c:145
+#: lib/rpminstall.c:148
 #, fuzzy
 msgid "looking for packages to download\n"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: lib/rpminstall.c:160
+#: lib/rpminstall.c:163
 #, fuzzy, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
 msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 
-#: lib/rpminstall.c:175
+#: lib/rpminstall.c:178
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Pribavljam %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:185
+#: lib/rpminstall.c:188
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:189
+#: lib/rpminstall.c:192
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 
-#: lib/rpminstall.c:216
+#: lib/rpminstall.c:219
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:228 lib/rpminstall.c:397
+#: lib/rpminstall.c:231 lib/rpminstall.c:400
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpminstall.c:246 lib/rpminstall.c:538
+#: lib/rpminstall.c:249 lib/rpminstall.c:541
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "gre¹ka: %s se ne mo¾e instalirati\n"
 
-#: lib/rpminstall.c:261
+#: lib/rpminstall.c:264
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/rpminstall.c:281
+#: lib/rpminstall.c:284
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/rpminstall.c:326
+#: lib/rpminstall.c:329
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpminstall.c:331
+#: lib/rpminstall.c:334
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:348
+#: lib/rpminstall.c:351
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/rpminstall.c:359
+#: lib/rpminstall.c:362
 msgid "failed dependencies:\n"
 msgstr "lo¹e meðuzavisnosti:\n"
 
-#: lib/rpminstall.c:377
+#: lib/rpminstall.c:380
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "instaliraj paket"
 
-#: lib/rpminstall.c:476
+#: lib/rpminstall.c:479
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-#: lib/rpminstall.c:499
+#: lib/rpminstall.c:502
 msgid "removing these packages would break dependencies:\n"
 msgstr "uklanjanje oviha paketa æe naru¹iti zavisnosti:\n"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:530
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpminstall.c:533
+#: lib/rpminstall.c:536
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
@@ -3739,205 +3749,205 @@ msgstr "(nepoznat tip)"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/signature.c:111
+#: lib/signature.c:114
 #, c-format
 msgid "sigsize         : %d\n"
 msgstr ""
 
-#: lib/signature.c:112
+#: lib/signature.c:115
 #, c-format
 msgid "Header + Archive: %d\n"
 msgstr ""
 
-#: lib/signature.c:113
+#: lib/signature.c:116
 #, c-format
 msgid "expected size   : %d\n"
 msgstr ""
 
-#: lib/signature.c:117
+#: lib/signature.c:120
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: lib/signature.c:135
+#: lib/signature.c:138
 #, fuzzy
 msgid "No signature\n"
 msgstr "%s: Potpis nije na raspolaganju\n"
 
-#: lib/signature.c:138
+#: lib/signature.c:141
 #, fuzzy
 msgid "Old PGP signature\n"
 msgstr "napravi PGP potpis"
 
-#: lib/signature.c:150
+#: lib/signature.c:153
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr "Stari (interni) potpis!  Odakle vam!?"
 
-#: lib/signature.c:154
+#: lib/signature.c:157
 #, fuzzy
 msgid "New Header signature\n"
 msgstr "ne mogu da proèitam potpis"
 
 #. 8-byte pad
-#: lib/signature.c:161 lib/signature.c:203
+#: lib/signature.c:164 lib/signature.c:206
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: lib/signature.c:162 lib/signature.c:204
+#: lib/signature.c:165 lib/signature.c:207
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: lib/signature.c:267
+#: lib/signature.c:270
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: lib/signature.c:278
+#: lib/signature.c:281
 msgid "pgp failed"
 msgstr "PGP omanuo"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:285
+#: lib/signature.c:288
 msgid "pgp failed to write signature"
 msgstr "PGP nije uspeo da zapi¹e potpis"
 
-#: lib/signature.c:290
+#: lib/signature.c:293
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:301 lib/signature.c:378
+#: lib/signature.c:304 lib/signature.c:381
 msgid "unable to read the signature"
 msgstr "ne mogu da proèitam potpis"
 
-#: lib/signature.c:306
+#: lib/signature.c:309
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:344 lib/signature.c:689
+#: lib/signature.c:347 lib/signature.c:692
 #, fuzzy
 msgid "Couldn't exec gpg"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: lib/signature.c:355
+#: lib/signature.c:358
 #, fuzzy
 msgid "gpg failed"
 msgstr "PGP omanuo"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:362
+#: lib/signature.c:365
 #, fuzzy
 msgid "gpg failed to write signature"
 msgstr "PGP nije uspeo da zapi¹e potpis"
 
-#: lib/signature.c:367
+#: lib/signature.c:370
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:383
+#: lib/signature.c:386
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:410
+#: lib/signature.c:413
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "napravi PGP potpis"
 
-#: lib/signature.c:416
+#: lib/signature.c:419
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "napravi PGP potpis"
 
-#: lib/signature.c:495 lib/signature.c:557
+#: lib/signature.c:498 lib/signature.c:560
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
-#: lib/signature.c:555 lib/signature.c:628
+#: lib/signature.c:558 lib/signature.c:631
 #, fuzzy
 msgid "exec failed!\n"
 msgstr "%s: Neuspelo otvaranje\n"
 
-#: lib/signature.c:630
+#: lib/signature.c:633
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr "Ne mogu da pokrenem pgp. Koristite --nopgp da preskoèite PGP proveru."
 
-#: lib/signature.c:718
+#: lib/signature.c:721
 msgid "Couldn't exec pgp"
 msgstr "Ne mogu da izvr¹im PGP"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:722 lib/signature.c:775
+#: lib/signature.c:725 lib/signature.c:778
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: lib/signature.c:755
+#: lib/signature.c:758
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/signature.c:767
+#: lib/signature.c:770
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/transaction.c:420
+#: lib/transaction.c:423
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/transaction.c:446 lib/transaction.c:529
+#: lib/transaction.c:449 lib/transaction.c:532
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:451
+#: lib/transaction.c:454
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:522
+#: lib/transaction.c:525
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:674
+#: lib/transaction.c:677
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/uninstall.c:54
+#: lib/uninstall.c:56
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "ne mogu da uklonim %s - direktorijum nije prazan"
 
-#: lib/uninstall.c:58
+#: lib/uninstall.c:60
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "neuspela komanda rmdir %s: %s"
 
-#: lib/uninstall.c:68
+#: lib/uninstall.c:70
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "uklanjanje %s nije uspelo: %s"
 
-#: lib/uninstall.c:131
+#: lib/uninstall.c:133
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:215
+#: lib/uninstall.c:217
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:416
+#: lib/uninstall.c:418
 #, fuzzy, c-format
 msgid "execution of %s-%s-%s script failed, exit status %d"
 msgstr "neuspelo izvr¹avanje skripta"
@@ -3955,77 +3965,77 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:284
+#: lib/verify.c:285
 #, fuzzy, c-format
 msgid "missing    %s\n"
 msgstr "nedostaje { posle %"
 
-#: lib/verify.c:346
+#: lib/verify.c:347
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
 
-#: rpmio/rpmio.c:543
+#: rpmio/rpmio.c:539
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:546
+#: rpmio/rpmio.c:542
 #, fuzzy
 msgid "Bad server response"
 msgstr "Lo¹ odgovor FTP servera"
 
-#: rpmio/rpmio.c:549
+#: rpmio/rpmio.c:545
 #, fuzzy
 msgid "Server IO error"
 msgstr "Ulazno/izlazna FTP gre¹ka"
 
-#: rpmio/rpmio.c:552
+#: rpmio/rpmio.c:548
 #, fuzzy
 msgid "Server timeout"
 msgstr "Tajm-aut FTP servera"
 
-#: rpmio/rpmio.c:555
+#: rpmio/rpmio.c:551
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Ne mogu da odredim host adresu FTP servera"
 
-#: rpmio/rpmio.c:558
+#: rpmio/rpmio.c:554
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Ne mogu da odredim ime FTP hosta"
 
-#: rpmio/rpmio.c:561
+#: rpmio/rpmio.c:557
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "Ne mogu da se pove¾em sa FTP serverom"
 
-#: rpmio/rpmio.c:564
+#: rpmio/rpmio.c:560
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Ne mogu da uspostavim vezu podataka sa FTP serverom"
 
-#: rpmio/rpmio.c:567
+#: rpmio/rpmio.c:563
 msgid "IO error to local file"
 msgstr "Ulazno/izlazna gre¹ka kod lokalne datoteke"
 
-#: rpmio/rpmio.c:570
+#: rpmio/rpmio.c:566
 msgid "Error setting remote server to passive mode"
 msgstr "Gre¹ka kod stavljanja udaljenog servera u pasivni re¾im"
 
-#: rpmio/rpmio.c:573
+#: rpmio/rpmio.c:569
 msgid "File not found on server"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: rpmio/rpmio.c:576
+#: rpmio/rpmio.c:572
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:580
+#: rpmio/rpmio.c:576
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
 
-#: rpmio/rpmio.c:1175
+#: rpmio/rpmio.c:1171
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -4098,17 +4108,17 @@ msgstr ""
 msgid "Macro %%%.*s not found, skipping"
 msgstr "paket %s nije naðen u %s"
 
-#: rpmio/macro.c:1314
+#: rpmio/macro.c:1304
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1493 rpmio/macro.c:1499
+#: rpmio/macro.c:1483 rpmio/macro.c:1489
 #, fuzzy, c-format
 msgid "File %s: %s"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: rpmio/macro.c:1502
+#: rpmio/macro.c:1492
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""

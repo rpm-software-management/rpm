@@ -1272,16 +1272,6 @@ expandMacro(MacroBuf *mb)
 }
 
 /* =============================================================== */
-/* XXX this is used only in build/expression.c and will go away. */
-const char *
-getMacroBody(MacroContext *mc, const char *name)
-{
-    MacroEntry **mep = findEntry(mc, name, 0);
-    MacroEntry *me = (mep ? *mep : NULL);
-    return ( me ? me->body : (const char *)NULL );
-}
-
-/* =============================================================== */
 
 int
 expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)

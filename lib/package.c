@@ -19,6 +19,8 @@
 #include "rpmlead.h"
 #include "signature.h"
 
+/*@access Header@*/		/* XXX compared with NULL */
+
 /**
  * Retrieve package components from file handle.
  * @param fd		file handle
@@ -27,9 +29,9 @@
  * @param hdrPtr	address of header (or NULL)
  * @return		0 on success, 1 on bad magic, 2 on error
  */
-static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr, 
-			      /*@out@*/Header * sigs, /*@out@*/Header * hdrPtr)
-	/*@modifies *leadPtr, *sigs, *hdrPtr @*/
+static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr, 
+			      /*@out@*/ Header * sigs, /*@out@*/ Header *hdrPtr)
+	/*@modifies fd, *leadPtr, *sigs, *hdrPtr @*/
 {
     Header hdrBlock;
     struct rpmlead leadBlock;
