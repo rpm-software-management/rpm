@@ -70,7 +70,7 @@ Summary     : %{SUMMARY}\n\
 Description :\n%{DESCRIPTION}\n' \
 	--POPTdesc=$"list descriptive information from package(s)"
 
-rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]' \
+rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
 	--POPTdesc=$"list change logs for this package"
 
 rpm	alias --triggerscripts --qf '\
@@ -347,7 +347,7 @@ Summary     : %{SUMMARY}\n\
 Description :\n%{DESCRIPTION}\n' \
 	--POPTdesc=$"list descriptive information from package(s)"
 
-rpmq	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]' \
+rpmq	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
 	--POPTdesc=$"list change logs for this package"
 
 rpmq	alias --triggerscripts --qf '\
@@ -441,7 +441,7 @@ Summary     : %{SUMMARY}\n\
 Description :\n%{DESCRIPTION}\n' \
 	--POPTdesc=$"list descriptive information from package(s)"
 
-rpmquery	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]' \
+rpmquery	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
 	--POPTdesc=$"list change logs for this package"
 
 rpmquery	alias --triggerscripts --qf '\
