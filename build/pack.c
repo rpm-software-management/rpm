@@ -54,7 +54,7 @@ static int generateRPM(char *name,       /* name-version-release         */
     Header sig;
 
     /* Write the archive to a temp file so we can get the size */
-    archiveTemp = tempnam("/var/tmp", "rpmbuild");
+    archiveTemp = tempnam(getVar(RPMVAR_TMPPATH), "rpmbuild");
     if ((fd = open(archiveTemp, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 	fprintf(stderr, "Could not open %s\n", archiveTemp);
 	return 1;
@@ -70,7 +70,7 @@ static int generateRPM(char *name,       /* name-version-release         */
     addEntry(header, RPMTAG_ARCHIVESIZE, INT32_TYPE, &archiveSize, 1);
     
     /* Now write the header and append the archive */
-    sigtarget = tempnam("/var/tmp", "rpmbuild");
+    sigtarget = tempnam(getVar(RPMVAR_TMPPATH), "rpmbuild");
     if ((fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 	fprintf(stderr, "Could not open %s\n", sigtarget);
 	unlink(archiveTemp);
@@ -618,7 +618,7 @@ int packageSource(Spec s, char *passPhrase)
 
     /**** Create links for all the sources ****/
     
-    tempdir = tempnam("/var/tmp", "rpmbuild");
+    tempdir = tempnam(getVar(RPMVAR_TMPPATH), "rpmbuild");
     mkdir(tempdir, 0700);
 
     filelist = newStringBuf();     /* List in the header */

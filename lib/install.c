@@ -410,9 +410,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	if (rootdir) {
 	    tmpPath = alloca(strlen(rootdir) + 15);
 	    strcpy(tmpPath, rootdir);
-	    strcat(tmpPath, "/var/tmp");
+	    strcat(tmpPath, getVar(RPMVAR_TMPPATH));
 	} else
-	    tmpPath = "/var/tmp";
+	    tmpPath = getVar(RPMVAR_TMPPATH);
 
 	/* the file pointer for fd is pointing at the cpio archive */
 	if (installArchive(archivePrefix, fd, files, archiveFileCount, notify, 
@@ -1267,9 +1267,9 @@ static int installSources(char * rootdir, int fd, char ** specFilePtr) {
     if (rootdir) {
 	tmpPath = alloca(strlen(rootdir) + 15);
 	strcpy(tmpPath, rootdir);
-	strcat(tmpPath, "/var/tmp");
+	strcat(tmpPath, getVar(RPMVAR_TMPPATH));
     } else
-	tmpPath = "/var/tmp";
+	tmpPath = getVar(RPMVAR_TMPPATH);
 
     if (installArchive(realSourceDir, fd, NULL, 0, NULL, &specFile, tmpPath)) {
 	return 1;

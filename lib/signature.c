@@ -7,6 +7,7 @@
  * size key you like).  We also honor PGPPATH finally.
  */
 
+#include <paths.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -346,7 +347,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
     int res = RPMSIG_OK;
 
     /* Write out the signature */
-    sigfile = tempnam("/var/tmp", "rpmsig");
+    sigfile = tempnam(getVar(RPMVAR_TMPPATH), "rpmsig");
     sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     write(sfd, sig, count);
     close(sfd);
