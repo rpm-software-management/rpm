@@ -23,6 +23,9 @@
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
+/*@unchecked@*/
+extern int _rpmds_unspecified_epoch_noise;
+
 int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
 {
@@ -432,8 +435,11 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
     if (fi != NULL) {
 
 	if (qva->qva_flags & VERIFY_DEPS) {
+	    int save_noise = _rpmds_unspecified_epoch_noise;
+	    _rpmds_unspecified_epoch_noise = 1;
 	    if ((rc = verifyDependencies(qva, ts, h)) != 0)
 		ec = rc;
+	    _rpmds_unspecified_epoch_noise = save_noise;
 	}
 	if (qva->qva_flags & VERIFY_FILES) {
 	    if ((rc = verifyHeader(qva, ts, fi)) != 0)

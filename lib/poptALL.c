@@ -9,16 +9,19 @@
 
 #include "debug.h"
 
-#ifdef  NOTYET
-#define POPT_RCFILE		-1022
-#endif
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
+#ifdef  NOTYET
+#define POPT_RCFILE		-997
+#endif
 
 /*@unchecked@*/
 static int _debug = 0;
 
 /*@-exportheadervar@*/
+/*@unchecked@*/
+extern int _rpmds_nopromote;
+
 /*@unchecked@*/
 extern int _fps_debug;
 
@@ -226,6 +229,9 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
        N_("disable use of libio(3) API"), NULL},
 #endif
+
+ { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
+	NULL, NULL},
 
  { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
 	NULL, NULL},

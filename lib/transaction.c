@@ -701,7 +701,7 @@ static int ensureOlder(rpmts ts,
 /*@=boundswrite@*/
     
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), reqEVR, reqFlags);
-    rc = headerMatchesDepFlags(h, req);
+    rc = rpmdsNVRMatchesDep(h, req, _rpmds_nopromote);
     req = rpmdsFree(req);
 
     if (rc == 0) {

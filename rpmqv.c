@@ -68,11 +68,6 @@ enum modes {
 /*@unchecked@*/
 static struct poptOption optionsTable[] = {
 
- /* XXX colliding options */
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
- {  NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',			NULL, NULL},
-#endif
-
 #ifdef	IAM_RPMQV
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQueryPoptTable, 0,
 	N_("Query options (with -q or --query):"),
@@ -173,7 +168,7 @@ int main(int argc, const char ** argv)
     rpmts ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
 
-#ifdef	IAM_RPMQV
+#if defined(IAM_RPMQV)
     QVA_t qva = &rpmQVKArgs;
 #endif
 
@@ -230,11 +225,13 @@ int main(int argc, const char ** argv)
     /*@-nullpass@*/
 #ifdef	IAM_RPMBT
     if (!strcmp(__progname, "rpmb"))	bigMode = MODE_BUILD;
+    if (!strcmp(__progname, "lt-rpmb"))	bigMode = MODE_BUILD;
     if (!strcmp(__progname, "rpmt"))	bigMode = MODE_TARBUILD;
     if (!strcmp(__progname, "rpmbuild"))	bigMode = MODE_BUILD;
 #endif
 #ifdef	IAM_RPMQV
     if (!strcmp(__progname, "rpmq"))	bigMode = MODE_QUERY;
+    if (!strcmp(__progname, "lt-rpmq"))	bigMode = MODE_QUERY;
     if (!strcmp(__progname, "rpmv"))	bigMode = MODE_VERIFY;
     if (!strcmp(__progname, "rpmquery"))	bigMode = MODE_QUERY;
     if (!strcmp(__progname, "rpmverify"))	bigMode = MODE_VERIFY;
@@ -242,9 +239,33 @@ int main(int argc, const char ** argv)
 #ifdef	RPMEIU
     if (!strcmp(__progname, "rpme"))	bigMode = MODE_ERASE;
     if (!strcmp(__progname, "rpmi"))	bigMode = MODE_INSTALL;
+    if (!strcmp(__progname, "lt-rpmi"))	bigMode = MODE_INSTALL;
     if (!strcmp(__progname, "rpmu"))	bigMode = MODE_INSTALL;
 #endif
     /*@=nullpass@*/
+
+#if defined(IAM_RPMQV)
+    /* Jumpstart option from argv[0] if necessary. */
+    switch (bigMode) {
+    case MODE_QUERY:	qva->qva_mode = 'q';	break;
+    case MODE_VERIFY:	qva->qva_mode = 'V';	break;
+    case MODE_QUERYTAGS:qva->qva_mode = 'Q';	break;
+    case MODE_CHECKSIG:	qva->qva_mode = 'K';	break;
+    case MODE_RESIGN:	qva->qva_mode = 'R';	break;
+    case MODE_INSTALL:
+    case MODE_ERASE:
+    case MODE_BUILD:
+    case MODE_REBUILD:
+    case MODE_RECOMPILE:
+    case MODE_TARBUILD:
+    case MODE_INITDB:
+    case MODE_REBUILDDB:
+    case MODE_VERIFYDB:
+    case MODE_UNKNOWN:
+    default:
+	break;
+    }
+#endif
 
     /* XXX Eliminate query linkage loop */
     /*@-type@*/	/* FIX: casts? */
@@ -276,35 +297,6 @@ int main(int argc, const char ** argv)
 	optArg = poptGetOptArg(optCon);
 
 	switch (arg) {
-	    
-/* XXX options used in multiple rpm modes */
-
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
-	case 'i':
-#ifdef	IAM_RPMQV
-	    if (bigMode == MODE_QUERY || qva->qva_mode == 'q') {
-		/*@-nullassign -readonlytrans@*/
-		const char * infoCommand[] = { "--info", NULL };
-		/*@=nullassign =readonlytrans@*/
-		(void) poptStuffArgs(optCon, infoCommand);
-	    } else
-#endif
-#ifdef	IAM_RPMEIU
-	    if (bigMode == MODE_INSTALL ||
-		(ia->installInterfaceFlags &
-		    (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL)))
-		/*@-ifempty@*/ ;
-	    else if (bigMode == MODE_UNKNOWN) {
-		/*@-nullassign -readonlytrans@*/
-		const char * installCommand[] = { "--install", NULL };
-		/*@=nullassign =readonlytrans@*/
-		(void) poptStuffArgs(optCon, installCommand);
-	    } else
-#endif
-		/*@-ifempty@*/ ;
-	    /*@switchbreak@*/ break;
-#endif	/* IAM_RPMQV || IAM_RPMEIU */
-
 	default:
 	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
 	    exit(EXIT_FAILURE);

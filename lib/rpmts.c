@@ -382,7 +382,7 @@ int rpmtsSolve(rpmts ts, rpmds ds)
 	time_t htime;
 	int_32 * ip;
 
-	if (rpmtag == RPMTAG_PROVIDENAME && !rangeMatchesDepFlags(h, ds))
+	if (rpmtag == RPMTAG_PROVIDENAME && !rpmdsAnyMatchesDep(h, ds, 1))
 	    continue;
 
 	htime = 0;

@@ -46,7 +46,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     case 'I':	/* from --import */
     case 'K':	/* from --checksig, -K */
     case 'R':	/* from --resign */
-	if (qva->qva_mode == ' ') {
+	if (qva->qva_mode == ' ' || qva->qva_mode == '\0') {
 	    qva->qva_mode = opt->val;
 	    qva->qva_char = ' ';
 	}
@@ -167,6 +167,15 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 	}
 	break;
 
+    case 'i':
+	if (qva->qva_mode == 'q') {
+	    /*@-nullassign -readonlytrans@*/
+	    const char * infoCommand[] = { "--info", NULL };
+	    /*@=nullassign =readonlytrans@*/
+	    (void) poptStuffArgs(con, infoCommand);
+	}
+	break;
+
     case RPMCLI_POPT_NODIGEST:
 	qva->qva_flags |= VERIFY_DIGEST;
 	break;
@@ -221,6 +230,8 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("list all documentation files"), NULL },
  { "dump", '\0', 0, 0, POPT_DUMP,
 	N_("dump basic file information"), NULL },
+ { NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',
+	NULL, NULL },
  { "list", 'l', 0, 0, 'l',
 	N_("list files in package"), NULL },
 

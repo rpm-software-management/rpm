@@ -16,12 +16,14 @@ extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@unchecked@*/
 struct rpmInstallArguments_s rpmIArgs;
 
-#define	POPT_RELOCATE		-1016
-#define	POPT_EXCLUDEPATH	-1019
-#define	POPT_ROLLBACK		-1024
+#define	POPT_RELOCATE		-1021
+#define	POPT_EXCLUDEPATH	-1022
+#define	POPT_ROLLBACK		-1023
 
-/*@exits@*/ static void argerror(const char * desc)
-	/*@*/
+/*@exits@*/
+static void argerror(const char * desc)
+	/*@globals stderr, fileSystem @*/
+	/*@modifies stderr, fileSystem @*/
 {
     /*@-modfilesys -globs @*/
     fprintf(stderr, _("%s: %s\n"), __progname, desc);
@@ -36,8 +38,8 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 		/*@unused@*/ enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg,
 		/*@unused@*/ const void * data)
-	/*@globals rpmIArgs @*/
-	/*@modifies rpmIArgs @*/
+	/*@globals rpmIArgs, stderr, fileSystem @*/
+	/*@modifies rpmIArgs, stderr, fileSystem @*/
 {
     struct rpmInstallArguments_s * ia = &rpmIArgs;
 
@@ -45,6 +47,11 @@ static void installArgCallback( /*@unused@*/ poptContext con,
     /*@-branchstate@*/
     if (opt->arg == NULL)
     switch (opt->val) {
+
+    case 'i':
+	ia->installInterfaceFlags |= INSTALL_INSTALL;
+	break;
+
     case POPT_EXCLUDEPATH:
 	if (arg == NULL || *arg != '/') 
 	    argerror(_("exclude paths must begin with a /"));
@@ -196,11 +203,19 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("don't check disk space before installing"), NULL},
  { "includedocs", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.incldocs, 0,
 	N_("install documentation"), NULL},
+
+#ifdef	DYING
  { "install", '\0', POPT_BIT_SET,
 	&rpmIArgs.installInterfaceFlags, INSTALL_INSTALL,
 	N_("install package(s)"), N_("<packagefile>+") },
+#else
+ { "install", 'i', 0, NULL, 'i',
+	N_("install package(s)"), N_("<packagefile>+") },
+#endif
+
  { "justdb", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_JUSTDB,
 	N_("update the database, but do not modify the filesystem"), NULL},
+
 #ifdef	DYING
  { "nodeps", '\0', 0, &rpmIArgs.noDeps, 0,
 	N_("do not verify package dependencies"), NULL },
@@ -208,6 +223,7 @@ struct poptOption rpmInstallPoptTable[] = {
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify package dependencies"), NULL },
 #endif
+
  { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
 	N_("don't verify MD5 digest of files"), NULL },
  { "noorder", '\0', POPT_BIT_SET,

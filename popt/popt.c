@@ -18,6 +18,11 @@
 #include "findme.h"
 #include "poptint.h"
 
+#ifdef	MYDEBUG
+/*@unchecked@*/
+int _popt_debug = 0;
+#endif
+
 #ifndef HAVE_STRERROR
 static char * strerror(int errno) {
     extern int sys_nerr;
@@ -427,7 +432,8 @@ static int execCommand(poptContext con)
     if (argv[0] == NULL)
 	return POPT_ERROR_NOARG;
 
-#ifdef MYDEBUG
+#ifdef	MYDEBUG
+if (_popt_debug)
     {	const char ** avp;
 	fprintf(stderr, "==> execvp(%s) argv[%d]:", argv[0], argc);
 	for (avp = argv; *avp; avp++)

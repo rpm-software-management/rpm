@@ -19,6 +19,12 @@ static int _noisy_range_comparison_debug_message = 0;
 /*@unchecked@*/
 int _rpmds_debug = 0;
 
+/*@unchecked@*/
+int _rpmds_nopromote = 1;
+
+/*@unchecked@*/
+int _rpmds_unspecified_epoch_noise = 0;
+
 rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;
@@ -157,6 +163,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 	ds->N = N;
 	ds->Nt = Nt;
 	ds->Count = Count;
+	ds->nopromote = 0;
 
 	xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
 	xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
@@ -436,6 +443,26 @@ rpmTag rpmdsTagN(const rpmds ds)
     return tagN;
 }
 
+int rpmdsNoPromote(const rpmds ds)
+{
+    int nopromote = 0;
+
+    if (ds != NULL)
+	nopromote = ds->nopromote;
+    return nopromote;
+}
+
+int rpmdsSetNoPromote(const rpmds ds, int nopromote)
+{
+    int onopromote = 0;
+
+    if (ds != NULL) {
+	onopromote = ds->nopromote;
+	ds->nopromote = nopromote;
+    }
+    return onopromote;
+}
+
 void rpmdsNotify(rpmds ds, const char * where, int rc)
 {
     if (!(ds != NULL && ds->i >= 0 && ds->i < ds->Count))
@@ -579,14 +606,13 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     if (aE && *aE && bE && *bE)
 	sense = rpmvercmp(aE, bE);
     else if (aE && *aE && atol(aE) > 0) {
-#ifndef	LEGACY_COMPATIBILITY_NEEDS_THIS
-	/* XXX legacy epoch-less requires/conflicts compatibility */
-	rpmMessage(RPMMESS_DEBUG, _("the \"B\" dependency needs an epoch (assuming same as \"A\")\n\tA %s\tB %s\n"),
+	if (!B->nopromote) {
+	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMMESS_WARNING : RPMMESS_DEBUG);
+	    rpmMessage(lvl, _("The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n\tA = \"%s\"\tB = \"%s\"\n"),
 		aDepend, bDepend);
-	sense = 0;
-#else
-	sense = 1;
-#endif
+	    sense = 0;
+	} else
+	    sense = 1;
     } else if (bE && *bE && atol(bE) > 0)
 	sense = -1;
 
@@ -652,7 +678,7 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
     rpmpsAppend(ps, type, pkgNEVR, key, NULL, NULL, DNEVR, adding);
 }
 
-int rangeMatchesDepFlags (Header h, const rpmds req)
+int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
     int scareMem = 1;
     rpmds provides = NULL;
@@ -667,6 +693,8 @@ int rangeMatchesDepFlags (Header h, const rpmds req)
     provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem));
     if (provides == NULL)
 	goto exit;	/* XXX should never happen */
+    if (nopromote)
+	(void) rpmdsSetNoPromote(provides, nopromote);
 
     /*
      * Rpm prior to 3.0.3 did not have versioned provides.
@@ -701,7 +729,7 @@ exit:
     return result;
 }
 
-int headerMatchesDepFlags(const Header h, const rpmds req)
+int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * pkgN, * v, * r;
@@ -733,6 +761,8 @@ int headerMatchesDepFlags(const Header h, const rpmds req)
 /*@=boundswrite@*/
 
     if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
+	if (nopromote)
+	    (void) rpmdsSetNoPromote(pkg, nopromote);
 	rc = rpmdsCompare(pkg, req);
 	pkg = rpmdsFree(pkg);
     }

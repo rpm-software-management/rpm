@@ -190,6 +190,9 @@
 	- popt: display sub-table options only once on --usage.
 	- wire --nosignatures et al as common options, rework CLI options.
 	- python: don't segfault in ts.GetKeys() on erased packages.
+	- update trpm.
+	- factor all mode-specific options into mode-specific tables.
+	- treat an unspecified epoch as Epoch: 0 everywhere.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

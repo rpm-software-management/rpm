@@ -1,14 +1,22 @@
 #!/bin/sh
 
+ulimit -S -c unlimited
 dbg=	# echo
 
 rpm=/bin/rpm
+#rpm=/X/src/rpm/rpm
 #rpmi=mrpm
-rpmi=/bin/rpm
 #rpmi="strace -o xxx /bin/rpm"
+rpmi="$rpm"
 rpmb=/usr/bin/rpmbuild
 rpmq=/usr/bin/rpmquery
 rpmdb=/usr/bin/rpmdb
+rpmk=/usr/bin/rpmsign
+
+pgppubkey=/usr/lib/rpm/RPM-PGP-KEY
+gpgpubkey=/usr/lib/rpm/RPM-GPG-KEY
+betapubkey=/usr/lib/rpm/BETA-GPG-KEY
+jbjpubkey=/usr/lib/rpm/JBJ-GPG-KEY
 
 #rpm=/X/src/rpm402/rpm
 #rpmb=/X/src/rpm402/rpmb
@@ -66,8 +74,12 @@ gdbm-1
 grep-
 gzip-
 info-
+less-
+libacl-2
+libattr-2
 mount-
 ncurses-[45]
+pcre-
 procps-2
 psmisc-
 sed-
@@ -98,19 +110,31 @@ words-
 baseglob="
 $min2glob
 ash-
+bdflush-
 console-tools-
-gmp-[23]
+cyrus-sasl-[12]
+cyrus-sasl-md5-
+glib2-2
+gmp-[234]
 initscripts-
 iputils-
 iproute-
+kbd-
 kernel-2
+krb5-libs-
+libuser-
 losetup-
+lvm-
 mkinitrd-
 modutils-
+net-tools-
+openldap-2
+openssl-0
 pam-0
 pamconfig-
 sh-utils-
 sysklogd-
+usermode-1
 util-linux-
 vixie-cron-
 rpm-[34]
@@ -128,6 +152,7 @@ db3-devel-
 db4-devel-
 gdbm-devel-
 glibc-devel-
+glibc-kernheaders-
 gmp-devel-
 kernel-headers-
 readline-devel-[24]
@@ -147,24 +172,48 @@ db3-utils-
 db4-utils-
 egcs-1
 egcs-c++-1
-gcc-2
-gcc-c++-2
+expat-1
+gcc-[23]
+gcc-c++-[23]
 gettext-
 krb5-configs-
-krb5-libs-
+libgcc-3
 libstdc++-
 libtool-
 make-
 m4-
 ncurses-devel-
-openssl-0
 patch-
 perl-5
-python-1
+perl-CGI-
+python-[12]
 rpm-build-
+file-3
 tcsh-
 "
-classes="min0 min1 min2 base devel build"
+
+mozillaglob="
+$buildglob
+mozilla-
+compat-libstdc++-7
+indexhtml-
+redhat-menus-
+gtk+-1
+XFree86-libs-[34]
+ORBit-0
+fontconfig-0
+freetype-2
+XFree86-Mesa-libGL-
+libpng-
+libjpeg-
+vorbis-tools-
+libvorbis-
+libogg-
+libao-0
+curl-
+"
+
+classes="min0 min1 min2 base devel build mozilla"
 notallpat="(kernel-[^2h])"
 
 for cmd in $*
@@ -177,7 +226,7 @@ do
     debug)		dbg=echo	;;
     dmalloc)		eval `dmalloc -b $dmopts`	;;
     db1)		db1="--define '%_dbapi 1'"	;;
-    5.2|6.2|7.0|7.1|7.2)
+    5.2|6.2|7.*|8.*)
 	dist=$cmd
 	root=$top/$dist
 	rc="--rcfile $top/rpmrc-$dist $db1"
@@ -230,7 +279,14 @@ EOF
 	;;
     --initdb)
 	$dbg $sudo mkdir -p $root/var/lib/rpm
+	$dbg $sudo mkdir -p $root/etc
+	$dbg $sudo touch $root/etc/fstab
+	$dbg $sudo touch $root/etc/mtab
 	$dbg $sudo $rpmdb $rc --root $root --initdb
+#	$dbg $sudo $rpmk $rc --root $root --import $pgppubkey
+#	$dbg $sudo $rpmk $rc --root $root --import $gpgpubkey
+#	$dbg $sudo $rpmk $rc --root $root --import $betapubkey
+#	$dbg $sudo $rpmk $rc --root $root --import $jbjpubkey
 	;;
     --savedb)
 	( $dbg cd $root/var/lib && $dbg $sudo tar czvf rpmdb.tar.gz rpm ; )

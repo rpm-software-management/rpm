@@ -923,6 +923,8 @@ exit:
 }
 
 /**
+ * Execute triggers.
+ * @todo Trigger on any provides, not just package NVR.
  * @param psm		package state machine data
  * @param sourceH
  * @param triggeredH
@@ -954,7 +956,11 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
 
     trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
-    if (trigger != NULL)
+    if (trigger == NULL)
+	return rc;
+
+    (void) rpmdsSetNoPromote(trigger, 1);
+
     while ((i = rpmdsNext(trigger)) >= 0) {
 	rpmTagType tit, tst, tpt;
 	const char * Name;
@@ -968,7 +974,7 @@ static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
 	if (!(Flags & psm->sense))
 	    continue;
 
-	if (!headerMatchesDepFlags(sourceH, trigger))
+	if (!rpmdsNVRMatchesDep(sourceH, trigger, 1))
 	    continue;
 
 	if (!(	hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,

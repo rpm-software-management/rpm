@@ -15,16 +15,16 @@
 /*@unchecked@*/
 struct rpmBuildArguments_s         rpmBTArgs;
 
-#define	POPT_USECATALOG		-1000
-#define	POPT_NOLANG		-1001
-#define	POPT_RMSOURCE		-1002
-#define	POPT_RMBUILD		-1003
-#define	POPT_BUILDROOT		-1004
-#define	POPT_TARGETPLATFORM	-1007
-#define	POPT_NOBUILD		-1008
-#define	POPT_SHORTCIRCUIT	-1009
-#define	POPT_RMSPEC		-1010
-#define	POPT_SIGN		-1012
+#define	POPT_USECATALOG		-1011
+#define	POPT_NOLANG		-1012
+#define	POPT_RMSOURCE		-1013
+#define	POPT_RMBUILD		-1014
+#define	POPT_BUILDROOT		-1015
+#define	POPT_TARGETPLATFORM	-1016
+#define	POPT_NOBUILD		-1017
+#define	POPT_SHORTCIRCUIT	-1018
+#define	POPT_RMSPEC		-1019
+#define	POPT_SIGN		-1020
 
 #define	POPT_REBUILD		0x4220
 #define	POPT_RECOMPILE		0x4320

@@ -15,6 +15,13 @@
 extern int _rpmds_debug;
 /*@=exportlocal@*/
 
+/**
+ */
+/*@-exportlocal@*/
+/*@unchecked@*/
+extern int _rpmds_nopromote;
+/*@=exportlocal@*/
+
 #if defined(_RPMDS_INTERNAL)
 /**
  * A package dependency set.
@@ -39,6 +46,7 @@ struct rpmds_s {
     int_32 * Flags;		/*!< Flags identifying context/comparison. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
+    int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
@@ -206,6 +214,30 @@ rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
+ * Return current "Don't promote Epoch:" flag.
+ *
+ * This flag controls for Epoch: promotion when a dependency set is
+ * compared. If the flag is set (for already installed packages), then
+ * an unspecified value will be treated as Epoch: 0. Otherwise (for added
+ * packages), the Epoch: portion of the comparison is skipped if the value
+ * is not specified, i.e. an unspecified Epoch: is assumed to be equal
+ * in dependency comparisons.
+ *
+ * @param ds		dependency set
+ * @return		current "Don't promote Epoch:" flag
+ */
+int rpmdsNoPromote(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
+ * Set "Don't promote Epoch:" flag.
+ * @param ds		dependency set
+ * @return		previous "Don't promote Epoch:" flag
+ */
+int rpmdsSetNoPromote(/*@null@*/ const rpmds ds, int nopromote)
+	/*@*/;
+
+/**
  * Notify of results of dependency match.
  * @param ds		dependency set
  * @param where		where dependency was resolved (or NULL)
@@ -260,18 +292,21 @@ void rpmdsProblem(/*@null@*/ rpmps ps, const char * pkgNEVR, const rpmds ds,
  * Compare package provides dependencies from header with a single dependency.
  * @param h		header
  * @param req		dependency set
+ * @param nopromote	Don't promote Epoch: in comparison?
+ * @return		1 if any dependency overlaps, 0 otherwise
  */
-int rangeMatchesDepFlags (Header h, const rpmds req)
+int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
         /*@modifies h @*/;
 
 /**
  * Compare package name-version-release from header with a single dependency.
  * @deprecated Remove from API when obsoletes is correctly implemented.
  * @param h		header
- * @param req		dependency
+ * @param req		dependency set
+ * @param nopromote	Don't promote Epoch: in comparison?
  * @return		1 if dependency overlaps, 0 otherwise
  */
-int headerMatchesDepFlags(const Header h, const rpmds req)
+int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 	/*@*/;
 
 #ifdef __cplusplus

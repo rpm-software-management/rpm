@@ -515,10 +515,13 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Sat Jul 27 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.58
+* Mon Jul 29 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.58
 - popt: display sub-table options only once on --usage.
 - wire --nosignatures et al as common options, rework CLI options.
 - python: don't segfault in ts.GetKeys() on erased packages.
+- update trpm.
+- factor all mode-specific options into mode-specific tables.
+- treat an unspecified epoch as Epoch: 0 everywhere.
 
 * Thu Jul 25 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.57
 - python: remove the old initdb/rebuilddb methods, use ts.fooDB().

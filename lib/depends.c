@@ -301,7 +301,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		 * If no obsoletes version info is available, match all names.
 		 */
 		if (rpmdsEVR(obsoletes) == NULL
-		 || headerMatchesDepFlags(h2, obsoletes))
+		 || rpmdsAnyMatchesDep(h2, obsoletes, _rpmds_nopromote))
 		    xx = removePackage(ts, h2, rpmdbGetIteratorOffset(mi), pkgKey);
 	    }
 	    mi = rpmdbFreeIterator(mi);
@@ -323,12 +323,12 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 
 /**
  * Check dep for an unsatisfied dependency.
- * @todo Eliminate rpmrc provides.
  * @param ts		transaction set
  * @param dep		dependency
+ * @param adding	dependency is from added package set?
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
-static int unsatisfiedDepend(rpmts ts, rpmds dep)
+static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 	/*@globals _cacheDependsRC, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies ts, _cacheDependsRC, rpmGlobalMacroContext,
@@ -339,6 +339,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
     rpmdbMatchIterator mi;
     const char * Name;
     Header h;
+    int _cacheThisRC = 1;
     int rc;
     int xx;
 
@@ -437,8 +438,15 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
     }
 
     /* Search added packages for the dependency. */
-    if (rpmalSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL)
+    if (rpmalSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL) {
+	/*
+	 * XXX Ick, context sensitive answers from dependency cache.
+	 * XXX Always resolve added dependencies within context to disambiguate.
+	 */
+	if (_rpmds_nopromote)
+	    _cacheThisRC = 0;
 	goto exit;
+    }
 
     /* XXX only the installer does not have the database open here. */
     if (rpmtsGetRdb(ts) != NULL) {
@@ -464,7 +472,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rangeMatchesDepFlags(h, dep)) {
+	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
 		rpmdsNotify(dep, _("(db provides)"), rc);
 		mi = rpmdbFreeIterator(mi);
 		goto exit;
@@ -477,7 +485,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rangeMatchesDepFlags(h, dep)) {
+	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
 		rpmdsNotify(dep, _("(db package)"), rc);
 		mi = rpmdbFreeIterator(mi);
 		goto exit;
@@ -492,8 +500,10 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
      * Search for an unsatisfied dependency.
      */
 /*@-boundsread@*/
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST) && ts->solve != NULL)
-	xx = (*ts->solve) (ts, dep);
+    if (adding && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
+	if (ts->solve != NULL)
+	    xx = (*ts->solve) (ts, dep);
+    }
 /*@=boundsread@*/
 
 unsatisfied:
@@ -504,7 +514,7 @@ exit:
     /*
      * If dbiOpen/dbiPut fails (e.g. permissions), we can't cache.
      */
-    if (_cacheDependsRC) {
+    if (_cacheDependsRC && _cacheThisRC) {
 	dbiIndex dbi;
 	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
 	if (dbi == NULL) {
@@ -581,7 +591,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	if (multiLib && !isDependsMULTILIB(Flags))
 	    continue;
 
-	rc = unsatisfiedDepend(ts, requires);
+	rc = unsatisfiedDepend(ts, requires, adding);
 
 	switch (rc) {
 	case 0:		/* requirements are satisfied. */
@@ -625,7 +635,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	if (multiLib && !isDependsMULTILIB(Flags))
 	    continue;
 
-	rc = unsatisfiedDepend(ts, conflicts);
+	rc = unsatisfiedDepend(ts, conflicts, adding);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
@@ -672,7 +682,9 @@ static int checkPackageSet(rpmts ts, const char * dep,
 
 	pkgNEVR = hGetNEVR(h, NULL);
 	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
