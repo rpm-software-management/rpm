@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 16:48-0400\n"
+"POT-Creation-Date: 2001-09-26 10:44-0400\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3520,17 +3520,17 @@ msgstr ""
 "в пакете нет ни имен групп, ни списка их идентификаторов (такого не должно "
 "быть)\n"
 
-#: lib/verify.c:397
+#: lib/verify.c:399
 #, c-format
 msgid "missing    %s"
 msgstr "отсутствует %s"
 
-#: lib/verify.c:490
+#: lib/verify.c:492
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: lib/verify.c:529
+#: lib/verify.c:531
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 16:48-0400\n"
+"POT-Creation-Date: 2001-09-26 10:44-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -3486,17 +3486,17 @@ msgstr "o pacote não tem o nome de utilizador nem as listas de IDs (nunca deve o
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr "o pacote não tem o nome do grupo nem as listas de IDs (nunca deve ocorrer)\n"
 
-#: lib/verify.c:397
+#: lib/verify.c:399
 #, c-format
 msgid "missing    %s"
 msgstr "falta     %s"
 
-#: lib/verify.c:490
+#: lib/verify.c:492
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Dependências não satisfeitas para o %s-%s-%s: "
 
-#: lib/verify.c:529
+#: lib/verify.c:531
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

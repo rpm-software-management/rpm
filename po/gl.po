@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-09-25 16:48-0400\n"
+"POT-Creation-Date: 2001-09-26 10:44-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -3426,17 +3426,17 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:397
+#: lib/verify.c:399
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:490
+#: lib/verify.c:492
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: lib/verify.c:529
+#: lib/verify.c:531
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

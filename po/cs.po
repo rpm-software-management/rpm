@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 16:48-0400\n"
+"POT-Creation-Date: 2001-09-26 10:44-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3495,17 +3495,17 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "balíèek neobsahuje ani jména skupin ani seznam id (nemìlo by se nikdy stát)\n"
 
-#: lib/verify.c:397
+#: lib/verify.c:399
 #, c-format
 msgid "missing    %s"
 msgstr "chybí      %s"
 
-#: lib/verify.c:490
+#: lib/verify.c:492
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 
-#: lib/verify.c:529
+#: lib/verify.c:531
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrola digestu v hlavièce selhala\n"

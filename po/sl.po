@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.155 2001/09/25 20:51:53 jbj Exp $
+# $Id: sl.po,v 1.156 2001/09/26 14:45:59 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 16:48-0400\n"
+"POT-Creation-Date: 2001-09-26 10:44-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3603,17 +3603,17 @@ msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "v paketu manjka tako seznam skupin kot identitet (to se ne sme zgoditi)"
 
-#: lib/verify.c:397
+#: lib/verify.c:399
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "manjka     %s\n"
 
-#: lib/verify.c:490
+#: lib/verify.c:492
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 
-#: lib/verify.c:529
+#: lib/verify.c:531
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

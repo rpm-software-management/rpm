@@ -516,4 +516,4 @@ fi
 - drop lib/md5*.[ch] files in favor of beecrypt.
 - legacy: drop brokenMD5 support (rrpm-2.3.3 to rpm-2.3.8 on sparc).
 - eliminate DYING code.
-
+- bind beecrypt md5/sha1 underneath rpmio.

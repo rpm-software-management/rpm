@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-25 16:48-0400\n"
+"POT-Creation-Date: 2001-09-26 10:44-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.170 2001/09/25 20:51:39 jbj Exp $
+# $Id: ja.po,v 1.171 2001/09/26 14:45:52 jbj Exp $
 #: rpm.c:227
 #, c-format
 msgid "rpm: %s\n"
@@ -3666,17 +3666,17 @@ msgstr ""
 "パッケージはグループ名と id リストの両方が欠けています(これは決して起きてはな"
 "らない)"
 
-#: lib/verify.c:397
+#: lib/verify.c:399
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:490
+#: lib/verify.c:492
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: lib/verify.c:529
+#: lib/verify.c:531
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""

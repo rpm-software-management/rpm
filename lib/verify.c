@@ -318,9 +318,11 @@ int rpmVerifyDigest(Header h)
     if (!hge(h, RPMTAG_SHA1HEADER, &hdt, (void **) &hdigest, NULL)
     &&	!hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
     {
+#ifdef	DYING
 	if (hge(h, RPMTAG_BADSHA1HEADER, &hdt, (void **) &hdigest, NULL))
 	    flags |= (RPMDIGEST_REVERSE|RPMDIGEST_BCSWAP);
 	else
+#endif
 	    return 0;
     }
     /* Regenerate original header. */
