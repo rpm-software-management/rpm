@@ -254,7 +254,27 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset) {
 }
 
 int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->fileIndex, filespec, matches);
+    char * fs;
+    char * src, * dst;
+
+    /* we try and canonicalize the filespec a bit before doing the search */
+
+    fs = alloca(strlen(filespec) + 1);
+    for (src = filespec, dst = fs; *src; ) { 
+	switch (*src) {
+	  case '/':
+	    if ((dst == fs) || (*(dst - 1) != '/'))
+		*dst++ = *src;
+	    src++;
+	    break;
+	  default:
+	    *dst++ = *src++;
+	}
+    }
+    *dst-- = '\0';
+    if (*dst == '/') *dst = '\0';
+
+    return dbiSearchIndex(db->fileIndex, fs, matches);
 }
 
 int rpmdbFindByProvides(rpmdb db, char * filespec, dbiIndexSet * matches) {
