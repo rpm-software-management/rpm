@@ -247,9 +247,19 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
 		    }
 		}
 
-		rpmtransAddPackage(rpmdep, h, NULL, *filename,
+		rc = rpmtransAddPackage(rpmdep, h, NULL, *filename,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
+		if (rc) {
+		    if (rc == 1)
+			rpmMessage(RPMMESS_ERROR, 
+			    _("error reading from file %s\n"), *filename);
+		    else if (rc == 2)
+			rpmMessage(RPMMESS_ERROR, 
+			    _("file %s requires a newer version of RPM\n"),
+			    *filename);
+		    return numPackages;
+		}
 
 		if (defaultReloc)
 		    defaultReloc->oldPath = NULL;
