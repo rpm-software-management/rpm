@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-09 14:38-0500\n"
+"POT-Creation-Date: 2002-03-12 11:41-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -862,7 +862,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:618 lib/psm.c:1444
+#: build/pack.c:618 lib/psm.c:1445
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -892,7 +892,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:699 lib/psm.c:1725
+#: build/pack.c:699 lib/psm.c:1726
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -1668,50 +1668,50 @@ msgstr "警告: %s は %s として作成されます"
 msgid "error creating temporary file %s\n"
 msgstr "一時ファイル %s の作成エラー"
 
-#: lib/package.c:184 lib/package.c:260
+#: lib/package.c:181 lib/package.c:257
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:205 lib/package.c:268
+#: lib/package.c:202 lib/package.c:265
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:246 lib/rpmchecksig.c:164 lib/rpmchecksig.c:557
+#: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:553
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:252
+#: lib/package.c:249
 #, fuzzy, c-format
 msgid "%s: bad magic\n"
 msgstr "不正なマジック"
 
-#: lib/package.c:277 lib/rpmchecksig.c:182 lib/rpmchecksig.c:573
+#: lib/package.c:274 lib/rpmchecksig.c:183 lib/rpmchecksig.c:569
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/package.c:281 lib/rpmchecksig.c:186 lib/rpmchecksig.c:578
+#: lib/package.c:278 lib/rpmchecksig.c:187 lib/rpmchecksig.c:574
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
 
-#: lib/package.c:331 lib/rpmchecksig.c:476
+#: lib/package.c:328 lib/rpmchecksig.c:474
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:366 lib/package.c:393 lib/package.c:425 lib/rpmchecksig.c:651
+#: lib/package.c:363 lib/package.c:390 lib/package.c:422 lib/rpmchecksig.c:645
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:437 lib/rpmchecksig.c:113 lib/rpmchecksig.c:505
+#: lib/package.c:434 lib/rpmchecksig.c:113 lib/rpmchecksig.c:503
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2320,37 +2320,37 @@ msgstr "スクリプトの実行に失敗"
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:1351
+#: lib/psm.c:1352
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1493
+#: lib/psm.c:1494
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1502
+#: lib/psm.c:1503
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1544
+#: lib/psm.c:1545
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:1545
+#: lib/psm.c:1546
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:1733
+#: lib/psm.c:1734
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:1736
+#: lib/psm.c:1737
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2489,12 +2489,12 @@ msgstr "レコード %d を読むことができませんでした\n"
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
 
-#: lib/rpmal.c:674
+#: lib/rpmal.c:673
 #, fuzzy
 msgid "(added files)"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:770
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %s は db が提供することによって満されます。\n"
@@ -2514,58 +2514,58 @@ msgstr "makeTempFile に失敗しました\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:169
+#: lib/rpmchecksig.c:170
 #, fuzzy, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: v1.0 の RPM には署名できません\n"
 
-#: lib/rpmchecksig.c:173
+#: lib/rpmchecksig.c:174
 #, fuzzy, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: v2.0 の RPM には再署名できません\n"
 
-#: lib/rpmchecksig.c:253
+#: lib/rpmchecksig.c:254
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writedLead に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:259
+#: lib/rpmchecksig.c:260
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:490
+#: lib/rpmchecksig.c:488
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/rpmchecksig.c:563
+#: lib/rpmchecksig.c:559
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 有効な署名はありません(v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:810
+#: lib/rpmchecksig.c:804
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:811 lib/rpmchecksig.c:825
+#: lib/rpmchecksig.c:805 lib/rpmchecksig.c:819
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (キーの紛失) "
 
-#: lib/rpmchecksig.c:813 lib/rpmchecksig.c:827
+#: lib/rpmchecksig.c:807 lib/rpmchecksig.c:821
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:814 lib/rpmchecksig.c:828
+#: lib/rpmchecksig.c:808 lib/rpmchecksig.c:822
 msgid " (UNTRUSTED KEYS:"
 msgstr " (信頼できない鍵:"
 
-#: lib/rpmchecksig.c:816 lib/rpmchecksig.c:830
+#: lib/rpmchecksig.c:810 lib/rpmchecksig.c:824
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:824
+#: lib/rpmchecksig.c:818
 msgid "OK"
 msgstr ""
 
@@ -2778,191 +2778,177 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"
 
-#: lib/signature.c:119
+#: lib/signature.c:118
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 "ファイルは一般のファイルではありません -- サイズチェックをスキップします\n"
 
-#: lib/signature.c:128
+#: lib/signature.c:127
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:133
+#: lib/signature.c:132
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:153
+#: lib/signature.c:152
 msgid "No signature\n"
 msgstr "署名はありません\n"
 
-#: lib/signature.c:157
+#: lib/signature.c:156
 msgid "Old PGP signature\n"
 msgstr "古い PGP 署名\n"
 
-#: lib/signature.c:170
+#: lib/signature.c:167
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 
-#: lib/signature.c:226
+#: lib/signature.c:221
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:307 lib/signature.c:406 lib/signature.c:678
-#: lib/signature.c:711
+#: lib/signature.c:300 lib/signature.c:397 lib/signature.c:664
+#: lib/signature.c:697
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: lib/signature.c:323
+#: lib/signature.c:316
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:330
+#: lib/signature.c:323
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:335
+#: lib/signature.c:328
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:351 lib/signature.c:451
+#: lib/signature.c:342 lib/signature.c:440
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:356
+#: lib/signature.c:347
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:414
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:430
+#: lib/signature.c:421
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:435
+#: lib/signature.c:426
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:456
+#: lib/signature.c:445
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:716 lib/signature.c:771
+#: lib/signature.c:702 lib/signature.c:753
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: lib/signature.c:750
+#: lib/signature.c:732
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:763
+#: lib/signature.c:745
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:807
+#: lib/signature.c:789
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/signature.c:847
+#: lib/signature.c:825
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:906
+#: lib/signature.c:873
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1102
+#: lib/signature.c:1059
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "MD5 署名をスキップします"
 
-#: lib/signature.c:1221
+#: lib/signature.c:1168
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1222
+#: lib/signature.c:1169
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
-#: lib/signature.c:1311
+#: lib/signature.c:1244
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1338
+#: lib/signature.c:1271
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1342
+#: lib/signature.c:1275
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
 
-#: lib/transaction.c:180
+#: lib/transaction.c:173
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
 #. @innercontinue@
-#: lib/transaction.c:990
+#: lib/transaction.c:985
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:1085
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 
-#: lib/verify.c:243
-#, fuzzy
-msgid "package lacks both user name and id lists (this should never happen)\n"
-msgstr ""
-"パッケージは ユーザ名と id リストの両方が欠けています(これは決して起きてはな"
-"らない)"
-
-#: lib/verify.c:264
-#, fuzzy
-msgid "package lacks both group name and id lists (this should never happen)\n"
-msgstr ""
-"パッケージはグループ名と id リストの両方が欠けています(これは決して起きてはな"
-"らない)"
-
-#: lib/verify.c:408
+#: lib/verify.c:324
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:505
+#: lib/verify.c:419
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
 
-#: lib/verify.c:543
+#: lib/verify.c:459
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3573,6 +3559,20 @@ msgstr "url ポートは数字でなければなりません\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both user name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "パッケージは ユーザ名と id リストの両方が欠けています(これは決して起きては"
+#~ "ならない)"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both group name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "パッケージはグループ名と id リストの両方が欠けています(これは決して起きて"
+#~ "はならない)"
 
 #, fuzzy
 #~ msgid "========== Header RSA signature\n"

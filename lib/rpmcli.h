@@ -331,17 +331,16 @@ int rpmcliQuery(rpmTransactionSet ts, QVA_t qva, /*@null@*/ const char ** argv)
 /** \ingroup rpmcli
  * Verify file attributes (including MD5 sum).
  * @todo gnorpm and python bindings prevent this from being static.
- * @param root		path to top of install tree
- * @param h		header
- * @param filenum	index of file in header file info arrays
+ * @param ts		transaction set
+ * @param fi		file info (with linked header and current file index)
  * @retval result	address of bit(s) returned to indicate failure
  * @param omitMask	bit(s) to disable verify checks
  * @return		0 on success (or not installed), 1 on error
  */
-int rpmVerifyFile(const char * root, Header h, int filenum,
+int rpmVerifyFile(const rpmTransactionSet ts, TFI_t fi,
 		/*@out@*/ rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
 	/*@globals fileSystem @*/
-	/*@modifies h, *result, fileSystem @*/;
+	/*@modifies fi, *result, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Display results of package verify.
@@ -351,10 +350,8 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
  * @return		result of last non-zero verify return
  */
 int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
  * Check original header digest.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-09 14:38-0500\n"
+"POT-Creation-Date: 2002-03-12 11:41-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -850,7 +850,7 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: build/pack.c:618 lib/psm.c:1444
+#: build/pack.c:618 lib/psm.c:1445
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
@@ -880,7 +880,7 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:699 lib/psm.c:1725
+#: build/pack.c:699 lib/psm.c:1726
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
@@ -1650,48 +1650,48 @@ msgstr "varovanie: %s vytvorené ako %s"
 msgid "error creating temporary file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: lib/package.c:184 lib/package.c:260
+#: lib/package.c:181 lib/package.c:257
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
-#: lib/package.c:205 lib/package.c:268
+#: lib/package.c:202 lib/package.c:265
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
-#: lib/package.c:246 lib/rpmchecksig.c:164 lib/rpmchecksig.c:557
+#: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:553
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/package.c:252
+#: lib/package.c:249
 #, fuzzy, c-format
 msgid "%s: bad magic\n"
 msgstr "Chybné magické èíslo"
 
-#: lib/package.c:277 lib/rpmchecksig.c:182 lib/rpmchecksig.c:573
+#: lib/package.c:274 lib/rpmchecksig.c:183 lib/rpmchecksig.c:569
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature zlyhalo\n"
 
-#: lib/package.c:281 lib/rpmchecksig.c:186 lib/rpmchecksig.c:578
+#: lib/package.c:278 lib/rpmchecksig.c:187 lib/rpmchecksig.c:574
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis nie je k dispozícii\n"
 
-#: lib/package.c:331 lib/rpmchecksig.c:476
+#: lib/package.c:328 lib/rpmchecksig.c:474
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/package.c:366 lib/package.c:393 lib/package.c:425 lib/rpmchecksig.c:651
+#: lib/package.c:363 lib/package.c:390 lib/package.c:422 lib/rpmchecksig.c:645
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:437 lib/rpmchecksig.c:113 lib/rpmchecksig.c:505
+#: lib/package.c:434 lib/rpmchecksig.c:113 lib/rpmchecksig.c:503
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
@@ -2275,36 +2275,36 @@ msgstr "vykonanie skriptu zlyhalo"
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "balík: %s-%s-%s test súborov = %d\n"
 
-#: lib/psm.c:1351
+#: lib/psm.c:1352
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1493
+#: lib/psm.c:1494
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "pou¾ívateµ %s neexistuje - pou¾ije sa root"
 
-#: lib/psm.c:1502
+#: lib/psm.c:1503
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s neexistuje - pou¾ije sa root"
 
-#: lib/psm.c:1544
+#: lib/psm.c:1545
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozbalenie archívu zlyhalo%s%s: %s"
 
-#: lib/psm.c:1545
+#: lib/psm.c:1546
 msgid " on file "
 msgstr " pre súbor "
 
-#: lib/psm.c:1733
+#: lib/psm.c:1734
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/psm.c:1736
+#: lib/psm.c:1737
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s zlyhalo"
@@ -2443,12 +2443,12 @@ msgstr "záznam %d nie je mo¾né preèíta»\n"
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmal.c:674
+#: lib/rpmal.c:673
 #, fuzzy
 msgid "(added files)"
 msgstr "chybný stav súboru: %s"
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:770
 #, fuzzy
 msgid "(added provide)"
 msgstr "Poskytuje:"
@@ -2468,57 +2468,57 @@ msgstr "vykonanie zlyhalo\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:169
+#: lib/rpmchecksig.c:170
 #, fuzzy, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: Nie je mo¾né podpísa» v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:173
+#: lib/rpmchecksig.c:174
 #, fuzzy, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: Nie je mo¾né znovu podpísa» v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:253
+#: lib/rpmchecksig.c:254
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:259
+#: lib/rpmchecksig.c:260
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmReadSignature zlyhalo\n"
 
-#: lib/rpmchecksig.c:490
+#: lib/rpmchecksig.c:488
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:563
+#: lib/rpmchecksig.c:559
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Podpis nie je k dispozícii (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:810
+#: lib/rpmchecksig.c:804
 msgid "NOT OK"
 msgstr "NIE JE V PORIADKU"
 
-#: lib/rpmchecksig.c:811 lib/rpmchecksig.c:825
+#: lib/rpmchecksig.c:805 lib/rpmchecksig.c:819
 msgid " (MISSING KEYS:"
 msgstr " (CHÝBAJÚCE K¥ÚÈE):"
 
-#: lib/rpmchecksig.c:813 lib/rpmchecksig.c:827
+#: lib/rpmchecksig.c:807 lib/rpmchecksig.c:821
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:814 lib/rpmchecksig.c:828
+#: lib/rpmchecksig.c:808 lib/rpmchecksig.c:822
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEDÔVERUJE SA K¥ÚÈOM: "
 
-#: lib/rpmchecksig.c:816 lib/rpmchecksig.c:830
+#: lib/rpmchecksig.c:810 lib/rpmchecksig.c:824
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:824
+#: lib/rpmchecksig.c:818
 msgid "OK"
 msgstr "V PORIADKU"
 
@@ -2729,190 +2729,176 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
 
-#: lib/signature.c:119
+#: lib/signature.c:118
 msgid "file is not regular -- skipping size check\n"
 msgstr "nejde o be¾ný súbor - kontrola veµkosti vynechaná\n"
 
-#: lib/signature.c:128
+#: lib/signature.c:127
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:133
+#: lib/signature.c:132
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: lib/signature.c:153
+#: lib/signature.c:152
 msgid "No signature\n"
 msgstr "Podpis nie je k dispozícii\n"
 
-#: lib/signature.c:157
+#: lib/signature.c:156
 msgid "Old PGP signature\n"
 msgstr "Starý PGP podpis\n"
 
-#: lib/signature.c:170
+#: lib/signature.c:167
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Starý (iba interný) podpis! Ako ste sa k tomu dostali?!"
 
-#: lib/signature.c:226
+#: lib/signature.c:221
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: lib/signature.c:307 lib/signature.c:406 lib/signature.c:678
-#: lib/signature.c:711
+#: lib/signature.c:300 lib/signature.c:397 lib/signature.c:664
+#: lib/signature.c:697
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: lib/signature.c:323
+#: lib/signature.c:316
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp zlyhalo"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:330
+#: lib/signature.c:323
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp sa nepodarilo zapísa» podpis"
 
-#: lib/signature.c:335
+#: lib/signature.c:328
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Veµkos» PGP podpisu: %d\n"
 
-#: lib/signature.c:351 lib/signature.c:451
+#: lib/signature.c:342 lib/signature.c:440
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "nie je mo¾né preèíta» podpis"
 
-#: lib/signature.c:356
+#: lib/signature.c:347
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Preèítaný PGP podpis obsahuje %d bajtov\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:414
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg zlyhalo"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:430
+#: lib/signature.c:421
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg sa nepodarilo zapísa» podpis"
 
-#: lib/signature.c:435
+#: lib/signature.c:426
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Veµkos» GPG podpisu: %d\n"
 
-#: lib/signature.c:456
+#: lib/signature.c:445
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Preèítaný GPG podpis obsahuje %d bajtov\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:716 lib/signature.c:771
+#: lib/signature.c:702 lib/signature.c:753
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Chybná ¹pecifikácia %%_signature v makro-súbore.\n"
 
-#: lib/signature.c:750
+#: lib/signature.c:732
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musíte nastavi» \"%%gpg_name\" vo va¹om makro-súbore"
 
-#: lib/signature.c:763
+#: lib/signature.c:745
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musíte nastavi» \"%%pgp_name\" vo va¹om makro-súbore"
 
-#: lib/signature.c:807
+#: lib/signature.c:789
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Priveµká hlavièka"
 
-#: lib/signature.c:847
+#: lib/signature.c:825
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:906
+#: lib/signature.c:873
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1102
+#: lib/signature.c:1059
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "vynecha» akékoµvek MD5 podpisy"
 
-#: lib/signature.c:1221
+#: lib/signature.c:1168
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1222
+#: lib/signature.c:1169
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Podpis nie je k dispozícii\n"
 
-#: lib/signature.c:1311
+#: lib/signature.c:1244
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1338
+#: lib/signature.c:1271
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1342
+#: lib/signature.c:1275
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Doplnenie podpisu: %d\n"
 
-#: lib/transaction.c:180
+#: lib/transaction.c:173
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:990
+#: lib/transaction.c:985
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/transaction.c:1085
+#: lib/transaction.c:1080
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/verify.c:243
-#, fuzzy
-msgid "package lacks both user name and id lists (this should never happen)\n"
-msgstr ""
-"v balíku chýba tak meno pou¾ívateµa, ako aj zoznamy identifikácií (nemalo by "
-"sa nikdy sta»)"
-
-#: lib/verify.c:264
-#, fuzzy
-msgid "package lacks both group name and id lists (this should never happen)\n"
-msgstr ""
-"v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by sa "
-"nikdy sta»)"
-
-#: lib/verify.c:408
+#: lib/verify.c:324
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "chýbajúce    %s\n"
 
-#: lib/verify.c:505
+#: lib/verify.c:419
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: lib/verify.c:543
+#: lib/verify.c:459
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
@@ -3512,6 +3498,20 @@ msgstr "url port musí by» èíslo\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both user name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "v balíku chýba tak meno pou¾ívateµa, ako aj zoznamy identifikácií (nemalo "
+#~ "by sa nikdy sta»)"
+
+#, fuzzy
+#~ msgid ""
+#~ "package lacks both group name and id lists (this should never happen)\n"
+#~ msgstr ""
+#~ "v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by "
+#~ "sa nikdy sta»)"
 
 #, fuzzy
 #~ msgid "========== Header RSA signature\n"

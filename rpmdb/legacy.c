@@ -13,28 +13,64 @@
 
 int domd5(const char * fn, unsigned char * digest, int asAscii)
 {
-    int rc;
-
-    FD_t fd = Fopen(fn, "r.ufdio");
-    unsigned char buf[BUFSIZ];
+    const char * path;
     unsigned char * md5sum = NULL;
     size_t md5len;
+    int rc = 0;
 
-    if (fd == NULL || Ferror(fd)) {
-	if (fd != NULL)
-	    (void) Fclose(fd);
-	return 1;
+    switch(urlPath(fn, &path)) {
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+#if HAVE_MMAP
+    {	struct stat sb, * st = &sb;
+	DIGEST_CTX ctx;
+	void * mapped;
+	int fdno;
+	int xx;
+
+	if (stat(path, st) < 0
+	|| (fdno = open(path, O_RDONLY)) < 0)
+	    return 1;
+	mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, fdno, 0);
+	if (mapped == (void *)-1) {
+	    xx = close(fdno);
+	    return 1;
+	}
+        (void) madvise(mapped, st->st_size, MADV_SEQUENTIAL);
+
+	ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	xx = rpmDigestUpdate(ctx, mapped, st->st_size);
+	xx = rpmDigestFinal(ctx, (void **)&md5sum, &md5len, asAscii);
+	xx = munmap(mapped, st->st_size);
+	xx = close(fdno);
+
+    }	break;
+#endif
+    case URL_IS_FTP:
+    case URL_IS_HTTP:
+    case URL_IS_DASH:
+    default:
+    {	FD_t fd;
+	unsigned char buf[32*BUFSIZ];
+
+	fd = Fopen(fn, "r.ufdio");
+	if (fd == NULL || Ferror(fd)) {
+	    if (fd != NULL)
+		(void) Fclose(fd);
+	    return 1;
+	}
+
+	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+
+	while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	    {};
+	fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, asAscii);
+
+	if (Ferror(fd))
+	    rc = 1;
+	(void) Fclose(fd);
+    }	break;
     }
-
-    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-
-    while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
-	{};
-    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, asAscii);
-
-    if (Ferror(fd))
-	rc = 1;
-    (void) Fclose(fd);
 
     if (!rc)
 	memcpy(digest, md5sum, md5len);

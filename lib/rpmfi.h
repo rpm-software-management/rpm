@@ -70,6 +70,9 @@ struct TFI_s {
 /*@only@*/ /*@null@*/
     char * fstates;		/*!< File state(s) (from header) */
 
+/*@only@*/ /*?null?*/
+    const uint_32 * vflags;	/*!< File verify flag(s) (from header) */
+
     int_32 dc;			/*!< No. of directories. */
     int_32 fc;			/*!< No. of files. */
 
@@ -265,6 +268,90 @@ int_32 tfiGetFFlags(/*@null@*/ TFI_t fi)
 	/*@*/;
 
 /**
+ * Return current file verify flags from file info set.
+ * @param fi		file info set
+ * @return		current file verify flags, 0 on invalid
+ */
+int_32 tfiGetVFlags(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file mode from file info set.
+ * @param fi		file info set
+ * @return		current file mode, 0 on invalid
+ */
+int_16 tfiGetFMode(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file state from file info set.
+ * @param fi		file info set
+ * @return		current file state, 0 on invalid
+ */
+rpmfileState tfiGetFState(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file (binary) md5 digest from file info set.
+ * @param fi		file info set
+ * @return		current file md5 digest, NULL on invalid
+ */
+/*@observer@*/ /*@null@*/
+const unsigned char * tfiGetMD5(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file linkto (i.e. symlink(2) target) from file info set.
+ * @param fi		file info set
+ * @return		current file linkto, NULL on invalid
+ */
+/*@observer@*/ /*@null@*/
+const char * tfiGetFLink(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file size from file info set.
+ * @param fi		file info set
+ * @return		current file size, 0 on invalid
+ */
+int_32 tfiGetFSize(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file rdev from file info set.
+ * @param fi		file info set
+ * @return		current file rdev, 0 on invalid
+ */
+int_16 tfiGetFRdev(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file modify time from file info set.
+ * @param fi		file info set
+ * @return		current file modify time, 0 on invalid
+ */
+int_32 tfiGetFMtime(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file owner from file info set.
+ * @param fi		file info set
+ * @return		current file owner, NULL on invalid
+ */
+/*@observer@*/ /*@null@*/
+const char * tfiGetFUser(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
+ * Return current file group from file info set.
+ * @param fi		file info set
+ * @return		current file group, NULL on invalid
+ */
+/*@observer@*/ /*@null@*/
+const char * tfiGetFGroup(/*@null@*/ TFI_t fi)
+	/*@*/;
+
+/**
  * Return next file iterator index.
  * @param fi		file info set
  * @return		file iterator index, -1 on termination
@@ -276,7 +363,7 @@ int tfiNext(/*@null@*/ TFI_t fi)
  * Initialize file iterator index.
  * @param fi		file info set
  * @param fx		file iterator index
- * @return		file info set, NULL if fx is out of range
+ * @return		file info set
  */
 /*@null@*/
 TFI_t tfiInit(/*@null@*/ TFI_t fi, int fx)

@@ -223,10 +223,27 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 
     fileNumber = (int) PyInt_AsLong(args);
 
-    /* XXX this routine might use callbacks intelligently. */
-    if (rpmVerifyFile("", s->h, fileNumber, &verifyResult, RPMVERIFY_NONE)) {
-	Py_INCREF(Py_None);
-	return Py_None;
+    {	rpmTransactionSet ts;
+	int scareMem = 1;
+	TFI_t fi;
+	int rc;
+
+	ts = rpmtransCreateSet(NULL, NULL);
+	fi = fiNew(ts, NULL, s->h, RPMTAG_BASENAMES, scareMem);
+	fi = tfiInit(fi, fileNumber);
+	if (fi != NULL && tfiNext(fi) >= 0) {
+	    /* XXX this routine might use callbacks intelligently. */
+	    rc = rpmVerifyFile(ts, fi, &verifyResult, RPMVERIFY_NONE);
+	} else
+	    rc = 1;
+
+	fi = fiFree(fi, 1);
+	rpmtransFree(ts);
+
+	if (rc) {
+	    Py_INCREF(Py_None);
+	    return Py_None;
+	}
     }
 
     list = PyList_New(0);

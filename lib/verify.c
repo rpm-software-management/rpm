@@ -15,62 +15,38 @@
 
 /*@access rpmProblem @*/
 /*@access rpmTransactionSet @*/
-/*@access TFI_t @*/
 /*@access PSM_t @*/
 /*@access FD_t @*/	/* XXX compared with NULL */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
-int rpmVerifyFile(const char * root, Header h, int filenum,
+int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
 		rpmVerifyAttrs * result, rpmVerifyAttrs omitMask)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    int_32 * fileFlags;
-    rpmfileAttrs fileAttrs = RPMFILE_NONE;
-    int_32 * verifyFlags;
-    rpmVerifyAttrs flags = RPMVERIFY_ALL;
-    unsigned short * modeList;
-    const char * fileStatesList;
-    const char * filespec = NULL;
-    int count;
+    unsigned short fmode = tfiGetFMode(fi);
+    rpmfileAttrs fileAttrs = tfiGetFFlags(fi);
+    rpmVerifyAttrs flags = tfiGetVFlags(fi);
+    const char * filespec = tfiGetFN(fi);
     int rc;
     struct stat sb;
 
-    rc = hge(h, RPMTAG_FILEMODES, NULL, (void **) &modeList, &count);
-    if (hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL))
-	fileAttrs = fileFlags[filenum];
-
-    if (hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, (void **) &verifyFlags, NULL))
-	flags = verifyFlags[filenum];
-
+    /* Prepend the path to root (if specified). */
+    if (ts->rootDir && *ts->rootDir != '\0'
+     && !(ts->rootDir[0] == '/' && ts->rootDir[1] == '\0'))
     {
-	const char ** baseNames;
-	const char ** dirNames;
-	int_32 * dirIndexes;
-	rpmTagType bnt, dnt;
+	int nb = strlen(filespec) + strlen(ts->rootDir) + 1;
+	char * tb = alloca(nb);
+	char * t;
 
-	if (hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, NULL)
-	&&  hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL)
-	&&  hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL))
-	{
-	    int nb = (strlen(dirNames[dirIndexes[filenum]]) + 
-		      strlen(baseNames[filenum]) + strlen(root) + 5);
-	    char * t = alloca(nb);
-	    filespec = t;
+	t = tb;
+	*t = '\0';
+	t = stpcpy(t, ts->rootDir);
+	while (t > tb && t[-1] == '/') {
+	    --t;
 	    *t = '\0';
-	    if (root && !(root[0] == '/' && root[1] == '\0')) {
-		t = stpcpy(t, root);
-		while (t > filespec && t[-1] == '/') {
-		    --t;
-		    *t = '\0';
-		}
-	    }
-	    t = stpcpy(t, dirNames[dirIndexes[filenum]]);
-	    t = stpcpy(t, baseNames[filenum]);
 	}
-	baseNames = hfd(baseNames, bnt);
-	dirNames = hfd(dirNames, dnt);
+	t = stpcpy(t, filespec);
+	filespec = t;
     }
 
     *result = RPMVERIFY_NONE;
@@ -78,27 +54,17 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     /*
      * Check to see if the file was installed - if not pretend all is OK.
      */
-    if (hge(h, RPMTAG_FILESTATES, NULL, (void **) &fileStatesList, NULL) &&
-	fileStatesList != NULL)
-    {
-	rpmfileState fstate = fileStatesList[filenum];
-	switch (fstate) {
-	case RPMFILE_STATE_NETSHARED:
-	case RPMFILE_STATE_REPLACED:
-	case RPMFILE_STATE_NOTINSTALLED:
-	    return 0;
-	    /*@notreached@*/ break;
-	case RPMFILE_STATE_NORMAL:
-	    break;
-	}
+    switch (tfiGetFState(fi)) {
+    case RPMFILE_STATE_NETSHARED:
+    case RPMFILE_STATE_REPLACED:
+    case RPMFILE_STATE_NOTINSTALLED:
+	return 0;
+	/*@notreached@*/ break;
+    case RPMFILE_STATE_NORMAL:
+	break;
     }
 
-    if (filespec == NULL) {
-	*result |= RPMVERIFY_LSTATFAIL;
-	return 1;
-    }
-
-    if (Lstat(filespec, &sb) != 0) {
+    if (filespec == NULL || Lstat(filespec, &sb) != 0) {
 	*result |= RPMVERIFY_LSTATFAIL;
 	return 1;
     }
@@ -141,49 +107,39 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     flags &= ~(omitMask | RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL);
 
     if (flags & RPMVERIFY_MD5) {
-	unsigned char md5sum[40];
-	const char ** md5List;
-	rpmTagType mdt;
+	byte md5sum[16];
 
-	if (!hge(h, RPMTAG_FILEMD5S, &mdt, (void **) &md5List, NULL))
-	    *result |= RPMVERIFY_MD5;
+	rc = domd5(filespec, md5sum, 0);
+	if (rc)
+	    *result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	else {
-	    rc = domd5(filespec, md5sum, 1);
-	    if (rc)
-		*result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
-	    else if (strcmp(md5sum, md5List[filenum]))
+	    const byte * md5 = tfiGetMD5(fi);
+	    if (md5 == NULL || memcmp(md5sum, md5, sizeof(md5sum)))
 		*result |= RPMVERIFY_MD5;
 	}
-	md5List = hfd(md5List, mdt);
     } 
 
     if (flags & RPMVERIFY_LINKTO) {
 	char linkto[1024];
 	int size = 0;
-	const char ** linktoList;
-	rpmTagType ltt;
 
-	if (!hge(h, RPMTAG_FILELINKTOS, &ltt, (void **) &linktoList, NULL)
-	|| (size = Readlink(filespec, linkto, sizeof(linkto)-1)) == -1)
+	if ((size = Readlink(filespec, linkto, sizeof(linkto)-1)) == -1)
 	    *result |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
+	    const char * flink = tfiGetFLink(fi);
 	    linkto[size] = '\0';
-	    if (strcmp(linkto, linktoList[filenum]))
+	    if (flink == NULL || strcmp(linkto, flink))
 		*result |= RPMVERIFY_LINKTO;
 	}
-	linktoList = hfd(linktoList, ltt);
     } 
 
     if (flags & RPMVERIFY_FILESIZE) {
-	int_32 * sizeList;
-
-	if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) &sizeList, NULL)
-	|| sizeList[filenum] != sb.st_size)
+	if (sb.st_size != tfiGetFSize(fi))
 	    *result |= RPMVERIFY_FILESIZE;
     } 
 
     if (flags & RPMVERIFY_MODE) {
-	unsigned short metamode = modeList[filenum];
+	unsigned short metamode = fmode;
 	unsigned short filemode;
 
 	/*
@@ -205,66 +161,33 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     }
 
     if (flags & RPMVERIFY_RDEV) {
-	if (S_ISCHR(modeList[filenum]) != S_ISCHR(sb.st_mode) ||
-	    S_ISBLK(modeList[filenum]) != S_ISBLK(sb.st_mode))
+	if (S_ISCHR(fmode) != S_ISCHR(sb.st_mode)
+	 || S_ISBLK(fmode) != S_ISBLK(sb.st_mode))
 	{
 	    *result |= RPMVERIFY_RDEV;
-	} else if (S_ISDEV(modeList[filenum]) && S_ISDEV(sb.st_mode)) {
-	    unsigned short * rdevList;
-	    if (!hge(h, RPMTAG_FILERDEVS, NULL, (void **) &rdevList, NULL)
-	    || rdevList[filenum] != sb.st_rdev)
+	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
+	    if (sb.st_rdev != tfiGetFRdev(fi))
 		*result |= RPMVERIFY_RDEV;
 	} 
     }
 
     if (flags & RPMVERIFY_MTIME) {
-	int_32 * mtimeList;
-
-	if (!hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtimeList, NULL)
-	||  mtimeList[filenum] != sb.st_mtime)
+	if (sb.st_mtime != tfiGetFMtime(fi))
 	    *result |= RPMVERIFY_MTIME;
     }
 
     if (flags & RPMVERIFY_USER) {
-	const char * name;
-	const char ** unameList;
-	int_32 * uidList;
-	rpmTagType unt;
-
-	if (hge(h, RPMTAG_FILEUSERNAME, &unt, (void **) &unameList, NULL)) {
-	    name = uidToUname(sb.st_uid);
-	    if (!name || strcmp(unameList[filenum], name))
-		*result |= RPMVERIFY_USER;
-	    unameList = hfd(unameList, unt);
-	} else if (hge(h, RPMTAG_FILEUIDS, NULL, (void **) &uidList, NULL)) {
-	    if (uidList[filenum] != sb.st_uid)
-		*result |= RPMVERIFY_GROUP;
-	} else {
-	    rpmError(RPMERR_INTERNAL, _("package lacks both user name and id "
-		  "lists (this should never happen)\n"));
-	    *result |= RPMVERIFY_GROUP;
-	}
+	const char * name = uidToUname(sb.st_uid);
+	const char * fuser = tfiGetFUser(fi);
+	if (name == NULL || fuser == NULL || strcmp(name, fuser))
+	    *result |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
-	const char ** gnameList;
-	int_32 * gidList;
-	rpmTagType gnt;
-	gid_t gid;
-
-	if (hge(h, RPMTAG_FILEGROUPNAME, &gnt, (void **) &gnameList, NULL)) {
-	    rc = gnameToGid(gnameList[filenum], &gid);
-	    if (rc || (gid != sb.st_gid))
-		*result |= RPMVERIFY_GROUP;
-	    gnameList = hfd(gnameList, gnt);
-	} else if (hge(h, RPMTAG_FILEGIDS, NULL, (void **) &gidList, NULL)) {
-	    if (gidList[filenum] != sb.st_gid)
-		*result |= RPMVERIFY_GROUP;
-	} else {
-	    rpmError(RPMERR_INTERNAL, _("package lacks both group name and id "
-		     "lists (this should never happen)\n"));
+	const char * name = uidToUname(sb.st_gid);
+	const char * fgroup = tfiGetFGroup(fi);
+	if (name == NULL || fgroup == NULL || strcmp(name, fgroup))
 	    *result |= RPMVERIFY_GROUP;
-	}
     }
 
     return 0;
@@ -272,40 +195,43 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 
 /**
  * Return exit code from running verify script from header.
+ * @todo malloc/free/refcount handling is fishy here.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h             header
+ * @param fi		file info set
  * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
 static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
-		Header h, /*@null@*/ FD_t scriptFd)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext,
+		TFI_t fi, /*@null@*/ FD_t scriptFd)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, fi, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
     int rc = 0;
+    FD_t savefd = NULL;
+    PSM_t psm;
 
+    psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
     psm->ts = rpmtsLink(ts, "rpmVerifyScript");
 
-    if (scriptFd != NULL)
+    if (scriptFd != NULL) {
+	savefd = ts->scriptFd;
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
-
-    psm->fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, 1);
-    if (psm->fi != NULL) {	/* XXX can't happen */
-	psm->stepName = "verify";
-	psm->scriptTag = RPMTAG_VERIFYSCRIPT;
-	psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
-	rc = psmStage(psm, PSM_SCRIPT);
     }
-    psm->fi = fiFree(psm->fi, 1);
 
-    if (ts->scriptFd != NULL)
+    psm->fi = rpmfiLink(fi, "rpmVerifyScript");
+    psm->stepName = "verify";
+    psm->scriptTag = RPMTAG_VERIFYSCRIPT;
+    psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
+    rc = psmStage(psm, PSM_SCRIPT);
+    psm->fi = rpmfiUnlink(fi, "rpmVerifyScript");
+
+    if (scriptFd != NULL) {
 	ts->scriptFd = fdFree(ts->scriptFd, "rpmVerifyScript");
-
-    rpmtransClean(ts);	/* XXX this is sure to cause heartburn */
+	ts->scriptFd = savefd;
+    }
 
     psm->ts = rpmtsUnlink(ts, "rpmVerifyScript");
 
@@ -359,19 +285,15 @@ int rpmVerifyDigest(Header h)
  * Check file info from header against what's actually installed.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
- * @param h		header
+ * @param fi		file info set
  * @return		0 no problems, 1 problems found
  */
-static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
+static int verifyHeader(QVA_t qva, const rpmTransactionSet ts, TFI_t fi)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies h, fileSystem, internalState  @*/
+	/*@modifies fi, fileSystem, internalState  @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char buf[BUFSIZ];
     char * t, * te;
-    const char ** fileNames = NULL;
-    int count;
-    int_32 * fileFlags = NULL;
     rpmVerifyAttrs verifyResult = 0;
     /*@-type@*/ /* FIX: union? */
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
@@ -382,30 +304,24 @@ static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
     te = t = buf;
     *te = '\0';
 
-    if (!hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL))
-	goto exit;
-
-    if (!headerIsEntry(h, RPMTAG_BASENAMES))
-	goto exit;
-
-    rpmBuildFileList(h, &fileNames, &count);
-
-    for (i = 0; i < count; i++)
-    {
+    fi = rpmfiLink(fi, "verifyHeader");
+    fi = tfiInit(fi, 0);
+    if (fi != NULL)	/* XXX lclint */
+    while ((i = tfiNext(fi)) >= 0) {
 	rpmfileAttrs fileAttrs;
 	int rc;
 
-	fileAttrs = fileFlags[i];
+	fileAttrs = tfiGetFFlags(fi);
 
 	/* If not verifying %ghost, skip ghost files. */
 	if (!(qva->qva_fflags & RPMFILE_GHOST)
 	&& (fileAttrs & RPMFILE_GHOST))
 	    continue;
 
-	rc = rpmVerifyFile(ts->rootDir, h, i, &verifyResult, omitMask);
+	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
 	if (rc) {
 	    if (!(fileAttrs & RPMFILE_MISSINGOK) || rpmIsVerbose()) {
-		sprintf(te, _("missing    %s"), fileNames[i]);
+		sprintf(te, _("missing    %s"), tfiGetFN(fi));
 		te += strlen(te);
 		ec = rc;
 	    }
@@ -446,7 +362,7 @@ static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
 			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
-			fileNames[i]);
+			tfiGetFN(fi));
 	    te += strlen(te);
 	}
 
@@ -458,9 +374,8 @@ static int verifyHeader(QVA_t qva, /*@unused@*/ rpmTransactionSet ts, Header h)
 	    *t = '\0';
 	}
     }
+    fi = rpmfiUnlink(fi, "verifyHeader");
 	
-exit:
-    fileNames = _free(fileNames);
     return ec;
 }
 
@@ -530,6 +445,8 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 
 int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 {
+    int scareMem = 1;	/* XXX only rpmVerifyScript needs now */
+    TFI_t fi;
     int ec = 0;
     int rc;
 
@@ -545,21 +462,31 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 	}
     }
 #endif
-    if (qva->qva_flags & VERIFY_DEPS) {
-	if ((rc = verifyDependencies(qva, ts, h)) != 0)
-	    ec = rc;
+
+    fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+    if (fi != NULL) {
+
+	if (qva->qva_flags & VERIFY_DEPS) {
+	    if ((rc = verifyDependencies(qva, ts, h)) != 0)
+		ec = rc;
+	}
+	if (qva->qva_flags & VERIFY_FILES) {
+	    if ((rc = verifyHeader(qva, ts, fi)) != 0)
+		ec = rc;
+	}
+	if ((qva->qva_flags & VERIFY_SCRIPT)
+	 && headerIsEntry(h, RPMTAG_VERIFYSCRIPT))
+	{
+	    FD_t fdo = fdDup(STDOUT_FILENO);
+	    if ((rc = rpmVerifyScript(qva, ts, fi, fdo)) != 0)
+		ec = rc;
+	    if (fdo)
+		rc = Fclose(fdo);
+	}
+
+	fi = fiFree(fi, 1);
     }
-    if (qva->qva_flags & VERIFY_FILES) {
-	if ((rc = verifyHeader(qva, ts, h)) != 0)
-	    ec = rc;
-    }
-    if (qva->qva_flags & VERIFY_SCRIPT) {
-	FD_t fdo = fdDup(STDOUT_FILENO);
-	if ((rc = rpmVerifyScript(qva, ts, h, fdo)) != 0)
-	    ec = rc;
-	if (fdo)
-	    rc = Fclose(fdo);
-    }
+
     return ec;
 }
 

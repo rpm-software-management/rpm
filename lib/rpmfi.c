@@ -146,6 +146,116 @@ int_32 tfiGetFFlags(TFI_t fi)
     return FFlags;
 }
 
+int_32 tfiGetVFlags(TFI_t fi)
+{
+    int_32 VFlags = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->vflags != NULL)
+	    VFlags = fi->vflags[fi->i];
+    }
+    return VFlags;
+}
+
+int_16 tfiGetFMode(TFI_t fi)
+{
+    int_16 fmode = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->fmodes != NULL)
+	    fmode = fi->fmodes[fi->i];
+    }
+    return fmode;
+}
+
+rpmfileState tfiGetFState(TFI_t fi)
+{
+    char fstate = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->fstates != NULL)
+	    fstate = fi->fstates[fi->i];
+    }
+    return fstate;
+}
+
+const unsigned char * tfiGetMD5(TFI_t fi)
+{
+    unsigned char * md5 = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->md5s != NULL)
+	    md5 = fi->md5s + (16 * fi->i);
+    }
+    return md5;
+}
+
+const char * tfiGetFLink(TFI_t fi)
+{
+    const char * flink = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->flinks != NULL)
+	    flink = fi->flinks[fi->i];
+    }
+    return flink;
+}
+
+int_32 tfiGetFSize(TFI_t fi)
+{
+    int_32 fsize = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->fsizes != NULL)
+	    fsize = fi->fsizes[fi->i];
+    }
+    return fsize;
+}
+
+int_16 tfiGetFRdev(TFI_t fi)
+{
+    int_16 frdev = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->frdevs != NULL)
+	    frdev = fi->frdevs[fi->i];
+    }
+    return frdev;
+}
+
+int_32 tfiGetFMtime(TFI_t fi)
+{
+    int_32 fmtime = 0;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->fmtimes != NULL)
+	    fmtime = fi->fmtimes[fi->i];
+    }
+    return fmtime;
+}
+
+const char * tfiGetFUser(TFI_t fi)
+{
+    const char * fuser = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->fuser != NULL)
+	    fuser = fi->fuser[fi->i];
+    }
+    return fuser;
+}
+
+const char * tfiGetFGroup(TFI_t fi)
+{
+    const char * fgroup = NULL;
+
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->fgroup != NULL)
+	    fgroup = fi->fgroup[fi->i];
+    }
+    return fgroup;
+}
+
 int tfiNext(TFI_t fi)
 {
     int i = -1;
@@ -174,8 +284,11 @@ TFI_t tfiInit(TFI_t fi, int fx)
 	if (fx >= 0 && fx < fi->fc) {
 	    fi->i = fx - 1;
 	    fi->j = -1;
-	} else
+	}
+#ifdef	DYING
+	else
 	    fi = NULL;
+#endif
     }
 
     /*@-refcounttrans@*/
@@ -721,6 +834,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	    fi->fmtimes = _free(fi->fmtimes);
 	    fi->fmodes = _free(fi->fmodes);
 	    fi->fflags = _free(fi->fflags);
+	    fi->vflags = _free(fi->vflags);
 	    fi->fsizes = _free(fi->fsizes);
 	    fi->frdevs = _free(fi->frdevs);
 	    fi->dil = _free(fi->dil);
@@ -848,11 +962,12 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
     xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
     xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
+    xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, (void **) &fi->vflags, NULL);
     xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
     xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
     if (xx == 0 || fi->fstates == NULL)
 	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
-    else if (!scareMem)
+    else
 	_fdupe(fi, fstates);
 
     fi->action = FA_UNKNOWN;
@@ -914,6 +1029,7 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
 	_fdupe(fi, frdevs);
 	_fdupe(fi, fsizes);
 	_fdupe(fi, fflags);
+	_fdupe(fi, vflags);
 	_fdupe(fi, fmodes);
 	_fdupe(fi, dil);
 	fi->h = headerFree(fi->h, fi->Type);

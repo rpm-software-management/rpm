@@ -1900,7 +1900,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 	rc = 0;
 	fi = teGetFI(p, RPMTAG_BASENAMES);
-	if ((fi = tfiInit(fi, 0)) != NULL)
+	fi = tfiInit(fi, 0);
 	while (tfiNext(fi) >= 0) {
 	    const char * fn = tfiGetFN(fi);
 

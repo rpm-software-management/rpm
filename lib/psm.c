@@ -1267,7 +1267,8 @@ assert(psm->mi == NULL);
 	    psm->mi = rpmdbFreeIterator(psm->mi);
 	    rc = RPMRC_OK;
 
-	    if (fc > 0 && fi->fstates == NULL) {
+	    /* XXX lazy alloc here may need to be done elsewhere. */
+	    if (fi->fstates == NULL && fc > 0) {
 		fi->fstates = xmalloc(sizeof(*fi->fstates) * fc);
 		memset(fi->fstates, RPMFILE_STATE_NORMAL, fc);
 	    }

@@ -398,7 +398,7 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
     alp->fi = rpmfiLink(fi, "Files (alAddPackage)");
 
     fi = rpmfiLink(alp->fi, "Files index (alAddPackage)");
-    if ((fi = tfiInit(fi, 0)) != NULL)
+    fi = tfiInit(fi, 0);
     if (tfiGetFC(fi) > 0) {
 	int * dirMapping;
 	dirInfo dieNeedle =
@@ -471,7 +471,6 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 
 	    /* Rewind to first file, generate file index entry for each file. */
 	    fi = tfiInit(fi, first);
-	    if (fi != NULL)
 	    while ((first = tfiNext(fi)) >= 0 && first < next) {
 		/*@-assignexpose -onlytrans @*/
 		fie->baseName = tfiGetBN(fi);

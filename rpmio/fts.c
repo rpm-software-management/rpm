@@ -117,7 +117,7 @@ Fts_open(char * const * argv, int options,
 	register FTS *sp;
 	register FTSENT *p, *root;
 	register int nitems;
-	FTSENT *parent, *tmp;
+	FTSENT *parent, *tmp = NULL;
 	int len;
 
 	/* Options check. */

@@ -527,6 +527,8 @@ fi
 * Sun Mar 10 2002 Jeff Johnson <jbj@redhat.com>
 - make --addsign and --resign behave exactly the same.
 - splint annotationsm, signature cleanup.
+- drill ts/fi through verify mode, add methods to keep fi abstract.
+- use mmap when calculating file digests on verify, ~20% faster.
 
 * Mon Sep 24 2001 Jeff Johnson <jbj@redhat.com>
 - Start rpm-4.1.

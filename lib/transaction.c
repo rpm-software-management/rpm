@@ -14,13 +14,6 @@
 #include "legacy.h"	/* XXX domd5 */
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 
-#ifdef	DYING
-/*@-redecl -exportheadervar@*/
-/*@unchecked@*/
-extern const char * chroot_prefix;
-/*@=redecl =exportheadervar@*/
-#endif
-
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
 #if STATFS_IN_SYS_STATVFS
@@ -562,7 +555,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
     int i, j;
   
     fi = tfiInit(fi, 0);
-    if (fi != NULL)
+    if (fi != NULL)	/* XXX lclint */
     while ((i = tfiNext(fi)) >= 0) {
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
@@ -854,7 +847,8 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
     dff = alloca(dc * sizeof(*dff));
     memset(dff, 0, dc * sizeof(*dff));
 
-    if ((fi = tfiInit(fi, 0)) != NULL)
+    fi = tfiInit(fi, 0);
+    if (fi != NULL)	/* XXX lclint */
     while ((i = tfiNext(fi)) >= 0)
     {
 	char **nsp;
@@ -970,7 +964,8 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	}
 
 	/* If explicitly included in the package, skip the directory. */
-	if ((fi = tfiInit(fi, 0)) != NULL)
+	fi = tfiInit(fi, 0);
+	if (fi != NULL)		/* XXX lclint */
 	while ((i = tfiNext(fi)) >= 0) {
 	    const char * dir;
 
@@ -1228,7 +1223,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    continue;	/* XXX can't happen */
 	fc = tfiGetFC(fi);
 
-#ifdef	DYING	/* XXX W2DO? this is now done teiGetFi, okay ??? */
+#ifdef	DYING	/* XXX W2DO? this is now done in teiGetFi, okay ??? */
 	fi->magic = TFIMAGIC;
 	fi->te = p;
 #endif
@@ -1258,13 +1253,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/*@=superuser =noeffect @*/
 	ts->chrootDone = 1;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
-#ifdef	DYING
-	/*@-onlytrans@*/
-	/*@-mods@*/
-	chroot_prefix = ts->rootDir;
-	/*@=mods@*/
-	/*@=onlytrans@*/
-#endif
     }
 
     ts->ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
@@ -1283,7 +1271,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
 	/*@-branchstate@*/
- 	if ((fi = tfiInit(fi, 0)) != NULL)
+ 	fi = tfiInit(fi, 0);
+ 	if (fi != NULL)		/* XXX lclint */
 	while ((i = tfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@innercontinue@*/ continue;
@@ -1328,14 +1317,14 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	}
 
 	numShared = 0;
- 	if ((fi = tfiInit(fi, 0)) != NULL)
+ 	fi = tfiInit(fi, 0);
 	while ((i = tfiNext(fi)) >= 0)
 	    numShared += dbiIndexSetCount(matches[i]);
 
 	/* Build sorted file info list for this package. */
 	shared = sharedList = xcalloc((numShared + 1), sizeof(*sharedList));
 
- 	if ((fi = tfiInit(fi, 0)) != NULL)
+ 	fi = tfiInit(fi, 0);
 	while ((i = tfiNext(fi)) >= 0) {
 	    /*
 	     * Take care not to mark files as replaced in packages that will
@@ -1451,11 +1440,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/*@=superuser =noeffect @*/
 	ts->chrootDone = 0;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
-#ifdef	DYING
-	/*@-mods@*/
-	chroot_prefix = NULL;
-	/*@=mods@*/
-#endif
 	xx = chdir(ts->currDir);
     }
 

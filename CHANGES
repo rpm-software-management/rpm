@@ -95,6 +95,8 @@
 	- wire --nodigest/--nosignature options to checksig/query/verify modes.
 	- make --addsign and --resign behave exactly the same.
 	- splint annotationsm, signature cleanup.
+	- drill ts/fi through verify mode, add methods to keep fi abstract.
+	- use mmap when calculating file digests on verify, ~20% faster.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

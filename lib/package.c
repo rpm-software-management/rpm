@@ -450,7 +450,7 @@ fprintf(stderr, "*** RPF: legacy %d nodigests %d nosignatures %d sigtag %d\n", t
 		    (void) rpmDigestFinal(ts->dig->md5ctx, NULL, NULL, 0);
 		/*@=branchstate@*/
 #else
-assert(ts->dig->md5ctx != NULL);
+assert(ts->dig->md5ctx == NULL);
 #endif
 		ts->dig->md5ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
@@ -463,7 +463,7 @@ assert(ts->dig->md5ctx != NULL);
 		    (void) rpmDigestFinal(ts->dig->sha1ctx, NULL, NULL, 0);
 		/*@=branchstate@*/
 #else
-assert(ts->dig->sha1ctx != NULL);
+assert(ts->dig->sha1ctx == NULL);
 #endif
 		ts->dig->sha1ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
