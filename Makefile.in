@@ -111,18 +111,18 @@ install: all
 	[ -d $(installprefix)/$(LIBDIR) ] || mkdir -p $(installprefix)/$(LIBDIR)
 	[ -d $(installprefix)/$(INCDIR) ] || mkdir -p $(installprefix)/$(INCDIR)
 	if [ -x ./rpm ]; then \
-	    $(INSTALL) -s -m 755 -o 0 -g 0 rpm $(installprefix)/$(RPMBINDIR); \
+	    $(INSTALL) -s -m 755 rpm $(installprefix)/$(RPMBINDIR); \
 	else \
-	    $(INSTALL) -s -m 755 -o 0 -g 0 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
+	    $(INSTALL) -s -m 755 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
 	fi
-	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
-	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/find-provides.sh $(installprefix)/$(BINDIR)/find-provides
-	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/find-requires.sh $(installprefix)/$(BINDIR)/find-requires
-	$(INSTALL) -s -m 755 -o 0 -g 0 rpm2cpio $(installprefix)/$(BINDIR)
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
+	$(INSTALL) -m 755 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
+	$(INSTALL) -m 755 $(srcdir)/find-provides.sh $(installprefix)/$(BINDIR)/find-provides
+	$(INSTALL) -m 755 $(srcdir)/find-requires.sh $(installprefix)/$(BINDIR)/find-requires
+	$(INSTALL) -s -m 755 rpm2cpio $(installprefix)/$(BINDIR)
+	$(INSTALL) -m 644 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
+	$(INSTALL) -m 644 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
+	$(INSTALL) -m 644 $(srcdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
+	$(INSTALL) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	for d in $(INSTSUBDIRS); do \
 		(cd $$d; $(MAKE) installprefix=$(installprefix) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
