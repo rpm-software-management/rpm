@@ -19,6 +19,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
     unsigned char md5sum[40];
     char linkto[1024];
     int size;
+    int_32 * uidList, * gidList;
 
     getEntry(h, RPMTAG_FILEMODES, &type, (void **) &modeList, &count);
 
@@ -92,6 +93,16 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 	getEntry(h, RPMTAG_FILEMTIMES, &type, (void **) &mtimeList, &count);
 	if (mtimeList[filenum] != sb.st_mtime)
 	    *result |= VERIFY_MTIME;
+    }
+    if (flags & VERIFY_USER) {
+	getEntry(h, RPMTAG_FILEUIDS, &type, (void **) &uidList, &count);
+	if (uidList[filenum] != sb.st_uid)
+	    *result |= VERIFY_USER;
+    }
+    if (flags & VERIFY_GROUP) {
+	getEntry(h, RPMTAG_FILEGIDS, &type, (void **) &gidList, &count);
+	if (gidList[filenum] != sb.st_gid)
+	    *result |= VERIFY_GROUP;
     }
 
     return 0;
