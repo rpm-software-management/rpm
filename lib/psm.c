@@ -483,16 +483,21 @@ static pid_t psmWait(rpmpsm psm)
  * @param ntype		new selinux type
  * @return		0 on success
  */
-static int switchIdentity(rpmpsm psm, const char * ntype)
+static int switchExecType(rpmpsm psm, /*@null@*/ const char * ntype)
 	/*@*/
 {
     security_context_t ocon = NULL;
     security_context_t ncon = NULL;
     int rc = -1;	/* assume failure */
 
-    if (psm == NULL || ntype == NULL)
+    if (psm == NULL)
 	goto exit;
 
+    /* Set default exec policy if NULL specified. */
+    if (ntype == NULL)
+	goto doit;
+
+    /* Substitute new exec type. */
     rc = getexeccon(&ocon);
     if (rc != 0)
 	goto exit;
@@ -522,6 +527,7 @@ static int switchIdentity(rpmpsm psm, const char * ntype)
 	ncon = (security_context_t) t;
     }
 
+doit:
     rc = setexeccon(ncon);
 
 	/*
@@ -807,7 +813,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
 	    /* Set "rpm_script_t" identity for scriptlets under selinux. */
 	    if (rpmtsSELinuxEnabled(ts) == 1) {	
-		xx = switchIdentity(psm, "rpm_script_t");
+		/* Set rpm_script_t for /bin/sh, default /sbin/ldconfig et al */
+		xx = switchExecType(psm,
+			(!strcmp(argv[0], "/bin/sh") ? "rpm_script_t" : NULL));
 		if (xx != 0)
 		    break;
 	    }

@@ -485,6 +485,7 @@ exit 0
 * Sun Feb 22 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.14
 - add ia32e arch.
 - stable sort for policy specifications, patterns before paths.
+- set "rpm_script_t" exec type for scriptlets iff /bin/sh, else default.
 
 * Fri Feb 20 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.13
 - fix: only first "mkdir -p" directory had context set.
