@@ -454,7 +454,12 @@ int main(int argc, char ** argv) {
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD) {
             if ((optind != argc) && (sigLookupType() == RPMSIG_PGP262_1024)) {
-	        passPhrase = strdup(getPassPhrase("Enter pass phrase:"));
+	        if (!(passPhrase = getPassPhrase("Enter pass phrase: "))) {
+		    fprintf(stderr, "Pass phrase check failed\n");
+		    exit(1);
+		} else {
+		    passPhrase = strdup(passPhrase);
+		}
 	    }
 	} else {
 	    argerror("--sign may only be used during package building");
