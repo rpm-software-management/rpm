@@ -17,6 +17,7 @@
 #include "header_internal.h"
 
 #include "header-py.h"
+#include "rpmds-py.h"
 
 /** \ingroup python
  * \class header
@@ -37,28 +38,33 @@
  * 	import os, rpm
  *  
  * 	fd = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
- * 	(header, isSource) = rpm.headerFromPackage(fd)
- * 	fd.close()
+ * 	hdr = rpm.headerFromPackage(fd)[0]
+ * 	os.close(fd)
  * \endcode
+ *
  * The Python interface to the header data is quite elegant.  It
  * presents the data in a dictionary form.  We'll take the header we
  * just loaded and access the data within it:
  * \code
- * 	print header[rpm.RPMTAG_NAME]
- * 	print header[rpm.RPMTAG_VERSION]
- * 	print header[rpm.RPMTAG_RELEASE]
+ * 	print hdr[rpm.RPMTAG_NAME]
+ * 	print hdr[rpm.RPMTAG_VERSION]
+ * 	print hdr[rpm.RPMTAG_RELEASE]
  * \endcode
- * in the case of our "foor-1.0-1.i386.rpm" package, this code would
+ * in the case of our "foo-1.0-1.i386.rpm" package, this code would
  * output:
 \verbatim
   	foo
   	1.0
   	1
 \endverbatim
+ *
  * You make also access the header data by string name:
  * \code
- * 	print header['name']
+ * 	print hdr['name']
+ * 	print hdr['version']
+ * 	print hdr['release']
  * \endcode
+ *
  * This method of access is a bit slower because the name must be
  * translated into the tag number dynamically. You also must make sure
  * the strings in header lookups don't get translated, or the lookups
@@ -532,6 +538,9 @@ static struct PyMethodDef hdrMethods[] = {
 	{"fullFilelist",	(PyCFunction) hdrFullFilelist,	1 },
 	{"rhnUnload",	(PyCFunction) rhnUnload, METH_VARARGS },
 	{"sprintf",     (PyCFunction) hdrSprintf, METH_VARARGS },
+
+ {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS,	NULL},
+
 	{NULL,		NULL}		/* sentinel */
 };
 
