@@ -499,6 +499,7 @@ exit 0
 * Sun Jan  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.4
 - upgrade to db-4.3.27.
 - revert MAGIC_COMPRESS, real fix is in libmagic (#143782).
+- upgrade to file-4.12 internal.
 
 * Tue Dec  7 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.3
 - use package color as Obsoletes: color.
