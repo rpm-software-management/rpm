@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Constants.xs,v 1.4 2000/06/14 09:26:22 rjray Exp $";
+static char * const rcsid = "$Id: Constants.xs,v 1.5 2000/08/07 09:31:23 rjray Exp $";
 
 static int
 not_here(pTHX_ char *s)
@@ -876,12 +876,6 @@ constant(pTHX_ char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_EPOCH"))
-#ifdef RPMTAG_EPOCH
-            return RPMTAG_EPOCH;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_EXCLUDEARCH"))
 #ifdef RPMTAG_EXCLUDEARCH
             return RPMTAG_EXCLUDEARCH;
@@ -1161,12 +1155,6 @@ constant(pTHX_ char *name, int arg)
         if (strEQ(name, "RPMTAG_REQUIREVERSION"))
 #ifdef RPMTAG_REQUIREVERSION
             return RPMTAG_REQUIREVERSION;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_ROOT"))
-#ifdef RPMTAG_ROOT
-            return RPMTAG_ROOT;
 #else
             goto not_there;
 #endif
