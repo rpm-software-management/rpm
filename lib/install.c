@@ -326,6 +326,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     char * chptr;
     char ** args;
     int len;
+    int childDead = 0;
 
     /* fd should be a gzipped cpio archive */
 
@@ -401,21 +402,26 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     }
 
     do {
+	if (waitpid(child, &status, WNOHANG)) childDead = 1;
+	
 	bytesRead = gzread(stream, buf, sizeof(buf));
 	if (write(p[1], buf, bytesRead) != bytesRead) {
 	     cpioFailed = 1;
+	     childDead = 1;
 	     kill(SIGTERM, child);
 	}
 
 	if (needSecondPipe) {
 	    bytes = read(statusPipe[0], line, sizeof(line));
+
 	    while (bytes > 0) {
 		fileInstalled.fileName = line;
 
 		while ((chptr = (strchr(fileInstalled.fileName, '\n')))) {
 		    *chptr = '\0';
 
-		    message(MESS_DEBUG, "file \"%s\" complete\n", line);
+		    message(MESS_DEBUG, "file \"%s\" complete\n", 
+				fileInstalled.fileName);
 
 		    if (notify) {
 			file = bsearch(&fileInstalled, files, fileCount, 
@@ -446,7 +452,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 		bytes = read(statusPipe[0], line, sizeof(line));
 	    }
 	}
-    } while (bytesRead);
+    } while (!childDead);
 
     gzclose(stream);
     close(p[1]);
