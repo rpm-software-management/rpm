@@ -63,19 +63,19 @@ extern BEECRYPTAPI const randomGenerator mtprng;
  */
 BEECRYPTAPI
 int mtprngSetup  (mtprngParam* mp)
-	/*@*/;
+	/*@modifies mp @*/;
 
 /*
  */
 BEECRYPTAPI
 int mtprngSeed   (mtprngParam* mp, const byte* data, size_t size)
-	/*@*/;
+	/*@modifies mp @*/;
 
 /*
  */
 BEECRYPTAPI
 int mtprngNext   (mtprngParam* mp, byte* data, size_t size)
-	/*@*/;
+	/*@modifies mp, data @*/;
 
 /*
  */

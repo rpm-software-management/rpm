@@ -18,7 +18,7 @@ extern "C" {
 
 BEECRYPTAPI
 int pkcs12_derive_key(const hashFunction* h, byte id, const byte* pdata, size_t psize, const byte* sdata, size_t ssize, size_t iterationcount, byte* ndata, size_t nsize)
-	/*@*/;
+	/*@modifies ndata @*/;
 
 #ifdef __cplusplus
 }

@@ -48,7 +48,7 @@ const randomGenerator fips186prng = {
 };
 
 static int fips186init(register sha1Param* p)
-	/*@*/
+	/*@modifies p @*/
 {
 	memcpy(p->h, fips186hinit, 5 * sizeof(uint32_t));
 	return 0;

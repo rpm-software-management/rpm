@@ -38,16 +38,16 @@ extern "C" {
 /* not used directly as keyed hash function, but instead used as generic methods */
 
 BEECRYPTAPI
-int hmacSetup (      byte*,       byte*, const hashFunction*, hashFunctionParam*, const byte*, size_t)
+int hmacSetup (      byte* kxi,       byte* kxo, const hashFunction* hash, hashFunctionParam* param, const byte* key, size_t keybits)
+	/*@modifies kxi, kxo @*/;
+BEECRYPTAPI
+int hmacReset (const byte* kxi,              const hashFunction* hash, hashFunctionParam* param)
 	/*@*/;
 BEECRYPTAPI
-int hmacReset (const byte*,              const hashFunction*, hashFunctionParam*)
+int hmacUpdate(                          const hashFunction* hash, hashFunctionParam* param, const byte* data, size_t size)
 	/*@*/;
 BEECRYPTAPI
-int hmacUpdate(                          const hashFunction*, hashFunctionParam*, const byte*, size_t)
-	/*@*/;
-BEECRYPTAPI
-int hmacDigest(             const byte*, const hashFunction*, hashFunctionParam*, byte*)
+int hmacDigest(             const byte* kxo, const hashFunction* hash, hashFunctionParam* param, byte* data)
 	/*@*/;
 
 #ifdef __cplusplus

@@ -237,7 +237,7 @@ int sha1Update(sha1Param* sp, const byte* data, size_t size)
 }
 
 static void sha1Finish(sha1Param* sp)
-	/*@*/
+	/*@modifies sp @*/
 {
 	register byte *ptr = ((byte *) sp->data) + sp->offset++;
 

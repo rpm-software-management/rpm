@@ -87,7 +87,7 @@ void mpcopy(size_t size, mpw* dest, const mpw* src)
 #else
 BEECRYPTAPI
 void mpmove(size_t size, mpw* dest, const mpw* src)
-	/*@*/;
+	/*@modifies dest @*/;
 #endif
 
 /*!\fn void mpzero(size_t size, mpw* data)
@@ -97,7 +97,7 @@ void mpmove(size_t size, mpw* dest, const mpw* src)
  */
 BEECRYPTAPI
 void mpzero(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data @*/;
 
 /*!\fn void mpfill(size_t size, mpw* data, mpw fill)
  * \brief This function fills each word of a multi-precision integer with a
@@ -108,7 +108,7 @@ void mpzero(size_t size, mpw* data)
  */
 BEECRYPTAPI
 void mpfill(size_t size, mpw* data, mpw fill)
-	/*@*/;
+	/*@modifies data @*/;
 
 /*!\fn int mpodd(size_t size, const mpw* data)
  * \brief This functions tests if a multi-precision integer is odd.
@@ -405,7 +405,7 @@ int mplsbset(size_t size, const mpw* data)
  */
 BEECRYPTAPI
 void mpsetmsb(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data */;
 
 /*!\fn void mpsetlsb(size_t size, mpw* data)
  * \brief This function sets the least significant bit of a multi-precision
@@ -415,7 +415,7 @@ void mpsetmsb(size_t size, mpw* data)
  */
 BEECRYPTAPI
 void mpsetlsb(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data */;
 
 /*!\fn void mpclrmsb(size_t size, mpw* data)
  * \brief This function clears the most significant bit of a multi-precision
@@ -425,7 +425,7 @@ void mpsetlsb(size_t size, mpw* data)
  */
 BEECRYPTAPI
 void mpclrmsb(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data */;
 
 /*!\fn void mpclrlsb(size_t size, mpw* data)
  * \brief This function clears the least significant bit of a multi-precision
@@ -435,7 +435,7 @@ void mpclrmsb(size_t size, mpw* data)
  */
 BEECRYPTAPI
 void mpclrlsb(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data */;
 
 /*!\fn mpand(size_t size, mpw* xdata, const mpw* ydata)
  * \brief This function computes the bit-wise AND of two multi-precision
@@ -446,7 +446,7 @@ void mpclrlsb(size_t size, mpw* data)
  */
 BEECRYPTAPI
 void mpand(size_t size, mpw* xdata, const mpw* ydata)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn void mpor(size_t size, mpw* xdata, const mpw* ydata) 
  * \brief This function computes the bit-wise OR of two multi-precision
@@ -457,7 +457,7 @@ void mpand(size_t size, mpw* xdata, const mpw* ydata)
  */
 BEECRYPTAPI
 void mpor(size_t size, mpw* xdata, const mpw* ydata)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn void mpxor(size_t size, mpw* xdata, const mpw* ydata) 
  * \brief This function computes the bit-wise XOR of two multi-precision
@@ -468,7 +468,7 @@ void mpor(size_t size, mpw* xdata, const mpw* ydata)
  */
 BEECRYPTAPI
 void mpxor(size_t size, mpw* xdata, const mpw* ydata)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn mpnot(size_t size, mpw* data)
  * \brief This function flips all bits of a multi-precision integer.
@@ -477,7 +477,7 @@ void mpxor(size_t size, mpw* xdata, const mpw* ydata)
  */
 BEECRYPTAPI
 void mpnot(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data @*/;
 
 /*!\fn void mpsetw(size_t size, mpw* xdata, mpw y)
  * \brief This function sets the value of a multi-precision integer to the
@@ -489,7 +489,7 @@ void mpnot(size_t size, mpw* data)
  */
 BEECRYPTAPI
 void mpsetw(size_t size, mpw* xdata, mpw y)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn void mpsetx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
  * \brief This function set the value of the first multi-precision integer
@@ -501,7 +501,7 @@ void mpsetw(size_t size, mpw* xdata, mpw y)
  * \param ydata The second multi-precision integer.
  */
 void mpsetx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn int mpaddw(size_t size, mpw* xdata, mpw y)
  * \brief This function adds one word to a multi-precision integer.
@@ -513,7 +513,7 @@ void mpsetx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
  */
 BEECRYPTAPI
 int mpaddw(size_t size, mpw* xdata, mpw y)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn int mpadd(size_t size, mpw* xdata, const mpw* ydata)
  * \brief This function adds two multi-precision integers of equal size.
@@ -525,7 +525,7 @@ int mpaddw(size_t size, mpw* xdata, mpw y)
  */
 BEECRYPTAPI
 int mpadd (size_t size, mpw* xdata, const mpw* ydata)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn int mpaddx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
  * \brief This function adds two multi-precision integers of different size.
@@ -538,7 +538,7 @@ int mpadd (size_t size, mpw* xdata, const mpw* ydata)
  */
 BEECRYPTAPI
 int mpaddx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn int mpsubw(size_t size, mpw* xdata, mpw y)
  * \brief This function subtracts one word to a multi-precision integer.
@@ -550,7 +550,7 @@ int mpaddx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
  */
 BEECRYPTAPI
 int mpsubw(size_t size, mpw* xdata, mpw y)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn int mpsub(size_t size, mpw* xdata, const mpw* ydata)
  * \brief This function subtracts two multi-precision integers of equal size.
@@ -562,7 +562,7 @@ int mpsubw(size_t size, mpw* xdata, mpw y)
  */
 BEECRYPTAPI
 int mpsub (size_t size, mpw* xdata, const mpw* ydata)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 /*!\fn int mpsubx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
  * \brief This function subtracts two multi-precision integers of different
@@ -575,11 +575,11 @@ int mpsub (size_t size, mpw* xdata, const mpw* ydata)
  */
 BEECRYPTAPI
 int mpsubx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
-	/*@*/;
+	/*@modifies xdata @*/;
 
 BEECRYPTAPI
 int mpmultwo(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data @*/;
 
 /*!\fn void mpneg(size_t size, mpw* data)
  * \brief This function negates a multi-precision integer.
@@ -588,7 +588,7 @@ int mpmultwo(size_t size, mpw* data)
  */
 BEECRYPTAPI
 void mpneg(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data @*/;
 
 /*!\fn size_t mpsize(size_t size, const mpw* data)
  * \brief This function returns the true size of a multi-precision
@@ -620,27 +620,27 @@ size_t mplszcnt(size_t size, const mpw* data)
 
 BEECRYPTAPI
 void mplshift(size_t size, mpw* data, size_t count)
-	/*@*/;
+	/*@modifies data @*/;
 
 BEECRYPTAPI
 void mprshift(size_t size, mpw* data, size_t count)
-	/*@*/;
+	/*@modifies data @*/;
 
 BEECRYPTAPI
 size_t mprshiftlsz(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data @*/;
 
 BEECRYPTAPI
 size_t mpnorm(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data @*/;
 
 BEECRYPTAPI
 void mpdivtwo (size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data @*/;
 
 BEECRYPTAPI
 void mpsdivtwo(size_t size, mpw* data)
-	/*@*/;
+	/*@modifies data @*/;
 
 /*!\fn mpw mpsetmul(size_t size, mpw* result, const mpw* data, mpw y)
  * \brief This function performs a multi-precision multiply-setup.
@@ -658,7 +658,7 @@ void mpsdivtwo(size_t size, mpw* data)
  */
 BEECRYPTAPI
 mpw mpsetmul   (size_t size, mpw* result, const mpw* data, mpw y)
-	/*@*/;
+	/*@modifies result @*/;
 
 /*!\fn mpw mpaddmul(size_t size, mpw* result, const mpw* data, mpw y)
  * \brief This function performs a mult-precision multiply-accumulate.
@@ -675,7 +675,7 @@ mpw mpsetmul   (size_t size, mpw* result, const mpw* data, mpw y)
  */
 BEECRYPTAPI
 mpw mpaddmul   (size_t size, mpw* result, const mpw* data, mpw y)
-	/*@*/;
+	/*@modifies result @*/;
 
 /*!\fn void mpaddsqrtrc(size_t size, mpw* result, const mpw* data)
  * \brief This function is used in the calculation of a multi-precision
@@ -683,41 +683,41 @@ mpw mpaddmul   (size_t size, mpw* result, const mpw* data, mpw y)
  */
 BEECRYPTAPI
 void mpaddsqrtrc(size_t size, mpw* result, const mpw* data)
-	/*@*/;
+	/*@modifies result @*/;
 
 /*!\fn void mpmul(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata)
  * \brief This function computes a full multi-precision product.
  */
 BEECRYPTAPI
 void mpmul(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata)
-	/*@*/;
+	/*@modifies result @*/;
 
 /*!\fn void mpsqr(mpw* result, size_t size, const mpw* data)
  * \brief This function computes a full multi-precision square.
  */
 BEECRYPTAPI
 void mpsqr(mpw* result, size_t size, const mpw* data)
-	/*@*/;
+	/*@modifies result @*/;
 
 BEECRYPTAPI
 void mpgcd_w(size_t size, const mpw* xdata, const mpw* ydata, mpw* result, mpw* wksp)
-	/*@*/;
+	/*@modifies result, wksp @*/;
 
 BEECRYPTAPI
 int  mpextgcd_w(size_t size, const mpw* xdata, const mpw* ydata, mpw* result, mpw* wksp)
-	/*@*/;
+	/*@modifies result, wksp @*/;
 
 BEECRYPTAPI
 mpw mppndiv(mpw xhi, mpw xlo, mpw y)
 	/*@*/;
 
 BEECRYPTAPI
-void mpmod (mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw*ydata, mpw* wksp)
-	/*@*/;
+void mpmod (mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw*ydata, mpw* workspace)
+	/*@modifies result, workspace @*/;
 
 BEECRYPTAPI
-void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* wksp)
-	/*@*/;
+void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* workspace)
+	/*@modifies result, workspace @*/;
 
 /*
  * Output Routines
@@ -733,11 +733,11 @@ void mpprintln(size_t size, const mpw* data)
 
 BEECRYPTAPI
 void mpfprint(FILE* f, size_t size, const mpw* data)
-	/*@*/;
+	/*@modifies f @*/;
 
 BEECRYPTAPI
 void mpfprintln(FILE* f, size_t size, const mpw* data)
-	/*@*/;
+	/*@modifies f @*/;
 
 /*
  * Conversion Routines
@@ -745,15 +745,15 @@ void mpfprintln(FILE* f, size_t size, const mpw* data)
 
 BEECRYPTAPI
 int os2ip(mpw* idata, size_t isize, const byte* osdata, size_t ossize)
-	/*@*/;
+	/*@modifies idata @*/;
 
 BEECRYPTAPI
 int i2osp(byte* osdata, size_t ossize, const mpw* idata, size_t isize)
-	/*@*/;
+	/*@modifies osdata @*/;
 
 BEECRYPTAPI
 int hs2ip(mpw* idata, size_t isize, const char* hsdata, size_t hssize)
-	/*@*/;
+	/*@modifies idata @*/;
 
 #ifdef __cplusplus
 }

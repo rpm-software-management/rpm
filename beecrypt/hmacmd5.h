@@ -45,16 +45,16 @@ extern "C" {
 extern BEECRYPTAPI const keyedHashFunction hmacmd5;
 
 BEECRYPTAPI
-int hmacmd5Setup (hmacmd5Param*, const byte*, size_t)
+int hmacmd5Setup (hmacmd5Param* sp, const byte* key, size_t keybits)
+	/*@modifies sp @*/;
+BEECRYPTAPI
+int hmacmd5Reset (hmacmd5Param* sp)
 	/*@*/;
 BEECRYPTAPI
-int hmacmd5Reset (hmacmd5Param*)
+int hmacmd5Update(hmacmd5Param* sp, const byte* data, size_t size)
 	/*@*/;
 BEECRYPTAPI
-int hmacmd5Update(hmacmd5Param*, const byte*, size_t)
-	/*@*/;
-BEECRYPTAPI
-int hmacmd5Digest(hmacmd5Param*, byte*)
+int hmacmd5Digest(hmacmd5Param* sp, byte* data)
 	/*@*/;
 
 #ifdef __cplusplus

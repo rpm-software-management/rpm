@@ -34,10 +34,10 @@
 /*!\addtogroup DL_m
  * \{
  */
-static int dldp_pgoqGenerator_w(dldp_p*, randomGeneratorContext*, mpw*)
-	/*@*/;
-static int dldp_pgonGenerator_w(dldp_p*, randomGeneratorContext*, mpw*)
-	/*@*/;
+static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, mpw* wksp)
+	/*@modifies dp, wksp @*/;
+static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, mpw* wksp)
+	/*@modifies dp, wksp @*/;
 
 int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mpnumber* x)
 {

@@ -101,7 +101,8 @@ int entropy_provider_cleanup()
  * return an error in case they are all zeroes or ones.
  */
 static int entropy_noise_filter(void* sampledata, int samplecount, int samplesize, int channels, int swap)
-	/*@*/
+	/*@globals errno @*/
+	/*@modifies sampledata, errno @*/
 {
 	register int rc = 0, i;
 
@@ -284,7 +285,8 @@ static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, in
 #else
 static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, byte* data, size_t size)
 #endif
-	/*@*/
+	/*@globals errno @*/
+	/*@modifies errno @*/
 {
 	size_t randombits = size << 3;
 	byte temp = 0;
@@ -832,7 +834,7 @@ static int opendevice(const char *device)
 /*!\ingroup ES_random_m ES_urandom_m
  */
 static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
-	/*@*/
+	/*@modifies data @*/
 {
 	register int rc;
 
@@ -932,7 +934,7 @@ static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
 /*!\ingroup ES_tty_m
  */
 static int entropy_ttybits(int fd, byte* data, size_t size)
-	/*@*/
+	/*@modifies data @*/
 {
 	byte dummy;
 
@@ -1064,6 +1066,8 @@ static int entropy_ttybits(int fd, byte* data, size_t size)
 /*!\ingroup ES_audio_m
  */
 int entropy_dev_audio(byte* data, size_t size)
+	/*@globals dev_audio_fd @*/
+	/*@modifies dev_audio_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_AUDIO_TIMEOUT");
 
@@ -1156,6 +1160,8 @@ dev_audio_end:
 /*!\ingroup ES_dsp_m
  */
 int entropy_dev_dsp(byte* data, size_t size)
+	/*@globals dev_dsp_fd @*/
+	/*@modifies dev_dsp_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_DSP_TIMEOUT");
 
@@ -1278,6 +1284,8 @@ dev_dsp_end:
 /*!\ingroup ES_random_m
  */
 int entropy_dev_random(byte* data, size_t size)
+	/*@globals dev_random_fd @*/
+	/*@modifies dev_random_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_RANDOM_TIMEOUT");
 
@@ -1322,6 +1330,8 @@ dev_random_end:
 /*!\ingroup ES_urandom_m
  */
 int entropy_dev_urandom(byte* data, size_t size)
+	/*@globals dev_urandom_fd @*/
+	/*@modifies dev_urandom_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_URANDOM_TIMEOUT");
 
@@ -1366,6 +1376,8 @@ dev_urandom_end:
 /*!\ingroup ES_tty_m
  */
 int entropy_dev_tty(byte* data, size_t size)
+	/*@globals dev_tty_fd @*/
+	/*@modifies dev_tty_fd @*/
 {
 	register int rc;
 

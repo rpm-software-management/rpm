@@ -388,6 +388,7 @@ void mpbsubone(const mpbarrett* b, mpw* result)
  *  computes the negative (modulo b) of x, where x must contain a value between 0 and b-1
  */
 void mpbneg(const mpbarrett* b, const mpw* data, mpw* result)
+	/*@modifies result @*/
 {
 	register size_t size = b->size;
 
@@ -507,6 +508,7 @@ void mpbsqrmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result
  *  needs workspace (4*size+2)
  */
 void mpbslide_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* slide, mpw* wksp)
+	/*@modifies slide, wksp @*/
 {
 	register size_t size = b->size;
 	mpbsqrmod_w(b, xsize, xdata,                     slide       , wksp); /* x^2 mod b, temp */

@@ -54,24 +54,24 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int dlpk_pInit(dlpk_p*)
-	/*@*/;
+int dlpk_pInit(dlpk_p* pk)
+	/*@modifies pk @*/;
 BEECRYPTAPI
-int dlpk_pFree(dlpk_p*)
-	/*@*/;
+int dlpk_pFree(dlpk_p* pk)
+	/*@modifies pk @*/;
 BEECRYPTAPI
-int dlpk_pCopy(dlpk_p*, const dlpk_p*)
+int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
+	/*@modifies dst @*/;
+
+BEECRYPTAPI
+int  dlpk_pEqual(const dlpk_p* a, const dlpk_p* b)
 	/*@*/;
 
 BEECRYPTAPI
-int  dlpk_pEqual(const dlpk_p*, const dlpk_p*)
-	/*@*/;
-
-BEECRYPTAPI
-int  dlpk_pgoqValidate(const dlpk_p*, randomGeneratorContext*, int cofactor)
+int  dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofactor)
 	/*@*/;
 BEECRYPTAPI
-int  dlpk_pgonValidate(const dlpk_p*, randomGeneratorContext*)
+int  dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
 	/*@*/;
 
 #ifdef __cplusplus

@@ -45,16 +45,16 @@ extern "C" {
 extern BEECRYPTAPI const keyedHashFunction hmacsha1;
 
 BEECRYPTAPI
-int hmacsha1Setup (hmacsha1Param*, const byte*, size_t)
+int hmacsha1Setup (hmacsha1Param* sp, const byte* key, size_t keybits)
+	/*@modifies sp @*/;
+BEECRYPTAPI
+int hmacsha1Reset (hmacsha1Param* sp)
 	/*@*/;
 BEECRYPTAPI
-int hmacsha1Reset (hmacsha1Param*)
+int hmacsha1Update(hmacsha1Param* sp, const byte* data, size_t size)
 	/*@*/;
 BEECRYPTAPI
-int hmacsha1Update(hmacsha1Param*, const byte*, size_t)
-	/*@*/;
-BEECRYPTAPI
-int hmacsha1Digest(hmacsha1Param*, byte*)
+int hmacsha1Digest(hmacsha1Param* sp, byte* data)
 	/*@*/;
 
 #ifdef __cplusplus

@@ -37,27 +37,27 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int  mpptrials     (size_t)
+int  mpptrials     (size_t bits)
 	/*@*/;
 BEECRYPTAPI
-int  mppmilrab_w   (const mpbarrett*, randomGeneratorContext*, int, mpw*)
-	/*@*/;
+int  mppmilrab_w   (const mpbarrett* p, randomGeneratorContext* rc, int t, mpw* wksp)
+	/*@modifies wksp @*/;
 
 BEECRYPTAPI
-int  mpprnd_w      (mpbarrett*, randomGeneratorContext*, size_t, int, const mpnumber*, mpw*)
-	/*@*/;
+int  mpprnd_w      (mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpnumber* f, mpw* wksp)
+	/*@modifies p, wksp @*/;
 BEECRYPTAPI
-int  mpprndr_w     (mpbarrett*, randomGeneratorContext*, size_t, int, const mpnumber*, const mpnumber*, const mpnumber*, mpw*)
-	/*@*/;
+int  mpprndr_w     (mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpnumber* min, const mpnumber* max, const mpnumber* f, mpw* wksp)
+	/*@modifies p, wksp @*/;
 BEECRYPTAPI
-void mpprndsafe_w  (mpbarrett*, randomGeneratorContext*, size_t, int, mpw*)
-	/*@*/;
+void mpprndsafe_w  (mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, mpw* wksp)
+	/*@modifies p, wksp @*/;
 BEECRYPTAPI
 void mpprndcon_w   (mpbarrett*, randomGeneratorContext*, size_t, int, const mpnumber*, const mpnumber*, const mpnumber*, mpnumber*, mpw*)
 	/*@*/;
 BEECRYPTAPI
-void mpprndconone_w(mpbarrett*, randomGeneratorContext*, size_t, int, const mpbarrett*, const mpnumber*, mpnumber*, int, mpw*)
-	/*@*/;
+void mpprndconone_w(mpbarrett* p, randomGeneratorContext* rc, size_t bits, int t, const mpbarrett* q, const mpnumber* f, mpnumber* r, int cofactor, mpw* wksp)
+	/*@modifies p, r, wksp @*/;
 
 #ifdef __cplusplus
 }

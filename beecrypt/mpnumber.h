@@ -73,49 +73,49 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-void mpnzero(mpnumber*)
-	/*@*/;
+void mpnzero(mpnumber* n)
+	/*@modifies n @*/;
 BEECRYPTAPI
-void mpnsize(mpnumber*, size_t)
-	/*@*/;
+void mpnsize(mpnumber* n, size_t size)
+	/*@modifies n @*/;
 BEECRYPTAPI
-void mpninit(mpnumber*, size_t, const mpw*)
-	/*@*/;
+void mpninit(mpnumber* n, size_t size, const mpw* data)
+	/*@modifies n @*/;
 BEECRYPTAPI
-void mpnfree(mpnumber*)
-	/*@*/;
+void mpnfree(mpnumber* n)
+	/*@modifies n @*/;
 BEECRYPTAPI
-void mpncopy(mpnumber*, const mpnumber*)
-	/*@*/;
+void mpncopy(mpnumber* n, const mpnumber* copy)
+	/*@modifies n @*/;
 BEECRYPTAPI
-void mpnwipe(mpnumber*)
-	/*@*/;
+void mpnwipe(mpnumber* n)
+	/*@modifies n @*/;
 
 BEECRYPTAPI
-void mpnset   (mpnumber*, size_t, const mpw*)
-	/*@*/;
+void mpnset   (mpnumber* n, size_t size, const mpw* data)
+	/*@modifies n @*/;
 BEECRYPTAPI
-void mpnsetw  (mpnumber*, mpw)
-	/*@*/;
+void mpnsetw  (mpnumber* n, mpw val)
+	/*@modifies n @*/;
 
 BEECRYPTAPI
-int mpnsetbin(mpnumber*, const byte*, size_t)
-	/*@*/;
+int mpnsetbin(mpnumber* n, const byte* osdata, size_t ossize)
+	/*@modifies n @*/;
 BEECRYPTAPI
-int mpnsethex(mpnumber*, const char*)
-	/*@*/;
+int mpnsethex(mpnumber* n, const char* hex)
+	/*@modifies n @*/;
 
 BEECRYPTAPI
-int  mpninv(mpnumber*, const mpnumber*, const mpnumber*)
-	/*@*/;
+int  mpninv(mpnumber* inv, const mpnumber* k, const mpnumber* mod)
+	/*@modifies inv @*/;
 
 /*!\brief Truncate the mpnumber to the specified number of (least significant) bits.
  */
 BEECRYPTAPI
-size_t mpntrbits(mpnumber*, size_t)
-	/*@*/;
+size_t mpntrbits(mpnumber* n, size_t bits)
+	/*@modifies n @*/;
 BEECRYPTAPI
-size_t mpnbits(const mpnumber*)
+size_t mpnbits(const mpnumber* n)
 	/*@*/;
 
 #ifdef __cplusplus

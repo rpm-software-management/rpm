@@ -47,6 +47,7 @@ memchunk* memchunkAlloc(size_t size)
 }
 
 void memchunkInit(memchunk* m)
+	/*@modifies m @*/
 {
 	m->data = (byte*) 0;
 	m->size = 0;

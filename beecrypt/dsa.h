@@ -63,7 +63,7 @@ extern "C" {
  */
 BEECRYPTAPI
 int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext*, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
-	/*@*/;
+	/*@modifies r, s @*/;
 
 /*!\fn int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
  * \brief This function performs a raw DSA verification.
@@ -103,8 +103,8 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
  * \retval -1 on failure.
  */
 BEECRYPTAPI
-int dsaparamMake(dsaparam*, randomGeneratorContext*, size_t)
-	/*@*/;
+int dsaparamMake(dsaparam* dp, randomGeneratorContext* rgc, size_t psize)
+	/*@modifies dp @*/;
 
 #ifdef __cplusplus
 }

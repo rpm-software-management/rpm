@@ -126,8 +126,8 @@ const entropySource*	entropySourceDefault(void)
  * \retval -1 On failure.
  */
 BEECRYPTAPI
-int						entropyGatherNext(byte*, size_t)
-	/*@*/;
+int						entropyGatherNext(byte* data, size_t size)
+	/*@modifies data @*/;
 
 #ifdef __cplusplus
 }
@@ -228,10 +228,10 @@ BEECRYPTAPI
 int						randomGeneratorCount(void)
 	/*@*/;
 BEECRYPTAPI
-const randomGenerator*	randomGeneratorGet(int)
+const randomGenerator*	randomGeneratorGet(int index)
 	/*@*/;
 BEECRYPTAPI
-const randomGenerator*	randomGeneratorFind(const char*)
+const randomGenerator*	randomGeneratorFind(const char* name)
 	/*@*/;
 BEECRYPTAPI
 const randomGenerator*	randomGeneratorDefault(void)
@@ -277,17 +277,17 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int randomGeneratorContextInit(randomGeneratorContext*, const randomGenerator*)
-	/*@*/;
+int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerator* rng)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int randomGeneratorContextFree(randomGeneratorContext*)
-	/*@*/;
+int randomGeneratorContextFree(randomGeneratorContext* ctxt)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int randomGeneratorContextNext(randomGeneratorContext*, byte*, size_t)
-	/*@*/;
+int randomGeneratorContextNext(randomGeneratorContext* ctxt, byte* data, size_t size)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int randomGeneratorContextSeed(randomGeneratorContext*, const byte*, size_t)
-	/*@*/;
+int randomGeneratorContextSeed(randomGeneratorContext* ctxt, const byte* data, size_t size)
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }
@@ -360,10 +360,10 @@ BEECRYPTAPI
 int					hashFunctionCount(void)
 	/*@*/;
 BEECRYPTAPI
-const hashFunction*	hashFunctionGet(int)
+const hashFunction*	hashFunctionGet(int index)
 	/*@*/;
 BEECRYPTAPI
-const hashFunction*	hashFunctionFind(const char*)
+const hashFunction*	hashFunctionFind(const char* name)
 	/*@*/;
 BEECRYPTAPI
 const hashFunction*	hashFunctionDefault(void)
@@ -408,32 +408,32 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int hashFunctionContextInit(hashFunctionContext*, const hashFunction*)
-	/*@*/;
+int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int hashFunctionContextFree(hashFunctionContext*)
-	/*@*/;
+int hashFunctionContextFree(hashFunctionContext* ctxt)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int hashFunctionContextReset(hashFunctionContext*)
-	/*@*/;
+int hashFunctionContextReset(hashFunctionContext* ctxt)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int hashFunctionContextUpdate(hashFunctionContext*, const byte*, size_t)
-	/*@*/;
+int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, size_t size)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int hashFunctionContextUpdateMC(hashFunctionContext*, const memchunk*)
-	/*@*/;
+int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int hashFunctionContextUpdateMP(hashFunctionContext*, const mpnumber*)
-	/*@*/;
+int hashFunctionContextUpdateMP(hashFunctionContext* ctxt, const mpnumber* n)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int hashFunctionContextDigest(hashFunctionContext*, byte*)
-	/*@*/;
+int hashFunctionContextDigest(hashFunctionContext* ctxt, byte* digest)
+	/*@modifies ctxt, digest @*/;
 BEECRYPTAPI
-int hashFunctionContextDigestMP(hashFunctionContext*, mpnumber*)
-	/*@*/;
+int hashFunctionContextDigestMP(hashFunctionContext* ctxt, mpnumber* d)
+	/*@modifies ctxt, d @*/;
 BEECRYPTAPI
-int hashFunctionContextDigestMatch(hashFunctionContext*, const mpnumber*)
-	/*@*/;
+int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber*)
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }
@@ -516,10 +516,10 @@ BEECRYPTAPI
 int							keyedHashFunctionCount(void)
 	/*@*/;
 BEECRYPTAPI
-const keyedHashFunction*	keyedHashFunctionGet(int)
+const keyedHashFunction*	keyedHashFunctionGet(int index)
 	/*@*/;
 BEECRYPTAPI
-const keyedHashFunction*	keyedHashFunctionFind(const char*)
+const keyedHashFunction*	keyedHashFunctionFind(const char* name)
 	/*@*/;
 BEECRYPTAPI
 const keyedHashFunction*	keyedHashFunctionDefault(void)
@@ -564,35 +564,35 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int keyedHashFunctionContextInit(keyedHashFunctionContext*, const keyedHashFunction*)
-	/*@*/;
+int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHashFunction* mac)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextFree(keyedHashFunctionContext*)
-	/*@*/;
+int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextSetup(keyedHashFunctionContext*, const byte*, size_t)
-	/*@*/;
+int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const byte* key, size_t keybits)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextReset(keyedHashFunctionContext*)
-	/*@*/;
+int keyedHashFunctionContextReset(keyedHashFunctionContext* ctxt)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextUpdate(keyedHashFunctionContext*, const byte*, size_t)
-	/*@*/;
+int keyedHashFunctionContextUpdate(keyedHashFunctionContext* ctxt, const byte* data, size_t size)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext*, const memchunk*)
-	/*@*/;
+int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memchunk* m)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext*, const mpnumber*)
-	/*@*/;
+int keyedHashFunctionContextUpdateMP(keyedHashFunctionContext* ctxt, const mpnumber* n)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextDigest(keyedHashFunctionContext*, byte*)
-	/*@*/;
+int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, byte* digest)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextDigestMP(keyedHashFunctionContext*, mpnumber*)
-	/*@*/;
+int keyedHashFunctionContextDigestMP(keyedHashFunctionContext* ctxt, mpnumber* d)
+	/*@modifies ctxt, d @*/;
 BEECRYPTAPI
-int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext*, const mpnumber*)
-	/*@*/;
+int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mpnumber* d)
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }
@@ -766,7 +766,7 @@ int						blockCipherCount(void)
  *  range.
  */
 BEECRYPTAPI
-const blockCipher*		blockCipherGet(int)
+const blockCipher*		blockCipherGet(int index)
 	/*@*/;
 
 /*!\fn const blockCIiher* blockCipherFind(const char* name)
@@ -775,7 +775,7 @@ const blockCipher*		blockCipherGet(int)
  * \return A pointer to a blockcipher or null, if the name wasn't found.
  */
 BEECRYPTAPI
-const blockCipher*		blockCipherFind(const char*)
+const blockCipher*		blockCipherFind(const char* name)
 	/*@*/;
 
 /*!\fn const blockCipher* blockCipherDefault()
@@ -835,28 +835,28 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int blockCipherContextInit(blockCipherContext*, const blockCipher*)
-	/*@*/;
+int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
+	/*@modifies ctxt @*/;
 
 BEECRYPTAPI
-int blockCipherContextSetup(blockCipherContext*, const byte*, size_t, cipherOperation)
-	/*@*/;
+int blockCipherContextSetup(blockCipherContext* ctxt, const byte* key, size_t keybits, cipherOperation op)
+	/*@modifies ctxt @*/;
 
 BEECRYPTAPI
-int blockCipherContextSetIV(blockCipherContext*, const byte*)
-	/*@*/;
+int blockCipherContextSetIV(blockCipherContext* ctxt, const byte* iv)
+	/*@modifies ctxt @*/;
 
 BEECRYPTAPI
-int blockCipherContextFree(blockCipherContext*)
-	/*@*/;
+int blockCipherContextFree(blockCipherContext* ctxt)
+	/*@modifies ctxt @*/;
 
 BEECRYPTAPI
-int blockCipherContextECB(blockCipherContext*, uint32_t*, const uint32_t*, int)
-	/*@*/;
+int blockCipherContextECB(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, int nblocks)
+	/*@modifies ctxt, dst @*/;
 
 BEECRYPTAPI
-int blockCipherContextCBC(blockCipherContext*, uint32_t*, const uint32_t*, int)
-	/*@*/;
+int blockCipherContextCBC(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, int nblocks)
+	/*@modifies ctxt, dst @*/;
 
 #ifdef __cplusplus
 }

@@ -73,7 +73,7 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
  */
 BEECRYPTAPI
 int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, unsigned int nblocks)
-	/*@*/;
+	/*@modifies dst @*/;
 
 /*!\fn int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, unsigned int nblocks)
  * \brief This function decrypts a number of data blocks in Cipher Block
@@ -87,7 +87,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
  */
 BEECRYPTAPI
 int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, unsigned int nblocks)
-	/*@*/;
+	/*@modifies dst @*/;
 
 #ifdef __cplusplus
 }

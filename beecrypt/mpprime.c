@@ -710,7 +710,7 @@ int mpptrials(size_t bits)
  * needs workspace of (size*2) words
  */
 static void mpprndbits(mpbarrett* p, size_t bits, size_t lsbset, const mpnumber* min, const mpnumber* max, randomGeneratorContext* rc, mpw* wksp)
-	/*@*/
+	/*@modifies p, wksp @*/
 {
 	register size_t size = p->size;
 	register size_t msbclr = MP_WORDS_TO_BITS(size) - bits;
@@ -758,6 +758,7 @@ static void mpprndbits(mpbarrett* p, size_t bits, size_t lsbset, const mpnumber*
  *  needs workspace of (3*size) words
  */
 int mppsppdiv_w(const mpbarrett* p, mpw* wksp)
+	/*@modifies wksp @*/
 {
 	/* small prime product trial division test */
 	register size_t size = p->size;
@@ -779,6 +780,7 @@ int mppsppdiv_w(const mpbarrett* p, mpw* wksp)
  * needs workspace of (5*size+2)
  */
 int mppmilrabtwo_w(const mpbarrett* p, int s, const mpw* rdata, const mpw* ndata, mpw* wksp)
+	/*@modifies wksp @*/
 {
 	register size_t size = p->size;
 	register int j = 0;
@@ -804,6 +806,7 @@ int mppmilrabtwo_w(const mpbarrett* p, int s, const mpw* rdata, const mpw* ndata
  * needs workspace of (5*size+2) words
  */
 int mppmilraba_w(const mpbarrett* p, const mpw* adata, int s, const mpw* rdata, const mpw* ndata, mpw* wksp)
+	/*@modifies wksp @*/
 {
 	register size_t size = p->size;
 	register int j = 0;

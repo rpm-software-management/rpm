@@ -49,7 +49,7 @@
 const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (randomGeneratorSetup) mtprngSetup, (randomGeneratorSeed) mtprngSeed, (randomGeneratorNext) mtprngNext, (randomGeneratorCleanup) mtprngCleanup };
 
 static void mtprngReload(mtprngParam* mp)
-	/*@*/
+	/*@modifies mp @*/
 {
     register uint32_t *p0 = mp->state;
 	register uint32_t *p2 = p0+2, *pM = p0+M, s0, s1;

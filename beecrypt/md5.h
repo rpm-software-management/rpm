@@ -74,7 +74,7 @@ extern BEECRYPTAPI const hashFunction md5;
  */
 BEECRYPTAPI
 void md5Process(md5Param* mp)
-	/*@*/;
+	/*@modifies mp @*/;
 
 /*!\fn int md5Reset(md5Param* mp)
  * \brief This function resets the parameter block so that it's ready for a
@@ -84,7 +84,7 @@ void md5Process(md5Param* mp)
  */
 BEECRYPTAPI
 int md5Reset   (md5Param* mp)
-	/*@*/;
+	/*@modifies mp @*/;
 
 /*!\fn int md5Update(md5Param* mp, const byte* data, size_t size)
  * \brief This function should be used to pass successive blocks of data
@@ -96,7 +96,7 @@ int md5Reset   (md5Param* mp)
  */
 BEECRYPTAPI
 int md5Update  (md5Param* mp, const byte* data, size_t size)
-	/*@*/;
+	/*@modifies mp @*/;
 
 /*!\fn int md5Digest(md5Param* mp, byte* digest)
  * \brief This function finishes the current hash computation and copies
@@ -107,7 +107,7 @@ int md5Update  (md5Param* mp, const byte* data, size_t size)
  */
 BEECRYPTAPI
 int md5Digest  (md5Param* mp, byte* digest)
-	/*@*/;
+	/*@modifies mp, digest @*/;
 
 #ifdef __cplusplus
 }

@@ -73,7 +73,7 @@ extern BEECRYPTAPI const hashFunction sha256;
  */
 BEECRYPTAPI
 void sha256Process(sha256Param* sp)
-	/*@*/;
+	/*@modifies sp @*/;
 
 /*!\fn int sha256Reset(sha256Param* sp)
  * \brief This function resets the parameter block so that it's ready for a
@@ -83,7 +83,7 @@ void sha256Process(sha256Param* sp)
  */
 BEECRYPTAPI
 int  sha256Reset  (sha256Param* sp)
-	/*@*/;
+	/*@modifies sp @*/;
 
 /*!\fn int sha256Update(sha256Param* sp, const byte* data, size_t size)
  * \brief This function should be used to pass successive blocks of data
@@ -95,7 +95,7 @@ int  sha256Reset  (sha256Param* sp)
  */
 BEECRYPTAPI
 int  sha256Update (sha256Param* sp, const byte* data, size_t size)
-	/*@*/;
+	/*@modifies sp @*/;
 
 /*!\fn int sha256Digest(sha256Param* sp, byte* digest)
  * \brief This function finishes the current hash computation and copies
@@ -106,7 +106,7 @@ int  sha256Update (sha256Param* sp, const byte* data, size_t size)
  */
 BEECRYPTAPI
 int  sha256Digest (sha256Param* sp, byte* digest)
-	/*@*/;
+	/*@modifies sp, digest @*/;
 
 #ifdef __cplusplus
 }

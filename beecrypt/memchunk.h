@@ -36,19 +36,19 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-memchunk*	memchunkAlloc(size_t)
+memchunk*	memchunkAlloc(size_t size)
 	/*@*/;
 BEECRYPTAPI
-void		memchunkWipe(memchunk*)
-	/*@*/;
+void		memchunkWipe(memchunk* m)
+	/*@modifies m @*/;
 BEECRYPTAPI
-void		memchunkFree(memchunk*)
-	/*@*/;
+void		memchunkFree(memchunk* m)
+	/*@modifies m @*/;
 BEECRYPTAPI
-memchunk*	memchunkResize(memchunk*, size_t)
-	/*@*/;
+memchunk*	memchunkResize(memchunk* m, size_t size)
+	/*@modifies m @*/;
 BEECRYPTAPI
-memchunk*	memchunkClone(const memchunk*)
+memchunk*	memchunkClone(const memchunk* m)
 	/*@*/;
 
 #ifdef __cplusplus

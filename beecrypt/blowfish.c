@@ -421,6 +421,7 @@ int blowfishSetIV(blowfishParam* bp, const byte* iv)
 #endif
 
 int blowfishBlowit(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
+	/*@modifies dst @*/
 {
 	register uint32_t xl = src[0], xr = src[1];
 	register uint32_t* p = bp->p;

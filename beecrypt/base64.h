@@ -78,7 +78,7 @@ char* b64crc(const unsigned char* data, size_t ns)
  */
 BEECRYPTAPI
 int b64decode(const char* s, void** datap, size_t* lenp)
-	/*@*/;
+	/*@modifies *datap, *lenp @*/;
 
 /*!
  */

@@ -69,7 +69,7 @@ extern const BEECRYPTAPI blockCipher aes;
  */
 BEECRYPTAPI
 int			aesSetup   (aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
-	/*@*/;
+	/*@modifies ap @*/;
 
 /*!\fn int aesSetIV(aesParam* ap, const byte* iv)
  * \brief This function sets the Initialization Vector.
@@ -80,7 +80,7 @@ int			aesSetup   (aesParam* ap, const byte* key, size_t keybits, cipherOperation
  */
 BEECRYPTAPI
 int			aesSetIV   (aesParam* ap, const byte* iv)
-	/*@*/;
+	/*@modifies ap @*/;
 
 /*!\fn aesEncrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
  * \brief This function performs the raw AES encryption; it encrypts one block
@@ -92,7 +92,7 @@ int			aesSetIV   (aesParam* ap, const byte* iv)
  */
 BEECRYPTAPI
 int			aesEncrypt (aesParam* ap, uint32_t* dst, const uint32_t* src)
-	/*@*/;
+	/*@modifies dst @*/;
 
 /*!\fn aesDecrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
  * \brief This function performs the raw AES decryption; it decrypts one block
@@ -104,7 +104,7 @@ int			aesEncrypt (aesParam* ap, uint32_t* dst, const uint32_t* src)
  */
 BEECRYPTAPI
 int			aesDecrypt (aesParam* ap, uint32_t* dst, const uint32_t* src)
-	/*@*/;
+	/*@modifies dst @*/;
 
 BEECRYPTAPI
 uint32_t*	aesFeedback(aesParam* ap)

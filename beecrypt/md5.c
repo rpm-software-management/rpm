@@ -215,7 +215,7 @@ int md5Update(md5Param* mp, const byte* data, size_t size)
 }
 
 static void md5Finish(md5Param* mp)
-	/*@*/
+	/*@modifies mp @*/
 {
 	register byte *ptr = ((byte *) mp->data) + mp->offset++;
 

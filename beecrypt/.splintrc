@@ -23,6 +23,7 @@
 -compdef
 -compdestroy
 -compmempass
+-evalorder
 -evalorderuncon
 -globs
 -globstate
@@ -30,7 +31,7 @@
 -infloopsuncon		# 2
 -internalglobs
 -mayaliasunique
--mods
+-modfilesys
 -modobserveruncon
 -moduncon
 -mustfreefresh

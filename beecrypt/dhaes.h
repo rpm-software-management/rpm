@@ -63,28 +63,28 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int dhaes_pUsable(const dhaes_pParameters*)
+int dhaes_pUsable(const dhaes_pParameters* params)
 	/*@*/;
 
 BEECRYPTAPI
-int dhaes_pContextInit       (dhaes_pContext*, const dhaes_pParameters*)
-	/*@*/;
+int dhaes_pContextInit       (dhaes_pContext* ctxt, const dhaes_pParameters* params)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int dhaes_pContextInitDecrypt(dhaes_pContext*, const dhaes_pParameters*, const mpnumber*)
-	/*@*/;
+int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pri)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int dhaes_pContextInitEncrypt(dhaes_pContext*, const dhaes_pParameters*, const mpnumber*)
-	/*@*/;
+int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mpnumber* pub)
+	/*@modifies ctxt @*/;
 BEECRYPTAPI
-int dhaes_pContextFree       (dhaes_pContext*)
-	/*@*/;
+int dhaes_pContextFree       (dhaes_pContext* ctxt)
+	/*@modifies ctxt @*/;
 
 BEECRYPTAPI
-memchunk* dhaes_pContextEncrypt(dhaes_pContext*,       mpnumber*,       mpnumber*, const memchunk*, randomGeneratorContext*)
-	/*@*/;
+memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt,       mpnumber* ephemeralPublicKey,       mpnumber* mac, const memchunk* cleartext, randomGeneratorContext* rng)
+	/*@modifies ctxt, ephemeralPublicKey, mac @*/;
 BEECRYPTAPI
-memchunk* dhaes_pContextDecrypt(dhaes_pContext*, const mpnumber*, const mpnumber*, const memchunk*)
-	/*@*/;
+memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralPublicKey, const mpnumber* mac, const memchunk* ciphertext)
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }

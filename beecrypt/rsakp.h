@@ -90,17 +90,17 @@ extern "C" {
 #endif
 
 BEECRYPTAPI
-int rsakpMake(rsakp*, randomGeneratorContext*, size_t)
-	/*@*/;
+int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t bits)
+	/*@modifies kp @*/;
 BEECRYPTAPI
-int rsakpInit(rsakp*)
-	/*@*/;
+int rsakpInit(rsakp* kp)
+	/*@modifies kp @*/;
 BEECRYPTAPI
-int rsakpFree(rsakp*)
-	/*@*/;
+int rsakpFree(rsakp* kp)
+	/*@modifies kp @*/;
 BEECRYPTAPI
-int rsakpCopy(rsakp*, const rsakp*)
-	/*@*/;
+int rsakpCopy(rsakp* dst, const rsakp* src)
+	/*@modifies dst @*/;
 
 #ifdef __cplusplus
 }
