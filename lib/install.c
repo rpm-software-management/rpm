@@ -145,22 +145,29 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	return installSources(rootdir, fd, NULL);
     }
 
-    if (location && !getEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *)
+    if (!getEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *)
 			      &defaultPrefix, &fileCount)) {
+	defaultPrefix = NULL;
+    }
+
+    if (location && !defaultPrefix) {
 	error(RPMERR_NORELOCATE, "package %s-%s-%s is not relocatable",
 		      name, version, release);
 	freeHeader(h);
 	return 2;
-    }
-
+    } else if (!location && defaultPrefix)
+	location = defaultPrefix;
+    
     if (location) {
 	relocateFilelist(&h, defaultPrefix, location, &relocationSize);
         getEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *) &defaultPrefix, 
 		&fileCount);
 	archivePrefix = alloca(strlen(rootdir) + strlen(location) + 2);
 	sprintf(archivePrefix, "%s/%s", rootdir, location);
-    } else
+    } else {
 	archivePrefix = rootdir;
+	relocationSize = 1;
+    }
 
     getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
@@ -511,6 +518,8 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     int childDead = 0;
 
     /* fd should be a gzipped cpio archive */
+
+    message(MESS_DEBUG, "installing archive into %s\n", prefix);
 
     needSecondPipe = (notify != NULL) || specFile;
 
@@ -1400,13 +1409,14 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
     newPrefix = strcpy(alloca(strlen(newPrefix) + 1), newPrefix);
     stripTrailingSlashes(newPrefix);
 
-    if (!strcmp(newPrefix, defaultPrefix)) {
-	*relocationLength = strlen(defaultPrefix);
-	return 0;		/* NOP */
-    }
-
     message(MESS_DEBUG, "relocating files from %s to %s\n", defaultPrefix,
 			 newPrefix);
+
+    if (!strcmp(newPrefix, defaultPrefix)) {
+	addEntry(h, RPMTAG_INSTALLPREFIX, STRING_TYPE, defaultPrefix, 1);
+	*relocationLength = strlen(defaultPrefix) + 1;
+	return 0;
+    }
 
     defaultPrefixLength = strlen(defaultPrefix);
     newPrefixLength = strlen(newPrefix);
