@@ -398,24 +398,47 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
 
+#define	NEONBLOWSCHUNKS
+#ifdef	NEONBLOWSCHUNKS
+    if (fd->req == NULL)
+#endif
     if (fd->wr_chunked) {
-	char chunksize[20];
+	char chunksize[20];	/* HACK: big enough. */
 	sprintf(chunksize, "%x\r\n", (unsigned)count);
-	rc = write(fdno, chunksize, strlen(chunksize));
+#ifndef	NEONBLOWSCHUNKS
+	/* HACK: flimsy wiring for davWrite */
+	if (fd->req != NULL)
+	    rc = davWrite(fd, chunksize, strlen(chunksize));
+	else
+#endif
+	    rc = write(fdno, chunksize, strlen(chunksize));
 	if (rc == -1)	fd->syserrno = errno;
     }
     if (count == 0) return 0;
 
     fdstat_enter(fd, FDSTAT_WRITE);
 /*@-boundsread@*/
-    rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+    /* HACK: flimsy wiring for davWrite */
+    if (fd->req != NULL)
+	rc = davWrite(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+    else
+	rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
 /*@=boundsread@*/
     fdstat_exit(fd, FDSTAT_WRITE, rc);
 
+#ifdef	NEONBLOWSCHUNKS
+    if (fd->req == NULL)
+#endif
     if (fd->wr_chunked) {
 	int ec;
 /*@-boundsread@*/
-	ec = write(fdno, "\r\n", sizeof("\r\n")-1);
+#ifndef	NEONBLOWSCHUNKS
+	/* HACK: flimsy wiring for davWrite */
+	if (fd->req != NULL)
+	    ec = davWrite(fd, "\r\n", sizeof("\r\n")-1);
+	else
+#endif
+	    ec = write(fdno, "\r\n", sizeof("\r\n")-1);
 /*@=boundsread@*/
 	if (ec == -1)	fd->syserrno = errno;
     }
@@ -542,6 +565,7 @@ int fdWritable(FD_t fd, int secs)
 /*@=compdef =nullpass@*/
 #endif
 
+	/* HACK: EBADF on PUT chunked termination from ufdClose. */
 if (_rpmio_debug && !(rc == 1 && errno == 0))
 fprintf(stderr, "*** fdWritable fdno %d rc %d %s\n", fdno, rc, strerror(errno));
 	if (rc < 0) {
@@ -1568,17 +1592,22 @@ static int httpResp(urlinfo u, FD_t ctrl, /*@out@*/ char ** str)
     URLSANE(u);
     rc = checkResponse(u, ctrl, &ec, str);
 
-if (_ftp_debug && !(rc == 0 && ec == 200))
+if (_ftp_debug && !(rc == 0 && (ec == 200 || ec == 201)))
 fprintf(stderr, "*** httpResp: rc %d ec %d\n", rc, ec);
 
     switch (ec) {
     case 200:
+    case 201:			/* 201 Created. */
+	break;
+    case 204:			/* HACK: if overwriting, 204 No Content. */
+    case 403:			/* 403 Forbidden. */
+	ctrl->syserrno = EACCES;	/* HACK */
+	rc = FTPERR_UNKNOWN;
 	break;
     default:
 	rc = FTPERR_FILE_NOT_FOUND;
 	break;
     }
-
     return rc;
 }
 
@@ -1935,21 +1964,36 @@ int ufdClose( /*@only@*/ void * cookie)
 	/* XXX Why not (u->urltype == URL_IS_HTTPS) ??? */
 	if (u->scheme != NULL && !strncmp(u->scheme, "http", sizeof("http")-1))
 	{
-	    /* HACK: not even close for neon. */
 	    if (fd->wr_chunked) {
 		int rc;
-	    /* XXX HTTP PUT requires terminating 0 length chunk. */
-		(void) fdWrite(fd, NULL, 0);
-		fd->wr_chunked = 0;
-	    /* XXX HTTP PUT requires terminating entity-header. */
+
+#ifdef	NEONBLOWSCHUNKS
+		if (!noNeon) {
+		    fd->wr_chunked = 0;
+		    /* HACK: flimsy wiring for davWrite */
+		    rc = ne_send_request_chunk(fd->req, (void *)NULL, (size_t)0);
+		    rc = ne_finish_request(fd->req);
+		    rc = davResp(u, fd, NULL);
+		} else
+#endif
+		{
+		    /* XXX HTTP PUT requires terminating 0 length chunk. */
+		    (void) fdWrite(fd, NULL, 0);
+		    fd->wr_chunked = 0;
+		    /* XXX HTTP PUT requires terminating entity-header. */
 if (_ftp_debug)
 fprintf(stderr, "-> \r\n");
-		(void) fdWrite(fd, "\r\n", sizeof("\r\n")-1);
-		/* HACK: flimsy wiring for davWrite */
-		if (!strcmp(u->scheme, "https"))
-		    rc = davResp(u, fd, NULL);
-		else
-		    rc = httpResp(u, fd, NULL);
+		    (void) fdWrite(fd, "\r\n", sizeof("\r\n")-1);
+#ifndef	NEONBLOWSCHUNKS
+		    if (!noNeon) {
+			rc = ne_finish_request(fd->req);
+			rc = davResp(u, fd, NULL);
+		    } else
+#endif
+			rc = httpResp(u, fd, NULL);
+		}
+if ((_ftp_debug || _rpmio_debug) && rc)	/* HACK: PUT rc not returned to Fclose. */
+fprintf(stderr, "*** ufdClose: httpResp rc %d errno(%d) %s\n", rc, fd->syserrno, strerror(fd->syserrno));
 	    }
 
 	    /*

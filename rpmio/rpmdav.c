@@ -14,6 +14,13 @@
 #include <neon/ne_basic.h>
 #include <neon/ne_dates.h>
 #include <neon/ne_locks.h>
+
+#define	NEONBLOWSCHUNKS
+#ifndef	NEONBLOWSCHUNKS
+/* HACK: include ne_private.h to access sess->socket for now. */
+#include "../neon/src/ne_private.h"
+#endif
+
 #include <neon/ne_props.h>
 #include <neon/ne_request.h>
 #include <neon/ne_socket.h>
@@ -33,7 +40,11 @@
 /*@access FD_t @*/
 /*@access urlinfo @*/
 
+#if 0	/* HACK: reasonable value needed. */
 #define TIMEOUT_SECS 60
+#else
+#define TIMEOUT_SECS 5
+#endif
 /*@unchecked@*/
 static int httpTimeoutSecs = TIMEOUT_SECS;
 
@@ -247,12 +258,50 @@ fprintf(stderr, "*** davVerifyCert(%p,%d,%p) %s\n", userdata, failures, cert, ho
     return 0;	/* HACK: trust all server certificates. */
 }
 
+static int davConnect(urlinfo u)
+	/*@globals internalState @*/
+	/*@modifies u, internalState @*/
+{
+    const char * path = NULL;
+    int rc;
+
+    /* HACK: where should server capabilities be read? */
+    (void) urlPath(u->url, &path);
+    /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
+    rc = ne_options(u->sess, path, u->capabilities);
+    switch (rc) {
+    case NE_OK:
+	break;
+    case NE_ERROR:
+	/* HACK: "301 Moved Permanently" on empty subdir. */
+	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
+	    break;
+	/*@fallthrough@*/
+    case NE_CONNECT:
+    case NE_LOOKUP:
+    default:
+if (_dav_debug)
+fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
+		   u->host, u->port, rc, ne_get_error(u->sess));
+	break;
+    }
+
+    /* HACK: sensitive to error returns? */
+    u->httpVersion = (ne_version_pre_http11(u->sess) ? 0 : 1);
+
+    /* HACK: stupid error impedence matching. */
+    if (rc)
+	rc = FTPERR_FAILED_CONNECT;
+
+    return rc;
+}
+
 static int davInit(const char * url, urlinfo * uret)
 	/*@globals internalState @*/
 	/*@modifies *uret, internalState @*/
 {
     urlinfo u = NULL;
-    int xx;
+    int rc = 0;
 
 /*@-globs@*/	/* FIX: h_errno annoyance. */
     if (urlSplit(url, &u))
@@ -266,10 +315,10 @@ static int davInit(const char * url, urlinfo * uret)
 
 	/* HACK: oneshots should be done Somewhere Else Instead. */
 /*@-noeffect@*/
-	xx = ((_dav_debug < 0) ? NE_DBG_HTTP : 0);
-	ne_debug_init(stderr, xx);		/* XXX oneshot? */
+	rc = ((_dav_debug < 0) ? NE_DBG_HTTP : 0);
+	ne_debug_init(stderr, rc);		/* XXX oneshot? */
 /*@=noeffect@*/
-	xx = ne_sock_init();			/* XXX oneshot? */
+	rc = ne_sock_init();			/* XXX oneshot? */
 
 	u->capabilities = capabilities = xcalloc(1, sizeof(*capabilities));
 	u->sess = ne_session_create(u->scheme, u->host, u->port);
@@ -306,51 +355,20 @@ static int davInit(const char * url, urlinfo * uret)
 	ne_hook_pre_send(u->sess, davPreSend, u);
 	ne_hook_post_send(u->sess, davPostSend, u);
 	ne_hook_destroy_request(u->sess, davDestroyRequest, u);
+
+	/* HACK: where should server capabilities be read? */
+	rc = davConnect(u);
+	if (rc)
+	    goto exit;
+
     }
 
+exit:
 /*@-boundswrite@*/
-    if (uret != NULL)
+    if (rc == 0 && uret != NULL)
 	*uret = urlLink(u, __FUNCTION__);
 /*@=boundswrite@*/
     u = urlFree(u, "urlSplit (davInit)");
-
-    return 0;
-}
-
-static int davConnect(urlinfo u)
-	/*@globals internalState @*/
-	/*@modifies u, internalState @*/
-{
-    const char * path = NULL;
-    int rc;
-
-    /* HACK: where should server capabilities be read? */
-    (void) urlPath(u->url, &path);
-    /* HACK: perhaps capture Allow: tag, look for PUT permitted. */
-    rc = ne_options(u->sess, path, u->capabilities);
-    switch (rc) {
-    case NE_OK:
-	break;
-    case NE_ERROR:
-	/* HACK: "301 Moved Permanently" on empty subdir. */
-	if (!strncmp("301 ", ne_get_error(u->sess), sizeof("301 ")-1))
-	    break;
-	/*@fallthrough@*/
-    case NE_CONNECT:
-    case NE_LOOKUP:
-    default:
-if (_dav_debug)
-fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
-		   u->host, u->port, rc, ne_get_error(u->sess));
-	break;
-    }
-
-    /* HACK: sensitive to error returns? */
-    u->httpVersion = (ne_version_pre_http11(u->sess) ? 0 : 1);
-
-    /* HACK: stupid error impedence matching. */
-    if (rc)
-	rc = FTPERR_FAILED_CONNECT;
 
     return rc;
 }
@@ -749,11 +767,6 @@ static int davNLST(struct fetch_context_s * ctx)
     if (rc || u == NULL)
 	goto exit;
 
-    /* HACK: where should server capabilities be read? */
-    rc = davConnect(u);
-    if (rc)
-	goto exit;
-
     rc = davFetch(u, ctx);
     switch (rc) {
     case NE_OK:
@@ -816,8 +829,8 @@ static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
     return ret;
 }
 
-#ifdef	DYING
-static void hexdump(unsigned char * buf, ssize_t len)
+#ifndef	DYING
+static void hexdump(const unsigned char * buf, ssize_t len)
 	/*@*/
 {
     int i;
@@ -882,10 +895,12 @@ int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
 
     rc = ne_begin_request(ctrl->req);
     rc = my_result("ne_begin_req(ctrl->req)", rc, NULL);
+
 if (_dav_debug < 0)
 fprintf(stderr, "*** davResp(%p,%p,%p) sess %p req %p rc %d\n", u, ctrl, str, u->sess, ctrl->req, rc);
 
     /* HACK: stupid error impedence matching. */
+    /* HACK: NE_TIMEOUT et al here does not unravel refcnt correctly. */
     switch (rc) {
     case NE_OK:		rc = 0;				break;
     case NE_ERROR:	rc = FTPERR_SERVER_IO_ERROR;	break;
@@ -912,7 +927,7 @@ fprintf(stderr, "*** davResp(%p,%p,%p) sess %p req %p rc %d\n", u, ctrl, str, u-
 int davReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 {
     urlinfo u;
-    int rc;
+    int rc = 0;
 
 assert(ctrl != NULL);
     u = ctrl->url;
@@ -921,23 +936,6 @@ assert(ctrl != NULL);
 if (_dav_debug < 0)
 fprintf(stderr, "*** davReq(%p,%s,\"%s\") entry sess %p req %p\n", ctrl, httpCmd, (httpArg ? httpArg : ""), u->sess, ctrl->req);
 
-    /* HACK: handle proxy host and port here. */
-#ifdef	REFERENCE
-    if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
-	return FTPERR_BAD_HOSTNAME;
-
-    if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
-    path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
-
-/*@-branchstate@*/
-    if (path == NULL) path = "";
-/*@=branchstate@*/
-#endif
-
-    /* HACK: where should server capabilities be read? */
-    rc = davConnect(u);
-    if (rc)
-	goto errxit;
     ctrl->persist = (u->httpVersion > 0 ? 1 : 0);
     ctrl = fdLink(ctrl, "open ctrl (davReq)");
 
@@ -952,22 +950,30 @@ assert(ctrl->req != NULL);
 
     ne_add_response_header_catcher(ctrl->req, davAllHeaders, ctrl);
 
-    ne_add_response_header_handler(ctrl->req, "Accept-Ranges",
-		davAcceptRanges, u);
     ne_add_response_header_handler(ctrl->req, "Content-Length",
 		davContentLength, ctrl);
     ne_add_response_header_handler(ctrl->req, "Connection",
 		davConnection, ctrl);
 
-#ifdef	NOTYET
-if (_ftp_debug)
-fprintf(stderr, "-> %s", req);
-#endif
-
-    /* HACK: other errors may need retry too. */
-    do {
+    if (!strcmp(httpCmd, "PUT")) {
+	ctrl->wr_chunked = 1;
+	ne_add_request_header(ctrl->req, "Transfer-Encoding", "chunked");
+	ne_set_request_chunked(ctrl->req, 1);
+	/* HACK: no retries if/when chunking. */
 	rc = davResp(u, ctrl, NULL);
-    } while (rc == NE_RETRY);
+    } else {
+	/* HACK: possible Last-Modified: Tue, 02 Nov 2004 14:29:36 GMT */
+	/* HACK: possible ETag: "inode-size-mtime" */
+	ne_add_response_header_handler(ctrl->req, "Accept-Ranges",
+			davAcceptRanges, u);
+	/* HACK: possible Transfer-Encoding: on GET. */
+
+	/* HACK: other errors may need retry too. */
+	/* HACK: neon retries once, gud enuf. */
+	do {
+	    rc = davResp(u, ctrl, NULL);
+	} while (rc == NE_RETRY);
+    }
     if (rc)
 	goto errxit;
 
@@ -1059,14 +1065,33 @@ hexdump(buf, rc);
 
 ssize_t davWrite(void * cookie, const char * buf, size_t count)
 {
-#ifdef	NOTYET
     FD_t fd = cookie;
-    return ne_read_response_block(fd->req, buf, count);
+    ssize_t rc;
+    int xx;
+
+#ifndef	NEONBLOWSCHUNKS
+    ne_session * sess;
+
+assert(fd->req != NULL);
+    sess = ne_get_session(fd->req);
+assert(sess != NULL);
+
+    /* HACK: include ne_private.h to access sess->socket for now. */
+    xx = ne_sock_fullwrite(sess->socket, buf, count);
 #else
-if (_dav_debug < 0)
-fprintf(stderr, "*** davWrite(%p,%p,0x%x)\n", cookie, buf, count);
-    return -1;
+assert(fd->req != NULL);
+    xx = ne_send_request_chunk(fd->req, buf, count);
 #endif
+
+    /* HACK: stupid error impedence matching. */
+    rc = (xx == 0 ? count : -1);
+
+if (_dav_debug < 0)
+fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, rc);
+if (count > 0)
+hexdump(buf, count);
+
+    return rc;
 }
 
 int davSeek(void * cookie, /*@unused@*/ _libio_pos_t pos, int whence)
@@ -1105,7 +1130,6 @@ int davMkdir(const char * path, mode_t mode)
     int rc;
 
     rc = davInit(path, &u);
-assert(u != NULL);
     if (rc)
 	goto exit;
 
@@ -1130,7 +1154,6 @@ int davRmdir(const char * path)
     int rc;
 
     rc = davInit(path, &u);
-assert(u != NULL);
     if (rc)
 	goto exit;
 
@@ -1157,7 +1180,6 @@ int davRename(const char * oldpath, const char * newpath)
     int rc;
 
     rc = davInit(oldpath, &u);
-assert(u != NULL);
     if (rc)
 	goto exit;
 
@@ -1183,7 +1205,6 @@ int davUnlink(const char * path)
     int rc;
 
     rc = davInit(path, &u);
-assert(u != NULL);
     if (rc)
 	goto exit;
 
@@ -1193,9 +1214,9 @@ assert(u != NULL);
 
     rc = ne_delete(u->sess, src);
 
+exit:
     if (rc) rc = -1;	/* XXX HACK: errno impedance match */
 
-exit:
 if (_dav_debug)
 fprintf(stderr, "*** davUnlink(%s) rc %d\n", path, rc);
     return rc;
