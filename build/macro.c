@@ -1,4 +1,5 @@
 /* macro.c - %macro handling */
+#include "miscfn.h"
 
 #include <stdlib.h>
 #include <string.h>

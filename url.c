@@ -1,4 +1,4 @@
-#include "config.h"
+#include "miscfn.h"
 
 #include <fcntl.h>
 #include <pwd.h>
