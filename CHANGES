@@ -4,6 +4,9 @@
 	- \%description was trying to do %d expansion in query formats
 	- made %% work in query formats
 	- fixed bug in handling characters before array
+	- let mips build noarch packages
+	- --setperms would set wrong permissions in some cases (it was
+	  following symlinks)
 
 2.4.9 -> 2.4.10:
 	- obsolete entries could cause segv's during upgrades
