@@ -31,6 +31,7 @@
 	- fix: don't headerCopy() relocateable packages if not relocating.
 	- fine-grained Requires, remove install PreReq's from Requires db.
 	- fix: duplicate headerFree() on installBinaryPackage() error return.
+	- fix: segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" (#20595).
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

@@ -27,7 +27,9 @@ void freeFilesystems(void)
 	filesystems = NULL;
     }
     if (fsnames) {
+#if 0	/* XXX leak/segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" */
 	free(fsnames);
+#endif
 	fsnames = NULL;
     }
     numFilesystems = 0;
