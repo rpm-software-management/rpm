@@ -1269,6 +1269,8 @@ int rpmdepOrder(rpmTransactionSet ts)
 #else
     int oType = 0;
 #endif
+    int treex;
+    int depth;
     int qlen;
     int i, j;
 
@@ -1377,11 +1379,23 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
     }
     pi = teFreeIterator(pi);
 
-    /* Save predecessor count. */
+    /* Save predecessor count and mark tree roots. */
+    treex = 0;
     pi = teInitIterator(ts);
     while ((p = teNext(pi, oType)) != NULL) {
+	int npreds;
 
-	(void) teSetNpreds(p, teGetTSI(p)->tsi_count);
+	npreds = teGetTSI(p)->tsi_count;
+
+	(void) teSetNpreds(p, npreds);
+
+	if (npreds == 0)
+	    (void) teSetTree(p, treex++);
+	else
+	    (void) teSetTree(p, -1);
+#ifdef	UNNECESSARY
+	(void) teSetParent(p, NULL);
+#endif
 
 /*@-modfilesystem -nullpass @*/
 if (_tso_debug)
@@ -1392,7 +1406,7 @@ if (_tso_debug)
     pi = teFreeIterator(pi);
 
     /* T4. Scan for zeroes. */
-    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, depth)\n"));
+    rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth)\n"));
 
 rescan:
     if (pi != NULL) pi = teFreeIterator(pi);
@@ -1440,12 +1454,16 @@ prtTSI(" p", teGetTSI(p));
 	}
 	deptypechar = (teGetType(q) == TR_REMOVED ? '-' : '+');
 
-	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%5d %*s%c%s\n",
+	rpmMessage(RPMMESS_DEBUG, "%5d%5d%5d%5d%5d %*s%c%s\n",
 			orderingCount, teGetNpreds(q),
-			teGetTSI(q)->tsi_qcnt, teGetDepth(q),
+			teGetTSI(q)->tsi_qcnt, teGetTree(q), teGetDepth(q),
 			(2 * teGetDepth(q)), "",
 			deptypechar,
 			(teGetNEVR(q) ? teGetNEVR(q) : "???"));
+
+	treex = teGetTree(q);
+	depth = teGetDepth(q);
+	(void) teSetDegree(q, 0);
 
 	ordering[orderingCount] = teGetAddedKey(q);
 	orderingCount++;
@@ -1460,6 +1478,12 @@ prtTSI(" p", teGetTSI(p));
 	    tsi->tsi_next = NULL;
 	    p = tsi->tsi_suc;
 	    if (p && (--teGetTSI(p)->tsi_count) <= 0) {
+
+		(void) teSetTree(p, treex);
+		(void) teSetDepth(p, depth+1);
+		(void) teSetParent(p, q);
+		(void) teSetDegree(q, teGetDegree(q)+1);
+
 		/* XXX TODO: add control bit. */
 		teGetTSI(p)->tsi_suc = NULL;
 		addQ(p, &teGetTSI(q)->tsi_suc, &r);

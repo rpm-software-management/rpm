@@ -244,6 +244,51 @@ int teSetNpreds(transactionElement te, int npreds)
     return opreds;
 }
 
+int teGetTree(transactionElement te)
+{
+    return (te != NULL ? te->tree : 0);
+}
+
+int teSetTree(transactionElement te, int ntree)
+{
+    int otree = 0;
+    if (te != NULL) {
+	otree = te->tree;
+	te->tree = ntree;
+    }
+    return otree;
+}
+
+transactionElement teGetParent(transactionElement te)
+{
+    return (te != NULL ? te->parent : NULL);
+}
+
+transactionElement teSetParent(transactionElement te, transactionElement pte)
+{
+    transactionElement opte = NULL;
+    if (te != NULL) {
+	opte = te->parent;
+	te->parent = pte;
+    }
+    return opte;
+}
+
+int teGetDegree(transactionElement te)
+{
+    return (te != NULL ? te->degree : 0);
+}
+
+int teSetDegree(transactionElement te, int ndegree)
+{
+    int odegree = 0;
+    if (te != NULL) {
+	odegree = te->degree;
+	te->degree = ndegree;
+    }
+    return odegree;
+}
+
 tsortInfo teGetTSI(transactionElement te)
 {
     /*@-compdef -retalias -retexpose -usereleased @*/

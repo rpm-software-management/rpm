@@ -236,13 +236,23 @@ restart:
 
 fprintf(stdout, "digraph XXX {\n");
 
+fprintf(stdout, "  rankdir=LR\n");
+
 fprintf(stdout, "//===== Packages:\n");
 	pi = teInitIterator(ts);
 	while ((p = teNext(pi, oType)) != NULL) {
+fprintf(stdout, "//%5d%5d %s\n", teGetTree(p), teGetDepth(p), teGetN(p));
+	    q = teGetParent(p);
+	    if (q != NULL)
+fprintf(stdout, "  \"%s\" -> \"%s\"\n", teGetN(p), teGetN(q));
+	    else {
 fprintf(stdout, "  \"%s\"\n", teGetN(p));
+fprintf(stdout, "  { rank=max ; \"%s\" }\n", teGetN(p));
+	    }
 	}
 	pi = teFreeIterator(pi);
 
+#ifdef	NOTNOW
 fprintf(stdout, "//===== Relations:\n");
 	pi = teInitIterator(ts);
 	while ((p = teNext(pi, oType)) != NULL) {
@@ -314,6 +324,27 @@ fprintf(stdout, "//===== Relations:\n");
 		    continue;
 		selected[i] = 1;
 
+		if (teGetTree(p) == teGetTree(q)) {
+		    int pdepth = teGetDepth(p);
+		    int qdepth = teGetDepth(q);
+
+#if 0
+		    if (pdepth == qdepth)
+			continue;
+		    if (pdepth < qdepth) {
+			if ((qdepth - pdepth) > 1)	continue;
+			if (!strcmp(teGetN(q), "glibc"))	continue;
+			if (!strcmp(teGetN(q), "bash"))	continue;
+		    }
+#endif
+		    if (pdepth > qdepth) {
+			if (!strcmp(teGetN(q), "glibc"))	continue;
+			if (!strcmp(teGetN(q), "bash"))		continue;
+			if (!strcmp(teGetN(q), "info"))		continue;
+			if (!strcmp(teGetN(q), "mktemp"))	continue;
+		    }
+		}
+
 if (!printed) {
 fprintf(stdout, "// %s\n", teGetN(p));
 printed = 1;
@@ -325,6 +356,7 @@ fprintf(stdout, "\t\"%s\" -> \"%s\"\n", teGetN(p), teGetN(q));
 
 	}
 	pi = teFreeIterator(pi);
+#endif	/* NOTNOW */
 
 fprintf(stdout, "}\n");
 

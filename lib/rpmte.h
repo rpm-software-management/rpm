@@ -66,8 +66,11 @@ struct transactionElement_s {
 /*@only@*/ /*@null@*/
     const char * os;		/*!< Operating system hint. */
 
-    int npreds;			/*!< No. of predecessors. */
+    transactionElement parent;	/*!< Parent transaction element. */
+    int degree;			/*!< No. of immediate children. */
     int depth;			/*!< Max. depth in dependency tree. */
+    int npreds;			/*!< No. of predecessors. */
+    int tree;			/*!< Tree index. */
 /*@owned@*/
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
@@ -259,10 +262,61 @@ int teGetNpreds(transactionElement te)
 /**
  * Set tsort no. of predecessors of transaction element.
  * @param te		transaction element
- * @param ndepth	new no. of predecessors
+ * @param npreds	new no. of predecessors
  * @return		previous no. of predecessors
  */
 int teSetNpreds(transactionElement te, int npreds)
+	/*@modifies te @*/;
+
+/**
+ * Retrieve tree index of transaction element.
+ * @param te		transaction element
+ * @return		tree index
+ */
+int teGetTree(transactionElement te)
+	/*@*/;
+
+/**
+ * Set tree index of transaction element.
+ * @param te		transaction element
+ * @param ntree		new tree index
+ * @return		previous tree index
+ */
+int teSetTree(transactionElement te, int ntree)
+	/*@modifies te @*/;
+
+/**
+ * Retrieve parent transaction element.
+ * @param te		transaction element
+ * @return		parent transaction element
+ */
+transactionElement teGetParent(transactionElement te)
+	/*@*/;
+
+/**
+ * Set parent transaction element.
+ * @param te		transaction element
+ * @param pte		new parent transaction element
+ * @return		previous parent transaction element
+ */
+transactionElement teSetParent(transactionElement te, transactionElement pte)
+	/*@modifies te @*/;
+
+/**
+ * Retrieve number of children of transaction element.
+ * @param te		transaction element
+ * @return		tree index
+ */
+int teGetDegree(transactionElement te)
+	/*@*/;
+
+/**
+ * Set number of children of transaction element.
+ * @param te		transaction element
+ * @param ntree		new number of children
+ * @return		previous number of children
+ */
+int teSetDegree(transactionElement te, int ntree)
 	/*@modifies te @*/;
 
 /**
