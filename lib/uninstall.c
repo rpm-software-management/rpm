@@ -345,6 +345,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 
 	  case KEEP:
 	    message(MESS_DEBUG, "keeping %s\n", file);
+	    break;
 
 	  case BACKUP:
 	    message(MESS_DEBUG, "saving %s as %s.rpmsave\n", file, file);
