@@ -41,7 +41,8 @@ static int createDirectories(char * prefix, char ** fileList, int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int fileCount, 
-				 enum instActions * instActions, int flags);
+				 enum instActions * instActions, 
+				 char ** prefixedFileList, int flags);
 static int fileCompare(const void * one, const void * two);
 
 /* 0 success */
@@ -65,6 +66,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     int archiveFileCount = 0;
     int installFile = 0;
     char * ext = NULL, * newpath;
+    int prefixLength = strlen(prefix);
+    char ** prefixedFileList = NULL;
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
@@ -92,7 +95,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		 &fileCount)) {
 
 	instActions = alloca(sizeof(enum instActions) * fileCount);
-	memset(instActions, CREATE, sizeof(instActions));
+	prefixedFileList = alloca(sizeof(char *) * fileCount);
 
 	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
 	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
@@ -102,16 +105,27 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	   on making a backup copy. If that's not the right thing to do
 	   instHandleSharedFiles() below will take care of the problem */
 	for (i = 0; i < fileCount; i++) {
+	    if (prefixLength > 1) {
+		prefixedFileList[i] = alloca(strlen(fileList[i]) + 
+				prefixLength + 3);
+		strcpy(prefixedFileList[i], prefix);
+		strcat(prefixedFileList[i], "/");
+		strcat(prefixedFileList[i], fileList[i]);
+	    } else 
+		prefixedFileList[i] = fileList[i];
+
+	    instActions[i] = CREATE;
 	    if (fileFlagsList[i] & RPMFILE_CONFIG) {
-		if (exists(fileList[i])) {
-		    message(MESS_DEBUG, "%s exists - backing up", fileList[i]);
+		if (exists(prefixedFileList[i])) {
+		    message(MESS_DEBUG, "%s exists - backing up", 
+				prefixedFileList[i]);
 		    instActions[i] = BACKUP;
 		}
 	    }
 	}
 
 	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileCount, 
-					instActions, flags);
+				   instActions, prefixedFileList, flags);
 
 	free(fileMd5s);
 	if (rc) {
@@ -168,18 +182,21 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	    }
 
 	    if (ext) {
-		newpath = malloc(strlen(fileList[i]) + 20);
-		strcpy(newpath, fileList[i]);
+		newpath = malloc(strlen(prefixedFileList[i]) + 20);
+		strcpy(newpath, prefixedFileList[i]);
 		strcat(newpath, ext);
-		message(MESS_WARNING, "%s saved as %s\n", fileList[i], newpath);
+		message(MESS_WARNING, "%s saved as %s\n", prefixedFileList[i], 
+			newpath);
 		/* XXX this message is a bad idea - it'll make glint more
 		   difficult */
 
-		if (rename(fileList[i], newpath)) {
-		    error(RPMERR_RENAME, "rename of %s to %s failed:\n",
-			  fileList[i], newpath, strerror(errno));
+		if (rename(prefixedFileList[i], newpath)) {
+		    error(RPMERR_RENAME, "rename of %s to %s failed: %s\n",
+			  prefixedFileList[i], newpath, strerror(errno));
 		    return 1;
 		}
+
+		free(newpath);
 	    }
 
 	    if (installFile) {
@@ -554,13 +571,15 @@ static int createDirectories(char * prefix, char ** fileList, int fileCount) {
 	
 	for (chptr = buffer + 1; *chptr; chptr++) {
 	    if (*chptr == '/') {
-		*chptr = '\0';
-		if (mkdirIfNone(buffer, 0755)) {
-		    free(lastDirectory);
-		    free(buffer);
-		    return 1;
+		if (*(chptr -1) != '/') {
+		    *chptr = '\0';
+		    if (mkdirIfNone(buffer, 0755)) {
+			free(lastDirectory);
+			free(buffer);
+			return 1;
+		    }
+		    *chptr = '/';
 		}
-		*chptr = '/';
 	    }
 	}
 
@@ -608,7 +627,8 @@ static int mkdirIfNone(char * directory, mode_t perms) {
 
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int fileCount, 
-			         enum instActions * instActions, int flags) {
+			         enum instActions * instActions, 
+			 	 char ** prefixedFileList, int flags) {
     struct sharedFile * sharedList;
     int sharedCount;
     int i, type;
@@ -707,7 +727,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 			"version\n");
 		instActions[sharedList[i].mainFileNumber] = KEEP;
 	    } else {
-		if (mdfile(fileList[sharedList[i].mainFileNumber], 
+		if (mdfile(prefixedFileList[sharedList[i].mainFileNumber], 
 				currentMd5)) {
 		    /* assume the file has been removed, don't freak */
 		    message(MESS_DEBUG, "	file not present - creating");
@@ -728,8 +748,8 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 			    "backing up");
 		    
 		    message(MESS_WARNING, "%s will be saved as %s.rpmsave\n",
-			fileList[sharedList[i].mainFileNumber], 
-			fileList[sharedList[i].mainFileNumber]);
+			prefixedFileList[sharedList[i].mainFileNumber], 
+			prefixedFileList[sharedList[i].mainFileNumber]);
 
 		    instActions[sharedList[i].mainFileNumber] = SAVE;
 		}
