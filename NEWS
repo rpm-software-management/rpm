@@ -33,6 +33,8 @@ the signature.  This should not be cause for alarm as the lead
 is only used by file(1), and by RPM to determine the package type
 (either source or binary) and architecture.
 
+The rpm(1) man page has some details on using PGP signatures.
+
 *** Spec file (RPM building)
 
 . Summary: ...
@@ -75,3 +77,8 @@ is only used by file(1), and by RPM to determine the package type
 . %changelog
 
 . %verify can be used to control which aspects of the file are verified
+
+. %attr can be used to specify mode, user and group of files
+
+. %files -f <file>
+  Takes file list from <file>, which is relative to the build dir.

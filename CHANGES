@@ -1,3 +1,18 @@
+2.0.8 -> 2.0.9:
+	- %files -f <file>
+	- prelim Require/Provide handling
+	- prelim strict checking of spec file
+	- removed some bash-isms
+	- fixed globbing/root bug
+	- fixed rpm -q <num> bug
+	- fixed ftw() related bug where symlinks were being
+	  followed in %files rather than just being noted!!
+	- pass "upgrade" arg to pre/post scripts when upgrading
+	- use PATH to find cpio when installing
+	- fixed rpm.magic, added sun4, mips, 68k, sgi, sunos, solaris
+	- added %attr(mode owner group) feature to file list
+	- fixed dumb %verify() parse bug
+
 2.0.7 -> 2.0.8:
 	- explicitly turn off ASCII armor when running PGP
 	- fixed --noscripts logic, which was on by default and 
