@@ -887,7 +887,7 @@ void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 	int numConflicts);
 
 /** \ingroup rpmtrans
- * Bit(s) to control rpmCheckSig() operation.
+ * Bit(s) to control rpmRunTransaction() operation.
  */
 typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_TEST		= (1 << 0),	/*!< from --test */
@@ -1090,6 +1090,7 @@ enum rpmVerifyAttrs_e {
 
 /** \ingroup rpmcli
  * Verify file attributes and MD5 sum.
+ * @todo python bindings prevent this from being static.
  * @param root		path to top of install tree
  * @param h		header
  * @param filenum	index of file in header file info arrays
@@ -1099,15 +1100,6 @@ enum rpmVerifyAttrs_e {
  */
 int rpmVerifyFile(const char * root, Header h, int filenum,
 	/*@out@*/ int * result, int omitMask);
-
-/** \ingroup rpmcli
- * Return exit code from running verify script in header.
- * @param root		path to top of install tree
- * @param h		header
- * @param err		file handle to use for stderr
- * @return		0 on success
- */
-int rpmVerifyScript(const char * root, Header h, FD_t err);
 
 /** \ingroup rpmcli
  * The command line argument will be used to retrieve header(s) ...

@@ -8,6 +8,7 @@
 
 #include "md5.h"
 #include "misc.h"
+#include "depends.h"
 #include "install.h"
 
 #include "build/rpmbuild.h"
@@ -45,8 +46,6 @@ struct poptOption rpmVerifyPoptTable[] = {
 };
 
 /* ======================================================================== */
-/* XXX static */
-/** */
 int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result, 
 		  int omitMask)
 {
@@ -243,12 +242,24 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
     return 0;
 }
 
-/* XXX static */
-/** */
-int rpmVerifyScript(const char * root, Header h, FD_t err)
+/**
+ * Return exit code from running verify script in header.
+ * @param rootDir	path to top of install tree
+ * @param rpmdb		rpm database
+ * @param h		header
+ * @param scriptFd	file handle to use for stderr
+ * @return		0 on success
+ */
+static int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd)
 {
-    return runInstScript(root, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
-		     0, 0, err);
+    rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
+    int rc;
+
+    ts->scriptFd = scriptFd;
+    rc = runInstScript(ts, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
+		     0, 0);
+    rpmtransFree(ts);
+    return rc;
 }
 
 /* ======================================================================== */
@@ -351,9 +362,10 @@ static int verifyDependencies(/*@only@*/ rpmdb rpmdb, Header h) {
 
 int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
 {
-    int ec, rc;
     FD_t fdo;
-    ec = 0;
+    int ec = 0;
+    int rc;
+
     if ((qva->qva_flags & VERIFY_DEPS) &&
 	(rc = verifyDependencies(rpmdb, h)) != 0)
 	    ec = rc;
@@ -362,7 +374,7 @@ int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
 	    ec = rc;;
     fdo = fdDup(STDOUT_FILENO);
     if ((qva->qva_flags & VERIFY_SCRIPT) &&
-	(rc = rpmVerifyScript(qva->qva_prefix, h, fdo)) != 0)
+	(rc = rpmVerifyScript(qva->qva_prefix, rpmdb, h, fdo)) != 0)
 	    ec = rc;
     Fclose(fdo);
     return ec;

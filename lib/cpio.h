@@ -50,12 +50,16 @@ enum cpioErrorReturns {
 	CPIOERR_INTERNAL	= (23			)
 };
 
-#define CPIO_MAP_PATH		(1 << 0)
-#define CPIO_MAP_MODE		(1 << 1)
-#define CPIO_MAP_UID		(1 << 2)
-#define CPIO_MAP_GID		(1 << 3)
-#define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
-#define CPIO_MULTILIB		(1 << 31) /* internal, only for building */
+/** \ingroup payload
+ */
+enum cpioMapFlags {
+    CPIO_MAP_PATH		= (1 << 0),
+    CPIO_MAP_MODE		= (1 << 1),
+    CPIO_MAP_UID		= (1 << 2),
+    CPIO_MAP_GID		= (1 << 3),
+    CPIO_FOLLOW_SYMLINKS	= (1 << 4),  /* only for building */
+    CPIO_MULTILIB		= (1 << 31) /* internal, only for building */
+};
 
 /** \ingroup payload
  * Defines a single file to be included in a cpio payload.
@@ -91,6 +95,7 @@ typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
 
 /** \ingroup payload
  * The RPM internal equivalent of the command line "cpio -i".
+ *
  * If no mappings are passed, this installs everything! If one is passed
  * it should be sorted according to cpioFileMapCmp() and only files included
  * in the map are installed. Files are installed relative to the current
@@ -133,12 +138,14 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
  * This is designed to be qsort/bsearch compatible.
  * @param a		1st map
  * @param b		2nd map
- * return		result of comparison
+ * @return		result of comparison
  */
 int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
 
 /** \ingroup payload
  * Return fornmatted error message on payload handling failure.
+ * @param		error code
+ * @return		formatted error string
  */
 /*@observer@*/ const char *cpioStrerror(int rc)		/*@*/;
 

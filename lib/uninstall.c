@@ -86,12 +86,10 @@ static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode,
     return 0;
 }
 
-int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
-			Header h, rpmtransFlags transFlags,
-			rpmCallbackFunction notify, rpmCallbackData notifyData,
-			const void * pkgKey, enum fileActions * actions,
-			FD_t scriptFd)
+int removeBinaryPackage(const rpmTransactionSet ts, unsigned int offset,
+		Header h, const void * pkgKey, enum fileActions * actions)
 {
+    rpmtransFlags transFlags = ts->transFlags;
     const char * name, * version, * release;
     const char ** baseNames;
     int scriptArg;
@@ -108,24 +106,24 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
      * When we run scripts, we pass an argument which is the number of 
      * versions of this package that will be installed when we are finished.
      */
-    if ((scriptArg = rpmdbCountPackages(rpmdb, name)) < 0)
+    if ((scriptArg = rpmdbCountPackages(ts->rpmdb, name)) < 0)
 	return 1;
     scriptArg -= 1;
 
     if (!(transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
-	if (runImmedTriggers(rootdir, rpmdb, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
+	if (runImmedTriggers(ts, RPMSENSE_TRIGGERUN, h, -1))
 	    return 2;
 
 	/* run triggers which are set off by the removal of this package */
-	if (runTriggers(rootdir, rpmdb, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
+	if (runTriggers(ts, RPMSENSE_TRIGGERUN, h, -1))
 	    return 1;
     }
 
     if (!(transFlags & RPMTRANS_FLAG_TEST)) {
-	rc = runInstScript(rootdir, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg,
-		          (transFlags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd);
+	rc = runInstScript(ts, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg,
+		          (transFlags & RPMTRANS_FLAG_NOSCRIPTS));
 	if (rc)
 	    return 1;
     }
@@ -144,15 +142,15 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 	int type;
 	char * fileName;
 	int fnmaxlen;
-	int rdlen = (rootdir && !(rootdir[0] == '/' && rootdir[1] == '\0'))
-			? strlen(rootdir) : 0;
+	int rdlen = (ts->rootDir && !(ts->rootDir[0] == '/' && ts->rootDir[1] == '\0'))
+			? strlen(ts->rootDir) : 0;
 
 	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes,
 	               NULL);
 	headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames,
 	               NULL);
 
-	/* Get buffer for largest possible rootdir + dirname + filename. */
+	/* Get buffer for largest possible rootDir + dirname + filename. */
 	fnmaxlen = 0;
 	for (i = 0; i < fileCount; i++) {
 		size_t fnlen;
@@ -166,7 +164,7 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 	fileName = alloca(fnmaxlen);
 
 	if (rdlen) {
-	    strcpy(fileName, rootdir);
+	    strcpy(fileName, ts->rootDir);
 	    (void)rpmCleanPath(fileName);
 	    rdlen = strlen(fileName);
 	} else
@@ -179,9 +177,9 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 	headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
 		 &fileCount);
 
-	if (notify) {
-	    (void)notify(h, RPMCALLBACK_UNINST_START, fileCount, fileCount,
-		pkgKey, notifyData);
+	if (ts->notify) {
+	    (void)ts->notify(h, RPMCALLBACK_UNINST_START, fileCount, fileCount,
+		pkgKey, ts->notifyData);
 	}
 
 	/* Traverse filelist backwards to help insure that rmdir() will work. */
@@ -194,18 +192,18 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 			fileName, fileActionString(actions[i]));
 
 	    if (!(transFlags & RPMTRANS_FLAG_TEST)) {
-		if (notify) {
-		    (void)notify(h, RPMCALLBACK_UNINST_PROGRESS,
-			i, actions[i], fileName, notifyData);
+		if (ts->notify) {
+		    (void)ts->notify(h, RPMCALLBACK_UNINST_PROGRESS,
+			i, actions[i], fileName, ts->notifyData);
 		}
 		removeFile(fileName, fileFlagsList[i], fileModesList[i], 
 			   actions[i]);
 	    }
 	}
 
-	if (notify) {
-	    (void)notify(h, RPMCALLBACK_UNINST_STOP, 0, fileCount,
-			pkgKey, notifyData);
+	if (ts->notify) {
+	    (void)ts->notify(h, RPMCALLBACK_UNINST_STOP, 0, fileCount,
+			pkgKey, ts->notifyData);
 	}
 
 	free(baseNames);
@@ -215,38 +213,37 @@ int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 
     if (!(transFlags & RPMTRANS_FLAG_TEST)) {
 	rpmMessage(RPMMESS_DEBUG, _("running postuninstall script (if any)\n"));
-	rc = runInstScript(rootdir, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
-			scriptArg, (transFlags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd);
+	rc = runInstScript(ts, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
+			scriptArg, (transFlags & RPMTRANS_FLAG_NOSCRIPTS));
 	/* XXX postun failures are not cause for erasure failure. */
     }
 
     if (!(transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal. */
-	rc = runTriggers(rootdir, rpmdb, RPMSENSE_TRIGGERPOSTUN, h,
-			-1, scriptFd);
+	rc = runTriggers(ts, RPMSENSE_TRIGGERPOSTUN, h, -1);
 	if (rc)
 	    return 2;
     }
 
     if (!(transFlags & RPMTRANS_FLAG_TEST))
-	rpmdbRemove(rpmdb, offset);
+	rpmdbRemove(ts->rpmdb, offset);
 
     return 0;
 }
 
 /**
+ * @param ts		transaction set
  * @param h		header
- * @param root		path to top of install tree
  * @param progArgc
  * @param progArgv
  * @param script
  * @param arg1
  * @param arg2
- * @param errfd
  * @return
  */
-static int runScript(Header h, const char * root, int progArgc, const char ** progArgv, 
-		     const char * script, int arg1, int arg2, FD_t errfd)
+static int runScript(const rpmTransactionSet ts, Header h,
+		int progArgc, const char ** progArgv, 
+		const char * script, int arg1, int arg2)
 {
     const char ** argv = NULL;
     int argc = 0;
@@ -296,7 +293,7 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 
     if (script) {
 	FD_t fd;
-	if (makeTempFile(root, &fn, &fd)) {
+	if (makeTempFile(ts->rootDir, &fn, &fd)) {
 	    if (freePrefixes) free(prefixes);
 	    return 1;
 	}
@@ -308,7 +305,7 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	(void)Fwrite(script, sizeof(script[0]), strlen(script), fd);
 	Fclose(fd);
 
-	argv[argc++] = fn + strlen(root);
+	argv[argc++] = fn + strlen(ts->rootDir);
 	if (arg1 >= 0) {
 	    char *av = alloca(20);
 	    sprintf(av, "%d", arg1);
@@ -323,13 +320,13 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 
     argv[argc] = NULL;
 
-    if (errfd != NULL) {
+    if (ts->scriptFd != NULL) {
 	if (rpmIsVerbose()) {
-	    out = fdDup(Fileno(errfd));
+	    out = fdDup(Fileno(ts->scriptFd));
 	} else {
 	    out = Fopen("/dev/null", "w.fdio");
 	    if (Ferror(out)) {
-		out = fdDup(Fileno(errfd));
+		out = fdDup(Fileno(ts->scriptFd));
 	    }
 	}
     } else {
@@ -347,17 +344,17 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	dup2(pipes[0], STDIN_FILENO);
 	close(pipes[0]);
 
-	if (errfd != NULL) {
-	    if (Fileno(errfd) != STDERR_FILENO)
-		dup2(Fileno(errfd), STDERR_FILENO);
+	if (ts->scriptFd != NULL) {
+	    if (Fileno(ts->scriptFd) != STDERR_FILENO)
+		dup2(Fileno(ts->scriptFd), STDERR_FILENO);
 	    if (Fileno(out) != STDOUT_FILENO)
 		dup2(Fileno(out), STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (Fileno(out) > STDERR_FILENO && Fileno(out) != Fileno(errfd)) {
+	    if (Fileno(out) > STDERR_FILENO && Fileno(out) != Fileno(ts->scriptFd)) {
 		Fclose (out);
 	    }
-	    if (Fileno(errfd) > STDERR_FILENO) {
-		Fclose (errfd);
+	    if (Fileno(ts->scriptFd) > STDERR_FILENO) {
+		Fclose (ts->scriptFd);
 	    }
 	}
 
@@ -381,14 +378,14 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	    }
 	}
 
-	switch(urlIsURL(root)) {
+	switch(urlIsURL(ts->rootDir)) {
 	case URL_IS_PATH:
-	    root += sizeof("file://") - 1;
-	    root = strchr(root, '/');
+	    ts->rootDir += sizeof("file://") - 1;
+	    ts->rootDir = strchr(ts->rootDir, '/');
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
-	    if (strcmp(root, "/"))
-		/*@-unrecog@*/ chroot(root); /*@=unrecog@*/
+	    if (strcmp(ts->rootDir, "/"))
+		/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
 	    chdir("/");
 	    execv(argv[0], (char *const *)argv);
 	    break;
@@ -424,8 +421,8 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
     return 0;
 }
 
-int runInstScript(const char * root, Header h, int scriptTag, int progTag,
-	          int arg, int norunScripts, FD_t err)
+int runInstScript(const rpmTransactionSet ts, Header h,
+		int scriptTag, int progTag, int arg, int norunScripts)
 {
     void ** programArgv;
     int programArgc;
@@ -449,27 +446,25 @@ int runInstScript(const char * root, Header h, int scriptTag, int progTag,
 	argv = (const char **) programArgv;
     }
 
-    rc = runScript(h, root, programArgc, argv, script, arg, -1, err);
+    rc = runScript(ts, h, programArgc, argv, script, arg, -1);
     if (programArgv && programType == RPM_STRING_ARRAY_TYPE) free(programArgv);
     return rc;
 }
 
 /**
- * @param root		path to top of install tree
- * @param db		rpm database
+ * @param ts		transaction set
  * @param sense
  * @param sourceH
  * @param triggeredH
  * @param arg1correction
  * @param arg2
  * @param triggersAlreadyRun
- * @param scriptFd
  * @return
  */
-static int handleOneTrigger(const char * root, rpmdb db, int sense,
+static int handleOneTrigger(const rpmTransactionSet ts, int sense,
 			Header sourceH, Header triggeredH,
 			int arg1correction, int arg2,
-			char * triggersAlreadyRun, FD_t scriptFd)
+			char * triggersAlreadyRun)
 {
     const char ** triggerNames;
     const char ** triggerEVR;
@@ -501,8 +496,7 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense,
 	if (!(triggerFlags[i] & sense)) continue;
 	if (strcmp(triggerNames[i], sourceName)) continue;
 
-	/* For some reason, the TRIGGERVERSION stuff includes the name
-	   of the package which the trigger is based on. We need to skip
+	/* For some reason, the TRIGGERVERSION stuff includes the name of the package which the trigger is based on. We need to skip
 	   over that here. I suspect that we'll change our minds on this
 	   and remove that, so I'm going to just 'do the right thing'. */
 	skip = strlen(triggerNames[i]);
@@ -528,15 +522,15 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense,
 	{   int arg1;
 	    int index;
 
-	    if ((arg1 = rpmdbCountPackages(db, triggerPackageName)) < 0) {
+	    if ((arg1 = rpmdbCountPackages(ts->rpmdb, triggerPackageName)) < 0) {
 		rc = 1;	/* XXX W2DO? same as "execution of script failed" */
 	    } else {
 		arg1 += arg1correction;
 		index = triggerIndices[i];
 		if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
-		    rc = runScript(triggeredH, root, 1, triggerProgs + index,
+		    rc = runScript(ts, triggeredH, 1, triggerProgs + index,
 			    triggerScripts[index], 
-			    arg1, arg2, scriptFd);
+			    arg1, arg2);
 		    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
 		}
 	    }
@@ -555,8 +549,8 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense,
     return rc;
 }
 
-int runTriggers(const char * root, rpmdb db, int sense, Header h,
-		int countCorrection, FD_t scriptFd)
+int runTriggers(const rpmTransactionSet ts, int sense, Header h,
+		int countCorrection)
 {
     const char * name;
     int numPackage;
@@ -564,17 +558,17 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 
     headerNVR(h, &name, NULL, NULL);
 
-    numPackage = rpmdbCountPackages(db, name);
+    numPackage = rpmdbCountPackages(ts->rpmdb, name);
     if (numPackage < 0)
 	return 1;
 
     {	Header triggeredH;
 	rpmdbMatchIterator mi;
 
-	mi = rpmdbInitIterator(db, RPMTAG_TRIGGERNAME, name, 0);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_TRIGGERNAME, name, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
-	    rc |= handleOneTrigger(root, db, sense, h, triggeredH, 0, numPackage, 
-			       NULL, scriptFd);
+	    rc |= handleOneTrigger(ts, sense, h, triggeredH, 0, numPackage, 
+			       NULL);
 	}
 
 	rpmdbFreeIterator(mi);
@@ -583,8 +577,8 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
     return rc;
 }
 
-int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
-		     int countCorrection, FD_t scriptFd)
+int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
+		     int countCorrection)
 {
     const char ** triggerNames;
     int numTriggers;
@@ -610,12 +604,12 @@ int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 
 	    if (triggersRun[triggerIndices[i]]) continue;
 	
-	    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
+	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, name, 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		rc |= handleOneTrigger(root, db, sense, sourceH, h, 
+		rc |= handleOneTrigger(ts, sense, sourceH, h, 
 				   countCorrection, rpmdbGetIteratorCount(mi),
-				   triggersRun, scriptFd);
+				   triggersRun);
 	    }
 
 	    rpmdbFreeIterator(mi);
