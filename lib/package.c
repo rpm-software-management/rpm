@@ -241,8 +241,8 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
  * @return		0 if new keyid, otherwise 1
  */
 static int rpmtsStashKeyid(rpmts ts)
-	/*@globals nkeyids, keyids @*/
-	/*@modifies nkeyids, keyids @*/
+	/*@globals nextkeyid, nkeyids, keyids @*/
+	/*@modifies nextkeyid, nkeyids, keyids @*/
 {
     const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
@@ -270,7 +270,8 @@ static int rpmtsStashKeyid(rpmts ts)
 	keyids = xrealloc(keyids, nkeyids * sizeof(*keyids));
     }
 /*@-boundswrite@*/
-    keyids[nextkeyid] = keyid;
+    if (keyids)		/* XXX can't happen */
+	keyids[nextkeyid] = keyid;
 /*@=boundswrite@*/
     nextkeyid++;
     nextkeyid %= nkeyids_max;
@@ -280,7 +281,9 @@ static int rpmtsStashKeyid(rpmts ts)
 
 int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 {
+/*@-castexpose@*/
     entryInfo pe = (entryInfo) pev;
+/*@=castexpose@*/
     entryInfo info = iv;
     int i;
 
@@ -349,11 +352,13 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     int xx;
     int i;
 
+/*@-boundswrite@*/
     buf[0] = '\0';
+/*@=boundswrite@*/
 
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
 		uc, il, dl);
 	goto exit;
@@ -362,7 +367,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     /* Check (and convert) the 1st tag element. */
     xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
     if (xx != -1) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		0, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -382,7 +387,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
     /* Is the offset within the data area? */
     if (entry->info.offset >= dl) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -391,19 +396,19 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
     /* Is there an immutable header region tag trailer? */
     regionEnd = dataStart + entry->info.offset;
+/*@-sizeoftype@*/
 /*@-bounds@*/
     (void) memcpy(info, regionEnd, REGION_TAG_COUNT);
 /*@=bounds@*/
     regionEnd += REGION_TAG_COUNT;
 
-/*@-sizeoftype@*/
     xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
     if (xx != -1 ||
 	!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
        && entry->info.type == RPM_BIN_TYPE
        && entry->info.count == REGION_TAG_COUNT))
     {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -417,7 +422,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     /* Is the no. of tags in the region less than the total no. of tags? */
     ril = entry->info.offset/sizeof(*pe);
     if ((entry->info.offset % sizeof(*pe)) || ril > il) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	goto exit;
     }
@@ -426,7 +431,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     for (i = ril; i < il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
 	if (xx != -1) {
-	    snprintf(buf, sizeof(buf),
+	    (void) snprintf(buf, sizeof(buf),
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		i, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -446,7 +451,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 	    }
 	    if (entry->info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
 	    {
-		snprintf(buf, sizeof(buf), _("hdr SHA1: BAD, not hex\n"));
+		(void) snprintf(buf, sizeof(buf), _("hdr SHA1: BAD, not hex\n"));
 		goto exit;
 	    }
 /*@=boundsread@*/
@@ -464,7 +469,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 	    if (vsflags & RPMVSF_NODSAHEADER)
 		/*@switchbreak@*/ break;
 	    if (entry->info.type != RPM_BIN_TYPE) {
-		snprintf(buf, sizeof(buf), _("hdr DSA: BAD, not binary\n"));
+		(void) snprintf(buf, sizeof(buf), _("hdr DSA: BAD, not binary\n"));
 		goto exit;
 	    }
 /*@-boundswrite@*/
@@ -481,8 +486,10 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 exit:
     /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
     if (rc != RPMRC_NOTFOUND) {
+/*@-boundswrite@*/
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
+/*@=boundswrite@*/
 	return rc;
     }
 
@@ -491,17 +498,19 @@ exit:
 verifyinfo_exit:
 	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
 	if (xx != -1) {
-	    snprintf(buf, sizeof(buf),
+	    (void) snprintf(buf, sizeof(buf),
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		xx+1, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
 	    rc = RPMRC_FAIL;
 	} else {
-	    snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
+	    (void) snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
 	    rc = RPMRC_OK;
 	}
+/*@-boundswrite@*/
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
+/*@=boundswrite@*/
 	return rc;
     }
 
@@ -631,46 +640,57 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
+/*@-boundswrite@*/
     buf[0] = '\0';
 
     if (hdrp)
 	*hdrp = NULL;
     if (msg)
 	*msg = NULL;
+/*@=boundswrite@*/
 
+    memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("hdr size(%d): BAD, read returned %d\n"), sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, header_magic, sizeof(header_magic))) {
-	snprintf(buf, sizeof(buf), _("hdr magic: BAD\n"));
+	(void) snprintf(buf, sizeof(buf), _("hdr magic: BAD\n"));
 	goto exit;
     }
+/*@-boundsread@*/
     il = ntohl(block[2]);
+/*@=boundsread@*/
     if (hdrchkTags(il)) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("hdr tags: BAD, no. of tags(%d) out of range\n"), il);
 
 	goto exit;
     }
+/*@-boundsread@*/
     dl = ntohl(block[3]);
+/*@=boundsread@*/
     if (hdrchkData(dl)) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("hdr data: BAD, no. of bytes(%d) out of range\n"), dl);
 	goto exit;
     }
 
+/*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
+/*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
     ei = xmalloc(uc);
+/*@-bounds@*/
     ei[0] = block[2];
     ei[1] = block[3];
     if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("hdr blob(%d): BAD, read returned %d\n"), nb, xx);
 	goto exit;
     }
+/*@=bounds@*/
 
     /* Sanity check header tags */
     rc = headerCheck(ts, ei, uc, msg);
@@ -680,15 +700,17 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     /* OK, blob looks sane, load the header. */
     h = headerLoad(ei);
     if (h == NULL) {
-	snprintf(buf, sizeof(buf), _("hdr load: BAD\n"));
+	(void) snprintf(buf, sizeof(buf), _("hdr load: BAD\n"));
         goto exit;
     }
     h->flags |= HEADERFLAG_ALLOCATED;
     ei = NULL;	/* XXX will be freed with header */
     
 exit:
-    if (rc == RPMRC_OK && hdrp && h)
+/*@-boundswrite@*/
+    if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
+/*@=boundswrite@*/
     ei = _free(ei);
     h = headerFree(h);
 
@@ -702,6 +724,7 @@ exit:
     return rc;
 }
 
+/*@-bounds@*/	/* LCL: segfault */
 int rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     pgpDig dig;
@@ -987,3 +1010,4 @@ exit:
     sigh = rpmFreeSignature(sigh);
     return rc;
 }
+/*@=bounds@*/

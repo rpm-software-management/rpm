@@ -13,6 +13,7 @@
 #include "ugid.h"
 #include "debug.h"
 
+/*@access DIR@*/
 /*@access FD_t@*/
 /*@access urlinfo@*/
 
@@ -1174,7 +1175,9 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     /*@=abstract@*/
 
     mydir->fd = ftpmagicdir;
+/*@-usereleased@*/
     mydir->data = (char *) dp;
+/*@=usereleased@*/
     mydir->allocation = nb;
     mydir->size = ac;
     mydir->offset = -1;
@@ -1242,7 +1245,9 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
     }
     av[ac] = NULL;
 
+/*@-kepttrans@*/
     return (DIR *) mydir;
+/*@=kepttrans@*/
 }
 /*@=boundswrite@*/
 

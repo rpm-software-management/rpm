@@ -50,6 +50,12 @@ typedef	FILE * FD_t;
 
 #include "debug.h"
 
+#if defined(__LCLINT__)
+/*@-exportheader@*/
+extern const unsigned short int **__ctype_b_loc (void) /*@*/;
+/*@=exportheader@*/
+#endif
+
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access MacroContext@*/
 /*@access MacroEntry@*/

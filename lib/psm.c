@@ -785,7 +785,7 @@ fprintf(stderr, "   Disable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms
  */
 static pid_t psmFork(rpmpsm psm)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies psm, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     pid_t pid;
 
@@ -804,8 +804,8 @@ fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmt
  * @return		fork(2) pid
  */
 static pid_t psmRegisterFork(rpmpsm psm)
-	/*@globals psmtbl, fileSystem @*/
-	/*@modifies psm, psmtbl, fileSystem @*/
+	/*@globals psmtbl, fileSystem, internalState @*/
+	/*@modifies psm, psmtbl, fileSystem, internalState @*/
 {
     sigset_t newMask, oldMask;
     int empty = -1;
@@ -850,8 +850,8 @@ fprintf(stderr, "  Register: %p[%d:%d:%d] = %p\n", psmtbl.psms, empty, psmtbl.np
  * Unregister a child reaper.
  */
 static int psmUnregister(rpmpsm psm, pid_t child)
-	/*@globals psmtbl, fileSystem @*/
-	/*@modifies psmtbl, fileSystem @*/
+	/*@globals psmtbl, fileSystem, internalState @*/
+	/*@modifies psmtbl, fileSystem, internalState @*/
 {
     sigset_t newMask, oldMask;
     int i = 0;
@@ -895,6 +895,8 @@ fprintf(stderr, "Unregister: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmt
  * @return		
  */
 static inline pid_t psmGetReaped(rpmpsm psm)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     sigset_t newMask, oldMask;
     pid_t reaped;
@@ -992,6 +994,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t out;
     rpmRC rc = RPMRC_OK;
     const char *n, *v, *r;
+    pid_t pid;
 
     if (progArgv == NULL && script == NULL)
 	return rc;
@@ -1113,7 +1116,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     
     /*@-branchstate@*/
-    if ((psm->child = psmRegisterFork(psm)) == 0) {
+    pid = psmRegisterFork(psm);
+    psm->child = pid;
+    if (psm->child == 0) {
 	const char * rootDir;
 	int pipes[2];
 

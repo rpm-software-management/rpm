@@ -397,11 +397,13 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
     case RPM_STRING_TYPE:
 	if (count != 1)
 	    return -1;
+/*@-boundsread@*/
 	while (*s++) {
 	    if (se && s > se)
 		return -1;
 	    length++;
 	}
+/*@=boundsread@*/
 	length++;	/* count nul terminator too. */
 	break;
 
@@ -413,11 +415,13 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
 	if (onDisk) {
 	    while (count--) {
 		length++;       /* count nul terminator too */
+/*@-boundsread@*/
                while (*s++) {
 		    if (se && s > se)
 			return -1;
 		    length++;
 		}
+/*@=boundsread@*/
 	    }
 	} else {
 	    const char ** av = (const char **)p;
@@ -500,8 +504,10 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 	    return -1;
 	if (hdrchkData(ie.info.offset))
 	    return -1;
+/*@-boundsread@*/
 	if (hdrchkAlign(ie.info.type, ie.info.offset))
 	    return -1;
+/*@=boundsread@*/
 
 	ie.data = t = dataStart + ie.info.offset;
 	if (dataEnd && t >= dataEnd)
@@ -1078,7 +1084,9 @@ Header headerLoad(/*@kept@*/ void * uh)
 	    if (hdrchkData(off))
 		goto errxit;
 	    if (off) {
+/*@-sizeoftype@*/
 		size_t nb = REGION_TAG_COUNT;
+/*@=sizeoftype@*/
 		int_32 * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
 		ril = rdl/sizeof(*pe);
@@ -1834,10 +1842,12 @@ grabData(int_32 type, hPTR_t p, int_32 c, /*@out@*/ int * lengthPtr)
     int length;
 
     length = dataLength(type, p, c, 0, NULL);
+/*@-branchstate@*/
     if (length > 0) {
 	data = xmalloc(length);
 	copyData(type, data, p, c, length);
     }
+/*@=branchstate@*/
 
     if (lengthPtr)
 	*lengthPtr = length;

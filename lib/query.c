@@ -312,6 +312,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 			_("package has neither file owner or id lists\n"));
 	    }
 	}
+/*@-branchstate@*/
 	if (te > t) {
 /*@-boundswrite@*/
 	    *te++ = '\n';
@@ -321,6 +322,7 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 	    *t = '\0';
 /*@=boundswrite@*/
 	}
+/*@=branchstate@*/
     }
 	    
     rc = 0;

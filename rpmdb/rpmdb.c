@@ -769,8 +769,8 @@ static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
  */
 /*@mayexit@*/
 static int unblockSignals(/*@unused@*/ rpmdb db, sigset_t * oldMask)
-	/*@globals rpmdbRock, fileSystem @*/
-	/*@modifies rpmdbRock, fileSystem @*/
+	/*@globals rpmdbRock, fileSystem, internalState @*/
+	/*@modifies rpmdbRock, fileSystem, internalState @*/
 {
     (void) rpmdbCheckSignals();
     return sigprocmask(SIG_SETMASK, oldMask, NULL);
@@ -1155,9 +1155,9 @@ int rpmdbVerify(const char * prefix)
  */
 static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 		DBT * key, DBT * data, /*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies db, *key, *data, *matches, rpmGlobalMacroContext,
-		fileSystem @*/
+		fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -1371,9 +1371,9 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ const char * version,
 		/*@null@*/ const char * release,
 		/*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, *matches,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
     int gotMatches = 0;
@@ -1467,9 +1467,9 @@ exit:
  */
 static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies dbi, *dbcursor, *key, *data, *matches,
-		rpmGlobalMacroContext, fileSystem @*/
+		rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@requires maxSet(matches) >= 0 @*/
 {
     const char * release;
@@ -1604,8 +1604,8 @@ struct _rpmdbMatchIterator {
  * @return 		0 on success
  */
 static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
-	/*@globals fileSystem @*/
-	/*@modifies mi, fileSystem @*/
+	/*@globals fileSystem, internalState @*/
+	/*@modifies mi, fileSystem, internalState @*/
 {
     int rc = 0;
 

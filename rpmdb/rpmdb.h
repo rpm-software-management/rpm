@@ -1004,8 +1004,8 @@ int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts,
 /*@only@*/ /*@null@*/
 rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Return next package header from iteration.
@@ -1014,16 +1014,16 @@ rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag rpmtag,
  */
 /*@null@*/
 Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies mi, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Check rpmdb signal handler for trapped signal exit.
  */
 /*@mayexit@*/
 int rpmdbCheckSignals(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Destroy rpm database iterator.
@@ -1032,8 +1032,8 @@ int rpmdbCheckSignals(void)
  */
 /*@null@*/
 rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies mi, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.
@@ -1046,8 +1046,8 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
  */
 int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
 		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies db, h, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies db, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
@@ -1061,8 +1061,8 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
 int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 		/*@null@*/ rpmts ts,
 		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.

@@ -37,8 +37,9 @@
  * @return		-1 on error, otherwise, an open file descriptor
  */ 
 static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_t *fsizep)
-	/*@globals rpmGlobalMacroContext, internalState @*/
-	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
 /*@only@*/
     static const char * cmd = NULL;

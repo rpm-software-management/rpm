@@ -47,9 +47,9 @@ Header rpmNewSignature(void)
  * @return		rpmRC return code
  */
 rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
-		sigType sig_type, const char ** msg)
+		sigType sig_type, /*@null@*/ /*@out@*/ const char ** msg)
 	/*@globals fileSystem @*/
-	/*@modifies fd, *sighp, fileSystem @*/;
+	/*@modifies fd, *sighp, *msg, fileSystem @*/;
 
 /** \ingroup signature
  * Write signature header.

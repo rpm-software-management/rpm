@@ -19,6 +19,8 @@
 #include "debug.h"
 
 /*@access Header@*/		/* XXX compared with NULL */
+/*@access entryInfo @*/		/* XXX rpmReadSignature */
+/*@access indexEntry @*/	/* XXX rpmReadSignature */
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access DIGEST_CTX@*/		/* XXX compared with NULL */
 /*@access pgpDig@*/
@@ -163,45 +165,56 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     int xx;
     int i;
 
+/*@-boundswrite@*/
     if (sighp)
 	*sighp = NULL;
 
     buf[0] = '\0';
+/*@=boundswrite@*/
 
     if (sig_type != RPMSIGTYPE_HEADERSIG)
 	goto exit;
 
+    memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("sigh size(%d): BAD, read returned %d\n"), sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, header_magic, sizeof(header_magic))) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("sigh magic: BAD\n"));
 	goto exit;
     }
+/*@-boundsread@*/
     il = ntohl(block[2]);
+/*@=boundsread@*/
     if (il < 0 || il > 32) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("sigh tags: BAD, no. of tags(%d) out of range\n"), il);
 	goto exit;
     }
+/*@-boundsread@*/
     dl = ntohl(block[3]);
+/*@=boundsread@*/
     if (dl < 0 || dl > 8192) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("sigh data: BAD, no. of  bytes(%d) out of range\n"), dl);
 	goto exit;
     }
 
+/*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
+/*@=sizeoftype@*/
     ei = xmalloc(sizeof(il) + sizeof(dl) + nb);
+/*@-bounds@*/
     ei[0] = block[2];
     ei[1] = block[3];
     pe = (entryInfo) &ei[2];
+/*@=bounds@*/
     dataStart = (unsigned char *) (pe + il);
     if ((xx = timedRead(fd, (char *)pe, nb)) != nb) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("sigh blob(%d): BAD, read returned %d\n"), nb, xx);
 	goto exit;
     }
@@ -209,7 +222,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     /* Check (and convert) the 1st tag element. */
     xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
     if (xx != -1) {
-	snprintf(buf, sizeof(buf),
+	(void) snprintf(buf, sizeof(buf),
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		0, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -225,7 +238,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 /*@=sizeoftype@*/
 
 	if (entry->info.offset >= dl) {
-	    snprintf(buf, sizeof(buf),
+	    (void) snprintf(buf, sizeof(buf),
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -234,19 +247,19 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 
 	/* Is there an immutable header region tag trailer? */
 	dataEnd = dataStart + entry->info.offset;
+/*@-sizeoftype@*/
 /*@-bounds@*/
 	(void) memcpy(info, dataEnd, REGION_TAG_COUNT);
 /*@=bounds@*/
 	dataEnd += REGION_TAG_COUNT;
 
-/*@-sizeoftype@*/
 	xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
 	if (xx != -1 ||
 	    !(entry->info.tag == RPMTAG_HEADERSIGNATURES
 	   && entry->info.type == RPM_BIN_TYPE
 	   && entry->info.count == REGION_TAG_COUNT))
 	{
-	    snprintf(buf, sizeof(buf),
+	    (void) snprintf(buf, sizeof(buf),
 		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -260,18 +273,20 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 	/* Is the no. of tags in the region less than the total no. of tags? */
 	ril = entry->info.offset/sizeof(*pe);
 	if ((entry->info.offset % sizeof(*pe)) || ril > il) {
-	    snprintf(buf, sizeof(buf),
+	    (void) snprintf(buf, sizeof(buf),
 		_("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	    goto exit;
 	}
     }
 
     /* Sanity check signature tags */
+/*@-boundswrite@*/
     memset(info, 0, sizeof(*info));
+/*@=boundswrite@*/
     for (i = 1; i < il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
 	if (xx != -1) {
-	    snprintf(buf, sizeof(buf),
+	    (void) snprintf(buf, sizeof(buf),
 		_("sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		i, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -282,7 +297,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     /* OK, blob looks sane, load the header. */
     sigh = headerLoad(ei);
     if (sigh == NULL) {
-	snprintf(buf, sizeof(buf), _("sigh load: BAD\n"));
+	(void) snprintf(buf, sizeof(buf), _("sigh load: BAD\n"));
 	goto exit;
     }
     sigh->flags |= HEADERFLAG_ALLOCATED;
@@ -293,7 +308,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 
 	/* Position at beginning of header. */
 	if (pad && (xx = timedRead(fd, (char *)block, pad)) != pad) {
-	    snprintf(buf, sizeof(buf),
+	    (void) snprintf(buf, sizeof(buf),
 		_("sigh pad(%d): BAD, read %d bytes\n"), pad, xx);
 	    goto exit;
 	}
@@ -304,11 +319,11 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     }
 
 exit:
-    if (rc == RPMRC_OK && sighp && sigh)
+/*@-boundswrite@*/
+    if (sighp && sigh && rc == RPMRC_OK)
 	*sighp = headerLink(sigh);
     sigh = headerFree(sigh);
 
-/*@-boundswrite@*/
     if (msg != NULL) {
 	buf[sizeof(buf)-1] = '\0';
 	*msg = xstrdup(buf);

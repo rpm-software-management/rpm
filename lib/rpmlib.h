@@ -123,10 +123,10 @@ int headerNVR(Header h,
  * Translate and merge legacy signature tags into header.
  * @todo Remove headerSort() through headerInitIterator() modifies sig.
  * @param h		header
- * @param sig		signature header
+ * @param sigh		signature header
  */
-void headerMergeLegacySigs(Header h, const Header sig)
-	/*@modifies h, sig @*/;
+void headerMergeLegacySigs(Header h, const Header sigh)
+	/*@modifies h, sigh @*/;
 
 /** \ingroup header
  * Regenerate signature header.
@@ -853,10 +853,11 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
  * @param ts		transaction set
  * @param uh		unloaded header blob
  * @param uc		no. of bytes in blob (or 0 to disable)
- * @retval *msg		verification error message
+ * @retval *msg		verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
+rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
+		/*@out@*/ /*@null@*/ const char ** msg)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, *msg, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
@@ -866,12 +867,13 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
  * @param ts		transaction set
  * @param fd		file handle
  * @retval hdrp		address of header (or NULL)
- * @retval *msg		verification error message
+ * @retval *msg		verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
+rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
+		/*@out@*/ /*@null@*/ const char ** msg)
         /*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-        /*@modifies ts, *msg, rpmGlobalMacroContext,
+        /*@modifies ts, *hdrp, *msg, rpmGlobalMacroContext,
                 fileSystem, internalState @*/;
 
 /**

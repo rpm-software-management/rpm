@@ -299,8 +299,8 @@ extern struct poptOption rpmVerifyPoptTable[];
  * @return		result of last non-zero showPackage() return
  */
 int rpmcliShowMatches(QVA_t qva, rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem@*/
-	/*@modifies qva, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies qva, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Display list of tags that can be used in --queryformat.
@@ -560,7 +560,8 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
 int rpmErase(rpmts ts, const struct rpmInstallArguments_s * ia,
 		/*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies ts, ia, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * A rollback transaction id element.
