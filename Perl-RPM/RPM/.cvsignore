@@ -1,4 +1,5 @@
 Header.c
+Error.c
 Database.c
 Constants.c
 *.html
