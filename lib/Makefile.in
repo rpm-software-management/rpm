@@ -1,6 +1,7 @@
 LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o falloc.o \
-	     convertdb.o oldrpmfile.o var.o md5.o md5sum.o dbindex.o \
-	     rpmdb.o stringbuf.o rpmlead.o package.o uninstall.o
+	     convertdb.o var.o md5.o md5sum.o dbindex.o \
+	     rpmdb.o stringbuf.o rpmlead.o package.o uninstall.o \
+	     oldheader.o
 LIBRPM = librpm.a
 LOADLIBES = -lrpm -lgdbm -ldb $(LIBEFENCE)
 PROGS = test dump dumpdb
@@ -16,6 +17,8 @@ endif
 all: $(TARGET)
 
 allprogs: $(LIBRPM) $(PROGS)
+
+$(PROGS): $(LIBRPM)
 
 $(LIBRPM): $(LIBOBJECTS) 
 	$(AR) $@ $(LIBOBJECTS)
