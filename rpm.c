@@ -12,9 +12,9 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <sys/types.h>
 
 #include "build/build.h"
