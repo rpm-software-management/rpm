@@ -10,11 +10,11 @@ verify script:\
 %{VERIFYSCRIPT}\n'
 
 rpm alias --setperms -q --qf '[%{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
-		   --pipe "sed 's/^.../chmod /' | sh"
+		   --pipe "grep -v \(none\) | sed 's/^.../chmod /' | sh"
 
 rpm alias --setugids -q --qf \
 		   '[chown %{FILEUSERNAME:shescape}:%{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n]' \
-		   --pipe "sh"
+		   --pipe "grep -v \(none\) | sh"
 
 rpm alias --requires --qf \
 	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"
