@@ -16,6 +16,7 @@
 	- create /usr/lib/rpm directory and move rpmrc et al there
 
 2.5.3 -> 2.5.4:
+	- eliminate redundant close in provide/require processing.
 	- solaris portability patch resurrection (Steve Sanberg).
 	- add %license/%readme virtual file attributes
         - align "Build Host:" with other fields
