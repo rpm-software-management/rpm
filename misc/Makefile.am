@@ -11,7 +11,7 @@ EXTRA_DIST = \
 	fakefork.c	fnmatch.c	getcwd.c	getmntent.c	\
 	getwd.c						memcmp.c	\
 	mktime.c	myrealloc.c	putenv.c	realpath.c	\
-			stpcpy.c	stpncpy.c	strcasecmp.c	\
+	setenv.c	stpcpy.c	stpncpy.c	strcasecmp.c	\
 	strncasecmp.c	strcspn.c	strdup.c	strerror.c	\
 	strftime.c	strcspn.c	strstr.c	strtol.c	\
 	strtoul.c

@@ -592,7 +592,7 @@ dnl XXX AC_FUNC_UTIME_NULL
 dnl XXX AC_FUNC_VFORK
 dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
 
-AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath)
+AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath setenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcasecmp strncasecmp strcspn)
 AC_CHECK_FUNCS(strdup strerror strtol strtoul strspn strstr)
 
