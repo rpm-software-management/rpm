@@ -52,23 +52,49 @@ struct cpioCallbackInfo {
     long bytesProcessed;		/* bytes in archive read */
 };
 
+typedef struct CFD {
+    union {
+	int	_cfdu_fd;
+#define	cpioFd	_cfdu._cfdu_fd
+	FILE *	_cfdu_fp;
+#define	cpioFp	_cfdu._cfdu_fp
+	gzFile	_cfdu_gzfd;
+#define	cpioGzFd	_cfdu._cfdu_gzfd
+    } _cfdu;
+    int		cpioPos;
+    enum cpioIoType {
+	cpioIoTypeDebug,
+	cpioIoTypeFd,
+	cpioIoTypeFp,
+	cpioIoTypeGzFd,
+    } cpioIoType;
+} CFD_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void (*cpioCallback)(struct cpioCallbackInfo * filespec, void * data);
 
 /* If no mappings are passed, this installs everything! If one is passed
    it should be sorted according to cpioFileMapCmp() and only files included
    in the map are installed. Files are installed relative to the current
-   directory unless a mapping is given which specifies an absolute 
+   directory unless a mapping is given which specifies an absolute
    directory. The mode mapping is only used for the permission bits, not
    for the file type. The owner/group mappings are ignored for the nonroot
    user. If *failedFile is non-NULL on return, it should be free()d. */
-int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings, 
+int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
 		       char ** failedFile);
-int cpioBuildArchive(int fd, struct cpioFileMapping * mappings, 
+int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, char ** failedFile);
 
 /* This is designed to be qsort/bsearch compatible */
 int cpioFileMapCmp(const void * a, const void * b);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif	/* H_CPIO */

@@ -985,7 +985,6 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data) {
 static int installArchive(int fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  char ** specFile, int archiveSize) {
-    gzFile stream;
     int rc, i;
     struct cpioFileMapping * map = NULL;
     int mappedFiles = 0;
@@ -1027,12 +1026,15 @@ static int installArchive(int fd, struct fileInfo * files,
     if (notify)
 	notify(0, archiveSize);
 
-    stream = gzdopen(fd, "r");
-    rc = cpioInstallArchive(stream, map, mappedFiles, 
+  { CFD_t cfdbuf, *cfd = &cfdbuf;
+    cfd->cpioIoType = cpioIoTypeGzFd;
+    cfd->cpioGzFd = gzdopen(fd, "r");
+    rc = cpioInstallArchive(cfd, map, mappedFiles, 
 			    ((notify && archiveSize) || specFile) ? 
 				callback : NULL, 
 			    &info, &failedFile);
-    gzclose(stream);
+    gzclose(cfd->cpioGzFd);
+  }
 
     if (rc) {
 	/* this would probably be a good place to check if disk space

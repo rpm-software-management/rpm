@@ -33,8 +33,17 @@ static int addFileToArrayTag(Spec spec, char *file, Header h, int tag);
 static int writeRPM(Header header, char *fileName, int type,
 		    struct cpioFileMapping *cpioList, int cpioCount,
 		    char *passPhrase, char **cookie);
-static int cpio_gzip(int fd, struct cpioFileMapping *cpioList,
-		     int cpioCount, int *archiveSize);
+
+typedef struct cpioSourceArchive {
+    int		cpioFlags;
+    int		cpioArchiveSize;
+    int		cpioFdIn;
+    struct cpioFileMapping *cpioList;
+    int		cpioCount;
+} CSA_t;
+    
+static int cpio_gzip(int fdo, CSA_t *csa);
+static int cpio_copy(int fdo, CSA_t *csa);
 
 static int genSourceRpmName(Spec spec)
 {
@@ -160,15 +169,22 @@ static int writeRPM(Header header, char *fileName, int type,
 		    struct cpioFileMapping *cpioList, int cpioCount,
 		    char *passPhrase, char **cookie)
 {
-    int archiveSize, fd, ifd, rc, count, arch, os, sigtype;
+    CSA_t csabuf, *csa = &csabuf;
+    int fd, ifd, rc, count, arch, os, sigtype;
     char *sigtarget, *name, *version, *release;
     char buf[BUFSIZ];
     Header sig;
     struct rpmlead lead;
 
+    csa->cpioFlags = 0;
+    csa->cpioArchiveSize = 0;
+    csa->cpioFdIn = -1;
+    csa->cpioList = cpioList;
+    csa->cpioCount = cpioCount;
+
     /* Add the a bogus archive size to the Header */
     headerAddEntry(header, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
-		   &archiveSize, 1);
+		   &csa->cpioArchiveSize, 1);
 
     /* Create and add the cookie */
     if (cookie) {
@@ -185,7 +201,7 @@ static int writeRPM(Header header, char *fileName, int type,
     headerWrite(fd, header, HEADER_MAGIC_YES);
 	     
     /* Write the archive and get the size */
-    if ((rc = cpio_gzip(fd, cpioList, cpioCount, &archiveSize))) {
+    if ((rc = cpio_gzip(fd, csa)) != 0) {
 	close(fd);
 	unlink(sigtarget);
 	free(sigtarget);
@@ -194,7 +210,7 @@ static int writeRPM(Header header, char *fileName, int type,
 
     /* Now set the real archive size in the Header */
     headerModifyEntry(header, RPMTAG_ARCHIVESIZE,
-		      RPM_INT32_TYPE, &archiveSize, 1);
+		      RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
     lseek(fd, 0,  SEEK_SET);
     headerWrite(fd, header, HEADER_MAGIC_YES);
 
@@ -288,46 +304,16 @@ static int writeRPM(Header header, char *fileName, int type,
     return 0;
 }
 
-static int cpio_gzip(int fd, struct cpioFileMapping *cpioList,
-		     int cpioCount, int *archiveSize)
-{
-    char *gzipbin;
-    void *oldhandler;
-    int rc, gzipPID, toGzip[2], status;
+static int cpio_gzip(int fd, CSA_t *csa) {
+    CFD_t cfdbuf, *cfd = &cfdbuf;
+    int rc;
     char *failedFile;
 
-    gzipbin = rpmGetVar(RPMVAR_GZIPBIN);
-    oldhandler = signal(SIGPIPE, SIG_IGN);
-
-    /* GZIP */
-    pipe(toGzip);
-    if (!(gzipPID = fork())) {
-	close(toGzip[1]);
-	
-	dup2(toGzip[0], 0);  /* Make stdin the in pipe       */
-	dup2(fd, 1);         /* Make stdout the passed-in fd */
-
-	execlp(gzipbin, gzipbin, "-c9fn", NULL);
-	rpmError(RPMERR_EXEC, "Couldn't exec gzip");
-	_exit(RPMERR_EXEC);
-    }
-    close(toGzip[0]);
-    if (gzipPID < 0) {
-	close(toGzip[1]);
-	rpmError(RPMERR_FORK, "Couldn't fork gzip");
-	return RPMERR_FORK;
-    }
-
-    rc = cpioBuildArchive(toGzip[1], cpioList, cpioCount, NULL, NULL,
-			  archiveSize, &failedFile);
-
-    close(toGzip[1]);
-    signal(SIGPIPE, oldhandler);
-    waitpid(gzipPID, &status, 0);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_GZIP, "Execution of gzip failed");
-	return 1;
-    }
+    cfd->cpioIoType = cpioIoTypeGzFd;
+    cfd->cpioGzFd = gzdopen(fd, "w9");
+    rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
+			  &csa->cpioArchiveSize, &failedFile);
+    gzclose(cfd->cpioGzFd);
 
     if (rc) {
 	if (rc & CPIO_CHECK_ERRNO)
@@ -339,6 +325,24 @@ static int cpio_gzip(int fd, struct cpioFileMapping *cpioList,
 	return 1;
     }
 
+    return 0;
+}
+
+static int cpio_copy(int fdo, CSA_t *csa) {
+    char buf[BUFSIZ];
+    size_t nb;
+
+    while((nb = read(csa->cpioFdIn, buf, sizeof(buf))) > 0) {
+	if (write(fdo, buf, nb) != nb) {
+	    rpmError(RPMERR_CPIO, "cpio_copy write failed: %s",
+		strerror(errno));
+	    return 1;
+	}
+    }
+    if (nb < 0) {
+	rpmError(RPMERR_CPIO, "cpio_copy read failed: %s", strerror(errno));
+	return 1;
+    }
     return 0;
 }
 
