@@ -170,7 +170,8 @@ int b64decode (const char * s, void ** datap, int *lenp)
     for (t = s; *t != '\0'; t++) {
 	switch (b64dec[ (unsigned)*t ]) {
 	case 0x80:	/* invalid chararcter */
-fprintf(stderr, "--- b64decode %c(%02x) %02x\n", *t, (*t & 0xff), b64dec[ (unsigned)*t ]);
+if (_debug)
+fprintf(stderr, "--- b64decode %c(%02x) %02x\n", *t, (unsigned)(*t & 0xff), (unsigned)b64dec[ (unsigned)*t ]);
 	    return 3;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 0x81:	/* white space */

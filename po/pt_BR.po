@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-09-29 13:34-0400\n"
+"POT-Creation-Date: 2001-10-05 14:58-0400\n"
 
 # , c-format
 #: build.c:36
@@ -2428,9 +2428,13 @@ msgstr ""
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
-#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:128
+#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:85 lib/formats.c:160
 #: lib/header.c:2623 lib/header.c:2644 lib/header.c:2666
 msgid "(not a number)"
+msgstr ""
+
+#: lib/formats.c:128
+msgid "(not a blob)"
 msgstr ""
 
 # , c-format
@@ -3317,90 +3321,90 @@ msgid "package %s is not installed\n"
 msgstr "no foi passado pacote para instalao"
 
 # , c-format
-#: lib/rpmchecksig.c:40
+#: lib/rpmchecksig.c:43
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:52
+#: lib/rpmchecksig.c:55
 #, fuzzy
 msgid "makeTempFile failed\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: lib/rpmchecksig.c:86
+#: lib/rpmchecksig.c:92
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmchecksig.c:92
+#: lib/rpmchecksig.c:98
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:128 lib/rpmchecksig.c:260
+#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:297
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:133
+#: lib/rpmchecksig.c:155
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:137
+#: lib/rpmchecksig.c:159
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:146 lib/rpmchecksig.c:276
+#: lib/rpmchecksig.c:168 lib/rpmchecksig.c:313
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:281
+#: lib/rpmchecksig.c:172 lib/rpmchecksig.c:318
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:183
+#: lib/rpmchecksig.c:205
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmchecksig.c:189
+#: lib/rpmchecksig.c:211
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:266
+#: lib/rpmchecksig.c:303
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:431
+#: lib/rpmchecksig.c:484
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:432 lib/rpmchecksig.c:446
+#: lib/rpmchecksig.c:485 lib/rpmchecksig.c:499
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
+#: lib/rpmchecksig.c:487 lib/rpmchecksig.c:501
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:435 lib/rpmchecksig.c:449
+#: lib/rpmchecksig.c:488 lib/rpmchecksig.c:502
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:490 lib/rpmchecksig.c:504
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:445
+#: lib/rpmchecksig.c:498
 msgid "OK"
 msgstr ""
 
@@ -3684,7 +3688,7 @@ msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
 # , c-format
-#: lib/signature.c:366 lib/signature.c:760
+#: lib/signature.c:366 lib/signature.c:804
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
@@ -3721,33 +3725,33 @@ msgstr "gere assinatura PGP"
 msgid "Generating signature using GPG.\n"
 msgstr "gere assinatura PGP"
 
-#: lib/signature.c:526 lib/signature.c:604
+#: lib/signature.c:526 lib/signature.c:616
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 
-#: lib/signature.c:697
+#: lib/signature.c:741
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 
 # , c-format
-#: lib/signature.c:789
+#: lib/signature.c:833
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:793 lib/signature.c:846
+#: lib/signature.c:837 lib/signature.c:890
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:826
+#: lib/signature.c:870
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:838
+#: lib/signature.c:882
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""

@@ -7,6 +7,7 @@
 
 #include "rpmio_internal.h"
 #include <rpmcli.h>
+#include "rpmpgp.h"
 
 #include "rpmlead.h"
 #include "signature.h"
@@ -15,6 +16,7 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
+/*@access rpmDigest@*/
 
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
@@ -70,8 +72,8 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 }
 
 static int copyFile(FD_t *sfdp, const char **sfnp,
-	FD_t *tfdp, const char **tfnp, void **sdigest)
-	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, *sidgest, fileSystem @*/
+	FD_t *tfdp, const char **tfnp, rpmDigest dig)
+	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, *dig, fileSystem @*/
 {
     unsigned char buffer[BUFSIZ];
     ssize_t count;
@@ -82,7 +84,7 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	goto exit;
 
-    if (sdigest != NULL)
+    if (dig != NULL)
 	(void) fdInitSHA1(*sfdp, 0);
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
@@ -97,13 +99,20 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 	goto exit;
     }
 
-    if (sdigest != NULL) {
-	(void) fdFiniSHA1(*sfdp, sdigest, NULL, 1);
+    if (dig != NULL) {
+#ifdef	DYING
+	(void) fdFiniSHA1(*sfdp, &dig->data, &dig->size, 0);
 if (rpmIsVerbose()) {
 fprintf(stderr, "========================= Package SHA1 Digest\n");
-fprintf(stderr, "%s\n", (const char *) (*sdigest));
+fprintf(stderr, "%s\n", pgpHexStr(dig->data, dig->size));
 }
-	*sdigest = _free(*sdigest);
+	mp32nsethex(&dig->hm, pgpHexStr(dig->data, dig->size));
+printf("\thm = ");  mp32println(dig->hm.size, dig->hm.data);
+#else
+	dig->ctx = _free(dig->ctx);
+	dig->ctx = (*sfdp)->digest;
+	(*sfdp)->digest = NULL;
+#endif
     }
 
     rc = 0;
@@ -258,8 +267,22 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     int_32 tag, type, count;
     const void * ptr;
     int res = 0;
-    void * sdigest = NULL;
+    rpmDigest dig = alloca(sizeof(*dig));
     rpmRC rc;
+
+    memset(dig, 0, sizeof(*dig));
+
+{   static const char * pubkey = NULL;
+    static unsigned int pklen = 0;
+
+    if (pubkey == NULL) {
+	(void) b64decode(redhatPubKeyDSA, (void **)&pubkey, &pklen);
+if (rpmIsVerbose())
+fprintf(stderr, "========================= Red Hat DSA Public Key\n");
+	    (void) pgpPrtPkts(pubkey, pklen, NULL, rpmIsVerbose());
+    }
+    (void) pgpPrtPkts(pubkey, pklen, dig, 0);
+}
 
     if (argv)
     while ((rpm = *argv++) != NULL) {
@@ -296,9 +319,10 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    res++;
 	    goto bottom;
 	}
+
 	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (copyFile(&fd, &rpm, &ofd, &sigtarget, &sdigest)) {
+	if (copyFile(&fd, &rpm, &ofd, &sigtarget, dig)) {
 	    res++;
 	    goto bottom;
 	}
@@ -314,16 +338,30 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    headerNextIterator(hi, &tag, &type, &ptr, &count);
 	    ptr = headerFreeData(ptr, type))
 	{
+	    if (ptr == NULL) continue;	/* XXX can't happen */
 	    switch (tag) {
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
 		if (!(flags & CHECKSIG_PGP)) 
 		     continue;
+if (rpmIsVerbose())
+fprintf(stderr, "========================= Package RSA Signature\n");
+		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
 		break;
 	    case RPMSIGTAG_GPG:
 		if (!(flags & CHECKSIG_GPG)) 
 		     continue;
-		break;
+if (rpmIsVerbose())
+fprintf(stderr, "========================= Package DSA Signature\n");
+		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
+	    {	DIGEST_CTX ctx = rpmDigestDup(dig->ctx);
+		const char * digest = NULL;
+		size_t digestlen = 0;
+		rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+		rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
+		mp32nzero(&dig->hm);mp32nsethex(&dig->hm, digest);
+		digest = _free(digest);
+	    }	break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
 	    case RPMSIGTAG_MD5:
@@ -337,7 +375,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    if (ptr == NULL) continue;	/* XXX can't happen */
 
 	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, 
-					   result))) {
+					   dig, result))) {
 		if (rpmIsVerbose()) {
 		    strcat(buffer, result);
 		    res2 = 1;
@@ -433,6 +471,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    }
 	}
 	hi = headerFreeIterator(hi);
+
 	res += res2;
 	(void) unlink(sigtarget);
 	sigtarget = _free(sigtarget);
@@ -473,9 +512,18 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    (void) unlink(sigtarget);
 	    sigtarget = _free(sigtarget);
 	}
-	sdigest = _free(sdigest);
+	dig->data = _free(dig->data);
+	dig->ctx = _free(dig->ctx);
+	mp32bfree(&dig->p);
+	mp32bfree(&dig->q);
+	mp32nfree(&dig->g);
+	mp32nfree(&dig->y);
+	mp32nfree(&dig->hm);
+	mp32nfree(&dig->r);
+	mp32nfree(&dig->s);
     }
 
-    sdigest = _free(sdigest);
+    dig->data = _free(dig->data);
+    dig->ctx = _free(dig->ctx);
     return res;
 }

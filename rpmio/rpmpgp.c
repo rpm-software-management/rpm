@@ -9,7 +9,7 @@
 
 static int _debug = 0;
 static int _print = 0;
-static struct pgpSig_s * _dig = NULL;
+/*@null@*/ static struct pgpSig_s * _dig = NULL;
 
 /*@-readonlytrans@*/
 /* This is the unarmored RPM-GPG-KEY public key. */
@@ -256,6 +256,7 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
     fprintf(stderr, "%s(%u)", pgpValStr(vs, val), (unsigned)val);
 }
 
+/*@-varuse -readonlytrans @*/
 static const char * pgpSigRSA[] = {
     " m**d =",
     NULL,
@@ -266,6 +267,7 @@ static const char * pgpSigDSA[] = {
     "    s =",
     NULL,
 };
+/*@=varuse =readonlytrans @*/
 
 int pgpPrtPktSigV3(pgpPkt pkt, const byte *h, unsigned int hlen)
 {
@@ -515,6 +517,7 @@ int pgpPrtPktSig(pgpPkt pkt, const byte *h, unsigned int hlen)
     return 0;
 }
 
+/*@-varuse -readonlytrans @*/
 static const char * pgpPublicRSA[] = {
     "    n =",
     "    e =",
@@ -553,6 +556,7 @@ static const char * pgpSecretELGAMAL[] = {
     "    x =",
     NULL,
 };
+/*@=varuse =readonlytrans @*/
 
 int pgpPrtKeyV3(pgpPkt pkt, const byte *h, unsigned int hlen)
 {
@@ -776,7 +780,7 @@ int pgpPrtUserID(pgpPkt pkt, const byte *h, unsigned int hlen)
 {
     pgpPrtVal("", pgpPktTbl, pkt);
     if (_print)
-	fprintf(stderr, " \"%.*s\"", hlen, (const char *)h);
+	fprintf(stderr, " \"%.*s\"", (int)hlen, (const char *)h);
     pgpPrtNL();
     return 0;
 }

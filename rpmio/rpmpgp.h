@@ -14,6 +14,7 @@
 #include "rsapk.h"
 #include "rsa.h"
 #include "dsa.h"
+#include "mp32.h"
 
 /*@-typeuse -fielduse@*/
 /**
@@ -850,17 +851,20 @@ extern const char * redhatPubKeyRSA;
 
 /**
  */
-struct pgpSig_s {
+typedef struct pgpSig_s {
     union {
 	struct pgpPktSigV3_s v3;
 	struct pgpPktSigV4_s v4;
     } sig;
+
+/*@only@*/ /*@null@*/ void * ctx;
 
     int hash_datalen;
 /*@only@*/ /*@null@*/ byte *hash_data;
 
     int size;			/*!< No. bytes in digest. */
 /*@only@*/ /*@null@*/ void * data; /*!< Digest data. */
+
 
     /* DSA parameters. */
     mp32barrett p;
@@ -900,8 +904,8 @@ unsigned int pgpGrab(const byte *s, int nbytes)
 /**
  */
 /*@unused@*/ static inline
-int pgpLen(const byte *s, unsigned int *lenp)
-	/*@*/
+int pgpLen(const byte *s, /*@out@*/ unsigned int *lenp)
+	/*@modifies *lenp @*/
 {
     if (*s < 192) {
 	(*lenp) = *s++;
@@ -1046,7 +1050,6 @@ int pgpPrtKey(pgpPkt pkt, const byte *h, unsigned int hlen)
  */
 int pgpPrtUserID(pgpPkt pkt, const byte *h, unsigned int hlen)
 	/*@modifies fileSystem @*/;
-/*@=exportlocal@*/
 
 /**
  */
@@ -1056,6 +1059,7 @@ int pgpPrtComment(pgpPkt pkt, const byte *h, unsigned int hlen)
 /**
  */
 int pgpPrtPkt(const byte *p);
+/*@=exportlocal@*/
 
 /**
  */

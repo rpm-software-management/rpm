@@ -35,6 +35,14 @@ struct DIGEST_CTX_s {
 };
 
 DIGEST_CTX
+rpmDigestDup(DIGEST_CTX octx)
+{
+    DIGEST_CTX nctx = xcalloc(1, sizeof(*nctx));
+    memcpy(nctx, octx, sizeof(*nctx));
+    return nctx;
+}
+
+DIGEST_CTX
 rpmDigestInit(rpmDigestFlags flags)
 {
     DIGEST_CTX ctx = xcalloc(1, sizeof(*ctx));

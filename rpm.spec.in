@@ -518,4 +518,4 @@ fi
 - eliminate DYING code.
 - bind beecrypt md5/sha1 underneath rpmio.
 - create RFC-2440 OpenPGP API in rpmio.
-- display signature packets before exec'ing gpg/pgp when verifying.
+- proof-of-concept GPG/DSA verification for legacy signatures.

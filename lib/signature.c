@@ -508,7 +508,7 @@ verifyMD5Signature(const char * datafile, const byte * sig,
 
 static rpmVerifySignatureReturn
 verifyPGPSignature(const char * datafile, const void * sig, int count,
-		/*@out@*/ char * result)
+		/*@unused@*/ const rpmDigest dig, /*@out@*/ char * result)
 	/*@modifies *result, fileSystem @*/
 {
     int pid, status, outpipe[2];
@@ -534,21 +534,20 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     if (pgpVer == PGP_5)
 	res = RPMSIG_BAD;
 
-if (rpmIsVerbose())
+#ifdef	DYING
 {   static const char * pubkey = NULL;
     static unsigned int pklen = 0;
 
     if (pubkey == NULL) {
-	if (!b64decode(redhatPubKeyRSA, (void **)&pubkey, &pklen)) {
+	(void) b64decode(redhatPubKeyRSA, (void **)&pubkey, &pklen);
 fprintf(stderr, "========================= Red Hat RSA Public Key\n");
-	    (void) pgpPrtPkts(pubkey, pklen);
-	}
+	    (void) pgpPrtPkts(pubkey, pklen, NULL, rpmIsVerbose());
     }
+    (void) pgpPrtPkts(pubkey, pklen, dig, 0);
 fprintf(stderr, "========================= Package RSA Signature\n");
-    (void) pgpPrtPkts(sig, count);
-
-    pubkey = _free(pubkey);
+    (void) pgpPrtPkts(sig, count, dig, 0);
 }
+#endif
 
     /* Write out the signature */
 #ifdef	DYING
@@ -653,7 +652,7 @@ fprintf(stderr, "========================= Package RSA Signature\n");
 
 static rpmVerifySignatureReturn
 verifyGPGSignature(const char * datafile, const void * sig, int count,
-		/*@out@*/ char * result)
+		/*@unused@*/ const rpmDigest dig, /*@out@*/ char * result)
 	/*@modifies *result, fileSystem @*/
 {
     int pid, status, outpipe[2];
@@ -661,22 +660,41 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
+    int rc;
   
-if (rpmIsVerbose())
+#ifdef	DYING
 {   static const char * pubkey = NULL;
     static unsigned int pklen = 0;
+    int rc;
 
     if (pubkey == NULL) {
-	if (!b64decode(redhatPubKeyDSA, (void **)&pubkey, &pklen)) {
+	(void) b64decode(redhatPubKeyDSA, (void **)&pubkey, &pklen);
 fprintf(stderr, "========================= Red Hat DSA Public Key\n");
-	    (void) pgpPrtPkts(pubkey, pklen);
-	}
+	    (void) pgpPrtPkts(pubkey, pklen, NULL, rpmIsVerbose());
     }
+    (void) pgpPrtPkts(pubkey, pklen, dig, 0);
 fprintf(stderr, "========================= Package DSA Signature\n");
-    (void) pgpPrtPkts(sig, count);
+    (void) pgpPrtPkts(sig, count, dig, rpmIsVerbose());
 
-    pubkey = _free(pubkey);
+
 }
+#else
+if (rpmIsVerbose()) {
+    printf("\t p = ");	mp32println(dig->p.size, dig->p.modl);
+    printf("\t q = ");	mp32println(dig->q.size, dig->q.modl);
+    printf("\t g = ");	mp32println(dig->g.size, dig->g.data);
+    printf("\t y = ");	mp32println(dig->y.size, dig->y.data);
+    printf("\t r = ");	mp32println(dig->r.size, dig->r.data);
+    printf("\t s = ");	mp32println(dig->s.size, dig->s.data);
+    printf("\thm = ");	mp32println(dig->hm.size, dig->hm.data);
+}
+
+    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
+		&dig->y, &dig->r, &dig->s);
+
+fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
+        datafile, rc);
+#endif
 
     /* Write out the signature */
 #ifdef	DYING
@@ -884,7 +902,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 
 rpmVerifySignatureReturn
 rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
-		int count, char * result)
+		int count, const rpmDigest dig, char * result)
 {
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
@@ -895,10 +913,10 @@ rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
 	/*@notreached@*/ break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	return verifyPGPSignature(file, sig, count, result);
+	return verifyPGPSignature(file, sig, count, dig, result);
 	/*@notreached@*/ break;
     case RPMSIGTAG_GPG:
-	return verifyGPGSignature(file, sig, count, result);
+	return verifyGPGSignature(file, sig, count, dig, result);
 	/*@notreached@*/ break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:

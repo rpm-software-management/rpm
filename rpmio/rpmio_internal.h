@@ -63,17 +63,27 @@ typedef enum rpmDigestFlags_e {
 typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
 
 /** \ingroup rpmio
+ * Duplicate a digest context.
+ * @param ctx		existing digest context
+ * @return		duplicated digest context
+ */
+/*@only@*/
+DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
+	/*@*/;
+
+/** \ingroup rpmio
  * Initialize digest.
  * Set bit count to 0 and buffer to mysterious initialization constants.
  * @param flags		bit(s) to control digest operation
- * @return		digest private data
+ * @return		digest context
  */
+/*@only@*/
 DIGEST_CTX rpmDigestInit(rpmDigestFlags flags)
 	/*@*/;
 
 /** \ingroup rpmio
- * Update context to with next plain text buffer.
- * @param private	private data
+ * Update context with next plain text buffer.
+ * @param ctx		digest context
  * @param data		next data buffer
  * @param len		no. bytes of data
  */
@@ -85,7 +95,7 @@ void rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
  * Final wrapup - pad to 64-byte boundary with the bit pattern 
  * 1 0* (64-bit count of bits processed, MSB-first)
  *
- * @param private	private data
+ * @param ctx		digest context
  * @retval datap	address of returned digest
  * @retval lenp		address of digest length
  * @param asAscii	return digest as ascii string?

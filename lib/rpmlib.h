@@ -1722,7 +1722,7 @@ typedef enum rpmVerifySignatureReturn_e {
  */
 rpmVerifySignatureReturn rpmVerifySignature(const char *file,
 		int_32 sigTag, const void * sig, int count,
-		/*@out@*/ char * result)
+		const rpmDigest dig, /*@out@*/ char * result)
 	/*@modifies *result, fileSystem @*/;
 
 /** \ingroup signature
