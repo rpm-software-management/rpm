@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 [ -z "$1" -o -z "$2" ] && {
 # usage
@@ -8,5 +8,5 @@
 
 find $1 \( -name "*$2" -o -name ".*$2" \) -print |
 while read f; do
-	diff -u $f ${f%%$2}
+	diff -u $f `echo $f | sed s/$2\$//`
 done
