@@ -1423,6 +1423,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    break;
 
 	  case '[':
+	    *dst++ = '\0';
 	    *start++ = '\0';
 	    currToken++;
 
