@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   $Id: Package.pm,v 1.9 2001/03/08 06:12:32 rjray Exp $
+#   $Id: Package.pm,v 1.10 2001/04/27 09:05:21 rjray Exp $
 #
 #   Description:    Perl-level glue and such for the RPM::Package class, the
 #                   methods and accessors to package operations.
@@ -26,15 +26,14 @@ package RPM::Package;
 
 use 5.005;
 use strict;
-use vars qw($VERSION $revision @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 use subs qw(AUTOLOAD);
 
 require Exporter;
 
 use RPM;
 
-$VERSION = '0.30';
-$revision = do { my @r=(q$Revision: 1.9 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = do { my @r=(q$Revision: 1.10 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @ISA = qw(Exporter);
 @EXPORT = ();

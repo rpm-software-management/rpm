@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.19 2001/03/08 06:12:32 rjray Exp $
+#   $Id: Header.pm,v 1.20 2001/04/27 09:05:21 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -29,7 +29,7 @@ package RPM::Header;
 require 5.005;
 
 use strict;
-use vars qw($VERSION $revision @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 use subs qw(new AUTOLOAD filenames);
 
 require Exporter;
@@ -38,8 +38,7 @@ use RPM;
 use RPM::Error;
 use RPM::Constants ':rpmerr';
 
-$VERSION = '0.30';
-$revision = do { my @r=(q$Revision: 1.19 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = do { my @r=(q$Revision: 1.20 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @ISA = qw(Exporter);
 @EXPORT = ();

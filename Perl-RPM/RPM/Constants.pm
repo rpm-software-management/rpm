@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.17 2001/04/27 08:43:23 rjray Exp $
+#   $Id: Constants.pm,v 1.18 2001/04/27 09:05:21 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -18,7 +18,7 @@
 package RPM::Constants;
 
 use strict;
-use vars qw(@ISA @EXPORT_OK %EXPORT_TAGS $VERSION $revision $AUTOLOAD);
+use vars qw(@ISA @EXPORT_OK %EXPORT_TAGS $VERSION $AUTOLOAD);
 
 require Exporter;
 
@@ -26,8 +26,7 @@ use RPM;
 
 @ISA = qw(Exporter);
 
-$VERSION = '0.30';
-$revision = do { my @r=(q$Revision: 1.17 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = do { my @r=(q$Revision: 1.18 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 CHECKSIG_GPG

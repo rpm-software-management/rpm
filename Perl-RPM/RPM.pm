@@ -3,25 +3,24 @@ package RPM;
 use 5.005;
 use strict;
 use subs qw(bootstrap_Constants bootstrap_Header bootstrap_Database);
-use vars qw($VERSION $revision @ISA @EXPORT @EXPORT_OK);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
 require DynaLoader;
 require Exporter;
 
 @ISA = qw(Exporter DynaLoader);
-$VERSION = '0.30';
-$revision = do { my @r=(q$Revision: 1.16 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = do { my @r=(q$Revision: 1.17 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(rpm_osname rpm_archname);
 @EXPORT_OK = (@EXPORT, 'vercmp');
 
-bootstrap RPM $VERSION;
+bootstrap RPM;
 
 # These are stubs into the sub-module bootstraps, hacked into RPM.xs
-bootstrap_Constants($VERSION);
-bootstrap_Header($VERSION);
-bootstrap_Database($VERSION);
-bootstrap_Error($VERSION);
+bootstrap_Constants();
+bootstrap_Header();
+bootstrap_Database();
+bootstrap_Error();
 #bootstrap_Package($VERSION);
 
 1;

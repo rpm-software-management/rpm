@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Database.pm,v 1.16 2001/03/08 06:12:32 rjray Exp $
+#   $Id: Database.pm,v 1.17 2001/04/27 09:05:21 rjray Exp $
 #
 #   Description:    The RPM::Database class provides access to the RPM database
 #                   as a tied hash, whose keys are taken as the names of
@@ -29,14 +29,13 @@ package RPM::Database;
 require 5.005;
 
 use strict;
-use vars qw($VERSION $revision %RPM $RPM);
+use vars qw($VERSION %RPM $RPM);
 use subs qw(new import);
 
 require RPM;
 require RPM::Header;
 
-$VERSION = '0.30';
-$revision = do { my @r=(q$Revision: 1.16 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = do { my @r=(q$Revision: 1.17 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
