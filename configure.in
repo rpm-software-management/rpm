@@ -612,4 +612,7 @@ AC_SUBST(LDFLAGS_STATIC)
 export LIBS INCPATH
 
 AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT(Makefile Makefile.inc lib-rpmrc macros lib/Makefile build/Makefile tools/Makefile scripts/Makefile misc/Makefile po/Makefile intl/Makefile)
+AC_OUTPUT([Makefile Makefile.inc lib-rpmrc macros lib/Makefile
+	build/Makefile tools/Makefile scripts/Makefile
+	misc/Makefile po/Makefile.in intl/Makefile],
+	[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])

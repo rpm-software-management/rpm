@@ -54,8 +54,6 @@ lib/rpmlead.c
 lib/rpmrc.c
 lib/signature.c
 lib/stringbuf.c
-lib/tagtable.c
 lib/tread.c
 lib/uninstall.c
 lib/verify.c
-
