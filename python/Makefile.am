@@ -21,5 +21,5 @@ EXTRA_DIST = hash.h upgrade.h
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 
 rpmmodule.so: rpmmodule.lo
-	gcc -shared  rpmmodule.lo  -ldb1 -L/usr/local/lib -lz -lc -o $@
+	gcc -shared  rpmmodule.lo -lrpm -ldb1 @BZIP2LIB@ -L/usr/local/lib -lz -lc -o $@
 

@@ -440,7 +440,7 @@ mostlyclean distclean maintainer-clean
 
 
 rpmmodule.so: rpmmodule.lo
-	gcc -shared  rpmmodule.lo  -ldb1 -L/usr/local/lib -lz -lc -o $@
+	gcc -shared  rpmmodule.lo -lrpm -ldb1 @BZIP2LIB@ -L/usr/local/lib -lz -lc -o $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
