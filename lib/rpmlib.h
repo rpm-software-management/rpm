@@ -78,7 +78,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_FILEMD5S			1035
 #define	RPMTAG_FILELINKTOS		1036
 #define	RPMTAG_FILEFLAGS		1037
-#define	RPMTAG_ROOT			1038
+#define	RPMTAG_ROOT			1038 /* obsolete */
 #define	RPMTAG_FILEUSERNAME		1039
 #define	RPMTAG_FILEGROUPNAME		1040
 #define	RPMTAG_EXCLUDE			1041 /* internal - depricated */
@@ -138,7 +138,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_TRIGGERPOSTUN		1102 /* internal */
 #define	RPMTAG_AUTOREQ			1103 /* internal */
 #define	RPMTAG_AUTOPROV			1104 /* internal */
-#define	RPMTAG_CAPABILITY		1105
+#define	RPMTAG_CAPABILITY		1105 /* unused */
 #define	RPMTAG_SOURCEPACKAGE		1106 /* internal */
 #define	RPMTAG_OLDORIGFILENAMES		1107 /* obsolete */
 #define	RPMTAG_BUILDPREREQ		1108 /* internal */
