@@ -28,14 +28,32 @@ struct rpmdb_s {
     dbiIndex * requiredbyIndex, * conflictsIndex, * triggerIndex;
 };
 
+struct intMatch {
+    dbiIndexRecord rec;
+    int fpNum;
+};
+
 static void removeIndexEntry(dbiIndex * dbi, char * name, dbiIndexRecord rec,
 		             int tolerant, char * idxName);
 static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
 		         unsigned int fileNumber);
 static void blockSignals(void);
 static void unblockSignals(void);
+static int intMatchCmp(const void * one, const void * two);
 
 static sigset_t signalMask;
+
+static int intMatchCmp(const void * one, const void * two) {
+    const struct intMatch * a = one;
+    const struct intMatch * b = two;
+
+    if (a->rec.recOffset < b->rec.recOffset)
+	return -1;
+    else if (a->rec.recOffset > b->rec.recOffset)
+	return 1;
+
+    return 0;
+};
 
 int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     char * dbpath;
@@ -727,4 +745,97 @@ int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath) {
     if (rename(ofilename, nfilename)) rc = 1;
 
     return rc;
+}
+
+int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
+		    int numItems) {
+    struct intMatch * intMatches, * im;
+    int i, j;
+    dbiIndexSet matches;
+    int intMatchesAlloced, numIntMatches;
+    int start, end;
+    int num, rc;
+    char ** fullfl, **fl;
+    int_32 fc;
+    fingerPrint * fps;
+    Header h;
+
+    /* this may be worth batching by basename, but probably not as
+       basenames are quite unique as it is */
+
+    intMatchesAlloced = numItems;
+    numIntMatches = 0;
+    im = intMatches = malloc(sizeof(*intMatches) * intMatchesAlloced);
+
+    for (i = 0; i < numItems; i++, im++) {
+        rc = dbiSearchIndex(db->fileIndex, fpList[i].basename, &matches);
+	if (rc == 2) {
+	    im = intMatches;
+	    free(intMatches);
+	    return 1;
+	} else if (!rc) {
+	    if ((numIntMatches + matches.count) >= intMatchesAlloced) {
+		intMatchesAlloced += matches.count;
+		intMatchesAlloced += intMatchesAlloced / 5;
+		intMatches = realloc(intMatches, 
+				     sizeof(*intMatches) * intMatchesAlloced);
+	    }
+
+	    for (j = 0; j < matches.count; j++) {
+		intMatches[numIntMatches].rec = matches.recs[j];
+		intMatches[numIntMatches++].fpNum = i;
+	    }
+
+	    dbiFreeIndexRecord(matches);
+	}
+    }
+
+    qsort(intMatches, numIntMatches, sizeof(*intMatches), intMatchCmp);
+    /* intMatches is now sorted by (recnum, filenum) */
+
+    for (i = 0; i < numItems; i++)
+	matchList[i] = dbiCreateIndexRecord();
+
+    start = 0;
+    while (start < numIntMatches) {
+	im = intMatches + start;
+	end = start + 1;
+	while (end < numIntMatches && 
+	    (im->rec.recOffset == intMatches[end].rec.recOffset))
+	    end++;
+
+	num = end - start;
+	h = rpmdbGetRecord(db, im->rec.recOffset);
+	if (!h) {
+	    free(intMatches);
+	    return 1;
+	}
+
+	headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL, 
+				(void **) &fullfl, &fc);
+
+	fl = malloc(sizeof(*fl) * num);
+	for (i = 0; i < num; i++)
+	    fl[i] = fullfl[im[i].rec.fileNumber];
+	free(fullfl);
+	fps = malloc(sizeof(*fps) * num);
+	fpLookupList(fl, fps, num, 1);
+	free(fl);
+
+	for (i = 0; i < num; i++) {
+	    j = im[i].fpNum;
+	    if (FP_EQUAL(fps[i], fpList[j]))
+		dbiAppendIndexRecord(&matchList[j], im[i].rec);
+	}
+
+	headerFree(h);
+
+	free(fps);
+
+	start = end;
+    }
+
+    free(intMatches);
+
+    return 0;
 }

@@ -7,6 +7,8 @@
 extern "C" {
 #endif
 
+#include "fprint.h"
+
 /* for RPM's internal use only */
 
 #define RPMDB_FLAG_JUSTCHECK	(1 << 0)
@@ -19,6 +21,9 @@ int rpmdbAdd(rpmdb db, Header dbentry);
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
 void rpmdbRemoveDatabase(char * rootdir, char * dbpath);
 int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath);
+/* matchList must be preallocated!!! */
+int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
+		    int numItems);
 
 #ifdef __cplusplus
 }
