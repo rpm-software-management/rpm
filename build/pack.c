@@ -11,6 +11,8 @@
 #include <string.h>
 #include <errno.h>
 
+#include <sys/time.h>  /* For 'select()' interfaces */
+
 #include "pack.h"
 #include "header.h"
 #include "spec.h"
@@ -49,58 +51,40 @@ static int generateRPM(char *name,       /* name-version-release         */
 		       char *prefix)
 {
     int_32 sigtype;
-    char *sigtarget, *archiveTemp;
+    char *sigtarget;
     int fd, ifd, count, archiveSize;
     unsigned char buffer[8192];
     Header sig;
 
-    /* Write the archive to a temp file so we can get the size */
-    archiveTemp = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmbuild");
-    if ((fd = open(archiveTemp, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
-	fprintf(stderr, "Could not open %s\n", archiveTemp);
-	return 1;
-    }
-    if (cpio_gzip(fd, stempdir, fileList, &archiveSize, prefix)) {
-	close(fd);
-	unlink(archiveTemp);
-	return 1;
-    }
-    close(fd);
+    /* Add the a bogus archive size to the Header */
+    headerAddEntry(header, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
+		   &archiveSize, 1);
 
-    /* Add the archive size to the Header */
-    headerAddEntry(header, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE, &archiveSize, 1);
-    
-    /* Now write the header and append the archive */
+    /* Write the header */
     sigtarget = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmbuild");
     if ((fd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 	fprintf(stderr, "Could not open %s\n", sigtarget);
-	unlink(archiveTemp);
 	return 1;
     }
     headerWrite(fd, header, HEADER_MAGIC_YES);
-    ifd = open(archiveTemp, O_RDONLY, 0644);
-    while ((count = read(ifd, buffer, sizeof(buffer))) > 0) {
-        if (count == -1) {
-	    perror("Couldn't read archiveTemp");
-	    close(fd);
-	    close(ifd);
-	    unlink(archiveTemp);
-	    unlink(sigtarget);
-	    return 1;
-        }
-        if (write(fd, buffer, count) < 0) {
-	    perror("Couldn't write package to temp file");
-	    close(fd);
-	    close(ifd);
-	    unlink(archiveTemp);
-	    unlink(sigtarget);
-	    return 1;
-        }
+    
+    /* Write the archive and get the size */
+    if (cpio_gzip(fd, stempdir, fileList, &archiveSize, prefix)) {
+	close(fd);
+	unlink(sigtarget);
+	return 1;
     }
-    close(ifd);
-    close(fd);
-    unlink(archiveTemp);
 
+    /* Now set the real archive size in the Header */
+    headerModifyEntry(header, RPMTAG_ARCHIVESIZE,
+		      RPM_INT32_TYPE, &archiveSize, 1);
+
+    /* Rewind and rewrite the Header */
+    lseek(fd, 0,  SEEK_SET);
+    headerWrite(fd, header, HEADER_MAGIC_YES);
+    
+    close(fd);
+    
     /* Now write the lead */
     if ((fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
 	fprintf(stderr, "Could not open %s\n", filename);
@@ -196,6 +180,9 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 
     int bytes;
     unsigned char buf[8192];
+    fd_set read_fds, read_ok, write_fds, write_ok;
+    int num_fds, max_fd;
+    struct stat fd_info;
 
     int status;
     void *oldhandler;
@@ -284,11 +271,19 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     /* to block reading or writing from/to cpio.            */
     fcntl(fromCpio[0], F_SETFL, O_NONBLOCK);
     fcntl(toCpio[1], F_SETFL, O_NONBLOCK);
-
     writeBytesLeft = strlen(writePtr);
+
+    /* Set up to use 'select()' to multiplex this I/O stream */
+    FD_ZERO(&read_fds);
+    FD_SET(fromCpio[0], &read_fds);
+    max_fd = fromCpio[0];
+    FD_ZERO(&write_fds);
+    FD_SET(toCpio[1], &write_fds);
+    if (toCpio[1] > max_fd) max_fd = toCpio[1];
     
     cpioDead = 0;
     gzipDead = 0;
+    bytes = 0;
     do {
 	if (waitpid(cpioPID, &status, WNOHANG)) {
 	    cpioDead = 1;
@@ -297,29 +292,50 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	    gzipDead = 1;
 	}
 
-	/* Write some stuff to the cpio process if possible */
-        if (writeBytesLeft) {
-	    if ((bytesWritten =
-		  write(toCpio[1], writePtr,
-		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
-	        if (errno != EAGAIN) {
-		    perror("Damn!");
-	            exit(1);
+	/* Pause here until we could perform some I/O */
+	read_ok = read_fds;
+	write_ok = write_fds;
+	if ((num_fds = select(max_fd+1, &read_ok, &write_ok, 
+			      (fd_set *)NULL, (struct timeval *)NULL)) < 0) {
+		/* One or more file connections has broken */
+		if (fstat(fromCpio[0], &fd_info) < 0) {
+			FD_CLR(fromCpio[0], &read_fds);
 		}
-	        bytesWritten = 0;
-	    }
-	    writeBytesLeft -= bytesWritten;
-	    writePtr += bytesWritten;
-	} else {
-	    close(toCpio[1]);
+		if (fstat(toCpio[1], &fd_info) < 0) {
+			FD_CLR(toCpio[1], &write_fds);
+		}
+		continue;
+	}
+
+	/* Write some stuff to the cpio process if possible */
+        if (FD_ISSET(toCpio[1], &write_ok)) {
+		if (writeBytesLeft) {
+			if ((bytesWritten =
+			     write(toCpio[1], writePtr,
+				   (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
+				if (errno != EAGAIN) {
+					perror("Damn!");
+					exit(1);
+				}
+				bytesWritten = 0;
+			}
+			writeBytesLeft -= bytesWritten;
+			writePtr += bytesWritten;
+		} else {
+			close(toCpio[1]);
+			FD_CLR(toCpio[1], &write_fds);
+		}
 	}
 	
 	/* Read any data from cpio, write it to gzip */
-	bytes = read(fromCpio[0], buf, sizeof(buf));
-	while (bytes > 0) {
-	    *archiveSize += bytes;
-	    write(toGzip[1], buf, bytes);
-	    bytes = read(fromCpio[0], buf, sizeof(buf));
+	bytes = 0;  /* So end condition works OK */
+	if (FD_ISSET(fromCpio[0], &read_ok)) {
+		bytes = read(fromCpio[0], buf, sizeof(buf));
+		while (bytes > 0) {
+			*archiveSize += bytes;
+			write(toGzip[1], buf, bytes);
+			bytes = read(fromCpio[0], buf, sizeof(buf));
+		}
 	}
 
 	/* while cpio is running, or we are writing to gzip */
