@@ -42,7 +42,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     memset(u, 0, sizeof(*u));
     u->proxyp = -1;
     u->port = -1;
-    u->ftpControl = -1;
+    u->ftpControl = fdio->new(fdio, "ftpControl", __FILE__, __LINE__);
     u->ftpFileDoneNeeded = 0;
     u->nrefs = 0;
     return XurlLink(u, msg, file, line);
@@ -53,8 +53,11 @@ void XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
 	return;
-    if (u->ftpControl >= 0)
-	close(u->ftpControl);
+    if (u->ftpControl) {
+	fdio->close(u->ftpControl);
+	fdio->deref(u->ftpControl, "ftpControl", __FILE__, __LINE__);
+	u->ftpControl = NULL;
+    }
     FREE(u->url);
     FREE(u->service);
     FREE(u->user);
@@ -358,7 +361,7 @@ int urlSplit(const char * url, urlinfo *uret)
     return 0;
 }
 
-int urlFile(const char * url, const char * dest, int dir) {
+int urlGetFile(const char * url, const char * dest) {
     int rc;
     FD_t sfd = NULL;
     FD_t tfd = NULL;
@@ -393,7 +396,7 @@ int urlFile(const char * url, const char * dest, int dir) {
 
     switch (urlIsURL(url)) {
     case URL_IS_FTP:
-	if ((rc = ftpFile(sfd, tfd, dir))) {
+	if ((rc = ftpGetFile(sfd, tfd))) {
 	    unlink(dest);
 	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}
@@ -402,7 +405,7 @@ int urlFile(const char * url, const char * dest, int dir) {
     case URL_IS_HTTP:
     case URL_IS_PATH:
     case URL_IS_DASH:
-	if ((rc = httpFile(sfd, tfd, dir))) {
+	if ((rc = httpGetFile(sfd, tfd))) {
 	    unlink(dest);
 	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}

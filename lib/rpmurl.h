@@ -42,7 +42,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
     const char *proxyh;		/* FTP/HTTP: proxy host */
     int proxyp;			/* FTP/HTTP: proxy port */
     int	port;
-    int ftpControl;
+    FD_t ftpControl;
     int ftpFileDoneNeeded;
     int openError;		/* Type of open failure */
 } *urlinfo;
@@ -75,7 +75,7 @@ void	urlFreeCache(void);
 urltype	urlIsURL(const char * url);
 int 	urlSplit(const char *url, /*@out@*/ urlinfo *u);
 
-int	urlFile(const char * url, const char * dest, int push);
+int	urlGetFile(const char * url, const char * dest);
 
 #ifdef __cplusplus
 }

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-02 12:41-0500\n"
+"POT-Creation-Date: 1999-11-03 15:27-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1407,7 +1407,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: build/files.c:1190 build/pack.c:495
+#: build/files.c:1190 build/pack.c:503
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1526,47 +1526,47 @@ msgstr ""
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:423 build/pack.c:446
+#: build/pack.c:427 build/pack.c:454
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: build/pack.c:465
+#: build/pack.c:473
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:472
+#: build/pack.c:480
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:551
+#: build/pack.c:559
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:558
+#: build/pack.c:566
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:565
+#: build/pack.c:573
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:572
+#: build/pack.c:580
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:580
+#: build/pack.c:588
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:596
+#: build/pack.c:604
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2208,86 +2208,86 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:355
+#: lib/install.c:359
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:356
+#: lib/install.c:360
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:399
+#: lib/install.c:403
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:410
+#: lib/install.c:414
 #, c-format
 msgid "cannot create %s: %s"
 msgstr ""
 
-#: lib/install.c:418 lib/install.c:440
+#: lib/install.c:422 lib/install.c:444
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:422
+#: lib/install.c:426
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:433
+#: lib/install.c:437
 #, c-format
 msgid "cannot create %s"
 msgstr ""
 
-#: lib/install.c:444
+#: lib/install.c:448
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:478 lib/install.c:506
+#: lib/install.c:482 lib/install.c:510
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:527
+#: lib/install.c:531
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:529 lib/install.c:807 lib/uninstall.c:27
+#: lib/install.c:533 lib/install.c:811 lib/uninstall.c:27
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:619
+#: lib/install.c:623
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:676
+#: lib/install.c:680
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:737
+#: lib/install.c:741
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:742
+#: lib/install.c:746
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:767
+#: lib/install.c:771
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:803
+#: lib/install.c:807
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:877
+#: lib/install.c:881
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2827,7 +2827,7 @@ msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/rpmdb.c:156 lib/url.c:370
+#: lib/rpmdb.c:156 lib/url.c:373
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
@@ -3021,60 +3021,59 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:200
+#: lib/rpmio.c:229
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:203
+#: lib/rpmio.c:232
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:206
+#: lib/rpmio.c:235
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:209
+#: lib/rpmio.c:238
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:212
+#: lib/rpmio.c:241
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:215
+#: lib/rpmio.c:244
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:218
+#: lib/rpmio.c:247
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:221
+#: lib/rpmio.c:250
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:224
+#: lib/rpmio.c:253
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:227
+#: lib/rpmio.c:256
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:230
+#: lib/rpmio.c:259
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:233
+#: lib/rpmio.c:262
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:237
+#: lib/rpmio.c:266
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#. XXX PARANOIA
-#: lib/rpmio.c:272
+#: lib/rpmio.c:301
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3374,22 +3373,22 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
-#: lib/url.c:173
+#: lib/url.c:176
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:198 lib/url.c:224
+#: lib/url.c:201 lib/url.c:227
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:333
+#: lib/url.c:336
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:388
+#: lib/url.c:391
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""

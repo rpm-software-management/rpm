@@ -416,7 +416,11 @@ static int cpio_bzip2(FD_t fdo, CSA_t *csa)
     int rc;
     const char *failedFile = NULL;
 
+#if 0
     cfd = bzdFdopen(fdDup(Fileno(fdo)), "w9");
+#else
+    cfd = Fdopen(fdDup(Fileno(fdo)), "w9.bzdio");
+#endif
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {
@@ -439,7 +443,11 @@ static int cpio_gzip(FD_t fdo, CSA_t *csa)
     int rc;
     const char *failedFile = NULL;
 
+#if 0
     cfd = gzdFdopen(fdDup(Fileno(fdo)), "w9");
+#else
+    cfd = Fdopen(fdDup(Fileno(fdo)), "w9.gzdio");
+#endif
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {

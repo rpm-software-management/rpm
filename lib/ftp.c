@@ -178,7 +178,7 @@ static int checkResponse(int fd, int secs, int *ecp, /*@out@*/ char ** str) {
 
 int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str) {
     int ec = 0;
-    int rc =  checkResponse(u->ftpControl, ftpTimeoutSecs, &ec, str);
+    int rc =  checkResponse(Fileno(u->ftpControl), ftpTimeoutSecs, &ec, str);
 
     switch (ec) {
     case 550:
@@ -228,7 +228,7 @@ static int ftpCommand(urlinfo u, char * command, ...) {
     buf[len] = '\0';
 
     DBG(0, (stderr, "-> %s", buf));
-    if (write(u->ftpControl, buf, len) != len)
+    if (fdio->write(u->ftpControl, buf, len) != len)
 	return FTPERR_SERVER_IO_ERROR;
 
     return ftpCheckResponse(u, NULL);
@@ -378,11 +378,12 @@ int ftpOpen(urlinfo u)
 	}
     }
 
-    if ((u->ftpControl = tcpConnect(host, port)) < 0)
-	return u->ftpControl;
+    fdSetFdno(u->ftpControl, tcpConnect(host, port));
+    if (Fileno(u->ftpControl) < 0)
+	return Fileno(u->ftpControl);
 
     /* ftpCheckResponse() assumes the socket is nonblocking */
-    if (fcntl(u->ftpControl, F_SETFL, O_NONBLOCK)) {
+    if (fcntl(Fileno(u->ftpControl), F_SETFL, O_NONBLOCK)) {
 	rc = FTPERR_FAILED_CONNECT;
 	goto errxit;
     }
@@ -400,11 +401,10 @@ int ftpOpen(urlinfo u)
     if ((rc = ftpCommand(u, "TYPE", "I", NULL)))
 	goto errxit;
 
-    return u->ftpControl;
+    return Fileno(u->ftpControl);
 
 errxit:
-    close(u->ftpControl);
-    u->ftpControl = -1;
+    fdio->close(u->ftpControl);
     return rc;
 }
 
@@ -440,8 +440,8 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
     if (u->ftpFileDoneNeeded)
 	rc = ftpFileDone(u);
 
-    DBG(fdDebug(fd), (stderr, "-> PASV\n"));
-    if (write(u->ftpControl, "PASV\r\n", 6) != 6)
+    DBG(0, (stderr, "-> PASV\n"));
+    if (fdio->write(u->ftpControl, "PASV\r\n", 6) != 6)
 	return FTPERR_SERVER_IO_ERROR;
 
     if ((rc = ftpCheckResponse(u, &passReply)))
@@ -479,25 +479,28 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
     if (!inet_aton(passReply, &dataAddress.sin_addr))
 	return FTPERR_PASSIVE_ERROR;
 
-    ufdSetFd(fd, socket(AF_INET, SOCK_STREAM, IPPROTO_IP));
+    fdSetFdno(fd, socket(AF_INET, SOCK_STREAM, IPPROTO_IP));
     if (Fileno(fd) < 0)
 	return FTPERR_FAILED_CONNECT;
+    /* XXX setsockopt SO_LINGER */
+    /* XXX setsockopt SO_KEEPALIVE */
+    /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
 
     while (connect(Fileno(fd), (struct sockaddr *) &dataAddress, 
 	        sizeof(dataAddress)) < 0) {
 	if (errno == EINTR)
 	    continue;
-	Fclose(fd);
+	fdio->close(fd);
 	return FTPERR_FAILED_DATA_CONNECT;
     }
 
-    DBG(fdDebug(fd), (stderr, "-> %s", cmd));
+    DBG(0, (stderr, "-> %s", cmd));
     i = strlen(cmd);
-    if (write(u->ftpControl, cmd, i) != i)
+    if (fdio->write(u->ftpControl, cmd, i) != i)
 	return FTPERR_SERVER_IO_ERROR;
 
     if ((rc = ftpCheckResponse(u, NULL))) {
-	Fclose(fd);
+	fdio->close(fd);
 	return rc;
     }
 

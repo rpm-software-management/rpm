@@ -47,13 +47,11 @@ struct FDIO_s {
   fdio_ffileno_function_t *ffileno;
   fdio_fflush_function_t *fflush;
 
-#ifdef NOTYET
   fdio_mkdir_function_t *mkdir;
   fdio_chdir_function_t *chdir;
   fdio_rmdir_function_t *rmdir;
   fdio_rename_function_t *rename;
   fdio_unlink_function_t *unlink;
-#endif
 };
 
 /*@observer@*/ const char * Fstrerror(FD_t fd);
@@ -62,6 +60,7 @@ size_t	Fread	(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd);
 size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
 int	Fseek	(FD_t fd, long int offset, int whence);
 int	Fclose	( /*@killref@*/ FD_t fd);
+FD_t	Fdopen	(FD_t fd, const char * fmode);
 FILE *	Fopen	(const char * path, const char * fmode);
 
 int	Ferror	(FD_t fd);
@@ -77,35 +76,67 @@ int	Rename	(const char * oldpath, const char * newpath);
 int	Chroot	(const char * path);
 int	Unlink	(const char * path);
 
+/*@observer@*/ extern FDIO_t gzdio;
+
 int timedRead(FD_t fd, /*@out@*/void * bufptr, int length);
 
+void fdSetFdno(FD_t fd, int fdno);
 /*@null@*/ const FDIO_t fdGetIoCookie(FD_t fd);
 void fdSetIoCookie(FD_t fd, FDIO_t iop);
+
+long int fdGetCpioPos(FD_t fd);
+extern /*@null@*/ FD_t fdDup(int fdno);
+void fdSetCpioPos(FD_t fd, long int cpioPos);
+extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
+
+#if 0
+#define	fdRead		fdio->read
+#define	fdWrite		fdio->write
+#define	fdSeek		fdio->seek
+#define	fdClose		fdio->close
+#endif
+
 #define	fdLink(_fd, _msg)	fdio->ref(_fd, _msg, __FILE__, __LINE__)
 #define	fdFree(_fd, _msg)	fdio->deref(_fd, _msg, __FILE__, __LINE__)
 #define	fdNew(_iop, _msg)	fdio->new(_iop, _msg, __FILE__, __LINE__)
 
-extern /*@null@*/ FD_t fdDup(int fdno);
-extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
-
-long int fdGetCpioPos(FD_t fd);
-void fdSetCpioPos(FD_t fd, long int cpioPos);
-int fdDebug(FD_t fd);
-void fdDebugOn(FD_t fd);
-void fdDebugOff(FD_t fd);
+#if 0
+#define	fdFileno	fdio->fileno
+#define	fdOpen		fdio->open
+#endif
 
 /*@observer@*/ extern FDIO_t fdio;
+/*@observer@*/ extern FDIO_t fpio;
 
 /*
  * Support for FTP and HTTP I/O.
  */
 /*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
-void ufdSetFd(FD_t fd, int fdno);
 /*@observer@*/ const char * urlStrerror(const char * url);
 
-int httpFile( /*@killref@*/ FD_t sfd, FD_t tfd, int dir);
-int ftpFile( /*@killref@*/ FD_t sfd, FD_t tfd, int dir);
+int httpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
+int ftpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 const char *const ftpStrerror(int errorNumber);
+
+#if 0
+#define	ufdRead		ufdio->read
+#define	ufdWrite	ufdio->write
+#define	ufdSeek		ufdio->seek
+#define	ufdClose	ufdio->close
+#define	ufdLink		ufdio->ref
+#define	ufdFree		ufdio->deref
+#define	ufdNew		ufdio->new
+#define	ufdFileno	ufdio->fileno
+#define	ufdOpen		ufdio->open
+#define	ufdFopen	ufdio->fopen
+#define	ufdFfileno	ufdio->ffileno
+#define	ufdFflush	ufdio->fflush
+#define	ufdMkdir	ufdio->mkdir
+#define	ufdChdir	ufdio->chdir
+#define	ufdRmdir	ufdio->rmdir
+#define	ufdRename	ufdio->rename
+#define	ufdUnlink	ufdio->unlink
+#endif
 
 /*@observer@*/ extern FDIO_t ufdio;
 

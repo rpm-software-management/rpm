@@ -40,7 +40,11 @@ int main(int argc, char **argv)
 	break;
     }
 
+#if 0
     gzdi = gzdFdopen(fdi, "r");	/* XXX gzdi == fdi */
+#else
+    gzdi = Fdopen(fdi, "r.gzdio");	/* XXX gzdi == fdi */
+#endif
 
     while ((ct = Fread(buffer, sizeof(buffer), 1, gzdi)) > 0) {
 	Fwrite(buffer, ct, 1, fdo);

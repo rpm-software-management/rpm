@@ -159,7 +159,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 	    }
 
 	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
-	    myrc = urlFile(*filename, tfn, 0);
+	    myrc = urlGetFile(*filename, tfn);
 	    if (myrc < 0) {
 		rpmMessage(RPMMESS_ERROR, 
 			_("skipping %s - transfer failed - %s\n"), 
