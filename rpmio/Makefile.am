@@ -27,15 +27,12 @@ usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = digest.c fts.c macro.c \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release @VERSION@ $(top_builddir)/file/libfmagic.la @WITH_ZLIB_LIB@ -lrt -lpthread
+librpmio_la_LDFLAGS = -release @VERSION@ \
+	$(top_builddir)/file/libfmagic.la \
+	@WITH_ZLIB_LIB@ \
+	-lrt -lpthread
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = .created
-
-# XXX Add internal libtool dependence
-install-data-local: install-usrlibLTLIBRARIES
-	@cd $(DESTDIR)/$(usrlibdir) && \
-	sed -e "s|^dependency_libs='|& -lpopt|" < librpmio.la > .librpmio.la && \
-	mv .librpmio.la librpmio.la
 
 $(top_builddir)/beecrypt/listobjs:
 	${MAKE} -C $(top_builddir)/beecrypt listobjs

@@ -25,12 +25,6 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h rpmhash.h
 noinst_HEADERS = fprint.h header_internal.h legacy.h
 
-#mylibpaths = \
-#	-L$(top_builddir)/lib \
-#	-L$(top_builddir)/rpmio \
-#	-L$(top_builddir)/popt
-
-#mylibs = -lrpm -lrpmio -lpopt @WITH_LIBELF_LIB@ @LIBS@ @INTLLIBS@ @LIBMISC@
 mylibs = librpmdb.la
 
 LIBS =
@@ -44,18 +38,16 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
-librpmdb_la_LDFLAGS = -release @VERSION@ $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la @WITH_LIBELF_LIB@ @libdb3@
+librpmdb_la_LDFLAGS = -release @VERSION@ \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la \
+	@WITH_LIBELF_LIB@ \
+	@libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
 
 # XXX make sure that db.h symlink is generated
-dbconfig.c: db.h
-
-# XXX Add internal libtool dependence
-install-data-local: install-usrlibLTLIBRARIES
-	@cd $(DESTDIR)/$(usrlibdir) && \
-	sed -e "s|^dependency_libs='|& -lrpmio-@VERSION@|" < librpmdb.la > .librpmdb.la && \
-	mv .librpmdb.la librpmdb.la
+dbconfig.c db3.c: db.h
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '/*@-bounds@*/' > $@

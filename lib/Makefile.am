@@ -21,13 +21,7 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h
 
-mylibpaths = \
-	-L$(top_builddir)/lib \
-	-L$(top_builddir)/rpmdb \
-	-L$(top_builddir)/rpmio \
-	-L$(top_builddir)/popt
-
-mylibs = -lrpm -lrpmdb -lrpmio -lpopt @WITH_LIBELF_LIB@ @LIBS@ @INTLLIBS@ @LIBMISC@
+mylibs = librpm.la
 LIBS =
 
 usrlibdir = $(libdir)@MARK64@
@@ -40,13 +34,10 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c
-librpm_la_LDFLAGS = -release @VERSION@ $(top_builddir)/rpmdb/librpmdb.la
-
-# XXX Add internal libtool dependence
-install-data-local: install-usrlibLTLIBRARIES
-	@cd $(DESTDIR)/$(usrlibdir) && \
-	sed -e "s|^dependency_libs='|& -lrpmdb-@VERSION@ -lrpmio-@VERSION@ -lpopt|" < librpm.la > .librpm.la && \
-	mv .librpm.la librpm.la
+librpm_la_LDFLAGS = -release @VERSION@ \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts
@@ -95,16 +86,17 @@ lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
 
 th: th.c librpm.la
-	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
 #tds: tds.c librpm.la
-#	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< librpm.la
+#	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 #
+
 trb: trb.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trb.o $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
 tplatform: tplatform.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ tplatform.o $(mylibpaths) $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
 trhn: trhn.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ trhn.o $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)

@@ -460,10 +460,13 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Dec 13 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.25
+* Sat Dec 14 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.25
+- rebuild rpm with internal dependency generation enabled.
+- fix: make sure each library has DT_NEEDED for all unresolved syms.
+
+* Fri Dec 13 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.24
 - debug_packages "works", but non-noarch w/o %setup has empty payload.
 - make dependency generation "opt-in" in order to build in distro.
-- rebuild rpm with internal dependency generation enabled.
 
 * Thu Dec 12 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.23
 - fix: add rpmlib(VersionedDependencies) if versioned Provides: found.

@@ -47,6 +47,7 @@
 	- fix: add %%ifnarch noarch to debug_package macro.
 	- debug_packages "works", but non-noarch w/o %setup has empty payload.
 	- make dependency generation "opt-in" in order to build in distro.
+	- fix: make sure each library has DT_NEEDED for all unresolved syms.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

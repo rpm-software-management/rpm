@@ -26,7 +26,11 @@ librpmbuild_la_SOURCES = \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c
-librpmbuild_la_LDFLAGS = -release @VERSION@ $(top_builddir)/lib/librpm.la
+librpmbuild_la_LDFLAGS = -release @VERSION@ \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	@WITH_LIBELF_LIB@
 
 rpmfile.h:
 	@ln -sf $(top_builddir)/file/file.h $@
@@ -35,12 +39,6 @@ files.c rpmfc.c: rpmfile.h
 
 clean-local:
 	 rm -f *.o rpmfile.h # .created $(FILELOBJS)
-
-# XXX Add internal libtool dependence
-install-data-local: install-usrlibLTLIBRARIES
-	@cd $(DESTDIR)/$(usrlibdir) && \
-	sed -e "s|^dependency_libs='|& -lrpm-@VERSION@|" < librpmbuild.la > .librpmbuild.la && \
-	mv .librpmbuild.la librpmbuild.la
 
 #BUILT_SOURCES = rpmbuild.lcd
 
