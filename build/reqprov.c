@@ -18,7 +18,8 @@
 #include "misc.h"
 
 static StringBuf getOutputFrom(char *dir, char *argv[],
-			       char *writePtr, int writeBytesLeft);
+			       char *writePtr, int writeBytesLeft,
+			       int failNonZero);
 
 /*************************************************************/
 /*                                                           */
@@ -89,7 +90,8 @@ int addReqProv(struct PackageRec *p, int flags,
 /*************************************************************/
 
 static StringBuf getOutputFrom(char *dir, char *argv[],
-			       char *writePtr, int writeBytesLeft)
+			       char *writePtr, int writeBytesLeft,
+			       int failNonZero)
 {
     int progPID;
     int progDead;
@@ -180,7 +182,7 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	return NULL;
     }
     waitpid(progPID, &status, 0);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+    if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	rpmError(RPMERR_EXEC, "%s failed", argv[0]);
 	return NULL;
     }
@@ -241,7 +243,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     
     argv[0] = "find-provides";
     argv[1] = NULL;
-    readBuff = getOutputFrom(dir, argv, writePtr, writeBytes);
+    readBuff = getOutputFrom(dir, argv, writePtr, writeBytes, 1);
     if (!readBuff) {
 	rpmError(RPMERR_EXEC, "Failed to find provides");
 	exit(1);
@@ -273,7 +275,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     argv[1] = "-0";
     argv[2] = "ldd";
     argv[3] = NULL;
-    readBuff = getOutputFrom(dir, argv, writePtr, writeBytes);
+    readBuff = getOutputFrom(dir, argv, writePtr, writeBytes, 0);
     if (!readBuff) {
 	rpmError(RPMERR_EXEC, "Failed to find requires");
 	exit(1);
