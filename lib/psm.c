@@ -477,14 +477,14 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 
 /**
  * Mark files in database shared with this package as "replaced".
- * @param ts		transaction set
- * @param fi		transaction element file info
+ * @param psm		package state machine data
  * @return		0 always
  */
-static int markReplacedFiles(const rpmTransactionSet ts, const TFI_t fi)
+static int markReplacedFiles(PSM_t psm)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
-    rpmdb rpmdb = ts->rpmdb;
     const struct sharedFileInfo * replaced = fi->replaced;
     const struct sharedFileInfo * sfi;
     rpmdbMatchIterator mi;
@@ -515,7 +515,7 @@ static int markReplacedFiles(const rpmTransactionSet ts, const TFI_t fi)
 	offsets[num++] = sfi->otherPkg;
     }
 
-    mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, NULL, 0);
+    mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
     rpmdbAppendIterator(mi, offsets, num);
 
     sfi = replaced;
@@ -563,8 +563,6 @@ static int installArchive(PSM_t psm, int allFiles)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
-    struct availablePackage * alp = fi->ap;
-    int saveerrno;
     int rc;
 
     if (allFiles) {
@@ -1325,6 +1323,7 @@ int psmStage(PSM_t psm, pkgStage stage)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
+    HFD_t hfd = fi->hfd;
     int rc = psm->rc;
     int saveerrno;
 
@@ -1335,6 +1334,53 @@ int psmStage(PSM_t psm, pkgStage stage)
 	rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
 		psm->stepName, fi->name, fi->version, fi->release,
 		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
+	if (psm->goal == PSM_PKGINSTALL) {
+	    /*
+	     * When we run scripts, we pass an argument which is the number of 
+	     * versions of this package that will be installed when we are
+	     * finished.
+	     */
+	    psm->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) + 1;
+	    if (psm->scriptArg < 1) {
+		rc = 1;
+		break;
+	    }
+
+	    {	rpmdbMatchIterator mi;
+		Header oh;
+
+		mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
+		rpmdbSetIteratorVersion(mi, fi->version);
+		rpmdbSetIteratorRelease(mi, fi->release);
+		while ((oh = rpmdbNextIterator(mi))) {
+		    fi->record = rpmdbGetIteratorOffset(mi);
+		    psm->oh = (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
+			? headerCopy(oh) : NULL;
+		    break;
+		}
+		rpmdbFreeIterator(mi);
+	    }
+	}
+	if (psm->goal == PSM_PKGERASE) {
+	    /*
+	     * When we run scripts, we pass an argument which is the number of 
+	     * versions of this package that will be installed when we are
+	     * finished.
+	     */
+	    psm->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) - 1;
+	    if (psm->scriptArg < 0) {
+		rc = 1;
+		break;
+	    }
+	
+	    /* Retrieve installed header. */
+	    rc = psmStage(psm, PSM_RPMDB_LOAD);
+	    if (rc) break;
+	}
+	if (psm->goal == PSM_PKGSAVE) {
+	    /* Retrieve installed header. */
+	    rc = psmStage(psm, PSM_RPMDB_LOAD);
+	}
 	break;
     case PSM_PRE:
 	if (psm->goal == PSM_PKGINSTALL) {
@@ -1371,6 +1417,83 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    rc = psmStage(psm, PSM_SCRIPT);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
+	    /* Regenerate original header. */
+	    {	void * uh = NULL;
+		int_32 uht, uhc;
+
+		if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
+		    psm->oh = headerCopyLoad(uh);
+		    uh = hfd(uh, uht);
+		} else {
+		    psm->oh = headerLink(fi->h);
+		}
+	    }
+
+	    /* Open output package for writing. */
+	    {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
+		const char * pkgbn =
+			headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
+
+		bfmt = _free(bfmt);
+		psm->pkgURL = rpmGenPath("%{?_repackage_root:%{_repackage_root}}",
+					 "%{?_repackage_dir:%{_repackage_dir}}",
+					pkgbn);
+		pkgbn = _free(pkgbn);
+		(void) urlPath(psm->pkgURL, &psm->pkgfn);
+		psm->fd = Fopen(psm->pkgfn, "w.ufdio");
+		if (psm->fd == NULL || Ferror(psm->fd)) {
+		    rc = 1;
+		    break;
+		}
+	    }
+
+	    /* Retrieve type of payload compression. */
+	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
+
+	    /* Write the lead section into the package. */
+	    {	int archnum = -1;
+		int osnum = -1;
+		struct rpmlead lead;
+
+#ifndef	DYING
+		rpmGetArchInfo(NULL, &archnum);
+		rpmGetOsInfo(NULL, &osnum);
+#endif
+
+		memset(&lead, 0, sizeof(lead));
+		/* XXX Set package version conditioned on noDirTokens. */
+		lead.major = 4;
+		lead.minor = 0;
+		lead.type = RPMLEAD_BINARY;
+		lead.archnum = archnum;
+		lead.osnum = osnum;
+		lead.signature_type = RPMSIGTYPE_HEADERSIG;
+
+		{   char buf[256];
+		    sprintf(buf, "%s-%s-%s", fi->name, fi->version, fi->release);
+		    strncpy(lead.name, buf, sizeof(lead.name));
+		}
+
+		rc = writeLead(psm->fd, &lead);
+		if (rc) {
+		    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
+			 Fstrerror(psm->fd));
+		    rc = 1;
+		    break;
+		}
+	    }
+
+	    /* Write the signature section into the package. */
+	    {	Header sig = headerRegenSigHeader(fi->h);
+		rc = rpmWriteSignature(psm->fd, sig);
+		headerFree(sig);
+		if (rc) break;
+	    }
+
+	    /* Write the metadata section into the package. */
+	    rc = headerWrite(psm->fd, psm->oh, HEADER_MAGIC_YES);
+	    if (rc) break;
+
 	    /* Change root directory if requested and not already done. */
 	    rc = psmStage(psm, PSM_CHROOT_IN);
 	}
@@ -1436,6 +1559,41 @@ int psmStage(PSM_t psm, pkgStage stage)
 	break;
     case PSM_POST:
 	if (psm->goal == PSM_PKGINSTALL) {
+	    int_32 installTime = time(NULL);
+
+	    /* Restore root directory if changed. */
+	    (void) psmStage(psm, PSM_CHROOT_OUT);
+
+	    if (fi->fc > 0 && fi->fstates)
+		headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
+				fi->fstates, fi->fc);
+
+	    headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
+				&installTime, 1);
+
+	    /*
+	     * If this package has already been installed, remove it from
+	     * the database before adding the new one.
+	     */
+	    if (fi->record) {
+		rc = psmStage(psm, PSM_RPMDB_REMOVE);
+		if (rc) break;
+	    }
+
+	    if (ts->transFlags & RPMTRANS_FLAG_MULTILIB) {
+		uint_32 multiLib, * newMultiLib, * p;
+
+		if (hge(fi->h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib, NULL) &&
+		    hge(psm->oh, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL)) {
+		    multiLib = *p;
+		    multiLib |= *newMultiLib;
+		    headerModifyEntry(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+				      &multiLib, 1);
+		}
+		rc = mergeFiles(fi, psm->oh, fi->h);
+		if (rc) break;
+	    }
+
 	    psm->scriptTag = RPMTAG_POSTIN;
 	    psm->progTag = RPMTAG_POSTINPROG;
 	    psm->sense = RPMSENSE_TRIGGERIN;
@@ -1453,7 +1611,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    rc = psmStage(psm, PSM_IMMED_TRIGGERS);
 	    if (rc) break;
 
-	    markReplacedFiles(ts, fi);
+	    rc = markReplacedFiles(psm);
 
 	}
 	if (psm->goal == PSM_PKGERASE) {
@@ -1596,9 +1754,8 @@ int psmStage(PSM_t psm, pkgStage stage)
 	fi->h = rpmdbNextIterator(mi);
 	if (fi->h)
 	    fi->h = headerLink(fi->h);
-	else
-	    rc = 2;
 	rpmdbFreeIterator(mi);
+	rc = (fi->h ? 0 : 2);
     }	break;
     case PSM_RPMDB_ADD:
 	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
@@ -1632,29 +1789,8 @@ psm->goal = PSM_PKGINSTALL;
 psm->stepName = "  install";
 
     rc = psmStage(psm, PSM_INIT);
-
-    /*
-     * When we run scripts, we pass an argument which is the number of 
-     * versions of this package that will be installed when we are finished.
-     */
-    psm->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) + 1;
-    if (psm->scriptArg < 1)
+    if (rc)
 	goto exit;
-
-    {	rpmdbMatchIterator mi;
-	Header oh;
-
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
-	rpmdbSetIteratorVersion(mi, fi->version);
-	rpmdbSetIteratorRelease(mi, fi->release);
-	while ((oh = rpmdbNextIterator(mi))) {
-	    fi->record = rpmdbGetIteratorOffset(mi);
-	    psm->oh = (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
-		? headerCopy(oh) : NULL;
-	    break;
-	}
-	rpmdbFreeIterator(mi);
-    }
 
     if (fi->fc > 0 && fi->fstates == NULL) {
 	fi->fstates = xmalloc(sizeof(*fi->fstates) * fi->fc);
@@ -1709,46 +1845,6 @@ psm->stepName = "  install";
 	    goto exit;
     }
 
-    /* Restore root directory if changed. */
-    (void) psmStage(psm, PSM_CHROOT_OUT);
-
-    if (fi->fc > 0 && fi->fstates) {
-	headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
-			fi->fstates, fi->fc);
-    }
-
-    {	int_32 installTime = time(NULL);
-	headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
-			&installTime, 1);
-    }
-
-    /*
-     * Legacy: changelogs used to be trimmed to (configurable) lsat N entries
-     * here. This doesn't make sense now that headers have immutable regions,
-     * as trimming changelogs would only increase the size of the header.
-     */
-
-    /*
-     * If this package has already been installed, remove it from the database
-     * before adding the new one.
-     */
-    if (fi->record)
-	rc = psmStage(psm, PSM_RPMDB_REMOVE);
-
-    if (ts->transFlags & RPMTRANS_FLAG_MULTILIB) {
-	uint_32 multiLib, * newMultiLib, * p;
-
-	if (hge(fi->h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib, NULL) &&
-	    hge(psm->oh, RPMTAG_MULTILIBS, NULL, (void **) &p, NULL)) {
-	    multiLib = *p;
-	    multiLib |= *newMultiLib;
-	    headerModifyEntry(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
-			      &multiLib, 1);
-	}
-	if (mergeFiles(fi, psm->oh, fi->h))
-	    goto exit;
-    }
-
     rc = psmStage(psm, PSM_POST);
     if (rc)
 	goto exit;
@@ -1763,46 +1859,25 @@ exit:
 
 int removeBinaryPackage(PSM_t psm)
 {
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
     int rc = 0;
 
 psm->goal = PSM_PKGERASE;
 psm->stepName = "    erase";
 
     rc = psmStage(psm, PSM_INIT);
-
-    /*
-     * When we run scripts, we pass an argument which is the number of 
-     * versions of this package that will be installed when we are finished.
-     */
-    psm->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) - 1;
-    if (psm->scriptArg < 0) {
-	rc = 1;
+    if (rc)
 	goto exit;
-    }
-
-    /* Load header from rpm database. */
-    rc = psmStage(psm, PSM_RPMDB_LOAD);
-    if (rc) {
-	rc = 2;
-	goto exit;
-    }
 
     rc = psmStage(psm, PSM_PRE);
-    if (rc) {
-	rc = 1;
+    if (rc)
 	goto exit;
-    }
 
     rc = psmStage(psm, PSM_PROCESS);
     /* XXX WTFO? erase failures are not cause for stopping. */
 
     rc = psmStage(psm, PSM_POST);
-    if (rc) {
-	rc = 1;
+    if (rc)
 	goto exit;
-    }
 
 exit:
     (void) psmStage(psm, PSM_FINI);
@@ -1812,101 +1887,19 @@ exit:
 
 int repackage(PSM_t psm)
 {
-    TFI_t fi = psm->fi;
-    int saveerrno;
     int rc = 0;
 
 psm->goal = PSM_PKGSAVE;
 psm->stepName = "repackage";
 
     rc = psmStage(psm, PSM_INIT);
-
-    /* Retrieve installed header. */
-    rc = psmStage(psm, PSM_RPMDB_LOAD);
-    if (rc) {
-	rc = 2;
+    if (rc)
 	goto exit;
-    }
 
-    /* Regenerate original header. */
-    {	void * uh = NULL;
-	int_32 uht, uhc;
-
-	if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
-	    HFD_t hfd = fi->hfd;
-	    psm->oh = headerCopyLoad(uh);
-	    uh = hfd(uh, uht);
-	} else {
-	    psm->oh = headerLink(fi->h);
-	}
-    }
-
-    /* Open output package for writing. */
-    {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
-	const char * pkgbn =
-		headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
-
-	bfmt = _free(bfmt);
-	psm->pkgURL = rpmGenPath("%{?_repackage_root:%{_repackage_root}}",
-				 "%{?_repackage_dir:%{_repackage_dir}}",
-				pkgbn);
-	pkgbn = _free(pkgbn);
-	(void) urlPath(psm->pkgURL, &psm->pkgfn);
-	psm->fd = Fopen(psm->pkgfn, "w.ufdio");
-	if (psm->fd == NULL || Ferror(psm->fd)) {
-	    rc = 1;
-	    goto exit;
-	}
-    }
-
-    /* Retrieve type of payload compression. */
-    rc = psmStage(psm, PSM_RPMIO_FLAGS);
-
-    /* Write the lead section into the package. */
-    {	int archnum = -1;
-	int osnum = -1;
-	struct rpmlead lead;
-
-#ifndef	DYING
-	rpmGetArchInfo(NULL, &archnum);
-	rpmGetOsInfo(NULL, &osnum);
-#endif
-
-	memset(&lead, 0, sizeof(lead));
-	/* XXX Set package version conditioned on noDirTokens. */
-	lead.major = 4;
-	lead.minor = 0;
-	lead.type = RPMLEAD_BINARY;
-	lead.archnum = archnum;
-	lead.osnum = osnum;
-	lead.signature_type = RPMSIGTYPE_HEADERSIG;
-
-	{   char buf[256];
-	    sprintf(buf, "%s-%s-%s", fi->name, fi->version, fi->release);
-	    strncpy(lead.name, buf, sizeof(lead.name));
-	}
-
-	rc = writeLead(psm->fd, &lead);
-	if (rc) {
-	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
-		 Fstrerror(psm->fd));
-	    rc = 1;
-	    goto exit;
-	}
-    }
-
-    /* Write the signature section into the package. */
-    {	Header sig = headerRegenSigHeader(fi->h);
-	rc = rpmWriteSignature(psm->fd, sig);
-	headerFree(sig);
-	if (rc) goto exit;
-    }
-
-    /* Write the metadata section into the package. */
-    rc = headerWrite(psm->fd, psm->oh, HEADER_MAGIC_YES);
-    if (rc) goto exit;
-
+    /* Write the lead, signature, and header into the package. */
     rc = psmStage(psm, PSM_PRE);
+    if (rc)
+	goto exit;
 
     /* Write the payload into the package. */
     rc = psmStage(psm, PSM_PROCESS);

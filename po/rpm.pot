@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-02 09:38-0500\n"
+"POT-Creation-Date: 2001-03-02 10:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1909
+#: build/pack.c:484 lib/psm.c:1479
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1498 lib/psm.c:1952
+#: build/pack.c:566 lib/psm.c:1644
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2893,58 +2893,58 @@ msgstr ""
 #. * This would probably be a good place to check if disk space
 #. * was used up - if so, we should return a different error.
 #.
-#: lib/psm.c:599
+#: lib/psm.c:585
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:600
+#: lib/psm.c:586
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:640
+#: lib/psm.c:626
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/psm.c:646
+#: lib/psm.c:632
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/psm.c:668
+#: lib/psm.c:654
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/psm.c:718
+#: lib/psm.c:704
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:807
+#: lib/psm.c:793
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:1077
+#: lib/psm.c:1063
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:1084
+#: lib/psm.c:1070
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1347
+#: lib/psm.c:1334
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1358
+#: lib/psm.c:1392
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1572
+#: lib/psm.c:1718
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
