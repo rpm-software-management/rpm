@@ -141,7 +141,7 @@ dbiIndexSet dbiCreateIndexRecord(void) {
 }
     
 void dbiFreeIndexRecord(dbiIndexSet set) {
-    free(set.recs);
+    if (set.recs) free(set.recs);
 }
 
 /* returns 1 on failure */

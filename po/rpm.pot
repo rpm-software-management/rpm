@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-02-23 02:04-0500\n"
+"POT-Creation-Date: 1999-02-24 23:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -256,107 +256,107 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: ../install.c:110
+#: ../install.c:109
 msgid "counting packages to install\n"
 msgstr ""
 
-#: ../install.c:114
+#: ../install.c:113
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: ../install.c:123
+#: ../install.c:122
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:134
+#: ../install.c:133
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:143
+#: ../install.c:142
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:147
+#: ../install.c:146
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:164
+#: ../install.c:163
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:173 ../install.c:281
+#: ../install.c:172 ../install.c:287
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:185 ../lib/query.c:540
+#: ../install.c:184 ../lib/query.c:540
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:189 ../install.c:418
+#: ../install.c:188 ../install.c:424
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:204 ../install.c:331
+#: ../install.c:203 ../install.c:337
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: ../install.c:222
+#: ../install.c:221
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: ../install.c:232
+#: ../install.c:231
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:248
+#: ../install.c:249
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:342 ../lib/query.c:684 ../verify.c:243
+#: ../install.c:348 ../lib/query.c:684 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:346
+#: ../install.c:352
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: ../install.c:355
+#: ../install.c:361
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:381
+#: ../install.c:387
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:408
+#: ../install.c:414
 #, c-format
 msgid "cannot open %s\n"
 msgstr ""
 
-#: ../install.c:413
+#: ../install.c:419
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: ../install.c:457
+#: ../install.c:463
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:460
+#: ../install.c:466
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -2244,31 +2244,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:372 ../lib/depends.c:531
+#: ../lib/depends.c:373 ../lib/depends.c:532
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:437
+#: ../lib/depends.c:438
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:624
+#: ../lib/depends.c:626
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:667
+#: ../lib/depends.c:669
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:767
+#: ../lib/depends.c:769
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:819
+#: ../lib/depends.c:821
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -3137,17 +3137,17 @@ msgstr ""
 msgid "Invalid signature spec in rc file"
 msgstr ""
 
-#: ../lib/transaction.c:641
+#: ../lib/transaction.c:662
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:647
+#: ../lib/transaction.c:668
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:735
+#: ../lib/transaction.c:756
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

@@ -138,7 +138,7 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 2, ts->numRemovedPackages,
     NULL, notifyData));
 
     /* FIXME: it seems a bit silly to read in all of these headers twice */
-    for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
+    for (i = 0; i < ts->numRemovedPackages; i++) {
 	Header h;
 
 	if ((h = rpmdbGetRecord(ts->db, ts->removedPackages[i]))) {
@@ -168,13 +168,14 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 3, al->size, NULL, notifyData));
 		fi++, alp++) {
 	if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL, 
 				     (void *) NULL, &fi->fc)) {
+	    fi->replaced = NULL;
+	    fi->actions = NULL;
 	    fi->fc = 0;
 	    fi->h = alp->h;
 	    hdrs[alp - al->list] = headerLink(fi->h);
 	    continue;
 	}
 
-/* XXX FIXME: There is a memory leak here ... */
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
 	fi->h = hdrs[alp - al->list] = relocateFileList(alp, probs, alp->h, 
 						         fi->actions);
@@ -208,6 +209,8 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 4, ts->numRemovedPackages,
 
     for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
 
+	fi->actions = NULL;
+	fi->replaced = NULL;
 	fi->type = REMOVED;
 	fi->record = ts->removedPackages[i];
 	fi->h = rpmdbGetRecord(ts->db, fi->record);
@@ -233,12 +236,7 @@ NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILESTATES, NULL, 
 				(void *) &fi->fstates, NULL);
 
-/* XXX FIXME: ... or there is a memory leak here ... */
 	/* Note that as FA_UNKNOWN = 0, this does the right thing */
-	if (fi->actions) {
-	    free(fi->actions);
-	    fi->actions = NULL;
-	}
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
     }
@@ -302,9 +300,10 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
 		last++;
 	    last--;
 
-	    for (j = 0; j < ts->numRemovedPackages; j++)
+	    for (j = 0; j < ts->numRemovedPackages; j++) {
 		if (ts->removedPackages[j] == sharedList[i].otherPkg)
 		    break;
+	    }
 	    beingRemoved = (j < ts->numRemovedPackages);
 
 	    if (fi->type == ADDED)
@@ -355,6 +354,11 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 8, al->size, NULL, notifyData));
 		free(fi->actions);
 		fi->actions = NULL;
 	    }
+/* XXX FIXME: This smells like a memory leak. */
+	    if (fi->actions) {
+		free(fi->actions);
+		fi->actions = NULL;
+	    }
 	}
 
 NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 8, al->size, NULL, notifyData));
@@ -401,9 +405,16 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 9, al->size, NULL, notifyData));
 
 	headerFree(hdrs[alp - al->list]);
 
-	if (fi->fc) {
+/* XXX FIXME: This smells like a memory leak. */
+	if (fi->actions) {
 	    free(fi->actions);
 	    fi->actions = NULL;
+	}
+
+/* XXX FIXME: This smells like a memory leak. */
+	if (fi->replaced) {
+	    free(fi->replaced);
+	    fi->replaced = NULL;
 	}
 
 	if (!alp->fd && fd)
@@ -425,20 +436,20 @@ NOTIFY((fi->h, RPMCALLBACK_UNINST_PROGRESS, i, ts->numRemovedPackages,
 				flags, fi->actions, ts->scriptFd))
 
 	    ourrc++;
+
+/* XXX FIXME: This smells like a memory leak. */
+	if (fi->actions) {
+	    free(fi->actions);
+	    fi->actions = NULL;
+	}
+/* XXX FIXME: This smells like a memory leak. */
+	if (fi->replaced) {
+	    free(fi->replaced);
+	    fi->replaced = NULL;
+	}
     }
 NOTIFY((NULL, RPMCALLBACK_UNINST_STOP, 0, ts->numRemovedPackages,
     NULL, notifyData));
-
-/* XXX FIXME: ... or possibly there is a memory leak here. */
-    if (fi->actions) {
-	free(fi->actions);
-	fi->actions = NULL;
-    }
-/* XXX FIXME: This smells like a memory leak. */
-    if (fi->replaced) {
-	free(fi->replaced);
-	fi->replaced = NULL;
-    }
 
     if (ourrc) 
     	return -1;
