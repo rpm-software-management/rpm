@@ -46,9 +46,10 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 				   char * release, int * recOffset, int flags);
 static int setFileOwnerships(char * prefix, char ** fileList, 
 			     char ** fileOwners, char ** fileGroups, 
+			     int_16 * fileModes, 
 			     enum instActions * instActions, int fileCount);
 static int setFileOwner(char * prefix, char * file, char * owner, 
-			char * group);
+			char * group, int_16 mode);
 static int createDirectories(char * prefix, char ** fileList, int fileCount);
 static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
@@ -378,7 +379,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	    if (getEntry(h, RPMTAG_FILEGROUPNAME, &type, (void **) &fileGroups, 
 			 &fileCount)) {
 		if (setFileOwnerships(prefix, fileList, fileOwners, fileGroups, 
-				instActions, fileCount)) {
+				fileModesList, instActions, fileCount)) {
 		    free(fileOwners);
 		    free(fileGroups);
 		    free(fileList);
@@ -690,6 +691,7 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 
 static int setFileOwnerships(char * prefix, char ** fileList, 
 			     char ** fileOwners, char ** fileGroups, 
+			     int_16 * fileModesList,
 			     enum instActions * instActions, int fileCount) {
     int i;
 
@@ -699,7 +701,8 @@ static int setFileOwnerships(char * prefix, char ** fileList,
 	if (instActions[i] != SKIP) {
 	    /* ignore errors here - setFileOwner handles them reasonable
 	       and we want to keep running */
-	    setFileOwner(prefix, fileList[i], fileOwners[i], fileGroups[i]);
+	    setFileOwner(prefix, fileList[i], fileOwners[i], fileGroups[i],
+			 fileModesList[i]);
 	}
     }
 
@@ -713,7 +716,7 @@ static int setFileOwnerships(char * prefix, char ** fileList,
    If this performs too poorly I'll have to implement it properly :-( */
 
 static int setFileOwner(char * prefix, char * file, char * owner, 
-			char * group) {
+			char * group, int_16 mode ) {
     static char * lastOwner = NULL, * lastGroup = NULL;
     static uid_t lastUID;
     static gid_t lastGID;
@@ -763,10 +766,18 @@ static int setFileOwner(char * prefix, char * file, char * owner,
 	}
     }
 	
-    message(MESS_DEBUG, "%s owned by %s (%d), group %s (%d)\n", filespec,
-	    owner, uid, group, gid);
+    message(MESS_DEBUG, "%s owned by %s (%d), group %s (%d) mode %o\n",
+		filespec, owner, uid, group, gid, mode);
     if (chown(filespec, uid, gid)) {
 	error(RPMERR_CHOWN, "cannot set owner and group for %s - %s\n",
+		filespec, strerror(errno));
+	/* screw with the permissions so it's not SUID and 0.0 */
+	chmod(filespec, 0644);
+	return 1;
+    }
+    /* Also set the mode according to what is stored in the header */
+    if (chmod(filespec, mode)) {
+	error(RPMERR_CHOWN, "cannot change mode for %s - %s\n",
 		filespec, strerror(errno));
 	/* screw with the permissions so it's not SUID and 0.0 */
 	chmod(filespec, 0644);
