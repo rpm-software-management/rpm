@@ -726,21 +726,17 @@ static int dataLength(int_32 type, void * p, int_32 count, int onDisk) {
     return length;
 }
 
-static void * grabData(int_32 type, void * p, int_32 c, int * lengthPtr) {
-    int length;
+static void copyData(int_32 type, void * dstPtr, void * srcPtr, int_32 c, 
+			int dataLength) {
     char ** src, * dst;
-    void * data;
     int i, len;
-
-    length = dataLength(type, p, c, 0);
-    data = malloc(length);
 
     switch (type) {
       case RPM_STRING_ARRAY_TYPE:
 	/* Otherwise, p is char** */
 	i = c;
-	src = (char **) p;
-	dst = (char *) data;
+	src = (char **) srcPtr;
+	dst = dstPtr;
 	while (i--) {
 	    len = strlen(*src) + 1;
 	    memcpy(dst, *src, len);
@@ -750,8 +746,18 @@ static void * grabData(int_32 type, void * p, int_32 c, int * lengthPtr) {
 	break;
 
       default:
-	memcpy(data, p, length);
+	memcpy(dstPtr, srcPtr, dataLength);
     }
+}
+
+static void * grabData(int_32 type, void * p, int_32 c, int * lengthPtr) {
+    int length;
+    void * data;
+
+    length = dataLength(type, p, c, 0);
+    data = malloc(length);
+
+    copyData(type, data, p, c, length);
 
     *lengthPtr = length;
     return data;
@@ -839,7 +845,8 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c) {
     entry->data = realloc(entry->data, entry->length + length);
     memcpy(((char *) entry->data) + entry->length, p, length);
 
-    grabData(type, entry->data + entry->length, c, &length);
+    copyData(type, entry->data + entry->length, p, c, length);
+
     entry->length += length;
 
     entry->info.count += c;
