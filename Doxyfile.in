@@ -180,9 +180,7 @@ INPUT                = \
 	./build.c \
 	./build.h \
 	./config.h \
-	./convertdb.c \
-	./oldrpmdb.c \
-	./rpm.c \
+	./rpmqv.c \
 	./rpm2cpio.c \
 	./system.h \
 	./build/build.c \
@@ -209,7 +207,7 @@ INPUT                = \
 	./build/spec.c \
 	./lib/cpio.c \
 	./lib/cpio.h \
-	./lib/db0.c \
+	./lib/db1.c \
 	./lib/db3.c \
 	./lib/depends.c \
 	./lib/depends.h \
@@ -225,34 +223,26 @@ INPUT                = \
 	./lib/header.h \
 	./lib/install.c \
 	./lib/install.h \
-	./lib/macro.c \
 	./lib/md5.c \
 	./lib/md5.h \
 	./lib/md5sum.c \
-	./lib/messages.c \
 	./lib/misc.c \
 	./lib/misc.h \
-	./lib/oldheader.c \
-	./lib/oldheader.h \
-	./lib/oldrpmdb.h \
 	./lib/package.c \
+	./lib/poptBT.c \
+	./lib/poptQV.c \
 	./lib/problems.c \
 	./lib/query.c \
+	./lib/rpm_malloc.h \
 	./lib/rpmchecksig.c \
 	./lib/rpmdb.c \
 	./lib/rpmdb.h \
-	./lib/rpmerr.c \
 	./lib/rpminstall.c \
-	./lib/rpmio.c \
-	./lib/rpmio.h \
 	./lib/rpmlead.c \
 	./lib/rpmlead.h \
 	./lib/rpmlib.h \
-	./lib/rpmmacro.h \
-	./lib/rpmmalloc.c \
-	./lib/rpm_malloc.h \
+	./lib/rpmlibprov.c \
 	./lib/rpmrc.c \
-	./lib/rpmurl.h \
 	./lib/signature.c \
 	./lib/signature.h \
 	./lib/stringbuf.c \
@@ -262,8 +252,22 @@ INPUT                = \
 	./lib/tagtable.c \
 	./lib/transaction.c \
 	./lib/uninstall.c \
-	./lib/url.c \
 	./lib/verify.c \
+	./rpmio/macro.c \
+	./rpmio/messages.c \
+	./rpmio/rpmerr.c \
+	./rpmio/rpmerr.h \
+	./rpmio/rpmio.c \
+	./rpmio/rpmio.h \
+	./rpmio/rpmio_api.c \
+	./rpmio/rpmmacro.h \
+	./rpmio/rpmmalloc.c \
+	./rpmio/rpmmessages.h \
+	./rpmio/rpmrpc.c \
+	./rpmio/rpmurl.h \
+	./rpmio/ugid.c \
+	./rpmio/ugid.h \
+	./rpmio/url.c \
 	./popt/findme.c \
 	./popt/findme.h \
 	./popt/popt.c \

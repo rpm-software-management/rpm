@@ -110,7 +110,7 @@ static struct poptOption optionsTable[] = {
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
-{ "freshen", 'F', 0, 0, 'F',			NULL, NULL},
+ { "freshen", 'F', 0, 0, 'F',			NULL, NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL, &_ftp_debug, -1,		NULL, NULL},
  { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
  { "help", '\0', 0, &help, 0,			NULL, NULL},

@@ -1,6 +1,5 @@
 3.0.5 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
-	- configure.in fiddles for BSD systems (Patrick Schoo).
 	- API: change dbi to pass by reference, not value.
 	- cram all of db1, db_185, and db2 interfaces into rpmlib.
 	- convert db1 -> db2 on-disk format using --rebuilddb.
@@ -9,7 +8,6 @@
 	- permit db3 configuration using macros.
 	- create dbi from template rather than passed args.
 	- use hashed access for package headers.
-	- solaris2.6: avoid bsearch with empty dir list (Ric Klaren - klaren@cs.utwente.nl)
 	- db3: save join keys in endian neutral binary format.
 	- treat legacy falloc.c as "special" db[01] index for package headers.
 	- API: pass *SearchIndex() length of key (0 will use strlen(key)).
@@ -31,10 +29,6 @@
 	- fix: free iterator *after* loop, not during.
 	- fix: Depends needed keylen in dbiPut, rpmdbFreeIterator after use.
 	- Rename db0.c to db1.c, resurrect db2.c (from db3.c).
-	- Add ia64 and sparc64 changes.
-	- rpm.spec: add per-platform sub-directories.
-	- FreeBSD fixes (bero@redhat.com).
-	- include RPM-GPG-KEY in file manifest.
 	- simplify --last popt alias, date like -qi (bjerrick@easystreet.com).
 	- fix: alloca'd memory used outside of scope (alpha segfault).
 	- fix: define/eval options assumed sizeof(int) == sizeof(void *).
@@ -89,6 +83,12 @@
 	- fix: don't attempt dbiOpen with anything but requested dbN.
 
 3.0.4 -> 3.0.5
+	- configure.in fiddles for BSD systems (Patrick Schoo).
+	- solaris2.6: avoid bsearch with empty dir list (Ric Klaren - klaren@cs.utwente.nl)
+	- include RPM-GPG-KEY in file manifest.
+	- Add ia64 and sparc64 changes.
+	- rpm.spec: add per-platform sub-directories.
+	- FreeBSD fixes (bero@redhat.com).
 	- handle version 4 packaging as input.
 	- builds against bzip2 1.0
 	- fix: resurrect symlink unique'ifying property of finger prints.
