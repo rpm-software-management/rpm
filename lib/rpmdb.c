@@ -69,7 +69,7 @@ int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp) {
 		     RPMDB_FLAG_MINIMAL)) {
 	return 1;
     }
-
+    xfree(dbpath);
     return 0;
 }
 
