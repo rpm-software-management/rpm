@@ -107,7 +107,7 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 		rc = 0;
 	    } else {
 		rc = rpmInstallSourcePackage(rootdir, fd, NULL, fn,
-					     printFormat);
+					     printFormat, NULL);
 	    }
 	} 
 
@@ -403,7 +403,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     return numFailed;
 }
 
-int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
+int doSourceInstall(char * rootdir, char * arg, char ** specFile,
+		    char ** cookie) {
     int fd;
     int rc;
 
@@ -416,9 +417,11 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
     if (rpmIsVerbose())
 	printf("Installing %s\n", arg);
 
-    rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL);
+    rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL, cookie);
     if (rc == 1) {
 	fprintf(stderr, _("error: %s cannot be installed\n"), arg);
+	if (specFile) free(*specFile);
+	if (cookie) free(*cookie);
     }
 
     close(fd);
