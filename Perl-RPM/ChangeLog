@@ -12,3 +12,23 @@ Revision history for Perl extension RPM.
 	exported symbols, rather than lengthening it). A basic top-level
 	RPM namespace is present, but doesn't yet do anything useful. Some
 	basic test scripts are in place, but more are (always) needed.
+
+0.2
+	- second alpha
+
+	Class for RPM::Error added. The code is in the RPM.xs file, but
+	the docs and accessors are done in RPM/Error.pm.
+
+	All sub-classes moved to RPM/.
+
+	More documentation added, especially to RPM::Constants.
+
+	RPM::Constants had about a dozen or so trimmed out.
+
+	Found error in Database.xs where the FIRSTKEY/NEXTKEY pair would
+	have returned string-ified references instead of package names,
+	because of not taking the first array element. I really plan to
+	change the RPM::Header::FETCH interface.
+
+	Added two utility functions under the RPM::* space for getting O/S
+	and architecture names.

@@ -6,6 +6,7 @@ const char *		T_PTROBJ
 RPM			T_PTROBJ
 RPM::Database		O_RPM_Database
 RPM::Header		O_RPM_Header
+RPM::Header::datum	T_PTROBJ
 
 #
 # The following mappings for O_HvRV are taken directly from Dean Roehrich's

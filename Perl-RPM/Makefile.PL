@@ -1,10 +1,10 @@
 use ExtUtils::MakeMaker;
 
 %XS = qw(
-         RPM.xs                     RPM.c
-         Constants/Constants.xs     Constants/Constants.c
-         Database/Database.xs       Database/Database.c
-         Header/Header.xs           Header/Header.c
+         RPM.xs             RPM.c
+         RPM/Constants.xs   RPM/Constants.c
+         RPM/Database.xs    RPM/Database.c
+         RPM/Header.xs      RPM/Header.c
         );
 
 @OBJECT = values %XS;
@@ -14,21 +14,17 @@ for (@OBJECT)
 }
 $OBJECT = join(' ', @OBJECT);
 
-@DIRS = qw(Constants Header Database);
-
 %PM = map { ($from = $_) =~ s/xs$/pm/;
-            ($to = $from) =~ s|.*?/|RPM/|;
-            ($from, "\$(INST_LIBDIR)/$to"); } (sort keys %XS);
+            ($from, "\$(INST_LIBDIR)/$from"); } (sort keys %XS);
+$PM{q(RPM/Error.pm)} = '$(INST_LIBDIR)/RPM/Error.pm';
 
-# Make symlinks for typemap in the sub-dirs
-for (@DIRS)
-{
-    symlink '../typemap', "$_/typemap";
-}
+# This shouldn't be necessary, I don't think, but for now it is
+unlink 'RPM/typemap';
+symlink '../typemap', 'RPM/typemap';
 
 # Cruft that MakeMaker wouldn't inherently know about
-$CLEAN = join(' ', map { "$_/typemap" } @DIRS) . " $OBJECT";
-$CLEAN .= ' pod2html-* */pod2html-* *.html */*.html';
+$CLEAN = join(' ', values %XS) . " $OBJECT";
+$CLEAN .= ' pod2html-* */pod2html-* *.html */*.html RPM/typemap';
 
 WriteMakefile(
               NAME         => 'RPM',
@@ -36,13 +32,13 @@ WriteMakefile(
               VERSION_FROM => 'RPM.pm',
               LIBS         => '-lrpm -lpopt',
               DEFINE       => '',
-              XS           => \%XS,
               PM           => \%PM,
+              XS           => \%XS,
               OBJECT       => $OBJECT,
               INC          => '-I/usr/include/rpm',
+              DIR          => [],
               dist         => { COMPRESS => 'gzip -9f' },
               clean        => { FILES => $CLEAN },
-              #realclean    => { FILES => $CLEAN },
              );
 
 sub MY::c_o
@@ -50,7 +46,8 @@ sub MY::c_o
     package MY; # so that "SUPER" works right
 
     my $text = shift->SUPER::c_o(@_);
-    $text =~ s/CCCMD.*$/$&\n\t\@if test -f `basename \$*.o` -a "`basename \$*.o`" != "\$*.o"; then mv `basename \$*.o` \$*.o; fi/m;
+
+    $text =~ s/CCCMD.*$/$& -o \$*\$(OBJ_EXT)/gm;
 
     $text;
 }

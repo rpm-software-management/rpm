@@ -3,12 +3,17 @@ package RPM;
 use 5.005;
 use strict;
 use subs qw(bootstrap_Constants bootstrap_Header bootstrap_Database);
-use vars qw($VERSION @ISA);
+use vars qw($VERSION $revision @ISA @EXPORT @EXPORT_OK);
 
 require DynaLoader;
+require Exporter;
 
-@ISA = qw(DynaLoader);
-$VERSION = '0.1';
+@ISA = qw(Exporter DynaLoader);
+$VERSION = '0.2';
+$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+
+@EXPORT = qw(GetOsName GetArchName);
+@EXPORT_OK = @EXPORT;
 
 bootstrap RPM $VERSION;
 
@@ -36,13 +41,41 @@ RPM - Perl interface to the API for the RPM Package Manager
 At present, the package-manipulation functionality is not yet implemented.
 The B<RPM::Database> and B<RPM::Header> packages do provide access to the
 information contained within the database of installed packages, and
-individual package headers, respectively.
+individual package headers, respectively. The B<RPM::Error> package is
+available, which provides support routines for signaling and catching
+errors. Additionally, there is the B<RPM::Constants> package which provides
+a number of values from the B<rpm> library, referred to by the same name used
+at the C level.
+
+=head1 UTILITY FUNCTIONS
+
+The following utility functions are exported by default from B<RPM>:
+
+=over
+
+=item GetOsName
+
+Returns the text name of the O/S, as derived from the B<rpm> configuration
+files. This is the O/S token that B<rpm> will use to refer to the running
+system.
+
+=item GetArchName
+
+As above, but returns the architecture string instead. Again, this may not
+directly match the running system, but rather is the value that B<rpm> is
+using. B<rpm> will use the lowest-matching architecture whenever possible,
+for maximum cross-platform compatibility.
+
+=back
 
 =head1 DIAGNOSTICS
 
-Direct binding to the internal error-management of B<rpm> is still under
-development. At present, most operations generate their diagnostics to
-STDERR.
+When an error occurs in either the C-level B<rpm> library or internally
+within these libraries, it is made available via a special dual-nature
+variable B<$RPM::err>. When evaluated in a numeric context, it returns the
+integer code value of the error. When taken in a string context, it returns
+the text message associated with the error. This is intended to closely
+mimic the behavior of the special Perl variable "C<$!>".
 
 =head1 CAVEATS
 
@@ -51,7 +84,8 @@ subject to change in future releases.
 
 =head1 SEE ALSO
 
-L<RPM::Database>, L<RPM::Header>, L<perl>, L<rpm>
+L<RPM::Constants>, L<RPM::Database>, L<RPM::Error>, L<RPM::Header>,
+L<perl>, L<rpm>
 
 =head1 AUTHOR
 
