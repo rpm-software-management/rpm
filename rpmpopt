@@ -54,5 +54,5 @@ rpm alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} script (through %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'
 
-rpm alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %-27{NAME} %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)}|\n' \
-	--pipe "sort -r -n | sed 's,^..........,,'"
+rpm alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)}|\n' \
+	--pipe "sort -r -n | sed 's,^..........,,' | awk '{printf(\"%-35s %-3s %-3s %2s %-8s %-4s\n\", $1, $2, $3, $4, $5, $6)}' "
