@@ -334,7 +334,8 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
+int headerModifyEntry(Header h, int_32 tag, int_32 type,
+			const void * p, int_32 c)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -367,8 +368,8 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
  * @return		1 on success, 0 on failure
  */
 int headerAddI18NString(Header h, int_32 tag, const char * string,
-	const char * lang)
-		/*@modifies h @*/;
+		const char * lang)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -384,7 +385,8 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
+int headerAppendEntry(Header h, int_32 tag, int_32 type,
+			const void * p, int_32 c)
 	/*@modifies h @*/;
 
 /** \ingroup header
@@ -397,8 +399,9 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
-		/*@modifies h @*/;
+int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
+			const void * p, int_32 c)
+	/*@modifies h @*/;
 
 /** \ingroup header
  * Retrieve tag value.
@@ -414,10 +417,10 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c
  * @return		1 on success, 0 on failure
  */
 int headerGetEntry(Header h, int_32 tag,
-	/*@null@*/ /*@out@*/ int_32 * type,
-	/*@null@*/ /*@out@*/ void ** p,
-	/*@null@*/ /*@out@*/int_32 *c)
-		/*@modifies *type, *p, *c @*/;
+			/*@null@*/ /*@out@*/ int_32 * type,
+			/*@null@*/ /*@out@*/ void ** p,
+			/*@null@*/ /*@out@*/int_32 *c)
+	/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
  * Retrieve tag value using header internal array.
@@ -432,10 +435,10 @@ int headerGetEntry(Header h, int_32 tag,
  * @return		1 on success, 0 on failure
  */
 int headerGetEntryMinMemory(Header h, int_32 tag,
-	/*@null@*/ /*@out@*/ int_32 * type,
-	/*@null@*/ /*@out@*/ const void ** p,
-	/*@null@*/ /*@out@*/ int_32 * c)
-		/*@modifies *type, *p, *c @*/;
+			/*@null@*/ /*@out@*/ int_32 * type,
+			/*@null@*/ /*@out@*/ const void ** p,
+			/*@null@*/ /*@out@*/ int_32 * c)
+	/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
  * Retrieve tag value with type match.
@@ -451,10 +454,10 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
  */
 /*@-exportlocal@*/
 int headerGetRawEntry(Header h, int_32 tag,
-	/*@null@*/ /*@out@*/ int_32 * type,
-	/*@null@*/ /*@out@*/ const void ** p, 
-	/*@null@*/ /*@out@*/ int_32 * c)
-		/*@modifies *type, *p, *c @*/;
+			/*@null@*/ /*@out@*/ int_32 * type,
+			/*@null@*/ /*@out@*/ const void ** p, 
+			/*@null@*/ /*@out@*/ int_32 * c)
+	/*@modifies *type, *p, *c @*/;
 /*@=exportlocal@*/
 
 /** \ingroup header
@@ -495,9 +498,11 @@ HeaderIterator headerInitIterator(Header h)
  * @return		1 on success, 0 on failure
  */
 int headerNextIterator(HeaderIterator hi,
-	/*@null@*/ /*@out@*/ int_32 * tag, /*@null@*/ /*@out@*/ int_32 * type,
-	/*@null@*/ /*@out@*/ const void ** p, /*@null@*/ /*@out@*/ int_32 * c)
-		/*@modifies hi, *tag, *type, *p, *c @*/;
+		/*@null@*/ /*@out@*/ int_32 * tag,
+		/*@null@*/ /*@out@*/ int_32 * type,
+		/*@null@*/ /*@out@*/ const void ** p,
+		/*@null@*/ /*@out@*/ int_32 * c)
+	/*@modifies hi, *tag, *type, *p, *c @*/;
 
 /** \ingroup header
  * Destroy header tag iterator.
@@ -536,7 +541,7 @@ void headerUnsort(Header h)
  * @param headerTo	destination header
  * @param tagstocopy	array of tags that are copied
  */
-void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy)
+void headerCopyTags(Header headerFrom, Header headerTo, int_32 * tagstocopy)
 	/*@modifies headerFrom, headerTo @*/;
 
 /** \ingroup header

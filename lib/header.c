@@ -955,10 +955,10 @@ Header headerReload(Header h, int tag)
     /*@-onlytrans@*/
     void * uh = doHeaderUnload(h, &length);
 
-    if (uh == NULL)
-	return NULL;
     h = headerFree(h);
     /*@=onlytrans@*/
+    if (uh == NULL)
+	return NULL;
     nh = headerLoad(uh);
     if (nh == NULL) {
 	uh = _free(uh);
@@ -1080,16 +1080,16 @@ void headerDump(Header h, FILE *f, int flags,
 		"      OFSET      COUNT\n");
     for (i = 0; i < h->indexUsed; i++) {
 	switch (p->info.type) {
-	case RPM_NULL_TYPE:   		type = "NULL_TYPE"; 	break;
-	case RPM_CHAR_TYPE:   		type = "CHAR_TYPE"; 	break;
-	case RPM_BIN_TYPE:   		type = "BIN_TYPE"; 	break;
-	case RPM_INT8_TYPE:   		type = "INT8_TYPE"; 	break;
-	case RPM_INT16_TYPE:  		type = "INT16_TYPE"; 	break;
-	case RPM_INT32_TYPE:  		type = "INT32_TYPE"; 	break;
-	/*case RPM_INT64_TYPE:  	type = "INT64_TYPE"; 	break;*/
-	case RPM_STRING_TYPE: 	    	type = "STRING_TYPE"; 	break;
-	case RPM_STRING_ARRAY_TYPE: 	type = "STRING_ARRAY_TYPE"; break;
-	case RPM_I18NSTRING_TYPE: 	type = "I18N_STRING_TYPE"; break;
+	case RPM_NULL_TYPE:   		type = "NULL"; 	break;
+	case RPM_CHAR_TYPE:   		type = "CHAR"; 	break;
+	case RPM_BIN_TYPE:   		type = "BIN"; 	break;
+	case RPM_INT8_TYPE:   		type = "INT8"; 	break;
+	case RPM_INT16_TYPE:  		type = "INT16"; 	break;
+	case RPM_INT32_TYPE:  		type = "INT32"; 	break;
+	/*case RPM_INT64_TYPE:  	type = "INT64"; 	break;*/
+	case RPM_STRING_TYPE: 	    	type = "STRING"; 	break;
+	case RPM_STRING_ARRAY_TYPE: 	type = "STRING_ARRAY"; break;
+	case RPM_I18NSTRING_TYPE: 	type = "I18N_STRING"; break;
 	default:		    	type = "(unknown)";	break;
 	}
 
@@ -1101,9 +1101,9 @@ void headerDump(Header h, FILE *f, int flags,
 	else
 	    tag = tage->name;
 
-	fprintf(f, "Entry      : %.3d (%d)%-14s %-18s 0x%.8x %.8d\n", i,
-		p->info.tag, tag, type, (unsigned) p->info.offset, (int) 
-		p->info.count);
+	fprintf(f, "Entry      : %3.3d (%d)%-14s %-18s 0x%.8x %.8d\n", i,
+		p->info.tag, tag, type, (unsigned) p->info.offset,
+		(int) p->info.count);
 
 	if (flags & HEADER_DUMP_INLINE) {
 	    char *dp = p->data;
@@ -1802,8 +1802,8 @@ int headerAddI18NString(Header h, int_32 tag, const char * string, const char * 
     return 0;
 }
 
-/* if there are multiple entries with this tag, the first one gets replaced */
-int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
+int headerModifyEntry(Header h, int_32 tag, int_32 type,
+			const void * p, int_32 c)
 {
     struct indexEntry *entry;
     void * oldData;
@@ -1834,14 +1834,15 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 }
 
 int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
-			   void * p, int_32 c)
+			   const void * p, int_32 c)
 {
     return (findEntry(h, tag, type)
 	? headerAppendEntry(h, tag, type, p, c)
 	: headerAddEntry(h, tag, type, p, c));
 }
 
-int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c)
+int headerAppendEntry(Header h, int_32 tag, int_32 type,
+			const void * p, int_32 c)
 {
     struct indexEntry *entry;
     int length;
@@ -2892,16 +2893,17 @@ const struct headerSprintfExtension headerDefaultFormats[] = {
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
 
-void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy)
+void headerCopyTags(Header headerFrom, Header headerTo, int_32 * tagstocopy)
 {
-    int *p;
+    int * p;
 
     if (headerFrom == headerTo)
 	return;
 
     for (p = tagstocopy; *p != 0; p++) {
 	char *s;
-	int type, count;
+	int_32 type;
+	int_32 count;
 	if (headerIsEntry(headerTo, *p))
 	    continue;
 	if (!headerGetEntryMinMemory(headerFrom, *p, &type,

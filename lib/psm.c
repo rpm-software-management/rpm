@@ -79,7 +79,9 @@ void loadFi(Header h, TFI_t fi)
     hge = (fi->type == TR_ADDED)
 	? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry;
     fi->hge = hge;
-
+    fi->hae = (HAE_t) headerAddEntry;
+    fi->hme = (HME_t) headerModifyEntry;
+    fi->hre = (HRE_t) headerRemoveEntry;
     fi->hfd = hfd = headerFreeData;
 
     if (h && fi->h == NULL)	fi->h = headerLink(h);
@@ -236,33 +238,34 @@ void freeFi(TFI_t fi)
  */
 static struct tagMacro {
 /*@observer@*/ /*@null@*/ const char *	macroname; /*!< Macro name to define. */
-    int		tag;		/*!< Header tag to use for value. */
+    rpmTag	tag;		/*!< Header tag to use for value. */
 } tagMacros[] = {
     { "name",		RPMTAG_NAME },
     { "version",	RPMTAG_VERSION },
     { "release",	RPMTAG_RELEASE },
-#if 0
     { "epoch",		RPMTAG_EPOCH },
-#endif
     { NULL, 0 }
 };
 
 /**
  * Define per-header macros.
+ * @param fi		transaction element file info
  * @param h		header
  * @return		0 always
  */
 static int rpmInstallLoadMacros(TFI_t fi, Header h)
 	/*@modifies internalState @*/
 {
-    HGE_t hge = (HGE_t)fi->hge;
-    struct tagMacro *tagm;
+    HGE_t hge = (HGE_t) fi->hge;
+    struct tagMacro * tagm;
     union {
-	const char * ptr;
+/*@unused@*/ void * ptr;
+/*@unused@*/ const char ** argv;
+	const char * str;
 	int_32 * i32p;
     } body;
     char numbuf[32];
-    int_32 type;
+    rpmTagType type;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	if (!hge(h, tagm->tag, &type, (void **) &body, NULL))
@@ -273,7 +276,16 @@ static int rpmInstallLoadMacros(TFI_t fi, Header h)
 	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
 	    break;
 	case RPM_STRING_TYPE:
-	    addMacro(NULL, tagm->macroname, NULL, body.ptr, -1);
+	    addMacro(NULL, tagm->macroname, NULL, body.str, -1);
+	    break;
+	case RPM_NULL_TYPE:
+	case RPM_CHAR_TYPE:
+	case RPM_INT8_TYPE:
+	case RPM_INT16_TYPE:
+	case RPM_BIN_TYPE:
+	case RPM_STRING_ARRAY_TYPE:
+	case RPM_I18NSTRING_TYPE:
+	default:
 	    break;
 	}
     }
@@ -291,10 +303,11 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)fi->hge;
+    HME_t hme = (HME_t)fi->hme;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     fileAction * actions = fi->actions;
     int i, j, k, fc;
-    int_32 type = 0;
+    rpmTagType type = 0;
     int_32 count = 0;
     int_32 dirNamesCount, dirCount;
     void * data, * newdata;
@@ -302,7 +315,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
     uint_32 * fileSizes, fileSize;
     const char ** dirNames;
     const char ** newDirNames;
-    static int_32 mergeTags[] = {
+    static rpmTag mergeTags[] = {
 	RPMTAG_FILESIZES,
 	RPMTAG_FILESTATES,
 	RPMTAG_FILEMODES,
@@ -320,7 +333,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	RPMTAG_BASENAMES,
 	0,
     };
-    static int_32 requireTags[] = {
+    static rpmTag requireTags[] = {
 	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
 	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS
@@ -334,7 +347,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 	    fc++;
 	    fileSize += fileSizes[i];
 	}
-    (void) headerModifyEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &fileSize, 1);
+    (void) hme(h, RPMTAG_SIZE, RPM_INT32_TYPE, &fileSize, 1);
 
     for (i = 0; mergeTags[i]; i++) {
         if (!hge(newH, mergeTags[i], &type, (void **) &data, &count))
@@ -413,7 +426,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
 
     for (i = 0; i < 9; i += 3) {
 	const char **Names, **EVR, **newNames, **newEVR;
-	int nnt, nvt, rnt;
+	rpmTagType nnt, nvt, rnt;
 	uint_32 *Flags, *newFlags;
 	int Count = 0, newCount = 0;
 
@@ -540,6 +553,11 @@ static int markReplacedFiles(PSM_t psm)
 }
 
 /**
+ * Create directory if it does not exist, make sure path is writable.
+ * @note This will only create last component of directory path.
+ * @param dpath		directory path
+ * @param dname		directory use
+ * @return		rpmRC return code
  */
 static rpmRC chkdir (const char * dpath, const char * dname)
 	/*@modifies fileSystem @*/
@@ -557,20 +575,19 @@ static rpmRC chkdir (const char * dpath, const char * dname)
 	    /*@fallthrough@*/
 	case URL_IS_FTP:
 	case URL_IS_HTTP:
-	    /* XXX this will only create last component of directory path */
 	    rc = Mkdir(dpath, 0755);
 	    break;
 	case URL_IS_DASH:
 	    break;
 	}
 	if (rc < 0) {
-	    rpmError(RPMERR_CREATE, _("cannot create %s %s\n"),
+	    rpmError(RPMERR_CREATE, _("cannot create %%%s %s\n"),
 			dname, dpath);
 	    return RPMRC_FAIL;
 	}
     }
     if ((rc = Access(dpath, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %s\n"), dpath);
+	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"), dname, dpath);
 	return RPMRC_FAIL;
     }
     return RPMRC_OK;
@@ -804,7 +821,7 @@ static int runScript(PSM_t psm, Header h,
     int argc = 0;
     const char ** prefixes = NULL;
     int numPrefixes;
-    int_32 ipt;
+    rpmTagType ipt;
     const char * oldPrefix;
     int maxPrefixLength;
     int len;
@@ -1010,7 +1027,7 @@ static rpmRC runInstScript(PSM_t psm)
     void ** programArgv;
     int programArgc;
     const char ** argv;
-    int_32 ptt, stt;
+    rpmTagType ptt, stt;
     const char * script;
     rpmRC rc = RPMRC_OK;
 
@@ -1058,7 +1075,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
     const char ** triggerProgs;
     int_32 * triggerFlags;
     int_32 * triggerIndices;
-    int_32 tnt, tvt, tft;
+    rpmTagType tnt, tvt, tft;
     const char * triggerPackageName;
     const char * sourceName;
     int numTriggers;
@@ -1078,7 +1095,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
     (void) headerNVR(sourceH, &sourceName, NULL, NULL);
 
     for (i = 0; i < numTriggers; i++) {
-	int_32 tit, tst, tpt;
+	rpmTagType tit, tst, tpt;
 
 	if (!(triggerFlags[i] & psm->sense)) continue;
 	if (strcmp(triggerNames[i], sourceName)) continue;
@@ -1200,7 +1217,7 @@ static int runImmedTriggers(PSM_t psm)
     const char ** triggerNames;
     int numTriggers;
     int_32 * triggerIndices;
-    int_32 tnt, tit;
+    rpmTagType tnt, tit;
     int numTriggerIndices;
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
@@ -1286,6 +1303,7 @@ int psmStage(PSM_t psm, pkgStage stage)
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
+    HME_t hme = fi->hme;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     rpmRC rc = psm->rc;
     int saveerrno;
@@ -1653,7 +1671,7 @@ assert(psm->mi == NULL);
 		{
 		    multiLib = *p;
 		    multiLib |= *newMultiLib;
-		    (void) headerModifyEntry(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+		    (void) hme(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 				      &multiLib, 1);
 		}
 		rc = mergeFiles(fi, psm->oh, fi->h);

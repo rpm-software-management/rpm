@@ -393,11 +393,14 @@ static int dncmp(const void * a, const void * b)
 void compressFilelist(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HFD_t hfd = headerFreeData;
     char ** fileNames;
     const char ** dirNames;
     const char ** baseNames;
     int_32 * dirIndexes;
-    int fnt;
+    rpmTagType fnt;
     int count;
     int i;
     int dirIndex = -1;
@@ -409,7 +412,7 @@ void compressFilelist(Header h)
      */
 
     if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	(void) headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
+	(void) hre(h, RPMTAG_OLDFILENAMES);
 	return;		/* Already converted. */
     }
 
@@ -462,17 +465,16 @@ void compressFilelist(Header h)
 
 exit:
     if (count > 0) {
-	(void) headerAddEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
-			dirIndexes, count);
-	(void) headerAddEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+	(void) hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
+	(void) hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			baseNames, count);
-	(void) headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+	(void) hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			dirNames, dirIndex + 1);
     }
 
-    fileNames = headerFreeData(fileNames, fnt);
+    fileNames = hfd(fileNames, fnt);
 
-    (void) headerRemoveEntry(h, RPMTAG_OLDFILENAMES);
+    (void) hre(h, RPMTAG_OLDFILENAMES);
 }
 
 /*
@@ -480,8 +482,8 @@ exit:
  * is getting all of this into a single xmalloc'd block.
  */
 static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
-			    /*@out@*/ int * fileCountPtr, int baseNameTag,
-			    int dirNameTag, int dirIndexesTag)
+			    /*@out@*/ int * fileCountPtr, rpmTag baseNameTag,
+			    rpmTag dirNameTag, rpmTag dirIndexesTag)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -491,7 +493,7 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
     int count;
     const char ** fileNames;
     int size;
-    int bnt, dnt;
+    rpmTagType bnt, dnt;
     char * data;
     int i;
 
@@ -527,6 +529,8 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 
 void expandFilelist(Header h)
 {
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HRE_t hre = (HRE_t)headerRemoveEntry;
     const char ** fileNames = NULL;
     int count = 0;
 
@@ -535,14 +539,14 @@ void expandFilelist(Header h)
 			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
 	if (fileNames == NULL || count <= 0)
 	    return;
-	(void) headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+	(void) hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			fileNames, count);
 	fileNames = _free(fileNames);
     }
 
-    (void) headerRemoveEntry(h, RPMTAG_DIRNAMES);
-    (void) headerRemoveEntry(h, RPMTAG_BASENAMES);
-    (void) headerRemoveEntry(h, RPMTAG_DIRINDEXES);
+    (void) hre(h, RPMTAG_DIRNAMES);
+    (void) hre(h, RPMTAG_BASENAMES);
+    (void) hre(h, RPMTAG_DIRINDEXES);
 }
 
 
@@ -802,7 +806,7 @@ void providePackageNVR(Header h)
     int_32 pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
-    int pnt, pvt;
+    rpmTagType pnt, pvt;
     int_32 * provideFlags = NULL;
     int providesCount;
     int i;

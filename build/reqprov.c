@@ -15,11 +15,11 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char ** names;
-    int dnt;
-    int nametag = 0;
-    int versiontag = 0;
-    int flagtag = 0;
-    int indextag = 0;
+    rpmTagType dnt;
+    rpmTag nametag = 0;
+    rpmTag versiontag = 0;
+    rpmTag flagtag = 0;
+    rpmTag indextag = 0;
     int len;
     rpmsenseFlags extra = RPMSENSE_ANY;
     
@@ -62,7 +62,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     /* Check for duplicate dependencies. */
     if (hge(h, nametag, &dnt, (void **) &names, &len)) {
 	const char ** versions = NULL;
-	int dvt = RPM_STRING_ARRAY_TYPE;
+	rpmTagType dvt = RPM_STRING_ARRAY_TYPE;
 	int *flags = NULL;
 	int *indexes = NULL;
 	int duplicate = 0;

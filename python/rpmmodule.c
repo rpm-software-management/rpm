@@ -14,7 +14,7 @@
 #include <locale.h>
 
 #include "Python.h"
-#include "rpmlib.h"
+#include "rpmcli.h"	/* XXX for rpmCheckSig */
 #include "misc.h"
 #include "rpmmacro.h"
 #include "rpmio_internal.h"

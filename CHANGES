@@ -87,6 +87,14 @@
 	- autogen.sh checks for latest libtool-1.4 and automake-1.4-p2.
 	- rpm --verify reports failure(s) if corresponding tag is not in header.
 	- rpm --verify honors %config(missingok), add -v for legacy behavior.
+	- remove dead code frpm popt table reorg.
+	- more CLI typedefs/prototypes moved from rpmlib.h to rpmcli.h.
+	- rpm --verify skips files in non-installed states.
+	- rpm --verify skips content checks for %ghost files.
+	- rpm --verify displays config/doc/gnost/license/readme atrrs for files.
+	- rpm --verify checks immutable header region digest if available.
+	- rpmbuild adds header region digest (SHA1 as string).
+	- use rpmTag* typedefs in new hge/hae/hme/hre header vectors.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

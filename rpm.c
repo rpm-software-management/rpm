@@ -1277,7 +1277,7 @@ int main(int argc, const char ** argv)
 	break;
 
       case MODE_VERIFY:
-	verifyFlags = (VERIFY_FILES|VERIFY_DEPS|VERIFY_SCRIPT|VERIFY_MD5);
+	verifyFlags = VERIFY_ALL;
 	verifyFlags &= ~qva->qva_flags;
 	if (noDeps)	verifyFlags &= ~VERIFY_DEPS;
 	if (noScripts)	verifyFlags &= ~VERIFY_SCRIPT;

@@ -175,7 +175,7 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int instprefixTag(Header h, /*@null@*/ /*@out@*/ int_32 * type,
+static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 	/*@null@*/ /*@out@*/ const void ** data,
 	/*@null@*/ /*@out@*/ int_32 * count,
 	/*@null@*/ /*@out@*/ int * freeData)
@@ -183,7 +183,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ int_32 * type,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int ipt;
+    rpmTagType ipt;
     char ** array;
 
     if (hge(h, RPMTAG_INSTALLPREFIX, type, (void **)data, count)) {
@@ -208,7 +208,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fssizesTag(Header h, /*@out@*/ int_32 * type,
+static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 		/*@modifies *type, *data, *count, *freeData @*/
@@ -259,14 +259,14 @@ static int fssizesTag(Header h, /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
+static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 		/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int tnt, tvt, tst;
+    rpmTagType tnt, tvt, tst;
     int_32 * indices, * flags;
     char ** names, ** versions;
     int numNames, numScripts;
@@ -330,14 +330,14 @@ static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
+static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 		/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int tst;
+    rpmTagType tst;
     int_32 * indices, * flags;
     const char ** conds;
     const char ** s;
@@ -382,7 +382,7 @@ static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int filenamesTag(Header h, /*@out@*/ int_32 * type,
+static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 		/*@modifies *type, *data, *count, *freeData @*/
@@ -416,7 +416,7 @@ int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
+static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 		/*@modifies *type, *data, *count, *freeData @*/
@@ -500,7 +500,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int summaryTag(Header h, /*@out@*/ int_32 * type,
+static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 		/*@modifies *type, *data, *count, *freeData @*/
@@ -516,7 +516,7 @@ static int summaryTag(Header h, /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int descriptionTag(Header h, /*@out@*/ int_32 * type,
+static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 		/*@modifies *type, *data, *count, *freeData @*/
@@ -532,7 +532,7 @@ static int descriptionTag(Header h, /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int groupTag(Header h, /*@out@*/ int_32 * type,
+static int groupTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
 		/*@modifies *type, *data, *count, *freeData @*/

@@ -1050,7 +1050,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
     HFD_t hfd = headerFreeData;
     const char * dirName;
     const char * baseName;
-    int bnt, dnt;
+    rpmTagType bnt, dnt;
     fingerPrintCache fpc;
     fingerPrint fp1;
     dbiIndex dbi = NULL;
@@ -1881,7 +1881,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	    DBC * dbcursor = NULL;
 	    const char *av[1];
 	    const char ** rpmvals = NULL;
-	    int rpmtype = 0;
+	    rpmTagType rpmtype = 0;
 	    int rpmcnt = 0;
 	    int rpmtag;
 	    int xx;
@@ -2047,7 +2047,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     HFD_t hfd = headerFreeData;
     sigset_t signalMask;
     const char ** baseNames;
-    int bnt;
+    rpmTagType bnt;
     int count = 0;
     dbiIndex dbi;
     int dbix;
@@ -2135,7 +2135,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	    DBC * dbcursor = NULL;
 	    const char *av[1];
 	    const char **rpmvals = NULL;
-	    int rpmtype = 0;
+	    rpmTagType rpmtype = 0;
 	    int rpmcnt = 0;
 	    int rpmtag;
 	    int_32 * requireFlags;
@@ -2338,7 +2338,7 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 	const char ** dirNames;
 	const char ** baseNames;
 	const char ** fullBaseNames;
-	int bnt, dnt;
+	rpmTagType bnt, dnt;
 	int_32 * dirIndexes;
 	int_32 * fullDirIndexes;
 	fingerPrint * fps;

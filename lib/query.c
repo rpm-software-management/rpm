@@ -142,20 +142,19 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     char * t, * te;
-    
     rpmQueryFlags queryFlags = qva->qva_flags;
     const char * queryFormat = qva->qva_queryFormat;
-
-    int_32 count, type;
+    rpmTagType type;
+    int_32 count;
     char * prefix = NULL;
     const char ** dirNames = NULL;
     const char ** baseNames = NULL;
-    int bnt, dnt;
+    rpmTagType bnt, dnt;
     const char ** fileMD5List = NULL;
     const char ** fileOwnerList = NULL;
     const char ** fileGroupList = NULL;
     const char ** fileLinktoList = NULL;
-    int m5t, fot, fgt, ltt;
+    rpmTagType m5t, fot, fgt, ltt;
     const char * fileStatesList;
     int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
     int_32 * fileUIDList = NULL;
@@ -237,10 +236,12 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 	fileGroupList = NULL;
 
     for (i = 0; i < count; i++) {
+
 	/* If querying only docs, skip non-doc files. */
 	if ((queryFlags & QUERY_FOR_DOCS)
 	  && !(fileFlagsList[i] & RPMFILE_DOC))
 	    continue;
+
 	/* If querying only configs, skip non-config files. */
 	if ((queryFlags & QUERY_FOR_CONFIG)
 	  && !(fileFlagsList[i] & RPMFILE_CONFIG))
@@ -251,7 +252,8 @@ int showQueryPackage(QVA_t qva, /*@unused@*/rpmdb rpmdb, Header h)
 
 	if (queryFlags & QUERY_FOR_STATE) {
 	    if (fileStatesList) {
-		switch (fileStatesList[i]) {
+		rpmfileState fstate = fileStatesList[i];
+		switch (fstate) {
 		case RPMFILE_STATE_NORMAL:
 		    te = stpcpy(te, _("normal        ")); break;
 		case RPMFILE_STATE_REPLACED:
@@ -496,7 +498,7 @@ int rpmQueryVerify(QVA_t qva, rpmQVSources source, const char * arg,
     int rc;
     int isSource;
     int retcode = 0;
-    char *end = NULL;
+    char * end = NULL;
 
     switch (source) {
     case RPMQV_RPM:
@@ -605,7 +607,6 @@ restart:
 	rc = parseSpecVec(&spec, arg, "/", buildRoot, recursing, passPhrase,
 		cookie, anyarch, force);
 	if (rc || spec == NULL) {
-	    
 	    rpmError(RPMERR_QUERY,
 	    		_("query of specfile %s failed, can't parse\n"), arg);
 	    spec = freeSpecVec(spec);

@@ -27,7 +27,9 @@
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
-    int type, count;
+    int type;
+    int count;
+
     if (np) {
 	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
@@ -58,7 +60,7 @@ static /*@only@*/ char * printDepend(const char * depend, const char * key,
 		const char * keyEVR, int keyFlags)
 	/*@*/
 {
-    char *tbuf, *t;
+    char * tbuf, * t;
     size_t nb;
 
     nb = 0;
@@ -240,7 +242,7 @@ alAddPackage(availableList al,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int dnt, bnt;
+    rpmTagType dnt, bnt;
     struct availablePackage * p;
     rpmRelocation * r;
     int i;
@@ -605,7 +607,7 @@ static int rangeMatchesDepFlags (Header h,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int pnt, pvt;
+    rpmTagType pnt, pvt;
     const char ** provides;
     const char ** providesEVR;
     int_32 * provideFlags;
@@ -789,7 +791,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int ont, ovt;
+    rpmTagType ont, ovt;
     /* this is an install followed by uninstalls */
     const char * name;
     int count;
@@ -1361,8 +1363,8 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int rnt, rvt;
-    int cnt, cvt;
+    rpmTagType rnt, rvt;
+    rpmTagType cnt, cvt;
     const char * name, * version, * release;
     const char ** requires;
     const char ** requiresEVR = NULL;
@@ -1372,7 +1374,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     const char ** conflictsEVR = NULL;
     int_32 * conflictFlags = NULL;
     int conflictsCount = 0;
-    int type;
+    rpmTagType type;
     int i, rc;
     int ourrc = 0;
     struct availablePackage ** suggestion;
@@ -2211,7 +2213,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 	{   const char ** provides;
 	    int providesCount;
-	    int pnt;
+	    rpmTagType pnt;
 
 	    if (hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides,
 				&providesCount))
@@ -2231,7 +2233,8 @@ int rpmdepCheck(rpmTransactionSet ts,
 	}
 
 	{   const char ** baseNames, ** dirNames;
-	    int_32 * dirIndexes, dnt, bnt;
+	    int_32 * dirIndexes;
+	    rpmTagType dnt, bnt;
 	    int fileCount;
 	    char * fileName = NULL;
 	    int fileAlloced = 0;

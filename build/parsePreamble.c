@@ -13,7 +13,7 @@
 
 /**
  */
-/*@observer@*/ static int_32 copyTagsDuringParse[] = {
+/*@observer@*/ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -33,7 +33,7 @@
 
 /**
  */
-/*@observer@*/ static int requiredTags[] = {
+/*@observer@*/ static rpmTag requiredTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -187,13 +187,14 @@ static inline char * findLastChar(char * s)
 
 /**
  */
-static int isMemberInEntry(Header h, const char *name, int tag)
+static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char ** names;
-    int type, count;
+    rpmTagType type;
+    int count;
 
     if (!hge(h, tag, &type, (void **)&names, &count))
 	return -1;
@@ -246,18 +247,22 @@ static int checkForValidArchitectures(Spec spec)
 }
 
 /**
+ * Check that required tags are present in header.
+ * @param h		header
+ * @param NVR		package name-version-release
+ * @return		0 if OK
  */
-static int checkForRequired(Header h, const char *name)
+static int checkForRequired(Header h, const char * NVR)
 	/*@*/
 {
     int res = 0;
-    int *p;
+    rpmTag * p;
 
     for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
 	    rpmError(RPMERR_BADSPEC,
 			_("%s field must be present in package: %s\n"),
-			tagName(*p), name);
+			tagName(*p), NVR);
 	    res = 1;
 	}
     }
@@ -266,8 +271,12 @@ static int checkForRequired(Header h, const char *name)
 }
 
 /**
+ * Check that no duplicate tags are present in header.
+ * @param h		header
+ * @param NVR		package name-version-release
+ * @return		0 if OK
  */
-static int checkForDuplicates(Header h, const char *name)
+static int checkForDuplicates(Header h, const char * NVR)
 	/*@modifies h @*/
 {
     int res = 0;
@@ -281,7 +290,7 @@ static int checkForDuplicates(Header h, const char *name)
 	if (tag != lastTag)
 	    continue;
 	rpmError(RPMERR_BADSPEC, _("Duplicate %s entries in package: %s\n"),
-		     tagName(tag), name);
+		     tagName(tag), NVR);
 	res = 1;
     }
     headerFreeIterator(hi);
@@ -292,7 +301,7 @@ static int checkForDuplicates(Header h, const char *name)
 /**
  */
 static struct optionalTag {
-    int		ot_tag;
+    rpmTag	ot_tag;
 /*@observer@*/ /*@null@*/ const char * ot_mac;
 } optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
@@ -432,12 +441,12 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    char *field = spec->line;
-    char *end;
-    char **array;
+    char * field = spec->line;
+    char * end;
+    char ** array;
     int multiToken = 0;
     rpmsenseFlags tagflags;
-    int type;
+    rpmTagType type;
     int len;
     int num;
     int rc;
@@ -680,7 +689,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 /**
  */
 typedef struct PreambleRec_s {
-    int tag;
+    rpmTag tag;
     int len;
     int multiLang;
 /*@observer@*/ /*@null@*/ const char * token;
@@ -806,10 +815,10 @@ int parsePreamble(Spec spec, int initialPackage)
     char *name, *linep;
     int flag;
     Package pkg;
-    char fullName[BUFSIZ];
+    char NVR[BUFSIZ];
     char lang[BUFSIZ];
 
-    strcpy(fullName, "(main package)");
+    strcpy(NVR, "(main package)");
 
     pkg = newPackage(spec);
 	
@@ -831,10 +840,10 @@ int parsePreamble(Spec spec, int initialPackage)
 	if (flag == PART_SUBNAME) {
 	    const char * mainName;
 	    (void) headerNVR(spec->packages->header, &mainName, NULL, NULL);
-	    sprintf(fullName, "%s-%s", mainName, name);
+	    sprintf(NVR, "%s-%s", mainName, name);
 	} else
-	    strcpy(fullName, name);
-	(void) headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, fullName, 1);
+	    strcpy(NVR, name);
+	(void) headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, NVR, 1);
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
@@ -882,13 +891,14 @@ int parsePreamble(Spec spec, int initialPackage)
     if (pkg == spec->packages)
 	fillOutMainPackage(pkg->header);
 
-    if (checkForDuplicates(pkg->header, fullName))
+    if (checkForDuplicates(pkg->header, NVR))
 	return RPMERR_BADSPEC;
 
     if (pkg != spec->packages)
-	headerCopyTags(spec->packages->header, pkg->header, copyTagsDuringParse);
+	headerCopyTags(spec->packages->header, pkg->header,
+			(int_32 *)copyTagsDuringParse);
 
-    if (checkForRequired(pkg->header, fullName))
+    if (checkForRequired(pkg->header, NVR))
 	return RPMERR_BADSPEC;
 
     return nextPart;

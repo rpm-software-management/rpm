@@ -255,14 +255,18 @@ static int processScriptFiles(Spec spec, Package pkg)
     return 0;
 }
 
-int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
-	    CSA_t csa)
+int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
+		Header *sigs, CSA_t csa)
 {
     FD_t fdi;
     Spec spec;
     rpmRC rc;
+    int ec;
 
-    fdi = (fileName != NULL) ? Fopen(fileName, "r.ufdio") : fdDup(STDIN_FILENO);
+    fdi = (fileName != NULL)
+	? Fopen(fileName, "r.ufdio")
+	: fdDup(STDIN_FILENO);
+
     if (fdi == NULL || Ferror(fdi)) {
 	rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"),
 		(fileName ? fileName : "<stdin>"),
@@ -279,7 +283,12 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
 	return RPMERR_BADMAGIC;
     }
 
-    (void)Fseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
+    /* XXX FIXME: EPIPE on <stdin> */
+    if (Fseek(fdi, 0, SEEK_SET) == -1) {
+	rpmError(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
+			(fileName ? fileName : "<stdin>"), Fstrerror(fdi));
+	return RPMERR_FSEEK;
+    }
 
     /* Reallocate build data structures */
     spec = newSpec();
@@ -288,7 +297,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     /* XXX the header just allocated will be allocated again */
     spec->packages->header = headerFree(spec->packages->header);
 
-   /* Read the rpm lead and header */
+   /* Read the rpm lead, signatures, and header */
     rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
     switch (rc) {
     case RPMRC_BADMAGIC:
@@ -320,18 +329,27 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     return 0;
 }
 
+static unsigned char header_magic[8] = {
+        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
+};
+
 int writeRPM(Header *hdrp, const char *fileName, int type,
 		    CSA_t csa, char *passPhrase, const char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
     int rc, count, sigtype;
-    const char *sigtarget;
+    const char * sigtarget;
     const char * rpmio_flags = NULL;
+    const char * sha1 = NULL;
     char *s;
     char buf[BUFSIZ];
-    Header h = *hdrp;
+    Header h;
     Header sig = NULL;
+
+    /* Transfer header reference form *hdrp to h. */
+    h = headerLink(*hdrp);
+    *hdrp = headerFree(*hdrp);
 
     if (Fileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
@@ -339,18 +357,6 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	(void) headerAddEntry(h, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
 		&csa->cpioArchiveSize, 1);
     }
-
-#ifdef	DYING
-    /* Choose how filenames are represented. */
-    if (_noDirTokens)
-	expandFilelist(h);
-    else {
-	compressFilelist(h);
-	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	if (type == RPMLEAD_BINARY)
-	    rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
-    }
-#endif
 
     /* Binary packages now have explicit Provides: name = version-release. */
     if (type == RPMLEAD_BINARY)
@@ -394,21 +400,21 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
     
     /* Reallocate the header into one contiguous region. */
-    /*@-refcounttrans -usereleased@*/
-    *hdrp = h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+    h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
     if (h == NULL) {	/* XXX can't happen */
 	rc = RPMERR_RELOAD;
 	goto exit;
     }
-    /*@=refcounttrans =usereleased@*/
+    /* Re-reference reallocated header. */
+    *hdrp = headerLink(h);
 
     /*
      * Write the header+archive into a temp file so that the size of
      * archive (after compression) can be added to the header.
      */
     if (makeTempFile(NULL, &sigtarget, &fd)) {
-	rpmError(RPMERR_CREATE, _("Unable to open temp file.\n"));
 	rc = RPMERR_CREATE;
+	rpmError(RPMERR_CREATE, _("Unable to open temp file.\n"));
 	goto exit;
     }
 
@@ -434,8 +440,10 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
      * This used to be done using headerModifyEntry(), but now that headers
      * have regions, the value is scribbled directly into the header data
      * area. Some new scheme for adding the final archive size will have
-     * to be devised if headerGetEntry() ever changes to return a pointer
-     * to memory not in the region. <shrug>
+     * to be devised if headerGetEntryMinMemory() ever changes to return
+     * a pointer to memory not in the region, probably by appending
+     * the archive size to the header region rather than including the
+     * archive size within the header region.
      */
     if (Fileno(csa->cpioFdIn) < 0) {
 	HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -444,10 +452,18 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	    *archiveSize = csa->cpioArchiveSize;
     }
 
-    (void)Fseek(fd, 0, SEEK_SET);
+    (void) Fflush(fd);
+    if (Fseek(fd, sizeof(header_magic), SEEK_SET) == -1) {
+	rc = RPMERR_FSEEK;
+	rpmError(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
+			sigtarget, Fstrerror(fd));
+    }
 
-    if (headerWrite(fd, h, HEADER_MAGIC_YES))
+    fdInitSHA1(fd);
+    if (headerWrite(fd, h, HEADER_MAGIC_NO))
 	rc = RPMERR_NOSPACE;
+    (void) Fflush(fd);
+    fdFiniSHA1(fd, (void **)&sha1, NULL, 1);
 
     (void) Fclose(fd);
     fd = NULL;
@@ -464,6 +480,11 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
 	(void) rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
+    }
+    
+    if (sha1) {
+	(void) headerAddEntry(sig, RPMTAG_SHA1HEADER, RPM_STRING_TYPE, sha1, 1);
+	sha1 = _free(sha1);
     }
 
     /* Reallocate the signature into one contiguous region. */
@@ -577,6 +598,8 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     rc = 0;
 
 exit:
+    sha1 = _free(sha1);
+    h = headerFree(h);
     sig = rpmFreeSignature(sig);
     if (ifd) {
 	(void) Fclose(ifd);
@@ -596,9 +619,7 @@ exit:
     else
 	(void) Unlink(fileName);
 
-    /*@-nullstate@*/	/* FIX: *hdrp may be NULL */
     return rc;
-    /*@=nullstate@*/
 }
 
 static int_32 copyTags[] = {

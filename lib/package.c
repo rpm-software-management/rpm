@@ -22,13 +22,15 @@
 /*@-mods@*/
 void headerMergeLegacySigs(Header h, const Header sig)
 {
+    HFD_t hfd = (HFD_t) headerFreeData;
+    HAE_t hae = (HAE_t) headerAddEntry;
     HeaderIterator hi;
     int_32 tag, type, count;
     const void * ptr;
 
     for (hi = headerInitIterator(sig);
         headerNextIterator(hi, &tag, &type, &ptr, &count);
-        ptr = headerFreeData(ptr, type))
+        ptr = hfd(ptr, type))
     {
 	switch (tag) {
 	case RPMSIGTAG_SIZE:	tag = RPMTAG_SIGSIZE;	break;
@@ -39,18 +41,20 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	case RPMSIGTAG_GPG:	tag = RPMTAG_SIGGPG;	break;
 	case RPMSIGTAG_PGP5:	tag = RPMTAG_SIGPGP5;	break;
 	default:
-	    continue;
-	    /*@notreached@*/ break;
+	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
+		continue;
+	    break;
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(h, tag))
-	    (void) headerAddEntry(h, tag, type, ptr, count);
+	    (void) hae(h, tag, type, ptr, count);
     }
     headerFreeIterator(hi);
 }
 
 Header headerRegenSigHeader(const Header h)
 {
+    HFD_t hfd = (HFD_t) headerFreeData;
     Header sig = rpmNewSignature();
     HeaderIterator hi;
     int_32 tag, stag, type, count;
@@ -58,7 +62,7 @@ Header headerRegenSigHeader(const Header h)
 
     for (hi = headerInitIterator(h);
         headerNextIterator(hi, &tag, &type, &ptr, &count);
-        ptr = headerFreeData(ptr, type))
+        ptr = hfd(ptr, type))
     {
 	switch (tag) {
 	case RPMTAG_SIGSIZE:	stag = RPMSIGTAG_SIZE;	break;
@@ -69,8 +73,10 @@ Header headerRegenSigHeader(const Header h)
 	case RPMTAG_SIGGPG:	stag = RPMSIGTAG_GPG;	break;
 	case RPMTAG_SIGPGP5:	stag = RPMSIGTAG_PGP5;	break;
 	default:
-	    continue;
-	    /*@notreached@*/ break;
+	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
+		continue;
+	    stag = tag;
+	    break;
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(sig, stag))
@@ -156,7 +162,8 @@ static rpmRC readPackageHeaders(FD_t fd,
 	 * which is quite handy.
 	 */
 	if (headerGetEntry(*hdr, RPMTAG_DEFAULTPREFIX, NULL,
-			   (void **) &defaultPrefix, NULL)) {
+			   (void **) &defaultPrefix, NULL))
+	{
 	    defaultPrefix =
 		stripTrailingChar(alloca_strdup(defaultPrefix), '/');
 	    (void) headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,

@@ -308,6 +308,8 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	/*@modifies ts, fi, alp, origH, actions @*/
 {
     HGE_t hge = fi->hge;
+    HAE_t hae = fi->hae;
+    HME_t hme = fi->hme;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
     rpmProblemSet probs = ts->probs;
@@ -316,7 +318,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     rpmRelocation * relocations = NULL;
     int numRelocations;
     const char ** validRelocations;
-    int_32 validType;
+    rpmTagType validType;
     int numValid;
     const char ** baseNames;
     const char ** dirNames;
@@ -355,7 +357,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     if (rawRelocations == NULL || numRelocations == 0) {
 	if (numValid) {
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
-		(void) headerAddEntry(origH, RPMTAG_INSTPREFIXES,
+		(void) hae(origH, RPMTAG_INSTPREFIXES,
 			validType, validRelocations, numValid);
 	    validRelocations = hfd(validRelocations, validType);
 	}
@@ -472,7 +474,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	}
 
 	if (numActual)
-	    (void) headerAddEntry(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
+	    (void) hae(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
 		       (void **) actualRelocations, numActual);
 
 	actualRelocations = _free(actualRelocations);
@@ -673,34 +675,34 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     if (nrelocated) {
 	int c;
 	void * p;
-	int t;
+	rpmTagType t;
 
 	p = NULL;
 	(void) hge(h, RPMTAG_BASENAMES, &t, &p, &c);
-	(void) headerAddEntry(h, RPMTAG_ORIGBASENAMES, t, p, c);
+	(void) hae(h, RPMTAG_ORIGBASENAMES, t, p, c);
 	p = hfd(p, t);
 
 	p = NULL;
 	(void) hge(h, RPMTAG_DIRNAMES, &t, &p, &c);
-	(void) headerAddEntry(h, RPMTAG_ORIGDIRNAMES, t, p, c);
+	(void) hae(h, RPMTAG_ORIGDIRNAMES, t, p, c);
 	p = hfd(p, t);
 
 	p = NULL;
 	(void) hge(h, RPMTAG_DIRINDEXES, &t, &p, &c);
-	(void) headerAddEntry(h, RPMTAG_ORIGDIRINDEXES, t, p, c);
+	(void) hae(h, RPMTAG_ORIGDIRINDEXES, t, p, c);
 	p = hfd(p, t);
 
-	(void) headerModifyEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+	(void) hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
 	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
 	(void) hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc);
 
-	(void) headerModifyEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+	(void) hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
 	(void) hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
 
-	(void) headerModifyEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
+	(void) hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			  dirIndexes, fileCount);
 	(void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
     }
@@ -895,7 +897,7 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 {
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    int oltype, omtype;
+    rpmTagType oltype, omtype;
     Header h;
     int i;
     const char ** otherMd5s;

@@ -238,7 +238,7 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char ** baseNames, ** dirNames;
-    int bnt, dnt;
+    rpmTagType bnt, dnt;
     int_32 * dirIndexes;
     int fileCount;
 

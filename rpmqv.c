@@ -20,33 +20,6 @@
 #define GETOPT_RECOMPILE	1004
 #endif
 
-#ifdef	DYING
-#ifdef	IAM_RPMDB
-#define GETOPT_REBUILDDB	1013
-#define GETOPT_VERIFYDB		1023
-static int initdb = 0;
-#endif
-#endif
-
-#ifdef	DYING
-#ifdef	IAM_RPMEIU
-#define GETOPT_INSTALL		1014
-#define GETOPT_RELOCATE		1016
-#define GETOPT_EXCLUDEPATH	1019
-static int incldocs = 0;
-/*@null@*/ static const char * prefix = NULL;
-#endif	/* IAM_RPMEIU */
-#endif
-
-#ifdef	DYING
-#ifdef	IAM_RPMK
-#define GETOPT_ADDSIGN		1005
-#define GETOPT_RESIGN		1006
-static int noGpg = 0;
-static int noPgp = 0;
-#endif	/* IAM_RPMK */
-#endif
-
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
 #include "signature.h"
 #endif
@@ -100,9 +73,6 @@ extern int _ftp_debug;
 extern int noLibio;
 extern int _rpmio_debug;
 extern int _url_debug;
-#ifdef	DYING
-extern int _noDirTokens;
-#endif
 
 /*@-varuse@*/
 /*@observer@*/ extern const char * rpmNAME;
@@ -125,19 +95,6 @@ static int quiet = 0;
 /*@observer@*/ /*@null@*/ static char * rootdir = "/";
 static int showrc = 0;
 static int showVersion = 0;
-
-#ifdef	DYING
-#if defined(IAM_RPMQV) || defined(IAM_RPMK)
-static int noMd5 = 0;
-#endif
-#endif
-
-#ifdef	DYING
-#if defined(IAM_RPMEIU)
-static int noDeps = 0;
-static int force = 0;
-#endif
-#endif
 
 static struct poptOption rpmAllPoptTable[] = {
  { "version", '\0', 0, &showVersion, 0,
@@ -188,171 +145,6 @@ static struct poptOption rpmAllPoptTable[] = {
 
    POPT_TABLEEND
 };
-
-#ifdef	DYING
-#ifdef	IAM_RPMDB
-static struct poptOption rpmDatabasePoptTable[] = {
- { "initdb", '\0', 0, &initdb, 0,
-	N_("initialize database"), NULL},
- { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,
-	N_("rebuild database inverted lists from installed package headers"),
-	NULL},
- { "verifydb", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, GETOPT_VERIFYDB,
-	N_("verify database files"),
-	NULL},
- { "nodirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 1,
-	N_("generate headers compatible with (legacy) rpm[23] packaging"),
-	NULL},
- { "dirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 0,
-	N_("generate headers compatible with rpm4 packaging"), NULL},
-
-   POPT_TABLEEND
-};
-#endif	/* IAM_RPMDB */
-#endif
-
-#ifdef	DYING
-#ifdef	IAM_RPMK
-static struct poptOption rpmSignPoptTable[] = {
- { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,
-	N_("add a signature to a package"), NULL },
- { "resign", '\0', 0, 0, GETOPT_RESIGN,
-	N_("sign a package (discard current signature)"), NULL },
- { "sign", '\0', 0, &signIt, 0,
-	N_("generate GPG/PGP signature"), NULL },
- { "checksig", 'K', 0, 0, 'K',
-	N_("verify package signature"), NULL },
- { "nogpg", '\0', 0, &noGpg, 0,
-	N_("skip any GPG signatures"), NULL },
- { "nopgp", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noPgp, 0,
-	N_("skip any PGP signatures"), NULL },
- { "nomd5", '\0', 0, &noMd5, 0,
-	N_("do not verify file md5 checksums"), NULL },
-
-   POPT_TABLEEND
-};
-#endif	/* IAM_RPMK */
-#endif
-
-#ifdef	DYING
-#ifdef	IAM_RPMEIU
-static rpmtransFlags transFlags = RPMTRANS_FLAG_NONE;
-static rpmprobFilterFlags probFilter = RPMPROB_FILTER_NONE;
-static rpmInstallInterfaceFlags installInterfaceFlags = INSTALL_NONE;
-static rpmEraseInterfaceFlags eraseInterfaceFlags = UNINSTALL_NONE;
-
-static struct poptOption rpmInstallPoptTable[] = {
- { "allfiles", '\0', POPT_BIT_SET, &transFlags, RPMTRANS_FLAG_ALLFILES,
-  N_("install all files, even configurations which might otherwise be skipped"),
-	NULL},
- { "allmatches", '\0', POPT_BIT_SET, &eraseInterfaceFlags, UNINSTALL_ALLMATCHES,
-	N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
-	NULL},
-
- { "apply", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	(_noTransScripts|_noTransTriggers|
-		RPMTRANS_FLAG_APPLYONLY|RPMTRANS_FLAG_PKGCOMMIT),
-	N_("do not execute package scriptlet(s)"), NULL },
-
- { "badreloc", '\0', POPT_BIT_SET, &probFilter, RPMPROB_FILTER_FORCERELOCATE,
-	N_("relocate files in non-relocateable package"), NULL},
- { "dirstash", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-		RPMTRANS_FLAG_DIRSTASH,
-	N_("save erased package files by renaming into sub-directory"), NULL},
- { "erase", 'e', 0, 0, 'e',
-	N_("erase (uninstall) package"), N_("<package>+") },
- { "excludedocs", '\0', POPT_BIT_SET, &transFlags, RPMTRANS_FLAG_NODOCS,
-	N_("do not install documentation"), NULL},
- { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,
-	N_("skip files with leading component <path> "),
-	N_("<path>") },
- { "force", '\0', 0, &force, 0,
-	N_("short hand for --replacepkgs --replacefiles"), NULL},
- { "freshen", 'F', POPT_BIT_SET, &installInterfaceFlags,
-	(INSTALL_UPGRADE|INSTALL_FRESHEN),
-	N_("upgrade package(s) if already installed"),
-	N_("<packagefile>+") },
- { "hash", 'h', POPT_BIT_SET, &installInterfaceFlags, INSTALL_HASH,
-	N_("print hash marks as package installs (good with -v)"), NULL},
- { "ignorearch", '\0', POPT_BIT_SET, &probFilter, RPMPROB_FILTER_IGNOREARCH,
-	N_("don't verify package architecture"), NULL},
- { "ignoreos", '\0', POPT_BIT_SET, &probFilter, RPMPROB_FILTER_IGNOREOS,
-	N_("don't verify package operating system"), NULL},
- { "ignoresize", '\0', POPT_BIT_SET, &probFilter,
-	(RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES),
-	N_("don't check disk space before installing"), NULL},
- { "includedocs", '\0', 0, &incldocs, 0,
-	N_("install documentation"), NULL},
- { "install", '\0', 0, 0, GETOPT_INSTALL,
-	N_("install package"), N_("<packagefile>+") },
- { "justdb", '\0', POPT_BIT_SET, &transFlags, RPMTRANS_FLAG_JUSTDB,
-	N_("update the database, but do not modify the filesystem"), NULL},
- { "nodeps", '\0', 0, &noDeps, 0,
-	N_("do not verify package dependencies"), NULL },
- { "noorder", '\0', POPT_BIT_SET, &installInterfaceFlags, INSTALL_NOORDER,
-	N_("do not reorder package installation to satisfy dependencies"),
-	NULL},
-
- { "noscripts", '\0', POPT_BIT_SET, &transFlags,
-	(_noTransScripts|_noTransTriggers),
-	N_("do not execute package scriptlet(s)"), NULL },
- { "nopre", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	RPMTRANS_FLAG_NOPRE,
-	N_("do not execute %%pre scriptlet (if any)"), NULL },
- { "nopost", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	RPMTRANS_FLAG_NOPOST,
-	N_("do not execute %%post scriptlet (if any)"), NULL },
- { "nopreun", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	RPMTRANS_FLAG_NOPREUN,
-	N_("do not execute %%preun scriptlet (if any)"), NULL },
- { "nopostun", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	RPMTRANS_FLAG_NOPOSTUN,
-	N_("do not execute %%postun scriptlet (if any)"), NULL },
-
- { "notriggers", '\0', POPT_BIT_SET, &transFlags,
-	_noTransTriggers,
-	N_("do not execute any scriptlet(s) triggered by this package"), NULL},
- { "notriggerprein", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	RPMTRANS_FLAG_NOTRIGGERPREIN,
-	N_("do not execute any %%triggerprein scriptlet(s)"), NULL},
- { "notriggerin", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	RPMTRANS_FLAG_NOTRIGGERIN,
-	N_("do not execute any %%triggerin scriptlet(s)"), NULL},
- { "notriggerun", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	RPMTRANS_FLAG_NOTRIGGERUN,
-	N_("do not execute any %%triggerun scriptlet(s)"), NULL},
- { "notriggerpostun", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &transFlags,
-	RPMTRANS_FLAG_NOTRIGGERPOSTUN,
-	N_("do not execute any %%triggerpostun scriptlet(s)"), NULL},
-
- { "oldpackage", '\0', POPT_BIT_SET, &probFilter, RPMPROB_FILTER_OLDPACKAGE,
-	N_("upgrade to an old version of the package (--force on upgrades does this automatically)"),
-	NULL},
- { "percent", '\0', POPT_BIT_SET, &installInterfaceFlags, INSTALL_PERCENT,
-	N_("print percentages as package installs"), NULL},
- { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,
-	N_("relocate the package to <dir>, if relocatable"),
-	N_("<dir>") },
- { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,
-	N_("relocate files from path <old> to <new>"),
-	N_("<old>=<new>") },
- { "repackage", '\0', POPT_BIT_SET, &transFlags, RPMTRANS_FLAG_REPACKAGE,
-	N_("save erased package files by repackaging"), NULL},
- { "replacefiles", '\0', POPT_BIT_SET, &probFilter,
-	(RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
-	N_("install even if the package replaces installed files"), NULL},
- { "replacepkgs", '\0', POPT_BIT_SET, &probFilter, RPMPROB_FILTER_REPLACEPKG,
-	N_("reinstall if the package is already present"), NULL},
- { "test", '\0', POPT_BIT_SET, &transFlags, RPMTRANS_FLAG_TEST,
-	N_("don't install, but tell if it would work or not"), NULL},
- { "upgrade", 'U', POPT_BIT_SET, &installInterfaceFlags, INSTALL_UPGRADE,
-	N_("upgrade package(s)"),
-	N_("<packagefile>+") },
-
-   POPT_TABLEEND
-};
-#endif	/* IAM_RPMEIU */
-#endif	/* DYING */
 
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
@@ -434,12 +226,10 @@ static void printBanner(void)
 static void printUsage(void)
 	/*@modifies fileSystem @*/
 {
-    FILE * fp;
+    FILE * fp = stdout;
     printVersion();
     printBanner();
     (void) puts("");
-
-    fp = stdout;
 
     fprintf(fp, _("Usage: %s {--help}\n"), __progname);
     fprintf(fp,  ("       %s {--version}\n"), __progname);
@@ -451,7 +241,7 @@ static void printUsage(void)
 --force		alias for --replacepkgs --replacefiles
 --includedocs	handle as option in table
 		--erase forbids many options
-#endif
+#endif	/* DYING */
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
@@ -473,251 +263,6 @@ static void printUsage(void)
 
 }
 
-#ifdef	DYING
-static void printHelpLine(char * prefix, char * help)
-	/*@modifies fileSystem @*/
-{
-    int indentLength = strlen(prefix) + 3;
-    int lineLength = 79 - indentLength;
-    int helpLength = strlen(help);
-    char * ch;
-    char format[10];
-
-    fprintf(stdout, "%s - ", prefix);
-
-    while (helpLength > lineLength) {
-	ch = help + lineLength - 1;
-	while (ch > help && !isspace(*ch)) ch--;
-	if (ch == help) break;		/* give up */
-	while (ch > (help + 1) && isspace(*ch)) ch--;
-	ch++;
-
-	sprintf(format, "%%.%ds\n%%%ds", (int) (ch - help), indentLength);
-	fprintf(stdout, format, help, " ");
-	help = ch;
-	while (isspace(*help) && *help) help++;
-	helpLength = strlen(help);
-    }
-
-    if (helpLength) puts(help);
-}
-
-static void printHelp(void) {
-    printVersion();
-    printBanner();
-    puts("");
-
-    puts(         _("Usage:"));
-    printHelpLine(  "   --help                 ", 
-		  _("print this message"));
-    printHelpLine(  "   --version              ",
-		  _("print the version of rpm being used"));
-
-    puts("");
-    puts(         _("  All modes support the following options:"));
-    printHelpLine(_("   --define '<name> <body>'"),
-		  _("define macro <name> with value <body>"));
-    printHelpLine(_("   --eval '<expr>+'       "),
-		  _("print the expansion of macro <expr> to stdout"));
-    printHelpLine(_("   --pipe <cmd>           "),
-		  _("send stdout to <cmd>"));
-    printHelpLine(_("   --rcfile <file:...>    "),
-		  _("use <file:...> instead of default list of macro files"));
-    printHelpLine(  "   --showrc               ",
-		  _("display final rpmrc and macro configuration"));
-#if defined(IAM_RPMBT) || defined(IAM_RPMDB) || defined(IAM_RPMEIU) || defined(IAM_RPMQV)
-    printHelpLine(_("   --dbpath <dir>         "),
-		  _("use <dir> as the directory for the database"));
-    printHelpLine(_("   --root <dir>           "),
-		  _("use <dir> as the top level directory"));
-#endif	/* IAM_RPMBT || IAM_RPMDB || IAM_RPMEIU || IAM_RPMQV */
-    printHelpLine(  "   -v                     ",
-		  _("be a little more verbose"));
-    printHelpLine(  "   -vv                    ",
-		  _("be incredibly verbose (for debugging)"));
-
-#if defined(IAM_RPMEIU) || defined(IAM_RPMQV)
-    puts("");
-    puts(         _("  Install, upgrade and query (with -p) modes allow URL's to be used in place"));
-    puts(         _("  of file names as well as the following options:"));
-    printHelpLine(_("     --ftpproxy <host>    "),
-		  _("hostname or IP of ftp proxy"));
-    printHelpLine(_("     --ftpport <port>     "),
-		  _("port number of ftp server (or proxy)"));
-    printHelpLine(_("     --httpproxy <host>   "),
-		  _("hostname or IP of http proxy"));
-    printHelpLine(_("     --httpport <port>    "),
-		  _("port number of http server (or proxy)"));
-#endif	/* IAM_RPMEIU || IAM_RPMQV */
-
-#ifdef IAM_RPMQV
-    puts("");
-    puts(         _("  Package specification options:"));
-    printHelpLine(  "     -a, --all            ",
-		  _("query/verify all packages"));
-    printHelpLine(_("     -f <file>+           "),
-		  _("query/verify package owning <file>"));
-    printHelpLine(_("     -p <packagefile>+    "),
-		  _("query/verify (uninstalled) package <packagefile>"));
-    printHelpLine(_("     --triggeredby <pkg>  "),
-		  _("query/verify packages triggered by <pkg>"));
-    printHelpLine(_("     --whatprovides <cap> "),
-		  _("query/verify packages which provide <cap> capability"));
-    printHelpLine(_("     --whatrequires <cap> "),
-		  _("query/verify packages which require <cap> capability"));
-    puts("");
-    printHelpLine(  "  -q, --query             ",
-		  _("query mode"));
-    printHelpLine(_("     --queryformat <qfmt> "),
-		  _("use <qfmt> as the header format (implies --info)"));
-    puts("");
-    puts(         _("    Information selection options:"));
-    printHelpLine(  "       -i, --info         ",
-		  _("display package information"));
-    printHelpLine(  "       --changelog        ",
-		  _("display the package's change log"));
-    printHelpLine(  "       -l                 ",
-		  _("display package file list"));
-    printHelpLine(  "       -s                 ",
-		  _("show file states (implies -l)"));
-    printHelpLine(  "       -d                 ",
-		  _("list only documentation files (implies -l)"));
-    printHelpLine(  "       -c                 ",
-		  _("list only configuration files (implies -l)"));
-    printHelpLine(  "       --dump             ",
-		  _("show all verifiable information for each file (must be used with -l, -c, or -d)"));
-    printHelpLine(  "       --provides         ",
-		  _("list capabilities provided by package"));
-    printHelpLine(  "       -R, --requires     ",
-		  _("list capabilities required by package"));
-    printHelpLine(  "       --scripts          ",
-		  _("print the various [un]install scriptlets"));
-    printHelpLine(  "       --triggers         ",
-		  _("show the trigger scriptlets contained in the package"));
-    puts("");
-    printHelpLine(  "   -V, -y, --verify       ",
-		  _("verify a package installation using the same same package specification options as -q"));
-    printHelpLine(  "     --nodeps             ",
-		  _("do not verify package dependencies"));
-    printHelpLine(  "     --nofiles            ",
-		  _("do not verify file attributes"));
-    printHelpLine(  "     --nomd5              ",
-		  _("do not verify file md5 checksums"));
-    printHelpLine(  "     --noscripts          ",
-		  _("do not execute scripts (if any)"));
-    puts("");
-    printHelpLine(  "   --querytags            ",
-		  _("list the tags that can be used in a query format"));
-    printHelpLine(  "   --setperms             ",
-		  _("set the file permissions to those in the package database"
-		    " using the same package specification options as -q"));
-    printHelpLine(  "   --setugids             ",
-		  _("set the file owner and group to those in the package "
-		    "database using the same package specification options as "
-		    "-q"));
-#endif	/* IAM_RPMQV */
-
-#ifdef	IAM_RPMEIU
-    puts("");
-    puts(         _("   --install <packagefile>"));
-    printHelpLine(_("   -i <packagefile>       "),
-		  _("install package"));
-    printHelpLine(  "     --allfiles           ",
-		  _("install all files, even configurations which might "
-		    "otherwise be skipped"));
-    printHelpLine(  "     --badreloc           ",
-		  _("relocate files in non-relocateable package"));
-    printHelpLine(  "     --excludedocs        ",
-		  _("do not install documentation"));
-    printHelpLine(_("     --excludepath <path> "),
-		  _("skip files with leading component <path> "));
-    printHelpLine(  "     --force              ",
-		  _("short hand for --replacepkgs --replacefiles"));
-    printHelpLine(  "     -h, --hash           ",
-		  _("print hash marks as package installs (good with -v)"));
-    printHelpLine(  "     --ignorearch         ",
-		  _("don't verify package architecture"));
-    printHelpLine(  "     --ignoresize         ",
-		  _("don't check disk space before installing"));
-    printHelpLine(  "     --ignoreos           ",
-		  _("don't verify package operating system"));
-    printHelpLine(  "     --includedocs        ",
-		  _("install documentation"));
-    printHelpLine(  "     --justdb             ",
-		  _("update the database, but do not modify the filesystem"));
-    printHelpLine(  "     --nodeps             ",
-		  _("do not verify package dependencies"));
-    printHelpLine(  "     --noorder            ",
-		  _("do not reorder package installation to satisfy dependencies"));
-    printHelpLine(  "     --noscripts          ",
-		  _("don't execute any installation scriptlets"));
-    printHelpLine(  "     --notriggers         ",
-		  _("don't execute any scriptlets triggered by this package"));
-    printHelpLine(  "     --percent            ",
-		  _("print percentages as package installs"));
-    printHelpLine(_("     --prefix <dir>       "),
-		  _("relocate the package to <dir>, if relocatable"));
-    printHelpLine(_("     --relocate <oldpath>=<newpath>"),
-		  _("relocate files from <oldpath> to <newpath>"));
-    printHelpLine(  "     --replacefiles       ",
-		  _("install even if the package replaces installed files"));
-    printHelpLine(  "     --replacepkgs        ",
-		  _("reinstall if the package is already present"));
-    printHelpLine(  "     --test               ",
-		  _("don't install, but tell if it would work or not"));
-    puts("");
-    puts(         _("   --upgrade <packagefile>"));
-    printHelpLine(_("   -U <packagefile>       "),
-		  _("upgrade package (same options as --install, plus)"));
-    printHelpLine(  "     --oldpackage         ",
-		  _("upgrade to an old version of the package (--force on upgrades does this automatically)"));
-    puts("");
-    puts(         _("   --erase <package>"));
-    printHelpLine(_("   -e <package>           "),
-		  _("erase (uninstall) package"));
-    printHelpLine(  "     --allmatches         ",
-		  _("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"));
-    printHelpLine(  "     --justdb             ",
-		  _("update the database, but do not modify the filesystem"));
-    printHelpLine(  "     --nodeps             ",
-		  _("do not verify package dependencies"));
-    printHelpLine(  "     --noorder            ",
-		  _("do not reorder package installation to satisfy dependencies"));
-    printHelpLine(  "     --noscripts          ",
-		  _("do not execute any package specific scripts"));
-    printHelpLine(  "     --notriggers         ",
-		  _("don't execute any scripts triggered by this package"));
-#endif	/* IAM_RPMEIU */
-
-#ifdef IAM_RPMK
-    puts("");
-    printHelpLine(_("   --resign <pkg>+        "),
-		  _("sign a package (discard current signature)"));
-    printHelpLine(_("   --addsign <pkg>+       "),
-		  _("add a signature to a package"));
-
-    puts(         _("   --checksig <pkg>+"));
-    printHelpLine(_("   -K <pkg>+             "),
-		  _("verify package signature"));
-    printHelpLine(  "     --nopgp              ",
-		  _("skip any PGP signatures"));
-    printHelpLine(  "     --nogpg              ",
-		  _("skip any GPG signatures"));
-    printHelpLine(  "     --nomd5              ",
-		  _("skip any MD5 signatures"));
-#endif	/* IAM_RPMK */
-
-#ifdef	IAM_RPMDB
-    puts("");
-    printHelpLine(  "   --initdb               ",
-		  _("initalize database (unnecessary, legacy use)"));
-    printHelpLine(  "   --rebuilddb            ",
-		  _("rebuild database indices from existing database headers"));
-#endif
-
-}
-#endif
-
 int main(int argc, const char ** argv)
 {
     enum modes bigMode = MODE_UNKNOWN;
@@ -731,12 +276,7 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMEIU
-#ifdef	DYING
-/*@only@*/ rpmRelocation * relocations = NULL;
-    int numRelocations = 0;
-#else
    struct rpmInstallArguments_s * ia = &rpmIArgs;
-#endif
 #endif
 
 #if defined(IAM_RPMDB)
@@ -744,12 +284,7 @@ int main(int argc, const char ** argv)
 #endif
 
 #if defined(IAM_RPMK)
-#ifdef	DYING
-    rpmResignFlags addSign = RESIGN_NEW_SIGNATURE;
-    rpmCheckSigFlags checksigFlags = CHECKSIG_NONE;
-#else
    struct rpmSignArguments_s * ka = &rpmKArgs;
-#endif
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
@@ -885,19 +420,12 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMEIU
-#ifdef DYING
-    transFlags = RPMTRANS_FLAG_NONE;
-    probFilter = RPMPROB_FILTER_NONE;
-    installInterfaceFlags = INSTALL_NONE;
-    eraseInterfaceFlags = UNINSTALL_NONE;
-#else
     ia->relocations = _free(ia->relocations);
     memset(ia, 0, sizeof(*ia));
     ia->transFlags = RPMTRANS_FLAG_NONE;
     ia->probFilter = RPMPROB_FILTER_NONE;
     ia->installInterfaceFlags = INSTALL_NONE;
     ia->eraseInterfaceFlags = UNINSTALL_NONE;
-#endif
 #endif
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
@@ -931,107 +459,6 @@ int main(int argc, const char ** argv)
 #endif
 	    break;
 #endif	/* IAM_RPMQV || IAM_RPMEIU || IAM_RPMBT */
-
-#ifdef	DYING
-#ifdef	IAM_RPMEIU
-	
-	case 'e':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_ERASE)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_ERASE;
-	    break;
-	
-	case GETOPT_INSTALL:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_INSTALL;
-	    break;
-
-#ifdef	DYING	/* XXX handled by popt */
-	case 'U':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_INSTALL;
-	    break;
-
-	case 'F':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_INSTALL;
-	    break;
-#endif
-
-	case GETOPT_EXCLUDEPATH:
-	    if (optArg == NULL || *optArg != '/') 
-		argerror(_("exclude paths must begin with a /"));
-
-	    ia->relocations = xrealloc(ia->relocations, 
-			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-	    /*@-observertrans -dependenttrans@*/	/* FIX: W2DO? */
-	    ia->relocations[ia->numRelocations].oldPath = optArg;
-	    ia->relocations[ia->numRelocations++].newPath = NULL;
-	    /*@=observertrans =dependenttrans@*/
-	    break;
-
-	case GETOPT_RELOCATE:
-	  { char * newPath = NULL;
-	    if (optArg == NULL || *optArg != '/') 
-		argerror(_("relocations must begin with a /"));
-	    if (!(newPath = strchr(optArg, '=')))
-		argerror(_("relocations must contain a ="));
-	    *newPath++ = '\0';
-	    if (*newPath != '/') 
-		argerror(_("relocations must have a / following the ="));
-	    ia->relocations = xrealloc(ia->relocations, 
-			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-	    /*@-observertrans -kepttrans@*/	/* FIX: W2DO? */
-	    ia->relocations[ia->numRelocations].oldPath = optArg;
-	    ia->relocations[ia->numRelocations++].newPath = newPath;
-	    /*@=observertrans =kepttrans@*/
-	  } break;
-#endif	/* IAM_RPMEIU */
-#endif	/* DYING */
-
-#ifdef	DYING
-#ifdef	IAM_RPMDB
-	case GETOPT_REBUILDDB:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILDDB)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_REBUILDDB;
-	    break;
-	case GETOPT_VERIFYDB:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_VERIFYDB)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_VERIFYDB;
-	    break;
-#endif	/* IAM_RPMDB */
-#endif	/* DYING */
-
-#ifdef	DYING
-#ifdef	IAM_RPMK
-	case 'K':
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_CHECKSIG)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_CHECKSIG;
-	    break;
-
-	case GETOPT_RESIGN:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_RESIGN;
-	    addSign = RESIGN_NEW_SIGNATURE;
-	    signIt = 1;
-	    break;
-
-	case GETOPT_ADDSIGN:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_RESIGN;
-	    addSign = RESIGN_ADD_SIGNATURE;
-	    signIt = 1;
-	    break;
-#endif	/* IAM_RPMK */
-#endif	/* DYING */
 
 	case GETOPT_DEFINEMACRO:
 	    if (optArg) {
@@ -1153,6 +580,7 @@ int main(int argc, const char ** argv)
     }
 #endif	/* IAM_RPMQV */
 
+    /* XXX TODO: never happens. */
     if (gotDbpath && (bigMode & ~MODES_FOR_DBPATH))
 	argerror(_("--dbpath given for operation that does not use a "
 			"database"));
@@ -1268,22 +696,6 @@ int main(int argc, const char ** argv)
 	    break;
 	}
     }
-
-#ifdef	DYING
-#ifdef	IAM_RPMK
-    if (!(ka->checksigFlags & CHECKSIG_PGP) && bigMode != MODE_CHECKSIG)
-	argerror(_("--nopgp may only be used during signature checking"));
-
-    if (!(ka->checksigFlags & CHECKSIG_GPG) && bigMode != MODE_CHECKSIG)
-	argerror(_("--nogpg may only be used during signature checking"));
-#endif
-
-#if defined(IAM_RPMK) || defined(IAM_RPMQV)
-    if ((!(ka->checksigFlags & CHECKSIG_MD5) || noMd5) && bigMode != MODE_CHECKSIG && bigMode != MODE_VERIFY)
-	argerror(_("--nomd5 may only be used during signature checking and "
-		   "package verification"));
-#endif
-#endif	/* DYING */
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
     if (0
@@ -1491,14 +903,6 @@ int main(int argc, const char ** argv)
 	break;
 
     case MODE_INSTALL:
-#ifdef	DYING
-	if (force) {
-	    ia->probFilter |= RPMPROB_FILTER_REPLACEPKG | 
-			  RPMPROB_FILTER_REPLACEOLDFILES |
-			  RPMPROB_FILTER_REPLACENEWFILES |
-			  RPMPROB_FILTER_OLDPACKAGE;
-	}
-#endif
 
 	/* RPMTRANS_FLAG_BUILD_PROBS */
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
@@ -1554,13 +958,12 @@ int main(int argc, const char ** argv)
 
     case MODE_VERIFY:
       { const char * pkg;
-	int verifyFlags;
+	rpmVerifyFlags verifyFlags = VERIFY_ALL;
 
-	verifyFlags = (VERIFY_FILES|VERIFY_DEPS|VERIFY_SCRIPT|VERIFY_MD5);
 	verifyFlags &= ~qva->qva_flags;
-
+	qva->qva_flags = (rpmQueryFlags) verifyFlags;
 	qva->qva_prefix = rootdir;
-	qva->qva_flags = verifyFlags;
+
 	if (qva->qva_source == RPMQV_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for verify of all packages"));
@@ -1585,11 +988,6 @@ int main(int argc, const char ** argv)
     case MODE_CHECKSIG:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signature check"));
-#ifdef	DYING
-	if (!noPgp) checksigFlags |= CHECKSIG_PGP;
-	if (!noGpg) checksigFlags |= CHECKSIG_GPG;
-	if (!noMd5) checksigFlags |= CHECKSIG_MD5;
-#endif
 	ec = rpmCheckSig(ka->checksigFlags,
 			(const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */

@@ -28,6 +28,9 @@ struct transactionFileInfo_s {
 /*@owned@*/ fileAction * actions;	/*!< File disposition(s) */
 /*@owned@*/ struct fingerPrint_s * fps;	/*!< File fingerprint(s) */
     HGE_t hge;			/*!< Vector to headerGetEntry() */
+    HAE_t hae;			/*!< Vector to headerAddEntry() */
+    HME_t hme;			/*!< Vector to headerModifyEntry() */
+    HRE_t hre;			/*!< Vector to headerRemoveEntry() */
     HFD_t hfd;			/*!< Vector to headerFreeData() */
     Header h;			/*!< Package header */
 /*@owned@*/ const char * name;

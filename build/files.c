@@ -249,9 +249,9 @@ static void timeCheck(int tc, Header h)	/*@modifies internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int *mtime;
+    int * mtime;
     const char ** files;
-    int fnt;
+    rpmTagType fnt;
     int count, x;
     time_t currentTime = time(NULL);
 
@@ -2119,9 +2119,9 @@ top:
 typedef struct {
 /*@observer@*/ /*@null@*/ const char * msg;
 /*@observer@*/ const char * argv[4];
-    int ntag;
-    int vtag;
-    int ftag;
+    rpmTag ntag;
+    rpmTag vtag;
+    rpmTag ftag;
     int mask;
     int xor;
 } DepMsg_t;
@@ -2339,9 +2339,9 @@ static void printDeps(Header h)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char ** names = NULL;
-    int dnt = -1;
+    rpmTagType dnt = -1;
     const char ** versions = NULL;
-    int dvt = -1;
+    rpmTagType dvt = -1;
     int * flags = NULL;
     DepMsg_t * dm;
     int count;
