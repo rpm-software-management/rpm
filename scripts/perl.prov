@@ -31,11 +31,6 @@ foreach $module (sort keys %require) {
     print "perl($module)\n";
   } else {
     print "perl($module)=$require{$module}\n";
-
-    # we need to print it without the version number until the
-    # requires syntax accepts version numbers correctly.
-
-    print "perl($module)\n";
   }
 }
 
@@ -49,14 +44,18 @@ sub process_file {
   chomp $file;
   
   open(FILE, "<$file")||
-    die("Could not open file: '$file' : $!\n");
+    die("$0: Could not open file: '$file' : $!\n");
 
   my ($package, $version) = ();
 
   while (<FILE>) {
     
     # skip the documentation
-    if ( (m/^=(head1|head2|pod)/) .. (m/^=(cut)/) ) {
+    if ( (m/^=(head1|head2|pod|item)/) .. (m/^=(cut)/) ) {
+      next;
+    }
+    
+    if ( (m/^=(over)/) .. (m/^=(back)/) ) {
       next;
     }
     
@@ -81,14 +80,14 @@ sub process_file {
 
     # here are examples of VERSION lines from the perl distribution
 
-    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
-    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.1 $, 10;
-    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.1 $)[1];
+    #FindBin.pm:$VERSION = $VERSION = sprintf("%d.%02d", q$Revision: 1.2 $ =~ /(\d+)\.(\d+)/);
+    #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.2 $, 10;
+    #CGI/Apache.pm:$VERSION = (qw$Revision: 1.2 $)[1];
     #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
 
     if ( 
 	($package) && 
-	(m/^\s*\$VERSION\s+=\s+/)
+	(m/^\s*\$VERSION\s*=\s+/)
        ) {
 
       # first see if the version string contains the string
@@ -106,7 +105,20 @@ sub process_file {
       $require{$package}=$version;
     }
     
+    # Each keyword can appear multiple times.  Don't
+    #  bother with datastructures to store these strings,
+    #  if we need to print it print it now.
+	
+    if ( m/^\s*\$RPM_Provides\s*=\s*["'](.*)['"]/i) {
+      foreach $_ (spit(/\s+/, $1)) {
+	print "$_\n";
+      }
+    }
+
   }
+
+  close(FILE)||
+    die("$0: Could not close file: '$file' : $!\n");
 
   return ;
 }

@@ -1,0 +1,126 @@
+#!/usr/bin/perl
+
+# This file can find requirements of html and jhtml files (cgi, gif,
+# java dependencies).  It is a bit of a hack but it turns out to work
+# well.  We track only dependencies between Relative URLs, absolute
+# URL's are assumed to be extenernal to the RPM system.  We do not
+# parse the HTML but look through the set of strings (text surrounded
+# by quotes) for something which looks like a reference.  This avoids
+# writing a full HTML parsers and tends to work really well.  In this
+# manner we can track dependencies for: href, src, action and other
+# HTML tags which have not been invented yet.
+
+
+# The reference:
+#
+#	href="http://www.perl.org/images/arrow.gif"
+#
+# does not create a dependency but the reference
+#
+#	href="images/arrow.gif"
+#
+# will create a dependency.  
+
+# Additionally this program will find the requirements for sun jhtml
+# (html with embedded java) since jhtml is deprecated so is this part
+# of the code.
+
+
+use File::Basename;
+
+# this is the pattern of extensions to call requirements
+
+$DEPS_PAT = '\.((cgi)|(ps)|(pdf)|(png)|(jpg)|(gif)|(tiff)|(tif)|(xbm)|(html)|(htm)|(shtml)|(jhtml))$'; #'
+
+if ("@ARGV") {
+  foreach (@ARGV) {
+    process_file($_);
+  }
+} else {
+  
+  # notice we are passed a list of filenames NOT as common in unix the
+  # contents of the file.
+  
+  foreach (<>) {
+    process_file($_);
+  }
+}
+
+
+
+foreach $key (sort keys %seen) {
+  print "$key\n";
+}
+
+
+sub process_file {
+
+  my ($file) = @_;
+  chomp $file;
+  
+  open(FILE, "<$file")||
+    die("$0: Could not open file: '$file' : $!\n");
+  
+  # we have to suck in the whole file at once because too many people
+  # split lines around <java></java> tags.
+  
+  my (@file) = <FILE>;
+  
+  $_= "@file";
+
+  # ignore line based comments ( careful although it has two slashes
+  # 'http://www.yahoo.com' is not a comment! )
+
+  s!^\s*//.*$!!mg;
+  s!//\s.*$!!mg;
+  s!\s//.*$!!mg;
+  
+  # ignore multi-line comments 
+  # (use non greedy operators)
+  
+  s!/\*.*?\*/!!g;
+  s/<!--.*?-->//g;
+
+  # html references other html documents inside strings.  Ignore non
+  # relative references since these dependencies can not be met. (ie,
+  # no package you install will ever provide 'http://www.yahoo.com').
+  # I use basename since I have seen too many http references which
+  # begin with '../' this would just kill the dependnecy tracking
+  # mechanism.
+
+  while ( m{\"([^\"]+)\"}g ) {
+    my $string = $1;
+    chomp $string;
+    if ( ( $string !~ m!http://! ) &&
+	 ( $string =~ m!$DEPS_PAT! ) ) {
+      $string = basename($string);
+      $string =~ s!\s+!!g;
+      $seen{"http(${string})"} = 1;
+    }
+  }
+
+  {
+
+  # This section is only for use with (Sun) jhtml dependencies, and
+  # since jhtml is deprecated so is this code.
+
+  # java imports in jhtml (may have stars for leaf class)
+  # these may span several lines
+  
+    while (  m!<java type=((import)|(extends))>\s*([^<]+)\s*<!g ) {
+      my $java_list = $4;
+      $java_list =~ s/;/ /g;
+      $java_list =~ s/\n+/ /g;
+      $java_list =~ s/\s+/ /g;
+      foreach $java_class ( split(/\s+/, $java_list) ) {
+	$seen{"java(${java_class})"} = 1;
+      }
+    }
+    
+  }
+
+  close(FILE, "<$file")||
+    die("$0: Could not close file: '$file' : $!\n");
+  
+  return ;
+}

@@ -29,13 +29,7 @@ foreach $module (sort keys %require) {
   if (length($require{$module}) == 0) {
     print "perl($module)\n";
   } else {
-
     print "perl($module)>=$require{$module}\n";
-
-    # we need to print it without the version number until the
-    # requires syntax accepts version numbers correctly.
-
-    print "perl($module)\n";
   }
 }
 
@@ -49,18 +43,32 @@ sub process_file {
   chomp $file;
   
   open(FILE, "<$file")||
-    die("Could not open file: '$file' : $!\n");
+    die("$0: Could not open file: '$file' : $!\n");
   
   while (<FILE>) {
     
     # skip the documentation
-    if ( (m/^=(head1|head2|pod)/) .. (m/^=(cut)/) ) {
+    if ( (m/^=(head1|head2|pod|item)/) .. (m/^=(cut)/) ) {
       next;
     }
 
+    if ( (m/^=(over)/) .. (m/^=(back)/) ) {
+      next;
+    }
+    
     # skip the data section
     if (m/^__(DATA|END)__$/) {
       last;
+    }
+
+    # Each keyword can appear multiple times.  Don't
+    #  bother with datastructures to store these strings,
+    #  if we need to print it print it now.
+    
+    if ( m/^\s*\$RPM_Requires\s*=\s*["'](.*)['"]/i) {
+      foreach $_ (spit(/\s+/, $1)) {
+	print "$_\n";
+      }
     }
 
     if ( 
@@ -82,6 +90,19 @@ sub process_file {
 	 /x)
        ) {
       my ($module, $version) = ($2,$3);
+
+      # trim off trailing parenthesis if any.  Sometimes people pass
+      # the module an empty list.
+
+      $module =~ s/\(\s*\)$//;
+
+      if ( $module =~ m/^[0-9._]+$/ ) {
+      # if module is a number then both require and use interpret that
+      # to mean that a particular version of perl is specified
+
+	print "perl>$module\n";
+	next;
+      };
 
       # if there is some interpolation of variables just skip this
       # dependency, we do not want
@@ -116,5 +137,9 @@ sub process_file {
     }
     
   }
- 
+
+  close(FILE)||
+    die("$0: Could not close file: '$file' : $!\n");
+  
+  return ; 
 }

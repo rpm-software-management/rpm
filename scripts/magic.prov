@@ -1,0 +1,167 @@
+#!/usr/bin/perl
+
+use File::Basename;
+use Getopt::Long;
+
+# this dependency analysis program is the only one which need to know
+# the RPM buildroot to do its work.
+
+# Figuring out what files are really executables via magic numbers is
+# hard.  Not only is every '#!' an executable of some type (with a
+# potentially infinite supply of interpreters) but there are thousands
+# of valid binary magic numbers for old OS's and old CPU types.
+
+# Permissions do not always help discriminate binaries from the rest
+# of the files, on Solaris the shared libraries are marked as
+# 'executable'.
+
+#	-rwxr-xr-x   1 bin      bin      1013248 Jul  1  1998 /lib/libc.so.1
+
+# I would like to let the 'file' command take care of the magic
+# numbers for us. Alas! under linux file prints different kind of
+# messages for each interpreter, there is no common word 'script' to
+# look for.
+
+#	' perl commands text'
+#	' Bourne shell script text'
+#	' a /usr/bin/wish -f script text'
+
+# WORSE on solaris there are entries which say:
+
+# 	' current ar archive, not a dynamic executable or shared object' 
+
+# how do I grep for 'executable' when people put a 'not executable' in
+# there?  I trim off everything after the first comma (if there is
+# one) and if the result has the string 'executable' in it then it may
+# be one.
+
+
+# so we must also do some magic number processing ourselves, and be
+# satisfied with 'good enough'.
+
+# I look for files which have atleast one of the executable bits set
+# and are either labled 'executable' by the file command (see above
+# restriction) OR have a '#!' as their first two characters.
+
+
+$is_mode_executable=oct(111);
+
+# set a known path
+  
+$ENV{'PATH'}= (
+	       ':/usr/bin'.
+	       ':/bin'.
+	       '');
+
+# taint perl requires we clean up these bad environmental variables.
+  
+delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+
+$BUILDROOT = '';
+%option_linkage = (
+		   "buildroot" => \$BUILDROOT,
+		  );
+
+if( !GetOptions (\%option_linkage, "buildroot=s") ) {
+  die("Illegal options in \@ARGV: '@ARGV'\n");
+
+}
+
+if ($BUILDROOT == '/') {
+  $BUILDROOT = '';
+}
+
+if ("@ARGV") {
+  foreach (@ARGV) {
+    process_file($_);
+  }
+} else {
+  
+  # notice we are passed a list of filenames NOT as common in unix the
+  # contents of the file.
+  
+  foreach (<>) {
+    process_file($_);
+  }
+}
+
+
+foreach $module (sort keys %provides) {
+  print "executable($module)\n";
+}
+
+exit 0;
+
+
+
+
+sub is_file_script {
+  
+  my ($file) = @_;
+  chomp $file;
+  
+  my $out = 0;
+  open(FILE, "<$file")||
+    die("$0: Could not open file: '$file' : $!\n");
+  
+  my $rc = sysread(FILE,$line,2);
+  
+  if ( ($rc > 1) && ($line =~ m/^\#\!/) ) {
+    $out = 1;
+  } 
+
+  close(FILE) ||
+    die("$0: Could not close file: '$file' : $!\n");
+  
+  return $out; 
+}
+
+
+
+sub is_file_binary_executable {
+  my ($file) = @_;
+
+  $file_out=`file $file`;
+  # trim off any extra descriptions.
+  $file_out =~ s/\,.*$//;
+  
+  my $out = 0;
+  if ($file_out =~ m/executable/ ) {
+    $out = 1;
+  }
+  return $out;
+}
+
+
+sub process_file {
+  my ($file) = @_;
+  chomp $file;
+
+  my $prov_name = $file;
+  $prov_name =~ s!^$BUILDROOT!!;
+
+  # If its a link find the file it points to.  Dead links do not
+  # provide anything.
+
+  while (-l $file) {
+    my $newfile = readlink($file);
+    if ($newfile !~ m!^/!) {
+      $newfile = dirname($file).'/'.$newfile;
+    } else {
+      $newfile = $BUILDROOT.$newfile;
+    }
+    $file = $newfile;
+  }
+
+  (-f $file) || return ;  
+  ( (stat($file))[2] & $is_mode_executable ) || return ;
+
+  is_file_script($file) || 
+    is_file_binary_executable($file) || 
+      return ;
+
+  $provides{$prov_name}=1;
+  $provides{basename($prov_name)}=1;
+    
+  return ; 
+}
