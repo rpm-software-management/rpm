@@ -616,6 +616,49 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
     return set;
 }
 
+typedef struct miRE_s {
+    rpmTag		tag;		/*!< header tag */
+    rpmMireMode		mode;		/*!< pattern match mode */
+/*@only@*/ const char *	pattern;	/*!< pattern string */
+    int			notmatch;	/*!< like "grep -v" */
+/*@only@*/ regex_t *	preg;		/*!< regex compiled pattern buffer */
+    int			cflags;		/*!< regcomp(3) flags */
+    int			eflags;		/*!< regexec(3) flags */
+    int			fnflags;	/*!< fnmatch(3) flags */
+} * miRE;
+
+struct _rpmdbMatchIterator {
+    rpmdbMatchIterator	mi_next;
+/*@only@*/
+    const void *	mi_keyp;
+    size_t		mi_keylen;
+/*@refcounted@*/
+    rpmdb		mi_db;
+    rpmTag		mi_rpmtag;
+    dbiIndexSet		mi_set;
+    DBC *		mi_dbc;
+    DBT			mi_key;
+    DBT			mi_data;
+    int			mi_setx;
+/*@refcounted@*/ /*@null@*/
+    Header		mi_h;
+    int			mi_sorted;
+    int			mi_cflags;
+    int			mi_modified;
+    unsigned int	mi_prevoffset;
+    unsigned int	mi_offset;
+    unsigned int	mi_filenum;
+    int			mi_nre;
+/*@only@*/ /*@null@*/
+    miRE		mi_re;
+/*@null@*/
+    rpmts		mi_ts;
+/*@null@*/
+    rpmRC (*mi_hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg)
+	/*@modifies ts, *msg @*/;
+
+};
+
 /**
  */
 /*@unchecked@*/
@@ -693,6 +736,9 @@ static int enableSignals(void)
 /*@unchecked@*/
 static rpmdb rpmdbRock;
 
+/*@unchecked@*/
+static rpmdbMatchIterator rpmmiRock = NULL;
+
 int rpmdbCheckSignals(void)
 	/*@globals rpmdbRock, satbl @*/
 	/*@modifies rpmdbRock @*/
@@ -712,7 +758,16 @@ int rpmdbCheckSignals(void)
 
     if (terminate) {
 	rpmdb db;
+	rpmdbMatchIterator mi;
+
 	rpmMessage(RPMMESS_DEBUG, "Exiting on signal ...\n");
+
+	while ((mi = rpmmiRock) != NULL) {
+/*@i@*/	    rpmmiRock = mi->mi_next;
+	    mi->mi_next = NULL;
+	    mi = rpmdbFreeIterator(mi);
+	}
+
 /*@-newreftrans@*/
 	while ((db = rpmdbRock) != NULL) {
 /*@i@*/	    rpmdbRock = db->db_next;
@@ -1557,48 +1612,6 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     /*@=nullstate@*/
 }
 
-typedef struct miRE_s {
-    rpmTag		tag;		/*!< header tag */
-    rpmMireMode		mode;		/*!< pattern match mode */
-/*@only@*/ const char *	pattern;	/*!< pattern string */
-    int			notmatch;	/*!< like "grep -v" */
-/*@only@*/ regex_t *	preg;		/*!< regex compiled pattern buffer */
-    int			cflags;		/*!< regcomp(3) flags */
-    int			eflags;		/*!< regexec(3) flags */
-    int			fnflags;	/*!< fnmatch(3) flags */
-} * miRE;
-
-struct _rpmdbMatchIterator {
-/*@only@*/
-    const void *	mi_keyp;
-    size_t		mi_keylen;
-/*@refcounted@*/
-    rpmdb		mi_db;
-    rpmTag		mi_rpmtag;
-    dbiIndexSet		mi_set;
-    DBC *		mi_dbc;
-    DBT			mi_key;
-    DBT			mi_data;
-    int			mi_setx;
-/*@refcounted@*/ /*@null@*/
-    Header		mi_h;
-    int			mi_sorted;
-    int			mi_cflags;
-    int			mi_modified;
-    unsigned int	mi_prevoffset;
-    unsigned int	mi_offset;
-    unsigned int	mi_filenum;
-    int			mi_nre;
-/*@only@*/ /*@null@*/
-    miRE		mi_re;
-/*@null@*/
-    rpmts		mi_ts;
-/*@null@*/
-    rpmRC (*mi_hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg)
-	/*@modifies ts, *msg @*/;
-
-};
-
 /**
  * Rewrite a header into packages (if necessary) and free the header.
  *   Note: this is called from a markReplacedFiles iteration, and *must*
@@ -1665,12 +1678,21 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 
 rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 {
+    rpmdbMatchIterator * prev, next;
     dbiIndex dbi;
     int xx;
     int i;
 
     if (mi == NULL)
 	return NULL;
+
+    prev = &rpmmiRock;
+    while ((next = *prev) != NULL && next != mi)
+	prev = &next->mi_next;
+    if (next) {
+/*@i@*/	*prev = next->mi_next;
+	next->mi_next = NULL;
+    }
 
     dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)	/* XXX can't happen */
@@ -1698,6 +1720,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
     mi->mi_db = rpmdbUnlink(mi->mi_db, "matchIterator");
+
     mi = _free(mi);
 
     (void) rpmdbCheckSignals();
@@ -2452,6 +2475,9 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	return NULL;
 
     mi = xcalloc(1, sizeof(*mi));
+    mi->mi_next = rpmmiRock;
+    rpmmiRock = mi;
+
     key = &mi->mi_key;
     data = &mi->mi_data;
 
