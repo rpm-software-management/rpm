@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.5 2000/06/10 22:32:08 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.6 2000/06/14 09:27:39 rjray Exp $";
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -177,16 +177,15 @@ static AV* rpmhdr_create(pTHX_ const char* data, int type, int size)
 /* These three are for reading the header data from external sources */
 static int new_from_fd_t(FD_t fd, RPM_Header* new_hdr)
 {
-    int is_source;
-    int major;
-    int minor;
-
-    if (rpmReadPackageHeader(fd, &new_hdr->hdr, &is_source, &major, &minor))
+    if (rpmReadPackageHeader(fd, &new_hdr->hdr, &new_hdr->isSource,
+                             &new_hdr->major, &new_hdr->minor))
+    {
+        /* Some cases of this failing, rpmError was already called. But not
+           all cases, unfortunately. So check the IV part of rpm_errSV */
+        if (! SvIV(rpm_errSV))
+            rpm_error(aTHX_ RPMERR_READERROR, "Error reading package header");
         return 0;
-
-    new_hdr->isSource = is_source;
-    new_hdr->major = major;
-    new_hdr->minor = minor;
+    }
 
     return 1;
 }
@@ -203,7 +202,7 @@ static int new_from_fname(const char* source, RPM_Header* new_hdr)
     FD_t fd;
 
     if (! (fd = Fopen(source, "r+")))
-        croak("Error opening the file %s", source);
+        return 0;
 
     return(new_from_fd_t(fd, new_hdr));
 }
@@ -214,10 +213,12 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
     int fname_len;
     SV* val;
     RPM__Header TIEHASH;
+    RPM__Header ERR_RETURN;
     RPM_Header* hdr_struct; /* Use this to store the actual C-level data */
 
     hdr_struct = safemalloc(sizeof(RPM_Header));
     Zero(hdr_struct, 1, RPM_Header);
+    ERR_RETURN = (RPM__Header)newSVsv(&PL_sv_undef);
 
     if (! source)
         hdr_struct->hdr = headerNew();
@@ -232,7 +233,7 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
             fname = SvPV(source, fname_len);
             if (! new_from_fname(fname, hdr_struct))
             {
-                return ((RPM__Header)newSVsv(&PL_sv_undef));
+                return ERR_RETURN;
             }
         }
         else if (IoIFP(sv_2io(source)))
@@ -240,12 +241,14 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
             if (! new_from_fd(PerlIO_fileno(IoIFP(sv_2io(source))),
                               hdr_struct))
             {
-                return ((RPM__Header)newSVsv(&PL_sv_undef));
+                return ERR_RETURN;
             }
         }
         else
         {
-            croak("Argument 2 must be filename or GLOB");
+            rpm_error(aTHX_ RPMERR_BADARG,
+                      "Argument 2 must be filename or GLOB");
+            return ERR_RETURN;
         }
     }
     else
