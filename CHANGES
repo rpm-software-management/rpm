@@ -21,6 +21,7 @@
 	- sqlite3: run-time endian test rather than chasing <endian.h> (#146752).
 	- discover and use getmntinfo if present.
 	- perform callbacks as always (#147537).
+	- permit build scriptlet interpreters to be individually overridden.
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).

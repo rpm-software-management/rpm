@@ -1,13 +1,13 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.389.2.14 2005/02/10 09:04:19 jbj Exp $
+# $Id: sl.po,v 1.389.2.15 2005/02/12 14:12:36 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 04:01-0500\n"
+"POT-Creation-Date: 2005-02-11 13:27-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -358,28 +358,28 @@ msgstr "argumenti za preverjanje niso podani"
 msgid "no arguments given"
 msgstr "argumenti za poizvedbo niso podani"
 
-#: build/build.c:132 build/pack.c:511
+#: build/build.c:140 build/pack.c:511
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "Zaèasne datoteke ni mo¾no odpreti"
 
-#: build/build.c:225
+#: build/build.c:233
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Izvajanje(%s): %s\n"
 
 #. @=boundsread@
-#: build/build.c:235
+#: build/build.c:243
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Izvajanje %s je bilo neuspe¹no (%s): %s"
 
-#: build/build.c:244
+#: build/build.c:252
 #, fuzzy, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "%s javi neuspe¹no izhodno kodo (%s)"
 
-#: build/build.c:355
+#: build/build.c:363
 msgid ""
 "\n"
 "\n"

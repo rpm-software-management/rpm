@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 04:01-0500\n"
+"POT-Creation-Date: 2005-02-11 13:27-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -353,27 +353,27 @@ msgstr "ingen parametre angivet ved verifikation"
 msgid "no arguments given"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: build/build.c:132 build/pack.c:511
+#: build/build.c:140 build/pack.c:511
 msgid "Unable to open temp file.\n"
 msgstr "Kunne ikke åbne midlertidig fil.\n"
 
-#: build/build.c:225
+#: build/build.c:233
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Udfører(%s): %s\n"
 
 #. @=boundsread@
-#: build/build.c:235
+#: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Udførelse af %s mislykkedes (%s): %s\n"
 
-#: build/build.c:244
+#: build/build.c:252
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Fejl-afslutningsstatus fra %s (%s)\n"
 
-#: build/build.c:355
+#: build/build.c:363
 msgid ""
 "\n"
 "\n"

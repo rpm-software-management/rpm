@@ -64,6 +64,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     const char * buildTemplate = NULL;
     const char * buildPost = NULL;
     const char * mTemplate = NULL;
+    const char * mCmd = NULL;
     const char * mPost = NULL;
     int argc = 0;
     const char **argv = NULL;
@@ -83,40 +84,47 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	sb = spec->prep;
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
+	mCmd = "%{__spec_prep_cmd}";
 	break;
     case RPMBUILD_BUILD:
 	name = "%build";
 	sb = spec->build;
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
+	mCmd = "%{__spec_build_cmd}";
 	break;
     case RPMBUILD_INSTALL:
 	name = "%install";
 	sb = spec->install;
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
+	mCmd = "%{__spec_install_cmd}";
 	break;
     case RPMBUILD_CHECK:
 	name = "%check";
 	sb = spec->check;
 	mTemplate = "%{__spec_check_template}";
 	mPost = "%{__spec_check_post}";
+	mCmd = "%{__spec_check_cmd}";
 	break;
     case RPMBUILD_CLEAN:
 	name = "%clean";
 	sb = spec->clean;
 	mTemplate = "%{__spec_clean_template}";
 	mPost = "%{__spec_clean_post}";
+	mCmd = "%{__spec_clean_cmd}";
 	break;
     case RPMBUILD_RMBUILD:
 	name = "--clean";
 	mTemplate = "%{__spec_clean_template}";
 	mPost = "%{__spec_clean_post}";
+	mCmd = "%{__spec_clean_cmd}";
 	break;
     case RPMBUILD_STRINGBUF:
     default:
 	mTemplate = "%{___build_template}";
 	mPost = "%{___build_post}";
+	mCmd = "%{___build_cmd}";
 	break;
     }
     if (name == NULL)	/* XXX shouldn't happen */
@@ -219,7 +227,7 @@ fprintf(stderr, "*** addMacros\n");
 	}
     }
 
-    buildCmd = rpmExpand("%{___build_cmd}", " ", buildScript, NULL);
+    buildCmd = rpmExpand(mCmd, " ", buildScript, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmMessage(RPMMESS_NORMAL, _("Executing(%s): %s\n"), name, buildCmd);

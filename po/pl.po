@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 04:01-0500\n"
+"POT-Creation-Date: 2005-02-11 13:27-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Arkadiusz Miskiewicz <arekm@pld-linux.org>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -363,27 +363,27 @@ msgstr "nie podano argumentów dla sprawdzania"
 msgid "no arguments given"
 msgstr "nie podano argumentów"
 
-#: build/build.c:132 build/pack.c:511
+#: build/build.c:140 build/pack.c:511
 msgid "Unable to open temp file.\n"
 msgstr "Nie mo¿na otworzyæ pliku tymczasowego.\n"
 
-#: build/build.c:225
+#: build/build.c:233
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Wykonywanie(%s): %s\n"
 
 #. @=boundsread@
-#: build/build.c:235
+#: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Wykonanie %s nie powiod³o siê (%s): %s\n"
 
-#: build/build.c:244
+#: build/build.c:252
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "B³êdny status wyj¶cia z %s (%s)\n"
 
-#: build/build.c:355
+#: build/build.c:363
 msgid ""
 "\n"
 "\n"

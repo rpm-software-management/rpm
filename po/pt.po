@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 04:01-0500\n"
+"POT-Creation-Date: 2005-02-11 13:27-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -360,27 +360,27 @@ msgstr "não foram indicados argumentos para a verificação"
 msgid "no arguments given"
 msgstr "não foram indicados argumentos para a pesquisa"
 
-#: build/build.c:132 build/pack.c:511
+#: build/build.c:140 build/pack.c:511
 msgid "Unable to open temp file.\n"
 msgstr "Não consegui abrir um ficheiro temporário.\n"
 
-#: build/build.c:225
+#: build/build.c:233
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "A executar(%s): %s\n"
 
 #. @=boundsread@
-#: build/build.c:235
+#: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "A execução de %s falhou (%s): %s\n"
 
-#: build/build.c:244
+#: build/build.c:252
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Código de saída inválido do %s (%s)\n"
 
-#: build/build.c:355
+#: build/build.c:363
 msgid ""
 "\n"
 "\n"

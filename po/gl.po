@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 04:01-0500\n"
+"POT-Creation-Date: 2005-02-11 13:27-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -341,27 +341,27 @@ msgstr ""
 msgid "no arguments given"
 msgstr ""
 
-#: build/build.c:132 build/pack.c:511
+#: build/build.c:140 build/pack.c:511
 msgid "Unable to open temp file.\n"
 msgstr ""
 
-#: build/build.c:225
+#: build/build.c:233
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr ""
 
 #. @=boundsread@
-#: build/build.c:235
+#: build/build.c:243
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr ""
 
-#: build/build.c:244
+#: build/build.c:252
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:355
+#: build/build.c:363
 msgid ""
 "\n"
 "\n"

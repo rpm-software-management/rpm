@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 04:01-0500\n"
+"POT-Creation-Date: 2005-02-11 13:27-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -361,28 +361,28 @@ msgstr "tarkistukselle ei annettu parametrejä"
 msgid "no arguments given"
 msgstr "kyselylle ei annettu parametrejä"
 
-#: build/build.c:132 build/pack.c:511
+#: build/build.c:140 build/pack.c:511
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "En voi avata %s luettavaksi: %s."
 
-#: build/build.c:225
+#: build/build.c:233
 #, fuzzy, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Haen: %s\n"
 
 #. @=boundsread@
-#: build/build.c:235
+#: build/build.c:243
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: build/build.c:244
+#: build/build.c:252
 #, fuzzy, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/build.c:355
+#: build/build.c:363
 msgid ""
 "\n"
 "\n"

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 04:01-0500\n"
+"POT-Creation-Date: 2005-02-11 13:27-0500\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -394,7 +394,7 @@ msgid "no arguments given"
 msgstr "no foi passado argumento para pesquisa"
 
 # , c-format
-#: build/build.c:132 build/pack.c:511
+#: build/build.c:140 build/pack.c:511
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "No consegui abrir: %s\n"
@@ -407,24 +407,24 @@ msgstr "No consegui abrir: %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: build/build.c:225
+#: build/build.c:233
 #, fuzzy, c-format
 msgid "Executing(%s): %s\n"
 msgstr "RPM verso %s\n"
 
 #. @=boundsread@
-#: build/build.c:235
+#: build/build.c:243
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: build/build.c:244
+#: build/build.c:252
 #, fuzzy, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/build.c:355
+#: build/build.c:363
 msgid ""
 "\n"
 "\n"
