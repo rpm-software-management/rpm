@@ -21,6 +21,7 @@
 	  missingok files) to be installed
 	- implemented %config(noreplace) for the install, but it hasn't
 	  been tested in any way
+	- added i18n support to headers
 
 2.4 -> 2.4.1:
 	- take advantage of lchown() if it's available
