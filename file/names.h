@@ -34,7 +34,7 @@
 #define	L_BCPL	12		/* BCPL */
 #define	L_M4	13		/* M4 */
 
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@unused@*/ /*@observer@*/
 static const struct {
 /*@observer@*/ /*@null@*/
 	char *human;
@@ -95,7 +95,7 @@ static const struct {
  * as Java, as it comes after "the" and "The".  Perhaps we need a fancier
  * heuristic to identify Java?
  */
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@unused@*/ /*@observer@*/
 static struct names {
 /*@observer@*/ /*@null@*/
 	const char *name;

@@ -92,11 +92,11 @@ int 			/* Global command-line options 		*/
 	nobuffer = 0,   /* Do not buffer stdout */
 	kflag = 0;	/* Keep going after the first match	*/
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@unused@*/
 int			/* Misc globals				*/
 	nmagic = 0;	/* number of valid magic[]s 		*/
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@unused@*/
 struct  magic *magic;	/* array of magic entries		*/
 
 /*@unchecked@*/ /*@null@*/
@@ -111,25 +111,26 @@ int lineno;		/* line number in the magic file	*/
 
 
 static void	unwrap(char *fn)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 /*@exits@*/
 static void	usage(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 #ifdef HAVE_GETOPT_H
+/*@exits@*/
 static void	help(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 #endif
 
 int main(int argc, char *argv[])
-	/*@globals debug, lflag, bflag, zflag, sflag, iflag, nobuffer, kflag,
+	/*@globals debug, bflag, zflag, sflag, iflag, nobuffer, kflag,
 		default_magicfile, lineno, magicfile, mlist, optind, progname,
-		fileSystem @*/
-	/*@modifies debug, lflag, bflag, zflag, sflag, iflag, nobuffer, kflag,
+		fileSystem, internalState @*/
+	/*@modifies argv, debug, bflag, zflag, sflag, iflag, nobuffer, kflag,
 		default_magicfile, lineno, magicfile, mlist, optind, progname,
-		fileSystem @*/;
+		fileSystem, internalState @*/;
 
 /*
  * main - parse arguments and handle options
@@ -177,10 +178,12 @@ main(int argc, char **argv)
 	_wildcard(&argc, &argv);
 #endif
 
+/*@-modobserver@*/
 	if ((progname = strrchr(argv[0], '/')) != NULL)
 		progname++;
 	else
 		progname = argv[0];
+/*@=modobserver@*/
 
 	magicfile = default_magicfile;
 	if ((usermagic = getenv("MAGIC")) != NULL)
@@ -432,7 +435,7 @@ process(const char *inname, int wid)
 		 * first try judging the file based on its filesystem status
 		 */
 		if (fsmagic(inname, &sb) != 0) {
-			putchar('\n');
+			(void) putchar('\n');
 			return;
 		}
 
@@ -546,14 +549,14 @@ usage(void)
 #ifdef HAVE_GETOPT_H
 	(void)fputs("Try `file --help' for more information.\n", stderr);
 #endif
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 #ifdef HAVE_GETOPT_H
 static void
 help(void)
 {
-	puts(
+	(void) puts(
 "Usage: file [OPTION]... [FILE]...\n"
 "Determine file type of FILEs.\n"
 "\n"

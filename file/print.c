@@ -172,7 +172,7 @@ error(const char *f, ...)
 		(void) fprintf(stderr, "%s: ", progname);
 	(void) vfprintf(stderr, f, va);
 	va_end(va);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 /*VARARGS*/
@@ -190,7 +190,7 @@ magwarn(const char *f, ...)
 			       progname, magicfile, lineno);
 	(void) vfprintf(stderr, f, va);
 	va_end(va);
-	fputc('\n', stderr);
+	(void) fputc('\n', stderr);
 }
 
 
@@ -224,8 +224,10 @@ fmttime(long v, int local)
 		pp = asctime(tm);
 	}
 
+/*@-modobserver@*/
 	if ((rt = strchr(pp, '\n')) != NULL)
 		*rt = '\0';
+/*@=modobserver@*/
 	return pp;
 }
 #endif

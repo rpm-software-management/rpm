@@ -267,19 +267,19 @@ subtype_identified:
 	}
 
 	if (iflag) {
-		if (subtype_mime)
+		if (subtype_mime != NULL)
 			ckfputs(subtype_mime, stdout);
 		else
 			ckfputs("text/plain", stdout);
 
-		if (code_mime) {
+		if (code_mime != NULL) {
 			ckfputs("; charset=", stdout);
 			ckfputs(code_mime, stdout);
 		}
 	} else {
 		ckfputs(code, stdout);
 
-		if (subtype) {
+		if (subtype != NULL) {
 			ckfputs(" ", stdout);
 			ckfputs(subtype, stdout);
 		}
@@ -643,7 +643,7 @@ unsigned char ebcdic_to_ascii[] = {
  * cases for the NEL character can be taken out of the code.
  */
 
-/*@unchecked@*/ /*@observer@*/
+/*@unchecked@*/ /*@unused@*/ /*@observer@*/
 unsigned char ebcdic_1047_to_8859[] = {
 0x00,0x01,0x02,0x03,0x9C,0x09,0x86,0x7F,0x97,0x8D,0x8E,0x0B,0x0C,0x0D,0x0E,0x0F,
 0x10,0x11,0x12,0x13,0x9D,0x0A,0x08,0x87,0x18,0x19,0x92,0x8F,0x1C,0x1D,0x1E,0x1F,

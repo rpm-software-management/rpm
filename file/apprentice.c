@@ -93,14 +93,14 @@ static int parse(/*@out@*/ struct magic **magicp,
 static void eatsize(/*@out@*/ char **p)
 	/*@modifies *p @*/;
 static int apprentice_1(const char *fn, int action)
-	/*@globals lineno, mlist, fileSystem @*/
-	/*@modifies lineno, mlist, fileSystem @*/;
+	/*@globals lineno, mlist, fileSystem, internalState @*/
+	/*@modifies lineno, mlist, fileSystem, internalState @*/;
 static int apprentice_file(/*@out@*/ struct magic **magicp,
 		/*@out@*/ uint32_t *nmagicp, const char *fn, int action)
 	/*@globals lineno, maxmagic, fileSystem @*/
 	/*@modifies *magicp, *nmagicp, lineno, maxmagic, fileSystem @*/;
-static void byteswap(struct magic *magic, uint32_t nmagic)
-	/*@modifies magic @*/;
+static void byteswap(struct magic *m, uint32_t nmagic)
+	/*@modifies m @*/;
 static void bs1(struct magic *m)
 	/*@modifies m @*/;
 static uint16_t swap2(uint16_t sv)
@@ -113,12 +113,12 @@ static char *mkdbname(const char *fn)
 	/*@modifies fileSystem @*/;
 static int apprentice_map(/*@out@*/ struct magic **magicp,
 		/*@out@*/ uint32_t *nmagicp, const char *fn, int action)
-	/*@globals fileSystem @*/
-	/*@modifies *magicp, *nmagicp, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *magicp, *nmagicp, fileSystem, internalState @*/;
 static int apprentice_compile(/*@out@*/ struct magic **magicp,
 		/*@out@*/ uint32_t *nmagicp, const char *fn, int action)
-	/*@globals fileSystem @*/
-	/*@modifies *magicp, *nmagicp, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 #ifdef COMPILE_ONLY
 const char *magicfile;
@@ -155,8 +155,10 @@ main(int argc, char *argv[])
 static int
 apprentice_1(const char *fn, int action)
 {
+/*@-shadow@*/
 	struct magic *magic = NULL;
 	uint32_t nmagic = 0;
+/*@=shadow@*/
 	struct mlist *ml;
 	int rv = -1;
 
@@ -193,10 +195,16 @@ apprentice_1(const char *fn, int action)
 
 	mlist.prev->next = ml;
 	ml->prev = mlist.prev;
+/*@-immediatetrans@*/
 	ml->next = &mlist;
+/*@=immediatetrans@*/
+/*@-kepttrans@*/
 	mlist.prev = ml;
+/*@=kepttrans@*/
 
+/*@-compdef@*/
 	return rv;
+/*@=compdef@*/
 #endif /* COMPILE_ONLY */
 }
 
@@ -208,35 +216,44 @@ apprentice(const char *fn, int action)
 	char *p, *mfn;
 	int file_err, errs = -1;
 
-	mlist.next = mlist.prev = &mlist;
+/*@-immediatetrans@*/
+	mlist.next = &mlist;
+	mlist.prev = &mlist;
+/*@=immediatetrans@*/
 	mfn = malloc(strlen(fn)+1);
 	if (mfn == NULL) {
 		(void) fprintf(stderr, "%s: Out of memory (%s).\n", progname,
 		    strerror(errno));
+/*@-compmempass@*/
 		if (action == CHECK)
 			return -1;
 		else
-			exit(1);
+			exit(EXIT_FAILURE);
+/*@=compmempass@*/
 	}
 	fn = strcpy(mfn, fn);
   
-	while (fn) {
+/*@-branchstate@*/
+	while (fn != NULL) {
 		p = strchr(fn, PATHSEP);
-		if (p)
+		if (p != NULL)
 			*p++ = '\0';
 		file_err = apprentice_1(fn, action);
 		if (file_err > errs)
 			errs = file_err;
 		fn = p;
 	}
+/*@=branchstate@*/
 	if (errs == -1)
 		(void) fprintf(stderr, "%s: couldn't find any magic files!\n",
 		    progname);
 	if (action == CHECK && errs)
-		exit(1);
+		exit(EXIT_FAILURE);
 
 	free(mfn);
+/*@-compdef -compmempass@*/
 	return errs;
+/*@=compdef =compmempass@*/
 }
 
 /*
@@ -352,17 +369,21 @@ parse(struct magic **magicp, uint32_t *nmagicp, char *l, int action)
 #define ALLOC_INCR	200
 	if (*nmagicp + 1 >= maxmagic){
 		maxmagic += ALLOC_INCR;
+/*@-unqualifiedtrans @*/
 		if ((m = (struct magic *) realloc(*magicp,
 		    sizeof(struct magic) * maxmagic)) == NULL) {
 			(void) fprintf(stderr, "%s: Out of memory (%s).\n",
 			    progname, strerror(errno));
-			if (*magicp)
+/*@-usereleased@*/
+			if (*magicp != NULL)
 				free(*magicp);
+/*@=usereleased@*/
 			if (action == CHECK)
 				return -1;
 			else
-				exit(1);
+				exit(EXIT_FAILURE);
 		}
+/*@=unqualifiedtrans @*/
 		*magicp = m;
 		memset(&(*magicp)[*nmagicp], 0, sizeof(struct magic)
 		    * ALLOC_INCR);
@@ -695,7 +716,7 @@ GetDesc:
 	} else
 		m->nospflag = 0;
 	while ((m->desc[i++] = *l++) != '\0' && i<MAXDESC)
-		/* NULLBODY */;
+		{};
 
 #ifndef COMPILE_ONLY
 	if (action == CHECK) {
@@ -935,7 +956,7 @@ eatsize(char **p)
  */
 static int
 apprentice_map(struct magic **magicp, uint32_t *nmagicp, const char *fn,
-    int action)
+		/*@unused@*/ int action)
 {
 	int fd;
 	struct stat st;
@@ -1008,7 +1029,8 @@ apprentice_map(struct magic **magicp, uint32_t *nmagicp, const char *fn,
 error:
 	if (fd != -1)
 		(void)close(fd);
-	if (mm) {
+/*@-branchstate@*/
+	if (mm != NULL) {
 #ifdef QUICK
 		(void)munmap(mm, (size_t)st.st_size);
 #else
@@ -1018,6 +1040,7 @@ error:
 		*magicp = NULL;
 		*nmagicp = 0;
 	}
+/*@=branchstate@*/
 	return -1;
 }
 
@@ -1026,7 +1049,7 @@ error:
  */
 static int
 apprentice_compile(struct magic **magicp, uint32_t *nmagicp, const char *fn,
-    int action)
+		/*@unused@*/ int action)
 {
 	int fd;
 	char *dbname = mkdbname(fn);
@@ -1094,11 +1117,11 @@ mkdbname(const char *fn)
  * Byteswap an mmap'ed file if needed
  */
 static void
-byteswap(struct magic *magic, uint32_t nmagic)
+byteswap(struct magic *m, uint32_t nmagic)
 {
 	uint32_t i;
 	for (i = 0; i < nmagic; i++)
-		bs1(&magic[i]);
+		bs1(&m[i]);
 }
 
 /*

@@ -8,6 +8,9 @@
  * Id: tar.h,v 1.5 1999/01/13 15:44:10 christos Exp  # checkin only
  */
 
+#ifndef	__tar_h__
+#define	__tar_h__
+
 /*
  * Kludge for handling systems that can't cope with multiple
  * external definitions of a variable.  In ONE routine (tar.c),
@@ -79,6 +82,7 @@ union record {
 #define	EX_SYSTEM	4		/* system gave unexpected error */
 
 
+#if 0
 /*
  * Global variables
  */
@@ -111,6 +115,7 @@ TAR_EXTERN char	f_namefile;		/* -T */
 TAR_EXTERN char	f_verbose;		/* -v */
 TAR_EXTERN char	f_extract;		/* -x */
 TAR_EXTERN char	f_compress;		/* -z */
+#endif
 
 /*
  * We now default to Unix Standard format rather than 4.2BSD tar format.
@@ -134,11 +139,13 @@ struct name {
 	char		name[NAMSIZ+1];
 };
 
+#if 0
 TAR_EXTERN struct name	*namelist;	/* Points to first name in list */
 TAR_EXTERN struct name	*namelast;	/* Points to last name in list */
 
 TAR_EXTERN int		archive;	/* File descriptor for archive file */
 TAR_EXTERN int		errors;		/* # of files in error */
+#endif
 
 /*
  *
@@ -158,6 +165,7 @@ struct link {
 	char		name[NAMSIZ+1];
 };
 
+#if 0
 TAR_EXTERN struct link	*linklist;	/* Points to first link in list */
 
 
@@ -165,4 +173,6 @@ TAR_EXTERN struct link	*linklist;	/* Points to first link in list */
  * Error recovery stuff
  */
 TAR_EXTERN char		read_error_flag;
+#endif
 
+#endif	/* __tar_h__ */

@@ -51,15 +51,13 @@ static int ncompr = sizeof(compr) / sizeof(compr[0]);
 
 
 static int swrite(int fd, const void *buf, size_t n)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@*/;
 static int sread(int fd, /*@out@*/ void *buf, size_t n)
-	/*@globals fileSystem @*/
-	/*@modifies *buf, fileSystem @*/;
+	/*@modifies *buf @*/;
 static int uncompressbuf(int method, const unsigned char *old,
 		/*@out@*/ unsigned char **newch, int n)
-	/*@globals fileSystem @*/
-	/*@modifies *newch, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *newch, fileSystem, internalState @*/;
 #ifdef HAVE_LIBZ
 static int uncompressgzipped(const unsigned char *old,
 		/*@out@*/ unsigned char **newch, int n)
@@ -79,10 +77,10 @@ zmagic(const char *fname, unsigned char *buf, int nbytes)
 			continue;
 		if (memcmp(buf, compr[i].magic, compr[i].maglen) == 0 &&
 		    (newsize = uncompressbuf(i, buf, &newbuf, nbytes)) != 0) {
-			tryit(fname, newbuf, newsize, 1);
+			(void) tryit(fname, newbuf, newsize, 1);
 			free(newbuf);
 			printf(" (");
-			tryit(fname, buf, nbytes, 0);
+			(void) tryit(fname, buf, nbytes, 0);
 			printf(")");
 			return 1;
 		}
@@ -249,24 +247,30 @@ uncompressgzipped(const unsigned char *old, unsigned char **newch, int n)
 	z.avail_in = n - data_start;
 	z.next_out = *newch;
 	z.avail_out = HOWMANY;
-	z.zalloc = Z_NULL;
-	z.zfree = Z_NULL;
-	z.opaque = Z_NULL;
+	z.zalloc = NULL;
+	z.zfree = NULL;
+	z.opaque = NULL;
 
+/*@-type@*/
 	rc = inflateInit2(&z, -15);
+/*@=type@*/
 	if (rc != Z_OK) {
 		(void) fprintf(stderr,"%s: zlib: %s\n", progname, z.msg);
 		return 0;
 	}
 
+/*@-type@*/
 	rc = inflate(&z, Z_SYNC_FLUSH);
+/*@=type@*/
 	if (rc != Z_OK && rc != Z_STREAM_END) {
 		fprintf(stderr,"%s: zlib: %s\n", progname, z.msg);
 		return 0;
 	}
 
 	n = z.total_out;
-	inflateEnd(&z);
+/*@-type@*/
+	(void) inflateEnd(&z);
+/*@=type@*/
 	
 	/* let's keep the nul-terminate tradition */
 	(*newch)[n++] = '\0';
@@ -307,9 +311,9 @@ uncompressbuf(int method, const unsigned char *old, unsigned char **newch,
 		if (compr[method].silent)
 			(void) close(2);
 
-		execvp(compr[method].argv[0],
+		(void) execvp(compr[method].argv[0],
 		       (char *const *)compr[method].argv);
-		exit(1);
+		exit(EXIT_FAILURE);
 		/*@notreached@*/break;
 	case -1:
 		error("could not fork (%s).\n", strerror(errno));

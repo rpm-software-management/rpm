@@ -126,12 +126,15 @@ struct magic {
 struct mlist {
 	struct magic *magic;		/* array of magic entries */
 	uint32_t nmagic;		/* number of entries in array */
-	struct mlist *next, *prev;
+/*@null@*/
+	struct mlist *next;
+/*@null@*/
+	struct mlist *prev;
 };
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern char *progname;		/* the program name 			*/
-/*@unchecked@*/
+/*@unchecked@*/ /*@dependent@*/ /*@observer@*/
 extern const char *magicfile;	/* name of the magic file		*/
 /*@unchecked@*/
 extern int lineno;		/* current line number in magic file	*/
@@ -174,18 +177,10 @@ extern char *sys_errlist[];
 #define QUICK
 #endif
 
-#if defined(__LCLINT__)
-#define FILE_RCSID(id)
-#else
-#define FILE_RCSID(id) \
-static const char *rcsid(const char *p) { \
-	return rcsid(p = id); \
-}
-#endif
-
+/*@mayexit@*/
 extern int   apprentice(const char *fn, int action)
-	/*@globals lineno, mlist, fileSystem @*/
-	/*@modifies lineno, mlist, fileSystem @*/;
+	/*@globals lineno, mlist, fileSystem, internalState @*/
+	/*@modifies lineno, mlist, fileSystem, internalState @*/;
 extern int   ascmagic(unsigned char *buf, int nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
@@ -200,10 +195,13 @@ struct stat;
 extern int   fsmagic(const char *fn, /*@out@*/ struct stat *sb)
 	/*@globals fileSystem @*/
 	/*@modifies *sb, fileSystem @*/;
+/*@observer@*/
 extern char *fmttime(long v, int local)
 	/*@*/;
+#if 0
 extern int   is_compress(const unsigned char *, int *)
 	/*@*/;
+#endif
 extern int   is_tar(unsigned char *buf, int nbytes)
 	/*@*/;
 extern void  magwarn(const char *f, ...)
@@ -213,8 +211,8 @@ extern void  mdump(struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 extern void  process(const char *inname, int wid)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 extern void  showstr(FILE *fp, const char *s, int len)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/;
@@ -222,11 +220,11 @@ extern int   softmagic(unsigned char *buf, int nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies buf, fileSystem @*/;
 extern int   tryit(const char *fn, unsigned char *buf, int nb, int zfl)
-	/*@globals fileSystem @*/
-	/*@modifies buf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies buf, fileSystem, internalState @*/;
 extern int   zmagic(const char *fname, unsigned char *buf, int nbytes)
-	/*@globals fileSystem @*/
-	/*@modifies buf, fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies buf, fileSystem, internalState @*/;
 extern void  ckfprintf(FILE *f, const char *fmt, ...)
 	/*@globals fileSystem @*/
 	/*@modifies f, fileSystem @*/;
@@ -234,10 +232,19 @@ extern uint32_t signextend(struct magic *m, uint32_t v)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 extern void tryelf(int fd, unsigned char *buf, int nbytes)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 extern int pipe2file(int fd, void *startbuf, size_t nbytes)
-	/*@globals errno, fileSystem @*/
-	/*@modifies errno, fileSystem @*/;
+	/*@globals errno, fileSystem, internalState @*/
+	/*@modifies errno, fileSystem, internalState @*/;
+
+#if defined(__LCLINT__)
+#define FILE_RCSID(id)
+#else
+#define FILE_RCSID(id) \
+static inline const char *rcsid(const char *p) { \
+	return rcsid(p = id); \
+}
+#endif
 
 #endif /* __file_h__ */

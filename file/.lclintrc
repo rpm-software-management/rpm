@@ -1,4 +1,4 @@
--I.
+-I. -DHAVE_CONFIG_H -DSTDC
 
 #+partial
 +forcehints
@@ -14,80 +14,47 @@
 +strict			# lclint level
 
 # --- in progress
--branchstate		# 4
--exitarg		# 6
 -exportheader		# 19
 -formatconst		# 9
--globstate		# 3
--globuse		# 4
--macroredef		# 1
--modobserver		# 2
--mods			# 7
--moduncon		# 4
+-macroredef		# 1 tar.h
+-moduncon		# 1 getopt_long
 -modunconnomods		# 12 ctype.h
--mustmod		# 6
--noeffectuncon		# 1
--noparams		# 44 zlib
--nullderef		# 2
--nullpass		# 6
+-mustmod		# 1 mman.h
+-noparams		# 3 getopt_long
+#-nullderef		# 4
+-nullpass		# 27
 -nullptrarith		# 1
--paramuse		# 2
--redecl			# 1
 -redef			# 4
--retvalint
--shadow
 -sizeoftype		# 29
--type			# 2 zlib
 -uniondef		# 6
--usereleased		# 1
 -usevarargs		# 1
--warnmissingglobs	# 2
-
--dependenttrans		# 2
--immediatetrans		# 2
--kepttrans		# 1
--observertrans		# 4
--temptrans		# 1
--unqualifiedtrans	# 2
-
--whileempty
 
 # --- +partial artifacts
--declundef		# 32 tar.h
--exportheadervar
--exportlocal
-
--varuse			# 5
+-exportlocal		# 18
 
 # --- not-yet at strict level
--bitwisesigned		# pita
--elseifcomplete		# 95 occurences
+-bitwisesigned		# 47
+-elseifcomplete		# 3
 -fielduse		# 21 tar.h
--forblock		# tedious
--ifblock		# tedious
--incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
+-forblock		# 6
+-ifblock		# 231
+-incondefs		# 36
 -namechecks		# tedious ANSI compliance checks
 -ptrarith		# tedious
 
--compdestroy
 -mustdefine
 -shiftimplementation	# 148 ctype.h
 
--strictops
--strictusereleased
--whileblock		# tedious
+-strictops		# 4
+-whileblock		# 17
 
 # --- not-yet at checks level
--ansi-reserved
-+enumint
--mustfree
--predboolptr
--usedef
+-mustfree		# 17
+-usedef			# 41
 
 # --- not-yet at standard level
--boolops
 -predboolint
-+boolint
-+charint
-+ignorequals
-+matchanyintegral
++boolint		# 36
++charint		# 147
++ignorequals		# 49
++matchanyintegral	# 83

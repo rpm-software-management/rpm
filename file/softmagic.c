@@ -37,13 +37,15 @@
 FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
 #endif	/* lint */
 
+/*@-redecl@*/
 /*@unchecked@*/
 extern int kflag;
+/*@=redecl@*/
 
-static int match(struct magic *magic, uint32_t nmagic,
+static int match(struct magic *m, uint32_t nmagic,
 		unsigned char *s, int nbytes)
 	/*@globals fileSystem @*/
-	/*@modifies *magic, s, fileSystem @*/;
+	/*@modifies m, s, fileSystem @*/;
 static int mget(union VALUETYPE *p, unsigned char *s,
 		struct magic *m, int nbytes)
 	/*@globals fileSystem @*/
@@ -107,7 +109,7 @@ softmagic(unsigned char *buf, int nbytes)
  *	so that higher-level continuations are processed.
  */
 static int
-match(struct magic *magic, uint32_t nmagic, unsigned char *s, int nbytes)
+match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
 {
 	int magindex = 0;
 	int cont_level = 0;
@@ -126,14 +128,14 @@ match(struct magic *magic, uint32_t nmagic, unsigned char *s, int nbytes)
 
 	for (magindex = 0; magindex < nmagic; magindex++) {
 		/* if main entry matches, print it... */
-		if (!mget(&p, s, &magic[magindex], nbytes) ||
-		    !mcheck(&p, &magic[magindex])) {
+		if (!mget(&p, s, &m[magindex], nbytes) ||
+		    !mcheck(&p, &m[magindex])) {
 			    /* 
 			     * main entry didn't match,
 			     * flush its continuations
 			     */
 			    while (magindex < nmagic &&
-			    	   magic[magindex + 1].cont_level != 0)
+			    	   m[magindex + 1].cont_level != 0)
 			    	   magindex++;
 			    continue;
 		}
@@ -143,35 +145,35 @@ match(struct magic *magic, uint32_t nmagic, unsigned char *s, int nbytes)
 			printf("\n- ");
 		}
 
-		tmpoff[cont_level] = mprint(&p, &magic[magindex]);
+		tmpoff[cont_level] = mprint(&p, &m[magindex]);
 		/*
 		 * If we printed something, we'll need to print
 		 * a blank before we print something else.
 		 */
-		if (magic[magindex].desc[0])
+		if (m[magindex].desc[0])
 			need_separator = 1;
 		/* and any continuations that match */
 		if (++cont_level >= tmplen)
 			if ((tmpoff = (int32_t *) realloc(tmpoff,
 						       tmplen += 20)) == NULL)
 				error("out of memory\n");
-		while (magic[magindex+1].cont_level != 0 && 
+		while (m[magindex+1].cont_level != 0 && 
 		       ++magindex < nmagic) {
-			if (cont_level >= magic[magindex].cont_level) {
-				if (cont_level > magic[magindex].cont_level) {
+			if (cont_level >= m[magindex].cont_level) {
+				if (cont_level > m[magindex].cont_level) {
 					/*
 					 * We're at the end of the level
 					 * "cont_level" continuations.
 					 */
-					cont_level = magic[magindex].cont_level;
+					cont_level = m[magindex].cont_level;
 				}
-				if (magic[magindex].flag & OFFADD) {
-					oldoff=magic[magindex].offset;
-					magic[magindex].offset +=
+				if (m[magindex].flag & OFFADD) {
+					oldoff=m[magindex].offset;
+					m[magindex].offset +=
 					    tmpoff[cont_level-1];
 				}
-				if (mget(&p, s, &magic[magindex], nbytes) &&
-				    mcheck(&p, &magic[magindex])) {
+				if (mget(&p, s, &m[magindex], nbytes) &&
+				    mcheck(&p, &m[magindex])) {
 					/*
 					 * This continuation matched.
 					 * Print its message, with
@@ -181,15 +183,15 @@ match(struct magic *magic, uint32_t nmagic, unsigned char *s, int nbytes)
 					 */
 					/* space if previous printed */
 					if (need_separator
-					   && (magic[magindex].nospflag == 0)
-					   && (magic[magindex].desc[0] != '\0')
+					   && (m[magindex].nospflag == 0)
+					   && (m[magindex].desc[0] != '\0')
 					   ) {
 						(void) putchar(' ');
 						need_separator = 0;
 					}
 					tmpoff[cont_level] =
-					    mprint(&p, &magic[magindex]);
-					if (magic[magindex].desc[0])
+					    mprint(&p, &m[magindex]);
+					if (m[magindex].desc[0])
 						need_separator = 1;
 
 					/*
@@ -203,8 +205,8 @@ match(struct magic *magic, uint32_t nmagic, unsigned char *s, int nbytes)
 						    tmplen += 20)) == NULL)
 							error("out of memory\n");
 				}
-				if (magic[magindex].flag & OFFADD) {
-					 magic[magindex].offset = oldoff;
+				if (m[magindex].flag & OFFADD) {
+					 m[magindex].offset = oldoff;
 				}
 			}
 		}
@@ -256,7 +258,7 @@ mprint(union VALUETYPE *p, struct magic *m)
 		else {
 			if (*m->value.s == '\0') {
 				char *cp = strchr(p->s,'\n');
-				if (cp)
+				if (cp != NULL)
 					*cp = '\0';
 			}
 			(void) printf(m->desc, p->s);
@@ -576,13 +578,16 @@ mget(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
 {
 	int32_t offset = m->offset;
 
+/*@-branchstate@*/
 	if (m->type == REGEX) {
 	      /*
 	       * offset is interpreted as last line to search,
 	       * (starting at 1), not as bytes-from start-of-file
 	       */
 	      char *last = NULL;
+/*@-temptrans@*/
 	      p->buf = s;
+/*@=temptrans@*/
 	      for (; offset && (s = strchr(s, '\n')) != NULL; offset--, s++)
 		    last = s;
 	      if (last != NULL)
@@ -599,6 +604,7 @@ mget(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
 		if (have > 0)
 			memcpy(p, s + offset, have);
 	}
+/*@=branchstate@*/
 
 	if (debug) {
 		mdebug(offset, (char *) p, sizeof(union VALUETYPE));
