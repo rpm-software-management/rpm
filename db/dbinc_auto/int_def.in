@@ -157,6 +157,7 @@
 #define	__db_pr __db_pr@DB_VERSION_UNIQUE_NAME@
 #define	__db_prdbt __db_prdbt@DB_VERSION_UNIQUE_NAME@
 #define	__db_prflags __db_prflags@DB_VERSION_UNIQUE_NAME@
+#define	__db_dbtype_to_string __db_dbtype_to_string@DB_VERSION_UNIQUE_NAME@
 #define	__db_prheader __db_prheader@DB_VERSION_UNIQUE_NAME@
 #define	__db_prfooter __db_prfooter@DB_VERSION_UNIQUE_NAME@
 #define	__db_addrem_recover __db_addrem_recover@DB_VERSION_UNIQUE_NAME@
@@ -440,7 +441,9 @@
 #define	__dbreg_rem_dbentry __dbreg_rem_dbentry@DB_VERSION_UNIQUE_NAME@
 #define	__dbreg_open_files __dbreg_open_files@DB_VERSION_UNIQUE_NAME@
 #define	__dbreg_close_files __dbreg_close_files@DB_VERSION_UNIQUE_NAME@
+#define	__dbreg_nofiles __dbreg_nofiles@DB_VERSION_UNIQUE_NAME@
 #define	__dbreg_id_to_db __dbreg_id_to_db@DB_VERSION_UNIQUE_NAME@
+#define	__dbreg_id_to_db_int __dbreg_id_to_db_int@DB_VERSION_UNIQUE_NAME@
 #define	__dbreg_id_to_fname __dbreg_id_to_fname@DB_VERSION_UNIQUE_NAME@
 #define	__dbreg_fid_to_fname __dbreg_fid_to_fname@DB_VERSION_UNIQUE_NAME@
 #define	__dbreg_get_name __dbreg_get_name@DB_VERSION_UNIQUE_NAME@
@@ -449,6 +452,7 @@
 #define	__dbreg_push_id __dbreg_push_id@DB_VERSION_UNIQUE_NAME@
 #define	__dbreg_pop_id __dbreg_pop_id@DB_VERSION_UNIQUE_NAME@
 #define	__dbreg_pluck_id __dbreg_pluck_id@DB_VERSION_UNIQUE_NAME@
+#define	__dbreg_print_dblist __dbreg_print_dblist@DB_VERSION_UNIQUE_NAME@
 #define	__db_shalloc_init __db_shalloc_init@DB_VERSION_UNIQUE_NAME@
 #define	__db_shalloc_size __db_shalloc_size@DB_VERSION_UNIQUE_NAME@
 #define	__db_shalloc __db_shalloc@DB_VERSION_UNIQUE_NAME@
@@ -831,6 +835,7 @@
 #define	__qam_sync __qam_sync@DB_VERSION_UNIQUE_NAME@
 #define	__qam_gen_filelist __qam_gen_filelist@DB_VERSION_UNIQUE_NAME@
 #define	__qam_extent_names __qam_extent_names@DB_VERSION_UNIQUE_NAME@
+#define	__qam_exid __qam_exid@DB_VERSION_UNIQUE_NAME@
 #define	__qam_db_create __qam_db_create@DB_VERSION_UNIQUE_NAME@
 #define	__qam_db_close __qam_db_close@DB_VERSION_UNIQUE_NAME@
 #define	__db_prqueue __db_prqueue@DB_VERSION_UNIQUE_NAME@
@@ -1161,13 +1166,13 @@
 #define	__txn_discard __txn_discard@DB_VERSION_UNIQUE_NAME@
 #define	__txn_prepare __txn_prepare@DB_VERSION_UNIQUE_NAME@
 #define	__txn_id __txn_id@DB_VERSION_UNIQUE_NAME@
-#define	__txn_free __txn_free@DB_VERSION_UNIQUE_NAME@
 #define	__txn_checkpoint __txn_checkpoint@DB_VERSION_UNIQUE_NAME@
 #define	__txn_getckp __txn_getckp@DB_VERSION_UNIQUE_NAME@
 #define	__txn_activekids __txn_activekids@DB_VERSION_UNIQUE_NAME@
 #define	__txn_force_abort __txn_force_abort@DB_VERSION_UNIQUE_NAME@
 #define	__txn_preclose __txn_preclose@DB_VERSION_UNIQUE_NAME@
 #define	__txn_reset __txn_reset@DB_VERSION_UNIQUE_NAME@
+#define	__txn_updateckp __txn_updateckp@DB_VERSION_UNIQUE_NAME@
 #define	__txn_regop_log __txn_regop_log@DB_VERSION_UNIQUE_NAME@
 #define	__txn_regop_getpgnos __txn_regop_getpgnos@DB_VERSION_UNIQUE_NAME@
 #define	__txn_regop_print __txn_regop_print@DB_VERSION_UNIQUE_NAME@
@@ -1211,16 +1216,6 @@
 #define	__txn_lockevent __txn_lockevent@DB_VERSION_UNIQUE_NAME@
 #define	__txn_remlock __txn_remlock@DB_VERSION_UNIQUE_NAME@
 #define	__txn_doevents __txn_doevents@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_open __db_xa_open@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_close __db_xa_close@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_start __db_xa_start@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_end __db_xa_end@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_prepare __db_xa_prepare@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_commit __db_xa_commit@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_recover __db_xa_recover@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_rollback __db_xa_rollback@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_forget __db_xa_forget@DB_VERSION_UNIQUE_NAME@
-#define	__db_xa_complete __db_xa_complete@DB_VERSION_UNIQUE_NAME@
 #define	__db_xa_create __db_xa_create@DB_VERSION_UNIQUE_NAME@
 #define	__db_rmid_to_env __db_rmid_to_env@DB_VERSION_UNIQUE_NAME@
 #define	__db_xid_to_txn __db_xid_to_txn@DB_VERSION_UNIQUE_NAME@
@@ -1228,8 +1223,6 @@
 #define	__db_unmap_rmid __db_unmap_rmid@DB_VERSION_UNIQUE_NAME@
 #define	__db_map_xid __db_map_xid@DB_VERSION_UNIQUE_NAME@
 #define	__db_unmap_xid __db_unmap_xid@DB_VERSION_UNIQUE_NAME@
-#define	__db_get_xa_txn __db_get_xa_txn@DB_VERSION_UNIQUE_NAME@
-#define	__db_get_current_thread __db_get_current_thread@DB_VERSION_UNIQUE_NAME@
 #define xdr___env_cachesize_msg xdr___env_cachesize_msg@DB_VERSION_UNIQUE_NAME@
 #define xdr___env_cachesize_reply xdr___env_cachesize_reply@DB_VERSION_UNIQUE_NAME@
 #define xdr___env_close_msg xdr___env_close_msg@DB_VERSION_UNIQUE_NAME@
