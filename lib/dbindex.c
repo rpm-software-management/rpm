@@ -55,8 +55,8 @@ static void freeDBI( /*@only@*/ /*@null@*/ dbiIndex dbi) {
     }
 }
 
-int prefer_dbi_major = 2;	/* XXX shared with rebuilddb.c */
-int use_dbi_major = -1;
+int _preferDbiMajor = 0;	/* XXX shared with rebuilddb.c */
+int _useDbiMajor = -1;
 
 typedef int (*_dbopen) (dbiIndex dbi);
 
@@ -93,7 +93,7 @@ dbiIndex dbiOpenIndex(const char * urlfn, int flags, int perms, DBI_TYPE type) {
     dbi->dbi_perms = perms;
     dbi->dbi_type = type;
     dbi->dbi_openinfo = NULL;
-    dbi->dbi_major = use_dbi_major;
+    dbi->dbi_major = _useDbiMajor;
 
     switch (dbi->dbi_major) {
     case 3:
@@ -126,7 +126,7 @@ fprintf(stderr, "*** loop db%d rc %d errno %d %s\n", dbi->dbi_major, rc, errno, 
 		dbi->dbi_major--;	/* XXX don't bother with db_185 */
 	    }
 	}
-	use_dbi_major = dbi->dbi_major;
+	_useDbiMajor = dbi->dbi_major;
     	break;
     }
 

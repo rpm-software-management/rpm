@@ -814,10 +814,10 @@ static PyObject * handleDbResult(int rc, dbiIndexSet matches) {
     list = PyList_New(0);
 
     if (!rc) {
-	for (i = 0; i < matches.count; i++)
-	    PyList_Append(list, PyInt_FromLong(matches.recs[i].recOffset));
+	for (i = 0; i < dbiIndexSetCount(matches); i++)
+	    PyList_Append(list, PyInt_FromLong(dbiIndexRecordOffset(matches, i)));
 
-	dbiFreeIndexRecord(matches);
+	dbiFreeIndexSet(matches);
     }
 
     return list;

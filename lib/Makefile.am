@@ -29,42 +29,16 @@ librpm_la_SOURCES = \
 librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 #librpm_la_LIBADD = -lpopt
 
-Xdb0.o:	db0.c
-	@echo '$(COMPILE) -c $<'; \
-	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-	@-cp .deps/$(*F).pp .deps/$(*F).P; \
-	tr ' ' '\012' < .deps/$(*F).pp \
-	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-	    >> .deps/$(*F).P; \
-	rm .deps/$(*F).pp
-	@__LD@ -r -o $@.o $@ -L/usr/lib -ldb1
-	@__OBJCOPY@ `\
-	    @__NM@ -g --defined-only $@.o | \
-	    sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
-	    grep -v '^-L $*'` $@.o $@
-	rm -f $@.o
-
-db0.lo: db0.c
-	@echo '$(LTCOMPILE) -c $<'; \
-	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
-	  < .deps/$(*F).pp > .deps/$(*F).P; \
-	tr ' ' '\012' < .deps/$(*F).pp \
-	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-	    >> .deps/$(*F).P; \
-	rm -f .deps/$(*F).pp
-	@__LD@ -r -o $*.o.o $*.o -L/usr/lib -ldb1
-	@__OBJCOPY@ `\
-	    @__NM@ -g --defined-only $*.o.o | \
-	    sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
-	    grep -v '^-L $*'` $*.o.o $*.o
-	rm -f $*.o.o
-	@__LD@ -r -o $@.o $@ -L/usr/lib -ldb1
-	@__OBJCOPY@ `\
-	    @__NM@ -g --defined-only $@.o | \
-	    sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
-	    grep -v '^-L $*'` $@.o $@
-	rm -f $@.o
+db0.lo: db0.c $(top_srcdir)/system.h rpmlib.h dbindex.h db0.h
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+	for F in $*.o $*.lo ; do \
+	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb1 ; \
+	    @__OBJCOPY@ `\
+		@__NM@ -g --defined-only $${F}.o | \
+		sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
+		grep -v '^-L $*'` $${F}.o $${F} ; \
+	    rm -f $${F}.o ; \
+	done
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c

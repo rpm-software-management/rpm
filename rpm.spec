@@ -13,7 +13,7 @@ BuildRequires: bzip2 >= 0.9.0c-2
 Requires: popt, bzip2 >= 0.9.0c-2
 BuildRequires: python-devel >= 1.5.2
 %endif
-BuildRoot: /var/tmp/%{name}-root
+BuildRoot: %{_tmppath}/%{name}-root
 
 %description
 The RPM Package Manager (RPM) is a powerful command line driven

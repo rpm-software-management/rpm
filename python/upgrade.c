@@ -164,13 +164,13 @@ static int findPackagesWithObsoletes(rpmdb db, struct pkgSet *psp)
 	    while (obsoletesCount--) {
 		rc = rpmdbFindPackage(db, obsoletes[obsoletesCount], &matches);
 		if (!rc) {
-		    if (matches.count) {
+		    if (dbiIndexSetCount(matches)) {
 			(*pip)->selected = 1;
-			dbiFreeIndexRecord(matches);
+			dbiFreeIndexSet(matches);
 			break;
 		    }
 
-		    dbiFreeIndexRecord(matches);
+		    dbiFreeIndexSet(matches);
 		}
 	    }
 
@@ -219,9 +219,9 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	if (rc == 0) {
 	    skipThis = 0;
 	    rpmErrorSetCallback(errorFunction);
-	    for (i = 0; i < matches.count; i++) {
+	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		installedHeader =
-		    rpmdbGetRecord(db, matches.recs[i].recOffset);
+		    rpmdbGetRecord(db, dbiIndexRecordOffset(matches, i));
 		if (rpmVersionCompare(installedHeader, h) >= 0) {
 		    /* already have a newer version installed */
 		    DEBUG (("Already have newer version\n"))
@@ -257,10 +257,10 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 			    (void **) &availDirIndexes, NULL);
 	    }
 
-	    for (i = 0; i < matches.count; i++) {
+	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		/* Compare the file lists */
 		installedHeader =
-		    rpmdbGetRecord(db, matches.recs[i].recOffset);
+		    rpmdbGetRecord(db, dbiIndexRecordOffset(matches, i));
 		if (headerGetEntryMinMemory(installedHeader, RPMTAG_BASENAMES, 
 			      NULL, (void **) &installedFiles,
 			      &installedFileCount)) {
@@ -288,7 +288,7 @@ static int findUpgradePackages(rpmdb db, struct pkgSet *psp,
 	}
 
 	if (rc == 0) {
-	    dbiFreeIndexRecord(matches);
+	    dbiFreeIndexSet(matches);
 	}
 
 	DEBUG (("\n\n"))
@@ -439,9 +439,9 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
 	    rc = rpmdbFindPackage(db, name, &matches);
 	    if (rc == 0) {
 		rpmErrorSetCallback(errorFunction);
-		for (i = 0; i < matches.count; i++) {
+		for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		    installedHeader =
-			rpmdbGetRecord(db, matches.recs[i].recOffset);
+			rpmdbGetRecord(db, dbiIndexRecordOffset(matches, i));
 		    if (rpmVersionCompare(installedHeader, h) >= 0) {
 			/* already have a newer version installed */
 			DEBUG (("Already have newer version\n"))
@@ -452,7 +452,7 @@ static int unmarkPackagesAlreadyInstalled(rpmdb db, struct pkgSet *psp)
 		    headerFree(installedHeader);
 		}
 		rpmErrorSetCallback(NULL);
-		dbiFreeIndexRecord(matches);
+		dbiFreeIndexSet(matches);
 	    }
 	}
 

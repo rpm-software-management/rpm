@@ -26,6 +26,9 @@ extern "C" {
  */
 void dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set);
 
+/* XXX API compatibility */
+#define	dbiFreeIndexRecord(_a)	dbiFreeIndexSet(_a)
+
 /**
  * Count items in index database set.
  * @param set	set of index database items
