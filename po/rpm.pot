@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-10-31 16:21-0500\n"
+"POT-Creation-Date: 1999-11-01 08:40-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2106,55 +2106,55 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: lib/ftp.c:665
+#: lib/ftp.c:657
 msgid "Success"
 msgstr ""
 
-#: lib/ftp.c:668
+#: lib/ftp.c:660
 msgid "Bad server response"
 msgstr ""
 
-#: lib/ftp.c:671
+#: lib/ftp.c:663
 msgid "Server IO error"
 msgstr ""
 
-#: lib/ftp.c:674
+#: lib/ftp.c:666
 msgid "Server timeout"
 msgstr ""
 
-#: lib/ftp.c:677
+#: lib/ftp.c:669
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/ftp.c:680
+#: lib/ftp.c:672
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/ftp.c:683
+#: lib/ftp.c:675
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/ftp.c:686
+#: lib/ftp.c:678
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/ftp.c:689
+#: lib/ftp.c:681
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/ftp.c:692
+#: lib/ftp.c:684
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/ftp.c:695
+#: lib/ftp.c:687
 msgid "File not found on server"
 msgstr ""
 
-#: lib/ftp.c:698
+#: lib/ftp.c:690
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/ftp.c:702
+#: lib/ftp.c:694
 msgid "Unknown or unexpected error"
 msgstr ""
 
@@ -3074,7 +3074,7 @@ msgid "Installing %s\n"
 msgstr ""
 
 #. XXX PARANOIA
-#: lib/rpmio.c:159
+#: lib/rpmio.c:170
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

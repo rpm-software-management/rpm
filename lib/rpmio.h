@@ -61,11 +61,12 @@ extern /*@only@*/ /*@null@*/ FD_t fdOpen(const char * pathname, int flags, mode_
 extern /*@only@*/ /*@null@*/ FD_t fdDup(int fdno);
 extern /*@dependent@*/ /*@null@*/ FILE *fdFdopen( /*@only@*/ FD_t fd, const char * mode);
 
-/*@observer@*/ const cookie_io_functions_t * fdGetIoCookie(FD_t fd);
+/*@observer@*/ /*@null@*/ const cookie_io_functions_t * fdGetIoCookie(FD_t fd);
 void fdSetIoCookie(FD_t fd, cookie_io_functions_t * io);
 
-void fdSetDebugOn(FD_t fd);
-void fdSetDebugOff(FD_t fd);
+int fdDebug(FD_t fd);
+void fdDebugOn(FD_t fd);
+void fdDebugOff(FD_t fd);
 
 extern cookie_io_functions_t fdio;
 
@@ -74,6 +75,7 @@ extern cookie_io_functions_t fdio;
  */
 /*@only@*/ FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
 /*@dependent@*/ void * ufdGetUrlinfo(FD_t fd);
+void ufdSetFd(FD_t fd, int fdno);
 /*@observer@*/ const char * urlStrerror(const char * url);
 
 extern cookie_io_functions_t ufdio;
