@@ -7,7 +7,7 @@ static char *sourcedir = "/usr/src/SOURCES";
 static char *builddir  = "/usr/src/BUILD";
 static char *specdir   = "/usr/src/SPECS";
 static char *docdir    = "/usr/doc";
-static char *optflags  = "-O2 -m486";
+static char *optflags  = "-O2";
 static char *root      = NULL;
 
 char *getVar(int var)
