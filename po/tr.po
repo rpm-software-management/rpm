@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-11 17:49-0400\n"
+"POT-Creation-Date: 2002-07-12 14:51-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1526,24 +1526,29 @@ msgstr "========== tsort sürüyor ...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:305
+#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:377
 #: rpmdb/header.c:3136 rpmdb/header.c:3159 rpmdb/header.c:3183
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
-#: lib/formats.c:156
+#: lib/formats.c:157
 #, fuzzy
 msgid "(not base64)"
 msgstr "(bir sayý deðil)"
 
-#: lib/formats.c:166
+#: lib/formats.c:167
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:231 lib/formats.c:278
+#: lib/formats.c:233 lib/formats.c:280
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(bir sayý deðil)"
+
+#: lib/formats.c:303
+#, fuzzy
+msgid "(not a OpenPGP signature"
+msgstr "tüm PGP imzalarýný atlar"
 
 #: lib/fs.c:77
 #, c-format
@@ -4073,9 +4078,6 @@ msgstr "%s: bildirge okuma baþarýsýz: %s\n"
 
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <pkt>+             "
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "tüm PGP imzalarýný atlar"
 
 #~ msgid "skip any GPG signatures"
 #~ msgstr "tüm GPG imzalarýný atlar"

@@ -125,6 +125,7 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 
 /**
  * Wrap a pubkey in ascii armor for display.
+ * @todo Permit selectable display formats (i.e. binary).
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -214,6 +215,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 
 /**
  * Encode binary data in base64 for display.
+ * @todo Permit selectable display formats (i.e. binary).
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -259,8 +261,8 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
     return val;
 }
 
-#ifdef	NOTYET
 /**
+ * Display signature fingerprint and time.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
@@ -268,20 +270,90 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * pgppktFormat(int_32 type, const void * data, 
+static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data, 
 	char * formatPrefix, int padding, int element)
 		/*@modifies formatPrefix @*/
 {
-    char * val;
+    char * val, * t;
 
     if (type != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
+	unsigned char * pkt = (byte *) data;
+	unsigned int pktlen = 0;
+	unsigned int v = *pkt;
+	pgpTag tag = 0;
+	unsigned int plen;
+	unsigned int hlen = 0;
+
+	if (v & 0x80) {
+	    if (v & 0x40) {
+		tag = (v & 0x3f);
+		plen = pgpLen(pkt+1, &hlen);
+	    } else {
+		tag = (v >> 2) & 0xf;
+		plen = (1 << (v & 0x3));
+		hlen = pgpGrab(pkt+1, plen);
+	    }
+	
+	    pktlen = 1 + plen + hlen;
+	}
+
+	if (pktlen == 0 || tag != PGPTAG_SIGNATURE) {
+	    val = xstrdup(_("(not a OpenPGP signature"));
+	} else {
+	    struct pgpDig_s * dig = pgpNewDig();
+	    struct pgpDigParams_s * sigp = &dig->signature;
+	    size_t nb = 80;
+
+	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
+
+	    val = t = xmalloc(nb + 1);
+
+	    switch (sigp->pubkey_algo) {
+	    case PGPPUBKEYALGO_DSA:
+		t = stpcpy(t, "DSA");
+		break;
+	    case PGPPUBKEYALGO_RSA:
+		t = stpcpy(t, "RSA");
+		break;
+	    default:
+		sprintf(t, "%d", sigp->pubkey_algo);
+		t += strlen(t);
+		break;
+	    }
+	    *t++ = '/';
+	    switch (sigp->hash_algo) {
+	    case PGPHASHALGO_MD5:
+		t = stpcpy(t, "MD5");
+		break;
+	    case PGPHASHALGO_SHA1:
+		t = stpcpy(t, "SHA1");
+		break;
+	    default:
+		sprintf(t, "%d", sigp->hash_algo);
+		t += strlen(t);
+		break;
+	    }
+
+	    t = stpcpy(t, ", ");
+
+	    /* this is important if sizeof(int_32) ! sizeof(time_t) */
+	    {	time_t dateint = pgpGrab(sigp->time, sizeof(sigp->time));
+		struct tm * tstruct = localtime(&dateint);
+		if (tstruct)
+ 		    (void) strftime(t, (nb - (t - val)), "%c", tstruct);
+	    }
+	    t += strlen(t);
+	    t = stpcpy(t, ", Key ID ");
+	    t = stpcpy(t, pgpHexStr(sigp->signid, sizeof(sigp->signid)));
+
+	    dig = pgpFreeDig(dig);
+	}
     }
 
     return val;
 }
-#endif
 
 /**
  * Format dependency flags for display.
@@ -796,9 +868,7 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE", { triggertypeTag } },
     { HEADER_EXT_FORMAT, "armor", { armorFormat } },
     { HEADER_EXT_FORMAT, "base64", { base64Format } },
-#ifdef	NOTYET
-    { HEADER_EXT_FORMAT, "pgppkt", { pgppktFormat } },
-#endif
+    { HEADER_EXT_FORMAT, "pgpsig", { pgpsigFormat } },
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
     { HEADER_EXT_FORMAT, "perms", { permsFormat } },

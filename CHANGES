@@ -164,6 +164,7 @@
 	- placeholders for manifest constants for SuSE patch packages.
 	- fix: repair 2ndary match criteria with rpmdb iterators.
 	- update for sv.po.
+	- display signature details using rpm -qi.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-11 17:49-0400\n"
+"POT-Creation-Date: 2002-07-12 14:51-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1558,24 +1558,29 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:305
+#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:377
 #: rpmdb/header.c:3136 rpmdb/header.c:3159 rpmdb/header.c:3183
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
-#: lib/formats.c:156
+#: lib/formats.c:157
 #, fuzzy
 msgid "(not base64)"
 msgstr "(数字ではありません)"
 
-#: lib/formats.c:166
+#: lib/formats.c:167
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:231 lib/formats.c:278
+#: lib/formats.c:233 lib/formats.c:280
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(数字ではありません)"
+
+#: lib/formats.c:303
+#, fuzzy
+msgid "(not a OpenPGP signature"
+msgstr "PGP 署名をスキップします"
 
 #: lib/fs.c:77
 #, fuzzy, c-format
@@ -3910,9 +3915,6 @@ msgstr "%s: Fread に失敗しました: %s\n"
 
 #~ msgid "add a signature to a package"
 #~ msgstr "パッケージに署名を追加します"
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "PGP 署名をスキップします"
 
 #, fuzzy
 #~ msgid "skip any GPG signatures"

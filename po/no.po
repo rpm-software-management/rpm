@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-11 17:49-0400\n"
+"POT-Creation-Date: 2002-07-12 14:51-0400\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1498,22 +1498,27 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:305
+#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:377
 #: rpmdb/header.c:3136 rpmdb/header.c:3159 rpmdb/header.c:3183
 msgid "(not a number)"
 msgstr ""
 
-#: lib/formats.c:156
+#: lib/formats.c:157
 msgid "(not base64)"
 msgstr ""
 
-#: lib/formats.c:166
+#: lib/formats.c:167
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:231 lib/formats.c:278
+#: lib/formats.c:233 lib/formats.c:280
 msgid "(not a blob)"
 msgstr ""
+
+#: lib/formats.c:303
+#, fuzzy
+msgid "(not a OpenPGP signature"
+msgstr "hopp over PGP-signaturer"
 
 #: lib/fs.c:77
 #, c-format
@@ -4015,9 +4020,6 @@ msgstr "%s: lesing av manifest feilet: %s\n"
 
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <pkg>+             "
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "hopp over PGP-signaturer"
 
 #~ msgid "skip any GPG signatures"
 #~ msgstr "hopp over GPG-signaturer"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-07-11 17:49-0400\n"
+"POT-Creation-Date: 2002-07-12 14:51-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1498,22 +1498,27 @@ msgstr "========== tsort를 진행합니다...\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:305
+#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:377
 #: rpmdb/header.c:3136 rpmdb/header.c:3159 rpmdb/header.c:3183
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
-#: lib/formats.c:156
+#: lib/formats.c:157
 msgid "(not base64)"
 msgstr "(base64가 아닙니다)"
 
-#: lib/formats.c:166
+#: lib/formats.c:167
 msgid "(invalid type)"
 msgstr "(부적합한 타입)"
 
-#: lib/formats.c:231 lib/formats.c:278
+#: lib/formats.c:233 lib/formats.c:280
 msgid "(not a blob)"
 msgstr "(BLOB[Binary Large OBject]이 아닙니다)"
+
+#: lib/formats.c:303
+#, fuzzy
+msgid "(not a OpenPGP signature"
+msgstr "어떠한 PGP 서명도 검사하지 않습니다"
 
 #: lib/fs.c:77
 #, c-format
@@ -4056,9 +4061,6 @@ msgstr "%s: 읽는데 실패했습니다: %s\n"
 
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <패키지>+          "
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "어떠한 PGP 서명도 검사하지 않습니다"
 
 #~ msgid "skip any GPG signatures"
 #~ msgstr "어떠한 GPG 서명도 검사하지 않습니다"

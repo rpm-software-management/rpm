@@ -63,6 +63,7 @@ Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}\n\
 Install date: %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)         }|      Build Host: %{BUILDHOST}\n\
 Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n\
 Size        : %-27{SIZE}%|LICENSE?{      License: %{LICENSE}}|\n\
+Signature   : %|DSAHEADER?{%{DSAHEADER:pgpsig}}:{%|RSAHEADER?{%{RSAHEADER:pgpsig}}:{%|SIGGPG?{%{SIGGPG:pgpsig}}:{%|SIGPGP?{%{SIGPGP:pgpsig}}:{(none)}|}|}|}|\n\
 %|PACKAGER?{Packager    : %{PACKAGER}\n}|\
 %|URL?{URL         : %{URL}\n}|\
 Summary     : %{SUMMARY}\n\
@@ -308,6 +309,7 @@ Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}\n\
 Install date: %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)         }|      Build Host: %{BUILDHOST}\n\
 Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n\
 Size        : %-27{SIZE}%|LICENSE?{      License: %{LICENSE}}|\n\
+Signature   : %|DSAHEADER?{%{DSAHEADER:pgpsig}}:{%|RSAHEADER?{%{RSAHEADER:pgpsig}}:{%|SIGGPG?{%{SIGGPG:pgpsig}}:{%|SIGPGP?{%{SIGPGP:pgpsig}}:{(none)}|}|}|}|\n\
 %|PACKAGER?{Packager    : %{PACKAGER}\n}|\
 %|URL?{URL         : %{URL}\n}|\
 Summary     : %{SUMMARY}\n\

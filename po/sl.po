@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.276 2002/07/11 21:48:26 jbj Exp $
+# $Id: sl.po,v 1.277 2002/07/12 19:09:49 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-11 17:49-0400\n"
+"POT-Creation-Date: 2002-07-12 14:51-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1541,24 +1541,29 @@ msgstr ""
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
-#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:305
+#: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:377
 #: rpmdb/header.c:3136 rpmdb/header.c:3159 rpmdb/header.c:3183
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
-#: lib/formats.c:156
+#: lib/formats.c:157
 #, fuzzy
 msgid "(not base64)"
 msgstr "(ni ¹tevilo)"
 
-#: lib/formats.c:166
+#: lib/formats.c:167
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:231 lib/formats.c:278
+#: lib/formats.c:233 lib/formats.c:280
 #, fuzzy
 msgid "(not a blob)"
 msgstr "(ni ¹tevilo)"
+
+#: lib/formats.c:303
+#, fuzzy
+msgid "(not a OpenPGP signature"
+msgstr "preskoèi vse podpise PGP"
 
 #: lib/fs.c:77
 #, fuzzy, c-format
@@ -4143,9 +4148,6 @@ msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 #, fuzzy
 #~ msgid "    -K <pkg>+             "
 #~ msgstr "    -K <paket>+           "
-
-#~ msgid "skip any PGP signatures"
-#~ msgstr "preskoèi vse podpise PGP"
 
 #~ msgid "skip any GPG signatures"
 #~ msgstr "preskoèi vse podpise GPG"
