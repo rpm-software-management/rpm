@@ -886,8 +886,20 @@ static void genCpioListAndHeader(struct FileList *fl,
 			       &s, 1);
 	
 	buf[0] = '\0';
-	if (S_ISLNK(flp->fl_mode))
-	    buf[readlink(flp->diskURL, buf, BUFSIZ)] = '\0';
+	if (S_ISLNK(flp->fl_mode)) {
+	    buf[Readlink(flp->diskURL, buf, BUFSIZ)] = '\0';
+	    if (fl->buildRootURL) {
+		const char * buildRoot;
+		(void) urlPath(fl->buildRootURL, &buildRoot);
+
+		if (buf[0] == '/' && strcmp(buildRoot, "/") &&
+		    !strncmp(buf, buildRoot, strlen(buildRoot))) {
+		     rpmError(RPMERR_BADSPEC, _("Symlink points to BuildRoot: %s -> %s"),
+				flp->fileURL, buf);
+		    fl->processingFailed = 1;
+		}
+	    }
+	}
 	s = buf;
 	headerAddOrAppendEntry(h, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);

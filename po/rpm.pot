@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-02 11:24-0500\n"
+"POT-Creation-Date: 1999-12-02 11:53-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1382,82 +1382,87 @@ msgstr ""
 msgid "File listed twice: %s"
 msgstr ""
 
-#: build/files.c:965
+#: build/files.c:897
+#, c-format
+msgid "Symlink points to BuildRoot: %s -> %s"
+msgstr ""
+
+#: build/files.c:977
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: build/files.c:975
+#: build/files.c:987
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: build/files.c:1018
+#: build/files.c:1030
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1032
+#: build/files.c:1044
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1111
+#: build/files.c:1123
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1140
+#: build/files.c:1152
 #, c-format
 msgid "File not found by glob: %s"
 msgstr ""
 
-#: build/files.c:1219
+#: build/files.c:1231
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1226 build/pack.c:482
+#: build/files.c:1238 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1569 build/parsePrep.c:30
+#: build/files.c:1581 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1624
+#: build/files.c:1636
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1629
+#: build/files.c:1641
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1711
+#: build/files.c:1723
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1715
+#: build/files.c:1727
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1804
+#: build/files.c:1816
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1832 build/files.c:1841
+#: build/files.c:1844 build/files.c:1853
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1947
+#: build/files.c:1959
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
