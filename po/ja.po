@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-04-03 10:01-0400\n"
+"POT-Creation-Date: 2000-04-04 06:01-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.35 2000/04/03 14:36:39 jbj Exp $
+# $Id: ja.po,v 1.36 2000/04/04 10:10:48 jbj Exp $
 #: rpm.c:200
 #, c-format
 msgid "rpm: %s\n"
@@ -2102,12 +2102,12 @@ msgstr "内部エラー"
 msgid " failed - "
 msgstr "失敗 - "
 
-#: lib/dbindex.c:93
+#: lib/dbindex.c:99
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/dbindex.c:136
+#: lib/dbindex.c:139
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2115,22 +2115,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:149
+#: lib/dbindex.c:152
 #, fuzzy, c-format
 msgid "cannot open file %s: %s"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/dbindex.c:189
+#: lib/dbindex.c:192
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "レコード %s の取得のエラー (%s から)"
 
-#: lib/dbindex.c:203
+#: lib/dbindex.c:206
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "レコード %s を %s にストアでエラー "
 
-#: lib/dbindex.c:208
+#: lib/dbindex.c:211
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "レコード %s を %s に削除でエラー"
@@ -2761,112 +2761,112 @@ msgstr "ファイル %s: %s\n"
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:639
+#: lib/query.c:649
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:642
+#: lib/query.c:652
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:645
+#: lib/query.c:655
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:657 lib/rpminstall.c:436
+#: lib/query.c:667 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
 
-#: lib/query.c:660
+#: lib/query.c:670
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: lib/query.c:685
+#: lib/query.c:695
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() に失敗しました\n"
 
-#: lib/query.c:744
+#: lib/query.c:754
 #, fuzzy
 msgid "query package owning file"
 msgstr "ファイルを所有しているパッケージを問い合わせます"
 
-#: lib/query.c:746
+#: lib/query.c:756
 #, fuzzy
 msgid "query packages in group"
 msgstr "グループ中のパッケージについて問い合わせます\n"
 
-#: lib/query.c:748
+#: lib/query.c:758
 #, fuzzy
 msgid "query a package file"
 msgstr "パッケージファイルについて問い合わせます"
 
-#: lib/query.c:752
+#: lib/query.c:762
 #, fuzzy
 msgid "query a spec file"
 msgstr "スペックファイルを問い合わせます"
 
-#: lib/query.c:754
+#: lib/query.c:764
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "パッケージによってトリガーされるパッケージを問い合わせます"
 
-#: lib/query.c:756
+#: lib/query.c:766
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr ""
 "機能を必要とするパッケージについて\n"
 "問い合わせます"
 
-#: lib/query.c:758
+#: lib/query.c:768
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "機能を提供するパッケージについて問い合わせます"
 
-#: lib/query.c:797
+#: lib/query.c:807
 #, fuzzy
 msgid "list all configuration files"
 msgstr "全ての設定ファイルを列挙します"
 
-#: lib/query.c:799
+#: lib/query.c:809
 #, fuzzy
 msgid "list all documentation files"
 msgstr "全てのドキュメントファイルを列挙します"
 
-#: lib/query.c:801
+#: lib/query.c:811
 #, fuzzy
 msgid "dump basic file information"
 msgstr "基本的なファイル情報をダンプします"
 
-#: lib/query.c:803
+#: lib/query.c:813
 #, fuzzy
 msgid "list files in package"
 msgstr "パッケージ中のファイルを列挙します\n"
 
-#: lib/query.c:807
+#: lib/query.c:817
 msgid "use the following query format"
 msgstr "以下の問い合わせフォーマットを使用します"
 
-#: lib/query.c:809
+#: lib/query.c:819
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "以下のカタログから i18n セクションを置き換えます"
 
-#: lib/query.c:811
+#: lib/query.c:821
 msgid "display the states of the listed files"
 msgstr "列挙したファイルの状態を表示します"
 
-#: lib/query.c:813
+#: lib/query.c:823
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "ファイルリストを冗長に表示します"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:349
+#: lib/rebuilddb.c:34 lib/rpmdb.c:290
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
@@ -3024,105 +3024,95 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:201
+#: lib/rpmdb.c:188
 #, fuzzy, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: lib/rpmdb.c:213 lib/url.c:445
+#: lib/rpmdb.c:200 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/rpmdb.c:227 lib/rpmdb.c:235
+#: lib/rpmdb.c:214 lib/rpmdb.c:222
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "データベースの %s をロックできません"
 
-#: lib/rpmdb.c:228
+#: lib/rpmdb.c:215
 msgid "exclusive"
 msgstr "除外"
 
-#: lib/rpmdb.c:236
+#: lib/rpmdb.c:223
 msgid "shared"
 msgstr "共有"
 
-#: lib/rpmdb.c:268 lib/rpmdb.c:321
+#: lib/rpmdb.c:263
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:594
-#, c-format
-msgid "package %s not listed in %s"
-msgstr "パッケージ %s は %s 中にリストされていません"
-
-#: lib/rpmdb.c:603
-#, c-format
-msgid "package %s not found in %s"
+#: lib/rpmdb.c:536
+#, fuzzy, c-format
+msgid "package not found with key \"%s\" in %s"
 msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:629 lib/uninstall.c:91
-#, c-format
-msgid "cannot read header at %d for uninstall"
-msgstr "アンインストールのために %d でヘッダを読むことができません"
+#: lib/rpmdb.c:545
+#, fuzzy, c-format
+msgid "key \"%s\" not found in %s"
+msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:639
-msgid "package has no name"
-msgstr "パッケージに名前がありません"
+#: lib/rpmdb.c:563
+#, fuzzy, c-format
+msgid "rpmdbRemove: cannot read header at 0x%x"
+msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: lib/rpmdb.c:641
-msgid "removing name index\n"
-msgstr "name インデックス削除します\n"
+#: lib/rpmdb.c:582
+#, fuzzy, c-format
+msgid "removing 0 %s entries.\n"
+msgstr "データベースエントリを削除します\n"
 
-#: lib/rpmdb.c:646
-msgid "package has no group\n"
-msgstr "パッケージにグループがありません\n"
-
-#: lib/rpmdb.c:648
-msgid "removing group index\n"
+#: lib/rpmdb.c:588
+#, fuzzy, c-format
+msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: lib/rpmdb.c:655
+#: lib/rpmdb.c:596
+#, fuzzy, c-format
+msgid "removing %d entries in %s index:\n"
+msgstr "name インデックス削除します\n"
+
+#: lib/rpmdb.c:600 lib/rpmdb.c:775
 #, c-format
-msgid "removing provides index for %s\n"
-msgstr "%s 用の provides インデックスを削除します\n"
+msgid "\t%6d %s\n"
+msgstr ""
 
-#: lib/rpmdb.c:670
-#, c-format
-msgid "removing requiredby index for %s\n"
-msgstr "%s 用の requiredby インデックスを削除します\n"
-
-#: lib/rpmdb.c:682
-#, c-format
-msgid "removing trigger index for %s\n"
-msgstr "%s 用の tigger インデックスを削除します\n"
-
-#: lib/rpmdb.c:693
-#, c-format
-msgid "removing conflict index for %s\n"
-msgstr "%s 用の confilict インデックスを削除します\n"
-
-#: lib/rpmdb.c:704
-#, c-format
-msgid "removing file index for %s\n"
-msgstr "%s 用の file インデックスを削除します\n"
-
-#: lib/rpmdb.c:713
-msgid "package has no files\n"
-msgstr "パッケージにファイルが有りません\n"
-
-#: lib/rpmdb.c:831
+#: lib/rpmdb.c:719
 msgid "cannot allocate space for database"
 msgstr "データベース用の空き容量が足りません"
 
-#: lib/rpmdb.c:890
+#: lib/rpmdb.c:752
+#, c-format
+msgid "adding 0 %s entries.\n"
+msgstr ""
+
+#: lib/rpmdb.c:764
+#, fuzzy, c-format
+msgid "adding \"%s\" to %s index.\n"
+msgstr "%s を %s へ名前を変更します\n"
+
+#: lib/rpmdb.c:771
+#, c-format
+msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:829
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "アップデート用の %d でヘッダを読めません"
 
-#: lib/rpmdb.c:903
+#: lib/rpmdb.c:842
 msgid "header changed size!"
 msgstr "ヘッダのサイズが変更されました"
 
@@ -3578,6 +3568,11 @@ msgstr "%s の rmdir に失敗: %s"
 msgid "removal of %s failed: %s"
 msgstr "%s の削除に失敗: %s"
 
+#: lib/uninstall.c:91
+#, c-format
+msgid "cannot read header at %d for uninstall"
+msgstr "アンインストールのために %d でヘッダを読むことができません"
+
 #: lib/uninstall.c:105
 #, c-format
 msgid "cannot read packages named %s for uninstall"
@@ -3668,6 +3663,33 @@ msgstr "%s-%s-%s のための依存性を満たしていません:"
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: rpmdbOen() に失敗しました\n"
+
+#~ msgid "package %s not listed in %s"
+#~ msgstr "パッケージ %s は %s 中にリストされていません"
+
+#~ msgid "package has no name"
+#~ msgstr "パッケージに名前がありません"
+
+#~ msgid "package has no group\n"
+#~ msgstr "パッケージにグループがありません\n"
+
+#~ msgid "removing provides index for %s\n"
+#~ msgstr "%s 用の provides インデックスを削除します\n"
+
+#~ msgid "removing requiredby index for %s\n"
+#~ msgstr "%s 用の requiredby インデックスを削除します\n"
+
+#~ msgid "removing trigger index for %s\n"
+#~ msgstr "%s 用の tigger インデックスを削除します\n"
+
+#~ msgid "removing conflict index for %s\n"
+#~ msgstr "%s 用の confilict インデックスを削除します\n"
+
+#~ msgid "removing file index for %s\n"
+#~ msgstr "%s 用の file インデックスを削除します\n"
+
+#~ msgid "package has no files\n"
+#~ msgstr "パッケージにファイルが有りません\n"
 
 #, fuzzy
 #~ msgid "Unable to stat icon: %s"

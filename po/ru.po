@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-03 10:01-0400\n"
+"POT-Creation-Date: 2000-04-04 06:01-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2062,12 +2062,12 @@ msgstr "Внутренняя ошибка"
 msgid " failed - "
 msgstr "не удалось - "
 
-#: lib/dbindex.c:93
+#: lib/dbindex.c:99
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "неверное состояние файла: %s"
 
-#: lib/dbindex.c:136
+#: lib/dbindex.c:139
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2075,22 +2075,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:149
+#: lib/dbindex.c:152
 #, c-format
 msgid "cannot open file %s: %s"
 msgstr "не могу открыть файл %s: %s"
 
-#: lib/dbindex.c:189
+#: lib/dbindex.c:192
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "ошибка получения записи %s из %s"
 
-#: lib/dbindex.c:203
+#: lib/dbindex.c:206
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "ошибка сохранения записи %s в %s"
 
-#: lib/dbindex.c:208
+#: lib/dbindex.c:211
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "ошибка удаления записи %s из %s"
@@ -2701,97 +2701,97 @@ msgstr "файл %s: %s\n"
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:639
+#: lib/query.c:649
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:642
+#: lib/query.c:652
 #, c-format
 msgid "package record number: %d\n"
 msgstr "запись пакета номер %d\n"
 
-#: lib/query.c:645
+#: lib/query.c:655
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:657 lib/rpminstall.c:436
+#: lib/query.c:667 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: lib/query.c:660
+#: lib/query.c:670
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "ошибка при поиске пакета %s\n"
 
-#: lib/query.c:685
+#: lib/query.c:695
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: неудача rpmdbOpen()\n"
 
-#: lib/query.c:744
+#: lib/query.c:754
 msgid "query package owning file"
 msgstr "найти пакет, которому принадлежит файл"
 
-#: lib/query.c:746
+#: lib/query.c:756
 msgid "query packages in group"
 msgstr "запрос пакетов в группе"
 
-#: lib/query.c:748
+#: lib/query.c:758
 msgid "query a package file"
 msgstr "запросить файл пакета"
 
-#: lib/query.c:752
+#: lib/query.c:762
 msgid "query a spec file"
 msgstr "запросить spec-файл"
 
-#: lib/query.c:754
+#: lib/query.c:764
 msgid "query the pacakges triggered by the package"
 msgstr "запросить пакеты с триггер-скриптами на пакет"
 
-#: lib/query.c:756
+#: lib/query.c:766
 msgid "query the packages which require a capability"
 msgstr "найти пакеты, требующие сервиса"
 
-#: lib/query.c:758
+#: lib/query.c:768
 msgid "query the packages which provide a capability"
 msgstr "найти пакеты, предоставляющие сервис"
 
-#: lib/query.c:797
+#: lib/query.c:807
 msgid "list all configuration files"
 msgstr "показать все конфигурационные файлы"
 
-#: lib/query.c:799
+#: lib/query.c:809
 msgid "list all documentation files"
 msgstr "показать все файлы документации"
 
-#: lib/query.c:801
+#: lib/query.c:811
 msgid "dump basic file information"
 msgstr "вывести базовую информацию о файле"
 
-#: lib/query.c:803
+#: lib/query.c:813
 msgid "list files in package"
 msgstr "показать файлы пакета"
 
-#: lib/query.c:807
+#: lib/query.c:817
 msgid "use the following query format"
 msgstr "исп. следующий формат запроса"
 
-#: lib/query.c:809
+#: lib/query.c:819
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "подставить секции i18n из следующего каталога"
 
-#: lib/query.c:811
+#: lib/query.c:821
 msgid "display the states of the listed files"
 msgstr "показать состояние показанных файлов"
 
-#: lib/query.c:813
+#: lib/query.c:823
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:349
+#: lib/rebuilddb.c:34 lib/rpmdb.c:290
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
@@ -2947,30 +2947,30 @@ msgstr ")"
 msgid "OK"
 msgstr "Ok"
 
-#: lib/rpmdb.c:201
+#: lib/rpmdb.c:188
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "открываю базу в режиме 0x%x в %s\n"
 
-#: lib/rpmdb.c:213 lib/url.c:445
+#: lib/rpmdb.c:200 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "не могу открыть %s: %s"
 
-#: lib/rpmdb.c:227 lib/rpmdb.c:235
+#: lib/rpmdb.c:214 lib/rpmdb.c:222
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "не могу получить %s доступ к базе данных"
 
-#: lib/rpmdb.c:228
+#: lib/rpmdb.c:215
 msgid "exclusive"
 msgstr "исключительный"
 
-#: lib/rpmdb.c:236
+#: lib/rpmdb.c:223
 msgid "shared"
 msgstr "разделяемый"
 
-#: lib/rpmdb.c:268 lib/rpmdb.c:321
+#: lib/rpmdb.c:263
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2978,76 +2978,66 @@ msgstr ""
 "найдена база данных старого формата; используйте --rebuilddb для генерации "
 "базы нового формата"
 
-#: lib/rpmdb.c:594
-#, c-format
-msgid "package %s not listed in %s"
-msgstr "пакет %s не внесен в %s"
-
-#: lib/rpmdb.c:603
-#, c-format
-msgid "package %s not found in %s"
+#: lib/rpmdb.c:536
+#, fuzzy, c-format
+msgid "package not found with key \"%s\" in %s"
 msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:629 lib/uninstall.c:91
-#, c-format
-msgid "cannot read header at %d for uninstall"
-msgstr "не могу прочитать хедер в %d для удаления"
+#: lib/rpmdb.c:545
+#, fuzzy, c-format
+msgid "key \"%s\" not found in %s"
+msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:639
-msgid "package has no name"
-msgstr "у пакета нет имени"
+#: lib/rpmdb.c:563
+#, fuzzy, c-format
+msgid "rpmdbRemove: cannot read header at 0x%x"
+msgstr "не могу прочесть хедер в %d для поиска"
 
-#: lib/rpmdb.c:641
-msgid "removing name index\n"
-msgstr "удаляю индекс имен\n"
+#: lib/rpmdb.c:582
+#, fuzzy, c-format
+msgid "removing 0 %s entries.\n"
+msgstr "удаляю запись базы данных\n"
 
-#: lib/rpmdb.c:646
-msgid "package has no group\n"
-msgstr "у пакета нет группы\n"
-
-#: lib/rpmdb.c:648
-msgid "removing group index\n"
+#: lib/rpmdb.c:588
+#, fuzzy, c-format
+msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляю индекс групп\n"
 
-#: lib/rpmdb.c:655
+#: lib/rpmdb.c:596
+#, fuzzy, c-format
+msgid "removing %d entries in %s index:\n"
+msgstr "удаляю индекс имен\n"
+
+#: lib/rpmdb.c:600 lib/rpmdb.c:775
 #, c-format
-msgid "removing provides index for %s\n"
-msgstr "удаляю индекс предоставляемых сервисов для %s\n"
+msgid "\t%6d %s\n"
+msgstr ""
 
-#: lib/rpmdb.c:670
-#, c-format
-msgid "removing requiredby index for %s\n"
-msgstr "удаляю индекс требований для %s\n"
-
-#: lib/rpmdb.c:682
-#, c-format
-msgid "removing trigger index for %s\n"
-msgstr "удаляю индекс триггеров для %s\n"
-
-#: lib/rpmdb.c:693
-#, c-format
-msgid "removing conflict index for %s\n"
-msgstr "удаляю индекс конфликтов для %s\n"
-
-#: lib/rpmdb.c:704
-#, c-format
-msgid "removing file index for %s\n"
-msgstr "удаляю индекс файлов для %s\n"
-
-#: lib/rpmdb.c:713
-msgid "package has no files\n"
-msgstr "пакет не содержит файлов\n"
-
-#: lib/rpmdb.c:831
+#: lib/rpmdb.c:719
 msgid "cannot allocate space for database"
 msgstr "не могу выделить место для базы данных"
 
-#: lib/rpmdb.c:890
+#: lib/rpmdb.c:752
+#, c-format
+msgid "adding 0 %s entries.\n"
+msgstr ""
+
+#: lib/rpmdb.c:764
+#, fuzzy, c-format
+msgid "adding \"%s\" to %s index.\n"
+msgstr "переименовываю %s в %s\n"
+
+#: lib/rpmdb.c:771
+#, c-format
+msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:829
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "не могу прочитать хедер в %d для апгрейда"
 
-#: lib/rpmdb.c:903
+#: lib/rpmdb.c:842
 msgid "header changed size!"
 msgstr "хедер изменил размер!"
 
@@ -3487,6 +3477,11 @@ msgstr "ошибка удаления каталога %s: %s"
 msgid "removal of %s failed: %s"
 msgstr "ошибка удаления %s: %s"
 
+#: lib/uninstall.c:91
+#, c-format
+msgid "cannot read header at %d for uninstall"
+msgstr "не могу прочитать хедер в %d для удаления"
+
 #: lib/uninstall.c:105
 #, c-format
 msgid "cannot read packages named %s for uninstall"
@@ -3569,6 +3564,33 @@ msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 #: lib/verify.c:381
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: неудача rpmdbOpen()\n"
+
+#~ msgid "package %s not listed in %s"
+#~ msgstr "пакет %s не внесен в %s"
+
+#~ msgid "package has no name"
+#~ msgstr "у пакета нет имени"
+
+#~ msgid "package has no group\n"
+#~ msgstr "у пакета нет группы\n"
+
+#~ msgid "removing provides index for %s\n"
+#~ msgstr "удаляю индекс предоставляемых сервисов для %s\n"
+
+#~ msgid "removing requiredby index for %s\n"
+#~ msgstr "удаляю индекс требований для %s\n"
+
+#~ msgid "removing trigger index for %s\n"
+#~ msgstr "удаляю индекс триггеров для %s\n"
+
+#~ msgid "removing conflict index for %s\n"
+#~ msgstr "удаляю индекс конфликтов для %s\n"
+
+#~ msgid "removing file index for %s\n"
+#~ msgstr "удаляю индекс файлов для %s\n"
+
+#~ msgid "package has no files\n"
+#~ msgstr "пакет не содержит файлов\n"
 
 #~ msgid "cannot create %s"
 #~ msgstr "не могу создать %s"

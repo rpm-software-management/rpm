@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-04-03 10:01-0400\n"
+"POT-Creation-Date: 2000-04-04 06:01-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2055,12 +2055,12 @@ msgstr "B³±d wewnêtrzny"
 msgid " failed - "
 msgstr " nie powiod³o siê -"
 
-#: lib/dbindex.c:93
+#: lib/dbindex.c:99
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/dbindex.c:136
+#: lib/dbindex.c:139
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2068,22 +2068,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:149
+#: lib/dbindex.c:152
 #, c-format
 msgid "cannot open file %s: %s"
 msgstr "nie mo¿na otworzyæ pliku %s: %s"
 
-#: lib/dbindex.c:189
+#: lib/dbindex.c:192
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "b³±d pobierania rekordu %s z %s"
 
-#: lib/dbindex.c:203
+#: lib/dbindex.c:206
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "b³±d zapisywania rekordu %s do %s"
 
-#: lib/dbindex.c:208
+#: lib/dbindex.c:211
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "b³±d usuwania rekordu %s z %s"
@@ -2697,97 +2697,97 @@ msgstr "plik %s: %s\n"
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:639
+#: lib/query.c:649
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:642
+#: lib/query.c:652
 #, c-format
 msgid "package record number: %d\n"
 msgstr "numer rekordu pakietu: %d\n"
 
-#: lib/query.c:645
+#: lib/query.c:655
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:657 lib/rpminstall.c:436
+#: lib/query.c:667 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
 
-#: lib/query.c:660
+#: lib/query.c:670
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: lib/query.c:685
+#: lib/query.c:695
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() nie powiod³o siê\n"
 
-#: lib/query.c:744
+#: lib/query.c:754
 msgid "query package owning file"
 msgstr "sprawdzanie do jakiego pakietu nale¿y plik"
 
-#: lib/query.c:746
+#: lib/query.c:756
 msgid "query packages in group"
 msgstr "odpytywanie pakietów w grupie"
 
-#: lib/query.c:748
+#: lib/query.c:758
 msgid "query a package file"
 msgstr "odpytywanie pakietu"
 
-#: lib/query.c:752
+#: lib/query.c:762
 msgid "query a spec file"
 msgstr "odpytywanie pliku spec"
 
-#: lib/query.c:754
+#: lib/query.c:764
 msgid "query the pacakges triggered by the package"
 msgstr "odpytywanie pakietów zahaczanych przez pakiet"
 
-#: lib/query.c:756
+#: lib/query.c:766
 msgid "query the packages which require a capability"
 msgstr "odpytywanie pakietów wymagaj±cych zasobu"
 
-#: lib/query.c:758
+#: lib/query.c:768
 msgid "query the packages which provide a capability"
 msgstr "odpytywanie pakietów udostêpniaj±cych zasób"
 
-#: lib/query.c:797
+#: lib/query.c:807
 msgid "list all configuration files"
 msgstr "wy¶wietl wszystkie pliki konfiguracyjne"
 
-#: lib/query.c:799
+#: lib/query.c:809
 msgid "list all documentation files"
 msgstr "wy¶wietl wszystkie pliki dokumentacji"
 
-#: lib/query.c:801
+#: lib/query.c:811
 msgid "dump basic file information"
 msgstr "podaj postawowe informacje o pliku"
 
-#: lib/query.c:803
+#: lib/query.c:813
 msgid "list files in package"
 msgstr "wy¶wietl pliki zawarte w pakiecie"
 
-#: lib/query.c:807
+#: lib/query.c:817
 msgid "use the following query format"
 msgstr "u¿yj nastêpuj±cego formatu zapytania"
 
-#: lib/query.c:809
+#: lib/query.c:819
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "pakiet ¼ród³owy nie zawiera pliku .spec"
 
-#: lib/query.c:811
+#: lib/query.c:821
 msgid "display the states of the listed files"
 msgstr "wy¶wietl status pokazywanych plików"
 
-#: lib/query.c:813
+#: lib/query.c:823
 msgid "display a verbose file listing"
 msgstr "wy¶wietl wiêcej informacji o plikach z listy"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:349
+#: lib/rebuilddb.c:34 lib/rpmdb.c:290
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
@@ -2943,30 +2943,30 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmdb.c:201
+#: lib/rpmdb.c:188
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: lib/rpmdb.c:213 lib/url.c:445
+#: lib/rpmdb.c:200 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
 
-#: lib/rpmdb.c:227 lib/rpmdb.c:235
+#: lib/rpmdb.c:214 lib/rpmdb.c:222
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: lib/rpmdb.c:228
+#: lib/rpmdb.c:215
 msgid "exclusive"
 msgstr ""
 
-#: lib/rpmdb.c:236
+#: lib/rpmdb.c:223
 msgid "shared"
 msgstr ""
 
-#: lib/rpmdb.c:268 lib/rpmdb.c:321
+#: lib/rpmdb.c:263
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2974,76 +2974,66 @@ msgstr ""
 "baza danych jest w starym formacie; u¿yj --rebuilddb aby wygenerowaæ bazê  w "
 "nowym formacie"
 
-#: lib/rpmdb.c:594
-#, c-format
-msgid "package %s not listed in %s"
-msgstr "pakiet %s nie jest wymieniony w %s"
-
-#: lib/rpmdb.c:603
-#, c-format
-msgid "package %s not found in %s"
+#: lib/rpmdb.c:536
+#, fuzzy, c-format
+msgid "package not found with key \"%s\" in %s"
 msgstr "pakiet %s nie znaleziony w %s"
 
-#: lib/rpmdb.c:629 lib/uninstall.c:91
-#, c-format
-msgid "cannot read header at %d for uninstall"
-msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla deinstalacji"
+#: lib/rpmdb.c:545
+#, fuzzy, c-format
+msgid "key \"%s\" not found in %s"
+msgstr "pakiet %s nie znaleziony w %s"
 
-#: lib/rpmdb.c:639
-msgid "package has no name"
-msgstr "pakiet nie ma nazwy"
+#: lib/rpmdb.c:563
+#, fuzzy, c-format
+msgid "rpmdbRemove: cannot read header at 0x%x"
+msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla poszukiwania"
 
-#: lib/rpmdb.c:641
-msgid "removing name index\n"
-msgstr "usuwanie indeksu nazw\n"
+#: lib/rpmdb.c:582
+#, fuzzy, c-format
+msgid "removing 0 %s entries.\n"
+msgstr "usuwanie wpisu w bazie\n"
 
-#: lib/rpmdb.c:646
-msgid "package has no group\n"
-msgstr "pakiet nie ma grupy\n"
-
-#: lib/rpmdb.c:648
-msgid "removing group index\n"
+#: lib/rpmdb.c:588
+#, fuzzy, c-format
+msgid "removing \"%s\" from %s index.\n"
 msgstr "usuwanie indeksu grupy\n"
 
-#: lib/rpmdb.c:655
+#: lib/rpmdb.c:596
+#, fuzzy, c-format
+msgid "removing %d entries in %s index:\n"
+msgstr "usuwanie indeksu nazw\n"
+
+#: lib/rpmdb.c:600 lib/rpmdb.c:775
 #, c-format
-msgid "removing provides index for %s\n"
-msgstr "usuwanie indeksu udostêpnianych zasobów dla %s\n"
+msgid "\t%6d %s\n"
+msgstr ""
 
-#: lib/rpmdb.c:670
-#, c-format
-msgid "removing requiredby index for %s\n"
-msgstr "usuwanie indeksu zale¿no¶ci dla %s\n"
-
-#: lib/rpmdb.c:682
-#, c-format
-msgid "removing trigger index for %s\n"
-msgstr "usuwanie indeksu trigger dla %s\n"
-
-#: lib/rpmdb.c:693
-#, c-format
-msgid "removing conflict index for %s\n"
-msgstr "usuwanie indeksu konfliktów dla %s\n"
-
-#: lib/rpmdb.c:704
-#, c-format
-msgid "removing file index for %s\n"
-msgstr "usuwanie indeksu plików dla %s\n"
-
-#: lib/rpmdb.c:713
-msgid "package has no files\n"
-msgstr "pakiet nie ma plików\n"
-
-#: lib/rpmdb.c:831
+#: lib/rpmdb.c:719
 msgid "cannot allocate space for database"
 msgstr "nie mo¿na alokowaæ przestrzeni dla bazy danych"
 
-#: lib/rpmdb.c:890
+#: lib/rpmdb.c:752
+#, c-format
+msgid "adding 0 %s entries.\n"
+msgstr ""
+
+#: lib/rpmdb.c:764
+#, fuzzy, c-format
+msgid "adding \"%s\" to %s index.\n"
+msgstr "zmiana nazwy %s na %s\n"
+
+#: lib/rpmdb.c:771
+#, c-format
+msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:829
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla uaktualnienia"
 
-#: lib/rpmdb.c:903
+#: lib/rpmdb.c:842
 msgid "header changed size!"
 msgstr "nag³ówek zmieni³ swój rozmiar!"
 
@@ -3480,6 +3470,11 @@ msgstr "skasowanie katalogu %s nie powiod³o siê"
 msgid "removal of %s failed: %s"
 msgstr "skasowanie %s nie powiod³o siê: %s"
 
+#: lib/uninstall.c:91
+#, c-format
+msgid "cannot read header at %d for uninstall"
+msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla deinstalacji"
+
 #: lib/uninstall.c:105
 #, c-format
 msgid "cannot read packages named %s for uninstall"
@@ -3566,6 +3561,33 @@ msgstr "Niespe³nione zale¿no¶ci dla %s-%s-%s: "
 #: lib/verify.c:381
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: rpmdbOpen() nie powiod³o siê\n"
+
+#~ msgid "package %s not listed in %s"
+#~ msgstr "pakiet %s nie jest wymieniony w %s"
+
+#~ msgid "package has no name"
+#~ msgstr "pakiet nie ma nazwy"
+
+#~ msgid "package has no group\n"
+#~ msgstr "pakiet nie ma grupy\n"
+
+#~ msgid "removing provides index for %s\n"
+#~ msgstr "usuwanie indeksu udostêpnianych zasobów dla %s\n"
+
+#~ msgid "removing requiredby index for %s\n"
+#~ msgstr "usuwanie indeksu zale¿no¶ci dla %s\n"
+
+#~ msgid "removing trigger index for %s\n"
+#~ msgstr "usuwanie indeksu trigger dla %s\n"
+
+#~ msgid "removing conflict index for %s\n"
+#~ msgstr "usuwanie indeksu konfliktów dla %s\n"
+
+#~ msgid "removing file index for %s\n"
+#~ msgstr "usuwanie indeksu plików dla %s\n"
+
+#~ msgid "package has no files\n"
+#~ msgstr "pakiet nie ma plików\n"
 
 #~ msgid "cannot create %s"
 #~ msgstr "nie mo¿na utworzyæ %s"

@@ -8,6 +8,7 @@
 	- try for db3 DB_INIT_CDB model.
 	- prefer db3 as default.
 	- permit db3 configuration using macros.
+	- create dbi from template rather than passed args.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

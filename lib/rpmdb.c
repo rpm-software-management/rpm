@@ -799,7 +799,7 @@ int rpmdbAdd(rpmdb db, Header h)
 
 	    dbiSyncIndex(dbi);
 
-	    switch (dbi->dbi_rpmtype) {
+	    switch (rpmtype) {
 	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_I18NSTRING_TYPE:
 		xfree(rpmvals);

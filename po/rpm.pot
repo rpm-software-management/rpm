@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-03 10:01-0400\n"
+"POT-Creation-Date: 2000-04-04 06:01-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1986,12 +1986,12 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/dbindex.c:93
+#: lib/dbindex.c:99
 #, c-format
 msgid "bad db file %s"
 msgstr ""
 
-#: lib/dbindex.c:136
+#: lib/dbindex.c:139
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -1999,22 +1999,22 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/dbindex.c:149
+#: lib/dbindex.c:152
 #, c-format
 msgid "cannot open file %s: %s"
 msgstr ""
 
-#: lib/dbindex.c:189
+#: lib/dbindex.c:192
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: lib/dbindex.c:203
+#: lib/dbindex.c:206
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: lib/dbindex.c:208
+#: lib/dbindex.c:211
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
@@ -2624,96 +2624,96 @@ msgstr ""
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:639
+#: lib/query.c:649
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:642
+#: lib/query.c:652
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: lib/query.c:645
+#: lib/query.c:655
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:657 lib/rpminstall.c:436
+#: lib/query.c:667 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/query.c:660
+#: lib/query.c:670
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:685
+#: lib/query.c:695
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:744
+#: lib/query.c:754
 msgid "query package owning file"
 msgstr ""
 
-#: lib/query.c:746
+#: lib/query.c:756
 msgid "query packages in group"
 msgstr ""
 
-#: lib/query.c:748
+#: lib/query.c:758
 msgid "query a package file"
 msgstr ""
 
-#: lib/query.c:752
+#: lib/query.c:762
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:754
+#: lib/query.c:764
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: lib/query.c:756
+#: lib/query.c:766
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:758
+#: lib/query.c:768
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:797
+#: lib/query.c:807
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/query.c:799
+#: lib/query.c:809
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/query.c:801
+#: lib/query.c:811
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/query.c:803
+#: lib/query.c:813
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:807
+#: lib/query.c:817
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:809
+#: lib/query.c:819
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/query.c:811
+#: lib/query.c:821
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:813
+#: lib/query.c:823
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:349
+#: lib/rebuilddb.c:34 lib/rpmdb.c:290
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -2868,105 +2868,95 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:201
+#: lib/rpmdb.c:188
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:213 lib/url.c:445
+#: lib/rpmdb.c:200 lib/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:227 lib/rpmdb.c:235
+#: lib/rpmdb.c:214 lib/rpmdb.c:222
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: lib/rpmdb.c:228
+#: lib/rpmdb.c:215
 msgid "exclusive"
 msgstr ""
 
-#: lib/rpmdb.c:236
+#: lib/rpmdb.c:223
 msgid "shared"
 msgstr ""
 
-#: lib/rpmdb.c:268 lib/rpmdb.c:321
+#: lib/rpmdb.c:263
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:594
+#: lib/rpmdb.c:536
 #, c-format
-msgid "package %s not listed in %s"
+msgid "package not found with key \"%s\" in %s"
 msgstr ""
 
-#: lib/rpmdb.c:603
+#: lib/rpmdb.c:545
 #, c-format
-msgid "package %s not found in %s"
+msgid "key \"%s\" not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:629 lib/uninstall.c:91
+#: lib/rpmdb.c:563
 #, c-format
-msgid "cannot read header at %d for uninstall"
+msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:639
-msgid "package has no name"
-msgstr ""
-
-#: lib/rpmdb.c:641
-msgid "removing name index\n"
-msgstr ""
-
-#: lib/rpmdb.c:646
-msgid "package has no group\n"
-msgstr ""
-
-#: lib/rpmdb.c:648
-msgid "removing group index\n"
-msgstr ""
-
-#: lib/rpmdb.c:655
+#: lib/rpmdb.c:582
 #, c-format
-msgid "removing provides index for %s\n"
+msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:670
+#: lib/rpmdb.c:588
 #, c-format
-msgid "removing requiredby index for %s\n"
+msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:682
+#: lib/rpmdb.c:596
 #, c-format
-msgid "removing trigger index for %s\n"
+msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:693
+#: lib/rpmdb.c:600 lib/rpmdb.c:775
 #, c-format
-msgid "removing conflict index for %s\n"
+msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:704
-#, c-format
-msgid "removing file index for %s\n"
-msgstr ""
-
-#: lib/rpmdb.c:713
-msgid "package has no files\n"
-msgstr ""
-
-#: lib/rpmdb.c:831
+#: lib/rpmdb.c:719
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:890
+#: lib/rpmdb.c:752
+#, c-format
+msgid "adding 0 %s entries.\n"
+msgstr ""
+
+#: lib/rpmdb.c:764
+#, c-format
+msgid "adding \"%s\" to %s index.\n"
+msgstr ""
+
+#: lib/rpmdb.c:771
+#, c-format
+msgid "adding %d entries to %s index:\n"
+msgstr ""
+
+#: lib/rpmdb.c:829
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:903
+#: lib/rpmdb.c:842
 msgid "header changed size!"
 msgstr ""
 
@@ -3399,6 +3389,11 @@ msgstr ""
 #: lib/uninstall.c:53
 #, c-format
 msgid "removal of %s failed: %s"
+msgstr ""
+
+#: lib/uninstall.c:91
+#, c-format
+msgid "cannot read header at %d for uninstall"
 msgstr ""
 
 #: lib/uninstall.c:105
