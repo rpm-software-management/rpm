@@ -18,7 +18,7 @@ NLSPACKAGE = @PACKAGE@
 LINGUAS = cz de fi fr pt_BR ru sr sv tr
 CATALOGS = $(addsuffix .mo, $(LINGUAS))
 
-POTFILES  = \
+POTFILES = \
 
 all: $(NLSPACKAGE).pot $(CATALOGS)
 
