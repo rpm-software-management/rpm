@@ -28,19 +28,21 @@ typedef struct {
     const char *fileName; /* filename in cpio archive */
     const char *uname;
     const char *gname;
-    int flags;
-    int verifyFlags;
+    int		flags;
+    int		verifyFlags;
     const char *lang;
 } FileListRec;
 
-struct AttrRec {
-    const char *PmodeString;
-    const char *PdirmodeString;
-    const char *Uname;
-    const char *Gname;
-    mode_t Pmode;
-    mode_t Pdirmode;
-};
+typedef struct {
+    const char *ar_fmodestr;
+    const char *ar_dmodestr;
+    const char *ar_user;
+    const char *ar_group;
+    mode_t	ar_fmode;
+    mode_t	ar_dmode;
+} AttrRec;
+
+static AttrRec empty_ar = { NULL, NULL, NULL, NULL, 0, 0 };
 
 struct FileList {
     const char *buildRoot;
@@ -57,8 +59,8 @@ struct FileList {
     int inFtw;
     int currentFlags;
     int currentVerifyFlags;
-    struct AttrRec current;
-    struct AttrRec def;
+    AttrRec cur_ar;
+    AttrRec def_ar;
     int defVerifyFlags;
     const char *currentLang;
 
@@ -95,6 +97,29 @@ static void genCpioListAndHeader(struct FileList *fl,
 				 int *cpioCount, Header h, int isSrc);
 static char *strtokWithQuotes(char *s, char *delim);
 #endif
+
+static void freeAttrRec(AttrRec *ar) {
+    FREE(ar->ar_fmodestr);
+    FREE(ar->ar_dmodestr);
+    FREE(ar->ar_user);
+    FREE(ar->ar_group);
+    /* XXX doesn't free ar (yet) */
+}
+
+static void dupAttrRec(AttrRec *oar, AttrRec *nar) {
+    if (oar != nar) {
+	freeAttrRec(nar);
+	nar = oar;	/* structure assignment */
+    }
+    if (nar->ar_fmodestr)
+	nar->ar_fmodestr = strdup(nar->ar_fmodestr);
+    if (nar->ar_dmodestr)
+	nar->ar_dmodestr = strdup(nar->ar_dmodestr);
+    if (nar->ar_user)
+	nar->ar_user = strdup(nar->ar_user);
+    if (nar->ar_group)
+	nar->ar_group = strdup(nar->ar_group);
+}
 
 /* glob_pattern_p() taken from bash
  * Copyright (C) 1985, 1988, 1989 Free Software Foundation, Inc.
@@ -305,7 +330,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     char *p, *s, *start, *end, *name;
     char ourbuf[1024];
     int x, defattr = 0;
-    struct AttrRec *resultAttr;
+    AttrRec *ar;
 
     if (!(p = start = strstr(buf, "%attr"))) {
 	if (!(p = start = strstr(buf, "%defattr"))) {
@@ -313,15 +338,15 @@ static int parseForAttr(char *buf, struct FileList *fl)
 	}
 	defattr = 1;
 	name = "%defattr";
-	resultAttr = &(fl->def);
+	ar = &(fl->def_ar);
 	p += 8;
     } else {
 	name = "%attr";
-	resultAttr = &(fl->current);
+	ar = &(fl->cur_ar);
 	p += 5;
     }
 
-    resultAttr->PmodeString = resultAttr->Uname = resultAttr->Gname = NULL;
+    ar->ar_fmodestr = ar->ar_user = ar->ar_group = NULL;
 
     SKIPSPACE(p);
 
@@ -358,61 +383,61 @@ static int parseForAttr(char *buf, struct FileList *fl)
     strncpy(ourbuf, p, end-p);
     ourbuf[end-p] = '\0';
 
-    resultAttr->PmodeString = strtok(ourbuf, ", \n\t");
-    resultAttr->Uname = strtok(NULL, ", \n\t");
-    resultAttr->Gname = strtok(NULL, ", \n\t");
-    resultAttr->PdirmodeString = strtok(NULL, ", \n\t");
+    ar->ar_fmodestr = strtok(ourbuf, ", \n\t");
+    ar->ar_user = strtok(NULL, ", \n\t");
+    ar->ar_group = strtok(NULL, ", \n\t");
+    ar->ar_dmodestr = strtok(NULL, ", \n\t");
 
-    if (! (resultAttr->PmodeString &&
-	   resultAttr->Uname && resultAttr->Gname)) {
+    if (! (ar->ar_fmodestr &&
+	   ar->ar_user && ar->ar_group)) {
 	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
-	resultAttr->PmodeString = resultAttr->Uname = resultAttr->Gname = NULL;
+	ar->ar_fmodestr = ar->ar_user = ar->ar_group = NULL;
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
 
     /* Do a quick test on the mode argument and adjust for "-" */
-    if (!strcmp(resultAttr->PmodeString, "-")) {
-	resultAttr->PmodeString = NULL;
+    if (!strcmp(ar->ar_fmodestr, "-")) {
+	ar->ar_fmodestr = NULL;
     } else {
-	x = sscanf(resultAttr->PmodeString, "%o", (unsigned *)&(resultAttr->Pmode));
-	if ((x == 0) || (resultAttr->Pmode >> 12)) {
+	x = sscanf(ar->ar_fmodestr, "%o", (unsigned *)&(ar->ar_fmode));
+	if ((x == 0) || (ar->ar_fmode >> 12)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad %s() mode spec: %s"), name, buf);
-	    resultAttr->PmodeString = resultAttr->Uname =
-		resultAttr->Gname = NULL;
+	    ar->ar_fmodestr = ar->ar_user =
+		ar->ar_group = NULL;
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
-	resultAttr->PmodeString = strdup(resultAttr->PmodeString);
+	ar->ar_fmodestr = strdup(ar->ar_fmodestr);
     }
-    if (resultAttr->PdirmodeString) {
+    if (ar->ar_dmodestr) {
 	/* The processing here is slightly different to maintain */
 	/* compatibility with old spec files.                    */
-	if (!strcmp(resultAttr->PdirmodeString, "-")) {
-	    resultAttr->PdirmodeString = strdup(resultAttr->PdirmodeString);
+	if (!strcmp(ar->ar_dmodestr, "-")) {
+	    ar->ar_dmodestr = strdup(ar->ar_dmodestr);
 	} else {
-	    x = sscanf(resultAttr->PdirmodeString, "%o",
-		       (unsigned *)&(resultAttr->Pdirmode));
-	    if ((x == 0) || (resultAttr->Pdirmode >> 12)) {
+	    x = sscanf(ar->ar_dmodestr, "%o",
+		       (unsigned *)&(ar->ar_dmode));
+	    if ((x == 0) || (ar->ar_dmode >> 12)) {
 		rpmError(RPMERR_BADSPEC,
 			 _("Bad %s() dirmode spec: %s"), name, buf);
-		resultAttr->PmodeString = resultAttr->Uname =
-		    resultAttr->Gname = resultAttr->PdirmodeString = NULL;
+		ar->ar_fmodestr = ar->ar_user =
+		    ar->ar_group = ar->ar_dmodestr = NULL;
 		fl->processingFailed = 1;
 		return RPMERR_BADSPEC;
 	    }
-	    resultAttr->PdirmodeString = strdup(resultAttr->PdirmodeString);
+	    ar->ar_dmodestr = strdup(ar->ar_dmodestr);
 	}
     }
-    if (!strcmp(resultAttr->Uname, "-")) {
-	resultAttr->Uname = NULL;
+    if (!strcmp(ar->ar_user, "-")) {
+	ar->ar_user = NULL;
     } else {
-	resultAttr->Uname = strdup(resultAttr->Uname);
+	ar->ar_user = strdup(ar->ar_user);
     }
-    if (!strcmp(resultAttr->Gname, "-")) {
-	resultAttr->Gname = NULL;
+    if (!strcmp(ar->ar_group, "-")) {
+	ar->ar_group = NULL;
     } else {
-	resultAttr->Gname = strdup(resultAttr->Gname);
+	ar->ar_group = strdup(ar->ar_group);
     }
     
     /* Set everything we just parsed to blank spaces */
@@ -930,24 +955,24 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
     fileGid = statp->st_gid;
 
     /* %attr ? */
-    if (S_ISDIR(fileMode) && fl->current.PdirmodeString) {
-	if (fl->current.PdirmodeString[0] != '-') {
+    if (S_ISDIR(fileMode) && fl->cur_ar.ar_dmodestr) {
+	if (fl->cur_ar.ar_dmodestr[0] != '-') {
 	    fileMode &= S_IFMT;
-	    fileMode |= fl->current.Pdirmode;
+	    fileMode |= fl->cur_ar.ar_dmode;
 	}
     } else {
-	if (fl->current.PmodeString) {
+	if (fl->cur_ar.ar_fmodestr) {
 	    fileMode &= S_IFMT;
-	    fileMode |= fl->current.Pmode;
+	    fileMode |= fl->cur_ar.ar_fmode;
 	}
     }
-    if (fl->current.Uname) {
-	fileUname = getUnameS(fl->current.Uname);
+    if (fl->cur_ar.ar_user) {
+	fileUname = getUnameS(fl->cur_ar.ar_user);
     } else {
 	fileUname = getUname(fileUid);
     }
-    if (fl->current.Gname) {
-	fileGname = getGnameS(fl->current.Gname);
+    if (fl->cur_ar.ar_group) {
+	fileGname = getGnameS(fl->cur_ar.ar_group);
     } else {
 	fileGname = getGname(fileGid);
     }
@@ -1048,7 +1073,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     char buf[BUFSIZ];
     FILE *f;
 
-    struct AttrRec specialDocAttrRec;
+    AttrRec specialDocAttrRec;
     char *specialDoc = NULL;
     
     pkg->cpioList = NULL;
@@ -1095,16 +1120,16 @@ static int processPackageFiles(Spec spec, Package pkg,
 
     fl.passedSpecialDoc = 0;
     
-    fl.current.PmodeString = NULL;
-    fl.current.PdirmodeString = NULL;
-    fl.current.Uname = NULL;
-    fl.current.Gname = NULL;
-    fl.def.PmodeString = NULL;
-    fl.def.PdirmodeString = NULL;
-    fl.def.Uname = NULL;
-    fl.def.Gname = NULL;
-    fl.def.Pmode = 0;
-    fl.def.Pdirmode = 0;
+    fl.cur_ar.ar_fmodestr = NULL;
+    fl.cur_ar.ar_dmodestr = NULL;
+    fl.cur_ar.ar_user = NULL;
+    fl.cur_ar.ar_group = NULL;
+    fl.def_ar.ar_fmodestr = NULL;
+    fl.def_ar.ar_dmodestr = NULL;
+    fl.def_ar.ar_user = NULL;
+    fl.def_ar.ar_group = NULL;
+    fl.def_ar.ar_fmode = 0;
+    fl.def_ar.ar_dmode = 0;
     fl.currentLang = NULL;
 
     fl.defVerifyFlags = RPMVERIFY_ALL;
@@ -1139,23 +1164,23 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
-	fl.current.Pmode = fl.def.Pmode;
-	fl.current.Pdirmode = fl.def.Pdirmode;
+	fl.cur_ar.ar_fmode = fl.def_ar.ar_fmode;
+	fl.cur_ar.ar_dmode = fl.def_ar.ar_dmode;
 	fl.isSpecialDoc = 0;
 
-	FREE(fl.current.PmodeString);
-	FREE(fl.current.PdirmodeString);
-	FREE(fl.current.Uname);
-	FREE(fl.current.Gname);
+	FREE(fl.cur_ar.ar_fmodestr);
+	FREE(fl.cur_ar.ar_dmodestr);
+	FREE(fl.cur_ar.ar_user);
+	FREE(fl.cur_ar.ar_group);
 	FREE(fl.currentLang);
-	if (fl.def.PmodeString)
-	    fl.current.PmodeString = strdup(fl.def.PmodeString);
-	if (fl.def.PdirmodeString)
-	    fl.current.PdirmodeString = strdup(fl.def.PdirmodeString);
-	if (fl.def.Uname)
-	    fl.current.Uname = strdup(fl.def.Uname);
-	if (fl.def.Gname)
-	    fl.current.Gname = strdup(fl.def.Gname);
+	if (fl.def_ar.ar_fmodestr)
+	    fl.cur_ar.ar_fmodestr = strdup(fl.def_ar.ar_fmodestr);
+	if (fl.def_ar.ar_dmodestr)
+	    fl.cur_ar.ar_dmodestr = strdup(fl.def_ar.ar_dmodestr);
+	if (fl.def_ar.ar_user)
+	    fl.cur_ar.ar_user = strdup(fl.def_ar.ar_user);
+	if (fl.def_ar.ar_group)
+	    fl.cur_ar.ar_group = strdup(fl.def_ar.ar_group);
 
 	if (parseForVerify(buf, &fl))
 	    continue;
@@ -1173,20 +1198,20 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
 	    specialDoc = strdup(fileName);
-	    specialDocAttrRec = fl.current;
-	    if (specialDocAttrRec.PmodeString) {
-		specialDocAttrRec.PmodeString =
-		    strdup(specialDocAttrRec.PmodeString);
+	    specialDocAttrRec = fl.cur_ar;
+	    if (specialDocAttrRec.ar_fmodestr) {
+		specialDocAttrRec.ar_fmodestr =
+		    strdup(specialDocAttrRec.ar_fmodestr);
 	    }
-	    if (specialDocAttrRec.PdirmodeString) {
-		specialDocAttrRec.PdirmodeString =
-		    strdup(specialDocAttrRec.PdirmodeString);
+	    if (specialDocAttrRec.ar_dmodestr) {
+		specialDocAttrRec.ar_dmodestr =
+		    strdup(specialDocAttrRec.ar_dmodestr);
 	    }
-	    if (specialDocAttrRec.Uname) {
-		specialDocAttrRec.Uname = strdup(specialDocAttrRec.Uname);
+	    if (specialDocAttrRec.ar_user) {
+		specialDocAttrRec.ar_user = strdup(specialDocAttrRec.ar_user);
 	    }
-	    if (specialDocAttrRec.Gname) {
-		specialDocAttrRec.Gname = strdup(specialDocAttrRec.Gname);
+	    if (specialDocAttrRec.ar_group) {
+		specialDocAttrRec.ar_group = strdup(specialDocAttrRec.ar_group);
 	    }
 	} else {
 	    processBinaryFile(pkg, &fl, fileName);
@@ -1199,9 +1224,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
 	}
 
-	/* fl.current now takes on "ownership" of the specialDocAttrRec */
+	/* fl.cur_ar now takes on "ownership" of the specialDocAttrRec */
 	/* allocated string data.                                       */
-	fl.current = specialDocAttrRec;
+	fl.cur_ar = specialDocAttrRec;
 	fl.isDir = 0;
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
@@ -1223,14 +1248,14 @@ static int processPackageFiles(Spec spec, Package pkg,
     
     /* Clean up */
     FREE(fl.prefix);
-    FREE(fl.current.PmodeString);
-    FREE(fl.current.PdirmodeString);
-    FREE(fl.current.Uname);
-    FREE(fl.current.Gname);
-    FREE(fl.def.PmodeString);
-    FREE(fl.def.PdirmodeString);
-    FREE(fl.def.Uname);
-    FREE(fl.def.Gname);
+    FREE(fl.cur_ar.ar_fmodestr);
+    FREE(fl.cur_ar.ar_dmodestr);
+    FREE(fl.cur_ar.ar_user);
+    FREE(fl.cur_ar.ar_group);
+    FREE(fl.def_ar.ar_fmodestr);
+    FREE(fl.def_ar.ar_dmodestr);
+    FREE(fl.def_ar.ar_user);
+    FREE(fl.def_ar.ar_group);
     FREE(fl.currentLang);
     freeFileList(fl.fileList, fl.fileListRecsUsed);
     while (fl.docDirCount--) {
