@@ -364,3 +364,17 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 
     return 0;
 }
+
+char * currentDirectory(void) {
+    int currDirLen;
+    char * currDir;
+
+    currDirLen = 50;
+    currDir = malloc(currDirLen);
+    while (!getcwd(currDir, currDirLen) && errno == ERANGE) {
+	currDirLen += 50;
+	currDir = realloc(currDir, currDirLen);
+    }
+
+    return currDir;
+}
