@@ -327,7 +327,7 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 	    break;
 	fd->fd_url = u;
 	if (ftpGetFileDesc(fd) < 0)
-	    break;
+	    fd = NULL;	/* XXX fd already closed */
 	break;
     case URL_IS_HTTP:
 	if (urlSplit(url, &u))
