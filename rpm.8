@@ -178,14 +178,25 @@ and the origin of the package.
 PGP configuration information is read from /etc/rpmrc.
 See the section on PGP SIGNATURES for details.
 
-.SH REBUILD OPTION
+.SH REBUILD AND RECOMPILE OPTIONS
 
-There is another way to invoke rpm:
+There are two other ways to invoke rpm:
+
+.I "\fBrpm \-\-recompile <source_package_file>+\fP"
 
 .I "\fBrpm \-\-rebuild <source_package_file>+\fP"
 
-When invoked this way, rpm installs the named source package, and
-builds a binary package from it as if it were invoked as:
+When invoked this way, rpm installs the named source package, and does
+a prep, compile and install.  In addition, \-\-rebuild builds a new
+binary package.
+
+.SH SIGNING AN EXISTING RPM
+
+.I "\fBrpm \-\-resign <binary_package_file>+\fP"
+
+This option generates and inserts new signatures for the listed packages.
+Any existing signatures are removed.
+
 
 .SH WHERE OPTION
 
