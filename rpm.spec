@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.3
 Version: %{version}
-Release: 0.10
+Release: 0.11
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -73,6 +73,11 @@ if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f /usr/lib/rpm/convertrpmrc.sh ]
 then
 	sh /usr/lib/rpm/convertrpmrc.sh 2>&1 > /dev/null
 fi
+%endif
+
+%ifos linux
+%post -n devel -b /sbin/ldconfig
+%postun -n devel -b /sbin/ldconfig
 %endif
 
 %files
