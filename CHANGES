@@ -7,6 +7,8 @@
 	- don't use error string after gzclose (Dmitry V. Levin).
 	- only internal Berkeley db from now on.
 	- revive "make dist".
+	- build with db-4.2.52 internal.
+	- refresh bsddb.
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.

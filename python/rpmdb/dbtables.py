@@ -15,7 +15,7 @@
 # This provides a simple database table interface built on top of
 # the Python BerkeleyDB 3 interface.
 #
-_cvsid = 'Id: dbtables.py,v 1.7 2003/01/28 17:20:42 bwarsaw Exp '
+_cvsid = 'Id: dbtables.py,v 1.9 2003/09/21 00:08:14 greg Exp '
 
 import re
 import sys
@@ -150,6 +150,9 @@ class bsdTableDB :
         if truncate:
             myflags |= DB_TRUNCATE
         self.db = DB(self.env)
+        # this code relies on DBCursor.set* methods to raise exceptions
+        # rather than returning None
+        self.db.set_get_returns_none(1)
         # allow duplicate entries [warning: be careful w/ metadata]
         self.db.set_flags(DB_DUP)
         self.db.open(filename, DB_BTREE, dbflags | myflags, mode)

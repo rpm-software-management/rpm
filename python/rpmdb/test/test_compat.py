@@ -4,13 +4,13 @@ regression test suite.
 """
 
 import sys, os, string
-import rpmdb
 import unittest
 import tempfile
 
 from test_all import verbose
 
 from rpmdb import db, hashopen, btopen, rnopen
+
 
 class CompatibilityTestCase(unittest.TestCase):
     def setUp(self):

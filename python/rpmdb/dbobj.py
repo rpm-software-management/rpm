@@ -15,6 +15,12 @@
 #           implied.
 #
 
+#
+# TODO it would be *really nice* to have an automatic shadow class populator
+# so that new methods don't need to be added  here manually after being
+# added to _bsddb.c.
+#
+
 import db
 
 try:
@@ -33,6 +39,8 @@ class DBEnv:
         return apply(self._cobj.open, args, kwargs)
     def remove(self, *args, **kwargs):
         return apply(self._cobj.remove, args, kwargs)
+    def set_shm_key(self, *args, **kwargs):
+        return apply(self._cobj.set_shm_key, args, kwargs)
     def set_cachesize(self, *args, **kwargs):
         return apply(self._cobj.set_cachesize, args, kwargs)
     def set_data_dir(self, *args, **kwargs):
@@ -57,6 +65,8 @@ class DBEnv:
         return apply(self._cobj.set_lk_max_objects, args, kwargs)
     def set_mp_mmapsize(self, *args, **kwargs):
         return apply(self._cobj.set_mp_mmapsize, args, kwargs)
+    def set_timeout(self, *args, **kwargs):
+        return apply(self._cobj.set_timeout, args, kwargs)
     def set_tmp_dir(self, *args, **kwargs):
         return apply(self._cobj.set_tmp_dir, args, kwargs)
     def txn_begin(self, *args, **kwargs):
