@@ -38,7 +38,7 @@ arch_canon: 	sun4c:	sparc	3
 arch_canon:	mips:	mips	4
 arch_canon:	ppc:	ppc	5
 # This is really a place holder for 68000
-arch_canon:	m68k:	68k	6
+arch_canon:	m68k:	m68k	6
 # This is wrong.
 arch_canon:	IP:	sgi	7
 
