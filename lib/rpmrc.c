@@ -151,7 +151,7 @@ static int findArchOsScore(struct archosEquivTable * table, char * name) {
 
     info = archosEquivSearch(table, name);
     if (info) 
-	return info - table->list;
+	return info->score;
     else
 	return 0;
 }
