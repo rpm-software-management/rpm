@@ -286,10 +286,6 @@ fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
     /* HACK: sensitive to error returns? */
     u->httpVersion = (ne_version_pre_http11(u->sess) ? 0 : 1);
 
-    /* HACK: stupid error impedence matching. */
-    if (rc)
-	rc = FTPERR_FAILED_CONNECT;
-
     return rc;
 }
 
@@ -322,10 +318,11 @@ static int davInit(const char * url, urlinfo * uret)
 /*@=noeffect@*/
 	rc = ne_sock_init();			/* XXX oneshot? */
 
+	u->lockstore = ne_lockstore_create();	/* XXX oneshot? */
+
 	u->capabilities = capabilities = xcalloc(1, sizeof(*capabilities));
 	u->sess = ne_session_create(u->scheme, u->host, u->port);
 
-	u->lockstore = ne_lockstore_create();	/* XXX oneshot? */
 	ne_lockstore_register(u->lockstore, u->sess);
 
 	if (u->proxyh != NULL)
@@ -794,27 +791,6 @@ exit:
 }
 
 /* =============================================================== */
-/*@observer@*/
-static const char * my_retstrerror(int ret)
-	/*@*/
-{
-    const char * str = "NE_UNKNOWN";
-    switch (ret) {
-    case NE_OK:		str = "NE_OK: Succeeded.";			break;
-    case NE_ERROR:	str = "NE_ERROR: Generic error.";		break;
-    case NE_LOOKUP:	str = "NE_LOOKUP: Hostname lookup failed.";	break;
-    case NE_AUTH:	str = "NE_AUTH: Server authentication failed.";	break;
-    case NE_PROXYAUTH:	str = "NE_PROXYAUTH: Proxy authentication failed.";break;
-    case NE_CONNECT:	str = "NE_CONNECT: Could not connect to server.";break;
-    case NE_TIMEOUT:	str = "NE_TIMEOUT: Connection timed out.";	break;
-    case NE_FAILED:	str = "NE_FAILED: The precondition failed.";	break;
-    case NE_RETRY:	str = "NE_RETRY: Retry request.";		break;
-    case NE_REDIRECT:	str = "NE_REDIRECT: Redirect received.";	break;
-    default:		str = "NE_UNKNOWN";				break;
-    }
-    return str;
-}
-
 static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
 	/*@modifies *fp @*/
 {
@@ -825,10 +801,12 @@ static int my_result(const char * msg, int ret, /*@null@*/ FILE * fp)
 	fp = stderr;
     if (msg != NULL)
 	fprintf(fp, "*** %s: ", msg);
+
+    /* HACK FTPERR_NE_FOO == -NE_FOO error impedance match */
 #ifdef	HACK
-    fprintf(fp, "%s: %s\n", my_retstrerror(ret), ne_get_error(sess));
+    fprintf(fp, "%s: %s\n", ftpStrerror(-ret), ne_get_error(sess));
 #else
-    fprintf(fp, "%s\n", my_retstrerror(ret));
+    fprintf(fp, "%s\n", ftpStrerror(-ret));
 #endif
     return ret;
 }
@@ -903,25 +881,10 @@ int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
 if (_dav_debug < 0)
 fprintf(stderr, "*** davResp(%p,%p,%p) sess %p req %p rc %d\n", u, ctrl, str, u->sess, ctrl->req, rc);
 
-    /* HACK: stupid error impedence matching. */
-    /* HACK: NE_TIMEOUT et al here does not unravel refcnt correctly. */
-    switch (rc) {
-    case NE_OK:		rc = 0;				break;
-    case NE_ERROR:	rc = FTPERR_SERVER_IO_ERROR;	break;
-    case NE_LOOKUP:	rc = FTPERR_BAD_HOSTNAME;	break;
-    case NE_AUTH:	rc = FTPERR_FAILED_CONNECT;	break;
-    case NE_PROXYAUTH:	rc = FTPERR_FAILED_CONNECT;	break;
-    case NE_CONNECT:	rc = FTPERR_FAILED_CONNECT;	break;
-    case NE_TIMEOUT:	rc = FTPERR_SERVER_TIMEOUT;	break;
-    case NE_FAILED:	rc = FTPERR_SERVER_IO_ERROR;	break;
-    case NE_RETRY:	/* HACK: davReq handles. */	break;
-    case NE_REDIRECT:	rc = FTPERR_BAD_SERVER_RESPONSE;break;
-    default:		rc = FTPERR_UNKNOWN;		break;
-    }
-
+    /* HACK FTPERR_NE_FOO == -NE_FOO error impedance match */
 /*@-observertrans@*/
     if (rc)
-	fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
+	fdSetSyserrno(ctrl, errno, ftpStrerror(-rc));
 /*@=observertrans@*/
 
     return rc;
@@ -978,6 +941,7 @@ assert(ctrl->req != NULL);
 
 	/* HACK: other errors may need retry too. */
 	/* HACK: neon retries once, gud enuf. */
+	/* HACK: retry counter? */
 	do {
 	    rc = davResp(u, ctrl, NULL);
 	} while (rc == NE_RETRY);
@@ -995,6 +959,9 @@ errxit:
 /*@-observertrans@*/
     fdSetSyserrno(ctrl, errno, ftpStrerror(rc));
 /*@=observertrans@*/
+
+    /* HACK balance fd refs. ne_session_destroy to tear down non-keepalive? */
+    ctrl = fdLink(ctrl, "error data (davReq)");
 
     return rc;
 }

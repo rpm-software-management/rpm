@@ -39,6 +39,7 @@
 	- fix: chunked davRead returns 0 is EOF.
 	- python: bleeping keywords broke labelCompare.
 	- add support for automagic pubkey retrieval using HKP.
+	- detect and return errors from neon through Ferror.
 
 4.3.2 -> 4.3.3:
 	- bump micro version.
