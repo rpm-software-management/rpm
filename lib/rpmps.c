@@ -44,6 +44,14 @@ fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=refcounttrans@*/
 }
 
+int rpmpsNumProblems(rpmps ps)
+{
+    int numProblems = 0;
+    if (ps && ps->probs)
+	numProblems = ps->numProblems;
+    return numProblems;
+}
+
 rpmps rpmpsCreate(void)
 {
     rpmps ps = xcalloc(1, sizeof(*ps));

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-10 12:05-0400\n"
+"POT-Creation-Date: 2002-06-12 10:53-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2254,7 +2254,7 @@ msgid "can't query %s: %s\n"
 msgstr "zmazanie %s zlyhalo: %s\n"
 
 #: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:363 lib/rpminstall.c:500
-#: lib/rpminstall.c:883
+#: lib/rpminstall.c:884
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
@@ -2338,7 +2338,7 @@ msgstr "po¾aduje sa záznam èíslo %d\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:962 lib/rpminstall.c:671
+#: lib/query.c:962 lib/rpminstall.c:672
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
@@ -2490,7 +2490,7 @@ msgstr "chyba pri vytváraní doèasného súboru %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:492 lib/rpminstall.c:739
+#: lib/rpminstall.c:492 lib/rpminstall.c:740
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
@@ -2500,7 +2500,7 @@ msgstr "%s nie je mo¾né nain¹talova»\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: lib/rpminstall.c:542 lib/rpminstall.c:1070
+#: lib/rpminstall.c:542 lib/rpminstall.c:1071
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
@@ -2513,31 +2513,31 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr "in¹talujú sa binárne balíky\n"
 
-#: lib/rpminstall.c:599
+#: lib/rpminstall.c:600
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s: %s"
 
-#: lib/rpminstall.c:674
+#: lib/rpminstall.c:675
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:700
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstránenie týchto balíkov by poru¹ilo závislosti:\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpminstall.c:732
+#: lib/rpminstall.c:733
 #, c-format
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpminstall.c:1064
+#: lib/rpminstall.c:1065
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2548,81 +2548,81 @@ msgid "read failed: %s (%d)\n"
 msgstr "èítanie zlyhalo: %s (%d)"
 
 #. @observer@
-#: lib/rpmps.c:207
+#: lib/rpmps.c:215
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:215
+#: lib/rpmps.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:220
+#: lib/rpmps.c:228
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr ""
 
-#: lib/rpmps.c:225
+#: lib/rpmps.c:233
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:230
+#: lib/rpmps.c:238
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:235
+#: lib/rpmps.c:243
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:240
+#: lib/rpmps.c:248
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/rpmps.c:245
+#: lib/rpmps.c:253
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:250
+#: lib/rpmps.c:258
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:260
+#: lib/rpmps.c:268
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:265
+#: lib/rpmps.c:273
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:277
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
-#: lib/rpmps.c:273
+#: lib/rpmps.c:281
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/rpmps.c:278
+#: lib/rpmps.c:286
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "conflicts with"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "is needed by"
 msgstr " je vy¾adované %s-%s-%s\n"
@@ -2728,7 +2728,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:563
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -3092,8 +3092,8 @@ msgstr "nie je mo¾né otvori» %s\n"
 msgid "no dbpath has been set\n"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2043
-#: rpmdb/rpmdb.c:2148 rpmdb/rpmdb.c:2835
+#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2044
+#: rpmdb/rpmdb.c:2149 rpmdb/rpmdb.c:2836
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "chyba pri naèítaní záznamu %s z %s"
@@ -3103,135 +3103,135 @@ msgstr "chyba pri naèítaní záznamu %s z %s"
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: rpmdb/rpmdb.c:1966
+#: rpmdb/rpmdb.c:1967
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2231
+#: rpmdb/rpmdb.c:2232
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: rpmdb/rpmdb.c:2292
+#: rpmdb/rpmdb.c:2293
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: rpmdb/rpmdb.c:2403
+#: rpmdb/rpmdb.c:2404
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: rpmdb/rpmdb.c:2407
+#: rpmdb/rpmdb.c:2408
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: rpmdb/rpmdb.c:2434
+#: rpmdb/rpmdb.c:2435
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: rpmdb/rpmdb.c:2455
+#: rpmdb/rpmdb.c:2456
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: rpmdb/rpmdb.c:2465
+#: rpmdb/rpmdb.c:2466
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: rpmdb/rpmdb.c:2607
+#: rpmdb/rpmdb.c:2608
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2812
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: rpmdb/rpmdb.c:2815
+#: rpmdb/rpmdb.c:2816
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: rpmdb/rpmdb.c:2851
+#: rpmdb/rpmdb.c:2852
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: rpmdb/rpmdb.c:3190
+#: rpmdb/rpmdb.c:3191
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3225
+#: rpmdb/rpmdb.c:3226
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3253
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: rpmdb/rpmdb.c:3256
+#: rpmdb/rpmdb.c:3257
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: rpmdb/rpmdb.c:3262
+#: rpmdb/rpmdb.c:3263
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:3265
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3272
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: rpmdb/rpmdb.c:3282
+#: rpmdb/rpmdb.c:3283
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: rpmdb/rpmdb.c:3306
+#: rpmdb/rpmdb.c:3307
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: rpmdb/rpmdb.c:3346
+#: rpmdb/rpmdb.c:3347
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: rpmdb/rpmdb.c:3364
+#: rpmdb/rpmdb.c:3365
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:3373
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: rpmdb/rpmdb.c:3374
+#: rpmdb/rpmdb.c:3375
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: rpmdb/rpmdb.c:3384
+#: rpmdb/rpmdb.c:3385
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3386
+#: rpmdb/rpmdb.c:3387
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"

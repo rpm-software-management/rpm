@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-10 12:05-0400\n"
+"POT-Creation-Date: 2002-06-12 10:53-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2210,7 +2210,7 @@ msgid "can't query %s: %s\n"
 msgstr "kunne ikke forespørge %s: %s\n"
 
 #: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:363 lib/rpminstall.c:500
-#: lib/rpminstall.c:883
+#: lib/rpminstall.c:884
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
@@ -2293,7 +2293,7 @@ msgstr "pakkens post-nummer: %u\n"
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:962 lib/rpminstall.c:671
+#: lib/query.c:962 lib/rpminstall.c:672
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -2446,7 +2446,7 @@ msgstr "fejl ved læsning fra filen %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s kræver en nyere version af RPM\n"
 
-#: lib/rpminstall.c:492 lib/rpminstall.c:739
+#: lib/rpminstall.c:492 lib/rpminstall.c:740
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kunne ikke installeres\n"
@@ -2456,7 +2456,7 @@ msgstr "%s kunne ikke installeres\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "fandt %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:542 lib/rpminstall.c:1070
+#: lib/rpminstall.c:542 lib/rpminstall.c:1071
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "afhængighedskrav, der ikke kunne imødekommes:\n"
@@ -2469,31 +2469,31 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:599
+#: lib/rpminstall.c:600
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kunne ikke åbne fil %s: %s\n"
 
-#: lib/rpminstall.c:674
+#: lib/rpminstall.c:675
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" angiver flere pakker\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:700
 msgid "removing these packages would break dependencies:\n"
 msgstr "fjernelse af disse pakker ville bryde afhængighederne:\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/rpminstall.c:732
+#: lib/rpminstall.c:733
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"
 
-#: lib/rpminstall.c:1064
+#: lib/rpminstall.c:1065
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2504,82 +2504,82 @@ msgid "read failed: %s (%d)\n"
 msgstr "læsning mislykkedes: %s (%d)\n"
 
 #. @observer@
-#: lib/rpmps.c:207
+#: lib/rpmps.c:215
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:215
+#: lib/rpmps.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "pakken %s hører til en anden arkitektur"
 
-#: lib/rpmps.c:220
+#: lib/rpmps.c:228
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "pakken %s hører til et andet operativsystem"
 
-#: lib/rpmps.c:225
+#: lib/rpmps.c:233
 #, c-format
 msgid "package %s is already installed"
 msgstr "pakken %s er allerede installeret"
 
-#: lib/rpmps.c:230
+#: lib/rpmps.c:238
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "sti %s i pakke %s kan ikke omrokeres"
 
-#: lib/rpmps.c:235
+#: lib/rpmps.c:243
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "filen %s skaber konflikt mellem den forsøgte installation af %s og %s"
 
-#: lib/rpmps.c:240
+#: lib/rpmps.c:248
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "filen %s fra installationen af %s skaber konflikt med fil fra pakken %s"
 
-#: lib/rpmps.c:245
+#: lib/rpmps.c:253
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "pakke %s (som er nyere end %s) er allerede installeret"
 
-#: lib/rpmps.c:250
+#: lib/rpmps.c:258
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "installation af pakke %s kræver %ld%cb på %s-filsystemet"
 
-#: lib/rpmps.c:260
+#: lib/rpmps.c:268
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "installation af pakken %s kræver %ld inode'r på %s-filsystemet"
 
-#: lib/rpmps.c:265
+#: lib/rpmps.c:273
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "pakke %s prætransaktion-systemkald: %s mislykkedes: %s"
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:277
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
 
-#: lib/rpmps.c:273
+#: lib/rpmps.c:281
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "pakke %s skaber konflikt: %s\n"
 
-#: lib/rpmps.c:278
+#: lib/rpmps.c:286
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "ukendt fejl %d under arbejdet med pakken %s"
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "conflicts with"
 msgstr " skaber konflikt med %s-%s-%s\n"
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "is needed by"
 msgstr " kræves af %s-%s-%s\n"
@@ -2687,7 +2687,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:563
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr "henter liste over monterede filsystemer\n"
 
@@ -3043,8 +3043,8 @@ msgstr "kan ikke åbne '%s'-indeks\n"
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
-#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2043
-#: rpmdb/rpmdb.c:2148 rpmdb/rpmdb.c:2835
+#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2044
+#: rpmdb/rpmdb.c:2149 rpmdb/rpmdb.c:2836
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
@@ -3054,138 +3054,138 @@ msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:1966
+#: rpmdb/rpmdb.c:1967
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2231
+#: rpmdb/rpmdb.c:2232
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: rpmdb/rpmdb.c:2292
+#: rpmdb/rpmdb.c:2293
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:2403
+#: rpmdb/rpmdb.c:2404
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "fjerner \"%s\" fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2407
+#: rpmdb/rpmdb.c:2408
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "fjerne %d indgange fra %s-indekset.\n"
 
-#: rpmdb/rpmdb.c:2434
+#: rpmdb/rpmdb.c:2435
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: rpmdb/rpmdb.c:2455
+#: rpmdb/rpmdb.c:2456
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:2465
+#: rpmdb/rpmdb.c:2466
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:2607
+#: rpmdb/rpmdb.c:2608
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2812
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 "tilføjer \"%s\" til '%s'-indekset.\n"
 "\n"
 
-#: rpmdb/rpmdb.c:2815
+#: rpmdb/rpmdb.c:2816
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "tilføjer %d indgange til '%s'-indekset.\n"
 
-#: rpmdb/rpmdb.c:2851
+#: rpmdb/rpmdb.c:2852
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: rpmdb/rpmdb.c:3190
+#: rpmdb/rpmdb.c:3191
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "fjerner %s efter vellykket genopbygning af db3.\n"
 
-#: rpmdb/rpmdb.c:3225
+#: rpmdb/rpmdb.c:3226
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3253
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "genopbygger database %s over i %s\n"
 
-#: rpmdb/rpmdb.c:3256
+#: rpmdb/rpmdb.c:3257
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: rpmdb/rpmdb.c:3262
+#: rpmdb/rpmdb.c:3263
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:3265
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "opretter kataloget %s: %s\n"
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3272
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "åbner gammel database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3282
+#: rpmdb/rpmdb.c:3283
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "åbner ny database med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3306
+#: rpmdb/rpmdb.c:3307
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: rpmdb/rpmdb.c:3346
+#: rpmdb/rpmdb.c:3347
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: rpmdb/rpmdb.c:3364
+#: rpmdb/rpmdb.c:3365
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:3373
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: rpmdb/rpmdb.c:3374
+#: rpmdb/rpmdb.c:3375
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: rpmdb/rpmdb.c:3384
+#: rpmdb/rpmdb.c:3385
 #, c-format
 msgid "removing directory %s\n"
 msgstr "fjerner kataloget %s\n"
 
-#: rpmdb/rpmdb.c:3386
+#: rpmdb/rpmdb.c:3387
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"

@@ -364,7 +364,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     ps = rpmtsProblems(ts);
 
     /*@-branchstate@*/
-    if (ps) {
+    if (rpmpsNumProblems(ps) > 0) {
 	const char * pkgNEVR, * altNEVR;
 	rpmProblem p;
 	char * t, * te;
@@ -387,7 +387,6 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	    /* XXX FIXME: should probably supply the "[R|C] " type prefix */
 	    te = stpcpy(te, altNEVR+2);
 	}
-	ps = rpmpsFree(ps);
 
 	if (te > t) {
 	    *te++ = '\n';
@@ -399,6 +398,8 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	rc = 1;
     }
     /*@=branchstate@*/
+
+    ps = rpmpsFree(ps);
 
     rpmtsClean(ts);
 

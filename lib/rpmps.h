@@ -128,7 +128,16 @@ rpmps XrpmpsLink (rpmps ps,
 #define	rpmpsLink(_ps, _msg)	XrpmpsLink(_ps, _msg, __FILE__, __LINE__)
 
 /**
+ * Return number of problems in set.
+ * @param ps		problem set
+ * @return		number of problems
+ */
+int rpmpsNumProblems(rpmps ps)
+	/*@*/;
+
+/**
  * Create a problem set.
+ * @return		new problem set
  */
 rpmps rpmpsCreate(void)
 	/*@*/;

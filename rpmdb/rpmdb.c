@@ -1459,7 +1459,7 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
  * Return pattern match.
  * @param mire		match iterator regex
  * @param val		value to match
- * @return		0 if pattern matches
+ * @return		0 if pattern matches, >0 on nomatch, <0 on error
  */
 static int miregexec(miRE mire, const char * val)
 	/*@*/
@@ -1469,6 +1469,7 @@ static int miregexec(miRE mire, const char * val)
     switch (mire->mode) {
     case RPMMIRE_STRCMP:
 	rc = strcmp(mire->pattern, val);
+	if (rc) rc = 1;
 	break;
     case RPMMIRE_DEFAULT:
     case RPMMIRE_REGEX:

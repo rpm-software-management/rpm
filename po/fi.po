@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-10 12:05-0400\n"
+"POT-Creation-Date: 2002-06-12 10:53-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2256,7 +2256,7 @@ msgid "can't query %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
 #: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:363 lib/rpminstall.c:500
-#: lib/rpminstall.c:883
+#: lib/rpminstall.c:884
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
@@ -2340,7 +2340,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %u could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:962 lib/rpminstall.c:671
+#: lib/query.c:962 lib/rpminstall.c:672
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -2492,7 +2492,7 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:492 lib/rpminstall.c:739
+#: lib/rpminstall.c:492 lib/rpminstall.c:740
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "virhe: %s ei voida asentaa\n"
@@ -2502,7 +2502,7 @@ msgstr "virhe: %s ei voida asentaa\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/rpminstall.c:542 lib/rpminstall.c:1070
+#: lib/rpminstall.c:542 lib/rpminstall.c:1071
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
@@ -2516,31 +2516,31 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr "asenna paketti"
 
-#: lib/rpminstall.c:599
+#: lib/rpminstall.c:600
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpminstall.c:674
+#: lib/rpminstall.c:675
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:700
 msgid "removing these packages would break dependencies:\n"
 msgstr "n‰iden pakettien poisto rikkoisi riippuvuuksia:\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpminstall.c:732
+#: lib/rpminstall.c:733
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
 
-#: lib/rpminstall.c:1064
+#: lib/rpminstall.c:1065
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "poistolle ei m‰‰ritelty paketteja"
@@ -2551,81 +2551,81 @@ msgid "read failed: %s (%d)\n"
 msgstr "luku ep‰onnistui: %s (%d)"
 
 #. @observer@
-#: lib/rpmps.c:207
+#: lib/rpmps.c:215
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:215
+#: lib/rpmps.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/rpmps.c:220
+#: lib/rpmps.c:228
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/rpmps.c:225
+#: lib/rpmps.c:233
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/rpmps.c:230
+#: lib/rpmps.c:238
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/rpmps.c:235
+#: lib/rpmps.c:243
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:240
+#: lib/rpmps.c:248
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 
-#: lib/rpmps.c:245
+#: lib/rpmps.c:253
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/rpmps.c:250
+#: lib/rpmps.c:258
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:260
+#: lib/rpmps.c:268
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:265
+#: lib/rpmps.c:273
 #, fuzzy, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:277
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/rpmps.c:273
+#: lib/rpmps.c:281
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/rpmps.c:278
+#: lib/rpmps.c:286
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "conflicts with"
 msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "is needed by"
 msgstr "vaatii %s-%s-%s\n"
@@ -2731,7 +2731,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:563
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -3097,8 +3097,8 @@ msgstr "virhe: en voi avata %s\n"
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2043
-#: rpmdb/rpmdb.c:2148 rpmdb/rpmdb.c:2835
+#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2044
+#: rpmdb/rpmdb.c:2149 rpmdb/rpmdb.c:2836
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
@@ -3108,134 +3108,134 @@ msgstr "virhe luettaessa tietuetta %s %s:st‰"
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:1966
+#: rpmdb/rpmdb.c:1967
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2231
+#: rpmdb/rpmdb.c:2232
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
 
-#: rpmdb/rpmdb.c:2292
+#: rpmdb/rpmdb.c:2293
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2403
+#: rpmdb/rpmdb.c:2404
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2407
+#: rpmdb/rpmdb.c:2408
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2434
+#: rpmdb/rpmdb.c:2435
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "virhe luettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2455
+#: rpmdb/rpmdb.c:2456
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:2465
+#: rpmdb/rpmdb.c:2466
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2607
+#: rpmdb/rpmdb.c:2608
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2812
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2815
+#: rpmdb/rpmdb.c:2816
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
-#: rpmdb/rpmdb.c:2851
+#: rpmdb/rpmdb.c:2852
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "virhe talletettaessa tietuetta %s %s:‰‰n"
 
-#: rpmdb/rpmdb.c:3190
+#: rpmdb/rpmdb.c:3191
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3225
+#: rpmdb/rpmdb.c:3226
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3253
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3256
+#: rpmdb/rpmdb.c:3257
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "v‰liaikainen tietokanta %s on jo olemassa"
 
-#: rpmdb/rpmdb.c:3262
+#: rpmdb/rpmdb.c:3263
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:3265
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3272
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3282
+#: rpmdb/rpmdb.c:3283
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/rpmdb.c:3306
+#: rpmdb/rpmdb.c:3307
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: rpmdb/rpmdb.c:3346
+#: rpmdb/rpmdb.c:3347
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "en voi lis‰t‰ tietuetta %d:st‰"
 
-#: rpmdb/rpmdb.c:3364
+#: rpmdb/rpmdb.c:3365
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:3373
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3374
+#: rpmdb/rpmdb.c:3375
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3384
+#: rpmdb/rpmdb.c:3385
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: rpmdb/rpmdb.c:3386
+#: rpmdb/rpmdb.c:3387
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"

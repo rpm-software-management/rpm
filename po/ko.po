@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-06-10 12:05-0400\n"
+"POT-Creation-Date: 2002-06-12 10:53-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2183,7 +2183,7 @@ msgid "can't query %s: %s\n"
 msgstr "%s(을)를 질의할 수 없음: %s\n"
 
 #: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:363 lib/rpminstall.c:500
-#: lib/rpminstall.c:883
+#: lib/rpminstall.c:884
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
@@ -2267,7 +2267,7 @@ msgstr "패키지 기록(record) 번호: %u\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u(은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:962 lib/rpminstall.c:671
+#: lib/query.c:962 lib/rpminstall.c:672
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지가 설치되어 있지 않습니다\n"
@@ -2419,7 +2419,7 @@ msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s 파일은 최신 버전의 RPM을 필요로 합니다\n"
 
-#: lib/rpminstall.c:492 lib/rpminstall.c:739
+#: lib/rpminstall.c:492 lib/rpminstall.c:740
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s(은)는 설치할 수 없습니다\n"
@@ -2429,7 +2429,7 @@ msgstr "%s(은)는 설치할 수 없습니다\n"
 msgid "found %d source and %d binary packages\n"
 msgstr "%d의 소스와 %d의 바이너리 패키지가 검색되었습니다\n"
 
-#: lib/rpminstall.c:542 lib/rpminstall.c:1070
+#: lib/rpminstall.c:542 lib/rpminstall.c:1071
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
@@ -2442,31 +2442,31 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:599
+#: lib/rpminstall.c:600
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:674
+#: lib/rpminstall.c:675
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:700
 msgid "removing these packages would break dependencies:\n"
 msgstr "이 패키지들을 제거할 경우 의존성이 깨질 수 있음:\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:732
+#: lib/rpminstall.c:733
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1064
+#: lib/rpminstall.c:1065
 #, fuzzy, c-format
 msgid "rollback %d packages to %s"
 msgstr "(+%d,-%d) 패키지를 %s으로 롤백(rollback)합니다"
@@ -2477,87 +2477,87 @@ msgid "read failed: %s (%d)\n"
 msgstr "읽는데 실패함: %s (%d)\n"
 
 #. @observer@
-#: lib/rpmps.c:207
+#: lib/rpmps.c:215
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:215
+#: lib/rpmps.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "%s(은)는 다른 아키텍쳐를 위한 패키지입니다"
 
-#: lib/rpmps.c:220
+#: lib/rpmps.c:228
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "%s(은)는 다른 운영체제를 위한 패키지입니다"
 
-#: lib/rpmps.c:225
+#: lib/rpmps.c:233
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/rpmps.c:230
+#: lib/rpmps.c:238
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
-#: lib/rpmps.c:235
+#: lib/rpmps.c:243
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%2$s(와)과 %3$s의 설치 과정에서 %1$s 파일이 서로 충돌합니다"
 
-#: lib/rpmps.c:240
+#: lib/rpmps.c:248
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%2$s에서 설치되는 %1$s 파일은 %3$s 패키지의 파일과 충돌합니다"
 
-#: lib/rpmps.c:245
+#: lib/rpmps.c:253
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
-#: lib/rpmps.c:250
+#: lib/rpmps.c:258
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
 "니다"
 
-#: lib/rpmps.c:260
+#: lib/rpmps.c:268
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld의 아이노드(inode)"
 "가 필요합니다"
 
-#: lib/rpmps.c:265
+#: lib/rpmps.c:273
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 "%s 패키지의 선(pre)-트랜잭션 시스템콜(syscall): %s(이)가 실패했습니다: %s"
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:277
 #, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"
 
-#: lib/rpmps.c:273
+#: lib/rpmps.c:281
 #, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "%s 패키지의 충돌사항(내역)이 만족하지 않음: %s\n"
 
-#: lib/rpmps.c:278
+#: lib/rpmps.c:286
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 "%2$s 패키지를 처리하는 과정에서 알 수 없는 오류 %1$d(이)가 발생했습니다"
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "conflicts with"
 msgstr " %s-%s-%s (와)과 충돌합니다\n"
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "is needed by"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
@@ -2663,7 +2663,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:563
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -3021,8 +3021,8 @@ msgstr "%s 인덱스를 열 수 없습니다\n"
 msgid "no dbpath has been set\n"
 msgstr "db경로가 설정되어 있지 않습니다\n"
 
-#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2043
-#: rpmdb/rpmdb.c:2148 rpmdb/rpmdb.c:2835
+#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2044
+#: rpmdb/rpmdb.c:2149 rpmdb/rpmdb.c:2836
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
@@ -3033,137 +3033,137 @@ msgstr ""
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:1966
+#: rpmdb/rpmdb.c:1967
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2231
+#: rpmdb/rpmdb.c:2232
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:2292
+#: rpmdb/rpmdb.c:2293
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2403
+#: rpmdb/rpmdb.c:2404
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%2$s 인덱스에서 \"%1$s\"(을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2407
+#: rpmdb/rpmdb.c:2408
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%2$s 인덱스에서 %1$d 항목들(entries)을 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2434
+#: rpmdb/rpmdb.c:2435
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2455
+#: rpmdb/rpmdb.c:2456
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2465
+#: rpmdb/rpmdb.c:2466
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "%3$s에서 %2$s 레코드를 삭제하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2607
+#: rpmdb/rpmdb.c:2608
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2812
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%2$s 인덱스에 \"%1$s\"(을)를 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:2815
+#: rpmdb/rpmdb.c:2816
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:2851
+#: rpmdb/rpmdb.c:2852
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:3190
+#: rpmdb/rpmdb.c:3191
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3를 재구축한 후에 %s(을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:3225
+#: rpmdb/rpmdb.c:3226
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3253
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%2$s에 %1$s 데이터베이스를 재구축 합니다\n"
 
-#: rpmdb/rpmdb.c:3256
+#: rpmdb/rpmdb.c:3257
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "임시 데이터베이스 %s(이)가 이미 존재합니다\n"
 
-#: rpmdb/rpmdb.c:3262
+#: rpmdb/rpmdb.c:3263
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:3265
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s 디렉토리를 생성함: %s\n"
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3272
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "dbapi %d로 이전 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3282
+#: rpmdb/rpmdb.c:3283
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "dbapi %d로 새로운 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3306
+#: rpmdb/rpmdb.c:3307
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u(이)가 잘못되었습니다 -- 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:3346
+#: rpmdb/rpmdb.c:3347
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%u에 처음부터 레코드를 추가할 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:3364
+#: rpmdb/rpmdb.c:3365
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "데이터베이스를 재구축하는데 실패함: 원본 데이터베이스는 그대로 유지됩니다\n"
 
-#: rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:3373
 msgid "failed to replace old database with new database!\n"
 msgstr "이전 데이터베이스를 새로운 데이터베이스로 교체하는데 실패했습니다!\n"
 
-#: rpmdb/rpmdb.c:3374
+#: rpmdb/rpmdb.c:3375
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "복구하기 위해 $2$s의 파일을 $1$s의 파일로 교체합니다"
 
-#: rpmdb/rpmdb.c:3384
+#: rpmdb/rpmdb.c:3385
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: rpmdb/rpmdb.c:3386
+#: rpmdb/rpmdb.c:3387
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"

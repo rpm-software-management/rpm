@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-10 12:05-0400\n"
+"POT-Creation-Date: 2002-06-12 10:53-0400\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -2174,7 +2174,7 @@ msgid "can't query %s: %s\n"
 msgstr "kan ikke spørre på %s: %s\n"
 
 #: lib/query.c:620 lib/query.c:654 lib/rpminstall.c:363 lib/rpminstall.c:500
-#: lib/rpminstall.c:883
+#: lib/rpminstall.c:884
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "feil under åpning av %s: %s\n"
@@ -2257,7 +2257,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:962 lib/rpminstall.c:671
+#: lib/query.c:962 lib/rpminstall.c:672
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakke %s er ikke installert\n"
@@ -2405,7 +2405,7 @@ msgstr "feil under lesing fra fil %s\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "fil %s trenger en nyere versjon av RPM\n"
 
-#: lib/rpminstall.c:492 lib/rpminstall.c:739
+#: lib/rpminstall.c:492 lib/rpminstall.c:740
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -2415,7 +2415,7 @@ msgstr ""
 msgid "found %d source and %d binary packages\n"
 msgstr "fant %d kilde- og %d binærpakker\n"
 
-#: lib/rpminstall.c:542 lib/rpminstall.c:1070
+#: lib/rpminstall.c:542 lib/rpminstall.c:1071
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "feilede avhengigheter:\n"
@@ -2428,31 +2428,31 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr "installerer binærpakker\n"
 
-#: lib/rpminstall.c:599
+#: lib/rpminstall.c:600
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:674
+#: lib/rpminstall.c:675
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" spesifiserer flere pakker\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:700
 msgid "removing these packages would break dependencies:\n"
 msgstr "fjerning av disse pakkene vil ødelegge avhengigheter:\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:727
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan ikke åpne %s: %s\n"
 
-#: lib/rpminstall.c:732
+#: lib/rpminstall.c:733
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerer %s\n"
 
-#: lib/rpminstall.c:1064
+#: lib/rpminstall.c:1065
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2463,81 +2463,81 @@ msgid "read failed: %s (%d)\n"
 msgstr "lesing feilet: %s (%d)\n"
 
 #. @observer@
-#: lib/rpmps.c:207
+#: lib/rpmps.c:215
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:215
+#: lib/rpmps.c:223
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "pakke %s er for en annen arkitektur"
 
-#: lib/rpmps.c:220
+#: lib/rpmps.c:228
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "pakke %s er for et annet operativsystem"
 
-#: lib/rpmps.c:225
+#: lib/rpmps.c:233
 #, c-format
 msgid "package %s is already installed"
 msgstr "pakke %s er allerede installert"
 
-#: lib/rpmps.c:230
+#: lib/rpmps.c:238
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "sti %s i pakke %s kan ikke relokeres"
 
-#: lib/rpmps.c:235
+#: lib/rpmps.c:243
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:240
+#: lib/rpmps.c:248
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/rpmps.c:245
+#: lib/rpmps.c:253
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 
-#: lib/rpmps.c:250
+#: lib/rpmps.c:258
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:260
+#: lib/rpmps.c:268
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:265
+#: lib/rpmps.c:273
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/rpmps.c:269
+#: lib/rpmps.c:277
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "pakke %s er i konflikt: %s\n"
 
-#: lib/rpmps.c:273
+#: lib/rpmps.c:281
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "pakke %s er i konflikt: %s\n"
 
-#: lib/rpmps.c:278
+#: lib/rpmps.c:286
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "conflicts with"
 msgstr " er i konflikt med %s-%s-%s\n"
 
-#: lib/rpmps.c:359
+#: lib/rpmps.c:367
 #, fuzzy
 msgid "is needed by"
 msgstr " kreves av %s-%s-%s\n"
@@ -2643,7 +2643,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "kan ikke åpne pakkedatabase i %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:563
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr "henter liste over monterte filsystemer\n"
 
@@ -2996,8 +2996,8 @@ msgstr "kan ikke åpne %s indeks\n"
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2043
-#: rpmdb/rpmdb.c:2148 rpmdb/rpmdb.c:2835
+#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2044
+#: rpmdb/rpmdb.c:2149 rpmdb/rpmdb.c:2836
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
@@ -3007,134 +3007,134 @@ msgstr ""
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: rpmdb/rpmdb.c:1966
+#: rpmdb/rpmdb.c:1967
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2231
+#: rpmdb/rpmdb.c:2232
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2292
+#: rpmdb/rpmdb.c:2293
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: rpmdb/rpmdb.c:2403
+#: rpmdb/rpmdb.c:2404
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2407
+#: rpmdb/rpmdb.c:2408
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2434
+#: rpmdb/rpmdb.c:2435
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:2455
+#: rpmdb/rpmdb.c:2456
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: rpmdb/rpmdb.c:2465
+#: rpmdb/rpmdb.c:2466
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
-#: rpmdb/rpmdb.c:2607
+#: rpmdb/rpmdb.c:2608
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2811
+#: rpmdb/rpmdb.c:2812
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2815
+#: rpmdb/rpmdb.c:2816
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2851
+#: rpmdb/rpmdb.c:2852
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: rpmdb/rpmdb.c:3190
+#: rpmdb/rpmdb.c:3191
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3225
+#: rpmdb/rpmdb.c:3226
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3252
+#: rpmdb/rpmdb.c:3253
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3256
+#: rpmdb/rpmdb.c:3257
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3262
+#: rpmdb/rpmdb.c:3263
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:3265
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3271
+#: rpmdb/rpmdb.c:3272
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3282
+#: rpmdb/rpmdb.c:3283
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3306
+#: rpmdb/rpmdb.c:3307
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3346
+#: rpmdb/rpmdb.c:3347
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3364
+#: rpmdb/rpmdb.c:3365
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:3373
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3374
+#: rpmdb/rpmdb.c:3375
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3384
+#: rpmdb/rpmdb.c:3385
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3386
+#: rpmdb/rpmdb.c:3387
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

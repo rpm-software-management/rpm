@@ -132,6 +132,7 @@
 	- add /usr/lib/rpm/redhat/* per-vendor configuration.
 	- remove build mode compatibility aliases, documented and gone.
 	- document digital signature verification in rpm.8.
+	- fix: separate existence and number checks for problems found.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
