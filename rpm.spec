@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.24
+Release: 0.25
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Jan 13 2001 Jeff Johnson <jbj@redhat.com>
+- fix the hack.
+
 * Fri Jan 12 2001 Jeff Johnson <jbj@redhat.com>
 - hack: permit installer to determine package ordering using 1000003 tag.
 

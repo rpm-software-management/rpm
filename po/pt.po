@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-12 16:42-0500\n"
+"POT-Creation-Date: 2001-01-13 11:37-0500\n"
 "PO-Revision-Date: 2000-08-01 21:11+01:00\n"
 "Last-Translator: Pedro Morais <morais@poli.org>\n"
 "Language-Team: pt <morais@poli.org>\n"
@@ -2389,15 +2389,15 @@ msgstr ""
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:2316
+#: lib/depends.c:2318
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2395
+#: lib/depends.c:2399
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2426
+#: lib/depends.c:2430
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

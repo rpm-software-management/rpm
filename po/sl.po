@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.133 2001/01/12 21:47:56 jbj Exp $
+# $Id: sl.po,v 1.134 2001/01/13 17:39:58 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-12 16:42-0500\n"
+"POT-Creation-Date: 2001-01-13 11:37-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2536,15 +2536,15 @@ msgstr ""
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:2316
+#: lib/depends.c:2318
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2395
+#: lib/depends.c:2399
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2426
+#: lib/depends.c:2430
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

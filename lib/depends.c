@@ -2266,14 +2266,16 @@ rescan:
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = q->tsi.tsi_suc) {
 	const char * qcd = "";
-	int_32 *qpri;
+	int qpri;
+	int_32 *qpp;
 	char qcdbuf[4];
 
-	if (!headerGetEntry(q->h, RPMTAG_MULTICD, NULL, (void **)&qpri, NULL)) {
+	if (!headerGetEntry(q->h, RPMTAG_MULTICD, NULL, (void **)&qpp, NULL)) {
 	    qpri = 0;
 	    qcd = "";
 	} else {
-	    qcdbuf[0] = '@' + (*qpri % 16);
+	    qpri = *qpp;
+	    qcdbuf[0] = '@' + (qpri % 16);
 	    qcdbuf[1] = ' ';
 	    qcdbuf[2] = '\0';
 	    qcd = qcdbuf;
@@ -2318,21 +2320,23 @@ rescan:
 	for (k = 0; k < 16; k++) {
 	    for (i = 0, q = ts->addedPackages.list; i < npkgs; i++, q++) {
 		const char * qcd = "";
-		int_32 *qpri;
+		int qpri;
+		int_32 *qpp;
 		char qcdbuf[4];
 
 		if (q->tsi.tsi_qcnt == -1234)
 		    continue;
-		if (!headerGetEntry(q->h, RPMTAG_MULTICD, NULL, (void **)&qpri, NULL)) {
+		if (!headerGetEntry(q->h, RPMTAG_MULTICD, NULL, (void **)&qpp, NULL)) {
 		    qpri = 0;
 		    qcd = "";
 		} else {
-		    qcdbuf[0] = '@' + (*qpri % 16);
+		    qpri = *qpp;
+		    qcdbuf[0] = '@' + (qpri % 16);
 		    qcdbuf[1] = ' ';
 		    qcdbuf[2] = '\0';
 		    qcd = qcdbuf;
 		}
-		if (*qpri != k)
+		if (qpri != k)
 		    continue;
 
 		rpmMessage(RPMMESS_DEBUG, "%5d (%d,%d) %s%s-%s-%s\n",

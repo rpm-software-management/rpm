@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-01-12 16:42-0500\n"
+msgstr "POT-Creation-Date: 2001-01-13 11:37-0500\n"
 
 # , c-format
 #: build.c:26
@@ -2661,15 +2661,15 @@ msgstr ""
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:2316
+#: lib/depends.c:2318
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2395
+#: lib/depends.c:2399
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2426
+#: lib/depends.c:2430
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
