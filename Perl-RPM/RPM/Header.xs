@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.13 2000/08/11 08:17:42 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.14 2000/08/17 09:23:19 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -207,7 +207,7 @@ static int new_from_fname(pTHX_ const char* source, RPM_Header* new_hdr)
 {
     FD_t fd;
 
-    if (! (fd = Fopen(source, "r+")))
+    if (! (fd = Fopen(source, "r")))
     {
         char errmsg[256];
 
@@ -1058,7 +1058,6 @@ static int scalar_tag(pTHX_ SV* self, int tag_value)
       case RPMTAG_RELEASE:
       case RPMTAG_RPMVERSION:
       case RPMTAG_SIZE:
-      case RPMTAG_SOURCE:
       case RPMTAG_SOURCERPM:
       case RPMTAG_SUMMARY:
       case RPMTAG_URL:
