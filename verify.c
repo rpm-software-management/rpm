@@ -206,7 +206,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 	      case VERIFY_GRP:
 		if (rpmdbFindByGroup(db, arg, &matches)) {
 		    fprintf(stderr, 
-				_("group %s does not contain any pacakges\n"), 
+				_("group %s does not contain any packages\n"), 
 				arg);
 		} else {
 		    verifyMatches(prefix, db, matches, verifyFlags);
