@@ -2553,7 +2553,8 @@ FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 #endif	/* HAVE_BZLIB_H */
 
 /* =============================================================== */
-/*@observer@*/ static const char * getFdErrstr (FD_t fd)
+/*@observer@*/
+static const char * getFdErrstr (FD_t fd)
 	/*@*/
 {
     const char *errstr = NULL;
@@ -2571,7 +2572,7 @@ FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 #endif	/* HAVE_BZLIB_H */
 
     {
-	errstr = strerror(fd->syserrno);
+	errstr = (fd->syserrno ? strerror(fd->syserrno) : "");
     }
 
     return errstr;
@@ -2582,7 +2583,7 @@ FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 const char *Fstrerror(FD_t fd)
 {
     if (fd == NULL)
-	return strerror(errno);
+	return (errno ? strerror(errno) : "");
     FDSANE(fd);
     return getFdErrstr(fd);
 }

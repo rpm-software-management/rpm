@@ -503,8 +503,8 @@ restart:
 
 	/* Read list of packages from manifest. */
 	rc = rpmReadPackageManifest(eiu->fd, &eiu->argc, &eiu->argv);
-	if (rc)
-	    rpmError(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
+	if (rc != RPMRC_OK)
+	    rpmError(RPMERR_MANIFEST, _("%s: not a package manifest: %s\n"),
 			*eiu->fnp, Fstrerror(eiu->fd));
 	xx = Fclose(eiu->fd);
 	eiu->fd = NULL;

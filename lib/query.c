@@ -664,8 +664,8 @@ restart:
 	    
 	    /* Read list of packages from manifest. */
 	    res = rpmReadPackageManifest(fd, &ac, &av);
-	    if (res) {
-		rpmError(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
+	    if (res != RPMRC_OK) {
+		rpmError(RPMERR_MANIFEST, _("%s: not a package manifest: %s\n"),
 			fileURL, Fstrerror(fd));
 		res = 1;
 	    }

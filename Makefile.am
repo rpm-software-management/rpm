@@ -21,7 +21,7 @@ INCLUDES = \
 	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@
 
-myLDFLAGS = @LDFLAGS_STATIC@
+myLDFLAGS = # @LDFLAGS_STATIC@
 
 # XXX libtool can/should generate dependent libs.
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
