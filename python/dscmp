@@ -13,6 +13,13 @@ print cmp(ds2,ds2)
 print ds1 == ds2
 print ds2 == ds1
 print ds2 == ds2
+
 print ds1 != ds2
 print ds2 != ds1
 print ds2 != ds2
+
+print ds1 > ds2
+print ds2 < ds1
+print ds1 >= ds2
+print ds2 <= ds1
+

@@ -2866,7 +2866,9 @@ DBT * data = alloca(sizeof(*data));
      * we won't have bogus information (i.e. the last succesful
      * add).
      */
+/*@-mods@*/
     myinstall_instance = 0;
+/*@=mods@*/
 
     if (db == NULL)
 	return 0;
@@ -2976,13 +2978,13 @@ memset(data, 0, sizeof(*data));
 
     if (hdrNum)
     {	
-	/* Need to save the header number for the current 
-	 * transaction.
-	 */
-	myinstall_instance = hdrNum;
-	
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 
+	/* Save the header number for the current transaction. */
+/*@-mods@*/
+	myinstall_instance = hdrNum;
+/*@=mods@*/
+	
 	if (dbiTags != NULL)
 	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	    const char *av[1];
@@ -3018,7 +3020,9 @@ memset(data, 0, sizeof(*data));
 mi_offset.ui = hdrNum;
 if (dbiByteSwapped(dbi) == 1)
     _DBSWAP(mi_offset);
+/*@-immediatetrans@*/
 key->data = (void *) &mi_offset;
+/*@=immediatetrans@*/
 key->size = sizeof(mi_offset.ui);
 data->data = headerUnload(h);
 data->size = headerSizeof(h, HEADER_MAGIC_NO);

@@ -2182,7 +2182,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->path, fsm->fcontext,
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0) rc = (errno == ENOTSUP ? 0 : CPIOERR_LSETFCON_FAILED);
+	if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : CPIOERR_LSETFCON_FAILED);
 	break;
     case FSM_CHOWN:
 	rc = chown(fsm->path, st->st_uid, st->st_gid);

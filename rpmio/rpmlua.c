@@ -69,7 +69,9 @@ rpmlua rpmluaNew()
 
     lua->L = L;
     for (; lib->name; lib++) {
+/*@-noeffectuncon@*/
 	(void) lib->func(L);
+/*@=noeffectuncon@*/
 	lua_settop(L, 0);
     }
     lua_pushliteral(L, "LUA_PATH");

@@ -115,7 +115,7 @@ struct rpmte_s {
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
 /*@-fielduse@*/	/* LCL: confused by union? */
-    union { 
+    union {
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
 	alKey addedKey;
 	struct {
@@ -259,7 +259,8 @@ uint_32 rpmteSetColor(rpmte te, uint_32 color)
  * @param te		transaction element
  * @return		last install instance.
  */
-unsigned int rpmteDBInstance(rpmte te);
+unsigned int rpmteDBInstance(rpmte te)
+	/*@*/;
 
 /**
  * Set last instance installed to the database.
@@ -267,7 +268,8 @@ unsigned int rpmteDBInstance(rpmte te);
  * @param instance	Database instance of last install element.
  * @return		last install instance.
  */
-void rpmteSetDBInstance(rpmte te, unsigned int instance);
+void rpmteSetDBInstance(rpmte te, unsigned int instance)
+	/*@modifies te @*/;
 
 /**
  * Retrieve size in bytes of package file.

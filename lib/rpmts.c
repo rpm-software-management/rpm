@@ -834,7 +834,9 @@ rpmts rpmtsFree(rpmts ts)
 	rpmtsPrintStats(ts);
 
     /* Free up the memory used by the rpmtsScore */
-    rpmtsScoreFree(ts->score);
+/*@-kepttrans -onlytrans @*/
+    ts->score = rpmtsScoreFree(ts->score);
+/*@=kepttrans =onlytrans @*/
 
     (void) rpmtsUnlink(ts, "tsCreate");
 
@@ -879,7 +881,7 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
  */
 void rpmtsSetType(rpmts ts, rpmtsType type)
 {
-    if(ts != NULL) {
+    if (ts != NULL) {
 	ts->type = type;
     }	 
 }
@@ -887,7 +889,7 @@ void rpmtsSetType(rpmts ts, rpmtsType type)
 /* Let them know what type of transaction we are */
 rpmtsType rpmtsGetType(rpmts ts) 
 {
-    if(ts != NULL) 
+    if (ts != NULL) 
 	return ts->type;
     else
 	return 0;
@@ -1530,12 +1532,12 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
     rpmRC      rc = RPMRC_OK; /* Assume success */
     rpmtsScoreEntry se;
 
-    rpmMessage(RPMMESS_DEBUG, _("Creating transaction score board(0x%x, 0x%x)\n"),
+    rpmMessage(RPMMESS_DEBUG, _("Creating transaction score board(%p, %p)\n"),
 	runningTS, rollbackTS); 
 
     /* Allocate space for score board */
     score = xcalloc(1, sizeof(*score));
-    rpmMessage(RPMMESS_DEBUG, _("\tScore board address:  0x%x\n"), score);
+    rpmMessage(RPMMESS_DEBUG, _("\tScore board address:  %p\n"), score);
 
     /* 
      * Determine the maximum size needed for the entry list.
@@ -1563,18 +1565,20 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
 	/* Try to find the entry in the score list */
 	for(i = 0; i < score->entries; i++) {
 	    se = score->scores[i]; 
-  	    if(strcmp(rpmteN(p), se->N) == 0) {
+  	    if (strcmp(rpmteN(p), se->N) == 0) {
 		found = 1;
-	 	break;
+	 	/*@innerbreak@*/ break;
 	    }
 	}
 
 	/* If we did not find the entry then allocate space for it */
-	if(!found) {
+	if (!found) {
+/*@-compdef -usereleased@*/ /* XXX p->fi->te undefined. */
     	    rpmMessage(RPMMESS_DEBUG, _("\tAdding entry for %s to score board.\n"),
 		rpmteN(p));
+/*@=compdef =usereleased@*/
     	    se = xcalloc(1, sizeof(*(*(score->scores))));
-    	    rpmMessage(RPMMESS_DEBUG, _("\t\tEntry address:  0x%x\n"), se);
+    	    rpmMessage(RPMMESS_DEBUG, _("\t\tEntry address:  %p\n"), se);
 	    se->N         = xstrdup(rpmteN(p));
 	    se->te_types  = rpmteType(p); 
 	    se->installed = 0;
@@ -1605,17 +1609,17 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
     return rc;
 }
 
-rpmRC rpmtsScoreFree(rpmtsScore score) 
+rpmtsScore rpmtsScoreFree(rpmtsScore score) 
 {
-    int i;
     rpmtsScoreEntry se = NULL;
+    int i;
 
-    rpmMessage(RPMMESS_DEBUG, _("May free Score board(0x%x)\n"), score);
+    rpmMessage(RPMMESS_DEBUG, _("May free Score board(%p)\n"), score);
 
     /* If score is not initialized, then just return.
      * This is likely the case if autorollbacks are not enabled.
      */
-    if(score == NULL) return RPMRC_OK;
+    if (score == NULL) return NULL;
 
     /* Decrement the reference count */
     score->nrefs--;
@@ -1623,29 +1627,31 @@ rpmRC rpmtsScoreFree(rpmtsScore score)
     /* Do we have any more references?  If so
      * just return.
      */
-    if(score->nrefs > 0) return RPMRC_OK;
+    if (score->nrefs > 0) return NULL;
 
-    rpmMessage(RPMMESS_DEBUG, _("\tRefcount is zero...will free\n"), score);
+    rpmMessage(RPMMESS_DEBUG, _("\tRefcount is zero...will free\n"));
     /* No more references, lets clean up  */
     /* First deallocate the score entries */
+/*@-branchstate@*/
     for(i = 0; i < score->entries; i++) {
 	/* Get the score for the ith entry */
 	se = score->scores[i]; 
 	
 	/* Deallocate the score entries name */
-	_free(se->N);
+	se->N = _free(se->N);
 
 	/* Deallocate the score entry itself */
-	_free(se);
+	se = _free(se);
     }
+/*@=branchstate@*/
 
     /* Next deallocate the score entry table */
-    _free(score->scores);
+    score->scores = _free(score->scores);
 
     /* Finally deallocate the score itself */
-    _free(score);
+    score = _free(score);
 
-    return RPMRC_OK;
+    return NULL;
 }
 
 /* 
@@ -1655,7 +1661,7 @@ rpmRC rpmtsScoreFree(rpmtsScore score)
  */
 rpmtsScore rpmtsGetScore(rpmts ts) 
 {
-    if(ts == NULL) return NULL;
+    if (ts == NULL) return NULL;
     return ts->score;
 }
 
@@ -1673,17 +1679,19 @@ rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N)
     rpmtsScoreEntry se;
     rpmtsScoreEntry ret = NULL; /* Assume we don't find it */
 
-    rpmMessage(RPMMESS_DEBUG, _("Looking in score board(0x%x) for %s\n"), score, N);
+    rpmMessage(RPMMESS_DEBUG, _("Looking in score board(%p) for %s\n"), score, N);
 
     /* Try to find the entry in the score list */
     for(i = 0; i < score->entries; i++) {
 	se = score->scores[i]; 
- 	if(strcmp(N, se->N) == 0) {
-    	    rpmMessage(RPMMESS_DEBUG, _("\tFound entry at address:  0x%x\n"), se);
+ 	if (strcmp(N, se->N) == 0) {
+    	    rpmMessage(RPMMESS_DEBUG, _("\tFound entry at address:  %p\n"), se);
 	    ret = se;
 	    break;
 	}
     }
 	
+/*@-compdef@*/ /* XXX score->scores undefined. */
     return ret;	
+/*@=compdef@*/
 }

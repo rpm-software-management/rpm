@@ -1516,7 +1516,7 @@ expandMacro(MacroBuf mb)
 #define POPT_ARGV_ARRAY_GROW_DELTA 5
 
 /*@-boundswrite@*/
-static int poptDupArgv(int argc, const char **argv,
+static int XpoptDupArgv(int argc, const char **argv,
 		int * argcPtr, const char *** argvPtr)
 	/*@modifies *argcPtr, *argvPtr @*/
 {
@@ -1560,7 +1560,7 @@ static int poptDupArgv(int argc, const char **argv,
 /*@=boundswrite@*/
 
 /*@-bounds@*/
-static int poptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
+static int XpoptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
 	/*@modifies *argcPtr, *argvPtr @*/
 {
     const char * src;
@@ -1620,7 +1620,7 @@ static int poptParseArgvString(const char * s, int * argcPtr, const char *** arg
 	argc++, buf++;
     }
 
-    rc = poptDupArgv(argc, argv, argcPtr, argvPtr);
+    rc = XpoptDupArgv(argc, argv, argcPtr, argvPtr);
 
 exit:
     if (argv) free(argv);
@@ -1642,7 +1642,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     int i, j;
     int rc;
 
-    rc = poptParseArgvString(patterns, &ac, &av);
+    rc = XpoptParseArgvString(patterns, &ac, &av);
     if (rc)
 	return rc;
 

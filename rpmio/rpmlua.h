@@ -42,10 +42,12 @@ struct rpmluav_s {
 typedef /*@abstract@*/ struct rpmlua_s * rpmlua;
 typedef /*@abstract@*/ struct rpmluav_s * rpmluav;
 
+/*@-exportlocal@*/
 /*@only@*/
 rpmlua rpmluaNew(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+/*@=exportlocal@*/
 void *rpmluaFree(/*@only@*/ rpmlua lua)
 	/*@modifies lua @*/;
 
@@ -105,7 +107,7 @@ void rpmluaPop(/*@null@*/ rpmlua lua)
 /*@only@*/
 rpmluav rpmluavNew(void)
 	/*@*/;
-void *rpmluavFree(/*@only@*/ rpmluav var)
+void * rpmluavFree(/*@only@*/ rpmluav var)
 	/*@modifes var @*/;
 void rpmluavSetListMode(rpmluav var, int flag)
 	/*@modifies var @*/;

@@ -42,7 +42,10 @@ int _psm_threads = 0;
 /* Give access to the rpmte global tracking the last instance added
  * to the database.
  */
+/*@-exportheadervar@*/
+/*@unchecked@*/
 extern unsigned int myinstall_instance;
+/*@=exportheadervar@*/
 
 /*@access FD_t @*/		/* XXX void ptr args */
 /*@access rpmpsm @*/
@@ -50,6 +53,10 @@ extern unsigned int myinstall_instance;
 /*@access rpmfi @*/
 /*@access rpmte @*/	/* XXX rpmInstallSourcePackage */
 /*@access rpmts @*/	/* XXX ts->notify */
+
+/*@access rpmluav @*/
+/*@access rpmtsScore @*/
+/*@access rpmtsScoreEntry @*/
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -563,9 +570,11 @@ exit:
 /**
  * Run internal Lua script.
  */
-rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
+static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 		   int progArgc, const char **progArgv,
 		   const char *script, int arg1, int arg2)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies psm, fileSystem, internalState @*/
 {
     const rpmts ts = psm->ts;
     int rootFd = -1;
@@ -575,17 +584,21 @@ rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     int xx;
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
-    
+
     xx = headerNVR(h, &n, &v, &r);
 
     if (!rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
 	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
-	    chdir("/");
+	    xx = chdir("/");
+/*@-nullpass@*/
 	    rootFd = open(".", O_RDONLY, 0);
+/*@=nullpass@*/
 	    if (rootFd >= 0) {
-		chroot(rootDir);
-		rpmtsSetChrootDone(ts, 1);
+		/*@-superuser -noeffect @*/
+		xx = chroot(rootDir);
+		/*@=superuser =noeffect @*/
+		xx = rpmtsSetChrootDone(ts, 1);
 	    }
 	}
     }
@@ -594,6 +607,7 @@ rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     rpmluaPushTable(lua, "arg");
     var = rpmluavNew();
     rpmluavSetListMode(var, 1);
+/*@+relaxtypes@*/
     if (progArgv) {
 	for (i = 0; i < progArgc && progArgv[i]; i++) {
 	    rpmluavSetValue(var, RPMLUAV_STRING, progArgv[i]);
@@ -608,12 +622,15 @@ rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	rpmluavSetValueNum(var, arg2);
 	rpmluaSetVar(lua, var);
     }
+/*@=relaxtypes@*/
+/*@-moduncon@*/
     var = rpmluavFree(var);
+/*@=moduncon@*/
     rpmluaPop(lua);
 
     {
 	char buf[BUFSIZ];
-	snprintf(buf, BUFSIZ, "%s(%s-%s-%s)", sln, n, v, r);
+	xx = snprintf(buf, BUFSIZ, "%s(%s-%s-%s)", sln, n, v, r);
 	if (rpmluaRunScript(lua, script, buf) == -1)
 	    rc = RPMRC_FAIL;
     }
@@ -621,10 +638,12 @@ rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
     rpmluaDelVar(lua, "arg");
 
     if (rootFd >= 0) {
-	fchdir(rootFd);
-	close(rootFd);
-	chroot(".");
-	rpmtsSetChrootDone(ts, 0);
+	xx = fchdir(rootFd);
+	xx = close(rootFd);
+	/*@-superuser -noeffect @*/
+	xx = chroot(".");
+	/*@=superuser =noeffect @*/
+	xx = rpmtsSetChrootDone(ts, 0);
     }
 
 exit:
@@ -646,7 +665,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * Run a script with an interpreter. If the interpreter is not specified,
  * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
  * the header will be ignored, passing instead arg1 and arg2.
- * 
+ *
  * @param psm		package state machine data
  * @param h		header
  * @param sln		name of scriptlet section
@@ -659,7 +678,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * @return		0 on success
  */
 static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
-		int progArgc, const char ** progArgv, 
+		int progArgc, const char ** progArgv,
 		const char * script, int arg1, int arg2)
 	/*@globals ldconfig_done, rpmGlobalMacroContext, h_errno,
 		fileSystem, internalState@*/
@@ -708,7 +727,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     /*
      * If a successor node, and ldconfig was just run, don't bother.
      */
-    if (ldconfig_path && progArgv && psm->unorderedSuccessor) {
+    if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
 	    rpmMessage(RPMMESS_DEBUG,
 		_("%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"),
@@ -814,7 +833,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	out = fdDup(STDOUT_FILENO);
     }
     if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
-    
+
     /*@-branchstate@*/
     xx = rpmsqFork(&psm->sq);
     if (psm->sq.child == 0) {
@@ -945,7 +964,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
 
     xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
-    
+
     /*@-branchstate@*/
     if (script) {
 	if (!rpmIsDebug())
@@ -1088,7 +1107,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		    triggersAlreadyRun[index] == 0)
 		{
 		    rc = runScript(psm, triggeredH, "%trigger", 1,
-			    triggerProgs + index, triggerScripts[index], 
+			    triggerProgs + index, triggerScripts[index],
 			    arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
 			triggersAlreadyRun[index] = 1;
@@ -1200,7 +1219,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, triggerNames[i], 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		rc |= handleOneTrigger(psm, sourceH, fi->h, 
+		rc |= handleOneTrigger(psm, sourceH, fi->h,
 				rpmdbGetIteratorCount(mi),
 				triggersRun);
 	    }
@@ -1374,7 +1393,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		rpmfiFC(fi), (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST));
 
 	/*
-	 * When we run scripts, we pass an argument which is the number of 
+	 * When we run scripts, we pass an argument which is the number of
 	 * versions of this package that will be installed when we are
 	 * finished.
 	 */
@@ -1385,41 +1404,41 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 
 	/* If we have a score then autorollback is enabled.  If autorollback is
- 	 * enabled, and this is an autorollback transaction, then we may need to 
+ 	 * enabled, and this is an autorollback transaction, then we may need to
 	 * adjust the pkgs installed count.
-	 * 
+	 *
 	 * If all this is true, this adjustment should only be made if the PSM goal
-	 * is an install.  No need to make this adjustment on the erase 
-	 * component of the upgrade, or even more absurd to do this when doing a 
+	 * is an install.  No need to make this adjustment on the erase
+	 * component of the upgrade, or even more absurd to do this when doing a
 	 * PKGSAVE.
 	 */
-	if(rpmtsGetScore(ts) != NULL &&
+	if (rpmtsGetScore(ts) != NULL &&
 	    rpmtsGetType(ts) == RPMTRANS_TYPE_AUTOROLLBACK &&
 	    (psm->goal & ~(PSM_PKGSAVE|PSM_PKGERASE))) {
-	    /* Get the score, if its not NULL, get the appropriate 
+	    /* Get the score, if its not NULL, get the appropriate
  	     * score entry.
 	     */
 	    rpmtsScore score = rpmtsGetScore(ts);
-	    if(score != NULL) {
+	    if (score != NULL) {
 		/* OK, we got a real score so lets get the appropriate
 		 * score entry.
 		 */
 		rpmtsScoreEntry se;
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
 
-		/* IF the header for the install element has been installed, 
+		/* IF the header for the install element has been installed,
 		 * but the header for the erase element has not been erased,
-		 * then decrement the instance count.  This is because in an 
+		 * then decrement the instance count.  This is because in an
 		 * autorollback, if the header was added in the initial transaction
-		 * then in the case of an upgrade the instance count will be 
+		 * then in the case of an upgrade the instance count will be
 		 * 2 instead of one when re-installing the old package, and 3 when
 		 * erasing the new package.
-		 * 
+		 *
 		 * Another wrinkle is we only want to make this adjustement
 		 * if the thing we are rollback was an upgrade of package.  A pure
 		 * install or erase does not need the adjustment
 		 */
-		if(se && se->installed && 
+		if (se && se->installed &&
 	 	    !se->erased &&
 		    (se->te_types & (TR_ADDED|TR_REMOVED)))
 		    psm->npkgs_installed--;
@@ -1470,7 +1489,7 @@ assert(psm->mi == NULL);
 	     */
 	    {   const char * p;
 		xx = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &p, NULL);
-		fi->striplen = (xx ? strlen(p) + 1 : 1); 
+		fi->striplen = (xx ? strlen(p) + 1 : 1);
 	    }
 	    fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
@@ -2092,26 +2111,26 @@ assert(psm->mi == NULL);
 	 * If the score exists and this is not a rollback or autorollback
 	 * then lets check off installed for this package.
 	 */
-	if(rpmtsGetScore(ts) != NULL &&
-	     rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
-	     rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK) {
-	     /* Get the score, if its not NULL, get the appropriate
- 	      * score entry.
-	      */
-	     rpmtsScore score = rpmtsGetScore(ts);
-	     if(score != NULL) {
+	if (rpmtsGetScore(ts) != NULL &&
+	    rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
+	    rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
+	{
+	    /* Get the score, if its not NULL, get the appropriate
+ 	     * score entry.
+	     */
+	    rpmtsScore score = rpmtsGetScore(ts);
+	    if (score != NULL) {
+		rpmtsScoreEntry se;
 		/* OK, we got a real score so lets get the appropriate
 		 * score entry.
 		 */
 		rpmMessage(RPMMESS_DEBUG,
-		    _("Attempting to mark %s as installed in score board(0x%x).\n"),
+		    _("Attempting to mark %s as installed in score board(%p).\n"),
 		    rpmteN(psm->te), score);
-		rpmtsScoreEntry se;
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
-		if(se) se->installed = 1;
+		if (se != NULL) se->installed = 1;
 	    }
 	}
-
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	break;
     case PSM_RPMDB_REMOVE:
@@ -2124,23 +2143,25 @@ assert(psm->mi == NULL);
 	 * If the score exists and this is not a rollback or autorollback
 	 * then lets check off erased for this package.
 	 */
-	if(rpmtsGetScore(ts) != NULL &&
-	    rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
-	    rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK) {
+	if (rpmtsGetScore(ts) != NULL &&
+	   rpmtsGetType(ts) != RPMTRANS_TYPE_ROLLBACK &&
+	   rpmtsGetType(ts) != RPMTRANS_TYPE_AUTOROLLBACK)
+	{
 	    /* Get the score, if its not NULL, get the appropriate
 	     * score entry.
 	     */
 	    rpmtsScore score = rpmtsGetScore(ts);
-	    if(score != NULL) { /* XXX: Can't happen */
+
+	    if (score != NULL) { /* XXX: Can't happen */
+		rpmtsScoreEntry se;
 		/* OK, we got a real score so lets get the appropriate
 		 * score entry.
 		 */
 		rpmMessage(RPMMESS_DEBUG,
 		    _("Attempting to mark %s as erased in score board(0x%x).\n"),
-		    rpmteN(psm->te), score);
-		rpmtsScoreEntry se;
+		    rpmteN(psm->te), (unsigned) score);
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
-		if(se) se->erased = 1;
+		if (se != NULL) se->erased = 1;
 	    }
 	}
 

@@ -32,7 +32,7 @@ typedef struct {
 } * rpmlock;
 
 /*@null@*/
-static rpmlock rpmlock_new(const char *rootdir)
+static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -49,10 +49,14 @@ static rpmlock rpmlock_new(const char *rootdir)
 				free(lock);
 				lock = NULL;
 			} else {
+/*@-nullderef@*/	/* XXX splint on crack */
 				lock->openmode = RPMLOCK_READ;
+/*@=nullderef@*/
 			}
 		} else {
+/*@-nullderef@*/	/* XXX splint on crack */
 			lock->openmode = RPMLOCK_WRITE | RPMLOCK_READ;
+/*@=nullderef@*/
 		}
 /*@=branchstate@*/
 	}
