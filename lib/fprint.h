@@ -11,6 +11,9 @@ typedef struct fingerprint_s {
 fingerPrint fpLookup(char * fullName, int scareMemory);
 unsigned int fpHashFunction(const void * string);
 int fpEqual(const void * key1, const void * key2);
+/* scareMemory is assumed here! */
+void fpLookupList(char ** fullNames, fingerPrint * fpList, int numItems,
+		  int alreadySorted);
 
 /* only if !scarceMemory */
 #define fpFree(a) free((a).basename)

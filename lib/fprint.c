@@ -4,17 +4,64 @@
 
 #include "fprint.h"
 
+struct lookupCache {
+    char * match;
+    int pathsStripped;
+    int matchLength;
+    dev_t dev;
+    ino_t ino;
+};
+
+static fingerPrint doLookup(char * fullName, int scareMemory, 
+			    struct lookupCache * cache);
+
+static int strCompare(const void * a, const void * b) {
+    const char * const * one = a;
+    const char * const * two = a;
+
+    return strcmp(*one, *two);
+};
+
 fingerPrint fpLookup(char * fullName, int scareMemory) {
+    return doLookup(fullName, scareMemory, NULL);
+}
+
+static fingerPrint doLookup(char * fullName, int scareMemory, 
+			    struct lookupCache * cache) {
     char dir[PATH_MAX];
     char * chptr1, * end;
     fingerPrint fp;
     struct stat sb;
     char * buf;
+    int stripCount;
 
     /* assert(*fullName == '/' || !scareMemory); */
 
     /* FIXME: a directory stat cache could *really* speed things up. we'd
        have to be sure to flush it, but... */
+
+    if (cache && cache->pathsStripped && 
+	!strncmp(fullName, cache->match, cache->matchLength)) {
+	chptr1 = fullName + cache->matchLength;
+	if (*chptr1 == '/') {
+	    chptr1++;
+	    stripCount = cache->pathsStripped - 1;
+	    while (*chptr1) {
+		if (*chptr1 == '/') stripCount--;
+		chptr1++;
+	    }
+	    if (!stripCount) {
+		chptr1 = fullName + cache->matchLength + 1;
+		if (scareMemory)
+		    fp.basename = strdup(chptr1);
+		else
+		    fp.basename = chptr1;
+		fp.ino = cache->ino;
+		fp.dev = cache->dev;
+		return fp;
+	    }
+	}
+    }
 
     if (*fullName != '/') {
 	scareMemory = 0;
@@ -40,8 +87,10 @@ fingerPrint fpLookup(char * fullName, int scareMemory) {
     buf = alloca(strlen(fullName) + 1);
     strcpy(buf, fullName);
     end = strrchr(buf, '/');
+    stripCount = 0;
     while (*buf) {
 	*end = '\0';
+	stripCount++;
 
 	/* as we're stating paths here, we want to follow symlinks */
 	if (!stat(buf, &sb)) {
@@ -52,10 +101,19 @@ fingerPrint fpLookup(char * fullName, int scareMemory) {
 		fp.basename = chptr1;
 	    fp.ino = sb.st_ino;
 	    fp.dev = sb.st_dev;
+
+	    if (cache) {
+		strcpy(cache->match, buf);
+		cache->matchLength = strlen(buf);
+		cache->pathsStripped = stripCount;
+		cache->dev = sb.st_dev;
+		cache->ino = sb.st_ino;
+	    }
+
 	    return fp;
 	}
 
-	buf--;
+	end--;
 	while ((end > buf) && *end != '/') end--;
     }
 
@@ -85,4 +143,29 @@ unsigned int fpHashFunction(const void * key) {
 
 int fpEqual(const void * key1, const void * key2) {
     return FP_EQUAL(*((const fingerPrint *) key1), *((fingerPrint *) key2));
+}
+
+void fpLookupList(char ** fullNames, fingerPrint * fpList, int numItems,
+		  int alreadySorted) {
+    int i, j;
+    struct lookupCache cache;
+    int maxLen = 0;
+
+    if (!alreadySorted) {
+	qsort(fullNames, numItems, sizeof(char *), strCompare);
+    }
+
+    for (i = 0; i < numItems; i++) {
+	j = strlen(fullNames[i]);
+	if (j > maxLen) maxLen = j;
+    }
+
+    cache.match = alloca(maxLen + 1);
+    *cache.match = '\0';
+    cache.matchLength = 0;
+    cache.pathsStripped = 0;    
+
+    for (i = 0; i < numItems; i++) {
+	fpList[i] = doLookup(fullNames[i], 1, &cache);
+    }
 }
