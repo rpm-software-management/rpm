@@ -377,6 +377,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 
 	pgpPrtVal("    ", pgpSubTypeTbl, (p[0]&(~PGPSUBTYPE_CRITICAL)));
 	if (p[0] & PGPSUBTYPE_CRITICAL)
+	    if (_print)
 	    fprintf(stderr, " *CRITICAL*");
 	switch (*p) {
 	case PGPSUBTYPE_PREFER_SYMKEY:	/* preferred symmetric algorithms */
@@ -1213,7 +1214,7 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
     const char * armortype = NULL;
     char * t, * te;
     int pstate = 0;
-    pgpArmor ec = PGPARMOR_ERROR;	/* XXX assume failure */
+    pgpArmor ec = PGPARMOR_ERR_NO_BEGIN_PGP;	/* XXX assume failure */
     int rc;
 
     rc = rpmioSlurp(fn, &b, &blen);
@@ -1244,8 +1245,10 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 	    t += sizeof("-----BEGIN PGP ")-1;
 
 	    rc = pgpValTok(pgpArmorTbl, t, te);
-	    if (rc < 0)
+	    if (rc < 0) {
+		ec = PGPARMOR_ERR_UNKNOWN_ARMOR_TYPE;
 		goto exit;
+	    }
 	    if (rc != PGPARMOR_PUBKEY)	/* XXX ASCII Pubkeys only, please. */
 		continue;
 	    armortype = t;
@@ -1278,10 +1281,13 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 	    /*@switchbreak@*/ break;
 	case 3:
 	    pstate = 0;
-	    if (!TOKEQ(t, "-----END PGP "))
+	    if (!TOKEQ(t, "-----END PGP ")) {
+		ec = PGPARMOR_ERR_NO_END_PGP;
 		goto exit;
+	    }
 	    *t = '\0';		/* Terminate encoded crc */
 	    t += sizeof("-----END PGP ")-1;
+	    if (t >= te) continue;
 
 	    if (armortype == NULL) /* XXX can't happen */
 		continue;
@@ -1289,23 +1295,37 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 	    if (rc)
 		continue;
 
-	    t = te - (sizeof("-----\n")-1);
-	    if (!TOKEQ(t, "-----\n"))
+	    t += strlen(armortype);
+	    if (t >= te) continue;
+
+	    if (!TOKEQ(t, "-----")) {
+		ec = PGPARMOR_ERR_NO_END_PGP;
 		goto exit;
+	    }
+	    t += (sizeof("-----")-1);
+	    if (t >= te) continue;
+	    /* XXX permitting \r here is not RFC-2440 compliant <shrug> */
+	    if (!(*t == '\n' || *t == '\r')) continue;
 
 	    crcdec = NULL;
 	    crclen = 0;
-	    if (b64decode(crcenc, (void **)&crcdec, &crclen) != 0)
-		continue;
+	    if (b64decode(crcenc, (void **)&crcdec, &crclen) != 0) {
+		ec = PGPARMOR_ERR_CRC_DECODE;
+		goto exit;
+	    }
 	    crcpkt = pgpGrab(crcdec, crclen);
 	    crcdec = _free(crcdec);
 	    dec = NULL;
 	    declen = 0;
-	    if (b64decode(enc, (void **)&dec, &declen) != 0)
+	    if (b64decode(enc, (void **)&dec, &declen) != 0) {
+		ec = PGPARMOR_ERR_BODY_DECODE;
 		goto exit;
+	    }
 	    crc = pgpCRC(dec, declen);
-	    if (crcpkt != crc)
+	    if (crcpkt != crc) {
+		ec = PGPARMOR_ERR_CRC_CHECK;
 		goto exit;
+	    }
 	    b = _free(b);
 	    b = dec;
 	    blen = declen;
