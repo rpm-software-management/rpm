@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-06-24 13:05-0400\n"
+"POT-Creation-Date: 2002-06-27 12:12-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2139,7 +2139,7 @@ msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/query.c:129 lib/rpmts.c:270
+#: lib/query.c:129 lib/rpmts.c:283
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
@@ -2657,13 +2657,13 @@ msgstr "%s(을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
-#: lib/rpmts.c:135 lib/rpmts.c:177
+#: lib/rpmts.c:135 lib/rpmts.c:190
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:568
+#: lib/rpmts.c:581
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

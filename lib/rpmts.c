@@ -157,16 +157,29 @@ static int rpmtsCloseSDB(rpmts ts)
     return rc;
 }
 
+/**
+ * Open dependency universe database.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
 static int rpmtsOpenSDB(rpmts ts)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    static int has_sdbpath = -1;
     int rc = 0;
 
     if (ts->sdb != NULL)
 	return 0;
 
-    addMacro(NULL, "_dbpath", NULL, "%{?_sdbpath}", RMIL_DEFAULT);
+    if (has_sdbpath < 0)
+	has_sdbpath = rpmExpandNumeric("%{?_sdbpath:1}");
+
+    /* If not configured, don't try to open. */
+    if (has_sdbpath <= 0)
+	return 1;
+
+    addMacro(NULL, "_dbpath", NULL, "%{_sdbpath}", RMIL_DEFAULT);
     rc = rpmdbOpen(ts->rootDir, &ts->sdb, O_RDONLY, 0644);
     if (rc) {
 	const char * dn;

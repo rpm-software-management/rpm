@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-24 13:05-0400\n"
+"POT-Creation-Date: 2002-06-27 12:12-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2210,7 +2210,7 @@ msgstr "en voinut avata %s: %s"
 msgid "%s failed: %s\n"
 msgstr "pgp epäonnistui"
 
-#: lib/query.c:129 lib/rpmts.c:270
+#: lib/query.c:129 lib/rpmts.c:283
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "virhe formaatissa: %s\n"
@@ -2725,13 +2725,13 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "En voi avata %s luettavaksi: %s."
 
-#: lib/rpmts.c:135 lib/rpmts.c:177
+#: lib/rpmts.c:135 lib/rpmts.c:190
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:568
+#: lib/rpmts.c:581
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-24 13:05-0400\n"
+"POT-Creation-Date: 2002-06-27 12:12-0400\n"
 
 #: build.c:40
 #, fuzzy
@@ -2338,7 +2338,7 @@ msgstr "No consegui abrir: %s\n"
 msgid "%s failed: %s\n"
 msgstr "Construo falhou.\n"
 
-#: lib/query.c:129 lib/rpmts.c:270
+#: lib/query.c:129 lib/rpmts.c:283
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2876,13 +2876,13 @@ msgid "Unable to open %s for reading: %s.\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmts.c:135 lib/rpmts.c:177
+#: lib/rpmts.c:135 lib/rpmts.c:190
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "No consegui abrir: %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:568
+#: lib/rpmts.c:581
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

@@ -143,6 +143,7 @@
 	- fix: reading macro files can corrupt memory if BUFSIZ is teensy.
 	- fix: assertion failure iff incomplete package install (#66837).
 	- python: link internal libelf (if used) directly into rpmmodule.so.
+	- use rpmdb-redhat for suggestions if/when configured (#67430).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

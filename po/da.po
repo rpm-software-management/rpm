@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-24 13:05-0400\n"
+"POT-Creation-Date: 2002-06-27 12:12-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2166,7 +2166,7 @@ msgstr "kunne ikke åbne %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: lib/query.c:129 lib/rpmts.c:270
+#: lib/query.c:129 lib/rpmts.c:283
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ugyldigt format: %s\n"
@@ -2681,13 +2681,13 @@ msgstr "Kunne ikke læse %s, HOME er for stor.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kunne ikke åbne %s for læsning: %s.\n"
 
-#: lib/rpmts.c:135 lib/rpmts.c:177
+#: lib/rpmts.c:135 lib/rpmts.c:190
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:568
+#: lib/rpmts.c:581
 msgid "getting list of mounted filesystems\n"
 msgstr "henter liste over monterede filsystemer\n"
 

@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.32
+Release: 0.33
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -511,6 +511,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jun 27 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.33
+- use rpmdb-redhat for suggestions if/when configured (#67430).
+
 * Mon Jun 24 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.32
 - python: link internal libelf (if used) directly into rpmmodule.so.
 

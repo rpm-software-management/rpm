@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-24 13:05-0400\n"
+"POT-Creation-Date: 2002-06-27 12:12-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2248,7 +2248,7 @@ msgstr "%s のオープンに失敗: %s"
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
 
-#: lib/query.c:129 lib/rpmts.c:270
+#: lib/query.c:129 lib/rpmts.c:283
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
@@ -2773,13 +2773,13 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"
 
-#: lib/rpmts.c:135 lib/rpmts.c:177
+#: lib/rpmts.c:135 lib/rpmts.c:190
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:568
+#: lib/rpmts.c:581
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 

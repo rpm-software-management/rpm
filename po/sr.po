@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-24 13:05-0400\n"
+"POT-Creation-Date: 2002-06-27 12:12-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -2201,7 +2201,7 @@ msgstr "neuspelo otvaranje %s: %s"
 msgid "%s failed: %s\n"
 msgstr "PGP omanuo"
 
-#: lib/query.c:129 lib/rpmts.c:270
+#: lib/query.c:129 lib/rpmts.c:283
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "gre¹ka u formatu: %s\n"
@@ -2716,13 +2716,13 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
-#: lib/rpmts.c:135 lib/rpmts.c:177
+#: lib/rpmts.c:135 lib/rpmts.c:190
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:568
+#: lib/rpmts.c:581
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
