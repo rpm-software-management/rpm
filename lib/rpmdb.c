@@ -271,7 +271,7 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset)
     return headerLoad(uh);
 }
 
-int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
+static int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 {
     const char * dirName;
     const char * baseName;
@@ -371,20 +371,6 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 
     return 0;
 }
-
-#ifdef DYING
-int rpmdbFindByProvides(rpmdb db, const char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_PROVIDES], filespec, 0, matches);
-}
-
-int rpmdbFindByRequiredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_REQUIREDBY], filespec, 0, matches);
-}
-
-int rpmdbFindByConflicts(rpmdb db, const char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_CONFLICTS], filespec, 0, matches);
-}
-#endif
 
 int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
     return dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, 0, matches);
@@ -565,10 +551,14 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix, const void * key, size_
 
     if (key) {
 	int rc;
-	rc = dbiSearchIndex(dbi, key, keylen, &set);
+	if (dbix == RPMDBI_FILE) {
+	    rc = rpmdbFindByFile(db, key, &set);
+	} else {
+	    rc = dbiSearchIndex(dbi, key, keylen, &set);
+	}
 	switch (rc) {
 	default:
-	case -1:		/* error */
+	case -1:	/* error */
 	case 1:		/* not found */
 	    if (set)
 		dbiFreeIndexSet(set);

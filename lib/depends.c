@@ -526,6 +526,7 @@ int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, in
 
 }
 
+#ifdef DYING
 static inline int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset,
 			        const char * reqName, const char * reqEVR,
 				int reqFlags, dbrecMatch_t matchDepFlags)
@@ -545,6 +546,7 @@ static inline int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset,
 
     return rc;
 }
+#endif
 
 rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * root)
 {
@@ -611,8 +613,8 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 {
     /* this is an install followed by uninstalls */
     dbiIndexSet matches = NULL;
-    char * name;
-    int count, i, j;
+    const char * name;
+    int count;
     const char ** obsoletes;
     int alNum;
     int * caps;
@@ -661,6 +663,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     if (headerGetEntry(h, RPMTAG_OBSOLETENAME, NULL, (void **) &obsoletes, &count)) {
 	const char **obsoletesEVR;
 	int_32 *obsoletesFlags;
+	int j;
 
 	headerGetEntry(h, RPMTAG_OBSOLETEVERSION, NULL, (void **) &obsoletesEVR, NULL);
 	headerGetEntry(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletesFlags, NULL);
@@ -865,7 +868,9 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	const char * keyName, const char * keyEVR, int keyFlags,
 	/*@out@*/ struct availablePackage ** suggestion)
 {
-    dbiIndexSet matches = NULL;		/* XXX DYING */
+#ifdef	DYING
+    dbiIndexSet matches = NULL;
+#endif
     int rc = 0;	/* assume dependency is satisfied */
     int i;
 
@@ -893,7 +898,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     if (rpmdep->db != NULL) {
 	if (*keyName == '/') {
 	    /* keyFlags better be 0! */
-#ifndef DYING	/* XXX more to do here */
+#ifdef DYING
 	    if (!rpmdbFindByFile(rpmdep->db, keyName, &matches)) {
 		for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
@@ -914,7 +919,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    {	rpmdbMatchIterator mi;
 		Header h2;
 
-		mi = rpmdbInitIterator(rpmdep->db, RPMDBI_PROVIDES, keyName, 0);
+		mi = rpmdbInitIterator(rpmdep->db, RPMDBI_FILE, keyName, 0);
 		while ((h2 = rpmdbNextIterator(mi)) != NULL) {
 		    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		    if (bsearch(&recOffset,
@@ -932,36 +937,13 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    }
 #endif
 	}
-	if (matches) {
-	    dbiFreeIndexSet(matches);
-	    matches = NULL;
-	}
-
 #ifdef	DYING
-	if (!rpmdbFindByProvides(rpmdep->db, keyName, &matches)) {
-	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-		if (bsearch(&recOffset,
-			    rpmdep->removedPackages,
-			    rpmdep->numRemovedPackages,
-			    sizeof(int), intcmp))
-		    continue;
-		if (dbrecMatchesDepFlags(rpmdep, recOffset,
-			 keyName, keyEVR, keyFlags, rangeMatchesDepFlags)) {
-		    break;
-		}
-	    }
-
-	    if (i < dbiIndexSetCount(matches)) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db provides.\n"), keyType, keyDepend);
-		goto exit;
-	    }
-	}
 	if (matches) {
 	    dbiFreeIndexSet(matches);
 	    matches = NULL;
 	}
-#else
+#endif
+
 	{   rpmdbMatchIterator mi;
 	    Header h2;
 
@@ -973,7 +955,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 			    rpmdep->numRemovedPackages,
 			    sizeof(int), intcmp))
 		    continue;
-		if (headerMatchesDepFlags(h2, keyName, keyEVR, keyFlags))
+		if (rangeMatchesDepFlags(h2, keyName, keyEVR, keyFlags))
 		    break;
 	    }
 	    rpmdbFreeIterator(mi);
@@ -982,7 +964,6 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 		goto exit;
 	    }
 	}
-#endif
 
 	{   rpmdbMatchIterator mi;
 	    Header h2;
@@ -1027,10 +1008,12 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     rc = 1;	/* dependency is unsatisfied */
 
 exit:
-    if (matches) {	/* XXX DYING */
+#ifdef	DYING
+    if (matches) {
 	dbiFreeIndexSet(matches);
 	matches = NULL;
     }
+#endif
     return rc;
 }
 
@@ -1177,41 +1160,12 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 /* Adding: check name/provides key against each conflict match. */
 /* Erasing: check name/provides/filename key against each requiredby match. */
-#ifdef DYING
-static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
-	const char * key, dbiIndexSet matches)
-#else
 static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	const char * key, /*@only@*/ rpmdbMatchIterator mi)
-#endif
 {
     Header h;
     int rc = 0;
-#ifdef DYING
-    int i;
 
-    for (i = 0; i < dbiIndexSetCount(matches); i++) {
-	unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-	if (bsearch(&recOffset, rpmdep->removedPackages,
-		    rpmdep->numRemovedPackages, sizeof(int), intcmp))
-	    continue;
-
-	h = rpmdbGetRecord(rpmdep->db, recOffset);
-	if (h == NULL) {
-	    rpmError(RPMERR_DBCORRUPT,
-                     _("cannot read header at %d for dependency check"),
-		     rpmdep->removedPackages[i]);
-	    return 1;
-	}
-
-	if (checkPackageDeps(rpmdep, psp, h, key)) {
-	    headerFree(h);
-	    return 1;
-	}
-
-	headerFree(h);
-    }
-#else
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 	if (bsearch(&recOffset, rpmdep->removedPackages,
@@ -1224,7 +1178,6 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	}
     }
     rpmdbFreeIterator(mi);
-#endif
 
     return rc;
 }
@@ -1233,20 +1186,9 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 static int checkDependentPackages(rpmTransactionSet rpmdep,
 			struct problemsSet * psp, const char * key)
 {
-#ifdef DYING
-    dbiIndexSet matches = NULL;
-    int rc = 0;
-
-    if (!rpmdbFindByRequiredBy(rpmdep->db, key, &matches))
-	rc = checkPackageSet(rpmdep, psp, key, matches);
-    if (matches)
-	dbiFreeIndexSet(matches);
-    return rc;
-#else
     rpmdbMatchIterator mi;
     mi = rpmdbInitIterator(rpmdep->db, RPMDBI_REQUIREDBY, key, 0);
     return checkPackageSet(rpmdep, psp, key, mi);
-#endif
 }
 
 /* Adding: check name/provides key against conflicts matches. */
@@ -1256,17 +1198,9 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
     int rc = 0;
 
     if (rpmdep->db) {	/* XXX is this necessary? */
-#ifdef DYING
-	dbiIndexSet matches = NULL;
-	if (!rpmdbFindByConflicts(rpmdep->db, key, &matches))
-	    rc = checkPackageSet(rpmdep, psp, key, matches);
-	if (matches)
-	    dbiFreeIndexSet(matches);
-#else
 	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_CONFLICTS, key, 0);
 	rc = checkPackageSet(rpmdep, psp, key, mi);
-#endif
     }
 
     return rc;

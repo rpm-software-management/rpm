@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-13 06:27-0400\n"
+"POT-Creation-Date: 2000-04-13 08:44-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2032,75 +2032,75 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:538
+#: lib/depends.c:539
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:794
+#: lib/depends.c:797
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:833
+#: lib/depends.c:836
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr ""
 
-#: lib/depends.c:850
+#: lib/depends.c:853
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:881
+#: lib/depends.c:886
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:909 lib/depends.c:929
+#: lib/depends.c:914 lib/depends.c:934
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:956 lib/depends.c:981
+#: lib/depends.c:963
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:1003
+#: lib/depends.c:984
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr ""
 
-#: lib/depends.c:1016
+#: lib/depends.c:997
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:1026
+#: lib/depends.c:1007
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1078
+#: lib/depends.c:1061
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1140
+#: lib/depends.c:1123
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1202 lib/depends.c:1523
-#, c-format
-msgid "cannot read header at %d for dependency check"
-msgstr ""
-
-#: lib/depends.c:1319
+#: lib/depends.c:1253
 #, c-format
 msgid "loop in prerequisite chain: %s"
+msgstr ""
+
+#: lib/depends.c:1457
+#, c-format
+msgid "cannot read header at %d for dependency check"
 msgstr ""
 
 #: lib/falloc.c:135
@@ -2865,61 +2865,61 @@ msgid ""
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:403
+#: lib/rpmdb.c:389
 #, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr ""
 
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:612
 #, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr ""
 
-#: lib/rpmdb.c:631
+#: lib/rpmdb.c:621
 #, c-format
 msgid "key \"%s\" not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:649
+#: lib/rpmdb.c:639
 #, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:674
+#: lib/rpmdb.c:664
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:680
+#: lib/rpmdb.c:670
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:688
+#: lib/rpmdb.c:678
 #, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:692 lib/rpmdb.c:889
+#: lib/rpmdb.c:682 lib/rpmdb.c:879
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:827
+#: lib/rpmdb.c:817
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:866
+#: lib/rpmdb.c:856
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:878
+#: lib/rpmdb.c:868
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:885
+#: lib/rpmdb.c:875
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""

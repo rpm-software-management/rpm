@@ -383,33 +383,18 @@ int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * dbp);
  */
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
 
+#ifdef	DYING
 /**
  * @param db		rpm database
  */
 int rpmdbFindByFile(rpmdb db, const char * filespec,
 	/*@out@*/ dbiIndexSet * matches);
+#endif
 /**
  * @param db		rpm database
  */
 int rpmdbFindPackage(rpmdb db, const char * name,
 	/*@out@*/ dbiIndexSet * matches);
-#ifdef	DYING
-/**
- * @param db		rpm database
- */
-int rpmdbFindByProvides(rpmdb db, const char * provides,
-	/*@out@*/ dbiIndexSet * matches);
-/**
- * @param db		rpm database
- */
-int rpmdbFindByRequiredBy(rpmdb db, const char * requires,
-	/*@out@*/ dbiIndexSet * matches);
-/**
- * @param db		rpm database
- */
-int rpmdbFindByConflicts(rpmdb db, const char * conflicts,
-	/*@out@*/ dbiIndexSet * matches);
-#endif
 
 /* these are just convenience functions */
 /**
@@ -558,10 +543,10 @@ typedef enum rpmProblemType_e { RPMPROB_BADARCH,
 
 typedef /*@abstract@*/ struct rpmProblem_s {
     Header h, altH;
-    /*@dependent@*/ const void * key;
+/*@dependent@*/ const void * key;
     rpmProblemType type;
     int ignoreProblem;
-    /*@only@*/ const char * str1;
+/*@only@*/ const char * str1;
     unsigned long ulong1;
 } rpmProblem;
 
@@ -811,6 +796,7 @@ typedef	struct rpmQVArguments QVA_t;
  * @param db		rpm database
  */
 typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
+
 /**
  * @param db		rpm database
  */
