@@ -741,16 +741,16 @@ void printDepProblems(FILE * fp, /*@null@*/ const rpmProblemSet ps)
  * Unreference a problem set instance.
  * @param ps		problem set
  * @param msg
- * @return		NULL always
+ * @return		problem set
  */
-/*@unused@*/ /*@null@*/
-rpmProblemSet rpmpsUnlink (/*@killref@*/ /*@only@*/ rpmProblemSet ps,
+/*@unused@*/
+rpmProblemSet rpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmProblemSet ps,
 		const char * msg)
 	/*@modifies ps @*/;
 
 /** @todo Remove debugging entry from the ABI. */
 /*@null@*/
-rpmProblemSet XrpmpsUnlink (/*@killref@*/ /*@only@*/ rpmProblemSet ps,
+rpmProblemSet XrpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmProblemSet ps,
 		const char * msg, const char * fn, unsigned ln)
 	/*@modifies ps @*/;
 #define	rpmpsUnlink(_ps, _msg)	XrpmpsUnlink(_ps, _msg, __FILE__, __LINE__)

@@ -59,8 +59,10 @@ hashTable htCreate(int numBuckets, int keySize, int freeData,
 /**
  * Destroy hash table.
  * @param ht            pointer to hash table
+ * @return		NULL always
  */
-void htFree( /*@only@*/ hashTable ht)
+/*@null@*/
+hashTable htFree( /*@only@*/ hashTable ht)
 	/*@modifies ht @*/;
 
 /**

@@ -26,7 +26,9 @@ if (_ps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
     ps->nrefs--;
-    return NULL;
+/*@-refcounttrans@*/
+    return ps;
+/*@=refcounttrans@*/
 }
 
 rpmProblemSet XrpmpsLink(rpmProblemSet ps, const char * msg,
@@ -37,26 +39,23 @@ rpmProblemSet XrpmpsLink(rpmProblemSet ps, const char * msg,
 if (_ps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
 /*@=modfilesystem@*/
-    /*@-refcounttrans@*/ return ps; /*@=refcounttrans@*/
+/*@-refcounttrans@*/
+    return ps;
+/*@=refcounttrans@*/
 }
 
 rpmProblemSet rpmProblemSetCreate(void)
 {
-    rpmProblemSet ps;
-
-    ps = xcalloc(1, sizeof(*ps));
-    ps->numProblems = ps->numProblemsAlloced = 0;
-    ps->probs = NULL;
-    ps->nrefs = 0;
-
+    rpmProblemSet ps = xcalloc(1, sizeof(*ps));
     return rpmpsLink(ps, "create");
 }
 
 rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
 {
     if (ps == NULL) return NULL;
-    if (ps->nrefs > 1)
-	return rpmpsUnlink(ps, "dereference");
+    ps = rpmpsUnlink(ps, "dereference");
+    if (ps->nrefs > 0)
+	return NULL;
 	
     if (ps->probs) {
 	int i;
@@ -68,12 +67,7 @@ rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
 	}
 	ps->probs = _free(ps->probs);
     }
-/*@-nullstate@*/ /* FIX: ps->probs may be NULL */
-    (void) rpmpsUnlink(ps, "destroy");
-/*@=nullstate@*/
-    /*@-refcounttrans -usereleased@*/
     ps = _free(ps);
-    /*@=refcounttrans =usereleased@*/
     return NULL;
 }
 

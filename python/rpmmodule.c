@@ -487,7 +487,7 @@ static PyObject * py_rpmtsGetAttr(rpmtsObject * o, char * name) {
 static void py_rpmtsDealloc(PyObject * o) {
     rpmtsObject * trans = (void *) o;
 
-    trans->ts->rpmdb = NULL;	/* XXX HACK: avoid rpmdb close/free */
+    trans->ts->rdb = NULL;	/* XXX HACK: avoid rpmdb close/free */
     rpmtsFree(trans->ts);
     if (trans->dbo) {
 	Py_DECREF(trans->dbo);
@@ -569,7 +569,7 @@ static PyObject * py_rpmtsCreate(PyObject * self, PyObject * args) {
     o->ts = rpmtsCreate();
     (void) rpmtsSetRootDir(o->ts, rootDir);
     /* XXX this will be fun to fix */
-    o->ts->rpmdb = (db ? dbFromDb(db) : NULL);
+    o->ts->rdb = (db ? dbFromDb(db) : NULL);
     o->keyList = PyList_New(0);
 
     return (void *) o;

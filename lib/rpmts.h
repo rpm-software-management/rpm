@@ -39,7 +39,7 @@ struct rpmTransactionSet_s {
 /*@only@*/ /*@null@*/
     const void ** suggests;	/*!< Possible depCheck suggestions. */
 /*@refcounted@*/ /*@null@*/
-    rpmdb sdb;			/*!< Available universe database handle. */
+    rpmdb sdb;			/*!< Solve database handle. */
 
 /*@observer@*/ /*@null@*/
     rpmCallbackFunction notify;	/*!< Callback function. */
@@ -59,7 +59,7 @@ struct rpmTransactionSet_s {
 
     int dbmode;			/*!< Database open mode. */
 /*@refcounted@*/ /*@null@*/
-    rpmdb rpmdb;		/*!< Database handle. */
+    rpmdb rdb;			/*!< Install database handle. */
 /*@only@*/
     hashTable ht;		/*!< Fingerprint hash table. */
 
@@ -90,7 +90,7 @@ struct rpmTransactionSet_s {
 /*@null@*/
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
-    int_32 id;			/*!< Transaction id. */
+    int_32 tid;			/*!< Transaction id. */
 
     int verify_legacy;		/*!< Verify legacy signatures? */
     int nodigests;		/*!< Verify digests? */
@@ -311,8 +311,24 @@ const char * rpmtsGetRootDir(rpmTransactionSet ts)
  * @param ts		transaction set
  * @param rootDir	new transaction rootDir (or NULL)
  */
-void rpmtsSetRootDir(rpmTransactionSet ts,
-		/*@null@*/ const char * rootDir)
+void rpmtsSetRootDir(rpmTransactionSet ts, /*@null@*/ const char * rootDir)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get transaction currDir, i.e. current directory before chroot(2).
+ * @param ts		transaction set
+ * @return		transaction currDir
+ */
+/*@observer@*/ /*@null@*/
+const char * rpmtsGetCurrDir(rpmTransactionSet ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set transaction currDir, i.e. current directory before chroot(2).
+ * @param ts		transaction set
+ * @param currDir	new transaction currDir (or NULL)
+ */
+void rpmtsSetCurrDir(rpmTransactionSet ts, /*@null@*/ const char * currDir)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -333,6 +349,49 @@ void rpmtsSetScriptFd(rpmTransactionSet ts, /*@null@*/ FD_t scriptFd)
 	/*@modifies ts, scriptFd @*/;
 
 /** \ingroup rpmts
+ * Get chrootDone flag, i.e. has chroot(2) been performed?
+ * @param ts		transaction set
+ * @return		chrootDone flag
+ */
+int rpmtsGetChrootDone(rpmTransactionSet ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set chrootDone flag, i.e. has chroot(2) been performed?
+ * @param ts		transaction set
+ * @param chrootDone	new chrootDone flag
+ * @return		previous chrootDone flag
+ */
+int rpmtsSetChrootDone(rpmTransactionSet ts, int chrootDone)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get transaction id, i.e. transaction time stamp.
+ * @param ts		transaction set
+ * @return		chrootDone flag
+ */
+int_32 rpmtsGetTid(rpmTransactionSet ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set transaction id, i.e. transaction time stamp.
+ * @param ts		transaction set
+ * @param tid		new transaction id
+ * @return		previous transaction id
+ */
+int_32 rpmtsSetTid(rpmTransactionSet ts, int_32 tid)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get transaction database handle.
+ * @param ts		transaction set
+ * @return		transaction database handle
+ */
+/*@null@*/
+rpmdb rpmtsGetRdb(rpmTransactionSet ts)
+	/*@*/;
+
+/** \ingroup rpmts
  * Get transaction flags, i.e. bits to control rpmtsRun().
  * @param ts		transaction set
  * @return		transaction flags
@@ -343,10 +402,10 @@ rpmtsFlags rpmtsGetFlags(rpmTransactionSet ts)
 /** \ingroup rpmts
  * Set transaction flags, i.e. bits to control rpmtsRun().
  * @param ts		transaction set
- * @param ntransFlags	new transaction flags
+ * @param transFlags	new transaction flags
  * @return		previous transaction flags
  */
-rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags ntransFlags)
+rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags transFlags)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

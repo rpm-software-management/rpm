@@ -28,7 +28,6 @@ struct fprintCacheEntry_s {
     const char * dirName;		/*!< path to existing directory */
     dev_t dev;				/*!< stat(2) device number */
     ino_t ino;				/*!< stat(2) inode number */
-    int isFake;				/*!< (currently unused) */
 };
 
 /**
@@ -49,10 +48,6 @@ struct fingerPrint_s {
 /*@owned@*/ /*@null@*/ const char * subDir;
 /*@dependent@*/ const char * baseName;	/*!< file base name */
 };
-
-/* only if !scarceMemory */
-/** */
-#define fpFree(a) free((void *)(a).baseName)
 
 /** */
 #define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
@@ -96,8 +91,10 @@ int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint  * fpList,
 /**
  * Destroy finger print cache.
  * @param cache		pointer to fingerprint cache
+ * @return		NULL always
  */
-void fpCacheFree(/*@only@*/ fingerPrintCache cache)
+/*@null@*/
+fingerPrintCache fpCacheFree(/*@only@*/ fingerPrintCache cache)
 	/*@modifies cache @*/;
 
 /**
@@ -145,17 +142,6 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 		  const char ** baseNames, const int * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
 	/*@modifies cache, *fpList @*/;
-
-/**
- * Return finger prints of all file names in header.
- * @warning: scareMemory is assumed!
- * @param cache		pointer to fingerprint cache
- * @param h		package header
- * @retval fpList	pointer to array of finger prints
- */
-/*@unused@*/
-void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
-	/*@modifies h, cache, *fpList @*/;
 
 #ifdef __cplusplus
 }

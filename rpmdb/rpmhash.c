@@ -130,7 +130,7 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
     b->data[b->dataCount++] = data;
 }
 
-void htFree(hashTable ht)
+hashTable htFree(hashTable ht)
 {
     hashBucket b, n;
     int i;
@@ -157,6 +157,7 @@ void htFree(hashTable ht)
 
     ht->buckets = _free(ht->buckets);
     ht = _free(ht);
+    return NULL;
 }
 
 int htHasEntry(hashTable ht, const void * key)

@@ -21,7 +21,7 @@
 
 /*@access TFI_t @*/
 /*@access transactionElement @*/
-/*@access rpmTransactionSet @*/	/* XXX for ts->ignoreSet and ts->probs */
+/*@access rpmTransactionSet @*/	/* XXX for ts->ignoreSet */
 
 /*@unchecked@*/
 static int _fi_debug = 0;
@@ -486,9 +486,11 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions) {
-		rpmProblemSetAppend(ts->probs, RPMPROB_BADRELOCATE,
+		rpmProblemSet ps = rpmtsGetProblems(ts);
+		rpmProblemSetAppend(ps, RPMPROB_BADRELOCATE,
 			p->NEVR, p->key,
 			relocations[i].oldPath, NULL, NULL, 0);
+		ps = rpmProblemSetFree(ps);
 	    }
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);

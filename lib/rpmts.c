@@ -18,6 +18,8 @@
 
 #include "debug.h"
 
+/*@access rpmdb @*/		/* XXX db->db_chrootDone, NULL */
+
 /*@access FD_t @*/		/* XXX compared with NULL */
 /*@access rpmProblemSet @*/
 /*@access rpmTransactionSet @*/
@@ -67,9 +69,9 @@ int rpmtsCloseDB(rpmTransactionSet ts)
 {
     int rc = 0;
 
-    if (ts->rpmdb != NULL) {
-	rc = rpmdbClose(ts->rpmdb);
-	ts->rpmdb = NULL;
+    if (ts->rdb != NULL) {
+	rc = rpmdbClose(ts->rdb);
+	ts->rdb = NULL;
     }
     return rc;
 }
@@ -78,7 +80,7 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
 {
     int rc = 0;
 
-    if (ts->rpmdb != NULL && ts->dbmode == dbmode)
+    if (ts->rdb != NULL && ts->dbmode == dbmode)
 	return 0;
 
     (void) rpmtsCloseDB(ts);
@@ -86,7 +88,7 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
     /* XXX there's a potential db lock race here. */
 
     ts->dbmode = dbmode;
-    rc = rpmdbOpen(ts->rootDir, &ts->rpmdb, ts->dbmode, 0644);
+    rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
     if (rc) {
 	const char * dn;
 	/*@-globs -mods@*/ /* FIX: rpmGlobalMacroContext for an error? shrug */
@@ -102,7 +104,7 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
 rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
 			const void * keyp, size_t keylen)
 {
-    return rpmdbInitIterator(ts->rpmdb, rpmtag, keyp, keylen);
+    return rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
 }
 
 static int rpmtsCloseSDB(rpmTransactionSet ts)
@@ -283,7 +285,6 @@ rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
 	if (ts->probs) {
 	    if (ts->probs->numProblems > 0)
 		ps = rpmpsLink(ts->probs, NULL);
-	    ts->probs = rpmpsUnlink(ts->probs, NULL);
 	}
     }
     return ps;
@@ -418,6 +419,24 @@ void rpmtsSetRootDir(rpmTransactionSet ts, const char * rootDir)
     }
 }
 
+const char * rpmtsGetCurrDir(rpmTransactionSet ts)
+{
+    const char * currDir = NULL;
+    if (ts != NULL) {
+	currDir = ts->currDir;
+    }
+    return currDir;
+}
+
+void rpmtsSetCurrDir(rpmTransactionSet ts, const char * currDir)
+{
+    if (ts != NULL) {
+	ts->currDir = _free(ts->currDir);
+	if (currDir)
+	    ts->currDir = xstrdup(currDir);
+    }
+}
+
 FD_t rpmtsGetScriptFd(rpmTransactionSet ts)
 {
     FD_t scriptFd = NULL;
@@ -442,6 +461,57 @@ void rpmtsSetScriptFd(rpmTransactionSet ts, FD_t scriptFd)
     }
 }
 
+int rpmtsGetChrootDone(rpmTransactionSet ts)
+{
+    int chrootDone = 0;
+    if (ts != NULL) {
+	chrootDone = ts->chrootDone;
+    }
+    return chrootDone;
+}
+
+int rpmtsSetChrootDone(rpmTransactionSet ts, int chrootDone)
+{
+    int ochrootDone = 0;
+    if (ts != NULL) {
+	ochrootDone = ts->chrootDone;
+	if (ts->rdb != NULL)
+	    ts->rdb->db_chrootDone = chrootDone;
+	ts->chrootDone = chrootDone;
+    }
+    return ochrootDone;
+}
+
+int_32 rpmtsGetTid(rpmTransactionSet ts)
+{
+    int_32 tid = 0;
+    if (ts != NULL) {
+	tid = ts->tid;
+    }
+    return tid;
+}
+
+int_32 rpmtsSetTid(rpmTransactionSet ts, int_32 tid)
+{
+    int_32 otid = 0;
+    if (ts != NULL) {
+	otid = ts->tid;
+	ts->tid = tid;
+    }
+    return otid;
+}
+
+rpmdb rpmtsGetRdb(rpmTransactionSet ts)
+{
+    rpmdb rdb = NULL;
+    if (ts != NULL) {
+	rdb = ts->rdb;
+    }
+/*@-compdef -refcounttrans -usereleased @*/
+    return rdb;
+/*@=compdef =refcounttrans =usereleased @*/
+}
+
 rpmtsFlags rpmtsGetFlags(rpmTransactionSet ts)
 {
     rpmtsFlags otransFlags = 0;
@@ -451,12 +521,12 @@ rpmtsFlags rpmtsGetFlags(rpmTransactionSet ts)
     return otransFlags;
 }
 
-rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags ntransFlags)
+rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags transFlags)
 {
     rpmtsFlags otransFlags = 0;
     if (ts != NULL) {
 	otransFlags = ts->transFlags;
-	ts->transFlags = ntransFlags;
+	ts->transFlags = transFlags;
     }
     return otransFlags;
 }
@@ -511,11 +581,11 @@ rpmTransactionSet rpmtsCreate(void)
     ts->filesystems = NULL;
     ts->di = NULL;
 
-    ts->rpmdb = NULL;
+    ts->rdb = NULL;
     ts->dbmode = O_RDONLY;
 
     ts->scriptFd = NULL;
-    ts->id = (int_32) time(NULL);
+    ts->tid = (int_32) time(NULL);
     ts->delta = 5;
 
     ts->numRemovedPackages = 0;

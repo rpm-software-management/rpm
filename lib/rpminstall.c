@@ -7,13 +7,13 @@
 #include <rpmcli.h>
 
 #include "rpmdb.h"
-#include "rpmts.h"		/* XXX ts->rpmdb */
+#include "rpmts.h"
 
 #include "manifest.h"
 #include "misc.h"	/* XXX for rpmGlob() */
 #include "debug.h"
 
-/*@access rpmTransactionSet @*/	/* XXX compared with NULL, ts->rpmdb */
+/*@access rpmTransactionSet @*/	/* XXX ts->goal, ts->dbmode */
 /*@access rpmProblemSet @*/	/* XXX compared with NULL */
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access rpmdb @*/		/* XXX compared with NULL */
@@ -307,8 +307,9 @@ restart:
 		fprintf(stdout, _("Retrieving %s\n"), fileURL);
 
 	    {	char tfnbuf[64];
-		const char * rootDir;
-		rootDir = (ts->rootDir && *ts->rootDir) ? ts->rootDir : "";
+		const char * rootDir = rpmtsGetRootDir(ts);
+		if (!(rootDir && * rootDir))
+		    rootDir = "";
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
 		(void) mktemp(tfnbuf);
 		tfn = rpmGenPath(rootDir, "%{_tmppath}/", tfnbuf);
@@ -398,12 +399,10 @@ restart:
 	if (eiu->rpmrc == RPMRC_OK || eiu->rpmrc == RPMRC_BADSIZE) {
 
 	    /* Open database RDWR for binary packages. */
-	    /*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	    if (rpmtsOpenDB(ts, ts->dbmode)) {
 		eiu->numFailed++;
 		goto exit;
 	    }
-	    /*@=nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 
 	    if (eiu->relocations) {
 		const char ** paths;
@@ -411,7 +410,8 @@ restart:
 		int c;
 
 		if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft,
-				       (void **) &paths, &c) && (c == 1)) {
+				       (void **) &paths, &c) && (c == 1))
+		{
 		    eiu->relocations->oldPath = xstrdup(paths[0]);
 		    paths = headerFreeData(paths, pft);
 		} else {
@@ -433,9 +433,7 @@ restart:
 		int count;
 
 		xx = headerNVR(eiu->h, &name, NULL, NULL);
-		/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 		mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
-		/*@=nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 		count = rpmdbGetIteratorCount(mi);
 		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
 		    if (rpmVersionCompare(oldH, eiu->h) < 0)
@@ -452,13 +450,11 @@ restart:
 		/* Package is newer than those currently installed. */
 	    }
 
-	    /*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	    /*@-abstract@*/
 	    rc = rpmtsAddPackage(ts, eiu->h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			relocations);
 	    /*@=abstract@*/
-	    /*@=nullstate@*/
 
 	    /* XXX reference held by transaction set */
 	    eiu->h = headerFree(eiu->h, "Install added");
@@ -533,12 +529,10 @@ restart:
 
     if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NODEPS)) {
 
-	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	if (rpmtsCheck(ts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
-	/*@=nullstate@*/
 
 	ps = rpmtsGetProblems(ts);
 	if (!stopInstall && ps) {
@@ -569,12 +563,10 @@ restart:
     }
 
     if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
-	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	if (rpmtsOrder(ts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
-	/*@=nullstate@*/
     }
 
     if (eiu->numRPMS && !stopInstall) {
@@ -583,9 +575,7 @@ restart:
 
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 
-	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	rc = rpmtsRun(ts, NULL, probFilter);
-	/*@=nullstate@*/
 	ps = rpmtsGetProblems(ts);
 
 	if (rc < 0) {

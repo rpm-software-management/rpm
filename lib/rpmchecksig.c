@@ -17,7 +17,7 @@
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
-/*@access rpmTransactionSet @*/	/* ts->rpmdb, ts->id, ts->dig et al */
+/*@access rpmTransactionSet @*/	/* ts->dig et al */
 /*?access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX stealing digests */
 /*@access pgpDig @*/
@@ -328,11 +328,11 @@ exit:
  * @param argv		array of pubkey file names (NULL terminated)
  * @return		0 on success
  */
-static int rpmImportPubkey(rpmTransactionSet ts,
+static int rpmImportPubkey(const rpmTransactionSet ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
 	/*@globals RPMVERSION, fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
     const char * fn;
     int res = 0;
@@ -437,11 +437,11 @@ static int rpmImportPubkey(rpmTransactionSet ts,
 
 	/* XXX W2DO: tag value inheirited from parent? */
 	xx = headerAddEntry(h, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildhost, 1);
-
-	xx = headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &ts->id, 1);
-	
-	/* XXX W2DO: tag value inheirited from parent? */
-	xx = headerAddEntry(h, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &ts->id, 1);
+	{   int_32 tid = rpmtsGetTid(ts);
+	    xx = headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &tid, 1);
+	    /* XXX W2DO: tag value inheirited from parent? */
+	    xx = headerAddEntry(h, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &tid, 1);
+	}
 
 #ifdef	NOTYET
 	/* XXX W2DO: tag value inheirited from parent? */
@@ -449,7 +449,7 @@ static int rpmImportPubkey(rpmTransactionSet ts,
 #endif
 
 	/* Add header to database. */
-	xx = rpmdbAdd(ts->rpmdb, ts->id, h);
+	xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h);
 
 bottom:
 	/* Clean up. */

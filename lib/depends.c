@@ -230,7 +230,7 @@ int rpmtsAddPackage(rpmTransactionSet ts, Header h,
 	goto exit;
 
     /* Do lazy (readonly?) open of rpm database. */
-    if (ts->rpmdb == NULL) {
+    if (rpmtsGetRdb(ts) == NULL) {
 	if ((ec = rpmtsOpenDB(ts, ts->dbmode)) != 0)
 	    goto exit;
     }
@@ -346,7 +346,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
      */
     if (_cacheDependsRC) {
 	dbiIndex dbi;
-	dbi = dbiOpen(ts->rpmdb, RPMDBI_DEPENDS, 0);
+	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
 	if (dbi == NULL)
 	    _cacheDependsRC = 0;
 	else {
@@ -433,7 +433,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
 	goto exit;
 
     /* XXX only the installer does not have the database open here. */
-    if (ts->rpmdb != NULL) {
+    if (rpmtsGetRdb(ts) != NULL) {
 	if (Name[0] == '/') {
 	    /* depFlags better be 0! */
 
@@ -481,7 +481,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
     /*
      * Search for an unsatisfied dependency.
      */
-    if (!(ts->transFlags & RPMTRANS_FLAG_NOSUGGESTS) && ts->solve != NULL)
+    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_NOSUGGESTS) && ts->solve != NULL)
 	xx = (*ts->solve) (ts, dep);
 
 unsatisfied:
@@ -494,7 +494,7 @@ exit:
      */
     if (_cacheDependsRC) {
 	dbiIndex dbi;
-	dbi = dbiOpen(ts->rpmdb, RPMDBI_DEPENDS, 0);
+	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
 	if (dbi == NULL) {
 	    _cacheDependsRC = 0;
 	} else {
@@ -699,7 +699,7 @@ static int checkDependentConflicts(rpmTransactionSet ts, const char * dep)
 {
     int rc = 0;
 
-    if (ts->rpmdb != NULL) {	/* XXX is this necessary? */
+    if (rpmtsGetRdb(ts) != NULL) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
 	rc = checkPackageSet(ts, dep, mi);
@@ -1140,7 +1140,7 @@ int rpmtsOrder(rpmTransactionSet ts)
     int_32 Flags;
 
 #ifdef	DYING
-    int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
+    int chainsaw = rpmtsGetFlags(ts) & RPMTRANS_FLAG_CHAINSAW;
 #else
     int chainsaw = 1;
 #endif
@@ -1655,7 +1655,7 @@ int rpmtsCheck(rpmTransactionSet ts)
     int rc;
 
     /* Do lazy, readonly, open of rpm database. */
-    if (ts->rpmdb == NULL) {
+    if (rpmtsGetRdb(ts) == NULL) {
 	if ((rc = rpmtsOpenDB(ts, ts->dbmode)) != 0)
 	    goto exit;
 	closeatexit = 1;
@@ -1777,7 +1777,7 @@ exit:
     if (closeatexit)
 	xx = rpmtsCloseDB(ts);
     else if (_cacheDependsRC)
-	xx = rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
+	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
     /*@=branchstate@*/
     return rc;
 }

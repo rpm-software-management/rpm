@@ -30,7 +30,7 @@
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 /*@unchecked@*/
-int _fsm_debug = 1;
+int _fsm_debug = 0;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/
@@ -522,8 +522,8 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
     if (fsm->goal == FSM_PKGINSTALL) {
-	if (ts && ts->id > 0)
-	    sprintf(fsm->sufbuf, ";%08x", (unsigned)ts->id);
+	if (ts && rpmtsGetTid(ts) > 0)
+	    sprintf(fsm->sufbuf, ";%08x", (unsigned)rpmtsGetTid(ts));
     }
 
     ec = fsm->rc = 0;

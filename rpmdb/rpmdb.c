@@ -1003,7 +1003,7 @@ if (rc == 0)
 
     if (rc) {
 	allMatches = dbiFreeIndexSet(allMatches);
-	fpCacheFree(fpc);
+	fpc = fpCacheFree(fpc);
 	return rc;
     }
 
@@ -1062,7 +1062,7 @@ if (rc == 0)
     rec = _free(rec);
     allMatches = dbiFreeIndexSet(allMatches);
 
-    fpCacheFree(fpc);
+    fpc = fpCacheFree(fpc);
 
     if ((*matches)->count == 0) {
 	*matches = dbiFreeIndexSet(*matches);
@@ -2976,7 +2976,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
     mi = rpmdbFreeIterator(mi);
 
-    fpCacheFree(fpc);
+    fpc = fpCacheFree(fpc);
 
     return 0;
 

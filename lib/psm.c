@@ -38,7 +38,6 @@
 
 /*@access TFI_t@*/
 /*@access transactionElement@*/	/* XXX rpmInstallSourcePackage */
-/*@access rpmTransactionSet@*/
 
 /*@access alKey@*/
 /*@access rpmDepSet@*/
@@ -497,9 +496,9 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 	goto exit;
     }
 
-/*@-assignexpose@*/
+/*@-assignexpose -type@*/
     fi->te = ts->order[0];
-/*@=assignexpose@*/
+/*@=assignexpose =type@*/
     fi->te->fd = fdLink(fd, "installSourcePackage");
     hge = fi->hge;
     hfd = fi->hfd;
@@ -752,7 +751,7 @@ static int runScript(PSM_t psm, Header h,
 	FD_t fd;
 
 	/*@-branchstate@*/
-	if (makeTempFile((!ts->chrootDone ? rootDir : "/"), &fn, &fd)) {
+	if (makeTempFile((!rpmtsGetChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
 	    if (freePrefixes) free(prefixes);
 	    return 1;
 	}
@@ -769,7 +768,7 @@ static int runScript(PSM_t psm, Header h,
 	xx = Fclose(fd);
 
 	{   const char * sn = fn;
-	    if (!ts->chrootDone && rootDir != NULL &&
+	    if (!rpmtsGetChrootDone(ts) && rootDir != NULL &&
 		!(rootDir[0] == '/' && rootDir[1] == '\0'))
 	    {
 		sn += strlen(rootDir)-1;
@@ -868,7 +867,7 @@ static int runScript(PSM_t psm, Header h,
 	    rootDir = strchr(rootDir, '/');
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
-	    if (!ts->chrootDone && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
+	    if (!rpmtsGetChrootDone(ts) && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
 		/*@-superuser -noeffect @*/
 		xx = chroot(rootDir);
 		/*@=superuser =noeffect @*/
@@ -971,11 +970,11 @@ exit:
  * @param triggersAlreadyRun
  * @return
  */
-static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
+static int handleOneTrigger(const PSM_t psm, Header sourceH, Header triggeredH,
 			int arg2, unsigned char * triggersAlreadyRun)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies psm, triggeredH, *triggersAlreadyRun, rpmGlobalMacroContext,
+	/*@modifies triggeredH, *triggersAlreadyRun, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     int scareMem = 1;
@@ -1041,7 +1040,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 	{   int arg1;
 	    int index;
 
-	    arg1 = rpmdbCountPackages(ts->rpmdb, Name);
+	    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), Name);
 	    if (arg1 < 0) {
 		/* XXX W2DO? fails as "execution of script failed" */
 		rc = RPMRC_FAIL;
@@ -1092,7 +1091,7 @@ static int runTriggers(PSM_t psm)
     int numPackage;
     rpmRC rc = RPMRC_OK;
 
-    numPackage = rpmdbCountPackages(ts->rpmdb, teGetN(psm->te)) + psm->countCorrection;
+    numPackage = rpmdbCountPackages(rpmtsGetRdb(ts), teGetN(psm->te)) + psm->countCorrection;
     if (numPackage < 0)
 	return 1;
 
@@ -1243,7 +1242,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	 * versions of this package that will be installed when we are
 	 * finished.
 	 */
-	psm->npkgs_installed = rpmdbCountPackages(ts->rpmdb, teGetN(psm->te));
+	psm->npkgs_installed = rpmdbCountPackages(rpmtsGetRdb(ts), teGetN(psm->te));
 	if (psm->npkgs_installed < 0) {
 	    rc = RPMRC_FAIL;
 	    break;
@@ -1463,7 +1462,7 @@ assert(psm->mi == NULL);
 
 	    /* Add remove transaction id to header. */
 	    if (psm->oh)
-	    {	int_32 tid = ts->id;
+	    {	int_32 tid = rpmtsGetTid(ts);
 		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
 			RPM_INT32_TYPE, &tid, 1);
 	    }
@@ -1792,12 +1791,14 @@ assert(psm->mi == NULL);
     case PSM_CREATE:
 	break;
     case PSM_NOTIFY:
+/*@-type@*/
 	if (ts && ts->notify) {
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void) ts->notify(fi->h, psm->what, psm->amount, psm->total,
 				teGetKey(psm->te), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	}
+/*@=type@*/
 	break;
     case PSM_DESTROY:
 	break;
@@ -1813,7 +1814,7 @@ assert(psm->mi == NULL);
     case PSM_CHROOT_IN:
     {	const char * rootDir = rpmtsGetRootDir(ts);
 	/* Change root directory if requested and not already done. */
-	if (rootDir != NULL && !ts->chrootDone && !psm->chrootDone) {
+	if (rootDir != NULL && !rpmtsGetChrootDone(ts) && !psm->chrootDone) {
 	    static int _loaded = 0;
 
 	    /*
@@ -1830,21 +1831,21 @@ assert(psm->mi == NULL);
 	    /*@-superuser@*/
 	    rc = chroot(rootDir);
 	    /*@=superuser@*/
-	    psm->chrootDone = ts->chrootDone = 1;
-	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 1;
+	    psm->chrootDone = 1;
+	    (void) rpmtsSetChrootDone(ts, 1);
 	}
     }	break;
     case PSM_CHROOT_OUT:
 	/* Restore root directory if changed. */
 	if (psm->chrootDone) {
+	    const char * currDir = rpmtsGetCurrDir(ts);
 	    /*@-superuser@*/
 	    rc = chroot(".");
 	    /*@=superuser@*/
-	    psm->chrootDone = ts->chrootDone = 0;
-	    if (ts->rpmdb != NULL)
-		ts->rpmdb->db_chrootDone = 0;
-	    if (ts->currDir != NULL)	/* XXX can't happen */
-		xx = chdir(ts->currDir);
+	    psm->chrootDone = 0;
+	    (void) rpmtsSetChrootDone(ts, 0);
+	    if (currDir != NULL)	/* XXX can't happen */
+		xx = chdir(currDir);
 	}
 	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */
@@ -1895,11 +1896,11 @@ fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
     case PSM_RPMDB_ADD:
 	if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h != NULL)	/* XXX can't happen */
-	rc = rpmdbAdd(ts->rpmdb, ts->id, fi->h);
+	rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h);
 	break;
     case PSM_RPMDB_REMOVE:
 	if (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	rc = rpmdbRemove(ts->rpmdb, ts->id, fi->record);
+	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record);
 	break;
 
     default:
