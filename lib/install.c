@@ -598,7 +598,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
     if (rootdir) {
 	currDirLen = 50;
 	currDir = malloc(currDirLen);
-	while (!getcwd(currDir, currDirLen)) {
+	while (!getcwd(currDir, currDirLen) && errno == ERANGE) {
 	    currDirLen += 50;
 	    currDir = realloc(currDir, currDirLen);
 	}

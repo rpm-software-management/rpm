@@ -17,6 +17,8 @@
 	- create /usr/lib/rpm directory and move rpmrc et al there
 
 2.5.2 -> 2.5.3:
+	- fix infinite recursion on non-ERANGE return from getcwd() during
+	  install.
 	- rm .depend for multiple builds in same tree (Will Partain)
 	- add special case code for "/" in %files.
 	- better query semantics with symlinks (Tim Mooney)
