@@ -1,13 +1,62 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-07-31 09:10-0400\n"
+"POT-Creation-Date: 2002-08-10 12:40-0400\n"
 "PO-Revision-Date: 2000-02-11 13:01+0200\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso8859-9\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: popt.c:34
+msgid "unknown errno"
+msgstr "bilinmeyen hata no"
+
+#: popt.c:940
+#, c-format
+msgid "option type (%d) not implemented in popt\n"
+msgstr "seçenek türü (%d) popt için geçersiz\n"
+
+#: popt.c:1160
+msgid "missing argument"
+msgstr "argüman eksik"
+
+#: popt.c:1162
+msgid "unknown option"
+msgstr "bilinmeyen seçenek"
+
+#: popt.c:1164
+msgid "mutually exclusive logical operations requested"
+msgstr "birbirini dýþlayan mantýksal iþlemler istendi"
+
+#: popt.c:1166
+msgid "opt->arg should not be NULL"
+msgstr ""
+
+#: popt.c:1168
+msgid "aliases nested too deeply"
+msgstr "adlarda çok fazla içiçelikler"
+
+#: popt.c:1170
+msgid "error in parameter quoting"
+msgstr "parametrelerde týrnak iþaretleme hatalý "
+
+#: popt.c:1172
+msgid "invalid numeric value"
+msgstr "sayýsal deðer geçersiz"
+
+#: popt.c:1174
+msgid "number too large or too small"
+msgstr "sayý ya çok büyük ya da çok küçük"
+
+#: popt.c:1176
+msgid "memory allocation failed"
+msgstr ""
+
+#: popt.c:1180
+msgid "unknown error"
+msgstr "bilinmeyen hata"
 
 #: popthelp.c:57
 msgid "Show this help message"
@@ -22,62 +71,42 @@ msgstr "Kýsa bir kullaným iletisi göster"
 msgid "Display option defaults in message"
 msgstr "Kýsa bir kullaným iletisi göster"
 
-#~ msgid "unknown errno"
-#~ msgstr "bilinmeyen hata no"
+#: popthelp.c:103
+msgid "NONE"
+msgstr "YOK"
 
-#~ msgid "option type (%d) not implemented in popt\n"
-#~ msgstr "seçenek türü (%d) popt için geçersiz\n"
+#: popthelp.c:105
+msgid "VAL"
+msgstr "DEÐ"
 
-#~ msgid "missing argument"
-#~ msgstr "argüman eksik"
+#: popthelp.c:109
+msgid "INT"
+msgstr "INT"
 
-#~ msgid "unknown option"
-#~ msgstr "bilinmeyen seçenek"
+#: popthelp.c:110
+msgid "LONG"
+msgstr "LONG"
 
-#~ msgid "mutually exclusive logical operations requested"
-#~ msgstr "birbirini dýþlayan mantýksal iþlemler istendi"
+#: popthelp.c:111
+msgid "STRING"
+msgstr "STRING"
 
-#~ msgid "aliases nested too deeply"
-#~ msgstr "adlarda çok fazla içiçelikler"
+#: popthelp.c:112
+msgid "FLOAT"
+msgstr "FLOAT"
 
-#~ msgid "error in parameter quoting"
-#~ msgstr "parametrelerde týrnak iþaretleme hatalý "
+#: popthelp.c:113
+msgid "DOUBLE"
+msgstr "DOUBLE"
 
-#~ msgid "invalid numeric value"
-#~ msgstr "sayýsal deðer geçersiz"
+#: popthelp.c:114
+msgid "ARG"
+msgstr "ARG"
 
-#~ msgid "number too large or too small"
-#~ msgstr "sayý ya çok büyük ya da çok küçük"
+#: popthelp.c:486
+msgid "Usage:"
+msgstr "Kullanýmý:"
 
-#~ msgid "unknown error"
-#~ msgstr "bilinmeyen hata"
-
-#~ msgid "NONE"
-#~ msgstr "YOK"
-
-#~ msgid "VAL"
-#~ msgstr "DEÐ"
-
-#~ msgid "INT"
-#~ msgstr "INT"
-
-#~ msgid "LONG"
-#~ msgstr "LONG"
-
-#~ msgid "STRING"
-#~ msgstr "STRING"
-
-#~ msgid "FLOAT"
-#~ msgstr "FLOAT"
-
-#~ msgid "DOUBLE"
-#~ msgstr "DOUBLE"
-
-#~ msgid "ARG"
-#~ msgstr "ARG"
-
-#~ msgid "Usage:"
-#~ msgstr "Kullanýmý:"
-
-#~ msgid "[OPTION...]"
-#~ msgstr "[SEÇENEK...]"
+#: popthelp.c:510
+msgid "[OPTION...]"
+msgstr "[SEÇENEK...]"

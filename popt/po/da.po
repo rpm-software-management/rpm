@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-07-31 09:10-0400\n"
+"POT-Creation-Date: 2002-08-10 12:40-0400\n"
 "PO-Revision-Date: Sun Jan 21 2001 04:30:32+0200\n"
 "Last-Translator: Martin Hansen <mah@k64.dk>\n"
 "Language-Team: Dansk <dansk@klid.dk>\n"
@@ -9,6 +9,55 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 "X-Generator: KTranslator v 0.6.0\n"
+
+#: popt.c:34
+msgid "unknown errno"
+msgstr "ukendt fejlnr."
+
+#: popt.c:940
+#, c-format
+msgid "option type (%d) not implemented in popt\n"
+msgstr "tilvalgstype (%d) er ikke implementeret i popt\n"
+
+#: popt.c:1160
+msgid "missing argument"
+msgstr "mangler argument"
+
+#: popt.c:1162
+msgid "unknown option"
+msgstr "ukendt tilvalg"
+
+#: popt.c:1164
+msgid "mutually exclusive logical operations requested"
+msgstr "de ønskede handlinger udelukker hinanden"
+
+#: popt.c:1166
+msgid "opt->arg should not be NULL"
+msgstr ""
+
+#: popt.c:1168
+msgid "aliases nested too deeply"
+msgstr "aliaser er for dybt indlejret"
+
+#: popt.c:1170
+msgid "error in parameter quoting"
+msgstr "fejl i parameter citering"
+
+#: popt.c:1172
+msgid "invalid numeric value"
+msgstr "ugyldig numerisk værdi"
+
+#: popt.c:1174
+msgid "number too large or too small"
+msgstr "nummer for stort, eller for lille"
+
+#: popt.c:1176
+msgid "memory allocation failed"
+msgstr ""
+
+#: popt.c:1180
+msgid "unknown error"
+msgstr "ukendt fejl"
 
 #: popthelp.c:57
 msgid "Show this help message"
@@ -23,62 +72,42 @@ msgstr "Vis kortfattet brugsanvisning"
 msgid "Display option defaults in message"
 msgstr "Vis kortfattet brugsanvisning"
 
-#~ msgid "unknown errno"
-#~ msgstr "ukendt fejlnr."
+#: popthelp.c:103
+msgid "NONE"
+msgstr "INGEN"
 
-#~ msgid "option type (%d) not implemented in popt\n"
-#~ msgstr "tilvalgstype (%d) er ikke implementeret i popt\n"
+#: popthelp.c:105
+msgid "VAL"
+msgstr "VAL"
 
-#~ msgid "missing argument"
-#~ msgstr "mangler argument"
+#: popthelp.c:109
+msgid "INT"
+msgstr "INT"
 
-#~ msgid "unknown option"
-#~ msgstr "ukendt tilvalg"
+#: popthelp.c:110
+msgid "LONG"
+msgstr "LONG"
 
-#~ msgid "mutually exclusive logical operations requested"
-#~ msgstr "de ønskede handlinger udelukker hinanden"
+#: popthelp.c:111
+msgid "STRING"
+msgstr "STRING"
 
-#~ msgid "aliases nested too deeply"
-#~ msgstr "aliaser er for dybt indlejret"
+#: popthelp.c:112
+msgid "FLOAT"
+msgstr "FLOAT"
 
-#~ msgid "error in parameter quoting"
-#~ msgstr "fejl i parameter citering"
+#: popthelp.c:113
+msgid "DOUBLE"
+msgstr "DOUBLE"
 
-#~ msgid "invalid numeric value"
-#~ msgstr "ugyldig numerisk værdi"
+#: popthelp.c:114
+msgid "ARG"
+msgstr "ARG"
 
-#~ msgid "number too large or too small"
-#~ msgstr "nummer for stort, eller for lille"
+#: popthelp.c:486
+msgid "Usage:"
+msgstr "Brug:"
 
-#~ msgid "unknown error"
-#~ msgstr "ukendt fejl"
-
-#~ msgid "NONE"
-#~ msgstr "INGEN"
-
-#~ msgid "VAL"
-#~ msgstr "VAL"
-
-#~ msgid "INT"
-#~ msgstr "INT"
-
-#~ msgid "LONG"
-#~ msgstr "LONG"
-
-#~ msgid "STRING"
-#~ msgstr "STRING"
-
-#~ msgid "FLOAT"
-#~ msgstr "FLOAT"
-
-#~ msgid "DOUBLE"
-#~ msgstr "DOUBLE"
-
-#~ msgid "ARG"
-#~ msgstr "ARG"
-
-#~ msgid "Usage:"
-#~ msgstr "Brug:"
-
-#~ msgid "[OPTION...]"
-#~ msgstr "[TILVALG...]"
+#: popthelp.c:510
+msgid "[OPTION...]"
+msgstr "[TILVALG...]"

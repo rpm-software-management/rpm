@@ -1,13 +1,62 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-07-31 09:10-0400\n"
+"POT-Creation-Date: 2002-08-10 12:40-0400\n"
 "PO-Revision-Date: 2001-06-08 01:35+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
+
+#: popt.c:34
+msgid "unknown errno"
+msgstr "óþekkt villunúmer"
+
+#: popt.c:940
+#, c-format
+msgid "option type (%d) not implemented in popt\n"
+msgstr "rofagerðin (%d) er ekki studd í popt\n"
+
+#: popt.c:1160
+msgid "missing argument"
+msgstr "vantar viðfang"
+
+#: popt.c:1162
+msgid "unknown option"
+msgstr "óþekktur rofi"
+
+#: popt.c:1164
+msgid "mutually exclusive logical operations requested"
+msgstr "beðið um rofa sem slökkva hvor á öðrum"
+
+#: popt.c:1166
+msgid "opt->arg should not be NULL"
+msgstr "opt->arg ætti ekki að vera NULL"
+
+#: popt.c:1168
+msgid "aliases nested too deeply"
+msgstr "alíasar of flóknir"
+
+#: popt.c:1170
+msgid "error in parameter quoting"
+msgstr "villa í viðföngum (gæsalappir og svo frv.)"
+
+#: popt.c:1172
+msgid "invalid numeric value"
+msgstr "ógilt tölulegt gildi"
+
+#: popt.c:1174
+msgid "number too large or too small"
+msgstr "talan of stór eða smá"
+
+#: popt.c:1176
+msgid "memory allocation failed"
+msgstr "ekki tókst að taka frá minni"
+
+#: popt.c:1180
+msgid "unknown error"
+msgstr "óþekkt villa"
 
 #: popthelp.c:57
 msgid "Show this help message"
@@ -21,68 +70,42 @@ msgstr "Sýna stuttar notkunarleiðbeiningar"
 msgid "Display option defaults in message"
 msgstr "Sýna sjálfgefin gildi rofa í skilaboðum"
 
-#~ msgid "unknown errno"
-#~ msgstr "óþekkt villunúmer"
+#: popthelp.c:103
+msgid "NONE"
+msgstr "ENGIN"
 
-#~ msgid "option type (%d) not implemented in popt\n"
-#~ msgstr "rofagerðin (%d) er ekki studd í popt\n"
+#: popthelp.c:105
+msgid "VAL"
+msgstr "VAL"
 
-#~ msgid "missing argument"
-#~ msgstr "vantar viðfang"
+#: popthelp.c:109
+msgid "INT"
+msgstr "INT"
 
-#~ msgid "unknown option"
-#~ msgstr "óþekktur rofi"
+#: popthelp.c:110
+msgid "LONG"
+msgstr "LONG"
 
-#~ msgid "mutually exclusive logical operations requested"
-#~ msgstr "beðið um rofa sem slökkva hvor á öðrum"
+#: popthelp.c:111
+msgid "STRING"
+msgstr "STRING"
 
-#~ msgid "opt->arg should not be NULL"
-#~ msgstr "opt->arg ætti ekki að vera NULL"
+#: popthelp.c:112
+msgid "FLOAT"
+msgstr "FLOAT"
 
-#~ msgid "aliases nested too deeply"
-#~ msgstr "alíasar of flóknir"
+#: popthelp.c:113
+msgid "DOUBLE"
+msgstr "DOUBLE"
 
-#~ msgid "error in parameter quoting"
-#~ msgstr "villa í viðföngum (gæsalappir og svo frv.)"
+#: popthelp.c:114
+msgid "ARG"
+msgstr "ARG"
 
-#~ msgid "invalid numeric value"
-#~ msgstr "ógilt tölulegt gildi"
+#: popthelp.c:486
+msgid "Usage:"
+msgstr "Notkun:"
 
-#~ msgid "number too large or too small"
-#~ msgstr "talan of stór eða smá"
-
-#~ msgid "memory allocation failed"
-#~ msgstr "ekki tókst að taka frá minni"
-
-#~ msgid "unknown error"
-#~ msgstr "óþekkt villa"
-
-#~ msgid "NONE"
-#~ msgstr "ENGIN"
-
-#~ msgid "VAL"
-#~ msgstr "VAL"
-
-#~ msgid "INT"
-#~ msgstr "INT"
-
-#~ msgid "LONG"
-#~ msgstr "LONG"
-
-#~ msgid "STRING"
-#~ msgstr "STRING"
-
-#~ msgid "FLOAT"
-#~ msgstr "FLOAT"
-
-#~ msgid "DOUBLE"
-#~ msgstr "DOUBLE"
-
-#~ msgid "ARG"
-#~ msgstr "ARG"
-
-#~ msgid "Usage:"
-#~ msgstr "Notkun:"
-
-#~ msgid "[OPTION...]"
-#~ msgstr "[ROFI...]"
+#: popthelp.c:510
+msgid "[OPTION...]"
+msgstr "[ROFI...]"

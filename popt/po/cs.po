@@ -1,13 +1,62 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-07-31 09:10-0400\n"
+"POT-Creation-Date: 2002-08-10 12:40-0400\n"
 "PO-Revision-Date: 2001-07-24 00:03+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: popt.c:34
+msgid "unknown errno"
+msgstr "neznámé èíslo chyby"
+
+#: popt.c:940
+#, c-format
+msgid "option type (%d) not implemented in popt\n"
+msgstr "volba (%d) není v popt implementována\n"
+
+#: popt.c:1160
+msgid "missing argument"
+msgstr "chybí argument"
+
+#: popt.c:1162
+msgid "unknown option"
+msgstr "neznámá volba"
+
+#: popt.c:1164
+msgid "mutually exclusive logical operations requested"
+msgstr "po¾adovány vzájemnì výluèné logické operace"
+
+#: popt.c:1166
+msgid "opt->arg should not be NULL"
+msgstr "opt->arg nesmí být NULL"
+
+#: popt.c:1168
+msgid "aliases nested too deeply"
+msgstr "aliasy vnoøené pøíli¹ hluboko"
+
+#: popt.c:1170
+msgid "error in parameter quoting"
+msgstr "chyba v quotování parametrù"
+
+#: popt.c:1172
+msgid "invalid numeric value"
+msgstr "chybná numerická hodnota"
+
+#: popt.c:1174
+msgid "number too large or too small"
+msgstr "èíslo je pøíli¹ velké nebo pøíli¹ malé"
+
+#: popt.c:1176
+msgid "memory allocation failed"
+msgstr "selhala alokace pamìti"
+
+#: popt.c:1180
+msgid "unknown error"
+msgstr "neznámá chyba"
 
 #: popthelp.c:57
 msgid "Show this help message"
@@ -21,68 +70,42 @@ msgstr "Vypí¹e krátký návod k pou¾ití"
 msgid "Display option defaults in message"
 msgstr "Zobrazit implicitní volby ve zprávì"
 
-#~ msgid "unknown errno"
-#~ msgstr "neznámé èíslo chyby"
+#: popthelp.c:103
+msgid "NONE"
+msgstr "NONE"
 
-#~ msgid "option type (%d) not implemented in popt\n"
-#~ msgstr "volba (%d) není v popt implementována\n"
+#: popthelp.c:105
+msgid "VAL"
+msgstr "VAL"
 
-#~ msgid "missing argument"
-#~ msgstr "chybí argument"
+#: popthelp.c:109
+msgid "INT"
+msgstr "INT"
 
-#~ msgid "unknown option"
-#~ msgstr "neznámá volba"
+#: popthelp.c:110
+msgid "LONG"
+msgstr "LONG"
 
-#~ msgid "mutually exclusive logical operations requested"
-#~ msgstr "po¾adovány vzájemnì výluèné logické operace"
+#: popthelp.c:111
+msgid "STRING"
+msgstr "STRING"
 
-#~ msgid "opt->arg should not be NULL"
-#~ msgstr "opt->arg nesmí být NULL"
+#: popthelp.c:112
+msgid "FLOAT"
+msgstr "FLOAT"
 
-#~ msgid "aliases nested too deeply"
-#~ msgstr "aliasy vnoøené pøíli¹ hluboko"
+#: popthelp.c:113
+msgid "DOUBLE"
+msgstr "DOUBLE"
 
-#~ msgid "error in parameter quoting"
-#~ msgstr "chyba v quotování parametrù"
+#: popthelp.c:114
+msgid "ARG"
+msgstr "ARG"
 
-#~ msgid "invalid numeric value"
-#~ msgstr "chybná numerická hodnota"
+#: popthelp.c:486
+msgid "Usage:"
+msgstr "Pou¾ití:"
 
-#~ msgid "number too large or too small"
-#~ msgstr "èíslo je pøíli¹ velké nebo pøíli¹ malé"
-
-#~ msgid "memory allocation failed"
-#~ msgstr "selhala alokace pamìti"
-
-#~ msgid "unknown error"
-#~ msgstr "neznámá chyba"
-
-#~ msgid "NONE"
-#~ msgstr "NONE"
-
-#~ msgid "VAL"
-#~ msgstr "VAL"
-
-#~ msgid "INT"
-#~ msgstr "INT"
-
-#~ msgid "LONG"
-#~ msgstr "LONG"
-
-#~ msgid "STRING"
-#~ msgstr "STRING"
-
-#~ msgid "FLOAT"
-#~ msgstr "FLOAT"
-
-#~ msgid "DOUBLE"
-#~ msgstr "DOUBLE"
-
-#~ msgid "ARG"
-#~ msgstr "ARG"
-
-#~ msgid "Usage:"
-#~ msgstr "Pou¾ití:"
-
-#~ msgid "[OPTION...]"
-#~ msgstr "[VOLBY...]"
+#: popthelp.c:510
+msgid "[OPTION...]"
+msgstr "[VOLBY...]"
