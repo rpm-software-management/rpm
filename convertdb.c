@@ -147,7 +147,7 @@ int convertDB(void)
 		    fileFlagsList[j] |= RPMFILE_CONFIG;
 	    }
 
-	    headerAddEntry(dbentry, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, fileList, 
+	    headerAddEntry(dbentry, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE, fileList, 
 		     package.fileCount);
 	    headerAddEntry(dbentry, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE, 
 		     fileLinktoList, package.fileCount);
