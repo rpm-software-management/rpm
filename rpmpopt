@@ -12,7 +12,7 @@ rpm alias --setugids -q --qf \
 		   '[chown %{FILEUSERNAME}:%{FILEGROUPNAME} %{FILENAMES}\n]' \
 		   --pipe "sh"
 
-rpm alias --requires -q --qf \
+rpm alias --requires --qf \
 	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"
 rpm alias -R --requires
 
