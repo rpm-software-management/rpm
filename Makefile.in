@@ -53,7 +53,7 @@ rpm: lib/librpm.a build/librpmbuild.a @MISCPATH@ $(OBJS)
 	$(CC) -o rpm -static $(OBJS) $(LDFLAGS) $(LOADLIBES) $(LIBS) \
 		$(LIBEFENCE)
 
-rpm.shared: lib/librpm.a build/rpmlibbuild.a $(OBJS)
+rpm.shared: lib/librpm.a build/librpmbuild.a $(OBJS)
 	$(CC) -o rpm.shared $(LDFLAGS) $(OBJS) $(LOADLIBES) $(LIBS) \
 		$(LIBEFENCE)
 
