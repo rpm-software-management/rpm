@@ -17,6 +17,8 @@
 	- added update-po rule to po/Makefile.in
 	- updated de.po (thanks to Karl Eichwalder)
 	- rpmFindByFile() removes trailing and duplicate /'s
+	- made many string in rpm program (though not yet in the various
+	  libraries) translatable
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output

@@ -11,6 +11,7 @@
 #endif
 
 #include "install.h"
+#include "intl.h"
 #include "lib/rpmlib.h"
 #include "messages.h"
 #include "query.h"
@@ -76,7 +77,7 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
-	    fprintf(stderr, "error: cannot open file %s\n", *filename);
+	    fprintf(stderr, _("error: cannot open file %s\n"), *filename);
 	    numFailed++;
 	    *filename = NULL;
 	    continue;
@@ -93,7 +94,7 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 
 	    printFormat = "%-28s";
 	} else if (rpmIsVerbose())
-	    printf("Installing %s\n", *filename);
+	    printf(_("Installing %s\n"), *filename);
 
 	if (db) {
 	    rc = rpmInstallPackage(rootdir, db, fd, location, installFlags, fn, 
@@ -110,12 +111,13 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 	} 
 
 	if (rc == 1) {
-	    fprintf(stderr, "error: %s does not appear to be a RPM package\n", 
-			*filename);
+	    fprintf(stderr, 
+		    _("error: %s does not appear to be a RPM package\n"), 
+		    *filename);
 	}
 	    
 	if (rc) {
-	    fprintf(stderr, "error: %s cannot be installed\n", *filename);
+	    fprintf(stderr, _("error: %s cannot be installed\n"), *filename);
 	    numFailed++;
 	}
 
@@ -162,7 +164,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
     for (filename = argv, i = 0; *filename; filename++) {
 	if (urlIsURL(*filename)) {
 	    if (rpmIsVerbose()) {
-		printf("Retrieving %s\n", *filename);
+		printf(_("Retrieving %s\n"), *filename);
 	    }
 	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir));
 	    sprintf(packages[i], "%s/var/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
@@ -170,7 +172,8 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    rpmMessage(RPMMESS_DEBUG, "getting %s as %s\n", *filename, packages[i]);
 	    fd = urlGetFile(*filename, packages[i]);
 	    if (fd < 0) {
-		fprintf(stderr, "error: skipping %s - transfer failed - %s\n", 
+		fprintf(stderr, 
+			_("error: skipping %s - transfer failed - %s\n"), 
 			*filename, ftpStrerror(fd));
 		numFailed++;
 	    } else {
@@ -188,7 +191,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
     for (filename = packages; *filename; filename++) {
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
-	    fprintf(stderr, "error: cannot open file %s\n", *filename);
+	    fprintf(stderr, _("error: cannot open file %s\n"), *filename);
 	    numFailed++;
 	    *filename = NULL;
 	    continue;
@@ -200,12 +203,13 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	close(fd);
 	
 	if (rc == 1) {
-	    fprintf(stderr, "error: %s does not appear to be a RPM package\n", 
+	    fprintf(stderr, 
+			_("error: %s does not appear to be a RPM package\n"), 
 			*filename);
 	}
 	    
 	if (rc) {
-	    fprintf(stderr, "error: %s cannot be installed\n", *filename);
+	    fprintf(stderr, _("error: %s cannot be installed\n"), *filename);
 	    numFailed++;
 	    *filename = NULL;
 	} else if (isSource) {
@@ -246,7 +250,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    rpmdepDone(rpmdep);
 
 	    if (!stopInstall && conflicts) {
-		fprintf(stderr, "failed dependencies:\n");
+		fprintf(stderr, _("failed dependencies:\n"));
 		printDepProblems(stderr, conflicts, numConflicts);
 		rpmdepFreeConflicts(conflicts, numConflicts);
 		numFailed = numPackages;
@@ -304,7 +308,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	mode = O_RDWR | O_EXCL;
 	
     if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	fprintf(stderr, "cannot open %s/var/lib/rpm/packages.rpm\n", rootdir);
+	fprintf(stderr, _("cannot open %s/var/lib/rpm/packages.rpm\n"), 
+		rootdir);
 	exit(1);
     }
 
@@ -313,10 +318,10 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     for (arg = argv; *arg; arg++) {
 	rc = findPackageByLabel(db, *arg, &matches);
 	if (rc == 1) {
-	    fprintf(stderr, "package %s is not installed\n", *arg);
+	    fprintf(stderr, _("package %s is not installed\n"), *arg);
 	    numFailed++;
 	} else if (rc == 2) {
-	    fprintf(stderr, "error searching for package %s\n", *arg);
+	    fprintf(stderr, _("error searching for package %s\n"), *arg);
 	    numFailed++;
 	} else {
 	    count = 0;
@@ -324,7 +329,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 		if (matches.recs[i].recOffset) count++;
 
 	    if (count > 1 && !(interfaceFlags & UNINSTALL_ALLMATCHES)) {
-		fprintf(stderr, "\"%s\" specifies multiple packages\n", *arg);
+		fprintf(stderr, _("\"%s\" specifies multiple packages\n"), 
+			*arg);
 		numFailed++;
 	    }
 	    else { 
@@ -360,8 +366,8 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	rpmdepDone(rpmdep);
 
 	if (!stopUninstall && conflicts) {
-	    fprintf(stderr, "removing these packages would break "
-			    "dependencies:\n");
+	    fprintf(stderr, _("removing these packages would break "
+			      "dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
 	    rpmdepFreeConflicts(conflicts, numConflicts);
 	    numFailed += numPackages;
@@ -392,7 +398,7 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
 
     fd = open(arg, O_RDONLY);
     if (fd < 0) {
-	fprintf(stderr, "error: cannot open %s\n", arg);
+	fprintf(stderr, _("error: cannot open %s\n"), arg);
 	return 1;
     }
 
@@ -401,7 +407,7 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
 
     rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL);
     if (rc == 1) {
-	fprintf(stderr, "error: %s cannot be installed\n", arg);
+	fprintf(stderr, _("error: %s cannot be installed\n"), arg);
     }
 
     close(fd);
@@ -438,10 +444,10 @@ static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
 	}
 
 	if (conflicts[i].sense == RPMDEP_SENSE_REQUIRES) 
-	    fprintf(f, " is needed by %s-%s-%s\n", conflicts[i].byName, 
+	    fprintf(f, _(" is needed by %s-%s-%s\n"), conflicts[i].byName, 
 		    conflicts[i].byVersion, conflicts[i].byRelease);
 	else
-	    fprintf(f, " conflicts with %s-%s-%s\n", conflicts[i].byName, 
+	    fprintf(f, _(" conflicts with %s-%s-%s\n"), conflicts[i].byName, 
 		    conflicts[i].byVersion, conflicts[i].byRelease);
     }
 }

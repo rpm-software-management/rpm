@@ -11,19 +11,18 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
+# , c-format
 #: ../rpm.c:60
-#, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: ../rpm.c:64
 msgid "Copyright (C) 1997 - Red Hat Software"
-msgstr "Copyright © 1997 - Red Hat Software"
+msgstr "Copyright \251 1997 - Red Hat Software"
 
 #: ../rpm.c:65
-msgid ""
-"This may be freely redistributed under the terms of the GNU Public License"
-msgstr "Dies darf unter den Bedingungen der »GNU Public License« frei verteilt werden"
+msgid "This may be freely redistributed under the terms of the GNU Public License"
+msgstr "Dies darf unter den Bedingungen der \273GNU Public License\253 frei verteilt werden"
 
 #: ../rpm.c:74
 msgid "usage: rpm {--help}"
@@ -38,8 +37,7 @@ msgid "       rpm {--initdb}   [--dbpath <dir>]"
 msgstr "       rpm {--initdb}   [--dbpath <VERZ>]"
 
 #: ../rpm.c:77
-msgid ""
-"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgid "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
 #: ../rpm.c:78
@@ -51,8 +49,7 @@ msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr ""
 
 #: ../rpm.c:80
-msgid ""
-"                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
+msgid "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr "                        [--rcfile <DATEI>] [--ignorearch] [--dbpath <VERZ>]"
 
 #: ../rpm.c:81
@@ -68,8 +65,7 @@ msgid "                        file1.rpm ... fileN.rpm"
 msgstr "                        DATEI1.rpm ... DATEIn.rpm"
 
 #: ../rpm.c:84
-msgid ""
-"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+msgid "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 
 #: ../rpm.c:85
@@ -77,13 +73,11 @@ msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <VERZ>] [--noscripts]"
 
 #: ../rpm.c:86
-msgid ""
-"                        [--excludedocs] [--includedocs] [--rcfile <file>]"
+msgid "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr "                        [--excludedocs] [--includedocs] [--rcfile <DATEI>]"
 
 #: ../rpm.c:87
-msgid ""
-"                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
+msgid "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr "                        [--ignorearch]  [--dbpath <dir>] [--prefix <VERZ>]"
 
 #: ../rpm.c:89
@@ -103,13 +97,11 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr ""
 
 #: ../rpm.c:93
-msgid ""
-"                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
+msgid "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpuseport] [--ftpproxy <HOST>] [--ftpport <PORT>]"
 
 #: ../rpm.c:94
-msgid ""
-"                        [--provides] [--dump] [--dbpath <dir>] [targets]"
+msgid "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
 msgstr "                        [--provides] [--dump] [--dbpath <VERZ>] [ZIELE]"
 
 #: ../rpm.c:95
@@ -117,8 +109,7 @@ msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr "       rpm {--verify -V -y} [-afpg] [--root <VERZ>] [--rcfile <DATEI>]"
 
 #: ../rpm.c:96
-msgid ""
-"                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
+msgid "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr "                        [--dbpath <VERZ>] [--nodeps] [--nofiles] [--noscripts]"
 
 #: ../rpm.c:97
@@ -146,8 +137,7 @@ msgid "                        package1 ... packageN"
 msgstr "                        PAKET1 ... PAKETn"
 
 #: ../rpm.c:103
-msgid ""
-"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
+msgid "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <DATEI>]"
 
 #: ../rpm.c:104
@@ -155,13 +145,11 @@ msgid "                        [--sign] [--test] [--timecheck <s>] specfile"
 msgstr "                        [--sign] [--test] [--timecheck <S>] SPEC-DATEI"
 
 #: ../rpm.c:105
-msgid ""
-"       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgid "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr "       rpm {--rebuild} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
 
 #: ../rpm.c:106
-msgid ""
-"       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
+msgid "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr "       rpm {--recompile} [--rcfile <DATEI>] [-v] SOURCE1.rpm ... SOURCEn.rpm"
 
 #: ../rpm.c:107
@@ -202,7 +190,7 @@ msgstr "Die benutzte RPM-Version anzeigen"
 
 #: ../rpm.c:151
 msgid "   all modes support the following arguments:"
-msgstr "   alle Modi unterstützen folgende Argumente:"
+msgstr "   alle Modi unterst\374tzen folgende Argumente:"
 
 #: ../rpm.c:153
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
@@ -210,11 +198,11 @@ msgstr "<DATEI> anstelle von /etc/rpmrc und $HOME/.rpmrc benutzen"
 
 #: ../rpm.c:155
 msgid "be a little more verbose"
-msgstr "Ausgabe etwas ausführlicher gestalten"
+msgstr "Ausgabe etwas ausf\374hrlicher gestalten"
 
 #: ../rpm.c:157
 msgid "be incredibly verbose (for debugging)"
-msgstr "extrem ausführliche Ausgabe (um Programm-Fehler zu finden)"
+msgstr "extrem ausf\374hrliche Ausgabe (um Programm-Fehler zu finden)"
 
 #: ../rpm.c:159
 msgid "query mode"
@@ -233,13 +221,12 @@ msgid "use s as the header format (implies -i)"
 msgstr "S als Kopfzeilen-Format benutzen (impliziert -i)"
 
 #: ../rpm.c:166
-msgid ""
-"   install, upgrade and query (with -p) allow ftp URL's to be used in place"
+msgid "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr "   Installieren, Aktualisieren und Anfragen (mit -p) erlauben es, ftp-URLs"
 
 #: ../rpm.c:167
 msgid "   of file names as well as the following options:\n"
-msgstr "   anstelle von Dateinamen zu benutzen. Außerdem die folgenden Optionen:\n"
+msgstr "   anstelle von Dateinamen zu benutzen. Au\337erdem die folgenden Optionen:\n"
 
 #: ../rpm.c:169
 msgid "hostname or IP of ftp proxy"
@@ -267,11 +254,11 @@ msgstr "Anfrage nach (nicht installiertem) Paket <PAKET-DATEI>"
 
 #: ../rpm.c:180
 msgid "query packages which provide <i> capability"
-msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
+msgstr "Anfrage nach Paketen, die die F\344higkeit <i> bereitstellen"
 
 #: ../rpm.c:182
 msgid "query packages which require <i> capability"
-msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
+msgstr "Anfrage nach Paketen, die die F\344higkeit <i> ben\366tigen"
 
 #: ../rpm.c:183
 msgid "      Information selection options:"
@@ -298,14 +285,12 @@ msgid "list only configuration files (implies -l)"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
 #: ../rpm.c:195
-msgid ""
-"show all verifiable information for each file (must be used with -l, -c, or "
-"-d)"
-msgstr "Alle überprüfbaren Infos zu jeder Datei anzeigen (mit -l, -c oder -d benutzen!)"
+msgid "show all verifiable information for each file (must be used with -l, -c, or -d)"
+msgstr "Alle \374berpr\374fbaren Infos zu jeder Datei anzeigen (mit -l, -c oder -d benutzen!)"
 
 #: ../rpm.c:197
 msgid "list capabilbities package provides"
-msgstr "Fähigkeiten des Pakets auflisten"
+msgstr "F\344higkeiten des Pakets auflisten"
 
 #: ../rpm.c:198
 msgid "        --requires"
@@ -313,7 +298,7 @@ msgstr ""
 
 #: ../rpm.c:200
 msgid "list package dependencies"
-msgstr "Paket-Abhängigkeiten ausgeben"
+msgstr "Paket-Abh\344ngigkeiten ausgeben"
 
 #: ../rpm.c:202
 msgid "print the various [un]install scripts"
@@ -324,36 +309,30 @@ msgid "send stdout to <cmd>"
 msgstr "Standard-Ausgabe nach <BEFEHL> umleiten"
 
 #: ../rpm.c:209
-msgid ""
-"verify a package installation using the same same package specification "
-"options as -q"
-msgstr "Ein Paket mit denselben Paketspezifikations-Optionen wie bei -q überprüfen"
+msgid "verify a package installation using the same same package specification options as -q"
+msgstr "Ein Paket mit denselben Paketspezifikations-Optionen wie bei -q \374berpr\374fen"
 
 #: ../rpm.c:215 ../rpm.c:250 ../rpm.c:278
 msgid "do not verify package dependencies"
-msgstr "Dateiabhängigkeiten nicht überprüfen"
+msgstr "Dateiabh\344ngigkeiten nicht \374berpr\374fen"
 
 #: ../rpm.c:217
 msgid "do not verify file md5 checksums"
-msgstr "md5-Prüfsumme der Datei nicht überprüfen"
+msgstr "md5-Pr\374fsumme der Datei nicht \374berpr\374fen"
 
 #: ../rpm.c:219
 msgid "do not verify file attributes"
-msgstr "Dateiattribute nicht überprüfen"
+msgstr "Dateiattribute nicht \374berpr\374fen"
 
 # Was ist gemeint?
 #: ../rpm.c:222
-msgid ""
-"set the file permissions to those in the package database using the same "
-"package specification options as -q"
-msgstr "Dateirechte gemäß deren in der Paketdatenbank setzen, wie wenn dieselben Paketspezifikationsoptionen wie bei -q benutzt würden"
+msgid "set the file permissions to those in the package database using the same package specification options as -q"
+msgstr "Dateirechte gem\344\337 deren in der Paketdatenbank setzen, wie wenn dieselben Paketspezifikationsoptionen wie bei -q benutzt w\374rden"
 
 # Was ist gemeint?
 #: ../rpm.c:225
-msgid ""
-"set the file owner and group to those in the package database using the same "
-"package specification options as -q"
-msgstr "Datei-Eigentümer und -Gruppe gemäß deren in der Paketdatenbank setzen, wie wenn dieselben Paketspezifikationsoptionen wie bei -q benutzt würden"
+msgid "set the file owner and group to those in the package database using the same package specification options as -q"
+msgstr "Datei-Eigent\374mer und -Gruppe gem\344\337 deren in der Paketdatenbank setzen, wie wenn dieselben Paketspezifikationsoptionen wie bei -q benutzt w\374rden"
 
 #: ../rpm.c:231
 msgid "install package"
@@ -369,7 +348,7 @@ msgstr "Dokumentation nicht installieren"
 
 #: ../rpm.c:239
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr "Abkürzung für --replacepkgs --replacefiles"
+msgstr "Abk\374rzung f\374r --replacepkgs --replacefiles"
 
 #: ../rpm.c:242
 msgid "print hash marks as package installs (good with -v)"
@@ -377,11 +356,11 @@ msgstr "Fortschrittsanzeige bei der Paketinstallation (gut zusammen mit -v)"
 
 #: ../rpm.c:244
 msgid "don't verify package architecure"
-msgstr "Paket-Architektur nicht überprüfen"
+msgstr "Paket-Architektur nicht \374berpr\374fen"
 
 #: ../rpm.c:246
 msgid "don't verify package operating system"
-msgstr "Paket-Betriebssystem nicht überprüfen"
+msgstr "Paket-Betriebssystem nicht \374berpr\374fen"
 
 #: ../rpm.c:248
 msgid "install documentation"
@@ -389,7 +368,7 @@ msgstr "Dokumentation installieren"
 
 #: ../rpm.c:252
 msgid "don't execute any installation scripts"
-msgstr "Keine Installations-Skripte ausführen"
+msgstr "Keine Installations-Skripte ausf\374hren"
 
 #: ../rpm.c:254
 msgid "print percentages as package installs"
@@ -405,33 +384,27 @@ msgstr "Neuinstallation, wenn das Paket schon vorhanden ist"
 
 #: ../rpm.c:262
 msgid "don't install, but tell if it would work or not"
-msgstr "Nicht installieren - nur anzeigen, ob es funktionieren würde"
+msgstr "Nicht installieren - nur anzeigen, ob es funktionieren w\374rde"
 
 #: ../rpm.c:266
 msgid "upgrade package (same options as --install, plus)"
-msgstr "Paket aktualisieren (dieselben Optionen wie --install, außerdem)"
+msgstr "Paket aktualisieren (dieselben Optionen wie --install, au\337erdem)"
 
 #: ../rpm.c:268
-msgid ""
-"upgrade to an old version of the package (--force on upgrades does this "
-"automatically)"
-msgstr ""
-"Aktualisierung auf eine alte Version des Pakets (--force macht das bei "
-"Aktualisierungen automatisch)"
+msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
+msgstr "Aktualisierung auf eine alte Version des Pakets (--force macht das bei Aktualisierungen automatisch)"
 
 #: ../rpm.c:272
 msgid "erase (uninstall) package"
-msgstr "Paket löschen (deinstallieren)"
+msgstr "Paket l\366schen (deinstallieren)"
 
 #: ../rpm.c:274
-msgid ""
-"remove all packages which match <package> (normally an error is generated if "
-"<package> specified multiple packages)"
-msgstr "Alle Pakete entfernen, die mit <PAKET> übereinstimmen (normalerweise wird ein Fehler angezeigt, wenn <PAKET> mehrere Pakete bezeichnet)"
+msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
+msgstr "Alle Pakete entfernen, die mit <PAKET> \374bereinstimmen (normalerweise wird ein Fehler angezeigt, wenn <PAKET> mehrere Pakete bezeichnet)"
 
 #: ../rpm.c:280
 msgid "do not execute any package specific scripts"
-msgstr "Keine paketspezifischen Skripte ausführen"
+msgstr "Keine paketspezifischen Skripte ausf\374hren"
 
 #: ../rpm.c:284
 msgid "    -b<stage> <spec>      "
@@ -443,39 +416,36 @@ msgstr "Paket erstellen, <STUFE> ist einer der Buchstaben:"
 
 #: ../rpm.c:288
 msgid "prep (unpack sources and apply patches)"
-msgstr "präparieren (Quellen entpacken und Patch-Dateien anwenden"
+msgstr "pr\344parieren (Quellen entpacken und Patch-Dateien anwenden"
 
+# , c-format
 #: ../rpm.c:290
-#, c-format
 msgid "list check (do some cursory checks on %files)"
-msgstr "kontrollieren (oberflächliche Überprüfung der %files)"
+msgstr "kontrollieren (oberfl\344chliche \334berpr\374fung der %files)"
 
 #: ../rpm.c:292
 msgid "compile (prep and compile)"
-msgstr "kompilieren (präparieren und kompilieren)"
+msgstr "kompilieren (pr\344parieren und kompilieren)"
 
 #: ../rpm.c:294
 msgid "install (prep, compile, install)"
-msgstr "installieren (präparieren, kompilieren, installieren)"
+msgstr "installieren (pr\344parieren, kompilieren, installieren)"
 
 #: ../rpm.c:296
 msgid "binary package (prep, compile, install, package)"
-msgstr ""
-"Binärpaket erstellen (präparieren, kompilieren, installieren und paketieren)"
+msgstr "Bin\344rpaket erstellen (pr\344parieren, kompilieren, installieren und paketieren)"
 
 #: ../rpm.c:298
 msgid "bin/src package (prep, compile, install, package)"
-msgstr ""
-"Binär- und Quellpaket erstellen (präparieren, kompilieren, installieren und "
-"Paketieren"
+msgstr "Bin\344r- und Quellpaket erstellen (pr\344parieren, kompilieren, installieren und Paketieren"
 
 #: ../rpm.c:300
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "Direkt zur angegeben Stufe springen (nur für c und i)"
+msgstr "Direkt zur angegeben Stufe springen (nur f\374r c und i)"
 
 #: ../rpm.c:302
 msgid "remove build tree when done"
-msgstr "Erstellungsdateibaum nach Beendigung löschen"
+msgstr "Erstellungsdateibaum nach Beendigung l\366schen"
 
 #: ../rpm.c:304
 msgid "generate PGP signature"
@@ -487,19 +457,15 @@ msgstr "Benutze s als Stammverzeichnis der Erstellung"
 
 #: ../rpm.c:308
 msgid "do not execute any stages"
-msgstr "Keine Stufen ausführen"
+msgstr "Keine Stufen ausf\374hren"
 
 #: ../rpm.c:310
 msgid "set the time check to S seconds (0 disables it)"
-msgstr "Die Zeitüberprüfung auf S Sekunden setzen (mit 0 ausschalten)"
+msgstr "Die Zeit\374berpr\374fung auf S Sekunden setzen (mit 0 ausschalten)"
 
 #: ../rpm.c:313
-msgid ""
-"install source package, build binary package and remove spec file, sources, "
-"patches, and icons."
-msgstr ""
-"Quellpaket installieren, Binarypaket erstellen und spec-Datei, Quellen, "
-"Patch-Dateien und Icons löschen"
+msgid "install source package, build binary package and remove spec file, sources, patches, and icons."
+msgstr "Quellpaket installieren, Binarypaket erstellen und spec-Datei, Quellen, Patch-Dateien und Icons l\366schen"
 
 #: ../rpm.c:315
 msgid "like --rebuild, but don't build any package"
@@ -511,60 +477,57 @@ msgstr "Ein Paket signieren (die aktuelle Signature wird verworfen)"
 
 #: ../rpm.c:319
 msgid "add a signature to a package"
-msgstr "Signatur einem Paket hinzufügen"
+msgstr "Signatur einem Paket hinzuf\374gen"
 
 #: ../rpm.c:322
 msgid "verify package signature"
-msgstr "Paketsignatur überprüfen"
+msgstr "Paketsignatur \374berpr\374fen"
 
 #: ../rpm.c:324
 msgid "skip any PGP signatures"
-msgstr "alle PGP-Signaturen überspringen"
+msgstr "alle PGP-Signaturen \374berspringen"
 
 #: ../rpm.c:326
 msgid "skip any MD5 signatures"
-msgstr "alle MD5-Signaturen überspringen"
+msgstr "alle MD5-Signaturen \374berspringen"
 
 #: ../rpm.c:328
 msgid "list the tags that can be used in a query format"
-msgstr "Tags auflisten, die im Anfrageformat benutzt werden können"
+msgstr "Tags auflisten, die im Anfrageformat benutzt werden k\366nnen"
 
 #: ../rpm.c:330
 msgid "make sure a valid database exists"
-msgstr "Sicherstellen, daß eine gültige Datenbank vorhanden ist"
+msgstr "Sicherstellen, da\337 eine g\374ltige Datenbank vorhanden ist"
 
 #: ../rpm.c:332
 msgid "rebuild database from existing database"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
+# , c-format
 #: ../rpm.c:360
-#, c-format
 msgid "Failed to open tar pipe: %s\n"
-msgstr "tar-Pipe zu öffnen, ist fehlgeschlagen: %s\n"
+msgstr "tar-Pipe zu \366ffnen, ist fehlgeschlagen: %s\n"
 
+# , c-format
 #: ../rpm.c:365
-#, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "spec-Datei von %s zu lesen, ist fehlgeschlagen\n"
 
+# , c-format
 #: ../rpm.c:426
-#, c-format
 msgid "unable to open: %s\n"
-msgstr "Datei kann nicht geöffnet werden: %s\n"
+msgstr "Datei kann nicht ge\366ffnet werden: %s\n"
 
 #: ../rpm.c:439 ../rpm.c:450
 msgid "Build failed.\n"
 msgstr "Die Erstellung ist fehlgeschlagen.\n"
 
+# , c-format
 #: ../rpm.c:448
-#, c-format
 msgid "%s doesn't build on this architecture\n"
-msgstr "%s läßt sich auf dieser Architektur nicht erstellen\n"
+msgstr "%s l\344\337t sich auf dieser Architektur nicht erstellen\n"
 
-#: ../rpm.c:621 ../rpm.c:627 ../rpm.c:634 ../rpm.c:640 ../rpm.c:649
-#: ../rpm.c:656 ../rpm.c:701 ../rpm.c:707 ../rpm.c:788 ../rpm.c:794
-#: ../rpm.c:801 ../rpm.c:807 ../rpm.c:815 ../rpm.c:847 ../rpm.c:872
-#: ../rpm.c:878
+#: ../rpm.c:621 ../rpm.c:627 ../rpm.c:634 ../rpm.c:640 ../rpm.c:649 ../rpm.c:656 ../rpm.c:701 ../rpm.c:707 ../rpm.c:788 ../rpm.c:794 ../rpm.c:801 ../rpm.c:807 ../rpm.c:815 ../rpm.c:847 ../rpm.c:872 ../rpm.c:878
 msgid "only one major mode may be specified"
 msgstr "Es darf nur ein Hauptmodus angegeben werden"
 
@@ -578,37 +541,35 @@ msgstr "Benutzen Sie stattdessen -e oder --erase\n"
 
 #: ../rpm.c:660
 msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-msgstr ""
-"--build (-b) benötigt einen Buchstaben aus a,b,i,c,p,l als einziges Argument"
+msgstr "--build (-b) ben\366tigt einen Buchstaben aus a,b,i,c,p,l als einziges Argument"
 
 #: ../rpm.c:664
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-msgstr "--tarbuild (-t) benötigt einen Buchstaben aus a,b,i,c,p,l als einziges Argument"
+msgstr "--tarbuild (-t) ben\366tigt einen Buchstaben aus a,b,i,c,p,l als einziges Argument"
 
-#: ../rpm.c:730 ../rpm.c:737 ../rpm.c:745 ../rpm.c:753 ../rpm.c:773
-#: ../rpm.c:781
+#: ../rpm.c:730 ../rpm.c:737 ../rpm.c:745 ../rpm.c:753 ../rpm.c:773 ../rpm.c:781
 msgid "one type of query/verify may be performed at a time"
-msgstr "Nur nur eine Art der Anfrage/Überprüfung kann pro Programmlauf durchgeführt werden"
+msgstr "Nur nur eine Art der Anfrage/\334berpr\374fung kann pro Programmlauf durchgef\374hrt werden"
 
 #: ../rpm.c:823
 msgid "arguments to --dbpath must begin with a /"
-msgstr "Argumente zu --dbpath müssen mit einem / beginnen"
+msgstr "Argumente zu --dbpath m\374ssen mit einem / beginnen"
 
 #: ../rpm.c:830
 msgid "one type of query may be performed at a time"
-msgstr "Nur eine Art der Anfrage kann pro Programmlauf durchgeführt werden"
+msgstr "Nur eine Art der Anfrage kann pro Programmlauf durchgef\374hrt werden"
 
 #: ../rpm.c:890
 msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath wurde für eine Operation angeben, die keine Datenbank benutzt"
+msgstr "--dbpath wurde f\374r eine Operation angeben, die keine Datenbank benutzt"
 
 #: ../rpm.c:895
 msgid "--timecheck may only be used during package builds"
-msgstr "--clean darf nur während der Paketerstellung benutzt werden"
+msgstr "--clean darf nur w\344hrend der Paketerstellung benutzt werden"
 
 #: ../rpm.c:898 ../rpm.c:901
 msgid "unexpected query specifiers"
-msgstr "Unerwartete Angaben für die Anfrage"
+msgstr "Unerwartete Angaben f\374r die Anfrage"
 
 #: ../rpm.c:905
 msgid "unexpected query source"
@@ -624,31 +585,31 @@ msgstr "--prefix darf nur bei der Installation neuer Pakete benutzt werden"
 
 #: ../rpm.c:914
 msgid "arguments to --prefix must begin with a /"
-msgstr "Argumente zu --prefix müssen mit einem / beginnen"
+msgstr "Argumente zu --prefix m\374ssen mit einem / beginnen"
 
 #: ../rpm.c:917
 msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) darf nur während der Paketinstallation angegeben werden"
+msgstr "--hash (-h) darf nur w\344hrend der Paketinstallation angegeben werden"
 
 #: ../rpm.c:921
 msgid "--percent may only be specified during package installation"
-msgstr "--percent darf nur während der Paketinstallation angegeben werden"
+msgstr "--percent darf nur w\344hrend der Paketinstallation angegeben werden"
 
 #: ../rpm.c:925
 msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles darf nur während der Paketinstallation angegeben werden"
+msgstr "--replacefiles darf nur w\344hrend der Paketinstallation angegeben werden"
 
 #: ../rpm.c:929
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs darf nur während der Paketinstallation angegeben werden"
+msgstr "--replacepkgs darf nur w\344hrend der Paketinstallation angegeben werden"
 
 #: ../rpm.c:933
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--excludedocs darf nur während der Paketinstallation angegeben werden"
+msgstr "--excludedocs darf nur w\344hrend der Paketinstallation angegeben werden"
 
 #: ../rpm.c:937
 msgid "--includedocs may only be specified during package installation"
-msgstr "--includedocs darf nur während der Paketinstallation angegeben werden"
+msgstr "--includedocs darf nur w\344hrend der Paketinstallation angegeben werden"
 
 #: ../rpm.c:941
 msgid "only one of --excludedocs and --includedocs may be specified"
@@ -656,63 +617,47 @@ msgstr "nur eines der Argumente --excludedocs und --includedocs darf angegeben w
 
 #: ../rpm.c:945
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--ignorearch darf nur während der Paketinstallation angegeben werden"
+msgstr "--ignorearch darf nur w\344hrend der Paketinstallation angegeben werden"
 
 #: ../rpm.c:949
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
+msgstr "--ignoreos darf nur w\344hrend der Paketinstallation angegeben werden"
 
 #: ../rpm.c:953
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--allmatches darf nur während der Paketdeinstallaiton angegeben werden"
+msgstr "--allmatches darf nur w\344hrend der Paketdeinstallaiton angegeben werden"
 
 #: ../rpm.c:958
-msgid ""
-"--noscripts may only be specified during package installation, erasure, and "
-"verification"
-msgstr ""
-"--noscripts darf nur während der Paketinstallation, -deinstallation und "
-"-überprüfung angegeben werden"
+msgid "--noscripts may only be specified during package installation, erasure, and verification"
+msgstr "--noscripts darf nur w\344hrend der Paketinstallation, -deinstallation und -\374berpr\374fung angegeben werden"
 
 #: ../rpm.c:963
-msgid ""
-"--nodeps may only be specified during package installation, erasure, and "
-"verification"
-msgstr ""
-"--nodeps darf nur während der Paketinstallation, -deinstallation und "
-"-überprüfung angegeben werden"
+msgid "--nodeps may only be specified during package installation, erasure, and verification"
+msgstr "--nodeps darf nur w\344hrend der Paketinstallation, -deinstallation und -\374berpr\374fung angegeben werden"
 
 #: ../rpm.c:967
 msgid "--nofiles may only be specified during package verification"
-msgstr "--nofiles darf nur während der Paketüberprüfung angegeben werden"
+msgstr "--nofiles darf nur w\344hrend der Paket\374berpr\374fung angegeben werden"
 
 #: ../rpm.c:972
-msgid ""
-"--test may only be specified during package installation, erasure, and "
-"building"
-msgstr ""
-"--test darf nur während der Paketinstallation, -deinstallation und "
-"-erstellung angegeben werden"
+msgid "--test may only be specified during package installation, erasure, and building"
+msgstr "--test darf nur w\344hrend der Paketinstallation, -deinstallation und -erstellung angegeben werden"
 
 #: ../rpm.c:977
-msgid ""
-"--root (-r) may only be specified during installation, erasure, querying, "
-"and database rebuilds"
-msgstr ""
-"--root (-r) darf nur während der Paketinstallation, -deinstallation, "
-"-anfrage und Datenbankneuerstellungen angegeben werden"
+msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
+msgstr "--root (-r) darf nur w\344hrend der Paketinstallation, -deinstallation, -anfrage und Datenbankneuerstellungen angegeben werden"
 
 #: ../rpm.c:982
 msgid "arguments to --root (-r) must begin with a /"
-msgstr "Argumente zu --root (-r) müssen mit einem / beginnen"
+msgstr "Argumente zu --root (-r) m\374ssen mit einem / beginnen"
 
 #: ../rpm.c:985
 msgid "--clean may only be used during package building"
-msgstr "--clean darf nur während der Paketerstellung benutzt werden"
+msgstr "--clean darf nur w\344hrend der Paketerstellung benutzt werden"
 
 #: ../rpm.c:988
 msgid "--short-circuit may only be used during package building"
-msgstr "--short-circuit darf nur während der Paketerstellung benutzt werden"
+msgstr "--short-circuit darf nur w\344hrend der Paketerstellung benutzt werden"
 
 #: ../rpm.c:991
 msgid "--short-circuit may only be used with -bc, -bi, -tc or -ti"
@@ -720,33 +665,31 @@ msgstr "--short-circuit darf nur zusammen mit -bc, bi, -tc oder -ti benutzt werd
 
 #: ../rpm.c:996
 msgid "--oldpackage may only be used during upgrades"
-msgstr "--oldpackage darf nur während Aktualisierungen benutzt werden"
+msgstr "--oldpackage darf nur w\344hrend Aktualisierungen benutzt werden"
 
 #: ../rpm.c:999
 msgid "--dump may only be used during queryies"
-msgstr "--dump darf nur während Anfragen benutzt werden"
+msgstr "--dump darf nur w\344hrend Anfragen benutzt werden"
 
 #: ../rpm.c:1002
 msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "--dump der Anfragen muß zusammen mit  -l, -c, or -d benutzt werden"
+msgstr "--dump der Anfragen mu\337 zusammen mit  -l, -c, or -d benutzt werden"
 
 #: ../rpm.c:1007
-msgid ""
-"ftp options can only be used during package queries, installs, and upgrades"
-msgstr "ftp-Optionen können nur während Paketanfragen, -installationen und -aktualisierungen benutzt werden"
+msgid "ftp options can only be used during package queries, installs, and upgrades"
+msgstr "ftp-Optionen k\366nnen nur w\344hrend Paketanfragen, -installationen und -aktualisierungen benutzt werden"
 
 #: ../rpm.c:1014
 msgid "--nopgp may only be used during signature checking"
-msgstr "--nopgp darf nur während der Signatur-Überprüfung benutzt werden"
+msgstr "--nopgp darf nur w\344hrend der Signatur-\334berpr\374fung benutzt werden"
 
 #: ../rpm.c:1017
-msgid ""
-"--nopgp may only be used during signature checking and package verification"
-msgstr "--nopgp darf nur während der Signatur- und Paketüberprüfung angegeben werden"
+msgid "--nopgp may only be used during signature checking and package verification"
+msgstr "--nopgp darf nur w\344hrend der Signatur- und Paket\374berpr\374fung angegeben werden"
 
 #: ../rpm.c:1030
 msgid "Pass phrase check failed\n"
-msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
+msgstr "Die Passwort\374berpr\374fung ist fehlgeschlagen\n"
 
 #: ../rpm.c:1033
 msgid "Pass phrase is good.\n"
@@ -754,7 +697,7 @@ msgstr "Das Passwort ist richtig.\n"
 
 #: ../rpm.c:1045
 msgid "--sign may only be used during package building"
-msgstr "--sign darf nur während der Paketerstellung benutzt werden"
+msgstr "--sign darf nur w\344hrend der Paketerstellung benutzt werden"
 
 #: ../rpm.c:1079
 msgid "unexpected arguments to --querytags "
@@ -762,40 +705,40 @@ msgstr "Unerwartete Argumente zu --querytags "
 
 #: ../rpm.c:1090
 msgid "no packages given for signature check"
-msgstr "Es wurden keine Pakete für die Signaturüberprüfung angegeben"
+msgstr "Es wurden keine Pakete f\374r die Signatur\374berpr\374fung angegeben"
 
 #: ../rpm.c:1097
 msgid "no packages given for signing"
-msgstr "Es wurden keine Pakete für die Signatur angeben"
+msgstr "Es wurden keine Pakete f\374r die Signatur angeben"
 
 #: ../rpm.c:1106
 msgid "no packages files given for rebuild"
-msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
+msgstr "Es wurden keine Paketdateien f\374r die Neuerstellung angegeben"
 
 #: ../rpm.c:1161
 msgid "no spec files given for build"
-msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
+msgstr "Es wurde kein spec-Datei f\374r die Erstellung angegeben"
 
 #: ../rpm.c:1163
 msgid "no tar files given for build"
-msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
+msgstr "Es wurde keine tar-Datei f\374r die Erstellung angegeben"
 
 #: ../rpm.c:1174
 msgid "no packages given for uninstall"
-msgstr "Es wurden keine Pakete für die Deinstallation angegeben"
+msgstr "Es wurden keine Pakete f\374r die Deinstallation angegeben"
 
 #: ../rpm.c:1207
 msgid "no packages given for install"
-msgstr "Es wurden keine Pakete für die Installation angegeben"
+msgstr "Es wurden keine Pakete f\374r die Installation angegeben"
 
 #: ../rpm.c:1218
 msgid "extra arguments given for query of all packages"
-msgstr "Zusätzliche Argumente für die Anfrage an alle Pakete angegeben"
+msgstr "Zus\344tzliche Argumente f\374r die Anfrage an alle Pakete angegeben"
 
 #: ../rpm.c:1223
 msgid "no arguments given for query"
-msgstr "Es wurden keine Argumente für die Anfrage angegeben"
+msgstr "Es wurden keine Argumente f\374r die Anfrage angegeben"
 
 #: ../rpm.c:1240
 msgid "no arguments given for verify"
-msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
+msgstr "Es wurden keine Argumente f\374r die \334berpr\374fung angegeben"

@@ -15,6 +15,7 @@
 # include <alloca.h>
 #endif
 
+#include "intl.h"
 #include "lib/messages.h"
 #include "miscfn.h"
 #include "rpmlib.h"
@@ -91,14 +92,14 @@ static int queryPartial(Header h, char ** chptrptr, int * cntptr,
 	    } else if (count != -1 && !*cntptr && !emptyItem){ 
 		*cntptr = count;
 	    } else if (count != -1 && *cntptr && count != *cntptr) {
-		fprintf(stderr, "(parallel array size mismatch)");
+		fprintf(stderr, _("(parallel array size mismatch)"));
 		return 1;
 	    }
 	    break;
 
 	  case ']':
 	    if (arrayNum == -1) {
-		printf("(unexpected ']')");
+		printf(_("(unexpected ']')"));
 		return 1;
 	    }
 	    *chptrptr = chptr + 1;
@@ -106,7 +107,7 @@ static int queryPartial(Header h, char ** chptrptr, int * cntptr,
 
 	  case '[':
 	    if (arrayNum != -1) {
-		printf("(unexpected ']')");
+		printf(_("(unexpected ']')"));
 		return 1;
 	    }
 	    *chptrptr = chptr + 1;
@@ -148,7 +149,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
     strcpy(format, "%");
     while (*chptr && *chptr != '{') chptr++;
     if (!*chptr || (chptr - f > (sizeof(format) - 3))) {
-	fprintf(stderr, "bad query format - %s\n", f);
+	fprintf(stderr, _("bad query format - %s\n"), f);
 	return NULL;
     }
 
@@ -157,7 +158,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
     tagptr = ++chptr;
     while (*chptr && *chptr != '}' && *chptr != ':' ) chptr++;
     if (tagptr == chptr || !*chptr) {
-	fprintf(stderr, "bad query format - %s\n", f);
+	fprintf(stderr, _("bad query format - %s\n"), f);
 	return NULL;
     }
 
@@ -166,11 +167,11 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	while (*end && *end != '}') end++;
 
 	if (*end != '}') {
-	    fprintf(stderr, "bad query format - %s\n", f);
+	    fprintf(stderr, _("bad query format - %s\n"), f);
 	    return NULL;
 	}
 	if ((end - chptr + 1) > sizeof(how)) {
-	    fprintf(stderr, "bad query format - %s\n", f);
+	    fprintf(stderr, _("bad query format - %s\n"), f);
 	    return NULL;
 	}
 	strncpy(how, chptr + 1, end - chptr - 1);
@@ -189,7 +190,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
     chptr = end + 1;
 
     if (tagLength > (sizeof(tag) - 20)) {
-	fprintf(stderr, "query tag too long\n");
+	fprintf(stderr, _("query tag too long\n"));
 	return NULL;
     }
     memset(tag, 0, sizeof(tag));
@@ -203,7 +204,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
     }
 
     if (i == rpmTagTableSize) {
-	fprintf(stderr, "unknown tag %s\n", tag);
+	fprintf(stderr, _("unknown tag %s\n"), tag);
 	return NULL;
     }
  
@@ -355,7 +356,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	if (queryFlags & QUERY_FOR_LIST) {
 	    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 		 &count)) {
-		puts("(contains no files)");
+		puts(_("(contains no files)"));
 	    } else {
 		if (!headerGetEntry(h, RPMTAG_FILESTATES, &type, 
 			 (void **) &fileStatesList, &count)) {
@@ -607,7 +608,7 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
 	    
 	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
 	    if (!h) {
-		fprintf(stderr, "error: could not read database record\n");
+		fprintf(stderr, _("error: could not read database record\n"));
 	    } else {
 		printHeader(h, queryFlags, queryFormat);
 		headerFree(h);
@@ -643,14 +644,14 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	if (urlIsURL(arg)) {
 	    isUrl = 1;
 	    if ((fd = urlGetFd(arg, &context)) < 0) {
-		fprintf(stderr, "open of %s failed: %s\n", arg, 
+		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 			ftpStrerror(fd));
 	    }
 	} else if (!strcmp(arg, "-")) {
 	    fd = 0;
 	} else {
 	    if ((fd = open(arg, O_RDONLY)) < 0) {
-		fprintf(stderr, "open of %s failed: %s\n", arg, 
+		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 			strerror(errno));
 	    }
 	}
@@ -666,19 +667,20 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    switch (rc) {
 		case 0:
 		    if (!h) {
-			fprintf(stderr, "old format source packages cannot be "
-						"queried\n");
+			fprintf(stderr, _("old format source packages cannot "
+				"be queried\n"));
 		    } else {
 			printHeader(h, queryFlags, queryFormat);
 			headerFree(h);
 		    }
 		    break;
 		case 1:
-		    fprintf(stderr, "%s does not appear to be a RPM package\n", 
-				arg);
+		    fprintf(stderr, 
+			    _("%s does not appear to be a RPM package\n"), 
+			    arg);
 		    /* fallthrough */
 		case 2:
-		    fprintf(stderr, "query of %s failed\n", arg);
+		    fprintf(stderr, _("query of %s failed\n"), arg);
 		    retcode = 1;
 	    }
 
@@ -691,7 +693,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	while (offset) {
 	    h = rpmdbGetRecord(db, offset);
 	    if (!h) {
-		fprintf(stderr, "could not read database record!\n");
+		fprintf(stderr, _("could not read database record!\n"));
 		return 1;
 	    }
 	    printHeader(h, queryFlags, queryFormat);
@@ -702,7 +704,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_GROUP:
 	if (rpmdbFindByGroup(db, arg, &matches)) {
-	    fprintf(stderr, "group %s does not contain any packages\n", arg);
+	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -712,7 +714,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_WHATPROVIDES:
 	if (rpmdbFindByProvides(db, arg, &matches)) {
-	    fprintf(stderr, "no package provides %s\n", arg);
+	    fprintf(stderr, _("no package provides %s\n"), arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -722,7 +724,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_WHATREQUIRES:
 	if (rpmdbFindByRequiredBy(db, arg, &matches)) {
-	    fprintf(stderr, "no package requires %s\n", arg);
+	    fprintf(stderr, _("no package requires %s\n"), arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -736,7 +738,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 		arg = path;
 	}
 	if (rpmdbFindByFile(db, arg, &matches)) {
-	    fprintf(stderr, "file %s is not owned by any package\n", arg);
+	    fprintf(stderr, _("file %s is not owned by any package\n"), arg);
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
@@ -747,14 +749,14 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
       case QUERY_DBOFFSET:
 	recNumber = strtoul(arg, &end, 10);
 	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
-	    fprintf(stderr, "invalid package number: %s\n", arg);
+	    fprintf(stderr, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmMessage(RPMMESS_DEBUG, "showing package: %d\n", recNumber);
+	rpmMessage(RPMMESS_DEBUG, _("showing package: %d\n"), recNumber);
 	h = rpmdbGetRecord(db, recNumber);
 
 	if (!h)  {
-	    fprintf(stderr, "record %d could not be read\n", recNumber);
+	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
 	    retcode = 1;
 	} else {
 	    printHeader(h, queryFlags, queryFormat);
@@ -766,10 +768,10 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	rc = findPackageByLabel(db, arg, &matches);
 	if (rc == 1) {
 	    retcode = 1;
-	    fprintf(stderr, "package %s is not installed\n", arg);
+	    fprintf(stderr, _("package %s is not installed\n"), arg);
 	} else if (rc == 2) {
 	    retcode = 1;
-	    fprintf(stderr, "error looking for package %s\n", arg);
+	    fprintf(stderr, _("error looking for package %s\n"), arg);
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
 	    dbiFreeIndexRecord(matches);
@@ -846,13 +848,15 @@ int findMatches(rpmdb db, char * name, char * version, char * release,
 	if (matches->recs[i].recOffset) {
 	    h = rpmdbGetRecord(db, matches->recs[i].recOffset);
 	    if (!h) {
-		fprintf(stderr, "error: could not read database record\n");
+		fprintf(stderr, _("error: could not read database record\n"));
 		dbiFreeIndexRecord(*matches);
 		return 2;
 	    }
 
-	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &pkgVersion, &count);
-	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &pkgRelease, &count);
+	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &pkgVersion, 
+			   &count);
+	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &pkgRelease, 
+			   &count);
 	    
 	    goodRelease = goodVersion = 1;
 

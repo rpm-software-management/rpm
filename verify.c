@@ -6,6 +6,7 @@
 
 #include "lib/messages.h"
 #include "install.h"
+#include "intl.h"
 #include "query.h"
 #include "rpmlib.h"
 #include "url.h"
@@ -86,7 +87,7 @@ static void verifyDependencies(rpmdb db, Header h) {
 	headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
 	headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
 	headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
-	printf("Unsatisfied dependencies for %s-%s-%s: ", name, version, 
+	printf(_("Unsatisfied dependencies for %s-%s-%s: "), name, version, 
 		release);
 	for (i = 0; i < numConflicts; i++) {
 	    if (i) printf(", ");
@@ -123,7 +124,7 @@ static void verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 	    
 	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
 	    if (!h) {
-		fprintf(stderr, "error: could not read database record\n");
+		fprintf(stderr, _("error: could not read database record\n"));
 	    } else {
 		verifyPackage(prefix, db, h, verifyFlags);
 		headerFree(h);
@@ -159,7 +160,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 	while (offset) {
 	    h = rpmdbGetRecord(db, offset);
 	    if (!h) {
-		fprintf(stderr, "could not read database record!\n");
+		fprintf(stderr, _("could not read database record!\n"));
 		exit(1);
 	    }
 	    verifyPackage(prefix, db, h, verifyFlags);
@@ -175,14 +176,14 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		if (urlIsURL(arg)) {
 		    isUrl = 1;
 		    if ((fd = urlGetFd(arg, &context)) < 0) {
-			fprintf(stderr, "open of %s failed: %s\n", arg, 
+			fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 				ftpStrerror(fd));
 		    }
 		} else if (!strcmp(arg, "-")) {
 		    fd = 0;
 		} else {
 		    if ((fd = open(arg, O_RDONLY)) < 0) {
-			fprintf(stderr, "open of %s failed: %s\n", arg, 
+			fprintf(stderr, _("open of %s failed: %s\n"), arg, 
 				strerror(errno));
 		    }
 		}
@@ -204,8 +205,9 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 
 	      case VERIFY_GRP:
 		if (rpmdbFindByGroup(db, arg, &matches)) {
-		    fprintf(stderr, "group %s does not contain any pacakges\n", 
-				     arg);
+		    fprintf(stderr, 
+				_("group %s does not contain any pacakges\n"), 
+				arg);
 		} else {
 		    verifyMatches(prefix, db, matches, verifyFlags);
 		    dbiFreeIndexRecord(matches);
@@ -218,7 +220,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 			arg = path;
 		}
 		if (rpmdbFindByFile(db, arg, &matches)) {
-		    fprintf(stderr, "file %s is not owned by any package\n", 
+		    fprintf(stderr, _("file %s is not owned by any package\n"), 
 				arg);
 		} else {
 		    verifyMatches(prefix, db, matches, verifyFlags);
@@ -229,9 +231,9 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 	      case VERIFY_PACKAGE:
 		rc = findPackageByLabel(db, arg, &matches);
 		if (rc == 1) 
-		    fprintf(stderr, "package %s is not installed\n", arg);
+		    fprintf(stderr, _("package %s is not installed\n"), arg);
 		else if (rc == 2) {
-		    fprintf(stderr, "error looking for package %s\n", arg);
+		    fprintf(stderr, _("error looking for package %s\n"), arg);
 		} else {
 		    verifyMatches(prefix, db, matches, verifyFlags);
 		    dbiFreeIndexRecord(matches);
