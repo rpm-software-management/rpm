@@ -110,6 +110,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_VERIFYSCRIPTPROG         1091
 #define RPMTAG_TRIGGERSCRIPTPROGS       1092
 #define RPMTAG_DOCDIR                   1093 /* internal */
+#define RPMTAG_COOKIE                   1094
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 
@@ -269,7 +270,8 @@ int rpmdbFindByLabel(rpmdb db, char * label, dbiIndexSet * matches);
 int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
 
 int rpmInstallSourcePackage(char * root, int fd, char ** specFile,
-			    rpmNotifyFunction notify, char * labelFormat);
+			    rpmNotifyFunction notify, char * labelFormat,
+			    char ** cookie);
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
 		      int flags, rpmNotifyFunction notify, char * labelFormat,
 		      char * netsharedPath);
