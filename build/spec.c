@@ -552,7 +552,7 @@ Spec parseSpec(FILE *f, char *specfile)
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
 
     spec->name = NULL;
-    spec->specfile = specfile;
+    spec->specfile = strdup(specfile);
     spec->numSources = 0;
     spec->numPatches = 0;
     spec->sources = NULL;
