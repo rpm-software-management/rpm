@@ -58,6 +58,8 @@
 	- make librpmio standalone.
 	- fix: avoid clobbering db cursor in removeBinaryPackage.
 	- expose cursors in dbi interfaces, remove internal cursors.
+	- remove incremental link.
+	- portability: sparc-sun-solaris2.5.1.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

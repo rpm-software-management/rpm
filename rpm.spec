@@ -255,6 +255,13 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jun 13 2000 Jeff Johnson <jbj@redhat.com>
+- make librpmio standalone.
+- fix: avoid clobbering db cursor in removeBinaryPackage.
+- expose cursors in dbi interfaces, remove internal cursors.
+- remove incremental link.
+- portability: sparc-sun-solaris2.5.1.
+
 * Wed Jun  7 2000 Jeff Johnson <jbj@redhat.com>
 - create rpmio directory for librpmio.
 
