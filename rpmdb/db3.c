@@ -355,8 +355,10 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	    sleep(15);
 	}
     } else {
+#if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
 	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
+#endif
 	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
 	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
@@ -666,6 +668,9 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 	/*@modifies dbi, fileSystem @*/
 {
     DB * db = dbi->dbi_db;
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+    DB_TXN * txnid = NULL;
+#endif
     int rc = 0;
 
     assert(db != NULL);
@@ -678,7 +683,11 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     dbi->dbi_stats = _free(dbi->dbi_stats);
 /* XXX 3.3.4 change. */
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3) || (DB_VERSION_MAJOR == 4)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+    rc = db->stat(db, txnid, &dbi->dbi_stats, flags);
+#else
     rc = db->stat(db, &dbi->dbi_stats, flags);
+#endif
 #else
     rc = db->stat(db, &dbi->dbi_stats, NULL, flags);
 #endif
@@ -809,8 +818,10 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /*	dbenv->set_paniccall(???) */
 	/*@=noeffectuncon@*/
+#if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
 	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
+#endif
 	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
 	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,

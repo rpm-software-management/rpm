@@ -165,8 +165,10 @@ struct poptOption rdbOptions[] = {
  { "tas_spins",	0,POPT_ARG_INT,		&db3dbi.dbi_tas_spins, 0,
 	NULL, NULL },
 
+#if defined(DB_VERB_CHKPOINT)
  { "chkpoint",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_CHKPOINT,
 	NULL, NULL },
+#endif
  { "deadlock",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_DEADLOCK,
 	NULL, NULL },
  { "recovery",	0,POPT_BIT_SET,	&db3dbi.dbi_verbose, DB_VERB_RECOVERY,

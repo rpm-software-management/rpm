@@ -312,7 +312,8 @@ struct _dbiIndex {
 	/* dbenv parameters */
     int	dbi_lorder;
 /*@unused@*/
-    void (*db_errcall) (const char *db_errpfx, char *buffer)
+    /* XXX db-4.3.14 adds dbenv as 1st arg. */
+    void (*db_errcall) (void * dbenv, const char *db_errpfx, char *buffer)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@unused@*/ /*@shared@*/

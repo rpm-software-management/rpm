@@ -102,7 +102,7 @@
 #endif
 
 #define PY_BSDDB_VERSION "4.2.4"
-static char *rcs_id = "$Id: _rpmdb.c,v 1.12 2004/01/01 16:34:10 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.13 2004/10/16 12:50:52 jbj Exp $";
 
 
 #ifdef WITH_THREAD
@@ -436,10 +436,17 @@ static int add_partial_dbt(DBT* d, int dlen, int doff) {
 /* Callback used to save away more information about errors from the DB
  * library. */
 static char _db_errmsg[1024];
+#if (DBVER >= 43)
+static void _db_errorCallback(const DB_ENV *db_env, const char* prefix, char* msg)
+{
+    strcpy(_db_errmsg, msg);
+}
+#else
 static void _db_errorCallback(const char* prefix, char* msg)
 {
     strcpy(_db_errmsg, msg);
 }
+#endif
 
 
 /* make a nice exception object to raise for errors. */
@@ -2011,7 +2018,11 @@ DB_stat(DBObject* self, PyObject* args)
 
     MYDB_BEGIN_ALLOW_THREADS;
 #if (DBVER >= 33)
+#if (DBVER >= 43)
+    err = self->db->stat(self->db, NULL, &sp, flags);
+#else
     err = self->db->stat(self->db, &sp, flags);
+#endif
 #else
     err = self->db->stat(self->db, &sp, NULL, flags);
 #endif
@@ -2273,7 +2284,11 @@ int DB_length(DBObject* self)
 
     MYDB_BEGIN_ALLOW_THREADS;
 #if (DBVER >= 33)
+#if (DBVER >= 43)
+    err = self->db->stat(self->db, NULL, &sp, flags);
+#else
     err = self->db->stat(self->db, &sp, flags);
+#endif
 #else
     err = self->db->stat(self->db, &sp, NULL, flags);
 #endif
@@ -4585,7 +4600,9 @@ DL_EXPORT(void) init_bsddb(void)
 
 #if (DBVER >= 33)
     ADD_INT(d, DB_LSTAT_ABORTED);
+#if (DBVER < 43)
     ADD_INT(d, DB_LSTAT_ERR);
+#endif
     ADD_INT(d, DB_LSTAT_FREE);
     ADD_INT(d, DB_LSTAT_HELD);
 #if (DBVER == 33)

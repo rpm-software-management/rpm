@@ -2154,11 +2154,11 @@ fi
 
 # Uniquename excludes C++, Java, RPC.
 if test "$db_cv_uniquename" = "yes"; then
-	if test "$db_cv_rpc" = "yes"; then
-		{ { echo "$as_me:$LINENO: error: --with-uniquename is not compatible with --enable-rpc" >&5
-echo "$as_me: error: --with-uniquename is not compatible with --enable-rpc" >&2;}
-   { (exit 1); exit 1; }; }
-	fi
+#	if test "$db_cv_rpc" = "yes"; then
+#		{ { echo "$as_me:$LINENO: error: --with-uniquename is not compatible with --enable-rpc" >&5
+#echo "$as_me: error: --with-uniquename is not compatible with --enable-rpc" >&2;}
+#   { (exit 1); exit 1; }; }
+#	fi
 	if test "$db_cv_cxx" = "yes"; then
 		{ { echo "$as_me:$LINENO: error: --with-uniquename is not compatible with --enable-cxx" >&5
 echo "$as_me: error: --with-uniquename is not compatible with --enable-cxx" >&2;}
