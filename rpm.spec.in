@@ -498,6 +498,7 @@ exit 0
 %changelog
 * Mon Jan 17 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.8
 - changes to build on Mac OS X using darwinports neon/beecrypt.
+- add https://svn.uhulinux.hu/packages/dev/zlib/patches/02-rsync.patch
 
 * Sun Jan  9 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.7
 - build against external/internal neon.
