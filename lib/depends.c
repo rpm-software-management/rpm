@@ -316,8 +316,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		if (rpmVersionCompare(h, oh))
 #endif
 		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+/*@-nullptrarith@*/
 		rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
+/*@=nullptrarith@*/
 		ohNEVRA = _free(ohNEVRA);
 	    }
 	}

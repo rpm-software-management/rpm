@@ -258,6 +258,8 @@ struct rpmQVKArguments_s {
     rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
 /*@only@*/ /*@null@*/
     rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
+/*@refccounted@*/ /*@null@*/
+    rpmdbMatchIterator qva_gi;	/*!< Generalized iterator on selected headers. */
 /*@null@*/
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
 /*@null@*/

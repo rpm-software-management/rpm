@@ -993,7 +993,7 @@ uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
  * @param opx		operation timestamp index
  * @return		pointer to operation timestamp.
  */
-/*@null@*/
+/*@relnull@*/
 rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 	/*@*/;
 

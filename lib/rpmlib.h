@@ -112,6 +112,11 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
  */
 typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 
+/** \ingroup rpmcli
+ * Generalized iterator.
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmgi_s * rpmgi;
+
 /** \ingroup header
  * Return name, version, release strings from header.
  * @param h		header

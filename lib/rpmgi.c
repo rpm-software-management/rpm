@@ -12,9 +12,12 @@
 
 #include "debug.h"
 
+/*@access rpmdbMatchIterator @*/
+
 /*@unchecked@*/
 int _rpmgi_debug = 0;
 
+/*@unchecked@*/ /*@observer@*/
 static const char * hdlistpath = "/usr/share/comps/i386/hdlist";
 
 rpmgi XrpmgiUnlink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
@@ -52,6 +55,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
 
     (void) rpmgiUnlink(gi, NULL);
 
+/*@-usereleased@*/
     switch (gi->tag) {
     default:
     case RPMGI_RPMDB:
@@ -80,7 +84,10 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
     gi->ts = rpmtsFree(gi->ts);
 
     memset(gi, 0, sizeof(*gi));		/* XXX trash and burn */
+/*@-refcounttrans@*/
     gi = _free(gi);
+/*@=refcounttrans@*/
+/*@=usereleased@*/
     return NULL;
 }
 
@@ -94,6 +101,9 @@ rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
     gi->ts = rpmtsLink(ts, NULL);
     gi->tag = tag;
     gi->i = -1;
+    gi->fd = NULL;
+    gi->argv = NULL;
+    gi->argc = 0;
 
     switch (gi->tag) {
     default:
@@ -109,7 +119,7 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	break;
     case RPMGI_ARGLIST:
     case RPMGI_FTSWALK:
-    {   ARGV_t pav = keyp;
+    {	ARGV_t pav = keyp;
 	const char * arg;
 	unsigned flags = keylen;
 	int xx;
@@ -139,8 +149,10 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
     return gi;
 }
 
+/*@unchecked@*/
 static int indent = 2;
 
+/*@unchecked@*/ /*@observer@*/
 static const char * ftsInfoStrings[] = {
     "UNKNOWN",
     "D",
@@ -159,16 +171,22 @@ static const char * ftsInfoStrings[] = {
     "W",
 };
 
-static const char * ftsInfoStr(int fts_info) {
+/*@observer@*/
+static const char * ftsInfoStr(int fts_info)
+	/*@*/
+{
+
     if (!(fts_info >= 1 && fts_info <= 14))
 	fts_info = 0;
+/*@-compmempass@*/
     return ftsInfoStrings[ fts_info ];
+/*@=compmempass@*/
 }
 
 /*@only@*/
-static const char * rpmgiPathOrQF(rpmgi gi, const char * fn,
+static const char * rpmgiPathOrQF(const rpmgi gi, const char * fn,
 		/*@null@*/ Header * hdrp)
-	/*@modifies gi, *hdrp @*/
+	/*@modifies *hdrp @*/
 {
     const char * fmt = ((gi->queryFormat != NULL)
 	? gi->queryFormat : "%{name}-%{version}-%{release}");
@@ -189,8 +207,9 @@ static const char * rpmgiPathOrQF(rpmgi gi, const char * fn,
 }
 
 /*@null@*/
-static rpmRC rpmgiReadManifest(rpmgi gi, const char * fileURL)
-	/*@*/
+static rpmRC rpmgiLoadManifest(rpmgi gi, const char * fileURL)
+	/*@globals h_errno, internalState @*/
+	/*@modifies gi, h_errno, internalState @*/
 {
     rpmRC rpmrc;
     FD_t fd;
@@ -212,7 +231,8 @@ static rpmRC rpmgiReadManifest(rpmgi gi, const char * fileURL)
 
 /*@null@*/
 static Header rpmgiReadHeader(rpmgi gi, const char * fileURL)
-	/*@*/
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     Header h = NULL;
     rpmRC rpmrc;
@@ -247,7 +267,6 @@ static Header rpmgiReadHeader(rpmgi gi, const char * fileURL)
 }
 
 const char * rpmgiNext(/*@null@*/ rpmgi gi)
-	/*@modifies gi @*/
 {
     const char * val = NULL;
     const char * fn = NULL;
@@ -259,15 +278,18 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
     default:
     case RPMGI_RPMDB:
 	h = rpmdbNextIterator(gi->mi);
+/*@-branchstate@*/
 	if (h != NULL) {
 	    val = rpmgiPathOrQF(gi, "rpmdb", &h);
 	} else {
 	    gi->mi = rpmdbFreeIterator(gi->mi);
 	    gi->i = -1;
 	}
+/*@=branchstate@*/
 	break;
     case RPMGI_HDLIST:
 	h = headerRead(gi->fd, HEADER_MAGIC_YES);
+/*@-branchstate@*/
 	if (h != NULL) {
 	    val = rpmgiPathOrQF(gi, "hdlist", &h);
 	} else {
@@ -275,8 +297,10 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	    gi->fd = NULL;
 	    gi->i = -1;
 	}
+/*@=branchstate@*/
 	break;
     case RPMGI_ARGLIST:
+/*@-branchstate@*/
 	if (gi->argv != NULL && gi->argv[gi->i] != NULL) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
@@ -285,21 +309,24 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 		fn = gi->argv[gi->i];
 		h = rpmgiReadHeader(gi, fn);
 		if (h != NULL)
-		    break;
+		    /*@loopbreak@*/ break;
 		/* Not a header, so try for a manifest. */
 		gi->argv[gi->i] = NULL;
-		rpmrc = rpmgiReadManifest(gi, fn);
+		rpmrc = rpmgiLoadManifest(gi, fn);
 		if (rpmrc != RPMRC_OK) {
 		    gi->argv[gi->i] = fn;
-		    break;
+		    /*@loopbreak@*/ break;
 		}
 		fn = _free(fn);
 	    } while (1);
 	    /* XXX check rpmrc */
+/*@-compdef@*/	/* XXX WTF? gi->argv undefined */
 	    val = rpmgiPathOrQF(gi, fn, &h);
+/*@=compdef@*/
 	    h = headerFree(h);
 	} else
 	    gi->i = -1;
+/*@=branchstate@*/
 	break;
     case RPMGI_FTSWALK:
 	if (gi->argv == NULL)
@@ -318,6 +345,7 @@ fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name);
 
+/*@-branchstate@*/
 	    switch (fts->fts_info) {
 	    case FTS_F:
 	    case FTS_SL:
@@ -327,10 +355,11 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->ftsp, gi->i, fts->fts_path);
 		h = rpmgiReadHeader(gi, fn);
 		val = rpmgiPathOrQF(gi, fn, &h);
 		h = headerFree(h);
-		break;
+		/*@switchbreak@*/ break;
 	    default:
-		break;
+		/*@switchbreak@*/ break;
 	    }
+/*@=branchstate@*/
 	}
 	if (gi->fts == NULL && gi->ftsp != NULL) {
 	    int xx;

@@ -868,9 +868,11 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     /* XXX repackaged packages have appended tags, legacy dig/sig check fails */
     if (opx > 0)
 	(void) rpmswEnter(rpmtsOp(ts, opx), 0);
+/*@-type@*/	/* XXX arrow access of non-pointer (FDSTAT_t) */
     nb = -fd->stats->ops[FDSTAT_READ].bytes;
     rc = rpmReadHeader(ts, fd, &h, &msg);
     nb += fd->stats->ops[FDSTAT_READ].bytes;
+/*@=type@*/
     if (opx > 0)
 	(void) rpmswExit(rpmtsOp(ts, opx), nb);
 

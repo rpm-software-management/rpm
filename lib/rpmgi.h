@@ -19,10 +19,6 @@ extern int _rpmgi_debug;
 
 /**
  */
-typedef /*@abstract@*/ struct rpmgi_s * rpmgi;
-
-/**
- */
 typedef enum rpmgiTag_e {
     RPMGI_RPMDB		= RPMDBI_PACKAGES,
     RPMGI_HDLIST	= 6,	/* XXX next after RPMDBI_AVAILABLE */
@@ -38,23 +34,19 @@ struct rpmgi_s {
     rpmts ts;
     int tag;
     int i;
+    const char * queryFormat;
 
-/*@dependent@*/
+/*@relnull@*/
     rpmdbMatchIterator mi;
 
 /*@refcounted@*/
     FD_t fd;
 
-/*@only@*/
-    const char * queryFormat;
-
-/*@dependent@*/
     ARGV_t argv;
     int argc;
+
     int ftsOpts;
-/*@dependent@*/
     FTS * ftsp;
-/*@dependent@*/
     FTSENT * fts;
 
 /*@refs@*/
@@ -107,21 +99,29 @@ rpmgi XrpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg,
  * @param gi		generalized iterator
  * @return		NULL always
  */
-/*@only@*/
+/*@null@*/
 rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
-	/*@modifies gi @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+        /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
 
 /** Create a generalized iterator.
  * @param argv		iterator argv array
  * @param flags		iterator flags
  * @return		new general iterator
  */
-/*@only@*/
+/*@null@*/
 rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, h_errno, internalState @*/;
 
+/** Return next iteration element.
+ * @param gi		generalized iterator
+ * @returns		next element
+ */
+/*@observer@*/
 const char * rpmgiNext(/*@null@*/ rpmgi gi)
-        /*@modifies gi @*/;
+	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
+        /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
 
 int rpmgiSetQueryFormat(rpmgi gi, const char * queryFormat)
 	/*@modifies gi @*/;

@@ -6,6 +6,7 @@
 
 #include <rpmio_internal.h>
 #include <rpmlib.h>
+#include <rpmmacro.h>
 
 #include "stringbuf.h"
 #include "manifest.h"
@@ -65,7 +66,7 @@ char * rpmPermsString(int mode)
 
 /**@todo Infinite loops through manifest files exist, operator error for now. */
 /*@-boundsread@*/
-int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
+rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 {
     StringBuf sb = newStringBuf();
     char * s = NULL;
@@ -77,7 +78,7 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 /*@+voidabstract@*/
     FILE * f = (FILE *) fdGetFp(fd);
 /*@=voidabstract@*/
-    int rc = 0;
+    rpmRC rpmrc = RPMRC_OK;
     int i;
 
 /*@-boundswrite@*/
@@ -105,7 +106,7 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 
 	/* Insure that file contains only ASCII */
 	if (*s < 32) {
-	    rc = 1;
+	    rpmrc = RPMRC_NOTFOUND;
 	    goto exit;
 	}
 
@@ -121,13 +122,13 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     /*@=branchstate@*/
 
     if (!(s && *s)) {
-	rc = 1;
+	rpmrc = RPMRC_NOTFOUND;
 	goto exit;
     }
 
     /* Glob manifest items. */
-    rc = rpmGlob(s, &ac, &av);
-    if (rc) goto exit;
+    rpmrc = rpmGlob(s, &ac, &av);
+    if (rpmrc != RPMRC_OK) goto exit;
 
     /* Find 1st existing unprocessed arg. */
     for (i = 0; i < argc; i++)
@@ -162,7 +163,7 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 
 exit:
     /*@-branchstate@*/
-    if (argvPtr == NULL || (rc != 0 && av)) {
+    if (argvPtr == NULL || (rpmrc != RPMRC_OK && av)) {
 	if (av)
 /*@-boundswrite@*/
 	for (i = 0; i < ac; i++)
@@ -173,7 +174,7 @@ exit:
     /*@=branchstate@*/
     sb = freeStringBuf(sb);
     /*@-nullstate@*/ /* FIX: *argvPtr may be NULL. */
-    return rc;
+    return rpmrc;
     /*@=nullstate@*/
 }
 /*@=boundsread@*/

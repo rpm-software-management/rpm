@@ -20,7 +20,7 @@ EXTRA_PROGRAMS = tgi
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	misc.h rpmcli.h rpmlib.h \
-	rpmal.h rpmds.h rpmfi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
+	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
 	stringbuf.h
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h rpmlock.h
@@ -36,7 +36,7 @@ librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
 	manifest.c misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c query.c \
-	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpminstall.c \
+	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpmgi.c rpminstall.c \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c stringbuf.c transaction.c \
 	verify.c rpmlock.c
@@ -123,5 +123,5 @@ tplatform: tplatform.o librpm.la
 trhn: trhn.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
-tgi_SOURCES = tgi.c rpmgi.c
+tgi_SOURCES = tgi.c
 tgi_LDADD = librpm.la

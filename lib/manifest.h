@@ -24,11 +24,12 @@ char * rpmPermsString(int mode)
 
 /**
  * Read manifest, glob items, and append to existing args.
- * @param fd			manifest file handle
- * @retval argcPtr		no. of args
- * @retval argvPtr		args themselves
+ * @param fd		manifest file handle
+ * @retval argcPtr	no. of args
+ * @retval argvPtr	args themselves
+ * @return		RPMRC_OK on success
  */
-int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
+rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fd, *argcPtr, *argvPtr, fileSystem, internalState @*/;
 
