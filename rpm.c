@@ -100,7 +100,8 @@ static void printUsage(void) {
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
     puts(_("                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"));
-    puts(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"));
+    puts(_("                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"));
+    puts(_("                        [targets]"));
     puts(_("       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
     puts(_("                        [--nomd5] [targets]"));
@@ -193,6 +194,8 @@ static void printHelp(void) {
     puts(_("      Information selection options:"));
     printHelpLine("        -i                ",
 		  _("display package information"));
+    printHelpLine("        --changelog       ",
+		  _("display the package's change log"));
     printHelpLine("        -l                ",
 		  _("display package file list"));
     printHelpLine("        -s                ",
