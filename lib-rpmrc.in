@@ -41,14 +41,9 @@ arch_canon: 	sun4c:	sparc	3
 # This is really a place holder for MIPS.
 arch_canon:	mips:	mips	4
 arch_canon:	ppc:	ppc	5
-# This is really a place holder for 68000
 arch_canon:	m68k:	m68k	6
-# This is wrong. We really need globbing in here :-(
 arch_canon:	IP:	sgi	7
-arch_canon:     IP22:   sgi     7
-
-# I don't know what this number is, but...
-arch_canon:    000050703700:   rs6000  8
+arch_canon:     rs6000: rs6000  8
 
 arch_canon:    9000/712:       hppa1.1 9
 
@@ -69,6 +64,7 @@ os_canon:        HP-UX: hpux10  6
 os_canon:         OSF1: osf1    7
 os_canon:      FreeBSD: FreeBSD 8
 os_canon:       SCO_SV: SCO_SV3.2v5.0.2  9
+os_canon:	IRIX64: Irix64  10
 
 #############################################################
 # For a given uname().machine, the default build arch
@@ -118,3 +114,5 @@ arch_compat: usparc: sparc
 arch_compat: sparc: noarch
 
 arch_compat: ppc: noarch
+
+os_compat:   IRIX64: IRIX
