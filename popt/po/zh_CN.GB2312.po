@@ -1,62 +1,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-03-13 12:58-0500\n"
 "PO-Revision-Date: 1999-11-11 05:04+0800\n"
 "Last-Translator: Dillion Chen <dillon.chen@turbolinux.com.cn>\n"
 "Language-Team: TLDN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=gb2312\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: popt.c:29
-msgid "unknown errno"
-msgstr ""
-
-#: popt.c:917
-#, c-format
-msgid "option type (%d) not implemented in popt\n"
-msgstr ""
-
-#: popt.c:1132
-msgid "missing argument"
-msgstr ""
-
-#: popt.c:1134
-msgid "unknown option"
-msgstr ""
-
-#: popt.c:1136
-msgid "mutually exclusive logical operations requested"
-msgstr ""
-
-#: popt.c:1138
-msgid "opt->arg should not be NULL"
-msgstr ""
-
-#: popt.c:1140
-msgid "aliases nested too deeply"
-msgstr ""
-
-#: popt.c:1142
-msgid "error in parameter quoting"
-msgstr ""
-
-#: popt.c:1144
-msgid "invalid numeric value"
-msgstr ""
-
-#: popt.c:1146
-msgid "number too large or too small"
-msgstr ""
-
-#: popt.c:1148
-msgid "memory allocation failed"
-msgstr ""
-
-#: popt.c:1152
-msgid "unknown error"
-msgstr ""
 
 #: popthelp.c:53
 msgid "Show this help message"
@@ -70,43 +21,3 @@ msgstr "显示简短使用信息"
 #, fuzzy
 msgid "Display option defaults in message"
 msgstr "显示简短使用信息"
-
-#: popthelp.c:99
-msgid "NONE"
-msgstr ""
-
-#: popthelp.c:100
-msgid "VAL"
-msgstr ""
-
-#: popthelp.c:101
-msgid "INT"
-msgstr ""
-
-#: popthelp.c:102
-msgid "LONG"
-msgstr ""
-
-#: popthelp.c:103
-msgid "STRING"
-msgstr ""
-
-#: popthelp.c:104
-msgid "FLOAT"
-msgstr ""
-
-#: popthelp.c:105
-msgid "DOUBLE"
-msgstr ""
-
-#: popthelp.c:106
-msgid "ARG"
-msgstr ""
-
-#: popthelp.c:459
-msgid "Usage:"
-msgstr ""
-
-#: popthelp.c:481
-msgid "[OPTION...]"
-msgstr ""

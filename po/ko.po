@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-12 11:41-0500\n"
+"POT-Creation-Date: 2002-03-13 12:57-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -113,7 +113,7 @@ msgstr "<명령>"
 msgid "use <dir> as the top level directory"
 msgstr "<디렉토리> 를 최상위 디렉토리로 사용합니다"
 
-#: lib/poptI.c:210 rpmqv.c:125
+#: lib/poptI.c:215 rpmqv.c:125
 msgid "<dir>"
 msgstr "<디렉토리>"
 
@@ -412,23 +412,23 @@ msgstr "패키지 제작에 필요한 tar 파일을 지정하지 않으셨습니다"
 msgid "no packages given for erase"
 msgstr "서명할 패키지를 지정하지 않으셨습니다"
 
-#: rpmqv.c:1085
+#: rpmqv.c:1084
 msgid "no packages given for install"
 msgstr "설치할 패키지를 지정하지 않으셨습니다"
 
-#: rpmqv.c:1103
+#: rpmqv.c:1100
 msgid "no arguments given for query"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
-#: rpmqv.c:1116
+#: rpmqv.c:1113
 msgid "no arguments given for verify"
 msgstr "검증에 필요한 인수가 지정되지 않았습니다"
 
-#: rpmqv.c:1124
+#: rpmqv.c:1121
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags 옵션에 부적절한 인수가 지정되었습니다 "
 
-#: rpmqv.c:1140
+#: rpmqv.c:1137
 #, fuzzy
 msgid "no arguments given"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
@@ -1424,75 +1424,70 @@ msgstr "헤더에 아카이브 파일이 없습니다"
 msgid " failed - "
 msgstr " 실패함 - "
 
-#: lib/depends.c:104
-#, c-format
-msgid "cannot open Packages database in %s\n"
-msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
-
-#: lib/depends.c:297
+#: lib/depends.c:149
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:568
+#: lib/depends.c:363
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:593
+#: lib/depends.c:388
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:609
+#: lib/depends.c:404
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:630
+#: lib/depends.c:425
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일    %s\n"
 
-#: lib/depends.c:642
+#: lib/depends.c:437
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:655
+#: lib/depends.c:450
 #, fuzzy
 msgid "(db package)"
 msgstr "패키지가 없습니다\n"
 
-#: lib/depends.c:694
+#: lib/depends.c:489
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) 의존(Depends) 캐시에 추가되었습니다.\n"
 
-#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
+#: lib/depends.c:491 lib/rpmds.c:410 lib/rpmds.c:569
 msgid "NO "
 msgstr "아니오"
 
-#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
+#: lib/depends.c:491 lib/rpmds.c:410 lib/rpmds.c:569
 msgid "YES"
 msgstr "예"
 
-#: lib/depends.c:962
+#: lib/depends.c:759
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1081
+#: lib/depends.c:878
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\" (을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1349
+#: lib/depends.c:1146
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1455
+#: lib/depends.c:1252
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1500,20 +1495,20 @@ msgid ""
 msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 깊이[depth])\n"
 
-#: lib/depends.c:1548
+#: lib/depends.c:1345
 msgid "========== successors only (presentation order)\n"
 msgstr "========== 후임자 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1618
+#: lib/depends.c:1415
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1653
+#: lib/depends.c:1450
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1658
+#: lib/depends.c:1455
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1622,7 +1617,7 @@ msgid ""
 msgstr ""
 "이 RPM 버전에서는 주요 번호(major number) <= 4 의 패키징 만을 지원합니다\n"
 
-#: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:553
+#: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:554
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead에 실패했습니다\n"
@@ -1632,27 +1627,27 @@ msgstr "%s: readLead에 실패했습니다\n"
 msgid "%s: bad magic\n"
 msgstr "잘못된 magic 입니다"
 
-#: lib/package.c:274 lib/rpmchecksig.c:183 lib/rpmchecksig.c:569
+#: lib/package.c:274 lib/rpmchecksig.c:183 lib/rpmchecksig.c:570
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature에 실패했습니다\n"
 
-#: lib/package.c:278 lib/rpmchecksig.c:187 lib/rpmchecksig.c:574
+#: lib/package.c:278 lib/rpmchecksig.c:187 lib/rpmchecksig.c:575
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 유효한 서명이 없습니다\n"
 
-#: lib/package.c:328 lib/rpmchecksig.c:474
+#: lib/package.c:328 lib/rpmchecksig.c:475
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead에 실패했습니다\n"
 
-#: lib/package.c:363 lib/package.c:390 lib/package.c:422 lib/rpmchecksig.c:645
+#: lib/package.c:363 lib/package.c:390 lib/package.c:422 lib/rpmchecksig.c:646
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:434 lib/rpmchecksig.c:113 lib/rpmchecksig.c:503
+#: lib/package.c:434 lib/rpmchecksig.c:113 lib/rpmchecksig.c:504
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread에 실패했습니다: %s\n"
@@ -1734,7 +1729,7 @@ msgstr "--replacepkgs 와 --replacefiles 옵션을 동시에 사용합니다"
 msgid "upgrade package(s) if already installed"
 msgstr "기존에 설치된 패키지를 업그레이드 합니다"
 
-#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:231
+#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:236
 msgid "<packagefile>+"
 msgstr "<패키지파일>+"
 
@@ -1796,31 +1791,41 @@ msgstr "%%preun 스크립트릿(scriptlet)을 실행하지 않습니다 (있을 경우)"
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "%%postun 스크립트릿(scriptlet)을 실행하지 않습니다 (있을 경우)"
 
-#: lib/poptI.c:187
+#: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
+#, fuzzy
+msgid "don't verify digest(s)"
+msgstr "파일의 MD5 축약(digest)을 검사하지 않습니다"
+
+#: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
+#, fuzzy
+msgid "don't verify signature(s)"
+msgstr "파일의 심볼릭 링크 경로를 검사하지 않습니다"
+
+#: lib/poptI.c:192
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "이 패키지에 의해 발생되는 스크립트릿(scriptlet)을 실행하지 않습니다"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:195
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "%%triggerprein 스크립트릿(scriptlet)을 실행하지 않습니다"
 
-#: lib/poptI.c:193
+#: lib/poptI.c:198
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "%%triggerin 스크립트릿(scriptlet)을 실행하지 않습니다"
 
-#: lib/poptI.c:196
+#: lib/poptI.c:201
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "%%triggerun 스크립트릿(scriptlet)을 실행하지 않습니다"
 
-#: lib/poptI.c:199
+#: lib/poptI.c:204
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "%%triggerpostun 스크립트릿(scriptlet)을 실행하지 않습니다"
 
-#: lib/poptI.c:203
+#: lib/poptI.c:208
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1828,49 +1833,49 @@ msgstr ""
 "이전 버전의 패키지로 다운그레이드 합니다 (--force 옵션을 사용시에는 이 옵션"
 "이 자동으로 적용됩니다)"
 
-#: lib/poptI.c:207
+#: lib/poptI.c:212
 msgid "print percentages as package installs"
 msgstr "패키지 설치를 퍼센트(%)로 표시합니다"
 
-#: lib/poptI.c:209
+#: lib/poptI.c:214
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 "재배치 기능이 있는 패키지의 경우, 지정된 <디렉토리> 로 재배치하여 설치합니다"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:217
 msgid "relocate files from path <old> to <new>"
 msgstr "<이전경로> 에서 <새로운경로> 로 파일을 재배치 합니다"
 
-#: lib/poptI.c:213
+#: lib/poptI.c:218
 msgid "<old>=<new>"
 msgstr "<이전경로>=<새로운경로>"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:221
 msgid "save erased package files by repackaging"
 msgstr "재패키징(repackaging)으로 인해 삭제되는 패키지 파일을 저장합니다"
 
-#: lib/poptI.c:219
+#: lib/poptI.c:224
 msgid "install even if the package replaces installed files"
 msgstr "패키지 설치시 기존에 설치되어 있는 파일을 덮어씁니다"
 
-#: lib/poptI.c:222
+#: lib/poptI.c:227
 msgid "reinstall if the package is already present"
 msgstr "패키지가 이미 설치되어 있는 경우에도 설치합니다"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:229
 #, fuzzy
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "새로운 패키지 삭제, 이전 패키지 재설치, 날짜 복구(back to date)"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:230
 msgid "<date>"
 msgstr "<날짜>"
 
-#: lib/poptI.c:227
+#: lib/poptI.c:232
 msgid "don't install, but tell if it would work or not"
 msgstr "패키지를 설치하지 않고, 제대로 설치되는지만 확인합니다"
 
-#: lib/poptI.c:230
+#: lib/poptI.c:235
 msgid "upgrade package(s)"
 msgstr "패키지를 업그레이드 합니다"
 
@@ -1939,146 +1944,132 @@ msgstr "패키지로 인하여 발생되는 패키지에 대해 질의합니다"
 msgid "rpm verify mode"
 msgstr "rpm 검증 모드"
 
-#: lib/poptQV.c:126
-msgid "rpm verify mode (legacy)"
-msgstr "rpm 검증 모드 (legacy)"
-
-#: lib/poptQV.c:128
+#: lib/poptQV.c:125
 msgid "query/verify the package(s) which require a dependency"
 msgstr "의존성을 필요로 하는 패키지에 대해 질의/검증 합니다"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:127
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "의존성을 제공하는 패키지에 대해 질의/검증 합니다"
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:187
 msgid "list all configuration files"
 msgstr "모든 설정 파일을 나열합니다"
 
-#: lib/poptQV.c:192
+#: lib/poptQV.c:189
 msgid "list all documentation files"
 msgstr "모든 문서 파일을 나열합니다"
 
-#: lib/poptQV.c:194
+#: lib/poptQV.c:191
 msgid "dump basic file information"
 msgstr "기본 파일 정보를 알려줍니다"
 
-#: lib/poptQV.c:196
+#: lib/poptQV.c:193
 msgid "list files in package"
 msgstr "패키지 안의 파일을 나열합니다"
 
-#: lib/poptQV.c:201
+#: lib/poptQV.c:198
 #, c-format
 msgid "skip %%ghost files"
 msgstr "%%ghost 파일을 생략합니다"
 
-#: lib/poptQV.c:205
+#: lib/poptQV.c:202
 #, c-format
 msgid "skip %%license files"
 msgstr "%%license 파일을 생략합니다"
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:205
 #, c-format
 msgid "skip %%readme files"
 msgstr "%%readme 파일을 생략합니다"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:211
 msgid "use the following query format"
 msgstr "다음의 질의 형식을 사용하십시요"
 
-#: lib/poptQV.c:216
+#: lib/poptQV.c:213
 msgid "substitute i18n sections into spec file"
 msgstr "spec 파일 안의 i18n 항목(section)을 대체(substitute)합니다"
 
-#: lib/poptQV.c:218
+#: lib/poptQV.c:215
 msgid "display the states of the listed files"
 msgstr "나열된 파일의 상태(state)를 보여줍니다"
 
-#: lib/poptQV.c:220
+#: lib/poptQV.c:217
 msgid "display a verbose file listing"
 msgstr "파일 목록을 자세히 보여줍니다"
 
-#: lib/poptQV.c:240
+#: lib/poptQV.c:237
 msgid "don't verify MD5 digest of files"
 msgstr "파일의 MD5 축약(digest)을 검사하지 않습니다"
 
-#: lib/poptQV.c:243
+#: lib/poptQV.c:240
 msgid "don't verify size of files"
 msgstr "파일의 용량을 검사하지 않습니다"
 
-#: lib/poptQV.c:246
+#: lib/poptQV.c:243
 msgid "don't verify symlink path of files"
 msgstr "파일의 심볼릭 링크 경로를 검사하지 않습니다"
 
-#: lib/poptQV.c:249
+#: lib/poptQV.c:246
 msgid "don't verify owner of files"
 msgstr "파일의 소유자를 검사하지 않습니다"
 
-#: lib/poptQV.c:252
+#: lib/poptQV.c:249
 msgid "don't verify group of files"
 msgstr "파일의 그룹을 검사하지 않습니다"
 
-#: lib/poptQV.c:255
+#: lib/poptQV.c:252
 msgid "don't verify modification time of files"
 msgstr "파일의 최종 변경 시간을 검사하지 않습니다"
 
-#: lib/poptQV.c:258 lib/poptQV.c:261
+#: lib/poptQV.c:255 lib/poptQV.c:258
 msgid "don't verify mode of files"
 msgstr "파일의 모드를 검사하지 않습니다"
 
-#: lib/poptQV.c:264
+#: lib/poptQV.c:261
 msgid "don't verify files in package"
 msgstr "패키지 안의 파일을 검사하지 않습니다"
 
-#: lib/poptQV.c:266
+#: lib/poptQV.c:263
 msgid "don't verify package dependencies"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: lib/poptQV.c:268 lib/poptQV.c:272
+#: lib/poptQV.c:265 lib/poptQV.c:269
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "%verifyscript를 실행하지 않습니다 (있을 경우)"
 
-#: lib/poptQV.c:275 lib/poptQV.c:313
-#, fuzzy
-msgid "don't verify digest(s)"
-msgstr "파일의 MD5 축약(digest)을 검사하지 않습니다"
-
-#: lib/poptQV.c:278 lib/poptQV.c:316
-#, fuzzy
-msgid "don't verify signature(s)"
-msgstr "파일의 심볼릭 링크 경로를 검사하지 않습니다"
-
-#: lib/poptQV.c:283
+#: lib/poptQV.c:280
 #, fuzzy
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "SHA1 축약(digest) 헤더를 검사하지 않습니다"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:283
 #, fuzzy
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "파일의 MD5 축약(digest)을 검사하지 않습니다"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:298
 #, fuzzy
-msgid "sign a package, preserving digests"
+msgid "sign a packagei (identical to --resign)"
 msgstr "패키지에 서명합니다 (기존의 서명은 삭제됩니다)"
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:300
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "패키지의 서명을 검사합니다"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:302
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:307
+#: lib/poptQV.c:304
 #, fuzzy
-msgid "sign a package, recomputing digests"
+msgid "sign a packagei (identical to --addsign)"
 msgstr "패키지에 서명합니다 (기존의 서명은 삭제됩니다)"
 
-#: lib/poptQV.c:309
+#: lib/poptQV.c:306
 msgid "generate signature"
 msgstr "서명을 작성합니다"
 
@@ -2295,8 +2286,8 @@ msgstr "패키지에 파일 소유자 또는 id 목록이 없습니다\n"
 msgid "can't query %s: %s\n"
 msgstr "%s (을)를 질의할 수 없음: %s\n"
 
-#: lib/query.c:616 lib/query.c:654 lib/rpminstall.c:333 lib/rpminstall.c:475
-#: lib/rpminstall.c:845
+#: lib/query.c:616 lib/query.c:654 lib/rpminstall.c:348 lib/rpminstall.c:490
+#: lib/rpminstall.c:865
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s (을)를 여는데 실패함: %s\n"
@@ -2310,7 +2301,7 @@ msgstr "%s (을)를 질의하는데 실패했습니다\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "이전 형식의 소스 패키지는 질의할 수 없습니다\n"
 
-#: lib/query.c:664 lib/rpminstall.c:488
+#: lib/query.c:664 lib/rpminstall.c:503
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 읽는데 실패했습니다: %s\n"
@@ -2379,7 +2370,7 @@ msgstr "패키지 기록(record) 번호: %u\n"
 msgid "record %u could not be read\n"
 msgstr "기록(record) 번호 %u (은)는 읽을 수 없습니다\n"
 
-#: lib/query.c:955 lib/rpminstall.c:633
+#: lib/query.c:955 lib/rpminstall.c:653
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s 패키지는 설치되어 있지 않습니다\n"
@@ -2428,42 +2419,42 @@ msgstr "%s: writeLead에 실패했습니다: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:488
+#: lib/rpmchecksig.c:489
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead에 실패했습니다\n"
 
-#: lib/rpmchecksig.c:559
+#: lib/rpmchecksig.c:560
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 유효한 서명이 없습니다 (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:804
+#: lib/rpmchecksig.c:805
 msgid "NOT OK"
 msgstr "올바르지 않음"
 
-#: lib/rpmchecksig.c:805 lib/rpmchecksig.c:819
+#: lib/rpmchecksig.c:806 lib/rpmchecksig.c:820
 msgid " (MISSING KEYS:"
 msgstr " (키를 찾을 수 없음:"
 
-#: lib/rpmchecksig.c:807 lib/rpmchecksig.c:821
+#: lib/rpmchecksig.c:808 lib/rpmchecksig.c:822
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:808 lib/rpmchecksig.c:822
+#: lib/rpmchecksig.c:809 lib/rpmchecksig.c:823
 msgid " (UNTRUSTED KEYS:"
 msgstr " (키를 신뢰할 수 없음:"
 
-#: lib/rpmchecksig.c:810 lib/rpmchecksig.c:824
+#: lib/rpmchecksig.c:811 lib/rpmchecksig.c:825
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:818
+#: lib/rpmchecksig.c:819
 msgid "OK"
 msgstr "확인"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:539
+#: lib/rpmds.c:538
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2472,13 +2463,13 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:569
+#: lib/rpmds.c:568
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:593
+#: lib/rpmds.c:592
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s-%s-%s 패키지의 필요 사항이 만족되지 않음: %s\n"
@@ -2491,81 +2482,81 @@ msgstr "준비 중..."
 msgid "Preparing packages for installation..."
 msgstr "설치할 패키지를 준비하고 있습니다..."
 
-#: lib/rpminstall.c:281
+#: lib/rpminstall.c:296
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s (을)를 복구합니다\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:293
+#: lib/rpminstall.c:308
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... %s (으)로\n"
 
-#: lib/rpminstall.c:297
+#: lib/rpminstall.c:312
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s (을)를 생략합니다 - 전송(transfer)에 실패함 - %s\n"
 
-#: lib/rpminstall.c:395
+#: lib/rpminstall.c:410
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "%s 패키지는 재배치할 수 없습니다\n"
 
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:464
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s 파일을 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/rpminstall.c:455
+#: lib/rpminstall.c:470
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s 파일이 최신 버전의 RPM을 필요로 합니다\n"
 
-#: lib/rpminstall.c:467 lib/rpminstall.c:701
+#: lib/rpminstall.c:482 lib/rpminstall.c:721
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s (은)는 설치될 수 없습니다\n"
 
-#: lib/rpminstall.c:503
+#: lib/rpminstall.c:518
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 의 소스와 %d 의 바이너리 패키지를 찾았습니다\n"
 
-#: lib/rpminstall.c:521 lib/rpminstall.c:1029
+#: lib/rpminstall.c:536 lib/rpminstall.c:1049
 msgid "failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
 
-#: lib/rpminstall.c:544
+#: lib/rpminstall.c:559
 msgid "installing binary packages\n"
 msgstr "바이너리 패키지를 설치합니다\n"
 
-#: lib/rpminstall.c:566
+#: lib/rpminstall.c:581
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s 파일을 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:656
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" 여러개의 패키지를 지정합니다\n"
 
-#: lib/rpminstall.c:660
+#: lib/rpminstall.c:680
 msgid "removing these packages would break dependencies:\n"
 msgstr "이 패키지들을 제거하면 의존성이 깨질 수 있음:\n"
 
-#: lib/rpminstall.c:687
+#: lib/rpminstall.c:707
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s (을)를 열 수 없음: %s\n"
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:713
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s (을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1042
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2669,6 +2660,11 @@ msgstr "%s (을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s (을)를 열 수 없음: %s.\n"
+
+#: lib/rpmts.c:73
+#, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
 #: lib/signature.c:118
 msgid "file is not regular -- skipping size check\n"
@@ -3438,6 +3434,17 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 msgid "failed to create %s: %s\n"
 msgstr "%s (을)를 생성하는데 실패함: %s\n"
 
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "rpm 검증 모드 (legacy)"
+
+#, fuzzy
+#~ msgid "sign a package, preserving digests"
+#~ msgstr "패키지에 서명합니다 (기존의 서명은 삭제됩니다)"
+
+#, fuzzy
+#~ msgid "sign a package, recomputing digests"
+#~ msgstr "패키지에 서명합니다 (기존의 서명은 삭제됩니다)"
+
 #~ msgid ""
 #~ "package lacks both user name and id lists (this should never happen)\n"
 #~ msgstr ""
@@ -3529,9 +3536,6 @@ msgstr "%s (을)를 생성하는데 실패함: %s\n"
 
 #~ msgid "verify package signature"
 #~ msgstr "패키지의 서명을 검사합니다"
-
-#~ msgid "sign a package (discard current signature)"
-#~ msgstr "패키지에 서명합니다 (기존의 서명은 삭제됩니다)"
 
 #~ msgid "skip any GPG signatures"
 #~ msgstr "GPG 서명은 검사하지 않습니다"

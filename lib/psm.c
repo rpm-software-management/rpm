@@ -764,7 +764,7 @@ static int runScript(PSM_t psm, Header h,
 	xx = Fclose(fd);
 
 	{   const char * sn = fn;
-	    if (!ts->chrootDone &&
+	    if (!ts->chrootDone && ts->rootDir != NULL &&
 		!(ts->rootDir[0] == '/' && ts->rootDir[1] == '\0'))
 	    {
 		sn += strlen(ts->rootDir)-1;
@@ -1827,13 +1827,10 @@ assert(psm->mi == NULL);
 	    rc = chroot(".");
 	    /*@=superuser@*/
 	    psm->chrootDone = ts->chrootDone = 0;
-	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 0;
-#ifdef	DYING
-	    /*@-mods@*/
-	    chroot_prefix = NULL;
-	    /*@=mods@*/
-#endif
-	    xx = chdir(ts->currDir);
+	    if (ts->rpmdb != NULL)
+		ts->rpmdb->db_chrootDone = 0;
+	    if (ts->currDir != NULL)	/* XXX can't happen */
+		xx = chdir(ts->currDir);
 	}
 	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */

@@ -385,6 +385,8 @@ INPUT                  = \
 	@top_srcdir@/lib/rpmrc.c \
 	@top_srcdir@/lib/rpmte.c \
 	@top_srcdir@/lib/rpmte.h \
+	@top_srcdir@/lib/rpmts.c \
+	@top_srcdir@/lib/rpmts.h \
 	@top_srcdir@/lib/rpmvercmp.c \
 	@top_srcdir@/lib/signature.c \
 	@top_srcdir@/lib/signature.h \

@@ -5,8 +5,8 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
-#include <rpmpgp.h>		/* XXX rpmtransFree() needs pgpFreeDig */
+
+#include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 
 #define _NEED_TEITERATOR	1
 #include "depends.h"
@@ -37,9 +37,6 @@ struct orderListIndex_s {
 int _cacheDependsRC = 1;
 
 /*@unchecked@*/
-int _ts_debug = 0;
-
-/*@unchecked@*/
 static int _tso_debug = 0;
 
 /*@observer@*/ /*@unchecked@*/
@@ -50,151 +47,6 @@ const char *rpmEVR = VERSION;
 
 /*@unchecked@*/
 int rpmFLAGS = RPMSENSE_EQUAL;
-
-rpmTransactionSet XrpmtsUnlink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
-{
-/*@-modfilesystem@*/
-if (_ts_debug)
-fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
-    ts->nrefs--;
-    return NULL;
-}
-
-rpmTransactionSet XrpmtsLink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
-{
-    ts->nrefs++;
-/*@-modfilesystem@*/
-if (_ts_debug)
-fprintf(stderr, "--> ts %p ++ %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
-/*@=modfilesystem@*/
-    /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
-}
-
-int rpmtsCloseDB(rpmTransactionSet ts)
-{
-    int rc = 0;
-
-    if (ts->rpmdb != NULL) {
-	rc = rpmdbClose(ts->rpmdb);
-	ts->rpmdb = NULL;
-    }
-    return rc;
-}
-
-int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
-{
-    int rc = 0;
-
-    if (ts->rpmdb != NULL && ts->dbmode == dbmode)
-	return 0;
-
-    (void) rpmtsCloseDB(ts);
-
-    /* XXX there's a lock race here. */
-
-    ts->dbmode = dbmode;
-    rc = rpmdbOpen(ts->rootDir, &ts->rpmdb, ts->dbmode, 0644);
-    if (rc) {
-	const char * dn;
-	/*@-globs -mods@*/ /* FIX: rpmGlobalMacroContext for an error? shrug */
-	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	/*@=globs =mods@*/
-	rpmMessage(RPMMESS_ERROR,
-			_("cannot open Packages database in %s\n"), dn);
-	dn = _free(dn);
-    }
-    return rc;
-}
-
-rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
-			const void * keyp, size_t keylen)
-{
-    return rpmdbInitIterator(ts->rpmdb, rpmtag, keyp, keylen);
-}
-
-char * hGetNEVR(Header h, const char ** np)
-{
-    const char * n, * v, * r;
-    char * NVR, * t;
-
-    (void) headerNVR(h, &n, &v, &r);
-    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    if (np)
-	*np = n;
-    return NVR;
-}
-
-rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
-{
-    rpmTransactionSet ts;
-    int rootLen;
-
-    /*@-branchstate@*/
-    if (!rootDir) rootDir = "";
-    /*@=branchstate@*/
-
-    ts = xcalloc(1, sizeof(*ts));
-    ts->filesystemCount = 0;
-    ts->filesystems = NULL;
-    ts->di = NULL;
-    if (db != NULL) {
-	ts->rpmdb = rpmdbLink(db, "tsCreate");
-	/*@-type@*/ /* FIX: silly wrapper */
-	ts->dbmode = db->db_mode;
-	/*@=type@*/
-    } else {
-	ts->rpmdb = NULL;
-	ts->dbmode = O_RDONLY;
-    }
-    ts->scriptFd = NULL;
-    ts->id = (int_32) time(NULL);
-    ts->delta = 5;
-
-    ts->numRemovedPackages = 0;
-    ts->allocedRemovedPackages = ts->delta;
-    ts->removedPackages = xcalloc(ts->allocedRemovedPackages,
-			sizeof(*ts->removedPackages));
-
-    /* This canonicalizes the root */
-    rootLen = strlen(rootDir);
-    if (!(rootLen && rootDir[rootLen - 1] == '/')) {
-	char * t;
-
-	t = alloca(rootLen + 2);
-	*t = '\0';
-	(void) stpcpy( stpcpy(t, rootDir), "/");
-	rootDir = t;
-    }
-
-    ts->rootDir = (rootDir != NULL ? xstrdup(rootDir) : xstrdup(""));
-    ts->currDir = NULL;
-    ts->chrootDone = 0;
-
-    ts->numAddedPackages = 0;
-    ts->addedPackages = alCreate(ts->delta);
-
-    ts->numAvailablePackages = 0;
-    ts->availablePackages = alCreate(ts->delta);
-
-    ts->orderAlloced = ts->delta;
-    ts->orderCount = 0;
-/*@-type -abstract@*/
-    ts->order = xcalloc(ts->orderAlloced, sizeof(*ts->order));
-/*@=type =abstract@*/
-
-    ts->sig = NULL;
-    ts->dig = NULL;
-
-    ts->nrefs = 0;
-
-    return rpmtsLink(ts, "tsCreate");
-}
 
 /**
  * Compare removed package instances (qsort/bsearch).
@@ -460,63 +312,6 @@ int rpmtransRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
 {
     return removePackage(ts, h, dboffset, RPMAL_NOMATCH);
 }
-
-/*@-nullstate@*/ /* FIX: better annotations */
-void rpmtransClean(rpmTransactionSet ts)
-{
-    if (ts) {
-	HFD_t hfd = headerFreeData;
-	if (ts->sig != NULL)
-	    ts->sig = hfd(ts->sig, ts->sigtype);
-	if (ts->dig != NULL)
-	    ts->dig = pgpFreeDig(ts->dig);
-    }
-}
-
-rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
-{
-    if (ts) {
-	teIterator pi; transactionElement p;
-	int oc;
-
-	(void) rpmtsUnlink(ts, "tsCreate");
-
-	/*@-usereleased@*/
-	if (ts->nrefs > 0)
-	    return NULL;
-
-	for (pi = teInitIterator(ts), oc = 0; (p = teNextIterator(pi)) != NULL; oc++) {
-/*@-type -unqualifiedtrans @*/
-	    ts->order[oc] = teFree(ts->order[oc]);
-/*@=type =unqualifiedtrans @*/
-	}
-	pi = teFreeIterator(pi);
-/*@-type +voidabstract @*/
-	ts->order = _free(ts->order);
-/*@=type =voidabstract @*/
-
-	ts->addedPackages = alFree(ts->addedPackages);
-	ts->availablePackages = alFree(ts->availablePackages);
-	ts->di = _free(ts->di);
-	ts->removedPackages = _free(ts->removedPackages);
-	if (ts->scriptFd != NULL) {
-	    ts->scriptFd =
-		fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
-	    ts->scriptFd = NULL;
-	}
-	ts->rootDir = _free(ts->rootDir);
-	ts->currDir = _free(ts->currDir);
-
-	rpmtransClean(ts);
-
-	(void) rpmtsCloseDB(ts);
-
-	/*@-refcounttrans@*/ ts = _free(ts); /*@=refcounttrans@*/
-	/*@=usereleased@*/
-    }
-    return NULL;
-}
-/*@=nullstate@*/
 
 /**
  * Check key for an unsatisfied dependency.
@@ -882,8 +677,10 @@ static int checkDependentConflicts(rpmTransactionSet ts, const char * key)
 }
 
 struct badDeps_s {
-/*@observer@*/ /*@owned@*/ /*@null@*/ const char * pname;
-/*@observer@*/ /*@dependent@*/ /*@null@*/ const char * qname;
+/*@observer@*/ /*@owned@*/ /*@null@*/
+    const char * pname;
+/*@observer@*/ /*@dependent@*/ /*@null@*/
+    const char * qname;
 };
 
 #ifdef	DYING

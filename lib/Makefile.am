@@ -18,7 +18,7 @@ pkginc_HEADERS = \
 	misc.h rpmcli.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h fsm.h manifest.h psm.h \
-	rpmal.h rpmds.h rpmfi.h rpmlead.h rpmte.h signature.h
+	rpmal.h rpmds.h rpmfi.h rpmlead.h rpmte.h rpmts.h signature.h
 
 mylibpaths = \
 	-L$(top_builddir)/lib \
@@ -35,7 +35,7 @@ librpm_la_SOURCES = \
 	manifest.c misc.c package.c \
 	problems.c poptI.c poptQV.c psm.c query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpminstall.c \
-	rpmlead.c rpmlibprov.c rpmrc.c rpmte.c rpmvercmp.c \
+	rpmlead.c rpmlibprov.c rpmrc.c rpmte.c rpmts.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c
 librpm_la_LDFLAGS = -release @VERSION@

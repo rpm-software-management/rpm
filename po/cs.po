@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-12 11:41-0500\n"
+"POT-Creation-Date: 2002-03-13 12:57-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -113,7 +113,7 @@ msgstr "<pøík>"
 msgid "use <dir> as the top level directory"
 msgstr "pou¾ít <adr> jako adresáø nejvy¹¹í úrovnì"
 
-#: lib/poptI.c:210 rpmqv.c:125
+#: lib/poptI.c:215 rpmqv.c:125
 msgid "<dir>"
 msgstr "<adresáø>"
 
@@ -417,23 +417,23 @@ msgstr "pro sestavení nezadány ¾ádné tar soubory"
 msgid "no packages given for erase"
 msgstr "k podepsání nezadány ¾ádné balíèky"
 
-#: rpmqv.c:1085
+#: rpmqv.c:1084
 msgid "no packages given for install"
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: rpmqv.c:1103
+#: rpmqv.c:1100
 msgid "no arguments given for query"
 msgstr "k dotazu nezadány ¾ádné parametry"
 
-#: rpmqv.c:1116
+#: rpmqv.c:1113
 msgid "no arguments given for verify"
 msgstr "pro kontrolu nezadány ¾ádné balíèky"
 
-#: rpmqv.c:1124
+#: rpmqv.c:1121
 msgid "unexpected arguments to --querytags "
 msgstr "neoèekávané parametry pro --querytags "
 
-#: rpmqv.c:1140
+#: rpmqv.c:1137
 #, fuzzy
 msgid "no arguments given"
 msgstr "k dotazu nezadány ¾ádné parametry"
@@ -1433,75 +1433,70 @@ msgstr ""
 msgid " failed - "
 msgstr "selhal - "
 
-#: lib/depends.c:104
-#, c-format
-msgid "cannot open Packages database in %s\n"
-msgstr "nemohu otevøít databázi balíèkù v %s\n"
-
-#: lib/depends.c:297
+#: lib/depends.c:149
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/depends.c:568
+#: lib/depends.c:363
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:593
+#: lib/depends.c:388
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
-#: lib/depends.c:609
+#: lib/depends.c:404
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:630
+#: lib/depends.c:425
 #, fuzzy
 msgid "(db files)"
 msgstr "¹patný db soubor %s\n"
 
-#: lib/depends.c:642
+#: lib/depends.c:437
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:655
+#: lib/depends.c:450
 #, fuzzy
 msgid "(db package)"
 msgstr "¾ádné balíèky\n"
 
-#: lib/depends.c:694
+#: lib/depends.c:489
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) pøidáno do ke¹e závislostí.\n"
 
-#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
+#: lib/depends.c:491 lib/rpmds.c:410 lib/rpmds.c:569
 msgid "NO "
 msgstr "NE "
 
-#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
+#: lib/depends.c:491 lib/rpmds.c:410 lib/rpmds.c:569
 msgid "YES"
 msgstr "ANO"
 
-#: lib/depends.c:962
+#: lib/depends.c:759
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1081
+#: lib/depends.c:878
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1349
+#: lib/depends.c:1146
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1455
+#: lib/depends.c:1252
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1509,20 +1504,20 @@ msgid ""
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:1548
+#: lib/depends.c:1345
 msgid "========== successors only (presentation order)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1618
+#: lib/depends.c:1415
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1653
+#: lib/depends.c:1450
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1658
+#: lib/depends.c:1455
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1630,7 +1625,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "tato verze RPM podporuje práci s balíèky s verzí <= 4\n"
 
-#: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:553
+#: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:554
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead selhalo\n"
@@ -1640,27 +1635,27 @@ msgstr "%s: readLead selhalo\n"
 msgid "%s: bad magic\n"
 msgstr "©patné magické èíslo"
 
-#: lib/package.c:274 lib/rpmchecksig.c:183 lib/rpmchecksig.c:569
+#: lib/package.c:274 lib/rpmchecksig.c:183 lib/rpmchecksig.c:570
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature selhalo\n"
 
-#: lib/package.c:278 lib/rpmchecksig.c:187 lib/rpmchecksig.c:574
+#: lib/package.c:278 lib/rpmchecksig.c:187 lib/rpmchecksig.c:575
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Není dostupný ¾ádný podpis\n"
 
-#: lib/package.c:328 lib/rpmchecksig.c:474
+#: lib/package.c:328 lib/rpmchecksig.c:475
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/package.c:363 lib/package.c:390 lib/package.c:422 lib/rpmchecksig.c:645
+#: lib/package.c:363 lib/package.c:390 lib/package.c:422 lib/rpmchecksig.c:646
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:434 lib/rpmchecksig.c:113 lib/rpmchecksig.c:503
+#: lib/package.c:434 lib/rpmchecksig.c:113 lib/rpmchecksig.c:504
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
@@ -1743,7 +1738,7 @@ msgstr "zkratka pro --replacepkgs --replacefiles"
 msgid "upgrade package(s) if already installed"
 msgstr "aktualizace balíèku jestli¾e je ji¾ nainstalován"
 
-#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:231
+#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:236
 msgid "<packagefile>+"
 msgstr "<soubor_balíèku>+"
 
@@ -1803,31 +1798,41 @@ msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:187
+#: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
+#, fuzzy
+msgid "don't verify digest(s)"
+msgstr "nekontrolovat MD5 souborù v balíèku"
+
+#: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
+#, fuzzy
+msgid "don't verify signature(s)"
+msgstr "nekontrolovat cesty symbolických linek"
+
+#: lib/poptI.c:192
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "nespou¹tìt ¾ádné skripty aktivované tímto balíèkem"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:195
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
-#: lib/poptI.c:193
+#: lib/poptI.c:198
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:196
+#: lib/poptI.c:201
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:199
+#: lib/poptI.c:204
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:203
+#: lib/poptI.c:208
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1835,48 +1840,48 @@ msgstr ""
 "aktualizovat na starou verzi balíèku (--force to dìlá pøi aktualizacích "
 "automaticky)"
 
-#: lib/poptI.c:207
+#: lib/poptI.c:212
 msgid "print percentages as package installs"
 msgstr "bìhem instalace balíèku zobrazit procenta"
 
-#: lib/poptI.c:209
+#: lib/poptI.c:214
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "pøemístit soubory do <adr>, jsou-li pøemístitelné"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:217
 msgid "relocate files from path <old> to <new>"
 msgstr "pøemístit soubory ze <staré_cesty> do <nové_cesty>"
 
-#: lib/poptI.c:213
+#: lib/poptI.c:218
 msgid "<old>=<new>"
 msgstr "<stará_cesta>=<nová_cesta>"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:221
 msgid "save erased package files by repackaging"
 msgstr "uchovat smazané soubory pomocí pøebalení"
 
-#: lib/poptI.c:219
+#: lib/poptI.c:224
 msgid "install even if the package replaces installed files"
 msgstr "instalovat, i kdy¾ balíèek pøepí¹e existující soubory"
 
-#: lib/poptI.c:222
+#: lib/poptI.c:227
 msgid "reinstall if the package is already present"
 msgstr "pøeinstalovat, i kdy¾ je ji¾ balíèek pøítomen"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:229
 #, fuzzy
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "odinstalovat nové balíèky, reinstalovat staré balíèky zpìt do data"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:230
 msgid "<date>"
 msgstr "<datum>"
 
-#: lib/poptI.c:227
+#: lib/poptI.c:232
 msgid "don't install, but tell if it would work or not"
 msgstr "neinstalovat ale sdìlit, zda-li by to fungovalo èi nikoli"
 
-#: lib/poptI.c:230
+#: lib/poptI.c:235
 msgid "upgrade package(s)"
 msgstr "aktualizace balíèku"
 
@@ -1945,146 +1950,132 @@ msgstr "dotaz na balíèky aktivované balíèkem"
 msgid "rpm verify mode"
 msgstr "re¾im kontroly"
 
-#: lib/poptQV.c:126
-msgid "rpm verify mode (legacy)"
-msgstr "re¾im kontroly (zastaralý)"
-
-#: lib/poptQV.c:128
+#: lib/poptQV.c:125
 msgid "query/verify the package(s) which require a dependency"
 msgstr "dotaz/ovìøení balíèkù vy¾adujících závislost"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:127
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "dotaz/ovìøení balíèkù poskytujících závislost"
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:187
 msgid "list all configuration files"
 msgstr "vypsat v¹echny konfiguraèní soubory"
 
-#: lib/poptQV.c:192
+#: lib/poptQV.c:189
 msgid "list all documentation files"
 msgstr "vypsat v¹echny soubory s dokumentací"
 
-#: lib/poptQV.c:194
+#: lib/poptQV.c:191
 msgid "dump basic file information"
 msgstr "zobrazit základní informace o souborech"
 
-#: lib/poptQV.c:196
+#: lib/poptQV.c:193
 msgid "list files in package"
 msgstr "vypsat soubory v balíèku"
 
-#: lib/poptQV.c:201
+#: lib/poptQV.c:198
 #, c-format
 msgid "skip %%ghost files"
 msgstr "vynechat %%ghost soubory"
 
-#: lib/poptQV.c:205
+#: lib/poptQV.c:202
 #, c-format
 msgid "skip %%license files"
 msgstr "vynechat %%license soubory"
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:205
 #, c-format
 msgid "skip %%readme files"
 msgstr "vynechat %%readme soubory"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:211
 msgid "use the following query format"
 msgstr "pou¾ij následující formát dotazù"
 
-#: lib/poptQV.c:216
+#: lib/poptQV.c:213
 msgid "substitute i18n sections into spec file"
 msgstr "nahradit i18n sekce do spec souboru"
 
-#: lib/poptQV.c:218
+#: lib/poptQV.c:215
 msgid "display the states of the listed files"
 msgstr "zobrazit stav vypsaných souborù"
 
-#: lib/poptQV.c:220
+#: lib/poptQV.c:217
 msgid "display a verbose file listing"
 msgstr "zobrazit roz¹íøený výpis souborù"
 
-#: lib/poptQV.c:240
+#: lib/poptQV.c:237
 msgid "don't verify MD5 digest of files"
 msgstr "nekontrolovat MD5 souborù v balíèku"
 
-#: lib/poptQV.c:243
+#: lib/poptQV.c:240
 msgid "don't verify size of files"
 msgstr "nekontrolovat velikost souborù"
 
-#: lib/poptQV.c:246
+#: lib/poptQV.c:243
 msgid "don't verify symlink path of files"
 msgstr "nekontrolovat cesty symbolických linek"
 
-#: lib/poptQV.c:249
+#: lib/poptQV.c:246
 msgid "don't verify owner of files"
 msgstr "nekontrolovat vlastníka souborù"
 
-#: lib/poptQV.c:252
+#: lib/poptQV.c:249
 msgid "don't verify group of files"
 msgstr "nekontrolovat skupinu souborù"
 
-#: lib/poptQV.c:255
+#: lib/poptQV.c:252
 msgid "don't verify modification time of files"
 msgstr "nekontrolovat èas zmìny souboru"
 
-#: lib/poptQV.c:258 lib/poptQV.c:261
+#: lib/poptQV.c:255 lib/poptQV.c:258
 msgid "don't verify mode of files"
 msgstr "nekontrolovat mód souborù"
 
-#: lib/poptQV.c:264
+#: lib/poptQV.c:261
 msgid "don't verify files in package"
 msgstr "nekontrolovat soubory v balíèku"
 
-#: lib/poptQV.c:266
+#: lib/poptQV.c:263
 msgid "don't verify package dependencies"
 msgstr "nekontrolovat závislosti balíèkù"
 
-#: lib/poptQV.c:268 lib/poptQV.c:272
+#: lib/poptQV.c:265 lib/poptQV.c:269
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "nespou¹tìt %verifyscript (pokud existuje)"
 
-#: lib/poptQV.c:275 lib/poptQV.c:313
-#, fuzzy
-msgid "don't verify digest(s)"
-msgstr "nekontrolovat MD5 souborù v balíèku"
-
-#: lib/poptQV.c:278 lib/poptQV.c:316
-#, fuzzy
-msgid "don't verify signature(s)"
-msgstr "nekontrolovat cesty symbolických linek"
-
-#: lib/poptQV.c:283
+#: lib/poptQV.c:280
 #, fuzzy
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "nekontrolovat SHA1 digest v hlavièce"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:283
 #, fuzzy
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "nekontrolovat MD5 souborù v balíèku"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:298
 #, fuzzy
-msgid "sign a package, preserving digests"
+msgid "sign a packagei (identical to --resign)"
 msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:300
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "ovìøit podpis v balíèku"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:302
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:307
+#: lib/poptQV.c:304
 #, fuzzy
-msgid "sign a package, recomputing digests"
+msgid "sign a packagei (identical to --addsign)"
 msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
-#: lib/poptQV.c:309
+#: lib/poptQV.c:306
 msgid "generate signature"
 msgstr "generovat PGP/GPG podpis"
 
@@ -2289,8 +2280,8 @@ msgstr "balíèek nemá vlastníka souboru ani seznamy id\n"
 msgid "can't query %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#: lib/query.c:616 lib/query.c:654 lib/rpminstall.c:333 lib/rpminstall.c:475
-#: lib/rpminstall.c:845
+#: lib/query.c:616 lib/query.c:654 lib/rpminstall.c:348 lib/rpminstall.c:490
+#: lib/rpminstall.c:865
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
@@ -2304,7 +2295,7 @@ msgstr "dotaz na %s se nezdaøil\n"
 msgid "old format source packages cannot be queried\n"
 msgstr "nelze provést dotaz na zdrojové balíèky starého formátu\n"
 
-#: lib/query.c:664 lib/rpminstall.c:488
+#: lib/query.c:664 lib/rpminstall.c:503
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
@@ -2373,7 +2364,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:955 lib/rpminstall.c:633
+#: lib/query.c:955 lib/rpminstall.c:653
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2422,42 +2413,42 @@ msgstr "%s: writeLead selhalo: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature selhalo: %s\n"
 
-#: lib/rpmchecksig.c:488
+#: lib/rpmchecksig.c:489
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/rpmchecksig.c:559
+#: lib/rpmchecksig.c:560
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Není dostupný ¾ádný podpis (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:804
+#: lib/rpmchecksig.c:805
 msgid "NOT OK"
 msgstr "NENÍ OK"
 
-#: lib/rpmchecksig.c:805 lib/rpmchecksig.c:819
+#: lib/rpmchecksig.c:806 lib/rpmchecksig.c:820
 msgid " (MISSING KEYS:"
 msgstr " (CHYBÍ KLÍÈ:"
 
-#: lib/rpmchecksig.c:807 lib/rpmchecksig.c:821
+#: lib/rpmchecksig.c:808 lib/rpmchecksig.c:822
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:808 lib/rpmchecksig.c:822
+#: lib/rpmchecksig.c:809 lib/rpmchecksig.c:823
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEDÙVÌRYHODNÝ KLÍÈ:"
 
-#: lib/rpmchecksig.c:810 lib/rpmchecksig.c:824
+#: lib/rpmchecksig.c:811 lib/rpmchecksig.c:825
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:818
+#: lib/rpmchecksig.c:819
 msgid "OK"
 msgstr "OK"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:539
+#: lib/rpmds.c:538
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2466,13 +2457,13 @@ msgstr ""
 "Závislost \"B\" potøebuje období (pøedpokládáno stejné jako \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:569
+#: lib/rpmds.c:568
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:593
+#: lib/rpmds.c:592
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
@@ -2485,81 +2476,81 @@ msgstr "Pøipravuji..."
 msgid "Preparing packages for installation..."
 msgstr "Pøipravuji balíèky pro instalaci..."
 
-#: lib/rpminstall.c:281
+#: lib/rpminstall.c:296
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Stahuji %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:293
+#: lib/rpminstall.c:308
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... jako %s\n"
 
-#: lib/rpminstall.c:297
+#: lib/rpminstall.c:312
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "pøeskakuji %s - pøenos selhal - %s\n"
 
-#: lib/rpminstall.c:395
+#: lib/rpminstall.c:410
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr "balíèek %s není pøemístitelný\n"
 
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:464
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pøi ètení ze souboru %s\n"
 
-#: lib/rpminstall.c:455
+#: lib/rpminstall.c:470
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "soubor %s vy¾aduje novìj¹í verzi RPM\n"
 
-#: lib/rpminstall.c:467 lib/rpminstall.c:701
+#: lib/rpminstall.c:482 lib/rpminstall.c:721
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nemù¾e být nainstalován\n"
 
-#: lib/rpminstall.c:503
+#: lib/rpminstall.c:518
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "nalezeno %d zdrojových a %d binárních balíèkù\n"
 
-#: lib/rpminstall.c:521 lib/rpminstall.c:1029
+#: lib/rpminstall.c:536 lib/rpminstall.c:1049
 msgid "failed dependencies:\n"
 msgstr "nevyøe¹ené závislosti:\n"
 
-#: lib/rpminstall.c:544
+#: lib/rpminstall.c:559
 msgid "installing binary packages\n"
 msgstr "instaluji binární balíèky\n"
 
-#: lib/rpminstall.c:566
+#: lib/rpminstall.c:581
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu otevøít soubor %s: %s\n"
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:656
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" urèuje více balíèkù\n"
 
-#: lib/rpminstall.c:660
+#: lib/rpminstall.c:680
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranìní tìchto balíèkù by poru¹ilo závislosti:\n"
 
-#: lib/rpminstall.c:687
+#: lib/rpminstall.c:707
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nemohu otevøít %s: %s\n"
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:713
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaluji %s\n"
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1042
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2663,6 +2654,11 @@ msgstr "Nemohu èíst %s, HOME je pøíli¹ velký.\n"
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nemohu otevøít %s pro ètení: %s.\n"
+
+#: lib/rpmts.c:73
+#, c-format
+msgid "cannot open Packages database in %s\n"
+msgstr "nemohu otevøít databázi balíèkù v %s\n"
 
 #: lib/signature.c:118
 msgid "file is not regular -- skipping size check\n"
@@ -3424,6 +3420,17 @@ msgstr "url port musí být èíslo\n"
 msgid "failed to create %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
+#~ msgid "rpm verify mode (legacy)"
+#~ msgstr "re¾im kontroly (zastaralý)"
+
+#, fuzzy
+#~ msgid "sign a package, preserving digests"
+#~ msgstr "podepsat balíèek (zahodit aktuální podpis)"
+
+#, fuzzy
+#~ msgid "sign a package, recomputing digests"
+#~ msgstr "podepsat balíèek (zahodit aktuální podpis)"
+
 #~ msgid ""
 #~ "package lacks both user name and id lists (this should never happen)\n"
 #~ msgstr ""
@@ -3516,9 +3523,6 @@ msgstr "nemohu vytvoøit %s: %s\n"
 
 #~ msgid "verify package signature"
 #~ msgstr "ovìøit podpis v balíèku"
-
-#~ msgid "sign a package (discard current signature)"
-#~ msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
 #~ msgid "skip any GPG signatures"
 #~ msgstr "vynechat pøípadné GPG podpisy"

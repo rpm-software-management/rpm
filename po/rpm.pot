@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-03-12 11:41-0500\n"
+"POT-Creation-Date: 2002-03-13 12:57-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,7 +118,7 @@ msgstr ""
 msgid "use <dir> as the top level directory"
 msgstr ""
 
-#: lib/poptI.c:210 rpmqv.c:125
+#: lib/poptI.c:215 rpmqv.c:125
 msgid "<dir>"
 msgstr ""
 
@@ -408,23 +408,23 @@ msgstr ""
 msgid "no packages given for erase"
 msgstr ""
 
-#: rpmqv.c:1085
+#: rpmqv.c:1084
 msgid "no packages given for install"
 msgstr ""
 
-#: rpmqv.c:1103
+#: rpmqv.c:1100
 msgid "no arguments given for query"
 msgstr ""
 
-#: rpmqv.c:1116
+#: rpmqv.c:1113
 msgid "no arguments given for verify"
 msgstr ""
 
-#: rpmqv.c:1124
+#: rpmqv.c:1121
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpmqv.c:1140
+#: rpmqv.c:1137
 msgid "no arguments given"
 msgstr ""
 
@@ -1409,89 +1409,84 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:104
-#, c-format
-msgid "cannot open Packages database in %s\n"
-msgstr ""
-
-#: lib/depends.c:297
+#: lib/depends.c:149
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:568
+#: lib/depends.c:363
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:593
+#: lib/depends.c:388
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:609
+#: lib/depends.c:404
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:630
+#: lib/depends.c:425
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:642
+#: lib/depends.c:437
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:655
+#: lib/depends.c:450
 msgid "(db package)"
 msgstr ""
 
-#: lib/depends.c:694
+#: lib/depends.c:489
 #, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
+#: lib/depends.c:491 lib/rpmds.c:410 lib/rpmds.c:569
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:696 lib/rpmds.c:411 lib/rpmds.c:570
+#: lib/depends.c:491 lib/rpmds.c:410 lib/rpmds.c:569
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:962
+#: lib/depends.c:759
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1081
+#: lib/depends.c:878
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1349
+#: lib/depends.c:1146
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1455
+#: lib/depends.c:1252
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1548
+#: lib/depends.c:1345
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1618
+#: lib/depends.c:1415
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1653
+#: lib/depends.c:1450
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1658
+#: lib/depends.c:1455
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1596,7 +1591,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:553
+#: lib/package.c:243 lib/rpmchecksig.c:165 lib/rpmchecksig.c:554
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
@@ -1606,27 +1601,27 @@ msgstr ""
 msgid "%s: bad magic\n"
 msgstr ""
 
-#: lib/package.c:274 lib/rpmchecksig.c:183 lib/rpmchecksig.c:569
+#: lib/package.c:274 lib/rpmchecksig.c:183 lib/rpmchecksig.c:570
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/package.c:278 lib/rpmchecksig.c:187 lib/rpmchecksig.c:574
+#: lib/package.c:278 lib/rpmchecksig.c:187 lib/rpmchecksig.c:575
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:328 lib/rpmchecksig.c:474
+#: lib/package.c:328 lib/rpmchecksig.c:475
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr ""
 
-#: lib/package.c:363 lib/package.c:390 lib/package.c:422 lib/rpmchecksig.c:645
+#: lib/package.c:363 lib/package.c:390 lib/package.c:422 lib/rpmchecksig.c:646
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:434 lib/rpmchecksig.c:113 lib/rpmchecksig.c:503
+#: lib/package.c:434 lib/rpmchecksig.c:113 lib/rpmchecksig.c:504
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
@@ -1705,7 +1700,7 @@ msgstr ""
 msgid "upgrade package(s) if already installed"
 msgstr ""
 
-#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:231
+#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:236
 msgid "<packagefile>+"
 msgstr ""
 
@@ -1765,77 +1760,85 @@ msgstr ""
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:187
+#: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
+msgid "don't verify digest(s)"
+msgstr ""
+
+#: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
+msgid "don't verify signature(s)"
+msgstr ""
+
+#: lib/poptI.c:192
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr ""
 
-#: lib/poptI.c:190
+#: lib/poptI.c:195
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:193
+#: lib/poptI.c:198
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:196
+#: lib/poptI.c:201
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:199
+#: lib/poptI.c:204
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:203
+#: lib/poptI.c:208
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
 
-#: lib/poptI.c:207
+#: lib/poptI.c:212
 msgid "print percentages as package installs"
 msgstr ""
 
-#: lib/poptI.c:209
+#: lib/poptI.c:214
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 
-#: lib/poptI.c:212
+#: lib/poptI.c:217
 msgid "relocate files from path <old> to <new>"
 msgstr ""
 
-#: lib/poptI.c:213
+#: lib/poptI.c:218
 msgid "<old>=<new>"
 msgstr ""
 
-#: lib/poptI.c:216
+#: lib/poptI.c:221
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:219
+#: lib/poptI.c:224
 msgid "install even if the package replaces installed files"
 msgstr ""
 
-#: lib/poptI.c:222
+#: lib/poptI.c:227
 msgid "reinstall if the package is already present"
 msgstr ""
 
-#: lib/poptI.c:224
+#: lib/poptI.c:229
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:225
+#: lib/poptI.c:230
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:227
+#: lib/poptI.c:232
 msgid "don't install, but tell if it would work or not"
 msgstr ""
 
-#: lib/poptI.c:230
+#: lib/poptI.c:235
 msgid "upgrade package(s)"
 msgstr ""
 
@@ -1899,138 +1902,126 @@ msgstr ""
 msgid "rpm verify mode"
 msgstr ""
 
-#: lib/poptQV.c:126
-msgid "rpm verify mode (legacy)"
-msgstr ""
-
-#: lib/poptQV.c:128
+#: lib/poptQV.c:125
 msgid "query/verify the package(s) which require a dependency"
 msgstr ""
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:127
 msgid "query/verify the package(s) which provide a dependency"
 msgstr ""
 
-#: lib/poptQV.c:190
+#: lib/poptQV.c:187
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/poptQV.c:192
+#: lib/poptQV.c:189
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/poptQV.c:194
+#: lib/poptQV.c:191
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/poptQV.c:196
+#: lib/poptQV.c:193
 msgid "list files in package"
 msgstr ""
 
-#: lib/poptQV.c:201
+#: lib/poptQV.c:198
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:205
+#: lib/poptQV.c:202
 #, c-format
 msgid "skip %%license files"
 msgstr ""
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:205
 #, c-format
 msgid "skip %%readme files"
 msgstr ""
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:211
 msgid "use the following query format"
 msgstr ""
 
-#: lib/poptQV.c:216
+#: lib/poptQV.c:213
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/poptQV.c:218
+#: lib/poptQV.c:215
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:220
+#: lib/poptQV.c:217
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/poptQV.c:240
+#: lib/poptQV.c:237
 msgid "don't verify MD5 digest of files"
 msgstr ""
 
-#: lib/poptQV.c:243
+#: lib/poptQV.c:240
 msgid "don't verify size of files"
 msgstr ""
 
-#: lib/poptQV.c:246
+#: lib/poptQV.c:243
 msgid "don't verify symlink path of files"
 msgstr ""
 
-#: lib/poptQV.c:249
+#: lib/poptQV.c:246
 msgid "don't verify owner of files"
 msgstr ""
 
-#: lib/poptQV.c:252
+#: lib/poptQV.c:249
 msgid "don't verify group of files"
 msgstr ""
 
-#: lib/poptQV.c:255
+#: lib/poptQV.c:252
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:258 lib/poptQV.c:261
+#: lib/poptQV.c:255 lib/poptQV.c:258
 msgid "don't verify mode of files"
 msgstr ""
 
-#: lib/poptQV.c:264
+#: lib/poptQV.c:261
 msgid "don't verify files in package"
 msgstr ""
 
-#: lib/poptQV.c:266
+#: lib/poptQV.c:263
 msgid "don't verify package dependencies"
 msgstr ""
 
-#: lib/poptQV.c:268 lib/poptQV.c:272
+#: lib/poptQV.c:265 lib/poptQV.c:269
 msgid "don't execute verify script(s)"
 msgstr ""
 
-#: lib/poptQV.c:275 lib/poptQV.c:313
-msgid "don't verify digest(s)"
-msgstr ""
-
-#: lib/poptQV.c:278 lib/poptQV.c:316
-msgid "don't verify signature(s)"
-msgstr ""
-
-#: lib/poptQV.c:283
+#: lib/poptQV.c:280
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:283
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:301
-msgid "sign a package, preserving digests"
+#: lib/poptQV.c:298
+msgid "sign a packagei (identical to --resign)"
 msgstr ""
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:300
 msgid "verify package signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:302
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:307
-msgid "sign a package, recomputing digests"
+#: lib/poptQV.c:304
+msgid "sign a packagei (identical to --addsign)"
 msgstr ""
 
-#: lib/poptQV.c:309
+#: lib/poptQV.c:306
 msgid "generate signature"
 msgstr ""
 
@@ -2233,8 +2224,8 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:616 lib/query.c:654 lib/rpminstall.c:333 lib/rpminstall.c:475
-#: lib/rpminstall.c:845
+#: lib/query.c:616 lib/query.c:654 lib/rpminstall.c:348 lib/rpminstall.c:490
+#: lib/rpminstall.c:865
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -2248,7 +2239,7 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:664 lib/rpminstall.c:488
+#: lib/query.c:664 lib/rpminstall.c:503
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
@@ -2317,7 +2308,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:955 lib/rpminstall.c:633
+#: lib/query.c:955 lib/rpminstall.c:653
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2364,55 +2355,55 @@ msgstr ""
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:488
+#: lib/rpmchecksig.c:489
 #, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:559
+#: lib/rpmchecksig.c:560
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:804
+#: lib/rpmchecksig.c:805
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:805 lib/rpmchecksig.c:819
+#: lib/rpmchecksig.c:806 lib/rpmchecksig.c:820
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:807 lib/rpmchecksig.c:821
+#: lib/rpmchecksig.c:808 lib/rpmchecksig.c:822
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:808 lib/rpmchecksig.c:822
+#: lib/rpmchecksig.c:809 lib/rpmchecksig.c:823
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:810 lib/rpmchecksig.c:824
+#: lib/rpmchecksig.c:811 lib/rpmchecksig.c:825
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:818
+#: lib/rpmchecksig.c:819
 msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:539
+#: lib/rpmds.c:538
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:569
+#: lib/rpmds.c:568
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:593
+#: lib/rpmds.c:592
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -2425,81 +2416,81 @@ msgstr ""
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:281
+#: lib/rpminstall.c:296
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:293
+#: lib/rpminstall.c:308
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:297
+#: lib/rpminstall.c:312
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:395
+#: lib/rpminstall.c:410
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:464
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:455
+#: lib/rpminstall.c:470
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:467 lib/rpminstall.c:701
+#: lib/rpminstall.c:482 lib/rpminstall.c:721
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:503
+#: lib/rpminstall.c:518
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:521 lib/rpminstall.c:1029
+#: lib/rpminstall.c:536 lib/rpminstall.c:1049
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:544
+#: lib/rpminstall.c:559
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:566
+#: lib/rpminstall.c:581
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:636
+#: lib/rpminstall.c:656
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:660
+#: lib/rpminstall.c:680
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:687
+#: lib/rpminstall.c:707
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:713
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1022
+#: lib/rpminstall.c:1042
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2602,6 +2593,11 @@ msgstr ""
 #: lib/rpmrc.c:1634
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
+msgstr ""
+
+#: lib/rpmts.c:73
+#, c-format
+msgid "cannot open Packages database in %s\n"
 msgstr ""
 
 #: lib/signature.c:118

@@ -1,62 +1,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-03-13 12:58-0500\n"
 "PO-Revision-Date: 2001-09-06 20:06+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-KR\n"
 "Content-Transfer-Encoding: 8-bit\n"
-
-#: popt.c:29
-msgid "unknown errno"
-msgstr "알 수 없는 오류코드(errno) 입니다"
-
-#: popt.c:917
-#, c-format
-msgid "option type (%d) not implemented in popt\n"
-msgstr "옵션 유형 (%d)은 popt에서 사용할 수 없습니다\n"
-
-#: popt.c:1132
-msgid "missing argument"
-msgstr "인수가 지정되지 않았습니다"
-
-#: popt.c:1134
-msgid "unknown option"
-msgstr "알 수 없는 옵션입니다"
-
-#: popt.c:1136
-msgid "mutually exclusive logical operations requested"
-msgstr "양쪽에 배타적 논리 연산이 지정되었습니다"
-
-#: popt.c:1138
-msgid "opt->arg should not be NULL"
-msgstr "옵션->인수가 NULL이 되어서는 안됩니다"
-
-#: popt.c:1140
-msgid "aliases nested too deeply"
-msgstr "별칭(alias)이 복잡하게 설정되었습니다"
-
-#: popt.c:1142
-msgid "error in parameter quoting"
-msgstr "매개변수에 오류가 있습니다"
-
-#: popt.c:1144
-msgid "invalid numeric value"
-msgstr "잘못된 수치 값입니다"
-
-#: popt.c:1146
-msgid "number too large or too small"
-msgstr "숫자가 너무 크거나 너무 적습니다"
-
-#: popt.c:1148
-msgid "memory allocation failed"
-msgstr "메모리 할당에 실패했습니다"
-
-#: popt.c:1152
-msgid "unknown error"
-msgstr "알 수 없는 오류입니다"
 
 #: popthelp.c:53
 msgid "Show this help message"
@@ -70,42 +21,68 @@ msgstr "간단한 사용법을 보여줍니다"
 msgid "Display option defaults in message"
 msgstr "기본적인 옵션을 보여줍니다"
 
-#: popthelp.c:99
-msgid "NONE"
-msgstr "없음(NONE)"
+#~ msgid "unknown errno"
+#~ msgstr "알 수 없는 오류코드(errno) 입니다"
 
-#: popthelp.c:100
-msgid "VAL"
-msgstr "값(VAL)"
+#~ msgid "option type (%d) not implemented in popt\n"
+#~ msgstr "옵션 유형 (%d)은 popt에서 사용할 수 없습니다\n"
 
-#: popthelp.c:101
-msgid "INT"
-msgstr "정수(INT)"
+#~ msgid "missing argument"
+#~ msgstr "인수가 지정되지 않았습니다"
 
-#: popthelp.c:102
-msgid "LONG"
-msgstr "정수(LONG)"
+#~ msgid "unknown option"
+#~ msgstr "알 수 없는 옵션입니다"
 
-#: popthelp.c:103
-msgid "STRING"
-msgstr "문자열(STRING)"
+#~ msgid "mutually exclusive logical operations requested"
+#~ msgstr "양쪽에 배타적 논리 연산이 지정되었습니다"
 
-#: popthelp.c:104
-msgid "FLOAT"
-msgstr "소수(FLOAT)"
+#~ msgid "opt->arg should not be NULL"
+#~ msgstr "옵션->인수가 NULL이 되어서는 안됩니다"
 
-#: popthelp.c:105
-msgid "DOUBLE"
-msgstr "소수(DOUBLE)"
+#~ msgid "aliases nested too deeply"
+#~ msgstr "별칭(alias)이 복잡하게 설정되었습니다"
 
-#: popthelp.c:106
-msgid "ARG"
-msgstr "인수(ARG)"
+#~ msgid "error in parameter quoting"
+#~ msgstr "매개변수에 오류가 있습니다"
 
-#: popthelp.c:459
-msgid "Usage:"
-msgstr "사용법:"
+#~ msgid "invalid numeric value"
+#~ msgstr "잘못된 수치 값입니다"
 
-#: popthelp.c:481
-msgid "[OPTION...]"
-msgstr "[옵션...]"
+#~ msgid "number too large or too small"
+#~ msgstr "숫자가 너무 크거나 너무 적습니다"
+
+#~ msgid "memory allocation failed"
+#~ msgstr "메모리 할당에 실패했습니다"
+
+#~ msgid "unknown error"
+#~ msgstr "알 수 없는 오류입니다"
+
+#~ msgid "NONE"
+#~ msgstr "없음(NONE)"
+
+#~ msgid "VAL"
+#~ msgstr "값(VAL)"
+
+#~ msgid "INT"
+#~ msgstr "정수(INT)"
+
+#~ msgid "LONG"
+#~ msgstr "정수(LONG)"
+
+#~ msgid "STRING"
+#~ msgstr "문자열(STRING)"
+
+#~ msgid "FLOAT"
+#~ msgstr "소수(FLOAT)"
+
+#~ msgid "DOUBLE"
+#~ msgstr "소수(DOUBLE)"
+
+#~ msgid "ARG"
+#~ msgstr "인수(ARG)"
+
+#~ msgid "Usage:"
+#~ msgstr "사용법:"
+
+#~ msgid "[OPTION...]"
+#~ msgstr "[옵션...]"

@@ -1,6 +1,6 @@
 /** \ingroup rpmdep
  * \file lib/rpmte.c
- * Routine to handle a transactionElement.
+ * Routine(s) to handle a transactionElement.
  */
 #include "system.h"
 

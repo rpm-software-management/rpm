@@ -1,62 +1,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2002-01-18 16:12-0500\n"
+"POT-Creation-Date: 2002-03-13 12:58-0500\n"
 "PO-Revision-Date: 2001-07-05 21:00-0500\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: popt.c:29
-msgid "unknown errno"
-msgstr "неизвестный номер ошибки"
-
-#: popt.c:917
-#, c-format
-msgid "option type (%d) not implemented in popt\n"
-msgstr "обработка параметра (%d) в popt не предусмотрена\n"
-
-#: popt.c:1132
-msgid "missing argument"
-msgstr "пропущен аргумент"
-
-#: popt.c:1134
-msgid "unknown option"
-msgstr "неизвестный параметр"
-
-#: popt.c:1136
-msgid "mutually exclusive logical operations requested"
-msgstr "запрошены взаимно исключающие логические операции"
-
-#: popt.c:1138
-msgid "opt->arg should not be NULL"
-msgstr "opt->arg не может быть NULL"
-
-#: popt.c:1140
-msgid "aliases nested too deeply"
-msgstr "превышен уровень допустимой рекурсии подстановок"
-
-#: popt.c:1142
-msgid "error in parameter quoting"
-msgstr "ошибкa помещения параметров в кавычки"
-
-#: popt.c:1144
-msgid "invalid numeric value"
-msgstr "неправильное числовое значение"
-
-#: popt.c:1146
-msgid "number too large or too small"
-msgstr "числовое значение за пределами предусмотренного"
-
-#: popt.c:1148
-msgid "memory allocation failed"
-msgstr "ошибка выделения памяти"
-
-#: popt.c:1152
-msgid "unknown error"
-msgstr "неизвестная ошибка"
 
 #: popthelp.c:53
 msgid "Show this help message"
@@ -70,42 +21,68 @@ msgstr "Показать краткую инструкцию по использованию"
 msgid "Display option defaults in message"
 msgstr "Показать параметры по умолчанию"
 
-#: popthelp.c:99
-msgid "NONE"
-msgstr "NONE"
+#~ msgid "unknown errno"
+#~ msgstr "неизвестный номер ошибки"
 
-#: popthelp.c:100
-msgid "VAL"
-msgstr "VAL"
+#~ msgid "option type (%d) not implemented in popt\n"
+#~ msgstr "обработка параметра (%d) в popt не предусмотрена\n"
 
-#: popthelp.c:101
-msgid "INT"
-msgstr "INT"
+#~ msgid "missing argument"
+#~ msgstr "пропущен аргумент"
 
-#: popthelp.c:102
-msgid "LONG"
-msgstr "LONG"
+#~ msgid "unknown option"
+#~ msgstr "неизвестный параметр"
 
-#: popthelp.c:103
-msgid "STRING"
-msgstr "STRING"
+#~ msgid "mutually exclusive logical operations requested"
+#~ msgstr "запрошены взаимно исключающие логические операции"
 
-#: popthelp.c:104
-msgid "FLOAT"
-msgstr "FLOAT"
+#~ msgid "opt->arg should not be NULL"
+#~ msgstr "opt->arg не может быть NULL"
 
-#: popthelp.c:105
-msgid "DOUBLE"
-msgstr "DOUBLE"
+#~ msgid "aliases nested too deeply"
+#~ msgstr "превышен уровень допустимой рекурсии подстановок"
 
-#: popthelp.c:106
-msgid "ARG"
-msgstr "ARG"
+#~ msgid "error in parameter quoting"
+#~ msgstr "ошибкa помещения параметров в кавычки"
 
-#: popthelp.c:459
-msgid "Usage:"
-msgstr "Использование:"
+#~ msgid "invalid numeric value"
+#~ msgstr "неправильное числовое значение"
 
-#: popthelp.c:481
-msgid "[OPTION...]"
-msgstr "[ПАРАМЕТР...]"
+#~ msgid "number too large or too small"
+#~ msgstr "числовое значение за пределами предусмотренного"
+
+#~ msgid "memory allocation failed"
+#~ msgstr "ошибка выделения памяти"
+
+#~ msgid "unknown error"
+#~ msgstr "неизвестная ошибка"
+
+#~ msgid "NONE"
+#~ msgstr "NONE"
+
+#~ msgid "VAL"
+#~ msgstr "VAL"
+
+#~ msgid "INT"
+#~ msgstr "INT"
+
+#~ msgid "LONG"
+#~ msgstr "LONG"
+
+#~ msgid "STRING"
+#~ msgstr "STRING"
+
+#~ msgid "FLOAT"
+#~ msgstr "FLOAT"
+
+#~ msgid "DOUBLE"
+#~ msgstr "DOUBLE"
+
+#~ msgid "ARG"
+#~ msgstr "ARG"
+
+#~ msgid "Usage:"
+#~ msgstr "Использование:"
+
+#~ msgid "[OPTION...]"
+#~ msgstr "[ПАРАМЕТР...]"
