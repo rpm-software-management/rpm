@@ -4,7 +4,9 @@
 #define POPT_OPTION_DEPTH	10
 
 #define POPT_ARG_NONE		0
-#define POPT_ARG_YES		1
+#define POPT_ARG_STRING		1
+#define POPT_ARG_INT		2
+#define POPT_ARG_LONG		3
 
 #define POPT_ERROR_NOARG	-10
 #define POPT_ERROR_BADOPT	-11
@@ -12,12 +14,13 @@
 #define POPT_ERROR_OPTSTOODEEP	-13
 #define POPT_ERROR_UNEXPARG	-14
 #define POPT_ERROR_BADQUOTE	-15	/* only from poptParseArgString() */
+#define POPT_ERROR_ERRNO	-16	/* only from poptParseArgString() */
 
 struct poptOption {
     const char * longName;	/* may be NULL */
     char shortName;		/* may be '\0' */
-    int takesArg;
-    int *flag;			/* may be NULL */
+    int argInfo;
+    void * arg;			/* depends on argInfo */
     int val;			/* 0 means don't return, just update flag */
 };
 
@@ -31,6 +34,7 @@ typedef struct poptContext_s * poptContext;
 
 poptContext poptGetContext(char * name, int argc, char ** argv, 
 			   struct poptOption * options, int flags);
+void poptResetContext(poptContext con);
 
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
 int poptGetNextOpt(poptContext con);
@@ -42,6 +46,10 @@ char * poptPeekArg(poptContext con);
 char ** poptGetArgs(poptContext con);
 void poptFreeContext(poptContext con);
 int poptAddAlias(poptContext con, struct poptAlias alias);
+int poptReadConfigFile(poptContext con, char * fn);
+/* like above, but reads /etc/popt and $HOME/.popt along with environment 
+   vars */
+int poptReadDefaultConfig(poptContext con, int useEnv);
 /* argv should be freed -- this allows ', ", and \ quoting, but ' is treated
    the same as " and both may include \ quotes */
 int poptParseArgvString(char * s, int * argcPtr, char *** argvPtr);
