@@ -1554,7 +1554,9 @@ typedef enum rpmtransFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
+/*@-enummemuse@*/
     RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
+/*@=enummemuse@*/
 } rpmtransFlags;
 
 #define	_noTransScripts		\

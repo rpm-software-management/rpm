@@ -245,8 +245,8 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 		     &count);
 	}
 
-	if (mdfile(s->fileList[fileNumber], buf)) {
-	    strcpy(buf, "(unknown)");
+	if (domd5(s->fileList[fileNumber], buf, 1)) {
+	    strcpy(buf, "00000000000000000000000000000000");
 	}
 
 	tuple = PyTuple_New(3);

@@ -8,7 +8,7 @@
 #include "psm.h"
 #include <rpmcli.h>
 
-#include "legacy.h"	/* XXX mdfile(), uidToUname(), gnameToGid */
+#include "legacy.h"	/* XXX domd5(), uidToUname(), gnameToGid */
 #include "ugid.h"
 #include "misc.h"	/* XXX for uidToUname() and gnameToGid() */
 #include "debug.h"
@@ -148,7 +148,7 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	if (!hge(h, RPMTAG_FILEMD5S, &mdt, (void **) &md5List, NULL))
 	    *result |= RPMVERIFY_MD5;
 	else {
-	    rc = mdfile(filespec, md5sum);
+	    rc = domd5(filespec, md5sum, 1);
 	    if (rc)
 		*result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	    else if (strcmp(md5sum, md5List[filenum]))

@@ -116,54 +116,78 @@ struct fsmIterator_s {
  * File name and stat information.
  */
 struct fsm_s {
-/*@owned@*/ const char * path;		/*!< Current file name. */
-/*@owned@*/ const char * opath;		/*!< Original file name. */
-    FD_t cfd;				/*!< Payload file handle. */
-    FD_t rfd;				/*!<  read: File handle. */
-/*@dependent@*/ char * rdbuf;		/*!<  read: Buffer. */
-/*@owned@*/ char * rdb;			/*!<  read: Buffer allocated. */
-    size_t rdsize;			/*!<  read: Buffer allocated size. */
-    size_t rdlen;			/*!<  read: Number of bytes requested.*/
-    size_t rdnb;			/*!<  read: Number of bytes returned. */
-    FD_t wfd;				/*!< write: File handle. */
-/*@dependent@*/ char * wrbuf;		/*!< write: Buffer. */
-/*@owned@*/ char * wrb;			/*!< write: Buffer allocated. */
-    size_t wrsize;			/*!< write: Buffer allocated size. */
-    size_t wrlen;			/*!< write: Number of bytes requested.*/
-    size_t wrnb;			/*!< write: Number of bytes returned. */
-/*@only@*/ /*@null@*/ FSMI_t iter;	/*!< File iterator. */
-    int ix;				/*!< Current file iterator index. */
-/*@only@*/ struct hardLink * links;	/*!< Pending hard linked file(s). */
-/*@only@*/ struct hardLink * li;	/*!< Current hard linked file(s). */
-/*@kept@*/ /*@null@*/ unsigned int * archiveSize;	/*!< Pointer to archive size. */
-/*@kept@*/ /*@null@*/ const char ** failedFile;	/*!< First file name that failed. */
-/*@shared@*/ const char * subdir;	/*!< Current file sub-directory. */
-/*@unused@*/ char subbuf[64];	/* XXX eliminate */
-/*@observer@*/ const char * osuffix;	/*!< Old, preserved, file suffix. */
-/*@observer@*/ const char * nsuffix;	/*!< New, created, file suffix. */
-/*@shared@*/ const char * suffix;	/*!< Current file suffix. */
+/*@owned@*/
+    const char * path;		/*!< Current file name. */
+/*@owned@*/
+    const char * opath;		/*!< Original file name. */
+    FD_t cfd;			/*!< Payload file handle. */
+    FD_t rfd;			/*!<  read: File handle. */
+/*@dependent@*/
+    char * rdbuf;		/*!<  read: Buffer. */
+/*@owned@*/
+    char * rdb;			/*!<  read: Buffer allocated. */
+    size_t rdsize;		/*!<  read: Buffer allocated size. */
+    size_t rdlen;		/*!<  read: Number of bytes requested.*/
+    size_t rdnb;		/*!<  read: Number of bytes returned. */
+    FD_t wfd;			/*!< write: File handle. */
+/*@dependent@*/
+    char * wrbuf;		/*!< write: Buffer. */
+/*@owned@*/
+    char * wrb;			/*!< write: Buffer allocated. */
+    size_t wrsize;		/*!< write: Buffer allocated size. */
+    size_t wrlen;		/*!< write: Number of bytes requested.*/
+    size_t wrnb;		/*!< write: Number of bytes returned. */
+/*@only@*/ /*@null@*/
+    FSMI_t iter;		/*!< File iterator. */
+    int ix;			/*!< Current file iterator index. */
+/*@only@*/
+    struct hardLink * links;	/*!< Pending hard linked file(s). */
+/*@only@*/
+    struct hardLink * li;	/*!< Current hard linked file(s). */
+/*@kept@*/ /*@null@*/
+    unsigned int * archiveSize;	/*!< Pointer to archive size. */
+/*@kept@*/ /*@null@*/
+    const char ** failedFile;	/*!< First file name that failed. */
+/*@shared@*/
+    const char * subdir;	/*!< Current file sub-directory. */
+/*@unused@*/
+    char subbuf[64];	/* XXX eliminate */
+/*@observer@*/
+    const char * osuffix;	/*!< Old, preserved, file suffix. */
+/*@observer@*/
+    const char * nsuffix;	/*!< New, created, file suffix. */
+/*@shared@*/
+    const char * suffix;	/*!< Current file suffix. */
     char sufbuf[64];	/* XXX eliminate */
-/*@only@*/ /*@null@*/ short * dnlx;	/*!< Last dirpath verified indexes. */
-/*@only@*/ /*@null@*/ char * ldn;	/*!< Last dirpath verified. */
-    int ldnlen;				/*!< Last dirpath current length. */
-    int ldnalloc;			/*!< Last dirpath allocated length. */
-    int postpone;			/*!< Skip remaining stages? */
-    int diskchecked;			/*!< Has stat(2) been performed? */
-    int exists;				/*!< Does current file exist on disk? */
-    int mkdirsdone;			/*!< Have "orphan" dirs been created? */
-    int astriplen;			/*!< Length of buildroot prefix. */
-    int rc;				/*!< External file stage return code. */
-    int commit;				/*!< Commit synchronously? */
-    cpioMapFlags mapFlags;		/*!< Bit(s) to control mapping. */
-/*@shared@*/ const char * dirName;	/*!< File directory name. */
-/*@shared@*/ const char * baseName;	/*!< File base name. */
-/*@shared@*/ const char * fmd5sum;	/*!< File MD5 sum (NULL disables). */
-    unsigned fflags;			/*!< File flags. */
-    fileAction action;			/*!< File disposition. */
-    fileStage goal;			/*!< Package state machine goal. */
-    fileStage stage;			/*!< External file stage. */
-    struct stat sb;			/*!< Current file stat(2) info. */
-    struct stat osb;			/*!< Original file stat(2) info. */
+/*@only@*/ /*@null@*/
+    short * dnlx;		/*!< Last dirpath verified indexes. */
+/*@only@*/ /*@null@*/
+    char * ldn;			/*!< Last dirpath verified. */
+    int ldnlen;			/*!< Last dirpath current length. */
+    int ldnalloc;		/*!< Last dirpath allocated length. */
+    int postpone;		/*!< Skip remaining stages? */
+    int diskchecked;		/*!< Has stat(2) been performed? */
+    int exists;			/*!< Does current file exist on disk? */
+    int mkdirsdone;		/*!< Have "orphan" dirs been created? */
+    int astriplen;		/*!< Length of buildroot prefix. */
+    int rc;			/*!< External file stage return code. */
+    int commit;			/*!< Commit synchronously? */
+    cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
+/*@shared@*/
+    const char * dirName;	/*!< File directory name. */
+/*@shared@*/
+    const char * baseName;	/*!< File base name. */
+/*@shared@*/
+    const char * fmd5sum;	/*!< Hex MD5 sum (NULL disables). */
+/*@shared@*/
+    const char * md5sum;	/*!< Binary MD5 sum (NULL disables). */
+    
+    unsigned fflags;		/*!< File flags. */
+    fileAction action;		/*!< File disposition. */
+    fileStage goal;		/*!< Package state machine goal. */
+    fileStage stage;		/*!< External file stage. */
+    struct stat sb;		/*!< Current file stat(2) info. */
+    struct stat osb;		/*!< Original file stat(2) info. */
 };
 
 #ifdef __cplusplus

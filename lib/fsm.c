@@ -676,6 +676,7 @@ int fsmMapAttrs(FSM_t fsm)
 	    st->st_gid = finalGid;
 
 	fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
+	fsm->md5sum = (fi->md5s ? (fi->md5s + (16 * i)) : NULL);
 
     }
     return 0;
@@ -691,7 +692,6 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
 	/*@globals fileSystem@*/
 	/*@modifies fsm, fileSystem @*/
 {
-    const char * fmd5sum;
     const struct stat * st = &fsm->sb;
     int left = st->st_size;
     int rc = 0;
@@ -701,9 +701,8 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
 	goto exit;
 
     /* XXX md5sum's will break on repackaging that includes modified files. */
-    fmd5sum = fsm->fmd5sum;
 
-    if (st->st_size > 0 && fmd5sum)
+    if (st->st_size > 0 && (fsm->fmd5sum || fsm->md5sum))
 	fdInitDigest(fsm->wfd, PGPHASHALGO_MD5, 0);
 
     while (left) {
@@ -724,19 +723,26 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
 	    (void) fsmStage(fsm, FSM_NOTIFY);
     }
 
-    if (st->st_size > 0 && fmd5sum) {
-	const char * md5sum = NULL;
+    if (st->st_size > 0 && (fsm->fmd5sum || fsm->md5sum)) {
+	void * md5sum = NULL;
+	int asAscii = (fsm->md5sum == NULL ? 1 : 0);
 
 	(void) Fflush(fsm->wfd);
-	fdFiniDigest(fsm->wfd, PGPHASHALGO_MD5, (void **)&md5sum, NULL, 1);
+	fdFiniDigest(fsm->wfd, PGPHASHALGO_MD5, &md5sum, NULL, asAscii);
 
 	if (md5sum == NULL) {
 	    rc = CPIOERR_MD5SUM_MISMATCH;
-	} else {
-	    if (strcmp(md5sum, fmd5sum))
-		rc = CPIOERR_MD5SUM_MISMATCH;
-	    md5sum = _free(md5sum);
+	    goto exit;
 	}
+
+	if (fsm->md5sum != NULL) {
+	    if (memcmp(md5sum, fsm->md5sum, 16))
+		rc = CPIOERR_MD5SUM_MISMATCH;
+	} else {
+	    if (strcmp(md5sum, fsm->fmd5sum))
+		rc = CPIOERR_MD5SUM_MISMATCH;
+	}
+	md5sum = _free(md5sum);
     }
 
 exit:

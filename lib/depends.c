@@ -40,7 +40,7 @@ int _cacheDependsRC = 1;
 int _ts_debug = 0;
 
 /*@unchecked@*/
-static int _tso_debug = 1;
+static int _tso_debug = 0;
 
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
@@ -1321,7 +1321,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 
 	    Flags = dsiGetFlags(requires);
 
-	    switch (p->type) {
+	    switch (teGetType(p)) {
 	    case TR_REMOVED:
 		/* Skip if not %preun/%postun requires or legacy prereq. */
 		if (isInstallPreReq(Flags)
@@ -1329,7 +1329,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 		    || isLegacyPreReq(Flags)
 		    ))
 		    /*@innercontinue@*/ continue;
-		break;
+		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if not %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
@@ -1337,7 +1337,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 		    || isLegacyPreReq(Flags)
 		    ))
 		    /*@innercontinue@*/ continue;
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
@@ -1352,7 +1352,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 
 	    Flags = dsiGetFlags(requires);
 
-	    switch (p->type) {
+	    switch (teGetType(p)) {
 	    case TR_REMOVED:
 		/* Skip if %preun/%postun requires or legacy prereq. */
 		if (isInstallPreReq(Flags)
@@ -1360,7 +1360,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 		    || isLegacyPreReq(Flags)
 		    ))
 		    /*@innercontinue@*/ continue;
-		break;
+		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
@@ -1368,7 +1368,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 		    || isLegacyPreReq(Flags)
 		    ))
 		    /*@innercontinue@*/ continue;
-		break;
+		/*@switchbreak@*/ break;
 	    }
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
@@ -1484,7 +1484,7 @@ prtTSI(" p", teGetTSI(p));
 	    while ((p = teNext(pi, oType)) != NULL) {
 		/* Is this element in the queue? */
 		if (teGetTSI(p)->tsi_reqx == 0)
-		    continue;
+		    /*@innercontinue@*/ continue;
 		tsi->tsi_suc = p;
 		tsi = teGetTSI(p);
 	    }
@@ -1611,10 +1611,10 @@ prtTSI(" p", teGetTSI(p));
 	switch (teGetType(p)) {
 	case TR_ADDED:
 	    orderList[j].pkgKey = teGetAddedKey(p);
-	    break;
+	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
 	    orderList[j].pkgKey = RPMAL_NOMATCH;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	orderList[j].orIndex = teiGetOc(pi);
 	j++;

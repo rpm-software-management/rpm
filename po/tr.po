@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-17 15:43-0500\n"
+"POT-Creation-Date: 2001-11-18 12:42-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1446,89 +1446,89 @@ msgstr ""
 msgid " failed - "
 msgstr " baþarýsýz - "
 
-#: lib/depends.c:101
+#: lib/depends.c:104
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabaný açýlamadý\n"
 
-#: lib/depends.c:294
+#: lib/depends.c:297
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s zaten kurulu"
 
-#: lib/depends.c:566
+#: lib/depends.c:569
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:591
+#: lib/depends.c:594
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:607
+#: lib/depends.c:610
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:628
+#: lib/depends.c:631
 #, fuzzy
 msgid "(db files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/depends.c:640
+#: lib/depends.c:643
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:653
+#: lib/depends.c:656
 #, fuzzy
 msgid "(db package)"
 msgstr "paket yok\n"
 
-#: lib/depends.c:692
+#: lib/depends.c:695
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
 
-#: lib/depends.c:694 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:697 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/depends.c:694 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:697 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr "EVET"
 
-#: lib/depends.c:1031
+#: lib/depends.c:1034
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1293
+#: lib/depends.c:1302
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1387
+#: lib/depends.c:1396
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1471
+#: lib/depends.c:1479
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1541
+#: lib/depends.c:1549
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1576
+#: lib/depends.c:1584
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1581
+#: lib/depends.c:1589
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1587,37 +1587,37 @@ msgstr "========= Pakette bulunmayan dizinler:\n"
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1171
+#: lib/fsm.c:1177
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%s dizin %04o izinleriyle oluþturuldu.\n"
 
-#: lib/fsm.c:1452
+#: lib/fsm.c:1458
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1573 lib/fsm.c:1701
+#: lib/fsm.c:1579 lib/fsm.c:1707
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s %s olarak kaydedildi\n"
 
-#: lib/fsm.c:1727
+#: lib/fsm.c:1733
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boþ deðil\n"
 
-#: lib/fsm.c:1733
+#: lib/fsm.c:1739
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi baþarýsýz: %s\n"
 
-#: lib/fsm.c:1743
+#: lib/fsm.c:1749
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s / %s bað kaldýrýlamadý: %s\n"
 
-#: lib/fsm.c:1762
+#: lib/fsm.c:1768
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluþturuldu\n"
@@ -2851,18 +2851,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
 
-#: lib/transaction.c:181
+#: lib/transaction.c:178
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "missingok flamasýndan dolayý %s atlandý\n"
 
 #. @innercontinue@
-#: lib/transaction.c:999
+#: lib/transaction.c:988
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s dizini dýþlanýyor\n"
 
-#: lib/transaction.c:1094
+#: lib/transaction.c:1083
 msgid "getting list of mounted filesystems\n"
 msgstr "baðlý dosya sistemlerinin listesi alýnýyor\n"
 

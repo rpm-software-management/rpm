@@ -707,6 +707,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->flinks = hfd(fi->flinks, -1);
 	fi->flangs = hfd(fi->flangs, -1);
 	fi->fmd5s = hfd(fi->fmd5s, -1);
+	fi->md5s = _free(fi->md5s);
 
 	fi->fuser = hfd(fi->fuser, -1);
 	fi->fuids = _free(fi->fuids);
@@ -756,6 +757,18 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     return NULL;
 }
 
+static inline unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (c - 'A') + 10;
+    if (c >= 'a' && c <= 'f')
+	return (c - 'a') + 10;
+    return 0;
+}
+
 #define	_fdupe(_fi, _data)	\
     if ((_fi)->_data != NULL)	\
 	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
@@ -766,10 +779,12 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
 {
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
+    HFD_t hfd = headerFreeData;
     const char * Type;
     uint_32 * uip;
     int malloced = 0;
     int dnlmax, bnlmax;
+    unsigned char * t;
     int len;
     int xx;
     int i;
@@ -849,6 +864,16 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
 
     xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
+    fi->md5s = t = xmalloc(fi->fc * 16);
+    for (i = 0; i < fi->fc; i++) {
+	const char * fmd5;
+	int j;
+
+	fmd5 = fi->fmd5s[i];
+	for (j = 0; j < 16; j++, t++, fmd5 += 2)
+	    *t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
+    }
+    fi->fmd5s = hfd(fi->fmd5s, -1);
 
     /* XXX TR_REMOVED doesn;t need fmtimes or frdevs */
     xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
@@ -903,7 +928,7 @@ if (_fi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
 /*@=modfilesystem@*/
 
-    /*@-nullstate@*/ /* FIX: TFI null annotations */
+    /*@-compdef -nullstate@*/ /* FIX: TFI null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
-    /*@=nullstate@*/
+    /*@=compdef =nullstate@*/
 }

@@ -17,7 +17,7 @@
 #include "buildio.h"
 
 #include "myftw.h"
-#include "legacy.h"	/* XXX mdfile, expandFileList, compressFileList */
+#include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
 #include "misc.h"
 #include "debug.h"
 
@@ -1271,7 +1271,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    (void) mdfile(flp->diskURL, buf);
+	    (void) domd5(flp->diskURL, buf, 1);
 	s = buf;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);

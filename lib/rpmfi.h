@@ -43,7 +43,7 @@ struct TFI_s {
 /*@only@*/ /*?null?*/
     const char ** flinks;	/*!< File link(s) (from header) */
 /*@only@*/ /*@null@*/
-    const char ** flangs;	/*!< File lang(s) */
+    const char ** flangs;	/*!< File lang(s) (from header) */
 
 /*@only@*/ /*?null?*/
           uint_32 * dil;	/*!< Directory indice(s) (from header) */
@@ -59,9 +59,9 @@ struct TFI_s {
     const uint_16 * frdevs;	/*!< File rdev(s) (from header) */
 
 /*@only@*/ /*@null@*/
-    const char ** fuser;	/*!< File owner(s) */
+    const char ** fuser;	/*!< File owner(s) (from header) */
 /*@only@*/ /*@null@*/
-    const char ** fgroup;	/*!< File group(s) */
+    const char ** fgroup;	/*!< File group(s) (from header) */
 /*@only@*/ /*@null@*/
     uid_t * fuids;		/*!< File uid(s) */
 /*@only@*/ /*@null@*/
@@ -97,6 +97,9 @@ struct TFI_s {
     const char ** odnl;		/*!< Original dirname(s) (from header) */
 /*@unused@*/
     int_32 * odil;		/*!< Original dirindex(s) (from header) */
+
+/*@only@*/ /*@null@*/
+    unsigned char * md5s;	/*!< File md5 sums in binary. */
 
 /*@only@*/ /*@null@*/
     char * fn;			/*!< File name buffer. */

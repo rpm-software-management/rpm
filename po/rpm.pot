@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-18 06:36-0500\n"
+"POT-Creation-Date: 2001-11-18 12:42-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1542,37 +1542,37 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1171
+#: lib/fsm.c:1177
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1452
+#: lib/fsm.c:1458
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1573 lib/fsm.c:1701
+#: lib/fsm.c:1579 lib/fsm.c:1707
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1727
+#: lib/fsm.c:1733
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1733
+#: lib/fsm.c:1739
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1743
+#: lib/fsm.c:1749
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1762
+#: lib/fsm.c:1768
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2777,18 +2777,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:181
+#: lib/transaction.c:178
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:999
+#: lib/transaction.c:988
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:1094
+#: lib/transaction.c:1083
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
