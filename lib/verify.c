@@ -196,8 +196,8 @@ int rpmVerifyScript(char * root, Header h, int err) {
 	exit(-1);
     }
 
-    close(out);
-    close(err);
+    if (out > 2) close(out);
+    if (err > 2) close(err);
     close(fd);
     if (!rpmIsVerbose()) close(out);
 
