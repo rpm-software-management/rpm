@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-12-12 14:32-0500\n"
+"POT-Creation-Date: 2000-12-12 16:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2322,46 +2322,51 @@ msgstr ""
 
 #: lib/depends.c:1143
 #, c-format
+msgid "%s: %-45s YES (db package)\n"
+msgstr ""
+
+#: lib/depends.c:1159
+#, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1164
+#: lib/depends.c:1180
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1222
+#: lib/depends.c:1238
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1289
+#: lib/depends.c:1305
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1515
+#: lib/depends.c:1531
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1619
+#: lib/depends.c:1635
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1669
+#: lib/depends.c:1685
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1772
+#: lib/depends.c:1788
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1803
+#: lib/depends.c:1819
 msgid "========== continuing tsort ...\n"
 msgstr ""
 

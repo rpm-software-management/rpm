@@ -622,14 +622,22 @@ static PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args) {
 
 
 static PyObject * hdrLoad(PyObject * self, PyObject * args) {
-    char * obj;
+    char * obj, * copy=NULL;
     Header hdr;
     hdrObject * h;
     int len;
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
+    
+    copy = malloc(len);
+    if (copy == NULL) {
+	PyErr_SetString(pyrpmError, "out of memory");
+	return NULL;
+    }
 
-    hdr = headerLoad(obj);
+    memcpy (copy, obj, len);
+
+    hdr = headerLoad(copy);
     if (!hdr) {
 	PyErr_SetString(pyrpmError, "bad header");
 	return NULL;

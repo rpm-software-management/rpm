@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-12 13:07-0500\n"
+"POT-Creation-Date: 2000-12-12 16:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,7 +131,7 @@ msgstr ""
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
-#: rpm.c:215 rpmqv.c:308
+#: rpm.c:215
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
@@ -180,7 +180,7 @@ msgstr ""
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <dizin>] [--noscripts]"
 
-#: rpm.c:224 rpmqv.c:317
+#: rpm.c:224
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
@@ -222,7 +222,7 @@ msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
-#: rpm.c:233 rpmqv.c:332
+#: rpm.c:233
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr ""
 "                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
@@ -348,7 +348,7 @@ msgstr ""
 msgid "    --eval '<name>+'      "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:299 rpmqv.c:409
+#: rpm.c:299
 #, fuzzy
 msgid "print the expansion of macro <name> to stdout"
 msgstr "Kullanýlan RPM sürümünü verir"
@@ -367,7 +367,7 @@ msgstr "standart çýktýyý <KOMUT>'a gönderir"
 msgid "    --rcfile <file>       "
 msgstr "    -b<adým> <spec>      "
 
-#: rpm.c:303 rpmqv.c:413
+#: rpm.c:303
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "/etc/rpmrc ve $HOME/.rpmrc yerine <dosya> kullanýn"
 
@@ -1256,7 +1256,7 @@ msgstr "       rpm {--initdb}   [--dbpath <dizin>]"
 
 #: rpmqv.c:301
 #, fuzzy, c-format
-msgid "       %s {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]\n"
+msgid "       %s {--rebuilddb} [--macros <file:...>] [--dbpath <dir>]\n"
 msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
 
 #: rpmqv.c:305
@@ -1266,15 +1266,38 @@ msgid ""
 msgstr ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
+#: rpmqv.c:308
+#, fuzzy
+msgid ""
+"                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"
+msgstr ""
+"                        [--rcfile <dosya>] [--ignorearch] [--dbpath <dizin>]"
+
+#: rpmqv.c:317
+#, fuzzy
+msgid ""
+"                        [--excludedocs] [--includedocs] [--macros <file:...>]"
+msgstr ""
+"                        [--excludedocs] [--includedocs] [--rcfile <dosya>]"
+
 #: rpmqv.c:325
 #, fuzzy, c-format
-msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
+msgid ""
+"       %s {--erase -e} [--root <dir>] [--noscripts] [--macros <file:...>]\n"
 msgstr ""
 "       rpm {--erase -e] [--root <dizin>] [--noscripts] [--rcfile <dosya>]"
 
+#: rpmqv.c:332
+#, fuzzy
+msgid ""
+"                        [--scripts] [--root <dir>] [--macros <file:...>]"
+msgstr ""
+"                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
+
 #: rpmqv.c:339
 #, fuzzy, c-format
-msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
+msgid ""
+"       %s {--verify -V -y} [-afpg] [--root <dir>] [--macros <file:...>]\n"
 msgstr ""
 "       rpm {--verify -V -y} [-afpg] [--root <dizin>] [--rcfile <dosya>]"
 
@@ -1291,8 +1314,8 @@ msgstr "       rpm {--setugids} [-afpg] [target]"
 #: rpmqv.c:348
 #, fuzzy, c-format
 msgid ""
-"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-"<file>]\n"
+"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--macros "
+"<file:...>]\n"
 msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<dosya>]"
@@ -1310,20 +1333,22 @@ msgstr ""
 
 #: rpmqv.c:352
 #, fuzzy, c-format
-msgid "       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"
+msgid "       %s {--rmsource} [--macros <file:...>] [-v] specfile\n"
 msgstr "       rpm {--rmsource} [--rcfile <dosya>] [-v] specdosyasý"
 
 #: rpmqv.c:353
 #, fuzzy, c-format
 msgid ""
-"       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
+"       %s {--rebuild} [--macros <file:...>] [-v] source1.rpm ... "
+"sourceN.rpm\n"
 msgstr ""
 "       rpm {--rebuild} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
 
 #: rpmqv.c:354
 #, fuzzy, c-format
 msgid ""
-"       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
+"       %s {--recompile} [--macros <file:...>] [-v] source1.rpm ... "
+"sourceN.rpm\n"
 msgstr ""
 "       rpm {--recompile} [--rcfile <dosya>] [-v] kaynak1.rpm ... kaynakN.rpm"
 
@@ -1334,18 +1359,21 @@ msgstr "                        [--badreloc] dosya1.rpm ... dosyaN.rpm"
 
 #: rpmqv.c:359
 #, fuzzy, c-format
-msgid "       %s {--resign} [--rcfile <file>] package1 package2 ... packageN\n"
+msgid ""
+"       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"
 msgstr "       rpm {--resign} [--rcfile <dosya>] paket1 paket2 ... paketN"
 
 #: rpmqv.c:360
 #, fuzzy, c-format
-msgid "       %s {--addsign} [--rcfile <file>] package1 package2 ... packageN"
+msgid ""
+"       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"
 msgstr "       rpm {--addsign} [--rcfile <dosya>] paket1 paket2 ... paketN"
 
 #: rpmqv.c:361
 #, fuzzy, c-format
 msgid ""
-"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]\n"
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--macros "
+"<file:...>]\n"
 msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <dosya>]"
 
 #: rpmqv.c:405
@@ -1359,8 +1387,13 @@ msgstr ""
 
 #: rpmqv.c:408
 #, fuzzy
-msgid "   --eval '<name>+'       "
+msgid "   --eval '<expr>+'       "
 msgstr "    -b<adým> <spec>      "
+
+#: rpmqv.c:409
+#, fuzzy
+msgid "print the expansion of macro <expr> to stdout"
+msgstr "Kullanýlan RPM sürümünü verir"
 
 #: rpmqv.c:410
 #, fuzzy
@@ -1369,8 +1402,12 @@ msgstr "    -b<adým> <spec>      "
 
 #: rpmqv.c:412
 #, fuzzy
-msgid "   --rcfile <file>        "
-msgstr "    -b<adým> <spec>      "
+msgid "   --macros <file:...>    "
+msgstr "Yerine  -e veya --erase komutunu kullanýn\n"
+
+#: rpmqv.c:413
+msgid "use <file:...> instead of default list of macro files"
+msgstr ""
 
 #: rpmqv.c:417
 #, fuzzy
@@ -2492,47 +2529,52 @@ msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
 #: lib/depends.c:1143
+#, fuzzy, c-format
+msgid "%s: %-45s YES (db package)\n"
+msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
+
+#: lib/depends.c:1159
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1164
+#: lib/depends.c:1180
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1222
+#: lib/depends.c:1238
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
 #. conflicts exist.
-#: lib/depends.c:1289
+#: lib/depends.c:1305
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi %s altýnda gözükmüyor"
 
-#: lib/depends.c:1515
+#: lib/depends.c:1531
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
 #. Record all relations.
-#: lib/depends.c:1619
+#: lib/depends.c:1635
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1669
+#: lib/depends.c:1685
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1772
+#: lib/depends.c:1788
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1803
+#: lib/depends.c:1819
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2671,7 +2713,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2088 lib/header.c:2104 lib/header.c:2123
+#: lib/header.c:2538 lib/header.c:2555 lib/header.c:2575
 msgid "(not a number)"
 msgstr "(üye deðil)"
 
@@ -2700,80 +2742,94 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:215
-msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+#: lib/header.c:218
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:246 lib/header.c:717 lib/install.c:380
+#: lib/header.c:253 lib/header.c:1024 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1074
+#: lib/header.c:1449
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1481
+#. @-observertrans@
+#: lib/header.c:1891
 #, c-format
 msgid "missing { after %"
 msgstr "% den sonra eksik {"
 
-#: lib/header.c:1509
+#. @-observertrans@
+#: lib/header.c:1921
 msgid "missing } after %{"
 msgstr "%{ den sonra eksik }"
 
-#: lib/header.c:1521
+#. @-observertrans@
+#: lib/header.c:1935
 msgid "empty tag format"
 msgstr "boþ tag tanýmlamasý"
 
-#: lib/header.c:1531
+#. @-observertrans@
+#: lib/header.c:1947
 msgid "empty tag name"
 msgstr "boþ tag ismi"
 
-#: lib/header.c:1546
+#. @-observertrans@
+#: lib/header.c:1964
 msgid "unknown tag"
 msgstr "bilinmeyen tag"
 
-#: lib/header.c:1571
+#. @-observertrans@
+#: lib/header.c:1991
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] bekleniyordu"
 
-#: lib/header.c:1587
+#. @-observertrans@
+#: lib/header.c:2009
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
-#: lib/header.c:1589
+#. @-observertrans@
+#: lib/header.c:2013
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
-#: lib/header.c:1644
+#. @-observertrans@
+#: lib/header.c:2073
 msgid "? expected in expression"
 msgstr "dizi içerisinde ? bekleniyordu"
 
-#: lib/header.c:1651
+#. @-observertrans@
+#: lib/header.c:2082
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "dizi içerisinde ? den sonra { bekleniyordu"
 
-#: lib/header.c:1662 lib/header.c:1697
+#. @-observertrans@
+#: lib/header.c:2095 lib/header.c:2136
 msgid "} expected in expression"
 msgstr "dizi içerisinde } bekleniyordu"
 
-#: lib/header.c:1670
+#. @-observertrans@
+#: lib/header.c:2105
 msgid ": expected following ? subexpression"
 msgstr "? altdizisinden sonra : bekleniyordu"
 
-#: lib/header.c:1684
+#. @-observertrans@
+#: lib/header.c:2121
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "dizide : den sonra { bekleniyordu"
 
-#: lib/header.c:1705
+#. @-observertrans@
+#: lib/header.c:2146
 msgid "| expected at end of expression"
 msgstr "dizinin sonunda | bekleniyordu"
 
-#: lib/header.c:1870
+#: lib/header.c:2317
 msgid "(unknown type)"
 msgstr "(bilinmeyen tip)"
 
@@ -4212,6 +4268,10 @@ msgid "failed to create %s: %s\n"
 msgstr "%s yaratýlamýyor\n"
 
 #, fuzzy
+#~ msgid "   --rcfile <file>        "
+#~ msgstr "    -b<adým> <spec>      "
+
+#, fuzzy
 #~ msgid "New Header signature\n"
 #~ msgstr "imzayý okumak mümkün olmadý"
 
@@ -4256,10 +4316,6 @@ msgstr "%s yaratýlamýyor\n"
 
 #, fuzzy
 #~ msgid "%s: %-45s YES (added package)\n"
-#~ msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
-
-#, fuzzy
-#~ msgid "%s: %-45s YES (db packages)\n"
 #~ msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
 #, fuzzy

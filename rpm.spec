@@ -1,6 +1,8 @@
 %define	with_python_subpackage	1
 %define	with_bzip2		1
 %define	with_apidocs		1
+%define strip_binaries		0
+%define	__spec_install_post	:
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -10,15 +12,15 @@
 
 Summary: The Red Hat package management system.
 Name: rpm
-%define version 4.1
+%define version 4.0.2
 Version: %{version}
-Release: 0.15
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
-Prereq: gawk fileutils textutils sh-utils mktemp
+Prereq: gawk fileutils textutils mktemp
 Requires: popt
 %endif
 
@@ -128,14 +130,19 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
-%_dbpath		1
-%_dbpath_rebuild	1
+%%_dbapi		1
 E_O_F
 
+%if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
   strip .%{__prefix}/bin/rpm2cpio
 }
+%endif
+
+%if %{with_apidocs}
+gzip -9n apidocs/man/* || :
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -154,13 +161,16 @@ fi
 %post
 %ifos linux
 /sbin/ldconfig
-if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f %{__prefix}/lib/rpm/convertrpmrc.sh ]; then
-	sh %{__prefix}/lib/rpm/convertrpmrc.sh > /dev/null 2>&1
-fi
 %endif
-/bin/rpm --initdb
-if [ -f /var/lib/rpm/Packages]; then
+if [ -f /var/lib/rpm/packages.rpm ]; then
+    : # do nothing
+elif [ -f /var/lib/rpm/Packages ]; then
+    # undo db1 configuration
     rm -f /etc/rpm/macros.db1
+else
+    # initialize db3 database
+    rm -f /etc/rpm/macros.db1
+    /bin/rpm --initdb
 fi
 
 %ifos linux
@@ -224,13 +234,6 @@ fi
 %{__prefix}/lib/rpm/armv[34][lb]*
 %endif
 
-%dir %{__prefix}/src/redhat
-%dir %{__prefix}/src/redhat/BUILD
-%dir %{__prefix}/src/redhat/SPECS
-%dir %{__prefix}/src/redhat/SOURCES
-%dir %{__prefix}/src/redhat/SRPMS
-%dir %{__prefix}/src/redhat/RPMS
-%{__prefix}/src/redhat/RPMS/*
 %{__prefix}/*/locale/*/LC_MESSAGES/rpm.mo
 %{__prefix}%{__share}/man/man[18]/*.[18]*
 %lang(pl) %{__prefix}%{__share}/man/pl/man[18]/*.[18]*
@@ -239,6 +242,13 @@ fi
 
 %files build
 %defattr(-,root,root)
+%dir %{__prefix}/src/redhat
+%dir %{__prefix}/src/redhat/BUILD
+%dir %{__prefix}/src/redhat/SPECS
+%dir %{__prefix}/src/redhat/SOURCES
+%dir %{__prefix}/src/redhat/SRPMS
+%dir %{__prefix}/src/redhat/RPMS
+%{__prefix}/src/redhat/RPMS/*
 %{__prefix}/bin/rpmbuild
 %{__prefix}/lib/rpm/brp-*
 %{__prefix}/lib/rpm/check-prereqs
@@ -300,13 +310,34 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Sun Dec  3 2000 Jeff Johnson <jbj@redhat.com>
+* Tue Dec 12 2000 Jeff Johnson <jbj@redhat.com>
+- bail on header regions.
+
+* Sun Dec 10 2000 Jeff Johnson <jbj@redhat.com>
+- handle added dirtoken tags (mostly) correctly with header regions.
+- add FHS doc/man/info dirs, diddle autoconf goo.
+- fix: headerUnload handles headers w/o regions correctly on rebuilddb.
+
+* Thu Dec  7 2000 Jeff Johnson <jbj@redhat.com>
+- add rpmtransGetKeys() to retrieve transaction keys in tsort'ed order.
+- python bindings for rpmtransGetKeys().
+- fix: include alignment in count when swabbing header region.
+
+* Wed Dec  6 2000 Jeff Johnson <jbj@redhat.com>
 - improved find-{requires,provides} for aix4/hpux/irix6/osf.
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 - portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
 - python: bind package removal (#21274).
 - autoconfigure building python bindings.
 - autoconfigure generating rpm API doco rpm-devel package.
+- fix: don't fdFree in rpmVerifyScript, rpmtransFree does already.
+- unify rpmError and rpmMessge interfaces through rpmlog.
+- collect and display rpm build error messages at end of build.
+- use package version 3 if --nodirtokens is specified.
+- add package names to problem sets early, don't save removed header.
+- make sure that replaced tags in region are counted in headerSizeof().
+- support for dmalloc debugging.
+- filter region tags in headerNextIterator, exit throut headerReload.
 
 * Thu Nov 30 2000 Jeff Johnson <jbj@redhat.com>
 - add missing headerFree for legacy signature header.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-12 13:07-0500\n"
+"POT-Creation-Date: 2000-12-12 16:58-0500\n"
 "PO-Revision-Date: 2000-03-07 05:17+01:00\n"
 "Last-Translator: K. Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish/Dansk <dansk@klid.dk>\n"
@@ -110,7 +110,7 @@ msgstr ""
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
-#: rpm.c:215 rpmqv.c:308
+#: rpm.c:215
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
@@ -157,7 +157,7 @@ msgstr ""
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <kat>] [--noscripts]"
 
-#: rpm.c:224 rpmqv.c:317
+#: rpm.c:224
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
@@ -196,7 +196,7 @@ msgstr "                        fil-1.rpm ... fil-N.rpm"
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
-#: rpm.c:233 rpmqv.c:332
+#: rpm.c:233
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
 
@@ -313,7 +313,7 @@ msgstr "definér makro <name> med værdi <body>"
 msgid "    --eval '<name>+'      "
 msgstr "    --eval '<name>+'      "
 
-#: rpm.c:299 rpmqv.c:409
+#: rpm.c:299
 msgid "print the expansion of macro <name> to stdout"
 msgstr ""
 
@@ -329,7 +329,7 @@ msgstr ""
 msgid "    --rcfile <file>       "
 msgstr "    --rcfile <fil>        "
 
-#: rpm.c:303 rpmqv.c:413
+#: rpm.c:303
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr ""
 
@@ -1147,8 +1147,8 @@ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
 msgstr "       %s {--initdb}   [--dbpath <katalog>]\n"
 
 #: rpmqv.c:301
-#, c-format
-msgid "       %s {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]\n"
+#, fuzzy, c-format
+msgid "       %s {--rebuilddb} [--macros <file:...>] [--dbpath <dir>]\n"
 msgstr "       %s {--rebuilddb} [--rcfile <fil>] [--dbpath <katalog>]\n"
 
 #: rpmqv.c:305
@@ -1158,15 +1158,37 @@ msgid ""
 msgstr ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 
+#: rpmqv.c:308
+#, fuzzy
+msgid ""
+"                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"
+msgstr ""
+"                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
+
+#: rpmqv.c:317
+#, fuzzy
+msgid ""
+"                        [--excludedocs] [--includedocs] [--macros <file:...>]"
+msgstr ""
+"                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
+
 #: rpmqv.c:325
-#, c-format
-msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
+#, fuzzy, c-format
+msgid ""
+"       %s {--erase -e} [--root <dir>] [--noscripts] [--macros <file:...>]\n"
 msgstr ""
 "       %s {--erase -e} [--root <katalog>] [--noscripts] [--rcfile <fil>]\n"
 
+#: rpmqv.c:332
+#, fuzzy
+msgid ""
+"                        [--scripts] [--root <dir>] [--macros <file:...>]"
+msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
+
 #: rpmqv.c:339
-#, c-format
-msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
+#, fuzzy, c-format
+msgid ""
+"       %s {--verify -V -y} [-afpg] [--root <dir>] [--macros <file:...>]\n"
 msgstr ""
 "       %s {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <fil>]\n"
 
@@ -1181,10 +1203,10 @@ msgid "       %s {--setugids} [-afpg] [target]\n"
 msgstr "       %s {--setugids} [-afpg] [mål]\n"
 
 #: rpmqv.c:348
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-"<file>]\n"
+"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--macros "
+"<file:...>]\n"
 msgstr ""
 "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<fil>]\n"
@@ -1198,21 +1220,23 @@ msgid "                        [--rmsource] [--rmspec] specfile"
 msgstr "                        [--rmsource] [--rmspec] spec-fil"
 
 #: rpmqv.c:352
-#, c-format
-msgid "       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"
+#, fuzzy, c-format
+msgid "       %s {--rmsource} [--macros <file:...>] [-v] specfile\n"
 msgstr "       %s {--rmsource} [--rcfile <fil>] [-v] 'spec'-fil\n"
 
 #: rpmqv.c:353
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
+"       %s {--rebuild} [--macros <file:...>] [-v] source1.rpm ... "
+"sourceN.rpm\n"
 msgstr ""
 "       %s {--rebuild} [--rcfile <fil>] [-v] kilde1.rpm ... kildeN.rpm\n"
 
 #: rpmqv.c:354
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
+"       %s {--recompile} [--macros <file:...>] [-v] source1.rpm ... "
+"sourceN.rpm\n"
 msgstr ""
 "       %s {--recompile} [--rcfile <fil>] [-v] kilde1.rpm ... kildeN.rpm\n"
 
@@ -1222,19 +1246,22 @@ msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
 msgstr "       %s {--freshen -F} fil1.rpm ... filN.rpm\n"
 
 #: rpmqv.c:359
-#, c-format
-msgid "       %s {--resign} [--rcfile <file>] package1 package2 ... packageN\n"
+#, fuzzy, c-format
+msgid ""
+"       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"
 msgstr "       %s {--resign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN\n"
 
 #: rpmqv.c:360
-#, c-format
-msgid "       %s {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr ""
+#, fuzzy, c-format
+msgid ""
+"       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"
+msgstr "       rpm {--addsign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN"
 
 #: rpmqv.c:361
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]\n"
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--macros "
+"<file:...>]\n"
 msgstr ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]\n"
 
@@ -1247,16 +1274,27 @@ msgid "   --define '<name> <body>'"
 msgstr "   --define '<name> <body>'"
 
 #: rpmqv.c:408
-msgid "   --eval '<name>+'       "
+#, fuzzy
+msgid "   --eval '<expr>+'       "
 msgstr "   --eval '<name>+'       "
+
+#: rpmqv.c:409
+#, fuzzy
+msgid "print the expansion of macro <expr> to stdout"
+msgstr "vis versionen af rpm som benyttes"
 
 #: rpmqv.c:410
 msgid "   --pipe <cmd>           "
 msgstr "   --pipe <kmd>           "
 
 #: rpmqv.c:412
-msgid "   --rcfile <file>        "
-msgstr "   --rcfile <fil>         "
+#, fuzzy
+msgid "   --macros <file:...>    "
+msgstr "    --rcfile <fil>        "
+
+#: rpmqv.c:413
+msgid "use <file:...> instead of default list of macro files"
+msgstr ""
 
 #: rpmqv.c:417
 msgid "   --dbpath <dir>         "
@@ -2316,46 +2354,51 @@ msgstr ""
 
 #: lib/depends.c:1143
 #, c-format
+msgid "%s: %-45s YES (db package)\n"
+msgstr ""
+
+#: lib/depends.c:1159
+#, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1164
+#: lib/depends.c:1180
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1222
+#: lib/depends.c:1238
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1289
+#: lib/depends.c:1305
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1515
+#: lib/depends.c:1531
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1619
+#: lib/depends.c:1635
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1669
+#: lib/depends.c:1685
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1772
+#: lib/depends.c:1788
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1803
+#: lib/depends.c:1819
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2494,7 +2537,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2088 lib/header.c:2104 lib/header.c:2123
+#: lib/header.c:2538 lib/header.c:2555 lib/header.c:2575
 msgid "(not a number)"
 msgstr ""
 
@@ -2523,78 +2566,92 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:215
-msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+#: lib/header.c:218
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:246 lib/header.c:717 lib/install.c:380
+#: lib/header.c:253 lib/header.c:1024 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1074
+#: lib/header.c:1449
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1481
+#. @-observertrans@
+#: lib/header.c:1891
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: lib/header.c:1509
+#. @-observertrans@
+#: lib/header.c:1921
 msgid "missing } after %{"
 msgstr ""
 
-#: lib/header.c:1521
+#. @-observertrans@
+#: lib/header.c:1935
 msgid "empty tag format"
 msgstr ""
 
-#: lib/header.c:1531
+#. @-observertrans@
+#: lib/header.c:1947
 msgid "empty tag name"
 msgstr ""
 
-#: lib/header.c:1546
+#. @-observertrans@
+#: lib/header.c:1964
 msgid "unknown tag"
 msgstr ""
 
-#: lib/header.c:1571
+#. @-observertrans@
+#: lib/header.c:1991
 msgid "] expected at end of array"
 msgstr ""
 
-#: lib/header.c:1587
+#. @-observertrans@
+#: lib/header.c:2009
 msgid "unexpected ]"
 msgstr ""
 
-#: lib/header.c:1589
+#. @-observertrans@
+#: lib/header.c:2013
 msgid "unexpected }"
 msgstr ""
 
-#: lib/header.c:1644
+#. @-observertrans@
+#: lib/header.c:2073
 msgid "? expected in expression"
 msgstr ""
 
-#: lib/header.c:1651
+#. @-observertrans@
+#: lib/header.c:2082
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: lib/header.c:1662 lib/header.c:1697
+#. @-observertrans@
+#: lib/header.c:2095 lib/header.c:2136
 msgid "} expected in expression"
 msgstr ""
 
-#: lib/header.c:1670
+#. @-observertrans@
+#: lib/header.c:2105
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: lib/header.c:1684
+#. @-observertrans@
+#: lib/header.c:2121
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: lib/header.c:1705
+#. @-observertrans@
+#: lib/header.c:2146
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:1870
+#: lib/header.c:2317
 msgid "(unknown type)"
 msgstr ""
 
@@ -3964,6 +4021,9 @@ msgstr ""
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""
+
+#~ msgid "   --rcfile <file>        "
+#~ msgstr "   --rcfile <fil>         "
 
 #~ msgid "internal error (rpm bug?): "
 #~ msgstr "intern fejl (rpm fejl?): "

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-12 13:07-0500\n"
+"POT-Creation-Date: 2000-12-12 16:58-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -111,7 +111,7 @@ msgstr ""
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
-#: rpm.c:215 rpmqv.c:308
+#: rpm.c:215
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
@@ -160,7 +160,7 @@ msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr ""
 "                        [--oldpackage] [--root <каталог>] [--noscripts]"
 
-#: rpm.c:224 rpmqv.c:317
+#: rpm.c:224
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
@@ -199,7 +199,7 @@ msgstr "                        file1.rpm ... fileN.rpm"
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
-#: rpm.c:233 rpmqv.c:332
+#: rpm.c:233
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr ""
 "                        [--scripts] [--root <каталог>] [--rcfile <файл>]"
@@ -314,7 +314,7 @@ msgstr "определить макрос <имя> со значением <подстановка>"
 msgid "    --eval '<name>+'      "
 msgstr "    --eval '<name>+'      "
 
-#: rpm.c:299 rpmqv.c:409
+#: rpm.c:299
 msgid "print the expansion of macro <name> to stdout"
 msgstr "вывести значение макроса <имя>"
 
@@ -330,7 +330,7 @@ msgstr "послать стандартный вывод в <cmd>"
 msgid "    --rcfile <file>       "
 msgstr "      --rcfile <файл>     "
 
-#: rpm.c:303 rpmqv.c:413
+#: rpm.c:303
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "использовать <файл> вместо /etc/rpmrc и $HOME/.rpmrc"
 
@@ -1187,8 +1187,8 @@ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
 msgstr "       %s {--initdb}   [--dbpath <каталог>]\n"
 
 #: rpmqv.c:301
-#, c-format
-msgid "       %s {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]\n"
+#, fuzzy, c-format
+msgid "       %s {--rebuilddb} [--macros <file:...>] [--dbpath <dir>]\n"
 msgstr "       %s {--rebuilddb} [--rcfile <файл>] [--dbpath <каталог>]\n"
 
 #: rpmqv.c:305
@@ -1198,15 +1198,38 @@ msgid ""
 msgstr ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 
+#: rpmqv.c:308
+#, fuzzy
+msgid ""
+"                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"
+msgstr ""
+"                        [--rcfile <file>] [--ignorearch] [--dbpath <каталог>]"
+
+#: rpmqv.c:317
+#, fuzzy
+msgid ""
+"                        [--excludedocs] [--includedocs] [--macros <file:...>]"
+msgstr ""
+"                        [--excludedocs] [--includedocs] [--rcfile <файл>]"
+
 #: rpmqv.c:325
-#, c-format
-msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
+#, fuzzy, c-format
+msgid ""
+"       %s {--erase -e} [--root <dir>] [--noscripts] [--macros <file:...>]\n"
 msgstr ""
 "       %s {--erase -e} [--root <каталог>] [--noscripts] [--rcfile <файл>]\n"
 
+#: rpmqv.c:332
+#, fuzzy
+msgid ""
+"                        [--scripts] [--root <dir>] [--macros <file:...>]"
+msgstr ""
+"                        [--scripts] [--root <каталог>] [--rcfile <файл>]"
+
 #: rpmqv.c:339
-#, c-format
-msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
+#, fuzzy, c-format
+msgid ""
+"       %s {--verify -V -y} [-afpg] [--root <dir>] [--macros <file:...>]\n"
 msgstr ""
 "       %s {--verify -V -y} [-afpg] [--root <каталог>] [--rcfile <файл>]\n"
 
@@ -1221,10 +1244,10 @@ msgid "       %s {--setugids} [-afpg] [target]\n"
 msgstr "       %s {--setugids} [-afpg] [цель]\n"
 
 #: rpmqv.c:348
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-"<file>]\n"
+"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--macros "
+"<file:...>]\n"
 msgstr ""
 "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<файл>]\n"
@@ -1238,21 +1261,23 @@ msgid "                        [--rmsource] [--rmspec] specfile"
 msgstr "                        [--rmsource] [--rmspec] specfile"
 
 #: rpmqv.c:352
-#, c-format
-msgid "       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"
+#, fuzzy, c-format
+msgid "       %s {--rmsource} [--macros <file:...>] [-v] specfile\n"
 msgstr "       %s {--rmsource} [--rcfile <файл>] [-v] specfile\n"
 
 #: rpmqv.c:353
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
+"       %s {--rebuild} [--macros <file:...>] [-v] source1.rpm ... "
+"sourceN.rpm\n"
 msgstr ""
 "       %s {--rebuild} [--rcfile <файл>] [-v] source1.rpm ... sourceN.rpm\n"
 
 #: rpmqv.c:354
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
+"       %s {--recompile} [--macros <file:...>] [-v] source1.rpm ... "
+"sourceN.rpm\n"
 msgstr ""
 "       %s {--recompile} [--rcfile <файл>] [-v] source1.rpm ... sourceN.rpm\n"
 
@@ -1262,19 +1287,22 @@ msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
 msgstr "       %s {--freshen -F} файл1.rpm ... файлN.rpm\n"
 
 #: rpmqv.c:359
-#, c-format
-msgid "       %s {--resign} [--rcfile <file>] package1 package2 ... packageN\n"
+#, fuzzy, c-format
+msgid ""
+"       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"
 msgstr "       %s {--resign} [--rcfile <файл>] пакет1 пакет2 ... пакетN\n"
 
 #: rpmqv.c:360
-#, c-format
-msgid "       %s {--addsign} [--rcfile <file>] package1 package2 ... packageN"
+#, fuzzy, c-format
+msgid ""
+"       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"
 msgstr "       %s {--addsign} [--rcfile <файл>] пакет1 пакет2 ... пакетN"
 
 #: rpmqv.c:361
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]\n"
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--macros "
+"<file:...>]\n"
 msgstr ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <файл>]\n"
 
@@ -1287,16 +1315,27 @@ msgid "   --define '<name> <body>'"
 msgstr "   --define '<имя> <подстановка>'"
 
 #: rpmqv.c:408
-msgid "   --eval '<name>+'       "
+#, fuzzy
+msgid "   --eval '<expr>+'       "
 msgstr "   --eval '<имя>+'       "
+
+#: rpmqv.c:409
+#, fuzzy
+msgid "print the expansion of macro <expr> to stdout"
+msgstr "вывести значение макроса <имя>"
 
 #: rpmqv.c:410
 msgid "   --pipe <cmd>           "
 msgstr "    --pipe <команда>      "
 
 #: rpmqv.c:412
-msgid "   --rcfile <file>        "
-msgstr "      --rcfile <файл>     "
+#, fuzzy
+msgid "   --macros <file:...>    "
+msgstr "Вместо них используйте -e или --erase.\n"
+
+#: rpmqv.c:413
+msgid "use <file:...> instead of default list of macro files"
+msgstr ""
 
 #: rpmqv.c:417
 msgid "   --dbpath <dir>         "
@@ -2364,47 +2403,52 @@ msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
 #: lib/depends.c:1143
+#, fuzzy, c-format
+msgid "%s: %-45s YES (db package)\n"
+msgstr "%s: %-45s YES (db files)\n"
+
+#: lib/depends.c:1159
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1164
+#: lib/depends.c:1180
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1222
+#: lib/depends.c:1238
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1289
+#: lib/depends.c:1305
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1515
+#: lib/depends.c:1531
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
 #. Record all relations.
-#: lib/depends.c:1619
+#: lib/depends.c:1635
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1669
+#: lib/depends.c:1685
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1772
+#: lib/depends.c:1788
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1803
+#: lib/depends.c:1819
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2548,7 +2592,7 @@ msgstr ""
 "рассылки rpm-list@redhat.com\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2088 lib/header.c:2104 lib/header.c:2123
+#: lib/header.c:2538 lib/header.c:2555 lib/header.c:2575
 msgid "(not a number)"
 msgstr "(не число)"
 
@@ -2577,79 +2621,93 @@ msgid "file %s is on an unknown device"
 msgstr "файл %s - на неизвестном устройстве"
 
 #. This should not be allowed
-#: lib/header.c:215
+#: lib/header.c:218
 #, fuzzy
-msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
+msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE count must be 1.\n"
 
-#: lib/header.c:246 lib/header.c:717 lib/install.c:380
+#: lib/header.c:253 lib/header.c:1024 lib/install.c:380
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
 
-#: lib/header.c:1074
+#: lib/header.c:1449
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Неверное число для headerAddEntry(): %d\n"
 
-#: lib/header.c:1481
+#. @-observertrans@
+#: lib/header.c:1891
 #, c-format
 msgid "missing { after %"
 msgstr "отсутствует \"{\" после \"%\""
 
-#: lib/header.c:1509
+#. @-observertrans@
+#: lib/header.c:1921
 msgid "missing } after %{"
 msgstr "отсутствует \"}\" после \"%{\""
 
-#: lib/header.c:1521
+#. @-observertrans@
+#: lib/header.c:1935
 msgid "empty tag format"
 msgstr "пустой формат тэга"
 
-#: lib/header.c:1531
+#. @-observertrans@
+#: lib/header.c:1947
 msgid "empty tag name"
 msgstr "пустое имя тэга"
 
-#: lib/header.c:1546
+#. @-observertrans@
+#: lib/header.c:1964
 msgid "unknown tag"
 msgstr "неизвестный тэг"
 
-#: lib/header.c:1571
+#. @-observertrans@
+#: lib/header.c:1991
 msgid "] expected at end of array"
 msgstr "в конце массива ожидалась \"]\""
 
-#: lib/header.c:1587
+#. @-observertrans@
+#: lib/header.c:2009
 msgid "unexpected ]"
 msgstr "неожиданная \"]\""
 
-#: lib/header.c:1589
+#. @-observertrans@
+#: lib/header.c:2013
 msgid "unexpected }"
 msgstr "неожиданная \"}\""
 
-#: lib/header.c:1644
+#. @-observertrans@
+#: lib/header.c:2073
 msgid "? expected in expression"
 msgstr "в выражении ожидалось \"?\""
 
-#: lib/header.c:1651
+#. @-observertrans@
+#: lib/header.c:2082
 msgid "{ expected after ? in expression"
 msgstr "в выражении после \"?\" ожидалось \"{\""
 
-#: lib/header.c:1662 lib/header.c:1697
+#. @-observertrans@
+#: lib/header.c:2095 lib/header.c:2136
 msgid "} expected in expression"
 msgstr "в выражении ожидалось \"}\""
 
-#: lib/header.c:1670
+#. @-observertrans@
+#: lib/header.c:2105
 msgid ": expected following ? subexpression"
 msgstr "в выражении после \"?\" ожидалось \":\""
 
-#: lib/header.c:1684
+#. @-observertrans@
+#: lib/header.c:2121
 msgid "{ expected after : in expression"
 msgstr "в выражении после \":\" ожидалось \"{\""
 
-#: lib/header.c:1705
+#. @-observertrans@
+#: lib/header.c:2146
 msgid "| expected at end of expression"
 msgstr "в конце выражения ожидался \"|\""
 
-#: lib/header.c:1870
+#: lib/header.c:2317
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
@@ -4054,6 +4112,9 @@ msgstr "невозможно открыть %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "   --rcfile <file>        "
+#~ msgstr "      --rcfile <файл>     "
 
 #~ msgid "sigsize         : %d\n"
 #~ msgstr "размер подписи  : %d\n"
