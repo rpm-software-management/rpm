@@ -36,3 +36,32 @@ Revision history for Perl extension RPM.
 	Put in the start of thread-safing the module. But this part of the
 	API is still pretty black in the Lockheed Skunkworks sense of the
 	word, so it isn't at all complete.
+
+0.25	Mon Jun  5 00:54:59 PDT 2000
+	- third alpha
+
+	Fixes to the thread-safing code. When built against a 5.6.0 configured
+	for threading, several problems were found. All (current) tests now
+	pass on that configuration.
+
+	Added a file, IMPORTANT.perl, to the distribution that explains the
+	nature of a condition that can prevent the extension from working on
+	any version of Perl not installed from an rpm.
+
+	Still more trimming of tokens out of Constants.pm that are not of use
+	by the interface being provided. Filled in a few more in terms of
+	documentation.
+
+	Found a case in RPM::Header that would cause core-dumps: Any tags found
+	by the iterator that were not exported for the API by the rpm lib
+	could cause a null pointer to be passed through to an entry point that
+	was several lines past where I had normally checked for the null. This
+	meant that source RPMs would almost certainly break, since the
+	offending tags only showed up when I started testing against SRPMS.
+	Now, the iterators skip over these internal tags. The normal FETCH
+	method already tested for this, but the interators were sneaking past
+	those tests.
+
+	Added a method to the RPM::Header class, is_source(), that returns a
+	true value (1) if the header is associated with a source RPM.
+

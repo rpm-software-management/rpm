@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.2 (second alpha)
+Version 0.25 (third alpha)
 
 
 WHAT IS IT
@@ -16,6 +16,8 @@ least some of which are also available as tied-hash implementations.
 
 At this time, the interface only provides access to the database of installed
 packages, and header data retrieval for RPM and SRPM files not yet installed.
+Error management and the export of most defined constants, through RPM::Error
+and RPM::Constants respectively, is also available.
 
 
 BUILDING/INSTALLING
@@ -40,9 +42,9 @@ Please send any reports of problems or bugs to rjray@blackperl.com.
 
 CHANGES
 
-This is the second release. In addition to some bug fixes, this release adds
-some documentation, more test suites, and error management via the RPM::Error
-package.
+This is the third release. Full details are itemized in the ChangeLog file,
+but the primary change in this release is the location and correction of a
+bug in the RPM::Header code that could cause segmentation faults.
 
 
 LICENSE
