@@ -5,6 +5,7 @@
 	- fix: rpm --target=arch ... resurrected.
 	- fix: rpm -q --specfile --specedit now works even with BuildArch:.
 	- fix: recursive strtok's is a no-no.
+	- added disk space checking
 
 2.90 -> 2.91
 	- fix: memory leaks in rpmRunTransactions plugged.
