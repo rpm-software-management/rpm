@@ -8,6 +8,7 @@
 #include <malloc.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 #include "sexp.h"
 
 /*@access sexpIter @*/
@@ -28,17 +29,17 @@
  */
 void ErrorMessage(int level, const char *fmt, ...)
 {
-  va_list ap;
+    va_list ap;
 
-  (void) fflush(stdout);
-  printf("\n*** ");
-  if (level==WARNING) printf("Warning: ");
-  else if (level==ERROR) printf("Error: ");
-  va_start(ap, fmt);
-  (void) vprintf(fmt, ap);
-  va_end(ap);
-  printf(" ***\n");
-  if (level==ERROR) exit(EXIT_FAILURE);
+    (void) fflush(stdout);
+    printf("\n*** ");
+    if (level==WARNING) printf("Warning: ");
+    else if (level==ERROR) printf("Error: ");
+    va_start(ap, fmt);
+    (void) vprintf(fmt, ap);
+    va_end(ap);
+    printf(" ***\n");
+    if (level==ERROR) exit(EXIT_FAILURE);
 }
 
 /**********************/
@@ -55,11 +56,13 @@ void initializeMemory(void)
  * Allocates n bytes of storage.
  * Terminates execution if no memory available.
  */
-char *sexpAlloc(int n)
-{ char *c = (char *)calloc(1, (unsigned int) n);
-  if (c == NULL) ErrorMessage(ERROR,"Error in sexpAlloc: out of memory!");
+void * sexpAlloc(size_t n)
+{
+    void * c = calloc(1, n);
+
+    if (c == NULL) ErrorMessage(ERROR,"Error in sexpAlloc: out of memory!");
 /*@-nullret@*/
-  return c;
+    return c;
 /*@=nullret@*/
 }
 
@@ -73,25 +76,28 @@ char *sexpAlloc(int n)
  */
 sexpSimpleString newSimpleString(void)
 {
-  sexpSimpleString ss;
-  ss = (sexpSimpleString) sexpAlloc(sizeof(*ss));
-  ss->length = 0;
-  ss->allocatedLength = 16;
-  ss->string = (octet *)sexpAlloc(16);
-  return ss;
+    sexpSimpleString ss = (sexpSimpleString) sexpAlloc(sizeof(*ss));
+    ss->length = 0;
+    ss->allocatedLength = 16;
+    ss->string = sexpAlloc(16);
+    return ss;
 }
 			
 /* simpleStringLength(ss)
  * returns length of simple string
  */
 long int simpleStringLength(sexpSimpleString ss)
-{ return ss->length; }
+{
+    return ss->length;
+}
 
 /* simpleStringString(ss)
  * returns pointer to character array of simple string
  */
 octet *simpleStringString(sexpSimpleString ss)
-{ return ss->string; }
+{
+    return ss->string;
+}
 
 /* reallocateSimpleString(ss)
  * Changes space allocated to ss.
@@ -99,26 +105,24 @@ octet *simpleStringString(sexpSimpleString ss)
  */
 sexpSimpleString reallocateSimpleString(sexpSimpleString ss)
 {
-  int newsize, i;
-  octet *newstring;
-  if (ss == NULL) {
-    ss = newSimpleString();
-    if (ss == NULL) return NULL;
-  }
-  if (ss->string == NULL)
-    ss->string = (octet *)sexpAlloc(16);
-  else
-    {
-      newsize = 16 + 3*(ss->length)/2;
-      newstring = (octet *)sexpAlloc(newsize);
-      for (i=0;i<ss->length;i++) newstring[i] = ss->string[i];
-      /* zeroize string before freeing; as it may be sensitive */
-      for (i=0;i<ss->allocatedLength;i++) ss->string[i] = 0;
-      free(ss->string);
-      ss->string = newstring;
-      ss->allocatedLength = newsize;
+    if (ss == NULL) {
+	ss = newSimpleString();
+	if (ss == NULL) return NULL;
     }
-  return ss;
+    if (ss->string == NULL)
+	ss->string = (octet *)sexpAlloc(16);
+    else {
+	size_t newsize = 16 + 3*(ss->length)/2;
+	octet * newstring = sexpAlloc(newsize);
+
+	memcpy(newstring, ss->string, ss->length);
+	/* zeroize string before freeing; as it may be sensitive */
+	memset(ss->string, 0, ss->allocatedLength);
+	free(ss->string);
+	ss->string = newstring;
+	ss->allocatedLength = newsize;
+    }
+    return ss;
 }
 
 /* appendCharToSimpleString(c,ss)
@@ -127,18 +131,16 @@ sexpSimpleString reallocateSimpleString(sexpSimpleString ss)
  */
 void appendCharToSimpleString(int c, sexpSimpleString ss)
 {
-  if (ss==NULL) {
-    ss = newSimpleString();
-    if (ss == NULL) return;
-  }
+    if (ss == NULL) {
+	ss = newSimpleString();
+	if (ss == NULL) return;
+    }
 /*@-branchstate@*/
-  if (ss->string == NULL || ss->length == ss->allocatedLength )
-    ss = reallocateSimpleString(ss);
+    if (ss->string == NULL || ss->length == ss->allocatedLength )
+	ss = reallocateSimpleString(ss);
 /*@=branchstate@*/
-  if (ss != NULL && ss->string != NULL) {
-    ss->string[ss->length] = (octet) (c & 0xFF);
-    ss->length++;
-  }
+    if (ss != NULL && ss->string != NULL)
+	ss->string[ss->length++] = (octet) (c & 0xFF);
 }
 
 /****************************/
@@ -151,19 +153,21 @@ void appendCharToSimpleString(int c, sexpSimpleString ss)
  */
 sexpString newSexpString(void)
 {
-  sexpString s;
-  s = (sexpString) sexpAlloc(sizeof(*s));
-  s->type = SEXP_STRING;
-  s->presentationHint = NULL;
-  s->string = NULL;
-  return s;
+    sexpString s = sexpAlloc(sizeof(*s));
+
+    s->type = SEXP_STRING;
+    s->presentationHint = NULL;
+    s->string = NULL;
+    return s;
 }
 
 /* sexpStringPresentationHint()
  * returns presentation hint field of the string
  */
 sexpSimpleString sexpStringPresentationHint(sexpString s)
-{ return s->presentationHint; }
+{
+    return s->presentationHint;
+}
 
 /* setSexpStringPresentationHint()
  * assigns the presentation hint field of the string
@@ -189,7 +193,9 @@ void setSexpStringString(sexpString s, sexpSimpleString ss)
  * returns the string field of the string
  */
 sexpSimpleString sexpStringString(sexpString s)
-{ return s->string; }
+{
+    return s->string;
+}
 
 /* closeSexpString()
  * finish up string computations after created
@@ -208,12 +214,12 @@ void closeSexpString(/*@unused@*/ sexpString s)
  */
 sexpList newSexpList(void)
 {
-  sexpList list;
-  list = (sexpList) sexpAlloc(sizeof(*list));
-  list->type = SEXP_LIST;
-  list->first = NULL;
-  list->rest = NULL;
-  return list;
+    sexpList list = sexpAlloc(sizeof(*list));
+
+    list->type = SEXP_LIST;
+    list->first = NULL;
+    list->rest = NULL;
+    return list;
 }
 
 /* sexpAddSexpListObject()
@@ -264,16 +270,18 @@ sexpIter sexpListIter(sexpList list)
  * advance iterator to next element of list, or else return null
  */
 sexpIter sexpIterNext(sexpIter iter)
-{ if (iter == NULL) return NULL;
-  return (sexpIter)(((sexpList)iter)->rest);
+{
+    if (iter == NULL) return NULL;
+    return (sexpIter)(((sexpList)iter)->rest);
 }
 
 /* sexpIterObject ()
  * return object corresponding to current state of iterator
  */
 sexpObject sexpIterObject(sexpIter iter)
-{ if (iter == NULL) return NULL;
-  return ((sexpList)iter)->first;
+{
+    if (iter == NULL) return NULL;
+    return ((sexpList)iter)->first;
 }
 
 /****************************/
@@ -281,11 +289,13 @@ sexpObject sexpIterObject(sexpIter iter)
 /****************************/
 
 int isObjectString(sexpObject object)
-{ if (((sexpString)object)->type == SEXP_STRING) return TRUE;
-  else                                             return FALSE;
+{
+    if (((sexpString)object)->type == SEXP_STRING) return TRUE;
+    else                                           return FALSE;
 }
 
 int isObjectList(sexpObject object)
-{ if (((sexpList)object)->type == SEXP_LIST) return TRUE;
-  else                                         return FALSE;
+{
+    if (((sexpList)object)->type == SEXP_LIST) return TRUE;
+    else                                       return FALSE;
 }

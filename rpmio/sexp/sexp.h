@@ -84,7 +84,7 @@ void ErrorMessage(int level, const char *fmt, ...)
 	/*@modifies fileSystem @*/;
 void initializeMemory(void)
 	/*@*/;
-char *sexpAlloc(int n)
+void * sexpAlloc(size_t n)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 sexpSimpleString newSimpleString(void)

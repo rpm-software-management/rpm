@@ -9,14 +9,14 @@
 
 /*@access sexpInputStream @*/
 struct sexpInputStream_s {
-  int nextChar;        /* character currently being scanned */
-  int byteSize;        /* 4 or 6 or 8 == currently scanning mode */
-  int bits;            /* Bits waiting to be used */
-  int nBits;           /* number of such bits waiting to be used */
-  void (*getChar)();
-  int count;           /* number of 8-bit characters output by getChar */
+    int nextChar;        /* character currently being scanned */
+    int byteSize;        /* 4 or 6 or 8 == currently scanning mode */
+    int bits;            /* Bits waiting to be used */
+    int nBits;           /* number of such bits waiting to be used */
+    void (*getChar)();
+    int count;           /* number of 8-bit characters output by getChar */
 /*@shared@*/ /*@relnull@*/
-  FILE *inputFile;     /* where to get input, if not stdin */
+    FILE *inputFile;     /* where to get input, if not stdin */
 };
 
 /*@access sexpList @*/
@@ -56,80 +56,93 @@ void initializeCharacterTables(void)
 		hexdigit, hexvalue, tokenchar, upper, whitespace @*/
 	/*@modifies alpha, base64digit, base64value, decdigit, decvalue,
 		hexdigit, hexvalue, tokenchar, upper, whitespace @*/
-{ int i;
-  for (i=0;i<256;i++) upper[i] = i;
-  for (i='a'; i<='z'; i++) upper[i] = i - 'a' + 'A';
-  for (i=0;   i<=255; i++)
-    alpha[i] = decdigit[i] = whitespace[i] = base64digit[i] = FALSE;
-  whitespace[' ']  = whitespace['\n'] = whitespace['\t'] = TRUE;
-  whitespace['\v'] = whitespace['\r'] = whitespace['\f'] = TRUE;
-  for (i='0';i<='9';i++)
-    { base64digit[i] = hexdigit[i] = decdigit[i] = TRUE;
-      decvalue[i] = hexvalue[i] = i-'0';
-      base64value[i] = (i-'0')+52;
+{
+    int i;
+    for (i=0;i<256;i++) upper[i] = i;
+    for (i='a'; i<='z'; i++) upper[i] = i - 'a' + 'A';
+    for (i=0;   i<=255; i++)
+	alpha[i] = decdigit[i] = whitespace[i] = base64digit[i] = FALSE;
+    whitespace[' ']  = whitespace['\n'] = whitespace['\t'] = TRUE;
+    whitespace['\v'] = whitespace['\r'] = whitespace['\f'] = TRUE;
+    for (i='0';i<='9';i++) {
+	base64digit[i] = hexdigit[i] = decdigit[i] = TRUE;
+	decvalue[i] = hexvalue[i] = i-'0';
+	base64value[i] = (i-'0')+52;
     }
-  for (i='a';i<='f';i++)
-    { hexdigit[i] = hexdigit[upper[i]] = TRUE;
-      hexvalue[i] = hexvalue[upper[i]] = i-'a'+10;
+    for (i='a';i<='f';i++) {
+	hexdigit[i] = hexdigit[upper[i]] = TRUE;
+	hexvalue[i] = hexvalue[upper[i]] = i-'a'+10;
     }
-  for (i='a';i<='z';i++)
-    { base64digit[i] = base64digit[upper[i]] = TRUE;
-      alpha[i] = alpha[upper[i]] = TRUE;
-      base64value[i] = i-'a'+26;
-      base64value[upper[i]] = i-'a';
+    for (i='a';i<='z';i++) {
+	base64digit[i] = base64digit[upper[i]] = TRUE;
+	alpha[i] = alpha[upper[i]] = TRUE;
+	base64value[i] = i-'a'+26;
+	base64value[upper[i]] = i-'a';
     }
-  base64digit['+'] = base64digit['/'] = TRUE;
-  base64value['+'] = 62;
-  base64value['/'] = 63;
-  base64value['='] = 0;
-  for (i=0;i<255;i++) tokenchar[i] = FALSE;
-  for (i='a';i<='z';i++) tokenchar[i] = tokenchar[upper[i]] = TRUE;
-  for (i='0';i<='9';i++) tokenchar[i] = TRUE;
-  tokenchar['-'] = TRUE;
-  tokenchar['.'] = TRUE;
-  tokenchar['/'] = TRUE;
-  tokenchar['_'] = TRUE;
-  tokenchar[':'] = TRUE;
-  tokenchar['*'] = TRUE;
-  tokenchar['+'] = TRUE;
-  tokenchar['='] = TRUE;
+    base64digit['+'] = base64digit['/'] = TRUE;
+    base64value['+'] = 62;
+    base64value['/'] = 63;
+    base64value['='] = 0;
+    for (i=0;i<255;i++) tokenchar[i] = FALSE;
+    for (i='a';i<='z';i++) tokenchar[i] = tokenchar[upper[i]] = TRUE;
+    for (i='0';i<='9';i++) tokenchar[i] = TRUE;
+    tokenchar['-'] = TRUE;
+    tokenchar['.'] = TRUE;
+    tokenchar['/'] = TRUE;
+    tokenchar['_'] = TRUE;
+    tokenchar[':'] = TRUE;
+    tokenchar['*'] = TRUE;
+    tokenchar['+'] = TRUE;
+    tokenchar['='] = TRUE;
 }
 
 /* isWhiteSpace(c)
  * Returns TRUE if c is a whitespace character (space, tab, etc. ).
  */
 int isWhiteSpace(int c)
-{ return ((c>=0 && c<=255) && whitespace[c]); }
+{
+    return ((c>=0 && c<=255) && whitespace[c]);
+}
 
 /* isDecDigit(c)
  * Returns TRUE if c is a decimal digit.
  */
 int isDecDigit(int c)
-{ return ((c>=0 && c<=255) && decdigit[c]); }
+{
+    return ((c>=0 && c<=255) && decdigit[c]);
+}
 
 /* isHexDigit(c)
  * Returns TRUE if c is a hexadecimal digit.
  */
 int isHexDigit(int c)
-{ return ((c>=0 && c<=255) && hexdigit[c]); }
+{
+    return ((c>=0 && c<=255) && hexdigit[c]);
+}
 
 /* isBase64Digit(c)
  * returns TRUE if c is a base64 digit A-Z,a-Z,0-9,+,/
  */
 int isBase64Digit(int c)
-{ return ((c>=0 && c<=255) && base64digit[c]); }
+{
+    return ((c>=0 && c<=255) && base64digit[c]);
+}
 
 /* isTokenChar(c)
  * Returns TRUE if c is allowed in a token
  */
 int isTokenChar(int c)
-{ return ((c>=0 && c<=255) && tokenchar[c]); }
+{
+    return ((c>=0 && c<=255) && tokenchar[c]);
+}
 
 /* isAlpha(c)
  * Returns TRUE if c is alphabetic
  */
 int isAlpha(int c)
-{ return ((c>=0 && c<=255) && alpha[c]); }
+{
+    return ((c>=0 && c<=255) && alpha[c]);
+}
 
 /**********************/
 /* SEXP INPUT STREAMS */
@@ -139,9 +152,9 @@ int isAlpha(int c)
  */
 void changeInputByteSize(sexpInputStream is, int newByteSize)
 {
-  is->byteSize = newByteSize;
-  is->nBits = 0;
-  is->bits = 0;
+    is->byteSize = newByteSize;
+    is->nBits = 0;
+    is->bits = 0;
 }
 
 /* getChar(is)
@@ -172,8 +185,8 @@ void getChar(sexpInputStream is)
 	    if (is->nBits>0 && (((1<<is->nBits)-1) & is->bits) != 0)
 		ErrorMessage(WARNING,
 			 "%d-bit region ended with %d unused bits left-over",
-			 is->byteSize,is->nBits);
-	    changeInputByteSize(is,8);
+			 is->byteSize, is->nBits);
+	    changeInputByteSize(is, 8);
 	    return;
 	}
 	else if (is->byteSize != 8 && isWhiteSpace(c))
@@ -231,8 +244,8 @@ void sexpIFpoke(sexpInputStream is, int c)
  */
 sexpInputStream sexpIFopen(const char * ifn, const char * fmode)
 {
-    sexpInputStream is;
-    is = (sexpInputStream) sexpAlloc(sizeof(*is));
+    sexpInputStream is = sexpAlloc(sizeof(*is));
+
     is->nextChar = ' ';
     is->getChar = getChar;
     is->count = -1;
@@ -261,7 +274,7 @@ sexpInputStream sexpIFopen(const char * ifn, const char * fmode)
  */
 void skipWhiteSpace(sexpInputStream is)
 {
-  while (isWhiteSpace(is->nextChar)) is->getChar(is);
+    while (isWhiteSpace(is->nextChar)) is->getChar(is);
 }
 
 /* skipChar(is,c)
@@ -270,12 +283,12 @@ void skipWhiteSpace(sexpInputStream is)
  */
 void skipChar(sexpInputStream is, int c)
 {
-  if (is->nextChar==c)
-    is->getChar(is);
-  else
-    ErrorMessage(ERROR, "character %x (hex) found where %c (char) expected",
-		 (int) is->nextChar,
-		 (int) c);
+    if (is->nextChar == c)
+	is->getChar(is);
+    else
+	ErrorMessage(ERROR, "character 0x%x found where '%c' was expected",
+		 (unsigned) is->nextChar,
+		 (unsigned) c);
 }
 
 /* scanToken(is,ss)
@@ -283,13 +296,12 @@ void skipChar(sexpInputStream is, int c)
  */
 void scanToken(sexpInputStream is, sexpSimpleString ss)
 {
-  skipWhiteSpace(is);
-  while (isTokenChar(is->nextChar))
-    {
-      appendCharToSimpleString(is->nextChar,ss);
-      is->getChar(is);
+    skipWhiteSpace(is);
+    while (isTokenChar(is->nextChar)) {
+	appendCharToSimpleString(is->nextChar, ss);
+	is->getChar(is);
     }
-  return;
+    return;
 }
 
 /* scanToEOF(is)
@@ -298,31 +310,33 @@ void scanToken(sexpInputStream is, sexpSimpleString ss)
  */
 sexpObject scanToEOF(sexpInputStream is)
 {
-  sexpSimpleString ss = newSimpleString();
-  sexpString s = newSexpString();
-  setSexpStringString(s,ss);
-  skipWhiteSpace(is);
-  while (is->nextChar != EOF)
-    {
-      appendCharToSimpleString(is->nextChar,ss);
-      is->getChar(is);
+    sexpSimpleString ss = newSimpleString();
+    sexpString s = newSexpString();
+
+    setSexpStringString(s,ss);
+    skipWhiteSpace(is);
+    while (is->nextChar != EOF) {
+	appendCharToSimpleString(is->nextChar, ss);
+	is->getChar(is);
     }
-  return (sexpObject)s;
+    return (sexpObject)s;
 }
 
 /* scanDecimal(is)
  * returns long integer that is value of decimal number
  */
 unsigned long int scanDecimal(sexpInputStream is)
-{ unsigned long int value = 0L;
-  int i = 0;
-  while (isDecDigit(is->nextChar))
-    { value = value*10 + decvalue[is->nextChar];
-      is->getChar(is);
-      if (i++ > 8)
-	ErrorMessage(ERROR,"Decimal number %d... too long.",(int)value);
+{
+    unsigned long int value = 0L;
+    int i = 0;
+
+    while (isDecDigit(is->nextChar)) {
+	value = value*10 + decvalue[is->nextChar];
+	is->getChar(is);
+	if (i++ > 8)
+	    ErrorMessage(ERROR,"Decimal number %d... too long.",(int)value);
     }
-  return value;
+    return value;
 }
 
 /* scanVerbatimString(is,ss,length)
@@ -330,16 +344,17 @@ unsigned long int scanDecimal(sexpInputStream is)
  */
 void scanVerbatimString(sexpInputStream is, sexpSimpleString ss, long int length)
 {
-  long int i = 0L;
-  skipWhiteSpace(is);
-  skipChar(is,':');
-  if (length == -1L) /* no length was specified */
-    ErrorMessage(ERROR,"Verbatim string had no declared length.");
-  for (i=0;i<length;i++)
-    { appendCharToSimpleString(is->nextChar,ss);
-      is->getChar(is);
+    long int i = 0L;
+
+    skipWhiteSpace(is);
+    skipChar(is,':');
+    if (length == -1L) /* no length was specified */
+	ErrorMessage(ERROR,"Verbatim string had no declared length.");
+    for (i=0;i<length;i++) {
+	appendCharToSimpleString(is->nextChar, ss);
+	is->getChar(is);
     }
-  return;
+    return;
 }
 
 /* scanQuotedString(is,ss,length)
@@ -351,81 +366,80 @@ void scanQuotedString(sexpInputStream is, sexpSimpleString ss, long int length)
 {
   int c;
   skipChar(is,'"');
-  while (length == -1 || simpleStringLength(ss) <= length)
-    {
-      if (is->nextChar == '\"')
-	{ if (length == -1 || (simpleStringLength(ss) == length))
-	    { skipChar(is,'\"');
-	      return;
+  while (length == -1 || simpleStringLength(ss) <= length) {
+	if (is->nextChar == '\"') {
+	    if (length == -1 || (simpleStringLength(ss) == length)) {
+		skipChar(is,'\"');
+		return;
 	    }
-	  else
-	    ErrorMessage(ERROR,"Quoted string ended too early. Declared length was %d",(int)length);
+	    else
+		ErrorMessage(ERROR,"Quoted string ended too early. Declared length was %d",(int)length);
 	}
-      else if (is->nextChar == '\\') /* handle escape sequence */
-	{ is->getChar(is);
-	  c = is->nextChar;
-	  if (c == 'b') appendCharToSimpleString('\b',ss);
-	  else if (c == 't') appendCharToSimpleString('\t',ss);
-	  else if (c == 'v') appendCharToSimpleString('\v',ss);
-	  else if (c == 'n') appendCharToSimpleString('\n',ss);
-	  else if (c == 'f') appendCharToSimpleString('\f',ss);
-	  else if (c == 'r') appendCharToSimpleString('\r',ss);
-	  else if (c == '\"') appendCharToSimpleString('\"',ss);
-	  else if (c == '\'') appendCharToSimpleString('\'',ss);
-	  else if (c == '\\') appendCharToSimpleString('\\',ss);
-	  else if (c >= '0' && c <= '7') /* octal number */
-	    { int j, val;
-	      val = 0;
-	      for (j=0;j<3;j++)
-		{ if (c >= '0' && c <= '7')
-		    { val = ((val << 3) | (c - '0'));
-		      if (j<2) { is->getChar(is); c = is->nextChar; }
-		    }
-		  else
-		    ErrorMessage(ERROR,"Octal character \\%o... too short.",
+	else if (is->nextChar == '\\') {	/* handle escape sequence */
+	    is->getChar(is);
+	    c = is->nextChar;
+	    if (c == 'b') appendCharToSimpleString('\b', ss);
+	    else if (c == 't') appendCharToSimpleString('\t', ss);
+	    else if (c == 'v') appendCharToSimpleString('\v', ss);
+	    else if (c == 'n') appendCharToSimpleString('\n', ss);
+	    else if (c == 'f') appendCharToSimpleString('\f', ss);
+	    else if (c == 'r') appendCharToSimpleString('\r', ss);
+	    else if (c == '\"') appendCharToSimpleString('\"', ss);
+	    else if (c == '\'') appendCharToSimpleString('\'', ss);
+	    else if (c == '\\') appendCharToSimpleString('\\', ss);
+	    else if (c >= '0' && c <= '7') {	/* octal number */
+		int val = 0;
+		int j;
+
+		for (j=0;j<3;j++) {
+		    if (c >= '0' && c <= '7') {
+			val = ((val << 3) | (c - '0'));
+			if (j<2) { is->getChar(is); c = is->nextChar; }
+		    } else
+			ErrorMessage(ERROR,"Octal character \\%o... too short.",
 				 val);
 		}
-	      if (val > 255)
+		if (val > 255)
 		    ErrorMessage(ERROR,"Octal character \\%o... too big.",
 				 val);
-	      appendCharToSimpleString(val,ss);
+		appendCharToSimpleString(val, ss);
 	    }
-	  else if (c == 'x') /* hexadecimal number */
-	    { int j, val;
-	      val = 0;
-	      is->getChar(is);
-	      c = is->nextChar;
-	      for (j=0;j<2;j++)
-		{ if (isHexDigit(c))
-		    { val = ((val << 4) | hexvalue[c]);
-		      if (j<1) { is->getChar(is); c = is->nextChar; }
+	    else if (c == 'x') {		/* hexadecimal number */
+		int val = 0;
+		int j;
+
+		is->getChar(is);
+		c = is->nextChar;
+		for (j=0;j<2;j++) {
+		    if (isHexDigit(c)) {
+			val = ((val << 4) | hexvalue[c]);
+			if (j<1) { is->getChar(is); c = is->nextChar; }
 		    }
-		  else
-		    ErrorMessage(ERROR,"Hex character \\x%x... too short.",
+		    else
+			ErrorMessage(ERROR,"Hex character \\x%x... too short.",
 				 val);
 		}
-	      appendCharToSimpleString(val,ss);
+		appendCharToSimpleString(val, ss);
 	    }
-	  else if (c == '\n') /* ignore backslash line feed */
-	    { /* also ignore following carriage-return if present */
-	      is->getChar(is);
-	      if (is->nextChar != '\r') goto gotnextchar;
+	    else if (c == '\n') {	/* ignore backslash line feed */
+		/* also ignore following carriage-return if present */
+		is->getChar(is);
+		if (is->nextChar != '\r') goto gotnextchar;
 	    }
-	  else if (c == '\r') /* ignore backslash carriage-return */
-	    { /* also ignore following linefeed if present */
-	      is->getChar(is);
-	      if (is->nextChar != '\n') goto gotnextchar;
+	    else if (c == '\r') {	/* ignore backslash carriage-return */
+		/* also ignore following linefeed if present */
+		is->getChar(is);
+		if (is->nextChar != '\n') goto gotnextchar;
 	    }
-	  else
-	    ErrorMessage(WARNING,"Escape character \\%c... unknown.",
-			 c);
+	    else
+		ErrorMessage(WARNING,"Escape character \\%c... unknown.", c);
 	} /* end of handling escape sequence */
-      else
-	appendCharToSimpleString(is->nextChar,ss);
-      is->getChar(is);
-    gotnextchar: ;
+	else
+	    appendCharToSimpleString(is->nextChar, ss);
+	is->getChar(is);
+	gotnextchar: ;
     } /* end of main while loop */
-  return;
+    return;
 }
 
 /* scanHexString(is,ss,length)
@@ -433,19 +447,19 @@ void scanQuotedString(sexpInputStream is, sexpSimpleString ss, long int length)
  * String is of given length result, or length = -1 if indefinite length.
  */
 void scanHexString(sexpInputStream is, sexpSimpleString ss, long int length)
-{ changeInputByteSize(is,4);
-  skipChar(is,'#');
-  while (is->nextChar != EOF && (is->nextChar != '#' || is->byteSize==4))
-    {
-      appendCharToSimpleString(is->nextChar,ss);
-      is->getChar(is);
+{
+    changeInputByteSize(is, 4);
+    skipChar(is, '#');
+    while (is->nextChar != EOF && (is->nextChar != '#' || is->byteSize==4)) {
+	appendCharToSimpleString(is->nextChar, ss);
+	is->getChar(is);
     }
-  skipChar(is,'#');
-  if (simpleStringLength(ss) != length && length >= 0)
-    ErrorMessage(WARNING,
-		 "Hex string has length %d different than declared length %d",
-		 (int)simpleStringLength(ss),
-		 (int)length);
+    skipChar(is,'#');
+    if (simpleStringLength(ss) != length && length >= 0)
+	ErrorMessage(WARNING,
+		 "Hex string has length %u different than declared length %u",
+		 (unsigned)simpleStringLength(ss),
+		 (unsigned)length);
 }
 
 /* scanBase64String(is,ss,length)
@@ -453,19 +467,19 @@ void scanHexString(sexpInputStream is, sexpSimpleString ss, long int length)
  * String is of given length result, or length = -1 if indefinite length.
  */
 void scanBase64String(sexpInputStream is, sexpSimpleString ss, long int length)
-{ changeInputByteSize(is,6);
-  skipChar(is,'|');
-  while (is->nextChar != EOF && (is->nextChar != '|' || is->byteSize == 6))
-    {
-      appendCharToSimpleString(is->nextChar,ss);
-      is->getChar(is);
+{
+    changeInputByteSize(is, 6);
+    skipChar(is, '|');
+    while (is->nextChar != EOF && (is->nextChar != '|' || is->byteSize == 6)) {
+	appendCharToSimpleString(is->nextChar, ss);
+	is->getChar(is);
     }
-  skipChar(is,'|');
-  if (simpleStringLength(ss) != length && length >= 0)
-    ErrorMessage(WARNING,
-		 "Base64 string has length %d different than declared length %d",
-		 (int)simpleStringLength(ss),
-		 (int)length);
+    skipChar(is,'|');
+    if (simpleStringLength(ss) != length && length >= 0)
+	ErrorMessage(WARNING,
+		 "Base64 string has length %u different than declared length %u",
+		 (unsigned)simpleStringLength(ss),
+		 (unsigned)length);
 }
 
 /* scanSimpleString(is)
@@ -475,34 +489,34 @@ void scanBase64String(sexpInputStream is, sexpSimpleString ss, long int length)
  */
 sexpSimpleString scanSimpleString(sexpInputStream is)
 {
-  long int length;
-  sexpSimpleString ss;
-  ss = newSimpleString();
-  skipWhiteSpace(is);
-  /* Note that it is important in the following code to test for token-ness
-   * before checking the other cases, so that a token may begin with ":",
-   * which would otherwise be treated as a verbatim string missing a length.
-   */
-  if (isTokenChar(is->nextChar) && !isDecDigit(is->nextChar))
-    scanToken(is,ss);
-  else if (isDecDigit(is->nextChar)
+    sexpSimpleString ss = newSimpleString();
+    long int length;
+
+    skipWhiteSpace(is);
+    /* Note that it is important in the following code to test for token-ness
+     * before checking the other cases, so that a token may begin with ":",
+     * which would otherwise be treated as a verbatim string missing a length.
+     */
+    if (isTokenChar(is->nextChar) && !isDecDigit(is->nextChar))
+	scanToken(is,ss);
+    else if (isDecDigit(is->nextChar)
 	   || is->nextChar == '\"'
 	   || is->nextChar == '#'
 	   || is->nextChar == '|'
 	   || is->nextChar == ':')
-    { if (isDecDigit(is->nextChar)) length = scanDecimal(is);
-      else                          length = -1L;
-      if (is->nextChar == '\"')     scanQuotedString(is,ss,length);
-      else if (is->nextChar == '#') scanHexString(is,ss,length);
-      else if (is->nextChar == '|') scanBase64String(is,ss,length);
-      else if (is->nextChar == ':') scanVerbatimString(is,ss,length);
+    {	if (isDecDigit(is->nextChar)) length = scanDecimal(is);
+	else                          length = -1L;
+	if (is->nextChar == '\"')     scanQuotedString(is, ss, length);
+	else if (is->nextChar == '#') scanHexString(is, ss, length);
+	else if (is->nextChar == '|') scanBase64String(is, ss, length);
+	else if (is->nextChar == ':') scanVerbatimString(is, ss, length);
     }
-  else
-    ErrorMessage(ERROR,"illegal character at position %d: %d (decimal)",
+    else
+	ErrorMessage(ERROR,"illegal character at position %d: %d (decimal)",
 		 is->count, is->nextChar );
-  if (simpleStringLength(ss) == 0)
-    ErrorMessage(WARNING,"Simple string has zero length.");
-  return ss;
+    if (simpleStringLength(ss) == 0)
+	ErrorMessage(WARNING,"Simple string has zero length.");
+    return ss;
 }
 
 /* scanString(is)
@@ -510,52 +524,50 @@ sexpSimpleString scanSimpleString(sexpInputStream is)
  */
 sexpString scanString(sexpInputStream is)
 {
-  sexpString s;
-  sexpSimpleString ss;
-  s = newSexpString();
-  if (is->nextChar == '[')
-    /* scan presentation hint */
-    { skipChar(is,'[');
-      ss = scanSimpleString(is);
-      setSexpStringPresentationHint(s,ss);
-      skipWhiteSpace(is);
-      skipChar(is,']');
-      skipWhiteSpace(is);
+    sexpString s = newSexpString();
+    sexpSimpleString ss;
+
+    if (is->nextChar == '[') {
+ 	/* scan presentation hint */
+	skipChar(is,'[');
+	ss = scanSimpleString(is);
+	setSexpStringPresentationHint(s, ss);
+	skipWhiteSpace(is);
+	skipChar(is, ']');
+	skipWhiteSpace(is);
     }
-  ss = scanSimpleString(is);
-  setSexpStringString(s,ss);
-  closeSexpString(s);
-  return s;
+    ss = scanSimpleString(is);
+    setSexpStringString(s, ss);
+    closeSexpString(s);
+    return s;
 }
 
 /* scanList(is)
  * Read and return a sexpList from the input stream.
  */
 sexpList scanList(sexpInputStream is)
-{ sexpList list;
-  sexpObject object;
-  skipChar(is,'(');
-  skipWhiteSpace(is);
-  list = newSexpList();
-  if (is->nextChar == ')')
-    { /* ErrorMessage(ERROR,"List () with no contents is illegal."); */
-      ; /* OK */
+{
+    sexpList list = newSexpList();
+    sexpObject object;
+
+    skipChar(is, '(');
+    skipWhiteSpace(is);
+    if (is->nextChar == ')') {
+	/* ErrorMessage(ERROR,"List () with no contents is illegal."); */
+	; /* OK */
+    } else {
+	object = scanObject(is);
+	sexpAddSexpListObject(list, object);
     }
-  else
-    { object = scanObject(is);
-      sexpAddSexpListObject(list,object);
-    }
-  while (TRUE)
-    { skipWhiteSpace(is);
-      if (is->nextChar == ')') /* we just grabbed last element of list */
-	{
-	  skipChar(is,')');
-	  closeSexpList(list);
-	  return list;
-	}
-      else
-        { object = scanObject(is);
-	  sexpAddSexpListObject(list,object);
+    while (TRUE) {
+	skipWhiteSpace(is);
+	if (is->nextChar == ')') { /* we just grabbed last element of list */
+	    skipChar(is,')');
+	    closeSexpList(list);
+	    return list;
+	} else {
+	    object = scanObject(is);
+	    sexpAddSexpListObject(list, object);
 	}
     }
 }
@@ -565,23 +577,20 @@ sexpList scanList(sexpInputStream is)
  */
 sexpObject scanObject(sexpInputStream is)
 {
-  sexpObject object;
-  skipWhiteSpace(is);
-  if (is->nextChar == '{')
-    {
-      changeInputByteSize(is,6);     /* order of this statement and next is */
-      skipChar(is,'{');              /*   important! */
-      object = scanObject(is);
-      skipChar(is,'}');
-      return object;
-    }
-  else
-    { if (is->nextChar == '(')
-	object = (sexpObject)scanList(is);
-      else
-	object = (sexpObject)scanString(is);
-      return object;
+    sexpObject object;
+
+    skipWhiteSpace(is);
+    if (is->nextChar == '{') {
+	changeInputByteSize(is, 6);    /* order of this statement and next is */
+	skipChar(is,'{');              /*   important! */
+	object = scanObject(is);
+	skipChar(is,'}');
+	return object;
+    } else {
+	if (is->nextChar == '(')
+	    object = (sexpObject)scanList(is);
+	else
+	    object = (sexpObject)scanString(is);
+	return object;
     }
 }
-
-
