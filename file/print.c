@@ -31,6 +31,15 @@
 
 FILE_RCSID("@(#)Id: print.c,v 1.38 2002/07/03 18:37:44 christos Exp ")
 
+/*@access fmagic @*/
+
+/*@-compmempass@*/
+/*@unchecked@*/
+static struct fmagic_s myfmagic;
+/*@unchecked@*/
+fmagic global_fmagic = &myfmagic;
+/*@=compmempass@*/
+
 #define SZOF(a)	(sizeof(a) / sizeof(a[0]))
 
 #ifndef COMPILE_ONLY
@@ -168,6 +177,7 @@ error(const char *f, ...)
 void
 magwarn(const char *f, ...)
 {
+	fmagic fm = global_fmagic;
 	va_list va;
 
 	va_start(va, f);
@@ -176,7 +186,7 @@ magwarn(const char *f, ...)
 
 	if (progname != NULL) 
 		(void) fprintf(stderr, "%s: %s, %d: ", 
-			       progname, magicfile, lineno);
+			       progname, fm->magicfile, fm->lineno);
 	(void) vfprintf(stderr, f, va);
 	va_end(va);
 	(void) fputc('\n', stderr);

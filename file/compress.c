@@ -292,11 +292,11 @@ err:
 
 /*
  * compress routines:
- *	zmagic() - returns 0 if not recognized, uncompresses and prints
+ *	fmagicZ() - returns 0 if not recognized, uncompresses and prints
  *		   information if recognized
  */
 int
-zmagic(const char *fname, unsigned char *buf, int nbytes)
+fmagicZ(fmagic fm, const char *fname, unsigned char *buf, int nbytes)
 {
 	unsigned char *newbuf;
 	int newsize;
@@ -307,10 +307,10 @@ zmagic(const char *fname, unsigned char *buf, int nbytes)
 			continue;
 		if (memcmp(buf, compr[i].magic, compr[i].maglen) == 0 &&
 		    (newsize = uncompressbuf(i, buf, &newbuf, nbytes)) != 0) {
-			(void) tryit(fname, newbuf, newsize, 1);
+			(void) fmagicF(fm, fname, newbuf, newsize, 1);
 			free(newbuf);
 			printf(" (");
-			(void) tryit(fname, buf, nbytes, 0);
+			(void) fmagicF(fm, fname, buf, nbytes, 0);
 			printf(")");
 			return 1;
 		}

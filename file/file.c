@@ -32,6 +32,11 @@
 
 FILE_RCSID("@(#)Id: file.c,v 1.66 2002/07/03 19:00:41 christos Exp ")
 
+/*@access fmagic @*/
+
+/*@unchecked@*/
+extern fmagic global_fmagic;
+
 #ifdef S_IFLNK
 # define USAGE  "Usage: %s [-bciknsvzL] [-f namefile] [-m magicfiles] file...\n"
 #else
@@ -55,23 +60,19 @@ int os2_apptype (const char *fn, char *buf, int nb);
 /*@unchecked@*/
 static	int	nobuffer = 0;   /* Do not buffer stdout */
 
-/*@unchecked@*/ /*@null@*/
-const char *magicfile = 0;	/* where the magic is		*/
 /*@unchecked@*/ /*@observer@*/
 static const char *default_magicfile = MAGIC;
 
 /*@unchecked@*/
 char *progname;		/* used throughout 			*/
-/*@unchecked@*/
-int lineno;		/* line number in the magic file	*/
 
 /*
  * unwrap -- read a file of filenames, do each one.
  */
 static void
-unwrap(char *fn)
+unwrap(fmagic fm, char *fn)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+	/*@modifies fm, fileSystem, internalState @*/
 {
 	char buf[MAXPATHLEN];
 	FILE *f;
@@ -97,7 +98,7 @@ unwrap(char *fn)
 
 	while (fgets(buf, MAXPATHLEN, f) != NULL) {
 		buf[strlen(buf)-1] = '\0';
-		process(buf, wid);
+		fmagicProcess(fm, buf, wid);
 		if(nobuffer)
 			(void) fflush(stdout);
 	}
@@ -156,16 +157,17 @@ help(void)
  */
 int
 main(int argc, char **argv)
-	/*@globals fmagic_flags, nobuffer,
-		default_magicfile, lineno, magicfile, mlist, optind, progname,
+	/*@globals global_fmagic, nobuffer,
+		default_magicfile, optind, progname,
 		fileSystem, internalState @*/
-	/*@modifies argv, fmagic_flags, nobuffer,
-		default_magicfile, lineno, magicfile, mlist, optind, progname,
+	/*@modifies argv, global_fmagic, nobuffer,
+		default_magicfile, optind, progname,
 		fileSystem, internalState @*/
 {
 	int c;
 	int action = 0, didsomefiles = 0, errflg = 0, ret = 0, app = 0;
 	char *mime, *home, *usermagic;
+	fmagic fm = global_fmagic;
 	struct stat sb;
 #define OPTSTRING	"bcdf:ikm:nsvzCL"
 #ifdef HAVE_GETOPT_H
@@ -216,9 +218,11 @@ main(int argc, char **argv)
 		progname = argv[0];
 /*@=modobserver@*/
 
-	magicfile = default_magicfile;
+/*@-assignexpose@*/
+	fm->magicfile = default_magicfile;
+/*@=assignexpose@*/
 	if ((usermagic = getenv("MAGIC")) != NULL)
-		magicfile = usermagic;
+		fm->magicfile = usermagic;
 	else {
 		if ((home = getenv("HOME")) != NULL) {
 			size_t nb = strlen(home) + 8;
@@ -228,7 +232,7 @@ main(int argc, char **argv)
 			if (stat(usermagic, &sb)<0) 
 				free(usermagic);
 			else
-				magicfile = usermagic;
+				fm->magicfile = usermagic;
 		}
 	}
 
@@ -247,7 +251,7 @@ main(int argc, char **argv)
 			/*@switchbreak@*/ break;
 #endif
 		case 'b':
-			fmagic_flags |= FMAGIC_FLAGS_BRIEF;
+			fm->flags |= FMAGIC_FLAGS_BRIEF;
 			/*@switchbreak@*/ break;
 		case 'c':
 			action = CHECK;
@@ -256,49 +260,51 @@ main(int argc, char **argv)
 			action = COMPILE;
 			/*@switchbreak@*/ break;
 		case 'd':
-			fmagic_flags |= FMAGIC_FLAGS_DEBUG;
+			fm->flags |= FMAGIC_FLAGS_DEBUG;
 			/*@switchbreak@*/ break;
 		case 'f':
 			if (!app) {
-				ret = apprentice(magicfile, action);
+				ret = fmagicSetup(fm, fm->magicfile, action);
 				if (action)
 					exit(ret);
 				app = 1;
 			}
-			unwrap(optarg);
+			unwrap(fm, optarg);
 			++didsomefiles;
 			/*@switchbreak@*/ break;
 		case 'i':
-			fmagic_flags |= FMAGIC_FLAGS_MIME;
-			mime = malloc(strlen(magicfile) + sizeof(".mime"));
-			(void)strcpy(mime, magicfile);
+			fm->flags |= FMAGIC_FLAGS_MIME;
+			mime = malloc(strlen(fm->magicfile) + sizeof(".mime"));
+			(void)strcpy(mime, fm->magicfile);
 			(void)strcat(mime, ".mime");
-			magicfile = mime;
+			fm->magicfile = mime;
 			/*@switchbreak@*/ break;
 		case 'k':
-			fmagic_flags |= FMAGIC_FLAGS_CONTINUE;
+			fm->flags |= FMAGIC_FLAGS_CONTINUE;
 			/*@switchbreak@*/ break;
 		case 'm':
-			magicfile = optarg;
+/*@-assignexpose@*/
+			fm->magicfile = optarg;
+/*@=assignexpose@*/
 			/*@switchbreak@*/ break;
 		case 'n':
 			++nobuffer;
 			/*@switchbreak@*/ break;
 		case 's':
-			fmagic_flags |= FMAGIC_FLAGS_SPECIAL;
+			fm->flags |= FMAGIC_FLAGS_SPECIAL;
 			/*@switchbreak@*/ break;
 		case 'v':
 			(void) fprintf(stdout, "%s-%d.%d\n", progname,
 				       FILE_VERSION_MAJOR, patchlevel);
 			(void) fprintf(stdout, "magic file from %s\n",
-				       magicfile);
+				       fm->magicfile);
 			return 1;
 		case 'z':
-			fmagic_flags |= FMAGIC_FLAGS_UNCOMPRESS;
+			fm->flags |= FMAGIC_FLAGS_UNCOMPRESS;
 			/*@switchbreak@*/ break;
 #ifdef S_IFLNK
 		case 'L':
-			fmagic_flags |= FMAGIC_FLAGS_FOLLOW;
+			fm->flags |= FMAGIC_FLAGS_FOLLOW;
 			/*@switchbreak@*/ break;
 #endif
 		case '?':
@@ -312,7 +318,7 @@ main(int argc, char **argv)
 		usage();
 
 	if (!app) {
-		ret = apprentice(magicfile, action);
+		ret = fmagicSetup(fm, fm->magicfile, action);
 		if (action)
 			exit(ret);
 		app = 1;
@@ -329,7 +335,7 @@ main(int argc, char **argv)
 				wid = nw;
 		}
 		for (; optind < argc; optind++)
-			process(argv[optind], wid);
+			fmagicProcess(fm, argv[optind], wid);
 	}
 
 #if HAVE_MCHECK_H && HAVE_MTRACE

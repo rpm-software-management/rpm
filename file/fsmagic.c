@@ -31,10 +31,10 @@
 
 FILE_RCSID("@(#)Id: fsmagic.c,v 1.36 2002/07/03 19:00:41 christos Exp ")
 
-int fmagic_flags = 0;
+/*@access fmagic @*/
 
 int
-fsmagic(const char *fn, struct stat *sb)
+fmagicD(fmagic fm, const char *fn, struct stat *sb)
 {
 	int ret = 0;
 
@@ -43,7 +43,7 @@ fsmagic(const char *fn, struct stat *sb)
 	 * On 4.2BSD and similar systems, use lstat() to identify symlinks.
 	 */
 #if defined(S_IFLNK) || defined(__LCLINT__)
-	if (!(fmagic_flags & FMAGIC_FLAGS_FOLLOW))
+	if (!(fm->flags & FMAGIC_FLAGS_FOLLOW))
 		ret = lstat(fn, sb);
 	else
 #endif
@@ -57,7 +57,7 @@ fsmagic(const char *fn, struct stat *sb)
 		return 1;
 	}
 
-	if ((fmagic_flags & FMAGIC_FLAGS_MIME)) {
+	if ((fm->flags & FMAGIC_FLAGS_MIME)) {
 		if ((sb->st_mode & S_IFMT) != S_IFREG) {
 			ckfputs("application/x-not-regular-file", stdout);
 			return 1;
@@ -86,7 +86,7 @@ fsmagic(const char *fn, struct stat *sb)
 		 * like ordinary files.  Otherwise, just report that they
 		 * are block special files and go on to the next file.
 		 */
-		if ((fmagic_flags & FMAGIC_FLAGS_SPECIAL))
+		if ((fm->flags & FMAGIC_FLAGS_SPECIAL))
 			break;
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
@@ -110,7 +110,7 @@ fsmagic(const char *fn, struct stat *sb)
 		 * like ordinary files.  Otherwise, just report that they
 		 * are block special files and go on to the next file.
 		 */
-		if ((fmagic_flags & FMAGIC_FLAGS_SPECIAL))
+		if ((fm->flags & FMAGIC_FLAGS_SPECIAL))
 			break;
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
@@ -184,8 +184,8 @@ fsmagic(const char *fn, struct stat *sb)
 /*@=branchstate@*/
 
 			/* Otherwise, handle it. */
-			if ((fmagic_flags & FMAGIC_FLAGS_FOLLOW)) {
-				process(buf, strlen(buf));
+			if ((fm->flags & FMAGIC_FLAGS_FOLLOW)) {
+				fmagicProcess(fm, buf, strlen(buf));
 				return 1;
 			} else { /* just print what it points to */
 				ckfputs("symbolic link to ", stdout);
@@ -220,15 +220,15 @@ fsmagic(const char *fn, struct stat *sb)
 	 * the fact that it is empty will be detected and reported correctly
 	 * when we read the file.)
 	 */
-	if (!(fmagic_flags & FMAGIC_FLAGS_SPECIAL) && sb->st_size == 0) {
-		ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/x-empty" : "empty", stdout);
+	if (!(fm->flags & FMAGIC_FLAGS_SPECIAL) && sb->st_size == 0) {
+		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-empty" : "empty", stdout);
 		return 1;
 	}
 	return 0;
 }
 
 int
-tryit(const char *fn, unsigned char *buf, int nb, int zfl)
+fmagicF(fmagic fm, const char *fn, unsigned char *buf, int nb, int zfl)
 {
 
 	/*
@@ -245,27 +245,27 @@ tryit(const char *fn, unsigned char *buf, int nb, int zfl)
 	       return 'o';
 #endif
 	/* try compression stuff */
-	if (zfl && zmagic(fn, buf, nb))
+	if (zfl && fmagicZ(fm, fn, buf, nb))
 		return 'z';
 
 	/* try tests in /etc/magic (or surrogate magic file) */
-	if (softmagic(buf, nb))
+	if (fmagicS(fm, buf, nb))
 		return 's';
 
 	/* try known keywords, check whether it is ASCII */
-	if (ascmagic(buf, nb))
+	if (fmagicA(fm, buf, nb))
 		return 'a';
 
 	/* abandon hope, all ye who remain here */
-	ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/octet-stream" : "data", stdout);
+	ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/octet-stream" : "data", stdout);
 		return '\0';
 }
 
 /*
- * process - process input file
+ * fmagicProcess - process input file
  */
 void
-process(const char *inname, int wid)
+fmagicProcess(fmagic fm, const char *inname, int wid)
 {
 	int	fd = 0;
 	static  const char stdname[] = "standard input";
@@ -283,7 +283,7 @@ process(const char *inname, int wid)
 		inname = stdname;
 	}
 
-	if (wid > 0 && !(fmagic_flags & FMAGIC_FLAGS_BRIEF))
+	if (wid > 0 && !(fm->flags & FMAGIC_FLAGS_BRIEF))
 	     (void) printf("%s:%*s ", inname, 
 			   (int) (wid - strlen(inname)), "");
 
@@ -291,7 +291,7 @@ process(const char *inname, int wid)
 		/*
 		 * first try judging the file based on its filesystem status
 		 */
-		if (fsmagic(inname, &sb) != 0) {
+		if (fmagicD(fm, inname, &sb) != 0) {
 			(void) putchar('\n');
 			return;
 		}
@@ -316,10 +316,10 @@ process(const char *inname, int wid)
 	}
 
 	if (nbytes == 0)
-		ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/x-empty" : "empty", stdout);
+		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-empty" : "empty", stdout);
 	else {
 		buf[nbytes++] = '\0';	/* null-terminate it */
-		match = tryit(inname, buf, nbytes, (fmagic_flags & FMAGIC_FLAGS_UNCOMPRESS));
+		match = fmagicF(fm, inname, buf, nbytes, (fm->flags & FMAGIC_FLAGS_UNCOMPRESS));
 	}
 
 #ifdef BUILTIN_ELF

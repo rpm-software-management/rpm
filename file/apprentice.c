@@ -31,6 +31,8 @@
 
 FILE_RCSID("@(#)Id: apprentice.c,v 1.49 2002/07/03 19:00:41 christos Exp ")
 
+/*@access fmagic @*/
+
 #define	EATAB {while (isascii((unsigned char) *l) && \
 		      isspace((unsigned char) *l))  ++l;}
 #define LOWCASE(l) (isupper((unsigned char) (l)) ? \
@@ -62,9 +64,6 @@ FILE_RCSID("@(#)Id: apprentice.c,v 1.49 2002/07/03 19:00:41 christos Exp ")
 
 /*@unchecked@*/
 static int maxmagic = 0;
-
-/*@unchecked@*/
-struct mlist mlist;
 
 /*
  * extend the sign bit if the comparison is to be signed
@@ -780,10 +779,10 @@ mkdbname(const char *fn)
  * const char *fn: name of magic file
  */
 static int
-apprentice_file(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
-		const char *fn, int action)
-	/*@globals lineno, maxmagic, fileSystem @*/
-	/*@modifies *magicp, *nmagicp, lineno, maxmagic, fileSystem @*/
+apprentice_file(fmagic fm, /*@out@*/ struct magic **magicp,
+		/*@out@*/ uint32_t *nmagicp, const char *fn, int action)
+	/*@globals maxmagic, fileSystem @*/
+	/*@modifies fm, *magicp, *nmagicp, maxmagic, fileSystem @*/
 {
 	/*@observer@*/
 	static const char hdr[] =
@@ -808,7 +807,7 @@ apprentice_file(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	if (action == CHECK)	/* print silly verbose header for USG compat. */
 		(void) printf("%s\n", hdr);
 
-	for (lineno = 1;fgets(line, BUFSIZ, f) != NULL; lineno++) {
+	for (fm->lineno = 1; fgets(line, BUFSIZ, f) != NULL; fm->lineno++) {
 		if (line[0]=='#')	/* comment, do not parse */
 			continue;
 		if (strlen(line) <= (unsigned)1) /* null line, garbage, etc */
@@ -831,7 +830,8 @@ apprentice_file(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
  * handle an mmaped file.
  */
 static int
-apprentice_compile(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
+apprentice_compile(/*@unused@*/ const fmagic fm,
+		/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		const char *fn, /*@unused@*/ int action)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -879,7 +879,8 @@ apprentice_compile(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
  * handle a compiled file.
  */
 static int
-apprentice_map(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
+apprentice_map(/*@unused@*/ const fmagic fm,
+		/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		const char *fn, /*@unused@*/ int action)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies *magicp, *nmagicp, fileSystem, internalState @*/
@@ -970,9 +971,9 @@ error:
  * Handle one file.
  */
 static int
-apprentice_1(const char *fn, int action)
-	/*@globals lineno, mlist, fileSystem, internalState @*/
-	/*@modifies lineno, mlist, fileSystem, internalState @*/
+apprentice_1(fmagic fm, const char *fn, int action)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fm, fileSystem, internalState @*/
 {
 /*@-shadow@*/
 	struct magic *magic = NULL;
@@ -982,19 +983,18 @@ apprentice_1(const char *fn, int action)
 	int rv = -1;
 
 	if (action == COMPILE) {
-		rv = apprentice_file(&magic, &nmagic, fn, action);
-		if (rv == 0)
-			return apprentice_compile(&magic, &nmagic, fn, action);
-		else
+		rv = apprentice_file(fm, &magic, &nmagic, fn, action);
+		if (rv)
 			return rv;
+		return apprentice_compile(fm, &magic, &nmagic, fn, action);
 	}
 #ifndef COMPILE_ONLY
-	if ((rv = apprentice_map(&magic, &nmagic, fn, action)) != 0)
+	if ((rv = apprentice_map(fm, &magic, &nmagic, fn, action)) != 0)
 		(void)fprintf(stderr, "%s: Using regular magic file `%s'\n",
 		    progname, fn);
 		
 	if (rv != 0)
-		rv = apprentice_file(&magic, &nmagic, fn, action);
+		rv = apprentice_file(fm, &magic, &nmagic, fn, action);
 
 	if (rv != 0)
 		return rv;
@@ -1007,42 +1007,46 @@ apprentice_1(const char *fn, int action)
 	ml->magic = magic;
 	ml->nmagic = nmagic;
 
-	mlist.prev->next = ml;
-	ml->prev = mlist.prev;
+	fm->mlist->prev->next = ml;
+	ml->prev = fm->mlist->prev;
 /*@-immediatetrans@*/
-	ml->next = &mlist;
+	ml->next = fm->mlist;
 /*@=immediatetrans@*/
 /*@-kepttrans@*/
-	mlist.prev = ml;
+	fm->mlist->prev = ml;
 /*@=kepttrans@*/
 
-/*@-compdef@*/
+/*@-compdef -compmempass @*/
 	return rv;
-/*@=compdef@*/
+/*@=compdef =compmempass @*/
 #endif /* COMPILE_ONLY */
 }
 
 /* const char *fn: list of magic files */
 int
-apprentice(const char *fn, int action)
+fmagicSetup(fmagic fm, const char *fn, int action)
 {
 	char *p, *mfn;
 	int file_err, errs = -1;
 
+	if (fm->mlist == NULL) {
+		static struct mlist mlist;
 /*@-immediatetrans@*/
-	mlist.next = &mlist;
-	mlist.prev = &mlist;
+		mlist.next = &mlist;
+		mlist.prev = &mlist;
+		fm->mlist = &mlist;
 /*@=immediatetrans@*/
+	}
 
-	mfn = xmalloc(strlen(fn)+1);
-	fn = strcpy(mfn, fn);
+	mfn = xstrdup(fn);
+	fn = mfn;
   
 /*@-branchstate@*/
 	while (fn != NULL) {
 		p = strchr(fn, PATHSEP);
 		if (p != NULL)
 			*p++ = '\0';
-		file_err = apprentice_1(fn, action);
+		file_err = apprentice_1(fm, fn, action);
 		if (file_err > errs)
 			errs = file_err;
 		fn = p;
@@ -1061,14 +1065,12 @@ apprentice(const char *fn, int action)
 }
 
 #ifdef COMPILE_ONLY
-const char *magicfile;
-char *progname;
-int lineno;
-
 int
 main(int argc, char *argv[])
 	/*@*/
 {
+	static struct fmagic_s myfmagic;
+	fmagic fm = &myfmagic;
 	int ret;
 
 	if ((progname = strrchr(argv[0], '/')) != NULL)
@@ -1080,8 +1082,8 @@ main(int argc, char *argv[])
 		(void)fprintf(stderr, "usage: %s file\n", progname);
 		exit(1);
 	}
-	magicfile = argv[1];
+	fm->magicfile = argv[1];
 
-	exit(apprentice(magicfile, COMPILE));
+	exit(apprentice(fm, fm->magicfile, COMPILE));
 }
 #endif /* COMPILE_ONLY */

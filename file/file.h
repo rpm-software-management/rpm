@@ -116,16 +116,12 @@ struct mlist {
 
 /*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern char *progname;		/* the program name 			*/
-/*@unchecked@*/ /*@dependent@*/ /*@observer@*/
-extern const char *magicfile;	/* name of the magic file		*/
 /*@unchecked@*/
-extern int lineno;		/* current line number in magic file	*/
 
-/*@unchecked@*/
-extern struct mlist mlist;	/* list of arrays of magic entries	*/
-
-enum fmagic_e {
+enum fmagicFlags_e {
+/*@-enummemuse@*/
     FMAGIC_FLAGS_NONE		= 0,
+/*@=enummemuse@*/
     FMAGIC_FLAGS_DEBUG		= (1 << 0),
     FMAGIC_FLAGS_BRIEF		= (1 << 1),	/*!< brief output format */
     FMAGIC_FLAGS_MIME		= (1 << 2),	/*!< output as mime-types */
@@ -135,49 +131,65 @@ enum fmagic_e {
     FMAGIC_FLAGS_UNCOMPRESS	= (1 << 6)	/*!< uncompress files? */
 };
 
-extern int fmagic_flags;
+struct fmagic_s {
+    int flags;			/*!< bit(s) to control fmagic behavior. */
+/*@dependent@*/ /*@observer@*/ /*@null@*/
+    const char *magicfile;	/*!< name of the magic file		*/
+    int lineno;			/*!< current line number in magic file	*/
+/*@null@*/
+    struct mlist * mlist;	/*!< list of arrays of magic entries	*/
+};
+
+typedef /*@abstract@*/ struct fmagic_s * fmagic;
 
 /*@mayexit@*/
-extern int   apprentice(const char *fn, int action)
-	/*@globals lineno, mlist, fileSystem, internalState @*/
-	/*@modifies lineno, mlist, fileSystem, internalState @*/;
-extern int   ascmagic(unsigned char *buf, int nbytes)
+extern int fmagicSetup(fmagic fm, const char *fn, int action)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fm, fileSystem, internalState @*/;
+extern void  fmagicProcess(fmagic fm, const char *inname, int wid)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fm, fileSystem, internalState @*/;
+
+extern int fmagicA(fmagic fm, unsigned char *buf, int nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
+struct stat;
+extern int fmagicD(fmagic fm, const char *fn, /*@out@*/ struct stat *sb)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fm, *sb, fileSystem, internalState @*/;
+extern int fmagicS(fmagic fm, unsigned char *buf, int nbytes)
+	/*@globals fileSystem @*/
+	/*@modifies fm, buf, fileSystem @*/;
+extern int fmagicF(fmagic fm, const char *fn, unsigned char *buf, int nb, int zfl)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fm, buf, fileSystem, internalState @*/;
+extern int fmagicZ(fmagic fm, const char *fname,
+		unsigned char *buf, int nbytes)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fm, buf, fileSystem, internalState @*/;
+
 /*@exits@*/
-extern void  error(const char *f, ...)
+extern void error(const char *f, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-extern void  ckfputs(const char *str, FILE *fil)
+extern void ckfputs(const char *str, FILE *fil)
 	/*@globals fileSystem @*/
 	/*@modifies fil, fileSystem @*/;
-struct stat;
-extern int   fsmagic(const char *fn, /*@out@*/ struct stat *sb)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *sb, fileSystem, internalState @*/;
 /*@observer@*/
 extern char *fmttime(long v, int local)
 	/*@*/;
 extern int   is_tar(unsigned char *buf, int nbytes)
 	/*@*/;
-extern void  magwarn(const char *f, ...)
+extern void magwarn(const char *f, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-extern void  mdump(struct magic *m)
+extern void mdump(struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
-extern void  process(const char *inname, int wid)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
-extern void  showstr(FILE *fp, const char *s, int len)
+extern void showstr(FILE *fp, const char *s, int len)
 	/*@globals fileSystem @*/
 	/*@modifies fp, fileSystem @*/;
-extern int   softmagic(unsigned char *buf, int nbytes)
-	/*@globals fileSystem @*/
-	/*@modifies buf, fileSystem @*/;
-extern int   tryit(const char *fn, unsigned char *buf, int nb, int zfl)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies buf, fileSystem, internalState @*/;
+
 /**
  */
 /*@unused@*/ /*@exits@*/ /*@only@*/
@@ -191,10 +203,8 @@ static inline void * vmefail(/*@unused@*/ size_t nb)
 	return NULL;
 /*@=nullret@*/
 }
-extern int   zmagic(const char *fname, unsigned char *buf, int nbytes)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies buf, fileSystem, internalState @*/;
-extern void  ckfprintf(FILE *f, const char *fmt, ...)
+
+extern void ckfprintf(FILE *f, const char *fmt, ...)
 	/*@globals fileSystem @*/
 	/*@modifies f, fileSystem @*/;
 extern uint32_t signextend(struct magic *m, uint32_t v)

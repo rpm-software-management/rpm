@@ -41,6 +41,8 @@
 
 FILE_RCSID("@(#)Id: ascmagic.c,v 1.32 2002/07/03 18:26:37 christos Exp ")
 
+/*@access fmagic @*/
+
 typedef unsigned long unichar;
 
 #define MAXLINELEN 300	/* longest sane line length */
@@ -387,7 +389,7 @@ from_ebcdic(const unsigned char *buf, int nbytes, /*@out@*/ unsigned char *otp)
 }
 
 static int
-ascmatch(const unsigned char *s, const unichar *us, int ulen)
+fmagicAMatch(const unsigned char *s, const unichar *us, int ulen)
 	/*@*/
 {
 	size_t i;
@@ -405,7 +407,7 @@ ascmatch(const unsigned char *s, const unichar *us, int ulen)
 
 /* int nbytes: size actually read */
 int
-ascmagic(unsigned char *buf, int nbytes)
+fmagicA(fmagic fm, unsigned char *buf, int nbytes)
 {
 	int i;
 	char nbuf[HOWMANY+1];		/* one extra for terminating '\0' */
@@ -436,16 +438,16 @@ ascmagic(unsigned char *buf, int nbytes)
 	 */
 	switch (is_tar(buf, nbytes)) {
 	case 1:
-		ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/x-tar" : "tar archive", stdout);
+		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-tar" : "tar archive", stdout);
 		return 1;
 	case 2:
-		ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/x-tar, POSIX"
+		ckfputs((fm->flags & FMAGIC_FLAGS_MIME) ? "application/x-tar, POSIX"
 				: "POSIX tar archive", stdout);
 		return 1;
 	}
 
 	/*
-	 * Undo the NUL-termination kindly provided by process()
+	 * Undo the NUL-termination kindly provided by fmagicProcess()
 	 * but leave at least one byte to look at
 	 */
 
@@ -552,7 +554,7 @@ ascmagic(unsigned char *buf, int nbytes)
 		 * compare the word thus isolated against the token list
 		 */
 		for (p = names; p < names + NNAMES; p++) {
-			if (ascmatch(p->name, ubuf + i, end - i)) {
+			if (fmagicAMatch(p->name, ubuf + i, end - i)) {
 				subtype = types[p->type].human;
 				subtype_mime = types[p->type].mime;
 				goto subtype_identified;
@@ -594,7 +596,7 @@ subtype_identified:
 		}
 	}
 
-	if ((fmagic_flags & FMAGIC_FLAGS_MIME)) {
+	if ((fm->flags & FMAGIC_FLAGS_MIME)) {
 		if (subtype_mime != NULL)
 			ckfputs(subtype_mime, stdout);
 		else

@@ -31,8 +31,10 @@
 
 FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
 
+/*@access fmagic @*/
+
 static int32_t
-sm_print(union VALUETYPE *p, struct magic *m)
+fmagicSPrint(/*@unused@*/ const fmagic fm, union VALUETYPE *p, struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/
 {
@@ -99,7 +101,7 @@ sm_print(union VALUETYPE *p, struct magic *m)
 		break;
 
 	default:
-		error("invalid m->type (%d) in sm_print().\n", m->type);
+		error("invalid m->type (%d) in fmagicSPrint().\n", m->type);
 		/*@notreached@*/
 	}
 	return(t);
@@ -111,7 +113,7 @@ sm_print(union VALUETYPE *p, struct magic *m)
  * (unless you have a better idea)
  */
 static int
-sm_convert(union VALUETYPE *p, struct magic *m)
+fmagicSConvert(/*@unused@*/ const fmagic fm, union VALUETYPE *p, struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/
 {
@@ -373,7 +375,7 @@ sm_convert(union VALUETYPE *p, struct magic *m)
 	case REGEX:
 		return 1;
 	default:
-		error("invalid type %d in sm_convert().\n", m->type);
+		error("invalid type %d in fmagicSConvert().\n", m->type);
 		/*@notreached@*/
 		return 0;
 	}
@@ -381,18 +383,19 @@ sm_convert(union VALUETYPE *p, struct magic *m)
 
 
 static void
-sm_debug(int32_t offset, char *str, int len)
+fmagicSDebug(int32_t offset, char *str, int len)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-	(void) fprintf(stderr, "sm_get @%d: ", offset);
+	(void) fprintf(stderr, "fmagicSGet @%d: ", offset);
 	showstr(stderr, (char *) str, len);
 	(void) fputc('\n', stderr);
 	(void) fputc('\n', stderr);
 }
 
 static int
-sm_get(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
+fmagicSGet(const fmagic fm, union VALUETYPE *p, unsigned char *s,
+		struct magic *m, int nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies p, s, fileSystem @*/
 {
@@ -426,8 +429,8 @@ sm_get(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
 	}
 /*@=branchstate@*/
 
-	if (fmagic_flags & FMAGIC_FLAGS_DEBUG) {
-		sm_debug(offset, (char *) p, sizeof(union VALUETYPE));
+	if (fm->flags & FMAGIC_FLAGS_DEBUG) {
+		fmagicSDebug(offset, (char *) p, sizeof(union VALUETYPE));
 		mdump(m);
 	}
 
@@ -760,18 +763,18 @@ sm_get(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
 
 		memcpy(p, s + offset, sizeof(union VALUETYPE));
 
-		if (fmagic_flags & FMAGIC_FLAGS_DEBUG) {
-			sm_debug(offset, (char *) p, sizeof(union VALUETYPE));
+		if (fm->flags & FMAGIC_FLAGS_DEBUG) {
+			fmagicSDebug(offset, (char *) p, sizeof(union VALUETYPE));
 			mdump(m);
 		}
 	}
-	if (!sm_convert(p, m))
+	if (!fmagicSConvert(fm, p, m))
 	  return 0;
 	return 1;
 }
 
 static int
-sm_check(union VALUETYPE *p, struct magic *m)
+fmagicSCheck(const fmagic fm, union VALUETYPE *p, struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -872,7 +875,7 @@ sm_check(union VALUETYPE *p, struct magic *m)
 	}
 		/*@notreached@*/ break;
 	default:
-		error("invalid type %d in sm_check().\n", m->type);
+		error("invalid type %d in fmagicSCheck().\n", m->type);
 		/*@notreached@*/
 		return 0;
 	}
@@ -882,21 +885,21 @@ sm_check(union VALUETYPE *p, struct magic *m)
 
 	switch (m->reln) {
 	case 'x':
-		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+		if (fm->flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "%u == *any* = 1\n", v);
 		matched = 1;
 		break;
 
 	case '!':
 		matched = v != l;
-		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+		if (fm->flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "%u != %u = %d\n",
 				       v, l, matched);
 		break;
 
 	case '=':
 		matched = v == l;
-		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+		if (fm->flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "%u == %u = %d\n",
 				       v, l, matched);
 		break;
@@ -904,13 +907,13 @@ sm_check(union VALUETYPE *p, struct magic *m)
 	case '>':
 		if (m->flag & UNSIGNED) {
 			matched = v > l;
-			if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+			if (fm->flags & FMAGIC_FLAGS_DEBUG)
 				(void) fprintf(stderr, "%u > %u = %d\n",
 					       v, l, matched);
 		}
 		else {
 			matched = (int32_t) v > (int32_t) l;
-			if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+			if (fm->flags & FMAGIC_FLAGS_DEBUG)
 				(void) fprintf(stderr, "%d > %d = %d\n",
 					       v, l, matched);
 		}
@@ -919,13 +922,13 @@ sm_check(union VALUETYPE *p, struct magic *m)
 	case '<':
 		if (m->flag & UNSIGNED) {
 			matched = v < l;
-			if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+			if (fm->flags & FMAGIC_FLAGS_DEBUG)
 				(void) fprintf(stderr, "%u < %u = %d\n",
 					       v, l, matched);
 		}
 		else {
 			matched = (int32_t) v < (int32_t) l;
-			if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+			if (fm->flags & FMAGIC_FLAGS_DEBUG)
 				(void) fprintf(stderr, "%d < %d = %d\n",
 					       v, l, matched);
 		}
@@ -933,21 +936,21 @@ sm_check(union VALUETYPE *p, struct magic *m)
 
 	case '&':
 		matched = (v & l) == l;
-		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+		if (fm->flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "((%x & %x) == %x) = %d\n",
 				       v, l, l, matched);
 		break;
 
 	case '^':
 		matched = (v & l) != l;
-		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
+		if (fm->flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "((%x & %x) != %x) = %d\n",
 				       v, l, l, matched);
 		break;
 
 	default:
 		matched = 0;
-		error("sm_check: can't happen: invalid relation %d.\n", m->reln);
+		error("fmagicSCheck: can't happen: invalid relation %d.\n", m->reln);
 		/*@notreached@*/ break;
 	}
 
@@ -982,7 +985,8 @@ sm_check(union VALUETYPE *p, struct magic *m)
  *	so that higher-level continuations are processed.
  */
 static int
-sm_match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
+fmagicSMatch(const fmagic fm, struct magic *m, uint32_t nmagic,
+		unsigned char *s, int nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies m, s, fileSystem @*/
 {
@@ -999,8 +1003,8 @@ sm_match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
 
 	for (magindex = 0; magindex < nmagic; magindex++) {
 		/* if main entry matches, print it... */
-		if (!sm_get(&p, s, &m[magindex], nbytes) ||
-		    !sm_check(&p, &m[magindex])) {
+		if (!fmagicSGet(fm, &p, s, &m[magindex], nbytes) ||
+		    !fmagicSCheck(fm, &p, &m[magindex])) {
 			    /* 
 			     * main entry didn't match,
 			     * flush its continuations
@@ -1018,7 +1022,7 @@ sm_match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
 
 		if ((cont_level+1) >= tmplen)
 			tmpoff = (int32_t *) xrealloc(tmpoff, tmplen += 20);
-		tmpoff[cont_level] = sm_print(&p, &m[magindex]);
+		tmpoff[cont_level] = fmagicSPrint(fm, &p, &m[magindex]);
 		cont_level++;
 
 		/*
@@ -1043,8 +1047,8 @@ sm_match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
 				oldoff = m[magindex].offset;
 				m[magindex].offset += tmpoff[cont_level-1];
 			}
-			if (sm_get(&p, s, &m[magindex], nbytes) &&
-			    sm_check(&p, &m[magindex]))
+			if (fmagicSGet(fm, &p, s, &m[magindex], nbytes) &&
+			    fmagicSCheck(fm, &p, &m[magindex]))
 			{
 				/*
 				 * This continuation matched.
@@ -1063,7 +1067,7 @@ sm_match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
 				}
 				if ((cont_level+1) >= tmplen)
 					tmpoff = xrealloc(tmpoff, tmplen += 20);
-				tmpoff[cont_level] = sm_print(&p, &m[magindex]);
+				tmpoff[cont_level] = fmagicSPrint(fm, &p, &m[magindex]);
 				cont_level++;
 				if (m[magindex].desc[0])
 					need_separator = 1;
@@ -1073,24 +1077,25 @@ sm_match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
 		}
 		firstline = 0;
 		returnval = 1;
-		if (!(fmagic_flags & FMAGIC_FLAGS_CONTINUE))	/* don't keep searching */
+		if (!(fm->flags & FMAGIC_FLAGS_CONTINUE))	/* don't keep searching */
 			return 1;
 	}
 	return returnval;  /* This is hit if -k is set or there is no match */
 }
 
 /*
- * softmagic - lookup one file in database 
+ * fmagicS - lookup one file in database 
  * (already read from MAGIC by apprentice.c).
  * Passed the name and FILE * of one file to be typed.
  */
 int
-softmagic(unsigned char *buf, int nbytes)
+fmagicS(fmagic fm, unsigned char *buf, int nbytes)
 {
 	struct mlist *ml;
 
-	for (ml = mlist.next; ml != &mlist; ml = ml->next) {
-		if (sm_match(ml->magic, ml->nmagic, buf, nbytes))
+	if (fm->mlist != NULL)
+	for (ml = fm->mlist->next; ml != fm->mlist; ml = ml->next) {
+		if (fmagicSMatch(fm, ml->magic, ml->nmagic, buf, nbytes))
 			return 1;
 	}
 

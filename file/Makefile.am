@@ -17,6 +17,7 @@ libfmagic_la_SOURCES = \
 
 bin_PROGRAMS =	file
 file_SOURCES =	file.c
+file_LDFLAGS =	-all-static
 file_LDADD =	libfmagic.la
 
 data_DATA = magic magic.mime magic.mgc magic.mime.mgc
