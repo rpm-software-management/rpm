@@ -415,7 +415,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	handleOverlappedFiles(fi, ht, 
 	       (ignoreSet & RPMPROB_FILTER_REPLACENEWFILES) ? NULL : probs, di);
 
-	if (di && fi->type == TR_ADDED) {
+	if (di && fi->type == TR_ADDED && fi->fc) {
 	    for (i = 0; i < filesystemCount; i++) {
 		if (((di[i].needed * 20) / 19)> di[i].avail) {
 		    psAppend(probs, RPMPROB_DISKSPACE, fi->ap->key, fi->ap->h,
