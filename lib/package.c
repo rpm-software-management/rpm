@@ -15,18 +15,22 @@
 #include "rpmlead.h"
 #include "signature.h"
 
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
+/**
+ * Retrieve package components from file handle.
+ * @param fd		file handle
+ * @param leadPtr	address of lead (or NULL)
+ * @param sigs		address of signatures (or NULL)
+ * @param hdrPtr	address of header (or NULL)
+ * @return		0 on success, 1 on bad magic, 2 on error
+ */
 static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr, 
 			      /*@out@*/Header * sigs, /*@out@*/Header * hdrPtr)
+	/*@modifies *leadPtr, *sigs, *hdrPtr @*/
 {
     Header hdrBlock;
     struct rpmlead leadBlock;
     Header * hdr = NULL;
     struct rpmlead * lead;
-    int_8 arch;
-    int isSource;
     char * defaultPrefix;
     struct stat sb;
     int_32 true = 1;
@@ -122,17 +126,11 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
     return 0;
 }
 
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
 int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr)
 {
     return readPackageHeaders(fd, NULL, signatures, hdr);
 }
 
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
 int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
 		  int * minor)
 {

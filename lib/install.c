@@ -9,6 +9,9 @@
 #include "misc.h"
 #include <assert.h>
 
+/**
+ * Private data for cpio callback.
+ */
 struct callbackInfo {
     unsigned long archiveSize;
     rpmCallbackFunction notify;
@@ -38,9 +41,12 @@ struct fileInfo {
 } ;
 
 /* XXX add more tags */
+/**
+ * Macros to be defined from per-header tag values.
+ */
 static struct tagMacro {
-	const char *	macroname;
-	int		tag;
+	const char *	macroname;	/*!< Macro name to define. */
+	int		tag;		/*!< Header tag to use for value. */
 } tagMacros[] = {
 	{ "name",	RPMTAG_NAME },
 	{ "version",	RPMTAG_VERSION },
@@ -51,7 +57,11 @@ static struct tagMacro {
 	{ NULL, 0 }
 };
 
-/** */
+/**
+ * Define per-header macros.
+ * @param h		header
+ * @return		0 always
+ */
 static int rpmInstallLoadMacros(Header h)
 {
     struct tagMacro *tagm;
@@ -78,7 +88,8 @@ static int rpmInstallLoadMacros(Header h)
     return 0;
 }
 
-/** */
+/**
+ */
 static /*@only@*/ struct fileMemory *newFileMemory(void)
 {
     struct fileMemory *fileMem = xmalloc(sizeof(*fileMem));
@@ -88,7 +99,8 @@ static /*@only@*/ struct fileMemory *newFileMemory(void)
     return fileMem;
 }
 
-/** */
+/**
+ */
 static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
 {
     if (fileMem->files) free(fileMem->files);
@@ -98,7 +110,10 @@ static void freeFileMemory( /*@only@*/ struct fileMemory *fileMem)
 }
 
 /* files should not be preallocated */
-/** */
+/**
+ * @param h		header
+ * @retval		0 always
+ */
 static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
 	 /*@out@*/ int * fileCountPtr, /*@out@*/ struct fileInfo ** filesPtr,
 	 int stripPrefixLength, enum fileActions * actions)
@@ -153,7 +168,9 @@ static int assembleFileList(Header h, /*@out@*/ struct fileMemory ** memPtr,
     return 0;
 }
 
-/** */
+/**
+ * @param h		header
+ */
 static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
 {
     char ** fileOwners;
@@ -185,7 +202,11 @@ static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
     free(fileGroups);
 }
 
-/** */
+/**
+ * Truncate header changelog tag to configurable limit before installing.
+ * @param h		header
+ * @return		none
+ */
 static void trimChangelog(Header h)
 {
     int * times;
@@ -236,7 +257,9 @@ static void trimChangelog(Header h)
     free(texts);
 }
 
-/** */
+/**
+ * @param h		header
+ */
 static int mergeFiles(Header h, Header newH, enum fileActions * actions)
 {
     int i, j, k, fileCount;
@@ -493,7 +516,9 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
 }
 
 /* NULL files means install all files */
-/** */
+/**
+ * @param h		header
+ */
 static int installArchive(FD_t fd, struct fileInfo * files,
 			  int fileCount, rpmCallbackFunction notify,
 			  void * notifyData, const void * pkgKey, Header h,
@@ -601,10 +626,10 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     return rc;
 }
 
-/* 0 success */
-/* 1 bad magic */
-/* 2 error */
-/** */
+/**
+ * @param h		header
+ * @return		0 on success, 1 on bad magic, 2 on error
+ */
 static int installSources(Header h, const char * rootdir, FD_t fd,
 			  const char ** specFilePtr, rpmCallbackFunction notify,
 			  void * notifyData)
@@ -848,9 +873,6 @@ const char *const fileActionString(enum fileActions a)
     return "???";
 }
 
-/* 0 success */
-/* 1 bad magic */
-/* 2 error */
 int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
 			    const char ** specFile, rpmCallbackFunction notify,
 			    void * notifyData, char ** cookie)
@@ -884,9 +906,6 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd,
     return rc;
 }
 
-/* 0 success */
-/* 1 bad magic */
-/* 2 error */
 int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		         int flags, rpmCallbackFunction notify,
 			 void * notifyData, const void * pkgKey,

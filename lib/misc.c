@@ -675,7 +675,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
 /*
  * XXX Yet Another dressed entry to unify signature/header tag retrieval.
  */
-int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
+int rpmPackageGetEntry( /*@unused@*/ void *leadp, Header sigs, Header h,
 	int_32 tag, int_32 *type, void **p, int_32 *c)
 {
     int_32 sigtag;
