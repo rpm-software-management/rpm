@@ -15,6 +15,8 @@ TODO:
 . %config
 . %setup
 . %patch
+. %changelog
+. %package -n
 . %dir and real directory handling
 . root: option
 
@@ -97,6 +99,7 @@ void freeSpec(Spec s)
 
 int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
 {
+    char buf[1024];
     struct PackageRec *package;
     struct PackageRec **ppp;
 
@@ -144,8 +147,13 @@ int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
     package = new_packagerec();
     if (flags & LP_SUBNAME) {
 	package->subname = strdup(name);
+	sprintf(buf, "%s-%s", s->name, name);
     } else if (flags & LP_NEWNAME) {
 	package->newname = strdup(name);
+	sprintf(buf, "%s", name);
+    }
+    if (name) {
+	addEntry(package->header, RPMTAG_NAME, STRING_TYPE, buf, 1);
     }
 
     /* Link it in to the spec */
@@ -371,7 +379,7 @@ Spec parseSpec(FILE *f)
 	line = buf;
 	s = NULL;
         if ((tag = check_part(line, &s))) {
-	    printf("Switching to part: %d\n", tag);
+	    message(MESS_DEBUG, "Switching to part: %d\n", tag);
 	    t1 = 0;
 	    switch (cur_part) {
 	      case PREIN_PART:
@@ -395,6 +403,7 @@ Spec parseSpec(FILE *f)
 	    truncStringBuf(sb);
 
 	    /* Now switch the current package to s */
+	    /* XXX Check for -n here               */
 	    lookupopts = (s) ? LP_SUBNAME : 0;
 	    if (tag == PREAMBLE_PART) {
 		lookupopts |= LP_CREATE | LP_FAIL_EXISTS;
@@ -415,7 +424,7 @@ Spec parseSpec(FILE *f)
 		return NULL;
 	    }
 
-	    printf("Switched to package: %s\n", s);
+	    message(MESS_DEBUG, "Switched to package: %s\n", s);
 
 	    if (cur_part == FILES_PART) {
 		cur_package->files = 0;
@@ -434,7 +443,7 @@ Spec parseSpec(FILE *f)
 		error(RPMERR_INTERNAL, "Base package lookup failed!");
 		return NULL;
 	    }
-	    printf("Switched to BASE package\n");
+	    message(MESS_DEBUG, "Switched to BASE package\n");
 	}
 	
         switch (cur_part) {
@@ -459,11 +468,11 @@ Spec parseSpec(FILE *f)
 		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
 		    break;
 		  default:
-		    printf("Skipping: %s\n", line);
+		    message(MESS_DEBUG, "Skipping: %s\n", line);
 		}		
 	    } else {
 	        /* Not a recognized preamble part */
-	        printf("Unknown Field: %s\n", line);
+	        message(MESS_DEBUG, "Unknown Field: %s\n", line);
 	    }
 	    break;
 	  case PREP_PART:
