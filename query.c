@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -295,6 +296,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
     int isSource;
     rpmdb db;
     dbIndexSet matches;
+    int recNumber;
 
     if (source != QUERY_SRPM && source != QUERY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
@@ -359,14 +361,27 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_SPACKAGE:
       case QUERY_PACKAGE:
-	rc = findPackageByLabel(db, arg, &matches);
-	if (rc == 1) 
-	    fprintf(stderr, "package %s is not installed\n", arg);
-	else if (rc == 2) {
-	    fprintf(stderr, "error looking for package %s\n", arg);
+	if (isdigit(arg[0])) {
+	    recNumber = atoi(arg);
+	    message(MESS_DEBUG, "showing package: %d\n", recNumber);
+	    h = rpmdbGetRecord(db, recNumber);
+
+	    if (!h) 
+		fprintf(stderr, "record %d could not be read\n", recNumber);
+	    else {
+		printHeader(h, queryFlags);
+		freeHeader(h);
+	    }
 	} else {
-	    showMatches(db, matches, queryFlags);
-	    freeDBIndexRecord(matches);
+	    rc = findPackageByLabel(db, arg, &matches);
+	    if (rc == 1) 
+		fprintf(stderr, "package %s is not installed\n", arg);
+	    else if (rc == 2) {
+		fprintf(stderr, "error looking for package %s\n", arg);
+	    } else {
+		showMatches(db, matches, queryFlags);
+		freeDBIndexRecord(matches);
+	    }
 	}
 	break;
     }
