@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-05-25 23:43-0400\n"
+"POT-Creation-Date: 1999-06-02 10:40-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
 #: ../build.c:34
-msgid "failed build prerequisites:\n"
+msgid "failed build dependencies:\n"
 msgstr ""
 
 #: ../build.c:83 ../build.c:96
@@ -1677,94 +1677,94 @@ msgstr ""
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:936
+#: ../build/files.c:943
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:946 ../build/files.c:1083
+#: ../build/files.c:953 ../build/files.c:1090
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:989
+#: ../build/files.c:996
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:1003
+#: ../build/files.c:1010
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr ""
 
-#: ../build/files.c:1067
+#: ../build/files.c:1074
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1124
+#: ../build/files.c:1131
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1131 ../build/pack.c:433
+#: ../build/files.c:1138 ../build/pack.c:433
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1451 ../build/parsePrep.c:31
+#: ../build/files.c:1458 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1505
+#: ../build/files.c:1512
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1509
+#: ../build/files.c:1516
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1559
+#: ../build/files.c:1566
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1563
+#: ../build/files.c:1570
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1597
+#: ../build/files.c:1604
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1604
+#: ../build/files.c:1611
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1623
+#: ../build/files.c:1630
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1630
+#: ../build/files.c:1637
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1664
+#: ../build/files.c:1671
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1679
+#: ../build/files.c:1686
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1691
+#: ../build/files.c:1698
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1715
+#: ../build/files.c:1722
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""

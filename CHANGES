@@ -2,6 +2,7 @@
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).
 	- permit multiple "Provides: " lines in rpmrc (#2999).
 	- add BuildConflicts: and BuildRequires: in spec file and src rpm.
+	- fix: bigendian's with longlong file sizes (e.g. IRIX) dinna work.
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

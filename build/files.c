@@ -803,8 +803,15 @@ static void genCpioListAndHeader(struct FileList *fl,
 	/* Make the header */
 	headerAddOrAppendEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->fileName), 1);
+
+      if (sizeof(flp->fl_size) != sizeof(uint_32)) {
+	uint_32 psize = (uint_32)flp->fl_size;
+	headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
+			       &(psize), 1);
+      } else {
 	headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
 			       &(flp->fl_size), 1);
+      }
 	headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->uname), 1);
 	headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
