@@ -107,5 +107,5 @@ archive:
 	@echo "The final archive is ./rpm-$(VERSION).tar.gz."
 
 .PHONY:	nextsrpm
-nextsrpm: ./rpm archive
+nextsrpm: all archive
 	@sudo ./rpm -ta rpm-$(VERSION).tar.gz
