@@ -21,6 +21,38 @@ const char * RPMVERSION = VERSION;
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
+rpmRC rpmMkdirPath (const char * dpath, const char * dname)
+{
+    struct stat st;
+    int rc;
+
+    if ((rc = Stat(dpath, &st)) < 0) {
+	int ut = urlPath(dpath, NULL);
+	switch (ut) {
+	case URL_IS_PATH:
+	case URL_IS_UNKNOWN:
+	    if (errno != ENOENT)
+		break;
+	    /*@fallthrough@*/
+	case URL_IS_FTP:
+	case URL_IS_HTTP:
+	    rc = Mkdir(dpath, 0755);
+	    break;
+	case URL_IS_DASH:
+	    break;
+	}
+	if (rc < 0) {
+	    rpmError(RPMERR_CREATE, _("cannot create %%%s %s\n"), dname, dpath);
+	    return RPMRC_FAIL;
+	}
+    }
+    if ((rc = Access(dpath, W_OK))) {
+	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"), dname, dpath);
+	return RPMRC_FAIL;
+    }
+    return RPMRC_OK;
+}
+
 /*@-bounds@*/
 char ** splitString(const char * str, int length, char sep)
 {

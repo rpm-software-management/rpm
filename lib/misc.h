@@ -11,6 +11,17 @@ extern "C" {
 #endif
 
 /**
+ * Create directory if it does not exist, and make sure path is writable.
+ * @note This will only create last component of directory path.
+ * @param dpath		directory path
+ * @param dname		directory use string
+ * @return		rpmRC return code
+ */
+rpmRC rpmMkdirPath (const char * dpath, const char * dname)
+	/*@globals fileSystem@*/
+	/*@modifies fileSystem @*/;
+
+/**
  * Split string into fields separated by a character.
  * @param str		string
  * @param length	length of string

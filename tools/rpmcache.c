@@ -13,6 +13,7 @@
 #endif
 
 #include "rpmps.h"
+#include "rpmdb.h"
 #include "rpmds.h"
 #include "rpmts.h"
 
@@ -20,6 +21,9 @@
 #include "debug.h"
 
 static int _debug = 0;
+
+/* XXX should be flag in ts */
+static int noCache = 0;
 
 static char ** ftsSet;
 static int ftsOpts = 0;
@@ -40,6 +44,8 @@ static int indent = 2;
 
 typedef struct Item_s {
     const char * path;
+    int_32 size;
+    int_32 mtime;
     rpmds this;
     Header h;
 } * Item;
@@ -77,16 +83,112 @@ static void freeItems(void) {
     nitems = 0;
 }
 
-static void ftsPrintPaths(FILE * fp) {
+static int ftsCachePrint(/*@unused@*/ rpmts ts, FILE * fp)
+{
+    int rc = 0;
     int i;
-    for (i = 0; i < nitems; i++)
-	fprintf(fp, "%s\n", items[i]->path);
+
+    if (fp == NULL) fp = stdout;
+    for (i = 0; i < nitems; i++) {
+	Item ip;
+
+	ip = items[i];
+	if (ip == NULL) {
+	    rc = 1;
+	    break;
+	}
+
+	fprintf(fp, "%s\n", ip->path);
+    }
+    return rc;
+}
+
+static int ftsCacheUpdate(rpmts ts)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    int_32 tid = rpmtsGetTid(ts);
+    rpmdbMatchIterator mi;
+    unsigned char * md5;
+    int rc = 0;
+    int i;
+
+    rc = rpmtsCloseDB(ts);
+    rc = rpmDefineMacro(NULL, "_dbpath %{_cache_dbpath}", RMIL_CMDLINE);
+    rc = rpmtsOpenDB(ts, O_RDWR);
+    if (rc != 0)
+	return rc;
+
+    for (i = 0; i < nitems; i++) {
+	Item ip;
+
+	ip = items[i];
+	if (ip == NULL) {
+	    rc = 1;
+	    break;
+	}
+
+	/* --- Check that identical package is not already cached. */
+ 	if (!hge(ip->h, RPMTAG_SIGMD5, NULL, (void **) &md5, NULL)
+	 || md5 == NULL)
+	{
+	    rc = 1;
+	    break;
+	}
+        mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5, 16);
+	rc = rpmdbGetIteratorCount(mi);
+        mi = rpmdbFreeIterator(mi);
+	if (rc) {
+	    rc = 0;
+	    continue;
+	}
+
+	/* --- Add cache tags to new cache header. */
+	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHECTIME,
+		RPM_INT32_TYPE, &tid, 1);
+	if (rc != 1) break;
+	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGPATH,
+		RPM_STRING_ARRAY_TYPE, &ip->path, 1);
+	if (rc != 1) break;
+	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGSIZE,
+		RPM_INT32_TYPE, &ip->size, 1);
+	if (rc != 1) break;
+	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGMTIME,
+		RPM_INT32_TYPE, &ip->mtime, 1);
+	if (rc != 1) break;
+
+	/* --- Add new cache header to database. */
+	rc = rpmdbAdd(rpmtsGetRdb(ts), tid, ip->h);
+	if (rc) break;
+
+    }
+    return rc;
+}
+
+/**
+ */
+static int archOkay(/*@null@*/ const char * pkgArch)
+        /*@*/
+{
+    if (pkgArch == NULL) return 0;
+    return (rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch) ? 1 : 0);
+}
+
+/**
+ */
+static int osOkay(/*@null@*/ const char * pkgOs)
+        /*@*/
+{
+    if (pkgOs == NULL) return 0;
+    return (rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs) ? 1 : 0);
 }
 
 static int ftsStashLatest(FTSENT * fts, rpmts ts)
 {
     Header h = NULL;
-    rpmds add;
+    rpmds add = NULL;
+    const char * arch;
+    const char * os;
+    struct stat sb, * st;
     int ec = -1;	/* assume not found */
     int i = 0;
 
@@ -99,13 +201,23 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 
 	if (fd == NULL || Ferror(fd)) {
 	    if (fd) xx = Fclose(fd);
-	    return ec;	/* XXX -1 */
+	    goto exit;
 	}
 
 	rc = rpmReadPackageFile(ts, fd, fts->fts_path, &h);
 	xx = Fclose(fd);
-	if (rc != RPMRC_OK)
-	    return ec;	/* XXX -1 */
+	if (rc != RPMRC_OK || h == NULL)
+	    goto exit;
+    }
+
+    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &arch, NULL)
+     || !headerGetEntry(h, RPMTAG_OS, NULL, (void **) &os, NULL))
+	goto exit;
+
+    /* Make sure arch and os match this platform. */
+    if (!archOkay(arch) || !osOkay(os)) {
+	ec = 0;
+	goto exit;
     }
 
     add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
@@ -116,8 +228,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 	
 	needle->this = add;
 
-	found = bsearch(fneedle, items, nitems,
-                       sizeof(*found), cmpItem);
+	found = bsearch(fneedle, items, nitems, sizeof(*found), cmpItem);
 
 	/* Rewind to the first item with same name. */
 	while (found > items && cmpItem(found-1, fneedle) == 0)
@@ -153,6 +264,15 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 
     items[i] = newItem();
     items[i]->path = xstrdup(fts->fts_path);
+    st = fts->fts_statp;
+    if (st == NULL && Stat(fts->fts_accpath, &sb) == 0)
+	st = &sb;
+
+    if (st != NULL) {
+	items[i]->size = st->st_size;
+	items[i]->mtime = st->st_mtime;
+    }
+    st = NULL;
     items[i]->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     items[i]->h = headerLink(h, NULL);
 
@@ -341,6 +461,7 @@ static void initGlobs(/*@unused@*/ rpmts ts, const char ** argv)
 	    *t++ = '|';
 	}
 	t[-1] = (single ? '\0' : ')');
+	*t = '\0';
     }
 
     bhpath = rpmExpand("%{_bhpath}", NULL);
@@ -401,22 +522,37 @@ static struct poptOption optionsTable[] = {
  { "nosignature", '\0', POPT_BIT_SET,   &vsflags, _RPMTS_VSF_NOSIGNATURES,
 	N_("don't verify package signature"), NULL },
 
- { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, FTS_COMFOLLOW,
+ { "nocache", '\0', POPT_ARG_VAL,   &noCache, -1,
+	N_("don't update cache database, only print package paths"), NULL },
+
+ { "comfollow", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&ftsOpts, FTS_COMFOLLOW,
 	N_("follow command line symlinks"), NULL },
- { "logical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_LOGICAL,
+ { "logical", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&ftsOpts, FTS_LOGICAL,
 	N_("logical walk"), NULL },
- { "nochdir", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOCHDIR,
+ { "nochdir", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&ftsOpts, FTS_NOCHDIR,
 	N_("don't change directories"), NULL },
- { "nostat", '\0', POPT_BIT_SET,	&ftsOpts, FTS_NOSTAT,
+ { "nostat", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&ftsOpts, FTS_NOSTAT,
 	N_("don't get stat info"), NULL },
- { "physical", '\0', POPT_BIT_SET,	&ftsOpts, FTS_PHYSICAL,
+ { "physical", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&ftsOpts, FTS_PHYSICAL,
 	N_("physical walk"), NULL },
- { "seedot", '\0', POPT_BIT_SET,	&ftsOpts, FTS_SEEDOT,
+ { "seedot", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&ftsOpts, FTS_SEEDOT,
 	N_("return dot and dot-dot"), NULL },
- { "xdev", '\0', POPT_BIT_SET,		&ftsOpts, FTS_XDEV,
+ { "xdev", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&ftsOpts, FTS_XDEV,
 	N_("don't cross devices"), NULL },
- { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
+ { "whiteout", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&ftsOpts, FTS_WHITEOUT,
 	N_("return whiteout information"), NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+	N_("Common options for all rpm modes and executables:"),
+	NULL },
 
     POPT_AUTOALIAS
     POPT_AUTOHELP
@@ -428,22 +564,44 @@ main(int argc, char *const argv[])
 {
     rpmts ts = NULL;
     poptContext optCon;
+    const char * s;
     FTS * ftsp;
     FTSENT * fts;
     int ec = 1;
+    rpmRC rpmrc;
     int xx;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
         exit(EXIT_FAILURE);
 
+    /* Configure the path to cache database, creating if necessary. */
+    s = rpmExpand("%{?_cache_dbpath}", NULL);
+    if (!(s && *s))
+	rpmrc = RPMRC_FAIL;
+    else
+	rpmrc = rpmMkdirPath(s, "cache_dbpath");
+    s = _free(s);
+    if (rpmrc != RPMRC_OK) {
+	fprintf(stderr, _("%s: %%{_cache_dbpath} macro is mis-configured.\n"),
+		__progname);
+        exit(EXIT_FAILURE);
+    }
+
     ts = rpmtsCreate();
     (void) rpmtsSetVerifySigFlags(ts, vsflags);
+    {   int_32 tid = (int_32) time(NULL);
+	(void) rpmtsSetTid(ts, tid);
+    }
 
     initGlobs(ts, poptGetArgs(optCon));
-
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+
+    if (noCache)
+	ftsOpts |= FTS_NOSTAT;
+    else
+	ftsOpts &= ~FTS_NOSTAT;
 
     /* Walk file tree, filter paths, save matched items. */
     ftsp = Fts_open(ftsSet, ftsOpts, NULL);
@@ -452,7 +610,15 @@ main(int argc, char *const argv[])
     }
     xx = Fts_close(ftsp);
 
-    ftsPrintPaths(stdout);
+    if (noCache)
+	ec = ftsCachePrint(ts, stdout);
+    else
+	ec = ftsCacheUpdate(ts);
+    if (ec) {
+	fprintf(stderr, _("%s: cache operation failed: ec %d.\n"),
+		__progname, ec);
+    }
+
     freeItems();
 
     ts = rpmtsFree(ts);

@@ -429,48 +429,6 @@ static int markReplacedFiles(const PSM_t psm)
 }
 /*@=bounds@*/
 
-/**
- * Create directory if it does not exist, make sure path is writable.
- * @note This will only create last component of directory path.
- * @param dpath		directory path
- * @param dname		directory use
- * @return		rpmRC return code
- */
-static rpmRC chkdir (const char * dpath, const char * dname)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/
-{
-    struct stat st;
-    int rc;
-
-    if ((rc = Stat(dpath, &st)) < 0) {
-	int ut = urlPath(dpath, NULL);
-	switch (ut) {
-	case URL_IS_PATH:
-	case URL_IS_UNKNOWN:
-	    if (errno != ENOENT)
-		break;
-	    /*@fallthrough@*/
-	case URL_IS_FTP:
-	case URL_IS_HTTP:
-	    rc = Mkdir(dpath, 0755);
-	    break;
-	case URL_IS_DASH:
-	    break;
-	}
-	if (rc < 0) {
-	    rpmError(RPMERR_CREATE, _("cannot create %%%s %s\n"),
-			dname, dpath);
-	    return RPMRC_FAIL;
-	}
-    }
-    if ((rc = Access(dpath, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"), dname, dpath);
-	return RPMRC_FAIL;
-    }
-    return RPMRC_OK;
-}
-
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		const char ** specFilePtr, const char ** cookie)
 {
@@ -578,14 +536,14 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     }
 
     _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
-    rc = chkdir(_sourcedir, "sourcedir");
+    rc = rpmMkdirPath(_sourcedir, "sourcedir");
     if (rc) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
-    rc = chkdir(_specdir, "specdir");
+    rc = rpmMkdirPath(_specdir, "specdir");
     if (rc) {
 	rc = RPMRC_FAIL;
 	goto exit;

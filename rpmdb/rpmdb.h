@@ -543,7 +543,7 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-    assert(key->size > 0);
+    assert(key->data != NULL && key->size > 0);
     return (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
 }
 
@@ -562,7 +562,7 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
-    assert((flags == DB_NEXT) || key->size > 0);
+    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
     return (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
 }
 
@@ -582,7 +582,7 @@ int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
-    assert((flags == DB_NEXT) || key->size > 0);
+    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
     return (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
 }
 
@@ -601,7 +601,7 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, fileSystem @*/
 {
-    assert(key->size > 0);
+    assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
     return (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
 }
 

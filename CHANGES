@@ -156,6 +156,8 @@
 	- factor common options into table, add rpmcliInit() and rpmcliFini().
 	- add preliminary rpmgraph(8) and rpmcache(8) executables to rpm-devel.
 	- use rpmfi in showQueryPackage(), eliminating headerGetEntry().
+	- fix: forgot lazy open of database on --freshen path (#67907).
+	- proof-of-concept rpmcache functionality.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

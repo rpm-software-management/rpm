@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.39
+Release: 0.40
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -514,6 +514,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jul  4 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.40
+- fix: forgot lazy open of database on --freshen path (#67907).
+- proof-of-concept rpmcache functionality.
+
 * Wed Jul  3 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.39
 - use rpmfi in showQueryPackage(), eliminating headerGetEntry().
 

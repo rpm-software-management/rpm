@@ -1458,21 +1458,15 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 }
 
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
-    if (mi == NULL)
-	return 0;
-    return mi->mi_offset;
+    return (mi ? mi->mi_offset : 0);
 }
 
 unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi) {
-    if (mi == NULL)
-	return 0;
-    return mi->mi_filenum;
+    return (mi ? mi->mi_filenum : 0);
 }
 
 int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
-    if (!(mi && mi->mi_set))
-	return 0;	/* XXX W2DO? */
-    return mi->mi_set->count;
+    return (mi && mi->mi_set ?  mi->mi_set->count : 0);
 }
 
 /**
@@ -2216,6 +2210,7 @@ if (rc == 0)
     mi->mi_filenum = 0;
     mi->mi_nre = 0;
     mi->mi_re = NULL;
+
     /*@-nullret@*/ /* FIX: mi->mi_{keyp,dbc,set,re->preg} are NULL */
     return mi;
     /*@=nullret@*/
@@ -2729,6 +2724,7 @@ data->size = 0;
 		dbiIndexSet set;
 		int stringvalued;
 		byte bin[32];
+		byte * t;
 
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
@@ -2792,7 +2788,6 @@ data->size = 0;
 		    /* Convert from hex to binary. */
 		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
 			const char * s;
-			byte * t;
 
 			s = rpmvals[i];
 			t = bin;

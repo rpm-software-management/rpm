@@ -381,10 +381,14 @@ typedef enum rpmTag_e {
     RPMTAG_INSTALLTID		= 1128,
     RPMTAG_REMOVETID		= 1129,
 /*@-enummemuse@*/
-    RPMTAG_SHA1RHN		= 1130, /*!< internal */
+    RPMTAG_SHA1RHN		= 1130, /*!< internal - obsolete */
 /*@=enummemuse@*/
     RPMTAG_RHNPLATFORM		= 1131,
     RPMTAG_PLATFORM		= 1132,
+    RPMTAG_CACHECTIME		= 1133,
+    RPMTAG_CACHEPKGPATH		= 1134,
+    RPMTAG_CACHEPKGSIZE		= 1135,
+    RPMTAG_CACHEPKGMTIME	= 1136,
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/

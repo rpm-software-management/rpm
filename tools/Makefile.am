@@ -37,8 +37,10 @@ bin_PROGRAMS =	rpmgraph
 javadeps_SOURCES =	javadeps.c
 
 rpmcache_SOURCES =	rpmcache.c
+#rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmgraph_SOURCES =	rpmgraph.c
+#rpmgraph_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmsort_SOURCES =	rpmsort.c
 rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
