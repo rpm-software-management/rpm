@@ -1249,6 +1249,7 @@ struct _rpmdbMatchIterator {
     rpmdb		mi_rpmdb;
     int			mi_rpmtag;
     dbiIndexSet		mi_set;
+    DBC *		mi_dbc;
     int			mi_setx;
     Header		mi_h;
     int			mi_sorted;
@@ -1294,6 +1295,10 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
     if (mi->mi_version) {
 	xfree(mi->mi_version);
 	mi->mi_version = NULL;
+    }
+    if (mi->mi_dbc) {
+	int xx = dbiCclose(dbi, mi->mi_dbc, 1);
+	mi->mi_dbc = NULL;
     }
     if (mi->mi_set) {
 	dbiFreeIndexSet(mi->mi_set);
@@ -1362,7 +1367,6 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) {
 Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned l)
 {
     dbiIndex dbi;
-    DBC * dbcursor;
     void * uh = NULL;
     size_t uhlen = 0;
     void * keyp;
@@ -1376,7 +1380,10 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned l)
     dbi = dbiOpen(mi->mi_rpmdb, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)
 	return NULL;
-    xx = XdbiCopen(dbi, &dbcursor, 0, f, l);
+    /* XXX cursors need to be per-iterator, not per-dbi. Get a cursor now. */
+    if (mi->mi_dbc == NULL) {
+	xx = XdbiCopen(dbi, &mi->mi_dbc, 1, f, l);
+     }
 
 top:
     /* XXX skip over instances with 0 join key */
@@ -1392,7 +1399,7 @@ top:
 	    keyp = (void *)mi->mi_keyp;		/* XXX FIXME const */
 	    keylen = mi->mi_keylen;
 
-	    rc = dbiGet(dbi, dbcursor, &keyp, &keylen, &uh, &uhlen, 0);
+	    rc = dbiGet(dbi, mi->mi_dbc, &keyp, &keylen, &uh, &uhlen, 0);
 
 	    if (rc == 0 && keyp && mi->mi_setx)
 		memcpy(&mi->mi_offset, keyp, sizeof(mi->mi_offset));
@@ -1409,7 +1416,7 @@ top:
 
     /* Retrieve next header */
     if (uh == NULL) {
-	rc = dbiGet(dbi, dbcursor, &keyp, &keylen, &uh, &uhlen, 0);
+	rc = dbiGet(dbi, mi->mi_dbc, &keyp, &keylen, &uh, &uhlen, 0);
 	if (rc)
 	    return NULL;
     }
@@ -1417,7 +1424,7 @@ top:
     /* Free current header */
     if (mi->mi_h) {
 	if (mi->mi_modified && mi->mi_prevoffset)
-	    dbiUpdateRecord(dbi, dbcursor, mi->mi_prevoffset, mi->mi_h);
+	    dbiUpdateRecord(dbi, mi->mi_dbc, mi->mi_prevoffset, mi->mi_h);
 	headerFree(mi->mi_h);
 	mi->mi_h = NULL;
     }
@@ -1593,6 +1600,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     mi->mi_rpmdb = rpmdb;
     mi->mi_rpmtag = rpmtag;
 
+    mi->mi_dbc = NULL;
     mi->mi_set = set;
     mi->mi_setx = 0;
     mi->mi_h = NULL;

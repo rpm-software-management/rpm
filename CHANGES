@@ -86,6 +86,8 @@
 	- link rpm2cpio dynamically since cpio is linked dynamically.
 	- fix: uniqify dependency problems when printing (#14034).
 	- fix: segfault on erase if filestates is missing in header (#14679).
+	- fix: popt POST callbacks typo.
+	- fix: -Va broken, make db cursors per-iterator, not per-dbi.
 
 3.0.4 -> 3.0.5
 	- configure.in fiddles for BSD systems (Patrick Schoo).

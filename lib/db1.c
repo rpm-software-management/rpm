@@ -197,7 +197,10 @@ exit:
     return uh;
 }
 
-static int db1copen(/*@unused@*/ dbiIndex dbi, /*@unused@*/ DBC ** dbcp, /*@unused@*/ unsigned int flags) {
+static int db1copen(/*@unused@*/ dbiIndex dbi, /*@unused@*/ DBC ** dbcp, unsigned int flags) {
+    /* XXX per-iterator cursors need to be set to non-NULL. */
+    if (flags)
+	*dbcp = (DBC *)-1;
     return 0;
 }
 

@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.65
+Release: 0.66
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -266,6 +266,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Aug  4 2000 Jeff Johnson <jbj@redhat.com>
+- fix: popt POST callbacks typo.
+- fix: -Va broken, make db cursors per-iterator, not per-dbi.
+
 * Thu Aug  3 2000 Jeff Johnson <jbj@redhat.com>
 - add glibc requirement.
 

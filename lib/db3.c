@@ -706,9 +706,13 @@ static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp)
 }
 
 static int db3cclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor,
-		/*@unused@*/ unsigned int flags)
+		unsigned int flags)
 {
     int rc = 0;
+
+    /* XXX per-iterator cursors */
+    if (flags == 1)
+	return db3c_close(dbi, dbcursor);
 
     if (!dbi->dbi_use_cursors)
 	return 0;
@@ -723,11 +727,14 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor,
     return rc;
 }
 
-static int db3copen(dbiIndex dbi, /*@out@*/ DBC ** dbcp,
-		/*@unused@*/ unsigned int flags)
+static int db3copen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
 {
     DBC * dbcursor;
     int rc = 0;
+
+    /* XXX per-iterator cursors */
+    if (flags == 1)
+	return db3c_open(dbi, dbcp);
 
     if (!dbi->dbi_use_cursors) {
 	if (dbcp) *dbcp = NULL;
