@@ -278,7 +278,17 @@ static int fieCompare(const void * one, const void * two)
     if (a->baseName == NULL || b->baseName == NULL)
 	return lenchk;
 
-    /* XXX FIXME: this might do "backward" strcmp for speed */
+#ifdef	NOISY
+/*@-modfilesys@*/
+if (_rpmal_debug) {
+fprintf(stderr, "\t\tstrcmp(%p:%p, %p:%p)", a, a->baseName, b, b->baseName);
+fprintf(stderr, " a %s", a->baseName);
+fprintf(stderr, " b %s", a->baseName);
+fprintf(stderr, "\n");
+}
+/*@=modfilesys@*/
+#endif
+
     return strcmp(a->baseName, b->baseName);
 }
 
@@ -330,17 +340,34 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	    if (die == NULL)
 		continue;
 
+/*@-modfilesys@*/
+if (_rpmal_debug)
+fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (die - al->dirs), die, die->dirNameLen, die->dirName);
+/*@=modfilesys@*/
+
 	    last = die->numFiles;
 	    fie = die->files + last - 1;
 	    for (i = last - 1; i >= 0; i--, fie--) {
 		if (fie->pkgNum != pkgNum)
 		    /*@innercontinue@*/ continue;
 		die->numFiles--;
-		if (i > die->numFiles)
-		    /*@innercontinue@*/ continue;
+
+		if (i < die->numFiles) {
+/*@-modfilesys@*/
+if (_rpmal_debug)
+fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p,0x%x)\n", die->files, die->numFiles, fie, fie->baseName, fie+1, ((die->numFiles - i) * sizeof(*fie)));
+/*@=modfilesys@*/
+
 /*@-bounds@*/
-		memmove(fie, fie+1, (die->numFiles - i) * sizeof(*fie));
+		    memmove(fie, fie+1, (die->numFiles - i) * sizeof(*fie));
 /*@=bounds@*/
+		}
+/*@-modfilesys@*/
+if (_rpmal_debug)
+fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x)\n", die->files, die->numFiles, die->files + die->numFiles, sizeof(*fie));
+/*@=modfilesys@*/
+		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
+
 	    }
 	    if (die->numFiles > 0) {
 		if (last > i)
@@ -351,11 +378,22 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	    die->files = _free(die->files);
 	    die->dirName = _free(die->dirName);
 	    al->numDirs--;
-	    if ((die - al->dirs) > al->numDirs)
-		continue;
+	    if ((die - al->dirs) < al->numDirs) {
+/*@-modfilesys@*/
+if (_rpmal_debug)
+fprintf(stderr, "    die[%5d] memmove(%p,%p,0x%x)\n", (die - al->dirs), die, die+1, ((al->numDirs - (die - al->dirs)) * sizeof(*die)));
+/*@=modfilesys@*/
+
 /*@-bounds@*/
-	    memmove(die, die+1, (al->numDirs - (die - al->dirs)) * sizeof(*die));
+		memmove(die, die+1, (al->numDirs - (die - al->dirs)) * sizeof(*die));
 /*@=bounds@*/
+	    }
+
+/*@-modfilesys@*/
+if (_rpmal_debug)
+fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->numDirs, sizeof(*die));
+/*@=modfilesys@*/
+	    memset(al->dirs + al->numDirs, 0, sizeof(*al->dirs)); /* overkill */
 	}
 
 	if (origNumDirs > al->numDirs) {
@@ -473,7 +511,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 		die->numFiles = 0;
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, die->dirName);
+fprintf(stderr, "+++ die[%5d] %p [%3d] %s\n", al->numDirs, die, die->dirNameLen, die->dirName);
 /*@=modfilesys@*/
 
 		al->numDirs++;
@@ -495,7 +533,15 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 	    die = al->dirs + dirMapping[dx];
 	    die->files = xrealloc(die->files,
 			(die->numFiles + next - first) * sizeof(*die->files));
+
 	    fie = die->files + die->numFiles;
+
+/*@-modfilesys@*/
+if (_rpmal_debug)
+fprintf(stderr, "    die[%5d] %p->files [%p[%d],%p) -> [%p[%d],%p)\n", dirMapping[dx], die,
+die->files, die->numFiles, die->files+die->numFiles,
+fie, (next - first), fie + (next - first));
+/*@=modfilesys@*/
 
 	    /* Rewind to first file, generate file index entry for each file. */
 	    fi = rpmfiInit(fi, first);
@@ -506,6 +552,11 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 		fie->baseNameLen = (fie->baseName ? strlen(fie->baseName) : 0);
 		fie->pkgNum = pkgNum;
 		fie->ficolor = rpmfiFColor(fi);
+/*@-modfilesys@*/
+if (_rpmal_debug)
+fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie->baseName, fie->baseNameLen, rpmfiFN(fi));
+/*@=modfilesys@*/
+
 		die->numFiles++;
 		fie++;
 	    }

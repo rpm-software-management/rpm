@@ -142,6 +142,15 @@ Header rpmgiHeader(/*@null@*/ rpmgi gi)
         /*@*/;
 
 /**
+ * Return current iteration transaction set.
+ * @param gi		generalized iterator
+ * @returns		transaction set
+ */
+/*@null@*/
+rpmts rpmgiTs(/*@null@*/ rpmgi gi)
+        /*@*/;
+
+/**
  * Load iterator args.
  * @param gi		generalized iterator
  * @returns		RPMRC_OK

@@ -458,6 +458,13 @@ Header rpmgiHeader(rpmgi gi)
 /*@=compdef =refcounttrans =retexpose =usereleased@*/
 }
 
+rpmts rpmgiTs(rpmgi gi)
+{
+/*@-compdef -refcounttrans -retexpose -usereleased@*/
+    return (gi != NULL ? gi->ts : NULL);
+/*@=compdef =refcounttrans =retexpose =usereleased@*/
+}
+
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int flags)
 {
     rpmRC rpmrc = rpmgiGlobArgv(gi, argv);

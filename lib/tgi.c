@@ -86,6 +86,7 @@ main(int argc, char *const argv[])
     const char ** av;
     int ac;
     int rc = 0;
+    int xx;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
@@ -126,10 +127,15 @@ main(int argc, char *const argv[])
     ac = 0;
     while (rpmgiNext(gi) == RPMRC_OK) {
 	const char * arg = rpmgiPathOrQF(gi);
+	Header h = rpmgiHeader(gi);
+	const char * fn = rpmgiHdrPath(gi);
 
 	fprintf(stderr, "%5d %s\n", ac, arg);
 	arg = _free(arg);
 	ac++;
+
+	xx = rpmtsAddInstallElement(ts, h, (fnpyKey)fn, 0, NULL);
+
     }
 
     gi = rpmgiFree(gi);
