@@ -250,16 +250,18 @@ rpmtime_t rpmswInit(void)
 /*@=incondefs@*/
 
 /*@-mods@*/
-int rpmswEnter(rpmop op)
+int rpmswEnter(rpmop op, ssize_t rc)
 {
     op->count++;
+    if (rc < 0)
+	op->usecs = 0;
 /*@-uniondef@*/
     (void) rpmswNow(&op->begin);
 /*@=uniondef@*/
     return 0;
 }
 
-int rpmswExit(rpmop op, ssize_t rc)
+rpmtime_t rpmswExit(rpmop op, ssize_t rc)
 {
     struct rpmsw_s end;
 
@@ -268,6 +270,6 @@ int rpmswExit(rpmop op, ssize_t rc)
 /*@=uniondef@*/
     if (rc > 0)
 	op->bytes += rc;
-    return 0;
+    return op->usecs;
 }
 /*@=mods@*/

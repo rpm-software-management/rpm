@@ -470,13 +470,18 @@ static pid_t psmWait(rpmpsm psm)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies psm, fileSystem, internalState @*/
 {
-    (void) rpmsqWait(&psm->sq);
+    const rpmts ts = psm->ts;
+    rpmtime_t msecs;
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
+    (void) rpmsqWait(&psm->sq);
+    msecs = psm->sq.op.usecs/1000;
+    ts->ms_scriptlets += msecs;
+
+    rpmMessage(RPMMESS_DEBUG,
+	_("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
 	psm->stepName, (unsigned)psm->sq.child,
 	(unsigned)psm->sq.reaped, psm->sq.status,
-	(unsigned)psm->sq.msecs/1000,
-	(unsigned)psm->sq.msecs%1000);
+	(unsigned)msecs/1000, (unsigned)msecs%1000);
 
     return psm->sq.reaped;
 }

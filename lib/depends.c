@@ -1179,7 +1179,7 @@ int rpmtsOrder(rpmts ts)
     rpmalMakeIndex(ts->addedPackages);
 #endif
 
-    (void) rpmswNow(&ts->begin);
+    (void) rpmswEnter(&ts->op, -1);
 
     /* T1. Initialize. */
     if (oType == 0)
@@ -1582,7 +1582,7 @@ assert(newOrderCount == ts->orderCount);
 #endif
     freeBadDeps();
 
-    ts->ms_order += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+    ts->ms_order += rpmswExit(&ts->op, -1)/1000;
 
     return 0;
 }
@@ -1597,7 +1597,7 @@ int rpmtsCheck(rpmts ts)
     int xx;
     int rc;
 
-    (void) rpmswNow(&ts->begin);
+    (void) rpmswEnter(&ts->op, -1);
 
     /* Do lazy, readonly, open of rpm database. */
     if (rpmtsGetRdb(ts) == NULL && ts->dbmode != -1) {
@@ -1724,7 +1724,7 @@ exit:
     mi = rpmdbFreeIterator(mi);
     pi = rpmtsiFree(pi);
 
-    ts->ms_check += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+    ts->ms_check += rpmswExit(&ts->op, -1)/1000;
 
     /*@-branchstate@*/
     if (closeatexit)

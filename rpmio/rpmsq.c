@@ -340,15 +340,6 @@ fprintf(stderr, "    Parent(%p): %p child %d\n", ME(), sq, sq->child);
 /*@=modfilesys@*/
 #endif
 
-#ifdef	DYING
-/*@-bounds@*/
-	/* Unblock child. */
-	xx = close(sq->pipes[0]);
-	xx = close(sq->pipes[1]);
-	sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
-#endif
-
     }
 
 out:
@@ -365,7 +356,6 @@ static int rpmsqWaitUnregister(rpmsq sq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies sq, fileSystem, internalState @*/
 {
-    struct rpmsw_s end;
     int same_thread = 0;
     int ret = 0;
     int xx;
@@ -384,7 +374,7 @@ static int rpmsqWaitUnregister(rpmsq sq)
     sq->pipes[0] = sq->pipes[1] = -1;
 /*@=bounds@*/
 
-    (void) rpmswNow(&sq->begin);
+    (void) rpmswEnter(&sq->op, -1);
 
     /*@-infloops@*/
     while (ret == 0 && sq->reaped != sq->child) {
@@ -395,10 +385,7 @@ static int rpmsqWaitUnregister(rpmsq sq)
     }
     /*@=infloops@*/
 
-/*@-uniondef@*/
-    sq->msecs = rpmswDiff(rpmswNow(&end), &sq->begin)/1000;
-/*@=uniondef@*/
-    sq->script_msecs += sq->msecs;
+    sq->ms_scriptlets += rpmswExit(&sq->op, -1)/1000;
 
     if (same_thread)
 	xx = sigrelse(SIGCHLD);

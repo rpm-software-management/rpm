@@ -194,15 +194,15 @@ struct rpmts_s {
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
 
-    struct rpmsw_s create;	/*!< Creation time stamp. */
-    struct rpmsw_s begin;	/*!< Begin operation time stamp. */
-    struct rpmsw_s end;		/*!< End operation time stamp. */
+    struct rpmop_s op;		/*!< Transaction operation time stamp. */
+
     rpmtime_t ms_check;
     rpmtime_t ms_order;
     rpmtime_t ms_fingerprint;
     rpmtime_t ms_repackage;
     rpmtime_t ms_install;
     rpmtime_t ms_erase;
+    rpmtime_t ms_scriptlets;
 
 /*@null@*/
     pgpDig dig;			/*!< Current signature/pubkey parameters. */

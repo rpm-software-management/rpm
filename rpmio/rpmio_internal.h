@@ -115,7 +115,6 @@ enum FDSTAT_e {
  * Cumulative statistics for a descriptor.
  */
 typedef	/*@abstract@*/ struct {
-    struct rpmsw_s	create;	/*!< Structure creation time. */
     struct rpmsw_s	begin;	/*!< Operation start time. */
     struct rpmop_s	ops[4];	/*!< Cumulative statistics. */
 } * FDSTAT_t;
@@ -131,7 +130,8 @@ typedef struct _FDDIGEST_s {
  * The FD_t File Handle data structure.
  */
 struct _FD_s {
-/*@refs@*/ int	nrefs;
+/*@refs@*/
+    int		nrefs;
     int		flags;
 #define	RPMIO_DEBUG_IO		0x40000000
 #define	RPMIO_DEBUG_REFS	0x20000000
@@ -141,7 +141,8 @@ struct _FD_s {
     FDSTACK_t	fps[8];
     int		urlType;	/* ufdio: */
 
-/*@dependent@*/ void *	url;	/* ufdio: URL info */
+/*@dependent@*/
+    void *	url;		/* ufdio: URL info */
     int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
     ssize_t	bytesRemain;	/* ufdio: */
     ssize_t	contentLength;	/* ufdio: */
@@ -149,7 +150,8 @@ struct _FD_s {
     int		wr_chunked;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
-/*@observer@*/ const void *errcookie;	/* gzdio/bzdio/ufdio: */
+/*@observer@*/
+    const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
     FDSTAT_t	stats;		/* I/O statistics */
 
@@ -356,17 +358,16 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 /** \ingroup rpmio
  */
-/*@-uniondef@*/
 /*@unused@*/ static inline
 void fdstat_enter(/*@null@*/ FD_t fd, int opx)
 	/*@globals internalState @*/
 	/*@modifies fd, internalState @*/
 {
-    if (fd == NULL || fd->stats == NULL) return;
+    if (fd == NULL) return;
 /*@-boundswrite@*/
-    fd->stats->ops[opx].count++;
+    if (fd->stats != NULL)
+	(void) rpmswEnter(&fd->stats->ops[opx], 0);
 /*@=boundswrite@*/
-    (void) rpmswNow(&fd->stats->begin);
 }
 
 /** \ingroup rpmio
@@ -376,28 +377,16 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 	/*@globals internalState @*/
 	/*@modifies fd, internalState @*/
 {
-    struct rpmsw_s end;
     if (fd == NULL) return;
-    if (rc == -1) fd->syserrno = errno;
-    if (fd->stats == NULL) return;
+    if (rc == -1)
+	fd->syserrno = errno;
+    else if (rc > 0 && fd->bytesRemain > 0)
+	fd->bytesRemain -= rc;
 /*@-boundswrite@*/
-    (void) rpmswNow(&end);
-    if (rc >= 0) {
-	switch(opx) {
-	case FDSTAT_SEEK:
-	    fd->stats->ops[opx].bytes = rc;
-	    break;
-	default:
-	    fd->stats->ops[opx].bytes += rc;
-	    if (fd->bytesRemain > 0) fd->bytesRemain -= rc;
-	    break;
-	}
-    }
-    fd->stats->ops[opx].usecs += rpmswDiff(&end, &fd->stats->begin);
-    fd->stats->begin = end;	/* structure assignment */
+    if (fd->stats != NULL)
+	(void) rpmswExit(&fd->stats->ops[opx], rc);
 /*@=boundswrite@*/
 }
-/*@=uniondef@*/
 
 /** \ingroup rpmio
  */
@@ -407,25 +396,25 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
-    static int usec_scale = 1000000;
+    static int usec_scale = (1000*1000);
     int opx;
 
     if (fd == NULL || fd->stats == NULL) return;
     for (opx = 0; opx < 4; opx++) {
-	rpmop ops = &fd->stats->ops[opx];
-	if (ops->count <= 0) continue;
+	rpmop op = &fd->stats->ops[opx];
+	if (op->count <= 0) continue;
 	switch (opx) {
 	case FDSTAT_READ:
 	    if (msg) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%06d secs\n",
-		ops->count, (long)ops->bytes,
-		(int)(ops->usecs/usec_scale), (int)(ops->usecs%usec_scale));
+		op->count, (long)op->bytes,
+		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_WRITE:
 	    if (msg) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%06d secs\n",
-		ops->count, (long)ops->bytes,
-		(int)(ops->usecs/usec_scale), (int)(ops->usecs%usec_scale));
+		op->count, (long)op->bytes,
+		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
 	    /*@switchbreak@*/ break;
 	case FDSTAT_SEEK:
 	    /*@switchbreak@*/ break;

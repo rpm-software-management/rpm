@@ -356,9 +356,6 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->ndigests = 0;
     memset(fd->digests, 0, sizeof(fd->digests));
 
-    (void) rpmswNow(&fd->stats->create);
-    (void) rpmswNow(&fd->stats->begin);
-
     fd->ftpFileDoneNeeded = 0;
     fd->firstFree = 0;
     fd->fileSize = 0;

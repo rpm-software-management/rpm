@@ -1270,8 +1270,6 @@ rpmts rpmtsCreate(void)
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
     ts->dig = NULL;
 
-    (void) rpmswNow(&ts->create);
-
     ts->nrefs = 0;
 
     return rpmtsLink(ts, "tsCreate");

@@ -39,9 +39,8 @@ struct rpmsqElem {
     pid_t child;		/*!< Currently running child. */
     volatile pid_t reaped;	/*!< Reaped waitpid(3) return. */
     volatile int status;	/*!< Reaped waitpid(3) status. */
-    struct rpmsw_s begin;	/*!< Start time. */
-    rpmtime_t msecs;		/*!< Instance duration (msecs). */
-    rpmtime_t script_msecs;	/*!< Accumulated script duration (msecs). */
+    struct rpmop_s op;		/*!< Scriptlet operation timestamp; */
+    rpmtime_t ms_scriptlets;	/*!< Accumulated script duration (msecs). */
     int reaper;			/*!< Register SIGCHLD handler? */
     int pipes[2];		/*!< Parent/child interlock. */
     void * id;			/*!< Blocking thread id (pthread_t). */

@@ -1154,7 +1154,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
      */
 rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
 
-(void) rpmswNow(&ts->begin);
+    (void) rpmswEnter(&ts->op, -1);
 
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
@@ -1367,7 +1367,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
 	NULL, ts->notifyData));
 
-ts->ms_fingerprint += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+    ts->ms_fingerprint += rpmswExit(&ts->op, -1)/1000;
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -1424,7 +1424,7 @@ ts->ms_fingerprint += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
 			numRemoved, NULL, ts->notifyData));
 		progress++;
 
-(void) rpmswNow(&ts->begin);
+		(void) rpmswEnter(&ts->op, -1);
 
 	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
 		fi->mapflags |= CPIO_MAP_ABSOLUTE;
@@ -1437,7 +1437,7 @@ ts->ms_fingerprint += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
 		fi->mapflags &= ~CPIO_MAP_ADDDOT;
 		fi->mapflags &= ~CPIO_ALL_HARDLINKS;
 
-ts->ms_repackage += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+		ts->ms_repackage += rpmswExit(&ts->op, -1)/1000;
 
 		/*@switchbreak@*/ break;
 	    }
@@ -1472,7 +1472,7 @@ assert(psm != NULL);
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
-(void) rpmswNow(&ts->begin);
+	    (void) rpmswEnter(&ts->op, -1);
 
 	    pkgKey = rpmteAddedKey(p);
 
@@ -1569,12 +1569,12 @@ assert(psm != NULL);
 
 	    p->h = headerFree(p->h);
 
-ts->ms_install += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+	    ts->ms_install += rpmswExit(&ts->op, -1)/1000;
 
 	    /*@switchbreak@*/ break;
 
 	case TR_REMOVED:
-(void) rpmswNow(&ts->begin);
+	    (void) rpmswEnter(&ts->op, -1);
 
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", rpmteNEVR(p));
 	    /*
@@ -1586,7 +1586,7 @@ ts->ms_install += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
 		    ourrc++;
 	    }
 
-ts->ms_erase += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+	    ts->ms_erase += rpmswExit(&ts->op, -1)/1000;
 
 	    /*@switchbreak@*/ break;
 	}

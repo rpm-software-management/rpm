@@ -45,18 +45,22 @@ extern "C" {
  * @param *sw		time stamp
  * @return		0 on success
  */
+/*@-exportlocal@*/
 /*@null@*/
 rpmsw rpmswNow(/*@returned@*/ rpmsw sw)
 	/*@globals internalState @*/
 	/*@modifies sw, internalState @*/;
+/*@=exportlocal@*/
 
 /** Return benchmark time stamp difference.
  * @param *end		end time stamp
  * @param *begin	begin time stamp
  * @return		difference in micro-seconds
  */
+/*@-exportlocal@*/
 rpmtime_t rpmswDiff(/*@null@*/ rpmsw end, /*@null@*/ rpmsw begin)
 	/*@*/;
+/*@=exportlocal@*/
 
 /** Return benchmark time stamp overhead.
  * @return		overhead in micro-seconds
@@ -64,27 +68,28 @@ rpmtime_t rpmswDiff(/*@null@*/ rpmsw end, /*@null@*/ rpmsw begin)
 /*@-exportlocal@*/
 rpmtime_t rpmswInit(void)
 	/*@globals internalState @*/
-	/*@modifes internalState @*/;
+	/*@modifies internalState @*/;
 /*@=exportlocal@*/
 
 /** \ingroup rpmio
  * Enter timed operation.
  * @param op			operation statistics
+ * @param rc			-1 clears usec counter
  * @return			0 always
  */
-int rpmswEnter(rpmop op)
+int rpmswEnter(rpmop op, ssize_t rc)
 	/*@globals internalState @*/
-	/*@modifes op->count, op->begin, internalState @*/;
+	/*@modifies *op, internalState @*/;
 
 /** \ingroup rpmio
  * Exit timed operation.
  * @param op			operation statistics
  * @param rc			per-operation data (e.g. bytes transferred)
- * @return			0 always
+ * @return			cumulative usecs for operation
  */
-int rpmswExit(rpmop op, ssize_t rc)
+rpmtime_t rpmswExit(rpmop op, ssize_t rc)
 	/*@globals internalState @*/
-	/*@modifes op-bytes, op->usecs, internalState @*/;
+	/*@modifies *op, internalState @*/;
 
 #ifdef __cplusplus
 }
