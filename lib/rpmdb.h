@@ -54,9 +54,9 @@ struct _dbiIndexSet {
  * Private methods for accessing an index database.
  */
 struct _dbiVec {
-    int dbv_major;			/*<! Berkeley db version major */
-    int dbv_minor;			/*<! Berkeley db version minor */
-    int dbv_patch;			/*<! Berkeley db version patch */
+    int dbv_major;			/*!< Berkeley db version major */
+    int dbv_minor;			/*!< Berkeley db version minor */
+    int dbv_patch;			/*!< Berkeley db version patch */
 
 /**
  * Return handle for an index database.
@@ -159,25 +159,25 @@ struct _dbiIndex {
     const char *	dbi_file;
     const char *	dbi_subfile;
 
-    int			dbi_cflags;	/*<! db_create/db_env_create flags */
-    int			dbi_oeflags;	/*<! common (db,dbenv}->open flags */
-    int			dbi_eflags;	/*<! dbenv->open flags */
-    int			dbi_oflags;	/*<! db->open flags */
-    int			dbi_tflags;	/*<! dbenv->txn_begin flags */
+    int			dbi_cflags;	/*!< db_create/db_env_create flags */
+    int			dbi_oeflags;	/*!< common (db,dbenv}->open flags */
+    int			dbi_eflags;	/*!< dbenv->open flags */
+    int			dbi_oflags;	/*!< db->open flags */
+    int			dbi_tflags;	/*!< dbenv->txn_begin flags */
 
-    int			dbi_type;	/*<! db index type */
-    int			dbi_mode;	/*<! mode to use on open */
-    int			dbi_perms;	/*<! file permission to use on open */
-    int			dbi_api;	/*<! Berkeley API type */
+    int			dbi_type;	/*!< db index type */
+    int			dbi_mode;	/*!< mode to use on open */
+    int			dbi_perms;	/*!< file permission to use on open */
+    int			dbi_api;	/*!< Berkeley API type */
 
     int			dbi_tear_down;
     int			dbi_use_cursors;
     int			dbi_use_dbenv;
     int			dbi_get_rmw_cursor;
-    int			dbi_no_fsync;	/*<! no-op fsync for db */
-    int			dbi_no_dbsync;	/*<! don't call dbiSync */
-    int			dbi_lockdbfd;	/*<! do fcntl lock on db fd */
-    int			dbi_temporary;	/*<! non-persistent */
+    int			dbi_no_fsync;	/*!< no-op fsync for db */
+    int			dbi_no_dbsync;	/*!< don't call dbiSync */
+    int			dbi_lockdbfd;	/*!< do fcntl lock on db fd */
+    int			dbi_temporary;	/*!< non-persistent */
     int			dbi_debug;
 
 	/* dbenv parameters */
@@ -189,8 +189,8 @@ struct _dbiIndex {
     int			dbi_region_init;
     int			dbi_tas_spins;
 	/* mpool sub-system parameters */
-    int			dbi_mp_mmapsize;	/*<! (10Mb) */
-    int			dbi_mp_size;	/*<! (128Kb) */
+    int			dbi_mp_mmapsize;	/*!< (10Mb) */
+    int			dbi_mp_size;	/*!< (128Kb) */
 	/* lock sub-system parameters */
     unsigned int	dbi_lk_max;
     unsigned int	dbi_lk_detect;
@@ -205,14 +205,14 @@ struct _dbiIndex {
     int			(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec, DB_LSN *lsnp, int redo, void *info);
 #endif
 	/* dbinfo parameters */
-    int			dbi_cachesize;	/*<! */
-    int			dbi_pagesize;	/*<! (fs blksize) */
+    int			dbi_cachesize;	/*!< */
+    int			dbi_pagesize;	/*!< (fs blksize) */
     void *		(*dbi_malloc) (size_t nbytes);
 	/* hash access parameters */
-    unsigned int	dbi_h_ffactor;	/*<! */
+    unsigned int	dbi_h_ffactor;	/*!< */
     unsigned int	(*dbi_h_hash_fcn) (const void *bytes, unsigned int length);
-    unsigned int	dbi_h_nelem;	/*<! */
-    unsigned int	dbi_h_flags;	/*<! DB_DUP, DB_DUPSORT */
+    unsigned int	dbi_h_nelem;	/*!< */
+    unsigned int	dbi_h_flags;	/*!< DB_DUP, DB_DUPSORT */
     int			(*dbi_h_dup_compare_fcn) (const DBT *, const DBT *);
 	/* btree access parameters */
     int			dbi_bt_flags;
@@ -228,17 +228,17 @@ struct _dbiIndex {
     const char *	dbi_re_source;
 
     rpmdb	dbi_rpmdb;
-    int		dbi_rpmtag;		/*<! rpm tag used for index */
-    int		dbi_jlen;		/*<! size of join key */
+    int		dbi_rpmtag;		/*!< rpm tag used for index */
+    int		dbi_jlen;		/*!< size of join key */
 
-    unsigned int dbi_lastoffset;	/*<! db1 with falloc.c needs this */
+    unsigned int dbi_lastoffset;	/*!< db1 with falloc.c needs this */
 
-    void *	dbi_db;			/*<! dbi handle */
+    void *	dbi_db;			/*!< dbi handle */
     void *	dbi_dbenv;
     void *	dbi_dbinfo;
-    void *	dbi_rmw;		/*<! db cursor (with DB_WRITECURSOR) */
+    void *	dbi_rmw;		/*!< db cursor (with DB_WRITECURSOR) */
 
-/*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
+/*@observer@*/ const struct _dbiVec * dbi_vec;	/*!< private methods */
 
 };
 
@@ -246,14 +246,14 @@ struct _dbiIndex {
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
-    const char *	db_root;	/*<! path prefix */
-    const char *	db_home;	/*<! directory path */
+    const char *	db_root;	/*!< path prefix */
+    const char *	db_home;	/*!< directory path */
     int			db_flags;
 
-    int			db_mode;	/*<! open mode */
-    int			db_perms;	/*<! open permissions */
+    int			db_mode;	/*!< open mode */
+    int			db_perms;	/*!< open permissions */
 
-    int			db_api;		/*<! Berkeley API type */
+    int			db_api;		/*!< Berkeley API type */
 
     int			db_remove_env;
     int			db_filter_dups;

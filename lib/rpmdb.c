@@ -29,7 +29,7 @@ int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 #define	_DBI_MAJOR	-1
 
 static int dbiTagsMax = 0;
-static int *dbiTags = NULL;
+/*@only@*/ static int *dbiTags = NULL;
 
 /**
  * Return dbi index used for rpm tag.

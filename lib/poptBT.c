@@ -1,4 +1,4 @@
-/** \file poptbuild.c
+/** \file poptBT.c
  *  Popt tables for build modes.
  */
 
