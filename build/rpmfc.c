@@ -280,7 +280,7 @@ static int rpmfcHelper(rpmfc fc, char deptype, const char * nsdep)
 	depsp = &fc->provides;
 	break;
     case 'R':
-	snprintf(buf, sizeof(buf), "%%{?__%s_provides}", nsdep);
+	snprintf(buf, sizeof(buf), "%%{?__%s_requires}", nsdep);
 	depsp = &fc->requires;
 	break;
     }
