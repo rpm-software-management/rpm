@@ -1338,7 +1338,6 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     char buf[BUFSIZ];
     const char * N;
     const char * EVR;
-    int_32 Flags;
     int genConfigDeps;
     int c;
     int rc = 0;
