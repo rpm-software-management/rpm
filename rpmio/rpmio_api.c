@@ -4,6 +4,7 @@
 #define	fdFileno	_fdFileno
 #include <rpmio_internal.h>
 #undef	fdFileno
+/*@access FD_t@*/
 
 int fdFileno(void * cookie) {
     FD_t fd;

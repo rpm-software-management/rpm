@@ -84,48 +84,50 @@ int ftpCmd(const char * cmd, const char * url, const char * arg2);
 
 int ufdClose( /*@only@*/ void * cookie);
 
-static inline /*@null@*/ const FDIO_t fdGetIo(FD_t fd) {
+/*@unused@*/ static inline /*@null@*/ const FDIO_t fdGetIo(FD_t fd) {
     FDSANE(fd);
     return fd->fps[fd->nfps].io;
 }
 
-static inline void fdSetIo(FD_t fd, FDIO_t io) {
+/*@unused@*/ static inline void fdSetIo(FD_t fd, FDIO_t io) {
     FDSANE(fd);
     fd->fps[fd->nfps].io = io;
 }
 
-static inline /*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd) {
+/*@unused@*/ static inline /*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd) {
     FDSANE(fd);
     return ((FILE *)fd->fps[fd->nfps].fp);
 }
 
-static inline /*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd) {
+/*@unused@*/ static inline /*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd) {
     FDSANE(fd);
     return fd->fps[fd->nfps].fp;
 }
 
-static inline void fdSetFp(FD_t fd, /*@keep@*/ void * fp) {
+/*@unused@*/ static inline void fdSetFp(FD_t fd, void * fp) {
     FDSANE(fd);
     fd->fps[fd->nfps].fp = fp;
 }
 
-static inline int fdGetFdno(FD_t fd) {
+/*@unused@*/ static inline int fdGetFdno(FD_t fd) {
     FDSANE(fd);
     return fd->fps[fd->nfps].fdno;
 }
 
-static inline void fdSetFdno(FD_t fd, int fdno) {
+/*@unused@*/ static inline void fdSetFdno(FD_t fd, int fdno) {
     FDSANE(fd);
     fd->fps[fd->nfps].fdno = fdno;
 }
 
-static inline void fdSetContentLength(FD_t fd, ssize_t contentLength)
+/*@unused@*/ static inline void fdSetContentLength(FD_t fd, ssize_t contentLength)
 {
     FDSANE(fd);
     fd->contentLength = fd->bytesRemain = contentLength;
 }
 
-static inline void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno) {
+/*@unused@*/ static inline void fdPush(FD_t fd, FDIO_t io,
+	void * fp, int fdno)
+{
     FDSANE(fd);
     if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
 	return;
@@ -135,7 +137,7 @@ static inline void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno) {
     fdSetFdno(fd, fdno);
 }
 
-static inline void fdPop(FD_t fd) {
+/*@unused@*/ static inline void fdPop(FD_t fd) {
     FDSANE(fd);
     if (fd->nfps < 0) return;
     fdSetIo(fd, NULL);
@@ -144,14 +146,14 @@ static inline void fdPop(FD_t fd) {
     fd->nfps--;
 }
 
-static inline void fdstat_enter(FD_t fd, int opx)
+/*@unused@*/ static inline void fdstat_enter(FD_t fd, int opx)
 {
     if (fd->stats == NULL) return;
     fd->stats->ops[opx].count++;
     gettimeofday(&fd->stats->begin, NULL);
 }
 
-static inline time_t tvsub(struct timeval *etv, struct timeval *btv) {
+/*@unused@*/ static inline time_t tvsub(struct timeval *etv, struct timeval *btv) {
     time_t secs, usecs;
     if (!(etv && btv)) return 0;
     secs = etv->tv_sec - btv->tv_sec;
@@ -163,7 +165,7 @@ static inline time_t tvsub(struct timeval *etv, struct timeval *btv) {
     return ((secs * 1000) + (usecs/1000));
 }
 
-static inline void fdstat_exit(FD_t fd, int opx, ssize_t rc)
+/*@unused@*/ static inline void fdstat_exit(FD_t fd, int opx, ssize_t rc)
 {
     struct timeval end;
     if (rc == -1) fd->syserrno = errno;
@@ -184,7 +186,7 @@ static inline void fdstat_exit(FD_t fd, int opx, ssize_t rc)
     fd->stats->begin = end;	/* structure assignment */
 }
 
-static inline void fdstat_print(FD_t fd, const char * msg, FILE * fp) {
+/*@unused@*/ static inline void fdstat_print(FD_t fd, const char * msg, FILE * fp) {
     int opx;
     if (fd->stats == NULL) return;
     for (opx = 0; opx < 4; opx++) {
@@ -211,34 +213,34 @@ static inline void fdstat_print(FD_t fd, const char * msg, FILE * fp) {
     }
 }
 
-static inline void fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie) {
+/*@unused@*/ static inline void fdSetSyserrno(FD_t fd, int syserrno, /*@kept@*/ const void * errcookie) {
     FDSANE(fd);
     fd->syserrno = syserrno;
     fd->errcookie = errcookie;
 }
 
-static inline int fdGetRdTimeoutSecs(FD_t fd) {
+/*@unused@*/ static inline int fdGetRdTimeoutSecs(FD_t fd) {
     FDSANE(fd);
     return fd->rd_timeoutsecs;
 }
 
-static inline long int fdGetCpioPos(FD_t fd) {
+/*@unused@*/ static inline long int fdGetCpioPos(FD_t fd) {
     FDSANE(fd);
     return fd->fd_cpioPos;
 }
 
-static inline void fdSetCpioPos(FD_t fd, long int cpioPos) {
+/*@unused@*/ static inline void fdSetCpioPos(FD_t fd, long int cpioPos) {
     FDSANE(fd);
     fd->fd_cpioPos = cpioPos;
 }
 
-static inline FD_t c2f(void * cookie) {
+/*@unused@*/ static inline FD_t c2f(void * cookie) {
     FD_t fd = (FD_t) cookie;
     FDSANE(fd);
-    return fd;
+    /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
-static inline int fdFileno(void * cookie) {
+/*@unused@*/ static inline int fdFileno(void * cookie) {
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);

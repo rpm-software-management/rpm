@@ -182,7 +182,7 @@ FD_t fdDup(int fdno) {
     fd = fdNew("open (fdDup)");
     fdSetFdno(fd, nfdno);
 DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, fd, fdbg(fd)));
-    return fd;
+    /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
 #ifdef USE_COOKIE_SEEK_POINTER
@@ -372,7 +372,7 @@ DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", fd, (long)rc, fdbg(fd)));
     fdSetFdno(fd, fdno);
     fd->flags = flags;
 DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, flags, (unsigned)mode, fdbg(fd)));
-    return fd;
+    /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
 }
 
 static struct FDIO_s fdio_s = {
@@ -769,8 +769,9 @@ fprintf(stderr, "<- %s\n", s);
 		    if (!strncmp(s, "Connection:", ne)) {
 			if (!strcmp(e, "close"))
 			    ctrl->persist = 0;
-		    } else
+		    }
 #if 0
+		    else
 		    if (!strncmp(s, "Content-Type:", ne)) {
 		    } else
 		    if (!strncmp(s, "Transfer-Encoding:", ne)) {
@@ -780,9 +781,8 @@ fprintf(stderr, "<- %s\n", s);
 			    ctrl->wr_chunked = 0;
 		    } else
 		    if (!strncmp(s, "Allow:", ne)) {
-		    } else
+		    }
 #endif
-			;
 		    continue;
 		}
 
@@ -1630,7 +1630,7 @@ int ufdClose( /*@only@*/ void * cookie)
 	    if (fd->wr_chunked) {
 		int rc;
 	    /* XXX HTTP PUT requires terminating 0 length chunk. */
-		fdWrite(fd, NULL, 0);
+		(void) fdWrite(fd, NULL, 0);
 		fd->wr_chunked = 0;
 	    /* XXX HTTP PUT requires terminating entity-header. */
 if (_ftp_debug)
@@ -2253,10 +2253,10 @@ int Fseek(FD_t fd, off_t offset, int whence) {
 DBGIO(fd, (stderr, "==> Fseek(%p,%ld,%d) %s\n", fd, (long)offset, whence, fdbg(fd)));
 
     if (fdGetIo(fd) == fpio) {
-	FILE *f;
+	FILE *fp;
 
-	f = fdGetFILE(fd);
-	rc = fseek(f, offset, whence);
+	fp = fdGetFILE(fd);
+	rc = fseek(fp, offset, whence);
 	return rc;
     }
 
