@@ -348,12 +348,7 @@ int rpmVerifyDigest(Header h)
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
 	if (digest) {		/* XXX can't happen */
-	    const char *n, *v, *r;
-	    (void) headerNVR(h, &n, &v, &r);
 	    if (strcmp(hdigest, digest)) {
-		rpmMessage(RPMMESS_NORMAL,
-		   _("%s-%s-%s: immutable header region digest check failed\n"),
-			n, v, r);
 		ec = 1;
 	    }
 	}
@@ -539,8 +534,14 @@ int showVerifyPackage(QVA_t qva, rpmdb rpmdb, Header h)
     int rc;
 
     if (qva->qva_flags & VERIFY_DIGEST) {
-	if ((rc = rpmVerifyDigest(h)) != 0)
+	if ((rc = rpmVerifyDigest(h)) != 0) {
+	    const char *n, *v, *r;
+	    (void) headerNVR(h, &n, &v, &r);
+	    rpmMessage(RPMMESS_NORMAL,
+		   _("%s-%s-%s: immutable header region digest check failed\n"),
+			n, v, r);
 	    ec = rc;
+	}
     }
     if (qva->qva_flags & VERIFY_DEPS) {
 	if ((rc = verifyDependencies(rpmdb, h)) != 0)

@@ -155,6 +155,7 @@
 	- popthelp.c: don't use stpcpy to avoid portability grief (#47500).
 	- permit alias/exec description/arg text to be set from popt config.
 	- use rpmqv.c, not rpm.c, as rpm's main() routine.
+	- python: rhnLoad/rhnUnload to check header digest.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
