@@ -18,7 +18,6 @@
 #define BUFFER_SIZE 4096
 
 #include "ftp.h"
-#include "lib/messages.h"
 
 static int ftpCheckResponse(int sock, char ** str);
 static int ftpCommand(int sock, char * command, ...);
@@ -178,8 +177,6 @@ int ftpOpen(char * host, char * name, char * password) {
     destPort.sin_port = htons(IPPORT_FTP);
     destPort.sin_addr = serverAddress;
 
-    message(MESS_DEBUG, "establishing connection\n");
-
     if (connect(sock, (struct sockaddr *) &destPort, sizeof(destPort))) {
 	close(sock);
         return FTPERR_FAILED_CONNECT;
@@ -205,8 +202,6 @@ int ftpOpen(char * host, char * name, char * password) {
 	strcat(password, "@");
     }
 
-    message(MESS_DEBUG, "logging in\n");
-
     if ((rc = ftpCommand(sock, "USER", name, NULL))) {
 	close(sock);
 	return rc;
@@ -221,8 +216,6 @@ int ftpOpen(char * host, char * name, char * password) {
 	close(sock);
 	return rc;
     }
-
-    message(MESS_DEBUG, "logged into ftp site\n");
 
     return sock;
 }
@@ -272,7 +265,6 @@ int ftpGetFile(int sock, char * remotename, int dest) {
     char * retrCommand;
     int rc;
 
-    message(MESS_DEBUG, "sending PASV command\n");
     if (write(sock, "PASV\n", 5) != 5) {
         return FTPERR_SERVER_IO_ERROR;
     }
@@ -318,7 +310,6 @@ int ftpGetFile(int sock, char * remotename, int dest) {
         return FTPERR_FAILED_CONNECT;
     }
 
-    message(MESS_DEBUG, "sending RETR command\n");
     retrCommand = alloca(strlen(remotename) + 20);
     sprintf(retrCommand, "RETR %s\n", remotename);
     i = strlen(retrCommand);
@@ -327,15 +318,12 @@ int ftpGetFile(int sock, char * remotename, int dest) {
         return FTPERR_SERVER_IO_ERROR;
     }
 
-    message(MESS_DEBUG, "connecting to data socket\n");
     if (connect(dataSocket, (struct sockaddr *) &dataAddress, 
 	        sizeof(dataAddress))) {
 	close(dataSocket);
         return FTPERR_FAILED_DATA_CONNECT;
     }
 
-    message(MESS_DEBUG, "data socket open\n");
-   
     if (ftpCheckResponse(sock, NULL)) {
 	close(dataSocket);
 	return FTPERR_BAD_SERVER_RESPONSE;
