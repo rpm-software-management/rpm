@@ -179,10 +179,12 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     Spec spec;
     int rc;
 
-    if (fileName != NULL && fdFileno(fdi = fdOpen(fileName, O_RDONLY, 0644)) < 0) {
-	rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
-	    strerror(errno));
-	return RPMERR_BADMAGIC;
+    if (fileName != NULL) {
+	if (fdFileno(fdi = fdOpen(fileName, O_RDONLY, 0644)) < 0) {
+	    rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
+		strerror(errno));
+	    return RPMERR_BADMAGIC;
+	}
     } else {
 	fdi = fdDup(STDIN_FILENO);
     }

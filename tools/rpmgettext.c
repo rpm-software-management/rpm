@@ -987,6 +987,7 @@ main(int argc, char **argv)
 
     /* XXX I don't want to read rpmrc yet */
     rpmSetVar(RPMVAR_TMPPATH, "/tmp");
+    addMacro(&globalMacroContext, "_tmppath", NULL, "/tmp", RMIL_DEFAULT);
 
     fdi = fdDup(STDIN_FILENO);
 

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-02-15 21:37-0500\n"
+"POT-Creation-Date: 1999-02-16 01:14-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,7 +131,7 @@ msgstr ""
 msgid "Couldn't write header/archive to temp file"
 msgstr ""
 
-#: ../build/pack.c:345 ../checksig.c:91
+#: ../build/pack.c:347 ../checksig.c:91
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
@@ -1499,7 +1499,7 @@ msgstr ""
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../build/build.c:86 ../build/pack.c:263
+#: ../build/build.c:86 ../build/pack.c:265
 msgid "Unable to open temp file"
 msgstr ""
 
@@ -1670,7 +1670,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1117 ../build/pack.c:448
+#: ../build/files.c:1117 ../build/pack.c:450
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1751,91 +1751,91 @@ msgstr ""
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:183
+#: ../build/pack.c:184
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:192
+#: ../build/pack.c:194
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: ../build/pack.c:212
+#: ../build/pack.c:214
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: ../build/pack.c:218
+#: ../build/pack.c:220
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: ../build/pack.c:274
+#: ../build/pack.c:276
 msgid "Bad CSA data"
 msgstr ""
 
-#: ../build/pack.c:297
+#: ../build/pack.c:299
 #, c-format
 msgid "Could not open %s\n"
 msgstr ""
 
-#: ../build/pack.c:329 ../build/pack.c:372
+#: ../build/pack.c:331 ../build/pack.c:374
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: ../build/pack.c:362
+#: ../build/pack.c:364
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr ""
 
-#: ../build/pack.c:387
+#: ../build/pack.c:389
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: ../build/pack.c:402
+#: ../build/pack.c:404
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:418
+#: ../build/pack.c:420
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:425
+#: ../build/pack.c:427
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:504
+#: ../build/pack.c:506
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:511
+#: ../build/pack.c:513
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:518
+#: ../build/pack.c:520
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:525
+#: ../build/pack.c:527
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:533
+#: ../build/pack.c:535
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:549
+#: ../build/pack.c:551
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
