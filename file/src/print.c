@@ -212,7 +212,7 @@ file_fmttime(uint32_t v, int local)
 	if (local) {
 		pp = ctime(&t);
 	} else {
-#ifndef HAVE_DAYLIGHT
+#ifndef HAVE_DAYLIGHT && !defined(__LCLINT__)
 		static int daylight = 0;
 #ifdef HAVE_TM_ISDST
 		static time_t now = (time_t)0;

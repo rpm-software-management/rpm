@@ -328,7 +328,7 @@ int parseExpressionBoolean(Spec spec, const char * expr)
  * @param expr		expression to parse
  * @return
  */
-/*@unused@*/
+/*@unused@*/ /*@null@*/
 char * parseExpressionString(Spec spec, const char * expr)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/;
@@ -343,7 +343,8 @@ char * parseExpressionString(Spec spec, const char * expr)
  * @param test		don't execute scripts or package if testing
  * @return		0 on success, RPMERR_SCRIPT on failure
  */
-int doScript(Spec spec, int what, const char * name, StringBuf sb, int test)
+int doScript(Spec spec, int what, /*@null@*/ const char * name,
+		/*@null@*/ StringBuf sb, int test)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies spec->macros,

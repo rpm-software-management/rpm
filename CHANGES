@@ -6,6 +6,7 @@
 	- fix: short option help missing string terminator.
 	- unify signal handling in librpmio, use condvar to deliver signal.
 	- resurrect manifests, RPMRC_NOTFOUND returned by readLead().
+	- permit secondary tag match patterns with RPMQV_ALL.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

@@ -38,5 +38,5 @@ lint:
 
 .PHONY: sources
 sources:
-	@echo $(libfmagic_la_SOURCES:%=file/%)
+	@echo $(libfmagic_la_SOURCES:%=file/src/%)
 

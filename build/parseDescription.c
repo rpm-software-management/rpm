@@ -27,8 +27,10 @@ extern int noLang;
     };
 
 int parseDescription(Spec spec)
+	/*@globals name, lang @*/
+	/*@modifies name, lang @*/
 {
-    int nextPart;
+    int nextPart = RPMERR_BADSPEC;	/* assume error */
     StringBuf sb;
     int flag = PART_SUBNAME;
     Package pkg;
@@ -38,10 +40,8 @@ int parseDescription(Spec spec)
     poptContext optCon = NULL;
     spectag t = NULL;
 
-    /*@-mods@*/
     name = NULL;
     lang = RPMBUILD_DEFAULT_LANG;
-    /*@=mods@*/
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%description: %s\n"),
@@ -61,32 +61,24 @@ int parseDescription(Spec spec)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
-	argv = _free(argv);
-	optCon = poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
 
     if (poptPeekArg(optCon)) {
-	/*@-mods@*/
 	if (name == NULL)
 	    name = poptGetArg(optCon);
-	/*@=mods@*/
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
-	    argv = _free(argv);
-	    optCon = poptFreeContext(optCon);
-	    return RPMERR_BADSPEC;
+	    goto exit;
 	}
     }
 
     if (lookupPackage(spec, name, flag, &pkg)) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
-	argv = _free(argv);
-	optCon = poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
 
 
@@ -96,9 +88,7 @@ int parseDescription(Spec spec)
     if (headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Second description\n"),
 		spec->lineNum);
-	argv = _free(argv);
-	optCon = poptFreeContext(optCon);
-	return RPMERR_BADSPEC;
+	goto exit;
     }
 #endif
 
@@ -110,18 +100,20 @@ int parseDescription(Spec spec)
 	nextPart = PART_NONE;
     } else {
 	if (rc) {
-	    return rc;
+	    nextPart = RPMERR_BADSPEC;
+	    goto exit;
 	}
 	while (! (nextPart = isPart(spec->line))) {
 	    appendLineStringBuf(sb, spec->line);
 	    if (t) t->t_nlines++;
 	    if ((rc =
-		 readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
+		readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;
 	    }
 	    if (rc) {
-		return rc;
+		nextPart = RPMERR_BADSPEC;
+		goto exit;
 	    }
 	}
     }
@@ -134,8 +126,8 @@ int parseDescription(Spec spec)
     
     sb = freeStringBuf(sb);
      
+exit:
     argv = _free(argv);
     optCon = poptFreeContext(optCon);
-    
     return nextPart;
 }

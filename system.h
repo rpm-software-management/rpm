@@ -109,6 +109,20 @@ extern int errno;
 /*@=declundef @*/
 #endif
 
+#if defined(__LCLINT__)
+/*@-declundef @*/
+/*@exits@*/
+extern void error(int status, int errnum, const char *format, ...)
+	__attribute__ ((__format__ (__printf__, 3, 4)))
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+/*@=declundef @*/
+#else
+#if HAVE_ERROR && HAVE_ERROR_H
+#include <error.h>
+#endif
+#endif
+
 #ifdef STDC_HEADERS
 /*@-macrounrecog -incondefs -globuse -mustmod @*/ /* FIX: shrug */
 #define getopt system_getopt

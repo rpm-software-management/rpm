@@ -518,9 +518,33 @@ restart:
 	    res = 1;
 	} else {
 	    if (arg != NULL)
-	    for (av = (const char **) arg; *av; av++) {
-		if (!rpmdbSetIteratorRE(qva->qva_mi, RPMTAG_NAME, RPMMIRE_DEFAULT, *av))
+	    for (av = (const char **) arg; *av != NULL; av++) {
+		int tag = RPMTAG_NAME;
+		const char * pat;
+		char * a, * ae;
+
+		pat = a = xstrdup(*av);
+		tag = RPMTAG_NAME;
+
+		/* Parse for "tag=pattern" args. */
+		if ((ae = strchr(a, '=')) != NULL) {
+		    *ae++ = '\0';
+		    tag = tagValue(a);
+		    if (tag < 0) {
+			rpmError(RPMERR_QUERYINFO,
+				_("unknown tag: \"%s\"\n"), a);
+			res = 1;
+		    }
+		    pat = ae;
+		}
+
+		if (!res)
+		    res = rpmdbSetIteratorRE(qva->qva_mi, tag, RPMMIRE_DEFAULT, pat);
+		a = _free(a);
+
+		if (res == 0)
 		    continue;
+
 		qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
 		res = 1;
 		/*@loopbreak@*/ break;

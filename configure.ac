@@ -425,6 +425,8 @@ AC_CHECK_FUNC(socket, [], [
     AC_CHECK_LIB(socket, socket)
 ])
 
+AC_CHECK_HEADERS(error.h)
+AC_CHECK_FUNCS(error)
 AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
 
 AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
@@ -764,8 +766,11 @@ AC_TRY_LINK([#include <time.h>],printf("%ld", timezone),
 AC_MSG_RESULT($HAS_TIMEZONE)
 
 dnl Check for missing typedefs
-AC_TYPE_MODE_T
+AC_TYPE_OFF_T
 AC_TYPE_PID_T
+AC_TYPE_MODE_T
+AC_TYPE_SIZE_T
+AC_STRUCT_ST_RDEV
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
