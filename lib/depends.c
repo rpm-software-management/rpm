@@ -11,6 +11,7 @@ struct availablePackage {
     char ** provides;
     char * name, * version, * release;
     int serial, hasSerial, providesCount;
+    void * key;
 } ;
 
 struct availableIndexEntry {
@@ -47,12 +48,13 @@ static void alMakeIndex(struct availableList * al);
 static void alCreate(struct availableList * al);
 static void alFreeIndex(struct availableList * al);
 static void alFree(struct availableList * al);
-static void alAddPackage(struct availableList * al, Header h);
+static void alAddPackage(struct availableList * al, Header h, void * key);
 
 static int intcmp(const void * a, const void *b);
 static int indexcmp(const void * a, const void *b);
 static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName, 
-			 char * reqVersion, int reqFlags);
+			     char * reqVersion, int reqFlags,
+			     struct availablePackage ** suggestion);
 static int checkDependentPackages(rpmDependencies rpmdep, 
 			    struct problemsSet * psp, char * requires);
 static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
@@ -60,8 +62,9 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset, 
 			        char * reqVersion, int reqFlags);
 static int headerMatchesDepFlags(Header h, char * reqVersion, int reqFlags);
-int alSatisfiesDepend(struct availableList * al, char * reqName, 
-                      char * reqVersion, int reqFlags);
+struct availablePackage * alSatisfiesDepend(struct availableList * al, 
+					    char * reqName, char * reqVersion, 
+					    int reqFlags);
 
 static void alCreate(struct availableList * al) {
     al->list = malloc(sizeof(*al->list) * 5);
@@ -92,7 +95,7 @@ static void alFree(struct availableList * al) {
     alFreeIndex(al);
 }
 
-static void alAddPackage(struct availableList * al, Header h) {
+static void alAddPackage(struct availableList * al, Header h, void * key) {
     struct availablePackage * p;
     int i, type;
 
@@ -114,6 +117,8 @@ static void alAddPackage(struct availableList * al, Header h) {
 	p->providesCount = 0;
 	p->provides = NULL;
     }
+
+    p->key = key;
 
     alFreeIndex(al);
 }
@@ -150,23 +155,24 @@ static void alMakeIndex(struct availableList * al) {
     }
 }
 
-int alSatisfiesDepend(struct availableList * al, char * reqName, 
-		      char * reqVersion, int reqFlags) {
+struct availablePackage * alSatisfiesDepend(struct availableList * al, 
+					    char * reqName, char * reqVersion, 
+					    int reqFlags) {
     struct availableIndexEntry needle, * match;
 
-    if (!al->index.size) return 0;
+    if (!al->index.size) return NULL;
 
     needle.entry = reqName;
     match = bsearch(&needle, al->index.index, al->index.size,
 		    sizeof(*al->index.index), (void *) indexcmp);
  
-    if (!match) return 0;
-    if (match->isProvides) return 1;
+    if (!match) return NULL;
+    if (match->isProvides) return match->package;
 
     if (headerMatchesDepFlags(match->package->h, reqVersion, reqFlags))
-	return 1;
+	return match->package;
 
-    return 0;
+    return NULL;
 }
 
 int indexcmp(const void * a, const void *b) {
@@ -210,7 +216,7 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h) {
     char * name;
     int count, type, i;
 
-    alAddPackage(&rpmdep->addedPackages, h);
+    alAddPackage(&rpmdep->addedPackages, h, NULL);
 
     if (!rpmdep->db) return;
 
@@ -226,7 +232,11 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h) {
 }
 
 void rpmdepAddPackage(rpmDependencies rpmdep, Header h) {
-    alAddPackage(&rpmdep->addedPackages, h);
+    alAddPackage(&rpmdep->addedPackages, h, NULL);
+}
+
+void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key) {
+    alAddPackage(&rpmdep->availablePackages, h, key);
 }
 
 void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset) {
@@ -322,45 +332,53 @@ int rpmdepCheck(rpmDependencies rpmdep,
 /* 2 == error */
 /* 1 == dependency not satisfied */
 static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName, 
-			 char * reqVersion, int reqFlags) {
+			     char * reqVersion, int reqFlags, 
+			     struct availablePackage ** suggestion) {
     dbIndexSet matches;
     int i;
 
     message(MESS_DEBUG, "dependencies: looking for %s\n", reqName);
 
+    if (suggestion) *suggestion = NULL;
+
     if (alSatisfiesDepend(&rpmdep->addedPackages, reqName, reqVersion, 
 			  reqFlags))
 	return 0;
 
-    if (!rpmdep->db) return 1;
-
-    if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, &matches))  {
-	for (i = 0; i < matches.count; i++) {
-	    if (bsearch(&matches.recs[i].recOffset, rpmdep->removedPackages, 
-		        rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
-		continue;
-	    break;
-	}
-
-	freeDBIndexRecord(matches);
-	if (i < matches.count) return 0;
-    }
-
-    if (!rpmdbFindPackage(rpmdep->db, reqName, &matches))  {
-	for (i = 0; i < matches.count; i++) {
-	    if (bsearch(&matches.recs[i].recOffset, rpmdep->removedPackages, 
-		        rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
-		continue;
-
-	    if (dbrecMatchesDepFlags(rpmdep, matches.recs[i].recOffset, 
-		                     reqVersion, reqFlags)) {
+    if (rpmdep->db) {
+	if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, &matches)) {
+	    for (i = 0; i < matches.count; i++) {
+		if (bsearch(&matches.recs[i].recOffset, 
+			    rpmdep->removedPackages, 
+			    rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
+		    continue;
 		break;
 	    }
+
+	    freeDBIndexRecord(matches);
+	    if (i < matches.count) return 0;
 	}
 
-	freeDBIndexRecord(matches);
-	if (i < matches.count) return 0;
+	if (!rpmdbFindPackage(rpmdep->db, reqName, &matches)) {
+	    for (i = 0; i < matches.count; i++) {
+		if (bsearch(&matches.recs[i].recOffset, 
+			    rpmdep->removedPackages, 
+			    rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
+		    continue;
+
+		if (dbrecMatchesDepFlags(rpmdep, matches.recs[i].recOffset, 
+					 reqVersion, reqFlags)) {
+		    break;
+		}
+	    }
+
+	    freeDBIndexRecord(matches);
+	    if (i < matches.count) return 0;
+	}
     }
+
+    *suggestion = alSatisfiesDepend(&rpmdep->availablePackages, reqName, 
+				    reqVersion, reqFlags);
 
     return 1;
 }
@@ -402,6 +420,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
     int type, count;
     int i, rc;
     int * requireFlags;
+    struct availablePackage * suggestion;
 
     if (!getEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requires, 
 	     &requiresCount)) return 0;
@@ -415,7 +434,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 	if (requirement && strcmp(requirement, requires[i])) continue;
 
 	rc = unsatisfiedDepend(rpmdep, requires[i], requiresVersion[i], 
-			       requireFlags[i]);
+			       requireFlags[i], &suggestion);
 	if (rc == 1) {
 	    getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
 	    getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
@@ -436,6 +455,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 	    psp->problems[psp->num].needsVersion = requiresVersion[i];
 	    psp->problems[psp->num].needsFlags = requireFlags[i];
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_REQUIRES;
+	    psp->problems[psp->num].suggestedPackage = suggestion->key;
 
 	    psp->num++;
 	} else if (rc) {
