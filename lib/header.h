@@ -219,9 +219,10 @@ void *headerUnload(Header h)	/*@*/;
  * Convert header to on-disk representation, and then reload.
  * This is used to insure that all header data is in one chunk.
  * @param h		header (with pointers)
+ * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
-Header headerReload(/*@only@*/ Header h)	/*@*/;
+Header headerReload(/*@only@*/ Header h, int tag)	/*@*/;
 
 /** \ingroup header
  * Create new (empty) header instance.
@@ -241,7 +242,7 @@ Header headerLink(Header h)
  * Dereference a header instance.
  * @param h		header
  */
-void headerFree( /*@killref@*/ Header h);
+void headerFree( /*@only@*/ /*@null@*/ /*@killref@*/ Header h);
 
 /** \ingroup header
  * Return header reference count.
@@ -400,7 +401,7 @@ int headerGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  * @return		1 on success, 0 on failure
  */
 int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type,
-	/*@out@*/ void **p, /*@out@*/ int_32 *c)
+	/*@out@*/ const void **p, /*@out@*/ int_32 *c)
 		/*@modifies *type, *p, *c @*/;
 
 /** \ingroup header
@@ -491,9 +492,9 @@ void headerUnsort(Header h)
 
 /** \ingroup header
  * Duplicate tag values from one header into another.
- * @param headerFrom		source header
- * @param headerTo		destination header
- * @param tagstocopy		array of tags that are copied
+ * @param headerFrom	source header
+ * @param headerTo	destination header
+ * @param tagstocopy	array of tags that are copied
  */
 void headerCopyTags(Header headerFrom, Header headerTo, int_32 *tagstocopy)
 	/*@modifies headerFrom, headerTo @*/;
@@ -515,6 +516,23 @@ typedef enum rpmTagType_e {
     RPM_I18NSTRING_TYPE		=  9
 #define	RPM_MAX_TYPE		9
 } rpmTagType;
+
+/** \ingroup header
+ * Free data allocated when retrieved from header.
+ * @param data		address of data
+ * @param type		type of data
+ * @return		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * headerFreeData(
+			/*@only@*/ const void * data, rpmTagType type)
+{
+    if (type == RPM_STRING_ARRAY_TYPE ||
+	type == RPM_I18NSTRING_TYPE ||
+	type == RPM_BIN_TYPE) {
+	if (data) free((void *)data);
+    }
+    return NULL;
+}
 
 /** \ingroup header
  * New rpm data types under consideration/development.
@@ -543,6 +561,8 @@ typedef enum rpmSubTagType_e {
 #define	HEADER_IMMUTABLE	63
 #define	HEADER_REGIONS		64
 #define HEADER_I18NTABLE	100
+#define	HEADER_SIGBASE		256
+#define	HEADER_TAGBASE		1000
 
 #ifdef __cplusplus
 }

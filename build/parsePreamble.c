@@ -195,7 +195,6 @@ static int checkForValidArchitectures(Spec spec)
 #else
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
-	/* XXX FIXME memory leak here. */
 #endif
     
     if (isMemberInEntry(spec->buildRestrictions,

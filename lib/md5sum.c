@@ -13,6 +13,7 @@
 #include "system.h"
 
 #include "md5.h"
+#include "rpmio_internal.h"
 
 /**
  * Calculate MD5 sum for file.
@@ -23,12 +24,15 @@
  * @return		0 on success, 1 on error
  */
 static int domd5(const char * fn, unsigned char * digest, int asAscii,
-		 int brokenEndian) {
+		 int brokenEndian)
+{
+    int rc;
+
+#ifndef	DYING
     unsigned char buf[1024];
     unsigned char bindigest[16];
     FILE * fp;
     MD5_CTX ctx;
-    int n;
 
     memset(bindigest, 0, sizeof(bindigest));
     fp = fopen(fn, "r");
@@ -37,8 +41,8 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
     }
 
     rpmMD5Init(&ctx, brokenEndian);
-    while ((n = fread(buf, 1, sizeof(buf), fp)) > 0)
-	    rpmMD5Update(&ctx, buf, n);
+    while ((rc = fread(buf, sizeof(buf[0]), sizeof(buf), fp)) > 0)
+	    rpmMD5Update(&ctx, buf, rc);
     rpmMD5Final(bindigest, &ctx);
     if (ferror(fp)) {
 	fclose(fp);
@@ -69,8 +73,37 @@ static int domd5(const char * fn, unsigned char * digest, int asAscii,
 
     }
     fclose(fp);
+    rc = 0;
+#else
+    FD_t fd = Fopen(fn, "r.ufdio");
+    unsigned char buf[BUFSIZ];
+    unsigned char * md5sum = NULL;
+    size_t md5len;
 
-    return 0;
+    if (fd == NULL || Ferror(fd)) {
+	if (fd)
+	    Fclose(fd);
+	return 1;
+    }
+
+    /* Preserve legacy "brokenEndian" behavior. */
+    fdInitMD5(fd, (brokenEndian ? RPMDIGEST_NATIVE : 0) );
+
+    while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
+	;
+    fdFiniMD5(fd, (void **)&md5sum, &md5len, 1);
+
+    if (Ferror(fd))
+	rc = 1;
+    Fclose(fd);
+
+    if (!rc)
+	memcpy(digest, md5sum, md5len);
+    if (md5sum)
+	free(md5sum);
+#endif
+
+    return rc;
 }
 
 int mdbinfile(const char *fn, unsigned char *bindigest) {

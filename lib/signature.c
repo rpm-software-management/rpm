@@ -162,6 +162,11 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 	if (h == NULL)
 	    break;
 	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
+
+	/* XXX Legacy headers have a HEADER_IMAGE tag added. */
+	if (headerIsEntry(h, RPMTAG_HEADERIMAGE))
+	    sigSize -= (16 + 16);
+
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
@@ -190,7 +195,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sig_type)
 int rpmWriteSignature(FD_t fd, Header header)
 {
     int sigSize, pad;
-    byte buf[8];
+    static byte buf[8] = "\000\000\000\000\000\000\000\000";
     int rc = 0;
     
     rc = headerWrite(fd, header, HEADER_MAGIC_YES);
@@ -202,7 +207,6 @@ int rpmWriteSignature(FD_t fd, Header header)
     if (pad) {
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
-	memset(buf, 0, pad);
 	if (Fwrite(buf, sizeof(buf[0]), pad, fd) != pad)
 	    rc = 1;
     }

@@ -477,6 +477,7 @@ void freeSpec(/*@only@*/ Spec spec)
 
     FREE(spec->buildRootURL);
     FREE(spec->buildSubdir);
+    FREE(spec->rootURL);
     FREE(spec->specFile);
     FREE(spec->sourceRpmName);
 

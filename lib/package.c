@@ -21,6 +21,34 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 
+void headerMergeLegacySigs(Header h, const Header sig)
+{
+    HeaderIterator hi;
+    int_32 tag, type, count;
+    const void * ptr;
+
+    for (hi = headerInitIterator(sig);
+        headerNextIterator(hi, &tag, &type, &ptr, &count);
+        ptr = headerFreeData(ptr, type))
+    {
+	if (tag < RPMSIGTAG_SIZE)
+	    continue;
+	switch (tag) {
+	case RPMSIGTAG_SIZE:	tag = RPMTAG_SIGSIZE;	break;
+	case RPMSIGTAG_LEMD5_1:	tag = RPMTAG_SIGLEMD5_1;break;
+	case RPMSIGTAG_PGP:	tag = RPMTAG_SIGPGP;	break;
+	case RPMSIGTAG_LEMD5_2:	tag = RPMTAG_SIGLEMD5_2;break;
+	case RPMSIGTAG_MD5:	tag = RPMTAG_SIGMD5;	break;
+	case RPMSIGTAG_GPG:	tag = RPMTAG_SIGGPG;	break;
+	case RPMSIGTAG_PGP5:	tag = RPMTAG_SIGPGP5;	break;
+	default:					break;
+	}
+	if (!headerIsEntry(h, tag))
+	    headerAddEntry(h, tag, type, ptr, count);
+    }
+    headerFreeIterator(hi);
+}
+
 /**
  * Retrieve package components from file handle.
  * @param fd		file handle
@@ -100,9 +128,8 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 	   only saves memory (nice), but gives fingerprinting a nice, fat
 	   speed boost (very nice). Go ahead and convert old headers to
 	   the new style (this is a noop for new headers) */
-	if (lead->major < 4) {
+	if (lead->major < 4)
 	    compressFilelist(*hdr);
-	}
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
         if (lead->type == RPMLEAD_SOURCE) {
@@ -122,30 +149,39 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 	/*@notreached@*/ break;
     } 
 
-    if (hdrPtr == NULL) {
+    if (hdrPtr == NULL)
 	headerFree(*hdr);
-    }
     
     return 0;
 }
 
-int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr)
+int rpmReadPackageInfo(FD_t fd, Header * sigp, Header * hdrp)
 {
-    return readPackageHeaders(fd, NULL, signatures, hdr);
+    int rc = readPackageHeaders(fd, NULL, sigp, hdrp);
+    if (hdrp && *hdrp && sigp && *sigp)
+	headerMergeLegacySigs(*hdrp, *sigp);
+    return rc;
 }
 
-int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
+int rpmReadPackageHeader(FD_t fd, Header * hdrp, int * isSource, int * major,
 		  int * minor)
 {
-    int rc;
     struct rpmlead lead;
+    Header sig = NULL;
+    int rc = readPackageHeaders(fd, &lead, &sig, hdrp);
 
-    rc = readPackageHeaders(fd, &lead, NULL, hdr);
-    if (rc) return rc;
+    if (rc)
+	goto exit;
+
+    if (hdrp && *hdrp && sig) {
+	headerMergeLegacySigs(*hdrp, sig);
+	headerFree(sig);
+    }
    
     if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
     if (major) *major = lead.major;
     if (minor) *minor = lead.minor;
    
-    return 0;
+exit:
+    return rc;
 }

@@ -35,8 +35,17 @@
 	- hpux w/o -D_OPEN_SOURCE has not h_errno.
 	- syntax to specify source of Requires: (PreReq: now legacy).
 	- md5 sums are little endian (no swap) so big endian needs the swap.
+	- merge signatures into header after reading from package.
+	- RPM_BIN_TYPE malloc'ed when retrieved through headerGetEntry().
+	- add headerFreeData() to free any data malloc'ed during retrieval.
+	- preserve exact image of original header when installing/upgrading.
+	- add missing headerFree for legacy signature header.
+	- fix: removed packages leaked DIRINDEXES tag data.
+	- reload tags added during install when loading header from rpmdb.
+	- avoid brp-compress hang with both compressed/uncompressed man pages.
 	- improved find-{requires,provides} for aix4/hpux/irix6/osf.
 		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
+	- portability: remove use of GNU make subst in lib/Makefile (Joe Orton).
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

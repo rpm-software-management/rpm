@@ -22,7 +22,7 @@ static int checkSpec(Header h)
     if (rpmdbOpen(rootdir, &db, mode, 0644)) {
 	const char *dn;
 	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
-	rpmError(RPMERR_OPEN, _("cannot open %s/packages.rpm\n"), dn);
+	rpmError(RPMERR_OPEN, _("cannot open rpm database in %s\n"), dn);
 	xfree(dn);
 	exit(EXIT_FAILURE);
     }
@@ -99,6 +99,10 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     Spec spec = NULL;
     int rc;
 
+#ifndef	DYING
+    rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
+#endif
+
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
 
@@ -107,7 +111,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	const char *specDir;
 	const char * tmpSpecFile;
 	char * cmd, *s;
-	int res;
+	rpmCompressedMagic res = COMPRESSED_OTHER;
 	static const char *zcmds[] = { "cat", "gunzip", "bunzip2", "cat" };
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
@@ -170,7 +174,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	
 	if (res) {
 	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m"),
-		    tmpSpecFile, s);
+			tmpSpecFile, s);
 	    unlink(tmpSpecFile);
 	    xfree(tmpSpecFile);
 	    return 1;

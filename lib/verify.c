@@ -244,13 +244,14 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
 
 /**
  * Return exit code from running verify script in header.
- * @param rootDir	path to top of install tree
- * @param rpmdb		rpm database
- * @param h		header
- * @param scriptFd	file handle to use for stderr
- * @return		0 on success
+ * @todo kpackage prevents static, should be using VERIFY_SCRIPT flag.
+ * @param rootDir       path to top of install tree
+ * @param rpmdb         rpm database
+ * @param h             header
+ * @param scriptFd      file handle to use for stderr
+ * @return              0 on success
  */
-static int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd)
+int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd)
 {
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
     int rc;

@@ -530,7 +530,7 @@ main(int argc, char *argv[])
     injmode_t lastmode = INJ_UNKNOWN;
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
-    mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    mtrace();  /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
 #endif
 
     setprogname(argv[0]);	/* Retrofit glibc __progname */

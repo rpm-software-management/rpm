@@ -6,7 +6,15 @@
 
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
+#ifdef HAVE_DB1_DB_H
 #include <db1/db.h>
+#else
+#ifdef HAVE_DB_185_H
+#include <db_185.h> /* XXX there are too mant compat API's for this to work */
+#else
+#include <db.h>
+#endif
+#endif
 
 #define	DB_VERSION_MAJOR	0
 #define	DB_VERSION_MINOR	0
@@ -39,28 +47,6 @@ static inline DBTYPE db3_to_dbtype(int dbitype)
     case 5:	return DB_HASH;		/* XXX W2DO? */
     }
     /*@notreached@*/ return DB_HASH;
-}
-
-/** \ingroup db1
- */
-char * db1basename (int rpmtag) {
-    char * base = NULL;
-    switch (rpmtag) {
-    case 0:			base = "packages.rpm";		break;
-    case RPMTAG_NAME:		base = "nameindex.rpm";		break;
-    case RPMTAG_BASENAMES:	base = "fileindex.rpm";		break;
-    case RPMTAG_GROUP:		base = "groupindex.rpm";	break;
-    case RPMTAG_REQUIRENAME:	base = "requiredby.rpm";	break;
-    case RPMTAG_PROVIDENAME:	base = "providesindex.rpm";	break;
-    case RPMTAG_CONFLICTNAME:	base = "conflictsindex.rpm";	break;
-    case RPMTAG_TRIGGERNAME:	base = "triggerindex.rpm";	break;
-    default:
-      {	const char * tn = tagName(rpmtag);
-	base = alloca( strlen(tn) + sizeof(".idx") + 1 );
-	(void) stpcpy( stpcpy(base, tn), ".idx");
-      }	break;
-    }
-    return xstrdup(base);
 }
 
 static /*@observer@*/ const char * db_strerror(int error)
@@ -161,7 +147,7 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
      * list.
      */
     if (!headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
-			   (void **) &fileNames, &fileCount)) goto exit;
+			   (const void **) &fileNames, &fileCount)) goto exit;
 
     for (i = 0; i < fileCount; i++) 
 	if (*fileNames[i] != '/') break;

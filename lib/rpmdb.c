@@ -104,7 +104,7 @@ static void dbiTagsInit(void)
 	if (dbiTagToDbix(rpmtag) >= 0)
 	    continue;
 
-	dbiTags = xrealloc(dbiTags, (dbiTagsMax + 1) * sizeof(*dbiTags));
+	dbiTags = xrealloc(dbiTags, (dbiTagsMax + 1) * sizeof(*dbiTags)); /* XXX memory leak */
 	dbiTags[dbiTagsMax++] = rpmtag;
     }
 
@@ -906,6 +906,7 @@ int rpmdbInit (const char * prefix, int perms)
 
     rc = openDatabase(prefix, NULL, _dbapi, &rpmdb, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
     if (rpmdb) {
+	rpmdbOpenAll(rpmdb);
 	rpmdbClose(rpmdb);
 	rpmdb = NULL;
     }
@@ -1011,11 +1012,11 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	}
 
 	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
-				(void **) &baseNames, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
-				(void **) &dirIndexes, NULL);
+				(const void **) &baseNames, NULL);
 	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
-				(void **) &dirNames, NULL);
+				(const void **) &dirNames, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
+				(const void **) &dirIndexes, NULL);
 
 	do {
 	    fingerPrint fp2;
@@ -2096,12 +2097,12 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 	num = end - start;
 
 	/* Compute fingerprints for this header's matches */
-	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
-			    (void **) &dirNames, NULL);
 	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
-			    (void **) &fullBaseNames, NULL);
+			    (const void **) &fullBaseNames, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
+			    (const void **) &dirNames, NULL);
 	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
-			    (void **) &fullDirIndexes, NULL);
+			    (const void **) &fullDirIndexes, NULL);
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
@@ -2134,6 +2135,26 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 
     return 0;
 
+}
+
+char * db1basename (int rpmtag) {
+    char * base = NULL;
+    switch (rpmtag) {
+    case RPMDBI_PACKAGES:	base = "packages.rpm";		break;
+    case RPMTAG_NAME:		base = "nameindex.rpm";		break;
+    case RPMTAG_BASENAMES:	base = "fileindex.rpm";		break;
+    case RPMTAG_GROUP:		base = "groupindex.rpm";	break;
+    case RPMTAG_REQUIRENAME:	base = "requiredby.rpm";	break;
+    case RPMTAG_PROVIDENAME:	base = "providesindex.rpm";	break;
+    case RPMTAG_CONFLICTNAME:	base = "conflictsindex.rpm";	break;
+    case RPMTAG_TRIGGERNAME:	base = "triggerindex.rpm";	break;
+    default:
+      {	const char * tn = tagName(rpmtag);
+	base = alloca( strlen(tn) + sizeof(".idx") + 1 );
+	(void) stpcpy( stpcpy(base, tn), ".idx");
+      }	break;
+    }
+    return xstrdup(base);
 }
 
 static int rpmdbRemoveDatabase(const char * rootdir,

@@ -231,17 +231,18 @@ fprintf(stderr, "*** delMacros\n");
     FREE(argv);
     FREE(buildCmd);
     FREE(buildTemplate);
+    FREE(buildPost);
     FREE(buildDirURL);
 
     return rc;
 }
 
-/** */
 int buildSpec(Spec spec, int what, int test)
 {
-    int x, rc;
+    int rc = 0;
 
     if (!spec->inBuildArchitectures && spec->buildArchitectureCount) {
+	int x;
 	/* When iterating over buildArchitectures, do the source    */
 	/* packaging on the first run, and skip RMSOURCE altogether */
 	for (x = 0; x < spec->buildArchitectureCount; x++) {
@@ -276,7 +277,7 @@ int buildSpec(Spec spec, int what, int test)
 
 	if (((what & RPMBUILD_PACKAGESOURCE) && !test) &&
 	    (rc = packageSources(spec)))
-		goto exit;
+		return rc;
 
 	if (((what & RPMBUILD_PACKAGEBINARY) && !test) &&
 	    (rc = packageBinaries(spec)))
@@ -296,7 +297,6 @@ int buildSpec(Spec spec, int what, int test)
 
     if (what & RPMBUILD_RMSPEC)
 	unlink(spec->specFile);
-    rc = 0;
 
 exit:
     if (rc && rpmlogGetNrecs() > 0) {

@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.31 2000/10/22 07:51:45 notting Exp $
+# $Id: rpmrc.in,v 2.32 2000/12/02 21:53:44 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -221,8 +221,7 @@ arch_compat: hades: m68kmint noarch
 arch_compat: s390: i370
 arch_compat: i370: noarch
 
-arch_compat: ia64: i686
-arch_compat: ia64: noarch
+arch_compat: ia64: i686 noarch
 
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6

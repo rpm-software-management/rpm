@@ -108,20 +108,18 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
     return sb;
 }
 
-static int addFileToTag(Spec spec, char *file, Header h, int tag)
+static int addFileToTag(Spec spec, const char *file, Header h, int tag)
 {
-    StringBuf sb;
+    StringBuf sb = newStringBuf();
     char *s;
 
-    sb = newStringBuf();
     if (headerGetEntry(h, tag, NULL, (void **)&s, NULL)) {
 	appendLineStringBuf(sb, s);
 	headerRemoveEntry(h, tag);
     }
 
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL) {
+    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
-    }
     
     headerAddEntry(h, tag, RPM_STRING_TYPE, getStringBuf(sb), 1);
 
@@ -131,13 +129,11 @@ static int addFileToTag(Spec spec, char *file, Header h, int tag)
 
 static int addFileToArrayTag(Spec spec, char *file, Header h, int tag)
 {
-    StringBuf sb;
+    StringBuf sb = newStringBuf();
     char *s;
 
-    sb = newStringBuf();
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL) {
+    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
-    }
 
     s = getStringBuf(sb);
     headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, &s, 1);
@@ -284,14 +280,12 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     FD_t fd = NULL;
     FD_t ifd = NULL;
     int rc, count, sigtype;
-    int archnum, osnum;
     const char *sigtarget;
     const char * rpmio_flags = NULL;
     char *s;
     char buf[BUFSIZ];
     Header h = *hdrp;
-    Header sig;
-    struct rpmlead lead;
+    Header sig = NULL;
 
     if (Fileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
@@ -352,7 +346,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     }
     
     /* Reallocate the header into one contiguous region. */
-    *hdrp = h = headerReload(h);
+    *hdrp = h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
 
     /*
      * Write the header+archive into a temp file so that the size of
@@ -390,11 +384,11 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
      */
     if (Fileno(csa->cpioFdIn) < 0) {
 	int_32 * archiveSize;
-	headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL, &archiveSize, NULL);
-	*archiveSize = csa->cpioArchiveSize;
+	if (headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL, (void *)&archiveSize, NULL))
+	    *archiveSize = csa->cpioArchiveSize;
     }
 
-    (void)Fseek(fd, 0,  SEEK_SET);
+    (void)Fseek(fd, 0, SEEK_SET);
 
     if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	rc = RPMERR_NOSPACE;
@@ -406,48 +400,6 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     if (rc)
 	goto exit;
 
-    /* Open the output file */
-    fd = Fopen(fileName, "w.ufdio");
-    if (fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
-		fileName, Fstrerror(fd));
-	rc = RPMERR_CREATE;
-	goto exit;
-    }
-
-    /* Now write the lead */
-    archnum = -1;
-    osnum = -1;
-    if (Fileno(csa->cpioFdIn) < 0) {
-#ifndef DYING
-	rpmGetArchInfo(NULL, &archnum);
-	rpmGetOsInfo(NULL, &osnum);
-#endif
-    } else if (csa->lead != NULL) {	/* XXX FIXME: exorcize lead/arch/os */
-	archnum = csa->lead->archnum;
-	osnum = csa->lead->osnum;
-    }
-
-    memset(&lead, 0, sizeof(lead));
-    lead.major = RPM_MAJOR_NUMBER;
-    lead.minor = 0;
-    lead.type = type;
-    lead.archnum = archnum;
-    lead.osnum = osnum;
-    lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
-    {	const char *name, *version, *release;
-	headerNVR(h, &name, &version, &release);
-	sprintf(buf, "%s-%s-%s", name, version, release);
-	strncpy(lead.name, buf, sizeof(lead.name));
-    }
-
-    if (writeLead(fd, &lead)) {
-	rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
-		 Fstrerror(fd));
-	rc = RPMERR_NOSPACE;
-	goto exit;
-    }
-
     /* Generate the signature */
     fflush(stdout);
     sig = rpmNewSignature();
@@ -457,13 +409,61 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
 	rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
     }
-    sig = headerReload(sig);
-    rc = rpmWriteSignature(fd, sig);
-    rpmFreeSignature(sig);
-    if (rc) {
+
+    /* Reallocate the signature into one contiguous region. */
+    sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
+
+    /* Open the output file */
+    fd = Fopen(fileName, "w.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
+		fileName, Fstrerror(fd));
+	rc = RPMERR_CREATE;
 	goto exit;
     }
-	
+
+    /* Write the lead section into the package. */
+    {	int archnum = -1;
+	int osnum = -1;
+	struct rpmlead lead;
+
+	if (Fileno(csa->cpioFdIn) < 0) {
+#ifndef	DYING
+	    rpmGetArchInfo(NULL, &archnum);
+	    rpmGetOsInfo(NULL, &osnum);
+#endif
+	} else if (csa->lead != NULL) {
+	    archnum = csa->lead->archnum;
+	    osnum = csa->lead->osnum;
+	}
+
+	memset(&lead, 0, sizeof(lead));
+	lead.major = RPM_MAJOR_NUMBER;
+	lead.minor = 0;
+	lead.type = type;
+	lead.archnum = archnum;
+	lead.osnum = osnum;
+	lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
+
+	{	    const char *name, *version, *release;
+	    headerNVR(h, &name, &version, &release);
+	    sprintf(buf, "%s-%s-%s", name, version, release);
+	    strncpy(lead.name, buf, sizeof(lead.name));
+	}
+
+	if (writeLead(fd, &lead)) {
+	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
+		 Fstrerror(fd));
+	    rc = RPMERR_NOSPACE;
+	    goto exit;
+	}
+    }
+
+    /* Write the signature section into the package. */
+    rc = rpmWriteSignature(fd, sig);
+    if (rc)
+	goto exit;
+
     /* Append the header and archive */
     ifd = Fopen(sigtarget, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
@@ -472,15 +472,42 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rc = RPMERR_READ;
 	goto exit;
     }
+
+    /* Add signatures to header, and write header into the package. */
+    {	Header nh = headerRead(ifd, HEADER_MAGIC_YES);
+
+	if (nh == NULL) {
+	    rpmError(RPMERR_READ, _("Unable to read header from %s: %s"),
+			sigtarget, Fstrerror(ifd));
+	    rc = RPMERR_READ;
+	    goto exit;
+	}
+
+#ifdef	NOTYET
+	headerMergeLegacySigs(nh, sig);
+#endif
+
+	rc = headerWrite(fd, nh, HEADER_MAGIC_YES);
+	headerFree(nh);
+
+	if (rc) {
+	    rpmError(RPMERR_NOSPACE, _("Unable to write header to %s: %s"),
+			fileName, Fstrerror(fd));
+	    rc = RPMERR_NOSPACE;
+	    goto exit;
+	}
+    }
+	
+    /* Write the payload into the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
-	    rpmError(RPMERR_READ, _("Unable to read sigtarget %s: %s"),
+	    rpmError(RPMERR_READ, _("Unable to read payload from %s: %s"),
 		     sigtarget, Fstrerror(ifd));
 	    rc = RPMERR_READ;
 	    goto exit;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) < 0) {
-	    rpmError(RPMERR_NOSPACE, _("Unable to write package %s: %s"),
+	    rpmError(RPMERR_NOSPACE, _("Unable to write payload to %s: %s"),
 		     fileName, Fstrerror(fd));
 	    rc = RPMERR_NOSPACE;
 	    goto exit;
@@ -489,6 +516,10 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     rc = 0;
 
 exit:
+    if (sig) {
+	rpmFreeSignature(sig);
+	sig = NULL;
+    }
     if (ifd) {
 	Fclose(ifd);
 	ifd = NULL;
@@ -517,7 +548,6 @@ static int_32 copyTags[] = {
     0
 };
 
-/** */
 int packageBinaries(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;
@@ -613,7 +643,6 @@ int packageBinaries(Spec spec)
     return 0;
 }
 
-/** */
 int packageSources(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;

@@ -10,7 +10,7 @@ Name: rpm
 Version: %{version}
 Release: 0.1
 Group: System Environment/Base
-Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
+Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
@@ -81,7 +81,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.6
+Version: 1.7
 
 %description -n popt
 Popt is a C library for parsing command line parameters.  Popt was

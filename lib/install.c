@@ -231,6 +231,7 @@ static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
     free(fileGroups);
 }
 
+#ifdef DYING
 /**
  * Truncate header changelog tag to configurable limit before installing.
  * @param h		header
@@ -285,6 +286,7 @@ static void trimChangelog(Header h)
     free(names);
     free(texts);
 }
+#endif	/* DYING */
 
 /**
  * Copy file data from h to newH.
@@ -334,60 +336,58 @@ static int mergeFiles(Header h, Header newH, enum fileActions * actions)
 	    fileSize += fileSizes[i];
 	}
     headerModifyEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &fileSize, 1);
-    for (i = 0; mergeTags[i]; i++)
-        if (headerGetEntryMinMemory(newH, mergeTags[i], &type,
-				    (void **) &data, &count)) {
-	    switch (type) {
-	    case RPM_CHAR_TYPE:
-	    case RPM_INT8_TYPE:
-		newdata = xmalloc(fileCount * sizeof(int_8));
-		for (j = 0, k = 0; j < count; j++)
-		    if (actions[j] != FA_SKIPMULTILIB)
+    for (i = 0; mergeTags[i]; i++) {
+        if (!headerGetEntryMinMemory(newH, mergeTags[i], &type,
+				    (const void **) &data, &count))
+	    continue;
+	switch (type) {
+	case RPM_CHAR_TYPE:
+	case RPM_INT8_TYPE:
+	    newdata = xmalloc(fileCount * sizeof(int_8));
+	    for (j = 0, k = 0; j < count; j++)
+		if (actions[j] != FA_SKIPMULTILIB)
 			((int_8 *) newdata)[k++] = ((int_8 *) data)[j];
-		headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
+	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
 				       fileCount);
-		free (newdata);
-		break;
-	    case RPM_INT16_TYPE:
-		newdata = xmalloc(fileCount * sizeof(int_16));
-		for (j = 0, k = 0; j < count; j++)
-		    if (actions[j] != FA_SKIPMULTILIB)
-			((int_16 *) newdata)[k++] = ((int_16 *) data)[j];
-		headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
-				       fileCount);
-		free (newdata);
-		break;
-	    case RPM_INT32_TYPE:
-		newdata = xmalloc(fileCount * sizeof(int_32));
-		for (j = 0, k = 0; j < count; j++)
-		    if (actions[j] != FA_SKIPMULTILIB)
-			((int_32 *) newdata)[k++] = ((int_32 *) data)[j];
-		headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
-				       fileCount);
-		free (newdata);
-		break;
-	    case RPM_STRING_ARRAY_TYPE:
-		newdata = xmalloc(fileCount * sizeof(char *));
-		for (j = 0, k = 0; j < count; j++)
-		    if (actions[j] != FA_SKIPMULTILIB)
-			((char **) newdata)[k++] = ((char **) data)[j];
-		headerAddOrAppendEntry(h, mergeTags[i], type, newdata,
-				       fileCount);
-		free (newdata);
-		free (data);
-		break;
-	    default:
-		fprintf(stderr, _("Data type %d not supported\n"), (int) type);
-		exit(EXIT_FAILURE);
-		/*@notreached@*/
-	    }
-        }
+	    free (newdata);
+	    break;
+	case RPM_INT16_TYPE:
+	    newdata = xmalloc(fileCount * sizeof(int_16));
+	    for (j = 0, k = 0; j < count; j++)
+		if (actions[j] != FA_SKIPMULTILIB)
+		    ((int_16 *) newdata)[k++] = ((int_16 *) data)[j];
+	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fileCount);
+	    free (newdata);
+	    break;
+	case RPM_INT32_TYPE:
+	    newdata = xmalloc(fileCount * sizeof(int_32));
+	    for (j = 0, k = 0; j < count; j++)
+		if (actions[j] != FA_SKIPMULTILIB)
+		    ((int_32 *) newdata)[k++] = ((int_32 *) data)[j];
+	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fileCount);
+	    free (newdata);
+	    break;
+	case RPM_STRING_ARRAY_TYPE:
+	    newdata = xmalloc(fileCount * sizeof(char *));
+	    for (j = 0, k = 0; j < count; j++)
+		if (actions[j] != FA_SKIPMULTILIB)
+		    ((char **) newdata)[k++] = ((char **) data)[j];
+	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fileCount);
+	    free (newdata);
+	    free (data);
+	    break;
+	default:
+	    fprintf(stderr, _("Data type %d not supported\n"), (int) type);
+	    exit(EXIT_FAILURE);
+	    /*@notreached@*/
+	}
+    }
     headerGetEntry(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes,
 		   &count);
     headerGetEntryMinMemory(newH, RPMTAG_DIRNAMES, NULL,
-			    (void **) &newDirNames, NULL);
+			    (const void **) &newDirNames, NULL);
     headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, (void **) &data,
+    headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, (const void **) &data,
 			    &dirNamesCount);
 
     dirNames = xcalloc(dirNamesCount + fileCount, sizeof(char *));
@@ -395,15 +395,16 @@ static int mergeFiles(Header h, Header newH, enum fileActions * actions)
 	dirNames[i] = ((char **) data)[i];
     dirCount = dirNamesCount;
     newdata = xmalloc(fileCount * sizeof(int_32));
-    for (i = 0, k = 0; i < count; i++)
-	if (actions[i] != FA_SKIPMULTILIB) {
-	    for (j = 0; j < dirCount; j++)
-		if (!strcmp(dirNames[j], newDirNames[newDirIndexes[i]]))
-		    break;
-	    if (j == dirCount)
-		dirNames[dirCount++] = newDirNames[newDirIndexes[i]];
-	    ((int_32 *) newdata)[k++] = j;
-	}
+    for (i = 0, k = 0; i < count; i++) {
+	if (actions[i] == FA_SKIPMULTILIB)
+	    continue;
+	for (j = 0; j < dirCount; j++)
+	    if (!strcmp(dirNames[j], newDirNames[newDirIndexes[i]]))
+		break;
+	if (j == dirCount)
+	    dirNames[dirCount++] = newDirNames[newDirIndexes[i]];
+	((int_32 *) newdata)[k++] = j;
+    }
     headerAddOrAppendEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, newdata,
 			   fileCount);
     if (dirCount > dirNamesCount)
@@ -420,46 +421,47 @@ static int mergeFiles(Header h, Header newH, enum fileActions * actions)
 	uint_32 *Flags, *newFlags;
 	int Count = 0, newCount = 0;
 
-	if (headerGetEntryMinMemory(newH, requireTags[i], NULL,
-				    (void **) &newNames, &newCount)) {
-	    headerGetEntryMinMemory(newH, requireTags[i+1], NULL,
-				    (void **) &newEVR, NULL);
-	    headerGetEntry(newH, requireTags[i+2], NULL, (void **) &newFlags,
-			   NULL);
-	    if (headerGetEntryMinMemory(h, requireTags[i], NULL,
-					(void **) &Names, &Count)) {
-		headerGetEntryMinMemory(h, requireTags[i+1], NULL,
-					(void **) &EVR, NULL);
-		headerGetEntry(h, requireTags[i+2], NULL, (void **) &Flags,
-			       NULL);
-		for (j = 0; j < newCount; j++)
-		    for (k = 0; k < Count; k++)
-			if (!strcmp (newNames[j], Names[k])
-			    && !strcmp (newEVR[j], EVR[k])
-			    && (newFlags[j] & RPMSENSE_SENSEMASK) ==
-			       (Flags[k] & RPMSENSE_SENSEMASK)) {
-			    newNames[j] = NULL;
-			    break;
-			}
+	if (!headerGetEntryMinMemory(newH, requireTags[i], NULL,
+				    (const void **) &newNames, &newCount))
+	    continue;
+
+	headerGetEntryMinMemory(newH, requireTags[i+1], NULL,
+				(const void **) &newEVR, NULL);
+	headerGetEntry(newH, requireTags[i+2], NULL, (void **) &newFlags, NULL);
+	if (headerGetEntryMinMemory(h, requireTags[i], NULL,
+				    (const void **) &Names, &Count))
+	{
+	    headerGetEntryMinMemory(h, requireTags[i+1], NULL,
+				    (const void **) &EVR, NULL);
+	    headerGetEntry(h, requireTags[i+2], NULL, (void **) &Flags, NULL);
+	    for (j = 0; j < newCount; j++)
+		for (k = 0; k < Count; k++)
+		    if (!strcmp (newNames[j], Names[k])
+			&& !strcmp (newEVR[j], EVR[k])
+			&& (newFlags[j] & RPMSENSE_SENSEMASK) ==
+			   (Flags[k] & RPMSENSE_SENSEMASK))
+		    {
+			newNames[j] = NULL;
+			break;
+		    }
+	}
+	for (j = 0, k = 0; j < newCount; j++) {
+	    if (!newNames[j] || !isDependsMULTILIB(newFlags[j]))
+		continue;
+	    if (j != k) {
+		newNames[k] = newNames[j];
+		newEVR[k] = newEVR[j];
+		newFlags[k] = newFlags[j];
 	    }
-	    for (j = 0, k = 0; j < newCount; j++) {
-		if (!newNames[j] || !isDependsMULTILIB(newFlags[j]))
-		    continue;
-		if (j != k) {
-		    newNames[k] = newNames[j];
-		    newEVR[k] = newEVR[j];
-		    newFlags[k] = newFlags[j];
-		}
-		k++;
-	    }
-	    if (k) {
-		headerAddOrAppendEntry(h, requireTags[i],
+	    k++;
+	}
+	if (k) {
+	    headerAddOrAppendEntry(h, requireTags[i],
 				       RPM_STRING_ARRAY_TYPE, newNames, k);
-		headerAddOrAppendEntry(h, requireTags[i+1],
+	    headerAddOrAppendEntry(h, requireTags[i+1],
 				       RPM_STRING_ARRAY_TYPE, newEVR, k);
-		headerAddOrAppendEntry(h, requireTags[i+2], RPM_INT32_TYPE,
+	    headerAddOrAppendEntry(h, requireTags[i+2], RPM_INT32_TYPE,
 				       newFlags, k);
-	    }
 	}
     }
     return 0;
@@ -613,13 +615,10 @@ static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
 #else
 	    urltype = urlPath(files[i].relativePath, &map[mappedFiles].fsPath);
 #endif
-	    /* XXX Can't do src rpm MD5 sum verification yet. */
-	    map[mappedFiles].md5sum =
-		specFile == NULL ? files[i].md5sum : NULL;
 	    /* XXX Can't do src rpm MD5 sum verification (yet). */
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
 	    map[mappedFiles].md5sum = headerIsEntry(h, RPMTAG_SOURCERPM)
-			?  files[i].md5sum : NULL;
+			? files[i].md5sum : NULL;
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;
@@ -824,7 +823,7 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
     Chdir(realSourceDir);
     if (installArchive(fd, fileCount > 0 ? files : NULL,
 			  fileCount, notify, notifyData, NULL, h,
-			  specFileIndex >=0 ? NULL : &specFile,
+			  specFileIndex >= 0 ? NULL : &specFile,
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
 	rc = 2;
 	goto exit;
@@ -1183,7 +1182,9 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	currDir = NULL;
     }
 
+#ifdef	DYING
     trimChangelog(h);
+#endif
 
     /* if this package has already been installed, remove it from the database
        before adding the new one */

@@ -306,37 +306,37 @@ AC_CHECK_LIB(port, writev)
 libpthread=""
 AC_CHECK_LIB(pthread, pthread_mutex_trylock,[libpthread="-lpthread"])
 
-DBLIBOBJS=""
+DBLIBSRCS=""
 libdb3=""
 libdb2=""
 libdb1=""
 dnl Check for Berkeley db3 API.
-AC_CHECK_FUNC(db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"],
-  AC_CHECK_LIB(db-3.1, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.1"],
-    AC_CHECK_LIB(db-3.0, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb-3.0"],
-      AC_CHECK_LIB(db, db_create, [DBLIBOBJS="$DBLIBOBJS db3.c"; libdb3="-ldb"],
+AC_CHECK_FUNC(db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"],
+  AC_CHECK_LIB(db-3.1, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.1"],
+    AC_CHECK_LIB(db-3.0, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb-3.0"],
+      AC_CHECK_LIB(db, db_create, [DBLIBSRCS="$DBLIBSRCS db3.c"; libdb3="-ldb"],
       ,$libpthread)
     ,$libpthread)
   ,$libpthread)
 )
 
 dnl Check for Berkeley db2 API.
-dnl AC_CHECK_FUNC(db_open, [DBLIBOBJS="$DBLIBOBJS db2.c"],
-dnl   AC_CHECK_LIB(db, db_open, [LIBS="$LIBS"; DBLIBOBJS="$DBLIBOBJS db2.c" ; libdb2="-ldb"])
+dnl AC_CHECK_FUNC(db_open, [DBLIBSRCS="$DBLIBSRCS db2.c"],
+dnl   AC_CHECK_LIB(db, db_open, [LIBS="$LIBS"; DBLIBSRCS="$DBLIBSRCS db2.c" ; libdb2="-ldb"])
 dnl )
 dnl Check for Berkeley db1 API retrofit to db2/db3 database.
-dnl AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"],
-dnl     AC_CHECK_LIB(db, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c"])
+dnl AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c"],
+dnl     AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c"])
 dnl )
 
 dnl Check for Berkeley db1 API in glibc.
-AC_CHECK_FUNC(dbopen, [DBLIBOBJS="$DBLIBOBJS db3.c"],
-  AC_CHECK_LIB(db1, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c falloc.c" ; libdb1="-ldb1"],
-    AC_CHECK_LIB(db, dbopen, [DBLIBOBJS="$DBLIBOBJS db1.c falloc.c" ; libdb1="-ldb"])
+AC_CHECK_FUNC(dbopen, [DBLIBSRCS="$DBLIBSRCS db3.c"],
+  AC_CHECK_LIB(db1, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb1"],
+    AC_CHECK_LIB(db, dbopen, [DBLIBSRCS="$DBLIBSRCS db1.c falloc.c" ; libdb1="-ldb"])
   )
 )
 
-if test X"$DBLIBOBJS" = X; then
+if test X"$DBLIBSRCS" = X; then
     AC_MSG_ERROR([sorry rpm requires libdb-3.x.a or libdb1.a (from the Berkeley db package)]) 
 fi
 
@@ -349,12 +349,15 @@ if test -n "$libdb3" -a -n "$libpthread" ; then
    LIBS="$saveLIBS"
 fi
 
+DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
+
+AC_SUBST(DBLIBSRCS)
 AC_SUBST(DBLIBOBJS)
 AC_SUBST(libdb3)
 AC_SUBST(libdb2)
 AC_SUBST(libdb1)
 
-for dbi in $DBLIBOBJS; do
+for dbi in $DBLIBSRCS; do
   case $dbi in
   db3.c) AC_DEFINE(USE_DB3) ;;
   db2.c) AC_DEFINE(USE_DB2) ;;

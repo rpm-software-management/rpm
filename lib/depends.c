@@ -300,15 +300,16 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	    p->requireFlags = NULL;
     }
 
-    if (!headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, (void **) 
-				 &p->baseNames, &p->filesCount)) {
+    if (!headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
+				(const void **) &p->baseNames, &p->filesCount))
+    {
 	p->filesCount = 0;
 	p->baseNames = NULL;
     } else {
-        headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, (void **) 
-				 &dirNames, &numDirs);
-        headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, (void **) 
-				 &dirIndexes, NULL);
+        headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL,
+				(const void **) &dirNames, &numDirs);
+        headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL,
+				(const void **) &dirIndexes, NULL);
 	headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
 
 	/* XXX FIXME: We ought to relocate the directory list here */

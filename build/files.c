@@ -1406,19 +1406,17 @@ static int processPackageFiles(Spec spec, Package pkg,
     return fl.processingFailed;
 }
 
-/** */
 void initSourceHeader(Spec spec)
 {
     HeaderIterator hi;
-    int tag, type, count;
+    int_32 tag, type, count;
     const void * ptr;
 
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
     for (hi = headerInitIterator(spec->packages->header);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = ((type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
-	    ? xfree(ptr), NULL : NULL))
+	ptr = headerFreeData(ptr, type))
     {
 	switch (tag) {
 	case RPMTAG_NAME:
@@ -1452,8 +1450,7 @@ void initSourceHeader(Spec spec)
     /* Add the build restrictions */
     for (hi = headerInitIterator(spec->buildRestrictions);
 	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = ((type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
-	    ? xfree(ptr), NULL : NULL))
+	ptr = headerFreeData(ptr, type))
     {
 	headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
     }
@@ -1466,7 +1463,6 @@ void initSourceHeader(Spec spec)
     }
 }
 
-/** */
 int processSourceFiles(Spec spec)
 {
     struct Source *srcPtr;
@@ -1732,6 +1728,7 @@ top:
     return readBuff;
 }
 
+/** */
 typedef struct {
     const char *msg;
     const char *argv[4];
@@ -1984,7 +1981,6 @@ static void printDeps(Header h)
     FREE(versions);
 }
 
-/** */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 {
     Package pkg;

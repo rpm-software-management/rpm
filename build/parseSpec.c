@@ -159,10 +159,6 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     return 0;
 }
 
-/* returns 0 - success */
-/*         1 - EOF     */
-/*        <0 - error   */
-
 int readLine(Spec spec, int strip)
 {
 #ifdef	DYING
@@ -408,7 +404,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
     
     while (parsePart != PART_NONE) {
 	switch (parsePart) {
-	 case PART_PREAMBLE:
+	  case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
 	    initialPackage = 0;
 	    break;
@@ -512,7 +508,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
     }
 
     /* Check for description in each package and add arch and os */
-  { 
+  {
 #ifdef	DYING
     const char *arch = NULL;
     const char *os = NULL;
@@ -547,7 +543,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 
 	headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
 	headerAddEntry(pkg->header, RPMTAG_ARCH, RPM_STRING_TYPE, arch, 1);
-    }
+      }
 #ifdef	DYING
     FREE(myos);
 #else

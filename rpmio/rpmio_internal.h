@@ -344,8 +344,10 @@ int ufdClose( /*@only@*/ void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline void fdInitMD5(FD_t fd) {
-    fd->digest = rpmDigestInit(RPMDIGEST_MD5);
+/*@unused@*/ static inline void fdInitMD5(FD_t fd, int flags) {
+    if (flags) flags = RPMDIGEST_NATIVE;
+    flags |= RPMDIGEST_MD5;
+    fd->digest = rpmDigestInit(flags);
 }
 
 /** \ingroup rpmio

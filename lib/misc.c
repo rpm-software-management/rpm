@@ -701,13 +701,15 @@ int rpmPackageGetEntry( /*@unused@*/ void *leadp, Header sigs, Header h,
 	/*@notreached@*/ break;
     }
 
+    if (headerIsEntry(h, tag))
+	return rpmHeaderGetEntry(h, tag, type, p, c);
+
     if (sigs == NULL) {
 	if (c)	*c = 0;
 	return 0;
     }
 
     return headerGetEntry(sigs, sigtag, type, p, c);
-
 }
 
 /*

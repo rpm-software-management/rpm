@@ -29,7 +29,7 @@ do
 	 *) b=$f;;
 	esac
 
-	$COMPRESS $b 2>/dev/null || {
+	$COMPRESS $b </dev/null 2>/dev/null || {
 	    inode=`ls -i $b | awk '{ print $1 }'`
 	    others=`find $d -type f -inum $inode`
 	    if [ -n "$others" ]; then

@@ -115,18 +115,16 @@ void freeNames(void);
 /*@observer@*/ const char *getGnameS(const char *gname);
 
 /**
- * Return build time stamp.
- * @return		build time stamp
- */
-/*@observer@*/ time_t *const getBuildTime(void);
-
-/**
  * Return build hostname.
  * @return		build hostname
  */
 /*@observer@*/ const char *const buildHost(void);
 
-/* from build/read.h */
+/**
+ * Return build time stamp.
+ * @return		build time stamp
+ */
+/*@observer@*/ time_t *const getBuildTime(void);
 
 /**
  * @return		0 on success, 1 on EOF, <0 on error

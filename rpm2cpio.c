@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     }
 
     gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
-    if (gzdi == NULL || Ferror(gzdi)) {
+    if (gzdi == NULL) {
 	fprintf(stderr, _("cannot re-open payload: %s\n"), Fstrerror(gzdi));
 	exit(EXIT_FAILURE);
     }

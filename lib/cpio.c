@@ -416,6 +416,7 @@ static int inline checkDirectory(const char * filename)	/*@*/
 
 /**
  * Create file from payload stream.
+ * @todo Legacy: support brokenEndian MD5 checks?
  * @param cfd		payload file handle
  * @param hdr		file name and stat info
  * @param filemd5	file md5 sum
@@ -459,8 +460,9 @@ static int expandRegular(FD_t cfd, const struct cpioHeader * hdr,
     if (ofd == NULL || Ferror(ofd))
 	return CPIOERR_OPEN_FAILED;
 
+    /* XXX This doesn't support brokenEndian checks. */
     if (filemd5)
-	fdInitMD5(ofd);
+	fdInitMD5(ofd, 0);
 
     cbInfo.file = hdr->path;
     cbInfo.fileSize = st->st_size;
@@ -735,7 +737,7 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
 #ifdef	NOTYET
     char * md5sum = NULL;
 
-    fdInitMD5(cfd);
+    fdInitMD5(cfd, 0);
 #endif
 
     fdSetCpioPos(cfd, 0);

@@ -9,28 +9,17 @@
 /**
  */
 typedef struct SpecStruct *Spec;
-#include "rpmmacro.h"
 
-#if 0
-struct ReqProvTrigger {
-    int flags;
-    char *name;
-    char *version;
-    int index;      /* Only used for triggers */
-    struct ReqProvTrigger *next;
-};
-#endif
+#include "rpmmacro.h"
 
 /**
  */
 struct TriggerFileEntry {
-/*@{*/
     int index;
 /*@only@*/ char *fileName;
 /*@only@*/ char *script;
 /*@only@*/ char *prog;
 /*@owned@*/ struct TriggerFileEntry *next;
-/*@}*/
 };
 
 #define RPMBUILD_ISSOURCE     1
@@ -43,76 +32,66 @@ struct TriggerFileEntry {
 /**
  */
 struct Source {
-/*@{*/
 /*@owned@*/ char *fullSource;
 /*@dependent@*/ char *source;     /* Pointer into fullSource */
     int flags;
     int num;
 /*@owned@*/ struct Source *next;
-/*@}*/
 };
 
 /**
  */
 typedef struct ReadLevelEntry {
-/*@{*/
     int reading;
 /*@dependent@*/ struct ReadLevelEntry *next;
-/*@}*/
 } RLE_t;
 
 /**
  */
 typedef struct OpenFileInfo {
-/*@{*/
-    /*@only@*/ char *fileName;
+/*@only@*/ const char *fileName;
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
 /*@dependent@*/ char *readPtr;
 /*@owned@*/ struct OpenFileInfo *next;
-/*@}*/
 } OFI_t;
 
 /**
  */
 struct spectag {
-/*@{*/
     int t_tag;
     int t_startx;
     int t_nlines;
 /*@only@*/ const char *t_lang;
 /*@only@*/ const char *t_msgid;
-/*@}*/
 };
 
 /**
  */
 struct spectags {
-/*@{*/
 /*@owned@*/ struct spectag *st_t;
     int st_nalloc;
     int st_ntags;
-/*@}*/
 };
 
 /**
  */
 struct speclines {
-/*@{*/
 /*@only@*/ char **sl_lines;
     int sl_nalloc;
     int sl_nlines;
-/*@}*/
 };
 
 /**
  * The structure used to store values parsed from a spec file.
  */
 struct SpecStruct {
-/*@{*/
 /*@only@*/ const char *specFile;	/*!< Name of the spec file. */
 /*@only@*/ const char *sourceRpmName;
+/*@only@*/ const char *buildRootURL;
+/*@only@*/ const char *buildSubdir;
+/*@only@*/ const char *rootURL;
 
 /*@owned@*/ struct speclines *sl;
 /*@owned@*/ struct spectags *st;
@@ -136,8 +115,6 @@ struct SpecStruct {
     int anyarch;
 
     int gotBuildRootURL;
-/*@only@*/ const char *buildRootURL;
-/*@only@*/ const char *buildSubdir;
 
     char *passPhrase;
     int timeCheck;
@@ -153,22 +130,19 @@ struct SpecStruct {
 
 /*@dependent@*/ struct MacroContext *macros;
 
-/*@only@*/ const char *rootURL;
 /*@only@*/ StringBuf prep;		/*!< %prep scriptlet. */
 /*@only@*/ StringBuf build;		/*!< %build scriptlet. */
 /*@only@*/ StringBuf install;		/*!< %install scriptlet. */
 /*@only@*/ StringBuf clean;		/*!< %clean scriptlet. */
 
-    /*@owned@*/ struct PackageStruct *packages;	/*!< Package list. */
-/*@}*/
+/*@owned@*/ struct PackageStruct *packages;	/*!< Package list. */
 };
 
 /**
  * The structure used to store values for a package.
  */
 struct PackageStruct {
-/*@{*/
-    /*@refcounted@*/ Header header;
+/*@refcounted@*/ Header header;
 
     int cpioCount;
 /*@owned@*/ struct cpioFileMapping *cpioList;
@@ -178,11 +152,11 @@ struct PackageStruct {
     int autoReq;
     int autoProv;
 
-    char *preInFile;		/*!< %pre scriptlet. */
-    char *postInFile;		/*!< %post scriptlet. */
-    char *preUnFile;		/*!< %preun scriptlet. */
-    char *postUnFile;		/*!< %postun scriptlet. */
-    char *verifyFile;		/*!< %verifyscript scriptlet. */
+/*@only@*/ const char *preInFile;	/*!< %pre scriptlet. */
+/*@only@*/ const char *postInFile;	/*!< %post scriptlet. */
+/*@only@*/ const char *preUnFile;	/*!< %preun scriptlet. */
+/*@only@*/ const char *postUnFile;	/*!< %postun scriptlet. */
+/*@only@*/ const char *verifyFile;	/*!< %verifyscript scriptlet. */
 
 /*@only@*/ StringBuf specialDoc;
 
@@ -197,7 +171,6 @@ struct PackageStruct {
 /*@only@*/ StringBuf fileList; /* If NULL, package will not be written */
 
 /*@dependent@*/ struct PackageStruct *next;
-/*@}*/
 };
 
 /**

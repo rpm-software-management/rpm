@@ -104,9 +104,6 @@ static void freeFi(TFI_t *fi)
 	if (fi->bnl) {
 	    free(fi->bnl); fi->bnl = NULL;
 	    free(fi->dnl); fi->dnl = NULL;
-#ifdef	DOUBLE_FREE
-	    xfree(fi->dil); fi->dil = NULL;
-#endif
 	}
 	if (fi->flinks) {
 	    free(fi->flinks); fi->flinks = NULL;
@@ -128,6 +125,9 @@ static void freeFi(TFI_t *fi)
 	    }
 	    if (fi->fstates) {
 		free(fi->fstates); fi->fstates = NULL;
+	    }
+	    if (fi->dil) {
+		xfree(fi->dil); fi->dil = NULL;
 	    }
 	    break;
 	case TR_ADDED:
@@ -803,17 +803,17 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     }
 
     headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
-			    (void **) &otherMd5s, NULL);
+			    (const void **) &otherMd5s, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILELINKTOS, NULL,
-			    (void **) &otherLinks, NULL);
+			    (const void **) &otherLinks, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-			    (void **) &otherStates, NULL);
+			    (const void **) &otherStates, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
-			    (void **) &otherModes, NULL);
+			    (const void **) &otherModes, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
-			    (void **) &otherFlags, NULL);
+			    (const void **) &otherFlags, NULL);
     headerGetEntryMinMemory(h, RPMTAG_FILESIZES, NULL,
-			    (void **) &otherSizes, NULL);
+			    (const void **) &otherSizes, NULL);
 
     fi->replaced = xmalloc(sizeof(*fi->replaced) * sharedCount);
 
@@ -892,7 +892,7 @@ static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
     }
 
     headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-			    (void **) &otherStates, NULL);
+			    (const void **) &otherStates, NULL);
 
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
@@ -1484,9 +1484,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    break;
 	case TR_ADDED:
 	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL,
-				    (void **) &fi->fmd5s, NULL);
+				    (const void **) &fi->fmd5s, NULL);
 	    headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL,
-				    (void **) &fi->flinks, NULL);
+				    (const void **) &fi->flinks, NULL);
 
 	    /* 0 makes for noops */
 	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
@@ -1659,9 +1659,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    continue;
 	free(fi->bnl); fi->bnl = NULL;
 	free(fi->dnl); fi->dnl = NULL;
-#ifdef	DOUBLE_FREE
-	xfree(fi->dil); fi->dil = NULL;
-#endif
 	switch (fi->type) {
 	case TR_ADDED:
 	    free(fi->fmd5s); fi->fmd5s = NULL;
@@ -1669,6 +1666,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	case TR_REMOVED:
+	    xfree(fi->dil); fi->dil = NULL;
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	}
