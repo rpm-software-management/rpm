@@ -1,0 +1,381 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define if on AIX 3.
+   System headers sometimes define this.
+   We just want to avoid a redefinition error message.  */
+#ifndef _ALL_SOURCE
+#undef _ALL_SOURCE
+#endif
+
+/* Define if using alloca.c.  */
+#undef C_ALLOCA
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define to one of _getb67, GETB67, getb67 for Cray-2 and Cray-YMP systems.
+   This function is required for alloca.c support on those systems.  */
+#undef CRAY_STACKSEG_END
+
+/* Define if you have alloca, as a function or macro.  */
+#undef HAVE_ALLOCA
+
+/* Define if you have <alloca.h> and it should be used (not on Ultrix).  */
+#undef HAVE_ALLOCA_H
+
+/* Define if you don't have vprintf but do have _doprnt.  */
+#undef HAVE_DOPRNT
+
+/* Define if your system has a working fnmatch function.  */
+#undef HAVE_FNMATCH
+
+/* Define if you have the getmntent function.  */
+#undef HAVE_GETMNTENT
+
+/* Define if you have a working `mmap' system call.  */
+#undef HAVE_MMAP
+
+/* Define if you have the vprintf function.  */
+#undef HAVE_VPRINTF
+
+/* Define as __inline if that's what the C compiler calls it.  */
+#undef inline
+
+/* Define if major, minor, and makedev are declared in <mkdev.h>.  */
+#undef MAJOR_IN_MKDEV
+
+/* Define if major, minor, and makedev are declared in <sysmacros.h>.  */
+#undef MAJOR_IN_SYSMACROS
+
+/* Define if on MINIX.  */
+#undef _MINIX
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef mode_t
+
+/* Define to `long' if <sys/types.h> doesn't define.  */
+#undef off_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define if the system does not provide POSIX.1 features except
+   with this defined.  */
+#undef _POSIX_1_SOURCE
+
+/* Define if you need to in order for stat and other things to work.  */
+#undef _POSIX_SOURCE
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* If using the C implementation of alloca, define if you know the
+   direction of stack growth for your system; otherwise it will be
+   automatically deduced at run-time.
+ STACK_DIRECTION > 0 => grows toward higher addresses
+ STACK_DIRECTION < 0 => grows toward lower addresses
+ STACK_DIRECTION = 0 => direction of growth unknown
+ */
+#undef STACK_DIRECTION
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define to 1 if NLS is requested.  */
+#undef ENABLE_NLS
+
+/* Define as 1 if you have catgets and don't want to use GNU gettext.  */
+#undef HAVE_CATGETS
+
+/* Define as 1 if you have gettext and don't want to use GNU gettext.  */
+#undef HAVE_GETTEXT
+
+/* Define if your locale.h file contains LC_MESSAGES.  */
+#undef HAVE_LC_MESSAGES
+
+/* Define to 1 if you have the stpcpy function.  */
+#undef HAVE_STPCPY
+
+/* Define as 1 if you have mntctl() (only aix?) */
+#undef HAVE_MNTCTL
+
+/* Define as 1 if <netdb.h> defines h_errno */
+#undef HAVE_HERRNO
+
+/* Define as 1 if <sys/stat.h> defines S_ISLNK */
+#undef HAVE_S_ISLNK
+
+/* Define as 1 if <sys/stat.h> defines S_IFSOCK */
+#undef HAVE_S_IFSOCK
+
+/* Define as 1 if <sys/stat.h> defines S_ISSOCK */
+#undef HAVE_S_ISSOCK
+
+/* Define as 1 if we need myrealloc */
+#undef NEED_MYREALLOC
+
+/* Define as one if we need to include <strings.h> (along with <string.h>) */
+#undef NEED_STRINGS_H
+
+/* Define as 1 if you have getmntinfo_r() (only osf?) */
+#undef HAVE_GETMNTINFO_R
+
+/* Define as 1 if you have "struct mnttab" (only sco?) */
+#undef HAVE_STRUCT_MNTTAB
+
+/* Define as 1 if you have lchown() */
+#undef HAVE_LCHOWN
+
+/* Define as 1 if chown() follows symlinks and you don't have lchown() */
+#undef CHOWN_FOLLOWS_SYMLINK
+
+/* Define if the patch call you'll be using is 2.1 or older */
+#undef HAVE_OLDPATCH_21
+
+/* A full path to a program, possibly with arguments, that will create a
+   directory and all necessary parent directories, ala `mkdir -p'        */
+#undef MKDIR_P
+
+/* Define this to be whatever root's primary group is, in double quotes */
+#undef ROOT_GROUP
+
+/* Full path to rpm locale directory (usually /usr/share/locale) */
+#undef LOCALEDIR
+
+/* Full path to rpm configuration directory (usually /usr/lib/rpm) */
+#undef RPMCONFIGDIR
+
+/* Full path to find-provides script (usually /usr/lib/rpm/find-provides) */
+#undef FINDPROVIDES
+
+/* Full path to find-requires script (usually /usr/lib/rpm/find-requires) */
+#undef FINDREQUIRES
+
+/* Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt) */
+#undef LIBRPMALIAS_FILENAME
+
+/* Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc) */
+#undef LIBRPMRC_FILENAME
+
+/* Full path to macros configuration file (usually /usr/lib/rpm/macros) */
+#undef MACROFILES
+
+/* Define if you have the __argz_count function.  */
+#undef HAVE___ARGZ_COUNT
+
+/* Define if you have the __argz_next function.  */
+#undef HAVE___ARGZ_NEXT
+
+/* Define if you have the __argz_stringify function.  */
+#undef HAVE___ARGZ_STRINGIFY
+
+/* Define if you have the dcgettext function.  */
+#undef HAVE_DCGETTEXT
+
+/* Define if you have the getcwd function.  */
+#undef HAVE_GETCWD
+
+/* Define if you have the getpagesize function.  */
+#undef HAVE_GETPAGESIZE
+
+/* Define if you have the getwd function.  */
+#undef HAVE_GETWD
+
+/* Define if you have the glob function.  */
+#undef HAVE_GLOB
+
+/* Define if you have the inet_aton function.  */
+#undef HAVE_INET_ATON
+
+/* Define if you have the munmap function.  */
+#undef HAVE_MUNMAP
+
+/* Define if you have the putenv function.  */
+#undef HAVE_PUTENV
+
+/* Define if you have the realpath function.  */
+#undef HAVE_REALPATH
+
+/* Define if you have the setenv function.  */
+#undef HAVE_SETENV
+
+/* Define if you have the setlocale function.  */
+#undef HAVE_SETLOCALE
+
+/* Define if you have the stpcpy function.  */
+#undef HAVE_STPCPY
+
+/* Define if you have the stpncpy function.  */
+#undef HAVE_STPNCPY
+
+/* Define if you have the strcasecmp function.  */
+#undef HAVE_STRCASECMP
+
+/* Define if you have the strchr function.  */
+#undef HAVE_STRCHR
+
+/* Define if you have the strcspn function.  */
+#undef HAVE_STRCSPN
+
+/* Define if you have the strdup function.  */
+#undef HAVE_STRDUP
+
+/* Define if you have the strerror function.  */
+#undef HAVE_STRERROR
+
+/* Define if you have the strncasecmp function.  */
+#undef HAVE_STRNCASECMP
+
+/* Define if you have the strspn function.  */
+#undef HAVE_STRSPN
+
+/* Define if you have the strstr function.  */
+#undef HAVE_STRSTR
+
+/* Define if you have the strtol function.  */
+#undef HAVE_STRTOL
+
+/* Define if you have the strtoul function.  */
+#undef HAVE_STRTOUL
+
+/* Define if you have the <argz.h> header file.  */
+#undef HAVE_ARGZ_H
+
+/* Define if you have the <bzlib.h> header file.  */
+#undef HAVE_BZLIB_H
+
+/* Define if you have the <db1/db.h> header file.  */
+#undef HAVE_DB1_DB_H
+
+/* Define if you have the <db_185.h> header file.  */
+#undef HAVE_DB_185_H
+
+/* Define if you have the <dirent.h> header file.  */
+#undef HAVE_DIRENT_H
+
+/* Define if you have the <fcntl.h> header file.  */
+#undef HAVE_FCNTL_H
+
+/* Define if you have the <getopt.h> header file.  */
+#undef HAVE_GETOPT_H
+
+/* Define if you have the <grp.h> header file.  */
+#undef HAVE_GRP_H
+
+/* Define if you have the <libio.h> header file.  */
+#undef HAVE_LIBIO_H
+
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the <locale.h> header file.  */
+#undef HAVE_LOCALE_H
+
+/* Define if you have the <machine/types.h> header file.  */
+#undef HAVE_MACHINE_TYPES_H
+
+/* Define if you have the <malloc.h> header file.  */
+#undef HAVE_MALLOC_H
+
+/* Define if you have the <memory.h> header file.  */
+#undef HAVE_MEMORY_H
+
+/* Define if you have the <mntent.h> header file.  */
+#undef HAVE_MNTENT_H
+
+/* Define if you have the <ndir.h> header file.  */
+#undef HAVE_NDIR_H
+
+/* Define if you have the <netdb.h> header file.  */
+#undef HAVE_NETDB_H
+
+/* Define if you have the <netinet/in_systm.h> header file.  */
+#undef HAVE_NETINET_IN_SYSTM_H
+
+/* Define if you have the <nl_types.h> header file.  */
+#undef HAVE_NL_TYPES_H
+
+/* Define if you have the <pwd.h> header file.  */
+#undef HAVE_PWD_H
+
+/* Define if you have the <string.h> header file.  */
+#undef HAVE_STRING_H
+
+/* Define if you have the <sys/dir.h> header file.  */
+#undef HAVE_SYS_DIR_H
+
+/* Define if you have the <sys/mman.h> header file.  */
+#undef HAVE_SYS_MMAN_H
+
+/* Define if you have the <sys/mntctl.h> header file.  */
+#undef HAVE_SYS_MNTCTL_H
+
+/* Define if you have the <sys/mnttab.h> header file.  */
+#undef HAVE_SYS_MNTTAB_H
+
+/* Define if you have the <sys/mount.h> header file.  */
+#undef HAVE_SYS_MOUNT_H
+
+/* Define if you have the <sys/ndir.h> header file.  */
+#undef HAVE_SYS_NDIR_H
+
+/* Define if you have the <sys/param.h> header file.  */
+#undef HAVE_SYS_PARAM_H
+
+/* Define if you have the <sys/resource.h> header file.  */
+#undef HAVE_SYS_RESOURCE_H
+
+/* Define if you have the <sys/select.h> header file.  */
+#undef HAVE_SYS_SELECT_H
+
+/* Define if you have the <sys/socket.h> header file.  */
+#undef HAVE_SYS_SOCKET_H
+
+/* Define if you have the <sys/stdtypes.h> header file.  */
+#undef HAVE_SYS_STDTYPES_H
+
+/* Define if you have the <sys/systemcfg.h> header file.  */
+#undef HAVE_SYS_SYSTEMCFG_H
+
+/* Define if you have the <sys/types.h> header file.  */
+#undef HAVE_SYS_TYPES_H
+
+/* Define if you have the <sys/utsname.h> header file.  */
+#undef HAVE_SYS_UTSNAME_H
+
+/* Define if you have the <sys/vmount.h> header file.  */
+#undef HAVE_SYS_VMOUNT_H
+
+/* Define if you have the <sys/wait.h> header file.  */
+#undef HAVE_SYS_WAIT_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the <utime.h> header file.  */
+#undef HAVE_UTIME_H
+
+/* Define if you have the <zlib.h> header file.  */
+#undef HAVE_ZLIB_H
+
+/* Define if you have the db1 library (-ldb1).  */
+#undef HAVE_LIBDB1
+
+/* Define if you have the i library (-li).  */
+#undef HAVE_LIBI
+
+/* Name of package */
+#undef PACKAGE
+
+/* Version number of package */
+#undef VERSION
+
+/* Define if compiler has function prototypes */
+#undef PROTOTYPES
+
+/* define if compiled symbols have a leading underscore */
+#undef WITH_SYMBOL_UNDERSCORE
+
