@@ -11,7 +11,14 @@
 
 #include "intl.h"
 
-static int escape = 1;	/* use octal escape sequence for !isprint(c)? */
+const char *progname = NULL;
+int debug = 0;
+int verbose = 0;
+int escape = 1;		/* use octal escape sequence for !isprint(c)? */
+char *inputdir = NULL;
+char *outputdir = NULL;
+int gentran = 0;
+
 
 static inline char *
 basename(const char *file)
@@ -497,27 +504,29 @@ matchchar(const char *p, char pl, char pr)
 static int
 parsepofile(const char *file, message_list_ty **mlpp)
 {
+    char tbuf[BUFSIZ];
     message_list_ty *mlp;
+    message_ty *mp;
     KW_t *kw;
-    char *buf, *s, *se;
+    char *buf, *s, *se, *t;
     size_t nb;
     int c, rc;
-    int state = 0;
+    int state = 1;
 
+if (debug)
 fprintf(stderr, "================ %s\n", file);
     if ((rc = slurp(file, &buf, &nb)) != 0)
 	return rc;
 
     mlp = message_list_alloc();
+    mp = NULL;
     s = buf;
     while ((c = *s) != '\0') {
 	se = s;
 	switch (state) {
 	case 0:		/* free wheeling */
-		SKIPWHITE;
-		if (c) state = 1;
-		break;
 	case 1:		/* comment "domain" "msgid" "msgstr" */
+		state = 1;
 		SKIPWHITE;
 		s = se;
 		if (!(isalpha(c) || c == '#')) {
@@ -525,11 +534,38 @@ fprintf(stderr, "================ %s\n", file);
 			NEXTLINE;
 			break;
 		}
+
+		if (mp == NULL) {
+			mp = message_alloc(NULL);
+			message_list_append(mlp, mp);
+		}
+
 		if (c == '#') {
-			NEXTLINE;
+			while ((c = *se) && c != '\n') se++;
 	/* === s:se has comment */
+if (debug)
+fprintf(stderr, "%.*s\n", (int)(se-s), s);
+
+			if (c)
+				*se == '\0';	/* zap \n */
+			switch (s[1]) {
+			case ':':	/* XXX for now fall thru */
+			case '.':
+				if (mp->comment_dot == NULL)
+					mp->comment_dot = string_list_alloc();
+				string_list_append(mp->comment_dot, xstrdup(s));
+				break;
+			default:
+				if (mp->comment == NULL)
+					mp->comment = string_list_alloc();
+				string_list_append(mp->comment, xstrdup(s));
+				break;
+			}
+			if (c)
+				se++;	/* skip \n */
 			break;
 		}
+
 		for (kw = keywords; kw->name != NULL; kw++) {
 			if (!strncmp(s, kw->name, kw->len)) {
 				se += kw->len;
@@ -542,6 +578,8 @@ fprintf(stderr, "================ %s\n", file);
 			break;
 		}
 	/* === s:se has keyword */
+if (debug)
+fprintf(stderr, "%.*s", (int)(se-s), s);
 
 		SKIPWHITE;
 		s = se;
@@ -555,8 +593,12 @@ fprintf(stderr, "================ %s\n", file);
 			}
 			s++;	/* skip ( */
 	/* === s:se has lang */
+if (debug)
+fprintf(stderr, "(%.*s)", (int)(se-s), s);
 			se++;	/* skip ) */
 		}
+if (debug)
+fprintf(stderr, "\n");
 
 		SKIPWHITE;
 		if (*se != '"') {
@@ -574,8 +616,11 @@ fprintf(stderr, "================ %s\n", file);
 			NEXTLINE;
 			break;
 		}
-		s = se;
+
+		t = tbuf;
+		*t = '\0';
 		do {
+			s = se;
 			s++;	/* skip open quote */
 			if ((se = matchchar(s, c, c)) == NULL) {
 				fprintf(stderr, "missing close %c at \"%.20s\"\n", c, s);
@@ -583,11 +628,26 @@ fprintf(stderr, "================ %s\n", file);
 				NEXTLINE;
 				break;
 			}
+
 	/* === s:se has next part of string */
+			*se = '\0';
+			strcpy(t, s);
+			t += (se - s);
+			*t = '\0';
+
 			se++;	/* skip close quote */
 			SKIPWHITE;
 		} while (c == '"');
-		state = 0;
+
+		if (!strcmp(kw->name, "msgid")) {
+			FREE(((char *)mp->msgid));
+			mp->msgid = xstrdup(tbuf);
+		} else if (!strcmp(kw->name, "msgstr")) {
+		}
+
+		mp = NULL;
+		state = 1;
+
 		break;
 	}
 	s = se;
@@ -603,13 +663,6 @@ fprintf(stderr, "================ %s\n", file);
 }
 
 /* ================================================================== */
-
-const char *progname = NULL;
-int debug = 0;
-int verbose = 0;
-char *inputdir = NULL;
-char *outputdir = NULL;
-int gentran = 0;
 
 #define	STDINFN	"<stdin>"
 
