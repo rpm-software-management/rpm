@@ -1153,13 +1153,12 @@ static int processPackageFiles(Spec spec, Package pkg,
 	/* Reset for a new line in %files */
 	fl.isDir = 0;
 	fl.inFtw = 0;
-	fl.currentFlags = 0;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
+	fl.currentFlags = 0;
 	fl.isSpecialDoc = 0;
+	FREE(fl.currentLang);	/* XXX should reset to %deflang value */
 
 	dupAttrRec(&fl.def_ar, &fl.cur_ar);
-
-	FREE(fl.currentLang);
 
 	if (parseForVerify(buf, &fl))
 	    continue;
@@ -1190,14 +1189,18 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
 	}
 
-	dupAttrRec(&specialDocAttrRec, &fl.cur_ar);
-	freeAttrRec(&specialDocAttrRec);
-
+	/* Reset for %doc */
 	fl.isDir = 0;
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
 	fl.currentVerifyFlags = 0;
+	FREE(fl.currentLang);	/* XXX should reset to %deflang value */
+
+	dupAttrRec(&specialDocAttrRec, &fl.cur_ar);
+	freeAttrRec(&specialDocAttrRec);
+
 	processBinaryFile(pkg, &fl, specialDoc);
+
 	FREE(specialDoc);
     }
     
