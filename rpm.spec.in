@@ -77,7 +77,7 @@ will manipulate RPM packages and databases.
 %package build
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
-Requires: rpm = %{rpm_version}
+Requires: rpm = %{rpm_version}, patch >= 2.5
 Provides: rpmbuild(VendorConfig) = %{version}
 
 %description build
