@@ -45,7 +45,7 @@ endif
 
 all: $(TARGET)
 
-rpm: lib/librpm.a build/libbuild.a $(OBJS)
+rpm: lib/librpm.a build/libbuild.a misc/libmisc.a $(OBJS)
 	$(CC) -o rpm -static $(LDFLAGS) $(OBJS) $(LOADLIBES) \
 		$(LIBEFENCE)
 
