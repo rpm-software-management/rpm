@@ -163,7 +163,7 @@ void build(char * arg, int buildAmount) {
 	    fprintf(stderr, "Build failed.\n");
 	}
     }
-    freeSpec(specfile);
+    freeSpec(*specfile);
     fclose(f);
 }
 
