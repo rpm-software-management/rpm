@@ -1246,7 +1246,7 @@ int main(int argc, char ** argv) {
 	if (showHash) interfaceFlags |= INSTALL_HASH;
 	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
 	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
-	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
+	if (upgrade) interfaceFlags |= INSTALL_UPGRADE;
 
 	if (!incldocs) {
 	    if (excldocs)
