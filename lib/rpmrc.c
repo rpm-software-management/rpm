@@ -15,7 +15,7 @@
 struct rpmoption {
     char * name;
     int var;
-    int archSpecific;
+    int archSpecific, required;
 };
 
 struct archosCacheEntry {
@@ -70,36 +70,36 @@ static struct archosEquivInfo * archosEquivSearch(
 
 /* this *must* be kept in alphabetical order */
 struct rpmoption optionTable[] = {
-    { "builddir",		RPMVAR_BUILDDIR,		0 },
-    { "buildroot",              RPMVAR_BUILDROOT,               0 },
-    { "cpiobin",                RPMVAR_CPIOBIN,                 0 },
-    { "dbpath",			RPMVAR_DBPATH,			0 },
-    { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0 },
-    { "distribution",		RPMVAR_DISTRIBUTION,		0 },
-    { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0 },
-    { "fixperms",		RPMVAR_FIXPERMS,		0 },
-    { "ftpport",		RPMVAR_FTPPORT,			0 },
-    { "ftpproxy",		RPMVAR_FTPPROXY,		0 },
-    { "gzipbin",		RPMVAR_GZIPBIN,			0 },
-    { "messagelevel",		RPMVAR_MESSAGELEVEL,		0 },
-    { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0 },
-    { "optflags",		RPMVAR_OPTFLAGS,		1 },
-    { "packager",               RPMVAR_PACKAGER,                0 },
-    { "pgp_name",               RPMVAR_PGP_NAME,                0 },
-    { "pgp_path",               RPMVAR_PGP_PATH,                0 },
-    { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0 },
-    { "require_icon",		RPMVAR_REQUIREICON,		0 },
-    { "require_vendor",		RPMVAR_REQUIREVENDOR,		0 },
-    { "root",			RPMVAR_ROOT,			0 },
-    { "rpmdir",			RPMVAR_RPMDIR,			0 },
-    { "signature",		RPMVAR_SIGTYPE,			0 },
-    { "sourcedir",		RPMVAR_SOURCEDIR,		0 },
-    { "specdir",		RPMVAR_SPECDIR,			0 },
-    { "srcrpmdir",		RPMVAR_SRPMDIR,			0 },
-    { "timecheck",		RPMVAR_TIMECHECK,		0 },
-    { "tmppath",		RPMVAR_TMPPATH,			0 },
-    { "topdir",			RPMVAR_TOPDIR,			0 },
-    { "vendor",			RPMVAR_VENDOR,			0 },
+    { "builddir",		RPMVAR_BUILDDIR,		0, 0 },
+    { "buildroot",              RPMVAR_BUILDROOT,               0, 0 },
+    { "cpiobin",                RPMVAR_CPIOBIN,                 0, 1 },
+    { "dbpath",			RPMVAR_DBPATH,			0, 1 },
+    { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0, 0 },
+    { "distribution",		RPMVAR_DISTRIBUTION,		0, 0 },
+    { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0, 0 },
+    { "fixperms",		RPMVAR_FIXPERMS,		0, 1 },
+    { "ftpport",		RPMVAR_FTPPORT,			0, 0 },
+    { "ftpproxy",		RPMVAR_FTPPROXY,		0, 0 },
+    { "gzipbin",		RPMVAR_GZIPBIN,			0, 1 },
+    { "messagelevel",		RPMVAR_MESSAGELEVEL,		0, 0 },
+    { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0, 0 },
+    { "optflags",		RPMVAR_OPTFLAGS,		1, 0 },
+    { "packager",               RPMVAR_PACKAGER,                0, 0 },
+    { "pgp_name",               RPMVAR_PGP_NAME,                0, 0 },
+    { "pgp_path",               RPMVAR_PGP_PATH,                0, 0 },
+    { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0, 0 },
+    { "require_icon",		RPMVAR_REQUIREICON,		0, 0 },
+    { "require_vendor",		RPMVAR_REQUIREVENDOR,		0, 0 },
+    { "root",			RPMVAR_ROOT,			0, 0 },
+    { "rpmdir",			RPMVAR_RPMDIR,			0, 0 },
+    { "signature",		RPMVAR_SIGTYPE,			0, 0 },
+    { "sourcedir",		RPMVAR_SOURCEDIR,		0, 0 },
+    { "specdir",		RPMVAR_SPECDIR,			0, 0 },
+    { "srcrpmdir",		RPMVAR_SRPMDIR,			0, 0 },
+    { "timecheck",		RPMVAR_TIMECHECK,		0, 0 },
+    { "tmppath",		RPMVAR_TMPPATH,			0, 1 },
+    { "topdir",			RPMVAR_TOPDIR,			0, 0 },
+    { "vendor",			RPMVAR_VENDOR,			0, 0 },
 };
 
 static int optionTableSize = sizeof(optionTable) / sizeof(struct rpmoption);
@@ -620,6 +620,7 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
     int tc;
     char *tcs, *tcse;
     static int alreadyInit = 0;
+    int i;
 
     if (alreadyInit)
       return 1;
@@ -657,11 +658,19 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
 	tc = strtoul(tcs, &tcse, 10);
 	if ((*tcse) || (tcse == tcs) || (tc == ULONG_MAX)) {
 	    rpmError(RPMERR_RPMRC, "Bad arg to timecheck: %s", tcs);
-	    return(RPMERR_RPMRC);
+	    return 1;
+	}
+    }
+
+    for (i = 0; i < optionTableSize; i++) {
+	if (optionTable[i].required && !rpmGetVar(optionTable[i].var)) {
+	    rpmError(RPMERR_RPMRC, "Missing definition of %s in rc files.",
+			optionTable[i].name);
+	    rc = 1;
 	}
     }
     
-    return 0;
+    return rc;
 }
 
 static void setPathDefault(int var, char * s) {
