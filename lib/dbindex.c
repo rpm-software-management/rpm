@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmurl.h>
 
 unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set.count;
@@ -25,6 +26,20 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
 dbiIndex * dbiOpenIndex(const char * filename, int flags, int perms, DBTYPE type) {
     dbiIndex * dbi;
         
+    switch (urlIsURL(filename)) {
+    case URL_IS_PATH:
+	filename += sizeof("file://") - 1;
+	filename = strchr(filename, '/');
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	break;
+    case URL_IS_DASH:
+    case URL_IS_FTP:
+    case URL_IS_HTTP:
+    default:
+	return NULL;
+	/*@notreached@*/ break;
+    }
     dbi = xmalloc(sizeof(*dbi));
     dbi->db = dbopen(filename, flags, perms, type, NULL);
     if (!dbi->db) {

@@ -787,8 +787,14 @@ int main(int argc, const char ** argv)
 	    break;
 
 	  case GETOPT_DBPATH:
-            if (optArg[0] != '/')
-                argerror(_("arguments to --dbpath must begin with a /"));
+	    switch (urlIsURL(optArg)) {
+	    case URL_IS_UNKNOWN:
+		if (optArg[0] != '/')
+		    argerror(_("arguments to --dbpath must begin with a /"));
+		break;
+	    default:
+		break;
+	    }
 	    addMacro(NULL,"_dbpath", NULL, optArg, RMIL_CMDLINE);
 	    gotDbpath = 1;
 	    break;
@@ -896,7 +902,8 @@ int main(int argc, const char ** argv)
 
     if (bigMode != MODE_QUERY && bigMode != MODE_INSTALL && 
 	bigMode != MODE_UNINSTALL && bigMode != MODE_VERIFY &&
-	bigMode != MODE_INITDB && bigMode != MODE_REBUILDDB && gotDbpath)
+	bigMode != MODE_INITDB && bigMode != MODE_REBUILDDB &&
+	bigMode != MODE_REBUILD && gotDbpath)
 	argerror(_("--dbpath given for operation that does not use a "
 			"database"));
 

@@ -5,6 +5,7 @@
 #include <sys/signal.h>
 
 #include <rpmlib.h>
+#include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
 #include "falloc.h"
@@ -39,7 +40,7 @@ const char *rpmdb_filenames[] = {
    right area w/o a linear search through the database. */
 
 struct rpmdb_s {
-    faFile pkgs;
+    FD_t pkgs;
     dbiIndex * nameIndex, * fileIndex, * groupIndex, * providesIndex;
     dbiIndex * requiredbyIndex, * conflictsIndex, * triggerIndex;
 };
@@ -112,7 +113,13 @@ static int openDbFile(const char * prefix, const char * dbpath, const char * sho
     char * filename = alloca(len);
 
     *filename = '\0';
-    if (prefix && *prefix) strcat(filename, prefix); 
+    switch (urlIsURL(dbpath)) {
+    case URL_IS_UNKNOWN:
+	if (prefix && *prefix) strcat(filename, prefix); 
+	break;
+    default:
+	break;
+    }
     strcat(filename, dbpath);
     strcat(filename, shortName);
 
@@ -151,6 +158,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     int minimal = flags & RPMDB_FLAG_MINIMAL;
     const char * akey;
 
+fprintf(stderr, "==> openDatabase %s\n", dbpath);
     if (mode & O_WRONLY) 
 	return 1;
 
@@ -170,8 +178,15 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     }
     
     filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
+    *filename = '\0';
 
-    strcpy(filename, prefix); 
+    switch (urlIsURL(dbpath)) {
+    case URL_IS_UNKNOWN:
+	strcpy(filename, prefix); 
+	break;
+    default:
+	break;
+    }
     strcat(filename, dbpath);
 
     rpmMessage(RPMMESS_DEBUG, _("opening database mode 0x%x in %s\n"),
@@ -182,7 +197,9 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     db = newRpmdb();
 
     if (!justcheck || !rpmfileexists(filename)) {
-	if ((db->pkgs = faOpen(filename, mode, perms)) == NULL) {
+	db->pkgs = fadOpen(filename, mode, perms);
+	if (Ferror(db->pkgs)) {
+	    /* XXX Fstrerror */
 	    rpmError(RPMERR_DBOPEN, _("failed to open %s\n"), filename);
 	    return 1;
 	}
@@ -195,7 +212,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	
 	if (mode & O_RDWR) {
 	    lockinfo.l_type = F_WRLCK;
-	    if (faFcntl(db->pkgs, F_SETLK, (void *) &lockinfo)) {
+	    if (Fcntl(db->pkgs, F_SETLK, (void *) &lockinfo)) {
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
 			 _("exclusive"));
 		rpmdbClose(db);
@@ -203,7 +220,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	    } 
 	} else {
 	    lockinfo.l_type = F_RDLCK;
-	    if (faFcntl(db->pkgs, F_SETLK, (void *) &lockinfo)) {
+	    if (Fcntl(db->pkgs, F_SETLK, (void *) &lockinfo)) {
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"), 
 			 _("shared"));
 		rpmdbClose(db);
@@ -269,7 +286,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 
 void rpmdbClose (rpmdb db)
 {
-    if (db->pkgs != NULL) faClose(db->pkgs);
+    if (db->pkgs != NULL) Fclose(db->pkgs);
     if (db->fileIndex) dbiCloseIndex(db->fileIndex);
     if (db->groupIndex) dbiCloseIndex(db->groupIndex);
     if (db->nameIndex) dbiCloseIndex(db->nameIndex);
@@ -281,12 +298,12 @@ void rpmdbClose (rpmdb db)
 }
 
 int rpmdbFirstRecNum(rpmdb db) {
-    return faFirstOffset(db->pkgs);
+    return fadFirstOffset(db->pkgs);
 }
 
 int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
     /* 0 at end */
-    return faNextOffset(db->pkgs, lastOffset);
+    return fadNextOffset(db->pkgs, lastOffset);
 }
 
 static Header doGetRecord(rpmdb db, unsigned int offset, int pristine) {
@@ -296,9 +313,9 @@ static Header doGetRecord(rpmdb db, unsigned int offset, int pristine) {
     int fileCount = 0;
     int i;
 
-    (void)faSeek(db->pkgs, offset, SEEK_SET);
+    (void)Fseek(db->pkgs, offset, SEEK_SET);
 
-    h = headerRead(faFileno(db->pkgs), HEADER_MAGIC_NO);
+    h = headerRead(db->pkgs, HEADER_MAGIC_NO);
 
     if (pristine) return h;
 
@@ -578,7 +595,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	rpmMessage(RPMMESS_DEBUG, _("package has no files\n"));
     }
 
-    faFree(db->pkgs, offset);
+    fadFree(db->pkgs, offset);
 
     dbiSyncIndex(db->nameIndex);
     dbiSyncIndex(db->groupIndex);
@@ -648,12 +665,12 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 
     blockSignals();
 
-    dboffset = faAlloc(db->pkgs, headerSizeof(dbentry, HEADER_MAGIC_NO));
+    dboffset = fadAlloc(db->pkgs, headerSizeof(dbentry, HEADER_MAGIC_NO));
     if (!dboffset) {
 	rc = 1;
     } else {
-	(void)faSeek(db->pkgs, dboffset, SEEK_SET);
-	rc = headerWrite(faFileno(db->pkgs), dbentry, HEADER_MAGIC_NO);
+	(void)Fseek(db->pkgs, dboffset, SEEK_SET);
+	rc = headerWrite(db->pkgs, dbentry, HEADER_MAGIC_NO);
     }
 
     if (rc) {
@@ -734,9 +751,9 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
     } else {
 	blockSignals();
 
-	(void)faSeek(db->pkgs, offset, SEEK_SET);
+	(void)Fseek(db->pkgs, offset, SEEK_SET);
 
-	rc = headerWrite(faFileno(db->pkgs), newHeader, HEADER_MAGIC_NO);
+	rc = headerWrite(db->pkgs, newHeader, HEADER_MAGIC_NO);
 
 	unblockSignals();
     }

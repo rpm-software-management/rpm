@@ -34,91 +34,57 @@ struct faFooter {
     unsigned int isFree; 
 } ;
 
-FD_t faFileno(faFile fa) {
-    return fa;
-}
-
-static inline ssize_t faRead(faFile fa, /*@out@*/ void *buf, size_t count) {
-    return Fread(buf, count, 1, faFileno(fa));
-}
-
-static inline ssize_t faWrite(faFile fa, const void *buf, size_t count) {
-    return Fwrite(buf, count, 1, faFileno(fa));
-}
-
-int faSeek(faFile fa, off_t pos, int whence) {
-    return Fseek(faFileno(fa), pos, whence);
-}
-
-int faClose(faFile fa) {
-    return Fclose(faFileno(fa));
-}
-
-int faFcntl(faFile fa, int op, void *lip) {
-    return fcntl(Fileno(faFileno(fa)), op, lip);
-}
-
-static inline ssize_t faPRead(faFile fa, /*@out@*/void *buf, size_t count, off_t offset) {
-    if (faSeek(fa, offset, SEEK_SET) < 0)
-	return -1;
-    return faRead(fa, buf, count);
-}
-
-static inline ssize_t faPWrite(faFile fa, const void *buf, size_t count, off_t offset) {
-    if (faSeek(fa, offset, SEEK_SET) < 0)
-	return -1;
-    return faWrite(fa, buf, count);
-}
-
 /* flags here is the same as for open(2) - NULL returned on error */
-faFile faOpen(const char * path, int flags, int perms)
+FD_t fadOpen(const char * path, int flags, int perms)
 {
     struct faFileHeader newHdr;
-    faFile fa;
+    FD_t fd;
 
     if (flags & O_WRONLY)
 	return NULL;
 
-    fa = ufdOpen(path, flags, perms);
-    if (Ferror(faFileno(fa)))
+    fd = ufdOpen(path, flags, perms);
+    if (Ferror(fd))
 	/* XXX Fstrerror */
 	return NULL;
 
-    fa->readOnly = (flags & O_RDWR) ? 0 : 1;
-    fa->firstFree = 0;
+    fdSetIoCookie(fd, &fadio);
+    fadSetFirstFree(fd, 0);
+    fadSetFileSize(fd, Fseek(fd, 0, SEEK_END));
 
     /* is this file brand new? */
-    if ((fa->fileSize = faSeek(fa, 0, SEEK_END)) < 0) {
+    if (fadGetFileSize(fd) < 0) {
 	newHdr.magic = FA_MAGIC;
 	newHdr.firstFree = 0;
-	if (faWrite(fa, &newHdr, sizeof(newHdr)) != sizeof(newHdr)) {
-	    faClose(fa);
+	if (Fwrite(&newHdr, sizeof(newHdr), 1, fd) != sizeof(newHdr)) {
+	    Fclose(fd);
 	    return NULL;
 	}
-	fa->firstFree = 0;
-	fa->fileSize = sizeof(newHdr);
+	fadSetFirstFree(fd, 0);
+	fadSetFileSize(fd, sizeof(newHdr));
     } else {
-	if (faPRead(fa, &newHdr, sizeof(newHdr), 0) != sizeof(newHdr)) {
-	    faClose(fa);
+	if (Pread(fd, &newHdr, sizeof(newHdr), 0) != sizeof(newHdr)) {
+	    Fclose(fd);
 	    return NULL;
 	}
 	if (newHdr.magic != FA_MAGIC) {
-	    faClose(fa);
+	    Fclose(fd);
 	    return NULL;
 	}
-	fa->firstFree = newHdr.firstFree;
+	fadSetFirstFree(fd, newHdr.firstFree);
+	fadSetFileSize(fd, Fseek(fd, 0, SEEK_END));
 
-	if ((fa->fileSize = faSeek(fa, 0, SEEK_END)) < 0) {
-	    faClose(fa);
+	if (fadGetFileSize(fd) < 0) {
+	    Fclose(fd);
 	    return NULL;
 	}
     }
 
-    return fa;
+    return fd;
 }
 
 /* returns 0 on failure */
-unsigned int faAlloc(faFile fa, unsigned int size)
+unsigned int fadAlloc(FD_t fd, unsigned int size)
 {
     unsigned int nextFreeBlock;
     unsigned int newBlockOffset;
@@ -147,11 +113,11 @@ unsigned int faAlloc(faFile fa, unsigned int size)
     /* find a block via first fit - see Knuth vol 1 for why */
     /* XXX this could be optimized a bit still */
 
-    nextFreeBlock =  fa->firstFree;
+    nextFreeBlock = fadGetFirstFree(fd);
     newBlockOffset = 0;
 
     while (nextFreeBlock && !newBlockOffset) {
-	if (faPRead(fa, &header, sizeof(header), nextFreeBlock) != sizeof(header)) return 0;
+	if (Pread(fd, &header, sizeof(header), nextFreeBlock) != sizeof(header)) return 0;
 
 /* XXX W2DO? exit(EXIT_FAILURE) forces the user to discover rpm --rebuilddb */
 	if (!header.isFree) {
@@ -179,7 +145,7 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 
 	footerOffset = newBlockOffset + header.size - sizeof(footer);
 
-	if (faPRead(fa, &footer, sizeof(footer), footerOffset) != sizeof(footer)) 
+	if (Pread(fd, &footer, sizeof(footer), footerOffset) != sizeof(footer)) 
 	    return 0;
 	origFooter = footer;
 
@@ -189,13 +155,13 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	footer.isFree = header.isFree = 0;
 
 	/* remove it from the free list before */
-	if (newBlockOffset == fa->firstFree) {
+	if (newBlockOffset == fadGetFirstFree(fd)) {
 	    faHeader.magic = FA_MAGIC;
 	    faHeader.firstFree = header.freeNext;
-	    fa->firstFree = header.freeNext;
+	    fadSetFirstFree(fd, header.freeNext);
 	    updateHeader = 1;
 	} else {
-	    if (faPRead(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+	    if (Pread(fd, &prevFreeHeader, sizeof(prevFreeHeader),
 			header.freePrev) != sizeof(prevFreeHeader)) 
 		return 0;
 	    origPrevFreeHeader = prevFreeHeader;
@@ -205,7 +171,7 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 
 	/* and after */
 	if (header.freeNext) {
-	    if (faPRead(fa, &nextFreeHeader, sizeof(nextFreeHeader),
+	    if (Pread(fd, &nextFreeHeader, sizeof(nextFreeHeader),
 			header.freeNext) != sizeof(nextFreeHeader)) 
 		return 0;
 	    origNextFreeHeader = nextFreeHeader;
@@ -215,18 +181,18 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 
 	/* if any of these fail, try and restore everything before leaving */
 	if (updateHeader) {
-	    if (faPWrite(fa, &faHeader, sizeof(faHeader), 0) !=
+	    if (Pwrite(fd, &faHeader, sizeof(faHeader), 0) !=
 			     sizeof(faHeader)) 
 		return 0;
 	} else {
-	    if (faPWrite(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+	    if (Pwrite(fd, &prevFreeHeader, sizeof(prevFreeHeader),
 			header.freePrev) != sizeof(prevFreeHeader))
 		return 0;
 	    restorePrevHeader = &origPrevFreeHeader;
 	}
 
 	if (header.freeNext) {
-	    if (faPWrite(fa, &nextFreeHeader, sizeof(nextFreeHeader),
+	    if (Pwrite(fd, &nextFreeHeader, sizeof(nextFreeHeader),
 			header.freeNext) != sizeof(nextFreeHeader))
 		return 0;
 
@@ -234,7 +200,7 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	}
 
 	if (!failed) {
-	    if (faPWrite(fa, &header, sizeof(header), newBlockOffset) !=
+	    if (Pwrite(fd, &header, sizeof(header), newBlockOffset) !=
 			 sizeof(header)) {
 		failed = 1;
 		restoreHeader = &origHeader;
@@ -242,7 +208,7 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	}
 
 	if (!failed) {
-	    if (faPWrite(fa, &footer, sizeof(footer),
+	    if (Pwrite(fd, &footer, sizeof(footer),
 			footerOffset) != sizeof(footer)) {
 		failed = 1;
 		restoreFooter = &origFooter;
@@ -252,24 +218,24 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	if (failed) {
 	    if (updateHeader) {
 		faHeader.firstFree = newBlockOffset;
-		fa->firstFree = newBlockOffset;
-	        (void)faPWrite(fa, &faHeader, sizeof(faHeader), 0);
+		fadSetFirstFree(fd, newBlockOffset);
+	        (void)Pwrite(fd, &faHeader, sizeof(faHeader), 0);
 	    } 
 
 	    if (restorePrevHeader)
-	    	(void)faPWrite(fa, restorePrevHeader, sizeof(*restorePrevHeader),
+	    	(void)Pwrite(fd, restorePrevHeader, sizeof(*restorePrevHeader),
 				header.freePrev);
 
 	    if (restoreNextHeader)
-	    	(void)faPWrite(fa, restoreNextHeader, sizeof(*restoreNextHeader),
+	    	(void)Pwrite(fd, restoreNextHeader, sizeof(*restoreNextHeader),
 				header.freeNext);
 
 	    if (restoreHeader)
-	    	(void)faPWrite(fa, restoreHeader, sizeof(header),
+	    	(void)Pwrite(fd, restoreHeader, sizeof(header),
 				newBlockOffset);
 
 	    if (restoreFooter)
-	    	(void)faPWrite(fa, restoreFooter, sizeof(footer),
+	    	(void)Pwrite(fd, restoreFooter, sizeof(footer),
 				footerOffset);
 
 	    return 0;
@@ -278,7 +244,7 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	char * space;
 
 	/* make a new block */
-	newBlockOffset = fa->fileSize;
+	newBlockOffset = fadGetFileSize(fd);
 	footerOffset = newBlockOffset + size - sizeof(footer);
 
 	space = alloca(size);
@@ -290,22 +256,22 @@ unsigned int faAlloc(faFile fa, unsigned int size)
 	header.freePrev = header.freeNext = 0;
 
 	/* reserve all space up front */
-	if (faPWrite(fa, space, size, newBlockOffset) != size)
+	if (Pwrite(fd, space, size, newBlockOffset) != size)
 	    return 0;
 
-	if (faPWrite(fa, &header, sizeof(header), newBlockOffset) != sizeof(header))
+	if (Pwrite(fd, &header, sizeof(header), newBlockOffset) != sizeof(header))
 	    return 0;
 
-	if (faPWrite(fa, &footer, sizeof(footer), footerOffset) != sizeof(footer))
+	if (Pwrite(fd, &footer, sizeof(footer), footerOffset) != sizeof(footer))
 	    return 0;
 
-	fa->fileSize += size;
+	fadSetFileSize(fd, fadGetFileSize(fd) + size);
     }
     
     return newBlockOffset + sizeof(header); 
 }
 
-void faFree(faFile fa, unsigned int offset)
+void fadFree(FD_t fd, unsigned int offset)
 {
     struct faHeader header;
     struct faFooter footer;
@@ -320,19 +286,19 @@ void faFree(faFile fa, unsigned int offset)
     offset -= sizeof(header);
 
     /* find out where in the (sorted) free list to put this */
-    prevFreeOffset = fa->firstFree;
+    prevFreeOffset = fadGetFirstFree(fd);
 
     if (!prevFreeOffset || (prevFreeOffset > offset)) {
-	nextFreeOffset = fa->firstFree;
+	nextFreeOffset = fadGetFirstFree(fd);
 	prevFreeOffset = 0;
     } else {
-	if (faPRead(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+	if (Pread(fd, &prevFreeHeader, sizeof(prevFreeHeader),
 			prevFreeOffset) != sizeof(prevFreeHeader))
 	    return;
 
 	while (prevFreeHeader.freeNext && prevFreeHeader.freeNext < offset) {
 	    prevFreeOffset = prevFreeHeader.freeNext;
-	    if (faPRead(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+	    if (Pread(fd, &prevFreeHeader, sizeof(prevFreeHeader),
 			prevFreeOffset) != sizeof(prevFreeHeader))
 		return;
 	} 
@@ -341,17 +307,17 @@ void faFree(faFile fa, unsigned int offset)
     }
 
     if (nextFreeOffset) {
-	if (faPRead(fa, &nextFreeHeader, sizeof(nextFreeHeader),
+	if (Pread(fd, &nextFreeHeader, sizeof(nextFreeHeader),
 			nextFreeOffset) != sizeof(nextFreeHeader))
 	    return;
     }
 
-    if (faPRead(fa, &header, sizeof(header), offset) != sizeof(header))
+    if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	return;
 
     footerOffset = offset + header.size - sizeof(footer);
 
-    if (faPRead(fa, &footer, sizeof(footer), footerOffset) != sizeof(footer))
+    if (Pread(fd, &footer, sizeof(footer), footerOffset) != sizeof(footer))
 	return;
 
     header.isFree = 1;
@@ -359,38 +325,39 @@ void faFree(faFile fa, unsigned int offset)
     header.freePrev = prevFreeOffset;
     footer.isFree = 1;
 
-    (void)faPWrite(fa, &header, sizeof(header), offset);
+    (void)Pwrite(fd, &header, sizeof(header), offset);
 
-    (void)faPWrite(fa, &footer, sizeof(footer), footerOffset);
+    (void)Pwrite(fd, &footer, sizeof(footer), footerOffset);
 
     if (nextFreeOffset) {
 	nextFreeHeader.freePrev = offset;
-	if (faPWrite(fa, &nextFreeHeader, sizeof(nextFreeHeader),
+	if (Pwrite(fd, &nextFreeHeader, sizeof(nextFreeHeader),
 			nextFreeOffset) != sizeof(nextFreeHeader))
 	    return;
     }
 
     if (prevFreeOffset) {
 	prevFreeHeader.freeNext = offset;
-	if (faPWrite(fa, &prevFreeHeader, sizeof(prevFreeHeader),
+	if (Pwrite(fd, &prevFreeHeader, sizeof(prevFreeHeader),
 			prevFreeOffset) != sizeof(prevFreeHeader))
 	    return;
     } else {
-	fa->firstFree = offset;
+	fadSetFirstFree(fd, offset);
 
 	faHeader.magic = FA_MAGIC;
-	faHeader.firstFree = fa->firstFree;
+	faHeader.firstFree = fadGetFirstFree(fd);
 
-	if (faPWrite(fa, &faHeader, sizeof(faHeader), 0) != sizeof(faHeader))
+	if (Pwrite(fd, &faHeader, sizeof(faHeader), 0) != sizeof(faHeader))
 	    return;
     }
 }
 
-int faFirstOffset(faFile fa) {
-    return faNextOffset(fa, 0);
+int fadFirstOffset(FD_t fd)
+{
+    return fadNextOffset(fd, 0);
 }
 
-int faNextOffset(faFile fa, unsigned int lastOffset)
+int fadNextOffset(FD_t fd, unsigned int lastOffset)
 {
     struct faHeader header;
     int offset;
@@ -399,10 +366,10 @@ int faNextOffset(faFile fa, unsigned int lastOffset)
 	? (lastOffset - sizeof(header))
 	: sizeof(struct faFileHeader);
 
-    if (offset >= fa->fileSize)
+    if (offset >= fadGetFileSize(fd))
 	return 0;
 
-    if (faPRead(fa, &header, sizeof(header), offset) != sizeof(header))
+    if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	return 0;
 
     if (!lastOffset && !header.isFree)
@@ -411,13 +378,13 @@ int faNextOffset(faFile fa, unsigned int lastOffset)
     do {
 	offset += header.size;
 
-	if (faPRead(fa, &header, sizeof(header), offset) != sizeof(header))
+	if (Pread(fd, &header, sizeof(header), offset) != sizeof(header))
 	    return 0;
 
 	if (!header.isFree) break;
-    } while (offset < fa->fileSize && header.isFree);
+    } while (offset < fadGetFileSize(fd) && header.isFree);
 
-    if (offset < fa->fileSize) {
+    if (offset < fadGetFileSize(fd)) {
 	/* Sanity check this to make sure we're not going in loops */
 	offset += sizeof(header);
 

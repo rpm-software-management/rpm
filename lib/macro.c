@@ -1462,7 +1462,8 @@ rpmGetPath(const char *path, ...)
     expandMacros(NULL, NULL, buf, sizeof(buf));
 
     for (s = p = buf; *s; s++, p++) {
-	while (s[0] == '/' && s[1] == '/') s++;
+	if (!(s > buf && s[-1] == ':'))
+	    while (s[0] == '/' && s[1] == '/') s++;
 	*p = *s;
     }
     *p = '\0';

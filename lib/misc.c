@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 
 #include "misc.h"
@@ -50,12 +51,25 @@ void freeSplitString(char ** list) {
 int rpmfileexists(const char * filespec) {
     struct stat buf;
 
-    if (stat(filespec, &buf)) {
-	switch(errno) {
-	   case ENOENT:
-	   case EINVAL:
+    switch (urlIsURL(filespec)) {
+    case URL_IS_PATH:
+	filespec += sizeof("file://") - 1;
+	filespec = strchr(filespec, '/');
+	/*@fallthrough@*/
+    case URL_IS_UNKNOWN:
+	if (stat(filespec, &buf)) {
+	    switch(errno) {
+	    case ENOENT:
+	    case EINVAL:
 		return 0;
+	    }
 	}
+	break;
+    case URL_IS_DASH:
+    case URL_IS_FTP:
+    case URL_IS_HTTP:
+    default:
+	break;
     }
 
     return 1;

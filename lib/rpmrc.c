@@ -519,7 +519,11 @@ int rpmReadRC(const char * rcfiles)
 	FD_t fd;
 
 	/* Get pointer to rest of files */
-	if ((re = strchr(r, ':')) != NULL)
+	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
+	    if (!(re[1] == '/' && re[2] == '/'))
+		break;
+	}
+	if (re && *re == ':')
 	    *re++ = '\0';
 	else
 	    re = r + strlen(r);
@@ -539,7 +543,7 @@ int rpmReadRC(const char * rcfiles)
 	strcat(fn, r);
 
 	/* Read another rcfile */
-	fd = fdOpen(fn, O_RDONLY, 0);
+	fd = ufdOpen(fn, O_RDONLY, 0);
 	if (Ferror(fd)) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 	    if (rcfiles == defrcfiles && myrcfiles != r)
