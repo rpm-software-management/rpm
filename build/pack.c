@@ -543,8 +543,7 @@ int packageBinaries(Spec s, char *passPhrase)
 
 	/* Make the output RPM filename */
 	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
-		getBooleanVar(RPMVAR_ARCHSENSITIVE) ? getArchName() : "",
-		name, getArchName());
+		getArchName(), name, getArchName());
 
 	if (generateRPM(name, filename, RPMLEAD_BINARY, outHeader, NULL,
 			getStringBuf(cpioFileList), passPhrase, prefix)) {
