@@ -17,6 +17,8 @@ struct rpmdb {
 
 void removeIndexEntry(dbIndex * dbi, char * name, dbIndexRecord rec,
 		     int tolerant, char * idxName);
+int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
+		  unsigned int fileNumber);
 
 int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     char * filename;
@@ -130,6 +132,7 @@ void removeIndexEntry(dbIndex * dbi, char * key, dbIndexRecord rec,
 	    updateDBIndex(dbi, key, &matches);
 	       /* errors from above will be reported from dbindex.c */
 	}
+	break;
       case 1:
 	if (!tolerant) 
 	    error(RPMERR_DBCORRUPT, "package %s not found in %s", key, idxName);
@@ -189,4 +192,63 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     }
 
     return 1;
+}
+
+int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
+		  unsigned int fileNumber) {
+    dbIndexSet set;
+    dbIndexRecord irec;   
+    int rc;
+
+    irec.recOffset = offset;
+    irec.fileNumber = fileNumber;
+
+    rc = searchDBIndex(idx, index, &set);
+    if (rc == -1)  		/* error */
+	return 1;
+
+    if (rc == 1)  		/* new item */
+	set = createDBIndexRecord();
+    appendDBIndexRecord(&set, irec);
+    if (updateDBIndex(idx, index, &set))
+	exit(1);
+    freeDBIndexRecord(set);
+    return 0;
+}
+
+int rpmdbAdd(rpmdb db, Header dbentry) {
+    unsigned int dboffset;
+    unsigned int i;
+    char ** fileList;
+    char * name, * group;
+    int count;
+    int type;
+
+    getEntry(dbentry, RPMTAG_NAME, &type, (void **) &name, &count);
+    getEntry(dbentry, RPMTAG_GROUP, &type, (void **) &group, &count);
+
+    if (!getEntry(dbentry, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+	 &count)) {
+	count = 0;
+    } 
+   
+    dboffset = faAlloc(db->pkgs, sizeofHeader(dbentry));
+    lseek(db->pkgs->fd, dboffset, SEEK_SET);
+
+    writeHeader(db->pkgs->fd, dbentry);
+
+    /* Now update the appropriate indexes */
+    if (addIndexEntry(db->nameIndex, name, dboffset, 0))
+	return 1;
+    if (addIndexEntry(db->groupIndex, group, dboffset, 0))
+	return 1;
+
+    for (i = 0; i < count; i++) {
+	if (addIndexEntry(db->fileIndex, fileList[i], dboffset, i))
+	    return 1;
+    }
+
+    if (count) free(fileList);
+
+    return 0;
 }
