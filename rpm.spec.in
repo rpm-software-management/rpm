@@ -4,7 +4,7 @@
 %define	with_bzip2		@WITH_BZIP2@%{nil}
 %define	with_apidocs		@WITH_APIDOCS@%{nil}
 %define with_internal_db	@WITH_INTERNAL_DB@%{nil}
-%define strip_binaries		1
+%define strip_binaries		0
 
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.30
+Release: 0.31
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -404,7 +404,7 @@ fi
 %{__prefix}%{__share}/man/man8/rpm2cpio.8*
 #%lang(fr)	%{__prefix}%{__share}/man/fr/man[18]/*.[18]*
 %lang(ja)	%{__prefix}%{__share}/man/ja/man[18]/*.[18]*
-%lang(ko)	%{__prefix}%{__share}/man/ko/man[18]/*.[18]*
+#%lang(ko)	%{__prefix}%{__share}/man/ko/man[18]/*.[18]*
 %lang(pl)	%{__prefix}%{__share}/man/pl/man[18]/*.[18]*
 %lang(ru)	%{__prefix}%{__share}/man/ru/man[18]/*.[18]*
 %lang(sk)	%{__prefix}%{__share}/man/sk/man[18]/*.[18]*
