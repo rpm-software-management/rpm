@@ -12,6 +12,7 @@
           the release)
 	- added buildarch/buildos macros
 	- added %ghost file option
+	- updated linux.req to only find requirements for exectuable files
 
 2.4.6 -> 2.4.7:
 	- had some wrong month lengths in changelog date parsing
