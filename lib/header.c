@@ -726,7 +726,7 @@ int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	if (h->langNum == -1) headerResetLang(h);
 
 	if (type) *type = RPM_STRING_TYPE;
-	if (c) *c = entry->info.count;
+	if (c) *c = 1;
 
 	chptr = entry->data;
 	for (i = 0; i < h->langNum; i++) 

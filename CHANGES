@@ -8,6 +8,8 @@
 	- freePrefixes wasn't initialized in runScript()
 	- fix typo in %triggerpostun generation
 	- include icons in source packages
+	- headerGetEntry() should return count of 1 when returning
+          strings plucked from i18n strings
 	- do not remove comments in scripts
 
 2.4.108 -> 2.4.109:
