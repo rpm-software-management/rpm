@@ -234,7 +234,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
 	    fprintf(stderr, "\n%cSpec file check failed!!\n", 7);
 	    fprintf(stderr,
 		    "Tell rpm-list@redhat.com if this is incorrect.\n\n");
-	    sleep(1);
+	    sleep(5);
 	}
 	if (doBuild(s, buildAmount, passPhrase)) {
 	    fprintf(stderr, _("Build failed.\n"));
