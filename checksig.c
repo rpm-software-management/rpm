@@ -239,7 +239,7 @@ int doCheckSig(int flags, char **argv)
 			}
 			break;
 		      default:
-			strcat(buffer, "!!! ");
+			strcat(buffer, "?UnknownSignatureType? ");
 			res2 = 1;
 		    }
 		}
