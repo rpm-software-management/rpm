@@ -278,9 +278,9 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p\n", s, s->ts);
 
     Py_BEGIN_ALLOW_THREADS
     xx = rpmtsCheck(s->ts);
-    Py_END_ALLOW_THREADS
 
     ps = rpmtsProblems(s->ts);
+    Py_END_ALLOW_THREADS
     if (ps) {
 	list = PyList_New(0);
 
@@ -447,11 +447,11 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, ":IDTXglob")) return NULL;
 
-    globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
     Py_BEGIN_ALLOW_THREADS
+    globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
     idtx = IDTXglob(s->ts, globstr, tag);
-    Py_END_ALLOW_THREADS
     globstr = _free(globstr);
+    Py_END_ALLOW_THREADS
 
     if (idtx->nidt <= 0) {
 	result = Py_None;
@@ -491,6 +491,7 @@ fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
 
     if (!PyArg_ParseTuple(args, "u:Rollback", &rbtid)) return NULL;
 
+    Py_BEGIN_ALLOW_THREADS
     memset(ia, 0, sizeof(*ia));
     ia->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE|VERIFY_HDRCHK);
     ia->transFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL);
@@ -501,10 +502,9 @@ fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
     ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 
     transFlags = rpmtsSetFlags(s->ts, ia->transFlags);
-    Py_BEGIN_ALLOW_THREADS
     rc = rpmRollback(s->ts, ia, av);
-    Py_END_ALLOW_THREADS
     transFlags = rpmtsSetFlags(s->ts, transFlags);
+    Py_END_ALLOW_THREADS
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -621,6 +621,50 @@ fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
 /** \ingroup python
  */
 static PyObject *
+rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct, fileSystem @*/
+	/*@modifies s, _Py_NoneStruct, fileSystem @*/
+{
+    hdrObject * hdr;
+    Header h;
+    FD_t fd;
+    int fdno;
+    rpmRC rpmrc;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, "i:HdrFromFdno", &fdno)) return NULL;
+
+    fd = fdDup(fdno);
+    rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
+    Fclose(fd);
+
+    switch (rpmrc) {
+    case RPMRC_BADSIZE:
+    case RPMRC_OK:
+	hdr = hdr_Wrap(h);
+	h = headerFree(h);	/* XXX ref held by hdr */
+	break;
+
+    case RPMRC_NOTFOUND:
+	Py_INCREF(Py_None);
+	hdr = (hdrObject *) Py_None;
+	break;
+
+    case RPMRC_FAIL:
+    case RPMRC_SHORTREAD:
+    default:
+	PyErr_SetString(pyrpmError, "error reading package header");
+	return NULL;
+    }
+
+    return Py_BuildValue("N", hdr);
+}
+
+/** \ingroup python
+ */
+static PyObject *
 rpmts_HdrCheck(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
@@ -726,6 +770,7 @@ struct rpmtsCallbackType_s {
     PyObject * cb;
     PyObject * data;
     int pythonError;
+    PyThreadState *_save;
 };
 
 /** \ingroup python
@@ -745,12 +790,15 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 
     if (!pkgKey) pkgKey = Py_None;
 
+    PyEval_RestoreThread(cbInfo->_save);
+
     args = Py_BuildValue("(illOO)", what, amount, total, pkgKey, cbInfo->data);
     result = PyEval_CallObject(cbInfo->cb, args);
     Py_DECREF(args);
 
     if (!result) {
 	cbInfo->pythonError = 1;
+	cbInfo->_save = PyEval_SaveThread();
 	return NULL;
     }
 
@@ -759,9 +807,11 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 
         if (!PyArg_Parse(result, "i", &fdno)) {
 	    cbInfo->pythonError = 1;
+	    cbInfo->_save = PyEval_SaveThread();
 	    return NULL;
 	}
 	Py_DECREF(result);
+	cbInfo->_save = PyEval_SaveThread();
 
 	fd = fdDup(fdno);
 if (_rpmts_debug)
@@ -779,6 +829,7 @@ fprintf(stderr, "\t%ld:%ld key %p\n", amount, total, pkgKey);
     }
 
     Py_DECREF(result);
+    cbInfo->_save = PyEval_SaveThread();
 
     return NULL;
 }
@@ -800,6 +851,7 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 	return NULL;
 
     cbInfo.pythonError = 0;
+    cbInfo._save = PyEval_SaveThread();
 
     (void) rpmtsSetNotifyCallback(s->ts, rpmtsCallback, (void *) &cbInfo);
     (void) rpmtsSetFlags(s->ts, flags);
@@ -807,11 +859,11 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Run(%p) ts %p flags %x ignore %x\n", s, s->ts, s->ts->transFlags, ignoreSet);
 
-    Py_BEGIN_ALLOW_THREADS
     rc = rpmtsRun(s->ts, NULL, ignoreSet);
-    Py_END_ALLOW_THREADS
 
     ps = rpmtsProblems(s->ts);
+
+    PyEval_RestoreThread(cbInfo._save);
 
     if (cbInfo.pythonError) {
 	ps = rpmpsFree(ps);
@@ -1002,6 +1054,9 @@ static struct PyMethodDef rpmts_methods[] = {
  {"verifyDB",	(PyCFunction) rpmts_VerifyDB,	METH_VARARGS,
 "ts.verifyDB() -> None\n\
 - Verify the default transaction rpmdb.\n" },
+ {"hdrFromFdno",(PyCFunction) rpmts_HdrFromFdno,METH_VARARGS,
+"ts.hdrFromFdno(fdno) -> hdr\n\
+- Read a package header from a file descriptor.\n" },
  {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS,
 	NULL },
  {"setVerifySigFlags",(PyCFunction) rpmts_SetVerifySigFlags,	METH_VARARGS,

@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.69
+Release: 0.70
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -517,8 +517,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Mon Aug  5 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.69
+* Mon Aug  5 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.70
 - python: bare bones rollback bindings.
+- python: enable threads on callbacks and longish rpmlib calls.
+- python: expose RPMTAG_SOURCEPACKAGE to identify source headers.
+- python: eliminate headerFromPackage() tuple return, deprecated.
+- python: add ts.hdrFromFdno(fdno) method.
 
 * Sun Aug  4 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.68
 - resurrect --rollback.

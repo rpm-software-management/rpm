@@ -215,6 +215,10 @@
 	- fix: don't repackage %%ghost files.
 	- add --predefine to define macros before reading macro configuration.
 	- python: bare bones rollback bindings.
+	- python: enable threads on callbacks and longish rpmlib calls.
+	- python: expose RPMTAG_SOURCEPACKAGE to identify source headers.
+	- python: eliminate headerFromPackage() tuple return, deprecated.
+	- python: add ts.hdrFromFdno(fdno) method.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

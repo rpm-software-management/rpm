@@ -33,21 +33,22 @@
  * Header objects can be returned by database queries or loaded from a
  * binary package on disk.
  * 
- * The headerFromPackage function loads the package header from a
- * package on disk.  It returns a tuple of a "isSource" flag and the
- * header object.  The "isSource" flag is set to 1 if the package
- * header was read from a source rpm or to 0 if the package header was
- * read from a binary rpm.
- * 
- * For example:
+ * The headerFromPackage function returns the package header from a
+ * package on disk.
+ *
+ * Note: rpm.headerFromPackage() used to return a (hdr, isSource) tuple.
+ * If you need to distinguish source/binary headers, do:
  * \code
  * 	import os, rpm
- *  
- * 	fd = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
- * 	hdr = rpm.headerFromPackage(fd)[0]
- * 	os.close(fd)
- * \endcode
  *
+ * 	fd = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
+ * 	hdr = rpm.headerFromPackage(fd)
+ *	if hdr[rpm.RPMTAG_SOURCEPACKAGE]:
+ *	   print "header is from a source package"
+ *	else:
+ *	   print "header is from a binary package"
+ * \endcode
+ * 
  * The Python interface to the header data is quite elegant.  It
  * presents the data in a dictionary form.  We'll take the header we
  * just loaded and access the data within it:
@@ -865,6 +866,7 @@ Header hdrGetHeader(hdrObject * s)
 }
 
 /**
+ * @deprecated Use ts.hdrFromFdno() instead.
  */
 PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
 {
@@ -872,7 +874,6 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
     Header h;
     FD_t fd;
     int rawFd;
-    int isSource = 0;
     rpmRC rc;
 
     if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
@@ -888,7 +889,6 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
     switch (rc) {
     case RPMRC_BADSIZE:
     case RPMRC_OK:
-	isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 	hdr = hdr_Wrap(h);
 	h = headerFree(h);	/* XXX ref held by hdr */
 	break;
@@ -905,7 +905,7 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
 	return NULL;
     }
 
-    return Py_BuildValue("(Ni)", hdr, isSource);
+    return Py_BuildValue("N", hdr);
 }
 
 /**
