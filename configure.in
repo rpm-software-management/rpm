@@ -1162,7 +1162,7 @@ AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	misc/Makefile intl/Makefile po/Makefile.in
 	doc/Makefile doc/manual/Makefile
 	doc/ja/Makefile doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
-	python/Makefile ],
+	python/Makefile python/rpmdb/Makefile ],
   [	echo timestamp > popt/stamp-h.in
 	echo timestamp > beecrypt/stamp-h.in
 	echo timestamp > stamp-h.in
