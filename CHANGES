@@ -21,6 +21,7 @@
 	- don't attempt to remove dbenv on --rebuilddb.
 	- autorelocate ix86 package file paths on ia64.
 	- resolve elf32/elf64 file conflicts to prefer elf64.
+	- apply debugedit patch necessary to produce kernel -debuginfo files.
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

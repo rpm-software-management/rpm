@@ -52,12 +52,17 @@ typedef struct
 {
   Elf *elf;
   GElf_Ehdr ehdr;
-  GElf_Phdr *phdr;
   Elf_Scn **scn;
   const char *filename;
   int lastscn;
   GElf_Shdr shdr[0];
 } DSO;
+
+typedef struct
+{
+  unsigned char *ptr;
+  uint_32 addend;
+} REL;
 
 #define read_uleb128(ptr) ({		\
   unsigned int ret = 0;			\
@@ -112,7 +117,7 @@ strptr (DSO *dso, int sec, off_t offset)
   Elf_Data *data;
 
   scn = dso->scn[sec];
-  if (offset >= 0 && offset < dso->shdr[sec].sh_size)
+  if (offset >= 0 && (GElf_Addr) offset < dso->shdr[sec].sh_size)
     {
       data = NULL;
       while ((data = elf_rawdata (scn, data)) != NULL)
@@ -130,16 +135,42 @@ strptr (DSO *dso, int sec, off_t offset)
 
 #define read_1(ptr) *ptr++
 
-#define read_16(ptr) ({			\
-  uint_16 ret = do_read_16 (ptr);	\
-  ptr += 2;				\
-  ret;					\
+#define read_16(ptr) ({					\
+  uint_16 ret = do_read_16 (ptr);			\
+  ptr += 2;						\
+  ret;							\
 })
 
-#define read_32(ptr) ({			\
-  uint_32 ret = do_read_32 (ptr);	\
-  ptr += 4;				\
-  ret;					\
+#define read_32(ptr) ({					\
+  uint_32 ret = do_read_32 (ptr);			\
+  ptr += 4;						\
+  ret;							\
+})
+
+REL *relptr, *relend;
+int reltype;
+
+#define do_read_32_relocated(ptr) ({			\
+  uint_32 dret = do_read_32 (ptr);			\
+  if (relptr)						\
+    {							\
+      while (relptr < relend && relptr->ptr < ptr)	\
+	++relptr;					\
+      if (relptr < relend && relptr->ptr == ptr)	\
+	{						\
+	  if (reltype == SHT_REL)			\
+	    dret += relptr->addend;			\
+	  else						\
+	    dret = relptr->addend;			\
+	}						\
+    }							\
+  dret;							\
+})
+
+#define read_32_relocated(ptr) ({			\
+  uint_32 ret = do_read_32_relocated (ptr);		\
+  ptr += 4;						\
+  ret;							\
 })
 
 static void
@@ -171,7 +202,7 @@ static struct
     unsigned char *data;
     Elf_Data *elf_data;
     size_t size;
-    int sec;
+    int sec, relsec;
   } debug_sections[] =
   {
 #define DEBUG_INFO	0
@@ -184,17 +215,17 @@ static struct
 #define DEBUG_STR	7
 #define DEBUG_FRAME	8
 #define DEBUG_RANGES	9
-    { ".debug_info", NULL, 0, 0 },
-    { ".debug_abbrev", NULL, 0, 0 },
-    { ".debug_line", NULL, 0, 0 },
-    { ".debug_aranges", NULL, 0, 0 },
-    { ".debug_pubnames", NULL, 0, 0 },
-    { ".debug_macinfo", NULL, 0, 0 },
-    { ".debug_loc", NULL, 0, 0 },
-    { ".debug_str", NULL, 0, 0 },
-    { ".debug_frame", NULL, 0, 0 },
-    { ".debug_ranges", NULL, 0, 0 },
-    { NULL, NULL, 0 }
+    { ".debug_info", NULL, NULL, 0, 0, 0 },
+    { ".debug_abbrev", NULL, NULL, 0, 0, 0 },
+    { ".debug_line", NULL, NULL, 0, 0, 0 },
+    { ".debug_aranges", NULL, NULL, 0, 0, 0 },
+    { ".debug_pubnames", NULL, NULL, 0, 0, 0 },
+    { ".debug_macinfo", NULL, NULL, 0, 0, 0 },
+    { ".debug_loc", NULL, NULL, 0, 0, 0 },
+    { ".debug_str", NULL, NULL, 0, 0, 0 },
+    { ".debug_frame", NULL, NULL, 0, 0, 0 },
+    { ".debug_ranges", NULL, NULL, 0, 0, 0 },
+    { NULL, NULL, NULL, 0, 0, 0 }
   };
 
 struct abbrev_attr
@@ -223,7 +254,7 @@ static int
 abbrev_eq (const void *p, const void *q)
 {
   struct abbrev_tag *t1 = (struct abbrev_tag *)p;
-  struct abbrev_tag *t2 = (struct abbrev_tag *)p;
+  struct abbrev_tag *t2 = (struct abbrev_tag *)q;
 
   return t1->entry == t2->entry;
 }
@@ -555,9 +586,8 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 		  p += ret;
 		}
 	    }
-	  
 	}
-      
+
       free (s);
       
       read_uleb128 (ptr);
@@ -677,7 +707,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    {
 	      if (form == DW_FORM_data4)
 		{
-		  list_offs = do_read_32 (ptr);
+		  list_offs = do_read_32_relocated (ptr);
 		  found_list_offs = 1;
 		}
 	    }
@@ -688,7 +718,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    {
 	      char *dir;
 	      
-	      dir = debug_sections[DEBUG_STR].data + do_read_32 (ptr);
+	      dir = debug_sections[DEBUG_STR].data
+		    + do_read_32_relocated (ptr);
 	      free (comp_dir);
 	      comp_dir = strdup (dir);
 
@@ -715,7 +746,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    {
 	      char *name;
 	      
-	      name = debug_sections[DEBUG_STR].data + do_read_32 (ptr);
+	      name = debug_sections[DEBUG_STR].data
+		     + do_read_32_relocated (ptr);
 	      if (*name == '/' && comp_dir == NULL)
 		{
 		  char *enddir = strrchr (name, '/');
@@ -820,7 +852,21 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 }
 
 static int
-edit_dwarf2 (DSO *dso, int n)
+rel_cmp (const void *a, const void *b)
+{
+  REL *rela = (REL *) a, *relb = (REL *) b;
+
+  if (rela->ptr < relb->ptr)
+    return -1;
+
+  if (rela->ptr > relb->ptr)
+    return 1;
+
+  return 0;
+}
+
+static int
+edit_dwarf2 (DSO *dso)
 {
   Elf_Data *data;
   Elf_Scn *scn;
@@ -831,6 +877,7 @@ edit_dwarf2 (DSO *dso, int n)
       debug_sections[i].data = NULL;
       debug_sections[i].size = 0;
       debug_sections[i].sec = 0;
+      debug_sections[i].relsec = 0;
     }
   ptr_size = 0;
 
@@ -872,6 +919,23 @@ edit_dwarf2 (DSO *dso, int n)
 		       dso->filename, name);
 	      }
 	  }
+	else if (dso->ehdr.e_type == ET_REL
+		 && ((dso->shdr[i].sh_type == SHT_REL
+		      && strncmp (name, ".rel.debug_",
+				  sizeof (".rel.debug_") - 1) == 0)
+		     || (dso->shdr[i].sh_type == SHT_RELA
+			 && strncmp (name, ".rela.debug_",
+				     sizeof (".rela.debug_") - 1) == 0)))
+	  {
+	    for (j = 0; debug_sections[j].name; ++j)
+	      if (strcmp (name + sizeof (".rel") - 1
+			  + (dso->shdr[i].sh_type == SHT_RELA),
+			  debug_sections[j].name) == 0)
+	 	{
+		  debug_sections[j].relsec = i;
+		  break;
+		}
+	  }
       }
 
   if (dso->ehdr.e_ident[EI_DATA] == ELFDATA2LSB)
@@ -899,10 +963,120 @@ edit_dwarf2 (DSO *dso, int n)
       htab_t abbrev;
       struct abbrev_tag tag, *t;
       int phase;
+      REL *relbuf = NULL;
+
+      if (debug_sections[DEBUG_INFO].relsec)
+	{
+	  int ndx, maxndx;
+	  GElf_Rel rel;
+	  GElf_Rela rela;
+	  GElf_Sym sym;
+	  GElf_Addr base = dso->shdr[debug_sections[DEBUG_INFO].sec].sh_addr;
+	  Elf_Data *symdata = NULL;
+	  int rtype;
+
+	  i = debug_sections[DEBUG_INFO].relsec;
+	  scn = dso->scn[i]; 
+	  data = elf_getdata (scn, NULL);
+	  assert (data != NULL && data->d_buf != NULL);
+	  assert (elf_getdata (scn, data) == NULL);
+	  assert (data->d_off == 0);
+	  assert (data->d_size == dso->shdr[i].sh_size);
+	  maxndx = dso->shdr[i].sh_size / dso->shdr[i].sh_entsize;
+	  relbuf = malloc (maxndx * sizeof (REL));
+	  reltype = dso->shdr[i].sh_type;
+	  if (relbuf == NULL)
+	    error (1, errno, "%s: Could not allocate memory", dso->filename);
+
+	  symdata = elf_getdata (dso->scn[dso->shdr[i].sh_link], NULL);
+	  assert (symdata != NULL && symdata->d_buf != NULL);
+	  assert (elf_getdata (dso->scn[dso->shdr[i].sh_link], symdata)
+		  == NULL);
+	  assert (symdata->d_off == 0);
+	  assert (symdata->d_size
+		  == dso->shdr[dso->shdr[i].sh_link].sh_size);
+
+	  for (ndx = 0, relend = relbuf; ndx < maxndx; ++ndx)
+	    {
+	      if (dso->shdr[i].sh_type == SHT_REL)
+		{
+		  gelf_getrel (data, ndx, &rel);
+		  rela.r_offset = rel.r_offset;
+		  rela.r_info = rel.r_info;
+		  rela.r_addend = 0;
+		}
+	      else
+		gelf_getrela (data, ndx, &rela);
+	      gelf_getsym (symdata, ELF64_R_SYM (rela.r_info), &sym);
+	      /* Relocations against section symbols are uninteresting
+		 in REL.  */
+	      if (dso->shdr[i].sh_type == SHT_REL && sym.st_value == 0)
+		continue;
+	      /* Only consider relocations against .debug_str, .debug_line
+		 and .debug_abbrev.  */
+	      if (sym.st_shndx != debug_sections[DEBUG_STR].sec
+		  && sym.st_shndx != debug_sections[DEBUG_LINE].sec
+		  && sym.st_shndx != debug_sections[DEBUG_ABBREV].sec)
+		continue;
+	      rela.r_addend += sym.st_value;
+	      rtype = ELF64_R_TYPE (rela.r_info);
+	      switch (dso->ehdr.e_machine)
+		{
+		case EM_SPARC:
+		case EM_SPARC32PLUS:
+		case EM_SPARCV9:
+		  if (rtype != R_SPARC_32 && rtype != R_SPARC_UA32)
+		    goto fail;
+		  break;
+		case EM_386:
+		  if (rtype != R_386_32)
+		    goto fail;
+		  break;
+		case EM_PPC:
+		case EM_PPC64:
+		  if (rtype != R_PPC_ADDR32 || rtype != R_PPC_UADDR32)
+		    goto fail;
+		  break;
+		case EM_S390:
+		  if (rtype != R_390_32)
+		    goto fail;
+		  break;
+		case EM_IA_64:
+		  if (rtype != R_IA64_SECREL32LSB)
+		    goto fail;
+		  break;
+		case EM_X86_64:
+		  if (rtype != R_X86_64_32)
+		    goto fail;
+		  break;
+		case EM_ALPHA:
+		  if (rtype != R_ALPHA_REFLONG)
+		    goto fail;
+		  break;
+		default:
+		fail:
+		  error (1, 0, "%s: Unhandled relocation %d in .debug_info section",
+			 dso->filename, rtype);
+		}
+	      relend->ptr = debug_sections[DEBUG_INFO].data
+			    + (rela.r_offset - base);
+	      relend->addend = rela.r_addend;
+	      ++relend;
+	    }
+	  if (relbuf == relend)
+	    {
+	      free (relbuf);
+	      relbuf = NULL;
+	      relend = NULL;
+	    }
+	  else
+	    qsort (relbuf, relend - relbuf, sizeof (REL), rel_cmp);
+	}
 
       for (phase = 0; phase < 2; phase++)
 	{
 	  ptr = debug_sections[DEBUG_INFO].data;
+	  relptr = relbuf;
 	  endsec = ptr + debug_sections[DEBUG_INFO].size;
 	  while (ptr < endsec)
 	    {
@@ -935,7 +1109,7 @@ edit_dwarf2 (DSO *dso, int n)
 		  return 1;
 		}
 	      
-	      value = read_32 (ptr);
+	      value = read_32_relocated (ptr);
 	      if (value >= debug_sections[DEBUG_ABBREV].size)
 		{
 		  if (debug_sections[DEBUG_ABBREV].data == NULL)
@@ -990,6 +1164,7 @@ edit_dwarf2 (DSO *dso, int n)
 	      htab_delete (abbrev);
 	    }
 	}
+      free (relbuf);
     }
   
   return 0;
@@ -1003,7 +1178,7 @@ static struct poptOption optionsTable[] = {
     { "list-file",  'l', POPT_ARG_STRING, &list_file, 0,
       "directory to rewrite base-dir into", NULL },
       POPT_AUTOHELP
-    { NULL, 0, 0, NULL, 0 }
+    { NULL, 0, 0, NULL, 0, NULL, NULL }
 };
 
 static DSO *
@@ -1034,7 +1209,7 @@ fdopen_dso (int fd, const char *name)
       goto error_out;
     }
 
-  if (ehdr.e_type != ET_DYN && ehdr.e_type != ET_EXEC)
+  if (ehdr.e_type != ET_DYN && ehdr.e_type != ET_EXEC && ehdr.e_type != ET_REL)
     {
       error (0, 0, "\"%s\" is not a shared library", name);
       goto error_out;
@@ -1044,7 +1219,6 @@ fdopen_dso (int fd, const char *name)
      headers.  */
   dso = (DSO *)
 	malloc (sizeof(DSO) + (ehdr.e_shnum + 20) * sizeof(GElf_Shdr)
-		+ (ehdr.e_phnum + 1) * sizeof(GElf_Phdr)
 	        + (ehdr.e_shnum + 20) * sizeof(Elf_Scn *));
   if (!dso)
     {
@@ -1057,10 +1231,7 @@ fdopen_dso (int fd, const char *name)
   memset (dso, 0, sizeof(DSO));
   dso->elf = elf;
   dso->ehdr = ehdr;
-  dso->phdr = (GElf_Phdr *) &dso->shdr[ehdr.e_shnum + 20];
-  dso->scn = (Elf_Scn **) &dso->phdr[ehdr.e_phnum + 1];
-  for (i = 0; i < ehdr.e_phnum; ++i)
-    gelf_getphdr (elf, i, dso->phdr + i);
+  dso->scn = (Elf_Scn **) &dso->shdr[ehdr.e_shnum + 20];
 
   for (i = 0; i < ehdr.e_shnum; ++i)
     {
@@ -1181,7 +1352,9 @@ main (int argc, char *argv[])
     }
 
   dso = fdopen_dso (fd, file);
-  
+  if (dso == NULL)
+    exit (1);
+
   for (i = 1; i < dso->ehdr.e_shnum; i++)
     {
       const char *name;
@@ -1196,7 +1369,7 @@ main (int argc, char *argv[])
 	    edit_stabs (dso, i);
 #endif
 	  if (strcmp (name, ".debug_info") == 0)
-	    edit_dwarf2 (dso, i);
+	    edit_dwarf2 (dso);
 	  
 	  break;
 	default:
