@@ -37,11 +37,11 @@ struct replacedFile {
 } ;
 
 enum fileTypes whatis(short mode);
-int filecmp(short mode1, char * md51, char * link1, 
-	      short mode2, char * md52, char * link2);
-enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
-				char * dbLink, short newMode, char * newMd5,
-				char * newLink, int brokenMd5);
+static int filecmp(short mode1, char * md51, char * link1, 
+	           short mode2, char * md52, char * link2);
+static enum instActions decideFileFate(char * filespec, short dbMode, 
+				char * dbMd5, char * dbLink, short newMode, 
+				char * newMd5, char * newLink, int brokenMd5);
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify,
 			  char ** installArchive, char * tmpPath,
@@ -1033,9 +1033,8 @@ static int filecmp(short mode1, char * md51, char * link1,
 }
 
 static enum instActions decideFileFate(char * filespec, short dbMode, 
-					char * dbMd5, char * dbLink, 
-					short newMode, char * newMd5,
-					char * newLink, int brokenMd5) {
+				char * dbMd5, char * dbLink, short newMode, 
+				char * newMd5, char * newLink, int brokenMd5) {
     char buffer[1024];
     char * dbAttr, * newAttr;
     enum fileTypes dbWhat, newWhat, diskWhat;
