@@ -99,6 +99,7 @@
 	- add per-arch canonical color, only x86_64 enabled for now.
 	- file: avoid ogg/vorbis file classification problems.
 	- portabilitly: solaris fixes.
+	- for DSO's, provide the file basename if DT_SONAME not found.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

@@ -461,6 +461,7 @@ exit 0
 %changelog
 * Mon Jan  6 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.52
 - portabilitly: solaris fixes.
+- for DSO's, provide the file basename if DT_SONAME not found.
 
 * Sun Jan  5 2003 Jeff Johnson <jbj@redhat.com> 4.2-0.51
 - file: avoid ogg/vorbis file classification problems.

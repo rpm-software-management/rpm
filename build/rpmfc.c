@@ -753,7 +753,6 @@ static int rpmfcELF(rpmfc fc)
     int cnt;
     char buf[BUFSIZ];
     const char * s;
-    unsigned char deptype;
     struct stat sb, * st = &sb;
     const char * soname = NULL;
     rpmds * depsp, ds;
@@ -761,6 +760,8 @@ static int rpmfcELF(rpmfc fc)
     char * t;
     int xx;
     int isElf64;
+    int isDSO;
+    int gotSONAME = 0;
 
     /* Files with executable bit set only. */
     if (stat(fn, st) != 0)
@@ -782,6 +783,7 @@ static int rpmfcELF(rpmfc fc)
 /*@=evalorder@*/
 
     isElf64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
+    isDSO = ehdr->e_type == ET_DYN;
 
     /*@-branchstate -uniondef @*/
     scn = NULL;
@@ -796,7 +798,6 @@ static int rpmfcELF(rpmfc fc)
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case SHT_GNU_verdef:
-	    deptype = 'P';
 	    data = NULL;
 	    if (!fc->skipProv)
 	    while ((data = elf_getdata (scn, data)) != NULL) {
@@ -851,7 +852,6 @@ static int rpmfcELF(rpmfc fc)
 	    }
 	    /*@switchbreak@*/ break;
 	case SHT_GNU_verneed:
-	    deptype = 'R';
 	    data = NULL;
 	    /* Files with executable bit set only. */
 	    if (!fc->skipReq && (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
@@ -923,7 +923,6 @@ static int rpmfcELF(rpmfc fc)
 			if (fc->skipReq || !(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
 			    /*@innercontinue@*/ continue;
 			/* Add to package requires. */
-			deptype = 'R';
 			depsp = &fc->requires;
 			tagN = RPMTAG_REQUIRENAME;
 			dsContext = RPMSENSE_FIND_REQUIRES;
@@ -931,10 +930,10 @@ static int rpmfcELF(rpmfc fc)
 assert(s != NULL);
 			/*@switchbreak@*/ break;
 		    case DT_SONAME:
+			gotSONAME = 1;
 			/* Add to package provides. */
 			if (fc->skipProv)
 			    /*@innercontinue@*/ continue;
-			deptype = 'P';
 			depsp = &fc->provides;
 			tagN = RPMTAG_PROVIDENAME;
 			dsContext = RPMSENSE_FIND_PROVIDES;
@@ -971,6 +970,37 @@ assert(s != NULL);
 	}
     }
     /*@=branchstate =uniondef @*/
+
+    /* For DSO's, provide the basename of the file if DT_SONAME not found. */
+    if (!fc->skipProv && isDSO && !gotSONAME) {
+	depsp = &fc->provides;
+	tagN = RPMTAG_PROVIDENAME;
+
+	s = strrchr(fn, '/');
+	if (s)
+	    s++;
+	else
+	    s = fn;
+
+	buf[0] = '\0';
+	t = buf;
+	t = stpcpy(t, s);
+
+#if !defined(__alpha__)
+	if (isElf64)
+	    t = stpcpy(t, "()(64bit)");
+#endif
+	t++;
+
+	/* Add to package dependencies. */
+	ds = rpmdsSingle(tagN, buf, "", dsContext);
+	xx = rpmdsMerge(depsp, ds);
+
+	/* Add to file dependencies. */
+	xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(t, fc->ix, ds));
+
+	ds = rpmdsFree(ds);
+    }
 
 exit:
     soname = _free(soname);
