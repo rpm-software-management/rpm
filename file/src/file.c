@@ -99,7 +99,7 @@ private int 		/* Global command-line options 		*/
 	nopad = 0,	/* Don't pad output			*/
 	nobuffer = 0;   /* Do not buffer stdout 		*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@observer@*/ /*@relnull@*/
 private const char *magicfile = 0;	/* where the magic is	*/
 /*@unchecked@*/ /*@observer@*/
 private const char *default_magicfile = MAGIC;
@@ -109,7 +109,7 @@ private char *separator = ":";	/* Default field separator	*/
 /*@unchecked@*/ /*@null@*/
 private char *progname;		/* used throughout 		*/
 
-/*@unchecked@*/ /*@null@*/
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
 private struct magic_set *magic;
 
 private void unwrap(char *fn)
@@ -218,12 +218,14 @@ main(int argc, char *argv[])
 			}
 		}
 
+/*@-moduncon@*/
 #ifndef HAVE_GETOPT_LONG
 	while ((c = getopt(argc, argv, OPTSTRING)) != -1)
 #else
 	while ((c = getopt_long(argc, argv, OPTSTRING, long_options,
 	    &longindex)) != -1)
 #endif
+/*@=moduncon@*/
 		switch (c) {
 #ifdef HAVE_GETOPT_LONG
 		case 0 :

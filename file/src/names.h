@@ -126,7 +126,7 @@ static const struct {
  */
 /*@unchecked@*/ /*@observer@*/
 static struct names {
-/*@observer@*/ /*@null@*/
+/*@observer@*/ /*@relnull@*/
 	const char *name;
 	short type;
 } names[] = {

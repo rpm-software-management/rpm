@@ -90,7 +90,7 @@ private int getvalue(struct magic_set *ms, struct magic *m, char **p)
 private int hextoint(int c)
 	/*@*/;
 /*@null@*/
-private char *getstr(struct magic_set *ms, char *s, char *p, int plen,
+private char *getstr(struct magic_set *ms, /*@returned@*/ char *s, char *p, int plen,
     int *slen)
 	/*@modifies ms, *p, *slen @*/;
 private int parse(struct magic_set *ms, struct magic **magicp,
@@ -115,7 +115,7 @@ private uint16_t swap2(uint16_t sv)
 	/*@*/;
 private uint32_t swap4(uint32_t sv)
 	/*@*/;
-private char *mkdbname(const char *fn, char *buf, size_t bufsiz)
+private char *mkdbname(const char *fn, /*@returned@*/ char *buf, size_t bufsiz)
 	/*@modifies buf @*/;
 private int apprentice_map(struct magic_set *ms, struct magic **magicp,
     uint32_t *nmagicp, const char *fn)
@@ -431,6 +431,7 @@ parse(struct magic_set *ms, struct magic **magicp, uint32_t *nmagicp, char *l,
 #define ALLOC_INCR	200
 	if (*nmagicp + 1 >= maxmagic){
 		maxmagic += ALLOC_INCR;
+/*@-unqualifiedtrans@*/
 		if ((m = (struct magic *) realloc(*magicp,
 		    sizeof(struct magic) * maxmagic)) == NULL) {
 			file_oomem(ms);
@@ -438,6 +439,7 @@ parse(struct magic_set *ms, struct magic **magicp, uint32_t *nmagicp, char *l,
 				free(*magicp);
 			return -1;
 		}
+/*@=unqualifiedtrans@*/
 		*magicp = m;
 		memset(&(*magicp)[*nmagicp], 0, sizeof(struct magic)
 		    * ALLOC_INCR);

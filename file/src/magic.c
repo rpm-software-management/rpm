@@ -74,7 +74,7 @@ protected int file_os2_apptype(struct magic_set *ms, const char *fn,
     const void *buf, size_t nb);
 #endif /* __EMX__ */
 
-private void free_mlist(struct mlist *mlist)
+private void free_mlist(/*@only@*/ struct mlist *mlist)
 	/*@globals fileSystem @*/
 	/*@modifies mlist, fileSystem @*/;
 private void close_and_restore(const struct magic_set *ms, const char *name,
@@ -129,6 +129,7 @@ free_mlist(struct mlist *mlist)
 	if (mlist == NULL)
 		return;
 
+/*@-dependenttrans@*/
 	for (ml = mlist->next; ml != mlist;) {
 		struct mlist *next = ml->next;
 		struct magic *mg = ml->magic;
@@ -137,6 +138,7 @@ free_mlist(struct mlist *mlist)
 		ml = next;
 	}
 	free(ml);
+/*@=dependenttrans@*/
 }
 
 public void
@@ -167,16 +169,22 @@ public int
 magic_compile(struct magic_set *ms, const char *magicfile)
 {
 	struct mlist *ml = file_apprentice(ms, magicfile, FILE_COMPILE);
-	free_mlist(ml);
-	return ml ? 0 : -1;
+	if (ml) {
+		free_mlist(ml);
+		return 0;
+	}
+	return -1;
 }
 
 public int
 magic_check(struct magic_set *ms, const char *magicfile)
 {
 	struct mlist *ml = file_apprentice(ms, magicfile, FILE_CHECK);
-	free_mlist(ml);
-	return ml ? 0 : -1;
+	if (ml) {
+		free_mlist(ml);
+		return 0;
+	}
+	return -1;
 }
 
 private void

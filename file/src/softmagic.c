@@ -1148,7 +1148,9 @@ mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 			return -1;
 		} else {
 			rc = regexec(&rx, p->buf, 0, 0, 0);
+/*@-immediatetrans -moduncon -noeffectuncon @*/	/* regfree annotate bogus only @*/
 			regfree(&rx);
+/*@=immediatetrans =moduncon =noeffectuncon @*/
 			free(p->buf);
 			return !rc;
 		}

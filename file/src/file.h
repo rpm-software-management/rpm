@@ -188,6 +188,7 @@ struct magic {
 		uint16_t h;
 		uint32_t l;
 		char s[MAXstring];
+/*@relnull@*/
 		char *buf;
 		uint8_t hs[2];	/* 2 bytes of a fixed-endian "short" */
 		uint8_t hl[4];	/* 4 bytes of a fixed-endian "long" */
@@ -212,19 +213,23 @@ struct mlist {
 	int mapped;  /* allocation type: 0 => apprentice_file
 		      *                  1 => apprentice_map + malloc
 		      *                  2 => apprentice_map + mmap */
+/*@dependent@*/
 	struct mlist *next, *prev;
 };
 
 struct magic_set {
-/*@null@*/
+/*@relnull@*/
     struct mlist *mlist;
     struct cont {
 	size_t len;
+/*@relnull@*/
 	int32_t *off;
     } c;
     struct out {
 	/* Accumulation buffer */
+/*@owned@*/ /*@relnull@*/
 	char *buf;
+/*@dependent@*/ /*@relnull@*/
 	char *ptr;
 	size_t len;
 	size_t size;
@@ -238,12 +243,13 @@ struct magic_set {
 };
 
 struct stat;
+/*@observer@*/
 protected char *file_fmttime(uint32_t, int)
 	/*@*/;
 protected int file_buffer(struct magic_set *ms, const void *, size_t)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ms, fileSystem, internalState @*/;
-protected int file_fsmagic(struct magic_set *ms, const char *, struct stat *sb)
+protected int file_fsmagic(struct magic_set *ms, /*@null@*/ const char * fn, struct stat *sb)
 	/*@modifies ms, sb @*/;
 protected int file_pipe2file(struct magic_set *ms, int fd, const void *startbuf,
     size_t nbytes)
@@ -273,7 +279,7 @@ protected struct mlist *file_apprentice(struct magic_set *ms, const char *, int)
 protected uint32_t file_signextend(struct magic_set *ms, struct magic *, uint32_t)
 	/*@globals fileSystem @*/
 	/*@modifies ms, fileSystem @*/;
-protected void file_delmagic(struct magic *p, int type, size_t entries)
+protected void file_delmagic(/*@only@*/ struct magic *p, int type, size_t entries)
 	/*@globals fileSystem @*/
 	/*@modifies p, fileSystem @*/;
 protected void file_badread(struct magic_set *ms)
@@ -295,6 +301,7 @@ protected void file_showstr(FILE *fp, const char *s, size_t len)
 	/*@modifies fp, fileSystem @*/;
 protected size_t file_mbswidth(const char *)
 	/*@*/;
+/*@observer@*/
 protected const char *file_getbuffer(struct magic_set *ms)
 	/*@modifies ms @*/;
 
