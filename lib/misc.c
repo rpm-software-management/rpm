@@ -99,7 +99,8 @@ static void init_arch_os(void)
     }
 
     uname(&un);
-    if ((!strcmp(un.machine, "i586")) ||
+    if ((!strcmp(un.machine, "i686")) ||
+	(!strcmp(un.machine, "i586")) ||
 	(!strcmp(un.machine, "i486")) ||
 	(!strcmp(un.machine, "i386"))) {
 	archnum = 1;
