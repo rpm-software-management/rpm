@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.42 2000/01/11 16:13:16 jbj Exp $
+# $Id: macros.in,v 1.43 2000/01/11 19:12:35 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -151,7 +151,7 @@
 #	A colon separated list of desired locales to be installed;
 #	"all" means install all locale specific files.
 #	
-#%_install_langs
+%_install_langs	all
 
 #
 #	Deprecated.
