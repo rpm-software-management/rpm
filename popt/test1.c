@@ -24,6 +24,12 @@ int main(int argc, char ** argv) {
     int help = 0;
     int usage = 0;
     int shortopt = 0;
+    struct poptOption moreCallbackArgs[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+		option_callback, 0, NULL },
+	{ "cb2", 'c', POPT_ARG_STRING, NULL, 'c', "Test argument callbacks" },
+	{ NULL, '\0', 0, NULL, 0 } 
+    };
     struct poptOption callbackArgs[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK, option_callback, 0, "sampledata" },
 	{ "cb", 'c', POPT_ARG_STRING, NULL, 'c', "Test argument callbacks" },
@@ -35,6 +41,7 @@ int main(int argc, char ** argv) {
 	{ NULL, '\0', 0, NULL, 0 } 
     };
     struct poptOption options[] = {
+	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreCallbackArgs, 0, "arg for cb2" },
 	{ "arg1", '\0', 0, &arg1, 0, "First argument with a really long" 
 	    " description. After all, we have to test argument help"
 	    " wrapping somehow, right?", NULL },

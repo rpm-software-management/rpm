@@ -41,6 +41,7 @@ run test1 "test1 - 22" "./test1 ; --arg2 something -- more args" -T something -a
 run test1 "test1 - 23" "./test1 ; --echo-args -a" --echo-args -e -a
 run test1 "test1 - 24" "arg1: 0 arg2: (none) short: 1" -shortoption
 run test1 "test1 - 25" "arg1: 0 arg2: (none) short: 1" --shortoption
+run test1 "test1 - 26" "callback: c arg for cb2 foo arg1: 0 arg2: (none)" --cb2 foo
 
 echo ""
 echo "Passed."

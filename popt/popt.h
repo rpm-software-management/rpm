@@ -23,6 +23,8 @@
 #define POPT_ARGFLAG_DOC_HIDDEN 0x40000000  /* don't show in help/usage */
 #define POPT_CBFLAG_PRE		0x80000000  /* call the callback before parse */
 #define POPT_CBFLAG_POST	0x40000000  /* call the callback after parse */
+#define POPT_CBFLAG_INC_DATA	0x20000000  /* use data from the include line,
+					       not the subtable */
 
 #define POPT_ERROR_NOARG	-10
 #define POPT_ERROR_BADOPT	-11
@@ -66,7 +68,6 @@ typedef struct poptContext_s * poptContext;
 typedef struct poptOption * poptOption;
 #endif
 
-#define POPT_CB_USE_INCLUDE_DATA	((void *) -1)
 enum poptCallbackReason { POPT_CALLBACK_REASON_PRE, 
 			  POPT_CALLBACK_REASON_POST,
 			  POPT_CALLBACK_REASON_OPTION };
