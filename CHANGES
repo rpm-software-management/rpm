@@ -22,6 +22,10 @@
 	- implemented %config(noreplace) for the install, but it hasn't
 	  been tested in any way
 	- added i18n support to headers
+	- added ppc/rs6000 differntiation for AIX
+	- all IP* from uname() is changed to just IP
+	- IP is considered the same as mips (not sgi)
+	- added IRIX64 OS, it's compatible w/ IRIX
 
 2.4 -> 2.4.1:
 	- take advantage of lchown() if it's available

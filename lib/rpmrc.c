@@ -719,6 +719,8 @@ static void setArchOs(char *arch, char *os, int build)
     uname(&un);
     if (!strcmp(un.sysname, "AIX")) {
 	strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
+    } else if (!strncmp(un.sysname, "IP", n)) {
+	un.sysname[2] = '\0';
     }
 
     if (build) {
