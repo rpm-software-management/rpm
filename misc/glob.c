@@ -190,7 +190,6 @@ extern char *alloca ();
 #undef	FNM_PATHNAME
 #undef	FNM_NOESCAPE
 #undef	FNM_PERIOD
-#include "miscfn.h"
 
 /* Some system header files erroneously define these.
    We want our own definitions from <glob.h> to take precedence.  */
