@@ -958,7 +958,6 @@ int rpmdepOrder(rpmTransactionSet rpmdep) {
 	    if (addOrderedPack(rpmdep, rpmdep->addedPackages.list + i,
 			       ordering, &orderingCount, selected, 1, 0, 
 			       errorStack)) {
-		free(ordering);
 		return 1;
 	    }
 	}
