@@ -169,9 +169,7 @@ int rpmsxParse(rpmsx sx, /*@null@*/ const char *fn)
 
 /**
  * Create and load security context patterns.
- * @param fn		header
- * @param tagN		type of dependency
- * @param scareMem	Use pointers to refcounted header memory?
+ * @param fn		security context patterns file name
  * @return		new security context patterns
  */
 /*@null@*/
