@@ -7,9 +7,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <glob.h>
 #include <time.h>
 
+#include "miscfn.h"
 #include "spec.h"
 #include "specP.h"
 #include "stringbuf.h"
