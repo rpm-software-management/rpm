@@ -247,7 +247,7 @@ static int readIcon(Header h, const char *file)
     fd = Fopen(fn, "r.fdio");
     /* XXX Fstrerror */
     /* XXX Ferror check */
-    nb = Fread(icon, statbuf.st_size, 1, fd);
+    nb = Fread(icon, sizeof(char), statbuf.st_size, fd);
     Fclose(fd);
     if (nb != statbuf.st_size) {
 	rpmError(RPMERR_BADSPEC, _("Unable to read icon: %s"), fn);

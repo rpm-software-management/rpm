@@ -50,13 +50,13 @@ static int doFIO(const char *ofn, const char *rfmode, const char *wfmode)
 
     if ((fd = Fopen(ofn, wfmode)) == NULL)
 	warn("Fopen: write %s (%s) %s\n", wfmode, rfmode, ofn);
-    else if ((rc = Fwrite(ofn, 1, strlen(ofn), fd)) != strlen(ofn))
+    else if ((rc = Fwrite(ofn, sizeof(ofn[0]), strlen(ofn), fd)) != strlen(ofn))
 	warn("Fwrite: write %s (%s) %s\n", wfmode, rfmode, ofn);
     else if ((rc = Fclose(fd)) != 0)
 	warn("Fclose: write %s (%s) %s\n", wfmode, rfmode, ofn);
     else if ((fd = Fopen(ofn, rfmode)) == NULL)
 	warn("Fopen: read %s (%s) %s\n", rfmode, wfmode, ofn);
-    else if ((rc = Fread(buf, 1, sizeof(buf), fd)) != strlen(ofn))
+    else if ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) != strlen(ofn))
 	warn("Fread: read %s (%s) %s\n", rfmode, wfmode, ofn);
     else if ((rc = Fclose(fd)) != 0)
 	warn("Fclose: read %s (%s) %s\n", rfmode, wfmode, ofn);

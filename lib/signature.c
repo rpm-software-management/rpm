@@ -203,7 +203,7 @@ int rpmWriteSignature(FD_t fd, Header header)
 	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
 	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	memset(buf, 0, pad);
-	if (Fwrite(buf, pad, 1, fd) != pad)
+	if (Fwrite(buf, sizeof(buf[0]), pad, fd) != pad)
 	    rc = 1;
     }
     return rc;
@@ -480,7 +480,7 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     int pid, status, outpipe[2];
     FD_t sfd;
     char *sigfile;
-    unsigned char buf[8192];
+    unsigned char buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
     const char *path;
@@ -507,7 +507,7 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     xfree(tmppath);
   }
     sfd = Fopen(sigfile, "w.fdio");
-    (void)Fwrite(sig, count, 1, sfd);
+    (void)Fwrite(sig, sizeof(char), count, sfd);
     Fclose(sfd);
 
     /* Now run PGP */
@@ -602,7 +602,7 @@ static int verifyGPGSignature(const char *datafile, void *sig,
     xfree(tmppath);
   }
     sfd = Fopen(sigfile, "w.fdio");
-    (void)Fwrite(sig, count, 1, sfd);
+    (void)Fwrite(sig, sizeof(char), count, sfd);
     Fclose(sfd);
 
     /* Now run GPG */

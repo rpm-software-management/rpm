@@ -57,7 +57,7 @@ int rpmfileexists(const char * filespec) {
 	filespec = strchr(filespec, '/');
 	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
-	if (stat(filespec, &buf)) {
+	if (Stat(filespec, &buf)) {
 	    switch(errno) {
 	    case ENOENT:
 	    case EINVAL:
@@ -65,8 +65,8 @@ int rpmfileexists(const char * filespec) {
 	    }
 	}
 	break;
-    case URL_IS_DASH:
     case URL_IS_FTP:
+    case URL_IS_DASH:
     case URL_IS_HTTP:
     default:
 	return 0;
@@ -356,63 +356,88 @@ char * gidToGname(gid_t gid) {
 }
 
 int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
-    const char * fnpath, * fn;
+    const char * tfn;
     FD_t fd;
     int ran;
     struct stat sb, sb2;
 
     if (!prefix) prefix = "";
 
-    fnpath = NULL;
+    tfn = NULL;
 
+    /* XXX should probably use mktemp here */
     srand(time(NULL));
     ran = rand() % 100000;
 
      /* maybe this should use link/stat? */
 
     do {
-	char tfn[32];
-	sprintf(tfn, "rpm-tmp.%d", ran++);
-	if (fnpath)	xfree(fnpath);
-	fnpath = rpmGetPath(prefix, "%{_tmppath}/", tfn, NULL);
+	char tfnbuf[64];
+	const char * tempfn;
+#ifndef	NOTYET
+	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
+	if (tfn)	xfree(tfn);
+	tfn = tempfn = rpmGetPath("%{_tmppath}/", tfnbuf, NULL);
+#else
+	strcpy(tfnbuf, "rpm-tmp.XXXXXX");
+	if (tfn)	xfree(tfn);
+	tfn = tempfn = rpmGetPath("%{_tmppath}/", mktemp(tfnbuf), NULL);
+#endif
 
-	switch (urlIsURL(fnpath)) {
+	switch (urlIsURL(tempfn)) {
 	case URL_IS_PATH:
-	    fn = fnpath + sizeof("file://") - 1;
-	    fn = strchr(fn, '/');
-	    break;
+	    tfn +=  sizeof("file://") - 1;
+	    tfn = strchr(tfn, '/');
+	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
-	    fn = fnpath;
+	    if (prefix && prefix[strlen(prefix) - 1] == '/')
+		while (*tfn == '/') tfn++;
+	    tfn = rpmGetPath( (prefix ? prefix : ""), tfn, NULL);
+	    xfree(tempfn);
 	    break;
+	case URL_IS_FTP:
+	case URL_IS_HTTP:
+	case URL_IS_DASH:
 	default:
+	    xfree(tempfn);
 	    return 1;
+	    /*@notreached@*/
 	}
-	fd = fdio->open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
-    } while (Ferror(fd) && errno == EEXIST);
+#ifdef	DYING
+	fd = fdio->open(tfn, O_CREAT | O_RDWR | O_EXCL, 0700);
+#else
+	fd = Fopen(tfn, "w+x.ufdio");
+fprintf(stderr, "*** mktemp %s fd %p: %s\n", tfnbuf, fd, strerror(errno));
+#endif
+    } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 
-    if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fnpath);
-	xfree(fnpath);
+    if (!Stat(tfn, &sb) && S_ISLNK(sb.st_mode)) {
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
+	xfree(tfn);
 	return 1;
     }
 
     if (sb.st_nlink != 1) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fnpath);
-	xfree(fnpath);
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
+	xfree(tfn);
 	return 1;
     }
 
+#ifndef	NOTYET
     fstat(Fileno(fd), &sb2);
+#else
+    Stat(tfn, &sb2);
+#endif
     if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fnpath);
-	xfree(fnpath);
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), tfn);
+	xfree(tfn);
 	return 1;
     }
 
     if (fnptr)
-	*fnptr = fnpath;
+	*fnptr = tfn;
     else
-	xfree(fnpath);
+	xfree(tfn);
     *fdptr = fd;
 
     return 0;

@@ -458,13 +458,19 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
     case RPMQV_RPM:
     { const char *myargv[2], **argv = myargv;;
 
+      /* XXX prepare for remglob */
       argv[0] = arg;
       argv[1] = NULL;
       while ((arg = *argv++) != NULL) {
 	FD_t fd = Fopen(arg, "r.ufdio");
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
-	    fprintf(stderr, _("open of %s failed: %s\n"), arg,urlStrerror(arg));
+	    fprintf(stderr, _("open of %s failed: %s\n"), arg,
+#ifndef	NOTYET
+			urlStrerror(arg));
+#else
+			Fstrerror(fd));
+#endif
 	    Fclose(fd);
 	    retcode = 1;
 	    break;

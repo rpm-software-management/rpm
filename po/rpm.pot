@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-09 15:28-0500\n"
+"POT-Creation-Date: 1999-11-10 16:44-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: build.c:25 lib/rpminstall.c:223 lib/rpminstall.c:384
+#: build.c:25 lib/rpminstall.c:229 lib/rpminstall.c:389
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
@@ -26,7 +26,7 @@ msgstr ""
 #. XXX Fstrerror
 #: build.c:65
 #, c-format
-msgid "Unable to open spec file: %s\n"
+msgid "Unable to open spec file %s: %s\n"
 msgstr ""
 
 #: build.c:121 build.c:134
@@ -1225,7 +1225,7 @@ msgstr ""
 msgid "error reading header from package\n"
 msgstr ""
 
-#: build/build.c:84 build/pack.c:268
+#: build/build.c:84 build/pack.c:267
 msgid "Unable to open temp file"
 msgstr ""
 
@@ -1407,7 +1407,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: build/files.c:1190 build/pack.c:467
+#: build/files.c:1190 build/pack.c:466
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1417,37 +1417,38 @@ msgstr ""
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: build/files.c:1585
+#. XXX this error message is probably not seen.
+#: build/files.c:1586
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1590
+#: build/files.c:1591
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1672
+#: build/files.c:1673
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1676
+#: build/files.c:1677
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1765
+#: build/files.c:1766
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1793 build/files.c:1802
+#: build/files.c:1794 build/files.c:1803
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1908
+#: build/files.c:1909
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1475,98 +1476,96 @@ msgstr ""
 msgid "cannot create %s: %s\n"
 msgstr ""
 
-#. XXX Fstrerror
-#: build/pack.c:185
+#: build/pack.c:184
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:195
+#: build/pack.c:194
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:216
+#: build/pack.c:215
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:222
+#: build/pack.c:221
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:279
+#: build/pack.c:278
 msgid "Bad CSA data"
 msgstr ""
 
-#. XXX Fstrerror
-#: build/pack.c:314
+#: build/pack.c:312
 #, c-format
-msgid "Could not open %s\n"
+msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:346 build/pack.c:388
+#: build/pack.c:344 build/pack.c:386
 #, c-format
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: build/pack.c:361
+#: build/pack.c:359
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:378
+#: build/pack.c:376
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr ""
 
-#: build/pack.c:403
+#: build/pack.c:401
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:418
+#: build/pack.c:416
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: build/pack.c:437
+#: build/pack.c:435
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:444
+#: build/pack.c:442
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: build/pack.c:523
+#: build/pack.c:522
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: build/pack.c:530
+#: build/pack.c:529
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: build/pack.c:537
+#: build/pack.c:536
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: build/pack.c:544
+#: build/pack.c:543
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: build/pack.c:552
+#: build/pack.c:551
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:568
+#: build/pack.c:567
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -2389,7 +2388,7 @@ msgstr ""
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: lib/misc.c:394 lib/misc.c:400 lib/misc.c:407
+#: lib/misc.c:415 lib/misc.c:421 lib/misc.c:432
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
@@ -2530,145 +2529,145 @@ msgstr ""
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:480
+#: lib/query.c:485
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:489 lib/rpminstall.c:204
+#: lib/query.c:494 lib/rpminstall.c:210
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:492
+#: lib/query.c:497
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:520
+#: lib/query.c:525
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:545
+#: lib/query.c:550
 msgid "could not read database record!\n"
 msgstr ""
 
-#: lib/query.c:556
+#: lib/query.c:561
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:566
+#: lib/query.c:571
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:576
+#: lib/query.c:581
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:586
+#: lib/query.c:591
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:601
+#: lib/query.c:606
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:604
+#: lib/query.c:609
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:617
+#: lib/query.c:622
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:620
+#: lib/query.c:625
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: lib/query.c:623
+#: lib/query.c:628
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:635 lib/rpminstall.c:395
+#: lib/query.c:640 lib/rpminstall.c:400
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/query.c:638
+#: lib/query.c:643
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:660
+#: lib/query.c:665
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:719
+#: lib/query.c:724
 msgid "query package owning file"
 msgstr ""
 
-#: lib/query.c:721
+#: lib/query.c:726
 msgid "query packages in group"
 msgstr ""
 
-#: lib/query.c:723
+#: lib/query.c:728
 msgid "query a package file"
 msgstr ""
 
-#: lib/query.c:727
+#: lib/query.c:732
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:729
+#: lib/query.c:734
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: lib/query.c:731
+#: lib/query.c:736
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:733
+#: lib/query.c:738
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:772
+#: lib/query.c:777
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/query.c:774
+#: lib/query.c:779
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/query.c:776
+#: lib/query.c:781
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/query.c:778
+#: lib/query.c:783
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:782
+#: lib/query.c:787
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:784
+#: lib/query.c:789
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:787
+#: lib/query.c:792
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:789
+#: lib/query.c:794
 msgid "display a verbose file listing"
 msgstr ""
 
@@ -2732,87 +2731,86 @@ msgstr ""
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#. XXX Fstrerror
-#: lib/rpmchecksig.c:33
+#: lib/rpmchecksig.c:36
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:44
+#: lib/rpmchecksig.c:47
 msgid "makeTempFile failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:76
+#: lib/rpmchecksig.c:79
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:82
+#: lib/rpmchecksig.c:85
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:115 lib/rpmchecksig.c:244
+#: lib/rpmchecksig.c:118 lib/rpmchecksig.c:248
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:120
+#: lib/rpmchecksig.c:123
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:124
+#: lib/rpmchecksig.c:127
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:132 lib/rpmchecksig.c:258
+#: lib/rpmchecksig.c:135 lib/rpmchecksig.c:262
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:136 lib/rpmchecksig.c:263
+#: lib/rpmchecksig.c:139 lib/rpmchecksig.c:267
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:169
+#: lib/rpmchecksig.c:172
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:175
+#: lib/rpmchecksig.c:178
 #, c-format
-msgid "%s: rpmWriteSignature failed\n"
+msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:250
+#: lib/rpmchecksig.c:254
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:413
+#: lib/rpmchecksig.c:417
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:414 lib/rpmchecksig.c:428
+#: lib/rpmchecksig.c:418 lib/rpmchecksig.c:432
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:416 lib/rpmchecksig.c:430
+#: lib/rpmchecksig.c:420 lib/rpmchecksig.c:434
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:417 lib/rpmchecksig.c:431
+#: lib/rpmchecksig.c:421 lib/rpmchecksig.c:435
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:419 lib/rpmchecksig.c:433
+#: lib/rpmchecksig.c:423 lib/rpmchecksig.c:437
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:427
+#: lib/rpmchecksig.c:431
 msgid "OK"
 msgstr ""
 
@@ -2821,10 +2819,9 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#. XXX Fstrerror
-#: lib/rpmdb.c:156 lib/url.c:404
+#: lib/rpmdb.c:155 lib/url.c:403
 #, c-format
-msgid "failed to open %s\n"
+msgid "failed to open %s: %s\n"
 msgstr ""
 
 #: lib/rpmdb.c:169 lib/rpmdb.c:177
@@ -2919,156 +2916,154 @@ msgstr ""
 msgid "header changed size!"
 msgstr ""
 
-#: lib/rpminstall.c:128
+#: lib/rpminstall.c:118
 msgid "counting packages to install\n"
 msgstr ""
 
-#: lib/rpminstall.c:132
+#: lib/rpminstall.c:122
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:141
+#: lib/rpminstall.c:131
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: lib/rpminstall.c:152
+#: lib/rpminstall.c:142
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:161
+#: lib/rpminstall.c:167
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:165
+#: lib/rpminstall.c:171
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:182
+#: lib/rpminstall.c:188
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#. XXX Fstrerror
-#: lib/rpminstall.c:192 lib/rpminstall.c:334
+#: lib/rpminstall.c:197 lib/rpminstall.c:339
 #, c-format
-msgid "cannot open file %s\n"
+msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:208 lib/rpminstall.c:473
+#: lib/rpminstall.c:214 lib/rpminstall.c:477
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:244
+#: lib/rpminstall.c:250
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:262
+#: lib/rpminstall.c:268
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:267
+#: lib/rpminstall.c:273
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:284
+#: lib/rpminstall.c:290
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:295
+#: lib/rpminstall.c:301
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:313
+#: lib/rpminstall.c:319
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:399
+#: lib/rpminstall.c:404
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:408
+#: lib/rpminstall.c:413
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:434
+#: lib/rpminstall.c:439
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#. XXX Fstrerror
-#: lib/rpminstall.c:462
+#: lib/rpminstall.c:466
 #, c-format
-msgid "cannot open %s\n"
+msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:468
+#: lib/rpminstall.c:472
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpmio.c:327
+#: lib/rpmio.c:339
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:330
+#: lib/rpmio.c:342
 msgid "Bad server response"
 msgstr ""
 
-#: lib/rpmio.c:333
+#: lib/rpmio.c:345
 msgid "Server IO error"
 msgstr ""
 
-#: lib/rpmio.c:336
+#: lib/rpmio.c:348
 msgid "Server timeout"
 msgstr ""
 
-#: lib/rpmio.c:339
+#: lib/rpmio.c:351
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: lib/rpmio.c:342
+#: lib/rpmio.c:354
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: lib/rpmio.c:345
+#: lib/rpmio.c:357
 msgid "Failed to connect to server"
 msgstr ""
 
-#: lib/rpmio.c:348
+#: lib/rpmio.c:360
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: lib/rpmio.c:351
+#: lib/rpmio.c:363
 msgid "IO error to local file"
 msgstr ""
 
-#: lib/rpmio.c:354
+#: lib/rpmio.c:366
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: lib/rpmio.c:357
+#: lib/rpmio.c:369
 msgid "File not found on server"
 msgstr ""
 
-#: lib/rpmio.c:360
+#: lib/rpmio.c:372
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:364
+#: lib/rpmio.c:376
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:412
+#: lib/rpmio.c:424
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3118,55 +3113,53 @@ msgstr ""
 msgid "Cannot expand %s"
 msgstr ""
 
-#. XXX Fstrerror
-#: lib/rpmrc.c:557
+#: lib/rpmrc.c:556
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:601
+#: lib/rpmrc.c:600
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: lib/rpmrc.c:634
+#: lib/rpmrc.c:633
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:651 lib/rpmrc.c:726
+#: lib/rpmrc.c:650 lib/rpmrc.c:724
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:668 lib/rpmrc.c:691
+#: lib/rpmrc.c:667 lib/rpmrc.c:689
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr ""
 
-#. XXX Fstrerror
-#: lib/rpmrc.c:678
+#: lib/rpmrc.c:676
 #, c-format
-msgid "cannot open %s at %s:%d"
+msgid "cannot open %s at %s:%d: %s"
 msgstr ""
 
-#: lib/rpmrc.c:718
+#: lib/rpmrc.c:716
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:785
+#: lib/rpmrc.c:783
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: lib/rpmrc.c:1153
+#: lib/rpmrc.c:1151
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1154
+#: lib/rpmrc.c:1152
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3369,6 +3362,21 @@ msgstr ""
 msgid "execution of script failed"
 msgstr ""
 
+#: lib/url.c:71
+#, c-format
+msgid "warning: u %p ctrl nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: lib/url.c:79
+#, c-format
+msgid "warning: data nrefs != 0 (%s %s)\n"
+msgstr ""
+
+#: lib/url.c:107
+#, c-format
+msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
+msgstr ""
+
 #: lib/url.c:207
 #, c-format
 msgid "Password for %s@%s: "
@@ -3384,9 +3392,9 @@ msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:425
+#: lib/url.c:426
 #, c-format
-msgid "failed to create %s\n"
+msgid "failed to create %s: %s\n"
 msgstr ""
 
 #: lib/verify.c:38

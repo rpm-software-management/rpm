@@ -35,7 +35,7 @@ int writeLead(FD_t fd, struct rpmlead *lead)
     l.osnum = htons(l.osnum);
     l.signature_type = htons(l.signature_type);
 	
-    if (Fwrite(&l, sizeof(l), 1, fd) < 0) {
+    if (Fwrite(&l, sizeof(char), sizeof(l), fd) < 0) {
 	return 1;
     }
 
@@ -45,7 +45,7 @@ int writeLead(FD_t fd, struct rpmlead *lead)
 int readLead(FD_t fd, struct rpmlead *lead)
 {
     if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
-	rpmError(RPMERR_READERROR, _("read failed: %s (%d)"), strerror(errno), 
+	rpmError(RPMERR_READERROR, _("read failed: %s (%d)"), Fstrerror(fd), 
 	      errno);
 	return 1;
     }

@@ -51,7 +51,6 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
     FD_t data;			/* per-xfer data channel */
     int bufAlloced;		/* sizeof I/O buffer */
     char *buf;			/* I/O buffer */
-    int ftpFileDoneNeeded;
     int openError;		/* Type of open failure */
     int httpVersion;
     int httpHasRange;
@@ -69,8 +68,8 @@ int	ftpCommand(urlinfo u, ...);
 
 int	httpOpen(urlinfo u, const char * httpcmd);
 int	ftpOpen(urlinfo u);
-int	ftpFileDone(urlinfo u);
-int	ftpFileDesc(urlinfo u, const char * cmd);
+int	ftpFileDone(urlinfo u, FD_t fd);
+int	ftpFileDesc(urlinfo u, const char * cmd, FD_t fd);
 
 urlinfo	urlLink(urlinfo u, const char * msg);
 urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line);

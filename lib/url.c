@@ -49,7 +49,6 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->data = NULL;
     u->bufAlloced = 0;
     u->buf = NULL;
-    u->ftpFileDoneNeeded = 0;
     u->httpHasRange = 1;
     u->httpContentLength = 0;
     u->httpPersist = u->httpVersion = 0;
@@ -69,16 +68,16 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
 	    fdio->close(u->ctrl);
 	u->ctrl = fdio->deref(u->ctrl, "persist ctrl (urlFree)", file, line);
 	if (u->ctrl)
-	    fprintf(stderr, "warning: ctrl nrefs != 0 (%s %s)\n",
-			u->host, u->service);
+	    fprintf(stderr, _("warning: u %p ctrl nrefs != 0 (%s %s)\n"),
+			u, u->host, u->service);
     }
     if (u->data) {
 	if (fdio->fileno(u->data) >= 0)
 	    fdio->close(u->data);
 	u->data = fdio->deref(u->data, "persist data (urlFree)", file, line);
 	if (u->data)
-	    fprintf(stderr, "warning: data nrefs != 0 (%s %s)\n",
-			u->host, u->service);
+	    fprintf(stderr, _("warning: data nrefs != 0 (%s %s)\n"),
+			u, u->host, u->service);
     }
     if (u->buf) {
 	free(u->buf);
@@ -105,8 +104,9 @@ void urlFreeCache(void)
 	if (uCache[i] == NULL) continue;
 	uCache[i] = urlFree(uCache[i], "uCache");
 	if (uCache[i])
-	    fprintf(stderr, "warning: nrefs(%d) != 1 (%s %s)\n", uCache[i]->nrefs,
-			uCache[i]->host, uCache[i]->service);
+	    fprintf(stderr, _("warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
+		i, uCache[i], uCache[i]->nrefs,
+		uCache[i]->host, uCache[i]->service);
     }
     if (uCache)
 	free(uCache);
@@ -400,8 +400,7 @@ int urlGetFile(const char * url, const char * dest) {
 
     sfd = Fopen(url, "r.ufdio");
     if (sfd == NULL || Ferror(sfd)) {
-	/* XXX Fstrerror */
-	rpmMessage(RPMMESS_DEBUG, _("failed to open %s\n"), url);
+	rpmMessage(RPMMESS_DEBUG, _("failed to open %s: %s\n"), url, Fstrerror(sfd));
 	Fclose(sfd);
 	return FTPERR_UNKNOWN;
     }
@@ -419,33 +418,41 @@ int urlGetFile(const char * url, const char * dest) {
 	sfu = NULL;
     }
 
-    tfd = Fopen(dest, "w.fdio");
+    tfd = Fopen(dest, "w.ufdio");
+if (_url_debug)
+fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
     if (Ferror(tfd)) {
 	/* XXX Fstrerror */
-	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);
-	Fclose(tfd);
-	Fclose(sfd);
+	rpmMessage(RPMMESS_DEBUG, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));
+	if (tfd)
+	    Fclose(tfd);
+	if (sfd)
+	    Fclose(sfd);
 	return FTPERR_UNKNOWN;
     }
 
     switch (urlIsURL(url)) {
     case URL_IS_FTP:
-	if ((rc = ftpGetFile(sfd, tfd))) {
+#ifdef	DYING
+	if ((rc = ftpGetFile(sfd, tfd, "RETR"))) {
 	    unlink(dest);
+	    /* XXX FIXME: sfd possibly closed by copyData */
 	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}
 	/* XXX Fclose(sfd) done by copyData */
 	break;
+#endif
     case URL_IS_HTTP:
     case URL_IS_PATH:
     case URL_IS_DASH:
+    case URL_IS_UNKNOWN:
 	if ((rc = httpGetFile(sfd, tfd))) {
 	    unlink(dest);
+	    /* XXX FIXME: sfd possibly closed by copyData */
 	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}
 	/* XXX Fclose(sfd) done by copyData */
 	break;
-    case URL_IS_UNKNOWN:
     default:
 	rc = FTPERR_UNKNOWN;
 	break;

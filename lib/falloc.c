@@ -56,7 +56,7 @@ FD_t fadOpen(const char * path, int flags, int perms)
     if (fadGetFileSize(fd) == 0) {
 	newHdr.magic = FA_MAGIC;
 	newHdr.firstFree = 0;
-	if (Fwrite(&newHdr, sizeof(newHdr), 1, fd) != sizeof(newHdr)) {
+	if (Fwrite(&newHdr, sizeof(char), sizeof(newHdr), fd) != sizeof(newHdr)) {
 	    Fclose(fd);
 	    return NULL;
 	}

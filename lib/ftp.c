@@ -81,6 +81,7 @@ static int checkResponse(urlinfo u, /*@out@*/ int *ecp, /*@out@*/ char ** str)
     URLSANE(u);
     buf = u->buf;
     bufAlloced = u->bufAlloced;
+    *buf = '\0';
 
     errorCode[0] = '\0';
     
@@ -91,6 +92,7 @@ static int checkResponse(urlinfo u, /*@out@*/ int *ecp, /*@out@*/ char ** str)
 	 * Read next line from server.
 	 */
 	se = buf + bufLength;
+	*se = '\0';
 	rc = fdRdline(u->ctrl, se, (bufAlloced - bufLength));
 	if (rc < 0) {
 	    ec = FTPERR_BAD_SERVER_RESPONSE;
@@ -371,13 +373,6 @@ reopen:
 	if (rc < 0)
 	    goto errxit;
 
-#ifdef	DYING
-	/* checkResponse() assumes the socket is nonblocking */
-	if (fcntl(fdio->fileno(u->ctrl), F_SETFL, O_NONBLOCK)) {
-	    rc = FTPERR_FAILED_CONNECT;
-	    goto errxit;
-	}
-#endif
 	u->ctrl = fdLink(u->ctrl, "open ctrl (httpOpen)");
     }
 
@@ -478,14 +473,6 @@ int ftpOpen(urlinfo u)
 	    goto errxit;
     }
 
-#ifdef	DYING
-    /* checkResponse() assumes the socket is nonblocking */
-    if (fcntl(fdio->fileno(u->ctrl), F_SETFL, O_NONBLOCK)) {
-	rc = FTPERR_FAILED_CONNECT;
-	goto errxit;
-    }
-#endif
-
     if ((rc = ftpCheckResponse(u, NULL)))
 	goto errxit;
 
@@ -507,15 +494,17 @@ errxit:
     return rc;
 }
 
-int ftpFileDone(urlinfo u)
+int ftpFileDone(urlinfo u, FD_t fd)
 {
     int rc = 0;
+    int ftpFileDoneNeeded;
 
     URLSANE(u);
-    assert(u->ftpFileDoneNeeded);
+    ftpFileDoneNeeded = fdGetFtpFileDoneNeeded(fd);
+    assert(ftpFileDoneNeeded);
 
-    if (u->ftpFileDoneNeeded) {
-	u->ftpFileDoneNeeded = 0;
+    if (ftpFileDoneNeeded) {
+	fdSetFtpFileDoneNeeded(fd, 0);
 	u->ctrl = fdFree(u->ctrl, "open data (ftpFileDone)");
 	u->ctrl = fdFree(u->ctrl, "grab data (ftpFileDone)");
 	rc = ftpCheckResponse(u, NULL);
@@ -523,33 +512,28 @@ int ftpFileDone(urlinfo u)
     return rc;
 }
 
-int ftpFileDesc(urlinfo u, const char *cmd)
+int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
 {
     struct sockaddr_in dataAddress;
     int cmdlen;
     char * passReply;
     char * chptr;
     int rc;
-    FD_t fd;
+    int ftpFileDoneNeeded;
 
     URLSANE(u);
     if (cmd == NULL)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 
     cmdlen = strlen(cmd);
-    fd = u->data;
 
-#ifdef DYING
 /*
  * XXX When ftpFileDesc() is called, there may be a lurking
  * XXX transfer complete message (if ftpFileDone() was not
- * XXX called to clear that message). Clear that message now.
+ * XXX called to clear that message). Detect that condition now.
  */
-    if (u->ftpFileDoneNeeded)
-	rc = ftpFileDone(u);	/* XXX return code ignored */
-#else
-    assert(u->ftpFileDoneNeeded == 0);
-#endif
+    ftpFileDoneNeeded = fdGetFtpFileDoneNeeded(fd);
+    assert(ftpFileDoneNeeded == 0);
 
 /*
  * Get the ftp version of the Content-Length.
@@ -656,7 +640,7 @@ int ftpFileDesc(urlinfo u, const char *cmd)
 	goto errxit;
     }
 
-    u->ftpFileDoneNeeded = 1;
+    fdSetFtpFileDoneNeeded(fd, 1);
     u->ctrl = fdLink(u->ctrl, "grab data (ftpFileDesc)");
     u->ctrl = fdLink(u->ctrl, "open data (ftpFileDesc)");
     return 0;

@@ -45,7 +45,7 @@ char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
     unsigned int groupLength;
 
     if (timedRead(fd, (char *)&lit, sizeof(lit)) != sizeof(lit)) {
-	return strerror(errno);
+	return Fstrerror(fd);
     }
 
     bytesRead = sizeof(lit);
@@ -90,7 +90,7 @@ char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
 
 	if (timedRead(fd, header->group, groupLength) != groupLength) {
 	    oldhdrFree(header);
-	    return strerror(errno);
+	    return Fstrerror(fd);
 	}
 	header->group[groupLength] = '\0';
 	bytesRead += groupLength;
@@ -109,7 +109,7 @@ char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
 	if (timedRead(fd, header->icon, header->iconLength) != 
 			header->iconLength) {
 	    oldhdrFree(header);
-	    return strerror(errno);
+	    return Fstrerror(fd);
 	}
 	bytesRead += header->iconLength;
     } else {
@@ -119,21 +119,21 @@ char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
     while (bytesRead < specOffset) {
 	if (timedRead(fd, &ch, 1) != 1) {
 	    oldhdrFree(header);
-	    return strerror(errno);
+	    return Fstrerror(fd);
 	}
 	bytesRead++;
     }
 
     if (timedRead(fd, header->spec, header->specLength) != header->specLength) {
 	oldhdrFree(header);
-	return strerror(errno);
+	return Fstrerror(fd);
     }
     bytesRead += header->specLength;
 
     while (bytesRead < archiveOffset) {
 	if (timedRead(fd, &ch, 1) != 1) {
 	    oldhdrFree(header);
-	    return strerror(errno);
+	    return Fstrerror(fd);
 	}
 	bytesRead++;
     }

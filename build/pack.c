@@ -181,9 +181,8 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     if (fileName != NULL) {
 	fdi = Fopen(fileName, "r.fdio");
 	if (Ferror(fdi)) {
-	    /* XXX Fstrerror */
 	    rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
-		strerror(errno));
+		Fstrerror(fdi));
 	    return RPMERR_BADMAGIC;
 	}
     } else {
@@ -191,9 +190,9 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     }
 
     /* Get copy of lead */
-    if ((rc = Fread(lead, sizeof(*lead), 1, fdi)) != sizeof(*lead)) {
+    if ((rc = Fread(lead, sizeof(char), sizeof(*lead), fdi)) != sizeof(*lead)) {
 	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"), fileName,
-	    strerror(errno));
+	    Fstrerror(fdi));
 	return RPMERR_BADMAGIC;
     }
 
@@ -310,8 +309,7 @@ int writeRPM(Header h, const char *fileName, int type,
     /* Open the output file */
     fd = Fopen(fileName, "w.fdio");
     if (Ferror(fd)) {
-	/* XXX Fstrerror */
-	rpmError(RPMERR_CREATE, _("Could not open %s\n"), fileName);
+	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"), fileName, Fstrerror(fd));
 	unlink(sigtarget);
 	xfree(sigtarget);
 	return RPMERR_CREATE;
@@ -344,7 +342,7 @@ int writeRPM(Header h, const char *fileName, int type,
     strncpy(lead.name, buf, sizeof(lead.name));
     if (writeLead(fd, &lead)) {
 	rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
-		 strerror(errno));
+		 Fstrerror(fd));
 	Fclose(fd);
 	unlink(sigtarget);
 	xfree(sigtarget);
@@ -373,10 +371,10 @@ int writeRPM(Header h, const char *fileName, int type,
 	
     /* Append the header and archive */
     ifd = Fopen(sigtarget, "r.fdio");
-    while ((count = Fread(buf, sizeof(buf), 1, ifd)) > 0) {
+    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
 	    rpmError(RPMERR_READERROR, _("Unable to read sigtarget: %s"),
-		     strerror(errno));
+		     Fstrerror(ifd));
 	    Fclose(ifd);
 	    Fclose(fd);
 	    unlink(sigtarget);
@@ -384,9 +382,9 @@ int writeRPM(Header h, const char *fileName, int type,
 	    unlink(fileName);
 	    return RPMERR_READERROR;
 	}
-	if (Fwrite(buf, count, 1, fd) < 0) {
+	if (Fwrite(buf, sizeof(buf[0]), count, fd) < 0) {
 	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
-		     strerror(errno));
+		     Fstrerror(fd));
 	    Fclose(ifd);
 	    Fclose(fd);
 	    unlink(sigtarget);
@@ -432,16 +430,17 @@ static int cpio_copy(FD_t fdo, CSA_t *csa)
     char buf[BUFSIZ];
     ssize_t nb;
 
-    while((nb = Fread(buf, sizeof(buf), 1, csa->cpioFdIn)) > 0) {
-	if (Fwrite(buf, nb, 1, fdo) != nb) {
+    while((nb = Fread(buf, sizeof(buf[0]), sizeof(buf), csa->cpioFdIn)) > 0) {
+	if (Fwrite(buf, sizeof(buf[0]), nb, fdo) != nb) {
 	    rpmError(RPMERR_CPIO, _("cpio_copy write failed: %s"),
-		strerror(errno));
+			Fstrerror(fdo));
 	    return 1;
 	}
 	csa->cpioArchiveSize += nb;
     }
     if (nb < 0) {
-	rpmError(RPMERR_CPIO, _("cpio_copy read failed: %s"), strerror(errno));
+	rpmError(RPMERR_CPIO, _("cpio_copy read failed: %s"),
+		Fstrerror(csa->cpioFdIn));
 	return 1;
     }
     return 0;

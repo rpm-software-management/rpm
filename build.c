@@ -62,10 +62,10 @@ static int isSpecFile(const char *specfile)
     fd = Fopen(specfile, "r.ufdio");
     if (Ferror(fd)) {
 	/* XXX Fstrerror */
-	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
+	fprintf(stderr, _("Unable to open spec file %s: %s\n"), specfile, Fstrerror(fd));
 	return 0;
     }
-    count = Fread(buf, sizeof(buf), 1, fd);
+    count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd);
     Fclose(fd);
 
     checking = 1;

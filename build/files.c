@@ -1582,6 +1582,7 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	}
 	
 	execvp(argv[0], argv);
+	/* XXX this error message is probably not seen. */
 	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s"),
 		argv[0], strerror(errno));
 	_exit(RPMERR_EXEC);

@@ -1349,7 +1349,7 @@ int isCompressed(const char *file, int *compressed)
 	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(errno));
 	return 1;
     }
-    nb = Fread(magic, sizeof(magic), 1, fd);
+    nb = Fread(magic, sizeof(char), sizeof(magic), fd);
     rderrno = errno;
     Fclose(fd);
 

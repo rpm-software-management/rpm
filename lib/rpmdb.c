@@ -152,8 +152,8 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     if (!justcheck || !rpmfileexists(filename)) {
 	db->pkgs = fadOpen(filename, mode, perms);
 	if (Ferror(db->pkgs)) {
-	    /* XXX Fstrerror */
-	    rpmError(RPMERR_DBOPEN, _("failed to open %s\n"), filename);
+	    rpmError(RPMERR_DBOPEN, _("failed to open %s: %s\n"), filename,
+		Fstrerror(db->pkgs));
 	    return 1;
 	}
 

@@ -289,9 +289,9 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 
 	if (rpmIsDebug() &&
 	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
-	    (void)Fwrite("set -x\n", 7, 1, fd);
+	    (void)Fwrite("set -x\n", sizeof(char), 7, fd);
 
-	(void)Fwrite(script, strlen(script), 1, fd);
+	(void)Fwrite(script, sizeof(script[0]), strlen(script), fd);
 	Fclose(fd);
 
 	argv[argc++] = fn + strlen(root);

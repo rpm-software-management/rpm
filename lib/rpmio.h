@@ -84,9 +84,13 @@ void fdSetIoCookie(FD_t fd, FDIO_t iop);
 
 int fdGetRdTimeoutSecs(FD_t fd);
 
+int fdGetFtpFileDoneNeeded(FD_t fd);
+void fdSetFtpFileDoneNeeded(FD_t fd, int ftpFileDoneNeeded);
+
 long int fdGetCpioPos(FD_t fd);
-extern /*@null@*/ FD_t fdDup(int fdno);
 void fdSetCpioPos(FD_t fd, long int cpioPos);
+
+extern /*@null@*/ FD_t fdDup(int fdno);
 #ifdef UNUSED
 extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #endif
@@ -117,7 +121,7 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 /*@observer@*/ const char * urlStrerror(const char * url);
 
 int httpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
-int ftpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
+int ftpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd, const char * ftpcmd);
 const char *const ftpStrerror(int errorNumber);
 
 #if 0

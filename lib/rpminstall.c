@@ -4,16 +4,6 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
-#ifdef DYING
-#include "build/rpmbuild.h"
-
-static void printHash(const unsigned long amount, const unsigned long total);
-static void * showProgress(const Header h, const rpmCallbackType what, 
-			   const unsigned long amount, 
-			   const unsigned long total,
-			   const void * pkgKey, void * data);
-#endif
-
 static int hashesPrinted = 0;
 
 static void printHash(const unsigned long amount, const unsigned long total) {
@@ -152,10 +142,26 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		fprintf(stdout, _("Retrieving %s\n"), *filename);
 
 	    {	char tfnbuf[64];
+		const char * tempfn;
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
 		/* XXX watchout for rootdir = NULL */
-		tfn = rpmGetPath( (rootdir ? rootdir : ""),
-		    "%{_tmppath}/", mktemp(tfnbuf), NULL);
+		tfn = tempfn = rpmGetPath("%{_tmppath}/", mktemp(tfnbuf), NULL);
+		switch(urlIsURL(tempfn)) {
+		case URL_IS_FTP:
+		case URL_IS_HTTP:
+		case URL_IS_DASH:
+		    break;
+		case URL_IS_PATH:
+		    tfn += sizeof("file://") - 1;
+		    tfn = strchr(tfn, '/');
+		    /*@fallthrough@*/
+		case URL_IS_UNKNOWN:
+		    if (rootdir && rootdir[strlen(rootdir) - 1] == '/')
+			while (*tfn == '/') tfn++;
+		    tfn = rpmGetPath( (rootdir ? rootdir : ""), tfn, NULL);
+		    xfree(tempfn);
+		    break;
+		}
 	    }
 
 	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
@@ -188,8 +194,8 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
     for (filename = packages; *filename; filename++) {
 	fd = Fopen(*filename, "r.ufdio");
 	if (Ferror(fd)) {
-	    /* XXX Fstrerror */
-	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), *filename);
+	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), *filename,
+		Fstrerror(fd));
 	    numFailed++;
 	    packages[i] = NULL;
 	    continue;
@@ -328,11 +334,10 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 
     if (numSourcePackages && !stopInstall) {
 	for (i = 0; i < numSourcePackages; i++) {
-	    fd = Fopen(sourcePackages[i], "r.fdio");
+	    fd = Fopen(sourcePackages[i], "r.ufdio");
 	    if (Ferror(fd)) {
-		/* XXX Fstrerror */
-		rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), 
-			   sourcePackages[i]);
+		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), 
+			   sourcePackages[i], Fstrerror(fd));
 		continue;
 	    }
 
@@ -458,8 +463,7 @@ int rpmInstallSource(const char * rootdir, const char * arg, const char ** specF
 
     fd = Fopen(arg, "r.ufdio");
     if (Ferror(fd)) {
-	/* XXX Fstrerror */
-	rpmMessage(RPMMESS_ERROR, _("cannot open %s\n"), arg);
+	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
 	Fclose(fd);
 	return 1;
     }

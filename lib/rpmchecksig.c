@@ -26,12 +26,15 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 
     /* open a file and set *fdp */
     if (*fdp == NULL && fnp && *fnp) {
+#ifdef DYING
 	mode_t mode = (flags & O_CREAT) ? 0644 : 0;
 	fd = fdio->open(*fnp, flags, mode);
+#else
+	fd = Fopen(*fnp, ((flags & O_RDONLY) ? "r.fdio" : "w.fdio"));
+#endif
 	if (Ferror(fd)) {
-	    /* XXX Fstrerror */
 	    fprintf(stderr, _("%s: open failed: %s\n"), *fnp,
-		strerror(errno));
+		Fstrerror(fd));
 	    return 1;
 	}
 	*fdp = fd;
@@ -62,7 +65,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags, int rc)
 static int copyFile(FD_t *sfdp, const char **sfnp,
 	FD_t *tfdp, const char **tfnp)
 {
-    unsigned char buffer[8192];
+    unsigned char buffer[BUFSIZ];
     ssize_t count;
     int rc = 1;
 
@@ -71,15 +74,15 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	goto exit;
 
-    while ((count = Fread(buffer, sizeof(buffer), 1, *sfdp)) > 0) {
-	if (Fwrite(buffer, count, 1, *tfdp) < 0) {
+    while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
+	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) < 0) {
 	    fprintf(stderr, _("%s: Fwrite failed: %s\n"), *tfnp,
-		strerror(errno));
+		Fstrerror(*tfdp));
 	    goto exit;
 	}
     }
     if (count < 0) {
-	fprintf(stderr, _("%s: Fread failed: %s\n"), *sfnp, strerror(errno));
+	fprintf(stderr, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
 	goto exit;
     }
 
@@ -167,12 +170,13 @@ int rpmReSign(int add, char *passPhrase, const char **argv)
 	lead.signature_type = RPMSIG_HEADERSIG;
 	if (writeLead(ofd, &lead)) {
 	    fprintf(stderr, _("%s: writeLead failed: %s\n"), trpm,
-		strerror(errno));
+		Fstrerror(ofd));
 	    goto exit;
 	}
 
 	if (rpmWriteSignature(ofd, sig)) {
-	    fprintf(stderr, _("%s: rpmWriteSignature failed\n"), trpm);
+	    fprintf(stderr, _("%s: rpmWriteSignature failed: %s\n"), trpm,
+		Fstrerror(ofd));
 	    goto exit;
 	}
 

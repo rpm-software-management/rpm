@@ -483,20 +483,20 @@ int headerWrite(FD_t fd, Header h, int magicp)
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	nb = Fwrite(header_magic, sizeof(header_magic), 1, fd);
+	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
 	if (nb != sizeof(header_magic)) {
 	    free(p);
 	    return 1;
 	}
 	l = htonl(0);
-	nb = Fwrite(&l, sizeof(l), 1, fd);
+	nb = Fwrite(&l, sizeof(char), sizeof(l), fd);
 	if (nb != sizeof(l)) {
 	    free(p);
 	    return 1;
 	}
     }
     
-    nb = Fwrite(p, length, 1, fd);
+    nb = Fwrite(p, sizeof(char), length, fd);
     if (nb != length) {
 	free(p);
 	return 1;
@@ -572,20 +572,20 @@ int headerGzWrite(FD_t fd, Header h, int magicp)
     p = doHeaderUnload(h, &length);
 
     if (magicp) {
-	nb = Fwrite(header_magic, sizeof(header_magic), 1, fd);
+	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
 	if (nb != sizeof(header_magic)) {
 	    free(p);
 	    return 1;
 	}
 	l = htonl(0);
-	nb = Fwrite(&l, sizeof(l), 1, fd);
+	nb = Fwrite(&l, sizeof(char), sizeof(l), fd);
 	if (nb != sizeof(l)) {
 	    free(p);
 	    return 1;
 	}
     }
     
-    nb = Fwrite(p, length, 1, fd);
+    nb = Fwrite(p, sizeof(char), length, fd);
     if (nb != length) {
 	free(p);
 	return 1;
@@ -606,24 +606,24 @@ Header headerGzRead(FD_t fd, int magicp)
     int totalSize;
 
     if (magicp == HEADER_MAGIC_YES) {
-	if (Fread(&magic, sizeof(magic), 1, fd) != sizeof(magic))
+	if (Fread(&magic, sizeof(char), sizeof(magic), fd) != sizeof(magic))
 	    return NULL;
 	if (memcmp(&magic, header_magic, sizeof(magic))) {
 	    return NULL;
 	}
 
-	if (Fread(&reserved, sizeof(reserved), 1, fd) != sizeof(reserved))
+	if (Fread(&reserved, sizeof(char), sizeof(reserved), fd) != sizeof(reserved))
 	    return NULL;
     }
     
     /* First read the index length (count of index entries) */
-    if (Fread(&il, sizeof(il), 1, fd) != sizeof(il)) 
+    if (Fread(&il, sizeof(char), sizeof(il), fd) != sizeof(il)) 
 	return NULL;
 
     il = ntohl(il);
 
     /* Then read the data length (number of bytes) */
-    if (Fread(&dl, sizeof(dl), 1, fd) != sizeof(dl)) 
+    if (Fread(&dl, sizeof(char), sizeof(dl), fd) != sizeof(dl)) 
 	return NULL;
 
     dl = ntohl(dl);
@@ -636,7 +636,7 @@ Header headerGzRead(FD_t fd, int magicp)
     *p++ = htonl(dl);
 
     totalSize -= sizeof(int_32) + sizeof(int_32);
-    if (Fread(p, totalSize, 1, fd) != totalSize)
+    if (Fread(p, sizeof(char), totalSize, fd) != totalSize)
 	return NULL;
     
     h = headerLoad(block);

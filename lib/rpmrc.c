@@ -553,9 +553,8 @@ int rpmReadRC(const char * rcfiles)
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 	    if (rcfiles == defrcfiles && myrcfiles != r)
 		continue;
-	    /* XXX Fstrerror */
 	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
-		 fn, strerror(errno));
+		 fn, Fstrerror(fd));
 	    rc = 1;
 	    break;
 	} else {
@@ -596,10 +595,10 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
     nb = (sb.st_size > 0 ?  sb.st_size : 8*BUFSIZ);
     next = alloca(nb + 2);
     next[0] = '\0';
-    rc = Fread(next, nb, 1, fd);
+    rc = Fread(next, sizeof(*next), nb, fd);
     if (Ferror(fd) || (sb.st_size > 0 && rc != nb)) {	/* XXX Feof(fd) */
 	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,
-		 strerror(errno));
+		 Fstrerror(fd));
 	rc = 1;
     } else
 	rc = 0;
@@ -674,9 +673,8 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 
 		fdinc = Fopen(fn, "r.ufdio");
 		if (fdinc == NULL || Ferror(fdinc)) {
-		    /* XXX Fstrerror */
-		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d"),
-			fn, filename, linenum);
+		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d: %s"),
+			fn, filename, linenum, Fstrerror(fdinc));
 		    rc = 1;
 		} else {
 		    rc = doReadRC(fdinc, fn);
@@ -853,7 +851,7 @@ static void defaultMachine(const char ** arch, const char ** os) {
 	    if (!Ferror(fd)) {
 		chptr = (char *) xcalloc(1, 256);
 		if (chptr != NULL) {
-		    int irelid = Fread(chptr, 256, 1, fd);
+		    int irelid = Fread(chptr, sizeof(*chptr), 256, fd);
 		    Fclose(fd);
 		    /* example: "112393 RELEASE 020200 Version 01 OS" */
 		    if (irelid > 0) {

@@ -62,7 +62,7 @@ static inline off_t saferead(FD_t cfd, /*@out@*/void * vbuf, size_t amount)
     while (amount > 0) {
 	size_t nb;
 
-	nb = Fread(buf, amount, 1, cfd);
+	nb = Fread(buf, sizeof(buf[0]), amount, cfd);
 	if (nb <= 0)
 		return nb;
 	rc += nb;
@@ -99,7 +99,7 @@ static inline off_t safewrite(FD_t cfd, const void * vbuf, size_t amount)
     while (amount > 0) {
 	size_t nb;
 
-	nb = Fwrite(buf, amount, 1, cfd);
+	nb = Fwrite(buf, sizeof(buf[0]), amount, cfd);
 	if (nb <= 0)
 		return nb;
 	rc += nb;
@@ -315,7 +315,7 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
 			 cpioCallback cb, void * cbData)
 {
     FD_t ofd;
-    char buf[8192];
+    char buf[BUFSIZ];
     int bytesRead;
     int left = hdr->size;
     int rc = 0;
@@ -355,7 +355,7 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
 	    break;
 	}
 
-	if (Fwrite(buf, bytesRead, 1, ofd) != bytesRead) {
+	if (Fwrite(buf, sizeof(buf[0]), bytesRead, ofd) != bytesRead) {
 	    rc = CPIOERR_COPY_FAILED;
 	    break;
 	}
@@ -772,9 +772,9 @@ static int writeFile(FD_t cfd, struct stat sb, struct cpioFileMapping * map,
 	  } else
 #endif
 	  {
-	    amount = Fread(b,
+	    amount = Fread(b, sizeof(buf[0]),
 			(sb.st_size > sizeof(buf) ? sizeof(buf) : sb.st_size),
-			1, datafd);
+			datafd);
 	    if (amount <= 0) {
 		olderrno = errno;
 		Fclose(datafd);
