@@ -25,4 +25,7 @@ struct rpmlead {
     char reserved[16];      /* pads to 96 bytes -- 8 byte aligned! */
 } ;
 
+int writeLead(int fd, struct rpmlead *lead);
+int readLead(int fd, struct rpmlead *lead);
+
 #endif
