@@ -428,9 +428,9 @@ msgstr ""
 
 #: ../rpm.c:176
 msgid ""
-"This may be freely redistributed under the terms of the GNU Public License"
+"This may be freely redistributed under the terms of the GNU GPL"
 msgstr ""
-"Peut être redistribué librement selon les termes de la GNU Public License"
+"Peut être redistribué librement selon les termes de la GNU GPL"
 
 #: ../rpm.c:185
 msgid "usage: rpm {--help}"

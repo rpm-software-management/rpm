@@ -466,8 +466,8 @@ msgstr "Copyright (C) 1998 - Red Hat Software"
 
 #: ../rpm.c:176
 msgid ""
-"This may be freely redistributed under the terms of the GNU Public License"
-msgstr "Bu ðrogram GNU Kamu lisansý uyarýnca serbestçe daðýtýlabilir."
+"This may be freely redistributed under the terms of the GNU GPL"
+msgstr "Bu ðrogram GNU GPL uyarýnca serbestçe daðýtýlabilir."
 
 #: ../rpm.c:185
 msgid "usage: rpm {--help}"

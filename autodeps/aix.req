@@ -2,7 +2,7 @@
 
 # Original Author: Ralph Goers(rgoer@Candle.Com)
 # Borrowed heavily from Tim Mooney's HP version.
-# This file is distributed under the terms of the GNU Public License
+# This file is distributed under the terms of the GNU General Public License
 #
 # find-requires is part of RPM, the RedHat Package Manager.  find-requires
 # reads a list of full pathnames (in a package) on stdin, and outputs all

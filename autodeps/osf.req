@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: osf.req,v 1.4 1999/07/07 14:28:07 jbj Exp $
+# $Id: osf.req,v 1.5 1999/08/04 18:07:18 jbj Exp $
 #
-# This file is distributed under the terms of the GNU Public License
+# This file is distributed under the terms of the GNU General Public License
 #
 # find-requires is part of RPM, the Red Hat Package Manager.  find-requires
 # reads a list of full pathnames (in a package) on stdin, and outputs all

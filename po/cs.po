@@ -449,9 +449,9 @@ msgstr "Copyright (c) 1998 - Red Hat Software"
 
 #: ../rpm.c:176
 msgid ""
-"This may be freely redistributed under the terms of the GNU Public License"
+"This may be freely redistributed under the terms of the GNU GPL"
 msgstr ""
-"Tento program lze volnì roz¹iøovat podle podmínek GPL (GNU Public License)."
+"Tento program lze volnì roz¹iøovat podle podmínek GNU GPL."
 
 #: ../rpm.c:185
 msgid "usage: rpm {--help}"

@@ -3,7 +3,7 @@
 #
 # Original Author: Tim Mooney (mooney@plains.NoDak.edu)
 # 
-# This file is distributed under the terms of the GNU Public License
+# This file is distributed under the terms of the GNU General Public License
 #
 # non-linux-provides is part of RPM, the Red Hat Package Manager.
 # non-linux-provides searches a list of directories (based on what OS it's

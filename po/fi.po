@@ -458,8 +458,8 @@ msgstr ""
 
 #: ../rpm.c:176
 msgid ""
-"This may be freely redistributed under the terms of the GNU Public License"
-msgstr "T‰t‰ ohjelmaa voi vapaasti levitt‰‰ GNU Public Licence:n puittessa"
+"This may be freely redistributed under the terms of the GNU GPL"
+msgstr "T‰t‰ ohjelmaa voi vapaasti levitt‰‰ GNU GPL:n puittessa"
 
 #: ../rpm.c:185
 msgid "usage: rpm {--help}"

@@ -456,8 +456,8 @@ msgstr ""
 
 #: ../rpm.c:176
 msgid ""
-"This may be freely redistributed under the terms of the GNU Public License"
-msgstr "Mo¾ete slobodno distribuirati dalje pod odredbama GNU javne licence"
+"This may be freely redistributed under the terms of the GNU GPL"
+msgstr "Mo¾ete slobodno distribuirati dalje pod odredbama GNU GPL"
 
 #: ../rpm.c:185
 msgid "usage: rpm {--help}"
