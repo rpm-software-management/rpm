@@ -5,6 +5,13 @@
 	- added conflict checking (use conflicts tag, which looks
 	  just like the requires tag)
 	- fixed RPM's return code when package removal fails
+	- cleaned up lib/install.c a bit for readability
+	- plugged a bunch of memory leaks thanks to mpr -- install,
+	  uninstall, verify, and query all seem clean now
+	- added support for trees shared over a network via netsharedpath
+	  in rpmrc
+	- don't exit when there is an unknown option in an rpmrc, just
+	  give an error and continue
 
 2.2.6 -> 2.2.7:
 	- applied lots of portability patches
