@@ -91,7 +91,7 @@ clean:
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
-	rm -f *.a *.o core *~ $(PROGS)
+	rm -f *.a *.o core *~ $(PROGS) rpm.shared
 
 depend:
 	$(CPP) $(CFLAGS) -M *.c > .depend
