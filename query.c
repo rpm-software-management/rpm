@@ -556,6 +556,8 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 	thisMonth = tstruct->tm_mon;
     }
 
+    ownerfield[8] = groupfield[8] = '\0';
+
     if (owner) 
 	strncpy(ownerfield, owner, 8);
     else
