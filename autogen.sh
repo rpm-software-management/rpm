@@ -1,5 +1,8 @@
 #!/bin/sh
 
+export CFLAGS
+export LDFLAGS
+
 LTV="libtoolize (GNU libtool) 1.3.3"
 ACV="Autoconf version 2.13"
 AMV="automake (GNU automake) 1.4"

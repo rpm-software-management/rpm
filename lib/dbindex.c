@@ -51,6 +51,9 @@ int dbiGetFirstKey(dbiIndex * dbi, const char ** keyp) {
     DBT key, data;
     int rc;
 
+    if (dbi == NULL || dbi->db == NULL)
+	return 1;
+    
     rc = dbi->db->seq(dbi->db, &key, &data, R_FIRST);
     if (rc) {
 	return 1;
