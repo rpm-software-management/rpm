@@ -18,6 +18,7 @@
 	- better cpio error message if package contains missing hard links.
 	- fix: shared file not skipped when removed.
 	- fix: conversion script left off leading underscores.
+	- another strtok bites the dust.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.

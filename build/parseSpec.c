@@ -27,33 +27,27 @@ static struct PartRec {
     {0, 0, 0}
 };
 
-static void initParts(void)
+static inline void initParts(struct PartRec *p)
 {
-    struct PartRec *p = partList;
-
-    while (p->token) {
+    for (; p->token != NULL; p++)
 	p->len = strlen(p->token);
-	p++;
-    }
 }
 
 int isPart(char *line)
 {
     char c;
-    struct PartRec *p = partList;
+    struct PartRec *p;
 
-    if (p->len == 0) {
-	initParts();
-    }
+    if (partList[0].len == 0)
+	initParts(partList);
     
-    while (p->token) {
+    for (p = partList; p->token != NULL; p++) {
 	if (! strncasecmp(line, p->token, p->len)) {
 	    c = *(line + p->len);
 	    if (c == '\0' || isspace(c)) {
 		break;
 	    }
 	}
-	p++;
     }
 
     if (p->token) {
@@ -63,24 +57,29 @@ int isPart(char *line)
     }
 }
 
-static int matchTok(char *token, char *line)
+static int matchTok(const char *token, const char *line)
 {
-    char buf[BUFSIZ], *bp, *tok;
+    const char *b, *be = line;
+    int rc = 0;
 
+    while ( *(b = be) ) {
+	SKIPSPACE(b);
+	be = b;
+	SKIPNONSPACE(be);
+	if (be == b)
+	    break;
     /*
-     * XXX The strcasecmp below is necessary so the old (rpm < 2.90) style
+     * XXX The strncasecmp below is necessary so the old (rpm < 2.90) style
      * XXX os-from-uname (e.g. "Linux") is compatible with the new
      * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
      */
-    strcpy(buf, line);
-    for (bp = buf; (tok = strtok(bp, " \n\t")) != NULL;) {
-	bp = NULL;
-	if (! strcasecmp(tok, token)) {
-	    return 1;
-	}
+	if (strncasecmp(token, b, (be-b)))
+	    continue;
+	rc = 1;
+	break;
     }
 
-    return 0;
+    return rc;
 }
 
 void handleComments(char *s)
@@ -197,17 +196,23 @@ retry:
     SKIPSPACE(s);
     match = -1;
     if (! strncmp("%ifarch", s, 7)) {
+	s += 7;
 	match = matchTok(arch, s);
     } else if (! strncmp("%ifnarch", s, 8)) {
+	s += 8;
 	match = !matchTok(arch, s);
     } else if (! strncmp("%ifos", s, 5)) {
+	s += 5;
 	match = matchTok(os, s);
     } else if (! strncmp("%ifnos", s, 6)) {
+	s += 6;
 	match = !matchTok(os, s);
     } else if (! strncmp("%if", s, 3)) {
+	s += 3;
         match = parseExpressionBoolean(spec, s + 3);
 	if (match < 0) return RPMERR_BADSPEC;
     } else if (! strncmp("%else", s, 5)) {
+	s += 5;
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
 	    rpmError(RPMERR_UNMATCHEDIF, _("%s:%d: Got a %%else with no if"),
@@ -218,6 +223,7 @@ retry:
 	    spec->readStack->next->reading && ! spec->readStack->reading;
 	spec->line[0] = '\0';
     } else if (! strncmp("%endif", s, 6)) {
+	s += 6;
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
 	    rpmError(RPMERR_UNMATCHEDIF, _("%s:%d: Got a %%endif with no if"),
@@ -229,28 +235,31 @@ retry:
 	free(rl);
 	spec->line[0] = '\0';
     } else if (! strncmp("%include", s, 8)) {
-	char *fileName = s + 8, *endFileName, *p;
+	char *fileName, *endFileName, *p;
 
+	s += 8;
+	fileName = s;
 	if (! isspace(*fileName)) {
 	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement"));
 	    return RPMERR_BADSPEC;
 	}
-	while (*fileName && isspace(*fileName)) fileName++;
+	SKIPSPACE(fileName);
 	endFileName = fileName;
-	while (*endFileName && !isspace(*endFileName)) endFileName++;
+	SKIPNONSPACE(endFileName);
 	p = endFileName;
 	SKIPSPACE(p);
 	if (*p != '\0') {
 	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement"));
 	    return RPMERR_BADSPEC;
 	}
-
 	*endFileName = '\0';
+
 	forceIncludeFile(spec, fileName);
 
 	ofi = spec->fileStack;
 	goto retry;
     }
+
     if (match != -1) {
 	rl = malloc(sizeof(struct ReadLevelEntry));
 	rl->reading = spec->readStack->reading && match;
