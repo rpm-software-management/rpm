@@ -201,7 +201,7 @@ strip_to_file(Elf *elf, Elf *out_elf, DebugLink *debuglink)
   /* Update section header stringtab ref */
   gelf_getehdr (out_elf, &out_ehdr);
   out_ehdr.e_shstrndx = section_map[out_ehdr.e_shstrndx];
-  out_ehdr.e_shoff = align_up (last_offset, 4);
+  out_ehdr.e_shoff = align_up (last_offset, 8);
   gelf_update_ehdr(out_elf, &out_ehdr);
 
   /* Update section header links */
@@ -402,6 +402,7 @@ main (int argc, char *argv[])
   Elf *elf, *out_elf;
   int fd, out;
   const char *origname;
+  char *origname_base;
   char *debugname, *strippedname;
   DebugLink *debuglink;
   poptContext optCon;   /* context for parsing command-line options */
@@ -433,14 +434,13 @@ main (int argc, char *argv[])
   
   origname = args[0];
 
-  if (output_dir) {
-    const char * bn = strrchr(origname, '/');
-    if ((bn = strrchr(origname, '/')) != NULL)
-	bn++;
-    else
-	bn = origname;
-    debugname = strconcat (output_dir, "/", bn, ".debug", NULL);
-  } else
+  if (output_dir)
+    {
+      origname_base = path_basename (origname);
+      debugname = strconcat (output_dir, "/", origname_base, ".debug", NULL);
+      free (origname_base);
+    }
+  else
     debugname = strconcat (origname, ".debug", NULL);
   
   strippedname = strconcat (origname, ".XXXXXX", NULL);
