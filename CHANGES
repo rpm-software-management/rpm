@@ -1,4 +1,5 @@
 2.91 -> 2.92
+	- fix: --target=arch works.
 
 2.90 -> 2.91
 	- fix: memory leaks in rpmRunTransactions plugged.
