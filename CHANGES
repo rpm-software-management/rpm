@@ -6,6 +6,7 @@
 	- CPIOERR_CHECK_ERRNO masking caused AIX cc warnings.
 	- solaris 2.6+ needs statvfs.
 	- check build prerequisites before building from specfile.
+	- convert per-system configuration in /etc/rpmrc to macros.
 
 2.93 -> 2.94
 	- fix: segfault while parsing target string.

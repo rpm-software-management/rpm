@@ -2,12 +2,15 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 2.95
 Version: %{version}
-Release: 8
+Release: 9
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
-BuildRoot: /var/tmp/rpm-%{version}-root
 Conflicts: patch < 2.5
+%ifos linux
+Prereq: awk fileutils textutils sh-utils mktemp
+%endif
+BuildRoot: /var/tmp/rpm-%{version}-root
 
 %description
 The Red Hat Package Manager (RPM) is a powerful command line driven
@@ -60,6 +63,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /bin/rpm --initdb
+%ifos linux
+if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f /usr/lib/rpm/convertrpmrc.sh ] 
+then
+	sh /usr/lib/rpm/convertrpmrc.sh 2>&1 > /dev/null
+fi
+%endif
 
 %files
 %defattr(-,root,root)

@@ -1,6 +1,9 @@
 #!/bin/sh
-
+#
+# Convert per-system configuration in /etc/rpmrc to macros in /etc/rpm/macros.
+#
 # prereq: awk fileutils textutils sh-utils mktemp
+#
 
 RPMRC=/etc/rpmrc
 MACROS=/etc/rpm/macros
@@ -11,14 +14,14 @@ MACROS=/etc/rpm/macros
 [ -f $RPMRC ] || exit 0
 
 [ -f $MACROS ] && {
-  echo "$MACROS already exists 1>&2
+  echo "$MACROS already exists" 1>&2
   exit 1
 }
 
 DIRN="`dirname $MACROS`"
 [ -d "$DIRN" ] || mkdir -p "$DIRN"
 [ -d "$DIRN" ] || {
-  echo "$DIRN doesn't exist"
+  echo "could not create directory $DIRN" 1>&2
   exit 1
 }
 
@@ -70,7 +73,6 @@ awk 'BEGIN {
 {
   for (str in xlate) {
     ms = "^" str ":"
-    print str >> "blah"
     if (match($1, ms)) {
       if (xlate[str]) {
         sub(ms, "%" xlate[str] " ")
