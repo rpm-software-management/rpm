@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.3 2000/06/02 07:54:49 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.4 2000/06/05 08:14:32 rjray Exp $";
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -252,9 +252,9 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
     {
         hdr_struct->hdr = (Header)SvRV(source);
         /* We simply don't know these three settings at this point */
-        hdr_struct->isSource = -1;
-        hdr_struct->major = -1;
-        hdr_struct->minor = -1;
+        hdr_struct->isSource = 0;
+        hdr_struct->major = 0;
+        hdr_struct->minor = 0;
     }
 
     /* These three are likely to be most of the data requests, anyway */
@@ -740,11 +740,22 @@ int rpmhdr_NEXTKEY(pTHX_ RPM__Header self, SV* key,
     if (! hdr->iterator)
         return 0;
 
-    /* Run it once, to get the next header entry */
-    if (! headerNextIterator(hdr->iterator, &tag, &type, (void **)&ptr, &size))
-        return 0;
+    /* Iterate here, since there are internal tags that may be present for
+       which we don't want to expose to the user. */
+    while (1)
+    {
+        /* Run it once, to get the next header entry */
+        if (! headerNextIterator(hdr->iterator, &tag, &type, (void **)&ptr,
+                                 &size))
+            /* Last tag. Inform perl that iteration is over. */
+            return 0;
 
-    tagname = num2tag(aTHX_ tag);
+        tagname = num2tag(aTHX_ tag);
+        /* This means that any time num2tag couldn't map it, we iterate */
+        if (tagname != Nullch)
+            break;
+    }
+
     *nextkey = newSVpv((char *)tagname, strlen(tagname));
     *nextvalue = rpmhdr_FETCH(aTHX_ self, *nextkey, ptr, type, size);
 
@@ -849,6 +860,20 @@ int rpmhdr_write(pTHX_ RPM__Header self, SV* gv_in, int magicp)
     written = headerSizeof(hdr->hdr, magicp);
 
     return written;
+}
+
+/* T/F test whether the header references a SRPM */
+int rpmhdr_is_source(pTHX_ RPM__Header self)
+{
+    SV** svp;
+    RPM_Header* hdr;
+
+    header_from_object_ret(svp, hdr, self, 0);
+
+    if (! hdr->hdr)
+        return 0;
+    else
+        return (hdr->isSource);
 }
 
 
@@ -1017,3 +1042,12 @@ rpmhdr_write(self, gv, magicp=0)
     }
     OUTPUT:
         RETVAL
+
+int
+rpmhdr_is_source(self)
+    RPM::Header self;
+    PROTOTYPE: $
+    CODE:
+    RETVAL = rpmhdr_is_source(aTHX_ self);
+    OUTPUT:
+    RETVAL
