@@ -151,6 +151,7 @@ static char * shescapeFormat(int_32 type, const void * data,
 static int getExtension(Header h, headerTagTagFunction fn, int_32 * typeptr,
 			void ** data, int_32 * countptr, 
 			struct extensionCache * ext);
+char *headerFindI18NString(Header h, struct indexEntry *entry);
 
 const struct headerSprintfExtension headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal", { octalFormat } },
@@ -795,14 +796,10 @@ int headerGetEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     }
 
     if (entry->info.type == RPM_I18NSTRING_TYPE) {
-	if (h->langNum == -1) headerResetLang(h);
+	chptr = headerFindI18NString(h, entry);
 
 	if (type) *type = RPM_STRING_TYPE;
 	if (c) *c = 1;
-
-	chptr = entry->data;
-	for (i = 0; i < h->langNum; i++) 
-	    chptr += strlen(chptr) + 1;
 
 	*p = chptr;
     } else {
@@ -1077,8 +1074,9 @@ int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
 	memcpy(buf, entry->data, length);
 	strcpy(buf + length, string);
 	i = strlen(chptr + length) + 1;
-	memcpy(buf + strlen(string) + 1, ((char *) entry->data) + length + i, 
-		entry->length - length - i);
+	memcpy(buf + length + strlen(string) + 1,
+	       ((char *) entry->data) + length + i, 
+	       entry->length - length - i);
 
 	free(entry->data);
 	entry->data = buf;
@@ -2046,4 +2044,49 @@ void headerResetLang(Header h) {
     }
    
     headerSetLangPath(h, getenv("LANG"));
+}
+
+char *headerFindI18NString(Header h, struct indexEntry *entry)
+{
+    char * lang, * buf, * chptr, * start, * next, * resptr;
+    struct indexEntry * table;
+    int langNum;
+
+    if (! (lang = getenv("LANGUAGE"))) {
+	lang = getenv("LANG");
+    }
+    
+    table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
+
+    if (!lang || !table) {
+	return entry->data;
+    }
+
+    buf = alloca(strlen(lang) + 1);
+    strcpy(buf, lang);
+
+    start = buf;
+    while (start) {
+	chptr = strchr(start, ':');
+	if (chptr) *chptr = '\0';
+	
+	next = table->data;
+	resptr = entry->data;
+	for (langNum = 0; langNum < entry->info.count; langNum++) {
+	    if (!strcmp(next, start) && *resptr) break;
+	    next += strlen(next) + 1;
+	    resptr += strlen(resptr) + 1;
+	}
+	
+	if (langNum < entry->info.count) {
+	    return resptr;
+	}
+
+	if (chptr)
+	    start = chptr + 1;
+	else
+	    start = NULL;
+    }
+
+    return entry->data;
 }
