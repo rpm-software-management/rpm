@@ -485,11 +485,11 @@ int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel labe
 	printf("no copyright!\n");
     }
 
-    pinfo->files = malloc(sizeof(struct rpmFileInfo) * pinfo->fileCount);
+    pinfo->files = malloc(sizeof(struct oldrpmFileInfo) * pinfo->fileCount);
 
     j = 8;
     for (i = 0; i < pinfo->fileCount; i++) {
-	rpmfileFromInfoLine(list[j], list[j + 1], list[j + 2],
+	oldrpmfileFromInfoLine(list[j], list[j + 1], list[j + 2],
 			    &pinfo->files[i]);
 	j += 3;
     }
@@ -514,7 +514,7 @@ void oldrpmdbFreePackageInfo(struct oldrpmdbPackageInfo package) {
     free(package.preamble);
 
     for (i = 0; i < package.fileCount; i++) {
-	rpmfileFree(&package.files[i]);
+	oldrpmfileFree(&package.files[i]);
     }
 
     free(package.files);

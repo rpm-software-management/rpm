@@ -9,7 +9,7 @@
 #include "header.h"
 #include "misc.h"
 #include "oldrpmdb.h"
-#include "oldrpmfile.h"
+#include "oldheader.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
 

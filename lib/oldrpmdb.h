@@ -3,7 +3,7 @@
 
 #include <gdbm.h>
 
-#include "oldrpmfile.h"
+#include "oldheader.h"
 
 typedef enum {
     RPMDB_NONE, RPMDB_GDBM_ERROR, RPMDB_NO_MEMORY
@@ -43,7 +43,7 @@ struct oldrpmdbPackageInfo {
     char *preamble;
     char *copyright;
     unsigned int fileCount;
-    struct rpmFileInfo *files;
+    struct oldrpmFileInfo *files;
 };
 
 #define RPMDB_READER 1
