@@ -29,6 +29,9 @@
 	- statically link rpmdeps against (internal) libfmagic.
 	- use rpmdeps rather than find-{requires,provides}.
 	- bundle libfmagic into librpmbuild for now.
+	- apply patches 7 and 8 to db-4.1.24.
+	- upgrade to elfutils-0.59.
+	- add -g to all platforms optflags.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

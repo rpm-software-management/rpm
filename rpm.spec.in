@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.12
+Release: 0.13
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -495,6 +495,9 @@ exit 0
 %changelog
 * Tue Nov 26 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.13
 - bundle libfmagic into librpmbuild for now.
+- apply patches 7 and 8 to db-4.1.24.
+- upgrade to elfutils-0.59.
+- add -g to all platforms optflags.
 
 * Wed Nov 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.12
 - use rpmdeps rather than find-{requires,provides}.
