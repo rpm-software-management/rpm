@@ -141,6 +141,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     int * intptr;
     char * archivePrefix, * tmpPath;
     int scriptArg;
+    int hasOthers = 0;
     int relocationSize = 1;		/* strip at least first / for cpio */
     uint_32 * archiveSizePtr;
 
@@ -235,10 +236,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     rc = rpmdbFindPackage(db, name, &matches);
     if (rc == -1) return 2;
-    if (rc)
+    if (rc) {
  	scriptArg = 1;
-    else
+	hasOthers = 1;
+    } else {
 	scriptArg = matches.count + 1;
+    }
 
     /* This canonicalizes the root */
     if (rootdir && rootdir[rootLength] == '/') {
@@ -251,7 +254,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	rootdir = newRootdir;
     }
 
-    if (flags & RPMINSTALL_UPGRADE) {
+    if (flags & RPMINSTALL_UPGRADE && hasOthers) {
 	/* 
 	   We need to get a list of all old version of this package. We let
 	   this install procede normally then, but:
@@ -280,9 +283,10 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    }
 	    *intptr++ = 0;
 	}
-
-	dbiFreeIndexRecord(matches);
     }
+
+    if (hasOthers) 
+	dbiFreeIndexRecord(matches);
 
     fileList = NULL;
     if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
