@@ -98,6 +98,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     struct replacedFile * replacedList = NULL;
     char * sptr, * dptr;
     int length;
+    char * s;
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
@@ -126,6 +127,17 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
     getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
+
+    if (flags & INSTALL_PRINTLABEL) {
+	s = alloca(strlen(name) + strlen(version) + strlen(release) + 3);
+	strcpy(s, name);
+	strcat(s, "-");
+	strcat(s, version);
+	strcat(s, "-");
+	strcat(s, release);
+
+	printf("%-28s", s);
+    }
 
     message(MESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
 		name, version, release, flags & INSTALL_TEST);
@@ -774,6 +786,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
+		freeHeader(sech);
 		free(secFileMd5List);
 		free(secFileList);
 	    }
@@ -812,8 +825,6 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 		     (void **) &secFileMd5List, &secFileCount);
 	    getEntry(sech, RPMTAG_FILEFLAGS, &type, 
 		     (void **) &secFileFlagsList, &secFileCount);
-
-	    freeHeader(sech);
 	}
 
 	message(MESS_DEBUG, "file %s is shared\n", 
@@ -896,6 +907,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
     }
 
     if (secOffset) {
+	freeHeader(sech);
 	free(secFileMd5List);
 	free(secFileList);
     }
