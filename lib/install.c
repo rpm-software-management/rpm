@@ -96,6 +96,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     int prefixLength = strlen(prefix);
     char ** prefixedFileList = NULL;
     struct replacedFile * replacedList = NULL;
+    char * sptr, * dptr;
+    int length;
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
@@ -250,10 +252,25 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	    }
 
 	    if (installFile) {
- 		/* +1 cuts off leading / */
+ 		/* 1) we skip over the leading /
+		   2) we have to escape globbing characters :-( */
 
-		files[archiveFileCount].fileName = fileList[i] + 1;
+		length = strlen(fileList[i]);
+		files[archiveFileCount].fileName = alloca((length * 2) + 1);
+		dptr = files[archiveFileCount].fileName;
+		for (sptr = fileList[i] + 1; *sptr; sptr++) {
+		    switch (*sptr) {
+		      case '*': case '[': case ']': case '?': case '\\':
+			*dptr++ = '\\';
+			/*fallthrough*/
+		      default:
+			*dptr++ = *sptr;
+		    }
+		}
+		*dptr++ = *sptr;
+
 		files[archiveFileCount].size = fileSizesList[i];
+
 		archiveFileCount++;
 	    }
 	}
@@ -982,8 +999,6 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 		secOffset = 0;
 	    } else {
 		secHeader = copyHeader(sh);	/* so we can modify it */
-		printf("old size: %d new size: %d\n", sizeofHeader(sh),
-			sizeofHeader(secHeader));
 		freeHeader(sh);
 	    }
 
