@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.10 1999/05/24 21:32:05 jbj Exp $
+# $Id: rpmrc.in,v 2.11 1999/06/09 19:06:48 jbj Exp $
 
 #############################################################
 
@@ -135,7 +135,7 @@ arch_compat: powerppc: ppc
 arch_compat: sun4c: sparc
 arch_compat: sun4d: sparc
 arch_compat: sun4m: sparc
-arch_compat: sun4u: sparc
+arch_compat: sun4u: sparc64
 arch_compat: sparc64: sparc
 arch_compat: sparc: noarch
 
