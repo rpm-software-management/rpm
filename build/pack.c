@@ -46,13 +46,13 @@ struct file_entry {
 static int cpio_gzip(Header header, int fd, char *tempdir);
 static int writeMagic(Spec s, int fd, char *name, unsigned short type);
 static int add_file(struct file_entry **festack,
-		    char *name, int isdoc, int isconf, int isdir);
+		    const char *name, int isdoc, int isconf, int isdir);
 static int compare_fe(const void *ap, const void *bp);
 static int process_filelist(Header header, StringBuf sb, int *size,
 			    char *name, char *version, char *release,
 			    int type);
 static char *buildHost(void);
-static int add_file_aux(char *file, struct stat *sb, int flag);
+static int add_file_aux(const char *file, struct stat *sb, int flag);
 static char *getUname(uid_t uid);
 static char *getGname(gid_t gid);
 static int glob_error(const char *foo, int bar);
@@ -288,7 +288,7 @@ static int Gcount;
 static struct file_entry **Gfestack;
 
 static int add_file(struct file_entry **festack,
-		    char *name, int isdoc, int isconf, int isdir)
+		    const char *name, int isdoc, int isconf, int isdir)
 {
     struct file_entry *p;
     char fullname[1024];
@@ -334,9 +334,9 @@ static int add_file(struct file_entry **festack,
     }
 }
 
-static int add_file_aux(char *file, struct stat *sb, int flag)
+static int add_file_aux(const char *file, struct stat *sb, int flag)
 {
-    char *name = file;
+    const char *name = file;
 
     if (getVar(RPMVAR_ROOT)) {
 	name += strlen(getVar(RPMVAR_ROOT));
@@ -692,6 +692,7 @@ int packageBinaries(Spec s)
     char *release;
     int size;
     int_8 os, arch;
+    char * archName;
 
     if (!getEntry(s->packages->header, RPMTAG_VERSION, NULL,
 		  (void *) &version, NULL)) {
@@ -756,8 +757,9 @@ int packageBinaries(Spec s)
 	    return 1;
 	}
 	
-	sprintf(filename, "%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
-		name, getArchName());
+	archName = getArchName();
+	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
+		archName, name, archName);
 	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	if (writeMagic(s, fd, name, RPMLEAD_BINARY)) {
 	    return 1;
