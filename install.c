@@ -132,7 +132,7 @@ int doInstall(char * prefix, char ** argv, int installFlags,
     if (installFlags & INSTALL_TEST) 
 	mode = O_RDONLY;
     else
-	mode = O_RDWR;
+	mode = O_RDWR | O_CREAT;
 
     message(MESS_DEBUG, "counting packages to install\n");
     for (filename = argv, numPackages = 0; *filename; filename++, numPackages++)
@@ -204,8 +204,8 @@ int doInstall(char * prefix, char ** argv, int installFlags,
 		numSourcePackages, numBinaryPackages);
 
     if (numBinaryPackages) {
-	message(MESS_DEBUG, "opening database mode: 0%o\n", mode | O_CREAT);
-	if (rpmdbOpen(prefix, &db, mode | O_CREAT, 0644)) {
+	message(MESS_DEBUG, "opening database mode: 0%o\n", mode);
+	if (rpmdbOpen(prefix, &db, mode, 0644)) {
 	    fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", 
 			prefix);
 	    exit(1);
