@@ -604,7 +604,7 @@ static void handleOverlappedFiles(const rpmts ts,
 
 assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
-	    if ((rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES)
+	    if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES)
 	     && filecmp(otherFi, fi))
 	    {
 		rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
