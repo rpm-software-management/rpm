@@ -10,7 +10,6 @@
 
 #include "rpmdb.h"
 
-#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
 #include "rpmlead.h"
@@ -18,10 +17,10 @@
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
-/*@access rpmts @*/	/* ts->dig et al */
 /*?access Header @*/		/* XXX compared with NULL */
 /*@access FD_t @*/		/* XXX stealing digests */
 /*@access pgpDig @*/
+/*@access pgpDigParams @*/
 
 /*@unchecked@*/
 static int _print_pkts = 0;
@@ -31,8 +30,7 @@ static int _print_pkts = 0;
 /*@-boundsread@*/
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies *fdp, *fnp, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
@@ -147,7 +145,7 @@ static int getSignid(Header sig, int sigtag, byte * signid)
     int rc = 1;
 
     if (headerGetEntry(sig, sigtag, &pkttyp, &pkt, &pktlen) && pkt != NULL) {
-	struct pgpDig_s * dig = pgpNewDig();
+	pgpDig dig = pgpNewDig();
 
 	if (!pgpPrtPkts(pkt, pktlen, dig, 0)) {
 /*@-bounds@*/
@@ -183,7 +181,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     const char *rpm, *trpm;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
-    Header sig = NULL;
+    Header sigh = NULL;
     void * uh = NULL;
     int_32 uht, uhc;
     int res = EXIT_FAILURE;
@@ -223,12 +221,12 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    /*@switchbreak@*/ break;
 	}
 
-	rc = rpmReadSignature(fd, &sig, l->signature_type);
+	rc = rpmReadSignature(fd, &sigh, l->signature_type);
 	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), rpm);
 	    goto exit;
 	}
-	if (sig == NULL) {
+	if (sigh == NULL) {
 	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
 	    goto exit;
 	}
@@ -241,7 +239,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Dump the immutable region (if present). */
-	if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
+	if (headerGetEntry(sigh, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
 	    HeaderIterator hi;
 	    int_32 tag, type, count;
 	    hPTR_t ptr;
@@ -265,24 +263,24 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    hi = headerFreeIterator(hi);
 	    oh = headerFree(oh);
 
-	    sig = headerFree(sig);
-	    sig = headerLink(nh);
+	    sigh = headerFree(sigh);
+	    sigh = headerLink(nh);
 	    nh = headerFree(nh);
 	}
 
 	/* Eliminate broken digest values. */
-	xx = headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
-	xx = headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
-	xx = headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_1);
-	xx = headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_2);
+	xx = headerRemoveEntry(sigh, RPMSIGTAG_LEMD5_1);
+	xx = headerRemoveEntry(sigh, RPMSIGTAG_LEMD5_2);
+	xx = headerRemoveEntry(sigh, RPMSIGTAG_BADSHA1_1);
+	xx = headerRemoveEntry(sigh, RPMSIGTAG_BADSHA1_2);
 
 	/* Toss and recalculate header+payload size and digests. */
-	xx = headerRemoveEntry(sig, RPMSIGTAG_SIZE);
-	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
-	xx = headerRemoveEntry(sig, RPMSIGTAG_MD5);
-	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
-	xx = headerRemoveEntry(sig, RPMSIGTAG_SHA1);
-	xx = rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
+	xx = headerRemoveEntry(sigh, RPMSIGTAG_SIZE);
+	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
+	xx = headerRemoveEntry(sigh, RPMSIGTAG_MD5);
+	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
+	xx = headerRemoveEntry(sigh, RPMSIGTAG_SHA1);
+	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
 
 	/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
@@ -290,34 +288,34 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
 	    /* Grab the old signature fingerprint (if any) */
 	    memset(oldsignid, 0, sizeof(oldsignid));
-	    xx = getSignid(sig, sigtag, oldsignid);
+	    xx = getSignid(sigh, sigtag, oldsignid);
 
 	    switch (sigtag) {
 	    case RPMSIGTAG_GPG:
-		xx = headerRemoveEntry(sig, RPMSIGTAG_DSA);
+		xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
 		/*@fallthrough@*/
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
-		xx = headerRemoveEntry(sig, RPMSIGTAG_RSA);
+		xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
 		/*@switchbreak@*/ break;
 	    }
 
-	    xx = headerRemoveEntry(sig, sigtag);
-	    xx = rpmAddSignature(sig, sigtarget, sigtag, qva->passPhrase);
+	    xx = headerRemoveEntry(sigh, sigtag);
+	    xx = rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase);
 
 	    /* If package was previously signed, check for same signer. */
 	    memset(newsignid, 0, sizeof(newsignid));
 	    if (memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
 
 		/* Grab the new signature fingerprint */
-		xx = getSignid(sig, sigtag, newsignid);
+		xx = getSignid(sigh, sigtag, newsignid);
 
 		/* If same signer, skip resigning the package. */
 		if (!memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
 
 		    rpmMessage(RPMMESS_WARNING,
 			_("%s: was already signed by key ID %s, skipping\n"),
-			rpm, pgpHexStr(newsignid, sizeof(newsignid)));
+			rpm, pgpHexStr(newsignid+4, sizeof(newsignid)-4));
 
 		    /* Clean up intermediate target */
 		    xx = unlink(sigtarget);
@@ -329,8 +327,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	}
 
 	/* Reallocate the signature into one contiguous region. */
-	sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
-	if (sig == NULL)	/* XXX can't happen */
+	sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
+	if (sigh == NULL)	/* XXX can't happen */
 	    goto exit;
 
 	/* Write the lead/signature of the output rpm */
@@ -351,7 +349,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    goto exit;
 	}
 
-	if (rpmWriteSignature(ofd, sig)) {
+	if (rpmWriteSignature(ofd, sigh)) {
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmWriteSignature failed: %s\n"), trpm,
 		Fstrerror(ofd));
 	    goto exit;
@@ -381,7 +379,7 @@ exit:
     if (fd)	(void) manageFile(&fd, NULL, 0, res);
     if (ofd)	(void) manageFile(&ofd, NULL, 0, res);
 
-    sig = rpmFreeSignature(sig);
+    sigh = rpmFreeSignature(sigh);
 
     if (sigtarget) {
 	xx = unlink(sigtarget);
@@ -406,8 +404,10 @@ exit:
 static int rpmImportPubkey(const rpmts ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/
+	/*@globals RPMVERSION, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const char * fn;
     int res = 0;
@@ -418,7 +418,7 @@ static int rpmImportPubkey(const rpmts ts,
     int_32 pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
     int_32 zero = 0;
     pgpDig dig = NULL;
-    struct pgpDigParams_s *digp = NULL;
+    pgpDigParams pubp = NULL;
     int rc, xx;
 
     if (argv == NULL) return res;
@@ -464,25 +464,25 @@ static int rpmImportPubkey(const rpmts ts,
 
 	/* Build header elements. */
 	(void) pgpPrtPkts(pkt, pktlen, dig, 0);
-	digp = &dig->pubkey;
+	pubp = &dig->pubkey;
 
 /*@-boundswrite@*/
 	v = t = xmalloc(16+1);
-	t = stpcpy(t, pgpHexStr(digp->signid, sizeof(digp->signid)));
+	t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
 
 	r = t = xmalloc(8+1);
-	t = stpcpy(t, pgpHexStr(digp->time, sizeof(digp->time)));
+	t = stpcpy(t, pgpHexStr(pubp->time, sizeof(pubp->time)));
 
 	n = t = xmalloc(sizeof("gpg()")+8);
 	t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
 
-	/*@-nullpass@*/ /* FIX: digp->userid may be NULL */
-	u = t = xmalloc(sizeof("gpg()")+strlen(digp->userid));
-	t = stpcpy( stpcpy( stpcpy(t, "gpg("), digp->userid), ")");
+	/*@-nullpass@*/ /* FIX: pubp->userid may be NULL */
+	u = t = xmalloc(sizeof("gpg()")+strlen(pubp->userid));
+	t = stpcpy( stpcpy( stpcpy(t, "gpg("), pubp->userid), ")");
 	/*@=nullpass@*/
 
 	evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
-	t = stpcpy(t, (digp->version == 4 ? "4:" : "3:"));
+	t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
 	t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
 /*@=boundswrite@*/
 
@@ -651,7 +651,12 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
     int_32 sigtag;
-    Header sig;
+    int_32 sigtype;
+    const void * sig;
+    pgpDig dig;
+    pgpDigParams sigp;
+    int_32 siglen;
+    Header sigh;
     HeaderIterator hi;
     int res = 0;
     int xx;
@@ -666,62 +671,63 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	if (readLead(fd, l)) {
 	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), fn);
 	    res++;
-	    goto bottom;
+	    goto exit;
 	}
 	switch (l->major) {
 	case 1:
 	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), fn);
 	    res++;
-	    goto bottom;
+	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	default:
 	    /*@switchbreak@*/ break;
 	}
 
-	rc = rpmReadSignature(fd, &sig, l->signature_type);
+	rc = rpmReadSignature(fd, &sigh, l->signature_type);
 	if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
 	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), fn);
 	    res++;
-	    goto bottom;
+	    goto exit;
 	}
-	if (sig == NULL) {
+	if (sigh == NULL) {
 	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
 	    res++;
-	    goto bottom;
+	    goto exit;
 	}
 
 	/* Grab a hint of what needs doing to avoid duplication. */
 	sigtag = 0;
 	if (sigtag == 0 && !nosignatures) {
-	    if (headerIsEntry(sig, RPMSIGTAG_DSA))
+	    if (headerIsEntry(sigh, RPMSIGTAG_DSA))
 		sigtag = RPMSIGTAG_DSA;
-	    else if (headerIsEntry(sig, RPMSIGTAG_RSA))
+	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
 		sigtag = RPMSIGTAG_RSA;
-	    else if (headerIsEntry(sig, RPMSIGTAG_GPG))
+	    else if (headerIsEntry(sigh, RPMSIGTAG_GPG))
 		sigtag = RPMSIGTAG_GPG;
-	    else if (headerIsEntry(sig, RPMSIGTAG_PGP))
+	    else if (headerIsEntry(sigh, RPMSIGTAG_PGP))
 		sigtag = RPMSIGTAG_PGP;
 	}
 	if (sigtag == 0 && !nodigests) {
-	    if (headerIsEntry(sig, RPMSIGTAG_MD5))
+	    if (headerIsEntry(sigh, RPMSIGTAG_MD5))
 		sigtag = RPMSIGTAG_MD5;
-	    else if (headerIsEntry(sig, RPMSIGTAG_SHA1))
+	    else if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
 		sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
 	}
 
-	if (headerIsEntry(sig, RPMSIGTAG_PGP)
-	||  headerIsEntry(sig, RPMSIGTAG_PGP5)
-	||  headerIsEntry(sig, RPMSIGTAG_MD5))
+	if (headerIsEntry(sigh, RPMSIGTAG_PGP)
+	||  headerIsEntry(sigh, RPMSIGTAG_PGP5)
+	||  headerIsEntry(sigh, RPMSIGTAG_MD5))
 	    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-	if (headerIsEntry(sig, RPMSIGTAG_GPG))
+	if (headerIsEntry(sigh, RPMSIGTAG_GPG))
 	    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
 
-	ts->dig = pgpNewDig();
+	dig = rpmtsDig(ts);
+	sigp = rpmtsSignature(ts);
 
 	/* Read the file, generating digest(s) on the fly. */
-	if (readFile(fd, fn, ts->dig)) {
+	if (dig == NULL || sigp == NULL || readFile(fd, fn, dig)) {
 	    res++;
-	    goto bottom;
+	    goto exit;
 	}
 
 	res2 = 0;
@@ -731,18 +737,20 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	sprintf(b, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 	b += strlen(b);
 
-	for (hi = headerInitIterator(sig);
-	    headerNextIterator(hi, &ts->sigtag, &ts->sigtype, &ts->sig, &ts->siglen);
-	    ts->sig = headerFreeData(ts->sig, ts->sigtype))
+	for (hi = headerInitIterator(sigh);
+	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
+	    (void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen))
 	{
 
-	    if (ts->sig == NULL) /* XXX can't happen */
+	    if (sig == NULL) /* XXX can't happen */
 		continue;
 
-	    /* Clean up parameters from previous sigtag. */
-	    pgpCleanDig(ts->dig);
+	    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
 
-	    switch (ts->sigtag) {
+	    /* Clean up parameters from previous sigtag. */
+	    pgpCleanDig(dig);
+
+	    switch (sigtag) {
 	    case RPMSIGTAG_RSA:
 	    case RPMSIGTAG_DSA:
 	    case RPMSIGTAG_GPG:
@@ -750,14 +758,14 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    case RPMSIGTAG_PGP:
 		if (nosignatures)
 		     continue;
-		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig,
+		xx = pgpPrtPkts(sig, siglen, dig,
 			(_print_pkts & rpmIsDebug()));
 
 		/* XXX only V3 signatures for now. */
-		if (ts->dig->signature.version != 3) {
+		if (sigp->version != 3) {
 		    rpmError(RPMERR_SIGVFY,
 		_("only V3 signatures can be verified, skipping V%u signature"),
-			ts->dig->signature.version);
+			sigp->version);
 		    continue;
 		}
 		/*@switchbreak@*/ break;
@@ -795,7 +803,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    res2 = 1;
 		} else {
 		    char *tempKey;
-		    switch (ts->sigtag) {
+		    switch (sigtag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "SIZE ");
 			res2 = 1;
@@ -876,7 +884,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    b = stpcpy(b, "    ");
 		    b = stpcpy(b, result);
 		} else {
-		    switch (ts->sigtag) {
+		    switch (sigtag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "size ");
 			/*@switchbreak@*/ break;
@@ -942,10 +950,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    }
 	}
 
-    bottom:
-	ts->dig = pgpFreeDig(ts->dig);
     }
 
+exit:
+    rpmtsCleanDig(ts);
     return res;
 }
 

@@ -709,7 +709,7 @@ restart:
 	break;
 
     case RPMQV_PKGID:
-    {	unsigned char md5[16];
+    {	unsigned char MD5[16];
 	unsigned char * t;
 
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
@@ -719,11 +719,11 @@ restart:
 	    return 1;
 	}
 
-	md5[0] = '\0';
-        for (i = 0, t = md5, s = arg; i < 16; i++, t++, s += 2)
+	MD5[0] = '\0';
+        for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 	
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5, sizeof(md5));
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, MD5, sizeof(MD5));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"pkgid", arg);
@@ -752,7 +752,7 @@ restart:
 	break;
 
     case RPMQV_FILEID:
-    {	unsigned char md5[16];
+    {	unsigned char MD5[16];
 	unsigned char * t;
 
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
@@ -762,11 +762,11 @@ restart:
 	    return 1;
 	}
 
-	md5[0] = '\0';
-        for (i = 0, t = md5, s = arg; i < 16; i++, t++, s += 2)
+	MD5[0] = '\0';
+        for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEMD5S, md5, sizeof(md5));
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEMD5S, MD5, sizeof(MD5));
 	if (qva->qva_mi == NULL) {
 	    rpmError(RPMERR_QUERYINFO, _("no package matches %s: %s\n"),
 			"fileid", arg);

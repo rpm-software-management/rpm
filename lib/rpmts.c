@@ -4,9 +4,9 @@
  */
 #include "system.h"
 
+#include "rpmio_internal.h"	/* XXX for pgp and beecrypt */
 #include <rpmlib.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
-#include <rpmpgp.h>		/* XXX rpmtsFree() needs pgpFreeDig */
 
 #include "rpmdb.h"		/* XXX stealing db->db_mode. */
 
@@ -59,6 +59,8 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access rpmtsi @*/
 /*@access rpmts @*/
 /*@access fnpyKey @*/
+/*@access pgpDig @*/
+/*@access pgpDigParams @*/
 
 /*@unchecked@*/
 int _ts_debug = 0;
@@ -128,9 +130,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
     if (rc) {
 	const char * dn;
-	/*@-globs -mods@*/ /* FIX: rpmGlobalMacroContext for an error? shrug */
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	/*@=globs =mods@*/
 	rpmMessage(RPMMESS_ERROR,
 			_("cannot open Packages database in %s\n"), dn);
 	dn = _free(dn);
@@ -138,7 +138,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     return rc;
 }
 
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, int rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
@@ -146,9 +146,124 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, int rpmtag,
     return rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
 }
 
-static int rpmtsCloseSDB(rpmts ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/
+rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
+{
+    const void * sig = rpmtsSig(ts);
+    pgpDig dig = rpmtsDig(ts);
+    pgpDigParams sigp = rpmtsSignature(ts);
+    pgpDigParams pubp = rpmtsSignature(ts);
+    rpmVerifySignatureReturn res;
+    int xx;
+
+    if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL) {
+	res = RPMSIG_NOKEY;		/* XXX RPMSIG_ARGS */
+	goto exit;
+    }
+
+    if (ts->pkpkt == NULL
+     || memcmp(sigp->signid, ts->pksignid, sizeof(ts->pksignid)))
+    {
+	int ix = -1;
+	rpmdbMatchIterator mi;
+	Header h;
+
+	ts->pkpkt = _free(ts->pkpkt);
+	ts->pkpktlen = 0;
+	memset(ts->pksignid, 0, sizeof(ts->pksignid));
+
+	/* Make sure the database is open. */
+	(void) rpmtsOpenDB(ts, ts->dbmode);
+
+	/* Retrieve the pubkey that matches the signature. */
+	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    const char ** pubkeys;
+	    int_32 pt, pc;
+
+	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
+		continue;
+	    ix = rpmdbGetIteratorFileNum(mi);
+/*@-boundsread@*/
+	    if (ix >= pc
+	     || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
+		ix = -1;
+/*@=boundsread@*/
+	    pubkeys = headerFreeData(pubkeys, pt);
+	    break;
+	}
+	mi = rpmdbFreeIterator(mi);
+
+	/* Was a matching pubkey found? */
+	if (ix < 0 || ts->pkpkt == NULL) {
+	    res = RPMSIG_NOKEY;
+	    goto exit;
+	}
+
+	/*
+	 * Can the pubkey packets be parsed?
+	 * Do the parameters match the signature?
+	 */
+	if (pgpPrtPkts(ts->pkpkt, ts->pkpktlen, NULL, 0)
+	 && sigp->pubkey_algo == pubp->pubkey_algo
+#ifdef	NOTYET
+	 && sigp->hash_algo == pubp->hash_algo
+#endif
+	 && !memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)))
+	{
+	    ts->pkpkt = _free(ts->pkpkt);
+	    ts->pkpktlen = 0;
+	    res = RPMSIG_NOKEY;
+	    goto exit;
+	}
+
+	/* XXX Verify the pubkey signature. */
+
+	/* Packet looks good, save the signer id. */
+/*@-boundsread@*/
+	memcpy(ts->pksignid, sigp->signid, sizeof(ts->pksignid));
+/*@=boundsread@*/
+
+	rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %s\n",
+		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
+		(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
+		pgpHexStr(sigp->signid, sizeof(sigp->signid)));
+
+    }
+
+#ifdef	NOTNOW
+    {
+	if (ts->pkpkt == NULL) {
+	    const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
+	    if (pgpReadPkts(pkfn, &ts->pkpkt, &ts->pkpktlen) != PGPARMOR_PUBKEY) {
+		pkfn = _free(pkfn);
+		res = RPMSIG_NOKEY;
+		goto exit;
+	    }
+	    pkfn = _free(pkfn);
+	}
+    }
+#endif
+
+    /* Retrieve parameters from pubkey packet(s). */
+    xx = pgpPrtPkts(ts->pkpkt, ts->pkpktlen, dig, 0);
+
+    /* Do the parameters match the signature? */
+    if (sigp->pubkey_algo == pubp->pubkey_algo
+#ifdef	NOTYET
+     && sigp->hash_algo == pubp->hash_algo
+#endif
+     &&	!memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) )
+	res = RPMSIG_OK;
+    else
+	res = RPMSIG_NOKEY;
+
+    /* XXX Verify the signature signature. */
+
+exit:
+    return res;
+}
+
+int rpmtsCloseSDB(rpmts ts)
 {
     int rc = 0;
 
@@ -159,19 +274,12 @@ static int rpmtsCloseSDB(rpmts ts)
     return rc;
 }
 
-/**
- * Open dependency universe database.
- * @param ts		transaction set
- * @return		0 on success
- */
-static int rpmtsOpenSDB(rpmts ts)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
+int rpmtsOpenSDB(rpmts ts, int dbmode)
 {
     static int has_sdbpath = -1;
     int rc = 0;
 
-    if (ts->sdb != NULL)
+    if (ts->sdb != NULL && ts->sdbmode == dbmode)
 	return 0;
 
     if (has_sdbpath < 0)
@@ -182,17 +290,16 @@ static int rpmtsOpenSDB(rpmts ts)
 	return 1;
 
     addMacro(NULL, "_dbpath", NULL, "%{_solve_dbpath}", RMIL_DEFAULT);
-    rc = rpmdbOpen(ts->rootDir, &ts->sdb, O_RDONLY, 0644);
+    rc = rpmdbOpen(ts->rootDir, &ts->sdb, ts->sdbmode, 0644);
     if (rc) {
 	const char * dn;
-	/*@-globs -mods@*/ /* FIX: rpmGlobalMacroContext for an error? shrug */
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	/*@=globs =mods@*/
 	rpmMessage(RPMMESS_DEBUG,
-			_("cannot open Packages database in %s\n"), dn);
+			_("cannot open Solve database in %s\n"), dn);
 	dn = _free(dn);
     }
     delMacro(NULL, "_dbpath");
+
     return rc;
 }
 
@@ -222,7 +329,7 @@ int rpmtsSolve(rpmts ts, rpmds ds)
     Header bh;
     Header h;
     time_t bhtime;
-    int rpmtag;
+    rpmTag rpmtag;
     const char * keyp;
     size_t keylen;
     int rc = 1;	/* assume not found */
@@ -240,7 +347,7 @@ int rpmtsSolve(rpmts ts, rpmds ds)
 	return rc;
 
     if (ts->sdb == NULL) {
-	xx = rpmtsOpenSDB(ts);
+	xx = rpmtsOpenSDB(ts, ts->sdbmode);
 	if (xx) return rc;
     }
 
@@ -346,89 +453,98 @@ rpmps rpmtsProblems(rpmts ts)
     return ps;
 }
 
+void rpmtsCleanDig(rpmts ts)
+{
+    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+    ts->dig = pgpFreeDig(ts->dig);
+}
+
 void rpmtsClean(rpmts ts)
 {
-    if (ts) {
-	rpmtsi pi; rpmte p;
+    rpmtsi pi; rpmte p;
+    if (ts == NULL)
+	return;
 
-	/* Clean up after dependency checks. */
-	pi = rpmtsiInit(ts);
-	while ((p = rpmtsiNext(pi, 0)) != NULL)
-	    rpmteCleanDS(p);
-	pi = rpmtsiFree(pi);
+    /* Clean up after dependency checks. */
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL)
+	rpmteCleanDS(p);
+    pi = rpmtsiFree(pi);
 
-	ts->addedPackages = rpmalFree(ts->addedPackages);
-	ts->numAddedPackages = 0;
+    ts->addedPackages = rpmalFree(ts->addedPackages);
+    ts->numAddedPackages = 0;
 
-	ts->suggests = _free(ts->suggests);
-	ts->nsuggests = 0;
+    ts->suggests = _free(ts->suggests);
+    ts->nsuggests = 0;
 
-	ts->probs = rpmpsFree(ts->probs);
+    ts->probs = rpmpsFree(ts->probs);
 
-	if (ts->sig != NULL)
-	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
-
-	if (ts->dig != NULL)
-	    ts->dig = pgpFreeDig(ts->dig);
-    }
+    rpmtsCleanDig(ts);
 }
 
 rpmts rpmtsFree(rpmts ts)
 {
-    if (ts) {
-	rpmtsi pi; rpmte p;
-	int oc;
+    rpmtsi pi; rpmte p;
+    int oc;
+    if (ts == NULL)
+	return NULL;
 
-	(void) rpmtsUnlink(ts, "tsCreate");
+    (void) rpmtsUnlink(ts, "tsCreate");
 
-	/*@-usereleased@*/
-	if (ts->nrefs > 0)
-	    return NULL;
+/*@-usereleased@*/
+    if (ts->nrefs > 0)
+	return NULL;
 
-	(void) rpmtsCloseDB(ts);
+    (void) rpmtsCloseDB(ts);
 
-	(void) rpmtsCloseSDB(ts);
+    (void) rpmtsCloseSDB(ts);
 
-	ts->availablePackages = rpmalFree(ts->availablePackages);
-	ts->numAvailablePackages = 0;
+    ts->availablePackages = rpmalFree(ts->availablePackages);
+    ts->numAvailablePackages = 0;
 
-	ts->dsi = _free(ts->dsi);
-	ts->removedPackages = _free(ts->removedPackages);
-	if (ts->scriptFd != NULL) {
-	    ts->scriptFd =
-		fdFree(ts->scriptFd, "rpmtsFree");
-	    ts->scriptFd = NULL;
-	}
-	ts->rootDir = _free(ts->rootDir);
-	ts->currDir = _free(ts->currDir);
+    ts->dsi = _free(ts->dsi);
+    ts->removedPackages = _free(ts->removedPackages);
+    if (ts->scriptFd != NULL) {
+	ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
+	ts->scriptFd = NULL;
+    }
+    ts->rootDir = _free(ts->rootDir);
+    ts->currDir = _free(ts->currDir);
 
-	for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
+    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 /*@-type -unqualifiedtrans @*/
-	    ts->order[oc] = rpmteFree(ts->order[oc]);
+	ts->order[oc] = rpmteFree(ts->order[oc]);
 /*@=type =unqualifiedtrans @*/
-	}
-	pi = rpmtsiFree(pi);
+    }
+    pi = rpmtsiFree(pi);
 /*@-type +voidabstract @*/	/* FIX: double indirection */
-	ts->order = _free(ts->order);
+    ts->order = _free(ts->order);
 /*@=type =voidabstract @*/
 
-	if (ts->pkpkt != NULL)
-	    ts->pkpkt = _free(ts->pkpkt);
-	ts->pkpktlen = 0;
-	memset(ts->pksignid, 0, sizeof(ts->pksignid));
+    if (ts->pkpkt != NULL)
+	ts->pkpkt = _free(ts->pkpkt);
+    ts->pkpktlen = 0;
+    memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
 /*@-nullstate@*/	/* FIX: partial annotations */
-	rpmtsClean(ts);
+    rpmtsClean(ts);
 /*@=nullstate@*/
 
-	/*@-refcounttrans@*/ ts = _free(ts); /*@=refcounttrans@*/
-	/*@=usereleased@*/
-    }
+    /*@-refcounttrans@*/ ts = _free(ts); /*@=refcounttrans@*/
+/*@=usereleased@*/
+
     return NULL;
 }
 
+int rpmtsVerifySigFlags(rpmts ts)
+{
+    int ret = 0;
+    if (ts != NULL)
+	ret = ts->vsflags;
+    return ret;
+}
+
 int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
-	/*@modifies ts @*/
 {
     int ret = 0;
     if (ts != NULL) {
@@ -551,6 +667,83 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
 	ts->tid = tid;
     }
     return otid;
+}
+
+int_32 rpmtsSigtag(const rpmts ts)
+{
+    int_32 sigtag = 0;
+    if (ts != NULL)
+	sigtag = ts->sigtag;
+    return sigtag;
+}
+
+int_32 rpmtsSigtype(const rpmts ts)
+{
+    int_32 sigtag = 0;
+    if (ts != NULL)
+	sigtag = ts->sigtag;
+    return sigtag;
+}
+
+const void * rpmtsSig(const rpmts ts)
+{
+    const void * sig = NULL;
+    if (ts != NULL)
+	sig = ts->sig;
+    return sig;
+}
+
+int_32 rpmtsSiglen(const rpmts ts)
+{
+    int_32 siglen = 0;
+    if (ts != NULL)
+	siglen = ts->siglen;
+    return siglen;
+}
+
+int rpmtsSetSig(rpmts ts,
+		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
+{
+    if (ts != NULL) {
+	if (ts->sig)
+	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
+	ts->sigtag = sigtag;
+	ts->sigtype = sigtype;
+/*@-assignexpose -kepttrans@*/
+	ts->sig = sig;
+/*@=assignexpose =kepttrans@*/
+	ts->siglen = siglen;
+    }
+    return 0;
+}
+
+pgpDig rpmtsDig(rpmts ts)
+{
+/*@-mods@*/ /* FIX: hide lazy malloc for now */
+    if (ts->dig == NULL)
+	ts->dig = pgpNewDig();
+/*@=mods@*/
+    if (ts->dig == NULL)
+	return NULL;
+    return ts->dig;
+}
+
+pgpDigParams rpmtsSignature(const rpmts ts)
+{
+    pgpDig dig = rpmtsDig(ts);
+    if (dig == NULL) return NULL;
+/*@-immediatetrans@*/
+    return &dig->signature;
+/*@=immediatetrans@*/
+}
+
+pgpDigParams rpmtsPubkey(const rpmts ts)
+{
+    pgpDig dig = rpmtsDig(ts);
+    if (dig == NULL) return NULL;
+/*@-immediatetrans@*/
+    return &dig->pubkey;
+/*@=immediatetrans@*/
 }
 
 rpmdb rpmtsGetRdb(rpmts ts)
@@ -828,6 +1021,12 @@ rpmts rpmtsCreate(void)
     ts->filesystems = NULL;
     ts->dsi = NULL;
 
+    ts->solve = rpmtsSolve;
+    ts->nsuggests = 0;
+    ts->suggests = NULL;
+    ts->sdb = NULL;
+    ts->sdbmode = O_RDONLY;
+
     ts->rdb = NULL;
     ts->dbmode = O_RDONLY;
 
@@ -846,11 +1045,6 @@ rpmts rpmtsCreate(void)
 
     ts->numAddedPackages = 0;
     ts->addedPackages = NULL;
-
-    ts->solve = rpmtsSolve;
-    ts->nsuggests = 0;
-    ts->suggests = NULL;
-    ts->sdb = NULL;
 
     ts->numAvailablePackages = 0;
     ts->availablePackages = NULL;

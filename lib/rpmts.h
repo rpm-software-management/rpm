@@ -66,14 +66,15 @@ struct rpmts_s {
     rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
 
+/*@refcounted@*/ /*@null@*/
+    rpmdb sdb;			/*!< Solve database handle. */
+    int sdbmode;		/*!< Solve database open mode. */
 /*@null@*/
     int (*solve) (rpmts ts, const rpmds key)
 	/*@modifies ts @*/;	/*!< Search for NEVRA key. */
     int nsuggests;		/*!< No. of depCheck suggestions. */
 /*@only@*/ /*@null@*/
     const void ** suggests;	/*!< Possible depCheck suggestions. */
-/*@refcounted@*/ /*@null@*/
-    rpmdb sdb;			/*!< Solve database handle. */
 
 /*@observer@*/ /*@null@*/
     rpmCallbackFunction notify;	/*!< Callback function. */
@@ -91,9 +92,9 @@ struct rpmts_s {
 /*@only@*/ /*@null@*/
     rpmDiskSpaceInfo dsi;	/*!< Per filesystem disk/inode usage. */
 
-    int dbmode;			/*!< Database open mode. */
 /*@refcounted@*/ /*@null@*/
     rpmdb rdb;			/*!< Install database handle. */
+    int dbmode;			/*!< Install database open mode. */
 /*@only@*/
     hashTable ht;		/*!< Fingerprint hash table. */
 
@@ -161,14 +162,14 @@ extern "C" {
  * @return		0 on success
  */
 int rpmtsCheck(rpmts ts)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Determine package order in a transaction set according to dependencies.
  *
  * Order packages, returning error if circular dependencies cannot be
- * eliminated by removing PreReq's from the loop(s). Only dependencies from
+ * eliminated by removing Requires's from the loop(s). Only dependencies from
  * added or removed packages are used to determine ordering using a
  * topological sort (Knuth vol. 1, p. 262). Use rpmtsCheck() to verify
  * that all dependencies can be resolved.
@@ -176,9 +177,6 @@ int rpmtsCheck(rpmts ts)
  * The final order ends up as installed packages followed by removed packages,
  * with packages removed for upgrades immediately following the new package
  * to be installed.
- *
- * The operation would be easier if we could sort the addedPackages array in the
- * transaction set, but we store indexes into the array in various places.
  *
  * @param ts		transaction set
  * @return		no. of (added) packages that could not be ordered
@@ -188,7 +186,7 @@ int rpmtsOrder(rpmts ts)
 	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
- * Process all packages in a transaction set.
+ * Process all package elements in a transaction set.
  *
  * @param ts		transaction set
  * @param okProbs	previously known problems (or NULL)
@@ -251,8 +249,8 @@ int rpmtsCloseDB(rpmts ts)
  * @return		0 on success
  */
 int rpmtsOpenDB(rpmts ts, int dbmode)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Return transaction database iterator.
@@ -263,13 +261,45 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, int rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
- * Attempt to solve a needed dependency.
+ * Retrieve pubkey from rpm database.
+ * @param ts		rpm transaction
+ * @return		RPMSIG_OK on success, RPMSIG_NOKEY if not found
+ */
+rpmVerifySignatureReturn rpmtsFindPubkey(rpmts ts)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState */;
+
+/** \ingroup rpmts
+ * Close the database used by the transaction to solve dependencies.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+/*@-exportlocal@*/
+int rpmtsCloseSDB(rpmts ts)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
+/*@=exportlocal@*/
+
+/** \ingroup rpmts
+ * Open the database used by the transaction to solve dependencies.
+ * @param ts		transaction set
+ * @param dbmode	O_RDONLY or O_RDWR
+ * @return		0 on success
+ */
+/*@-exportlocal@*/
+int rpmtsOpenSDB(rpmts ts, int dbmode)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+/*@=exportlocal@*/
+
+/**
+ * Attempt to solve a needed dependency using the solve database..
  * @param ts		transaction set
  * @param ds		dependency set
  * @return		0 if resolved (and added to ts), 1 not found
@@ -281,7 +311,8 @@ int rpmtsSolve(rpmts ts, rpmds ds)
 /*@=exportlocal@*/
 
 /**
- * Attempt to solve a needed dependency.
+ * Attempt to solve a needed dependency using memory resident tables.
+ * @deprecated This function will move from rpmlib to the python bindings.
  * @param ts		transaction set
  * @param ds		dependency set
  * @return		0 if resolved (and added to ts), 1 not found
@@ -298,6 +329,13 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
  */
 /*@null@*/
 rpmps rpmtsProblems(rpmts ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Free signature verification data.
+ * @param ts		transaction set
+ */
+void rpmtsCleanDig(rpmts ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -318,10 +356,18 @@ rpmts rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmts ts)
 	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmts
+ * Get verify signatures flag(s).
+ * @param ts		transaction set
+ * @return		verify signatures flags
+ */
+int rpmtsVerifySigFlags(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
  * Set verify signatures flag(s).
  * @param ts		transaction set
  * @param vsflags	new verify signatures flags
- * @retrun		previous value
+ * @return		previous value
  */
 int rpmtsSetVerifySigFlags(rpmts ts, int vsflags)
 	/*@modifies ts @*/;
@@ -412,7 +458,81 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
- * Get transaction database handle.
+ * Get signature tag.
+ * @param ts		transaction set
+ * @return		signature tag
+ */
+int_32 rpmtsSigtag(const rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get signature tag type.
+ * @param ts		transaction set
+ * @return		signature tag type
+ */
+int_32 rpmtsSigtype(const rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get signature tag data, i.e. from header.
+ * @param ts		transaction set
+ * @return		signature tag data
+ */
+/*@observer@*/ /*@null@*/
+extern const void * rpmtsSig(const rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get signature tag data length, i.e. no. of bytes of data.
+ * @param ts		transaction set
+ * @return		signature tag data length
+ */
+int_32 rpmtsSiglen(const rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set signature tag info, i.e. from header.
+ * @param ts		transaction set
+ * @param sigtag	signature tag
+ * @param sigtype	signature tag type
+ * @param sig		signature tag data
+ * @param siglen	signature tag data length
+ * @return		0 always
+ */
+int rpmtsSetSig(rpmts ts,
+		int_32 sigtag, int_32 sigtype,
+		/*@kept@*/ /*@null@*/ const void * sig, int_32 siglen)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get OpenPGP packet parameters, i.e. signature/pubkey constants.
+ * @param ts		transaction set
+ * @return		signature/pubkey constants.
+ */
+/*@exposed@*/ /*@null@*/
+pgpDig rpmtsDig(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get OpenPGP signature constants.
+ * @param ts		transaction set
+ * @return		signature constants.
+ */
+/*@exposed@*/ /*@null@*/
+pgpDigParams rpmtsSignature(const rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get OpenPGP pubkey constants.
+ * @param ts		transaction set
+ * @return		pubkey constants.
+ */
+/*@exposed@*/ /*@null@*/
+pgpDigParams rpmtsPubkey(const rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get transaction set database handle.
  * @param ts		transaction set
  * @return		transaction database handle
  */
@@ -511,7 +631,7 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
  * Set transaction notify callback function and argument.
  *
  * @warning This call must be made before rpmtsRun() for
- *	install/upgrade/freshen to "work".
+ *	install/upgrade/freshen to function correctly.
  *
  * @param ts		transaction set
  * @param notify	progress callback
@@ -534,12 +654,8 @@ rpmts rpmtsCreate(void)
 /** \ingroup rpmts
  * Add package to be installed to transaction set.
  *
- * If fd is NULL, the callback set by rpmtsSetNotifyCallback() is used to
- * open and close the file descriptor. If Header is NULL, the fd is always
- * used, otherwise fd is only needed (and only opened) for actual package 
- * installation.
- *
- * @warning The fd argument has been eliminated, and is assumed always NULL.
+ * The transaction set is checked for duplicate package names.
+ * If found, the package with the "newest" EVR will be replaced.
  *
  * @param ts		transaction set
  * @param h		header
@@ -551,22 +667,8 @@ rpmts rpmtsCreate(void)
 int rpmtsAddInstallElement(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, h, fileSystem, internalState @*/;
-
-#ifdef	DYING
-/** \ingroup rpmts
- * Add package to universe of possible packages to install in transaction set.
- * @warning The key parameter is non-functional.
- * @param ts		transaction set
- * @param h		header
- * @param key		package private data
- */
-/*@unused@*/
-void rpmtsAvailablePackage(rpmts ts, Header h,
-		/*@exposed@*/ /*@null@*/ fnpyKey key)
-	/*@modifies h, ts @*/;
-#endif
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Add package to be erased to transaction set.

@@ -21,8 +21,8 @@
 /**
  */
 static int checkSpec(rpmts ts, Header h)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, h, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmps ps;
     int rc;
@@ -99,10 +99,8 @@ static int isSpecFile(const char * specfile)
  */
 /*@-boundswrite@*/
 static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;

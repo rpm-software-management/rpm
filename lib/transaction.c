@@ -221,8 +221,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 		rpmte p, rpmfi fi,
 		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fi, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * altNEVR = NULL;
     rpmfi otherFi = NULL;
@@ -310,8 +310,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 /* XXX only ts->rpmdb modified */
 static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 		sharedFileInfo shared, int sharedCount)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fi, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = fi->hge;
     Header h;
@@ -651,8 +651,8 @@ assert(otherFi != NULL);
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char md5sum[50];
-		const unsigned char * md5 = fi->md5s + (16 * i);
-		if (!domd5(fn, md5sum, 0, NULL) && memcmp(md5, md5sum, 16)) {
+		const unsigned char * MD5 = fi->md5s + (16 * i);
+		if (!domd5(fn, md5sum, 0, NULL) && memcmp(MD5, md5sum, 16)) {
 		    fi->actions[i] = FA_BACKUP;
 		    /*@switchbreak@*/ break;
 		}

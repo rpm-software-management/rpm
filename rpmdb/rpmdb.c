@@ -125,13 +125,13 @@ static void dbiTagsInit(void)
 	/*@modifies rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
 {
 /*@observer@*/ static const char * const _dbiTagStr_default =
-	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Removetid";
+	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys";
     char * dbiTagStr = NULL;
     char * o, * oe;
     int rpmtag;
 
-    dbiTagStr = rpmExpand("%{_dbi_tags}", NULL);
-    if (!(dbiTagStr && *dbiTagStr && *dbiTagStr != '%')) {
+    dbiTagStr = rpmExpand("%{?_dbi_tags}", NULL);
+    if (!(dbiTagStr && *dbiTagStr)) {
 	dbiTagStr = _free(dbiTagStr);
 	dbiTagStr = xstrdup(_dbiTagStr_default);
     }
@@ -331,7 +331,7 @@ union _dbswap {
  * @return		0 on success
  */
 static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
-	/*@modifies *setp @*/
+	/*@modifies dbi, *setp @*/
 {
     int _dbbyteswapped = dbiByteSwapped(dbi);
     const char * sdbir;
@@ -400,7 +400,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, /*@out@*/ dbiIndexSet * setp)
  * @return		0 on success
  */
 static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
-	/*@modifies *data @*/
+	/*@modifies dbi, *data @*/
 {
     int _dbbyteswapped = dbiByteSwapped(dbi);
     char * tdbir;
@@ -1940,7 +1940,6 @@ top:
     uh = NULL;
     uhlen = 0;
 
-    /* XXX skip over instances with 0 join key */
     do {
   	/*@-branchstate -compmempass @*/
 	if (mi->mi_set) {
@@ -1969,8 +1968,6 @@ top:
 
 	    /*
 	     * If we got the next key, save the header instance number.
-	     *
-	     * (dead) For db1 Packages (db1->dbi_lastoffset != 0), always copy.
 	     *
 	     * For db3 Packages, instance 0 (i.e. mi->mi_setx == 0) is the
 	     * largest header instance in the database, and should be
@@ -2274,7 +2271,7 @@ if (rc == 0)
     /*@=nullret@*/
 }
 
-/* XXX install.c uninstall.c */
+/* XXX psm.c */
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 {
 DBC * dbcursor = NULL;
@@ -3328,10 +3325,10 @@ int rpmdbRebuild(const char * prefix)
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
 
     /*@-nullpass@*/
-    tfn = rpmGetPath("%{_dbpath}", NULL);
+    tfn = rpmGetPath("%{?_dbpath}", NULL);
     /*@=nullpass@*/
 /*@-boundsread@*/
-    if (!(tfn && tfn[0] != '%'))
+    if (!(tfn && tfn[0] != '\0'))
 /*@=boundsread@*/
     {
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
@@ -3344,10 +3341,10 @@ int rpmdbRebuild(const char * prefix)
     tfn = _free(tfn);
 
     /*@-nullpass@*/
-    tfn = rpmGetPath("%{_dbpath_rebuild}", NULL);
+    tfn = rpmGetPath("%{?_dbpath_rebuild}", NULL);
     /*@=nullpass@*/
 /*@-boundsread@*/
-    if (!(tfn && tfn[0] != '%' && strcmp(tfn, dbpath)))
+    if (!(tfn && tfn[0] != '\0' && strcmp(tfn, dbpath)))
 /*@=boundsread@*/
     {
 	char pidbuf[20];

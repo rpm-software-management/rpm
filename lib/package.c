@@ -9,7 +9,6 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
-#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
 #include "misc.h"	/* XXX stripTrailingChar() */
@@ -154,14 +153,15 @@ static int rpmtsStashKeyid(rpmts ts)
 	/*@globals nkeyids, keyids @*/
 	/*@modifies nkeyids, keyids @*/
 {
-    pgpDigParams sigp = NULL;
+    const void * sig = rpmtsSig(ts);
+    pgpDig dig = rpmtsDig(ts);
+    pgpDigParams sigp = rpmtsSignature(ts);
     unsigned int keyid;
     int i;
 
-    if (ts->sig == NULL || ts->dig == NULL)
+    if (sig == NULL || dig == NULL || sigp == NULL)
 	return 0;
 
-    sigp = &ts->dig->signature;
     keyid = pgpGrab(sigp->signid+4, 4);
     if (keyid == 0)
 	return 0;
@@ -191,12 +191,18 @@ static unsigned char header_magic[8] = {
 int rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, Header * hdrp)
 {
+    pgpDig dig;
     byte buf[8*BUFSIZ];
     ssize_t count;
     struct rpmlead * l = alloca(sizeof(*l));
-    Header sig;
+    Header sigh;
+    int_32 sigtag;
+    int_32 sigtype;
+    const void * sig;
+    int_32 siglen;
     Header h = NULL;
     int hmagic;
+    int vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     int i;
@@ -243,51 +249,52 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     }
 
     /* Read the signature header. */
-    rc = rpmReadSignature(fd, &sig, l->signature_type);
+    rc = rpmReadSignature(fd, &sigh, l->signature_type);
     if (!(rc == RPMRC_OK || rc == RPMRC_BADSIZE)) {
 	rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed\n"), fn);
 	goto exit;
     }
-    if (sig == NULL) {
+    if (sigh == NULL) {
 	rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     /* Figger the most effective available signature. */
-    ts->sigtag = 0;
-    if (ts->vsflags & _RPMTS_VSF_VERIFY_LEGACY) {
-	if (ts->sigtag == 0 && !(ts->vsflags & _RPMTS_VSF_NOSIGNATURES)) {
-	    if (headerIsEntry(sig, RPMSIGTAG_DSA))
-		ts->sigtag = RPMSIGTAG_DSA;
-	    else if (headerIsEntry(sig, RPMSIGTAG_RSA))
-		ts->sigtag = RPMSIGTAG_RSA;
-	    else if (headerIsEntry(sig, RPMSIGTAG_GPG)) {
-		ts->sigtag = RPMSIGTAG_GPG;
+    sigtag = 0;
+    vsflags = rpmtsVerifySigFlags(ts);
+    if (vsflags & _RPMTS_VSF_VERIFY_LEGACY) {
+	if (sigtag == 0 && !(vsflags & _RPMTS_VSF_NOSIGNATURES)) {
+	    if (headerIsEntry(sigh, RPMSIGTAG_DSA))
+		sigtag = RPMSIGTAG_DSA;
+	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
+		sigtag = RPMSIGTAG_RSA;
+	    else if (headerIsEntry(sigh, RPMSIGTAG_GPG)) {
+		sigtag = RPMSIGTAG_GPG;
 		fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-	    } else if (headerIsEntry(sig, RPMSIGTAG_PGP)) {
-		ts->sigtag = RPMSIGTAG_PGP;
+	    } else if (headerIsEntry(sigh, RPMSIGTAG_PGP)) {
+		sigtag = RPMSIGTAG_PGP;
 		fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	    }
 	}
-	if (ts->sigtag == 0 && !(ts->vsflags & _RPMTS_VSF_NODIGESTS)) {
-	    if (headerIsEntry(sig, RPMSIGTAG_SHA1))
-		ts->sigtag = RPMSIGTAG_SHA1;
-	    else if (headerIsEntry(sig, RPMSIGTAG_MD5)) {
-		ts->sigtag = RPMSIGTAG_MD5;
+	if (sigtag == 0 && !(vsflags & _RPMTS_VSF_NODIGESTS)) {
+	    if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
+		sigtag = RPMSIGTAG_SHA1;
+	    else if (headerIsEntry(sigh, RPMSIGTAG_MD5)) {
+		sigtag = RPMSIGTAG_MD5;
 		fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	    }
 	}
     } else {
-	if (ts->sigtag == 0 && !(ts->vsflags & _RPMTS_VSF_NOSIGNATURES)) {
-	    if (headerIsEntry(sig, RPMSIGTAG_DSA))
-		ts->sigtag = RPMSIGTAG_DSA;
-	    else if (headerIsEntry(sig, RPMSIGTAG_RSA))
-		ts->sigtag = RPMSIGTAG_RSA;
+	if (sigtag == 0 && !(vsflags & _RPMTS_VSF_NOSIGNATURES)) {
+	    if (headerIsEntry(sigh, RPMSIGTAG_DSA))
+		sigtag = RPMSIGTAG_DSA;
+	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
+		sigtag = RPMSIGTAG_RSA;
 	}
-	if (ts->sigtag == 0 && !(ts->vsflags & _RPMTS_VSF_NODIGESTS)) {
-	    if (headerIsEntry(sig, RPMSIGTAG_SHA1))
-		ts->sigtag = RPMSIGTAG_SHA1;
+	if (sigtag == 0 && !(vsflags & _RPMTS_VSF_NODIGESTS)) {
+	    if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
+		sigtag = RPMSIGTAG_SHA1;
 	}
     }
 
@@ -301,37 +308,37 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     }
 
     /* Any signatures to check? */
-    if (ts->sigtag == 0) {
+    if (sigtag == 0) {
 	rc = RPMRC_OK;
 	goto exit;
     }
 
-    ts->dig = pgpNewDig();
-    if (ts->dig == NULL) {
+    dig = rpmtsDig(ts);
+    if (dig == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-    ts->dig->nbytes = 0;
+    dig->nbytes = 0;
 
     /* Retrieve the tag parameters from the signature header. */
-    ts->sig = NULL;
-    xx = headerGetEntry(sig, ts->sigtag, &ts->sigtype,
-		(void **) &ts->sig, &ts->siglen);
-    if (ts->sig == NULL) {
+    sig = NULL;
+    xx = headerGetEntry(sigh, sigtag, &sigtype, (void **) &sig, &siglen);
+    if (sig == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
+    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
 
-    switch (ts->sigtag) {
+    switch (sigtag) {
     case RPMSIGTAG_RSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig,
+	xx = pgpPrtPkts(sig, siglen, dig,
 			(_print_pkts & rpmIsDebug()));
 	/* XXX only V3 signatures for now. */
-	if (ts->dig->signature.version != 3) {
+	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
 		_("only V3 signatures can be verified, skipping V%u signature"),
-		ts->dig->signature.version);
+		dig->signature.version);
 	    rc = RPMRC_OK;
 	    goto exit;
 	}
@@ -341,22 +348,22 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
-	ts->dig->md5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(ts->dig->md5ctx, header_magic, sizeof(header_magic));
-	ts->dig->nbytes += sizeof(header_magic);
-	(void) rpmDigestUpdate(ts->dig->md5ctx, uh, uhc);
-	ts->dig->nbytes += uhc;
+	dig->md5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(dig->md5ctx, header_magic, sizeof(header_magic));
+	dig->nbytes += sizeof(header_magic);
+	(void) rpmDigestUpdate(dig->md5ctx, uh, uhc);
+	dig->nbytes += uhc;
 	uh = headerFreeData(uh, uht);
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig,
+	xx = pgpPrtPkts(sig, siglen, dig,
 			(_print_pkts & rpmIsDebug()));
 	/* XXX only V3 signatures for now. */
-	if (ts->dig->signature.version != 3) {
+	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
 		_("only V3 signatures can be verified, skipping V%u signature"),
-		ts->dig->signature.version);
+		dig->signature.version);
 	    rc = RPMRC_OK;
 	    goto exit;
 	}
@@ -368,41 +375,41 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
-	ts->dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(ts->dig->hdrsha1ctx, header_magic, sizeof(header_magic));
-	ts->dig->nbytes += sizeof(header_magic);
-	(void) rpmDigestUpdate(ts->dig->hdrsha1ctx, uh, uhc);
-	ts->dig->nbytes += uhc;
+	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
+	dig->nbytes += sizeof(header_magic);
+	(void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
+	dig->nbytes += uhc;
 	uh = headerFreeData(uh, uht);
     }	break;
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig,
+	xx = pgpPrtPkts(sig, siglen, dig,
 			(_print_pkts & rpmIsDebug()));
 
 	/* XXX only V3 signatures for now. */
-	if (ts->dig->signature.version != 3) {
+	if (dig->signature.version != 3) {
 	    rpmMessage(RPMMESS_WARNING,
 		_("only V3 signatures can be verified, skipping V%u signature"),
-		ts->dig->signature.version);
+		dig->signature.version);
 	    rc = RPMRC_OK;
 	    goto exit;
 	}
 	/*@fallthrough@*/
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
-	ts->dig->nbytes += headerSizeof(h, hmagic);
+	dig->nbytes += headerSizeof(h, hmagic);
 	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
-	    ts->dig->nbytes += count;
+	    dig->nbytes += count;
 	if (count < 0) {
 	    rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"),
 					fn, Fstrerror(fd));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	ts->dig->nbytes += count;
+	dig->nbytes += count;
 
 	/* XXX Steal the digest-in-progress from the file handle. */
 	for (i = fd->ndigests - 1; i >= 0; i--) {
@@ -410,12 +417,12 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 	    if (fddig->hashctx == NULL)
 		continue;
 	    if (fddig->hashalgo == PGPHASHALGO_MD5) {
-		ts->dig->md5ctx = fddig->hashctx;
+		dig->md5ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
 		continue;
 	    }
 	    if (fddig->hashalgo == PGPHASHALGO_SHA1) {
-		ts->dig->sha1ctx = fddig->hashctx;
+		dig->sha1ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
 		continue;
 	    }
@@ -457,7 +464,7 @@ exit:
 	legacyRetrofit(h, l);
 	
 	/* Append (and remap) signature tags to the metadata. */
-	headerMergeLegacySigs(h, sig);
+	headerMergeLegacySigs(h, sigh);
 
 	/* Bump reference count for return. */
 /*@-boundswrite@*/
@@ -465,10 +472,7 @@ exit:
 /*@=boundswrite@*/
     }
     h = headerFree(h);
-    if (ts->sig != NULL)
-	ts->sig = headerFreeData(ts->sig, ts->sigtype);
-    if (ts->dig != NULL)
-	ts->dig = pgpFreeDig(ts->dig);
-    sig = rpmFreeSignature(sig);
+    rpmtsCleanDig(ts);
+    sigh = rpmFreeSignature(sigh);
     return rc;
 }

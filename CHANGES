@@ -175,6 +175,7 @@
 	- popt: parse file into string of options (#56860).
 	- version added to *.la dependency libraries (#69063).
 	- expose digests in rpmio API, but hide internal beecrypt API (#68999).
+	- add methods to make signature handling opaque wrto rpmts.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

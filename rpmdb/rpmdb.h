@@ -28,9 +28,9 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
  */
 typedef enum rpmMireMode_e {
     RPMMIRE_DEFAULT	= 0,	/*!< regex with \., .* and ^...$ added */
-    RPMMIRE_STRCMP	= 1,	/*!< strcmp on strings */
-    RPMMIRE_REGEX	= 2,	/*!< regex patterns */
-    RPMMIRE_GLOB	= 3	/*!< glob patterns through fnmatch(3) */
+    RPMMIRE_STRCMP	= 1,	/*!< strings  using strcmp(3) */
+    RPMMIRE_REGEX	= 2,	/*!< regex(7) patterns through regcomp(3) */
+    RPMMIRE_GLOB	= 3	/*!< glob(7) patterns through fnmatch(3) */
 } rpmMireMode;
 
 /**
@@ -373,8 +373,6 @@ struct _dbiIndex {
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
     int	dbi_jlen;		/*!< size of join key */
 
-    unsigned int dbi_lastoffset;	/*!< db1 with falloc.c needs this */
-
 /*@only@*//*@null@*/
     DB * dbi_db;		/*!< Berkeley DB * handle */
 /*@only@*//*@null@*/
@@ -391,32 +389,40 @@ struct _dbiIndex {
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
-/*@owned@*/ const char * db_root;/*!< path prefix */
-/*@owned@*/ const char * db_home;/*!< directory path */
+/*@owned@*/
+    const char * db_root;/*!< path prefix */
+/*@owned@*/
+    const char * db_home;/*!< directory path */
     int		db_flags;
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     int		db_api;		/*!< Berkeley API type */
-/*@owned@*/ const char * db_errpfx;
+/*@owned@*/
+    const char * db_errpfx;
     int		db_remove_env;
     int		db_filter_dups;
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
     void (*db_errcall) (const char *db_errpfx, char *buffer)
 	/*@*/;
-/*@shared@*/ FILE *	db_errfile;
-/*@only@*/ void * (*db_malloc) (size_t nbytes)
+/*@shared@*/
+    FILE *	db_errfile;
+/*@only@*/
+    void * (*db_malloc) (size_t nbytes)
 	/*@*/;
-/*@only@*/ void * (*db_realloc) (/*@only@*//*@null@*/ void * ptr,
+/*@only@*/
+    void * (*db_realloc) (/*@only@*//*@null@*/ void * ptr,
 						size_t nbytes)
 	/*@*/;
     void (*db_free) (/*@only@*/ void * ptr)
 	/*@modifies *ptr @*/;
     int		db_opens;
-/*@only@*//*@null@*/ void * db_dbenv;	/*!< Berkeley DB_ENV handle */
+/*@only@*/ /*@null@*/
+    void * db_dbenv;		/*!< Berkeley DB_ENV handle */
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex *	_dbi;		/*!< Tag indices. */
 
-/*@refs@*/ int nrefs;		/*!< Reference count. */
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
 };
 
 /* for RPM's internal use only */
@@ -479,7 +485,7 @@ extern const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 		unsigned int flags)
 	/*@modifies db @*/;
 
-/*@-globuse -mods -mustmod @*/
+/*@-globuse -mustmod @*/ /* FIX: vector annotations */
 /** \ingroup dbi
  * Open a database cursor.
  * @param dbi		index database handle
@@ -707,15 +713,13 @@ int dbiJoin(dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
  */
 /*@unused@*/ static inline
 int dbiByteSwapped(dbiIndex dbi)
-	/*@*/
+	/*@modifies dbi @*/
 {
-/*@-mods@*/ /* FIX: shrug */
     if (dbi->dbi_byteswapped == -1)
         dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
-/*@=mods@*/
     return dbi->dbi_byteswapped;
 }
-/*@=globuse =mods =mustmod @*/
+/*@=globuse =mustmod @*/
 
 /*@=exportlocal@*/
 
@@ -948,7 +952,7 @@ int rpmdbSetIteratorRewrite(/*@null@*/ rpmdbMatchIterator mi, int rewrite)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb
- * Modify iterator to mark header for lazy write.
+ * Modify iterator to mark header for lazy write on release.
  * @param mi		rpm database iterator
  * @param modified	new value of modified
  * @return		previous value

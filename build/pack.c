@@ -412,7 +412,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     int_32 count, sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
-    const char * sha1 = NULL;
+    const char * SHA1 = NULL;
     char *s;
     char buf[BUFSIZ];
     Header h;
@@ -501,7 +501,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rpmError(RPMERR_NOSPACE, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
 	(void) Fflush(fd);
-	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
+	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
 	if (csa->cpioList != NULL) {
 	    rc = cpio_doio(fd, h, csa, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
@@ -547,7 +547,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rpmError(RPMERR_NOSPACE, _("Unable to write final header\n"));
     }
     (void) Fflush(fd);
-    fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
+    fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
 #endif
 
     (void) Fclose(fd);
@@ -568,9 +568,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	(void) rpmAddSignature(sig, sigtarget, sigtag, passPhrase);
     }
     
-    if (sha1) {
-	(void) headerAddEntry(sig, RPMSIGTAG_SHA1, RPM_STRING_TYPE, sha1, 1);
-	sha1 = _free(sha1);
+    if (SHA1) {
+	(void) headerAddEntry(sig, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1);
+	SHA1 = _free(SHA1);
     }
 
     {	int_32 payloadSize = csa->cpioArchiveSize;
@@ -690,7 +690,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     rc = 0;
 
 exit:
-    sha1 = _free(sha1);
+    SHA1 = _free(SHA1);
     h = headerFree(h);
     sig = rpmFreeSignature(sig);
     if (ifd) {

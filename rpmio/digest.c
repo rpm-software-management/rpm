@@ -3,10 +3,6 @@
  */
 
 #include "system.h"
-#include "beecrypt.h"
-#include "md5.h"
-#include "endianness.h"
-#include "sha1.h"
 #include "rpmio_internal.h"
 #include "debug.h"
 

@@ -122,8 +122,8 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	if (rc)
 	    *res |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	else {
-	    const unsigned char * md5 = rpmfiMD5(fi);
-	    if (md5 == NULL || memcmp(md5sum, md5, sizeof(md5sum)))
+	    const unsigned char * MD5 = rpmfiMD5(fi);
+	    if (MD5 == NULL || memcmp(md5sum, MD5, sizeof(md5sum)))
 		*res |= RPMVERIFY_MD5;
 	}
     } 
@@ -290,7 +290,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 		ec = rc;
 	    }
 	} else if (verifyResult) {
-	    const char * size, * md5, * link, * mtime, * mode;
+	    const char * size, * MD5, * link, * mtime, * mode;
 	    const char * group, * user, * rdev;
 	    /*@observer@*/ static const char *const aok = ".";
 	    /*@observer@*/ static const char *const unknown = "?";
@@ -306,7 +306,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	((verifyResult & RPMVERIFY_READFAIL) ? unknown : \
 	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
 	
-	    md5 = _verifyfile(RPMVERIFY_MD5, "5");
+	    MD5 = _verifyfile(RPMVERIFY_MD5, "5");
 	    size = _verify(RPMVERIFY_FILESIZE, "S");
 	    link = _verifylink(RPMVERIFY_LINKTO, "L");
 	    mtime = _verify(RPMVERIFY_MTIME, "T");
@@ -320,7 +320,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 #undef _verifyfile
 
 	    sprintf(te, "%s%s%s%s%s%s%s%s %c %s",
-			size, mode, md5, rdev, link, user, group, mtime, 
+			size, mode, MD5, rdev, link, user, group, mtime, 
 			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
@@ -354,8 +354,8 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
  */
 static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 		Header h)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, h, fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmps ps;
     int numProblems;

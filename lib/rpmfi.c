@@ -200,15 +200,15 @@ rpmfileState rpmfiFState(rpmfi fi)
 
 const unsigned char * rpmfiMD5(rpmfi fi)
 {
-    unsigned char * md5 = NULL;
+    unsigned char * MD5 = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
 	if (fi->md5s != NULL)
-	    md5 = fi->md5s + (16 * fi->i);
+	    MD5 = fi->md5s + (16 * fi->i);
 /*@=boundsread@*/
     }
-    return md5;
+    return MD5;
 }
 
 const char * rpmfiFLink(rpmfi fi)

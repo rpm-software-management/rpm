@@ -15,9 +15,9 @@
  * Package read return codes.
  */
 typedef	enum rpmRC_e {
-    RPMRC_OK		= 0,
-    RPMRC_NOTFOUND	= 1,
-    RPMRC_FAIL		= 2,
+    RPMRC_OK		= 0,	/*!< Generic success code */
+    RPMRC_NOTFOUND	= 1,	/*!< Generic not found code. */
+    RPMRC_FAIL		= 2,	/*!< Generic failure code. */
     RPMRC_BADSIZE	= 3,
     RPMRC_SHORTREAD	= 4
 } rpmRC;
@@ -840,8 +840,9 @@ typedef /*@abstract@*/ struct psm_s * PSM_t;
  */
 int rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fd, *hdrp, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, fd, *hdrp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Install source package.
@@ -854,8 +855,7 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 			/*@null@*/ /*@out@*/ const char ** specFilePtr,
 			/*@null@*/ /*@out@*/ const char ** cookie)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, fd, *specFilePtr, *cookie, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
@@ -978,7 +978,7 @@ void rpmShowRpmlibProvides(FILE * fp)
  * @param tagstr	name of tag
  * @return		tag value
  */
-int tagValue(const char *tagstr)
+int tagValue(const char * tagstr)
 	/*@*/;
 
 #define	RPMLEAD_BINARY 0
@@ -999,7 +999,8 @@ int tagValue(const char *tagstr)
  */
 struct rpmlead {
     unsigned char magic[4];
-    unsigned char major, minor;
+    unsigned char major;
+    unsigned char minor;
     short type;
     short archnum;
     char name[66];
@@ -1135,8 +1136,9 @@ typedef enum rpmVerifySignatureReturn_e {
  */
 rpmVerifySignatureReturn rpmVerifySignature(const rpmts ts,
 		/*@out@*/ char * result)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, *result, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, *result, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup signature
  * Destroy signature header from package.

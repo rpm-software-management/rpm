@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.51
+Release: 0.52
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -514,6 +514,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Jul 21 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.52
+- add methods to make signature handling opaque wrto rpmts.
+
 * Sat Jul 20 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.51
 - popt: parse file into string of options (#56860).
 - version added to *.la dependency libraries (#69063).

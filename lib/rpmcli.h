@@ -399,8 +399,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
  * @return		0 on success, 1 on failure
  */
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies qva, ts, fd,
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies qva, ts, fd, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
@@ -577,8 +577,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @return 		id index
  */
 /*@only@*/ /*@null@*/ IDTX IDTXload(rpmts ts, rpmTag tag)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState  @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
 /**
  * Load tag (instance,value) pairs from packages, and return sorted id index.
@@ -589,8 +589,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
  */
 /*@only@*/ /*@null@*/ IDTX IDTXglob(rpmts ts,
 		const char * globstr, rpmTag tag)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  * Rollback transactions, erasing new, reinstalling old, package(s).

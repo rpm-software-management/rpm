@@ -3,10 +3,10 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I. \
+	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
-	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 

@@ -16,27 +16,26 @@ dnl XXX AM_MAINTAINER_MODE
 dnl Set of available languages.
 ALL_LINGUAS="cs da de en_RN es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN.GB2312"
 
-echo "
-
-****************************************************************************
-*                                                                          *
-*                   *** WARNING WARNING WARNING ***                        *
-*                                                                          *
-* This is source code from the development branch of rpm-4.1.              *
-*                                                                          *
-* If you want the "production" rpm-4.0.4 code, then you should either use  *
-* an rpm-4.0.4 src.rpm, or, if using a CVS checkout, do the following:     *
-*                                                                          *
-*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
-*       (no password, just carriage return)                                *
-*       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
-*       cd rpm                                                             *
-*       cvs up -r rpm-4_0                                                  *
-*                                                                          *
-****************************************************************************
-
-"
-sleep 10
+# echo "
+# ****************************************************************************
+# *                                                                          *
+# *                   *** WARNING WARNING WARNING ***                        *
+# *                                                                          *
+# * This is source code from the development branch of rpm-4.1.              *
+# *                                                                          *
+# * If you want the "production" rpm-4.0.4 code, then you should either use  *
+# * an rpm-4.0.4 src.rpm, or, if using a CVS checkout, do the following:     *
+# *                                                                          *
+# *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login             *
+# *       (no password, just carriage return)                                *
+# *       cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get rpm           *
+# *       cd rpm                                                             *
+# *       cvs up -r rpm-4_0                                                  *
+# *                                                                          *
+# ****************************************************************************
+# 
+# "
+# sleep 10
 
 dnl Checks for programs.
 AC_PROG_CC

@@ -6,8 +6,8 @@ EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
 
 EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
 
-INCLUDES = -I. -I.. \
-	-I$(top_srcdir)/beecrypt \
+INCLUDES = -I. \
+	-I$(top_srcdir) \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
