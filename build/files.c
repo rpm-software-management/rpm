@@ -47,8 +47,6 @@ typedef struct {
     mode_t	ar_dmode;
 } AttrRec;
 
-static AttrRec empty_ar = { NULL, NULL, NULL, NULL, 0, 0 };
-
 struct FileList {
     const char *buildRoot;
     const char *prefix;
@@ -68,7 +66,7 @@ struct FileList {
     AttrRec def_ar;
     int defVerifyFlags;
     int nLangs;
-    const char **currentLangs;
+    /*@only@*/ const char **currentLangs;
 
     /* Hard coded limit of MAXDOCDIR docdirs.         */
     /* If you break it you are doing something wrong. */
@@ -80,7 +78,18 @@ struct FileList {
     int fileListRecsUsed;
 };
 
-static void freeAttrRec(AttrRec *ar) {
+static void nullAttrRec(/*@out@*/AttrRec *ar)
+{
+    ar->ar_fmodestr = NULL;
+    ar->ar_dmodestr = NULL;
+    ar->ar_user = NULL;
+    ar->ar_group = NULL;
+    ar->ar_fmode = 0;
+    ar->ar_dmode = 0;
+}
+
+static void freeAttrRec(AttrRec *ar)
+{
     FREE(ar->ar_fmodestr);
     FREE(ar->ar_dmodestr);
     FREE(ar->ar_user);
@@ -88,19 +97,17 @@ static void freeAttrRec(AttrRec *ar) {
     /* XXX doesn't free ar (yet) */
 }
 
-static void dupAttrRec(AttrRec *oar, AttrRec *nar) {
+static void dupAttrRec(AttrRec *oar, /*@out@*/ AttrRec *nar)
+{
     if (oar == nar)	/* XXX pathological paranoia */
 	return;
     freeAttrRec(nar);
-    *nar = *oar;		/* structure assignment */
-    if (nar->ar_fmodestr)
-	nar->ar_fmodestr = xstrdup(nar->ar_fmodestr);
-    if (nar->ar_dmodestr)
-	nar->ar_dmodestr = xstrdup(nar->ar_dmodestr);
-    if (nar->ar_user)
-	nar->ar_user = xstrdup(nar->ar_user);
-    if (nar->ar_group)
-	nar->ar_group = xstrdup(nar->ar_group);
+    nar->ar_fmodestr = (oar->ar_fmodestr ? xstrdup(oar->ar_fmodestr) : NULL);
+    nar->ar_dmodestr = (oar->ar_dmodestr ? xstrdup(oar->ar_dmodestr) : NULL);
+    nar->ar_user = (oar->ar_user ? xstrdup(oar->ar_user) : NULL);
+    nar->ar_group = (oar->ar_group ? xstrdup(oar->ar_group) : NULL);
+    nar->ar_fmode = oar->ar_fmode;
+    nar->ar_dmode = oar->ar_dmode;
 }
 
 #if 0
@@ -144,11 +151,6 @@ static int myGlobPatternP (const char *pattern)
 	}
 
     return (0);
-}
-
-static int glob_error(const char *foo, int bar)
-{
-    return 1;
 }
 
 /* strtokWithQuotes() modified from glibc strtok() */
@@ -375,7 +377,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     while (p <= pe)
 	*p++ = ' ';
 
-    *ar = empty_ar;	/* structure assignment */
+    nullAttrRec(ar);
 
     p = q; SKIPWHITE(p);
     if (*p) {
@@ -577,7 +579,7 @@ static int parseForLang(char *buf, struct FileList *fl)
     return 0;
 }
 
-static int parseForRegexLang(const char *fileName, char **lang)
+static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -631,7 +633,7 @@ VFA_t virtualFileAttributes[] = {
 	{ NULL, 0 }
 };
 
-static int parseForSimple(Spec spec, Package pkg, char *buf,
+static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
 			  struct FileList *fl, const char **fileName)
 {
     char *s, *t;
@@ -908,10 +910,9 @@ static void freeFileList(FileListRec *fileList, int count)
     FREE(fileList);
 }
 
-static int addFile(struct FileList *fl, const char *name, struct stat *statp)
+static int addFile(struct FileList *fl, const char *diskName, struct stat *statp)
 {
-    char fileName[BUFSIZ];
-    char diskName[BUFSIZ];
+    const char *fileName = diskName;
     struct stat statbuf;
     mode_t fileMode;
     uid_t fileUid;
@@ -919,24 +920,20 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
     char *fileUname, *fileGname;
     char *lang;
     
-    strcpy(fileName, cleanFileName(name));
+    /* Path may have prepended buildroot, so locate the original filename. */
+    {	const char *s;
+	char c;
 
-    if (fl->inFtw) {
-	/* Any buildRoot is already prepended */
-	strcpy(diskName, fileName);
-	if (fl->buildRoot) {
-	    strcpy(fileName, diskName + strlen(fl->buildRoot));
-	    /* Special case for "/" */
-	    if (*fileName == '\0') {
-		fileName[0] = '/';
-		fileName[1] = '\0';
+	if ((s = fl->buildRoot) != NULL) {
+	    c = '\0';
+	    while (*s) {
+		if (c == '/')
+		    while(*s && *s == '/') s++;
+		if (*s) {
+		    fileName++;
+		    c = *s++;
+		}
 	    }
-	}
-    } else {
-	if (fl->buildRoot) {
-	    sprintf(diskName, "%s%s", fl->buildRoot, fileName);
-	} else {
-	    strcpy(diskName, fileName);
 	}
     }
 
@@ -957,7 +954,7 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
 	}
     }
 
-    if (! statp) {
+    if (statp == NULL) {
 	statp = &statbuf;
 	if (lstat(diskName, statp)) {
 	    rpmError(RPMERR_BADSPEC, _("File not found: %s"), diskName);
@@ -1017,7 +1014,7 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
     }
 #endif
     
-    rpmMessage(RPMMESS_DEBUG, _("File %4d: 0%o %s.%s\t %s\n"), fl->fileCount,
+    rpmMessage(RPMMESS_DEBUG, _("File %4d: %07o %s.%s\t %s\n"), fl->fileCount,
 	fileMode, fileUname, fileGname, fileName);
 
     /* Add to the file list */
@@ -1073,44 +1070,78 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
     return 0;
 }
 
-static int processBinaryFile(Package pkg, struct FileList *fl, const char *fileName)
+static int glob_error(/*@unused@*/const char *foo, /*@unused@*/int bar)
 {
-    char fullname[BUFSIZ];
-    glob_t glob_result;
-    int x, offset, rc = 0;
+    return 1;
+}
+
+static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
+	const char *fileName)
+{
+    int doGlob = myGlobPatternP(fileName);
+    const char *fn;
+    int rc = 0;
     
-    /* check that file starts with leading "/" */
+    /* Check that file starts with leading "/" */
     if (*fileName != '/') {
 	rpmError(RPMERR_BADSPEC, _("File needs leading \"/\": %s"), fileName);
-	fl->processingFailed = 1;
-	return 1;
+	rc = 1;
+	goto exit;
     }
     
-    if (myGlobPatternP(fileName)) {
-	if (fl->buildRoot) {
-	    sprintf(fullname, "%s%s", fl->buildRoot, fileName);
-	    offset = strlen(fl->buildRoot);
-	} else {
-	    strcpy(fullname, fileName);
-	    offset = 0;
+    /* Copy file name or glob pattern removing multiple "/" chars. */
+    {	const char *s;
+	char c, *t = alloca((fl->buildRoot ? strlen(fl->buildRoot) : 0) +
+			strlen(fileName) + 1);
+
+	fn = t;
+	*t = c = '\0';
+
+	/* With a buildroot, prepend the buildroot now. */
+	if ((s = fl->buildRoot) != NULL) {
+	    while (*s) {
+		if (c == '/')
+		    while(*s && *s == '/') s++;
+		if (*s)
+		    *t++ = c = *s++;
+	    }
+	    while (t > fn && t[-1] == '/') t--;
+	    *t = '\0';
 	}
-	
-	if (glob(fullname, 0, glob_error, &glob_result) ||
-	    (glob_result.gl_pathc < 1)) {
-	    rpmError(RPMERR_BADSPEC, _("File not found: %s"), fullname);
-	    fl->processingFailed = 1;
-	    globfree(&glob_result);
-	    return 1;
+	if ((s = fileName) != NULL) {
+	    while (*s) {
+		if (c == '/')
+		    while(*s && *s == '/') s++;
+		if (*s)
+		    *t++ = c = *s++;
+	    }
+	    while (t > fn && t[-1] == '/') t--;
+	    *t = '\0';
 	}
-	
-	for (x = 0; x < glob_result.gl_pathc; x++) {
-	    rc = addFile(fl, &(glob_result.gl_pathv[x][offset]), NULL);
-	}
-	globfree(&glob_result);
-    } else {
-	rc = addFile(fl, fileName, NULL);
     }
 
+    if (doGlob) {
+	glob_t glob_result;
+	int i;
+	
+	glob_result.gl_pathc = 0;
+	glob_result.gl_pathv = NULL;
+	if (glob(fn, 0, glob_error, &glob_result) ||
+	    (glob_result.gl_pathc < 1)) {
+	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s"), fn);
+	    rc = 1;
+	}
+	
+	for (i = 0; rc == 0 && i < glob_result.gl_pathc; i++)
+	    rc = addFile(fl, &(glob_result.gl_pathv[i][0]), NULL);
+	globfree(&glob_result);
+    } else {
+	rc = addFile(fl, fn, NULL);
+    }
+
+exit:
+    if (rc)
+	fl->processingFailed = 1;
     return rc;
 }
 
@@ -1122,16 +1153,17 @@ static int processPackageFiles(Spec spec, Package pkg,
     const char *fileName;
     char buf[BUFSIZ];
     FILE *f;
-    AttrRec specialDocAttrRec = empty_ar;	/* structure assignment */
+    AttrRec specialDocAttrRec;
     char *specialDoc = NULL;
     
+    nullAttrRec(&specialDocAttrRec);
     pkg->cpioList = NULL;
     pkg->cpioCount = 0;
 
     if (pkg->fileFile) {
 	const char *ffn;
 
-	/* XXX FIXME: add %{_buildsubdir} and use rpmGetPath() */
+	/* XXX FIXME: add %{_buildsubdir} */
 	ffn = rpmGetPath("%{_builddir}/",
 	    (spec->buildSubdir ? spec->buildSubdir : "") ,
 	    "/", pkg->fileFile, NULL);
@@ -1171,14 +1203,19 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.processingFailed = 0;
 
     fl.passedSpecialDoc = 0;
-    
-    fl.cur_ar = empty_ar;	/* structure assignment */
-    fl.def_ar = empty_ar;	/* structure assignment */
+    fl.isSpecialDoc = 0;
 
-    fl.nLangs = 0;
-    fl.currentLangs = NULL;
+    fl.isDir = 0;
+    fl.inFtw = 0;
+    fl.currentFlags = 0;
+    fl.currentVerifyFlags = 0;
+    
+    nullAttrRec(&fl.cur_ar);
+    nullAttrRec(&fl.def_ar);
 
     fl.defVerifyFlags = RPMVERIFY_ALL;
+    fl.nLangs = 0;
+    fl.currentLangs = NULL;
 
     fl.docDirCount = 0;
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/doc");
@@ -1207,8 +1244,8 @@ static int processPackageFiles(Spec spec, Package pkg,
 	/* Reset for a new line in %files */
 	fl.isDir = 0;
 	fl.inFtw = 0;
-	fl.currentVerifyFlags = fl.defVerifyFlags;
 	fl.currentFlags = 0;
+	fl.currentVerifyFlags = fl.defVerifyFlags;
 	fl.isSpecialDoc = 0;
 
 	/* XXX should reset to %deflang value */
@@ -1501,7 +1538,9 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 
     oldhandler = signal(SIGPIPE, SIG_IGN);
 
+    toProg[0] = toProg[1] = 0;
     pipe(toProg);
+    fromProg[0] = fromProg[1] = 0;
     pipe(fromProg);
     
     if (!(progPID = fork())) {
@@ -1653,6 +1692,7 @@ static int generateDepends(Spec spec, Package pkg,
     StringBuf readBuf;
     DepMsg_t *dm;
     char *myargv[4];
+    int failnonzero = 0;
     int rc = 0;
 
     if (cpioCount <= 0)
@@ -1670,7 +1710,7 @@ static int generateDepends(Spec spec, Package pkg,
     }
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {
-	int i, tag, failnonzero;
+	int i, tag;
 
 	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
 
@@ -1687,14 +1727,16 @@ static int generateDepends(Spec spec, Package pkg,
 	    break;
 	default:
 	    continue;
-	    break;
+	    /*@notreached@*/ break;
 	}
 
 	/* Get the script name to run */
 	myargv[0] = rpmExpand(dm->argv[0], NULL);
 
-	if (!(myargv[0] && *myargv[0] != '%'))
+	if (!(myargv[0] && *myargv[0] != '%')) {
+	    free(myargv[0]);
 	    continue;
+	}
 
 	rpmMessage(RPMMESS_NORMAL, _("Finding  %s: (using %s)...\n"),
 		dm->msg, myargv[0]);
@@ -1829,21 +1871,20 @@ static void printDeps(Header h)
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 {
     Package pkg;
-    int res, rc;
-    char *name;
+    int res = 0;
     
-    res = 0;
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	if (pkg->fileList == NULL) {
-	    continue;
-	}
+	const char *n, *v, *r;
+	int rc;
 
-	headerGetEntry(pkg->header, RPMTAG_NAME, NULL, (void **)&name, NULL);
-	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s\n"), name);
+	if (pkg->fileList == NULL)
+	    continue;
+
+	headerNVR(pkg->header, &n, &v, &r);
+	rpmMessage(RPMMESS_NORMAL, _("Processing files: %s-%s-%s\n"), n, v, r);
 		   
-	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test))) {
+	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;
-	}
 
 	generateDepends(spec, pkg, pkg->cpioList, pkg->cpioCount);
 	printDeps(pkg->header);

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-09-30 13:16-0400\n"
+"POT-Creation-Date: 1999-10-01 10:51-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -1517,35 +1517,35 @@ msgstr ""
 
 #: build/files.c:1522
 #, fuzzy, c-format
-msgid "Couldn't exec %s"
+msgid "Couldn't exec %s: %s"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: build/files.c:1526
+#: build/files.c:1527
 #, fuzzy, c-format
-msgid "Couldn't fork %s"
+msgid "Couldn't fork %s: %s"
 msgstr "Ne mogu da proèitam 'sigtarget'"
 
-#: build/files.c:1607
+#: build/files.c:1609
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "PGP omanuo"
 
-#: build/files.c:1611
+#: build/files.c:1613
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:1697
+#: build/files.c:1699
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1725 build/files.c:1734
+#: build/files.c:1727 build/files.c:1736
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:1840
+#: build/files.c:1842
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "neuspelo otvaranje %s: %s"

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-09-30 13:16-0400\n"
+"POT-Creation-Date: 1999-10-01 10:51-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1556,35 +1556,35 @@ msgstr ""
 
 #: build/files.c:1522
 #, fuzzy, c-format
-msgid "Couldn't exec %s"
+msgid "Couldn't exec %s: %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1526
+#: build/files.c:1527
 #, fuzzy, c-format
-msgid "Couldn't fork %s"
+msgid "Couldn't fork %s: %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1607
+#: build/files.c:1609
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp epäonnistui"
 
-#: build/files.c:1611
+#: build/files.c:1613
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1697
+#: build/files.c:1699
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1725 build/files.c:1734
+#: build/files.c:1727 build/files.c:1736
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1840
+#: build/files.c:1842
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "en voinut avata %s: %s"

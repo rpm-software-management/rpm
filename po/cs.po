@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-30 13:16-0400\n"
+"POT-Creation-Date: 1999-10-01 10:51-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -1518,35 +1518,35 @@ msgstr ""
 
 #: build/files.c:1522
 #, fuzzy, c-format
-msgid "Couldn't exec %s"
+msgid "Couldn't exec %s: %s"
 msgstr "Nelze spustit pgp"
 
-#: build/files.c:1526
+#: build/files.c:1527
 #, fuzzy, c-format
-msgid "Couldn't fork %s"
+msgid "Couldn't fork %s: %s"
 msgstr "Nelze naèíst cílpodpisu"
 
-#: build/files.c:1607
+#: build/files.c:1609
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "chyba pgp"
 
-#: build/files.c:1611
+#: build/files.c:1613
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1697
+#: build/files.c:1699
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1725 build/files.c:1734
+#: build/files.c:1727 build/files.c:1736
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1840
+#: build/files.c:1842
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "soubor %s: %s\n"

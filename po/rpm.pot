@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-30 13:16-0400\n"
+"POT-Creation-Date: 1999-10-04 13:09-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1296,154 +1296,159 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr ""
 
-#: build/files.c:224
+#: build/files.c:226
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:267 build/files.c:349 build/files.c:512
+#: build/files.c:269 build/files.c:351 build/files.c:514
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr ""
 
-#: build/files.c:278 build/files.c:466 build/files.c:523
+#: build/files.c:280 build/files.c:468 build/files.c:525
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr ""
 
-#: build/files.c:316 build/files.c:491
+#: build/files.c:318 build/files.c:493
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: build/files.c:365
+#: build/files.c:367
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
-#: build/files.c:403
+#: build/files.c:405
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr ""
 
-#: build/files.c:413
+#: build/files.c:415
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:425
+#: build/files.c:427
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:549
+#: build/files.c:551
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:559
+#: build/files.c:561
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:651
+#: build/files.c:653
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: build/files.c:657
+#: build/files.c:659
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:682
+#: build/files.c:684
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: build/files.c:695
+#: build/files.c:697
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: build/files.c:707
+#: build/files.c:709
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: build/files.c:793
+#: build/files.c:795
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: build/files.c:953
+#: build/files.c:950
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: build/files.c:963 build/files.c:1100
+#: build/files.c:960
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: build/files.c:1006
+#: build/files.c:1003
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1020
+#: build/files.c:1017
 #, c-format
-msgid "File %4d: 0%o %s.%s\t %s\n"
+msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1084
+#: build/files.c:1087
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1141
+#: build/files.c:1131
+#, c-format
+msgid "File not found by glob: %s"
+msgstr ""
+
+#: build/files.c:1173
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: build/files.c:1148 build/pack.c:484
+#: build/files.c:1180 build/pack.c:484
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1470 build/parsePrep.c:29
+#: build/files.c:1507 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: build/files.c:1522
+#: build/files.c:1561
 #, c-format
-msgid "Couldn't exec %s"
+msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1526
+#: build/files.c:1566
 #, c-format
-msgid "Couldn't fork %s"
+msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1607
+#: build/files.c:1648
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1611
+#: build/files.c:1652
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1697
+#: build/files.c:1741
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1725 build/files.c:1734
+#: build/files.c:1769 build/files.c:1778
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1840
+#: build/files.c:1884
 #, c-format
-msgid "Processing files: %s\n"
+msgid "Processing files: %s-%s-%s\n"
 msgstr ""
 
 #: build/names.c:32 build/names.c:64

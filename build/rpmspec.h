@@ -124,7 +124,7 @@ struct SpecStruct {
 };
 
 struct PackageStruct {
-    /*@only@*/ Header header;
+    /*@refcounted@*/ Header header;
 
     int cpioCount;
     /*@only@*/ struct cpioFileMapping *cpioList;
