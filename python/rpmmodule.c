@@ -46,6 +46,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args);
 
 void initrpm(void);
 static PyObject * doAddMacro(PyObject * self, PyObject * args);
+static PyObject * doDelMacro(PyObject * self, PyObject * args);
 static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args);
 static PyObject * hdrLoad(PyObject * self, PyObject * args);
 static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args);
@@ -68,12 +69,14 @@ static void rpmtransDealloc(PyObject * o);
 static PyObject * rpmtransGetAttr(rpmtransObject * o, char * name);
 static int rpmtransSetAttr(rpmtransObject * o, char * name,
 			   PyObject * val);
+static PyObject * doFopen(PyObject * self, PyObject * args);
 
 /* Types */
 
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
     { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS, NULL },
+    { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS, NULL },
     { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
     { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
     { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
@@ -86,6 +89,9 @@ static PyMethodDef rpmModuleMethods[] = {
     { "errorString", (PyCFunction) errorString, METH_VARARGS, NULL },
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS, NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS, NULL },
+    /* Don't use me yet.
+    { "Fopen", (PyCFunction) doFopen, METH_VARARGS, NULL },
+    */
     { NULL }
 } ;
 
@@ -227,7 +233,7 @@ void initrpm(void) {
 
     for (i = 0; i < rpmTagTableSize; i++) {
 	tag = PyInt_FromLong(rpmTagTable[i].val);
-	PyDict_SetItemString(d, rpmTagTable[i].name, tag);
+	PyDict_SetItemString(d, (char *) rpmTagTable[i].name, tag);
 
         PyDict_SetItem(dict, tag, PyString_FromString(rpmTagTable[i].name + 7));
     }
@@ -609,6 +615,22 @@ static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
 
     if (!PyArg_ParseTuple(args, "O|O", &errorCB, &errorData)) return NULL;
 
+    /* if we're getting a void*, set the error callback to this. */
+    /* also, we can possibly decref any python callbacks we had  */
+    /* and set them to NULL.                                     */
+    if (PyCObject_Check (errorCB)) {
+	rpmErrorSetCallback (PyCObject_AsVoidPtr(errorCB));
+
+	Py_XDECREF (errorCB);
+	Py_XDECREF (errorData);
+
+	errorCB   = NULL;
+	errorData = NULL;
+	
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+    
     if (!PyCallable_Check (errorCB)) {
 	PyErr_SetString(PyExc_TypeError, "parameter must be callable");
 	return NULL;
@@ -617,10 +639,7 @@ static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
     Py_INCREF (errorCB);
     Py_XINCREF (errorData);
 
-    rpmErrorSetCallback (errorcb);
-
-    Py_INCREF(Py_None);
-    return Py_None;
+    return PyCObject_FromVoidPtr(rpmErrorSetCallback (errorcb), NULL);
 }
 
 static PyObject * errorString (PyObject * self, PyObject * args) {
@@ -1383,6 +1402,7 @@ static void * tsCallback(const Header h, const rpmCallbackType what,
 	    return NULL;
 	}
 	fdt = fdDup(fd);
+	
 	Py_DECREF(result);
 	return fdt;
     }
@@ -1463,4 +1483,55 @@ static PyObject * doAddMacro(PyObject * self, PyObject * args) {
 
     Py_INCREF(Py_None);
     return Py_None;
+}
+
+static PyObject * doDelMacro(PyObject * self, PyObject * args) {
+    char * name;
+
+    if (!PyArg_ParseTuple(args, "s", &name))
+	return NULL;
+
+    delMacro(NULL, name);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static int closeCallback(FILE * f) {
+    /* XXX FD_t leak */
+    /* XXX lookup the FD_t from the fp and close with Fclose */
+    return fclose(f);
+    return 0; 
+}
+
+static PyObject * doFopen(PyObject * self, PyObject * args) {
+    char * path, * mode;
+    FD_t fd;
+    FILE *f;
+    
+    if (!PyArg_ParseTuple(args, "ss", &path, &mode))
+	return NULL;
+
+    fd = Fopen(path, mode);
+    fd = fdLink(fd, "doFopen");
+    
+    if (!fd) {
+	PyErr_SetFromErrno(pyrpmError);
+	return NULL;
+    }
+    
+    if (Ferror(fd)) {
+	const char *err = Fstrerror(fd);
+	if (err) {
+	    PyErr_SetString(pyrpmError, err);
+	    return NULL;
+	}
+    }
+    f = fdGetFp(fd);
+    if (!f) {
+	PyErr_SetString(pyrpmError, "FD_t has no FILE*");
+	return NULL;
+    }
+	
+    return PyFile_FromFile (f, path, mode, closeCallback);
 }
