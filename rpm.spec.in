@@ -27,8 +27,8 @@ Prereq: gawk fileutils textutils mktemp shadow-utils
 Requires: popt = 1.8
 Obsoletes: rpm-perl < %{version}
 
-# XXX not really necessary with internal elfutils
-BuildRequires: elfutils
+# XXX necessary only to drag in /usr/lib/libelf.a
+BuildRequires: elfutils-devel >= 0.63
 
 %if !%{with_internal_db}
 BuildRequires: db3-devel
