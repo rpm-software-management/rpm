@@ -101,6 +101,8 @@ int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
  * Retrieve tag info from header.
  * Yet Another "dressed" entry to headerGetEntry in order to unify
  * signature/header tag retrieval.
+ * @deprecated Signature tags are now duplicated into header when installed.
+ * @todo Eliminate from API.
  * @param leadp		rpm lead
  * @param h		header
  * @param sigs		signatures
@@ -169,7 +171,7 @@ typedef enum rpmTag_e {
     RPMTAG_VERSION		= 1001,
     RPMTAG_RELEASE		= 1002,
     RPMTAG_EPOCH   		= 1003,
-#define	RPMTAG_SERIAL		RPMTAG_EPOCH	/* backward comaptibility */
+#define	RPMTAG_SERIAL	RPMTAG_EPOCH	/* backward comaptibility */
     RPMTAG_SUMMARY		= 1004,
     RPMTAG_DESCRIPTION		= 1005,
     RPMTAG_BUILDTIME		= 1006,
@@ -1158,7 +1160,7 @@ extern struct poptOption		rpmBuildPoptTable[];
 /** \ingroup rpmcli
  * Bit(s) for rpmVerifyFile() attributes and result.
  */
-enum rpmVerifyAttrs_e {
+typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_NONE	= 0,		/*!< */
     RPMVERIFY_MD5	= (1 << 0),	/*!< */
     RPMVERIFY_FILESIZE	= (1 << 1),	/*!< */
@@ -1171,12 +1173,13 @@ enum rpmVerifyAttrs_e {
     RPMVERIFY_READLINKFAIL= (1 << 28),	/*!< */
     RPMVERIFY_READFAIL	= (1 << 29),	/*!< */
     RPMVERIFY_LSTATFAIL	= (1 << 30)	/*!< */
-};
+} rpmVerifyAttrs;
 #define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
 
 /** \ingroup rpmcli
  * Verify file attributes and MD5 sum.
- * @todo python bindings prevent this from being static.
+ * @todo gnorpm and python bindings prevent this from being static.
+ * @todo add rpmVerifyAttrs to prototype.
  * @param root		path to top of install tree
  * @param h		header
  * @param filenum	index of file in header file info arrays
@@ -1189,14 +1192,13 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 
 /**
  * Return exit code from running verify script in header.
- * @todo kpackage prevents static, should be using VERIFY_SCRIPT flag.
+ * @todo gnorpm/kpackage prevents static, should be using VERIFY_SCRIPT flag.
  * @param rootDir	path to top of install tree
- * @param rpmdb		rpm database
  * @param h		header
- * @param scriptFd	file handle to use for stderr
+ * @param scriptFd	file handle to use for stderr (or NULL)
  * @return		0 on success
  */
-int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd);
+int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd);
 
 /** \ingroup rpmcli
  * The command line argument will be used to retrieve header(s) ...

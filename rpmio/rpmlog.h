@@ -206,6 +206,19 @@ void rpmlog (int pri, const char *fmt, ...);
  */
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb);
 
+/**
+ * Set rpmlog callback function.
+ * @deprecated gnorpm needs, use rpmlogSetCallback() instead.
+ */
+rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb);
+
+/**
+ * Return text of last rpmError() message.
+ * @deprecated gnorpm needs, use rpmlogMessage() instead.
+ * @return		text of last message
+ */
+/*@observer@*/ const char * rpmErrorString(void);
+
 #ifdef __cplusplus
 }
 #endif

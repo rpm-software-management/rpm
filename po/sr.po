@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-12-21 15:42-0500\n"
+"POT-Creation-Date: 2000-12-25 08:50-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2789,13 +2789,13 @@ msgstr "neuspelo otvaranje %s: %s"
 
 #: lib/install.c:215
 #, c-format
-msgid "user %s does not exist - using root"
+msgid "user %s does not exist - using root\n"
 msgstr ""
 
 #: lib/install.c:223
-#, c-format
-msgid "group %s does not exist - using root"
-msgstr ""
+#, fuzzy, c-format
+msgid "group %s does not exist - using root\n"
+msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
@@ -2878,13 +2878,13 @@ msgstr "gre¹ka: preskaèem %s - neuspelo preno¹enje - %s\n"
 
 #: lib/install.c:1062
 #, fuzzy, c-format
-msgid "%s created as %s"
+msgid "%s created as %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: lib/install.c:1098
-#, c-format
-msgid "%s saved as %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "%s saved as %s\n"
+msgstr "Ne mogu da otvorim datoteku %s: "
 
 #: lib/install.c:1189
 msgid "running postinstall scripts (if any)\n"
@@ -3168,125 +3168,125 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
 #: lib/query.c:151
-#, c-format
-msgid "error in format: %s\n"
+#, fuzzy, c-format
+msgid "incorrect format: %s\n"
 msgstr "gre¹ka u formatu: %s\n"
 
-#: lib/query.c:213
+#: lib/query.c:223
 msgid "(contains no files)"
 msgstr "(nema datoteka)"
 
-#: lib/query.c:272
+#: lib/query.c:274
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:274
+#: lib/query.c:276
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:276
+#: lib/query.c:278
 #, fuzzy
 msgid "not installed "
 msgstr "paket %s nije instaliran\n"
 
-#: lib/query.c:278
+#: lib/query.c:280
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:280
+#: lib/query.c:282
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(nepoznat tip)"
 
-#: lib/query.c:284
+#: lib/query.c:287
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:301 lib/query.c:344
+#: lib/query.c:306 lib/query.c:351
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:388
+#: lib/query.c:405
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:504
+#: lib/query.c:521
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "neuspelo otvaranje %s: %s\n"
 
-#: lib/query.c:522
+#: lib/query.c:541
 msgid "old format source packages cannot be queried\n"
 msgstr "Upit se ne mo¾e izvesti nad izvorni paketima u starom formatu\n"
 
-#: lib/query.c:531 lib/rpminstall.c:312
+#: lib/query.c:550 lib/rpminstall.c:312
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s ne lièi na RPM paket\n"
 
-#: lib/query.c:535
+#: lib/query.c:554
 #, c-format
 msgid "query of %s failed\n"
 msgstr "upit nad %s neuspeo\n"
 
-#: lib/query.c:568
+#: lib/query.c:588
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "upit nad %s neuspeo\n"
 
-#: lib/query.c:591
+#: lib/query.c:611
 #, fuzzy
 msgid "no packages\n"
 msgstr "upit nad svim paketima"
 
-#: lib/query.c:601
+#: lib/query.c:622
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s ne sadr¾i nijedan paket\n"
 
-#: lib/query.c:611
+#: lib/query.c:632
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "nijedan paket ne aktivira %s\n"
 
-#: lib/query.c:621
+#: lib/query.c:642
 #, c-format
 msgid "no package requires %s\n"
 msgstr "nijedan paket ne zahteva %s\n"
 
-#: lib/query.c:632
+#: lib/query.c:653
 #, c-format
 msgid "no package provides %s\n"
 msgstr "nijedan paket ne obezbeðuje %s\n"
 
-#: lib/query.c:662
+#: lib/query.c:684
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/query.c:665
+#: lib/query.c:688
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ne pripada nijednom paketu\n"
 
-#: lib/query.c:691
+#: lib/query.c:714
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:694
+#: lib/query.c:717
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/query.c:698
+#: lib/query.c:722
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "ne mogu da proèitam slog %d\n"
 
-#: lib/query.c:709 lib/rpminstall.c:546
+#: lib/query.c:733 lib/rpminstall.c:546
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -3986,20 +3986,20 @@ msgstr "neuspelo izvr¹avanje skripta"
 msgid "don't verify files in package"
 msgstr "instaliraj paket"
 
-#: lib/verify.c:218
+#: lib/verify.c:219
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:236
+#: lib/verify.c:237
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:285
+#: lib/verify.c:299
 #, fuzzy, c-format
-msgid "missing    %s\n"
+msgid "missing    %s"
 msgstr "nedostaje { posle %"
 
-#: lib/verify.c:347
+#: lib/verify.c:380
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "

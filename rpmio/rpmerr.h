@@ -72,7 +72,9 @@ typedef enum rpmerrCode_e {
     RPMERR_BADFILENAME	= _em(120), /*!< @todo Document. */
     RPMERR_OPEN		= _em(121), /*!< @todo Document. */
     RPMERR_POPEN	= _em(122), /*!< @todo Document. */
-    RPMERR_NOTREG	= _em(122), /*!< File %s is not a regular file */
+    RPMERR_NOTREG	= _em(123), /*!< File %s is not a regular file */
+    RPMERR_QUERY	= _em(124), /*!< @todo Document. */
+    RPMERR_QFMT		= _em(125), /*!< @todo Document. */
 
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
     RPMERR_SIGGEN	= _em(201)  /*!< Error generating signature */

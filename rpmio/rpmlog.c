@@ -166,3 +166,13 @@ void rpmlog (int code, const char *fmt, ...)
     vrpmlog(code, fmt, ap);
     va_end(ap);
 }
+
+const char * rpmErrorString(void)
+{
+    return rpmlogMessage();
+}
+
+rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
+{
+    return rpmlogSetCallback(cb);
+}

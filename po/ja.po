@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-21 15:42-0500\n"
+"POT-Creation-Date: 2000-12-25 08:50-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.130 2000/12/21 21:07:43 jbj Exp $
+# $Id: ja.po,v 1.131 2000/12/26 13:10:20 jbj Exp $
 #: rpm.c:185 rpmqv.c:269
 #, c-format
 msgid "rpm: %s\n"
@@ -2782,13 +2782,13 @@ msgid "   file: %s action: %s\n"
 msgstr "ファイル %s: アクション: %s\n"
 
 #: lib/install.c:215
-#, c-format
-msgid "user %s does not exist - using root"
+#, fuzzy, c-format
+msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
 #: lib/install.c:223
-#, c-format
-msgid "group %s does not exist - using root"
+#, fuzzy, c-format
+msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
 #. this would probably be a good place to check if disk space
@@ -2871,12 +2871,12 @@ msgstr "%s をスキップします - 転送失敗 - %s\n"
 
 #: lib/install.c:1062
 #, fuzzy, c-format
-msgid "%s created as %s"
+msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
 
 #: lib/install.c:1098
 #, fuzzy, c-format
-msgid "%s saved as %s"
+msgid "%s saved as %s\n"
 msgstr "警告: %s は %s として保存されます"
 
 #: lib/install.c:1189
@@ -3173,124 +3173,124 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 
 #: lib/query.c:151
-#, c-format
-msgid "error in format: %s\n"
+#, fuzzy, c-format
+msgid "incorrect format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
 
-#: lib/query.c:213
+#: lib/query.c:223
 msgid "(contains no files)"
 msgstr "ファイルを含んでいません"
 
-#: lib/query.c:272
+#: lib/query.c:274
 msgid "normal        "
 msgstr "通常"
 
-#: lib/query.c:274
+#: lib/query.c:276
 msgid "replaced      "
 msgstr "置き換えられています"
 
-#: lib/query.c:276
+#: lib/query.c:278
 msgid "not installed "
 msgstr "インストールされていません"
 
-#: lib/query.c:278
+#: lib/query.c:280
 msgid "net shared    "
 msgstr "ネット共有"
 
-#: lib/query.c:280
+#: lib/query.c:282
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(未知の %3d)"
 
-#: lib/query.c:284
+#: lib/query.c:287
 msgid "(no state)    "
 msgstr "(何の状態もありません)"
 
-#: lib/query.c:301 lib/query.c:344
+#: lib/query.c:306 lib/query.c:351
 msgid "package has neither file owner or id lists"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:388
+#: lib/query.c:405
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:504
+#: lib/query.c:521
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:522
+#: lib/query.c:541
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:531 lib/rpminstall.c:312
+#: lib/query.c:550 lib/rpminstall.c:312
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s は RPM パッケージではありません\n"
 
-#: lib/query.c:535
+#: lib/query.c:554
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:568
+#: lib/query.c:588
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:591
+#: lib/query.c:611
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:601
+#: lib/query.c:622
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:611
+#: lib/query.c:632
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:621
+#: lib/query.c:642
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:632
+#: lib/query.c:653
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:662
+#: lib/query.c:684
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:665
+#: lib/query.c:688
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:691
+#: lib/query.c:714
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:694
+#: lib/query.c:717
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:698
+#: lib/query.c:722
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:709 lib/rpminstall.c:546
+#: lib/query.c:733 lib/rpminstall.c:546
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -3991,24 +3991,24 @@ msgstr "スクリプトの実行に失敗"
 msgid "don't verify files in package"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/verify.c:218
+#: lib/verify.c:219
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 "パッケージは ユーザ名と id "
 "リストの両方が欠けています(これは決して起きてはならない)"
 
-#: lib/verify.c:236
+#: lib/verify.c:237
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 "パッケージはグループ名と id "
 "リストの両方が欠けています(これは決して起きてはならない)"
 
-#: lib/verify.c:285
-#, c-format
-msgid "missing    %s\n"
+#: lib/verify.c:299
+#, fuzzy, c-format
+msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:347
+#: lib/verify.c:380
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"

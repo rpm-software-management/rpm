@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-21 15:42-0500\n"
+"POT-Creation-Date: 2000-12-25 08:50-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2719,13 +2719,13 @@ msgid "   file: %s action: %s\n"
 msgstr "файл : %s действие: %s\n"
 
 #: lib/install.c:215
-#, c-format
-msgid "user %s does not exist - using root"
+#, fuzzy, c-format
+msgid "user %s does not exist - using root\n"
 msgstr "пользователь %s не существует, используется root"
 
 #: lib/install.c:223
-#, c-format
-msgid "group %s does not exist - using root"
+#, fuzzy, c-format
+msgid "group %s does not exist - using root\n"
 msgstr "группа %s не существует, используется root"
 
 #. this would probably be a good place to check if disk space
@@ -2807,12 +2807,12 @@ msgstr "%s пропускается - ошибка передачи - %s\n"
 
 #: lib/install.c:1062
 #, fuzzy, c-format
-msgid "%s created as %s"
+msgid "%s created as %s\n"
 msgstr "внимание: %s создан как %s"
 
 #: lib/install.c:1098
 #, fuzzy, c-format
-msgid "%s saved as %s"
+msgid "%s saved as %s\n"
 msgstr "внимание: %s сохранен как %s"
 
 #: lib/install.c:1189
@@ -3067,123 +3067,123 @@ msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s-%s-%s"
 
 #: lib/query.c:151
-#, c-format
-msgid "error in format: %s\n"
+#, fuzzy, c-format
+msgid "incorrect format: %s\n"
 msgstr "ошибка в формате: %s\n"
 
-#: lib/query.c:213
+#: lib/query.c:223
 msgid "(contains no files)"
 msgstr "(не содержит файлов)"
 
-#: lib/query.c:272
+#: lib/query.c:274
 msgid "normal        "
 msgstr "нормальный    "
 
-#: lib/query.c:274
+#: lib/query.c:276
 msgid "replaced      "
 msgstr "замененный    "
 
-#: lib/query.c:276
+#: lib/query.c:278
 msgid "not installed "
 msgstr "не установлен "
 
-#: lib/query.c:278
+#: lib/query.c:280
 msgid "net shared    "
 msgstr "сетевой       "
 
-#: lib/query.c:280
+#: lib/query.c:282
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(неизв. %3d)  "
 
-#: lib/query.c:284
+#: lib/query.c:287
 msgid "(no state)    "
 msgstr "(сост. нет)   "
 
-#: lib/query.c:301 lib/query.c:344
+#: lib/query.c:306 lib/query.c:351
 msgid "package has neither file owner or id lists"
 msgstr "пакет не содержит списков ни хозяев файлов, ни их ID"
 
-#: lib/query.c:388
+#: lib/query.c:405
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "невозможно запросить %s: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:504
+#: lib/query.c:521
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/query.c:522
+#: lib/query.c:541
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к SRPM в старом формате не поддерживаются\n"
 
-#: lib/query.c:531 lib/rpminstall.c:312
+#: lib/query.c:550 lib/rpminstall.c:312
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s не похож на пакет RPM...\n"
 
-#: lib/query.c:535
+#: lib/query.c:554
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:568
+#: lib/query.c:588
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос файла спецификации %s не удался, невозможно разобрать файл\n"
 
-#: lib/query.c:591
+#: lib/query.c:611
 msgid "no packages\n"
 msgstr "нет пакетов\n"
 
-#: lib/query.c:601
+#: lib/query.c:622
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:611
+#: lib/query.c:632
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:621
+#: lib/query.c:642
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:632
+#: lib/query.c:653
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:662
+#: lib/query.c:684
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:665
+#: lib/query.c:688
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:691
+#: lib/query.c:714
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:694
+#: lib/query.c:717
 #, c-format
 msgid "package record number: %u\n"
 msgstr "номер записи пакета: %u\n"
 
-#: lib/query.c:698
+#: lib/query.c:722
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:709 lib/rpminstall.c:546
+#: lib/query.c:733 lib/rpminstall.c:546
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -3899,20 +3899,20 @@ msgstr "ошибка выполнения скрипта %s-%s-%s, код возврата %d"
 msgid "don't verify files in package"
 msgstr "не проверять файлы пакета"
 
-#: lib/verify.c:218
+#: lib/verify.c:219
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr "в пакете нет ни имен пользователей, ни их ID (так не должно быть)"
 
-#: lib/verify.c:236
+#: lib/verify.c:237
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr "в пакете нет ни имен групп, ни их ID (так не должно быть)"
 
-#: lib/verify.c:285
-#, c-format
-msgid "missing    %s\n"
+#: lib/verify.c:299
+#, fuzzy, c-format
+msgid "missing    %s"
 msgstr "отсутствует %s\n"
 
-#: lib/verify.c:347
+#: lib/verify.c:380
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "

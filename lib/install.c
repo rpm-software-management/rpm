@@ -212,7 +212,7 @@ static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
     for (i = 0; i < fileCount; i++) {
 	if (unameToUid(fileOwners[i], &files[i].uid)) {
 	    rpmMessage(RPMMESS_WARNING,
-		_("user %s does not exist - using root"), fileOwners[i]);
+		_("user %s does not exist - using root\n"), fileOwners[i]);
 	    files[i].uid = 0;
 	    /* turn off the suid bit */
 	    files[i].mode &= ~S_ISUID;
@@ -220,7 +220,7 @@ static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
 
 	if (gnameToGid(fileGroups[i], &files[i].gid)) {
 	    rpmMessage(RPMMESS_WARNING,
-		_("group %s does not exist - using root"), fileGroups[i]);
+		_("group %s does not exist - using root\n"), fileGroups[i]);
 	    files[i].gid = 0;
 	    /* turn off the sgid bit */
 	    files[i].mode &= ~S_ISGID;
@@ -1059,7 +1059,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	      case FA_ALTNAME:
 		newpath = alloca(strlen(files[i].relativePath) + 20);
 		(void)stpcpy(stpcpy(newpath, files[i].relativePath), ".rpmnew");
-		rpmMessage(RPMMESS_WARNING, _("%s created as %s"),
+		rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"),
 			files[i].relativePath, newpath);
 		files[i].relativePath = newpath;
 		break;
@@ -1095,7 +1095,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	    if (ext && access(files[i].relativePath, F_OK) == 0) {
 		newpath = alloca(strlen(files[i].relativePath) + 20);
 		(void)stpcpy(stpcpy(newpath, files[i].relativePath), ext);
-		rpmMessage(RPMMESS_WARNING, _("%s saved as %s"),
+		rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"),
 			files[i].relativePath, newpath);
 
 		if (rename(files[i].relativePath, newpath)) {

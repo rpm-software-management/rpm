@@ -46,11 +46,12 @@ struct poptOption rpmVerifyPoptTable[] = {
 };
 
 /* ======================================================================== */
-int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result, 
-		  int omitMask)
+int rpmVerifyFile(const char * prefix, Header h, int filenum,
+		int * result, int omitMask)
 {
     char ** baseNames, ** md5List, ** linktoList, ** dirNames;
-    int_32 * verifyFlags, flags;
+    int_32 * verifyFlags;
+    rpmVerifyAttrs flags;
     int_32 * sizeList, * mtimeList, * dirIndexes;
     unsigned short * modeList, * rdevList;
     char * fileStatesList;
@@ -244,19 +245,20 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
 
 /**
  * Return exit code from running verify script in header.
- * @todo kpackage prevents static, should be using VERIFY_SCRIPT flag.
+ * @todo gnorpm/kpackage prevents static, should be using VERIFY_SCRIPT flag.
  * @param rootDir       path to top of install tree
- * @param rpmdb         rpm database
  * @param h             header
- * @param scriptFd      file handle to use for stderr
+ * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
-int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd)
+int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd)
 {
+    rpmdb rpmdb = NULL;
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
     int rc;
 
-    ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
+    if (scriptFd)
+	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
     rc = runInstScript(ts, h, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG,
 		     0, 0);
     rpmtransFree(ts);
@@ -266,32 +268,44 @@ int rpmVerifyScript(const char * rootDir, rpmdb rpmdb, Header h, FD_t scriptFd)
 /* ======================================================================== */
 static int verifyHeader(QVA_t *qva, Header h)
 {
-    const char ** fileNames;
+    char buf[BUFSIZ];
+    char * t, * te;
+
+    const char ** fileNames = NULL;
     int count;
-    int verifyResult;
-    int i, ec, rc;
-    int_32 * fileFlagsList;
-    int omitMask = 0;
+    int_32 * fileFlagsList = NULL;
+    rpmVerifyAttrs verifyResult = 0;
+    rpmVerifyAttrs omitMask = !(qva->qva_flags & VERIFY_MD5)
+			? RPMVERIFY_MD5 : RPMVERIFY_NONE;
+    int ec = 0;
+    int i;
 
-    ec = 0;
-    if (!(qva->qva_flags & VERIFY_MD5)) omitMask = RPMVERIFY_MD5;
+    te = t = buf;
+    *te = '\0';
 
-    if (headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL) &&
-	headerIsEntry(h, RPMTAG_BASENAMES)) {
-	rpmBuildFileList(h, &fileNames, &count);
+    if (!headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL))
+	goto exit;
 
-	for (i = 0; i < count; i++) {
-	    if ((rc = rpmVerifyFile(qva->qva_prefix, h, i, &verifyResult, omitMask)) != 0) {
-		fprintf(stdout, _("missing    %s\n"), fileNames[i]);
-	    } else {
-		const char * size, * md5, * link, * mtime, * mode;
-		const char * group, * user, * rdev;
-		/*@observer@*/ static const char *const aok = ".";
-		/*@observer@*/ static const char *const unknown = "?";
+    if (!headerIsEntry(h, RPMTAG_BASENAMES))
+	goto exit;
 
-		if (!verifyResult) continue;
-	    
-		rc = 1;
+    rpmBuildFileList(h, &fileNames, &count);
+
+    for (i = 0; i < count; i++) {
+	int rc;
+
+	rc = rpmVerifyFile(qva->qva_prefix, h, i, &verifyResult, omitMask);
+	if (rc) {
+	    sprintf(te, _("missing    %s"), fileNames[i]);
+	    te += strlen(te);
+	    ec = rc;
+	} else if (verifyResult) {
+	    const char * size, * md5, * link, * mtime, * mode;
+	    const char * group, * user, * rdev;
+	    /*@observer@*/ static const char *const aok = ".";
+	    /*@observer@*/ static const char *const unknown = "?";
+
+	    ec = 1;
 
 #define	_verify(_RPMVERIFY_F, _C)	\
 	((verifyResult & _RPMVERIFY_F) ? _C : aok)
@@ -302,38 +316,46 @@ static int verifyHeader(QVA_t *qva, Header h)
 	((verifyResult & RPMVERIFY_READFAIL) ? unknown : \
 	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
 	
-		md5 = _verifyfile(RPMVERIFY_MD5, "5");
-		size = _verify(RPMVERIFY_FILESIZE, "S");
-		link = _verifylink(RPMVERIFY_LINKTO, "L");
-		mtime = _verify(RPMVERIFY_MTIME, "T");
-		rdev = _verify(RPMVERIFY_RDEV, "D");
-		user = _verify(RPMVERIFY_USER, "U");
-		group = _verify(RPMVERIFY_GROUP, "G");
-		mode = _verify(RPMVERIFY_MODE, "M");
+	    md5 = _verifyfile(RPMVERIFY_MD5, "5");
+	    size = _verify(RPMVERIFY_FILESIZE, "S");
+	    link = _verifylink(RPMVERIFY_LINKTO, "L");
+	    mtime = _verify(RPMVERIFY_MTIME, "T");
+	    rdev = _verify(RPMVERIFY_RDEV, "D");
+	    user = _verify(RPMVERIFY_USER, "U");
+	    group = _verify(RPMVERIFY_GROUP, "G");
+	    mode = _verify(RPMVERIFY_MODE, "M");
 
 #undef _verify
 #undef _verifylink
 #undef _verifyfile
 
-		fprintf(stdout, "%s%s%s%s%s%s%s%s %c %s\n",
+	    sprintf(te, "%s%s%s%s%s%s%s%s %c %s",
 		       size, mode, md5, rdev, link, user, group, mtime, 
 		       fileFlagsList[i] & RPMFILE_CONFIG ? 'c' : ' ', 
 		       fileNames[i]);
-	    }
-	    if (rc)
-		ec = rc;
+	    te += strlen(te);
 	}
-	
-	free(fileNames);
+
+	if (te > t) {
+	    *te++ = '\n';
+	    *te = '\0';
+	    rpmMessage(RPMMESS_NORMAL, "%s", t);
+	    te = t = buf;
+	    *t = '\0';
+	}
     }
+	
+exit:
+    if (fileNames) free(fileNames);
     return ec;
 }
 
-static int verifyDependencies(rpmdb rpmdb, Header h) {
+static int verifyDependencies(rpmdb rpmdb, Header h)
+{
     rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
-    const char * name, * version, * release;
+    int rc = 0;
     int i;
 
     rpmdep = rpmtransCreateSet(rpmdb, NULL);
@@ -343,22 +365,45 @@ static int verifyDependencies(rpmdb rpmdb, Header h) {
     rpmtransFree(rpmdep);
 
     if (numConflicts) {
+	const char * name, * version, * release;
+	char * t, * te;
+	int nb = 512;
 	headerNVR(h, &name, &version, &release);
-	fprintf(stdout, _("Unsatisfied dependencies for %s-%s-%s: "),
-		name, version, release);
+
 	for (i = 0; i < numConflicts; i++) {
-	    if (i) fprintf(stdout, ", ");
-	    fprintf(stdout, "%s", conflicts[i].needsName);
+	    nb += strlen(conflicts[i].needsName) + sizeof(", ") - 1;
+	    if (conflicts[i].needsFlags)
+		nb += strlen(conflicts[i].needsVersion) + 5;
+	}
+	te = t = alloca(nb);
+	*te = '\0';
+	sprintf(te, _("Unsatisfied dependencies for %s-%s-%s: "),
+		name, version, release);
+	te += strlen(te);
+	for (i = 0; i < numConflicts; i++) {
+	    if (i) te = stpcpy(te, ", ");
+	    te = stpcpy(te, conflicts[i].needsName);
 	    if (conflicts[i].needsFlags) {
-		printDepFlags(stdout, conflicts[i].needsVersion, 
-			      conflicts[i].needsFlags);
+		int flags = conflicts[i].needsFlags;
+		*te++ = ' ';
+		if (flags & RPMSENSE_LESS)	*te++ = '<';
+		if (flags & RPMSENSE_GREATER)	*te++ = '>';
+		if (flags & RPMSENSE_EQUAL)	*te++ = '=';
+		*te++ = ' ';
+		te = stpcpy(te, conflicts[i].needsVersion);
 	    }
 	}
-	fprintf(stdout, "\n");
 	rpmdepFreeConflicts(conflicts, numConflicts);
-	return 1;
+	if (te > t) {
+	    *te++ = '\n';
+	    *te = '\0';
+	    rpmMessage(RPMMESS_NORMAL, "%s", t);
+	    te = t;
+	    *t = '\0';
+	}
+	rc = 1;
     }
-    return 0;
+    return rc;
 }
 
 int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
@@ -375,7 +420,7 @@ int showVerifyPackage(QVA_t *qva, rpmdb rpmdb, Header h)
 	    ec = rc;;
     fdo = fdDup(STDOUT_FILENO);
     if ((qva->qva_flags & VERIFY_SCRIPT) &&
-	(rc = rpmVerifyScript(qva->qva_prefix, rpmdb, h, fdo)) != 0)
+	(rc = rpmVerifyScript(qva->qva_prefix, h, fdo)) != 0)
 	    ec = rc;
     Fclose(fdo);
     return ec;

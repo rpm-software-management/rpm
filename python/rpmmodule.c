@@ -1287,7 +1287,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args) {
 */
 static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
     int fileNumber;
-    int verifyResult;
+    rpmVerifyAttrs verifyResult = 0;
     PyObject * list, * tuple, * attrName;
     int type, count;
     struct stat sb;
@@ -1303,7 +1303,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 
     fileNumber = (int) PyInt_AsLong(args);
 
-    if (rpmVerifyFile("", s->h, fileNumber, &verifyResult, 0)) {
+    if (rpmVerifyFile("", s->h, fileNumber, &verifyResult, RPMVERIFY_NONE)) {
 	Py_INCREF(Py_None);
 	return Py_None;
     }
