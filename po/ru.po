@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
-"POT-Creation-Date: 2000-08-04 15:48-0400\n"
+"POT-Creation-Date: 2000-08-07 15:28-0400\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Leon Kanter <leon@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1144,7 +1144,9 @@ msgstr "не могу открыть файл %s\n"
 #: rpmqv.c:284
 #, c-format
 msgid "Usage: %s {--help}\n"
-msgstr "Использование: %s {--help}\n"
+msgstr ""
+"Использование:\n"
+"       rpm {--help}\n"
 
 #: rpmqv.c:288
 #, c-format
@@ -1178,12 +1180,12 @@ msgstr ""
 #: rpmqv.c:331
 #, c-format
 msgid "       %s {--setperms} [-afpg] [target]\n"
-msgstr "      %s {--setperms} [-afpg] [цель]\n"
+msgstr "       %s {--setperms} [-afpg] [цель]\n"
 
 #: rpmqv.c:332
 #, c-format
 msgid "       %s {--setugids} [-afpg] [target]\n"
-msgstr "      %s {--setugids} [-afpg] [цель]\n"
+msgstr "       %s {--setugids} [-afpg] [цель]\n"
 
 #: rpmqv.c:336
 #, c-format
@@ -1224,7 +1226,7 @@ msgstr ""
 #: rpmqv.c:343
 #, c-format
 msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
-msgstr "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
+msgstr "       %s {--freshen -F} файл1.rpm ... файлN.rpm\n"
 
 #: rpmqv.c:347
 #, c-format
@@ -1249,15 +1251,15 @@ msgstr "   Все режимы поддерживают следующие аргументы:"
 
 #: rpmqv.c:394
 msgid "   --define '<name> <body>'"
-msgstr ""
+msgstr "   --define '<имя> <подстановка>'"
 
 #: rpmqv.c:396
 msgid "   --eval '<name>+'       "
-msgstr "    --pipe <cmd>          "
+msgstr "   --eval '<имя>+'       "
 
 #: rpmqv.c:398
 msgid "   --pipe <cmd>           "
-msgstr "    --pipe <cmd>          "
+msgstr "    --pipe <команда>      "
 
 #: rpmqv.c:400
 msgid "   --rcfile <file>        "
@@ -1265,17 +1267,17 @@ msgstr "      --rcfile <файл>     "
 
 #: rpmqv.c:405
 msgid "   --dbpath <dir>         "
-msgstr "      --dbpath <каталог>  "
+msgstr "   --dbpath <каталог>     "
 
 #: rpmqv.c:407
 msgid "   --root <dir>           "
-msgstr "      --root <каталог>    "
+msgstr "   --root <каталог>       "
 
 #: rpmqv.c:417
 msgid ""
 "  Install, upgrade and query (with -p) modes allow URL's to be used in place"
 msgstr ""
-"   установка, обновление и запрос (с -p) допускают использование ftp URL "
+"  Установка, обновление и запрос (с -p) допускают использование ftp URL "
 "вместо"
 
 #: rpmqv.c:418
@@ -1284,7 +1286,7 @@ msgstr "   имен файлов а также следующие опции:"
 
 #: rpmqv.c:419
 msgid "     --ftpproxy <host>    "
-msgstr "      --ftpproxy <host>   "
+msgstr "     --ftpproxy <адрес>   "
 
 #: rpmqv.c:421
 msgid "     --ftpport <port>     "
@@ -1292,7 +1294,7 @@ msgstr "      --ftpport <порт>    "
 
 #: rpmqv.c:423
 msgid "     --httpproxy <host>   "
-msgstr "      --httpproxy <host>   "
+msgstr "     --httpproxy <адрес>  "
 
 #: rpmqv.c:425
 msgid "     --httpport <port>    "
@@ -1304,7 +1306,7 @@ msgstr "      Опции спецификации пакета:"
 
 #: lib/poptQV.c:62 rpmqv.c:433
 msgid "query/verify all packages"
-msgstr "запросить все пакеты"
+msgstr "запросить/проверить все пакеты"
 
 #: rpmqv.c:434
 msgid "     -f <file>+           "
@@ -1312,7 +1314,7 @@ msgstr "        -f <файл>+        "
 
 #: rpmqv.c:435
 msgid "query/verify package owning <file>"
-msgstr "найти пакет, которому принадлежит <файл>"
+msgstr "найти/проверить пакет, которому принадлежит <файл>"
 
 #: rpmqv.c:436
 msgid "     -p <packagefile>+    "
@@ -1320,31 +1322,31 @@ msgstr "        -p <файл пакета>+ "
 
 #: rpmqv.c:437
 msgid "query/verify (uninstalled) package <packagefile>"
-msgstr "запросить (неустановленный) пакет <файл пакета>"
+msgstr "запросить/проверить (неустановленный) пакет <файл пакета>"
 
 #: rpmqv.c:438
 msgid "     --triggeredby <pkg>  "
-msgstr "        --triggeredby <pkg>"
+msgstr "     --triggeredby <пакет>"
 
 #: rpmqv.c:439
 msgid "query/verify packages triggered by <pkg>"
-msgstr "запросить пакеты с триггер-скриптами на пакет <pkg>"
+msgstr "запросить/проверить пакеты с триггер-скриптами на пакет <пакет>"
 
 #: rpmqv.c:440
 msgid "     --whatprovides <cap> "
-msgstr "        --whatprovides <cap>"
+msgstr "     --whatprovides <сервис>"
 
 #: rpmqv.c:441
 msgid "query/verify packages which provide <cap> capability"
-msgstr "найти пакеты, предоставляющие сервис <cap>"
+msgstr "найти/проверить пакеты, предоставляющие сервис <сервис>"
 
 #: rpmqv.c:442
 msgid "     --whatrequires <cap> "
-msgstr "        --whatrequires <cap>"
+msgstr "     --whatrequires <сервис>"
 
 #: rpmqv.c:443
 msgid "query/verify packages which require <cap> capability"
-msgstr "найти пакеты, требующие сервиса <cap>"
+msgstr "найти/проверить пакеты, требующие сервис <сервис>"
 
 #: rpmqv.c:447
 msgid "     --queryformat <qfmt> "
@@ -1360,7 +1362,7 @@ msgstr "показать сервисы, предоставляемые пакетом"
 
 #: rpmqv.c:468
 msgid "list capabilities required by package"
-msgstr "показать сервисы, предоставляемые пакетом"
+msgstr "показать сервисы, необходимые для пакета"
 
 #: rpmqv.c:470
 msgid "print the various [un]install scriptlets"
@@ -1424,47 +1426,47 @@ msgstr "    -t<stage> <tarball>   "
 
 #: rpmqv.c:584
 msgid "package src rpm only"
-msgstr "у пакета нет имени"
+msgstr "создать только src rpm"
 
 #: rpmqv.c:595
 msgid "     --buildroot <dir>    "
-msgstr "      --buildroot <кат.>  "
+msgstr "     --buildroot <каталог>"
 
 #: rpmqv.c:597
 msgid "     --target=<platform>+ "
-msgstr "      --target=<платформа>+"
+msgstr "     --target=<платформа>+"
 
 #: rpmqv.c:602
 msgid "   --rebuild <src_pkg>    "
-msgstr "    --rebuild <src_pkg>   "
+msgstr "   --rebuild <src_pkg>    "
 
 #: rpmqv.c:604
 msgid "   --recompile <src_pkg>  "
-msgstr "    --recompile <src_pkg> "
+msgstr "   --recompile <src_pkg>  "
 
 #: rpmqv.c:610
 msgid "   --resign <pkg>+        "
-msgstr "    --resign <pkg>+       "
+msgstr "   --resign <пакет>+      "
 
 #: rpmqv.c:612
 msgid "   --addsign <pkg>+       "
-msgstr "    --addsign <pkg>+      "
+msgstr "   --addsign <pkg>+       "
 
 #: rpmqv.c:615
 msgid "   --checksig <pkg>+"
-msgstr "    --checksig <pkg>+     "
+msgstr "   --checksig <pkg>+"
 
 #: rpmqv.c:616
 msgid "   -K <pkg>+             "
-msgstr "    --resign <pkg>+       "
+msgstr "   -K <pkg>+             "
 
 #: rpmqv.c:629
 msgid "initalize database (unnecessary, legacy use)"
-msgstr ""
+msgstr "создать базу данных (не обязательно)"
 
 #: rpmqv.c:631
 msgid "rebuild database indices from existing database headers"
-msgstr "перестроить базу данных из существующей базы"
+msgstr "переиндексировать базу данных"
 
 #: rpmqv.c:987
 msgid "--dbpath given for operation that does not use a database"
@@ -1490,17 +1492,17 @@ msgstr "не заданы tar-файлы для сборки пакета"
 
 #: build/build.c:110 build/pack.c:354
 msgid "Unable to open temp file."
-msgstr "Не могу открыть временный файл"
+msgstr "Невозможно открыть временный файл"
 
 #: build/build.c:189
 #, c-format
 msgid "Executing(%s): %s\n"
-msgstr "Исполняю: %s\n"
+msgstr "Исполняется: %s\n"
 
 #: build/build.c:195
 #, c-format
 msgid "Exec of %s failed (%s): %s"
-msgstr "Исполнить %s не удалось (%s)"
+msgstr "Исполнить %s не удалось (%s): %s"
 
 #: build/build.c:203
 #, c-format
@@ -1509,19 +1511,19 @@ msgstr "Неверный код возврата из %s (%s)"
 
 #: build/expression.c:211
 msgid "syntax error while parsing =="
-msgstr "синтаксическая ошибка в выражении"
+msgstr "синтаксическая ошибка при анализе =="
 
 #: build/expression.c:241
 msgid "syntax error while parsing &&"
-msgstr "синтаксическая ошибка в выражении"
+msgstr "синтаксическая ошибка при анализе &&"
 
 #: build/expression.c:250
 msgid "syntax error while parsing ||"
-msgstr "синтаксическая ошибка в выражении"
+msgstr "синтаксическая ошибка при анализе ||"
 
 #: build/expression.c:292
 msgid "parse error in expression"
-msgstr "ошибка разбора выражения"
+msgstr "ошибка анализа выражения"
 
 #: build/expression.c:321
 msgid "unmatched ("
@@ -1568,12 +1570,12 @@ msgstr "Ошибка TIMECHECK: %s\n"
 #: build/files.c:249 build/files.c:331 build/files.c:494
 #, c-format
 msgid "Missing '(' in %s %s"
-msgstr "отсутствует '(' в %s"
+msgstr "Отсутствует '(' в %s %s"
 
 #: build/files.c:260 build/files.c:448 build/files.c:505
 #, c-format
 msgid "Missing ')' in %s(%s"
-msgstr "отсутствует ')' в %s"
+msgstr "отсутствует ')' в %s(%s"
 
 #: build/files.c:298 build/files.c:473
 #, c-format
@@ -1583,22 +1585,22 @@ msgstr "Неверный токен %s: %s"
 #: build/files.c:347
 #, c-format
 msgid "Non-white space follows %s(): %s"
-msgstr ""
+msgstr "Не пробел следует после %s(): %s"
 
 #: build/files.c:385
 #, c-format
 msgid "Bad syntax: %s(%s)"
-msgstr "Неверный синтаксис %s(): %s"
+msgstr "Неверный синтаксис: %s(%s)"
 
 #: build/files.c:395
 #, c-format
 msgid "Bad mode spec: %s(%s)"
-msgstr "Неверные права %s(): %s"
+msgstr "Неверные права: %s(%s)"
 
 #: build/files.c:407
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
-msgstr "Неверные права на каталог %s(): %s"
+msgstr "Неверные права на каталог %s(%s)"
 
 #: build/files.c:531
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
@@ -1639,12 +1641,12 @@ msgstr "Файл указан дважды: %s"
 #: build/files.c:921
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
-msgstr ""
+msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s"
 
 #: build/files.c:1010
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
-msgstr "Файл не отвечает префиксу (%s): %s"
+msgstr "Файл не соответстует префиксу (%s): %s"
 
 #: build/files.c:1020
 #, c-format
@@ -1659,7 +1661,7 @@ msgstr "Неверная пара хозяин/группа: %s\n"
 #: build/files.c:1075
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
-msgstr "Файл %4d: 0%o %s.%s\t %s\n"
+msgstr "Файл %4d: %07o %s.%s\t %s\n"
 
 #: build/files.c:1149
 #, c-format
@@ -1673,7 +1675,7 @@ msgstr "Файл не найден: %s"
 
 #: build/files.c:1231
 msgid "Could not open %%files file %s: %s"
-msgstr "Не могу открыть файл %%files: %s"
+msgstr "Невозможно открыть файл %%files: %s"
 
 #: build/files.c:1238 build/pack.c:100
 #, c-format
@@ -1688,18 +1690,18 @@ msgstr "Неверный файл %s: %s"
 #: build/files.c:1577 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
-msgstr "Неверная пара владелец/группа: %s"
+msgstr "Неверная пара хозяин/группа: %s"
 
 #. XXX this error message is probably not seen.
 #: build/files.c:1632
 #, c-format
 msgid "Couldn't exec %s: %s"
-msgstr "Не могу выполнить %s: %s"
+msgstr "Не могу исполнить %s: %s"
 
 #: build/files.c:1637
 #, c-format
 msgid "Couldn't fork %s: %s"
-msgstr "Не могу форкнуть %s: %s"
+msgstr "Не могу форкнуть %s"
 
 #: build/files.c:1719
 #, c-format
@@ -1714,17 +1716,17 @@ msgstr "запись всех данных в %s не удалась"
 #: build/files.c:1819
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
-msgstr "Определяю требования пакета...\n"
+msgstr "Определяются требования пакета...\n"
 
 #: build/files.c:1847 build/files.c:1857
 #, c-format
 msgid "Failed to find %s:"
-msgstr "Ошибка определения сервисов, предоставляемых пакетом"
+msgstr "Невозможно найти %s"
 
 #: build/files.c:1967
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
-msgstr "Обрабатываю файлы: %s\n"
+msgstr "Обрабатываются файлы: %s-%s-%s\n"
 
 #: build/names.c:46 build/names.c:79
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
@@ -1737,7 +1739,7 @@ msgstr "RPMERR_INTERNAL: Достигнут предел в getGname()\n"
 #: build/names.c:186
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
-msgstr "Не могу канонизировать имя хоста: %s\n"
+msgstr "Не могу канонизировать имя компьютера: %s\n"
 
 #: build/pack.c:48
 #, c-format
@@ -1747,42 +1749,42 @@ msgstr "ошибка создания архива на файле %s: %s"
 #: build/pack.c:68
 #, c-format
 msgid "cpio_copy write failed: %s"
-msgstr "неудача записи cpio_copy: %s"
+msgstr "cpio_copy: ошибка записи: %s"
 
 #: build/pack.c:75
 #, c-format
 msgid "cpio_copy read failed: %s"
-msgstr "неудача чтения cpio_copy: %s"
+msgstr "cpio_copy: ошибка чтения: %s"
 
 #: build/pack.c:155
 #, c-format
 msgid "Could not open PreIn file: %s"
-msgstr "Не могу открыть файл PreIn: %s"
+msgstr "Невозможно открыть файл PreIn: %s"
 
 #: build/pack.c:162
 #, c-format
 msgid "Could not open PreUn file: %s"
-msgstr "Не могу открыть файл PreUn: %s"
+msgstr "Невозможно открыть файл PreUn: %s"
 
 #: build/pack.c:169
 #, c-format
 msgid "Could not open PostIn file: %s"
-msgstr "Не могу открыть файл PostIn: %s"
+msgstr "Невозможно открыть файл PostIn: %s"
 
 #: build/pack.c:176
 #, c-format
 msgid "Could not open PostUn file: %s"
-msgstr "Не могу открыть файл PostUn: %s"
+msgstr "Невозможно открыть файл PostUn: %s"
 
 #: build/pack.c:184
 #, c-format
 msgid "Could not open VerifyScript file: %s"
-msgstr "Не могу открыть файл VerifyScript: %s"
+msgstr "Невозможно открыть файл VerifyScript: %s"
 
 #: build/pack.c:199
 #, c-format
 msgid "Could not open Trigger script file: %s"
-msgstr "Не могу открыть файл Trigger script: %s"
+msgstr "Невозможно открыть файл Trigger script: %s"
 
 #: build/pack.c:226
 #, c-format
@@ -1802,7 +1804,7 @@ msgstr "readRPM: %s - не пакет RPM\n"
 #: build/pack.c:263
 #, c-format
 msgid "readRPM: reading header from %s\n"
-msgstr "readRPM: читаю хедер из %s\n"
+msgstr "readRPM: читается заголовок из %s\n"
 
 #: build/pack.c:366
 msgid "Bad CSA data"
@@ -1811,32 +1813,32 @@ msgstr "Неверные данные CSA"
 #: build/pack.c:402
 #, c-format
 msgid "Could not open %s: %s\n"
-msgstr "Не могу открыть %s\n"
+msgstr "Невозможно открыть %s: %s\n"
 
 #: build/pack.c:434
 #, c-format
 msgid "Unable to write package: %s"
-msgstr "Не могу записать пакет: %s"
+msgstr "Невозможно записать пакет: %s"
 
 #: build/pack.c:449
 #, c-format
 msgid "Generating signature: %d\n"
-msgstr "Генерирую подпись: %d\n"
+msgstr "Генерируется подпись: %d\n"
 
 #: build/pack.c:465
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
-msgstr "Не могу прочитать цель подписи: %s"
+msgstr "Невозможно прочитать цель подписи %s: %s"
 
 #: build/pack.c:475
 #, c-format
 msgid "Unable to read sigtarget %s: %s"
-msgstr "Не могу прочитать цель подписи: %s"
+msgstr "Невозможно прочитать цель подписи %s: %s"
 
 #: build/pack.c:485
 #, c-format
 msgid "Unable to write package %s: %s"
-msgstr "Не могу записать пакет: %s"
+msgstr "Невозможно записать пакет %s: %s"
 
 #: build/pack.c:500
 #, c-format
@@ -1846,7 +1848,7 @@ msgstr "Записан: %s\n"
 #: build/pack.c:564
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
-msgstr "Не могу сгенерировать имя файла для пакета %s: %s\n"
+msgstr "Невозможно сгенерировать имя файла для пакета %s: %s\n"
 
 #: build/pack.c:581
 #, c-format
@@ -1876,7 +1878,7 @@ msgstr "%%changelog не в нисходящем хронологическом порядке"
 
 #: build/parseChangelog.c:144 build/parseChangelog.c:155
 msgid "missing name in %%changelog"
-msgstr "отсутствует имя в %%changelog"
+msgstr "пропущено имя в %%changelog"
 
 #: build/parseChangelog.c:162
 msgid "no description in %%changelog"
@@ -1884,7 +1886,7 @@ msgstr "нет описания в %%changelog"
 
 #: build/parseDescription.c:38
 msgid "line %d: Error parsing %%description: %s"
-msgstr "строка %d: Ошибка разбора %%description: %s"
+msgstr "строка %d: Ошибка анализа %%description: %s"
 
 #: build/parseDescription.c:51 build/parseFiles.c:46 build/parseScript.c:173
 #, c-format
@@ -1947,12 +1949,12 @@ msgstr "Дублирующиеся записи %s в пакете: %s"
 #: build/parsePreamble.c:244
 #, c-format
 msgid "Unable to open icon %s: %s"
-msgstr "Не могу прочитать пиктограмму: %s"
+msgstr "Невозможно открыть пиктограмму %s: %s"
 
 #: build/parsePreamble.c:262
 #, c-format
 msgid "Unable to read icon %s: %s"
-msgstr "Не могу прочитать пиктограмму: %s"
+msgstr "Невозможно прочитать пиктограмму %s: %s"
 
 #: build/parsePreamble.c:275
 #, c-format
@@ -1962,13 +1964,13 @@ msgstr "Неизвестный тип пиктограммы: %s"
 #: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
-msgstr "строка %d: Неверный тэг: %s"
+msgstr "строка %d: Неверный формат ярлыка: %s"
 
 #. Empty field
 #: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
-msgstr "строка %d: Пустой тэг: %s"
+msgstr "строка %d: Пустой ярлык: %s"
 
 #: build/parsePreamble.c:368 build/parsePreamble.c:375
 #, c-format
@@ -1978,7 +1980,7 @@ msgstr "строка %d: Недопустимый символ '-' в %s: %s"
 #: build/parsePreamble.c:432 build/parseSpec.c:376
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
-msgstr "строка %d: BuildRoot не может быть \"/\": %s"
+msgstr "BuildRoot не может быть \"/\": %s"
 
 #: build/parsePreamble.c:445
 #, c-format
@@ -2003,7 +2005,7 @@ msgstr "строка %d: Неверный формат BuildArchitecture: %s"
 #: build/parsePreamble.c:536
 #, c-format
 msgid "Internal error: Bogus tag %d"
-msgstr "Внутренняя ошибка: \"Левый\" тэг %d"
+msgstr "Внутренняя ошибка: Неизвестный ярлык %d"
 
 #: build/parsePreamble.c:675
 #, c-format
@@ -2018,7 +2020,7 @@ msgstr "Пакет уже существует: %s"
 #: build/parsePreamble.c:708
 #, c-format
 msgid "line %d: Unknown tag: %s"
-msgstr "строка %d: Неизвестный тэг: %s"
+msgstr "строка %d: Неизвестный ярлык: %s"
 
 #: build/parsePreamble.c:733
 msgid "Spec file can't use BuildRoot"
@@ -2032,7 +2034,7 @@ msgstr "Неверный исходник: %s: %s"
 #: build/parsePrep.c:57
 #, c-format
 msgid "No patch number %d"
-msgstr "Нет патча номер %d"
+msgstr "Нет заплаты номер %d"
 
 #: build/parsePrep.c:139
 #, c-format
@@ -2046,7 +2048,7 @@ msgstr "Не могу получить nosource %s: %s"
 
 #: build/parsePrep.c:224
 msgid "Error parsing %%setup: %s"
-msgstr "Ошибка разбора %%setup: %s"
+msgstr "Ошибка анализа %%setup: %s"
 
 #: build/parsePrep.c:239
 msgid "line %d: Bad arg to %%setup %c: %s"
@@ -2074,7 +2076,7 @@ msgstr "строка %d: Неверный аргумент для %%patch -p: %s"
 
 #: build/parsePrep.c:417
 msgid "Too many patches!"
-msgstr "Слишком много патчей!"
+msgstr "Слишком много заплат!"
 
 #: build/parsePrep.c:421
 msgid "line %d: Bad arg to %%patch: %s"
@@ -2082,38 +2084,40 @@ msgstr "строка %d: Неверный аргумент для %%patch: %s"
 
 #: build/parsePrep.c:458
 msgid "line %d: second %%prep"
-msgstr "строка %d: Второй %%prep"
+msgstr "строка %d: второй %%prep"
 
 #: build/parseReqs.c:97
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
-msgstr "строка %d: %s: токены должны начинаться с буквы или цифры: %s"
+msgstr ""
+"строка %d: %s: Токены зависимостей должны начинаться с буквы, цифры, '_' или "
+"'/': %s"
 
 #: build/parseReqs.c:108
 #, c-format
 msgid "line %d: File name not permitted: %s"
-msgstr "строка %d: Имена файлов в Obsoletes недопустимы: %s"
+msgstr "строка %d: Имена файлов не разрешаются: %s"
 
 #: build/parseReqs.c:140
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s"
-msgstr "строка %d: Версии и имена файлов в %s недопустимы: %s"
+msgstr "строка %d: Версии в именах файлов недопустимы: %s"
 
 #: build/parseReqs.c:169
 #, c-format
 msgid "line %d: Version required: %s"
-msgstr "строка %d: В %s требуется версия: %s"
+msgstr "строка %d: Требуется версия: %s"
 
 #: build/parseScript.c:141
 #, c-format
 msgid "line %d: triggers must have --: %s"
-msgstr "строка %d: Триггеры должны содержать --: %s"
+msgstr "строка %d: триггеры должны содержать --: %s"
 
 #: build/parseScript.c:151 build/parseScript.c:214
 #, c-format
 msgid "line %d: Error parsing %s: %s"
-msgstr "строка %d: Ошибка разбора %s: %s"
+msgstr "строка %d: Ошибка анализа %s: %s"
 
 #: build/parseScript.c:161
 #, c-format
@@ -2134,7 +2138,7 @@ msgstr "строка %d: %s"
 #: build/parseSpec.c:188
 #, c-format
 msgid "Unable to open %s: %s\n"
-msgstr "Не могу открыть %s\n"
+msgstr "Невозможно открыть %s: %s\n"
 
 #: build/parseSpec.c:200
 msgid "Unclosed %%if"
@@ -2143,17 +2147,17 @@ msgstr "Незакрытый %%if"
 #: build/parseSpec.c:261
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
-msgstr ""
+msgstr "%s:%d: parseExpressionBoolean код возврата: %d"
 
 #. Got an else with no %if !
 #: build/parseSpec.c:269
 msgid "%s:%d: Got a %%else with no if"
-msgstr "%s:%d: Найден %%else без if"
+msgstr "%s:%d: Найден %%else без %%if"
 
 #. Got an end with no %if !
 #: build/parseSpec.c:280
 msgid "%s:%d: Got a %%endif with no if"
-msgstr "%s:%d: Найден %%endif без if"
+msgstr "%s:%d: Найден %%endif без %%if"
 
 #: build/parseSpec.c:294 build/parseSpec.c:303
 msgid "malformed %%include statement"
@@ -2297,7 +2301,7 @@ msgstr ""
 #: lib/depends.c:1073
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
-msgstr "требования пакета %s не удовлетворены: %s\n"
+msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
 #: lib/depends.c:1140
@@ -2313,32 +2317,32 @@ msgstr "замкнутый цикл в цепочке требований для установки: %s"
 #: lib/db1.c:96 lib/db3.c:441
 #, c-format
 msgid "db%d error(%d)"
-msgstr ""
+msgstr "db%d ошибка(%d)"
 
 #: lib/db1.c:98 lib/db3.c:443
 #, c-format
 msgid " performing %s"
-msgstr ""
+msgstr " исполняется %s"
 
 #: lib/db1.c:390
 #, c-format
 msgid "closed  db file        %s\n"
-msgstr ""
+msgstr "закрыт файл базы данных %s\n"
 
 #: lib/db1.c:393
 #, c-format
 msgid "removed db file        %s\n"
-msgstr "удаляю индекс файлов для %s\n"
+msgstr "удалён файл базу данных %s\n"
 
 #: lib/db1.c:424
 #, c-format
 msgid "bad db file %s"
-msgstr "неверное состояние файла: %s"
+msgstr "неверный файл базы данных %s"
 
 #: lib/db1.c:429
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
-msgstr "открываю базу в режиме 0x%x в %s\n"
+msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 
 #. XXX check errno validity
 #: lib/db1.c:452
@@ -2427,7 +2431,7 @@ msgstr ""
 #: lib/db3.c:1102
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
-msgstr ""
+msgstr "не могу получить %s доступ к базе данных"
 
 #: lib/db3.c:1109
 #, c-format
@@ -2689,15 +2693,15 @@ msgstr "подставить секции i18n из следующего каталога"
 
 #: lib/poptBT.c:116
 msgid "build source and binary package from spec file"
-msgstr ""
+msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
 #: lib/poptBT.c:118
 msgid "build binary package from spec file"
-msgstr ""
+msgstr "исходный пакет не содержит файла .spec"
 
 #: lib/poptBT.c:120
 msgid "build source package from spec file"
-msgstr ""
+msgstr "исходный пакет не содержит файла .spec"
 
 #: lib/poptBT.c:123
 msgid "build through %%prep stage from tar ball"
@@ -2717,7 +2721,7 @@ msgstr ""
 
 #: lib/poptBT.c:131
 msgid "build source and binary package from tar ball"
-msgstr ""
+msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
 #: lib/poptBT.c:133
 msgid "build binary package from tar ball"
@@ -2729,19 +2733,19 @@ msgstr ""
 
 #: lib/poptBT.c:138
 msgid "build binary package from source package"
-msgstr ""
+msgstr "binary package (исполнить %prep, %build, %install и создать RPM)"
 
 #: lib/poptBT.c:140
 msgid "build through %%install stage from source package"
-msgstr ""
+msgstr "устанавливаю исходный пакет\n"
 
 #: lib/poptBT.c:143
 msgid "override build root"
-msgstr ""
+msgstr "переопределить build root"
 
 #: lib/poptBT.c:147
 msgid "do not execute any stages of the build"
-msgstr ""
+msgstr "не исполнять никаких этапов сборки"
 
 #: lib/poptBT.c:149
 msgid "do not accept I18N msgstr's from specfile"
@@ -3123,7 +3127,7 @@ msgstr "не могу открыть %s на %s:%d"
 #: lib/rpmdb.c:293
 #, c-format
 msgid "cannot open %s index"
-msgstr "не могу открыть индекс %s"
+msgstr "не могу открыть %s\n"
 
 #: lib/rpmdb.c:308
 #, c-format
@@ -3187,7 +3191,7 @@ msgstr ""
 #: lib/rpmdb.c:1077
 #, c-format
 msgid "error(%d) counting packages"
-msgstr ""
+msgstr "ошибка при поиске пакета %s\n"
 
 #: lib/rpmdb.c:1136 lib/rpmdb.c:1663 lib/uninstall.c:97
 #, c-format
@@ -3212,7 +3216,7 @@ msgstr "удаляю индекс имен\n"
 #: lib/rpmdb.c:1878
 #, c-format
 msgid "error(%d) allocating new package instance"
-msgstr ""
+msgstr "ошибка при поиске пакета %s\n"
 
 #: lib/rpmdb.c:1935
 #, c-format
@@ -3335,7 +3339,7 @@ msgstr "получено %d пакетов\n"
 #: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, c-format
 msgid "cannot open file %s: %s\n"
-msgstr "невозможно открыть файл %s: %s\n"
+msgstr "не могу открыть файл %s: %s"
 
 #: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, c-format
@@ -3902,7 +3906,7 @@ msgstr "url port должен быть числом\n"
 #: rpmio/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
-msgstr "не могу открыть %s: %s\n"
+msgstr "не могу открыть %s: %s"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462
