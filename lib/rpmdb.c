@@ -238,11 +238,11 @@ void rpmdbClose (rpmdb db) {
     free(db);
 }
 
-unsigned int rpmdbFirstRecNum(rpmdb db) {
+int rpmdbFirstRecNum(rpmdb db) {
     return faFirstOffset(db->pkgs);
 }
 
-unsigned int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
+int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
     /* 0 at end */
     return faNextOffset(db->pkgs, lastOffset);
 }

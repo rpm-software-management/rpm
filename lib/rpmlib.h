@@ -213,9 +213,9 @@ int rpmdbInit(char * prefix, int perms);
     /* nonzero on error */
 void rpmdbClose (rpmdb db);
 
-unsigned int rpmdbFirstRecNum(rpmdb db);
-unsigned int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);  
-    /* 0 at end */
+int rpmdbFirstRecNum(rpmdb db);
+int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);  
+    /* 0 at end, -1 on error */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
 int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches);
