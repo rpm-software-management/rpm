@@ -89,7 +89,25 @@ int rpmswEnter(rpmop op, ssize_t rc)
  */
 rpmtime_t rpmswExit(rpmop op, ssize_t rc)
 	/*@globals internalState @*/
-	/*@modifies *op, internalState @*/;
+	/*@modifies op, internalState @*/;
+
+/** \ingroup rpmio
+ * Sum statistic counters.
+ * @param to			result statistics
+ * @param from			operation statistics
+ * @return			cumulative usecs for operation
+ */
+rpmtime_t rpmswAdd(rpmop to, rpmop from)
+	/*@modifies to @*/;
+
+/** \ingroup rpmio
+ * Subtract statistic counters.
+ * @param to			result statistics
+ * @param from			operation statistics
+ * @return			cumulative usecs for operation
+ */
+rpmtime_t rpmswSub(rpmop to, rpmop from)
+	/*@modifies to @*/;
 
 #ifdef __cplusplus
 }

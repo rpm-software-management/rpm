@@ -123,12 +123,30 @@ pid_t rpmsqWait(rpmsq sq)
 	/*@modifies sq, fileSystem, internalState @*/;
 
 /**
- * Call a function in a thread synchronously.
+ * Call a function in a thread.
  * @param start		function
  * @param arg		function argument
+ * @return		thread pointer (NULL on error)
+ */
+void * rpmsqThread(void * (*start) (void * arg), void * arg)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+
+/**
+ * Wait for thread to terminate.
+ * @param thread	thread
  * @return		0 on success
  */
-int rpmsqThread(void * (*start) (void * arg), void * arg)
+int rpmsqJoin(/*@null@*/ void * thread)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
+
+/**
+ * Compare thread with current thread.
+ * @param thread	thread
+ * @return		0 if not equal
+ */
+int rpmsqThreadEqual(/*@null@*/ void * thread)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
 

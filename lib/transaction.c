@@ -1154,8 +1154,6 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
      */
 rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
 
-    (void) rpmswEnter(&ts->op, -1);
-
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1211,6 +1209,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
+	(void) rpmswEnter(&ts->op_fingerprint, 0);
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
 	/*@-branchstate@*/
  	fi = rpmfiInit(fi, 0);
@@ -1223,6 +1222,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	    /*@=dependenttrans@*/
 	}
 	/*@=branchstate@*/
+	(void) rpmswExit(&ts->op_fingerprint, fc);
+
     }
     pi = rpmtsiFree(pi);
 
@@ -1251,6 +1252,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 
 	if (fc == 0) continue;
 
+	(void) rpmswEnter(&ts->op_fingerprint, 0);
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(fc, sizeof(*matches));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
@@ -1350,6 +1352,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	case TR_REMOVED:
 	    /*@switchbreak@*/ break;
 	}
+	(void) rpmswExit(&ts->op_fingerprint, fc);
     }
     pi = rpmtsiFree(pi);
     ps = rpmpsFree(ps);
@@ -1366,8 +1369,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
 	NULL, ts->notifyData));
-
-    ts->ms_fingerprint += rpmswExit(&ts->op, totalFileCount)/1000;
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -1424,7 +1425,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 			numRemoved, NULL, ts->notifyData));
 		progress++;
 
-		(void) rpmswEnter(&ts->op, -1);
+		(void) rpmswEnter(&ts->op_repackage, 0);
 
 	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
 		fi->mapflags |= CPIO_MAP_ABSOLUTE;
@@ -1437,7 +1438,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		fi->mapflags &= ~CPIO_MAP_ADDDOT;
 		fi->mapflags &= ~CPIO_ALL_HARDLINKS;
 
-		ts->ms_repackage += rpmswExit(&ts->op, -1)/1000;
+		(void) rpmswExit(&ts->op_repackage, 0);
 
 		/*@switchbreak@*/ break;
 	    }
@@ -1472,7 +1473,7 @@ assert(psm != NULL);
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
-	    (void) rpmswEnter(&ts->op, -1);
+	    (void) rpmswEnter(&ts->op_install, 0);
 
 	    pkgKey = rpmteAddedKey(p);
 
@@ -1569,12 +1570,12 @@ assert(psm != NULL);
 
 	    p->h = headerFree(p->h);
 
-	    ts->ms_install += rpmswExit(&ts->op, -1)/1000;
+	    (void) rpmswExit(&ts->op_install, 0);
 
 	    /*@switchbreak@*/ break;
 
 	case TR_REMOVED:
-	    (void) rpmswEnter(&ts->op, -1);
+	    (void) rpmswEnter(&ts->op_erase, 0);
 
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", rpmteNEVR(p));
 	    /*
@@ -1586,7 +1587,7 @@ assert(psm != NULL);
 		    ourrc++;
 	    }
 
-	    ts->ms_erase += rpmswExit(&ts->op, -1)/1000;
+	    (void) rpmswExit(&ts->op_erase, 0);
 
 	    /*@switchbreak@*/ break;
 	}

@@ -108,14 +108,16 @@ enum FDSTAT_e {
     FDSTAT_READ		= 0,	/*!< Read statistics index. */
     FDSTAT_WRITE	= 1,	/*!< Write statistics index. */
     FDSTAT_SEEK		= 2,	/*!< Seek statistics index. */
-    FDSTAT_CLOSE	= 3	/*!< Close statistics index */
+    FDSTAT_CLOSE	= 3,	/*!< Close statistics index */
+    FDSTAT_DIGEST	= 4,	/*!< Digest statistics index. */
+    FDSTAT_MAX		= 5
 };
 
 /** \ingroup rpmio
  * Cumulative statistics for a descriptor.
  */
 typedef	/*@abstract@*/ struct {
-    struct rpmop_s	ops[4];	/*!< Cumulative statistics. */
+    struct rpmop_s	ops[FDSTAT_MAX];	/*!< Cumulative statistics. */
 } * FDSTAT_t;
 
 /** \ingroup rpmio
@@ -491,7 +493,9 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
     if (fddig != (fd->digests + FDDIGEST_MAX)) {
 	fd->ndigests++;
 	fddig->hashalgo = hashalgo;
+	fdstat_enter(fd, FDSTAT_DIGEST);
 	fddig->hashctx = rpmDigestInit(hashalgo, flags);
+	fdstat_exit(fd, FDSTAT_DIGEST, 0);
     }
 }
 
@@ -509,7 +513,9 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
 	    continue;
+	fdstat_enter(fd, FDSTAT_DIGEST);
 	(void) rpmDigestUpdate(fddig->hashctx, buf, buflen);
+	fdstat_exit(fd, FDSTAT_DIGEST, buflen);
     }
 }
 
@@ -532,7 +538,9 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	if (i > imax) imax = i;
 	if (fddig->hashalgo != hashalgo)
 	    continue;
+	fdstat_enter(fd, FDSTAT_DIGEST);
 	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
+	fdstat_exit(fd, FDSTAT_DIGEST, 0);
 	fddig->hashctx = NULL;
 	break;
     }

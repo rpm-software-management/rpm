@@ -18,6 +18,7 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 #include "rpmte.h"
+#define	_RPMTS_INTERNAL
 #include "rpmts.h"
 #include "rpmsq.h"
 
@@ -405,7 +406,7 @@ int fsmNext(FSM_t fsm, fileStage nstage)
 {
     fsm->nstage = nstage;
     if (_fsm_threads)
-	return rpmsqThread(fsmThread, fsm);
+	return rpmsqJoin( rpmsqThread(fsmThread, fsm) );
     return fsmStage(fsm, fsm->nstage);
 }
 
@@ -2302,6 +2303,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->rfd != NULL) {
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
+	    if (fsm->rfd->stats != NULL) {
+		FDSTAT_t stats = fsm->rfd->stats;
+		rpmts ts = fsmGetTs(fsm);
+		(void) rpmswAdd(&ts->op_digest, &stats->ops[FDSTAT_DIGEST]);
+            }
 	    (void) Fclose(fsm->rfd);
 	    errno = saveerrno;
 	}
@@ -2330,6 +2336,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->wfd != NULL) {
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
+	    if (fsm->wfd->stats != NULL) {
+		FDSTAT_t stats = fsm->wfd->stats;
+		rpmts ts = fsmGetTs(fsm);
+		(void) rpmswAdd(&ts->op_digest, &stats->ops[FDSTAT_DIGEST]);
+            }
 	    (void) Fclose(fsm->wfd);
 	    errno = saveerrno;
 	}

@@ -449,19 +449,28 @@ fprintf(stderr, "      Fini(%p): %p child %d status 0x%x\n", ME(), sq, sq->child
     return sq->reaped;
 }
 
-int rpmsqThread(void * (*start) (void * arg), void * arg)
+void * rpmsqThread(void * (*start) (void * arg), void * arg)
 {
     pthread_t pth;
     int ret;
 
     ret = pthread_create(&pth, NULL, start, arg);
-    if (ret == 0) {
-#if 0
-fprintf(stderr, "    Thread(%p): %p\n", ME(), pth);
-#endif
-	ret = pthread_join(pth, NULL);
-    }
-    return ret;
+    return (ret == 0 ? (void *)pth : NULL);
+}
+
+int rpmsqJoin(void * thread)
+{
+    pthread_t pth = (pthread_t) thread;
+    if (thread == NULL)
+	return EINVAL;
+    return pthread_join(pth, NULL);
+}
+
+int rpmsqThreadEqual(void * thread)
+{
+    pthread_t t1 = (pthread_t) thread;
+    pthread_t t2 = pthread_self();
+    return pthread_equal(t1, t2);
 }
 
 /**

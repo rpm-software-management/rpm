@@ -133,6 +133,9 @@ int rpmtsCloseDB(rpmts ts)
     int rc = 0;
 
     if (ts->rdb != NULL) {
+	(void) rpmswAdd(&ts->op_dbget, &ts->rdb->db_getops);
+	(void) rpmswAdd(&ts->op_dbput, &ts->rdb->db_putops);
+	(void) rpmswAdd(&ts->op_dbdel, &ts->rdb->db_delops);
 	rc = rpmdbClose(ts->rdb);
 	ts->rdb = NULL;
     }
@@ -313,6 +316,9 @@ int rpmtsCloseSDB(rpmts ts)
     int rc = 0;
 
     if (ts->sdb != NULL) {
+	(void) rpmswAdd(&ts->op_dbget, &ts->sdb->db_getops);
+	(void) rpmswAdd(&ts->op_dbput, &ts->sdb->db_putops);
+	(void) rpmswAdd(&ts->op_dbdel, &ts->sdb->db_delops);
 	rc = rpmdbClose(ts->sdb);
 	ts->sdb = NULL;
     }
@@ -630,22 +636,42 @@ void rpmtsEmpty(rpmts ts)
 /*@=nullstate@*/
 }
 
+static void rpmtsPrintStat(const char * name, struct rpmop_s * op)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+    static unsigned uscale = (1000 * 1000);
+    static unsigned mscale = (1024 * 1024);
+    if (op->count > 0)
+	fprintf(stderr, "   %s %6d %6lu.%06lu MB %6lu.%06lu secs\n",
+		name, op->count,
+		(unsigned long)op->bytes/mscale, (unsigned long)op->bytes%mscale,
+		op->usecs/uscale, op->usecs%uscale);
+}
+
 static void rpmtsPrintStats(rpmts ts)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    rpmtime_t msecs = rpmswExit(&ts->create, -1)/1000;
+    (void) rpmswExit(&ts->op_total, 0);
 
-    fprintf(stderr, "   total:       %4lu.%03lu sec\n", msecs/1000, msecs%1000);
-    fprintf(stderr, "   check:       %4lu.%03lu sec\n", ts->ms_check/1000, ts->ms_check%1000);
-    fprintf(stderr, "   order:       %4lu.%03lu sec\n", ts->ms_order/1000, ts->ms_order%1000);
-    fprintf(stderr, "   fingerprint: %4lu.%03lu sec\n", ts->ms_fingerprint/1000, ts->ms_fingerprint%1000);
-    fprintf(stderr, "   repackage:   %4lu.%03lu sec\n", ts->ms_repackage/1000, ts->ms_repackage%1000);
-    fprintf(stderr, "   install:     %4lu.%03lu sec\n", ts->ms_install/1000, ts->ms_install%1000);
-    fprintf(stderr, "   erase:       %4lu.%03lu sec\n", ts->ms_erase/1000, ts->ms_erase%1000);
-    fprintf(stderr, "   scriptlets:  %4lu.%03lu sec\n", ts->ms_scriptlets/1000, ts->ms_scriptlets%1000);
-    fprintf(stderr, "   compress:    %4lu.%03lu sec\n", ts->ms_compress/1000, ts->ms_compress%1000);
-    fprintf(stderr, "   uncompress:  %4lu.%03lu sec\n", ts->ms_uncompress/1000, ts->ms_uncompress%1000);
+    rpmtsPrintStat("total:       ", &ts->op_total);
+    rpmtsPrintStat("check:       ", &ts->op_check);
+    rpmtsPrintStat("order:       ", &ts->op_order);
+    rpmtsPrintStat("fingerprint: ", &ts->op_fingerprint);
+    rpmtsPrintStat("repackage:   ", &ts->op_repackage);
+    rpmtsPrintStat("install:     ", &ts->op_install);
+    rpmtsPrintStat("erase:       ", &ts->op_erase);
+    rpmtsPrintStat("scriptlets:  ", &ts->op_scriptlets);
+    rpmtsPrintStat("compress:    ", &ts->op_compress);
+    rpmtsPrintStat("uncompress:  ", &ts->op_uncompress);
+    rpmtsPrintStat("digest:      ", &ts->op_digest);
+    rpmtsPrintStat("signature:   ", &ts->op_signature);
+    rpmtsPrintStat("dbadd:       ", &ts->op_dbadd);
+    rpmtsPrintStat("dbremove:    ", &ts->op_dbremove);
+    rpmtsPrintStat("dbget:       ", &ts->op_dbget);
+    rpmtsPrintStat("dbput:       ", &ts->op_dbput);
+    rpmtsPrintStat("dbdel:       ", &ts->op_dbdel);
 }
 
 rpmts rpmtsFree(rpmts ts)
@@ -1246,7 +1272,7 @@ rpmts rpmtsCreate(void)
     rpmts ts;
 
     ts = xcalloc(1, sizeof(*ts));
-    rpmswEnter(&ts->create, -1);
+    (void) rpmswEnter(&ts->op_total, -1);
     ts->goal = TSM_UNKNOWN;
     ts->filesystemCount = 0;
     ts->filesystems = NULL;

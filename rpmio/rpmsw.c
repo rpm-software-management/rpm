@@ -27,7 +27,7 @@ static int rpmsw_type = 0;
 /*@unchecked@*/
 static int rpmsw_initialized = 0;
 
-#if 0	/* XXX defined(__i386__) */
+#if defined(__i386__)
 /* Swiped from glibc-2.3.2 sysdeps/i386/i686/hp-timing.h */
 
 #define	HP_TIMING_ZERO(Var)	(Var) = (0)
@@ -114,33 +114,33 @@ rpmtime_t tvsub(/*@null@*/ const struct timeval * etv,
     if (etv == NULL  || btv == NULL) return 0;
     secs = etv->tv_sec - btv->tv_sec;
     for (usecs = etv->tv_usec - btv->tv_usec; usecs < 0; usecs += 1000000)
-	secs++;
+	secs--;
     return ((secs * 1000000) + usecs);
 }
 
 rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
 {
-    rpmtime_t diff = 0;
+    unsigned long long ticks = 0;
 
     if (end == NULL || begin == NULL)
 	return 0;
     switch (rpmsw_type) {
     default:
     case 0:
-	diff = tvsub(&end->u.tv, &begin->u.tv);
+	ticks = tvsub(&end->u.tv, &begin->u.tv);
 	break;
 #if defined(HP_TIMING_NOW)
     case 1:
 	if (end->u.ticks > begin->u.ticks)
-	    HP_TIMING_DIFF(diff, begin->u.ticks, end->u.ticks);
+	    HP_TIMING_DIFF(ticks, begin->u.ticks, end->u.ticks);
 	break;
 #endif
     }
-    if (diff >= rpmsw_overhead)
-	diff -= rpmsw_overhead;
+    if (ticks >= rpmsw_overhead)
+	ticks -= rpmsw_overhead;
     if (rpmsw_cycles > 1)
-	diff /= rpmsw_cycles;
-    return diff;
+	ticks /= rpmsw_cycles;
+    return ticks;
 }
 
 #if defined(HP_TIMING_NOW)
@@ -187,7 +187,10 @@ rpmtime_t rpmswInit(void)
 		rpmsw_type @*/
 {
     struct rpmsw_s begin, end;
-    rpmtime_t cycles, usecs;
+    unsigned long long sum_cycles = 0;
+    rpmtime_t sum_usecs = 0;
+    rpmtime_t sum_overhead = 0;
+    rpmtime_t cycles;
     int i;
 
     rpmsw_initialized = 1;
@@ -195,8 +198,8 @@ rpmtime_t rpmswInit(void)
     rpmsw_overhead = 0;
     rpmsw_cycles = 0;
 
-    /* Convergence is futile overkill ... */
-    for (i = 0; i < 1; i++) {
+    /* Convergence for simultaneous cycles and overhead is overkill ... */
+    for (i = 0; i < 3; i++) {
 #if defined(HP_TIMING_NOW)
 	rpmtime_t save_cycles = rpmsw_cycles;
 
@@ -209,39 +212,31 @@ rpmtime_t rpmswInit(void)
 	(void) rpmswNow(&begin);
 /*@=uniondef@*/
 
-	/* Get no. of cycles in 20ms nanosleep */
+	/* Get no. of cycles while doing nanosleep. */
 	rpmsw_type = 1;
 	cycles = rpmswCalibrate();
-	if (i)
+	if (save_cycles > 0 && rpmsw_overhead > 0)
 	    cycles -= (save_cycles * rpmsw_overhead);
+	sum_cycles += cycles;
 
 	/* Compute wall clock delta in usecs. */
 	rpmsw_type = 0;
 /*@-uniondef@*/
-	usecs = rpmswDiff(rpmswNow(&end), &begin);
+	sum_usecs += rpmswDiff(rpmswNow(&end), &begin);
 /*@=uniondef@*/
-
 	rpmsw_type = 1;
 
 	/* Compute cycles/usec */
-	if (usecs > 1)
-	    cycles /= usecs;
-
-	rpmsw_cycles = save_cycles;
-	rpmsw_cycles *= i;
-	rpmsw_cycles += cycles;
-	rpmsw_cycles /= (i+1);
+	rpmsw_cycles = sum_cycles/sum_usecs;
 #endif
 
 	/* Calculate timing overhead in usecs. */
 /*@-uniondef@*/
 	(void) rpmswNow(&begin);
-	usecs = rpmswDiff(rpmswNow(&end), &begin);
+	sum_overhead += rpmswDiff(rpmswNow(&end), &begin);
 /*@=uniondef@*/
 
-	rpmsw_overhead *= i;
-	rpmsw_overhead += usecs;
-	rpmsw_overhead /= (i+1);
+	rpmsw_overhead = sum_overhead/(i+1);
 
     }
 
@@ -253,8 +248,10 @@ rpmtime_t rpmswInit(void)
 int rpmswEnter(rpmop op, ssize_t rc)
 {
     op->count++;
-    if (rc < 0)
+    if (rc < 0) {
+	op->bytes = 0;
 	op->usecs = 0;
+    }
 /*@-uniondef@*/
     (void) rpmswNow(&op->begin);
 /*@=uniondef@*/
@@ -270,6 +267,28 @@ rpmtime_t rpmswExit(rpmop op, ssize_t rc)
 /*@=uniondef@*/
     if (rc > 0)
 	op->bytes += rc;
+    op->begin = end;	/* structure assignment */
     return op->usecs;
 }
+
+rpmtime_t rpmswAdd(rpmop to, rpmop from)
+{
+    if (to != NULL && from != NULL) {
+	to->count += from->count;
+	to->bytes += from->bytes;
+	to->usecs += from->usecs;
+    }
+    return to->usecs;
+}
+
+rpmtime_t rpmswSub(rpmop to, rpmop from)
+{
+    if (to != NULL && from != NULL) {
+	to->count -= from->count;
+	to->bytes -= from->bytes;
+	to->usecs -= from->usecs;
+    }
+    return to->usecs;
+}
+
 /*@=mods@*/

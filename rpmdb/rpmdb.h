@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include "rpmlib.h"
+#include "rpmsw.h"
 #include "db.h"
 
 /*@-exportlocal@*/
@@ -428,6 +429,10 @@ struct rpmdb_s {
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex * _dbi;		/*!< Tag indices. */
 
+    struct rpmop_s db_getops;
+    struct rpmop_s db_putops;
+    struct rpmop_s db_delops;
+
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
@@ -557,8 +562,12 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
+    int rc;
     assert(key->data != NULL && key->size > 0);
-    return (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
+    rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_delops, data->size);
+    return rc;
 }
 
 /** \ingroup dbi
@@ -576,8 +585,12 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *data, fileSystem @*/
 {
+    int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    return (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    return rc;
 }
 
 /** \ingroup dbi
@@ -596,8 +609,12 @@ int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
+    int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    return (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    rc = (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    return rc;
 }
 
 /** \ingroup dbi
@@ -615,8 +632,12 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, fileSystem @*/
 {
+    int rc;
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-    return (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, 0);
+    rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, data->size);
+    return rc;
 }
 
 /** \ingroup dbi
