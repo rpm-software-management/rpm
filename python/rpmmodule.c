@@ -650,6 +650,8 @@ static PyObject * hdrLoad(PyObject * self, PyObject * args) {
 	PyErr_SetString(pyrpmError, "bad header");
 	return NULL;
     }
+    compressFilelist (hdr);
+    providePackageNVR (hdr);
 
     h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
     h->h = hdr;
