@@ -22,7 +22,7 @@ char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_RESIGN,
-	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_UNKNOWN };
+	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_INITDB, MODE_UNKNOWN };
 
 static void argerror(char * desc);
 
@@ -54,6 +54,7 @@ void printUsage(void) {
 
     puts(_("usage: rpm {--help}"));
     puts(_("       rpm {--version}"));
+    puts(_("       rpm {--initdb}"));
     puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--replacepkgs] [--replacefiles] [--root <dir>]"));
     puts(_("                          [--excludedocs] [--includedocs] [--noscripts]"));
@@ -168,6 +169,7 @@ void printHelp(void) {
     puts(_("    --checksig <pkg>+   - verify package signature"));
     puts(_("      --nopgp             - skip any PGP signatures (MD5 only)"));
     puts(_("    --querytags         - list the tags that can be used in a query format"));
+    puts(_("    --initdb            - make sure a valid database exists"));
 }
 
 int build(char * arg, int buildAmount, char *passPhrase) {
@@ -227,7 +229,7 @@ int main(int argc, char ** argv) {
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
-    int noPgp = 0, dump = 0;
+    int noPgp = 0, dump = 0, initdb = 0;
     char * rcfile = NULL;
     char * queryFormat = NULL;
     char buildChar = ' ';
@@ -237,7 +239,7 @@ int main(int argc, char ** argv) {
     char * smallArgv[2] = { NULL, NULL };
     char ** currarg;
     int ec = 0;
-    struct option options[] = {
+    struct option optionsTable[] = {
 	    { "all", 0, 0, 'a' },
 	    { "build", 1, 0, 'b' },
 	    { "checksig", 0, 0, 'K' },
@@ -254,6 +256,7 @@ int main(int argc, char ** argv) {
 	    { "help", 0, &help, 0 },
 	    { "info", 0, 0, 'i' },
             { "includedocs", 0, &incldocs, 0},
+	    { "initdb", 0, &initdb, 0 },
 	    { "install", 0, 0, 'i' },
 	    { "list", 0, 0, 'l' },
 	    { "nodeps", 0, &noDeps, 0 },
@@ -294,6 +297,7 @@ int main(int argc, char ** argv) {
 	    { "whatprovides", 0, 0, 0 },
 	    { 0, 0, 0, 0 } 
 	} ;
+    struct option * options = optionsTable;
 
     /* set up the correct locale via the LANG environment variable */
     setlocale(LC_ALL, "" );
@@ -571,6 +575,12 @@ int main(int argc, char ** argv) {
 	queryFor |= QUERY_FOR_SCRIPTS;
     }
 
+    if (initdb)
+	if (bigMode != MODE_UNKNOWN) 
+	    argerror(_("only one major mode may be specified"));
+	else
+	    bigMode = MODE_INITDB;
+
     if (queryTags)
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
@@ -684,6 +694,13 @@ int main(int argc, char ** argv) {
 	    argerror(_("unexpected arguments to --querytags "));
 
 	queryPrintTags();
+	break;
+
+      case MODE_INITDB:
+	if (argc != 2)
+	    argerror(_("unexpected arguments to --initdb "));
+
+	rpmdbInit(prefix, 0644);
 	break;
 
       case MODE_CHECKSIG:
