@@ -424,10 +424,17 @@ void rpmtsCleanDig(rpmts ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
- * Re-create an empty transaction set.
+ * Free memory needed only for dependency checks and ordering.
  * @param ts		transaction set
  */
 void rpmtsClean(rpmts ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Re-create an empty transaction set.
+ * @param ts		transaction set
+ */
+void rpmtsEmpty(rpmts ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

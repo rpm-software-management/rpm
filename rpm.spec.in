@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.80
+Release: 0.81
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -519,8 +519,15 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Aug 15 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.81
+- rollback: re-create empty transaction set for multiple rollbacks.
+- fix: %%basename typo (Dmitry V. Levin<ldv@altlinux.org>).
+- fix: queryformat segfaults (Dmitry V. Levin<ldv@altlinux.org>).
+
 * Wed Aug 14 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.80
 - fix: rebuilddb stat'ed target, not source, for rename sanity, take 2.
+- python: explicit method to set transFlags.
+- python: stuff package name into a string for repackage/erase callbacks.
 
 * Tue Aug 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.79
 - supply transitive closure for CLI packages from rpmdb-redhat database.

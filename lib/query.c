@@ -589,7 +589,7 @@ restart:
 	    if (rpmrc == RPMRC_OK) {
 		res = qva->qva_showPackage(qva, ts, h);
 		h = headerFree(h);
-		rpmtsClean(ts);
+		rpmtsEmpty(ts);
 		continue;
 	    }
 
@@ -944,7 +944,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 	if (argv != NULL)
 	while ((arg = *argv++) != NULL) {
 	    ec += rpmQueryVerify(qva, ts, arg);
-	    rpmtsClean(ts);
+	    rpmtsEmpty(ts);
 	}
 /*@=boundsread@*/
     }

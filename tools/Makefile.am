@@ -15,7 +15,7 @@ INCLUDES = -I. \
 
 EXTRA_DIST =	rpminject.c rpmsort.c
 
-EXTRA_PROGRAMS = rpminject rpmsort tblob
+EXTRA_PROGRAMS = rpminject rpmsort
 
 LDADD = \
 	$(top_builddir)/build/librpmbuild.la \
@@ -47,8 +47,5 @@ rpminject_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmsort_SOURCES =	rpmsort.c
 rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
-
-tblob_SOURCES =		tblob.c
-tblob_LDFLAGS =		@LDFLAGS_STATIC@
 
 $(PROGRAMS): $(LDADD)

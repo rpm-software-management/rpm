@@ -1061,6 +1061,8 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
 	    b = buf;
+	else
+	    b++;
 #if NOTYET
     /* XXX watchout for conflict with %dir */
     } else if (STREQ("dirname", f, fn)) {

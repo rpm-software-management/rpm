@@ -372,7 +372,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     int xx;
     int i;
 
-    rpmtsClean(ts);
+    rpmtsEmpty(ts);
     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     xx = rpmtsCheck(ts);
@@ -419,7 +419,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 
     ps = rpmpsFree(ps);
 
-    rpmtsClean(ts);
+    rpmtsEmpty(ts);
 
     return rc;
 }
@@ -493,7 +493,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 	if (argv != NULL)
 	while ((arg = *argv++) != NULL) {
 	    ec += rpmQueryVerify(qva, ts, arg);
-	    rpmtsClean(ts);
+	    rpmtsEmpty(ts);
 	}
 /*@=boundsread@*/
     }
@@ -501,6 +501,8 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 
     if (qva->qva_showPackage == showVerifyPackage)
         qva->qva_showPackage = NULL;
+
+    rpmtsEmpty(ts);
 
     return ec;
 }

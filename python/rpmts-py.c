@@ -105,16 +105,12 @@ static int _rpmts_debug = 0;
  *     rpm.RPMDEP_SENSE_REQUIRES are set to show a dependency as a
  *     requirement or a conflict.
  *
- * - order()	Do a topological sort of added element relations.
+ * - ts.order()	Do a topological sort of added element relations.
  * @return	None
  *
- * - run(flags,problemSetFilter,callback,data) Attempt to execute a
- *	transaction set. After the transaction set has been populated
- *	with install and upgrade actions, it can be executed by invoking
- *	the run() method.
- * @param flags - modifies the behavior of the transaction set as it is
- *		processed.  The following values can be locical ORed
- *		together:
+ * - ts.setFlags(transFlags) Set transaction set flags.
+ * @param transFlags - bit(s) to controll transaction operations. The
+ *		following values can be logically OR'ed together:
  *	- rpm.RPMTRANS_FLAG_TEST - test mode, do not modify the RPM
  *		database, change any files, or run any package scripts
  *	- rpm.RPMTRANS_FLAG_BUILD_PROBS - only build a list of
@@ -130,6 +126,12 @@ static int _rpmts_debug = 0;
  *		being performed.
  *	- rpm.RPMTRANS_FLAG_KEEPOBSOLETE - do not remove obsoleted
  *		packages.
+ * @return	previous transFlags
+ *
+ * - run(problemSetFilter,callback,data) Attempt to execute a
+ *	transaction set. After the transaction set has been populated
+ *	with install and upgrade actions, it can be executed by invoking
+ *	the run() method.
  * @param problemSetFilter - control bit(s) to ignore classes of problems,
  *		any of
  *	- rpm.RPMPROB_FILTER_IGNOREOS - 
@@ -929,20 +931,34 @@ rpmtsCallback(/*@unused@*/ const void * hd, const rpmCallbackType what,
 	                 const void * pkgKey, rpmCallbackData data)
 	/*@*/
 {
+    Header h = (Header) hd;
     struct rpmtsCallbackType_s * cbInfo = data;
+    PyObject * pkgObj = (PyObject *) pkgKey;
     PyObject * args, * result;
     static FD_t fd;
 
     if (cbInfo->pythonError) return NULL;
     if (cbInfo->cb == Py_None) return NULL;
 
-    if (!pkgKey) pkgKey = Py_None;
+    /* Synthesize a python object for callback (if necessary). */
+    if (pkgObj == NULL) {
+	if (h) {
+	    const char * n = NULL;
+	    (void) headerNVR(h, &n, NULL, NULL);
+	    pkgObj = Py_BuildValue("s", n);
+	} else {
+	    pkgObj = Py_None;
+	    Py_INCREF(pkgObj);
+	}
+    } else
+	Py_INCREF(pkgObj);
 
     PyEval_RestoreThread(cbInfo->_save);
 
-    args = Py_BuildValue("(illOO)", what, amount, total, pkgKey, cbInfo->data);
+    args = Py_BuildValue("(illOO)", what, amount, total, pkgObj, cbInfo->data);
     result = PyEval_CallObject(cbInfo->cb, args);
     Py_DECREF(args);
+    Py_DECREF(pkgObj);
 
     if (!result) {
 	cbInfo->pythonError = 1;
@@ -984,17 +1000,34 @@ fprintf(stderr, "\t%ld:%ld key %p\n", amount, total, pkgKey);
 
 /** \ingroup python
  */
+static PyObject * rpmts_SetFlags(rpmtsObject * s, PyObject * args)
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
+{
+    rpmtransFlags transFlags = 0;
+
+    if (!PyArg_ParseTuple(args, "i:SetFlags", &transFlags))
+	return NULL;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_SetFlags(%p) ts %p transFlags %x\n", s, s->ts, transFlags);
+
+    return Py_BuildValue("i", rpmtsSetFlags(s->ts, transFlags));
+}
+
+/** \ingroup python
+ */
 static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
-    int flags, ignoreSet;
+    int ignoreSet;
     int rc, i;
     PyObject * list;
     rpmps ps;
     struct rpmtsCallbackType_s cbInfo;
 
-    if (!PyArg_ParseTuple(args, "iiOO:Run", &flags, &ignoreSet, &cbInfo.cb,
+    if (!PyArg_ParseTuple(args, "iOO:Run", &ignoreSet, &cbInfo.cb,
 			  &cbInfo.data))
 	return NULL;
 
@@ -1010,10 +1043,9 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
 	(void) rpmtsSetNotifyCallback(s->ts, rpmtsCallback, (void *) &cbInfo);
     }
 
-    (void) rpmtsSetFlags(s->ts, flags);
 
 if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_Run(%p) ts %p flags %x ignore %x\n", s, s->ts, s->ts->transFlags, ignoreSet);
+fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, ignoreSet);
 
     rc = rpmtsRun(s->ts, NULL, ignoreSet);
     ps = rpmtsProblems(s->ts);
@@ -1173,6 +1205,10 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
  {"order",	(PyCFunction) rpmts_Order,	METH_VARARGS,
 	NULL },
+ {"setFlags",	(PyCFunction) rpmts_SetFlags,	METH_VARARGS,
+"ts.setFlags(transFlags) -> previous transFlags\n\
+- Set control bit(s) for processing a transaction set.\n\
+  Note: This method sets bit(s) passed as the first argument to ts.run()\n" },
  {"run",	(PyCFunction) rpmts_Run,	METH_VARARGS,
 	NULL },
  {"clean",	(PyCFunction) rpmts_Clean,	METH_VARARGS,

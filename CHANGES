@@ -238,6 +238,11 @@
 	- create /var/lib/rpm if non-existent in, say, a chroot.
 	- erased packages are now repackaged into /var/spool/repackage.
 	- fix: rebuilddb stat'ed target, not source, for rename sanity, take 2.
+	- python: explicit method to set transFlags.
+	- python: stuff package name into a string for repackage callbacks.
+	- rollback: re-create empty transaction set for multiple rollbacks.
+	- fix: %%basename typo (Dmitry V. Levin<ldv@altlinux.org>).
+	- fix: queryformat segfaults (Dmitry V. Levin<ldv@altlinux.org>).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

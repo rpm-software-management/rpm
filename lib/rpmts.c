@@ -546,6 +546,7 @@ void rpmtsCleanDig(rpmts ts)
 void rpmtsClean(rpmts ts)
 {
     rpmtsi pi; rpmte p;
+
     if (ts == NULL)
 	return;
 
@@ -566,10 +567,35 @@ void rpmtsClean(rpmts ts)
     rpmtsCleanDig(ts);
 }
 
+void rpmtsEmpty(rpmts ts)
+{
+    rpmtsi pi; rpmte p;
+    int oc;
+
+    if (ts == NULL)
+	return;
+
+/*@-nullstate@*/	/* FIX: partial annotations */
+    rpmtsClean(ts);
+/*@=nullstate@*/
+
+    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
+/*@-type -unqualifiedtrans @*/
+	ts->order[oc] = rpmteFree(ts->order[oc]);
+/*@=type =unqualifiedtrans @*/
+    }
+    pi = rpmtsiFree(pi);
+
+    ts->orderCount = 0;
+
+    ts->numRemovedPackages = 0;
+}
+
 rpmts rpmtsFree(rpmts ts)
 {
     rpmtsi pi; rpmte p;
     int oc;
+
     if (ts == NULL)
 	return NULL;
 
@@ -579,15 +605,21 @@ rpmts rpmtsFree(rpmts ts)
     if (ts->nrefs > 0)
 	return NULL;
 
+/*@-nullstate@*/	/* FIX: partial annotations */
+    rpmtsEmpty(ts);
+/*@=nullstate@*/
+
     (void) rpmtsCloseDB(ts);
 
     (void) rpmtsCloseSDB(ts);
+
+    ts->removedPackages = _free(ts->removedPackages);
 
     ts->availablePackages = rpmalFree(ts->availablePackages);
     ts->numAvailablePackages = 0;
 
     ts->dsi = _free(ts->dsi);
-    ts->removedPackages = _free(ts->removedPackages);
+
     if (ts->scriptFd != NULL) {
 	ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
 	ts->scriptFd = NULL;
@@ -595,24 +627,15 @@ rpmts rpmtsFree(rpmts ts)
     ts->rootDir = _free(ts->rootDir);
     ts->currDir = _free(ts->currDir);
 
-    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
-/*@-type -unqualifiedtrans @*/
-	ts->order[oc] = rpmteFree(ts->order[oc]);
-/*@=type =unqualifiedtrans @*/
-    }
-    pi = rpmtsiFree(pi);
 /*@-type +voidabstract @*/	/* FIX: double indirection */
     ts->order = _free(ts->order);
 /*@=type =voidabstract @*/
+    ts->orderAlloced = 0;
 
     if (ts->pkpkt != NULL)
 	ts->pkpkt = _free(ts->pkpkt);
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
-
-/*@-nullstate@*/	/* FIX: partial annotations */
-    rpmtsClean(ts);
-/*@=nullstate@*/
 
     /*@-refcounttrans@*/ ts = _free(ts); /*@=refcounttrans@*/
 /*@=usereleased@*/

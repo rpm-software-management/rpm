@@ -2507,7 +2507,8 @@ static int parseExpression(sprintfToken token, char * str,
 		    &token->u.cond.numIfTokens, &end, PARSER_IN_EXPR, errmsg)) 
 	return 1;
 
-    if (!*end) {
+    /* XXX fix segfault on "rpm -q rpm --qf='%|NAME?{%}:{NAME}|\n'"*/
+    if (!(end && *end)) {
 	/*@-observertrans -readonlytrans@*/
 	if (errmsg) *errmsg = _("} expected in expression");
 	/*@=observertrans =readonlytrans@*/
@@ -2552,7 +2553,9 @@ static int parseExpression(sprintfToken token, char * str,
 			&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR, 
 			errmsg)) 
 	    return 1;
-	if (!*end) {
+
+	/* XXX fix segfault on "rpm -q rpm --qf='%|NAME?{a}:{%}|{NAME}\n'" */
+	if (!(end && *end)) {
 	    /*@-observertrans -readonlytrans@*/
 	    if (errmsg) *errmsg = _("} expected in expression");
 	    /*@=observertrans =readonlytrans@*/
