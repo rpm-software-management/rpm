@@ -207,7 +207,7 @@ int main(int argc, char ** argv) {
 	exit(1);
     }
 
-    printf("rpmconvert 1.0 - convering database in /var/lib/rpm\n");
+    printf("rpmconvert 1.0 - converting database in /var/lib/rpm\n");
     convertDB();
 
     exit(0);
