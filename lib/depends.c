@@ -320,7 +320,11 @@ addheader:
 	    continue;	/* XXX can't happen */
 
 	/* Ignore colored obsoletes not in our rainbow. */
+#if 0
 	dscolor = rpmdsColor(obsoletes);
+#else
+	dscolor = hcolor;
+#endif
 	/* XXX obsoletes are never colored, so this is for future devel. */
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.3
+Release: 0.4
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -496,6 +496,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Tue Dec  7 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.3
+- use package color as Obsoletes: color.
+
 * Mon Dec  6 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.2
 - automagically detect and emit "python(abi) = 2.4" dependencies.
 - popt 1.10.1 to preserve newer.
