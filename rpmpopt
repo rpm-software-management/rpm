@@ -30,3 +30,5 @@ Packager    : %{PACKAGER}\
 URL         : %{URL}\
 Summary     : %{SUMMARY}\
 Description :\n%{DESCRIPTION}\n'
+
+rpm alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]'

@@ -10,6 +10,9 @@
 	- netsharedpath entries shouldn't match partial directory names
 	  anymore (a nersharedpath of /usr/lib shouldn't affect /usr/libexec)
 	- don't backup config files on netsharedpaths (take 2)
+	- added "day" query format which is like date, but doesn't print
+	  any time
+	- added --changelog alias to query a packages changelog entry
 
 2.4 -> 2.4.1:
 	- take advantage of lchown() if it's available

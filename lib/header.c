@@ -121,6 +121,8 @@ static char * octalFormat(int_32 type, const void * data,
 		          char * formatPrefix, int padding, int element);
 static char * dateFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);
+static char * dayFormat(int_32 type, const void * data, 
+		          char * formatPrefix, int padding, int element);
 static char * shescapeFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);
 static int getExtension(Header h, headerTagTagFunction fn, int_32 * typeptr,
@@ -130,6 +132,7 @@ static int getExtension(Header h, headerTagTagFunction fn, int_32 * typeptr,
 const struct headerSprintfExtension headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal", { octalFormat } },
     { HEADER_EXT_FORMAT, "date", { dateFormat } },
+    { HEADER_EXT_FORMAT, "day", { dayFormat } },
     { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
@@ -1470,8 +1473,9 @@ static char * octalFormat(int_32 type, const void * data,
     return val;
 }
 
-static char * dateFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element) {
+static char * realDateFormat(int_32 type, const void * data, 
+			     char * formatPrefix, int padding, int element,
+			     char * strftimeFormat) {
     char * val;
     time_t dateint;
     struct tm * tstruct;
@@ -1487,11 +1491,22 @@ static char * dateFormat(int_32 type, const void * data,
 	/* this is important if sizeof(int_32) ! sizeof(time_t) */
 	dateint = *((int_32 *) data);
 	tstruct = localtime(&dateint);
-	strftime(buf, sizeof(buf) - 1, "%c", tstruct);
+	strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
 	sprintf(val, formatPrefix, buf);
     }
 
     return val;
+}
+
+static char * dateFormat(int_32 type, const void * data, 
+		         char * formatPrefix, int padding, int element) {
+    return realDateFormat(type, data, formatPrefix, padding, element, "%c");
+}
+
+static char * dayFormat(int_32 type, const void * data, 
+		         char * formatPrefix, int padding, int element) {
+    return realDateFormat(type, data, formatPrefix, padding, element, 
+			  "%a %b %d %Y");
 }
 
 static char * shescapeFormat(int_32 type, const void * data, 
