@@ -12,6 +12,8 @@
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
+#define	SUFFIX_RPMSAVE	".rpmsave"
+
 static int removeFile(const char * file, unsigned int flags, short mode, 
 		      enum fileActions action)
 {
@@ -21,9 +23,9 @@ static int removeFile(const char * file, unsigned int flags, short mode,
     switch (action) {
 
       case FA_BACKUP:
-	newfile = alloca(strlen(file) + 20);
-	strcpy(newfile, file);
-	strcat(newfile, ".rpmsave");
+	newfile = alloca(strlen(file) + sizeof(SUFFIX_RPMSAVE));
+	stpcpy(stpcpy(newfile, file), SUFFIX_RPMSAVE);
+
 	if (rename(file, newfile)) {
 	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
 			file, newfile, strerror(errno));
@@ -67,6 +69,7 @@ static int removeFile(const char * file, unsigned int flags, short mode,
     return 0;
 }
 
+/** */
 int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset, 
 			int flags, enum fileActions * actions, FD_t scriptFd)
 {
@@ -92,8 +95,10 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 
     headerNVR(h, &name, &version, &release);
 
-    /* when we run scripts, we pass an argument which is the number of 
-       versions of this package that will be installed when we are finished */
+    /*
+     * When we run scripts, we pass an argument which is the number of 
+     * versions of this package that will be installed when we are finished.
+     */
     {	dbiIndexSet matches;
 	if (rpmdbFindPackage(db, name, &matches)) {
 	    rpmError(RPMERR_DBCORRUPT, _("cannot read packages named %s for uninstall"),
@@ -140,36 +145,35 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	int_16 * fileModesList;
 	const char ** dirNames;
 	int_32 * dirIndexes;
-	char * fnbuffer = NULL;
-	int prefixlen = 0;
+	char * fileName;
+	int fnmaxlen;
+	int prefixlen = (prefix && !(prefix[0] == '/' && prefix[1] == '\0'))
+			? strlen(prefix) : 0;
 
 	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes,
 	               NULL);
 	headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames,
 	               NULL);
 
-	/* Get alloca buffer for largest possible prefix + filename. */
-	if (prefix && prefix[0] != '\0') {
-	    int fnbuffersize = 0;
-	    size_t fnlen;
-
-	    for (i = 0; i < fileCount; i++) {
+	/* Get buffer for largest possible prefix + dirname + filename. */
+	fnmaxlen = 0;
+	for (i = 0; i < fileCount; i++) {
+		size_t fnlen;
 		fnlen = strlen(baseNames[i]) + 
 			strlen(dirNames[dirIndexes[i]]);
-		if (fnlen > fnbuffersize)
-		    fnbuffersize = fnlen;
-	    }
-
-	    prefixlen = strlen(prefix);
-	    fnbuffersize += prefixlen + sizeof("/");
-	    fnbuffer = alloca(fnbuffersize + 1);
-
-	    strcpy(fnbuffer, prefix);
-	    if (fnbuffer[prefixlen-1] != '/') {
-		fnbuffer[prefixlen++] = '/';
-		fnbuffer[prefixlen] = '\0';
-	    }
+		if (fnlen > fnmaxlen)
+		    fnmaxlen = fnlen;
 	}
+	fnmaxlen += prefixlen + sizeof("/");	/* XXX one byte too many */
+
+	fileName = alloca(fnmaxlen);
+
+	if (prefixlen) {
+	    strcpy(fileName, prefix);
+	    rpmCleanPath(fileName);
+	    prefixlen = strlen(fileName);
+	} else
+	    *fileName = '\0';
 
 	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5List, 
 		 &fileCount);
@@ -180,23 +184,15 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 
 	/* Traverse filelist backwards to help insure that rmdir() will work. */
 	for (i = fileCount - 1; i >= 0; i--) {
-	    const char * dirName;
 
-	    dirName = dirNames[dirIndexes[i]];
-
-	    if (prefixlen) {
-		if (*dirName == '/') dirName++;
-		strcpy(fnbuffer + prefixlen, dirName);
-	    } else {
-		strcpy(fnbuffer, dirName);
-	    }
-	    strcat(fnbuffer, baseNames[i]);
+	    /* XXX this assumes that dirNames always starts/ends with '/' */
+	    stpcpy(stpcpy(fileName+prefixlen, dirNames[dirIndexes[i]]), baseNames[i]);
 
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
-			fnbuffer, fileActionString(actions[i]));
+			fileName, fileActionString(actions[i]));
 
 	    if (!(flags & RPMTRANS_FLAG_TEST))
-		removeFile(fnbuffer, fileFlagsList[i], fileModesList[i], 
+		removeFile(fileName, fileFlagsList[i], fileModesList[i], 
 			   actions[i]);
 	}
 
@@ -412,6 +408,7 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
     return 0;
 }
 
+/** */
 int runInstScript(const char * root, Header h, int scriptTag, int progTag,
 	          int arg, int norunScripts, FD_t err)
 {
@@ -525,6 +522,7 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
     return rc;
 }
 
+/** */
 int runTriggers(const char * root, rpmdb db, int sense, Header h,
 		int countCorrection, FD_t scriptFd)
 {
@@ -564,6 +562,7 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
     
 }
 
+/** */
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		     int countCorrection, FD_t scriptFd)
 {

@@ -47,6 +47,7 @@
 	- add %_rebuilddbpath macro to permit rebuilding db in new location.
 	- updated perl scripts (Ken Estes).
 	- fix: on --rebuilddb, make sure new/old paths are not the same (#8752).
+	- fix: on --erase, segfault caused by "" prefix.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
