@@ -879,6 +879,9 @@ static PyObject * hdrSubscript(hdrObject * s, PyObject * item) {
 
     switch (tag) {
       case RPMTAG_OLDFILENAMES:
+      case RPMTAG_BASENAMES:
+      case RPMTAG_DIRNAMES:
+      case RPMTAG_DIRINDEXES:
       case RPMTAG_FILESIZES:
       case RPMTAG_FILESTATES:
       case RPMTAG_FILEMODES:
