@@ -61,7 +61,6 @@ static int installPackages(char * rootdir, char ** packages,
     char * chptr;
     int rc;
     rpmNotifyFunction fn;
-    char * netsharedPath = NULL;
 
     if (interfaceFlags & INSTALL_PERCENT)
 	fn = printPercent;
@@ -69,8 +68,6 @@ static int installPackages(char * rootdir, char ** packages,
 	fn = printHash;
     else
 	fn = NULL;
-
-    netsharedPath = rpmGetVar(RPMVAR_NETSHAREDPATH);
 
     for (i = 0, filename = packages; i < numPackages; i++, filename++) {
 	if (!*filename) continue;
@@ -100,7 +97,7 @@ static int installPackages(char * rootdir, char ** packages,
 
 	if (db) {
 	    rc = rpmInstallPackage(rootdir, db, fd, relocations, installFlags, 
-				   fn, printFormat, netsharedPath);
+				   fn, printFormat);
 	} else {
 	    if (installFlags &= RPMINSTALL_TEST) {
 		rpmMessage(RPMMESS_DEBUG, "stopping source install as we're "
