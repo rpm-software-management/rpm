@@ -173,8 +173,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	return rc;
     }
 
-    umask(0);		/* we know what we're doing */
-
     /* Do this now so we can give error messages, even though we'll just
        do it again after relocating everything */
     headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
@@ -230,11 +228,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 				flags)) {
 	headerFree(h);
 	return 2;
-    }
-
-    if (labelFormat) {
-	printf(labelFormat, name, version, release);
-	fflush(stdout);
     }
 
     rpmMessage(RPMMESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
@@ -493,6 +486,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    free(fileList);
 	    if (replacedList) free(replacedList);
 	    return 2;
+	}
+
+	if (labelFormat) {
+	    printf(labelFormat, name, version, release);
+	    fflush(stdout);
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
@@ -1380,16 +1378,6 @@ static int installSources(Header h, char * rootdir, int fd,
     sourceDir = rpmGetVar(RPMVAR_SOURCEDIR);
     specDir = rpmGetVar(RPMVAR_SPECDIR);
 
-    if (access(sourceDir, W_OK)) {
-	rpmError(RPMERR_CREATE, "cannot write to %s", sourceDir);
-	return 2;
-    }
-
-    if (access(specDir, W_OK)) {
-	rpmError(RPMERR_CREATE, "cannot write to %s", specDir);
-	return 2;
-    }
-
     realSourceDir = alloca(strlen(rootdir) + strlen(sourceDir) + 2);
     strcpy(realSourceDir, rootdir);
     strcat(realSourceDir, "/");
@@ -1399,6 +1387,16 @@ static int installSources(Header h, char * rootdir, int fd,
     strcpy(realSpecDir, rootdir);
     strcat(realSpecDir, "/");
     strcat(realSpecDir, specDir);
+
+    if (access(realSourceDir, W_OK)) {
+	rpmError(RPMERR_CREATE, "cannot write to %s", realSourceDir);
+	return 2;
+    }
+
+    if (access(realSpecDir, W_OK)) {
+	rpmError(RPMERR_CREATE, "cannot write to %s", realSpecDir);
+	return 2;
+    }
 
     rpmMessage(RPMMESS_DEBUG, "sources in: %s\n", realSourceDir);
     rpmMessage(RPMMESS_DEBUG, "spec file in: %s\n", realSpecDir);
