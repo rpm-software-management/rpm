@@ -5,9 +5,6 @@
  * Things have been cleaned up wrt PGP.  We can now handle
  * signatures of any length (which means you can use any
  * size key you like).  We also honor PGPPATH finally.
- *
- * We are aligning the sig section on disk to 8 bytes.
- * The lead is already 8 byte aligned.
  */
 
 #include <stdlib.h>
@@ -25,8 +22,8 @@
 #include "rpmlead.h"
 #include "rpmerr.h"
 
-static int makeMD5Signature(char *file, int ofd);
-static int makePGPSignature(char *file, int ofd, char *passPhrase);
+static int makePGPSignature(char *file, void **sig, int_32 *size,
+			    char *passPhrase);
 static int checkSize(int fd, int size, int sigsize);
 static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result);
 static int verifyMD5Signature(char *datafile, void *sigfile, char *result);
@@ -35,212 +32,209 @@ static int verifyMD5PGPSignature(int fd, unsigned char *sig,
 				 char *result, int pgp);
 static int checkPassPhrase(char *passPhrase);
 
-unsigned short sigLookupType(void)
+int sigLookupType(void)
 {
     char *name;
 
-    /* Now we always generate at least a RPMSIG_MD5 */
-    
     if (! (name = getVar(RPMVAR_SIGTYPE))) {
-	return RPMSIG_MD5;
+	return 0;
     }
 
     if (!strcasecmp(name, "none")) {
-	return RPMSIG_MD5;
+	return 0;
     } else if (!strcasecmp(name, "pgp")) {
-	return RPMSIG_MD5_PGP;
+	return SIGTAG_PGP;
     } else {
-	return RPMSIG_BAD;
+	return -1;
     }
 }
 
-int verifySignature(int fd, short sig_type, void *sig, char *result, int pgp)
-{
-    int res = RPMSIG_SIGOK;
-    
-    switch (sig_type) {
-    case RPMSIG_NONE:
-	strcpy(result, "No signature information available\n");
-	return (RPMSIG_BADSIG | RPMSIG_NOSIG);
-	break;
-    case RPMSIG_PGP262_1024:
-	if ((res = verifyOLDPGPSignature(fd, sig, result))) {
-	    return (RPMSIG_BADSIG | res);
-	}
-	break;
-    case RPMSIG_MD5:
-	if ((res = verifyMD5PGPSignature(fd, sig, result, 0))) {
-	    return (RPMSIG_BADSIG | res);
-	}
-	break;
-    case RPMSIG_MD5_PGP:
-	if ((res = verifyMD5PGPSignature(fd, sig, result, pgp))) {
-	    return (RPMSIG_BADSIG | res);
-	}
-	break;
-    default:
-	sprintf(result, "Unimplemented signature type\n");
-	return (RPMSIG_BADSIG | RPMSIG_UNKNOWNSIG);
-	break;
-    }
+/* readSignature() emulates the new style signatures if it finds an */
+/* old-style one.  It also immediately verifies the header+archive  */
+/* size and returns an error if it doesn't match.                   */
 
-    return RPMSIG_SIGOK;
-}
-
-/* We need to be careful here to do 8 byte alignment */
-/* when reading any of the "new" style signatures.   */
-
-int readSignature(int fd, short sig_type, void **sig)
+int readSignature(int fd, Header *header, short sig_type)
 {
     unsigned char buf[2048];
-    int length, pad;
-    int_32 size[2];
+    int sigSize, length, pad;
+    int_32 size[2], type, count;
+    int_32 *archSize;
+    Header h;
+
+    if (header) {
+	*header = NULL;
+    }
     
     switch (sig_type) {
-    case RPMSIG_NONE:
-	if (sig) {
-	    *sig = NULL;
-	}
+      case RPMSIG_NONE:
+	message(MESS_DEBUG, "No signature\n");
 	break;
-    case RPMSIG_PGP262_1024:
+      case RPMSIG_PGP262_1024:
+	message(MESS_DEBUG, "Old PGP signature\n");
 	/* These are always 256 bytes */
 	if (read(fd, buf, 256) != 256) {
-	   return 0;
+	    return 1;
 	}
-	if (sig) {
-	    *sig = malloc(152);
-	    memcpy(*sig, buf, 152);
+	if (header) {
+	    *header = newHeader();
+	    addEntry(*header, SIGTAG_PGP, BIN_TYPE, buf, 152);
 	}
 	break;
-    case RPMSIG_MD5:
+      case RPMSIG_MD5:
+	message(MESS_DEBUG, "Old-new MD5 signature\n");
 	/* 8 byte aligned */
 	if (read(fd, size, 8) != 8) {
-	    return 0;
+	    return 1;
 	}
-	if (checkSize(fd, ntohl(size[0]), 8 + 16)) {
-	    return 0;
+	size[0] = ntohl(size[0]);
+	if (checkSize(fd, size[0], 8 + 16)) {
+	    return 1;
 	}
 	if (read(fd, buf, 16) != 16) {
-	    return 0;
+	    return 1;
 	}
-	if (sig) {
-	    *sig = malloc(16);
-	    memcpy(*sig, buf, 16);
+	if (header) {
+	    *header = newHeader();
+	    addEntry(*header, SIGTAG_SIZE, INT32_TYPE, size, 1);
+	    addEntry(*header, SIGTAG_MD5, BIN_TYPE, buf, 16);
 	}
 	break;
-    case RPMSIG_MD5_PGP:
+      case RPMSIG_MD5_PGP:
+	message(MESS_DEBUG, "Old-new MD5 and PGP signature\n");
 	/* 8 byte aligned */
+	/* Size of header+archive */
 	if (read(fd, size, 8) != 8) {
-	    return 0;
+	    return 1;
 	}
+	size[0] = ntohl(size[0]);
+	/* Read MD5 sum and size of PGP signature */
 	if (read(fd, buf, 18) != 18) {
-	    return 0;
+	    return 1;
 	}
-	length = buf[16] * 256 + buf[17];
+	length = buf[16] * 256 + buf[17];  /* length of PGP sig */
 	pad = (8 - ((length + 18) % 8)) % 8;
-	if (checkSize(fd, ntohl(size[0]), 8 + 16 + 2 + length + pad)) {
-	    return 0;
+	if (checkSize(fd, size[0], 8 + 16 + 2 + length + pad)) {
+	    return 1;
 	}
+	/* Read PGP signature */
 	if (read(fd, buf + 18, length) != length) {
-	    return 0;
+	    return 1;
 	}
-	if (sig) {
-	    *sig = malloc(18 + length);
-	    memcpy(*sig, buf, 18 + length);
+	if (header) {
+	    *header = newHeader();
+	    addEntry(*header, SIGTAG_SIZE, INT32_TYPE, size, 1);
+	    addEntry(*header, SIGTAG_MD5, BIN_TYPE, buf, 16);
+	    addEntry(*header, SIGTAG_PGP, BIN_TYPE, buf+18, length);
 	}
 	/* The is the align magic */
 	if (pad) {
 	    if (read(fd, buf, pad) != pad) {
-		return 0;
+		if (header) {
+		    freeHeader(*header);
+		    *header = NULL;
+		}
+		return 1;
 	    }
 	}
 	break;
-    default:
-	return 0;
-    }
-
-    return 1;
-}
-
-int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
-{
-    switch (sig_type) {
-    case RPMSIG_PGP262_1024:
-	/* We no longer generate these */
-#if 0	
-	if (! getVar(RPMVAR_PGP_NAME)) {
-	    error(RPMERR_SIGGEN, "You must set \"pgp_name:\" in /etc/rpmrc\n");
-	    return RPMERR_SIGGEN;
+      case RPMSIG_HEADERSIG:
+	message(MESS_DEBUG, "New Header signature\n");
+	/* This is a new style signature */
+	h = readHeader(fd, HEADER_MAGIC);
+	if (! h) {
+	    return 1;
 	}
-	if ((res = makePGPSignature(file, ofd, passPhrase)) == -1) {
-	    /* This is the 151 byte sig hack */
-	    return makePGPSignature(file, ofd, passPhrase);
+	sigSize = sizeofHeader(h, HEADER_MAGIC);
+	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
+	message(MESS_DEBUG, "Signature size: %d\n", sigSize);
+	message(MESS_DEBUG, "Signature pad : %d\n", pad);
+	if (! getEntry(h, SIGTAG_SIZE, &type, (void **)&archSize, &count)) {
+	    freeHeader(h);
+	    return 1;
 	}
-        return res;
-#endif
-	error(RPMERR_SIGGEN, "Internal error! RPMSIG_PGP262_1024\n");
-	return RPMERR_SIGGEN;
-	break;
-    case RPMSIG_MD5:
-	if (makeMD5Signature(file, ofd)) {
-	    error(RPMERR_SIGGEN, "Unable to generate MD5 signature\n");
-	    return RPMERR_SIGGEN;
+	if (checkSize(fd, *archSize, sigSize + pad)) {
+	    freeHeader(h);
+	    return 1;
 	}
-	break;
-    case RPMSIG_MD5_PGP:
-	if (! getVar(RPMVAR_PGP_NAME)) {
-	    error(RPMERR_SIGGEN, "You must set \"pgp_name:\" in /etc/rpmrc\n");
-	    return RPMERR_SIGGEN;
+	if (pad) {
+	    if (read(fd, buf, pad) != pad) {
+		freeHeader(h);
+		return 1;
+	    }
 	}
-	if (makeMD5Signature(file, ofd)) {
-	    error(RPMERR_SIGGEN, "Unable to generate MD5 signature\n");
-	    return RPMERR_SIGGEN;
-	}
-	/* makePGPSignature() takes care of 8 byte alignment */
-	if (makePGPSignature(file, ofd, passPhrase)) {
-	    error(RPMERR_SIGGEN, "Unable to generate PGP signature\n");
-	    return RPMERR_SIGGEN;
+	if (header) {
+	    *header = h;
+	} else {
+	    freeHeader(h);
 	}
 	break;
-    case RPMSIG_NONE:
+      default:
+	return 1;
     }
 
     return 0;
 }
 
-static int makeMD5Signature(char *file, int ofd)
+int writeSignature(int fd, Header header)
 {
-    unsigned char sig[16];
-    struct stat statbuf;
-    int_32 size[2];
-
-    /* Size */
-    stat(file, &statbuf);
-    size[0] = htonl(statbuf.st_size);
-    size[1] = 0;
-    if (write(ofd, &size, 8) != 8) {
-	return 1;
-    }
-
-    /* MD5 */
-    mdbinfile(file, sig);
-    if (write(ofd, sig, 16) != 16) {
-	return 1;
-    }
+    int sigSize, pad;
+    unsigned char buf[8];
     
+    writeHeader(fd, header, HEADER_MAGIC);
+    sigSize = sizeofHeader(header, HEADER_MAGIC);
+    pad = (8 - (sigSize % 8)) % 8;
+    if (pad) {
+	message(MESS_DEBUG, "Signature size: %d\n", sigSize);
+	message(MESS_DEBUG, "Signature pad : %d\n", pad);
+	memset(buf, 0, pad);
+	write(fd, buf, pad);
+    }
     return 0;
 }
 
-/* Be sure to handle 8 byte alignment! */
-
-static int makePGPSignature(char *file, int ofd, char *passPhrase)
+Header newSignature(void)
 {
-    unsigned char length[2];
+    return newHeader();
+}
+
+void freeSignature(Header h)
+{
+    freeHeader(h);
+}
+
+int addSignature(Header header, char *file, int_32 sigTag, char *passPhrase)
+{
+    struct stat statbuf;
+    int_32 size;
+    unsigned char buf[16];
+    void *sig;
+    
+    switch (sigTag) {
+      case SIGTAG_SIZE:
+	stat(file, &statbuf);
+	size = statbuf.st_size;
+	addEntry(header, SIGTAG_SIZE, INT32_TYPE, &size, 1);
+	break;
+      case SIGTAG_MD5:
+	mdbinfile(file, buf);
+	addEntry(header, sigTag, BIN_TYPE, buf, 16);
+	break;
+      case SIGTAG_PGP:
+	makePGPSignature(file, &sig, &size, passPhrase);
+	addEntry(header, sigTag, BIN_TYPE, sig, size);
+	break;
+    }
+
+    return 0;
+}
+
+static int makePGPSignature(char *file, void **sig, int_32 *size,
+			    char *passPhrase)
+{
     char name[1024];
     char sigfile[1024];
-    int pid, status, len;
+    int pid, status;
     int fd, inpipe[2];
-    unsigned char sigbuf[2048];   /* 1024bit sig is ~152 bytes */
     FILE *fpipe;
     struct stat statbuf;
 
@@ -285,41 +279,22 @@ static int makePGPSignature(char *file, int ofd, char *passPhrase)
 	return 1;
     }
 
-    /* Fill in the length, data, and then 8 byte alignment magic */
-    len = statbuf.st_size;
-    length[0] = len / 256;
-    length[1] = len % 256;
-    write(ofd, length, 2);
+    *size = statbuf.st_size;
+    message(MESS_DEBUG, "PGP sig size: %d\n", *size);
+    *sig = malloc(*size);
     
     fd = open(sigfile, O_RDONLY);
-    if (read(fd, sigbuf, len) != len) {
+    if (read(fd, *sig, *size) != *size) {
 	unlink(sigfile);
 	close(fd);
+	free(*sig);
 	error(RPMERR_SIGGEN, "unable to read the signature");
-	return 1;
-    }
-    if (write(ofd, sigbuf, len) != len) {
-	unlink(sigfile);
-	close(fd);
-	error(RPMERR_SIGGEN, "unable to write the signature");
 	return 1;
     }
     close(fd);
     unlink(sigfile);
 
-    message(MESS_DEBUG, "Wrote %d bytes of PGP sig\n", len);
-    
-    /* Now the alignment */
-    len = (8 - ((len + 18) % 8)) % 8;
-    if (len) {
-	memset(sigbuf, 0xff, len);
-	if (write(ofd, sigbuf, len) != len) {
-	    close(fd);
-	    error(RPMERR_SIGGEN, "unable to write the alignment cruft");
-	    return 1;
-	}
-	message(MESS_DEBUG, "Wrote %d bytes of alignment cruft\n", len);
-    }
+    message(MESS_DEBUG, "Got %d bytes of PGP sig\n", *size);
     
     return 0;
 }
@@ -337,6 +312,39 @@ static int checkSize(int fd, int size, int sigsize)
     message(MESS_DEBUG, "expected size   : %d\n", size);
 
     return size - headerArchiveSize;
+}
+
+int verifySignature(int fd, short sig_type, void *sig, char *result, int pgp)
+{
+    int res = RPMSIG_SIGOK;
+
+    switch (sig_type) {
+      case RPMSIG_NONE:
+	strcpy(result, "No signature information available\n");
+	return (RPMSIG_BADSIG | RPMSIG_NOSIG);
+	break;
+      case RPMSIG_PGP262_1024:
+	if ((res = verifyOLDPGPSignature(fd, sig, result))) {
+	    return (RPMSIG_BADSIG | res);
+	}
+	break;
+      case RPMSIG_MD5:
+	if ((res = verifyMD5PGPSignature(fd, sig, result, 0))) {
+	    return (RPMSIG_BADSIG | res);
+	}
+	break;
+      case RPMSIG_MD5_PGP:
+	if ((res = verifyMD5PGPSignature(fd, sig, result, pgp))) {
+	    return (RPMSIG_BADSIG | res);
+	}
+	break;
+      default:
+	sprintf(result, "Unimplemented signature type\n");
+	return (RPMSIG_BADSIG | RPMSIG_UNKNOWNSIG);
+	break;
+    }
+
+    return RPMSIG_SIGOK;
 }
 
 static int auxVerifyPGPSig(char *datafile, char *sigfile, char *result)
