@@ -989,6 +989,15 @@ PyObject * versionCompare (PyObject * self, PyObject * args)
 
 /**
  */
+static int label_compare_values(const char *str1, const char *str2)
+{
+    if (str1 && !str2)
+	return 1;
+    else if (!str1 && str2)
+	return -1;
+    return rpmvercmp(str1, str2);
+}
+
 PyObject * labelCompare (PyObject * self, PyObject * args)
 {
     char *v1, *r1, *e1, *v2, *r2, *e2;
@@ -998,30 +1007,15 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
 			  &e1, &v1, &r1,
 			  &e2, &v2, &r2)) return NULL;
 
-    if (!v1 || !v2 || !r1  || !r2) {
-	PyErr_SetString(pyrpmError, "Invalid version or release - possibly None");
-	return NULL;
-    }
-
-    if (e1 && !e2)
-	return Py_BuildValue("i", 1);
-    else if (!e1 && e2)
-	return Py_BuildValue("i", -1);
-    else if (e1 && e2) {
-	int ep1, ep2;
-	ep1 = atoi (e1);
-	ep2 = atoi (e2);
-	if (ep1 < ep2)
-	    return Py_BuildValue("i", -1);
-	else if (ep1 > ep2)
-	    return Py_BuildValue("i", 1);
-    }
-
-    rc = rpmvercmp(v1, v2);
+    rc = compare_values(e1, e2)
     if (rc)
 	return Py_BuildValue("i", rc);
 
-    return Py_BuildValue("i", rpmvercmp(r1, r2));
+    rc = compare_values(v1, v2)
+    if (rc)
+	return Py_BuildValue("i", rc);
+
+    return Py_BuildValue("i", compare_values(r1, r2));
 }
 
 /*@}*/
