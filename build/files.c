@@ -102,8 +102,6 @@ typedef struct AttrRec_s {
 /* list of files */
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static StringBuf check_fileList = NULL;
-/*@unchecked@*/
-static int check_fileListLen = 0;
 
 /**
  * Package file tree walk data.
@@ -873,42 +871,6 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 }
 /*@=boundswrite@*/
 
-#ifdef	DYING
-/**
- */
-/*@-boundswrite@*/
-static int parseForRegexMultiLib(const char *fileName)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/
-{
-    static int oneshot = 0;
-    static int hasRegex = 0;
-    static regex_t compiledPatt;
-
-    if (! oneshot) {
-	const char *patt;
-	int rc = 0;
-
-	oneshot = 1;
-	patt = rpmExpand("%{?_multilibpatt}", NULL);
-	if (!(patt && *patt != '\0'))
-	    rc = 1;
-	else if (regcomp(&compiledPatt, patt, REG_EXTENDED | REG_NOSUB))
-	    rc = -1;
-	patt = _free(patt);
-	if (rc)
-	    return rc;
-	hasRegex = 1;
-    }
-
-    if (! hasRegex || regexec(&compiledPatt, fileName, 0, NULL, 0))
-	return 1;
-
-    return 0;
-}
-/*@=boundswrite@*/
-#endif
-
 /**
  */
 /*@-exportlocal -exportheadervar@*/
@@ -920,12 +882,6 @@ VFA_t virtualFileAttributes[] = {
 	{ "%exclude",	0,	RPMFILE_EXCLUDE },
 	{ "%readme",	0,	RPMFILE_README },
 	{ "%license",	0,	RPMFILE_LICENSE },
-#ifdef	DYING
-	{ "%multilib",	0,	0 },
-	{ "%multilib(0)", 1,	RPMFILE_MULTILIB_MASK},
-	{ "%multilib(1)", 0,	RPMFILE_MULTILIB(1) },
-	{ "%multilib(2)", 0,	RPMFILE_MULTILIB(2) },
-#endif
 
 #if WHY_NOT
 	{ "%spec",	RPMFILE_SPEC },
@@ -993,10 +949,6 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    if (!vfa->flag) {
 		if (!strcmp(s, "%dir"))
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
-#ifdef	DYING
-		else if (!strcmp(s, "%multilib"))
-		    fl->currentFlags |= RPMFILE_MULTILIB(multiLibNo);
-#endif
 	    } else {
 		if (vfa->not)
 		    fl->currentFlags &= ~vfa->flag;
@@ -1160,9 +1112,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
-#ifdef	DYING
-    uint_32 multiLibMask = 0;
-#endif
     int apathlen = 0;
     int dpathlen = 0;
     int skipLen = 0;
@@ -1243,18 +1192,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	/* Leave room for both dirname and basename NUL's */
 	dpathlen += (strlen(flp->diskURL) + 2);
-
-#ifdef	DYING
-	/*
-	 * Create union bit mask of all files in the package.
-	 */
-	if (flp->flags & RPMFILE_MULTILIB_MASK) {
-	    unsigned mlno;
-	    mlno = (flp->flags & RPMFILE_MULTILIB_MASK);
-	    mlno >>= RPMFILE_MULTILIB_SHIFT;
-	    multiLibMask |= (1u << mlno);
-	}
-#endif
 
 	/*
 	 * Make the header, the OLDFILENAMES will get converted to a 
@@ -1377,14 +1314,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
 
-#ifdef	DYING
-    /* XXX MULTILIBTODO: only binary packages for now. */
-    if (!isSrc) {
-	(void) headerAddEntry(h, RPMTAG_MULTILIBMASK, RPM_INT32_TYPE,
-		       &multiLibMask, 1);
-    }
-#endif
-
     if (_addDotSlash)
 	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
 
@@ -1503,13 +1432,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	if (isSrc)
 	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
-#ifdef	DYING
-	/*
-	 * Mark multilib colored files as not-yet-processed.
-	 */
-	if (flp->flags & RPMFILE_MULTILIB_MASK)
-	    fi->fmapflags[i] |= CPIO_MULTILIB;
-#endif
 
     }
     /*@-branchstate@*/
@@ -1541,12 +1463,12 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 
 /* forward ref */
 static int recurseDir(FileList fl, const char * diskURL)
-	/*@globals check_fileList, check_fileListLen, rpmGlobalMacroContext,
+	/*@globals check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
-		check_fileList, check_fileListLen, rpmGlobalMacroContext,
+		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /**
@@ -1559,12 +1481,12 @@ static int recurseDir(FileList fl, const char * diskURL)
 /*@-boundswrite@*/
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
-	/*@globals check_fileList, check_fileListLen, rpmGlobalMacroContext,
+	/*@globals check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
 		fl->totalFileSize, fl->fileCount,
-		check_fileList, check_fileListLen, rpmGlobalMacroContext,
+		check_fileList, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     const char *fileURL = diskURL;
@@ -1678,7 +1600,6 @@ static int addFile(FileList fl, const char * diskURL,
     if (check_fileList && S_ISREG(fileMode)) {
 	appendStringBuf(check_fileList, diskURL);
 	appendStringBuf(check_fileList, "\n");
-	check_fileListLen += strlen(diskURL) + 1;
     }
 
     /* Add to the file list */
@@ -1725,15 +1646,6 @@ static int addFile(FileList fl, const char * diskURL,
 	flp->flags = fl->currentFlags;
 	flp->specdFlags = fl->currentSpecdFlags;
 	flp->verifyFlags = fl->currentVerifyFlags;
-
-#ifdef	DYING
-	/* If coloring and still white, apply regex to path. */
-	if (multiLibNo
-	 && !(flp->flags & RPMFILE_MULTILIB_MASK)
-	 && !parseForRegexMultiLib(fileURL)) {
-	    flp->flags |= RPMFILE_MULTILIB(multiLibNo);
-	}
-#endif
 
 	/* Hard links need be counted only once. */
 	if (S_ISREG(flp->fl_mode) && flp->fl_nlink > 1) {
@@ -2436,11 +2348,9 @@ DepMsg_t depMsgs[] = {
 /**
  */
 /*@-bounds@*/
-static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibPass)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies cpioList, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+static int generateDepends(Spec spec, Package pkg, rpmfi cpioList)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmfi fi = cpioList;
     StringBuf sb_stdin;
@@ -2461,19 +2371,6 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibP
      */
     sb_stdin = newStringBuf();
     for (i = 0; i < fi->fc; i++) {
-
-#ifdef	DYING
-	/*
-	 * On 2nd dependency pass for multilib, skip files already processed.
-	 */
-	if (fi->fmapflags && multiLibPass == 2) {
-	    if (!(fi->fmapflags[i] & CPIO_MULTILIB))
-		continue;
-	    /* Mark multilib colored file as processed. */
-	    fi->fmapflags[i] &= ~CPIO_MULTILIB;
-	}
-#endif
-
 	appendStringBuf(sb_stdin, fi->dnl[fi->dil[i]]);
 	appendLineStringBuf(sb_stdin, fi->bnl[i]);
     }
@@ -2522,10 +2419,6 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLibP
 
 	/* Parse dependencies into header */
 	tagflags &= ~RPMSENSE_MULTILIB;
-#ifdef	DYING
-	if (multiLibPass > 1)
-	    tagflags |=  RPMSENSE_MULTILIB;
-#endif
 
 	rc = parseRCPOT(spec, pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
 	sb_stdout = freeStringBuf(sb_stdout);
@@ -2560,11 +2453,6 @@ static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
 	    bingo = 1;
 	}
 	rpmMessage(RPMMESS_NORMAL, " %s", *names);
-
-#ifdef	DYING
-	if (hasFlags && isDependsMULTILIB(*flags))
-	    rpmMessage(RPMMESS_NORMAL, "*");
-#endif
 
 	if (hasVersions && !(*versions != NULL && **versions != '\0'))
 	    continue;
@@ -2645,22 +2533,25 @@ static void printDeps(Header h)
 /**
  * Check packaged file list against what's in the build root.
  * @param fileList	packaged file list
- * @param fileListLen	no. of packaged files
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
-static int checkFiles(StringBuf fileList, int fileListLen)
+static int checkFiles(StringBuf fileList)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+/*@-readonlytrans@*/
     static const char * av_ckfile[] = { "%{?__check_files}", NULL };
+/*@=readonlytrans@*/
     StringBuf sb_stdout = NULL;
     const char * s;
     int rc;
     
     s = rpmExpand(av_ckfile[0], NULL);
-    rc = (s && *s) ? 0 : -1;
-    if (rc != 0)
+    if (!(s && *s)) {
+	rc = -1;
 	goto exit;
+    }
+    rc = 0;
 
     rpmMessage(RPMMESS_NORMAL, _("Checking for unpackaged file(s): %s\n"), s);
 
@@ -2695,26 +2586,13 @@ exit:
 
 /*@-incondefs@*/
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
-	/*@globals check_fileList, check_fileListLen,
-		multiLibNo, multiLib_oneshot @*/
-	/*@modifies check_fileList, check_fileListLen,
-		multiLibNo, multiLib_oneshot @*/
+	/*@globals check_fileList @*/
+	/*@modifies check_fileList @*/
 {
     Package pkg;
     int res = 0;
-#ifdef	DYING
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    int_32 * mlmp;
-    int mlm;
-    
-    if (!multiLib_oneshot) {
-	multiLib_oneshot = 1;
-	multiLibNo = rpmExpandNumeric("%{?_multilibno}");
-    }
-#endif
     
     check_fileList = newStringBuf();
-    check_fileListLen = 0;
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	const char *n, *v, *r;
@@ -2729,19 +2607,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;
 
-#ifdef	DYING
-	mlm = 0;
-	mlmp = NULL;
-	if (hge(pkg->header, RPMTAG_MULTILIBMASK, NULL, (void **)&mlmp, NULL)
-	&& mlmp != NULL)
-	    mlm = *mlmp;
-
-	if (mlm) {
-	    (void) generateDepends(spec, pkg, pkg->cpioList, 1);
-	    (void) generateDepends(spec, pkg, pkg->cpioList, 2);
-	} else
-#endif
-	    (void) generateDepends(spec, pkg, pkg->cpioList, 0);
+	(void) generateDepends(spec, pkg, pkg->cpioList);
 
 	/*@-noeffect@*/
 	printDeps(pkg->header);
@@ -2754,7 +2620,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
      */
     
     if (res == 0)  {
-	if (checkFiles(check_fileList, check_fileListLen) > 0)
+	if (checkFiles(check_fileList) > 0)
 	    res = 1;
     }
     

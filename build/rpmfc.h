@@ -80,9 +80,11 @@ extern "C" {
 
 /**
  */
-int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
+int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
 		int failnonzero)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies *sb_stdoutp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  */
@@ -109,7 +111,7 @@ rpmfc rpmfcNew(void)
  * Build file class dictionary and mappings.
  */
 int rpmfcClassify(rpmfc fc, ARGV_t argv)
-	/*@modifies *fcp @*/;
+	/*@modifies fc @*/;
 
 /**
  * BUild file/package dependency dictionary and mappings.

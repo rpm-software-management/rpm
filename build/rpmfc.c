@@ -17,6 +17,8 @@
 int _rpmfc_debug;
 
 static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies *argvp, rpmGlobalMacroContext @*/
 {
     ARGV_t argv = *argvp;
     int argc = argvCount(argv);
@@ -181,7 +183,6 @@ top:
     }
     return readBuff;
 }
-/*@=boundswrite@*/
 
 int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 		int failnonzero)
@@ -218,7 +219,7 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     if (av[1])
 	xx = rpmfcExpandAppend(&xav, av + 1);
 
-    if (sb_stdin) {
+    if (sb_stdin != NULL) {
 	buf_stdin = getStringBuf(sb_stdin);
 	buf_stdin_len = strlen(buf_stdin);
     }
@@ -226,10 +227,12 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     /* Read output from exec'd helper. */
     sb = getOutputFrom(NULL, xav, buf_stdin, buf_stdin_len, failnonzero);
 
-    if (sb_stdoutp) {
+/*@-branchstate@*/
+    if (sb_stdoutp != NULL) {
 	*sb_stdoutp = sb;
 	sb = NULL;	/* XXX don't free */
     }
+/*@=branchstate@*/
 
     ec = 0;
 
@@ -240,10 +243,12 @@ exit:
     s = _free(s);
     return ec;
 }
+/*@=boundswrite@*/
 
 /**
  */
-static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
+static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
+	/*@modifies *argvp @*/
 {
     int rc = 0;
 
@@ -256,7 +261,10 @@ static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
 
 /**
  */
-static int rpmfcHelper(rpmfc fc, char deptype, const char * nsdep)
+/*@-bounds@*/
+static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * fn = fc->fn[fc->ix];
     char buf[BUFSIZ];
@@ -274,13 +282,13 @@ static int rpmfcHelper(rpmfc fc, char deptype, const char * nsdep)
     switch (deptype) {
     default:
 	return -1;
-	break;
+	/*@notreached@*/ break;
     case 'P':
-	snprintf(buf, sizeof(buf), "%%{?__%s_provides}", nsdep);
+	xx = snprintf(buf, sizeof(buf), "%%{?__%s_provides}", nsdep);
 	depsp = &fc->provides;
 	break;
     case 'R':
-	snprintf(buf, sizeof(buf), "%%{?__%s_requires}", nsdep);
+	xx = snprintf(buf, sizeof(buf), "%%{?__%s_requires}", nsdep);
 	depsp = &fc->requires;
 	break;
     }
@@ -295,6 +303,7 @@ static int rpmfcHelper(rpmfc fc, char deptype, const char * nsdep)
     sb_stdin = freeStringBuf(sb_stdin);
 
     if (xx == 0 && sb_stdout != NULL) {
+	pav = NULL;
 	xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
 	pac = argvCount(pav);
 	if (pav)
@@ -332,6 +341,7 @@ static int rpmfcHelper(rpmfc fc, char deptype, const char * nsdep)
 
     return 0;
 }
+/*@=bounds@*/
 
 /**
  */
@@ -472,8 +482,8 @@ assert(fx < fc->fddictn->nvals);
 
 	while (ndx-- > 0) {
 	    const char * depval;
-	    char deptype;
-	    int ix;
+	    unsigned char deptype;
+	    unsigned ix;
 
 	    ix = fc->ddictx->vals[dx++];
 	    deptype = ((ix >> 24) & 0xff);
@@ -481,16 +491,16 @@ assert(fx < fc->fddictn->nvals);
 	    depval = NULL;
 	    switch (deptype) {
 	    default:
-assert(depval);
-		break;
+assert(depval != NULL);
+		/*@switchbreak@*/ break;
 	    case 'P':
 assert(ix < nprovides);
 		depval = fc->provides[ix];
-		break;
+		/*@switchbreak@*/ break;
 	    case 'R':
 assert(ix < nrequires);
 		depval = fc->requires[ix];
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    if (depval)
 		fprintf(fp, "\t%c %s\n", deptype, depval);
@@ -523,17 +533,19 @@ rpmfc rpmfcNew(void)
 }
 
 static int rpmfcSCRIPT(rpmfc fc)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * fn = fc->fn[fc->ix];
     const char * bn;
-    char deptype;
+    unsigned char deptype;
     char buf[BUFSIZ];
     FILE * fp;
     char * s, * se;
     size_t ns;
     char * t;
     int i;
-    struct stat sb, * st = &sb;;
+    struct stat sb, * st = &sb;
     int xx;
 
     /* Only executable scripts are searched. */
@@ -544,7 +556,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 
     fp = fopen(fn, "r");
     if (fp == NULL || ferror(fp)) {
-	if (fp) fclose(fp);
+	if (fp) (void) fclose(fp);
 	return -1;
     }
 
@@ -570,7 +582,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 
 	for (se = s+1; *se; se++) {
 	    if (strchr(" \t\n\r", *se) != NULL)
-		break;
+		/*@innerbreak@*/ break;
 	}
 	*se = '\0';
 
@@ -607,9 +619,11 @@ static int rpmfcSCRIPT(rpmfc fc)
 }
 
 static int rpmfcELF(rpmfc fc)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fc, fileSystem, internalState @*/
 {
 #if HAVE_GELF_H && HAVE_LIBELF
-    const char * fn = fc->fn[fc->ix];;
+    const char * fn = fc->fn[fc->ix];
     Elf * elf;
     Elf_Scn * scn;
     Elf_Data * data;
@@ -625,7 +639,7 @@ static int rpmfcELF(rpmfc fc)
     int cnt;
     char buf[BUFSIZ];
     const char * s;
-    char deptype;
+    unsigned char deptype;
     const char * soname = NULL;
     ARGV_t * depsp;
     const char * depval;
@@ -639,12 +653,14 @@ static int rpmfcELF(rpmfc fc)
 
     (void) elf_version(EV_CURRENT);
 
+/*@-evalorder@*/
     elf = NULL;
     if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
      || elf_kind(elf) != ELF_K_ELF
      || (ehdr = gelf_getehdr(elf, &ehdr_mem)) == NULL
      || !(ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC))
 	goto exit;
+/*@=evalorder@*/
 
     isElf64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
 
@@ -659,7 +675,7 @@ static int rpmfcELF(rpmfc fc)
 	switch (shdr->sh_type) {
 	default:
 	    continue;
-	    /*@switchbreak@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case SHT_GNU_verdef:
 	    deptype = 'P';
 	    data = NULL;
@@ -669,27 +685,30 @@ static int rpmfcELF(rpmfc fc)
 		
 		    def = gelf_getverdef (data, offset, &def_mem);
 		    if (def == NULL)
-			break;
+			/*@innerbreak@*/ break;
 		    auxoffset = offset + def->vd_aux;
 		    for (cnt2 = def->vd_cnt; --cnt2 >= 0; ) {
 			GElf_Verdaux aux_mem, * aux;
 
 			aux = gelf_getverdaux (data, auxoffset, &aux_mem);
 			if (aux == NULL)
-			    break;
+			    /*@innerbreak@*/ break;
 
 			s = elf_strptr(elf, shdr->sh_link, aux->vda_name);
+			if (s == NULL)
+			    /*@innerbreak@*/ break;
 			/* XXX Ick, but what's a girl to do. */
 			if (!strncmp("ld-", s, 3) || !strncmp("lib", s, 3))
 			{
 			    soname = _free(soname);
 			    soname = xstrdup(s);
 			    auxoffset += aux->vda_next;
-			    continue;
+			    /*@innercontinue@*/ continue;
 			}
+assert(soname != NULL);
 
+			buf[0] = '\0';
 			t = buf;
-			*t = '\0';
 			sprintf(t, "%08d%c ", fc->ix, deptype);
 			t += strlen(t);
 			depval = t;
@@ -720,9 +739,11 @@ static int rpmfcELF(rpmfc fc)
 		for (cnt = shdr->sh_info; --cnt >= 0; ) {
 		    need = gelf_getverneed (data, offset, &need_mem);
 		    if (need == NULL)
-			break;
+			/*@innerbreak@*/ break;
 
 		    s = elf_strptr(elf, shdr->sh_link, need->vn_file);
+		    if (s == NULL)
+			/*@innerbreak@*/ break;
 		    soname = _free(soname);
 		    soname = xstrdup(s);
 		    auxoffset = offset + need->vn_aux;
@@ -731,13 +752,15 @@ static int rpmfcELF(rpmfc fc)
 
 			aux = gelf_getvernaux (data, auxoffset, &aux_mem);
 			if (aux == NULL)
-			    break;
+			    /*@innerbreak@*/ break;
 
 			s = elf_strptr(elf, shdr->sh_link, aux->vna_name);
-assert(soname);
+			if (s == NULL)
+			    /*@innerbreak@*/ break;
+assert(soname != NULL);
 
+			buf[0] = '\0';
 			t = buf;
-			*t = '\0';
 			sprintf(t, "%08d%c ", fc->ix, deptype);
 			t += strlen(t);
 			depval = t;
@@ -765,11 +788,13 @@ assert(soname);
 	    while ((data = elf_getdata (scn, data)) != NULL) {
 		for (cnt = 0; cnt < (shdr->sh_size / shdr->sh_entsize); ++cnt) {
 		    dyn = gelf_getdyn (data, cnt, &dyn_mem);
+		    if (dyn == NULL)
+			/*@innerbreak@*/ break;
 		    s = NULL;
 		    switch (dyn->d_tag) {
 		    default:
 			/*@innercontinue@*/ continue;
-			/*@notreached@*/ break;
+			/*@notreached@*/ /*@switchbreak@*/ break;
 		    case DT_NEEDED:
 			/* Add to package requires. */
 			deptype = 'R';
@@ -784,10 +809,10 @@ assert(soname);
 			/*@switchbreak@*/ break;
 		    }
 		    if (s == NULL)
-			continue;
+			/*@innercontinue@*/ continue;
 
+		    buf[0] = '\0';
 		    t = buf;
-		    *t = '\0';
 		    sprintf(t, "%08d%c ", fc->ix, deptype);
 		    t += strlen(t);
 		    depval = t;
@@ -846,14 +871,14 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     while ((s = *av++) != NULL) {
 	for (se = s; *se; se++) {
 	    if (se[0] == ':' && se[1] == ' ')
-		break;
+		/*@innerbreak@*/ break;
 	}
 	if (*se == '\0')
 	    return -1;
 
 	for (se++; *se; se++) {
 	    if (!(*se == ' ' || *se == '\t'))
-		break;
+		/*@innerbreak@*/ break;
 	}
 	if (*se == '\0')
 	    return -1;
@@ -872,7 +897,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     while ((s = *av++) != NULL) {
 	for (se = s; *se; se++) {
 	    if (se[0] == ':' && se[1] == ' ')
-		break;
+		/*@innerbreak@*/ break;
 	}
 	if (*se == '\0')
 	    return -1;
@@ -884,7 +909,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
 
 	for (se++; *se; se++) {
 	    if (!(*se == ' ' || *se == '\t'))
-		break;
+		/*@innerbreak@*/ break;
 	}
 	if (*se == '\0')
 	    return -1;
@@ -912,6 +937,7 @@ typedef struct rpmfcApplyTbl_s {
     int colormask;
 } * rpmfcApplyTbl;
 
+/*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	RPMFC_SCRIPT },
@@ -924,7 +950,7 @@ int rpmfcApply(rpmfc fc)
     char * se;
     ARGV_t dav, davbase;
     rpmfcApplyTbl fcat;
-    char deptype;
+    unsigned char deptype;
     int nddict;
     int previx;
     unsigned int val;
@@ -936,7 +962,7 @@ int rpmfcApply(rpmfc fc)
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
-		continue;
+		/*@innercontinue@*/ continue;
 	    xx = (*fcat->func) (fc);
 	}
     }
@@ -947,25 +973,25 @@ int rpmfcApply(rpmfc fc)
     for (i = 0; i < nddict; i++) {
 	s = fc->ddict[i];
 	ix = strtol(s, &se, 10);
-assert(se);
+assert(se != NULL);
 	deptype = *se++;
 	se++;
 	
 	davbase = NULL;
 	switch (deptype) {
 	default:
-assert(davbase);
-	    break;
+assert(davbase != NULL);
+	    /*@switchbreak@*/ break;
 	case 'P':	
 	    davbase = fc->provides;
-	    break;
+	    /*@switchbreak@*/ break;
 	case 'R':
 	    davbase = fc->requires;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 
 	dav = argvSearch(davbase, se, NULL);
-assert(dav);
+assert(dav != NULL);
 	val = (deptype << 24) | ((dav - davbase) & 0x00ffffff);
 	xx = argiAdd(&fc->ddictx, -1, val);
 
