@@ -1440,8 +1440,12 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 				fi->fflags, fi->fc * sizeof(*fi->fflags));
 	    fi->fmodes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmodes)),
 				fi->fmodes, fi->fc * sizeof(*fi->fmodes));
-	    fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
+	    /* XXX there's a tedious segfault here for some version(s) of rpm */
+	    if (fi->fstates)
+		fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
 				fi->fstates, fi->fc * sizeof(*fi->fstates));
+	    else
+		fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
 	    fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
 				fi->dil, fi->fc * sizeof(*fi->dil));
 	    headerFree(fi->h);

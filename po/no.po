@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-07-31 10:51-0400\n"
+"POT-Creation-Date: 2000-07-31 08:48-0400\n"
 "PO-Revision-Date: 2000-06-22 21:59+02:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"

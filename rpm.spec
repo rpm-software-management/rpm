@@ -263,6 +263,7 @@ fi
 %changelog
 * Mon Jul 31 2000 Jeff Johnson <jbj@redhat.com>
 - fix: uniqify dependency problems when printing (#14034).
+- fix: segfault on erase if filestates is missing in header (#14679).
 - popt: add ability to perform callbacks for every, not just first, match.
 
 * Sat Jul 29 2000 Jeff Johnson <jbj@redhat.com>

@@ -85,6 +85,7 @@
 	- fix: look for any/all dbapi when rebuilding.
 	- link rpm2cpio dynamically since cpio is linked dynamically.
 	- fix: uniqify dependency problems when printing (#14034).
+	- fix: segfault on erase if filestates is missing in header (#14679).
 
 3.0.4 -> 3.0.5
 	- configure.in fiddles for BSD systems (Patrick Schoo).
