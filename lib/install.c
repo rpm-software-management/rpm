@@ -161,7 +161,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	    /* new arch handling */
 	    if (!rpmArchScore(pkgArch)) {
 		error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
-		      "architecture", name, version, release);
+		      "architecture (%s)", name, version, release, pkgArch);
 		freeHeader(h);
 		return 2;
 	    }
