@@ -721,7 +721,7 @@ int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
 
     headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
 
-    if (!(reqFlags & RPMSENSE_SENSEMASK)) {
+    if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqInfo || !strlen(reqInfo)) {
 	return 1;
     }
 
