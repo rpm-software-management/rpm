@@ -57,15 +57,16 @@ void printUsage(void) {
     puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--replacepkgs] [--replacefiles] [--search]"));
     puts(_("                          [--root <dir>] [--excludedocs] [--includedocs]"));
-    puts(_("                          file1.rpm ... filen.rpm"));
+    puts(_("                          [--noscripts] file1.rpm ... filen.rpm"));
     puts(_("       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--search] [--oldpackage] [--root <dir>]"));
     puts(_("                          [--excludedocs] [--includedocs]")); 
     puts(_("                          file1.rpm ... filen.rpm"));
     puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "));
-    puts(_("                        [--root <dir>] [targets]"));
+    puts(_("                        [--scripts] [--root <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"));
-    puts(_("       rpm {--erase -e] [--root <dir>] package1 package2 ... packageN"));
+    puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] "));
+    puts(_("                        package1 package2 ... packageN"));
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]"));
     puts(_("                        [--sign] [--test] [--time-check <s>] specfile"));
     puts(_("       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"));
@@ -99,6 +100,7 @@ void printHelp(void) {
     puts(_("        -s                - show file states (implies -l)"));
     puts(_("        -d                - list only documentation files (implies -l)"));
     puts(_("        -c                - list only configuration files (implies -l)"));
+    puts(_("        --scripts         - print the various [un]install scripts"));
     puts(_(""));
     puts(_("    -V"));
     puts(_("    -y"));
@@ -117,6 +119,7 @@ void printHelp(void) {
     puts(_("      --force           - short hand for --replacepkgs --replacefiles"));
     puts(_("      --test            - don't install, but tell if it would work or not"));
     puts(_("      --search          - search the paths listed in /etc/rpmrc for rpms"));
+    puts(_("      --noscripts       - don't execute any installation scripts"));
     puts(_("      --excludedocs     - do not install documentation"));
     puts(_("      --includedocs     - install documentation"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
@@ -128,6 +131,7 @@ void printHelp(void) {
     puts(_(""));
     puts(_("    --erase <package>"));
     puts(_("    -e <package>        - uninstall (erase) package"));
+    puts(_("      --noscripts       - don't execute any installation scripts"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
     puts(_(""));
     puts(_("    -b<stage> <spec>    - build package, where <stage> is one of:"));
@@ -217,6 +221,7 @@ int main(int argc, char ** argv) {
     int showPercents = 0;
     int showHash = 0;
     int installFlags = 0;
+    int uninstallFlags = 0;
     int interfaceFlags = 0;
     int buildAmount = 0;
     int oldPackage = 0;
@@ -227,6 +232,8 @@ int main(int argc, char ** argv) {
     int queryTags = 0;
     int excldocs = 0;
     int incldocs = 0;
+    int queryScripts = 0;
+    int noScripts = 0;
     char * queryFormat = NULL;
     char buildChar = ' ';
     char * prefix = "/";
@@ -252,6 +259,7 @@ int main(int argc, char ** argv) {
             { "includedocs", 0, &incldocs, 0},
 	    { "install", 0, 0, 'i' },
 	    { "list", 0, 0, 'l' },
+	    { "noscripts", 0, &noScripts, 0 },
 	    { "oldpackage", 0, &oldPackage, 0 },
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
@@ -265,6 +273,7 @@ int main(int argc, char ** argv) {
 	    { "replacepkgs", 0, &replacePackages, 0 },
 	    { "resign", 0, 0, 0 },
 	    { "root", 1, 0, 'r' },
+	    { "scripts", 0, &queryScripts, 0 },
 	    { "short-circuit", 0, &shortCircuit, 0 },
 	    { "sign", 0, &signIt, 0 },
 	    { "state", 0, 0, 's' },
@@ -410,11 +419,11 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case 'd':
-	    queryFor |= QUERY_FOR_DOCS;
+	    queryFor |= QUERY_FOR_DOCS | QUERY_FOR_LIST;
 	    break;
 
 	  case 'c':
-	    queryFor |= QUERY_FOR_CONFIG;
+	    queryFor |= QUERY_FOR_CONFIG | QUERY_FOR_LIST;
 	    break;
 
 	  case 'P':
@@ -518,6 +527,10 @@ int main(int argc, char ** argv) {
     if (badOption)
 	exit(1);
 
+    if (queryScripts) {
+	queryFor |= QUERY_FOR_SCRIPTS;
+    }
+
     if (queryTags)
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
@@ -562,7 +575,10 @@ int main(int argc, char ** argv) {
 	argerror(_("only one of --exclude-docs and --include-docs may be "
 		 "specified"));
   
-  
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noScripts)
+	argerror(_("--noscripts may only be specified during package "
+		   "installation and uninstallation"));
+
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && test)
 	argerror(_("--test may only be specified during package installation "
 		 "and uninstallation"));
@@ -697,8 +713,11 @@ int main(int argc, char ** argv) {
 	if (optind == argc) 
 	    argerror(_("no packages given for uninstall"));
 
+	if (noScripts) uninstallFlags |= INSTALL_NOSCRIPTS;
+	if (test) uninstallFlags |= UNINSTALL_TEST;
+
 	while (optind < argc) 
-	    doUninstall(prefix, argv[optind++], test, 0);
+	    doUninstall(prefix, argv[optind++], uninstallFlags, 0);
 	break;
 
       case MODE_INSTALL:
@@ -706,9 +725,11 @@ int main(int argc, char ** argv) {
 	if (replaceFiles) installFlags |= INSTALL_REPLACEFILES;
 	if (replacePackages) installFlags |= INSTALL_REPLACEPKG;
 	if (test) installFlags |= INSTALL_TEST;
+	if (noScripts) installFlags |= INSTALL_NOSCRIPTS;
 
 	if (showPercents) interfaceFlags |= RPMINSTALL_PERCENT;
 	if (showHash) interfaceFlags |= RPMINSTALL_HASH;
+
 
 	if (!incldocs) {
 	    if (excldocs)
