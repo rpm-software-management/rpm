@@ -1735,17 +1735,19 @@ typedef enum rpmVerifySignatureReturn_e {
 
 /** \ingroup signature
  * Verify a signature from a package.
- * @param fn		file name of header+payload
- * @param sigTag	type of signature
- * @param sig		signature itself
- * @param siglen	no. of bytes in signature
- * @param dig		signature parameters
+ *
+ * This needs the following variables from the transaction set:
+ *	- ts->sigtag	type of signature
+ *	- ts->sig	signature itself (from signature header)
+ *	- ts->siglen	no. of bytes in signature
+ *	- ts->dig	signature parameters (malloc'd workspace)
+ *
+ * @param ts		transaction set
  * @retval result	detailed text result of signature verification
  * @return		result of signature verification
  */
-rpmVerifySignatureReturn rpmVerifySignature(const char * fn,
-		int_32 sigTag, const void * sig, int siglen,
-		const pgpDig dig, /*@out@*/ char * result)
+rpmVerifySignatureReturn rpmVerifySignature(const rpmTransactionSet ts,
+		/*@out@*/ char * result)
 	/*@modifies *result @*/;
 
 /** \ingroup signature

@@ -530,3 +530,4 @@ fi
 - stupid macros to configure public key file paths.
 - all symbols but hdrVec are now forward references in linkage.
 - generate an rpm header on the fly for imported pubkeys.
+- wire transactions through rpmcli signature modes.

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-23 12:43-0400\n"
+"POT-Creation-Date: 2001-10-23 16:43-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -434,13 +434,10 @@ msgstr "não foram indicados argumentos para a verificação"
 msgid "unexpected arguments to --querytags "
 msgstr "argumentos inesperados no --querytags "
 
-#: rpmqv.c:1153
-msgid "no packages given for signature check"
-msgstr "não foram indicados pacotes para verificar as assinaturas"
-
-#: rpmqv.c:1161
-msgid "no packages given for signing"
-msgstr "não foram indicados pacotes para assinar"
+#: rpmqv.c:1154
+#, fuzzy
+msgid "no arguments given"
+msgstr "não foram indicados argumentos para a pesquisa"
 
 #: build/build.c:125 build/pack.c:466
 msgid "Unable to open temp file.\n"
@@ -1288,7 +1285,7 @@ msgid " failed - "
 msgstr " falhou - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:559
+#: lib/depends.c:555
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -1297,66 +1294,66 @@ msgstr ""
 "A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
 "\t %s\tB %s\n"
 
-#: lib/depends.c:588
+#: lib/depends.c:584
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s     A %s\tB %s\n"
 
-#: lib/depends.c:589 lib/depends.c:1225 lib/depends.c:1358
+#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:589 lib/depends.c:1225 lib/depends.c:1358
+#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
 #, fuzzy
 msgid "NO "
 msgstr "NÃO-OK"
 
-#: lib/depends.c:1019
+#: lib/depends.c:1026
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s SIM (ficheiros adicionados)\n"
 
-#: lib/depends.c:1130
+#: lib/depends.c:1137
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s SIM (oferecidos para adição)\n"
 
-#: lib/depends.c:1224
+#: lib/depends.c:1231
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (em cache)\n"
 
-#: lib/depends.c:1253
+#: lib/depends.c:1260
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:1270
+#: lib/depends.c:1277
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:1294
+#: lib/depends.c:1301
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s SIM (ficheiros db)\n"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1314
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:1321
+#: lib/depends.c:1328
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s SIM (pacote db)\n"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1344
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NÃO\n"
 
-#: lib/depends.c:1358
+#: lib/depends.c:1365
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) adicionado à cache de dependências.\n"
@@ -1364,42 +1361,42 @@ msgstr "%s: (%s, %s) adicionado à cache de dependências.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1431
+#: lib/depends.c:1438
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1510
+#: lib/depends.c:1517
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "o pacote %s está em conflito: %s\n"
 
-#: lib/depends.c:1763
+#: lib/depends.c:1770
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1913
+#: lib/depends.c:1920
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1973
+#: lib/depends.c:1980
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2023
+#: lib/depends.c:2030
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:2076
+#: lib/depends.c:2083
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:2106
+#: lib/depends.c:2113
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
@@ -2444,72 +2441,72 @@ msgstr "o makeTempFile falhou\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: O fwrite falhou: %s\n"
 
-#: lib/rpmchecksig.c:110 lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:110 lib/rpmchecksig.c:291
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
 
-#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:523
+#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:534
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/rpmchecksig.c:152
+#: lib/rpmchecksig.c:164
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Não consigo assinar o RPM v1.0\n"
 
-#: lib/rpmchecksig.c:156
+#: lib/rpmchecksig.c:168
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: não consigo assinar de novo o RPM v2.0\n"
 
-#: lib/rpmchecksig.c:165 lib/rpmchecksig.c:539
+#: lib/rpmchecksig.c:177 lib/rpmchecksig.c:550
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: o rpmReadSignature falhou\n"
 
-#: lib/rpmchecksig.c:169 lib/rpmchecksig.c:544
+#: lib/rpmchecksig.c:181 lib/rpmchecksig.c:555
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
 
-#: lib/rpmchecksig.c:202
+#: lib/rpmchecksig.c:214
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: o writeLead falhou: %s\n"
 
-#: lib/rpmchecksig.c:208
+#: lib/rpmchecksig.c:220
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: o rpmWriteSignature falhou: %s\n"
 
-#: lib/rpmchecksig.c:529
+#: lib/rpmchecksig.c:540
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Nenhuma assinatura disponível (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:752
+#: lib/rpmchecksig.c:768
 msgid "NOT OK"
 msgstr "NÃO-OK"
 
-#: lib/rpmchecksig.c:753 lib/rpmchecksig.c:767
+#: lib/rpmchecksig.c:769 lib/rpmchecksig.c:783
 msgid " (MISSING KEYS:"
 msgstr " (FALTAM AS CHAVES:"
 
-#: lib/rpmchecksig.c:755 lib/rpmchecksig.c:769
+#: lib/rpmchecksig.c:771 lib/rpmchecksig.c:785
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:756 lib/rpmchecksig.c:770
+#: lib/rpmchecksig.c:772 lib/rpmchecksig.c:786
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CHAVES SUSPEITAS:"
 
-#: lib/rpmchecksig.c:758 lib/rpmchecksig.c:772
+#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:766
+#: lib/rpmchecksig.c:782
 msgid "OK"
 msgstr "OK"
 
@@ -2705,115 +2702,115 @@ msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/signature.c:115
+#: lib/signature.c:117
 msgid "file is not regular -- skipping size check\n"
 msgstr "o ficheiro não é normal -- a ignorar a verificação do tamanho\n"
 
-#: lib/signature.c:124
+#: lib/signature.c:126
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "Esperado um tamanho: %12d = início(%d)+assin.(%d)+'pad'(%d)+dados(%d)\n"
 
-#: lib/signature.c:129
+#: lib/signature.c:131
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Tamanho real: %12d\n"
 
-#: lib/signature.c:149
+#: lib/signature.c:151
 msgid "No signature\n"
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:153
+#: lib/signature.c:155
 msgid "Old PGP signature\n"
 msgstr "Assinatura PGP antiga\n"
 
-#: lib/signature.c:166
+#: lib/signature.c:168
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Assinatura (só interna) antiga! Como é que obteve isto!?\n"
 
-#: lib/signature.c:222
+#: lib/signature.c:224
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Tamanho da assinatura: %d\n"
 
-#: lib/signature.c:285
+#: lib/signature.c:287
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Não consigo executar o pgp (%s)\n"
 
-#: lib/signature.c:298
+#: lib/signature.c:300
 msgid "pgp failed\n"
 msgstr "o pgp falhou\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:305
+#: lib/signature.c:307
 msgid "pgp failed to write signature\n"
 msgstr "o pgp não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:310
+#: lib/signature.c:312
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "tamanho da assinatura do PGP: %d\n"
 
-#: lib/signature.c:325 lib/signature.c:412
+#: lib/signature.c:327 lib/signature.c:414
 msgid "unable to read the signature\n"
 msgstr "incapaz de ler a assinatura\n"
 
-#: lib/signature.c:330
+#: lib/signature.c:332
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Obtive %d bytes da assinatura PGP\n"
 
-#: lib/signature.c:372 lib/signature.c:502
+#: lib/signature.c:374 lib/signature.c:504
 msgid "Couldn't exec gpg\n"
 msgstr "Não consegui executar o gpg\n"
 
-#: lib/signature.c:385
+#: lib/signature.c:387
 msgid "gpg failed\n"
 msgstr "o gpg falhou\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:392
+#: lib/signature.c:394
 msgid "gpg failed to write signature\n"
 msgstr "o gpg não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:397
+#: lib/signature.c:399
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Tamanho da assinatura do GPG: %d\n"
 
-#: lib/signature.c:417
+#: lib/signature.c:419
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Obtive %d bytes da assinatura do GPG\n"
 
-#: lib/signature.c:445
+#: lib/signature.c:447
 msgid "Generating signature using PGP.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:451
+#: lib/signature.c:453
 msgid "Generating signature using GPG.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:531
+#: lib/signature.c:533
 msgid "Couldn't exec pgp\n"
 msgstr "Não consegui executar o pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:535 lib/signature.c:588
+#: lib/signature.c:537 lib/signature.c:590
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:568
+#: lib/signature.c:570
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:580
+#: lib/signature.c:582
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
@@ -2852,59 +2849,59 @@ msgstr "Dependências não satisfeitas para o %s-%s-%s: "
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:100 rpmdb/db3.c:100
+#: rpmdb/db1.c:98 rpmdb/db3.c:100
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "erro do db%d (%d) do %s: %s\n"
 
-#: rpmdb/db1.c:103 rpmdb/db3.c:103
+#: rpmdb/db1.c:101 rpmdb/db3.c:103
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "erro do db%d (%d): %s\n"
 
-#: rpmdb/db1.c:170
+#: rpmdb/db1.c:168
 #, c-format
 msgid ""
 "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
 msgstr ""
 
-#: rpmdb/db1.c:182
+#: rpmdb/db1.c:180
 #, c-format
 msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
 msgstr ""
 
 #. @=branchstate@
-#: rpmdb/db1.c:508
+#: rpmdb/db1.c:506
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "fechei o ficheiro do db %s\n"
 
-#: rpmdb/db1.c:511
+#: rpmdb/db1.c:509
 #, c-format
 msgid "removed db file        %s\n"
 msgstr "removi o ficheiro do db %s\n"
 
-#: rpmdb/db1.c:546
+#: rpmdb/db1.c:544
 #, c-format
 msgid "bad db file %s\n"
 msgstr "ficheiro db inválido %s\n"
 
-#: rpmdb/db1.c:551
+#: rpmdb/db1.c:549
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "a aceder ao ficheiro db %s modo 0x%x\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:574
+#: rpmdb/db1.c:572
 #, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "não consegui adquirir exclusivamente o %s na base de dados\n"
 
-#: rpmdb/db1.c:575 rpmdb/db3.c:1213
+#: rpmdb/db1.c:573 rpmdb/db3.c:1213
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db1.c:575 rpmdb/db3.c:1213
+#: rpmdb/db1.c:573 rpmdb/db3.c:1213
 msgid "shared"
 msgstr "partilhado"
 
@@ -3360,6 +3357,12 @@ msgstr "o porto do URL tem de ser um número\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"
+
+#~ msgid "no packages given for signature check"
+#~ msgstr "não foram indicados pacotes para verificar as assinaturas"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "não foram indicados pacotes para assinar"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"

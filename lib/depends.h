@@ -160,6 +160,13 @@ struct rpmTransactionSet_s {
 /*@null@*/ FD_t scriptFd;	/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
     int id;			/*!< Transaction id. */
+/*@observer@*/ /*@dependent@*/ /*@null@*/
+    const char * fn;		/*!< Current package fn. */
+    int_32  sigtag;		/*!< Current package signature tag. */
+    int_32  sigtype;		/*!< Current package signature data type. */
+/*@null@*/ const void * sig;	/*!< Current package signature. */
+    int_32 siglen;		/*!< Current package signature length. */
+/*@null@*/ struct pgpDig_s * dig;/*!< Current signature/pubkey parametrs. */
 } ;
 
 /** \ingroup rpmdep

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.170 2001/10/23 16:48:27 jbj Exp $
+# $Id: sl.po,v 1.171 2001/10/23 20:52:59 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-23 12:43-0400\n"
+"POT-Creation-Date: 2001-10-23 16:43-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -450,13 +450,10 @@ msgstr "argumenti za preverjanje niso podani"
 msgid "unexpected arguments to --querytags "
 msgstr "neprièakovani argumenti za --querytags "
 
-#: rpmqv.c:1153
-msgid "no packages given for signature check"
-msgstr "paketi za katere bi bilo potrebno preveriti podpis niso navedeni"
-
-#: rpmqv.c:1161
-msgid "no packages given for signing"
-msgstr "paketi katere bi bilo potrebno podpisati niso navedeni"
+#: rpmqv.c:1154
+#, fuzzy
+msgid "no arguments given"
+msgstr "argumenti za poizvedbo niso podani"
 
 #: build/build.c:125 build/pack.c:466
 #, fuzzy
@@ -1317,7 +1314,7 @@ msgid " failed - "
 msgstr " neuspe¹no - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:559
+#: lib/depends.c:555
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -1326,66 +1323,66 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:588
+#: lib/depends.c:584
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:589 lib/depends.c:1225 lib/depends.c:1358
+#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:589 lib/depends.c:1225 lib/depends.c:1358
+#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
 
-#: lib/depends.c:1019
+#: lib/depends.c:1026
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s DA (dodane datoteke)\n"
 
-#: lib/depends.c:1130
+#: lib/depends.c:1137
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/depends.c:1224
+#: lib/depends.c:1231
 #, fuzzy, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-3s (predpomnjeno)\n"
 
-#: lib/depends.c:1253
+#: lib/depends.c:1260
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:1270
+#: lib/depends.c:1277
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:1294
+#: lib/depends.c:1301
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s DA (db datoteke)\n"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1314
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:1321
+#: lib/depends.c:1328
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %s zadovoljen ob paketih db.\n"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1344
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NE\n"
 
-#: lib/depends.c:1358
+#: lib/depends.c:1365
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) dodano v predpomnilnik Depends.\n"
@@ -1393,42 +1390,42 @@ msgstr "%s: (%s, %s) dodano v predpomnilnik Depends.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1431
+#: lib/depends.c:1438
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"
 
 #. conflicts exist.
-#: lib/depends.c:1510
+#: lib/depends.c:1517
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s jw v sporu z: %s\n"
 
-#: lib/depends.c:1763
+#: lib/depends.c:1770
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1913
+#: lib/depends.c:1920
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1973
+#: lib/depends.c:1980
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:2023
+#: lib/depends.c:2030
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2076
+#: lib/depends.c:2083
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2106
+#: lib/depends.c:2113
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2516,72 +2513,72 @@ msgstr "makeTempFile je bil neuspe¹en\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: pisanje Fwrite je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:110 lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:110 lib/rpmchecksig.c:291
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:523
+#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:534
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/rpmchecksig.c:152
+#: lib/rpmchecksig.c:164
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Podpis RPM v1.0 ni mo¾en\n"
 
-#: lib/rpmchecksig.c:156
+#: lib/rpmchecksig.c:168
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Sprememba podpisa RPM v2.0 ni mo¾na\n"
 
-#: lib/rpmchecksig.c:165 lib/rpmchecksig.c:539
+#: lib/rpmchecksig.c:177 lib/rpmchecksig.c:550
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature je bil neuspe¹en\n"
 
-#: lib/rpmchecksig.c:169 lib/rpmchecksig.c:544
+#: lib/rpmchecksig.c:181 lib/rpmchecksig.c:555
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis ni na voljo\n"
 
-#: lib/rpmchecksig.c:202
+#: lib/rpmchecksig.c:214
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead je bil neuspe¹en: %s\n"
 
-#: lib/rpmchecksig.c:208
+#: lib/rpmchecksig.c:220
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:529
+#: lib/rpmchecksig.c:540
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Podpis ni na voljo (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:752
+#: lib/rpmchecksig.c:768
 msgid "NOT OK"
 msgstr "NI DOBRO"
 
-#: lib/rpmchecksig.c:753 lib/rpmchecksig.c:767
+#: lib/rpmchecksig.c:769 lib/rpmchecksig.c:783
 msgid " (MISSING KEYS:"
 msgstr " (MANJKAJOÈI KLJUÈI:"
 
-#: lib/rpmchecksig.c:755 lib/rpmchecksig.c:769
+#: lib/rpmchecksig.c:771 lib/rpmchecksig.c:785
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:756 lib/rpmchecksig.c:770
+#: lib/rpmchecksig.c:772 lib/rpmchecksig.c:786
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEPREVERJENI KLJUÈI:"
 
-#: lib/rpmchecksig.c:758 lib/rpmchecksig.c:772
+#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:766
+#: lib/rpmchecksig.c:782
 msgid "OK"
 msgstr "V REDU"
 
@@ -2778,123 +2775,123 @@ msgstr "Ni mo¾no prebrati %s, HOME je prevelik."
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s ni mo¾no odpreti za branje: %s."
 
-#: lib/signature.c:115
+#: lib/signature.c:117
 msgid "file is not regular -- skipping size check\n"
 msgstr "datoteka ni navadna datoteka -- preskakujemo preverjanje velikosti\n"
 
-#: lib/signature.c:124
+#: lib/signature.c:126
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:129
+#: lib/signature.c:131
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:149
+#: lib/signature.c:151
 msgid "No signature\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:153
+#: lib/signature.c:155
 msgid "Old PGP signature\n"
 msgstr "Stari podpis PGP\n"
 
-#: lib/signature.c:166
+#: lib/signature.c:168
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Podpis v (interni) stari obliki! Kje ste ga dobili?"
 
-#: lib/signature.c:222
+#: lib/signature.c:224
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:285
+#: lib/signature.c:287
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Ni mo¾no pognati pgp (%s)"
 
-#: lib/signature.c:298
+#: lib/signature.c:300
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp je bil neuspe¹en"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:305
+#: lib/signature.c:307
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp je bil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:310
+#: lib/signature.c:312
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Dol¾. podpisa PGP: %d\n"
 
-#: lib/signature.c:325 lib/signature.c:412
+#: lib/signature.c:327 lib/signature.c:414
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "branje podpisa je bilo neuspe¹no"
 
-#: lib/signature.c:330
+#: lib/signature.c:332
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Prebrano %d bajtov podpisa PGP\n"
 
-#: lib/signature.c:372 lib/signature.c:502
+#: lib/signature.c:374 lib/signature.c:504
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Ni mo¾no pognati gpg"
 
-#: lib/signature.c:385
+#: lib/signature.c:387
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg je bil neuspe¹en"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:392
+#: lib/signature.c:394
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg je boil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:397
+#: lib/signature.c:399
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Dol¾. podpisa GnuPG: %d\n"
 
-#: lib/signature.c:417
+#: lib/signature.c:419
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Prebrano %d bajtov podpisa GnuPG\n"
 
-#: lib/signature.c:445
+#: lib/signature.c:447
 msgid "Generating signature using PGP.\n"
 msgstr "Ustvarjanje podpisa s PGP.\n"
 
-#: lib/signature.c:451
+#: lib/signature.c:453
 msgid "Generating signature using GPG.\n"
 msgstr "Ustvarjanje podpisa z GnuPG.\n"
 
-#: lib/signature.c:531
+#: lib/signature.c:533
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Ni mo¾no pognati pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:535 lib/signature.c:588
+#: lib/signature.c:537 lib/signature.c:590
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Neveljaven %%_signature v makro-datoteki.\n"
 
-#: lib/signature.c:568
+#: lib/signature.c:570
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:580
+#: lib/signature.c:582
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
@@ -2937,59 +2934,59 @@ msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:100 rpmdb/db3.c:100
+#: rpmdb/db1.c:98 rpmdb/db3.c:100
 #, fuzzy, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d napaka(%d)"
 
-#: rpmdb/db1.c:103 rpmdb/db3.c:103
+#: rpmdb/db1.c:101 rpmdb/db3.c:103
 #, fuzzy, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d napaka(%d)"
 
-#: rpmdb/db1.c:170
+#: rpmdb/db1.c:168
 #, c-format
 msgid ""
 "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
 msgstr ""
 
-#: rpmdb/db1.c:182
+#: rpmdb/db1.c:180
 #, c-format
 msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
 msgstr ""
 
 #. @=branchstate@
-#: rpmdb/db1.c:508
+#: rpmdb/db1.c:506
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "zaprta datoteka db       %s\n"
 
-#: rpmdb/db1.c:511
+#: rpmdb/db1.c:509
 #, fuzzy, c-format
 msgid "removed db file        %s\n"
 msgstr "odstranjena datoteka db        %s\n"
 
-#: rpmdb/db1.c:546
+#: rpmdb/db1.c:544
 #, fuzzy, c-format
 msgid "bad db file %s\n"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: rpmdb/db1.c:551
+#: rpmdb/db1.c:549
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "odpiranje datoteke %s v naèinu 0x%x\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:574
+#: rpmdb/db1.c:572
 #, fuzzy, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: rpmdb/db1.c:575 rpmdb/db3.c:1213
+#: rpmdb/db1.c:573 rpmdb/db3.c:1213
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db1.c:575 rpmdb/db3.c:1213
+#: rpmdb/db1.c:573 rpmdb/db3.c:1213
 msgid "shared"
 msgstr "skupno"
 
@@ -3457,6 +3454,12 @@ msgstr "vrata URL morajo biti ¹tevilka\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#~ msgid "no packages given for signature check"
+#~ msgstr "paketi za katere bi bilo potrebno preveriti podpis niso navedeni"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "paketi katere bi bilo potrebno podpisati niso navedeni"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"

@@ -1149,18 +1149,11 @@ int main(int argc, const char ** argv)
 
 #ifdef IAM_RPMK
     case MODE_CHECKSIG:
-	if (!poptPeekArg(optCon))
-	    argerror(_("no packages given for signature check"));
-	ec = rpmCheckSig(ka, (const char **)poptGetArgs(optCon));
-	/* XXX don't overflow single byte exit status */
-	if (ec > 255) ec = 255;
-	break;
-
     case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
-	    argerror(_("no packages given for signing"));
+	    argerror(_("no arguments given"));
 	ka->passPhrase = passPhrase;
-	ec = rpmReSign(ka, (const char **)poptGetArgs(optCon));
+	ec = rpmcliSign(ka, (const char **)poptGetArgs(optCon));
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	break;

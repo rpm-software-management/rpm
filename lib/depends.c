@@ -2,14 +2,10 @@
  * \file lib/depends.c
  */
 
-/*@-exportheadervar@*/
-/*@unchecked@*/ /*@unused@*/
-static int _depends_debug = 0;
-/*@=exportheadervar@*/
-
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmpgp.h>		/* XXX pgpFreeDig */
 
 #include "depends.h"
 #include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
@@ -692,7 +688,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->rpmdb = db;
     /*@=assignexpose@*/
     ts->scriptFd = NULL;
-    ts->id = 0;
+    ts->id = (int_32) time(NULL);
     ts->delta = 5;
 
     ts->numRemovedPackages = 0;
@@ -723,6 +719,10 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->orderAlloced = ts->delta;
     ts->orderCount = 0;
     ts->order = xcalloc(ts->orderAlloced, sizeof(*ts->order));
+
+    ts->fn = NULL;
+    ts->sig = NULL;
+    ts->dig = NULL;
 
     return ts;
 }
@@ -913,6 +913,7 @@ int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
 rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 {
     if (ts) {
+	HFD_t hfd = headerFreeData;
 	alFree(&ts->addedPackages);
 	alFree(&ts->availablePackages);
 	ts->di = _free(ts->di);
@@ -925,6 +926,12 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	/*@=type@*/
 	ts->rootDir = _free(ts->rootDir);
 	ts->currDir = _free(ts->currDir);
+
+	ts->fn = NULL;
+	if (ts->sig != NULL)
+	    ts->sig = hfd(ts->sig, ts->sigtype);
+	if (ts->dig != NULL)
+	    ts->dig = pgpFreeDig(ts->dig);
 
 	ts = _free(ts);
     }

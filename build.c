@@ -111,7 +111,7 @@ static int buildForTarget(const char * arg, BTA_t ba)
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * passPhrase = ba->passPhrase;
-    char * cookie = ba->cookie;
+    const char * cookie = ba->cookie;
     int buildAmount = ba->buildAmount;
     const char * buildRootURL = NULL;
     const char * specFile;

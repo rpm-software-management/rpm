@@ -8,12 +8,14 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 
+#include "depends.h"
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
 #include "legacy.h"	/* XXX for mdbinfile() */
 #include "rpmlead.h"
 #include "signature.h"
 #include "debug.h"
 
+/*@access rpmTransactionSet@*/
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access pgpDig@*/
@@ -598,19 +600,33 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
     return pass;
 }
 
-static rpmVerifySignatureReturn
-verifySizeSignature(/*@unused@*/ const char * fn,
-		const byte * sig,
-		/*@unused@*/ int siglen,
-		const pgpDig dig, /*@out@*/ char * result)
-	/*@modifies *result @*/
+static /*@observer@*/ const char * rpmSigString(rpmVerifySignatureReturn res)
+	/*@*/
 {
-    char * t = result;
-    int_32 size = *(int_32 *)sig;
-    int res;
+    const char * str;
+    switch (res) {
+    case RPMSIG_OK:		str = "OK";		break;
+    case RPMSIG_BAD:		str = "BAD";		break;
+    case RPMSIG_NOKEY:		str = "NOKEY";		break;
+    case RPMSIG_NOTTRUSTED:	str = "NOTRUSTED";	break;
+    case RPMSIG_UNKNOWN:
+    default:			str = "UNKNOWN";	break;
+    }
+    return str;
+}
+
+static rpmVerifySignatureReturn
+verifySizeSignature(const byte * sig, /*@unused@*/ int siglen,
+		const pgpDig dig, /*@out@*/ char * t)
+	/*@modifies *t @*/
+{
+    rpmVerifySignatureReturn res;
+    int_32 size;
 
     *t = '\0';
     t = stpcpy(t, "Header+Payload size: ");
+
+    memcpy(&size, sig, sizeof(size));
 
     /*@-type@*/
     if (size != dig->nbytes) {
@@ -626,22 +642,21 @@ verifySizeSignature(/*@unused@*/ const char * fn,
 }
 
 static rpmVerifySignatureReturn
-verifyMD5Signature(/*@unused@*/ const char * fn, const byte * sig, int siglen,
-		const pgpDig dig, /*@out@*/ char * result)
-	/*@modifies *result @*/
+verifyMD5Signature(const byte * sig, int siglen,
+		const pgpDig dig, /*@out@*/ char * t)
+	/*@modifies *t @*/
 {
-    char * t = result;
+    rpmVerifySignatureReturn res;
     byte * md5sum = NULL;
     size_t md5len = 0;
-    int res;
+
+    *t = '\0';
+    t = stpcpy(t, "MD5 digest: ");
 
     /*@-type@*/
     (void) rpmDigestFinal(rpmDigestDup(dig->md5ctx),
 		(void **)&md5sum, &md5len, 0);
     /*@=type@*/
-
-    *t = '\0';
-    t = stpcpy(t, "MD5 digest: ");
 
     if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
 	res = RPMSIG_BAD;
@@ -663,16 +678,16 @@ verifyMD5Signature(/*@unused@*/ const char * fn, const byte * sig, int siglen,
 }
 
 static rpmVerifySignatureReturn
-verifyPGPSignature(/*@unused@*/ const char * fn,
-		/*@unused@*/ const byte * sig,
+verifyPGPSignature(/*@unused@*/ const byte * sig,
 		/*@unused@*/ int siglen,
-		const pgpDig dig, /*@out@*/ char * result)
-	/*@modifies *result */
+		const pgpDig dig, /*@out@*/ char * t)
+	/*@modifies *t */
 {
+    rpmVerifySignatureReturn res;
+    struct pgpDigParams_s * digp = &dig->signature;
     /*@unchecked@*/ static const byte * pgppk = NULL;
     /*@unchecked@*/ static size_t pgppklen = 0;
-    char * t = result;
-    int res, xx;
+    int xx;
 
     *t = '\0';
     t = stpcpy(t, "V3 RSA/MD5 signature: ");
@@ -683,10 +698,9 @@ verifyPGPSignature(/*@unused@*/ const char * fn,
     if (pgppk == NULL) {
 	const char * pkfn = rpmExpand("%{_pgp_pubkey}", NULL);
 	if (pgpReadPkts(pkfn, &pgppk, &pgppklen) != PGPARMOR_PUBKEY) {
-	    res = RPMSIG_NOKEY;
-	    t = stpcpy( stpcpy( stpcpy(t, "NOKEY ("), pkfn), ")\n");
 	    pkfn = _free(pkfn);
-	    return res;
+	    res = RPMSIG_NOKEY;
+	    goto exit;
 	}
 	rpmMessage(RPMMESS_DEBUG,
 		"========== PGP RSA/MD5 pubkey %s\n", pkfn);
@@ -705,34 +719,35 @@ verifyPGPSignature(/*@unused@*/ const char * fn,
      || memcmp(dig->signature.signid, dig->pubkey.signid, 8))
     {
 	res = RPMSIG_NOKEY;
-	t = stpcpy(t, "NOKEY\n");
-	return res;
+	goto exit;
     }
 
     /*@-type@*/
-    if (!rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c)) {
+    if (!rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c))
 	res = RPMSIG_BAD;
-	t = stpcpy(t, "BAD\n");
-    } else {
+    else
 	res = RPMSIG_OK;
-	t = stpcpy(t, "OK\n");
-    }
     /*@=type@*/
 
+exit:
+    t = stpcpy( stpcpy(t, rpmSigString(res)), ", key ID ");
+    (void) pgpHexCvt(t, digp->signid+4, sizeof(digp->signid)-4);
+    t += strlen(t);
+    t = stpcpy(t, "\n");
     return res;
 }
 
 static rpmVerifySignatureReturn
-verifyGPGSignature(/*@unused@*/ const char * fn,
-		/*@unused@*/ const byte * sig,
+verifyGPGSignature(/*@unused@*/ const byte * sig,
 		/*@unused@*/ int siglen,
-		const pgpDig dig, /*@out@*/ char * result)
-	/*@modifies *result @*/
+		const pgpDig dig, /*@out@*/ char * t)
+	/*@modifies *t @*/
 {
+    rpmVerifySignatureReturn res;
+    struct pgpDigParams_s * digp = &dig->signature;
     /*@unchecked@*/ static const byte * gpgpk = NULL;
     /*@unchecked@*/ static size_t gpgpklen = 0;
-    char * t = result;
-    int res, xx;
+    int xx;
 
     *t = '\0';
     t = stpcpy(t, "V3 DSA signature: ");
@@ -743,10 +758,9 @@ verifyGPGSignature(/*@unused@*/ const char * fn,
     if (gpgpk == NULL) {
 	const char * pkfn = rpmExpand("%{_gpg_pubkey}", NULL);
 	if (pgpReadPkts(pkfn, &gpgpk, &gpgpklen) != PGPARMOR_PUBKEY) {
-	    res = RPMSIG_NOKEY;
-	    t = stpcpy( stpcpy( stpcpy(t, "NOKEY ("), pkfn), ")\n");
 	    pkfn = _free(pkfn);
-	    return res;
+	    res = RPMSIG_NOKEY;
+	    goto exit;
 	}
 	rpmMessage(RPMMESS_DEBUG,
 		"========== GPG DSA pubkey %s\n", pkfn);
@@ -765,41 +779,47 @@ verifyGPGSignature(/*@unused@*/ const char * fn,
      || memcmp(dig->signature.signid, dig->pubkey.signid, 8))
     {
 	res = RPMSIG_NOKEY;
-	t = stpcpy(t, "NOKEY\n");
-	return res;
+	goto exit;
     }
 
     /*@-type@*/
-    if (!dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm, &dig->y, &dig->r, &dig->s)) {
+    if (!dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm, &dig->y, &dig->r, &dig->s))
 	res = RPMSIG_BAD;
-	t = stpcpy(t, "BAD\n");
-    } else {
+    else
 	res = RPMSIG_OK;
-	t = stpcpy(t, "OK\n");
-    }
     /*@=type@*/
 
+exit:
+    t = stpcpy( stpcpy(t, rpmSigString(res)), ", key ID ");
+    (void) pgpHexCvt(t, digp->signid+4, sizeof(digp->signid)-4);
+    t += strlen(t);
+    t = stpcpy(t, "\n");
     return res;
 }
 
 rpmVerifySignatureReturn
-rpmVerifySignature(const char * fn, int_32 sigTag, const void * sig,
-		int siglen, const pgpDig dig, char * result)
+rpmVerifySignature(const rpmTransactionSet ts, char * result)
 {
-    int res;
-    switch (sigTag) {
+    rpmVerifySignatureReturn res;
+
+    if (ts->sig == NULL || ts->siglen <= 0 || ts->dig == NULL) {
+	sprintf(result, "Verify signature: BAD PARAMETERS\n");
+	return RPMSIG_UNKNOWN;
+    }
+
+    switch (ts->sigtag) {
     case RPMSIGTAG_SIZE:
-	res = verifySizeSignature(fn, sig, siglen, dig, result);
+	res = verifySizeSignature(ts->sig, ts->siglen, ts->dig, result);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(fn, sig, siglen, dig, result);
+	res = verifyMD5Signature(ts->sig, ts->siglen, ts->dig, result);
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyPGPSignature(fn, sig, siglen, dig, result);
+	res = verifyPGPSignature(ts->sig, ts->siglen, ts->dig, result);
 	break;
     case RPMSIGTAG_GPG:
-	res = verifyGPGSignature(fn, sig, siglen, dig, result);
+	res = verifyGPGSignature(ts->sig, ts->siglen, ts->dig, result);
 	break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:
@@ -807,7 +827,7 @@ rpmVerifySignature(const char * fn, int_32 sigTag, const void * sig,
 	res = RPMSIG_UNKNOWN;
 	break;
     default:
-	sprintf(result, "Signature: UNKNOWN(%d)\n", sigTag);
+	sprintf(result, "Signature: UNKNOWN(%d)\n", ts->sigtag);
 	res = RPMSIG_UNKNOWN;
 	break;
     }

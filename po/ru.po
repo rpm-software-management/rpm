@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-23 12:43-0400\n"
+"POT-Creation-Date: 2001-10-23 16:43-0400\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -451,13 +451,10 @@ msgstr "не заданы аргументы для верификации"
 msgid "unexpected arguments to --querytags "
 msgstr "неожиданные аргументы для --querytags "
 
-#: rpmqv.c:1153
-msgid "no packages given for signature check"
-msgstr "не заданы пакеты для проверки подписи"
-
-#: rpmqv.c:1161
-msgid "no packages given for signing"
-msgstr "не заданы пакеты для подписи"
+#: rpmqv.c:1154
+#, fuzzy
+msgid "no arguments given"
+msgstr "не заданы аргументы запроса"
 
 #: build/build.c:125 build/pack.c:466
 msgid "Unable to open temp file.\n"
@@ -1299,7 +1296,7 @@ msgid " failed - "
 msgstr "не удалось - "
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:559
+#: lib/depends.c:555
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -1308,65 +1305,65 @@ msgstr ""
 "для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:588
+#: lib/depends.c:584
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:589 lib/depends.c:1225 lib/depends.c:1358
+#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:589 lib/depends.c:1225 lib/depends.c:1358
+#: lib/depends.c:585 lib/depends.c:1232 lib/depends.c:1365
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/depends.c:1019
+#: lib/depends.c:1026
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:1130
+#: lib/depends.c:1137
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:1224
+#: lib/depends.c:1231
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cached)\n"
 
-#: lib/depends.c:1253
+#: lib/depends.c:1260
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:1270
+#: lib/depends.c:1277
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:1294
+#: lib/depends.c:1301
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1307
+#: lib/depends.c:1314
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:1321
+#: lib/depends.c:1328
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db package)\n"
 
-#: lib/depends.c:1337
+#: lib/depends.c:1344
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1358
+#: lib/depends.c:1365
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
@@ -1374,44 +1371,44 @@ msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1431
+#: lib/depends.c:1438
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1510
+#: lib/depends.c:1517
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1763
+#: lib/depends.c:1770
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1913
+#: lib/depends.c:1920
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1973
+#: lib/depends.c:1980
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:2023
+#: lib/depends.c:2030
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:2076
+#: lib/depends.c:2083
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:2106
+#: lib/depends.c:2113
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
@@ -2458,72 +2455,72 @@ msgstr "ошибка makeTempFile\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: ошибка Fwrite: %s\n"
 
-#: lib/rpmchecksig.c:110 lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:110 lib/rpmchecksig.c:291
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
 
-#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:523
+#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:534
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: ошибка readLead\n"
 
-#: lib/rpmchecksig.c:152
+#: lib/rpmchecksig.c:164
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Не могу подписать RPM v1.0\n"
 
-#: lib/rpmchecksig.c:156
+#: lib/rpmchecksig.c:168
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Не могу переподписать RPM v2.0\n"
 
-#: lib/rpmchecksig.c:165 lib/rpmchecksig.c:539
+#: lib/rpmchecksig.c:177 lib/rpmchecksig.c:550
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/rpmchecksig.c:169 lib/rpmchecksig.c:544
+#: lib/rpmchecksig.c:181 lib/rpmchecksig.c:555
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
 
-#: lib/rpmchecksig.c:202
+#: lib/rpmchecksig.c:214
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: ошибка writeLead: %s\n"
 
-#: lib/rpmchecksig.c:208
+#: lib/rpmchecksig.c:220
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
-#: lib/rpmchecksig.c:529
+#: lib/rpmchecksig.c:540
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Подписи нет (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:752
+#: lib/rpmchecksig.c:768
 msgid "NOT OK"
 msgstr "НЕ OК"
 
-#: lib/rpmchecksig.c:753 lib/rpmchecksig.c:767
+#: lib/rpmchecksig.c:769 lib/rpmchecksig.c:783
 msgid " (MISSING KEYS:"
 msgstr " (ОТСУТСТВУЮТ КЛЮЧИ:"
 
-#: lib/rpmchecksig.c:755 lib/rpmchecksig.c:769
+#: lib/rpmchecksig.c:771 lib/rpmchecksig.c:785
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:756 lib/rpmchecksig.c:770
+#: lib/rpmchecksig.c:772 lib/rpmchecksig.c:786
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:758 lib/rpmchecksig.c:772
+#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:766
+#: lib/rpmchecksig.c:782
 msgid "OK"
 msgstr "OК"
 
@@ -2719,116 +2716,116 @@ msgstr "Невозможно прочитать %s, значение HOME слишком велико.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
 
-#: lib/signature.c:115
+#: lib/signature.c:117
 msgid "file is not regular -- skipping size check\n"
 msgstr "необычный файл -- пропускаю проверку размера\n"
 
-#: lib/signature.c:124
+#: lib/signature.c:126
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "Ожидаемый размер: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 
-#: lib/signature.c:129
+#: lib/signature.c:131
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Фактический размер: %12d\n"
 
-#: lib/signature.c:149
+#: lib/signature.c:151
 msgid "No signature\n"
 msgstr "Подписи нет\n"
 
-#: lib/signature.c:153
+#: lib/signature.c:155
 msgid "Old PGP signature\n"
 msgstr "Старая подпись PGP\n"
 
-#: lib/signature.c:166
+#: lib/signature.c:168
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 "Старая (только для внутреннего использования) подпись! Где вы ЭТО взяли!?\n"
 
-#: lib/signature.c:222
+#: lib/signature.c:224
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
-#: lib/signature.c:285
+#: lib/signature.c:287
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Нвозможно запустить pgp (%s)\n"
 
-#: lib/signature.c:298
+#: lib/signature.c:300
 msgid "pgp failed\n"
 msgstr "ошибка pgp\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:305
+#: lib/signature.c:307
 msgid "pgp failed to write signature\n"
 msgstr "ошибка pgp при записи подписи\n"
 
-#: lib/signature.c:310
+#: lib/signature.c:312
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
-#: lib/signature.c:325 lib/signature.c:412
+#: lib/signature.c:327 lib/signature.c:414
 msgid "unable to read the signature\n"
 msgstr "невозможно прочесть подпись\n"
 
-#: lib/signature.c:330
+#: lib/signature.c:332
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
-#: lib/signature.c:372 lib/signature.c:502
+#: lib/signature.c:374 lib/signature.c:504
 msgid "Couldn't exec gpg\n"
 msgstr "Невозможно запустить gpg\n"
 
-#: lib/signature.c:385
+#: lib/signature.c:387
 msgid "gpg failed\n"
 msgstr "ошибка gpg\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:392
+#: lib/signature.c:394
 msgid "gpg failed to write signature\n"
 msgstr "ошибка gpg при записи подписи\n"
 
-#: lib/signature.c:397
+#: lib/signature.c:399
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Размер подписи GPG: %d\n"
 
-#: lib/signature.c:417
+#: lib/signature.c:419
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Получено %d байт подписи GPG\n"
 
-#: lib/signature.c:445
+#: lib/signature.c:447
 msgid "Generating signature using PGP.\n"
 msgstr "Генерируется подпись PGP.\n"
 
-#: lib/signature.c:451
+#: lib/signature.c:453
 msgid "Generating signature using GPG.\n"
 msgstr "Генерируется подпись GPG.\n"
 
-#: lib/signature.c:531
+#: lib/signature.c:533
 msgid "Couldn't exec pgp\n"
 msgstr "Невозможно запустить pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:535 lib/signature.c:588
+#: lib/signature.c:537 lib/signature.c:590
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Неверная спецификация %%_signature в макрофайле\n"
 
-#: lib/signature.c:568
+#: lib/signature.c:570
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:580
+#: lib/signature.c:582
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле\n"
@@ -2871,60 +2868,60 @@ msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"
 
-#: rpmdb/db1.c:100 rpmdb/db3.c:100
+#: rpmdb/db1.c:98 rpmdb/db3.c:100
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "ошибка(%d) db%d из %s: %s\n"
 
-#: rpmdb/db1.c:103 rpmdb/db3.c:103
+#: rpmdb/db1.c:101 rpmdb/db3.c:103
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "ошибка(%d) db%d: %s\n"
 
-#: rpmdb/db1.c:170
+#: rpmdb/db1.c:168
 #, c-format
 msgid ""
 "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
 msgstr ""
 "Цепочка пакетов оборвана на смещении %d(0x%08x), попытка соединения...\n"
 
-#: rpmdb/db1.c:182
+#: rpmdb/db1.c:180
 #, c-format
 msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
 msgstr "Соединяется оборванная связь в смещении %d(0x%08x).\n"
 
 #. @=branchstate@
-#: rpmdb/db1.c:508
+#: rpmdb/db1.c:506
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr "закрыт файл базы данных %s\n"
 
-#: rpmdb/db1.c:511
+#: rpmdb/db1.c:509
 #, c-format
 msgid "removed db file        %s\n"
 msgstr "удалён файл базы данных %s\n"
 
-#: rpmdb/db1.c:546
+#: rpmdb/db1.c:544
 #, c-format
 msgid "bad db file %s\n"
 msgstr "неверный файл базы данных %s\n"
 
-#: rpmdb/db1.c:551
+#: rpmdb/db1.c:549
 #, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 
 #. XXX check errno validity
-#: rpmdb/db1.c:574
+#: rpmdb/db1.c:572
 #, c-format
 msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных\n"
 
-#: rpmdb/db1.c:575 rpmdb/db3.c:1213
+#: rpmdb/db1.c:573 rpmdb/db3.c:1213
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db1.c:575 rpmdb/db3.c:1213
+#: rpmdb/db1.c:573 rpmdb/db3.c:1213
 msgid "shared"
 msgstr "разделяемый"
 
@@ -3384,6 +3381,12 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "no packages given for signature check"
+#~ msgstr "не заданы пакеты для проверки подписи"
+
+#~ msgid "no packages given for signing"
+#~ msgstr "не заданы пакеты для подписи"
 
 #~ msgid "rpm: %s\n"
 #~ msgstr "rpm: %s\n"

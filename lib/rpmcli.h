@@ -554,28 +554,16 @@ extern struct rpmSignArguments_s rpmKArgs;
 extern struct poptOption rpmSignPoptTable[];
 
 /** \ingroup rpmcli
- * Check elements in signature header.
+ * Create/Modify/Check elements from signature header.
  * @param ka		mode flags and parameters
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-int rpmCheckSig(struct rpmSignArguments_s * ka, /*@null@*/ const char ** argv)
+int rpmcliSign(struct rpmSignArguments_s * ka, /*@null@*/ const char ** argv)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
-
-/** \ingroup rpmcli
- * Create/modify elements in signature header.
- * @param ka		mode flags and parameters
- * @param argv		array of package file names (NULL terminated)
- * @return		0 on success
- */
-int rpmReSign(struct rpmSignArguments_s * ka, /*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext,
-		fileSystem, internalState  @*/;
 
 /*@}*/
 
