@@ -224,19 +224,19 @@ retry:
     SKIPSPACE(s);
 
     match = -1;
-    if (! strncmp("%ifarch", s, 7)) {
+    if (! strncmp("%ifarch", s, sizeof("%ifarch")-1)) {
 	s += 7;
 	match = matchTok(arch, s);
-    } else if (! strncmp("%ifnarch", s, 8)) {
+    } else if (! strncmp("%ifnarch", s, sizeof("%ifnarch")-1)) {
 	s += 8;
 	match = !matchTok(arch, s);
-    } else if (! strncmp("%ifos", s, 5)) {
+    } else if (! strncmp("%ifos", s, sizeof("%ifos")-1)) {
 	s += 5;
 	match = matchTok(os, s);
-    } else if (! strncmp("%ifnos", s, 6)) {
+    } else if (! strncmp("%ifnos", s, sizeof("%ifnos")-1)) {
 	s += 6;
 	match = !matchTok(os, s);
-    } else if (! strncmp("%if", s, 3)) {
+    } else if (! strncmp("%if", s, sizeof("%if")-1)) {
 	s += 3;
         match = parseExpressionBoolean(spec, s);
 	if (match < 0) {
@@ -244,7 +244,7 @@ retry:
 		     ofi->fileName, ofi->lineNum, match);
 	    return RPMERR_BADSPEC;
 	}
-    } else if (! strncmp("%else", s, 5)) {
+    } else if (! strncmp("%else", s, sizeof("%else")-1)) {
 	s += 5;
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
@@ -255,7 +255,7 @@ retry:
 	spec->readStack->reading =
 	    spec->readStack->next->reading && ! spec->readStack->reading;
 	spec->line[0] = '\0';
-    } else if (! strncmp("%endif", s, 6)) {
+    } else if (! strncmp("%endif", s, sizeof("%endif")-1)) {
 	s += 6;
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
@@ -267,7 +267,7 @@ retry:
 	spec->readStack = spec->readStack->next;
 	free(rl);
 	spec->line[0] = '\0';
-    } else if (! strncmp("%include", s, 8)) {
+    } else if (! strncmp("%include", s, sizeof("%include")-1)) {
 	char *fileName, *endFileName, *p;
 
 	s += 8;

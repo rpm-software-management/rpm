@@ -1363,7 +1363,7 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
     *tagMatch = NULL;
     *extMatch = NULL;
 
-    if (strncmp("RPMTAG_", name, 7)) {
+    if (strncmp("RPMTAG_", name, sizeof("RPMTAG_")-1)) {
 	tagname = alloca(strlen(name) + 10);
 	strcpy(tagname, "RPMTAG_");
 	strcat(tagname, name);

@@ -197,22 +197,22 @@ char * oldhdrParseSpec(struct oldrpmHeader * header, struct oldrpmHeaderSpec * s
 
     spec->fileCount = 0;
     for (strptr = lines; *strptr; strptr++) {
-	if (!strncmp("%speci", *strptr, 6)) {
+	if (!strncmp("%speci", *strptr, sizeof("%speci")-1)) {
 	    state = FILELIST;
 	    files = strptr + 1;
-	} else if (!strncmp("%postun", *strptr, 7)) {
+	} else if (!strncmp("%postun", *strptr, sizeof("%postun")-1)) {
 	    state = POSTUN;
 	    str = &spec->postun;
 	}
-	else if (!strncmp("%preun", *strptr, 6)) {
+	else if (!strncmp("%preun", *strptr, sizeof("%preun")-1)) {
 	    state = PREUN;
 	    str = &spec->preun;
 	}
-	else if (!strncmp("%post", *strptr, 5)) {
+	else if (!strncmp("%post", *strptr, sizeof("%post")-1)) {
 	    state = POSTIN;
 	    str = &spec->postin;
 	}
-	else if (!strncmp("%pre", *strptr, 4)) {
+	else if (!strncmp("%pre", *strptr, sizeof("%pre")-1)) {
 	    state = PREIN;
 	    str = &spec->prein;
 	}

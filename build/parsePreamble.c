@@ -254,9 +254,9 @@ static int readIcon(Header h, const char *file)
 	goto exit;
     }
 
-    if (! strncmp(icon, "GIF", 3)) {
+    if (! strncmp(icon, "GIF", sizeof("GIF")-1)) {
 	headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, statbuf.st_size);
-    } else if (! strncmp(icon, "/* XPM", 6)) {
+    } else if (! strncmp(icon, "/* XPM", sizeof("/* XPM")-1)) {
 	headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, statbuf.st_size);
     } else {
 	rpmError(RPMERR_BADSPEC, _("Unknown icon type: %s"), file);

@@ -362,7 +362,7 @@ static int doPatchMacro(Spec spec, char *line)
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
-	} else if (!strncmp(s, "-p", 2)) {
+	} else if (!strncmp(s, "-p", sizeof("-p")-1)) {
 	    /* unfortunately, we must support -pX */
 	    if (! strchr(" \t\n", s[2])) {
 		s = s + 2;
@@ -456,9 +456,9 @@ int parsePrep(Spec spec)
     saveLines = lines;
     while (*lines) {
 	res = 0;
-	if (! strncmp(*lines, "%setup", 6)) {
+	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, *lines);
-	} else if (! strncmp(*lines, "%patch", 6)) {
+	} else if (! strncmp(*lines, "%patch", sizeof("%patch")-1)) {
 	    res = doPatchMacro(spec, *lines);
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);

@@ -194,8 +194,8 @@ static int getNextHeader(CFD_t * cfd, struct cpioHeader * chPtr) {
     if (ourread(cfd, &physHeader, PHYS_HDR_SIZE) != PHYS_HDR_SIZE) 
 	return CPIOERR_READ_FAILED;
 
-    if (strncmp(CPIO_CRC_MAGIC, physHeader.magic, strlen(CPIO_CRC_MAGIC)) &&
-	strncmp(CPIO_NEWC_MAGIC, physHeader.magic, strlen(CPIO_NEWC_MAGIC)))
+    if (strncmp(CPIO_CRC_MAGIC, physHeader.magic, sizeof(CPIO_CRC_MAGIC)-1) &&
+	strncmp(CPIO_NEWC_MAGIC, physHeader.magic, sizeof(CPIO_NEWC_MAGIC)-1))
 	return CPIOERR_BAD_MAGIC;
 
     GET_NUM_FIELD(physHeader.inode, chPtr->inode);

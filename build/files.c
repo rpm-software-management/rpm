@@ -545,9 +545,9 @@ static int parseForLang(char *buf, struct FileList *fl)
 	np = pe - p;
 	
 	/* Sanity check on locale lengths */
-	if (np < 1 || (np == 1 && *p != 'C') || np >= 16) {
+	if (np < 1 || (np == 1 && *p != 'C') || np >= 32) {
 	    rpmError(RPMERR_BADSPEC, _("Unusual locale length: \"%.*s\" in %%lang(%s)"),
-		np, p, q);
+		(int)np, p, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -557,7 +557,7 @@ static int parseForLang(char *buf, struct FileList *fl)
 	    if (strncmp(fl->currentLangs[i], p, np))
 		continue;
 	    rpmError(RPMERR_BADSPEC, _("Duplicate locale %.*s in %%lang(%s)"),
-		np, p, q);
+		(int)np, p, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}

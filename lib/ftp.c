@@ -129,7 +129,7 @@ static int checkResponse(int fd, int secs, int *ecp, char ** str) {
 		*se++ = '\0';
 
 		/* HTTP: look for "HTTP/1.1 123 ..." */
-		if (!strncmp(s, "HTTP", 4)) {
+		if (!strncmp(s, "HTTP", sizeof("HTTP")-1)) {
 			char *e;
 			if ((e = strchr(s, ' ')) != NULL) {
 			    e++;
@@ -144,10 +144,10 @@ static int checkResponse(int fd, int secs, int *ecp, char ** str) {
 		/* FTP: look for "123-" and/or "123 " */
 		if (strchr("0123456789", *s)) {
 			if (errorCode[0]) {
-			    if (!strncmp(s, errorCode, 3) && s[3] == ' ')
+			    if (!strncmp(s, errorCode, sizeof("123")-1) && s[3] == ' ')
 				doesContinue = 0;
 			} else {
-			    strncpy(errorCode, s, 3);
+			    strncpy(errorCode, s, sizeof("123")-1);
 			    errorCode[3] = '\0';
 			    if (s[3] != '-') {
 				doesContinue = 0;
