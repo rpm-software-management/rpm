@@ -14,6 +14,7 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <utime.h>
 #include <zlib.h>
 
 #include "header.h"
@@ -54,8 +55,8 @@ static int setFileOwnerships(char * rootdir, char ** fileList,
 			     enum instActions * instActions, int fileCount);
 static int setFileOwner(char * file, char * owner, char * group, int_16 mode);
 static int createDirectories(char ** fileList, uint_32 * modesList, 
-			     int fileCount);
-static int mkdirIfNone(char * directory, mode_t perms);
+			     uint_32 * mtimesList, int fileCount);
+static int mkdirIfNone(char * directory, mode_t perms, uint_32 stamp);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int_16 * fileModeList,
 				 char ** fileLinkList, uint_32 * fileFlagsList,
@@ -117,7 +118,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     char ** fileList;
     char ** fileOwners, ** fileGroups, ** fileMd5s, ** fileLinkList;
     uint_32 * fileFlagsList;
-    uint_32 * fileSizesList;
+    uint_32 * fileSizesList, * fileMtimesList;
     int_16 * fileModesList;
     int_32 installTime;
     char * fileStatesList = NULL;
@@ -133,7 +134,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     char ** finalFileList = NULL;
     char ** mkdirFileList = NULL;
     int mkdirFileCount = 0;
-    uint_32 * mkdirModesList;
+    uint_32 * mkdirModesList, * mkdirMtimesList;
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
     dbiIndexSet matches;
@@ -168,6 +169,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	return rc;
     }
+
+    umask(0);		/* we know what we're doing */
 
     /* Do this now so we can give error messages, even though we'll just
        do it again after relocating everything */
@@ -385,11 +388,14 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     if (fileList) {
 	headerGetEntry(h, RPMTAG_FILESIZES, &type, (void **) &fileSizesList, 
 		 &fileCount);
+	headerGetEntry(h, RPMTAG_FILEMTIMES, &type, (void **) &fileMtimesList, 
+		 &fileCount);
 
 	files = alloca(sizeof(struct fileToInstall) * fileCount);
 	finalFileList = alloca(sizeof(char *) * fileCount);
 	mkdirFileList = alloca(sizeof(char *) * fileCount);
 	mkdirModesList = alloca(sizeof(*mkdirModesList) * fileCount);
+	mkdirMtimesList = alloca(sizeof(*mkdirMtimesList) * fileCount);
 	for (i = 0; i < fileCount; i++) {
 	    switch (instActions[i]) {
 	      case BACKUP:
@@ -457,6 +463,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		   when we'd rather it didn't */
 		mkdirFileList[mkdirFileCount] = rootedFileList[i];
 		mkdirModesList[mkdirFileCount] = fileModesList[i];
+		mkdirMtimesList[mkdirFileCount] = fileMtimesList[i];
 		mkdirFileCount++;
 
 		if (!S_ISDIR(fileModesList[i])) {
@@ -477,7 +484,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		      &count))
 	    archiveSizePtr = NULL;
 
-	if (createDirectories(mkdirFileList, mkdirModesList, mkdirFileCount)) {
+	if (createDirectories(mkdirFileList, mkdirModesList, mkdirMtimesList,
+			      mkdirFileCount)) {
 	    headerFree(h);
 	    free(fileList);
 	    if (replacedList) free(replacedList);
@@ -971,7 +979,7 @@ static int setFileOwner(char * file, char * owner, char * group,
    This creates directories which are always 0755, despite the current umask */
 
 static int createDirectories(char ** fileList, uint_32 * modesList, 
-			     int fileCount) {
+			     uint_32 * fileMtimesList, int fileCount) {
     int i;
     char * lastDirectory;
     char * buffer;
@@ -1008,7 +1016,7 @@ static int createDirectories(char ** fileList, uint_32 * modesList,
 		if (*chptr == '/') {
 		    if (*(chptr -1) != '/') {
 			*chptr = '\0';
-			if (mkdirIfNone(buffer, 0755)) {
+			if (mkdirIfNone(buffer, 0755, 0)) {
 			    free(lastDirectory);
 			    free(buffer);
 			    return 1;
@@ -1018,7 +1026,7 @@ static int createDirectories(char ** fileList, uint_32 * modesList,
 		}
 	    }
 
-	    if (mkdirIfNone(buffer, 0755)) {
+	    if (mkdirIfNone(buffer, 0755, 0)) {
 		free(lastDirectory);
 		free(buffer);
 		return 1;
@@ -1029,7 +1037,7 @@ static int createDirectories(char ** fileList, uint_32 * modesList,
 	}
 
 	if (S_ISDIR(modesList[i])) {
-	    if (mkdirIfNone(fileList[i], 0755)) {
+	    if (mkdirIfNone(fileList[i], 0755, fileMtimesList[i])) {
 		free(lastDirectory);
 		free(buffer);
 		return 1;
@@ -1043,24 +1051,30 @@ static int createDirectories(char ** fileList, uint_32 * modesList,
     return 0;
 }
 
-static int mkdirIfNone(char * directory, mode_t perms) {
+static int mkdirIfNone(char * directory, mode_t perms, uint_32 mtime) {
     int rc;
     char * chptr;
+    struct utimbuf stamp;
 
-    /* if the path is '/' we get ENOFILE not found" from mkdir, rather
-       then EEXIST which is weird */
     for (chptr = directory; *chptr; chptr++)
 	if (*chptr != '/') break;
     if (!*chptr) return 0;
 
-    if (exists(directory)) return 0;
+    if (exists(directory)) {
+	return 0;
+    }
 
     rpmMessage(RPMMESS_DEBUG, "trying to make %s\n", directory);
 
     rc = mkdir(directory, perms);
-    if (!rc || errno == EEXIST) return 0;
-
-    chmod(directory, perms);  /* this should not be modified by the umask */
+    if (!rc) {
+	if (mtime) {
+	    stamp.actime = mtime;
+	    stamp.modtime = mtime;
+	    utime(directory, &stamp);
+	}
+	return 0;
+    }
 
     rpmError(RPMERR_MKDIR, "failed to create %s - %s", directory, 
 	  strerror(errno));
