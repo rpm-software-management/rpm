@@ -614,3 +614,35 @@ void buildOrigFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
     doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_ORIGBASENAMES,
 			RPMTAG_ORIGDIRNAMES, RPMTAG_ORIGDIRINDEXES);
 }
+
+/* glob_pattern_p() taken from bash
+ * Copyright (C) 1985, 1988, 1989 Free Software Foundation, Inc.
+ *
+ * Return nonzero if PATTERN has any special globbing chars in it.
+ */
+int myGlobPatternP (const char *patternURL)
+{
+    const char *p;
+    char c;
+    int open = 0;
+  
+    (void) urlPath(patternURL, &p);
+    while ((c = *p++) != '\0')
+	switch (c) {
+	case '?':
+	case '*':
+	    return (1);
+	case '[':      /* Only accept an open brace if there is a close */
+	    open++;    /* brace to match it.  Bracket expressions must be */
+	    continue;  /* complete, according to Posix.2 */
+	case ']':
+	    if (open)
+		return (1);
+	    continue;      
+	case '\\':
+	    if (*p++ == '\0')
+		return (0);
+	}
+
+    return (0);
+}

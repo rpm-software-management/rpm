@@ -17,6 +17,7 @@
 	- rename new FILENAMES tags to BASENAMES/DIRNAMES/DIRINDEXES.
 	- fix: don't look at password when searching urlCache.
 	- add contentLength sanity check on rpmdb headerWrite.
+	- fix: fprint abort in empty chroots.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

@@ -19,7 +19,7 @@ mylibs=	$(top_builddir)/build/.libs/librpmbuild.a \
 
 EXTRA_PROGRAMS = rpmgettext rpmputtext
 
-LDADD = $(top_builddir)/lib/.libs/librpm.a @INTLLIBS@ @LIBMISC@
+LDADD = $(top_builddir)/lib/.libs/librpm.a $(top_builddir)/popt/.libs/libpopt.a @INTLLIBS@ @LIBMISC@
 
 noinst_PROGRAMS = \
 	dump dumpdb javadeps rpmarchive rpmheader rpmlead rpmsignature

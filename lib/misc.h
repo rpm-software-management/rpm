@@ -40,6 +40,8 @@ void	expandFilelist(Header h);
 void	buildOrigFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			/*@out@*/ int * fileCountPtr);
 
+int myGlobPatternP (const char *patternURL);
+
 #ifdef __cplusplus
 }
 #endif
