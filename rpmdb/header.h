@@ -128,6 +128,7 @@ struct headerTagTableEntry_s {
 /*@observer@*/ /*@null@*/
     const char * name;		/*!< Tag name. */
     int val;			/*!< Tag numeric value. */
+    int type;			/*!< Tag type. */
 };
 
 /** \ingroup header
