@@ -525,11 +525,11 @@ void compressFilelist(Header h)
     }
 
 exit:
-    headerAddEntry(h, RPMTAG_COMPDIRLIST, RPM_STRING_ARRAY_TYPE,
+    headerAddEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			dirNames, dirIndex + 1);
-    headerAddEntry(h, RPMTAG_COMPFILEDIRS, RPM_INT32_TYPE,
+    headerAddEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			dirIndexes, count);
-    headerAddEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE,
+    headerAddEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			baseNames, count);
 
     xfree(fileNames);
@@ -586,8 +586,8 @@ void expandFilelist(Header h)
     const char ** fileNames = NULL;
     int count = 0;
 
-    doBuildFileList(h, &fileNames, &count, RPMTAG_COMPFILELIST,
-			RPMTAG_COMPDIRLIST, RPMTAG_COMPFILEDIRS);
+    doBuildFileList(h, &fileNames, &count, RPMTAG_BASENAMES,
+			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
 
     if (fileNames == NULL || count <= 0)
 	return;
@@ -597,20 +597,20 @@ void expandFilelist(Header h)
 
     xfree(fileNames);
 
-    headerRemoveEntry(h, RPMTAG_COMPFILELIST);
-    headerRemoveEntry(h, RPMTAG_COMPDIRLIST);
-    headerRemoveEntry(h, RPMTAG_COMPFILEDIRS);
+    headerRemoveEntry(h, RPMTAG_BASENAMES);
+    headerRemoveEntry(h, RPMTAG_DIRNAMES);
+    headerRemoveEntry(h, RPMTAG_DIRINDEXES);
 }
 
 
 void rpmBuildFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
 {
-    doBuildFileList(h, fileListPtr, fileCountPtr,RPMTAG_COMPFILELIST,
-			RPMTAG_COMPDIRLIST, RPMTAG_COMPFILEDIRS);
+    doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_BASENAMES,
+			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
 }
 
 void buildOrigFileList(Header h, const char *** fileListPtr, int * fileCountPtr)
 {
-    doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_ORIGCOMPFILELIST,
-			RPMTAG_ORIGCOMPDIRLIST, RPMTAG_ORIGCOMPFILEDIRS);
+    doBuildFileList(h, fileListPtr, fileCountPtr, RPMTAG_ORIGBASENAMES,
+			RPMTAG_ORIGDIRNAMES, RPMTAG_ORIGDIRINDEXES);
 }

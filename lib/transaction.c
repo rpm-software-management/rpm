@@ -366,10 +366,10 @@ static Header relocateFileList(struct availablePackage * alp,
      * backwards so that /usr/local relocations take precedence over /usr 
      * ones. */
 
-    headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseNames, 
+    headerGetEntry(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, 
 		   &fileCount);
-    headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &dirIndexes, NULL);
-    headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirNames, 
+    headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, 
 		   &dirCount);
     skipDirList = xcalloc(sizeof(*skipDirList), dirCount);
 
@@ -508,24 +508,24 @@ static Header relocateFileList(struct availablePackage * alp,
 	int t;
 
 	p = NULL;
-	headerGetEntry(h, RPMTAG_COMPFILELIST, &t, &p, &c);
-	headerAddEntry(h, RPMTAG_ORIGCOMPFILELIST, t, p, c);
+	headerGetEntry(h, RPMTAG_BASENAMES, &t, &p, &c);
+	headerAddEntry(h, RPMTAG_ORIGBASENAMES, t, p, c);
 	xfree(p);
 
 	p = NULL;
-	headerGetEntry(h, RPMTAG_COMPDIRLIST, &t, &p, &c);
-	headerAddEntry(h, RPMTAG_ORIGCOMPDIRLIST, t, p, c);
+	headerGetEntry(h, RPMTAG_DIRNAMES, &t, &p, &c);
+	headerAddEntry(h, RPMTAG_ORIGDIRNAMES, t, p, c);
 	xfree(p);
 
 	p = NULL;
-	headerGetEntry(h, RPMTAG_COMPFILEDIRS, &t, &p, &c);
-	headerAddEntry(h, RPMTAG_ORIGCOMPFILEDIRS, t, p, c);
+	headerGetEntry(h, RPMTAG_DIRINDEXES, &t, &p, &c);
+	headerAddEntry(h, RPMTAG_ORIGDIRINDEXES, t, p, c);
 
-	headerModifyEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE,
+	headerModifyEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
-	headerModifyEntry(h, RPMTAG_COMPDIRLIST, RPM_STRING_ARRAY_TYPE,
+	headerModifyEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
-	headerModifyEntry(h, RPMTAG_COMPFILEDIRS, RPM_INT32_TYPE,
+	headerModifyEntry(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			  dirIndexes, fileCount);
     }
 
@@ -1284,7 +1284,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    dbiFreeIndexRecord(dbi);
 	}
 
-	if (headerGetEntry(alp->h, RPMTAG_COMPFILELIST, NULL, NULL, 
+	if (headerGetEntry(alp->h, RPMTAG_BASENAMES, NULL, NULL, 
 			   &fileCount))
 	    totalFileCount += fileCount;
     }
@@ -1295,7 +1295,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	Header h;
 
 	if ((h = rpmdbGetRecord(ts->db, ts->removedPackages[i]))) {
-	    if (headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, NULL,
+	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL,
 			       &fileCount))
 		totalFileCount += fileCount;
 	    headerFree(h);
@@ -1319,7 +1319,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    i = ts->order[oc].u.addedIndex;
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
 
-	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_COMPFILELIST, NULL,
+	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_BASENAMES, NULL,
 					 NULL, &fi->fc)) {
 		fi->h = headerLink(alp->h);
 		hdrs[i] = headerLink(fi->h);
@@ -1344,16 +1344,16 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    fi->type = TR_REMOVED;
 	    break;
 	}
-	if (!headerGetEntry(fi->h, RPMTAG_COMPFILELIST, NULL,
+	if (!headerGetEntry(fi->h, RPMTAG_BASENAMES, NULL,
 				     (void **) &fi->bnl, &fi->fc)) {
 	    /* This catches removed packages w/ no file lists */
 	    fi->fc = 0;
 	    continue;
 	}
 
-	headerGetEntry(fi->h, RPMTAG_COMPFILEDIRS, NULL, (void **) &fi->dil, 
+	headerGetEntry(fi->h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, 
 		       NULL);
-	headerGetEntry(fi->h, RPMTAG_COMPDIRLIST, NULL, (void **) &fi->dnl, 
+	headerGetEntry(fi->h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, 
 		       NULL);
 
 	/* actions is initialized earlier for added packages */

@@ -150,7 +150,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     struct availablePackage * p;
     rpmRelocation * r;
     int i;
-    int_32 * fileDirIndex;
+    int_32 * dirIndexes;
     const char ** dirNames;
     int numDirs, dirNum;
     int * dirMapping;
@@ -189,15 +189,15 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	    p->provideFlags = NULL;
     }
 
-    if (!headerGetEntryMinMemory(h, RPMTAG_COMPFILELIST, NULL, (void **) 
+    if (!headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, (void **) 
 				 &p->baseNames, &p->filesCount)) {
 	p->filesCount = 0;
 	p->baseNames = NULL;
     } else {
-        headerGetEntryMinMemory(h, RPMTAG_COMPDIRLIST, NULL, (void **) 
+        headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, (void **) 
 				 &dirNames, &numDirs);
-        headerGetEntryMinMemory(h, RPMTAG_COMPFILEDIRS, NULL, (void **) 
-				 &fileDirIndex, NULL);
+        headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, (void **) 
+				 &dirIndexes, NULL);
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
@@ -234,20 +234,17 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
 	while (first < p->filesCount) {
 	    last = first;
 	    while ((last + 1) < p->filesCount) {
-		if (fileDirIndex[first] != fileDirIndex[last + 1]) break;
+		if (dirIndexes[first] != dirIndexes[last + 1]) break;
 		last++;
 	    }
 
-	    dirMatch = al->dirs + dirMapping[fileDirIndex[first]];
+	    dirMatch = al->dirs + dirMapping[dirIndexes[first]];
 	    dirMatch->files = xrealloc(dirMatch->files,
 		sizeof(*dirMatch->files) * 
 		    (dirMatch->numFiles + last - first + 1));
 	    for (fileNum = first; fileNum <= last; fileNum++) {
 		dirMatch->files[dirMatch->numFiles].baseName =
 		    p->baseNames[fileNum];
-#ifdef	DYING
-		dirMatch->files[dirMatch->numFiles].package = p;
-#endif
 		dirMatch->files[dirMatch->numFiles].pkgNum = pkgNum;
 		dirMatch->numFiles++;
 	    }
@@ -779,11 +776,7 @@ alFileSatisfiesDepend(struct availableList * al,
 	    if (keyType)
 		rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added file "
 			    "list.\n"), keyType, fileName);
-#ifdef	DYING
-	    return dirMatch->files[i].package;
-#else
 	    return al->list + dirMatch->files[i].pkgNum;
-#endif
 	}
     }
 
@@ -1466,11 +1459,11 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    int fileAlloced = 0;
 	    int len;
 
-	    if (headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, 
+	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, 
 			   (void **) &baseNames, &fileCount)) {
-		headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, 
+		headerGetEntry(h, RPMTAG_DIRNAMES, NULL, 
 			    (void **) &dirNames, NULL);
-		headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, 
+		headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, 
 			    (void **) &dirIndexes, NULL);
 		rc = 0;
 		for (j = 0; j < fileCount; j++) {

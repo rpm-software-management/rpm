@@ -106,6 +106,54 @@ struct sprintfToken {
     } u;
 };
 
+#if HAVE_MCHECK_H
+static int probe_headers = 0;
+#define	HEADERPROBE(_h, _msg)	if (probe_headers) headerProbe((_h), (_msg))
+
+static void headerProbeAddr(Header h, const char * msg,
+	void * p, const char * imsg)
+{
+    const char * mchkstr = NULL;
+    switch (mprobe(p)) {
+    case MCHECK_DISABLED:
+    case MCHECK_OK:
+	return;
+	/*@notreached@*/ break;
+    case MCHECK_HEAD:
+	mchkstr = "HEAD";
+	break;
+    case MCHECK_TAIL:
+	mchkstr = "TAIL";
+	break;
+    case MCHECK_FREE:
+	mchkstr = "FREE";
+	break;
+    }
+    fprintf(stderr, "*** MCHECK_%s h %p", mchkstr, h);
+    if (imsg && p)
+	fprintf(stderr, " %s %p", imsg, p);
+    if (msg)
+	fprintf(stderr, " %s", msg);
+    fprintf(stderr, "\n");
+}
+
+static void headerProbe(Header h, const char *msg)
+{
+    char imsg[256];
+    int i;
+
+    headerProbeAddr(h, msg, h, "header");
+    sprintf(imsg, "index (used %d)", h->indexUsed);
+    headerProbeAddr(h, msg, h->index, imsg);
+    for (i = 0; i < h->indexUsed; i++) {
+	sprintf(imsg, "index[%d:%d].data", i, h->indexUsed);
+	headerProbeAddr(h, msg, h->index[i].data, imsg);
+    }
+}
+#else	/* HAVE_MCHECK_H */
+#define	HEADERPROBE(_h, _msg)
+#endif	/* HAVE_MCHECK_H */
+
 static void copyEntry(struct indexEntry * entry, /*@out@*/ int_32 * type,
 	/*@out@*/ void ** p, /*@out@*/ int_32 * c, int minimizeMemory)
 {
@@ -956,6 +1004,7 @@ static int intGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
     struct indexEntry * entry;
     char * chptr;
 
+    HEADERPROBE(h, "intGetEntry");
     /* First find the tag */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
     if (!entry) {
@@ -1023,6 +1072,7 @@ void headerFree(Header h)
 
 Header headerLink(Header h)
 {
+    HEADERPROBE(h, "headerLink");
     h->usageCount++;
     return h;
 }

@@ -13,7 +13,8 @@
 	- expose enough of legacy fdio interface to compile rpmfind/rpm2html.
 	- fix: Fopen should use 0666 as default (umask will be applied later).
 	- fix: default for rd_timeoutsecs is 1 sec (avoid ufdio assertion).
-	- fix: new filelists require package index, not pointer.
+	- fix: new FILENAMES tags require package index, not pointer in lookups.
+	- rename new FILENAMES tags to BASENAMES/DIRNAMES/DIRINDEXES.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-08 11:31-0500\n"
+msgstr "POT-Creation-Date: 1999-12-08 13:59-0500\n"
 
 #: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
 #, c-format
@@ -2165,85 +2165,85 @@ msgid "error removing record %s into %s"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:414
+#: lib/depends.c:411
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:443
+#: lib/depends.c:440
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:535
+#: lib/depends.c:532
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: lib/depends.c:780
+#: lib/depends.c:777
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:823
+#: lib/depends.c:816
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr ""
 
-#: lib/depends.c:840
+#: lib/depends.c:833
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:871
+#: lib/depends.c:864
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:899
+#: lib/depends.c:892
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:921
+#: lib/depends.c:914
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:943
+#: lib/depends.c:936
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:949
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:966
+#: lib/depends.c:959
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1014
+#: lib/depends.c:1007
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "inga paket angivna för installation"
 
 #. conflicts exist.
-#: lib/depends.c:1076
+#: lib/depends.c:1069
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "inga paket angivna för avinstallation"
 
-#: lib/depends.c:1131 lib/depends.c:1430
+#: lib/depends.c:1124 lib/depends.c:1423
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: lib/depends.c:1226
+#: lib/depends.c:1219
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2259,7 +2259,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
-#: lib/header.c:2139 lib/header.c:2156 lib/header.c:2176
+#: lib/header.c:2189 lib/header.c:2206 lib/header.c:2226
 msgid "(not a number)"
 msgstr ""
 
@@ -2288,80 +2288,80 @@ msgid "file %s is on an unknown device"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:170
+#: lib/header.c:218
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:201 lib/header.c:764
+#: lib/header.c:249 lib/header.c:812
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1121
+#: lib/header.c:1171
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1530
+#: lib/header.c:1580
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: lib/header.c:1558
+#: lib/header.c:1608
 msgid "missing } after %{"
 msgstr ""
 
-#: lib/header.c:1570
+#: lib/header.c:1620
 msgid "empty tag format"
 msgstr ""
 
-#: lib/header.c:1580
+#: lib/header.c:1630
 msgid "empty tag name"
 msgstr ""
 
-#: lib/header.c:1595
+#: lib/header.c:1645
 msgid "unknown tag"
 msgstr ""
 
-#: lib/header.c:1621
+#: lib/header.c:1671
 msgid "] expected at end of array"
 msgstr ""
 
-#: lib/header.c:1637
+#: lib/header.c:1687
 #, fuzzy
 msgid "unexpected ]"
 msgstr "oväntad undersöknings källa"
 
-#: lib/header.c:1639
+#: lib/header.c:1689
 #, fuzzy
 msgid "unexpected }"
 msgstr "oväntad undersöknings källa"
 
-#: lib/header.c:1693
+#: lib/header.c:1743
 msgid "? expected in expression"
 msgstr ""
 
-#: lib/header.c:1700
+#: lib/header.c:1750
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: lib/header.c:1710 lib/header.c:1745
+#: lib/header.c:1760 lib/header.c:1795
 msgid "} expected in expression"
 msgstr ""
 
-#: lib/header.c:1718
+#: lib/header.c:1768
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: lib/header.c:1732
+#: lib/header.c:1782
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: lib/header.c:1753
+#: lib/header.c:1803
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:1922
+#: lib/header.c:1972
 msgid "(unknown type)"
 msgstr ""
 

@@ -90,11 +90,11 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum, int * result,
 	flags = RPMVERIFY_ALL;
     }
 
-    headerGetEntry(h, RPMTAG_COMPFILELIST, &type, (void **) &baseNames, 
+    headerGetEntry(h, RPMTAG_BASENAMES, &type, (void **) &baseNames, 
 		   &count);
-    headerGetEntry(h, RPMTAG_COMPFILEDIRS, &type, (void **) &dirIndexes, 
+    headerGetEntry(h, RPMTAG_DIRINDEXES, &type, (void **) &dirIndexes, 
 		   NULL);
-    headerGetEntry(h, RPMTAG_COMPDIRLIST, &type, (void **) &dirNames, NULL);
+    headerGetEntry(h, RPMTAG_DIRNAMES, &type, (void **) &dirNames, NULL);
 
     filespec = alloca(strlen(dirNames[dirIndexes[filenum]]) + 
 		      strlen(baseNames[filenum]) + strlen(prefix) + 5);
@@ -258,7 +258,7 @@ static int verifyHeader(QVA_t *qva, Header h)
     if (!(qva->qva_flags & VERIFY_MD5)) omitMask = RPMVERIFY_MD5;
 
     if (headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL) &&
-	headerIsEntry(h, RPMTAG_COMPFILELIST)) {
+	headerIsEntry(h, RPMTAG_BASENAMES)) {
 	rpmBuildFileList(h, &fileNames, &count);
 
 	for (i = 0; i < count; i++) {

@@ -132,7 +132,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 		flags & RPMTRANS_FLAG_TEST);
 
     if (!(flags & RPMTRANS_FLAG_JUSTDB) &&
-	headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &baseNames, 
+	headerGetEntry(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, 
 	               &fileCount)) {
 	const char ** fileMd5List;
 	uint_32 * fileFlagsList;
@@ -142,9 +142,9 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	char * fnbuffer = NULL;
 	int prefixlen = 0;
 
-	headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &dirIndexes,
+	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes,
 	               NULL);
-	headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &dirNames,
+	headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames,
 	               NULL);
 
 	/* Get alloca buffer for largest possible prefix + filename. */

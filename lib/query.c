@@ -176,7 +176,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 	    queryHeader(fp, h, queryFormat);
 
 	if (queryFlags & QUERY_FOR_LIST) {
-	    if (!headerGetEntry(h, RPMTAG_COMPFILELIST, &type, 
+	    if (!headerGetEntry(h, RPMTAG_BASENAMES, &type, 
 				(void **) &baseNames, &count)) {
 		fputs(_("(contains no files)"), fp);
 		fputs("\n", fp);
@@ -185,9 +185,9 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 			 (void **) &fileStatesList, &count)) {
 		    fileStatesList = NULL;
 		}
-		headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL,
+		headerGetEntry(h, RPMTAG_DIRNAMES, NULL,
 			 (void **) &dirNames, NULL);
-		headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, 
+		headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, 
 			 (void **) &dirIndexes, NULL);
 		headerGetEntry(h, RPMTAG_FILEFLAGS, &type, 
 			 (void **) &fileFlagsList, &count);

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 1999-12-08 11:31-0500\n"
+"POT-Creation-Date: 1999-12-08 13:59-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2069,85 +2069,85 @@ msgid "error removing record %s into %s"
 msgstr "b³±d usuwania rekordu %s z %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:414
+#: lib/depends.c:411
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:443
+#: lib/depends.c:440
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:535
+#: lib/depends.c:532
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr "dbrecMatchesDepFlags() odczyt nag³ówka nie powiód³ siê"
 
-#: lib/depends.c:780
+#: lib/depends.c:777
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:823
+#: lib/depends.c:816
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:840
+#: lib/depends.c:833
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:871
+#: lib/depends.c:864
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:899
+#: lib/depends.c:892
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:921
+#: lib/depends.c:914
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:943
+#: lib/depends.c:936
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:956
+#: lib/depends.c:949
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:966
+#: lib/depends.c:959
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1014
+#: lib/depends.c:1007
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1076
+#: lib/depends.c:1069
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "pakiet %s jest w konflikcie: %s\n"
 
-#: lib/depends.c:1131 lib/depends.c:1430
+#: lib/depends.c:1124 lib/depends.c:1423
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "nie mo¿na odczytaæ nag³ówka %d dla sprawdzenia zale¿no¶ci"
 
-#: lib/depends.c:1226
+#: lib/depends.c:1219
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2163,7 +2163,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
-#: lib/header.c:2139 lib/header.c:2156 lib/header.c:2176
+#: lib/header.c:2189 lib/header.c:2206 lib/header.c:2226
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -2192,78 +2192,78 @@ msgid "file %s is on an unknown device"
 msgstr "plik %s jest na nieznanym urz±dzeniu"
 
 #. This should not be allowed
-#: lib/header.c:170
+#: lib/header.c:218
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
 
-#: lib/header.c:201 lib/header.c:764
+#: lib/header.c:249 lib/header.c:812
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ danych %d nie jest obs³ugiwany\n"
 
-#: lib/header.c:1121
+#: lib/header.c:1171
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "B³edny licznik dla headerAddEntry(): %d\n"
 
-#: lib/header.c:1530
+#: lib/header.c:1580
 #, c-format
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: lib/header.c:1558
+#: lib/header.c:1608
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: lib/header.c:1570
+#: lib/header.c:1620
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: lib/header.c:1580
+#: lib/header.c:1630
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: lib/header.c:1595
+#: lib/header.c:1645
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: lib/header.c:1621
+#: lib/header.c:1671
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: lib/header.c:1637
+#: lib/header.c:1687
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: lib/header.c:1639
+#: lib/header.c:1689
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: lib/header.c:1693
+#: lib/header.c:1743
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: lib/header.c:1700
+#: lib/header.c:1750
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: lib/header.c:1710 lib/header.c:1745
+#: lib/header.c:1760 lib/header.c:1795
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: lib/header.c:1718
+#: lib/header.c:1768
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: lib/header.c:1732
+#: lib/header.c:1782
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: lib/header.c:1753
+#: lib/header.c:1803
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
-#: lib/header.c:1922
+#: lib/header.c:1972
 msgid "(unknown type)"
 msgstr "(nieznany typ)"
 

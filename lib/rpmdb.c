@@ -396,11 +396,11 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 	    continue;
 	}
 
-	headerGetEntryMinMemory(h, RPMTAG_COMPFILELIST, NULL, 
+	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
 				(void **) &baseNames, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_COMPFILEDIRS, NULL, 
+	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
 				(void **) &dirIndexes, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_COMPDIRLIST, NULL, 
+	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
 				(void **) &dirNames, NULL);
 
 	do {
@@ -571,7 +571,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
 	free(conflictList);
     }
 
-    if (headerGetEntry(h, RPMTAG_COMPFILELIST, &type, (void **) &baseNames, 
+    if (headerGetEntry(h, RPMTAG_BASENAMES, &type, (void **) &baseNames, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
 	    rpmMessage(RPMMESS_DEBUG, _("removing file index for %s\n"), 
@@ -644,7 +644,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
 
     count = 0;
 
-    headerGetEntry(dbentry, RPMTAG_COMPFILELIST, &type, (void **) 
+    headerGetEntry(dbentry, RPMTAG_BASENAMES, &type, (void **) 
 		    &baseNames, &count);
 
     if (_noDirTokens) {
@@ -937,11 +937,11 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    return 1;
 	}
 
-	headerGetEntryMinMemory(h, RPMTAG_COMPDIRLIST, NULL, 
+	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
 			    (void **) &dirNames, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_COMPFILELIST, NULL, 
+	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
 			    (void **) &fullBaseNames, &fc);
-	headerGetEntryMinMemory(h, RPMTAG_COMPFILEDIRS, NULL, 
+	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
 			    (void **) &fullDirIndexes, NULL);
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
