@@ -49,7 +49,6 @@ void headerFree(Header h);
 void headerDump(Header h, FILE *f, int flags);
 
 #define HEADER_DUMP_INLINE   1
-#define HEADER_DUMP_SYMBOLIC 2
 
 int headerGetEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
 int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
