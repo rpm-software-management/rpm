@@ -6,6 +6,7 @@
 #define INSTALL_PERCENT         (1 << 0)
 #define INSTALL_HASH            (1 << 1)
 #define INSTALL_NODEPS          (1 << 2)
+#define INSTALL_NOORDER         (1 << 3)
 
 #define UNINSTALL_NODEPS        (1 << 0)
 #define UNINSTALL_ALLMATCHES    (1 << 1)

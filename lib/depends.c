@@ -23,6 +23,8 @@ struct availablePackage {
 
 enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
 
+enum selectionStatus { UNSELECTED = 0, SELECTED, INPROCESS };
+
 struct availableIndexEntry {
     struct availablePackage * package;
     char * entry;
@@ -78,6 +80,11 @@ static int checkDependentConflicts(rpmDependencies rpmdep,
 			    struct problemsSet * psp, char * package);
 static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp, 
 			    char * package, dbiIndexSet * matches);
+static int addOrderedPack(rpmDependencies rpmdep, 
+			struct availablePackage * package,
+			void ** ordering, int * orderNumPtr, 
+			enum selectionStatus * selected, 
+			int satisfyDepends);
 
 static void alCreate(struct availableList * al) {
     al->list = malloc(sizeof(*al->list) * 5);
@@ -241,13 +248,13 @@ rpmDependencies rpmdepDependencies(rpmdb db) {
     return rpmdep;
 }
 
-void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h) {
+void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key) {
     /* this is an install followed by uninstalls */
     dbiIndexSet matches;
     char * name;
     int count, type, i;
 
-    alAddPackage(&rpmdep->addedPackages, h, NULL);
+    alAddPackage(&rpmdep->addedPackages, h, key);
 
     if (!rpmdep->db) return;
 
@@ -262,8 +269,8 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h) {
     }
 }
 
-void rpmdepAddPackage(rpmDependencies rpmdep, Header h) {
-    alAddPackage(&rpmdep->addedPackages, h, NULL);
+void rpmdepAddPackage(rpmDependencies rpmdep, Header h, void * key) {
+    alAddPackage(&rpmdep->addedPackages, h, key);
 }
 
 void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key) {
@@ -682,7 +689,7 @@ static int headerMatchesDepFlags(Header h, char * reqInfo, int reqFlags) {
 
     headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
 
-    if (!reqFlags) {
+    if (!(reqFlags & RPMSENSE_SENSEMASK)) {
 	return 1;
     }
 
@@ -741,4 +748,78 @@ static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset,
     headerFree(h);
 
     return rc;
+}
+
+static int addOrderedPack(rpmDependencies rpmdep, 
+			struct availablePackage * package,
+			void ** ordering, int * orderNumPtr, 
+			enum selectionStatus * selected, 
+			int satisfyDepends) {
+    char ** requires, ** requiresVersion;
+    int_32 * requireFlags;
+    int requiresCount;
+    int packageNum = package - rpmdep->addedPackages.list;
+    int i;
+    struct availablePackage * match;
+
+    if (selected[packageNum] == INPROCESS) {
+	rpmError(RPMMESS_PREREQLOOP, "loop in prerequisite chain");
+	return 1;
+    }
+
+    selected[packageNum] = INPROCESS;
+
+    if (headerGetEntry(package->h, RPMTAG_REQUIRENAME, NULL, 
+			(void **) &requires, &requiresCount)) {
+	headerGetEntry(package->h, RPMTAG_REQUIREFLAGS, NULL, 
+			(void **) &requireFlags, NULL);
+	headerGetEntry(package->h, RPMTAG_REQUIREVERSION, NULL, 
+			(void **) &requiresVersion, NULL);
+
+	for (i = 0; i < requiresCount; i++) {
+	    if (satisfyDepends || (requireFlags[i] & RPMSENSE_PREREQ)) {
+		match = alSatisfiesDepend(&rpmdep->addedPackages,
+					  requires[i], requiresVersion[i],
+					  requireFlags[i]);
+		/* broken dependencies don't concern us */
+		if (!match) continue;
+		if (addOrderedPack(rpmdep, match, ordering, orderNumPtr,
+				   selected, 1)) return 1;
+	    }
+	}
+    }
+
+    /* whew -- add this package */
+    ordering[(*orderNumPtr)++] = package->key;
+    selected[packageNum] = SELECTED;
+
+    return 0;
+}
+
+int rpmdepOrder(rpmDependencies rpmdep, void *** keysListPtr) {
+    int i;
+    enum selectionStatus * selected;
+    void ** order;
+    int orderNum;
+
+    selected = alloca(sizeof(*selected) * rpmdep->addedPackages.size);
+    memset(selected, 0, sizeof(*selected) * rpmdep->addedPackages.size);
+
+    order = malloc(sizeof(*order) * (rpmdep->addedPackages.size + 1));
+    orderNum = 0;
+
+    for (i = 0; i < rpmdep->addedPackages.size; i++) {
+	if (selected[i] == UNSELECTED) {
+	    if (addOrderedPack(rpmdep, rpmdep->addedPackages.list + i,
+			       order, &orderNum, selected, 0)) {
+		free(order);
+		return 1;
+	    }
+	}
+    }
+
+    order[orderNum] = NULL;
+    *keysListPtr = order;
+
+    return 0;
 }

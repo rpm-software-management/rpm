@@ -268,12 +268,19 @@ struct rpmDependencyConflict {
 } ;
 
 rpmDependencies rpmdepDependencies(rpmdb db); 	       /* db may be NULL */
-void rpmdepAddPackage(rpmDependencies rpmdep, Header h);
+void rpmdepAddPackage(rpmDependencies rpmdep, Header h, void * key);
 void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key);
-void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h);
+void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key);
 void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset);
+
+/* this checks for dependency satisfaction, but *not* ordering */
 int rpmdepCheck(rpmDependencies rpmdep, 
 		struct rpmDependencyConflict ** conflicts, int * numConflicts);
+/* Orders items, returns error on circle, finals keys[] is NULL. No dependency
+   check is done, use rpmdepCheck() for that. If dependencies are not 
+   satisfied a "best-try" ordering is returned. */
+int rpmdepOrder(rpmDependencies order, void *** keysListPtr);
+
 void rpmdepDone(rpmDependencies rpmdep);
 void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 			 numConflicts);
@@ -377,6 +384,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define RPMERR_STAT		-36	/* failed to stat something */
 #define RPMERR_BADDEV		-37	/* file on device not listed in mtab */
 #define RPMMESS_ALTNAME         -38     /* file written as .rpmnew */
+#define RPMMESS_PREREQLOOP      -39     /* loop in prerequisites */
 
 /* spec.c build.c pack.c */
 #define RPMERR_UNMATCHEDIF      -107    /* unclosed %ifarch or %ifos */

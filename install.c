@@ -170,7 +170,8 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir));
 	    sprintf(packages[i], "%s/var/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
 		    tmpnum++, (int) getpid());
-	    rpmMessage(RPMMESS_DEBUG, "getting %s as %s\n", *filename, packages[i]);
+	    rpmMessage(RPMMESS_DEBUG, 
+			"getting %s as %s\n", *filename, packages[i]);
 	    fd = urlGetFile(*filename, packages[i]);
 	    if (fd < 0) {
 		fprintf(stderr, 
@@ -198,8 +199,8 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    continue;
 	}
 
-	rc = rpmReadPackageHeader(fd, &binaryHeaders[numBinaryPackages], &isSource,
-			   NULL, NULL);
+	rc = rpmReadPackageHeader(fd, &binaryHeaders[numBinaryPackages], 
+					&isSource, NULL, NULL);
 
 	close(fd);
 	
@@ -235,20 +236,20 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    exit(1);
 	}
 
-	if (!(interfaceFlags & INSTALL_NODEPS)) {
-	    rpmdep = rpmdepDependencies(db);
-	    for (i = 0; i < numBinaryPackages; i++)
-		if (installFlags & RPMINSTALL_UPGRADE)
-		    rpmdepUpgradePackage(rpmdep, binaryHeaders[i]);
-		else
-		    rpmdepAddPackage(rpmdep, binaryHeaders[i]);
+	rpmdep = rpmdepDependencies(db);
+	for (i = 0; i < numBinaryPackages; i++)
+	    if (installFlags & RPMINSTALL_UPGRADE)
+		rpmdepUpgradePackage(rpmdep, binaryHeaders[i],
+				     packages[i]);
+	    else
+		rpmdepAddPackage(rpmdep, binaryHeaders[i], 
+				    packages[i]);
 
+	if (!(interfaceFlags & INSTALL_NODEPS)) {
 	    if (rpmdepCheck(rpmdep, &conflicts, &numConflicts)) {
 		numFailed = numPackages;
 		stopInstall = 1;
 	    }
-
-	    rpmdepDone(rpmdep);
 
 	    if (!stopInstall && conflicts) {
 		fprintf(stderr, _("failed dependencies:\n"));
@@ -258,6 +259,15 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 		stopInstall = 1;
 	    }
 	}
+
+	if (!(interfaceFlags & INSTALL_NOORDER)) {
+	    if (rpmdepOrder(rpmdep, (void ***) &packages)) {
+		numFailed = numPackages;
+		stopInstall = 1;
+	    }
+	}
+
+	rpmdepDone(rpmdep);
     }
     else
 	db = NULL;

@@ -78,7 +78,7 @@ static void verifyDependencies(rpmdb db, Header h) {
     int type, count, i;
 
     rpmdep = rpmdepDependencies(db);
-    rpmdepAddPackage(rpmdep, h);
+    rpmdepAddPackage(rpmdep, h, NULL);
 
     rpmdepCheck(rpmdep, &conflicts, &numConflicts);
     rpmdepDone(rpmdep);
