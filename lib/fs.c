@@ -108,19 +108,30 @@ static int getFilesystemList(void) {
 }
 #else 
 static int getFilesystemList(void) {
-    our_mntent item, * itemptr;
-    FILE * mtab;
     int numAlloced = 10;
     int num = 0;
     struct stat sb;
     int i;
+    char * mntdir;
+    #if GETMNTENT_ONE || GETMNTENT_TWO
+    our_mntent item, * itemptr;
+    FILE * mtab;
+    #elif HAVE_GETMNTINFO_R
+    struct statfs * mounts = NULL;
+    int mntCount = 0, bufSize = 0, flags = MNT_NOWAIT;
+    int nextMount = 0;
+    #endif
 
-    mtab = fopen(MOUNTED, "r");
-    if (!mtab) {
-	rpmError(RPMERR_MTAB, _("failed to open %s: %s"), MOUNTED, 
-		 strerror(errno));
-	return 1;
-    }
+    #if GETMNTENT_ONE || GETMNTENT_TWO
+	mtab = fopen(MOUNTED, "r");
+	if (!mtab) {
+	    rpmError(RPMERR_MTAB, _("failed to open %s: %s"), MOUNTED, 
+		     strerror(errno));
+	    return 1;
+	}
+    #elif HAVE_GETMNTINFO_R
+	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
+    #endif
 
     filesystems = malloc(sizeof(*filesystems) * (numAlloced + 1));
 
@@ -130,13 +141,18 @@ static int getFilesystemList(void) {
 	    itemptr = getmntent(mtab);
 	    if (!itemptr) break;
 	    item = *itemptr;
+	    mntdir = item.our_mntdir;
 	#elif GETMNTENT_TWO
 	    /* Solaris, maybe others */
 	    if (getmntent(mtab, &item)) break;
+	    mntdir = item.our_mntdir;
+	#elif HAVE_GETMNTINFO_R
+	    if (nextMount == mntCount) break;
+	    mntdir = mounts[nextMount++].f_mntonname;
 	#endif
 
-	if (stat(item.our_mntdir, &sb)) {
-	    rpmError(RPMERR_STAT, "failed to stat %s: %s", item.our_mntdir,
+	if (stat(mntdir, &sb)) {
+	    rpmError(RPMERR_STAT, "failed to stat %s: %s", mntdir,
 			strerror(errno));
 
 	    for (i = 0; i < num; i++)
@@ -153,10 +169,15 @@ static int getFilesystemList(void) {
 	}
 
 	filesystems[num].dev = sb.st_dev;
-	filesystems[num++].mntPoint = strdup(item.our_mntdir);
+	filesystems[num++].mntPoint = strdup(mntdir);
     }
 
-    fclose(mtab);
+    #if GETMNTENT_ONE || GETMNTENT_TWO
+	fclose(mtab);
+    #elif HAVE_GETMNTINFO_R
+	free(mounts);
+    #endif
+
     filesystems[num].mntPoint = NULL;
 
     fsnames = malloc(sizeof(*fsnames) * (num + 1));

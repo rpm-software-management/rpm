@@ -93,4 +93,7 @@
 /* Define as one if you have "struct mnttab" (only sco?) */
 #define HAVE_STRUCT_MNTTAB 0
 
+/* Define as one if you have getmntinfo_r() (only osf?) */
+#define HAVE_GETMNTINFO_R 0
+
 #endif

@@ -11,7 +11,7 @@
 #define COMMENTCHAR '#'
 #endif
 
-#if HAVE_STRUCT_MNTTAB {
+#if HAVE_STRUCT_MNTTAB 
 our_mntent * getmntent(FILE *filep) {
     static struct mnttab entry;
     static our_mntent item = { entry.mt_filsys };
