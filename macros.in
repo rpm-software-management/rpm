@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: /usr/lib/rpm/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.80 2001/06/15 04:56:33 jbj Exp $
+# $Id: macros.in,v 1.81 2001/06/15 21:52:47 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -41,6 +41,8 @@
 %__chown		@__CHOWN@
 %__cp			@__CP@
 %__cpio			@__CPIO@
+%__file			@__FILE@
+%__gpg			@__GPG@
 %__grep			@__GREP@
 %__gzip			@GZIPBIN@
 %__id			@__ID@
@@ -112,14 +114,17 @@
 #%__find_prereq		???
 #%__find_conflicts	???
 #%__find_obsoletes	???
+
 #
-# XXX fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
-%__id_u			@__ID_U@
-%__chown_Rhf		@__CHOWN_RHF@
-%__chgrp_Rhf		@__CHGRP_RHF@
-%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
-%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
-%_fixperms		%{__chmod} -Rf @FIXPERMS@
+# fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
+# These macros are necessary only for legacy compatibility, and have moved
+# to per-platform macro configuration (i.e. /usr/lib/rpm/<arch>-<os>/macros)
+#%__id_u			@__ID_U@
+#%__chown_Rhf		@__CHOWN_RHF@
+#%__chgrp_Rhf		@__CHGRP_RHF@
+#%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
+#%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
+#%_fixperms		%{__chmod} -Rf @FIXPERMS@
 #
 
 #	The path to the gzip executable (legacy).
@@ -227,6 +232,11 @@
 #
 #%_langpatt
 
+#	A colon separated list of paths where files should *not* be installed.
+#	Usually, these are network file system mount points.
+#
+#%_netsharedpath
+
 #	(experimental)
 #	The type of pattern match used on rpmdb iterator selectors:
 #	"default"	simple glob-like regex, periods will be escaped,
@@ -237,11 +247,6 @@
 #	"glob"		glob(7) patterns using fnmatch(3)
 #
 %_query_selector_match	default
-
-#	A colon separated list of paths where files should *not* be installed.
-#	Usually, these are network file system mount points.
-#
-#%_netsharedpath
 
 #	Configurable packager information, same as Packager: in a specfile.
 #
@@ -314,8 +319,8 @@
 #   token	works?	Berkeley db flag or value
 #==================================================
 #---------------------- DBENV->open parameters and tunable values:
-#   mp_mmapsize=8Mb +++	DBENV->set_mp_mmapsize
-#   mp_size=512Kb +++	DBENV->set_cachesize
+#   mp_mmapsize=8Mb	DBENV->set_mp_mmapsize
+#   mp_size=512Kb	DBENV->set_cachesize
 #---------------------- DBENV->open and DB->open common bits:
 #   create		DB_CREATE
 #   thread	???	DB_THREAD	(useless w/o posix mutexes on linux)
@@ -341,7 +346,7 @@
 #   nommap	???	DB_NOMMAP
 #   rdonly		DB_RDONLY
 #---------------------- DB->open types:
-#   btree	+++	DB_BTREE
+#   btree		DB_BTREE
 #   hash		DB_HASH
 #   recno	???	DB_RECNO
 #   queue	???	DB_QUEUE
@@ -450,7 +455,7 @@
 
 #	The directory in which erased packages will be saved when using
 #	the --repackage option.
-%_repackage_dir		/var/tmp
+%_repackage_dir		/var/spool/up2date
 %_repackage_root	%{nil}
 
 #==============================================================================

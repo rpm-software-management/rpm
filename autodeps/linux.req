@@ -102,3 +102,5 @@ done | sort -u
 # --- Tcl modules.
 [ -x /usr/lib/rpm/tcl.req -a -n "$tcllist" ] && \
     echo $tcllist | tr [:blank:] \\n | /usr/lib/rpm/tcl.req | sort -u
+
+exit 0
