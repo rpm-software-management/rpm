@@ -107,9 +107,6 @@ install: all
 	$(INSTALL) -s -m 755 -o 0 -g 0 rpm2cpio $(installprefix)/$(BINDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
-	if [ ! -f $(installprefix)/$(ETCDIR)/rpmrc ]; then \
-		$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmrc $(installprefix)/$(ETCDIR)/rpmrc; \
-	fi
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
 	(cd lib; make LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	(cd po; make NLSDIR=$(installprefix)/$(NLSDIR) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
