@@ -814,7 +814,6 @@ int main(int argc, char ** argv) {
 	  case GETOPT_DBPATH:
             if (optArg[0] != '/')
                 argerror(_("arguments to --dbpath must begin with a /"));
-	    rpmSetVar(RPMVAR_DBPATH, optArg);
 	    addMacro(&globalMacroContext, "_dbpath", NULL, optArg, RMIL_CMDLINE);
 	    gotDbpath = 1;
 	    break;
@@ -825,7 +824,6 @@ int main(int argc, char ** argv) {
 	    if ((*tce) || (tce == optArg) || (timeCheck == ULONG_MAX)) {
 		argerror("Argument to --timecheck must be integer");
 	    }
-	    rpmSetVar(RPMVAR_TIMECHECK, optArg);
 	    addMacro(&globalMacroContext, "_timecheck", NULL, optArg, RMIL_CMDLINE);
 	    timeCheck = 1;
 	    break;
@@ -1071,19 +1069,15 @@ int main(int argc, char ** argv) {
 		   "package verification"));
 
     if (ftpProxy) {
-	rpmSetVar(RPMVAR_FTPPROXY, ftpProxy);
 	addMacro(&globalMacroContext, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
     }
     if (ftpPort) {
-	rpmSetVar(RPMVAR_FTPPORT, ftpPort);
 	addMacro(&globalMacroContext, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
     }
     if (httpProxy) {
-	rpmSetVar(RPMVAR_HTTPPROXY, httpProxy);
 	addMacro(&globalMacroContext, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
     }
     if (httpPort) {
-	rpmSetVar(RPMVAR_HTTPPORT, httpPort);
 	addMacro(&globalMacroContext, "_httpport", NULL, httpPort, RMIL_CMDLINE);
     }
 
@@ -1130,8 +1124,7 @@ int main(int argc, char ** argv) {
 	}
     } else {
         /* Override any rpmrc setting */
-        rpmSetVar(RPMVAR_SIGTYPE, "none");
-	addMacro(&globalMacroContext, "_sigtype", NULL, "none", RMIL_CMDLINE);
+	addMacro(&globalMacroContext, "_signature", NULL, "none", RMIL_CMDLINE);
     }
 
     if (pipeOutput) {
@@ -1304,7 +1297,7 @@ int main(int argc, char ** argv) {
 	if (!incldocs) {
 	    if (excldocs)
 		installFlags |= RPMTRANS_FLAG_NODOCS;
-	    else if (rpmGetBooleanVar(RPMVAR_EXCLUDEDOCS))
+	    else if (rpmExpandNumeric("%{_excludedocs}"))
 		installFlags |= RPMTRANS_FLAG_NODOCS;
 	}
 

@@ -38,20 +38,22 @@ static int checkPassPhrase(const char *passPhrase, const int sigType);
 
 int rpmLookupSignatureType(void)
 {
-    char *name;
+    const char *name = rpmExpand("%{_signature}", NULL);
+    int rc;
 
-    if (! (name = rpmGetVar(RPMVAR_SIGTYPE))) {
-	return 0;
-    }
-
-    if (!strcasecmp(name, "none"))
-	return 0;
+    if (!(name && *name != '%'))
+	rc = 0;
+    else if (!strcasecmp(name, "none"))
+	rc = 0;
     else if (!strcasecmp(name, "pgp"))
-	return RPMSIGTAG_PGP;
+	rc = RPMSIGTAG_PGP;
     else if (!strcasecmp(name, "gpg"))
-	return RPMSIGTAG_GPG;
+	rc = RPMSIGTAG_GPG;
     else
-	return -1;
+	rc = -1;
+
+    xfree(name);
+    return rc;
 }
 
 /* rpmReadSignature() emulates the new style signatures if it finds an */
@@ -189,27 +191,28 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
 static int makePGPSignature(const char *file, void **sig, int_32 *size,
 			    const char *passPhrase)
 {
-    char name[1024];
     char sigfile[1024];
     int pid, status;
     int inpipe[2];
     FILE *fpipe;
     struct stat statbuf;
 
-    sprintf(name, "+myname=\"%s\"", rpmGetVar(RPMVAR_PGP_NAME));
-
     sprintf(sigfile, "%s.sig", file);
 
     pipe(inpipe);
     
     if (!(pid = fork())) {
+	const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
+	const char *name = rpmExpand("+myname=\"%{_pgp_name}\"", NULL);
+
 	close(STDIN_FILENO);
 	dup2(inpipe[0], 3);
 	close(inpipe[1]);
+
 	dosetenv("PGPPASSFD", "3", 1);
-	if (rpmGetVar(RPMVAR_PGP_PATH)) {
-	    dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
-	}
+	if (pgp_path && *pgp_path != '%')
+	    dosetenv("PGPPATH", pgp_path, 1);
+
 	/* dosetenv("PGPPASS", passPhrase, 1); */
 	execlp("pgp", "pgp",
 	       "+batchmode=on", "+verbose=0", "+armor=off",
@@ -267,26 +270,26 @@ static int makePGPSignature(const char *file, void **sig, int_32 *size,
 static int makeGPGSignature(const char *file, void **sig, int_32 *size,
 			    const char *passPhrase)
 {
-    char name[1024];
     char sigfile[1024];
     int pid, status;
     int inpipe[2];
     FILE *fpipe;
     struct stat statbuf;
 
-    sprintf(name, "%s", rpmGetVar(RPMVAR_GPG_NAME));
-
     sprintf(sigfile, "%s.sig", file);
 
     pipe(inpipe);
     
     if (!(pid = fork())) {
+	const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
+	const char *name = rpmExpand("%{_gpg_name}", NULL);
+
 	close(STDIN_FILENO);
 	dup2(inpipe[0], 3);
 	close(inpipe[1]);
-	if (rpmGetVar(RPMVAR_GPG_PATH)) {
-	    dosetenv("GNUPGHOME", rpmGetVar(RPMVAR_GPG_PATH), 1);
-	}
+
+	if (gpg_path && *gpg_path != '%')
+	    dosetenv("GNUPGHOME", gpg_path, 1);
 	execlp("gpg", "gpg",
 	       "--batch", "--no-verbose", "--no-armor", "--passphrase-fd", "3",
 	       "-u", name, "-sbo", sigfile, file,
@@ -450,7 +453,10 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     int res = RPMSIG_OK;
 
     /* Write out the signature */
-    sigfile = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsig");
+  { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);
+    sigfile = tempnam(tmppath, "rpmsig");
+    xfree(tmppath);
+  }
     sfd = fdOpen(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     (void)fdWrite(sfd, sig, count);
     fdClose(sfd);
@@ -459,12 +465,14 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     pipe(outpipe);
 
     if (!(pid = fork())) {
+	const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
+
 	close(outpipe[0]);
 	close(STDOUT_FILENO);	/* XXX unnecessary */
 	dup2(outpipe[1], STDOUT_FILENO);
-	if (rpmGetVar(RPMVAR_PGP_PATH)) {
-	    dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
-	}
+
+	if (pgp_path && *pgp_path != '%')
+	    dosetenv("PGPPATH", pgp_path, 1);
 	execlp("pgp", "pgp",
 	       "+batchmode=on", "+verbose=0",
 	       sigfile, datafile,
@@ -510,7 +518,10 @@ static int verifyGPGSignature(const char *datafile, void *sig,
     int res = RPMSIG_OK;
   
     /* Write out the signature */
-    sigfile = tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsig");
+  { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);
+    sigfile = tempnam(tmppath, "rpmsig");
+    xfree(tmppath);
+  }
     sfd = fdOpen(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
     (void)fdWrite(sfd, sig, count);
     fdClose(sfd);
@@ -519,13 +530,16 @@ static int verifyGPGSignature(const char *datafile, void *sig,
     pipe(outpipe);
 
     if (!(pid = fork())) {
+	const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
+
 	close(outpipe[0]);
 	/* gpg version 0.9 sends its output to stderr. */
 	close(STDERR_FILENO);	/* XXX unnecessary */
 	dup2(outpipe[1], STDERR_FILENO);
-	if (rpmGetVar(RPMVAR_GPG_PATH)) {
-	    dosetenv("GNUPGHOME", rpmGetVar(RPMVAR_GPG_PATH), 1);
-	}
+
+	if (gpg_path && *gpg_path != '%')
+	    dosetenv("GNUPGHOME", gpg_path, 1);
+
 	execlp("gpg", "gpg",
 	       "--batch", "--no-verbose", 
 	       "--verify", sigfile, datafile,
@@ -559,19 +573,28 @@ static int verifyGPGSignature(const char *datafile, void *sig,
 char *rpmGetPassPhrase(const char *prompt, const int sigTag)
 {
     char *pass;
+    int aok;
 
     switch (sigTag) {
       case RPMSIGTAG_GPG:
-        if (! rpmGetVar(RPMVAR_GPG_NAME)) {
+      { const char *name = rpmExpand("%{_gpg_name}", NULL);
+	aok = (name && *name != '%');
+	xfree(name);
+      }
+        if (!aok) {
             rpmError(RPMERR_SIGGEN,
-                     _("You must set \"gpg_name:\" in your rpmrc file"));
+                     _("You must set \"%%_gpg_name\" in your macro file"));
             return NULL;
         }
         break;
       case RPMSIGTAG_PGP: 
-        if (! rpmGetVar(RPMVAR_PGP_NAME)) {
+      { const char *name = rpmExpand("%{_pgp_name}", NULL);
+	aok = (name && *name != '%');
+	xfree(name);
+      }
+        if (!aok) {
 	        rpmError(RPMERR_SIGGEN,
-                     _("You must set \"pgp_name:\" in your rpmrc file"));
+                     _("You must set \"%%_pgp_name\" in your macro file"));
 	    return NULL;
         }
         break;
@@ -599,7 +622,6 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
 
 static int checkPassPhrase(const char *passPhrase, const int sigType)
 {
-    char name[1024];
     int passPhrasePipe[2];
     FILE *fpipe;
     int pid, status;
@@ -620,38 +642,37 @@ static int checkPassPhrase(const char *passPhrase, const int sigType)
 	}
 	dup2(passPhrasePipe[0], 3);
 
-     switch (sigType) {
-      case RPMSIGTAG_GPG:
-        sprintf(name, "%s", rpmGetVar(RPMVAR_GPG_NAME));
-	    if (rpmGetVar(RPMVAR_GPG_PATH)) {
-	        dosetenv("GNUPGHOME", rpmGetVar(RPMVAR_GPG_PATH), 1);
-    	}
+	switch (sigType) {
+	case RPMSIGTAG_GPG:
+	{   const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
+	    const char *name = rpmExpand("%{_gpg_name}", NULL);
+	    if (gpg_path && *gpg_path != '%')
+		dosetenv("GNUPGHOME", gpg_path, 1);
 	    execlp("gpg", "gpg",
 	           "--batch", "--no-verbose", "--passphrase-fd", "3",
 	           "-u", name, "-so", "-",
 	           NULL);
 	    rpmError(RPMERR_EXEC, _("Couldn't exec gpg"));
 	    _exit(RPMERR_EXEC);
-        break;
-      case RPMSIGTAG_PGP:
-        sprintf(name, "+myname=\"%s\"", rpmGetVar(RPMVAR_PGP_NAME));
-    	dosetenv("PGPPASSFD", "3", 1);
-	    if (rpmGetVar(RPMVAR_PGP_PATH)) {
-	        dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
-    	}
+	}   break;
+	case RPMSIGTAG_PGP:
+	{   const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
+	    const char *name = rpmExpand("+myname=\"%{_pgp_name}\"", NULL);
+	    dosetenv("PGPPASSFD", "3", 1);
+	    if (pgp_path && *pgp_path != '%')
+		dosetenv("PGPPATH", pgp_path, 1);
 	    execlp("pgp", "pgp",
 	           "+batchmode=on", "+verbose=0",
 	           name, "-sf",
 	           NULL);
 	    rpmError(RPMERR_EXEC, _("Couldn't exec pgp"));
 	    _exit(RPMERR_EXEC);
-        break;
-      default:
-        /* This case should have been screened out long ago. */
-        rpmError(RPMERR_SIGGEN,
-                 _("Invalid signature spec in rc file"));
-        _exit(RPMERR_SIGGEN);
-     }
+	}   break;
+	default: /* This case should have been screened out long ago. */
+	    rpmError(RPMERR_SIGGEN, _("Invalid signature spec in rc file"));
+	    _exit(RPMERR_SIGGEN);
+	    break;
+	}
     }
 
     fpipe = fdopen(passPhrasePipe[1], "w");

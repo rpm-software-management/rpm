@@ -1016,8 +1016,7 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    /* XXX I don't want to read rpmrc yet */
-    rpmSetVar(RPMVAR_TMPPATH, "/tmp");
+    /* XXX I don't want to read rpmrc */
     addMacro(&globalMacroContext, "_tmppath", NULL, "/tmp", RMIL_DEFAULT);
 
     fdi = fdDup(STDIN_FILENO);

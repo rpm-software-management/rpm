@@ -575,7 +575,8 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 #if 0
 	    char *binRpm, *errorString;
-	    binRpm = headerSprintf(pkg->header, rpmGetVar(RPMVAR_RPMFILENAME),
+	    binRpm = headerSprintf(pkg->header,
+		rpmGetPath("%{_rpmfilename}", NULL),
 		rpmTagTable, rpmHeaderFormats, &errorString);
 	    if (!(pkg == spec->packages && pkg->next == NULL))
 		fprintf(stdout, "====== %s\n", binRpm);

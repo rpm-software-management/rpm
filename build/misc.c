@@ -4,7 +4,7 @@
 
 #include "popt/popt.h"
 
-int parseNum(char *line, int *res)
+int parseNum(const char *line, int *res)
 {
     char *s1;
     

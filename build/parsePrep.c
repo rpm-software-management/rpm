@@ -87,6 +87,9 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
     }
 
     if (compressed) {
+	const char *zipper = rpmGetPath(
+	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
+	    NULL);
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"
 		"%s -d < %s | patch -p%d %s -s\n"
@@ -95,9 +98,9 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
 		"  exit $STATUS\n"
 		"fi",
 		c,
-		(compressed == COMPRESSED_BZIP2) ?
-		rpmGetVar(RPMVAR_BZIP2BIN) : rpmGetVar(RPMVAR_GZIPBIN),
+		zipper,
 		fn, strip, args);
+	xfree(zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"
@@ -137,15 +140,18 @@ static char *doUntar(Spec spec, int c, int quietly)
     }
 
     if (compressed) {
+	const char *zipper = rpmGetPath(
+	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
+	    NULL);
 	sprintf(buf,
 		"%s -dc %s | tar %s -\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
-		(compressed == COMPRESSED_BZIP2) ?
-		rpmGetVar(RPMVAR_BZIP2BIN) : rpmGetVar(RPMVAR_GZIPBIN),
+		zipper,
 		fn, taropts);
+	xfree(zipper);
     } else {
 	sprintf(buf, "tar %s %s", taropts, fn);
     }
@@ -281,19 +287,19 @@ static int doSetupMacro(Spec spec, char *line)
     appendStringBuf(spec->prep, getStringBuf(after));
     freeStringBuf(after);
 
-    /* clean up permissions etc */
-    if (!geteuid()) {
-	appendLineStringBuf(spec->prep, "chown -R root .");
-#ifdef	__LCLINT__
-#define	ROOT_GROUP	"root"
-#endif
-	appendLineStringBuf(spec->prep, "chgrp -R " ROOT_GROUP " .");
-    }
+    /* XXX FIXME: owner & group fixes were conditioned on !geteuid() */
+    /* Fix the owner, group, and permissions of the setup build tree */
+    {	static const char *fixmacs[] = {
+	    "%{_fixowner}", "%{_fixgroup}", "%{_fixperms}", NULL
+	};
+	const char **fm;
 
-    if (rpmGetVar(RPMVAR_FIXPERMS)) {
-	appendStringBuf(spec->prep, "chmod -R ");
-	appendStringBuf(spec->prep, rpmGetVar(RPMVAR_FIXPERMS));
-	appendLineStringBuf(spec->prep, " .");
+	for (fm = fixmacs; *fm; fm++) {
+	    const char *fix = rpmExpand(*fm, " .", NULL);
+	    if (fix && *fix != '%')
+		appendLineStringBuf(spec->prep, fix);
+	    xfree(fix);
+	}
     }
     
     return 0;

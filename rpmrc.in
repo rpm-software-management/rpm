@@ -1,21 +1,4 @@
-# $Id: rpmrc.in,v 2.3 1999/03/14 00:35:00 jbj Exp $
-#############################################################
-# Default values, often overridden in /etc/rpmrc
-#
-# This file *should not be modified*. Local customizations
-# belong in /etc/rpmrc, not here. This file will be replaced
-# whenever a new version of RPM is installed.
-
-dbpath:		@varprefix@/lib/rpm
-topdir:		@prefix@/src/redhat
-tmppath:	@tmpdir@
-gzipbin:	@GZIPBIN@
-bzip2bin:	@BZIP2BIN@
-defaultdocdir:  @prefix@/doc
-fixperms:	@FIXPERMS@
-rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
-instchangelog:	5
-
+# $Id: rpmrc.in,v 2.4 1999/03/20 21:09:52 jbj Exp $
 #############################################################
 
 # Please send new entries to rpm-list@redhat.com

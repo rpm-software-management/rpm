@@ -236,24 +236,26 @@ static int checkForDuplicates(Header h, char *name)
     return res;
 }
 
+static struct optionalTag {
+    int		ot_tag;
+    const char *ot_mac;
+} optionalTags[] = {
+    { RPMTAG_VENDOR,		"%{vendor}" },
+    { RPMTAG_PACKAGER,		"%{packager}" },
+    { RPMTAG_DISTRIBUTION,	"%{distribution}" },
+    { -1, NULL }
+};
+
 static void fillOutMainPackage(Header h)
 {
-    if (!headerIsEntry(h, RPMTAG_VENDOR)) {
-	if (rpmGetVar(RPMVAR_VENDOR)) {
-	    headerAddEntry(h, RPMTAG_VENDOR, RPM_STRING_TYPE,
-			   rpmGetVar(RPMVAR_VENDOR), 1);
-	}
-    }
-    if (!headerIsEntry(h, RPMTAG_PACKAGER)) {
-	if (rpmGetVar(RPMVAR_PACKAGER)) {
-	    headerAddEntry(h, RPMTAG_PACKAGER, RPM_STRING_TYPE,
-			   rpmGetVar(RPMVAR_PACKAGER), 1);
-	}
-    }
-    if (!headerIsEntry(h, RPMTAG_DISTRIBUTION)) {
-	if (rpmGetVar(RPMVAR_DISTRIBUTION)) {
-	    headerAddEntry(h, RPMTAG_DISTRIBUTION, RPM_STRING_TYPE,
-			   rpmGetVar(RPMVAR_DISTRIBUTION), 1);
+    struct optionalTag *ot;
+
+    for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
+	if (!headerIsEntry(h, ot->ot_tag)) {
+	    const char *val = rpmExpand(ot->ot_mac, NULL);
+	    if (val && *val != '%')
+		headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
+	    xfree(val);
 	}
     }
 }
@@ -416,13 +418,14 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	break;
       case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
-	if (! spec->buildRoot) {
-	    if (rpmGetVar(RPMVAR_BUILDROOT)) {
-		spec->buildRoot = rpmGetVar(RPMVAR_BUILDROOT);
+	if (spec->buildRoot == NULL) {
+	    const char *buildroot = rpmGetPath("%{buildroot}", NULL);
+	    if (buildroot && *buildroot != '%') {
+		spec->buildRoot = strdup(cleanFileName(buildroot));
 	    } else {
-		spec->buildRoot = field;
+		spec->buildRoot = strdup(cleanFileName(field));
 	    }
-	    spec->buildRoot = strdup(cleanFileName(spec->buildRoot));
+	    xfree(buildroot);
 	}
 	if (!strcmp(spec->buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,

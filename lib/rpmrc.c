@@ -94,47 +94,10 @@ static struct tableType tables[RPM_MACHTABLE_COUNT] = {
 /* The order of the flags is archSpecific, required, macroize, localize */
 
 static struct rpmOption optionTable[] = {
-    { "builddir",		RPMVAR_BUILDDIR,		0, 0,	1, 2 },
-    { "buildroot",              RPMVAR_BUILDROOT,               0, 0,	1, 0 },
-    { "buildshell",             RPMVAR_BUILDSHELL,              0, 0,	1, 0 },
-    { "bzip2bin",		RPMVAR_BZIP2BIN,		0, 1,	1, 2 },
-    { "dbpath",			RPMVAR_DBPATH,			0, 1,	1, 2 },
-    { "defaultdocdir",		RPMVAR_DEFAULTDOCDIR,		0, 0,	1, 1 },
-    { "distribution",		RPMVAR_DISTRIBUTION,		0, 0,	1, 0 },
-    { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0, 0,	1, 0 },
-    { "fixperms",		RPMVAR_FIXPERMS,		0, 1,	1, 2 },
-    { "ftpport",		RPMVAR_FTPPORT,			0, 0,	1, 0 },
-    { "ftpproxy",		RPMVAR_FTPPROXY,		0, 0,	1, 0 },
-    { "gpg_name",               RPMVAR_GPG_NAME,                0, 0,	1, 0 },
-    { "gpg_path",               RPMVAR_GPG_PATH,                0, 0,	1, 0 },
-    { "gzipbin",		RPMVAR_GZIPBIN,			0, 1,	1, 2 },
     { "include",		RPMVAR_INCLUDE,			0, 1,	1, 2 },
-    { "instchangelog",		RPMVAR_INSTCHANGELOG,		0, 0,	0, 0 },
-    { "langpatt",               RPMVAR_LANGPATT,                0, 0,	1, 0 },
     { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	1, 1 },
-    { "messagelevel",		RPMVAR_MESSAGELEVEL,		0, 0,	1, 0 },
-    { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0, 0,	1, 0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
-    { "packager",               RPMVAR_PACKAGER,                0, 0,	1, 0 },
-    { "pgp_name",               RPMVAR_PGP_NAME,                0, 0,	1, 0 },
-    { "pgp_path",               RPMVAR_PGP_PATH,                0, 0,	1, 0 },
     { "provides",               RPMVAR_PROVIDES,                0, 0,	1, 0 },
-    { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0, 0,	1, 0 },
-    { "require_icon",		RPMVAR_REQUIREICON,		0, 0,	1, 0 },
-    { "require_vendor",		RPMVAR_REQUIREVENDOR,		0, 0,	1, 0 },
-    { "rpmdir",			RPMVAR_RPMDIR,			0, 0,	1, 1 },
-    { "rpmfilename",		RPMVAR_RPMFILENAME,		0, 1,	1, 2 },
-#if defined(RPMVAR_SETENV)
-    { "setenv",			RPMVAR_SETENV,			0, 1,	0. 0 },
-#endif
-    { "signature",		RPMVAR_SIGTYPE,			0, 0,	0, 0 },
-    { "sourcedir",		RPMVAR_SOURCEDIR,		0, 0,	1, 1 },
-    { "specdir",		RPMVAR_SPECDIR,			0, 0,	1, 1 },
-    { "srcrpmdir",		RPMVAR_SRPMDIR,			0, 0,	1, 1 },
-    { "timecheck",		RPMVAR_TIMECHECK,		0, 0,	1, 0 },
-    { "tmppath",		RPMVAR_TMPPATH,			0, 1,	1, 2 },
-    { "topdir",			RPMVAR_TOPDIR,			0, 0,	1, 1 },
-    { "vendor",			RPMVAR_VENDOR,			0, 0,	1, 1 },
 };
 /*@=fullinitblock@*/
 static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
@@ -480,8 +443,10 @@ int rpmReadConfigFiles(const char * file, const char * target)
 
 static void setVarDefault(int var, const char *macroname, const char *val, const char *body)
 {
-    if (rpmGetVar(var)) return;
-    rpmSetVar(var, val);
+    if (var >= 0) {	/* XXX Dying ... */
+	if (rpmGetVar(var)) return;
+	rpmSetVar(var, val);
+    }
     if (body == NULL)
 	body = val;
     addMacro(&globalMacroContext, macroname, NULL, body, RMIL_DEFAULT);
@@ -489,21 +454,24 @@ static void setVarDefault(int var, const char *macroname, const char *val, const
 
 static void setPathDefault(int var, const char *macroname, const char *subdir)
 {
-    const char * topdir;
-    char * fn;
 
-    if (rpmGetVar(var)) return;
+    if (var >= 0) {	/* XXX Dying ... */
+	const char * topdir;
+	char * fn;
 
-    topdir = rpmGetVar(RPMVAR_TOPDIR);
-    if (topdir == NULL) topdir = rpmGetVar(RPMVAR_TMPPATH);
+	if (rpmGetVar(var)) return;
 
-    fn = alloca(strlen(topdir) + strlen(subdir) + 2);
-    strcpy(fn, topdir);
-    if (fn[strlen(topdir) - 1] != '/')
-	strcat(fn, "/");
-    strcat(fn, subdir);
+	topdir = rpmGetPath("%{_topdir}", NULL);
 
-    rpmSetVar(var, fn);
+	fn = alloca(strlen(topdir) + strlen(subdir) + 2);
+	strcpy(fn, topdir);
+	if (fn[strlen(topdir) - 1] != '/')
+	    strcat(fn, "/");
+	strcat(fn, subdir);
+
+	rpmSetVar(var, fn);
+	if (topdir)	xfree(topdir);
+    }
 
     if (macroname != NULL) {
 #define	_TOPDIRMACRO	"%{_topdir}/"
@@ -543,24 +511,26 @@ static void setDefaults(void) {
 
     setVarDefault(RPMVAR_MACROFILES,	"_macrofiles",
 		"/usr/lib/rpm/macros", "%{_usr}/lib/rpm/macros");
-    setVarDefault(RPMVAR_TOPDIR,	"_topdir",
-		"/usr/src/redhat", "%{_usr}/src/redhat");
-    setVarDefault(RPMVAR_TMPPATH,	"_tmppath",
-		"/var/tmp",	"%{_var}/tmp");
-    setVarDefault(RPMVAR_DBPATH,	"_dbpath",
-		"/var/lib/rpm",	"%{_var}/lib/rpm");
-    setVarDefault(RPMVAR_DEFAULTDOCDIR, "_defaultdocdir",
-		"/usr/doc",	"%{_usr}/doc");
+    setVarDefault(-1,			"_topdir",
+		"/usr/src/redhat",	"%{_usr}/src/redhat");
+    setVarDefault(-1,			"_tmppath",
+		"/var/tmp",		"%{_var}/tmp");
+    setVarDefault(-1,			"_dbpath",
+		"/var/lib/rpm",		"%{_var}/lib/rpm");
+    setVarDefault(-1,			"_defaultdocdir",
+		"/usr/doc",		"%{_usr}/doc");
 
     setVarDefault(RPMVAR_OPTFLAGS,	"optflags",	"-O2",		NULL);
-    setVarDefault(RPMVAR_SIGTYPE,	"sigtype",	"none",		NULL);
-    setVarDefault(RPMVAR_BUILDSHELL,	"buildshell",	"/bin/sh",	NULL);
+    setVarDefault(-1,			"sigtype",
+		"none",			NULL);
+    setVarDefault(-1,			"_buildshell",
+		"/bin/sh",		NULL);
 
-    setPathDefault(RPMVAR_BUILDDIR, "_builddir", "BUILD");
-    setPathDefault(RPMVAR_RPMDIR, "_rpmdir", "RPMS");
-    setPathDefault(RPMVAR_SRPMDIR, "_srcrpmdir", "SRPMS");
-    setPathDefault(RPMVAR_SOURCEDIR, "_sourcedir", "SOURCES");
-    setPathDefault(RPMVAR_SPECDIR, "_specdir", "SPECS");
+    setPathDefault(-1,			"_builddir",	"BUILD");
+    setPathDefault(-1,			"_rpmdir",	"RPMS");
+    setPathDefault(-1,			"_srcrpmdir",	"SRPMS");
+    setPathDefault(-1,			"_sourcedir",	"SOURCES");
+    setPathDefault(-1,			"_specdir",	"SPECS");
 
 }
 
@@ -588,6 +558,32 @@ char * rpmExpand(const char *arg, ...)
     va_end(ap);
     expandMacros(NULL, &globalMacroContext, buf, sizeof(buf));
     return strdup(buf);
+}
+
+int rpmExpandNumeric(const char *arg)
+{
+    const char *val;
+    int rc;
+
+    if (arg == NULL)
+	return 0;
+
+    val = rpmExpand(arg, NULL);
+    if (!(val && *val != '%'))
+	rc = 0;
+    else if (*val == 'Y' || *val == 'y')
+	rc = 1;
+    else if (*val == 'N' || *val == 'n')
+	rc = 0;
+    else {
+	char *end;
+	rc = strtol(val, &end, 0);
+	if (!(end && *end == '\0'))
+	    rc = 0;
+    }
+    xfree(val);
+
+    return rc;
 }
 
 /* Return concatenated and expanded path with multiple /'s removed */

@@ -50,7 +50,6 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     const char *scriptName;
     int pid;
     int status;
-    char *buildShell;
     char buf[BUFSIZ];
     
     switch (what) {
@@ -124,7 +123,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     
     rpmMessage(RPMMESS_NORMAL, _("Executing: %s\n"), name);
     if (!(pid = fork())) {
-	buildShell = rpmGetVar(RPMVAR_BUILDSHELL);
+	const char *buildShell = rpmGetPath("%{_buildshell}", NULL);
 	execl(buildShell, buildShell, "-e", scriptName, scriptName, NULL);
 	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s)"),
 		 scriptName, name);

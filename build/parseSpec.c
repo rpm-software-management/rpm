@@ -320,15 +320,19 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 	spec->cookie = strdup(cookie);
     }
 
-    if (rpmGetVar(RPMVAR_TIMECHECK)) {
-	if (parseNum(rpmGetVar(RPMVAR_TIMECHECK), &(spec->timeCheck))) {
-	    rpmError(RPMERR_BADSPEC, _("Timecheck value must be an integer: %s"),
-		     rpmGetVar(RPMVAR_TIMECHECK));
-	    freeSpec(spec);
-	    return RPMERR_BADSPEC;
+    {	const char *timecheck = rpmExpand("%{_timecheck}", NULL);
+	if (timecheck && *timecheck != '%') {
+	    if (parseNum(timecheck, &(spec->timeCheck))) {
+		rpmError(RPMERR_BADSPEC,
+		    _("Timecheck value must be an integer: %s"), timecheck);
+		xfree(timecheck);
+		freeSpec(spec);
+		return RPMERR_BADSPEC;
+	    }
+	} else {
+	    spec->timeCheck = 0;
 	}
-    } else {
-	spec->timeCheck = 0;
+	xfree(timecheck);
     }
 
     /* All the parse*() functions expect to have a line pre-read */

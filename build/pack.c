@@ -106,7 +106,7 @@ int packageBinaries(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;
     int rc;
-    char *binFormat, *binRpm, *errorString;
+    char *errorString;
     char *name;
     Package pkg;
 
@@ -143,18 +143,20 @@ int packageBinaries(Spec spec)
 	headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
 		       spec->sourceRpmName, 1);
 	
-	binFormat = rpmGetVar(RPMVAR_RPMFILENAME);
-	binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
+	{   const char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
+	    const char *binRpm;
+	    binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
 			       rpmHeaderFormats, &errorString);
-	if (binRpm == NULL) {
-	    headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
+	    if (binRpm == NULL) {
+		headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
 			   (void **)&name, NULL);
-	    rpmError(RPMERR_BADFILENAME, _("Could not generate output "
+		rpmError(RPMERR_BADFILENAME, _("Could not generate output "
 		     "filename for package %s: %s\n"), name, errorString);
-	    return RPMERR_BADFILENAME;
+		return RPMERR_BADFILENAME;
+	    }
+	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
+	    xfree(binRpm);
 	}
-	fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
-	FREE(binRpm);
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;

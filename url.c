@@ -128,8 +128,6 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 
     /* Perform one-time FTP initialization */
     if (!strcmp(u->service, "ftp")) {
-	char *proxy;
-	char *proxyport;
 
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
 	    char * prompt;
@@ -139,49 +137,61 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	    u->password = strdup(getpass(prompt));
 	}
 
-	if (u->proxyh == NULL && (proxy = rpmGetVar(RPMVAR_FTPPROXY)) != NULL) {
-	    const char *uu = (u->user ? u->user : "anonymous");
-	    char *nu = malloc(strlen(uu) + sizeof("@") + strlen(u->host));
-	    strcpy(nu, uu);
-	    strcat(nu, "@");
-	    strcat(nu, u->host);
-	    u->proxyu = nu;
-	    u->proxyh = strdup(proxy);
+	if (u->proxyh == NULL) {
+	    const char *proxy = rpmExpand("%{_ftpproxy}", NULL);
+	    if (proxy && *proxy != '%') {
+		const char *uu = (u->user ? u->user : "anonymous");
+		char *nu = malloc(strlen(uu) + sizeof("@") + strlen(u->host));
+		strcpy(nu, uu);
+		strcat(nu, "@");
+		strcat(nu, u->host);
+		u->proxyu = nu;
+		u->proxyh = strdup(proxy);
+	    }
+	    xfree(proxy);
 	}
 
-	if (u->proxyp < 0 && (proxyport = rpmGetVar(RPMVAR_FTPPORT)) != NULL) {
-	    int port;
-	    char *end;
-	    port = strtol(proxyport, &end, 0);
-	    if (*end) {
-		fprintf(stderr, _("error: %sport must be a number\n"),
+	if (u->proxyp < 0) {
+	    const char *proxy = rpmExpand("%{_ftpport}", NULL);
+	    if (proxy && *proxy != '%') {
+		char *end;
+		int port = strtol(proxy, &end, 0);
+		if (!(end && *end == '\0')) {
+		    fprintf(stderr, _("error: %sport must be a number\n"),
 			u->service);
-		return;
+		    return;
+		}
+		u->proxyp = port;
 	    }
-	    u->proxyp = port;
+	    xfree(proxy);
 	}
     }
 
     /* Perform one-time HTTP initialization */
     if (!strcmp(u->service, "http")) {
-	char *proxy;
-	char *proxyport;
 
-	if (u->proxyh == NULL && (proxy = rpmGetVar(RPMVAR_HTTPPROXY)) != NULL) {
-	    u->proxyh = strdup(proxy);
+	if (u->proxyh == NULL) {
+	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
+	    if (proxy && *proxy != '%')
+		u->proxyh = strdup(proxy);
+	    xfree(proxy);
 	}
 
-	if (u->proxyp < 0 && (proxyport = rpmGetVar(RPMVAR_HTTPPORT)) != NULL) {
-	    int port;
-	    char *end;
-	    port = strtol(proxyport, &end, 0);
-	    if (*end) {
-		fprintf(stderr, _("error: %sport must be a number\n"),
+	if (u->proxyp < 0) {
+	    const char *proxy = rpmExpand("%{_httpport}", NULL);
+	    if (proxy && *proxy != '%') {
+		char *end;
+		int port = strtol(proxy, &end, 0);
+		if (!(end && *end == '\0')) {
+		    fprintf(stderr, _("error: %sport must be a number\n"),
 			u->service);
-		return;
+		    return;
+		}
+		u->proxyp = port;
 	    }
-	    u->proxyp = port;
+	    xfree(proxy);
 	}
+
     }
 
     return;

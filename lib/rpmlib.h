@@ -185,58 +185,58 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
-#define	RPMVAR_SOURCEDIR		0
-#define	RPMVAR_BUILDDIR			1
+/* #define	RPMVAR_SOURCEDIR		0 -- No longer used */
+/* #define	RPMVAR_BUILDDIR			1 -- No longer used */
 /* #define RPMVAR_DOCDIR		2 -- No longer used */
 #define	RPMVAR_OPTFLAGS			3
-#define	RPMVAR_TOPDIR			4
-#define	RPMVAR_SPECDIR			5
-#define	RPMVAR_ROOT			6
-#define	RPMVAR_RPMDIR			7
-#define	RPMVAR_SRPMDIR			8
+/* #define	RPMVAR_TOPDIR			4 -- No longer used */
+/* #define	RPMVAR_SPECDIR			5 -- No longer used */
+/* #define	RPMVAR_ROOT			6 -- No longer used */
+/* #define	RPMVAR_RPMDIR			7 -- No longer used */
+/* #define	RPMVAR_SRPMDIR			8 -- No longer used */
 /* #define RPMVAR_ARCHSENSITIVE 	9  -- No longer used */
-#define	RPMVAR_REQUIREDISTRIBUTION	10
+/* #define	RPMVAR_REQUIREDISTRIBUTION	10 -- No longer used */
 /* #define RPMVAR_REQUIREGROUP		11 -- No longer used */
-#define	RPMVAR_REQUIREVENDOR		12
-#define	RPMVAR_DISTRIBUTION		13
-#define	RPMVAR_VENDOR			14
-#define	RPMVAR_MESSAGELEVEL		15
-#define	RPMVAR_REQUIREICON		16
-#define	RPMVAR_TIMECHECK		17
-#define	RPMVAR_SIGTYPE			18
-#define	RPMVAR_PGP_PATH			19
-#define	RPMVAR_PGP_NAME			20
+/* #define	RPMVAR_REQUIREVENDOR		12 -- No longer used */
+/* #define	RPMVAR_DISTRIBUTION		13 -- No longer used */
+/* #define	RPMVAR_VENDOR			14 -- No longer used */
+/* #define	RPMVAR_MESSAGELEVEL		15 -- No longer used */
+/* #define	RPMVAR_REQUIREICON		16 -- No longer used */
+/* #define	RPMVAR_TIMECHECK		17 -- No longer used */
+/* #define	RPMVAR_SIGTYPE			18 -- No longer used */
+/* #define	RPMVAR_PGP_PATH			19 -- No longer used */
+/* #define	RPMVAR_PGP_NAME			20 -- No longer used */
 /* #define RPMVAR_PGP_SECRING		21 -- No longer used */
 /* #define RPMVAR_PGP_PUBRING		22 -- No longer used */
-#define	RPMVAR_EXCLUDEDOCS		23
+/* #define	RPMVAR_EXCLUDEDOCS		23 -- No longer used */
 /* #define RPMVAR_BUILDARCH		24 -- No longer used */
 /* #define RPMVAR_BUILDOS		25 -- No longer used */
-#define	RPMVAR_BUILDROOT		26
-#define	RPMVAR_DBPATH			27
-#define	RPMVAR_PACKAGER			28
+/* #define	RPMVAR_BUILDROOT		26 */
+/* #define	RPMVAR_DBPATH			27 -- No longer used */
+/* #define	RPMVAR_PACKAGER			28 -- No longer used */
 #define	RPMVAR_FTPPROXY			29
-#define	RPMVAR_TMPPATH			30
+/* #define	RPMVAR_TMPPATH			30 -- No longer used */
 /* #define RPMVAR_CPIOBIN		31 -- No longer used */
 #define	RPMVAR_FTPPORT			32
-#define	RPMVAR_NETSHAREDPATH		33
-#define	RPMVAR_DEFAULTDOCDIR		34
-#define	RPMVAR_FIXPERMS			35
-#define	RPMVAR_GZIPBIN			36
-#define	RPMVAR_RPMFILENAME		37
+/* #define	RPMVAR_NETSHAREDPATH		33 -- No longer used */
+/* #define	RPMVAR_DEFAULTDOCDIR		34 -- No longer used */
+/* #define	RPMVAR_FIXPERMS			35 -- No longer used */
+/* #define	RPMVAR_GZIPBIN			36 -- No longer used */
+/* #define	RPMVAR_RPMFILENAME		37 -- No longer used */
 #define	RPMVAR_PROVIDES			38
-#define	RPMVAR_BUILDSHELL		39
-#define	RPMVAR_INSTCHANGELOG		40
-#define	RPMVAR_BZIP2BIN			41
-#define	RPMVAR_LANGPATT			42
+/* #define	RPMVAR_BUILDSHELL		39 -- No longer used */
+/* #define	RPMVAR_INSTCHANGELOG		40 -- No longer used */
+/* #define	RPMVAR_BZIP2BIN			41 -- No longer used */
+/* #define	RPMVAR_LANGPATT			42 -- No longer used */
 #define	RPMVAR_INCLUDE			43
-/* #define RPMVAR_ARCH			44 -- reserved */
-/* #define RPMVAR_OS			45 -- reserved */
-/* #define RPMVAR_BUILDPLATFORM		46 -- reserved */
-/* #define RPMVAR_BUILDARCH		47 -- reserved */
-/* #define RPMVAR_BUILDOS		48 -- reserved */
+/* #define RPMVAR_ARCH			44 -- No longer used */
+/* #define RPMVAR_OS			45 -- No longer used */
+/* #define RPMVAR_BUILDPLATFORM		46 -- No longer used */
+/* #define RPMVAR_BUILDARCH		47 -- No longer used */
+/* #define RPMVAR_BUILDOS		48 -- No longer used */
 #define	RPMVAR_MACROFILES		49
-#define	RPMVAR_GPG_PATH			51
-#define	RPMVAR_GPG_NAME			52
+/* #define	RPMVAR_GPG_PATH			51 -- No longer used */
+/* #define	RPMVAR_GPG_NAME			52 -- No longer used */
 #define RPMVAR_HTTPPROXY                53
 #define RPMVAR_HTTPPORT                 54
 
@@ -245,6 +245,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	xfree(_p)	free((void *)_p)
 char *rpmExpand(const char *arg, ...);
 const char *rpmGetPath(const char *path, ...);
+int rpmExpandNumeric(const char *arg);
+
 char * rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
 void rpmSetVar(int var, const char *val);

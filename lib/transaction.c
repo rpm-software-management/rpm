@@ -634,7 +634,7 @@ static Header relocateFileList(struct availablePackage * alp,
     char ** validRelocations, ** actualRelocations;
     char ** names;
     char ** origNames;
-    int len;
+    int len = 0;
     char * newName;
     int_32 fileCount;
     Header h;
@@ -1199,13 +1199,16 @@ static void skipFiles(struct fileInfo * fi, int noDocs) {
     char ** fileLangs, ** languages, ** lang;
     char * oneLang[2] = { NULL, NULL };
     int freeLanguages = 0;
-    char * tmpPath, * chptr;
+    char * chptr;
 
     if (!noDocs)
-	noDocs = rpmGetBooleanVar(RPMVAR_EXCLUDEDOCS);
+	noDocs = rpmExpandNumeric("%{_excludedocs}");
 
-    if ((tmpPath = rpmGetVar(RPMVAR_NETSHAREDPATH)))
-	netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
+    {	const char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
+	if (tmpPath && *tmpPath != '%')
+	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
+	xfree(tmpPath);
+    }
 
     if (!headerGetEntry(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fileLangs, 
 			NULL))

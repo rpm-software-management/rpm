@@ -193,13 +193,18 @@ static void trimChangelog(Header h) {
     int * times;
     char ** names, ** texts;
     long numToKeep;
-    char * buf, * end;
+    char * end;
     int count;
 
-    buf = rpmGetVar(RPMVAR_INSTCHANGELOG);
-    if (!buf) return;
+    {	char *buf = rpmExpand("%{_instchangelog}", NULL);
+	if (!(buf && *buf != '%')) {
+	    xfree(buf);
+	    return;
+	}
+	numToKeep = strtol(buf, &end, 10);
+	xfree(buf);
+    }
 
-    numToKeep = strtol(buf, &end, 10);
     if (*end) {
 	rpmError(RPMERR_RPMRC, _("instchangelog value in rpmrc should be a "
 		    "number, but isn't"));

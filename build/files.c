@@ -578,19 +578,17 @@ static int parseForRegexLang(const char *fileName, char **lang)
     static char buf[BUFSIZ];
     int x;
     regmatch_t matches[2];
-    const char *patt;
     const char *s;
 
     if (! initialized) {
-	initialized = 1;
-	patt = rpmGetVar(RPMVAR_LANGPATT);
-	if (! patt) {
+	const char *patt = rpmExpand("%{_langpatt}", NULL);
+	if (!(patt && *patt != '%'))
 	    return 1;
-	}
-	if (regcomp(&compiledPatt, patt, REG_EXTENDED)) {
+	if (regcomp(&compiledPatt, patt, REG_EXTENDED))
 	    return -1;
-	}
+	xfree(patt);
 	hasRegex = 1;
+	initialized = 1;
     }
     
     if (! hasRegex || regexec(&compiledPatt, fileName, 2, matches, REG_NOTEOL))
