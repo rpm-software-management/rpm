@@ -4,6 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 PYVER= @WITH_PYTHON_VERSION@
 
+pylibdir = $(shell python -c 'import sys; print sys.path[1]')
+
 EXTRA_DIST = \
 	test_all.py test_associate.py test_basics.py test_compat.py \
 	test_dbobj.py test_dbshelve.py test_dbtables.py test_get_none.py \
