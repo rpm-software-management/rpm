@@ -82,6 +82,8 @@ test1_LDADD = -lpopt
 noinst_HEADERS = popt.h
 noinst_LIBRARIES = libpopt.a
 libpopt_a_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
+
+CVSTAG = $(PACKAGE)-$(subst .,_,$(VERSION))
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
@@ -436,6 +438,23 @@ install-exec install-data install uninstall all installdirs \
 mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
+
+.PHONY: archive
+archive: 
+	@echo "This is $(PACKAGE)-$(VERSION)."
+	@sleep 5
+	@cvs -Q tag -F $(CVSTAG) .
+	rm -rf /tmp/$(PACKAGE)-$(VERSION) /tmp/$(PACKAGE)
+	cd /tmp; cvs -Q -d $(CVSROOT) export -r$(CVSTAG) $(PACKAGE) || :
+	mv /tmp/$(PACKAGE) /tmp/$(PACKAGE)-$(VERSION)
+	cd /tmp/$(PACKAGE)-$(VERSION); ./autogen.sh ; make depend; make distclean
+	cd /tmp/$(PACKAGE)-$(VERSION); ./autogen.sh --noconfigure
+	cd /tmp; tar czSpf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION)
+	rm -rf /tmp/$(PACKAGE)-$(VERSION)
+	cp /tmp/$(PACKAGE)-$(VERSION).tar.gz .
+	rm -f /tmp/$(PACKAGE)-$(VERSION).tar.gz 
+	@echo " "
+	@echo "The final archive is ./$(PACKAGE)-$(VERSION).tar.gz."
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -10,4 +10,6 @@ config.log
 config.cache
 config.satus
 config.status
+stamp-h
+stamp-h.in
 test1

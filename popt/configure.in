@@ -59,4 +59,5 @@ AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])
 
-AC_OUTPUT(Makefile po/Makefile)
+AC_OUTPUT([Makefile po/Makefile.in],
+	[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
