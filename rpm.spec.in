@@ -518,6 +518,7 @@ fi
 - install rpmal.h and rpmhash.h, implicit rpmps.hinclude, for now.
 - revert headerFree/headerLink/headerUnlink debugging.
 - popt: mingw32 portability configure check (#67911).
+- teach gendiff about unreadable files (#42666).
 
 * Fri Jul 12 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.47
 - display signature details using rpm -qi.
