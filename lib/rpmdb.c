@@ -654,5 +654,9 @@ int rpmdbMoveDatabase(char * rootdir, char * olddbpath, char * newdbpath) {
     sprintf(nfilename, "%s/%s/conflictsindex.rpm", rootdir, newdbpath);
     if (rename(ofilename, nfilename)) rc = 1;
 
+    sprintf(ofilename, "%s/%s/triggerindex.rpm", rootdir, olddbpath);
+    sprintf(nfilename, "%s/%s/triggerindex.rpm", rootdir, newdbpath);
+    if (rename(ofilename, nfilename)) rc = 1;
+
     return rc;
 }

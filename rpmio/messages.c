@@ -67,6 +67,14 @@ void rpmMessage(int level, char * format, ...) {
 	    fflush(stderr);
 	    exit(1);
 	    break;
+
+	  default:
+	    fprintf(stderr, _("internal error (rpm bug?): "));
+	    vfprintf(stderr, format, args);
+	    fflush(stderr);
+	    exit(1);
+	    break;
+
 	}
     }
 }
