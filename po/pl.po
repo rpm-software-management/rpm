@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-01-12 16:44-0500\n"
+"POT-Creation-Date: 2000-01-17 13:07-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -30,96 +30,96 @@ msgstr "niespe³nione zale¿no¶ci:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku spec: %s\n"
 
-#: build.c:125 build.c:138
+#: build.c:128 build.c:141
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "Otwarcie potoku tara nie powiod³o siê: %s\n"
 
 #. Give up
-#: build.c:146
+#: build.c:149
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Odczytanie pliku spec z %s nie powiod³o siê\n"
 
-#: build.c:174
+#: build.c:177
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr "Zmiana nazwy %s na %s nie powiod³a siê\n"
 
-#: build.c:212
+#: build.c:215
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr "Plik: %s nie jest regularnym plikiem\n"
 
-#: build.c:219
+#: build.c:222
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s nie wygl±da na pakiet RPM\n"
 
 #. parse up the build operators
-#: build.c:279
+#: build.c:282
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Budowanie dla platform: %s\n"
 
-#: build.c:294
+#: build.c:297
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
 
-#: build.c:344
+#: build.c:347
 msgid "buildroot already specified"
 msgstr "buildroot by³ ju¿ wcze¶niej podany"
 
-#: build.c:351
+#: build.c:354
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildarch wysz³o z u¿ycia. U¿yj opcji --target.\n"
 
-#: build.c:355
+#: build.c:358
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "--builddos wysz³o z u¿ycia. U¿yj opcji --target.\n"
 
-#: build.c:376
+#: build.c:379
 msgid "override build architecture"
 msgstr "wymu¶ architekturê"
 
-#: build.c:378
+#: build.c:381
 msgid "override build operating system"
 msgstr "wymu¶ rodzaj systemu operacyjnego"
 
-#: build.c:380
+#: build.c:383
 msgid "override build root"
 msgstr "wymu¶ build root"
 
-#: build.c:382 rpm.c:495
+#: build.c:385 rpm.c:495
 msgid "remove build tree when done"
 msgstr "usuñ budowane drzewo po skoñczeniu"
 
-#: build.c:384
+#: build.c:387
 msgid "do not execute any stages of the build"
 msgstr "nie wykonuj ¿adnych etapów budowania"
 
-#: build.c:386
+#: build.c:389
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "nie akceptuj wpisów I18N ze speca"
 
-#: build.c:388
+#: build.c:391
 msgid "remove sources when done"
 msgstr "usuñ ¼ród³a po zakoñczeniu"
 
-#: build.c:390
+#: build.c:393
 msgid "remove specfile when done"
 msgstr "usuñ speca po zakoñczeniu"
 
-#: build.c:392 rpm.c:493
+#: build.c:395 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "przejd¼ od razu do podanego etapu (tylko dla c,i)"
 
-#: build.c:394
+#: build.c:397
 msgid "override target platform"
 msgstr "wymu¶ platformê docelow±"
 
-#: build.c:396
+#: build.c:399
 msgid "lookup I18N strings in specfile catalog"
 msgstr "wyszukaj wpisy I18N w katalogu speca"
 
@@ -2761,62 +2761,62 @@ msgstr "wy¶wietl status pokazywanych plików"
 msgid "display a verbose file listing"
 msgstr "wy¶wietl wiêcej informacji o plikach z listy"
 
-#: lib/rebuilddb.c:20
-#, c-format
-msgid "rebuilding database in rootdir %s\n"
-msgstr "odbudowywujê bazê danych w rootdir %s\n"
-
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: lib/rebuilddb.c:34
+#: lib/rebuilddb.c:47
+#, fuzzy, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "odbudowywujê bazê danych w rootdir %s\n"
+
+#: lib/rebuilddb.c:51
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "tymczasowa baza danych %s ju¿ istnieje"
 
-#: lib/rebuilddb.c:38
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/rebuilddb.c:40
+#: lib/rebuilddb.c:57
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "b³±d przy tworzeniu katalogu %s: %s"
 
-#: lib/rebuilddb.c:44
+#: lib/rebuilddb.c:61
 msgid "opening old database\n"
 msgstr "otwieranie starej bazy danych\n"
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:68
 msgid "opening new database\n"
 msgstr "otwieranie nowej bazy danych\n"
 
-#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
+#: lib/rebuilddb.c:78 lib/rebuilddb.c:96
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "rekord numer %d w bazie danych jest b³êdny -- rekord pominiêto"
 
-#: lib/rebuilddb.c:73
+#: lib/rebuilddb.c:90
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie mo¿na dodaæ rekordu oryginalnie przy %d"
 
-#: lib/rebuilddb.c:92
+#: lib/rebuilddb.c:109
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: lib/rebuilddb.c:100
+#: lib/rebuilddb.c:117
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:119
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "naprawcze zastêpowanie plików w %s plikami z %s"
 
-#: lib/rebuilddb.c:108
+#: lib/rebuilddb.c:125
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"

@@ -9,26 +9,43 @@ int rpmdbRebuild(const char * rootdir)
 {
     rpmdb olddb, newdb;
     const char * dbpath = NULL;
+    const char * rootdbpath = NULL;
     const char * newdbpath = NULL;
     const char * newrootdbpath = NULL;
+    const char * tfn;
     int recnum; 
     Header h;
+    int nocleanup = 1;
     int failed = 0;
     int rc = 0;
-    char tfn[64];
 
-    rpmMessage(RPMMESS_DEBUG, _("rebuilding database in rootdir %s\n"), rootdir);
-
-    dbpath = rpmGetPath("%{_dbpath}", NULL);
-    if (!(dbpath && dbpath[0] != '%')) {
+    tfn = rpmGetPath("%{_dbpath}", NULL);
+    if (!(tfn && tfn[0] != '%')) {
 	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
 	rc = 1;
 	goto exit;
     }
+    rootdbpath = rpmGetPath(rootdir, tfn, NULL);
+    dbpath = rootdbpath + strlen(rootdir);
+    xfree(tfn);
 
-    sprintf(tfn, "rebuilddb.%d", (int) getpid());
-    newrootdbpath = rpmGetPath(rootdir, dbpath, tfn, NULL);
+    tfn = rpmGetPath("%{_rebuilddbpath}", NULL);
+    if (!(tfn && tfn[0] != '%' && strcmp(tfn, dbpath))) {
+	char pidbuf[20];
+	char *t;
+	sprintf(pidbuf, "rebuilddb.%d", (int) getpid());
+	t = xmalloc(strlen(dbpath) + strlen(pidbuf) + 1);
+	stpcpy(stpcpy(t, dbpath), pidbuf);
+	if (tfn) xfree(tfn);
+	tfn = t;
+	nocleanup = 0;
+    }
+    newrootdbpath = rpmGetPath(rootdir, tfn, NULL);
     newdbpath = newrootdbpath + strlen(rootdir);
+    xfree(tfn);
+
+    rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
+	rootdbpath, newrootdbpath);
 
     if (!access(newrootdbpath, F_OK)) {
 	rpmError(RPMERR_MKDIR, _("temporary database %s already exists"),
@@ -95,7 +112,7 @@ int rpmdbRebuild(const char * rootdir)
 	rpmdbRemoveDatabase(rootdir, newdbpath);
 	rc = 1;
 	goto exit;
-    } else {
+    } else if (!nocleanup) {
 	if (rpmdbMoveDatabase(rootdir, newdbpath, dbpath)) {
 	    rpmMessage(RPMMESS_ERROR, _("failed to replace old database with new "
 			"database!\n"));
@@ -111,7 +128,7 @@ int rpmdbRebuild(const char * rootdir)
     rc = 0;
 
 exit:
-    if (dbpath)		xfree(dbpath);
+    if (rootdbpath)		xfree(rootdbpath);
     if (newrootdbpath)	xfree(newrootdbpath);
 
     return rc;

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-01-12 16:44-0500\n"
+"POT-Creation-Date: 2000-01-17 13:07-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -29,106 +29,106 @@ msgstr "依存性の欠如:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "spec ファイルをオープンできません: %s\n"
 
-#: build.c:125 build.c:138
+#: build.c:128 build.c:141
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "tar パイプのオープンに失敗: %s\n"
 
 #. Give up
-#: build.c:146
+#: build.c:149
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました\n"
 
-#: build.c:174
+#: build.c:177
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr "%s を %s にする名前の変更に失敗しました: %s\n"
 
-#: build.c:212
+#: build.c:215
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr "普通のファイルではありません: %s\n"
 
-#: build.c:219
+#: build.c:222
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は スペックファイルではないようです。\n"
 
 #. parse up the build operators
-#: build.c:279
+#: build.c:282
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "作成中ターゲットプラットフォーム: %s\n"
 
-#: build.c:294
+#: build.c:297
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
 
-#: build.c:344
+#: build.c:347
 msgid "buildroot already specified"
 msgstr "ビルドルートはすでに指定されています"
 
-#: build.c:351
+#: build.c:354
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 "--buildarch は旧式になりました。代りに --target "
 "オプションを使用してください。\n"
 
-#: build.c:355
+#: build.c:358
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 "--buildos は旧式になりました。 代りに --target "
 "オプションを使用してください。\n"
 
-#: build.c:376
+#: build.c:379
 #, fuzzy
 msgid "override build architecture"
 msgstr "作成対象アーキテクチャを上書きします"
 
-#: build.c:378
+#: build.c:381
 #, fuzzy
 msgid "override build operating system"
 msgstr "作成対象OSを上書きします"
 
-#: build.c:380
+#: build.c:383
 #, fuzzy
 msgid "override build root"
 msgstr "ビルドルートを上書きします"
 
-#: build.c:382 rpm.c:495
+#: build.c:385 rpm.c:495
 msgid "remove build tree when done"
 msgstr "パッケージング後作成ツリーを削除します"
 
-#: build.c:384
+#: build.c:387
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "作成するためのどの段階も実行しません"
 
-#: build.c:386
+#: build.c:389
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "スペックファイルから I18N な msgstr を受け入れません"
 
-#: build.c:388
+#: build.c:391
 #, fuzzy
 msgid "remove sources when done"
 msgstr "終了後ソースを削除します"
 
-#: build.c:390
+#: build.c:393
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "終了後スペックファイルを削除します"
 
-#: build.c:392 rpm.c:493
+#: build.c:395 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "指定した過程までスキップします (c、i でのみ有効)"
 
-#: build.c:394
+#: build.c:397
 msgid "override target platform"
 msgstr "ターゲットプラットフォームを上書きします"
 
-#: build.c:396
+#: build.c:399
 msgid "lookup I18N strings in specfile catalog"
 msgstr "スペックファイルカタログ中の I18N 文字列を探しています"
 
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.6 2000/01/12 22:06:21 jbj Exp $
+# $Id: ja.po,v 1.7 2000/01/17 18:12:33 jbj Exp $
 #: rpm.c:197
 #, c-format
 msgid "rpm: %s\n"
@@ -2838,63 +2838,63 @@ msgstr "列挙したファイルの状態を表示します"
 msgid "display a verbose file listing"
 msgstr "ファイルリストを冗長に表示します"
 
-#: lib/rebuilddb.c:20
-#, c-format
-msgid "rebuilding database in rootdir %s\n"
-msgstr "rootdir %s 中でデータベースを再構築します\n"
-
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
-#: lib/rebuilddb.c:34
+#: lib/rebuilddb.c:47
+#, fuzzy, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "rootdir %s 中でデータベースを再構築します\n"
+
+#: lib/rebuilddb.c:51
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: lib/rebuilddb.c:38
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rebuilddb.c:40
+#: lib/rebuilddb.c:57
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ディレクトリ %s の作成エラー: %s"
 
-#: lib/rebuilddb.c:44
+#: lib/rebuilddb.c:61
 msgid "opening old database\n"
 msgstr "古いデータベースのオープン\n"
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:68
 msgid "opening new database\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
+#: lib/rebuilddb.c:78 lib/rebuilddb.c:96
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rebuilddb.c:73
+#: lib/rebuilddb.c:90
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rebuilddb.c:92
+#: lib/rebuilddb.c:109
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rebuilddb.c:100
+#: lib/rebuilddb.c:117
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:119
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rebuilddb.c:108
+#: lib/rebuilddb.c:125
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-01-12 16:44-0500\n"
+"POT-Creation-Date: 2000-01-17 13:07-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -33,102 +33,102 @@ msgstr "lo¹e meðuzavisnosti:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
-#: build.c:125 build.c:138
+#: build.c:128 build.c:141
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "neuspelo otvaranje %s\n"
 
 #. Give up
-#: build.c:146
+#: build.c:149
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build.c:174
+#: build.c:177
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build.c:212
+#: build.c:215
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr ""
 
-#: build.c:219
+#: build.c:222
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s ne lièi na RPM paket\n"
 
 #. parse up the build operators
-#: build.c:279
+#: build.c:282
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:294
+#: build.c:297
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: build.c:344
+#: build.c:347
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:351
+#: build.c:354
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:355
+#: build.c:358
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:376
+#: build.c:379
 #, fuzzy
 msgid "override build architecture"
 msgstr "nemoj proveravati arhitekturu paketa"
 
-#: build.c:378
+#: build.c:381
 #, fuzzy
 msgid "override build operating system"
 msgstr "nemoj proveravati operativni sistem za paket"
 
-#: build.c:380
+#: build.c:383
 #, fuzzy
 msgid "override build root"
 msgstr "koristi <dir> kao korenski katalog kod kreiranja"
 
-#: build.c:382 rpm.c:495
+#: build.c:385 rpm.c:495
 msgid "remove build tree when done"
 msgstr "ukloni stablo direktorijuma po zavr¹etku"
 
-#: build.c:384
+#: build.c:387
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "nemoj izvr¹iti nijednu fazu"
 
-#: build.c:386
+#: build.c:389
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:388
+#: build.c:391
 #, fuzzy
 msgid "remove sources when done"
 msgstr "ukloni izvorne datoteke i datoteku specifikacije po zavr¹etku"
 
-#: build.c:390
+#: build.c:393
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "ukloni izvorne datoteke i datoteku specifikacije po zavr¹etku"
 
-#: build.c:392 rpm.c:493
+#: build.c:395 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "idi pravo do odreðene faze (samo za k,i)"
 
-#: build.c:394
+#: build.c:397
 msgid "override target platform"
 msgstr ""
 
-#: build.c:396
+#: build.c:399
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -2818,62 +2818,62 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "prika¾i listu datoteka u paketu"
 
-#: lib/rebuilddb.c:20
-#, fuzzy, c-format
-msgid "rebuilding database in rootdir %s\n"
-msgstr "rekreiraj bazu podataka iz postojeæe baze"
-
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
 msgstr "dbpath nije odreðen"
 
-#: lib/rebuilddb.c:34
+#: lib/rebuilddb.c:47
+#, fuzzy, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "rekreiraj bazu podataka iz postojeæe baze"
+
+#: lib/rebuilddb.c:51
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: lib/rebuilddb.c:38
+#: lib/rebuilddb.c:55
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rebuilddb.c:40
+#: lib/rebuilddb.c:57
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rebuilddb.c:44
+#: lib/rebuilddb.c:61
 msgid "opening old database\n"
 msgstr ""
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:68
 msgid "opening new database\n"
 msgstr ""
 
-#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
+#: lib/rebuilddb.c:78 lib/rebuilddb.c:96
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "slog broj %d u bazi podataka je neispravan -- preskaèem ga"
 
-#: lib/rebuilddb.c:73
+#: lib/rebuilddb.c:90
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "ne mogu da dodam slog originalno na %d"
 
-#: lib/rebuilddb.c:92
+#: lib/rebuilddb.c:109
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:100
+#: lib/rebuilddb.c:117
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:119
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:108
+#: lib/rebuilddb.c:125
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"

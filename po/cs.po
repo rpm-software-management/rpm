@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-01-12 16:44-0500\n"
+"POT-Creation-Date: 2000-01-17 13:07-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -29,102 +29,102 @@ msgstr "chybné závislosti:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Nelze otevøít %s pro ètení: %s."
 
-#: build.c:125 build.c:138
+#: build.c:128 build.c:141
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "nelze otevøít %s\n"
 
 #. Give up
-#: build.c:146
+#: build.c:149
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Nelze èíst %s: %s."
 
-#: build.c:174
+#: build.c:177
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr "nelze odstranit %s: %s\n"
 
-#: build.c:212
+#: build.c:215
 #, fuzzy, c-format
 msgid "File is not a regular file: %s\n"
 msgstr "soubor není regulérní -- kontrola velikosti se vynechává\n"
 
-#: build.c:219
+#: build.c:222
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
 
 #. parse up the build operators
-#: build.c:279
+#: build.c:282
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:294
+#: build.c:297
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
 
-#: build.c:344
+#: build.c:347
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:351
+#: build.c:354
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:355
+#: build.c:358
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:376
+#: build.c:379
 #, fuzzy
 msgid "override build architecture"
 msgstr "neovìøovat architekturu balíèku"
 
-#: build.c:378
+#: build.c:381
 #, fuzzy
 msgid "override build operating system"
 msgstr "neovìøovat operaèní systém balíèku"
 
-#: build.c:380
+#: build.c:383
 #, fuzzy
 msgid "override build root"
 msgstr "pou¾ít <adr> jako sestavovací koøen"
 
-#: build.c:382 rpm.c:495
+#: build.c:385 rpm.c:495
 msgid "remove build tree when done"
 msgstr "po dokonèení odstranit sestavovací strom"
 
-#: build.c:384
+#: build.c:387
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "nespou¹tìt ¾ádné etapy"
 
-#: build.c:386
+#: build.c:389
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:388
+#: build.c:391
 #, fuzzy
 msgid "remove sources when done"
 msgstr "po dokonèení odstranit zdroje a soubor .spec"
 
-#: build.c:390
+#: build.c:393
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "po dokonèení odstranit zdroje a soubor .spec"
 
-#: build.c:392 rpm.c:493
+#: build.c:395 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "pøeskoèit pøímo na urèenou etapu (pouze pro c,i)"
 
-#: build.c:394
+#: build.c:397
 msgid "override target platform"
 msgstr ""
 
-#: build.c:396
+#: build.c:399
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -2820,62 +2820,62 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "zobrazit seznam souborù balíèkù"
 
-#: lib/rebuilddb.c:20
-#, c-format
-msgid "rebuilding database in rootdir %s\n"
-msgstr "databáze se pøestavuje v koøenovém adresáøi %s\n"
-
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
 msgstr "nebyla nastavena dbpath"
 
-#: lib/rebuilddb.c:34
+#: lib/rebuilddb.c:47
+#, fuzzy, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "databáze se pøestavuje v koøenovém adresáøi %s\n"
+
+#: lib/rebuilddb.c:51
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáze %s ji¾ existuje"
 
-#: lib/rebuilddb.c:38
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "vytváøí se adresáø: %s\n"
 
-#: lib/rebuilddb.c:40
+#: lib/rebuilddb.c:57
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pøi vytváøení adresáøe %s: %s"
 
-#: lib/rebuilddb.c:44
+#: lib/rebuilddb.c:61
 msgid "opening old database\n"
 msgstr "otevírá se stará databáze\n"
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:68
 msgid "opening new database\n"
 msgstr "otevírá se nová databáze\n"
 
-#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
+#: lib/rebuilddb.c:78 lib/rebuilddb.c:96
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "záznam èíslo %d v databázi je chybný -- vynechává se"
 
-#: lib/rebuilddb.c:73
+#: lib/rebuilddb.c:90
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nelze pøidat záznam - pùvodnì u %d"
 
-#: lib/rebuilddb.c:92
+#: lib/rebuilddb.c:109
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "databázi nelze pøestavit; pùvodní databáze zùstává na svém místì\n"
 
-#: lib/rebuilddb.c:100
+#: lib/rebuilddb.c:117
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:119
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "aby se obnovily, nahrazuje soubory v %s soubory z %s"
 
-#: lib/rebuilddb.c:108
+#: lib/rebuilddb.c:125
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nelze odstranit %s: %s\n"

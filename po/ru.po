@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-01-12 16:44-0500\n"
+"POT-Creation-Date: 2000-01-17 13:07-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -22,96 +22,96 @@ msgstr "неудовлетворенные зависимости:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Не могу открыть файл spec: %s\n"
 
-#: build.c:125 build.c:138
+#: build.c:128 build.c:141
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "Не могу открыть канал tar: %s\n"
 
 #. Give up
-#: build.c:146
+#: build.c:149
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Не могу прочесть файл spec из %s\n"
 
-#: build.c:174
+#: build.c:177
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr "Не могу переименовать %s в %s: %s\n"
 
-#: build.c:212
+#: build.c:215
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr "Не обычный файл: %s\n"
 
-#: build.c:219
+#: build.c:222
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s не похож на пакет RPM...\n"
 
 #. parse up the build operators
-#: build.c:279
+#: build.c:282
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Целевые платформы: %s\n"
 
-#: build.c:294
+#: build.c:297
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Сборка для целевой платформы %s\n"
 
-#: build.c:344
+#: build.c:347
 msgid "buildroot already specified"
 msgstr "buildroot уже задан"
 
-#: build.c:351
+#: build.c:354
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildarch уже не в моде :) Используйте опцию --target.\n"
 
-#: build.c:355
+#: build.c:358
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildos уже не в моде :) Используйте опцию --target.\n"
 
-#: build.c:376
+#: build.c:379
 msgid "override build architecture"
 msgstr "переопределить архитектуру собираемого пакета"
 
-#: build.c:378
+#: build.c:381
 msgid "override build operating system"
 msgstr "переопределить ОС собираемого пакета"
 
-#: build.c:380
+#: build.c:383
 msgid "override build root"
 msgstr "переопределить build root"
 
-#: build.c:382 rpm.c:495
+#: build.c:385 rpm.c:495
 msgid "remove build tree when done"
 msgstr "после завершения удалить дерево исходников"
 
-#: build.c:384
+#: build.c:387
 msgid "do not execute any stages of the build"
 msgstr "не исполнять никаких этапов сборки"
 
-#: build.c:386
+#: build.c:389
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "не принимать строк I18N из spec-файла"
 
-#: build.c:388
+#: build.c:391
 msgid "remove sources when done"
 msgstr "после завершения удалить исходникb"
 
-#: build.c:390
+#: build.c:393
 msgid "remove specfile when done"
 msgstr "после завершения удалить spec-файл"
 
-#: build.c:392 rpm.c:493
+#: build.c:395 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "перейти непосредственно к указанному этапу (только для c,i)"
 
-#: build.c:394
+#: build.c:397
 msgid "override target platform"
 msgstr "переопределить целевую платформу"
 
-#: build.c:396
+#: build.c:399
 msgid "lookup I18N strings in specfile catalog"
 msgstr "искать строки I18N в каталоге со spec-файлом"
 
@@ -2765,62 +2765,62 @@ msgstr "показать состояние показанных файлов"
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
-#: lib/rebuilddb.c:20
-#, c-format
-msgid "rebuilding database in rootdir %s\n"
-msgstr "перестраиваю базу в корневом каталоге %s\n"
-
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
-#: lib/rebuilddb.c:34
+#: lib/rebuilddb.c:47
+#, fuzzy, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "перестраиваю базу в корневом каталоге %s\n"
+
+#: lib/rebuilddb.c:51
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rebuilddb.c:38
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/rebuilddb.c:40
+#: lib/rebuilddb.c:57
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rebuilddb.c:44
+#: lib/rebuilddb.c:61
 msgid "opening old database\n"
 msgstr "открываю старую базу\n"
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:68
 msgid "opening new database\n"
 msgstr "открываю новую базу\n"
 
-#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
+#: lib/rebuilddb.c:78 lib/rebuilddb.c:96
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rebuilddb.c:73
+#: lib/rebuilddb.c:90
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "не могу добавить запись (первоначально в %d)"
 
-#: lib/rebuilddb.c:92
+#: lib/rebuilddb.c:109
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "перестроение базы не удалось, старая база остается на месте\n"
 
-#: lib/rebuilddb.c:100
+#: lib/rebuilddb.c:117
 msgid "failed to replace old database with new database!\n"
 msgstr "замена старой базы на новую не удалась!\n"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:119
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "для восстановления заменяет файлы в %s файлами из %s"
 
-#: lib/rebuilddb.c:108
+#: lib/rebuilddb.c:125
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "удаление каталога %s не удалось: %s\n"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.3\n"
-"POT-Creation-Date: 2000-01-12 16:44-0500\n"
+"POT-Creation-Date: 2000-01-17 13:07-0500\n"
 "PO-Revision-Date: 2000-01-09 22:47+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -27,96 +27,96 @@ msgstr "misslyckades bygga beroenden:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Kan inte öppna spec-fil: %s\n"
 
-#: build.c:125 build.c:138
+#: build.c:128 build.c:141
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "Kunde inte öppna \"tar\"-rör: %s\n"
 
 #. Give up
-#: build.c:146
+#: build.c:149
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Kunde inte läsa spec-fil från %s\n"
 
-#: build.c:174
+#: build.c:177
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr "Kunde inte byta namn på %s till %s: %s\n"
 
-#: build.c:212
+#: build.c:215
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr "Filen är inte en ordinär fil: %s\n"
 
-#: build.c:219
+#: build.c:222
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Filen %s tycks inte vara en spec-fil.\n"
 
 #. parse up the build operators
-#: build.c:279
+#: build.c:282
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: build.c:294
+#: build.c:297
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger för mål %s\n"
 
-#: build.c:344
+#: build.c:347
 msgid "buildroot already specified"
 msgstr "buildroot redan specificerad"
 
-#: build.c:351
+#: build.c:354
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildarch är föråldrat.  Använd flaggan --target istället.\n"
 
-#: build.c:355
+#: build.c:358
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildos är föråldrat.  Använd flaggan --tgarget istället.\n"
 
-#: build.c:376
+#: build.c:379
 msgid "override build architecture"
 msgstr "åsidosätt tillverkningsarkitektur"
 
-#: build.c:378
+#: build.c:381
 msgid "override build operating system"
 msgstr "åsidosätt tillverkningsoperativsystem"
 
-#: build.c:380
+#: build.c:383
 msgid "override build root"
 msgstr "åsidosätt tillverkningsrot"
 
-#: build.c:382 rpm.c:495
+#: build.c:385 rpm.c:495
 msgid "remove build tree when done"
 msgstr "tag bort tillverkningsträd efteråt"
 
-#: build.c:384
+#: build.c:387
 msgid "do not execute any stages of the build"
 msgstr "utför inga steg i tillverkningen"
 
-#: build.c:386
+#: build.c:389
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "acceptera inte I18N \"msgstr\" från spec-filen"
 
-#: build.c:388
+#: build.c:391
 msgid "remove sources when done"
 msgstr "tag bort källkod efteråt"
 
-#: build.c:390
+#: build.c:393
 msgid "remove specfile when done"
 msgstr "tag bort spec-fil efteråt"
 
-#: build.c:392 rpm.c:493
+#: build.c:395 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "gå direkt till angivet steg (endast för c,i)"
 
-#: build.c:394
+#: build.c:397
 msgid "override target platform"
 msgstr "åsidosätt målplattform"
 
-#: build.c:396
+#: build.c:399
 msgid "lookup I18N strings in specfile catalog"
 msgstr "slå upp I18N-strängar i spec-fil katalog"
 
@@ -2752,62 +2752,62 @@ msgstr "visa tillstånd för de listade filerna"
 msgid "display a verbose file listing"
 msgstr "visa en utförlig fillistning"
 
-#: lib/rebuilddb.c:20
-#, c-format
-msgid "rebuilding database in rootdir %s\n"
-msgstr "bygger om databas i rotkatalog %s\n"
-
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
-#: lib/rebuilddb.c:34
+#: lib/rebuilddb.c:47
+#, fuzzy, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "bygger om databas i rotkatalog %s\n"
+
+#: lib/rebuilddb.c:51
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "tillfällig databas %s existerar redan"
 
-#: lib/rebuilddb.c:38
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "skapar katalog: %s\n"
 
-#: lib/rebuilddb.c:40
+#: lib/rebuilddb.c:57
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "fel när katalog skapades %s: %s"
 
-#: lib/rebuilddb.c:44
+#: lib/rebuilddb.c:61
 msgid "opening old database\n"
 msgstr "öppnar gammal databas\n"
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:68
 msgid "opening new database\n"
 msgstr "öppnar ny databas\n"
 
-#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
+#: lib/rebuilddb.c:78 lib/rebuilddb.c:96
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "post nummer %d i databasen är felaktig -- hoppar över den"
 
-#: lib/rebuilddb.c:73
+#: lib/rebuilddb.c:90
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kan inte lägga till post ursprungligen vid %d"
 
-#: lib/rebuilddb.c:92
+#: lib/rebuilddb.c:109
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "kunde inte bygga om databasen; orginaldatabasen finns kvar\n"
 
-#: lib/rebuilddb.c:100
+#: lib/rebuilddb.c:117
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:119
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: lib/rebuilddb.c:108
+#: lib/rebuilddb.c:125
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"

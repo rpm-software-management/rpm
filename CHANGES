@@ -44,6 +44,7 @@
 	- default value for %_install_langs is all.
 	- fix: resurrect relative path's in fprint lookup queries.
 	- extract spec files from bzip'ped tarballs too on tar builds.
+	- add %_rebuilddbpath macro to permit rebuilding db in new location.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

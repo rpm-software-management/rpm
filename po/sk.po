@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-01-12 16:44-0500\n"
+"POT-Creation-Date: 2000-01-17 13:07-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -24,98 +24,98 @@ msgstr "nevyrie¹ené závislosti:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Nie je mo¾né otvori» spec súbor: %s\n"
 
-#: build.c:125 build.c:138
+#: build.c:128 build.c:141
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "Otvorenie rúry pre tar zlyhalo: %s\n"
 
 #. Give up
-#: build.c:146
+#: build.c:149
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
 
-#: build.c:174
+#: build.c:177
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr "Nie je mo¾né premenova» %s na %s: %s\n"
 
-#: build.c:212
+#: build.c:215
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr "Súbor nie je obyèajný súbor: %s\n"
 
-#: build.c:219
+#: build.c:222
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s zrejme nie je RPM balík\n"
 
 #. parse up the build operators
-#: build.c:279
+#: build.c:282
 #, fuzzy, c-format
 msgid "Building target platforms: %s\n"
 msgstr "predefinova» cieµovú platformu"
 
-#: build.c:294
+#: build.c:297
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "vyhµadáva sa balík %s\n"
 
-#: build.c:344
+#: build.c:347
 msgid "buildroot already specified"
 msgstr "buildroot u¾ bol zadaný"
 
-#: build.c:351
+#: build.c:354
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "Voµba --buildarch je zastaralá. Pou¾ite namiesto nej --target.\n"
 
-#: build.c:355
+#: build.c:358
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "Voµba --buildos je zastaralá. Pou¾ite namiesto nej --target.\n"
 
-#: build.c:376
+#: build.c:379
 msgid "override build architecture"
 msgstr "predefinova» architektúru balíka"
 
-#: build.c:378
+#: build.c:381
 msgid "override build operating system"
 msgstr "predefinova» operaèný systém balíka"
 
-#: build.c:380
+#: build.c:383
 msgid "override build root"
 msgstr "predefinova» adresár pre zostavenie balíka"
 
-#: build.c:382 rpm.c:495
+#: build.c:385 rpm.c:495
 msgid "remove build tree when done"
 msgstr "po ukonèení odstráni» adresár, v ktorom sa balík zostavoval"
 
-#: build.c:384
+#: build.c:387
 msgid "do not execute any stages of the build"
 msgstr "nevykona» ¾iadne etapy zostavenia"
 
-#: build.c:386
+#: build.c:389
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "neakceptova» lokalizované re»azce zo spec-súboru"
 
-#: build.c:388
+#: build.c:391
 #, fuzzy
 msgid "remove sources when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: build.c:390
+#: build.c:393
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: build.c:392 rpm.c:493
+#: build.c:395 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "preskoèi» priamo k urèenej etape (iba pre c, i)"
 
-#: build.c:394
+#: build.c:397
 msgid "override target platform"
 msgstr "predefinova» cieµovú platformu"
 
-#: build.c:396
+#: build.c:399
 msgid "lookup I18N strings in specfile catalog"
 msgstr "pre preklad re»azcov pou¾i» katalóg správ spec-súborov"
 
@@ -2770,62 +2770,62 @@ msgstr "zobrazii» stav daných súborov"
 msgid "display a verbose file listing"
 msgstr "zobrazi» podrobný zoznam súborov balíka"
 
-#: lib/rebuilddb.c:20
-#, c-format
-msgid "rebuilding database in rootdir %s\n"
-msgstr "znovu sa vytvára databáza v adresári %s\n"
-
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: lib/rebuilddb.c:34
+#: lib/rebuilddb.c:47
+#, fuzzy, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr "znovu sa vytvára databáza v adresári %s\n"
+
+#: lib/rebuilddb.c:51
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rebuilddb.c:38
+#: lib/rebuilddb.c:55
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rebuilddb.c:40
+#: lib/rebuilddb.c:57
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rebuilddb.c:44
+#: lib/rebuilddb.c:61
 msgid "opening old database\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rebuilddb.c:51
+#: lib/rebuilddb.c:68
 msgid "opening new database\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rebuilddb.c:61 lib/rebuilddb.c:79
+#: lib/rebuilddb.c:78 lib/rebuilddb.c:96
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rebuilddb.c:73
+#: lib/rebuilddb.c:90
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rebuilddb.c:92
+#: lib/rebuilddb.c:109
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rebuilddb.c:100
+#: lib/rebuilddb.c:117
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:119
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rebuilddb.c:108
+#: lib/rebuilddb.c:125
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
