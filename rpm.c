@@ -213,9 +213,9 @@ static void printUsage(void) {
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
-    puts(_("                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"));
-    puts(_("                        [--provides] [--dump] [--dbpath <dir>] [--changelog]"));
-    puts(_("                        [targets]"));
+    puts(_("                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"));
+    puts(_("                        [--ftpport <port>] [--provides] [--triggers] [--dump]"));
+    puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
     puts(_("                        [--nomd5] [targets]"));
@@ -303,6 +303,8 @@ static void printHelp(void) {
 		  _("query package owning <file>"));
     printHelpLine("        -p <packagefile>+ ",
 		  _("query (uninstalled) package <packagefile>"));
+    printHelpLine("        --triggeredby <package>",
+		  _("query packages triggered by <package>"));
     printHelpLine("        --whatprovides <i>",
 		  _("query packages which provide <i> capability"));
     printHelpLine("        --whatrequires <i>",
@@ -329,6 +331,8 @@ static void printHelp(void) {
 		  _("list package dependencies"));
     printHelpLine("        --scripts         ",
 		  _("print the various [un]install scripts"));
+    printHelpLine("        --triggers        ",
+		  _("show the trigger scripts contained in the package"));
     puts(         "");
     puts(         "    -V");
     puts(         "    -y");

@@ -193,6 +193,9 @@ Query all packages that requires \fI<capability>\fP for proper functioning.
 Query all packages that provide the \fI<virtual>\fP capability.
 .IP "\fB\-f \fI<file>\fP"
 Query package owning \fI<file>\fP.
+.IP "\fB\-\-requiredby \fI<package>\fP"
+Query all of the package which contain triggers scripts that are triggered
+by \fI<package>\fR.
 .IP "\fB\-p \fI<package_file>\fP"
 Query an (uninstalled) package \fI<package_file>\fP. 
 The <package_file> may be specified as an ftp style URL, in which case
@@ -224,6 +227,8 @@ List only configuration files (implies \fB\-l\fP).
 .IP "\fB\-\-scripts\fP"
 List the package specific shell scripts that are used as part of the 
 installation and uninstallation processes, if there are any.
+.IP "\fB\-\-triggers\fP"
+Display the trigger scripts, if any, which are contained in the package.
 .IP "\fB\-\-dump\fP"
 Dump file information as follows: path size mtime md5sum mode
 owner group isconfig isdoc rdev symlink. This must be used with
