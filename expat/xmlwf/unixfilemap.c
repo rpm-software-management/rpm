@@ -1,6 +1,5 @@
-/*
-Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
-See the file COPYING for copying permission.
+/* Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
+   See the file COPYING for copying permission.
 */
 
 #include <sys/types.h>
@@ -10,6 +9,7 @@ See the file COPYING for copying permission.
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #ifndef MAP_FILE
 #define MAP_FILE 0
@@ -17,9 +17,10 @@ See the file COPYING for copying permission.
 
 #include "filemap.h"
 
-int filemap(const char *name,
-	    void (*processor)(const void *, size_t, const char *, void *arg),
-	    void *arg)
+int
+filemap(const char *name,
+        void (*processor)(const void *, size_t, const char *, void *arg),
+        void *arg)
 {
   int fd;
   size_t nbytes;
@@ -41,16 +42,18 @@ int filemap(const char *name,
     fprintf(stderr, "%s: not a regular file\n", name);
     return 0;
   }
-  
+
   nbytes = sb.st_size;
   p = (void *)mmap((caddr_t)0, (size_t)nbytes, PROT_READ,
-		   MAP_FILE|MAP_PRIVATE, fd, (off_t)0);
+                   MAP_FILE|MAP_PRIVATE, fd, (off_t)0);
   if (p == (void *)-1) {
     perror(name);
     close(fd);
     return 0;
   }
+/*@-noeffect@*/
   processor(p, nbytes, name, arg);
+/*@=noeffect@*/
   munmap((caddr_t)p, nbytes);
   close(fd);
   return 1;

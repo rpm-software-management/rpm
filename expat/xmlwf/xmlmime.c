@@ -1,8 +1,10 @@
 #include <string.h>
 #include "xmlmime.h"
 
-static
-const char *getTok(const char **pp)
+/*@null@*/
+static const char *
+getTok(const char **pp)
+	/*@modifies *pp @*/
 {
   /* inComment means one level of nesting; inComment+1 means two levels etc */
   enum { inAtom, inString, init, inComment };
@@ -12,57 +14,57 @@ const char *getTok(const char **pp)
     switch (**pp) {
     case '\0':
       if (state == inAtom)
-	return tokStart;
+        return tokStart;
       return 0;
     case ' ':
     case '\r':
     case '\t':
     case '\n':
       if (state == inAtom)
-	return tokStart;
+        return tokStart;
       break;
     case '(':
       if (state == inAtom)
-	return tokStart;
+        return tokStart;
       if (state != inString)
-	state++;
+        state++;
       break;
     case ')':
       if (state > init)
-	--state;
+        --state;
       else if (state != inString)
-	return 0;
+        return 0;
       break;
     case ';':
     case '/':
     case '=':
       if (state == inAtom)
-	return tokStart;
+        return tokStart;
       if (state == init)
-	return (*pp)++;
+        return (*pp)++;
       break;
     case '\\':
       ++*pp;
       if (**pp == '\0')
-	return 0;
+        return 0;
       break;
     case '"':
       switch (state) {
       case inString:
-	++*pp;
-	return tokStart;
+        ++*pp;
+        return tokStart;
       case inAtom:
-	return tokStart;
+        return tokStart;
       case init:
-	tokStart = *pp;
-	state = inString;
-	break;
+        tokStart = *pp;
+        state = inString;
+        /*@innerbreak@*/ break;
       }
       break;
     default:
       if (state == init) {
-	tokStart = *pp;
-	state = inAtom;
+        tokStart = *pp;
+        state = inAtom;
       }
       break;
     }
@@ -73,8 +75,9 @@ const char *getTok(const char **pp)
 
 /* key must be lowercase ASCII */
 
-static
-int matchkey(const char *start, const char *end, const char *key)
+static int
+matchkey(const char *start, const char *end, const char *key)
+	/*@*/
 {
   if (!start)
     return 0;
@@ -84,7 +87,8 @@ int matchkey(const char *start, const char *end, const char *key)
   return *key == '\0';
 }
 
-void getXMLCharset(const char *buf, char *charset)
+void
+getXMLCharset(const char *buf, char *charset)
 {
   const char *next, *p;
 
@@ -108,34 +112,34 @@ void getXMLCharset(const char *buf, char *charset)
     if (*p == ';') {
       p = getTok(&next);
       if (matchkey(p, next, "charset")) {
-	p = getTok(&next);
-	if (p && *p == '=') {
-	  p = getTok(&next);
-	  if (p) {
-	    char *s = charset;
-	    if (*p == '"') {
-	      while (++p != next - 1) {
-		if (*p == '\\')
-		  ++p;
-		if (s == charset + CHARSET_MAX - 1) {
-		  charset[0] = '\0';
-		  break;
-		}
-		*s++ = *p;
-	      }
-	      *s++ = '\0';
-	    }
-	    else {
-	      if (next - p > CHARSET_MAX - 1)
-		break;
-	      while (p != next)
-		*s++ = *p++;
-	      *s = 0;
-	      break;
-	    }
-	  }
-	}
-	break;
+        p = getTok(&next);
+        if (p && *p == '=') {
+          p = getTok(&next);
+          if (p) {
+            char *s = charset;
+            if (*p == '"') {
+              while (++p != next - 1) {
+                if (*p == '\\')
+                  ++p;
+                if (s == charset + CHARSET_MAX - 1) {
+                  charset[0] = '\0';
+                  /*@innerbreak@*/ break;
+                }
+                *s++ = *p;
+              }
+              *s++ = '\0';
+            }
+            else {
+              if (next - p > CHARSET_MAX - 1)
+                break;
+              while (p != next)
+                *s++ = *p++;
+              *s = 0;
+              break;
+            }
+          }
+        }
+        break;
       }
     }
   else
@@ -147,7 +151,8 @@ void getXMLCharset(const char *buf, char *charset)
 
 #include <stdio.h>
 
-int main(int argc, char **argv)
+int
+main(int argc, char *argv[])
 {
   char buf[CHARSET_MAX];
   if (argc <= 1)

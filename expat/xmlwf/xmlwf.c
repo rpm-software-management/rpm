@@ -1,6 +1,5 @@
-/*
-Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
-See the file COPYING for copying permission.
+/* Copyright (c) 1998, 1999 Thai Open Source Software Center Ltd
+   See the file COPYING for copying permission.
 */
 
 #include <stdio.h>
@@ -21,7 +20,10 @@ See the file COPYING for copying permission.
 
 #define NSSEP T('\001')
 
-static void characterData(void *userData, const XML_Char *s, int len)
+static void
+characterData(void *userData, const XML_Char *s, int len)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
   FILE *fp = userData;
   for (; len > 0; --len, ++s) {
@@ -56,7 +58,10 @@ static void characterData(void *userData, const XML_Char *s, int len)
   }
 }
 
-static void attributeValue(FILE *fp, const XML_Char *s)
+static void
+attributeValue(FILE *fp, const XML_Char *s)
+	/*@globals fileSystem @*/
+	/*@modifies fp, fileSystem @*/
 {
   puttc(T('='), fp);
   puttc(T('"'), fp);
@@ -106,12 +111,17 @@ static void attributeValue(FILE *fp, const XML_Char *s)
 /* Lexicographically comparing UTF-8 encoded attribute values,
 is equivalent to lexicographically comparing based on the character number. */
 
-static int attcmp(const void *att1, const void *att2)
+static int
+attcmp(const void *att1, const void *att2)
+	/*@*/
 {
   return tcscmp(*(const XML_Char **)att1, *(const XML_Char **)att2);
 }
 
-static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
+static void
+startElement(void *userData, const XML_Char *name, const XML_Char **atts)
+	/*@globals fileSystem @*/
+	/*@modifies userData, *atts, fileSystem @*/
 {
   int nAtts;
   const XML_Char **p;
@@ -134,7 +144,10 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
   puttc(T('>'), fp);
 }
 
-static void endElement(void *userData, const XML_Char *name)
+static void
+endElement(void *userData, const XML_Char *name)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
   FILE *fp = userData;
   puttc(T('<'), fp);
@@ -143,7 +156,9 @@ static void endElement(void *userData, const XML_Char *name)
   puttc(T('>'), fp);
 }
 
-static int nsattcmp(const void *p1, const void *p2)
+static int
+nsattcmp(const void *p1, const void *p2)
+	/*@*/
 {
   const XML_Char *att1 = *(const XML_Char **)p1;
   const XML_Char *att2 = *(const XML_Char **)p2;
@@ -154,7 +169,10 @@ static int nsattcmp(const void *p1, const void *p2)
   return tcscmp(att1, att2);
 }
 
-static void startElementNS(void *userData, const XML_Char *name, const XML_Char **atts)
+static void
+startElementNS(void *userData, const XML_Char *name, const XML_Char **atts)
+	/*@globals fileSystem @*/
+	/*@modifies userData, *atts, fileSystem @*/
 {
   int nAtts;
   int nsi;
@@ -202,7 +220,10 @@ static void startElementNS(void *userData, const XML_Char *name, const XML_Char 
   puttc(T('>'), fp);
 }
 
-static void endElementNS(void *userData, const XML_Char *name)
+static void
+endElementNS(void *userData, const XML_Char *name)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
   FILE *fp = userData;
   const XML_Char *sep;
@@ -220,7 +241,11 @@ static void endElementNS(void *userData, const XML_Char *name)
 
 #ifndef W3C14N
 
-static void processingInstruction(void *userData, const XML_Char *target, const XML_Char *data)
+static void
+processingInstruction(void *userData, const XML_Char *target,
+                      const XML_Char *data)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
   FILE *fp = userData;
   puttc(T('<'), fp);
@@ -234,78 +259,110 @@ static void processingInstruction(void *userData, const XML_Char *target, const 
 
 #endif /* not W3C14N */
 
-static void defaultCharacterData(XML_Parser parser, const XML_Char *s, int len)
+static void
+defaultCharacterData(void *userData, const XML_Char *s, int len)
+	/*@modifies userData @*/
 {
-  XML_DefaultCurrent(parser);
+  XML_DefaultCurrent((XML_Parser) userData);
 }
 
-static void defaultStartElement(XML_Parser parser, const XML_Char *name, const XML_Char **atts)
+static void
+defaultStartElement(void *userData, const XML_Char *name,
+                    const XML_Char **atts)
+	/*@modifies userData @*/
 {
-  XML_DefaultCurrent(parser);
+  XML_DefaultCurrent((XML_Parser) userData);
 }
 
-static void defaultEndElement(XML_Parser parser, const XML_Char *name)
+static void
+defaultEndElement(void *userData, const XML_Char *name)
+	/*@modifies userData @*/
 {
-  XML_DefaultCurrent(parser);
+  XML_DefaultCurrent((XML_Parser) userData);
 }
 
-static void defaultProcessingInstruction(XML_Parser parser, const XML_Char *target, const XML_Char *data)
+static void
+defaultProcessingInstruction(void *userData, const XML_Char *target,
+                             const XML_Char *data)
+	/*@modifies userData @*/
 {
-  XML_DefaultCurrent(parser);
+  XML_DefaultCurrent((XML_Parser) userData);
 }
 
-static void nopCharacterData(XML_Parser parser, const XML_Char *s, int len)
-{
-}
-
-static void nopStartElement(XML_Parser parser, const XML_Char *name, const XML_Char **atts)
-{
-}
-
-static void nopEndElement(XML_Parser parser, const XML_Char *name)
-{
-}
-
-static void nopProcessingInstruction(XML_Parser parser, const XML_Char *target, const XML_Char *data)
+static void
+nopCharacterData(void *userData, const XML_Char *s, int len)
+	/*@*/
 {
 }
 
-static void markup(XML_Parser parser, const XML_Char *s, int len)
+static void
+nopStartElement(void *userData, const XML_Char *name, const XML_Char **atts)
+	/*@*/
 {
-  FILE *fp = XML_GetUserData(parser);
+}
+
+static void
+nopEndElement(void *userData, const XML_Char *name)
+	/*@*/
+{
+}
+
+static void
+nopProcessingInstruction(void *userData, const XML_Char *target,
+                         const XML_Char *data)
+	/*@*/
+{
+}
+
+static void
+markup(void *userData, const XML_Char *s, int len)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+  FILE *fp = XML_GetUserData((XML_Parser) userData);
   for (; len > 0; --len, ++s)
     puttc(*s, fp);
 }
 
-static
-void metaLocation(XML_Parser parser)
+static void
+metaLocation(XML_Parser parser)
+	/*@globals fileSystem @*/
+	/*@modifies parser, fileSystem @*/
 {
   const XML_Char *uri = XML_GetBase(parser);
   if (uri)
     ftprintf(XML_GetUserData(parser), T(" uri=\"%s\""), uri);
   ftprintf(XML_GetUserData(parser),
            T(" byte=\"%ld\" nbytes=\"%d\" line=\"%d\" col=\"%d\""),
-	   XML_GetCurrentByteIndex(parser),
-	   XML_GetCurrentByteCount(parser),
-	   XML_GetCurrentLineNumber(parser),
-	   XML_GetCurrentColumnNumber(parser));
+           XML_GetCurrentByteIndex(parser),
+           XML_GetCurrentByteCount(parser),
+           XML_GetCurrentLineNumber(parser),
+           XML_GetCurrentColumnNumber(parser));
 }
 
-static
-void metaStartDocument(XML_Parser parser)
+static void
+metaStartDocument(void *userData)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
-  fputts(T("<document>\n"), XML_GetUserData(parser));
+  fputts(T("<document>\n"), XML_GetUserData((XML_Parser) userData));
 }
 
-static
-void metaEndDocument(XML_Parser parser)
+static void
+metaEndDocument(void *userData)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
-  fputts(T("</document>\n"), XML_GetUserData(parser));
+  fputts(T("</document>\n"), XML_GetUserData((XML_Parser) userData));
 }
 
-static
-void metaStartElement(XML_Parser parser, const XML_Char *name, const XML_Char **atts)
+static void
+metaStartElement(void *userData, const XML_Char *name,
+                 const XML_Char **atts)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   const XML_Char **specifiedAttsEnd
     = atts + XML_GetSpecifiedAttributeCount(parser);
@@ -324,11 +381,11 @@ void metaStartElement(XML_Parser parser, const XML_Char *name, const XML_Char **
       ftprintf(fp, T("<attribute name=\"%s\" value=\""), atts[0]);
       characterData(fp, atts[1], tcslen(atts[1]));
       if (atts >= specifiedAttsEnd)
-	fputts(T("\" defaulted=\"yes\"/>\n"), fp);
+        fputts(T("\" defaulted=\"yes\"/>\n"), fp);
       else if (atts == idAttPtr)
-	fputts(T("\" id=\"yes\"/>\n"), fp);
+        fputts(T("\" id=\"yes\"/>\n"), fp);
       else
-	fputts(T("\"/>\n"), fp);
+        fputts(T("\"/>\n"), fp);
     } while (*(atts += 2));
     fputts(T("</starttag>\n"), fp);
   }
@@ -336,18 +393,25 @@ void metaStartElement(XML_Parser parser, const XML_Char *name, const XML_Char **
     fputts(T("/>\n"), fp);
 }
 
-static
-void metaEndElement(XML_Parser parser, const XML_Char *name)
+static void
+metaEndElement(void *userData, const XML_Char *name)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   ftprintf(fp, T("<endtag name=\"%s\""), name);
   metaLocation(parser);
   fputts(T("/>\n"), fp);
 }
 
-static
-void metaProcessingInstruction(XML_Parser parser, const XML_Char *target, const XML_Char *data)
+static void
+metaProcessingInstruction(void *userData, const XML_Char *target,
+                          const XML_Char *data)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   ftprintf(fp, T("<pi target=\"%s\" data=\""), target);
   characterData(fp, data, tcslen(data));
@@ -356,9 +420,12 @@ void metaProcessingInstruction(XML_Parser parser, const XML_Char *target, const 
   fputts(T("/>\n"), fp);
 }
 
-static
-void metaComment(XML_Parser parser, const XML_Char *data)
+static void
+metaComment(void *userData, const XML_Char *data)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   fputts(T("<comment data=\""), fp);
   characterData(fp, data, tcslen(data));
@@ -367,27 +434,36 @@ void metaComment(XML_Parser parser, const XML_Char *data)
   fputts(T("/>\n"), fp);
 }
 
-static
-void metaStartCdataSection(XML_Parser parser)
+static void
+metaStartCdataSection(void *userData)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   fputts(T("<startcdata"), fp);
   metaLocation(parser);
   fputts(T("/>\n"), fp);
 }
 
-static
-void metaEndCdataSection(XML_Parser parser)
+static void
+metaEndCdataSection(void *userData)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   fputts(T("<endcdata"), fp);
   metaLocation(parser);
   fputts(T("/>\n"), fp);
 }
 
-static
-void metaCharacterData(XML_Parser parser, const XML_Char *s, int len)
+static void
+metaCharacterData(void *userData, const XML_Char *s, int len)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   fputts(T("<chars str=\""), fp);
   characterData(fp, s, len);
@@ -396,35 +472,44 @@ void metaCharacterData(XML_Parser parser, const XML_Char *s, int len)
   fputts(T("/>\n"), fp);
 }
 
-static
-void metaStartDoctypeDecl(XML_Parser parser,
-			  const XML_Char *doctypeName,
-			  const XML_Char *sysid,
-			  const XML_Char *pubid,
-			  int has_internal_subset)
+static void
+metaStartDoctypeDecl(void *userData,
+                     const XML_Char *doctypeName,
+                     const XML_Char *sysid,
+                     const XML_Char *pubid,
+                     int has_internal_subset)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   ftprintf(fp, T("<startdoctype name=\"%s\""), doctypeName);
   metaLocation(parser);
   fputts(T("/>\n"), fp);
 }
 
-static
-void metaEndDoctypeDecl(XML_Parser parser)
+static void
+metaEndDoctypeDecl(void *userData)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   fputts(T("<enddoctype"), fp);
   metaLocation(parser);
   fputts(T("/>\n"), fp);
 }
 
-static
-void metaNotationDecl(XML_Parser parser,
-		      const XML_Char *notationName,
-		      const XML_Char *base,
-		      const XML_Char *systemId,
-		      const XML_Char *publicId)
+static void
+metaNotationDecl(void *userData,
+                 const XML_Char *notationName,
+                 const XML_Char *base,
+                 const XML_Char *systemId,
+                 const XML_Char *publicId)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   ftprintf(fp, T("<notation name=\"%s\""), notationName);
   if (publicId)
@@ -439,17 +524,20 @@ void metaNotationDecl(XML_Parser parser,
 }
 
 
-static
-void metaEntityDecl(XML_Parser parser,
-		    const XML_Char *entityName,
-		    int  is_param,
-		    const XML_Char *value,
-		    int  value_length,
-		    const XML_Char *base,
-		    const XML_Char *systemId,
-		    const XML_Char *publicId,
-		    const XML_Char *notationName)
+static void
+metaEntityDecl(void *userData,
+               const XML_Char *entityName,
+               int  is_param,
+               const XML_Char *value,
+               int  value_length,
+               const XML_Char *base,
+               const XML_Char *systemId,
+               const XML_Char *publicId,
+               const XML_Char *notationName)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
 
   if (value) {
@@ -482,11 +570,14 @@ void metaEntityDecl(XML_Parser parser,
   }
 }
 
-static
-void metaStartNamespaceDecl(XML_Parser parser,
-			    const XML_Char *prefix,
-			    const XML_Char *uri)
+static void
+metaStartNamespaceDecl(void *userData,
+                       const XML_Char *prefix,
+                       const XML_Char *uri)
+	/*@globals fileSystem @*/
+	/*@modifies userData, fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   fputts(T("<startns"), fp);
   if (prefix)
@@ -500,9 +591,12 @@ void metaStartNamespaceDecl(XML_Parser parser,
     fputts(T("/>\n"), fp);
 }
 
-static
-void metaEndNamespaceDecl(XML_Parser parser, const XML_Char *prefix)
+static void
+metaEndNamespaceDecl(void *userData, const XML_Char *prefix)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
+  XML_Parser parser = (XML_Parser) userData;
   FILE *fp = XML_GetUserData(parser);
   if (!prefix)
     fputts(T("<endns/>\n"), fp);
@@ -510,16 +604,16 @@ void metaEndNamespaceDecl(XML_Parser parser, const XML_Char *prefix)
     ftprintf(fp, T("<endns prefix=\"%s\"/>\n"), prefix);
 }
 
-static
-int unknownEncodingConvert(void *data, const char *p)
+static int
+unknownEncodingConvert(void *data, const char *p)
+	/*@*/
 {
   return codepageConvert(*(int *)data, p);
 }
 
-static
-int unknownEncoding(void *userData,
-		    const XML_Char *name,
-		    XML_Encoding *info)
+static int
+unknownEncoding(void *userData, const XML_Char *name, XML_Encoding *info)
+	/*@modifies info @*/
 {
   int cp;
   static const XML_Char prefixL[] = T("windows-");
@@ -554,30 +648,73 @@ int unknownEncoding(void *userData,
   return 1;
 }
 
-static
-int notStandalone(void *userData)
+static int
+notStandalone(void *userData)
+	/*@*/
 {
   return 0;
 }
 
-static
-void usage(const XML_Char *prog)
+static void
+showVersion(XML_Char *prog)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
-  ftprintf(stderr, T("usage: %s [-n] [-p] [-r] [-s] [-w] [-x] [-d output-dir] [-e encoding] file ...\n"), prog);
-  exit(1);
+  XML_Char *s = prog;
+  XML_Char ch;
+  const XML_Feature *features = XML_GetFeatureList();
+  while ((ch = *s) != 0) {
+    if (ch == '/'
+#ifdef WIN32
+        || ch == '\\'
+#endif
+        )
+      prog = s + 1;
+    ++s;
+  }
+  ftprintf(stdout, T("%s using %s\n"), prog, XML_ExpatVersion());
+  if (features != NULL && features[0].feature != XML_FEATURE_END) {
+    int i = 1;
+    ftprintf(stdout, T("%s"), features[0].name);
+    if (features[0].value)
+      ftprintf(stdout, T("=%ld"), features[0].value);
+    while (features[i].feature != XML_FEATURE_END) {
+      ftprintf(stdout, T(", %s"), features[i].name);
+      if (features[i].value)
+        ftprintf(stdout, T("=%ld"), features[i].value);
+      ++i;
+    }
+    ftprintf(stdout, T("\n"));
+  }
 }
 
-int tmain(int argc, XML_Char **argv)
+/*@exits@*/
+static void
+usage(const XML_Char *prog, int rc)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+  ftprintf(stderr,
+           T("usage: %s [-n] [-p] [-r] [-s] [-w] [-x] [-d output-dir] "
+             "[-e encoding] file ...\n"), prog);
+  exit(rc);
+}
+
+int
+tmain(int argc, XML_Char **argv)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
   int i, j;
-  const XML_Char *outputDir = 0;
-  const XML_Char *encoding = 0;
+  const XML_Char *outputDir = NULL;
+  const XML_Char *encoding = NULL;
   unsigned processFlags = XML_MAP_FILE;
   int windowsCodePages = 0;
   int outputType = 0;
   int useNamespaces = 0;
   int requireStandalone = 0;
   int paramEntityParsing = XML_PARAM_ENTITY_PARSING_NEVER;
+  int useStdin = 0;
 
 #ifdef _MSC_VER
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF|_CRTDBG_LEAK_CHECK_DF);
@@ -588,10 +725,10 @@ int tmain(int argc, XML_Char **argv)
   while (i < argc) {
     if (j == 0) {
       if (argv[i][0] != T('-'))
-	break;
+        break;
       if (argv[i][1] == T('-') && argv[i][2] == T('\0')) {
-	i++;
-	break;
+        i++;
+        break;
       }
       j++;
     }
@@ -610,7 +747,7 @@ int tmain(int argc, XML_Char **argv)
       break;
     case T('p'):
       paramEntityParsing = XML_PARAM_ENTITY_PARSING_ALWAYS;
-      /* fall through */
+      /*@fallthrough@*/
     case T('x'):
       processFlags |= XML_EXTERNAL_ENTITIES;
       j++;
@@ -634,39 +771,49 @@ int tmain(int argc, XML_Char **argv)
       break;
     case T('d'):
       if (argv[i][j + 1] == T('\0')) {
-	if (++i == argc)
-	  usage(argv[0]);
-	outputDir = argv[i];
+        if (++i == argc)
+          usage(argv[0], 2);
+        outputDir = argv[i];
       }
       else
-	outputDir = argv[i] + j + 1;
+        outputDir = argv[i] + j + 1;
       i++;
       j = 0;
       break;
     case T('e'):
       if (argv[i][j + 1] == T('\0')) {
-	if (++i == argc)
-	  usage(argv[0]);
-	encoding = argv[i];
+        if (++i == argc)
+          usage(argv[0], 2);
+        encoding = argv[i];
       }
       else
-	encoding = argv[i] + j + 1;
+        encoding = argv[i] + j + 1;
       i++;
       j = 0;
       break;
+    case T('h'):
+      usage(argv[0], 0);
+      /*@notreached@*/
+      return 0;
+    case T('v'):
+      showVersion(argv[0]);
+      return 0;
     case T('\0'):
       if (j > 1) {
-	i++;
-	j = 0;
-	break;
+        i++;
+        j = 0;
+        break;
       }
-      /* fall through */
+      /*@fallthrough@*/
     default:
-      usage(argv[0]);
+      usage(argv[0], 2);
     }
   }
-  if (i == argc)
-    usage(argv[0]);
+  if (i == argc) {
+    useStdin = 1;
+    processFlags &= ~XML_MAP_FILE;
+    i--;
+  }
   for (; i < argc; i++) {
     FILE *fp = 0;
     XML_Char *outName = 0;
@@ -681,28 +828,29 @@ int tmain(int argc, XML_Char **argv)
     XML_SetParamEntityParsing(parser, paramEntityParsing);
     if (outputType == 't') {
       /* This is for doing timings; this gives a more realistic estimate of
-	 the parsing time. */
+         the parsing time. */
       outputDir = 0;
       XML_SetElementHandler(parser, nopStartElement, nopEndElement);
       XML_SetCharacterDataHandler(parser, nopCharacterData);
       XML_SetProcessingInstructionHandler(parser, nopProcessingInstruction);
     }
     else if (outputDir) {
-      const XML_Char *file = argv[i];
+      const XML_Char *file = useStdin ? T("STDIN") : argv[i];
       if (tcsrchr(file, T('/')))
-	file = tcsrchr(file, T('/')) + 1;
+        file = tcsrchr(file, T('/')) + 1;
 #ifdef WIN32
       if (tcsrchr(file, T('\\')))
-	file = tcsrchr(file, T('\\')) + 1;
+        file = tcsrchr(file, T('\\')) + 1;
 #endif
-      outName = malloc((tcslen(outputDir) + tcslen(file) + 2) * sizeof(XML_Char));
+      outName = malloc((tcslen(outputDir) + tcslen(file) + 2)
+                       * sizeof(XML_Char));
       tcscpy(outName, outputDir);
       tcscat(outName, T("/"));
       tcscat(outName, file);
       fp = tfopen(outName, T("wb"));
       if (!fp) {
-	tperror(outName);
-	exit(1);
+        tperror(outName);
+        exit(1);
       }
       setvbuf(fp, NULL, _IOFBF, 16384);
 #ifdef XML_UNICODE
@@ -711,46 +859,50 @@ int tmain(int argc, XML_Char **argv)
       XML_SetUserData(parser, fp);
       switch (outputType) {
       case 'm':
-	XML_UseParserAsHandlerArg(parser);
-	XML_SetElementHandler(parser, metaStartElement, metaEndElement);
-	XML_SetProcessingInstructionHandler(parser, metaProcessingInstruction);
-	XML_SetCommentHandler(parser, metaComment);
-	XML_SetCdataSectionHandler(parser, metaStartCdataSection, metaEndCdataSection);
-	XML_SetCharacterDataHandler(parser, metaCharacterData);
-	XML_SetDoctypeDeclHandler(parser, metaStartDoctypeDecl, metaEndDoctypeDecl);
-	XML_SetEntityDeclHandler(parser, metaEntityDecl);
-	XML_SetNotationDeclHandler(parser, metaNotationDecl);
-	XML_SetNamespaceDeclHandler(parser, metaStartNamespaceDecl, metaEndNamespaceDecl);
-	metaStartDocument(parser);
-	break;
+        XML_UseParserAsHandlerArg(parser);
+        XML_SetElementHandler(parser, metaStartElement, metaEndElement);
+        XML_SetProcessingInstructionHandler(parser, metaProcessingInstruction);
+        XML_SetCommentHandler(parser, metaComment);
+        XML_SetCdataSectionHandler(parser, metaStartCdataSection,
+                                   metaEndCdataSection);
+        XML_SetCharacterDataHandler(parser, metaCharacterData);
+        XML_SetDoctypeDeclHandler(parser, metaStartDoctypeDecl,
+                                  metaEndDoctypeDecl);
+        XML_SetEntityDeclHandler(parser, metaEntityDecl);
+        XML_SetNotationDeclHandler(parser, metaNotationDecl);
+        XML_SetNamespaceDeclHandler(parser, metaStartNamespaceDecl,
+                                    metaEndNamespaceDecl);
+        metaStartDocument(parser);
+        break;
       case 'c':
-	XML_UseParserAsHandlerArg(parser);
-	XML_SetDefaultHandler(parser, markup);
-	XML_SetElementHandler(parser, defaultStartElement, defaultEndElement);
-	XML_SetCharacterDataHandler(parser, defaultCharacterData);
-	XML_SetProcessingInstructionHandler(parser, defaultProcessingInstruction);
-	break;
+        XML_UseParserAsHandlerArg(parser);
+        XML_SetDefaultHandler(parser, markup);
+        XML_SetElementHandler(parser, defaultStartElement, defaultEndElement);
+        XML_SetCharacterDataHandler(parser, defaultCharacterData);
+        XML_SetProcessingInstructionHandler(parser,
+                                            defaultProcessingInstruction);
+        break;
       default:
-	if (useNamespaces)
-	  XML_SetElementHandler(parser, startElementNS, endElementNS);
-	else
-	  XML_SetElementHandler(parser, startElement, endElement);
-	XML_SetCharacterDataHandler(parser, characterData);
+        if (useNamespaces)
+          XML_SetElementHandler(parser, startElementNS, endElementNS);
+        else
+          XML_SetElementHandler(parser, startElement, endElement);
+        XML_SetCharacterDataHandler(parser, characterData);
 #ifndef W3C14N
-	XML_SetProcessingInstructionHandler(parser, processingInstruction);
+        XML_SetProcessingInstructionHandler(parser, processingInstruction);
 #endif /* not W3C14N */
-	break;
+        break;
       }
     }
     if (windowsCodePages)
       XML_SetUnknownEncodingHandler(parser, unknownEncoding, 0);
-    result = XML_ProcessFile(parser, argv[i], processFlags);
+    result = XML_ProcessFile(parser, useStdin ? NULL : argv[i], processFlags);
     if (outputDir) {
       if (outputType == 'm')
-	metaEndDocument(parser);
+        metaEndDocument(parser);
       fclose(fp);
       if (!result)
-	tremove(outName);
+        tremove(outName);
       free(outName);
     }
     XML_ParserFree(parser);

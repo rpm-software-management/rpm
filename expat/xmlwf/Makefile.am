@@ -16,3 +16,7 @@ bin_PROGRAMS = xmlwf
 
 xmlwf_SOURCES = \
 	codepage.c unixfilemap.c xmlfile.c xmlmime.c xmlwf.c
+
+.PHONY: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(xmlwf_SOURCES)

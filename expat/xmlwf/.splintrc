@@ -1,0 +1,74 @@
+-I. -I.. -I../lib -DHAVE_CONFIG_H
+
+#+partial
++forcehints
+
+-warnunixlib
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
++bounds
+-boundsread
+-boundswrite
+
+-declundef
+-enummemuse		# 6
+-fcnuse			# 61
+-fielduse
+-exportconst		# 48
+-exportfcn		# 67
+-exporttype		# 9
+
+-aliasunique		# 1
+-boolops		# 11
+-branchstate		# 2
+-compdef		# 5
+-evalorder		# 10
+-exitarg
+-maintype
+-nullpass		# 17
+-nullstate		# 3
+-paramuse		# 32
+-predboolptr		# 26
+-retalias		# 3
+-retvalint
+-sizeoftype		# 5
+-type			# 3
+-usereleased		# 1
++voidabstract
+
+-kepttrans		# 1
+-temptrans		# 2
+
+-loopswitchbreak	# 33
+
+# --- not-yet at strict level
+-bitwisesigned		# 86
+-elseifcomplete		# 2
+-forblock		# 6
+-ifblock		# 231
+-incondefs		# 64
+-namechecks		# tedious ANSI compliance checks
+-ptrarith		# tedious
+
+-mustdefine		# 25
+-shiftimplementation	# 148 ctype.h
+
+-strictops		# 37
+-whileblock		# 16
+
+# --- not-yet at checks level
+-mustfree		# 26
+-usedef			# 31
+
+# --- not-yet at standard level
++boolint		# 38
++charint		# 147
++ignorequals		# 49
++matchanyintegral	# 77
