@@ -92,6 +92,7 @@ env005
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 env006
 	Make sure that all the utilities exist and run.
+	Test that db_load -r options don't blow up.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 env007
@@ -143,13 +144,17 @@ fop003
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 fop004
-	Test of DB->rename().
-	(formerly test075)
+	Test of DB->rename(). (formerly test075)
+	Test that files can be renamed from one directory to another.
+	Test that files can be renamed using absolute or relative
+	pathnames.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 fop005
 	Test of DB->remove()
 	Formerly test080.
+	Test use of dbremove with and without envs, with absolute
+	and relative paths, and with subdirectories.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 fop006.tcl
@@ -211,6 +216,8 @@ lock006
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 log001
 	Read/write log records.
+	Test with and without fixed-length, in-memory logging,
+	and encryption.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 log002
@@ -385,38 +392,45 @@ recd019
 	Test txn id wrap-around and recovery.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+recd020
+	Test creation of intermediate directories -- an
+	undocumented, UNIX-only feature.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+recd021
+	Test of failed opens in recovery.
+
+	If a file was deleted through the file system (and not
+	within Berkeley DB), an error message should appear.
+	Test for regular files and subdbs.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep001
 	Replication rename and forced-upgrade test.
 
-	Run a modified version of test001 in a replicated master
-	environment; verify that the database on the client is correct.
+	Run rep_test in a replicated master environment.
+	Verify that the database on the client is correct.
 	Next, remove the database, close the master, upgrade the
 	client, reopen the master, and make sure the new master can
-	correctly run test001 and propagate it in the other direction.
+	correctly run rep_test and propagate it in the other direction.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep002
 	Basic replication election test.
 
-	Run a modified version of test001 in a replicated master environment;
-	hold an election among a group of clients to make sure they select
-	a proper master from amongst themselves, in various scenarios.
+	Run a modified version of test001 in a replicated master
+	environment; hold an election among a group of clients to
+	make sure they select a proper master from amongst themselves,
+	in various scenarios.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep003
 	Repeated shutdown/restart replication test
 
-	Run a quick put test in a replicated master environment;  start up,
-	shut down, and restart client processes, with and without recovery.
-	To ensure that environment state is transient, use DB_PRIVATE.
-
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-rep004
-	Test of DB_REP_LOGSONLY.
-
-	Run a quick put test in a master environment that has one logs-only
-	client.  Shut down, then run catastrophic recovery in the logs-only
-	client and check that the database is present and populated.
+	Run a quick put test in a replicated master environment;
+	start up, shut down, and restart client processes, with
+	and without recovery.  To ensure that environment state
+	is transient, use DB_PRIVATE.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep005
@@ -431,8 +445,8 @@ rep005
 rep006
 	Replication and non-rep env handles.
 
-	Run a modified version of test001 in a replicated master environment;
-	verify that the database on the client is correct.
+	Run a modified version of test001 in a replicated master
+	environment; verify that the database on the client is correct.
 	Next, create a non-rep env handle to the master env.
 	Attempt to open the database r/w to force error.
 
@@ -440,7 +454,7 @@ rep006
 rep007
 	Replication and bad LSNs
 
-	Run a modified version of test001 in a replicated master env.
+	Run rep_test in a replicated master env.
 	Close the client.  Make additional changes to master.
 	Close the master.  Open the client as the new master.
 	Make several different changes.  Open the old master as
@@ -450,7 +464,8 @@ rep007
 rep008
 	Replication, back up and synchronizing
 
-	Run a modified version of test001 in a replicated master environment;
+	Run a modified version of test001 in a replicated master
+	environment.
 	Close master and client.
 	Copy the master log to the client.
 	Clean the master.
@@ -468,25 +483,25 @@ rep009
 rep010
 	Replication and ISPERM
 
-	With consecutive message processing, make sure every 
-	DB_REP_PERMANENT is responded to with an ISPERM when 
-	processed.  With gaps in the processing, make sure 
+	With consecutive message processing, make sure every
+	DB_REP_PERMANENT is responded to with an ISPERM when
+	processed.  With gaps in the processing, make sure
 	every DB_REP_PERMANENT is responded to with an ISPERM
-	or a NOTPERM.  Verify in both cases that the LSN returned 
+	or a NOTPERM.  Verify in both cases that the LSN returned
 	with ISPERM is found in the log.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep011
 	Replication: test open handle across an upgrade.
 
-	Open and close test database in master environment. 
+	Open and close test database in master environment.
 	Update the client.  Check client, and leave the handle
 	to the client open as we close the masterenv and upgrade
 	the client to master.  Reopen the old master as client
-	and catch up.  Test that we can still do a put to the 
-	handle we created on the master while it was still a 
-	client, and then make sure that the change can be 
-	propagated back to the new client. 
+	and catch up.  Test that we can still do a put to the
+	handle we created on the master while it was still a
+	client, and then make sure that the change can be
+	propagated back to the new client.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep012
@@ -508,6 +523,215 @@ rep013
 	Swap and verify several times.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep014
+	Replication and multiple replication handles.
+	Test multiple client handles, opening and closing to
+	make sure we get the right openfiles.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep015
+	Locking across multiple pages with replication.
+
+	Open master and client with small pagesize and
+	generate more than one page and generate off-page
+	dups on the first page (second key) and last page
+	(next-to-last key).
+	Within a single transaction, for each database, open
+	2 cursors and delete the first and last entries (this
+	exercises locks on regular pages).  Intermittently
+	update client during the process.
+	Within a single transaction, for each database, open
+	2 cursors.  Walk to the off-page dups and delete one
+	from each end (this exercises locks on off-page dups).
+	Intermittently update client.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep016
+	Replication election test with varying required nvotes.
+
+	Run a modified version of test001 in a replicated master environment;
+	hold an election among a group of clients to make sure they select
+	the master with varying required participants.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep017
+	Concurrency with checkpoints.
+
+	Verify that we achieve concurrency in the presence of checkpoints.
+	Here are the checks that we wish to make:
+	While dbenv1 is handling the checkpoint record:
+	Subsequent in-order log records are accepted.
+	Accepted PERM log records get NOTPERM
+	A subsequent checkpoint gets NOTPERM
+	After checkpoint completes, next txn returns PERM
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep018
+	Replication with dbremove.
+
+	Verify that the attempt to remove a database file
+	on the master hangs while another process holds a
+	handle on the client.
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep019
+	Replication and multiple clients at same LSN.
+	Have several clients at the same LSN.  Run recovery at
+	different times.  Declare a client master and after sync-up
+	verify all client logs are identical.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep020
+	Replication elections - test election generation numbers.
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep021
+	Replication and multiple environments.
+	Run similar tests in separate environments, making sure
+	that some data overlaps.  Then, "move" one client env
+	from one replication group to another and make sure that
+	we do not get divergent logs.  We either match the first
+	record and end up with identical logs or we get an error.
+	Verify all client logs are identical if successful.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep022
+	Replication elections - test election generation numbers
+	during simulated network partition.
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep023
+	Replication using two master handles.
+
+	Open two handles on one master env.  Create two
+	databases, one through each master handle.  Process
+	all messages through the first master handle.  Make
+	sure changes made through both handles are picked
+	up properly.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep024
+	Replication page allocation / verify test
+
+	Start a master (site 1) and a client (site 2).  Master
+	closes (simulating a crash).  Site 2 becomes the master
+	and site 1 comes back up as a client.  Verify database.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep026
+	Replication elections - simulate a crash after sending
+	a vote.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep027
+	Replication and secondary indexes.
+
+	Set up a secondary index on the master and make sure
+	it can be accessed from the client.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep028
+	Replication and non-rep env handles. (Also see rep006.)
+
+	Open second non-rep env on client, and create a db
+	through this handle.  Open the db on master and put
+	some data.  Check whether the non-rep handle keeps
+	working.  Also check if opening the client database
+	in the non-rep env writes log records.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep029
+	Test of internal initialization.
+
+	One master, one client.
+	Generate several log files.
+	Remove old master log files.
+	Delete client files and restart client.
+	Put one more record to the master.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep030
+	Test of internal initialization multiple files and pagesizes.
+	Hold some databases open on master.
+
+	One master, one client.
+	Generate several log files.
+	Remove old master log files.
+	Delete client files and restart client.
+	Put one more record to the master.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep031
+	Test of internal initialization and blocked operations.
+
+	One master, one client.
+	Put one more record to the master.
+	Test that internal initialization block log_archive, rename, remove.
+	Sleep 30+ seconds.
+	Test that we can now log_archive, rename, remove.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep032
+	Test of log gap processing.
+
+	One master, one clients.
+	Run rep_test.
+	Run rep_test without sending messages to client.
+	Make sure client missing the messages catches up properly.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep033
+	Test of internal initialization with rename and remove of dbs.
+
+	One master, one client.
+	Generate several databases.  Replicate to client.
+	Do some renames and removes, both before and after
+	closing the client.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep034
+	Test of client startup synchronization.
+
+	One master, two clients.
+	Run rep_test.
+	Close one client and change master to other client.
+	Reopen closed client - enter startup.
+	Run rep_test and we should see live messages and startup complete.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep035
+	Test sync-up recovery in replication.
+
+	We need to fork off 3 child tclsh processes to operate
+	on Site 3's (client always) home directory:
+	Process 1 continually calls lock_detect.
+	Process 2 continually calls txn_checkpoint.
+	Process 3 continually calls memp_trickle.
+	Process 4 continually calls log_archive.
+	Sites 1 and 2 will continually swap being master
+	(forcing site 3 to continually run sync-up recovery)
+	New master performs 1 operation, replicates and downgrades.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep036
+	Multiple master processes writing to the database.
+	One process handles all message processing.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep037
+	Test of internal initialization and page throttling.
+
+	One master, one client, force page throttling.
+	Generate several log files.
+	Remove old master log files.
+	Delete client files and restart client.
+	Put one more record to the master.
+	Verify page throttling occurred.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rpc001
 	Test RPC server timeouts for cursor, txn and env handles.
 
@@ -527,6 +751,12 @@ rpc004
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rpc005
 	Test RPC server handle ID sharing
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rpc006
+	Test RPC server and multiple operations to server.
+	Make sure the server doesn't deadlock itself, but
+	returns DEADLOCK to the client.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rsrc001
@@ -662,6 +892,13 @@ sdb012
 	Test subdbs with locking and transactions
 	Tests creating and removing subdbs while handles
 	are open works correctly, and in the face of txns.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb013
+	Tests in-memory subdatabases.
+	Create an in-memory subdb.  Test for persistence after
+	overflowing the cache.  Test for conflicts when we have
+	two in-memory files.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 sdbtest001
@@ -1251,11 +1488,11 @@ test056
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test057
 	Cursor maintenance during key deletes.
-	Check if we handle the case where we delete a key with the cursor on
-	it and then add the same key.  The cursor should not get the new item
-	returned, but the item shouldn't disappear.
-	Run test tests, one where the overwriting put is done with a put and
-	one where it's done with a cursor put.
+	1.  Delete a key with a cursor.  Add the key back with a regular
+	put.  Make sure the cursor can't get the new item.
+	2.  Put two cursors on one item.  Delete through one cursor,
+	check that the other sees the change.
+	3.  Same as 2, with the two cursors on a duplicate.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test058
@@ -1307,7 +1544,8 @@ test064
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test065
-	Test of DB->stat(DB_FASTSTAT)
+	Test of DB->stat, both -DB_FAST_STAT and row
+	counts with DB->stat -txn.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test066
@@ -1596,6 +1834,26 @@ test106
 
 
 
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test107
+	Test of degree 2 isolation. [#8689]
+
+	We set up a database.  Open a degree 2 transactional
+	cursor and a regular transactional cursor on it.
+	Position each cursor on one page, and do a put to
+	a different page.
+
+	Make sure that:
+	- the put succeeds if we are using degree 2.
+	- the put deadlocks within a regular transaction with
+	a regular cursor.
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test109
+
+	Test of sequences.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 txn001

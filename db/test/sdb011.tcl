@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb011.tcl,v 11.12 2003/04/18 14:39:09 sandstro Exp $
+# $Id: sdb011.tcl,v 11.14 2004/01/28 03:36:29 bostic Exp $
 #
 # TEST	sdb011
 # TEST	Test deleting Subdbs with overflow pages
@@ -58,10 +58,6 @@ proc sdb011 { method {ndups 13} {nsubdbs 10} args} {
 
 	# Here is the loop where we put and get each key/data pair
 	set file_list [get_file_list]
-	if { $max_files != 0 && [llength $file_list] > $max_files } {
-		set fend [expr $max_files - 1]
-		set file_list [lrange $file_list 0 $fend]
-	}
 	set flen [llength $file_list]
 	puts "Subdb011: $method ($args) $ndups overflow dups with \
 	    $flen filename=key filecontents=data pairs"

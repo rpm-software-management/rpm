@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: bt_recno.c,v 11.117 2004/03/28 17:01:01 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: bt_recno.c,v 11.113 2003/06/30 17:19:34 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -89,11 +87,13 @@ static int  __ram_update __P((DBC *, db_recno_t, int));
  * After a search, copy the found page into the cursor, discarding any
  * currently held lock.
  */
-#define	STACK_TO_CURSOR(cp) {						\
+#define	STACK_TO_CURSOR(cp, ret) {					\
+	int __t_ret;							\
 	(cp)->page = (cp)->csp->page;					\
 	(cp)->pgno = (cp)->csp->page->pgno;				\
 	(cp)->indx = (cp)->csp->indx;					\
-	(void)__TLPUT(dbc, (cp)->lock);					\
+	if ((__t_ret = __TLPUT(dbc, (cp)->lock)) != 0 && (ret) == 0)	\
+		ret = __t_ret;						\
 	(cp)->lock = (cp)->csp->lock;					\
 	(cp)->lock_mode = (cp)->csp->lock_mode;				\
 }
@@ -235,7 +235,9 @@ __ram_c_del(dbc)
 	stack = 1;
 
 	/* Copy the page into the cursor. */
-	STACK_TO_CURSOR(cp);
+	STACK_TO_CURSOR(cp, ret);
+	if (ret != 0)
+		goto err;
 
 	/*
 	 * If re-numbering records, the on-page deleted flag can only mean
@@ -495,7 +497,9 @@ retry:	switch (flags) {
 		}
 
 		/* Copy the page into the cursor. */
-		STACK_TO_CURSOR(cp);
+		STACK_TO_CURSOR(cp, ret);
+		if (ret != 0)
+			goto err;
 
 		/*
 		 * If re-numbering records, the on-page deleted flag means this
@@ -653,7 +657,9 @@ split:	if ((ret = __bam_rsearch(dbc, &cp->recno, S_INSERT, 1, &exact)) != 0)
 	DB_ASSERT(exact || CD_ISSET(cp));
 
 	/* Copy the page into the cursor. */
-	STACK_TO_CURSOR(cp);
+	STACK_TO_CURSOR(cp, ret);
+	if (ret != 0)
+		goto err;
 
 	ret = __bam_iitem(dbc, key, data, iiflags, 0);
 	t_ret = __bam_stkrel(dbc, STK_CLRDBC);
@@ -988,7 +994,7 @@ __ram_source(dbp)
 	 * when it comes time to write the database back to the source.
 	 */
 	if ((t->re_fp = fopen(t->re_source, "r")) == NULL) {
-		ret = errno;
+		ret = __os_get_errno();
 		__db_err(dbp->dbenv, "%s: %s", t->re_source, db_strerror(ret));
 		return (ret);
 	}
@@ -1065,13 +1071,13 @@ __ram_writeback(dbp)
 	 */
 	if (t->re_fp != NULL) {
 		if (fclose(t->re_fp) != 0) {
-			ret = errno;
+			ret = __os_get_errno();
 			goto err;
 		}
 		t->re_fp = NULL;
 	}
 	if ((fp = fopen(t->re_source, "w")) == NULL) {
-		ret = errno;
+		ret = __os_get_errno();
 		__db_err(dbenv, "%s: %s", t->re_source, db_strerror(ret));
 		goto err;
 	}
@@ -1093,23 +1099,24 @@ __ram_writeback(dbp)
 	 * and the pad character if we're doing fixed-length records.
 	 */
 	delim = t->re_delim;
-	if (F_ISSET(dbp, DB_AM_FIXEDLEN)) {
-		if ((ret = __os_malloc(dbenv, t->re_len, &pad)) != 0)
-			goto err;
-		memset(pad, t->re_pad, t->re_len);
-	}
 	for (keyno = 1;; ++keyno) {
 		switch (ret = __db_get(dbp, NULL, &key, &data, 0)) {
 		case 0:
-			if (data.size != 0 && (u_int32_t)fwrite(
-			    data.data, 1, data.size, fp) != data.size)
+			if (data.size != 0 &&
+			    fwrite(data.data, 1, data.size, fp) != data.size)
 				goto write_err;
 			break;
 		case DB_KEYEMPTY:
-			if (F_ISSET(dbp, DB_AM_FIXEDLEN) &&
-			    (u_int32_t)fwrite(pad, 1, t->re_len, fp) !=
-			    t->re_len)
-				goto write_err;
+			if (F_ISSET(dbp, DB_AM_FIXEDLEN)) {
+				if (pad == NULL) {
+					if ((ret = __os_malloc(
+					    dbenv, t->re_len, &pad)) != 0)
+						goto err;
+					memset(pad, t->re_pad, t->re_len);
+				}
+				if (fwrite(pad, 1, t->re_len, fp) != t->re_len)
+					goto write_err;
+			}
 			break;
 		case DB_NOTFOUND:
 			ret = 0;
@@ -1119,8 +1126,8 @@ __ram_writeback(dbp)
 		}
 		if (!F_ISSET(dbp, DB_AM_FIXEDLEN) &&
 		    fwrite(&delim, 1, 1, fp) != 1) {
-write_err:		ret = errno;
-			__db_err(dbp->dbenv,
+write_err:		ret = __os_get_errno();
+			__db_err(dbenv,
 			    "%s: write failed to backing file: %s",
 			    t->re_source, strerror(ret));
 			goto err;
@@ -1130,9 +1137,10 @@ write_err:		ret = errno;
 err:
 done:	/* Close the file descriptor. */
 	if (fp != NULL && fclose(fp) != 0) {
+		t_ret = __os_get_errno();
 		if (ret == 0)
-			ret = errno;
-		__db_err(dbenv, "%s: %s", t->re_source, db_strerror(errno));
+			ret = t_ret;
+		__db_err(dbenv, "%s: %s", t->re_source, db_strerror(t_ret));
 	}
 
 	/* Discard the cursor. */
@@ -1275,7 +1283,9 @@ retry:	/* Find the slot for insertion. */
 	stack = 1;
 
 	/* Copy the page into the cursor. */
-	STACK_TO_CURSOR(cp);
+	STACK_TO_CURSOR(cp, ret);
+	if (ret != 0)
+		goto err;
 
 	/*
 	 * The application may modify the data based on the selected record

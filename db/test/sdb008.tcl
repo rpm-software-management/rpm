@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb008.tcl,v 11.30 2003/09/04 23:41:15 bostic Exp $
+# $Id: sdb008.tcl,v 11.31 2004/01/28 03:36:29 bostic Exp $
 #
 # TEST	sdb008
 # TEST	Tests explicit setting of lorders for subdatabases -- the

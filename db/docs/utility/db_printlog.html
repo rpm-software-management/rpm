@@ -1,42 +1,47 @@
-<!--$Id: db_printlog.so,v 10.14 2002/08/24 18:24:53 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_printlog.so,v 10.15 2003/12/10 20:25:45 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: db_printlog</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>db_printlog</h3>
 </td>
-</td></tr></table>
+</tr></table>
 <hr size=1 noshade>
 <tt>
-<h3><pre>db_printlog [<b>-NrV</b>] [<b>-h home</b>] [<b>-P password</b>]</pre></h3>
+<h3><pre>db_printlog [<b>-NrV</b>] [<b>-b start-LSN</b>] [<b>-e stop-LSN</b>] [<b>-h home</b>] [<b>-P password</b>]</pre></h3>
 <h3>Description</h3>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>The db_printlog utility is a debugging utility that dumps Berkeley DB
 log files in a human-readable format.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt><b>-h</b><dd>Specify a home directory for the database environment; by
+<dl compact>
+<dt><b>-b</b><dd>Display log records starting at log sequence number (LSN) <b>start-LSN</b>;
+<b>start-LSN</b> is specified as a file number, followed by a slash (/)
+character, followed by an offset number, with no intervening whitespace.
+<dt><b>-e</b><dd>Stop displaying log records at log sequence number (LSN) <b>stop-LSN</b>;
+<b>stop-LSN</b> is specified as a file number, followed by a slash (/)
+character, followed by an offset number, with no intervening whitespace.
+<dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
-<p><dt><b>-N</b><dd>Do not acquire shared region mutexes while running.  Other problems,
+<dt><b>-N</b><dd>Do not acquire shared region mutexes while running.  Other problems,
 such as potentially fatal errors in Berkeley DB, will be ignored as well.
 This option is intended only for debugging errors, and should not be
 used under any other circumstances.
-<p><dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
+<dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
 password strings as soon as possible, be aware there may be a window of
 vulnerability on systems where unprivileged users can see command-line
 arguments or where utilities are not able to overwrite the memory
 containing the command-line arguments.
-<p><dt><b>-r</b><dd>Read the log files in reverse order.
-<p><dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-r</b><dd>Read the log files in reverse order.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
 </dl>
 <p>For more information on the db_printlog output and using it to
 debug applications, see <a href="../ref/debug/printlog.html">Reviewing
@@ -51,12 +56,12 @@ to release all environment resources and exit cleanly, send it an
 interrupt signal (SIGINT).</p>
 <p>The db_printlog utility exits 0 on success, and &gt;0 if an error occurs.</p>
 <h3>Environment Variables</h3>
-<p><dl compact>
-<p><dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
+<dl compact>
+<dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
 DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

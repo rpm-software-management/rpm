@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb012.tcl,v 1.5 2003/01/08 05:53:10 bostic Exp $
+# $Id: sdb012.tcl,v 1.6 2004/01/28 03:36:29 bostic Exp $
 #
 # TEST	sdb012
 # TEST	Test subdbs with locking and transactions

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: env005.tcl,v 11.19 2003/08/05 13:14:28 sandstro Exp $
+# $Id: env005.tcl,v 11.20 2004/01/28 03:36:27 bostic Exp $
 #
 # TEST	env005
 # TEST	Test that using subsystems without initializing them correctly

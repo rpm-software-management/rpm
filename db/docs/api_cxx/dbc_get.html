@@ -1,23 +1,22 @@
-<!--$Id: dbc_get.so,v 10.108 2003/11/08 19:17:26 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: dbc_get.so,v 10.112 2004/09/28 15:04:19 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Dbc::get</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Dbc::get</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,23 +30,17 @@ Dbc::pget(Dbt *key, Dbt *pkey, Dbt *data, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: Dbc::get</h3>
-<a name="3"><!--meow--></a>
 <p>The Dbc::get method retrieves key/data pairs from the database.  The
-address and length of the key
-are returned in the object to which <b>key</b> refers (except for the
-case of the DB_SET flag, in which the <b>key</b> object is
-unchanged), and the address
-and length of the data are returned in the object to which <b>data</b>
-refers.</p>
+address and length of the key are returned in the object to which
+<b>key</b> refers (except for the case of the DB_SET flag, in
+which the <b>key</b> object is unchanged), and the address and length
+of the data are returned in the object to which <b>data</b> refers.</p>
 <p>When called on a cursor opened on a database that has been made into a
 secondary index using the <a href="../api_cxx/db_associate.html">Db::associate</a> method, the Dbc::get
 and Dbc::pget methods return the key from the secondary index and the
-data item from the primary database. In addition, the
-Dbc::pget method
+data item from the primary database. In addition, the Dbc::pget method
 returns the key from the primary database.  In databases that are not
-secondary indices, the
-Dbc::pget method
-will always fail.</p>
+secondary indices, the Dbc::pget method will always fail.</p>
 <p>Modifications to the database during a sequential scan will be reflected
 in the scan; that is, records inserted behind a cursor will not be
 returned while records inserted in front of a cursor will be returned.</p>
@@ -62,76 +55,65 @@ failure, and returns 0 on success.
 <p>If Dbc::get fails for any reason, the state of the cursor will be
 unchanged.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>data</b><dd>
-The data <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to one of the following values:
-<p><dl compact>
-<p><dt><a name="DB_CURRENT">DB_CURRENT</a><dd>Return the key/data pair to which the cursor refers.
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if DB_CURRENT is set and the cursor key/data pair was deleted.
+<dl compact>
+<dt><b>data</b><dd>The data <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
+<dl compact>
+<dt><a name="DB_CURRENT">DB_CURRENT</a><dd>Return the key/data pair to which the cursor refers.
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if DB_CURRENT is set and the cursor key/data pair was deleted.
 </p>
-<p><dt><a name="DB_FIRST">DB_FIRST</a><dd>The cursor is set to refer to the first key/data pair of the database,
+<dt><a name="DB_FIRST">DB_FIRST</a><dd>The cursor is set to refer to the first key/data pair of the database,
 and that pair is returned.  If the first key has duplicate values, the
 first data item in the set of duplicates is returned.
 <p>If the database is a Queue or Recno database, Dbc::get using the
 DB_FIRST flag will ignore any keys that exist but were never
 explicitly created by the application, or were created and later
 deleted.</p>
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_FIRST is set and the database is empty.
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_FIRST is set and the database is empty.
 </p>
-<p><dt><a name="DB_GET_BOTH">DB_GET_BOTH</a><dd>The DB_GET_BOTH flag is identical to the DB_SET flag,
+<dt><a name="DB_GET_BOTH">DB_GET_BOTH</a><dd>The DB_GET_BOTH flag is identical to the DB_SET flag,
 except that both the key and the data parameters must be matched by the
 key and data item in the database.
-<p>When used with the
-Dbc::pget method
-version of this method on a secondary index handle, both the
-secondary and primary keys must be matched by the secondary and primary
-key item in the database.  It is an error to use the DB_GET_BOTH
-flag with the
-Dbc::get
-version of this method and a cursor that has been opened on a
-secondary index handle.</p>
-<p><dt><a name="DB_GET_BOTH_RANGE">DB_GET_BOTH_RANGE</a><dd>The DB_GET_BOTH_RANGE flag is identical to the DB_GET_BOTH
+<p>When used with the Dbc::pget method version of this method on a
+secondary index handle, both the secondary and primary keys must be
+matched by the secondary and primary key item in the database.  It is
+an error to use the DB_GET_BOTH flag with the Dbc::get
+version of this method and a cursor that has been opened on a secondary
+index handle.</p>
+<dt><a name="DB_GET_BOTH_RANGE">DB_GET_BOTH_RANGE</a><dd>The DB_GET_BOTH_RANGE flag is identical to the DB_GET_BOTH
 flag, except that, in the case of any database supporting sorted
 duplicate sets, the returned key/data pair is the smallest data item
 greater than or equal to the specified data item (as determined by the
 comparison function), permitting partial matches and range searches in
 duplicate data sets.
-<p><dt><a name="DB_GET_RECNO">DB_GET_RECNO</a><dd>Return the record number associated with the cursor.  The record number
+<dt><a name="DB_GET_RECNO">DB_GET_RECNO</a><dd>Return the record number associated with the cursor.  The record number
 will be returned in <b>data</b>, as described in <a href="../api_cxx/dbt_class.html">Dbt</a>.  The
 <b>key</b> parameter is ignored.
 <p>For DB_GET_RECNO to be specified, the underlying database must be
 of type Btree, and it must have been created with the <a href="../api_cxx/db_set_flags.html#DB_RECNUM">DB_RECNUM</a>
 flag.</p>
 <p>When called on a cursor opened on a database that has been made into a
-secondary index, the
-Dbc::get and Dbc::pget methods return
-the record number of the primary database in <b>data</b>.  In addition,
-the
-Dbc::pget method
-returns the record number of the secondary index in <b>pkey</b>.  If
-either underlying database is not of type Btree or is not created with
-the <a href="../api_cxx/db_set_flags.html#DB_RECNUM">DB_RECNUM</a> flag, the out-of-band record number of 0 is
-returned.</p>
-<p><dt><a name="DB_JOIN_ITEM">DB_JOIN_ITEM</a><dd>Do not use the data value found in all of the cursors as a lookup key for
+secondary index, the Dbc::get and Dbc::pget methods return the
+record number of the primary database in <b>data</b>.  In addition, the
+Dbc::pget method returns the record number of the secondary index in
+<b>pkey</b>.  If either underlying database is not of type Btree or is
+not created with the <a href="../api_cxx/db_set_flags.html#DB_RECNUM">DB_RECNUM</a> flag, the out-of-band record
+number of 0 is returned.</p>
+<dt><a name="DB_JOIN_ITEM">DB_JOIN_ITEM</a><dd>Do not use the data value found in all of the cursors as a lookup key for
 the primary database, but simply return it in the key parameter instead.
 The data parameter is left unchanged.
 <p>For DB_JOIN_ITEM to be specified, the underlying cursor must have
 been returned from the <a href="../api_cxx/db_join.html">Db::join</a> method.</p>
-<p><dt><a name="DB_LAST">DB_LAST</a><dd>The cursor is set to refer to the last key/data pair of the database,
+<dt><a name="DB_LAST">DB_LAST</a><dd>The cursor is set to refer to the last key/data pair of the database,
 and that pair is returned.  If the last key has duplicate values, the
 last data item in the set of duplicates is returned.
 <p>If the database is a Queue or Recno database, Dbc::get using the
 DB_LAST flag will ignore any keys that exist but were never
 explicitly created by the application, or were created and later
 deleted.</p>
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_LAST is set and the database is empty.
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_LAST is set and the database is empty.
 </p>
-<p><dt><a name="DB_NEXT">DB_NEXT</a><dd>If the cursor is not yet initialized, DB_NEXT is identical to
+<dt><a name="DB_NEXT">DB_NEXT</a><dd>If the cursor is not yet initialized, DB_NEXT is identical to
 DB_FIRST.  Otherwise, the cursor is moved to the next key/data
 pair of the database, and that pair is returned.  In the presence of
 duplicate key values, the value of the key may not change.
@@ -139,29 +121,26 @@ duplicate key values, the value of the key may not change.
 DB_NEXT flag will skip any keys that exist but were never
 explicitly created by the application, or those that were created and
 later deleted.</p>
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT is set and the cursor is already on the last record
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT is set and the cursor is already on the last record
 in the database.
 </p>
-<p><dt><a name="DB_NEXT_DUP">DB_NEXT_DUP</a><dd>If the next key/data pair of the database is a duplicate data record for
+<dt><a name="DB_NEXT_DUP">DB_NEXT_DUP</a><dd>If the next key/data pair of the database is a duplicate data record for
 the current key/data pair, the cursor is moved to the next key/data pair
 of the database, and that pair is returned.
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT_DUP is set and the next key/data pair of the
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT_DUP is set and the next key/data pair of the
 database is not a duplicate data record for the current key/data pair.
 </p>
-<p><dt><a name="DB_NEXT_NODUP">DB_NEXT_NODUP</a><dd>If the cursor is not yet initialized, DB_NEXT_NODUP is identical
+<dt><a name="DB_NEXT_NODUP">DB_NEXT_NODUP</a><dd>If the cursor is not yet initialized, DB_NEXT_NODUP is identical
 to DB_FIRST.  Otherwise, the cursor is moved to the next
 non-duplicate key of the database, and that key/data pair is returned.
 <p>If the database is a Queue or Recno database, Dbc::get using the
 DB_NEXT_NODUP flag will ignore any keys that exist but were
 never explicitly created by the application, or those that were created
 and later deleted.</p>
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT_NODUP is set and no non-duplicate key/data pairs
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT_NODUP is set and no non-duplicate key/data pairs
 occur after the cursor position in the database.
 </p>
-<p><dt><a name="DB_PREV">DB_PREV</a><dd>If the cursor is not yet initialized, DB_PREV is identical to
+<dt><a name="DB_PREV">DB_PREV</a><dd>If the cursor is not yet initialized, DB_PREV is identical to
 DB_LAST.  Otherwise, the cursor is moved to the previous
 key/data pair of the database, and that pair is returned.  In the
 presence of duplicate key values, the value of the key may not change.
@@ -169,25 +148,22 @@ presence of duplicate key values, the value of the key may not change.
 DB_PREV flag will skip any keys that exist but were never
 explicitly created by the application, or those that were created and
 later deleted.</p>
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV is set and the cursor is already on the first record
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV is set and the cursor is already on the first record
 in the database.
 </p>
-<p><dt><a name="DB_PREV_NODUP">DB_PREV_NODUP</a><dd>If the cursor is not yet initialized, DB_PREV_NODUP is identical
+<dt><a name="DB_PREV_NODUP">DB_PREV_NODUP</a><dd>If the cursor is not yet initialized, DB_PREV_NODUP is identical
 to DB_LAST.  Otherwise, the cursor is moved to the previous
 non-duplicate key of the database, and that key/data pair is returned.
 <p>If the database is a Queue or Recno database, Dbc::get using the
 DB_PREV_NODUP flag will ignore any keys that exist but were
 never explicitly created by the application, or those that were created
 and later deleted.</p>
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV_NODUP is set and no non-duplicate key/data pairs
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV_NODUP is set and no non-duplicate key/data pairs
 occur before the cursor position in the database.
 </p>
-<p><dt><a name="DB_SET">DB_SET</a><dd>Move the cursor to the specified key/data pair of the database, and
+<dt><a name="DB_SET">DB_SET</a><dd>Move the cursor to the specified key/data pair of the database, and
 return the datum associated with the given key.
-<p>
-The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_SET is set and
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_SET is set and
 no matching keys are found.
 The Dbc::get method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if DB_SET is set and the database is a
 Queue or Recno database, and the specified key exists, but was never
@@ -195,29 +171,28 @@ explicitly created by the application or was later deleted.
 In the presence of duplicate key values, Dbc::get will return the
 first data item for the given key.
 </p>
-<p><dt><a name="DB_SET_RANGE">DB_SET_RANGE</a><dd>The DB_SET_RANGE flag is identical to the DB_SET flag,
+<dt><a name="DB_SET_RANGE">DB_SET_RANGE</a><dd>The DB_SET_RANGE flag is identical to the DB_SET flag,
 except that in the case of the Btree access method, the key is returned
 as well as the data item and the returned key/data pair is the smallest
 key greater than or equal to the specified key (as determined by the
 Btree comparison function), permitting partial key matches and range
 searches.
-<p><dt><a name="DB_SET_RECNO">DB_SET_RECNO</a><dd>Move the cursor to the specific numbered record of the database, and
+<dt><a name="DB_SET_RECNO">DB_SET_RECNO</a><dd>Move the cursor to the specific numbered record of the database, and
 return the associated key/data pair.  The <b>data</b> field of the
-specified <b>key</b>
-must be a pointer to a memory location from which a <a href="../api_cxx/dbt_class.html#db_recno_t">db_recno_t</a>
-may be read, as described in <a href="../api_cxx/dbt_class.html">Dbt</a>.  This memory location will be
-read to determine the record to be retrieved.
+specified <b>key</b> must be a pointer to a memory location from which
+a <a href="../api_cxx/dbt_class.html#db_recno_t">db_recno_t</a> may be read, as described in <a href="../api_cxx/dbt_class.html">Dbt</a>.  This
+memory location will be read to determine the record to be retrieved.
 <p>For DB_SET_RECNO to be specified, the underlying database must be
 of type Btree, and it must have been created with the <a href="../api_cxx/db_set_flags.html#DB_RECNUM">DB_RECNUM</a>
 flag.</p>
 </dl>
 In addition, the following flags may be set by
 bitwise inclusively <b>OR</b>'ing them into the <b>flags</b> parameter:
-<p><dl compact>
-<p><dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Read modified but not yet committed data.  Silently ignored if the
+<dl compact>
+<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Read modified but not yet committed data.  Silently ignored if the
 <a href="../api_cxx/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag was not specified when the underlying
 database was opened.
-<p><dt><a name="DB_MULTIPLE">DB_MULTIPLE</a><dd>Return multiple data items in the <b>data</b> parameter.
+<dt><a name="DB_MULTIPLE">DB_MULTIPLE</a><dd>Return multiple data items in the <b>data</b> parameter.
 <p>In the case of Btree or Hash databases, duplicate data items for the
 current key, starting at the current cursor position, are entered into
 the buffer.  Subsequent calls with both the DB_NEXT_DUP and
@@ -242,7 +217,7 @@ least as large as the page size of the underlying database, aligned for
 unsigned integer access, and be a multiple of 1024 bytes in size.  If
 the buffer size is insufficient, then upon return from the call the size
 field of the <b>data</b> parameter will have been set to an estimated
-buffer size, and the error ENOMEM is returned.  (The size is an estimate as the
+buffer size, and the error DB_BUFFER_SMALL is returned.  (The size is an estimate as the
 exact size needed may not be known until all entries are read.  It is
 best to initially provide a relatively large buffer, but applications
 should be prepared to resize the buffer as necessary and repeatedly call
@@ -256,10 +231,10 @@ DB_NEXT_NODUP, DB_SET, DB_SET_RANGE, and
 DB_SET_RECNO options.  The DB_MULTIPLE flag may not be
 used when accessing databases made into secondary indices using the
 <a href="../api_cxx/db_associate.html">Db::associate</a> method.</p>
-<p><dt><a name="DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a><dd>Return multiple key and data pairs in the <b>data</b> parameter.
+<dt><a name="DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a><dd>Return multiple key and data pairs in the <b>data</b> parameter.
 <p>Key and data pairs, starting at the current cursor position, are entered
 into the buffer.  Subsequent calls with both the DB_NEXT and
-DB_MULTIPLE flags specified will return additional key and data
+DB_MULTIPLE_KEY flags specified will return additional key and data
 pairs or <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if there are no additional key and data
 items to return.</p>
 <p>In the case of Btree or Hash databases,
@@ -274,7 +249,7 @@ least as large as the page size of the underlying database, aligned for
 unsigned integer access, and be a multiple of 1024 bytes in size.  If
 the buffer size is insufficient, then upon return from the call the size
 field of the <b>data</b> parameter will have been set to an estimated
-buffer size, and the error ENOMEM is returned.  (The size is an estimate as the
+buffer size, and the error DB_BUFFER_SMALL is returned.  (The size is an estimate as the
 exact size needed may not be known until all entries are read.  It is
 best to initially provide a relatively large buffer, but applications
 should be prepared to resize the buffer as necessary and repeatedly call
@@ -286,16 +261,14 @@ DB_NEXT_NODUP, DB_SET, DB_SET_RANGE, and
 DB_SET_RECNO options.  The DB_MULTIPLE_KEY flag may not
 be used when accessing databases made into secondary indices using the
 <a href="../api_cxx/db_associate.html">Db::associate</a> method.</p>
-<p><dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
 Setting this flag can eliminate deadlock during a read-modify-write
 cycle by acquiring the write lock during the read part of the cycle so
 that another thread of control acquiring a read lock for the same item,
 in its own read-modify-write cycle, will not result in deadlock.
 </dl>
-<p><dt><b>key</b><dd>
-The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
-<p><dt><b>pkey</b><dd>
-The secondary index key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
+<dt><b>key</b><dd>The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
+<dt><b>pkey</b><dd>The secondary index key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
 </dl>
 <h3>Errors</h3>
 <p>The Dbc::get method
@@ -303,19 +276,18 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+<dl compact>
+<dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
 </dl>
-<p><dl compact>
-<p><dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
+<dl compact>
+<dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the DB_CURRENT or DB_NEXT_DUP flags were specified and
+<dl compact>
+<dt>EINVAL<dd>If the DB_CURRENT or DB_NEXT_DUP flags were specified and
 the cursor has not been initialized;
-the
-Dbc::pget method
-was called with a cursor that does not refer to a secondary index; or if an
+the Dbc::pget method was called with a cursor that does not refer to a
+secondary index; or if an
 invalid flag value or parameter was specified.
 </dl>
 <p>If a transactional database environment operation was selected to
@@ -326,8 +298,8 @@ throw a <a href="../api_cxx/deadlock_class.html">DbDeadlockException</a> excepti
 to grant a lock in the allowed time, the Dbc::get method will fail and
 either return <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or
 throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.</p>
-<p>If the requested item could not be returned due to insufficient memory, the Dbc::get method will fail and
-either return ENOMEM or
+<p>If the requested item could not be returned due to undersized buffer, the Dbc::get method will fail and
+either return DB_BUFFER_SMALL or
 throw a <a href="../api_cxx/memp_class.html">DbMemoryException</a> exception.</p>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -338,6 +310,6 @@ throw a <a href="../api_cxx/memp_class.html">DbMemoryException</a> exception.</p
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

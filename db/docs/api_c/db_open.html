@@ -1,23 +1,22 @@
-<!--$Id: db_open.so,v 10.101 2003/12/02 13:38:39 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_open.so,v 10.106 2004/10/06 19:16:06 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;open</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;open</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -38,10 +37,6 @@ DB-&gt;get_transactional(DB *db);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB-&gt;open</h3>
-<a name="3"><!--meow--></a>
-<a name="4"><!--meow--></a>
-<a name="5"><!--meow--></a>
-<a name="6"><!--meow--></a>
 <p>The DB-&gt;open method opens the database represented by the <b>file</b>
 and <b>database</b> parameters for both reading and writing.</p>
 <p>The currently supported Berkeley DB file formats (or <i>access
@@ -64,9 +59,8 @@ If DB-&gt;open fails, the <a href="../api_c/db_close.html">DB-&gt;close</a> meth
 discard the <a href="../api_c/db_class.html">DB</a> handle.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>database</b><dd>
-The <b>database</b> parameter is optional, and allows applications to
+<dl compact>
+<dt><b>database</b><dd>The <b>database</b> parameter is optional, and allows applications to
 have multiple databases in a single file.  Although no <b>database</b>
 parameter needs to be specified, it is an error to attempt to open a
 second database in a <b>file</b> that was not initially created using
@@ -80,41 +74,40 @@ created by setting both the <b>file</b> and <b>database</b> parameters
 to NULL.  Note that in-memory databases can only ever be shared by
 sharing the single database handle that created them, in circumstances
 where doing so is safe.</p>
-<p><dt><b>file</b><dd>
-The <b>file</b> parameter is used as the name of an underlying file that
+<dt><b>file</b><dd>The <b>file</b> parameter is used as the name of an underlying file that
 will be used to back the database.
 <p>In-memory databases never intended to be preserved on disk may be
 created by setting both the <b>file</b> and <b>database</b> parameters
 to NULL.  Note that in-memory databases can only ever be shared by
 sharing the single database handle that created them, in circumstances
 where doing so is safe.</p>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<p>On Windows, the <b>file</b> argument will be interpreted as a UTF-8
+string, which is equivalent to ASCII for Latin characters.</p>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DB-&gt;open call within a transaction.  If the call
+<dl compact>
+<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DB-&gt;open call within a transaction.  If the call
 succeeds, the open operation will be recoverable.  If the call fails,
 no database will have been created.
-<p><dt><a name="DB_CREATE">DB_CREATE</a><dd>Create the database.  If the database does not already exist and the
-DB_CREATE flag is not specified, the DB-&gt;open will
-fail.
-<p><dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Support dirty reads; that is, read operations on the database may
+<dt><a name="DB_CREATE">DB_CREATE</a><dd>Create the database.  If the database does not already exist and the
+DB_CREATE flag is not specified, the DB-&gt;open will fail.
+<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Support dirty reads; that is, read operations on the database may
 request the return of modified but not yet committed data.  This flag
 must be specified on all <a href="../api_c/db_class.html">DB</a> handles used to perform dirty reads
 or database updates, otherwise requests for dirty reads may not be
 honored and the read may block.
-<p><dt><a name="DB_EXCL">DB_EXCL</a><dd>Return an error if the database already exists.  The DB_EXCL
+<dt><a name="DB_EXCL">DB_EXCL</a><dd>Return an error if the database already exists.  The DB_EXCL
 flag is only meaningful when specified with the DB_CREATE
 flag.
-<p><dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Do not map this database into process memory (see the
+<dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Do not map this database into process memory (see the
 <a href="../api_c/env_set_mp_mmapsize.html">DB_ENV-&gt;set_mp_mmapsize</a> method for further information).
-<p><dt><a name="DB_RDONLY">DB_RDONLY</a><dd>Open the database for reading only.  Any attempt to modify items in the
+<dt><a name="DB_RDONLY">DB_RDONLY</a><dd>Open the database for reading only.  Any attempt to modify items in the
 database will fail, regardless of the actual permissions of any
 underlying files.
-<p><dt><a name="DB_THREAD">DB_THREAD</a><dd>Cause the <a href="../api_c/db_class.html">DB</a> handle returned by DB-&gt;open to be
-<i>free-threaded</i>; that is, usable by multiple threads within a
-single address space.
-<p><dt><a name="DB_TRUNCATE">DB_TRUNCATE</a><dd>Physically truncate the underlying file, discarding all previous
+<dt><a name="DB_THREAD">DB_THREAD</a><dd>Cause the <a href="../api_c/db_class.html">DB</a> handle returned by DB-&gt;open to be
+<i>free-threaded</i>; that is, concurrently usable by multiple
+threads in the address space.
+<dt><a name="DB_TRUNCATE">DB_TRUNCATE</a><dd>Physically truncate the underlying file, discarding all previous
 databases it might have held.  Underlying filesystem primitives are used
 to implement this flag.  For this reason, it is applicable only to the
 file and cannot be used to discard databases within a file.
@@ -122,31 +115,28 @@ file and cannot be used to discard databases within a file.
 and it is an error to specify it in a locking or transaction-protected
 environment.</p>
 </dl>
-<p><dt><b>mode</b><dd>
-On UNIX systems or in IEEE/ANSI Std 1003.1 (POSIX) environments, all files created by
-the database open are created with mode <b>mode</b> (as described in <b>chmod</b>(2)) and modified by the process' umask value at the time of creation
-(see <b>umask</b>(2)).  If <b>mode</b> is 0, the database open will use a default
-mode of readable and writable by both owner and group.  On Windows
-systems, the mode parameter is ignored. The group ownership of created
-files is based on the system and directory defaults, and is not further
-specified by Berkeley DB.
-<p><dt><b>txnid</b><dd>
-If the operation is to be transaction-protected,
+<dt><b>mode</b><dd>On Windows systems, the mode parameter is ignored.
+<p>On UNIX systems or in IEEE/ANSI Std 1003.1 (POSIX) environments, files created by the database open
+are created with mode <b>mode</b> (as described in <b>chmod</b>(2))
+and modified by the process' umask value at the time of creation (see
+<b>umask</b>(2)).  Created files are owned by the process owner; the
+group ownership of created files is based on the system and directory
+defaults, and is not further specified by Berkeley DB.  System shared memory
+segments created by the database open are created with mode <b>mode</b>, unmodified
+by the process' umask value.  If <b>mode</b> is 0, the database open will use a
+default mode of readable and writable by both owner and group.</p>
+<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
 (other than by specifying the DB_AUTO_COMMIT flag),
 the <b>txnid</b> parameter is a transaction handle returned from
 <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  Note that transactionally protected operations on a <a href="../api_c/db_class.html">DB</a> handle
 requires the <a href="../api_c/db_class.html">DB</a> handle itself be transactionally protected
 during its open.
-<p><dt><b>type</b><dd>
-The <b>type</b> parameter
-is of type DBTYPE, and
-must be set to one of <a name="DB_BTREE">DB_BTREE</a>,
-<a name="DB_HASH">DB_HASH</a>, <a name="DB_QUEUE">DB_QUEUE</a>,
-<a name="DB_RECNO">DB_RECNO</a>, or <a name="DB_UNKNOWN">DB_UNKNOWN</a>.  If
-<b>type</b> is DB_UNKNOWN, the database must already exist
-and DB-&gt;open will automatically determine its type.  The
-<a href="../api_c/db_get_type.html">DB-&gt;get_type</a> method may be used to determine the underlying type of
-databases opened using DB_UNKNOWN.
+<dt><b>type</b><dd>The <b>type</b> parameter is of type DBTYPE, and must be set to one of
+<a name="DB_BTREE">DB_BTREE</a>, <a name="DB_HASH">DB_HASH</a>, <a name="DB_QUEUE">DB_QUEUE</a>,
+<a name="DB_RECNO">DB_RECNO</a>, or <a name="DB_UNKNOWN">DB_UNKNOWN</a>.  If <b>type</b> is
+DB_UNKNOWN, the database must already exist and DB-&gt;open will
+automatically determine its type.  The <a href="../api_c/db_get_type.html">DB-&gt;get_type</a> method may be used
+to determine the underlying type of databases opened using DB_UNKNOWN.
 </dl>
 <h3>Environment Variables</h3>
 <p>If the database was opened within a database environment, the
@@ -155,31 +145,31 @@ database environment home.</p>
 <p>DB-&gt;open is affected by any database directory specified using
 the <a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> method, or by setting the "set_data_dir" string
 in the environment's <b>DB_CONFIG</b> file.</p>
-<p><dl compact>
-<p><dt>TMPDIR<dd>If the <b>file</b> and <b>dbenv</b> parameters to DB-&gt;open are
+<dl compact>
+<dt>TMPDIR<dd>If the <b>file</b> and <b>dbenv</b> parameters to DB-&gt;open are
 NULL, the environment variable <b>TMPDIR</b> may be used as a
 directory in which to create temporary backing files
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;open method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
+<dl compact>
+<dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
 a deadlock.
-<p><dt>DB_LOCK_NOTGRANTED<dd>A Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
+<dt>DB_LOCK_NOTGRANTED<dd>A Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
 to grant a lock in the allowed time.
 </dl>
-<p><dl compact>
-<p><dt>ENOENT<dd>The file or directory does not exist.
+<dl compact>
+<dt>ENOENT<dd>The file or directory does not exist.
 </dl>
-<p><dl compact>
-<p><dt>DB_OLD_VERSION<dd>The database cannot be opened without being first upgraded.
+<dl compact>
+<dt>DB_OLD_VERSION<dd>The database cannot be opened without being first upgraded.
 </dl>
-<p><dl compact>
-<p><dt>EEXIST<dd>DB_CREATE and DB_EXCL were specified and the database exists.
+<dl compact>
+<dt>EEXIST<dd>DB_CREATE and DB_EXCL were specified and the database exists.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>If an unknown database type, page size, hash function, pad byte, byte
+<dl compact>
+<dt>EINVAL<dd>If an unknown database type, page size, hash function, pad byte, byte
 order, or a flag value or parameter that is incompatible with the
 specified database was specified;
 the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag was specified and fast mutexes are not
@@ -192,11 +182,11 @@ flag or the provided database environment supports transaction
 processing; or if an
 invalid flag value or parameter was specified.
 </dl>
-<p><dl compact>
-<p><dt>ENOENT<dd>A nonexistent <b>re_source</b> file was specified.
+<dl compact>
+<dt>ENOENT<dd>A nonexistent <b>re_source</b> file was specified.
 </dl>
-<p><dl compact>
-<p><dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+<dl compact>
+<dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
 </dl>
 <hr size=1 noshade>
@@ -204,12 +194,10 @@ unrolled a committed transaction.
 <p>The DB-&gt;get_database method returns the current filename and database
 name.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>filenamep</b><dd>
-The <b>filenamep</b> parameter references memory into which
+<dl compact>
+<dt><b>filenamep</b><dd>The <b>filenamep</b> parameter references memory into which
 a pointer to the current filename is copied.
-<p><dt><b>dbnamep</b><dd>
-The <b>dbnamep</b> parameter references memory into which
+<dt><b>dbnamep</b><dd>The <b>dbnamep</b> parameter references memory into which
 a pointer to the current database name is copied.
 </dl>
 <p>The DB-&gt;get_database method may be called at any time during the life of the
@@ -228,9 +216,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flagsp</b><dd>
-The DB-&gt;get_open_flags method returns  the
+<dl compact>
+<dt><b>flagsp</b><dd>The DB-&gt;get_open_flags method returns  the
 current open method flags in <b>flagsp</b>.
 </dl>
 <hr size=1 noshade>
@@ -248,6 +235,6 @@ application.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

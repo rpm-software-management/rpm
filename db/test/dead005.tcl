@@ -1,28 +1,28 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: dead005.tcl,v 11.13 2003/05/28 14:33:48 sandstro Exp $
+# $Id: dead005.tcl,v 11.15 2004/03/17 15:17:17 bostic Exp $
 #
 # Deadlock Test 5.
 # Test out the minlocks, maxlocks, and minwrites options
 # to the deadlock detector.
-proc dead005 { { procs "4 6 10" } {tests "maxlocks minwrites minlocks" } \
-    { tnum "005" } } {
+proc dead005 { { procs "4 6 10" } \
+    {tests "maxlocks maxwrites minlocks minwrites" } { tnum "005" } } {
 	source ./include.tcl
 
-	puts "Dead$tnum: minlocks, maxlocks, and minwrites deadlock detection tests"
 	foreach t $tests {
-		puts "Dead$tnum.$t: creating environment"
+		puts "Dead$tnum.$t: deadlock detection tests"
 		env_cleanup $testdir
 
 		# Create the environment.
 		set env [berkdb_env -create -mode 0644 -lock -home $testdir]
 		error_check_good lock_env:open [is_valid_env $env] TRUE
 		case $t {
-			minlocks { set to n }
 			maxlocks { set to m }
+			maxwrites { set to W }
+			minlocks { set to n }
 			minwrites { set to w }
 		}
 		foreach n $procs {
@@ -67,9 +67,10 @@ proc dead005 { { procs "4 6 10" } {tests "maxlocks minwrites minlocks" } \
 			# Now verify that the correct participant
 			# got deadlocked.
 			switch $t {
+				maxlocks {set f [expr $n - 1]}
+				maxwrites {set f 2}
 				minlocks {set f 0}
 				minwrites {set f 1}
-				maxlocks {set f [expr $n - 1]}
 			}
 			set did [open $testdir/dead$tnum.log.$f]
 			error_check_bad file:$t [gets $did val] -1

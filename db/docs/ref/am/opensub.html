@@ -1,12 +1,12 @@
-<!--$Id: opensub.so,v 10.15 2003/04/15 16:47:37 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: opensub.so,v 10.17 2004/08/25 17:34:14 mjc Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Opening multiple databases in a single file</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -21,7 +21,7 @@ reasonably small, in order to avoid creating a large number of
 underlying files, or when it is desirable to include secondary index
 databases in the same file as the primary index database.  Multiple
 databases are an administrative convenience and using them is unlikely
-to effect database performance.  To open or create a file that will
+to affect database performance.  To open or create a file that will
 include more than a single database, specify a database name when
 calling the <a href="../../api_c/db_open.html">DB-&gt;open</a> method.</p>
 <p>Physical files do not need to be comprised of a single type of database,
@@ -34,48 +34,48 @@ standard Berkeley DB file size and disk space limitations.</p>
 not initially created using a database name, that is, the file must
 initially be specified as capable of containing multiple databases for a
 second database to be created in it.</p>
-<p>It is not an error to open a file that contains multiple databases without
-specifying a database name, however the database type should be specified
-as DB_UNKNOWN and the database must be opened read-only.  The handle that
-is returned from such a call is a handle on a database whose key values
-are the names of the databases stored in the database file and whose data
-values are opaque objects.  No keys or data values may be modified or
-stored using this database handle.</p>
-<p>Storing multiple databases in a single file is identical to storing each
-database in a separate file with the exception of some configuration
-information and the likely need for locking and a shared underlying
-memory pool.</p>
-<p>There are four types of configuration information which must be specified
-consistently for all databases in a file, rather than differing on a
-per-database basis.  They are: byte order, checksum and encryption
-behavior, and page size.  When creating additional databases in a file,
-any of these configuration values specified must be consistent with the
-existing databases in the file or an error will be returned.</p>
+<p>It is not an error to open a file that contains multiple databases
+without specifying a database name, however the database type should be
+specified as DB_UNKNOWN and the database must be opened read-only.  The
+handle that is returned from such a call is a handle on a database whose
+key values are the names of the databases stored in the database file
+and whose data values are opaque objects.  No keys or data values may be
+modified or stored using this database handle.</p>
+<p>The main difference when storing multiple databases in a single file
+rather than in separate files is that <b>if any of the databases
+in a file is opened for updates, all of the databases in the file must
+share a memory pool</b>.  In other words, they must be opened in the same
+environment.  In addition, there are some constraints on configuration
+information that apply to databases in the same file.</p>
 <p>
-An additional difference is how locking and the underlying memory pool
-services must to be configured.  As an example, consider two databases
-instantiated in two different physical files.  If access to each
-separate database is single-threaded, there is no reason to perform any
-locking of any kind, and the two databases may be read and written
-simultaneously.  Further, there would be no requirement to create a
-shared database environment in which to open the databases.</p>
-<p>Because multiple databases in a file exist in a single physical file,
-opening two databases in the same file requires locking be enabled
-(unless access to the databases is known to be single-threaded, that
-is, only one of the databases is ever read or written at a time).
-As the locks for the two databases can only conflict during page
-allocation, this additional locking is unlikely to effect performance.</p>
+If databases are in separate files, and access to each separate database
+is single-threaded, there is no reason to perform any locking of any
+kind, and the two databases may be read and written simultaneously.
+Further, there would be no requirement to create a shared database
+environment in which to open the databases.</p>
+<p>However, since multiple databases in a file exist in a single physical
+file, opening two databases in the same file simultaneously requires
+locking be enabled unless all of the handles are read-only.  As the
+locks for the two databases can only conflict during page allocation,
+this additional locking is unlikely to affect performance.</p>
 <p>Also, because multiple databases in a file exist in a single physical
 file, opening two databases in the same file requires the databases
 share an underlying memory pool so that per-physical-file information
 common between the two databases is updated correctly.</p>
-<p>In summary, programmers writing applications that open multiple databases
-in a single file will almost certainly need to create a shared database
-environment in the application as well.  For more information on
-database environments, see <a href="../../ref/env/intro.html">Database
+<p>In summary, programmers writing applications that open multiple
+databases in a single file will almost certainly need to create a shared
+database environment in the application as well.  For more information
+on database environments, see <a href="../../ref/env/intro.html">Database
 environment introduction.</a></p>
+<p>In addition, there are four types of configuration information which
+must be specified consistently for all databases in a file, rather than
+differing on a per-database basis.  They are: byte order, checksum and
+encryption behavior, and page size.  When creating additional databases
+in a file, any of these configuration values specified must be
+consistent with the existing databases in the file or an error will be
+returned.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am/open.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/get.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

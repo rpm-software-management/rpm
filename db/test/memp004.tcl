@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: memp004.tcl,v 1.4 2003/01/20 05:07:07 mjc Exp $
+# $Id: memp004.tcl,v 1.5 2004/01/28 03:36:28 bostic Exp $
 #
 
 # TEST	memp004

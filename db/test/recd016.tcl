@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: recd016.tcl,v 11.11 2003/01/08 05:52:06 bostic Exp $
+# $Id: recd016.tcl,v 11.13 2004/07/07 19:08:21 carol Exp $
 #
 # TEST	recd016
 # TEST	Test recovery after checksum error.
@@ -174,4 +174,6 @@ proc recd016 { method args} {
 	}
 	error_check_good db_close [$db close] 0
 	error_check_good env_close [$dbenv close] 0
+	set fixed_len $orig_fixed_len
+	return
 }

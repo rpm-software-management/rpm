@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2003
+ * Copyright (c) 1998-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_am.c,v 11.120 2004/10/07 17:33:32 sue Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_am.c,v 11.112 2003/09/13 19:23:42 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -29,11 +27,6 @@ static const char revid[] = "$Id: db_am.c,v 11.112 2003/09/13 19:23:42 bostic Ex
 
 static int __db_append_primary __P((DBC *, DBT *, DBT *));
 static int __db_secondary_get __P((DB *, DB_TXN *, DBT *, DBT *, u_int32_t));
-static int __db_secondary_close __P((DB *, u_int32_t));
-
-#ifdef DEBUG
-static int __db_cprint_item __P((DBC *));
-#endif
 
 /*
  * __db_cursor_int --
@@ -52,7 +45,7 @@ __db_cursor_int(dbp, txn, dbtype, root, is_opd, lockerid, dbcp)
 	u_int32_t lockerid;
 	DBC **dbcp;
 {
-	DBC *dbc, *adbc;
+	DBC *dbc;
 	DBC_INTERNAL *cp;
 	DB_ENV *dbenv;
 	int allocated, ret;
@@ -89,15 +82,22 @@ __db_cursor_int(dbp, txn, dbtype, root, is_opd, lockerid, dbcp)
 		/* Set up locking information. */
 		if (LOCKING_ON(dbenv)) {
 			/*
-			 * If we are not threaded, then there is no need to
-			 * create new locker ids.  We know that no one else
-			 * is running concurrently using this DB, so we can
-			 * take a peek at any cursors on the active queue.
+			 * If we are not threaded, we share a locker ID among
+			 * all cursors opened in the environment handle,
+			 * allocating one if this is the first cursor.
+			 *
+			 * This relies on the fact that non-threaded DB handles
+			 * always have non-threaded environment handles, since
+			 * we set DB_THREAD on DB handles created with threaded
+			 * environment handles.
 			 */
-			if (!DB_IS_THREADED(dbp) &&
-			    (adbc = TAILQ_FIRST(&dbp->active_queue)) != NULL)
-				dbc->lid = adbc->lid;
-			else {
+			if (!DB_IS_THREADED(dbp)) {
+				if (dbp->dbenv->env_lid == DB_LOCK_INVALIDID &&
+				    (ret =
+				    __lock_id(dbenv,&dbp->dbenv->env_lid)) != 0)
+					goto err;
+				dbc->lid = dbp->dbenv->env_lid;
+			} else {
 				if ((ret = __lock_id(dbenv, &dbc->lid)) != 0)
 					goto err;
 				F_SET(dbc, DBC_OWN_LID);
@@ -201,10 +201,8 @@ __db_cursor_int(dbp, txn, dbtype, root, is_opd, lockerid, dbcp)
 			dbc->locker = lockerid;
 		else
 			dbc->locker = dbc->lid;
-	} else {
+	} else
 		dbc->locker = txn->txnid;
-		txn->cursors++;
-	}
 
 	/*
 	 * These fields change when we are used as a secondary index, so
@@ -247,6 +245,14 @@ __db_cursor_int(dbp, txn, dbtype, root, is_opd, lockerid, dbcp)
 		goto err;
 	}
 
+	/*
+	 * The transaction keeps track of how many cursors were opened within
+	 * it to catch application errors where the cursor isn't closed when
+	 * the transaction is resolved.
+	 */
+	if (txn != NULL)
+		++txn->cursors;
+
 	MUTEX_THREAD_LOCK(dbenv, dbp->mutexp);
 	TAILQ_INSERT_TAIL(&dbp->active_queue, dbc, links);
 	F_SET(dbc, DBC_ACTIVE);
@@ -259,96 +265,6 @@ err:	if (allocated)
 		__os_free(dbenv, dbc);
 	return (ret);
 }
-
-#ifdef DEBUG
-/*
- * __db_cprint --
- *	Display the cursor active and free queues.
- *
- * PUBLIC: int __db_cprint __P((DB *));
- */
-int
-__db_cprint(dbp)
-	DB *dbp;
-{
-	DBC *dbc;
-	int ret, t_ret;
-
-	ret = 0;
-	MUTEX_THREAD_LOCK(dbp->dbenv, dbp->mutexp);
-	fprintf(stderr, "Active queue:\n");
-	for (dbc = TAILQ_FIRST(&dbp->active_queue);
-	    dbc != NULL; dbc = TAILQ_NEXT(dbc, links))
-		if ((t_ret = __db_cprint_item(dbc)) != 0 && ret == 0)
-			ret = t_ret;
-	fprintf(stderr, "Join queue:\n");
-	for (dbc = TAILQ_FIRST(&dbp->join_queue);
-	    dbc != NULL; dbc = TAILQ_NEXT(dbc, links))
-		if ((t_ret = __db_cprint_item(dbc)) != 0 && ret == 0)
-			ret = t_ret;
-	fprintf(stderr, "Free queue:\n");
-	for (dbc = TAILQ_FIRST(&dbp->free_queue);
-	    dbc != NULL; dbc = TAILQ_NEXT(dbc, links))
-		if ((t_ret = __db_cprint_item(dbc)) != 0 && ret == 0)
-			ret = t_ret;
-	MUTEX_THREAD_UNLOCK(dbp->dbenv, dbp->mutexp);
-
-	return (ret);
-}
-
-static
-int __db_cprint_item(dbc)
-	DBC *dbc;
-{
-	static const FN fn[] = {
-		{ DBC_ACTIVE,		"active" },
-		{ DBC_COMPENSATE,	"compensate" },
-		{ DBC_OPD,		"off-page-dup" },
-		{ DBC_RECOVER,		"recover" },
-		{ DBC_RMW,		"read-modify-write" },
-		{ DBC_TRANSIENT,	"transient" },
-		{ DBC_WRITECURSOR,	"write cursor" },
-		{ DBC_WRITER,		"short-term write cursor" },
-		{ 0,			NULL }
-	};
-	DB *dbp;
-	DBC_INTERNAL *cp;
-	const char *s;
-
-	dbp = dbc->dbp;
-	cp = dbc->internal;
-
-	s = __db_dbtype_to_string(dbc->dbtype);
-	fprintf(stderr, "%s/%#lx: opd: %#lx\n",
-	    s, P_TO_ULONG(dbc), P_TO_ULONG(cp->opd));
-
-	fprintf(stderr, "\ttxn: %#lx lid: %lu locker: %lu\n",
-	    P_TO_ULONG(dbc->txn), (u_long)dbc->lid, (u_long)dbc->locker);
-
-	fprintf(stderr, "\troot: %lu page/index: %lu/%lu",
-	    (u_long)cp->root, (u_long)cp->pgno, (u_long)cp->indx);
-
-	__db_prflags(dbc->flags, fn, stderr);
-	fprintf(stderr, "\n");
-
-	switch (dbp->type) {
-	case DB_BTREE:
-	case DB_RECNO:
-		__bam_cprint(dbc);
-		break;
-	case DB_HASH:
-		__ham_cprint(dbc);
-		break;
-	case DB_UNKNOWN:
-		DB_ASSERT(dbp->type != DB_UNKNOWN);
-		/* FALLTHROUGH */
-	case DB_QUEUE:
-	default:
-		break;
-	}
-	return (0);
-}
-#endif /* DEBUG */
 
 /*
  * __db_put --
@@ -601,7 +517,7 @@ __db_sync(dbp)
 	if (dbp->type == DB_RECNO)
 		ret = __ram_writeback(dbp);
 
-	/* If the database was never backed by a databse file, we're done. */
+	/* If the database was never backed by a database file, we're done. */
 	if (F_ISSET(dbp, DB_AM_INMEM))
 		return (ret);
 
@@ -645,7 +561,7 @@ __db_associate(dbp, txn, sdbp, callback, flags)
 	sdbp->get = __db_secondary_get;
 
 	sdbp->stored_close = sdbp->close;
-	sdbp->close = __db_secondary_close;
+	sdbp->close = __db_secondary_close_pp;
 
 	F_SET(sdbp, DB_AM_SECONDARY);
 
@@ -771,7 +687,7 @@ __db_secondary_get(sdbp, txn, skey, data, flags)
 {
 
 	DB_ASSERT(F_ISSET(sdbp, DB_AM_SECONDARY));
-	return (__db_pget(sdbp, txn, skey, NULL, data, flags));
+	return (__db_pget_pp(sdbp, txn, skey, NULL, data, flags));
 }
 
 /*
@@ -779,8 +695,10 @@ __db_secondary_get(sdbp, txn, skey, data, flags)
  *	Wrapper function for DB->close() which we use on secondaries to
  *	manage refcounting and make sure we don't close them underneath
  *	a primary that is updating.
+ *
+ * PUBLIC: int __db_secondary_close __P((DB *, u_int32_t));
  */
-static int
+int
 __db_secondary_close(sdbp, flags)
 	DB *sdbp;
 	u_int32_t flags;

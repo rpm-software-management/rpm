@@ -1,38 +1,10 @@
 #!/bin/sh -
 #
-# $Id: chk.javas,v 1.4 2003/11/21 02:39:41 bostic Exp $
+# $Id: chk.javas,v 1.6 2004/09/29 01:12:08 bostic Exp $
 #
 # Check to make sure that the java code samples in the documents build.
 
-docs=../../../db.docs
 
-[ -d $d ] || {
-	echo "FAIL: $d: cannot find document sources."
-	exit 1
-}
-[ -f ../db.jar ] || (cd .. && make db.jar) || {
-	echo 'FAIL: unable to find or build db.jar'
-	exit 1
-}
-
-for i in `find $docs -name '*.javas'`; do
-	echo "	compiling $i"
-	sed -e 's/m4_[a-z]*[(\[)]*//g' \
-	    -e 's/(\[//g' \
-	    -e 's/\])//g' \
-	    -e 's/dnl//g' \
-	    -e 's/[ \t]*public class[ \t]*/ class /g' \
-	    -e 's/^[ \t]*\.\.\.[ \t]*$//' \
-	    -e 's/__GT__/>/g' \
-	    -e 's/__LB__/[/g' \
-	    -e 's/__LT__/</g' \
-	    -e 's/__RB__/]/g' < $i > t.java
-	if javac -classpath ../db.jar t.java; then
-		:
-	else
-		echo "FAIL: unable to compile $i"
-		exit 1
-	fi
-done
-
+# There isn't any Java sample code left in the Reference Guide.  This test
+# left as a placeholder so I don't have to renumber all of the other tests.
 exit 0

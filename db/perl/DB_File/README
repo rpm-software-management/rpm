@@ -1,10 +1,10 @@
                                      DB_File
 
-                                  Version 1.807
+                                  Version 1.810
 
-                                  1st Nov 2003
+                                 7th August 2004
 
- 	Copyright (c) 1995-2003 Paul Marquess. All rights reserved. This
+ 	Copyright (c) 1995-2004 Paul Marquess. All rights reserved. This
 	program is free software; you can redistribute it and/or modify
 	it under the same terms as Perl itself.
 
@@ -454,6 +454,37 @@ IRIX NOTES
 If you are running IRIX, and want to use Berkeley DB version 1, you can
 get it from http://reality.sgi.com/ariel. It has the patches necessary
 to compile properly on IRIX 5.3.
+
+AIX NOTES
+---------
+
+I've had replrts of a build failure like this on AIX 5.2 using the
+xlC compiler.
+
+        rm -f blib/arch/auto/DB_File/DB_File.so
+        LD_RUN_PATH="" ld  -bhalt:4 -bM:SRE -bI:/usr/local/5.8.1/lib/perl5/5.8.1/aix/CORE/perl.exp -bE:DB_File.exp -bnoentry -lc
+    -L/usr/local/lib version.o DB_File.o  -o blib/arch/auto/DB_File/DB_File.so
+    -L/usr/local/BerkeleyDB/lib -ldb -lpthread
+    ld: 0711-317 ERROR: Undefined symbol: .mutex_lock
+    ld: 0711-317 ERROR: Undefined symbol: .cond_signal
+    ld: 0711-317 ERROR: Undefined symbol: .mutex_unlock
+    ld: 0711-317 ERROR: Undefined symbol: .mutex_trylock
+    ld: 0711-317 ERROR: Undefined symbol: .cond_wait
+    ld: 0711-317 ERROR: Undefined symbol: .mutex_init
+    ld: 0711-317 ERROR: Undefined symbol: .cond_init
+    ld: 0711-317 ERROR: Undefined symbol: .mutex_destroy
+    ld: 0711-345 Use the -bloadmap or -bnoquiet option to obtain more information.
+    make: 1254-004 The error code from the last command is 8.
+
+Editing Makefile.PL, and changing the line 
+
+    $LIBS .= " -lpthread" if $^O eq 'aix' ;
+
+to this
+
+    $LIBS .= " -lthread" if $^O eq 'aix' ;
+
+fixed the problem.
 
 
 FEEDBACK

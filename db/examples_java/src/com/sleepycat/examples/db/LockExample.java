@@ -1,53 +1,55 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: LockExample.java,v 11.12 2003/03/21 23:28:38 gburd Exp $
+ * $Id: LockExample.java,v 11.14 2004/04/06 20:43:35 mjc Exp $
  */
-
 
 package com.sleepycat.examples.db;
 
 import com.sleepycat.db.*;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
 
 //
-// An example of a program using DbLock and related classes.
+// An example of a program using Lock and related classes.
 //
-class LockExample extends DbEnv
-{
+class LockExample {
     private static final String progname = "LockExample";
-    private static final String LOCK_HOME = "TESTDIR";
+    private static final File LOCK_HOME = new File("TESTDIR");
+    Environment dbenv;
 
-    public LockExample(String home, int maxlocks, boolean do_unlink)
-         throws DbException, FileNotFoundException
-    {
-        super(0);
+    public LockExample(File home, int maxlocks, boolean do_unlink)
+        throws DatabaseException, FileNotFoundException {
+
         if (do_unlink) {
-            remove(home, Db.DB_FORCE);
+            Environment.remove(home, true, null);
         }
-        else {
-            setErrorStream(System.err);
-            setErrorPrefix("LockExample");
-            if (maxlocks != 0)
-                setLockMaxLocks(maxlocks);
-            open(home, Db.DB_CREATE|Db.DB_INIT_LOCK, 0);
-        }
+
+        EnvironmentConfig config = new EnvironmentConfig();
+        config.setErrorStream(System.err);
+        config.setErrorPrefix("LockExample");
+        config.setMaxLocks(maxlocks);
+        config.setAllowCreate(true);
+        config.setInitializeLocking(true);
+        dbenv = new Environment(home, config);
+    }
+
+    public void close() throws DatabaseException {
+        dbenv.close();
     }
 
     // Prompts for a line, and keeps prompting until a non blank
     // line is returned.  Returns null on erroror.
     //
-    static public String askForLine(InputStreamReader reader,
-                                    PrintStream out, String prompt)
-    {
+    public static String askForLine(InputStreamReader reader,
+                                    PrintStream out, String prompt) {
         String result = "";
         while (result != null && result.length() == 0) {
             out.print(prompt);
@@ -62,17 +64,14 @@ class LockExample extends DbEnv
     // Returns null on EOF.  If EOF appears in the middle
     // of a line, returns that line, then null on next call.
     //
-    static public String getLine(InputStreamReader reader)
-    {
+    public static String getLine(InputStreamReader reader) {
         StringBuffer b = new StringBuffer();
         int c;
         try {
-            while ((c = reader.read()) != -1 && c != '\n') {
+            while ((c = reader.read()) != -1 && c != '\n')
                 if (c != '\r')
                     b.append((char)c);
-            }
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             c = -1;
         }
 
@@ -82,9 +81,7 @@ class LockExample extends DbEnv
             return b.toString();
     }
 
-    public void run()
-         throws DbException
-    {
+    public void run() throws DatabaseException {
         long held;
         int len = 0, locker;
         int ret;
@@ -96,7 +93,7 @@ class LockExample extends DbEnv
         //
         // Accept lock requests.
         //
-        locker = lockId();
+        locker = dbenv.createLockerID();
         for (held = 0;;) {
             String opbuf = askForLine(in, System.out,
                                       "Operation get/release [get]> ");
@@ -107,7 +104,7 @@ class LockExample extends DbEnv
                 if (opbuf.equals("get")) {
                     // Acquire a lock.
                     String objbuf = askForLine(in, System.out,
-                                   "input object (text string) to lock> ");
+                           "input object (text string) to lock> ");
                     if (objbuf == null)
                         break;
 
@@ -122,18 +119,17 @@ class LockExample extends DbEnv
                              !lockbuf.equals("read") &&
                              !lockbuf.equals("write"));
 
-                    int lock_type;
+                    LockRequestMode lock_type;
                     if (len <= 1 || lockbuf.equals("read"))
-                        lock_type = Db.DB_LOCK_READ;
+                        lock_type = LockRequestMode.READ;
                     else
-                        lock_type = Db.DB_LOCK_WRITE;
+                        lock_type = LockRequestMode.WRITE;
 
-                    Dbt dbt = new Dbt(objbuf.getBytes());
+                    DatabaseEntry entry = new DatabaseEntry(objbuf.getBytes());
 
-                    DbLock lock;
+                    Lock lock;
                     did_get = true;
-                    lock = lockGet(locker, Db.DB_LOCK_NOWAIT,
-                                    dbt, lock_type);
+                    lock = dbenv.getLock(locker, true, entry, lock_type);
                     lockid = locks.size();
                     locks.addElement(lock);
                 } else {
@@ -150,22 +146,19 @@ class LockExample extends DbEnv
                         continue;
                     }
                     did_get = false;
-                    DbLock lock = (DbLock)locks.elementAt(lockid);
-                    lockPut(lock);
+                    Lock lock = (Lock)locks.elementAt(lockid);
+                    dbenv.putLock(lock);
                 }
                 System.out.println("Lock #" + lockid + " " +
                                    (did_get ? "granted" : "released"));
                 held += did_get ? 1 : -1;
-            }
-            catch (DbLockNotGrantedException lnge) {
+            } catch (LockNotGrantedException lnge) {
                 System.err.println("Lock not granted");
-            }
-            catch (DbDeadlockException de) {
+            } catch (DeadlockException de) {
                 System.err.println("LockExample: lock_" +
                                    (did_get ? "get" : "put") +
                                    ": returned DEADLOCK");
-            }
-            catch (DbException dbe) {
+            } catch (DatabaseException dbe) {
                 System.err.println("LockExample: lock_get: " + dbe.toString());
             }
         }
@@ -174,15 +167,13 @@ class LockExample extends DbEnv
                            " locks held");
     }
 
-    private static void usage()
-    {
+    private static void usage() {
         System.err.println("usage: LockExample [-u] [-h home] [-m maxlocks]");
         System.exit(1);
     }
 
-    public static void main(String argv[])
-    {
-        String home = LOCK_HOME;
+    public static void main(String[] argv) {
+        File home = LOCK_HOME;
         boolean do_unlink = false;
         int maxlocks = 0;
 
@@ -190,42 +181,30 @@ class LockExample extends DbEnv
             if (argv[i].equals("-h")) {
                 if (++i >= argv.length)
                     usage();
-                home = argv[i];
-            }
-            else if (argv[i].equals("-m")) {
+                home = new File(argv[i]);
+            } else if (argv[i].equals("-m")) {
                 if (++i >= argv.length)
                     usage();
 
                 try {
                     maxlocks = Integer.parseInt(argv[i]);
-                }
-                catch (NumberFormatException nfe) {
+                } catch (NumberFormatException nfe) {
                     usage();
                 }
-            }
-            else if (argv[i].equals("-u")) {
+            } else if (argv[i].equals("-u")) {
                 do_unlink = true;
-            }
-            else {
+            } else {
                 usage();
             }
         }
 
         try {
-            if (do_unlink) {
-                // Create an environment that immediately
-                // removes all files.
-                LockExample tmp = new LockExample(home, maxlocks, do_unlink);
-            }
-
             LockExample app = new LockExample(home, maxlocks, do_unlink);
             app.run();
-            app.close(0);
-        }
-        catch (DbException dbe) {
+            app.close();
+        } catch (DatabaseException dbe) {
             System.err.println(progname + ": " + dbe.toString());
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             System.err.println(progname + ": " + t.toString());
         }
         System.out.println("LockExample completed");

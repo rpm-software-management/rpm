@@ -1,12 +1,12 @@
-<!--$Id: intro.so,v 10.47 2002/04/04 03:56:29 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.50 2004/04/16 19:02:01 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Introduction</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -47,13 +47,16 @@ and what part is undo information.</p>
 system call.  After all requests are issued, the application may call
 <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a>.  When <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a> returns, the caller is
 guaranteed that all necessary log writes have been written to disk.</p>
-<p>At any time before issuing a <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a>,
-the application may call <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a>, which will
-result in restoration of the database to a consistent pretransaction
-state.  (The application may specify its own recovery function for this
-purpose using the <a href="../../api_c/env_set_app_dispatch.html">DB_ENV-&gt;set_app_dispatch</a> method.  The recovery
-function must be able to either reapply or undo the update depending on
-the context, for each different type of log record.)</p>
+<p>At any time before issuing a <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a>, the application may
+call <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a>, which will result in restoration of the database
+to a consistent pretransaction state.  (The application may specify its
+own recovery function for this purpose using the
+<a href="../../api_c/env_set_app_dispatch.html">DB_ENV-&gt;set_app_dispatch</a> method.  The recovery function must be able to
+either reapply or undo the update depending on the context, for each
+different type of log record. The recovery functions must not use Berkeley DB
+methods to access data in the environment as there is no way to
+coordinate these accesses with either the aborting transaction or the
+updates done by recovery or replication.)</p>
 <p>If the application crashes, the recovery process uses the log to restore
 the database to a consistent state.</p>
 <p>Berkeley DB includes tools to assist in the development of application-specific
@@ -72,6 +75,6 @@ usable on any system, not just POSIX systems.</p>
 in the Berkeley DB distribution, in the directory <b>examples_c/ex_apprec</b>.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../xa/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/def.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

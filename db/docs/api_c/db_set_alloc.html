@@ -1,24 +1,23 @@
 <!--$Id: db_set_alloc.so,v 10.3 2002/08/18 21:15:51 bostic Exp $-->
-<!--$Id: env_set_alloc.so,v 1.21 2003/11/08 19:17:28 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_alloc.so,v 1.22 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;set_alloc</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;set_alloc</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -70,8 +69,8 @@ and 0 on success.
 <h3>Errors</h3>
 <p>The DB-&gt;set_alloc method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If Called in a database environment.
+<dl compact>
+<dt>EINVAL<dd>If Called in a database environment.
 <p>Called after <a href="../api_c/db_open.html">DB-&gt;open</a> was called.</p>; or if an
 invalid flag value or parameter was specified.
 </dl>
@@ -84,6 +83,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,17 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_checkpoint.c,v 11.54 2004/03/24 15:13:12 bostic Exp $
  */
 
 #include "db_config.h"
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
-static const char revid[] =
-    "$Id: db_checkpoint.c,v 11.51 2003/09/04 18:57:00 bostic Exp $";
+    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -193,7 +193,7 @@ db_checkpoint_main(argc, argv)
 	while (!__db_util_interrupted()) {
 		if (verbose) {
 			(void)time(&now);
-			dbenv->errx(dbenv, "checkpoint: %s", ctime(&now));
+			dbenv->errx(dbenv, "checkpoint begin: %s", ctime(&now));
 		}
 
 		if ((ret = dbenv->txn_checkpoint(dbenv,
@@ -202,10 +202,16 @@ db_checkpoint_main(argc, argv)
 			goto shutdown;
 		}
 
+		if (verbose) {
+			(void)time(&now);
+			dbenv->errx(dbenv,
+			    "checkpoint complete: %s", ctime(&now));
+		}
+
 		if (once)
 			break;
 
-		(void)__os_sleep(dbenv, seconds, 0);
+		__os_sleep(dbenv, seconds, 0);
 	}
 
 	if (0) {

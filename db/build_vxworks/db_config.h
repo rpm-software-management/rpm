@@ -54,8 +54,14 @@
 /* Define to 1 if fcntl/F_SETFD denies child access to file descriptors. */
 /* #undef HAVE_FCNTL_F_SETFD */
 
+/* Define to 1 if you have the `fdatasync' function. */
+/* #undef HAVE_FDATASYNC */
+
 /* Define to 1 if allocated filesystem blocks are not zeroed. */
 #define HAVE_FILESYSTEM_NOTZERO 1
+
+/* Define to 1 if you have the `ftruncate' function. */
+/* #undef HAVE_FTRUNCATE */
 
 /* Define to 1 if you have the `getcwd' function. */
 #define HAVE_GETCWD 1
@@ -80,6 +86,9 @@
 
 /* Define to 1 if you have the `nsl' library (-lnsl). */
 /* #undef HAVE_LIBNSL */
+
+/* Define to 1 if the system has the type `long long'. */
+/* #undef HAVE_LONG_LONG */
 
 /* Define to 1 if you have the `memcmp' function. */
 #define HAVE_MEMCMP 1
@@ -228,6 +237,9 @@
 /* Define to 1 if you have the `raise' function. */
 #define HAVE_RAISE 1
 
+/* Define to 1 if you have the `rand' function. */
+#define HAVE_RAND 1
+
 /* Define to 1 if building replication support. */
 #define HAVE_REPLICATION 1
 
@@ -240,11 +252,20 @@
 /* Define to 1 if you have the `select' function. */
 #define HAVE_SELECT 1
 
+/* Define to 1 if building sequence support. */
+/* #undef HAVE_SEQUENCE */
+
 /* Define to 1 if you have the `shmget' function. */
 /* #undef HAVE_SHMGET */
 
 /* Define to 1 if you have the `snprintf' function. */
 /* #undef HAVE_SNPRINTF */
+
+/* Define to 1 if you have the `srand' function. */
+#define HAVE_SRAND 1
+
+/* Define to 1 if building statistics support. */
+#define HAVE_STATISTICS 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
 /* #undef HAVE_STDINT_H */
@@ -305,6 +326,9 @@
 /* Define to 1 if unlink of file with open file descriptors will fail. */
 #define HAVE_UNLINK_WITH_OPEN_FAILURE 1
 
+/* Define to 1 if the system has the type `unsigned long long'. */
+/* #undef HAVE_UNSIGNED_LONG_LONG */
+
 /* Define to 1 if building access method verification support. */
 #define HAVE_VERIFY 1
 
@@ -330,13 +354,13 @@
 #define PACKAGE_NAME "Berkeley DB"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Berkeley DB 4.2.52"
+#define PACKAGE_STRING "Berkeley DB 4.3.14"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "db-4.2.52"
+#define PACKAGE_TARNAME "db-4.3.14"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.2.52"
+#define PACKAGE_VERSION "4.3.14"
 
 /* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
 /* #undef STAT_MACROS_BROKEN */
@@ -347,7 +371,7 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 /* #undef TIME_WITH_SYS_TIME */
 
-/* Define to 1 to mask harmless unitialized memory read/writes. */
+/* Define to 1 to mask harmless uninitialized memory read/writes. */
 /* #undef UMRW */
 
 /* Number of bits in a file offset, on hosts where this is settable. */

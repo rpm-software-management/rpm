@@ -1,15 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: qam_stub.c,v 1.12 2004/06/14 15:23:33 bostic Exp $
  */
+
 #include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: qam_stub.c,v 1.7 2003/10/28 18:52:34 bostic Exp $";
-#endif /* not lint */
-
+#ifndef	HAVE_QUEUE
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 #endif
@@ -40,12 +40,10 @@ __db_no_queue_am(dbenv)
 }
 
 int
-__db_prqueue(dbp, fp, flags)
+__db_prqueue(dbp, flags)
 	DB *dbp;
-	FILE *fp;
 	u_int32_t flags;
 {
-	COMPQUIET(fp, NULL);
 	COMPQUIET(flags, 0);
 	return (__db_no_queue_am(dbp->dbenv));
 }
@@ -133,18 +131,6 @@ __qam_gen_filelist(dbp, filelistp)
 {
 	COMPQUIET(filelistp, NULL);
 	return (__db_no_queue_am(dbp->dbenv));
-}
-
-int
-__qam_init_getpgnos(dbenv, dtabp, dtabsizep)
-	DB_ENV *dbenv;
-	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
-	size_t *dtabsizep;
-{
-	COMPQUIET(dbenv, NULL);
-	COMPQUIET(dtabp, NULL);
-	COMPQUIET(dtabsizep, NULL);
-	return (0);
 }
 
 int
@@ -265,6 +251,15 @@ __qam_stat(dbc, spp, flags)
 }
 
 int
+__qam_stat_print(dbc, flags)
+	DBC *dbc;
+	u_int32_t flags;
+{
+	COMPQUIET(flags, 0);
+	return (__db_no_queue_am(dbc->dbp->dbenv));
+}
+
+int
 __qam_sync(dbp)
 	DB *dbp;
 {
@@ -336,3 +331,4 @@ __qam_vrfy_walkqueue(dbp, vdp, handle, callback, flags)
 	COMPQUIET(flags, 0);
 	return (__db_no_queue_am(dbp->dbenv));
 }
+#endif	/* !HAVE_QUEUE */

@@ -1,23 +1,22 @@
-<!--$Id: rep_limit.so,v 1.16 2003/11/18 13:55:13 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: rep_limit.so,v 1.18 2004/09/28 15:04:22 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_rep_limit</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;set_rep_limit</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DB_ENV-&gt;get_rep_limit(DB_ENV *dbenv, u_int32_t *gbytesp, u_int32_t *bytesp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;set_rep_limit</h3>
-<a name="3"><!--meow--></a>
 <p>The DB_ENV-&gt;set_rep_limit method imposes a byte-count limit on the amount of data
 that will be transmitted from a site in a single call to <a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.</p>
 <p>The DB_ENV-&gt;set_rep_limit method configures a database environment, not only operations
@@ -43,12 +41,10 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>bytes</b><dd>
-The <b>gbytes</b> and <b>bytes</b> parameters specify the maximum
+<dl compact>
+<dt><b>bytes</b><dd>The <b>gbytes</b> and <b>bytes</b> parameters specify the maximum
 number of bytes that will be sent in a single call to <a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.
-<p><dt><b>gbytes</b><dd>
-The <b>gbytes</b> and <b>bytes</b> parameters specify the maximum
+<dt><b>gbytes</b><dd>The <b>gbytes</b> and <b>bytes</b> parameters specify the maximum
 number of bytes that will be sent in a single call to <a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.
 </dl>
 <hr size=1 noshade>
@@ -60,12 +56,10 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>bytesp</b><dd>
-The <b>bytesp</b> parameter references memory into which
+<dl compact>
+<dt><b>bytesp</b><dd>The <b>bytesp</b> parameter references memory into which
  the additional bytes of memory in the current transmit limit is copied.
-<p><dt><b>gbytesp</b><dd>
-The <b>gbytesp</b> parameter references memory into which
+<dt><b>gbytesp</b><dd>The <b>gbytesp</b> parameter references memory into which
  the gigabytes of memory in the in the current transmit limit is copied.
 </dl>
 <hr size=1 noshade>
@@ -77,6 +71,6 @@ The <b>gbytesp</b> parameter references memory into which
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

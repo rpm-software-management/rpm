@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp.h,v 11.52 2003/07/08 20:14:19 ubell Exp $
+ * $Id: mp.h,v 11.61 2004/09/17 22:00:27 mjc Exp $
  */
 
 #ifndef	_DB_MP_H_
@@ -85,7 +85,7 @@ struct __db_mpreg {
  *	more frequent than a random data page.
  */
 #define	NCACHE(mp, mf_offset, pgno)					\
-	(((pgno) ^ ((mf_offset) >> 3)) % ((MPOOL *)mp)->nreg)
+	(((pgno) ^ ((u_int32_t)(mf_offset) >> 3)) % ((MPOOL *)mp)->nreg)
 
 /*
  * NBUCKET --
@@ -126,6 +126,12 @@ struct __mpool {
 
 	SH_TAILQ_HEAD(__mpfq) mpfq;	/* List of MPOOLFILEs. */
 
+	/* Configuration information: protected by the region lock. */
+	size_t mp_mmapsize;		/* Maximum file size for mmap. */
+	int    mp_maxopenfd;		/* Maximum open file descriptors. */
+	int    mp_maxwrite;		/* Maximum buffers to write. */
+	int    mp_maxwrite_sleep;	/* Sleep after writing max buffers. */
+
 	/*
 	 * The nreg, regids and maint_off fields are not thread protected,
 	 * as they are initialized during mpool creation, and not modified
@@ -148,7 +154,7 @@ struct __mpool {
 	 * The last_checked and lru_count fields are thread protected by
 	 * the region lock.
 	 */
-	int	  htab_buckets;	/* Number of hash table entries. */
+	u_int32_t htab_buckets;	/* Number of hash table entries. */
 	roff_t	  htab;		/* Hash table offset. */
 	u_int32_t last_checked;	/* Last bucket checked for free. */
 	u_int32_t lru_count;		/* Counter for buffer LRU */
@@ -176,6 +182,17 @@ struct __db_mpool_hash {
 
 	u_int32_t	hash_page_dirty;/* Count of dirty pages. */
 	u_int32_t	hash_priority;	/* Minimum priority of bucket buffer. */
+
+#ifdef	HPUX_MUTEX_PAD
+	/*
+	 * !!!
+	 * We allocate the mpool hash buckets as an array, which means that
+	 * they are not individually aligned.  This fails on one platform:
+	 * HPUX 10.20, where mutexes require 16 byte alignment.   This is a
+	 * grievous hack for that single platform.
+	 */
+	u_int8_t	pad[HPUX_MUTEX_PAD];
+#endif
 };
 
 /*
@@ -183,7 +200,7 @@ struct __db_mpool_hash {
  * When the LRU counter wraps, we shift everybody down to a base-relative
  * value.
  */
-#define	MPOOL_BASE_DECREMENT	(UINT32_T_MAX - (UINT32_T_MAX / 4))
+#define	MPOOL_BASE_DECREMENT	(UINT32_MAX - (UINT32_MAX / 4))
 
 /*
  * Mpool priorities from low to high.  Defined in terms of fractions of the
@@ -243,14 +260,18 @@ struct __mpoolfile {
 	 * There are potential races with the file_written field (many threads
 	 * may be writing blocks at the same time), and with no_backing_file
 	 * and unlink_on_close fields, as they may be set while other threads
-	 * are reading them.  However, we only care if the value of these fields
-	 * are zero or non-zero, so don't lock the memory.
+	 * are reading them.  However, we only care if the field value is zero
+	 * or non-zero, so don't lock the memory.
 	 *
 	 * !!!
 	 * Theoretically, a 64-bit architecture could put two of these fields
 	 * in a single memory operation and we could race.  I have never seen
 	 * an architecture where that's a problem, and I believe Java requires
 	 * that to never be the case.
+	 *
+	 * File_written is set whenever a buffer is marked dirty in the cache.
+	 * It can be cleared in some cases, after all dirty buffers have been
+	 * written AND the file has been flushed to disk.
 	 */
 	int32_t	  file_written;		/* File was written. */
 	int32_t	  no_backing_file;	/* Never open a backing file. */
@@ -280,15 +301,22 @@ struct __mpoolfile {
 	 */
 #define	MP_CAN_MMAP		0x001	/* If the file can be mmap'd. */
 #define	MP_DIRECT		0x002	/* No OS buffering. */
-#define	MP_EXTENT		0x004	/* Extent file. */
-#define	MP_FAKE_DEADFILE	0x008	/* Deadfile field: fake flag. */
-#define	MP_FAKE_FILEWRITTEN	0x010	/* File_written field: fake flag. */
-#define	MP_FAKE_NB		0x020	/* No_backing_file field: fake flag. */
-#define	MP_FAKE_UOC		0x040	/* Unlink_on_close field: fake flag. */
-#define	MP_NOT_DURABLE		0x080	/* File is not durable. */
-#define	MP_TEMP			0x100	/* Backing file is a temporary. */
+#define	MP_DURABLE_UNKNOWN	0x004	/* We don't care about durability. */
+#define	MP_EXTENT		0x008	/* Extent file. */
+#define	MP_FAKE_DEADFILE	0x010	/* Deadfile field: fake flag. */
+#define	MP_FAKE_FILEWRITTEN	0x020	/* File_written field: fake flag. */
+#define	MP_FAKE_NB		0x040	/* No_backing_file field: fake flag. */
+#define	MP_FAKE_UOC		0x080	/* Unlink_on_close field: fake flag. */
+#define	MP_NOT_DURABLE		0x100	/* File is not durable. */
+#define	MP_TEMP			0x200	/* Backing file is a temporary. */
 	u_int32_t  flags;
 };
+
+/*
+ * Flags to __memp_bh_free.
+ */
+#define	BH_FREE_FREEMEM		0x01
+#define	BH_FREE_UNLOCKED	0x02
 
 /*
  * BH --

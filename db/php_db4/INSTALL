@@ -1,0 +1,33 @@
+To install this php module linked against the mod_db4 framework,
+execute the following steps:
+
+> phpize
+> ./configure --with-db4[=/path/to/db4]
+--with-mod_db4=$APACHE_INCLUDEDIR
+> make
+> su -
+# make install
+
+Then in your php.ini file add:
+
+extension=db4.so
+
+This extension will now only run in a SAPI linked into Apache httpd
+(mod_php4, 
+most likely), and will take advantage of all of it's auto-recovery and
+handle-caching facilities.
+
+
+To install this php module linked against db-4.2 and NOT the mod_db4
+framework,
+execute the following steps:
+
+> phpize
+> ./configure --with-db4[=/path/to/db4]
+> make
+> su -
+# make install
+
+Then in your php.ini file add:
+
+extension=db4.so

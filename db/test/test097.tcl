@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test097.tcl,v 11.10 2003/01/08 05:54:11 bostic Exp $
+# $Id: test097.tcl,v 11.11 2004/01/28 03:36:32 bostic Exp $
 #
 # TEST	test097
 # TEST	Open up a large set of database files simultaneously.

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_tpcb.h,v 11.7 2003/01/08 04:44:03 bostic Exp $
+ * $Id: ex_tpcb.h,v 11.8 2004/01/28 03:36:03 bostic Exp $
  */
 
 #ifndef _TPCB_H_

@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -38,13 +38,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * $Id: bt_search.c,v 11.50 2004/07/23 17:21:09 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: bt_search.c,v 11.47 2003/06/30 17:19:35 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -85,12 +83,13 @@ __bam_search(dbc, root_pgno, key, flags, stop, recnop, exactp)
 	db_lockmode_t lock_mode;
 	db_pgno_t pg;
 	db_recno_t recno;
-	int adjust, cmp, deloffset, ret, stack;
+	int adjust, cmp, deloffset, ret, stack, t_ret;
 	int (*func) __P((DB *, const DBT *, const DBT *));
 
 	dbp = dbc->dbp;
 	mpf = dbp->mpf;
 	cp = (BTREE_CURSOR *)dbc->internal;
+	h = NULL;
 	t = dbp->bt_internal;
 	recno = 0;
 
@@ -135,8 +134,11 @@ try_again:
 	if (!stack &&
 	    ((LF_ISSET(S_PARENT) && (u_int8_t)(stop + 1) >= h->level) ||
 	    (LF_ISSET(S_WRITE) && h->level == LEAFLEVEL))) {
-		(void)__memp_fput(mpf, h, 0);
-		(void)__LPUT(dbc, lock);
+		ret = __memp_fput(mpf, h, 0);
+		if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
+			ret = t_ret;
+		if (ret != 0)
+			return (ret);
 		lock_mode = DB_LOCK_WRITE;
 		if ((ret = __db_lget(dbc, 0, pg, lock_mode, 0, &lock)) != 0)
 			return (ret);
@@ -149,8 +151,11 @@ try_again:
 		    (u_int8_t)(stop + 1) >= h->level) ||
 		    (LF_ISSET(S_WRITE) && h->level == LEAFLEVEL))) {
 			/* Someone else split the root, start over. */
-			(void)__memp_fput(mpf, h, 0);
-			(void)__LPUT(dbc, lock);
+			ret = __memp_fput(mpf, h, 0);
+			if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
+				ret = t_ret;
+			if (ret != 0)
+				return (ret);
 			goto try_again;
 		}
 		stack = 1;
@@ -198,13 +203,19 @@ try_again:
 		if (TYPE(h) == P_LBTREE || TYPE(h) == P_LDUP) {
 			*exactp = 0;
 
-			if (LF_ISSET(S_EXACT))
-				goto notfound;
+			if (LF_ISSET(S_EXACT)) {
+				ret = DB_NOTFOUND;
+				goto err;
+			}
 
 			if (LF_ISSET(S_STK_ONLY)) {
 				BT_STK_NUM(dbp->dbenv, cp, h, base, ret);
-				__LPUT(dbc, lock);
-				(void)__memp_fput(mpf, h, 0);
+				if ((t_ret =
+				    __LPUT(dbc, lock)) != 0 && ret == 0)
+					ret = t_ret;
+				if ((t_ret =
+				    __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+					ret = t_ret;
 				return (ret);
 			}
 
@@ -244,12 +255,17 @@ next:		if (recnop != NULL)
 		if (LF_ISSET(S_STK_ONLY)) {
 			if (stop == h->level) {
 				BT_STK_NUM(dbp->dbenv, cp, h, indx, ret);
-				__LPUT(dbc, lock);
-				(void)__memp_fput(mpf, h, 0);
+				if ((t_ret =
+				    __LPUT(dbc, lock)) != 0 && ret == 0)
+					ret = t_ret;
+				if ((t_ret =
+				    __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+					ret = t_ret;
 				return (ret);
 			}
 			BT_STK_NUMPUSH(dbp->dbenv, cp, h, indx, ret);
 			(void)__memp_fput(mpf, h, 0);
+			h = NULL;
 			if ((ret = __db_lget(dbc,
 			    LCK_COUPLE_ALWAYS, pg, lock_mode, 0, &lock)) != 0) {
 				/*
@@ -257,7 +273,7 @@ next:		if (recnop != NULL)
 				 * is OK because it only happens when descending
 				 * the tree holding read-locks.
 				 */
-				__LPUT(dbc, lock);
+				(void)__LPUT(dbc, lock);
 				return (ret);
 			}
 		} else if (stack) {
@@ -273,6 +289,7 @@ next:		if (recnop != NULL)
 			    cp, h, indx, lock, lock_mode, ret);
 			if (ret != 0)
 				goto err;
+			h = NULL;
 
 			lock_mode = DB_LOCK_WRITE;
 			if ((ret =
@@ -289,7 +306,9 @@ next:		if (recnop != NULL)
 			    (h->level - 1) == LEAFLEVEL)
 				stack = 1;
 
-			(void)__memp_fput(mpf, h, 0);
+			if ((ret = __memp_fput(mpf, h, 0)) != 0)
+				goto err;
+			h = NULL;
 
 			lock_mode = stack &&
 			    LF_ISSET(S_WRITE) ? DB_LOCK_WRITE : DB_LOCK_READ;
@@ -300,7 +319,7 @@ next:		if (recnop != NULL)
 				 * is OK because this only happens when we are
 				 * descending the tree holding read-locks.
 				 */
-				__LPUT(dbc, lock);
+				(void)__LPUT(dbc, lock);
 				goto err;
 			}
 		}
@@ -357,8 +376,10 @@ found:	*exactp = 1;
 		 * If we weren't able to find a non-deleted duplicate, return
 		 * DB_NOTFOUND.
 		 */
-		if (B_DISSET(GET_BKEYDATA(dbp, h, indx + deloffset)->type))
-			goto notfound;
+		if (B_DISSET(GET_BKEYDATA(dbp, h, indx + deloffset)->type)) {
+			ret = DB_NOTFOUND;
+			goto err;
+		}
 
 		/*
 		 * Increment the record counter to point to the found element.
@@ -381,23 +402,27 @@ found:	*exactp = 1;
 
 	if (LF_ISSET(S_STK_ONLY)) {
 		BT_STK_NUM(dbp->dbenv, cp, h, indx, ret);
-		__LPUT(dbc, lock);
-		(void)__memp_fput(mpf, h, 0);
-	} else {
+		if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
+			ret = t_ret;
+		if ((t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+			ret = t_ret;
+	} else
 		BT_STK_ENTER(dbp->dbenv, cp, h, indx, lock, lock_mode, ret);
-		if (ret != 0)
-			goto err;
-	}
+	if (ret != 0)
+		goto err;
+
 	return (0);
 
-notfound:
-	/* Keep the page locked for serializability. */
-	(void)__memp_fput(mpf, h, 0);
-	(void)__TLPUT(dbc, lock);
-	ret = DB_NOTFOUND;
+err:	if (h != NULL && (t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+		ret = t_ret;
 
-err:	BT_STK_POP(cp);
+	/* Keep any not-found page locked for serializability. */
+	if ((t_ret = __TLPUT(dbc, lock)) != 0 && ret == 0)
+		ret = t_ret;
+
+	BT_STK_POP(cp);
 	__bam_stkrel(dbc, 0);
+
 	return (ret);
 }
 
@@ -446,10 +471,12 @@ __bam_stkrel(dbc, flags)
 			 */
 			epg->page = NULL;
 		}
-		if (LF_ISSET(STK_NOLOCK))
-			(void)__LPUT(dbc, epg->lock);
-		else
-			(void)__TLPUT(dbc, epg->lock);
+		if (LF_ISSET(STK_NOLOCK)) {
+			if ((t_ret = __LPUT(dbc, epg->lock)) != 0 && ret == 0)
+				ret = t_ret;
+		} else
+			if ((t_ret = __TLPUT(dbc, epg->lock)) != 0 && ret == 0)
+				ret = t_ret;
 	}
 
 	/* Clear the stack, all pages have been released. */

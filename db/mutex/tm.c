@@ -127,7 +127,7 @@ main(argc, argv)
 	 *	TM[nthreads]		per-thread mutex array
 	 *	TM[maxlocks]		per-lock mutex array
 	 */
-	align = ALIGN(sizeof(TM), MUTEX_ALIGN);
+	align = DB_ALIGN(sizeof(TM), MUTEX_ALIGN);
 	len = align * (1 + nthreads * nprocs + maxlocks);
 
 	switch (rtype) {
@@ -253,7 +253,7 @@ run_locker(id)
 #endif
 	int status;
 
-	(void)__os_sleep(&dbenv, 3, 0);		/* Let everyone catch up. */
+	__os_sleep(&dbenv, 3, 0);		/* Let everyone catch up. */
 
 	srand((u_int)time(NULL) % getpid());	/* Initialize random numbers. */
 
@@ -348,7 +348,7 @@ run_lthread(arg)
 		 * we still hold the mutex.
 		 */
 		for (i = 0; i < 3; ++i) {
-			(void)__os_sleep(&dbenv, 0, rand() % 3);
+			__os_sleep(&dbenv, 0, rand() % 3);
 			if (mp->id != id) {
 				fprintf(stderr,
 				    "RACE! (%03lu stole lock %d from %03lu)\n",
@@ -427,7 +427,7 @@ run_lthread(arg)
 			if (nl == 0)
 				break;
 
-			(void)__os_sleep(&dbenv, 0, rand() % 500);
+			__os_sleep(&dbenv, 0, rand() % 500);
 		}
 	}
 
@@ -443,7 +443,7 @@ run_wakeup(id)
 	int status;
 	void *retp;
 #endif
-	(void)__os_sleep(&dbenv, 3, 0);		/* Let everyone catch up. */
+	__os_sleep(&dbenv, 3, 0);		/* Let everyone catch up. */
 
 	srand((u_int)time(NULL) % getpid());	/* Initialize random numbers. */
 
@@ -543,7 +543,7 @@ run_wthread(arg)
 			return ((void *)EXIT_FAILURE);
 		}
 
-		(void)__os_sleep(&dbenv, 0, rand() % 3);
+		__os_sleep(&dbenv, 0, rand() % 3);
 	}
 	return (NULL);
 }

@@ -1,15 +1,13 @@
 /*
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2003
+ * Copyright (c) 1998-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_join.c,v 11.75 2004/09/22 03:30:23 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_join.c,v 11.65 2003/10/07 18:55:39 mjc Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -68,7 +66,7 @@ static int __db_join_put __P((DBC *, DBT *, DBT *, u_int32_t));
  * cursor method of a DB, join cursors are created through an explicit
  * call to DB->join.
  *
- * The curslist is an array of existing, intialized cursors and primary
+ * The curslist is an array of existing, initialized cursors and primary
  * is the DB of the primary file.  The data item that joins all the
  * cursors in the curslist is used as the key into the primary and that
  * key and data are returned.  When no more items are left in the join
@@ -229,7 +227,7 @@ err:	if (jc != NULL) {
 			__os_free(dbenv, jc->j_curslist);
 		if (jc->j_workcurs != NULL) {
 			if (jc->j_workcurs[0] != NULL)
-				__os_free(dbenv, jc->j_workcurs[0]);
+				(void)__db_c_close(jc->j_workcurs[0]);
 			__os_free(dbenv, jc->j_workcurs);
 		}
 		if (jc->j_fdupcurs != NULL)
@@ -262,13 +260,13 @@ __db_join_close_pp(dbc)
 
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 0, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 0, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	ret = __db_join_close(dbc);
 
 	if (handle_check)
-		__env_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -311,7 +309,8 @@ __db_join_get_pp(dbc, key, data, flags)
 {
 	DB *dbp;
 	DB_ENV *dbenv;
-	u_int32_t handle_check, ret, save_flags;
+	u_int32_t handle_check, save_flags;
+	int ret;
 
 	dbp = dbc->dbp;
 	dbenv = dbp->dbenv;
@@ -321,11 +320,11 @@ __db_join_get_pp(dbc, key, data, flags)
 
 	PANIC_CHECK(dbenv);
 
-	if (LF_ISSET(DB_DIRTY_READ | DB_RMW)) {
+	if (LF_ISSET(DB_DIRTY_READ | DB_DEGREE_2 | DB_RMW)) {
 		if (!LOCKING_ON(dbp->dbenv))
 			return (__db_fnl(dbp->dbenv, "DBcursor->c_get"));
 
-		LF_CLR(DB_DIRTY_READ | DB_RMW);
+		LF_CLR(DB_DIRTY_READ | DB_DEGREE_2 | DB_RMW);
 	}
 
 	switch (flags) {
@@ -355,7 +354,7 @@ __db_join_get_pp(dbc, key, data, flags)
 
 	handle_check = IS_REPLICATED(dbp->dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 1, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 1, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	/* Restore the original flags value. */
@@ -364,7 +363,7 @@ __db_join_get_pp(dbc, key, data, flags)
 	ret = __db_join_get(dbc, key, data, flags);
 
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -391,7 +390,7 @@ __db_join_get(dbc, key_arg, data_arg, flags)
 	 * If the set of flags here changes, check that __db_join_primget
 	 * is updated to handle them properly.
 	 */
-	opmods = LF_ISSET(DB_RMW | DB_DIRTY_READ);
+	opmods = LF_ISSET(DB_RMW | DB_DEGREE_2 | DB_DIRTY_READ);
 
 	/*
 	 * Since we are fetching the key as a datum in the secondary indices,
@@ -423,7 +422,7 @@ __db_join_get(dbc, key_arg, data_arg, flags)
 retry:	ret = __db_c_get(jc->j_workcurs[0], &jc->j_key, key_n,
 	    opmods | (jc->j_exhausted[0] ? DB_NEXT_DUP : DB_CURRENT));
 
-	if (ret == ENOMEM) {
+	if (ret == DB_BUFFER_SMALL) {
 		jc->j_key.ulen <<= 1;
 		if ((ret = __os_realloc(dbp->dbenv,
 		    jc->j_key.ulen, &jc->j_key.data)) != 0)
@@ -473,7 +472,7 @@ retry:	ret = __db_c_get(jc->j_workcurs[0], &jc->j_key, key_n,
 		if (jc->j_workcurs[i] == NULL)
 			/* If this is NULL, we need to dup curslist into it. */
 			if ((ret = __db_c_dup(jc->j_curslist[i],
-			    jc->j_workcurs + i, DB_POSITION)) != 0)
+			    &jc->j_workcurs[i], DB_POSITION)) != 0)
 				goto err;
 
 retry2:		cp = jc->j_workcurs[i];
@@ -560,18 +559,17 @@ retry2:		cp = jc->j_workcurs[i];
 				    __db_c_close(jc->j_workcurs[j])) != 0)
 					goto err;
 				jc->j_exhausted[j] = 0;
-				if (jc->j_fdupcurs[j] != NULL &&
-				    (ret = __db_c_dup(jc->j_fdupcurs[j],
+				if (jc->j_fdupcurs[j] == NULL)
+					jc->j_workcurs[j] = NULL;
+				else if ((ret = __db_c_dup(jc->j_fdupcurs[j],
 				    &jc->j_workcurs[j], DB_POSITION)) != 0)
 					goto err;
-				else
-					jc->j_workcurs[j] = NULL;
 			}
 			goto retry2;
 			/* NOTREACHED */
 		}
 
-		if (ret == ENOMEM) {
+		if (ret == DB_BUFFER_SMALL) {
 			jc->j_key.ulen <<= 1;
 			if ((ret = __os_realloc(dbp->dbenv, jc->j_key.ulen,
 			    &jc->j_key.data)) != 0) {
@@ -611,7 +609,6 @@ mem_err:			__db_err(dbp->dbenv,
 		if (SORTED_SET(jc, i) && jc->j_fdupcurs[i] == NULL && (ret =
 		    __db_c_dup(cp, &jc->j_fdupcurs[i], DB_POSITION)) != 0)
 			goto err;
-
 	}
 
 err:	if (ret != 0)
@@ -875,7 +872,11 @@ __db_join_primget(dbp, txn, lockerid, key, data, flags)
 	u_int32_t flags;
 {
 	DBC *dbc;
-	int dirty, ret, rmw, t_ret;
+	int ret, rmw, t_ret;
+
+	if ((ret = __db_cursor_int(dbp,
+	    txn, dbp->type, PGNO_INVALID, 0, lockerid, &dbc)) != 0)
+		return (ret);
 
 	/*
 	 * The only allowable flags here are the two flags copied into
@@ -884,17 +885,17 @@ __db_join_primget(dbp, txn, lockerid, key, data, flags)
 	 * It's a DB bug if we allow any other flags down in here.
 	 */
 	rmw = LF_ISSET(DB_RMW);
-	dirty = LF_ISSET(DB_DIRTY_READ);
-	LF_CLR(DB_RMW | DB_DIRTY_READ);
-	DB_ASSERT(flags == 0);
-
-	if ((ret = __db_cursor_int(dbp,
-	    txn, dbp->type, PGNO_INVALID, 0, lockerid, &dbc)) != 0)
-		return (ret);
-
-	if (dirty ||
+	if (LF_ISSET(DB_DIRTY_READ) ||
 	    (txn != NULL && F_ISSET(txn, TXN_DIRTY_READ)))
 		F_SET(dbc, DBC_DIRTY_READ);
+
+	if (LF_ISSET(DB_DEGREE_2) ||
+	    (txn != NULL && F_ISSET(txn, TXN_DEGREE_2)))
+		F_SET(dbc, DBC_DEGREE_2);
+
+	LF_CLR(DB_RMW | DB_DIRTY_READ | DB_DEGREE_2);
+	DB_ASSERT(flags == 0);
+
 	F_SET(dbc, DBC_TRANSIENT);
 
 	/*

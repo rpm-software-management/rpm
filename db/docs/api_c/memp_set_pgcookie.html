@@ -1,23 +1,22 @@
-<!--$Id: memp_set_pgcookie.so,v 10.14 2003/11/08 19:17:41 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: memp_set_pgcookie.so,v 10.16 2004/09/28 15:04:21 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_MPOOLFILE-&gt;set_pgcookie</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_MPOOLFILE-&gt;set_pgcookie</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DB_MPOOLFILE-&gt;get_pgcookie(DB_MPOOLFILE *mpf, DBT *dbt);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_MPOOLFILE-&gt;set_pgcookie</h3>
-<a name="3"><!--meow--></a>
 <p>The DB_MPOOLFILE-&gt;set_pgcookie method specifies a byte string that is provided
 to the functions registered to do input or output processing of the
 file's pages as they are read from or written to, the backing filesystem
@@ -49,27 +47,16 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>pgcookie</b><dd>
-The <b>pgcookie</b> parameter is a byte string provided to the
+<dl compact>
+<dt><b>pgcookie</b><dd>The <b>pgcookie</b> parameter is a byte string provided to the
 functions registered to do input or output processing of the file's
 pages.
 </dl>
 <hr size=1 noshade>
 <h3>Description: DB_MPOOLFILE-&gt;get_pgcookie</h3>
-<p>The DB_MPOOLFILE-&gt;get_pgcookie method returns the byte string.</p>
+<p>The DB_MPOOLFILE-&gt;get_pgcookie method returns the .</p>
 <p>The DB_MPOOLFILE-&gt;get_pgcookie method may be called at any time during the life of the
 application.</p>
-<p>The DB_MPOOLFILE-&gt;get_pgcookie method
-returns a non-zero error value on failure
-and 0 on success.
-</p>
-<h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dbt</b><dd>
-The DB_MPOOLFILE-&gt;get_pgcookie method returns a reference to the
-byte string in <b>dbt</b>.
-</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a>
@@ -79,6 +66,6 @@ byte string in <b>dbt</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

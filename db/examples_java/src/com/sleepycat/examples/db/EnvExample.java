@@ -1,127 +1,114 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: EnvExample.java,v 11.13 2003/03/21 23:28:38 gburd Exp $
+ * $Id: EnvExample.java,v 11.15 2004/04/06 20:43:35 mjc Exp $
  */
-
 
 package com.sleepycat.examples.db;
 
 import com.sleepycat.db.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
 /*
- * An example of a program using DbEnv to configure its DB
- * environment.
+ * An example of a program configuring a database environment.
  *
  * For comparison purposes, this example uses a similar structure
  * as examples/ex_env.c and examples_cxx/EnvExample.cpp.
  */
-public class EnvExample
-{
+public class EnvExample {
     private static final String progname = "EnvExample";
-    private static final String DATABASE_HOME = "/tmp/database";
+    private static final File DATABASE_HOME = new File("/tmp/database");
 
-    private static void db_application()
-        throws DbException
-    {
+    private static void runApplication(Environment dbenv)
+        throws DatabaseException {
+
         // Do something interesting...
         // Your application goes here.
     }
 
-    private static void db_setup(String home, String data_dir,
-                                  OutputStream errs)
-         throws DbException, FileNotFoundException
-    {
-        //
-        // Create an environment object and initialize it for erroror
-        // reporting.
-        //
-        DbEnv dbenv = new DbEnv(0);
-        dbenv.setErrorStream(errs);
-        dbenv.setErrorPrefix(progname);
+    private static void setupEnvironment(File home,
+                                         String dataDir,
+                                         OutputStream errs)
+        throws DatabaseException, FileNotFoundException {
+
+        // Create an environment object and initialize it for error reporting.
+        EnvironmentConfig config = new EnvironmentConfig();
+        config.setErrorStream(errs);
+        config.setErrorPrefix(progname);
 
         //
         // We want to specify the shared memory buffer pool cachesize,
         // but everything else is the default.
         //
-        dbenv.setCacheSize(64 * 1024, 0);
+        config.setCacheSize(64 * 1024);
 
-	// Databases are in a subdirectory.
-	dbenv.setDataDir(data_dir);
+        // Databases are in a separate directory.
+        config.addDataDir(dataDir);
 
-	// Open the environment with full transactional support.
-        //
-        // open() will throw a DbException if there is an erroror.
+        // Open the environment with full transactional support.
+        config.setAllowCreate(true);
+        config.setInitializeCache(true);
+        config.setTransactional(true);
+        config.setInitializeLocking(true);
+
         //
         // open is declared to throw a FileNotFoundException, which normally
-        // shouldn't occur with the DB_CREATE option.
+        // shouldn't occur when allowCreate is set.
         //
-        dbenv.open(DATABASE_HOME,
-                   Db.DB_CREATE | Db.DB_INIT_LOCK | Db.DB_INIT_LOG |
-                   Db.DB_INIT_MPOOL | Db.DB_INIT_TXN, 0);
+        Environment dbenv = new Environment(home, config);
 
         try {
-
             // Start your application.
-            db_application();
-
-        }
-        finally {
-
-            // Close the environment.  Doing this in the
-            // finally block ensures it is done, even if
-            // an erroror is thrown.
-            //
-            dbenv.close(0);
+            runApplication(dbenv);
+        } finally {
+            // Close the environment.  Doing this in the finally block ensures
+            // it is done, even if an error is thrown.
+            dbenv.close();
         }
     }
 
-    private static void db_teardown(String home, String data_dir,
-                                    OutputStream errs)
-         throws DbException, FileNotFoundException
-    {
-	// Remove the shared database regions.
+    private static void teardownEnvironment(File home,
+                                            String dataDir,
+                                            OutputStream errs)
+        throws DatabaseException, FileNotFoundException {
 
-        DbEnv dbenv = new DbEnv(0);
+        // Remove the shared database regions.
+        EnvironmentConfig config = new EnvironmentConfig();
 
-        dbenv.setErrorStream(errs);
-        dbenv.setErrorPrefix(progname);
-	dbenv.setDataDir(data_dir);
-        dbenv.remove(home, 0);
+        config.setErrorStream(errs);
+        config.setErrorPrefix(progname);
+        config.addDataDir(dataDir);
+        Environment.remove(home, true, config);
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         //
         // All of the shared database files live in /tmp/database,
-        // but data files live in /database.
+        // but data files live in /database/files.
         //
         // Using Berkeley DB in C/C++, we need to allocate two elements
         // in the array and set config[1] to NULL.  This is not
         // necessary in Java.
         //
-        String home = DATABASE_HOME;
-        String config = "/database/files";
+        File home = DATABASE_HOME;
+        String dataDir = "/database/files";
 
         try {
             System.out.println("Setup env");
-            db_setup(home, config, System.err);
+            setupEnvironment(home, dataDir, System.err);
 
             System.out.println("Teardown env");
-            db_teardown(home, config, System.err);
-        }
-        catch (DbException dbe) {
+            teardownEnvironment(home, dataDir, System.err);
+        } catch (DatabaseException dbe) {
             System.err.println(progname + ": environment open: " + dbe.toString());
             System.exit (1);
-        }
-        catch (FileNotFoundException fnfe) {
-            System.err.println(progname +
-                               ": unexpected open environment error  " + fnfe);
+        } catch (FileNotFoundException fnfe) {
+            System.err.println(progname + ": unexpected open environment error  " + fnfe);
             System.exit (1);
         }
     }

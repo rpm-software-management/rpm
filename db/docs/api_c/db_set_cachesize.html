@@ -1,24 +1,23 @@
 <!--$Id: db_set_cachesize.so,v 10.21 2002/08/18 21:15:53 bostic Exp $-->
-<!--$Id: env_set_cachesize.so,v 10.46 2003/11/08 19:17:28 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_cachesize.so,v 10.49 2004/09/28 15:04:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;set_cachesize</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;set_cachesize</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -34,7 +33,6 @@ DB-&gt;get_cachesize(DB *db,
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB-&gt;set_cachesize</h3>
-<a name="3"><!--meow--></a>
 <p>Set the size of the shared memory buffer pool -- that is, the cache.
 The cache should be the size of the normal working data set of the
 application, with some small amount of additional memory for unusual
@@ -44,7 +42,7 @@ pages accessed simultaneously, and is usually much larger.)</p>
 20KB.  Any cache size less than 500MB is automatically increased by 25%
 to account for buffer pool overhead; cache sizes larger than 500MB are
 used as specified.  The current maximum size of a single cache is 4GB.
-(All sizes are in powers-of-two, that is, 256KB is 2^32 not 256,000.)
+(All sizes are in powers-of-two, that is, 256KB is 2^18 not 256,000.)
 For information on tuning the Berkeley DB cache size, see
 <a href="../ref/am_conf/cachesize.html">Selecting a cache size</a>.</p>
 <p>It is possible to specify caches to Berkeley DB larger than 4GB and/or large
@@ -64,19 +62,16 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>bytes</b><dd>
-The size of the cache is set to <b>gbytes</b> gigabytes plus <b>bytes</b>.
-<p><dt><b>gbytes</b><dd>
-The size of the cache is set to <b>gbytes</b> gigabytes plus <b>bytes</b>.
-<p><dt><b>ncache</b><dd>
-The <b>ncache</b> parameter is the number of caches to create.
+<dl compact>
+<dt><b>bytes</b><dd>The size of the cache is set to <b>gbytes</b> gigabytes plus <b>bytes</b>.
+<dt><b>gbytes</b><dd>The size of the cache is set to <b>gbytes</b> gigabytes plus <b>bytes</b>.
+<dt><b>ncache</b><dd>The <b>ncache</b> parameter is the number of caches to create.
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;set_cachesize method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the specified cache size was impossibly small;
+<dl compact>
+<dt>EINVAL<dd>If the specified cache size was impossibly small;
 called in a database environment;
 the method was called after
 <a href="../api_c/db_open.html">DB-&gt;open</a>
@@ -94,15 +89,12 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>bytesp</b><dd>
-The <b>bytesp</b> parameter references memory into which
+<dl compact>
+<dt><b>bytesp</b><dd>The <b>bytesp</b> parameter references memory into which
  the additional bytes of memory in the cache is copied.
-<p><dt><b>gbytesp</b><dd>
-The <b>gbytesp</b> parameter references memory into which
+<dt><b>gbytesp</b><dd>The <b>gbytesp</b> parameter references memory into which
  the gigabytes of memory in the cache is copied.
-<p><dt><b>ncachep</b><dd>
-The <b>ncachep</b> parameter references memory into which
+<dt><b>ncachep</b><dd>The <b>ncachep</b> parameter references memory into which
  the number of caches is copied.
 </dl>
 <hr size=1 noshade>
@@ -114,6 +106,6 @@ The <b>ncachep</b> parameter references memory into which
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

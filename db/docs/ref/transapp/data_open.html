@@ -1,12 +1,12 @@
-<!--$Id: data_open.so,v 1.12 2002/06/24 14:51:06 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: data_open.so,v 1.13 2004/04/28 13:15:29 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Opening the databases</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -130,13 +130,14 @@ well-known file might include an update of the list in the same
 transaction in which the database is created.  Or, an application might
 create both a primary and secondary database in a single transaction.</p>
 <p><a href="../../api_c/db_class.html">DB</a> handles that will later be used for transactionally protected
-operations must be opened within a transaction.  Specifying a
-transaction handle to operations using handles not opened within a
-transaction will return an error.  Similarly, not specifying a
-transaction handle to operations using handles that were opened within
-a transaction will also return an error.</p>
+database operations must be opened within a transaction.  Specifying a
+transaction handle to database operations using <a href="../../api_c/db_class.html">DB</a> handles not
+opened within a transaction will return an error.  Similarly, not
+specifying a transaction handle to database operations that will modify
+the database, using handles that were opened within a transaction, will
+also return an error.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/env_open.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/put.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

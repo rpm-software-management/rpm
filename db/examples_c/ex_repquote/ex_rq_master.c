@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_rq_master.c,v 1.26 2003/07/04 17:45:06 margo Exp $
+ * $Id: ex_rq_master.c,v 1.27 2004/01/28 03:36:03 bostic Exp $
  */
 
 #include <sys/types.h>

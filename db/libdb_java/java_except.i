@@ -14,8 +14,7 @@
 	if ($input == 0) {
 		__dbj_throw(jenv, EINVAL, "call on closed handle", NULL, NULL);
 		return $null;
-	}
-%}
+	}%}
 
 %define JAVA_EXCEPT_NONE
 %exception %{ $action %}
@@ -25,8 +24,9 @@
 %define JAVA_EXCEPT(_retcheck, _jdbenv)
 %exception %{
 	$action
-	if (!_retcheck(result))
+	if (!_retcheck(result)) {
 		__dbj_throw(jenv, result, NULL, NULL, _jdbenv);
+	}
 %}
 %enddef
 
@@ -35,8 +35,9 @@
 %exception %{
 	errno = 0;
 	$action
-	if (!_retcheck(errno))
+	if (!_retcheck(errno)) {
 		__dbj_throw(jenv, errno, NULL, NULL, _jdbenv);
+	}
 %}
 %enddef
 
@@ -49,12 +50,12 @@
                     (*jenv)->NewObject(jenv, lockex_class, lockex_construct,
                     (*jenv)->NewStringUTF(jenv, "DbEnv.lock_get not granted"),
                         DB_LOCK_GET, arg5, jarg4, NULL, -1, JDBENV));
-	} else if (!DB_RETOK_STD(errno))
+	} else if (!DB_RETOK_STD(errno)) {
 		__dbj_throw(jenv, errno, NULL, NULL, JDBENV);
+	}
 %}
 
 %{
-
 static jthrowable __dbj_get_except(JNIEnv *jenv,
     int err, const char *msg, jobject obj, jobject jdbenv) {
 	jobject jmsg;
@@ -74,8 +75,17 @@ static jthrowable __dbj_get_except(JNIEnv *jenv,
 		    filenotfoundex_class, filenotfoundex_construct, jmsg);
 
 	case ENOMEM:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    outofmemerr_class, outofmemerr_construct, jmsg);
+
+	case DB_BUFFER_SMALL:
 		return (jthrowable)(*jenv)->NewObject(jenv, memex_class,
 		    memex_construct, jmsg, obj, err, jdbenv);
+
+	case DB_REP_HANDLE_DEAD:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    rephandledeadex_class, rephandledeadex_construct,
+		    jmsg, err, jdbenv);
 
 	case DB_RUNRECOVERY:
 		return (jthrowable)(*jenv)->NewObject(jenv, runrecex_class,
@@ -95,13 +105,15 @@ static jthrowable __dbj_get_except(JNIEnv *jenv,
 	}
 }
 
-static int __dbj_throw(JNIEnv *jenv, int err, const char *msg, jobject obj, jobject jdbenv)
+static int __dbj_throw(JNIEnv *jenv,
+    int err, const char *msg, jobject obj, jobject jdbenv)
 {
 	jthrowable t;
 
 	/* If an exception is pending, ignore requests to throw a new one. */
 	if ((*jenv)->ExceptionOccurred(jenv) == NULL) {
-		if ((t = __dbj_get_except(jenv, err, msg, obj, jdbenv)) == NULL) {
+		t = __dbj_get_except(jenv, err, msg, obj, jdbenv);
+		if (t == NULL) {
 			/*
 			 * This is a problem - something went wrong creating an
 			 * exception.  We have to assume there is an exception

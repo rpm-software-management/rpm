@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: txn_method.c,v 11.72 2004/03/23 17:24:18 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: txn_method.c,v 11.66 2003/06/30 17:20:30 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -21,11 +19,14 @@ static const char revid[] = "$Id: txn_method.c,v 11.66 2003/06/30 17:20:30 bosti
 #include <string.h>
 #endif
 
+#ifdef HAVE_RPC
+#include "db_server.h"
+#endif
+
 #include "db_int.h"
 #include "dbinc/txn.h"
 
 #ifdef HAVE_RPC
-#include "dbinc_auto/db_server.h"
 #include "dbinc_auto/rpc_client_ext.h"
 #endif
 
@@ -62,6 +63,7 @@ __txn_dbenv_create(dbenv)
 		dbenv->txn_checkpoint = __dbcl_txn_checkpoint;
 		dbenv->txn_recover = __dbcl_txn_recover;
 		dbenv->txn_stat = __dbcl_txn_stat;
+		dbenv->txn_stat_print = NULL;
 		dbenv->txn_begin = __dbcl_txn_begin;
 	} else
 #endif
@@ -74,6 +76,7 @@ __txn_dbenv_create(dbenv)
 		dbenv->txn_checkpoint = __txn_checkpoint_pp;
 		dbenv->txn_recover = __txn_recover_pp;
 		dbenv->txn_stat = __txn_stat_pp;
+		dbenv->txn_stat_print = __txn_stat_print_pp;
 		dbenv->txn_begin = __txn_begin_pp;
 	}
 }
@@ -83,7 +86,15 @@ __txn_get_tx_max(dbenv, tx_maxp)
 	DB_ENV *dbenv;
 	u_int32_t *tx_maxp;
 {
-	*tx_maxp = dbenv->tx_max;
+	ENV_NOT_CONFIGURED(dbenv,
+	    dbenv->tx_handle, "DB_ENV->get_tx_max", DB_INIT_TXN);
+
+	if (TXN_ON(dbenv)) {
+		/* Cannot be set after open, no lock required to read. */
+		*tx_maxp = ((DB_TXNREGION *)
+		    ((DB_TXNMGR *)dbenv->tx_handle)->reginfo.primary)->maxtxns;
+	} else
+		*tx_maxp = dbenv->tx_max;
 	return (0);
 }
 

@@ -1,23 +1,22 @@
-<!--$Id: env_class.so,v 10.39 2003/10/31 03:44:02 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_class.so,v 10.41 2004/08/18 02:33:48 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbEnv</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -54,15 +53,15 @@ regardless of the method's return.</p>
 allocates memory internally; calling the <a href="../api_cxx/env_close.html">DbEnv::close</a> or
 <a href="../api_cxx/env_remove.html">DbEnv::remove</a> methods will free that memory.</p>
 <p>The following <b>flags</b> value may be specified:</p>
-<p><dl compact>
-<p><dt><a name="DB_CXX_NO_EXCEPTIONS">DB_CXX_NO_EXCEPTIONS</a><dd>The Berkeley DB C++ API supports two different error behaviors.  By default,
+<dl compact>
+<dt><a name="DB_CXX_NO_EXCEPTIONS">DB_CXX_NO_EXCEPTIONS</a><dd>The Berkeley DB C++ API supports two different error behaviors.  By default,
 whenever an error occurs, an exception is thrown that encapsulates the
 error information.  This generally allows for cleaner logic for
 transaction processing because a try block can surround a single
 transaction.  However, if DB_CXX_NO_EXCEPTIONS is specified,
 exceptions are not thrown; instead, each individual function returns an
 error code.
-<p><dt><a name="DB_RPCCLIENT">DB_RPCCLIENT</a><dd>Create a client environment to connect to a server.
+<dt><a name="DB_RPCCLIENT">DB_RPCCLIENT</a><dd>Create a client environment to connect to a server.
 <p>The DB_RPCCLIENT flag indicates to the system that this environment
 is remote on a server.  The use of this flag causes the environment
 methods to use functions that call a server instead of local functions.
@@ -94,6 +93,6 @@ DbEnv
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

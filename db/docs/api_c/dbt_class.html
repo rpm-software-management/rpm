@@ -1,27 +1,26 @@
 <!--$Id: dbt_class.so,v 10.1 2002/08/24 18:22:30 bostic Exp $-->
-<!--$Id: dbt_c.so,v 10.47 2002/08/29 03:24:33 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: dbt_c.so,v 10.50 2004/10/14 15:09:17 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DBT</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DBT: Key/Data Pairs</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>Storage and retrieval for the Berkeley DB access methods are based on key/data
 pairs.  Both key and data items are represented by the DBT data
 structure.  (The name <i>DBT</i> is a mnemonic for <i>data
@@ -51,22 +50,22 @@ store into the <b>data</b> structure element a pointer to a byte string
 of <b>size</b> bytes, and the memory to which the pointer refers will be
 allocated and managed by Berkeley DB.</p>
 <p>The elements of the DBT structure are defined as follows:</p>
-<p><dl compact>
-<p><dt>void *<a name="data">data</a>;<dd>A pointer to a byte string.
-<p><dt>u_int32_t <a name="size">size</a>;<dd>The length of <b>data</b>, in bytes.
-<p><dt>u_int32_t <a name="ulen">ulen</a>;<dd>The size of the user's buffer (to which <b>data</b> refers), in bytes.
+<dl compact>
+<dt>void *<a name="data">data</a>;<dd>A pointer to a byte string.
+<dt>u_int32_t <a name="size">size</a>;<dd>The length of <b>data</b>, in bytes.
+<dt>u_int32_t <a name="ulen">ulen</a>;<dd>The size of the user's buffer (to which <b>data</b> refers), in bytes.
 This location is not written by the Berkeley DB functions.
 <p>Note that applications can determine the length of a record by setting
 the <b>ulen</b> field to 0 and checking the return value in the
 <b>size</b> field.  See the DB_DBT_USERMEM flag for more information.</p>
-<p><dt>u_int32_t <a name="dlen">dlen</a>;<dd>The length of the partial record being read or written by the application,
+<dt>u_int32_t <a name="dlen">dlen</a>;<dd>The length of the partial record being read or written by the application,
 in bytes.  See the DB_DBT_PARTIAL flag for more information.
-<p><dt>u_int32_t <a name="doff">doff</a>;<dd>The offset of the partial record being read or written by the application,
+<dt>u_int32_t <a name="doff">doff</a>;<dd>The offset of the partial record being read or written by the application,
 in bytes.  See the DB_DBT_PARTIAL flag for more information.
-<p><dt>u_int32_t flags;<dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<dt>u_int32_t flags;<dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_DBT_MALLOC">DB_DBT_MALLOC</a><dd>When this flag is set, Berkeley DB will allocate memory for the returned key
+<dl compact>
+<dt><a name="DB_DBT_MALLOC">DB_DBT_MALLOC</a><dd>When this flag is set, Berkeley DB will allocate memory for the returned key
 or data item (using <b>malloc</b>(3), or the user-specified malloc
 function), and return a pointer to it in the <b>data</b> field of the
 key or data DBT structure.  Because any allocated memory becomes the
@@ -75,7 +74,7 @@ whether memory was allocated using the returned value of the
 <b>data</b> field.
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
-<p><dt><a name="DB_DBT_REALLOC">DB_DBT_REALLOC</a><dd>When this flag is set Berkeley DB will allocate memory for the returned key
+<dt><a name="DB_DBT_REALLOC">DB_DBT_REALLOC</a><dd>When this flag is set Berkeley DB will allocate memory for the returned key
 or data item (using <b>realloc</b>(3), or the user-specified realloc
 function), and return a pointer to it in the <b>data</b> field of the
 key or data DBT structure.  Because any allocated memory becomes the
@@ -88,15 +87,16 @@ is that the latter will call <b>realloc</b>(3) instead of
 instead of the application doing repeated free/malloc calls.</p>
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
-<p><dt><a name="DB_DBT_USERMEM">DB_DBT_USERMEM</a><dd>The <b>data</b> field of the key or data structure must refer to
+<a name="3"><!--meow--></a>
+<dt><a name="DB_DBT_USERMEM">DB_DBT_USERMEM</a><dd>The <b>data</b> field of the key or data structure must refer to
 memory that is at least <b>ulen</b> bytes in length.  If the length of
 the requested item is less than or equal to that number of bytes, the
 item is copied into the memory to which the <b>data</b> field refers.
 Otherwise, the <b>size</b> field is set to the length needed for the
-requested item, and the error ENOMEM is returned.
+requested item, and the error <a href="../api_c/dbt_class.html#DB_BUFFER_SMALL">DB_BUFFER_SMALL</a> is returned.
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
-<p><dt><a name="DB_DBT_PARTIAL">DB_DBT_PARTIAL</a><dd>Do partial retrieval or storage of an item.  If the calling application
+<dt><a name="DB_DBT_PARTIAL">DB_DBT_PARTIAL</a><dd>Do partial retrieval or storage of an item.  If the calling application
 is doing a get, the <b>dlen</b> bytes starting <b>doff</b> bytes from
 the beginning of the retrieved data record are returned as if they
 comprised the entire record.  If any or all of the specified bytes do
@@ -132,6 +132,6 @@ those specified by the put call.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

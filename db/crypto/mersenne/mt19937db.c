@@ -1,8 +1,7 @@
+/*
+ * $Id: mt19937db.c,v 1.12 2004/06/14 16:54:27 mjc Exp $
+ */
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: mt19937db.c,v 1.10 2003/04/24 14:30:42 bostic Exp $";
-#endif /* not lint */
 
 #include "db_int.h"
 #include "dbinc/crypto.h"
@@ -157,8 +156,7 @@ __db_genrand(dbenv)
 		 * function will return 4 bytes if we don't send in a key.
 		 */
 		do {
-			if (__os_clock(dbenv, &secs, &usecs) != 0)
-				return (0); /* 0 is the only invalid return */
+			__os_clock(dbenv, &secs, &usecs);
 			__db_chksum((u_int8_t *)&secs, sizeof(secs), NULL,
 			    (u_int8_t *)&seed);
 		} while (seed == 0);

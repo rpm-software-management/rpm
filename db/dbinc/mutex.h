@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mutex.h,v 11.90 2003/09/20 21:40:49 bostic Exp $
+ * $Id: mutex.h,v 11.100 2004/10/05 14:41:12 mjc Exp $
  */
 
 #ifndef _DB_MUTEX_H_
@@ -128,6 +128,7 @@ extern void _spin_unlock(tsl_t *);
 
 #ifndef	MUTEX_ALIGN
 #define	MUTEX_ALIGN	16
+#define	HPUX_MUTEX_PAD	 8
 #endif
 #endif
 
@@ -290,8 +291,7 @@ typedef SEM_ID tsl_t;
  * trying to initialize the global lock at the same time.
  */
 #undef	DB_BEGIN_SINGLE_THREAD
-#define	DB_BEGIN_SINGLE_THREAD						\
-do {									\
+#define	DB_BEGIN_SINGLE_THREAD do {					\
 	if (DB_GLOBAL(db_global_init))					\
 		(void)semTake(DB_GLOBAL(db_global_lock), WAIT_FOREVER);	\
 	else {								\
@@ -360,7 +360,9 @@ typedef unsigned int tsl_t;
  * platforms, and it improves performance on Pentium 4 processor platforms."
  */
 #ifdef HAVE_MUTEX_WIN32
+#ifndef _WIN64
 #define	MUTEX_PAUSE		{__asm{_emit 0xf3}; __asm{_emit 0x90}}
+#endif
 #endif
 #ifdef HAVE_MUTEX_WIN32_GCC
 #define	MUTEX_PAUSE		asm volatile ("rep; nop" : : );
@@ -375,9 +377,8 @@ typedef unsigned int tsl_t;
 typedef unsigned char tsl_t;
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
-/*
- * For gcc/68K, 0 is clear, 1 is set.
- */
+#define	MUTEX_SET_TEST	1		/* gcc/68K: 0 is clear, 1 is set. */
+
 #define	MUTEX_SET(tsl) ({						\
 	register tsl_t *__l = (tsl);					\
 	int __r;							\
@@ -467,9 +468,8 @@ typedef volatile u_int32_t tsl_t;
 typedef unsigned char tsl_t;
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
-/*
- * For arm/gcc, 0 is clear, 1 is set.
- */
+#define	MUTEX_SET_TEST	1		/* gcc/arm: 0 is clear, 1 is set. */
+
 #define	MUTEX_SET(tsl) ({						\
 	int __r;							\
 	asm volatile(							\
@@ -494,6 +494,7 @@ typedef u_int32_t tsl_t;
 
 #ifndef	MUTEX_ALIGN
 #define	MUTEX_ALIGN	16
+#define	HPUX_MUTEX_PAD	 8
 #endif
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
@@ -521,9 +522,8 @@ typedef u_int32_t tsl_t;
 typedef unsigned char tsl_t;
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
-/*
- * For gcc/ia64, 0 is clear, 1 is set.
- */
+#define	MUTEX_SET_TEST	1		/* gcc/ia64: 0 is clear, 1 is set. */
+
 #define	MUTEX_SET(tsl) ({						\
 	register tsl_t *__l = (tsl);					\
 	long __r;							\
@@ -578,28 +578,30 @@ typedef u_int32_t tsl_t;
  * 'set' mutexes have the value 1, like on Intel; the returned value from
  * MUTEX_SET() is 1 if the mutex previously had its low bit clear, 0 otherwise.
  */
-#ifdef HAVE_MUTEX_PPC_GCC_ASSEMBLY
+#define	MUTEX_SET_TEST	1		/* gcc/ppc: 0 is clear, 1 is set. */
+
 static inline int
 MUTEX_SET(int *tsl)  {
          int __r;
-         asm volatile (
+         int __tmp = (int)tsl;
+    asm volatile (
 "0:                             \n\t"
-"       lwarx   %0,0,%1         \n\t"
+"       lwarx   %0,0,%2         \n\t"
 "       cmpwi   %0,0            \n\t"
 "       bne-    1f              \n\t"
-"       stwcx.  %1,0,%1         \n\t"
+"       stwcx.  %2,0,%2         \n\t"
 "       isync                   \n\t"
 "       beq+    2f              \n\t"
 "       b       0b              \n\t"
 "1:                             \n\t"
 "       li      %1, 0           \n\t"
 "2:                             \n\t"
-         : "=&r" (__r), "+r" (tsl)
-         :
+         : "=&r" (__r), "=r" (tsl)
+         : "r" (__tmp)
          : "cr0", "memory");
          return (int)tsl;
 }
-#endif
+
 static inline int
 MUTEX_UNSET(tsl_t *tsl) {
          asm volatile("sync" : : : "memory");
@@ -616,7 +618,7 @@ MUTEX_UNSET(tsl_t *tsl) {
 typedef int tsl_t;
 
 #ifndef	MUTEX_ALIGN
-#define	MUTEX_ALIGN	 sizeof(int)
+#define	MUTEX_ALIGN	sizeof(int)
 #endif
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
@@ -637,9 +639,8 @@ typedef int tsl_t;
 typedef int tsl_t;
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
-/*
- * For gcc/S390, 0 is clear, 1 is set.
- */
+#define	MUTEX_SET_TEST	1		/* gcc/S390: 0 is clear, 1 is set. */
+
 static inline int
 MUTEX_SET(tsl_t *tsl) {							\
 	register tsl_t *__l = (tsl);					\
@@ -669,9 +670,8 @@ typedef unsigned char tsl_t;
 #ifdef LOAD_ACTUAL_MUTEX_CODE
 /*
  * UnixWare has threads in libthread, but OpenServer doesn't (yet).
- *
- * For cc/x86, 0 is clear, 1 is set.
  */
+#define	MUTEX_SET_TEST	1		/* cc/x86: 0 is clear, 1 is set. */
 
 #if defined(__USLC__)
 asm int
@@ -711,9 +711,9 @@ typedef unsigned char tsl_t;
  * so is functional there as well.  For v7, stbar may generate an illegal
  * instruction and we have no way to tell what we're running on.  Some
  * operating systems notice and skip this instruction in the fault handler.
- *
- * For gcc/sparc, 0 is clear, 1 is set.
  */
+#define	MUTEX_SET_TEST	1		/* gcc/sparc: 0 is clear, 1 is set. */
+
 #define	MUTEX_SET(tsl) ({						\
 	register tsl_t *__l = (tsl);					\
 	register tsl_t __r;						\
@@ -752,9 +752,8 @@ typedef int tsl_t;
 typedef unsigned char tsl_t;
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
-/*
- * For gcc/x86, 0 is clear, 1 is set.
- */
+#define	MUTEX_SET_TEST	1		/* gcc/x86: 0 is clear, 1 is set. */
+
 #define	MUTEX_SET(tsl) ({						\
 	register tsl_t *__l = (tsl);					\
 	int __r;							\
@@ -805,7 +804,7 @@ typedef unsigned char tsl_t;
 
 /*
  * !!!
- * The flag arguments for __db_mutex_setup (and the underyling intialization
+ * The flag arguments for __db_mutex_setup (and the underlying initialization
  * function for the mutex type, for example, __db_tas_mutex_init), and flags
  * stored in the DB_MUTEX structure are combined, and may not overlap.  Flags
  * to __db_mutex_setup:
@@ -866,6 +865,11 @@ struct __mutex_t {
 	u_int32_t flags;		/* MUTEX_XXX */
 };
 
+/* Macro to clear mutex statistics. */
+#define	MUTEX_CLEAR(mp) {						\
+	(mp)->mutex_set_wait = (mp)->mutex_set_nowait = 0;		\
+}
+
 /* Redirect calls to the correct functions. */
 #ifdef HAVE_MUTEX_THREADS
 #if defined(HAVE_MUTEX_PTHREADS) ||					\
@@ -875,7 +879,8 @@ struct __mutex_t {
 #define	__db_mutex_lock(a, b)		__db_pthread_mutex_lock(a, b)
 #define	__db_mutex_unlock(a, b)		__db_pthread_mutex_unlock(a, b)
 #define	__db_mutex_destroy(a)		__db_pthread_mutex_destroy(a)
-#elif defined(HAVE_MUTEX_WIN32) || defined(HAVE_MUTEX_WIN32_GCC)
+#else
+#if defined(HAVE_MUTEX_WIN32) || defined(HAVE_MUTEX_WIN32_GCC)
 #define	__db_mutex_init_int(a, b, c, d)	__db_win32_mutex_init(a, b, d)
 #define	__db_mutex_lock(a, b)		__db_win32_mutex_lock(a, b)
 #define	__db_mutex_unlock(a, b)		__db_win32_mutex_unlock(a, b)
@@ -885,6 +890,7 @@ struct __mutex_t {
 #define	__db_mutex_lock(a, b)		__db_tas_mutex_lock(a, b)
 #define	__db_mutex_unlock(a, b)		__db_tas_mutex_unlock(a, b)
 #define	__db_mutex_destroy(a)		__db_tas_mutex_destroy(a)
+#endif
 #endif
 #else
 #define	__db_mutex_init_int(a, b, c, d)	__db_fcntl_mutex_init(a, b, c)

@@ -1,12 +1,12 @@
-<!--$Id: bt_prefix.so,v 10.21 2002/06/24 14:50:23 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: bt_prefix.so,v 10.22 2004/02/21 15:50:51 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Btree prefix comparison</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -27,13 +27,15 @@ comparison function of the Btree, since what distinguishes any two keys
 depends entirely on the function used to compare them.  This means that
 if a prefix comparison routine is specified by the application, a
 compatible overall comparison routine must also have been specified.</p>
-<p>Prefix comparison routines are passed pointers to keys as arguments.  The
-keys are represented as <a href="../../api_c/dbt_class.html">DBT</a> structures.  The prefix comparison
-function must return the number of bytes of the second key argument that
-are necessary to determine if it is greater than the first key argument.
-If the keys are equal, the length of the second key should be returned.
-The only fields that the routines may examine in the <a href="../../api_c/dbt_class.html">DBT</a>
-structures are <b>data</b> and <b>size</b> fields.</p>
+<p>Prefix comparison routines are passed pointers to keys as arguments.
+The keys are represented as <a href="../../api_c/dbt_class.html">DBT</a> structures.  The only fields
+the routines may examine in the <a href="../../api_c/dbt_class.html">DBT</a> structures are <b>data</b>
+and <b>size</b> fields.</p>
+<p>The prefix comparison function must return the number of bytes necessary
+to distinguish the two keys.  If the keys are identical (equal and equal
+in length), the length should be returned.  If the keys are equal up to
+the smaller of the two lengths, then the length of the smaller key plus
+1 should be returned.</p>
 <p>An example prefix comparison routine follows:</p>
 <blockquote><pre>u_int32_t
 compare_prefix(dbp, a, b)
@@ -63,6 +65,6 @@ compare_prefix(dbp, a, b)
 sets can produce significantly reduced tree sizes and faster search times.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_conf/bt_compare.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_conf/bt_minkey.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

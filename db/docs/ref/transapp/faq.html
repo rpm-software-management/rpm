@@ -1,12 +1,12 @@
-<!--$Id: faq.so,v 10.6 2002/09/09 14:52:40 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 10.8 2004/03/16 18:33:28 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Transaction FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -73,23 +73,25 @@ into another?</b>
 cannot be simply moved into different database environments.  To move
 a database into a different environment, dump and reload the database
 before moving it.  If the database is too large to dump and reload, the
-database may be prepared in place by setting the first eight bytes of
-each database page in the file to 0.</p>
+database may be prepared in place using the <b>-l</b> argument to the
+<a href="../../utility/db_load.html">db_load</a> utility.</p>
 <p><li><b>I'm seeing the error "log_flush: LSN past current end-of-log",
 what does that mean?</b>
 <p>The most common cause of this error is that a system administrator has
 removed all of the log files from a database environment.  You should
 shut down your database environment as gracefully as possible, first
 flushing the database environment cache to disk, if that's possible.
-Then, dump and reload your databases.  If your databases are too large
-to dump and reload, the database may be repaired in place by setting
-the first eight bytes of each database page in the file to 0, but if
-you do that, you must verify your databases before using them again.
-(It is possible for the databases to be corrupted when this happens,
-and the longer the application runs, the worse it can get.)</p>
+Then, dump and reload your databases.  If the database is too large to
+dump and reload, the database may be reset in place using the
+<b>-l</b> argument to the <a href="../../utility/db_load.html">db_load</a>
+utility.  However, if you reset the database in place, you should verify
+your databases before using them again.  (It is possible for the
+databases to be corrupted by running after all of the log files have
+been removed, and the longer the application runs, the worse it can
+get.)</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

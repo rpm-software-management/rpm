@@ -1,23 +1,22 @@
-<!--$Id: memp_trickle.so,v 10.35 2003/11/08 19:17:42 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: memp_trickle.so,v 10.36 2004/08/13 03:38:58 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;memp_trickle</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;memp_trickle</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -34,6 +33,25 @@ backing files.</p>
 <p>The purpose of the DB_ENV-&gt;memp_trickle function is to enable a memory
 pool manager to ensure that a page is always available for reading in new
 information without having to wait for a write.</p>
+<p>The DB_ENV-&gt;memp_trickle method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>nwrotep</b><dd>The <b>nwrotep</b> parameter references memory into which
+ the number of pages written to reach the specified
+percentage is copied.
+<dt><b>percent</b><dd>The <b>percent</b> parameter is the percent of the pages in the cache
+that should be clean.
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;memp_trickle method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a>
@@ -43,6 +61,6 @@ information without having to wait for a write.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

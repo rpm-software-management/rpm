@@ -1,12 +1,12 @@
-<!--$Id: java.so,v 11.9 2003/11/21 01:59:11 gburd Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: java.so,v 11.10 2004/08/15 03:22:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Release 3.0: additional Java changes</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -24,16 +24,12 @@ DbException will catch these also, so code is not required to change.
 The catch clause for these new exceptions should appear before the catch
 clause for DbException.</p>
 <p>You will need to add a catch clause for java.io.FileNotFoundException,
-since that can be thrown by the 
-<a href="../../java/com/sleepycat/db/Db.html#open">Db.open</a>
-and 
-<a href="../../java/com/sleepycat/db/DbEnv.html#open">DbEnv.open</a>
-s.</p>
+since that can be thrown by Db.open and DbEnv.open.</p>
 <p>There are a number of smaller changes to the API that bring the C, C++
 and Java APIs much closer in terms of functionality and usage.  Please
 refer to the pages for upgrading C applications for further details.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.3.0/cxx.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.3.0/disk.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

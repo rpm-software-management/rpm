@@ -1,23 +1,22 @@
-<!--$Id: db_verify.so,v 10.28 2003/11/08 19:17:23 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_verify.so,v 10.29 2004/08/13 03:38:56 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;verify</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;verify</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -44,9 +43,8 @@ called, regardless of its return.</p>
 <p>The DB-&gt;verify method is the underlying method used by the <a href="../utility/db_verify.html">db_verify</a> utility.
 See the <a href="../utility/db_verify.html">db_verify</a> utility source code for an example of using DB-&gt;verify
 in a IEEE/ANSI Std 1003.1 (POSIX) environment.</p>
-<a name="3"><!--meow--></a>
-<p>
-The DB-&gt;verify method will return DB_VERIFY_BAD if a database is
+<a name="2"><!--meow--></a>
+<p>The DB-&gt;verify method will return DB_VERIFY_BAD if a database is
 corrupted.  When the DB_SALVAGE flag is specified, the
 DB_VERIFY_BAD return means that all key/data pairs in the file
 may not have been successfully output.
@@ -55,22 +53,19 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>database</b><dd>
-The <b>database</b> parameter is the database in <b>file</b> on which
+<dl compact>
+<dt><b>database</b><dd>The <b>database</b> parameter is the database in <b>file</b> on which
 the database checks for btree and duplicate sort order and for hashing
 are to be performed.  See the DB_ORDERCHKONLY flag for more
 information.
 <p>The database parameter must be set to NULL except when the
 DB_ORDERCHKONLY flag is set.</p>
-<p><dt><b>file</b><dd>
-The <b>file</b> parameter is the physical file in which the databases
+<dt><b>file</b><dd>The <b>file</b> parameter is the physical file in which the databases
 to be verified are found.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_SALVAGE">DB_SALVAGE</a><dd>Write the key/data pairs from all databases in the file to the file
+<dl compact>
+<dt><a name="DB_SALVAGE">DB_SALVAGE</a><dd>Write the key/data pairs from all databases in the file to the file
 stream named in the <b>outfile</b> parameter.  The output format is the
 same as that specified for the <a href="../utility/db_dump.html">db_dump</a> utility, and can be used
 as input for the <a href="../utility/db_load.html">db_load</a> utility.
@@ -80,8 +75,8 @@ pairs normally produces less than optimal loads for Btree databases.</p>
 </dl>
 <p>In addition, the following flags may be set by bitwise inclusively <b>OR</b>'ing them into the
 <b>flags</b> parameter:</p>
-<p><dl compact>
-<p><dt><a name="DB_AGGRESSIVE">DB_AGGRESSIVE</a><dd>Output <b>all</b> the key/data pairs in the file that can be found.
+<dl compact>
+<dt><a name="DB_AGGRESSIVE">DB_AGGRESSIVE</a><dd>Output <b>all</b> the key/data pairs in the file that can be found.
 By default, DB-&gt;verify does not assume corruption.  For example,
 if a key/data pair on a page is marked as deleted, it is not then written
 to the output file.  When DB_AGGRESSIVE is specified, corruption
@@ -90,14 +85,14 @@ case, key/data pairs that are corrupted or have been deleted may appear
 in the output (even if the file being salvaged is in no way corrupt), and
 the output will almost certainly require editing before being loaded into
 a database.
-<p><dt><a name="DB_PRINTABLE">DB_PRINTABLE</a><dd>When using the DB_SALVAGE flag, if characters in either the key
+<dt><a name="DB_PRINTABLE">DB_PRINTABLE</a><dd>When using the DB_SALVAGE flag, if characters in either the key
 or data items are printing characters (as defined by <b>isprint</b>(3)), use printing characters to represent them.  This flag permits users
 to use standard text editors and tools to modify the contents of
 databases or selectively remove data from salvager output.
 <p>Note: different systems may have different notions about what characters
 are considered <i>printing characters</i>, and databases dumped in
 this manner may be less portable to external systems.</p>
-<p><dt><a name="DB_NOORDERCHK">DB_NOORDERCHK</a><dd>Skip the database checks for btree and duplicate sort order and for
+<dt><a name="DB_NOORDERCHK">DB_NOORDERCHK</a><dd>Skip the database checks for btree and duplicate sort order and for
 hashing.
 <p>The DB-&gt;verify method normally verifies that btree keys and duplicate
 items are correctly sorted, and hash keys are correctly hashed.  If the
@@ -110,7 +105,7 @@ first perform verification of the file as a whole by using the
 DB_NOORDERCHK flag, and then individually verify the sort order
 and hashing function for each database in the file using the
 DB_ORDERCHKONLY flag.</p>
-<p><dt><a name="DB_ORDERCHKONLY">DB_ORDERCHKONLY</a><dd>Perform the database checks for btree and duplicate sort order and for
+<dt><a name="DB_ORDERCHKONLY">DB_ORDERCHKONLY</a><dd>Perform the database checks for btree and duplicate sort order and for
 hashing, skipped by DB_NOORDERCHK.
 <p>When this flag is specified, a <b>database</b> parameter should also be
 specified, indicating the database in the physical file which is to be
@@ -118,8 +113,7 @@ checked.  This flag is only safe to use on databases that have already
 successfully been verified using DB-&gt;verify with the
 DB_NOORDERCHK flag set.</p>
 </dl>
-<p><dt><b>outfile</b><dd>
-The <b>outfile</b> parameter is an optional file stream to which the
+<dt><b>outfile</b><dd>The <b>outfile</b> parameter is an optional file stream to which the
 databases' key/data pairs are written.
 </dl>
 <h3>Environment Variables</h3>
@@ -130,13 +124,13 @@ database environment home.</p>
 the <a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> method, or by setting the "set_data_dir" string
 in the environment's <b>DB_CONFIG</b> file.</p>
 <h3>Errors</h3>
-<p><dl compact>
-<p><dt>ENOENT<dd>The file or directory does not exist.
+<dl compact>
+<dt>ENOENT<dd>The file or directory does not exist.
 </dl>
 <p>The DB-&gt;verify method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If DB-&gt;verify was called after <a href="../api_c/db_open.html">DB-&gt;open</a>; or if an
+<dl compact>
+<dt>EINVAL<dd>If DB-&gt;verify was called after <a href="../api_c/db_open.html">DB-&gt;open</a>; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -148,6 +142,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

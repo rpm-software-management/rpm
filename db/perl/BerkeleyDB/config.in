@@ -8,15 +8,8 @@
 #    installed on your system.
 
 #INCLUDE	= /usr/local/include
-#INCLUDE	= /usr/local/BerkeleyDB/include
-#INCLUDE	= ./libraries/2.7.5/include
-#INCLUDE	= ./libraries/3.0.55/include
-#INCLUDE	= ./libraries/3.1.17/include
-#INCLUDE	= ./libraries/3.3.11/include
-#INCLUDE	= ./libraries/4.1.12/include
-#INCLUDE	= ./libraries/4.1.24.NC/include
-#INCLUDE	= ./libraries/4.1.25/include
-INCLUDE	= ./libraries/4.2.41/include
+#INCLUDE	= ../..
+INCLUDE	= /usr/local/BerkeleyDB/include
 
 # 2. Where is libdb?
 #
@@ -24,17 +17,8 @@ INCLUDE	= ./libraries/4.2.41/include
 #    installed on your system.
 
 #LIB	= /usr/local/lib
-#LIB	= /usr/local/BerkeleyDB/lib
-#LIB	= ./libraries/2.7.5/lib
-#LIB	= ./libraries/3.0.55/lib
-#LIB	= ./libraries/3.1.17/lib
-#LIB	= ./libraries/3.3.11/lib
-#LIB	= ./libraries/4.1.12/lib
-#LIB	= ./libraries/4.1.24.NC/lib
-#LIB	= ./libraries/4.1.25/lib
-LIB	= ./libraries/4.2.41/lib
-
-#LIB	= ./libraries/1.85/lib
+#LIB	= ../..
+LIB	= /usr/local/BerkeleyDB/lib
 
 # 3. Is the library called libdb?
 #

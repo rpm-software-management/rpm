@@ -1,14 +1,17 @@
-<!-- $Id: build.xml,v 1.14 2003/10/17 03:06:34 mhayes Exp $ -->
+<!-- $Id: build.xml,v 1.18 2004/09/22 16:17:13 mark Exp $ -->
 <project name="clover" default="test" basedir=".">
 
   <property name="db" location="../../.."/>
   <property name="src" location="${db}/java/src"/>
   <property name="test.src" location="${db}/test/scr024/src"/>
   <property name="examples.src" location="${db}/examples_java/src"/>
+  <property name="testserialdir" value="testserial"/>
   <property name="clover.initstring" location="reports/clover.db"/>
   <property name="clover.excludes" value="**/test/** com/sleepycat/examples/** com/sleepycat/db/**"/>
+  <!--
   <property name="build.compiler"
             value="org.apache.tools.ant.taskdefs.CloverCompilerAdapter"/>
+  -->
 
   <target name="all" depends="clean,test,report"/>
 
@@ -35,31 +38,55 @@
   </path>
 
   <target name="build" depends="init">
-    <javac destdir="classes" debug="on" srcdir="${src}">
+    <javac destdir="classes" debug="on">
+      <src path="${src}"/>
       <src path="${test.src}"/>
       <src path="${examples.src}"/>
       <exclude name="com/sleepycat/**/release/**"/>
-      <exclude name="com/sleepycat/db/xa/**"/> <!-- PENDING(gburd): test XA -->
+      <exclude name="com/sleepycat/examples/bdb/**"/>
+      <exclude name="com/sleepycat/bdb/**"/>
+      <exclude name="com/sleepycat/xa/**"/>
     </javac>
-    <copy todir="classes">
-      <fileset dir="${test.src}">
-         <include name="**/testdata/**"/>
-      </fileset>
-    </copy>
+    <property name="testserialpath"
+              value="com/sleepycat/collections/test/serial/TestSerial"/>
+    <copy file="${test.src}/${testserialpath}.java.original"
+          tofile="${testserialdir}/${testserialpath}.java"/>
+    <javac destdir="${testserialdir}" debug="on"
+           includeAntRuntime="true" srcdir="${testserialdir}">
+      <include name="${testserialpath}.java"/>
+    </javac>
   </target>
 
   <target name="test" depends="build">
+
+    <!-- Performs initialization needed before StoredClassCatalogTest is run in
+         the <batchtest> below.
+    -->
+    <junit fork="yes" dir="." printsummary="on" haltonfailure="on"
+           showoutput="on">
+      <classpath path="${testserialdir}"/> <!-- Must be first -->
+      <classpath refid="classpath"/>
+      <formatter type="plain" usefile="false"/>
+      <formatter type="xml"/>
+      <test
+      name="com.sleepycat.collections.test.serial.StoredClassCatalogTestInit"
+            todir="reports"/>
+    </junit>
+
     <junit fork="yes" dir="." printsummary="on" haltonfailure="on"
            showoutput="on">
       <formatter type="xml"/>
-      <classpath>
-        <path refid="classpath"/>
-      </classpath>
+      <classpath refid="classpath"/>
+      <batchtest todir="reports">
+        <fileset dir="classes" includes="**/*Test.class"/>
+      </batchtest>
       <!--
-      <test name="com.sleepycat.bdb.util.test.Suite" todir="reports"/>
-      <test name="com.sleepycat.bdb.test.CollectionTest" todir="reports"/>
       -->
-      <test name="com.sleepycat.bdb.test.Suite" todir="reports"/>
+      <!--
+      <test name="com.sleepycat.collections.KeyRangeTest" todir="reports"/>
+      <test name="com.sleepycat.collections.test.TransactionTest" todir="reports"/>
+      <test name="com.sleepycat.collections.test.CollectionTest" todir="reports"/>
+      -->
     </junit>
   </target>
 
@@ -88,7 +115,7 @@
     <echo message=""/>
     <echo message="=== HelloDatabaseWorld ==="/>
     <java dir="." fork="yes" classpathref="classpath"
-         classname="com.sleepycat.examples.bdb.helloworld.HelloDatabaseWorld"/>
+         classname="com.sleepycat.examples.collections.hello.HelloDatabaseWorld"/>
   </target>
 
   <target name="one_shipment_example">
@@ -96,7 +123,18 @@
     <delete dir="tmp"/>
     <mkdir dir="tmp"/>
     <java dir="." fork="yes" classpathref="classpath"
-         classname="com.sleepycat.examples.bdb.shipment.${param_name}.Sample"/>
+     classname="com.sleepycat.examples.collections.ship.${param_name}.Sample"/>
+  </target>
+
+    <!-- Using fork="yes" does not work for AccessExample, apparently because
+         it is interactive and the input stream of the forked process isn't
+         functional; therefore this sample writes to the base directory.
+    -->
+  <target name="access_example" depends="build">
+    <echo message="=== AccessExample ==="/>
+    <java classpathref="classpath"
+          classname="com.sleepycat.examples.collections.access.AccessExample">
+    </java>
   </target>
 
   <target name="report">

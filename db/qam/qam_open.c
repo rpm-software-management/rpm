@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: qam_open.c,v 11.68 2004/02/27 12:38:31 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: qam_open.c,v 11.66 2003/09/25 01:35:38 margo Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -119,7 +117,8 @@ err:	if (qmeta != NULL &&
 		ret = t_ret;
 
 	/* Don't hold the meta page long term. */
-	(void)__LPUT(dbc, metalock);
+	if ((t_ret = __LPUT(dbc, metalock)) != 0 && ret == 0)
+		ret = t_ret;
 
 	if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;

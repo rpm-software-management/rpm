@@ -1,23 +1,22 @@
-<!--$Id: memp_set_ftype.so,v 10.14 2003/11/08 19:17:40 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: memp_set_ftype.so,v 10.16 2004/09/28 15:04:21 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbMpoolFile::set_ftype</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbMpoolFile::set_ftype</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DbMpoolFile::get_ftype(int *ftypep);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbMpoolFile::set_ftype</h3>
-<a name="3"><!--meow--></a>
 <p>The DbMpoolFile::set_ftype method specifies a file type for the purposes of
 input or output processing of the file's pages as they are read from or
 written to, the backing filesystem store.</p>
@@ -48,29 +46,17 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>ftype</b><dd>
-The <b>ftype</b> parameter sets the file's type for the purposes of input
+<dl compact>
+<dt><b>ftype</b><dd>The <b>ftype</b> parameter sets the file's type for the purposes of input
 and output processing.  The <b>ftype</b> must be the same as a
 <b>ftype</b> parameter previously specified to the <a href="../api_cxx/memp_register.html">DbEnv::memp_register</a> method.
 (See the <a href="../api_cxx/memp_register.html">DbEnv::memp_register</a> documentation for more information.)
 </dl>
 <hr size=1 noshade>
 <h3>Description: DbMpoolFile::get_ftype</h3>
-<p>The DbMpoolFile::get_ftype method returns the file type.</p>
+<p>The DbMpoolFile::get_ftype method returns the .</p>
 <p>The DbMpoolFile::get_ftype method may be called at any time during the life of the
 application.</p>
-<p>The DbMpoolFile::get_ftype method
-either returns a non-zero error value
-or throws an exception that encapsulates a non-zero error value on
-failure, and returns 0 on success.
-</p>
-<h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>ftypep</b><dd>
-The DbMpoolFile::get_ftype method returns  the
-file type in <b>ftypep</b>.
-</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a>
@@ -80,6 +66,6 @@ file type in <b>ftypep</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

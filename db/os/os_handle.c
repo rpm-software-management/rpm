@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2003
+ * Copyright (c) 1998-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_handle.c,v 11.40 2004/08/19 17:59:22 sue Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_handle.c,v 11.32 2003/02/16 15:54:03 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -36,7 +34,8 @@ __os_openhandle(dbenv, name, flags, mode, fhpp)
 	DB_FH **fhpp;
 {
 	DB_FH *fhp;
-	int ret, nrepeat, retries;
+	u_int nrepeat, retries;
+	int ret;
 #ifdef HAVE_VXWORKS
 	int newflags;
 #endif
@@ -73,6 +72,13 @@ __os_openhandle(dbenv, name, flags, mode, fhpp)
 			DB_BEGIN_SINGLE_THREAD;
 			newflags = flags & ~(O_CREAT | O_EXCL);
 			if ((fhp->fd = open(name, newflags, mode)) != -1) {
+				/*
+				 * We need to mark the file opened at this
+				 * point so that if we get any error below
+				 * we will properly close the fd we just
+				 * opened on the error path.
+				 */
+				F_SET(fhp, DB_FH_OPENED);
 				if (LF_ISSET(O_EXCL)) {
 					/*
 					 * If we get here, want O_EXCL create,
@@ -96,7 +102,6 @@ __os_openhandle(dbenv, name, flags, mode, fhpp)
 				fhp->fd = creat(name, newflags);
 			DB_END_SINGLE_THREAD;
 		} else
-
 		/* FALLTHROUGH */
 #endif
 #ifdef __VMS
@@ -138,16 +143,19 @@ __os_openhandle(dbenv, name, flags, mode, fhpp)
 			 * if we can't open a database, an inability to open a
 			 * log file is cause for serious dismay.
 			 */
-			(void)__os_sleep(dbenv, nrepeat * 2, 0);
+			__os_sleep(dbenv, nrepeat * 2, 0);
 			break;
+		case EAGAIN:
 		case EBUSY:
 		case EINTR:
 			/*
-			 * If it was an EINTR or EBUSY, retry immediately,
+			 * If an EAGAIN, EBUSY or EINTR, retry immediately for
 			 * DB_RETRY times.
 			 */
 			if (++retries < DB_RETRY)
 				--nrepeat;
+			break;
+		default:
 			break;
 		}
 	}
@@ -171,7 +179,7 @@ __os_closehandle(dbenv, fhp)
 	DB_ENV *dbenv;
 	DB_FH *fhp;
 {
-	int ret, retries;
+	int ret;
 
 	ret = 0;
 
@@ -180,13 +188,10 @@ __os_closehandle(dbenv, fhp)
 	 * file.
 	 */
 	if (F_ISSET(fhp, DB_FH_OPENED)) {
-		retries = 0;
-		do {
-			ret = DB_GLOBAL(j_close) != NULL ?
-			    DB_GLOBAL(j_close)(fhp->fd) : close(fhp->fd);
-		} while (ret != 0 &&
-		    ((ret = __os_get_errno()) == EINTR || ret == EBUSY) &&
-		    ++retries < DB_RETRY);
+		if (DB_GLOBAL(j_close) != NULL)
+			ret = DB_GLOBAL(j_close)(fhp->fd);
+		else
+			RETRY_CHK((close(fhp->fd)), ret);
 
 		if (ret != 0)
 			__db_err(dbenv, "close: %s", strerror(ret));
@@ -194,7 +199,7 @@ __os_closehandle(dbenv, fhp)
 		/* Unlink the file if we haven't already done so. */
 		if (F_ISSET(fhp, DB_FH_UNLINK)) {
 			(void)__os_unlink(dbenv, fhp->name);
-			(void)__os_free(dbenv, fhp->name);
+			__os_free(dbenv, fhp->name);
 		}
 	}
 

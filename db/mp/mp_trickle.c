@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mp_trickle.c,v 11.34 2004/09/15 21:49:19 mjc Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: mp_trickle.c,v 11.30 2003/09/13 19:20:41 bostic Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -45,7 +44,7 @@ __memp_trickle_pp(dbenv, pct, nwrotep)
 		__env_rep_enter(dbenv);
 	ret = __memp_trickle(dbenv, pct, nwrotep);
 	if (rep_check)
-		__env_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 	return (ret);
 }
 
@@ -60,8 +59,8 @@ __memp_trickle(dbenv, pct, nwrotep)
 {
 	DB_MPOOL *dbmp;
 	MPOOL *c_mp, *mp;
-	u_int32_t dirty, i, total, dtmp;
-	int n, ret, wrote;
+	u_int32_t dirty, i, total, dtmp, wrote;
+	int n, ret;
 
 	dbmp = dbenv->mp_handle;
 	mp = dbmp->reginfo[0].primary;
@@ -87,7 +86,7 @@ __memp_trickle(dbenv, pct, nwrotep)
 	for (ret = 0, i = dirty = total = 0; i < mp->nreg; ++i) {
 		c_mp = dbmp->reginfo[i].primary;
 		total += c_mp->stat.st_pages;
-		__memp_stat_hash(&dbmp->reginfo[i], c_mp, &dtmp);
+		__memp_stat_hash(dbenv, &dbmp->reginfo[i], c_mp, &dtmp);
 		dirty += dtmp;
 	}
 
@@ -95,15 +94,15 @@ __memp_trickle(dbenv, pct, nwrotep)
 	 * !!!
 	 * Be careful in modifying this calculation, total may be 0.
 	 */
-	n = ((total * pct) / 100) - (total - dirty);
+	n = ((total * (u_int)pct) / 100) - (total - dirty);
 	if (dirty == 0 || n <= 0)
 		return (0);
 
-	if (nwrotep == NULL)
-		nwrotep = &wrote;
-	ret = __memp_sync_int(dbenv, NULL, n, DB_SYNC_TRICKLE, nwrotep);
-
-	mp->stat.st_page_trickle += *nwrotep;
+	ret = __memp_sync_int(
+	    dbenv, NULL, (u_int32_t)n, DB_SYNC_TRICKLE, &wrote);
+	mp->stat.st_page_trickle += wrote;
+	if (nwrotep != NULL)
+		*nwrotep = (int)wrote;
 
 	return (ret);
 }

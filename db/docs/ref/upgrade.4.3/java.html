@@ -1,0 +1,63 @@
+<!--$Id: java.so,v 1.2 2004/09/28 19:17:13 mark Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.3: Java</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.2/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.3/err.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.3: Java</h3>
+<p>The Berkeley DB Java API has changed significantly in the 4.3 release, in ways
+incompatible with previous releases.  This has been done to provide a
+consistent Java-like API for Berkeley DB as well as to make the Berkeley DB Java API
+match the API in Berkeley DB Java Edition, to ease application-porting between
+the two libraries.</p>
+<p>Here is a summary of the major changes:</p>
+<ol>
+<p><li>The low-level wrapper around the C API has been moved into a package
+called com.sleepycat.db.internal.
+<p><li>There is a new public API in the package com.sleepycat.db.
+<p><li>All flags and error numbers have been eliminated from the public API.
+All configuration is done through method calls on configuration objects.
+<p><li>All classes and methods are named to Java standards, matching Berkeley DB Java
+Edition.  For example:
+<blockquote><pre><p><ul type=disc>
+<li>Db -&gt; Database
+<li>Dbc -&gt; Cursor
+<li>Dbt -&gt; DatabaseEntry
+<li>DbEnv -&gt; Environment
+<li>DbTxn -&gt; Transaction
+<li>Db.cursor -&gt; Database.openCursor
+<li>Dbc.get(..., DbConstants.DB_CURRENT) -&gt; Cursor.getCurrent(...)
+</ul></pre></blockquote>
+<p><li>The statistics classes have "getter" methods for all fields.
+<p><li>In transactional applications, the Java API infers whether to
+auto-commit operations: if an update is performed on a transactional
+database without supplying a transaction, it is implicitly
+auto-committed.
+<p><li>The com.sleepycat.bdb.* packages have been reorganized so that the binding
+classes can be used with the base API in the com.sleepycat.db package.  The
+bind and collection classes are now essentially the same in Berkeley DB and Berkeley DB
+Java Edition.  The former com.sleepycat.bdb.bind.* packages are now the
+com.sleepycat.bind.* packages.  The former com.sleepycat.bdb,
+com.sleepycat.bdb.collections, and com.sleepycat.bdb.factory packages are now
+combined in the new com.sleepycat.collections package.
+<p><li>A layer of the former collections API has been removed to simplify the API and
+to remove the redundant implementation of secondary indices.  The former
+DataStore, DataIndex, and ForeignKeyIndex classes have been removed.  Instead
+of wrapping a Database in a DataStore or DataIndex, the Database object is now
+passed directly to the constructor of a StoredMap, StoredList, etc.
+</ol>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.2/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.3/err.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -53,19 +53,19 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 Release/libdb42.lib /nologo /base:"0x13000000" /subsystem:windows /dll /machine:I386 /out:"Release/libdb_java42.dll"
+# ADD LINK32 Release/libdb43.lib /nologo /base:"0x13000000" /subsystem:windows /dll /machine:I386 /out:"Release/libdb_java43.dll"
 # Begin Custom Build - Compiling java files using javac
 ProjDir=.
-InputPath=.\Release\libdb_java42.dll
+InputPath=.\Release\libdb_java43.dll
 SOURCE="$(InputPath)"
 
 "force_compilation.txt" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo compiling Berkeley DB classes 
 	mkdir "$(OUTDIR)\classes"
-	javac -g -d "$(OUTDIR)\classes" -classpath "$(OUTDIR)/classes" ..\java\src\com\sleepycat\db\*.java ..\java\src\com\sleepycat\db\$(OUTDIR)\*.java ..\java\src\com\sleepycat\bdb\bind\*.java ..\java\src\com\sleepycat\bdb\bind\serial\*.java ..\java\src\com\sleepycat\bdb\bind\tuple\*.java ..\java\src\com\sleepycat\bdb\*.java ..\java\src\com\sleepycat\bdb\collection\*.java ..\java\src\com\sleepycat\bdb\factory\*.java ..\java\src\com\sleepycat\bdb\util\*.java
+	javac -O -d "$(OUTDIR)\classes" -classpath "$(OUTDIR)/classes" ..\java\src\com\sleepycat\db\*.java ..\java\src\com\sleepycat\db\internal\*.java ..\java\src\com\sleepycat\bind\*.java ..\java\src\com\sleepycat\bind\serial\*.java ..\java\src\com\sleepycat\bind\tuple\*.java ..\java\src\com\sleepycat\collections\*.java ..\java\src\com\sleepycat\compat\*.java ..\java\src\com\sleepycat\util\*.java
 	echo compiling examples 
 	mkdir "$(OUTDIR)\classes.ex"
-	javac -g -d "$(OUTDIR)\classes.ex" -classpath "$(OUTDIR)\classes;$(OUTDIR)\classes.ex" ..\examples_java\src\com\sleepycat\examples\db\*.java ..\examples_java\src\com\sleepycat\examples\bdb\access\*.java ..\examples_java\src\com\sleepycat\examples\bdb\helloworld\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\basic\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\entity\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\tuple\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\sentity\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\marshal\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\factory\*.java
+	javac -O -d "$(OUTDIR)\classes.ex" -classpath "$(OUTDIR)\classes;$(OUTDIR)\classes.ex" ..\examples_java\src\com\sleepycat\examples\db\*.java ..\examples_java\src\com\sleepycat\examples\db\GettingStarted\*.java ..\examples_java\src\com\sleepycat\examples\collections\access\*.java ..\examples_java\src\com\sleepycat\examples\collections\hello\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\basic\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\entity\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\tuple\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\sentity\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\marshal\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\factory\*.java
 	echo creating jar files 
 	jar cf "$(OUTDIR)\db.jar" -C "$(OUTDIR)\classes" .
 	jar cf "$(OUTDIR)\dbexamples.jar" -C "$(OUTDIR)\classes.ex" .
@@ -98,19 +98,19 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 Debug/libdb42d.lib /nologo /base:"0x13000000" /subsystem:windows /dll /pdb:none /debug /machine:I386 /out:"Debug/libdb_java42d.dll" /fixed:no
+# ADD LINK32 Debug/libdb43d.lib /nologo /base:"0x13000000" /subsystem:windows /dll /pdb:none /debug /machine:I386 /out:"Debug/libdb_java43d.dll" /fixed:no
 # Begin Custom Build - Compiling java files using javac
 ProjDir=.
-InputPath=.\Debug\libdb_java42d.dll
+InputPath=.\Debug\libdb_java43d.dll
 SOURCE="$(InputPath)"
 
 "force_compilation.txt" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	echo compiling Berkeley DB classes 
 	mkdir "$(OUTDIR)\classes"
-	javac -g -d "$(OUTDIR)\classes" -classpath "$(OUTDIR)/classes" ..\java\src\com\sleepycat\db\*.java ..\java\src\com\sleepycat\db\$(OUTDIR)\*.java ..\java\src\com\sleepycat\bdb\bind\*.java ..\java\src\com\sleepycat\bdb\bind\serial\*.java ..\java\src\com\sleepycat\bdb\bind\tuple\*.java ..\java\src\com\sleepycat\bdb\*.java ..\java\src\com\sleepycat\bdb\collection\*.java ..\java\src\com\sleepycat\bdb\factory\*.java ..\java\src\com\sleepycat\bdb\util\*.java
+	javac -g -d "$(OUTDIR)\classes" -classpath "$(OUTDIR)/classes" ..\java\src\com\sleepycat\db\*.java ..\java\src\com\sleepycat\db\internal\*.java ..\java\src\com\sleepycat\bind\*.java ..\java\src\com\sleepycat\bind\serial\*.java ..\java\src\com\sleepycat\bind\tuple\*.java ..\java\src\com\sleepycat\collections\*.java ..\java\src\com\sleepycat\compat\*.java ..\java\src\com\sleepycat\util\*.java
 	echo compiling examples 
 	mkdir "$(OUTDIR)\classes.ex"
-	javac -g -d "$(OUTDIR)\classes.ex" -classpath "$(OUTDIR)\classes;$(OUTDIR)\classes.ex" ..\examples_java\src\com\sleepycat\examples\db\*.java ..\examples_java\src\com\sleepycat\examples\bdb\access\*.java ..\examples_java\src\com\sleepycat\examples\bdb\helloworld\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\basic\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\entity\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\tuple\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\sentity\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\marshal\*.java ..\examples_java\src\com\sleepycat\examples\bdb\shipment\factory\*.java
+	javac -g -d "$(OUTDIR)\classes.ex" -classpath "$(OUTDIR)\classes;$(OUTDIR)\classes.ex" ..\examples_java\src\com\sleepycat\examples\db\*.java ..\examples_java\src\com\sleepycat\examples\db\GettingStarted\*.java ..\examples_java\src\com\sleepycat\examples\collections\access\*.java ..\examples_java\src\com\sleepycat\examples\collections\hello\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\basic\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\entity\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\tuple\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\sentity\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\marshal\*.java ..\examples_java\src\com\sleepycat\examples\collections\ship\factory\*.java
 	echo creating jar files 
 	jar cf "$(OUTDIR)\db.jar" -C "$(OUTDIR)\classes" .
 	jar cf "$(OUTDIR)\dbexamples.jar" -C "$(OUTDIR)\classes.ex" .

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test044.tcl,v 11.34 2003/09/16 19:01:36 sandstro Exp $
+# $Id: test044.tcl,v 11.35 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test044
 # TEST	Small system integration tests

@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: qam_files.c,v 1.86 2004/10/12 22:53:44 ubell Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: qam_files.c,v 1.72 2003/10/03 21:21:54 ubell Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -28,8 +26,8 @@ static const char revid[] = "$Id: qam_files.c,v 1.72 2003/10/03 21:21:54 ubell E
 #include "dbinc/mp.h"
 #include "dbinc/qam.h"
 
-#define	QAM_EXNAME(Q, I, B, L) 						\
-	snprintf((B), (L), 						\
+#define	QAM_EXNAME(Q, I, B, L)						\
+	snprintf((B), (L),						\
 	    QUEUE_EXTENT, (Q)->dir, PATH_SEPARATOR[0], (Q)->name, (I))
 
 /*
@@ -53,9 +51,9 @@ __qam_fprobe(dbp, pgno, addrp, mode, flags)
 	MPFARRAY *array;
 	QUEUE *qp;
 	u_int8_t fid[DB_FILE_ID_LEN];
-	u_int32_t extid, maxext, openflags;
+	u_int32_t extid, maxext, numext, offset, oldext, openflags;
 	char buf[MAXPATHLEN];
-	int ftype, numext, offset, oldext, ret;
+	int ftype, less, ret, t_ret;
 
 	dbenv = dbp->dbenv;
 	qp = (QUEUE *)dbp->q_internal;
@@ -82,19 +80,32 @@ __qam_fprobe(dbp, pgno, addrp, mode, flags)
 	array = &qp->array1;
 	if (array->n_extent == 0) {
 		/* Start with 4 extents */
-		oldext = 0;
 		array->n_extent = 4;
 		array->low_extent = extid;
-		offset = 0;
-		numext = 0;
+		numext = offset = oldext = 0;
+		less = 0;
 		goto alloc;
 	}
 
-	offset = extid - qp->array1.low_extent;
-	if (qp->array2.n_extent != 0 &&
-	    abs(offset) > abs(extid - qp->array2.low_extent)) {
-		array = &qp->array2;
+	if (extid < array->low_extent) {
+		less = 1;
+		offset = array->low_extent - extid;
+	} else {
+		less = 0;
 		offset = extid - array->low_extent;
+	}
+	if (qp->array2.n_extent != 0 &&
+	    (extid >= qp->array2.low_extent ?
+	    offset > extid - qp->array2.low_extent :
+	    offset > qp->array2.low_extent - extid)) {
+		array = &qp->array2;
+		if (extid < array->low_extent) {
+			less = 1;
+			offset = array->low_extent - extid;
+		} else {
+			less = 0;
+			offset = extid - array->low_extent;
+		}
 	}
 
 	/*
@@ -102,27 +113,26 @@ __qam_fprobe(dbp, pgno, addrp, mode, flags)
 	 * extents in the array.  This is true by default if there are
 	 * no extents here yet.
 	 */
-	if (offset < 0 || (unsigned) offset >= array->n_extent) {
+	if (less == 1 || offset >= array->n_extent) {
 		oldext = array->n_extent;
-		numext = array->hi_extent - array->low_extent  + 1;
-		if (offset < 0 &&
-		    (unsigned) -offset + numext <= array->n_extent) {
+		numext = (array->hi_extent - array->low_extent) + 1;
+		if (less == 1 && offset + numext <= array->n_extent) {
 			/*
 			 * If we can fit this one into the existing array by
 			 * shifting the existing entries then we do not have
 			 * to allocate.
 			 */
-			memmove(&array->mpfarray[-offset],
+			memmove(&array->mpfarray[offset],
 			    array->mpfarray, numext
 			    * sizeof(array->mpfarray[0]));
-			memset(array->mpfarray, 0, -offset
+			memset(array->mpfarray, 0, offset
 			    * sizeof(array->mpfarray[0]));
 			offset = 0;
-		} else if ((u_int32_t)offset == array->n_extent &&
+		} else if (less == 0 && offset == array->n_extent &&
 		    mode != QAM_PROBE_MPF && array->mpfarray[0].pinref == 0) {
 			/*
 			 * If this is at the end of the array and the file at
-			 * the begining has a zero pin count we can close
+			 * the beginning has a zero pin count we can close
 			 * the bottom extent and put this one at the end.
 			 * TODO: If this process is "slow" then it might be
 			 * appending but miss one or more extents.
@@ -146,9 +156,9 @@ __qam_fprobe(dbp, pgno, addrp, mode, flags)
 			 * If it has then allocate the second array.
 			 * Otherwise just expand the one we are using.
 			 */
-			maxext = (u_int32_t) UINT32_T_MAX
+			maxext = (u_int32_t) UINT32_MAX
 			    / (qp->page_ext * qp->rec_page);
-			if ((u_int32_t) abs(offset) >= maxext/2) {
+			if (offset >= maxext/2) {
 				array = &qp->array2;
 				DB_ASSERT(array->n_extent == 0);
 				oldext = 0;
@@ -161,21 +171,19 @@ __qam_fprobe(dbp, pgno, addrp, mode, flags)
 				 * Increase the size to at least include
 				 * the new one and double it.
 				 */
-				array->n_extent += abs(offset);
+				array->n_extent += offset;
 				array->n_extent <<= 2;
 			}
-	alloc:
-			if ((ret = __os_realloc(dbenv,
+alloc:			if ((ret = __os_realloc(dbenv,
 			    array->n_extent * sizeof(struct __qmpf),
 			    &array->mpfarray)) != 0)
 				goto err;
 
-			if (offset < 0) {
+			if (less == 1) {
 				/*
 				 * Move the array up and put the new one
 				 * in the first slot.
 				 */
-				offset = -offset;
 				memmove(&array->mpfarray[offset],
 				    array->mpfarray,
 				    numext * sizeof(array->mpfarray[0]));
@@ -256,14 +264,27 @@ err:
 		}
 		pgno--;
 		pgno %= qp->page_ext;
-		if (mode == QAM_PROBE_GET)
-			return (__memp_fget(mpf, &pgno, flags, addrp));
-		ret = __memp_fput(mpf, addrp, flags);
+		if (mode == QAM_PROBE_GET) {
+			if ((ret = __memp_fget(mpf, &pgno, flags, addrp)) == 0)
+				return (ret);
+		} else
+			ret = __memp_fput(mpf, addrp, flags);
+
 		MUTEX_THREAD_LOCK(dbenv, dbp->mutexp);
 		/* Recalculate because we dropped the lock. */
 		offset = extid - array->low_extent;
 		DB_ASSERT(array->mpfarray[offset].pinref > 0);
-		array->mpfarray[offset].pinref--;
+		if (--array->mpfarray[offset].pinref == 0 &&
+		    (mode == QAM_PROBE_GET || ret == 0)) {
+			/* Check to see if this file will be unlinked. */
+			(void)__memp_get_flags(mpf, &flags);
+			if (LF_ISSET(DB_MPOOL_UNLINK)) {
+				array->mpfarray[offset].mpf = NULL;
+				if ((t_ret =
+				    __memp_fclose(mpf, 0)) != 0 && ret == 0)
+					ret = t_ret;
+			}
+		}
 		MUTEX_THREAD_UNLOCK(dbenv, dbp->mutexp);
 	}
 	return (ret);
@@ -286,8 +307,8 @@ __qam_fclose(dbp, pgnoaddr)
 	DB_MPOOLFILE *mpf;
 	MPFARRAY *array;
 	QUEUE *qp;
-	u_int32_t extid;
-	int offset, ret;
+	u_int32_t extid, offset;
+	int ret;
 
 	ret = 0;
 	dbenv = dbp->dbenv;
@@ -301,7 +322,7 @@ __qam_fclose(dbp, pgnoaddr)
 		array = &qp->array2;
 	offset = extid - array->low_extent;
 
-	DB_ASSERT(offset >= 0 && (unsigned) offset < array->n_extent);
+	DB_ASSERT(extid >= array->low_extent && offset < array->n_extent);
 
 	/* If other threads are still using this file, leave it. */
 	if (array->mpfarray[offset].pinref != 0)
@@ -334,11 +355,11 @@ __qam_fremove(dbp, pgnoaddr)
 	DB_MPOOLFILE *mpf;
 	MPFARRAY *array;
 	QUEUE *qp;
-	u_int32_t extid;
-#if CONFIG_TEST
+	u_int32_t extid, offset;
+#ifdef CONFIG_TEST
 	char buf[MAXPATHLEN], *real_name;
 #endif
-	int offset, ret;
+	int ret;
 
 	qp = (QUEUE *)dbp->q_internal;
 	dbenv = dbp->dbenv;
@@ -352,9 +373,9 @@ __qam_fremove(dbp, pgnoaddr)
 		array = &qp->array2;
 	offset = extid - array->low_extent;
 
-	DB_ASSERT(offset >= 0 && (unsigned) offset < array->n_extent);
+	DB_ASSERT(extid >= array->low_extent && offset < array->n_extent);
 
-#if CONFIG_TEST
+#ifdef CONFIG_TEST
 	real_name = NULL;
 	/* Find the real name of the file. */
 	QAM_EXNAME(qp, extid, buf, sizeof(buf));
@@ -370,8 +391,11 @@ __qam_fremove(dbp, pgnoaddr)
 		goto err;
 
 	mpf = array->mpfarray[offset].mpf;
-	array->mpfarray[offset].mpf = NULL;
 	(void)__memp_set_flags(mpf, DB_MPOOL_UNLINK, 1);
+	/* Someone could be real slow, let them close it down. */
+	if (array->mpfarray[offset].pinref != 0)
+		goto err;
+	array->mpfarray[offset].mpf = NULL;
 	if ((ret = __memp_fclose(mpf, 0)) != 0)
 		goto err;
 
@@ -394,7 +418,7 @@ __qam_fremove(dbp, pgnoaddr)
 
 err:
 	MUTEX_THREAD_UNLOCK(dbenv, dbp->mutexp);
-#if CONFIG_TEST
+#ifdef CONFIG_TEST
 	if (real_name != NULL)
 		__os_free(dbenv, real_name);
 #endif
@@ -483,14 +507,14 @@ __qam_gen_filelist(dbp, filelistp)
 	 *   roundoff at first (e.g., current record in extent);
 	 *   roundoff at current (e.g., first record in extent);
 	 *   NULL termination; and
-	 *   UINT32_T_MAX wraparound (the last extent can be small).
+	 *   UINT32_MAX wraparound (the last extent can be small).
 	 */
 	rec_extent = qp->rec_page * qp->page_ext;
 	if (current >= first)
 		extent_cnt = (current - first) / rec_extent + 3;
 	else
 		extent_cnt =
-		    (current + (UINT32_T_MAX - first)) / rec_extent + 4;
+		    (current + (UINT32_MAX - first)) / rec_extent + 4;
 	if ((ret = __os_calloc(dbenv,
 	    extent_cnt, sizeof(QUEUE_FILELIST), filelistp)) != 0)
 		return (ret);
@@ -500,7 +524,7 @@ again:
 	if (current >= first)
 		stop = current;
 	else
-		stop = UINT32_T_MAX;
+		stop = UINT32_MAX;
 
 	/*
 	 * Make sure that first is at the same offset in the extent as stop.
@@ -545,8 +569,9 @@ __qam_extent_names(dbenv, name, namelistp)
 	DB *dbp;
 	QUEUE *qp;
 	QUEUE_FILELIST *filelist, *fp;
+	size_t len;
+	int cnt, ret, t_ret;
 	char buf[MAXPATHLEN], **cp, *freep;
-	int cnt, len, ret;
 
 	*namelistp = NULL;
 	filelist = NULL;
@@ -570,19 +595,18 @@ __qam_extent_names(dbenv, name, namelistp)
 		cnt++;
 
 	/* QUEUE_EXTENT contains extra chars, but add 6 anyway for the int. */
-	len = (u_int32_t)(cnt * (sizeof(**namelistp)
-	    + strlen(QUEUE_EXTENT) + strlen(qp->dir) + strlen(qp->name) + 6));
+	len = (size_t)cnt * (sizeof(**namelistp) +
+	    strlen(QUEUE_EXTENT) + strlen(qp->dir) + strlen(qp->name) + 6);
 
-	if ((ret =
-	    __os_malloc(dbp->dbenv, len, namelistp)) != 0)
+	if ((ret = __os_malloc(dbp->dbenv, len, namelistp)) != 0)
 		goto done;
 	cp = *namelistp;
 	freep = (char *)(cp + cnt + 1);
 	for (fp = filelist; fp->mpf != NULL; fp++) {
 		QAM_EXNAME(qp, fp->id, buf, sizeof(buf));
-		len = (u_int32_t)strlen(buf);
+		len = strlen(buf);
 		*cp++ = freep;
-		strcpy(freep, buf);
+		(void)strcpy(freep, buf);
 		freep += len + 1;
 	}
 	*cp = NULL;
@@ -590,7 +614,8 @@ __qam_extent_names(dbenv, name, namelistp)
 done:
 	if (filelist != NULL)
 		__os_free(dbp->dbenv, filelist);
-	(void)__db_close(dbp, NULL, DB_NOSYNC);
+	if ((t_ret = __db_close(dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
+		ret = t_ret;
 
 	return (ret);
 }
@@ -632,7 +657,7 @@ __qam_exid(dbp, fidp, exnum)
 
 /*
  * __qam_nameop --
- *	Remove or rename  extent files associated with a particular file. 
+ *	Remove or rename  extent files associated with a particular file.
  * This is to remove or rename (both in mpool and the file system) any
  * extent files associated with the given dbp.
  * This is either called from the QUEUE remove or rename methods or
@@ -648,17 +673,19 @@ int __qam_nameop(dbp, txn, newname, op)
 {
 	DB_ENV *dbenv;
 	QUEUE *qp;
+	size_t exlen, fulllen, len;
+	u_int8_t fid[DB_FILE_ID_LEN];
+	u_int32_t exid;
+	int cnt, i, ret, t_ret;
 	char buf[MAXPATHLEN], nbuf[MAXPATHLEN], sepsave;
 	char *endname, *endpath, *exname, *fullname, **names;
 	char *ndir, *namep, *new, *cp;
-	int cnt, exlen, fulllen, i, len, ret, t_ret;
-	u_int8_t fid[DB_FILE_ID_LEN];
-	u_int32_t exid;
 
 	ret = t_ret = 0;
 	dbenv = dbp->dbenv;
 	qp = (QUEUE *)dbp->q_internal;
 	namep = exname = fullname = NULL;
+	names = NULL;
 
 	/* If this isn't a queue with extents, we're done. */
 	if (qp->page_ext == 0)
@@ -753,8 +780,7 @@ int __qam_nameop(dbp, txn, newname, op)
 		 * We have a queue extent file.  We need to generate its
 		 * name and its fileid.
 		 */
-
-		exid = atol(names[i] + len);
+		exid = (u_int32_t)strtoul(names[i] + len, NULL, 10);
 		__qam_exid(dbp, fid, exid);
 
 		switch (op) {
@@ -793,5 +819,7 @@ err:	if (fullname != NULL)
 		__os_free(dbenv, exname);
 	if (namep != NULL)
 		__os_free(dbenv, namep);
+	if (names != NULL)
+		__os_free(dbenv, names);
 	return (ret);
 }

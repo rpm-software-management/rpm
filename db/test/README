@@ -28,10 +28,10 @@ Each test starts with a section like the following:
 
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: README,v 1.5 2003/09/04 23:41:09 bostic Exp $
+# $Id: README,v 1.6 2004/01/28 03:36:26 bostic Exp $
 #
 # TEST	test001
 # TEST	Small keys/data

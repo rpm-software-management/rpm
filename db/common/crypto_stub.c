@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: crypto_stub.c,v 1.4 2004/01/28 03:35:52 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: crypto_stub.c,v 1.3 2003/07/01 19:47:10 bostic Exp $";
-#endif /* not lint */
 
 #include "db_int.h"
 

@@ -1,0 +1,40 @@
+<!--$Id: repl.so,v 1.9 2004/09/28 14:13:09 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.3: Replication</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.3/enomem.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.3/rtc.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.3: Replication</h3>
+<p>The 4.3 release removes support for logs-only replication clients.  Use
+of the DB_REP_LOGSONLY flag to the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> should be replaced
+with the <a href="../../api_c/rep_start.html#DB_REP_CLIENT">DB_REP_CLIENT</a> flag.</p>
+<p>The 4.3 release adds two new arguments to the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method,
+<b>nvotes</b> and <b>flags</b>.  The <b>nvotes</b> argument sets the
+required number of replication group members that must participate in
+an election in order for a master to be declared.  For backward
+compatibility, set the <b>nvotes</b> argument to 0.  The flags argument
+is currently unused and should be set to 0.  See <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method or
+"Replication Elections" for more information.</p>
+<p>In the 4.3 release it is no longer necessary to do a database
+environment hot backup to initialize a replication client.  All that is
+needed now is for the client to join the replication group.  Berkeley DB will
+perform an internal backup from the master to the client automatically
+and will run recovery on the client to bring it up to date with the
+master.  For this reason, the DB_REP_OUTDATED error return from the
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method is no longer needed, and applications should remove
+any checking done for that error return.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.3/enomem.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.3/rtc.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

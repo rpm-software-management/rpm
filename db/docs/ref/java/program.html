@@ -1,12 +1,12 @@
-<!--$Id: program.so,v 10.31 2003/11/21 02:11:37 gburd Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: program.so,v 10.35 2004/09/10 13:04:01 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Java programming notes</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -30,79 +30,38 @@ order, so we would have to do extra bookkeeping to make sure that
 everything was closed in the proper order.  The best word of advice is
 to always do a close() for any matching open() call.  Specifically, the
 Berkeley DB package requires that you explicitly call close on each individual
-<a href="../../java/com/sleepycat/db/Db.html">Db</a>
- and
-<a href="../../java/com/sleepycat/db/Dbc.html">Dbc</a>
- object that you opened.  Your database
+<a href="../../java/com/sleepycat/db/Database.html">Database</a> and
+<a href="../../java/com/sleepycat/db/Cursor.html">Cursor</a> object that you opened.  Your database
 activity may not be synchronized to disk unless you do so.
 <p><li>Some methods in the Java API have no return type, and throw a
-<a href="../../java/com/sleepycat/db/DbException.html">DbException</a>
- when an severe error
-arises.  There are some notable
-methods that do have a return value, and can also throw an exception.
-<a href="../../java/com/sleepycat/db/Db.html#get">Db.get</a>
- and
-<a href="../../java/com/sleepycat/db/Dbc.html#get">Dbc.get</a>
- both return 0 when a get succeeds,
-return <a href="../../ref/program/errorret.html#DB_NOTFOUND">Db.DB_NOTFOUND</a> when the key is not found, and throw an error
-when there is a severe error.  This approach allows the programmer to
-check for typical data-driven errors by watching return values without
-special casing exceptions.
-<p>An object of type 
-<a href="../../java/com/sleepycat/db/DbDeadlockException.html">DbDeadlockException</a>
- is
+<a href="../../java/com/sleepycat/db/DatabaseException.html">DatabaseException</a> when an severe error
+arises.  There are some notable methods that do have a return value, and
+can also throw an exception.  The "get" methods in
+<a href="../../java/com/sleepycat/db/Database.html">Database</a> and
+<a href="../../java/com/sleepycat/db/Cursor.html">Cursor</a> both return 0 when a get
+succeeds, <a href="../../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> when the key is not found, and throw an
+error when there is a severe error.  This approach allows the programmer
+to check for typical data-driven errors by watching return values
+without special casing exceptions.
+<p>An object of type <a href="../../java/com/sleepycat/db/MemoryException.html">MemoryException</a> is
+thrown when a Dbt is too small to hold the corresponding key or data item.</p>
+<p>An object of type <a href="../../java/com/sleepycat/db/DeadlockException.html">DeadlockException</a> is
 thrown when a deadlock would occur.</p>
-<p>An object of type 
-<a href="../../java/com/sleepycat/db/DbMemoryException.html">DbMemoryException</a>
- is
-thrown when the system cannot provide enough memory to complete the
-operation (the ENOMEM system error on UNIX).</p>
-<p>An object of type 
-<a href="../../java/com/sleepycat/db/DbRunRecoveryException.html">DbRunRecoveryException</a>
-,
-a subclass of 
-<a href="../../java/com/sleepycat/db/DbException.html">DbException</a>
-, is thrown when
-there is an error that requires a
-recovery of the database using <a href="../../utility/db_recover.html">db_recover</a>.</p>
-<p>An object of type 
-<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/IllegalArgumentException.html">IllegalArgumentException</a>
+<p>An object of type <a href="../../java/com/sleepycat/db/RunRecoveryException.html">RunRecoveryException</a>, a
+subclass of <a href="../../java/com/sleepycat/db/DatabaseException.html">DatabaseException</a>, is thrown when
+there is an error that requires a recovery of the database using
+<a href="../../utility/db_recover.html">db_recover</a>.</p>
+<p>An object of type <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/IllegalArgumentException.html">IllegalArgumentException</a>
 a standard Java Language exception, is thrown when there is an error in
 method arguments.</p>
-<p><li>Berkeley DB always turns on the 
-<a href="../../java/com/sleepycat/db/Db.html#DB_THREAD">Db.DB_THREAD</a>
-flag because threads are expected in Java.
-<p><li>Callbacks in Java manufacture 
-<a href="../../java/com/sleepycat/db/Dbt.html">Dbt</a>
- objects
-from internal data.  For efficiency, the <b>data</b> field in such Dbts is
-not set in the Java object until a
-<a href="../../java/com/sleepycat/db/Dbt.html#getData">Dbt.getData</a>
- method call.  This avoids the
-creation of a potentially large Java byte array if it isn't needed.  If
-callback code can be written to defer calling
-<a href="../../java/com/sleepycat/db/Dbt.html#getData">Dbt.getData</a>
-performance may be increased.  For example, a bt_compare method might
-compare values returned by 
-<a href="../../java/com/sleepycat/db/Dbt.html#getSize">Dbt.getSize</a>
-before deciding whether a call to
-<a href="../../java/com/sleepycat/db/Dbt.html#getData">Dbt.getData</a>
- is needed.
-<p><li>If there are embedded null strings in the <b>curslist</b> argument for
-<a href="../../java/com/sleepycat/db/Db.html#join">Db.join</a>
-, they will be treated as the
-end of the list of
-cursors, even if you may have allocated a longer array.  Fill in all
-the strings in your array unless you intend to cut it short.
-<p><li>The callback installed for
-<a href="../../java/com/sleepycat/db/DbEnv.html#setErrorHandler">DbEnv.setErrorHandler</a>
- will run in the same
-thread as the caller to
-<a href="../../java/com/sleepycat/db/DbEnv.html#setErrorHandler">DbEnv.setErrorHandler</a>
-.  Make sure that
-thread remains running until your application exits or until
-<a href="../../java/com/sleepycat/db/DbEnv.html#close">DbEnv.close</a>
-is called.
+<p>An object of type <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/OutOfMemoryError.html">OutOfMemoryError</a> is thrown
+when the system cannot provide enough memory to complete the operation
+(the ENOMEM system error on UNIX).</p>
+<p><li>If there are embedded nulls in the <b>curslist</b> argument for
+<a href="../../java/com/sleepycat/db/Database.html#pathsubst(join(com.sleepycat.db.Cursor__BRACKETS__, com.sleepycat.db.JoinConfig), ' ', '%20')">Database.join(com.sleepycat.db.Cursor__BRACKETS__, com.sleepycat.db.JoinConfig)</a>,
+they will be treated as the end of the list of cursors, even if you
+may have allocated a longer array.  Fill in all the cursors in your
+array unless you intend to cut it short.
 <p><li>If you are using custom class loaders in your application, make sure
 that the Berkeley DB classes are loaded by the system class loader, not a
 custom class loader. This is due to a JVM bug that can cause an access
@@ -111,6 +70,6 @@ Java Bug Database).
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../java/compat.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../java/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

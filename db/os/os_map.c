@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_map.c,v 11.57 2004/07/06 13:55:48 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_map.c,v 11.51 2003/07/01 19:47:15 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -65,7 +63,7 @@ __os_r_sysattach(dbenv, infop, rp)
 #if defined(HAVE_SHMGET)
 		{
 		key_t segid;
-		int id, ret;
+		int id, mode, ret;
 
 		/*
 		 * We could potentially create based on REGION_CREATE_OK, but
@@ -106,8 +104,13 @@ __os_r_sysattach(dbenv, infop, rp)
 					return (EAGAIN);
 				}
 			}
-			if ((id =
-			    shmget(segid, rp->size, IPC_CREAT | 0600)) == -1) {
+
+			/*
+			 * Map the DbEnv::open method file mode permissions to
+			 * shmget call permissions.
+			 */
+			mode = IPC_CREAT | __db_shm_mode(dbenv);
+			if ((id = shmget(segid, rp->size, mode)) == -1) {
 				ret = __os_get_errno();
 				__db_err(dbenv,
 	"shmget: key: %ld: unable to create shared system memory region: %s",
@@ -148,9 +151,9 @@ __os_r_sysattach(dbenv, infop, rp)
 	 * of that.
 	 */
 	if ((ret = __os_open(dbenv, infop->name,
-	    DB_OSO_REGION | DB_OSO_DIRECT |
+	    DB_OSO_REGION |
 	    (F_ISSET(infop, REGION_CREATE_OK) ? DB_OSO_CREATE : 0),
-	    infop->mode, &fhp)) != 0)
+	    dbenv->db_mode, &fhp)) != 0)
 		__db_err(dbenv, "%s: %s", infop->name, db_strerror(ret));
 
 	/*
@@ -295,6 +298,8 @@ __os_unmapfile(dbenv, addr, len)
 	void *addr;
 	size_t len;
 {
+	int ret;
+
 	/* If the user replaced the map call, call through their interface. */
 	if (DB_GLOBAL(j_unmap) != NULL)
 		return (DB_GLOBAL(j_unmap)(addr, len));
@@ -302,22 +307,12 @@ __os_unmapfile(dbenv, addr, len)
 #ifdef HAVE_MMAP
 #ifdef HAVE_MUNLOCK
 	if (F_ISSET(dbenv, DB_ENV_LOCKDOWN))
-		while (munlock(addr, len) != 0 && __os_get_errno() == EINTR)
-			;
+		RETRY_CHK((munlock(addr, len)), ret);
 #else
 	COMPQUIET(dbenv, NULL);
 #endif
-	{
-		int err, ret, retries;
-
-		err = retries = 0;
-		do {
-			ret = munmap(addr, len);
-		} while (ret != 0 &&
-		    ((err = __os_get_errno()) == EINTR || err == EBUSY) &&
-		    ++retries < DB_RETRY);
-		return (ret ? err : 0);
-	}
+	RETRY_CHK((munmap(addr, len)), ret);
+	return (ret);
 #else
 	COMPQUIET(dbenv, NULL);
 
@@ -377,6 +372,19 @@ __os_map(dbenv, path, fhp, len, is_region, is_rdonly, addrp)
 		flags |= MAP_HASSEMAPHORE;
 #else
 	COMPQUIET(is_region, 0);
+#endif
+
+	/*
+	 * FreeBSD:
+	 * Causes data dirtied via this VM map to be flushed to physical media
+	 * only when necessary (usually by the pager) rather then gratuitously.
+	 * Typically this prevents the update daemons from flushing pages
+	 * dirtied through such maps and thus allows efficient sharing of
+	 * memory across unassociated processes using a file-backed shared
+	 * memory map.
+	 */
+#ifdef MAP_NOSYNC
+	flags |= MAP_NOSYNC;
 #endif
 
 	prot = PROT_READ | (is_rdonly ? 0 : PROT_WRITE);

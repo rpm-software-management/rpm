@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test093.tcl,v 11.22 2003/01/08 05:54:10 bostic Exp $
+# $Id: test093.tcl,v 11.23 2004/01/28 03:36:32 bostic Exp $
 #
 # TEST	test093
 # TEST	Test using set_bt_compare.

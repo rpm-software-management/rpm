@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_thread.c,v 11.35 2003/01/08 04:44:00 bostic Exp $
+ * $Id: ex_thread.c,v 11.36 2004/01/28 03:36:03 bostic Exp $
  */
 
 #include <sys/types.h>

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_rq_main.c,v 1.32 2003/07/29 02:26:18 margo Exp $
+ * $Id: ex_rq_main.c,v 1.34 2004/07/16 14:56:22 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -24,8 +24,8 @@ int master_eid;
 char *myaddr;
 unsigned short myport;
 
-static int env_init __P((const char *, const char *, DB_ENV **, machtab_t *,
-    u_int32_t));
+static int env_init
+    __P((const char *, const char *, DB_ENV **, machtab_t *, u_int32_t));
 static void usage __P((const char *));
 
 int
@@ -281,7 +281,7 @@ usage(progname)
 }
 
 /* Open and configure an environment.  */
-int
+static int
 env_init(progname, home, dbenvp, machtab, flags)
 	const char *progname, *home;
 	DB_ENV **dbenvp;

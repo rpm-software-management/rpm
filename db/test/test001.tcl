@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test001.tcl,v 11.35 2003/09/08 18:12:56 bostic Exp $
+# $Id: test001.tcl,v 11.38 2004/09/22 18:01:06 bostic Exp $
 #
 # TEST	test001
 # TEST	Small keys/data
@@ -17,7 +17,7 @@
 # TEST	After all are entered, retrieve all; compare output to original.
 # TEST	Close file, reopen, do retrieve and re-verify.
 proc test001 { method {nentries 10000} \
-    {start 0} {skip 1} {tnum "001"} args } {
+    {start 0} {skip 0} {tnum "001"} args } {
 	source ./include.tcl
 
 	set args [convert_args $method $args]
@@ -57,16 +57,12 @@ proc test001 { method {nentries 10000} \
 
 	# The "start" variable determines the record number to start
 	# with, if we're using record numbers.  The "skip" variable
-	# determines whether to start with the first entry in the
-	# dict file (if skip = 0) or skip over "start" entries (skip = 1).
-	# Skip is set to 1 to get different key/data pairs for
-	# different iterations of replication tests.  Skip must be set
-	# to 0 if we're running a test that uses 10000 iterations,
-	# otherwise we run out of data to read in.
+	# determines the dictionary entry to start with.
+	# In normal use, skip will match start.
 
-	puts "\tTest$tnum: starting at $start"
-	if { $skip == 1 } {
-		for { set count 0 } { $count < $start } { incr count } {
+	puts "\tTest$tnum: Starting at $start with dictionary entry $skip"
+	if { $skip != 0 } {
+		for { set count 0 } { $count < $skip } { incr count } {
 			gets $did str
 		}
 	}

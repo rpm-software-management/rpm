@@ -1,23 +1,22 @@
-<!--$Id: memp_stat.so,v 10.53 2003/11/08 19:17:41 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: memp_stat.so,v 10.63 2004/09/28 18:18:30 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;memp_stat</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;memp_stat</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -26,6 +25,9 @@
 int
 DB_ENV-&gt;memp_stat(DB_ENV *env, DB_MPOOL_STAT **gsp,
     DB_MPOOL_FSTAT *(*fsp)[], u_int32_t flags);
+<p>
+int
+DB_ENV-&gt;memp_stat_print(DB_ENV *env, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;memp_stat</h3>
@@ -45,11 +47,11 @@ individually freed.</p>
 <p>If <b>gsp</b> is non-NULL, the global statistics for the cache
 <b>mp</b> are copied into the memory location to which it refers.
 The following DB_MPOOL_STAT fields will be filled in:</p>
-<p><dl compact>
+<dl compact>
 <dt>size_t st_gbytes;<dd>Gigabytes of cache (total cache size is st_gbytes + st_bytes).
 <dt>size_t st_bytes;<dd>Bytes of cache (total cache size is st_gbytes + st_bytes).
 <dt>u_int32_t st_ncache;<dd>Number of caches.
-<dt>u_int32_t st_regsize;<dd>Individual cache size.
+<dt>roff_t st_regsize;<dd>Individual cache size, in bytes.
 <dt>u_int32_t st_map;<dd>Requested pages mapped into the process' address space (there is no
 available information about whether or not this request caused disk I/O,
 although examining the application page fault rate may be helpful).
@@ -83,6 +85,15 @@ lock without waiting.
 <dt>u_int32_t st_alloc_max_buckets;<dd>Maximum number of hash buckets checked during an allocation.
 <dt>u_int32_t st_alloc_pages;<dd>Number of pages checked during allocation.
 <dt>u_int32_t st_alloc_max_pages;<dd>Maximum number of pages checked during an allocation.
+<dt>u_int32_t st_mmapsize;<dd>Maximum memory-mapped file size.
+<dt>u_int32_t st_maxopenfd;<dd>Maximum open file descriptors.
+<dt>u_int32_t st_maxwrite;<dd>Maximum sequential buffer writes.
+<dt>u_int32_t st_maxwrite_sleep;<dd>Sleep after writing maximum sequential buffers.
+</dl>
+The <b>flags</b> parameter must be set to 0 or
+the following value:
+<dl compact>
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
 <p>If <b>fsp</b> is non-NULL, a pointer to a NULL-terminated
 variable length array of statistics for individual files, in the cache
@@ -92,7 +103,7 @@ set to NULL.</p>
 <p>The per-file statistics are stored in structures of type DB_MPOOL_FSTAT.
 The following DB_MPOOL_FSTAT fields will be filled in for each file in
 the cache; that is, each element of the array:</p>
-<p><dl compact>
+<dl compact>
 <dt>char * file_name;<dd>The name of the file.
 <dt>size_t st_pagesize;<dd>Page size in bytes.
 <dt>u_int32_t st_cache_hit;<dd>Requested pages found in the cache.
@@ -107,26 +118,42 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
+<dl compact>
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
-<p><dt><b>fsp</b><dd>
-The <b>fsp</b> parameter references memory into which
+<dt><b>fsp</b><dd>The <b>fsp</b> parameter references memory into which
 a pointer to the allocated per-file statistics structures is copied.
-<p><dt><b>gsp</b><dd>
-The <b>gsp</b> parameter references memory into which
+<dt><b>gsp</b><dd>The <b>gsp</b> parameter references memory into which
 a pointer to the allocated global statistics structure is copied.
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;memp_stat method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;memp_stat_print</h3>
+<p>The DB_ENV-&gt;memp_stat_print method prints diagnostic information to the output
+channel described by the <a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method.</p>
+<p>The DB_ENV-&gt;memp_stat_print method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
+been called.</p>
+<p>The DB_ENV-&gt;memp_stat_print method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set by bitwise inclusively <b>OR</b>'ing together one or more
+of the following values:
+<dl compact>
+<dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+<dt><a name="DB_STAT_MEMP_HASH">DB_STAT_MEMP_HASH</a><dd>Display the buffers with hash chains.
+</dl>
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -137,6 +164,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

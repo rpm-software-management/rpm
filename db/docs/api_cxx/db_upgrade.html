@@ -1,23 +1,22 @@
-<!--$Id: db_upgrade.so,v 10.36 2003/11/08 19:17:23 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_upgrade.so,v 10.37 2004/08/13 03:38:56 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::upgrade</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::upgrade</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -44,15 +43,13 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>file</b><dd>
-The <b>file</b> parameter is the physical file containing the databases
+<dl compact>
+<dt><b>file</b><dd>The <b>file</b> parameter is the physical file containing the databases
 to be upgraded.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_DUPSORT">DB_DUPSORT</a><dd><b>This flag is only meaningful when upgrading databases from
+<dl compact>
+<dt><a name="DB_DUPSORT">DB_DUPSORT</a><dd><b>This flag is only meaningful when upgrading databases from
 releases before the Berkeley DB 3.1 release.</b>
 <p>As part of the upgrade from the Berkeley DB 3.0 release to the 3.1 release,
 the on-disk format of duplicate data items changed.  To correctly
@@ -88,11 +85,11 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt><a name="DB_OLD_VERSION">DB_OLD_VERSION</a><dd>The database cannot be upgraded by this version of the Berkeley DB software.
+<dl compact>
+<dt><a name="DB_OLD_VERSION">DB_OLD_VERSION</a><dd>The database cannot be upgraded by this version of the Berkeley DB software.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the database is not in the same byte-order as the system; or if an
+<dl compact>
+<dt>EINVAL<dd>If the database is not in the same byte-order as the system; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -104,6 +101,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

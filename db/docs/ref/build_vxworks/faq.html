@@ -1,12 +1,12 @@
-<!--$Id: faq.so,v 1.29 2003/11/27 18:25:58 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 1.30 2004/08/17 13:45:35 sue Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: VxWorks FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
@@ -108,9 +108,14 @@ particular problem.</p>
 look at <b>SPR 72063</b> in the Wind River Systems' Support pages for
 a more detailed description of this problem.</p>
 <p><li><b>Are there any filesystems I cannot use?</b>
+<p>Currently both the Target Server File System (TSFS) and NFS are not able
+to be used.</p>
 <p>The Target Server File System (TSFS) uses the netDrv driver.  This driver
-does not support any ioctl that allows flushing to the disk, and therefore
-cannot be used with Berkeley DB.</p>
+does not support any ioctl that allows flushing to the disk, nor does
+it allow renaming of files via FIORENAME.
+The NFS file system uses nfsDrv and that driver
+does not support FIORENAME and cannot be used
+with Berkeley DB.  </p>
 <p><li><b>What VxWorks primitives are used for mutual exclusion in Berkeley DB?</b>
 <p>Mutexes inside of Berkeley DB use the basic binary semaphores in VxWorks.  The
 mutexes are created using the FIFO queue type.</p>
@@ -130,6 +135,6 @@ may leak their underlying system resources.  Therefore, the
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_vxworks/notes.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade/version.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -48,8 +48,14 @@
 /* Define to 1 if fcntl/F_SETFD denies child access to file descriptors. */
 /* #undef HAVE_FCNTL_F_SETFD */
 
+/* Define to 1 if you have the `fdatasync' function. */
+/* #undef HAVE_FDATASYNC */
+
 /* Define to 1 if allocated filesystem blocks are not zeroed. */
 #define HAVE_FILESYSTEM_NOTZERO 1
+
+/* Define to 1 if you have the `ftruncate' function. */
+#define HAVE_FTRUNCATE 1
 
 /* Define to 1 if you have the `getcwd' function. */
 #define HAVE_GETCWD 1
@@ -76,6 +82,9 @@
 
 /* Define to 1 if you have the `nsl' library (-lnsl). */
 /* #undef HAVE_LIBNSL */
+
+/* Define to 1 if the system has the type `long long'. */
+#define HAVE_LONG_LONG 1
 
 /* Define to 1 if you have the `memcmp' function. */
 #define HAVE_MEMCMP 1
@@ -226,6 +235,9 @@
 /* Define to 1 if you have the `raise' function. */
 #define HAVE_RAISE 1
 
+/* Define to 1 if you have the `rand' function. */
+#define HAVE_RAND 1
+
 /* Define to 1 if building replication support. */
 #ifndef HAVE_SMALLBUILD
 #define HAVE_REPLICATION 1
@@ -240,11 +252,20 @@
 /* Define to 1 if you have the `select' function. */
 /* #undef HAVE_SELECT */
 
+/* Define to 1 if building sequence support. */
+#define HAVE_SEQUENCE 1
+
 /* Define to 1 if you have the `shmget' function. */
 /* #undef HAVE_SHMGET */
 
 /* Define to 1 if you have the `snprintf' function. */
 #define HAVE_SNPRINTF 1
+
+/* Define to 1 if you have the `srand' function. */
+#define HAVE_SRAND 1
+
+/* Define to 1 if building statistics support. */
+#define HAVE_STATISTICS 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
 /* #undef HAVE_STDINT_H */
@@ -305,6 +326,9 @@
 /* Define to 1 if unlink of file with open file descriptors will fail. */
 /* #undef HAVE_UNLINK_WITH_OPEN_FAILURE */
 
+/* Define to 1 if the system has the type `unsigned long long'. */
+#define HAVE_UNSIGNED_LONG_LONG 1
+
 /* Define to 1 if building access method verification support. */
 #ifndef HAVE_SMALLBUILD
 #define HAVE_VERIFY 1
@@ -349,7 +373,7 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 /* #undef TIME_WITH_SYS_TIME */
 
-/* Define to 1 to mask harmless unitialized memory read/writes. */
+/* Define to 1 to mask harmless uninitialized memory read/writes. */
 /* #undef UMRW */
 
 /* Number of bits in a file offset, on hosts where this is settable. */
@@ -410,6 +434,6 @@
  * arguments turning OFF all vendor extensions.  Even more unfortunately, if
  * we do that, it fails to parse windows.h!!!!!  So, we define __STDC__ here,
  * after windows.h comes in.  Note: the compiler knows we've defined it, and
- * starts enforcing strict ANSI compilance from this point on.
+ * starts enforcing strict ANSI compliance from this point on.
  */
 #define __STDC__ 1

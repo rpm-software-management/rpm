@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: rep_method.c,v 1.167 2004/10/07 17:20:12 bostic Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: rep_method.c,v 1.134 2003/11/13 15:41:51 sue Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -21,6 +20,10 @@ static const char revid[] = "$Id: rep_method.c,v 1.134 2003/11/13 15:41:51 sue E
 #include <string.h>
 #endif
 
+#ifdef HAVE_RPC
+#include "db_server.h"
+#endif
+
 #include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc/btree.h"
@@ -28,16 +31,15 @@ static const char revid[] = "$Id: rep_method.c,v 1.134 2003/11/13 15:41:51 sue E
 #include "dbinc/txn.h"
 
 #ifdef HAVE_RPC
-#include "dbinc_auto/db_server.h"
 #include "dbinc_auto/rpc_client_ext.h"
 #endif
 
 static int __rep_abort_prepared __P((DB_ENV *));
 static int __rep_bt_cmp __P((DB *, const DBT *, const DBT *));
-static int __rep_client_dbinit __P((DB_ENV *, int));
-static int __rep_elect __P((DB_ENV *, int, int, u_int32_t, int *));
+static int __rep_elect
+	       __P((DB_ENV *, int, int, int, u_int32_t, int *, u_int32_t));
 static int __rep_elect_init
-	       __P((DB_ENV *, DB_LSN *, int, int, int *, u_int32_t *));
+	       __P((DB_ENV *, DB_LSN *, int, int, int, int *, u_int32_t *));
 static int __rep_flush __P((DB_ENV *));
 static int __rep_restore_prepared __P((DB_ENV *));
 static int __rep_get_limit __P((DB_ENV *, u_int32_t *, u_int32_t *));
@@ -47,16 +49,15 @@ static int __rep_set_rep_transport __P((DB_ENV *, int,
     int (*)(DB_ENV *, const DBT *, const DBT *, const DB_LSN *,
     int, u_int32_t)));
 static int __rep_start __P((DB_ENV *, DBT *, u_int32_t));
-static int __rep_stat __P((DB_ENV *, DB_REP_STAT **, u_int32_t));
 static int __rep_wait __P((DB_ENV *, u_int32_t, int *, u_int32_t));
 
 /*
  * __rep_dbenv_create --
  *	Replication-specific initialization of the DB_ENV structure.
  *
- * PUBLIC: int __rep_dbenv_create __P((DB_ENV *));
+ * PUBLIC: void __rep_dbenv_create __P((DB_ENV *));
  */
-int
+void
 __rep_dbenv_create(dbenv)
 	DB_ENV *dbenv;
 {
@@ -67,6 +68,7 @@ __rep_dbenv_create(dbenv)
 		dbenv->rep_process_message = __dbcl_rep_process_message;
 		dbenv->rep_start = __dbcl_rep_start;
 		dbenv->rep_stat = __dbcl_rep_stat;
+		dbenv->rep_stat_print = NULL;
 		dbenv->get_rep_limit = __dbcl_rep_get_limit;
 		dbenv->set_rep_limit = __dbcl_rep_set_limit;
 		dbenv->set_rep_request = __dbcl_rep_set_request;
@@ -79,14 +81,13 @@ __rep_dbenv_create(dbenv)
 		dbenv->rep_flush = __rep_flush;
 		dbenv->rep_process_message = __rep_process_message;
 		dbenv->rep_start = __rep_start;
-		dbenv->rep_stat = __rep_stat;
+		dbenv->rep_stat = __rep_stat_pp;
+		dbenv->rep_stat_print = __rep_stat_print_pp;
 		dbenv->get_rep_limit = __rep_get_limit;
 		dbenv->set_rep_limit = __rep_set_limit;
 		dbenv->set_rep_request = __rep_set_request;
 		dbenv->set_rep_transport = __rep_set_rep_transport;
 	}
-
-	return (0);
 }
 
 /*
@@ -127,7 +128,7 @@ __rep_open(dbenv)
  * recovery, and want to prohibit new transactions from entering and cause
  * existing ones to return immediately (with a DB_LOCK_DEADLOCK error).
  *
- * There is also the rep->timestamp which is updated whenever significant
+ * There is also the renv->rep_timestamp which is updated whenever significant
  * events (i.e., new masters, log rollback, etc).  Upon creation, a handle
  * is associated with the current timestamp.  Each time a handle enters the
  * library it must check if the handle timestamp is the same as the one
@@ -147,6 +148,9 @@ __rep_start(dbenv, dbt, flags)
 	REP *rep;
 	u_int32_t repflags;
 	int announce, init_db, redo_prepared, ret, sleep_cnt, t_ret, was_client;
+#ifdef DIAGNOSTIC
+	DB_MSGBUF mb;
+#endif
 
 	PANIC_CHECK(dbenv);
 	ENV_ILLEGAL_BEFORE_OPEN(dbenv, "DB_ENV->rep_start");
@@ -156,23 +160,18 @@ __rep_start(dbenv, dbt, flags)
 	rep = db_rep->region;
 
 	if ((ret = __db_fchk(dbenv, "DB_ENV->rep_start", flags,
-	    DB_REP_CLIENT | DB_REP_LOGSONLY | DB_REP_MASTER)) != 0)
+	    DB_REP_CLIENT | DB_REP_MASTER)) != 0)
 		return (ret);
 
 	/* Exactly one of CLIENT and MASTER must be specified. */
 	if ((ret = __db_fcchk(dbenv,
 	    "DB_ENV->rep_start", flags, DB_REP_CLIENT, DB_REP_MASTER)) != 0)
 		return (ret);
-	if (!LF_ISSET(DB_REP_CLIENT | DB_REP_MASTER | DB_REP_LOGSONLY)) {
+	if (!LF_ISSET(DB_REP_CLIENT | DB_REP_MASTER)) {
 		__db_err(dbenv,
 	"DB_ENV->rep_start: replication mode must be specified");
 		return (EINVAL);
 	}
-
-	/* Masters can't be logs-only. */
-	if ((ret = __db_fcchk(dbenv,
-	    "DB_ENV->rep_start", flags, DB_REP_LOGSONLY, DB_REP_MASTER)) != 0)
-		return (ret);
 
 	/* We need a transport function. */
 	if (dbenv->rep_send == NULL) {
@@ -199,10 +198,7 @@ __rep_start(dbenv, dbt, flags)
 		/*
 		 * There is already someone in rep_start.  Return.
 		 */
-#ifdef DIAGNOSTIC
-		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-			__db_err(dbenv, "Thread already in rep_start");
-#endif
+		RPRINT(dbenv, rep, (dbenv, &mb, "Thread already in rep_start"));
 		goto err;
 	} else
 		rep->start_th = 1;
@@ -218,7 +214,7 @@ __rep_start(dbenv, dbt, flags)
 	"DB_ENV->rep_start waiting %d minutes for replication message thread",
 			    sleep_cnt / 60);
 		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
-		(void)__os_sleep(dbenv, 1, 0);
+		__os_sleep(dbenv, 1, 0);
 		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
 	}
 
@@ -226,7 +222,7 @@ __rep_start(dbenv, dbt, flags)
 		rep->eid = dbenv->rep_eid;
 
 	if (LF_ISSET(DB_REP_MASTER)) {
-		was_client = F_ISSET(rep, REP_F_UPGRADE);
+		was_client = F_ISSET(rep, REP_F_CLIENT);
 		if (was_client) {
 			/*
 			 * If we're upgrading from having been a client,
@@ -269,11 +265,9 @@ __rep_start(dbenv, dbt, flags)
 			}
 			if (rep->egen <= rep->gen)
 				rep->egen = rep->gen + 1;
-#ifdef DIAGNOSTIC
-			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-				__db_err(dbenv, "New master gen %lu, egen %lu",
-				    (u_long)rep->gen, (u_long)rep->egen);
-#endif
+			RPRINT(dbenv, rep, (dbenv, &mb,
+			    "New master gen %lu, egen %lu",
+			    (u_long)rep->gen, (u_long)rep->egen));
 		}
 		rep->master_id = rep->eid;
 		/*
@@ -281,6 +275,7 @@ __rep_start(dbenv, dbt, flags)
 		 * REP_F_NOARCHIVE, REP_F_INIT and REP_F_READY.
 		 */
 		rep->flags = REP_F_MASTER;
+		rep->start_th = 0;
 		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
 		dblp = (DB_LOG *)dbenv->lg_handle;
 		R_LOCK(dbenv, &dblp->reginfo);
@@ -310,16 +305,13 @@ __rep_start(dbenv, dbt, flags)
 			ret = t_ret;
 	} else {
 		init_db = 0;
-		was_client = F_ISSET(rep, REP_ISCLIENT);
+		was_client = F_ISSET(rep, REP_F_CLIENT);
 		announce = !was_client || rep->master_id == DB_EID_INVALID;
 
 		/* Zero out everything except recovery and tally flags. */
 		repflags = F_ISSET(rep, REP_F_NOARCHIVE |
-		    REP_F_READY | REP_F_RECOVER | REP_F_TALLY);
-		if (LF_ISSET(DB_REP_LOGSONLY))
-			FLD_SET(repflags, REP_F_LOGSONLY);
-		else
-			FLD_SET(repflags, REP_F_UPGRADE);
+		    REP_F_RECOVER_MASK | REP_F_TALLY);
+		FLD_SET(repflags, REP_F_CLIENT);
 
 		rep->flags = repflags;
 		if (!was_client) {
@@ -339,8 +331,14 @@ __rep_start(dbenv, dbt, flags)
 		if ((ret = __rep_abort_prepared(dbenv)) != 0)
 			goto errlock;
 
-		if ((ret = __rep_client_dbinit(dbenv, init_db)) != 0)
+		MUTEX_LOCK(dbenv, db_rep->db_mutexp);
+		ret = __rep_client_dbinit(dbenv, init_db, REP_DB);
+		MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
+		if (ret != 0)
 			goto errlock;
+		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
+		rep->start_th = 0;
+		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
 
 		/*
 		 * If this client created a newly replicated environment,
@@ -353,20 +351,25 @@ __rep_start(dbenv, dbt, flags)
 		if (announce)
 			(void)__rep_send_message(dbenv,
 			    DB_EID_BROADCAST, REP_NEWCLIENT, NULL, dbt, 0);
+		else
+			(void)__rep_send_message(dbenv,
+			    DB_EID_BROADCAST, REP_ALIVE_REQ, NULL, NULL, 0);
 	}
 
-	/*
-	 * We have separate labels for errors.  If we're returning an
-	 * error before we've set start_th, we use 'err'.  If
-	 * we are erroring while holding the rep_mutex, then we use
-	 * 'errunlock' label.  If we're erroring without holding the rep
-	 * mutex we must use 'errlock'.
-	 */
+	if (0) {
+		/*
+		 * We have separate labels for errors.  If we're returning an
+		 * error before we've set start_th, we use 'err'.  If
+		 * we are erroring while holding the rep_mutex, then we use
+		 * 'errunlock' label.  If we're erroring without holding the rep
+		 * mutex we must use 'errlock'.
+		 */
 errlock:
-	MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
+		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
 errunlock:
-	rep->start_th = 0;
-err:	MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
+		rep->start_th = 0;
+err:		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
+	}
 	return (ret);
 }
 
@@ -378,28 +381,42 @@ err:	MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
  * this is the first thread/process starting up and therefore should create
  * the LSN database.  This routine must be called once by each process acting
  * as a client.
+ *
+ * Assumes caller holds appropriate mutex.
+ *
+ * PUBLIC: int __rep_client_dbinit __P((DB_ENV *, int, repdb_t));
  */
-static int
-__rep_client_dbinit(dbenv, startup)
+int
+__rep_client_dbinit(dbenv, startup, which)
 	DB_ENV *dbenv;
 	int startup;
+	repdb_t which;
 {
 	DB_REP *db_rep;
-	DB *dbp;
+	DB *dbp, **rdbpp;
+	REP *rep;
 	int ret, t_ret;
 	u_int32_t flags;
+	const char *name;
 
 	PANIC_CHECK(dbenv);
 	db_rep = dbenv->rep_handle;
+	rep = db_rep->region;
 	dbp = NULL;
 
 #define	REPDBNAME	"__db.rep.db"
+#define	REPPAGENAME     "__db.reppg.db"
 
+	if (which == REP_DB) {
+		name = REPDBNAME;
+		rdbpp = &db_rep->rep_db;
+	} else {
+		name = REPPAGENAME;
+		rdbpp = &rep->file_dbp;
+	}
 	/* Check if this has already been called on this environment. */
-	if (db_rep->rep_db != NULL)
+	if (*rdbpp != NULL)
 		return (0);
-
-	MUTEX_LOCK(dbenv, db_rep->db_mutexp);
 
 	if (startup) {
 		if ((ret = db_create(&dbp, dbenv, DB_REP_CREATE)) != 0)
@@ -408,12 +425,13 @@ __rep_client_dbinit(dbenv, startup)
 		 * Ignore errors, because if the file doesn't exist, this
 		 * is perfectly OK.
 		 */
-		(void)__db_remove(dbp, NULL, REPDBNAME, NULL, DB_FORCE);
+		(void)__db_remove(dbp, NULL, name, NULL, DB_FORCE);
 	}
 
 	if ((ret = db_create(&dbp, dbenv, DB_REP_CREATE)) != 0)
 		goto err;
-	if ((ret = __bam_set_bt_compare(dbp, __rep_bt_cmp)) != 0)
+	if (which == REP_DB &&
+	    (ret = __bam_set_bt_compare(dbp, __rep_bt_cmp)) != 0)
 		goto err;
 
 	/* Allow writes to this database on a client. */
@@ -423,20 +441,19 @@ __rep_client_dbinit(dbenv, startup)
 	    (startup ? DB_CREATE : 0) |
 	    (F_ISSET(dbenv, DB_ENV_THREAD) ? DB_THREAD : 0);
 
-	if ((ret = __db_open(dbp, NULL,
-	    REPDBNAME, NULL, DB_BTREE, flags, 0, PGNO_BASE_MD)) != 0)
+	if ((ret = __db_open(dbp, NULL, name, NULL,
+	    (which == REP_DB ? DB_BTREE : DB_RECNO),
+	    flags, 0, PGNO_BASE_MD)) != 0)
 		goto err;
 
-	db_rep->rep_db = dbp;
+	*rdbpp= dbp;
 
 	if (0) {
 err:		if (dbp != NULL &&
 		    (t_ret = __db_close(dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
 			ret = t_ret;
-		db_rep->rep_db = NULL;
+		*rdbpp = NULL;
 	}
-
-	MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
 
 	return (ret);
 }
@@ -462,8 +479,8 @@ __rep_bt_cmp(dbp, dbt1, dbt2)
 	rp1 = dbt1->data;
 	rp2 = dbt2->data;
 
-	__ua_memcpy(&lsn1, &rp1->lsn, sizeof(DB_LSN));
-	__ua_memcpy(&lsn2, &rp2->lsn, sizeof(DB_LSN));
+	(void)__ua_memcpy(&lsn1, &rp1->lsn, sizeof(DB_LSN));
+	(void)__ua_memcpy(&lsn2, &rp2->lsn, sizeof(DB_LSN));
 
 	if (lsn1.file > lsn2.file)
 		return (1);
@@ -548,7 +565,7 @@ __rep_restore_prepared(dbenv)
 	__txn_regop_args *regop_args;
 	__txn_xa_regop_args *prep_args;
 	int ret, t_ret;
-	u_int32_t hi_txn, low_txn, rectype;
+	u_int32_t hi_txn, low_txn, rectype, status;
 	void *txninfo;
 
 	txninfo = NULL;
@@ -682,11 +699,13 @@ __rep_restore_prepared(dbenv)
 				goto err;
 
 			ret = __db_txnlist_find(dbenv,
-			    txninfo, regop_args->txnid->txnid);
-			if (ret == TXN_NOTFOUND)
+			    txninfo, regop_args->txnid->txnid, &status);
+			if (ret == DB_NOTFOUND)
 				ret = __db_txnlist_add(dbenv, txninfo,
 				    regop_args->txnid->txnid,
 				    regop_args->opcode, &lsn);
+			else if (ret != 0)
+				goto err;
 			__os_free(dbenv, regop_args);
 			break;
 		case DB___txn_xa_regop:
@@ -699,8 +718,8 @@ __rep_restore_prepared(dbenv)
 			    &prep_args)) != 0)
 				goto err;
 			ret = __db_txnlist_find(dbenv, txninfo,
-			    prep_args->txnid->txnid);
-			if (ret == TXN_NOTFOUND) {
+			    prep_args->txnid->txnid, &status);
+			if (ret == DB_NOTFOUND) {
 				if (prep_args->opcode == TXN_ABORT)
 					ret = __db_txnlist_add(dbenv, txninfo,
 					    prep_args->txnid->txnid,
@@ -709,7 +728,8 @@ __rep_restore_prepared(dbenv)
 				    __rep_process_txn(dbenv, &rec)) == 0)
 					ret = __txn_restore_txn(dbenv,
 					    &lsn, prep_args);
-			}
+			} else if (ret != 0)
+				goto err;
 			__os_free(dbenv, prep_args);
 			break;
 		default:
@@ -876,20 +896,25 @@ __rep_set_rep_transport(dbenv, eid, f_send)
  *	a new master.
  */
 static int
-__rep_elect(dbenv, nsites, priority, timeout, eidp)
+__rep_elect(dbenv, nsites, nvotes, priority, timeout, eidp, flags)
 	DB_ENV *dbenv;
-	int nsites, priority;
+	int nsites, nvotes, priority;
 	u_int32_t timeout;
 	int *eidp;
+	u_int32_t flags;
 {
 	DB_LOG *dblp;
 	DB_LSN lsn;
 	DB_REP *db_rep;
 	REP *rep;
-	int done, in_progress, ret, send_vote, tiebreaker;
-	u_int32_t egen, orig_tally, pid, sec, usec;
+	int ack, done, in_progress, ret, send_vote;
+	u_int32_t egen, orig_tally, tiebreaker, to;
+#ifdef DIAGNOSTIC
+	DB_MSGBUF mb;
+#endif
 
 	PANIC_CHECK(dbenv);
+	COMPQUIET(flags, 0);
 	ENV_REQUIRES_CONFIG(dbenv, dbenv->rep_handle, "rep_elect", DB_INIT_REP);
 
 	/* Error checking. */
@@ -898,23 +923,57 @@ __rep_elect(dbenv, nsites, priority, timeout, eidp)
 		    "DB_ENV->rep_elect: nsites must be greater than 0");
 		return (EINVAL);
 	}
+	if (nvotes < 0) {
+		__db_err(dbenv,
+		    "DB_ENV->rep_elect: nvotes may not be negative");
+		return (EINVAL);
+	}
 	if (priority < 0) {
 		__db_err(dbenv,
 		    "DB_ENV->rep_elect: priority may not be negative");
 		return (EINVAL);
+	}
+	if (nsites < nvotes) {
+		__db_err(dbenv,
+    "DB_ENV->rep_elect: nvotes (%d) is larger than nsites (%d)",
+		    nvotes, nsites);
+		return (EINVAL);
+	}
+
+	ack = nvotes;
+	/* If they give us a 0 for nvotes, default to simple majority.  */
+	if (nvotes == 0)
+		ack = (nsites / 2) + 1;
+
+	/*
+	 * XXX
+	 * If users give us less than a majority, they run the risk of
+	 * having a network partition.  However, this also allows the
+	 * scenario of master/1 client to elect the client.  Allow
+	 * sub-majority values, but give a warning.
+	 */
+	if (nvotes <= (nsites / 2)) {
+		__db_err(dbenv,
+    "DB_ENV->rep_elect:WARNING: nvotes (%d) is sub-majority with nsites (%d)",
+		    nvotes, nsites);
 	}
 
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
 	dblp = dbenv->lg_handle;
 
+	RPRINT(dbenv, rep,
+	    (dbenv, &mb, "Start election nsites %d, ack %d, priority %d",
+	    nsites, ack, priority));
+
 	R_LOCK(dbenv, &dblp->reginfo);
 	lsn = ((LOG *)dblp->reginfo.primary)->lsn;
 	R_UNLOCK(dbenv, &dblp->reginfo);
 
 	orig_tally = 0;
+	to = timeout;
 	if ((ret = __rep_elect_init(dbenv,
-	    &lsn, nsites, priority, &in_progress, &orig_tally)) != 0) {
+	    &lsn, nsites, ack, priority, &in_progress, &orig_tally)) != 0) {
 		if (ret == DB_REP_NEWMASTER) {
 			ret = 0;
 			*eidp = dbenv->rep_eid;
@@ -926,82 +985,98 @@ __rep_elect(dbenv, nsites, priority, timeout, eidp)
 	 * just quietly return and not interfere.
 	 */
 	if (in_progress) {
-		*eidp = dbenv->rep_eid;
+		*eidp = rep->master_id;
 		return (0);
 	}
 	(void)__rep_send_message(dbenv,
 	    DB_EID_BROADCAST, REP_MASTER_REQ, NULL, NULL, 0);
-	ret = __rep_wait(dbenv, timeout/4, eidp, REP_F_EPHASE1);
+	ret = __rep_wait(dbenv, to/4, eidp, REP_F_EPHASE1);
 	switch (ret) {
 		case 0:
 			/* Check if we found a master. */
 			if (*eidp != DB_EID_INVALID) {
-#ifdef DIAGNOSTIC
-				if (FLD_ISSET(dbenv->verbose,
-				    DB_VERB_REPLICATION))
-					__db_err(dbenv,
-					    "Found master %d", *eidp);
-#endif
-				return (0);
+				RPRINT(dbenv, rep, (dbenv, &mb,
+				    "Found master %d", *eidp));
+				goto edone;
 			}
 			/*
 			 * If we didn't find a master, continue
 			 * the election.
 			 */
 			break;
+		case DB_REP_EGENCHG:
+			/*
+			 * Egen changed, just continue with election.
+			 */
+			break;
 		case DB_TIMEOUT:
-#ifdef DIAGNOSTIC
-		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-			__db_err(dbenv,
-			    "Did not find master.  Sending vote1");
-#endif
+			RPRINT(dbenv, rep, (dbenv, &mb,
+			    "Did not find master.  Sending vote1"));
 			break;
 		default:
 			goto err;
 	}
-	/* Generate a randomized tiebreaker value. */
 restart:
-	__os_id(&pid);
-	if ((ret = __os_clock(dbenv, &sec, &usec)) != 0)
-		return (ret);
-	tiebreaker = pid ^ sec ^ usec ^ (u_int)rand() ^ P_TO_UINT32(&pid);
+	/* Generate a randomized tiebreaker value. */
+	__os_unique_id(dbenv, &tiebreaker);
 
 	MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
 	F_SET(rep, REP_F_EPHASE1 | REP_F_NOARCHIVE);
 	F_CLR(rep, REP_F_TALLY);
 
+	/*
+	 * We are about to participate at this egen.  We must
+	 * write out the next egen before participating in this one
+	 * so that if we crash we can never participate in this egen
+	 * again.
+	 */
+	if ((ret = __rep_write_egen(dbenv, rep->egen + 1)) != 0)
+		goto lockdone;
+
 	/* Tally our own vote */
 	if (__rep_tally(dbenv, rep, rep->eid, &rep->sites, rep->egen,
-	    rep->tally_off) != 0)
+	    rep->tally_off) != 0) {
+		ret = EINVAL;
 		goto lockdone;
+	}
 	__rep_cmp_vote(dbenv, rep, &rep->eid, &lsn, priority, rep->gen,
 	    tiebreaker);
 
-#ifdef DIAGNOSTIC
-	if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-		__db_err(dbenv, "Beginning an election");
-#endif
+	RPRINT(dbenv, rep, (dbenv, &mb, "Beginning an election"));
 
 	/* Now send vote */
 	send_vote = DB_EID_INVALID;
 	egen = rep->egen;
 	MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
-	__rep_send_vote(dbenv, &lsn, nsites, priority, tiebreaker, egen,
+	__rep_send_vote(dbenv, &lsn, nsites, ack, priority, tiebreaker, egen,
 	    DB_EID_BROADCAST, REP_VOTE1);
-	ret = __rep_wait(dbenv, timeout, eidp, REP_F_EPHASE1);
+	DB_ENV_TEST_RECOVERY(dbenv, DB_TEST_ELECTVOTE1, ret, NULL);
+	ret = __rep_wait(dbenv, to, eidp, REP_F_EPHASE1);
 	switch (ret) {
 		case 0:
 			/* Check if election complete or phase complete. */
 			if (*eidp != DB_EID_INVALID) {
-#ifdef DIAGNOSTIC
-				if (FLD_ISSET(dbenv->verbose,
-				    DB_VERB_REPLICATION))
-					__db_err(dbenv,
-					    "Ended election phase 1 %d", ret);
-#endif
-				return (0);
+				RPRINT(dbenv, rep, (dbenv, &mb,
+				    "Ended election phase 1 %d", ret));
+				goto edone;
 			}
 			goto phase2;
+		case DB_REP_EGENCHG:
+			if (to > timeout)
+				to = timeout;
+			to = (to * 8) / 10;
+			RPRINT(dbenv, rep, (dbenv, &mb,
+"Egen changed while waiting. Now %lu.  New timeout %lu, orig timeout %lu",
+			    (u_long)rep->egen, (u_long)to, (u_long)timeout));
+			/*
+			 * If the egen changed while we were sleeping, that
+			 * means we're probably late to the next election,
+			 * so we'll backoff our timeout so that we don't get
+			 * into an out-of-phase election scenario.
+			 *
+			 * Backoff to 80% of the current timeout.
+			 */
+			goto restart;
 		case DB_TIMEOUT:
 			break;
 		default:
@@ -1020,14 +1095,11 @@ restart:
 	 */
 	if (egen != rep->egen) {
 		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
-#ifdef DIAGNOSTIC
-		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-			__db_err(dbenv, "Egen changed from %lu to %lu",
-			    (u_long)egen, (u_long)rep->egen);
-#endif
+		RPRINT(dbenv, rep, (dbenv, &mb, "Egen changed from %lu to %lu",
+		    (u_long)egen, (u_long)rep->egen));
 		goto restart;
 	}
-	if (rep->sites > rep->nsites / 2) {
+	if (rep->sites >= rep->nvotes) {
 
 		/* We think we've seen enough to cast a vote. */
 		send_vote = rep->winner;
@@ -1039,11 +1111,8 @@ restart:
 		if (rep->winner == rep->eid) {
 			(void)__rep_tally(dbenv, rep, rep->eid, &rep->votes,
 			    egen, rep->v2tally_off);
-#ifdef DIAGNOSTIC
-			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-				__db_err(dbenv,
-				    "Counted my vote %d", rep->votes);
-#endif
+			RPRINT(dbenv, rep, (dbenv, &mb,
+			    "Counted my vote %d", rep->votes));
 		}
 		F_SET(rep, REP_F_EPHASE2);
 		F_CLR(rep, REP_F_EPHASE1);
@@ -1051,12 +1120,9 @@ restart:
 	MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
 	if (send_vote == DB_EID_INVALID) {
 		/* We do not have enough votes to elect. */
-#ifdef DIAGNOSTIC
-		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-			__db_err(dbenv,
-			    "Not enough votes to elect: received %d of %d",
-			    rep->sites, rep->nsites);
-#endif
+		RPRINT(dbenv, rep, (dbenv, &mb,
+		    "Not enough votes to elect: recvd %d of %d from %d sites",
+		    rep->sites, rep->nvotes, rep->nsites));
 		ret = DB_REP_UNAVAIL;
 		goto err;
 
@@ -1066,26 +1132,40 @@ restart:
 		 * for all the vote2's.
 		 */
 		if (send_vote != rep->eid) {
-#ifdef DIAGNOSTIC
-			if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION) &&
-			    send_vote != rep->eid)
-				__db_err(dbenv, "Sending vote");
-#endif
-			__rep_send_vote(dbenv, NULL, 0, 0, 0, egen,
+			RPRINT(dbenv, rep, (dbenv, &mb, "Sending vote"));
+			__rep_send_vote(dbenv, NULL, 0, 0, 0, 0, egen,
 			    send_vote, REP_VOTE2);
+			/*
+			 * If we are NOT the new master we want to send
+			 * our vote to the winner, and wait longer.  The
+			 * reason is that the winner may be "behind" us
+			 * in the election waiting and if the master is
+			 * down, the winner will wait the full timeout
+			 * and we want to give the winner enough time to
+			 * process all the votes.  Otherwise we could
+			 * incorrectly return DB_REP_UNAVAIL and start a
+			 * new election before the winner can declare
+			 * itself.
+			 */
+			to = to * 2;
 
 		}
-phase2:
-		ret = __rep_wait(dbenv, timeout, eidp, REP_F_EPHASE2);
-#ifdef DIAGNOSTIC
-				if (FLD_ISSET(dbenv->verbose,
-				    DB_VERB_REPLICATION))
-					__db_err(dbenv,
-					    "Ended election phase 2 %d", ret);
-#endif
+
+phase2:		ret = __rep_wait(dbenv, to, eidp, REP_F_EPHASE2);
+		RPRINT(dbenv, rep, (dbenv, &mb,
+		    "Ended election phase 2 %d", ret));
 		switch (ret) {
 			case 0:
-				return (0);
+				goto edone;
+			case DB_REP_EGENCHG:
+				if (to > timeout)
+					to = timeout;
+				to = (to * 8) / 10;
+				RPRINT(dbenv, rep, (dbenv, &mb,
+"While waiting egen changed to %lu.  Phase 2 New timeout %lu, orig timeout %lu",
+				    (u_long)rep->egen,
+				    (u_long)to, (u_long)timeout));
+				goto restart;
 			case DB_TIMEOUT:
 				ret = DB_REP_UNAVAIL;
 				break;
@@ -1093,13 +1173,17 @@ phase2:
 				goto err;
 		}
 		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
-		done = rep->votes > rep->nsites / 2;
-#ifdef DIAGNOSTIC
-		if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-			__db_err(dbenv,
-			    "After phase 2: done %d, votes %d, nsites %d",
-			    done, rep->votes, rep->nsites);
-#endif
+		if (egen != rep->egen) {
+			MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
+			RPRINT(dbenv, rep, (dbenv, &mb,
+			    "Egen ph2 changed from %lu to %lu",
+			    (u_long)egen, (u_long)rep->egen));
+			goto restart;
+		}
+		done = rep->votes >= rep->nvotes;
+		RPRINT(dbenv, rep, (dbenv, &mb,
+		    "After phase 2: done %d, votes %d, nsites %d",
+		    done, rep->votes, rep->nsites));
 		if (send_vote == rep->eid && done) {
 			__rep_elect_master(dbenv, rep, eidp);
 			ret = 0;
@@ -1121,13 +1205,19 @@ lockdone:
 	else if (orig_tally)
 		F_SET(rep, orig_tally);
 
-#ifdef DIAGNOSTIC
-	if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-		__db_err(dbenv,
-		    "Ended election with %d, sites %d, egen %lu, flags 0x%lx",
-		    ret, rep->sites, (u_long)rep->egen, (u_long)rep->flags);
-#endif
+	/*
+	 * If the election finished elsewhere, we need to decrement
+	 * the elect_th anyway.
+	 */
+	if (0)
+edone:		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
+	rep->elect_th = 0;
+
+	RPRINT(dbenv, rep, (dbenv, &mb,
+	    "Ended election with %d, sites %d, egen %lu, flags 0x%lx",
+	    ret, rep->sites, (u_long)rep->egen, (u_long)rep->flags));
 	MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
+DB_TEST_RECOVERY_LABEL
 	return (ret);
 }
 
@@ -1137,10 +1227,10 @@ lockdone:
  * already in progress; makes it 0 otherwise.
  */
 static int
-__rep_elect_init(dbenv, lsnp, nsites, priority, beginp, otally)
+__rep_elect_init(dbenv, lsnp, nsites, nvotes, priority, beginp, otally)
 	DB_ENV *dbenv;
 	DB_LSN *lsnp;
-	int nsites, priority;
+	int nsites, nvotes, priority;
 	int *beginp;
 	u_int32_t *otally;
 {
@@ -1167,7 +1257,7 @@ __rep_elect_init(dbenv, lsnp, nsites, priority, beginp, otally)
 	MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
 	if (otally != NULL)
 		*otally = F_ISSET(rep, REP_F_TALLY);
-	*beginp = IN_ELECTION(rep);
+	*beginp = IN_ELECTION(rep) || rep->elect_th;
 	if (!*beginp) {
 		/*
 		 * Make sure that we always initialize all the election fields
@@ -1179,7 +1269,9 @@ __rep_elect_init(dbenv, lsnp, nsites, priority, beginp, otally)
 		    (ret = __rep_grow_sites(dbenv, nsites)) != 0)
 			goto err;
 		DB_ENV_TEST_RECOVERY(dbenv, DB_TEST_ELECTINIT, ret, NULL);
+		rep->elect_th = 1;
 		rep->nsites = nsites;
+		rep->nvotes = nvotes;
 		rep->priority = priority;
 		rep->master_id = DB_EID_INVALID;
 	}
@@ -1201,19 +1293,19 @@ __rep_elect_master(dbenv, rep, eidp)
 	REP *rep;
 	int *eidp;
 {
+#ifdef DIAGNOSTIC
+	DB_MSGBUF mb;
+#else
+	COMPQUIET(dbenv, NULL);
+#endif
 	rep->master_id = rep->eid;
 	F_SET(rep, REP_F_MASTERELECT);
 	if (eidp != NULL)
 		*eidp = rep->master_id;
 	rep->stat.st_elections_won++;
-#ifdef DIAGNOSTIC
-	if (FLD_ISSET(dbenv->verbose, DB_VERB_REPLICATION))
-		__db_err(dbenv,
-    "Got enough votes to win; election done; winner is %d, gen %lu",
-		    rep->master_id, (u_long)rep->gen);
-#else
-	COMPQUIET(dbenv, NULL);
-#endif
+	RPRINT(dbenv, rep, (dbenv, &mb,
+	    "Got enough votes to win; election done; winner is %d, gen %lu",
+	    rep->master_id, (u_long)rep->gen));
 }
 
 static int
@@ -1225,12 +1317,13 @@ __rep_wait(dbenv, timeout, eidp, flags)
 {
 	DB_REP *db_rep;
 	REP *rep;
-	int done;
-	u_int32_t sleeptime;
+	int done, echg;
+	u_int32_t egen, sleeptime;
 
-	done = 0;
+	done = echg = 0;
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
+	egen = rep->egen;
 
 	/*
 	 * The user specifies an overall timeout function, but checking
@@ -1241,8 +1334,9 @@ __rep_wait(dbenv, timeout, eidp, flags)
 	if (sleeptime == 0)
 		sleeptime++;
 	while (timeout > 0) {
-		(void)__os_sleep(dbenv, 0, sleeptime);
+		__os_sleep(dbenv, 0, sleeptime);
 		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
+		echg = egen != rep->egen;
 		done = !F_ISSET(rep, flags) && rep->master_id != DB_EID_INVALID;
 
 		*eidp = rep->master_id;
@@ -1250,6 +1344,9 @@ __rep_wait(dbenv, timeout, eidp, flags)
 
 		if (done)
 			return (0);
+
+		if (echg)
+			return (DB_REP_EGENCHG);
 
 		if (timeout > sleeptime)
 			timeout -= sleeptime;
@@ -1291,121 +1388,4 @@ __rep_flush(dbenv)
 err:	if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
-}
-
-/*
- * __rep_stat --
- *	Fetch replication statistics.
- */
-static int
-__rep_stat(dbenv, statp, flags)
-	DB_ENV *dbenv;
-	DB_REP_STAT **statp;
-	u_int32_t flags;
-{
-	DB_LOG *dblp;
-	DB_REP *db_rep;
-	DB_REP_STAT *stats;
-	LOG *lp;
-	REP *rep;
-	u_int32_t queued, repflags;
-	int dolock, ret;
-
-	PANIC_CHECK(dbenv);
-	ENV_REQUIRES_CONFIG(dbenv, dbenv->rep_handle, "rep_stat", DB_INIT_REP);
-
-	db_rep = dbenv->rep_handle;
-	rep = db_rep->region;
-	dblp = dbenv->lg_handle;
-	lp = dblp->reginfo.primary;
-
-	*statp = NULL;
-	if ((ret = __db_fchk(dbenv,
-	    "DB_ENV->rep_stat", flags, DB_STAT_CLEAR)) != 0)
-		return (ret);
-
-	/* Allocate a stat struct to return to the user. */
-	if ((ret = __os_umalloc(dbenv, sizeof(DB_REP_STAT), &stats)) != 0)
-		return (ret);
-
-	/*
-	 * Read without holding the lock.  If we are in client
-	 * recovery, we copy just the stats struct so we won't
-	 * block.  We only copy out those stats that don't
-	 * require acquiring any mutex.
-	 */
-	repflags = rep->flags;
-	if (FLD_ISSET(repflags, REP_F_RECOVER))
-		dolock = 0;
-	else {
-		dolock = 1;
-		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
-	}
-	memcpy(stats, &rep->stat, sizeof(*stats));
-
-	/* Copy out election stats. */
-	if (IN_ELECTION_TALLY(rep)) {
-		if (F_ISSET(rep, REP_F_EPHASE1))
-			stats->st_election_status = 1;
-		else if (F_ISSET(rep, REP_F_EPHASE2))
-			stats->st_election_status = 2;
-
-		stats->st_election_nsites = rep->sites;
-		stats->st_election_cur_winner = rep->winner;
-		stats->st_election_priority = rep->w_priority;
-		stats->st_election_gen = rep->w_gen;
-		stats->st_election_lsn = rep->w_lsn;
-		stats->st_election_votes = rep->votes;
-		stats->st_election_tiebreaker = rep->w_tiebreaker;
-	}
-
-	/* Copy out other info that's protected by the rep mutex. */
-	stats->st_env_id = rep->eid;
-	stats->st_env_priority = rep->priority;
-	stats->st_nsites = rep->nsites;
-	stats->st_master = rep->master_id;
-	stats->st_gen = rep->gen;
-
-	if (F_ISSET(rep, REP_F_MASTER))
-		stats->st_status = DB_REP_MASTER;
-	else if (F_ISSET(rep, REP_F_LOGSONLY))
-		stats->st_status = DB_REP_LOGSONLY;
-	else if (F_ISSET(rep, REP_F_UPGRADE))
-		stats->st_status = DB_REP_CLIENT;
-	else
-		stats->st_status = 0;
-
-	if (LF_ISSET(DB_STAT_CLEAR)) {
-		queued = rep->stat.st_log_queued;
-		memset(&rep->stat, 0, sizeof(rep->stat));
-		rep->stat.st_log_queued = rep->stat.st_log_queued_total =
-		    rep->stat.st_log_queued_max = queued;
-	}
-
-	if (dolock) {
-		stats->st_in_recovery = 0;
-		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
-		MUTEX_LOCK(dbenv, db_rep->db_mutexp);
-	} else
-		stats->st_in_recovery = 1;
-
-	/*
-	 * Log-related replication info is stored in the log system and
-	 * protected by the log region lock.
-	 */
-	if (F_ISSET(rep, REP_ISCLIENT)) {
-		stats->st_next_lsn = lp->ready_lsn;
-		stats->st_waiting_lsn = lp->waiting_lsn;
-	} else {
-		if (F_ISSET(rep, REP_F_MASTER))
-			stats->st_next_lsn = lp->lsn;
-		else
-			ZERO_LSN(stats->st_next_lsn);
-		ZERO_LSN(stats->st_waiting_lsn);
-	}
-	if (dolock)
-		MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
-
-	*statp = stats;
-	return (0);
 }

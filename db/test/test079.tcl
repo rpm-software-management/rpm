@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test079.tcl,v 11.11 2003/01/08 05:54:04 bostic Exp $
+# $Id: test079.tcl,v 11.12 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test079
 # TEST	Test of deletes in large trees.  (test006 w/ sm. pagesize).

@@ -1,12 +1,12 @@
-<!--$Id: checkpoint.so,v 10.20 2002/06/24 14:51:04 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: checkpoint.so,v 10.22 2003/12/09 18:57:46 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Checkpoints</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -17,21 +17,23 @@
 <p>
 <h3 align=center>Checkpoints</h3>
 <p>The second component of the infrastructure is performing checkpoints of
-the log files.  As transactions commit, change records are written into
-the log files, but the actual changes to the database are not
-necessarily written to disk.  When a checkpoint is performed, the
-changes to the database that are part of committed transactions are
-written into the backing database file.</p>
-<p>Performing checkpoints is necessary for two reasons.  First, you can
-remove the Berkeley DB log files from your system only after a checkpoint.
-Second, the frequency of your checkpoints is inversely proportional to
-the amount of time it takes to run database recovery after a system or
-application failure.</p>
-<p>Once the database pages are written, log files can be archived and removed
-from the system because they will never be needed for anything other than
-catastrophic failure.  In addition, recovery after system or application
-failure has to redo or undo changes only since the last checkpoint since
-changes before the checkpoint have all been flushed to the filesystem.</p>
+the log files.  Performing checkpoints is necessary for two reasons.</p>
+<p>First, you may be able to remove Berkeley DB log files from your database
+environment after a checkpoint.  Change records are written into the log
+files when databases are modified, but the actual changes to the
+database are not necessarily written to disk.  When a checkpoint is
+performed, changes to the database are written into the backing database
+file.  Once the database pages are written, log files can be archived
+and removed from the database environment because they will never be
+needed for anything other than catastrophic failure.  (Log files which
+are involved in active transactions may not be removed, and there must
+always be at least one log file in the database environment.)</p>
+<p>The second reason to perform checkpoints is because checkpoint frequency
+is inversely proportional to the amount of time it takes to run database
+recovery after a system or application failure.  This is because
+recovery after failure has to redo or undo changes only since the last
+checkpoint, as changes before the checkpoint have all been flushed to
+the databases.</p>
 <p>Berkeley DB provides a separate utility, <a href="../../utility/db_checkpoint.html">db_checkpoint</a>, which can be
 used to perform checkpoints.  Alternatively, applications can write
 their own checkpoint utility using the underlying <a href="../../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a>
@@ -118,6 +120,6 @@ perform a checkpoint is a common tuning parameter for Berkeley DB
 applications.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/deadlock.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/archival.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: fop_rec.c,v 1.31 2004/09/22 03:45:25 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: fop_rec.c,v 1.27 2003/10/07 20:23:28 ubell Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -60,7 +58,7 @@ __fop_create_recover(dbenv, dbtp, lsnp, op, info)
 		if ((ret = __os_open(dbenv, real_name,
 		    DB_OSO_CREATE | DB_OSO_EXCL, argp->mode, &fhp)) == 0)
 			(void)__os_closehandle(dbenv, fhp);
-		else 
+		else
 			goto out;
 	}
 
@@ -257,7 +255,7 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 	int is_real, is_tmp, ret;
 	size_t len;
 	u_int8_t mbuf[DBMETASIZE];
-	u_int32_t cstat;
+	u_int32_t cstat, ret_stat;
 
 	fhp = NULL;
 	is_real = is_tmp = 0;
@@ -319,10 +317,7 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 	if (DB_UNDO(op)) {
 		/* On the backward pass, we leave a note for the child txn. */
 		if ((ret = __db_txnlist_update(dbenv,
-		    info, argp->child, cstat, NULL)) == TXN_NOTFOUND)
-			ret = __db_txnlist_add(dbenv,
-			    info, argp->child, cstat, NULL);
-		if (ret != 0)
+		    info, argp->child, cstat, NULL, &ret_stat, 1)) != 0)
 			goto out;
 	} else if (DB_REDO(op)) {
 		/*

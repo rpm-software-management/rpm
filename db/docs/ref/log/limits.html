@@ -1,12 +1,12 @@
-<!--$Id: limits.so,v 10.25 2001/03/13 18:48:49 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: limits.so,v 10.26 2004/08/13 03:48:05 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Log file limits</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -33,17 +33,17 @@ application is reaching the end of its log filename space, you must do
 the following:</p>
 <ol>
 <p><li>Archive your databases as if to prepare for catastrophic failure (see
-<a href="../../utility/db_archive.html">db_archive</a> for more information).
-<p><li>Dump and reload all your databases (see <a href="../../utility/db_dump.html">db_dump</a> and
-<a href="../../utility/db_load.html">db_load</a> for more information).
-<p><li>Remove all of the log files from the database environment.  Note: This
-is the only situation in which all the log files are removed from an
-environment; in all other cases, at least a single log file is
-retained.
+<a href="../../ref/transapp/archival.html">Database and log file archival</a>
+for more information).
+<p><li>Reset the database's log sequence numbers (see the <b>-r</b> option
+to the <a href="../../utility/db_load.html">db_load</a> utility for more information).
+<p><li>Remove all of the log files from the database environment.  (This is the
+only situation in which all the log files are removed from an environment;
+in all other cases, at least a single log file is retained.)
 <p><li>Restart your application.
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../log/config.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../mp/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,18 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
  * Some parts of this code originally written by Adam Stubblefield
- * - astubble@rice.edu
+ * -- astubble@rice.edu
+ *
+ * $Id: crypto.c,v 1.30 2004/09/15 21:49:11 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: crypto.c,v 1.23 2003/06/30 17:19:41 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <string.h>
@@ -45,17 +43,17 @@ __crypto_region_init(dbenv)
 	MUTEX_LOCK(dbenv, &renv->mutex);
 	if (renv->cipher_off == INVALID_ROFF) {
 		if (!CRYPTO_ON(dbenv))
-			goto out;
+			goto err;
 		if (!F_ISSET(infop, REGION_CREATE)) {
 			__db_err(dbenv,
     "Joining non-encrypted environment with encryption key");
 			ret = EINVAL;
-			goto out;
+			goto err;
 		}
 		if (F_ISSET(db_cipher, CIPHER_ANY)) {
 			__db_err(dbenv, "Encryption algorithm not supplied");
 			ret = EINVAL;
-			goto out;
+			goto err;
 		}
 		/*
 		 * Must create the shared information.  We need:
@@ -63,42 +61,42 @@ __crypto_region_init(dbenv)
 		 * After we copy the passwd, we smash and free the one in the
 		 * dbenv.
 		 */
-		if ((ret = __db_shalloc(infop->addr,
-		    sizeof(CIPHER), MUTEX_ALIGN, &cipher)) != 0)
-			goto out;
+		if ((ret = __db_shalloc(
+		    infop, sizeof(CIPHER), MUTEX_ALIGN, &cipher)) != 0)
+			goto err;
 		memset(cipher, 0, sizeof(*cipher));
-		if ((ret = __db_shalloc(infop->addr,
-		    dbenv->passwd_len, 0, &sh_passwd)) != 0) {
-			__db_shalloc_free(infop->addr, cipher);
-			goto out;
+		if ((ret = __db_shalloc(
+		    infop, dbenv->passwd_len, 0, &sh_passwd)) != 0) {
+			__db_shalloc_free(infop, cipher);
+			goto err;
 		}
 		memset(sh_passwd, 0, dbenv->passwd_len);
-		cipher->passwd = R_OFFSET(infop, sh_passwd);
+		cipher->passwd = R_OFFSET(dbenv, infop, sh_passwd);
 		cipher->passwd_len = dbenv->passwd_len;
 		cipher->flags = db_cipher->alg;
 		memcpy(sh_passwd, dbenv->passwd, cipher->passwd_len);
-		renv->cipher_off = R_OFFSET(infop, cipher);
+		renv->cipher_off = R_OFFSET(dbenv, infop, cipher);
 	} else {
 		if (!CRYPTO_ON(dbenv)) {
 			__db_err(dbenv,
     "Encrypted environment: no encryption key supplied");
 			ret = EINVAL;
-			goto out;
+			goto err;
 		}
-		cipher = R_ADDR(infop, renv->cipher_off);
-		sh_passwd = R_ADDR(infop, cipher->passwd);
+		cipher = R_ADDR(dbenv, infop, renv->cipher_off);
+		sh_passwd = R_ADDR(dbenv, infop, cipher->passwd);
 		if ((cipher->passwd_len != dbenv->passwd_len) ||
 		    memcmp(dbenv->passwd, sh_passwd, cipher->passwd_len) != 0) {
 			__db_err(dbenv, "Invalid password");
 			ret = EPERM;
-			goto out;
+			goto err;
 		}
 		if (!F_ISSET(db_cipher, CIPHER_ANY) &&
 		    db_cipher->alg != cipher->flags) {
 			__db_err(dbenv,
     "Environment encrypted using a different algorithm");
 			ret = EINVAL;
-			goto out;
+			goto err;
 		}
 		if (F_ISSET(db_cipher, CIPHER_ANY))
 			/*
@@ -108,7 +106,7 @@ __crypto_region_init(dbenv)
 			 */
 			if ((ret = __crypto_algsetup(dbenv, db_cipher,
 			    cipher->flags, 0)) != 0)
-				goto out;
+				goto err;
 	}
 	MUTEX_UNLOCK(dbenv, &renv->mutex);
 	ret = db_cipher->init(dbenv, db_cipher);
@@ -124,7 +122,7 @@ __crypto_region_init(dbenv)
 	dbenv->passwd_len = 0;
 
 	if (0) {
-out:		MUTEX_UNLOCK(dbenv, &renv->mutex);
+err:		MUTEX_UNLOCK(dbenv, &renv->mutex);
 	}
 	return (ret);
 }
@@ -155,6 +153,30 @@ __crypto_dbenv_close(dbenv)
 		ret = db_cipher->close(dbenv, db_cipher->data);
 	__os_free(dbenv, db_cipher);
 	return (ret);
+}
+
+/*
+ * __crypto_region_destroy --
+ *	Destroy any system resources allocated in the primary region.
+ *
+ * PUBLIC: int __crypto_region_destroy __P((DB_ENV *));
+ */
+int
+__crypto_region_destroy(dbenv)
+	DB_ENV *dbenv;
+{
+	CIPHER *cipher;
+	REGENV *renv;
+	REGINFO *infop;
+
+	infop = dbenv->reginfo;
+	renv = infop->primary;
+	if (renv->cipher_off != INVALID_ROFF) {
+		cipher = R_ADDR(dbenv, infop, renv->cipher_off);
+		__db_shalloc_free(infop, R_ADDR(dbenv, infop, cipher->passwd));
+		__db_shalloc_free(infop, cipher);
+	}
+	return (0);
 }
 
 /*
@@ -357,7 +379,7 @@ __crypto_set_passwd(dbenv_src, dbenv_dest)
 
 	DB_ASSERT(CRYPTO_ON(dbenv_src));
 
-	cipher = R_ADDR(infop, renv->cipher_off);
-	sh_passwd = R_ADDR(infop, cipher->passwd);
+	cipher = R_ADDR(dbenv_src, infop, renv->cipher_off);
+	sh_passwd = R_ADDR(dbenv_src, infop, cipher->passwd);
 	return (__dbenv_set_encrypt(dbenv_dest, sh_passwd, DB_ENCRYPT_AES));
 }

@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: qam_verify.c,v 1.51 2004/10/11 18:47:51 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: qam_verify.c,v 1.45 2003/08/12 19:51:55 ubell Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -49,11 +47,14 @@ __qam_vrfy_meta(dbp, vdp, meta, pgno, flags)
 	int count, i, isbad, nextents, ret, t_ret;
 	char *buf, **names;
 
+	COMPQUIET(count, 0);
+
 	dbenv = dbp->dbenv;
+	qp = (QUEUE *)dbp->q_internal;
+	extents = NULL;
 	first = last = 0;
 	buf = NULL;
 	names = NULL;
-	qp = (QUEUE *)dbp->q_internal;
 
 	if ((ret = __db_vrfy_getpageinfo(vdp, pgno, &pip)) != 0)
 		return (ret);
@@ -79,7 +80,7 @@ __qam_vrfy_meta(dbp, vdp, meta, pgno, flags)
 	 * re_len:  If this is bad, we can't safely verify queue data pages, so
 	 * return DB_VERIFY_FATAL
 	 */
-	if (ALIGN(meta->re_len + sizeof(QAMDATA) - 1, sizeof(u_int32_t)) *
+	if (DB_ALIGN(meta->re_len + sizeof(QAMDATA) - 1, sizeof(u_int32_t)) *
 	    meta->rec_page + QPAGE_SZ(dbp) > dbp->pgsize) {
 		EPRINT((dbenv,
    "Page %lu: queue record length %lu too high for page size and recs/page",
@@ -145,21 +146,19 @@ __qam_vrfy_meta(dbp, vdp, meta, pgno, flags)
 	len = strlen(QUEUE_EXTENT_HEAD) + strlen(qp->name) + 1;
 	if ((ret = __os_malloc(dbenv, len, &buf)) != 0)
 		goto err;
-	len = snprintf(buf, len, QUEUE_EXTENT_HEAD, qp->name);
-	nextents = 0;
-	extents = NULL;
-	for (i = 0; i < count; i++) {
+	len = (size_t)snprintf(buf, len, QUEUE_EXTENT_HEAD, qp->name);
+	for (i = nextents = 0; i < count; i++) {
 		if (strncmp(names[i], buf, len) == 0) {
 			/* Only save extents out of bounds. */
-			extid = atoi(&names[i][len]);
+			extid = (db_pgno_t)strtoul(&names[i][len], NULL, 10);
 			if (qp->page_ext != 0 &&
 			    (last > first ?
 			    (extid >= first && extid <= last) :
 			    (extid >= first || extid <= last)))
 				continue;
-			if (extents == NULL &&
-			     (ret = __os_malloc(dbenv,
-			     (count - i) * sizeof(extid), &extents)) != 0)
+			if (extents == NULL && (ret = __os_malloc(
+			     dbenv, (size_t)(count - i) * sizeof(extid),
+			     &extents)) != 0)
 				goto err;
 			extents[nextents] = extid;
 			nextents++;
@@ -179,6 +178,9 @@ err:	if ((t_ret = __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0 && ret == 0)
 		__os_free(dbenv, buf);
 	if (ret != 0 && extents != NULL)
 		__os_free(dbenv, extents);
+	if (LF_ISSET(DB_SALVAGE) &&
+	   (t_ret = __db_salvage_markdone(vdp, pgno)) != 0 && ret == 0)
+		ret = t_ret;
 	return (ret == 0 && isbad == 1 ? DB_VERIFY_BAD : ret);
 }
 
@@ -312,13 +314,13 @@ __qam_vrfy_walkqueue(dbp, vdp, handle, callback, flags)
 	db_pgno_t first, i, last, pg_ext, stop;
 	int isbad, nextents, ret, t_ret;
 
-	isbad = ret = t_ret = 0;
+	COMPQUIET(h, NULL);
 
-	pip = NULL;
 	dbenv = dbp->dbenv;
 	qp = dbp->q_internal;
-
+	pip = NULL;
 	pg_ext = qp->page_ext;
+	isbad = ret = t_ret = 0;
 
 	/* If this database has no extents, we've seen all the pages already. */
 	if (pg_ext == 0)
@@ -329,14 +331,13 @@ __qam_vrfy_walkqueue(dbp, vdp, handle, callback, flags)
 
 	i = first;
 	if (first > last)
-		stop = QAM_RECNO_PAGE(dbp, UINT32_T_MAX);
+		stop = QAM_RECNO_PAGE(dbp, UINT32_MAX);
 	else
 		stop = last;
 	nextents = vdp->nextents;
 
 	/* Verify/salvage each page. */
-begin:
-	for (; i <= stop; i++) {
+begin:	for (; i <= stop; i++) {
 		/*
 		 * If DB_SALVAGE is set, we inspect our database of completed
 		 * pages, and skip any we've already printed in the subdb pass.
@@ -345,7 +346,7 @@ begin:
 			continue;
 		if ((t_ret = __qam_fget(dbp, &i, 0, &h)) != 0) {
 			if (t_ret == ENOENT || t_ret == DB_PAGE_NOTFOUND) {
-				i += pg_ext - ((i - 1) % pg_ext) - 1;
+				i += (pg_ext - ((i - 1) % pg_ext)) - 1;
 				continue;
 			}
 
@@ -382,7 +383,6 @@ begin:
 			 * may make it easier to diagnose problems and
 			 * determine the magnitude of the corruption.
 			 */
-
 			if ((ret = __db_vrfy_common(dbp,
 			    vdp, h, i, flags)) == DB_VERIFY_BAD)
 				isbad = 1;
@@ -402,8 +402,7 @@ begin:
 				isbad = 1;
 				goto err;
 			}
-			if ((ret =
-			     __db_vrfy_pgset_inc(vdp->pgset, i)) != 0)
+			if ((ret = __db_vrfy_pgset_inc(vdp->pgset, i)) != 0)
 				goto err;
 			if ((ret = __qam_vrfy_data(dbp, vdp,
 			    (QPAGE *)h, i, flags)) == DB_VERIFY_BAD)
@@ -438,7 +437,6 @@ put:			if ((ret = __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0)
 	 * Now check to see if there were any lingering
 	 * extents and dump their data.
 	 */
-
 	if (LF_ISSET(DB_SALVAGE) && nextents != 0) {
 		nextents--;
 		i = 1 +
@@ -505,11 +503,11 @@ __qam_salvage(dbp, vdp, pgno, h, handle, callback, flags)
 			continue;
 
 		dbt.data = qp->data;
-		if ((ret = __db_prdbt(&key,
+		if ((ret = __db_vrfy_prdbt(&key,
 		    0, " ", handle, callback, 1, vdp)) != 0)
 			err_ret = ret;
 
-		if ((ret = __db_prdbt(&dbt,
+		if ((ret = __db_vrfy_prdbt(&dbt,
 		    0, " ", handle, callback, 0, vdp)) != 0)
 			err_ret = ret;
 	}

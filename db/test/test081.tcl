@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test081.tcl,v 11.8 2003/01/08 05:54:04 bostic Exp $
+# $Id: test081.tcl,v 11.9 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test081
 # TEST	Test off-page duplicates and overflow pages together with

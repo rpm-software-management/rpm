@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test085.tcl,v 1.15 2003/01/08 05:54:05 bostic Exp $
+# $Id: test085.tcl,v 1.18 2004/09/20 17:29:32 carol Exp $
 #
 # TEST	test085
 # TEST	Test of cursor behavior when a cursor is pointing to a deleted
@@ -69,7 +69,7 @@ proc test085 { method {pagesize 512} {onp 3} {offp 10} {tnum "085"} args } {
 	}
 
 	# Repeat the test with both on-page and off-page numbers of dups.
-	foreach	ndups "$onp $offp" {
+	foreach ndups "$onp $offp" {
 		# Put operations we want to test on a cursor set to the
 		# deleted item, the key to use with them, and what should
 		# come before and after them given a placement of
@@ -78,8 +78,6 @@ proc test085 { method {pagesize 512} {onp 3} {offp 10} {tnum "085"} args } {
 		set putops {
 		{{-before} "" $predatum	{[test085_ddatum 0]} beginning}
 		{{-before} "" {[test085_ddatum $final]} $postdatum end}
-		{{-current} "" $predatum {[test085_ddatum 0]} beginning}
-		{{-current} "" {[test085_ddatum $final]} $postdatum end}
 		{{-keyfirst} $key $predatum {[test085_ddatum 0]} beginning}
 		{{-keyfirst} $key $predatum {[test085_ddatum 0]} end}
 		{{-keylast} $key {[test085_ddatum $final]} $postdatum beginning}
@@ -153,7 +151,8 @@ proc test085 { method {pagesize 512} {onp 3} {offp 10} {tnum "085"} args } {
 			eval set edata [lindex $pair 3]
 
 			set dbt [eval $dbc get $op $gargs]
-			if { [string compare $ekey EMPTYLIST] == 0 } {
+			if { [string compare $ekey EMPTYLIST] == 0 || \
+			     [string compare $op -current] == 0 } {
 				error_check_good dbt($op,$ndups) \
 				    [llength $dbt] 0
 			} else {

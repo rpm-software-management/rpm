@@ -1,15 +1,16 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test072.tcl,v 11.31 2003/09/04 23:41:17 bostic Exp $
+# $Id: test072.tcl,v 11.34 2004/05/13 18:51:44 mjc Exp $
 #
 # TEST	test072
 # TEST	Test of cursor stability when duplicates are moved off-page.
 proc test072 { method {pagesize 512} {ndups 20} {tnum "072"} args } {
 	source ./include.tcl
 	global alphabet
+	global is_je_test
 
 	set omethod [convert_method $method]
 	set args [convert_args $method $args]
@@ -49,7 +50,7 @@ proc test072 { method {pagesize 512} {ndups 20} {tnum "072"} args } {
 		puts "Skipping for method $method."
 		return
 	} else {
-		puts "\n    Test of cursor stability when\
+		puts "\nTest$tnum: Test of cursor stability when\
 		    duplicates are moved off-page."
 	}
 	set pgindex [lsearch -exact $args "-pagesize"]
@@ -64,6 +65,10 @@ proc test072 { method {pagesize 512} {ndups 20} {tnum "072"} args } {
 	set dlist [list "-dup" "-dup -dupsort"]
 	set testid 0
 	foreach dupopt $dlist {
+		if { $is_je_test && $dupopt == "-dup" } {
+			continue
+		}
+
 		incr testid
 		set duptestfile $basename$testid.db
 		set db [eval {berkdb_open -create -mode 0644} \

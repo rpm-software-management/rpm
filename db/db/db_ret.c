@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_ret.c,v 11.26 2004/02/05 02:25:13 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_ret.c,v 11.24 2003/04/02 14:12:34 sue Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -127,7 +125,7 @@ __db_retcopy(dbenv, dbt, data, len, memp, memsize)
 			ret = __os_urealloc(dbenv, len, &dbt->data);
 	} else if (F_ISSET(dbt, DB_DBT_USERMEM)) {
 		if (len != 0 && (dbt->data == NULL || dbt->ulen < len))
-			ret = ENOMEM;
+			ret = DB_BUFFER_SMALL;
 	} else if (memp == NULL || memsize == NULL) {
 		ret = EINVAL;
 	} else {

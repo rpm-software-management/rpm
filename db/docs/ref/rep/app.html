@@ -1,12 +1,12 @@
-<!--$Id: app.so,v 1.16 2003/11/19 20:06:01 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: app.so,v 1.20 2004/10/14 15:06:11 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Building replicated applications</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -22,12 +22,12 @@ applications use the following additional four Berkeley DB methods:
 <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>, <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> and
 <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> and may also use the configuration method
 <a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a>:</p>
-<p><dl compact>
-<p><dt><a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a><dd>The <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method configures the replication system's
+<dl compact>
+<dt><a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a><dd>The <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method configures the replication system's
 communications infrastructure.
-<p><dt><a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a><dd>The <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method configures (or reconfigures) an existing database
+<dt><a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a><dd>The <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method configures (or reconfigures) an existing database
 environment to be a replication master or client.
-<p><dt><a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a><dd>The <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method is used to process incoming messages from other
+<dt><a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a><dd>The <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method is used to process incoming messages from other
 environments in the replication group.  For clients, it is responsible
 for accepting log records and updating the local databases based on
 messages from the master.  For both the master and the clients, it is
@@ -36,10 +36,10 @@ protocol for dealing with lost messages), and permitting new clients to
 join an active replication group.  This method should only be called
 after the environment has been configured as a replication master or
 client via <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.
-<p><dt><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a><dd>The <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method causes the replication group to elect a new
+<dt><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a><dd>The <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method causes the replication group to elect a new
 master; it is called whenever contact with the master is lost and the
 application wants the remaining sites to select a new master.
-<p><dt><a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a><dd>The <a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a> method imposes an upper bound on the amount of data
+<dt><a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a><dd>The <a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a> method imposes an upper bound on the amount of data
 that will be sent in response to a single call to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>.
 During client recovery, that is, when a replica site is trying to
 synchronize with the master, clients may ask the master for a large
@@ -53,6 +53,11 @@ control and accepting other messages.
 must be changed and the application's communications infrastructure must
 be written.  The application initialization changes are relatively
 simple, but the communications infrastructure code can be complex.</p>
+<p>For implementation reasons, all replicated databases must reside in the
+data directories set from <a href="../../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> or in the default
+environment home directory.  If your databases reside in the default
+environment home directory, they must be in the home directory itself,
+not subdirectories below the environment home.</p>
 <p>During application initialization, the application performs three
 additional tasks: first, it must specify the <a href="../../api_c/env_open.html#DB_INIT_REP">DB_INIT_REP</a> flag
 when opening its database environment; second, it must provide Berkeley DB
@@ -73,20 +78,29 @@ The result of calling <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start<
 master, or the declaration of the local environment as the master.  If
 a master has not been discovered after a reasonable amount of time, the
 application should call <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> to call for an election.</p>
-<p>In the case of multiple processes or threads accessing a replicated
-environment, any environment handle that modifies databases in the
-environment or processes replication messages must call the
-<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method.  Note that not all processes running in replicated
-environments need to call <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> or <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.
-Read-only processes running in a master environment do not need to be
-configured for replication in any way.  Processes running in a client
-environment are read-only by definition, and so do not need to be
-configured for replication either (although, in the case of clients that
-may become masters, it is usually simplest to configure for replication
-on process startup rather than trying to reconfigure when the client
-becomes a master).  Obviously, at least one thread of control on each
-client must be configured for replication as messages must be passed
-between the master and the client.</p>
+<p>Consider the case of multiple processes or multiple environment handles
+that modify databases in the replicated environment.  All modifications
+must be done on the master environment.  The first process to join or
+create the master environment must call both the <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method
+and the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method.  Subsequent replication processes must at
+least call the <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method.  Those processes may call the
+<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method (as long as they use the same master or client
+argument).  If multiple processes are modifying the master environment
+there must be a unified communication infrastructure such that messages
+arriving at clients have a single master ID.  Additionally the
+application must be structured so that all incoming messages are able
+to be processed by a single <a href="../../api_c/env_class.html">DB_ENV</a> handle.</p>
+<p>Note that not all processes running in replicated environments need to
+call <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> or <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.  Read-only processes
+running in a master environment do not need to be configured for
+replication in any way.  Processes running in a client environment are
+read-only by definition, and so do not need to be configured for
+replication either (although, in the case of clients that may become
+masters, it is usually simplest to configure for replication on process
+startup rather than trying to reconfigure when the client becomes a
+master).  Obviously, at least one thread of control on each client must
+be configured for replication as messages must be passed between the
+master and the client.</p>
 <p>For implementation reasons, all incoming replication messages must be
 processed using the same <a href="../../api_c/env_class.html">DB_ENV</a> handle.  It is not required that
 a single thread of control process all messages, only that all threads
@@ -96,6 +110,6 @@ participating in a replication group.  The application should shut down
 the environment in the usual manner, by calling the <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a> method.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/pri.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/comm.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,24 +1,23 @@
 <!--$Id: dbc_put.so,v 11.17 2003/02/21 15:16:45 bostic Exp $-->
-<!--$Id: m4.tcl,v 11.26 2003/09/02 14:38:50 sue Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: m4.tcl,v 11.27 2004/09/07 15:37:41 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: dbc put</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3><i>dbc</i> <b>put</b></h3>
 </td>
 <td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>dbc put
@@ -36,8 +35,8 @@ dbc put
 <h3>Description(dbc put)</h3>
 <p>The <i>dbc</i> <b>put</b> command stores the specified key/data pair into the
 database.  One of the following options must be specified:</p>
-<p><dl compact>
-<p><dt>-after<dd>In the case of the Btree and Hash access methods, insert the data element
+<dl compact>
+<dt>-after<dd>In the case of the Btree and Hash access methods, insert the data element
 as a duplicate element of the key to which the cursor refers. The new
 element appears immediately after the current cursor position. It is an
 error to specify <b>-after</b> if the underlying Btree or Hash database
@@ -55,7 +54,7 @@ the key parameter is ignored. See <b>berkdb open</b> for more information.</p>
 <p>If the current cursor record has already been deleted, and the underlying
 access method is Hash, <i>dbc</i> <b>put</b> will throw a Tcl error. If the
 underlying access method is Btree or Recno, the operation will succeed.</p>
-<p><dt>-before<dd>In the case of the Btree and Hash access methods, insert the data element
+<dt>-before<dd>In the case of the Btree and Hash access methods, insert the data element
 as a duplicate element of the key to which the cursor refers. The new
 element appears immediately before the current cursor position. It is an
 error to specify <b>-before</b> if the underlying Btree or Hash database
@@ -73,7 +72,7 @@ key parameter is ignored. See <b>berkdb open</b> for more information.</p>
 <p>If the current cursor record has already been deleted and the underlying
 access method is Hash, <i>dbc</i> <b>put</b> will throw a Tcl error. If the
 underlying access method is Btree or Recno, the operation will succeed.</p>
-<p><dt>-current<dd>Overwrite the data of the key/data pair to which the cursor refers with
+<dt>-current<dd>Overwrite the data of the key/data pair to which the cursor refers with
 the specified data item.  No key argument should be specified.
 <p>If the <b>-dupsort</b> option was specified to <b>berkdb open</b> and the
 data item of the key/data pair to which the cursor refers does not
@@ -83,7 +82,7 @@ error.</p>
 access method is Hash, <i>dbc</i> <b>put</b> will throw a Tcl error. If the
 underlying access method is Btree, Queue, or Recno, the operation will
 succeed.</p>
-<p><dt>-keyfirst<dd>In the case of the Btree and Hash access methods, insert the specified
+<dt>-keyfirst<dd>In the case of the Btree and Hash access methods, insert the specified
 key/data pair into the database.
 <p>If the key already exists in the database, and the <b>-dupsort</b> option
 was specified to <b>berkdb open</b>, the inserted data item is added in its
@@ -92,7 +91,7 @@ sorted location.  If the key already exists in the database, and the
 as the first of the data items for that key.</p>
 <p>The <b>-keyfirst</b> option may not be specified to the Queue or Recno
 access methods.</p>
-<p><dt>-keylast<dd>In the case of the Btree and Hash access methods, insert the specified
+<dt>-keylast<dd>In the case of the Btree and Hash access methods, insert the specified
 key/data pair into the database.
 <p>If the key already exists in the database, and the <b>-dupsort</b> option
 was specified to <b>berkdb open</b>, the inserted data item is added in its
@@ -101,16 +100,17 @@ sorted location.  If the key already exists in the database, and the
 as the last of the data items for that key.</p>
 <p>The <b>-keylast</b> option may not be specified to the Queue or Recno
 access methods.</p>
-<p><dt>-partial {doff dlen}<dd><p>The <b>dlen</b> bytes starting <b>doff</b> bytes from the beginning
+<dt>-partial {doff dlen}<dd><p>The <b>dlen</b> bytes starting <b>doff</b> bytes from the beginning
 of the specified key's data record are replaced by the data specified
 by the data and size structure elements.  If <b>dlen</b> is smaller
 than the length of the supplied data, the record will grow; if
 <b>dlen</b> is larger than the length of the supplied data, the record
 will shrink.  If the specified bytes do not exist, the record will be
 extended using nul bytes as necessary, and the <i>dbc</i> <b>put</b> call will succeed.
+</p>
 <p>It is an error to attempt a partial put using the <i>dbc</i> <b>put</b> command in a database
 that supports duplicate records. Partial puts in databases supporting
-duplicate records must be done using a <i>dbc</i> <b>put</b> command.</p></p>
+duplicate records must be done using a <i>dbc</i> <b>put</b> command.</p>
 <p>It is an error to attempt a partial put with differing <b>dlen</b> and
 supplied data length values in Queue or Recno databases with fixed-length
 records.</p>
@@ -129,6 +129,6 @@ is thrown.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

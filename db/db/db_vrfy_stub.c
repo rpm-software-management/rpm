@@ -1,15 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_vrfy_stub.c,v 11.6 2004/06/14 15:23:32 bostic Exp $
  */
+
 #include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: db_vrfy_stub.c,v 11.4 2003/07/01 19:47:12 bostic Exp $";
-#endif /* not lint */
-
+#ifndef HAVE_VERIFY
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 #endif
@@ -100,3 +100,4 @@ __db_vrfy_putpageinfo(dbenv, vdp, pip)
 	COMPQUIET(pip, NULL);
 	return (__db_novrfy(dbenv));
 }
+#endif /* !HAVE_VERIFY */

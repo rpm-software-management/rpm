@@ -1,19 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- *
  * Some parts of this code originally written by Adam Stubblefield,
- * astubble@rice.edu.
+ * -- astubble@rice.edu.
+ *
+ * $Id: aes_method.c,v 1.20 2004/09/17 22:00:25 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: aes_method.c,v 1.18 2003/04/28 19:59:19 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <string.h>
@@ -64,7 +61,7 @@ __aes_adj_size(len)
 {
 	if (len % DB_AES_CHUNK == 0)
 		return (0);
-	return (DB_AES_CHUNK - (len % DB_AES_CHUNK));
+	return (DB_AES_CHUNK - (u_int)(len % DB_AES_CHUNK));
 }
 
 /*

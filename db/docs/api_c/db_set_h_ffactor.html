@@ -1,23 +1,22 @@
-<!--$Id: db_set_h_ffactor.so,v 10.34 2003/11/08 19:17:21 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_set_h_ffactor.so,v 10.37 2004/09/28 15:04:19 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;set_h_ffactor</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;set_h_ffactor</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DB-&gt;get_h_ffactor(DB *db, u_int32_t *h_ffactorp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB-&gt;set_h_ffactor</h3>
-<a name="3"><!--meow--></a>
 <p>Set the desired density within the hash table.  If no value is
 specified, the fill factor will be selected dynamically as pages are
 filled.</p>
@@ -47,9 +45,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>h_ffactor</b><dd>
-The <b>h_ffactor</b> parameter is the desired density within the hash table.
+<dl compact>
+<dt><b>h_ffactor</b><dd>The <b>h_ffactor</b> parameter is the desired density within the hash table.
 <p>The density is an approximation of the number of keys allowed to
 accumulate in any one bucket, determining when the hash table grows or
 shrinks.  If you know the average sizes of the keys and data in your
@@ -60,8 +57,8 @@ rule computing fill factor is to set it to the following:</p>
 <h3>Errors</h3>
 <p>The DB-&gt;set_h_ffactor method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/db_open.html">DB-&gt;open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_c/db_open.html">DB-&gt;open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -74,9 +71,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>h_ffactorp</b><dd>
-The DB-&gt;get_h_ffactor method returns  the
+<dl compact>
+<dt><b>h_ffactorp</b><dd>The DB-&gt;get_h_ffactor method returns  the
 hash table density in <b>h_ffactorp</b>.
 </dl>
 <hr size=1 noshade>
@@ -88,6 +84,6 @@ hash table density in <b>h_ffactorp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,75 +1,138 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003
+# Copyright (c) 2003-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: foputils.tcl,v 11.3 2003/09/04 23:41:11 bostic Exp $
+# $Id: foputils.tcl,v 11.9 2004/09/22 18:01:05 bostic Exp $
 #
-proc do_op {op args txn env} {
+proc do_op {omethod op names txn env {largs ""}} {
 	switch -exact $op {
-		rename { do_rename $args $txn $env }
-		remove { do_remove $args $txn $env }
-		open_create { do_create $args $txn $env }
-		open { do_open $args $txn $env }
-		open_excl { do_create_excl $args $txn $env }
-		truncate { do_truncate $args $txn $env }
+		delete { do_delete $names }
+		rename { do_rename $names $txn $env }
+		remove { do_remove $names $txn $env }
+		noop { do_noop }
+		open_create { do_create $omethod $names $txn $env $largs }
+		open { do_open $omethod $names $txn $env $largs }
+		open_excl { do_create_excl $omethod $names $txn $env $largs }
+		truncate { do_truncate $omethod $names $txn $env $largs }
 		default { puts "FAIL: operation $op not recognized" }
 	}
 }
 
-proc do_rename {args txn env} {
-	# Pull db names out of $args
-	set oldname [lindex $args 0]
-	set newname [lindex $args 1]
+proc do_subdb_op {omethod op names txn env {largs ""}} {
+	#
+	# The 'noop' and 'delete' actions are the same
+	# for subdbs as for regular db files.
+	#
+	switch -exact $op {
+		delete { do_delete $names }
+		rename { do_subdb_rename $names $txn $env }
+		remove { do_subdb_remove $names $txn $env }
+		noop { do_noop }
+		default { puts "FAIL: operation $op not recognized" }
+	}
+}
+
+proc do_delete {names} {
+	#
+	# This is the odd man out among the ops -- it's not a Berkeley
+	# DB file operation, but mimics an operation done externally,
+	# as if a user deleted a file with "rm" or "erase".
+	#
+	# We assume the file is found in $testdir.
+	#
+	global testdir
+
+	if {[catch [fileremove -f $testdir/$names] result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
+proc do_noop { } {
+	# Do nothing.  Report success.
+	return 0
+}
+
+proc do_rename {names txn env} {
+	# Pull db names out of $names
+	set oldname [lindex $names 0]
+	set newname [lindex $names 1]
 
 	if {[catch {eval $env dbrename -txn $txn \
-	    $oldname.db $newname.db} result]} {
+	    $oldname $newname} result]} {
 		return $result
 	} else {
 		return 0
 	}
 }
 
-proc do_remove {args txn env} {
-	if {[catch {eval $env dbremove -txn $txn $args.db} result]} {
+proc do_subdb_rename {names txn env} {
+	# Pull db and subdb names out of $names
+	set filename [lindex $names 0]
+	set oldsname [lindex $names 1]
+	set newsname [lindex $names 2]
+
+	if {[catch {eval $env dbrename -txn $txn $filename \
+	    $oldsname $newsname} result]} {
 		return $result
 	} else {
 		return 0
 	}
 }
 
-proc do_create {args txn env} {
-	if {[catch {eval berkdb_open -create -btree -env $env \
-	    -txn $txn $args.db} result]} {
+
+proc do_remove {names txn env} {
+	if {[catch {eval $env dbremove -txn $txn $names} result]} {
 		return $result
 	} else {
 		return 0
 	}
 }
 
-proc do_open {args txn env} {
-	if {[catch {eval berkdb_open -btree -env $env \
-	    -txn $txn $args.db} result]} {
+proc do_subdb_remove {names txn env} {
+	set filename [lindex $names 0]
+	set subname [lindex $names 1]
+	if {[catch {eval $env dbremove -txn $txn $filename $subname} result]} {
 		return $result
 	} else {
 		return 0
 	}
 }
 
-proc do_create_excl {args txn env} {
-	if {[catch {eval berkdb_open -create -excl -btree -env $env \
-	    -txn $txn $args.db} result]} {
+proc do_create {omethod names txn env {largs ""}} {
+	if {[catch {eval berkdb_open -create $omethod $largs -env $env \
+	    -txn $txn $names} result]} {
 		return $result
 	} else {
 		return 0
 	}
 }
 
-proc do_truncate {args txn env} {
+proc do_open {omethod names txn env {largs ""}} {
+	if {[catch {eval berkdb_open $omethod $largs -env $env \
+	    -txn $txn $names} result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
+proc do_create_excl {omethod names txn env {largs ""}} {
+	if {[catch {eval berkdb_open -create -excl $omethod $largs -env $env \
+	    -txn $txn $names} result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
+proc do_truncate {omethod names txn env {largs ""}} {
 	# First we have to get a handle.  We omit the -create flag
 	# because testing of truncate is meaningful only in cases
 	# where the database already exists.
-	set db [berkdb_open -btree -env $env -txn $txn $args.db]
+	set db [eval {berkdb_open $omethod} $largs {-env $env -txn $txn $names}]
 	error_check_good db_open [is_valid_db $db] TRUE
 
 	if {[catch {$db truncate -txn $txn} result]} {
@@ -236,14 +299,6 @@ proc create_op2 { op2 exists noexist open retval } {
 
 				set retlist [concat $retlist1 $retlist2]
 			}
-			# "File open" errors arise from trying to rename
-			# open files.
-			if { $retval == "file is open" } {
-				set old $open
-				set new $noexist
-				set retlist \
-				   [build_retlist $op2 $old $new $retval]
-			}
 		}
 		remove {
 			# Successful removes result from removing existing
@@ -260,11 +315,6 @@ proc create_op2 { op2 exists noexist open retval } {
 			if { $retval == "no such file" } {
 				set file $noexist
 			}
-			# "File is open" errors arise from trying to remove
-			# open files.
-			if { $retval == "file is open" } {
-				set file $open
-			}
 			set retlist [build_retlist $op2 $file "" $retval]
 		}
 		open_create {
@@ -273,10 +323,9 @@ proc create_op2 { op2 exists noexist open retval } {
 			if { $retval == 0 } {
 				set file [concat $exists $open $noexist]
 			}
-			# "File exists", "file is open", and "no such file"
+			# "File exists" and "no such file"
 			# do not happen in open_create.
 			if { $retval == "file exists" || \
-			    $retval == "file is open" || \
 			    $retval == "no such file" } {
 				return
 			}
@@ -292,10 +341,8 @@ proc create_op2 { op2 exists noexist open retval } {
 			if { $retval == "no such file" } {
 				set file $noexist
 			}
-			# "File exists" and "file is open" do not happen
-			# in open.
-			if { $retval == "file exists" || \
-			    $retval == "file is open" } {
+			# "File exists" errors do not happen in open.
+			if { $retval == "file exists" } {
 				return
 			}
 			set retlist [build_retlist $op2 $file "" $retval]
@@ -310,10 +357,8 @@ proc create_op2 { op2 exists noexist open retval } {
 			if { $retval == "file exists" } {
 				set file [concat $exists $open]
 			}
-			# "No such file" and "file is open" do not happen
-			# in open_excl.
-			if { $retval == "no such file" || \
-			    $retval == "file is open" } {
+			# "No such file" errors do not arise in open_excl.
+			if { $retval == "no such file" } {
 				return
 			}
 			set retlist [build_retlist $op2 $file "" $retval]
@@ -326,9 +371,8 @@ proc create_op2 { op2 exists noexist open retval } {
 			# No other return values are meaningful to test since
 			# do_truncate starts with an open and we've already
 			# tested open.
-			if { $retval == "file is open" || \
-			    $retval == "file exists" || \
-			    $retval == "no such file" } {
+			if { $retval == "no such file" || \
+			    $retval == "file exists" } {
 				return
 			}
 			set retlist [build_retlist $op2 $file "" $retval]
@@ -358,8 +402,6 @@ proc extract_error { message } {
 		set message "file exists"
 	} elseif {[is_substr $message "no such file"] == 1 } {
 		set message "no such file"
-	} elseif {[is_substr $message "file is open"] == 1 } {
-		set message "file is open"
 	}
 	return $message
 }

@@ -1,12 +1,12 @@
 <!--$Id: put.so,v 10.15 2003/10/18 19:15:53 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Storing records</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -20,11 +20,11 @@
 <a href="../../api_c/db_put.html">DB-&gt;put</a> takes a key and stores the associated data into the
 database.</p>
 <p>There are a few flags that you can set to customize storage:</p>
-<p><dl compact>
-<p><dt><a href="../../api_c/db_put.html#DB_APPEND">DB_APPEND</a><dd>Simply append the data to the end of the database, treating the database
+<dl compact>
+<dt><a href="../../api_c/db_put.html#DB_APPEND">DB_APPEND</a><dd>Simply append the data to the end of the database, treating the database
 much like a simple log.  This flag is only valid for the Queue and Recno
 access methods.
-<p><dt><a href="../../api_c/db_put.html#DB_NOOVERWRITE">DB_NOOVERWRITE</a><dd>Only store the data item if the key does not already appear in the database.
+<dt><a href="../../api_c/db_put.html#DB_NOOVERWRITE">DB_NOOVERWRITE</a><dd>Only store the data item if the key does not already appear in the database.
 </dl>
 <p>If the database has been configured to support duplicate records, the
 <a href="../../api_c/db_put.html">DB-&gt;put</a> method will add the new data value at the end of the duplicate
@@ -32,6 +32,6 @@ set.  If the database supports sorted duplicates, the new data value is
 inserted at the correct sorted location.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am/get.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/delete.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,23 +1,22 @@
-<!--$Id: lock_id.so,v 10.32 2003/10/31 17:24:56 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: lock_id.so,v 10.33 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::lock_id</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbEnv::lock_id</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -28,9 +27,9 @@ DbEnv::lock_id(u_int32_t *idp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::lock_id</h3>
-<p>The DbEnv::lock_id method
-copies a locker ID, which is guaranteed to be unique in the specified lock
-table, into the memory location to which <b>idp</b> refers.</p>
+<p>The DbEnv::lock_id method copies a locker ID, which is guaranteed to be
+unique in the specified lock table, into the memory location to which
+<b>idp</b> refers.</p>
 <p>The <a href="../api_cxx/lock_id_free.html">DbEnv::lock_id_free</a> method should be called to return the locker ID to
 the Berkeley DB library when it is no longer needed.</p>
 <p>The DbEnv::lock_id method
@@ -39,9 +38,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>idp</b><dd>
-The <b>idp</b> parameter references memory into which
+<dl compact>
+<dt><b>idp</b><dd>The <b>idp</b> parameter references memory into which
  the allocated locker ID is copied.
 </dl>
 <hr size=1 noshade>
@@ -53,6 +51,6 @@ The <b>idp</b> parameter references memory into which
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,5 +1,5 @@
 #
-# $Id: gen_rpc.awk,v 11.54 2003/09/04 23:59:03 bostic Exp $
+# $Id: gen_rpc.awk,v 11.58 2004/08/19 20:28:37 mjc Exp $
 # Awk script for generating client/server RPC code.
 #
 # This awk script generates most of the RPC routines for DB client/server
@@ -14,7 +14,6 @@
 #	xidsize		-- size of GIDs
 #	client_file	-- the C source file being created for client code
 #	ctmpl_file	-- the C template file being created for client code
-#	sed_file	-- the sed file created to alter server proc code
 #	server_file	-- the C source file being created for server code
 #	stmpl_file	-- the C template file being created for server code
 #	xdr_file	-- the XDR message file created
@@ -23,15 +22,13 @@
 BEGIN {
 	if (major == "" || minor == "" || xidsize == "" ||
 	    client_file == "" || ctmpl_file == "" ||
-	    sed_file == "" || server_file == "" ||
-	    stmpl_file == "" || xdr_file == "") {
+	    server_file == "" || stmpl_file == "" || xdr_file == "") {
 		print "Usage: gen_rpc.awk requires these variables be set:"
 		print "\tmajor\t-- Major version number"
 		print "\tminor\t-- Minor version number"
 		print "\txidsize\t-- GID size"
 		print "\tclient_file\t-- the client C source file being created"
 		print "\tctmpl_file\t-- the client template file being created"
-		print "\tsed_file\t-- the sed command file being created"
 		print "\tserver_file\t-- the server C source file being created"
 		print "\tstmpl_file\t-- the server template file being created"
 		print "\txdr_file\t-- the XDR message file being created"
@@ -51,32 +48,24 @@ BEGIN {
 	printf("/* Do not edit: automatically built by gen_rpc.awk. */\n") \
 	    > SFILE
 
-	# Server procedure template and a sed file to massage an existing
-	# template source file to change args.
-	# SEDFILE should be same name as PFILE but .c
-	#
+	# Server procedure template.
 	PFILE = stmpl_file
-	SEDFILE = sed_file
-	printf("") > SEDFILE
-	printf("/* Do not edit: automatically built by gen_rpc.awk. */\n") \
-	    > PFILE
-
 	XFILE = xdr_file
 	printf("/* Do not edit: automatically built by gen_rpc.awk. */\n") \
 	    > XFILE
 	nendlist = 1;
 }
 END {
-	printf("#endif /* HAVE_RPC */\n") >> CFILE
-	printf("#endif /* HAVE_RPC */\n") >> TFILE
-	printf("program DB_RPC_SERVERPROG {\n") >> XFILE
-	printf("\tversion DB_RPC_SERVERVERS {\n") >> XFILE
+	if (error == 0) {
+		printf("program DB_RPC_SERVERPROG {\n") >> XFILE
+		printf("\tversion DB_RPC_SERVERVERS {\n") >> XFILE
 
-	for (i = 1; i < nendlist; ++i)
-		printf("\t\t%s;\n", endlist[i]) >> XFILE
+		for (i = 1; i < nendlist; ++i)
+			printf("\t\t%s;\n", endlist[i]) >> XFILE
 
-	printf("\t} = %d%03d;\n", major, minor) >> XFILE
-	printf("} = 351457;\n") >> XFILE
+		printf("\t} = %d%03d;\n", major, minor) >> XFILE
+		printf("} = 351457;\n") >> XFILE
+	}
 }
 
 /^[	 ]*BEGIN/ {
@@ -205,33 +194,29 @@ END {
 	if (first == 0) {
 		printf("#include \"db_config.h\"\n") >> CFILE
 		printf("\n") >> CFILE
-		printf("#ifdef HAVE_RPC\n") >> CFILE
 		printf("#ifndef NO_SYSTEM_INCLUDES\n") >> CFILE
-		printf("#include <sys/types.h>\n\n") >> CFILE
+		printf("#include <sys/types.h>\n") >> CFILE
+		printf("\n") >> CFILE
 		printf("#include <rpc/rpc.h>\n") >> CFILE
-		printf("#include <rpc/xdr.h>\n") >> CFILE
 		printf("\n") >> CFILE
 		printf("#include <string.h>\n") >> CFILE
 		printf("#endif\n") >> CFILE
 		printf("\n") >> CFILE
+		printf("#include \"db_server.h\"\n") >> CFILE
+		printf("\n") >> CFILE
 		printf("#include \"db_int.h\"\n") >> CFILE
 		printf("#include \"dbinc/txn.h\"\n") >> CFILE
-		printf("\n") >> CFILE
-		printf("#include \"dbinc_auto/db_server.h\"\n") >> CFILE
 		printf("#include \"dbinc_auto/rpc_client_ext.h\"\n") >> CFILE
 		printf("\n") >> CFILE
 
 		printf("#include \"db_config.h\"\n") >> TFILE
 		printf("\n") >> TFILE
-		printf("#ifdef HAVE_RPC\n") >> TFILE
 		printf("#ifndef NO_SYSTEM_INCLUDES\n") >> TFILE
 		printf("#include <sys/types.h>\n") >> TFILE
-		printf("#include <rpc/rpc.h>\n") >> TFILE
 		printf("\n") >> TFILE
 		printf("#include <string.h>\n") >> TFILE
 		printf("#endif\n") >> TFILE
 		printf("#include \"db_int.h\"\n") >> TFILE
-		printf("#include \"dbinc_auto/db_server.h\"\n") >> TFILE
 		printf("#include \"dbinc/txn.h\"\n") >> TFILE
 		printf("\n") >> TFILE
 
@@ -241,13 +226,13 @@ END {
 		printf("#include <sys/types.h>\n") >> SFILE
 		printf("\n") >> SFILE
 		printf("#include <rpc/rpc.h>\n") >> SFILE
-		printf("#include <rpc/xdr.h>\n") >> SFILE
 		printf("\n") >> SFILE
 		printf("#include <string.h>\n") >> SFILE
 		printf("#endif\n") >> SFILE
 		printf("\n") >> SFILE
+		printf("#include \"db_server.h\"\n") >> SFILE
+		printf("\n") >> SFILE
 		printf("#include \"db_int.h\"\n") >> SFILE
-		printf("#include \"dbinc_auto/db_server.h\"\n") >> SFILE
 		printf("#include \"dbinc/db_server_int.h\"\n") >> SFILE
 		printf("#include \"dbinc_auto/rpc_server_ext.h\"\n") >> SFILE
 		printf("\n") >> SFILE
@@ -262,10 +247,10 @@ END {
 		printf("#include <string.h>\n") >> PFILE
 		printf("#endif\n") >> PFILE
 		printf("\n") >> PFILE
+		printf("#include \"db_server.h\"\n") >> PFILE
+		printf("\n") >> PFILE
 		printf("#include \"db_int.h\"\n") >> PFILE
-		printf("#include \"dbinc_auto/db_server.h\"\n") >> PFILE
 		printf("#include \"dbinc/db_server_int.h\"\n") >> PFILE
-		printf("#include \"dbinc_auto/rpc_server_ext.h\"\n") >> PFILE
 		printf("\n") >> PFILE
 
 		first = 1;
@@ -310,6 +295,7 @@ END {
 		#
 		# Spit out PUBLIC prototypes.
 		#
+		delete p;
 		pi = 1;
 		p[pi++] = sprintf("int __dbcl_%s __P((", name);
 		p[pi++] = "";
@@ -318,9 +304,8 @@ END {
 			p[pi++] = ", ";
 		}
 		p[pi - 1] = "";
-		p[pi++] = "));";
-		p[pi] = "";
-		proto_format(p, 0, CFILE);
+		p[pi] = "));";
+		proto_format(p, CFILE);
 
 		#
 		# Spit out function name/args.
@@ -476,13 +461,9 @@ END {
 	#
 	# First spit out PUBLIC prototypes for server functions.
 	#
-	p[1] = sprintf("__%s_reply *__db_%s_%d%03d __P((__%s_msg *, struct svc_req *));",
-	    name, name, major, minor, name);
-	p[2] = "";
-	proto_format(p, 0, SFILE);
-
 	printf("__%s_reply *\n", name) >> SFILE
-	printf("__db_%s_%d%03d(msg, req)\n", name, major, minor) >> SFILE
+	printf("__db_%s_%d%03d__SVCSUFFIX__(msg, req)\n", \
+	    name, major, minor) >> SFILE
 	printf("\t__%s_msg *msg;\n", name) >> SFILE;
 	printf("\tstruct svc_req *req;\n", name) >> SFILE;
 	printf("{\n") >> SFILE
@@ -529,7 +510,7 @@ END {
 			    sep, args[i], args[i]) >> SFILE
 		}
 		if (rpc_type[i] == "GID") {
-			printf("%smsg->%s", sep, args[i]) >> SFILE
+			printf("%s(u_int8_t *)msg->%s", sep, args[i]) >> SFILE
 		}
 		if (rpc_type[i] == "INT") {
 			printf("%smsg->%s", sep, args[i]) >> SFILE
@@ -568,16 +549,9 @@ END {
 	# =====================================================
 	# Generate Procedure Template Server code
 	#
-	# Produce SED file commands if needed at the same time
-	#
 	# Spit out comment, prototype, function name and arg list.
-	#
-	printf("/^\\/\\* BEGIN __%s_proc/,/^\\/\\* END __%s_proc/c\\\n", \
-	    name, name) >> SEDFILE
-
 	printf("/* BEGIN __%s_proc */\n", name) >> PFILE
-	printf("/* BEGIN __%s_proc */\\\n", name) >> SEDFILE
-
+	delete p;
 	pi = 1;
 	p[pi++] = sprintf("void __%s_proc __P((", name);
 	p[pi++] = "";
@@ -646,12 +620,9 @@ END {
 		p[pi++] = "));";
 	}
 	p[pi++] = "";
-	proto_format(p, 1, SEDFILE);
 
 	printf("void\n") >> PFILE
-	printf("void\\\n") >> SEDFILE
 	printf("__%s_proc(", name) >> PFILE
-	printf("__%s_proc(", name) >> SEDFILE
 	sep = "";
 	argcount = 0;
 	for (i = 0; i < nvars; ++i) {
@@ -664,27 +635,21 @@ END {
 			continue;
 		if (rpc_type[i] == "ID") {
 			printf("%s%scl_id", sep, args[i]) >> PFILE
-			printf("%s%scl_id", sep, args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "STRING") {
 			printf("%s%s", sep, args[i]) >> PFILE
-			printf("%s%s", sep, args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "GID") {
 			printf("%s%s", sep, args[i]) >> PFILE
-			printf("%s%s", sep, args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "INT") {
 			printf("%s%s", sep, args[i]) >> PFILE
-			printf("%s%s", sep, args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "INTRET") {
 			printf("%s%s", sep, args[i]) >> PFILE
-			printf("%s%s", sep, args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "LIST") {
 			printf("%s%s", sep, args[i]) >> PFILE
-			printf("%s%s", sep, args[i]) >> SEDFILE
 			argcount++;
 			split_lines();
 			if (argcount == 0) {
@@ -693,11 +658,9 @@ END {
 				sep = ", ";
 			}
 			printf("%s%slen", sep, args[i]) >> PFILE
-			printf("%s%slen", sep, args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "DBT") {
 			printf("%s%sdlen", sep, args[i]) >> PFILE
-			printf("%s%sdlen", sep, args[i]) >> SEDFILE
 			sep = ", ";
 			argcount++;
 			split_lines();
@@ -707,7 +670,6 @@ END {
 				sep = ", ";
 			}
 			printf("%s%sdoff", sep, args[i]) >> PFILE
-			printf("%s%sdoff", sep, args[i]) >> SEDFILE
 			argcount++;
 			split_lines();
 			if (argcount == 0) {
@@ -716,7 +678,6 @@ END {
 				sep = ", ";
 			}
 			printf("%s%sulen", sep, args[i]) >> PFILE
-			printf("%s%sulen", sep, args[i]) >> SEDFILE
 			argcount++;
 			split_lines();
 			if (argcount == 0) {
@@ -725,7 +686,6 @@ END {
 				sep = ", ";
 			}
 			printf("%s%sflags", sep, args[i]) >> PFILE
-			printf("%s%sflags", sep, args[i]) >> SEDFILE
 			argcount++;
 			split_lines();
 			if (argcount == 0) {
@@ -734,7 +694,6 @@ END {
 				sep = ", ";
 			}
 			printf("%s%sdata", sep, args[i]) >> PFILE
-			printf("%s%sdata", sep, args[i]) >> SEDFILE
 			argcount++;
 			split_lines();
 			if (argcount == 0) {
@@ -743,18 +702,14 @@ END {
 				sep = ", ";
 			}
 			printf("%s%ssize", sep, args[i]) >> PFILE
-			printf("%s%ssize", sep, args[i]) >> SEDFILE
 		}
 		sep = ", ";
 	}
 	printf("%sreplyp",sep) >> PFILE
-	printf("%sreplyp",sep) >> SEDFILE
 	if (xdr_free) {
 		printf("%sfreep)\n",sep) >> PFILE
-		printf("%sfreep)\\\n",sep) >> SEDFILE
 	} else {
 		printf(")\n") >> PFILE
-		printf(")\\\n") >> SEDFILE
 	}
 	#
 	# Spit out arg types/names;
@@ -762,65 +717,44 @@ END {
 	for (i = 0; i < nvars; ++i) {
 		if (rpc_type[i] == "ID") {
 			printf("\tlong %scl_id;\n", args[i]) >> PFILE
-			printf("\\\tlong %scl_id;\\\n", args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "STRING") {
 			printf("\tchar *%s;\n", args[i]) >> PFILE
-			printf("\\\tchar *%s;\\\n", args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "GID") {
 			printf("\tu_int8_t *%s;\n", args[i]) >> PFILE
-			printf("\\\tu_int8_t *%s;\\\n", args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "INT") {
 			printf("\tu_int32_t %s;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t %s;\\\n", args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "LIST" && list_type[i] == "GID") {
 			printf("\tu_int8_t * %s;\n", args[i]) >> PFILE
-			printf("\\\tu_int8_t * %s;\\\n", args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "LIST" && list_type[i] == "INT") {
 			printf("\tu_int32_t * %s;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t * %s;\\\n", \
-			    args[i]) >> SEDFILE
 			printf("\tu_int32_t %ssize;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t %ssize;\\\n", args[i]) >> SEDFILE
 		}
 		if (rpc_type[i] == "LIST" && list_type[i] == "ID") {
 			printf("\tu_int32_t * %s;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t * %s;\\\n", args[i]) \
-			    >> SEDFILE
 		}
 		if (rpc_type[i] == "LIST") {
 			printf("\tu_int32_t %slen;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t %slen;\\\n", args[i]) \
-			    >> SEDFILE
 		}
 		if (rpc_type[i] == "DBT") {
 			printf("\tu_int32_t %sdlen;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t %sdlen;\\\n", args[i]) >> SEDFILE
 			printf("\tu_int32_t %sdoff;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t %sdoff;\\\n", args[i]) >> SEDFILE
 			printf("\tu_int32_t %sulen;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t %sulen;\\\n", args[i]) >> SEDFILE
 			printf("\tu_int32_t %sflags;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t %sflags;\\\n", args[i]) >> SEDFILE
 			printf("\tvoid *%sdata;\n", args[i]) >> PFILE
-			printf("\\\tvoid *%sdata;\\\n", args[i]) >> SEDFILE
 			printf("\tu_int32_t %ssize;\n", args[i]) >> PFILE
-			printf("\\\tu_int32_t %ssize;\\\n", args[i]) >> SEDFILE
 		}
 	}
 	printf("\t__%s_reply *replyp;\n",name) >> PFILE
-	printf("\\\t__%s_reply *replyp;\\\n",name) >> SEDFILE
 	if (xdr_free) {
 		printf("\tint * freep;\n") >> PFILE
-		printf("\\\tint * freep;\\\n") >> SEDFILE
 	}
 
 	printf("/* END __%s_proc */\n", name) >> PFILE
-	printf("/* END __%s_proc */\n", name) >> SEDFILE
 
 	#
 	# Function body
@@ -853,6 +787,7 @@ END {
 	#
 	# Spit out PUBLIC prototypes.
 	#
+	delete p;
 	pi = 1;
 	p[pi++] = sprintf("int __dbcl_%s __P((", name);
 	p[pi++] = "";
@@ -861,9 +796,8 @@ END {
 		p[pi++] = ", ";
 	}
 	p[pi - 1] = "";
-	p[pi++] = "));";
-	p[pi] = "";
-	proto_format(p, 0, CFILE);
+	p[pi] = "));";
+	proto_format(p, CFILE);
 
 	#
 	# Spit out function name/args.
@@ -1106,6 +1040,7 @@ END {
 		#
 		# If we are doing a list, write prototypes
 		#
+		delete p;
 		pi = 1;
 		p[pi++] = sprintf("int __dbcl_%s_ret __P((", name);
 		p[pi++] = "";
@@ -1113,9 +1048,8 @@ END {
 			p[pi++] = pr_type[i];
 			p[pi++] = ", ";
 		}
-		p[pi++] = sprintf("__%s_reply *));", name);
-		p[pi++] = "";
-		proto_format(p, 0, TFILE);
+		p[pi] = sprintf("__%s_reply *));", name);
+		proto_format(p, TFILE);
 
 		printf("int\n") >> TFILE
 		printf("__dbcl_%s_ret(", name) >> TFILE
@@ -1206,32 +1140,22 @@ function split_lines() {
 		sub("[ 	]$", "", sep)
 
 		printf("%s\n\t\t", sep) >> PFILE
-		printf("%s\\\n\\\t\\\t", sep) >> SEDFILE
 	}
 }
 
 # proto_format --
 #	Pretty-print a function prototype.
-function proto_format(p, sedfile, OUTPUT)
+function proto_format(p, OUTPUT)
 {
-	if (sedfile)
-		printf("/*\\\n") >> OUTPUT;
-	else
-		printf("/*\n") >> OUTPUT;
+	printf("/*\n") >> OUTPUT;
 
 	s = "";
 	for (i = 1; i in p; ++i)
 		s = s p[i];
 
-	if (sedfile)
-		t = "\\ * PUBLIC: "
-	else
-		t = " * PUBLIC: "
+	t = " * PUBLIC: "
 	if (length(s) + length(t) < 80)
-		if (sedfile)
-			printf("%s%s", t, s) >> OUTPUT;
-		else
-			printf("%s%s", t, s) >> OUTPUT;
+		printf("%s%s", t, s) >> OUTPUT;
 	else {
 		split(s, p, "__P");
 		len = length(t) + length(p[1]);
@@ -1241,20 +1165,12 @@ function proto_format(p, sedfile, OUTPUT)
 		comma[1] = "__P" comma[1];
 		for (i = 1; i <= n; i++) {
 			if (len + length(comma[i]) > 75) {
-				if (sedfile)
-					printf(\
-					    "\\\n\\ * PUBLIC:     ") >> OUTPUT;
-				else
-					printf("\n * PUBLIC:     ") >> OUTPUT;
+				printf("\n * PUBLIC:     ") >> OUTPUT;
 				len = 0;
 			}
 			printf("%s%s", comma[i], i == n ? "" : ",") >> OUTPUT;
 			len += length(comma[i]);
 		}
 	}
-	if (sedfile)
-		printf("\\\n\\ */\\\n") >> OUTPUT;
-	else
-		printf("\n */\n") >> OUTPUT;
-	delete p;
+	printf("\n */\n") >> OUTPUT;
 }

@@ -1,0 +1,155 @@
+# See the file LICENSE for redistribution information.
+#
+# Copyright (c) 2001-2004
+#	Sleepycat Software.  All rights reserved.
+#
+# $Id: rep019.tcl,v 11.7 2004/09/22 18:01:06 bostic Exp $
+#
+# TEST  rep019
+# TEST	Replication and multiple clients at same LSN.
+# TEST  Have several clients at the same LSN.  Run recovery at
+# TEST  different times.  Declare a client master and after sync-up
+# TEST  verify all client logs are identical.
+#
+proc rep019 { method { nclients 3 } { tnum "019" } args } {
+	global mixed_mode_logging
+
+	# This test needs to use recovery, so mixed-mode testing
+	# isn't appropriate.
+	if { $mixed_mode_logging == 1 } {
+		puts "Rep$tnum: Skipping for mixed-mode logging."
+		return
+	}
+	set args [convert_args $method $args]
+
+	# Run the body of the test with and without recovery.
+	set recopts { "" "-recover" }
+	foreach r $recopts {
+		puts "Rep$tnum ($method $r):\
+		    Replication and $nclients recovered clients in sync."
+		rep019_sub $method $nclients $tnum $r $args
+	}
+}
+
+proc rep019_sub { method nclients tnum recargs largs } {
+	global testdir
+	global util_path
+
+	set orig_tdir $testdir
+	env_cleanup $testdir
+
+	replsetup $testdir/MSGQUEUEDIR
+
+	set niter 100
+	set masterdir $testdir/MASTERDIR
+	file mkdir $masterdir
+
+	# Open a master.
+	repladd 1
+	set ma_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
+#	set ma_envcmd "berkdb_env -create $m_txnargs -lock_max 2500 \
+#	    -errpfx MASTER -verbose {rep on} \
+#	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
+	set menv [eval $ma_envcmd $recargs]
+	error_check_good master_env [is_valid_env $menv] TRUE
+
+	for {set i 0} {$i < $nclients} {incr i} {
+		set clientdir($i) $testdir/CLIENTDIR.$i
+		file mkdir $clientdir($i)
+		set id($i) [expr 2 + $i]
+		repladd $id($i)
+		set cl_envcmd($i) "berkdb_env -create -txn nosync \
+		    -lock_max 2500 -home $clientdir($i) \
+		    -rep_client -rep_transport \[list $id($i) replsend\]"
+#		set cl_envcmd($i) "berkdb_env -create -txn nosync \
+#		    -lock_max 2500 -home $clientdir($i) \
+#		    -errpfx CLIENT$i -verbose {rep on} \
+#		    -rep_client -rep_transport \[list $id($i) replsend\]"
+		set clenv($i) [eval $cl_envcmd($i) $recargs]
+		error_check_good client_env [is_valid_env $clenv($i)] TRUE
+	}
+	set testfile "test$tnum.db"
+	set omethod [convert_method $method]
+	set masterdb [eval {berkdb_open_noerr -env $menv -auto_commit \
+	    -create -mode 0644} $largs $omethod $testfile]
+	error_check_good dbopen [is_valid_db $masterdb] TRUE
+
+	# Bring the clients online by processing the startup messages.
+	set envlist {}
+	lappend envlist "$menv 1"
+	for { set i 0 } { $i < $nclients } { incr i } {
+		lappend envlist "$clenv($i) $id($i)"
+	}
+	process_msgs $envlist
+
+	# Run a modified test001 in the master (and update clients).
+	puts "\tRep$tnum.a: Running test001 in replicated env."
+	eval rep_test $method $menv $masterdb $niter 0 0
+	process_msgs $envlist
+
+	error_check_good mdb_cl [$masterdb close] 0
+	# Process any close messages.
+	process_msgs $envlist
+
+	error_check_good menv_cl [$menv close] 0
+	puts "\tRep$tnum.b: Close all envs and run recovery in clients."
+	for {set i 0} {$i < $nclients} {incr i} {
+		error_check_good cl$i.close [$clenv($i) close] 0
+		set hargs($i) "-h $clientdir($i)"
+	}
+	foreach sleep {2 1 0} {
+		for {set i 0} {$i < $nclients} {incr i} {
+			set stat [catch {eval exec $util_path/db_recover \
+			    $hargs($i)} result]
+			error_check_good stat $stat 0
+			#
+			# Need to sleep to make sure recovery's checkpoint
+			# records have different timestamps.
+			tclsleep $sleep
+		}
+	}
+
+	puts "\tRep$tnum.c: Reopen clients and declare one master."
+	for {set i 0} {$i < $nclients} {incr i} {
+		set clenv($i) [eval $cl_envcmd($i) $recargs]
+		error_check_good client_env [is_valid_env $clenv($i)] TRUE
+	}
+	error_check_good master0 [$clenv(0) rep_start -master] 0
+
+	puts "\tRep$tnum.d: Sync up with other clients."
+	while { 1 } {
+		set nproced 0
+
+		for {set i 0} {$i < $nclients} {incr i} {
+			incr nproced [replprocessqueue $clenv($i) $id($i)]
+		}
+
+		if { $nproced == 0 } {
+			break
+		}
+	}
+	puts "\tRep$tnum.e: Verify client logs match."
+	set i 0
+	error_check_good cl$i.close [$clenv($i) close] 0
+	set stat [catch {eval exec $util_path/db_printlog \
+	    $hargs($i) >& $clientdir($i)/prlog} result]
+	#
+	# Note we start the loop at 1 here and compare against client0
+	# which became the master.
+	#
+	for {set i 1} {$i < $nclients} {incr i} {
+		error_check_good cl$i.close [$clenv($i) close] 0
+		fileremove -f $clientdir($i)/prlog
+		set stat [catch {eval exec $util_path/db_printlog \
+		    $hargs($i) >> $clientdir($i)/prlog} result]
+		error_check_good stat_prlog $stat 0
+		error_check_good log_cmp(0,$i) \
+		    [filecmp $clientdir(0)/prlog $clientdir($i)/prlog] 0
+	}
+
+	replclose $testdir/MSGQUEUEDIR
+	set testdir $orig_tdir
+	return
+}
+

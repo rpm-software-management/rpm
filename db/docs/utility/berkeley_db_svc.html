@@ -1,30 +1,29 @@
-<!--$Id: berkeley_db_svc.so,v 10.15 2002/08/24 18:24:49 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: berkeley_db_svc.so,v 10.16 2004/07/16 20:51:11 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: berkeley_db_svc</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>berkeley_db_svc</h3>
 </td>
-</td></tr></table>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>berkeley_db_svc [<b>-Vv</b>] [<b>-h home</b>]
     [<b>-I seconds</b>] [<b>-L file</b>] [<b>-t seconds</b>] [<b>-T seconds</b>]</pre></h3>
 <h3>Description</h3>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>The berkeley_db_svc utility is the Berkeley DB RPC server.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt><b>-h</b><dd>Add the specified home directory to the list of allowed home directories
+<dl compact>
+<dt><b>-h</b><dd>Add the specified home directory to the list of allowed home directories
 that can be specified by the client.  The home directory should be an
 absolute pathname.  The last component of each home directory specified
 must be unique because that is how clients specify which database environment
@@ -33,40 +32,32 @@ they want to join.
 begins accepting requests from clients.  For this reason, only one copy
 of the server program should ever be run at any time because recovery
 must always be single-threaded.</p>
-<p><dt><b>-I</b><dd>Set the default idle timeout for client environments to the specified
+<dt><b>-I</b><dd>Set the default idle timeout for client environments to the specified
 number of seconds.  The default timeout is 24 hours.
-<p><dt><b>-L</b><dd>Log the execution of the berkeley_db_svc utility to the specified file in the
+<dt><b>-L</b><dd>Log the execution of the berkeley_db_svc utility to the specified file in the
 following format, where <i>###</i> is the process ID, and the date
 is the time the utility was started.
 <blockquote><pre>berkeley_db_svc: ### Wed Jun 15 01:23:45 EDT 1995</pre></blockquote>
 This file will be removed if the berkeley_db_svc utility exits gracefully.
-<p><dt><b>-t</b><dd>Set the default timeout for client resources (idle transactions and
+<dt><b>-t</b><dd>Set the default timeout for client resources (idle transactions and
 cursors) to the specified number of seconds.  When the timeout expires,
 if the resource is a transaction, it is aborted; if the resource is a
 cursor, it is closed.  The default timeout is 5 minutes.
-<p><dt><b>-T</b><dd>Set the maximum timeout allowed for client resources.  The default
+<dt><b>-T</b><dd>Set the maximum timeout allowed for client resources.  The default
 timeout is 20 minutes.  If a client application requests a server
 timeout greater than the maximum timeout set for this server, the
 client's timeout will be capped at the maximum timeout value.
-<p><dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
-<p><dt><b>-v</b><dd>Run in verbose mode.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-v</b><dd>Run in verbose mode.
 </dl>
-<p>The berkeley_db_svc utility uses a Berkeley DB environment (as described for the
-<b>-h</b> option, the environment variable <b>DB_HOME</b>, or
-because the utility was run in a directory containing a Berkeley DB
-environment).  In order to avoid environment corruption when using a
-Berkeley DB environment, berkeley_db_svc should always be given the chance to
-detach from the environment and exit gracefully.  To cause berkeley_db_svc
-to release all environment resources and exit cleanly, send it an
-interrupt signal (SIGINT).</p>
 <p>The berkeley_db_svc utility exits 0 on success, and &gt;0 if an error occurs.</p>
 <h3>Environment Variables</h3>
-<p><dl compact>
-<p><dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
+<dl compact>
+<dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
 DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,17 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db.src,v 11.24 2003/11/14 05:32:30 ubell Exp $
+ * $Id: db.src,v 11.28 2004/06/17 17:35:15 bostic Exp $
  */
 
 PREFIX	__db
 DBPRIVATE
 
-INCLUDE	#include "db_config.h"
-INCLUDE
 INCLUDE #ifndef NO_SYSTEM_INCLUDES
 INCLUDE #include <sys/types.h>
 INCLUDE
@@ -98,28 +96,6 @@ POINTER	lsn		DB_LSN *	lu
 END
 
 /*
- * relink -- Handles relinking around a page.
- *
- * opcode:	indicates if this is an addpage or delete page
- * pgno:	the page being changed.
- * lsn		the page's original lsn.
- * prev:	the previous page.
- * lsn_prev:	the previous page's original lsn.
- * next:	the next page.
- * lsn_next:	the previous page's original lsn.
- */
-BEGIN relink		45
-ARG	opcode		u_int32_t	lu
-DB	fileid		int32_t		ld
-ARG	pgno		db_pgno_t	lu
-POINTER	lsn		DB_LSN *	lu
-ARG	prev		db_pgno_t	lu
-POINTER	lsn_prev	DB_LSN *	lu
-ARG	next		db_pgno_t	lu
-POINTER	lsn_next	DB_LSN *	lu
-END
-
-/*
  * Debug -- log an operation upon entering an access method.
  * op:		Operation (cursor, c_close, c_get, c_put, c_del,
  *		get, put, delete).
@@ -154,6 +130,7 @@ END
  * pgno:	the page allocated.
  * ptype:	the type of the page allocated.
  * next:	the next page on the free list.
+ * last_pgno:	the last page in the file after this op.
  */
 BEGIN pg_alloc	49
 DB	fileid		int32_t		ld
@@ -163,6 +140,7 @@ POINTER	page_lsn	DB_LSN *	lu
 ARG	pgno		db_pgno_t	lu
 ARG	ptype		u_int32_t	lu
 ARG	next		db_pgno_t	lu
+ARG	last_pgno	db_pgno_t	lu
 END
 
 /*
@@ -173,6 +151,7 @@ END
  * meta_pgno:	the meta-data page number.
  * header:	the header from the free'd page.
  * next:	the previous next pointer on the metadata page.
+ * last_pgno:	the last page in the file before this op.
  */
 BEGIN pg_free		50
 DB	fileid		int32_t		ld
@@ -181,6 +160,7 @@ POINTER	meta_lsn	DB_LSN *	lu
 ARG	meta_pgno	db_pgno_t	lu
 PGDBT	header		DBT		s
 ARG	next		db_pgno_t	lu
+ARG	last_pgno	db_pgno_t	lu
 END
 
 /*
@@ -202,6 +182,7 @@ END
  * header:	the header and index entries from the free'd page.
  * data:	the data from the free'd page.
  * next:	the previous next pointer on the metadata page.
+ * last_pgno:	the last page in the file before this op.
  */
 BEGIN pg_freedata		52
 DB	fileid		int32_t		ld
@@ -210,6 +191,7 @@ POINTER	meta_lsn	DB_LSN *	lu
 ARG	meta_pgno	db_pgno_t	lu
 PGDBT	header		DBT		s
 ARG	next		db_pgno_t	lu
+ARG	last_pgno	db_pgno_t	lu
 PGDBT	data		DBT		s
 END
 
@@ -239,4 +221,18 @@ POINTER	meta_lsn	DB_LSN *	lu
 ARG	meta_pgno	db_pgno_t	lu
 PGDBT	header		DBT		s
 ARG	next		db_pgno_t	lu
+END
+
+/*
+ * pg_init: used to reinitialize a page during truncate.
+ *
+ * pgno:	the page being initialized.
+ * header:	the header from the page.
+ * data:	data that used to be on the page.
+ */
+BEGIN pg_init		60
+DB	fileid		int32_t		ld
+ARG	pgno		db_pgno_t	lu
+PGDBT	header		DBT		s
+PGDBT	data		DBT		s
 END

@@ -1,23 +1,22 @@
-<!--$Id: lockng_class.so,v 1.12 2003/10/31 17:24:57 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: lockng_class.so,v 1.14 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbLockNotGrantedException</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbLockNotGrantedException</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -36,36 +35,41 @@ public:
 <h3>Description: DbLockNotGrantedException</h3>
 <p>This information describes the DbLockNotGrantedException class and
 how it is used by the various Db* classes.</p>
-<p>A DbLockNotGrantedException is thrown when a lock, requested
-using the <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> or <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> methods, where the
-<a href="../api_cxx/lock_vec.html#DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a> option was specified, is unable to be granted
-immediately.</p>
-<p>The <b>get_op</b> method
-returns 0 when <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was called, and returns the <b>op</b>
-for the failed DB_LOCKREQ when <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> was called.</p>
-<p>The <b>get_mode</b> method
-returns the <b>mode</b> parameter when
+<p>A DbLockNotGrantedException is thrown when a lock requested using
+the <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> or <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> methods, where the <a href="../api_cxx/lock_vec.html#DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a>
+flag or lock timers were configured, could not be granted before the
+wait-time expired.</p>
+<p>Additionally, DbLockNotGrantedException is thrown when a Berkeley DB
+Concurrent Data Store database environment configured for lock timeouts
+was unable to grant a lock in the allowed time.</p>
+<p>Additionally, DbLockNotGrantedException is thrown when lock or
+transaction timeouts have been configured, a database operation has
+timed out, and the <a href="../api_cxx/env_set_flags.html#DB_TIME_NOTGRANTED">DB_TIME_NOTGRANTED</a> configuration flag has
+been specified.</p>
+<p>The <a href="../api_cxx/except_class.html">DbException</a> errno value is set to DB_LOCKNOTGRANTED.</p>
+<p>The <b>get_op</b> method returns 0 when <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was called,
+and returns the <b>op</b> for the failed DB_LOCKREQ when
+<a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> was called.</p>
+<p>The <b>get_mode</b> method returns the <b>mode</b> parameter when
 <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was called, and returns the <b>mode</b> for the failed
 DB_LOCKREQ when <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> was called.</p>
-<p>The <b>get_obj</b> method
-returns the <b>mode</b> parameter when
-returns the <b>object</b> parameter when <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was called, and
-returns the <b>object</b> for the failed DB_LOCKREQ when
+<p>The <b>get_obj</b> method returns the <b>mode</b> parameter when
+returns the <b>object</b> parameter when <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was called,
+and returns the <b>object</b> for the failed DB_LOCKREQ when
 <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> was called.
 The <a href="../api_cxx/dbt_class.html">Dbt</a> pointer may or may not refer to valid memory, depending on
 whether the <a href="../api_cxx/dbt_class.html">Dbt</a> used in the call to the failed <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> or
 <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> method is still in scope and has not been deleted.</p>
-<p>The <b>get_lock</b> method
-returns NULL when <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was called, and returns the
-<b>lock</b> in the failed DB_LOCKREQ when <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a>
-was called.</p>
-<p>The <b>get_index</b> method
-returns -1 when <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was called, and returns the index of
-the failed DB_LOCKREQ when <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> was called.</p>
+<p>The <b>get_lock</b> method returns NULL when <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was
+called, and returns the <b>lock</b> in the failed DB_LOCKREQ
+when <a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> was called.</p>
+<p>The <b>get_index</b> method returns -1 when <a href="../api_cxx/lock_get.html">DbEnv::lock_get</a> was
+called, and returns the index of the failed DB_LOCKREQ when
+<a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a> was called.</p>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

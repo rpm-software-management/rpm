@@ -1,23 +1,22 @@
-<!--$Id: db_join.so,v 10.55 2003/11/08 19:17:18 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_join.so,v 10.56 2004/08/13 03:38:55 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::join</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::join</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -36,32 +35,32 @@ information on how to organize your data to use this functionality, see
 the primary database.</p>
 <p>The join cursor supports only the <a href="../api_cxx/dbc_get.html">Dbc::get</a> and <b>dbc_close</b>
 cursor functions:</p>
-<p><dl compact>
-<p><dt><a href="../api_cxx/dbc_get.html">Dbc::get</a><dd>Iterates over the values associated with the keys to which each item in
+<dl compact>
+<dt><a href="../api_cxx/dbc_get.html">Dbc::get</a><dd>Iterates over the values associated with the keys to which each item in
 <b>curslist</b> was initialized.  Any data value that appears in all
 items specified by the <b>curslist</b> parameter is then used as a key
 into the <b>primary</b>, and the key/data pair found in the
 <b>primary</b> is returned.
 The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_JOIN_ITEM">DB_JOIN_ITEM</a><dd>Do not use the data value found in all the cursors as a lookup key for
+<dl compact>
+<dt><a name="DB_JOIN_ITEM">DB_JOIN_ITEM</a><dd>Do not use the data value found in all the cursors as a lookup key for
 the <b>primary</b>, but simply return it in the key parameter instead.
 The data parameter is left unchanged.
 </dl>
 In addition, the following flag may be set by
 bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
-<p><dl compact>
-<p><dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Read modified but not yet committed data.  Silently ignored if the
+<dl compact>
+<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Read modified but not yet committed data.  Silently ignored if the
 <a href="../api_cxx/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag was not specified when the underlying
 database was opened.
-<p><dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
 Setting this flag can eliminate deadlock during a read-modify-write
 cycle by acquiring the write lock during the read part of the cycle so
 that another thread of control acquiring a read lock for the same item,
 in its own read-modify-write cycle, will not result in deadlock.
 </dl>
-<p><dt><a href="../api_cxx/dbc_close.html">Dbc::close</a><dd>Close the returned cursor and release all resources.  (Closing the cursors
+<dt><a href="../api_cxx/dbc_close.html">Dbc::close</a><dd>Close the returned cursor and release all resources.  (Closing the cursors
 in <b>curslist</b> is the responsibility of the caller.)
 </dl>
 <p>The Db::join method
@@ -70,9 +69,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>curslist</b><dd>
-The <b>curslist</b> parameter contains a NULL terminated array of cursors.
+<dl compact>
+<dt><b>curslist</b><dd>The <b>curslist</b> parameter contains a NULL terminated array of cursors.
 Each cursor must have been initialized to refer to the key on which the
 underlying database should be joined.  Typically, this initialization is done
 by a <a href="../api_cxx/dbc_get.html">Dbc::get</a> call with the <a href="../api_cxx/dbc_get.html#DB_SET">DB_SET</a> flag specified.  Once the
@@ -90,14 +88,12 @@ most.  By default, Db::join does this sort on behalf of its caller.</p>
 <p>For the returned join cursor to be used in a transaction-protected manner,
 the cursors listed in <b>curslist</b> must have been created within the
 context of the same transaction.</p>
-<p><dt><b>dbcp</b><dd>
-The newly created join cursor is returned in the memory location to which
-<b>dbcp</b> refers.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dt><b>dbcp</b><dd>The newly created join cursor is returned in the memory location to
+which <b>dbcp</b> refers.
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_JOIN_NOSORT">DB_JOIN_NOSORT</a><dd>Do not sort the cursors based on the number of data items to which they
+<dl compact>
+<dt><a name="DB_JOIN_NOSORT">DB_JOIN_NOSORT</a><dd>Do not sort the cursors based on the number of data items to which they
 refer.  If the data are structured so that cursors with many data items
 also share many common elements, higher performance will result from
 listing those cursors before cursors with fewer data items; that is, a
@@ -112,15 +108,15 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+<dl compact>
+<dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
 </dl>
-<p><dl compact>
-<p><dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
+<dl compact>
+<dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>If cursor methods other than  <a href="../api_cxx/dbc_get.html">Dbc::get</a> or <a href="../api_cxx/dbc_close.html">Dbc::close</a> were
+<dl compact>
+<dt>EINVAL<dd>If cursor methods other than  <a href="../api_cxx/dbc_get.html">Dbc::get</a> or <a href="../api_cxx/dbc_close.html">Dbc::close</a> were
 called; or if an
 invalid flag value or parameter was specified.
 </dl>
@@ -133,6 +129,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,71 @@
+<!--$Id: seq_class.so,v 1.11 2004/10/13 19:57:15 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbSequence</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbSequence</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+class DbSequence {
+public:
+	DbSequence(Db *db, u_int32_t flags);
+	~DbSequence();
+<p>
+	DB_SEQUENCE *DbSequence::get_DB();
+	const DB *DbSequence::get_const_DB() const;
+	static DbSequence *DbSequence::get_DbSequence(DB *db);
+	static const DbSequence *DbSequence::get_const_DbSequence(const DB *db);
+	...
+};
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbSequence</h3>
+<p>The DbSequence handle is the handle used to manipulate a
+sequence object.  A sequence object is stored in a record in a
+database.</p>
+<p>DbSequence handles are free-threaded if the <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a>
+flag is specified to the <a href="../api_cxx/seq_open.html">DbSequence::open</a> method when the sequence is opened.
+Once the <a href="../api_cxx/seq_close.html">DbSequence::close</a> or <a href="../api_cxx/seq_remove.html">DbSequence::remove</a> methods are called, the
+handle may not be accessed again, regardless of the method's return.</p>
+<p>Each handle opened on a sequence may maintain a separate cache of values
+which are returned to the application using the <a href="../api_cxx/seq_get.html">DbSequence::get</a> method
+either singly or in groups depending on its <b>delta</b> parameter.</p>
+<p>The
+constructor creates a
+DbSequence object that serves as the handle for a sequence.
+Calling the <a href="../api_cxx/seq_close.html">DbSequence::close</a> or <a href="../api_cxx/seq_remove.html">DbSequence::remove</a> methods will discard the
+handle.</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>db</b><dd>The <b>db</b> parameter is an open database handle which holds the
+persistent data for the sequence.
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+DbSequence
+<h3>See Also</h3>
+<a href="../api_cxx/seq_list.html">Sequences and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

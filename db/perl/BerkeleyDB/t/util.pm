@@ -7,6 +7,10 @@ use BerkeleyDB ;
 use File::Path qw(rmtree);
 use vars qw(%DB_errors $FA) ;
 
+use vars qw( @StdErrFile );
+
+@StdErrFile = ( -ErrFile => *STDERR, -ErrPrefix => "\n# " ) ;
+
 $| = 1;
 
 %DB_errors = (

@@ -1,12 +1,11 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: BulkAccessExample.java,v 1.10 2003/03/27 23:05:31 gburd Exp $
+ * $Id: BulkAccessExample.java,v 1.13 2004/09/22 18:00:59 bostic Exp $
  */
-
 
 package com.sleepycat.examples.db;
 
@@ -17,28 +16,20 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
-class BulkAccessExample
-{
+class BulkAccessExample {
     private static final String FileName = "access.db";
 
-    public BulkAccessExample()
-    {
+    public BulkAccessExample() {
     }
 
-    public static void main(String argv[])
-    {
-        try
-        {
+    public static void main(String[] argv) {
+        try {
             BulkAccessExample app = new BulkAccessExample();
             app.run();
-        }
-        catch (DbException dbe)
-        {
+        } catch (DatabaseException dbe) {
             System.err.println("BulkAccessExample: " + dbe.toString());
             System.exit(1);
-        }
-        catch (FileNotFoundException fnfe)
-        {
+        } catch (FileNotFoundException fnfe) {
             System.err.println("BulkAccessExample: " + fnfe.toString());
             System.exit(1);
         }
@@ -48,9 +39,8 @@ class BulkAccessExample
     // Prompts for a line, and keeps prompting until a non blank
     // line is returned.  Returns null on erroror.
     //
-    static public String askForLine(InputStreamReader reader,
-                                    PrintStream out, String prompt)
-    {
+    public static String askForLine(InputStreamReader reader,
+                                    PrintStream out, String prompt) {
         String result = "";
         while (result != null && result.length() == 0) {
             out.print(prompt);
@@ -65,8 +55,7 @@ class BulkAccessExample
     // Returns null on EOF.  If EOF appears in the middle
     // of a line, returns that line, then null on next call.
     //
-    static public String getLine(InputStreamReader reader)
-    {
+    public static String getLine(InputStreamReader reader) {
         StringBuffer b = new StringBuffer();
         int c;
         try {
@@ -74,8 +63,7 @@ class BulkAccessExample
                 if (c != '\r')
                     b.append((char)c);
             }
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             c = -1;
         }
 
@@ -85,18 +73,19 @@ class BulkAccessExample
             return b.toString();
     }
 
-    public void run()
-         throws DbException, FileNotFoundException
-    {
+    public void run() throws DatabaseException, FileNotFoundException {
         // Remove the previous database.
         new File(FileName).delete();
 
         // Create the database object.
         // There is no environment for this simple example.
-        Db table = new Db(null, 0);
-        table.setErrorStream(System.err);
-        table.setErrorPrefix("BulkAccessExample");
-        table.open(null, FileName, null, Db.DB_BTREE, Db.DB_CREATE, 0644);
+        DatabaseConfig config = new DatabaseConfig();
+        config.setErrorStream(System.err);
+        config.setErrorPrefix("BulkAccessExample");
+        config.setType(DatabaseType.BTREE);
+        config.setAllowCreate(true);
+        config.setMode(0644);
+        Database table = new Database(FileName, null, config);
 
         //
         // Insert records into the database, where the key is the user
@@ -111,88 +100,62 @@ class BulkAccessExample
 
             String reversed = (new StringBuffer(line)).reverse().toString();
 
-            // See definition of StringDbt below
+            // See definition of StringEntry below
             //
-            StringDbt key = new StringDbt(line);
-            StringDbt data = new StringDbt(reversed);
+            StringEntry key = new StringEntry(line);
+            StringEntry data = new StringEntry(reversed);
 
-            try
-            {
-                int err;
-                if ((err = table.put(null,
-                    key, data, Db.DB_NOOVERWRITE)) == Db.DB_KEYEXIST) {
-                        System.out.println("Key " + line + " already exists.");
-                }
-            }
-            catch (DbException dbe)
-            {
+            try {
+                if (table.putNoOverwrite(null, key, data) == OperationStatus.KEYEXIST)
+                    System.out.println("Key " + line + " already exists.");
+            } catch (DatabaseException dbe) {
                 System.out.println(dbe.toString());
             }
             System.out.println("");
         }
 
-        // Acquire a cursor for the table and two Dbts.
-        Dbc dbc = table.cursor(null, 0);
-        Dbt foo = new Dbt();
-        foo.setFlags(Db.DB_DBT_MALLOC);
+        // Acquire a cursor for the table.
+        Cursor cursor = table.openCursor(null, null);
+        DatabaseEntry foo = new DatabaseEntry();
 
-        Dbt bulk_data = new Dbt();
-
-        // Set Db.DB_DBT_USERMEM on the data Dbt;  Db.DB_MULTIPLE_KEY requires
-        // it.  Then allocate a byte array of a reasonable size;  we'll
-        // go through the database in chunks this big.
-        bulk_data.setFlags(Db.DB_DBT_USERMEM);
-        bulk_data.setData(new byte[1000000]);
-        bulk_data.setUserBufferLength(1000000);
-
+        MultipleKeyDataEntry bulk_data = new MultipleKeyDataEntry();
+        bulk_data.setData(new byte[1024 * 1024]);
+        bulk_data.setUserBuffer(1024 * 1024, true);
 
         // Walk through the table, printing the key/data pairs.
         //
-        while (dbc.get(foo, bulk_data, Db.DB_NEXT | Db.DB_MULTIPLE_KEY) == 0)
-        {
-            DbMultipleKeyDataIterator iterator;
-            iterator = new DbMultipleKeyDataIterator(bulk_data);
+        while (cursor.getNext(foo, bulk_data, null) == OperationStatus.SUCCESS) {
+            StringEntry key, data;
+            key = new StringEntry();
+            data = new StringEntry();
 
-            StringDbt key, data;
-            key = new StringDbt();
-            data = new StringDbt();
-
-            while (iterator.next(key, data)) {
+            while (bulk_data.next(key, data))
                 System.out.println(key.getString() + " : " + data.getString());
-            }
         }
-        dbc.close();
-        table.close(0);
+        cursor.close();
+        table.close();
     }
 
-    // Here's an example of how you can extend a Dbt in a straightforward
-    // way to allow easy storage/retrieval of strings, or whatever
-    // kind of data you wish.  We've declared it as a static inner
+    // Here's an example of how you can extend DatabaseEntry in a
+    // straightforward way to allow easy storage/retrieval of strings, or
+    // whatever kind of data you wish.  We've declared it as a static inner
     // class, but it need not be.
     //
-    static /*inner*/
-    class StringDbt extends Dbt
-    {
-        StringDbt()
-        {
-            setFlags(Db.DB_DBT_MALLOC); // tell Db to allocate on retrieval
+    static class StringEntry extends DatabaseEntry {
+        StringEntry() {
         }
 
-        StringDbt(String value)
-        {
+        StringEntry(String value) {
             setString(value);
-            setFlags(Db.DB_DBT_MALLOC); // tell Db to allocate on retrieval
         }
 
-        void setString(String value)
-        {
+        void setString(String value) {
             byte[] data = value.getBytes();
             setData(data);
             setSize(data.length);
         }
 
-        String getString()
-        {
+        String getString() {
             return new String(getData(), getOffset(), getSize());
         }
     }

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: cxx_int.h,v 11.22 2003/03/11 15:39:41 merrells Exp $
+ * $Id: cxx_int.h,v 11.25 2004/09/22 22:20:31 mjc Exp $
  */
 
 #ifndef _CXX_INT_H_
@@ -30,27 +30,23 @@
 									   \
 	class _IMP_CLASS {};                                               \
 									   \
-	inline _WRAPPED_TYPE unwrap(_WRAPPER_CLASS *val)                   \
+	inline _WRAPPED_TYPE *unwrap(_WRAPPER_CLASS *val)                  \
 	{                                                                  \
 		if (!val) return (0);                                      \
-		return ((_WRAPPED_TYPE)((void *)(val->imp())));            \
+		return (val->get_##_WRAPPED_TYPE());                       \
 	}                                                                  \
 									   \
-	inline const _WRAPPED_TYPE unwrapConst(const _WRAPPER_CLASS *val)  \
+	inline const _WRAPPED_TYPE *unwrapConst(const _WRAPPER_CLASS *val) \
 	{                                                                  \
 		if (!val) return (0);                                      \
-		return ((const _WRAPPED_TYPE)((void *)(val->constimp()))); \
-	}                                                                  \
-									   \
-	inline _IMP_CLASS *wrap(_WRAPPED_TYPE val)                         \
-	{                                                                  \
-		return ((_IMP_CLASS*)((void *)val));                       \
+		return (val->get_const_##_WRAPPED_TYPE());                 \
 	}
 
-WRAPPED_CLASS(DbMpoolFile, DbMpoolFileImp, DB_MPOOLFILE*)
-WRAPPED_CLASS(Db, DbImp, DB*)
-WRAPPED_CLASS(DbEnv, DbEnvImp, DB_ENV*)
-WRAPPED_CLASS(DbTxn, DbTxnImp, DB_TXN*)
+WRAPPED_CLASS(Db, DbImp, DB)
+WRAPPED_CLASS(DbEnv, DbEnvImp, DB_ENV)
+WRAPPED_CLASS(DbMpoolFile, DbMpoolFileImp, DB_MPOOLFILE)
+WRAPPED_CLASS(DbSequence, DbSequenceImp, DB_SEQUENCE)
+WRAPPED_CLASS(DbTxn, DbTxnImp, DB_TXN)
 
 // A tristate integer value used by the DB_ERROR macro below.
 // We chose not to make this an enumerated type so it can

@@ -115,7 +115,7 @@ umask(0) ;
     my $rec_len = 11 ;
     ok 30, my $lexD = new LexDir($home);
 
-    ok 31, my $env = new BerkeleyDB::Env -Flags => DB_CREATE|DB_INIT_MPOOL,
+    ok 31, my $env = new BerkeleyDB::Env -Flags => DB_CREATE|DB_INIT_MPOOL,@StdErrFile,
     					 -Home => $home ;
     ok 32, my $db = new BerkeleyDB::Queue -Filename => $Dfile, 
 				    -Env      => $env,
@@ -508,7 +508,7 @@ umask(0) ;
     my $home = "./fred" ;
     ok 168, my $lexD = new LexDir($home);
     my $rec_len = 9 ;
-    ok 169, my $env = new BerkeleyDB::Env -Home => $home,
+    ok 169, my $env = new BerkeleyDB::Env -Home => $home,@StdErrFile,
 				     -Flags => DB_CREATE|DB_INIT_TXN|
 					  	DB_INIT_MPOOL|DB_INIT_LOCK ;
     ok 170, my $txn = $env->txn_begin() ;

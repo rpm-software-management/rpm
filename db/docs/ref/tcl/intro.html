@@ -1,18 +1,18 @@
-<!--$Id: intro.so,v 11.22 2003/03/25 00:27:08 mjc Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 11.23 2004/10/05 16:44:35 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Loading Berkeley DB with Tcl</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Tcl API</dl></h3></td>
-<td align=right><a href="../perl/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../tcl/using.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rpc/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../tcl/using.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Loading Berkeley DB with Tcl</h3>
@@ -37,21 +37,21 @@ several steps that must be performed:</p>
 </ol>
 <p>For example:</p>
 <blockquote><pre># tclsh8.4
-% lappend auto_path /usr/local/BerkeleyDB.4.2/lib
-% pkg_mkIndex /usr/local/BerkeleyDB.4.2/lib libdb_tcl-4.2.so</pre></blockquote>
+% lappend auto_path /usr/local/BerkeleyDB.4.3/lib
+% pkg_mkIndex /usr/local/BerkeleyDB.4.3/lib libdb_tcl-4.3.so</pre></blockquote>
 <p>Note that your Tcl and Berkeley DB version numbers may differ from the
 example, and so your tclsh and library names may be different.</p>
 <h3>Loading Berkeley DB with Tcl</h3>
 <p>The Berkeley DB package may be loaded into the user's interactive Tcl script
 (or wish session) via the <b>load</b> command. For example:</p>
-<blockquote><pre>load /usr/local/BerkeleyDB.4.2/lib/libdb_tcl-4.2.so</pre></blockquote>
+<blockquote><pre>load /usr/local/BerkeleyDB.4.3/lib/libdb_tcl-4.3.so</pre></blockquote>
 <p>Note that your Berkeley DB version numbers may differ from the example, and so
 the library name may be different.</p>
 <p>If you installed your library to run as a Tcl package, Tcl application
 scripts should use the <b>package</b> command to indicate to the Tcl
 interpreter that it needs the Berkeley DB package and where to find it. For
 example:</p>
-<blockquote><pre>lappend auto_path "/usr/local/BerkeleyDB.4.2/lib"
+<blockquote><pre>lappend auto_path "/usr/local/BerkeleyDB.4.3/lib"
 package require Db_tcl</pre></blockquote>
 <p>No matter which way the library gets loaded, it creates a command named
 <b>berkdb</b>.  All the Berkeley DB functionality is accessed via this
@@ -60,8 +60,8 @@ A simple test to determine whether everything is loaded and ready is to
 display the library version, as follows:</p>
 <blockquote><pre>berkdb version -string</pre></blockquote>
 <p>This should return you the Berkeley DB version in a string format.</p>
-<table width="100%"><tr><td><br></td><td align=right><a href="../perl/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../tcl/using.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rpc/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../tcl/using.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

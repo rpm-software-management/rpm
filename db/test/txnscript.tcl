@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: txnscript.tcl,v 11.4 2003/01/08 05:54:16 bostic Exp $
+# $Id: txnscript.tcl,v 11.5 2004/01/28 03:36:33 bostic Exp $
 #
 # Txn003 script - outstanding child prepare script
 # Usage: txnscript envcmd dbcmd gidf key data

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: TestLogc.java,v 1.8 2003/01/08 05:54:26 bostic Exp $
+ * $Id: TestLogc.java,v 1.9 2004/01/28 03:36:34 bostic Exp $
  */
 
 /*

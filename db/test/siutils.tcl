@@ -1,9 +1,9 @@
 #See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: siutils.tcl,v 11.4 2003/09/04 23:41:15 bostic Exp $
+# $Id: siutils.tcl,v 11.6 2004/03/02 18:44:41 mjc Exp $
 #
 # Secondary index utilities.  This file used to be known as
 # sindex.tcl.
@@ -35,7 +35,7 @@ proc callback_n { n } {
 		3 { return _s_concatdatakey }
 		4 { return _s_reverseconcat }
 		5 { return _s_truncdata }
-		6 { return _s_alwayscocacola }
+		6 { return _s_constant }
 	}
 	return _s_noop
 }
@@ -45,7 +45,7 @@ proc _s_truncdata { a b } { return [string range $b 1 end] }
 proc _s_concatkeydata { a b } { return $a$b }
 proc _s_concatdatakey { a b } { return $b$a }
 proc _s_reverseconcat { a b } { return [reverse $a$b] }
-proc _s_alwayscocacola { a b } { return "Coca-Cola" }
+proc _s_constant { a b } { return "constant data" }
 proc _s_noop { a b } { return $b }
 
 # Should the check_secondary routines print lots of output?

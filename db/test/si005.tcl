@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: si005.tcl,v 11.7 2003/01/08 05:53:28 bostic Exp $
+# $Id: si005.tcl,v 11.9 2004/01/28 03:36:30 bostic Exp $
 #
 # TEST	si005
 # TEST	Basic secondary index put/delete test with transactions
@@ -36,7 +36,7 @@ proc si005 { methods {nentries 200} {tnum "005"} args } {
 	set omethods [convert_methods $methods]
 
 	puts "Si$tnum ($pmethod/$methods) $nentries equal key/data pairs"
-	puts "    with transactions"
+	puts "\twith transactions"
 	env_cleanup $testdir
 
 	set pname "primary$tnum.db"

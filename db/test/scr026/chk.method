@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.method,v 1.2 2003/08/01 17:12:39 bostic Exp $
+# $Id: chk.method,v 1.4 2004/10/07 20:42:10 bostic Exp $
 #
 # Check that DB doesn't call DB or DB_ENV methods internally.
 
@@ -65,6 +65,8 @@ sed \
     -e '/^examples_java\//d' \
     -e '/^hsearch\//d' \
     -e '/^libdb_java\//d' \
+    -e '/^mod_db4\//d' \
+    -e '/^php_db4\//d' \
     -e '/^tcl\//d' \
     -e '/^test\//d' \
     -e '/^test_perf\//d' \
@@ -75,6 +77,7 @@ sed \
     -e '/^xa\//d' \
     -e '/closeme->close() is a wrapper;/d' \
     -e '/crypto.c.*db_cipher->close/d' \
+    -e '/db_err.c:.*dbenv->db_msgcall(dbenv, buf);/d' \
     -e '/db_iface.c:.*(txn->commit(txn, nosync ? DB_TXN_NOSYNC : 0));/d' \
     -e '/db_iface.c:.*if ((t_ret = txn->abort(txn)) != 0)/d' \
     -e '/db_iface.c:.*return (dbenv->txn_begin(dbenv, NULL, txnidp, 0));/d' \

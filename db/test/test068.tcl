@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test068.tcl,v 11.19 2003/01/08 05:54:01 bostic Exp $
+# $Id: test068.tcl,v 11.21 2004/05/13 18:51:43 mjc Exp $
 #
 # TEST	test068
 # TEST	Test of DB_BEFORE and DB_AFTER with partial puts.
@@ -13,6 +13,7 @@ proc test068 { method args } {
 	source ./include.tcl
 	global alphabet
 	global errorCode
+	global is_je_test
 
 	set tnum "068"
 
@@ -71,6 +72,10 @@ proc test068 { method args } {
 	}
 
 	foreach dupopt $dupoptlist {
+		if { $is_je_test && $dupopt == "-dup" } {
+			continue
+		}
+
 		#
 		# Testdir might be reset in the loop by some proc sourcing
 		# include.tcl.  Reset it to the env's home here, before

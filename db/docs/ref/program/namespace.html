@@ -1,12 +1,12 @@
-<!--$Id: namespace.so,v 10.20 2002/09/26 01:38:32 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: namespace.so,v 10.22 2004/03/08 15:09:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Name spaces</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -30,19 +30,27 @@ each architecture.  If they are not provided by the system, they are
 typedef'd in the db.h include file.  The types that may be typedef'd
 by db.h include the following: u_int8_t, int16_t, u_int16_t, int32_t,
 u_int32_t, u_char, u_short, u_int, and u_long.</p>
-<p>The Berkeley DB library declares a number of external routines.  All these
-routines are prefixed with the strings "db_", "lock_", "log_", "memp_"
-or "txn_".  All internal routines are prefixed with the strings "__db_",
-"__lock_", "__log_", "__memp_", or "__txn_".</p>
+<p>The Berkeley DB library declares a few external routines.  All these routines
+are prefixed with the strings "db_".  All internal Berkeley DB routines are
+prefixed with the strings "__XXX_", where "XXX" is the subsystem prefix
+(for example, "__db_XXX_" and "__txn_XXX_").</p>
 <h3>Filesystem Name Space</h3>
 <p>Berkeley DB environments create or use some number of files in environment
 home directories.  These files are named <a href="../../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a>, "log.NNNNN"
 (for example, log.0000000003, where the number of digits following the
 dot is unspecified), or with the string prefix "__db" (for example,
-__db.001).  Database files that match these names should not be created
-in the environment directory.</p>
+__db.001).  Applications should never create files or databases in
+database environment home directories with names beginning with the
+characters "log" or "__db".</p>
+<p>In some cases, applications may choose to remove Berkeley DB files as part of
+their cleanup procedures, using system utilities instead of Berkeley DB
+interfaces (for example, using the UNIX rm utility instead of the
+<a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method).  This is not a problem, as long as applications
+limit themselves to removing only files named "__db.###", where "###"
+are the digits 0 through 9.  Applications should never remove any files
+named with the prefix "__db" or "log", other than "__db.###" files.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../program/scope.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/ram.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

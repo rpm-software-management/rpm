@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_rq_net.c,v 1.46 2003/09/05 00:05:34 bostic Exp $
+ * $Id: ex_rq_net.c,v 1.47 2004/01/28 03:36:03 bostic Exp $
  */
 
 #include <sys/types.h>

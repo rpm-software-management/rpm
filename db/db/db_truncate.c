@@ -1,22 +1,23 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_truncate.c,v 11.201 2004/07/15 15:52:51 sue Exp $
  */
 
 #include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: db_truncate.c,v 11.195 2003/07/02 15:39:51 bostic Exp $";
-#endif /* not lint */
-
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
+
+#include <string.h>
 #endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
+#include "dbinc/log.h"
 #include "dbinc/btree.h"
 #include "dbinc/hash.h"
 #include "dbinc/qam.h"
@@ -44,12 +45,11 @@ __db_truncate_pp(dbp, txn, countp, flags)
 	PANIC_CHECK(dbenv);
 
 	/* Check for invalid flags. */
-	if (F_ISSET(dbp, DB_AM_SECONDARY) && !LF_ISSET(DB_UPDATE_SECONDARY)) {
+	if (F_ISSET(dbp, DB_AM_SECONDARY)) {
 		__db_err(dbenv,
 		    "DBP->truncate forbidden on secondary indices");
 		return (EINVAL);
 	}
-	LF_CLR(DB_UPDATE_SECONDARY);
 	if ((ret =
 	    __db_fchk(dbenv, "DB->truncate", flags, DB_AUTO_COMMIT)) != 0)
 		return (ret);
@@ -80,13 +80,13 @@ __db_truncate_pp(dbp, txn, countp, flags)
 	}
 
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
 		goto err;
 
-	ret = __db_truncate(dbp, txn, countp, flags);
+	ret = __db_truncate(dbp, txn, countp);
 
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 err:	return (txn_local ? __db_txn_auto_resolve(dbenv, txn, 0, ret) : ret);
 }
@@ -95,13 +95,13 @@ err:	return (txn_local ? __db_txn_auto_resolve(dbenv, txn, 0, ret) : ret);
  * __db_truncate
  *	DB->truncate.
  *
- * PUBLIC: int __db_truncate __P((DB *, DB_TXN *, u_int32_t *, u_int32_t));
+ * PUBLIC: int __db_truncate __P((DB *, DB_TXN *, u_int32_t *));
  */
 int
-__db_truncate(dbp, txn, countp, flags)
+__db_truncate(dbp, txn, countp)
 	DB *dbp;
 	DB_TXN *txn;
-	u_int32_t *countp, flags;
+	u_int32_t *countp;
 {
 	DB *sdbp;
 	DBC *dbc;
@@ -109,29 +109,33 @@ __db_truncate(dbp, txn, countp, flags)
 	u_int32_t scount;
 	int ret, t_ret;
 
-	COMPQUIET(flags, 0);
-
 	dbenv = dbp->dbenv;
 	dbc = NULL;
 	ret = 0;
-
-	DB_TEST_RECOVERY(dbp, DB_TEST_PREDESTROY, ret, NULL);
 
 	/*
 	 * Run through all secondaries and truncate them first.  The count
 	 * returned is the count of the primary only.  QUEUE uses normal
 	 * processing to truncate so it will update the secondaries normally.
 	 */
-	if (dbp->type != DB_QUEUE && LIST_FIRST(&dbp->s_secondaries) != NULL)
+	if (dbp->type != DB_QUEUE && LIST_FIRST(&dbp->s_secondaries) != NULL) {
 		for (sdbp = __db_s_first(dbp);
 		    sdbp != NULL && ret == 0; ret = __db_s_next(&sdbp))
-			if ((ret = __db_truncate(sdbp,
-			     txn, &scount, DB_UPDATE_SECONDARY)) != 0)
-				return (ret);
+			if ((ret = __db_truncate(sdbp, txn, &scount)) != 0)
+				break;
+		if (sdbp != NULL)
+			(void)__db_s_done(sdbp);
+		if (ret != 0)
+			return (ret);
+	}
+
+	DB_TEST_RECOVERY(dbp, DB_TEST_PREDESTROY, ret, NULL);
 
 	/* Acquire a cursor. */
 	if ((ret = __db_cursor(dbp, txn, &dbc, 0)) != 0)
 		return (ret);
+
+	DEBUG_LWRITE(dbc, txn, "DB->truncate", NULL, NULL, 0);
 
 	switch (dbp->type) {
 	case DB_BTREE:

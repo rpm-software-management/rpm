@@ -1,12 +1,12 @@
-<!--$Id: read.so,v 1.7 2002/05/17 15:48:42 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: read.so,v 1.8 2004/01/12 05:33:23 ubell Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Degrees of isolation</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -22,7 +22,7 @@ for the life of the transaction, every time a thread of control reads
 a data item, it will be unchanged from its previous value (assuming, of
 course, the thread of control does not itself modify the item).  Berkeley DB
 enforces repeatable reads whenever database reads are wrapped in
-transactions.</p>
+transactions.  This is also know as <i>degree 3 isolation</i>.</p>
 <p>Most applications do not need to enclose reads in transactions, and when
 possible, transactionally protected reads should be avoided as they can
 cause performance problems.  For example, a transactionally protected
@@ -39,6 +39,18 @@ that it will not have changed (for example, an operation modifying a
 data item based on its existing value).</p>
 <a name="3"><!--meow--></a>
 <a name="4"><!--meow--></a>
+<a name="5"><!--meow--></a>
+<a name="6"><!--meow--></a>
+<p>A transaction may only require <i>cursor stability</i>, that is
+only be guaranteed that cursors see committed data that does
+not change so long as it is addressed by the cursor, but may
+change before the reading transaction completes.  This is
+also called <i>degree 2 isolation</i>.  Berkeley DB provides
+this level of isolation when a transaction is started with
+the <a href="../../api_c/db_cursor.html#DB_DEGREE_2">DB_DEGREE_2</a> flag.  This flag may also be specified
+when opening a cursor within a fully isolated transaction.</p>
+<a name="7"><!--meow--></a>
+<a name="8"><!--meow--></a>
 <p>Berkeley DB optionally supports reading uncommitted data; that is, read
 operations may request data which has been modified but not yet
 committed by another transaction.  This is done by first specifying the
@@ -51,6 +63,6 @@ data; the disadvantage is that read operations may return data that will
 disappear should the transaction holding the write lock abort.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/inc.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/cursor.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

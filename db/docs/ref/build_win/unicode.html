@@ -1,0 +1,40 @@
+<!--$Id: unicode.so,v 10.1 2004/10/05 18:00:00 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Unicode support</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for Windows systems</dl></h3></td>
+<td align=right><a href="../build_win/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/small.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Unicode support</h3>
+<p>Unicode support requires a separate configuration step on Windows.
+To enable Unicode support, perform the following steps:</p>
+<ol>
+<p><li>Right click on the "db_dll" project and choose Settings... (Visual
+Studio .NET: Properties), then C/C++.  The "Preprocessor definitions"
+should read:
+<blockquote><pre>DB_CREATE_DLL,...</pre></blockquote>
+<p>Change it to read:</p>
+<blockquote><pre>UNICODE,_UNICODE,DB_CREATE_DLL,...</pre></blockquote>
+<p>You will have to do this twice: once for the debug build and once for
+the release build.  If you also require static libraries, repeat for the
+"db_static" project (there the first symbol is "CONFIG_TEST" for the
+Debug Static build and "WIN32" for the Release Static build).</p>
+<p><li>Select "Rebuild All" from the Build menu.
+</ol>
+<p>To build binaries that can also run on Windows 9x or ME, follow the
+instructions at <a href="http://microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm">Microsoft's web site</a>.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_win/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/small.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

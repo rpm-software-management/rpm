@@ -1,12 +1,12 @@
-<!--$Id: logrec.so,v 10.30 2003/10/18 19:15:54 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: logrec.so,v 10.31 2004/08/05 14:16:56 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Logical record numbers</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -30,11 +30,6 @@ The <b>db_recno_t</b> type is a 32-bit unsigned type, which limits the
 number of logical records in a Queue or Recno database, and the maximum
 logical record which may be directly retrieved from a Btree database,
 to 4,294,967,295.</p>
-<p>Record numbers in Queue databases wrap around.  When the tail of the
-queue reaches the maximum record number, the next record appended will
-be given record number 1.  If the head of the queue ever catches up to
-the tail of the queue, the Berkeley DB methods will return the system error
-EFBIG.</p>
 <p>Record numbers in Recno databases can be configured to run in either
 mutable or fixed mode: mutable, where logical record numbers change as
 records are deleted or inserted, and fixed, where record numbers never
@@ -45,6 +40,12 @@ as records are deleted or inserted, the logical record number for other
 records in the database can change.  See
 <a href="../../ref/am_conf/renumber.html">Logically renumbering records</a>
 for more information.</p>
+<p>When appending new data items into Queue databases, record numbers wrap
+around.  When the tail of the queue reaches the maximum record number,
+the next record appended will be given record number 1.  If the head of
+the queue ever catches up to the tail of the queue, Berkeley DB will return
+the system error EFBIG.  Record numbers do not wrap around when appending
+new data items into Recno databases.</p>
 <p>Configuring Btree databases to support record numbers can severely limit
 the throughput of applications with multiple concurrent threads writing
 the database, because locations used to store record counts often become
@@ -118,6 +119,6 @@ recno_build(dbp)
 }</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_conf/select.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_conf/pagesize.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: crypto.h,v 1.11 2003/04/28 14:27:26 bostic Exp $
+ * $Id: crypto.h,v 1.12 2004/01/28 03:36:00 bostic Exp $
  */
 
 #ifndef	_DB_CRYPTO_H_

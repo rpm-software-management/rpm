@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_fid.c,v 11.19 2004/07/06 21:06:38 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_fid.c,v 11.17 2003/02/16 15:54:32 bostic Exp $";
-#endif /* not lint */
 
 #include "db_int.h"
 
@@ -76,7 +74,7 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 
 	/* File open, get its info */
 	if ((retval = GetFileInformationByHandle(fhp->handle, &fi)) == FALSE)
-		ret = __os_win32_errno();
+		ret = __os_get_errno();
 	(void)__os_closehandle(dbenv, fhp);
 
 	if (retval == FALSE)

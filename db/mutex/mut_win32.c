@@ -1,15 +1,13 @@
 /*
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2003
+ * Copyright (c) 2002-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mut_win32.c,v 1.18 2004/07/06 21:06:39 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: mut_win32.c,v 1.15 2003/05/05 19:55:03 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -26,13 +24,18 @@ static const char revid[] = "$Id: mut_win32.c,v 1.15 2003/05/05 19:55:03 bostic 
 /* We don't want to run this code even in "ordinary" diagnostic mode. */
 #undef MUTEX_DIAG
 
+static _TCHAR hex_digits[] = _T("0123456789abcdef");
+
 #define	GET_HANDLE(mutexp, event) do {					\
-	char idbuf[13];							\
+	_TCHAR idbuf[] = _T("db.m00000000");				\
+	_TCHAR *p = idbuf + 12;						\
+	u_int32_t id;							\
 									\
-	snprintf(idbuf, sizeof idbuf, "db.m%08x", mutexp->id);		\
+	for (id = (mutexp)->id; id != 0; id >>= 4)			\
+		*--p = hex_digits[id & 0xf];				\
 	event = CreateEvent(NULL, FALSE, FALSE, idbuf);			\
 	if (event == NULL)						\
-		return (__os_win32_errno());				\
+		return (__os_get_errno());				\
 } while (0)
 
 /*
@@ -158,7 +161,7 @@ loop:	/* Attempt to acquire the resource for N spins. */
 		GET_HANDLE(mutexp, event);
 	}
 	if ((ret = WaitForSingleObject(event, ms)) == WAIT_FAILED)
-		return (__os_win32_errno());
+		return (__os_get_errno());
 	if ((ms <<= 1) > MS_PER_SEC)
 		ms = MS_PER_SEC;
 
@@ -205,7 +208,7 @@ __db_win32_mutex_unlock(dbenv, mutexp)
 		    now.QuadPart, mutexp, mutexp->id);
 #endif
 		if (!PulseEvent(event))
-			ret = __os_win32_errno();
+			ret = __os_get_errno();
 
 		CloseHandle(event);
 	}

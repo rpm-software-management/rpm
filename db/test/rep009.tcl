@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: rep009.tcl,v 11.3 2003/08/28 19:59:15 sandstro Exp $
+# $Id: rep009.tcl,v 11.8 2004/09/22 18:01:06 bostic Exp $
 #
 # TEST  rep009
 # TEST	Replication and DUPMASTERs
@@ -13,19 +13,34 @@
 # TEST  Close a client, clean it and then declare it a 2nd master.
 proc rep009 { method { niter 10 } { tnum "009" } args } {
 
-	puts "Rep$tnum: Replication DUPMASTER test."
-
-        if { [is_btree $method] == 0 } {
+	if { [is_btree $method] == 0 } {
 		puts "Rep009: Skipping for method $method."
 		return
 	}
-	set largs $args
-	rep009_body $method $niter $tnum 0 $largs
-	rep009_body $method $niter $tnum 1 $largs
 
+	set logsets [create_logsets 3]
+
+	# Run the body of the test with and without recovery.
+	set recopts { "" "-recover" }
+	foreach r $recopts {
+		foreach l $logsets {
+			set logindex [lsearch -exact $l "in-memory"]
+			if { $r == "-recover" && $logindex != -1 } {
+				puts "Rep$tnum: Skipping\
+				    for in-memory logs with -recover."
+				continue
+			}
+			puts "Rep$tnum ($r): Replication DUPMASTER test."
+			puts "Rep$tnum: Master logs are [lindex $l 0]"
+			puts "Rep$tnum: Client1 logs are [lindex $l 1]"
+			puts "Rep$tnum: Client2 logs are [lindex $l 2]"
+			rep009_sub $method $niter $tnum 0 $l $r $args
+			rep009_sub $method $niter $tnum 1 $l $r $args
+		}
+	}
 }
 
-proc rep009_body { method niter tnum clean largs } {
+proc rep009_sub { method niter tnum clean logset recargs largs } {
 	global testdir
 
 	env_cleanup $testdir
@@ -40,67 +55,67 @@ proc rep009_body { method niter tnum clean largs } {
 	file mkdir $clientdir
 	file mkdir $clientdir2
 
+	set m_logtype [lindex $logset 0]
+	set m_logargs [adjust_logargs $m_logtype]
+	set m_txnargs [adjust_txnargs $m_logtype]
+
+	set c_logtype [lindex $logset 1]
+	set c_logargs [adjust_logargs $c_logtype]
+	set c_txnargs [adjust_txnargs $c_logtype]
+
+	set c2_logtype [lindex $logset 2]
+	set c2_logargs [adjust_logargs $c2_logtype]
+	set c2_txnargs [adjust_txnargs $c2_logtype]
+
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+	set ma_envcmd "berkdb_env -create $m_txnargs \
+	    $m_logargs -lock_max 2500 \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+#	set ma_envcmd "berkdb_env -create $m_txnargs \
+# 	    $m_logargs -lock_max 2500 \
 #	    -verbose {rep on} \
 #	    -home $masterdir -rep_transport \[list 1 replsend\]"
-	set masterenv [eval $ma_envcmd -rep_master]
+	set masterenv [eval $ma_envcmd $recargs -rep_master]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
-	set cl_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+	set cl_envcmd "berkdb_env -create $c_txnargs \
+	    $c_logargs -lock_max 2500 \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+#	set cl_envcmd "berkdb_env -create $c_txnargs \
+#         $c_logargs -lock_max 2500 \
 #	    -verbose {rep on} \
 #	    -home $clientdir -rep_transport \[list 2 replsend\]"
-	set clientenv [eval $cl_envcmd -rep_client]
+	set clientenv [eval $cl_envcmd $recargs -rep_client]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	repladd 3
-	set cl2_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+	set cl2_envcmd "berkdb_env -create $c2_txnargs \
+	    $c2_logargs -lock_max 2500 \
 	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
-#	set cl2_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+#	set cl2_envcmd "berkdb_env -create $c2_txnargs \
+#         $c2_logargs -lock_max 2500 \
 #	    -home $clientdir2 -rep_transport \[list 3 replsend\] \
 #	    -verbose {rep on}"
-	set cl2env [eval $cl2_envcmd -rep_client]
+	set cl2env [eval $cl2_envcmd $recargs -rep_client]
 	error_check_good client2_env [is_valid_env $cl2env] TRUE
 
 	# Bring the clients online by processing the startup messages.
-	while { 1 } {
-		set nproced 0
-
-		incr nproced [replprocessqueue $masterenv 1]
-		incr nproced [replprocessqueue $clientenv 2]
-		incr nproced [replprocessqueue $cl2env 3]
-
-		if { $nproced == 0 } {
-			break
-		}
-	}
+	set envlist "{$masterenv 1} {$clientenv 2} {$cl2env 3}"
+	process_msgs $envlist
 
 	# Run a modified test001 in the master (and update client).
 	puts "\tRep$tnum.a: Running test001 in replicated env."
 	eval test001 $method $niter 0 0 $tnum -env $masterenv $largs
-	while { 1 } {
-		set nproced 0
+	process_msgs $envlist
 
-		incr nproced [replprocessqueue $masterenv 1]
-		incr nproced [replprocessqueue $clientenv 2]
-		incr nproced [replprocessqueue $cl2env 3]
-
-		if { $nproced == 0 } {
-			break
-		}
-	}
 	puts "\tRep$tnum.b: Declare a client to be a master."
 	if { $clean } {
 		error_check_good clientenv_close [$clientenv close] 0
 		env_cleanup $clientdir
-		set clientenv [eval $cl_envcmd -rep_master]
+		set clientenv [eval $cl_envcmd $recargs -rep_master]
 		error_check_good client_env [is_valid_env $clientenv] TRUE
 	} else {
 		error_check_good client_master [$clientenv rep_start -master] 0

@@ -1,23 +1,22 @@
-<!--$Id: memp_fopen.so,v 10.49 2003/11/08 19:17:39 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: memp_fopen.so,v 10.51 2004/08/13 03:38:58 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_MPOOLFILE-&gt;open</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_MPOOLFILE-&gt;open</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -35,43 +34,44 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>file</b><dd>
-The <b>file</b> parameter is the name of the file to be opened.  If
+<dl compact>
+<dt><b>file</b><dd>The <b>file</b> parameter is the name of the file to be opened.  If
 <b>file</b> is NULL, a private temporary file is created that
 cannot be shared with any other process (although it may be shared with
 other threads of control in the same process).
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<p>On Windows, the <b>file</b> argument will be interpreted as a UTF-8
+string, which is equivalent to ASCII for Latin characters.</p>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_CREATE">DB_CREATE</a><dd>Create any underlying files, as necessary.  If the files do not already
+<dl compact>
+<dt><a name="DB_CREATE">DB_CREATE</a><dd>Create any underlying files, as necessary.  If the files do not already
 exist and the DB_CREATE flag is not specified, the call will
 fail.
-<a name="3"><!--meow--></a>
-<p><dt><a name="DB_DIRECT">DB_DIRECT</a><dd>If set and supported by the system, turn off system buffering of the
+<a name="2"><!--meow--></a>
+<dt><a name="DB_DIRECT">DB_DIRECT</a><dd>If set and supported by the system, turn off system buffering of the
 file to avoid double caching.
-<p><dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Always copy this file into the local cache instead of potentially mapping
+<dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Always copy this file into the local cache instead of potentially mapping
 it into process memory (see the description of the
 <a href="../api_c/env_set_mp_mmapsize.html">DB_ENV-&gt;set_mp_mmapsize</a> method for further information).
-<p><dt><a name="DB_ODDFILESIZE">DB_ODDFILESIZE</a><dd>Attempts to open files which are not a multiple of the page size in
+<dt><a name="DB_ODDFILESIZE">DB_ODDFILESIZE</a><dd>Attempts to open files which are not a multiple of the page size in
 length will fail, by default.  If the DB_ODDFILESIZE flag is
 set, any partial page at the end of the file will be ignored and the
 open will proceed.
-<p><dt><a name="DB_RDONLY">DB_RDONLY</a><dd>Open any underlying files for reading only.  Any attempt to write the file
+<dt><a name="DB_RDONLY">DB_RDONLY</a><dd>Open any underlying files for reading only.  Any attempt to write the file
 using the pool functions will fail, regardless of the actual permissions
 of the file.
 </dl>
-<p><dt><b>mode</b><dd>
-On UNIX systems or in IEEE/ANSI Std 1003.1 (POSIX) environments, all files created by
-DB_MPOOLFILE-&gt;open are created with mode <b>mode</b> (as described in <b>chmod</b>(2)) and modified by the process' umask value at the time of creation
-(see <b>umask</b>(2)).  If <b>mode</b> is 0, DB_MPOOLFILE-&gt;open will use a default
-mode of readable and writable by both owner and group.  On Windows
-systems, the mode parameter is ignored. The group ownership of created
-files is based on the system and directory defaults, and is not further
-specified by Berkeley DB.
-<p><dt><b>pagesize</b><dd>
-The <b>pagesize</b> parameter is the size, in bytes, of the unit of
+<dt><b>mode</b><dd>On Windows systems, the mode parameter is ignored.
+<p>On UNIX systems or in IEEE/ANSI Std 1003.1 (POSIX) environments, files created by DB_MPOOLFILE-&gt;open
+are created with mode <b>mode</b> (as described in <b>chmod</b>(2))
+and modified by the process' umask value at the time of creation (see
+<b>umask</b>(2)).  Created files are owned by the process owner; the
+group ownership of created files is based on the system and directory
+defaults, and is not further specified by Berkeley DB.  System shared memory
+segments created by DB_MPOOLFILE-&gt;open are created with mode <b>mode</b>, unmodified
+by the process' umask value.  If <b>mode</b> is 0, DB_MPOOLFILE-&gt;open will use a
+default mode of readable and writable by both owner and group.</p>
+<dt><b>pagesize</b><dd>The <b>pagesize</b> parameter is the size, in bytes, of the unit of
 transfer between the application and the cache, although it is not
 necessarily the unit of transfer between the cache and the underlying
 filesystem.
@@ -79,15 +79,15 @@ filesystem.
 <h3>Errors</h3>
 <p>The DB_MPOOLFILE-&gt;open method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the file has already been entered into the pool, and the <b>pagesize</b>
+<dl compact>
+<dt>EINVAL<dd>If the file has already been entered into the pool, and the <b>pagesize</b>
 value is not the same as when the file was entered into the pool, or the
 length of the file is not zero or a multiple of the <b>pagesize</b>;
 the DB_RDONLY flag was specified for an in-memory pool; or if an
 invalid flag value or parameter was specified.
 </dl>
-<p><dl compact>
-<p><dt>ENOMEM<dd>The maximum number of open files has been reached.
+<dl compact>
+<dt>ENOMEM<dd>The maximum number of open files has been reached.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -98,6 +98,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

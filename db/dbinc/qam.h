@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: qam.h,v 11.44 2003/10/01 20:03:41 ubell Exp $
+ * $Id: qam.h,v 11.49 2004/09/17 22:00:27 mjc Exp $
  */
 
 #ifndef	_DB_QAM_H_
@@ -78,7 +78,7 @@ typedef struct __qam_filelist {
 } QUEUE_FILELIST;
 
 /*
- * Caculate the page number of a recno
+ * Calculate the page number of a recno.
  *
  * Number of records per page =
  *	Divide the available space on the page by the record len + header.
@@ -94,7 +94,7 @@ typedef struct __qam_filelist {
  */
 #define	CALC_QAM_RECNO_PER_PAGE(dbp)					\
     (((dbp)->pgsize - QPAGE_SZ(dbp)) /					\
-    ALIGN((db_align_t)SSZA(QAMDATA, data) +				\
+    (u_int32_t)DB_ALIGN((uintmax_t)SSZA(QAMDATA, data) +		\
     ((QUEUE *)(dbp)->q_internal)->re_len, sizeof(u_int32_t)))
 
 #define	QAM_RECNO_PER_PAGE(dbp)	(((QUEUE*)(dbp)->q_internal)->rec_page)
@@ -115,7 +115,7 @@ typedef struct __qam_filelist {
 
 #define	QAM_GET_RECORD(dbp, page, index)				\
     ((QAMDATA *)((u_int8_t *)(page) + (QPAGE_SZ(dbp) +			\
-    (ALIGN((db_align_t)SSZA(QAMDATA, data) +				\
+    (DB_ALIGN((uintmax_t)SSZA(QAMDATA, data) +				\
     ((QUEUE *)(dbp)->q_internal)->re_len, sizeof(u_int32_t)) * index))))
 
 #define	QAM_AFTER_CURRENT(meta, recno)					\

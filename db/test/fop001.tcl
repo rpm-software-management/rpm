@@ -1,16 +1,20 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: fop001.tcl,v 1.15 2003/09/04 23:41:10 bostic Exp $
+# $Id: fop001.tcl,v 1.21 2004/09/22 18:01:04 bostic Exp $
 #
 # TEST	fop001.tcl
 # TEST	Test file system operations, combined in a transaction. [#7363]
-proc fop001 { } {
+proc fop001 { method args } {
 	source ./include.tcl
 
-	puts "\nFop001: Multiple file system ops in one transaction"
+	set args [convert_args $method $args]
+	set omethod [convert_method $method]
+
+	puts "\nFop001: ($method)\
+	    Multiple file system ops in one transaction."
 
 	set exists {a b}
 	set noexist {foo bar}
@@ -19,7 +23,7 @@ proc fop001 { } {
 	set ops {rename remove open open_create open_excl truncate}
 
 	# Set up all sensible two-op cases (op1 succeeds).
-	foreach retval { 0 "file exists" "no such file" "file is open" } {
+	foreach retval { 0 "file exists" "no such file" } {
 		foreach op1 {rename remove open open_excl \
 		    open_create truncate} {
 			foreach op2 $ops {
@@ -32,7 +36,7 @@ proc fop001 { } {
 	# Set up evil two-op cases (op1 fails).  Omit open_create
 	# and truncate from op1 list -- open_create always succeeds
 	# and truncate requires a successful open.
-	foreach retval { 0 "file exists" "no such file" "file is open" } {
+	foreach retval { 0 "file exists" "no such file" } {
 		foreach op1 { rename remove open open_excl } {
 			foreach op2 $ops {
 				append cases " " [create_badtests $op1 $op2 \
@@ -42,9 +46,13 @@ proc fop001 { } {
 	}
 
 	# The structure of each case is:
-	# {{op1 {args} result} {op2 {args} result}}
+	# {{op1 {names1} result end1} {op2 {names2} result}}
 	# A result of "0" indicates no error is expected.
 	# Otherwise, the result is the expected error message.
+	#
+	# The "end1" variable indicates whether the first txn
+	# ended with an abort or a commit, and is not used
+	# in this test.
 	#
 	# Comment this loop out to remove the list of cases.
 #	set i 1
@@ -62,26 +70,28 @@ proc fop001 { } {
 
 		# Extract elements of the case
 		set op1 [lindex [lindex $case 0] 0]
-		set args1 [lindex [lindex $case 0] 1]
+		set names1 [lindex [lindex $case 0] 1]
 		set res1 [lindex [lindex $case 0] 2]
 
 		set op2 [lindex [lindex $case 1] 0]
-		set args2 [lindex [lindex $case 1] 1]
+		set names2 [lindex [lindex $case 1] 1]
 		set res2 [lindex [lindex $case 1] 2]
 
-		puts "\tFop001.$testid: $op1 ($args1), then $op2 ($args2)."
+		puts "\tFop001.$testid: $op1 ($names1), then $op2 ($names2)."
 
 		# Create transactional environment.
 		set env [berkdb_env -create -home $testdir -txn]
 		error_check_good is_valid_env [is_valid_env $env] TRUE
 
 		# Create two databases
-		set dba [berkdb_open -create -btree -env $env -auto_commit a.db]
+		set dba [eval {berkdb_open \
+		    -create} $omethod $args -env $env -auto_commit a]
 		error_check_good dba_open [is_valid_db $dba] TRUE
 		error_check_good dba_put [$dba put -auto_commit 1 a] 0
 		error_check_good dba_close [$dba close] 0
 
-		set dbb [berkdb_open -create -btree -env $env -auto_commit b.db]
+		set dbb [eval {berkdb_open \
+		    -create} $omethod $args -env $env -auto_commit b]
 		error_check_good dbb_open [is_valid_db $dbb] TRUE
 		error_check_good dbb_put [$dbb put -auto_commit 1 b] 0
 		error_check_good dbb_close [$dbb close] 0
@@ -91,7 +101,7 @@ proc fop001 { } {
 			set txn [$env txn]
 
 			# Execute and check operation 1
-			set result1 [do_op $op1 $args1 $txn $env]
+			set result1 [do_op $omethod $op1 $names1 $txn $env $args]
 			if {$res1 == 0} {
 				error_check_good op1_should_succeed $result1 $res1
 			} else {
@@ -100,7 +110,7 @@ proc fop001 { } {
 			}
 
 			# Execute and check operation 2
-			set result2 [do_op $op2 $args2 $txn $env]
+			set result2 [do_op $omethod $op2 $names2 $txn $env $args]
 			if {$res2 == 0} {
 				error_check_good op2_should_succeed $result2 $res2
 			} else {
@@ -115,9 +125,9 @@ proc fop001 { } {
 			# databases.
 			if {$end == "abort"} {
 				error_check_good a_exists \
-				    [file exists $testdir/a.db] 1
+				    [file exists $testdir/a] 1
 				error_check_good b_exists \
-				    [file exists $testdir/b.db] 1
+				    [file exists $testdir/b] 1
 			}
 		}
 

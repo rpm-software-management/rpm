@@ -1,15 +1,16 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test074.tcl,v 11.19 2003/01/08 05:54:02 bostic Exp $
+# $Id: test074.tcl,v 11.22 2004/09/22 18:01:06 bostic Exp $
 #
 # TEST	test074
 # TEST	Test of DB_NEXT_NODUP.
 proc test074 { method {dir -nextnodup} {nitems 100} {tnum "074"} args } {
 	source ./include.tcl
 	global alphabet
+	global is_je_test
 	global rand_init
 
 	set omethod [convert_method $method]
@@ -159,6 +160,9 @@ proc test074 { method {dir -nextnodup} {nitems 100} {tnum "074"} args } {
 	}
 
 	foreach opt { "-dup" "-dupsort" } {
+		if { $is_je_test && $opt == "-dup" } {
+			continue
+		}
 
 		#
 		# If we are using an env, then testfile should just be the

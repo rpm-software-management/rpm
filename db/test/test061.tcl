@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test061.tcl,v 11.19 2003/01/08 05:54:00 bostic Exp $
+# $Id: test061.tcl,v 11.20 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test061
 # TEST	Test of txn abort and commit for in-memory databases.

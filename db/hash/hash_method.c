@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: hash_method.c,v 11.17 2004/01/28 03:36:11 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: hash_method.c,v 11.15 2003/04/18 08:36:37 mjc Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -19,11 +17,9 @@ static const char revid[] = "$Id: hash_method.c,v 11.15 2003/04/18 08:36:37 mjc 
 #include "dbinc/db_page.h"
 #include "dbinc/hash.h"
 
-static int __ham_get_h_ffactor __P((DB *, u_int32_t *));
 static int __ham_set_h_ffactor __P((DB *, u_int32_t));
 static int __ham_set_h_hash
 	       __P((DB *, u_int32_t(*)(DB *, const void *, u_int32_t)));
-static int __ham_get_h_nelem __P((DB *, u_int32_t *));
 static int __ham_set_h_nelem __P((DB *, u_int32_t));
 
 /*
@@ -73,9 +69,11 @@ __ham_db_close(dbp)
 }
 
 /*
- * __db_get_h_ffactor --
+ * __ham_get_h_ffactor --
+ *
+ * PUBLIC: int __ham_get_h_ffactor __P((DB *, u_int32_t *));
  */
-static int
+int
 __ham_get_h_ffactor(dbp, h_ffactorp)
 	DB *dbp;
 	u_int32_t *h_ffactorp;
@@ -127,8 +125,10 @@ __ham_set_h_hash(dbp, func)
 
 /*
  * __db_get_h_nelem --
+ *
+ * PUBLIC: int __ham_get_h_nelem __P((DB *, u_int32_t *));
  */
-static int
+int
 __ham_get_h_nelem(dbp, h_nelemp)
 	DB *dbp;
 	u_int32_t *h_nelemp;

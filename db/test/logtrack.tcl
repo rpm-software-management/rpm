@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #       Sleepycat Software.  All rights reserved.
 #
-# $Id: logtrack.tcl,v 11.13 2003/07/16 13:48:05 bostic Exp $
+# $Id: logtrack.tcl,v 11.15 2004/04/14 16:08:42 carol Exp $
 #
 # logtrack.tcl:  A collection of routines, formerly implemented in Perl
 # as log.pl, to track which log record types the test suite hits.
@@ -66,6 +66,7 @@ proc logtrack_read { dirname } {
 # seen and the log record types that were not seen but should have been seen.
 proc logtrack_summary { } {
 	global ltsname ltlist testdir
+	global one_test
 
 	set seendb [berkdb_open $ltsname]
 	error_check_good seendb_open [is_valid_db $seendb] TRUE
@@ -109,7 +110,7 @@ proc logtrack_summary { } {
 	    [is_valid_cursor [set ec [$existdb cursor]] $existdb] TRUE
 	while { [llength [set dbt [$ec get -next]]] != 0 } {
 		set rec [lindex [lindex $dbt 0] 0]
-		if { [$seendb count $rec] == 0 } {
+		if { [$seendb count $rec] == 0 && $one_test == "ALL" } {
 			puts "WARNING: log record type $rec: not tested"
 		}
 	}

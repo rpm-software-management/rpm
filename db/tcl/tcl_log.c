@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: tcl_log.c,v 11.61 2004/04/05 20:18:32 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: tcl_log.c,v 11.58 2003/04/24 16:25:54 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -86,7 +84,7 @@ tcl_LogArchive(interp, objc, objv, envp)
 	if (result == TCL_OK) {
 		res = Tcl_NewListObj(0, NULL);
 		for (file = list; file != NULL && *file != NULL; file++) {
-			fileobj = Tcl_NewStringObj(*file, strlen(*file));
+			fileobj = NewStringObj(*file, strlen(*file));
 			result = Tcl_ListObjAppendElement(interp, res, fileobj);
 			if (result != TCL_OK)
 				break;
@@ -186,7 +184,7 @@ tcl_LogFile(interp, objc, objv, envp)
 	}
 	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "log_file");
 	if (ret == 0) {
-		res = Tcl_NewStringObj(name, strlen(name));
+		res = NewStringObj(name, strlen(name));
 		Tcl_SetObjResult(interp, res);
 	}
 
@@ -336,7 +334,7 @@ tcl_LogPut(interp, objc, objv, envp)
 	result = Tcl_ListObjAppendElement(interp, res, intobj);
 	Tcl_SetObjResult(interp, res);
 	if (freedata)
-		(void)__os_free(NULL, dtmp);
+		__os_free(NULL, dtmp);
 	return (result);
 }
 /*
@@ -403,7 +401,7 @@ tcl_LogStat(interp, objc, objv, envp)
 	MAKE_STAT_LIST("Number of region lock nowaits", sp->st_region_nowait);
 	Tcl_SetObjResult(interp, res);
 error:
-	(void)__os_ufree(envp, sp);
+	__os_ufree(envp, sp);
 	return (result);
 }
 
@@ -591,7 +589,7 @@ tcl_LogcGet(interp, objc, objv, logc)
 			goto memerr;
 
 		result = Tcl_ListObjAppendElement(interp, res, lsnlist);
-		dataobj = Tcl_NewStringObj(data.data, data.size);
+		dataobj = NewStringObj(data.data, data.size);
 		if (dataobj == NULL) {
 			goto memerr;
 		}

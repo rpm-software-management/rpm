@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: cxx_db.cpp,v 11.87 2004/07/15 18:26:48 ubell Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: cxx_db.cpp,v 11.77 2003/04/18 08:36:29 mjc Exp $";
-#endif /* not lint */
 
 #include <errno.h>
 #include <string.h>
@@ -43,7 +41,7 @@ int Db::_name _argspec							\
 	return (ret);							\
 }
 
-#define	DB_METHOD_CHECKED(_name, _cleanup, _argspec, _arglist, _retok)	\
+#define	DB_DESTRUCTOR(_name, _argspec, _arglist, _retok)		\
 int Db::_name _argspec							\
 {									\
 	int ret;							\
@@ -53,8 +51,7 @@ int Db::_name _argspec							\
 		DB_ERROR(env_, "Db::" # _name, EINVAL, error_policy());	\
 		return (EINVAL);					\
 	}								\
-	if (_cleanup)							\
-		cleanup();						\
+	cleanup();							\
 	ret = db->_name _arglist;					\
 	if (!_retok(ret))						\
 		DB_ERROR(env_, "Db::" # _name, ret, error_policy());	\
@@ -151,7 +148,7 @@ int Db::initialize()
 		return (ret);
 
 	// Associate the DB with this object
-	imp_ = wrap(db);
+	imp_ = db;
 	db->api_internal = this;
 
 	// Create a new DbEnv from a DB_ENV* if it was created locally.
@@ -162,7 +159,7 @@ int Db::initialize()
 
 	// Create a DbMpoolFile from the DB_MPOOLFILE* in the DB handle.
 	mpf_ = new DbMpoolFile();
-	mpf_->imp_ = wrap(db->mpf);
+	mpf_->imp_ = db->mpf;
 
 	return (0);
 }
@@ -221,26 +218,7 @@ int Db::error_policy()
 	}
 }
 
-int Db::close(u_int32_t flags)
-{
-	DB *db = unwrap(this);
-	int ret;
-
-	// after a DB->close (no matter if success or failure),
-	// the underlying DB object must not be accessed,
-	// so we clean up in advance.
-	//
-	cleanup();
-
-	// It's safe to throw an error after the close,
-	// since our error mechanism does not peer into
-	// the DB* structures.
-	//
-	if ((ret = db->close(db, flags)) != 0)
-		DB_ERROR(env_, "Db::close", ret, error_policy());
-
-	return (ret);
-}
+DB_DESTRUCTOR(close, (u_int32_t flags), (db, flags), DB_RETOK_STD)
 
 // The following cast implies that Dbc can be no larger than DBC
 DB_METHOD(cursor, (DbTxn *txnid, Dbc **cursorp, u_int32_t flags),
@@ -275,7 +253,7 @@ int Db::get(DbTxn *txnid, Dbt *key, Dbt *value, u_int32_t flags)
 	ret = db->get(db, unwrap(txnid), key, value, flags);
 
 	if (!DB_RETOK_DBGET(ret)) {
-		if (ret == ENOMEM && DB_OVERFLOWED_DBT(value))
+		if (ret == DB_BUFFER_SMALL)
 			DB_ERROR_DBT(env_, "Db::get", value, error_policy());
 		else
 			DB_ERROR(env_, "Db::get", ret, error_policy());
@@ -293,8 +271,7 @@ int Db::get_byteswapped(int *isswapped)
 DbEnv *Db::get_env()
 {
 	DB *db = (DB *)unwrapConst(this);
-	DB_ENV *dbenv;
-	(void)db->get_env(db, &dbenv);
+	DB_ENV *dbenv = db->get_env(db);
 	return (dbenv != NULL ? DbEnv::get_DbEnv(dbenv) : NULL);
 }
 
@@ -306,8 +283,7 @@ DbMpoolFile *Db::get_mpf()
 DB_METHOD(get_dbname, (const char **filenamep, const char **dbnamep),
     (db, filenamep, dbnamep), DB_RETOK_STD)
 
-DB_METHOD(get_open_flags, (u_int32_t *flagsp),
-    (db, flagsp), DB_RETOK_STD)
+DB_METHOD(get_open_flags, (u_int32_t *flagsp), (db, flagsp), DB_RETOK_STD)
 
 int Db::get_type(DBTYPE *dbtype)
 {
@@ -319,13 +295,11 @@ int Db::get_type(DBTYPE *dbtype)
 // or even extra data members, so these casts, although technically
 // non-portable, "should" always be okay.
 DB_METHOD(join, (Dbc **curslist, Dbc **cursorp, u_int32_t flags),
-    (db, (DBC **)curslist, (DBC **)cursorp, flags),
-    DB_RETOK_STD)
+    (db, (DBC **)curslist, (DBC **)cursorp, flags), DB_RETOK_STD)
 
 DB_METHOD(key_range,
     (DbTxn *txnid, Dbt *key, DB_KEY_RANGE *results, u_int32_t flags),
-    (db, unwrap(txnid), key, results, flags),
-    DB_RETOK_STD)
+    (db, unwrap(txnid), key, results, flags), DB_RETOK_STD)
 
 // If an error occurred during the constructor, report it now.
 // Otherwise, call the underlying DB->open method.
@@ -366,31 +340,28 @@ int Db::pget(DbTxn *txnid, Dbt *key, Dbt *pkey, Dbt *value, u_int32_t flags)
 	return (ret);
 }
 
-DB_METHOD(put,
-    (DbTxn *txnid, Dbt *key, Dbt *value, u_int32_t flags),
-    (db, unwrap(txnid), key, value, flags),
-    DB_RETOK_DBPUT)
+DB_METHOD(put, (DbTxn *txnid, Dbt *key, Dbt *value, u_int32_t flags),
+    (db, unwrap(txnid), key, value, flags), DB_RETOK_DBPUT)
 
-DB_METHOD_CHECKED(rename, 1,
+DB_DESTRUCTOR(rename,
     (const char *file, const char *database, const char *newname,
     u_int32_t flags),
     (db, file, database, newname, flags), DB_RETOK_STD)
 
-DB_METHOD_CHECKED(remove, 1,
-    (const char *file, const char *database, u_int32_t flags),
+DB_DESTRUCTOR(remove, (const char *file, const char *database, u_int32_t flags),
     (db, file, database, flags), DB_RETOK_STD)
 
-DB_METHOD_CHECKED(truncate, 0,
-    (DbTxn *txnid, u_int32_t *countp, u_int32_t flags),
+DB_METHOD(truncate, (DbTxn *txnid, u_int32_t *countp, u_int32_t flags),
     (db, unwrap(txnid), countp, flags), DB_RETOK_STD)
 
-DB_METHOD_CHECKED(stat, 0,
-    (void *sp, u_int32_t flags), (db, sp, flags), DB_RETOK_STD)
+DB_METHOD(stat, (DbTxn *txnid, void *sp, u_int32_t flags),
+    (db, unwrap(txnid), sp, flags), DB_RETOK_STD)
 
-DB_METHOD_CHECKED(sync, 0,
-    (u_int32_t flags), (db, flags), DB_RETOK_STD)
+DB_METHOD(stat_print, (u_int32_t flags), (db, flags), DB_RETOK_STD)
 
-DB_METHOD_CHECKED(upgrade, 0,
+DB_METHOD(sync, (u_int32_t flags), (db, flags), DB_RETOK_STD)
+
+DB_METHOD(upgrade,
     (const char *name, u_int32_t flags), (db, name, flags), DB_RETOK_STD)
 
 ////////////////////////////////////////////////////////////////////////
@@ -526,10 +497,10 @@ extern "C"
 int _verify_callback_c(void *handle, const void *str_arg)
 {
 	char *str;
-	__DB_OSTREAMCLASS *out;
+	__DB_STD(ostream) *out;
 
 	str = (char *)str_arg;
-	out = (__DB_OSTREAMCLASS *)handle;
+	out = (__DB_STD(ostream) *)handle;
 
 	(*out) << str;
 	if (out->fail())
@@ -539,7 +510,7 @@ int _verify_callback_c(void *handle, const void *str_arg)
 }
 
 int Db::verify(const char *name, const char *subdb,
-	       __DB_OSTREAMCLASS *ostr, u_int32_t flags)
+	       __DB_STD(ostream) *ostr, u_int32_t flags)
 {
 	DB *db = unwrap(this);
 	int ret;
@@ -601,6 +572,8 @@ DB_METHOD(get_lorder, (int *db_lorderp), (db, db_lorderp),
     DB_RETOK_STD)
 DB_METHOD(set_lorder, (int db_lorder), (db, db_lorder),
     DB_RETOK_STD)
+DB_METHOD_VOID(get_msgfile, (FILE **msgfilep), (db, msgfilep))
+DB_METHOD_VOID(set_msgfile, (FILE *msgfile), (db, msgfile))
 DB_METHOD(get_pagesize, (u_int32_t *db_pagesizep),
     (db, db_pagesizep), DB_RETOK_STD)
 DB_METHOD(set_pagesize, (u_int32_t db_pagesize),
@@ -630,9 +603,14 @@ DB_METHOD_QUIET(set_alloc, (db_malloc_fcn_type malloc_fcn,
     db_realloc_fcn_type realloc_fcn, db_free_fcn_type free_fcn),
     (db, malloc_fcn, realloc_fcn, free_fcn))
 
-void Db::set_errcall(void (*arg)(const char *, char *))
+void Db::set_errcall(void (*arg)(const DbEnv *, const char *, const char *))
 {
 	env_->set_errcall(arg);
+}
+
+void Db::set_msgcall(void (*arg)(const DbEnv *, const char *))
+{
+	env_->set_msgcall(arg);
 }
 
 void *Db::get_app_private() const
@@ -655,7 +633,24 @@ int Db::set_paniccall(void (*callback)(DbEnv *, int))
 	return (env_->set_paniccall(callback));
 }
 
-void Db::set_error_stream(__DB_OSTREAMCLASS *error_stream)
+__DB_STD(ostream) *Db::get_error_stream()
+{
+	return env_->get_error_stream();
+}
+
+void Db::set_error_stream(__DB_STD(ostream) *error_stream)
 {
 	env_->set_error_stream(error_stream);
 }
+
+__DB_STD(ostream) *Db::get_message_stream()
+{
+	return env_->get_message_stream();
+}
+
+void Db::set_message_stream(__DB_STD(ostream) *message_stream)
+{
+	env_->set_message_stream(message_stream);
+}
+
+DB_METHOD_QUIET(get_transactional, (), (db))

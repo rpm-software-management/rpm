@@ -1,4 +1,4 @@
-# $Id: options.ac,v 11.29 2003/11/05 18:25:41 bostic Exp $
+# $Id: options.ac,v 11.37 2004/06/10 16:38:18 bostic Exp $
 
 # Process user-specified options.
 AC_DEFUN(AM_OPTIONS_SET, [
@@ -46,6 +46,16 @@ AC_ARG_ENABLE(replication,
 	AC_HELP_STRING([--disable-replication],
 	    [Do not build database replication support.]),, enableval="yes")
 db_cv_build_replication="$enableval"
+case "$enableval" in
+ no) AC_MSG_RESULT(yes);;
+yes) AC_MSG_RESULT(no);;
+esac
+
+AC_MSG_CHECKING(if --disable-statistics option specified)
+AC_ARG_ENABLE(statistics,
+	AC_HELP_STRING([--disable-statistics],
+	    [Do not build statistics support.]),, enableval="yes")
+db_cv_build_statistics="$enableval"
 case "$enableval" in
  no) AC_MSG_RESULT(yes);;
 yes) AC_MSG_RESULT(no);;
@@ -137,6 +147,13 @@ AC_ARG_ENABLE(mingw,
 	[db_cv_mingw="$enable_mingw"], [db_cv_mingw="no"])
 AC_MSG_RESULT($db_cv_mingw)
 
+AC_MSG_CHECKING(if --enable-o_direct option specified)
+AC_ARG_ENABLE(o_direct,
+	[AC_HELP_STRING([--enable-o_direct],
+			[Enable the O_DIRECT flag for direct I/O.])],
+	[db_cv_o_direct="$enable_o_direct"], [db_cv_o_direct="no"])
+AC_MSG_RESULT($db_cv_o_direct)
+
 AC_MSG_CHECKING(if --enable-posixmutexes option specified)
 AC_ARG_ENABLE(posixmutexes,
 	[AC_HELP_STRING([--enable-posixmutexes],
@@ -161,6 +178,7 @@ if test "$db_cv_smallbuild" = "yes"; then
 	db_cv_build_hash="no"
 	db_cv_build_queue="no"
 	db_cv_build_replication="no"
+	db_cv_build_statistics="no"
 	db_cv_build_verify="no"
 fi
 AC_MSG_RESULT($db_cv_smallbuild)
@@ -189,7 +207,7 @@ AC_MSG_RESULT($db_cv_uimutexes)
 AC_MSG_CHECKING(if --enable-umrw option specified)
 AC_ARG_ENABLE(umrw,
 	[AC_HELP_STRING([--enable-umrw],
-			[Mask harmless unitialized memory read/writes.])],
+			[Mask harmless uninitialized memory read/writes.])],
 	[db_cv_umrw="$enable_umrw"], [db_cv_umrw="no"])
 AC_MSG_RESULT($db_cv_umrw)
 
@@ -220,22 +238,6 @@ if test "$with_mutexalign" != "no"; then
 	AC_DEFINE_UNQUOTED(MUTEX_ALIGN, $with_mutexalign)
 fi
 AC_MSG_RESULT($with_mutexalign)
-
-AC_MSG_CHECKING(if --with-rpm=ARCHIVE option specified)
-AC_ARG_WITH(rpm,
-	[AC_HELP_STRING([--with-rpm=ARCHIVE], [Path of RPM archive.])],
-	[with_rpm="$withval"], [with_rpm="no"])
-if test "$with_rpm" = "no"; then
-	db_cv_rpm="no"
-	db_cv_path_rpm_archive="Not-configured-with-rpm=ARCHIVE"
-else
-	if test "$with_rpm" = "yes"; then
-		AC_MSG_ERROR([--with-rpm requires an archive path argument])
-	fi
-	db_cv_rpm="yes"
-	db_cv_path_rpm_archive="$with_rpm"
-fi
-AC_MSG_RESULT($with_rpm)
 
 AC_MSG_CHECKING([if --with-tcl=DIR option specified])
 AC_ARG_WITH(tcl,
@@ -270,5 +272,21 @@ fi
 if test "$db_cv_test" = "yes"; then
 	if test "$db_cv_tcl" = "no"; then
 		AC_MSG_ERROR([--enable-test requires --enable-tcl])
+	fi
+fi
+
+# Uniquename excludes C++, Java, RPC.
+if test "$db_cv_uniquename" = "yes"; then
+	if test "$db_cv_rpc" = "yes"; then
+		AC_MSG_ERROR(
+		    [--with-uniquename is not compatible with --enable-rpc])
+	fi
+	if test "$db_cv_cxx" = "yes"; then
+		AC_MSG_ERROR(
+		    [--with-uniquename is not compatible with --enable-cxx])
+	fi
+	if test "$db_cv_java" = "yes"; then
+		AC_MSG_ERROR(
+		    [--with-uniquename is not compatible with --enable-java])
 	fi
 fi])

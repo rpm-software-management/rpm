@@ -1,4 +1,29 @@
 
+
+1.810 7th August 2004
+
+   * Fixed db-hash.t for Cygwin
+
+   * Added substr tests to db-hast.t
+
+1.809 20th June 2004
+
+   * Merged core patch 22258
+
+   * Merged core patch 22741
+
+   * Fixed core bug 30237. 
+     Using substr to pass parameters to the low-level Berkeley DB interface
+     causes problems with Perl 5.8.1 or better.
+     typemap fix supplied by Marcus Holland-Moritz.
+
+1.808 22nd December 2003
+
+   * Added extra DBM Filter tests.
+
+   * Fixed a memory leak in ParseOpenInfo, which whould occur if the
+     opening of the database failed. Leak spotted by Adrian Enache.
+
 1.807 1st November 2003
 
    * Fixed minor typos on pod documetation - reported by Jeremy Mates &

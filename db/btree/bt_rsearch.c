@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -35,13 +35,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * $Id: bt_rsearch.c,v 11.40 2004/07/23 17:21:09 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: bt_rsearch.c,v 11.37 2003/06/30 17:19:34 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -78,11 +76,12 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 	db_lockmode_t lock_mode;
 	db_pgno_t pg;
 	db_recno_t recno, t_recno, total;
-	int ret, stack;
+	int ret, stack, t_ret;
 
 	dbp = dbc->dbp;
 	mpf = dbp->mpf;
 	cp = (BTREE_CURSOR *)dbc->internal;
+	h = NULL;
 
 	BT_STK_CLR(cp);
 
@@ -123,8 +122,11 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 	if (!stack &&
 	    ((LF_ISSET(S_PARENT) && (u_int8_t)(stop + 1) >= h->level) ||
 	    (LF_ISSET(S_WRITE) && h->level == LEAFLEVEL))) {
-		(void)__memp_fput(mpf, h, 0);
-		(void)__LPUT(dbc, lock);
+		ret = __memp_fput(mpf, h, 0);
+		if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
+			ret = t_ret;
+		if (ret != 0)
+			return (ret);
 		lock_mode = DB_LOCK_WRITE;
 		if ((ret = __db_lget(dbc, 0, pg, lock_mode, 0, &lock)) != 0)
 			return (ret);
@@ -167,9 +169,11 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 				 * eliminate any concurrency.  A possible fix
 				 * would be to lock the last leaf page instead.
 				 */
-				(void)__memp_fput(mpf, h, 0);
-				(void)__TLPUT(dbc, lock);
-				return (DB_NOTFOUND);
+				ret = __memp_fput(mpf, h, 0);
+				if ((t_ret =
+				    __TLPUT(dbc, lock)) != 0 && ret == 0)
+					ret = t_ret;
+				return (ret == 0 ? DB_NOTFOUND : ret);
 			}
 		}
 	}
@@ -201,9 +205,13 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 					*exactp = 0;
 					if (!LF_ISSET(S_PAST_EOF) ||
 					    recno > t_recno + 1) {
-						(void)__memp_fput(mpf, h, 0);
-						(void)__TLPUT(dbc, lock);
-						ret = DB_NOTFOUND;
+						ret = __memp_fput(mpf, h, 0);
+						h = NULL;
+						if ((t_ret = __TLPUT(dbc,
+						    lock)) != 0 && ret == 0)
+							ret = t_ret;
+						if (ret == 0)
+							ret = DB_NOTFOUND;
 						goto err;
 					}
 				}
@@ -265,6 +273,7 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 			    cp, h, indx, lock, lock_mode, ret);
 			if (ret != 0)
 				goto err;
+			h = NULL;
 
 			lock_mode = DB_LOCK_WRITE;
 			if ((ret =
@@ -281,7 +290,9 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 			    (h->level - 1) == LEAFLEVEL)
 				stack = 1;
 
-			(void)__memp_fput(mpf, h, 0);
+			if ((ret = __memp_fput(mpf, h, 0)) != 0)
+				goto err;
+			h = NULL;
 
 			lock_mode = stack &&
 			    LF_ISSET(S_WRITE) ? DB_LOCK_WRITE : DB_LOCK_READ;
@@ -292,7 +303,7 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 				 * is OK because this only happens when we are
 				 * descending the tree holding read-locks.
 				 */
-				__LPUT(dbc, lock);
+				(void)__LPUT(dbc, lock);
 				goto err;
 			}
 		}
@@ -302,8 +313,12 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 	}
 	/* NOTREACHED */
 
-err:	BT_STK_POP(cp);
+err:	if (h != NULL && (t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+		ret = t_ret;
+
+	BT_STK_POP(cp);
 	__bam_stkrel(dbc, 0);
+
 	return (ret);
 }
 
@@ -378,7 +393,7 @@ __bam_nrecs(dbc, rep)
 	DB_MPOOLFILE *mpf;
 	PAGE *h;
 	db_pgno_t pgno;
-	int ret;
+	int ret, t_ret;
 
 	dbp = dbc->dbp;
 	mpf = dbp->mpf;
@@ -391,10 +406,11 @@ __bam_nrecs(dbc, rep)
 
 	*rep = RE_NREC(h);
 
-	(void)__memp_fput(mpf, h, 0);
-	(void)__TLPUT(dbc, lock);
+	ret = __memp_fput(mpf, h, 0);
+	if ((t_ret = __TLPUT(dbc, lock)) != 0 && ret == 0)
+		ret = t_ret;
 
-	return (0);
+	return (ret);
 }
 
 /*

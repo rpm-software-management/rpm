@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sec002.tcl,v 11.10 2003/09/11 16:55:38 sandstro Exp $
+# $Id: sec002.tcl,v 11.12 2004/02/20 19:47:58 sue Exp $
 #
 # TEST	sec002
 # TEST	Test of security interface and catching errors in the
@@ -136,12 +136,13 @@ proc sec002 { } {
 
 	puts "\tSec002.e: Replace root page in encrypted w/ encrypted"
 	set fid1 [open $testfile1 r+]
+	fconfigure $fid1 -translation binary
 	set fid2 [open $testfile2 r+]
+	fconfigure $fid2 -translation binary
 	seek $fid1 $pagesize start
 	seek $fid2 $pagesize start
-	set root1 [read $fid1 $pagesize]
+	fcopy $fid1 $fid2 -size $pagesize
 	close $fid1
-	puts -nonewline $fid2 $root1
 	close $fid2
 
 	set db [berkdb_open_noerr -encryptaes $passwd2 $testfile2]
@@ -156,12 +157,13 @@ proc sec002 { } {
 
 	puts "\tSec002.f: Replace root page in encrypted w/ unencrypted"
 	set fid2 [open $testfile2 r+]
+	fconfigure $fid2 -translation binary
 	set fid4 [open $testfile4 r+]
+	fconfigure $fid4 -translation binary
 	seek $fid2 $pagesize start
 	seek $fid4 $pagesize start
-	set root4 [read $fid4 $pagesize]
+	fcopy $fid4 $fid2 -size $pagesize
 	close $fid4
-	puts -nonewline $fid2 $root4
 	close $fid2
 
 	set db [berkdb_open_noerr -encryptaes $passwd2 $testfile2]

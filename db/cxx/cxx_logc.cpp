@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: cxx_logc.cpp,v 11.13 2004/02/05 02:25:12 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: cxx_logc.cpp,v 11.11 2003/03/27 20:05:04 merrells Exp $";
-#endif /* not lint */
 
 #include <errno.h>
 #include <string.h>
@@ -56,7 +54,7 @@ int DbLogc::get(DbLsn *lsn, Dbt *data, u_int32_t _flags)
 	ret = logc->get(logc, lsn, data, _flags);
 
 	if (!DB_RETOK_LGGET(ret)) {
-		if (ret == ENOMEM && DB_OVERFLOWED_DBT(data))
+		if (ret == DB_BUFFER_SMALL)
 			DB_ERROR_DBT(DbEnv::get_DbEnv(logc->dbenv),
 				"DbLogc::get", data, ON_ERROR_UNKNOWN);
 		else

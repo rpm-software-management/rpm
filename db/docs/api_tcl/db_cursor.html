@@ -1,24 +1,23 @@
 <!--$Id: db_cursor.so,v 11.13 2002/08/18 21:17:25 bostic Exp $-->
-<!--$Id: m4.tcl,v 11.26 2003/09/02 14:38:50 sue Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: m4.tcl,v 11.27 2004/09/07 15:37:41 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: db cursor</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3><i>db</i> <b>cursor</b></h3>
 </td>
 <td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>db cursor
@@ -31,8 +30,8 @@ where X is an integer starting at 0 (for example, db0.c0 and db0.c1).
 It is through this Tcl command that the script accesses the cursor
 methods.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt>-txn txnid<dd>If the operation is to be
+<dl compact>
+<dt>-txn txnid<dd>If the operation is to be
 transaction-protected,
 the <b>txnid</b> parameter is a transaction handle returned from
 <i>env</i> <b>txn</b>.
@@ -42,6 +41,6 @@ the <b>txnid</b> parameter is a transaction handle returned from
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

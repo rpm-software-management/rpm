@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: dead003.tcl,v 1.19 2003/05/28 14:33:48 sandstro Exp $
+# $Id: dead003.tcl,v 1.20 2004/01/28 03:36:26 bostic Exp $
 #
 # TEST	dead003
 # TEST

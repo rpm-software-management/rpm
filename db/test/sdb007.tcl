@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb007.tcl,v 11.23 2003/11/10 17:41:39 sandstro Exp $
+# $Id: sdb007.tcl,v 11.25 2004/09/22 18:01:06 bostic Exp $
 #
 # TEST	sdb007
 # TEST	Tests page size difference errors between subdbs.
@@ -89,9 +89,9 @@ proc sdb007 { method args } {
 	set stat [catch {eval {berkdb_open_noerr -create -btree} \
 	    $db2args {-pagesize $pgsz2 $testfile $sub2}} ret]
 	error_check_good subdb:pgsz $stat 1
-	# We'll get a different error if running in an env, 
+	# We'll get a different error if running in an env,
 	# because the env won't have been opened with noerr.
-	# Skip the test for what the error is, just getting the 
+	# Skip the test for what the error is, just getting the
 	# error is enough.
 	if { $is_envmethod == 0 } {
 		error_check_good subdb:fail [is_substr $ret \

@@ -1,34 +1,38 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003
+# Copyright (c) 2003-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: fopscript.tcl,v 1.3 2003/09/04 23:41:11 bostic Exp $
+# $Id: fopscript.tcl,v 1.6 2004/03/03 16:48:42 carol Exp $
 #
 # Fop006 script - test of fileops in multiple transactions
 # Usage: fopscript
+# omethod: access method for database
 # op: file operation to perform
 # end: how to end the transaction (abort or commit)
 # result: expected result of the transaction
-# args: name(s) of files to operate on
+# names: name(s) of files to operate on
+# args: additional args to do_op
 
 source ./include.tcl
 source $test_path/test.tcl
 source $test_path/testutils.tcl
 
-set usage "fopscript op end result args"
+set usage "fopscript omethod op end result names args"
 
 # Verify usage
-if { $argc != 4 } {
+if { $argc < 5 } {
 	puts stderr "FAIL:[timestamp] Usage: $usage"
 	exit
 }
 
 # Initialize arguments
-set op [ lindex $argv 0 ]
-set end [ lindex $argv 1 ]
-set result [ lindex $argv 2 ]
-set args [ lindex $argv 3 ]
+set omethod [ lindex $argv 0 ]
+set op [ lindex $argv 1 ]
+set end [ lindex $argv 2 ]
+set result [ lindex $argv 3 ]
+set names [ lindex $argv 4 ]
+set args [lindex [lrange $argv 5 end] 0]
 
 # Join the env
 set dbenv [eval berkdb_env -home $testdir]
@@ -39,7 +43,7 @@ puts "\tFopscript.a: begin 2nd transaction (will block)"
 set txn2 [$dbenv txn]
 error_check_good txn2_begin [is_valid_txn $txn2 $dbenv] TRUE
 # Execute op2
-set op2result [do_op $op $args $txn2 $dbenv]
+set op2result [do_op $omethod $op $names $txn2 $dbenv $args]
 # End txn2
 error_check_good txn2_end [$txn2 $end] 0
 if {$result == 0} {

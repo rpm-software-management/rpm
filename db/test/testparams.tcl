@@ -1,10 +1,11 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: testparams.tcl,v 11.164 2003/10/31 20:17:24 sandstro Exp $
+# $Id: testparams.tcl,v 11.200 2004/10/12 16:22:14 sue Exp $
 
+global one_test
 global serial_tests
 set serial_tests {rep002 rep005}
 
@@ -14,6 +15,7 @@ set subs {bigfile dead env fop lock log memp mutex recd rep rpc rsrc\
 set test_names(bigfile)	[list bigfile001 bigfile002]
 set test_names(dead)    [list dead001 dead002 dead003 dead004 dead005 dead006 \
     dead007]
+set test_names(elect)	[list rep002 rep005 rep016 rep020 rep022]
 set test_names(env)	[list env001 env002 env003 env004 env005 env006 \
     env007 env008 env009 env010 env011]
 set test_names(fop)	[list fop001 fop002 fop003 fop004 fop005 fop006]
@@ -23,10 +25,12 @@ set test_names(memp)	[list memp001 memp002 memp003 memp004]
 set test_names(mutex)	[list mutex001 mutex002 mutex003]
 set test_names(recd)	[list recd001 recd002 recd003 recd004 recd005 recd006 \
     recd007 recd008 recd009 recd010 recd011 recd012 recd013 recd014 recd015 \
-    recd016 recd017 recd018 recd019]
-set test_names(rep)	[list rep001 rep002 rep003 rep004 rep005 rep006 \
-    rep007 rep008 rep009 rep010 rep011 rep012 rep013]
-set test_names(rpc)	[list rpc001 rpc002 rpc003 rpc004 rpc005]
+    recd016 recd017 recd018 recd019 recd020 ]
+set test_names(rep)	[list rep001 rep002 rep003 rep005 rep006 rep007 \
+    rep008 rep009 rep010 rep011 rep012 rep013 rep014 rep015 rep016 rep017 \
+    rep018 rep019 rep020 rep021 rep022 rep023 rep024 rep026 rep027 rep028 \
+    rep029 rep030 rep031 rep032 rep033 rep034 rep035 rep036 rep037]
+set test_names(rpc)	[list rpc001 rpc002 rpc003 rpc004 rpc005 rpc006]
 set test_names(rsrc)	[list rsrc001 rsrc002 rsrc003 rsrc004]
 set test_names(sdb)	[list sdb001 sdb002 sdb003 sdb004 sdb005 sdb006 \
     sdb007 sdb008 sdb009 sdb010 sdb011 sdb012]
@@ -44,14 +48,46 @@ set test_names(test)	[list test001 test002 test003 test004 test005 \
     test069 test070 test071 test072 test073 test074 test076 test077 \
     test078 test079 test081 test082 test083 test084 test085 test086 \
     test087 test088 test089 test090 test091 test092 test093 test094 test095 \
-    test096 test097 test098 test099 test100 test101 test102 test103 ]
+    test096 test097 test098 test099 test100 test101 test102 test103 test107 \
+    test109 ]
 set test_names(txn)	[list txn001 txn002 txn003 txn004 txn005 txn006 \
     txn007 txn008 txn009 txn010 txn011]
 
+set rpc_tests(berkeley_db_svc) [concat $test_names(test) $test_names(sdb)]
+set rpc_tests(berkeley_db_cxxsvc) $test_names(test)
+set rpc_tests(berkeley_db_javasvc) $test_names(test)
+
+# JE tests are a subset of regular RPC tests -- exclude these ones.
+# be fixable by modifying tests dealing with unsorted duplicates, second line
+# will probably never work unless certain features are added to JE (record
+# numbers, bulk get, etc.).
+set je_exclude {(?x)    # Turn on extended syntax
+	test(010|026|027|028|030|031|032|033|034|   # These should be fixable by
+	     035|039|041|046|047|054|056|057|062|   # modifying tests to avoid
+	     066|073|081|085)|                      # unsorted dups, etc.
+
+	test(011|017|018|022|023|024|029|040|049|   # Not expected to work with
+	     062|083|095)                           # JE until / unless features
+						    # are added to JE (record
+						    # numbers, bulk gets, etc.)
+}
+set rpc_tests(berkeley_dbje_svc) [lsearch -all -inline -not -regexp \
+                                  $rpc_tests(berkeley_db_svc) $je_exclude]
+
+# Source all the tests, whether we're running one or many.
 foreach sub $subs {
 	foreach test $test_names($sub) {
 		source $test_path/$test.tcl
 	}
+}
+
+# Reset test_names if we're running only one test.
+if { $one_test != "ALL" } {
+	foreach sub $subs {
+		set test_names($sub) ""
+	}
+	set type [string trim $one_test 0123456789]
+	set test_names($type) [list $one_test]
 }
 
 source $test_path/archive.tcl
@@ -90,6 +126,41 @@ set parms(recd016) ""
 set parms(recd017) 0
 set parms(recd018) 10
 set parms(recd019) 50
+set parms(recd020) ""
+set parms(rep001) {1000 "001"}
+set parms(rep002) {10 3 "002"}
+set parms(rep003) "003"
+set parms(rep005) ""
+set parms(rep006) {1000 "006"}
+set parms(rep007) {10 "007"}
+set parms(rep008) {10 "008"}
+set parms(rep009) {10 "009"}
+set parms(rep010) {100 "010"}
+set parms(rep011) "011"
+set parms(rep012) {10 "012"}
+set parms(rep013) {10 "013"}
+set parms(rep014) {10 "014"}
+set parms(rep015) {100 "015" 3}
+set parms(rep016) ""
+set parms(rep017) {10 "017"}
+set parms(rep018) {10 "018"}
+set parms(rep019) {3 "019"}
+set parms(rep020) ""
+set parms(rep021) {3 "021"}
+set parms(rep022) ""
+set parms(rep023) {10 "023"}
+set parms(rep024) {1000 "024"}
+set parms(rep026) ""
+set parms(rep027) {1000 "027"}
+set parms(rep028) {100 "028"}
+set parms(rep029) {200 "029"}
+set parms(rep030) {500 "030"}
+set parms(rep031) {200 "031"}
+set parms(rep032) {200 "032"}
+set parms(rep033) {200 "033"}
+set parms(rep034) {2 "034"}
+set parms(rep035) {100 "035"}
+set parms(rep036) {200 "036"}
 set parms(subdb001) ""
 set parms(subdb002) 10000
 set parms(subdb003) 1000
@@ -119,7 +190,7 @@ set parms(si002) {200 2}
 set parms(si003) {200 3}
 set parms(si004) {200 4}
 set parms(si005) {200 5}
-set parms(test001) {10000 0 1 "001"}
+set parms(test001) {10000 0 0 "001"}
 set parms(test002) 10000
 set parms(test003) ""
 set parms(test004) {10000 "004" 0}
@@ -220,11 +291,13 @@ set parms(test100) {10000 "100"}
 set parms(test101) {1000 -txn "101"}
 set parms(test102) {1000 "102"}
 set parms(test103) {100 4294967250 "103"}
+set parms(test107) ""
+set parms(test109) {"109"}
 
 # RPC server executables.  Each of these is tested (if it exists)
 # when running the RPC tests.
 set svc_list { berkeley_db_svc berkeley_db_cxxsvc \
-    berkeley_db_javasvc }
+    berkeley_db_javasvc berkeley_dbje_svc }
 set rpc_svc berkeley_db_svc
 
 # Shell script tests.  Each list entry is a {directory filename} pair,
@@ -257,4 +330,7 @@ set shelltest_list {
 	{ scr025	chk.cxxmulti }
 	{ scr026	chk.method }
 	{ scr027	chk.javas }
+	{ scr028	chk.rtc }
+	{ scr029	chk.get }
+	{ scr030	chk.build }
 }

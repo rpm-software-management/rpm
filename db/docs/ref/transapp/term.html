@@ -1,12 +1,12 @@
 <!--$Id: term.so,v 10.18 2001/03/13 19:45:12 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Terminology</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -17,41 +17,41 @@
 <h3 align=center>Terminology</h3>
 <p>Here are some definitions that will be helpful in understanding
 transactions:</p>
-<p><dl compact>
-<p><dt>Thread of control<dd>Berkeley DB is indifferent to the type or style of threads being used by the
+<dl compact>
+<dt>Thread of control<dd>Berkeley DB is indifferent to the type or style of threads being used by the
 application; or, for that matter, if threads are being used at all --
 because Berkeley DB supports multiprocess access.  In the Berkeley DB documentation,
 any time we refer to a <i>thread of control</i>, it can be read as
 a true thread (one of many in an application's address space) or a
 process.
-<p><dt>Free-threaded<dd>A Berkeley DB handle that can be used by multiple threads simultaneously
+<dt>Free-threaded<dd>A Berkeley DB handle that can be used by multiple threads simultaneously
 without any application-level synchronization is called
 <i>free-threaded</i>.
-<p><dt>Transaction<dd>A <i>transaction</i> is a one or more operations on one or more
+<dt>Transaction<dd>A <i>transaction</i> is a one or more operations on one or more
 databases that should be treated as a single unit of work.  For example,
 changes to a set of databases, in which either all of the changes must be
 applied to the database(s) or none of them should.  Applications specify
 when each transaction starts, what database operations are included in
 it, and when it ends.
-<p><dt>Transaction abort/commit<dd>Every transaction ends by <i>committing</i> or <i>aborting</i>.
+<dt>Transaction abort/commit<dd>Every transaction ends by <i>committing</i> or <i>aborting</i>.
 If a transaction commits, Berkeley DB guarantees that any database changes
 included in the transaction will never be lost, even after system or
 application failure.  If a transaction aborts, or is uncommitted when
 the system or application fails, then the changes involved will never
 appear in the database.
-<p><dt>System or application failure<dd><i>System or application failure</i> is the phrase we use to
+<dt>System or application failure<dd><i>System or application failure</i> is the phrase we use to
 describe something bad happening near your data.  It can be an
 application dumping core, being interrupted by a signal, the disk
 filling up, or the entire system crashing.  In any case, for whatever
 reason, the application can no longer make forward progress, and its
 databases are left in an unknown state.
-<p><dt>Recovery<dd><i>Recovery</i> is what makes the database consistent after a system
+<dt>Recovery<dd><i>Recovery</i> is what makes the database consistent after a system
 or application failure.  The recovery process includes review of log
 files and databases to ensure that the changes from each committed
 transaction appear in the database, and that no changes from an
 unfinished (or aborted) transaction do.  Whenever system or application
 failure occurs, applications must usually run recovery.
-<p><dt>Deadlock<dd><i>Deadlock</i>, in its simplest form, happens when one thread of
+<dt>Deadlock<dd><i>Deadlock</i>, in its simplest form, happens when one thread of
 control owns resource A, but needs resource B; while another thread of
 control owns resource B, but needs resource A.  Neither thread of
 control can make progress, and so one has to give up and release all
@@ -60,6 +60,6 @@ forward progress.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/why.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/app.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,12 +1,12 @@
 <!--$Id: utilities.so,v 10.25 2001/03/05 19:15:07 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Supporting utilities</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -18,37 +18,37 @@
 <h3 align=center>Supporting utilities</h3>
 <p>The following are the standalone utilities that provide supporting
 functionality for the Berkeley DB environment:</p>
-<p><dl compact>
-<p><dt><a href="../../utility/berkeley_db_svc.html">berkeley_db_svc</a><dd>The <a href="../../utility/berkeley_db_svc.html">berkeley_db_svc</a> utility is the Berkeley DB RPC server that
+<dl compact>
+<dt><a href="../../utility/berkeley_db_svc.html">berkeley_db_svc</a><dd>The <a href="../../utility/berkeley_db_svc.html">berkeley_db_svc</a> utility is the Berkeley DB RPC server that
 provides standard server functionality for client applications.
-<p><dt><a href="../../utility/db_archive.html">db_archive</a><dd>The <a href="../../utility/db_archive.html">db_archive</a> utility supports database backup and archival,
+<dt><a href="../../utility/db_archive.html">db_archive</a><dd>The <a href="../../utility/db_archive.html">db_archive</a> utility supports database backup and archival,
 and log file administration.  It facilitates log reclamation and the
 creation of database snapshots.  Generally, some form of log archival
 must be done if a database environment has been configured for logging
 or transactions.
-<p><dt><a href="../../utility/db_checkpoint.html">db_checkpoint</a><dd>The <a href="../../utility/db_checkpoint.html">db_checkpoint</a> utility runs as a daemon process, monitoring
+<dt><a href="../../utility/db_checkpoint.html">db_checkpoint</a><dd>The <a href="../../utility/db_checkpoint.html">db_checkpoint</a> utility runs as a daemon process, monitoring
 the database log and periodically issuing checkpoints.  It facilitates
 log reclamation and the creation of database snapshots.  Generally, some
 form of database checkpointing must be done if a database environment has
 been configured for transactions.
-<p><dt><a href="../../utility/db_deadlock.html">db_deadlock</a><dd>The <a href="../../utility/db_deadlock.html">db_deadlock</a> utility runs as a daemon process, periodically
+<dt><a href="../../utility/db_deadlock.html">db_deadlock</a><dd>The <a href="../../utility/db_deadlock.html">db_deadlock</a> utility runs as a daemon process, periodically
 traversing the database lock structures and aborting transactions when it
 detects a deadlock.  Generally, some form of deadlock detection must be
 done if a database environment has been configured for locking.
-<p><dt><a href="../../utility/db_dump.html">db_dump</a><dd>The <a href="../../utility/db_dump.html">db_dump</a> utility writes a copy of the database to a flat-text
+<dt><a href="../../utility/db_dump.html">db_dump</a><dd>The <a href="../../utility/db_dump.html">db_dump</a> utility writes a copy of the database to a flat-text
 file in a portable format.
-<p><dt><a href="../../utility/db_load.html">db_load</a><dd>The <a href="../../utility/db_load.html">db_load</a> utility reads the flat-text file produced by
+<dt><a href="../../utility/db_load.html">db_load</a><dd>The <a href="../../utility/db_load.html">db_load</a> utility reads the flat-text file produced by
 <a href="../../utility/db_dump.html">db_dump</a> and loads it into a database file.
-<p><dt><a href="../../utility/db_printlog.html">db_printlog</a><dd>The <a href="../../utility/db_printlog.html">db_printlog</a> utility displays the contents of Berkeley DB log files
+<dt><a href="../../utility/db_printlog.html">db_printlog</a><dd>The <a href="../../utility/db_printlog.html">db_printlog</a> utility displays the contents of Berkeley DB log files
 in a human-readable and parsable format.
-<p><dt><a href="../../utility/db_recover.html">db_recover</a><dd>The <a href="../../utility/db_recover.html">db_recover</a> utility runs after an unexpected Berkeley DB or system
+<dt><a href="../../utility/db_recover.html">db_recover</a><dd>The <a href="../../utility/db_recover.html">db_recover</a> utility runs after an unexpected Berkeley DB or system
 failure to restore the database to a consistent state.  Generally, some
 form of database recovery must be done if databases are being modified.
-<p><dt><a href="../../utility/db_stat.html">db_stat</a>  <dd>The <a href="../../utility/db_stat.html">db_stat</a> utility displays statistics for databases and database
+<dt><a href="../../utility/db_stat.html">db_stat</a>  <dd>The <a href="../../utility/db_stat.html">db_stat</a> utility displays statistics for databases and database
 environments.
-<p><dt><a href="../../utility/db_upgrade.html">db_upgrade</a><dd>The <a href="../../utility/db_upgrade.html">db_upgrade</a> utility provides a command-line interface for
+<dt><a href="../../utility/db_upgrade.html">db_upgrade</a><dd>The <a href="../../utility/db_upgrade.html">db_upgrade</a> utility provides a command-line interface for
 upgrading underlying database formats.
-<p><dt><a href="../../utility/db_verify.html">db_verify</a><dd>The <a href="../../utility/db_verify.html">db_verify</a> utility provides a command-line interface for
+<dt><a href="../../utility/db_verify.html">db_verify</a><dd>The <a href="../../utility/db_verify.html">db_verify</a> utility provides a command-line interface for
 verifying the database format.
 </dl>
 <p>All of the functionality implemented for these utilities is also available
@@ -59,6 +59,6 @@ the necessity for multiple processes to negotiate database and database
 environment creation and shut down.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../arch/script.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

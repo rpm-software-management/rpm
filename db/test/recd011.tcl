@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: recd011.tcl,v 11.25 2003/08/21 16:44:06 ubell Exp $
+# $Id: recd011.tcl,v 11.26 2004/01/28 03:36:28 bostic Exp $
 #
 # TEST	recd011
 # TEST	Verify that recovery to a specific timestamp works.

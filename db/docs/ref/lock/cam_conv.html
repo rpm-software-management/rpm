@@ -1,12 +1,12 @@
 <!--$Id: cam_conv.so,v 10.14 2003/10/18 19:16:02 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Berkeley DB Concurrent Data Store locking conventions</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -23,8 +23,8 @@ entirely in the Berkeley DB interface layer.</p>
 <p>The object it locks is the file, identified by its unique file number.
 The locking matrix is not one of the two standard lock modes, instead,
 we use a four-lock set, consisting of the following:</p>
-<p><dl compact>
-<p><dt>DB_LOCK_NG<dd>not granted (always 0)
+<dl compact>
+<dt>DB_LOCK_NG<dd>not granted (always 0)
 <dt>DB_LOCK_READ<dd>read (shared)
 <dt>DB_LOCK_WRITE<dd>write (exclusive)
 <dt>DB_LOCK_IWRITE<dd>intention-to-write (shared with NG and READ, but conflicts with WRITE and IWRITE)
@@ -49,6 +49,6 @@ already locked with a READ lock.
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../lock/twopl.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/am_conv.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

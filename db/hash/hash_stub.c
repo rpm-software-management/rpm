@@ -1,15 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: hash_stub.c,v 1.10 2004/09/29 15:35:14 bostic Exp $
  */
+
 #include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: hash_stub.c,v 1.4 2003/07/01 19:47:14 bostic Exp $";
-#endif /* not lint */
-
+#ifndef HAVE_HASH
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 #endif
@@ -121,14 +121,6 @@ __ham_c_init(dbc)
 	return (__db_no_hash_am(dbc->dbp->dbenv));
 }
 
-void
-__ham_cprint(dbc)
-	DBC *dbc;
-{
-	COMPQUIET(dbc, NULL);
-	return;
-}
-
 int
 __ham_db_close(dbp)
 	DB *dbp;
@@ -142,18 +134,6 @@ __ham_db_create(dbp)
 	DB *dbp;
 {
 	COMPQUIET(dbp, NULL);
-	return (0);
-}
-
-int
-__ham_init_getpgnos(dbenv, dtabp, dtabsizep)
-	DB_ENV *dbenv;
-	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
-	size_t *dtabsizep;
-{
-	COMPQUIET(dbenv, NULL);
-	COMPQUIET(dtabp, NULL);
-	COMPQUIET(dtabsizep, NULL);
 	return (0);
 }
 
@@ -275,6 +255,13 @@ __ham_pgout(dbenv, dummydbp, pg, pp, cookie)
 	return (__db_no_hash_am(dbenv));
 }
 
+void
+__ham_print_cursor(dbc)
+	DBC *dbc;
+{
+	(void)__db_no_hash_am(dbc->dbp->dbenv);
+}
+
 int
 __ham_quick_delete(dbc)
 	DBC *dbc;
@@ -317,6 +304,15 @@ __ham_stat(dbc, spp, flags)
 	u_int32_t flags;
 {
 	COMPQUIET(spp, NULL);
+	COMPQUIET(flags, 0);
+	return (__db_no_hash_am(dbc->dbp->dbenv));
+}
+
+int
+__ham_stat_print(dbc, flags)
+	DBC *dbc;
+	u_int32_t flags;
+{
 	COMPQUIET(flags, 0);
 	return (__db_no_hash_am(dbc->dbp->dbenv));
 }
@@ -392,3 +388,4 @@ __ham_vrfy_structure(dbp, vdp, meta_pgno, flags)
 	COMPQUIET(flags, 0);
 	return (__db_no_hash_am(dbp->dbenv));
 }
+#endif /* !HAVE_HASH */

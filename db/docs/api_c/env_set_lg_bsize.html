@@ -1,23 +1,22 @@
-<!--$Id: env_set_lg_bsize.so,v 10.31 2003/11/08 19:17:30 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_lg_bsize.so,v 10.35 2004/09/28 15:04:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_lg_bsize</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;set_lg_bsize</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,16 +30,25 @@ DB_ENV-&gt;get_lg_bsize(DB_ENV *dbenv, u_int32_t *lg_bsizep);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;set_lg_bsize</h3>
-<a name="3"><!--meow--></a>
-<p>Set the size of the in-memory log buffer, in bytes.  By default, or if
-the value is set to 0, a size of 32K is used.  The size of the log file
-(see <a href="../api_c/env_set_lg_max.html">DB_ENV-&gt;set_lg_max</a>) must be at least four times the size of
-the in-memory log buffer.</p>
-<p>Log information is stored in-memory until the storage space fills up
-or transaction commit forces the information to be flushed to stable
-storage.  In the presence of long-running transactions or transactions
-producing large amounts of data, larger buffer sizes can increase
-throughput.</p>
+<p>Set the size of the in-memory log buffer, in bytes.</p>
+<p>When the logging subsystem is configured for on-disk logging, the
+default size of the in-memory log buffer is 32KB.  Log information is
+stored in-memory until the storage space fills up or transaction commit
+forces the information to be flushed to stable storage.  In the presence
+of long-running transactions or transactions producing large amounts of
+data, larger buffer sizes can increase throughput.</p>
+<p>When the logging subsystem is configured for in-memory logging, the
+default size of the in-memory log buffer is 1MB.  Log information is
+stored in-memory until the storage space fills up or transaction abort
+or commit frees up the memory for new transactions.  In the presence of
+long-running transactions or transactions producing large amounts of
+data, the buffer size must be sufficient to hold all log information
+that can accumulate during the longest running transaction.  When
+choosing log buffer and file sizes for in-memory logs, applications
+should ensure the in-memory log buffer size is large enough that no
+transaction will ever span the entire buffer, and avoid a state where
+the in-memory buffer is full and no space can be freed because a
+transaction that started in the first log "file" is still active.</p>
 <p>The database environment's log buffer size may also be set using the environment's
 <b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
 single line with the string "set_lg_bsize", one or more whitespace characters,
@@ -61,18 +69,15 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>lg_bsize</b><dd>
-The <b>lg_bsize</b> parameter is the size of the in-memory log buffer,
+<dl compact>
+<dt><b>lg_bsize</b><dd>The <b>lg_bsize</b> parameter is the size of the in-memory log buffer,
 in bytes.
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;set_lg_bsize method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called;
-The size of the log file is less than four times the size of the in-memory
-log buffer; or if an
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -85,9 +90,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>lg_bsizep</b><dd>
-The DB_ENV-&gt;get_lg_bsize method returns  the
+<dl compact>
+<dt><b>lg_bsizep</b><dd>The DB_ENV-&gt;get_lg_bsize method returns  the
 size of the log buffer, in bytes in <b>lg_bsizep</b>.
 </dl>
 <hr size=1 noshade>
@@ -99,6 +103,6 @@ size of the log buffer, in bytes in <b>lg_bsizep</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

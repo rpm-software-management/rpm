@@ -1,4 +1,4 @@
-// Callbacks
+/* Callbacks */
 %define JAVA_CALLBACK(_sig, _jclass, _name)
 JAVA_TYPEMAP(_sig, _jclass, jobject)
 %typemap(javain) _sig %{ (_name##_handler = $javainput) %}
@@ -13,19 +13,16 @@ JAVA_TYPEMAP(_sig, _jclass, jobject)
 %enddef
 
 %{
-/*
- * We do a dance so that the prefix in the C API points to the DB_ENV.
- * The real prefix is stored as a Java string in the DbEnv object.
- */
-static void __dbj_error(const char *prefix, char *msg)
+static void __dbj_error(const DB_ENV *dbenv, const char *prefix, const char *msg)
 {
-	DB_ENV *dbenv = (DB_ENV *)prefix;
 	JNIEnv *jenv = __dbj_get_jnienv();
 	jobject jdbenv = (jobject)DB_ENV_INTERNAL(dbenv);
 
 	if (jdbenv != NULL)
 		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv, dbenv_class,
-		    errcall_method, (*jenv)->NewStringUTF(jenv, msg));
+		    errcall_method,
+		    (*jenv)->NewStringUTF(jenv, prefix),
+		    (*jenv)->NewStringUTF(jenv, msg));
 }
 
 static void __dbj_env_feedback(DB_ENV *dbenv, int opcode, int percent)
@@ -35,6 +32,16 @@ static void __dbj_env_feedback(DB_ENV *dbenv, int opcode, int percent)
 
 	(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv, dbenv_class,
 	    env_feedback_method, opcode, percent);
+}
+
+static void __dbj_message(const DB_ENV *dbenv, const char *msg)
+{
+	JNIEnv *jenv = __dbj_get_jnienv();
+	jobject jdbenv = (jobject)DB_ENV_INTERNAL(dbenv);
+
+	if (jdbenv != NULL)
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv, dbenv_class,
+		    msgcall_method, (*jenv)->NewStringUTF(jenv, msg));
 }
 
 static void __dbj_panic(DB_ENV *dbenv, int err)
@@ -126,7 +133,6 @@ static int __dbj_seckey_create(DB *db,
 	jobject jkey, jdata, jresult;
 	jbyteArray jkeyarr, jdataarr;
 	DBT_LOCKED lresult;
-	void *data_copy;
 	int ret;
 
 	jkey = (*jenv)->NewObject(jenv, dbt_class, dbt_construct);
@@ -144,28 +150,25 @@ static int __dbj_seckey_create(DB *db,
 	ret = (int)(*jenv)->CallNonvirtualIntMethod(jenv, jdb, db_class,
 	    seckey_create_method, jkey, jdata, jresult);
 
+	if (ret != 0)
+		goto err;
+
 	if ((*jenv)->ExceptionOccurred(jenv)) {
 		/* The exception will be thrown, so this could be any error. */
 		ret = EINVAL;
 		goto err;
 	}
 	
-	if ((ret = __dbj_dbt_copyin(jenv, &lresult, jresult)) != 0)
+	if ((ret = __dbj_dbt_copyin(jenv, &lresult, NULL, jresult, 0)) != 0)
 		goto err;
 
 	if (lresult.jarr != NULL) {
 		/*
-		 * If there's data, we need to make a copy because we can't
-		 * keep the Java array pinned.
+		 * If there's data, we've got a copy of it (that's the default
+		 * when no Dbt flags are set, so we can safely free the array.
 		 */
-		memset(result, 0, sizeof (DBT));
 		*result = lresult.dbt;
-		if ((ret = __os_umalloc(NULL, result->size, &data_copy)) == 0)
-			memcpy(data_copy, result->data, result->size);
-		(*jenv)->ReleaseByteArrayElements(jenv, lresult.jarr,
-		    lresult.orig_data, 0);
 		(*jenv)->DeleteLocalRef(jenv, lresult.jarr);
-		result->data = data_copy;
 		result->flags |= DB_DBT_APPMALLOC;
 	}
 	
@@ -184,7 +187,6 @@ static int __dbj_append_recno(DB *db, DBT *dbt, db_recno_t recno)
 	jobject jdb = (jobject)DB_INTERNAL(db);
 	jobject jdbt;
 	DBT_LOCKED lresult;
-	void *data_copy;
 	jbyteArray jdbtarr;
 	int ret;
 
@@ -206,21 +208,16 @@ static int __dbj_append_recno(DB *db, DBT *dbt, db_recno_t recno)
 		goto err;
 	}
 
-	if ((ret = __dbj_dbt_copyin(jenv, &lresult, jdbt)) != 0)
+	if ((ret = __dbj_dbt_copyin(jenv, &lresult, NULL, jdbt, 0)) != 0)
 		goto err;
 
 	if (lresult.jarr != NULL) {
 		/*
-		 * If there's data, we need to make a copy because we can't
-		 * keep the Java array pinned.
+		 * If there's data, we've got a copy of it (that's the default
+		 * when no Dbt flags are set, so we can safely free the array.
 		 */
 		*dbt = lresult.dbt;
-		if ((ret = __os_umalloc(db->dbenv, dbt->size, &data_copy)) == 0)
-			memcpy(data_copy, dbt->data, dbt->size);
-		(*jenv)->ReleaseByteArrayElements(jenv, lresult.jarr,
-		    lresult.orig_data, 0);
 		(*jenv)->DeleteLocalRef(jenv, lresult.jarr);
-		dbt->data = data_copy;
 		dbt->flags |= DB_DBT_APPMALLOC;
 	}
 
@@ -234,22 +231,23 @@ static int __dbj_bt_compare(DB *db, const DBT *dbt1, const DBT *dbt2)
 {
 	JNIEnv *jenv = __dbj_get_jnienv();
 	jobject jdb = (jobject)DB_INTERNAL(db);
-	jobject jdbt1, jdbt2;
 	jbyteArray jdbtarr1, jdbtarr2;
 	int ret;
 
-	jdbt1 = (*jenv)->NewObject(jenv, dbt_class, dbt_construct);
-	jdbt2 = (*jenv)->NewObject(jenv, dbt_class, dbt_construct);
-	if (jdbt1 == NULL || jdbt2 == NULL)
-		return ENOMEM; /* An exception is pending */
+	jdbtarr1 = (*jenv)->NewByteArray(jenv, (jsize)dbt1->size);
+        if (jdbtarr1 == NULL)
+                return ENOMEM;
+        (*jenv)->SetByteArrayRegion(jenv, jdbtarr1, 0, (jsize)dbt1->size,
+            (jbyte *)dbt1->data);
 
-	__dbj_dbt_copyout(jenv, dbt1, &jdbtarr1, jdbt1);
-	__dbj_dbt_copyout(jenv, dbt2, &jdbtarr2, jdbt2);
-	if (jdbtarr1 == NULL || jdbtarr2 == NULL)
-		return ENOMEM; /* An exception is pending */
-	
+	jdbtarr2 = (*jenv)->NewByteArray(jenv, (jsize)dbt2->size);
+        if (jdbtarr2 == NULL)
+                return ENOMEM;
+        (*jenv)->SetByteArrayRegion(jenv, jdbtarr2, 0, (jsize)dbt2->size,
+            (jbyte *)dbt2->data);
+
 	ret = (int)(*jenv)->CallNonvirtualIntMethod(jenv, jdb, db_class,
-	    bt_compare_method, jdbt1, jdbt2);
+	    bt_compare_method, jdbtarr1, jdbtarr2);
 
 	if ((*jenv)->ExceptionOccurred(jenv)) {
 		/* The exception will be thrown, so this could be any error. */
@@ -258,8 +256,6 @@ static int __dbj_bt_compare(DB *db, const DBT *dbt1, const DBT *dbt2)
 	
 	(*jenv)->DeleteLocalRef(jenv, jdbtarr2);
 	(*jenv)->DeleteLocalRef(jenv, jdbtarr1);
-	(*jenv)->DeleteLocalRef(jenv, jdbt2);
-	(*jenv)->DeleteLocalRef(jenv, jdbt1);
 
 	return (ret);
 }
@@ -357,36 +353,38 @@ static u_int32_t __dbj_h_hash(DB *db, const void *data, u_int32_t len)
 }
 %}
 
-JAVA_CALLBACK(void (*db_errcall_fcn)(const char *, char *),
-    DbErrorHandler, error)
-JAVA_CALLBACK(void (*db_feedback_fcn)(DB_ENV *, int, int),
-    DbEnvFeedbackHandler, env_feedback)
+JAVA_CALLBACK(void (*db_errcall_fcn)(const DB_ENV *, const char *, const char *),
+    com.sleepycat.db.ErrorHandler, error)
+JAVA_CALLBACK(void (*env_feedback_fcn)(DB_ENV *, int, int),
+    com.sleepycat.db.FeedbackHandler, env_feedback)
+JAVA_CALLBACK(void (*db_msgcall_fcn)(const DB_ENV *, const char *),
+    com.sleepycat.db.MessageHandler, message)
 JAVA_CALLBACK(void (*db_panic_fcn)(DB_ENV *, int),
-    DbPanicHandler, panic)
+    com.sleepycat.db.PanicHandler, panic)
 JAVA_CALLBACK(int (*tx_recover)(DB_ENV *, DBT *, DB_LSN *, db_recops),
-    DbAppDispatch, app_dispatch)
+    com.sleepycat.db.LogRecordHandler, app_dispatch)
 JAVA_CALLBACK(int (*send)(DB_ENV *, const DBT *, const DBT *,
                                const DB_LSN *, int, u_int32_t),
-    DbRepTransport, rep_transport)
+    com.sleepycat.db.ReplicationTransport, rep_transport)
 
 /*
  * Db.associate is a special case, because the handler must be set in the
  * secondary DB - that's what we have in the callback.
  */
 JAVA_CALLBACK(int (*callback)(DB *, const DBT *, const DBT *, DBT *),
-    DbSecondaryKeyCreate, seckey_create)
+    com.sleepycat.db.SecondaryKeyCreator, seckey_create)
 %typemap(javain) int (*callback)(DB *, const DBT *, const DBT *, DBT *)
     %{ (secondary.seckey_create_handler = $javainput) %}
 
 JAVA_CALLBACK(int (*db_append_recno_fcn)(DB *, DBT *, db_recno_t),
-    DbAppendRecno, append_recno)
+    com.sleepycat.db.RecordNumberAppender, append_recno)
 JAVA_CALLBACK(int (*bt_compare_fcn)(DB *, const DBT *, const DBT *),
-    DbBtreeCompare, bt_compare)
+    java.util.Comparator, bt_compare)
 JAVA_CALLBACK(size_t (*bt_prefix_fcn)(DB *, const DBT *, const DBT *),
-    DbBtreePrefix, bt_prefix)
+    com.sleepycat.db.BtreePrefixCalculator, bt_prefix)
 JAVA_CALLBACK(int (*dup_compare_fcn)(DB *, const DBT *, const DBT *),
-    DbDupCompare, dup_compare)
+    java.util.Comparator, dup_compare)
 JAVA_CALLBACK(void (*db_feedback_fcn)(DB *, int, int),
-    DbFeedbackHandler, db_feedback)
+    com.sleepycat.db.FeedbackHandler, db_feedback)
 JAVA_CALLBACK(u_int32_t (*h_hash_fcn)(DB *, const void *, u_int32_t),
-    DbHash, h_hash)
+    com.sleepycat.db.Hasher, h_hash)

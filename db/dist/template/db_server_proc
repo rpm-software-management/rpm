@@ -1,4 +1,3 @@
-/* Do not edit: automatically built by gen_rpc.awk. */
 #include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -9,10 +8,10 @@
 #include <string.h>
 #endif
 
+#include "db_server.h"
+
 #include "db_int.h"
-#include "dbinc_auto/db_server.h"
 #include "dbinc/db_server_int.h"
-#include "dbinc_auto/rpc_server_ext.h"
 
 /* BEGIN __env_get_cachesize_proc */
 void
@@ -1442,8 +1441,10 @@ __db_rename_proc(dbpcl_id, name, subdb,
 
 /* BEGIN __db_stat_proc */
 void
-__db_stat_proc(dbpcl_id, flags, replyp, freep)
+__db_stat_proc(dbpcl_id, txnpcl_id,
+		flags, replyp, freep)
 	long dbpcl_id;
+	long txnpcl_id;
 	u_int32_t flags;
 	__db_stat_reply *replyp;
 	int * freep;
@@ -1452,9 +1453,13 @@ __db_stat_proc(dbpcl_id, flags, replyp, freep)
 	int ret;
 	DB * dbp;
 	ct_entry *dbp_ctp;
+	DB_TXN * txnp;
+	ct_entry *txnp_ctp;
 
 	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
 	dbp = (DB *)dbp_ctp->ct_anyp;
+	ACTIVATE_CTP(txnp_ctp, txnpcl_id, CT_TXN);
+	txnp = (DB_TXN *)txnp_ctp->ct_anyp;
 
 	/*
 	 * XXX Code goes here

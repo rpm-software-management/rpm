@@ -1,23 +1,22 @@
-<!--$Id: log_archive.so,v 10.48 2003/11/08 19:17:35 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: log_archive.so,v 10.49 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;log_archive</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;log_archive</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -33,8 +32,8 @@ DB_ENV-&gt;log_archive(DB_ENV *env, char *(*listp)[], u_int32_t flags);
 files that are no longer in use (for example, that are no longer
 involved in active transactions), and that may safely be archived for
 catastrophic recovery and then removed from the system.  If there are
-no filenames to return,
-the memory location to which <b>listp</b> refers will be set to NULL.</p>
+no filenames to return, the memory location to which <b>listp</b>
+refers will be set to NULL.</p>
 <p>Arrays of log filenames are stored in allocated memory.  If application-specific allocation
 routines have been declared (see <a href="../api_c/env_set_alloc.html">DB_ENV-&gt;set_alloc</a> for more
 information), they are used to allocate the memory; otherwise, the
@@ -67,33 +66,29 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_ARCH_ABS">DB_ARCH_ABS</a><dd>All pathnames are returned as absolute pathnames, instead of relative
+<dl compact>
+<dt><a name="DB_ARCH_ABS">DB_ARCH_ABS</a><dd>All pathnames are returned as absolute pathnames, instead of relative
 to the database home directory.
-<p><dt><a name="DB_ARCH_DATA">DB_ARCH_DATA</a><dd>Return the database files that need to be archived in order to recover
+<dt><a name="DB_ARCH_DATA">DB_ARCH_DATA</a><dd>Return the database files that need to be archived in order to recover
 the database from catastrophic failure.  If any of the database files
 have not been accessed during the lifetime of the current log files,
 DB_ENV-&gt;log_archive will not include them in this list.  It is also
 possible that some of the files referred to by the log have since been
 deleted from the system.
-<p>The DB_ARCH_DATA and DB_ARCH_LOG flags are mutually
-exclusive.</p>
-<p><dt><a name="DB_ARCH_LOG">DB_ARCH_LOG</a><dd>Return all the log filenames, regardless of whether or not they are in
+<p>The DB_ARCH_DATA and DB_ARCH_LOG flags are mutually exclusive.</p>
+<dt><a name="DB_ARCH_LOG">DB_ARCH_LOG</a><dd>Return all the log filenames, regardless of whether or not they are in
 use.
-<p>The DB_ARCH_DATA and DB_ARCH_LOG flags are mutually
-exclusive.</p>
-<p><dt><a name="DB_ARCH_REMOVE">DB_ARCH_REMOVE</a><dd>Remove log files that are no longer needed; no filenames are returned.
+<p>The DB_ARCH_DATA and DB_ARCH_LOG flags are mutually exclusive.</p>
+<dt><a name="DB_ARCH_REMOVE">DB_ARCH_REMOVE</a><dd>Remove log files that are no longer needed; no filenames are returned.
 Automatic log file removal is likely to make catastrophic recovery
 impossible.
 <p>The DB_ARCH_REMOVE flag may not be specified with any other
 flag.</p>
 </dl>
-<p><dt><b>listp</b><dd>
-The <b>listp</b> parameter references memory into which the allocated
+<dt><b>listp</b><dd>The <b>listp</b> parameter references memory into which the allocated
 array of log or database filenames is copied.  If there are no filenames
 to return, the memory location to which <b>listp</b> refers will be set
 to NULL.
@@ -101,8 +96,8 @@ to NULL.
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;log_archive method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -114,6 +109,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: TestAssociate.java,v 1.7 2003/06/18 18:46:48 gburd Exp $
+ * $Id: TestAssociate.java,v 1.8 2004/01/28 03:36:34 bostic Exp $
  */
 
 package com.sleepycat.test;

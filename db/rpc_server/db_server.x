@@ -496,11 +496,10 @@ struct __db_open_msg {
 };
 
 struct __db_open_reply {
-	/* num return vars: 4 */
+	/* num return vars: 3 */
 	int status;
 	unsigned int dbcl_id;
 	unsigned int type;
-	unsigned int dbflags;
 	unsigned int lorder;
 };
 
@@ -662,6 +661,7 @@ struct __db_rename_reply {
 
 struct __db_stat_msg {
 	unsigned int dbpcl_id;
+	unsigned int txnpcl_id;
 	unsigned int flags;
 };
 
@@ -898,5 +898,5 @@ program DB_RPC_SERVERPROG {
 		__dbc_get_reply __DB_dbc_get(__dbc_get_msg) = 66;
 		__dbc_pget_reply __DB_dbc_pget(__dbc_pget_msg) = 67;
 		__dbc_put_reply __DB_dbc_put(__dbc_put_msg) = 68;
-	} = 4002;
+	} = 4003;
 } = 351457;

@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_test,v 1.28 2003/10/14 17:13:55 sandstro Exp $
+#	$Id: s_test,v 1.29 2004/05/13 18:51:43 mjc Exp $
 #
 # Build the Tcl test files.
 
@@ -22,6 +22,7 @@ trap 'rm -f $t; exit 0' 0 1 2 3 13 15
  echo ""					&& \
  echo "set src_root @srcdir@/.."		&& \
  echo "set test_path @srcdir@/../test"		&& \
+ echo "set je_root @srcdir@/../../je"		&& \
  echo ""					&& \
  echo "global testdir"				&& \
  echo "set testdir ./TESTDIR"			&& \
@@ -46,6 +47,7 @@ cmp $t $f > /dev/null 2>&1 ||
  echo ""					&& \
  echo "set src_root .."				&& \
  echo "set test_path ../test"			&& \
+ echo "set je_root ../../je"			&& \
  echo ""					&& \
  echo "global testdir"				&& \
  echo "set testdir ./TESTDIR"			&& \

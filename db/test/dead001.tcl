@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: dead001.tcl,v 11.36 2003/05/18 14:09:38 bostic Exp $
+# $Id: dead001.tcl,v 11.37 2004/01/28 03:36:26 bostic Exp $
 #
 # TEST	dead001
 # TEST	Use two different configurations to test deadlock detection among a

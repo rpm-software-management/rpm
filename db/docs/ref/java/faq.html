@@ -1,12 +1,12 @@
-<!--$Id: faq.so,v 1.9 2003/11/27 18:25:59 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 1.12 2004/09/17 20:16:22 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Java FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
@@ -17,6 +17,36 @@
 <p>
 <h3 align=center>Java FAQ</h3>
 <ol>
+<p><li><b>On what platforms is the Berkeley DB Java API supported?</b>
+<p>All platforms supported by Berkeley DB that have a J2SE 1.3.1 compliant JVM.</p>
+<p><li><b>Will the Berkeley DB Java API function properly when using Java
+version 1.4?</b>
+<p>The minimum required version is J2SE 1.3.  Sun claims, and it has been
+our experience, that for the most part 1.4.1 is backwards compatible
+with 1.3.1.  It is highly likely it will, we recommend that you run the
+supplied test suites against the specific Java VM on the specific
+platform on which you plan to ship your product to ensure compatibility.</p>
+<p><li><b>How does the Berkeley DB Java API relate to the J2EE standard?</b>
+<p>The Berkeley DB Java API does not currently implement any part of the J2EE
+standard.  That said, it does implement the implicit standard for Java
+<a href="http://java.sun.com/j2se/1.3/docs/guide/collections/">Java Collections</a>.  The concept of a transaction exists in several
+Java packages (J2EE, XA, JINI to name a few).  Support for these APIs
+will be added based on demand in future versions of Berkeley DB.</p>
+<p><li><b>How should I incorporate db.jar and the db native library into
+a Tomcat or other J2EE application servers?</b>
+<p>Tomcat and other J2EE application servers have the ability to rebuild
+and reload code automatically.  When using Tomcat this is the case when
+"reloadable" is set to "true".  If your WAR file includes the db.jar it
+too will be reloaded each time your code is reloaded.  This causes
+exceptions as the native library can't be loaded more than once and
+there is no way to unload native code.  The solution is to place the
+db.jar in $TOMCAT_HOME/common/lib and let Tomcat load that library once
+at start time rather than putting it into the WAR that gets reloaded
+over and over.</p>
+<p><li><b>Can I use the Berkeley DB Java API from within a EJB, a Servlet or a
+JSP page?</b>
+<p>Yes.  The Berkeley DB Java API can be used from within all the popular J2EE
+application servers in many different ways.</p>
 <p><li><b>During one of the first calls to the Berkeley DB Java API, a
 DbException is thrown with a "Bad file number" or "Bad file descriptor"
 message.</b>
@@ -32,21 +62,31 @@ follows (note the 'd' at the end):</p>
 <blockquote><pre>% java -Dsleepycat.db.libname=libdb_java-VERSIONd</pre></blockquote>
 <p>On UNIX, try:</p>
 <blockquote><pre>% java -Dsleepycat.db.libname=db_java_g-VERSION</pre></blockquote>
-<p><li><b>How should I incorporate db.jar and the db native library
-into a Tomcat or other J2EE application servers?</b>
-<p>Tomcat and other J2EE application servers have the ability to
-rebuild and reload code automatically.  When using Tomcat this
-is the case when "reloadable" is set to "true".  If your WAR
-file includes the db.jar it too will be reloaded each time
-your code is reloaded.  This causes exceptions as the native
-library can't be loaded more than once and there is no way to
-unload native code.  The solution is to place the db.jar in
-$TOMCAT_HOME/common/lib and let Tomcat load that library once
-at start time rather than putting it into the WAR that
-gets reloaded over and over.</p>
+<p><li><b>Why is ClassNotFoundException thrown when adding a record to
+the database, when a SerialBinding is used?</b>
+<p>This problem occurs if you copy the db.jar file into the Java extensions
+(ext) directory.  This will cause the database code to run under the
+System class loader, and it won't be able to find your application
+classes.</p>
+<p>You'll have to actually remove db.jar from the Java extension directory.
+If you have more than one installation of Java, be sure to remove it
+from all of them.  This is necessary even if db.jar is specified in the
+classpath.</p>
+<p>An example of the exception is:</p>
+<blockquote><pre>com.sleepycat.examples.bdb.shipment.basic.SupplierKey
+at java.net.URLClassLoader$1.run(Unknown Source)
+at java.security.AccessController.doPrivileged(Native Method)
+at java.net.URLClassLoader.findClass(Unknown Source)
+at java.lang.ClassLoader.loadClass(Unknown Source)
+at java.lang.ClassLoader.loadClass(Unknown Source)
+at java.lang.ClassLoader.loadClassInternal(Unknown Source)
+at java.lang.Class.forName0(Native Method)
+at java.lang.Class.forName(Unknown Source)
+at com.sleepycat.bind.serial.StoredClassCatalog.getClassInfo(StoredClassCatalog.java:211)
+...</pre></blockquote>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../java/program.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../arch/bigpic.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -178,6 +178,7 @@ T_dbtkeydatum
 	    SV* my_sv = $arg ;
 	    DBM_ckFilter(my_sv, filter_store_key, \"filter_store_key\");
 	    DBT_clear($var) ;
+            SvGETMAGIC($arg) ;
 	    if (db->recno_or_queue) {
 	        Value = GetRecnoKey(db, SvIV(my_sv)) ; 
 	        $var.data = & Value; 
@@ -194,6 +195,7 @@ T_dbtkeydatum_btree
 	    SV* my_sv = $arg ;
 	    DBM_ckFilter(my_sv, filter_store_key, \"filter_store_key\");
 	    DBT_clear($var) ;
+            SvGETMAGIC($arg) ;
 	    if (db->recno_or_queue ||
 		    (db->type == DB_BTREE && flagSet(DB_SET_RECNO))) {
 	        Value = GetRecnoKey(db, SvIV(my_sv)) ; 
@@ -211,6 +213,7 @@ T_dbtdatum
 	    SV* my_sv = $arg ;
 	    DBM_ckFilter(my_sv, filter_store_value, \"filter_store_value\");
 	    DBT_clear($var) ;
+            SvGETMAGIC($arg) ;
 	    $var.data = SvPV(my_sv, PL_na);
 	    $var.size = (int)PL_na;
   	    $var.flags = db->partial ;
@@ -223,6 +226,7 @@ T_dbtdatum_opt
 	if (flagSet(DB_GET_BOTH)) {
 	   SV* my_sv = $arg ;
 	   DBM_ckFilter(my_sv, filter_store_value, \"filter_store_value\");
+           SvGETMAGIC($arg) ;
 	   $var.data = SvPV(my_sv, PL_na);
 	   $var.size = (int)PL_na;
   	   $var.flags = db->partial ;
@@ -235,6 +239,7 @@ T_dbtdatum_btree
 	if (flagSet(DB_GET_BOTH)) {
 	    SV* my_sv = $arg ;
 	    DBM_ckFilter(my_sv, filter_store_value, \"filter_store_value\");
+            SvGETMAGIC($arg) ;
 	    $var.data = SvPV(my_sv, PL_na);
 	    $var.size = (int)PL_na;
   	    $var.flags = db->partial ;

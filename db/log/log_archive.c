@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: log_archive.c,v 11.62 2004/07/16 21:38:59 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: log_archive.c,v 11.51 2003/09/13 19:20:38 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -28,6 +26,7 @@ static const char revid[] = "$Id: log_archive.c,v 11.51 2003/09/13 19:20:38 bost
 static int __absname __P((DB_ENV *, char *, char *, char **));
 static int __build_data __P((DB_ENV *, char *, char ***));
 static int __cmpfunc __P((const void *, const void *));
+static int __log_archive __P((DB_ENV *, char **[], u_int32_t));
 static int __usermem __P((DB_ENV *, char ***));
 
 /*
@@ -48,42 +47,6 @@ __log_archive_pp(dbenv, listp, flags)
 	ENV_REQUIRES_CONFIG(dbenv,
 	    dbenv->lg_handle, "DB_ENV->log_archive", DB_INIT_LOG);
 
-	rep_check = IS_ENV_REPLICATED(dbenv) ? 1 : 0;
-	if (rep_check)
-		__env_rep_enter(dbenv);
-	ret = __log_archive(dbenv, listp, flags);
-	if (rep_check)
-		__env_rep_exit(dbenv);
-	return (ret);
-}
-
-/*
- * __log_archive --
- *	DB_ENV->log_archive.
- *
- * PUBLIC: int __log_archive __P((DB_ENV *, char **[], u_int32_t));
- */
-int
-__log_archive(dbenv, listp, flags)
-	DB_ENV *dbenv;
-	char ***listp;
-	u_int32_t flags;
-{
-	DBT rec;
-	DB_LOG *dblp;
-	DB_LOGC *logc;
-	DB_LSN stable_lsn;
-	__txn_ckp_args *ckp_args;
-	char **array, **arrayp, *name, *p, *pref, buf[MAXPATHLEN];
-	int array_size, db_arch_abs, n, rep_check, ret;
-	u_int32_t fnum;
-
-	ret = 0;
-	name = NULL;
-	array = NULL;
-	dblp = dbenv->lg_handle;
-	COMPQUIET(fnum, 0);
-
 #define	OKFLAGS	(DB_ARCH_ABS | DB_ARCH_DATA | DB_ARCH_LOG | DB_ARCH_REMOVE)
 	if (flags != 0) {
 		if ((ret = __db_fchk(
@@ -98,34 +61,60 @@ __log_archive(dbenv, listp, flags)
 			return (ret);
 	}
 
-	if (LF_ISSET(DB_ARCH_ABS)) {
-		db_arch_abs = 1;
-		LF_CLR(DB_ARCH_ABS);
-	} else
-		db_arch_abs = 0;
+	rep_check = IS_ENV_REPLICATED(dbenv) ? 1 : 0;
+	if (rep_check)
+		__env_rep_enter(dbenv);
+	ret = __log_archive(dbenv, listp, flags);
+	if (rep_check)
+		__env_db_rep_exit(dbenv);
+	return (ret);
+}
 
-	if (flags == 0 || flags == DB_ARCH_DATA)
-		ENV_REQUIRES_CONFIG(dbenv,
-		    dbenv->tx_handle, "DB_ENV->log_archive", DB_INIT_TXN);
+/*
+ * __log_archive --
+ *	DB_ENV->log_archive.  Internal.
+ */
+static int
+__log_archive(dbenv, listp, flags)
+	DB_ENV *dbenv;
+	char ***listp;
+	u_int32_t flags;
+{
+	DBT rec;
+	DB_LOG *dblp;
+	LOG *lp;
+	DB_LOGC *logc;
+	DB_LSN stable_lsn;
+	__txn_ckp_args *ckp_args;
+	u_int array_size, n;
+	u_int32_t fnum;
+	int ret, t_ret;
+	char **array, **arrayp, *name, *p, *pref, buf[MAXPATHLEN];
+
+	dblp = dbenv->lg_handle;
+	lp = (LOG *)dblp->reginfo.primary;
+	array = NULL;
+	name = NULL;
+	ret = 0;
+	COMPQUIET(fnum, 0);
+
+	if (flags != DB_ARCH_REMOVE)
+		*listp = NULL;
+
+	/* There are no log files if logs are in memory. */
+	if (lp->db_log_inmemory) {
+		LF_CLR(~DB_ARCH_DATA);
+		if (flags == 0)
+			return (0);
+	}
 
 	/*
 	 * If the user wants the list of log files to remove and we're
-	 * at a bad time in replication initialization, give them
-	 * back an empty list.  Otherwise, wait until it's OK to run
-	 * log archive.
+	 * at a bad time in replication initialization, just return.
 	 */
-	rep_check = 0;
-	if (flags == 0 || flags == DB_ARCH_REMOVE || db_arch_abs) {
-		if (__rep_noarchive(dbenv)) {
-			*listp = NULL;
-			ret = 0;
-			goto err;
-		}
-	} else {
-		rep_check = IS_ENV_REPLICATED(dbenv) ? 1 : 0;
-		if (rep_check)
-			__env_rep_enter(dbenv);
-	}
+	if (!LF_ISSET(DB_ARCH_DATA) &&
+	    !LF_ISSET(DB_ARCH_LOG) && __rep_noarchive(dbenv))
+		return (0);
 
 	/*
 	 * Get the absolute pathname of the current directory.  It would
@@ -136,49 +125,59 @@ __log_archive(dbenv, listp, flags)
 	 * Can't trust getcwd(3) to set a valid errno.  If it doesn't, just
 	 * guess that we ran out of memory.
 	 */
-	if (db_arch_abs) {
+	if (LF_ISSET(DB_ARCH_ABS)) {
 		__os_set_errno(0);
 		if ((pref = getcwd(buf, sizeof(buf))) == NULL) {
 			if (__os_get_errno() == 0)
 				__os_set_errno(ENOMEM);
 			ret = __os_get_errno();
-			goto err1;
+			goto err;
 		}
 	} else
 		pref = NULL;
 
+	LF_CLR(DB_ARCH_ABS);
 	switch (flags) {
 	case DB_ARCH_DATA:
-		return (__build_data(dbenv, pref, listp));
+		ret = __build_data(dbenv, pref, listp);
+		goto err;
 	case DB_ARCH_LOG:
 		memset(&rec, 0, sizeof(rec));
 		if ((ret = __log_cursor(dbenv, &logc)) != 0)
-			goto err1;
+			goto err;
 #ifdef UMRW
 		ZERO_LSN(stable_lsn);
 #endif
 		ret = __log_c_get(logc, &stable_lsn, &rec, DB_LAST);
-		(void)__log_c_close(logc);
+		if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
+			ret = t_ret;
 		if (ret != 0)
-			goto err1;
+			goto err;
 		fnum = stable_lsn.file;
 		break;
 	case DB_ARCH_REMOVE:
 		__log_autoremove(dbenv);
-		goto err1;
+		goto err;
 	case 0:
 		memset(&rec, 0, sizeof(rec));
-		if (__txn_getckp(dbenv, &stable_lsn) != 0) {
+		if (!TXN_ON(dbenv)) {
+			__log_get_cached_ckp_lsn(dbenv, &stable_lsn);
+			if (IS_ZERO_LSN(stable_lsn) && (ret =
+			     __txn_findlastckp(dbenv, &stable_lsn, NULL)) != 0)
+				goto err;
+			if (IS_ZERO_LSN(stable_lsn))
+				goto err;
+		}
+		else if (__txn_getckp(dbenv, &stable_lsn) != 0) {
 			/*
 			 * A failure return means that there's no checkpoint
 			 * in the log (so we are not going to be deleting
 			 * any log files).
 			 */
-			*listp = NULL;
-			goto err1;
+			goto err;
 		}
 		if ((ret = __log_cursor(dbenv, &logc)) != 0)
-			goto err1;
+			goto err;
 		if ((ret = __log_c_get(logc, &stable_lsn, &rec, DB_SET)) != 0 ||
 		    (ret = __txn_ckp_read(dbenv, rec.data, &ckp_args)) != 0) {
 			/*
@@ -187,21 +186,24 @@ __log_archive(dbenv, listp, flags)
 			 * log files that we still have.  This is not
 			 * an error;  it just means our work is done.
 			 */
-			if (ret == DB_NOTFOUND) {
-				*listp = NULL;
+			if (ret == DB_NOTFOUND)
 				ret = 0;
-			}
-			(void)__log_c_close(logc);
-			goto err1;
+			if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
+				ret = t_ret;
+			goto err;
 		}
 		if ((ret = __log_c_close(logc)) != 0)
-			goto err1;
+			goto err;
 		stable_lsn = ckp_args->ckp_lsn;
 		__os_free(dbenv, ckp_args);
 
 		/* Remove any log files before the last stable LSN. */
 		fnum = stable_lsn.file - 1;
 		break;
+	default:
+		DB_ASSERT(0);
+		ret = EINVAL;
+		goto err;
 	}
 
 #define	LIST_INCREMENT	64
@@ -209,7 +211,7 @@ __log_archive(dbenv, listp, flags)
 	array_size = 64;
 	if ((ret = __os_malloc(dbenv,
 	    sizeof(char *) * array_size, &array)) != 0)
-		goto err1;
+		goto err;
 	array[0] = NULL;
 
 	/* Build an array of the file names. */
@@ -231,9 +233,9 @@ __log_archive(dbenv, listp, flags)
 				goto err;
 		}
 
-		if (db_arch_abs) {
-			if ((ret = __absname(dbenv,
-			    pref, name, &array[n])) != 0)
+		if (pref != NULL) {
+			if ((ret =
+			    __absname(dbenv, pref, name, &array[n])) != 0)
 				goto err;
 			__os_free(dbenv, name);
 		} else if ((p = __db_rpath(name)) != NULL) {
@@ -248,11 +250,8 @@ __log_archive(dbenv, listp, flags)
 	}
 
 	/* If there's nothing to return, we're done. */
-	if (n == 0) {
-		*listp = NULL;
-		ret = 0;
+	if (n == 0)
 		goto err;
-	}
 
 	/* Sort the list. */
 	qsort(array, (size_t)n, sizeof(char *), __cmpfunc);
@@ -261,19 +260,43 @@ __log_archive(dbenv, listp, flags)
 	if ((ret = __usermem(dbenv, &array)) != 0)
 		goto err;
 
-	*listp = array;
-	return (0);
+	if (listp != NULL)
+		*listp = array;
 
-err:	if (array != NULL) {
-		for (arrayp = array; *arrayp != NULL; ++arrayp)
-			__os_free(dbenv, *arrayp);
-		__os_free(dbenv, array);
+	if (0) {
+err:		if (array != NULL) {
+			for (arrayp = array; *arrayp != NULL; ++arrayp)
+				__os_free(dbenv, *arrayp);
+			__os_free(dbenv, array);
+		}
+		if (name != NULL)
+			__os_free(dbenv, name);
 	}
-	if (name != NULL)
-		__os_free(dbenv, name);
-err1:	if (rep_check)
-		__env_rep_exit(dbenv);
+
 	return (ret);
+}
+
+/*
+ * __log_autoremove --
+ *	Delete any non-essential log files.
+ *
+ * PUBLIC: void __log_autoremove __P((DB_ENV *));
+ */
+void
+__log_autoremove(dbenv)
+	DB_ENV *dbenv;
+{
+	char **begin, **list;
+
+	if (__log_archive(dbenv, &list, DB_ARCH_ABS) != 0)
+		return;
+
+	if (list != NULL) {
+		for (begin = list; *list != NULL; ++list)
+			(void)__os_unlink(dbenv, *list);
+		__os_ufree(dbenv, begin);
+	}
+	return;
 }
 
 /*
@@ -289,8 +312,9 @@ __build_data(dbenv, pref, listp)
 	DB_LOGC *logc;
 	DB_LSN lsn;
 	__dbreg_register_args *argp;
+	u_int array_size, last, n, nxt;
 	u_int32_t rectype;
-	int array_size, last, n, nxt, ret, t_ret;
+	int ret, t_ret;
 	char **array, **arrayp, **list, **lp, *p, *real_name;
 
 	/* Get some initial space. */
@@ -307,7 +331,7 @@ __build_data(dbenv, pref, listp)
 		if (rec.size < sizeof(rectype)) {
 			ret = EINVAL;
 			__db_err(dbenv, "DB_ENV->log_archive: bad log record");
-			goto free_continue;
+			break;
 		}
 
 		memcpy(&rectype, rec.data, sizeof(rectype));
@@ -318,7 +342,7 @@ __build_data(dbenv, pref, listp)
 			ret = EINVAL;
 			__db_err(dbenv,
 			    "DB_ENV->log_archive: unable to read log record");
-			goto free_continue;
+			break;
 		}
 
 		if (n >= array_size - 2) {

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: TestStat.java,v 1.9 2003/08/07 15:48:03 mjc Exp $
+ * $Id: TestStat.java,v 1.10 2004/01/28 03:36:34 bostic Exp $
  */
 
 /*

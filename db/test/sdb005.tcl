@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb005.tcl,v 11.20 2003/01/08 05:52:59 bostic Exp $
+# $Id: sdb005.tcl,v 11.21 2004/01/28 03:36:29 bostic Exp $
 #
 # TEST	sdb005
 # TEST	Tests cursor operations in subdbs

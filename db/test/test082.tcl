@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test082.tcl,v 11.7 2003/01/08 05:54:04 bostic Exp $
+# $Id: test082.tcl,v 11.8 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test082
 # TEST	Test of DB_PREV_NODUP (uses test074).

@@ -1,17 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: qam.src,v 11.31 2003/11/14 05:32:38 ubell Exp $
+ * $Id: qam.src,v 11.33 2004/06/17 17:35:22 bostic Exp $
  */
 
 PREFIX	__qam
 DBPRIVATE
 
-INCLUDE	#include "db_config.h"
-INCLUDE
 INCLUDE #ifndef NO_SYSTEM_INCLUDES
 INCLUDE #include <sys/types.h>
 INCLUDE

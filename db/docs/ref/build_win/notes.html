@@ -1,12 +1,12 @@
-<!--$Id: notes.so,v 10.25 2003/10/18 19:15:58 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: notes.so,v 10.27 2004/01/28 00:03:04 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Windows notes</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -29,6 +29,17 @@ with an obvious race.</p>
 <p>Practically speaking, however, these efforts would be largely meaningless
 on a FAT file system, which only has a "readable" and "writable" flag,
 applying to all users.</p>
+<p><li>On Windows, Berkeley DB supports internationalized filenames by treating all
+directory paths and filenames passed to Berkeley DB methods as UTF-8 strings.
+All paths are internally converted to wide character strings and passed
+to the wide character variants of Windows system calls.
+<p>This allows applications to create and open databases with names that
+cannot be represented with ASCII names while maintaining compatibility
+with applications that work purely with ASCII paths.</p>
+<p>Applications that operate on wide character strings can use the Windows
+function WideCharToMultiByte with the code page CP_UTF8 to convert paths
+to the form expected by Berkeley DB.  Internally, Berkeley DB calls MultiByteToWideChar
+on paths before calling Windows functions.</p>
 <p><li>On Windows/9X, files opened by multiple processes do not share data
 correctly.  For this reason, the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag is implied
 for any application that does not specify the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag,
@@ -57,6 +68,6 @@ directly specified through the <a href="../../api_c/env_open.html">DB_ENV-&gt;op
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_win/test.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

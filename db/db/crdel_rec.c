@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: crdel_rec.c,v 11.68 2004/04/29 00:07:55 ubell Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: crdel_rec.c,v 11.66 2003/06/30 17:19:42 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -52,15 +50,9 @@ __crdel_metasub_recover(dbenv, dbtp, lsnp, op, info)
 	REC_INTRO(__crdel_metasub_read, 0);
 
 	if ((ret = __memp_fget(mpf, &argp->pgno, 0, &pagep)) != 0) {
-		if (DB_REDO(op)) {
-			if ((ret = __memp_fget(mpf,
-			    &argp->pgno, DB_MPOOL_CREATE, &pagep)) != 0)
-				goto out;
-		} else {
-			*lsnp = argp->prev_lsn;
-			ret = 0;
-			goto out;
-		}
+		*lsnp = argp->prev_lsn;
+		ret = 0;
+		goto out;
 	}
 
 	modified = 0;

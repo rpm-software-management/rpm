@@ -1,18 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2003
+ * Copyright (c) 1998-2004
  *	Sleepycat Software.  All rights reserved.
  *
  * This code is derived from software contributed to Sleepycat Software by
  * Frederick G.M. Roeber of Netscape Communications Corp.
+ *
+ * $Id: os_vx_map.c,v 1.23 2004/01/28 03:36:19 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_vx_map.c,v 1.22 2003/01/08 05:32:38 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>

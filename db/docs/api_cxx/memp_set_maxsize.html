@@ -1,23 +1,22 @@
-<!--$Id: memp_set_maxsize.so,v 1.11 2003/11/08 19:17:41 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: memp_set_maxsize.so,v 1.14 2004/09/28 15:04:21 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbMpoolFile::set_maxsize</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbMpoolFile::set_maxsize</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,11 +30,9 @@ DbMpoolFile::get_maxsize(u_int32_t *gbytesp, u_int32_t *bytesp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbMpoolFile::set_maxsize</h3>
-<a name="3"><!--meow--></a>
-<p>Set the maximum size for the file to be
-<b>gbytes</b> gigabytes plus <b>bytes</b>.
-Attempts to allocate new pages in the file after the limit has been
-reached will fail.</p>
+<p>Set the maximum size for the file to be <b>gbytes</b> gigabytes plus
+<b>bytes</b>.  Attempts to allocate new pages in the file after the
+limit has been reached will fail.</p>
 <p>To set the maximum file size for a particular database, call the
 DbMpoolFile::set_maxsize method using the <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> handle stored
 in the <b>mpf</b> field of the <a href="../api_cxx/db_class.html">Db</a> handle.  Attempts to insert
@@ -48,12 +45,10 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>bytes</b><dd>
-The maximum size of the file is set to <b>gbytes</b> gigabytes plus
+<dl compact>
+<dt><b>bytes</b><dd>The maximum size of the file is set to <b>gbytes</b> gigabytes plus
 <b>bytes</b>.
-<p><dt><b>gbytes</b><dd>
-The maximum size of the file is set to <b>gbytes</b> gigabytes plus
+<dt><b>gbytes</b><dd>The maximum size of the file is set to <b>gbytes</b> gigabytes plus
 <b>bytes</b>.
 </dl>
 <hr size=1 noshade>
@@ -66,12 +61,10 @@ failure, and returns 0 on success.
 <p>The DbMpoolFile::get_maxsize method may be called at any time during the life of the
 application.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>bytesp</b><dd>
-The <b>bytesp</b> parameter references memory into which
+<dl compact>
+<dt><b>bytesp</b><dd>The <b>bytesp</b> parameter references memory into which
  the additional bytes of memory in the maximum file size is copied.
-<p><dt><b>gbytesp</b><dd>
-The <b>gbytesp</b> parameter references memory into which
+<dt><b>gbytesp</b><dd>The <b>gbytesp</b> parameter references memory into which
  the gigabytes of memory in the maximum file size is copied.
 </dl>
 <hr size=1 noshade>
@@ -83,6 +76,6 @@ The <b>gbytesp</b> parameter references memory into which
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

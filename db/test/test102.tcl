@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test102.tcl,v 1.7 2003/09/04 23:41:18 bostic Exp $
+# $Id: test102.tcl,v 1.9 2004/02/05 02:25:24 mjc Exp $
 #
 # TEST	test102
 # TEST	Bulk get test for record-based methods. [#2934]
@@ -161,16 +161,16 @@ proc t102_gettest_body { db tnum letter bufsize expectfail usecursor } {
 				}
 			}
 
-			# If we expect a failure, be more tolerant if the
-			# above fails; just make sure it's an ENOMEM or
-			# and EINVAL (if the buffer is smaller than the
-			# pagesize, it's EINVAL), mark it, and move along.
+			# If we expect a failure, be more tolerant if the above
+			# fails; just make sure it's a DB_BUFFER_SMALL or an
+			# EINVAL (if the buffer is smaller than the pagesize,
+			# it's EINVAL), mark it, and move along.
 			if { $expectfail != 0 && $ret != 0 } {
-				if { [is_substr $errorCode ENOMEM] != 1 && \
+				if { [is_substr $errorCode DB_BUFFER_SMALL] != 1 && \
 				    [is_substr $errorCode EINVAL] != 1 } {
 					error_check_good \
 					    "$flag failure errcode" \
-					    $errorCode "ENOMEM or EINVAL"
+					    $errorCode "DB_BUFFER_SMALL or EINVAL"
 				}
 				set allpassed FALSE
 				continue
@@ -181,7 +181,7 @@ proc t102_gettest_body { db tnum letter bufsize expectfail usecursor } {
 		if { $expectfail == 1 } {
 			error_check_good allpassed $allpassed FALSE
 			puts "\t\tTest$tnum.$letter:\
-			    returned at least one ENOMEM (as expected)"
+			    returned at least one DB_BUFFER_SMALL (as expected)"
 		} else {
 			error_check_good allpassed $allpassed TRUE
 			puts "\t\tTest$tnum.$letter: succeeded (as expected)"

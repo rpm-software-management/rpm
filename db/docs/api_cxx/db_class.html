@@ -1,23 +1,22 @@
-<!--$Id: db_class.so,v 10.47 2003/11/08 19:17:16 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_class.so,v 10.49 2004/08/18 02:33:48 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -68,9 +67,8 @@ the associated const Db object, if there is one.</p>
 and C++ language software.  It should not be necessary to use these
 calls in a purely C++ application.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dbenv</b><dd>
-If no <b>dbenv</b> value is specified, the database is standalone; that
+<dl compact>
+<dt><b>dbenv</b><dd>If no <b>dbenv</b> value is specified, the database is standalone; that
 is, it is not part of any Berkeley DB environment.
 <p>If a <b>dbenv</b> value is specified, the database is created within
 the specified Berkeley DB environment. The database access methods
@@ -78,11 +76,10 @@ automatically make calls to the other subsystems in Berkeley DB based on the
 enclosing environment. For example, if the environment has been
 configured to use locking, the access methods will automatically acquire
 the correct locks when reading and writing pages of the database.</p>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_CXX_NO_EXCEPTIONS">DB_CXX_NO_EXCEPTIONS</a><dd>The Berkeley DB C++ API supports two different error behaviors.  By default,
+<dl compact>
+<dt><a name="DB_CXX_NO_EXCEPTIONS">DB_CXX_NO_EXCEPTIONS</a><dd>The Berkeley DB C++ API supports two different error behaviors.  By default,
 whenever an error occurs, an exception is thrown that encapsulates the
 error information.  This generally allows for cleaner logic for
 transaction processing because a try block can surround a single
@@ -91,7 +88,7 @@ exceptions are not thrown; instead, each individual function returns an
 error code.
 <p>If <b>dbenv</b> is not null, this flag is ignored, and the error behavior
 of the specified environment is used instead.</p>
-<p><dt><a name="DB_XA_CREATE">DB_XA_CREATE</a><dd>Instead of creating a standalone database, create a database intended to
+<dt><a name="DB_XA_CREATE">DB_XA_CREATE</a><dd>Instead of creating a standalone database, create a database intended to
 be accessed via applications running under a X/Open conformant Transaction
 Manager.  The database will be opened in the environment specified by the
 OPENINFO parameter of the GROUPS section of the ubbconfig file.  See the
@@ -108,6 +105,6 @@ Db
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

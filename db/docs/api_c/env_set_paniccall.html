@@ -1,23 +1,22 @@
-<!--$Id: env_set_paniccall.so,v 10.36 2003/11/08 19:17:32 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_paniccall.so,v 10.37 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_paniccall</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;set_paniccall</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -45,14 +44,13 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>db_panic_fcn</b><dd>
-The <b>db_panic_fcn</b> parameter is the application-specified function
+<dl compact>
+<dt><b>db_panic_fcn</b><dd>The <b>db_panic_fcn</b> parameter is the application-specified function
 called in the case of a database environment panic.  The function takes
 two arguments:
-<p><dl compact>
-<p><dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment handle.
-<p><dt><b>errval</b><dd>The <b>errval</b> parameter is the error value that would have been
+<dl compact>
+<dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment handle.
+<dt><b>errval</b><dd>The <b>errval</b> parameter is the error value that would have been
 returned to the caller if <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> were not going to be
 returned instead.
 </dl>
@@ -66,6 +64,6 @@ returned instead.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,12 +1,12 @@
-<!--$Id: faq.so,v 1.8 2003/05/17 19:07:59 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 1.9 2003/12/19 18:16:06 sue Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Replication FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -96,15 +96,9 @@ communications process which is responsible for forwarding the message
 to the appropriate client.  Alternatively, a broadcast mechanism will
 simplify the entire networking infrastructure, as processes will likely
 no longer have to maintain their own specific network connections.</p>
-<p><li><b>Can I use replication to replicate just the database
-environment's log files?</b>
-<p>Yes.  If the <a href="../../api_c/rep_start.html#DB_REP_LOGSONLY">DB_REP_LOGSONLY</a> flag is specified to
-<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>, the client site acts as a repository for logfiles
-(see <a href="../../ref/rep/logonly.html">Log file only clients</a> for more
-information).</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/partition.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/ex.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

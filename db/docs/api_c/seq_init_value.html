@@ -1,0 +1,60 @@
+<!--$Id: seq_init_value.so,v 1.5 2004/08/29 00:12:47 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_SEQUENCE-&gt;init_value</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_SEQUENCE-&gt;init_value</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_SEQUENCE-&gt;init_value(DB_SEQUENCE *seq, db_seq_t value);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_SEQUENCE-&gt;init_value</h3>
+<p>Set the initial value for a sequence.  This call is only effective when
+the sequence is being created.</p>
+<p>The DB_SEQUENCE-&gt;init_value method may not be called after the <a href="../api_c/seq_open.html">DB_SEQUENCE-&gt;open</a>
+method is called.</p>
+<p>The DB_SEQUENCE-&gt;init_value method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>value</b><dd>The initial value to set.
+</dl>
+<h3>Errors</h3>
+<p>The DB_SEQUENCE-&gt;init_value method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/seq_class.html">DB_SEQUENCE</a>
+<h3>See Also</h3>
+<a href="../api_c/seq_list.html">Sequences and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #       Sleepycat Software.  All rights reserved.
 #
-# $Id: rpc.src,v 1.85 2003/06/30 17:54:49 sue Exp $
+# $Id: rpc.src,v 1.90 2004/07/15 19:54:11 sue Exp $
 #
 # Syntax:
 # BEGIN	function_name  {CODE | RETCODE | NOFUNC}
@@ -211,12 +211,20 @@ BEGIN	set_lk_max_objects	NOFUNC
 ARG	ID	DB_ENV *	dbenv
 ARG	INT	u_int32_t	max
 END
-BEGIN	get_mp_maxwrite	NOFUNC
+BEGIN	get_mp_max_openfd	NOFUNC
+ARG	ID	DB_ENV *	dbenv
+ARET	INT	int		nopen
+END
+BEGIN	set_mp_max_openfd	NOFUNC
+ARG	ID	DB_ENV *	dbenv
+ARG	INT	int		nopen
+END
+BEGIN	get_mp_max_write	NOFUNC
 ARG	ID	DB_ENV *	dbenv
 ARET	INT	int		nwrite
 ARET	INT	int		nsleep
 END
-BEGIN	set_mp_maxwrite	NOFUNC
+BEGIN	set_mp_max_write	NOFUNC
 ARG	ID	DB_ENV *	dbenv
 ARG	INT	int		nwrite
 ARG	INT	int		nsleep
@@ -371,9 +379,11 @@ END
 BEGIN	rep_elect	NOFUNC
 ARG	ID	DB_ENV *	dbenv
 ARG	INT	int		nsites
+ARG	INT	int		nvotes
 ARG	INT	int		pri
 ARG	INT	u_int32_t	timeout
 ARG	IGNORE	int *		idp
+ARG	INT	u_int32_t	flags
 END
 BEGIN	rep_flush	NOFUNC
 ARG	ID	DB_ENV *	dbenv
@@ -604,7 +614,6 @@ ARG	INT	u_int32_t	flags
 ARG	INT	int		mode
 RET	ID	long		db
 RET	INT	DBTYPE		type
-RET	INT	u_int32_t	dbflags
 RET	INT	int		lorder
 END
 BEGIN	db_get_pagesize	CODE
@@ -686,6 +695,7 @@ ARG	INT	u_int32_t	flags
 END
 BEGIN	db_stat		RETCODE
 ARG	ID	DB *		dbp
+ARG	ID	DB_TXN *	txnp
 ARG	IGNORE	void *		sp
 ARG	INT	u_int32_t	flags
 RET	LIST	u_int32_t *	stats	INT

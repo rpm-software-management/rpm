@@ -1,12 +1,12 @@
 <!--$Id: ex.so,v 1.5 2003/02/06 03:19:11 mjc Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Ex_repquote: a replication example</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -30,19 +30,19 @@ attempt to build it.</p>
 <p>The synopsis for ex_repquote is as follows:</p>
 <pre>ex_repquote [<b>-MC</b>] [<b>-h home</b>] [<b>-m host:port</b>] [<b>-o host:port</b>] [<b>-n sites</b>] [<b>-p priority</b>]</pre>
 <p>The options to ex_repquote are as follows:</p>
-<p><dl compact>
-<p><dt><b>-M</b><dd>Configure this process as a master.
-<p><dt><b>-C</b><dd>Configure this process as a client.
-<p><dt><b>-h</b><dd>Specify a home directory for the database environment; by
+<dl compact>
+<dt><b>-M</b><dd>Configure this process as a master.
+<dt><b>-C</b><dd>Configure this process as a client.
+<dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
-<p><dt><b>-m</b><dd>Listen on port "port" of host "host" for incoming connections.
-<p><dt><b>-o</b><dd>Attempt to connect to another member of the replication group which is
+<dt><b>-m</b><dd>Listen on port "port" of host "host" for incoming connections.
+<dt><b>-o</b><dd>Attempt to connect to another member of the replication group which is
 listening on host "host" at port "port".  Members of a replication group
 should be able to find all other members of a replication group so long
 as they are in contact with at least one other member of the replication
 group.
-<p><dt><b>-n</b><dd>Specify the total number of sites in the replication group.
-<p><dt><b>-p</b><dd>Set the election priority.  See <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> for more
+<dt><b>-n</b><dd>Specify the total number of sites in the replication group.
+<dt><b>-p</b><dd>Set the election priority.  See <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> for more
 information.
 </dl>
 <p>A typical ex_repquote session begins with a command such as the
@@ -60,6 +60,6 @@ having particular clients take over as master in the case that the
 master fails.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/ex_comm.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,77 @@
+<!--$Id: seq_class.so,v 1.11 2004/10/13 19:57:15 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: db_sequence_create</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>db_sequence_create</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+typedef struct __db_sequence DB_SEQUENCE;
+<p>
+int
+db_sequence_create(DB_SEQUENCE **seq, DB *db, u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: db_sequence_create</h3>
+<p>The DB_SEQUENCE handle is the handle used to manipulate a
+sequence object.  A sequence object is stored in a record in a
+database.</p>
+<p>DB_SEQUENCE handles are free-threaded if the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a>
+flag is specified to the <a href="../api_c/seq_open.html">DB_SEQUENCE-&gt;open</a> method when the sequence is opened.
+Once the <a href="../api_c/seq_close.html">DB_SEQUENCE-&gt;close</a> or <a href="../api_c/seq_remove.html">DB_SEQUENCE-&gt;remove</a> methods are called, the
+handle may not be accessed again, regardless of the method's return.</p>
+<p>Each handle opened on a sequence may maintain a separate cache of values
+which are returned to the application using the <a href="../api_c/seq_get.html">DB_SEQUENCE-&gt;get</a> method
+either singly or in groups depending on its <b>delta</b> parameter.</p>
+<p>The
+DB_SEQUENCE method creates a
+DB_SEQUENCE object that serves as the handle for a sequence.
+Calling the <a href="../api_c/seq_close.html">DB_SEQUENCE-&gt;close</a> or <a href="../api_c/seq_remove.html">DB_SEQUENCE-&gt;remove</a> methods will discard the
+handle.</p>
+<p>The db_sequence_create method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>seq</b><dd>The <b>seq</b> parameter references the memory into which the returned
+structure pointer is stored.
+<dt><b>db</b><dd>The <b>db</b> parameter is an open database handle which holds the
+persistent data for the sequence.
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
+</dl>
+<h3>Errors</h3>
+<p>The db_sequence_create method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+DB_SEQUENCE
+<h3>See Also</h3>
+<a href="../api_c/seq_list.html">Sequences and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: dead002.tcl,v 11.28 2003/09/04 23:41:09 bostic Exp $
+# $Id: dead002.tcl,v 11.30 2004/07/07 17:05:55 carol Exp $
 #
 # TEST	dead002
 # TEST	Same test as dead001, but use "detect on every collision" instead
@@ -47,7 +47,7 @@ proc dead002 { { procs "2 4 10" } {tests "ring clump" } \
 				# If we're running with timeouts, pause so that
 				# locks will have a chance to time out.
 				if { $timeout != 0 } {
-					tclsleep 1
+					tclsleep 2
 				}
 			}
 			watch_procs $pidlist 5

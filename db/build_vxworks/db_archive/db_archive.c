@@ -1,17 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_archive.c,v 11.46 2004/06/10 01:00:08 bostic Exp $
  */
 
 #include "db_config.h"
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
-static const char revid[] =
-    "$Id: db_archive.c,v 11.42 2003/08/13 19:57:04 ubell Exp $";
+    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -123,9 +123,6 @@ db_archive_main(argc, argv)
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
 
-	if (verbose)
-		(void)dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT, 1);
-
 	if (passwd != NULL && (ret = dbenv->set_encrypt(dbenv,
 	    passwd, DB_ENCRYPT_AES)) != 0) {
 		dbenv->err(dbenv, ret, "set_passwd");
@@ -137,9 +134,10 @@ db_archive_main(argc, argv)
 	 */
 	if ((ret = dbenv->open(dbenv,
 	    home, DB_JOINENV | DB_USE_ENVIRON, 0)) != 0 &&
+	    (ret == DB_VERSION_MISMATCH ||
 	    (ret = dbenv->open(dbenv, home, DB_CREATE |
-	    DB_INIT_LOG | DB_INIT_TXN | DB_PRIVATE | DB_USE_ENVIRON, 0)) != 0) {
-		dbenv->err(dbenv, ret, "open");
+	    DB_INIT_LOG | DB_PRIVATE | DB_USE_ENVIRON, 0)) != 0)) {
+		dbenv->err(dbenv, ret, "DB_ENV->open");
 		goto shutdown;
 	}
 

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test039.tcl,v 11.22 2003/01/08 05:53:53 bostic Exp $
+# $Id: test039.tcl,v 11.23 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test039
 # TEST	DB_GET_BOTH/DB_GET_BOTH_RANGE on deleted items without comparison

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test100.tcl,v 11.4 2003/03/14 16:49:58 sue Exp $
+# $Id: test100.tcl,v 11.5 2004/01/28 03:36:32 bostic Exp $
 #
 # TEST	test100
 # TEST	Test for functionality near the end of the queue

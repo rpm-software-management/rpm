@@ -1,23 +1,22 @@
-<!--$Id: env_set_lk_conflicts.so,v 10.41 2003/11/08 19:17:30 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_lk_conflicts.so,v 10.43 2004/09/28 15:04:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_lk_conflicts</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;set_lk_conflicts</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -33,7 +32,6 @@ DB_ENV-&gt;get_lk_conflicts(DB_ENV *dbenv,
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;set_lk_conflicts</h3>
-<a name="3"><!--meow--></a>
 <p>Set the locking conflicts matrix.</p>
 <p>If DB_ENV-&gt;set_lk_conflicts is never called, a standard conflicts
 array is used; see <a href="../ref/lock/stdmode.html">Standard Lock
@@ -51,27 +49,24 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>conflicts</b><dd>
-The <b>conflicts</b> parameter is the new locking conflicts matrix.
-The <b>conflicts</b> parameter
-is an <b>nmodes</b> by <b>nmodes</b> array.
-A non-0 value for the array element indicates that requested_mode and
-held_mode conflict:
+<dl compact>
+<dt><b>conflicts</b><dd>The <b>conflicts</b> parameter is the new locking conflicts matrix.
+The <b>conflicts</b> parameter is an <b>nmodes</b> by <b>nmodes</b>
+array.  A non-0 value for the array element indicates that
+requested_mode and held_mode conflict:
 <blockquote><pre>conflicts[requested_mode][held_mode]</pre></blockquote>
 <p>The <i>not-granted</i> mode must be represented by 0.</p>
-<p><dt><b>nmodes</b><dd>
-The <b>nmodes</b> parameter is the size of the lock conflicts matrix.
+<dt><b>nmodes</b><dd>The <b>nmodes</b> parameter is the size of the lock conflicts matrix.
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;set_lk_conflicts method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
-<p><dl compact>
-<p><dt>ENOMEM<dd>The conflicts array could not be copied.
+<dl compact>
+<dt>ENOMEM<dd>The conflicts array could not be copied.
 </dl>
 <hr size=1 noshade>
 <h3>Description: dbenv_get_lk_conflicts</h3>
@@ -83,12 +78,10 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>lk_conflictsp</b><dd>
-The <b>lk_conflictsp</b> parameter references memory into which
+<dl compact>
+<dt><b>lk_conflictsp</b><dd>The <b>lk_conflictsp</b> parameter references memory into which
 a pointer to the current conflicts array is copied.
-<p><dt><b>lk_modesp</b><dd>
-The <b>lk_modesp</b> parameter references memory into which
+<dt><b>lk_modesp</b><dd>The <b>lk_modesp</b> parameter references memory into which
  the size of the current conflicts array is copied.
 </dl>
 <hr size=1 noshade>
@@ -100,6 +93,6 @@ The <b>lk_modesp</b> parameter references memory into which
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

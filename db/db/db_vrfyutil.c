@@ -1,17 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2003
+ * Copyright (c) 2000-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_vrfyutil.c,v 11.37 2003/06/30 17:19:49 bostic Exp $
+ * $Id: db_vrfyutil.c,v 11.40 2004/10/11 18:47:50 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_vrfyutil.c,v 11.37 2003/06/30 17:19:49 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -321,7 +317,6 @@ __db_vrfy_pgset_get(dbp, pgno, valp)
 
 	if ((ret = __db_get(dbp, NULL, &key, &data, 0)) == 0) {
 		DB_ASSERT(data.size == sizeof(int));
-		memcpy(&val, data.data, sizeof(int));
 	} else if (ret == DB_NOTFOUND)
 		val = 0;
 	else
@@ -359,7 +354,6 @@ __db_vrfy_pgset_inc(dbp, pgno)
 
 	if ((ret = __db_get(dbp, NULL, &key, &data, 0)) == 0) {
 		DB_ASSERT(data.size == sizeof(int));
-		memcpy(&val, data.data, sizeof(int));
 	} else if (ret != DB_NOTFOUND)
 		return (ret);
 
@@ -865,4 +859,47 @@ __db_salvage_markneeded(vdp, pgno, pgtype)
 	 */
 	ret = __db_put(dbp, NULL, &key, &data, DB_NOOVERWRITE);
 	return (ret == DB_KEYEXIST ? 0 : ret);
+}
+
+/*
+ * __db_vrfy_prdbt --
+ *	Print out a DBT data element from a verification routine.
+ *
+ * PUBLIC: int __db_vrfy_prdbt __P((DBT *, int, const char *, void *,
+ * PUBLIC:     int (*)(void *, const void *), int, VRFY_DBINFO *));
+ */
+int
+__db_vrfy_prdbt(dbtp, checkprint, prefix, handle, callback, is_recno, vdp)
+	DBT *dbtp;
+	int checkprint;
+	const char *prefix;
+	void *handle;
+	int (*callback) __P((void *, const void *));
+	int is_recno;
+	VRFY_DBINFO *vdp;
+{
+	if (vdp != NULL) {
+		/*
+		 * If vdp is non-NULL, we might be the first key in the
+		 * "fake" subdatabase used for key/data pairs we can't
+		 * associate with a known subdb.
+		 *
+		 * Check and clear the SALVAGE_PRINTHEADER flag;  if
+		 * it was set, print a subdatabase header.
+		 */
+		if (F_ISSET(vdp, SALVAGE_PRINTHEADER))
+			(void)__db_prheader(
+			    NULL, "__OTHER__", 0, 0, handle, callback, vdp, 0);
+		F_CLR(vdp, SALVAGE_PRINTHEADER);
+		F_SET(vdp, SALVAGE_PRINTFOOTER);
+
+		/*
+		 * Even if the printable flag wasn't set by our immediate
+		 * caller, it may be set on a salvage-wide basis.
+		 */
+		if (F_ISSET(vdp, SALVAGE_PRINTABLE))
+			checkprint = 1;
+	}
+	return (
+	    __db_prdbt(dbtp, checkprint, prefix, handle, callback, is_recno));
 }

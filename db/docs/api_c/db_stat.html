@@ -1,37 +1,60 @@
-<!--$Id: db_stat.so,v 10.75 2003/11/08 19:17:23 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_stat.so,v 10.86 2004/09/24 15:44:04 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;stat</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;stat</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
 #include &lt;db.h&gt;
 <p>
 int
-DB-&gt;stat(DB *db, void *sp, u_int32_t flags);
+DB-&gt;stat(DB *db, DB_TXN *txnid, void *sp, u_int32_t flags);
+<p>
+int
+DB-&gt;stat_print(DB *db, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB-&gt;stat</h3>
-<p>The DB-&gt;stat method creates a statistical structure and
-copies a pointer to it into user-specified memory locations.
-Specifically, if <b>sp</b> is non-NULL, a pointer to the statistics
-for the database are copied into the memory location to which it refers.</p>
+<p>The DB-&gt;stat method creates a statistical structure and copies a
+pointer to it into user-specified memory locations.  Specifically, if
+<b>sp</b> is non-NULL, a pointer to the statistics for the database are
+copied into the memory location to which it refers.</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+one of the following values:
+<dl compact>
+<dt><a name="DB_DEGREE_2">DB_DEGREE_2</a><dd>Database items read during this operation will have degree 2 isolation.
+This ensures the stability of the data items read during the stat
+operation but permits that data to be modified or deleted by other
+transactions prior to the commit of the specified transaction.
+<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Database items read during this operation may include modified but not
+yet committed data.  Silently ignored if the <a href="../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag
+was not specified when the underlying database was opened.
+<dt><a name="DB_FAST_STAT">DB_FAST_STAT</a><dd>Return only the values which do not require traversal of the database.
+Among other things, this flag makes it possible for applications to
+request key and record counts without incurring the performance penalty
+of traversing the entire database.
+</dl>
+<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
+the <b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  
+</dl>
 <p>Statistical structures are stored in allocated memory.  If application-specific allocation
 routines have been declared (see <a href="../api_c/env_set_alloc.html">DB_ENV-&gt;set_alloc</a> for more
 information), they are used to allocate the memory; otherwise, the
@@ -56,10 +79,9 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Hash Statistics</h3>
-<p>In the case of a Hash database,
-the statistics are stored in a structure of type DB_HASH_STAT.  The
-following fields will be filled in:</p>
-<p><dl compact>
+<p>In the case of a Hash database, the statistics are stored in a structure
+of type DB_HASH_STAT.  The following fields will be filled in:</p>
+<dl compact>
 <dt>u_int32_t hash_magic;<dd>Magic number that identifies the file as a Hash file.  Returned if
 DB_FAST_STAT is set.
 <dt>u_int32_t hash_version;<dd>The version of the Hash database.  Returned if DB_FAST_STAT is
@@ -88,28 +110,39 @@ that did not fit in the main bucket page).
 <dt>u_int32_t hash_dup_free;<dd>The number of bytes free on duplicate pages.
 </dl>
 <h3>Btree and Recno Statistics</h3>
-<p>In the case of a Btree or Recno database,
-the statistics are stored in a structure of type DB_BTREE_STAT.  The
-following fields will be filled in:</p>
-<p><dl compact>
+<p>In the case of a Btree or Recno database, the statistics are stored in
+a structure of type DB_BTREE_STAT.  The following fields will be filled
+in:</p>
+<dl compact>
 <dt>u_int32_t bt_magic;<dd>Magic number that identifies the file as a Btree database.  Returned
 if DB_FAST_STAT is set.
 <dt>u_int32_t bt_version;<dd>The version of the Btree database.  Returned if DB_FAST_STAT
 is set.
-<dt>u_int32_t bt_nkeys;<dd>For the Btree Access Method, the number of unique keys in the database.
-If DB_FAST_STAT was specified and the database was created with
-the <a href="../api_c/db_set_flags.html#DB_RECNUM">DB_RECNUM</a> flag, the count will be exact, otherwise, the
-count will be the last saved value unless it has never been calculated,
-in which case it will be 0.  For the Recno Access Method, the exact
-number of records in the database.  Returned if DB_FAST_STAT is
-set.
+<dt>u_int32_t bt_nkeys;<dd>For the Btree Access Method, the number of keys in the database.  If
+the DB_FAST_STAT flag is not specified or the database was
+configured to support record numbers (see <a href="../api_c/db_set_flags.html#DB_RECNUM">DB_RECNUM</a>), the count
+will be exact.  Otherwise, the count will be the last saved value unless
+it has never been calculated, in which case it will be 0.
+<p>For the Recno Access Method, the number of records in the database.  If
+the database was configured with mutable record numbers (see
+<a href="../api_c/db_set_flags.html#DB_RENUMBER">DB_RENUMBER</a>), the count will be exact.  Otherwise, if the
+DB_FAST_STAT flag is specified the count will be exact but will
+include deleted and implicitly created records; if the
+DB_FAST_STAT flag is not specified, the count will be exact and
+will not include deleted or implicitly created records.</p>
+<p>Returned if DB_FAST_STAT is set.</p>
 <dt>u_int32_t bt_ndata;<dd>For the Btree Access Method, the number of key/data pairs in the
-database.  If DB_FAST_STAT was specified the count will be the
-last saved value unless it has never been calculated, in which case it
-will be 0.  For the Recno Access Method, the exact number of records in
-the database. If the database has been configured to not renumber
-records during deletion, the count of records will only reflect
-undeleted records.  Returned if DB_FAST_STAT is set.
+database.  If the DB_FAST_STAT flag is not specified, the count
+will be exact.  Otherwise, the count will be the last saved value unless
+it has never been calculated, in which case it will be 0.
+<p>For the Recno Access Method, the number of records in the database.  If
+the database was configured with mutable record numbers (see
+<a href="../api_c/db_set_flags.html#DB_RENUMBER">DB_RENUMBER</a>), the count will be exact.  Otherwise, if the
+DB_FAST_STAT flag is specified the count will be exact but will
+include deleted and implicitly created records; if the
+DB_FAST_STAT flag is not specified, the count will be exact and
+will not include deleted or implicitly created records.</p>
+<p>Returned if DB_FAST_STAT is set.</p>
 <dt>u_int32_t bt_pagesize;<dd>Underlying database page size, in bytes.  Returned if
 DB_FAST_STAT is set.
 <dt>u_int32_t bt_minkey;<dd>The minimum keys per page.  Returned if DB_FAST_STAT is set.
@@ -122,6 +155,7 @@ DB_FAST_STAT is set.
 <dt>u_int32_t bt_leaf_pg;<dd>Number of database leaf pages.
 <dt>u_int32_t bt_dup_pg;<dd>Number of database duplicate pages.
 <dt>u_int32_t bt_over_pg;<dd>Number of database overflow pages.
+<dt>u_int32_t bt_empty_pg;<dd>Number of empty database pages.
 <dt>u_int32_t bt_free;<dd>Number of pages on the free list.
 <dt>u_int32_t bt_int_pgfree;<dd>Number of bytes free in database internal pages.
 <dt>u_int32_t bt_leaf_pgfree;<dd>Number of bytes free in database leaf pages.
@@ -129,10 +163,10 @@ DB_FAST_STAT is set.
 <dt>u_int32_t bt_over_pgfree;<dd>Number of bytes free in database overflow pages.
 </dl>
 <h3>Queue Statistics</h3>
-<p>In the case of a Queue database,
-the statistics are stored in a structure of type DB_QUEUE_STAT.  The
-following fields will be filled in:</p>
-<p><dl compact>
+<p>In the case of a Queue database, the statistics are stored in a
+structure of type DB_QUEUE_STAT.  The following fields will be filled
+in:</p>
+<dl compact>
 <dt>u_int32_t qs_magic;<dd>Magic number that identifies the file as a Queue file.  Returned if
 DB_FAST_STAT is set.
 <dt>u_int32_t qs_version;<dd>The version of the Queue file type.  Returned if DB_FAST_STAT
@@ -158,36 +192,38 @@ DB_FAST_STAT is set.
 DB_FAST_STAT is set.
 <dt>u_int32_t qs_cur_recno;<dd>Next available record number.  Returned if DB_FAST_STAT is set.
 </dl>
-<h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
-one of the following values:
-<p><dl compact>
-<p><dt><a name="DB_FAST_STAT">DB_FAST_STAT</a><dd>Return only the values which do not require traversal of the database.
-<p>Among other things, this flag makes it possible for applications to
-request key and record counts without incurring the performance penalty
-of traversing the entire database.  If the underlying database is of
-type Recno, or of type Btree and the database was created with the
-<a href="../api_c/db_set_flags.html#DB_RECNUM">DB_RECNUM</a> flag, the count of keys will be exact.  Otherwise,
-the count of keys will be the value saved the last time the database
-was traversed, or 0 if no count of keys has ever been made.  If the
-underlying database is of type Recno, the count of data items will be
-exact, otherwise, the count of data items will be the value saved the
-last time the database was traversed, or 0 if no count of data items
-has ever been done.</p>
-</dl>
-</dl>
 <h3>Errors</h3>
 <p>The DB-&gt;stat method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+<dl compact>
+<dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB-&gt;stat_print</h3>
+<p>The DB-&gt;stat_print method returns the
+database statistical information, as described for the DB-&gt;stat method.
+The information is printed to a specified output channel (see the
+<a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method for more information), or passed to an
+application callback function (see the <a href="../api_c/env_set_msgcall.html">DB_ENV-&gt;set_msgcall</a> method for
+more information).</p>
+<p>The DB-&gt;stat_print method may not be called before the <a href="../api_c/db_open.html">DB-&gt;open</a> method has been
+called.</p>
+<p>The DB-&gt;stat_print method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+the following value:
+<dl compact>
+<dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+</dl>
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -198,6 +234,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

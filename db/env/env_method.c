@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: env_method.c,v 11.136 2004/10/11 18:47:50 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: env_method.c,v 11.113 2003/09/11 17:36:41 sue Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -19,6 +17,10 @@ static const char revid[] = "$Id: env_method.c,v 11.113 2003/09/11 17:36:41 sue 
 #endif
 
 #include <string.h>
+#endif
+
+#ifdef HAVE_RPC
+#include "db_server.h"
 #endif
 
 /*
@@ -40,26 +42,25 @@ static const char revid[] = "$Id: env_method.c,v 11.113 2003/09/11 17:36:41 sue 
 #include "dbinc/txn.h"
 
 #ifdef HAVE_RPC
-#include "dbinc_auto/db_server.h"
 #include "dbinc_auto/rpc_client_ext.h"
 #endif
 
-static int  __dbenv_init __P((DB_ENV *));
 static void __dbenv_err __P((const DB_ENV *, int, const char *, ...));
 static void __dbenv_errx __P((const DB_ENV *, const char *, ...));
-static int  __dbenv_get_home __P((DB_ENV *, const char **));
-static int  __dbenv_set_app_dispatch __P((DB_ENV *,
-    int (*)(DB_ENV *, DBT *, DB_LSN *, db_recops)));
 static int  __dbenv_get_data_dirs __P((DB_ENV *, const char ***));
-static int  __dbenv_set_feedback __P((DB_ENV *, void (*)(DB_ENV *, int, int)));
-static void __dbenv_map_flags __P((DB_ENV *, u_int32_t *, u_int32_t *));
 static int  __dbenv_get_flags __P((DB_ENV *, u_int32_t *));
-static int  __dbenv_set_rpc_server_noclnt
-    __P((DB_ENV *, void *, const char *, long, long, u_int32_t));
+static int  __dbenv_get_home __P((DB_ENV *, const char **));
 static int  __dbenv_get_shm_key __P((DB_ENV *, long *));
 static int  __dbenv_get_tas_spins __P((DB_ENV *, u_int32_t *));
 static int  __dbenv_get_tmp_dir __P((DB_ENV *, const char **));
 static int  __dbenv_get_verbose __P((DB_ENV *, u_int32_t, int *));
+static int  __dbenv_init __P((DB_ENV *));
+static void __dbenv_map_flags __P((DB_ENV *, u_int32_t *, u_int32_t *));
+static int  __dbenv_set_app_dispatch
+		__P((DB_ENV *, int (*)(DB_ENV *, DBT *, DB_LSN *, db_recops)));
+static int  __dbenv_set_feedback __P((DB_ENV *, void (*)(DB_ENV *, int, int)));
+static int  __dbenv_set_rpc_server_noclnt
+		__P((DB_ENV *, void *, const char *, long, long, u_int32_t));
 
 /*
  * db_env_create --
@@ -111,8 +112,6 @@ static int
 __dbenv_init(dbenv)
 	DB_ENV *dbenv;
 {
-	int ret;
-
 	/*
 	 * !!!
 	 * Our caller has not yet had the opportunity to reset the panic
@@ -128,6 +127,9 @@ __dbenv_init(dbenv)
 	dbenv->set_errfile = __dbenv_set_errfile;
 	dbenv->get_errpfx = __dbenv_get_errpfx;
 	dbenv->set_errpfx = __dbenv_set_errpfx;
+	dbenv->set_msgcall = __dbenv_set_msgcall;
+	dbenv->get_msgfile = __dbenv_get_msgfile;
+	dbenv->set_msgfile = __dbenv_set_msgfile;
 
 #ifdef	HAVE_RPC
 	if (F_ISSET(dbenv, DB_ENV_RPCCLIENT)) {
@@ -138,6 +140,13 @@ __dbenv_init(dbenv)
 		dbenv->get_open_flags = __dbcl_env_get_open_flags;
 		dbenv->open = __dbcl_env_open_wrap;
 		dbenv->remove = __dbcl_env_remove;
+		dbenv->stat_print = NULL;
+
+		dbenv->fileid_reset = NULL;
+		dbenv->is_bigendian = NULL;
+		dbenv->lsn_reset = NULL;
+		dbenv->prdbt = NULL;
+
 		dbenv->set_alloc = __dbcl_env_alloc;
 		dbenv->set_app_dispatch = __dbcl_set_app_dispatch;
 		dbenv->get_data_dirs = __dbcl_get_data_dirs;
@@ -166,6 +175,13 @@ __dbenv_init(dbenv)
 		dbenv->dbrename = __dbenv_dbrename_pp;
 		dbenv->open = __dbenv_open;
 		dbenv->remove = __dbenv_remove;
+		dbenv->stat_print = __dbenv_stat_print_pp;
+
+		dbenv->fileid_reset = __db_fileid_reset;
+		dbenv->is_bigendian = __db_isbigendian;
+		dbenv->lsn_reset = __db_lsn_reset;
+		dbenv->prdbt = __db_prdbt;
+
 		dbenv->get_home = __dbenv_get_home;
 		dbenv->get_open_flags = __dbenv_get_open_flags;
 		dbenv->set_alloc = __dbenv_set_alloc;
@@ -177,6 +193,7 @@ __dbenv_init(dbenv)
 		dbenv->set_feedback = __dbenv_set_feedback;
 		dbenv->get_flags = __dbenv_get_flags;
 		dbenv->set_flags = __dbenv_set_flags;
+		dbenv->set_intermediate_dir = __dbenv_set_intermediate_dir;
 		dbenv->set_paniccall = __dbenv_set_paniccall;
 		dbenv->set_rpc_server = __dbenv_set_rpc_server_noclnt;
 		dbenv->get_shm_key = __dbenv_get_shm_key;
@@ -198,8 +215,7 @@ __dbenv_init(dbenv)
 	__log_dbenv_create(dbenv);		/* Subsystem specific. */
 	__lock_dbenv_create(dbenv);
 	__memp_dbenv_create(dbenv);
-	if ((ret = __rep_dbenv_create(dbenv)) != 0)
-		return (ret);
+	__rep_dbenv_create(dbenv);
 	__txn_dbenv_create(dbenv);
 
 	return (0);
@@ -419,9 +435,17 @@ __dbenv_map_flags(dbenv, inflagsp, outflagsp)
 		FLD_SET(*outflagsp, DB_ENV_DIRECT_LOG);
 		FLD_CLR(*inflagsp, DB_DIRECT_LOG);
 	}
+	if (FLD_ISSET(*inflagsp, DB_DSYNC_LOG)) {
+		FLD_SET(*outflagsp, DB_ENV_DSYNC_LOG);
+		FLD_CLR(*inflagsp, DB_DSYNC_LOG);
+	}
 	if (FLD_ISSET(*inflagsp, DB_LOG_AUTOREMOVE)) {
 		FLD_SET(*outflagsp, DB_ENV_LOG_AUTOREMOVE);
 		FLD_CLR(*inflagsp, DB_LOG_AUTOREMOVE);
+	}
+	if (FLD_ISSET(*inflagsp, DB_LOG_INMEMORY)) {
+		FLD_SET(*outflagsp, DB_ENV_LOG_INMEMORY);
+		FLD_CLR(*inflagsp, DB_LOG_INMEMORY);
 	}
 	if (FLD_ISSET(*inflagsp, DB_NOLOCKING)) {
 		FLD_SET(*outflagsp, DB_ENV_NOLOCKING);
@@ -451,10 +475,6 @@ __dbenv_map_flags(dbenv, inflagsp, outflagsp)
 		FLD_SET(*outflagsp, DB_ENV_TXN_NOSYNC);
 		FLD_CLR(*inflagsp, DB_TXN_NOSYNC);
 	}
-	if (FLD_ISSET(*inflagsp, DB_TXN_NOT_DURABLE)) {
-		FLD_SET(*outflagsp, DB_ENV_TXN_NOT_DURABLE);
-		FLD_CLR(*inflagsp, DB_TXN_NOT_DURABLE);
-	}
 	if (FLD_ISSET(*inflagsp, DB_TXN_WRITE_NOSYNC)) {
 		FLD_SET(*outflagsp, DB_ENV_TXN_WRITE_NOSYNC);
 		FLD_CLR(*inflagsp, DB_TXN_WRITE_NOSYNC);
@@ -475,7 +495,9 @@ __dbenv_get_flags(dbenv, flagsp)
 		DB_CDB_ALLDB,
 		DB_DIRECT_DB,
 		DB_DIRECT_LOG,
+		DB_DSYNC_LOG,
 		DB_LOG_AUTOREMOVE,
+		DB_LOG_INMEMORY,
 		DB_NOLOCKING,
 		DB_NOMMAP,
 		DB_NOPANIC,
@@ -483,7 +505,6 @@ __dbenv_get_flags(dbenv, flagsp)
 		DB_REGION_INIT,
 		DB_TIME_NOTGRANTED,
 		DB_TXN_NOSYNC,
-		DB_TXN_NOT_DURABLE,
 		DB_TXN_WRITE_NOSYNC,
 		DB_YIELDCPU,
 		0
@@ -500,11 +521,12 @@ __dbenv_get_flags(dbenv, flagsp)
 			LF_SET(env_flags[i]);
 	}
 
-	/* Special cases */
+	/* Some flags are persisted in the regions. */
 	if (dbenv->reginfo != NULL &&
 	    ((REGENV *)((REGINFO *)dbenv->reginfo)->primary)->envpanic != 0) {
 		LF_SET(DB_PANIC_ENVIRONMENT);
 	}
+	__log_get_flags(dbenv, &flags);
 
 	*flagsp = flags;
 	return (0);
@@ -527,27 +549,27 @@ __dbenv_set_flags(dbenv, flags, on)
 
 #define	OK_FLAGS							\
 	(DB_AUTO_COMMIT | DB_CDB_ALLDB | DB_DIRECT_DB | DB_DIRECT_LOG |	\
-	    DB_LOG_AUTOREMOVE | DB_NOLOCKING | DB_NOMMAP | DB_NOPANIC | \
-	    DB_OVERWRITE | DB_PANIC_ENVIRONMENT | DB_REGION_INIT |      \
-	    DB_TIME_NOTGRANTED | DB_TXN_NOSYNC | DB_TXN_NOT_DURABLE |   \
-	    DB_TXN_WRITE_NOSYNC | DB_YIELDCPU)
+	    DB_DSYNC_LOG | DB_LOG_AUTOREMOVE | DB_LOG_INMEMORY | \
+	    DB_NOLOCKING | DB_NOMMAP | DB_NOPANIC | DB_OVERWRITE | \
+	    DB_PANIC_ENVIRONMENT | DB_REGION_INIT | DB_TIME_NOTGRANTED | \
+	    DB_TXN_NOSYNC | DB_TXN_WRITE_NOSYNC | DB_YIELDCPU)
 
 	if (LF_ISSET(~OK_FLAGS))
 		return (__db_ferr(dbenv, "DB_ENV->set_flags", 0));
 	if (on) {
 		if ((ret = __db_fcchk(dbenv, "DB_ENV->set_flags",
-		    flags, DB_TXN_NOSYNC, DB_TXN_NOT_DURABLE)) != 0)
+		    flags, DB_LOG_INMEMORY, DB_TXN_NOSYNC)) != 0)
+			return (ret);
+		if ((ret = __db_fcchk(dbenv, "DB_ENV->set_flags",
+		    flags, DB_LOG_INMEMORY, DB_TXN_WRITE_NOSYNC)) != 0)
 			return (ret);
 		if ((ret = __db_fcchk(dbenv, "DB_ENV->set_flags",
 		    flags, DB_TXN_NOSYNC, DB_TXN_WRITE_NOSYNC)) != 0)
 			return (ret);
-		if ((ret = __db_fcchk(dbenv, "DB_ENV->set_flags",
-		    flags, DB_TXN_NOT_DURABLE, DB_TXN_WRITE_NOSYNC)) != 0)
-			return (ret);
 		if (LF_ISSET(DB_DIRECT_DB |
 		    DB_DIRECT_LOG) && __os_have_direct() == 0) {
 			__db_err(dbenv,
-	"DB_ENV->set_flags: direct I/O is not supported by this platform");
+	"DB_ENV->set_flags: direct I/O either not configured or not supported");
 			return (EINVAL);
 		}
 	}
@@ -564,12 +586,27 @@ __dbenv_set_flags(dbenv, flags, on)
 		ENV_ILLEGAL_AFTER_OPEN(dbenv,
 		    "DB_ENV->set_flags: DB_REGION_INIT");
 
+	/*
+	 * DB_LOG_INMEMORY, DB_TXN_NOSYNC and DB_TXN_WRITE_NOSYNC are
+	 * mutually incompatible.  If we're setting one of them, clear all
+	 * current settings.
+	 */
+	if (LF_ISSET(
+	    DB_LOG_INMEMORY | DB_TXN_NOSYNC | DB_TXN_WRITE_NOSYNC))
+		F_CLR(dbenv,
+		    DB_ENV_LOG_INMEMORY |
+		    DB_ENV_TXN_NOSYNC | DB_ENV_TXN_WRITE_NOSYNC);
+
+	/* Some flags are persisted in the regions. */
+	__log_set_flags(dbenv, flags, on);
+
 	mapped_flags = 0;
 	__dbenv_map_flags(dbenv, &flags, &mapped_flags);
 	if (on)
 		F_SET(dbenv, mapped_flags);
 	else
 		F_CLR(dbenv, mapped_flags);
+
 	return (0);
 }
 
@@ -584,7 +621,7 @@ __dbenv_get_data_dirs(dbenv, dirpp)
 
 /*
  * __dbenv_set_data_dir --
- *	DB_ENV->set_dta_dir.
+ *	DB_ENV->set_data_dir.
  *
  * PUBLIC: int  __dbenv_set_data_dir __P((DB_ENV *, const char *));
  */
@@ -621,16 +658,44 @@ __dbenv_set_data_dir(dbenv, dir)
 }
 
 /*
+ * __dbenv_set_intermediate_dir --
+ *	DB_ENV->set_intermediate_dir.
+ *
+ * !!!
+ * Undocumented routine allowing applications to configure Berkeley DB to
+ * create intermediate directories.
+ *
+ * PUBLIC: int  __dbenv_set_intermediate_dir __P((DB_ENV *, int, u_int32_t));
+ */
+int
+__dbenv_set_intermediate_dir(dbenv, mode, flags)
+	DB_ENV *dbenv;
+	int mode;
+	u_int32_t flags;
+{
+	if (flags != 0)
+		return (__db_ferr(dbenv, "DB_ENV->set_intermediate_dir", 0));
+	if (mode == 0) {
+		__db_err(dbenv,
+		    "DB_ENV->set_intermediate_dir: mode may not be set to 0");
+		return (EINVAL);
+	}
+
+	dbenv->dir_mode = mode;
+	return (0);
+}
+
+/*
  * __dbenv_set_errcall --
  *	{DB_ENV,DB}->set_errcall.
  *
- * PUBLIC: void __dbenv_set_errcall
- * PUBLIC:          __P((DB_ENV *, void (*)(const char *, char *)));
+ * PUBLIC: void __dbenv_set_errcall __P((DB_ENV *,
+ * PUBLIC:		void (*)(const DB_ENV *, const char *, const char *)));
  */
 void
 __dbenv_set_errcall(dbenv, errcall)
 	DB_ENV *dbenv;
-	void (*errcall) __P((const char *, char *));
+	void (*errcall) __P((const DB_ENV *, const char *, const char *));
 {
 	dbenv->db_errcall = errcall;
 }
@@ -698,6 +763,49 @@ __dbenv_set_feedback(dbenv, feedback)
 {
 	dbenv->db_feedback = feedback;
 	return (0);
+}
+
+/*
+ * __dbenv_set_msgcall --
+ *	{DB_ENV,DB}->set_msgcall.
+ *
+ * PUBLIC: void __dbenv_set_msgcall
+ * PUBLIC:     __P((DB_ENV *, void (*)(const DB_ENV *, const char *)));
+ */
+void
+__dbenv_set_msgcall(dbenv, msgcall)
+	DB_ENV *dbenv;
+	void (*msgcall) __P((const DB_ENV *, const char *));
+{
+	dbenv->db_msgcall = msgcall;
+}
+
+/*
+ * __dbenv_get_msgfile --
+ *	{DB_ENV,DB}->get_msgfile.
+ *
+ * PUBLIC: void __dbenv_get_msgfile __P((DB_ENV *, FILE **));
+ */
+void
+__dbenv_get_msgfile(dbenv, msgfilep)
+	DB_ENV *dbenv;
+	FILE **msgfilep;
+{
+	*msgfilep = dbenv->db_msgfile;
+}
+
+/*
+ * __dbenv_set_msgfile --
+ *	{DB_ENV,DB}->set_msgfile.
+ *
+ * PUBLIC: void __dbenv_set_msgfile __P((DB_ENV *, FILE *));
+ */
+void
+__dbenv_set_msgfile(dbenv, msgfile)
+	DB_ENV *dbenv;
+	FILE *msgfile;
+{
+	dbenv->db_msgfile = msgfile;
 }
 
 /*
@@ -797,7 +905,6 @@ __dbenv_get_verbose(dbenv, which, onoffp)
 	int *onoffp;
 {
 	switch (which) {
-	case DB_VERB_CHKPOINT:
 	case DB_VERB_DEADLOCK:
 	case DB_VERB_RECOVERY:
 	case DB_VERB_REPLICATION:
@@ -823,7 +930,6 @@ __dbenv_set_verbose(dbenv, which, on)
 	int on;
 {
 	switch (which) {
-	case DB_VERB_CHKPOINT:
 	case DB_VERB_DEADLOCK:
 	case DB_VERB_RECOVERY:
 	case DB_VERB_REPLICATION:
@@ -850,7 +956,8 @@ __db_mi_env(dbenv, name)
 	DB_ENV *dbenv;
 	const char *name;
 {
-	__db_err(dbenv, "%s: method not permitted in shared environment", name);
+	__db_err(dbenv, "%s: method not permitted when environment specified",
+	    name);
 	return (EINVAL);
 }
 

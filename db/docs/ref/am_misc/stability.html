@@ -1,12 +1,12 @@
-<!--$Id: stability.so,v 10.28 2001/04/04 22:32:29 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: stability.so,v 10.29 2004/01/12 05:33:23 ubell Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Cursor stability</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
@@ -38,7 +38,9 @@ records are not locked, therefore another transaction may replace a
 deleted record between two calls to retrieve it.  The record would not
 appear in the first call but would be seen by the second call.  For
 readers not enclosed in transactions, all access method calls provide
-degree 2 isolation, that is, reads are not repeatable.  Finally, Berkeley DB
+degree 2 isolation, that is, reads are not repeatable.  A transaction
+may be declared to run with degree 2 isolation by specifying the
+<a href="../../api_c/db_cursor.html#DB_DEGREE_2">DB_DEGREE_2</a> flag.  Finally, Berkeley DB
 provides degree 1 isolation when the <a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag is
 specified; that is, reads may see data modified in transactions which
 have not yet committed.</p>
@@ -50,6 +52,6 @@ the scan inserts a new pair into the database, it is possible that
 duplicate key/data pairs will be returned.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/error.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/dbsizes.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,18 +1,18 @@
-<!--$Id: intro.so,v 10.27 2003/10/18 19:15:58 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.29 2004/10/13 13:40:59 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Berkeley DB Concurrent Data Store applications</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Concurrent Data Store Applications</dl></h3></td>
-<td align=right><a href="../env/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../env/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/app.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Berkeley DB Concurrent Data Store applications</h3>
@@ -94,15 +94,15 @@ lock that is blocking it.
 <p><li>Not testing Berkeley DB error return codes (if any cursor operation returns
 an unexpected error, that cursor must still be closed).
 <p><li>By default, Berkeley DB Concurrent Data Store does locking on a per-database basis.  For this reason,
-accessing multiple databases in different orders in different threads
-or processes, or leaving cursors open on one database while accessing
+using cursors to access multiple databases in different orders in different
+threads or processes, or leaving cursors open on one database while accessing
 another database, can cause an application to hang.  If this behavior
 is a requirement for the application, Berkeley DB should be configured to do
 locking on an environment-wide basis.  See the <a href="../../api_c/env_set_flags.html#DB_CDB_ALLDB">DB_CDB_ALLDB</a> flag
 of the <a href="../../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> function for more information.
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../env/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../env/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/app.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

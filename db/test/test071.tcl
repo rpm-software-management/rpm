@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test071.tcl,v 11.13 2003/05/19 17:33:16 bostic Exp $
+# $Id: test071.tcl,v 11.14 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test071
 # TEST	Test of DB_CONSUME (One consumer, 10000 items.)

@@ -1,0 +1,100 @@
+<!--$Id: seq_stat.so,v 1.8 2004/09/07 15:37:41 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbSequence::stat</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbSequence::stat</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+Db::stat(void *sp, u_int32_t flags);
+<p>
+int
+Db::stat_print(u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbSequence::stat</h3>
+<p>The DbSequence::stat method creates a statistical structure and copies a
+pointer to it into user-specified memory locations.  Specifically, if
+<b>sp</b> is non-NULL, a pointer to the statistics for the database are
+copied into the memory location to which it refers.</p>
+<p>Statistical structures are stored in allocated memory.  If application-specific allocation
+routines have been declared (see <a href="../api_cxx/env_set_alloc.html">DbEnv::set_alloc</a> for more
+information), they are used to allocate the memory; otherwise, the
+standard C library <b>malloc</b>(3) is used.  The caller is
+responsible for deallocating the memory.  To deallocate the memory, free
+the memory reference; references inside the returned memory need not be
+individually freed.</p>
+<p>In the presence of multiple threads or processes accessing an active
+sequence, the information returned by DbSequence::stat may be out-of-date.</p>
+<p>The DbSequence::stat method cannot be transaction-protected.  For this reason,
+it should be called in a thread of control that has no open cursors or
+active transactions.</p>
+<p>The statistics are stored in a structure of type DB_SEQUENCE_STAT.  The
+following fields will be filled in:</p>
+<dl compact>
+<dt>u_int32_t st_wait;<dd>The number of times a thread of control was forced to wait on the
+handle mutex.
+<dt>u_int32_t st_nowait;<dd>The number of times that a thread of control was able to obtain handle
+mutex without waiting.
+<dt>db_seq_t st_current;<dd>The current value of the sequence in the database.
+<dt>db_seq_t st_value;<dd>The current cached value of the sequence.
+<dt>db_seq_t st_last_value;<dd>The last cached value of the sequence.
+<dt>db_seq_t st_min;<dd>The minimum permitted value of the sequence.
+<dt>db_seq_t st_max;<dd>The maximum permitted value of the sequence.
+<dt>int32_t st_cache_size;<dd>The number of values that will be cached in this handle.
+<dt>u_int32_t st_flags;<dd>The flags value for the sequence.
+</dl>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set by bitwise inclusively <b>OR</b>'ing together one or more
+of the following values:
+<dl compact>
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after printing their values.
+</dl>
+</dl>
+<p>The DbSequence::stat_print method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<hr size=1 noshade>
+<h3>Description: DbSequence::stat_print</h3>
+<p>The DbSequence::stat_print method prints diagnostic information to the output
+channel described by the <a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a> method.</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set by bitwise inclusively <b>OR</b>'ing together one or more
+of the following values:
+<dl compact>
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after printing their values.
+</dl>
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/seq_class.html">DbSequence</a>
+<h3>See Also</h3>
+<a href="../api_cxx/seq_list.html">Sequences and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

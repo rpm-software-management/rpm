@@ -1,17 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_load.c,v 11.99 2004/10/11 18:53:14 bostic Exp $
  */
 
 #include "db_config.h"
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
-static const char revid[] =
-    "$Id: db_load.c,v 11.88 2003/10/16 17:51:08 bostic Exp $";
+    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -85,12 +85,13 @@ db_load_main(argc, argv)
 	int argc;
 	char *argv[];
 {
+	enum { NOTSET, FILEID_RESET, LSN_RESET, INVALID } reset;
 	extern char *optarg;
 	extern int optind, __db_getopt_reset;
 	DBTYPE dbtype;
 	DB_ENV	*dbenv;
 	LDG ldg;
-	u_int32_t ldf;
+	u_int ldf;
 	int ch, existed, exitval, ret;
 	char **clist, **clp;
 
@@ -106,6 +107,7 @@ db_load_main(argc, argv)
 	if ((ret = db_load_version_check(ldg.progname)) != 0)
 		return (ret);
 
+	reset = NOTSET;
 	ldf = 0;
 	exitval = existed = 0;
 	dbtype = DB_UNKNOWN;
@@ -116,13 +118,28 @@ db_load_main(argc, argv)
 		return (EXIT_FAILURE);
 	}
 
+	/*
+	 * There are two modes for db_load: -r and everything else.  The -r
+	 * option zeroes out the database LSN's or resets the file ID, it
+	 * doesn't really "load" a new database.  The functionality is in
+	 * db_load because we don't have a better place to put it, and we
+	 * don't want to create a new utility for just that functionality.
+	 */
 	__db_getopt_reset = 1;
-	while ((ch = getopt(argc, argv, "c:f:h:nP:Tt:V")) != EOF)
+	while ((ch = getopt(argc, argv, "c:f:h:nP:r:Tt:V")) != EOF)
 		switch (ch) {
 		case 'c':
+			if (reset != NOTSET)
+				return (db_load_usage());
+			reset = INVALID;
+
 			*clp++ = optarg;
 			break;
 		case 'f':
+			if (reset != NOTSET)
+				return (db_load_usage());
+			reset = INVALID;
+
 			if (freopen(optarg, "r", stdin) == NULL) {
 				fprintf(stderr, "%s: %s: reopen: %s\n",
 				    ldg.progname, optarg, strerror(errno));
@@ -133,6 +150,10 @@ db_load_main(argc, argv)
 			ldg.home = optarg;
 			break;
 		case 'n':
+			if (reset != NOTSET)
+				return (db_load_usage());
+			reset = INVALID;
+
 			ldf |= LDF_NOOVERWRITE;
 			break;
 		case 'P':
@@ -145,10 +166,28 @@ db_load_main(argc, argv)
 			}
 			ldf |= LDF_PASSWORD;
 			break;
+		case 'r':
+			if (reset == INVALID)
+				return (db_load_usage());
+			if (strcmp(optarg, "lsn") == 0)
+				reset = LSN_RESET;
+			else if (strcmp(optarg, "fileid") == 0)
+				reset = FILEID_RESET;
+			else
+				return (db_load_usage());
+			break;
 		case 'T':
+			if (reset != NOTSET)
+				return (db_load_usage());
+			reset = INVALID;
+
 			ldf |= LDF_NOHEADER;
 			break;
 		case 't':
+			if (reset != NOTSET)
+				return (db_load_usage());
+			reset = INVALID;
+
 			if (strcmp(optarg, "btree") == 0) {
 				dbtype = DB_BTREE;
 				break;
@@ -189,10 +228,23 @@ db_load_main(argc, argv)
 	if (db_load_env_create(&dbenv, &ldg) != 0)
 		goto shutdown;
 
-	while (!ldg.endofile)
-		if (db_load_load(dbenv, argv[0], dbtype, clist, ldf,
-		    &ldg, &existed) != 0)
-			goto shutdown;
+	/* If we're resetting the LSNs, that's an entirely separate path. */
+	switch (reset) {
+	case FILEID_RESET:
+		exitval = dbenv->fileid_reset(
+		    dbenv, argv[0], ldf & LDF_PASSWORD ? 1 : 0);
+		break;
+	case LSN_RESET:
+		exitval = dbenv->lsn_reset(
+		    dbenv, argv[0], ldf & LDF_PASSWORD ? 1 : 0);
+		break;
+	default:
+		while (!ldg.endofile)
+			if (db_load_load(dbenv, argv[0], dbtype, clist, ldf,
+			    &ldg, &existed) != 0)
+				goto shutdown;
+		break;
+	}
 
 	if (0) {
 shutdown:	exitval = 1;
@@ -367,8 +419,7 @@ retry_db:
 		goto err;
 	}
 	if (ldg->private != 0) {
-		if ((ret =
-		    __db_util_cache(dbenv, dbp, &ldg->cache, &resize)) != 0)
+		if ((ret = __db_util_cache(dbp, &ldg->cache, &resize)) != 0)
 			goto err;
 		if (resize) {
 			if ((ret = dbp->close(dbp, 0)) != 0)
@@ -464,8 +515,8 @@ retry:		if (txn != NULL)
 			    name,
 			    !keyflag ? recno : recno * 2 - 1);
 
-			(void)__db_prdbt(&key, checkprint, 0, stderr,
-			    __db_pr_callback, 0, NULL);
+			(void)dbenv->prdbt(&key,
+			    checkprint, 0, stderr, __db_pr_callback, 0);
 			break;
 		case DB_LOCK_DEADLOCK:
 			/* If we have a child txn, retry--else it's fatal. */
@@ -575,8 +626,10 @@ db_load_db_init(dbenv, home, cache, is_private)
 	/* We may be loading into a live environment.  Try and join. */
 	flags = DB_USE_ENVIRON |
 	    DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | DB_INIT_TXN;
-	if (dbenv->open(dbenv, home, flags, 0) == 0)
+	if ((ret = dbenv->open(dbenv, home, flags, 0)) == 0)
 		return (0);
+	if (ret == DB_VERSION_MISMATCH)
+		goto err;
 
 	/*
 	 * We're trying to load a database.
@@ -601,7 +654,7 @@ db_load_db_init(dbenv, home, cache, is_private)
 		return (0);
 
 	/* An environment is required. */
-	dbenv->err(dbenv, ret, "DB_ENV->open");
+err:	dbenv->err(dbenv, ret, "DB_ENV->open");
 	return (1);
 }
 
@@ -768,20 +821,19 @@ memerr:			dbp->errx(dbp, "could not allocate buffer %d", buflen);
 					break;
 				}
 
-				if (ch == '\n')
-					break;
-
 				/*
-				 * If the buffer is too small, double it.  The
-				 * +1 is for the nul byte inserted below.
+				 * If the buffer is too small, double it.
 				 */
-				if (linelen + start + 1 == buflen) {
+				if (linelen + start == buflen) {
 					G(hdrbuf) =
 					    realloc(G(hdrbuf), buflen *= 2);
 					if (G(hdrbuf) == NULL)
 						goto memerr;
 					buf = &G(hdrbuf)[start];
 				}
+
+				if (ch == '\n')
+					break;
 
 				buf[linelen++] = ch;
 			}
@@ -1125,6 +1177,7 @@ db_load_dbt_rrecno(dbenv, dbtp, ishex)
 	int ishex;
 {
 	char buf[32], *p, *q;
+	u_long recno;
 
 	++G(lineno);
 
@@ -1163,12 +1216,12 @@ db_load_dbt_rrecno(dbenv, dbtp, ishex)
 		*p = '\0';
 	}
 
-	if (__db_getulong(dbenv,
-	    G(progname), buf + 1, 0, 0, (u_long *)dbtp->data)) {
+	if (__db_getulong(dbenv, G(progname), buf + 1, 0, 0, &recno)) {
 bad:		db_load_badend(dbenv);
 		return (1);
 	}
 
+	*((db_recno_t *)dbtp->data) = recno;
 	dbtp->size = sizeof(db_recno_t);
 	return (0);
 }
@@ -1256,6 +1309,8 @@ db_load_usage()
 	(void)fprintf(stderr, "%s\n\t%s\n",
 	    "usage: db_load [-nTV] [-c name=value] [-f file]",
     "[-h home] [-P password] [-t btree | hash | recno | queue] db_file");
+	(void)fprintf(stderr, "%s\n",
+	    "usage: db_load -r lsn | fileid [-h home] [-P password] db_file");
 	return (EXIT_FAILURE);
 }
 

@@ -1,17 +1,17 @@
-<!--$Id: elect.so,v 1.16 2003/06/18 01:44:58 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: elect.so,v 1.20 2004/08/13 03:39:00 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Elections</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/trans.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Elections</h3>
@@ -30,8 +30,10 @@ period, then the application should call for an election.</p>
 have no master, and the client must have the most recent log records.
 In the case of clients having equivalent log records, the priority of
 the database environments participating in the election will determine
-the winner.  At least ((N/2) + 1) of the members of the replication
-group must participate in the election for a winner to be declared.</p>
+the winner.  The application specifies the minimum number of replication
+group members that must participate in an election for a winner to be
+declared.  We recommend at least ((N/2) + 1) members.  If fewer than the
+simple majority are specified, a warning will be given.</p>
 <p>If an application's policy for what site should win an election can be
 parameterized in terms the database environment's information (that is,
 the number of sites, available log records and a relative priority are
@@ -66,8 +68,7 @@ client does not win the election, it is likely that it was not given
 sufficient time to update itself with respect to the current master.</p>
 <p>If a client is unable to find a master or win an election, it means that
 the network has been partitioned and there are not enough environments
-participating in the election for one of the participants to win (or,
-there were only two sites in the replication group and one crashed).
+participating in the election for one of the participants to win.
 In this case, the application should repeatedly call <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>
 and <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, alternating between attempting to discover an
 existing master, and holding an election to declare a new one.  In
@@ -106,8 +107,8 @@ and reconfigure itself as a client using the <a href="../../api_c/rep_start.html
 <li>Then, the current or preferred master should call for an election using
 the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../rep/init.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/logonly.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/trans.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

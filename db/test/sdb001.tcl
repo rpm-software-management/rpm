@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb001.tcl,v 11.21 2003/10/06 13:56:51 margo Exp $
+# $Id: sdb001.tcl,v 11.23 2004/04/05 17:49:25 carol Exp $
 #
 # TEST	sdb001	Tests mixing db and subdb operations
 # TEST	Tests mixing db and subdb operations
@@ -53,7 +53,6 @@ proc sdb001 { method args } {
 
 	set pflags ""
 	set gflags ""
-	set txn ""
 	set count 0
 
 	if { [is_record_based $method] == 1 } {
@@ -69,7 +68,7 @@ proc sdb001 { method args } {
 			set key $str
 		}
 		set ret [eval \
-		    {$db put} $txn $pflags {$key [chop_data $method $str]}]
+		    {$db put} $pflags {$key [chop_data $method $str]}]
 		error_check_good put $ret 0
 
 		set ret [eval {$db get} $gflags {$key}]

@@ -9,6 +9,7 @@ set rpc_testdir $rpc_path/TESTDIR
 
 set src_root @srcdir@/..
 set test_path @srcdir@/../test
+set je_root @srcdir@/../../je
 
 global testdir
 set testdir ./TESTDIR

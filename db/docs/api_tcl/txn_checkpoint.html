@@ -1,24 +1,23 @@
 <!--$Id: txn_checkpoint.so,v 11.1 2003/09/02 14:38:51 sue Exp $-->
-<!--$Id: m4.tcl,v 11.26 2003/09/02 14:38:50 sue Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: m4.tcl,v 11.27 2004/09/07 15:37:41 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: env txn_checkpoint</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3><i>env</i> <b>txn_checkpoint</b></h3>
 </td>
 <td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>env txn_checkpoint
@@ -29,11 +28,11 @@
 <h3>Description(env txn_checkpoint)</h3>
 <p>The <i>env</i> <b>txn_checkpoint</b> command writes a checkpoint.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt>-force<dd>The checkpoint will occur regardless of activity level.
-<p><dt>-kbyte kb<dd>The checkpoint will occur only if at least the specified number
+<dl compact>
+<dt>-force<dd>The checkpoint will occur regardless of activity level.
+<dt>-kbyte kb<dd>The checkpoint will occur only if at least the specified number
 of kilobytes of log data has been written since the last checkpoint.
-<p><dt>-min minutes<dd>The checkpoint will occur only if at least the specified number
+<dt>-min minutes<dd>The checkpoint will occur only if at least the specified number
 of minutes has passed since the last checkpoint.
 </dl>
 <p>In the case of error, a Tcl error is thrown.</p>
@@ -41,6 +40,6 @@ of minutes has passed since the last checkpoint.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

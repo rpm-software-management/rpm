@@ -1,0 +1,56 @@
+<!--$Id: set_func_pread.so,v 1.1 2003/12/11 21:32:46 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: db_env_set_func_pread</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>db_env_set_func_pread</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+db_env_set_func_pread(ssize_t (*func_pread)(int fd, void *buf, size_t nbytes, off_t offset));
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: db_env_set_func_pread</h3>
+<p>Replace Berkeley DB calls to the IEEE/ANSI Std 1003.1 (POSIX) <b>pread</b> function with
+<b>func_pread</b>, which must conform to the standard interface
+specification.</p>
+<p>The db_env_set_func_pread method configures all operations performed by a process and
+all of its threads of control, not operations confined to a single
+database environment.</p>
+<p>Although the db_env_set_func_pread method may be called at any time during the life of
+the application, it should normally be called before making calls to the
+<a href="../api_c/env_class.html">db_env_create</a> or <a href="../api_c/db_class.html">db_create</a> methods.</p>
+<p>The db_env_set_func_pread method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>func_pread</b><dd>The <b>func_pread</b> parameter is the replacement function.  It must conform
+to the standard interface specification.
+</dl>
+<h3>See Also</h3>
+<a href="../ref/program/runtime.html">Run-time configuration</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

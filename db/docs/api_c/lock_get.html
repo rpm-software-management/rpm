@@ -1,23 +1,22 @@
-<!--$Id: lock_get.so,v 10.52 2003/11/08 19:17:34 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: lock_get.so,v 10.53 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;lock_get</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;lock_get</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,28 +30,25 @@ DB_ENV-&gt;lock_get(DB_ENV *env, u_int32_t locker,
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;lock_get</h3>
 <p>The DB_ENV-&gt;lock_get method acquires a lock from the lock table, returning
-information about it in
-the <b>lock</b> parameter.</p>
+information about it in the <b>lock</b> parameter.</p>
 <p>The DB_ENV-&gt;lock_get method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a><dd>If a lock cannot be granted because the requested lock conflicts with an
+<dl compact>
+<dt><a name="DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a><dd>If a lock cannot be granted because the requested lock conflicts with an
 existing lock,
 return DB_LOCK_NOTGRANTED immediately instead of waiting
 for the lock to become available.
 </dl>
-<p><dt><b>lock_mode</b><dd>
-The <b>lock_mode</b> parameter is used as an index into the environment's
+<dt><b>lock_mode</b><dd>The <b>lock_mode</b> parameter is used as an index into the environment's
 lock conflict matrix.  When using the default lock conflict matrix,
 <b>lock_mode</b> must be set to one of the following values:
-<p><dl compact>
+<dl compact>
 <dt>DB_LOCK_READ<dd>read (shared)
 <dt>DB_LOCK_WRITE<dd>write (exclusive)
 <dt>DB_LOCK_IWRITE<dd>intention to write (shared)
@@ -60,11 +56,9 @@ lock conflict matrix.  When using the default lock conflict matrix,
 <dt>DB_LOCK_IWR<dd>intention to read and write (shared)
 </dl>
 <p>See <a href="../api_c/env_set_lk_conflicts.html">DB_ENV-&gt;set_lk_conflicts</a> and <a href="../ref/lock/stdmode.html">Standard Lock Modes</a> for more information on the lock conflict matrix.</p>
-<p><dt><b>locker</b><dd>
-The <b>locker</b> parameter is an unsigned 32-bit integer quantity.  It
+<dt><b>locker</b><dd>The <b>locker</b> parameter is an unsigned 32-bit integer quantity.  It
 represents the entity requesting the lock.
-<p><dt><b>object</b><dd>
-The <b>object</b> parameter is an untyped byte string that specifies the
+<dt><b>object</b><dd>The <b>object</b> parameter is an untyped byte string that specifies the
 object to be locked.  Applications using the locking subsystem directly
 while also doing locking via the Berkeley DB access methods must take care not
 to inadvertently lock objects that happen to be equal to the unique file
@@ -75,21 +69,21 @@ for more information.
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;lock_get method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
+<dl compact>
+<dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
 a deadlock.
-<p><dt>DB_LOCK_NOTGRANTED<dd>A Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
+<dt>DB_LOCK_NOTGRANTED<dd>A Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
 to grant a lock in the allowed time.
 </dl>
-<p><dl compact>
-<p><dt>DB_LOCK_NOTGRANTED<dd>The <a href="../api_c/lock_vec.html#DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a> flag or lock timers were configured and the lock could not be granted before the wait-time expired.
+<dl compact>
+<dt>DB_LOCK_NOTGRANTED<dd>The <a href="../api_c/lock_vec.html#DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a> flag or lock timers were configured and the lock could not be granted before the wait-time expired.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
-<p><dl compact>
-<p><dt>ENOMEM<dd>The maximum number of locks has been reached.
+<dl compact>
+<dt>ENOMEM<dd>The maximum number of locks has been reached.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -100,6 +94,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

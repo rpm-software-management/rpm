@@ -1,5 +1,5 @@
 /*-
- * $Id: win_db.h,v 1.51 2003/12/03 21:15:37 bostic Exp $
+ * $Id: win_db.h,v 1.123 2004/10/14 15:32:28 bostic Exp $
  *
  * The following provides the information necessary to build Berkeley
  * DB on native Windows, and other Windows environments such as MinGW.
@@ -17,6 +17,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <tchar.h>
 #include <time.h>
 #include <errno.h>
 
@@ -56,4 +57,38 @@ extern char *optarg;
 extern int getopt(int, char * const *, const char *);
 #if defined(__cplusplus)
 }
+#endif
+
+#ifdef _UNICODE
+#define TO_TSTRING(dbenv, s, ts, ret) do {				\
+		int __len = strlen(s) + 1;				\
+		ts = NULL;						\
+		if ((ret = __os_malloc((dbenv),				\
+		    __len * sizeof (_TCHAR), &(ts))) == 0 &&		\
+		    MultiByteToWideChar(CP_UTF8, 0,			\
+		    (s), -1, (ts), __len) == 0)				\
+			ret = __os_get_errno();				\
+	} while (0)
+
+#define FROM_TSTRING(dbenv, ts, s, ret) {				\
+		int __len = WideCharToMultiByte(CP_UTF8, 0, ts, -1,	\
+		    NULL, 0, NULL, NULL);				\
+		s = NULL;						\
+		if ((ret = __os_malloc((dbenv), __len, &(s))) == 0 &&	\
+		    WideCharToMultiByte(CP_UTF8, 0,			\
+		    (ts), -1, (s), __len, NULL, NULL) == 0)		\
+			ret = __os_get_errno();				\
+	} while (0)
+
+#define FREE_STRING(dbenv, s) do {					\
+		if ((s) != NULL) {					\
+			__os_free((dbenv), (s));			\
+			(s) = NULL;					\
+		}							\
+	} while (0)
+
+#else
+#define TO_TSTRING(dbenv, s, ts, ret) (ret) = 0, (ts) = (_TCHAR *)(s)
+#define FROM_TSTRING(dbenv, ts, s, ret) (ret) = 0, (s) = (char *)(ts)
+#define FREE_STRING(dbenv, ts)
 #endif

@@ -1,0 +1,77 @@
+<!--$Id: seq_get.so,v 1.8 2004/08/28 23:44:22 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_SEQUENCE-&gt;get</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_SEQUENCE-&gt;get</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_SEQUENCE-&gt;get(DB_SEQUENCE *seq,
+    DB_TXN *txnid, int32_t delta, db_seq_t *retp, u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_SEQUENCE-&gt;get</h3>
+<p>The DB_SEQUENCE-&gt;get method returns the next available element in the sequence
+and changes the sequence value by <b>delta</b>.  The value of
+<b>delta</b> must be greater than zero.  If there are enough cached
+values in the sequence handle then they will be returned.  Otherwise the
+next value will be fetched from the database and incremented
+(decremented) by enough to cover the <b>delta</b> and the next batch
+of cached values.</p>
+<p>If the underlying database handle was opened in a transaction then
+either the <b>txnid</b> parameter must be a valid transaction handle or
+DB_AUTO_COMMIT must be specified.  The <b>txnid</b> handle must be NULL
+if the sequence handle was opened with a non-zero cache size.</p>
+<p>For maximum concurrency a non-zero cache size should be specified prior
+to opening the sequence handle and DB_AUTO_COMMIT | DB_TXN_NOSYNC should
+be specified each DB_SEQUENCE-&gt;get method call.</p>
+<p>The DB_SEQUENCE-&gt;get method will return EINVAL if the record in the database is not a valid sequence record,
+or the sequences have overflowed is range.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>delta</b><dd>Specifies the amount to increment or decrement the sequence.
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
+<dl compact>
+<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>If the database
+must be updated the update will be enclosed in a transaction
+and will be recoverable.
+<dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>If a DB_AUTO_COMMIT
+triggers a transaction, do not synchronously flush the log.
+</dl>
+<dt><b>retp</b><dd><b>retp</b> points to the memory to hold the return value from
+the sequence.
+<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
+the <b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/seq_class.html">DB_SEQUENCE</a>
+<h3>See Also</h3>
+<a href="../api_c/seq_list.html">Sequences and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -86,6 +86,11 @@
 /* Replace: 0 */
 #endif
 
+#ifndef SvGETMAGIC
+#  define SvGETMAGIC(x)                  STMT_START { if (SvGMAGICAL(x)) mg_get(x); } STMT_END
+#endif
+
+
 /* DEFSV appears first in 5.004_56 */
 #ifndef DEFSV
 #  define DEFSV	GvSV(PL_defgv)

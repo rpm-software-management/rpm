@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_am.h,v 11.70 2003/06/30 17:19:50 bostic Exp $
+ * $Id: db_am.h,v 11.78 2004/09/22 21:14:56 ubell Exp $
  */
 #ifndef _DB_AM_H_
 #define	_DB_AM_H_
@@ -24,8 +24,6 @@
 #define	DB_REM_DUP	2
 #define	DB_ADD_BIG	3
 #define	DB_REM_BIG	4
-#define	DB_ADD_PAGE	5
-#define	DB_REM_PAGE	6
 
 /*
  * Standard initialization and shutdown macros for all recovery functions.
@@ -34,7 +32,8 @@
 	argp = NULL;							\
 	dbc = NULL;							\
 	file_dbp = NULL;						\
-	mpf = NULL;							\
+	/* mpf isn't used by all of the recovery functions. */		\
+	COMPQUIET(mpf, NULL);						\
 	if ((ret = func(dbenv, dbtp->data, &argp)) != 0)		\
 		goto out;						\
 	if ((ret = __dbreg_id_to_db(dbenv, argp->txnid,			\
@@ -75,6 +74,31 @@
 	return (ret)
 
 /*
+ * Macro for reading pages during recovery.  In most cases we
+ * want to avoid an error if the page is not found during rollback
+ * or if we are using truncate to remove pages from the file.
+ */
+#ifndef HAVE_FTRUNCATE
+#define	REC_FGET(mpf, pgno, pagep, cont)				\
+	if ((ret = __memp_fget(mpf, &(pgno), 0, pagep)) != 0) {		\
+		if (ret != DB_PAGE_NOTFOUND || DB_REDO(op)) {		\
+			ret = __db_pgerr(file_dbp, pgno, ret);		\
+			goto out;					\
+		} else							\
+			goto cont;					\
+	}
+#else
+#define	REC_FGET(mpf, pgno, pagep, cont)				\
+	if ((ret = __memp_fget(mpf, &(pgno), 0, pagep)) != 0) {		\
+		if (ret != DB_PAGE_NOTFOUND) {				\
+			ret = __db_pgerr(file_dbp, pgno, ret);		\
+			goto out;					\
+		} else							\
+			goto cont;					\
+	}
+#endif
+
+/*
  * Standard debugging macro for all recovery functions.
  */
 #ifdef DEBUG_RECOVER
@@ -100,7 +124,10 @@
  * we don't tie up the internal pages of the tree longer than necessary.
  */
 #define	__LPUT(dbc, lock)						\
-	(LOCK_ISSET(lock) ?  __lock_put((dbc)->dbp->dbenv, &(lock)) : 0)
+	__ENV_LPUT((dbc)->dbp->dbenv, 					\
+	     lock, F_ISSET((dbc)->dbp, DB_AM_DIRTY) ? DB_LOCK_DOWNGRADE : 0)
+#define	__ENV_LPUT(dbenv, lock, flags)					\
+	(LOCK_ISSET(lock) ? __lock_put(dbenv, &(lock), flags) : 0)
 
 /*
  * __TLPUT -- transactional lock put

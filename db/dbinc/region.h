@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2003
+ * Copyright (c) 1998-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: region.h,v 11.38 2003/07/14 13:44:59 bostic Exp $
+ * $Id: region.h,v 11.50 2004/09/15 21:49:12 mjc Exp $
  */
 
 #ifndef _DB_REGION_H_
@@ -53,7 +53,7 @@
  * or joining the REGENV file, i.e., __db.001.  We have to be absolutely sure
  * that only one process creates it, and that everyone else joins it without
  * seeing inconsistent data.  Once that region is created, we can use normal
- * shared locking procedures to do mutal exclusion for all other regions.
+ * shared locking procedures to do mutual exclusion for all other regions.
  *
  * One of the REGION structures in the main environment region describes the
  * environment region itself.
@@ -114,7 +114,7 @@ typedef enum {
 	REGION_TYPE_LOG,
 	REGION_TYPE_MPOOL,
 	REGION_TYPE_MUTEX,
-	REGION_TYPE_TXN } reg_type;
+	REGION_TYPE_TXN } reg_type_t;
 
 #define	INVALID_REGION_SEGID	-1	/* Segment IDs are either shmget(2) or
 					 * Win16 segment identifiers.  They are
@@ -150,6 +150,7 @@ typedef struct __db_reg_env {
 	 * zero/non-zero value.
 	 */
 	u_int32_t  magic;		/* Valid region magic number. */
+	u_int32_t  envid;		/* Unique environment ID. */
 
 	int	   envpanic;		/* Environment is dead. */
 
@@ -166,6 +167,11 @@ typedef struct __db_reg_env {
 	u_int32_t  refcnt;		/* References to the environment. */
 
 	roff_t	   rep_off;		/* Offset of the replication area. */
+#define	DB_REGENV_REPLOCKED	0x0001	/* Env locked for rep backup. */
+	u_int32_t  flags;		/* Shared environment flags. */
+#define	DB_REGENV_TIMEOUT	30	/* Backup timeout. */
+	time_t	   op_timestamp;	/* Timestamp for operations. */
+	time_t	   rep_timestamp;	/* Timestamp for rep db handles. */
 
 	size_t	   pad;			/* Guarantee that following memory is
 					 * size_t aligned.  This is necessary
@@ -185,10 +191,11 @@ typedef struct __db_region {
 
 	SH_LIST_ENTRY q;		/* Linked list of REGIONs. */
 
-	reg_type   type;		/* Region type. */
+	reg_type_t type;		/* Region type. */
 	u_int32_t  id;			/* Region id. */
 
-	roff_t	   size;		/* Region size in bytes. */
+	roff_t	   size_orig;		/* Region size in bytes (original). */
+	roff_t	   size;		/* Region size in bytes (adjusted). */
 
 	roff_t	   primary;		/* Primary data structure offset. */
 
@@ -199,17 +206,21 @@ typedef struct __db_region {
  * Per-process/per-attachment information about a single region.
  */
 struct __db_reginfo_t {		/* __db_r_attach IN parameters. */
-	reg_type    type;		/* Region type. */
+	DB_ENV	   *dbenv;		/* Enclosing environment. */
+	reg_type_t  type;		/* Region type. */
 	u_int32_t   id;			/* Region id. */
-	int	    mode;		/* File creation mode. */
 
 				/* __db_r_attach OUT parameters. */
 	REGION	   *rp;			/* Shared region. */
 
 	char	   *name;		/* Region file name. */
 
-	void	   *addr;		/* Region allocation address. */
+	void	   *addr_orig;		/* Region address (original). */
+	void	   *addr;		/* Region address (adjusted). */
 	void	   *primary;		/* Primary data structure address. */
+
+	size_t	    max_alloc;		/* Maximum bytes allocated. */
+	size_t	    allocated;		/* Bytes allocated. */
 
 #ifdef DB_WIN32
 	HANDLE	wnt_handle;		/* Win/NT HANDLE. */
@@ -244,15 +255,13 @@ typedef struct __db_regmaint_t {
 /*
  * R_ADDR	Return a per-process address for a shared region offset.
  * R_OFFSET	Return a shared region offset for a per-process address.
- *
- * !!!
- * R_OFFSET should really be returning a ptrdiff_t, but that's not yet
- * portable.  We use u_int32_t, which restricts regions to 4Gb in size.
  */
-#define	R_ADDR(base, offset)						\
-	((void *)((u_int8_t *)((base)->addr) + offset))
-#define	R_OFFSET(base, p)						\
-	((u_int32_t)((u_int8_t *)(p) - (u_int8_t *)(base)->addr))
+#define	R_ADDR(dbenv, base, offset)					\
+	(F_ISSET((dbenv), DB_ENV_PRIVATE) ? (void *)(offset) :		\
+	(void *)((u_int8_t *)((base)->addr) + (offset)))
+#define	R_OFFSET(dbenv, base, p)					\
+	(F_ISSET((dbenv), DB_ENV_PRIVATE) ? (roff_t)(p) :		\
+	(roff_t)((u_int8_t *)(p) - (u_int8_t *)(base)->addr))
 
 /*
  * R_LOCK	Lock/unlock a region.
@@ -283,7 +292,7 @@ typedef struct __db_regmaint_t {
 #define	OS_VMPAGESIZE		(8 * 1024)
 #define	OS_VMROUNDOFF(i) {						\
 	if ((i) <							\
-	    (UINT32_T_MAX - OS_VMPAGESIZE) + 1 || (i) < OS_VMPAGESIZE)	\
+	    (UINT32_MAX - OS_VMPAGESIZE) + 1 || (i) < OS_VMPAGESIZE)	\
 		(i) += OS_VMPAGESIZE - 1;				\
 	(i) -= (i) % OS_VMPAGESIZE;					\
 }

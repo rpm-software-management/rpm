@@ -1,12 +1,12 @@
 <!--$Id: id.so,v 1.7 2003/10/18 19:16:06 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Replication environment IDs</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -31,15 +31,15 @@ identifier.  Subsequently, Berkeley DB will label outgoing messages to the
 <p>Negative identifiers are reserved for use by Berkeley DB, and should never be
 assigned to environments by the application.  Two of these reserved
 identifiers are intended for application use, as follows:</p>
-<p><dl compact>
-<p><dt><a href="../../api_c/rep_transport.html#DB_EID_BROADCAST">DB_EID_BROADCAST</a><dd>The <a href="../../api_c/rep_transport.html#DB_EID_BROADCAST">DB_EID_BROADCAST</a> identifier indicates a message should be
+<dl compact>
+<dt><a href="../../api_c/rep_transport.html#DB_EID_BROADCAST">DB_EID_BROADCAST</a><dd>The <a href="../../api_c/rep_transport.html#DB_EID_BROADCAST">DB_EID_BROADCAST</a> identifier indicates a message should be
 broadcast to all members of a replication group.
-<p><dt><a href="../../api_c/rep_transport.html#DB_EID_INVALID">DB_EID_INVALID</a><dd>The <a href="../../api_c/rep_transport.html#DB_EID_INVALID">DB_EID_INVALID</a> identifier is an invalid environment ID, and
+<dt><a href="../../api_c/rep_transport.html#DB_EID_INVALID">DB_EID_INVALID</a><dd>The <a href="../../api_c/rep_transport.html#DB_EID_INVALID">DB_EID_INVALID</a> identifier is an invalid environment ID, and
 may be used to initialize environment ID variables that are subsequently
 checked for validity.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/pri.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

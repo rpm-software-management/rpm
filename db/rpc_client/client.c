@@ -1,17 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: client.c,v 1.60 2004/09/21 16:09:54 sue Exp $
  */
 
 #include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: client.c,v 1.54 2003/06/14 17:56:01 bostic Exp $";
-#endif /* not lint */
-
-#ifdef HAVE_RPC
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 
@@ -25,12 +22,12 @@ static const char revid[] = "$Id: client.c,v 1.54 2003/06/14 17:56:01 bostic Exp
 #include <string.h>
 #endif
 
+#include "db_server.h"
+
 #include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc/db_am.h"
 #include "dbinc/txn.h"
-
-#include "dbinc_auto/db_server.h"
 #include "dbinc_auto/rpc_client_ext.h"
 
 static int __dbcl_c_destroy __P((DBC *));
@@ -225,11 +222,17 @@ __dbcl_retcopy(dbenv, dbt, data, len, memp, memsize)
 
 	/*
 	 * The RPC server handles DB_DBT_PARTIAL, so we mask it out here to
-	 * avoid the handling of partials in __db_retcopy.
+	 * avoid the handling of partials in __db_retcopy.  Check first whether
+	 * the data has actually changed, so we don't try to copy over
+	 * read-only keys, which the RPC server always returns regardless.
 	 */
 	orig_flags = dbt->flags;
 	F_CLR(dbt, DB_DBT_PARTIAL);
-	ret = __db_retcopy(dbenv, dbt, data, len, memp, memsize);
+	if (dbt->data != NULL && dbt->size == len &&
+	    memcmp(dbt->data, data, len) == 0)
+		ret = 0;
+	else
+		ret = __db_retcopy(dbenv, dbt, data, len, memp, memsize);
 	dbt->flags = orig_flags;
 	return (ret);
 }
@@ -238,7 +241,7 @@ __dbcl_retcopy(dbenv, dbt, data, len, memp, memsize)
  * __dbcl_txn_close --
  *	Clean up an environment's transactions.
  */
-int
+static int
 __dbcl_txn_close(dbenv)
 	DB_ENV *dbenv;
 {
@@ -400,11 +403,11 @@ __dbcl_c_refresh(dbc)
  * __dbcl_c_setup --
  *	Allocate a cursor.
  *
- * PUBLIC: int __dbcl_c_setup __P((long, DB *, DBC **));
+ * PUBLIC: int __dbcl_c_setup __P((u_int, DB *, DBC **));
  */
 int
 __dbcl_c_setup(cl_id, dbp, dbcp)
-	long cl_id;
+	u_int cl_id;
 	DB *dbp;
 	DBC **dbcp;
 {
@@ -484,4 +487,3 @@ __dbcl_dbclose_common(dbp)
 	__os_free(NULL, dbp);
 	return (ret);
 }
-#endif /* HAVE_RPC */

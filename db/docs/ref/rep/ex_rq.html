@@ -1,12 +1,12 @@
 <!--$Id: ex_rq.so,v 1.4 2002/06/24 14:50:48 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Ex_repquote: putting it all together</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -143,7 +143,7 @@ for (ret = 0; ret == 0;) {
 		 */
 		machtab_parm(tab, &n, &pri, &timeout);
 		if ((ret = dbenv-&gt;rep_elect(dbenv,
-		    n, pri, timeout, &newm)) != 0)
+		    n, 0, pri, timeout, &newm, 0)) != 0)
 			continue;
 <p>
 		/*
@@ -231,6 +231,6 @@ for (ret = 0; ret == 0;) {
 }</blockquote></pre>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/ex_comm.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../xa/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

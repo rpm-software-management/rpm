@@ -1,23 +1,22 @@
-<!--$Id: rep_transport.so,v 1.30 2003/11/19 04:07:41 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: rep_transport.so,v 1.31 2004/08/13 03:39:02 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::set_rep_transport</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbEnv::set_rep_transport</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -44,43 +43,40 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>envid</b><dd>
-The <b>envid</b> parameter is the local environment's ID.  It must be
+<dl compact>
+<dt><b>envid</b><dd>The <b>envid</b> parameter is the local environment's ID.  It must be
 a positive integer and uniquely identify this Berkeley DB database environment
 (see <a href="../ref/rep/id.html">Replication environment IDs</a> for more
 information).
-<p><dt><b>send</b><dd>
-The <b>send</b> callback function is used to transmit data using the
+<dt><b>send</b><dd>The <b>send</b> callback function is used to transmit data using the
 replication application's communication infrastructure.  The parameters
 to <b>send</b> are as follows:
-<p><dl compact>
-<p><dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment handle.
-<p><dt><b>control</b><dd>The <b>control</b> parameter is the first of the two data elements to be
+<dl compact>
+<dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment handle.
+<dt><b>control</b><dd>The <b>control</b> parameter is the first of the two data elements to be
 transmitted by the <b>send</b> function.
-<p><dt><b>rec</b><dd>The <b>rec</b> parameter is the second of the two data elements to be
+<dt><b>rec</b><dd>The <b>rec</b> parameter is the second of the two data elements to be
 transmitted by the <b>send</b> function.
-<p><dt><b>lsnp</b><dd>If the type of message to be sent has an LSN associated with it, then
-the <b>lsnp</b> parameter
-contains the LSN of the record being sent.  This LSN can be used to
-determine that certain records have been processed successfully by
-clients.
-<p><dt><b>envid</b><dd>The <b>envid</b> parameter is a positive integer identifier that
+<dt><b>lsnp</b><dd>If the type of message to be sent has an LSN associated with it, then
+the <b>lsnp</b> parameter contains the LSN of the record being sent.
+This LSN can be used to determine that certain records have been
+processed successfully by clients.
+<dt><b>envid</b><dd>The <b>envid</b> parameter is a positive integer identifier that
 specifies the replication environment to which the message should be
 sent (see <a href="../ref/rep/id.html">Replication environment IDs</a> for
 more information).
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>The special identifier DB_EID_BROADCAST indicates that a message
 should be broadcast to every environment in the replication group.  The
 application may use a true broadcast protocol or may send the message
 in sequence to each machine with which it is in communication.  In both
 cases, the sending site should not be asked to process the message.</p>
-<p><dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_REP_NOBUFFER">DB_REP_NOBUFFER</a><dd>The record being sent should be transmitted immediately and not buffered
+<dl compact>
+<dt><a name="DB_REP_NOBUFFER">DB_REP_NOBUFFER</a><dd>The record being sent should be transmitted immediately and not buffered
 or delayed.
-<p><dt><a name="DB_REP_PERMANENT">DB_REP_PERMANENT</a><dd>The record being sent is critical for maintaining database integrity
+<dt><a name="DB_REP_PERMANENT">DB_REP_PERMANENT</a><dd>The record being sent is critical for maintaining database integrity
 (for example, the message includes a transaction commit).  The
 application should take appropriate action to enforce the reliability
 guarantees it has chosen, such as waiting for acknowledgement from one
@@ -103,8 +99,8 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -116,6 +112,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

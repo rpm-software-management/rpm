@@ -1,23 +1,22 @@
-<!--$Id: env_set_lg_max.so,v 10.40 2003/11/08 19:17:30 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_lg_max.so,v 10.45 2004/09/28 15:04:21 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_lg_max</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;set_lg_max</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,15 +30,25 @@ DB_ENV-&gt;get_lg_max(DB_ENV *dbenv, u_int32_t *lg_maxp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;set_lg_max</h3>
-<a name="3"><!--meow--></a>
-<p>Set the maximum size of a single file in the log, in bytes.  By default,
-or if the <b>lg_max</b> parameter is set to 0, a size of 10MB is used.
-Because <a href="../api_c/lsn_class.html">DB_LSN</a> file offsets are unsigned four-byte values, the
-set value may not be larger than the maximum unsigned four-byte value.
-The size of the log file must be at least four times the size of the
-in-memory log buffer (see <a href="../api_c/env_set_lg_bsize.html">DB_ENV-&gt;set_lg_bsize</a>).</p>
-<p>See <a href="../ref/log/limits.html">Log File Limits</a>
-for more information.</p>
+<p>Set the maximum size of a single file in the log, in bytes.  Because
+<a href="../api_c/lsn_class.html">DB_LSN</a> file offsets are unsigned four-byte values, the set
+value may not be larger than the maximum unsigned four-byte value.</p>
+<p>When the logging subsystem is configured for on-disk logging, the
+default size of a log file is 10MB.</p>
+<p>When the logging subsystem is configured for in-memory logging, the
+default size of a log file is 256KB.  In addition, the configured log
+buffer size must be larger than the log file size.  (The logging
+subsystem divides memory configured for in-memory log records into
+"files", as database environments configured for in-memory log records
+may exchange log records with other members of a replication group, and
+those members may be configured to store log records on-disk.)  When
+choosing log buffer and file sizes for in-memory logs, applications
+should ensure the in-memory log buffer size is large enough that no
+transaction will ever span the entire buffer, and avoid a state where
+the in-memory buffer is full and no space can be freed because a
+transaction that started in the first log "file" is still active.</p>
+<p>See <a href="../ref/log/limits.html">Log File Limits</a> for more
+information.</p>
 <p>The database environment's log file size may also be set using the environment's
 <b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
 single line with the string "set_lg_max", one or more whitespace characters,
@@ -59,15 +68,14 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>lg_max</b><dd>
-The <b>lg_max</b> parameter is the size of a single log file, in bytes.
+<dl compact>
+<dt><b>lg_max</b><dd>The <b>lg_max</b> parameter is the size of a single log file, in bytes.
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;set_lg_max method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called;
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called;
 the size of the log file is less than four times the size of the in-memory
 log buffer;
 The specified log file size was too large; or if an
@@ -83,9 +91,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>lg_maxp</b><dd>
-The DB_ENV-&gt;get_lg_max method returns  the
+<dl compact>
+<dt><b>lg_maxp</b><dd>The DB_ENV-&gt;get_lg_max method returns  the
 maximum log file size in <b>lg_maxp</b>.
 </dl>
 <hr size=1 noshade>
@@ -97,6 +104,6 @@ maximum log file size in <b>lg_maxp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

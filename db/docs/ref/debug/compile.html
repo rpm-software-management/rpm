@@ -1,12 +1,12 @@
 <!--$Id: compile.so,v 10.12 2001/03/13 20:39:46 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Compile-time configuration</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -17,8 +17,8 @@
 <h3 align=center>Compile-time configuration</h3>
 <p>There are three compile-time configuration options that assist in
 debugging Berkeley DB and Berkeley DB applications:</p>
-<p><dl compact>
-<p><dt><a href="../../ref/build_unix/conf.html#--enable-debug">--enable-debug</a><dd>If you want to build Berkeley DB with <b>-g</b> as the C and C++ compiler
+<dl compact>
+<dt><a href="../../ref/build_unix/conf.html#--enable-debug">--enable-debug</a><dd>If you want to build Berkeley DB with <b>-g</b> as the C and C++ compiler
 flag, enter --enable-debug as an argument to configure. This will create
 Berkeley DB with debugging symbols, as well as load various Berkeley DB routines
 that can be called directly from a debugger to display database page
@@ -26,12 +26,12 @@ content, cursor queues, and so forth.  (Note that the <b>-O</b>
 optimization flag will still be specified.  To compile with only the
 <b>-g</b>, explicitly set the <b>CFLAGS</b> environment variable
 before configuring.)
-<p><dt><a href="../../ref/build_unix/conf.html#--enable-diagnostic">--enable-diagnostic</a><dd>If you want to build Berkeley DB with debugging run-time sanity checks and with
+<dt><a href="../../ref/build_unix/conf.html#--enable-diagnostic">--enable-diagnostic</a><dd>If you want to build Berkeley DB with debugging run-time sanity checks and with
 DIAGNOSTIC #defined during compilation, enter --enable-diagnostic as an
 argument to configure. This will cause a number of special checks to be
 performed when Berkeley DB is running. This flag should not be defined when
 configuring to build production binaries because it degrades performance.
-<p><dt><a href="../../ref/build_unix/conf.html#--enable-umrw">--enable-umrw</a><dd>When compiling Berkeley DB for use in run-time memory consistency checkers
+<dt><a href="../../ref/build_unix/conf.html#--enable-umrw">--enable-umrw</a><dd>When compiling Berkeley DB for use in run-time memory consistency checkers
 (in particular, programs that look for reads and writes of uninitialized
 memory), use --enable-umrw as an argument to configure.  This
 guarantees, among other things, that Berkeley DB will completely initialize
@@ -40,6 +40,6 @@ amount.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../debug/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../debug/runtime.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

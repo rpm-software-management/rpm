@@ -1,8 +1,8 @@
 /*-
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: bench_001.c,v 1.15 2003/01/08 04:43:48 bostic Exp $
+ * $Id: bench_001.c,v 1.17 2004/09/22 03:44:28 bostic Exp $
  */
 
 /*
@@ -178,7 +178,7 @@ fill(dbenv, dbp, txn, datalen, num, dups)
 	key.size = sizeof(i);
 	data.data = data_val = (struct data *) malloc(datalen);
 	memcpy(data_val->str, "0123456789012345678901234567890123456789",
-	    datalen - sizeof (data_val->id));
+	    datalen - sizeof(data_val->id));
 	data.size = datalen;
 	data.flags = DB_DBT_USERMEM;
 

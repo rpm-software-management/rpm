@@ -1,23 +1,22 @@
-<!--$Id: logc_get.so,v 10.47 2003/11/08 19:17:37 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: logc_get.so,v 10.48 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_LOGC-&gt;get</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_LOGC-&gt;get</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -34,56 +33,49 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>data</b><dd>
-The data field of the <b>data</b> structure is set to the record
+<dl compact>
+<dt><b>data</b><dd>The data field of the <b>data</b> structure is set to the record
 retrieved, and the size field indicates the number of bytes in the
 record.  See <a href="../api_c/dbt_class.html">DBT</a> for a description of other fields in the
 <b>data</b> structure.  The <a href="../api_c/dbt_class.html#DB_DBT_MALLOC">DB_DBT_MALLOC</a>,
 <a href="../api_c/dbt_class.html#DB_DBT_REALLOC">DB_DBT_REALLOC</a> and <a href="../api_c/dbt_class.html#DB_DBT_USERMEM">DB_DBT_USERMEM</a> flags may be specified
 for any <a href="../api_c/dbt_class.html">DBT</a> used for data retrieval.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to one of the following values:
-<p><dl compact>
-<p><dt><a name="DB_CURRENT">DB_CURRENT</a><dd>Return the log record to which the log currently refers.
-<p><dt><a name="DB_FIRST">DB_FIRST</a><dd>The first record from any of the log files found in the log directory
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
+<dl compact>
+<dt><a name="DB_CURRENT">DB_CURRENT</a><dd>Return the log record to which the log currently refers.
+<dt><a name="DB_FIRST">DB_FIRST</a><dd>The first record from any of the log files found in the log directory
 is returned in the <b>data</b> parameter.
 The <b>lsn</b> parameter is overwritten with the <a href="../api_c/lsn_class.html">DB_LSN</a> of the
 record returned.
-<p>
-The DB_LOGC-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_FIRST is set and the log is empty.
+<p>The DB_LOGC-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_FIRST is set and the log is empty.
 </p>
-<p><dt><a name="DB_LAST">DB_LAST</a><dd>The last record in the log is returned in the <b>data</b> parameter.
+<dt><a name="DB_LAST">DB_LAST</a><dd>The last record in the log is returned in the <b>data</b> parameter.
 The <b>lsn</b> parameter is overwritten with the <a href="../api_c/lsn_class.html">DB_LSN</a> of the
 record returned.
-<p>
-The DB_LOGC-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_LAST is set and the log is empty.
+<p>The DB_LOGC-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_LAST is set and the log is empty.
 </p>
-<p><dt><a name="DB_NEXT">DB_NEXT</a><dd>The current log position is advanced to the next record in the log, and
+<dt><a name="DB_NEXT">DB_NEXT</a><dd>The current log position is advanced to the next record in the log, and
 that record is returned in the <b>data</b> parameter.  The <b>lsn</b>
 parameter is overwritten with the <a href="../api_c/lsn_class.html">DB_LSN</a> of the record returned.
 <p>If the cursor has not been initialized via DB_FIRST, DB_LAST, DB_SET,
 DB_NEXT, or DB_PREV, DB_LOGC-&gt;get will return the first record in
 the log.</p>
-<p>
-The DB_LOGC-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT is set and the last log record has already been
+<p>The DB_LOGC-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT is set and the last log record has already been
 returned or the log is empty.
 </p>
-<p><dt><a name="DB_PREV">DB_PREV</a><dd>The current log position is advanced to the previous record in the log,
+<dt><a name="DB_PREV">DB_PREV</a><dd>The current log position is advanced to the previous record in the log,
 and that record is returned in the <b>data</b> parameter.  The
 <b>lsn</b> parameter is overwritten with the <a href="../api_c/lsn_class.html">DB_LSN</a> of the record
 returned.
 <p>If the cursor has not been initialized via DB_FIRST, DB_LAST, DB_SET,
 DB_NEXT, or DB_PREV, DB_LOGC-&gt;get will return the last record in the
 log.</p>
-<p>
-The DB_LOGC-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV is set and the first log record has already been
+<p>The DB_LOGC-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV is set and the first log record has already been
 returned or the log is empty.
 </p>
-<p><dt><a name="DB_SET">DB_SET</a><dd>Retrieve the record specified by the <b>lsn</b> parameter.
+<dt><a name="DB_SET">DB_SET</a><dd>Retrieve the record specified by the <b>lsn</b> parameter.
 </dl>
-<p><dt><b>lsn</b><dd>
-When the <b>flag</b> parameter is set to DB_CURRENT,
+<dt><b>lsn</b><dd>When the <b>flag</b> parameter is set to DB_CURRENT,
 DB_FIRST, DB_LAST, DB_NEXT or DB_PREV,
 the <b>lsn</b> parameter is overwritten with the <a href="../api_c/lsn_class.html">DB_LSN</a> value
 of the record retrieved.  When <b>flag</b> is set to DB_SET,
@@ -93,8 +85,8 @@ be retrieved.
 <h3>Errors</h3>
 <p>The DB_LOGC-&gt;get method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the DB_CURRENT flag was set and the log cursor has not yet
+<dl compact>
+<dt>EINVAL<dd>If the DB_CURRENT flag was set and the log cursor has not yet
 been initialized;
 the DB_CURRENT, DB_NEXT, or DB_PREV flags were
 set and the log was opened with the DB_THREAD flag set;
@@ -111,6 +103,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

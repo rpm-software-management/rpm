@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mut_fcntl.c,v 11.26 2004/01/28 03:36:18 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: mut_fcntl.c,v 11.24 2003/05/05 19:55:03 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -17,6 +15,7 @@ static const char revid[] = "$Id: mut_fcntl.c,v 11.24 2003/05/05 19:55:03 bostic
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>				/* SEEK_SET on SunOS. */
 #endif
 
 #include "db_int.h"

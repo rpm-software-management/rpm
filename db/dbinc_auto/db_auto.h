@@ -44,21 +44,6 @@ typedef struct ___db_ovref_args {
 	DB_LSN	lsn;
 } __db_ovref_args;
 
-#define	DB___db_relink	45
-typedef struct ___db_relink_args {
-	u_int32_t type;
-	DB_TXN *txnid;
-	DB_LSN prev_lsn;
-	u_int32_t	opcode;
-	int32_t	fileid;
-	db_pgno_t	pgno;
-	DB_LSN	lsn;
-	db_pgno_t	prev;
-	DB_LSN	lsn_prev;
-	db_pgno_t	next;
-	DB_LSN	lsn_next;
-} __db_relink_args;
-
 #define	DB___db_debug	47
 typedef struct ___db_debug_args {
 	u_int32_t type;
@@ -93,6 +78,7 @@ typedef struct ___db_pg_alloc_args {
 	db_pgno_t	pgno;
 	u_int32_t	ptype;
 	db_pgno_t	next;
+	db_pgno_t	last_pgno;
 } __db_pg_alloc_args;
 
 #define	DB___db_pg_free	50
@@ -106,6 +92,7 @@ typedef struct ___db_pg_free_args {
 	db_pgno_t	meta_pgno;
 	DBT	header;
 	db_pgno_t	next;
+	db_pgno_t	last_pgno;
 } __db_pg_free_args;
 
 #define	DB___db_cksum	51
@@ -126,6 +113,7 @@ typedef struct ___db_pg_freedata_args {
 	db_pgno_t	meta_pgno;
 	DBT	header;
 	db_pgno_t	next;
+	db_pgno_t	last_pgno;
 	DBT	data;
 } __db_pg_freedata_args;
 
@@ -150,5 +138,16 @@ typedef struct ___db_pg_new_args {
 	DBT	header;
 	db_pgno_t	next;
 } __db_pg_new_args;
+
+#define	DB___db_pg_init	60
+typedef struct ___db_pg_init_args {
+	u_int32_t type;
+	DB_TXN *txnid;
+	DB_LSN prev_lsn;
+	int32_t	fileid;
+	db_pgno_t	pgno;
+	DBT	header;
+	DBT	data;
+} __db_pg_init_args;
 
 #endif

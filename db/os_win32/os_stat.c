@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_stat.c,v 11.32 2004/10/07 14:00:11 carol Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_stat.c,v 11.26 2003/02/20 14:36:07 mjc Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -29,27 +27,25 @@ __os_exists(path, isdirp)
 	const char *path;
 	int *isdirp;
 {
-	int ret, retries;
+	int ret;
 	DWORD attrs;
+	_TCHAR *tpath;
 
 	if (DB_GLOBAL(j_exists) != NULL)
 		return (DB_GLOBAL(j_exists)(path, isdirp));
 
-	ret = retries = 0;
-	do {
-		attrs = GetFileAttributes(path);
-		if (attrs == (DWORD)-1)
-			ret = __os_win32_errno();
-	} while ((ret == EINTR || ret == EBUSY) &&
-	    ++retries < DB_RETRY);
-
+	TO_TSTRING(NULL, path, tpath, ret);
 	if (ret != 0)
 		return (ret);
 
-	if (isdirp != NULL)
+	RETRY_CHK(
+	    ((attrs = GetFileAttributes(tpath)) == (DWORD)-1 ? 1 : 0), ret);
+
+	if (ret == 0 && isdirp != NULL)
 		*isdirp = (attrs & FILE_ATTRIBUTE_DIRECTORY);
 
-	return (0);
+	FREE_STRING(NULL, tpath);
+	return (ret);
 }
 
 /*
@@ -64,19 +60,16 @@ __os_ioinfo(dbenv, path, fhp, mbytesp, bytesp, iosizep)
 	DB_FH *fhp;
 	u_int32_t *mbytesp, *bytesp, *iosizep;
 {
-	int ret, retries;
+	int ret;
 	BY_HANDLE_FILE_INFORMATION bhfi;
 	unsigned __int64 filesize;
 
-	retries = 0;
 	if (DB_GLOBAL(j_ioinfo) != NULL)
 		return (DB_GLOBAL(j_ioinfo)(path,
 		    fhp->fd, mbytesp, bytesp, iosizep));
 
-retry:	if (!GetFileInformationByHandle(fhp->handle, &bhfi)) {
-		if (((ret = __os_win32_errno()) == EINTR || ret == EBUSY) &&
-		    ++retries < DB_RETRY)
-			goto retry;
+	RETRY_CHK((!GetFileInformationByHandle(fhp->handle, &bhfi)), ret);
+	if (ret != 0) {
 		__db_err(dbenv,
 		    "GetFileInformationByHandle: %s", strerror(ret));
 		return (ret);

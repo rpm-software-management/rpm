@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: lock.h,v 11.47 2003/04/16 18:23:27 ubell Exp $
+ * $Id: lock.h,v 11.53 2004/09/22 21:14:56 ubell Exp $
  */
 
 #ifndef	_DB_LOCK_H_
@@ -46,8 +46,8 @@ typedef struct {
 
 #define	LOCK_TIME_ISVALID(time)		((time)->tv_sec != 0)
 #define	LOCK_SET_TIME_INVALID(time)	((time)->tv_sec = 0)
-#define	LOCK_TIME_ISMAX(time)		((time)->tv_sec == UINT32_T_MAX)
-#define	LOCK_SET_TIME_MAX(time)		((time)->tv_sec = UINT32_T_MAX)
+#define	LOCK_TIME_ISMAX(time)		((time)->tv_sec == UINT32_MAX)
+#define	LOCK_SET_TIME_MAX(time)		((time)->tv_sec = UINT32_MAX)
 #define	LOCK_TIME_EQUAL(t1, t2)						\
 	((t1)->tv_sec == (t2)->tv_sec && (t1)->tv_usec == (t2)->tv_usec)
 #define	LOCK_TIME_GREATER(t1, t2)					\
@@ -96,7 +96,7 @@ typedef struct __db_lockregion {
  */
 typedef struct __sh_dbt {
 	u_int32_t size;			/* Byte length. */
-	ssize_t   off;			/* Region offset. */
+	roff_t    off;			/* Region offset. */
 } SH_DBT;
 
 #define	SH_DBT_PTR(p)	((void *)(((u_int8_t *)(p)) + (p)->off))
@@ -125,8 +125,8 @@ typedef struct __db_locker {
 	u_int32_t dd_id;		/* Deadlock detector id. */
 	u_int32_t nlocks;		/* Number of locks held. */
 	u_int32_t nwrites;		/* Number of write locks held. */
-	size_t master_locker;		/* Locker of master transaction. */
-	size_t parent_locker;		/* Parent of this child. */
+	roff_t  master_locker;		/* Locker of master transaction. */
+	roff_t  parent_locker;		/* Parent of this child. */
 	SH_LIST_HEAD(_child) child_locker;	/* List of descendant txns;
 						   only used in a "master"
 						   txn. */
@@ -160,9 +160,13 @@ typedef struct __db_locktab {
 	DB_HASHTAB	*locker_tab;	/* Beginning of locker hash table. */
 } DB_LOCKTAB;
 
-/* Test for conflicts. */
+/*
+ * Test for conflicts.
+ *
+ * Cast HELD and WANTED to ints, they are usually db_lockmode_t enums.
+ */
 #define	CONFLICTS(T, R, HELD, WANTED) \
-	(T)->conflicts[(HELD) * (R)->stat.st_nmodes + (WANTED)]
+	(T)->conflicts[((int)HELD) * (R)->stat.st_nmodes + ((int)WANTED)]
 
 #define	OBJ_LINKS_VALID(L) ((L)->links.stqe_prev != -1)
 
@@ -179,7 +183,7 @@ struct __db_lock {
 	SH_LIST_ENTRY	locker_links;	/* List of locks held by a locker. */
 	u_int32_t	refcount;	/* Reference count the lock. */
 	db_lockmode_t	mode;		/* What sort of lock. */
-	ssize_t		obj;		/* Relative offset of object struct. */
+	roff_t		obj;		/* Relative offset of object struct. */
 	db_status_t	status;		/* Status of this lock. */
 };
 
@@ -194,10 +198,12 @@ struct __db_lock {
  * we pass some of those around (i.e., DB_LOCK_REMOVE).
  */
 #define	DB_LOCK_DOALL		0x010000
-#define	DB_LOCK_FREE		0x020000
-#define	DB_LOCK_NOPROMOTE	0x040000
-#define	DB_LOCK_UNLINK		0x080000
-#define	DB_LOCK_NOWAITERS	0x100000
+#define	DB_LOCK_DOWNGRADE	0x020000
+#define	DB_LOCK_FREE		0x040000
+#define	DB_LOCK_NOPROMOTE	0x080000
+#define	DB_LOCK_UNLINK		0x100000
+#define	DB_LOCK_NOREGION	0x200000
+#define	DB_LOCK_NOWAITERS	0x400000
 
 /*
  * Macros to get/release different types of mutexes.
@@ -209,8 +215,8 @@ struct __db_lock {
 #define	LOCKER_LOCK(lt, reg, locker, ndx)				\
 	ndx = __lock_locker_hash(locker) % (reg)->locker_t_size;
 
-#define	LOCKREGION(dbenv, lt)  R_LOCK((dbenv), &(lt)->reginfo)
-#define	UNLOCKREGION(dbenv, lt)  R_UNLOCK((dbenv), &(lt)->reginfo)
+#define	LOCKREGION(dbenv, lt)  R_LOCK((dbenv), &((DB_LOCKTAB *)lt)->reginfo)
+#define	UNLOCKREGION(dbenv, lt)  R_UNLOCK((dbenv), &((DB_LOCKTAB *)lt)->reginfo)
 
 #include "dbinc_auto/lock_ext.h"
 #endif /* !_DB_LOCK_H_ */

@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -35,13 +35,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * $Id: db.c,v 11.298 2004/10/07 16:43:43 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db.c,v 11.283 2003/11/14 05:32:29 ubell Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -61,10 +59,9 @@ static const char revid[] = "$Id: db.c,v 11.283 2003/11/14 05:32:29 ubell Exp $"
 #include "dbinc/qam.h"
 #include "dbinc/txn.h"
 
-static int __db_dbenv_mpool __P((DB *, const char *, u_int32_t));
 static int __db_disassociate __P((DB *));
 
-#if CONFIG_TEST
+#ifdef CONFIG_TEST
 static void __db_makecopy __P((DB_ENV *, const char *, const char *));
 static int  __db_testdocopy __P((DB_ENV *, const char *));
 static int  __qam_testdocopy __P((DB *, const char *));
@@ -124,15 +121,13 @@ __db_master_open(subdbp, txn, name, flags, mode, dbpp)
 		goto err;
 
 	/*
-	 * Verify that pagesize is the same on both.
-	 * The items in dbp were now initialized from the meta
-	 * page.  The items in dbp were set in __db_dbopen
-	 * when we either read or created the master file.
-	 * Other items such as checksum and encryption are
-	 * checked when we read the meta-page.  So we do not
-	 * check those here.  However, if the meta-page caused
-	 * chksumming to be turned on and it wasn't already, set
-	 * it here.
+	 * Verify that pagesize is the same on both.  The items in dbp were now
+	 * initialized from the meta page.  The items in dbp were set in
+	 * __db_dbopen when we either read or created the master file.  Other
+	 * items such as checksum and encryption are checked when we read the
+	 * meta-page.  So we do not check those here.  However, if the
+	 * meta-page caused checksumming to be turned on and it wasn't already,
+	 * set it here.
 	 */
 	if (F_ISSET(dbp, DB_AM_CHKSUM))
 		F_SET(subdbp, DB_AM_CHKSUM);
@@ -170,7 +165,7 @@ __db_master_update(mdbp, sdbp, txn, subdb, type, action, newname, flags)
 	DB_ENV *dbenv;
 	DBC *dbc, *ndbc;
 	DBT key, data, ndata;
-	PAGE *p;
+	PAGE *p, *r;
 	db_pgno_t t_pgno;
 	int modify, ret, t_ret;
 
@@ -246,6 +241,18 @@ __db_master_update(mdbp, sdbp, txn, subdb, type, action, newname, flags)
 		    __memp_fget(mdbp->mpf, &sdbp->meta_pgno, 0, &p)) != 0)
 			goto err;
 
+		/* Free the root on the master db. */
+		if (TYPE(p) == P_BTREEMETA) {
+			if ((ret = __memp_fget(mdbp->mpf,
+			     &((BTMETA *)p)->root, 0, &r)) != 0)
+				goto err;
+
+			/* Free and put the page. */
+			if ((ret = __db_free(dbc, r)) != 0) {
+				r = NULL;
+				goto err;
+			}
+		}
 		/* Free and put the page. */
 		if ((ret = __db_free(dbc, p)) != 0) {
 			p = NULL;
@@ -361,14 +368,6 @@ done:	/*
 		if (ret == 0) {
 			if ((t_ret =
 			    __memp_fput(mdbp->mpf, p, DB_MPOOL_DIRTY)) != 0)
-				ret = t_ret;
-			/*
-			 * Since we cannot close this file until after
-			 * transaction commit, we need to sync the dirty
-			 * pages, because we'll read these directly from
-			 * disk to open.
-			 */
-			if ((t_ret = __db_sync(mdbp)) != 0 && ret == 0)
 				ret = t_ret;
 		} else
 			(void)__memp_fput(mdbp->mpf, p, 0);
@@ -502,8 +501,10 @@ __db_dbenv_setup(dbp, txn, fname, id, flags)
 /*
  * __db_dbenv_mpool --
  *	Set up the underlying environment cache during a db_open.
+ *
+ * PUBLIC: int __db_dbenv_mpool __P((DB *, const char *, u_int32_t));
  */
-static int
+int
 __db_dbenv_mpool(dbp, fname, flags)
 	DB *dbp;
 	const char *fname;
@@ -519,11 +520,6 @@ __db_dbenv_mpool(dbp, fname, flags)
 	COMPQUIET(mpf, NULL);
 
 	dbenv = dbp->dbenv;
-
-	/* Register DB's pgin/pgout functions.  */
-	if ((ret = __memp_register(
-	    dbenv, DB_FTYPE_SET, __db_pgin, __db_pgout)) != 0)
-		return (ret);
 
 	/*
 	 * If we need to pre- or post-process a file's pages on I/O, set the
@@ -613,7 +609,6 @@ __db_close(dbp, txn, flags)
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
-	u_int32_t dbpflags;
 	int db_ref, deferred_close, ret, t_ret;
 
 	dbenv = dbp->dbenv;
@@ -629,7 +624,6 @@ __db_close(dbp, txn, flags)
 	if (txn != NULL)
 		(void)__db_check_txn(dbp, txn, DB_LOCK_INVALIDID, 0);
 
-	dbpflags = dbp->flags;
 	/* Refresh the structure and close any underlying resources. */
 	ret = __db_refresh(dbp, txn, flags, &deferred_close);
 
@@ -639,22 +633,6 @@ __db_close(dbp, txn, flags)
 	 */
 	if (deferred_close)
 		return (ret);
-
-	/*
-	 * Call the access specific close function.
-	 *
-	 * !!!
-	 * Because of where these functions are called in the DB handle close
-	 * process, these routines can't do anything that would dirty pages or
-	 * otherwise affect closing down the database.  Specifically, we can't
-	 * abort and recover any of the information they control.
-	 */
-	if ((t_ret = __bam_db_close(dbp)) != 0 && ret == 0)
-		ret = t_ret;
-	if ((t_ret = __ham_db_close(dbp)) != 0 && ret == 0)
-		ret = t_ret;
-	if ((t_ret = __qam_db_close(dbp, dbpflags)) != 0 && ret == 0)
-		ret = t_ret;
 
 	/* !!!
 	 * This code has an apparent race between the moment we read and
@@ -703,7 +681,7 @@ __db_refresh(dbp, txn, flags, deferred_closep)
 	DB_ENV *dbenv;
 	DB_LOCKREQ lreq;
 	DB_MPOOL *dbmp;
-	int ret, t_ret;
+	int resync, ret, t_ret;
 
 	ret = 0;
 
@@ -750,6 +728,7 @@ __db_refresh(dbp, txn, flags, deferred_closep)
 	 * routine.  Note that any failure on a close is considered "really
 	 * bad" and we just break out of the loop and force forward.
 	 */
+	resync = TAILQ_FIRST(&dbp->active_queue) == NULL ? 0 : 1;
 	while ((dbc = TAILQ_FIRST(&dbp->active_queue)) != NULL)
 		if ((t_ret = __db_c_close(dbc)) != 0) {
 			if (ret == 0)
@@ -765,8 +744,9 @@ __db_refresh(dbp, txn, flags, deferred_closep)
 		}
 
 	/*
-	 * Close any outstanding join cursors.  Join cursors destroy
-	 * themselves on close and have no separate destroy routine.
+	 * Close any outstanding join cursors.  Join cursors destroy themselves
+	 * on close and have no separate destroy routine.  We don't have to set
+	 * the resync flag here, because join cursors aren't write cursors.
 	 */
 	while ((dbc = TAILQ_FIRST(&dbp->join_queue)) != NULL)
 		if ((t_ret = __db_join_close(dbc)) != 0) {
@@ -784,7 +764,7 @@ __db_refresh(dbp, txn, flags, deferred_closep)
 	 * entire buffer cache is searched.  If we're in recovery, don't flush
 	 * the file, it's not necessary.
 	 */
-	if (!LF_ISSET(DB_NOSYNC) &&
+	if (resync && !LF_ISSET(DB_NOSYNC) &&
 	    !F_ISSET(dbp, DB_AM_DISCARD | DB_AM_RECOVER) &&
 	    (t_ret = __memp_fsync(dbp->mpf)) != 0 && ret == 0)
 		ret = t_ret;
@@ -808,8 +788,8 @@ __db_refresh(dbp, txn, flags, deferred_closep)
 		if (F_ISSET(dbp, DB_AM_RECOVER))
 			t_ret = __dbreg_revoke_id(dbp, 0, DB_LOGFILEID_INVALID);
 		else {
-			if ((t_ret = __dbreg_close_id(dbp, txn)) != 0 &&
-			    txn != NULL) {
+			if ((t_ret = __dbreg_close_id(dbp,
+			    txn, DBREG_CLOSE)) != 0 && txn != NULL) {
 				/*
 				 * We're in a txn and the attempt to log the
 				 * close failed;  let the txn subsystem know
@@ -846,6 +826,64 @@ __db_refresh(dbp, txn, flags, deferred_closep)
 		ret = t_ret;
 
 never_opened:
+	/*
+	 * Remove this DB handle from the DB_ENV's dblist, if it's been added.
+	 *
+	 * Close our reference to the underlying cache while locked, we don't
+	 * want to race with a thread searching for our underlying cache link
+	 * while opening a DB handle.
+	 */
+	MUTEX_THREAD_LOCK(dbenv, dbenv->dblist_mutexp);
+	if (dbp->dblistlinks.le_prev != NULL) {
+		LIST_REMOVE(dbp, dblistlinks);
+		dbp->dblistlinks.le_prev = NULL;
+	}
+
+	/* Close the memory pool file handle. */
+	if (dbp->mpf != NULL) {
+		if ((t_ret = __memp_fclose(dbp->mpf,
+		    F_ISSET(dbp, DB_AM_DISCARD) ? DB_MPOOL_DISCARD : 0)) != 0 &&
+		    ret == 0)
+			ret = t_ret;
+		dbp->mpf = NULL;
+	}
+
+	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
+
+	/*
+	 * Call the access specific close function.
+	 *
+	 * We do this here rather than in __db_close as we need to do this when
+	 * aborting an open so that file descriptors are closed and abort of
+	 * renames can succeed on platforms that lock open files (such as
+	 * Windows).  In particular, we need to ensure that all the extents
+	 * associated with a queue are closed so that queue renames can be
+	 * aborted.
+	 *
+	 * It is also important that we do this before releasing the handle
+	 * lock, because dbremove and dbrename assume that once they have the
+	 * handle lock, it is safe to modify the underlying file(s).
+	 *
+	 * !!!
+	 * Because of where these functions are called in the DB handle close
+	 * process, these routines can't do anything that would dirty pages or
+	 * otherwise affect closing down the database.  Specifically, we can't
+	 * abort and recover any of the information they control.
+	 */
+	if ((t_ret = __bam_db_close(dbp)) != 0 && ret == 0)
+		ret = t_ret;
+	if ((t_ret = __ham_db_close(dbp)) != 0 && ret == 0)
+		ret = t_ret;
+	if ((t_ret = __qam_db_close(dbp, dbp->flags)) != 0 && ret == 0)
+		ret = t_ret;
+
+	/*
+	 * !!!
+	 * At this point, the access-method specific information has been
+	 * freed.  From now on, we can use the dbp, but not touch any
+	 * access-method specific data.
+	 */
+
 	if (dbp->lid != DB_LOCK_INVALIDID) {
 		/* We may have pending trade operations on this dbp. */
 		if (txn != NULL)
@@ -901,30 +939,6 @@ never_opened:
 	memset(&dbp->my_rskey, 0, sizeof(DBT));
 	memset(&dbp->my_rkey, 0, sizeof(DBT));
 	memset(&dbp->my_rdata, 0, sizeof(DBT));
-
-	/*
-	 * Remove this DB handle from the DB_ENV's dblist, if it's been added.
-	 *
-	 * Close our reference to the underlying cache while locked, we don't
-	 * want to race with a thread searching for our underlying cache link
-	 * while opening a DB handle.
-	 */
-	MUTEX_THREAD_LOCK(dbenv, dbenv->dblist_mutexp);
-	if (dbp->dblistlinks.le_prev != NULL) {
-		LIST_REMOVE(dbp, dblistlinks);
-		dbp->dblistlinks.le_prev = NULL;
-	}
-
-	/* Close the memory pool file handle. */
-	if (dbp->mpf != NULL) {
-		if ((t_ret = __memp_fclose(dbp->mpf,
-		    F_ISSET(dbp, DB_AM_DISCARD) ? DB_MPOOL_DISCARD : 0)) != 0 &&
-		    ret == 0)
-			ret = t_ret;
-		dbp->mpf = NULL;
-	}
-
-	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
 
 	/* Clear out fields that normally get set during open. */
 	memset(dbp->fileid, 0, sizeof(dbp->fileid));
@@ -1005,8 +1019,17 @@ __db_backup_name(dbenv, name, txn, backup)
 {
 	DB_LSN lsn;
 	size_t len;
-	int plen, ret, use_lsn;
+	int ret;
 	char *p, *retp;
+
+	/*
+	 * Part of the name may be a full path, so we need to make sure that
+	 * we allocate enough space for it, even in the case where we don't
+	 * use the entire filename for the backup name.
+	 */
+	len = strlen(name) + strlen(BACKUP_PREFIX) + MAX_LSN_TO_TEXT;
+	if ((ret = __os_malloc(dbenv, len, &retp)) != 0)
+		return (ret);
 
 	/*
 	 * Create the name.  Backup file names are in one of two forms:
@@ -1015,64 +1038,49 @@ __db_backup_name(dbenv, name, txn, backup)
 	 * and
 	 *	in a non-transactional env: __db.FILENAME
 	 *
-	 * If the transaction doesn't have a current LSN, we write
-	 * a dummy log record to force it, so that we ensure that
-	 * all tmp names are unique.
+	 * If the transaction doesn't have a current LSN, we write a dummy
+	 * log record to force it, so we ensure all tmp names are unique.
 	 *
 	 * In addition, the name passed may contain an env-relative path.
 	 * In that case, put the __db. in the right place (in the last
 	 * component of the pathname).
-	 */
-	if (!F_ISSET(dbenv, DB_ENV_TXN_NOT_DURABLE) && txn != NULL) {
-		if (IS_ZERO_LSN(txn->last_lsn)) {
-			/*
-			 * Write dummy log record.   The two choices for
-			 * dummy log records are __db_noop_log and
-			 * __db_debug_log; unfortunately __db_noop_log requires
-			 * a valid dbp, and we aren't guaranteed to be able
-			 * to pass one in here.
-			 */
-			if ((ret = __db_debug_log(dbenv, txn, &lsn, 0,
-			    NULL, 0, NULL, NULL, 0)) != 0)
-				return (ret);
-		} else
-			lsn = txn->last_lsn;
-		use_lsn = 1;
-	} else
-		use_lsn = 0;
-
-	/*
-	 * Part of the name may be a full path, so we need to make sure that
-	 * we allocate enough space for it, even in the case where we don't
-	 * use the entire filename for the backup name.
-	 */
-	len = strlen(name) + strlen(BACKUP_PREFIX) + MAX_LSN_TO_TEXT;
-
-	if ((ret = __os_malloc(dbenv, len, &retp)) != 0)
-		return (ret);
-
-	/*
+	 *
 	 * There are four cases here:
 	 *	1. simple path w/out transaction
 	 *	2. simple path + transaction
 	 *	3. multi-component path w/out transaction
 	 *	4. multi-component path + transaction
 	 */
-	if ((p = __db_rpath(name)) == NULL) {
-		if (use_lsn) /* case 2 */
+	p = __db_rpath(name);
+	if (txn == NULL)
+		if (p == NULL)				/* Case 1. */
+			snprintf(retp, len, "%s%s", BACKUP_PREFIX, name);
+		else					/* Case 3. */
+			snprintf(retp, len, "%.*s%s%s",
+			    (int)(p - name) + 1, name, BACKUP_PREFIX, p + 1);
+	else {
+		if (IS_ZERO_LSN(txn->last_lsn)) {
+			/*
+			 * Write dummy log record.   The two choices for dummy
+			 * log records are __db_noop_log and __db_debug_log;
+			 * unfortunately __db_noop_log requires a valid dbp,
+			 * and we aren't guaranteed to be able to pass one in
+			 * here.
+			 */
+			if ((ret = __db_debug_log(dbenv,
+			    txn, &lsn, 0, NULL, 0, NULL, NULL, 0)) != 0) {
+				__os_free(dbenv, retp);
+				return (ret);
+			}
+		} else
+			lsn = txn->last_lsn;
+
+		if (p == NULL)				/* Case 2. */
 			snprintf(retp, len,
 			    "%s%x.%x", BACKUP_PREFIX, lsn.file, lsn.offset);
-		else /* case 1 */
-			snprintf(retp, len, "%s%s", BACKUP_PREFIX, name);
-	} else {
-		plen = (int)(p - name) + 1;
-		p++;
-		if (use_lsn)	/* case 4 */
-			snprintf(retp, len,
-			    "%.*s%x.%x", plen, name, lsn.file, lsn.offset);
-		else /* case 3 */
-			snprintf(retp, len,
-			    "%.*s%s%s", plen, name, BACKUP_PREFIX, p);
+		else					/* Case 4. */
+			snprintf(retp, len, "%.*s%x.%x",
+			    (int)(p - name) + 1, name, lsn.file, lsn.offset);
 	}
 
 	*backup = retp;
@@ -1140,12 +1148,12 @@ __db_disassociate(sdbp)
 	return (ret);
 }
 
-#if CONFIG_TEST
+#ifdef CONFIG_TEST
 /*
  * __db_testcopy
  *	Create a copy of all backup files and our "main" DB.
  *
- * PUBLIC: #if CONFIG_TEST
+ * PUBLIC: #ifdef CONFIG_TEST
  * PUBLIC: int __db_testcopy __P((DB_ENV *, DB *, const char *));
  * PUBLIC: #endif
  */
@@ -1163,7 +1171,7 @@ __db_testcopy(dbenv, dbp, name)
 	if (name == NULL) {
 		dbmp = dbenv->mp_handle;
 		mpf = dbp->mpf;
-		name = R_ADDR(dbmp->reginfo, mpf->mfp->path_off);
+		name = R_ADDR(dbenv, dbmp->reginfo, mpf->mfp->path_off);
 	}
 
 	if (dbp != NULL && dbp->type == DB_QUEUE)
@@ -1214,15 +1222,16 @@ __db_testdocopy(dbenv, name)
 {
 	size_t len;
 	int dircnt, i, ret;
-	char **namesp, *backup, *copy, *dir, *p, *real_name;
-	real_name = NULL;
+	char *backup, *copy, *dir, **namesp, *p, *real_name;
+
+	dircnt = 0;
+	copy = backup = NULL;
+	namesp = NULL;
+
 	/* Get the real backing file name. */
 	if ((ret = __db_appname(dbenv,
 	    DB_APP_DATA, name, 0, NULL, &real_name)) != 0)
 		return (ret);
-
-	copy = backup = NULL;
-	namesp = NULL;
 
 	/*
 	 * Maximum size of file, including adding a ".afterop".
@@ -1230,10 +1239,10 @@ __db_testdocopy(dbenv, name)
 	len = strlen(real_name) + strlen(BACKUP_PREFIX) + MAX_LSN_TO_TEXT + 9;
 
 	if ((ret = __os_malloc(dbenv, len, &copy)) != 0)
-		goto out;
+		goto err;
 
 	if ((ret = __os_malloc(dbenv, len, &backup)) != 0)
-		goto out;
+		goto err;
 
 	/*
 	 * First copy the file itself.
@@ -1242,9 +1251,10 @@ __db_testdocopy(dbenv, name)
 	__db_makecopy(dbenv, real_name, copy);
 
 	if ((ret = __os_strdup(dbenv, real_name, &dir)) != 0)
-		goto out;
+		goto err;
 	__os_free(dbenv, real_name);
 	real_name = NULL;
+
 	/*
 	 * Create the name.  Backup file names are of the form:
 	 *
@@ -1276,7 +1286,7 @@ __db_testdocopy(dbenv, name)
 #endif
 	__os_free(dbenv, dir);
 	if (ret != 0)
-		goto out;
+		goto err;
 	for (i = 0; i < dircnt; i++) {
 		/*
 		 * Need to check if it is a backup file for this.
@@ -1289,7 +1299,7 @@ __db_testdocopy(dbenv, name)
 		if (strncmp(namesp[i], backup, strlen(backup)) == 0) {
 			if ((ret = __db_appname(dbenv, DB_APP_DATA,
 			    namesp[i], 0, NULL, &real_name)) != 0)
-				goto out;
+				goto err;
 
 			/*
 			 * This should not happen.  Check that old
@@ -1307,8 +1317,8 @@ __db_testdocopy(dbenv, name)
 			real_name = NULL;
 		}
 	}
-out:
-	if (backup != NULL)
+
+err:	if (backup != NULL)
 		__os_free(dbenv, backup);
 	if (copy != NULL)
 		__os_free(dbenv, copy);

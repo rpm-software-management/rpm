@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: os.h,v 11.18 2003/03/11 14:59:29 bostic Exp $
+ * $Id: os.h,v 11.25 2004/09/22 03:40:20 bostic Exp $
  */
 
 #ifndef _DB_OS_H_
@@ -14,18 +14,30 @@
 extern "C" {
 #endif
 
+/* Number of times to retry system calls that return EINTR or EBUSY. */
+#define	DB_RETRY	100
+
+#define	RETRY_CHK(op, ret) do {						\
+	int __retries = DB_RETRY;					\
+	do {								\
+		(ret) = (op);						\
+	} while ((ret) != 0 && (((ret) = __os_get_errno()) == EAGAIN ||	\
+	    (ret) == EBUSY || (ret) == EINTR) && --__retries > 0);	\
+} while (0)
+
 /*
  * Flags understood by __os_open.
  */
 #define	DB_OSO_CREATE	0x0001		/* POSIX: O_CREAT */
 #define	DB_OSO_DIRECT	0x0002		/* Don't buffer the file in the OS. */
-#define	DB_OSO_EXCL	0x0004		/* POSIX: O_EXCL */
-#define	DB_OSO_LOG	0x0008		/* Opening a log file. */
-#define	DB_OSO_RDONLY	0x0010		/* POSIX: O_RDONLY */
-#define	DB_OSO_REGION	0x0020		/* Opening a region file. */
-#define	DB_OSO_SEQ	0x0040		/* Expected sequential access. */
-#define	DB_OSO_TEMP	0x0080		/* Remove after last close. */
-#define	DB_OSO_TRUNC	0x0100		/* POSIX: O_TRUNC */
+#define	DB_OSO_DSYNC	0x0004		/* POSIX: O_DSYNC. */
+#define	DB_OSO_EXCL	0x0008		/* POSIX: O_EXCL */
+#define	DB_OSO_LOG	0x0010		/* Opening a log file. */
+#define	DB_OSO_RDONLY	0x0020		/* POSIX: O_RDONLY */
+#define	DB_OSO_REGION	0x0040		/* Opening a region file. */
+#define	DB_OSO_SEQ	0x0080		/* Expected sequential access. */
+#define	DB_OSO_TEMP	0x0100		/* Remove after last close. */
+#define	DB_OSO_TRUNC	0x0200		/* POSIX: O_TRUNC */
 
 /*
  * Seek options understood by __os_seek.
@@ -65,7 +77,7 @@ struct __fh_t {
 	 * Last seek statistics, used for zero-filling on filesystems
 	 * that don't support it directly.
 	 */
-	u_int32_t pgno;
+	db_pgno_t pgno;
 	u_int32_t pgsize;
 	u_int32_t offset;
 

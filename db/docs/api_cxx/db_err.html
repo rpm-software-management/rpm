@@ -1,24 +1,23 @@
 <!--$Id: db_err.so,v 1.3 2002/08/18 21:15:48 bostic Exp $-->
-<!--$Id: env_err.so,v 10.30 2003/11/08 19:17:27 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_err.so,v 10.32 2004/09/28 15:04:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::err</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::err</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -30,22 +29,21 @@ Db::errx(const char *fmt, ...);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: Db::err</h3>
-<a name="3"><!--meow--></a>
 <p>The <a href="../api_cxx/env_err.html">DbEnv::err</a>, <a href="../api_cxx/env_err.html">DbEnv::errx</a>,  Db::err and
 Db::errx methods provide error-messaging functionality for
 applications written using the Berkeley DB library.</p>
 <p>The <a href="../api_cxx/env_err.html">DbEnv::err</a> method constructs an error message consisting of the
 following elements:</p>
-<blockquote><p><dl compact>
-<p><dt>An optional prefix string<dd>If no error callback function has been set using the
+<blockquote><dl compact>
+<dt>An optional prefix string<dd>If no error callback function has been set using the
 <a href="../api_cxx/env_set_errcall.html">DbEnv::set_errcall</a> method, any prefix string specified using the
 <a href="../api_cxx/env_set_errpfx.html">DbEnv::set_errpfx</a> method, followed by two separating characters: a colon
 and a &lt;space&gt; character.
-<p><dt>An optional printf-style message<dd>The supplied message <b>fmt</b>, if non-NULL, in which the
+<dt>An optional printf-style message<dd>The supplied message <b>fmt</b>, if non-NULL, in which the
 ANSI C X3.159-1989 (ANSI C) printf function specifies how subsequent parameters
 are converted for output.
-<p><dt>A separator<dd>Two separating characters: a colon and a &lt;space&gt; character.
-<p><dt>A standard error string<dd>The standard system or Berkeley DB library error string associated with the
+<dt>A separator<dd>Two separating characters: a colon and a &lt;space&gt; character.
+<dt>A standard error string<dd>The standard system or Berkeley DB library error string associated with the
 <b>error</b> value, as returned by the <a href="../api_cxx/env_strerror.html">DbEnv::strerror</a> method.
 </dl>
 </blockquote>
@@ -61,20 +59,24 @@ stream.</p>
 (see <a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a> and <a href="../api_cxx/db_set_error_stream.html">Db::set_error_stream</a>),
 the error message is written to that stream.</p>
 <p>If none of these output options has been configured, the error message
-is written to stderr, the standard
-error output stream.</p></blockquote>
+is written to stderr, the standard error output stream.</p></blockquote>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>error</b><dd>The <b>error</b> parameter is the error value for which the
+<a href="../api_cxx/env_err.html">DbEnv::err</a>  and  Db::err methods will display a explanatory
+string.
+<dt><b>fmt</b><dd>The <b>fmt</b> parameter is an optional printf-style message to display.
+</dl>
 <p>The <a href="../api_cxx/env_err.html">DbEnv::errx</a> and Db::errx methods perform identically to the
 <a href="../api_cxx/env_err.html">DbEnv::err</a> and Db::err methods, except that they do not append
 the final separator characters and standard error string to the error
 message.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>error</b><dd>
-The <b>error</b> parameter is the error value for which the
+<dl compact>
+<dt><b>error</b><dd>The <b>error</b> parameter is the error value for which the
 <a href="../api_cxx/env_err.html">DbEnv::err</a>  and  Db::err methods will display a explanatory
 string.
-<p><dt><b>fmt</b><dd>
-The <b>fmt</b> parameter is an optional printf-style message to display.
+<dt><b>fmt</b><dd>The <b>fmt</b> parameter is an optional printf-style message to display.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -85,6 +87,6 @@ The <b>fmt</b> parameter is an optional printf-style message to display.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

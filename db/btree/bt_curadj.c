@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: bt_curadj.c,v 11.37 2004/03/13 14:11:33 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: bt_curadj.c,v 11.34 2003/07/09 02:32:24 margo Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -20,30 +18,6 @@ static const char revid[] = "$Id: bt_curadj.c,v 11.34 2003/07/09 02:32:24 margo 
 #include "dbinc/btree.h"
 
 static int __bam_opd_cursor __P((DB *, DBC *, db_pgno_t, u_int32_t, u_int32_t));
-
-#ifdef DEBUG
-/*
- * __bam_cprint --
- *	Display the current internal cursor.
- *
- * PUBLIC: void __bam_cprint __P((DBC *));
- */
-void
-__bam_cprint(dbc)
-	DBC *dbc;
-{
-	BTREE_CURSOR *cp;
-
-	cp = (BTREE_CURSOR *)dbc->internal;
-
-	fprintf(stderr, "\tinternal: ovflsize: %lu", (u_long)cp->ovflsize);
-	if (dbc->dbtype == DB_RECNO)
-		fprintf(stderr, " recno: %lu", (u_long)cp->recno);
-	if (F_ISSET(cp, C_DELETED))
-		fprintf(stderr, " (deleted)");
-	fprintf(stderr, "\n");
-}
-#endif
 
 /*
  * Cursor adjustments are logged if they are for subtransactions.  This is
@@ -219,8 +193,8 @@ __bam_ca_di(my_dbc, pgno, indx, adjust)
 	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
 
 	if (found != 0 && DBC_LOGGING(my_dbc)) {
-		if ((ret = __bam_curadj_log(dbp, my_dbc->txn,
-		    &lsn, 0, DB_CA_DI, pgno, 0, 0, adjust, indx, 0)) != 0)
+		if ((ret = __bam_curadj_log(dbp, my_dbc->txn, &lsn, 0,
+		    DB_CA_DI, pgno, 0, 0, (u_int32_t)adjust, indx, 0)) != 0)
 			return (ret);
 	}
 

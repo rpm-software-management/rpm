@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: recd007.tcl,v 11.62 2003/10/14 14:55:36 sue Exp $
+# $Id: recd007.tcl,v 11.64 2004/07/07 19:08:21 carol Exp $
 #
 # TEST	recd007
 # TEST	File create/delete tests.
@@ -136,6 +136,8 @@ proc recd007 { method args} {
 	    > $tmpfile} ret]
 	error_check_good db_printlog $stat 0
 	fileremove $tmpfile
+	set fixed_len $orig_fixed_len
+	return
 }
 
 proc file_recover_create { dir env_cmd method opts dbfile cmd msg } {

@@ -1,5 +1,33 @@
 Revision history for Perl extension BerkeleyDB.
 
+0.26  10th October 2004
+
+        * Changed to allow Building with Berkeley DB 4.3
+
+        * added cds_lock and associated methods as a convenience to allow
+          safe updaing of database records when using Berkeley DB CDS mode.
+
+        * added t/cds.t and t/pod.t
+
+        * Modified the test suite to use "-ErrFile => *STDOUT" where 
+          possible. This will make it easier to diagnose build issues.
+
+	* -Errfile will now accept a filehandle as well as a filename
+          This means that -ErrFile => *STDOUT will get all extended error
+          messages displayed directly on screen.
+
+	* Added support for set_shm_key & get_shm_key.
+
+	* Patch from Mark Jason Dominus to add a better error message
+	  when an odd number of parameters are passed to ParseParameters.
+
+	* fixed off-by-one error in my_strdup
+
+	* Fixed a problem with push, pop, shift & unshift with Queue &
+	  Recno when used in CDS mode. These methods were not using
+	  a write cursor behind the scenes. 
+	  Problem reported by Pavel Hlavnicka.
+
 0.25  1st November 2003
 
 	* Minor update to dbinfo

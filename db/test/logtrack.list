@@ -4,7 +4,6 @@ PREFIX	__db
 BEGIN	addrem	41
 BEGIN	big	43
 BEGIN	ovref	44
-BEGIN	relink	45
 BEGIN	debug	47
 BEGIN	noop	48
 BEGIN	pg_alloc	49
@@ -13,6 +12,7 @@ BEGIN	cksum	51
 BEGIN	pg_freedata	52
 BEGIN	pg_prepare	53
 BEGIN	pg_new	54
+BEGIN	pg_init	60
 PREFIX	__dbreg
 BEGIN	register	2
 PREFIX	__bam
@@ -25,6 +25,13 @@ BEGIN	repl	58
 BEGIN	root	59
 BEGIN	curadj	64
 BEGIN	rcuradj	65
+BEGIN	relink	147
+PREFIX	__fop
+BEGIN	create	143
+BEGIN	remove	144
+BEGIN	write	145
+BEGIN	rename	146
+BEGIN	file_remove	141
 PREFIX	__ham
 BEGIN	insdel	21
 BEGIN	newpage	22
@@ -41,6 +48,7 @@ BEGIN	mvptr	85
 BEGIN	del	79
 BEGIN	add	80
 BEGIN	delext	83
+PREFIX  __rep
 PREFIX	__txn
 BEGIN	regop	10
 BEGIN	ckp	11

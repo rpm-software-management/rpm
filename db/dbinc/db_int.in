@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_int.in,v 11.126 2003/09/10 17:27:14 sue Exp $
+ * $Id: db_int.in,v 11.153 2004/10/05 14:43:53 mjc Exp $
  */
 
 #ifndef _DB_INTERNAL_H_
@@ -35,8 +35,39 @@ extern "C" {
 /*******************************************************
  * General purpose constants and macros.
  *******************************************************/
-#define	UINT16_T_MAX	    0xffff	/* Maximum 16 bit unsigned. */
-#define	UINT32_T_MAX	0xffffffff	/* Maximum 32 bit unsigned. */
+#ifndef	UINT16_MAX
+#define	UINT16_MAX	65535		/* Maximum 16-bit unsigned. */
+#endif
+#ifndef	UINT32_MAX
+#define	UINT32_MAX	4294967295U	/* Maximum 32-bit unsigned. */
+#endif
+
+#if defined(HAVE_LONG_LONG) && defined(HAVE_UNSIGNED_LONG_LONG)
+#undef	INT64_MAX
+#undef	INT64_MIN
+#undef	UINT64_MAX
+
+#ifdef	DB_WIN32
+#define	INT64_MAX	_I64_MAX
+#define	INT64_MIN	_I64_MIN
+#define	UINT64_MAX	_UI64_MAX
+
+#define	INT64_FMT	"%l64d"
+#define	UINT64_FMT	"%l64u"
+#else
+/*
+ * Override the system's 64-bit min/max constants.  AIX's 32-bit compiler can
+ * handle 64-bit values, but the system's constants don't include the LL/ULL
+ * suffix, and so can't be compiled using the 32-bit compiler.
+ */
+#define	INT64_MAX	9223372036854775807LL
+#define	INT64_MIN	(-INT64_MAX-1)
+#define	UINT64_MAX	18446744073709551615ULL
+
+#define	INT64_FMT	"%lld"
+#define	UINT64_FMT	"%llu"
+#endif	/* DB_WIN32 */
+#endif	/* HAVE_LONG_LONG && HAVE_UNSIGNED_LONG_LONG */
 
 #define	MEGABYTE	1048576
 #define	GIGABYTE	1073741824
@@ -64,53 +95,38 @@ extern "C" {
  */
 #define	DB_DEF_IOSIZE	(8 * 1024)
 
-/* Number of times to reties I/O operations that return EINTR or EBUSY. */
-#define	DB_RETRY	100
-
-/*
- * Aligning items to particular sizes or in pages or memory.
- *
- * db_align_t --
- * Largest integral type, used to align structures in memory.  We don't store
- * floating point types in structures, so integral types should be sufficient
- * (and we don't have to worry about systems that store floats in other than
- * power-of-2 numbers of bytes).  Additionally this fixes compiler that rewrite
- * structure assignments and ANSI C memcpy calls to be in-line instructions
- * that happen to require alignment.  Note: this alignment isn't sufficient for
- * mutexes, which depend on things like cache line alignment.  Mutex alignment
- * is handled separately, in mutex.h.
- *
- * db_alignp_t --
- * Integral type that's the same size as a pointer.  There are places where
- * DB modifies pointers by discarding the bottom bits to guarantee alignment.
- * We can't use db_align_t, it may be larger than the pointer, and compilers
- * get upset about that.  So far we haven't run on any machine where there
- * isn't an integral type the same size as a pointer -- here's hoping.
- */
-@db_align_t_decl@
-@db_alignp_t_decl@
-
 /* Align an integer to a specific boundary. */
-#undef	ALIGN
-#define	ALIGN(v, bound)	(((v) + (bound) - 1) & ~(((db_align_t)bound) - 1))
+#undef	DB_ALIGN
+#define	DB_ALIGN(v, bound)						\
+	(((v) + (bound) - 1) & ~(((uintmax_t)bound) - 1))
+
+/* Increment a pointer to a specific boundary. */
+#undef	ALIGNP_INC
+#define	ALIGNP_INC(p, bound)						\
+	(void *)(((uintptr_t)(p) + (bound) - 1) & ~(((uintptr_t)bound) - 1))
+
+/* Decrement a pointer to a specific boundary. */
+#undef	ALIGNP_DEC
+#define	ALIGNP_DEC(p, bound)						\
+	(void *)((uintptr_t)(p) & ~(((uintptr_t)bound) - 1))
 
 /*
  * Print an address as a u_long (a u_long is the largest type we can print
  * portably).  Most 64-bit systems have made longs 64-bits, so this should
  * work.
  */
-#define	P_TO_ULONG(p)	((u_long)(db_alignp_t)(p))
+#define	P_TO_ULONG(p)	((u_long)(uintptr_t)(p))
 
 /*
  * Convert a pointer to a small integral value.
  *
- * The (u_int16_t)(db_alignp_t) cast avoids warnings: the (db_alignp_t) cast
+ * The (u_int16_t)(uintptr_t) cast avoids warnings: the (uintptr_t) cast
  * converts the value to an integral type, and the (u_int16_t) cast converts
  * it to a small integral type so we don't get complaints when we assign the
- * final result to an integral type smaller than db_alignp_t.
+ * final result to an integral type smaller than uintptr_t.
  */
-#define	P_TO_UINT32(p)	((u_int32_t)(db_alignp_t)(p))
-#define	P_TO_UINT16(p)	((u_int16_t)(db_alignp_t)(p))
+#define	P_TO_UINT32(p)	((u_int32_t)(uintptr_t)(p))
+#define	P_TO_UINT16(p)	((u_int16_t)(uintptr_t)(p))
 
 /*
  * There are several on-page structures that are declared to have a number of
@@ -148,9 +164,64 @@ typedef struct __fn {
 #define	LF_ISSET(f)		((flags) & (f))
 #define	LF_SET(f)		((flags) |= (f))
 
-/* Display separator string. */
-#undef	DB_LINE
-#define	DB_LINE "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+/*
+ * Calculate a percentage.  The values can overflow 32-bit integer arithmetic
+ * so we use floating point.
+ *
+ * When calculating a bytes-vs-page size percentage, we're getting the inverse
+ * of the percentage in all cases, that is, we want 100 minus the percentage we
+ * calculate.
+ */
+#define	DB_PCT(v, total)						\
+	((int)((total) == 0 ? 0 : ((double)(v) * 100) / (total)))
+#define	DB_PCT_PG(v, total, pgsize)					\
+	((int)((total) == 0 ? 0 :					\
+	    100 - ((double)(v) * 100) / ((total) * (pgsize))))
+
+/*
+ * Structure used for callback message aggregation.
+ *
+ * Display values in XXX_stat_print calls.
+ */
+typedef struct __db_msgbuf {
+	char *buf;			/* Heap allocated buffer. */
+	char *cur;			/* Current end of message. */
+	size_t len;			/* Allocated length of buffer. */
+} DB_MSGBUF;
+#define	DB_MSGBUF_INIT(a) do {						\
+	(a)->buf = (a)->cur = NULL;					\
+	(a)->len = 0;							\
+} while (0)
+#define	DB_MSGBUF_FLUSH(dbenv, a) do {					\
+	if ((a)->buf != NULL) {						\
+		if ((a)->cur != (a)->buf)				\
+			__db_msg(dbenv, "%s", (a)->buf);		\
+		__os_free(dbenv, (a)->buf);				\
+		DB_MSGBUF_INIT(a);					\
+	}								\
+} while (0)
+#define	STAT_FMT(msg, fmt, type, v) do {				\
+	DB_MSGBUF __mb;							\
+	DB_MSGBUF_INIT(&__mb);						\
+	__db_msgadd(dbenv, &__mb, fmt, (type)(v));			\
+	__db_msgadd(dbenv, &__mb, "\t%s", msg);				\
+	DB_MSGBUF_FLUSH(dbenv, &__mb);					\
+} while (0)
+#define	STAT_HEX(msg, v)						\
+	__db_msg(dbenv, "%#lx\t%s", (u_long)(v), msg)
+#define	STAT_ISSET(msg, p)						\
+	__db_msg(dbenv, "%sSet\t%s", (p) == NULL ? "!" : " ", msg)
+#define	STAT_LONG(msg, v)						\
+	__db_msg(dbenv, "%ld\t%s", (long)(v), msg)
+#define	STAT_LSN(msg, lsnp)						\
+	__db_msg(dbenv, "%lu/%lu\t%s",					\
+	    (u_long)(lsnp)->file, (u_long)(lsnp)->offset, msg)
+#define	STAT_STRING(msg, p) do {					\
+	const char *__p = p;	/* p may be a function call. */		\
+	__db_msg(dbenv, "%s\t%s", __p == NULL ? "!Set" : __p, msg);	\
+} while (0)
+#define	STAT_ULONG(msg, v)						\
+	__db_msg(dbenv, "%lu\t%s", (u_long)(v), msg)
 
 /*******************************************************
  * API return values
@@ -176,7 +247,8 @@ typedef struct __fn {
 				    (ret) == DB_REP_ISPERM || \
 				    (ret) == DB_REP_NEWMASTER || \
 				    (ret) == DB_REP_NEWSITE || \
-				    (ret) == DB_REP_NOTPERM)
+				    (ret) == DB_REP_NOTPERM || \
+				    (ret) == DB_REP_STARTUPDONE)
 
 /* Find a reasonable operation-not-supported error. */
 #ifdef	EOPNOTSUPP
@@ -262,6 +334,9 @@ typedef enum {
 #define	ENV_REQUIRES_CONFIG(dbenv, handle, i, flags)			\
 	if (handle == NULL)						\
 		return (__db_env_config(dbenv, i, flags));
+#define	ENV_NOT_CONFIGURED(dbenv, handle, i, flags)			\
+	if (F_ISSET((dbenv), DB_ENV_OPEN_CALLED))			\
+		ENV_REQUIRES_CONFIG(dbenv, handle, i, flags)
 
 /*******************************************************
  * Database Access Methods.
@@ -385,11 +460,11 @@ typedef struct __dbpginfo {
 } while (0)
 
 #define	MAX_LSN(LSN) do {						\
-	(LSN).file = UINT32_T_MAX;					\
-	(LSN).offset = UINT32_T_MAX;					\
+	(LSN).file = UINT32_MAX;					\
+	(LSN).offset = UINT32_MAX;					\
 } while (0)
 #define	IS_MAX_LSN(LSN) \
-	((LSN).file == UINT32_T_MAX && (LSN).offset == UINT32_T_MAX)
+	((LSN).file == UINT32_MAX && (LSN).offset == UINT32_MAX)
 
 /* If logging is turned off, smash the lsn. */
 #define	LSN_NOT_LOGGED(LSN) do {					\
@@ -403,6 +478,8 @@ typedef struct __dbpginfo {
  * Txn.
  *******************************************************/
 #define	DB_NONBLOCK(C)	((C)->txn != NULL && F_ISSET((C)->txn, TXN_NOWAIT))
+#define	NOWAIT_FLAG(txn) \
+	((txn) != NULL && F_ISSET((txn), TXN_NOWAIT) ? DB_LOCK_NOWAIT : 0)
 #define	IS_SUBTRANSACTION(txn)						\
 	((txn) != NULL && (txn)->parent != NULL)
 
@@ -411,6 +488,33 @@ typedef struct __dbpginfo {
  *******************************************************/
 #define	DB_IV_BYTES     16		/* Bytes per IV */
 #define	DB_MAC_KEY	20		/* Bytes per MAC checksum */
+
+/*******************************************************
+ * Secondaries over RPC.
+ *******************************************************/
+#ifdef CONFIG_TEST
+/*
+ * These are flags passed to DB->associate calls by the Tcl API if running
+ * over RPC.  The RPC server will mask out these flags before making the real
+ * DB->associate call.
+ *
+ * These flags must coexist with the valid flags to DB->associate (currently
+ * DB_AUTO_COMMIT and DB_CREATE).  DB_AUTO_COMMIT is in the group of
+ * high-order shared flags (0xff000000), and DB_CREATE is in the low-order
+ * group (0x00000fff), so we pick a range in between.
+ */
+#define	DB_RPC2ND_MASK		0x00f00000 /* Reserved bits. */
+
+#define	DB_RPC2ND_REVERSEDATA	0x00100000 /* callback_n(0) _s_reversedata. */
+#define	DB_RPC2ND_NOOP		0x00200000 /* callback_n(1) _s_noop */
+#define	DB_RPC2ND_CONCATKEYDATA	0x00300000 /* callback_n(2) _s_concatkeydata */
+#define	DB_RPC2ND_CONCATDATAKEY 0x00400000 /* callback_n(3) _s_concatdatakey */
+#define	DB_RPC2ND_REVERSECONCAT	0x00500000 /* callback_n(4) _s_reverseconcat */
+#define	DB_RPC2ND_TRUNCDATA	0x00600000 /* callback_n(5) _s_truncdata */
+#define	DB_RPC2ND_CONSTANT	0x00700000 /* callback_n(6) _s_constant */
+#define	DB_RPC2ND_GETZIP	0x00800000 /* sj_getzip */
+#define	DB_RPC2ND_GETNAME	0x00900000 /* sj_getname */
+#endif
 
 /*******************************************************
  * Forward structure declarations.

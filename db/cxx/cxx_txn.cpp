@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: cxx_txn.cpp,v 11.33 2004/09/22 22:20:31 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: cxx_txn.cpp,v 11.29 2003/03/11 15:39:40 merrells Exp $";
-#endif /* not lint */
 
 #include <errno.h>
 
@@ -25,20 +23,20 @@ static const char revid[] = "$Id: cxx_txn.cpp,v 11.29 2003/03/11 15:39:40 merrel
 // list element (e.g., "char *arg") and that _arglist is the arguments
 // that should be passed through to the C method (e.g., "(db, arg)")
 //
-#define	DBTXN_METHOD(_name, _delete, _argspec, _arglist)		\
-int DbTxn::_name _argspec						\
-{									\
-	int ret;							\
-	DB_TXN *txn = unwrap(this);					\
-									\
-	ret = txn->_name _arglist;					\
-	/* Weird, but safe if we don't access this again. */		\
-	if (_delete)							\
-		delete this;						\
-	if (!DB_RETOK_STD(ret))						\
-	DB_ERROR(DbEnv::get_DbEnv(txn->mgrp->dbenv), \
-		"DbTxn::" # _name, ret, ON_ERROR_UNKNOWN);	\
-	return (ret);							\
+#define	DBTXN_METHOD(_name, _delete, _argspec, _arglist)		   \
+int DbTxn::_name _argspec						   \
+{									   \
+	int ret;							   \
+	DB_TXN *txn = unwrap(this);					   \
+	DbEnv *dbenv = DbEnv::get_DbEnv(txn->mgrp->dbenv);		   \
+									   \
+	ret = txn->_name _arglist;					   \
+	/* Weird, but safe if we don't access this again. */		   \
+	if (_delete)							   \
+		delete this;						   \
+	if (!DB_RETOK_STD(ret))						   \
+		DB_ERROR(dbenv, "DbTxn::" # _name, ret, ON_ERROR_UNKNOWN); \
+	return (ret);							   \
 }
 
 // private constructor, never called but needed by some C++ linkers
@@ -48,7 +46,7 @@ DbTxn::DbTxn()
 }
 
 DbTxn::DbTxn(DB_TXN *txn)
-:	imp_(wrap(txn))
+:	imp_(txn)
 {
 	txn->api_internal = this;
 }
@@ -77,7 +75,5 @@ DBTXN_METHOD(set_timeout, 0, (db_timeout_t timeout, u_int32_t flags),
 DbTxn *DbTxn::wrap_DB_TXN(DB_TXN *txn)
 {
 	DbTxn *wrapped_txn = get_DbTxn(txn);
-	if (wrapped_txn == NULL)
-		wrapped_txn = new DbTxn(txn);
-	return wrapped_txn;
+	return (wrapped_txn != NULL) ?  wrapped_txn : new DbTxn(txn);
 }

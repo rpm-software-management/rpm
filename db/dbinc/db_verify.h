@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_verify.h,v 1.32 2003/09/04 19:01:13 bostic Exp $
+ * $Id: db_verify.h,v 1.34 2004/05/20 14:34:12 bostic Exp $
  */
 
 #ifndef _DB_VERIFY_H_
@@ -20,21 +20,22 @@
  * for DB->err.
  */
 #define	EPRINT(x) do {							\
-		if (!LF_ISSET(DB_SALVAGE))				\
-			__db_err x;					\
+	if (!LF_ISSET(DB_SALVAGE))					\
+		__db_err x;						\
 } while (0)
 
 /* For fatal type errors--i.e., verifier bugs. */
 #define	TYPE_ERR_PRINT(dbenv, func, pgno, ptype)			\
-    EPRINT(((dbenv), "Page %lu: %s called on nonsensical page of type %lu", \
-	(u_long)(pgno), (func), (u_long)(ptype)));
+	EPRINT(((dbenv),						\
+	    "Page %lu: %s called on nonsensical page of type %lu",	\
+	    (u_long)(pgno), (func), (u_long)(ptype)));
 
 /* Complain about a totally zeroed page where we don't expect one. */
-#define	ZEROPG_ERR_PRINT(dbenv, pgno, str) do {				   \
-	    EPRINT(((dbenv), "Page %lu: %s is of inappropriate type %lu",  \
-		(u_long)(pgno), str, (u_long)P_INVALID));		   \
-	    EPRINT(((dbenv), "Page %lu: totally zeroed page",		   \
-		(u_long)(pgno)));					   \
+#define	ZEROPG_ERR_PRINT(dbenv, pgno, str) do {				\
+	EPRINT(((dbenv), "Page %lu: %s is of inappropriate type %lu",	\
+	    (u_long)(pgno), str, (u_long)P_INVALID));			\
+	EPRINT(((dbenv), "Page %lu: totally zeroed page",		\
+	    (u_long)(pgno)));						\
 } while (0)
 
 /*

@@ -1,18 +1,18 @@
-<!--$Id: linux.so,v 11.12 2003/04/01 22:51:35 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: linux.so,v 11.18 2004/10/06 19:47:01 carol Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Linux</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for UNIX/POSIX systems</dl></h3></td>
-<td align=right><a href="../build_unix/irix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/macosx.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../build_unix/irix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Linux</h3>
@@ -23,11 +23,6 @@ applications on Linux.  If you are compiling a threaded application, you
 must compile with the _REENTRANT flag:</p>
 <blockquote><pre>cc -D_REENTRANT ...</pre></blockquote>
 <p>The Berkeley DB library will automatically build with the correct options.</p>
-<p><li><b>I see database corruption when accessing databases on
-NFS-mounted filesystems.</b>
-<p>Some Linux filesystems are known to not support complete semantics for
-the POSIX fsync call on NFS-mounted filesystems. No Berkeley DB files should
-be placed on NFS-mounted filesystems on these systems.</p>
 <p><li><b>I see database corruption when accessing databases.</b>
 <p>Some Linux filesystems do not support POSIX filesystem semantics.
 Specifically, ext2 and early releases of ReiserFS, and ext3 in some
@@ -35,9 +30,13 @@ configurations, do not support "ordered data mode" and may insert random
 data into database or log files when systems crash.  Berkeley DB files should
 not be placed on a filesystem that does not support, or is not
 configured to support, POSIX semantics.</p>
+<p><li><b>What scheduler should I use?</b>
+<p>In some Linux kernels you can select schedulers, and the default is the
+"anticipatory" scheduler.  We recommend not using the "anticipatory"
+scheduler for transaction processing workloads.</p>
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/irix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/macosx.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/irix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

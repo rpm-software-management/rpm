@@ -22,7 +22,7 @@ BEGIN
     }
 
     # Is encryption available?
-    my $env = new BerkeleyDB::Env 
+    my $env = new BerkeleyDB::Env @StdErrFile,
              -Encrypt => {Password => "abc",
 	                  Flags    => DB_ENCRYPT_AES
 	                 };
@@ -41,7 +41,7 @@ print "1..80\n";
 {    
     eval
     {
-        my $env = new BerkeleyDB::Env 
+        my $env = new BerkeleyDB::Env @StdErrFile,
              -Encrypt => 1,
              -Flags => DB_CREATE ;
      };
@@ -49,7 +49,7 @@ print "1..80\n";
 
     eval
     {
-        my $env = new BerkeleyDB::Env 
+        my $env = new BerkeleyDB::Env @StdErrFile,
              -Encrypt => {},
              -Flags => DB_CREATE ;
      };
@@ -57,7 +57,7 @@ print "1..80\n";
 
     eval
     {
-        my $env = new BerkeleyDB::Env 
+        my $env = new BerkeleyDB::Env @StdErrFile,
              -Encrypt => {Password => "fred"},
              -Flags => DB_CREATE ;
      };
@@ -65,7 +65,7 @@ print "1..80\n";
 
     eval
     {
-        my $env = new BerkeleyDB::Env 
+        my $env = new BerkeleyDB::Env @StdErrFile,
              -Encrypt => {Flags => 1},
              -Flags => DB_CREATE ;
      };
@@ -73,7 +73,7 @@ print "1..80\n";
 
     eval
     {
-        my $env = new BerkeleyDB::Env 
+        my $env = new BerkeleyDB::Env @StdErrFile,
              -Encrypt => {Fred => 1},
              -Flags => DB_CREATE ;
      };
@@ -88,14 +88,13 @@ print "1..80\n";
     my $home = "./fred" ;
     #mkdir $home;
     ok 6, my $lexD = new LexDir($home) ;
-    ok 7, my $env = new BerkeleyDB::Env 
+    ok 7, my $env = new BerkeleyDB::Env @StdErrFile,
              -Home => $home,
              -Encrypt => {Password => "abc",
 	                  Flags    => DB_ENCRYPT_AES
 	                 },
              -Flags => DB_CREATE | DB_INIT_MPOOL ;
 
-print "$BerkeleyDB::Error\n" ;	     
 
 
     my $Dfile = "abc.enc";

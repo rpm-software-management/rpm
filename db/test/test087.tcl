@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test087.tcl,v 11.17 2003/01/08 05:54:06 bostic Exp $
+# $Id: test087.tcl,v 11.19 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test087
 # TEST	Test of cursor stability when converting to and modifying
@@ -56,7 +56,7 @@ proc test087 { method {pagesize 512} {ndups 50} {tnum "087"} args } {
 		puts "Skipping for method $method."
 		return
 	} else {
-		puts "Cursor stability on dup. pages w/ aborts."
+		puts "Test$tnum: Cursor stability on dup. pages w/ aborts."
 	}
 
 	set env [eval {berkdb_env -create -home $testdir -txn} $encargs]

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: si003.tcl,v 1.9 2003/01/08 05:53:26 bostic Exp $
+# $Id: si003.tcl,v 1.10 2004/01/28 03:36:30 bostic Exp $
 #
 # TEST	si003
 # TEST	si001 with secondaries created and closed mid-test

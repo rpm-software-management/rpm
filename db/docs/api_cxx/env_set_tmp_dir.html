@@ -1,23 +1,22 @@
-<!--$Id: env_set_tmp_dir.so,v 10.22 2003/11/08 19:17:32 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_tmp_dir.so,v 10.26 2004/09/28 15:04:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::set_tmp_dir</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbEnv::set_tmp_dir</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,8 +30,7 @@ DbEnv::get_tmp_dir(const char **dirp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::set_tmp_dir</h3>
-<a name="3"><!--meow--></a>
-<a name="4"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>Specify the path of a directory to be used as the location of temporary
 files.  The files created to back in-memory access method databases will
 be created relative to this path.  These temporary files can be quite
@@ -79,10 +77,11 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dir</b><dd>
-The <b>dir</b> parameter is the directory to be used to store temporary
+<dl compact>
+<dt><b>dir</b><dd>The <b>dir</b> parameter is the directory to be used to store temporary
 files.
+<p>On Windows, the <b>dir</b> argument will be interpreted as a UTF-8
+string, which is equivalent to ASCII for Latin characters.</p>
 </dl>
 <h3>Errors</h3>
 <p>The DbEnv::set_tmp_dir method
@@ -90,8 +89,8 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -105,9 +104,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dirp</b><dd>
-The DbEnv::get_tmp_dir method returns a reference to the
+<dl compact>
+<dt><b>dirp</b><dd>The DbEnv::get_tmp_dir method returns a reference to the
 database environment temporary file directory in <b>dirp</b>.
 </dl>
 <hr size=1 noshade>
@@ -119,6 +117,6 @@ database environment temporary file directory in <b>dirp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

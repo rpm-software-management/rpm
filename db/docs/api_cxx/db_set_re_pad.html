@@ -1,23 +1,22 @@
-<!--$Id: db_set_re_pad.so,v 10.34 2003/11/08 19:17:22 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_set_re_pad.so,v 10.37 2004/09/28 15:04:19 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::set_re_pad</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::set_re_pad</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ Db::get_re_pad(int *re_padp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: Db::set_re_pad</h3>
-<a name="3"><!--meow--></a>
 <p>Set the padding character for short, fixed-length records for the Queue
 and Recno access methods.</p>
 <p>If no pad character is specified, &lt;space&gt; characters (that
@@ -49,9 +47,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>re_pad</b><dd>
-The <b>re_pad</b> parameter is the pad character for fixed-length
+<dl compact>
+<dt><b>re_pad</b><dd>The <b>re_pad</b> parameter is the pad character for fixed-length
 records for the Queue and Recno access methods.
 </dl>
 <h3>Errors</h3>
@@ -60,8 +57,8 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_cxx/db_open.html">Db::open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_cxx/db_open.html">Db::open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -75,9 +72,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>re_padp</b><dd>
-The Db::get_re_pad method returns  the
+<dl compact>
+<dt><b>re_padp</b><dd>The Db::get_re_pad method returns  the
 pad character in <b>re_padp</b>.
 </dl>
 <hr size=1 noshade>
@@ -89,6 +85,6 @@ pad character in <b>re_padp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

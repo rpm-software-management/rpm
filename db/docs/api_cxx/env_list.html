@@ -1,82 +1,50 @@
 <!--$Id: env_list.so,v 10.1 2002/08/30 20:00:50 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Berkeley DB: Database Environments and Related Methods</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <h3 align=center>Berkeley DB: Database Environments and Related Methods</h3>
-<!--$Id: m4.methods,v 10.2 2003/10/18 19:15:47 bostic Exp $-->
+<!--$Id: m4.methods,v 10.5 2004/10/12 13:56:26 bostic Exp $-->
 <table border=1 align=center>
-<tr><th>Database Environments and Related Methods</th><th>Description</th></tr>
+<tr><th>Database Environment Operations</th><th>Description</th></tr>
+<tr><td><a href="../api_cxx/env_class.html">DbEnv</a></td><td>Create an environment handle</td></tr>
 <tr><td><a href="../api_cxx/env_close.html">DbEnv::close</a></td><td>Close an environment</td></tr>
 <tr><td><a href="../api_cxx/env_dbremove.html">DbEnv::dbremove</a></td><td>Remove a database</td></tr>
 <tr><td><a href="../api_cxx/env_dbrename.html">DbEnv::dbrename</a></td><td>Rename a database</td></tr>
 <tr><td><a href="../api_cxx/env_err.html">DbEnv::err</a></td><td>Error message with error string</td></tr>
 <tr><td><a href="../api_cxx/env_err.html">DbEnv::errx</a></td><td>Error message</td></tr>
-<tr><td><a href="../api_cxx/lock_detect.html">DbEnv::lock_detect</a></td><td>Perform deadlock detection</td></tr>
-<tr><td><a href="../api_cxx/lock_get.html">DbEnv::lock_get</a></td><td>Acquire a lock</td></tr>
-<tr><td><a href="../api_cxx/lock_id.html">DbEnv::lock_id</a></td><td>Acquire a locker ID</td></tr>
-<tr><td><a href="../api_cxx/lock_id_free.html">DbEnv::lock_id_free</a></td><td>Release a locker ID</td></tr>
-<tr><td><a href="../api_cxx/lock_put.html">DbEnv::lock_put</a></td><td>Release a lock</td></tr>
-<tr><td><a href="../api_cxx/lock_stat.html">DbEnv::lock_stat</a></td><td>Return lock subsystem statistics</td></tr>
-<tr><td><a href="../api_cxx/lock_vec.html">DbEnv::lock_vec</a></td><td>Acquire/release locks</td></tr>
-<tr><td><a href="../api_cxx/log_archive.html">DbEnv::log_archive</a></td><td>List log and database files</td></tr>
-<tr><td><a href="../api_cxx/log_file.html">DbEnv::log_file</a></td><td>Map Log Sequence Numbers to log files</td></tr>
-<tr><td><a href="../api_cxx/log_flush.html">DbEnv::log_flush</a></td><td>Flush log records</td></tr>
-<tr><td><a href="../api_cxx/log_put.html">DbEnv::log_put</a></td><td>Write a log record</td></tr>
-<tr><td><a href="../api_cxx/log_stat.html">DbEnv::log_stat</a></td><td>Return log subsystem statistics</td></tr>
-<tr><td><a href="../api_cxx/memp_register.html">DbEnv::memp_register</a></td><td>Register input/output functions for a file in a memory pool</td></tr>
-<tr><td><a href="../api_cxx/memp_stat.html">DbEnv::memp_stat</a></td><td>Return memory pool statistics</td></tr>
-<tr><td><a href="../api_cxx/memp_sync.html">DbEnv::memp_sync</a></td><td>Flush pages from a memory pool</td></tr>
-<tr><td><a href="../api_cxx/memp_trickle.html">DbEnv::memp_trickle</a></td><td>Trickle flush pages from a memory pool</td></tr>
+<tr><td><a href="../api_cxx/env_open.html">DbEnv::get_home</a></td><td>Return environment's home directory</td></tr>
+<tr><td><a href="../api_cxx/env_open.html">DbEnv::get_open_flags</a></td><td>Return the flags with which the environment was opened</td></tr>
 <tr><td><a href="../api_cxx/env_open.html">DbEnv::open</a></td><td>Open an environment</td></tr>
 <tr><td><a href="../api_cxx/env_remove.html">DbEnv::remove</a></td><td>Remove an environment</td></tr>
-<tr><td><a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a></td><td>Hold a replication election</td></tr>
-<tr><td><a href="../api_cxx/rep_message.html">DbEnv::rep_process_message</a></td><td>Process a replication message</td></tr>
-<tr><td><a href="../api_cxx/rep_start.html">DbEnv::rep_start</a></td><td>Configure an environment for replication</td></tr>
-<tr><td><a href="../api_cxx/rep_stat.html">DbEnv::rep_stat</a></td><td>Replication statistics</td></tr>
-<tr><td><a href="../api_cxx/env_set_alloc.html">DbEnv::set_alloc</a></td><td>Set local space allocation functions</td></tr>
+<tr><td><a href="../api_cxx/env_stat.html">DbEnv::stat_print</a></td><td>Environment statistics</td></tr>
+<tr><td><a href="../api_cxx/env_strerror.html">DbEnv::strerror</a></td><td>Error strings</td></tr>
+<tr><td><a href="../api_cxx/env_version.html">DbEnv::version</a></td><td>Return version information</td></tr>
+<tr><td><b>Environment Configuration</b></td><td><br></td></tr>
 <tr><td><a href="../api_cxx/env_set_app_dispatch.html">DbEnv::set_app_dispatch</a></td><td>Configure application recovery</td></tr>
-<tr><td><a href="../api_cxx/env_set_cachesize.html">DbEnv::set_cachesize</a></td><td>Set the environment cache size</td></tr>
+<tr><td><a href="../api_cxx/env_set_alloc.html">DbEnv::set_alloc</a></td><td>Set local space allocation functions</td></tr>
 <tr><td><a href="../api_cxx/env_set_data_dir.html">DbEnv::set_data_dir</a></td><td>Set the environment data directory</td></tr>
 <tr><td><a href="../api_cxx/env_set_encrypt.html">DbEnv::set_encrypt</a></td><td>Set the environment cryptographic key</td></tr>
-<tr><td><a href="../api_cxx/env_set_errcall.html">DbEnv::set_errcall</a></td><td>Set error message callback</td></tr>
-<tr><td><a href="../api_cxx/env_set_errfile.html">DbEnv::set_errfile</a></td><td>Set error message FILE</td></tr>
-<tr><td><a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a></td><td>Set error message output stream</td></tr>
+<tr><td><a href="../api_cxx/env_set_errcall.html">DbEnv::set_errcall</a>, <a href="../api_cxx/env_set_msgcall.html">DbEnv::set_msgcall</a></td><td>Set error and informational message callbacks</td></tr>
+<tr><td><a href="../api_cxx/env_set_errfile.html">DbEnv::set_errfile</a>, <a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a></td><td>Set error and informational message FILE</td></tr>
+<tr><td><a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a>, <a href="../api_cxx/env_set_msg_stream.html">DbEnv::set_message_stream</a></td><td>Set error and informational message output stream</td></tr>
 <tr><td><a href="../api_cxx/env_set_errpfx.html">DbEnv::set_errpfx</a></td><td>Set error message prefix</td></tr>
 <tr><td><a href="../api_cxx/env_set_feedback.html">DbEnv::set_feedback</a></td><td>Set feedback callback</td></tr>
 <tr><td><a href="../api_cxx/env_set_flags.html">DbEnv::set_flags</a></td><td>Environment configuration</td></tr>
-<tr><td><a href="../api_cxx/env_set_lg_bsize.html">DbEnv::set_lg_bsize</a></td><td>Set log buffer size</td></tr>
-<tr><td><a href="../api_cxx/env_set_lg_dir.html">DbEnv::set_lg_dir</a></td><td>Set the environment logging directory</td></tr>
-<tr><td><a href="../api_cxx/env_set_lg_max.html">DbEnv::set_lg_max</a></td><td>Set log file size</td></tr>
-<tr><td><a href="../api_cxx/env_set_lg_regionmax.html">DbEnv::set_lg_regionmax</a></td><td>Set logging region size</td></tr>
-<tr><td><a href="../api_cxx/env_set_lk_conflicts.html">DbEnv::set_lk_conflicts</a></td><td>Set lock conflicts matrix</td></tr>
-<tr><td><a href="../api_cxx/env_set_lk_detect.html">DbEnv::set_lk_detect</a></td><td>Set automatic deadlock detection</td></tr>
-<tr><td><a href="../api_cxx/env_set_lk_max_lockers.html">DbEnv::set_lk_max_lockers</a></td><td>Set maximum number of lockers</td></tr>
-<tr><td><a href="../api_cxx/env_set_lk_max_locks.html">DbEnv::set_lk_max_locks</a></td><td>Set maximum number of locks</td></tr>
-<tr><td><a href="../api_cxx/env_set_lk_max_objects.html">DbEnv::set_lk_max_objects</a></td><td>Set maximum number of lock objects</td></tr>
-<tr><td><a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a></td><td>Set maximum mapped-in database file size</td></tr>
 <tr><td><a href="../api_cxx/env_set_paniccall.html">DbEnv::set_paniccall</a></td><td>Set panic callback</td></tr>
-<tr><td><a href="../api_cxx/rep_limit.html">DbEnv::set_rep_limit</a></td><td>Limit data sent in response to a single message</td></tr>
-<tr><td><a href="../api_cxx/rep_transport.html">DbEnv::set_rep_transport</a></td><td>Configure replication transport</td></tr>
 <tr><td><a href="../api_cxx/env_set_rpc_server.html">DbEnv::set_rpc_server</a></td><td>Establish an RPC server connection</td></tr>
 <tr><td><a href="../api_cxx/env_set_shm_key.html">DbEnv::set_shm_key</a></td><td>Set system memory shared segment ID</td></tr>
 <tr><td><a href="../api_cxx/env_set_tas_spins.html">DbEnv::set_tas_spins</a></td><td>Set the number of test-and-set spins</td></tr>
 <tr><td><a href="../api_cxx/env_set_timeout.html">DbEnv::set_timeout</a></td><td>Set lock and transaction timeout</td></tr>
 <tr><td><a href="../api_cxx/env_set_tmp_dir.html">DbEnv::set_tmp_dir</a></td><td>Set the environment temporary file directory</td></tr>
-<tr><td><a href="../api_cxx/env_set_tx_max.html">DbEnv::set_tx_max</a></td><td>Set maximum number of transactions</td></tr>
-<tr><td><a href="../api_cxx/env_set_tx_timestamp.html">DbEnv::set_tx_timestamp</a></td><td>Set recovery timestamp</td></tr>
 <tr><td><a href="../api_cxx/env_set_verbose.html">DbEnv::set_verbose</a></td><td>Set verbose messages</td></tr>
-<tr><td><a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a></td><td>Begin a transaction</td></tr>
-<tr><td><a href="../api_cxx/txn_checkpoint.html">DbEnv::txn_checkpoint</a></td><td>Checkpoint the transaction subsystem</td></tr>
-<tr><td><a href="../api_cxx/txn_recover.html">DbEnv::txn_recover</a></td><td>Distributed transaction recovery</td></tr>
-<tr><td><a href="../api_cxx/txn_stat.html">DbEnv::txn_stat</a></td><td>Return transaction subsystem statistics</td></tr>
 </table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

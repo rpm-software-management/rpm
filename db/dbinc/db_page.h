@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_page.h,v 11.59 2003/09/13 18:49:29 bostic Exp $
+ * $Id: db_page.h,v 11.63 2004/09/17 22:00:27 mjc Exp $
  */
 
 #ifndef _DB_PAGE_H_
@@ -553,10 +553,13 @@ typedef struct _bkeydata {
 
 /*
  * Page space required to add a new BKEYDATA item to the page, with and
- * without the index value.
+ * without the index value.  The (u_int16_t) cast avoids warnings: DB_ALIGN
+ * casts to uintmax_t, the cast converts it to a small integral type so we
+ * don't get complaints when we assign the final result to an integral type
+ * smaller than uintmax_t.
  */
 #define	BKEYDATA_SIZE(len)						\
-	ALIGN((len) + SSZA(BKEYDATA, data), sizeof(u_int32_t))
+	(u_int16_t)DB_ALIGN((len) + SSZA(BKEYDATA, data), sizeof(u_int32_t))
 #define	BKEYDATA_PSIZE(len)						\
 	(BKEYDATA_SIZE(len) + sizeof(db_indx_t))
 
@@ -578,13 +581,10 @@ typedef struct _boverflow {
 
 /*
  * Page space required to add a new BOVERFLOW item to the page, with and
- * without the index value.  The (u_int16_t) cast avoids warnings: ALIGN
- * casts to db_align_t, the cast converts it to a small integral type so
- * we don't get complaints when we assign the final result to an integral
- * type smaller than db_align_t.
+ * without the index value.
  */
 #define	BOVERFLOW_SIZE							\
-	((u_int16_t)ALIGN(sizeof(BOVERFLOW), sizeof(u_int32_t)))
+	((u_int16_t)DB_ALIGN(sizeof(BOVERFLOW), sizeof(u_int32_t)))
 #define	BOVERFLOW_PSIZE							\
 	(BOVERFLOW_SIZE + sizeof(db_indx_t))
 
@@ -621,7 +621,7 @@ typedef struct _binternal {
  * without the index value.
  */
 #define	BINTERNAL_SIZE(len)						\
-	ALIGN((len) + SSZA(BINTERNAL, data), sizeof(u_int32_t))
+	(u_int16_t)DB_ALIGN((len) + SSZA(BINTERNAL, data), sizeof(u_int32_t))
 #define	BINTERNAL_PSIZE(len)						\
 	(BINTERNAL_SIZE(len) + sizeof(db_indx_t))
 
@@ -646,7 +646,7 @@ typedef struct _rinternal {
  * without the index value.
  */
 #define	RINTERNAL_SIZE							\
-	ALIGN(sizeof(RINTERNAL), sizeof(u_int32_t))
+	(u_int16_t)DB_ALIGN(sizeof(RINTERNAL), sizeof(u_int32_t))
 #define	RINTERNAL_PSIZE							\
 	(RINTERNAL_SIZE + sizeof(db_indx_t))
 

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test080.tcl,v 11.21 2003/10/03 13:28:17 sandstro Exp $
+# $Id: test080.tcl,v 11.22 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test080
 # TEST	Test of DB->remove()

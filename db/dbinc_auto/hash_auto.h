@@ -87,6 +87,7 @@ typedef struct ___ham_metagroup_args {
 	db_pgno_t	pgno;
 	DB_LSN	pagelsn;
 	u_int32_t	newalloc;
+	db_pgno_t	last_pgno;
 } __ham_metagroup_args;
 
 #define	DB___ham_groupalloc	32
@@ -99,6 +100,7 @@ typedef struct ___ham_groupalloc_args {
 	db_pgno_t	start_pgno;
 	u_int32_t	num;
 	db_pgno_t	free;
+	db_pgno_t	last_pgno;
 } __ham_groupalloc_args;
 
 #define	DB___ham_curadj	33

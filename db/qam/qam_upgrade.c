@@ -1,19 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: qam_upgrade.c,v 11.16 2004/05/10 21:29:43 bostic Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: qam_upgrade.c,v 11.14 2003/01/08 05:37:44 bostic Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 
-#include <limits.h>
 #include <string.h>
 #endif
 

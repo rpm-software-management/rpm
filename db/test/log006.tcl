@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: log006.tcl,v 11.5 2003/09/04 23:41:11 bostic Exp $
+# $Id: log006.tcl,v 11.12 2004/09/22 18:01:05 bostic Exp $
 #
 # TEST	log006
 # TEST	Test log file auto-remove.
@@ -22,8 +22,10 @@ proc log006 { } {
 	# Open the environment, set auto-remove flag.  Use smaller log
 	# files to make more of them.
 	puts "\tLog006.a: open environment, populate database."
+	set lbuf 16384
+	set lmax 65536
 	set env [berkdb_env_noerr -log_remove \
-	    -create -home $testdir -log_buffer 10000 -log_max 100000 -txn]
+	    -create -home $testdir -log_buffer $lbuf -log_max $lmax -txn]
 	error_check_good envopen [is_valid_env $env] TRUE
 
 	log006_put $testdir $env
@@ -31,9 +33,9 @@ proc log006 { } {
 	#
 	# Check log files.  Using the small log file size, we should
 	# have made a lot of log files, check that we have a reasonable
-	# number left, less than 12.
+	# number left, less than 25.
 	#
-	set log_expect 12
+	set log_expect 25
 	puts "\tLog006.b: Check log files removed."
 	set lfiles [glob -nocomplain $testdir/log.*]
 	set remlen [llength $lfiles]
@@ -43,13 +45,19 @@ proc log006 { } {
 	# Files may not be sorted, sort them and then save the last filename.
 	set oldfile [lindex [lsort -ascii $lfiles] end]
 
-	#
-	# Rerun log006_put with a long lived txn.  This unresolved txn will
-	# mean that no files will be able to be removed.
+	# Rerun log006_put with a long lived txn.
 	#
 	puts "\tLog006.c: Rerun put loop with long-lived transaction."
+	cleanup $testdir $env
 	set txn [$env txn]
 	error_check_good txn [is_valid_txn $txn $env] TRUE
+
+	# Give the txn something to do so no files can be removed.
+	set testfile temp.db
+	set db [eval {berkdb_open_noerr -create -mode 0644} \
+	    -env $env -txn $txn -pagesize 8192 -btree $testfile]
+	error_check_good dbopen [is_valid_db $db] TRUE
+
 	log006_put $testdir $env
 
 	puts "\tLog006.d: Check log files not removed."
@@ -58,6 +66,7 @@ proc log006 { } {
 	set lfiles [lsort -ascii $lfiles]
 	error_check_good lfiles_chk [lsearch $lfiles $oldfile] 0
 	error_check_good txn_commit [$txn commit] 0
+	error_check_good db_close [$db close] 0
 	error_check_good ckp1 [$env txn_checkpoint] 0
 	error_check_good ckp2 [$env txn_checkpoint] 0
 
@@ -130,7 +139,7 @@ proc log006 { } {
 	# 6. Verify log files removed.
 	puts "\tLog006.j: open environment w/o auto remove, populate database."
 	set env [berkdb_env -recover \
-	    -create -home $testdir -log_buffer 10000 -log_max 100000 -txn]
+	    -create -home $testdir -log_buffer $lbuf -log_max $lmax -txn]
 	error_check_good envopen [is_valid_env $env] TRUE
 
 	log006_put $testdir $env
@@ -163,7 +172,7 @@ proc log006 { } {
 	puts $cid "set_flags db_log_autoremove"
 	close $cid
 	set env [berkdb_env -recover \
-	    -create -home $testdir -log_buffer 10000 -log_max 100000 -txn]
+	    -create -home $testdir -log_buffer $lbuf -log_max $lmax -txn]
 	error_check_good envopen [is_valid_env $env] TRUE
 
 	log006_put $testdir $env
@@ -180,11 +189,7 @@ proc log006 { } {
 # Modified from test003.
 #
 proc log006_put { testdir env } {
-
 	set testfile log006.db
-	set limit 100
-
-	cleanup $testdir $env
 	#
 	# Specify a pagesize so we can control how many log files
 	# are created and left over.
@@ -193,11 +198,8 @@ proc log006_put { testdir env } {
 	    -env $env -auto_commit -pagesize 8192 -btree $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
+	set lmax [$env get_lg_max]
 	set file_list [get_file_list]
-	if { [llength $file_list] > $limit } {
-		set file_list [lrange $file_list 1 $limit]
-	}
-	set len [llength $file_list]
 	set count 0
 	foreach f $file_list {
 		if { [string compare [file type $f] "file"] != 0 } {
@@ -207,7 +209,8 @@ proc log006_put { testdir env } {
 		# Should really catch errors
 		set fid [open $f r]
 		fconfigure $fid -translation binary
-		set data [read $fid]
+		# Read in less than the maximum log size.
+		set data [read $fid [expr $lmax - [expr $lmax / 8]]]
 		close $fid
 
 		set t [$env txn]

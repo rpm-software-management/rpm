@@ -1,12 +1,12 @@
-<!--$Id: comm.so,v 1.11 2003/10/18 19:16:06 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: comm.so,v 1.13 2004/06/28 14:48:07 sue Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Building the communications infrastructure</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -51,23 +51,23 @@ deliver any number of messages simultaneously, and from any arbitrary
 thread or process in the Berkeley DB environment.</p>
 <p>There are a number of informational returns from the
 <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method:</p>
-<p><dl compact>
-<p><dt><a href="../../api_c/rep_message.html#DB_REP_DUPMASTER">DB_REP_DUPMASTER</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_DUPMASTER">DB_REP_DUPMASTER</a>, it means that
+<dl compact>
+<dt><a href="../../api_c/rep_message.html#DB_REP_DUPMASTER">DB_REP_DUPMASTER</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_DUPMASTER">DB_REP_DUPMASTER</a>, it means that
 another database environment in the replication group also believes
 itself to be the master.  The application should complete all active
 transactions, close all open database handles, reconfigure itself as
 a client using the <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method, and then call for an election by
 calling the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
-<p><dt><a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a>, it means
+<dt><a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a>, it means
 that another database environment in the replication group has called
 for an election.  The application should call the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
-<p><dt><a href="../../api_c/rep_message.html#DB_REP_ISPERM">DB_REP_ISPERM</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_ISPERM">DB_REP_ISPERM</a>, it means a
+<dt><a href="../../api_c/rep_message.html#DB_REP_ISPERM">DB_REP_ISPERM</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_ISPERM">DB_REP_ISPERM</a>, it means a
 permanent record, perhaps a message previously returned as
 <a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a> was successfully
 written to disk.  This record may have filled a gap in the log record that
 allowed additional records to be written.  The <b>ret_lsnp</b>
 contains the maximum LSN of the permanent records written.
-<p><dt><a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a>, it means that
+<dt><a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a>, it means that
 a new master has been elected.  The call will also return the local
 environment's ID for that master.  If the ID of the master has changed,
 the application may need to reconfigure itself (for example, to redirect
@@ -75,11 +75,11 @@ update queries to the new master rather then the old one).  If the new
 master is the local environment, then the application must call the
 <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method, and reconfigure the supporting Berkeley DB library as a
 replication master.
-<p><dt><a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>, it means that
+<dt><a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>, it means that
 a message from a previously unknown member of the replication group has
 been received.  The application should reconfigure itself as necessary
 so it is able to send messages to this site.
-<p><dt><a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a>, it means a
+<dt><a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a>, it means a
 message marked as <a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> was processed successfully
 but was not written to disk.  This is normally an indication that one
 or more messages, which should have arrived before this message, have
@@ -87,14 +87,14 @@ not yet arrived.  This operation will be written to disk when the
 missing messages arrive.  The <b>ret_lsnp</b> argument will contain
 the LSN of this record.  The application should take whatever action
 is deemed necessary to retain its recoverability characteristics.
-<p><dt><a href="../../api_c/rep_message.html#DB_REP_OUTDATED">DB_REP_OUTDATED</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_OUTDATED">DB_REP_OUTDATED</a>, it means that
-the environment has been partitioned from the master for too long a
-time, and the master no longer has the necessary log files to update
-the local client.  The application should shut down, and the client
-should be reinitialized (see <a href="../../ref/rep/init.html">Initializing a new site</a> for more information).
+<dt><a href="../../api_c/rep_message.html#DB_REP_STARTUPDONE">DB_REP_STARTUPDONE</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_STARTUPDONE">DB_REP_STARTUPDONE</a>, it means that
+the client has completed its startup synchronization activities and is
+now processing live log messages from the master.  Live log messages
+are messages that the master is sending due to operations, as opposed
+to resending log messages due to a request for log records from the client.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/app.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/newsite.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

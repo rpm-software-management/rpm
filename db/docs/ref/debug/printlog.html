@@ -1,12 +1,12 @@
-<!--$Id: printlog.so,v 10.42 2003/09/25 15:05:22 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: printlog.so,v 10.46 2004/08/17 19:07:19 ubell Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Reviewing Berkeley DB log files</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -48,7 +48,7 @@ some records.</p>
 <p>The following table presents each currently written log record type with
 a brief description of the operation it describes.  Any of these
 record types may have the string "_debug" appended if they
-were written because <a href="../../api_c/env_set_flags.html#DB_TXN_NOT_DURABLE">DB_TXN_NOT_DURABLE</a> was specified and the
+were written because <a href="../../api_c/db_set_flags.html#DB_TXN_NOT_DURABLE">DB_TXN_NOT_DURABLE</a> was specified and the
 system was configured with <a href="../../ref/build_unix/conf.html#--enable-diagnostic">--enable-diagnostic</a>.</p>
 <!--START LOG RECORD TYPES-->
 <table border=1>
@@ -58,6 +58,7 @@ system was configured with <a href="../../ref/build_unix/conf.html#--enable-diag
 <tr><td>bam_cdel</td><td>Used to mark a record on a page as deleted.</td></tr>
 <tr><td>bam_curadj</td><td>Used to adjust a cursor location when a nearby record changes in a Btree database.</td></tr>
 <tr><td>bam_rcuradj</td><td>Used to adjust a cursor location when a nearby record changes in a Recno database.</td></tr>
+<tr><td>bam_relink</td><td>Fix leaf page prev/next chain when a page is removed.</td></tr>
 <tr><td>bam_repl</td><td>Describes a replace operation on a record.</td></tr>
 <tr><td>bam_root</td><td>Describes an assignment of a root page.</td></tr>
 <tr><td>bam_rsplit</td><td>Describes a reverse page split.</td></tr>
@@ -69,13 +70,18 @@ system was configured with <a href="../../ref/build_unix/conf.html#--enable-diag
 <tr><td>db_debug</td><td>Log debugging message.</td></tr>
 <tr><td>db_noop</td><td>This marks an operation that did nothing but update the LSN on a page.</td></tr>
 <tr><td>db_ovref</td><td>Increment or decrement the reference count for a big item.</td></tr>
-<tr><td>db_pg_alloc</td><td>Indicates we allocated a page to a Btree.</td></tr>
+<tr><td>db_pg_alloc</td><td>Indicates we allocated a page to a database.</td></tr>
 <tr><td>db_pg_free</td><td>Indicates we freed a page (freed pages are added to a freelist and reused).</td></tr>
 <tr><td>db_pg_freedata</td><td>Indicates we freed a page that still contained data entries (freed pages are added to a freelist and reused.)</td></tr>
+<tr><td>db_pg_init</td><td>Indicates we reinitialized a page during a truncate.</td></tr>
 <tr><td>db_pg_new</td><td>Indicates that a page was allocated and put on the free list.</td></tr>
 <tr><td>db_pg_prepare</td><td>Indicates a new page was allocated during a child transaction of a prepared transaction.</td></tr>
-<tr><td>db_relink</td><td>Fix prev/next chains on duplicate pages because a page was added or removed.</td></tr>
 <tr><td>dbreg_register</td><td>Records an open of a file (mapping the filename to a log-id that is used in subsequent log operations).</td></tr>
+<tr><td>fop_create</td><td>Create a file in the file system.</td></tr>
+<tr><td>fop_file_remove</td><td>Remove a name in the file system.</td></tr>
+<tr><td>fop_remove</td><td>Remove a file in the file system.</td></tr>
+<tr><td>fop_rename</td><td>Rename a file in the file system.</td></tr>
+<tr><td>fop_write</td><td>Write bytes to an object in the file system.</td></tr>
 <tr><td>ham_chgpg</td><td>Used to adjust a cursor location when a Hash page is removed, and its elements are moved to a different Hash page.</td></tr>
 <tr><td>ham_copypage</td><td>Used when we empty a bucket page, but there are overflow pages for the bucket; one needs to be copied back into the actual bucket.</td></tr>
 <tr><td>ham_curadj</td><td>Used to adjust a cursor location when a nearby record changes in a Hash database.</td></tr>
@@ -154,6 +160,6 @@ extract:</p>
 <blockquote><pre>awk -f range.awk START_FILE=sf START_OFFSET=so END_FILE=ef END_OFFSET=eo log_output</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../debug/runtime.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../debug/common.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

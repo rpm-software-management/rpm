@@ -1,18 +1,18 @@
-<!--$Id: notes.so,v 1.18 2003/06/02 20:33:18 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: notes.so,v 1.20 2004/10/08 17:16:54 sue Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: VxWorks notes</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for VxWorks systems</dl></h3></td>
-<td align=right><a href="../build_vxworks/introae.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../build_vxworks/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>VxWorks notes</h3>
@@ -28,8 +28,7 @@ system supporting FIOSYNC.</p>
 building Berkeley DB.  If you want different or additional BSP
 build specifications you should add them by following the
 directions indicated in <a href="../../ref/build_vxworks/intro.html">Building
-with Tornado 2.0 or Tornado 2.2</a> or
-<a href="../../ref/build_vxworks/introae.html">Building with Tornado 3.1</a>.</p>
+with Tornado 2.0 or Tornado 2.2</a>.</p>
 <p>The demo program can be downloaded and run by calling the entry function
 <b>dbdemo</b> with the pathname of a database to use.  The demo
 program will ask for some input keys.  It creates a database and adds
@@ -56,14 +55,15 @@ flag is implied for any application that does not specify the
 ID to ensure that different applications do not overwrite each other's
 database environments.  See the <a href="../../api_c/env_set_shm_key.html">DB_ENV-&gt;set_shm_key</a> method for more
 information.  Also, the <a href="../../api_c/env_open.html#DB_LOCKDOWN">DB_LOCKDOWN</a> flag has no effect.</p>
-<h3>Notes for VxWorks AE 1.1</h3>
-<p>All tasks wanting to access a particular environment must run in the
-same application domain.  The memory regions used by the environment are
-only accessible to the application domain.  If more than one application
-domain attempts to access an environment simultaneously, the results are
-undefined but will likely lead to corruption.</p>
-<table width="100%"><tr><td><br></td><td align=right><a href="../build_vxworks/introae.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+<p>A default small footprint build is provided.  This default provides
+equivalent to the <b>--enable-smallbuild</b> configuration option
+described in <a href="../../ref/build_unix/small.html">Building a
+small memory footprint library</a>.  In order to build the small
+footprint, you should move <b>db_config.h</b> aside and copy
+<b>db_config_small.h</b> to <b>db_config.h</b>.  Then open up
+the appropriate small workspace file via Tornado and build as usual.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_vxworks/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,39 +1,38 @@
-<!--$Id: dbt_bulk.so,v 10.11 2003/09/25 15:26:30 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: dbt_bulk.so,v 10.12 2004/08/13 03:38:56 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DBT</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DBT: Bulk Retrieval</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>If either of the <a href="../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> or <a href="../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a> flags
 were specified to the <a href="../api_c/db_get.html">DB-&gt;get</a> or <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> methods, the data
 <a href="../api_c/dbt_class.html">DBT</a> returned by those interfaces will refer to a buffer that
 is filled with data.  Access to that data is through the following
 macros:</p>
-<p><dl compact>
-<p><dt><a name="DB_MULTIPLE_INIT">DB_MULTIPLE_INIT</a><dd><pre>DB_MULTIPLE_INIT(void *pointer, <a href="../api_c/dbt_class.html">DBT</a> *data);</pre>
+<dl compact>
+<dt><a name="DB_MULTIPLE_INIT">DB_MULTIPLE_INIT</a><dd><pre>DB_MULTIPLE_INIT(void *pointer, <a href="../api_c/dbt_class.html">DBT</a> *data);</pre>
 <p>Initialize the retrieval.  The <b>pointer</b> parameter is a variable
 to be initialized.  The <b>data</b> parameter is a <a href="../api_c/dbt_class.html">DBT</a> structure
 returned from a successful call to <a href="../api_c/db_get.html">DB-&gt;get</a> or <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a>
 for which one of the <a href="../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> or <a href="../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
 flags was specified.</p>
-<p><dt><a name="DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a><dd><pre>DB_MULTIPLE_NEXT(void *pointer, <a href="../api_c/dbt_class.html">DBT</a> *data, void *retdata, size_t retdlen);</pre>
+<dt><a name="DB_MULTIPLE_NEXT">DB_MULTIPLE_NEXT</a><dd><pre>DB_MULTIPLE_NEXT(void *pointer, <a href="../api_c/dbt_class.html">DBT</a> *data, void *retdata, size_t retdlen);</pre>
 <p>The <b>data</b> parameter is a <a href="../api_c/dbt_class.html">DBT</a> structure returned from a
 successful call to <a href="../api_c/db_get.html">DB-&gt;get</a> or <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> for which the
 <a href="../api_c/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a> flag was specified.  The <b>pointer</b> and
@@ -45,7 +44,7 @@ element.  When used with the Queue and Recno access methods,
 <b>retdata</b> will be set to NULL for deleted records.  The
 <b>pointer</b> parameter is set to NULL if there are no more data
 elements in the returned set.</p>
-<p><dt><a name="DB_MULTIPLE_KEY_NEXT">DB_MULTIPLE_KEY_NEXT</a><dd><pre>DB_MULTIPLE_KEY_NEXT(void *pointer, <a href="../api_c/dbt_class.html">DBT</a> *data,
+<dt><a name="DB_MULTIPLE_KEY_NEXT">DB_MULTIPLE_KEY_NEXT</a><dd><pre>DB_MULTIPLE_KEY_NEXT(void *pointer, <a href="../api_c/dbt_class.html">DBT</a> *data,
 	void *retkey, size_t retklen, void *retdata, size_t retdlen);</pre>
 <p>The <b>data</b> parameter is a <a href="../api_c/dbt_class.html">DBT</a> structure returned from a
 successful call to <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> for which the <a href="../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
@@ -58,7 +57,7 @@ refer to the next data element in the returned set, and the
 <b>retdlen</b> parameter is set to the length, in bytes, of that data
 element.  The <b>pointer</b> parameter is set to NULL if there are
 no more key/data pairs in the returned set.</p>
-<p><dt><a name="DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a><dd><pre>DB_MULTIPLE_RECNO_NEXT(void *pointer, <a href="../api_c/dbt_class.html">DBT</a> *data,
+<dt><a name="DB_MULTIPLE_RECNO_NEXT">DB_MULTIPLE_RECNO_NEXT</a><dd><pre>DB_MULTIPLE_RECNO_NEXT(void *pointer, <a href="../api_c/dbt_class.html">DBT</a> *data,
 	db_recno_t recno, void * retdata, size_t retdlen);</pre>
 <p>The <b>data</b> parameter is a <a href="../api_c/dbt_class.html">DBT</a> structure returned from a
 successful call to <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> for which the <a href="../api_c/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
@@ -77,6 +76,6 @@ pairs in the returned set.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

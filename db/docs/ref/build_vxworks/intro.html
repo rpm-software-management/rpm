@@ -1,26 +1,23 @@
-<!--$Id: intro.so,v 1.21 2002/10/01 19:38:33 sue Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 1.24 2004/10/08 17:16:54 sue Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Building for VxWorks</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for VxWorks systems</dl></h3></td>
-<td align=right><a href="../build_win/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/introae.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../build_win/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/notes.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Building for VxWorks</h3>
 <p>The build_vxworks directory in the Berkeley DB distribution contains a workspace
-and project files for Tornado 2.0/VxWorks 5.4, Tornado 2.2/VxWorks 5.5
-and component files for Tornado 3.1/VxWorks AE.  See
-<a href="../../ref/build_vxworks/introae.html">Building for VxWorks AE</a> for
-information about VxWorks AE.</p>
+and project files for Tornado 2.0/VxWorks 5.4 and Tornado 2.2/VxWorks 5.5.</p>
 <table border=1 align=center>
 <tr><th>File</th><th>Description</th></tr>
 <tr>    <td align=left>BerkeleyDB20.wsp</td>    <td align=left>Berkeley DB Workspace file for Tornado 2.0</td>    </tr>
@@ -36,13 +33,14 @@ information about VxWorks AE.</p>
 <p>Open the workspace <b>BerkeleyDB20.wsp</b> or <b>BerkeleyDB22.wsp</b>.
 The list of projects in this workspace will be shown.  These projects
 were created for the x86 BSP for VxWorks.</p>
-<p>The remainder of this document assumes that you already have a
-VxWorks target and a target server, both up and running.  It also
-assumes that your VxWorks image is configured properly for your
-needs.  It also assumes that you
-have an acceptable file system already available.  See
-<a href="../../ref/build_vxworks/faq.html">VxWorks FAQ</a> for more
-information about file system requirements.</p>
+<p>The remainder of this document assumes that you already have a VxWorks
+target and a target server, both up and running.  It also assumes that
+your VxWorks image is configured properly for your needs.  It also
+assumes that you have an acceptable file system already available.
+See <a href="../../ref/build_vxworks/faq.html">VxWorks FAQ</a> for more
+information about file system requirements.
+See <a href="../../ref/build_vxworks/notes.html">VxWorks Notes</a> for more
+information about building a small footprint version of Berkeley DB.</p>
 <p>First, you need to set the include directories.  To do this, go to the
 <i>Builds</i> tab for the workspace.  Open up <i>Berkeley DB
 Builds</i>.  You will see several different builds, containing different
@@ -98,8 +96,8 @@ depending on which version of Tornado you are running.
 You need to repeat this procedure for all builds you are interested in
 building, as well as for all of the utility project builds you want to
 run.</p>
-<table width="100%"><tr><td><br></td><td align=right><a href="../build_win/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/introae.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_win/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/notes.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,15 +1,12 @@
 /* Do not edit: automatically built by gen_rpc.awk. */
 #include "db_config.h"
 
-#ifdef HAVE_RPC
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
-#include <rpc/rpc.h>
 
 #include <string.h>
 #endif
 #include "db_int.h"
-#include "dbinc_auto/db_server.h"
 #include "dbinc/txn.h"
 
 /*
@@ -338,14 +335,12 @@ __dbcl_db_open_ret(dbp, txnp, name, subdb, type, flags, mode, replyp)
 	int ret;
 	long db;
 	DBTYPE type;
-	u_int32_t dbflags;
 	int lorder;
 
 	if (replyp->status != 0)
 		return (replyp->status);
 	db = replyp->dbcl_id;
 	type = replyp->type;
-	dbflags = replyp->dbflags;
 	lorder = replyp->lorder;
 
 	/*
@@ -464,12 +459,13 @@ __dbcl_db_rename_ret(dbp, name, subdb, newname, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_db_stat_ret __P((DB *, void *, u_int32_t,
+ * PUBLIC: int __dbcl_db_stat_ret __P((DB *, DB_TXN *, void *, u_int32_t,
  * PUBLIC:      __db_stat_reply *));
  */
 int
-__dbcl_db_stat_ret(dbp, sp, flags, replyp)
+__dbcl_db_stat_ret(dbp, txnp, sp, flags, replyp)
 	DB * dbp;
+	DB_TXN * txnp;
 	void * sp;
 	u_int32_t flags;
 	__db_stat_reply *replyp;
@@ -725,4 +721,3 @@ __dbcl_dbc_put_ret(dbc, key, data, flags, replyp)
 	return (replyp->status);
 }
 
-#endif /* HAVE_RPC */

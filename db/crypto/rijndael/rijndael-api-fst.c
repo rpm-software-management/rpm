@@ -78,7 +78,7 @@ __db_makeKey(key, direction, keyLen, keyMaterial)
 	}
 
 	if (keyMaterial != NULL) {
-		memcpy(cipherKey, keyMaterial, key->keyLen/4);
+		memcpy(cipherKey, keyMaterial, key->keyLen/8);
 	}
 
 	if (direction == DIR_ENCRYPT) {

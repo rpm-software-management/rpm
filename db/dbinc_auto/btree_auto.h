@@ -125,4 +125,18 @@ typedef struct ___bam_rcuradj_args {
 	u_int32_t	order;
 } __bam_rcuradj_args;
 
+#define	DB___bam_relink	147
+typedef struct ___bam_relink_args {
+	u_int32_t type;
+	DB_TXN *txnid;
+	DB_LSN prev_lsn;
+	int32_t	fileid;
+	db_pgno_t	pgno;
+	DB_LSN	lsn;
+	db_pgno_t	prev;
+	DB_LSN	lsn_prev;
+	db_pgno_t	next;
+	DB_LSN	lsn_next;
+} __bam_relink_args;
+
 #endif

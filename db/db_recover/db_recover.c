@@ -1,17 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_recover.c,v 11.41 2004/01/28 03:36:00 bostic Exp $
  */
 
 #include "db_config.h"
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
-static const char revid[] =
-    "$Id: db_recover.c,v 11.39 2003/09/04 18:06:46 bostic Exp $";
+    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -115,10 +115,8 @@ main(argc, argv)
 	}
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
-	if (verbose) {
+	if (verbose)
 		(void)dbenv->set_verbose(dbenv, DB_VERB_RECOVERY, 1);
-		(void)dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT, 1);
-	}
 	if (timestamp &&
 	    (ret = dbenv->set_tx_timestamp(dbenv, &timestamp)) != 0) {
 		dbenv->err(dbenv, ret, "DB_ENV->set_timestamp");

@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: bt_method.c,v 11.38 2004/09/22 03:31:26 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: bt_method.c,v 11.34 2003/06/30 17:19:32 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -21,15 +19,12 @@ static const char revid[] = "$Id: bt_method.c,v 11.34 2003/06/30 17:19:32 bostic
 #include "dbinc/qam.h"
 
 static int __bam_set_bt_maxkey __P((DB *, u_int32_t));
-static int __bam_get_bt_minkey __P((DB *, u_int32_t *));
 static int __bam_set_bt_minkey __P((DB *, u_int32_t));
 static int __bam_set_bt_prefix
 	       __P((DB *, size_t(*)(DB *, const DBT *, const DBT *)));
 static int __ram_get_re_delim __P((DB *, int *));
 static int __ram_set_re_delim __P((DB *, int));
-static int __ram_get_re_len __P((DB *, u_int32_t *));
 static int __ram_set_re_len __P((DB *, u_int32_t));
-static int __ram_get_re_pad __P((DB *, int *));
 static int __ram_set_re_pad __P((DB *, int));
 static int __ram_get_re_source __P((DB *, const char **));
 static int __ram_set_re_source __P((DB *, const char *));
@@ -241,8 +236,10 @@ __bam_set_bt_maxkey(dbp, bt_maxkey)
 /*
  * __db_get_bt_minkey --
  *	Get the minimum keys per page.
+ *
+ * PUBLIC: int __bam_get_bt_minkey __P((DB *, u_int32_t *));
  */
-static int
+int
 __bam_get_bt_minkey(dbp, bt_minkeyp)
 	DB *dbp;
 	u_int32_t *bt_minkeyp;
@@ -389,17 +386,34 @@ __ram_set_re_delim(dbp, re_delim)
 /*
  * __db_get_re_len --
  *	Get the variable-length input record length.
+ *
+ * PUBLIC: int __ram_get_re_len __P((DB *, u_int32_t *));
  */
-static int
+int
 __ram_get_re_len(dbp, re_lenp)
 	DB *dbp;
 	u_int32_t *re_lenp;
 {
 	BTREE *t;
+	QUEUE *q;
 
 	DB_ILLEGAL_METHOD(dbp, DB_OK_QUEUE | DB_OK_RECNO);
-	t = dbp->bt_internal;
-	*re_lenp = t->re_len;
+
+	/*
+	 * This has to work for all access methods, before or after opening the
+	 * database.  When the record length is set with __ram_set_re_len, the
+	 * value in both the BTREE and QUEUE structs will be correct.
+	 * Otherwise, this only makes sense after the database in opened, in
+	 * which case we know the type.
+	 */
+	if (dbp->type == DB_QUEUE) {
+		q = dbp->q_internal;
+		*re_lenp = q->re_len;
+	} else {
+		t = dbp->bt_internal;
+		*re_lenp = t->re_len;
+	}
+
 	return (0);
 }
 
@@ -432,18 +446,34 @@ __ram_set_re_len(dbp, re_len)
 /*
  * __db_get_re_pad --
  *	Get the fixed-length record pad character.
+ *
+ * PUBLIC: int __ram_get_re_pad __P((DB *, int *));
  */
-static int
+int
 __ram_get_re_pad(dbp, re_padp)
 	DB *dbp;
 	int *re_padp;
 {
 	BTREE *t;
+	QUEUE *q;
 
 	DB_ILLEGAL_METHOD(dbp, DB_OK_QUEUE | DB_OK_RECNO);
 
-	t = dbp->bt_internal;
-	*re_padp = t->re_pad;
+	/*
+	 * This has to work for all access methods, before or after opening the
+	 * database.  When the record length is set with __ram_set_re_pad, the
+	 * value in both the BTREE and QUEUE structs will be correct.
+	 * Otherwise, this only makes sense after the database in opened, in
+	 * which case we know the type.
+	 */
+	if (dbp->type == DB_QUEUE) {
+		q = dbp->q_internal;
+		*re_padp = q->re_pad;
+	} else {
+		t = dbp->bt_internal;
+		*re_padp = t->re_pad;
+	}
+
 	return (0);
 }
 

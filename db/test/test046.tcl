@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test046.tcl,v 11.35 2003/01/08 05:53:55 bostic Exp $
+# $Id: test046.tcl,v 11.36 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test046
 # TEST	Overwrite test of small/big key/data with cursor checks.

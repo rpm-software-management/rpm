@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: AccessExample.java,v 11.17 2003/03/27 23:05:31 gburd Exp $
+ * $Id: AccessExample.java,v 11.19 2004/04/06 20:43:35 mjc Exp $
  */
 
 
@@ -17,54 +17,45 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
-class AccessExample
-{
+class AccessExample {
     private static final int EXIT_SUCCESS = 0;
     private static final int EXIT_FAILURE = 1;
 
-    public AccessExample()
-    {
+    public AccessExample() {
     }
 
-    public static void usage()
-    {
-	System.out.println("usage: java " +
-	   "com.sleepycat.examples.db.AccessExample [-r] [database]\n");
-	System.exit(EXIT_FAILURE);
+    public static void usage() {
+        System.out.println("usage: java " +
+               "com.sleepycat.examples.db.AccessExample [-r] [database]\n");
+        System.exit(EXIT_FAILURE);
     }
 
-    public static void main(String argv[])
-    {
-	boolean removeExistingDatabase = false;
-	String databaseName = "access.db";
+    public static void main(String[] argv) {
+        boolean removeExistingDatabase = false;
+        String databaseName = "access.db";
 
-	for (int i = 0; i < argv.length; i++) {
-	    if (argv[i].equals("-r")) {
-		removeExistingDatabase = true;
-	    } else if (argv[i].equals("-?")) {
-		usage();
-	    } else if (argv[i].startsWith("-")) {
-		usage();
-	    } else {
-		if ((argv.length - i) != 1)
-		    usage();
-		databaseName = argv[i];
-		break;
-	    }
-	}
+        for (int i = 0; i < argv.length; i++) {
+            if (argv[i].equals("-r"))
+                removeExistingDatabase = true;
+            else if (argv[i].equals("-?"))
+                usage();
+            else if (argv[i].startsWith("-"))
+                usage();
+            else {
+                if ((argv.length - i) != 1)
+                    usage();
+                databaseName = argv[i];
+                break;
+            }
+        }
 
-        try
-        {
+        try {
             AccessExample app = new AccessExample();
             app.run(removeExistingDatabase, databaseName);
-        }
-        catch (DbException dbe)
-        {
+        } catch (DatabaseException dbe) {
             System.err.println("AccessExample: " + dbe.toString());
             System.exit(EXIT_FAILURE);
-        }
-        catch (FileNotFoundException fnfe)
-        {
+        } catch (FileNotFoundException fnfe) {
             System.err.println("AccessExample: " + fnfe.toString());
             System.exit(EXIT_FAILURE);
         }
@@ -74,9 +65,8 @@ class AccessExample
     // Prompts for a line, and keeps prompting until a non blank
     // line is returned.  Returns null on erroror.
     //
-    static public String askForLine(InputStreamReader reader,
-                                    PrintStream out, String prompt)
-    {
+    public static String askForLine(InputStreamReader reader,
+                                    PrintStream out, String prompt) {
         String result = "";
         while (result != null && result.length() == 0) {
             out.print(prompt);
@@ -91,8 +81,7 @@ class AccessExample
     // Returns null on EOF.  If EOF appears in the middle
     // of a line, returns that line, then null on next call.
     //
-    static public String getLine(InputStreamReader reader)
-    {
+    public static String getLine(InputStreamReader reader) {
         StringBuffer b = new StringBuffer();
         int c;
         try {
@@ -100,8 +89,7 @@ class AccessExample
                 if (c != '\r')
                     b.append((char)c);
             }
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             c = -1;
         }
 
@@ -112,18 +100,20 @@ class AccessExample
     }
 
     public void run(boolean removeExistingDatabase, String databaseName)
-         throws DbException, FileNotFoundException
-    {
+        throws DatabaseException, FileNotFoundException {
+
         // Remove the previous database.
-	if (removeExistingDatabase)
-	    new File(databaseName).delete();
+        if (removeExistingDatabase)
+            new File(databaseName).delete();
 
         // Create the database object.
         // There is no environment for this simple example.
-        Db table = new Db(null, 0);
-        table.setErrorStream(System.err);
-        table.setErrorPrefix("AccessExample");
-        table.open(null, databaseName, null, Db.DB_BTREE, Db.DB_CREATE, 0644);
+        DatabaseConfig dbConfig = new DatabaseConfig();
+        dbConfig.setErrorStream(System.err);
+        dbConfig.setErrorPrefix("AccessExample");
+        dbConfig.setType(DatabaseType.BTREE);
+        dbConfig.setAllowCreate(true);
+        Database table = new Database(databaseName, null, dbConfig);
 
         //
         // Insert records into the database, where the key is the user
@@ -140,69 +130,54 @@ class AccessExample
 
             // See definition of StringDbt below
             //
-            StringDbt key = new StringDbt(line);
-            StringDbt data = new StringDbt(reversed);
+            StringEntry key = new StringEntry(line);
+            StringEntry data = new StringEntry(reversed);
 
-            try
-            {
-		int err = 0;
-                if ((err = table.put(null,
-		    key, data, Db.DB_NOOVERWRITE)) == Db.DB_KEYEXIST) {
-                        System.out.println("Key " + line + " already exists.");
-                }
-            }
-            catch (DbException dbe)
-            {
+            try {
+                if (table.putNoOverwrite(null, key, data) == OperationStatus.KEYEXIST)
+                    System.out.println("Key " + line + " already exists.");
+            } catch (DatabaseException dbe) {
                 System.out.println(dbe.toString());
             }
         }
 
         // Acquire an iterator for the table.
-        Dbc iterator;
-        iterator = table.cursor(null, 0);
+        Cursor cursor;
+        cursor = table.openCursor(null, null);
 
         // Walk through the table, printing the key/data pairs.
         // See class StringDbt defined below.
         //
-        StringDbt key = new StringDbt();
-        StringDbt data = new StringDbt();
-        while (iterator.get(key, data, Db.DB_NEXT) == 0)
-        {
+        StringEntry key = new StringEntry();
+        StringEntry data = new StringEntry();
+        while (cursor.getNext(key, data, null) == OperationStatus.SUCCESS)
             System.out.println(key.getString() + " : " + data.getString());
-        }
-        iterator.close();
-        table.close(0);
+        cursor.close();
+        table.close();
     }
 
-    // Here's an example of how you can extend a Dbt in a straightforward
-    // way to allow easy storage/retrieval of strings, or whatever
-    // kind of data you wish.  We've declared it as a static inner
-    // class, but it need not be.
+    // Here's an example of how you can extend DatabaseEntry in a
+    // straightforward way to allow easy storage/retrieval of strings,
+    // or whatever kind of data you wish.  We've declared it as a static
+    // inner class, but it need not be.
     //
     static /*inner*/
-    class StringDbt extends Dbt
-    {
-        StringDbt()
-        {
-            setFlags(Db.DB_DBT_MALLOC); // tell Db to allocate on retrieval
+    class StringEntry extends DatabaseEntry {
+        StringEntry() {
         }
 
-        StringDbt(String value)
-        {
+        StringEntry(String value) {
             setString(value);
-            setFlags(Db.DB_DBT_MALLOC); // tell Db to allocate on retrieval
         }
 
-        void setString(String value)
-        {
+        void setString(String value) {
             byte[] data = value.getBytes();
             setData(data);
             setSize(data.length);
         }
 
-        String getString()
-        {
-            return new String(getData(), 0, getSize());
+        String getString() {
+            return new String(getData(), getOffset(), getSize());
         }
     }
 }

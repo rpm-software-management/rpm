@@ -1,24 +1,23 @@
 <!--$Id: db_rename.so,v 10.3 2002/08/18 21:15:51 bostic Exp $-->
-<!--$Id: env_dbrename.so,v 10.31 2003/11/08 19:17:27 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_dbrename.so,v 10.36 2004/08/29 19:27:38 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;rename</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;rename</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -41,7 +40,10 @@ the database environment, no database in the file may be open when the
 DB-&gt;rename method is called.  In particular, some architectures do
 not permit renaming files with open handles.  On these architectures,
 attempts to rename databases that are currently in use by any thread of
-control in the system will fail.</p>
+control in the system may fail.</p>
+<p>The DB-&gt;rename method should not be called if the rename is intended
+to be transactionally safe; the <a href="../api_c/env_dbrename.html">DB_ENV-&gt;dbrename</a> method should be used
+instead.</p>
 <p>The DB-&gt;rename method may not be called after calling the
 <a href="../api_c/db_open.html">DB-&gt;open</a> method on any <a href="../api_c/db_class.html">DB</a> handle.  If the <a href="../api_c/db_open.html">DB-&gt;open</a> method
 has already been called on a <a href="../api_c/db_class.html">DB</a> handle, close the existing
@@ -53,16 +55,14 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>database</b><dd>
-The <b>database</b> parameter is the database to be removed.
-<p><dt><b>file</b><dd>
-The <b>file</b> parameter is the physical file which contains the
-database(s) to be removed.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter is currently unused, and must be set to 0.
-<p><dt><b>newname</b><dd>
-The <b>newname</b> parameter is the new name of the database or file.
+<dl compact>
+<dt><b>database</b><dd>The <b>database</b> parameter is the database to be renamed.
+<dt><b>file</b><dd>The <b>file</b> parameter is the physical file which contains the
+database(s) to be renamed.
+<p>On Windows, the <b>file</b> argument will be interpreted as a UTF-8
+string, which is equivalent to ASCII for Latin characters.</p>
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
+<dt><b>newname</b><dd>The <b>newname</b> parameter is the new name of the database or file.
 </dl>
 <h3>Environment Variables</h3>
 <p>If the database was opened within a database environment, the
@@ -74,16 +74,12 @@ in the environment's <b>DB_CONFIG</b> file.</p>
 <h3>Errors</h3>
 <p>The DB-&gt;rename method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_FILEOPEN<dd>An attempt was made to rename the underlying file and a database in the
-file was currently open.
-</dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>If DB-&gt;rename called after <a href="../api_c/db_open.html">DB-&gt;open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If DB-&gt;rename called after <a href="../api_c/db_open.html">DB-&gt;open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
-<p><dl compact>
-<p><dt>ENOENT<dd>The file or directory does not exist.
+<dl compact>
+<dt>ENOENT<dd>The file or directory does not exist.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -94,6 +90,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

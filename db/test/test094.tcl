@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test094.tcl,v 11.19 2003/10/17 13:38:19 sandstro Exp $
+# $Id: test094.tcl,v 11.21 2004/06/29 14:26:17 carol Exp $
 #
 # TEST	test094
 # TEST	Test using set_dup_compare.
@@ -57,7 +57,7 @@ proc test094 { method {nentries 10000} {ndups 10} {tnum "094"} args} {
 
 	cleanup $testdir $env
 
-	set db [eval {berkdb_open_noerr -dupcompare test094_cmp \
+	set db [eval {berkdb_open -dupcompare test094_cmp \
 	    -dup -dupsort -create -mode 0644} $omethod $dbargs {$testfile}]
 	error_check_good dbopen [is_valid_db $db] TRUE
 

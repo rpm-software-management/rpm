@@ -1,23 +1,22 @@
-<!--$Id: rep_stat.so,v 10.23 2003/11/08 19:17:48 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: rep_stat.so,v 10.32 2004/08/13 03:39:02 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;rep_stat</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;rep_stat</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -25,6 +24,9 @@
 <p>
 int
 DB_ENV-&gt;rep_stat(DB_ENV *env, DB_REP_STAT **statp, u_int32_t flags);
+<p>
+int
+DB_ENV-&gt;rep_stat_print(DB_ENV *env, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;rep_stat</h3>
@@ -40,11 +42,10 @@ responsible for deallocating the memory.  To deallocate the memory, free
 the memory reference; references inside the returned memory need not be
 individually freed.</p>
 <p>The following DB_REP_STAT fields will be filled in:</p>
-<p><dl compact>
+<dl compact>
 <dt>u_int32_t st_status;<dd>The current replication mode.  Set to <a href="../api_c/rep_start.html#DB_REP_MASTER">DB_REP_MASTER</a> if the
 environment is a replication master, <a href="../api_c/rep_start.html#DB_REP_CLIENT">DB_REP_CLIENT</a> if the
-environment is a replication client, <a href="../api_c/rep_start.html#DB_REP_LOGSONLY">DB_REP_LOGSONLY</a> if the
-environment is a log-files-only replica, or 0 if replication is not
+environment is a replication client, or 0 if replication is not
 configured.
 <dt>DB_LSN st_next_lsn;<dd>In replication environments configured as masters, the next LSN expected.
 In replication environments configured as clients, the next LSN to be used.
@@ -54,8 +55,7 @@ being waited for, or 0 if no log records are currently missing.
 <dt>u_int32_t st_env_id;<dd>The current environment ID.
 <dt>u_int32_t st_env_priority;<dd>The current environment priority.
 <dt>u_int32_t st_gen;<dd>The current generation number.
-<dt>u_int32_t st_in_recovery;<dd>The site is currently in client recovery.  When this field is set, LSN
-values are not authoritative.
+<dt>u_int32_t st_egen;<dd>The current election generation number.
 <dt>u_int32_t st_log_duplicated;<dd>The number of duplicate log records received.
 <dt>u_int32_t st_log_queued;<dd>The number of log records currently queued.
 <dt>u_int32_t st_log_queued_max;<dd>The maximum number of log records ever queued at once.
@@ -72,6 +72,14 @@ values are not authoritative.
 <dt>u_int32_t st_newsites;<dd>The number of new site messages received.
 <dt>int st_nsites;<dd>The number of sites believed to be in the replication group.
 <dt>u_int32_t st_outdated;<dd>The number of outdated conditions detected.
+<dt>u_int32_t st_next_pg;<dd>The next page number we expect to receive.
+<dt>u_int32_t st_waiting_pg;<dd>The page number of the first page we have after missing pages
+being waited for, or 0 if no pages are currently missing.
+<dt>u_int32_t st_pg_duplicated;<dd>The number of duplicate pages received.
+<dt>u_int32_t st_pg_records;<dd>The number of pages received and stored.
+<dt>u_int32_t st_pg_requested;<dd>The number of pages missed and requested from the master.
+<dt>u_int32_t st_startup_complete;<dd>The client site has completed its startup procedures and is now
+handling live records from the master.
 <dt>u_int32_t st_txns_applied;<dd>The number of transactions applied.
 <dt>u_int32_t st_elections;<dd>The number of elections held.
 <dt>u_int32_t st_elections_won;<dd>The number of elections won.
@@ -80,6 +88,7 @@ values are not authoritative.
 <dt>u_int32_t st_election_gen;<dd>The election generation number.
 <dt>DB_LSN st_election_lsn;<dd>The maximum LSN of election winner.
 <dt>u_int32_t st_election_nsites;<dd>The number sites expected to participate in elections.
+<dt>u_int32_t st_election_nvotes;<dd>The number of votes required to complete the election.
 <dt>u_int32_t st_nthrottles;<dd>Transmission limited. This indicates the number of times that data
 transmission was stopped to limit the amount of data sent in response
 to a single call to <a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>.
@@ -92,23 +101,43 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
+<dl compact>
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
-<p><dt><b>statp</b><dd>
-The <b>statp</b> parameter references memory into which
+<dt><b>statp</b><dd>The <b>statp</b> parameter references memory into which
 a pointer to the allocated statistics structure is copied.
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;rep_stat method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;rep_stat_print</h3>
+<p>The DB_ENV-&gt;rep_stat_print method returns the
+replication subsystem statistical information, as described for the DB_ENV-&gt;rep_stat method.
+The information is printed to a specified output channel (see the
+<a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method for more information), or passed to an
+application callback function (see the <a href="../api_c/env_set_msgcall.html">DB_ENV-&gt;set_msgcall</a> method for
+more information).</p>
+<p>The DB_ENV-&gt;rep_stat_print method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
+been called.</p>
+<p>The DB_ENV-&gt;rep_stat_print method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+the following value:
+<dl compact>
+<dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+</dl>
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -119,6 +148,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

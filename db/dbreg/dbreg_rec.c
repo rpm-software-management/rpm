@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -31,13 +31,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * $Id: dbreg_rec.c,v 11.133 2004/09/24 00:43:18 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: dbreg_rec.c,v 11.120 2003/10/27 15:54:31 sue Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -52,7 +50,6 @@ static const char revid[] = "$Id: dbreg_rec.c,v 11.120 2003/10/27 15:54:31 sue E
 #include "dbinc/log.h"
 #include "dbinc/mp.h"
 #include "dbinc/txn.h"
-#include "dbinc/qam.h"
 
 static int __dbreg_open_file __P((DB_ENV *,
     DB_TXN *, __dbreg_register_args *, void *));
@@ -74,6 +71,7 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 	DB *dbp;
 	__dbreg_register_args *argp;
 	int do_close, do_open, do_rem, ret, t_ret;
+	u_int32_t status;
 
 	dblp = dbenv->lg_handle;
 	dbp = NULL;
@@ -93,7 +91,6 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 		else
 			do_close = 1;
 		break;
-
 	case DBREG_CLOSE:
 		if (DB_UNDO(op))
 			do_open = 1;
@@ -114,11 +111,14 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 		else
 			do_close = 1;
 		break;
-
 	case DBREG_CHKPNT:
 		if (DB_UNDO(op) ||
 		    op == DB_TXN_OPENFILES || op == DB_TXN_POPENFILES)
 			do_open = 1;
+		break;
+	default:
+		DB_ASSERT(0);
+		ret = EINVAL;
 		break;
 	}
 
@@ -138,6 +138,8 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 		ret = __dbreg_open_file(dbenv,
 		    op == DB_TXN_ABORT || op == DB_TXN_POPENFILES ?
 		    argp->txnid : NULL, argp, info);
+		if (ret == DB_PAGE_NOTFOUND && argp->meta_pgno != PGNO_BASE_MD)
+			ret = ENOENT;
 		if (ret == ENOENT || ret == EINVAL) {
 			/*
 			 * If this is an OPEN while rolling forward, it's
@@ -152,6 +154,9 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 				dblp->dbentry[argp->fileid].deleted = 0;
 				ret =
 				    __dbreg_open_file(dbenv, NULL, argp, info);
+				if (ret == DB_PAGE_NOTFOUND &&
+				     argp->meta_pgno != PGNO_BASE_MD)
+					ret = ENOENT;
 			}
 			/*
 			 * We treat ENOENT as OK since it's possible that
@@ -190,11 +195,15 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 			 * recovery, it's possible that we failed after
 			 * the log record, but before we actually entered
 			 * a handle here.
+			 * 3. If we aborted an open, then we wrote a non-txnal
+			 * RCLOSE into the log.  During the forward pass, the
+			 * file won't be open, and that's OK.
 			 */
 			dbe = &dblp->dbentry[argp->fileid];
 			if (dbe->dbp == NULL && !dbe->deleted) {
 				/* No valid entry here. */
-				if (DB_REDO(op) ||
+				if ((DB_REDO(op) &&
+				    argp->opcode != DBREG_RCLOSE) ||
 				    argp->opcode == DBREG_CHKPNT) {
 					__db_err(dbenv,
 					    "Improper file close at %lu/%lu",
@@ -208,64 +217,70 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 
 			/* We have either an open entry or a deleted entry. */
 			if ((dbp = dbe->dbp) != NULL) {
-				MUTEX_THREAD_UNLOCK(dbenv, dblp->mutexp);
-				(void)__dbreg_revoke_id(dbp, 0,
-				    DB_LOGFILEID_INVALID);
-
 				/*
 				 * If we're a replication client, it's
 				 * possible to get here with a dbp that
 				 * the user opened, but which we later
 				 * assigned a fileid to.  Be sure that
 				 * we only close dbps that we opened in
-				 * the recovery code;  they should have
-				 * DB_AM_RECOVER set.
-				 *
-				 * The only exception is if we're aborting
-				 * in a normal environment;  then we might
-				 * get here with a non-AM_RECOVER database.
+				 * the recovery code or that were opened
+				 * inside a currently aborting transaction.
 				 */
-				if (F_ISSET(dbp, DB_AM_RECOVER) ||
-				    op == DB_TXN_ABORT)
-					do_rem = 1;
+				do_rem = F_ISSET(dbp, DB_AM_RECOVER) ||
+				    op == DB_TXN_ABORT;
+				MUTEX_THREAD_UNLOCK(dbenv, dblp->mutexp);
+				if (op == DB_TXN_ABORT)
+					(void)__dbreg_close_id(dbp,
+					    NULL, DBREG_RCLOSE);
+				else
+					(void)__dbreg_revoke_id(dbp, 0,
+					    DB_LOGFILEID_INVALID);
 			} else if (dbe->deleted) {
 				MUTEX_THREAD_UNLOCK(dbenv, dblp->mutexp);
 				__dbreg_rem_dbentry(dblp, argp->fileid);
 			}
 		} else
 			MUTEX_THREAD_UNLOCK(dbenv, dblp->mutexp);
-		if (do_rem) {
-			/*
-			 * During recovery, all files are closed.  On an abort,
-			 * we only close the file if we opened it during the
-			 * abort (DB_AM_RECOVER set), otherwise we simply do
-			 * a __db_refresh.  For the close case, if remove or
-			 * rename has closed the file, don't request a sync,
-			 * because the NULL mpf would be a problem.
-			 */
-			if (dbp != NULL) {
-				/*
-				 * If we are undoing a create we'd better
-				 * discard any buffers from the memory pool. 
-				 * We identify creates because the argp->id
-				 * field contains the transaction containing
-				 * the file create; if that id is invalid, we
-				 * are not creating.
-				 */
 
-				if (argp->id != TXN_INVALID) 
+		/*
+		 * During recovery, all files are closed.  On an abort, we only
+		 * close the file if we opened it during the abort
+		 * (DB_AM_RECOVER set), otherwise we simply do a __db_refresh.
+		 * For the close case, if remove or rename has closed the file,
+		 * don't request a sync, because a NULL mpf would be a problem.
+		 *
+		 * If we are undoing a create we'd better discard any buffers
+		 * from the memory pool.  We identify creates because the
+		 * argp->id field contains the transaction containing the file
+		 * create; if that id is invalid, we are not creating.
+		 *
+		 * On the backward pass, we need to "undo" opens even if the
+		 * transaction in which they appeared committed, because we have
+		 * already undone the corresponding close.  In that case, the
+		 * id will be valid, but we do not want to discard buffers.
+		 */
+		if (do_rem && dbp != NULL) {
+			if (argp->id != TXN_INVALID) {
+				if ((ret = __db_txnlist_find(dbenv,
+				    info, argp->txnid->txnid, &status))
+				    != DB_NOTFOUND && ret != 0)
+					goto out;
+				if (ret == DB_NOTFOUND || status != TXN_COMMIT)
 					F_SET(dbp, DB_AM_DISCARD);
-				if (op == DB_TXN_ABORT &&
-				    !F_ISSET(dbp, DB_AM_RECOVER))
-					t_ret = __db_refresh(dbp,
-					    NULL, DB_NOSYNC, NULL);
-				else {
-					if (op == DB_TXN_APPLY)
-						__db_sync(dbp);
-					t_ret =
-					    __db_close(dbp, NULL, DB_NOSYNC);
-				}
-				if (t_ret != 0 && ret == 0)
+				ret = 0;
+			}
+
+			if (op == DB_TXN_ABORT &&
+			    !F_ISSET(dbp, DB_AM_RECOVER)) {
+				if ((t_ret = __db_refresh(dbp,
+				    NULL, DB_NOSYNC, NULL)) != 0 && ret == 0)
+					ret = t_ret;
+			} else {
+				if (op == DB_TXN_APPLY &&
+				    (t_ret = __db_sync(dbp)) != 0 && ret == 0)
+					ret = t_ret;
+				if ((t_ret = __db_close(
+				    dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
 					ret = t_ret;
 			}
 		}
@@ -291,49 +306,51 @@ __dbreg_open_file(dbenv, txn, argp, info)
 	void *info;
 {
 	DB_ENTRY *dbe;
-	DB_LOG *lp;
+	DB_LOG *dblp;
 	DB *dbp;
-	u_int32_t id;
+	u_int32_t id, status;
+	int ret;
 
-	lp = (DB_LOG *)dbenv->lg_handle;
-	/*
-	 * We never re-open temporary files.  Temp files are only
-	 * useful during aborts in which case the dbp was entered
-	 * when the file was registered.  During recovery, we treat
-	 * temp files as properly deleted files, allowing the open to
-	 * fail and not reporting any errors when recovery fails to
-	 * get a valid dbp from __dbreg_id_to_db.
-	 */
-	if (argp->name.size == 0) {
-		(void)__dbreg_add_dbentry(dbenv, lp, NULL, argp->fileid);
-		return (ENOENT);
-	}
+	dblp = (DB_LOG *)dbenv->lg_handle;
 
 	/*
 	 * When we're opening, we have to check that the name we are opening
 	 * is what we expect.  If it's not, then we close the old file and
 	 * open the new one.
 	 */
-	MUTEX_THREAD_LOCK(dbenv, lp->mutexp);
-	if (argp->fileid < lp->dbentry_cnt)
-		dbe = &lp->dbentry[argp->fileid];
+	MUTEX_THREAD_LOCK(dbenv, dblp->mutexp);
+	if (argp->fileid < dblp->dbentry_cnt)
+		dbe = &dblp->dbentry[argp->fileid];
 	else
 		dbe = NULL;
 
 	if (dbe != NULL) {
 		if (dbe->deleted) {
-			MUTEX_THREAD_UNLOCK(dbenv, lp->mutexp);
+			MUTEX_THREAD_UNLOCK(dbenv, dblp->mutexp);
 			return (ENOENT);
 		}
+
+		/*
+		 * At the end of OPENFILES, we may have a file open.  The
+		 * open was part of a committed transaction, so it doesn't
+		 * get undone.  However, if the fileid was previously used,
+		 * we'll see a close that may need to get undone.  There are
+		 * three ways we can detect this. 1) the meta-pgno in the
+		 * current file does not match that of the open file, 2) the
+		 * file uid of the current file does not match that of the
+		 * previously opened file, 3) the current file is unnamed, in
+		 * which case it should never be opened during recovery.
+		 */
 		if ((dbp = dbe->dbp) != NULL) {
 			if (dbp->meta_pgno != argp->meta_pgno ||
-			    memcmp(dbp->fileid,
-			    argp->uid.data, DB_FILE_ID_LEN) != 0) {
-				MUTEX_THREAD_UNLOCK(dbenv, lp->mutexp);
+			    argp->name.size == 0 ||
+			    memcmp(dbp->fileid, argp->uid.data,
+			    DB_FILE_ID_LEN) != 0) {
+				MUTEX_THREAD_UNLOCK(dbenv, dblp->mutexp);
 				(void)__dbreg_revoke_id(dbp, 0,
 				    DB_LOGFILEID_INVALID);
 				if (F_ISSET(dbp, DB_AM_RECOVER))
-					__db_close(dbp, NULL, DB_NOSYNC);
+					(void)__db_close(dbp, NULL, DB_NOSYNC);
 				goto reopen;
 			}
 
@@ -343,7 +360,7 @@ __dbreg_open_file(dbenv, txn, argp, info)
 			 * here had better be the same dbp.
 			 */
 			DB_ASSERT(dbe->dbp == dbp);
-			MUTEX_THREAD_UNLOCK(dbenv, lp->mutexp);
+			MUTEX_THREAD_UNLOCK(dbenv, dblp->mutexp);
 
 			/*
 			 * This is a successful open.  We need to record that
@@ -351,27 +368,40 @@ __dbreg_open_file(dbenv, txn, argp, info)
 			 * subtransaction that created the file system object.
 			 */
 			if (argp->id != TXN_INVALID &&
-			    __db_txnlist_update(dbenv, info,
-			    argp->id, TXN_EXPECTED, NULL) == TXN_NOTFOUND)
-				(void)__db_txnlist_add(dbenv,
-				    info, argp->id, TXN_EXPECTED, NULL);
+			    (ret = __db_txnlist_update(dbenv, info,
+			    argp->id, TXN_EXPECTED, NULL, &status, 1)) != 0)
+				return (ret);
 			return (0);
 		}
 	}
 
-	MUTEX_THREAD_UNLOCK(dbenv, lp->mutexp);
+	MUTEX_THREAD_UNLOCK(dbenv, dblp->mutexp);
+
+reopen:
+	/*
+	 * We never re-open temporary files.  Temp files are only useful during
+	 * aborts in which case the dbp was entered when the file was
+	 * registered. During recovery, we treat temp files as properly deleted
+	 * files, allowing the open to fail and not reporting any errors when
+	 * recovery fails to get a valid dbp from __dbreg_id_to_db.
+	 */
+	if (argp->name.size == 0) {
+		(void)__dbreg_add_dbentry(dbenv, dblp, NULL, argp->fileid);
+		return (ENOENT);
+	}
 
 	/*
 	 * We are about to pass a recovery txn pointer into the main library.
 	 * We need to make sure that any accessed fields are set appropriately.
 	 */
-reopen:	if (txn != NULL) {
+	if (txn != NULL) {
 		id = txn->txnid;
 		memset(txn, 0, sizeof(DB_TXN));
 		txn->txnid = id;
 		txn->mgrp = dbenv->tx_handle;
 	}
 
-	return (__dbreg_do_open(dbenv, txn, lp, argp->uid.data, argp->name.data,
+	return (__dbreg_do_open(dbenv,
+	    txn, dblp, argp->uid.data, argp->name.data,
 	    argp->ftype, argp->fileid, argp->meta_pgno, info, argp->id));
 }

@@ -1,24 +1,23 @@
 <!--$Id: env_remove.so,v 11.17 2002/08/18 21:17:29 bostic Exp $-->
-<!--$Id: m4.tcl,v 11.26 2003/09/02 14:38:50 sue Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: m4.tcl,v 11.27 2004/09/07 15:37:41 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: berkdb envremove</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3><b>berkdb envremove</b></h3>
 </td>
 <td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>berkdb envremove
@@ -33,28 +32,28 @@
 <h3>Description(berkdb envremove)</h3>
 <p>Remove a Berkeley DB environment.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt>-data_dir dirname<dd>Specify the environment's data directory, as described in
+<dl compact>
+<dt>-data_dir dirname<dd>Specify the environment's data directory, as described in
 <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.
-<p><dt>-force<dd>If there are processes that have called <b>berkdb env</b> without calling
+<dt>-force<dd>If there are processes that have called <b>berkdb env</b> without calling
 <i>env</i> <b>close</b> (that is, there are processes currently using the
 environment), <b>berkdb envremove</b> will fail without further action, unless
 the <b>-force</b> flag is set, in which case <b>berkdb envremove</b> will
 attempt to remove the environment regardless of any processes still
 using it.
-<p><dt>-home directory<dd>The <b>-home</b> argument is described in
+<dt>-home directory<dd>The <b>-home</b> argument is described in
 <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.
-<p><dt>-log_dir dirname<dd>Specify the environment's log directory, as described in
+<dt>-log_dir dirname<dd>Specify the environment's log directory, as described in
 <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.
-<p><dt>-tmp_dir dirname<dd>Specify the environment's tmp directory, as described in
+<dt>-tmp_dir dirname<dd>Specify the environment's tmp directory, as described in
 <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.
-<p><dt>-use_environ<dd>The Berkeley DB process' environment may be permitted to specify information
+<dt>-use_environ<dd>The Berkeley DB process' environment may be permitted to specify information
 to be used when naming files; see
 <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.
 Because permitting users to specify which files are used can create
 security problems, environment information will be used in file naming
 for all users only if the <b>-use_environ</b> flag is set.
-<p><dt>-use_environ_root<dd>The Berkeley DB process' environment may be permitted to specify information
+<dt>-use_environ_root<dd>The Berkeley DB process' environment may be permitted to specify information
 to be used when naming files; see
 <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.
 As permitting users to specify which files are used can create security
@@ -69,6 +68,6 @@ is thrown.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_tcl/tcl_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

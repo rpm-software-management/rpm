@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_dbclient.c,v 1.30 2003/05/16 15:06:20 sue Exp $
+ * $Id: ex_dbclient.c,v 1.32 2004/09/23 19:00:23 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -21,6 +21,7 @@
 #define	DATABASE	"access.db"
 
 int	db_clientrun __P((DB_ENV *, const char *));
+int	ex_dbclient __P((const char *));
 int	ex_dbclient_run __P((const char *, FILE *, const char *, const char *));
 int	main __P((int, char *[]));
 

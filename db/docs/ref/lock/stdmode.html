@@ -1,12 +1,12 @@
 <!--$Id: stdmode.so,v 10.26 2001/05/22 19:39:32 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Standard lock modes</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -26,8 +26,8 @@ lock mode within a conflict matrix.</p>
 matrix used by Berkeley DB to support the underlying access methods is more
 complicated, but this matrix shows the lock mode relationships available
 to applications using the Berkeley DB Locking subsystem interfaces directly.</p>
-<p><dl compact>
-<p><dt>DB_LOCK_NG<dd>not granted (always 0)
+<dl compact>
+<dt>DB_LOCK_NG<dd>not granted (always 0)
 <dt>DB_LOCK_READ<dd>read (shared)
 <dt>DB_LOCK_WRITE<dd>write (exclusive)
 <dt>DB_LOCK_IWRITE<dd>intention to write (shared)
@@ -45,15 +45,15 @@ Write**		0	1	1	1	1	1
 Intent Write	0	1	1	0	0	0
 Intent Read	0	0	1	0	0	0
 Intent RW	0	1	1	0	0	0</pre></blockquote>
-<p><dl compact>
-<p><dt>*<dd>In this case, suppose that there is a read lock held on an object.  A new
+<dl compact>
+<dt>*<dd>In this case, suppose that there is a read lock held on an object.  A new
 request for a read lock would be granted, but a request for a write lock
 would not.
-<p><dt>**<dd>In this case, suppose that there is a write lock held on an object.  A
+<dt>**<dd>In this case, suppose that there is a write lock held on an object.  A
 new request for either a read or write lock would be denied.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../lock/max.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/dead.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

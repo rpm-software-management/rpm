@@ -1,23 +1,22 @@
-<!--$Id: env_set_tx_timestamp.so,v 10.26 2003/11/08 19:17:33 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_tx_timestamp.so,v 10.29 2004/09/28 15:04:23 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_tx_timestamp</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;set_tx_timestamp</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DB_ENV-&gt;get_tx_timestamp(DB_ENV *dbenv, time_t *timestampp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;set_tx_timestamp</h3>
-<a name="3"><!--meow--></a>
 <p>Recover to the time specified by <b>timestamp</b> rather than to the
 most current possible date.</p>
 <p>Once a database environment has been upgraded to a new version of Berkeley DB
@@ -48,9 +46,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>timestamp</b><dd>
-The <b>timestamp</b> parameter references the memory location where the
+<dl compact>
+<dt><b>timestamp</b><dd>The <b>timestamp</b> parameter references the memory location where the
 recovery timestamp is located.
 <p>The <b>timestamp</b> parameter should be the number of seconds since 0
 hours, 0 minutes, 0 seconds, January 1, 1970, Coordinated Universal
@@ -59,8 +56,8 @@ Time; that is, the Epoch.</p>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;set_tx_timestamp method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If it is not possible to recover to the specified time using the log files
+<dl compact>
+<dt>EINVAL<dd>If it is not possible to recover to the specified time using the log files
 currently present in the environment; or if an
 invalid flag value or parameter was specified.
 </dl>
@@ -74,9 +71,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>timestampp</b><dd>
-The DB_ENV-&gt;get_tx_timestamp method returns  the
+<dl compact>
+<dt><b>timestampp</b><dd>The DB_ENV-&gt;get_tx_timestamp method returns  the
 recovery timestamp in <b>timestampp</b>.
 </dl>
 <hr size=1 noshade>
@@ -88,6 +84,6 @@ recovery timestamp in <b>timestampp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

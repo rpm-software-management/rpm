@@ -1,12 +1,12 @@
 <!--$Id: faq.so,v 10.30 2003/07/23 21:35:38 mjc Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Windows FAQ</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
@@ -29,14 +29,14 @@ click on db_load -&gt; Properties and change "Configuration Type" from
 fprintf (or some other standard C library function).</b>
 <p>You should be using the "Debug Multithreaded DLL" compiler option in
 your application when you link with the
-build_win32/Debug/libdb42d.lib library (this .lib file
-is actually a stub for libdb42d.DLL). To check this
+build_win32/Debug/libdb43d.lib library (this .lib file
+is actually a stub for libdb43d.DLL). To check this
 setting in Visual C++, choose the <i>Project/Settings</i> menu
 item and select <i>Code Generation</i> under the tab marked
 <i>C/C++</i>; and see the box marked <i>Use runtime
 library</i>.  This should be set to <i>Debug Multithreaded DLL</i>.
 If your application is linked against the static library,
-build_win32/Debug/libdb42sd.lib; then, you will want
+build_win32/Debug/libdb43sd.lib; then, you will want
 to set <i>Use runtime library</i> to <i>Debug Multithreaded</i>.</p>
 <p>Setting this option incorrectly can cause multiple versions of the
 standard libraries to be linked into your application (one on behalf
@@ -75,6 +75,6 @@ source.</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_win/notes.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

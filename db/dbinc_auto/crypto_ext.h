@@ -13,6 +13,7 @@ int __aes_decrypt __P((DB_ENV *, void *, void *, u_int8_t *, size_t));
 int __aes_encrypt __P((DB_ENV *, void *, void *, u_int8_t *, size_t));
 int __aes_init __P((DB_ENV *, DB_CIPHER *));
 int __crypto_dbenv_close __P((DB_ENV *));
+int __crypto_region_destroy __P((DB_ENV *));
 int __crypto_algsetup __P((DB_ENV *, DB_CIPHER *, u_int32_t, int));
 int __crypto_decrypt_meta __P((DB_ENV *, DB *, u_int8_t *, int));
 int __crypto_set_passwd __P((DB_ENV *, DB_ENV *));

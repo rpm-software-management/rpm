@@ -1,23 +1,22 @@
-<!--$Id: env_remove.so,v 10.42 2003/11/08 19:17:27 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_remove.so,v 10.44 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;remove</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;remove</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -72,25 +71,25 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>db_home</b><dd>
-The <b>db_home</b> parameter names the database environment to be removed.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<dl compact>
+<dt><b>db_home</b><dd>The <b>db_home</b> parameter names the database environment to be removed.
+<p>On Windows, the <b>db_home</b> argument will be interpreted as a UTF-8
+string, which is equivalent to ASCII for Latin characters.</p>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_FORCE">DB_FORCE</a><dd>If the <a href="../api_c/env_remove.html#DB_FORCE">DB_FORCE</a> flag is set, the environment is removed, regardless
+<dl compact>
+<dt><a name="DB_FORCE">DB_FORCE</a><dd>If the <a href="../api_c/env_remove.html#DB_FORCE">DB_FORCE</a> flag is set, the environment is removed, regardless
 of any processes that may still using it, and no locks are acquired
 during this process.  (Generally, the <a href="../api_c/env_remove.html#DB_FORCE">DB_FORCE</a> flag is
 specified only when applications were unable to shut down cleanly, and there
 is a risk that an application may have died holding a Berkeley DB lock.)
-<a name="3"><!--meow--></a>
-<p><dt><a name="DB_USE_ENVIRON">DB_USE_ENVIRON</a><dd>The Berkeley DB process' environment may be permitted to specify information
+<a name="2"><!--meow--></a>
+<dt><a name="DB_USE_ENVIRON">DB_USE_ENVIRON</a><dd>The Berkeley DB process' environment may be permitted to specify information
 to be used when naming files; see <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.  Because permitting users to specify which files
 are used can create security problems, environment information will be
 used in file naming for all users only if the DB_USE_ENVIRON
 flag is set.
-<p><dt><a name="DB_USE_ENVIRON_ROOT">DB_USE_ENVIRON_ROOT</a><dd>The Berkeley DB process' environment may be permitted to specify information
+<dt><a name="DB_USE_ENVIRON_ROOT">DB_USE_ENVIRON_ROOT</a><dd>The Berkeley DB process' environment may be permitted to specify information
 to be used when naming files; see <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.  Because permitting users to specify which files
 are used can create security problems, if the
 DB_USE_ENVIRON_ROOT flag is set, environment information will
@@ -101,11 +100,11 @@ example, users with a user-ID of 0 on UNIX systems).
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;remove method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EBUSY  <dd>The shared memory region was in use and the force flag was not set.
+<dl compact>
+<dt>EBUSY  <dd>The shared memory region was in use and the force flag was not set.
 </dl>
-<p><dl compact>
-<p><dt>ENOENT<dd>The file or directory does not exist.
+<dl compact>
+<dt>ENOENT<dd>The file or directory does not exist.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -116,6 +115,6 @@ may fail and return one of the following non-zero errors:</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

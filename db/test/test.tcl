@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test.tcl,v 11.256 2003/11/10 17:41:38 sandstro Exp $
+# $Id: test.tcl,v 11.271 2004/09/22 18:01:06 bostic Exp $
 
 source ./include.tcl
 
@@ -44,12 +44,10 @@ set datastr "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
 
 # Random number seed.
 global rand_init
-set rand_init 101301
+set rand_init 12082003
 
-# Default record length and padding character for
-# fixed record length access method(s)
+# Default record length for fixed record length access method(s)
 set fixed_len 20
-set fixed_pad 0
 
 set recd_debug	0
 set log_log_record_types 0
@@ -70,6 +68,13 @@ global txn_maxid
 set txn_curid 2147483648
 set txn_maxid 4294967295
 
+# The variable one_test allows us to run all the permutations
+# of a test with run_all or run_std.
+global one_test
+if { [info exists one_test] != 1 } {
+	set one_test "ALL"
+}
+
 # This is where the test numbering and parameters now live.
 source $test_path/testparams.tcl
 
@@ -77,8 +82,18 @@ source $test_path/testparams.tcl
 global tcl_platform
 set is_windows_test [is_substr $tcl_platform(os) "Win"]
 set is_hp_test [is_substr $tcl_platform(os) "HP-UX"]
+set is_je_test 0
 set is_qnx_test [is_substr $tcl_platform(os) "QNX"]
 set upgrade_be [big_endian]
+
+global EXE BAT
+if { $is_windows_test == 1 } {
+	set EXE ".exe"
+	set BAT ".bat"
+} else {
+	set EXE ""
+	set BAT ""
+}
 
 # Try to open an encrypted database.  If it fails, this release
 # doesn't support encryption, and encryption tests should be skipped.
@@ -99,9 +114,16 @@ if { $stat != 0 } {
 # From here on out, test.tcl contains the procs that are used to
 # run all or part of the test suite.
 
-proc run_std { args } {
+proc run_std { { testname ALL } args } {
 	global test_names
+	global one_test
 	source ./include.tcl
+
+	set one_test $testname
+	if { $one_test != "ALL" } {
+		# Source testparams again to adjust test_names.
+		source $test_path/testparams.tcl
+	}
 
 	set exflgs [eval extractflags $args]
 	set args [lindex $exflgs 0]
@@ -175,11 +197,12 @@ proc run_std { args } {
 			set msg [lindex $pair 0]
 			set cmd [lindex $pair 1]
 			puts "Running $msg tests"
-			if [catch {exec $tclsh_path \
-			    << "source $test_path/test.tcl; r $rflags $cmd" \
+			if [catch {exec $tclsh_path << \
+			    "global one_test; set one_test $one_test; \
+			    source $test_path/test.tcl; r $rflags $cmd" \
 			    >>& ALL.OUT } res] {
 				set o [open ALL.OUT a]
-				puts $o "FAIL: $cmd test"
+				puts $o "FAIL: $cmd test: $res"
 				close $o
 			}
 		}
@@ -200,12 +223,13 @@ proc run_std { args } {
 		# stderr.
 		puts "Running recovery tests"
 		if [catch {
-		    exec $tclsh_path \
-			<< "source $test_path/test.tcl; r $rflags recd" \
+		    exec $tclsh_path << \
+		    "global one_test; set one_test $one_test; \
+		    source $test_path/test.tcl; r $rflags recd" \
 			2>@ stderr >> ALL.OUT
 		    } res] {
 			set o [open ALL.OUT a]
-			puts $o "FAIL: recd tests"
+			puts $o "FAIL: recd tests: $res"
 			close $o
 		}
 
@@ -214,14 +238,16 @@ proc run_std { args } {
 		# XXX
 		# Broken up into separate tclsh instantiations so we don't
 		# require so much memory.
-		puts "Running join test"
-		foreach test "join1 join2 join3 join4 join5 join6" {
-			if [catch {exec $tclsh_path \
-			    << "source $test_path/test.tcl; r $rflags $test" \
-			    >>& ALL.OUT } res] {
-				set o [open ALL.OUT a]
-				puts $o "FAIL: $test test"
-				close $o
+		if { $one_test == "ALL" } {
+			puts "Running join test"
+			foreach test "join1 join2 join3 join4 join5 join6" {
+				if [catch {exec $tclsh_path << \
+				    "source $test_path/test.tcl; r $rflags $test" \
+				    >>& ALL.OUT } res] {
+					set o [open ALL.OUT a]
+					puts $o "FAIL: $test test: $res"
+					close $o
+				}
 			}
 		}
 	}
@@ -238,16 +264,20 @@ proc run_std { args } {
 			foreach test $test_names(test) {
 				if { $run == 0 } {
 					set o [open ALL.OUT a]
-					run_method -$method $test $display $run $o
+					run_method \
+					    -$method $test $display $run $o
 					close $o
 				}
 				if { $run } {
-					if [catch {exec $tclsh_path \
-					    << "source $test_path/test.tcl; \
-					    run_method -$method $test $display $run"\
+					if [catch {exec $tclsh_path << \
+					    "global one_test; \
+					    set one_test $one_test; \
+					    source $test_path/test.tcl; \
+					    run_method \
+					    -$method $test $display $run"\
 					    >>& ALL.OUT } res] {
 						set o [open ALL.OUT a]
-						puts $o "FAIL:$test $method"
+						puts $o "FAIL:$test $method: $res"
 						close $o
 					}
 				}
@@ -262,14 +292,16 @@ proc run_std { args } {
 		return
 	}
 
-	set failed [check_failed_run ALL.OUT]
+	set failed [check_output ALL.OUT]
 
 	set o [open ALL.OUT a]
 	if { $failed == 0 } {
 		puts "Regression Tests Succeeded"
 		puts $o "Regression Tests Succeeded"
 	} else {
-		puts "Regression Tests Failed; see ALL.OUT for log"
+		puts "Regression Tests Failed"
+		puts "Check UNEXPECTED OUTPUT lines."
+		puts "Review ALL.OUT.x for details."
 		puts $o "Regression Tests Failed"
 	}
 
@@ -280,17 +312,113 @@ proc run_std { args } {
 	close $o
 }
 
-proc check_failed_run { file {text "^FAIL"}} {
+proc check_output { file } {
+	# These are all the acceptable patterns.
+	set pattern {(?x)
+		^[:space:]*$|
+		.*?wrap\.tcl.*|
+		.*?dbscript\.tcl.*|
+		.*?ddscript\.tcl.*|
+		.*?mpoolscript\.tcl.*|
+		.*?mutexscript\.tcl.*|
+		^\d\d:\d\d:\d\d\s\(\d\d:\d\d:\d\d\)$|
+		^\d\d:\d\d:\d\d\s\(\d\d:\d\d:\d\d\)\sCrashing$|
+		^\d\d:\d\d:\d\d\s\(\d\d:\d\d:\d\d\)\s[p|P]rocesses\srunning:.*|
+		^\d\d:\d\d:\d\d\s\(\d\d:\d\d:\d\d\)\s5\sprocesses\srunning.*|
+		^\d:\sPut\s\d*\sstrings\srandom\soffsets.*|
+		^100.*|
+		^eval\s.*|
+		^exec\s.*|
+		^jointest.*$|
+		^r\sarchive\s*|
+		^r\sdbm\s*|
+		^r\shsearch\s*|
+		^r\sndbm\s*|
+		^r\srpc\s*|
+		^run_recd:\s.*|
+		^run_reptest:\s.*|
+		^run_rpcmethod:\s.*|
+		^run_secenv:\s.*|
+		^All\sprocesses\shave\sexited.$|
+		^Beginning\scycle\s\d$|
+		^Byteorder:.*|
+		^Child\sruns\scomplete\.\s\sParent\smodifies\sdata\.$|
+		^Deadlock\sdetector:\s\d*\sCheckpoint\sdaemon\s\d*$|
+		^Ending\srecord.*|
+		^Environment\s.*?specified;\s\sskipping\.$|
+		^Executing\srecord\s.*|
+		^Join\stest:\.*|
+		^Method:\s.*|
+		^Repl:\stest\d\d\d:.*|
+		^Repl:\ssdb\d\d\d:.*|
+		^Script\swatcher\sprocess\s.*|
+		^Sleepycat\sSoftware:\sBerkeley\sDB\s.*|
+		^Test\ssuite\srun\s.*|
+		^Unlinking\slog:\serror\smessage\sOK$|
+		^Verifying\s.*|
+		^\t*\.\.\.dbc->get.*$|
+		^\t*\.\.\.dbc->put.*$|
+		^\t*\.\.\.key\s\d*$|
+		^\t*\.\.\.Skipping\sdbc.*|
+		^\t*and\s\d*\sduplicate\sduplicates\.$|
+		^\t*About\sto\srun\srecovery\s.*complete$|
+		^\t*Archive[:\.].*|
+		^\t*Building\s.*|
+		^\t*closing\ssecondaries\.$|
+		^\t*Command\sexecuted\sand\s.*$|
+		^\t*DBM.*|
+		^\t*[d|D]ead[0-9][0-9][0-9].*|
+		^\t*Dump\/load\sof.*|
+		^\t*[e|E]nv[0-9][0-9][0-9].*|
+		^\t*Executing\scommand$|
+		^\t*Executing\stxn_.*|
+		^\t*File\srecd005\.\d\.db\sexecuted\sand\saborted\.$|
+		^\t*File\srecd005\.\d\.db\sexecuted\sand\scommitted\.$|
+		^\t*[f|F]op[0-9][0-9][0-9].*|
+		^\t*HSEARCH.*|
+		^\t*Initial\sCheckpoint$|
+		^\t*Iteration\s\d*:\sCheckpointing\.$|
+		^\t*Joining:\s.*|
+		^\t*Kid[1|2]\sabort\.\.\.complete$|
+		^\t*Kid[1|2]\scommit\.\.\.complete$|
+		^\t*[l|L]ock[0-9][0-9][0-9].*|
+		^\t*[l|L]og[0-9][0-9][0-9].*|
+		^\t*[m|M]emp[0-9][0-9][0-9].*|
+		^\t*[m|M]utex[0-9][0-9][0-9].*|
+		^\t*NDBM.*|
+		^\t*opening\ssecondaries\.$|
+		^\t*op_recover_rec:\sRunning\srecovery.*|
+		^\t*[r|R]ecd[0-9][0-9][0-9].*|
+		^\t*[r|R]ep[0-9][0-9][0-9].*|
+		^\t*[r|R]ep_test.*|
+		^\t*[r|R]pc[0-9][0-9][0-9].*|
+		^\t*[r|R]src[0-9][0-9][0-9].*|
+		^\t*Run_rpcmethod.*|
+		^\t*Running\srecovery\son\s.*|
+		^\t*[s|S]ec[0-9][0-9][0-9].*|
+		^\t*Si[0-9][0-9][0-9].*|
+		^\t*Sijoin.*|
+		^\t*sdb[0-9][0-9][0-9].*|
+		^\t*Skipping\s.*|
+		^\t*Subdb[0-9][0-9][0-9].*|
+		^\t*Syncing$|
+		^\t*[t|T]est[0-9][0-9][0-9].*|
+		^\t*[t|T]xn[0-9][0-9][0-9].*|
+		^\t*Txnscript.*|
+		^\t*Using\s.*?\senvironment\.$|
+		^\t*Verification\sof.*|
+		^\t*with\stransactions$}
+
 	set failed 0
-	set o [open $file r]
-	while { [gets $o line] >= 0 } {
-		set ret [regexp $text $line]
-		if { $ret != 0 } {
+	set f [open $file r]
+	while { [gets $f line] >= 0 } {
+		if { [regexp $pattern $line] == 0 } {
+			puts -nonewline "UNEXPECTED OUTPUT: "
+			puts $line
 			set failed 1
 		}
 	}
-	close $o
-
+	close $f
 	return $failed
 }
 
@@ -298,6 +426,7 @@ proc r { args } {
 	global test_names
 	global has_crypto
 	global rand_init
+	global one_test
 
 	source ./include.tcl
 
@@ -323,7 +452,6 @@ proc r { args } {
 		switch $sub {
 			dead -
 			env -
-			fop -
 			lock -
 			log -
 			memp -
@@ -338,23 +466,29 @@ proc r { args } {
 					run_subsystem $sub
 				}
 			}
-			bigfile {
-				foreach test $test_names($sub) {
-					eval run_test $test $display $run
-				}
-			}
 			byte {
-				run_test byteorder $display $run
+				if { $one_test == "ALL" } {
+					run_test byteorder $display $run
+				}
 			}
 			archive -
 			dbm -
 			hsearch -
 			ndbm -
 			shelltest {
-				if { $display } { puts "r $sub" }
-				if { $run } {
-					check_handles
-					$sub
+				if { $one_test == "ALL" } {
+					if { $display } { puts "r $sub" }
+					if { $run } {
+						check_handles
+						$sub
+					}
+				}
+			}
+			bigfile -
+			elect -
+			fop {
+				foreach test $test_names($sub) {
+					eval run_test $test $display $run
 				}
 			}
 			join {
@@ -437,22 +571,46 @@ proc r { args } {
 				}
 			}
 			rpc {
-				if { $display } { puts "r $sub" }
-				global rpc_svc svc_list
-				set old_rpc_src $rpc_svc
-				foreach rpc_svc $svc_list {
-					if { !$run || \
-					  ![file exist $util_path/$rpc_svc] } {
-						continue
+				if { $one_test == "ALL" } {
+					if { $display } { puts "r $sub" }
+					global BAT EXE rpc_svc svc_list
+					global rpc_svc svc_list is_je_test
+					set old_rpc_src $rpc_svc
+					foreach rpc_svc $svc_list {
+						if { $rpc_svc == "berkeley_dbje_svc" } {
+							set old_util_path $util_path
+							set util_path $je_root/dist
+							set is_je_test 1
+						}
+
+						if { !$run || \
+				      ![file exist $util_path/$rpc_svc$BAT] || \
+				      ![file exist $util_path/$rpc_svc$EXE] } {
+							continue
+						}
+
+						run_subsystem rpc
+						if { [catch {run_rpcmethod -txn} ret] != 0 } {
+							puts $ret
+						}
+
+						if { $is_je_test } {
+							check_handles
+							eval run_rpcmethod -btree
+							verify_dir $testdir "" 1
+						} else {
+							run_test run_rpcmethod $display $run
+						}
+
+						if { $is_je_test } {
+							set util_path $old_util_path
+							set is_je_test 0
+						}
+
 					}
-					run_subsystem rpc
-					if { [catch {run_rpcmethod -txn} ret] != 0 } {
-						puts $ret
+					set rpc_svc $old_rpc_src
 					}
-					run_test run_rpcmethod $display $run
 				}
-				set rpc_svc $old_rpc_src
-			}
 			sec {
 				# Skip secure mode tests if release
 				# does not support encryption.
@@ -473,29 +631,35 @@ proc r { args } {
 				}
 			}
 			sdb {
-				if { $display } {
-					puts "eval r $saveflags sdbtest"
-				}
-				if { $run } {
-					eval r $saveflags sdbtest
+				if { $one_test == "ALL" } {
+					if { $display } {
+						puts "eval r $saveflags sdbtest"
+					}
+					if { $run } {
+						eval r $saveflags sdbtest
+					}
 				}
 				foreach test $test_names(sdb) {
 					eval run_test $test $display $run
 				}
 			}
 			sindex {
-				if { $display } {
-					sindex 1 0
-					sijoin 1 0
-				}
-				if { $run } {
-					sindex 0 1
-					sijoin 0 1
+				if { $one_test == "ALL" } {
+					if { $display } {
+						sindex 1 0
+						sijoin 1 0
+					}
+					if { $run } {
+						sindex 0 1
+						sijoin 0 1
+					}
 				}
 			}
 			btree -
 			rbtree -
 			hash -
+			iqueue -
+			iqueueext -
 			queue -
 			queueext -
 			recno -
@@ -611,7 +775,7 @@ proc run_rpcmethod { method {largs ""} } {
 	global __debug_on
 	global __debug_print
 	global __debug_test
-	global test_names
+	global rpc_tests
 	global parms
 	global is_envmethod
 	global rpc_svc
@@ -644,56 +808,59 @@ proc run_rpcmethod { method {largs ""} } {
 		if { $stat == 0 } {
 			set stat [catch {eval txn001_subb $ntxns $env} res]
 		}
-		error_check_good envclose [$env close] 0
 		set stat [catch {eval txn003} res]
+		error_check_good envclose [$env close] 0
 	} else {
-		set stat [catch {
-			foreach sub { test sdb } {
-				foreach test $test_names($sub) {
-					check_handles
-					remote_cleanup $rpc_server \
-					    $rpc_testdir $testdir
-					#
-					# Set server cachesize to 1Mb.  
-					# Otherwise some tests won't fit.
-					# (like test084 -btree).
-					#
-					set env [eval {berkdb_env -create \
-					    -mode 0644 \
-					    -home $home -server $rpc_server \
-					    -client_timeout 10000 \
-					    -cachesize {0 1048576 1}}]
-					error_check_good env_open \
-					    [is_valid_env $env] TRUE
-					append largs " -env $env "
-	
-					puts "[timestamp]"
-					eval $test $method $parms($test) $largs
-					if { $__debug_print != 0 } {
-						puts ""
-					}
-					if { $__debug_on != 0 } {
-						debug $__debug_test
-					}
-					flush stdout
-					flush stderr
-					set largs $save_largs
-					error_check_good envclose [$env close] 0
-				}
-			}
-		} res]
-	}
-	if { $stat != 0} {
-		global errorInfo;
+		foreach test $rpc_tests($rpc_svc) {
+			set stat [catch {
+				check_handles
+				remote_cleanup $rpc_server $rpc_testdir $testdir
+				#
+				# Set server cachesize to 128Mb.  Otherwise
+				# some tests won't fit (like test084 -btree).
+				#
+				set env [eval {berkdb_env -create -mode 0644 \
+				    -home $home -server $rpc_server \
+				    -client_timeout 10000 \
+				    -cachesize {0 134217728 1}}]
+				error_check_good env_open \
+				    [is_valid_env $env] TRUE
+				set largs $save_largs
+				append largs " -env $env "
 
-		set fnl [string first "\n" $errorInfo]
-		set theError [string range $errorInfo 0 [expr $fnl - 1]]
-		tclkill $dpid
-		if {[string first FAIL $errorInfo] == -1} {
-			error "FAIL:[timestamp]\
-			    run_rpcmethod: $method: $theError"
-		} else {
-			error $theError;
+				puts "[timestamp]"
+				eval $test $method $parms($test) $largs
+				if { $__debug_print != 0 } {
+					puts ""
+				}
+				if { $__debug_on != 0 } {
+					debug $__debug_test
+				}
+				flush stdout
+				flush stderr
+				error_check_good envclose [$env close] 0
+				set env ""
+			} res]
+
+			if { $stat != 0} {
+				global errorInfo;
+
+				puts "$res"
+
+				set fnl [string first "\n" $errorInfo]
+				set theError [string range $errorInfo 0 [expr $fnl - 1]]
+				if {[string first FAIL $errorInfo] == -1} {
+					puts "FAIL:[timestamp]\
+					    run_rpcmethod: $method $test: $errorInfo"
+				} else {
+					puts $theError;
+				}
+
+				catch { $env close } ignore
+				set env ""
+				tclkill $dpid
+				set dpid [rpc_server_start]
+			}
 		}
 	}
 	set is_envmethod 0
@@ -800,6 +967,7 @@ proc run_secmethod { method test {display 0} {run 1} \
 		return
 	}
 
+	set largs $args
 	append largs " -encryptaes $passwd "
 	eval run_method $method $test $display $run $outfile $largs
 }
@@ -894,7 +1062,7 @@ proc run_reptest { method test {droppct 0} {nclients 1} {do_del 0} \
 	global passwd
 	global has_crypto
 
-	puts "run_reptest: $method $test"
+	puts "run_reptest: $method $test $droppct $nclients $do_del $do_sec $do_oob $largs"
 
 	env_cleanup $testdir
 	set is_envmethod 1
@@ -1234,12 +1402,19 @@ proc run_recds { {run 1} {display 0} args } {
 	set log_log_record_types 0
 }
 
-proc run_all { args } {
+proc run_all { { testname ALL } args } {
 	global test_names
+	global one_test
 	global has_crypto
 	source ./include.tcl
 
 	fileremove -f ALL.OUT
+
+	set one_test $testname
+	if { $one_test != "ALL" } {
+		# Source testparams again to adjust test_names.
+		source $test_path/testparams.tcl
+	}
 
 	set exflgs [eval extractflags $args]
 	set flags [lindex $exflgs 1]
@@ -1279,7 +1454,7 @@ proc run_all { args } {
 	# print out start/end times.
 	#
 	lappend args -A
-	eval {run_std} $args
+	eval {run_std} $one_test $args
 
 	set test_pagesizes [get_test_pagesizes]
 	set args [lindex $exflgs 0]
@@ -1334,14 +1509,16 @@ proc run_all { args } {
 					}
 					if { $run } {
 						if [catch {exec $tclsh_path << \
-						    "source $test_path/test.tcl; \
+						    "global one_test; \
+						    set one_test $one_test; \
+						    source $test_path/test.tcl; \
 						    eval {run_method -$method \
 						    $test $display $run \
 						    stdout} $args" \
 						    >>& ALL.OUT } res] {
 							set o [open ALL.OUT a]
 							puts $o "FAIL: \
-							    -$method $test"
+							    -$method $test: $res"
 							close $o
 						}
 					}
@@ -1364,14 +1541,16 @@ proc run_all { args } {
 					close $o
 				}
 				if { $run } {
-					if [catch {exec $tclsh_path \
-					    << "source $test_path/test.tcl; \
+					if [catch {exec $tclsh_path << \
+					    "global one_test; \
+					    set one_test $one_test; \
+					    source $test_path/test.tcl; \
 					    run_envmethod -$method $test \
 				  	    $display $run stdout $args" \
 					    >>& ALL.OUT } res] {
 						set o [open ALL.OUT a]
 						puts $o "FAIL: run_envmethod \
-						    $method $test"
+						    $method $test: $res"
 						close $o
 					}
 				}
@@ -1393,14 +1572,16 @@ proc run_all { args } {
 					close $o
 				}
 				if { $run } {
-					if [catch {exec $tclsh_path \
-					    << "source $test_path/test.tcl; \
+					if [catch {exec $tclsh_path << \
+					    "global one_test; \
+					    set one_test $one_test; \
+					    source $test_path/test.tcl; \
 					    eval {run_envmethod -$method $test \
 				  	    $display $run stdout -thread}" \
 					    >>& ALL.OUT } res] {
 						set o [open ALL.OUT a]
 						puts $o "FAIL: run_envmethod \
-						    $method $test -thread"
+						    $method $test -thread: $res"
 						close $o
 					}
 				}
@@ -1421,14 +1602,16 @@ proc run_all { args } {
 					close $o
 				}
 				if { $run } {
-					if [catch {exec $tclsh_path \
-					    << "source $test_path/test.tcl; \
+					if [catch {exec $tclsh_path << \
+					    "global one_test; \
+					    set one_test $one_test; \
+					    source $test_path/test.tcl; \
 					    eval {run_envmethod -$method $test \
 				  	    $display $run stdout -alloc}" \
 					    >>& ALL.OUT } res] {
 						set o [open ALL.OUT a]
 						puts $o "FAIL: run_envmethod \
-						    $method $test -alloc"
+						    $method $test -alloc: $res"
 						close $o
 					}
 				}
@@ -1459,11 +1642,12 @@ proc run_all { args } {
 		set msg [lindex $pair 0]
 		set cmd [lindex $pair 1]
 		puts "Running $msg tests"
-		if [catch {exec $tclsh_path \
-		    << "source $test_path/test.tcl; \
+		if [catch {exec $tclsh_path << \
+		    "global one_test; set one_test $one_test; \
+		    source $test_path/test.tcl; \
 		    r $rflags $cmd $args" >>& ALL.OUT } res] {
 			set o [open ALL.OUT a]
-			puts $o "FAIL: $cmd test"
+			puts $o "FAIL: $cmd test: $res"
 			close $o
 		}
 	}

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003
+# Copyright (c) 2003-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: fop006.tcl,v 1.7 2003/09/11 13:11:45 sandstro Exp $
+# $Id: fop006.tcl,v 1.11 2004/07/09 14:33:21 carol Exp $
 #
 # TEST	fop006.tcl
 # TEST	Test file system operations in multiple simultaneous
@@ -11,11 +11,19 @@
 # TEST	Start a second transaction, do a file operation.  Abort
 # TEST	or commit txn1, then abort or commit txn2, and check for
 # TEST	appropriate outcome.
-proc fop006 { } {
+proc fop006 { method args } {
 	source ./include.tcl
 
+	if { [is_btree $method] != 1 } {
+		puts "Skipping fop006 for method $method"
+		return
+	}
+
+	set args [convert_args $method $args]
+	set omethod [convert_method $method]
+
 	env_cleanup $testdir
-	puts "\nFop006: File system ops in multiple transactions"
+	puts "\nFop006 ($method): File system ops in multiple transactions"
 
 	set exists {a b}
 	set noexist {foo bar}
@@ -69,16 +77,16 @@ proc fop006 { } {
 
 		# Extract elements of the case
 		set op1 [lindex [lindex $case 0] 0]
-		set args1 [lindex [lindex $case 0] 1]
+		set names1 [lindex [lindex $case 0] 1]
 		set res1 [lindex [lindex $case 0] 2]
 		set end1 [lindex [lindex $case 0] 3]
 
 		set op2 [lindex [lindex $case 1] 0]
-		set args2 [lindex [lindex $case 1] 1]
+		set names2 [lindex [lindex $case 1] 1]
 		set res2 [lindex [lindex $case 1] 2]
 
-		puts "\tFop006.$testid: $op1 ($args1) $res1 $end1;\
-		    $op2 ($args2) $res2."
+		puts "\tFop006.$testid: $op1 ($names1) $res1 $end1;\
+		    $op2 ($names2) $res2."
 
 		foreach end2 { abort commit } {
 			# Create transactional environment.
@@ -86,23 +94,25 @@ proc fop006 { } {
 			error_check_good is_valid_env [is_valid_env $env] TRUE
 
 			# Create databases
-			set db [berkdb_open\
-			    -create -btree -env $env -auto_commit a.db]
+			set db [eval {berkdb_open \
+			    -create} $omethod $args -env $env -auto_commit a]
 			error_check_good db_open [is_valid_db $db] TRUE
-			error_check_good db_put [$db put -auto_commit 1 a] 0
+			error_check_good db_put \
+			    [$db put -auto_commit 1 [chop_data $method a]] 0
 			error_check_good db_close [$db close] 0
 
-			set db [berkdb_open\
-			    -create -btree -env $env -auto_commit b.db]
+			set db [eval {berkdb_open \
+			    -create} $omethod $args -env $env -auto_commit b]
 			error_check_good db_open [is_valid_db $db] TRUE
-			error_check_good db_put [$db put -auto_commit 1 a] 0
+			error_check_good db_put \
+			    [$db put -auto_commit 1 [chop_data $method a]] 0
 			error_check_good db_close [$db close] 0
 
 			# Start transaction 1 and perform a file op.
 			set txn1 [$env txn]
 			error_check_good \
 			    txn_begin [is_valid_txn $txn1 $env] TRUE
-			set result1 [do_op $op1 $args1 $txn1 $env]
+			set result1 [do_op $omethod $op1 $names1 $txn1 $env $args]
 			if {$res1 == 0} {
 				error_check_good \
 				    op1_should_succeed $result1 $res1
@@ -114,7 +124,7 @@ proc fop006 { } {
 			# Start transaction 2 before ending transaction 1.
 			set pid [exec $tclsh_path $test_path/wrap.tcl \
 			    fopscript.tcl $testdir/fop006.log \
-			    $op2 $end2 $res2 $args2 &]
+			    $omethod $op2 $end2 $res2 $names2 &]
 
 			# End transaction 1 and close any open db handles.
 			# Txn2 will now unblock and finish.
@@ -132,7 +142,14 @@ proc fop006 { } {
 			error_check_good env_close [$env close] 0
 			error_check_good \
 			    envremove [berkdb envremove -home $testdir] 0
+
+			# Check for errors in log file.
+			set errstrings [eval findfail $testdir/fop006.log]
+			foreach str $errstrings {
+				puts "FAIL: error message in log file: $str"
+			}
 			env_cleanup $testdir
 		}
 	}
 }
+

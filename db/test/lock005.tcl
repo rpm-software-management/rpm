@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 # Sleepycat Software. All rights reserved.
 #
-# $Id: lock005.tcl,v 1.9 2003/04/16 17:50:48 ubell Exp $
+# $Id: lock005.tcl,v 1.10 2004/01/28 03:36:28 bostic Exp $
 #
 # TEST lock005
 # TEST Check that page locks are being released properly.

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_rq_util.c,v 1.34 2003/07/14 21:30:24 mjc Exp $
+ * $Id: ex_rq_util.c,v 1.38 2004/07/16 14:57:38 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -17,11 +17,10 @@
 
 #include "ex_repquote.h"
 
-static int	 connect_site __P((DB_ENV *,
-		    machtab_t *, const char *, repsite_t *, int *, int *,
-		    thread *));
-static void	*elect_thread __P((void *));
-static void	*hm_loop __P((void *));
+static int   connect_site __P((DB_ENV *, machtab_t *,
+		 const char *, repsite_t *, int *, int *, thread *));
+static void *elect_thread __P((void *));
+static void *hm_loop __P((void *));
 
 typedef struct {
 	DB_ENV *dbenv;
@@ -105,7 +104,7 @@ hm_loop(args)
 			master_eid = DB_EID_INVALID;
 			machtab_parm(tab, &n, &pri, &timeout);
 			if ((ret = dbenv->rep_elect(dbenv,
-			    n, pri, timeout, &newm)) != 0)
+			    n, (n/2+1), pri, timeout, &newm, 0)) != 0)
 				continue;
 
 			/*
@@ -314,7 +313,7 @@ connect_all(args)
 	hm_thr = NULL;
 	success = NULL;
 
-	/* Some implementations of calloc are sad about alloc'ing 0 things. */
+	/* Some implementations of calloc are sad about allocating 0 things. */
 	if ((success = calloc(nsites > 0 ? nsites : 1, sizeof(int))) == NULL) {
 		dbenv->err(dbenv, errno, "connect_all");
 		ret = 1;
@@ -364,7 +363,7 @@ err:	if (success != NULL)
 	return (ret ? (void *)EXIT_FAILURE : (void *)EXIT_SUCCESS);
 }
 
-int
+static int
 connect_site(dbenv, machtab, progname, site, is_open, eidp, hm_thrp)
 	DB_ENV *dbenv;
 	machtab_t *machtab;
@@ -411,7 +410,7 @@ err:
  * We need to spawn off a new thread in which to hold an election in
  * case we are the only thread listening on for messages.
  */
-void *
+static void *
 elect_thread(args)
 	void *args;
 {
@@ -427,8 +426,8 @@ elect_thread(args)
 	free(eargs);
 
 	machtab_parm(machtab, &n, &pri, &timeout);
-	while ((ret =
-	    dbenv->rep_elect(dbenv, n, pri, timeout, &master_eid)) != 0)
+	while ((ret = dbenv->rep_elect(dbenv, n, (n/2+1), pri, timeout,
+	    &master_eid, 0)) != 0)
 		sleep(2);
 
 	/* Check if it's us. */

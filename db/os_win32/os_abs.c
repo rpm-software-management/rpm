@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_abs.c,v 11.7 2004/01/28 03:36:19 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_abs.c,v 11.6 2003/01/08 05:33:51 bostic Exp $";
-#endif /* not lint */
 
 #include "db_int.h"
 

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2003
+ * Copyright (c) 2000-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: TestGetSetMethods.cpp,v 1.5 2003/01/08 05:54:20 bostic Exp $
+ * $Id: TestGetSetMethods.cpp,v 1.6 2004/01/28 03:36:33 bostic Exp $
  */
 
 /*

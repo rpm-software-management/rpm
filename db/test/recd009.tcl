@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: recd009.tcl,v 1.19 2003/01/08 05:51:44 bostic Exp $
+# $Id: recd009.tcl,v 1.20 2004/01/28 03:36:28 bostic Exp $
 #
 # TEST	recd009
 # TEST	Verify record numbering across split/reverse splits and recovery.

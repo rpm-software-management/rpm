@@ -1,16 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *      Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_server_cxxproc.cpp,v 1.23 2004/09/22 17:30:12 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifdef HAVE_RPC
-#ifndef lint
-static const char revid[] = "$Id: db_server_cxxproc.cpp,v 1.15 2003/04/23 20:43:09 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -19,7 +16,8 @@ static const char revid[] = "$Id: db_server_cxxproc.cpp,v 1.15 2003/04/23 20:43:
 
 #include <string.h>
 #endif
-#include "dbinc_auto/db_server.h"
+
+#include "db_server.h"
 
 #include "db_int.h"
 #include "db_cxx.h"
@@ -395,7 +393,7 @@ __txn_begin_proc(
 	} else
 		parent = NULL;
 
-	ret = dbenv->txn_begin(parent, &txnp, flags);
+	ret = dbenv->txn_begin(parent, &txnp, flags | DB_TXN_NOWAIT);
 	if (ret == 0) {
 		ctp->ct_txnp = txnp;
 		ctp->ct_type = CT_TXN;
@@ -489,11 +487,10 @@ __txn_recover_proc(
 	dbenv = (DbEnv *)dbenv_ctp->ct_anyp;
 	*freep = 0;
 
-	if ((ret =
-	    __os_malloc(dbenv->get_DB_ENV(), count * sizeof(DbPreplist), &dbprep)) != 0)
+	if ((ret = __os_malloc(
+	    dbenv->get_DB_ENV(), count * sizeof(DbPreplist), &dbprep)) != 0)
 		goto out;
-	if ((ret =
-	    dbenv->txn_recover(dbprep, count, &retcount, flags)) != 0)
+	if ((ret = dbenv->txn_recover(dbprep, count, &retcount, flags)) != 0)
 		goto out;
 	/*
 	 * If there is nothing, success, but it's easy.
@@ -620,11 +617,12 @@ __db_associate_proc(
 		txnp = NULL;
 
 	/*
-	 * We do not support DB_CREATE for associate.   Users
-	 * can only access secondary indices on a read-only basis,
-	 * so whatever they are looking for needs to be there already.
+	 * We do not support DB_CREATE for associate or the callbacks
+	 * implemented in the Java and JE RPC servers.   Users can only
+	 * access secondary indices on a read-only basis, so whatever they
+	 * are looking for needs to be there already.
 	 */
-	if (flags != 0)
+	if (LF_ISSET(DB_RPC2ND_MASK | DB_CREATE))
 		ret = EINVAL;
 	else
 		ret = dbp->associate(txnp, sdbp, NULL, flags);
@@ -941,12 +939,15 @@ __db_get_proc(
 			ret = __os_umalloc(dbp->get_DB()->dbenv,
 			    key.get_size(), &replyp->keydata.keydata_val);
 			if (ret != 0) {
-				__os_ufree(dbp->get_DB()->dbenv, key.get_data());
-				__os_ufree(dbp->get_DB()->dbenv, data.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, key.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, data.get_data());
 				goto err;
 			}
 			key_alloc = 1;
-			memcpy(replyp->keydata.keydata_val, key.get_data(), key.get_size());
+			memcpy(replyp->keydata.keydata_val,
+			    key.get_data(), key.get_size());
 		} else
 			replyp->keydata.keydata_val = (char *)key.get_data();
 
@@ -959,8 +960,10 @@ __db_get_proc(
 			ret = __os_umalloc(dbp->get_DB()->dbenv,
 			     data.get_size(), &replyp->datadata.datadata_val);
 			if (ret != 0) {
-				__os_ufree(dbp->get_DB()->dbenv, key.get_data());
-				__os_ufree(dbp->get_DB()->dbenv, data.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, key.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, data.get_data());
 				if (key_alloc)
 					__os_ufree(dbp->get_DB()->dbenv,
 					    replyp->keydata.keydata_val);
@@ -1181,8 +1184,8 @@ __db_open_proc(
 		txnp = NULL;
 
 	replyp->dbcl_id = dbpcl_id;
-	if ((new_ctp = __dbsrv_sharedb(dbp_ctp, name, subdb, (DBTYPE)type, flags))
-	    != NULL) {
+	if ((new_ctp = __dbsrv_sharedb(
+	    dbp_ctp, name, subdb, (DBTYPE)type, flags)) != NULL) {
 		/*
 		 * We can share, clean up old ID, set new one.
 		 */
@@ -1196,11 +1199,6 @@ __db_open_proc(
 	if (ret == 0) {
 		(void)dbp->get_type(&dbtype);
 		replyp->type = dbtype;
-		/* XXX
-		 * Tcl needs to peek at dbp->flags for DB_AM_DUP.  Send
-		 * this dbp's flags back.
-		 */
-		replyp->dbflags = (int) dbp->get_DB()->flags;
 		/*
 		 * We need to determine the byte order of the database
 		 * and send it back to the client.  Determine it by
@@ -1356,9 +1354,12 @@ __db_pget_proc(
 			ret = __os_umalloc(dbp->get_DB()->dbenv,
 			    skey.get_size(), &replyp->skeydata.skeydata_val);
 			if (ret != 0) {
-				__os_ufree(dbp->get_DB()->dbenv, skey.get_data());
-				__os_ufree(dbp->get_DB()->dbenv, pkey.get_data());
-				__os_ufree(dbp->get_DB()->dbenv, data.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, skey.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, pkey.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, data.get_data());
 				goto err;
 			}
 			key_alloc = 1;
@@ -1376,9 +1377,12 @@ __db_pget_proc(
 			ret = __os_umalloc(dbp->get_DB()->dbenv,
 			     pkey.get_size(), &replyp->pkeydata.pkeydata_val);
 			if (ret != 0) {
-				__os_ufree(dbp->get_DB()->dbenv, skey.get_data());
-				__os_ufree(dbp->get_DB()->dbenv, pkey.get_data());
-				__os_ufree(dbp->get_DB()->dbenv, data.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, skey.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, pkey.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, data.get_data());
 				if (key_alloc)
 					__os_ufree(dbp->get_DB()->dbenv,
 					    replyp->skeydata.skeydata_val);
@@ -1404,9 +1408,12 @@ __db_pget_proc(
 			ret = __os_umalloc(dbp->get_DB()->dbenv,
 			     data.get_size(), &replyp->datadata.datadata_val);
 			if (ret != 0) {
-				__os_ufree(dbp->get_DB()->dbenv, skey.get_data());
-				__os_ufree(dbp->get_DB()->dbenv, pkey.get_data());
-				__os_ufree(dbp->get_DB()->dbenv, data.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, skey.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, pkey.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, data.get_data());
 				/*
 				 * If key_alloc is 1, just skey needs to be
 				 * freed, if key_alloc is 2, both skey and pkey
@@ -1509,10 +1516,12 @@ __db_put_proc(
 			ret = __os_umalloc(dbp->get_DB()->dbenv,
 			    key.get_size(), &replyp->keydata.keydata_val);
 			if (ret != 0) {
-				__os_ufree(dbp->get_DB()->dbenv, key.get_data());
+				__os_ufree(
+				    dbp->get_DB()->dbenv, key.get_data());
 				goto err;
 			}
-			memcpy(replyp->keydata.keydata_val, key.get_data(), key.get_size());
+			memcpy(replyp->keydata.keydata_val,
+			    key.get_data(), key.get_size());
 		} else
 			replyp->keydata.keydata_val = (char *)key.get_data();
 
@@ -1673,21 +1682,28 @@ __db_rename_proc(
 extern "C" void
 __db_stat_proc(
 	long dbpcl_id,
+	long txnpcl_id,
 	u_int32_t flags,
 	__db_stat_reply *replyp,
 	int * freep)
 {
 	Db *dbp;
+	DbTxn *txnp;
 	DBTYPE type;
-	ct_entry *dbp_ctp;
+	ct_entry *dbp_ctp, *txnp_ctp;
 	u_int32_t *q, *p, *retsp;
 	int i, len, ret;
 	void *sp;
 
 	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
 	dbp = (Db *)dbp_ctp->ct_anyp;
+	if (txnpcl_id != 0) {
+		ACTIVATE_CTP(txnp_ctp, txnpcl_id, CT_TXN);
+		txnp = (DbTxn *)txnp_ctp->ct_anyp;
+	} else
+		txnp = NULL;
 
-	ret = dbp->stat(&sp, flags);
+	ret = dbp->stat(txnp, &sp, flags);
 	replyp->status = ret;
 	if (ret != 0)
 		return;
@@ -2084,11 +2100,13 @@ __dbc_get_proc(
 			    &replyp->keydata.keydata_val);
 			if (ret != 0) {
 				__os_ufree(dbenv->get_DB_ENV(), key.get_data());
-				__os_ufree(dbenv->get_DB_ENV(), data.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), data.get_data());
 				goto err;
 			}
 			key_alloc = 1;
-			memcpy(replyp->keydata.keydata_val, key.get_data(), key.get_size());
+			memcpy(replyp->keydata.keydata_val,
+			    key.get_data(), key.get_size());
 		} else
 			replyp->keydata.keydata_val = (char *)key.get_data();
 
@@ -2102,7 +2120,8 @@ __dbc_get_proc(
 			    &replyp->datadata.datadata_val);
 			if (ret != 0) {
 				__os_ufree(dbenv->get_DB_ENV(), key.get_data());
-				__os_ufree(dbenv->get_DB_ENV(), data.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), data.get_data());
 				if (key_alloc)
 					__os_ufree(dbenv->get_DB_ENV(),
 					    replyp->keydata.keydata_val);
@@ -2207,9 +2226,12 @@ __dbc_pget_proc(
 			ret = __os_umalloc(dbenv->get_DB_ENV(),
 			    skey.get_size(), &replyp->skeydata.skeydata_val);
 			if (ret != 0) {
-				__os_ufree(dbenv->get_DB_ENV(), skey.get_data());
-				__os_ufree(dbenv->get_DB_ENV(), pkey.get_data());
-				__os_ufree(dbenv->get_DB_ENV(), data.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), skey.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), pkey.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), data.get_data());
 				goto err;
 			}
 			key_alloc = 1;
@@ -2226,9 +2248,12 @@ __dbc_pget_proc(
 			ret = __os_umalloc(dbenv->get_DB_ENV(),
 			     pkey.get_size(), &replyp->pkeydata.pkeydata_val);
 			if (ret != 0) {
-				__os_ufree(dbenv->get_DB_ENV(), skey.get_data());
-				__os_ufree(dbenv->get_DB_ENV(), pkey.get_data());
-				__os_ufree(dbenv->get_DB_ENV(), data.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), skey.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), pkey.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), data.get_data());
 				if (key_alloc)
 					__os_ufree(dbenv->get_DB_ENV(),
 					    replyp->skeydata.skeydata_val);
@@ -2254,9 +2279,12 @@ __dbc_pget_proc(
 			ret = __os_umalloc(dbenv->get_DB_ENV(),
 			     data.get_size(), &replyp->datadata.datadata_val);
 			if (ret != 0) {
-				__os_ufree(dbenv->get_DB_ENV(), skey.get_data());
-				__os_ufree(dbenv->get_DB_ENV(), pkey.get_data());
-				__os_ufree(dbenv->get_DB_ENV(), data.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), skey.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), pkey.get_data());
+				__os_ufree(
+				    dbenv->get_DB_ENV(), data.get_data());
 				/*
 				 * If key_alloc is 1, just skey needs to be
 				 * freed, if key_alloc is 2, both skey and pkey
@@ -2343,7 +2371,8 @@ __dbc_put_proc(
 		ret = dbp->get_type(&dbtype);
 		if (ret == 0 && dbtype == DB_RECNO) {
 			/*
-			 * We need to xdr_free whatever we are returning, next time.
+			 * We need to xdr_free whatever we are returning, next
+			 * time.
 			 */
 			replyp->keydata.keydata_val = (char *)key.get_data();
 			replyp->keydata.keydata_len = key.get_size();
@@ -2352,4 +2381,3 @@ __dbc_put_proc(
 	replyp->status = ret;
 	return;
 }
-#endif /* HAVE_RPC */

@@ -1,23 +1,22 @@
-<!--$Id: db_class.so,v 10.47 2003/11/08 19:17:16 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_class.so,v 10.49 2004/08/18 02:33:48 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: db_create</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>db_create</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -55,12 +54,10 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dbp</b><dd>
-The <b>dbp</b> parameter references the memory into which the returned
+<dl compact>
+<dt><b>dbp</b><dd>The <b>dbp</b> parameter references the memory into which the returned
 structure pointer is stored.
-<p><dt><b>dbenv</b><dd>
-If the <b>dbenv</b> parameter is NULL, the database is standalone; that
+<dt><b>dbenv</b><dd>If the <b>dbenv</b> parameter is NULL, the database is standalone; that
 is, it is not part of any Berkeley DB environment.
 <p>If the <b>dbenv</b> parameter is not NULL, the database is created
 within the specified Berkeley DB environment.  The database access methods
@@ -68,11 +65,10 @@ automatically make calls to the other subsystems in Berkeley DB, based on the
 enclosing environment.  For example, if the environment has been
 configured to use locking, the access methods will automatically acquire
 the correct locks when reading and writing pages of the database.</p>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_XA_CREATE">DB_XA_CREATE</a><dd>Instead of creating a standalone database, create a database intended
+<dl compact>
+<dt><a name="DB_XA_CREATE">DB_XA_CREATE</a><dd>Instead of creating a standalone database, create a database intended
 to be accessed via applications running under an X/Open conformant
 Transaction Manager.  The database will be opened in the environment
 specified by the OPENINFO parameter of the GROUPS section of the
@@ -83,8 +79,8 @@ Introduction</a> section in the Berkeley DB Reference Guide for more information
 <h3>Errors</h3>
 <p>The db_create method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -96,6 +92,6 @@ DB
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

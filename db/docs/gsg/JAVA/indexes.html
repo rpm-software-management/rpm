@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <title>Chapter 5. Secondary Databases</title>
+    <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
+    <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
+    <link rel="up" href="index.html" title="Getting Started with Berkeley DB" />
+    <link rel="previous" href="cursorJavaUsage.html" title="Cursor Example" />
+    <link rel="next" href="keyCreator.html" title="Implementing Key &#10;        Creators&#10;        &#10;        " />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <th colspan="3" align="center">Chapter 5. Secondary Databases</th>
+        </tr>
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="cursorJavaUsage.html">Prev</a> </td>
+          <th width="60%" align="center"> </th>
+          <td width="20%" align="right"> <a accesskey="n" href="keyCreator.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="chapter" lang="en" xml:lang="en">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title"><a id="indexes"></a>Chapter 5. Secondary Databases</h2>
+          </div>
+        </div>
+        <div></div>
+      </div>
+      <div class="toc">
+        <p>
+          <b>Table of Contents</b>
+        </p>
+        <dl>
+          <dt>
+            <span class="sect1">
+              <a href="indexes.html#DbAssociate">Opening and Closing Secondary Databases</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="sect1">
+              <a href="keyCreator.html">Implementing Key 
+        Creators
+        
+        </a>
+            </span>
+          </dt>
+          <dt>
+            <span class="sect1">
+              <a href="secondaryProps.html">Secondary Database Properties</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="sect1">
+              <a href="readSecondary.html">Reading Secondary Databases</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="sect1">
+              <a href="secondaryDelete.html">Deleting Secondary Database Records</a>
+            </span>
+          </dt>
+          <dt>
+            <span class="sect1">
+              <a href="secondaryCursor.html">
+        Using Secondary Cursors
+        
+    </a>
+            </span>
+          </dt>
+          <dt>
+            <span class="sect1">
+              <a href="joins.html">Database Joins</a>
+            </span>
+          </dt>
+          <dd>
+            <dl>
+              <dt>
+                <span class="sect2">
+                  <a href="joins.html#joinUsage">Using Join Cursors</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="sect2">
+                  <a href="joins.html#joinconfig">JoinCursor Properties</a>
+                </span>
+              </dt>
+            </dl>
+          </dd>
+          <dt>
+            <span class="sect1">
+              <a href="javaindexusage.html">Secondary Database Example</a>
+            </span>
+          </dt>
+          <dd>
+            <dl>
+              <dt>
+                <span class="sect2">
+                  <a href="javaindexusage.html#secondaryMyDbs">Opening Secondary Databases with MyDbs</a>
+                </span>
+              </dt>
+              <dt>
+                <span class="sect2">
+                  <a href="javaindexusage.html#exampleReadJavaSecondaries">Using Secondary Databases with ExampleDatabaseRead</a>
+                </span>
+              </dt>
+            </dl>
+          </dd>
+        </dl>
+      </div>
+      <p>
+    Usually you find database records by means of the record's key.  However,
+    the key that you use for your record will not always contain the
+    information required to provide you with rapid access to the data that you
+    want to retrieve. For example, suppose your 
+        <tt class="classname">Database</tt>
+        
+    contains records related to users. The key might be a string that is some
+    unique identifier for the person, such as a user ID. Each record's data,
+    however, would likely contain a complex object containing details about
+    people such as names, addresses, phone numbers, and so forth.
+    While your application may frequently want to query a person by user
+    ID (that is, by the information stored in the key), it may also on occasion
+    want to location people by, say, their name.
+  </p>
+      <p>
+    Rather than iterate through all of the records in your database, examining
+    each in turn for a given person's name, you create indexes based on names
+    and then just search that index for the name that you want.  You can do this
+    using secondary databases. In DB, the 
+        <tt class="classname">Database</tt>
+         
+    that contains your data is called a
+    <span class="emphasis"><em>primary database</em></span>. A database that provides an
+    alternative set of keys to access that data is called a <span class="emphasis"><em>secondary
+    database</em></span> In a secondary database, the keys are your alternative 
+    (or secondary) index, and the data corresponds to a primary record's key.
+  </p>
+      <p>
+    You create a secondary database by using a <tt class="classname">SecondaryConfig</tt>
+    class object to identify an implementation of a
+    <tt class="classname">SecondaryKeyCreator</tt>
+    class object that is used to create keys based on data found in the primary
+    database. You then pass this <tt class="classname">SecondaryConfig</tt>
+    object to the <tt class="classname">SecondaryDatabase</tt> constructor.
+  </p>
+      <p>
+  Once opened, DB manages secondary databases for you. Adding or deleting
+  records in your primary database causes DB to update the secondary as
+  necessary. Further, changing a record's data in the primary database may cause
+  DB to modify a record in the secondary, depending on whether the change
+  forces a modification of a key in the secondary database.
+  </p>
+      <p>
+    Note that you can not write directly to a secondary database. 
+
+    
+
+    
+    
+    To change the data referenced by a 
+        <tt class="classname">SecondaryDatabase</tt>
+        
+    record, modify the primary database instead. The exception to this rule is
+    that delete operations are allowed on the
+        <span><tt class="classname">SecondaryDatabase</tt> object.</span> 
+         
+    
+    See <a href="secondaryDelete.html">Deleting Secondary Database Records</a> for more
+    information.
+  </p>
+      <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+        <h3 class="title">Note</h3>
+        <p>
+
+        Secondary database records are updated/created by DB 
+        only if the 
+            <span><tt class="methodname">SecondaryKeyCreator.createSecondaryKey()</tt> method</span>
+            
+        returns 
+            <span><tt class="literal">true</tt>.</span> 
+             
+        If 
+            <tt class="literal">false</tt> 
+            
+        is returned, then DB will not add the key to the secondary database, and 
+        in the event of a record update it will remove any existing key. 
+
+        
+
+     </p>
+        <p>
+        See <a href="keyCreator.html">Implementing Key 
+        <span>Creators</span>
+        
+        </a> for more
+            <span>information on this interface and method.</span>
+            
+    
+    </p>
+      </div>
+      <p>
+    When you read a record from a secondary database, DB automatically
+    returns 
+         
+        <span>the data and optionally the key</span> 
+    from the corresponding record in the primary database.
+    
+  </p>
+      <div class="sect1" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="DbAssociate"></a>Opening and Closing Secondary Databases</h2>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+            You manage secondary database opens and closes using the
+            
+            <span>
+                <tt class="classname">SecondaryDatabase</tt> constructor.
+            </span>
+            Just as is the case with primary databases, you must provide
+             
+            <span>
+                the <tt class="classname">SecondaryDatabase()</tt> constructor
+            </span>
+            with the database's
+            name and, optionally, other properties such as whether duplicate
+            records are allowed, or whether the secondary database can be created on
+            open. In addition, you must also provide:
+        </p>
+        <div class="itemizedlist">
+          <ul type="disc">
+            <li>
+              <p>A handle to the primary database that this secondary database is
+        indexing. Note that this means that secondary databases are maintained
+        only for the specified <tt class="classname">Database</tt> handle. If you
+        open the same <tt class="classname">Database</tt> multiple times for write
+        (such as might occur when opening a database for read-only and read-write in the same application),
+        then you should open the <tt class="classname">SecondaryDatabase</tt> for
+        each such <tt class="classname">Database</tt> handle.</p>
+            </li>
+            <li>
+              <p>A <tt class="classname">SecondaryConfig</tt> object that provides
+        properties specific to a secondary database. The most important of
+        these is used to identify the key creator for the database. The key
+        creator is responsible for generating keys for the secondary database.
+        See <a href="secondaryProps.html">Secondary Database Properties</a>  for details.</p>
+            </li>
+          </ul>
+        </div>
+        <p>So to open (create) a secondary database, you:</p>
+        <div class="orderedlist">
+          <ol type="1">
+            <li>
+              <p>Open your primary database.</p>
+            </li>
+            <li>
+              <p>Instantiate your key creator.</p>
+            </li>
+            <li>
+              <p>Instantiate your <tt class="classname">SecondaryConfig</tt> object.</p>
+            </li>
+            <li>
+              <p>Set your key creator object on your <tt class="classname">SecondaryConfig</tt>
+        object.</p>
+            </li>
+            <li>
+              <p>Open your secondary database, specifying your primary database
+        and your <tt class="classname">SecondaryConfig</tt> at that time.</p>
+            </li>
+          </ol>
+        </div>
+        <p>For example:</p>
+        <a id="java_index1"></a>
+        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+
+import com.sleepycat.bind.tuple.TupleBinding;
+import com.sleepycat.db.Database;
+import com.sleepycat.db.DatabaseType;
+import com.sleepycat.db.DatabaseConfig;
+import com.sleepycat.db.DatabaseException;
+import com.sleepycat.db.SecondaryDatabase;
+import com.sleepycat.db.SecondaryConfig;
+
+import java.io.FileNotFoundException;
+
+...
+
+DatabaseConfig myDbConfig = new DatabaseConfig();
+myDbConfig.setAllowCreate(true);
+myDbConfig.setType(DatabaseType.BTREE);
+
+SecondaryConfig mySecConfig = new SecondaryConfig();
+mySecConfig.setAllowCreate(true);
+mySecConfig.setType(DatabaseType.BTREE);
+// Duplicates are frequently required for secondary databases.
+mySecConfig.setSortedDuplicates(true);
+
+// Open the primary
+Database myDb = null;
+SecondaryDatabase mySecDb = null;
+try {
+    String dbName = "myPrimaryDatabase";
+
+    myDb = new Database(dbName, null, myDbConfig);
+
+    // A fake tuple binding that is not actually implemented anywhere.
+    // The tuple binding is dependent on the data in use.
+    // Tuple bindings are described earlier in this manual.
+    TupleBinding myTupleBinding = new MyTupleBinding();
+
+    // Open the secondary.
+    // Key creators are described in the next section.
+    FullNameKeyCreator keyCreator = new FullNameKeyCreator(myTupleBinding);
+
+    // Get a secondary object and set the key creator on it.
+    mySecConfig.setKeyCreator(keyCreator);
+
+    // Perform the actual open
+    String secDbName = "mySecondaryDatabase";
+    mySecDb = new SecondaryDatabase(secDbName, null, myDb, mySecConfig); 
+} catch (DatabaseException de) {
+    // Exception handling goes here ...
+} catch (FileNotFoundException fnfe) {
+    // Exception handling goes here ...
+}</pre>
+        <p>To close a secondary database, call its close() method. Note that
+    for best results, you should close all the secondary databases associated
+    with a primary database before closing the primary.</p>
+        <p>For example:</p>
+        <a id="java_index2"></a>
+        <pre class="programlisting">try {
+    if (mySecDb != null) {
+        mySecDb.close();
+    }
+
+    if (myDb != null) {
+        myDb.close(); 
+    }
+} catch (DatabaseException dbe) {
+    // Exception handling goes here
+}</pre>
+      </div>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="cursorJavaUsage.html">Prev</a> </td>
+          <td width="20%" align="center">
+            <a accesskey="u" href="index.html">Up</a>
+          </td>
+          <td width="40%" align="right"> <a accesskey="n" href="keyCreator.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top">Cursor Example </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> Implementing Key 
+        Creators
+        
+        </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,23 +1,22 @@
-<!--$Id: hsearch.so,v 10.27 2003/10/18 19:15:48 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: hsearch.so,v 10.28 2004/09/28 15:04:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: hsearch</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>hsearch</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -44,7 +43,6 @@ hdestroy(void);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: hsearch</h3>
-<a name="3"><!--meow--></a>
 <p>The hsearch functions are intended to provide a high-performance
 implementation and source code compatibility for applications written
 to the historic hsearch interface.  It is not recommended for any other
@@ -68,12 +66,12 @@ and retrieval.  The field <b>data</b> is declared to be of type
 <p>The hsearch function retrieves key/data pairs from, and stores
 key/data pairs into the database.</p>
 <p>The <b>action</b> parameter must be set to one of two values:</p>
-<p><dl compact>
-<p><dt>ENTER<dd>If the key does not already appear in the database, insert the key/data
+<dl compact>
+<dt>ENTER<dd>If the key does not already appear in the database, insert the key/data
 pair into the database.  If the key already appears in the database,
 return a reference to an <b>ENTRY</b> structure which refers to the
 existing key and its associated data element.
-<p><dt>FIND<dd>Retrieve the specified key/data pair from the database.
+<dt>FIND<dd>Retrieve the specified key/data pair from the database.
 </dl>
 <h3>Compatibility Notes</h3>
 <p>Historically, hsearch required applications to maintain the keys
@@ -99,6 +97,6 @@ system functions.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,12 +1,12 @@
-<!--$Id: archival.so,v 10.53 2003/09/25 15:28:00 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: archival.so,v 10.54 2004/04/14 16:18:14 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Database and log file archival</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
@@ -75,23 +75,16 @@ backup device such as CD-ROM, alternate disk, or tape.
 <p>To create a <i>hot</i> backup of your database that can be used to
 recover from catastrophic failure, take the following steps:</p>
 <ol>
-<p><li>Run db_archive to identify those log files which are not
-in use.  These log files are not part of this hot backup and can
-be discarded after the hot backup is successful.  They can be used
-with the previous hot backup to bring the databases forward to
-this point.
 <p><li>Archive your databases, as described in the previous step #4.
-You do not have to halt ongoing transactions or force a
-checkpoint.  In the case of a hot backup, the utility you use to copy
-the databases must read database pages atomically (as described by
-<a href="../../ref/transapp/reclimit.html">Berkeley DB recoverability</a>).
-<p><li>When performing a hot backup, you must additionally archive all of the
-log files not identified in step #1.
-Note that the order of these two operations is required,
-and the database files must be archived before the log files.  This
-means that if the database files and log files are in the same
-directory, you cannot simply archive the directory; you must make sure
-that the correct order of archival is maintained.
+You do not have to halt ongoing transactions or force a checkpoint.  As
+this is a hot backup, and the databases may be modified during the copy,
+the utility you use to copy the databases must read database pages
+atomically (as described by <a href="../../ref/transapp/reclimit.html">Berkeley DB recoverability</a>).
+<p><li>Archive <b>all</b> of the log files.  The order of these two operations
+is required, and the database files must be archived <b>before</b> the
+log files.  This means that if the database files and log files are in
+the same directory, you cannot simply archive the directory; you must
+make sure that the correct order of archival is maintained.
 <p>To archive your log files, run the <a href="../../utility/db_archive.html">db_archive</a> utility using
 the <b>-l</b> option to identify all the database log files, and
 copy them to your backup media.  If the database log files are stored
@@ -99,17 +92,24 @@ in a separate directory from the other database files, it may be simpler
 to archive the directory itself instead of the individual files (see
 the <a href="../../api_c/env_set_lg_dir.html">DB_ENV-&gt;set_lg_dir</a> method for more information).</p>
 </ol>
-<p>Once these steps are completed, your database can be recovered from
-catastrophic failure (see <a href="recovery.html">Recovery procedures</a> for
-more information).</p>
-<p>To update your snapshot so that recovery from catastrophic failure is
-possible up to a new point in time, repeat step 2 under the hot backup
-instructions -- copying all existing log files to a backup device.  This
-is applicable to both standard and hot backups; that is, you can update
-snapshots made either way.  Each time both the database and log files
-are copied to backup media, you may discard all previous database
-snapshots and saved log files.  Archiving additional log files does not
-allow you to discard either previous database snapshots or log files.</p>
+<p>To minimize the archival space needed for log files when doing a hot
+backup, run db_archive to identify those log files which are not in use.
+Log files which are not in use do not need to be included when creating
+a hot backup, and you can discard them or move them aside for use with
+previous backups (whichever is appropriate), before beginning the hot
+backup.</p>
+<p>After completing one of these two sets of steps, the database
+environment can be recovered from catastrophic failure (see
+<a href="recovery.html">Recovery procedures</a> for more information).</p>
+<p>To update either a hot or cold backup so that recovery from catastrophic
+failure is possible to a new point in time, repeat step #2 under the
+hot backup instructions and archive <b>all</b> of the log files in the
+database environment.  Each time both the database and log files are
+copied to backup media, you may discard all previous database snapshots
+and saved log files.  Archiving additional log files does not allow you
+to discard either previous database snapshots or log files.  Generally,
+updating a backup must be integrated with the application's log file
+removal procedures.</p>
 <p>The time to restore from catastrophic failure is a function of the
 number of log records that have been written since the snapshot was
 originally created.  Perhaps more importantly, the more separate pieces
@@ -155,6 +155,6 @@ log_archlist(DB_ENV *dbenv)
 }</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/checkpoint.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/logfile.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

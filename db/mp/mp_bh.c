@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mp_bh.c,v 11.98 2004/09/17 22:00:31 mjc Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: mp_bh.c,v 11.86 2003/07/02 20:02:37 mjc Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -147,24 +146,32 @@ __memp_bhwrite(dbmp, hp, mfp, bhp, open_extents)
 	}
 
 	/*
-	 * Try and open the file, attaching to the underlying shared area.
-	 * Ignore any error, assume it's a permissions problem.
+	 * Try and open the file, specifying the known underlying shared area.
 	 *
-	 * XXX
+	 * !!!
 	 * There's no negative cache, so we may repeatedly try and open files
 	 * that we have previously tried (and failed) to open.
 	 */
 	if ((ret = __memp_fcreate(dbenv, &dbmfp)) != 0)
 		return (ret);
-	if ((ret = __memp_fopen(dbmfp, mfp,
-	    R_ADDR(dbmp->reginfo, mfp->path_off),
-	    0, 0, mfp->stat.st_pagesize)) != 0) {
+	if ((ret = __memp_fopen(dbmfp,
+	    mfp, NULL, DB_DURABLE_UNKNOWN, 0, mfp->stat.st_pagesize)) != 0) {
 		(void)__memp_fclose(dbmfp, 0);
-		return (ret);
+
+		/*
+		 * Ignore any error if the file is marked dead, assume the file
+		 * was removed from under us.
+		 */
+		if (!mfp->deadfile)
+			return (ret);
+
+		dbmfp = NULL;
 	}
 
 pgwrite:
 	ret = __memp_pgwrite(dbenv, dbmfp, hp, bhp);
+	if (dbmfp == NULL)
+		return (ret);
 
 	/*
 	 * Discard our reference, and, if we're the last reference, make sure
@@ -195,7 +202,8 @@ __memp_pgread(dbmfp, mutexp, bhp, can_create)
 {
 	DB_ENV *dbenv;
 	MPOOLFILE *mfp;
-	size_t len, nr, pagesize;
+	size_t len, nr;
+	u_int32_t pagesize;
 	int ret;
 
 	dbenv = dbmfp->dbenv;
@@ -324,7 +332,8 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 	 * If the page is in a file for which we have LSN information, we have
 	 * to ensure the appropriate log records are on disk.
 	 */
-	if (LOGGING_ON(dbenv) && mfp->lsn_off != -1) {
+	if (LOGGING_ON(dbenv) && mfp->lsn_off != -1 &&
+	    !IS_CLIENT_PGRECOVER(dbenv)) {
 		memcpy(&lsn, bhp->buf + mfp->lsn_off, sizeof(DB_LSN));
 		if ((ret = __log_flush(dbenv, &lsn)) != 0)
 			goto err;
@@ -335,7 +344,7 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 	 * Verify write-ahead logging semantics.
 	 *
 	 * !!!
-	 * One special case.  There is a single field on the meta-data page,
+	 * Two special cases.  There is a single field on the meta-data page,
 	 * the last-page-number-in-the-file field, for which we do not log
 	 * changes.  If the page was originally created in a database that
 	 * didn't have logging turned on, we can see a page marked dirty but
@@ -344,8 +353,13 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 	 * previous log record and valid LSN is when the page was created
 	 * without logging turned on, and so we check for that special-case
 	 * LSN value.
+	 *
+	 * Second, when a client is reading database pages from a master
+	 * during an internal backup, we may get pages modified after
+	 * the current end-of-log.
 	 */
-	if (LOGGING_ON(dbenv) && !IS_NOT_LOGGED_LSN(LSN(bhp->buf))) {
+	if (LOGGING_ON(dbenv) && !IS_NOT_LOGGED_LSN(LSN(bhp->buf)) &&
+	    !IS_CLIENT_PGRECOVER(dbenv)) {
 		/*
 		 * There is a potential race here.  If we are in the midst of
 		 * switching log files, it's possible we could test against the
@@ -358,8 +372,10 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 
 		dblp = dbenv->lg_handle;
 		lp = dblp->reginfo.primary;
-		if (log_compare(&lp->s_lsn, &LSN(bhp->buf)) <= 0) {
-			mtx = R_ADDR(&dblp->reginfo, lp->flush_mutex_off);
+		if (!lp->db_log_inmemory &&
+		    log_compare(&lp->s_lsn, &LSN(bhp->buf)) <= 0) {
+			mtx = R_ADDR(dbenv,
+			    &dblp->reginfo, lp->flush_mutex_off);
 			MUTEX_LOCK(dbenv, mtx);
 			DB_ASSERT(log_compare(&lp->s_lsn, &LSN(bhp->buf)) > 0);
 			MUTEX_UNLOCK(dbenv, mtx);
@@ -385,8 +401,6 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 		    __memp_fn(dbmfp), (u_long)bhp->pgno);
 		goto err;
 	}
-
-	mfp->file_written = 1;
 	++mfp->stat.st_page_out;
 
 err:
@@ -459,8 +473,9 @@ __memp_pg(dbmfp, bhp, is_pgin)
 		if (mfp->pgcookie_len == 0)
 			dbtp = NULL;
 		else {
-			dbt.size = mfp->pgcookie_len;
-			dbt.data = R_ADDR(dbmp->reginfo, mfp->pgcookie_off);
+			dbt.size = (u_int32_t)mfp->pgcookie_len;
+			dbt.data = R_ADDR(dbenv,
+			    dbmp->reginfo, mfp->pgcookie_off);
 			dbtp = &dbt;
 		}
 		MUTEX_THREAD_UNLOCK(dbenv, dbmp->mutexp);
@@ -493,14 +508,15 @@ err:	MUTEX_THREAD_UNLOCK(dbenv, dbmp->mutexp);
  * __memp_bhfree --
  *	Free a bucket header and its referenced data.
  *
- * PUBLIC: void __memp_bhfree __P((DB_MPOOL *, DB_MPOOL_HASH *, BH *, int));
+ * PUBLIC: void __memp_bhfree
+ * PUBLIC:     __P((DB_MPOOL *, DB_MPOOL_HASH *, BH *, u_int32_t));
  */
 void
-__memp_bhfree(dbmp, hp, bhp, free_mem)
+__memp_bhfree(dbmp, hp, bhp, flags)
 	DB_MPOOL *dbmp;
 	DB_MPOOL_HASH *hp;
 	BH *bhp;
-	int free_mem;
+	u_int32_t flags;
 {
 	DB_ENV *dbenv;
 	MPOOL *c_mp, *mp;
@@ -528,13 +544,14 @@ __memp_bhfree(dbmp, hp, bhp, free_mem)
 	 * Discard the hash bucket's mutex, it's no longer needed, and
 	 * we don't want to be holding it when acquiring other locks.
 	 */
-	MUTEX_UNLOCK(dbenv, &hp->hash_mutex);
+	if (!LF_ISSET(BH_FREE_UNLOCKED))
+		MUTEX_UNLOCK(dbenv, &hp->hash_mutex);
 
 	/*
 	 * Find the underlying MPOOLFILE and decrement its reference count.
 	 * If this is its last reference, remove it.
 	 */
-	mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
+	mfp = R_ADDR(dbenv, dbmp->reginfo, bhp->mf_offset);
 	MUTEX_LOCK(dbenv, &mfp->mutex);
 	if (--mfp->block_cnt == 0 && mfp->mpf_cnt == 0)
 		(void)__memp_mf_discard(dbmp, mfp);
@@ -548,14 +565,14 @@ __memp_bhfree(dbmp, hp, bhp, free_mem)
 	 * be held.
 	 */
 	__db_shlocks_clear(&bhp->mutex, &dbmp->reginfo[n_cache],
-	    (REGMAINT *)R_ADDR(&dbmp->reginfo[n_cache], mp->maint_off));
+	    (REGMAINT *)R_ADDR(dbenv, &dbmp->reginfo[n_cache], mp->maint_off));
 
 	/*
 	 * If we're not reusing the buffer immediately, free the buffer header
 	 * and data for real.
 	 */
-	if (free_mem) {
-		__db_shalloc_free(dbmp->reginfo[n_cache].addr, bhp);
+	if (LF_ISSET(BH_FREE_FREEMEM)) {
+		__db_shalloc_free(&dbmp->reginfo[n_cache], bhp);
 		c_mp = dbmp->reginfo[n_cache].primary;
 		c_mp->stat.st_pages--;
 	}

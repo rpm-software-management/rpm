@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 /nologo /base:"0x13000000" /subsystem:windows /dll /machine:I386 /out:"Release/libdb42.dll"
+# ADD LINK32 /nologo /base:"0x13000000" /subsystem:windows /dll /machine:I386 /out:"Release/libdb43.dll"
 
 !ELSEIF  "$(CFG)" == "db_dll - Win32 Debug"
 
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /base:"0x13000000" /subsystem:windows /dll /pdb:none /debug /machine:I386 /out:"Debug/libdb42d.dll" /fixed:no
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /base:"0x13000000" /subsystem:windows /dll /pdb:none /debug /machine:I386 /out:"Debug/libdb43d.dll" /fixed:no
 
 !ENDIF 
 
@@ -262,6 +262,10 @@ SOURCE=..\cxx\cxx_multi.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\cxx\cxx_seq.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\cxx\cxx_txn.cpp
 # End Source File
 # Begin Source File
@@ -354,6 +358,18 @@ SOURCE=..\db\db_ret.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\db\db_setid.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\db\db_setlsn.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\db\db_stati.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\db\db_truncate.c
 # End Source File
 # Begin Source File
@@ -390,6 +406,10 @@ SOURCE=..\dbreg\dbreg_rec.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\dbreg\dbreg_stat.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\dbreg\dbreg_util.c
 # End Source File
 # Begin Source File
@@ -419,6 +439,10 @@ SOURCE=..\env\env_recover.c
 # Begin Source File
 
 SOURCE=..\env\env_region.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\env\env_stat.c
 # End Source File
 # Begin Source File
 
@@ -514,6 +538,14 @@ SOURCE=..\lock\lock_deadlock.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\lock\lock_id.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\lock\lock_list.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\lock\lock_method.c
 # End Source File
 # Begin Source File
@@ -523,6 +555,10 @@ SOURCE=..\lock\lock_region.c
 # Begin Source File
 
 SOURCE=..\lock\lock_stat.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\lock\lock_timer.c
 # End Source File
 # Begin Source File
 
@@ -554,6 +590,10 @@ SOURCE=..\log\log_put.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\log\log_stat.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\mp\mp_alloc.c
 # End Source File
 # Begin Source File
@@ -563,6 +603,10 @@ SOURCE=..\mp\mp_bh.c
 # Begin Source File
 
 SOURCE=..\mp\mp_fget.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\mp\mp_fmethod.c
 # End Source File
 # Begin Source File
 
@@ -642,10 +686,6 @@ SOURCE=..\os\os_tmpdir.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\os\os_unlink.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\os_win32\os_abs.c
 # End Source File
 # Begin Source File
@@ -710,6 +750,14 @@ SOURCE=..\os_win32\os_stat.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\os_win32\os_truncate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\os_win32\os_unlink.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\qam\qam.c
 # End Source File
 # Begin Source File
@@ -750,6 +798,14 @@ SOURCE=..\qam\qam_verify.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\rep\rep_auto.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\rep\rep_backup.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\rep\rep_method.c
 # End Source File
 # Begin Source File
@@ -762,7 +818,19 @@ SOURCE=..\rep\rep_region.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\rep\rep_stat.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\rep\rep_util.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sequence\seq_stat.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\sequence\sequence.c
 # End Source File
 # Begin Source File
 

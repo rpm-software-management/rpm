@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: si002.tcl,v 1.9 2003/01/08 05:53:25 bostic Exp $
+# $Id: si002.tcl,v 1.12 2004/05/28 14:33:26 carol Exp $
 #
 # TEST	si002
 # TEST	Basic cursor-based secondary index put/delete test

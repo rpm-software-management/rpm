@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: rsrc004.tcl,v 11.4 2003/01/08 05:52:49 bostic Exp $
+# $Id: rsrc004.tcl,v 11.5 2004/01/28 03:36:29 bostic Exp $
 #
 # TEST	rsrc004
 # TEST	Recno backing file test for EOF-terminated records.

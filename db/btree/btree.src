@@ -1,17 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: btree.src,v 10.39 2003/11/14 05:32:34 ubell Exp $
+ * $Id: btree.src,v 10.42 2004/06/17 17:35:12 bostic Exp $
  */
 
 PREFIX	__bam
 DBPRIVATE
 
-INCLUDE	#include "db_config.h"
-INCLUDE
 INCLUDE #ifndef NO_SYSTEM_INCLUDES
 INCLUDE #include <sys/types.h>
 INCLUDE
@@ -28,10 +26,6 @@ INCLUDE #include "dbinc/btree.h"
 INCLUDE #include "dbinc/log.h"
 INCLUDE #include "dbinc/txn.h"
 INCLUDE
-
-/*
- * NOTE: pg_alloc and pg_free have been moved to db.src, where they belong.
- */
 
 /*
  * BTREE-split: used to log a page split.
@@ -207,4 +201,25 @@ ARG	root		db_pgno_t	ld
 ARG	recno		db_recno_t	ld
 /* Order number of the adjustment. */
 ARG	order		u_int32_t	ld
+END
+
+/*
+ * BTREE-relink -- Handles relinking around a deleted leaf page.
+ *
+ */
+BEGIN relink		147
+/* Fileid of db affected. */
+DB	fileid		int32_t		ld
+/* The page being changed. */
+ARG	pgno		db_pgno_t	lu
+/* The page's original lsn. */
+POINTER	lsn		DB_LSN *	lu
+/* The previous page. */
+ARG	prev		db_pgno_t	lu
+/* The previous page's original lsn. */
+POINTER	lsn_prev	DB_LSN *	lu
+/* The next page. */
+ARG	next		db_pgno_t	lu
+/* The previous page's original lsn. */
+POINTER	lsn_next	DB_LSN *	lu
 END

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb003.tcl,v 11.28 2003/06/06 18:47:54 sandstro Exp $
+# $Id: sdb003.tcl,v 11.29 2004/01/28 03:36:29 bostic Exp $
 #
 # TEST	sdb003
 # TEST	Tests many subdbs

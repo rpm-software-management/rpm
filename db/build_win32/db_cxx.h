@@ -2,10 +2,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_cxx.in,v 11.134 2003/09/04 19:02:27 bostic Exp $
+ * $Id: db_cxx.in,v 11.147 2004/10/07 21:39:48 bostic Exp $
  */
 
 #ifndef _DB_CXX_H_
@@ -55,10 +55,12 @@
 #define	HAVE_CXX_STDHEADERS 1
 #ifdef HAVE_CXX_STDHEADERS
 #include <iostream>
-#define	__DB_OSTREAMCLASS	std::ostream
+#include <exception>
+#define	__DB_STD(x)	std::x
 #else
 #include <iostream.h>
-#define	__DB_OSTREAMCLASS	ostream
+#include <exception.h>
+#define	__DB_STD(x)	x
 #endif
 
 #include "db.h"
@@ -74,40 +76,20 @@ class DbMpoolFile;                               // forward
 class DbPreplist;                                // forward
 class Dbt;                                       // forward
 class DbTxn;                                     // forward
-class DbDeadlockException;                       // forward
-class DbException;                               // forward
-class DbLockNotGrantedException;                 // forward
 class DbLock;                                    // forward
-class DbMemoryException;                         // forward
-class DbRunRecoveryException;                    // forward
+class DbSequence;                                // forward
 class Dbt;                                       // forward
+
 class DbMultipleIterator;                        // forward
 class DbMultipleKeyDataIterator;                 // forward
 class DbMultipleRecnoDataIterator;               // forward
 class DbMultipleDataIterator;                    // forward
 
-// These classes are not defined here and should be invisible
-// to the user, but some compilers require forward references.
-// There is one for each use of the DEFINE_DB_CLASS macro.
-
-class DbImp;
-class DbEnvImp;
-class DbMpoolFileImp;
-class DbTxnImp;
-
-// DEFINE_DB_CLASS defines an imp_ data member and imp() accessor.
-// The underlying type is a pointer to an opaque *Imp class, that
-// gets converted to the correct implementation class by the implementation.
-//
-// Since these defines use "private/public" labels, and leave the access
-// being "private", we always use these by convention before any data
-// members in the private section of a class.  Keeping them in the
-// private section also emphasizes that they are off limits to user code.
-//
-#define	DEFINE_DB_CLASS(name) \
-	public: class name##Imp* imp() { return (imp_); } \
-	public: const class name##Imp* constimp() const { return (imp_); } \
-	private: class name##Imp* imp_
+class DbException;                               // forward
+class DbDeadlockException;                       // forward
+class DbLockNotGrantedException;                 // forward
+class DbMemoryException;                         // forward
+class DbRunRecoveryException;                    // forward
 
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
@@ -187,304 +169,194 @@ extern "C" {
 		(DB_ENV *dbenv, db_pgno_t pgno, void *pgaddr, DBT *pgcookie);
 	typedef int (*pgout_fcn_type)
 		(DB_ENV *dbenv, db_pgno_t pgno, void *pgaddr, DBT *pgcookie);
-};
+}
 
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
 //
-// Exception classes
+// Represents a database table = a set of keys with associated values.
 //
-
-// Almost any error in the DB library throws a DbException.
-// Every exception should be considered an abnormality
-// (e.g. bug, misuse of DB, file system error).
-//
-// NOTE: We would like to inherit from class exception and
-//       let it handle what(), but there are
-//       MSVC++ problems when <exception> is included.
-//
-class _exported DbException
+class _exported Db
 {
-public:
-	virtual ~DbException();
-	DbException(int err);
-	DbException(const char *description);
-	DbException(const char *prefix, int err);
-	DbException(const char *prefix1, const char *prefix2, int err);
-	int get_errno() const;
-	virtual const char *what() const;
-	DbEnv *get_env() const;
-	void set_env(DbEnv *env);
+	friend class DbEnv;
 
-	DbException(const DbException &);
-	DbException &operator = (const DbException &);
+public:
+	Db(DbEnv*, u_int32_t);      // create a Db object, then call open()
+	virtual ~Db();              // does *not* call close.
+
+	// These methods exactly match those in the C interface.
+	//
+	virtual int associate(DbTxn *txn, Db *secondary,
+	    int (*callback)(Db *, const Dbt *, const Dbt *, Dbt *),
+	    u_int32_t flags);
+	virtual int close(u_int32_t flags);
+	virtual int cursor(DbTxn *txnid, Dbc **cursorp, u_int32_t flags);
+	virtual int del(DbTxn *txnid, Dbt *key, u_int32_t flags);
+	virtual void err(int, const char *, ...);
+	virtual void errx(const char *, ...);
+	virtual int fd(int *fdp);
+	virtual int get(DbTxn *txnid, Dbt *key, Dbt *data, u_int32_t flags);
+	virtual void *get_app_private() const;
+	virtual int get_byteswapped(int *);
+	virtual int get_dbname(const char **, const char **);
+	virtual int get_open_flags(u_int32_t *);
+	virtual int get_type(DBTYPE *);
+	virtual int get_transactional();
+	virtual int join(Dbc **curslist, Dbc **dbcp, u_int32_t flags);
+	virtual int key_range(DbTxn *, Dbt *, DB_KEY_RANGE *, u_int32_t);
+	virtual int open(DbTxn *txnid,
+	    const char *, const char *subname, DBTYPE, u_int32_t, int);
+	virtual int pget(DbTxn *txnid, Dbt *key, Dbt *pkey, Dbt *data,
+		 u_int32_t flags);
+	virtual int put(DbTxn *, Dbt *, Dbt *, u_int32_t);
+	virtual int remove(const char *, const char *, u_int32_t);
+	virtual int rename(const char *, const char *, const char *, u_int32_t);
+	virtual int set_alloc(db_malloc_fcn_type, db_realloc_fcn_type,
+		      db_free_fcn_type);
+	virtual void set_app_private(void *);
+	virtual int set_append_recno(int (*)(Db *, Dbt *, db_recno_t));
+	virtual int set_bt_compare(bt_compare_fcn_type); /*deprecated*/
+	virtual int set_bt_compare(int (*)(Db *, const Dbt *, const Dbt *));
+	virtual int set_bt_maxkey(u_int32_t);
+	virtual int get_bt_minkey(u_int32_t *);
+	virtual int set_bt_minkey(u_int32_t);
+	virtual int set_bt_prefix(bt_prefix_fcn_type); /*deprecated*/
+	virtual int set_bt_prefix(size_t (*)(Db *, const Dbt *, const Dbt *));
+	virtual int get_cachesize(u_int32_t *, u_int32_t *, int *);
+	virtual int set_cachesize(u_int32_t, u_int32_t, int);
+	virtual int set_dup_compare(dup_compare_fcn_type); /*deprecated*/
+	virtual int set_dup_compare(int (*)(Db *, const Dbt *, const Dbt *));
+	virtual int get_encrypt_flags(u_int32_t *);
+	virtual int set_encrypt(const char *, u_int32_t);
+	virtual void set_errcall(
+			void (*)(const DbEnv *, const char *, const char *));
+	virtual void get_errfile(FILE **);
+	virtual void set_errfile(FILE *);
+	virtual void get_errpfx(const char **);
+	virtual void set_errpfx(const char *);
+	virtual int set_feedback(void (*)(Db *, int, int));
+	virtual int get_flags(u_int32_t *);
+	virtual int set_flags(u_int32_t);
+	virtual int get_h_ffactor(u_int32_t *);
+	virtual int set_h_ffactor(u_int32_t);
+	virtual int set_h_hash(h_hash_fcn_type); /*deprecated*/
+	virtual int set_h_hash(u_int32_t (*)(Db *, const void *, u_int32_t));
+	virtual int get_h_nelem(u_int32_t *);
+	virtual int set_h_nelem(u_int32_t);
+	virtual int get_lorder(int *);
+	virtual int set_lorder(int);
+	virtual void set_msgcall(void (*)(const DbEnv *, const char *));
+	virtual void get_msgfile(FILE **);
+	virtual void set_msgfile(FILE *);
+	virtual int get_pagesize(u_int32_t *);
+	virtual int set_pagesize(u_int32_t);
+	virtual int set_paniccall(void (*)(DbEnv *, int));
+	virtual int get_re_delim(int *);
+	virtual int set_re_delim(int);
+	virtual int get_re_len(u_int32_t *);
+	virtual int set_re_len(u_int32_t);
+	virtual int get_re_pad(int *);
+	virtual int set_re_pad(int);
+	virtual int get_re_source(const char **);
+	virtual int set_re_source(const char *);
+	virtual int get_q_extentsize(u_int32_t *);
+	virtual int set_q_extentsize(u_int32_t);
+	virtual int stat(DbTxn *, void *sp, u_int32_t flags);
+	virtual int stat_print(u_int32_t flags);
+	virtual int sync(u_int32_t flags);
+	virtual int truncate(DbTxn *, u_int32_t *, u_int32_t);
+	virtual int upgrade(const char *name, u_int32_t flags);
+	virtual int verify(const char *, const char *, __DB_STD(ostream) *,
+		      u_int32_t);
+
+	// These additional methods are not in the C interface, and
+	// are only available for C++.
+	//
+	virtual __DB_STD(ostream) *get_error_stream();
+	virtual void set_error_stream(__DB_STD(ostream) *);
+	virtual __DB_STD(ostream) *get_message_stream();
+	virtual void set_message_stream(__DB_STD(ostream) *);
+
+	virtual DbEnv *get_env();
+	virtual DbMpoolFile *get_mpf();
+
+	virtual DB *get_DB()
+	{
+		return imp_;
+	}
+
+	virtual const DB *get_const_DB() const
+	{
+		return imp_;
+	}
+
+	static Db* get_Db(DB *db)
+	{
+		return (Db *)db->api_internal;
+	}
+
+	static const Db* get_const_Db(const DB *db)
+	{
+		return (const Db *)db->api_internal;
+	}
 
 private:
-	char *what_;
-	int err_;                   // errno
+	// no copying
+	Db(const Db &);
+	Db &operator = (const Db &);
+
+	void cleanup();
+	int initialize();
+	int error_policy();
+
+	// instance data
+	DB *imp_;
 	DbEnv *env_;
-};
-
-//
-// A specific sort of exception that occurs when
-// an operation is aborted to resolve a deadlock.
-//
-class _exported DbDeadlockException : public DbException
-{
-public:
-	virtual ~DbDeadlockException();
-	DbDeadlockException(const char *description);
-
-	DbDeadlockException(const DbDeadlockException &);
-	DbDeadlockException &operator = (const DbDeadlockException &);
-};
-
-//
-// A specific sort of exception that occurs when
-// a lock is not granted, e.g. by lock_get or lock_vec.
-// Note that the Dbt is only live as long as the Dbt used
-// in the offending call.
-//
-class _exported DbLockNotGrantedException : public DbException
-{
-public:
-	virtual ~DbLockNotGrantedException();
-	DbLockNotGrantedException(const char *prefix, db_lockop_t op,
-	    db_lockmode_t mode, const Dbt *obj, const DbLock lock, int index);
-	DbLockNotGrantedException(const char *description);
-	DbLockNotGrantedException(const DbLockNotGrantedException &);
-	DbLockNotGrantedException &operator =
-	    (const DbLockNotGrantedException &);
-
-	db_lockop_t get_op() const;
-	db_lockmode_t get_mode() const;
-	const Dbt* get_obj() const;
-	DbLock *get_lock() const;
-	int get_index() const;
-
-private:
-	db_lockop_t op_;
-	db_lockmode_t mode_;
-	const Dbt *obj_;
-	DbLock *lock_;
-	int index_;
-};
-
-//
-// A specific sort of exception that occurs when
-// user declared memory is insufficient in a Dbt.
-//
-class _exported DbMemoryException : public DbException
-{
-public:
-	virtual ~DbMemoryException();
-	DbMemoryException(Dbt *dbt);
-	DbMemoryException(const char *description);
-	DbMemoryException(const char *prefix, Dbt *dbt);
-	DbMemoryException(const char *prefix1, const char *prefix2, Dbt *dbt);
-	Dbt *get_dbt() const;
-
-	DbMemoryException(const DbMemoryException &);
-	DbMemoryException &operator = (const DbMemoryException &);
-
-private:
-	Dbt *dbt_;
-};
-
-//
-// A specific sort of exception that occurs when
-// recovery is required before continuing DB activity.
-//
-class _exported DbRunRecoveryException : public DbException
-{
-public:
-	virtual ~DbRunRecoveryException();
-	DbRunRecoveryException(const char *description);
-
-	DbRunRecoveryException(const DbRunRecoveryException &);
-	DbRunRecoveryException &operator = (const DbRunRecoveryException &);
-};
-
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
-//
-// Lock classes
-//
-
-class _exported DbLock
-{
-	friend class DbEnv;
+	DbMpoolFile *mpf_;
+	int construct_error_;
+	u_int32_t flags_;
+	u_int32_t construct_flags_;
 
 public:
-	DbLock();
-	DbLock(const DbLock &);
-	DbLock &operator = (const DbLock &);
-
-protected:
-	// We can add data to this class if needed
-	// since its contained class is not allocated by db.
-	// (see comment at top)
-
-	DbLock(DB_LOCK);
-	DB_LOCK lock_;
+	// These are public only because they need to be called
+	// via C callback functions.  They should never be used by
+	// external users of this class.
+	//
+	int (*append_recno_callback_)(Db *, Dbt *, db_recno_t);
+	int (*associate_callback_)(Db *, const Dbt *, const Dbt *, Dbt *);
+	int (*bt_compare_callback_)(Db *, const Dbt *, const Dbt *);
+	size_t (*bt_prefix_callback_)(Db *, const Dbt *, const Dbt *);
+	int (*dup_compare_callback_)(Db *, const Dbt *, const Dbt *);
+	void (*feedback_callback_)(Db *, int, int);
+	u_int32_t (*h_hash_callback_)(Db *, const void *, u_int32_t);
 };
 
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
 //
-// Log classes
+// Cursor
 //
-
-class _exported DbLsn : public DB_LSN
+class _exported Dbc : protected DBC
 {
-	friend class DbEnv;          // friendship needed to cast to base class
-	friend class DbLogc;         // friendship needed to cast to base class
-};
-
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
-//
-// Memory pool classes
-//
-
-class _exported DbMpoolFile
-{
-	friend class DbEnv;
 	friend class Db;
 
-private:
-	// Put this first to allow inlining with some C++ compilers (g++-2.95)
-	DEFINE_DB_CLASS(DbMpoolFile);
-
 public:
-	int close(u_int32_t flags);
-	int get(db_pgno_t *pgnoaddr, u_int32_t flags, void *pagep);
-	int open(const char *file, u_int32_t flags, int mode, size_t pagesize);
-	int put(void *pgaddr, u_int32_t flags);
-	int set(void *pgaddr, u_int32_t flags);
-	int get_clear_len(u_int32_t *len);
-	int set_clear_len(u_int32_t len);
-	int get_fileid(u_int8_t *fileid);
-	int set_fileid(u_int8_t *fileid);
-	int get_flags(u_int32_t *flagsp);
-	int set_flags(u_int32_t flags, int onoff);
-	int get_ftype(int *ftype);
-	int set_ftype(int ftype);
-	int get_lsn_offset(int32_t *offsetp);
-	int set_lsn_offset(int32_t offset);
-	int get_maxsize(u_int32_t *gbytes, u_int32_t *bytes);
-	int set_maxsize(u_int32_t gbytes, u_int32_t bytes);
-	int get_pgcookie(DBT *dbt);
-	int set_pgcookie(DBT *dbt);
-	int get_priority(DB_CACHE_PRIORITY *priorityp);
-	int set_priority(DB_CACHE_PRIORITY priority);
-	int sync();
-
-	virtual DB_MPOOLFILE *get_DB_MPOOLFILE()
-	{
-		return (DB_MPOOLFILE *)imp();
-	}
-
-	virtual const DB_MPOOLFILE *get_const_DB_MPOOLFILE() const
-	{
-		return (const DB_MPOOLFILE *)constimp();
-	}
+	int close();
+	int count(db_recno_t *countp, u_int32_t flags);
+	int del(u_int32_t flags);
+	int dup(Dbc** cursorp, u_int32_t flags);
+	int get(Dbt* key, Dbt *data, u_int32_t flags);
+	int pget(Dbt* key, Dbt* pkey, Dbt *data, u_int32_t flags);
+	int put(Dbt* key, Dbt *data, u_int32_t flags);
 
 private:
-	// We can add data to this class if needed
-	// since it is implemented via a pointer.
-	// (see comment at top)
+	// No data is permitted in this class (see comment at top)
 
-	// Note: use DbEnv::memp_fcreate() to get pointers to a DbMpoolFile,
-	// and call DbMpoolFile::close() rather than delete to release them.
+	// Note: use Db::cursor() to get pointers to a Dbc,
+	// and call Dbc::close() rather than delete to release them.
 	//
-	DbMpoolFile();
-
-	// Shut g++ up.
-protected:
-	virtual ~DbMpoolFile();
-
-private:
-	// no copying
-	DbMpoolFile(const DbMpoolFile &);
-	void operator = (const DbMpoolFile &);
-};
-
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
-//
-// This is filled in and returned by the DbEnv::txn_recover() method.
-//
-
-class _exported DbPreplist
-{
-public:
-	DbTxn *txn;
-	u_int8_t gid[DB_XIDDATASIZE];
-};
-
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
-//
-// Transaction classes
-//
-
-class _exported DbTxn
-{
-	friend class DbEnv;
-
-private:
-	// Put this first to allow inlining with some C++ compilers (g++-2.95)
-	DEFINE_DB_CLASS(DbTxn);
-
-public:
-	int abort();
-	int commit(u_int32_t flags);
-	int discard(u_int32_t flags);
-	u_int32_t id();
-	int prepare(u_int8_t *gid);
-	int set_timeout(db_timeout_t timeout, u_int32_t flags);
-
-	virtual DB_TXN *get_DB_TXN()
-	{
-		return (DB_TXN *)imp();
-	}
-
-	virtual const DB_TXN *get_const_DB_TXN() const
-	{
-		return (const DB_TXN *)constimp();
-	}
-
-	static DbTxn* get_DbTxn(DB_TXN *txn)
-	{
-		return (DbTxn *)txn->api_internal;
-	}
-
-	static const DbTxn* get_const_DbTxn(const DB_TXN *txn)
-	{
-		return (const DbTxn *)txn->api_internal;
-	}
-
-	// For internal use only.
-	static DbTxn* wrap_DB_TXN(DB_TXN *txn);
-
-private:
-	// We can add data to this class if needed
-	// since it is implemented via a pointer.
-	// (see comment at top)
-
-	// Note: use DbEnv::txn_begin() to get pointers to a DbTxn,
-	// and call DbTxn::abort() or DbTxn::commit rather than
-	// delete to release them.
-	//
-	DbTxn();
-	// For internal use only.
-	DbTxn(DB_TXN *txn);
-	virtual ~DbTxn();
+	Dbc();
+	~Dbc();
 
 	// no copying
-	DbTxn(const DbTxn &);
-	void operator = (const DbTxn &);
+	Dbc(const Dbc &);
+	Dbc &operator = (const Dbc &);
 };
 
 //
@@ -501,10 +373,6 @@ class _exported DbEnv
 	friend class Db;
 	friend class DbLock;
 	friend class DbMpoolFile;
-
-private:
-	// Put this first to allow inlining with some C++ compilers (g++-2.95)
-	DEFINE_DB_CLASS(DbEnv);
 
 public:
 	// After using this constructor, you can set any needed
@@ -531,7 +399,7 @@ public:
 	virtual int open(const char *, u_int32_t, int);
 	virtual int remove(const char *, u_int32_t);
 	virtual int set_alloc(db_malloc_fcn_type, db_realloc_fcn_type,
-		      db_free_fcn_type);
+			      db_free_fcn_type);
 	virtual void set_app_private(void *);
 	virtual int get_cachesize(u_int32_t *, u_int32_t *, int *);
 	virtual int set_cachesize(u_int32_t, u_int32_t, int);
@@ -539,7 +407,8 @@ public:
 	virtual int set_data_dir(const char *);
 	virtual int get_encrypt_flags(u_int32_t *);
 	virtual int set_encrypt(const char *, u_int32_t);
-	virtual void set_errcall(void (*)(const char *, char *));
+	virtual void set_errcall(
+			void (*)(const DbEnv *, const char *, const char *));
 	virtual void get_errfile(FILE **);
 	virtual void set_errfile(FILE *);
 	virtual void get_errpfx(const char **);
@@ -568,6 +437,9 @@ public:
 	virtual int set_lk_max_objects(u_int32_t);
 	virtual int get_mp_mmapsize(size_t *);
 	virtual int set_mp_mmapsize(size_t);
+	virtual void set_msgcall(void (*)(const DbEnv *, const char *));
+	virtual void get_msgfile(FILE **);
+	virtual void set_msgfile(FILE *);
 	virtual int set_paniccall(void (*)(DbEnv *, int));
 	virtual int set_rpc_server(void *, char *, long, long, u_int32_t);
 	virtual int get_shm_key(long *);
@@ -603,7 +475,10 @@ public:
 	// set_error_stream() to force all errors to a C++ stream.
 	// It is unwise to mix these approaches.
 	//
-	virtual void set_error_stream(__DB_OSTREAMCLASS *);
+	virtual __DB_STD(ostream) *get_error_stream();
+	virtual void set_error_stream(__DB_STD(ostream) *);
+	virtual __DB_STD(ostream) *get_message_stream();
+	virtual void set_message_stream(__DB_STD(ostream) *);
 
 	// used internally
 	static void runtime_error(DbEnv *env, const char *caller, int err,
@@ -624,6 +499,7 @@ public:
 	virtual int lock_id_free(u_int32_t id);
 	virtual int lock_put(DbLock *lock);
 	virtual int lock_stat(DB_LOCK_STAT **statp, u_int32_t flags);
+	virtual int lock_stat_print(u_int32_t flags);
 	virtual int lock_vec(u_int32_t locker, u_int32_t flags,
 		     DB_LOCKREQ list[], int nlist, DB_LOCKREQ **elistp);
 
@@ -637,6 +513,7 @@ public:
 	virtual int log_put(DbLsn *lsn, const Dbt *data, u_int32_t flags);
 
 	virtual int log_stat(DB_LOG_STAT **spp, u_int32_t flags);
+	virtual int log_stat_print(u_int32_t flags);
 
 	// Mpool functions
 	//
@@ -646,6 +523,7 @@ public:
 			  pgout_fcn_type pgout_fcn);
 	virtual int memp_stat(DB_MPOOL_STAT
 		      **gsp, DB_MPOOL_FSTAT ***fsp, u_int32_t flags);
+	virtual int memp_stat_print(u_int32_t flags);
 	virtual int memp_sync(DbLsn *lsn);
 	virtual int memp_trickle(int pct, int *nwrotep);
 
@@ -657,13 +535,15 @@ public:
 	virtual int txn_recover(DbPreplist *preplist, long count,
 			long *retp, u_int32_t flags);
 	virtual int txn_stat(DB_TXN_STAT **statp, u_int32_t flags);
+	virtual int txn_stat_print(u_int32_t flags);
 
 	// Replication functions
 	//
-	virtual int rep_elect(int, int, u_int32_t, int *);
+	virtual int rep_elect(int, int, int, u_int32_t, int *, u_int32_t);
 	virtual int rep_process_message(Dbt *, Dbt *, int *, DbLsn *);
 	virtual int rep_start(Dbt *, u_int32_t);
 	virtual int rep_stat(DB_REP_STAT **statp, u_int32_t flags);
+	virtual int rep_stat_print(u_int32_t flags);
 	virtual int get_rep_limit(u_int32_t *, u_int32_t *);
 	virtual int set_rep_limit(u_int32_t, u_int32_t);
 	virtual int set_rep_transport(int, int (*)(DbEnv *,
@@ -673,22 +553,22 @@ public:
 	//
 	virtual DB_ENV *get_DB_ENV()
 	{
-		return (DB_ENV *)imp();
+		return imp_;
 	}
 
 	virtual const DB_ENV *get_const_DB_ENV() const
 	{
-		return (const DB_ENV *)constimp();
+		return imp_;
 	}
 
 	static DbEnv* get_DbEnv(DB_ENV *dbenv)
 	{
-		return (DbEnv *)dbenv->api1_internal;
+		return dbenv ? (DbEnv *)dbenv->api1_internal : 0;
 	}
 
 	static const DbEnv* get_const_DbEnv(const DB_ENV *dbenv)
 	{
-		return (const DbEnv *)dbenv->api1_internal;
+		return dbenv ? (const DbEnv *)dbenv->api1_internal : 0;
 	}
 
 	// For internal use only.
@@ -698,15 +578,19 @@ public:
 	// via C functions.  They should never be called by users
 	// of this class.
 	//
-	static void _stream_error_function(const char *, char *);
 	static int _app_dispatch_intercept(DB_ENV *env, DBT *dbt, DB_LSN *lsn,
-					db_recops op);
+				       db_recops op);
 	static void _paniccall_intercept(DB_ENV *env, int errval);
 	static void _feedback_intercept(DB_ENV *env, int opcode, int pct);
 	static int _rep_send_intercept(DB_ENV *env,
 				       const DBT *cntrl, const DBT *data,
 				       const DB_LSN *lsn, int id,
 				       u_int32_t flags);
+	static void _stream_error_function(const DB_ENV *env,
+					   const char *prefix,
+					   const char *message);
+	static void _stream_message_function(const DB_ENV *env,
+					     const char *message);
 
 private:
 	void cleanup();
@@ -721,10 +605,16 @@ private:
 	void operator = (const DbEnv &);
 
 	// instance data
+	DB_ENV *imp_;
 	int construct_error_;
 	u_int32_t construct_flags_;
+	__DB_STD(ostream) *error_stream_;
+	__DB_STD(ostream) *message_stream_;
+
 	int (*app_dispatch_callback_)(DbEnv *, Dbt *, DbLsn *, db_recops);
+	void (*error_callback_)(const DbEnv *, const char *, const char *);
 	void (*feedback_callback_)(DbEnv *, int, int);
+	void (*message_callback_)(const DbEnv *, const char *);
 	void (*paniccall_callback_)(DbEnv *, int);
 	int (*pgin_callback_)(DbEnv *dbenv, db_pgno_t pgno,
 			      void *pgaddr, Dbt *pgcookie);
@@ -732,167 +622,255 @@ private:
 			       void *pgaddr, Dbt *pgcookie);
 	int (*rep_send_callback_)(DbEnv *,
 	    const Dbt *, const Dbt *, const DbLsn *, int, u_int32_t);
-
-	// class data
-	static __DB_OSTREAMCLASS *error_stream_;
 };
 
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
 //
-// Table access classes
+// Lock
 //
-
-//
-// Represents a database table = a set of keys with associated values.
-//
-class _exported Db
+class _exported DbLock
 {
 	friend class DbEnv;
 
-private:
-	// Put this first to allow inlining with some C++ compilers (g++-2.95)
-	DEFINE_DB_CLASS(Db);
+public:
+	DbLock();
+	DbLock(const DbLock &);
+	DbLock &operator = (const DbLock &);
+
+protected:
+	// We can add data to this class if needed
+	// since its contained class is not allocated by db.
+	// (see comment at top)
+
+	DbLock(DB_LOCK);
+	DB_LOCK lock_;
+};
+
+//
+// Log cursor
+//
+class _exported DbLogc : protected DB_LOGC
+{
+	friend class DbEnv;
 
 public:
-	Db(DbEnv*, u_int32_t);      // create a Db object, then call open()
-	virtual ~Db();              // does *not* call close.
+	int close(u_int32_t _flags);
+	int get(DbLsn *lsn, Dbt *data, u_int32_t _flags);
 
-	// These methods exactly match those in the C interface.
+private:
+	// No data is permitted in this class (see comment at top)
+
+	// Note: use Db::cursor() to get pointers to a Dbc,
+	// and call Dbc::close() rather than delete to release them.
 	//
-	virtual int associate(DbTxn *txn, Db *secondary,
-	    int (*callback)(Db *, const Dbt *, const Dbt *, Dbt *),
-	    u_int32_t flags);
-	virtual int close(u_int32_t flags);
-	virtual int cursor(DbTxn *txnid, Dbc **cursorp, u_int32_t flags);
-	virtual int del(DbTxn *txnid, Dbt *key, u_int32_t flags);
-	virtual void err(int, const char *, ...);
-	virtual void errx(const char *, ...);
-	virtual int fd(int *fdp);
-	virtual int get(DbTxn *txnid, Dbt *key, Dbt *data, u_int32_t flags);
-	virtual void *get_app_private() const;
-	virtual int get_byteswapped(int *);
-	virtual int get_dbname(const char **, const char **);
-	virtual int get_open_flags(u_int32_t *);
-	virtual int get_type(DBTYPE *);
-	virtual int join(Dbc **curslist, Dbc **dbcp, u_int32_t flags);
-	virtual int key_range(DbTxn *, Dbt *, DB_KEY_RANGE *, u_int32_t);
-	virtual int open(DbTxn *txnid,
-	    const char *, const char *subname, DBTYPE, u_int32_t, int);
-	virtual int pget(DbTxn *txnid, Dbt *key, Dbt *pkey, Dbt *data,
-		 u_int32_t flags);
-	virtual int put(DbTxn *, Dbt *, Dbt *, u_int32_t);
-	virtual int remove(const char *, const char *, u_int32_t);
-	virtual int rename(const char *, const char *, const char *, u_int32_t);
-	virtual int set_alloc(db_malloc_fcn_type, db_realloc_fcn_type,
-		      db_free_fcn_type);
-	virtual void set_app_private(void *);
-	virtual int set_append_recno(int (*)(Db *, Dbt *, db_recno_t));
-	virtual int set_bt_compare(bt_compare_fcn_type); /*deprecated*/
-	virtual int set_bt_compare(int (*)(Db *, const Dbt *, const Dbt *));
-	virtual int set_bt_maxkey(u_int32_t);
-	virtual int get_bt_minkey(u_int32_t *);
-	virtual int set_bt_minkey(u_int32_t);
-	virtual int set_bt_prefix(bt_prefix_fcn_type); /*deprecated*/
-	virtual int set_bt_prefix(size_t (*)(Db *, const Dbt *, const Dbt *));
-	virtual int get_cachesize(u_int32_t *, u_int32_t *, int *);
-	virtual int set_cachesize(u_int32_t, u_int32_t, int);
-	virtual int set_dup_compare(dup_compare_fcn_type); /*deprecated*/
-	virtual int set_dup_compare(int (*)(Db *, const Dbt *, const Dbt *));
-	virtual int get_encrypt_flags(u_int32_t *);
-	virtual int set_encrypt(const char *, u_int32_t);
-	virtual void set_errcall(void (*)(const char *, char *));
-	virtual void get_errfile(FILE **);
-	virtual void set_errfile(FILE *);
-	virtual void get_errpfx(const char **);
-	virtual void set_errpfx(const char *);
-	virtual int set_feedback(void (*)(Db *, int, int));
-	virtual int get_flags(u_int32_t *);
-	virtual int set_flags(u_int32_t);
-	virtual int get_h_ffactor(u_int32_t *);
-	virtual int set_h_ffactor(u_int32_t);
-	virtual int set_h_hash(h_hash_fcn_type); /*deprecated*/
-	virtual int set_h_hash(u_int32_t (*)(Db *, const void *, u_int32_t));
-	virtual int get_h_nelem(u_int32_t *);
-	virtual int set_h_nelem(u_int32_t);
-	virtual int get_lorder(int *);
-	virtual int set_lorder(int);
-	virtual int get_pagesize(u_int32_t *);
-	virtual int set_pagesize(u_int32_t);
-	virtual int set_paniccall(void (*)(DbEnv *, int));
-	virtual int get_re_delim(int *);
-	virtual int set_re_delim(int);
-	virtual int get_re_len(u_int32_t *);
-	virtual int set_re_len(u_int32_t);
-	virtual int get_re_pad(int *);
-	virtual int set_re_pad(int);
-	virtual int get_re_source(const char **);
-	virtual int set_re_source(const char *);
-	virtual int get_q_extentsize(u_int32_t *);
-	virtual int set_q_extentsize(u_int32_t);
-	virtual int stat(void *sp, u_int32_t flags);
-	virtual int sync(u_int32_t flags);
-	virtual int truncate(DbTxn *, u_int32_t *, u_int32_t);
-	virtual int upgrade(const char *name, u_int32_t flags);
-	virtual int verify(const char *, const char *, __DB_OSTREAMCLASS *,
-		      u_int32_t);
+	DbLogc();
+	~DbLogc();
 
-	// These additional methods are not in the C interface, and
-	// are only available for C++.
+	// no copying
+	DbLogc(const Dbc &);
+	DbLogc &operator = (const Dbc &);
+};
+
+//
+// Log sequence number
+//
+class _exported DbLsn : public DB_LSN
+{
+	friend class DbEnv;          // friendship needed to cast to base class
+	friend class DbLogc;         // friendship needed to cast to base class
+};
+
+//
+// Memory pool file
+//
+class _exported DbMpoolFile
+{
+	friend class DbEnv;
+	friend class Db;
+
+public:
+	int close(u_int32_t flags);
+	int get(db_pgno_t *pgnoaddr, u_int32_t flags, void *pagep);
+	int open(const char *file, u_int32_t flags, int mode, size_t pagesize);
+	int get_transactional(void);
+	int put(void *pgaddr, u_int32_t flags);
+	int set(void *pgaddr, u_int32_t flags);
+	int get_clear_len(u_int32_t *len);
+	int set_clear_len(u_int32_t len);
+	int get_fileid(u_int8_t *fileid);
+	int set_fileid(u_int8_t *fileid);
+	int get_flags(u_int32_t *flagsp);
+	int set_flags(u_int32_t flags, int onoff);
+	int get_ftype(int *ftype);
+	int set_ftype(int ftype);
+	int get_lsn_offset(int32_t *offsetp);
+	int set_lsn_offset(int32_t offset);
+	int get_maxsize(u_int32_t *gbytes, u_int32_t *bytes);
+	int set_maxsize(u_int32_t gbytes, u_int32_t bytes);
+	int get_pgcookie(DBT *dbt);
+	int set_pgcookie(DBT *dbt);
+	int get_priority(DB_CACHE_PRIORITY *priorityp);
+	int set_priority(DB_CACHE_PRIORITY priority);
+	int sync();
+
+	virtual DB_MPOOLFILE *get_DB_MPOOLFILE()
+	{
+		return imp_;
+	}
+
+	virtual const DB_MPOOLFILE *get_const_DB_MPOOLFILE() const
+	{
+		return imp_;
+	}
+
+private:
+	DB_MPOOLFILE *imp_;
+
+	// We can add data to this class if needed
+	// since it is implemented via a pointer.
+	// (see comment at top)
+
+	// Note: use DbEnv::memp_fcreate() to get pointers to a DbMpoolFile,
+	// and call DbMpoolFile::close() rather than delete to release them.
 	//
-	virtual void set_error_stream(__DB_OSTREAMCLASS *);
+	DbMpoolFile();
 
-	virtual DbEnv *get_env();
-	virtual DbMpoolFile *get_mpf();
-
-	virtual DB *get_DB()
-	{
-		return (DB *)imp();
-	}
-
-	virtual const DB *get_const_DB() const
-	{
-		return (const DB *)constimp();
-	}
-
-	static Db* get_Db(DB *db)
-	{
-		return (Db *)db->api_internal;
-	}
-
-	static const Db* get_const_Db(const DB *db)
-	{
-		return (const Db *)db->api_internal;
-	}
+	// Shut g++ up.
+protected:
+	virtual ~DbMpoolFile();
 
 private:
 	// no copying
-	Db(const Db &);
-	Db &operator = (const Db &);
+	DbMpoolFile(const DbMpoolFile &);
+	void operator = (const DbMpoolFile &);
+};
 
-	void cleanup();
-	int initialize();
-	int error_policy();
+//
+// This is filled in and returned by the DbEnv::txn_recover() method.
+//
+class _exported DbPreplist
+{
+public:
+	DbTxn *txn;
+	u_int8_t gid[DB_XIDDATASIZE];
+};
 
-	// instance data
-	DbEnv *env_;
-	DbMpoolFile *mpf_;
-	int construct_error_;
-	u_int32_t flags_;
-	u_int32_t construct_flags_;
+//
+// A sequence record in a database
+//
+class _exported DbSequence
+{
+public:
+	DbSequence(Db *db, u_int32_t flags);
+	virtual ~DbSequence();
+
+	int open(DbTxn *txnid, Dbt *key, u_int32_t flags);
+	int initial_value(db_seq_t value);
+	int close(u_int32_t flags);
+	int remove(DbTxn *txnid, u_int32_t flags);
+	int stat(DB_SEQUENCE_STAT **sp, u_int32_t flags);
+	int stat_print(u_int32_t flags);
+	
+	int get(DbTxn *txnid, int32_t delta, db_seq_t *retp, u_int32_t flags);
+	int get_cachesize(int32_t *sizep);
+	int set_cachesize(int32_t size);
+	int get_flags(u_int32_t *flagsp);
+	int set_flags(u_int32_t flags);
+	int get_range(db_seq_t *minp, db_seq_t *maxp);
+	int set_range(db_seq_t min, db_seq_t max);
+
+	Db *get_db();
+	Dbt *get_key();
+
+	virtual DB_SEQUENCE *get_DB_SEQUENCE()
+	{
+		return imp_;
+	}
+
+	virtual const DB_SEQUENCE *get_const_DB_SEQUENCE() const
+	{
+		return imp_;
+	}
+
+	static DbSequence* get_DbSequence(DB_SEQUENCE *seq)
+	{
+		return (DbSequence *)seq->api_internal;
+	}
+
+	static const DbSequence* get_const_DbSequence(const DB_SEQUENCE *seq)
+	{
+		return (const DbSequence *)seq->api_internal;
+	}
+
+	// For internal use only.
+	static DbSequence* wrap_DB_SEQUENCE(DB_SEQUENCE *seq);
+
+private:
+	DbSequence(DB_SEQUENCE *seq);
+	// no copying
+	DbSequence(const DbSequence &);
+	DbSequence &operator = (const DbSequence &);
+
+	DB_SEQUENCE *imp_;
+	DBT key_;
+};
+
+//
+// Transaction
+//
+class _exported DbTxn
+{
+	friend class DbEnv;
 
 public:
-	// These are public only because they need to be called
-	// via C callback functions.  They should never be used by
-	// external users of this class.
+	int abort();
+	int commit(u_int32_t flags);
+	int discard(u_int32_t flags);
+	u_int32_t id();
+	int prepare(u_int8_t *gid);
+	int set_timeout(db_timeout_t timeout, u_int32_t flags);
+
+	virtual DB_TXN *get_DB_TXN()
+	{
+		return imp_;
+	}
+
+	virtual const DB_TXN *get_const_DB_TXN() const
+	{
+		return imp_;
+	}
+
+	static DbTxn* get_DbTxn(DB_TXN *txn)
+	{
+		return (DbTxn *)txn->api_internal;
+	}
+
+	static const DbTxn* get_const_DbTxn(const DB_TXN *txn)
+	{
+		return (const DbTxn *)txn->api_internal;
+	}
+
+	// For internal use only.
+	static DbTxn* wrap_DB_TXN(DB_TXN *txn);
+
+private:
+	DB_TXN *imp_;
+
+	// We can add data to this class if needed
+	// since it is implemented via a pointer.
+	// (see comment at top)
+
+	// Note: use DbEnv::txn_begin() to get pointers to a DbTxn,
+	// and call DbTxn::abort() or DbTxn::commit rather than
+	// delete to release them.
 	//
-	int (*append_recno_callback_)(Db *, Dbt *, db_recno_t);
-	int (*associate_callback_)(Db *, const Dbt *, const Dbt *, Dbt *);
-	int (*bt_compare_callback_)(Db *, const Dbt *, const Dbt *);
-	size_t (*bt_prefix_callback_)(Db *, const Dbt *, const Dbt *);
-	int (*dup_compare_callback_)(Db *, const Dbt *, const Dbt *);
-	void (*feedback_callback_)(Db *, int, int);
-	u_int32_t (*h_hash_callback_)(Db *, const void *, u_int32_t);
+	DbTxn();
+	// For internal use only.
+	DbTxn(DB_TXN *txn);
+	virtual ~DbTxn();
+
+	// no copying
+	DbTxn(const DbTxn &);
+	void operator = (const DbTxn &);
 };
 
 //
@@ -900,13 +878,13 @@ public:
 //
 class _exported Dbt : private DBT
 {
-	friend class Dbc;
 	friend class Db;
+	friend class Dbc;
 	friend class DbEnv;
 	friend class DbLogc;
+	friend class DbSequence;
 
 public:
-
 	// key/data
 	void *get_data() const                 { return data; }
 	void set_data(void *value)             { data = value; }
@@ -957,55 +935,6 @@ private:
 	// not of your subclassed type.
 };
 
-class _exported Dbc : protected DBC
-{
-	friend class Db;
-
-public:
-	int close();
-	int count(db_recno_t *countp, u_int32_t flags);
-	int del(u_int32_t flags);
-	int dup(Dbc** cursorp, u_int32_t flags);
-	int get(Dbt* key, Dbt *data, u_int32_t flags);
-	int pget(Dbt* key, Dbt* pkey, Dbt *data, u_int32_t flags);
-	int put(Dbt* key, Dbt *data, u_int32_t flags);
-
-private:
-	// No data is permitted in this class (see comment at top)
-
-	// Note: use Db::cursor() to get pointers to a Dbc,
-	// and call Dbc::close() rather than delete to release them.
-	//
-	Dbc();
-	~Dbc();
-
-	// no copying
-	Dbc(const Dbc &);
-	Dbc &operator = (const Dbc &);
-};
-
-class _exported DbLogc : protected DB_LOGC
-{
-	friend class DbEnv;
-
-public:
-	int close(u_int32_t _flags);
-	int get(DbLsn *lsn, Dbt *data, u_int32_t _flags);
-
-private:
-	// No data is permitted in this class (see comment at top)
-
-	// Note: use Db::cursor() to get pointers to a Dbc,
-	// and call Dbc::close() rather than delete to release them.
-	//
-	DbLogc();
-	~DbLogc();
-
-	// no copying
-	DbLogc(const Dbc &);
-	DbLogc &operator = (const Dbc &);
-};
-
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 //
@@ -1045,4 +974,116 @@ public:
 	bool next(Dbt &data);
 };
 
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+//
+// Exception classes
+//
+
+// Almost any error in the DB library throws a DbException.
+// Every exception should be considered an abnormality
+// (e.g. bug, misuse of DB, file system error).
+//
+class _exported DbException : public __DB_STD(exception)
+{
+public:
+	virtual ~DbException() throw();
+	DbException(int err);
+	DbException(const char *description);
+	DbException(const char *description, int err);
+	DbException(const char *prefix, const char *description, int err);
+	int get_errno() const;
+	virtual const char *what() const throw();
+	DbEnv *get_env() const;
+	void set_env(DbEnv *env);
+
+	DbException(const DbException &);
+	DbException &operator = (const DbException &);
+
+private:
+	void describe(const char *prefix, const char *description);
+
+	char *what_;
+	int err_;                   // errno
+	DbEnv *env_;
+};
+
+//
+// A specific sort of exception that occurs when
+// an operation is aborted to resolve a deadlock.
+//
+class _exported DbDeadlockException : public DbException
+{
+public:
+	virtual ~DbDeadlockException() throw();
+	DbDeadlockException(const char *description);
+
+	DbDeadlockException(const DbDeadlockException &);
+	DbDeadlockException &operator = (const DbDeadlockException &);
+};
+
+//
+// A specific sort of exception that occurs when
+// a lock is not granted, e.g. by lock_get or lock_vec.
+// Note that the Dbt is only live as long as the Dbt used
+// in the offending call.
+//
+class _exported DbLockNotGrantedException : public DbException
+{
+public:
+	virtual ~DbLockNotGrantedException() throw();
+	DbLockNotGrantedException(const char *prefix, db_lockop_t op,
+	    db_lockmode_t mode, const Dbt *obj, const DbLock lock, int index);
+	DbLockNotGrantedException(const char *description);
+
+	DbLockNotGrantedException(const DbLockNotGrantedException &);
+	DbLockNotGrantedException &operator =
+	    (const DbLockNotGrantedException &);
+
+	db_lockop_t get_op() const;
+	db_lockmode_t get_mode() const;
+	const Dbt* get_obj() const;
+	DbLock *get_lock() const;
+	int get_index() const;
+
+private:
+	db_lockop_t op_;
+	db_lockmode_t mode_;
+	const Dbt *obj_;
+	DbLock *lock_;
+	int index_;
+};
+
+//
+// A specific sort of exception that occurs when
+// user declared memory is insufficient in a Dbt.
+//
+class _exported DbMemoryException : public DbException
+{
+public:
+	virtual ~DbMemoryException() throw();
+	DbMemoryException(Dbt *dbt);
+	DbMemoryException(const char *prefix, Dbt *dbt);
+
+	DbMemoryException(const DbMemoryException &);
+	DbMemoryException &operator = (const DbMemoryException &);
+
+	Dbt *get_dbt() const;
+private:
+	Dbt *dbt_;
+};
+
+//
+// A specific sort of exception that occurs when
+// recovery is required before continuing DB activity.
+//
+class _exported DbRunRecoveryException : public DbException
+{
+public:
+	virtual ~DbRunRecoveryException() throw();
+	DbRunRecoveryException(const char *description);
+
+	DbRunRecoveryException(const DbRunRecoveryException &);
+	DbRunRecoveryException &operator = (const DbRunRecoveryException &);
+};
 #endif /* !_DB_CXX_H_ */

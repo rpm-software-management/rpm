@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: BtRecExample.java,v 11.17 2003/10/20 20:12:31 mjc Exp $
+ * $Id: BtRecExample.java,v 11.21 2004/08/20 16:33:58 mjc Exp $
  */
 
 
@@ -15,34 +15,34 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class BtRecExample
-{
-    static final String progname =  "BtRecExample";	// Program name.
+public class BtRecExample {
+    static final String progname =  "BtRecExample"; // Program name.
     static final String database =  "access.db";
     static final String wordlist =  "../test/wordlist";
 
     BtRecExample(BufferedReader reader)
-        throws DbException, IOException, FileNotFoundException
-    {
-        int ret;
+        throws DatabaseException, IOException, FileNotFoundException {
+
+        OperationStatus status;
 
         // Remove the previous database.
         File f = new File(database);
         f.delete();
 
-        dbp = new Db(null, 0);
+        DatabaseConfig config = new DatabaseConfig();
 
-        dbp.setErrorStream(System.err);
-        dbp.setErrorPrefix(progname);
-        dbp.setPageSize(1024);			// 1K page sizes.
+        config.setErrorStream(System.err);
+        config.setErrorPrefix(progname);
+        config.setPageSize(1024);           // 1K page sizes.
 
-        dbp.setFlags(Db.DB_RECNUM);			// Record numbers.
-        dbp.open(null, database, null, Db.DB_BTREE, Db.DB_CREATE, 0664);
+        config.setBtreeRecordNumbers(true);
+        config.setType(DatabaseType.BTREE);
+        config.setAllowCreate(true);
+        db = new Database(database, null, config);
 
         //
         // Insert records into the database, where the key is the word
@@ -57,24 +57,22 @@ public class BtRecExample
             String buf = numstr + '_' + reader.readLine();
             StringBuffer rbuf = new StringBuffer(buf).reverse();
 
-            StringDbt key = new StringDbt(buf);
-            StringDbt data = new StringDbt(rbuf.toString());
+            StringEntry key = new StringEntry(buf);
+            StringEntry data = new StringEntry(rbuf.toString());
 
-            if ((ret = dbp.put(null, key, data, Db.DB_NOOVERWRITE)) != 0) {
-                if (ret != Db.DB_KEYEXIST)
-                    throw new DbException("Db.put failed" + ret);
-            }
+            status = db.putNoOverwrite(null, key, data);
+            if (status != OperationStatus.SUCCESS &&
+                status!= OperationStatus.KEYEXIST)
+                throw new DatabaseException("Database.put failed " + status);
         }
     }
 
-    void run()
-        throws DbException
-    {
+    void run() throws DatabaseException {
         int recno;
-        int ret;
+        OperationStatus status;
 
         // Acquire a cursor for the database.
-        dbcp = dbp.cursor(null, 0);
+        cursor = db.openCursor(null, null);
 
         //
         // Prompt the user for a record number, then retrieve and display
@@ -90,90 +88,83 @@ public class BtRecExample
 
             try {
                 recno = Integer.parseInt(line);
-            }
-            catch (NumberFormatException nfe) {
+            } catch (NumberFormatException nfe) {
                 System.err.println("Bad record number: " + nfe);
                 continue;
             }
 
             //
-            // Start with a fresh key each time, the dbp.get() routine returns
+            // Start with a fresh key each time, the db.get() routine returns
             // the key and data pair, not just the key!
             //
-            RecnoStringDbt key = new RecnoStringDbt(recno, 100);
-            RecnoStringDbt data = new RecnoStringDbt(100);
+            RecnoStringEntry key = new RecnoStringEntry(recno, 100);
+            RecnoStringEntry data = new RecnoStringEntry(100);
 
-            if ((ret = dbcp.get(key, data, Db.DB_SET_RECNO)) != 0) {
-                throw new DbException("Dbc.get failed", ret);
-            }
+            status = cursor.getSearchRecordNumber(key, data, null);
+            if (status != OperationStatus.SUCCESS)
+                throw new DatabaseException("Cursor.setRecno failed: " + status);
 
             // Display the key and data.
             show("k/d\t", key, data);
 
             // Move the cursor a record forward.
-            if ((ret = dbcp.get(key, data, Db.DB_NEXT)) != 0) {
-                throw new DbException("Dbc.get failed", ret);
-            }
+            status = cursor.getNext(key, data, null);
+            if (status != OperationStatus.SUCCESS)
+                throw new DatabaseException("Cursor.getNext failed: " + status);
 
             // Display the key and data.
             show("next\t", key, data);
 
-            RecnoStringDbt datano = new RecnoStringDbt(100);
+            RecnoStringEntry datano = new RecnoStringEntry(100);
 
             //
             // Retrieve the record number for the following record into
             // local memory.
             //
-            if ((ret = dbcp.get(key, datano, Db.DB_GET_RECNO)) != 0) {
-                if (ret != Db.DB_NOTFOUND && ret != Db.DB_KEYEMPTY) {
-                    throw new DbException("Dbc.get failed", ret);
-                }
-            }
+            status = cursor.getRecordNumber(datano, null);
+            if (status != OperationStatus.SUCCESS &&
+                status != OperationStatus.NOTFOUND &&
+                status != OperationStatus.KEYEMPTY)
+                throw new DatabaseException("Cursor.get failed: " + status);
             else {
-                recno = datano.getRecno();
+                recno = datano.getRecordNumber();
                 System.out.println("retrieved recno: " + recno);
             }
         }
 
-        dbcp.close();
-        dbcp = null;
+        cursor.close();
+        cursor = null;
     }
 
     //
     // Print out the number of records in the database.
     //
-    void stats()
-        throws DbException
-    {
-        DbBtreeStat statp;
+    void stats() throws DatabaseException {
+        BtreeStats stats;
 
-        statp = (DbBtreeStat)dbp.stat(0);
+        stats = (BtreeStats)db.getStats(null, null);
         System.out.println(progname + ": database contains " +
-                          statp.bt_ndata + " records");
+               stats.getNumData() + " records");
     }
 
-    void show(String msg, RecnoStringDbt key, RecnoStringDbt data)
-        throws DbException
-    {
+    void show(String msg, RecnoStringEntry key, RecnoStringEntry data)
+        throws DatabaseException {
+
         System.out.println(msg + key.getString() + ": " + data.getString());
     }
 
-    public void shutdown()
-        throws DbException
-    {
-        if (dbcp != null) {
-            dbcp.close();
-            dbcp = null;
+    public void shutdown() throws DatabaseException {
+        if (cursor != null) {
+            cursor.close();
+            cursor = null;
         }
-        if (dbp != null) {
-            dbp.close(0);
-            dbp = null;
+        if (db != null) {
+            db.close();
+            db = null;
         }
     }
 
-    public static void main(String argv[])
-    {
-
+    public static void main(String[] argv) {
         try {
             // Open the word database.
             FileReader freader = new FileReader(wordlist);
@@ -192,7 +183,7 @@ public class BtRecExample
         } catch (IOException ioe) {
             System.err.println(progname + ": open " + wordlist + ": " + ioe);
             System.exit (1);
-        } catch (DbException dbe) {
+        } catch (DatabaseException dbe) {
             System.err.println("Exception: " + dbe);
             System.exit(dbe.getErrno());
         }
@@ -203,9 +194,8 @@ public class BtRecExample
     // Prompts for a line, and keeps prompting until a non blank
     // line is returned.  Returns null on erroror.
     //
-    static public String askForLine(InputStreamReader reader,
-                                    PrintStream out, String prompt)
-    {
+    public static String askForLine(InputStreamReader reader,
+                                    PrintStream out, String prompt) {
         String result = "";
         while (result != null && result.length() == 0) {
             out.print(prompt);
@@ -220,8 +210,7 @@ public class BtRecExample
     // Returns null on EOF.  If EOF appears in the middle
     // of a line, returns that line, then null on next call.
     //
-    static public String getLine(InputStreamReader reader)
-    {
+    public static String getLine(InputStreamReader reader) {
         StringBuffer b = new StringBuffer();
         int c;
         try {
@@ -229,8 +218,7 @@ public class BtRecExample
                 if (c != '\r')
                     b.append((char)c);
             }
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             c = -1;
         }
 
@@ -240,102 +228,62 @@ public class BtRecExample
             return b.toString();
     }
 
-    private Dbc dbcp;
-    private Db dbp;
+    private Cursor cursor;
+    private Database db;
 
-    // Here's an example of how you can extend a Dbt in a straightforward
-    // way to allow easy storage/retrieval of strings.
+    // Here's an example of how you can extend DatabaseEntry in a
+    // straightforward way to allow easy storage/retrieval of strings.
     // We've declared it as a static inner class, but it need not be.
     //
-    static /*inner*/
-    class StringDbt extends Dbt
-    {
-        StringDbt(byte[] arr)
-        {
-            setFlags(Db.DB_DBT_USERMEM);
-            setData(arr);
-            setSize(arr.length);
-        }
+    static class StringEntry extends DatabaseEntry {
+        StringEntry() {}
 
-        StringDbt()
-        {
-            setFlags(Db.DB_DBT_MALLOC); // tell Db to allocate on retrieval
-        }
-
-        StringDbt(String value)
-        {
+        StringEntry(String value) {
             setString(value);
-            setFlags(Db.DB_DBT_MALLOC); // tell Db to allocate on retrieval
         }
 
-        void setString(String value)
-        {
+        void setString(String value) {
             byte[] data = value.getBytes();
             setData(data);
             setSize(data.length);
-            // must set ulen because sometimes a string is returned
-            setUserBufferLength(data.length);
         }
 
-        String getString()
-        {
+        String getString() {
             return new String(getData(), 0, getSize());
         }
     }
 
-    // Here's an example of how you can extend a Dbt to store
-    // (potentially) both recno's and strings in the same
-    // structure.
+    // Here's an example of how you can extend DatabaseEntry to store
+    // (potentially) both recno's and strings in the same structure.
     //
-    static /*inner*/
-    class RecnoStringDbt extends Dbt
-    {
-        RecnoStringDbt(int maxsize)
-        {
+    static class RecnoStringEntry extends DatabaseEntry {
+        RecnoStringEntry(int maxsize) {
             this(0, maxsize);     // let other constructor do most of the work
         }
 
-        RecnoStringDbt(int value, int maxsize)
-        {
-            setFlags(Db.DB_DBT_USERMEM); // do not allocate on retrieval
+        RecnoStringEntry(int value, int maxsize) {
             arr = new byte[maxsize];
             setData(arr);                // use our local array for data
-            setUserBufferLength(maxsize);           // size of return storage
-            setRecno(value);
-        }
-
-        RecnoStringDbt(String value, int maxsize)
-        {
-            setFlags(Db.DB_DBT_USERMEM); // do not allocate on retrieval
-            arr = new byte[maxsize];
-            setData(arr);                // use our local array for data
-            setUserBufferLength(maxsize);           // size of return storage
-            setString(value);
-        }
-
-        void setRecno(int value)
-        {
+            setUserBuffer(maxsize, true);
             setRecordNumber(value);
-            setSize(arr.length);
         }
 
-        void setString(String value)
-        {
+        RecnoStringEntry(String value) {
+            byte[] data = value.getBytes();
+            setData(data);                // use our local array for data
+            setUserBuffer(data.length, true);
+        }
+
+        void setString(String value) {
             byte[] data = value.getBytes();
             setData(data);
             setSize(data.length);
         }
 
-        int getRecno()
-        {
-            return getRecordNumber();
+        String getString() {
+            return new String(getData(), getOffset(), getSize());
         }
 
-        String getString()
-        {
-            return new String(getData(), 0, getSize());
-        }
-
-        byte arr[];
+        byte[] arr;
     }
 }

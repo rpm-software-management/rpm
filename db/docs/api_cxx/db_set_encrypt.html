@@ -1,24 +1,23 @@
 <!--$Id: db_set_encrypt.so,v 10.3 2002/08/18 21:15:54 bostic Exp $-->
-<!--$Id: env_set_encrypt.so,v 10.20 2003/11/08 19:17:28 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_encrypt.so,v 10.23 2004/09/28 15:04:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::set_encrypt</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::set_encrypt</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -32,7 +31,6 @@ Db::get_encrypt_flags(u_int32_t *flagsp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: Db::set_encrypt</h3>
-<a name="3"><!--meow--></a>
 <p>Set the password used by the Berkeley DB library to perform encryption and
 decryption.</p>
 <p>Because databases opened within Berkeley DB environments use the password
@@ -46,17 +44,15 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_ENCRYPT_AES">DB_ENCRYPT_AES</a><dd>Use the Rijndael/AES (also known as the Advanced Encryption Standard
+<dl compact>
+<dt><a name="DB_ENCRYPT_AES">DB_ENCRYPT_AES</a><dd>Use the Rijndael/AES (also known as the Advanced Encryption Standard
 and Federal Information Processing Standard (FIPS) 197) algorithm for
 encryption or decryption.
 </dl>
-<p><dt><b>passwd</b><dd>
-The <b>passwd</b> parameter is the password used to perform encryption
+<dt><b>passwd</b><dd>The <b>passwd</b> parameter is the password used to perform encryption
 and decryption.
 </dl>
 <h3>Errors</h3>
@@ -65,14 +61,14 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after
+<dl compact>
+<dt>EINVAL<dd>If the method was called after
 <a href="../api_cxx/db_open.html">Db::open</a>
 was called; or if an
 invalid flag value or parameter was specified.
 </dl>
-<p><dl compact>
-<p><dt>EOPNOTSUPP<dd>Cryptography is not available in this Berkeley DB release.
+<dl compact>
+<dt>EOPNOTSUPP<dd>Cryptography is not available in this Berkeley DB release.
 </dl>
 <hr size=1 noshade>
 <h3>Description: Db::get_encrypt_flags</h3>
@@ -85,9 +81,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flagsp</b><dd>
-The Db::get_encrypt_flags method returns  the
+<dl compact>
+<dt><b>flagsp</b><dd>The Db::get_encrypt_flags method returns  the
 encryption flags in <b>flagsp</b>.
 </dl>
 <hr size=1 noshade>
@@ -99,6 +94,6 @@ encryption flags in <b>flagsp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

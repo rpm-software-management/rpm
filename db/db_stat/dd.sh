@@ -1,5 +1,5 @@
 #! /bin/sh
-#	$Id: dd.sh,v 1.2 2003/09/05 00:05:59 bostic Exp $
+#	$Id: dd.sh,v 1.3 2004/05/04 15:51:45 bostic Exp $
 #
 # Display environment's deadlocks based on "db_stat -Co" output.
 
@@ -8,10 +8,23 @@ t2=__b
 
 trap 'rm -f $t1 $t2; exit 0' 0 1 2 3 13 15
 
+if [ $# -ne 1 ]; then
+	echo "Usage: dd.sh [db_stat -Co output]"
+	exit 1
+fi
+
+if `egrep '\<WAIT\>.*\<page\>' $1 > /dev/null`; then
+	n=`egrep '\<WAIT\>.*\<page\>' $1 | wc -l | awk '{print $1}'`
+	echo "dd.sh: $1: $n page locks in a WAIT state."
+else
+	echo "dd.sh: $1: No page locks in a WAIT state found."
+	exit 1
+fi
+
 # Print out list of node wait states, and output cycles in the graph.
-egrep 'WAIT.*page' $1 | awk '{print $1 " " $7}' |
+egrep '\<WAIT\>.*\<page\>' $1 | awk '{print $1 " " $7}' |
 while read l p; do
-	p=`egrep "HELD.*page[	 ][	 ]*$p$" $1 | awk '{print $1}'`
+	p=`egrep "\<HELD\>.*\<page\>[	 ][	 ]*$p$" $1 | awk '{print $1}'`
 	echo "$l $p"
 done | tsort > /dev/null 2>$t1
 

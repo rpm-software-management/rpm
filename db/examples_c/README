@@ -1,10 +1,17 @@
-# $Id: README,v 11.5 2002/02/26 16:22:45 krinsky Exp $
+# $Id: README,v 11.6 2004/09/23 17:49:25 mjc Exp $
+
+getting_started/
+		Examples from the Getting Started Guide
+
+bench_001.c	Micro-benchmark for the bulk fetch interface.
 
 ex_access.c	Using just the DB access methods.
 
-ex_apprec	Application-specific recovery.
+ex_apprec/	Application-specific recovery.
 
 ex_btrec.c	Using the BTREE access method with record numbers.
+
+ex_dbclient.c	Using DB from an RPC client.
 
 ex_env.c	Setting up the DB environment.
 
@@ -12,9 +19,13 @@ ex_lock.c	Locking.
 
 ex_mpool.c	Shared memory buffer pools.
 
-ex_repquote	Replication.  This creates a toy stock quote server
+ex_repquote/	Replication.  This creates a toy stock quote server
 		with DB's single-master, multiple-client replication,
 		with communication over TCP.
+
+ex_sequence.c	Sequences.
+
+ex_thread.c	Threaded application with multiple readers and writers.
 
 ex_tpcb.c	TPC/B.
 		Ex_tpcb sets up a framework in which to run a TPC/B test.

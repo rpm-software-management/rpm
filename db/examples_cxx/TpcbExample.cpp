@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: TpcbExample.cpp,v 11.32 2003/04/24 15:46:05 bostic Exp $
+ * $Id: TpcbExample.cpp,v 11.33 2004/01/28 03:36:05 bostic Exp $
  */
 
 #include <sys/types.h>

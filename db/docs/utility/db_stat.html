@@ -1,78 +1,86 @@
-<!--$Id: db_stat.so,v 10.40 2002/08/24 18:24:53 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_stat.so,v 10.45 2004/07/14 15:41:04 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: db_stat</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>db_stat</h3>
 </td>
-</td></tr></table>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>db_stat <b>-d</b> <b>file</b> [<b>-fN</b>] [<b>-h home</b>] [<b>-P password</b>] [<b>-s database</b>]
-db_stat [<b>-celmNrtVZ</b>] [<b>-C Aclmop</b>] [<b>-h home</b>] [<b>-M Ahm</b>] [<b>-P password</b>]</pre></h3>
+db_stat [<b>-cEelmNrtVZ</b>] [<b>-C Aclop</b>] [<b>-h home</b>] [<b>-L A</b>] [<b>-M A</b>] [<b>-R A</b>] [<b>-P password</b>]</pre></h3>
 <h3>Description</h3>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>The db_stat utility displays statistics for Berkeley DB environments.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt><b>-C</b><dd>Display internal information about the lock region.  (The output from this
-option is often both voluminous and meaningless, and is intended only for
-debugging.)
-<p><dl compact>
-<p><dt>A<dd>Display all information.
+<dl compact>
+<dt><b>-C</b><dd>Display internal information about the locking subsystem.  (The output
+from this option is often both voluminous and meaningless, and is
+intended only for debugging.)
+<dl compact>
+<dt>A<dd>Display all information.
 <dt>c<dd>Display lock conflict matrix.
 <dt>l<dd>Display lockers within hash chains.
-<dt>m<dd>Display region memory information.
-<dt>o<dd>Display objects within hash chains.
-<dt>p<dd>Display lock region parameters.
+<dt>o<dd>Display lock objects within hash chains.
+<dt>p<dd>Display locking subsystem parameters.
 </dl>
-<p><dt><b>-c</b><dd>Display lock region statistics, as described in <a href="../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a>.
-<p><dt><b>-d</b><dd>Display database statistics for the specified file, as described in
+<dt><b>-c</b><dd>Display locking subsystem statistics, as described in <a href="../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a>.
+<dt><b>-d</b><dd>Display database statistics for the specified file, as described in
 <a href="../api_c/db_stat.html">DB-&gt;stat</a>.
 <p>If the database contains multiple databases and the <b>-s</b> flag is
 not specified, the statistics are for the internal database that describes
 the other databases the file contains, and not for the file as a whole.</p>
-<p><dt><b>-e</b><dd>Display current environment statistics.
-<p><dt><b>-f</b><dd>Display only those database statistics that can be
+<dt><b>-E</b><dd>Display internal information about the database environment, including
+all configured subsystems of the database environment.  (The
+output from this option is often both voluminous and meaningless, and
+is intended only for debugging.)
+<dt><b>-e</b><dd>Display information about the database environment, including
+all configured subsystems of the database environment.
+<dt><b>-f</b><dd>Display only those database statistics that can be
 acquired without traversing the database.
-<p><dt><b>-h</b><dd>Specify a home directory for the database environment; by
+<dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
-<p><dt><b>-l</b><dd>Display log region statistics, as described in <a href="../api_c/log_stat.html">DB_ENV-&gt;log_stat</a>.
-<p><dt><b>-M</b><dd>Display internal information about the shared memory buffer pool.  (The
-output from this option is often both voluminous and meaningless, and is
-intended only for debugging.)
-<p><dl compact>
-<p><dt>A<dd>Display all information.
+<dt><b>-l</b><dd>Display logging subsystem statistics, as described in <a href="../api_c/log_stat.html">DB_ENV-&gt;log_stat</a>.
+<dt><b>-M</b><dd>Display internal information about the cache.  (The output from this
+option is often both voluminous and meaningless, and is intended only
+for debugging.)
+<dl compact>
+<dt>A<dd>Display all information.
 <dt>h<dd>Display buffers within hash chains.
-<dt>m<dd>Display region memory information.
 </dl>
-<p><dt><b>-m</b><dd>Display shared memory buffer pool statistics, as described in
-<a href="../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a>.
-<p><dt><b>-N</b><dd>Do not acquire shared region mutexes while running.  Other problems,
+<dt><b>-m</b><dd>Display cache statistics, as described in <a href="../api_c/memp_stat.html">DB_ENV-&gt;memp_stat</a>.
+<dt><b>-N</b><dd>Do not acquire shared region mutexes while running.  Other problems,
 such as potentially fatal errors in Berkeley DB, will be ignored as well.
 This option is intended only for debugging errors, and should not be
 used under any other circumstances.
-<p><dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
+<dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
 password strings as soon as possible, be aware there may be a window of
 vulnerability on systems where unprivileged users can see command-line
 arguments or where utilities are not able to overwrite the memory
 containing the command-line arguments.
-<p><dt><b>-r</b><dd>Display replication statistics, as described in <a href="../api_c/rep_stat.html">DB_ENV-&gt;rep_stat</a>.
-<p><dt><b>-s</b><dd>Display statistics for the specified database contained in the file
+<dt><b>-R</b><dd>Display internal information about the replication subsystem.  (The
+output from this option is often both voluminous and meaningless, and
+is intended only for debugging.)
+<dl compact>
+<dt>A<dd>Display all information.
+</dl>
+<dt><b>-r</b><dd>Display replication statistics, as described in <a href="../api_c/rep_stat.html">DB_ENV-&gt;rep_stat</a>.
+<dt><b>-s</b><dd>Display statistics for the specified database contained in the file
 specified with the <b>-d</b> flag.
-<p><dt><b>-t</b><dd>Display transaction region statistics, as described in <a href="../api_c/txn_stat.html">DB_ENV-&gt;txn_stat</a>.
-<p><dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
-<p><dt><b>-Z</b><dd>Reset the statistics after reporting them; valid only with the
-<b>-c</b>, <b>-e</b>, <b>-l</b>, <b>-m</b>, and <b>-t</b>
+<dt><b>-t</b><dd>Display transaction subsystem statistics, as described in <a href="../api_c/txn_stat.html">DB_ENV-&gt;txn_stat</a>.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-Z</b><dd>Reset the statistics after reporting them; valid only with the <b>-C</b>,
+<b>-c</b>, <b>-E</b>, <b>-e</b>, <b>-L</b>, <b>-l</b>,
+<b>-M</b>, <b>-m</b>, <b>-R</b>, <b>-r</b>, and <b>-t</b>
 options.
 </dl>
 <p>Values normally displayed in quantities of bytes are displayed as a
@@ -90,12 +98,12 @@ to release all environment resources and exit cleanly, send it an
 interrupt signal (SIGINT).</p>
 <p>The db_stat utility exits 0 on success, and &gt;0 if an error occurs.</p>
 <h3>Environment Variables</h3>
-<p><dl compact>
-<p><dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
+<dl compact>
+<dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
 DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

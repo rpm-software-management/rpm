@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: log.h,v 11.68 2003/11/20 18:32:19 bostic Exp $
+ * $Id: log.h,v 11.89 2004/09/24 00:43:18 bostic Exp $
  */
 
 #ifndef _LOG_H_
@@ -65,7 +65,9 @@ struct __log_persist;	typedef struct __log_persist LOGP;
 #define	LFNAME_V1	"log.%05d"	/* Log file name template, rev 1. */
 
 #define	LG_MAX_DEFAULT		(10 * MEGABYTE)	/* 10 MB. */
+#define	LG_MAX_INMEM		(256 * 1024)	/* 256 KB. */
 #define	LG_BSIZE_DEFAULT	(32 * 1024)	/* 32 KB. */
+#define	LG_BSIZE_INMEM		(1 * MEGABYTE)	/* 1 MB. */
 #define	LG_BASE_REGION_SIZE	(60 * 1024)	/* 60 KB. */
 
 /*
@@ -158,8 +160,8 @@ struct __log {
 	SH_TAILQ_HEAD(__fq1) fq;	/* List of file names. */
 	int32_t	fid_max;		/* Max fid allocated. */
 	roff_t	free_fid_stack;		/* Stack of free file ids. */
-	int	free_fids;		/* Height of free fid stack. */
-	int	free_fids_alloced;	/* Number of free fid slots alloc'ed. */
+	u_int	free_fids;		/* Height of free fid stack. */
+	u_int	free_fids_alloced;	/* N free fid slots allocated. */
 
 	/*
 	 * The lsn LSN is the file offset that we're about to write and which
@@ -178,7 +180,16 @@ struct __log {
 	u_int32_t w_off;		/* Current write offset in the file. */
 	u_int32_t len;			/* Length of the last record. */
 
+	DB_LSN	  active_lsn;		/* Oldest active LSN in the buffer. */
+	size_t	  a_off;		/* Offset in the buffer of first active
+					   file. */
+
 	/*
+	 * Due to alignment constraints on some architectures (e.g. HP-UX),
+	 * DB_MUTEXes must be the first element of shalloced structures,
+	 * and as a corollary there can be only one per structure.  Thus,
+	 * flush_mutex_off points to a mutex in a separately-allocated chunk.
+	 *
 	 * The s_lsn LSN is the last LSN that we know is on disk, not just
 	 * written, but synced.  This field is protected by the flush mutex
 	 * rather than by the region mutex.
@@ -190,11 +201,12 @@ struct __log {
 	DB_LOG_STAT stat;		/* Log statistics. */
 
 	/*
-	 * !!! - NOTE that the next 6 fields, waiting_lsn, verify_lsn,
-	 * max_wait_lsn, wait_recs, rcvd_recs, and ready_lsn are NOT
-	 * protected by the log region lock.  They are protected by
-	 * db_rep->db_mutexp. If you need access to both, you must
-	 * acquire the db_mutexp before acquiring the log region lock.
+	 * !!! - NOTE that the next 7 fields, waiting_lsn, verify_lsn,
+	 * max_wait_lsn, maxperm_lsn, wait_recs, rcvd_recs,
+	 * and ready_lsn are NOT protected
+	 * by the log region lock.  They are protected by db_rep->db_mutexp.
+	 * If you need access to both, you must acquire db_rep->db_mutexp
+	 * before acquiring the log region lock.
 	 *
 	 * The waiting_lsn is used by the replication system.  It is the
 	 * first LSN that we are holding without putting in the log, because
@@ -212,6 +224,7 @@ struct __log {
 	DB_LSN	  waiting_lsn;		/* First log record after a gap. */
 	DB_LSN	  verify_lsn;		/* LSN we are waiting to verify. */
 	DB_LSN	  max_wait_lsn;		/* Maximum LSN requested. */
+	DB_LSN	  max_perm_lsn;		/* Maximum PERMANENT LSN processed. */
 	u_int32_t wait_recs;		/* Records to wait before requesting. */
 	u_int32_t rcvd_recs;		/* Records received while waiting. */
 	/*
@@ -232,17 +245,33 @@ struct __log {
 	 */
 	DB_LSN	cached_ckp_lsn;
 
+	u_int32_t regionmax;		/* Configured size of the region. */
+
 	roff_t	  buffer_off;		/* Log buffer offset in the region. */
 	u_int32_t buffer_size;		/* Log buffer size. */
 
 	u_int32_t log_size;		/* Log file's size. */
 	u_int32_t log_nsize;		/* Next log file's size. */
 
-	u_int32_t ncommit;		/* Number of txns waiting to commit. */
+	/*
+	 * DB_LOG_AUTOREMOVE and DB_LOG_INMEMORY: not protected by a mutex,
+	 * all we care about is if they're zero or non-zero.
+	 */
+	int	  db_log_autoremove;
+	int	  db_log_inmemory;
 
+	u_int32_t ncommit;		/* Number of txns waiting to commit. */
 	DB_LSN	  t_lsn;		/* LSN of first commit */
 	SH_TAILQ_HEAD(__commit) commits;/* list of txns waiting to commit. */
 	SH_TAILQ_HEAD(__free) free_commits;/* free list of commit structs. */
+
+	/*
+	 * In-memory logs maintain a list of the start positions of all log
+	 * files currently active in the in-memory buffer.  This is to make the
+	 * lookup from LSN to log buffer offset efficient.
+	 */
+	SH_TAILQ_HEAD(__logfile) logfiles;
+	SH_TAILQ_HEAD(__free_logfile) free_logfiles;
 
 #ifdef HAVE_MUTEX_SYSTEM_RESOURCES
 #define	LG_MAINT_SIZE	(sizeof(roff_t) * DB_MAX_HANDLES)
@@ -253,8 +282,7 @@ struct __log {
 
 /*
  * __db_commit structure --
- *	One of these is allocated for each transaction waiting
- * to commit.
+ *	One of these is allocated for each transaction waiting to commit.
  */
 struct __db_commit {
 	DB_MUTEX	mutex;		/* Mutex for txn to wait on. */
@@ -265,15 +293,75 @@ struct __db_commit {
 	u_int32_t	flags;
 };
 
+/*
+ * Check for the proper progression of Log Sequence Numbers.
+ * If we are rolling forward the LSN on the page must be greater
+ * than or equal to the previous LSN in log record.
+ * We ignore NOT LOGGED LSNs.  The user did an unlogged update.
+ * We should eventually see a log record that matches and continue
+ * forward.
+ * If truncate is supported then a ZERO LSN implies a page that was
+ * allocated prior to the recovery start pont and then truncated
+ * later in the log.  An allocation of a page after this
+ * page will extend the file, leaving a hole.  We want to
+ * ignore this page until it is truncated again.
+ *
+ */
+
+#ifdef HAVE_FTRUNCATE
 #define	CHECK_LSN(redo, cmp, lsn, prev)					\
-	if (DB_REDO(redo) && (cmp) < 0 && !IS_NOT_LOGGED_LSN(*(lsn))) {	\
-		__db_err(dbenv,						\
-	"Log sequence error: page LSN %lu %lu; previous LSN %lu %lu",	\
-		    (u_long)(lsn)->file, (u_long)(lsn)->offset,		\
-		    (u_long)(prev)->file, (u_long)(prev)->offset);	\
-		ret = EINVAL;						\
+	if (DB_REDO(redo) && (cmp) < 0 &&				\
+	    !IS_NOT_LOGGED_LSN(*(lsn)) && !IS_ZERO_LSN(*(lsn))) {	\
+		ret = __db_check_lsn(dbenv, lsn, prev);			\
 		goto out;						\
 	}
+#else
+#define	CHECK_LSN(redo, cmp, lsn, prev)					\
+	if (DB_REDO(redo) && (cmp) < 0 && !IS_NOT_LOGGED_LSN(*(lsn))) {	\
+		ret = __db_check_lsn(dbenv, lsn, prev);			\
+		goto out;						\
+	}
+#endif
+
+/*
+ * Helper for in-memory logs -- check whether an offset is in range
+ * in a ring buffer (inclusive of start, exclusive of end).
+ */
+struct __db_filestart {
+	u_int32_t	file;
+	size_t		b_off;
+
+	SH_TAILQ_ENTRY	links;		/* Either on free or waiting list. */
+};
+
+#define	RINGBUF_LEN(lp, start, end)					\
+	((start) < (end) ?						\
+	    (end) - (start) : (lp)->buffer_size - ((start) - (end)))
+
+/*
+ * Internal macro to set pointer to the begin_lsn for generated
+ * logging routines.  If begin_lsn is already set then do nothing.
+ */
+#undef DB_SET_BEGIN_LSNP
+#define	DB_SET_BEGIN_LSNP(txn, rlsnp) do {				\
+	DB_LSN *__lsnp;							\
+	TXN_DETAIL *__td;						\
+	__td = (TXN_DETAIL *)R_ADDR((txn)->mgrp->dbenv,			\
+	    &(txn)->mgrp->reginfo, (txn)->off);				\
+	while (__td->parent != INVALID_ROFF)				\
+		__td = (TXN_DETAIL *)R_ADDR((txn)->mgrp->dbenv,		\
+		    &(txn)->mgrp->reginfo, __td->parent);		\
+	__lsnp = &__td->begin_lsn;					\
+	if (IS_ZERO_LSN(*__lsnp))					\
+		*(rlsnp) = __lsnp;					\
+} while (0)
+
+/*
+ * These are used in __log_backup to determine which LSN in the
+ * checkpoint record to compare and return.
+ */
+#define	CKPLSN_CMP	0
+#define	LASTCKP_CMP	1
 
 /*
  * Status codes indicating the validity of a log file examined by

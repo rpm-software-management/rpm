@@ -1,23 +1,22 @@
-<!--$Id: txn_recover.so,v 10.24 2003/11/08 19:17:51 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: txn_recover.so,v 10.25 2004/08/13 03:39:03 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;txn_recover</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;txn_recover</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -42,7 +41,7 @@ be filled in with a list of transactions that must be resolved by the
 application (committed, aborted or discarded).  The <b>preplist</b>
 parameter is a structure of type DB_PREPLIST; the following DB_PREPLIST
 fields will be filled in:</p>
-<p><dl compact>
+<dl compact>
 <dt>DB_TXN * txn;<dd>The transaction handle for the transaction.
 <dt>u_int8_t gid[DB_XIDDATASIZE];<dd>The global transaction ID for the transaction.  The global transaction
 ID is the one specified when the transaction was prepared.  The
@@ -57,21 +56,18 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>count</b><dd>
-The <b>count</b> parameter specifies the number of available entries
+<dl compact>
+<dt><b>count</b><dd>The <b>count</b> parameter specifies the number of available entries
 in the passed-in <b>preplist</b> array.  The <b>retp</b> parameter
 returns the number of entries DB_ENV-&gt;txn_recover has filled in, in the
 array.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to one of the following values:
-<p><dl compact>
-<p><dt><a name="DB_FIRST">DB_FIRST</a><dd>Begin returning a list of prepared, but not yet resolved transactions.
-<p><dt><a name="DB_NEXT">DB_NEXT</a><dd>Continue returning a list of prepared, but not yet resolved transactions,
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
+<dl compact>
+<dt><a name="DB_FIRST">DB_FIRST</a><dd>Begin returning a list of prepared, but not yet resolved transactions.
+<dt><a name="DB_NEXT">DB_NEXT</a><dd>Continue returning a list of prepared, but not yet resolved transactions,
 starting where the last call to DB_ENV-&gt;txn_recover left off.
 </dl>
-<p><dt><b>preplist</b><dd>
-The <b>preplist</b> parameter references memory into which
+<dt><b>preplist</b><dd>The <b>preplist</b> parameter references memory into which
  the list of transactions to be resolved by the application is copied.
 </dl>
 <hr size=1 noshade>
@@ -83,6 +79,6 @@ The <b>preplist</b> parameter references memory into which
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

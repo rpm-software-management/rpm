@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_remove.c,v 11.219 2004/09/16 17:55:17 margo Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_remove.c,v 11.214 2003/09/04 18:56:41 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -68,7 +66,7 @@ __dbenv_dbremove_pp(dbenv, txn, name, subdb, flags)
 		goto err;
 
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 1, txn != NULL)) != 0)
 		goto err;
 
 	ret = __db_remove_int(dbp, txn, name, subdb, flags);
@@ -93,7 +91,7 @@ __dbenv_dbremove_pp(dbenv, txn, name, subdb, flags)
 	}
 
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 err:	if (txn_local)
 		ret = __db_txn_auto_resolve(dbenv, txn, 0, ret);
@@ -152,14 +150,14 @@ __db_remove_pp(dbp, name, subdb, flags)
 		return (ret);
 
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 1, 0)) != 0)
 		return (ret);
 
 	/* Remove the file. */
 	ret = __db_remove(dbp, NULL, name, subdb, flags);
 
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 	return (ret);
 }
 
@@ -202,7 +200,6 @@ __db_remove_int(dbp, txn, name, subdb, flags)
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
-	DB_LSN newlsn;
 	int ret;
 	char *real_name, *tmpname;
 
@@ -242,7 +239,7 @@ __db_remove_int(dbp, txn, name, subdb, flags)
 		goto err;
 
 	if (dbp->db_am_remove != NULL &&
-	    (ret = dbp->db_am_remove(dbp, NULL, name, subdb, &newlsn)) != 0)
+	    (ret = dbp->db_am_remove(dbp, NULL, name, subdb)) != 0)
 		goto err;
 
 	ret = __fop_remove(dbenv, NULL, dbp->fileid, name, DB_APP_DATA,
@@ -319,7 +316,7 @@ err:
 		ret = t_ret;
 
 	if (mdbp != NULL &&
-	    (t_ret = __db_close(mdbp, txn, 0)) != 0 && ret == 0)
+	    (t_ret = __db_close(mdbp, txn, DB_NOSYNC)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -332,7 +329,6 @@ __db_dbtxn_remove(dbp, txn, name)
 	const char *name;
 {
 	DB_ENV *dbenv;
-	DB_LSN newlsn;
 	int ret;
 	char *tmpname;
 
@@ -357,7 +353,7 @@ __db_dbtxn_remove(dbp, txn, name)
 
 	/* The internal removes will also translate into delayed removes. */
 	if (dbp->db_am_remove != NULL &&
-	    (ret = dbp->db_am_remove(dbp, txn, tmpname, NULL, &newlsn)) != 0)
+	    (ret = dbp->db_am_remove(dbp, txn, tmpname, NULL)) != 0)
 		goto err;
 
 	ret = __fop_remove(dbenv, txn, dbp->fileid, tmpname, DB_APP_DATA,

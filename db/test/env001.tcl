@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: env001.tcl,v 11.27 2003/01/08 05:49:42 bostic Exp $
+# $Id: env001.tcl,v 11.28 2004/01/28 03:36:27 bostic Exp $
 #
 # TEST	env001
 # TEST	Test of env remove interface (formerly env_remove).

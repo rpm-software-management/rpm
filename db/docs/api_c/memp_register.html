@@ -1,23 +1,22 @@
-<!--$Id: memp_register.so,v 10.37 2003/11/19 03:47:47 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: memp_register.so,v 10.38 2004/08/13 03:38:58 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;memp_register</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;memp_register</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -60,25 +59,13 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>ftype</b><dd>
-The <b>ftype</b> parameter specifies the type of file for which the
+<dl compact>
+<dt><b>ftype</b><dd>The <b>ftype</b> parameter specifies the type of file for which the
 page-in and page-out functions will be called.
 <p>The <b>ftype</b> value for a file must be a non-zero positive number
 less than 128 (0 and negative numbers are reserved for internal use by
 the Berkeley DB library).</p>
-<p><dt><b>pgin_fcn</b><dd>
-The page-in and page-out functions.
-<p>The <b>pgin_fcn</b> and <b>pgout_fcn</b> functions are called with a
-reference to the current database environment, the page number being
-read or written, a pointer to the page being read or written, and any
-parameter <b>pgcookie</b> that was specified to the
-<a href="../api_c/memp_set_pgcookie.html">DB_MPOOLFILE-&gt;set_pgcookie</a> method.</p>
-<p>The <b>pgin_fcn</b> and <b>pgout_fcn</b> functions should return 0 on
-success, and a non-zero value on failure, in which case the shared Berkeley DB
-library function calling it will also fail, returning that non-zero
-value.  The non-zero value should be selected from values outside of the
-Berkeley DB library namespace.</p>
+<dt><b>pgin_fcn<dd>pgout_fcn</b>
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -89,6 +76,6 @@ Berkeley DB library namespace.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test019.tcl,v 11.22 2003/01/08 05:53:44 bostic Exp $
+# $Id: test019.tcl,v 11.24 2004/04/22 18:57:32 sue Exp $
 #
 # TEST	test019
 # TEST	Partial get test.
@@ -101,8 +101,13 @@ proc test019 { method {nentries 10000} args } {
 
 		set maxndx [expr [string length $data] - 1]
 
-		set beg [berkdb random_int 0 [expr $maxndx - 1]]
-		set len [berkdb random_int 0 [expr $maxndx * 2]]
+		if { $maxndx > 0 } {
+			set beg [berkdb random_int 0 [expr $maxndx - 1]]
+			set len [berkdb random_int 0 [expr $maxndx * 2]]
+		} else {
+			set beg 0
+			set len 0
+		}
 
 		if { $txnenv == 1 } {
 			set t [$env txn]

@@ -1,4 +1,4 @@
-# $Id: sosuffix.ac,v 1.3 2003/04/19 05:11:55 dda Exp $
+# $Id: sosuffix.ac,v 1.4 2004/08/14 20:00:45 dda Exp $
 # Determine shared object suffixes.
 #
 # Our method is to use the libtool variable $library_names_spec,
@@ -18,11 +18,11 @@ AC_DEFUN(_SOSUFFIX_INTERNAL, [
 	versuffix=""
 	release=""
 	libname=libfoo
-	eval _SOSUFFIX=\"$shrext\"
-	if test "X$_SOSUFFIX" = "" ; then
+	eval _SOSUFFIX=\"$shrext_cmds\"
+	if test "$_SOSUFFIX" = "" ; then
 		_SOSUFFIX=".so"
 		if test `$LIBTOOL_PROG --config | grep build_libtool_libs | grep no` 2>/dev/null; then
-			if test "X$_SOSUFFIX_MESSAGE" = "X"; then
+			if test "$_SOSUFFIX_MESSAGE" = ""; then
 				_SOSUFFIX_MESSAGE=yes
         			AC_MSG_WARN([libtool may not know about this architecture.])
                			AC_MSG_WARN([assuming $_SUFFIX suffix for dynamic libraries.])

@@ -1,24 +1,13 @@
-__APIREL__/utility/berkeley_db_svc.html__OCT__2 @berkeley_db_svc
-__APIREL__/utility/berkeley_db_svc.html__OCT__3 utility to support @RPC client/server
-__APIREL__/utility/db_archive.html__OCT__2 @db_archive
-__APIREL__/utility/db_archive.html__OCT__3 utility to @archive log files
-__APIREL__/utility/db_checkpoint.html__OCT__2 @db_checkpoint
-__APIREL__/utility/db_checkpoint.html__OCT__3 utility to take @checkpoints
-__APIREL__/utility/db_deadlock.html__OCT__2 @db_deadlock
-__APIREL__/utility/db_deadlock.html__OCT__3 utility to detect @deadlocks
-__APIREL__/utility/db_dump.html__OCT__2 @db_dump
-__APIREL__/utility/db_dump.html__OCT__3 utility to @dump databases as text files
-__APIREL__/utility/db_load.html__OCT__2 @db_load
-__APIREL__/utility/db_load.html__OCT__3 utility to @load text files into databases
-__APIREL__/utility/db_printlog.html__OCT__2 @db_printlog
-__APIREL__/utility/db_printlog.html__OCT__3 utility to display @log files as text
-__APIREL__/utility/db_recover.html__OCT__2 @db_recover
-__APIREL__/utility/db_recover.html__OCT__3 utility to @recover database environments
-__APIREL__/utility/db_stat.html__OCT__2 @db_stat
-__APIREL__/utility/db_stat.html__OCT__3 utility to display database and environment @statistics
-__APIREL__/utility/db_upgrade.html__OCT__2 @db_upgrade
-__APIREL__/utility/db_upgrade.html__OCT__3 utility to upgrade @database files
-__APIREL__/utility/db_upgrade.html__OCT__4 utility to @upgrade database files
-__APIREL__/utility/db_verify.html__OCT__2 @db_verify
-__APIREL__/utility/db_verify.html__OCT__3 utility to verify @database files
-__APIREL__/utility/db_verify.html__OCT__4 utility to @verify database files
+__APIREL__/utility/berkeley_db_svc.html__OCT__2 utility to support @RPC client/server
+__APIREL__/utility/db_archive.html__OCT__2 utility to @archive log files
+__APIREL__/utility/db_checkpoint.html__OCT__2 utility to take @checkpoints
+__APIREL__/utility/db_deadlock.html__OCT__2 utility to detect @deadlocks
+__APIREL__/utility/db_dump.html__OCT__2 utility to @dump databases as text files
+__APIREL__/utility/db_load.html__OCT__2 utility to @load text files into databases
+__APIREL__/utility/db_printlog.html__OCT__2 utility to display @log files as text
+__APIREL__/utility/db_recover.html__OCT__2 utility to @recover database environments
+__APIREL__/utility/db_stat.html__OCT__2 utility to display database and environment @statistics
+__APIREL__/utility/db_upgrade.html__OCT__2 utility to upgrade @database files
+__APIREL__/utility/db_upgrade.html__OCT__3 utility to @upgrade database files
+__APIREL__/utility/db_verify.html__OCT__2 utility to verify @database files
+__APIREL__/utility/db_verify.html__OCT__3 utility to @verify database files

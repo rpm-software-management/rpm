@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: shelltest.tcl,v 1.28 2003/09/04 23:41:15 bostic Exp $
+# $Id: shelltest.tcl,v 1.31 2004/03/15 21:09:49 bostic Exp $
 #
 # TEST	scr###
 # TEST	The scr### directories are shell scripts that test a variety of
@@ -96,3 +96,6 @@ proc scr024 {} { shelltest 24 }
 proc scr025 {} { shelltest 25 }
 proc scr026 {} { shelltest 26 }
 proc scr027 {} { shelltest 27 }
+proc scr028 {} { shelltest 28 }
+proc scr029 {} { shelltest 29 }
+proc scr030 {} { shelltest 30 }

@@ -1,23 +1,22 @@
-<!--$Id: log_file.so,v 10.32 2003/11/08 19:17:36 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: log_file.so,v 10.34 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::log_file</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbEnv::log_file</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -45,24 +44,27 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>lsn</b><dd>
-The <b>lsn</b> parameter is the
+<dl compact>
+<dt><b>lsn</b><dd>The <b>lsn</b> parameter is the
 <a href="../api_cxx/lsn_class.html">DbLsn</a> object
 for which a filename is wanted.
-<p><dt><b>namep</b><dd>
-The <b>namep</b> parameter references memory into which
+<dt><b>namep</b><dd>The <b>namep</b> parameter references memory into which
  the name of the file containing the record named by <b>lsn</b> is copied.
-<p><dt><b>len</b><dd>
-The <b>len</b> parameter is the length of the <b>namep</b> buffer in
+<dt><b>len</b><dd>The <b>len</b> parameter is the length of the <b>namep</b> buffer in
 bytes.  If <b>namep</b> is too short to hold the filename,
 DbEnv::log_file will fail.  (Log filenames are normally quite short,
 on the order of 10 characters.)
 </dl>
 <h3>Errors</h3>
-<p>If the supplied buffer was too small to hold the log filename, the DbEnv::log_file method will fail and
-either return ENOMEM or
-throw a <a href="../api_cxx/memp_class.html">DbMemoryException</a> exception.</p>
+<p>The DbEnv::log_file method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>If supplied buffer was too small to hold the log filename; or if an
+invalid flag value or parameter was specified.
+</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/logc_class.html">DbLogc</a>, <a href="../api_cxx/lsn_class.html">DbLsn</a>
@@ -72,6 +74,6 @@ throw a <a href="../api_cxx/memp_class.html">DbMemoryException</a> exception.</p
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

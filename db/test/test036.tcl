@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test036.tcl,v 11.19 2003/01/08 05:53:52 bostic Exp $
+# $Id: test036.tcl,v 11.20 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test036
 # TEST	Test KEYFIRST and KEYLAST when the key doesn't exist

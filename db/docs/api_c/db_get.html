@@ -1,23 +1,22 @@
-<!--$Id: db_get.so,v 10.79 2003/12/03 15:11:47 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_get.so,v 10.84 2004/09/28 15:04:19 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;get</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;get</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -33,28 +32,21 @@ DB-&gt;pget(DB *db,
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB-&gt;get</h3>
-<a name="3"><!--meow--></a>
 <p>The DB-&gt;get method retrieves key/data pairs from the database.  The
-address
-and length of the data associated with the specified <b>key</b> are
-returned in the structure to which <b>data</b> refers.</p>
+address and length of the data associated with the specified <b>key</b>
+are returned in the structure to which <b>data</b> refers.</p>
 <p>In the presence of duplicate key values, DB-&gt;get will return the
 first data item for the designated key.  Duplicates are sorted by insert
 order, except where this order has been overridden by cursor operations.
 <b>Retrieval of duplicates requires the use of cursor operations.</b>
 See <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> for details.</p>
 <p>When called on a database that has been made into a secondary index
-using the <a href="../api_c/db_associate.html">DB-&gt;associate</a> method, the DB-&gt;get
-and DB-&gt;pget methods return
-the key from the secondary index and the data item from the primary
-database.  In addition, the
-DB-&gt;pget method
+using the <a href="../api_c/db_associate.html">DB-&gt;associate</a> method, the DB-&gt;get and
+DB-&gt;pget methods return the key from the secondary index and the data
+item from the primary database.  In addition, the DB-&gt;pget method
 returns the key from the primary database.  In databases that are not
-secondary indices, the
-DB-&gt;pget method
-will always fail.</p>
-<p>
-The DB-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if the specified key is not in the database.
+secondary indices, the DB-&gt;pget method will always fail.</p>
+<p>The DB-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if the specified key is not in the database.
 The DB-&gt;get method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if the database is a Queue or Recno database and
 the specified key exists, but was never explicitly created by the
 application or was later deleted.
@@ -63,21 +55,19 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>data</b><dd>
-The data <a href="../api_c/dbt_class.html">DBT</a> operated on.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dl compact>
+<dt><b>data</b><dd>The data <a href="../api_c/dbt_class.html">DBT</a> operated on.
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 one of the following values:
-<p><dl compact>
-<p><dt><a name="DB_CONSUME">DB_CONSUME</a><dd>Return the record number and data from the available record closest to
+<dl compact>
+<dt><a name="DB_CONSUME">DB_CONSUME</a><dd>Return the record number and data from the available record closest to
 the head of the queue, and delete the record.  The cursor will be
 positioned on the deleted record.  The record number will be returned
 in <b>key</b>, as described in <a href="../api_c/dbt_class.html">DBT</a>.  The data will be returned
 in the <b>data</b> parameter.  A record is available if it is not
 deleted and is not currently locked.  The underlying database must be
 of type Queue for DB_CONSUME to be specified.
-<p><dt><a name="DB_CONSUME_WAIT">DB_CONSUME_WAIT</a><dd>The DB_CONSUME_WAIT flag is the same as the DB_CONSUME
+<dt><a name="DB_CONSUME_WAIT">DB_CONSUME_WAIT</a><dd>The DB_CONSUME_WAIT flag is the same as the DB_CONSUME
 flag, except that if the Queue database is empty, the thread of control
 will wait until there is data in the queue before returning.  The
 underlying database must be of type Queue for DB_CONSUME_WAIT
@@ -87,37 +77,36 @@ with the DB_CONSUME_WAIT flag
 may return <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a>.
 This failure, by itself, does not require the enclosing transaction be
 aborted.</p>
-<p><dt><a name="DB_GET_BOTH">DB_GET_BOTH</a><dd>Retrieve the key/data pair only if both the key and data match the
+<dt><a name="DB_GET_BOTH">DB_GET_BOTH</a><dd>Retrieve the key/data pair only if both the key and data match the
 arguments.
-<p>When used with the
-DB-&gt;pget method
-version of this method on a secondary index handle, return the
-secondary key/primary key/data tuple only if both the primary and
-secondary keys match the arguments.  It is an error to use the
-DB_GET_BOTH flag with the
-DB-&gt;get
+<p>When used with the DB-&gt;pget method version of this method on a
+secondary index handle, return the secondary key/primary key/data tuple
+only if both the primary and secondary keys match the arguments.  It is
+an error to use the DB_GET_BOTH flag with the DB-&gt;get
 version of this method and a secondary index handle.</p>
-<p><dt><a name="DB_SET_RECNO">DB_SET_RECNO</a><dd>Retrieve the specified numbered key/data pair from a database.  Upon
+<dt><a name="DB_SET_RECNO">DB_SET_RECNO</a><dd>Retrieve the specified numbered key/data pair from a database.  Upon
 return, both the <b>key</b> and <b>data</b> items will have been
 filled in.
-<p>The <b>data</b> field of the specified <b>key</b>
-must be a pointer to a logical record number (that is, a <b>db_recno_t</b>).
-This record number determines the record to be retrieved.
+<p>The <b>data</b> field of the specified <b>key</b> must be a pointer
+to a logical record number (that is, a <b>db_recno_t</b>).  This record
+number determines the record to be retrieved.</p>
 <p>For DB_SET_RECNO to be specified, the underlying database must be
-of type Btree, and it must have been created with the DB_RECNUM flag.</p></p>
+of type Btree, and it must have been created with the DB_RECNUM flag.</p>
 </dl>
 In addition, the following flags may be set by
 bitwise inclusively <b>OR</b>'ing them into the <b>flags</b> parameter:
-<p><dl compact>
-<p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DB-&gt;get call within a transaction.  If the call
+<dl compact>
+<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DB-&gt;get call within a transaction.  If the call
 succeeds, changes made by the operation will be recoverable.  If the
 call fails, the operation will have made no changes.  This flag may only
 be specified with the DB_CONSUME and DB_CONSUME_WAIT
 flags.
-<p><dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Read modified but not yet committed data.  Silently ignored if the
+<dt><a name="DB_DEGREE_2">DB_DEGREE_2</a><dd>Perform the get operation with degree 2 isolation.
+The read is not repeatable.
+<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Read modified but not yet committed data.  Silently ignored if the
 <a href="../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag was not specified when the underlying
 database was opened.
-<p><dt><a name="DB_MULTIPLE">DB_MULTIPLE</a><dd>Return multiple data items in the buffer to which the <b>data</b>
+<dt><a name="DB_MULTIPLE">DB_MULTIPLE</a><dd>Return multiple data items in the buffer to which the <b>data</b>
 parameter refers.
 <p>In the case of Btree or Hash databases, all of the data items associated
 with the specified key are entered into the buffer.  In the case of
@@ -130,7 +119,7 @@ least as large as the page size of the underlying database, aligned for
 unsigned integer access, and be a multiple of 1024 bytes in size.  If
 the buffer size is insufficient, then upon return from the call the size
 field of the <b>data</b> parameter will have been set to an estimated
-buffer size, and the error ENOMEM is returned.  (The size is an estimate as the
+buffer size, and the error DB_BUFFER_SMALL is returned.  (The size is an estimate as the
 exact size needed may not be known until all entries are read.  It is
 best to initially provide a relatively large buffer, but applications
 should be prepared to resize the buffer as necessary and repeatedly call
@@ -142,7 +131,7 @@ into secondary indices using the <a href="../api_c/db_associate.html">DB-&gt;ass
 <p>See
 <a href="../api_c/dbt_bulk.html#DB_MULTIPLE_INIT">DB_MULTIPLE_INIT</a>
 for more information.</p>
-<p><dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
 Setting this flag can eliminate deadlock during a read-modify-write
 cycle by acquiring the write lock during the read part of the cycle so
 that another thread of control acquiring a read lock for the same item,
@@ -152,46 +141,43 @@ Berkeley DB calls in non-transactional operations, the <a href="../api_c/dbc_get
 to the DB-&gt;get call is meaningful only in the presence of
 transactions.</p>
 </dl>
-<p><dt><b>key</b><dd>
-The key <a href="../api_c/dbt_class.html">DBT</a> operated on.
-<p><dt><b>pkey</b><dd>
-The <b>pkey</b> parameter is the return key from the primary database.
-<p><dt><b>txnid</b><dd>
-If the operation is to be transaction-protected,
+<dt><b>key</b><dd>The key <a href="../api_c/dbt_class.html">DBT</a> operated on.
+<dt><b>pkey</b><dd>The <b>pkey</b> parameter is the return key from the primary database.
+<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
 the <b>txnid</b> parameter is a transaction handle returned from
 <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;get method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
+<dl compact>
+<dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
 a deadlock.
-<p><dt>DB_LOCK_NOTGRANTED<dd>A Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
+<dt>DB_LOCK_NOTGRANTED<dd>A Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
 to grant a lock in the allowed time.
 </dl>
-<p><dl compact>
-<p><dt>DB_LOCK_NOTGRANTED<dd>The DB_CONSUME_WAIT flag was specified, lock or transaction
+<dl compact>
+<dt>DB_LOCK_NOTGRANTED<dd>The DB_CONSUME_WAIT flag was specified, lock or transaction
 timers were configured and the lock could not be granted before the wait-time expired.
 </dl>
-<p><dl compact>
-<p><dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+<dl compact>
+<dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
 </dl>
-<p><dl compact>
-<p><dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
+<dl compact>
+<dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>If a record number of 0 was specified;
+<dl compact>
+<dt>EINVAL<dd>If a record number of 0 was specified;
 the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag was specified to the <a href="../api_c/db_open.html">DB-&gt;open</a> method and
 none of the <a href="../api_c/dbt_class.html#DB_DBT_MALLOC">DB_DBT_MALLOC</a>, <a href="../api_c/dbt_class.html#DB_DBT_REALLOC">DB_DBT_REALLOC</a> or
 <a href="../api_c/dbt_class.html#DB_DBT_USERMEM">DB_DBT_USERMEM</a> flags were set in the <a href="../api_c/dbt_class.html">DBT</a>;
-the DB-&gt;pget method
-was called with a <a href="../api_c/db_class.html">DB</a> handle that does not refer to a secondary index; or if an
+the DB-&gt;pget method was called with a <a href="../api_c/db_class.html">DB</a> handle that does not
+refer to a secondary index; or if an
 invalid flag value or parameter was specified.
 </dl>
-<p><dl compact>
-<p><dt>ENOMEM<dd>The requested item could not be returned due to insufficient memory.
+<dl compact>
+<dt>DB_BUFFER_SMALL<dd>The requested item could not be returned due to undersized buffer.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -202,6 +188,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,9 +1,9 @@
 # Sel the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: rpc002.tcl,v 1.23 2003/09/19 16:53:26 sandstro Exp $
+# $Id: rpc002.tcl,v 1.25 2004/07/15 17:19:12 sue Exp $
 #
 # TEST	rpc002
 # TEST	Test invalid RPC functions and make sure we error them correctly
@@ -45,7 +45,7 @@ proc rpc002 { } {
 		{ "-lock_conflict {3 {0 0 0 0 0 1 0 1 1}}"	"Rpc002.b4"}
 		{ "-lock_detect default"	"Rpc002.b5"}
 		{ "-lock_max 100"		"Rpc002.b6"}
-		{ "-mmapsize 100"		"Rpc002.b7"}
+		{ "-mpool_mmap_size 100"	"Rpc002.b7"}
 		{ "-shm_key 100"		"Rpc002.b9"}
 		{ "-tmp_dir $rpc_testdir"	"Rpc002.b10"}
 		{ "-txn_max 100"		"Rpc002.b11"}

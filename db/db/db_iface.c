@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_iface.c,v 11.121 2004/10/07 17:33:32 sue Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_iface.c,v 11.106 2003/10/02 02:57:46 margo Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -21,8 +19,8 @@ static const char revid[] = "$Id: db_iface.c,v 11.106 2003/10/02 02:57:46 margo 
 #include "dbinc/db_page.h"
 #include "dbinc/db_shash.h"
 #include "dbinc/btree.h"
-#include "dbinc/hash.h"
-#include "dbinc/qam.h"
+#include "dbinc/hash.h"			/* For __db_no_hash_am(). */
+#include "dbinc/qam.h"			/* For __db_no_queue_am(). */
 #include "dbinc/lock.h"
 #include "dbinc/log.h"
 #include "dbinc/mp.h"
@@ -42,7 +40,6 @@ static int __db_open_arg __P((DB *,
 static int __db_pget_arg __P((DB *, DBT *, u_int32_t));
 static int __db_put_arg __P((DB *, DBT *, DBT *, u_int32_t));
 static int __db_rdonly __P((const DB_ENV *, const char *));
-static int __db_stat_arg __P((DB *, u_int32_t));
 static int __dbt_ferr __P((const DB *, const char *, const DBT *, int));
 
 /*
@@ -53,7 +50,6 @@ static int __dbt_ferr __P((const DB *, const char *, const DBT *, int));
 #define	IS_READONLY(dbp)						\
     (F_ISSET(dbp, DB_AM_RDONLY) ||					\
     (IS_REP_CLIENT((dbp)->dbenv) &&					\
-    !IS_REP_LOGSONLY((dbp)->dbenv) &&					\
     !F_ISSET((dbp), DB_AM_CL_WRITER)))
 
 /*
@@ -133,7 +129,7 @@ __db_associate_pp(dbp, txn, sdbp, callback, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
 		goto err;
 
 	while ((sdbc = TAILQ_FIRST(&sdbp->free_queue)) != NULL)
@@ -145,7 +141,7 @@ __db_associate_pp(dbp, txn, sdbp, callback, flags)
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 err:	return (txn_local ? __db_txn_auto_resolve(dbenv, txn, 0, ret) : ret);
 }
@@ -192,7 +188,8 @@ __db_associate_arg(dbp, sdbp, callback, flags)
 	    "The primary and secondary must be opened in the same environment");
 		return (EINVAL);
 	}
-	if (DB_IS_THREADED(dbp) != DB_IS_THREADED(sdbp)) {
+	if ((DB_IS_THREADED(dbp) && !DB_IS_THREADED(sdbp)) ||
+	    (!DB_IS_THREADED(dbp) && DB_IS_THREADED(sdbp))) {
 		__db_err(dbenv,
 	    "The DB_THREAD setting must be the same for primary and secondary");
 		return (EINVAL);
@@ -244,15 +241,18 @@ __db_close_pp(dbp, flags)
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (t_ret = __db_rep_enter(dbp, 0, 0)) != 0 && ret == 0)
-		ret = t_ret;
+	    (t_ret = __db_rep_enter(dbp, 0, 0, 0)) != 0) {
+		handle_check = 0;
+		if (ret == 0)
+			ret = t_ret;
+	}
 
 	if ((t_ret = __db_close(dbp, NULL, flags)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -293,14 +293,14 @@ __db_cursor_pp(dbp, txn, dbcp, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
 		return (ret);
 
 	ret = __db_cursor(dbp, txn, dbcp, flags);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -351,6 +351,10 @@ __db_cursor(dbp, txn, dbcp, flags)
 	    (txn != NULL && F_ISSET(txn, TXN_DIRTY_READ)))
 		F_SET(dbc, DBC_DIRTY_READ);
 
+	if (LF_ISSET(DB_DEGREE_2) ||
+	    (txn != NULL && F_ISSET(txn, TXN_DEGREE_2)))
+		F_SET(dbc, DBC_DEGREE_2);
+
 	*dbcp = dbc;
 	return (0);
 
@@ -371,11 +375,14 @@ __db_cursor_arg(dbp, flags)
 
 	dbenv = dbp->dbenv;
 
-	/* DB_DIRTY_READ is the only valid bit-flag and requires locking. */
-	if (LF_ISSET(DB_DIRTY_READ)) {
+	/*
+	 * DB_DIRTY_READ  and DB_DGREE_2 are the only valid bit-flags
+	 * and requires locking.
+	 */
+	if (LF_ISSET(DB_DIRTY_READ | DB_DEGREE_2)) {
 		if (!LOCKING_ON(dbenv))
 			return (__db_fnl(dbenv, "DB->cursor"));
-		LF_CLR(DB_DIRTY_READ);
+		LF_CLR(DB_DIRTY_READ | DB_DEGREE_2);
 	}
 
 	/* Check for invalid function flags. */
@@ -438,14 +445,14 @@ __db_del_pp(dbp, txn, key, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
 		goto err;
 
 	ret = __db_del(dbp, txn, key, flags);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 err:	return (txn_local ? __db_txn_auto_resolve(dbenv, txn, 0, ret) : ret);
 }
@@ -501,7 +508,7 @@ __db_fd_pp(dbp, fdp)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, 0)) != 0)
 		return (ret);
 
 	/*
@@ -527,7 +534,7 @@ __db_fd_pp(dbp, fdp)
 
 err:	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -579,14 +586,14 @@ __db_get_pp(dbp, txn, key, data, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
 		goto err;
 
 	ret = __db_get(dbp, txn, key, data, flags);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 err:	return (txn_local ? __db_txn_auto_resolve(dbenv, txn, 0, ret) : ret);
 }
@@ -612,6 +619,9 @@ __db_get(dbp, txn, key, data, flags)
 	if (LF_ISSET(DB_DIRTY_READ)) {
 		mode = DB_DIRTY_READ;
 		LF_CLR(DB_DIRTY_READ);
+	} else if (LF_ISSET(DB_DEGREE_2)) {
+		mode = DB_DEGREE_2;
+		LF_CLR(DB_DEGREE_2);
 	} else if ((flags & DB_OPFLAGS_MASK) == DB_CONSUME ||
 	    (flags & DB_OPFLAGS_MASK) == DB_CONSUME_WAIT)
 		mode = DB_WRITELOCK;
@@ -674,12 +684,14 @@ __db_get_arg(dbp, key, data, flags)
 	 * flag in a path where CDB may have been configured.
 	 */
 	check_thread = dirty = 0;
-	if (LF_ISSET(DB_DIRTY_READ | DB_RMW)) {
+	if (LF_ISSET(DB_DIRTY_READ | DB_RMW | DB_DEGREE_2)) {
 		if (!LOCKING_ON(dbenv))
 			return (__db_fnl(dbenv, "DB->get"));
-		if (LF_ISSET(DB_DIRTY_READ))
-			dirty = 1;
-		LF_CLR(DB_DIRTY_READ | DB_RMW);
+		dirty = LF_ISSET(DB_DIRTY_READ | DB_DEGREE_2);
+		if ((ret = __db_fcchk(dbenv,
+		    "DB->get", flags, DB_DIRTY_READ, DB_DEGREE_2)) != 0)
+			return (ret);
+		LF_CLR(DB_DIRTY_READ | DB_RMW | DB_DEGREE_2);
 	}
 
 	multi = 0;
@@ -711,7 +723,9 @@ __db_get_arg(dbp, key, data, flags)
 		check_thread = 1;
 		if (dirty) {
 			__db_err(dbenv,
-    "DB_DIRTY_READ is not supported with DB_CONSUME or DB_CONSUME_WAIT");
+    "%s is not supported with DB_CONSUME or DB_CONSUME_WAIT",
+			     LF_ISSET(DB_DIRTY_READ) ?
+			     "DB_DIRTY_READ" : "DB_DEGREE_2");
 			return (EINVAL);
 		}
 		if (multi)
@@ -782,15 +796,15 @@ __db_join_pp(primary, curslist, dbcp, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, primary);
-	if (handle_check &&
-	    (ret = __db_rep_enter(primary, 1, curslist[0]->txn != NULL)) != 0)
+	if (handle_check && (ret =
+	    __db_rep_enter(primary, 1, 0, curslist[0]->txn != NULL)) != 0)
 		return (ret);
 
 	ret = __db_join(primary, curslist, dbcp, flags);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -799,7 +813,7 @@ __db_join_pp(primary, curslist, dbcp, flags)
  * __db_join_arg --
  *	Check DB->join arguments.
  */
-int
+static int
 __db_join_arg(primary, curslist, flags)
 	DB *primary;
 	DBC **curslist;
@@ -873,7 +887,7 @@ __db_key_range_pp(dbp, txn, key, kr, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
 		return (ret);
 
 	/*
@@ -906,7 +920,7 @@ __db_key_range_pp(dbp, txn, key, kr, flags)
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -970,8 +984,11 @@ __db_open_pp(dbp, txn, fname, dname, type, flags, mode)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check &&
+	    (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0) {
+		handle_check = 0;
 		goto err;
+	}
 
 	if ((ret = __db_open(dbp,
 	    txn, fname, dname, type, flags, mode, PGNO_BASE_MD)) != 0)
@@ -1022,7 +1039,7 @@ err:	if (ret != 0 && txn == NULL) {
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (txn_local ?
 	    __db_txn_auto_resolve(dbenv, txn, nosync, ret) : ret);
@@ -1183,14 +1200,14 @@ __db_pget_pp(dbp, txn, skey, pkey, data, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
 		return (ret);
 
 	ret = __db_pget(dbp, txn, skey, pkey, data, flags);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -1346,14 +1363,14 @@ __db_put_pp(dbp, txn, key, data, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
 		goto err;
 
 	ret = __db_put(dbp, txn, key, data, flags);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 err:	return (txn_local ? __db_txn_auto_resolve(dbenv, txn, 0, ret) : ret);
 }
@@ -1409,128 +1426,16 @@ err:		return (__db_ferr(dbenv, "DB->put", 0));
 	if ((ret = __dbt_ferr(dbp, "data", data, 0)) != 0)
 		return (ret);
 
+	/* Keys shouldn't have partial flags during a put. */
+	if (F_ISSET(key, DB_DBT_PARTIAL))
+		return (__db_ferr(dbenv, "key DBT", 0));
+
 	/* Check for partial puts in the presence of duplicates. */
 	if (F_ISSET(data, DB_DBT_PARTIAL) &&
 	    (F_ISSET(dbp, DB_AM_DUP) || F_ISSET(key, DB_DBT_DUPOK))) {
 		__db_err(dbenv,
 "a partial put in the presence of duplicates requires a cursor operation");
 		return (EINVAL);
-	}
-
-	return (0);
-}
-
-/*
- * __db_stat_pp --
- *	DB->stat pre/post processing.
- *
- * PUBLIC: int __db_stat_pp __P((DB *, void *, u_int32_t));
- */
-int
-__db_stat_pp(dbp, spp, flags)
-	DB *dbp;
-	void *spp;
-	u_int32_t flags;
-{
-	DB_ENV *dbenv;
-	int handle_check, ret;
-
-	dbenv = dbp->dbenv;
-
-	PANIC_CHECK(dbp->dbenv);
-	DB_ILLEGAL_BEFORE_OPEN(dbp, "DB->stat");
-
-	if ((ret = __db_stat_arg(dbp, flags)) != 0)
-		return (ret);
-
-	/* Check for replication block. */
-	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0)) != 0)
-		return (ret);
-
-	ret = __db_stat(dbp, spp, flags);
-
-	/* Release replication block. */
-	if (handle_check)
-		__db_rep_exit(dbenv);
-
-	return (ret);
-}
-
-/*
- * __db_stat --
- *	DB->stat.
- *
- * PUBLIC: int __db_stat __P((DB *, void *, u_int32_t));
- */
-int
-__db_stat(dbp, spp, flags)
-	DB *dbp;
-	void *spp;
-	u_int32_t flags;
-{
-	DB_ENV *dbenv;
-	DBC *dbc;
-	int ret, t_ret;
-
-	dbenv = dbp->dbenv;
-
-	/* Acquire a cursor. */
-	if ((ret = __db_cursor(dbp, NULL, &dbc, 0)) != 0)
-		return (ret);
-
-	DEBUG_LWRITE(dbc, NULL, "DB->stat", NULL, NULL, flags);
-
-	switch (dbp->type) {
-	case DB_BTREE:
-	case DB_RECNO:
-		ret = __bam_stat(dbc, spp, flags);
-		break;
-	case DB_HASH:
-		ret = __ham_stat(dbc, spp, flags);
-		break;
-	case DB_QUEUE:
-		ret = __qam_stat(dbc, spp, flags);
-		break;
-	case DB_UNKNOWN:
-	default:
-		ret = (__db_unknown_type(dbenv, "DB->stat", dbp->type));
-		break;
-	}
-
-	if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
-		ret = t_ret;
-
-	return (ret);
-}
-
-/*
- * __db_stat_arg --
- *	Check DB->stat arguments.
- */
-static int
-__db_stat_arg(dbp, flags)
-	DB *dbp;
-	u_int32_t flags;
-{
-	DB_ENV *dbenv;
-
-	dbenv = dbp->dbenv;
-
-	/* Check for invalid function flags. */
-	switch (flags) {
-	case 0:
-	case DB_FAST_STAT:
-	case DB_CACHED_COUNTS:		/* Deprecated and undocumented. */
-		break;
-	case DB_RECORDCOUNT:		/* Deprecated and undocumented. */
-		if (dbp->type == DB_RECNO)
-			break;
-		if (dbp->type == DB_BTREE && F_ISSET(dbp, DB_AM_RECNUM))
-			break;
-		goto err;
-	default:
-err:		return (__db_ferr(dbenv, "DB->stat", 0));
 	}
 
 	return (0);
@@ -1564,14 +1469,14 @@ __db_sync_pp(dbp, flags)
 
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0)) != 0)
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, 0)) != 0)
 		return (ret);
 
 	ret = __db_sync(dbp);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -1610,14 +1515,14 @@ __db_c_close_pp(dbc)
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 0, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 0, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	ret = __db_c_close(dbc);
 
 	/* Release replication block. */
 	if (handle_check)
-		__env_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -1660,14 +1565,14 @@ __db_c_count_pp(dbc, recnop, flags)
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 1, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 1, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	ret = __db_c_count(dbc, recnop);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -1702,7 +1607,7 @@ __db_c_del_pp(dbc, flags)
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 1, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 1, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	DEBUG_LWRITE(dbc, dbc->txn, "DBcursor->del", NULL, NULL, flags);
@@ -1711,7 +1616,7 @@ __db_c_del_pp(dbc, flags)
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -1788,14 +1693,14 @@ __db_c_dup_pp(dbc, dbcp, flags)
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 1, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 1, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	ret = __db_c_dup(dbc, dbcp, flags);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -1827,7 +1732,7 @@ __db_c_get_pp(dbc, key, data, flags)
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 1, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 1, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	DEBUG_LREAD(dbc, dbc->txn, "DBcursor->get",
@@ -1837,7 +1742,7 @@ __db_c_get_pp(dbc, key, data, flags)
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -1986,6 +1891,55 @@ err:		return (__db_ferr(dbenv, "DBcursor->get", 0));
 }
 
 /*
+ * __db_secondary_close_pp --
+ *	DB->close for secondaries
+ *
+ * PUBLIC: int __db_secondary_close_pp __P((DB *, u_int32_t));
+ */
+int
+__db_secondary_close_pp(dbp, flags)
+	DB *dbp;
+	u_int32_t flags;
+{
+	DB_ENV *dbenv;
+	int handle_check, ret, t_ret;
+
+	dbenv = dbp->dbenv;
+	ret = 0;
+
+	PANIC_CHECK(dbenv);
+
+	/*
+	 * !!!
+	 * The actual argument checking is simple, do it inline.
+	 *
+	 * Validate arguments and complain if they're wrong, but as a DB
+	 * handle destructor, we can't fail.
+	 */
+	if (flags != 0 && flags != DB_NOSYNC &&
+	    (t_ret = __db_ferr(dbenv, "DB->close", 0)) != 0 && ret == 0)
+		ret = t_ret;
+
+	/* Check for replication block. */
+	handle_check = IS_REPLICATED(dbenv, dbp);
+	if (handle_check &&
+	    (t_ret = __db_rep_enter(dbp, 0, 0, 0)) != 0) {
+		handle_check = 0;
+		if (ret == 0)
+			ret = t_ret;
+	}
+
+	if ((t_ret = __db_secondary_close(dbp, flags)) != 0 && ret == 0)
+		ret = t_ret;
+
+	/* Release replication block. */
+	if (handle_check)
+		__env_db_rep_exit(dbenv);
+
+	return (ret);
+}
+
+/*
  * __db_c_pget_pp --
  *	DBC->c_pget pre/post processing.
  *
@@ -2015,14 +1969,14 @@ __db_c_pget_pp(dbc, skey, pkey, data, flags)
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 1, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 1, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	ret = __db_c_pget(dbc, skey, pkey, data, flags);
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -2122,7 +2076,7 @@ __db_c_put_pp(dbc, key, data, flags)
 	/* Check for replication block. */
 	handle_check = IS_REPLICATED(dbenv, dbp);
 	if (handle_check &&
-	    (ret = __db_rep_enter(dbp, 1, dbc->txn != NULL)) != 0)
+	    (ret = __db_rep_enter(dbp, 1, 0, dbc->txn != NULL)) != 0)
 		return (ret);
 
 	DEBUG_LWRITE(dbc, dbc->txn, "DBcursor->put",
@@ -2134,7 +2088,7 @@ __db_c_put_pp(dbc, key, data, flags)
 
 	/* Release replication block. */
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -2220,6 +2174,10 @@ err:		return (__db_ferr(dbenv, "DBcursor->put", 0));
 		return (ret);
 	if ((ret = __dbt_ferr(dbp, "data", data, 0)) != 0)
 		return (ret);
+
+	/* Keys shouldn't have partial flags during a put. */
+	if (F_ISSET(key, DB_DBT_PARTIAL))
+		return (__db_ferr(dbenv, "key DBT", 0));
 
 	/*
 	 * The cursor must be initialized for anything other than DB_KEYFIRST

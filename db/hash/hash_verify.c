@@ -1,17 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: hash_verify.c,v 1.58 2003/06/30 17:20:13 bostic Exp $
+ * $Id: hash_verify.c,v 1.62 2004/10/11 18:47:50 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: hash_verify.c,v 1.58 2003/06/30 17:20:13 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -175,6 +171,9 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 err:	if ((t_ret =
 	    __db_vrfy_putpageinfo(dbp->dbenv, vdp, pip)) != 0 && ret == 0)
 		ret = t_ret;
+	if (LF_ISSET(DB_SALVAGE) &&
+	   (t_ret = __db_salvage_markdone(vdp, pgno)) != 0 && ret == 0)
+		ret = t_ret;
 	return ((ret == 0 && isbad == 1) ? DB_VERIFY_BAD : ret);
 }
 
@@ -201,11 +200,6 @@ __ham_vrfy(dbp, vdp, h, pgno, flags)
 	isbad = 0;
 	if ((ret = __db_vrfy_getpageinfo(vdp, pgno, &pip)) != 0)
 		return (ret);
-
-	/* Sanity check our flags and page type. */
-	if ((ret = __db_fchk(dbp->dbenv, "__ham_vrfy",
-	    flags, DB_AGGRESSIVE | DB_NOORDERCHK | DB_SALVAGE)) != 0)
-		goto err;
 
 	if (TYPE(h) != P_HASH) {
 		TYPE_ERR_PRINT(dbp->dbenv, "__ham_vrfy", pgno, TYPE(h));
@@ -861,7 +855,7 @@ __ham_salvage(dbp, vdp, pgno, h, handle, callback, flags)
 keydata:			memcpy(buf, HKEYDATA_DATA(hk), len);
 				dbt.size = len;
 				dbt.data = buf;
-				if ((ret = __db_prdbt(&dbt,
+				if ((ret = __db_vrfy_prdbt(&dbt,
 				    0, " ", handle, callback, 0, vdp)) != 0)
 					err_ret = ret;
 				break;
@@ -875,11 +869,11 @@ keydata:			memcpy(buf, HKEYDATA_DATA(hk), len);
 				if ((ret = __db_safe_goff(dbp, vdp,
 				    dpgno, &dbt, &buf, flags)) != 0) {
 					err_ret = ret;
-					(void)__db_prdbt(&unkdbt, 0, " ",
+					(void)__db_vrfy_prdbt(&unkdbt, 0, " ",
 					    handle, callback, 0, vdp);
 					break;
 				}
-				if ((ret = __db_prdbt(&dbt,
+				if ((ret = __db_vrfy_prdbt(&dbt,
 				    0, " ", handle, callback, 0, vdp)) != 0)
 					err_ret = ret;
 				break;
@@ -892,7 +886,8 @@ keydata:			memcpy(buf, HKEYDATA_DATA(hk), len);
 				    HOFFPAGE_PGNO(hk), sizeof(dpgno));
 				/* UNKNOWN iff pgno is bad or we're a key. */
 				if (!IS_VALID_PGNO(dpgno) || (i % 2 == 0)) {
-					if ((ret = __db_prdbt(&unkdbt, 0, " ",
+					if ((ret =
+					    __db_vrfy_prdbt(&unkdbt, 0, " ",
 					    handle, callback, 0, vdp)) != 0)
 						err_ret = ret;
 				} else if ((ret = __db_salvage_duptree(dbp,
@@ -935,7 +930,7 @@ keydata:			memcpy(buf, HKEYDATA_DATA(hk), len);
 					memcpy(buf, hk + tlen, dlen);
 					dbt.size = dlen;
 					dbt.data = buf;
-					if ((ret = __db_prdbt(&dbt, 0, " ",
+					if ((ret = __db_vrfy_prdbt(&dbt, 0, " ",
 					    handle, callback, 0, vdp)) != 0)
 						err_ret = ret;
 					tlen += sizeof(db_indx_t);

@@ -1,17 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_deadlock.c,v 11.45 2004/03/24 15:13:12 bostic Exp $
  */
 
 #include "db_config.h"
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
-static const char revid[] =
-    "$Id: db_deadlock.c,v 11.41 2003/06/17 14:36:44 bostic Exp $";
+    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -95,6 +95,9 @@ db_deadlock_main(argc, argv)
 			case 'o':
 				atype = DB_LOCK_OLDEST;
 				break;
+			case 'W':
+				atype = DB_LOCK_MAXWRITE;
+				break;
 			case 'w':
 				atype = DB_LOCK_MINWRITE;
 				break;
@@ -176,8 +179,8 @@ db_deadlock_main(argc, argv)
 	}
 
 	/* An environment is required. */
-	if ((ret = dbenv->open(dbenv, home,
-	    DB_JOINENV | DB_USE_ENVIRON, 0)) != 0) {
+	if ((ret =
+	    dbenv->open(dbenv, home, DB_INIT_LOCK | DB_USE_ENVIRON, 0)) != 0) {
 		dbenv->err(dbenv, ret, "open");
 		goto shutdown;
 	}
@@ -196,7 +199,7 @@ db_deadlock_main(argc, argv)
 		/* Make a pass every "secs" secs and "usecs" usecs. */
 		if (secs == 0 && usecs == 0)
 			break;
-		(void)__os_sleep(dbenv, secs, usecs);
+		__os_sleep(dbenv, secs, usecs);
 	}
 
 	if (0) {
@@ -225,7 +228,7 @@ db_deadlock_usage()
 {
 	(void)fprintf(stderr, "%s\n\t%s\n",
 	    "usage: db_deadlock [-Vv]",
-	    "[-a e | m | n | o | w | y] [-h home] [-L file] [-t sec.usec]");
+	    "[-a e | m | n | o | W | w | y] [-h home] [-L file] [-t sec.usec]");
 	return (EXIT_FAILURE);
 }
 

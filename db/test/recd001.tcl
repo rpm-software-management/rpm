@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: recd001.tcl,v 11.42 2003/04/24 23:38:51 mjc Exp $
+# $Id: recd001.tcl,v 11.43 2004/01/28 03:36:28 bostic Exp $
 #
 # TEST	recd001
 # TEST	Per-operation recovery tests for non-duplicate, non-split

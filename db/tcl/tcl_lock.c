@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: tcl_lock.c,v 11.59 2004/10/07 16:48:39 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: tcl_lock.c,v 11.53 2003/11/26 23:14:22 ubell Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -25,7 +23,7 @@ static const char revid[] = "$Id: tcl_lock.c,v 11.53 2003/11/26 23:14:22 ubell E
 /*
  * Prototypes for procedures defined later in this file:
  */
-#if CONFIG_TEST
+#ifdef CONFIG_TEST
 static int      lock_Cmd __P((ClientData, Tcl_Interp *, int, Tcl_Obj * CONST*));
 static int	_LockMode __P((Tcl_Interp *, Tcl_Obj *, db_lockmode_t *));
 static int	_GetThisLock __P((Tcl_Interp *, DB_ENV *, u_int32_t,
@@ -47,9 +45,10 @@ tcl_LockDetect(interp, objc, objv, envp)
 	DB_ENV *envp;			/* Environment pointer */
 {
 	static const char *ldopts[] = {
-		"expire",
 		"default",
+		"expire",
 		"maxlocks",
+		"maxwrites",
 		"minlocks",
 		"minwrites",
 		"oldest",
@@ -58,9 +57,10 @@ tcl_LockDetect(interp, objc, objv, envp)
 		 NULL
 	};
 	enum ldopts {
-		LD_EXPIRE,
 		LD_DEFAULT,
+		LD_EXPIRE,
 		LD_MAXLOCKS,
+		LD_MAXWRITES,
 		LD_MINLOCKS,
 		LD_MINWRITES,
 		LD_OLDEST,
@@ -79,37 +79,41 @@ tcl_LockDetect(interp, objc, objv, envp)
 			return (IS_HELP(objv[i]));
 		i++;
 		switch ((enum ldopts)optindex) {
-		case LD_EXPIRE:
-			FLAG_CHECK(policy);
-			policy = DB_LOCK_EXPIRE;
-			break;
 		case LD_DEFAULT:
 			FLAG_CHECK(policy);
 			policy = DB_LOCK_DEFAULT;
+			break;
+		case LD_EXPIRE:
+			FLAG_CHECK(policy);
+			policy = DB_LOCK_EXPIRE;
 			break;
 		case LD_MAXLOCKS:
 			FLAG_CHECK(policy);
 			policy = DB_LOCK_MAXLOCKS;
 			break;
-		case LD_MINWRITES:
+		case LD_MAXWRITES:
 			FLAG_CHECK(policy);
-			policy = DB_LOCK_MINWRITE;
+			policy = DB_LOCK_MAXWRITE;
 			break;
 		case LD_MINLOCKS:
 			FLAG_CHECK(policy);
 			policy = DB_LOCK_MINLOCKS;
 			break;
+		case LD_MINWRITES:
+			FLAG_CHECK(policy);
+			policy = DB_LOCK_MINWRITE;
+			break;
 		case LD_OLDEST:
 			FLAG_CHECK(policy);
 			policy = DB_LOCK_OLDEST;
 			break;
-		case LD_YOUNGEST:
-			FLAG_CHECK(policy);
-			policy = DB_LOCK_YOUNGEST;
-			break;
 		case LD_RANDOM:
 			FLAG_CHECK(policy);
 			policy = DB_LOCK_RANDOM;
+			break;
+		case LD_YOUNGEST:
+			FLAG_CHECK(policy);
+			policy = DB_LOCK_YOUNGEST;
 			break;
 		}
 	}
@@ -195,12 +199,12 @@ tcl_LockGet(interp, objc, objv, envp)
 
 	result = _GetThisLock(interp, envp, lockid, flag, &obj, mode, newname);
 	if (result == TCL_OK) {
-		res = Tcl_NewStringObj(newname, strlen(newname));
+		res = NewStringObj(newname, strlen(newname));
 		Tcl_SetObjResult(interp, res);
 	}
 out:
 	if (freeobj)
-		(void)__os_free(envp, otmp);
+		__os_free(envp, otmp);
 	return (result);
 }
 
@@ -268,7 +272,7 @@ tcl_LockStat(interp, objc, objv, envp)
 	MAKE_STAT_LIST("Number of transaction timeouts", sp->st_ntxntimeouts);
 	Tcl_SetObjResult(interp, res);
 error:
-	(void)__os_ufree(envp, sp);
+	__os_ufree(envp, sp);
 	return (result);
 }
 
@@ -420,6 +424,7 @@ tcl_LockVec(interp, objc, objv, envp)
 	memset(&list, 0, sizeof(DB_LOCKREQ));
 	flag = 0;
 	freeobj = 0;
+	otmp = NULL;
 
 	/*
 	 * If -nowait is given, it MUST be first arg.
@@ -503,10 +508,10 @@ tcl_LockVec(interp, objc, objv, envp)
 				    thisop);
 				goto error;
 			}
-			thisop = Tcl_NewStringObj(newname, strlen(newname));
+			thisop = NewStringObj(newname, strlen(newname));
 			(void)Tcl_ListObjAppendElement(interp, res, thisop);
-			if (freeobj) {
-				(void)__os_free(envp, otmp);
+			if (freeobj && otmp != NULL) {
+				__os_free(envp, otmp);
 				freeobj = 0;
 			}
 			continue;
@@ -576,8 +581,8 @@ tcl_LockVec(interp, objc, objv, envp)
 		if (ret != 0 && result == TCL_OK)
 			result = _ReturnSetup(interp, ret,
 			    DB_RETOK_STD(ret), "lock put");
-		if (freeobj) {
-			(void)__os_free(envp, otmp);
+		if (freeobj && otmp != NULL) {
+			__os_free(envp, otmp);
 			freeobj = 0;
 		}
 		/*
@@ -733,7 +738,7 @@ _GetThisLock(interp, envp, lockid, flag, objp, mode, newname)
 	ip->i_parent = envip;
 	ip->i_locker = lockid;
 	_SetInfoData(ip, lock);
-	Tcl_CreateObjCommand(interp, newname,
+	(void)Tcl_CreateObjCommand(interp, newname,
 	    (Tcl_ObjCmdProc *)lock_Cmd, (ClientData)lock, NULL);
 error:
 	return (result);

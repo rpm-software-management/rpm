@@ -1,4 +1,4 @@
-# $Id: tcl.ac,v 11.17 2003/10/13 21:04:04 bostic Exp $
+# $Id: tcl.ac,v 11.18 2004/03/11 20:11:17 bostic Exp $
 
 # The SC_* macros in this file are from the unix/tcl.m4 files in the Tcl
 # 8.3.0 distribution, with some minor changes.  For this reason, license
@@ -124,7 +124,6 @@ AC_DEFUN(SC_LOAD_TCLCONFIG, [
 
 # Optional Tcl API.
 AC_DEFUN(AM_TCL_LOAD, [
-if test "$db_cv_tcl" = "yes"; then
 	if test `$LIBTOOL_PROG --config | grep build_libtool_libs | grep no` 2>/dev/null; then
 		AC_MSG_ERROR([Tcl requires shared libraries])
 	fi
@@ -139,4 +138,4 @@ if test "$db_cv_tcl" = "yes"; then
 	fi
 
 	INSTALL_LIBS="${INSTALL_LIBS} \$(libtso_target)"
-fi])
+])

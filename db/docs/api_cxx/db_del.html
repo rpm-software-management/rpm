@@ -1,23 +1,22 @@
-<!--$Id: db_del.so,v 10.44 2003/11/08 19:17:18 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_del.so,v 10.45 2004/08/13 03:38:55 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::del</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::del</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -35,8 +34,7 @@ associated with the designated key will be discarded.</p>
 <p>When called on a database that has been made into a secondary index
 using the <a href="../api_cxx/db_associate.html">Db::associate</a> method, the Db::del method deletes the
 key/data pair from the primary database and all secondary indices.</p>
-<p>
-The Db::del method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if the specified key is not in the database.
+<p>The Db::del method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if the specified key is not in the database.
 The Db::del method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if the database is a Queue or Recno database and
 the specified key exists, but was never explicitly created by the
 application or was later deleted.
@@ -46,19 +44,16 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>key</b><dd>
-The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dl compact>
+<dt><b>key</b><dd>The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::del call within a transaction.  If the call succeeds,
+<dl compact>
+<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::del call within a transaction.  If the call succeeds,
 changes made by the operation will be recoverable.  If the call fails,
 the operation will have made no changes.
 </dl>
-<p><dt><b>txnid</b><dd>
-If the operation is to be transaction-protected,
+<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
 (other than by specifying the DB_AUTO_COMMIT flag),
 the <b>txnid</b> parameter is a transaction handle returned from
 <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
@@ -69,18 +64,18 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+<dl compact>
+<dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
 </dl>
-<p><dl compact>
-<p><dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
+<dl compact>
+<dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
 </dl>
-<p><dl compact>
-<p><dt>EACCES<dd>An attempt was made to modify a read-only database.
+<dl compact>
+<dt>EACCES<dd>An attempt was made to modify a read-only database.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <p>If a transactional database environment operation was selected to
@@ -100,6 +95,6 @@ throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exc
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

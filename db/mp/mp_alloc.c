@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mp_alloc.c,v 11.46 2004/09/15 21:49:19 mjc Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: mp_alloc.c,v 11.40 2003/07/03 02:24:34 bostic Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -18,11 +17,6 @@ static const char revid[] = "$Id: mp_alloc.c,v 11.40 2003/07/03 02:24:34 bostic 
 #include "db_int.h"
 #include "dbinc/db_shash.h"
 #include "dbinc/mp.h"
-
-typedef struct {
-	DB_MPOOL_HASH *bucket;
-	u_int32_t priority;
-} HS;
 
 static void __memp_bad_buffer __P((DB_MPOOL_HASH *));
 
@@ -56,7 +50,7 @@ __memp_alloc(dbmp, memreg, mfp, len, offsetp, retp)
 
 	dbenv = dbmp->dbenv;
 	c_mp = memreg->primary;
-	dbht = R_ADDR(memreg, c_mp->htab);
+	dbht = R_ADDR(dbenv, memreg, c_mp->htab);
 	hp_end = &dbht[c_mp->htab_buckets];
 
 	buckets = buffers = put_counter = total_buckets = 0;
@@ -91,13 +85,13 @@ __memp_alloc(dbmp, memreg, mfp, len, offsetp, retp)
 	 * we need in the hopes it will coalesce into a contiguous chunk of the
 	 * right size.  In the latter case we branch back here and try again.
 	 */
-alloc:	if ((ret = __db_shalloc(memreg->addr, len, MUTEX_ALIGN, &p)) == 0) {
+alloc:	if ((ret = __db_shalloc(memreg, len, MUTEX_ALIGN, &p)) == 0) {
 		if (mfp != NULL)
 			c_mp->stat.st_pages++;
 		R_UNLOCK(dbenv, memreg);
 
 found:		if (offsetp != NULL)
-			*offsetp = R_OFFSET(memreg, p);
+			*offsetp = R_OFFSET(dbenv, memreg, p);
 		*(void **)retp = p;
 
 		/*
@@ -208,7 +202,7 @@ found:		if (offsetp != NULL)
 				(void)__memp_sync_int(
 				    dbenv, NULL, 0, DB_SYNC_ALLOC, NULL);
 
-				(void)__os_sleep(dbenv, 1, 0);
+				__os_sleep(dbenv, 1, 0);
 				break;
 			default:
 				aggressive = 1;
@@ -268,7 +262,7 @@ found:		if (offsetp != NULL)
 		buffers++;
 
 		/* Find the associated MPOOLFILE. */
-		bh_mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
+		bh_mfp = R_ADDR(dbenv, dbmp->reginfo, bhp->mf_offset);
 
 		/* If the page is dirty, pin it and write it. */
 		ret = 0;
@@ -311,8 +305,8 @@ found:		if (offsetp != NULL)
 			goto found;
 		}
 
-		freed_space += __db_shsizeof(bhp);
-		__memp_bhfree(dbmp, hp, bhp, 1);
+		freed_space += __db_shalloc_sizeof(bhp);
+		__memp_bhfree(dbmp, hp, bhp, BH_FREE_FREEMEM);
 		if (aggressive > 1)
 			aggressive = 1;
 

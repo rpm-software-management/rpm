@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003
+# Copyright (c) 2003-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test103.tcl,v 1.6 2003/09/04 23:41:18 bostic Exp $
+# $Id: test103.tcl,v 1.7 2004/01/28 03:36:32 bostic Exp $
 #
 # TEST	test103
 # TEST	Test bulk get when record numbers wrap around.

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2004
+ *	Sleepycat Software.  All rights reserved.
  *
- * $Id: LocalIterator.java,v 1.3 2003/01/08 05:45:38 bostic Exp $
+ * $Id: LocalIterator.java,v 1.5 2004/04/06 20:43:41 mjc Exp $
  */
 
 package com.sleepycat.db.rpcserver;
@@ -17,7 +17,7 @@ import java.util.*;
  * Intentionally package-protected exposure.
  */
 interface LocalIterator {
-	boolean hasNext();
-	Object next();
-	void remove();
+    boolean hasNext();
+    Object next();
+    void remove();
 }

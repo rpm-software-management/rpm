@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2003
+ * Copyright (c) 2000-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_cam.c,v 11.156 2004/09/28 18:07:32 ubell Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_cam.c,v 11.140 2003/11/18 18:20:48 mjc Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -79,7 +77,7 @@ __db_c_close(dbc)
 	/*
 	 * Remove the cursor(s) from the active queue.  We may be closing two
 	 * cursors at once here, a top-level one and a lower-level, off-page
-	 * duplicate one.  The acess-method specific cursor close routine must
+	 * duplicate one.  The access-method specific cursor close routine must
 	 * close both of them in a single call.
 	 *
 	 * !!!
@@ -114,11 +112,8 @@ __db_c_close(dbc)
 		 * and secondary update cursors, a cursor in a CDB
 		 * environment may not have a lock at all.
 		 */
-		if (LOCK_ISSET(dbc->mylock)) {
-			if ((t_ret = __lock_put(
-			    dbenv, &dbc->mylock)) != 0 && ret == 0)
-				ret = t_ret;
-		}
+		if ((t_ret = __LPUT(dbc, dbc->mylock)) != 0 && ret == 0)
+			ret = t_ret;
 
 		/* For safety's sake, since this is going on the free queue. */
 		memset(&dbc->mylock, 0, sizeof(dbc->mylock));
@@ -248,7 +243,7 @@ __db_c_del(dbc, flags)
 {
 	DB *dbp;
 	DBC *opd;
-	int ret;
+	int ret, t_ret;
 
 	dbp = dbc->dbp;
 
@@ -295,6 +290,22 @@ __db_c_del(dbc, flags)
 	else
 		if ((ret = dbc->c_am_writelock(dbc)) == 0)
 			ret = opd->c_am_del(opd);
+
+	/*
+	 * If this was an update that is supporting dirty reads
+	 * then we may have just swapped our read for a write lock
+	 * which is held by the surviving cursor.  We need
+	 * to explicitly downgrade this lock.  The closed cursor
+	 * may only have had a read lock.
+	 */
+	if (F_ISSET(dbc->dbp, DB_AM_DIRTY) &&
+	    dbc->internal->lock_mode == DB_LOCK_WRITE) {
+		if ((t_ret =
+		    __TLPUT(dbc, dbc->internal->lock)) != 0 && ret == 0)
+			ret = t_ret;
+		if (t_ret == 0)
+			dbc->internal->lock_mode = DB_LOCK_WWRITE;
+	}
 
 done:	CDB_LOCKING_DONE(dbp, dbc);
 
@@ -367,7 +378,7 @@ __db_c_idup(dbc_orig, dbcp, flags)
 	    dbc_orig->locker, &dbc_n)) != 0)
 		return (ret);
 
-	/* If the user wants the cursor positioned, do it here.  */
+	/* Position the cursor if requested, acquiring the necessary locks. */
 	if (flags == DB_POSITION) {
 		int_n = dbc_n->internal;
 		int_orig = dbc_orig->internal;
@@ -401,9 +412,9 @@ __db_c_idup(dbc_orig, dbcp, flags)
 		}
 	}
 
-	/* Copy the dirty read flag to the new cursor. */
-	F_SET(dbc_n, F_ISSET(dbc_orig, DBC_DIRTY_READ));
-	F_SET(dbc_n, F_ISSET(dbc_orig, DBC_WRITECURSOR));
+	/* Copy the locking flags to the new cursor. */
+	F_SET(dbc_n,
+	    F_ISSET(dbc_orig, DBC_WRITECURSOR | DBC_DIRTY_READ | DBC_DEGREE_2));
 
 	/*
 	 * If we're in CDB and this isn't an offpage dup cursor, then
@@ -756,7 +767,8 @@ done:	/*
 		 * get set up unless there is an error.  Assume success
 		 * here.  This is the only call to c_am_bulk, and it avoids
 		 * setting it exactly the same everywhere.  If we have an
-		 * ENOMEM error, it'll get overwritten with the needed value.
+		 * DB_BUFFER_SMALL error, it'll get overwritten with the
+		 * needed value.
 		 */
 		data->size = data->ulen;
 		ret = dbc_n->c_am_bulk(dbc_n, data, flags | multi);
@@ -774,6 +786,19 @@ err:	/* Don't pass DB_DBT_ISSET back to application level, error or no. */
 
 	/* Cleanup and cursor resolution. */
 	if (opd != NULL) {
+		/*
+		 * To support dirty reads we must reget the write lock
+		 * if we have just stepped off a deleted record.
+		 * Since the OPD cursor does not know anything
+		 * about the referencing page or cursor we need
+		 * to peek at the OPD cursor and get the lock here.
+		 */
+		if (F_ISSET(dbc_arg->dbp, DB_AM_DIRTY) &&
+		     F_ISSET((BTREE_CURSOR *)
+		     dbc_arg->internal->opd->internal, C_DELETED))
+			if ((t_ret =
+			    dbc_arg->c_am_writelock(dbc_arg)) != 0 && ret != 0)
+				ret = t_ret;
 		if ((t_ret = __db_c_cleanup(
 		    dbc_arg->internal->opd, opd, ret)) != 0 && ret == 0)
 			ret = t_ret;
@@ -926,14 +951,6 @@ __db_c_put(dbc_arg, key, data, flags)
 	 */
 	rmw = STD_LOCKING(dbc_arg) ? DB_RMW : 0;
 
-	/*
-	 * Set pkey so we can use &pkey everywhere instead of key.
-	 * If DB_CURRENT is set and there is a key at the current
-	 * location, pkey will be overwritten before it's used.
-	 */
-	pkey.data = key->data;
-	pkey.size = key->size;
-
 	if (flags == DB_CURRENT) {		/* Step 1. */
 		/*
 		 * This is safe to do on the cursor we already have;
@@ -943,19 +960,25 @@ __db_c_put(dbc_arg, key, data, flags)
 		 * writing soon enough in the "normal" put code.  In
 		 * transactional databases we'll hold those write locks
 		 * even if we close the cursor we're reading with.
+		 *
+		 * The DB_KEYEMPTY return needs special handling -- if the
+		 * cursor is on a deleted key, we return DB_NOTFOUND.
 		 */
 		ret = __db_c_get(dbc_arg, &pkey, &olddata, rmw | DB_CURRENT);
-		if (ret == DB_KEYEMPTY) {
-			nodel = 1;	 /*
-					  * We know we don't need a delete
-					  * in the secondary.
-					  */
-			have_oldrec = 1; /* We've looked for the old record. */
-			ret = 0;
-		} else if (ret != 0)
+		if (ret == DB_KEYEMPTY)
+			ret = DB_NOTFOUND;
+		if (ret != 0)
 			goto err;
-		else
-			have_oldrec = 1;
+
+		have_oldrec = 1; /* We've looked for the old record. */
+	} else {
+		/*
+		 * Set pkey so we can use &pkey everywhere instead of key.
+		 * If DB_CURRENT is set and there is a key at the current
+		 * location, pkey will be overwritten before it's used.
+		 */
+		pkey.data = key->data;
+		pkey.size = key->size;
 	}
 
 	/*
@@ -1144,10 +1167,10 @@ __db_c_put(dbc_arg, key, data, flags)
 				goto skipput;
 		} else if (!F_ISSET(sdbp, DB_AM_DUPSORT)) {
 			/* Case 2. */
-			memset(&tempskey, 0, sizeof (DBT));
+			memset(&tempskey, 0, sizeof(DBT));
 			tempskey.data = skey.data;
 			tempskey.size = skey.size;
-			memset(&temppkey, 0, sizeof (DBT));
+			memset(&temppkey, 0, sizeof(DBT));
 			temppkey.data = pkey.data;
 			temppkey.size = pkey.size;
 			ret = __db_c_get(sdbc, &tempskey, &temppkey,
@@ -1499,6 +1522,22 @@ __db_c_cleanup(dbc, dbc_n, failed)
 	 */
 	if ((t_ret = __db_c_close(dbc_n)) != 0 && ret == 0)
 		ret = t_ret;
+
+	/*
+	 * If this was an update that is supporting dirty reads
+	 * then we may have just swapped our read for a write lock
+	 * which is held by the surviving cursor.  We need
+	 * to explicitly downgrade this lock.  The closed cursor
+	 * may only have had a read lock.
+	 */
+	if (F_ISSET(dbp, DB_AM_DIRTY) &&
+	    dbc->internal->lock_mode == DB_LOCK_WRITE) {
+		if ((t_ret =
+		    __TLPUT(dbc, dbc->internal->lock)) != 0 && ret == 0)
+			ret = t_ret;
+		if (t_ret == 0)
+			dbc->internal->lock_mode = DB_LOCK_WWRITE;
+	}
 
 	return (ret);
 }
@@ -1892,7 +1931,7 @@ __db_c_del_secondary(dbc)
 	else if (ret == DB_NOTFOUND)
 		ret = __db_secondary_corrupt(pdbp);
 
-	if ((t_ret = __db_c_close(pdbc)) != 0 && ret != 0)
+	if ((t_ret = __db_c_close(pdbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);

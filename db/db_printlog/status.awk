@@ -1,10 +1,10 @@
-# $Id: status.awk,v 10.4 2003/07/03 16:05:30 margo Exp $
+# $Id: status.awk,v 10.5 2004/09/24 00:43:17 bostic Exp $
 #
 # Read through db_printlog output and list all the transactions encountered
-# and whether they commited or aborted.
+# and whether they committed or aborted.
 #
 # 1 = started
-# 2 = commited
+# 2 = committed
 # 3 = explicitly aborted
 # 4 = other
 BEGIN {

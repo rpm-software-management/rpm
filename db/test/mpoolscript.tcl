@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: mpoolscript.tcl,v 11.17 2003/01/08 05:50:40 bostic Exp $
+# $Id: mpoolscript.tcl,v 11.18 2004/01/28 03:36:28 bostic Exp $
 #
 # Random multiple process mpool tester.
 # Usage: mpoolscript dir id numiters numfiles numpages sleepint

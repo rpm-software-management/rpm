@@ -1,15 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: TpcbExample.java,v 11.24 2003/10/20 20:12:32 mjc Exp $
+ * $Id: TpcbExample.java,v 11.26 2004/04/06 20:43:35 mjc Exp $
  */
 
 package com.sleepycat.examples.db;
 
 import com.sleepycat.db.*;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -25,8 +27,7 @@ import java.util.GregorianCalendar;
 // test, use the n flag to indicate a number of transactions to run in
 // each thread and -T to specify the number of threads.
 //
-class TpcbExample extends DbEnv
-{
+class TpcbExample {
     public static final int TELLERS_PER_BRANCH = 10;
     public static final int ACCOUNTS_PER_TELLER = 10000;
     public static final int HISTORY_PER_BRANCH = 2592000;
@@ -40,18 +41,18 @@ class TpcbExample extends DbEnv
 
     // VALID_SCALING configuration
     /*
-    public static final int ACCOUNTS = 1000000;
-    public static final int BRANCHES = 10;
-    public static final int TELLERS = 100;
-    public static final int HISTORY = 25920000;
+      public static final int ACCOUNTS = 1000000;
+      public static final int BRANCHES = 10;
+      public static final int TELLERS = 100;
+      public static final int HISTORY = 25920000;
     */
 
     // TINY configuration
     /*
-    public static final int ACCOUNTS = 1000;
-    public static final int BRANCHES = 10;
-    public static final int TELLERS = 100;
-    public static final int HISTORY = 10000;
+      public static final int ACCOUNTS = 1000;
+      public static final int BRANCHES = 10;
+      public static final int TELLERS = 100;
+      public static final int HISTORY = 10000;
     */
 
     // Default configuration
@@ -69,47 +70,55 @@ class TpcbExample extends DbEnv
     public static final int BRANCH = 1;
     public static final int TELLER = 2;
 
-    public  static boolean verbose = false;
-    public  static final String progname = "TpcbExample";    // Program name.
+    public static boolean verbose = false;
+    public static final String progname = "TpcbExample";    // Program name.
 
+    Environment dbenv;
     int accounts, branches, tellers, history;
 
-    public TpcbExample(String home,
+    public TpcbExample(File home,
                        int accounts, int branches, int tellers, int history,
-                       int cachesize, boolean initializing, int flags)
-        throws DbException, FileNotFoundException
-    {
-        super(0);
+                       int cachesize, boolean initializing, boolean noSync)
+        throws DatabaseException, FileNotFoundException {
+
         this.accounts = accounts;
         this.branches = branches;
         this.tellers = tellers;
         this.history = history;
-        setErrorStream(System.err);
-        setErrorPrefix(progname);
-        setCacheSize(cachesize == 0 ? 4 * 1024 * 1024 : cachesize, 0);
 
-        if ((flags & (Db.DB_TXN_NOSYNC)) != 0)
-            setFlags(Db.DB_TXN_NOSYNC, true);
-        flags &= ~(Db.DB_TXN_NOSYNC);
-        setLockDetect(Db.DB_LOCK_DEFAULT);
+        EnvironmentConfig config = new EnvironmentConfig();
+        config.setErrorStream(System.err);
+        config.setErrorPrefix(progname);
+        config.setCacheSize(cachesize == 0 ? 4 * 1024 * 1024 : cachesize);
+        config.setTxnNoSync(noSync);
+        config.setLockDetectMode(LockDetectMode.DEFAULT);
+        config.setAllowCreate(true);
 
-        int local_flags = flags | Db.DB_CREATE;
-        if (initializing)
-            local_flags |= Db.DB_INIT_MPOOL;
-        else
-            local_flags |= Db.DB_INIT_TXN | Db.DB_INIT_LOCK |
-                           Db.DB_INIT_LOG | Db.DB_INIT_MPOOL;
+        config.setInitializeCache(true);
+        config.setTransactional(!initializing);
+        config.setInitializeLocking(!initializing);
+        config.setInitializeLogging(!initializing);
 
-        open(home, local_flags, 0);        // may throw DbException
+        dbenv = new Environment(home, config);
+    }
+
+    public void close()
+        throws DatabaseException {
+
+        try {
+            if (dbenv != null)
+                dbenv.close();
+        } finally {
+            dbenv = null;
+        }
     }
 
     //
     // Initialize the database to the number of accounts, branches,
     // history records, and tellers given to the constructor.
     //
-    public void populate()
-    {
-        Db dbp = null;
+    public void populate() {
+        Database dbp = null;
 
         int err;
         int balance, idnum;
@@ -123,12 +132,14 @@ class TpcbExample extends DbEnv
         h_nelem = accounts;
 
         try {
-            dbp = new Db(this, 0);
-            dbp.setHashNumElements(h_nelem);
-            dbp.open(null, "account", null, Db.DB_HASH,
-                     Db.DB_CREATE | Db.DB_TRUNCATE, 0644);
+            DatabaseConfig config = new DatabaseConfig();
+            config.setType(DatabaseType.HASH);
+            config.setHashNumElements(h_nelem);
+            config.setAllowCreate(true);
+            config.setTruncate(true);
+            dbp = dbenv.openDatabase(null, "account", null, config);
         } catch (Exception e1) {
-            // can be DbException or FileNotFoundException
+            // can be DatabaseException or FileNotFoundException
             errExit(e1, "Open of account file failed");
         }
 
@@ -137,8 +148,8 @@ class TpcbExample extends DbEnv
         idnum += h_nelem;
         end_anum = idnum - 1;
         try {
-            dbp.close(0);
-        } catch (DbException e2) {
+            dbp.close();
+        } catch (DatabaseException e2) {
             errExit(e2, "Account file close failed");
         }
 
@@ -155,26 +166,27 @@ class TpcbExample extends DbEnv
         h_nelem = (int)branches;
 
         try {
-            dbp = new Db(this, 0);
-
-            dbp.setHashNumElements(h_nelem);
-            dbp.setHashFillFactor(1);
-            dbp.setPageSize(512);
-
-            dbp.open(null, "branch", null, Db.DB_HASH,
-                     Db.DB_CREATE | Db.DB_TRUNCATE, 0644);
+            DatabaseConfig config = new DatabaseConfig();
+            config.setType(DatabaseType.HASH);
+            config.setHashNumElements(h_nelem);
+            config.setHashFillFactor(1);
+            config.setPageSize(512);
+            config.setAllowCreate(true);
+            config.setTruncate(true);
+            dbp = dbenv.openDatabase(null, "branch", null, config);
         } catch (Exception e3) {
-            // can be DbException or FileNotFoundException
+            // can be DatabaseException or FileNotFoundException
             errExit(e3, "Branch file create failed");
         }
+
         start_bnum = idnum;
         populateTable(dbp, idnum, balance, h_nelem, "branch");
         idnum += h_nelem;
         end_bnum = idnum - 1;
 
         try {
-            dbp.close(0);
-        } catch (DbException dbe4) {
+            dbp.close();
+        } catch (DatabaseException dbe4) {
             errExit(dbe4, "Close of branch file failed");
         }
 
@@ -190,17 +202,16 @@ class TpcbExample extends DbEnv
         h_nelem = (int)tellers;
 
         try {
-
-            dbp = new Db(this, 0);
-
-            dbp.setHashNumElements(h_nelem);
-            dbp.setHashFillFactor(0);
-            dbp.setPageSize(512);
-
-            dbp.open(null, "teller", null, Db.DB_HASH,
-                     Db.DB_CREATE | Db.DB_TRUNCATE, 0644);
+            DatabaseConfig config = new DatabaseConfig();
+            config.setType(DatabaseType.HASH);
+            config.setHashNumElements(h_nelem);
+            config.setHashFillFactor(0);
+            config.setPageSize(512);
+            config.setAllowCreate(true);
+            config.setTruncate(true);
+            dbp = dbenv.openDatabase(null, "teller", null, config);
         } catch (Exception e5) {
-            // can be DbException or FileNotFoundException
+            // can be DatabaseException or FileNotFoundException
             errExit(e5, "Teller file create failed");
         }
 
@@ -210,67 +221,68 @@ class TpcbExample extends DbEnv
         end_tnum = idnum - 1;
 
         try {
-            dbp.close(0);
-        } catch (DbException e6) {
+            dbp.close();
+        } catch (DatabaseException e6) {
             errExit(e6, "Close of teller file failed");
         }
 
         if (verbose)
-            System.out.println("Populated tellers: "
-                 + String.valueOf(start_tnum) + " - " + String.valueOf(end_tnum));
+            System.out.println("Populated tellers: " +
+                               String.valueOf(start_tnum) + " - " +
+                               String.valueOf(end_tnum));
 
         try {
-            dbp = new Db(this, 0);
-            dbp.setRecordLength(HISTORY_LEN);
-            dbp.open(null, "history", null, Db.DB_RECNO,
-                     Db.DB_CREATE | Db.DB_TRUNCATE, 0644);
+            DatabaseConfig config = new DatabaseConfig();
+            config.setType(DatabaseType.RECNO);
+            config.setRecordLength(HISTORY_LEN);
+            config.setAllowCreate(true);
+            config.setTruncate(true);
+            dbp = dbenv.openDatabase(null, "history", null, config);
         } catch (Exception e7) {
-            // can be DbException or FileNotFoundException
+            // can be DatabaseException or FileNotFoundException
             errExit(e7, "Create of history file failed");
         }
 
         populateHistory(dbp);
 
         try {
-            dbp.close(0);
-        } catch (DbException e8) {
+            dbp.close();
+        } catch (DatabaseException e8) {
             errExit(e8, "Close of history file failed");
         }
     }
 
-    public void populateTable(
-        Db dbp, int start_id, int balance, int nrecs, String msg)
-    {
+    public void populateTable(Database dbp,
+                              int start_id, int balance, int nrecs, String msg) {
         Defrec drec = new Defrec();
 
-        Dbt kdbt = new Dbt(drec.data);
+        DatabaseEntry kdbt = new DatabaseEntry(drec.data);
         kdbt.setSize(4);                  // sizeof(int)
-        Dbt ddbt = new Dbt(drec.data);
+        DatabaseEntry ddbt = new DatabaseEntry(drec.data);
         ddbt.setSize(drec.data.length);   // uses whole array
 
         try {
             for (int i = 0; i < nrecs; i++) {
                 kdbt.setRecordNumber(start_id + (int)i);
                 drec.set_balance(balance);
-                dbp.put(null, kdbt, ddbt, Db.DB_NOOVERWRITE);
+                dbp.putNoOverwrite(null, kdbt, ddbt);
             }
-        } catch (DbException dbe) {
+        } catch (DatabaseException dbe) {
             System.err.println("Failure initializing " + msg + " file: " +
                                dbe.toString());
             System.exit(1);
         }
     }
 
-    public void populateHistory(Db dbp)
-    {
+    public void populateHistory(Database dbp) {
         Histrec hrec = new Histrec();
         hrec.set_amount(10);
 
-        byte arr[] = new byte[4];                  // sizeof(int)
+        byte[] arr = new byte[4];                  // sizeof(int)
         int i;
-        Dbt kdbt = new Dbt(arr);
+        DatabaseEntry kdbt = new DatabaseEntry(arr);
         kdbt.setSize(arr.length);
-        Dbt ddbt = new Dbt(hrec.data);
+        DatabaseEntry ddbt = new DatabaseEntry(hrec.data);
         ddbt.setSize(hrec.data.length);
 
         try {
@@ -281,30 +293,25 @@ class TpcbExample extends DbEnv
                 hrec.set_bid(random_id(BRANCH));
                 hrec.set_tid(random_id(TELLER));
 
-                dbp.put(null, kdbt, ddbt, Db.DB_APPEND);
+                dbp.append(null, kdbt, ddbt);
             }
-        } catch (DbException dbe) {
+        } catch (DatabaseException dbe) {
             errExit(dbe, "Failure initializing history file");
         }
     }
 
     static Random rand = new Random();
-    public int random_int(int lo, int hi)
-    {
-        int ret;
-        int t;
-
-        t = rand.nextInt();
+    public static int random_int(int lo, int hi) {
+        int t = rand.nextInt();
         if (t < 0)
             t = -t;
-        ret = (int)(((double)t / ((double)(Integer.MAX_VALUE) + 1)) *
-                          (hi - lo + 1));
+        int ret = (int)(((double)t / ((double)(Integer.MAX_VALUE) + 1)) *
+            (hi - lo + 1));
         ret += lo;
         return (ret);
     }
 
-    public int random_id(int type)
-    {
+    public int random_id(int type) {
         int min, max, num;
 
         max = min = BEGID;
@@ -327,51 +334,46 @@ class TpcbExample extends DbEnv
 
     // The byte order is our choice.
     //
-    static long get_int_in_array(byte[] array, int offset)
-    {
+    static long get_int_in_array(byte[] array, int offset) {
         return
-            ((0xff & array[offset+0]) << 0)  |
-            ((0xff & array[offset+1]) << 8)  |
-            ((0xff & array[offset+2]) << 16) |
-            ((0xff & array[offset+3]) << 24);
+            ((0xff & array[offset + 0]) << 0)  |
+            ((0xff & array[offset + 1]) << 8)  |
+            ((0xff & array[offset + 2]) << 16) |
+            ((0xff & array[offset + 3]) << 24);
     }
 
     // Note: Value needs to be long to avoid sign extension
-    static void set_int_in_array(byte[] array, int offset, long value)
-    {
-        array[offset+0] = (byte)((value >> 0) & 0x0ff);
-        array[offset+1] = (byte)((value >> 8) & 0x0ff);
-        array[offset+2] = (byte)((value >> 16) & 0x0ff);
-        array[offset+3] = (byte)((value >> 24) & 0x0ff);
+    static void set_int_in_array(byte[] array, int offset, long value) {
+        array[offset + 0] = (byte)((value >> 0) & 0xff);
+        array[offset + 1] = (byte)((value >> 8) & 0xff);
+        array[offset + 2] = (byte)((value >> 16) & 0xff);
+        array[offset + 3] = (byte)((value >> 24) & 0xff);
     }
 
     // round 'd' to 'scale' digits, and return result as string
-    static String showRounded(double d, int scale)
-    {
+    static String showRounded(double d, int scale) {
         return new BigDecimal(d).
             setScale(scale, BigDecimal.ROUND_HALF_DOWN).toString();
     }
 
-    public void run(int ntxns, int threads)
-    {
+    public void run(int ntxns, int threads) {
         double gtps;
         int txns, failed;
         long curtime, starttime;
         TxnThread[] txnList = new TxnThread[threads];
-        for (int i = 0; i < threads; i++) {
+        for (int i = 0; i < threads; i++)
             txnList[i] = new TxnThread("Thread " + String.valueOf(i), ntxns);
-        }
 
         starttime = (new Date()).getTime();
         for (int i = 0; i < threads; i++)
             txnList[i].start();
-        for (int i = 0; i < threads; i++) {
+        for (int i = 0; i < threads; i++)
             try {
                 txnList[i].join();
             } catch (Exception e1) {
                 errExit(e1, "join failed");
             }
-        }
+
         curtime = (new Date()).getTime();
         txns = failed = 0;
         for (int i = 0; i < threads; i++) {
@@ -386,20 +388,17 @@ class TpcbExample extends DbEnv
         System.out.println(showRounded(gtps, 2) + " TPS");
     }
 
-    class TxnThread extends Thread
-    {
+    class TxnThread extends Thread {
         private int ntxns;       /* Number of txns we were asked to run. */
         public int txns, failed; /* Number that succeeded / failed. */
-        private Db adb, bdb, hdb, tdb;
+        private Database adb, bdb, hdb, tdb;
 
-        public TxnThread(String name, int ntxns)
-        {
+        public TxnThread(String name, int ntxns) {
             super(name);
             this.ntxns = ntxns;
         }
 
-        public void run()
-        {
+        public void run() {
             double gtps, itps;
             int n, ifailed, ret;
             long starttime, curtime, lasttime;
@@ -409,19 +408,13 @@ class TpcbExample extends DbEnv
             //
             int err;
             try {
-                adb = new Db(TpcbExample.this, 0);
-                adb.open(null, "account", null, Db.DB_UNKNOWN,
-                         Db.DB_AUTO_COMMIT, 0);
-                bdb = new Db(TpcbExample.this, 0);
-                bdb.open(null, "branch", null, Db.DB_UNKNOWN,
-                         Db.DB_AUTO_COMMIT, 0);
-                tdb = new Db(TpcbExample.this, 0);
-                tdb.open(null, "teller", null, Db.DB_UNKNOWN,
-                         Db.DB_AUTO_COMMIT, 0);
-                hdb = new Db(TpcbExample.this, 0);
-                hdb.open(null, "history", null, Db.DB_UNKNOWN,
-                         Db.DB_AUTO_COMMIT, 0);
-            } catch (DbException dbe) {
+                DatabaseConfig config = new DatabaseConfig();
+                config.setTransactional(true);
+                adb = dbenv.openDatabase(null, "account", null, config);
+                bdb = dbenv.openDatabase(null, "branch", null, config);
+                tdb = dbenv.openDatabase(null, "teller", null, config);
+                hdb = dbenv.openDatabase(null, "history", null, config);
+            } catch (DatabaseException dbe) {
                 TpcbExample.errExit(dbe, "Open of db files failed");
             } catch (FileNotFoundException fnfe) {
                 TpcbExample.errExit(fnfe, "Open of db files failed, missing file");
@@ -457,39 +450,38 @@ class TpcbExample extends DbEnv
             }
 
             try {
-                adb.close(0);
-                bdb.close(0);
-                tdb.close(0);
-                hdb.close(0);
-            } catch (DbException dbe2) {
+                adb.close();
+                bdb.close();
+                tdb.close();
+                hdb.close();
+            } catch (DatabaseException dbe2) {
                 TpcbExample.errExit(dbe2, "Close of db files failed");
             }
 
             System.out.println(getName() + ": " +
-                             (long)txns + " transactions begun "
-                 + String.valueOf(failed) + " failed");
+                   (long)txns + " transactions begun " +
+                   String.valueOf(failed) + " failed");
 
         }
 
         //
         // XXX Figure out the appropriate way to pick out IDs.
         //
-        int txn()
-        {
-            Dbc acurs = null;
-            Dbc bcurs = null;
-            Dbc hcurs = null;
-            Dbc tcurs = null;
-            DbTxn t = null;
+        int txn() {
+            Cursor acurs = null;
+            Cursor bcurs = null;
+            Cursor hcurs = null;
+            Cursor tcurs = null;
+            Transaction t = null;
 
             Defrec rec = new Defrec();
             Histrec hrec = new Histrec();
-            int account, branch, teller, ret;
+            int account, branch, teller;
 
-            Dbt d_dbt = new Dbt();
-            Dbt d_histdbt = new Dbt();
-            Dbt k_dbt = new Dbt();
-            Dbt k_histdbt = new Dbt();
+            DatabaseEntry d_dbt = new DatabaseEntry();
+            DatabaseEntry d_histdbt = new DatabaseEntry();
+            DatabaseEntry k_dbt = new DatabaseEntry();
+            DatabaseEntry k_histdbt = new DatabaseEntry();
 
             account = TpcbExample.this.random_id(TpcbExample.ACCOUNT);
             branch = TpcbExample.this.random_id(TpcbExample.BRANCH);
@@ -497,62 +489,61 @@ class TpcbExample extends DbEnv
 
             // The history key will not actually be retrieved,
             // but it does need to be set to something.
-            byte hist_key[] = new byte[4];
+            byte[] hist_key = new byte[4];
             k_histdbt.setData(hist_key);
             k_histdbt.setSize(4 /* == sizeof(int)*/);
 
-            byte key_bytes[] = new byte[4];
+            byte[] key_bytes = new byte[4];
             k_dbt.setData(key_bytes);
             k_dbt.setSize(4 /* == sizeof(int)*/);
 
-            d_dbt.setFlags(Db.DB_DBT_USERMEM);
             d_dbt.setData(rec.data);
-            d_dbt.setUserBufferLength(rec.length());
+            d_dbt.setUserBuffer(rec.length(), true);
 
             hrec.set_aid(account);
             hrec.set_bid(branch);
             hrec.set_tid(teller);
             hrec.set_amount(10);
             // Request 0 bytes since we're just positioning.
-            d_histdbt.setFlags(Db.DB_DBT_PARTIAL);
+            d_histdbt.setPartial(0, 0, true);
 
             // START TIMING
 
             try {
-                t = TpcbExample.this.txnBegin(null, 0);
+                t = dbenv.beginTransaction(null, null);
 
-                acurs = adb.cursor(t, 0);
-                bcurs = bdb.cursor(t, 0);
-                tcurs = tdb.cursor(t, 0);
-                hcurs = hdb.cursor(t, 0);
+                acurs = adb.openCursor(t, null);
+                bcurs = bdb.openCursor(t, null);
+                tcurs = tdb.openCursor(t, null);
+                hcurs = hdb.openCursor(t, null);
 
                 // Account record
                 k_dbt.setRecordNumber(account);
-                if (acurs.get(k_dbt, d_dbt, Db.DB_SET) != 0)
-                    throw new TpcbException("acurs get failed");
+                if (acurs.getSearchKey(k_dbt, d_dbt, null) != OperationStatus.SUCCESS)
+                    throw new Exception("acurs get failed");
                 rec.set_balance(rec.get_balance() + 10);
-                acurs.put(k_dbt, d_dbt, Db.DB_CURRENT);
+                acurs.putCurrent(d_dbt);
 
                 // Branch record
                 k_dbt.setRecordNumber(branch);
-                if ((ret = bcurs.get(k_dbt, d_dbt, Db.DB_SET)) != 0)
-                    throw new TpcbException("bcurs get failed");
+                if (bcurs.getSearchKey(k_dbt, d_dbt, null) != OperationStatus.SUCCESS)
+                    throw new Exception("bcurs get failed");
                 rec.set_balance(rec.get_balance() + 10);
-                bcurs.put(k_dbt, d_dbt, Db.DB_CURRENT);
+                bcurs.putCurrent(d_dbt);
 
                 // Teller record
                 k_dbt.setRecordNumber(teller);
-                if (tcurs.get(k_dbt, d_dbt, Db.DB_SET) != 0)
-                    throw new TpcbException("ccurs get failed");
+                if (tcurs.getSearchKey(k_dbt, d_dbt, null) != OperationStatus.SUCCESS)
+                    throw new Exception("ccurs get failed");
                 rec.set_balance(rec.get_balance() + 10);
-                tcurs.put(k_dbt, d_dbt, Db.DB_CURRENT);
+                tcurs.putCurrent(d_dbt);
 
                 // History record
-                d_histdbt.setFlags(0);
+                d_histdbt.setPartial(0, 0, false);
                 d_histdbt.setData(hrec.data);
-                d_histdbt.setUserBufferLength(hrec.length());
-                if (hdb.put(t, k_histdbt, d_histdbt, Db.DB_APPEND) != 0)
-                    throw(new DbException("put failed"));
+                d_histdbt.setUserBuffer(hrec.length(), true);
+                if (hdb.append(t, k_histdbt, d_histdbt) != OperationStatus.SUCCESS)
+                    throw new DatabaseException("put failed");
 
                 acurs.close();
                 acurs = null;
@@ -565,9 +556,9 @@ class TpcbExample extends DbEnv
 
                 // null out t in advance; if the commit fails,
                 // we don't want to abort it in the catch clause.
-                DbTxn tmptxn = t;
+                Transaction tmptxn = t;
                 t = null;
-                tmptxn.commit(0);
+                tmptxn.commit();
 
                 // END TIMING
                 return (0);
@@ -583,14 +574,15 @@ class TpcbExample extends DbEnv
                         hcurs.close();
                     if (t != null)
                         t.abort();
-                } catch (DbException dbe) {
+                } catch (DatabaseException dbe) {
                     // not much we can do here.
                 }
 
                 if (TpcbExample.this.verbose) {
-                    System.out.println("Transaction A=" + String.valueOf(account)
-                                       + " B=" + String.valueOf(branch)
-                                       + " T=" + String.valueOf(teller) + " failed");
+                    System.out.println("Transaction A=" + String.valueOf(account) +
+                                       " B=" + String.valueOf(branch) +
+                                       " T=" + String.valueOf(teller) +
+                                       " failed");
                     System.out.println("Reason: " + e.toString());
                 }
                 return (-1);
@@ -598,23 +590,20 @@ class TpcbExample extends DbEnv
         }
     }
 
-    private static void usage()
-    {
+    private static void usage() {
         System.err.println(
-           "usage: TpcbExample [-fiv] [-a accounts] [-b branches]\n" +
-           "                   [-c cachesize] [-h home] [-n transactions]\n" +
-           "                   [-T threads] [-S seed] [-s history] [-t tellers]");
+               "usage: TpcbExample [-fiv] [-a accounts] [-b branches]\n" +
+               "                   [-c cachesize] [-h home] [-n transactions]\n" +
+               "                   [-T threads] [-S seed] [-s history] [-t tellers]");
         System.exit(1);
     }
 
-    private static void invarg(String str)
-    {
+    private static void invarg(String str) {
         System.err.println("TpcbExample: invalid argument: " + str);
         System.exit(1);
     }
 
-    public static void errExit(Exception err, String s)
-    {
+    public static void errExit(Exception err, String s) {
         System.err.print(progname + ": ");
         if (s != null) {
             System.err.print(s + ": ");
@@ -623,9 +612,8 @@ class TpcbExample extends DbEnv
         System.exit(1);
     }
 
-    public static void main(String argv[]) throws java.io.IOException
-    {
-        String home = "TESTDIR";
+    public static void main(String[] argv) throws java.io.IOException {
+        File home = new File("TESTDIR");
         int accounts = ACCOUNTS;
         int branches = BRANCHES;
         int tellers = TELLERS;
@@ -655,7 +643,7 @@ class TpcbExample extends DbEnv
                 txn_no_sync = true;
             } else if (argv[i].equals("-h")) {
                 // DB  home.
-                home = argv[++i];
+                home = new File(argv[++i]);
             } else if (argv[i].equals("-i")) {
                 // Initialize the test.
                 iflag = true;
@@ -696,17 +684,16 @@ class TpcbExample extends DbEnv
         TpcbExample app = null;
         try {
             app = new TpcbExample(home, accounts, branches, tellers, history,
-                                  mpool, iflag,
-                                  txn_no_sync ? Db.DB_TXN_NOSYNC : 0);
+                                  mpool, iflag, txn_no_sync);
         } catch (Exception e1) {
             errExit(e1, "initializing environment failed");
         }
 
         if (verbose)
-            System.out.println((long)accounts + " Accounts, "
-                 + String.valueOf(branches) + " Branches, "
-                 + String.valueOf(tellers) + " Tellers, "
-                 + String.valueOf(history) + " History");
+            System.out.println((long)accounts + " Accounts, " +
+                               String.valueOf(branches) + " Branches, " +
+                               String.valueOf(tellers) + " Tellers, " +
+                               String.valueOf(history) + " History");
 
         if (iflag) {
             if (ntxns != 0)
@@ -721,8 +708,8 @@ class TpcbExample extends DbEnv
         // Shut down the application.
 
         try {
-            app.close(0);
-        } catch (DbException dbe2) {
+            app.close();
+        } catch (DatabaseException dbe2) {
             errExit(dbe2, "appexit failed");
         }
 
@@ -737,35 +724,28 @@ class TpcbExample extends DbEnv
 //     u_int8_t    pad[RECLEN - sizeof(int) - sizeof(int)];
 // };
 
-class Defrec
-{
-    public Defrec()
-    {
+class Defrec {
+    public Defrec() {
         data = new byte[TpcbExample.RECLEN];
     }
 
-    public int length()
-    {
+    public int length() {
         return TpcbExample.RECLEN;
     }
 
-    public long get_id()
-    {
+    public long get_id() {
         return TpcbExample.get_int_in_array(data, 0);
     }
 
-    public void set_id(long value)
-    {
+    public void set_id(long value) {
         TpcbExample.set_int_in_array(data, 0, value);
     }
 
-    public long get_balance()
-    {
+    public long get_balance() {
         return TpcbExample.get_int_in_array(data, 4);
     }
 
-    public void set_balance(long value)
-    {
+    public void set_balance(long value) {
         TpcbExample.set_int_in_array(data, 4, value);
     }
 
@@ -786,70 +766,46 @@ class Defrec
 //     u_int8_t    pad[RECLEN - 4 * sizeof(u_int32_t)];
 // };
 
-class Histrec
-{
-    public Histrec()
-    {
+class Histrec {
+    public Histrec() {
         data = new byte[TpcbExample.RECLEN];
     }
 
-    public int length()
-    {
+    public int length() {
         return TpcbExample.RECLEN;
     }
 
-    public long get_aid()
-    {
+    public long get_aid() {
         return TpcbExample.get_int_in_array(data, 0);
     }
 
-    public void set_aid(long value)
-    {
+    public void set_aid(long value) {
         TpcbExample.set_int_in_array(data, 0, value);
     }
 
-    public long get_bid()
-    {
+    public long get_bid() {
         return TpcbExample.get_int_in_array(data, 4);
     }
 
-    public void set_bid(long value)
-    {
+    public void set_bid(long value) {
         TpcbExample.set_int_in_array(data, 4, value);
     }
 
-    public long get_tid()
-    {
+    public long get_tid() {
         return TpcbExample.get_int_in_array(data, 8);
     }
 
-    public void set_tid(long value)
-    {
+    public void set_tid(long value) {
         TpcbExample.set_int_in_array(data, 8, value);
     }
 
-    public long get_amount()
-    {
+    public long get_amount() {
         return TpcbExample.get_int_in_array(data, 12);
     }
 
-    public void set_amount(long value)
-    {
+    public void set_amount(long value) {
         TpcbExample.set_int_in_array(data, 12, value);
     }
 
     public byte[] data;
-}
-
-class TpcbException extends Exception
-{
-    TpcbException()
-    {
-        super();
-    }
-
-    TpcbException(String s)
-    {
-        super(s);
-    }
 }

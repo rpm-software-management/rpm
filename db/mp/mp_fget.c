@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mp_fget.c,v 11.95 2004/09/15 21:49:19 mjc Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: mp_fget.c,v 11.81 2003/09/25 02:15:16 sue Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -76,9 +75,9 @@ __memp_fget_pp(dbmfp, pgnoaddr, flags, addrp)
 		__op_rep_enter(dbenv);
 	ret = __memp_fget(dbmfp, pgnoaddr, flags, addrp);
 	/*
-	 * We only decrement the count in op_rep_exit if the operattion fails.
-	 * Otherwise the count will be decremeneted when the page
-	 * is no longer pinned in memp_fput.
+	 * We only decrement the count in op_rep_exit if the operation fails.
+	 * Otherwise the count will be decremented when the page is no longer
+	 * pinned in memp_fput.
 	 */
 	if (ret != 0 && rep_check)
 		__op_rep_exit(dbenv);
@@ -118,7 +117,7 @@ __memp_fget(dbmfp, pgnoaddr, flags, addrp)
 	c_mp = NULL;
 	mp = dbmp->reginfo[0].primary;
 	mfp = dbmfp->mfp;
-	mf_offset = R_OFFSET(dbmp->reginfo, mfp);
+	mf_offset = R_OFFSET(dbenv, dbmp->reginfo, mfp);
 	alloc_bhp = bhp = NULL;
 	hp = NULL;
 	b_incr = extending = ret = 0;
@@ -126,20 +125,16 @@ __memp_fget(dbmfp, pgnoaddr, flags, addrp)
 	switch (flags) {
 	case DB_MPOOL_LAST:
 		/* Get the last page number in the file. */
-		if (flags == DB_MPOOL_LAST) {
-			R_LOCK(dbenv, dbmp->reginfo);
-			*pgnoaddr = mfp->last_pgno;
-			R_UNLOCK(dbenv, dbmp->reginfo);
-		}
+		R_LOCK(dbenv, dbmp->reginfo);
+		*pgnoaddr = mfp->last_pgno;
+		R_UNLOCK(dbenv, dbmp->reginfo);
 		break;
 	case DB_MPOOL_NEW:
 		/*
 		 * If always creating a page, skip the first search
 		 * of the hash bucket.
 		 */
-		if (flags == DB_MPOOL_NEW)
-			goto alloc;
-		break;
+		goto alloc;
 	case DB_MPOOL_CREATE:
 	default:
 		break;
@@ -147,7 +142,9 @@ __memp_fget(dbmfp, pgnoaddr, flags, addrp)
 
 	/*
 	 * If mmap'ing the file and the page is not past the end of the file,
-	 * just return a pointer.
+	 * just return a pointer.  We can't use R_ADDR here: this is an offset
+	 * into an mmap'd file, not a shared region, and doesn't change for
+	 * private environments.
 	 *
 	 * The page may be past the end of the file, so check the page number
 	 * argument against the original length of the file.  If we previously
@@ -167,8 +164,8 @@ __memp_fget(dbmfp, pgnoaddr, flags, addrp)
 	 */
 	if (dbmfp->addr != NULL &&
 	    F_ISSET(mfp, MP_CAN_MMAP) && *pgnoaddr <= mfp->orig_last_pgno) {
-		*(void **)addrp =
-		    R_ADDR(dbmfp, *pgnoaddr * mfp->stat.st_pagesize);
+		*(void **)addrp = (u_int8_t *)dbmfp->addr +
+		    (*pgnoaddr * mfp->stat.st_pagesize);
 		++mfp->stat.st_map;
 		return (0);
 	}
@@ -181,7 +178,7 @@ hb_search:
 	 */
 	n_cache = NCACHE(mp, mf_offset, *pgnoaddr);
 	c_mp = dbmp->reginfo[n_cache].primary;
-	hp = R_ADDR(&dbmp->reginfo[n_cache], c_mp->htab);
+	hp = R_ADDR(dbenv, &dbmp->reginfo[n_cache], c_mp->htab);
 	hp = &hp[NBUCKET(c_mp, mf_offset, *pgnoaddr)];
 
 	/* Search the hash chain for the page. */
@@ -199,12 +196,13 @@ retry:	st_hsearch = 0;
 		 * need to ensure it doesn't move and its contents remain
 		 * unchanged.
 		 */
-		if (bhp->ref == UINT16_T_MAX) {
+		if (bhp->ref == UINT16_MAX) {
+			MUTEX_UNLOCK(dbenv, &hp->hash_mutex);
+
 			__db_err(dbenv,
 			    "%s: page %lu: reference count overflow",
 			    __memp_fn(dbmfp), (u_long)bhp->pgno);
-			ret = EINVAL;
-			MUTEX_UNLOCK(dbenv, &hp->hash_mutex);
+			ret = __db_panic(dbenv, EINVAL);
 			goto err;
 		}
 		++bhp->ref;
@@ -289,6 +287,23 @@ retry:	st_hsearch = 0;
 	    (alloc_bhp == NULL ? FIRST_FOUND : SECOND_FOUND);
 	switch (state) {
 	case FIRST_FOUND:
+		/*
+		 * If we are to free the buffer, then this had better
+		 * be the only reference. If so, just free the buffer.
+		 * If not, complain and get out.
+		 */
+		if (flags == DB_MPOOL_FREE) {
+			if (bhp->ref == 1) {
+				__memp_bhfree(dbmp, hp, bhp, BH_FREE_FREEMEM);
+				return (0);
+			}
+			__db_err(dbenv,
+			    "File %s: freeing pinned buffer for page %lu",
+				__memp_fns(dbmp, mfp), (u_long)*pgnoaddr);
+			ret = __db_panic(dbenv, EINVAL);
+			goto err;
+		}
+
 		/* We found the buffer in our first check -- we're done. */
 		break;
 	case FIRST_MISS:
@@ -298,6 +313,12 @@ retry:	st_hsearch = 0;
 		 * the page to the buffer pool.
 		 */
 		MUTEX_UNLOCK(dbenv, &hp->hash_mutex);
+
+		/*
+		 * The buffer is not in the pool, so we don't need to free it.
+		 */
+		if (flags == DB_MPOOL_FREE)
+			return (0);
 
 alloc:		/*
 		 * If DB_MPOOL_NEW is set, we have to allocate a page number.
@@ -340,7 +361,7 @@ alloc:		/*
 		 * In the DB_MPOOL_NEW code path, mf_offset and n_cache have
 		 * not yet been initialized.
 		 */
-		mf_offset = R_OFFSET(dbmp->reginfo, mfp);
+		mf_offset = R_OFFSET(dbenv, dbmp->reginfo, mfp);
 		n_cache = NCACHE(mp, mf_offset, *pgnoaddr);
 		c_mp = dbmp->reginfo[n_cache].primary;
 
@@ -349,10 +370,10 @@ alloc:		/*
 		    &dbmp->reginfo[n_cache], mfp, 0, NULL, &alloc_bhp)) != 0)
 			goto err;
 #ifdef DIAGNOSTIC
-		if ((db_alignp_t)alloc_bhp->buf & (sizeof(size_t) - 1)) {
+		if ((uintptr_t)alloc_bhp->buf & (sizeof(size_t) - 1)) {
 			__db_err(dbenv,
 		    "DB_MPOOLFILE->get: buffer data is NOT size_t aligned");
-			ret = EINVAL;
+			ret = __db_panic(dbenv, EINVAL);
 			goto err;
 		}
 #endif
@@ -399,7 +420,7 @@ alloc:		/*
 
 				R_LOCK(dbenv, &dbmp->reginfo[n_cache]);
 				__db_shalloc_free(
-				    dbmp->reginfo[n_cache].addr, alloc_bhp);
+				    &dbmp->reginfo[n_cache], alloc_bhp);
 				c_mp->stat.st_pages--;
 				R_UNLOCK(dbenv, &dbmp->reginfo[n_cache]);
 
@@ -436,11 +457,10 @@ alloc:		/*
 		 */
 		MUTEX_UNLOCK(dbenv, &hp->hash_mutex);
 		R_LOCK(dbenv, &dbmp->reginfo[n_cache]);
-		__db_shalloc_free(dbmp->reginfo[n_cache].addr, alloc_bhp);
+		__db_shalloc_free(&dbmp->reginfo[n_cache], alloc_bhp);
 		c_mp->stat.st_pages--;
 		alloc_bhp = NULL;
 		R_UNLOCK(dbenv, &dbmp->reginfo[n_cache]);
-		MUTEX_LOCK(dbenv, &hp->hash_mutex);
 
 		/*
 		 * We can't use the page we found in the pool if DB_MPOOL_NEW
@@ -455,6 +475,9 @@ alloc:		/*
 			b_incr = 0;
 			goto alloc;
 		}
+
+		/* We can use the page -- get the bucket lock. */
+		MUTEX_LOCK(dbenv, &hp->hash_mutex);
 		break;
 	case SECOND_MISS:
 		/*
@@ -474,9 +497,10 @@ alloc:		/*
 		 */
 		b_incr = 1;
 
+		/*lint --e{668} (flexelint: bhp cannot be NULL). */
 		memset(bhp, 0, sizeof(BH));
 		bhp->ref = 1;
-		bhp->priority = UINT32_T_MAX;
+		bhp->priority = UINT32_MAX;
 		bhp->pgno = *pgnoaddr;
 		bhp->mf_offset = mf_offset;
 		SH_TAILQ_INSERT_TAIL(&hp->hash_bucket, bhp, hq);
@@ -552,7 +576,7 @@ alloc:		/*
 	 * the buffer, so there is no need to do it again.)
 	 */
 	if (state != SECOND_MISS && bhp->ref == 1) {
-		bhp->priority = UINT32_T_MAX;
+		bhp->priority = UINT32_MAX;
 		SH_TAILQ_REMOVE(&hp->hash_bucket, bhp, hq, __bh);
 		SH_TAILQ_INSERT_TAIL(&hp->hash_bucket, bhp, hq);
 		hp->hash_priority =
@@ -614,7 +638,7 @@ err:	/*
 	 */
 	if (b_incr) {
 		if (bhp->ref == 1)
-			(void)__memp_bhfree(dbmp, hp, bhp, 1);
+			__memp_bhfree(dbmp, hp, bhp, BH_FREE_FREEMEM);
 		else {
 			--bhp->ref;
 			MUTEX_UNLOCK(dbenv, &hp->hash_mutex);
@@ -624,7 +648,7 @@ err:	/*
 	/* If alloc_bhp is set, free the memory. */
 	if (alloc_bhp != NULL) {
 		R_LOCK(dbenv, &dbmp->reginfo[n_cache]);
-		__db_shalloc_free(dbmp->reginfo[n_cache].addr, alloc_bhp);
+		__db_shalloc_free(&dbmp->reginfo[n_cache], alloc_bhp);
 		c_mp->stat.st_pages--;
 		R_UNLOCK(dbenv, &dbmp->reginfo[n_cache]);
 	}

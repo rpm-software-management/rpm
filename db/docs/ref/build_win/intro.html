@@ -1,18 +1,18 @@
 <!--"@(#)intro.so	10.26 (Sleepycat) 11/18/99"-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Building for Win32</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for Windows systems</dl></h3></td>
-<td align=right><a href="../build_unix/ultrix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/small.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../build_unix/ultrix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/unicode.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Building for Win32</h3>
@@ -25,7 +25,9 @@ project files for Microsoft Visual C++:</p>
 </table>
 <p>These project files can be used to build Berkeley DB for any Win32 platform:
 Windows/XP, Windows/2000, Windows/NT, Windows/98 and Windows/95.</p>
-<h3>Building Berkeley DB with Visual C++ .NET</h3>
+<p>The <b>build_win64</b> directory contains project files for Microsoft
+Visual C++ to target Windows on 64-bit CPUs:</p>
+<h3>Building Berkeley DB with Visual C++ .NET for Win32</h3>
 <ol>
 <p><li>Choose <i>File -&gt; Open Solution</i>.  Look in the
 <b>build_win32</b> directory for compatible workspace files, select
@@ -44,7 +46,7 @@ your build will be placed in a subdirectory of <b>build_win32</b>
 named after the configuration you chose (for examples,
 <b>build_win32/Release</b> or <b>build_win32/Debug</b>).
 </ol>
-<h3>Building Berkeley DB with Visual C++ 6.0</h3>
+<h3>Building Berkeley DB with Visual C++ 6.0 for Win32</h3>
 <ol>
 <p><li>Choose <i>File -&gt; Open Workspace</i>.  Look in the
 <b>build_win32</b> directory for Workspaces, select
@@ -65,20 +67,39 @@ examples, <b>build_win32/Release</b> or
 </ol>
 <p>When building your application, you should normally use compile
 options "Debug Multithreaded DLL" and link against
-<b>build_win32/Debug/libdb42d.lib</b>.  If you
+<b>build_win32/Debug/libdb43d.lib</b>.  If you
 want to link against a static (non-DLL) version of the library, use
 the "Debug Multithreaded" compile options and link against
-<b>build_win32/Debug_static/libdb42sd.lib</b>.
+<b>build_win32/Debug_static/libdb43sd.lib</b>.
 You can also build using a release version of the libraries and tools,
 which will be placed in
-<b>build_win32/Release/libdb42.lib</b>.  The
+<b>build_win32/Release/libdb43.lib</b>.  The
 static version will be in
-<b>build_win32/Release_static/libdb42s.lib</b>.
+<b>build_win32/Release_static/libdb43s.lib</b>.
 You will also need to add the <b>build_win32</b> directory to the
 list of include directories of your application's project.</p>
 <p>Each release of Berkeley DB is built and tested with this procedure using
 Microsoft Visual C++ 6.0, Standard Version and Microsoft Visual C++
 .NET, Standard Version.</p>
+<h3>Building Berkeley DB for 64-bit Windows</h3>
+<p>You can follow the same steps on either the Itanium itself or to
+cross-compile on an x86 box.</p>
+<p>You will need latest Platform SDK from Microsoft, available from
+<a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">Microsoft's web site</a>.  You only need the "Core SDK" from there.</p>
+<p>Once that is installed, you should have an entry in your Start Menu
+called <i>Microsoft Platform SDK (date) -&gt; Open Build
+Environment Window -&gt; Windows Server 2003 64-bit Build Environment
+-&gt; Set Win Svr 2003 Build Env (Debug)</i>.  Selecting that will open
+a command window with the environment set up for Itanium development.</p>
+<p>Then, in the <b>build_win64</b> directory in the Berkeley DB distribution,
+run:
+<blockquote><pre>msdev /useenv BerkeleyDB.dsw /make "build_all - Debug"</pre></blockquote>
+You should now have Itanium binaries in the "Debug" directory.</p>
+<p>To build a release, open the "Retail" window instead of the "Debug"
+window, and run:
+<blockquote><pre>msdev /useenv BerkeleyDB.dsw /make "build_all - Release"</pre></blockquote>
+There may be some warnings during build, but we don't believe any of
+them are real bugs.</p>
 <h3>Building Berkeley DB with Cygwin</h3>
 <p>To build Berkeley DB with Cygwin, follow the instructions in
 <a href="../../ref/build_unix/intro.html">Building for UNIX</a>.</p>
@@ -127,7 +148,7 @@ javac.
 either the Debug or Release version of the db_java project.  Then
 press OK.
 <p><li>To build, select <i>Build -&gt; Build
-libdb_java42.dll</i>.  This builds the Java support
+libdb_java43.dll</i>.  This builds the Java support
 library for Berkeley DB and compiles all the java files, placing the
 resulting <b>db.jar</b> and <b>dbexamples.jar</b> files in the
 <b>build_win32/Release</b> or <b>build_win32/Debug</b>
@@ -178,7 +199,7 @@ tool bar.
 <p><li>To build, right-click on db_tcl and select Build.  This builds the Tcl
 support library for Berkeley DB, placing the result into
 <b>build_win32/Debug/libdb_tcl4M4MINORd.dll</b> or
-<b>build_win32/Release/libdb_tcl42.dll</b>.
+<b>build_win32/Release/libdb_tcl43.dll</b>.
 </ol>
 <p>If you use a version different from Tcl 8.4.x you will
 need to change the name of the Tcl library used in the build (for
@@ -205,18 +226,19 @@ whatever the library is named in your distribution).
 either the Debug or Release version of the db_tcl project.  Then press
 OK.
 <p><li>To build, select <i>Build -&gt; Build
-libdb_tcl42.dll</i>.  This builds the Tcl support
+libdb_tcl43.dll</i>.  This builds the Tcl support
 library for Berkeley DB, placing the result into
 <b>build_win32/Debug/libdb_tcl4M4MINORd.dll</b> or
-<b>build_win32/Release/libdb_tcl42.dll</b>.
+<b>build_win32/Release/libdb_tcl43.dll</b>.
 </ol>
 <p>If you use a version different from Tcl 8.4.x you will
 need to change the name of the Tcl library used in the build (for
 example, <b>tcl84g.lib</b>) to the
-appropriate name.  To do this, right click on <i>db_tcl</i>, go to
-<i>Settings -&gt; Link -&gt; Object / library modules</i>
-and change <b>tcl84g.lib</b> to match the
-Tcl version you are using.</p>
+appropriate name.  To do this, choose
+<i>Project -&gt; Settings -&gt; db_tcl</i>
+and change the Tcl library listed in the Object/Library modules
+<b>tcl84g.lib</b> to match the Tcl version
+you are using.</p>
 <h3>Distributing DLLs</h3>
 <p>When distributing applications linked against the DLL (not static)
 version of the library, the DLL files you need will be found in the
@@ -231,8 +253,8 @@ installed in the same directory that will contain your installed Berkeley DB
 DLLs.  This directory may need to be added to your System PATH
 environment variable.  Check your compiler's license and documentation
 for specifics on redistributing runtime DLLs.</p>
-<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/ultrix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/small.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/ultrix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/unicode.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

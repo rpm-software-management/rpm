@@ -1,0 +1,65 @@
+<!--$Id: env_set_msgcall.so,v 10.5 2004/09/07 15:37:41 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;set_msgcall</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;set_msgcall</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+void
+DB_ENV-&gt;set_msgcall(DB_ENV *dbenv,
+    void (*db_msgcall_fcn)(const DB_ENV *dbenv, const char *msg));
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_msgcall</h3>
+<p>There are interfaces in the Berkeley DB library which either directly output
+informational messages or statistical information, or configure the
+library to output such messages when performing other operations, for
+example, <a href="../api_c/env_set_verbose.html">DB_ENV-&gt;set_verbose</a> and <a href="../api_c/env_stat.html">DB_ENV-&gt;stat_print</a>.</p>
+<p>The DB_ENV-&gt;set_msgcall and DB-&gt;set_msgcall methods are used to
+pass these messages to the application, and Berkeley DB will call
+<b>db_msgcall_fcn</b> with each message.  It is up to the
+<b>db_msgcall_fcn</b> function to display the message in an appropriate
+manner.</p>
+<p>Setting <b>db_msgcall_fcn</b> to NULL unconfigures the callback interface.</p>
+<p>Alternatively, you can use the <a href="../api_c/db_set_msgfile.html">DB-&gt;set_msgfile</a> or
+<a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> methods to display the messages via a C library FILE *.</p>
+<p>The DB_ENV-&gt;set_msgcall method may be called at any time during the life of the
+application.</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>db_msgcall_fcn</b><dd>The <b>db_msgcall_fcn</b> parameter is the application-specified message
+reporting function.  The function takes two parameters:
+<dl compact>
+<dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment.
+<dt><b>msg</b><dd>The <b>msg</b> parameter is the message string.
+</dl>
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

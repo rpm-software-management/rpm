@@ -20,6 +20,7 @@ typedef struct ___txn_ckp_args {
 	DB_LSN	ckp_lsn;
 	DB_LSN	last_ckp;
 	int32_t	timestamp;
+	u_int32_t	envid;
 	u_int32_t	rep_gen;
 } __txn_ckp_args;
 

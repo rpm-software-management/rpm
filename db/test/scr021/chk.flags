@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.flags,v 1.10 2003/09/30 19:33:14 bostic Exp $
+# $Id: chk.flags,v 1.11 2004/03/12 14:57:15 bostic Exp $
 #
 # Check flag name-spaces.
 
@@ -25,9 +25,10 @@ echo ===============================================
 
 grep 'DB_ENV_' $d/*/*.c |
 sed -e '/F_.*dbenv,/d' \
-    -e '/env_method.c.*outflagsp,/d' \
     -e '/DB_ENV_TEST_RECOVERY(.*DB_TEST_/d' \
-    -e '/\/libdb_java\//d' > $t1
+    -e '/env_method.c.*outflagsp,/d' \
+    -e '/\/libdb_java\//d' \
+    -e '/{ DB_ENV_/d' > $t1
 [ -s $t1 ] && {
 	cat $t1
 	exit 1
@@ -50,23 +51,27 @@ echo ===============================================
 }
 
 grep 'DB_AM_' $d/*/*.c |
-sed -e '/F_.*dbp/d' \
-    -e '/F_.*db_rep->rep_db,/d' \
+sed -e '/ DB_AM_RECNUM\./d' \
+    -e '/ DB_AM_RECOVER set\./d' \
     -e '/"DB->open", dbp->flags, DB_AM_DUP,/d' \
     -e '/"DB_NODUPDATA" behavior for databases with/d' \
+    -e '/:[	 {]*DB_AM_/d' \
+    -e '/DB_AM_RECOVER bit in this handle, so that the/d' \
+    -e '/F_.*db_rep->rep_db,/d' \
+    -e '/F_.*dbp/d' \
     -e '/If DB_AM_OPEN_CALLED is not set, then we/d' \
     -e '/This was checked in set_flags when DB_AM_ENCRYPT/d' \
     -e '/XA_ABORT, we can safely set DB_AM_RECOVER/d' \
-    -e '/ DB_AM_RECNUM\./d' \
-    -e '/ DB_AM_RECOVER set\./d' \
+    -e '/_method.c.*outflagsp,/d' \
+    -e '/db_pr.c:.*LF_ISSET(DB_AM_FIXEDLEN)/d' \
+    -e '/db_pr.c:.*LF_ISSET(DB_AM_RENUMBER)/d' \
     -e '/isdup = dbp->flags & DB_AM_DUP/d' \
     -e '/otherwise we simply do/d' \
     -e '/pginfo/d' \
-    -e '/_method.c.*outflagsp,/d' \
+    -e '/qam_method.c:.*LF_ISSET(DB_AM_DISCARD)/d' \
     -e '/setting DB_AM_RECOVER, we guarantee that we don/d' \
     -e '/the DB_AM_SWAP flag.  However, we use/d' \
-    -e '/DB_AM_RECOVER bit in this handle, so that the/d' \
-    -e '/:[	 {]*DB_AM_/d' > $t1
+    > $t1
 [ -s $t1 ] && {
 	cat $t1
 	exit 1

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test062.tcl,v 11.22 2003/01/08 05:54:00 bostic Exp $
+# $Id: test062.tcl,v 11.23 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test062
 # TEST	Test of partial puts (using DB_CURRENT) onto duplicate pages.

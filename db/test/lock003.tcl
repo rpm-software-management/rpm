@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: lock003.tcl,v 11.27 2003/09/16 19:01:37 sandstro Exp $
+# $Id: lock003.tcl,v 11.28 2004/01/28 03:36:28 bostic Exp $
 #
 # TEST	lock003
 # TEST	Exercise multi-process aspects of lock.  Generate a bunch of parallel

@@ -43,8 +43,14 @@
 /* Define to 1 if fcntl/F_SETFD denies child access to file descriptors. */
 #undef HAVE_FCNTL_F_SETFD
 
+/* Define to 1 if you have the `fdatasync' function. */
+#undef HAVE_FDATASYNC
+
 /* Define to 1 if allocated filesystem blocks are not zeroed. */
 #undef HAVE_FILESYSTEM_NOTZERO
+
+/* Define to 1 if you have the `ftruncate' function. */
+#undef HAVE_FTRUNCATE
 
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
@@ -69,6 +75,9 @@
 
 /* Define to 1 if you have the `nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
+
+/* Define to 1 if the system has the type `long long'. */
+#undef HAVE_LONG_LONG
 
 /* Define to 1 if you have the `memcmp' function. */
 #undef HAVE_MEMCMP
@@ -217,6 +226,9 @@
 /* Define to 1 if you have the `raise' function. */
 #undef HAVE_RAISE
 
+/* Define to 1 if you have the `rand' function. */
+#undef HAVE_RAND
+
 /* Define to 1 if building replication support. */
 #undef HAVE_REPLICATION
 
@@ -229,11 +241,20 @@
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
 
+/* Define to 1 if building sequence support. */
+#undef HAVE_SEQUENCE
+
 /* Define to 1 if you have the `shmget' function. */
 #undef HAVE_SHMGET
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
+
+/* Define to 1 if you have the `srand' function. */
+#undef HAVE_SRAND
+
+/* Define to 1 if building statistics support. */
+#undef HAVE_STATISTICS
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -294,6 +315,9 @@
 /* Define to 1 if unlink of file with open file descriptors will fail. */
 #undef HAVE_UNLINK_WITH_OPEN_FAILURE
 
+/* Define to 1 if the system has the type `unsigned long long'. */
+#undef HAVE_UNSIGNED_LONG_LONG
+
 /* Define to 1 if building access method verification support. */
 #undef HAVE_VERIFY
 
@@ -339,6 +363,9 @@
 /* The size of a `long', as computed by sizeof. */
 #undef SIZEOF_LONG
 
+/* The size of a `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
+
 /* The size of a `short', as computed by sizeof. */
 #undef SIZEOF_SHORT
 
@@ -354,6 +381,9 @@
 /* The size of a `unsigned long', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_LONG
 
+/* The size of a `unsigned long long', as computed by sizeof. */
+#undef SIZEOF_UNSIGNED_LONG_LONG
+
 /* The size of a `unsigned short', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_SHORT
 
@@ -366,7 +396,7 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
-/* Define to 1 to mask harmless unitialized memory read/writes. */
+/* Define to 1 to mask harmless uninitialized memory read/writes. */
 #undef UMRW
 
 /* Number of bits in a file offset, on hosts where this is settable. */

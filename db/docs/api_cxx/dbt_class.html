@@ -1,24 +1,23 @@
 <!--$Id: dbt_class.so,v 10.1 2002/08/24 18:22:30 bostic Exp $-->
-<!--$Id: dbt_cxx.so,v 10.66 2003/11/08 19:17:24 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: dbt_cxx.so,v 10.68 2004/08/13 03:38:56 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Dbt</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Dbt</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -60,7 +59,7 @@ public:
 <h3>Description: Dbt</h3>
 <p>This information describes the specific details of the Dbt class,
 used to encode keys and data items in a database.</p>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <h3>Key/Data Pairs</h3>
 <p>Storage and retrieval for the <a href="../api_cxx/db_class.html">Db</a> access methods are based on
 key/data pairs.  Both key and data items are represented by Dbt
@@ -87,8 +86,7 @@ refers will be allocated and managed by Berkeley DB.</p>
 multiple threads simultaneously access the same Dbt object using
 <a href="../api_cxx/db_class.html">Db</a> API calls, the results are undefined, and may result in a
 crash.  One easy way to avoid problems is to use Dbt objects
-that are
-constructed as stack variables.</p>
+that are constructed as stack variables.</p>
 <p>Each Dbt object has an associated DBT struct, which is used by
 the underlying implementation of Berkeley DB and its C-language API.  The
 Dbt::get_DBT method returns a pointer to this struct.  Given a const
@@ -105,12 +103,10 @@ and C++ language software.  It should not be necessary to use these
 calls in a purely C++ application.</p>
 <hr size=1 noshade>
 <h3>Description: Dbt::set_data</h3>
-<p>Set the data array.
-</p>
+<p>Set the data array.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>data</b><dd>
-The <b>data</b> parameter is an array of bytes to be used to set the
+<dl compact>
+<dt><b>data</b><dd>The <b>data</b> parameter is an array of bytes to be used to set the
 content for the Dbt.
 </dl>
 <hr size=1 noshade>
@@ -124,9 +120,8 @@ Dbt::set_recno_key_data method is called, the data, size and offset
 fields in the Dbt are implicitly set to hold a byte array representation
 of the integer key.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>recno</b><dd>
-The <b>recno</b> parameter logical record number used to initialize the
+<dl compact>
+<dt><b>recno</b><dd>The <b>recno</b> parameter logical record number used to initialize the
 data array.
 </dl>
 <hr size=1 noshade>
@@ -138,12 +133,10 @@ logical record number.</p>
 <p>Set the byte offset into the data array.</p>
 <p>The number of bytes offset into the <b>data</b> array determine the
 portion of the array actually used.  This element is accessed using
-Dbt::get_offset and Dbt::set_offset.
-</p>
+Dbt::get_offset and Dbt::set_offset.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>offset</b><dd>
-The <b>offset</b> parameter is the byte offset into the data array.
+<dl compact>
+<dt><b>offset</b><dd>The <b>offset</b> parameter is the byte offset into the data array.
 </dl>
 <hr size=1 noshade>
 <h3>Description: Dbt::get_offset</h3>
@@ -152,9 +145,8 @@ The <b>offset</b> parameter is the byte offset into the data array.
 <h3>Description: Dbt::set_size</h3>
 <p>Set the byte size of the data array.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>size</b><dd>
-The <b>size</b> parameter is the size of the data array in bytes.
+<dl compact>
+<dt><b>size</b><dd>The <b>size</b> parameter is the size of the data array in bytes.
 </dl>
 <hr size=1 noshade>
 <h3>Description: Dbt::get_size</h3>
@@ -166,9 +158,8 @@ The <b>size</b> parameter is the size of the data array in bytes.
 the <b>ulen</b> to 0 and checking the return value found in <b>size</b>.
 See the DB_DBT_USERMEM flag for more information.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>ulen</b><dd>
-The <b>ulen</b> parameter the size of the data array in bytes.
+<dl compact>
+<dt><b>ulen</b><dd>The <b>ulen</b> parameter the size of the data array in bytes.
 </dl>
 <hr size=1 noshade>
 <h3>Description: Dbt::get_ulen</h3>
@@ -179,9 +170,8 @@ The <b>ulen</b> parameter the size of the data array in bytes.
 application, in bytes.  See the DB_DBT_PARTIAL flag for more
 information.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dlen</b><dd>
-The <b>dlen</b> parameter is the length of the partial record in bytes.
+<dl compact>
+<dt><b>dlen</b><dd>The <b>dlen</b> parameter is the length of the partial record in bytes.
 </dl>
 <hr size=1 noshade>
 <h3>Description: Dbt::get_dlen</h3>
@@ -192,9 +182,8 @@ The <b>dlen</b> parameter is the length of the partial record in bytes.
 application, in bytes.  See the DB_DBT_PARTIAL flag for more
 information.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>doff</b><dd>
-The <b>doff</b> parameter is the offset of the partial record.
+<dl compact>
+<dt><b>doff</b><dd>The <b>doff</b> parameter is the offset of the partial record.
 </dl>
 <hr size=1 noshade>
 <h3>Description: Dbt::get_doff</h3>
@@ -203,40 +192,35 @@ The <b>doff</b> parameter is the offset of the partial record.
 <h3>Description: Dbt::set_object</h3>
 <p>Set the object flag value.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter is Dbt flag value.
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter is Dbt flag value.
 The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_DBT_MALLOC">DB_DBT_MALLOC</a><dd>
-When this flag is set, Berkeley DB will allocate memory for the returned key
-or data item
-(using <b>malloc</b>(3) or the user-specified malloc method), and
-return a pointer to it in the <b>data</b> field of the key or data
-Dbt object.  Because any allocated memory becomes the
+<dl compact>
+<dt><a name="DB_DBT_MALLOC">DB_DBT_MALLOC</a><dd>When this flag is set, Berkeley DB will allocate memory for the returned key
+or data item (using <b>malloc</b>(3) or the user-specified malloc
+method), and return a pointer to it in the <b>data</b> field of the key
+or data Dbt object.  Because any allocated memory becomes the
 responsibility of the calling application, the caller must determine
 whether memory was allocated using the returned value of the
 <b>data</b> field.
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
-<p><dt><a name="DB_DBT_REALLOC">DB_DBT_REALLOC</a><dd>
-When this flag is set Berkeley DB
-will allocate memory for the returned key or data item (using
-<b>realloc</b>(3) or the user-specified realloc method), and return
-a pointer to it in the <b>data</b> field of the key or data Dbt
-object.  Because any allocated memory becomes the responsibility of the
-calling application, the caller must determine whether memory was
-allocated using the returned value of the <b>data</b> field.
+<dt><a name="DB_DBT_REALLOC">DB_DBT_REALLOC</a><dd>When this flag is set Berkeley DB will allocate memory for the returned key
+or data item (using <b>realloc</b>(3) or the user-specified realloc
+method), and return a pointer to it in the <b>data</b> field of the key
+or data Dbt object.  Because any allocated memory becomes the
+responsibility of the calling application, the caller must determine
+whether memory was allocated using the returned value of the
+<b>data</b> field.
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
-<p><dt><a name="DB_DBT_USERMEM">DB_DBT_USERMEM</a><dd>
-The <b>data</b> field of the key or data object must refer to memory
+<dt><a name="DB_DBT_USERMEM">DB_DBT_USERMEM</a><dd>The <b>data</b> field of the key or data object must refer to memory
 that is at least <b>ulen</b> bytes in length.  If the length of the
 requested item is less than or equal to that number of bytes, the item
 is copied into the memory referred to by the <b>data</b> field.
 Otherwise, the <b>size</b> field is set to the length needed for the
-requested item, and the error ENOMEM is returned.
+requested item, and the error <a href="../api_cxx/dbt_class.html#DB_BUFFER_SMALL">DB_BUFFER_SMALL</a> is returned.
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
 </dl>
@@ -250,10 +234,10 @@ you are retrieving, you might decrease the memory burden and speed your
 application by allocating your own byte array and using
 DB_DBT_USERMEM.  Even if you don't know the maximum size, you can
 use this option and reallocate your array whenever your retrieval API call
-returns an ENOMEM error or throws an exception encapsulating an ENOMEM.</p>
-<p><dl compact>
-<p><dt><a name="DB_DBT_PARTIAL">DB_DBT_PARTIAL</a><dd>
-Do partial retrieval or storage of an item.  If the calling application
+returns an <a href="../api_cxx/dbt_class.html#DB_BUFFER_SMALL">DB_BUFFER_SMALL</a> error or throws an exception
+encapsulating an <a href="../api_cxx/dbt_class.html#DB_BUFFER_SMALL">DB_BUFFER_SMALL</a>.</p>
+<dl compact>
+<dt><a name="DB_DBT_PARTIAL">DB_DBT_PARTIAL</a><dd>Do partial retrieval or storage of an item.  If the calling application
 is doing a get, the <b>dlen</b> bytes starting <b>doff</b> bytes from
 the beginning of the retrieved data record are returned as if they
 comprised the entire record.  If any or all of the specified bytes do
@@ -292,6 +276,6 @@ bytes would be those specified by the put call.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

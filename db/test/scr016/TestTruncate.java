@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: TestTruncate.java,v 1.7 2003/05/06 17:09:43 dda Exp $
+ * $Id: TestTruncate.java,v 1.8 2004/01/28 03:36:34 bostic Exp $
  */
 
 /*

@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -34,12 +34,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * $Id: hash_dup.c,v 11.85 2004/06/03 16:32:21 margo Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: hash_dup.c,v 11.81 2003/06/30 17:20:11 bostic Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 /*
  * PACKAGE:  hashing
@@ -200,7 +199,11 @@ __ham_add_dup(dbc, nval, flags, pgnop)
 		case DB_AFTER:
 			tmp_val.doff = hcp->dup_off + DUP_SIZE(hcp->dup_len);
 			break;
+		default:
+			DB_ASSERT(0);
+			return (EINVAL);
 		}
+
 		/* Add the duplicate. */
 		ret = __ham_replpair(dbc, &tmp_val, 0);
 		if (ret == 0)
@@ -222,6 +225,9 @@ __ham_add_dup(dbc, nval, flags, pgnop)
 			hcp->dup_tlen += (db_indx_t)DUP_SIZE(nval->size);
 			hcp->dup_len = nval->size;
 			break;
+		default:
+			DB_ASSERT(0);
+			return (EINVAL);
 		}
 		ret = __ham_c_update(dbc, tmp_val.size, 1, 1);
 		return (ret);
@@ -477,7 +483,7 @@ __ham_check_move(dbc, add_len)
 
 	old_len =
 	    LEN_HITEM(dbp, hcp->page, dbp->pgsize, H_DATAINDEX(hcp->indx));
-	new_datalen = old_len - HKEYDATA_SIZE(0) + add_len;
+	new_datalen = (old_len - HKEYDATA_SIZE(0)) + add_len;
 	if (HPAGE_PTYPE(hk) != H_DUPLICATE)
 		new_datalen += DUP_SIZE(0);
 
@@ -650,7 +656,7 @@ __ham_move_offpage(dbc, pagep, ndx, pgno)
 	DBT old_dbt;
 	HOFFDUP od;
 	db_indx_t i, *inp;
-	int32_t shrink;
+	int32_t difflen;
 	u_int8_t *src;
 	int ret;
 
@@ -674,18 +680,24 @@ __ham_move_offpage(dbc, pagep, ndx, pgno)
 	} else
 		LSN_NOT_LOGGED(LSN(pagep));
 
-	shrink = LEN_HITEM(dbp, pagep, dbp->pgsize, ndx) - HOFFDUP_SIZE;
-	inp = P_INP(dbp, pagep);
-
-	if (shrink != 0) {
+	/*
+	 * difflen is the difference in the lengths, and so may be negative.
+	 * We know that the difference between two unsigned lengths from a
+	 * database page will fit into an int32_t.
+	 */
+	difflen =
+	    (int32_t)LEN_HITEM(dbp, pagep, dbp->pgsize, ndx) -
+	    (int32_t)HOFFDUP_SIZE;
+	if (difflen != 0) {
 		/* Copy data. */
+		inp = P_INP(dbp, pagep);
 		src = (u_int8_t *)(pagep) + HOFFSET(pagep);
-		memmove(src + shrink, src, inp[ndx] - HOFFSET(pagep));
-		HOFFSET(pagep) += shrink;
+		memmove(src + difflen, src, inp[ndx] - HOFFSET(pagep));
+		HOFFSET(pagep) += difflen;
 
 		/* Update index table. */
 		for (i = ndx; i < NUM_ENT(pagep); i++)
-			inp[i] += shrink;
+			inp[i] += difflen;
 	}
 
 	/* Now copy the offdup entry onto the page. */
@@ -722,6 +734,7 @@ __ham_dsearch(dbc, dbt, offp, cmpp, flags)
 	i = F_ISSET(hcp, H_CONTINUE) ? hcp->dup_off: 0;
 	data = HKEYDATA_DATA(H_PAIRDATA(dbp, hcp->page, hcp->indx)) + i;
 	hcp->dup_tlen = LEN_HDATA(dbp, hcp->page, dbp->pgsize, hcp->indx);
+	len = hcp->dup_len;
 	while (i < hcp->dup_tlen) {
 		memcpy(&len, data, sizeof(db_indx_t));
 		data += sizeof(db_indx_t);
@@ -752,30 +765,6 @@ __ham_dsearch(dbc, dbt, offp, cmpp, flags)
 	hcp->dup_len = len;
 	F_SET(hcp, H_ISDUP);
 }
-
-#ifdef DEBUG
-/*
- * __ham_cprint --
- *	Display the current cursor list.
- *
- * PUBLIC: void __ham_cprint __P((DBC *));
- */
-void
-__ham_cprint(dbc)
-	DBC *dbc;
-{
-	HASH_CURSOR *cp;
-
-	cp = (HASH_CURSOR *)dbc->internal;
-
-	fprintf(stderr, "%#0lx->%#0lx: page: %lu index: %lu",
-	    P_TO_ULONG(dbc), P_TO_ULONG(cp), (u_long)cp->pgno,
-	    (u_long)cp->indx);
-	if (F_ISSET(cp, H_DELETED))
-		fprintf(stderr, " (deleted)");
-	fprintf(stderr, "\n");
-}
-#endif /* DEBUG */
 
 /*
  * __ham_dcursor --

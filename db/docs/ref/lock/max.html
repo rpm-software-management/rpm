@@ -1,12 +1,12 @@
-<!--$Id: max.so,v 10.7 2003/10/30 19:38:48 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: max.so,v 10.9 2004/04/10 15:17:08 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Configuring locking: sizing the system</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -44,14 +44,16 @@ applications, finer granularity of control is necessary in order to
 minimize the size of the Lock subsystem.</p>
 <p>The maximum number of lockers can be estimated as follows:</p>
 <p><ul type=disc>
-<li>If the database environment is configured to use transactions, the
-maximum number of lockers needed is the number of simultaneously active
-transactions and child transactions (where a child transaction is active
-until its parent commits or aborts, not until it commits or aborts).
-<li>If the database environment is not configured to use transactions, the
-maximum number of lockers needed is the number of simultaneous
-non-cursor operations plus an additional locker for every simultaneously
-open cursor or database handle.
+<li>If the database environment is using transactions, the maximum number
+of lockers can be estimated by adding the number of simultaneously
+active non-transactional cursors open database handles to the number of
+simultaneously active transactions and child transactions (where a child
+transaction is active until it commits or aborts, not until its parent
+commits or aborts).
+<li>If the database environment is not using transactions, the maximum
+number of lockers can be estimated by adding the number of
+simultaneously active non-transactional cursors and open database
+handles to the number of simultaneous non-cursor operations.
 </ul>
 <p>The maximum number of lock objects needed for a single database
 operation can be estimated as follows:</p>
@@ -90,6 +92,6 @@ applications are unlikely to actually need that many locks.  Reviewing
 the Lock subsystem statistics is the best way to determine this value.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../lock/config.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/stdmode.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

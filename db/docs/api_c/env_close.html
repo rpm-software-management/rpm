@@ -1,23 +1,22 @@
-<!--$Id: env_close.so,v 10.37 2003/10/31 17:24:44 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_close.so,v 10.38 2004/08/13 03:38:56 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;close</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;close</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -36,11 +35,11 @@ handles must not be closed while database handles remain open, or
 transactions in the environment have not yet been committed or aborted.
 Specifically, this includes <a href="../api_c/db_class.html">DB</a>, <a href="../api_c/dbc_class.html">DBC</a>, <a href="../api_c/txn_class.html">DB_TXN</a>,
 <a href="../api_c/logc_class.html">DB_LOGC</a> and <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a> handles.</p>
-<p>Where the environment was initialized with the <a href="../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a> flag,
-calling DB_ENV-&gt;close does not release any locks still held by the
-closing process, providing functionality for long-lived locks.
-Processes that want to have all their locks
-released can do so by issuing the appropriate <a href="../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> call.</p>
+<p>Where the environment was initialized with the <a href="../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a>
+flag, calling DB_ENV-&gt;close does not release any locks still held
+by the closing process, providing functionality for long-lived locks.
+Processes that want to have all their locks released can do so by
+issuing the appropriate <a href="../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> call.</p>
 <p>Where the environment was initialized with the <a href="../api_c/env_open.html#DB_INIT_MPOOL">DB_INIT_MPOOL</a>
 flag, calling DB_ENV-&gt;close implies calls to <a href="../api_c/memp_fclose.html">DB_MPOOLFILE-&gt;close</a> for
 any remaining open files in the memory pool that were returned to this
@@ -67,9 +66,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter is currently unused, and must be set to 0.
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -80,6 +78,6 @@ The <b>flags</b> parameter is currently unused, and must be set to 0.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

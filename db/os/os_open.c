@@ -1,18 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_open.c,v 11.60 2004/09/24 00:43:19 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: os_open.c,v 11.48 2003/09/10 00:27:29 bostic Exp $";
-#endif /* not lint */
-
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
+#include <sys/stat.h>
 
 #ifdef HAVE_SYS_FCNTL_H
 #include <sys/fcntl.h>
@@ -20,10 +19,13 @@ static const char revid[] = "$Id: os_open.c,v 11.48 2003/09/10 00:27:29 bostic E
 
 #include <fcntl.h>
 #include <string.h>
+#include <unistd.h>
 #endif
 
 #include "db_int.h"
 
+static int __os_intermediate_dir __P((DB_ENV *, const char *));
+static int __os_mkdir __P((DB_ENV *, const char *));
 #ifdef HAVE_QNX
 static int __os_region_open __P((DB_ENV *, const char *, int, int, DB_FH **));
 #endif
@@ -65,7 +67,7 @@ __os_open(dbenv, name, flags, mode, fhpp)
 	int mode;
 	DB_FH **fhpp;
 {
-	return (__os_open_extend(dbenv, name, 0, 0, flags, mode, fhpp));
+	return (__os_open_extend(dbenv, name, 0, flags, mode, fhpp));
 }
 
 /*
@@ -73,29 +75,28 @@ __os_open(dbenv, name, flags, mode, fhpp)
  *	Open a file descriptor (including page size and log size information).
  *
  * PUBLIC: int __os_open_extend __P((DB_ENV *,
- * PUBLIC:     const char *, u_int32_t, u_int32_t, u_int32_t, int, DB_FH **));
+ * PUBLIC:     const char *, u_int32_t, u_int32_t, int, DB_FH **));
  */
 int
-__os_open_extend(dbenv, name, log_size, page_size, flags, mode, fhpp)
+__os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	DB_ENV *dbenv;
 	const char *name;
-	u_int32_t log_size, page_size, flags;
+	u_int32_t page_size, flags;
 	int mode;
 	DB_FH **fhpp;
 {
 	DB_FH *fhp;
 	int oflags, ret;
 
-	COMPQUIET(log_size, 0);
 	COMPQUIET(page_size, 0);
 
 	*fhpp = NULL;
 	oflags = 0;
 
 #define	OKFLAGS								\
-	(DB_OSO_CREATE | DB_OSO_DIRECT | DB_OSO_EXCL | DB_OSO_LOG |	\
-	 DB_OSO_RDONLY | DB_OSO_REGION | DB_OSO_SEQ | DB_OSO_TEMP |	\
-	 DB_OSO_TRUNC)
+	(DB_OSO_CREATE | DB_OSO_DIRECT | DB_OSO_DSYNC | DB_OSO_EXCL |	\
+	 DB_OSO_LOG | DB_OSO_RDONLY | DB_OSO_REGION | DB_OSO_SEQ |	\
+	 DB_OSO_TEMP | DB_OSO_TRUNC)
 	if ((ret = __db_fchk(dbenv, "__os_open", flags, OKFLAGS)) != 0)
 		return (ret);
 
@@ -120,16 +121,12 @@ __os_open_extend(dbenv, name, log_size, page_size, flags, mode, fhpp)
 	if (LF_ISSET(DB_OSO_EXCL))
 		oflags |= O_EXCL;
 
-#if defined(O_DSYNC) && defined(XXX_NEVER_SET)
-	/*
-	 * !!!
-	 * We should get better performance if we push the log files to disk
-	 * immediately instead of waiting for the sync.  However, Solaris
-	 * (and likely any other system based on the 4BSD filesystem releases),
-	 * doesn't implement O_DSYNC correctly, only flushing data blocks and
-	 * not inode or indirect blocks.
-	 */
-	if (LF_ISSET(DB_OSO_LOG))
+#ifdef HAVE_O_DIRECT
+	if (LF_ISSET(DB_OSO_DIRECT))
+		oflags |= O_DIRECT;
+#endif
+#ifdef O_DSYNC
+	if (LF_ISSET(DB_OSO_LOG) && LF_ISSET(DB_OSO_DSYNC))
 		oflags |= O_DSYNC;
 #endif
 
@@ -141,10 +138,14 @@ __os_open_extend(dbenv, name, log_size, page_size, flags, mode, fhpp)
 	if (LF_ISSET(DB_OSO_TRUNC))
 		oflags |= O_TRUNC;
 
-#ifdef HAVE_O_DIRECT
-	if (LF_ISSET(DB_OSO_DIRECT))
-		oflags |= O_DIRECT;
-#endif
+	/*
+	 * Undocumented feature: allow applications to create intermediate
+	 * directories whenever a file is opened.
+	 */
+	if (dbenv != NULL &&
+	    dbenv->dir_mode != 0 && LF_ISSET(DB_OSO_CREATE) &&
+	    (ret = __os_intermediate_dir(dbenv, name)) != 0)
+		return (ret);
 
 #ifdef HAVE_QNX
 	if (LF_ISSET(DB_OSO_REGION))
@@ -153,6 +154,11 @@ __os_open_extend(dbenv, name, log_size, page_size, flags, mode, fhpp)
 	/* Open the file. */
 	if ((ret = __os_openhandle(dbenv, name, oflags, mode, &fhp)) != 0)
 		return (ret);
+
+#ifdef O_DSYNC
+	if (LF_ISSET(DB_OSO_LOG) && LF_ISSET(DB_OSO_DSYNC))
+		F_SET(fhp, DB_FH_NOSYNC);
+#endif
 
 #if defined(HAVE_DIRECTIO) && defined(DIRECTIO_ON)
 	/*
@@ -230,7 +236,7 @@ __os_qnx_region_open(dbenv, name, oflags, mode, fhpp)
 	F_SET(fhp, DB_FH_OPENED);
 
 #ifdef HAVE_FCNTL_F_SETFD
-	/* Deny file descriptor acces to any child process. */
+	/* Deny file descriptor access to any child process. */
 	if (fcntl(fhp->fd, F_SETFD, 1) == -1) {
 		ret = __os_get_errno();
 		__db_err(dbenv, "fcntl(F_SETFD): %s", strerror(ret));
@@ -321,3 +327,86 @@ __os_shmname(dbenv, name, newnamep)
 	return (0);
 }
 #endif
+
+/*
+ * __os_intermediate_dir --
+ *	Create intermediate directories.
+ */
+static int
+__os_intermediate_dir(dbenv, name)
+	DB_ENV *dbenv;
+	const char *name;
+{
+	size_t len;
+	int ret;
+	char savech, *p, *t, buf[128];
+
+	ret = 0;
+
+	/*
+	 * Get a copy so we can modify the string.
+	 *
+	 * Allocate memory if temporary space is too small.
+	 */
+	if ((len = strlen(name)) > sizeof(buf) - 1) {
+		if ((ret = __os_umalloc(dbenv, len, &t)) != 0)
+			return (ret);
+	} else
+		t = buf;
+	(void)strcpy(t, name);
+
+	/*
+	 * Cycle through the path, creating intermediate directories.
+	 *
+	 * Skip the first byte if it's a path separator, it's the start of an
+	 * absolute pathname.
+	 */
+	if (PATH_SEPARATOR[1] == '\0') {
+		for (p = t + 1; p[0] != '\0'; ++p)
+			if (p[0] == PATH_SEPARATOR[0]) {
+				savech = *p;
+				*p = '\0';
+				if (__os_exists(t, NULL) &&
+				    (ret = __os_mkdir(dbenv, t)) != 0)
+					break;
+				*p = savech;
+			}
+	} else
+		for (p = t + 1; p[0] != '\0'; ++p)
+			if (strchr(PATH_SEPARATOR, p[0]) != NULL) {
+				savech = *p;
+				*p = '\0';
+				if (__os_exists(t, NULL) &&
+				    (ret = __os_mkdir(dbenv, t)) != 0)
+					break;
+				*p = savech;
+			}
+	if (t != buf)
+		__os_free(dbenv, t);
+	return (ret);
+}
+
+/*
+ * __os_mkdir --
+ *	Create a directory.
+ */
+static int
+__os_mkdir(dbenv, name)
+	DB_ENV *dbenv;
+	const char *name;
+{
+	int ret;
+
+	/* Make the directory, with paranoid permissions. */
+#ifdef HAVE_VXWORKS
+	RETRY_CHK((mkdir((char *)name)), ret);
+#else
+	RETRY_CHK((mkdir(name, 0600)), ret);
+	if (ret != 0)
+		return (ret);
+
+	/* Set the absolute permissions. */
+	RETRY_CHK((chmod(name, dbenv->dir_mode)), ret);
+#endif
+	return (ret);
+}

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_rq_client.c,v 1.37 2003/09/05 00:05:34 bostic Exp $
+ * $Id: ex_rq_client.c,v 1.39 2004/01/28 03:36:03 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -118,7 +118,7 @@ check_loop(args)
 		} else {
 			machtab_parm(machtab, &n, &pri, &timeout);
 		 	if (dbenv->rep_elect(dbenv,
-			    n, pri, timeout, &master_eid) == 0)
+			    n, (n/2+1), pri, timeout, &master_eid, 0) == 0)
 				break;
 			count = 0;
 		}

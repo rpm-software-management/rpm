@@ -27,6 +27,9 @@ int raise __P((int));
 #ifndef HAVE_SNPRINTF
 int snprintf __P((char *, size_t, const char *, ...));
 #endif
+#ifndef HAVE_VSNPRINTF
+int vsnprintf __P((char *, size_t, const char *, va_list));
+#endif
 #ifndef HAVE_STRCASECMP
 int strcasecmp __P((const char *, const char *));
 #endif
@@ -38,9 +41,6 @@ char *strdup __P((const char *));
 #endif
 #ifndef HAVE_STRERROR
 char *strerror __P((int));
-#endif
-#ifndef HAVE_VSNPRINTF
-int vsnprintf __P((char *, size_t, const char *, va_list));
 #endif
 
 #if defined(__cplusplus)

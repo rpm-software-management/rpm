@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_sleep.c,v 11.23 2004/03/27 19:09:13 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_sleep.c,v 11.18 2003/05/14 17:01:23 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -45,9 +43,9 @@ static const char revid[] = "$Id: os_sleep.c,v 11.18 2003/05/14 17:01:23 bostic 
  * __os_sleep --
  *	Yield the processor for a period of time.
  *
- * PUBLIC: int __os_sleep __P((DB_ENV *, u_long, u_long));
+ * PUBLIC: void __os_sleep __P((DB_ENV *, u_long, u_long));
  */
-int
+void
 __os_sleep(dbenv, secs, usecs)
 	DB_ENV *dbenv;
 	u_long secs, usecs;		/* Seconds and microseconds. */
@@ -59,8 +57,10 @@ __os_sleep(dbenv, secs, usecs)
 	for (; usecs >= 1000000; usecs -= 1000000)
 		++secs;
 
-	if (DB_GLOBAL(j_sleep) != NULL)
-		return (DB_GLOBAL(j_sleep)(secs, usecs));
+	if (DB_GLOBAL(j_sleep) != NULL) {
+		(void)DB_GLOBAL(j_sleep)(secs, usecs);
+		return;
+	}
 
 	/*
 	 * It's important that we yield the processor here so that other
@@ -68,11 +68,11 @@ __os_sleep(dbenv, secs, usecs)
 	 *
 	 * Sheer raving paranoia -- don't select for 0 time.
 	 */
-	t.tv_sec = secs;
+	t.tv_sec = (long)secs;
 	if (secs == 0 && usecs == 0)
 		t.tv_usec = 1;
 	else
-		t.tv_usec = usecs;
+		t.tv_usec = (long)usecs;
 
 	/*
 	 * We don't catch interrupts and restart the system call here, unlike
@@ -81,12 +81,7 @@ __os_sleep(dbenv, secs, usecs)
 	 * we want the utility to see the signal and quit.  This assumes it's
 	 * always OK for DB to sleep for less time than originally scheduled.
 	 */
-	if ((ret = select(0, NULL, NULL, NULL, &t)) != 0)
-		if ((ret = __os_get_errno()) == EINTR)
-			ret = 0;
-
-	if (ret != 0)
-		__db_err(dbenv, "select: %s", strerror(ret));
-
-	return (ret);
+	if (select(0, NULL, NULL, NULL, &t) == -1)
+		 if ((ret = __os_get_errno()) != EINTR)
+			__db_err(dbenv, "select: %s", strerror(ret));
 }

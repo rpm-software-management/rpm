@@ -1,12 +1,12 @@
 <!--$Id: build.so,v 10.11 2003/10/18 19:16:21 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Building a Global Transaction Manager</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -163,20 +163,20 @@ committing state.  For each environment, the GTM should issue a
 can determine the fate of each transaction.  The correct behavior is
 defined depending on the state of the global transaction according to
 the table below.</p>
-<p><dl compact>
-<p><dt>preparing<dd>if all participating environments return the transaction in the prepared
+<dl compact>
+<dt>preparing<dd>if all participating environments return the transaction in the prepared
 but not yet committed/aborted state, then the GTM should commit the
 transaction.  If any participating environment fails to return it, then
 the GTM should issue an abort to all environments that did return it.
-<p><dt>committing<dd>the GTM should send a commit to any environment that returned this
+<dt>committing<dd>the GTM should send a commit to any environment that returned this
 transaction in its list of prepared but not yet committed/aborted
 transactions.
-<p><dt>aborting<dd>the GTM should send an abort to any environment that returned this
+<dt>aborting<dd>the GTM should send an abort to any environment that returned this
 transaction in its list of prepared but not yet committed/aborted
 transactions.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../xa/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../xa/xa_intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

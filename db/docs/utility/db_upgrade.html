@@ -1,41 +1,40 @@
 <!--$Id: db_upgrade.so,v 1.8 2002/08/24 18:24:54 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: db_upgrade</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>db_upgrade</h3>
 </td>
-</td></tr></table>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>db_upgrade [<b>-NsV</b>] [<b>-h home</b>] [<b>-P password</b>] file ...</pre></h3>
 <h3>Description</h3>
-<a name="3"><!--meow--></a><a name="4"><!--meow--></a>
+<a name="2"><!--meow--></a><a name="3"><!--meow--></a>
 <p>The db_upgrade utility upgrades the Berkeley DB version of one or more
 files and the databases they contain to the current release version.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt><b>-h</b><dd>Specify a home directory for the database environment; by
+<dl compact>
+<dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
-<p><dt><b>-N</b><dd>Do not acquire shared region mutexes while running.  Other problems,
+<dt><b>-N</b><dd>Do not acquire shared region mutexes while running.  Other problems,
 such as potentially fatal errors in Berkeley DB, will be ignored as well.
 This option is intended only for debugging errors, and should not be
 used under any other circumstances.
-<p><dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
+<dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
 password strings as soon as possible, be aware there may be a window of
 vulnerability on systems where unprivileged users can see command-line
 arguments or where utilities are not able to overwrite the memory
 containing the command-line arguments.
-<p><dt><b>-s</b><dd>This flag is only meaningful when upgrading databases from releases
+<dt><b>-s</b><dd>This flag is only meaningful when upgrading databases from releases
 before the Berkeley DB 3.1 release.
 <p>As part of the upgrade from the Berkeley DB 3.0 release to the 3.1 release,
 the on-disk format of duplicate data items changed. To correctly upgrade
@@ -56,7 +55,7 @@ db_upgrade will work correctly as long as the <b>-s</b> flag
 is correctly specified. Otherwise, the file cannot be upgraded using
 db_upgrade, and must be upgraded manually using the
 <a href="../utility/db_dump.html">db_dump</a> and <a href="../utility/db_load.html">db_load</a> utilities.</p>
-<p><dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
 </dl>
 <p><b>It is important to realize that Berkeley DB database upgrades are done
 in place, and so are potentially destructive.</b> This means that if the
@@ -74,12 +73,12 @@ to release all environment resources and exit cleanly, send it an
 interrupt signal (SIGINT).</p>
 <p>The db_upgrade utility exits 0 on success, and &gt;0 if an error occurs.</p>
 <h3>Environment Variables</h3>
-<p><dl compact>
-<p><dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
+<dl compact>
+<dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
 DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: TestCallback.java,v 1.2 2003/10/24 01:23:19 mjc Exp $
+ * $Id: TestCallback.java,v 1.3 2004/01/28 03:36:34 bostic Exp $
  */
 
 /*

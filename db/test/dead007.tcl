@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: dead007.tcl,v 1.5 2003/05/28 14:33:49 sandstro Exp $
+# $Id: dead007.tcl,v 1.6 2004/01/28 03:36:27 bostic Exp $
 #
 # TEST	dead007
 # TEST	Tests for locker and txn id wraparound.

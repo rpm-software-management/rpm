@@ -1,23 +1,22 @@
-<!--$Id: env_set_mp_mmapsize.so,v 10.36 2003/11/08 19:17:31 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_mp_mmapsize.so,v 10.40 2004/09/28 15:04:21 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_mp_mmapsize</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;set_mp_mmapsize</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DB_ENV-&gt;get_mp_mmapsize(DB_ENV *dbenv, size_t *mp_mmapsizep);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;set_mp_mmapsize</h3>
-<a name="3"><!--meow--></a>
 <p>Files that are opened read-only in the pool (and that satisfy a few
 other criteria) are, by default, mapped into the process address space
 instead of being copied into the local cache.  This can result in
@@ -50,9 +48,8 @@ and the size in bytes.
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
 before that time.</p>
-<p>The DB_ENV-&gt;set_mp_mmapsize method configures operations performed using the specified
-<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
-database environment.</p>
+<p>The DB_ENV-&gt;set_mp_mmapsize method configures a database environment, not only operations
+performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
 <p>The DB_ENV-&gt;set_mp_mmapsize method may be called at any time during the life of the
 application.</p>
 <p>The DB_ENV-&gt;set_mp_mmapsize method
@@ -60,16 +57,15 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>mp_mmapsize</b><dd>
-The <b>mp_mmapsize</b> parameter is the maximum file size, in bytes,
+<dl compact>
+<dt><b>mp_mmapsize</b><dd>The <b>mp_mmapsize</b> parameter is the maximum file size, in bytes,
 for a file to be mapped into the process address space.
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;set_mp_mmapsize method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -82,9 +78,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>mp_mmapsizep</b><dd>
-The DB_ENV-&gt;get_mp_mmapsize method returns  the
+<dl compact>
+<dt><b>mp_mmapsizep</b><dd>The DB_ENV-&gt;get_mp_mmapsize method returns  the
 maximum file map size in <b>mp_mmapsizep</b>.
 </dl>
 <hr size=1 noshade>
@@ -96,6 +91,6 @@ maximum file map size in <b>mp_mmapsizep</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

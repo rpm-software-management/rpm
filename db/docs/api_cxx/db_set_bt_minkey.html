@@ -1,23 +1,22 @@
-<!--$Id: db_set_bt_minkey.so,v 10.35 2003/11/08 19:17:20 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_set_bt_minkey.so,v 10.38 2004/09/28 15:04:19 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::set_bt_minkey</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::set_bt_minkey</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ Db::get_bt_minkey(u_int32_t *bt_minkeyp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: Db::set_bt_minkey</h3>
-<a name="3"><!--meow--></a>
 <p>Set the minimum number of key/data pairs intended to be stored on any
 single Btree leaf page.</p>
 <p>This value is used to determine if key or data items will be stored on
@@ -52,9 +50,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>bt_minkey</b><dd>
-The <b>bt_minkey</b> parameter is the minimum number of key/data pairs
+<dl compact>
+<dt><b>bt_minkey</b><dd>The <b>bt_minkey</b> parameter is the minimum number of key/data pairs
 intended to be stored on any single Btree leaf page.
 </dl>
 <h3>Errors</h3>
@@ -63,8 +60,8 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_cxx/db_open.html">Db::open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_cxx/db_open.html">Db::open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -79,9 +76,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>bt_minkeyp</b><dd>
-The Db::get_bt_minkey method returns  the
+<dl compact>
+<dt><b>bt_minkeyp</b><dd>The Db::get_bt_minkey method returns  the
 minimum number of key/data pairs intended to be stored on any single Btree
 leaf page in <b>bt_minkeyp</b>.
 </dl>
@@ -94,6 +90,6 @@ leaf page in <b>bt_minkeyp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: recd004.tcl,v 11.30 2003/01/08 05:51:15 bostic Exp $
+# $Id: recd004.tcl,v 11.31 2004/01/28 03:36:28 bostic Exp $
 #
 # TEST	recd004
 # TEST	Big key test where big key gets elevated to internal page.

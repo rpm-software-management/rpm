@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: update.tcl,v 11.12 2003/01/08 05:54:16 bostic Exp $
+# $Id: update.tcl,v 11.13 2004/01/28 03:36:33 bostic Exp $
 
 source ./include.tcl
 global update_dir

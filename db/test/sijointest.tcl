@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sijointest.tcl,v 11.3 2003/01/08 05:53:29 bostic Exp $
+# $Id: sijointest.tcl,v 11.4 2004/01/28 03:36:30 bostic Exp $
 #
 # TEST	sijointest: Secondary index and join test.
 # TEST 	This used to be si005.tcl.

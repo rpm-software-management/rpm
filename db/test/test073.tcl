@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test073.tcl,v 11.25 2003/01/08 05:54:02 bostic Exp $
+# $Id: test073.tcl,v 11.26 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test073
 # TEST	Test of cursor stability on duplicate pages.

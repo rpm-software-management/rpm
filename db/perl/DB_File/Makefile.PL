@@ -38,6 +38,9 @@ $LIBS .= " -lpthread" if $^O eq 'aix' ;
 my $OS2 = "" ;
 $OS2 = "-DOS2" if $Config{'osname'} eq 'os2' ;
 
+my $WALL = '' ;
+#$WALL = ' -Wall ';
+
 WriteMakefile(
 	NAME 		=> 'DB_File',
 	LIBS 		=> ["-L${LIB_DIR} $LIBS"],
@@ -45,7 +48,7 @@ WriteMakefile(
 	INC		=> "-I$INC_DIR",
 	VERSION_FROM	=> 'DB_File.pm',
 	XSPROTOARG	=> '-noprototypes',
-	DEFINE		=> "-D_NOT_CORE $OS2 $VER_INFO $COMPAT185",
+	DEFINE		=> "-D_NOT_CORE $OS2 $VER_INFO $COMPAT185 $WALL",
 	OBJECT		=> 'version$(OBJ_EXT) DB_File$(OBJ_EXT)',
 	#OPTIMIZE	=> '-g',
 	'depend'	=> { 'Makefile'          => 'config.in',

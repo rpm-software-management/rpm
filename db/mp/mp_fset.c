@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mp_fset.c,v 11.33 2004/09/15 21:49:19 mjc Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: mp_fset.c,v 11.30 2003/09/13 19:26:21 bostic Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -62,7 +61,7 @@ __memp_fset_pp(dbmfp, pgaddr, flags)
 		__env_rep_enter(dbenv);
 	ret = __memp_fset(dbmfp, pgaddr, flags);
 	if (rep_check)
-		__env_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 	return (ret);
 }
 
@@ -92,7 +91,7 @@ __memp_fset(dbmfp, pgaddr, flags)
 	bhp = (BH *)((u_int8_t *)pgaddr - SSZA(BH, buf));
 	n_cache = NCACHE(dbmp->reginfo[0].primary, bhp->mf_offset, bhp->pgno);
 	c_mp = dbmp->reginfo[n_cache].primary;
-	hp = R_ADDR(&dbmp->reginfo[n_cache], c_mp->htab);
+	hp = R_ADDR(dbenv, &dbmp->reginfo[n_cache], c_mp->htab);
 	hp = &hp[NBUCKET(c_mp, bhp->mf_offset, bhp->pgno)];
 
 	MUTEX_LOCK(dbenv, &hp->hash_mutex);

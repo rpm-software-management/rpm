@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: txn_util.c,v 11.28 2004/09/16 17:55:19 margo Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: txn_util.c,v 11.25 2003/12/03 14:33:07 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -280,8 +278,8 @@ __txn_doevents(dbenv, txn, opcode, preprocess)
 		case TXN_CLOSE:
 			/* If we didn't abort this txn, we screwed up badly. */
 			DB_ASSERT(opcode == TXN_ABORT);
-			if ((t_ret =
-			    __db_close(e->u.c.dbp, NULL, 0)) != 0 && ret == 0)
+			if ((t_ret = __db_close(e->u.c.dbp,
+			    NULL, DB_NOSYNC)) != 0 && ret == 0)
 				ret = t_ret;
 			break;
 		case TXN_REMOVE:
@@ -315,7 +313,9 @@ dofree:
 				__os_free(dbenv, e->u.r.fileid);
 			__os_free(dbenv, e->u.r.name);
 			break;
-
+		case TXN_CLOSE:
+		case TXN_TRADE:
+		case TXN_TRADED:
 		default:
 			break;
 		}

@@ -1,12 +1,12 @@
 <!--$Id: auto.so,v 10.3 2002/03/15 16:19:10 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Automatically generated functions</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -90,20 +90,20 @@ ex_apprec_template and ex_apprec_rec.c for an example.)</p>
 (but not the automatically generated source_file, as that will get
 overwritten each time gen_rec.awk is run) and fully developed there.
 The recovery function takes the following parameters:</p>
-<blockquote><p><dl compact>
-<p><dt>dbenv<dd>The environment in which recovery is running.
-<p><dt>rec<dd>The record being recovered.
-<p><dt>lsn<dd>The log sequence number of the record being recovered.  The
+<blockquote><dl compact>
+<dt>dbenv<dd>The environment in which recovery is running.
+<dt>rec<dd>The record being recovered.
+<dt>lsn<dd>The log sequence number of the record being recovered.  The
 prev_lsn field, automatically included in every auto-generated log
 record, should be returned through this argument.  The prev_lsn field
 is used to chain log records together to allow transaction aborts;
 because the recovery function is the only place that a log record gets
 parsed, the responsibility for returning this value lies with the
 recovery function writer.
-<p><dt>op<dd>A parameter of type db_recops, which indicates what operation is being
+<dt>op<dd>A parameter of type db_recops, which indicates what operation is being
 run (<a href="../../api_c/env_set_app_dispatch.html#DB_TXN_ABORT">DB_TXN_ABORT</a>, <a href="../../api_c/env_set_app_dispatch.html#DB_TXN_APPLY">DB_TXN_APPLY</a>, <a href="../../api_c/env_set_app_dispatch.html#DB_TXN_BACKWARD_ROLL">DB_TXN_BACKWARD_ROLL</a>,
 <a href="../../api_c/env_set_app_dispatch.html#DB_TXN_FORWARD_ROLL">DB_TXN_FORWARD_ROLL</a> or <a href="../../api_c/env_set_app_dispatch.html#DB_TXN_PRINT">DB_TXN_PRINT</a>).
-<p><dt>info<dd>A structure passed by the dispatch function.  It is used to contain a
+<dt>info<dd>A structure passed by the dispatch function.  It is used to contain a
 list of committed transactions and information about files that may have
 been deleted.  Application-specific log records can usually simply
 ignore this field.
@@ -114,15 +114,15 @@ record type.</p>
 <p>The log function marshalls the parameters into a buffer, and calls
 <a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a> on that buffer returning 0 on success and non-zero on
 failure.  The log function takes the following parameters:</p>
-<blockquote><p><dl compact>
-<p><dt>dbenv<dd>The environment in which recovery is running.
-<p><dt>txnid<dd>The transaction identifier for the transaction handle returned by
+<blockquote><dl compact>
+<dt>dbenv<dd>The environment in which recovery is running.
+<dt>txnid<dd>The transaction identifier for the transaction handle returned by
 <a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>.
-<p><dt>lsnp<dd>A pointer to storage for a log sequence number into which the log
+<dt>lsnp<dd>A pointer to storage for a log sequence number into which the log
 sequence number of the new log record will be returned.
-<p><dt>syncflag<dd>A flag indicating whether the record must be written synchronously.
+<dt>syncflag<dd>A flag indicating whether the record must be written synchronously.
 Valid values are 0 and <a href="../../api_c/log_put.html#DB_FLUSH">DB_FLUSH</a>.
-<p><dt>args<dd>The remaining parameters to the log message are the fields described
+<dt>args<dd>The remaining parameters to the log message are the fields described
 in the XXX.src file, in order.
 </dl></blockquote>
 <p>The read function takes a buffer and unmarshalls its contents into a
@@ -130,10 +130,10 @@ structure of the appropriate type.  It returns 0 on success and non-zero
 on error.  After the fields of the structure have been used, the pointer
 returned from the read function should be freed.  The read function
 takes the following parameters:</p>
-<blockquote><p><dl compact>
-<p><dt>dbenv<dd>The environment in which recovery is running.
-<p><dt>recbuf<dd>A buffer.
-<p><dt>argp<dd>A pointer to a structure of the appropriate type.
+<blockquote><dl compact>
+<dt>dbenv<dd>The environment in which recovery is running.
+<dt>recbuf<dd>A buffer.
+<dt>argp<dd>A pointer to a structure of the appropriate type.
 </dl></blockquote>
 <p>The print function displays the contents of the record.  The print
 function takes the same parameters as the recovery function described
@@ -141,12 +141,12 @@ previously.  Although some of the parameters are unused by the print
 function, taking the same parameters  allows a single dispatch loop to
 dispatch to a variety of functions.  The print function takes the
 following parameters:</p>
-<blockquote><p><dl compact>
-<p><dt>dbenv<dd>The environment in which recovery is running.
-<p><dt>rec<dd>The record being recovered.
-<p><dt>lsn<dd>The log sequence number of the record being recovered.
-<p><dt>op<dd>Unused.
-<p><dt>info<dd>Unused.
+<blockquote><dl compact>
+<dt>dbenv<dd>The environment in which recovery is running.
+<dt>rec<dd>The record being recovered.
+<dt>lsn<dd>The log sequence number of the record being recovered.
+<dt>op<dd>Unused.
+<dt>info<dd>Unused.
 </dl></blockquote>
 <p>Finally, the source file will contain a function (named XXX_init_print,
 where XXX is replaced by the prefix) which should be added to the
@@ -154,6 +154,6 @@ initialization part of the standalone <a href="../../utility/db_printlog.html">d
 so that utility can be used to display application-specific log records.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../apprec/def.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

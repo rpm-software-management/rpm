@@ -1,17 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db185.c,v 11.35 2004/03/24 20:37:35 bostic Exp $
  */
 
 #include "db_config.h"
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
-static const char revid[] =
-    "$Id: db185.c,v 11.33 2003/05/05 19:54:58 bostic Exp $";
+    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -224,7 +224,7 @@ __db185_open(file, oflags, mode, type, openinfo)
 	 * Store a reference so we can indirect from the DB 1.85 structure
 	 * to the underlying DB structure, and vice-versa.  This has to be
 	 * done BEFORE the DB::open method call because the hash callback
-	 * is exercised as part of hash database initialiation.
+	 * is exercised as part of hash database initialization.
 	 */
 	db185p->dbp = dbp;
 	dbp->api_internal = db185p;

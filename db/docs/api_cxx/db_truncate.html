@@ -1,23 +1,22 @@
-<!--$Id: db_truncate.so,v 1.24 2003/12/03 15:11:47 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_truncate.so,v 1.26 2004/08/13 03:38:56 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::truncate</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::truncate</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -29,9 +28,12 @@ Db::truncate(DbTxn *txnid, u_int32_t *countp, u_int32_t flags);
 <hr size=1 noshade>
 <h3>Description: Db::truncate</h3>
 <p>The Db::truncate method empties the database, discarding all records
-it contains.
-The number of records discarded from the database is returned in
-<b>countp</b>.</p>
+it contains.  The number of records discarded from the database is
+returned in <b>countp</b>.</p>
+<p>When called on a database configured with secondary indices using the
+<a href="../api_cxx/db_associate.html">Db::associate</a> method, the Db::truncate method truncates the primary
+database and all secondary indices.  A count of the records discarded
+from the primary database is returned.</p>
 <p>It is an error to call the Db::truncate method on a database with open
 cursors.</p>
 <p>The Db::truncate method
@@ -40,20 +42,17 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>countp</b><dd>
-The <b>countp</b> parameter references memory into which
+<dl compact>
+<dt><b>countp</b><dd>The <b>countp</b> parameter references memory into which
  the number of records discarded from the database is copied.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::truncate call within a transaction.  If the call succeeds,
+<dl compact>
+<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::truncate call within a transaction.  If the call succeeds,
 changes made by the operation will be recoverable.  If the call fails,
 the operation will have made no changes.
 </dl>
-<p><dt><b>txnid</b><dd>
-If the operation is to be transaction-protected,
+<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
 (other than by specifying the DB_AUTO_COMMIT flag),
 the <b>txnid</b> parameter is a transaction handle returned from
 <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
@@ -64,8 +63,8 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If there are open cursors in the database; or if an
+<dl compact>
+<dt>EINVAL<dd>If there are open cursors in the database; or if an
 invalid flag value or parameter was specified.
 </dl>
 <p>If a transactional database environment operation was selected to
@@ -85,6 +84,6 @@ throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exc
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

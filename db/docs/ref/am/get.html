@@ -1,12 +1,12 @@
 <!--$Id: get.so,v 10.18 2003/10/18 19:15:52 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Retrieving records</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -20,13 +20,13 @@
 <a href="../../api_c/db_get.html">DB-&gt;get</a> takes a key and returns the associated data from the
 database.</p>
 <p>There are a few flags that you can set to customize retrieval:</p>
-<p><dl compact>
-<p><dt><a href="../../api_c/db_get.html#DB_GET_BOTH">DB_GET_BOTH</a><dd>Search for a matching key and data item, that is, only return success
+<dl compact>
+<dt><a href="../../api_c/db_get.html#DB_GET_BOTH">DB_GET_BOTH</a><dd>Search for a matching key and data item, that is, only return success
 if both the key and the data items match those stored in the database.
-<p><dt><a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a><dd>Read-modify-write: acquire write locks instead of read locks during
+<dt><a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a><dd>Read-modify-write: acquire write locks instead of read locks during
 retrieval. This can enhance performance in threaded applications by
 reducing the chance of deadlock.
-<p><dt><a href="../../api_c/db_get.html#DB_SET_RECNO">DB_SET_RECNO</a><dd>If the underlying database is a Btree, and was configured so that it
+<dt><a href="../../api_c/db_get.html#DB_SET_RECNO">DB_SET_RECNO</a><dd>If the underlying database is a Btree, and was configured so that it
 is possible to search it by logical record number, retrieve a specific
 record.
 </dl>
@@ -35,6 +35,6 @@ record.
 set.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am/opensub.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/put.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

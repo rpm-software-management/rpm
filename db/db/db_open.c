@@ -1,20 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_open.c,v 11.240 2004/09/22 20:53:19 margo Exp $
  */
 
 #include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: db_open.c,v 11.236 2003/09/27 00:29:03 sue Exp $";
-#endif /* not lint */
-
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
 
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #endif
@@ -359,8 +356,8 @@ __db_chk_meta(dbenv, dbp, meta, do_metachk)
 	int do_metachk;
 {
 	int is_hmac, ret, swapped;
-	u_int8_t *chksum;
 	u_int32_t orig_chk;
+	u_int8_t *chksum;
 
 	ret = 0;
 
@@ -370,27 +367,26 @@ __db_chk_meta(dbenv, dbp, meta, do_metachk)
 
 		is_hmac = meta->encrypt_alg == 0 ? 0 : 1;
 		chksum = ((BTMETA *)meta)->chksum;
+
 		/*
-		 * We cannot add this to __db_metaswap because that gets
-		 * done later after we've verified the checksum or
-		 * decrypted.
+		 * If we need to swap, the checksum function overwrites the
+		 * original checksum with 0, so we need to save a copy of the
+		 * original for swapping later.
+		 */
+		orig_chk = *(u_int32_t *)chksum;
+
+		/*
+		 * We cannot add this to __db_metaswap because that gets done
+		 * later after we've verified the checksum or decrypted.
 		 */
 		if (do_metachk) {
-			/*
-			 * If we need to swap, the checksum function
-			 * overwrites the original checksum with 0, so
-			 * we need to save a copy of the original for
-			 * swapping later.
-			 */
-			if (is_hmac == 0)
-				orig_chk = *(u_int32_t *)chksum;
 			swapped = 0;
-chk_retry:
-			if ((ret = __db_check_chksum(dbenv,
+chk_retry:		if ((ret = __db_check_chksum(dbenv,
 			    (DB_CIPHER *)dbenv->crypto_handle, chksum, meta,
 			    DBMETASIZE, is_hmac)) != 0) {
 				if (is_hmac || swapped)
 					return (ret);
+
 				M_32_SWAP(orig_chk);
 				swapped = 1;
 				*(u_int32_t *)chksum = orig_chk;
@@ -530,6 +526,9 @@ swap_retry:
 	return (0);
 
 bad_format:
-	__db_err(dbenv, "%s: unexpected file type or format", name);
+	if (F_ISSET(dbp, DB_AM_RECOVER))
+		ret = ENOENT;
+	else
+		__db_err(dbenv, "%s: unexpected file type or format", name);
 	return (ret == 0 ? EINVAL : ret);
 }

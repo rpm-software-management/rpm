@@ -1,4 +1,4 @@
-# $Id: buildrel,v 1.57 2003/11/28 19:21:02 bostic Exp $
+# $Id: buildrel,v 1.60 2004/10/14 15:32:29 bostic Exp $
 #
 # Build the distribution package.
 #
@@ -17,13 +17,15 @@ echo "Version: $VERSION"
 # Make sure the source tree is up-to-date
 cd $D && cvs -q update
 
+# Build auto-generated files.
+cd $D/dist && sh s_all
+
 # Build the documentation.
 cd db.docs && cvs -q update
-cd db.docs && sh build ../db.rel clean && sh build ../db.rel |& sed '/.html$/d'
-cd db.docs && sh build ../db.rel javadoc
+cd db.docs && sh build $D clean && sh build $D |& sed '/.html$/d'
+cd je/docs_src && sh build db ../../db
 
-# Generate new support files, commit anything that's changed.
-cd $D/dist && sh s_all
+# Commit all of the changes.
 cd $D && cvs -q commit
 
 # Copy a development tree into a release tree.

@@ -1,26 +1,26 @@
-<!--$Id: db_load.so,v 10.38 2002/08/24 18:24:53 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_load.so,v 10.42 2004/03/24 20:12:08 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: db_load</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>db_load</h3>
 </td>
-</td></tr></table>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>db_load [<b>-nTV</b>] [<b>-c name=value</b>] [<b>-f file</b>]
-    [<b>-h home</b>] [<b>-P password</b>] [<b>-t btree | hash | queue | recno</b>] file</pre></h3>
+    [<b>-h home</b>] [<b>-P password</b>] [<b>-t btree | hash | queue | recno</b>] file
+db_load [<b>-r lsn | fileid</b>] [<b>-h home</b>] [<b>-P password</b>] file</pre></h3>
 <h3>Description</h3>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>The db_load utility reads from the standard input and loads it
 into the database <b>file</b>.  The database <b>file</b> is created if
 it does not already exist.</p>
@@ -28,32 +28,47 @@ it does not already exist.</p>
 <a href="../utility/db_dump.html">db_dump</a> utility, utilities, or as specified for the <b>-T</b>
 below.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt><b>-c</b><dd>Specify configuration options ignoring any value they may have based on
+<dl compact>
+<dt><b>-c</b><dd>Specify configuration options ignoring any value they may have based on
 the input.  The command-line format is <b>name=value</b>.  See the
 Supported Keywords section below for a list of keywords supported by
 the <b>-c</b> option.
-<p><dt><b>-f</b><dd>Read from the specified <b>input</b> file instead of from the standard
+<dt><b>-f</b><dd>Read from the specified <b>input</b> file instead of from the standard
 input.
-<p><dt><b>-h</b><dd>Specify a home directory for the database environment.
+<dt><b>-h</b><dd>Specify a home directory for the database environment.
 <p>If a home directory is specified, the database environment is opened
-using the <a href="../api_c/env_open.html#DB_INIT_LOCK">Db.DB_INIT_LOCK</a>, <a href="../api_c/env_open.html#DB_INIT_LOG">Db.DB_INIT_LOG</a>,
-<a href="../api_c/env_open.html#DB_INIT_MPOOL">Db.DB_INIT_MPOOL</a>, <a href="../api_c/env_open.html#DB_INIT_TXN">Db.DB_INIT_TXN</a>, and <a href="../api_c/env_open.html#DB_USE_ENVIRON">Db.DB_USE_ENVIRON</a>
+using the <a href="../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a>, <a href="../api_c/env_open.html#DB_INIT_LOG">DB_INIT_LOG</a>,
+<a href="../api_c/env_open.html#DB_INIT_MPOOL">DB_INIT_MPOOL</a>, <a href="../api_c/env_open.html#DB_INIT_TXN">DB_INIT_TXN</a>, and <a href="../api_c/env_open.html#DB_USE_ENVIRON">DB_USE_ENVIRON</a>
 flags to <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.  (This means that db_load can be
 used to load data into databases while they are in use by other
 processes.) If the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> call fails, or if no home
 directory is specified, the database is still updated, but the
 environment is ignored; for example, no locking is done.</p>
-<p><dt><b>-n</b><dd>Do not overwrite existing keys in the database when loading into an
+<dt><b>-n</b><dd>Do not overwrite existing keys in the database when loading into an
 already existing database.  If a key/data pair cannot be loaded into the
 database for this reason, a warning message is displayed on the standard
 error output, and the key/data pair are skipped.
-<p><dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
+<dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
 password strings as soon as possible, be aware there may be a window of
 vulnerability on systems where unprivileged users can see command-line
 arguments or where utilities are not able to overwrite the memory
 containing the command-line arguments.
-<p><dt><b>-T</b><dd>The <b>-T</b> option allows non-Berkeley DB applications to easily load text
+<dt><b>-r</b><dd>Reset the database's file ID or log sequence numbers (LSNs).
+<p>All database pages in transactional environments contain references to
+the environment's log records.  In order to copy a database into a
+different database environment, database page references to the old
+environment's log records must be reset, otherwise data corruption can
+occur when the database is modified in the new environment.  The
+<b>-r</b> <b>lsn</b> option resets a database's log sequence
+numbers.</p>
+<p>All databases contain an ID string used to identify the database in the
+database environment cache.  If a database is copied, and used in the
+same environment as another file with the same ID string, corruption can
+occur.  The <b>-r</b> <b>fileid</b>  option resets a database's file
+ID to a new value.</p>
+<p><b>In both cases, the physical file specified by the <b>file</b> argument
+is modified in-place.</b></p>
+<dt><b>-T</b><dd>The <b>-T</b> option allows non-Berkeley DB applications to easily load text
 files into databases.
 <p>If the database to be created is of type Btree or Hash, or the keyword
 <b>keys</b> is specified as set, the input must be paired lines of text,
@@ -76,7 +91,7 @@ occur in the text input must be escaped to avoid misinterpretation by
 db_load.</p>
 <p>If the <b>-T</b> option is specified, the underlying access method type
 must be specified using the <b>-t</b> option.</p>
-<p><dt><b>-t</b><dd>Specify the underlying access method.  If no <b>-t</b> option is
+<dt><b>-t</b><dd>Specify the underlying access method.  If no <b>-t</b> option is
 specified, the database will be loaded into a database of the same type
 as was dumped; for example, a Hash database will be created if a Hash
 database was dumped.
@@ -85,7 +100,7 @@ and Recno databases may be converted from one to the other.  If the
 <b>-k</b> option was specified on the call to <a href="../utility/db_dump.html">db_dump</a> then Queue
 and Recno databases may be converted to Btree or Hash, with the key being
 the integer record number.</p>
-<p><dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
 </dl>
 <p>The db_load utility may be used with a Berkeley DB environment (as described for the
 <b>-h</b> option, the environment variable <b>DB_HOME</b>, or
@@ -108,8 +123,8 @@ key item and the entire password entry as the data item:</p>
 <p>Note that backslash characters naturally occurring in the text are escaped
 to avoid interpretation as escape characters by db_load.</p>
 <h3>Environment Variables</h3>
-<p><dl compact>
-<p><dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
+<dl compact>
+<dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
 DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
@@ -122,14 +137,14 @@ discussion of these keywords and what values should be specified.
 expect value to be <b>1</b> (set) or <b>0</b> (unset).  Items listed
 as (number) convert value to a number.  Items listed as (string) use
 the string value without modification.</p>
-<p><dl compact>
+<dl compact>
 <dt>bt_minkey (number)<dd>The minimum number of keys per page.
 <dt>chksum (boolean)<dd>Enable page checksums.
 <dt>database (string)<dd>The database to load.
 <dt>db_lorder (number)<dd>The byte order for integers in the stored database metadata.
 <dt>db_pagesize (number)<dd>The size of database pages, in bytes.
-<dt>duplicates (boolean)<dd>The value of the <a href="../api_c/db_set_flags.html#DB_DUP">Db.DB_DUP</a> flag.
-<dt>dupsort (boolean)<dd>The value of the <a href="../api_c/db_set_flags.html#DB_DUPSORT">Db.DB_DUPSORT</a> flag.
+<dt>duplicates (boolean)<dd>The value of the <a href="../api_c/db_set_flags.html#DB_DUP">DB_DUP</a> flag.
+<dt>dupsort (boolean)<dd>The value of the <a href="../api_c/db_set_flags.html#DB_DUPSORT">DB_DUPSORT</a> flag.
 <dt>extentsize (number)<dd>The size of database extents, in pages, for Queue databases configured
 to use extents.
 <dt>h_ffactor (number)<dd>The density within the Hash database.
@@ -137,11 +152,11 @@ to use extents.
 <dt>keys (boolean)<dd>Specify whether keys are present for Queue or Recno databases.
 <dt>re_len (number)<dd>Specify fixed-length records of the specified length.
 <dt>re_pad (string)<dd>Specify the fixed-length record pad character.
-<dt>recnum (boolean)<dd>The value of the <a href="../api_c/db_set_flags.html#DB_RECNUM">Db.DB_RECNUM</a> flag.
-<dt>renumber (boolean)<dd>The value of the <a href="../api_c/db_set_flags.html#DB_RENUMBER">Db.DB_RENUMBER</a> flag.
+<dt>recnum (boolean)<dd>The value of the <a href="../api_c/db_set_flags.html#DB_RECNUM">DB_RECNUM</a> flag.
+<dt>renumber (boolean)<dd>The value of the <a href="../api_c/db_set_flags.html#DB_RENUMBER">DB_RENUMBER</a> flag.
 <dt>subdatabase (string)<dd>The subdatabase to load.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

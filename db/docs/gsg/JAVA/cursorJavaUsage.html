@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <title>Cursor Example</title>
+    <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
+    <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
+    <link rel="up" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="previous" href="ReplacingEntryWCursor.html" title="Replacing Records Using Cursors" />
+    <link rel="next" href="indexes.html" title="Chapter 5. Secondary Databases" />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <th colspan="3" align="center">Cursor Example</th>
+        </tr>
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="ReplacingEntryWCursor.html">Prev</a> </td>
+          <th width="60%" align="center">Chapter 4. Using Cursors</th>
+          <td width="20%" align="right"> <a accesskey="n" href="indexes.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="sect1" lang="en" xml:lang="en">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title" style="clear: both"><a id="cursorJavaUsage"></a>Cursor Example</h2>
+          </div>
+        </div>
+        <div></div>
+      </div>
+      <p>In <a href="dbtJavaUsage.html">Database Usage Example</a> we wrote an
+    application that loaded two <tt class="classname">Database</tt> objects with vendor
+    and inventory information. In this example, we will use those databases to
+    display all of the items in the inventory database. As a part of showing
+    any given inventory item, we will look up the vendor who can provide the
+    item and show the vendor's contact information.</p>
+      <p>To do this, we create the <tt class="classname">ExampleDatabaseRead</tt>
+    application. This application reads and displays all inventory records by:</p>
+      <div class="orderedlist">
+        <ol type="1">
+          <li>
+            <p>Opening the  inventory, vendor, and
+        class catalog <tt class="classname">Database</tt> objects. We do this using the
+        <tt class="classname">MyDbs</tt> class. See <a href="dbtJavaUsage.html#dbsStoredClass">Stored Class Catalog Management with MyDbs</a>
+        for a description of this class.</p>
+          </li>
+          <li>
+            <p>Obtaining a cursor from the inventory <tt class="classname">Database</tt>.</p>
+          </li>
+          <li>
+            <p>Steps through the <tt class="classname">Database</tt>, displaying
+        each record as it goes.</p>
+          </li>
+          <li>
+            <p>To display the Inventory record, the custom tuple binding that
+        we created in <a href="dbtJavaUsage.html#InventoryJavaBinding">InventoryBinding.java</a> is used.</p>
+          </li>
+          <li>
+            <p><tt class="methodname">Database.get()</tt> is used to obtain the vendor that corresponds to
+        the inventory item.</p>
+          </li>
+          <li>
+            <p>A serial binding is used to convert the
+        <tt class="classname">DatabaseEntry</tt> returned
+        by the <tt class="methodname">get()</tt> to a Vendor object.</p>
+          </li>
+          <li>
+            <p>The contents of the Vendor object are displayed.</p>
+          </li>
+        </ol>
+      </div>
+      <p>We implemented the <tt class="classname">Vendor</tt> class in <a href="dbtJavaUsage.html#vendorjava">Vendor.java</a>. We implemented the
+    <tt class="classname">Inventory</tt> class in <a href="dbtJavaUsage.html#inventoryjava">Inventory.java</a>.</p>
+      <p>The full implementation of <tt class="classname">ExampleDatabaseRead</tt>
+    can be found in:
+    </p>
+      <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+      <p>
+        where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
+        placed your DB distribution.
+    </p>
+      <div class="example">
+        <a id="EDR"></a>
+        <p class="title">
+          <b>Example 4.1  ExampleDatabaseRead.java</b>
+        </p>
+        <p>To begin, we import the necessary classes:</p>
+        <a id="java_cursor10"></a>
+        <pre class="programlisting">// file ExampleDatabaseRead.java
+package com.sleepycat.examples.db.GettingStarted;
+
+import java.io.File;
+import java.io.IOException;
+
+import com.sleepycat.bind.EntryBinding;
+import com.sleepycat.bind.serial.SerialBinding;
+import com.sleepycat.bind.tuple.TupleBinding;
+import com.sleepycat.db.Cursor;
+import com.sleepycat.db.DatabaseEntry;
+import com.sleepycat.db.DatabaseException;
+import com.sleepycat.db.LockMode;
+import com.sleepycat.db.OperationStatus;</pre>
+        <p>Next we declare our class and set up some global variables. Note a
+      <tt class="classname">MyDbs</tt> object is instantiated here. We can do
+      this because its constructor never throws an exception. See <a href="CoreJavaUsage.html">Database Example</a> for its implementation
+      details.</p>
+        <a id="java_cursor11"></a>
+        <pre class="programlisting">public class ExampleDatabaseRead {
+
+    private static String myDbsPath = "./";
+
+    // Encapsulates the database environment and databases.
+    private static MyDbs myDbs = new MyDbs();
+
+    private static TupleBinding inventoryBinding;
+    private static EntryBinding vendorBinding; </pre>
+        <p>
+        Next we create the <tt class="methodname">ExampleDatabaseRead.usage()</tt> and
+        <tt class="methodname">ExampleDatabaseRead.main()</tt> methods. 
+        We perform almost all of our exception handling from <tt class="methodname">ExampleDatabaseRead.main()</tt>, and so we
+        must catch <tt class="classname">DatabaseException</tt> because the <tt class="literal">com.sleepycat.db.*</tt>
+        APIs throw them.
+      </p>
+        <a id="java_cursor12"></a>
+        <pre class="programlisting">   private static void usage() {
+        System.out.println("ExampleDatabaseRead [-h &lt;env directory&gt;]" +
+                           "[-s &lt;item to locate&gt;]");
+        System.exit(-1);
+    }
+
+    public static void main(String args[]) {
+        ExampleDatabaseRead edr = new ExampleDatabaseRead();
+        try {
+            edr.run(args);
+        } catch (DatabaseException dbe) {
+            System.err.println("ExampleDatabaseRead: " + dbe.toString());
+            dbe.printStackTrace();
+        } finally {
+            myDbs.close();
+        }
+        System.out.println("All done.");
+    }</pre>
+        <p>In <tt class="methodname">ExampleDatabaseRead.run()</tt>, we call <tt class="methodname">MyDbs.setup()</tt> to
+      open our databases. Then we create the bindings that we need for using our data objects with 
+      <tt class="classname">DatabaseEntry</tt> objects.
+      </p>
+        <a id="java_cursor13"></a>
+        <pre class="programlisting">    private void run(String args[])
+        throws DatabaseException {
+        // Parse the arguments list
+        parseArgs(args);
+
+        myDbs.setup(myDbsPath);
+
+        // Setup our bindings.
+        inventoryBinding = new InventoryBinding();
+        vendorBinding =
+             new SerialBinding(myDbs.getClassCatalog(),
+                               Vendor.class);
+
+        showAllInventory();
+    }</pre>
+        <p>Now we write the loop that displays the <tt class="classname">Inventory</tt>
+      records. We do this by opening a cursor on the inventory database and
+      iterating over all its contents, displaying each as we go.</p>
+        <a id="java_cursor14"></a>
+        <pre class="programlisting">    private void showAllInventory() 
+        throws DatabaseException {
+        // Get a cursor
+        Cursor cursor = myDbs.getInventoryDB().openCursor(null, null);
+
+        // DatabaseEntry objects used for reading records
+        DatabaseEntry foundKey = new DatabaseEntry();
+        DatabaseEntry foundData = new DatabaseEntry();
+                                                                                                                                       
+        try { // always want to make sure the cursor gets closed
+            while (cursor.getNext(foundKey, foundData,
+                        LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+                Inventory theInventory =
+                    (Inventory)inventoryBinding.entryToObject(foundData);
+                displayInventoryRecord(foundKey, theInventory);
+            }
+        } catch (Exception e) {
+            System.err.println("Error on inventory cursor:");
+            System.err.println(e.toString());
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+    } </pre>
+        <p>We use <tt class="methodname">ExampleDatabaseRead.displayInventoryRecord()</tt> 
+       to actually show the record. This
+      method first displays all the relevant information from the retrieved
+      Inventory object. It then uses the vendor database to retrieve and
+      display the vendor. Because the vendor database is keyed by vendor name,
+      and because each inventory object contains this key, it is trivial to
+      retrieve the appropriate vendor record.</p>
+        <a id="java_cursor15"></a>
+        <pre class="programlisting">   private void displayInventoryRecord(DatabaseEntry theKey,
+                                        Inventory theInventory)
+        throws DatabaseException {
+
+        String theSKU = new String(theKey.getData());
+        System.out.println(theSKU + ":");
+        System.out.println("\t " + theInventory.getItemName());
+        System.out.println("\t " + theInventory.getCategory());
+        System.out.println("\t " + theInventory.getVendor());
+        System.out.println("\t\tNumber in stock: " +
+            theInventory.getVendorInventory());
+        System.out.println("\t\tPrice per unit:  " +
+            theInventory.getVendorPrice());
+        System.out.println("\t\tContact: ");
+
+        DatabaseEntry searchKey = null;
+        try {
+            searchKey =
+                new DatabaseEntry(theInventory.getVendor().getBytes("UTF-8"));
+        } catch (IOException willNeverOccur) {}
+        DatabaseEntry foundVendor = new DatabaseEntry();
+
+        if (myDbs.getVendorDB().get(null, searchKey, foundVendor,
+                LockMode.DEFAULT) != OperationStatus.SUCCESS) {
+            System.out.println("Could not find vendor: " +
+                theInventory.getVendor() + ".");
+            System.exit(-1);
+        } else {
+            Vendor theVendor =
+                (Vendor)vendorBinding.entryToObject(foundVendor);
+            System.out.println("\t\t " + theVendor.getAddress());
+            System.out.println("\t\t " + theVendor.getCity() + ", " +
+                theVendor.getState() + " " + theVendor.getZipcode());
+            System.out.println("\t\t Business Phone: " +
+                theVendor.getBusinessPhoneNumber());
+            System.out.println("\t\t Sales Rep: " +
+                                theVendor.getRepName());
+            System.out.println("\t\t            " +
+                theVendor.getRepPhoneNumber());
+       }
+    }</pre>
+        <p>The remainder of this application provides a utility method used
+      to parse the command line options. From the perspective of this
+      document, this is relatively uninteresting. You can see how this is
+      implemented by looking at:
+      </p>
+        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+        <p>
+        where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
+        placed your DB distribution.
+    </p>
+      </div>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="ReplacingEntryWCursor.html">Prev</a> </td>
+          <td width="20%" align="center">
+            <a accesskey="u" href="Cursors.html">Up</a>
+          </td>
+          <td width="40%" align="right"> <a accesskey="n" href="indexes.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top">Replacing Records Using Cursors </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> Chapter 5. Secondary Databases</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -38,13 +38,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * $Id: db_overflow.c,v 11.54 2004/03/28 17:17:50 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_overflow.c,v 11.51 2003/06/30 17:19:46 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -117,7 +115,7 @@ __db_goff(dbp, dbt, tlen, pgno, bpp, bpsz)
 	if (F_ISSET(dbt, DB_DBT_USERMEM)) {
 		if (needed > dbt->ulen) {
 			dbt->size = needed;
-			return (ENOMEM);
+			return (DB_BUFFER_SMALL);
 		}
 	} else if (F_ISSET(dbt, DB_DBT_MALLOC)) {
 		if ((ret = __os_umalloc(dbenv, needed, &dbt->data)) != 0)
@@ -125,13 +123,20 @@ __db_goff(dbp, dbt, tlen, pgno, bpp, bpsz)
 	} else if (F_ISSET(dbt, DB_DBT_REALLOC)) {
 		if ((ret = __os_urealloc(dbenv, needed, &dbt->data)) != 0)
 			return (ret);
-	} else if (*bpsz == 0 || *bpsz < needed) {
+	} else if (bpsz != NULL && (*bpsz == 0 || *bpsz < needed)) {
 		if ((ret = __os_realloc(dbenv, needed, bpp)) != 0)
 			return (ret);
 		*bpsz = needed;
 		dbt->data = *bpp;
-	} else
+	} else if (bpp != NULL)
 		dbt->data = *bpp;
+	else {
+		DB_ASSERT(
+		    F_ISSET(dbt,
+		    DB_DBT_USERMEM | DB_DBT_MALLOC | DB_DBT_REALLOC) ||
+		    bpsz != NULL || bpp != NULL);
+		return (DB_BUFFER_SMALL);
+	}
 
 	/*
 	 * Step through the linked list of pages, copying the data on each

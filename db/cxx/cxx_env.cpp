@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: cxx_env.cpp,v 11.105 2004/09/22 22:20:31 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: cxx_env.cpp,v 11.96 2003/06/30 19:17:48 mjc Exp $";
-#endif /* not lint */
 
 #include <errno.h>
 #include <stdio.h>              // needed for set_error_stream
@@ -63,13 +61,6 @@ void DbEnv::_name _argspec					  \
 	dbenv->_name _arglist;					  \
 }
 
-// This datatype is needed for picky compilers.
-//
-extern "C" {
-	typedef void (*db_errcall_fcn_type)
-		(const char *, char *);
-};
-
 // The reason for a static variable is that some structures
 // (like Dbts) have no connection to any Db or DbEnv, so when
 // errors occur in their methods, we must have some reasonable
@@ -80,8 +71,6 @@ extern "C" {
 // there is typically a single policy of throwing or returning.
 //
 static int last_known_error_policy = ON_ERROR_UNKNOWN;
-
-__DB_OSTREAMCLASS *DbEnv::error_stream_ = 0;
 
 // These 'glue' function are declared as extern "C" so they will
 // be compatible with picky compilers that do not allow mixing
@@ -101,14 +90,21 @@ void _paniccall_intercept_c(DB_ENV *env, int errval)
 }
 
 extern "C"
-void _stream_error_function_c(const char *prefix, char *message)
+void _stream_error_function_c(const DB_ENV *env,
+			      const char *prefix, const char *message)
 {
-	DbEnv::_stream_error_function(prefix, message);
+	DbEnv::_stream_error_function(env, prefix, message);
+}
+
+extern "C"
+void _stream_message_function_c(const DB_ENV *env, const char *message)
+{
+	DbEnv::_stream_message_function(env, message);
 }
 
 extern "C"
 int _app_dispatch_intercept_c(DB_ENV *env, DBT *dbt,
-			    DB_LSN *lsn, db_recops op)
+			      DB_LSN *lsn, db_recops op)
 {
 	return (DbEnv::_app_dispatch_intercept(env, dbt, lsn, op));
 }
@@ -124,14 +120,9 @@ int _rep_send_intercept_c(DB_ENV *env, const DBT *cntrl,
 
 void DbEnv::_feedback_intercept(DB_ENV *env, int opcode, int pct)
 {
-	if (env == 0) {
-		DB_ERROR(DbEnv::get_DbEnv(env),
-		    "DbEnv::feedback_callback", EINVAL, ON_ERROR_UNKNOWN);
-		return;
-	}
-	DbEnv *cxxenv = (DbEnv *)env->api1_internal;
+	DbEnv *cxxenv = DbEnv::get_DbEnv(env);
 	if (cxxenv == 0) {
-		DB_ERROR(DbEnv::get_DbEnv(env),
+		DB_ERROR(0,
 		    "DbEnv::feedback_callback", EINVAL, ON_ERROR_UNKNOWN);
 		return;
 	}
@@ -145,32 +136,24 @@ void DbEnv::_feedback_intercept(DB_ENV *env, int opcode, int pct)
 
 void DbEnv::_paniccall_intercept(DB_ENV *env, int errval)
 {
-	if (env == 0) {
-		DB_ERROR(DbEnv::get_DbEnv(env),
-		    "DbEnv::paniccall_callback", EINVAL, ON_ERROR_UNKNOWN);
-	}
-	DbEnv *cxxenv = (DbEnv *)env->api1_internal;
+	DbEnv *cxxenv = DbEnv::get_DbEnv(env);
 	if (cxxenv == 0) {
-		DB_ERROR(DbEnv::get_DbEnv(env),
+		DB_ERROR(0,
 		    "DbEnv::paniccall_callback", EINVAL, ON_ERROR_UNKNOWN);
+		return;
 	}
 	if (cxxenv->paniccall_callback_ == 0) {
-		DB_ERROR(DbEnv::get_DbEnv(env),
-		    "DbEnv::paniccall_callback", EINVAL,
+		DB_ERROR(cxxenv, "DbEnv::paniccall_callback", EINVAL,
 		    cxxenv->error_policy());
+		return;
 	}
 	(*cxxenv->paniccall_callback_)(cxxenv, errval);
 }
 
 int DbEnv::_app_dispatch_intercept(DB_ENV *env, DBT *dbt,
-				DB_LSN *lsn, db_recops op)
+				   DB_LSN *lsn, db_recops op)
 {
-	if (env == 0) {
-		DB_ERROR(DbEnv::get_DbEnv(env),
-		    "DbEnv::app_dispatch_callback", EINVAL, ON_ERROR_UNKNOWN);
-		return (EINVAL);
-	}
-	DbEnv *cxxenv = (DbEnv *)env->api1_internal;
+	DbEnv *cxxenv = DbEnv::get_DbEnv(env);
 	if (cxxenv == 0) {
 		DB_ERROR(DbEnv::get_DbEnv(env),
 		    "DbEnv::app_dispatch_callback", EINVAL, ON_ERROR_UNKNOWN);
@@ -188,14 +171,10 @@ int DbEnv::_app_dispatch_intercept(DB_ENV *env, DBT *dbt,
 }
 
 int DbEnv::_rep_send_intercept(DB_ENV *env, const DBT *cntrl,
-		const DBT *data, const DB_LSN *lsn, int id, u_int32_t flags)
+			       const DBT *data, const DB_LSN *lsn,
+			       int id, u_int32_t flags)
 {
-	if (env == 0) {
-		DB_ERROR(DbEnv::get_DbEnv(env),
-			"DbEnv::rep_send_callback", EINVAL, ON_ERROR_UNKNOWN);
-		return (EINVAL);
-	}
-	DbEnv *cxxenv = (DbEnv *)env->api1_internal;
+	DbEnv *cxxenv = DbEnv::get_DbEnv(env);
 	if (cxxenv == 0) {
 		DB_ERROR(DbEnv::get_DbEnv(env),
 			"DbEnv::rep_send_callback", EINVAL, ON_ERROR_UNKNOWN);
@@ -224,6 +203,8 @@ DbEnv::DbEnv(u_int32_t flags)
 :	imp_(0)
 ,	construct_error_(0)
 ,	construct_flags_(flags)
+,	error_stream_(0)
+,	message_stream_(0)
 ,	app_dispatch_callback_(0)
 ,	feedback_callback_(0)
 ,	paniccall_callback_(0)
@@ -240,6 +221,8 @@ DbEnv::DbEnv(DB_ENV *env, u_int32_t flags)
 :	imp_(0)
 ,	construct_error_(0)
 ,	construct_flags_(flags)
+,	error_stream_(0)
+,	message_stream_(0)
 ,	app_dispatch_callback_(0)
 ,	feedback_callback_(0)
 ,	paniccall_callback_(0)
@@ -363,7 +346,7 @@ int DbEnv::initialize(DB_ENV *env)
 		    construct_flags_ & ~DB_CXX_NO_EXCEPTIONS)) != 0)
 			return (ret);
 	}
-	imp_ = wrap(env);
+	imp_ = env;
 	env->api1_internal = this;	// for DB_ENV* to DbEnv* conversion
 	return (0);
 }
@@ -383,6 +366,7 @@ DBENV_METHOD(lock_id_free, (u_int32_t id), (dbenv, id))
 DBENV_METHOD(lock_put, (DbLock *lock), (dbenv, &lock->lock_))
 DBENV_METHOD(lock_stat, (DB_LOCK_STAT **statp, u_int32_t flags),
     (dbenv, statp, flags))
+DBENV_METHOD(lock_stat_print, (u_int32_t flags), (dbenv, flags))
 DBENV_METHOD_ERR(lock_vec,
     (u_int32_t locker, u_int32_t flags, DB_LOCKREQ list[],
     int nlist, DB_LOCKREQ **elist_returned),
@@ -410,6 +394,7 @@ DBENV_METHOD(log_put, (DbLsn *lsn, const Dbt *data, u_int32_t flags),
     (dbenv, lsn, data, flags))
 DBENV_METHOD(log_stat, (DB_LOG_STAT **spp, u_int32_t flags),
     (dbenv, spp, flags))
+DBENV_METHOD(log_stat_print, (u_int32_t flags), (dbenv, flags))
 
 int DbEnv::memp_fcreate(DbMpoolFile **dbmfp, u_int32_t flags)
 {
@@ -424,7 +409,7 @@ int DbEnv::memp_fcreate(DbMpoolFile **dbmfp, u_int32_t flags)
 
 	if (DB_RETOK_STD(ret)) {
 		*dbmfp = new DbMpoolFile();
-		(*dbmfp)->imp_ = wrap(mpf);
+		(*dbmfp)->imp_ = mpf;
 	} else
 		DB_ERROR(this, "DbMpoolFile::f_create", ret, ON_ERROR_UNKNOWN);
 
@@ -439,9 +424,8 @@ DBENV_METHOD(memp_register,
 DBENV_METHOD(memp_stat,
     (DB_MPOOL_STAT **gsp, DB_MPOOL_FSTAT ***fsp, u_int32_t flags),
     (dbenv, gsp, fsp, flags))
-
+DBENV_METHOD(memp_stat_print, (u_int32_t flags), (dbenv, flags))
 DBENV_METHOD(memp_sync, (DbLsn *sn), (dbenv, sn))
-
 DBENV_METHOD(memp_trickle, (int pct, int *nwrotep), (dbenv, pct, nwrotep))
 
 // If an error occurred during the constructor, report it now.
@@ -568,32 +552,53 @@ void DbEnv::runtime_error_lock_get(DbEnv *env,
 	}
 }
 
+void DbEnv::_stream_error_function(
+    const DB_ENV *env, const char *prefix, const char *message)
+{
+	const DbEnv *cxxenv = DbEnv::get_const_DbEnv(env);
+	if (cxxenv == 0) {
+		DB_ERROR(0,
+		    "DbEnv::stream_error", EINVAL, ON_ERROR_UNKNOWN);
+		return;
+	}
+
+	if (cxxenv->error_callback_)
+		cxxenv->error_callback_(cxxenv, prefix, message);
+	else if (cxxenv->error_stream_) {
+		// HP compilers need the extra casts, we don't know why.
+		if (prefix) {
+			(*cxxenv->error_stream_) << prefix;
+			(*cxxenv->error_stream_) << (const char *)": ";
+		}
+		if (message)
+			(*cxxenv->error_stream_) << (const char *)message;
+		(*cxxenv->error_stream_) << (const char *)"\n";
+	}
+}
+
+void DbEnv::_stream_message_function(const DB_ENV *env, const char *message)
+{
+	const DbEnv *cxxenv = DbEnv::get_const_DbEnv(env);
+	if (cxxenv == 0) {
+		DB_ERROR(0,
+		    "DbEnv::stream_message", EINVAL, ON_ERROR_UNKNOWN);
+		return;
+	}
+
+	if (cxxenv->message_callback_)
+		cxxenv->message_callback_(cxxenv, message);
+	else if (cxxenv->message_stream_) {
+		// HP compilers need the extra casts, we don't know why.
+		(*cxxenv->message_stream_) << (const char *)message;
+		(*cxxenv->message_stream_) << (const char *)"\n";
+	}
+}
+
 // static method
 char *DbEnv::strerror(int error)
 {
 	return (db_strerror(error));
 }
-
-void DbEnv::_stream_error_function(const char *prefix, char *message)
-{
-	// HP compilers need the extra casts, we don't know why.
-	if (error_stream_) {
-		if (prefix) {
-			(*error_stream_) << prefix << (const char *)": ";
-		}
-		if (message) {
-			(*error_stream_) << (const char *)message;
-		}
-		(*error_stream_) << (const char *)"\n";
-	}
-}
-
-// set methods
-
-DBENV_METHOD_VOID(get_errfile, (FILE **errfilep), (dbenv, errfilep))
-DBENV_METHOD_VOID(set_errfile, (FILE *errfile), (dbenv, errfile))
-DBENV_METHOD_VOID(get_errpfx, (const char **errpfxp), (dbenv, errpfxp))
-DBENV_METHOD_VOID(set_errpfx, (const char *errpfx), (dbenv, errpfx))
 
 // We keep these alphabetical by field name,
 // for comparison with Java's list.
@@ -603,6 +608,10 @@ DBENV_METHOD(get_encrypt_flags, (u_int32_t *flagsp),
     (dbenv, flagsp))
 DBENV_METHOD(set_encrypt, (const char *passwd, u_int32_t flags),
     (dbenv, passwd, flags))
+DBENV_METHOD_VOID(get_errfile, (FILE **errfilep), (dbenv, errfilep))
+DBENV_METHOD_VOID(set_errfile, (FILE *errfile), (dbenv, errfile))
+DBENV_METHOD_VOID(get_errpfx, (const char **errpfxp), (dbenv, errpfxp))
+DBENV_METHOD_VOID(set_errpfx, (const char *errpfx), (dbenv, errpfx))
 DBENV_METHOD(get_lg_bsize, (u_int32_t *bsizep), (dbenv, bsizep))
 DBENV_METHOD(set_lg_bsize, (u_int32_t bsize), (dbenv, bsize))
 DBENV_METHOD(get_lg_dir, (const char **dirp), (dbenv, dirp))
@@ -628,6 +637,8 @@ DBENV_METHOD(get_lk_max_objects, (u_int32_t *max_objectsp),
 DBENV_METHOD(set_lk_max_objects, (u_int32_t max_objects), (dbenv, max_objects))
 DBENV_METHOD(get_mp_mmapsize, (size_t *mmapsizep), (dbenv, mmapsizep))
 DBENV_METHOD(set_mp_mmapsize, (size_t mmapsize), (dbenv, mmapsize))
+DBENV_METHOD_VOID(get_msgfile, (FILE **msgfilep), (dbenv, msgfilep))
+DBENV_METHOD_VOID(set_msgfile, (FILE *msgfile), (dbenv, msgfile))
 DBENV_METHOD(get_tmp_dir, (const char **tmp_dirp), (dbenv, tmp_dirp))
 DBENV_METHOD(set_tmp_dir, (const char *tmp_dir), (dbenv, tmp_dir))
 DBENV_METHOD(get_tx_max, (u_int32_t *tx_maxp), (dbenv, tx_maxp))
@@ -650,36 +661,29 @@ DBENV_METHOD(set_cachesize,
     (u_int32_t gbytes, u_int32_t bytes, int ncache),
     (dbenv, gbytes, bytes, ncache))
 
-void DbEnv::set_errcall(void (*arg)(const char *, char *))
+void DbEnv::set_errcall(void (*arg)(const DbEnv *, const char *, const char *))
 {
 	DB_ENV *dbenv = unwrap(this);
 
-	// XXX
-	// We are casting from a function ptr declared with C++
-	// linkage to one (same arg types) declared with C
-	// linkage.  It's hard to imagine a pair of C/C++
-	// compilers from the same vendor for which this
-	// won't work.  Unfortunately, we can't use a
-	// intercept function like the others since the
-	// function does not have a (DbEnv*) as one of
-	// the args.  If this causes trouble, we can pull
-	// the same trick we use in Java, namely stuffing
-	// a (DbEnv*) pointer into the prefix.  We're
-	// avoiding this for the moment because it obfuscates.
-	//
-	(*(dbenv->set_errcall))(dbenv, (db_errcall_fcn_type)arg);
+	error_callback_ = arg;
+	error_stream_ = 0;
+
+	dbenv->set_errcall(dbenv, (arg == 0) ? 0 :
+			   _stream_error_function_c);
 }
 
-// Note: This actually behaves a bit like a static function,
-// since DB_ENV.db_errcall has no information about which
-// db_env triggered the call.  A user that has multiple DB_ENVs
-// will simply not be able to have different streams for each one.
-//
-void DbEnv::set_error_stream(__DB_OSTREAMCLASS *stream)
+__DB_STD(ostream) *DbEnv::get_error_stream()
+{
+	return (error_stream_);
+}
+
+void DbEnv::set_error_stream(__DB_STD(ostream) *stream)
 {
 	DB_ENV *dbenv = unwrap(this);
 
 	error_stream_ = stream;
+	error_callback_ = 0;
+
 	dbenv->set_errcall(dbenv, (stream == 0) ? 0 :
 			   _stream_error_function_c);
 }
@@ -690,11 +694,38 @@ int DbEnv::set_feedback(void (*arg)(DbEnv *, int, int))
 
 	feedback_callback_ = arg;
 
-	return ((*(dbenv->set_feedback))(dbenv, _feedback_intercept_c));
+	return (dbenv->set_feedback(dbenv, _feedback_intercept_c));
 }
 
 DBENV_METHOD(get_flags, (u_int32_t *flagsp), (dbenv, flagsp))
 DBENV_METHOD(set_flags, (u_int32_t flags, int onoff), (dbenv, flags, onoff))
+
+void DbEnv::set_msgcall(void (*arg)(const DbEnv *, const char *))
+{
+	DB_ENV *dbenv = unwrap(this);
+
+	message_callback_ = arg;
+	message_stream_ = 0;
+
+	dbenv->set_msgcall(dbenv, (arg == 0) ? 0 :
+			   _stream_message_function_c);
+}
+
+__DB_STD(ostream) *DbEnv::get_message_stream()
+{
+	return (message_stream_);
+}
+
+void DbEnv::set_message_stream(__DB_STD(ostream) *stream)
+{
+	DB_ENV *dbenv = unwrap(this);
+
+	message_stream_ = stream;
+	message_callback_ = 0;
+
+	dbenv->set_msgcall(dbenv, (stream == 0) ? 0 :
+			   _stream_message_function_c);
+}
 
 int DbEnv::set_paniccall(void (*arg)(DbEnv *, int))
 {
@@ -702,7 +733,7 @@ int DbEnv::set_paniccall(void (*arg)(DbEnv *, int))
 
 	paniccall_callback_ = arg;
 
-	return ((*(dbenv->set_paniccall))(dbenv, _paniccall_intercept_c));
+	return (dbenv->set_paniccall(dbenv, _paniccall_intercept_c));
 }
 
 DBENV_METHOD(set_rpc_server,
@@ -721,7 +752,7 @@ int DbEnv::set_app_dispatch
 	int ret;
 
 	app_dispatch_callback_ = arg;
-	if ((ret = (*(dbenv->set_app_dispatch))(dbenv,
+	if ((ret = dbenv->set_app_dispatch(dbenv,
 	    _app_dispatch_intercept_c)) != 0)
 		DB_ERROR(this, "DbEnv::set_app_dispatch", ret, error_policy());
 
@@ -785,7 +816,7 @@ int DbEnv::txn_recover(DbPreplist *preplist, long count,
 
 	for (i = 0; i < *retp; i++) {
 		preplist[i].txn = new DbTxn();
-		preplist[i].txn->imp_ = wrap(c_preplist[i].txn);
+		preplist[i].txn->imp_ = c_preplist[i].txn;
 		memcpy(preplist[i].gid, c_preplist[i].gid,
 		    sizeof(preplist[i].gid));
 	}
@@ -797,10 +828,11 @@ int DbEnv::txn_recover(DbPreplist *preplist, long count,
 
 DBENV_METHOD(txn_stat, (DB_TXN_STAT **statp, u_int32_t flags),
     (dbenv, statp, flags))
+DBENV_METHOD(txn_stat_print, (u_int32_t flags), (dbenv, flags))
 
 int DbEnv::set_rep_transport(int myid,
     int (*f_send)(DbEnv *, const Dbt *, const Dbt *, const DbLsn *, int,
-	          u_int32_t))
+		  u_int32_t))
 {
 	DB_ENV *dbenv = unwrap(this);
 	int ret;
@@ -814,8 +846,9 @@ int DbEnv::set_rep_transport(int myid,
 }
 
 DBENV_METHOD(rep_elect,
-    (int nsites, int pri, u_int32_t timeout, int *idp),
-    (dbenv, nsites, pri, timeout, idp))
+    (int nsites,
+    int nvotes, int priority, u_int32_t timeout, int *eidp, u_int32_t flags),
+    (dbenv, nvotes, nsites, priority, timeout, eidp, flags))
 
 int DbEnv::rep_process_message(Dbt *control,
     Dbt *rec, int *idp, DbLsn *ret_lsnp)
@@ -837,6 +870,7 @@ DBENV_METHOD(rep_start,
 
 DBENV_METHOD(rep_stat, (DB_REP_STAT **statp, u_int32_t flags),
     (dbenv, statp, flags))
+DBENV_METHOD(rep_stat_print, (u_int32_t flags), (dbenv, flags))
 
 DBENV_METHOD(get_rep_limit, (u_int32_t *gbytesp, u_int32_t *bytesp),
     (dbenv, gbytesp, bytesp))
@@ -860,7 +894,5 @@ char *DbEnv::version(int *major, int *minor, int *patch)
 DbEnv *DbEnv::wrap_DB_ENV(DB_ENV *dbenv)
 {
 	DbEnv *wrapped_env = get_DbEnv(dbenv);
-	if (wrapped_env == NULL)
-		wrapped_env = new DbEnv(dbenv, 0);
-	return wrapped_env;
+	return (wrapped_env != NULL) ? wrapped_env : new DbEnv(dbenv, 0);
 }

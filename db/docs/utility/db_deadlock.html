@@ -1,26 +1,25 @@
-<!--$Id: db_deadlock.so,v 10.30 2002/08/24 18:24:51 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_deadlock.so,v 10.31 2004/03/17 15:18:18 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: db_deadlock</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>db_deadlock</h3>
 </td>
-</td></tr></table>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>db_deadlock [<b>-Vv</b>]
-    [<b>-a e | m | n | o | w | y</b>] [<b>-h home</b>] [<b>-L file</b>] [<b>-t sec.usec</b>]</pre></h3>
+    [<b>-a e | m | n | o | W | w | y</b>] [<b>-h home</b>] [<b>-L file</b>] [<b>-t sec.usec</b>]</pre></h3>
 <h3>Description</h3>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>The db_deadlock utility traverses the database environment lock
 region, and aborts a lock request each time it detects a deadlock or a
 lock request that has timed out.  By default, in the case of a deadlock,
@@ -30,32 +29,33 @@ Berkeley DB deadlock detection interfaces should be called in some other way,
 whenever there are multiple threads or processes accessing a database
 and at least one of them is modifying it.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt><b>-a</b><dd>When a deadlock is detected, abort the locker:
-<p><dl compact>
-<p><dt>m<dd>with the greatest number of locks
-<dt>n<dd>with the fewest number of locks
-<dt>o<dd>with the oldest locker ID
-<dt>w<dd>with the fewest number of write locks
-<dt>y<dd>with the youngest locker ID
+<dl compact>
+<dt><b>-a</b><dd>When a deadlock is detected, abort the locker:
+<dl compact>
+<dt>m<dd>with the most locks
+<dt>n<dd>with the fewest locks
+<dt>o<dd>with the oldest lock
+<dt>W<dd>with the most write locks
+<dt>w<dd>with the fewest write locks
+<dt>y<dd>with the youngest lock
 </dl>
 <p>When lock or transaction timeouts have been specified:
-<p><dl compact>
-<p><dt>e<dd>abort any lock request that has timed out
+<dl compact>
+<dt>e<dd>abort any lock request that has timed out
 </dl></p>
-<p><dt><b>-h</b><dd>Specify a home directory for the database environment; by
+<dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
-<p><dt><b>-L</b><dd>Log the execution of the db_deadlock utility to the specified file in the
+<dt><b>-L</b><dd>Log the execution of the db_deadlock utility to the specified file in the
 following format, where <i>###</i> is the process ID, and the date
 is the time the utility was started.
 <blockquote><pre>db_deadlock: ### Wed Jun 15 01:23:45 EDT 1995</pre></blockquote>
 This file will be removed if the db_deadlock utility exits gracefully.
-<p><dt><b>-t</b><dd>Check the database environment every <b>sec</b> seconds plus
+<dt><b>-t</b><dd>Check the database environment every <b>sec</b> seconds plus
 <b>usec</b> microseconds to see if a process has been forced to wait
 for a lock; if one has, review the database environment lock
 structures.
-<p><dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
-<p><dt><b>-v</b><dd>Run in verbose mode, generating messages each time the detector runs.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-v</b><dd>Run in verbose mode, generating messages each time the detector runs.
 </dl>
 <p>If the <b>-t</b> option is not specified, db_deadlock will
 run once and exit.</p>
@@ -76,12 +76,12 @@ See the db_deadlock utility source code for an example of using <a href="../api_
 in a IEEE/ANSI Std 1003.1 (POSIX) environment.</p>
 <p>The db_deadlock utility exits 0 on success, and &gt;0 if an error occurs.</p>
 <h3>Environment Variables</h3>
-<p><dl compact>
-<p><dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
+<dl compact>
+<dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
 DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

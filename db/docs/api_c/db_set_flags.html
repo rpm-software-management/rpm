@@ -1,23 +1,22 @@
-<!--$Id: db_set_flags.so,v 10.64 2003/11/09 02:22:42 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_set_flags.so,v 10.68 2004/09/28 15:04:19 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB-&gt;set_flags</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB-&gt;set_flags</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DB-&gt;get_flags(DB *db, u_int32_t *flagsp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB-&gt;set_flags</h3>
-<a name="3"><!--meow--></a>
 <p>Configure a database.  Calling DB-&gt;set_flags is additive; there
 is no way to clear flags.</p>
 <p>The DB-&gt;set_flags method may not be called after the <a href="../api_c/db_open.html">DB-&gt;open</a> method is called.
@@ -41,15 +39,14 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <h3>General</h3>
 <p>The following flags may be specified for any Berkeley DB access method:</p>
-<p><dl compact>
-<a name="4"><!--meow--></a>
-<p><dt><a name="DB_CHKSUM">DB_CHKSUM</a><dd>Do checksum verification of pages read into the cache from the backing
+<dl compact>
+<a name="2"><!--meow--></a>
+<dt><a name="DB_CHKSUM">DB_CHKSUM</a><dd>Do checksum verification of pages read into the cache from the backing
 filestore.  Berkeley DB uses the SHA1 Secure Hash Algorithm
 if encryption is configured and a general hash algorithm if it is not.
 <p>Calling DB-&gt;set_flags with the DB_CHKSUM flag only affects the
@@ -61,8 +58,8 @@ will be ignored.</p>
 If creating additional databases in a file, the checksum behavior specified
 must be consistent with the existing databases in the file or an error will
 be returned.
-<a name="5"><!--meow--></a>
-<p><dt><a name="DB_ENCRYPT">DB_ENCRYPT</a><dd>Encrypt the database using the cryptographic password specified to the
+<a name="3"><!--meow--></a>
+<dt><a name="DB_ENCRYPT">DB_ENCRYPT</a><dd>Encrypt the database using the cryptographic password specified to the
 <a href="../api_c/env_set_encrypt.html">DB_ENV-&gt;set_encrypt</a> or <a href="../api_c/db_set_encrypt.html">DB-&gt;set_encrypt</a> methods.
 <p>Calling DB-&gt;set_flags with the DB_ENCRYPT flag only affects the
 specified <a href="../api_c/db_class.html">DB</a> handle (and any other Berkeley DB handles opened within
@@ -78,29 +75,28 @@ be returned.
 <p>Encrypted databases are not portable between machines of different byte
 orders, that is, encrypted databases created on big-endian machines
 cannot be read on little-endian machines, and vice versa.</p>
-<a name="6"><!--meow--></a>
-<p><dt><a name="DB_TXN_NOT_DURABLE">DB_TXN_NOT_DURABLE</a><dd>If set, Berkeley DB will not write log records for this database.  This
-means that updates of this database exhibit the ACI (atomicity,
-consistency, and isolation) properties, but not D (durability); that
-is, database integrity will be maintained, but if the application or
-system fails, integrity will not persist.  The database file must be
-verified and/or restored from backup after a failure.  In order to
-ensure integrity after application shut down, the database handles must
-be closed without specifying <a href="../api_c/db_close.html#DB_NOSYNC">DB_NOSYNC</a>, or all database
-changes must be flushed from the database environment cache using
-either the <a href="../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a> or <a href="../api_c/memp_sync.html">DB_ENV-&gt;memp_sync</a> methods.
-All database handles for a single physical file must set
-DB_TXN_NOT_DURABLE, including database handles for different
-databases in a physical file.
+<a name="4"><!--meow--></a>
+<dt><a name="DB_TXN_NOT_DURABLE">DB_TXN_NOT_DURABLE</a><dd>If set, Berkeley DB will not write log records for this database.  This means
+that updates of this database exhibit the ACI (atomicity, consistency,
+and isolation) properties, but not D (durability); that is, database
+integrity will be maintained, but if the application or system fails,
+integrity will not persist.  The database file must be verified and/or
+restored from backup after a failure.  In order to ensure integrity
+after application shut down, the database handles must be closed without
+specifying <a href="../api_c/db_close.html#DB_NOSYNC">DB_NOSYNC</a>, or all database changes must be flushed
+from the database environment cache using either the
+<a href="../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a> or <a href="../api_c/memp_sync.html">DB_ENV-&gt;memp_sync</a> methods.  All database handles for
+a single physical file must set DB_TXN_NOT_DURABLE, including
+database handles for different databases in a physical file.
 <p>Calling DB-&gt;set_flags with the DB_TXN_NOT_DURABLE flag only affects the
 specified <a href="../api_c/db_class.html">DB</a> handle (and any other Berkeley DB handles opened within
 the scope of that handle).</p>
 </dl>
 <h3>Btree</h3>
 <p>The following flags may be specified for the Btree access method:</p>
-<p><dl compact>
-<a name="7"><!--meow--></a>
-<p><dt><a name="DB_DUP">DB_DUP</a><dd>Permit duplicate data items in the database; that is, insertion when the
+<dl compact>
+<a name="5"><!--meow--></a>
+<dt><a name="DB_DUP">DB_DUP</a><dd>Permit duplicate data items in the database; that is, insertion when the
 key of the key/data pair being inserted already exists in the database
 will be successful.  The ordering of duplicates in the database is
 determined by the order of insertion, unless the ordering is otherwise
@@ -116,14 +112,13 @@ must be the same as the existing database or an error
 will be returned.
 </p>
 <p>It is an error to specify both DB_DUP and DB_RECNUM.</p>
-<a name="8"><!--meow--></a>
-<p><dt><a name="DB_DUPSORT">DB_DUPSORT</a><dd>Permit duplicate data items in the database; that is, insertion when the
+<a name="6"><!--meow--></a>
+<dt><a name="DB_DUPSORT">DB_DUPSORT</a><dd>Permit duplicate data items in the database; that is, insertion when the
 key of the key/data pair being inserted already exists in the database
-will be successful.  The ordering of duplicates in the database is determined
-by the duplicate comparison function.
-If the application does not specify a comparison function using the
-<a href="../api_c/db_set_dup_compare.html">DB-&gt;set_dup_compare</a> method, a default lexical comparison will be
-used.
+will be successful.  The ordering of duplicates in the database is
+determined by the duplicate comparison function.  If the application
+does not specify a comparison function using the
+<a href="../api_c/db_set_dup_compare.html">DB-&gt;set_dup_compare</a> method, a default lexical comparison will be used.
 It is an error to specify both DB_DUPSORT and DB_RECNUM.
 <p>Calling DB-&gt;set_flags with the DB_DUPSORT flag affects the
 database, including all threads of control accessing the database.</p>
@@ -132,8 +127,8 @@ flag
 must be the same as the existing database or an error
 will be returned.
 </p>
-<a name="9"><!--meow--></a>
-<p><dt><a name="DB_RECNUM">DB_RECNUM</a><dd>Support retrieval from the Btree using record numbers.  For more
+<a name="7"><!--meow--></a>
+<dt><a name="DB_RECNUM">DB_RECNUM</a><dd>Support retrieval from the Btree using record numbers.  For more
 information, see the <a href="../api_c/db_get.html#DB_SET_RECNO">DB_SET_RECNO</a> flag to the <a href="../api_c/db_get.html">DB-&gt;get</a>
 and <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> methods.
 <p>Logical record numbers in Btree databases are mutable in the face of
@@ -153,8 +148,8 @@ flag
 must be the same as the existing database or an error
 will be returned.
 </p>
-<a name="10"><!--meow--></a><a name="11"><!--meow--></a>
-<p><dt><a name="DB_REVSPLITOFF">DB_REVSPLITOFF</a><dd>Turn off reverse splitting in the Btree.  As pages are emptied in a
+<a name="8"><!--meow--></a><a name="9"><!--meow--></a>
+<dt><a name="DB_REVSPLITOFF">DB_REVSPLITOFF</a><dd>Turn off reverse splitting in the Btree.  As pages are emptied in a
 database, the Berkeley DB Btree implementation attempts to coalesce empty pages
 into higher-level pages in order to keep the database as small as possible
 and minimize search time.  This can hurt performance in applications
@@ -170,8 +165,8 @@ the scope of that handle).</p>
 </dl>
 <h3>Hash</h3>
 <p>The following flags may be specified for the Hash access method:</p>
-<p><dl compact>
-<p><dt><a name="DB_DUP">DB_DUP</a><dd>Permit duplicate data items in the database; that is, insertion when the
+<dl compact>
+<dt><a name="DB_DUP">DB_DUP</a><dd>Permit duplicate data items in the database; that is, insertion when the
 key of the key/data pair being inserted already exists in the database
 will be successful.  The ordering of duplicates in the database is
 determined by the order of insertion, unless the ordering is otherwise
@@ -186,13 +181,12 @@ flag
 must be the same as the existing database or an error
 will be returned.
 </p>
-<p><dt><a name="DB_DUPSORT">DB_DUPSORT</a><dd>Permit duplicate data items in the database; that is, insertion when the
+<dt><a name="DB_DUPSORT">DB_DUPSORT</a><dd>Permit duplicate data items in the database; that is, insertion when the
 key of the key/data pair being inserted already exists in the database
-will be successful.  The ordering of duplicates in the database is determined
-by the duplicate comparison function.
-If the application does not specify a comparison function using the
-<a href="../api_c/db_set_dup_compare.html">DB-&gt;set_dup_compare</a> method, a default lexical comparison will be
-used.
+will be successful.  The ordering of duplicates in the database is
+determined by the duplicate comparison function.  If the application
+does not specify a comparison function using the
+<a href="../api_c/db_set_dup_compare.html">DB-&gt;set_dup_compare</a> method, a default lexical comparison will be used.
 It is an error to specify both DB_DUPSORT and DB_RECNUM.
 <p>Calling DB-&gt;set_flags with the DB_DUPSORT flag affects the
 database, including all threads of control accessing the database.</p>
@@ -203,13 +197,30 @@ will be returned.
 </p>
 </dl>
 <h3>Queue</h3>
-<p>There are no additional flags that may be specified for the Queue access
-method.</p>
+<p>The following flags may be specified for the Queue access method:</p>
+<dl compact>
+<a name="10"><!--meow--></a>
+<dt><a name="DB_INORDER">DB_INORDER</a><dd>The DB_INORDER flag modifies the operation of the
+<a href="../api_c/db_get.html#DB_CONSUME">DB_CONSUME</a> or <a href="../api_c/db_get.html#DB_CONSUME_WAIT">DB_CONSUME_WAIT</a> flags to <a href="../api_c/db_get.html">DB-&gt;get</a>
+to return key/data pairs in order.  That is, they will always return
+the key/data item from the head of the queue.
+<p>The default behavior of queue databases is optimized for multiple
+readers, and does not guarantee that record will be retrieved in the
+order they are added to the queue.  Specifically, if a writing thread
+adds multiple records to an empty queue, reading threads may skip some
+of the initial records when the next <a href="../api_c/db_get.html">DB-&gt;get</a> call returns.</p>
+<p>This flag modifies the <a href="../api_c/db_get.html">DB-&gt;get</a> call to verify that the record
+being returned is in fact the head of the queue.  This will increase
+contention and reduce concurrency when there are many reading threads.</p>
+<p>Calling DB-&gt;set_flags with the DB_INORDER flag only affects the
+specified <a href="../api_c/db_class.html">DB</a> handle (and any other Berkeley DB handles opened within
+the scope of that handle).</p>
+</dl>
 <h3>Recno</h3>
 <p>The following flags may be specified for the Recno access method:</p>
-<p><dl compact>
-<a name="12"><!--meow--></a>
-<p><dt><a name="DB_RENUMBER">DB_RENUMBER</a><dd>Specifying the DB_RENUMBER flag causes the logical record
+<dl compact>
+<a name="11"><!--meow--></a>
+<dt><a name="DB_RENUMBER">DB_RENUMBER</a><dd>Specifying the DB_RENUMBER flag causes the logical record
 numbers to be mutable, and change as records are added to and deleted
 from the database.  For example, the deletion of record number 4 causes
 records numbered 5 and greater to be renumbered downward by one.  If a
@@ -242,8 +253,8 @@ flag
 must be the same as the existing database or an error
 will be returned.
 </p>
-<a name="13"><!--meow--></a>
-<p><dt><a name="DB_SNAPSHOT">DB_SNAPSHOT</a><dd>This flag specifies that any specified <b>re_source</b> file be read
+<a name="12"><!--meow--></a>
+<dt><a name="DB_SNAPSHOT">DB_SNAPSHOT</a><dd>This flag specifies that any specified <b>re_source</b> file be read
 in its entirety when <a href="../api_c/db_open.html">DB-&gt;open</a> is called.  If this flag is not
 specified, the <b>re_source</b> file may be read lazily.
 <p>Calling DB-&gt;set_flags with the DB_SNAPSHOT flag only affects the
@@ -254,8 +265,8 @@ the scope of that handle).</p>
 <h3>Errors</h3>
 <p>The DB-&gt;set_flags method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -268,9 +279,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flagsp</b><dd>
-The DB-&gt;get_flags method returns  the
+<dl compact>
+<dt><b>flagsp</b><dd>The DB-&gt;get_flags method returns  the
 current flags in <b>flagsp</b>.
 </dl>
 <hr size=1 noshade>
@@ -282,6 +292,6 @@ current flags in <b>flagsp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

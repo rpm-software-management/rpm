@@ -1,17 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_upgrade.c,v 1.37 2004/06/10 01:00:09 bostic Exp $
  */
 
 #include "db_config.h"
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2003\nSleepycat Software Inc.  All rights reserved.\n";
-static const char revid[] =
-    "$Id: db_upgrade.c,v 1.35 2003/08/13 19:57:09 ubell Exp $";
+    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
 #endif
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -137,9 +137,11 @@ db_upgrade_main(argc, argv)
 	 */
 	if ((ret = dbenv->open(dbenv,
 	    home, DB_JOINENV | DB_USE_ENVIRON, 0)) != 0 &&
+	    (ret == DB_VERSION_MISMATCH ||
 	    (ret = dbenv->open(dbenv, home,
-	    DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0)) != 0) {
-		dbenv->err(dbenv, ret, "open");
+	    DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON,
+	    0)) != 0)) {
+		dbenv->err(dbenv, ret, "DB_ENV->open");
 		goto shutdown;
 	}
 

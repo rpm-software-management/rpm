@@ -1,12 +1,12 @@
 <!--$Id: scope.so,v 10.11 2003/10/24 22:27:56 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Berkeley DB handles</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
@@ -19,8 +19,8 @@
 <p>The Berkeley DB library has a number of object handles.  The following table
 lists those handles, their scope, and whether they are free-threaded
 (that is, whether multiple threads within a process can share them).</p>
-<p><dl compact>
-<p><dt><a href="../../api_c/env_class.html">DB_ENV</a><dd>The <a href="../../api_c/env_class.html">DB_ENV</a> handle, created by the <a href="../../api_c/env_class.html">db_env_create</a> method, refers
+<dl compact>
+<dt><a href="../../api_c/env_class.html">DB_ENV</a><dd>The <a href="../../api_c/env_class.html">DB_ENV</a> handle, created by the <a href="../../api_c/env_class.html">db_env_create</a> method, refers
 to a Berkeley DB database environment -- a collection of Berkeley DB subsystems,
 log files and databases.  <a href="../../api_c/env_class.html">DB_ENV</a> handles are free-threaded if
 the <a href="../../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag is specified to the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method when
@@ -29,7 +29,7 @@ other handle remains open that is using it as a reference (for example,
 <a href="../../api_c/db_class.html">DB</a> or <a href="../../api_c/txn_class.html">DB_TXN</a>).  Once either the <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a> or
 <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> methods are called, the handle may not be accessed again,
 regardless of the method's return.
-<p><dt><a href="../../api_c/txn_class.html">DB_TXN</a><dd>The <a href="../../api_c/txn_class.html">DB_TXN</a> handle, created by the <a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a> method, refers to
+<dt><a href="../../api_c/txn_class.html">DB_TXN</a><dd>The <a href="../../api_c/txn_class.html">DB_TXN</a> handle, created by the <a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a> method, refers to
 a single transaction.  The handle is not free-threaded.  Transactions
 may span threads, but only serially, that is, the application must
 serialize access to the <a href="../../api_c/txn_class.html">DB_TXN</a> handles.  In the case of nested
@@ -42,15 +42,15 @@ In addition, parent transactions may not issue any Berkeley DB operations
 while they have active child transactions (child transactions that
 have not yet been committed or aborted) except for <a href="../../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>,
 <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a> and <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a>.</p>
-<p><dt><a href="../../api_c/logc_class.html">DB_LOGC</a><dd>The <a href="../../api_c/logc_class.html">DB_LOGC</a> handle refers to a cursor into the log files.  The
+<dt><a href="../../api_c/logc_class.html">DB_LOGC</a><dd>The <a href="../../api_c/logc_class.html">DB_LOGC</a> handle refers to a cursor into the log files.  The
 handle is not free-threaded.  Once the <a href="../../api_c/logc_close.html">DB_LOGC-&gt;close</a> method is called,
 the handle may not be accessed again, regardless of the method's
 return.
-<p><dt><a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a><dd>The <a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle refers to an open file in the shared
+<dt><a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a><dd>The <a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle refers to an open file in the shared
 memory buffer pool of the database environment.  The handle is not
 free-threaded.  Once the <a href="../../api_c/memp_fclose.html">DB_MPOOLFILE-&gt;close</a> method is called, the handle may
 not be accessed again, regardless of the method's return.
-<p><dt><a href="../../api_c/db_class.html">DB</a><dd>The <a href="../../api_c/db_class.html">DB</a> handle, created by the <a href="../../api_c/db_class.html">db_create</a> method, refers to a
+<dt><a href="../../api_c/db_class.html">DB</a><dd>The <a href="../../api_c/db_class.html">DB</a> handle, created by the <a href="../../api_c/db_class.html">db_create</a> method, refers to a
 single Berkeley DB database, which may or may not be part of a database
 environment.  <a href="../../api_c/db_class.html">DB</a> handles are free-threaded if the
 <a href="../../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag is specified to the <a href="../../api_c/db_open.html">DB-&gt;open</a> method when the
@@ -63,7 +63,7 @@ database have not yet been committed or aborted.  Once the
 <a href="../../api_c/db_close.html">DB-&gt;close</a>, <a href="../../api_c/db_remove.html">DB-&gt;remove</a>, or <a href="../../api_c/db_rename.html">DB-&gt;rename</a> methods are
 called, the handle may not be accessed again, regardless of the
 method's return.
-<p><dt><a href="../../api_c/dbc_class.html">DBC</a><dd>The <a href="../../api_c/dbc_class.html">DBC</a> handle refers to a cursor into a Berkeley DB database.  The
+<dt><a href="../../api_c/dbc_class.html">DBC</a><dd>The <a href="../../api_c/dbc_class.html">DBC</a> handle refers to a cursor into a Berkeley DB database.  The
 handle is not free-threaded.  Cursors may span threads, but only
 serially, that is, the application must serialize access to the
 <a href="../../api_c/dbc_class.html">DBC</a> handles.  If the cursor is to be used to perform operations
@@ -74,6 +74,6 @@ method's return.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../program/mt.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/namespace.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

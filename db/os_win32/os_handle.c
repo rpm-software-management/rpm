@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2003
+ * Copyright (c) 1998-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_handle.c,v 11.39 2004/07/06 21:06:38 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_handle.c,v 11.34 2003/04/24 16:17:06 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -69,12 +67,13 @@ __os_openhandle(dbenv, name, flags, mode, fhpp)
 			 * if we can't open a database, an inability to open a
 			 * log file is cause for serious dismay.
 			 */
-			(void)__os_sleep(dbenv, nrepeat * 2, 0);
+			__os_sleep(dbenv, nrepeat * 2, 0);
 			break;
+		case EAGAIN:
 		case EBUSY:
 		case EINTR:
 			/*
-			 * If it was an EINTR or EBUSY, retry immediately,
+			 * If an EAGAIN, EBUSY or EINTR, retry immediately for
 			 * DB_RETRY times.
 			 */
 			if (++retries < DB_RETRY)
@@ -100,7 +99,6 @@ __os_closehandle(dbenv, fhp)
 	DB_ENV *dbenv;
 	DB_FH *fhp;
 {
-	BOOL success;
 	int ret;
 
 	ret = 0;
@@ -110,20 +108,21 @@ __os_closehandle(dbenv, fhp)
 	 * file.
 	 */
 	if (F_ISSET(fhp, DB_FH_OPENED)) {
-		do {
-			if (DB_GLOBAL(j_close) != NULL)
-				success = (DB_GLOBAL(j_close)(fhp->fd) == 0);
-			else if (fhp->handle != INVALID_HANDLE_VALUE) {
-				success = CloseHandle(fhp->handle);
-				if (!success)
-					__os_set_errno(__os_win32_errno());
-			}
-			else
-				success = (close(fhp->fd) == 0);
-		} while (!success && (ret = __os_get_errno()) == EINTR);
+		if (DB_GLOBAL(j_close) != NULL)
+			ret = DB_GLOBAL(j_close)(fhp->fd);
+		else if (fhp->handle != INVALID_HANDLE_VALUE)
+			RETRY_CHK((!CloseHandle(fhp->handle)), ret);
+		else
+			RETRY_CHK((close(fhp->fd)), ret);
 
 		if (ret != 0)
 			__db_err(dbenv, "CloseHandle: %s", strerror(ret));
+
+		/* Unlink the file if we haven't already done so. */
+		if (F_ISSET(fhp, DB_FH_UNLINK)) {
+			(void)__os_unlink(dbenv, fhp->name);
+			__os_free(dbenv, fhp->name);
+		}
 	}
 
 	__os_free(dbenv, fhp);

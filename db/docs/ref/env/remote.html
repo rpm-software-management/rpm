@@ -1,12 +1,12 @@
 <!--$Id: remote.so,v 11.10 2003/05/15 15:05:32 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Remote filesystem</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
@@ -38,17 +38,17 @@ databases cannot be accessed from more than one Berkeley DB environment at a
 time (and therefore from more than one system), because no Berkeley DB
 database may be accessed from more than one Berkeley DB environment at a
 time.</p>
-<p><dl compact>
-<p><dt>FreeBSD note:<dd>Some FreeBSD releases are known to return ENOLCK from fsync and close
+<dl compact>
+<dt>FreeBSD note:<dd>Some FreeBSD releases are known to return ENOLCK from fsync and close
 calls on NFS-mounted filesystems, even though the call has succeeded.
 The Berkeley DB code should be modified to ignore ENOLCK errors, or no Berkeley DB
 files should be placed on NFS-mounted filesystems on these systems.
-<p><dt>Linux note:<dd>Some Linux releases are known to not support complete semantics for the
+<dt>Linux note:<dd>Some Linux releases are known to not support complete semantics for the
 POSIX fsync call on NFS-mounted filesystems.  No Berkeley DB files should be
 placed on NFS-mounted filesystems on these systems.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../env/encrypt.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

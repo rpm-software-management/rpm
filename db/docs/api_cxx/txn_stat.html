@@ -1,23 +1,22 @@
-<!--$Id: txn_stat.so,v 10.55 2003/11/27 02:15:22 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: txn_stat.so,v 10.61 2004/09/28 17:57:03 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::txn_stat</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbEnv::txn_stat</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -25,6 +24,9 @@
 <p>
 int
 DbEnv::txn_stat(DB_TXN_STAT **statp, u_int32_t flags);
+<p>
+int
+DbEnv::txn_stat_print(u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::txn_stat</h3>
@@ -40,7 +42,7 @@ responsible for deallocating the memory.  To deallocate the memory, free
 the memory reference; references inside the returned memory need not be
 individually freed.</p>
 <p>The following DB_TXN_STAT fields will be filled in:</p>
-<p><dl compact>
+<dl compact>
 <dt>DbLsn st_last_ckp;<dd>The LSN of the last checkpoint.
 <dt>time_t st_time_ckp;<dd>The time the last completed checkpoint finished (as the number of seconds
 since the Epoch, returned by the IEEE/ANSI Std 1003.1 (POSIX) <b>time</b> function).
@@ -52,15 +54,15 @@ since the Epoch, returned by the IEEE/ANSI Std 1003.1 (POSIX) <b>time</b> functi
 <dt>u_int32_t st_naborts;<dd>The number of transactions that have aborted.
 <dt>u_int32_t st_ncommits;<dd>The number of transactions that have committed.
 <dt>u_int32_t st_nrestores;<dd>The number of transactions that have been restored.
-<dt>u_int32_t st_regsize;<dd>The size of the region.
+<dt>roff_t st_regsize;<dd>The size of the region, in bytes.
 <dt>u_int32_t st_region_wait;<dd>The number of times that a thread of control was forced to wait before
 obtaining the region lock.
 <dt>u_int32_t st_region_nowait;<dd>The number of times that a thread of control was able to obtain
 the region lock without waiting.
 <dt>DB_TXN_ACTIVE *st_txnarray;<dd>A pointer to an array of <b>st_nactive</b> DB_TXN_ACTIVE structures,
-describing the currently active transactions.  The following fields of
+describing the currently active transactions. The following fields of
 the DB_TXN_ACTIVE structure will be filled in:
-<p><dl compact>
+<dl compact>
 <dt>u_int32_t txnid;<dd>The transaction ID of the transaction.
 <dt>u_int32_t parentid;<dd>The transaction ID of the parent transaction (or 0, if no parent).
 <dt>DbLsn lsn;<dd>The current log sequence number when the transaction was begun.
@@ -75,15 +77,13 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
+<dl compact>
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
-<p><dt><b>statp</b><dd>
-The <b>statp</b> parameter references memory into which
+<dt><b>statp</b><dd>The <b>statp</b> parameter references memory into which
 a pointer to the allocated statistics structure is copied.
 </dl>
 <h3>Errors</h3>
@@ -92,9 +92,32 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbEnv::txn_stat_print</h3>
+<p>The DbEnv::txn_stat_print method returns the
+transaction subsystem statistical information, as described for the DbEnv::txn_stat method.
+The information is printed to a specified output channel (see the
+<a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a> method for more information), or passed to an
+application callback function (see the <a href="../api_cxx/env_set_msgcall.html">DbEnv::set_msgcall</a> method for
+more information).</p>
+<p>The DbEnv::txn_stat_print method may not be called before the <a href="../api_cxx/env_open.html">DbEnv::open</a> method has
+been called.</p>
+<p>The DbEnv::txn_stat_print method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+the following value:
+<dl compact>
+<dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+</dl>
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -105,6 +128,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

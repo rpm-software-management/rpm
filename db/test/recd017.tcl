@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: recd017.tcl,v 11.6 2003/01/08 05:52:09 bostic Exp $
+# $Id: recd017.tcl,v 11.7 2004/01/28 03:36:29 bostic Exp $
 #
 # TEST	recd017
 # TEST  Test recovery and security.  This is basically a watered

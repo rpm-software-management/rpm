@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_lock.c,v 11.19 2003/01/08 04:43:59 bostic Exp $
+ * $Id: ex_lock.c,v 11.21 2004/09/17 22:00:28 mjc Exp $
  */
 
 #include <sys/types.h>
@@ -40,7 +40,8 @@ main(argc, argv)
 	DB_LOCK *locks;
 	db_lockmode_t lock_type;
 	long held;
-	u_int32_t len, locker, maxlocks;
+	size_t len;
+	u_int32_t locker, maxlocks;
 	int ch, do_unlink, did_get, i, lockid, lockcount, ret;
 	const char *home;
 	char opbuf[16], objbuf[1024], lockbuf[16];
@@ -119,7 +120,7 @@ main(argc, argv)
 				lock_type = DB_LOCK_WRITE;
 
 			lock_dbt.data = objbuf;
-			lock_dbt.size = strlen(objbuf);
+			lock_dbt.size = (u_int32_t)strlen(objbuf);
 			ret = dbenv->lock_get(dbenv, locker,
 			    DB_LOCK_NOWAIT, &lock_dbt, lock_type, &lock);
 			if (ret == 0) {

@@ -1,23 +1,22 @@
-<!--$Id: db_associate.so,v 10.36 2003/11/08 19:17:16 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: db_associate.so,v 10.37 2004/08/13 03:38:55 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::associate</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::associate</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -45,29 +44,28 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>callback</b><dd>
-The <b>callback</b> parameter is a callback function that creates a
+<dl compact>
+<dt><b>callback</b><dd>The <b>callback</b> parameter is a callback function that creates a
 secondary key from a given primary key and data pair.
 <p>The callback parameter may be NULL if both the primary and secondary
 database handles were opened with the <a href="../api_cxx/db_open.html#DB_RDONLY">DB_RDONLY</a> flag.</p>
 <p>The callback takes four arguments:</p>
-<p><dl compact>
-<p><dt><b>secondary</b><dd>The <b>secondary</b> parameter is the database handle for the secondary.
-<p><dt><b>key</b><dd>The <b>key</b> parameter is a <a href="../api_cxx/dbt_class.html">Dbt</a> referencing the primary key.
-<p><dt><b>data</b><dd>The <b>data</b> parameter is a <a href="../api_cxx/dbt_class.html">Dbt</a> referencing the primary data
+<dl compact>
+<dt><b>secondary</b><dd>The <b>secondary</b> parameter is the database handle for the secondary.
+<dt><b>key</b><dd>The <b>key</b> parameter is a <a href="../api_cxx/dbt_class.html">Dbt</a> referencing the primary key.
+<dt><b>data</b><dd>The <b>data</b> parameter is a <a href="../api_cxx/dbt_class.html">Dbt</a> referencing the primary data
 item.
-<p><dt><b>result</b><dd>The <b>result</b> parameter is a zeroed <a href="../api_cxx/dbt_class.html">Dbt</a> in which the callback
+<dt><b>result</b><dd>The <b>result</b> parameter is a zeroed <a href="../api_cxx/dbt_class.html">Dbt</a> in which the callback
 function should fill in <b>data</b> and <b>size</b> fields that describe
 the secondary key.
 </dl>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <p>If the callback function needs to allocate memory for the <b>data</b>
 field rather than simply pointing into the primary key or datum, the
 <b>flags</b> field of the returned <a href="../api_cxx/dbt_class.html">Dbt</a> should be set to
 DB_DBT_APPMALLOC, which indicates that Berkeley DB should free the
 memory when it is done with it.</p>
-<a name="4"><!--meow--></a>
+<a name="3"><!--meow--></a>
 <p>If any key/data pair in the primary yields a null secondary key and
 should be left out of the secondary index, the callback function may
 optionally return DB_DONOTINDEX.  Otherwise, the callback
@@ -81,11 +79,10 @@ iterations and range queries will reflect only the corresponding subset
 of the database.  If this is not desirable, the application should
 ensure that the callback function is well-defined for all possible
 values and never returns DB_DONOTINDEX.</p>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
-<p><dl compact>
-<p><dt><a name="DB_CREATE">DB_CREATE</a><dd>If the secondary database is empty, walk through the primary and create
+<dl compact>
+<dt><a name="DB_CREATE">DB_CREATE</a><dd>If the secondary database is empty, walk through the primary and create
 an index to it in the empty secondary.  This operation is potentially
 very expensive.
 <p>If the secondary database has been opened in an environment configured
@@ -103,16 +100,14 @@ not do any special operation ordering.</p>
 </dl>
 In addition, the following flag may be set by
 bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
-<p><dl compact>
-<p><dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::associate call within a transaction.  If the call succeeds,
+<dl compact>
+<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::associate call within a transaction.  If the call succeeds,
 changes made by the operation will be recoverable.  If the call fails,
 the operation will have made no changes.
 </dl>
-<p><dt><b>primary</b><dd>
-The associate method called should be a method off a database handle for
+<dt><b>primary</b><dd>The associate method called should be a method off a database handle for
 the primary database that is to be indexed.
-<p><dt><b>secondary</b><dd>
-The <b>secondary</b> parameter should be an open database handle of
+<dt><b>secondary</b><dd>The <b>secondary</b> parameter should be an open database handle of
 either a newly created and empty database that is to be used to store
 a secondary index, or of a database that was previously associated with
 the same primary and contains a secondary index.  Note that it is not
@@ -122,8 +117,7 @@ with the <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a> flag it is s
 of control after the Db::associate method has returned.  Note also
 that either secondary keys must be unique or the secondary database must
 be configured with support for duplicate data items.
-<p><dt><b>txnid</b><dd>
-If the operation is to be transaction-protected,
+<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
 (other than by specifying the DB_AUTO_COMMIT flag),
 the <b>txnid</b> parameter is a transaction handle returned from
 <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
@@ -134,12 +128,12 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+<dl compact>
+<dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
 </dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the secondary database handle has already been associated with this or
+<dl compact>
+<dt>EINVAL<dd>If the secondary database handle has already been associated with this or
 another database handle; the secondary database handle is not open; the
 primary database has been configured to allow duplicates; or if an
 invalid flag value or parameter was specified.
@@ -153,6 +147,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

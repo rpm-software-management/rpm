@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mp_sync.c,v 11.97 2004/09/22 16:26:19 bostic Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: mp_sync.c,v 11.80 2003/09/13 19:20:41 bostic Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -29,7 +28,7 @@ typedef struct {
 } BH_TRACK;
 
 static int __bhcmp __P((const void *, const void *));
-static int __memp_close_flush_files __P((DB_ENV *, DB_MPOOL *));
+static int __memp_close_flush_files __P((DB_ENV *, DB_MPOOL *, int));
 static int __memp_sync_files __P((DB_ENV *, DB_MPOOL *));
 
 /*
@@ -62,7 +61,7 @@ __memp_sync_pp(dbenv, lsnp)
 		__env_rep_enter(dbenv);
 	ret = __memp_sync(dbenv, lsnp);
 	if (rep_check)
-		__env_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 	return (ret);
 }
 
@@ -127,11 +126,12 @@ __memp_fsync_pp(dbmfp)
 	PANIC_CHECK(dbenv);
 	MPF_ILLEGAL_BEFORE_OPEN(dbmfp, "DB_MPOOLFILE->sync");
 
-	if ((rep_check = IS_ENV_REPLICATED(dbenv)) != 0)
+	rep_check = IS_ENV_REPLICATED(dbenv) ? 1 : 0;
+	if (rep_check)
 		__env_rep_enter(dbenv);
 	ret = __memp_fsync(dbmfp);
 	if (rep_check)
-		__env_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 	return (ret);
 }
 
@@ -145,15 +145,23 @@ int
 __memp_fsync(dbmfp)
 	DB_MPOOLFILE *dbmfp;
 {
+	MPOOLFILE *mfp;
+
+	mfp = dbmfp->mfp;
+
 	/*
 	 * If this handle doesn't have a file descriptor that's open for
-	 * writing, or if the file is a temporary, there's no reason to
-	 * proceed further.
+	 * writing, or if the file is a temporary, or if the file hasn't
+	 * been written since it was flushed, there's no reason to proceed
+	 * further.
 	 */
 	if (F_ISSET(dbmfp, MP_READONLY))
 		return (0);
 
-	if (F_ISSET(dbmfp->mfp, MP_TEMP))
+	if (F_ISSET(mfp, MP_TEMP))
+		return (0);
+
+	if (mfp->file_written == 0)
 		return (0);
 
 	return (__memp_sync_int(dbmfp->dbenv, dbmfp, 0, DB_SYNC_FILE, NULL));
@@ -194,14 +202,14 @@ __mp_xxx_fh(dbmfp, fhp)
  * __memp_sync_int --
  *	Mpool sync internal function.
  *
- * PUBLIC: int __memp_sync_int
- * PUBLIC:     __P((DB_ENV *, DB_MPOOLFILE *, int, db_sync_op, int *));
+ * PUBLIC: int __memp_sync_int __P((DB_ENV *,
+ * PUBLIC:     DB_MPOOLFILE *, u_int32_t, db_sync_op, u_int32_t *));
  */
 int
 __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 	DB_ENV *dbenv;
 	DB_MPOOLFILE *dbmfp;
-	int trickle_max, *wrotep;
+	u_int32_t trickle_max, *wrotep;
 	db_sync_op op;
 {
 	BH *bhp;
@@ -211,13 +219,22 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 	DB_MUTEX *mutexp;
 	MPOOL *c_mp, *mp;
 	MPOOLFILE *mfp;
-	u_int32_t n_cache;
-	int ar_cnt, ar_max, hb_lock, i, pass, remaining, ret, t_ret;
-	int wait_cnt, write_cnt, wrote;
+	roff_t last_mf_offset;
+	u_int32_t ar_cnt, ar_max, i, n_cache, remaining, wrote;
+	int filecnt, hb_lock, maxopenfd, maxwrite, maxwrite_sleep;
+	int pass, ret, t_ret, wait_cnt, write_cnt;
 
 	dbmp = dbenv->mp_handle;
 	mp = dbmp->reginfo[0].primary;
-	pass = wrote = 0;
+	last_mf_offset = INVALID_ROFF;
+	filecnt = pass = wrote = 0;
+
+	/* Get shared configuration information. */
+	R_LOCK(dbenv, dbmp->reginfo);
+	maxopenfd = mp->mp_maxopenfd;
+	maxwrite = mp->mp_maxwrite;
+	maxwrite_sleep = mp->mp_maxwrite_sleep;
+	R_UNLOCK(dbenv, dbmp->reginfo);
 
 	/* Assume one dirty page per bucket. */
 	ar_max = mp->nreg * mp->htab_buckets;
@@ -233,7 +250,7 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 	for (ar_cnt = 0, n_cache = 0; n_cache < mp->nreg; ++n_cache) {
 		c_mp = dbmp->reginfo[n_cache].primary;
 
-		hp = R_ADDR(&dbmp->reginfo[n_cache], c_mp->htab);
+		hp = R_ADDR(dbenv, &dbmp->reginfo[n_cache], c_mp->htab);
 		for (i = 0; i < c_mp->htab_buckets; i++, hp++) {
 			/*
 			 * We can check for empty buckets before locking as we
@@ -266,7 +283,8 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 				    !F_ISSET(bhp, BH_DIRTY))
 					continue;
 
-				mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
+				mfp = R_ADDR(dbenv,
+				    dbmp->reginfo, bhp->mf_offset);
 
 				/*
 				 * Ignore temporary files -- this means you
@@ -336,7 +354,7 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 	 * If we're trickling buffers, only write enough to reach the correct
 	 * percentage.
 	 */
-	 if (op == DB_SYNC_TRICKLE && ar_cnt > trickle_max)
+	if (op == DB_SYNC_TRICKLE && ar_cnt > trickle_max)
 		ar_cnt = trickle_max;
 
 	/*
@@ -359,7 +377,7 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 		if (i >= ar_cnt) {
 			i = 0;
 			++pass;
-			(void)__os_sleep(dbenv, 1, 0);
+			__os_sleep(dbenv, 1, 0);
 		}
 		if ((hp = bharray[i].track_hp) == NULL)
 			continue;
@@ -436,9 +454,23 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 		MUTEX_UNLOCK(dbenv, mutexp);
 		for (wait_cnt = 1;
 		    bhp->ref_sync != 0 && wait_cnt < 4; ++wait_cnt)
-			(void)__os_sleep(dbenv, 1, 0);
+			__os_sleep(dbenv, 1, 0);
 		MUTEX_LOCK(dbenv, mutexp);
 		hb_lock = 1;
+
+		/*
+		 * If we've switched files, check to see if we're configured
+		 * to close file descriptors.
+		 */
+		if (maxopenfd != 0 && bhp->mf_offset != last_mf_offset) {
+			if (++filecnt >= maxopenfd) {
+				filecnt = 0;
+				if ((ret = __memp_close_flush_files(
+				    dbenv, dbmp, 1)) != 0)
+					break;
+			}
+			last_mf_offset = bhp->mf_offset;
+		}
 
 		/*
 		 * If the ref_sync count has gone to 0, we're going to be done
@@ -452,33 +484,25 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 		/*
 		 * If the ref_sync count has gone to 0 and the buffer is still
 		 * dirty, we write it.  We only try to write the buffer once.
-		 * Any process checkpointing or trickle-flushing the pool
-		 * must be able to write any underlying file -- if the write
-		 * fails, error out.  It would be very strange if file sync
-		 * failed to write, but we don't care if it happens.
 		 */
 		if (bhp->ref_sync == 0 && F_ISSET(bhp, BH_DIRTY)) {
 			hb_lock = 0;
 			MUTEX_UNLOCK(dbenv, mutexp);
 
-			mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
+			mfp = R_ADDR(dbenv, dbmp->reginfo, bhp->mf_offset);
 			if ((ret = __memp_bhwrite(dbmp, hp, mfp, bhp, 1)) == 0)
 				++wrote;
-			else if (op == DB_SYNC_CACHE || op == DB_SYNC_TRICKLE)
+			else
 				__db_err(dbenv, "%s: unable to flush page: %lu",
 				    __memp_fns(dbmp, mfp), (u_long)bhp->pgno);
-			else
-				ret = 0;
 
 			/*
 			 * Avoid saturating the disk, sleep once we've done
 			 * some number of writes.
 			 */
-			 if (dbenv->mp_maxwrite != 0 &&
-			     ++write_cnt >= dbenv->mp_maxwrite) {
+			if (maxwrite != 0 && ++write_cnt >= maxwrite) {
 				write_cnt = 0;
-				(void)__os_sleep(
-				    dbenv, 0, dbenv->mp_maxwrite_sleep);
+				__os_sleep(dbenv, 0, (u_long)maxwrite_sleep);
 			}
 		}
 
@@ -535,7 +559,7 @@ done:	/*
 	}
 
 	/* If we've opened files to flush pages, close them. */
-	if ((t_ret = __memp_close_flush_files(dbenv, dbmp)) != 0 && ret == 0)
+	if ((t_ret = __memp_close_flush_files(dbenv, dbmp, 0)) != 0 && ret == 0)
 		ret = t_ret;
 
 err:	__os_free(dbenv, bharray);
@@ -589,16 +613,73 @@ int __memp_sync_files(dbenv, dbmp)
 			ret = __memp_mf_sync(dbmp, mfp);
 		if (ret != 0) {
 			__db_err(dbenv, "%s: unable to flush: %s",
-			    (char *)R_ADDR(dbmp->reginfo, mfp->path_off),
+			    (char *)R_ADDR(dbenv, dbmp->reginfo, mfp->path_off),
 			    db_strerror(ret));
 			if (final_ret == 0)
 				final_ret = ret;
+			continue;
 		}
-	}
 
+		/*
+		 * If we wrote the file and there are no open handles (or there
+		 * is a single open handle, and it's the one we opened to write
+		 * buffers during checkpoint), clear the file_written flag.  We
+		 * do this so that applications opening thousands of files don't
+		 * loop here opening and flushing those files during checkpoint.
+		 *
+		 * The danger here is if a buffer were to be written as part of
+		 * a checkpoint, and then not be flushed to disk.  This cannot
+		 * happen because we only clear file_written when there are no
+		 * other users of the MPOOLFILE in the system, and, as we hold
+		 * the region lock, no possibility of another thread of control
+		 * racing with us to open a MPOOLFILE.
+		 */
+		if (mfp->mpf_cnt == 0 || (mfp->mpf_cnt == 1 &&
+		    dbmfp != NULL && F_ISSET(dbmfp, MP_FLUSH)))
+			mfp->file_written = 0;
+	}
 	R_UNLOCK(dbenv, dbmp->reginfo);
 
 	return (final_ret);
+}
+
+/*
+ * __memp_mf_sync --
+ *	 Flush an MPOOLFILE.
+ *
+ *	Should only be used when the file is not already open in this process.
+ *
+ * PUBLIC: int __memp_mf_sync __P((DB_MPOOL *, MPOOLFILE *));
+ */
+int
+__memp_mf_sync(dbmp, mfp)
+	DB_MPOOL *dbmp;
+	MPOOLFILE *mfp;
+{
+	DB_ENV *dbenv;
+	DB_FH *fhp;
+	int ret, t_ret;
+	char *rpath;
+
+	dbenv = dbmp->dbenv;
+
+	/*
+	 * Expects caller to be holding the region lock: we're using the path
+	 * name and __memp_nameop might try and rename the file.
+	 */
+	if ((ret = __db_appname(dbenv, DB_APP_DATA,
+	    R_ADDR(dbenv, dbmp->reginfo, mfp->path_off), 0, NULL,
+	    &rpath)) == 0) {
+		if ((ret = __os_open(dbenv, rpath, 0, 0, &fhp)) == 0) {
+			ret = __os_fsync(dbenv, fhp);
+			if ((t_ret =
+			    __os_closehandle(dbenv, fhp)) != 0 && ret == 0)
+				ret = t_ret;
+		}
+		__os_free(dbenv, rpath);
+	}
+
+	return (ret);
 }
 
 /*
@@ -606,11 +687,13 @@ int __memp_sync_files(dbenv, dbmp)
  *	Close files opened only to flush buffers.
  */
 static int
-__memp_close_flush_files(dbenv, dbmp)
+__memp_close_flush_files(dbenv, dbmp, dosync)
 	DB_ENV *dbenv;
 	DB_MPOOL *dbmp;
+	int dosync;
 {
 	DB_MPOOLFILE *dbmfp;
+	MPOOLFILE *mfp;
 	int ret;
 
 	/*
@@ -618,7 +701,7 @@ __memp_close_flush_files(dbenv, dbmp)
 	 * flush buffers.  There are two cases: first, extent files have to
 	 * be closed so they may be removed when empty.  Second, regular
 	 * files have to be closed so we don't run out of descriptors (for
-	 * example, and application partitioning its data into databases
+	 * example, an application partitioning its data into databases
 	 * based on timestamps, so there's a continually increasing set of
 	 * files).
 	 *
@@ -632,6 +715,22 @@ retry:	MUTEX_THREAD_LOCK(dbenv, dbmp->mutexp);
 		if (F_ISSET(dbmfp, MP_FLUSH)) {
 			F_CLR(dbmfp, MP_FLUSH);
 			MUTEX_THREAD_UNLOCK(dbenv, dbmp->mutexp);
+			if (dosync) {
+				if ((ret = __os_fsync(dbenv, dbmfp->fhp)) != 0)
+					return (ret);
+				/*
+				 * If the file is clean and we have the only
+				 * open handle on the file, clear the dirty
+				 * flag so we don't re-open and sync it again.
+				 */
+				mfp = dbmfp->mfp;
+				if (mfp->mpf_cnt == 1) {
+					R_LOCK(dbenv, dbmp->reginfo);
+					if (mfp->mpf_cnt == 1)
+						mfp->file_written = 0;
+					R_UNLOCK(dbenv, dbmp->reginfo);
+				}
+			}
 			if ((ret = __memp_fclose(dbmfp, 0)) != 0)
 				return (ret);
 			goto retry;

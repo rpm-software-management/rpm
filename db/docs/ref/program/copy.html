@@ -1,12 +1,12 @@
-<!--$Id: copy.so,v 10.12 2003/10/18 19:16:05 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: copy.so,v 10.13 2004/03/24 20:12:08 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Copying databases</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -24,16 +24,15 @@ When multiple processes or threads open the same database file in Berkeley DB,
 it is this bytestring that is used to ensure that the same underlying
 pages are updated in the shared memory buffer pool, no matter which
 Berkeley DB handle is used for the operation.</p>
-<p>It is usually a bad idea to physically copy a database to a new name.  In
-the few cases in which copying is the best solution for your application,
-you must guarantee that there are never two different databases with
-the same file identification bytestring in the memory pool at the same
-time.  Copying databases is further complicated by the fact that the
-shared memory buffer pool does not discard all cached copies of pages
-for a database when the database is logically closed; that is, when
-<a href="../../api_c/db_close.html">DB-&gt;close</a> is called.  Nor is there a Berkeley DB interface to
-explicitly discard pages from the shared memory buffer pool for any
-particular database.</p>
+<p>It is usually a bad idea to physically copy a database to a new name.
+In the few cases in which copying is the best solution for your
+application, you must guarantee that there are never two different
+databases with the same file identification bytestring in the memory
+pool at the same time.  Copying databases is further complicated because
+the shared memory buffer pool does not discard cached database pages
+when the database is closed by calling the <a href="../../api_c/db_close.html">DB-&gt;close</a> method, cached
+pages are only discarded when the database is removed by calling the
+<a href="../../api_c/db_remove.html">DB-&gt;remove</a> method.</p>
 <p>Before copying a database, you must ensure that all modified pages have
 been written from the memory pool cache to the backing database file.
 This is done using the <a href="../../api_c/db_sync.html">DB-&gt;sync</a> or <a href="../../api_c/db_close.html">DB-&gt;close</a> methods.</p>
@@ -53,15 +52,13 @@ create a new file that will have a new bytestring is to call the
 then use the <a href="../../utility/db_load.html">db_load</a> utility to load the dumped output into a
 new file.  This allows you to access both the original and copy of
 the database at the same time.
-<p><li>If your database is too large to be copied, overwrite the bytestring in
-the copied database with a new bytestring.  This allows you to access
-both the original and copy of the database at the same time.
-If there are multiple databases in a single physical file,
-the bytestring found in the first page of each database needs to
-be overwritten, not just the first page of the physical file.
+<p><li>If your database is too large to be copied, reset the bytestring in the
+copied database to a new bytestring.  This allows you to access both the
+original and copy of the database at the same time.  You can reset the
+bytestring with the <b>-r</b> flag to the <a href="../../utility/db_load.html">db_load</a> utility.
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../program/cache.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/compatible.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

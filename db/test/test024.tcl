@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2003
+# Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test024.tcl,v 11.20 2003/01/08 05:53:46 bostic Exp $
+# $Id: test024.tcl,v 11.21 2004/01/28 03:36:30 bostic Exp $
 #
 # TEST	test024
 # TEST	Record number retrieval test.

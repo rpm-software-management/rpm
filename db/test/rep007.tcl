@@ -1,28 +1,48 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2003
+# Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: rep007.tcl,v 11.15 2003/09/25 01:35:39 margo Exp $
+# $Id: rep007.tcl,v 11.22 2004/09/22 18:01:06 bostic Exp $
 #
-# TEST  rep007
+# TEST  	rep007
 # TEST	Replication and bad LSNs
 # TEST
-# TEST	Run a modified version of test001 in a replicated master env.
+# TEST	Run rep_test in a replicated master env.
 # TEST  	Close the client.  Make additional changes to master.
 # TEST  	Close the master.  Open the client as the new master.
 # TEST 	Make several different changes.  Open the old master as
 # TEST	the client.  Verify periodically that contents are correct.
 proc rep007 { method { niter 10 } { tnum "007" } args } {
+
+	set args [convert_args $method $args]
+	set logsets [create_logsets 3]
+
+	# Run the body of the test with and without recovery.
+	set recopts { "" "-recover" }
+	foreach r $recopts {
+		foreach l $logsets {
+			set logindex [lsearch -exact $l "in-memory"]
+			if { $r == "-recover" && $logindex != -1 } {
+				puts "Rep$tnum: Skipping for\
+				    in-memory logs with -recover."
+				continue
+			}
+			puts "Rep$tnum ($method $r): Replication and bad LSNs."
+			puts "Rep$tnum: Master logs are [lindex $l 0]"
+			puts "Rep$tnum: Client1 logs are [lindex $l 1]"
+			puts "Rep$tnum: Client2 logs are [lindex $l 2]"
+			rep007_sub $method $niter $tnum $l $r $args
+		}
+	}
+}
+
+proc rep007_sub { method niter tnum logset recargs largs } {
 	global testdir
-
-	puts "Rep$tnum: Replication and bad LSNs."
-	set orig_tdir $testdir
-	set largs $args
-
-	set omethod [convert_method $method]
-
 	env_cleanup $testdir
+
+	set orig_tdir $testdir
+	set omethod [convert_method $method]
 
 	replsetup $testdir/MSGQUEUEDIR
 
@@ -33,75 +53,73 @@ proc rep007 { method { niter 10 } { tnum "007" } args } {
 	file mkdir $clientdir
 	file mkdir $clientdir2
 
+	set m_logtype [lindex $logset 0]
+	set m_logargs [adjust_logargs $m_logtype]
+	set m_txnargs [adjust_txnargs $m_logtype]
+
+	set c_logtype [lindex $logset 1]
+	set c_logargs [adjust_logargs $c_logtype]
+	set c_txnargs [adjust_txnargs $c_logtype]
+
+	set c2_logtype [lindex $logset 2]
+	set c2_logargs [adjust_logargs $c2_logtype]
+	set c2_txnargs [adjust_txnargs $c2_logtype]
+
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+	set ma_envcmd "berkdb_env -create $m_txnargs \
+	    $m_logargs -lock_max 2500 \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+#	set ma_envcmd "berkdb_env -create $m_txnargs \
+#	    $m_logargs -lock_max 2500 \
 #	    -verbose {rep on} \
 #	    -home $masterdir -rep_transport \[list 1 replsend\]"
-	set masterenv [eval $ma_envcmd -rep_master]
+	set masterenv [eval $ma_envcmd $recargs -rep_master]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open two clients
 	repladd 2
-	set cl_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+	set cl_envcmd "berkdb_env -create $c_txnargs \
+	    $c_logargs -lock_max 2500 \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+#	set cl_envcmd "berkdb_env -create $c_txnargs \
+#	    $c_logargs -lock_max 2500 \
 #	    -verbose {rep on} \
 #	    -home $clientdir -rep_transport \[list 2 replsend\]"
-	set clientenv [eval $cl_envcmd -rep_client]
+	set clientenv [eval $cl_envcmd $recargs -rep_client]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	repladd 3
-	set cl2_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+	set cl2_envcmd "berkdb_env -create $c2_txnargs \
+	    $c2_logargs -lock_max 2500 \
 	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
-#	set cl2_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+#	set cl2_envcmd "berkdb_env -create $c2_txnargs \
+#	    $c2_logargs -lock_max 2500 \
 #	    -home $clientdir2 -rep_transport \[list 3 replsend\] \
 #	    -verbose {rep on}"
-	set cl2env [eval $cl2_envcmd -rep_client]
+	set cl2env [eval $cl2_envcmd $recargs -rep_client]
 	error_check_good client2_env [is_valid_env $cl2env] TRUE
 
 	# Bring the clients online by processing the startup messages.
-	while { 1 } {
-		set nproced 0
+	set envlist "{$masterenv 1} {$clientenv 2} {$cl2env 3}"
+	process_msgs $envlist
 
-		incr nproced [replprocessqueue $masterenv 1]
-		incr nproced [replprocessqueue $clientenv 2]
-		incr nproced [replprocessqueue $cl2env 3]
+	# Run rep_test in the master (and update clients).
+	puts "\tRep$tnum.a: Running rep_test in replicated env."
+	eval rep_test $method $masterenv NULL $niter 0 0 0 $largs
+	process_msgs $envlist
 
-		if { $nproced == 0 } {
-			break
-		}
-	}
-
-	# Run a modified test001 in the master (and update clients).
-	puts "\tRep$tnum.a: Running test001 in replicated env."
-	eval test001 $method $niter 0 0 $tnum -env $masterenv $largs
-	while { 1 } {
-		set nproced 0
-
-		incr nproced [replprocessqueue $masterenv 1]
-		incr nproced [replprocessqueue $clientenv 2]
-		incr nproced [replprocessqueue $cl2env 3]
-
-		if { $nproced == 0 } {
-			break
-		}
-	}
-
-	# Databases should now have identical contents. We assume we
-	# know the name of the file created by test001, "test$tnum.db".
-	set dbname "test$tnum.db"
+	# Databases should now have identical contents.
+	set dbname "test.db"
 	if { [is_hash $method] == 0 } {
 		set db1 [berkdb_open -env $masterenv -auto_commit $dbname]
 		set db2 [berkdb_open -env $clientenv -auto_commit $dbname]
 		set db3 [berkdb_open -env $cl2env -auto_commit $dbname]
 
-		error_check_good compare1and2 \
-		    [db_compare $db1 $db2 $masterdir/$dbname $clientdir/$dbname] 0
-		error_check_good compare1and3 \
-		    [db_compare $db1 $db3 $masterdir/$dbname $clientdir2/$dbname] 0
+		error_check_good compare1and2 [db_compare \
+		    $db1 $db2 $masterdir/$dbname $clientdir/$dbname] 0
+		error_check_good compare1and3 [db_compare \
+		    $db1 $db3 $masterdir/$dbname $clientdir2/$dbname] 0
 		error_check_good db1_close [$db1 close] 0
 		error_check_good db2_close [$db2 close] 0
 		error_check_good db3_close [$db3 close] 0
@@ -112,17 +130,9 @@ proc rep007 { method { niter 10 } { tnum "007" } args } {
 
 	# Change master and propagate changes to client 2.
 	set start $niter
-	eval test001 $method $niter $start 1 $tnum -env $masterenv $largs
-	while { 1 } {
-		set nproced 0
-
-		incr nproced [replprocessqueue $masterenv 1]
-		incr nproced [replprocessqueue $cl2env 3]
-
-		if { $nproced == 0 } {
-			break
-		}
-	}
+	eval rep_test $method $masterenv NULL $niter $start $start 0 $largs
+	set envlist "{$masterenv 1} {$cl2env 3}"
+	process_msgs $envlist
 
 	# We need to do a deletion here to cause meta-page updates,
 	# particularly for queue.  Delete the first pair and remember
@@ -146,16 +156,8 @@ proc rep007 { method { niter 10 } { tnum "007" } args } {
 	# Process the messages to get them out of the db.  This also
 	# propagates the delete to client 2.
 	#
-	while { 1 } {
-		set nproced 0
+	process_msgs $envlist
 
-		incr nproced [replprocessqueue $masterenv 1]
-		incr nproced [replprocessqueue $cl2env 3]
-
-		if { $nproced == 0 } {
-			break
-		}
-	}
 	# Nuke those for closed client
 	replclear 2
 
@@ -172,7 +174,7 @@ proc rep007 { method { niter 10 } { tnum "007" } args } {
 	puts "\tRep$tnum.c: Close master, reopen client as master."
 	error_check_good master_close [$masterenv close] 0
 
-	set newmasterenv [eval $cl_envcmd -rep_master]
+	set newmasterenv [eval $cl_envcmd $recargs -rep_master]
 	# Now we can check that database 2 does not match 3.
 	if { [is_hash $method] == 0 } {
 		set db2 [berkdb_open -env $newmasterenv -auto_commit $dbname]
@@ -185,8 +187,19 @@ proc rep007 { method { niter 10 } { tnum "007" } args } {
 	error_check_good db3_close [$db3 close] 0
 
 	puts "\tRep$tnum.d: Make incompatible changes to new master."
+	#
+	# Process startup messages and note that startup isn't complete.
+	#
+	set envlist "{$newmasterenv 2} {$cl2env 3}"
+	process_msgs $envlist
+	set stup [stat_field $cl2env rep_stat "Startup complete"]
+	error_check_good cl2recover $stup 0
+
+	#
+	# Making modifications should trigger startup complete.
+	#
 	set db [berkdb_open -env $newmasterenv -auto_commit -create $omethod \
-	    test007.db]
+	    test.db]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	set t [$newmasterenv txn]
 	# Force in a pair {10 10}.  This works for all access
@@ -196,35 +209,16 @@ proc rep007 { method { niter 10 } { tnum "007" } args } {
 	error_check_good txn [$t commit] 0
 	error_check_good dbclose [$db close] 0
 
-	eval test001 $method $niter $start 1 $tnum -env $newmasterenv $largs
+	eval rep_test $method $newmasterenv NULL $niter $start $start 0 $largs
 	set cl2rec 0
-	while { 1 } {
-		set nproced 0
-
-		incr nproced [replprocessqueue $newmasterenv 2]
-		incr nproced [replprocessqueue $cl2env 3]
-		# At some point in the processing, client2 should be
-		# in recovery.
-		set stat [$cl2env rep_stat]
-		if { [is_substr $stat "{{In recovery} 1}"] } {
-			set cl2rec 1
-		}
-
-		if { $nproced == 0 } {
-			break
-		}
-	}
+	set envlist "{$newmasterenv 2} {$cl2env 3}"
+	process_msgs $envlist
 
 	# Nuke those for closed old master
 	replclear 1
 
-	#
-	# Check that cl2 stats showed we were in recovery and now that
-	# we're done, we should be out of it.
-	#
-	error_check_good cl2rec $cl2rec 1
-	set stat [$cl2env rep_stat]
-	error_check_good cl2recover [is_substr $stat "{{In recovery} 0}"] 1
+	set stup [stat_field $cl2env rep_stat "Startup complete"]
+	error_check_good cl2recover $stup 1
 
 	# Databases 2 and 3 should now match.
 	set db2 [berkdb_open -env $newmasterenv -auto_commit $dbname]
@@ -237,26 +231,11 @@ proc rep007 { method { niter 10 } { tnum "007" } args } {
 
 	puts "\tRep$tnum.e: Open old master as client."
 	set newclientenv [eval $ma_envcmd -rep_client -recover]
-	# Bring the newclient online by processing the startup messages.
-	set ncrec 0
-	while { 1 } {
-		set nproced 0
+	set envlist "{$newclientenv 1} {$newmasterenv 2} {$cl2env 3}"
+	process_msgs $envlist
 
-		incr nproced [replprocessqueue $newmasterenv 2]
-		incr nproced [replprocessqueue $newclientenv 1]
-		set stat [$newclientenv rep_stat]
-		if { [is_substr $stat "{{In recovery} 1}"] } {
-			set ncrec 1
-		}
-		incr nproced [replprocessqueue $cl2env 3]
-
-		if { $nproced == 0 } {
-			break
-		}
-	}
-	error_check_good ncrec $ncrec 1
-	set stat [$newclientenv rep_stat]
-	error_check_good nc2recover [is_substr $stat "{{In recovery} 0}"] 1
+	set stup [stat_field $newclientenv rep_stat "Startup complete"]
+	error_check_good ncrecover $stup 0
 
 	# The pair we deleted earlier from the master should now
 	# have reappeared.
@@ -267,19 +246,15 @@ proc rep007 { method { niter 10 } { tnum "007" } args } {
 	error_check_good db1_close [$db1 close] 0
 
 	set start [expr $niter * 2]
-	eval test001 $method $niter $start 1 $tnum -env $newmasterenv $largs
+	eval rep_test $method $newmasterenv NULL $niter $start $start 0 $largs
+	set envlist "{$newclientenv 1} {$newmasterenv 2} {$cl2env 3}"
+	process_msgs $envlist
 
-	while { 1 } {
-		set nproced 0
-
-		incr nproced [replprocessqueue $newmasterenv 2]
-		incr nproced [replprocessqueue $newclientenv 1]
-		incr nproced [replprocessqueue $cl2env 3]
-
-		if { $nproced == 0 } {
-			break
-		}
-	}
+	#
+	# Now startup should be complete.
+	#
+	set stup [stat_field $newclientenv rep_stat "Startup complete"]
+	error_check_good nc2recover $stup 1
 
 	# Now all 3 should match again.
 	set db1 [berkdb_open -env $newclientenv -auto_commit $dbname]

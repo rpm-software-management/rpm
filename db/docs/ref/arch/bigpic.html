@@ -1,12 +1,12 @@
 <!--$Id: bigpic.so,v 8.32 2003/11/27 18:25:57 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: The big picture</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -77,29 +77,29 @@ it is wrapped in transaction calls.  The transaction is started with
 operation fails due to a deadlock, the transaction is aborted using
 <a href="../../api_c/txn_abort.html">DB_TXN-&gt;abort</a>, after which the operation may be retried.</p>
 <p>There are actually five major subsystems in Berkeley DB, as follows:</p>
-<p><dl compact>
-<p><dt>Access Methods<dd>The access methods subsystem provides general-purpose support for
+<dl compact>
+<dt>Access Methods<dd>The access methods subsystem provides general-purpose support for
 creating and accessing database files formatted as Btrees, Hashed files,
 and Fixed- and Variable-length records.  These modules are useful in
 the absence of transactions for applications that need fast formatted
 file support.  See <a href="../../api_c/db_open.html">DB-&gt;open</a> and <a href="../../api_c/db_cursor.html">DB-&gt;cursor</a> for more
 information.  These functions were already discussed in detail in the
 previous chapters.
-<p><dt>Memory Pool<dd>The Memory Pool subsystem is the general-purpose shared memory buffer pool
+<dt>Memory Pool<dd>The Memory Pool subsystem is the general-purpose shared memory buffer pool
 used by Berkeley DB.  This is the shared memory cache that allows multiple
 processes and threads within processes to share access to databases.  This
 module is useful outside of the Berkeley DB package for processes that require
 portable, page-oriented, cached, shared file access.
-<p><dt>Transaction<dd>The Transaction subsystem allows a group of database changes to be
+<dt>Transaction<dd>The Transaction subsystem allows a group of database changes to be
 treated as an atomic unit so that either all of the changes are done,
 or none of the changes are done.  The transaction subsystem implements
 the Berkeley DB transaction model.  This module is useful outside of the Berkeley DB
 package for processes that want to transaction-protect their own data
 modifications.
-<p><dt>Locking<dd>The Locking subsystem is the general-purpose lock manager used by Berkeley DB.
+<dt>Locking<dd>The Locking subsystem is the general-purpose lock manager used by Berkeley DB.
 This module is useful outside of the Berkeley DB package for processes that
 require a portable, fast, configurable lock manager.
-<p><dt>Logging<dd>The Logging subsystem is the write-ahead logging used to support the
+<dt>Logging<dd>The Logging subsystem is the write-ahead logging used to support the
 Berkeley DB transaction model.  It is largely specific to the Berkeley DB package,
 and unlikely to be useful elsewhere except as a supporting module for
 the Berkeley DB transaction subsystem.
@@ -120,6 +120,6 @@ subsystem, or the access methods subsystem wrapped in calls to the Berkeley DB
 transaction interfaces.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../java/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../arch/progmodel.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

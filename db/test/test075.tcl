@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test075.tcl,v 11.23 2003/01/08 05:54:03 bostic Exp $
+# $Id: test075.tcl,v 11.24 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test075
 # TEST	Test of DB->rename().

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_btrec.c,v 11.19 2003/01/08 04:43:54 bostic Exp $
+ * $Id: ex_btrec.c,v 11.22 2004/09/17 22:00:28 mjc Exp $
  */
 
 #include <sys/types.h>
@@ -37,7 +37,7 @@ ex_btrec()
 	DB_BTREE_STAT *statp;
 	FILE *fp;
 	db_recno_t recno;
-	u_int32_t len;
+	size_t len;
 	int cnt, ret;
 	char *p, *t, buf[1024], rbuf[1024];
 	const char *progname = "ex_btrec";		/* Program name. */
@@ -92,7 +92,7 @@ ex_btrec()
 
 		key.data = buf;
 		data.data = rbuf;
-		data.size = key.size = len - 1;
+		data.size = key.size = (u_int32_t)len - 1;
 
 		if ((ret =
 		    dbp->put(dbp, NULL, &key, &data, DB_NOOVERWRITE)) != 0) {
@@ -106,7 +106,7 @@ ex_btrec()
 	(void)fclose(fp);
 
 	/* Print out the number of records in the database. */
-	if ((ret = dbp->stat(dbp, &statp, 0)) != 0) {
+	if ((ret = dbp->stat(dbp, NULL, &statp, 0)) != 0) {
 		dbp->err(dbp, ret, "DB->stat");
 		goto err1;
 	}

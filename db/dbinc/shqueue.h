@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: shqueue.h,v 11.13 2003/04/24 15:41:02 bostic Exp $
+ * $Id: shqueue.h,v 11.15 2004/03/24 20:37:37 bostic Exp $
  */
 
 #ifndef	_SYS_SHQUEUE_H_
@@ -95,7 +95,7 @@ struct {								\
 /*
  * Given correct A.next: B.prev = SH_LIST_NEXT_TO_PREV(A)
  * in a list [A, B]
- * The prev value is always the offset from an element to its preceeding
+ * The prev value is always the offset from an element to its preceding
  * element's next location, not the beginning of the structure.  To get
  * to the beginning of an element structure in memory given an element
  * do the following:
@@ -237,7 +237,7 @@ struct {								\
 /*
  * Given correct A.next: B.prev = SH_TAILQ_NEXT_TO_PREV(A)
  * in a list [A, B]
- * The prev value is always the offset from an element to its preceeding
+ * The prev value is always the offset from an element to its preceding
  * element's next location, not the beginning of the structure.  To get
  * to the beginning of an element structure in memory given an element
  * do the following:

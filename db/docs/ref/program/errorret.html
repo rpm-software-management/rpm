@@ -1,12 +1,12 @@
-<!--$Id: errorret.so,v 10.46 2003/09/23 18:25:43 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: errorret.so,v 10.47 2004/10/14 13:32:14 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Error returns to applications</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -20,13 +20,13 @@
 interfaces, Berkeley DB does not use the global variable <b>errno</b> to
 return error values.  The return values for all Berkeley DB functions are
 grouped into the following three categories:</p>
-<p><dl compact>
-<p><dt>0<dd>A return value of 0 indicates that the operation was successful.
-<p><dt>&gt; 0<dd>A return value that is greater than 0 indicates that there was a system
+<dl compact>
+<dt>0<dd>A return value of 0 indicates that the operation was successful.
+<dt>&gt; 0<dd>A return value that is greater than 0 indicates that there was a system
 error.  The <b>errno</b> value returned by the system is returned by
 the function; for example, when a Berkeley DB function is unable to allocate
 memory, the return value from the function will be ENOMEM.
-<p><dt>&lt; 0<dd>A return value that is less than 0 indicates a condition that was not
+<dt>&lt; 0<dd>A return value that is less than 0 indicates a condition that was not
 a system failure, but was not an unqualified success, either.  For
 example, a routine to retrieve a key/data pair from the database may
 return DB_NOTFOUND when the key/data pair does not appear in
@@ -62,8 +62,9 @@ DB_KEYEMPTY for records that were created as part of a
 transaction that was later aborted and never re-created.</p>
 <h3><a name="DB_KEYEXIST">DB_KEYEXIST</a></h3>
 <p>The DB_KEYEXIST error return indicates the <a href="../../api_c/db_put.html#DB_NOOVERWRITE">DB_NOOVERWRITE</a>
-option was specified to the <a href="../../api_c/db_put.html">DB-&gt;put</a> method and the key already exists
-in the database.</p>
+option was specified when inserting a key/data pair into the database and
+the key already exists in the database, or the <a href="../../api_c/db_put.html#DB_NODUPDATA">DB_NODUPDATA</a>
+option was specified and the key/data pair already exists in the data.</p>
 <a name="4"><!--meow--></a>
 <h3><a name="DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a></h3>
 <p>When multiple threads of control are modifying the database, there is
@@ -108,6 +109,6 @@ by simply exiting the application when the callback function is called
 in applications that have no cleanup processing of their own.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../program/appsignals.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/environ.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

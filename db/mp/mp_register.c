@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mp_register.c,v 11.26 2004/07/15 15:52:54 sue Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: mp_register.c,v 11.24 2003/09/13 19:20:40 bostic Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -45,7 +44,7 @@ __memp_register_pp(dbenv, ftype, pgin, pgout)
 		__env_rep_enter(dbenv);
 	ret = __memp_register(dbenv, ftype, pgin, pgout);
 	if (rep_check)
-		__env_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 	return (ret);
 }
 

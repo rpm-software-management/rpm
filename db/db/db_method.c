@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2003
+ * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_method.c,v 11.116 2004/10/11 18:22:05 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_method.c,v 11.99 2003/07/08 20:14:17 ubell Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -19,6 +17,10 @@ static const char revid[] = "$Id: db_method.c,v 11.99 2003/07/08 20:14:17 ubell 
 #endif
 
 #include <string.h>
+#endif
+
+#ifdef HAVE_RPC
+#include "db_server.h"
 #endif
 
 #include "db_int.h"
@@ -34,15 +36,13 @@ static const char revid[] = "$Id: db_method.c,v 11.99 2003/07/08 20:14:17 ubell 
 #include "dbinc_auto/xa_ext.h"
 
 #ifdef HAVE_RPC
-#include "dbinc_auto/db_server.h"
 #include "dbinc_auto/rpc_client_ext.h"
 #endif
 
 static int  __db_get_byteswapped __P((DB *, int *));
 static int  __db_get_dbname __P((DB *, const char **, const char **));
-static int  __db_get_env __P((DB *, DB_ENV **));
-static int  __db_get_lorder __P((DB *, int *));
-static int  __db_get_transactional __P((DB *, int *));
+static DB_ENV *__db_get_env __P((DB *));
+static int  __db_get_transactional __P((DB *));
 static int  __db_get_type __P((DB *, DBTYPE *dbtype));
 static int  __db_init __P((DB *, u_int32_t));
 static int  __db_set_alloc __P((DB *, void *(*)(size_t),
@@ -56,14 +56,18 @@ static int  __db_get_encrypt_flags __P((DB *, u_int32_t *));
 static int  __db_set_encrypt __P((DB *, const char *, u_int32_t));
 static int  __db_set_feedback __P((DB *, void (*)(DB *, int, int)));
 static void __db_map_flags __P((DB *, u_int32_t *, u_int32_t *));
-static int  __db_get_flags __P((DB *, u_int32_t *));
 static int  __db_get_pagesize __P((DB *, u_int32_t *));
 static int  __db_set_paniccall __P((DB *, void (*)(DB_ENV *, int)));
-static void __db_set_errcall __P((DB *, void (*)(const char *, char *)));
+static void __db_set_errcall
+	      __P((DB *, void (*)(const DB_ENV *, const char *, const char *)));
 static void __db_get_errfile __P((DB *, FILE **));
 static void __db_set_errfile __P((DB *, FILE *));
 static void __db_get_errpfx __P((DB *, const char **));
 static void __db_set_errpfx __P((DB *, const char *));
+static void __db_set_msgcall
+	      __P((DB *, void (*)(const DB_ENV *, const char *)));
+static void __db_get_msgfile __P((DB *, FILE **));
+static void __db_set_msgfile __P((DB *, FILE *));
 static void __dbh_err __P((DB *, int, const char *, ...));
 static void __dbh_errx __P((DB *, const char *, ...));
 
@@ -140,11 +144,14 @@ db_create(dbpp, dbenv, flags)
 	 */
 	dbp->timestamp =
 	    (F_ISSET(dbenv, DB_ENV_DBLOCAL) || !REP_ON(dbenv)) ? 0 :
-	    ((DB_REP *)dbenv->rep_handle)->region->timestamp;
+	    ((REGENV *)((REGINFO *)dbenv->reginfo)->primary)->rep_timestamp;
 
-	/* Open a backing DB_MPOOLFILE handle in the memory pool. */
-	if ((ret = __memp_fcreate(dbenv, &dbp->mpf)) != 0)
-		goto err;
+	/* If not RPC, open a backing DB_MPOOLFILE handle in the memory pool. */
+#ifdef HAVE_RPC
+	if (!RPC_ON(dbenv))
+#endif
+		if ((ret = __memp_fcreate(dbenv, &dbp->mpf)) != 0)
+			goto err;
 
 	dbp->type = DB_UNKNOWN;
 
@@ -186,6 +193,7 @@ __db_init(dbp, flags)
 	dbp->close = __db_close_pp;
 	dbp->cursor = __db_cursor_pp;
 	dbp->del = __db_del_pp;
+	dbp->dump = __db_dump_pp;
 	dbp->err = __dbh_err;
 	dbp->errx = __dbh_errx;
 	dbp->fd = __db_fd_pp;
@@ -221,10 +229,14 @@ __db_init(dbp, flags)
 	dbp->set_flags = __db_set_flags;
 	dbp->get_lorder = __db_get_lorder;
 	dbp->set_lorder = __db_set_lorder;
+	dbp->set_msgcall = __db_set_msgcall;
+	dbp->get_msgfile = __db_get_msgfile;
+	dbp->set_msgfile = __db_set_msgfile;
 	dbp->get_pagesize = __db_get_pagesize;
 	dbp->set_pagesize = __db_set_pagesize;
 	dbp->set_paniccall = __db_set_paniccall;
 	dbp->stat = __db_stat_pp;
+	dbp->stat_print = __db_stat_print_pp;
 	dbp->sync = __db_sync_pp;
 	dbp->upgrade = __db_upgrade_pp;
 	dbp->verify = __db_verify_pp;
@@ -351,13 +363,11 @@ __db_get_dbname(dbp, fnamep, dnamep)
  * __db_get_env --
  *	Get the DB_ENV handle that was passed to db_create.
  */
-static int
-__db_get_env(dbp, dbenvp)
+static DB_ENV *
+__db_get_env(dbp)
 	DB *dbp;
-	DB_ENV **dbenvp;
 {
-	*dbenvp = dbp->dbenv;
-	return (0);
+	return (dbp->dbenv);
 }
 
 /*
@@ -365,14 +375,10 @@ __db_get_env(dbp, dbenvp)
  *	Get whether this database was created in a transaction.
  */
 static int
-__db_get_transactional(dbp, istxnp)
+__db_get_transactional(dbp)
 	DB *dbp;
-	int *istxnp;
 {
-	DB_ILLEGAL_BEFORE_OPEN(dbp, "DB->get_transactional");
-
-	*istxnp = F_ISSET(dbp, DB_AM_TXN) ? 1 : 0;
-	return (0);
+	return (F_ISSET(dbp, DB_AM_TXN) ? 1 : 0);
 }
 
 /*
@@ -509,7 +515,7 @@ __db_set_encrypt(dbp, passwd, flags)
 static void
 __db_set_errcall(dbp, errcall)
 	DB *dbp;
-	void (*errcall) __P((const char *, char *));
+	void (*errcall) __P((const DB_ENV *, const char *, const char *));
 {
 	__dbenv_set_errcall(dbp->dbenv, errcall);
 }
@@ -581,7 +587,13 @@ __db_map_flags(dbp, inflagsp, outflagsp)
 	}
 }
 
-static int
+/*
+ * __db_get_flags --
+ *	The DB->get_flags method.
+ *
+ * PUBLIC: int __db_get_flags __P((DB *, u_int32_t *));
+ */
+int
 __db_get_flags(dbp, flagsp)
 	DB *dbp;
 	u_int32_t *flagsp;
@@ -591,6 +603,7 @@ __db_get_flags(dbp, flagsp)
 		DB_DUP,
 		DB_DUPSORT,
 		DB_ENCRYPT,
+		DB_INORDER,
 		DB_RECNUM,
 		DB_RENUMBER,
 		DB_REVSPLITOFF,
@@ -607,6 +620,9 @@ __db_get_flags(dbp, flagsp)
 		__db_map_flags(dbp, &f, &mapped_flag);
 		__bam_map_flags(dbp, &f, &mapped_flag);
 		__ram_map_flags(dbp, &f, &mapped_flag);
+#ifdef HAVE_QUEUE
+		__qam_map_flags(dbp, &f, &mapped_flag);
+#endif
 		DB_ASSERT(f == 0);
 		if (F_ISSET(dbp, mapped_flag) == mapped_flag)
 			LF_SET(db_flags[i]);
@@ -647,6 +663,10 @@ __db_set_flags(dbp, flags)
 		return (ret);
 	if ((ret = __ram_set_flags(dbp, &flags)) != 0)
 		return (ret);
+#ifdef HAVE_QUEUE
+	if ((ret = __qam_set_flags(dbp, &flags)) != 0)
+		return (ret);
+#endif
 
 	return (flags == 0 ? 0 : __db_ferr(dbenv, "DB->set_flags", 0));
 }
@@ -654,8 +674,10 @@ __db_set_flags(dbp, flags)
 /*
  * __db_get_lorder --
  *	Get whether lorder is swapped or not.
+ *
+ * PUBLIC: int  __db_get_lorder __P((DB *, int *));
  */
-static int
+int
 __db_get_lorder(dbp, db_lorderp)
 	DB *dbp;
 	int *db_lorderp;
@@ -719,6 +741,30 @@ __db_set_alloc(dbp, mal_func, real_func, free_func)
 	DB_ILLEGAL_AFTER_OPEN(dbp, "DB->set_alloc");
 
 	return (__dbenv_set_alloc(dbp->dbenv, mal_func, real_func, free_func));
+}
+
+static void
+__db_set_msgcall(dbp, msgcall)
+	DB *dbp;
+	void (*msgcall) __P((const DB_ENV *, const char *));
+{
+	__dbenv_set_msgcall(dbp->dbenv, msgcall);
+}
+
+static void
+__db_get_msgfile(dbp, msgfilep)
+	DB *dbp;
+	FILE **msgfilep;
+{
+	__dbenv_get_msgfile(dbp->dbenv, msgfilep);
+}
+
+static void
+__db_set_msgfile(dbp, msgfile)
+	DB *dbp;
+	FILE *msgfile;
+{
+	__dbenv_set_msgfile(dbp->dbenv, msgfile);
 }
 
 static int

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test083.tcl,v 11.15 2003/04/18 14:39:10 sandstro Exp $
+# $Id: test083.tcl,v 11.16 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test083
 # TEST	Test of DB->key_range.

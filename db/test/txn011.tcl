@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003
+# Copyright (c) 2003-2004
 # Sleepycat Software. All rights reserved.
 #
-# $Id: txn011.tcl,v 1.9 2003/09/04 23:41:19 bostic Exp $
+# $Id: txn011.tcl,v 1.11 2004/07/26 20:27:49 carol Exp $
 #
 # TEST	txn011
 # TEST	Test durable and non-durable txns.
@@ -21,9 +21,14 @@ proc txn011 { {ntxns 100} } {
 	puts "Txn011: Non-durable txns"
 	env_cleanup $testdir
 
-	puts "\tTxn011.a: Persistent env recovery with -notdurable."
-	set ndenv [berkdb_env -create -home $testdir -txn -notdurable]
-	set db [berkdb_open -create -btree -env $ndenv test.db]
+	puts "\tTxn011.a: Persistent env recovery with -log_inmemory"
+	set lbuf [expr 8 * [expr 1024 * 1024]]
+	set env_cmd "berkdb_env -create \
+	    -home $testdir -txn -log_inmemory -log_buffer $lbuf"
+	set ndenv [eval $env_cmd]
+	set db [berkdb_open -create -auto_commit \
+	    -btree -env $ndenv -notdurable test.db]
+	check_log_records $testdir
 	error_check_good db_close [$db close] 0
 	error_check_good ndenv_close [$ndenv close] 0
 
@@ -31,30 +36,29 @@ proc txn011 { {ntxns 100} } {
 	set stat [catch {exec $util_path/db_recover -e -h $testdir} ret]
 	error_check_good db_printlog $stat 0
 
-	# Rejoin env and make sure that db is still -notdurable.
+	# Rejoin env and make sure that the db is still there.
 	set ndenv [berkdb_env -home $testdir]
-	set db [berkdb_open -env $ndenv -notdurable test.db]
+	set db [berkdb_open -auto_commit -env $ndenv test.db]
 	error_check_good db_close [$db close] 0
 	error_check_good ndenv_close [$ndenv close] 0
 	env_cleanup $testdir
 
 	# Start with a new env for the next test.
-	set ndenv [berkdb_env -create -home $testdir -txn -notdurable]
+	set ndenv [eval $env_cmd]
 	error_check_good env_open [is_valid_env $ndenv] TRUE
 
-	# Open/create the database; it acquires non-durability
-	# from the env.
-	set testfile envnotdurable.db
-	set db [eval berkdb_open \
-	   -create -auto_commit -env $ndenv -btree $testfile]
+	# Open/create the database.
+	set testfile notdurable.db
+	set db [eval berkdb_open -create \
+	    -auto_commit -env $ndenv -notdurable -btree $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
-	puts "\tTxn011.b: Abort txns in non-durable env."
+	puts "\tTxn011.b: Abort txns in in-memory logging env."
 	txn011_runtxns $ntxns $db $ndenv abort
 	# Make sure there is nothing in the db.
 	txn011_check_empty $db $ndenv
 
-	puts "\tTxn011.c: Commit txns in non-durable env."
+	puts "\tTxn011.c: Commit txns in in-memory logging env."
 	txn011_runtxns $ntxns $db $ndenv commit
 
 	# Make sure we haven't written any inappropriate log records
@@ -63,17 +67,20 @@ proc txn011 { {ntxns 100} } {
 	# Clean up non-durable env tests.
 	error_check_good db_close [$db close] 0
 	error_check_good ndenv_close [$ndenv close] 0
+	env_cleanup $testdir
 
 	puts "\tTxn011.d: Set up mixed durable/non-durable test."
 	# Open/create the mixed environment
-	set env [berkdb_env_noerr -create -home $testdir -txn]
+	set mixed_env_cmd "berkdb_env_noerr -create \
+		-home $testdir -txn -log_inmemory -log_buffer $lbuf"
+	set env [eval $mixed_env_cmd]
 	error_check_good env_open [is_valid_env $env] TRUE
 	check_log_records $testdir
 
 	# Open/create the non-durable database
 	set nondurfile nondurable.db
-	set ndb [berkdb_open_noerr \
-	    -create -auto_commit -env $env -btree -notdurable $nondurfile]
+	set ndb [berkdb_open_noerr -create\
+	    -auto_commit -env $env -btree -notdurable $nondurfile]
 	error_check_good dbopen [is_valid_db $ndb] TRUE
 	check_log_records $testdir
 

@@ -1,12 +1,12 @@
-<!--$Id: naming.so,v 10.49 2003/10/24 22:27:54 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: naming.so,v 10.50 2004/08/13 03:39:00 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: File naming</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -34,11 +34,11 @@ information.</p>
 information may be specified to the Berkeley DB library.  The specific
 circumstances and order in which these ways are applied are described
 in a subsequent paragraph.</p>
-<p><dl compact>
-<p><dt><a name="db_home">db_home</a><dd>If the <b>db_home</b> argument to <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> is non-NULL,
+<dl compact>
+<dt><a name="db_home">db_home</a><dd>If the <b>db_home</b> argument to <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> is non-NULL,
 its value may be used as the database home, and files named relative to
 its path.
-<p><dt><a name="DB_HOME">DB_HOME</a><dd>If the DB_HOME environment variable is set when <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> is
+<dt><a name="DB_HOME">DB_HOME</a><dd>If the DB_HOME environment variable is set when <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> is
 called, its value may be used as the database home, and files named
 relative to its path.
 <p>The DB_HOME environment variable is intended to permit users and system
@@ -48,7 +48,7 @@ example::</p>
 <p>Application writers are encouraged to support the <b>-h</b> option
 found in the supporting Berkeley DB utilities to let users specify a database
 home.</p>
-<p><dt><a href="../../api_c/env_class.html">DB_ENV</a> methods<dd>There are three <a href="../../api_c/env_class.html">DB_ENV</a> methods that affect file naming.  The
+<dt><a href="../../api_c/env_class.html">DB_ENV</a> methods<dd>There are three <a href="../../api_c/env_class.html">DB_ENV</a> methods that affect file naming.  The
 <a href="../../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> method specifies a directory to search for database
 files.  The <a href="../../api_c/env_set_lg_dir.html">DB_ENV-&gt;set_lg_dir</a> method specifies a directory in which to
 create logging files.  The <a href="../../api_c/env_set_tmp_dir.html">DB_ENV-&gt;set_tmp_dir</a> method specifies a
@@ -57,7 +57,7 @@ are intended to permit applications to customize a file location for a
 database.  For example, an application writer can place data files and
 log files in different directories or instantiate a new log directory
 each time the application runs.
-<p><dt><a href="../../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a><dd>The same information specified to the <a href="../../api_c/env_class.html">DB_ENV</a> methods may also be
+<dt><a href="../../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a><dd>The same information specified to the <a href="../../api_c/env_class.html">DB_ENV</a> methods may also be
 specified using the <a href="../../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration file.
 </dl>
 <h3>Filename resolution in Berkeley DB</h3>
@@ -65,8 +65,8 @@ specified using the <a href="../../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</
 which the different ways of specifying file naming information are
 applied.  Berkeley DB filename processing proceeds sequentially through the
 following steps:</p>
-<p><dl compact>
-<p><dt>absolute pathnames<dd>If the filename specified to a Berkeley DB function is an <i>absolute
+<dl compact>
+<dt>absolute pathnames<dd>If the filename specified to a Berkeley DB function is an <i>absolute
 pathname</i>, that filename is used without modification by Berkeley DB.
 <p>On UNIX systems, an absolute pathname is defined as any pathname that
 begins with a leading slash (<b>/</b>).</p>
@@ -74,21 +74,21 @@ begins with a leading slash (<b>/</b>).</p>
 a leading slash or leading backslash (<b>\</b>); or any
 pathname beginning with a single alphabetic character, a colon and a
 leading slash or backslash (for example, <b>C:/tmp</b>).</p>
-<p><dt><a href="../../api_c/env_class.html">DB_ENV</a> methods, DB_CONFIG<dd>If a relevant configuration string (for example, set_data_dir), is
+<dt><a href="../../api_c/env_class.html">DB_ENV</a> methods, DB_CONFIG<dd>If a relevant configuration string (for example, set_data_dir), is
 specified either by calling a <a href="../../api_c/env_class.html">DB_ENV</a> method or as a line in the
 DB_CONFIG configuration file, the value is prepended to the filename.
 If the resulting filename is an absolute pathname, the filename is used
 without further modification by Berkeley DB.
-<p><dt>db_home<dd>If the application specified a non-NULL <b>db_home</b> argument to
+<dt>db_home<dd>If the application specified a non-NULL <b>db_home</b> argument to
 <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a>, its value is prepended to the filename.  If the
 resulting filename is an absolute pathname, the filename is used without
 further modification by Berkeley DB.
-<p><dt>DB_HOME<dd>If the <b>db_home</b> argument is NULL, the DB_HOME environment
+<dt>DB_HOME<dd>If the <b>db_home</b> argument is NULL, the DB_HOME environment
 variable was set, and the application has set the appropriate
 <a href="../../api_c/env_open.html#DB_USE_ENVIRON">DB_USE_ENVIRON</a> or <a href="../../api_c/env_open.html#DB_USE_ENVIRON_ROOT">DB_USE_ENVIRON_ROOT</a> flags, its value
 is prepended to the filename.  If the resulting filename is an absolute
 pathname, the filename is used without further modification by Berkeley DB.
-<p><dt>default<dd>Finally, all filenames are interpreted relative to the current working
+<dt>default<dd>Finally, all filenames are interpreted relative to the current working
 directory of the process.
 </dl>
 <p>The common model for a Berkeley DB environment is one in which only the DB_HOME
@@ -122,6 +122,6 @@ dbenv-&gt;set_data_dir(dbenv, "data1");
 dbenv-&gt;open(dbenv, "/a/database", flags, mode);</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../env/db_config.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/region.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,24 +1,23 @@
 <!--$Id: db_remove.so,v 10.3 2002/08/18 21:15:51 bostic Exp $-->
-<!--$Id: env_dbremove.so,v 10.44 2003/11/08 19:17:26 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_dbremove.so,v 10.48 2004/08/29 19:27:38 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Db::remove</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Db::remove</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -30,15 +29,18 @@ Db::remove(const char *file, const char *database, u_int32_t flags);
 <hr size=1 noshade>
 <h3>Description: Db::remove</h3>
 <p>The Db::remove method removes the database specified by the
-<b>file</b> and <b>database</b> parameters.  If no <b>database</b> is
-specified, the underlying file represented by <b>file</b> is removed,
-incidentally removing all of the databases it contained.</p>
+<b>file</b> and <b>database</b> parameters.  If no <b>database</b>
+is specified, the underlying file represented by <b>file</b> is
+removed, incidentally removing all of the databases it contained.</p>
 <p>Applications should never remove databases with open <a href="../api_cxx/db_class.html">Db</a> handles,
 or in the case of removing a file, when any database in the file has an
 open handle.  For example, some architectures do not permit the removal
 of files with open system handles.  On these architectures, attempts to
 remove databases currently in use by any thread of control in the system
-will fail.</p>
+may fail.</p>
+<p>The Db::remove method should not be called if the remove is intended
+to be transactionally safe; the <a href="../api_cxx/env_dbremove.html">DbEnv::dbremove</a> method should be used
+instead.</p>
 <p>The Db::remove method may not be called after calling the
 <a href="../api_cxx/db_open.html">Db::open</a> method on any <a href="../api_cxx/db_class.html">Db</a> handle.  If the <a href="../api_cxx/db_open.html">Db::open</a> method
 has already been called on a <a href="../api_cxx/db_class.html">Db</a> handle, close the existing
@@ -51,14 +53,13 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>database</b><dd>
-The <b>database</b> parameter is the database to be removed.
-<p><dt><b>file</b><dd>
-The <b>file</b> parameter is the physical file which contains the
+<dl compact>
+<dt><b>database</b><dd>The <b>database</b> parameter is the database to be removed.
+<dt><b>file</b><dd>The <b>file</b> parameter is the physical file which contains the
 database(s) to be removed.
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter is currently unused, and must be set to 0.
+<p>On Windows, the <b>file</b> argument will be interpreted as a UTF-8
+string, which is equivalent to ASCII for Latin characters.</p>
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
 </dl>
 <h3>Environment Variables</h3>
 <p>If the database was opened within a database environment, the
@@ -73,16 +74,12 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_FILEOPEN<dd>An attempt was made to remove the underlying file and a database in the
-file was currently open.
-</dl>
-<p><dl compact>
-<p><dt>EINVAL<dd>If Db::remove called after <a href="../api_cxx/db_open.html">Db::open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If Db::remove called after <a href="../api_cxx/db_open.html">Db::open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
-<p><dl compact>
-<p><dt>ENOENT<dd>The file or directory does not exist.
+<dl compact>
+<dt>ENOENT<dd>The file or directory does not exist.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -93,6 +90,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

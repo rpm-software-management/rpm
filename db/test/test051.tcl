@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test051.tcl,v 11.23 2003/06/18 14:13:11 bostic Exp $
+# $Id: test051.tcl,v 11.25 2004/01/28 03:36:31 bostic Exp $
 #
 # TEST	test051
 # TEST	Fixed-length record Recno test.
@@ -186,7 +186,7 @@ proc test051 { method { args "" } } {
 		set ret [eval {$db put} $txn {$key $data}]
 		error_check_good dbput:init $ret 0
 
-		puts "\t\t  Test051.g: Replace at offset $doff."
+		puts "\t\tTest051.g: Replace at offset $doff."
 		set ret [eval {$db put -partial [list $doff $dlen]} $txn \
 		    {$key $pdata}]
 		error_check_good dbput:partial $ret 0

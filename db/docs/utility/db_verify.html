@@ -1,32 +1,31 @@
 <!--$Id: db_verify.so,v 10.10 2003/10/24 22:27:57 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: db_verify</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>db_verify</h3>
 </td>
-</td></tr></table>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>db_verify [<b>-NoqV</b>] [<b>-h home</b>] [<b>-P password</b>] file ...</pre></h3>
 <h3>Description</h3>
-<a name="3"><!--meow--></a><a name="4"><!--meow--></a>
+<a name="2"><!--meow--></a><a name="3"><!--meow--></a>
 <p>The db_verify utility verifies the structure of one or more
 files and the databases they contain.</p>
 <p>The options are as follows:</p>
-<p><dl compact>
-<p><dt><b>-h</b><dd>Specify a home directory for the database environment; by
+<dl compact>
+<dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
-<p><dt><b>-o</b><dd>Skip the database checks for btree and duplicate sort order and for
+<dt><b>-o</b><dd>Skip the database checks for btree and duplicate sort order and for
 hashing.
 <p>If the file being verified contains databases with non-default
 comparison or hashing configurations, calling the db_verify
@@ -36,18 +35,18 @@ hash ordering and allows db_verify to be used on these files.
 To fully verify these files, verify them explicitly using the
 <a href="../api_c/db_verify.html">DB-&gt;verify</a> method, after configuring the correct comparison or hashing
 functions.</p>
-<p><dt><b>-N</b><dd>Do not acquire shared region mutexes while running.  Other problems,
+<dt><b>-N</b><dd>Do not acquire shared region mutexes while running.  Other problems,
 such as potentially fatal errors in Berkeley DB, will be ignored as well.
 This option is intended only for debugging errors, and should not be
 used under any other circumstances.
-<p><dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
+<dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
 password strings as soon as possible, be aware there may be a window of
 vulnerability on systems where unprivileged users can see command-line
 arguments or where utilities are not able to overwrite the memory
 containing the command-line arguments.
-<p><dt><b>-q</b><dd>Suppress the printing of any error descriptions, simply exit success or
+<dt><b>-q</b><dd>Suppress the printing of any error descriptions, simply exit success or
 failure.
-<p><dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
 </dl>
 <p><b>The db_verify utility does not perform any locking, even in
 Berkeley DB environments that are configured with a locking subsystem.  As
@@ -63,12 +62,12 @@ to release all environment resources and exit cleanly, send it an
 interrupt signal (SIGINT).</p>
 <p>The db_verify utility exits 0 on success, and &gt;0 if an error occurs.</p>
 <h3>Environment Variables</h3>
-<p><dl compact>
-<p><dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
+<dl compact>
+<dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
 DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

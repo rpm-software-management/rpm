@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_access.c,v 11.23 2003/01/08 04:43:53 bostic Exp $
+ * $Id: ex_access.c,v 11.25 2004/09/17 22:00:28 mjc Exp $
  */
 
 #include <sys/types.h>
@@ -49,7 +49,7 @@ dbdemo_main(argc, argv)
 	DB *dbp;
 	DBC *dbcp;
 	DBT key, data;
-	u_int32_t len;
+	size_t len;
 	int ch, ret, rflag;
 	char *database, *p, *t, buf[1024], rbuf[1024];
 	const char *progname = "dbdemo";		/* Program name. */
@@ -118,7 +118,7 @@ dbdemo_main(argc, argv)
 
 		key.data = buf;
 		data.data = rbuf;
-		data.size = key.size = len - 1;
+		data.size = key.size = (u_int32_t)len - 1;
 
 		switch (ret =
 		    dbp->put(dbp, NULL, &key, &data, DB_NOOVERWRITE)) {

@@ -1,129 +1,148 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: fop005.tcl,v 11.2 2003/09/04 23:41:10 bostic Exp $
+# $Id: fop005.tcl,v 11.6 2004/09/22 18:01:05 bostic Exp $
 #
 # TEST	fop005
 # TEST	Test of DB->remove()
 # TEST	Formerly test080.
-proc fop005 { { method btree } {tnum "005"} args } {
+# TEST	Test use of dbremove with and without envs, with absolute
+# TEST	and relative paths, and with subdirectories.
+
+proc fop005 { method args } {
 	source ./include.tcl
 
+	set tnum "005"
 	set args [convert_args $method $args]
+	set omethod [convert_method $method]
 
-	puts "Fop$tnum: Test of DB->remove()"
+	puts "Fop$tnum: ($method $args): Test of DB->remove()"
 
 	# Determine full path
 	set curdir [pwd]
 	cd $testdir
 	set fulldir [pwd]
 	cd $curdir
-
-	# Test both relative and absolute path
-	set paths [list $fulldir $testdir]
-
-	set encrypt 0
-	set encargs ""
-	set args [split_encargs $args encargs]
+	set reldir $testdir
 
 	# If we are using an env, then skip this test.
 	# It needs its own.
 	set eindex [lsearch -exact $args "-env"]
 	if { $eindex != -1 } {
 		incr eindex
-		set e [lindex $args $eindex]
-		puts "Skipping fop005 for env $e"
+		set env [lindex $args $eindex]
+		puts "Skipping fop$tnum for env $env"
 		return
 	}
+	cleanup $testdir NULL
+
+	# Set up absolute and relative pathnames, and a subdirectory.
+	set subdira A
+	set filename fop$tnum.db
+	set extentname __dbq.$filename.0
+	set paths [list $fulldir $reldir]
+	set files [list "$filename $extentname"\
+	    "$subdira/$filename $subdira/$extentname"]
 
 	foreach path $paths {
+		foreach fileset $files {
+			set filename [lindex $fileset 0]
+			set extentname [lindex $fileset 1]
 
-		set dbfile test$tnum.db
-		set testfile $path/$dbfile
-		set eargs $encargs
-
-		# Loop through test using the following remove options
-		# 1. no environment, not in transaction
-		# 2. with environment, not in transaction
-		# 3. rename with auto-commit
-		# 4. rename in committed transaction
-		# 5. rename in aborted transaction
+			# Loop through test using the following options:
+			# 1. no environment, not in transaction
+			# 2. with environment, not in transaction
+			# 3. remove with auto-commit
+			# 4. remove in committed transaction
+			# 5. remove in aborted transaction
 
 			foreach op "noenv env auto commit abort" {
-
-			# Make sure we're starting with a clean slate.
-			env_cleanup $testdir
-			if { $op == "noenv" } {
-				set dbfile $testfile
-				set e NULL
-				set envargs ""
-			} else {
-				if { $op == "env" } {
-					set largs ""
+				file mkdir $testdir/$subdira
+				if { $op == "noenv" } {
+					set file $path/$filename
+					set extentfile $path/$extentname
+					set env NULL
+					set envargs ""
 				} else {
+					set file $filename
+					set extentfile $extentname
 					set largs " -txn"
+					if { $op == "env" } {
+						set largs ""
+					}
+					set env [eval {berkdb_env -create \
+					    -home $path} $largs]
+					set envargs " -env $env "
+					error_check_good \
+					    env_open [is_valid_env $env] TRUE
 				}
-				if { $encargs != "" } {
-					set eargs " -encrypt "
+
+				puts "\tFop$tnum: dbremove with $op\
+				    in path $path"
+				puts "\t\tFop$tnum.a.1: Create file $file"
+				set db [eval {berkdb_open -create -mode 0644} \
+				    $omethod $envargs $args {$file}]
+				error_check_good db_open [is_valid_db $db] TRUE
+
+				# Use a numeric key so record-based methods
+				# don't need special treatment.
+				set key 1
+				set data [pad_data $method data]
+
+				error_check_good dbput \
+				    [$db put $key [chop_data $method $data]] 0
+				error_check_good dbclose [$db close] 0
+				check_file_exist $file $env $path 1
+				if { [is_queueext $method] == 1 } {
+					check_file_exist \
+					    $extentfile $env $path 1
 				}
-				set e [eval {berkdb_env -create -home $path} \
-				    $encargs $largs]
-				set envargs "-env $e"
-				error_check_good env_open [is_valid_env $e] TRUE
+
+				# Use berkdb dbremove for non-txn tests
+				# and $env dbremove for transactional tests
+				puts "\t\tFop$tnum.a.2: Remove file"
+				if { $op == "noenv" || $op == "env" } {
+					error_check_good remove_$op \
+					    [eval {berkdb dbremove} \
+					    $envargs $file] 0
+				} elseif { $op == "auto" } {
+					error_check_good remove_$op \
+					    [eval {$env dbremove} \
+					    -auto_commit $file] 0
+				} else {
+					# $op is "abort" or "commit"
+					set txn [$env txn]
+					error_check_good remove_$op \
+					    [eval {$env dbremove} \
+					    -txn $txn $file] 0
+					error_check_good txn_$op [$txn $op] 0
+				}
+
+				puts "\t\tFop$tnum.a.3: Check that file is gone"
+				# File should now be gone, unless the op is an
+				# abort.  Check extent files if necessary.
+				if { $op != "abort" } {
+					check_file_exist $file $env $path 0
+					if { [is_queueext $method] == 1 } {
+						check_file_exist \
+						    $extentfile $env $path 0
+					}
+				} else {
+					check_file_exist $file $env $path 1
+					if { [is_queueext $method] == 1 } {
+						check_file_exist \
+						    $extentfile $env $path 1
+					}
+				}
+
+				if { $env != "NULL" } {
+					error_check_good envclose [$env close] 0
+				}
+				env_cleanup $path
+				check_file_exist $file $env $path 0
 			}
-
-			puts "\tFop$tnum: dbremove with $op in $path"
-			puts "\tFop$tnum.a.1: Create file"
-			set db [eval {berkdb_open -create -mode 0644} \
-			    -$method $envargs $eargs $args {$dbfile}]
-			error_check_good db_open [is_valid_db $db] TRUE
-
-			# The nature of the key and data are unimportant;
-			# use numeric key so record-based methods don't need
-			# special treatment.
-			set key 1
-			set data [pad_data $method data]
-
-			error_check_good dbput [$db put $key $data] 0
-			error_check_good dbclose [$db close] 0
-			error_check_good file_exists_before \
-				    [file exists $testfile] 1
-
-			# Use berkdb dbremove for non-transactional tests
-			# and $env dbremove for transactional tests
-			puts "\tFop$tnum.a.2: Remove file"
-			if { $op == "noenv" || $op == "env" } {
-				error_check_good remove_$op [eval \
-				    {berkdb dbremove} $eargs $envargs $dbfile] 0
-			} elseif { $op == "auto" } {
-				error_check_good remove_$op \
-				    [eval {$e dbremove} -auto_commit $dbfile] 0
-			} else {
-				# $op is "abort" or "commit"
-				set txn [$e txn]
-				error_check_good remove_$op \
-				    [eval {$e dbremove} -txn $txn $dbfile] 0
-				error_check_good txn_$op [$txn $op] 0
-			}
-
-			puts "\tFop$tnum.a.3: Check that file is gone"
-			# File should now be gone, unless the op is an abort.
-			if { $op != "abort" } {
-				error_check_good exists_after \
-				    [file exists $testfile] 0
-			} else {
-				error_check_good exists_after \
-				    [file exists $testfile] 1
-			}
-
-			if { $e != "NULL" } {
-				error_check_good env_close [$e close] 0
-			}
-
-			set dbfile fop$tnum-old.db
-			set testfile $path/$dbfile
 		}
 	}
 }

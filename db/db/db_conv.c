@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -35,13 +35,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * $Id: db_conv.c,v 11.45 2004/01/28 03:35:57 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_conv.c,v 11.43 2003/09/23 16:15:00 sue Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -142,7 +140,7 @@ __db_pgin(dbenv, pg, pp, cookie)
 	 * it's fatal: panic the system.
 	 */
 	if (F_ISSET(dbp, DB_AM_CHKSUM) && sum_len != 0) {
-		if (F_ISSET(dbp, DB_AM_SWAP) && is_hmac == 0) 
+		if (F_ISSET(dbp, DB_AM_SWAP) && is_hmac == 0)
 			P_32_SWAP(chksum);
 		switch (ret = __db_check_chksum(
 		    dbenv, db_cipher, chksum, pp, sum_len, is_hmac)) {

@@ -1,0 +1,75 @@
+<!--$Id: seq_remove.so,v 1.5 2004/08/18 02:34:52 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbSequence::remove</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbSequence::remove</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbSequence::remove(u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbSequence::remove</h3>
+<p>The DbSequence::remove method removes the sequence from the database.  This
+method should not be called if there are other open handles on this
+sequence.</p>
+<p>The <a href="../api_cxx/seq_class.html">DbSequence</a> handle may not be accessed again after DbSequence::remove is
+called, regardless of its return.</p>
+<p>The DbSequence::remove method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
+<dl compact>
+<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>The remove
+will be enclosed in a transaction and will be recoverable.
+<dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>If a DB_AUTO_COMMIT
+triggers a transaction, do not synchronously flush the log.
+</dl>
+<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
+the <b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
+</dl>
+<h3>Errors</h3>
+<p>The DbSequence::remove method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/seq_class.html">DbSequence</a>
+<h3>See Also</h3>
+<a href="../api_cxx/seq_list.html">Sequences and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

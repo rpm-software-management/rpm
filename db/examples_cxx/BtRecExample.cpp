@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: BtRecExample.cpp,v 11.22 2003/01/08 04:46:52 bostic Exp $
+ * $Id: BtRecExample.cpp,v 11.26 2004/09/17 22:00:28 mjc Exp $
  */
 
 #include <sys/types.h>
@@ -68,7 +68,7 @@ BtRecExample::BtRecExample(FILE *fp)
 		(void)sprintf(buf, "%04d_", cnt);
 		if (fgets(buf + 4, sizeof(buf) - 4, fp) == NULL)
 			break;
-		u_int32_t len = strlen(buf);
+		u_int32_t len = (u_int32_t)strlen(buf);
 		buf[len - 1] = '\0';
 		for (t = rbuf, p = buf + (len - 2); p >= buf;)
 			*t++ = *p--;
@@ -103,7 +103,7 @@ void BtRecExample::stats()
 {
 	DB_BTREE_STAT *statp;
 
-	dbp->stat(&statp, 0);
+	dbp->stat(NULL, &statp, 0);
 	cout << progname << ": database contains "
 	     << (u_long)statp->bt_ndata << " records\n";
 

@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_upg.c,v 11.35 2004/03/24 20:37:35 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_upg.c,v 11.33 2003/06/06 14:55:40 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -181,7 +179,7 @@ __db_upgrade(dbp, fname, flags)
 			 * the end of the database file.
 			 *
 			 * In DB 3.X, we now create all the hash pages
-			 * belonging to a doubling atomicly;  it's not
+			 * belonging to a doubling atomically; it's not
 			 * safe to just save them for later, because when
 			 * we create an overflow page we'll just create
 			 * a new last page (whatever that may be).  Grow

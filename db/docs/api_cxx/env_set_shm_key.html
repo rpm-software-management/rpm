@@ -1,23 +1,22 @@
-<!--$Id: env_set_shm_key.so,v 10.25 2003/11/08 19:17:32 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_shm_key.so,v 10.28 2004/09/28 15:04:20 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbEnv::set_shm_key</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbEnv::set_shm_key</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DbEnv::get_shm_key(long *shm_keyp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::set_shm_key</h3>
-<a name="3"><!--meow--></a>
 <p>Specify a base segment ID for Berkeley DB environment shared memory regions
 created in system memory on VxWorks or systems supporting X/Open-style
 shared memory interfaces; for example, UNIX systems supporting
@@ -76,9 +74,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>shm_key</b><dd>
-The <b>shm_key</b> parameter is the base segment ID for the database
+<dl compact>
+<dt><b>shm_key</b><dd>The <b>shm_key</b> parameter is the base segment ID for the database
 environment.
 </dl>
 <h3>Errors</h3>
@@ -87,8 +84,8 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>If the method was called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called; or if an
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_cxx/env_open.html">DbEnv::open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -102,9 +99,8 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>shm_keyp</b><dd>
-The DbEnv::get_shm_key method returns  the
+<dl compact>
+<dt><b>shm_keyp</b><dd>The DbEnv::get_shm_key method returns  the
 base segment ID in <b>shm_keyp</b>.
 </dl>
 <hr size=1 noshade>
@@ -116,6 +112,6 @@ base segment ID in <b>shm_keyp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

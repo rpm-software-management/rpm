@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: db_rename.c,v 11.216 2004/09/16 17:55:17 margo Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_rename.c,v 11.211 2003/09/04 18:06:45 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -92,8 +90,8 @@ __dbenv_dbrename(dbenv, txn, name, subdb, newname, txn_local)
 		F_SET(dbp, DB_AM_TXN);
 
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, txn != NULL)) != 0)
-		return (ret);
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 1, txn != NULL)) != 0)
+		goto err;
 
 	ret = __db_rename_int(dbp, txn, name, subdb, newname);
 
@@ -117,8 +115,9 @@ __dbenv_dbrename(dbenv, txn, name, subdb, newname, txn_local)
 	}
 
 	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
+err:
 	if ((t_ret = __db_close(dbp, txn, DB_NOSYNC)) != 0 && ret == 0)
 		ret = t_ret;
 
@@ -170,7 +169,7 @@ __db_rename_pp(dbp, name, subdb, newname, flags)
 		goto err;
 
 	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0)) != 0) {
+	if (handle_check && (ret = __db_rep_enter(dbp, 1, 1, 0)) != 0) {
 		handle_check = 0;
 		goto err;
 	}
@@ -179,7 +178,7 @@ __db_rename_pp(dbp, name, subdb, newname, flags)
 	ret = __db_rename(dbp, NULL, name, subdb, newname);
 
 err:	if (handle_check)
-		__db_rep_exit(dbenv);
+		__env_db_rep_exit(dbenv);
 
 	return (ret);
 }
@@ -325,7 +324,7 @@ __db_subdb_rename(dbp, txn, name, subdb, newname)
 		goto err;
 	memcpy(dbp->fileid, ((DBMETA *)meta)->uid, DB_FILE_ID_LEN);
 	if ((ret = __fop_lock_handle(dbenv,
-	    dbp, mdbp->lid, DB_LOCK_WRITE, NULL, 0)) != 0)
+	    dbp, mdbp->lid, DB_LOCK_WRITE, NULL, NOWAIT_FLAG(txn))) != 0)
 		goto err;
 
 	ret = __memp_fput(mdbp->mpf, meta, 0);
@@ -346,7 +345,7 @@ err:
 		ret = t_ret;
 
 	if (mdbp != NULL &&
-	    (t_ret = __db_close(mdbp, txn, 0)) != 0 && ret == 0)
+	    (t_ret = __db_close(mdbp, txn, DB_NOSYNC)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);

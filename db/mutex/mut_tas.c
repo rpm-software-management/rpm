@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: mut_tas.c,v 11.44 2004/09/15 19:14:49 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: mut_tas.c,v 11.40 2003/05/06 14:25:33 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -39,7 +37,11 @@ __db_tas_mutex_init(dbenv, mutexp, flags)
 	u_int32_t save;
 
 	/* Check alignment. */
-	DB_ASSERT(((db_alignp_t)mutexp & (MUTEX_ALIGN - 1)) == 0);
+	if ((uintptr_t)mutexp & (MUTEX_ALIGN - 1)) {
+		__db_err(dbenv,
+		    "__db_tas_mutex_init: mutex not appropriately aligned");
+		return (EINVAL);
+	}
 
 	/*
 	 * The only setting/checking of the MUTEX_MPOOL flag is in the mutex
@@ -115,7 +117,16 @@ relock:
 #ifdef HAVE_MUTEX_S390_CC_ASSEMBLY
 		tsl_t zero = 0;
 #endif
-		if (!MUTEX_SET(&mutexp->tas)) {
+		if (
+#ifdef MUTEX_SET_TEST
+		/*
+		 * If using test-and-set mutexes, and we know the "set" value,
+		 * we can avoid interlocked instructions since they're unlikely
+		 * to succeed.
+		 */
+		mutexp->tas ||
+#endif
+		!MUTEX_SET(&mutexp->tas)) {
 			/*
 			 * Some systems (notably those with newer Intel CPUs)
 			 * need a small pause here. [#6975]

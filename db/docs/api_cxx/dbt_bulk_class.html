@@ -1,23 +1,22 @@
-<!--$Id: dbt_bulk_class.so,v 1.14 2003/11/20 03:37:41 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: dbt_bulk_class.so,v 1.15 2004/08/13 03:38:56 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: Bulk Retrieval API</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>Bulk Retrieval API</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -73,9 +72,8 @@ to any access method.</p>
 <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a>
 flag.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dbt</b><dd>
-The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<dl compact>
+<dt><b>dbt</b><dd>The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
 <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE">DB_MULTIPLE</a>
 flag.
 </dl>
@@ -87,9 +85,8 @@ together yield the next data item in the original bulk retrieval buffer.</p>
 <p>The DbMultipleDataIterator.next method returns false if no more data are
 available, and true otherwise.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>data</b><dd>
-The <b>data</b> parameter is a <a href="../api_cxx/dbt_class.html">Dbt</a> that will be filled in with
+<dl compact>
+<dt><b>data</b><dd>The <b>data</b> parameter is a <a href="../api_cxx/dbt_class.html">Dbt</a> that will be filled in with
 a reference to a buffer, a size, and an offset that together yield the
 next data item in the original bulk retrieval buffer.
 </dl>
@@ -102,9 +99,8 @@ belonging to the Btree or Hash access methods.</p>
 <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
 flag.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dbt</b><dd>
-The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<dl compact>
+<dt><b>dbt</b><dd>The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
 <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
 flag.
 </dl>
@@ -119,13 +115,11 @@ available, and true otherwise.</p>
 <p>The DbMultipleKeyDataIterator.next method returns false if no more data
 are available, and true otherwise.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>key</b><dd>
-The <b>key</b> parameter will be filled in with a reference to a buffer,
+<dl compact>
+<dt><b>key</b><dd>The <b>key</b> parameter will be filled in with a reference to a buffer,
 a size, and an offset that yields the next key item in the original bulk
 retrieval buffer.
-<p><dt><b>data</b><dd>
-The <b>data</b> parameter will be filled in with a reference to a buffer,
+<dt><b>data</b><dd>The <b>data</b> parameter will be filled in with a reference to a buffer,
 a size, and an offset that yields the next data item in the original bulk
 retrieval buffer.
 </dl>
@@ -138,9 +132,8 @@ Queue access methods.</p>
 <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
 flag.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>dbt</b><dd>
-The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
+<dl compact>
+<dt><b>dbt</b><dd>The <b>dbt</b> parameter is a data <a href="../api_cxx/dbt_class.html">Dbt</a> returned by the call to
 <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> that used the <a href="../api_cxx/dbc_get.html#DB_MULTIPLE_KEY">DB_MULTIPLE_KEY</a>
 flag.
 </dl>
@@ -153,13 +146,11 @@ and data item in the original bulk retrieval buffer.
 <p>The DbMultipleRecnoDataIterator.next method returns false if no more
 data are available, and true otherwise.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>key</b><dd>
-The <b>key</b> parameter will be filled in with a reference to a
+<dl compact>
+<dt><b>key</b><dd>The <b>key</b> parameter will be filled in with a reference to a
 buffer, a size, and an offset that yields the next key item in the
 original bulk retrieval buffer.
-<p><dt><b>data</b><dd>
-The <b>data</b> parameter will be filled in with a reference to a
+<dt><b>data</b><dd>The <b>data</b> parameter will be filled in with a reference to a
 buffer, a size, and an offset that yields the next data item in the
 original bulk retrieval buffer.
 </dl>
@@ -167,6 +158,6 @@ original bulk retrieval buffer.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

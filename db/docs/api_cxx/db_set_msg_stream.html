@@ -1,0 +1,64 @@
+<!--$Id: db_set_msg_stream.so,v 1.1 2004/07/14 19:30:39 bostic Exp $-->
+<!--$Id: env_set_msg_stream.so,v 10.4 2004/08/13 03:38:57 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: Db::set_message_stream</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>Db::set_message_stream</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+void Db::set_message_stream(class ostream*);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: Db::set_message_stream</h3>
+<p>There are interfaces in the Berkeley DB library which either directly output
+informational messages or statistical information, or configure the
+library to output such messages when performing other operations, for
+example, <a href="../api_cxx/env_set_verbose.html">DbEnv::set_verbose</a> and <a href="../api_cxx/env_stat.html">DbEnv::stat_print</a>.</p>
+<p>The <a href="../api_cxx/env_set_msg_stream.html">DbEnv::set_message_stream</a> and
+Db::set_message_stream methods are used to display these messages for
+the application.  In this case, the message will include a trailing
+&lt;newline&gt; character.</p>
+<p>Setting <b>stream</b> to NULL unconfigures the interface.</p>
+<p>Alternatively, you can use the <a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a> and
+<a href="../api_cxx/db_set_msgfile.html">Db::set_msgfile</a> methods to display the messages via a C library FILE *,
+or the <a href="../api_cxx/env_set_msgcall.html">DbEnv::set_msgcall</a> and <a href="../api_cxx/db_set_msgcall.html">Db::set_msgcall</a> methods to
+capture the additional error information in a way that does not use
+either output streams or C library FILE *'s.  You should not mix these
+approaches.</p>
+<p>For <a href="../api_cxx/db_class.html">Db</a> handles opened inside of Berkeley DB environments, calling the
+Db::set_message_stream method affects the entire environment and is equivalent to calling
+the <a href="../api_cxx/env_set_msg_stream.html">DbEnv::set_message_stream</a> method.</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>stream</b><dd>The <b>stream</b> parameter is the application-specified output stream to
+be used for additional message information.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/db_class.html">Db</a>
+<h3>See Also</h3>
+<a href="../api_cxx/db_list.html">Databases and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+</body>
+</html>

@@ -6,7 +6,7 @@
 
  All comments/suggestions/problems are welcome
 
-     Copyright (c) 1997-2003 Paul Marquess. All rights reserved.
+     Copyright (c) 1997-2004 Paul Marquess. All rights reserved.
      This program is free software; you can redistribute it and/or
      modify it under the same terms as Perl itself.
 
@@ -60,9 +60,9 @@ extern "C" {
 #undef __attribute__
 
 #ifdef USE_PERLIO
-#    define GetFILEptr(sv) PerlIO_findFILE(IoOFP(sv_2io(sv)))
+#    define GetFILEptr(sv) PerlIO_findFILE(IoIFP(sv_2io(sv)))
 #else
-#    define GetFILEptr(sv) IoOFP(sv_2io(sv))
+#    define GetFILEptr(sv) IoIFP(sv_2io(sv))
 #endif
 
 #include <db.h>
@@ -119,6 +119,10 @@ extern "C" {
 
 #if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 2)
 #  define AT_LEAST_DB_4_2
+#endif
+
+#if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+#  define AT_LEAST_DB_4_3
 #endif
 
 #ifdef __cplusplus
@@ -199,7 +203,7 @@ typedef struct {
 	int		Status ;
 	/* char		ErrBuff[1000] ; */
 	SV *		ErrPrefix ;
-	FILE *		ErrHandle ;
+	SV *		ErrHandle ;
 	DB_ENV *	Env ;
 	int		open_dbs ;
 	int		TxnMgrStatus ;
@@ -481,6 +485,8 @@ hash_delete(char * hash, char * key);
 
 #define dieIfEnvOpened(e, m) if (e->opened) softCrash("Cannot call method BerkeleyDB::Env::%s after environment has been opened", m);	
 
+#define isSTDOUT_ERR(f) ((f) == stdout || (f) == stderr)
+
 /* Internal Global Data */
 static db_recno_t Value ;
 static db_recno_t zero = 0 ;
@@ -516,7 +522,7 @@ my_strdup(const char *s)
         return NULL ;
 
     {
-        MEM_SIZE l = strlen(s);
+        MEM_SIZE l = strlen(s) + 1;
         char *s1 = (char *)safemalloc(l);
 
         Copy(s, s1, (MEM_SIZE)l, char);
@@ -690,6 +696,8 @@ destroyDB(BerkeleyDB db)
 {
     dTHR;
     if (! PL_dirty && db->active) {
+	if (db->parent_env && db->parent_env->open_dbs)
+	    -- db->parent_env->open_dbs ;
       	-- db->open_cursors ;
 	((db->dbp)->close)(db->dbp, 0) ;
     }
@@ -1057,7 +1065,8 @@ static int
 associate_cb(DB_callback const DBT * pkey, const DBT * pdata, DBT * skey)
 {
     dSP ;
-    char * pk_dat, * pd_dat, *sk_dat ;
+    char * pk_dat, * pd_dat ;
+    /* char *sk_dat ; */
     int retval ;
     int count ;
     SV * skey_SV ;
@@ -1130,7 +1139,11 @@ associate_cb(DB_callback const DBT * pkey, const DBT * pdata, DBT * skey)
 #endif /* AT_LEAST_DB_3_3 */
 
 static void
+#ifdef AT_LEAST_DB_4_3
+db_errcall_cb(const DB_ENV* dbenv, const char * db_errpfx, const char * buffer)
+#else
 db_errcall_cb(const char * db_errpfx, char * buffer)
+#endif
 {
 #if 0
 
@@ -1631,6 +1644,14 @@ open(env, db_home=NULL, flags=0, mode=0777)
     OUTPUT:
         RETVAL
 
+bool
+cds_enabled(env)
+	BerkeleyDB::Env env
+	CODE:
+	    RETVAL = env->cds_enabled ;
+	OUTPUT:
+	    RETVAL
+
 
 int
 set_encrypt(env, passwd, flags)
@@ -1652,9 +1673,10 @@ set_encrypt(env, passwd, flags)
 
 
 BerkeleyDB::Env::Raw
-_db_appinit(self, ref)
+_db_appinit(self, ref, errfile=NULL)
 	char *		self
 	SV * 		ref
+	SV * 		errfile 
 	CODE:
 	{
 	    HV *	hash ;
@@ -1662,13 +1684,13 @@ _db_appinit(self, ref)
 	    char *	enc_passwd = NULL ;
 	    int		enc_flags = 0 ;
 	    char *	home = NULL ;
-	    char *	errfile = NULL ;
 	    char * 	server = NULL ;
 	    char **	config = NULL ;
 	    int		flags = 0 ;
 	    int		setflags = 0 ;
 	    int		cachesize = 0 ;
 	    int		lk_detect = 0 ;
+	    long	shm_key = 0 ;
 	    SV *	errprefix = NULL;
 	    DB_ENV *	env ;
 	    int status ;
@@ -1685,11 +1707,14 @@ _db_appinit(self, ref)
 	    SetValue_pv(server,    "Server", char *) ;
 	    SetValue_iv(cachesize, "Cachesize") ;
 	    SetValue_iv(lk_detect, "LockDetect") ;
+	    SetValue_iv(shm_key,   "SharedMemKey") ;
 #ifndef AT_LEAST_DB_3_2
 	    if (setflags)
 	        softCrash("-SetFlags needs Berkeley DB 3.x or better") ;
 #endif /* ! AT_LEAST_DB_3 */
 #ifndef AT_LEAST_DB_3_1
+	    if (shm_key)
+	        softCrash("-SharedMemKey needs Berkeley DB 3.1 or better") ;
 	    if (server)
 	        softCrash("-Server needs Berkeley DB 3.1 or better") ;
 #endif /* ! AT_LEAST_DB_3_1 */
@@ -1723,29 +1748,33 @@ _db_appinit(self, ref)
 	        Trace(("copying errprefix\n" )) ;
 		RETVAL->ErrPrefix = newSVsv(errprefix) ;
 		SvPOK_only(RETVAL->ErrPrefix) ;
-	    }
+	    } 
 	    if (RETVAL->ErrPrefix)
 	        RETVAL->Env->db_errpfx = SvPVX(RETVAL->ErrPrefix) ;
 
-	    SetValue_pv(errfile,      "ErrFile", char *) ;
-	    if (errfile) {
-	    	RETVAL->ErrHandle = env->db_errfile = fopen(errfile, "w");
-	    	if (RETVAL->ErrHandle == NULL)
-		    croak("Cannot open file %s: %s\n", errfile,  Strerror(errno));
+	    if (SvGMAGICAL(errfile))
+		    mg_get(errfile);
+	    if (SvOK(errfile)) {
+	        FILE * ef = GetFILEptr(errfile) ;
+	    	if (! ef)
+		    croak("Cannot open file ErrFile", Strerror(errno));
+		RETVAL->ErrHandle = newSVsv(errfile) ;
+	    	env->db_errfile = ef;
 	    }
 	    SetValue_iv(env->db_verbose, "Verbose") ;
 	    env->db_errcall = db_errcall_cb ;
 	    RETVAL->active = TRUE ;
 	    RETVAL->opened = TRUE;
-	    RETVAL->cds_enabled = (flags & DB_INIT_CDB != 0 ? TRUE : FALSE) ;
+	    RETVAL->cds_enabled = ((flags & DB_INIT_CDB) != 0 ? TRUE : FALSE) ;
 	    status = db_appinit(home, config, env, flags) ;
 	    printf("  status = %d errno %d \n", status, errno) ;
 	    Trace(("  status = %d env %d Env %d\n", status, RETVAL, env)) ;
 	    if (status == 0)
 	        hash_store_iv("BerkeleyDB::Term::Env", (char *)RETVAL, 1) ;
 	    else {
+
                 if (RETVAL->ErrHandle)
-                    fclose(RETVAL->ErrHandle) ;
+                    SvREFCNT_dec(RETVAL->ErrHandle) ;
                 if (RETVAL->ErrPrefix)
                     SvREFCNT_dec(RETVAL->ErrPrefix) ;
                 Safefree(RETVAL->Env) ;
@@ -1767,6 +1796,13 @@ _db_appinit(self, ref)
 #ifdef AT_LEAST_DB_3_3
 	  env->set_alloc(env, safemalloc, MyRealloc, safefree) ;
 #endif
+#ifdef AT_LEAST_DB_3_1
+	  if (status == 0 && shm_key) {
+	      status = env->set_shm_key(env, shm_key) ;
+	      Trace(("set_shm_key [%d] returned %s\n", shm_key,
+			my_db_strerror(status)));
+	  }
+#endif	  
 	  if (status == 0 && cachesize) {
 	      status = env->set_cachesize(env, 0, cachesize, 0) ;
 	      Trace(("set_cachesize [%d] returned %s\n",
@@ -1827,18 +1863,21 @@ _db_appinit(self, ref)
 	    if (RETVAL->ErrPrefix)
 	        env->set_errpfx(env, SvPVX(RETVAL->ErrPrefix)) ;
 
-	    SetValue_pv(errfile,      "ErrFile", char *) ;
-	    if (errfile) {
-	    	RETVAL->ErrHandle = fopen(errfile, "w");
-	    	if (RETVAL->ErrHandle == NULL)
-		    croak("Cannot open file %s: %s\n", errfile,  Strerror(errno));
-	    	env->set_errfile(env, RETVAL->ErrHandle) ;
+	    if (SvGMAGICAL(errfile))
+		    mg_get(errfile);
+	    if (SvOK(errfile)) {
+	        FILE * ef = GetFILEptr(errfile);
+	    	if (! ef)
+		    croak("Cannot open file ErrFile", Strerror(errno));
+		RETVAL->ErrHandle = newSVsv(errfile) ;
+	    	env->set_errfile(env, ef) ;
+
 	    }
 
 	    SetValue_iv(mode, "Mode") ;
 	    env->set_errcall(env, db_errcall_cb) ;
 	    RETVAL->active = TRUE ;
-	    RETVAL->cds_enabled = (flags & DB_INIT_CDB != 0 ? TRUE : FALSE) ;
+	    RETVAL->cds_enabled = ((flags & DB_INIT_CDB) != 0 ? TRUE : FALSE) ; 
 #ifdef IS_DB_3_0_x
 	    status = (env->open)(env, home, config, flags, mode) ;
 #else /* > 3.0 */
@@ -1853,7 +1892,7 @@ _db_appinit(self, ref)
 	  else {
 	      (env->close)(env, 0) ;
               if (RETVAL->ErrHandle)
-                  fclose(RETVAL->ErrHandle) ;
+                  SvREFCNT_dec(RETVAL->ErrHandle) ;
               if (RETVAL->ErrPrefix)
                   SvREFCNT_dec(RETVAL->ErrPrefix) ;
               Safefree(RETVAL) ;
@@ -2074,6 +2113,8 @@ status(env)
 	OUTPUT:
 	    RETVAL
 
+
+
 DualType
 db_appexit(env)
         BerkeleyDB::Env 	env
@@ -2111,7 +2152,7 @@ _DESTROY(env)
 	      (env->Env->close)(env->Env, 0) ;
 #endif
           if (env->ErrHandle)
-              fclose(env->ErrHandle) ;
+              SvREFCNT_dec(env->ErrHandle) ;
           if (env->ErrPrefix)
               SvREFCNT_dec(env->ErrPrefix) ;
 #if DB_VERSION_MAJOR == 2
@@ -2134,6 +2175,23 @@ _TxnMgr(env)
 	    /* hash_store_iv("BerkeleyDB::Term::TxnMgr", (char *)txn, 1) ; */
 	OUTPUT:
 	    RETVAL
+
+int
+get_shm_key(env, id)
+        BerkeleyDB::Env  env
+	long  		 id = NO_INIT
+	INIT:
+	  ckActive_Database(env->active) ;
+	CODE:
+#ifndef AT_LEAST_DB_4_2
+	    softCrash("$env->get_shm_key needs Berkeley DB 4.2 or better") ;
+#else
+	    RETVAL = env->Env->get_shm_key(env->Env, &id);
+#endif	    
+	OUTPUT:
+	    RETVAL
+	    id
+
 
 int
 set_lg_dir(env, dir)
@@ -2353,10 +2411,14 @@ db_stat(db, flags=0)
 	    softCrash("$db->db_stat for a Hash needs Berkeley DB 3.x or better") ;
 #else
 	    DB_HASH_STAT *	stat ;
+#ifdef AT_LEAST_DB_4_3
+	    db->Status = ((db->dbp)->stat)(db->dbp, db->txn, &stat, flags) ;
+#else        
 #ifdef AT_LEAST_DB_3_3
 	    db->Status = ((db->dbp)->stat)(db->dbp, &stat, flags) ;
 #else
 	    db->Status = ((db->dbp)->stat)(db->dbp, &stat, safemalloc, flags) ;
+#endif
 #endif
 	    if (db->Status == 0) {
 	    	RETVAL = (HV*)sv_2mortal((SV*)newHV()) ;
@@ -2525,10 +2587,14 @@ db_stat(db, flags=0)
 	CODE:
 	{
 	    DB_BTREE_STAT *	stat ;
+#ifdef AT_LEAST_DB_4_3
+	    db->Status = ((db->dbp)->stat)(db->dbp, db->txn, &stat, flags) ;
+#else        
 #ifdef AT_LEAST_DB_3_3
 	    db->Status = ((db->dbp)->stat)(db->dbp, &stat, flags) ;
 #else
 	    db->Status = ((db->dbp)->stat)(db->dbp, &stat, safemalloc, flags) ;
+#endif
 #endif
 	    if (db->Status == 0) {
 	    	RETVAL = (HV*)sv_2mortal((SV*)newHV()) ;
@@ -2723,10 +2789,14 @@ db_stat(db, flags=0)
 	    softCrash("$db->db_stat for a Queue needs Berkeley DB 3.x or better") ;
 #else /* Berkeley DB 3, or better */
 	    DB_QUEUE_STAT *	stat ;
+#ifdef AT_LEAST_DB_4_3
+	    db->Status = ((db->dbp)->stat)(db->dbp, db->txn, &stat, flags) ;
+#else        
 #ifdef AT_LEAST_DB_3_3
 	    db->Status = ((db->dbp)->stat)(db->dbp, &stat, flags) ;
 #else
 	    db->Status = ((db->dbp)->stat)(db->dbp, &stat, safemalloc, flags) ;
+#endif
 #endif
 	    if (db->Status == 0) {
 	    	RETVAL = (HV*)sv_2mortal((SV*)newHV()) ;
@@ -2946,17 +3016,6 @@ ArrayOffset(db)
 #else
 	    RETVAL = 0 ;
 #endif /* ALLOW_RECNO_OFFSET */
-	OUTPUT:
-	    RETVAL
-
-bool
-cds_available()
-	CODE:
-#ifndef AT_LEAST_DB_2
-	    RETVAL = TRUE;
-#else
-	    RETVAL = FALSE;
-#endif	    
 	OUTPUT:
 	    RETVAL
 

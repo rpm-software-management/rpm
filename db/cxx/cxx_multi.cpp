@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: cxx_multi.cpp,v 1.4 2004/01/28 03:35:56 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: cxx_multi.cpp,v 1.3 2003/02/22 01:25:43 merrells Exp $";
-#endif /* not lint */
 
 #include "db_cxx.h"
 

@@ -1,31 +1,30 @@
-<!--$Id: rep_elect.so,v 1.18 2003/11/08 19:17:47 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: rep_elect.so,v 1.21 2004/09/07 15:37:41 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;rep_elect</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;rep_elect</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
 #include &lt;db.h&gt;
 <p>
 int
-DB_ENV-&gt;rep_elect(DB_ENV *env, int nsites,
-    int priority, u_int32_t timeout, int *envid);
+DB_ENV-&gt;rep_elect(DB_ENV *env, int nsites, int nvotes,
+    int priority, u_int32_t timeout, int *envid, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;rep_elect</h3>
@@ -39,41 +38,41 @@ selected master, in accordance with the results of this election.</p>
 <p>The thread of control that calls the DB_ENV-&gt;rep_elect method must not be the
 thread of control that processes incoming messages; processing the
 incoming messages is necessary to successfully complete an election.</p>
-<p>The DB_ENV-&gt;rep_elect method
-returns a non-zero error value on failure
-and 0 on success.
-</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>envid</b><dd>
-The <b>envid</b> parameter references memory into which
+<dl compact>
+<dt><b>envid</b><dd>The <b>envid</b> parameter references memory into which
  the newly elected master's ID is copied.
-<p><dt><b>nsites</b><dd>
-The <b>nsites</b> parameter indicates the number of environments that
+<dt><b>nsites</b><dd>The <b>nsites</b> parameter indicates the number of environments that
 the application believes are in the replication group.  This number is
 used by Berkeley DB to avoid having two masters active simultaneously, even
 in the case of a network partition.  During an election, a new master
-cannot be elected unless more than half of <b>nsites</b> agree on
-the new master.  Thus, in the face of a network partition, the side of
-the partition with more than half the environments will elect a new
-master and continue, while the environments communicating with fewer
-than half the other environments will fail to find a new master.
-<p><dt><b>priority</b><dd>
-The <b>priority</b> parameter is the priority of this environment.  It
+cannot be elected unless more than half of <b>nsites</b> agree on the
+new master.  Thus, in the face of a network partition, the side of the
+partition with more than half the environments will elect a new master
+and continue, while the environments communicating with fewer than half
+the other environments will fail to find a new master.
+<dt><b>nvotes</b><dd>The <b>nvotes</b> parameter indicates the number of votes required by
+the application to successfully elect a new master.  It must be a
+positive integer, no greater than <b>nsites</b>, or 0 if the election
+should use a simple majority of the <b>nsites</b> value as the
+requirement.  A warning is given if half or fewer votes are required to
+win an election as that can potentially lead to multiple masters in the
+face of a network partition.
+<dt><b>priority</b><dd>The <b>priority</b> parameter is the priority of this environment.  It
 must be a positive integer, or 0 if this environment is not permitted
 to become a master (see <a href="../ref/rep/pri.html">Replication
 environment priorities</a> for more information).
-<p><dt><b>timeout</b><dd>
-The <b>timeout</b> parameter specifies a timeout period for an election.
+<dt><b>timeout</b><dd>The <b>timeout</b> parameter specifies a timeout period for an election.
 If the election has not completed after <b>timeout</b> microseconds, the
 election will fail.
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
 </dl>
-<a name="3"><!--meow--></a>
+<a name="2"><!--meow--></a>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;rep_elect method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>DB_REP_UNAVAIL<dd>The replication group was unable to elect a master, or was unable to
+<dl compact>
+<dt>DB_REP_UNAVAIL<dd>The replication group was unable to elect a master, or was unable to
 complete the election in the specified <b>timeout</b> period.
 </dl>
 <hr size=1 noshade>
@@ -85,6 +84,6 @@ complete the election in the specified <b>timeout</b> period.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

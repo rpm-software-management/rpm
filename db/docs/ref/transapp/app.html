@@ -1,12 +1,12 @@
-<!--$Id: app.so,v 10.8 2003/01/07 20:02:51 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: app.so,v 10.11 2004/10/13 19:38:47 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Application structure</title>
+<title>Berkeley DB Reference Guide: Architecting Transactional Data Store applications</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -14,7 +14,7 @@
 <td align=right><a href="../transapp/term.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/env_open.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h3 align=center>Application structure</h3>
+<h3 align=center>Architecting Transactional Data Store applications</h3>
 <p>When building transactionally protected applications, there are some
 special issues that must be considered.  The most important one is that
 if any thread of control exits for any reason while holding Berkeley DB
@@ -27,15 +27,14 @@ locks.
 <li>Clean up any partially completed operations that may have left a
 database in an inconsistent or corrupted state.
 </ul>
-<p>Complicating this problem is the fact that the Berkeley DB library itself
-cannot determine whether recovery is required; the application itself
-<b>must</b> make that decision.  A further complication is that
-recovery must be single-threaded; that is, one thread of control or
-process must perform recovery before any other thread of control or
-processes attempts to create or join the Berkeley DB environment.</p>
+<p>The Berkeley DB library cannot determine whether recovery is required; the
+application must make that decision.  Furthermore, recovery must be
+single-threaded; that is, one thread of control or process must perform
+recovery before any other thread of control or process attempts to join
+the Berkeley DB environment.</p>
 <p>There are two approaches to handling this problem:</p>
-<p><dl compact>
-<p><dt>The hard way:<dd>An application can track its own state carefully enough that it knows
+<dl compact>
+<dt>The hard way:<dd>An application can track its own state carefully enough that it knows
 when recovery needs to be performed.  Specifically, the rule to use is
 that recovery must be performed before using a Berkeley DB environment any
 time the threads of control previously using the Berkeley DB environment did
@@ -54,7 +53,7 @@ aborted, or <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a> method was
 <a href="../../api_c/env_class.html">DB_ENV</a> handle.  In addition, at least one transaction checkpoint
 must be performed after all existing transactions have been committed
 or aborted.</p>
-<p><dt>The easy way:<dd>It greatly simplifies matters that recovery may be performed regardless
+<dt>The easy way:<dd>It greatly simplifies matters that recovery may be performed regardless
 of whether recovery strictly needs to be performed; that is, it is not
 an error to run recovery on a database for which no recovery is
 necessary.  Because of this fact, it is almost invariably simpler to
@@ -125,6 +124,6 @@ be as simple and well-tested as possible because there is no recourse
 if it fails.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/term.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/env_open.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

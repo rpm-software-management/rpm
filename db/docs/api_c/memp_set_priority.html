@@ -1,23 +1,22 @@
-<!--$Id: memp_set_priority.so,v 10.19 2003/11/08 19:17:41 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: memp_set_priority.so,v 10.22 2004/09/28 15:04:21 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_MPOOLFILE-&gt;set_priority</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_MPOOLFILE-&gt;set_priority</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,7 +30,6 @@ DB_MPOOLFILE-&gt;get_priority(DB_MPOOLFILE *mpf, DB_CACHE_PRIORITY *priorityp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_MPOOLFILE-&gt;set_priority</h3>
-<a name="3"><!--meow--></a>
 <p>Set the cache priority for pages from the specified file.  The priority
 of a page biases the replacement algorithm to be more or less likely to
 discard a page when space is needed in the buffer pool.  The bias is
@@ -48,12 +46,11 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>priority</b><dd>
-The <b>priority</b> parameter must be set to one of the following
+<dl compact>
+<dt><b>priority</b><dd>The <b>priority</b> parameter must be set to one of the following
 values:
-<p><dl compact>
-<p><dt><a name="DB_PRIORITY_VERY_LOW">DB_PRIORITY_VERY_LOW</a><dd>The lowest priority: pages are the most likely to be discarded.
+<dl compact>
+<dt><a name="DB_PRIORITY_VERY_LOW">DB_PRIORITY_VERY_LOW</a><dd>The lowest priority: pages are the most likely to be discarded.
 <dt><a name="DB_PRIORITY_LOW">DB_PRIORITY_LOW</a><dd>The next lowest priority.
 <dt><a name="DB_PRIORITY_DEFAULT">DB_PRIORITY_DEFAULT</a><dd>The default priority.
 <dt><a name="DB_PRIORITY_HIGH">DB_PRIORITY_HIGH</a><dd>The next highest priority.
@@ -70,9 +67,8 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>priorityp</b><dd>
-The DB_MPOOLFILE-&gt;get_priority method returns  the
+<dl compact>
+<dt><b>priorityp</b><dd>The DB_MPOOLFILE-&gt;get_priority method returns  the
 cache priority in <b>priorityp</b>.
 </dl>
 <hr size=1 noshade>
@@ -84,6 +80,6 @@ cache priority in <b>priorityp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

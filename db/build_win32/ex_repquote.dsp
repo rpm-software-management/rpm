@@ -52,7 +52,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 Release/libdb42.lib ws2_32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"libcmt"
+# ADD LINK32 Release/libdb43.lib ws2_32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"libcmt"
 
 !ELSEIF  "$(CFG)" == "ex_repquote - Win32 Debug"
 
@@ -76,7 +76,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 Debug/libdb42d.lib ws2_32.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"libcmtd" /fixed:no
+# ADD LINK32 Debug/libdb43d.lib ws2_32.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /nodefaultlib:"libcmtd" /fixed:no
 
 !ELSEIF  "$(CFG)" == "ex_repquote - Win32 Release Static"
 
@@ -100,8 +100,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 Release_static/libdb42.lib ws2_32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 Release_static/libdb42s.lib ws2_32.lib /nologo /subsystem:console /machine:I386
+# ADD BASE LINK32 Release_static/libdb43.lib ws2_32.lib /nologo /subsystem:console /machine:I386
+# ADD LINK32 Release_static/libdb43s.lib ws2_32.lib /nologo /subsystem:console /machine:I386
 
 !ELSEIF  "$(CFG)" == "ex_repquote - Win32 Debug Static"
 
@@ -125,8 +125,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 Debug_static/libdb42d.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /fixed:no
-# ADD LINK32 Debug_static/libdb42sd.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /fixed:no
+# ADD BASE LINK32 Debug_static/libdb43d.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /fixed:no
+# ADD LINK32 Debug_static/libdb43sd.lib ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /pdb:none /debug /machine:I386 /fixed:no
 
 !ENDIF 
 

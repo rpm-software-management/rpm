@@ -1,23 +1,22 @@
-<!--$Id: txn_begin.so,v 10.69 2003/11/08 19:17:51 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: txn_begin.so,v 10.72 2004/08/18 02:31:21 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;txn_begin</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;txn_begin</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,8 +30,7 @@ DB_ENV-&gt;txn_begin(DB_ENV *env,
 <h3>Description: DB_ENV-&gt;txn_begin</h3>
 <p>The DB_ENV-&gt;txn_begin method creates a new transaction in the environment
 and copies a pointer to a <a href="../api_c/txn_class.html">DB_TXN</a> that uniquely identifies it into
-the memory to which <b>tid</b> refers.
-Calling the <a href="../api_c/txn_abort.html">DB_TXN-&gt;abort</a>,
+the memory to which <b>tid</b> refers.  Calling the <a href="../api_c/txn_abort.html">DB_TXN-&gt;abort</a>,
 <a href="../api_c/txn_commit.html">DB_TXN-&gt;commit</a> or <a href="../api_c/txn_discard.html">DB_TXN-&gt;discard</a> methods will discard the returned
 handle.</p>
 <p><b>Note: Transactions may only span threads if they do so serially;
@@ -51,15 +49,18 @@ returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
-<p><dl compact>
-<p><dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>All read operations performed by the transaction may read modified but
+<dl compact>
+<dt><a name="DB_DEGREE_2">DB_DEGREE_2</a><dd>This transaction will have degree 2 isolation.  This provides for cursor
+stability but not repeatable reads.  Data items which have been
+previously read by this transaction may be deleted or modified by other
+transactions before this transaction completes.
+<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>All read operations performed by the transaction may read modified but
 not yet committed data.  Silently ignored if the <a href="../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a>
 flag was not specified when the underlying database was opened.
-<p><dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>Do not synchronously flush the log when this transaction commits or
+<dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>Do not synchronously flush the log when this transaction commits or
 prepares. This means the transaction will exhibit the ACI (atomicity,
 consistency, and isolation) properties, but not D (durability); that is,
 database integrity will be maintained but it is possible that this
@@ -67,11 +68,11 @@ transaction may be undone during recovery.
 <p>This behavior may be set for a Berkeley DB environment using the
 <a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method
 overrides that setting.</p>
-<p><dt><a name="DB_TXN_NOWAIT">DB_TXN_NOWAIT</a><dd>If a lock is unavailable for any Berkeley DB operation performed in the context
+<dt><a name="DB_TXN_NOWAIT">DB_TXN_NOWAIT</a><dd>If a lock is unavailable for any Berkeley DB operation performed in the context
 of this transaction, cause the operation to
 return DB_LOCK_DEADLOCK
 immediately instead of blocking on the lock.
-<p><dt><a name="DB_TXN_SYNC">DB_TXN_SYNC</a><dd>Synchronously flush the log when this transaction commits or prepares.
+<dt><a name="DB_TXN_SYNC">DB_TXN_SYNC</a><dd>Synchronously flush the log when this transaction commits or prepares.
 This means the transaction will exhibit all of the ACID (atomicity,
 consistency, isolation, and durability) properties.
 <p>This behavior is the default for Berkeley DB environments unless the
@@ -79,8 +80,7 @@ consistency, isolation, and durability) properties.
 <a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method
 overrides that setting.</p>
 </dl>
-<p><dt><b>parent</b><dd>
-If the <b>parent</b> parameter is non-NULL, the new transaction will
+<dt><b>parent</b><dd>If the <b>parent</b> parameter is non-NULL, the new transaction will
 be a nested transaction, with the transaction indicated by
 <b>parent</b> as its parent.  Transactions may be nested to any level.
 In the presence of distributed transactions and two-phase commit, only
@@ -90,8 +90,8 @@ specified, should be passed as an parameter to <a href="../api_c/txn_prepare.htm
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;txn_begin method
 may fail and return one of the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>ENOMEM<dd>The maximum number of concurrent transactions has been reached.
+<dl compact>
+<dt>ENOMEM<dd>The maximum number of concurrent transactions has been reached.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -102,6 +102,6 @@ may fail and return one of the following non-zero errors:</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

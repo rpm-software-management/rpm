@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -32,7 +32,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_swap.h,v 11.9 2003/01/08 04:31:32 bostic Exp $
+ * $Id: db_swap.h,v 11.11 2004/01/28 03:36:02 bostic Exp $
  */
 
 #ifndef _DB_SWAP_H_
@@ -44,6 +44,7 @@
  *	P_32_COPY	copy potentially unaligned 4 byte quantities
  *	P_32_SWAP	swap a referenced memory location
  */
+#undef	M_32_SWAP
 #define	M_32_SWAP(a) {							\
 	u_int32_t _tmp;							\
 	_tmp = a;							\
@@ -52,12 +53,14 @@
 	((u_int8_t *)&a)[2] = ((u_int8_t *)&_tmp)[1];			\
 	((u_int8_t *)&a)[3] = ((u_int8_t *)&_tmp)[0];			\
 }
+#undef	P_32_COPY
 #define	P_32_COPY(a, b) {						\
 	((u_int8_t *)b)[0] = ((u_int8_t *)a)[0];			\
 	((u_int8_t *)b)[1] = ((u_int8_t *)a)[1];			\
 	((u_int8_t *)b)[2] = ((u_int8_t *)a)[2];			\
 	((u_int8_t *)b)[3] = ((u_int8_t *)a)[3];			\
 }
+#undef	P_32_SWAP
 #define	P_32_SWAP(a) {							\
 	u_int32_t _tmp;							\
 	P_32_COPY(a, &_tmp);						\
@@ -73,16 +76,19 @@
  *	P_16_COPY	copy potentially unaligned 2 byte quantities
  *	P_16_SWAP	swap a referenced memory location
  */
+#undef	M_16_SWAP
 #define	M_16_SWAP(a) {							\
 	u_int16_t _tmp;							\
 	_tmp = (u_int16_t)a;						\
 	((u_int8_t *)&a)[0] = ((u_int8_t *)&_tmp)[1];			\
 	((u_int8_t *)&a)[1] = ((u_int8_t *)&_tmp)[0];			\
 }
+#undef	P_16_COPY
 #define	P_16_COPY(a, b) {						\
 	((u_int8_t *)b)[0] = ((u_int8_t *)a)[0];			\
 	((u_int8_t *)b)[1] = ((u_int8_t *)a)[1];			\
 }
+#undef	P_16_SWAP
 #define	P_16_SWAP(a) {							\
 	u_int16_t _tmp;							\
 	P_16_COPY(a, &_tmp);						\
@@ -90,10 +96,12 @@
 	((u_int8_t *)a)[1] = ((u_int8_t *)&_tmp)[0];			\
 }
 
+#undef	SWAP32
 #define	SWAP32(p) {							\
 	P_32_SWAP(p);							\
 	(p) += sizeof(u_int32_t);					\
 }
+#undef	SWAP16
 #define	SWAP16(p) {							\
 	P_16_SWAP(p);							\
 	(p) += sizeof(u_int16_t);					\
@@ -104,10 +112,12 @@
  * pointers to the right size memory locations; the portability magic for
  * finding the real system functions isn't worth the effort.
  */
+#undef	DB_HTONL
 #define	DB_HTONL(p) do {						\
 	if (!__db_isbigendian())					\
 		P_32_SWAP(p);						\
 } while (0)
+#undef	DB_NTOHL
 #define	DB_NTOHL(p) do {						\
 	if (!__db_isbigendian())					\
 		P_32_SWAP(p);						\

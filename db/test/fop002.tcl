@@ -1,17 +1,20 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2003
+# Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: fop002.tcl,v 1.5 2003/09/08 16:41:06 sandstro Exp $
+# $Id: fop002.tcl,v 1.7 2004/02/25 17:49:05 carol Exp $
 #
 # TEST	fop002.tcl
 # TEST	Test file system operations in the presence of bad permissions.
-proc fop002 { } {
+proc fop002 { method args } {
 	source ./include.tcl
 
+	set args [convert_args $method $args]
+	set omethod [convert_method $method]
+
 	env_cleanup $testdir
-	puts "\nFop002: File system ops and permissions. "
+	puts "\nFop002: ($method) File system ops and permissions."
 	if { $is_windows_test == 1 } {
 		puts "\tSkipping permissions test for Windows platform."
 		return
@@ -22,9 +25,10 @@ proc fop002 { } {
 	set testfile $testdir/a.db
 	set destfile $testdir/b.db
 
-	set db [berkdb_open -create -btree -mode $perms $testfile]
+	set db [eval \
+	    {berkdb_open -create} $omethod $args -mode $perms $testfile]
 	error_check_good db_open [is_valid_db $db] TRUE
-	error_check_good db_put [$db put 1 a] 0
+	error_check_good db_put [$db put 1 [chop_data $method a]] 0
 	error_check_good db_close [$db close] 0
 
 	# Eliminate all read and write permission, and try to execute
@@ -41,12 +45,14 @@ proc fop002 { } {
 		puts "\t\tFop002.a: Testing $op for failure."
 		switch $op {
 			open {
-				test_$op $testfile $rdonly 1
+				test_$op $testfile $omethod $args $rdonly 1
 			}
 			rename {
 				test_$op $testfile $destfile 1
 			}
-			open_create -
+			open_create {
+				test_$op $testfile $omethod $args 1
+			}
 			remove {
 				test_$op $testfile 1
 			}
@@ -64,7 +70,7 @@ proc fop002 { } {
 		puts "\t\tFop002.b: Testing $op for success."
 		switch $op {
 			open {
-				test_$op $testfile $rdonly 0
+				test_$op $testfile $omethod $args $rdonly 0
 			}
 			rename {
 				test_$op $testfile $destfile 0
@@ -99,9 +105,9 @@ proc test_rename { testfile destfile {expectfail 0} } {
 	}
 }
 
-proc test_open_create { testfile {expectfail 0} } {
+proc test_open_create { testfile omethod args {expectfail 0} } {
 	set stat [catch { set db \
-	    [berkdb_open -create -btree $testfile]} res]
+	    [eval {berkdb_open -create} $omethod $args $testfile]} res]
 	if { $expectfail == 1 } {
 		error_check_good open_create_err $res \
 		    "db open:permission denied"
@@ -112,12 +118,12 @@ proc test_open_create { testfile {expectfail 0} } {
 	}
 }
 
-proc test_open { testfile {readonly 0} {expectfail 0} } {
+proc test_open { testfile omethod args {readonly 0} {expectfail 0} } {
 	if { $readonly == 1 } {
 		set stat [catch {set db \
-		    [berkdb_open -rdonly -btree $testfile]} res]
+		    [eval {berkdb_open -rdonly} $omethod $args $testfile]} res]
 	} else {
-		set stat [catch {set db [berkdb_open -btree $testfile]} res]
+		set stat [catch {set db [berkdb_open $omethod $testfile]} res]
 	}
 	if { $expectfail == 1 } {
 		error_check_good open_err $res \

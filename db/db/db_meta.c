@@ -1,7 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  */
 /*
@@ -38,13 +38,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * $Id: db_meta.c,v 11.89 2004/10/05 14:28:33 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: db_meta.c,v 11.77 2003/09/09 16:42:06 ubell Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -108,7 +106,7 @@ __db_new(dbc, type, pagepp)
 	PAGE *h;
 	db_pgno_t last, pgno, newnext;
 	u_int32_t meta_flags;
-	int extend, ret;
+	int extend, ret, t_ret;
 
 	meta = NULL;
 	meta_flags = 0;
@@ -150,8 +148,8 @@ __db_new(dbc, type, pagepp)
 	 */
 	if (DBC_LOGGING(dbc)) {
 		if ((ret = __db_pg_alloc_log(dbp, dbc->txn, &LSN(meta), 0,
-		    &LSN(meta), PGNO_BASE_MD, &lsn, pgno,
-		    (u_int32_t)type, newnext)) != 0)
+		    &LSN(meta), PGNO_BASE_MD, &lsn,
+		    pgno, (u_int32_t)type, newnext, meta->last_pgno)) != 0)
 			goto err;
 	} else
 		LSN_NOT_LOGGED(LSN(meta));
@@ -174,8 +172,12 @@ __db_new(dbc, type, pagepp)
 	if (TYPE(h) != P_INVALID)
 		return (__db_panic(dbp->dbenv, EINVAL));
 
-	(void)__memp_fput(mpf, (PAGE *)meta, DB_MPOOL_DIRTY);
-	(void)__TLPUT(dbc, metalock);
+	ret = __memp_fput(mpf, (PAGE *)meta, DB_MPOOL_DIRTY);
+	meta = NULL;
+	if ((t_ret = __TLPUT(dbc, metalock)) != 0 && ret == 0)
+		ret = t_ret;
+	if (ret != 0)
+		goto err;
 
 	switch (type) {
 		case P_BTREEMETA:
@@ -271,7 +273,8 @@ __db_free(dbc, h)
 				ddbt.size = dbp->pgsize - h->hf_offset;
 				ret = __db_pg_freedata_log(dbp, dbc->txn,
 				     &LSN(meta), 0, h->pgno, &LSN(meta),
-				     PGNO_BASE_MD, &ldbt, meta->free, &ddbt);
+				     PGNO_BASE_MD, &ldbt,
+				     meta->free, meta->last_pgno, &ddbt);
 				break;
 			}
 			goto log;
@@ -288,8 +291,8 @@ __db_free(dbc, h)
 			DB_ASSERT(h->type != P_QAMDATA);
 
 log:			ret = __db_pg_free_log(dbp,
-			    dbc->txn, &LSN(meta), 0, h->pgno,
-			    &LSN(meta), PGNO_BASE_MD, &ldbt, meta->free);
+			    dbc->txn, &LSN(meta), 0, h->pgno, &LSN(meta),
+			    PGNO_BASE_MD, &ldbt, meta->free, meta->last_pgno);
 		}
 		if (ret != 0) {
 			(void)__memp_fput(mpf, (PAGE *)meta, 0);
@@ -300,13 +303,32 @@ log:			ret = __db_pg_free_log(dbp,
 		LSN_NOT_LOGGED(LSN(meta));
 	LSN(h) = LSN(meta);
 
-	P_INIT(h, dbp->pgsize, h->pgno, PGNO_INVALID, meta->free, 0, P_INVALID);
-#ifdef DIAGNOSTIC
-	memset((u_int8_t *)
-	    h + P_OVERHEAD(dbp), CLEAR_BYTE, dbp->pgsize - P_OVERHEAD(dbp));
+#ifdef HAVE_FTRUNCATE
+	if (h->pgno == meta->last_pgno) {
+		if ((ret = __memp_fput(mpf, h, DB_MPOOL_DISCARD)) != 0)
+			goto err;
+		/* Give the page back to the OS. */
+		if ((ret = __memp_ftruncate(mpf, meta->last_pgno, 0)) != 0)
+			goto err;
+		meta->last_pgno--;
+		h = NULL;
+	} else
 #endif
 
-	meta->free = h->pgno;
+	{
+		/*
+		 * If we are not truncating the page then we
+		 * reinitialize it and put it hat the head of
+		 * the free list.
+		 */
+		P_INIT(h, dbp->pgsize,
+		    h->pgno, PGNO_INVALID, meta->free, 0, P_INVALID);
+#ifdef DIAGNOSTIC
+		memset((u_int8_t *) h + P_OVERHEAD(dbp),
+		    CLEAR_BYTE, dbp->pgsize - P_OVERHEAD(dbp));
+#endif
+		meta->free = h->pgno;
+	}
 
 	/* Discard the metadata page. */
 	if ((t_ret =
@@ -317,7 +339,8 @@ log:			ret = __db_pg_free_log(dbp,
 
 	/* Discard the caller's page reference. */
 	dirty_flag = DB_MPOOL_DIRTY;
-err:	if ((t_ret = __memp_fput(mpf, h, dirty_flag)) != 0 && ret == 0)
+err:	if (h != NULL &&
+	    (t_ret = __memp_fput(mpf, h, dirty_flag)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/*
@@ -352,21 +375,6 @@ __db_lprint(dbc)
 	return (0);
 }
 #endif
-
-/*
- * Implement the rules for transactional locking.  We can release the previous
- * lock if we are not in a transaction or COUPLE_ALWAYS is specifed (used in
- * record locking).  If we are doing dirty reads then we can release read locks
- * and down grade write locks.
- */
-#define	DB_PUT_ACTION(dbc, action, lockp)				\
-	    (((action == LCK_COUPLE || action == LCK_COUPLE_ALWAYS) &&	\
-	    LOCK_ISSET(*lockp)) ?					\
-	    (dbc->txn == NULL || action == LCK_COUPLE_ALWAYS ||		\
-	    (F_ISSET(dbc, DBC_DIRTY_READ) &&				\
-	    (lockp)->mode == DB_LOCK_DIRTY)) ? LCK_COUPLE :		\
-	    (F_ISSET((dbc)->dbp, DB_AM_DIRTY) &&			\
-	    (lockp)->mode == DB_LOCK_WRITE) ? LCK_DOWNGRADE : 0 : 0)
 
 /*
  * __db_lget --
@@ -413,6 +421,8 @@ __db_lget(dbc, action, pgno, mode, lkflags, lockp)
 	else
 		dbc->lock.type = DB_PAGE_LOCK;
 	lkflags &= ~DB_LOCK_RECORD;
+	if (action == LCK_ROLLBACK)
+		lkflags |= DB_LOCK_ABORT;
 
 	/*
 	 * If the transaction enclosing this cursor has DB_LOCK_NOWAIT set,
@@ -427,13 +437,46 @@ __db_lget(dbc, action, pgno, mode, lkflags, lockp)
 	has_timeout = F_ISSET(dbc, DBC_RECOVER) ||
 	    (txn != NULL && F_ISSET(txn, TXN_LOCKTIMEOUT));
 
-	switch (DB_PUT_ACTION(dbc, action, lockp)) {
+	/*
+	 * Transactional locking.
+	 * Hold on to the previous read lock only if we are in full isolation.
+	 * COUPLE_ALWAYS indicates we are holding an interior node
+	 * which need not be isolated.
+	 * Downgrade write locks if we are supporting dirty readers.
+	 */
+	if ((action != LCK_COUPLE && action != LCK_COUPLE_ALWAYS) ||
+	    !LOCK_ISSET(*lockp))
+		action = 0;
+	else if (dbc->txn == NULL || action == LCK_COUPLE_ALWAYS)
+		action = LCK_COUPLE;
+	else if (F_ISSET(dbc, DBC_DEGREE_2) && lockp->mode == DB_LOCK_READ)
+		action = LCK_COUPLE;
+	else if (F_ISSET(dbc, DBC_DIRTY_READ) && lockp->mode == DB_LOCK_DIRTY)
+		action = LCK_COUPLE;
+	else if (F_ISSET(dbc->dbp, DB_AM_DIRTY) && lockp->mode == DB_LOCK_WRITE)
+		action = LCK_DOWNGRADE;
+	else
+		action = 0;
+
+	switch (action) {
+	case LCK_DOWNGRADE:
+		if ((ret = __lock_downgrade(
+		    dbenv, lockp, DB_LOCK_WWRITE, 0)) != 0)
+			return (ret);
+		/* FALLTHROUGH */
+
+	default:
+		if (!has_timeout) {
+			ret = __lock_get(dbenv,
+			    dbc->locker, lkflags, &dbc->lock_dbt, mode, lockp);
+			break;
+		}
+
+		/* FALLTHROUGH */
 	case LCK_COUPLE:
-lck_couple:	couple[0].op = has_timeout? DB_LOCK_GET_TIMEOUT : DB_LOCK_GET;
+		couple[0].op = has_timeout? DB_LOCK_GET_TIMEOUT : DB_LOCK_GET;
 		couple[0].obj = &dbc->lock_dbt;
 		couple[0].mode = mode;
-		if (action == LCK_COUPLE_ALWAYS)
-			action = LCK_COUPLE;
 		UMRW_SET(couple[0].timeout);
 		if (has_timeout)
 			couple[0].timeout =
@@ -448,19 +491,10 @@ lck_couple:	couple[0].op = has_timeout? DB_LOCK_GET_TIMEOUT : DB_LOCK_GET;
 		if (ret == 0 || reqp == &couple[1])
 			*lockp = couple[0].lock;
 		break;
-	case LCK_DOWNGRADE:
-		if ((ret = __lock_downgrade(
-		    dbenv, lockp, DB_LOCK_WWRITE, 0)) != 0)
-			return (ret);
-		/* FALL THROUGH */
-	default:
-		if (has_timeout)
-			goto lck_couple;
-		ret = __lock_get(dbenv,
-		    dbc->locker, lkflags, &dbc->lock_dbt, mode, lockp);
-		break;
 	}
 
+	if (txn != NULL && ret == DB_LOCK_DEADLOCK)
+		F_SET(txn, TXN_DEADLOCK);
 	return ((ret == DB_LOCK_NOTGRANTED &&
 	     !F_ISSET(dbenv, DB_ENV_TIME_NOTGRANTED)) ? DB_LOCK_DEADLOCK : ret);
 }
@@ -477,13 +511,28 @@ __db_lput(dbc, lockp)
 	DB_LOCK *lockp;
 {
 	DB_ENV *dbenv;
-	int ret;
+	int action, ret;
+
+	/*
+	 * Transactional locking.
+	 * Hold on to the read locks only if we are in full isolation.
+	 * Downgrade write locks if we are supporting dirty readers.
+	 */
+	if (F_ISSET(dbc->dbp, DB_AM_DIRTY) && lockp->mode == DB_LOCK_WRITE)
+		action = LCK_DOWNGRADE;
+	else if (dbc->txn == NULL)
+		action = LCK_COUPLE;
+	else if (F_ISSET(dbc, DBC_DEGREE_2) && lockp->mode == DB_LOCK_READ)
+		action = LCK_COUPLE;
+	else if (F_ISSET(dbc, DBC_DIRTY_READ) && lockp->mode == DB_LOCK_DIRTY)
+		action = LCK_COUPLE;
+	else
+		action = 0;
 
 	dbenv = dbc->dbp->dbenv;
-
-	switch (DB_PUT_ACTION(dbc, LCK_COUPLE, lockp)) {
+	switch (action) {
 	case LCK_COUPLE:
-		ret = __lock_put(dbenv, lockp);
+		ret = __lock_put(dbenv, lockp, 0);
 		break;
 	case LCK_DOWNGRADE:
 		ret = __lock_downgrade(dbenv, lockp, DB_LOCK_WWRITE, 0);

@@ -1,31 +1,30 @@
-<!--$Id: env_set_errcall.so,v 10.33 2003/11/08 19:17:29 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_errcall.so,v 10.37 2004/10/12 20:00:47 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DB_ENV-&gt;set_errcall</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DB_ENV-&gt;set_errcall</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
 #include &lt;db.h&gt;
 <p>
 void
-DB_ENV-&gt;set_errcall(DB_ENV *dbenv,
-    void (*db_errcall_fcn)(const char *errpfx, char *msg));
+DB_ENV-&gt;set_errcall(DB_ENV *dbenv, void (*db_errcall_fcn)
+    (const DB_ENV *dbenv, const char *errpfx, const char *msg));
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;set_errcall</h3>
@@ -39,6 +38,7 @@ In some cases, when an error occurs, Berkeley DB will call
 <b>db_errcall_fcn</b> with additional error information.  It is up to
 the <b>db_errcall_fcn</b> function to display the error message in an
 appropriate manner.</p>
+<p>Setting <b>db_errcall_fcn</b> to NULL unconfigures the callback interface.</p>
 <p>Alternatively, you can use the <a href="../api_c/db_set_errfile.html">DB-&gt;set_errfile</a> or
 <a href="../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a> methods to display the additional information via
 a C library FILE *.</p>
@@ -48,14 +48,14 @@ as during application debugging.</p>
 <p>The DB_ENV-&gt;set_errcall method may be called at any time during the life of the
 application.</p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>db_errcall_fcn</b><dd>
-The <b>db_errcall_fcn</b> parameter is the application-specified error
-reporting function.  The function takes two parameters:
-<p><dl compact>
-<p><dt><b>errpfx</b><dd>The <b>errpfx</b> parameter is the prefix string (as previously set by
+<dl compact>
+<dt><b>db_errcall_fcn</b><dd>The <b>db_errcall_fcn</b> parameter is the application-specified error
+reporting function.  The function takes three parameters:
+<dl compact>
+<dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment.
+<dt><b>errpfx</b><dd>The <b>errpfx</b> parameter is the prefix string (as previously set by
 <a href="../api_c/db_set_errpfx.html">DB-&gt;set_errpfx</a> or <a href="../api_c/env_set_errpfx.html">DB_ENV-&gt;set_errpfx</a>).
-<p><dt><b>msg</b><dd>The <b>msg</b> parameter is the error message string.
+<dt><b>msg</b><dd>The <b>msg</b> parameter is the error message string.
 </dl>
 </dl>
 <hr size=1 noshade>
@@ -67,6 +67,6 @@ reporting function.  The function takes two parameters:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

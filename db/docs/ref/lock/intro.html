@@ -1,12 +1,12 @@
 <!--$Id: intro.so,v 10.26 2003/10/18 19:16:02 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Berkeley DB and locking</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <a name="2"><!--meow--></a>
@@ -83,25 +83,25 @@ the lock subsystem.  It is the programmatic interface used by the
 <p>The locking subsystem is closed by the call to <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a>.</p>
 <p>Finally, the entire locking subsystem may be discarded using the
 <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method.</p>
-<!--$Id: m4.methods,v 1.1 2002/08/30 20:00:52 bostic Exp $-->
+<!--$Id: m4.methods,v 1.3 2004/08/28 22:28:01 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Locking Subsystem and Related Methods</th><th>Description</th></tr>
-<tr><td><a href="../../api_c/env_set_lk_conflicts.html">DB_ENV-&gt;set_lk_conflicts</a></td><td>Set lock conflicts matrix</td></tr>
-<tr><td><a href="../../api_c/env_set_lk_detect.html">DB_ENV-&gt;set_lk_detect</a></td><td>Set automatic deadlock detection</td></tr>
-<tr><td><a href="../../api_c/env_set_lk_max_lockers.html">DB_ENV-&gt;set_lk_max_lockers</a></td><td>Set maximum number of lockers</td></tr>
-<tr><td><a href="../../api_c/env_set_lk_max_locks.html">DB_ENV-&gt;set_lk_max_locks</a></td><td>Set maximum number of locks</td></tr>
-<tr><td><a href="../../api_c/env_set_lk_max_objects.html">DB_ENV-&gt;set_lk_max_objects</a></td><td>Set maximum number of lock objects</td></tr>
-<tr><td><a href="../../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a></td><td>Set lock and transaction timeout</td></tr>
-<tr><td><a href="../../api_c/lock_detect.html">DB_ENV-&gt;lock_detect</a></td><td>Perform deadlock detection</td></tr>
-<tr><td><a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a></td><td>Acquire a lock</td></tr>
-<tr><td><a href="../../api_c/lock_id.html">DB_ENV-&gt;lock_id</a></td><td>Acquire a locker ID</td></tr>
-<tr><td><a href="../../api_c/lock_id_free.html">DB_ENV-&gt;lock_id_free</a></td><td>Release a locker ID</td></tr>
-<tr><td><a href="../../api_c/lock_put.html">DB_ENV-&gt;lock_put</a></td><td>Release a lock</td></tr>
-<tr><td><a href="../../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a></td><td>Return lock subsystem statistics</td></tr>
-<tr><td><a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a></td><td>Acquire/release locks</td></tr>
+<!--DbEnv::lock_detect--><tr><td><a href="../../api_c/lock_detect.html">DB_ENV-&gt;lock_detect</a></td><td>Perform deadlock detection</td></tr>
+<!--DbEnv::lock_get--><tr><td><a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a></td><td>Acquire a lock</td></tr>
+<!--DbEnv::lock_id--><tr><td><a href="../../api_c/lock_id.html">DB_ENV-&gt;lock_id</a></td><td>Acquire a locker ID</td></tr>
+<!--DbEnv::lock_id_free--><tr><td><a href="../../api_c/lock_id_free.html">DB_ENV-&gt;lock_id_free</a></td><td>Release a locker ID</td></tr>
+<!--DbEnv::lock_put--><tr><td><a href="../../api_c/lock_put.html">DB_ENV-&gt;lock_put</a></td><td>Release a lock</td></tr>
+<!--DbEnv::lock_stat--><tr><td><a href="../../api_c/lock_stat.html">DB_ENV-&gt;lock_stat</a></td><td>Return lock subsystem statistics</td></tr>
+<!--DbEnv::lock_vec--><tr><td><a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a></td><td>Acquire/release locks</td></tr>
+<!--DbEnv::set_lk_conflicts--><tr><td><a href="../../api_c/env_set_lk_conflicts.html">DB_ENV-&gt;set_lk_conflicts</a></td><td>Set lock conflicts matrix</td></tr>
+<!--DbEnv::set_lk_max_detect--><tr><td><a href="../../api_c/env_set_lk_detect.html">DB_ENV-&gt;set_lk_detect</a></td><td>Set automatic deadlock detection</td></tr>
+<!--DbEnv::set_lk_max_lockers--><tr><td><a href="../../api_c/env_set_lk_max_lockers.html">DB_ENV-&gt;set_lk_max_lockers</a></td><td>Set maximum number of lockers</td></tr>
+<!--DbEnv::set_lk_max_locks--><tr><td><a href="../../api_c/env_set_lk_max_locks.html">DB_ENV-&gt;set_lk_max_locks</a></td><td>Set maximum number of locks</td></tr>
+<!--DbEnv::set_lk_max_objects--><tr><td><a href="../../api_c/env_set_lk_max_objects.html">DB_ENV-&gt;set_lk_max_objects</a></td><td>Set maximum number of lock objects</td></tr>
+<!--DbEnv::set_timeout--><tr><td><a href="../../api_c/env_set_timeout.html">DB_ENV-&gt;set_timeout</a></td><td>Set lock and transaction timeout</td></tr>
 </table>
 <table width="100%"><tr><td><br></td><td align=right><a href="../program/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,12 +1,12 @@
-<!--$Id: cursor.so,v 1.11 2002/06/24 14:51:05 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: cursor.so,v 1.12 2004/03/05 21:47:36 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB Reference Guide: Transactional cursors</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
@@ -23,9 +23,9 @@ remember is that a cursor <b>must be closed</b> before the enclosing
 transaction is committed or aborted.</p>
 <p>The following code fragment uses a cursor to store a new key in the cats
 database with four associated data items.  The key is a name.  The data
-items are a company name, an address, and a list of the breeds of cat
-owned.  Each of the data entries is stored as a duplicate data item.
-In this example, transactions are necessary to ensure that either all or none
+items are a company name and a list of the breeds of cat owned.  Each
+of the data entries is stored as a duplicate data item.  In this
+example, transactions are necessary to ensure that either all or none
 of the data items appear in case of system or application failure.</p>
 <blockquote><pre>int
 main(int argc, char *argv)
@@ -164,6 +164,6 @@ retry:	/* Begin the transaction. */
 }</b></pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/read.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/nested.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

@@ -1,14 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2003
+ * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: dbreg.c,v 11.89 2004/09/22 03:43:09 bostic Exp $
  */
-#include "db_config.h"
 
-#ifndef lint
-static const char revid[] = "$Id: dbreg.c,v 11.81 2003/10/27 15:54:31 sue Exp $";
-#endif /* not lint */
+#include "db_config.h"
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -21,6 +20,10 @@ static const char revid[] = "$Id: dbreg.c,v 11.81 2003/10/27 15:54:31 sue Exp $"
 #include "dbinc/log.h"
 #include "dbinc/txn.h"
 #include "dbinc/db_am.h"
+
+static int __dbreg_push_id __P((DB_ENV *, int32_t));
+static int __dbreg_pop_id __P((DB_ENV *, int32_t *));
+static int __dbreg_pluck_id __P((DB_ENV *, int32_t));
 
 /*
  * The dbreg subsystem, as its name implies, registers database handles so
@@ -98,33 +101,33 @@ __dbreg_setup(dbp, name, create_txnid)
 	DB_ENV *dbenv;
 	DB_LOG *dblp;
 	FNAME *fnp;
+	REGINFO *infop;
 	int ret;
 	size_t len;
 	void *namep;
 
 	dbenv = dbp->dbenv;
 	dblp = dbenv->lg_handle;
+	infop = &dblp->reginfo;
 
 	fnp = NULL;
 	namep = NULL;
 
 	/* Allocate an FNAME and, if necessary, a buffer for the name itself. */
-	R_LOCK(dbenv, &dblp->reginfo);
-	if ((ret =
-	    __db_shalloc(dblp->reginfo.addr, sizeof(FNAME), 0, &fnp)) != 0)
+	R_LOCK(dbenv, infop);
+	if ((ret = __db_shalloc(infop, sizeof(FNAME), 0, &fnp)) != 0)
 		goto err;
 	memset(fnp, 0, sizeof(FNAME));
 	if (name != NULL) {
 		len = strlen(name) + 1;
-		if ((ret =
-		    __db_shalloc(dblp->reginfo.addr, len, 0, &namep)) != 0)
+		if ((ret = __db_shalloc(infop, len, 0, &namep)) != 0)
 			goto err;
-		fnp->name_off = R_OFFSET(&dblp->reginfo, namep);
+		fnp->name_off = R_OFFSET(dbenv, infop, namep);
 		memcpy(namep, name, len);
 	} else
 		fnp->name_off = INVALID_ROFF;
 
-	R_UNLOCK(dbenv, &dblp->reginfo);
+	R_UNLOCK(dbenv, infop);
 
 	/*
 	 * Fill in all the remaining info that we'll need later to register
@@ -140,7 +143,7 @@ __dbreg_setup(dbp, name, create_txnid)
 
 	return (0);
 
-err:	R_UNLOCK(dbenv, &dblp->reginfo);
+err:	R_UNLOCK(dbenv, infop);
 	if (ret == ENOMEM)
 		__db_err(dbenv,
     "Logging region out of memory; you may need to increase its size");
@@ -160,10 +163,12 @@ __dbreg_teardown(dbp)
 {
 	DB_ENV *dbenv;
 	DB_LOG *dblp;
+	REGINFO *infop;
 	FNAME *fnp;
 
 	dbenv = dbp->dbenv;
 	dblp = dbenv->lg_handle;
+	infop = &dblp->reginfo;
 	fnp = dbp->log_filename;
 
 	/*
@@ -175,12 +180,11 @@ __dbreg_teardown(dbp)
 
 	DB_ASSERT(fnp->id == DB_LOGFILEID_INVALID);
 
-	R_LOCK(dbenv, &dblp->reginfo);
+	R_LOCK(dbenv, infop);
 	if (fnp->name_off != INVALID_ROFF)
-		__db_shalloc_free(dblp->reginfo.addr,
-		    R_ADDR(&dblp->reginfo, fnp->name_off));
-	__db_shalloc_free(dblp->reginfo.addr, fnp);
-	R_UNLOCK(dbenv, &dblp->reginfo);
+		__db_shalloc_free(infop, R_ADDR(dbenv, infop, fnp->name_off));
+	__db_shalloc_free(infop, fnp);
+	R_UNLOCK(dbenv, infop);
 
 	dbp->log_filename = NULL;
 
@@ -279,7 +283,7 @@ __dbreg_get_id(dbp, txn, idp)
 	memset(&fid_dbt, 0, sizeof(fid_dbt));
 	memset(&r_name, 0, sizeof(r_name));
 	if (fnp->name_off != INVALID_ROFF) {
-		r_name.data = R_ADDR(&dblp->reginfo, fnp->name_off);
+		r_name.data = R_ADDR(dbenv, &dblp->reginfo, fnp->name_off);
 		r_name.size = (u_int32_t)strlen((char *)r_name.data) + 1;
 	}
 	fid_dbt.data = dbp->fileid;
@@ -291,7 +295,7 @@ __dbreg_get_id(dbp, txn, idp)
 		goto err;
 	/*
 	 * Once we log the create_txnid, we need to make sure we never
-	 * log it again (as might happen if this is a replication client 
+	 * log it again (as might happen if this is a replication client
 	 * that later upgrades to a master).
 	 */
 	fnp->create_txnid = TXN_INVALID;
@@ -310,7 +314,7 @@ err:
 	if (ret != 0 && id != DB_LOGFILEID_INVALID) {
 		(void)__dbreg_revoke_id(dbp, 1, id);
 		id = DB_LOGFILEID_INVALID;
-	} 
+	}
 	*idp = id;
 	return (ret);
 }
@@ -390,8 +394,13 @@ cont:	if ((ret = __dbreg_pluck_id(dbenv, id)) != 0)
 	fnp->is_durable = !F_ISSET(dbp, DB_AM_NOT_DURABLE);
 	SH_TAILQ_INSERT_HEAD(&lp->fq, fnp, q, __fname);
 
+	/*
+	 * If we get an error adding the dbentry, revoke the id.
+	 * We void the return value since we want to retain and
+	 * return the original error in ret anyway.
+	 */
 	if ((ret = __dbreg_add_dbentry(dbenv, dblp, dbp, id)) != 0)
-		goto err;
+		(void)__dbreg_revoke_id(dbp, 1, id);
 
 err:	MUTEX_UNLOCK(dbenv, &lp->fq_mutex);
 
@@ -466,12 +475,13 @@ __dbreg_revoke_id(dbp, have_lock, force_id)
  *	Take a dbreg id away from a dbp that we're closing, and log
  * the unregistry.
  *
- * PUBLIC: int __dbreg_close_id __P((DB *, DB_TXN *));
+ * PUBLIC: int __dbreg_close_id __P((DB *, DB_TXN *, u_int32_t));
  */
 int
-__dbreg_close_id(dbp, txn)
+__dbreg_close_id(dbp, txn, op)
 	DB *dbp;
 	DB_TXN *txn;
+	u_int32_t op;
 {
 	DBT fid_dbt, r_name, *dbtp;
 	DB_ENV *dbenv;
@@ -496,7 +506,7 @@ __dbreg_close_id(dbp, txn)
 		dbtp = NULL;
 	else {
 		memset(&r_name, 0, sizeof(r_name));
-		r_name.data = R_ADDR(&dblp->reginfo, fnp->name_off);
+		r_name.data = R_ADDR(dbenv, &dblp->reginfo, fnp->name_off);
 		r_name.size =
 		    (u_int32_t)strlen((char *)r_name.data) + 1;
 		dbtp = &r_name;
@@ -506,7 +516,7 @@ __dbreg_close_id(dbp, txn)
 	fid_dbt.size = DB_FILE_ID_LEN;
 	if ((ret = __dbreg_register_log(dbenv, txn, &r_unused,
 	    F_ISSET(dbp, DB_AM_NOT_DURABLE) ? DB_LOG_NOT_DURABLE : 0,
-	    DBREG_CLOSE, dbtp, &fid_dbt, fnp->id,
+	    op, dbtp, &fid_dbt, fnp->id,
 	    fnp->s_type, fnp->meta_pgno, TXN_INVALID)) != 0)
 		goto err;
 
@@ -514,4 +524,123 @@ __dbreg_close_id(dbp, txn)
 
 err:	MUTEX_UNLOCK(dbenv, &lp->fq_mutex);
 	return (ret);
+}
+
+/*
+ * __dbreg_push_id and __dbreg_pop_id --
+ *	Dbreg ids from closed files are kept on a stack in shared memory
+ * for recycling.  (We want to reuse them as much as possible because each
+ * process keeps open files in an array by ID.)  Push them to the stack and
+ * pop them from it, managing memory as appropriate.
+ *
+ * The stack is protected by the fq_mutex, and in both functions we assume
+ * that this is already locked.
+ */
+static int
+__dbreg_push_id(dbenv, id)
+	DB_ENV *dbenv;
+	int32_t id;
+{
+	DB_LOG *dblp;
+	LOG *lp;
+	REGINFO *infop;
+	int32_t *stack, *newstack;
+	int ret;
+
+	dblp = dbenv->lg_handle;
+	infop = &dblp->reginfo;
+	lp = infop->primary;
+
+	if (lp->free_fid_stack == INVALID_ROFF) {
+		stack = NULL;
+		DB_ASSERT(lp->free_fids_alloced == 0);
+	} else
+		stack = R_ADDR(dbenv, infop, lp->free_fid_stack);
+
+	/* Check if we have room on the stack. */
+	if (lp->free_fids_alloced <= lp->free_fids + 1) {
+		R_LOCK(dbenv, infop);
+		if ((ret = __db_shalloc(infop,
+		    (lp->free_fids_alloced + 20) * sizeof(u_int32_t), 0,
+		    &newstack)) != 0) {
+			R_UNLOCK(dbenv, infop);
+			return (ret);
+		}
+
+		if (stack != NULL) {
+			memcpy(newstack, stack,
+			    lp->free_fids_alloced * sizeof(u_int32_t));
+			__db_shalloc_free(infop, stack);
+		}
+		stack = newstack;
+		lp->free_fid_stack = R_OFFSET(dbenv, infop, stack);
+		lp->free_fids_alloced += 20;
+		R_UNLOCK(dbenv, infop);
+	}
+
+	stack[lp->free_fids++] = id;
+	return (0);
+}
+
+static int
+__dbreg_pop_id(dbenv, id)
+	DB_ENV *dbenv;
+	int32_t *id;
+{
+	DB_LOG *dblp;
+	LOG *lp;
+	int32_t *stack;
+
+	dblp = dbenv->lg_handle;
+	lp = dblp->reginfo.primary;
+
+	/* Do we have anything to pop? */
+	if (lp->free_fid_stack != INVALID_ROFF && lp->free_fids > 0) {
+		stack = R_ADDR(dbenv, &dblp->reginfo, lp->free_fid_stack);
+		*id = stack[--lp->free_fids];
+	} else
+		*id = DB_LOGFILEID_INVALID;
+
+	return (0);
+}
+
+/*
+ * __dbreg_pluck_id --
+ *	Remove a particular dbreg id from the stack of free ids.  This is
+ * used when we open a file, as in recovery, with a specific ID that might
+ * be on the stack.
+ *
+ * Returns success whether or not the particular id was found, and like
+ * push and pop, assumes that the fq_mutex is locked.
+ */
+static int
+__dbreg_pluck_id(dbenv, id)
+	DB_ENV *dbenv;
+	int32_t id;
+{
+	DB_LOG *dblp;
+	LOG *lp;
+	int32_t *stack;
+	u_int i;
+
+	dblp = dbenv->lg_handle;
+	lp = dblp->reginfo.primary;
+
+	/* Do we have anything to look at? */
+	if (lp->free_fid_stack != INVALID_ROFF) {
+		stack = R_ADDR(dbenv, &dblp->reginfo, lp->free_fid_stack);
+		for (i = 0; i < lp->free_fids; i++)
+			if (id == stack[i]) {
+				/*
+				 * Found it.  Overwrite it with the top
+				 * id (which may harmlessly be itself),
+				 * and shorten the stack by one.
+				 */
+				stack[i] = stack[lp->free_fids - 1];
+				lp->free_fids--;
+				return (0);
+			}
+	}
+
+	return (0);
 }

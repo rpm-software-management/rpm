@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb006.tcl,v 11.22 2003/01/08 05:53:00 bostic Exp $
+# $Id: sdb006.tcl,v 11.23 2004/01/28 03:36:29 bostic Exp $
 #
 # TEST	sdb006
 # TEST	Tests intra-subdb join

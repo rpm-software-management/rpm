@@ -1,23 +1,22 @@
-<!--$Id: txn_set_timeout.so,v 10.18 2003/11/08 19:17:52 bostic Exp $-->
-<!--Copyright 1997-2003 by Sleepycat Software, Inc.-->
+<!--$Id: txn_set_timeout.so,v 10.20 2004/08/13 03:39:03 bostic Exp $-->
+<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
 <title>Berkeley DB: DbTxn::set_timeout</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
-<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td>
 <h3>DbTxn::set_timeout</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
-<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
-</td></tr></table>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
 <hr size=1 noshade>
 <tt>
 <h3><pre>
@@ -31,15 +30,12 @@ DbTxn::set_timeout(db_timeout_t timeout, u_int32_t flags);
 <p>The DbTxn::set_timeout method sets timeout values for locks or
 transactions for the specified transaction.</p>
 <p>Timeouts are checked whenever a thread of control blocks on a lock or
-when deadlock detection is performed.  (In the case of
-DB_SET_LOCK_TIMEOUT, the lock is one requested explicitly
-through the Lock subsystem interfaces.  In the case of
-DB_SET_TXN_TIMEOUT, the lock is one requested on behalf of a
-transaction.  In either case, it may be a lock requested by the database
-access methods underlying the application.)  As timeouts are only
-checked when the lock request first blocks or when deadlock detection
-is performed, the accuracy of the timeout depends on how often deadlock
-detection is performed.</p>
+when deadlock detection is performed.  In the case of
+DB_SET_LOCK_TIMEOUT, the timeout is for any single lock request.
+In the case of DB_SET_TXN_TIMEOUT, the timeout is for the life
+of the transaction.  As timeouts are only checked when the lock request
+first blocks or when deadlock detection is performed, the accuracy of
+the timeout depends on how often deadlock detection is performed.</p>
 <p>Timeout values may be specified for the database environment as a whole.
 See <a href="../api_cxx/env_set_timeout.html">DbEnv::set_timeout</a> and for more information.</p>
 <p>The DbTxn::set_timeout method configures operations performed on the underlying
@@ -53,15 +49,13 @@ or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
-<p><dl compact>
-<p><dt><b>flags</b><dd>
-The <b>flags</b> parameter must be set to one of the following values:
-<p><dl compact>
-<p><dt><a name="DB_SET_LOCK_TIMEOUT">DB_SET_LOCK_TIMEOUT</a><dd>Set the timeout value for locks in this transaction.
-<p><dt><a name="DB_SET_TXN_TIMEOUT">DB_SET_TXN_TIMEOUT</a><dd>Set the timeout value for this transaction.
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
+<dl compact>
+<dt><a name="DB_SET_LOCK_TIMEOUT">DB_SET_LOCK_TIMEOUT</a><dd>Set the timeout value for locks in this transaction.
+<dt><a name="DB_SET_TXN_TIMEOUT">DB_SET_TXN_TIMEOUT</a><dd>Set the timeout value for this transaction.
 </dl>
-<p><dt><b>timeout</b><dd>
-The <b>timeout</b> parameter is specified as an unsigned 32-bit number
+<dt><b>timeout</b><dd>The <b>timeout</b> parameter is specified as an unsigned 32-bit number
 of microseconds, limiting the maximum timeout to roughly 71 minutes.  A
 value of 0 disables timeouts for the transaction.
 </dl>
@@ -71,8 +65,8 @@ may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
-<p><dl compact>
-<p><dt>EINVAL<dd>An
+<dl compact>
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -84,6 +78,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2003</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>
 </html>

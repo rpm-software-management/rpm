@@ -1,15 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2003
+ * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
+ *
+ * $Id: os_rw.c,v 11.38 2004/09/17 22:00:32 mjc Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char revid[] = "$Id: os_rw.c,v 11.33 2003/02/16 15:55:06 bostic Exp $";
-#endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
 #include <sys/types.h>
@@ -35,8 +33,9 @@ __os_io(dbenv, op, fhp, pgno, pagesize, buf, niop)
 	int op;
 	DB_FH *fhp;
 	db_pgno_t pgno;
-	size_t pagesize, *niop;
+	u_int32_t pagesize;
 	u_int8_t *buf;
+	size_t *niop;
 {
 	int ret;
 
@@ -108,41 +107,35 @@ __os_read(dbenv, fhp, addr, len, nrp)
 {
 	size_t offset, nr;
 	DWORD count;
-	int ret, retries;
-	BOOL success;
+	int ret;
 	u_int8_t *taddr;
 
-	retries = 0;
+	ret = 0;
+
+	if (DB_GLOBAL(j_read) != NULL) {
+		*nrp = len;
+		if (DB_GLOBAL(j_read)(fhp->fd, addr, len) != (ssize_t)len) {
+			ret = __os_get_errno();
+			__db_err(dbenv, "read: %#lx, %lu: %s",
+			    P_TO_ULONG(addr), (u_long)len, strerror(ret));
+		}
+		return (ret);
+	}
+
+	ret = 0;
 	for (taddr = addr,
 	    offset = 0; offset < len; taddr += nr, offset += nr) {
-retry:		if (DB_GLOBAL(j_read) != NULL) {
-			nr = DB_GLOBAL(j_read)(fhp->fd,
-			    taddr, len - offset);
-			success = (nr >= 0);
-		} else {
-			success = ReadFile(fhp->handle,
-			    taddr, (DWORD)(len - offset), &count, NULL);
-			if (!success)
-				__os_set_errno(__os_win32_errno());
-			else
-				nr = (size_t)count;
-		}
-
-		if (!success) {
-			ret = __os_get_errno();
-			if ((ret == EINTR || ret == EBUSY) &&
-			    ++retries < DB_RETRY)
-				goto retry;
-			__db_err(dbenv, "read: 0x%lx, %lu: %s",
-			    P_TO_ULONG(taddr),
-			    (u_long)len - offset, strerror(ret));
-			return (ret);
-		}
-		if (nr == 0)
+		RETRY_CHK((!ReadFile(fhp->handle,
+		    taddr, (DWORD)(len - offset), &count, NULL)), ret);
+		if (count == 0 || ret != 0)
 			break;
+		nr = (size_t)count;
 	}
 	*nrp = taddr - (u_int8_t *)addr;
-	return (0);
+	if (ret != 0)
+		__db_err(dbenv, "read: 0x%lx, %lu: %s",
+		    P_TO_ULONG(taddr), (u_long)len - offset, strerror(ret));
+	return (ret);
 }
 
 /*
@@ -181,39 +174,33 @@ __os_physwrite(dbenv, fhp, addr, len, nwp)
 {
 	size_t offset, nw;
 	DWORD count;
-	int ret, retries;
-	BOOL success;
+	int ret;
 	u_int8_t *taddr;
 
-	retries = 0;
-	for (taddr = addr,
-	    offset = 0; offset < len; taddr += nw, offset += nw) {
-retry:		if (DB_GLOBAL(j_write) != NULL) {
-			nw = DB_GLOBAL(j_write)(fhp->fd,
-			    taddr, len - offset);
-			success = (nw >= 0);
-		} else {
-			success = WriteFile(fhp->handle,
-			    taddr, (DWORD)(len - offset), &count, NULL);
-			if (!success)
-				__os_set_errno(__os_win32_errno());
-			else
-				nw = (size_t)count;
-		}
-
-		if (!success) {
+	if (DB_GLOBAL(j_write) != NULL) {
+		*nwp = len;
+		if (DB_GLOBAL(j_write)(fhp->fd, addr, len) != (ssize_t)len) {
 			ret = __os_get_errno();
-			if ((ret == EINTR || ret == EBUSY) &&
-			    ++retries < DB_RETRY)
-				goto retry;
-			__db_err(dbenv, "write: 0x%x, %lu: %s", taddr,
-			    (u_long)len-offset, strerror(ret));
-			return (ret);
+			__db_err(dbenv, "write: %#lx, %lu: %s",
+			    P_TO_ULONG(addr), (u_long)len, strerror(ret));
 		}
+		return (ret);
 	}
 
+	ret = 0;
+	for (taddr = addr,
+	    offset = 0; offset < len; taddr += nw, offset += nw) {
+		RETRY_CHK((!WriteFile(fhp->handle,
+		    taddr, (DWORD)(len - offset), &count, NULL)), ret);
+		if (ret != 0)
+			break;
+		nw = (size_t)count;
+	}
 	*nwp = len;
-	return (0);
+	if (ret != 0)
+		__db_err(dbenv, "write: %#lx, %lu: %s",
+		    P_TO_ULONG(taddr), (u_long)len - offset, strerror(ret));
+	return (ret);
 }
 
 #ifdef HAVE_FILESYSTEM_NOTZERO

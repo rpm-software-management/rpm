@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2003
+ * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_repquote.h,v 1.34 2003/07/29 02:26:18 margo Exp $
+ * $Id: ex_repquote.h,v 1.35 2004/01/28 03:36:03 bostic Exp $
  */
 
 #ifndef _EX_REPQUOTE_H_

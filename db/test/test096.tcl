@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2003
+# Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test096.tcl,v 11.24 2003/09/04 23:41:18 bostic Exp $
+# $Id: test096.tcl,v 11.26 2004/06/10 17:21:20 carol Exp $
 #
 # TEST	test096
 # TEST	Db->truncate test.
@@ -16,6 +16,7 @@
 # TEST	For btree and hash, do the same in a database with offpage dups.
 proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	global fixed_len
+	global alphabet
 	source ./include.tcl
 
 	set orig_fixed_len $fixed_len
@@ -119,6 +120,32 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	error_check_good dbclose [$db close] 0
 	error_check_good dbverify [verify_dir $testdir "\tTest096.h: "] 0
 
+	puts "\tTest096.i: Check proper handling of overflow pages."
+	# Large keys and data compared to page size guarantee
+	# overflow pages.
+	if { [is_fixed_length $method] == 1 } {
+		puts "Skipping overflow test for fixed-length method."
+	} else {
+		set overflowfile overflow096.db
+		set data [repeat $alphabet 600]
+		set db [eval {berkdb_open -create -auto_commit -pagesize 512 \
+		    -env $env $omethod -mode 0644} $args $overflowfile]
+		error_check_good db_open [is_valid_db $db] TRUE
+
+		set noverflows 100
+		for { set i 1 } { $i <= $noverflows } { incr i } {
+			set ret [eval {$db put} -auto_commit \
+			    $i [chop_data $method "$i$data"]]
+		}
+
+		set stat [$db stat]
+		error_check_bad stat:overflow [is_substr $stat \
+		    "{{Overflow pages} 0}"] 1
+
+		error_check_good overflow_truncate [$db truncate] $noverflows
+		error_check_good overflow_close [$db close] 0
+	}
+
 	# Remove database and create a new one with dups.  Skip
 	# the rest of the test for methods not supporting dups.
 	if { [is_record_based $method] == 1 || \
@@ -130,8 +157,9 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 		return
 	}
 	set ret [berkdb dbremove -env $env -auto_commit $testfile]
+	set ret [berkdb dbremove -env $env -auto_commit $overflowfile]
 
-	puts "\tTest096.i: Create $nentries entries with $ndups duplicates"
+	puts "\tTest096.j: Create $nentries entries with $ndups duplicates"
 	set db [eval {berkdb_open -pagesize $pagesize -dup -auto_commit \
 	    -create -env $env $omethod -mode 0644} $args $testfile]
 	error_check_good db_open [is_valid_db $db] TRUE
@@ -147,7 +175,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	set txn "-txn $t"
 	dup_check $db $txn $t1 $dlist
 	error_check_good txn [$t commit] 0
-	puts "\tTest096.j: Verify off page duplicates status"
+	puts "\tTest096.k: Verify off page duplicates status"
 	set stat [$db stat]
 	error_check_bad stat:offpage [is_substr $stat \
 	    "{{Duplicate pages} 0}"] 1
@@ -155,7 +183,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	set recs [expr $ndups * $nentries]
 	error_check_good dbclose [$db close] 0
 
-	puts "\tTest096.k: Truncate database in a txn then abort"
+	puts "\tTest096.l: Truncate database in a txn then abort"
 	txn_truncate $env $omethod $testfile $recs abort
 
 	set db [eval {berkdb_open -auto_commit -env $env} $args $testfile]
@@ -165,7 +193,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	error_check_good number_of_entries $number $recs
 	error_check_good dbclose [$db close] 0
 
-	puts "\tTest096.l: Truncate database in a txn then commit"
+	puts "\tTest096.m: Truncate database in a txn then commit"
 	txn_truncate $env $omethod $testfile $recs commit
 
 	set db [berkdb_open -auto_commit -env $env $testfile]
@@ -175,11 +203,11 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	error_check_good dbclose [$db close] 0
 
 	set testdir [get_home $env]
-	error_check_good dbverify [verify_dir $testdir "\tTest096.m: "] 0
+	error_check_good dbverify [verify_dir $testdir "\tTest096.n: "] 0
 
 	# Remove database, and create a new one with dups.  Test
 	# truncate + write within a transaction.
-	puts "\tTest096.n: Create $nentries entries with $ndups duplicates"
+	puts "\tTest096.o: Create $nentries entries with $ndups duplicates"
 	set ret [berkdb dbremove -env $env -auto_commit $testfile]
 	set db [eval {berkdb_open -pagesize $pagesize -dup -auto_commit \
 	    -create -env $env $omethod -mode 0644} $args $testfile]
@@ -196,7 +224,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	set txn "-txn $t"
 	dup_check $db $txn $t1 $dlist
 	error_check_good txn [$t commit] 0
-	puts "\tTest096.o: Verify off page duplicates status"
+	puts "\tTest096.p: Verify off page duplicates status"
 	set stat [$db stat]
 	error_check_bad stat:offpage [is_substr $stat \
 	    "{{Duplicate pages} 0}"] 1
@@ -204,7 +232,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	set recs [expr $ndups * $nentries]
 	error_check_good dbclose [$db close] 0
 
-	puts "\tTest096.p: Truncate and write in a txn, then abort"
+	puts "\tTest096.q: Truncate and write in a txn, then abort"
 	txn_truncate $env $omethod $testfile $recs abort 1
 
 	set db [eval {berkdb_open -auto_commit -env $env} $args $testfile]
@@ -213,7 +241,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	error_check_good number_of_entries $number $recs
 	error_check_good dbclose [$db close] 0
 
-	puts "\tTest096.q: Truncate and write in a txn, then commit"
+	puts "\tTest096.r: Truncate and write in a txn, then commit"
 	txn_truncate $env $omethod $testfile $recs commit 1
 
 	set db [berkdb_open -auto_commit -env $env $testfile]
@@ -222,8 +250,29 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	error_check_good number_of_entries $number [expr $recs / 2]
 	error_check_good dbclose [$db close] 0
 
+	puts "\tTest096.s: Check overflow pages with dups."
+	set ndups 3
+	set db [eval {berkdb_open -create -auto_commit -pagesize 512 \
+	    -env $env $omethod -dup -mode 0644} $args $overflowfile]
+	error_check_good db_open [is_valid_db $db] TRUE
+
+	for { set i 1 } { $i <= $noverflows } { incr i } {
+		for { set j 0 } { $j < $ndups } { incr j } {
+			set ret [eval {$db put} -auto_commit \
+			    $i [chop_data $method "$i.$j$data"]]
+		}
+	}
+
+	set stat [$db stat]
+	error_check_bad stat:overflow [is_substr $stat \
+	    "{{Overflow pages} 0}"] 1
+
+	set nentries [expr $noverflows * $ndups]
+	error_check_good overflow_truncate [$db truncate] $nentries
+	error_check_good overflow_close [$db close] 0
+
 	set testdir [get_home $env]
-	error_check_good dbverify [verify_dir $testdir "\tTest096.r: "] 0
+	error_check_good dbverify [verify_dir $testdir "\tTest096.t: "] 0
 
 	if { $closeenv == 1 } {
 		error_check_good envclose [$env close] 0
@@ -319,3 +368,4 @@ proc txn_truncate { env method testfile nentries op {write 0}} {
 	error_check_good txn$op [$txn $op] 0
 	error_check_good db_close [$db close] 0
 }
+
