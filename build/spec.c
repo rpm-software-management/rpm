@@ -924,7 +924,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		}
 	    }
 
-	    message(MESS_DEBUG, "fileFile = %s\n", fileFile);
+	    message(MESS_DEBUG, "fileFile = %s\n", 
+			fileFile ? fileFile : "(null)");
 	    
 	    /* Handle -n in part tags */
 	    lookupopts = 0;
