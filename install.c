@@ -328,7 +328,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 		numFailed++;
 	    }
 	    else { 
-		numPackages += matches.count;
+		numPackages += count;
 		if (numPackages > packageOffsetsAlloced) {
 		    packageOffsetsAlloced = numPackages + 5;
 		    packageOffsets = realloc(packageOffsets, 
