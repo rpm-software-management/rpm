@@ -39,6 +39,7 @@ Executing: %doc
 + exit 0
 Finding provides...
 Finding requires...
+Provides: hi
 Prereqs: /bin/sh
 Requires: ld-linux.so.2 libc.so.6
 Wrote: /usr/src/redhat/SRPMS/hello-1.0-1.src.rpm

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+rpm=${rpm:=rpm}
+destdir="`pwd`"
+destdir="`dirname $destdir`"
+
+$rpm -qil --scripts hello > $0.out
+
+diff $0.out $0.exp || exit 0
+

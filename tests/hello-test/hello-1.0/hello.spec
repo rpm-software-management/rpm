@@ -2,10 +2,20 @@ Summary: hello -- hello, world rpm
 Name: hello
 Version: 1.0
 Release: 1
+Serial:	1
 Group: Utilities
 License: GPL
+Distribution: RPM test suite.
+Vendor: Red Hat Software
+Packager: Red Hat Software <bugs@redhat.com>
 URL: http://www.redhat.com
 Source0: hello-1.0.tar.gz
+Excludearch: lsi
+Excludeos: cpm
+Provides: hi
+Conflicts: goodbye
+Obsoletes: howdy
+Prefix: /usr
 BuildRoot: /var/tmp/hello-root
 
 %description

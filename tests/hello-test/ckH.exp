@@ -1,4 +1,4 @@
-Entry count: 42
+Entry count: 52
 
              CT  TAG                  TYPE               OFSET      COUNT
 Entry      : 000 (100)(unknown)      STRING_ARRAY_TYPE  0xffffffff 00000001
@@ -9,113 +9,133 @@ Entry      : 002 (1001)RPMTAG_VERSION STRING_TYPE        0xffffffff 00000001
        Data: 000 1.0
 Entry      : 003 (1002)RPMTAG_RELEASE STRING_TYPE        0xffffffff 00000001
        Data: 000 1
-Entry      : 004 (1004)RPMTAG_SUMMARY I18N_STRING_TYPE   0xffffffff 00000001
+Entry      : 004 (1003)RPMTAG_EPOCH   INT32_TYPE         0xffffffff 00000001
+       Data: 000 0x00000001 (1)
+Entry      : 005 (1004)RPMTAG_SUMMARY I18N_STRING_TYPE   0xffffffff 00000001
        Data: 000 hello -- hello, world rpm
-Entry      : 005 (1005)RPMTAG_DESCRIPTION I18N_STRING_TYPE   0xffffffff 00000001
+Entry      : 006 (1005)RPMTAG_DESCRIPTION I18N_STRING_TYPE   0xffffffff 00000001
        Data: 000 Simple rpm demonstration.
-Entry      : 006 (1006)RPMTAG_BUILDTIME INT32_TYPE         0xffffffff 00000001
-       Data: 000 0x362cac47 (908897351)
-Entry      : 007 (1007)RPMTAG_BUILDHOST STRING_TYPE        0xffffffff 00000001
+Entry      : 007 (1006)RPMTAG_BUILDTIME INT32_TYPE         0xffffffff 00000001
+       Data: 000 0x362cd576 (908907894)
+Entry      : 008 (1007)RPMTAG_BUILDHOST STRING_TYPE        0xffffffff 00000001
        Data: 000 krusty.devel.redhat.com
-Entry      : 008 (1009)RPMTAG_SIZE    INT32_TYPE         0xffffffff 00000001
+Entry      : 009 (1009)RPMTAG_SIZE    INT32_TYPE         0xffffffff 00000001
        Data: 000 0x00007c67 (31847)
-Entry      : 009 (1014)RPMTAG_LICENSE STRING_TYPE        0xffffffff 00000001
+Entry      : 010 (1010)RPMTAG_DISTRIBUTION STRING_TYPE        0xffffffff 00000001
+       Data: 000 RPM test suite.
+Entry      : 011 (1011)RPMTAG_VENDOR  STRING_TYPE        0xffffffff 00000001
+       Data: 000 Red Hat Software
+Entry      : 012 (1014)RPMTAG_LICENSE STRING_TYPE        0xffffffff 00000001
        Data: 000 GPL
-Entry      : 010 (1016)RPMTAG_GROUP   I18N_STRING_TYPE   0xffffffff 00000001
+Entry      : 013 (1015)RPMTAG_PACKAGER STRING_TYPE        0xffffffff 00000001
+       Data: 000 Red Hat Software <bugs@redhat.com>
+Entry      : 014 (1016)RPMTAG_GROUP   I18N_STRING_TYPE   0xffffffff 00000001
        Data: 000 Utilities
-Entry      : 011 (1020)RPMTAG_URL     STRING_TYPE        0xffffffff 00000001
+Entry      : 015 (1020)RPMTAG_URL     STRING_TYPE        0xffffffff 00000001
        Data: 000 http://www.redhat.com
-Entry      : 012 (1021)RPMTAG_OS      STRING_TYPE        0xffffffff 00000001
+Entry      : 016 (1021)RPMTAG_OS      STRING_TYPE        0xffffffff 00000001
        Data: 000 Linux
-Entry      : 013 (1022)RPMTAG_ARCH    STRING_TYPE        0xffffffff 00000001
+Entry      : 017 (1022)RPMTAG_ARCH    STRING_TYPE        0xffffffff 00000001
        Data: 000 sparc
-Entry      : 014 (1027)RPMTAG_FILENAMES STRING_ARRAY_TYPE  0xffffffff 00000003
+Entry      : 018 (1027)RPMTAG_FILENAMES STRING_ARRAY_TYPE  0xffffffff 00000003
        Data: 000 /home/devel/jbj/src/rpm/tests/usr/doc/hello-1.0
        Data: 001 /home/devel/jbj/src/rpm/tests/usr/doc/hello-1.0/FAQ
        Data: 002 /usr/local/bin/hello
-Entry      : 015 (1028)RPMTAG_FILESIZES INT32_TYPE         0xffffffff 00000003
+Entry      : 019 (1028)RPMTAG_FILESIZES INT32_TYPE         0xffffffff 00000003
        Data: 000 0x00000400 (1024)
        Data: 001 0x00000024 (36)
        Data: 002 0x00007843 (30787)
-Entry      : 016 (1030)RPMTAG_FILEMODES INT16_TYPE         0xffffffff 00000003
+Entry      : 020 (1030)RPMTAG_FILEMODES INT16_TYPE         0xffffffff 00000003
        Data: 000 0x41ed (16877)
        Data: 001 0xffff81a4 (-32348)
        Data: 002 0xffff81e9 (-32279)
-Entry      : 017 (1033)RPMTAG_FILERDEVS INT16_TYPE         0xffffffff 00000003
+Entry      : 021 (1033)RPMTAG_FILERDEVS INT16_TYPE         0xffffffff 00000003
        Data: 000 0x0000 (0)
        Data: 001 0x0000 (0)
        Data: 002 0x0000 (0)
-Entry      : 018 (1034)RPMTAG_FILEMTIMES INT32_TYPE         0xffffffff 00000003
-       Data: 000 0x362cac42 (908897346)
+Entry      : 022 (1034)RPMTAG_FILEMTIMES INT32_TYPE         0xffffffff 00000003
+       Data: 000 0x362cd571 (908907889)
        Data: 001 0x362ca336 (908895030)
-       Data: 002 0x362cac42 (908897346)
-Entry      : 019 (1035)RPMTAG_FILEMD5S STRING_ARRAY_TYPE  0xffffffff 00000003
+       Data: 002 0x362cd571 (908907889)
+Entry      : 023 (1035)RPMTAG_FILEMD5S STRING_ARRAY_TYPE  0xffffffff 00000003
        Data: 000 
        Data: 001 33cccc1f055d73acaceed7d8204e99c7
        Data: 002 741e702cdf114c95a9e965fa8aa40864
-Entry      : 020 (1036)RPMTAG_FILELINKTOS STRING_ARRAY_TYPE  0xffffffff 00000003
+Entry      : 024 (1036)RPMTAG_FILELINKTOS STRING_ARRAY_TYPE  0xffffffff 00000003
        Data: 000 
        Data: 001 
        Data: 002 
-Entry      : 021 (1037)RPMTAG_FILEFLAGS INT32_TYPE         0xffffffff 00000003
+Entry      : 025 (1037)RPMTAG_FILEFLAGS INT32_TYPE         0xffffffff 00000003
        Data: 000 0x00000000 (0)
        Data: 001 0x00000002 (2)
        Data: 002 0x00000000 (0)
-Entry      : 022 (1039)RPMTAG_FILEUSERNAME STRING_ARRAY_TYPE  0xffffffff 00000003
+Entry      : 026 (1039)RPMTAG_FILEUSERNAME STRING_ARRAY_TYPE  0xffffffff 00000003
        Data: 000 root
        Data: 001 root
        Data: 002 root
-Entry      : 023 (1040)RPMTAG_FILEGROUPNAME STRING_ARRAY_TYPE  0xffffffff 00000003
+Entry      : 027 (1040)RPMTAG_FILEGROUPNAME STRING_ARRAY_TYPE  0xffffffff 00000003
        Data: 000 root
        Data: 001 root
        Data: 002 root
-Entry      : 024 (1044)RPMTAG_SOURCERPM STRING_TYPE        0xffffffff 00000001
+Entry      : 028 (1044)RPMTAG_SOURCERPM STRING_TYPE        0xffffffff 00000001
        Data: 000 hello-1.0-1.src.rpm
-Entry      : 025 (1045)RPMTAG_FILEVERIFYFLAGS INT32_TYPE         0xffffffff 00000003
+Entry      : 029 (1045)RPMTAG_FILEVERIFYFLAGS INT32_TYPE         0xffffffff 00000003
        Data: 000 0x00000000 (0)
        Data: 001 0x00000000 (0)
        Data: 002 0xffffffff (-1)
-Entry      : 026 (1046)RPMTAG_ARCHIVESIZE INT32_TYPE         0xffffffff 00000001
+Entry      : 030 (1046)RPMTAG_ARCHIVESIZE INT32_TYPE         0xffffffff 00000001
        Data: 000 0x00007aac (31404)
-Entry      : 027 (1048)RPMTAG_REQUIREFLAGS INT32_TYPE         0xffffffff 00000003
+Entry      : 031 (1047)RPMTAG_PROVIDES STRING_ARRAY_TYPE  0xffffffff 00000001
+       Data: 000 hi
+Entry      : 032 (1048)RPMTAG_REQUIREFLAGS INT32_TYPE         0xffffffff 00000003
        Data: 000 0x00000040 (64)
        Data: 001 0x00000000 (0)
        Data: 002 0x00000000 (0)
-Entry      : 028 (1049)RPMTAG_REQUIRENAME STRING_ARRAY_TYPE  0xffffffff 00000003
+Entry      : 033 (1049)RPMTAG_REQUIRENAME STRING_ARRAY_TYPE  0xffffffff 00000003
        Data: 000 /bin/sh
        Data: 001 ld-linux.so.2
        Data: 002 libc.so.6
-Entry      : 029 (1050)RPMTAG_REQUIREVERSION STRING_ARRAY_TYPE  0xffffffff 00000003
+Entry      : 034 (1050)RPMTAG_REQUIREVERSION STRING_ARRAY_TYPE  0xffffffff 00000003
        Data: 000 
        Data: 001 
        Data: 002 
-Entry      : 030 (1064)RPMTAG_RPMVERSION STRING_TYPE        0xffffffff 00000001
+Entry      : 035 (1053)RPMTAG_CONFLICTFLAGS INT32_TYPE         0xffffffff 00000001
+       Data: 000 0x00000000 (0)
+Entry      : 036 (1054)RPMTAG_CONFLICTNAME STRING_ARRAY_TYPE  0xffffffff 00000001
+       Data: 000 goodbye
+Entry      : 037 (1055)RPMTAG_CONFLICTVERSION STRING_ARRAY_TYPE  0xffffffff 00000001
+       Data: 000 
+Entry      : 038 (1064)RPMTAG_RPMVERSION STRING_TYPE        0xffffffff 00000001
        Data: 000 2.90
-Entry      : 031 (1080)RPMTAG_CHANGELOGTIME INT32_TYPE         0xffffffff 00000001
+Entry      : 039 (1080)RPMTAG_CHANGELOGTIME INT32_TYPE         0xffffffff 00000001
        Data: 000 0x362cf9d0 (908917200)
-Entry      : 032 (1081)RPMTAG_CHANGELOGNAME STRING_ARRAY_TYPE  0xffffffff 00000001
+Entry      : 040 (1081)RPMTAG_CHANGELOGNAME STRING_ARRAY_TYPE  0xffffffff 00000001
        Data: 000 Jeff Johnson <jbj@redhat.com>
-Entry      : 033 (1082)RPMTAG_CHANGELOGTEXT STRING_ARRAY_TYPE  0xffffffff 00000001
+Entry      : 041 (1082)RPMTAG_CHANGELOGTEXT STRING_ARRAY_TYPE  0xffffffff 00000001
        Data: 000 - create.
-Entry      : 034 (1085)RPMTAG_PREINPROG STRING_TYPE        0xffffffff 00000001
+Entry      : 042 (1085)RPMTAG_PREINPROG STRING_TYPE        0xffffffff 00000001
        Data: 000 /bin/sh
-Entry      : 035 (1086)RPMTAG_POSTINPROG STRING_TYPE        0xffffffff 00000001
+Entry      : 043 (1086)RPMTAG_POSTINPROG STRING_TYPE        0xffffffff 00000001
        Data: 000 /bin/sh
-Entry      : 036 (1087)RPMTAG_PREUNPROG STRING_TYPE        0xffffffff 00000001
+Entry      : 044 (1087)RPMTAG_PREUNPROG STRING_TYPE        0xffffffff 00000001
        Data: 000 /bin/sh
-Entry      : 037 (1088)RPMTAG_POSTUNPROG STRING_TYPE        0xffffffff 00000001
+Entry      : 045 (1088)RPMTAG_POSTUNPROG STRING_TYPE        0xffffffff 00000001
        Data: 000 /bin/sh
-Entry      : 038 (1094)RPMTAG_COOKIE  STRING_TYPE        0xffffffff 00000001
-       Data: 000 krusty.devel.redhat.com 908897351
-Entry      : 039 (1095)RPMTAG_FILEDEVICES INT32_TYPE         0xffffffff 00000003
+Entry      : 046 (1090)RPMTAG_OBSOLETES STRING_ARRAY_TYPE  0xffffffff 00000001
+       Data: 000 howdy
+Entry      : 047 (1094)RPMTAG_COOKIE  STRING_TYPE        0xffffffff 00000001
+       Data: 000 krusty.devel.redhat.com 908907894
+Entry      : 048 (1095)RPMTAG_FILEDEVICES INT32_TYPE         0xffffffff 00000003
        Data: 000 0x00000804 (2052)
        Data: 001 0x00000804 (2052)
        Data: 002 0x00000804 (2052)
-Entry      : 040 (1096)RPMTAG_FILEINODES INT32_TYPE         0xffffffff 00000003
-       Data: 000 0x0001bc87 (113799)
-       Data: 001 0x0001bc88 (113800)
-       Data: 002 0x00010de6 (69094)
-Entry      : 041 (1097)RPMTAG_FILELANGS STRING_ARRAY_TYPE  0xffffffff 00000003
+Entry      : 049 (1096)RPMTAG_FILEINODES INT32_TYPE         0xffffffff 00000003
+       Data: 000 0x000194d7 (103639)
+       Data: 001 0x000194d8 (103640)
+       Data: 002 0x00010de9 (69097)
+Entry      : 050 (1097)RPMTAG_FILELANGS STRING_ARRAY_TYPE  0xffffffff 00000003
        Data: 000 
        Data: 001 
        Data: 002 
+Entry      : 051 (1098)RPMTAG_PREFIXES STRING_ARRAY_TYPE  0xffffffff 00000001
+       Data: 000 /usr

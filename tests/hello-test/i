@@ -1,0 +1,11 @@
+#!/bin/sh
+
+rpm=${rpm:=rpm}
+destdir="`pwd`"
+destdir="`dirname $destdir`"
+
+$rpm -i -vv --nodeps --prefix="`pwd`/../usr" $myrpm | \
+	sed -e "s,$destdir,,g" > $0.out
+
+diff $0.out $0.exp || exit 1
+

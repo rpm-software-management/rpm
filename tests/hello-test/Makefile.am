@@ -2,7 +2,7 @@
 
 all:
 
-noinst_SCRIPTS = initdb showrc ba ckL ckH ckS ckC
+noinst_SCRIPTS = initdb showrc ba ckL ckH ckS ckC i qi e
 
 TESTS_ENVIRONMENT = \
   rpm="${top_builddir}/rpm --rcfile ${top_builddir}/tests/$(pkglibdir)/rpmrc" \
@@ -11,6 +11,7 @@ TESTS_ENVIRONMENT = \
   rpmheader="${top_builddir}/tools/rpmheader" \
   rpmsignature="${top_builddir}/tools/rpmsignature" \
   rpmdump="${top_builddir}/tools/dump" \
-  myrpm="../usr/src/redhat/RPMS/sparc/hello-1.0-1.sparc.rpm"
+  rpmdumpdb="${top_builddir}/tools/dumpdb" \
+  myrpm='../usr/src/redhat/RPMS/*/hello-1.0-1.*.rpm'
 
-TESTS = initdb showrc ba ckL ckH ckS ckC
+TESTS = initdb showrc ba ckL ckH ckS ckC i qi e
