@@ -1,12 +1,12 @@
 Summary: Red Hat Package Manager
 Name: rpm
-%define version 2.5.1
+%define version 2.5.2
 Version: %{version}
 Release: 1
 Group: Utilities/System
-Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5/rpm-%{version}.tar.gz
+Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
-BuildRoot: /tmp/rpm
+BuildRoot: /var/tmp/rpm-%{version}
 Conflicts: patch < 2.5
 
 %package devel
@@ -71,7 +71,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir /usr/src/redhat/SPECS
 %dir /usr/src/redhat/SOURCES
 %dir /usr/src/redhat/SRPMS
-/usr/src/redhat/RPMS
+%dir /usr/src/redhat/RPMS
 /usr/share/locale/*/LC_MESSAGES/rpm.mo
 
 %files devel
