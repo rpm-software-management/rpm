@@ -1,3 +1,985 @@
+3.0.3 -> 3.0.4
+	- use compressed filenames on install side.
+	- start unifying FD types, CFD_t now gone.
+	- check for memory leaks (almost all leaks are plugged).
+	- fix: resurrect multiple target platform builds.
+	- freshen.sh: detect when all packages are up to date (Ian Macdonald).
+	- fix: typo in error message (#6858).
+	- add/update dependency scripts (Ken Estes).
+	- use directory tokens internally to reduce memory usage.
+	- permit --whatprovides to lookup file dependencies.
+	- fail to package if absolute symlink points within build root.
+	- initial version of check-prereqs.
+	- expose enough of legacy fdio interface to compile rpmfind/rpm2html.
+	- fix: Fopen should use 0666 as default (umask will be applied later).
+	- fix: default for rd_timeoutsecs is 1 sec (avoid ufdio assertion).
+	- fix: new FILENAMES tags require package index, not pointer in lookups.
+	- rename new FILENAMES tags to BASENAMES/DIRNAMES/DIRINDEXES.
+	- fix: don't look at password when searching urlCache.
+	- add contentLength sanity check on rpmdb headerWrite.
+	- fix: fprint abort on stat("/", ...) in empty chroots.
+	- perform glob on remote ftp query args.
+	- fix: ftpAbort must close the data channel to read abort status.
+	- perform glob on remote ftp install args.
+	- fix: reload macros from cmd line when re-reading config files.
+	- fix: compressFileList was over-generating dirNames.
+	- fix: alAddPackage sorted dirNames too soon, destroying dirMapping.
+	- expose enough of legacy fdio interface to compile gnorpm.
+	- fix: missing strdup when overriding buildroot from command line
+	  argument (#1026,#5006).
+	- diddle some names to keep my C++ brethern happy (i.e. kpackage port).
+	- fix: add ufdSeek.
+
+3.0.2 -> 3.0.3
+	- add --eval to find result of macro expansion.
+	- add configure scaffolding to support rpm-4.0 packages.
+	- include shared libs in rpm-devel (no versioning yet).
+	- add epoch (as [0-9]*:version-release) to install dependency parse.
+	- move install/erase major modes into rpmlib.
+	- move checksig/resign major modes into rpmlib.
+	- add python bindings to rpm-devel (linux only).
+	- make query (rpm -qvl) behave like (POSIX?) ls for older files (#4050).
+	- fix: %if parsing skipped 3 chars too many.
+	- permit multiline macro expansions with comments and %if.
+	- add pl translation and man pages (PLD team - from Tomasz Kloczko).
+	- fix: incomplete cleanup if --rebuilddb fails (#4115).
+	- add versions to provides.
+	- fix: sanity test on specfile fails when encountering i18n chars.
+	- print all dependencies for each package at end of build.
+	- the death of RPMSENSE_SERIAL, use [epoch:]version[-release] instead.
+	- add _mandir/_infodir macro expansions to docdirs (Tomasz Kloczko).
+	- add post install configurable dependency checking.
+	- fix: segfault on --rebuild (#4185).
+	- macro fixes (Benedict Lofstedt, #4220):
+	   expand %# just like %{#} (and with same value as shell analogues).
+	   macro defaults for *, 0, and # if no args specified.
+	   getopt on non-linux requires optind to be saved/restored.
+	- fix: don't remove file until last occurence in transaction (#4291).
+	- resuscitate net shared paths (#4330).
+	- fix: macro table cannot contain NULL pointers (#4263).
+	- fix: last char in rpmrc w/o terminating newline lost (#4361).
+	- prepare for handling \r in macro exapnsions.
+	- fix: n>1 occurrences of %config(noreplace) should not FA_CREATE (#4355).
+	- fix: use pgp5 rather than pgp-2.6.3 if both are in %_pgpbin (#4564).
+	- match "de" when locale is specified as "de_DE.ISO-8859-1@Munich".
+	- add versions to obsoletes.
+	- add %_install_langs to configure languages to be installed.
+	- add LC_ALL/LC_MESSAGES to query locale search.
+	- fix: segfault with "--sign" w/o supplying files (#4651).
+	- add headerWrite return code and check for errors.
+	- update python bindings from anaconda.
+	- add versions to prereq.
+	- add syntax sensitive implict prereq on rpm-3.0.3.
+	- fix: don't successfully match with strncasecmp("sparc", "sparc64", 5)
+	- add sparcv9 architecture.
+	- add --freshen to usage message (#4823).
+	- suggested changes to docs from Ken Estes (#4451).
+	- link libbz2.a statically to avoid rpm->bzip2 dependence for now.
+	- Tru64: avoid find-requires variable size limit (Tim Mooney).
+	- Solaris: use getpassphrase rather than getpass if available.
+	- pgp and pgp5 have compatible RSA signature (#4780).
+	- fix: avoid db problems with self-obsoleting packages on install.
+	- glibc2: always enable dynamic mtrace if available.
+	- fix: versioned provides devolved to existence test with conflicts.
+	- fix: with unspecified epochs, skip dependency epoch compare.
+	- python: shared module linked correctly.
+	- do versioned provides/conflicts resolution correctly.
+	- rpmpopt: display versioned provides/obsoletes.
+	- revert to shared libbz2.so now that bzip2 is in base install.
+	- fix: command line install had header memory leak.
+	- check for NULL on all memory allocations.
+	- free rpmrc mallocs on exit.
+	- glibc2: permit run time leak detection.
+	- fix: removed files fingerprint memory leak.
+	- fix: resurrect allfiles flag from rpm-2.5.x.
+	- fix: version compares compatible with epoch-less requires/conflicts.
+	- fix: rpm-2.5.1 had file list w/o leading / fix.
+	- portatbility fiddles (solaris).
+	- create binary rpm directory (e.g. .../%{_target_cpu}) on the fly.
+	- updated pl/rpm.8 (PLD team).
+	- new find req/prov scripts for non-linux platforms (Tim Mooney).
+	- fix: non-GNU globs burp on repeated '/' in patterns.
+	- dumb cpp's want white space around lclint annotations (Tim Mooney).
+	- aix: aix.req broken by cut-and-paste (Tim Mooney).
+
+3.0.1 -> 3.0.2
+	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).
+	- permit multiple "Provides: " lines in rpmrc (#2999).
+	- add BuildConflicts: and BuildRequires: in spec file and src rpm.
+	- fix: bigendian's with longlong file sizes (e.g. IRIX) dinna work.
+	- move printDep* routines into rpmlib for gnorpm et al.
+	- updated ru translation (Sergey Kubushin).
+	- add vpkg-provides.sh (Tim Mooney).
+	- don't clobber LDFLAGS in top-level Makefile (Tim Mooney).
+	- fix: build root from cmd line did not set macro %buildroot (#1026).
+	- fix: resurrect "rpm -Va --nofiles" (verify dependencies only) (#3111).
+	- rpm-devel should require popt (#3125).
+	- don't spin while waiting for delayed requires/provides input (#3289).
+	- common parse for all dependency token syntax.
+	- eliminate find-requirements on libNoVersion (Red Hat linux only).
+	- add new-fangled requires on "libc.so.6(GLIBC_2.1)" (sparc-linux only).
+	- MiNT port (Guido Flohr <gufl0000@stud.uni-sb.de>).
+	- fix: --rebuilddb with --root dinna remove directory (Michael Andres).
+	- fix: false fingerprint stat cache hit -- "the tetex problem" (#2727).
+	- fix: bsearch needs macro table sorted after undefine. (#3713).
+	- fix: --checksig segfault with odd pgp output (e.g. w/o ~/.pgp) (#3720)
+	- avoid numeric overflow in version comparison (Thayne Harbaugh<tharbaug@liberate.com>).
+	- move url.c and ftp.c to rpmlib right next to query.
+	- 12 more dead strtoks.
+	- changelog stamp broken w/ big endian 64 bit time_t (Stephane Erania).
+	- tru64: use /bin/sh not /usr/bin/ksh in find-requires.
+	- 32Mb (~16x largest known) sanity check on header size.
+
+3.0 -> 3.0.1
+	- fix: %verifyscript resurrected (Shing-Gene Yung).
+	- fix: % before non-alphabetic non-macro special now passed unscathed.
+	- fix: noarch header gets initialized differently.
+	- fix: $2 to triggerpostun scripts was wrong
+	- fix: --querybypkg in man page should be --filesbypkg
+	- fix: optflags not implicitly set to canonical arch value.
+	- fix: prefer pgp2.6.3 over pgp5 if both are installed.
+	- make sure that rpm-the-package auto-requires glibc.
+	- add rpmputtext/rpmgettext to rpm package.
+	- fix: non-apache servers need "GET ... HTTP/1.0" by the book.
+	- fix: %doc wrongly inherits lang from last entry in %files.
+	- resurrect toplevel tar target.
+	- spec file removal separate from source removal (Shing-Gene Yung).
+	- add rpm prefix to MD5 routines to avoid name conflict on solaris.
+	- fix: resurrect -Vp, -Vf and -Vg functionality.
+	- colesce query and verify modes.
+	- better cpio error message if package contains missing hard links.
+	- fix: shared file not skipped when removed.
+	- fix: conversion script left off leading underscores.
+	- another strtok bites the dust.
+	- fix: prevent return code wrap during packagage checking/resigning.
+	- permit multiple %lang(xx) markers on elements in %files.
+	- permit %lang(xx,yy,zz) constructs --  2 more dead strtoks.
+	- fix: --prefix should work properly during package installs.
+	- add librpmbuild.a to the file list.
+
+2.94 -> 2.95
+	- fix: last update transaction set segfault bug in installer.
+	- improved checks for statfs (Tim Mooney).
+	- remove inconsistent use of __P((...)) throughout.
+	- non-static inline functions caused IRIX cc pain.
+	- CPIOERR_CHECK_ERRNO masking caused AIX cc warnings.
+	- solaris 2.6+ needs statvfs.
+	- check build prerequisites before building from specfile.
+	- convert per-system configuration in /etc/rpmrc to macros.
+
+2.93 -> 2.94
+	- fix: segfault while parsing target string.
+	- fix: os was not initialized with "--target i586".
+	- fix: --prefix resurrected.
+	- non-linux, non-gcc portability fixes (Tim Mooney).
+	- default to static libs only (remove implied support for shared libs).
+
+2.92 -> 2.93
+	- eliminate old rpmrc configuration syntax.
+	- pgp5 support (Carlo Wood <carlo@runaway.xs4all.nl>)
+	- fix: segfault from double close on ftpGetFileDesc->ftpAbort path.
+	- fix: don't add header if signature generation failed (Carlo Wood).
+	- more DU 4.0D fiddles (Shing-Gene Yung).
+	- fix: segfault from unknown uid/gid -- use builder's uid/gid instead.
+	- autoReq/autoProv now per-package.
+	- fix: avoid segfault using --prefix until ewt fixes.
+	- add --define "%foo %bar" option.
+	- dump macros to same fd as --showrc uses.
+	- add %GNUconfigure for full-blown package regeneration.
+	- fix: RPM_ARCH/RPM_OS had wrong values.
+	- fix: create ppc directories correctly.
+	- (re-)enable fixowner/fixgroup macros.
+	- fix: specfile BuildRoot was masking rpmrc macro.
+	- expand twiddles in macrofiles list.
+	- add explicit macrofiles path to rpmrc.
+	- add per-target macrofiles to search path.
+	- take globalMacroContext out of macro api.
+	- fix: flush all macros between builds.
+	- add name/version/release macros during src.rpm install.
+	- attempt mkdir sourcedir/specdir during src.rpm install.
+
+2.91 -> 2.92
+	- update with libtool-2.4f.
+	- DU 4.0D fiddles (Shing-Gene Yung<shing@cz3.nus.edu.sg>)
+	- change support@redhat.com to rpm-list@redhat.com.
+	- fix: with --target=i686, pass macro %_arch=i386.
+	- fix: rpm --target=arch ... resurrected.
+	- fix: rpm -q --specfile --specedit now works even with BuildArch:.
+	- fix: nested strtok's is a no-no.
+	- added disk space checking
+
+2.90 -> 2.91
+	- fix: memory leaks in rpmRunTransactions plugged.
+	- fix: build of packages w/o BuildRoot segfault.
+	- permit substitution of I18N strings from PO meta-catalogues.
+	- add callbacks for installer updates while doing URL xfers.
+	- resurrect http queries/verifies.
+	- create rpmbzio.c to avoid implicit dependence on libbz2 for installer.
+	- spec files can provide /filename now
+	- added rpmdbOpenForTraversal()
+	- proxy http (Alex deVries).
+	- add BuildPrereq: in spec file and src rpm.
+	- added rpmtransSetScriptFd()
+	- fixed config file problems during chroot upgrades
+	- fixed %attr brokenness for directories
+	- augment linux provides/requires for glibc 2.1 backward compatibility.
+	- fixed --noscript, --notriggers, --excludedocs, and a bunch
+	  of other install/remove flags
+	- fixed noreplace handling
+	- complain about old packages being installed
+
+2.5.x -> 2.90
+	- added --excludepath
+	- identify missing keys by type (Toshio Kuratomi).
+	- package install/removal much smarter about symlinks
+	- redid install/remove API to allow transaction semantics
+	- support for GPG (Toshio Kuratomi <badger@prtr-13.ucsc.edu>)
+	- file lookup finally sane wrt symbolic links :-)
+	- fileindex format changed -- rebuilddb is necessary for rpm 2.90!!
+	- --rebuilddb doesn't open old index files
+	- permit http:// and file:// url's as well as ftp://.
+	- change --rcfile to permit colon separated file list.
+	- compile in defaults from rpmrc/macros.
+	- finish hiding rpmdb index record data ("matches").
+	- implement abstract fd type almost everywhere.
+	- update and rename Czech (Pavel Makovec <pavelm@terminal.cz>)
+	- augment --showrc with -v, only display set variables without -v.
+	- add macrofiles variable, permit second entry to initMacros().
+	- add config.h defines for paths to find-requires et. al.
+	- add readRPM to libbuild, headerGetLangs to librpm.
+	- permit rpm to be built in a sub-directory (--srcdir=DIR).
+	- configure using automake.
+	- arch/os (and platform) should be case insensitive everywhere forever.
+	- attempt to deal rationally with os as "Linux" or "linux".
+	- add generalized expression handler (Tom Dyas<tdyas@remus.rutgers.edu>)
+	- use /usr/lib/rpm/mkinstalldirs if mkdir -p fails.
+	- more portable dirent handling (Hermann Lauer).
+	- add Slovak translation (Stanislav Meduna <stano@trillian.eunet.sk>)
+	- gettextify rpmMessage/rpmError/fprintf messages.
+	- update po files; add cz to catalogs.
+	- cpio_gzip: dup the fd before doing gzdopen (Thanks Erik!)
+	- add --noLang to skip non-default languages.
+	- writeRPM can now copy cpio archive from fd.
+	- preliminary macro environment as side effect of rpmrc parse.
+	- macro handling in rpmlib -- rework include: tag with macro expansion.
+	- first attempt at librpmbuild API.
+        - fixed lib/rpmrc.c to accept include: tags (AdV)
+        - fixed the CHANGES file to reflect that this is 2.9, not 3.0 (AdV)
+	- aggregate system includes into system.h.
+	- rearrange functions to minimize exported routines in librpmbuild API.
+	- generalize cpio I/O to eliminate pipe to exec'd gzip on install.
+	- add {init,add,expand}Macro args everywhere (new macro.c compatibility)
+	- add new fully recursive macro.c
+	- there must be a { between two % in a query format (unless %% is used)
+
+2.5.6 -> 2.5.7:
+	- permit 0x1b in specfile sanity check.
+	- increase timeout in tread from 5 to 30 secs for slow links.
+	- rename file before unlinking to avoid EBUSY failures.
+	- headerGetEntry now returns count=0 if tag not found (Chris Blizzard).
+	- resurrect osf1 as canonical os name (Time Mooney).
+	- sub-packages should inheirit Prefixes tag (Ian Mortimer).
+	- make '-' character illegal (again) in version/release.
+	- use portable #!/bin/sh (Tim Mooney).
+	- don't erase failing build script (Tim Mooney).
+	- use portable mkinstalldirs (Tim Mooney).
+	- irix6 autodeps were dup'd (Shing-Gene Yung <shing@cz3.nus.edu.sg>).
+	- getservbyname needed ntohs().
+	- propagate "const char *" into rpmlib prototypes.
+	- use "original db-1.85" if available (Raw Hide glibc 2.1).
+	- make sure files to sign exist before asking for the pass phrase
+
+2.5.5 -> 2.5.6:
+	- ultrapenguin 1.1.9 sparc64 changes.
+	- attempt ftp ABOR on query/verify url's.
+	- cache open ftp control descriptor with password.
+	- verify needed same realpath semantics as query.
+	- plug fd leak in urlGetFile().
+	- translate cpio errors using cpioStrerror.
+	- display "..?....." rather than "..5....." for unreadable files.
+	- run time (rather than compile time) host endian check.
+	- caldera patches (ray@Caldera.DE)
+	- added ARM patches.
+	- fix incorrect directory permissions using %attr/%defattr.
+	- permit "rpm -q --specfile ... file.spec" queries.
+	- strncasecmp on spec file separators (KDE has %Description).
+	- remove redundant md5 computation on uninstall.
+	- permit --rmsource --force even if sources/patches are missing.
+	- don't compute md5sum on non-file %config objects. (from Jos Vos)
+	- check arch only on RPMBUILD_{PREP,BUILD,INSTALL,PACKAGEBINARY}.
+	- configure.in: set default value for RPM. (Tim Mooney)
+	- add new Epoch: keyword just like Serial:.
+	- update Russian translation w man pages.
+	- solaris: don't attempt static link. (Tim Mooney)
+	- fix: timeCheck in rpm.c should be unsigned long. (Tim Mooney)
+	- osf: prov searches only shared libraries. (Tim Mooney)
+	- solaris: set PATH in prov/req scripts. (Tim Mooney)
+	- fix: ignore modes on symlinks. (Tim Mooney)
+	- sub-packages inherit RPMTAG_EPOCH (just like RPMTAG_VERSION/RELEASE).
+	- fix off-by-1 alloca that prevented relocating /.
+	- there must be a { between two % in a query format (unless %% is
+	  used).
+
+2.5.4 -> 2.5.5:
+	- permit rpm to be built in a sub-directory (--srcdir=DIR).
+	- return CPIO_BAD_HEADER instead of exiting. (Scott M. Stone)
+	- untranslate "(none)" for auto relocating script wrappers.
+	- non-linux arch/os identification (Eugene Kanter).
+	- portable mode_t/pid_t typedefs.
+	- fix check for trailing / in Prefix:
+	- remove 2 character language name assumption.
+        - add /usr/lib/rpm/find-lang.sh (W. L. Estes <wlestes@uncg.edu>)
+	- miscellaneous portability cruft (Eugene Kanter).
+	- Makefile: don't use ln -sf.
+	- getOutputFrom(): fix race between last read on pipe and child death
+	  (exacerbated in 2.5.4).
+	- rpm.spec: create /usr/src/redhat/* in %install.
+
+2.5.3 -> 2.5.4:
+	- expand args using popt on pre-rpmReadConfigFiles arg pass.
+	- skip arch checks if only packaging source rpm.
+	- add license field to rpmpopt -qi alias.
+	- provides/obsoletes requires tokens that begin with alnum or _.
+	- non-zero exit status for verify failures.
+	- hpux does setreuid differently (Hermann Lauer).
+	- check for setreuid portably (Eugene Kanter).
+	- add Serbian translation (Zoltan Csala <zcsala@iname.com>).
+	- arch/os tables were not being initialized  for noarch builds.
+	- quote users/groups/filenames in --setugids.
+	- add Russian translation w man pages (Serguei Koubouchine <ksi@gu.net>)
+	- fix virtual file attribute bug that skipped all files in binary rpm.
+	- eliminate infinite loop with missing tmpdir (Trent Jarvi).
+	- os_canon for CYGWIN32_NT/95.
+	- rationalize autoconf detection of gzip/bzip2.
+	- restore backward compatible rpmrc/rpmpopt symlinks.
+	- update pt_BR translations (Arnaldo Carvalho de Melo).
+	- permit --{buildroot,timecheck,test,sign} with -tX (Toshio Kuratomi).
+	- fix database rebuilds with triggers (Steve Sanberg).
+	- diagnostic message if unreadable/short source or patch file.
+	- eliminate redundant close in provide/require processing.
+	- solaris portability patch resurrection (Steve Sanberg).
+	- permit autogen.sh to work on non "prefix=/usr" hosts.
+	- add %license/%readme virtual file attributes.
+        - align "Build Host:" with other fields.
+
+2.5.2 -> 2.5.3:
+	- copy changelog tags to sub-packages just before packaging.
+	- added EPOCH handling to supplement serial numbers
+	- add RPMTAG_EPOCH and RPMTAG_CAPABILITY init to 0.
+	- fix infinite recursion on non-ERANGE return from getcwd() during
+	  install (Matt Wilson).
+	- rm .depend for multiple builds in same tree (Will Partain)
+	- addFile: fix special case of "/" in %files.
+	- better query semantics with symlinks (Tim Mooney)
+	- build.c: fix incorrect check for successful open
+	- allow %define with leading whitespace
+	- use /usr/lib/rpm for rpmpopt, rpmrc, find-requires, find-provides
+	- added popt 'exec' functionality
+	- made --rebuilddb a bit more robust by checking data types
+	- added --freshen via popt exec stuff
+	- fixed spelling of expected
+	- updated de.po (Karl Eichwalder)
+	- do a better job of checking for a spec file in tarballs
+	  (Pavel Roskin)
+	- fixed --triggers alias (Michael Andres)
+	- added :hex query format
+	- fixed --querytags to display virtual tags
+?????	- added --triggers and --triggered by to man page, help, and usage
+?????	- added support for epochs
+
+2.5.1 -> 2.5.2:
+	- added -bs to build just a source package
+	- included irix.req and irix.prov (Tim Mooney)
+	- copy CHANGELOG* and URL tags to all subpackages
+	- follow symlinks when packaging sources
+	- handle %files -f with no %setup (no build directory)
+	- fixed ugly i18n header bug
+	- deal with lang paths sanely when entries are missing languages
+	- fix bug packing /usr/doc when last file was %dir
+	- added --last alias
+	- fix :depflags query format
+	- Group: i18n (like Summary:)
+	- make --justdb install files in normal state
+	- %{fssizes} segv'd for packages with empty file lists
+	- updated HP-UX, OSF1, Irix 6.x dependency scripts (Tim Mooney)
+	- added arm and MachTen arch/os info
+	- added --filesbypkg query format
+	- updated README to have proper URLs
+	- updated rpm.spec for proper paths and cleanliness
+	- dependency resolution could hang when Provides: line is used in
+	  rpmrc (Tim Mooney)
+	- updated mips rpmrc entries (Alex deVries)
+	- version/release conditional triggers weren't ignoring the trigger	
+	  package name at the front of the TRIGGERVERSION
+	- added --notriggers for -i and -e
+	- made --triggers a synonym for --triggerscripts
+	- ftp installs were trying to use /var/tmp/tmp
+	- allow whitespace in source/patch lines
+	
+2.5 -> 2.5.1:
+	- fail if sources are not regular files
+	- wasn't catching readLine() errors
+	- fixed (hopefully) temp file creation problems
+	- make %doc obey --test
+	- unlink before writing .rpms
+	- librpm.c: added headerGzRead()/headerGzWrite()
+	- set bzip2path via lib-rpmrc/configure (Toshio Kuratomi)
+	- added finish translation (Raimo Koski)
+	- prefer db_185.h to db.h (Christopher Seawood)
+	- included updated hpux.req (Ralph Goers)
+	- added aix.req (Ralph Goers)
+	- updated hpux.prov, osf.req, osf.prov (Tim Mooney)
+	- set file states for --justdb packages to "not installed"
+	- handle missing file states properly in -e code
+	- install time wasn missing for --justdb packages
+	- missing parameter in an rpmError() caused segfault
+
+2.4.109 -> 2.5:
+	- fixed return code bug in build code
+	- do macro expansion before %if processing
+	- dep ordering returns w/ an error as soon as a prereq loop is found
+	- autoreqprov flag was being ignored during builds
+	- add autoreq: and autoprov:
+	- missed a few unlink() when scripts failed
+	- freePrefixes wasn't initialized in runScript()
+	- fix typo in %triggerpostun generation
+	- include icons in source packages
+	- headerGetEntry() should return count of 1 when returning
+          strings plucked from i18n strings
+	- do not remove comments in scripts
+	- save/restore existing arch when done with buildarch
+	- copy the I18N table to the source header so i18n stuff works
+	- fixed multiple memory leaks in install code
+	- fixed bug in part recognition
+	- shared files weren't being handled properly in net shared paths
+
+2.4.108 -> 2.4.109:
+        - remove icons with --rmsource
+        - do dependecy generation on -bl
+        - check files on all packages on -bl
+	- integrate Jeff Johnson's memleak patches
+	- added OSF1 autodep scripts
+
+2.4.107 -> 2.4.108:
+        - make --clean work with no %setup
+	- fixed FSSIZES problem introduced in 2.4.107
+	- fixed search for find-requires.sh
+	- improved solaris autodeps scripts
+	- automated (somewhat) the -static flag
+
+2.4.106 -> 2.4.107:
+	- --nomd5 wasn't handled properly
+	- updated configure.in find-req and find-prov checks (Tim Mooney)
+        - make --rmsource actually work
+	- run postun triggers
+
+2.4.105 -> 2.4.106:
+	- build: only check for non-printables in first 128 chars
+	- added %triggerpostun
+	- linux.req generates deps for shared libs
+	- added a CC=@CC@ to popt/Makefile.in
+	- handle signed return types from poptGetNextOpt() properly
+
+2.4.104 -> 2.4.105:
+	- added langpatt: to rpmrc, and mark files with matches
+	- added some C++ cruft to rpmlib.h
+	- added find-requires and find-provides for hpux (Tim Mooney)
+	- respect LINGUAS when install package files
+	- added trigger support to build code
+	- got rid of annoying mwftw() type warning
+	- fixed many command line options which got broke by changes
+	  for non-gcc compilers
+	- added trigger support in install code
+	- added doc/triggers
+	- strntoul() in lib/cpio.c was returning a pointer to freed
+	  memory
+	- headerAppend() was doing a bad memcpy()
+
+2.4.103 -> 2.4.104:
+	- fixed popt/Makefile.in to use CPP from configure
+	- use tmppath from rpmrc to for ftp'd files (rather then /var/tmp)
+	- autoconf files and .depend files weren't created properly during
+	  make archive
+
+2.4.102 -> 2.4.103:
+	- need to create popt/configure during make archive
+	- added comments about modifictation to base popt and rpmrc files
+	- allow spaces in group names
+	- fix bug in memory allocation of special doc stuff
+	- Jeff Johnson's mode/dev fixes
+	- clean up buildroot
+	- be more paranoid about making temp files
+	- added patches from Tim Mooney which let RPM build with non-gcc
+	  compilers and non-GNU versions of make
+
+2.4.101 -> 2.4.102:
+	- fixed spelling of "instchangelog" in lib-rpmrc.in
+	- fixed memory leak in headerSprintf() extension cache
+	- fixed memory allocation for header formatting extension cache
+	- added support for INSTPREFIX virtual tag for backwards compatibility
+	- cpio error codes were poorly defined, causing bad error messages
+	- generates INSTPREFIXES tag properly, and sets RPM_INSTALL_PREFIX
+	  and RPM_INSTALL_PREFIXn environment variables
+	- fixed memory leak in install code which occured when net shared paths
+	  were used
+	- don't pass net shared path to rpmInstallPackage() -- it looks 
+	  directly in the rpmrc entries
+	- don't remove files in netsharedpath, even for files whose states
+	  are not net shared
+	- changed --setugids to use separate chown and chgrp programs, for
+	  better portability
+	- popt moved to autoconf
+	- Makefiles changed to allow building in a different directory then
+	  the source code resides in
+	- finally fixed the Build Host spacing in rpmpopt
+
+2.4.100 -> 2.4.101:
+	- handle files with spaces (put double quotes around them)
+        - new rpmrc setting, buildshell, can be used to set shell
+          used for build scripts (default is /bin/sh)
+	- fix bug where macros were being improperly set for
+	  Patch: and Source: lines
+	- may use "instchangelog" in rpmrc to limit the maxmium number of 
+	  changelog entries that are stored in the database for each package
+	  (-1 means store all of them)
+	- default instchangelog is set to 5
+	- headerRemoveEntry() didn't free the item's data -- this led to
+  	  a slight memory leak when installing packages
+        - implemented generic file relocations at install time
+          (use --relocate <oldpath>=<newpath>, i.e. --relocate /usr=/foo)
+        - added --badreloc flag to force RPM to relocate files which packages
+          haven't advertised as relocateable
+	- fix return code on failed uncompresses in %prep
+	- preliminary handling of bzip2 compressed files
+	- differentiates between big and little endian mips
+	- added support for "prefixes:" tag
+
+2.4.99 -> 2.4.100:
+	- fixed handling of --rebuild and --recompile
+	- fixed rpmlibbuild.a typo in Makefile
+	- fixed handling of '\' in spec files (a specific case of a more
+	  general bug)
+	- change use of "export" to work with non-bash shells
+	- compress the archives.  oops.
+	- fixed bug when there is no %setup
+	- added -L$(topdir)/popt to Makefile.inc
+
+2.4.12 -> 2.4.99:
+	- added many more i18n strings
+        - merged in large rewrite of build code, which includes the following
+	  changes:
+            - new option --rmsource
+	    - all scripts can now take -p <prog>
+	    - more strict about %package placement and use of main package 
+	      preamble
+	    - %attr(mode, user, group [, dirmode])
+	    - %defattr()
+	    - %defverify()
+	    - Root: is depricated.  Use BuildRoot: instead
+	    - "nosrc" sources arn't deleted when sources are removed
+	    - New tag DocDir: <dir> to set alternate doc dir (default is 
+              /usr/doc)
+	    - %doc should work as expected with buildroot, prefix, DocDir:
+	    - all file processing is done before any packaging
+	    - should work with modern patch programs (later than 2.1)
+	    - %patch -z <arg> same as %patch -b <arg>
+	    - %define only defines a macro if it starts a line
+	    - script prog entries are now arrays (ie with arguments)
+	    - standard macros: tag names, buildarch, buildos, buildarch_lc, 
+              buildos_lc, PATCHn, SOURCEn, PATCHURLn, SOURCEURLn, sourcedir, 
+              builddir, optflags
+	    - deprecate require_distribution, require_icon, require_vendor
+	    - add RPMTAG_FILEDEVICES and RPMTAG_FILEINODES to header
+	    - export variables in scripts
+	    - fixed tag:field bug
+	    - %lang() in %files
+	    - %description -l <lang>
+	    - Summary(<lang>):
+	    - fixed read_line() termination usage
+	- Makefile changes to shorten compiler lines
+
+2.4.11 -> 2.4.12:
+	- intialize reserved portion of lead when writing packages
+	- fixed error messages displayed when opening the database
+	  fails during package installation and removal
+	- query format of the form '[A%{}]' would drop the static string
+	- fixed fix in 2.4.9 for empty packages which broke -qip on ftp URL's
+	- fixed arch/os numbers in lead
+	- added Turkish message catalog
+	- -e was running scripts even w/ --test was specified
+
+2.4.10 -> 2.4.11:
+	- HAVE_SYS_SOCKET_H was mistakingly MACHINE_SYS_SOCKET_H in
+	  config.h.in
+	- \%description was trying to do %d expansion in query formats
+	- made %% work in query formats
+	- fixed bug in handling characters before array
+	- let mips build noarch packages
+	- --setperms would set wrong permissions in some cases (it was
+	  following symlinks)
+
+2.4.9 -> 2.4.10:
+	- obsolete entries could cause segv's during upgrades
+	- sources now installed with uid/gid of process rather then
+	  the ids used when the src rpm was created
+	- don't give an error if missingok files don't exist during remove
+	- touched ftp code to make it coexist w/ Red Hat install better
+	- use rand/srand rather then random/srandom
+	- don't build misc directory unless it's necessary
+	- empty package files should be treated the same as files
+	  with bad magic, not as read errors
+	- fix bug where Prefix directory is included in file list
+	- sinix readdir() work-around
+
+2.4.8 -> 2.4.9:
+	- fix for verification on systems where a single group id
+	  maps to mulitiple group names (Benedict Lofstedt)
+	- added 'make tar' rule for building a distribution tarball
+	  (Horacio Rodriguez Montero)
+	- fixed serial number handling in dependencies and install
+	  code
+	- make mips compatible with noarch
+	- fixed bug w/ printing string arrays in conditionals
+	- handle modern patch programs (> 2.1)
+	- handle packages w/ duplicate dependency names
+	- --noscripts didn't get handled properly for removed packages
+	- fixed handling of packages where %prereq creates users/groups
+
+2.4.7 -> 2.4.8:
+	- added noarch build compatibilities for ppc, m68k
+	- fixed some minor typos (Florian La Roche)
+	- added Obsoletes: tag, an upgrade removes packages which
+	  have been obsoleted
+	- updated rpmdepUpgradePackage() to deal with obsoletes tag
+	- convertdb needed to read rpmrc
+	- fixed ugly bug in package ordering
+	- archivesize tag was incorrect for packages with hard links
+	- moved popt into a separate library
+	- directory created with %doc is now name-version (dropped
+          the release)
+	- added buildarch/buildos macros
+	- added %ghost file option
+	- updated linux.req to only find requirements for exectuable files
+
+2.4.6 -> 2.4.7:
+	- had some wrong month lengths in changelog date parsing
+	- updated fine-requires (Linux version) to add lines for shell
+	  scripts (Donnie Barnes)
+	- didn't package / properly
+	- pre/post script processing had some erroneous free() calls
+	- fixed typos for HP archs in lib/rpmrc.c
+	- uname() results should go through *_canon tables before anything
+	  else happens
+	- set -x in debug shells, not -xs
+
+2.4.5 -> 2.4.6:
+	- added os_canon entries for BSD/OS and NextStep
+	- replaced include of <malloc.h> with includes of <stdlib.h>
+	- fixed md5sum of source packages w/ a buildroot is used
+	- fixed bugs installing version 1 packages
+	- remove hyphens from uname() result (specifically for HP-UX)
+	- hacks to recognize architecture under parisc
+	- RPM_INSTALL_PREFIX wasn't being set properly (this should be
+	  fixed now)
+	- replaced temporary file creation to be race-condition safe
+	- prerequisites may not specify versions
+
+2.4.4 -> 2.4.5:
+	- call getpwnam()/endpwent() once before a chroot(), forcing name 
+	  service shared libs to be loaded from outside of the root path
+	- added vesrion stamp to lib/misc.o (and librpm.a by extension)
+	- fixed config.sub, config.guess to recognize i686
+	- ARCHIVESIZE tag didn't get filled in properly, breaking progress
+	  meters
+
+2.4.3 -> 2.4.4:
+	- restore working directory after installing a package w/ a chroot
+	- dump the package stack when a dependency loop is encountered
+	- when a user/group lookup fails, end*ent() and retry 
+	- fixed broken --scripts argument (it was --s2)
+	- only display the packager and url in -qi output if they have defined
+	  values
+	- print "(not installed)" as the install time for -p queries rather
+	  then "not a number"
+	- almost completely rewrote rcfile parsing; I'm sure this will
+	  break things eventually but it's much more flexible now
+	- added buildarch/buildos compatibility tables, listed values
+	  in --showrc
+	- added cpio archive building code; GNU cpio is no longer used!
+	  packages created w/ rpm 2.4.4 and later cannot be installed with
+	  rpm 2.4 - rpm 2.4.3 however (version of RPM before 2.4 will 
+	  work fine, however). An "error -2 reading header" happens when
+	  this is attempted
+	- removed cpiobin from rpmrc
+	- added rpmrc "provides" tag to allow easy fulfillment of 
+	  automatically generated dependencies
+	- look for random() in libm if it can't be found be default
+	- fixed problems in Solaris's autodeps stuff (Eric Mumpower)
+	- --setperms should work properly on directories now
+	- --justdb on install, upgrade, and erasure causes a database
+	  update w/o the filesystem being touched
+	- fixed version comparison of a package w/ a serial tag against
+	  a package w/o one
+	- added BuildArchitectures: tag to spec file to enable builds
+	  for alternate/multiple architectures
+	- look for random() in -lucb
+	- changed the licensing terms for librpm to allow redistribution
+	  under the LGPL
+	- applied man page changes from Alex deVries
+	- configure.in builds up LIBS by appending (Benedict Lofstedt)
+	- rpm2cpio reported wrong zlib error string
+	- removed \n from (none) generated by query format code
+	- queries of fssizes w/o fsnames didn't work (Till Bubeck)
+	- added --noorder option to skip package reordering (Elliot Lee)
+
+2.4.2 -> 2.4.3:
+	- implemented install time prerequisites
+	- repaired %{#TAG} query format
+	- implemented ternary operator as query expression
+	- fixed --scripts to only print information on scripts which
+	  are present
+	- check symlink() return for < 0, not != 0 (Bob Tanner)
+	- uses chroot() for installs --root option
+	- archive expansion doesn't create new devices or symlinks when
+	  the proper files already exist
+	- added -p to %post (etc) to specify the program which a script
+	  is run through
+	- if -p is used w/ an empty script, the specified program is
+	  executed directly 
+	- the -p argument (or /bin/sh) is automaticall added as a prereq
+
+2.4.1 -> 2.4.2:
+	- completely rewrote queryformat code
+	- added fsnames, fssizes virtual query tags
+	- added rpmdbFindByHeader() and rpmdbFindByTag() public functions
+	- added rpmfilename tag to rpmrc to define the filename format to
+	  use for binary packages (note the rpmdir is prepended to it)
+	- used pclose() instead of fclose() in -t code
+	- updated man pages
+	- changed "struct rpmdb" to "struct rpmdb_s" for C++
+	- netsharedpath entries shouldn't match partial directory names
+	  anymore (a nersharedpath of /usr/lib shouldn't affect /usr/libexec)
+	- don't backup config files on netsharedpaths (take 2)
+	- added "day" query format which is like date, but doesn't print
+	  any time
+	- added --changelog alias to query a packages changelog entry
+	- added mntctl() support for AIX (I think, I can't test this)
+	- fflags query type displays 's' for specfiles, 'm' for missingok
+	  files, and 'n' for noreplace files
+	- implemented %config(missingok) flag in install
+	- added --allfiles flag for -i and -U, which forces all files (even
+	  missingok files) to be installed
+	- implemented %config(noreplace) for the install, but it hasn't
+	  been tested in any way
+	- added i18n support to headers
+	- added ppc/rs6000 differntiation for AIX
+	- all IP* from uname() is changed to just IP
+	- IP is considered the same as mips (not sgi)
+	- added IRIX64 OS, it's compatible w/ IRIX
+
+2.4 -> 2.4.1:
+	- take advantage of lchown() if it's available
+	- fixed configure script to assume chown() doesn't follow symlinks
+	  if lchown() isn't available and configure is not being run as root
+	- more header file changes for AIX
+	- added :shescape query format type for strings, which prints strings
+	  which will survive a single level of shell expansion
+	- fixed --setperms and --setugids to handle empty packages and 
+	  packages with odd filenames
+	- include <sys/time.h> before <sys/resource.h>
+	- include "miscfn.h" first in every file which needs it
+	- created noarch architecture which everything is compatible with
+	- fixed group verification (Benedict Lofstedt)
+	- don't backup config files on netsharedpaths
+	- added info on --build{arch|os} to --help and usage messages
+
+2.3.11 -> 2.4:
+	- changed RPMNLSDIR directories to and @datadir@ to better
+	  conform with autoconf
+	- set RPM_INSTALL_PREFIX environment variable when running 
+	  verify scripts
+	- beginnings of SCO support (though I suspect it will take one
+	  or two more iterations to get it right)
+	- switched to CVS and updated some Makefile rules
+	- look for gethostbyname() instead of gethostname() in -nsl
+	  (this could break some things)
+	- added check for strcasecmp() in -lucb on systems which don't
+	  have strcasecmp() in libc
+	- don't build -static on hpux10
+	- don't try and NLS empty strings
+	- changed index() call to strchr() in macro code
+	- include <time.h> in build/spec.c for various platforms
+	- added update-po rule to po/Makefile.in
+	- updated de.po (thanks to Karl Eichwalder)
+	- rpmFindByFile() removes trailing and duplicate /'s
+	- made many string in rpm program (though not yet in the various
+	  libraries) translatable
+	- eight character user names could break -qlv
+	- requirements which begin with a leading / require files (in
+	  the database!) instead of packages
+	- clean up conflictsindex during --rebuilddb
+	- get path to gzip from /usr/lib/rpmrc rather then just hoping it's 
+	  in the path
+	- use dbpath for error messages with include database path in 
+	  their text
+	- don't set owner/group if binaries installed by "make install"
+	- include <strings.h> on SCO
+	- don't use cpio when installing packages <gulp>
+	- fixed bug which affected dependencies on the Alpha
+	- made '=' work for long arguments (the switch to popt broke this)
+	- handle solaris systems better
+	- complain if critical rpmrc variables (cpiobin, gzipbin, etc) aren't
+	  set anywhere
+	- allow --dbpath for --rebuilddb
+	- added check for systems whose chown() follows symlinks. If configure
+	  is run as root, this should get it right, otherwise it assumes
+	  chown() does not follow symlinks. You can use --enable-broken-chown
+	  to force configure to think chown does indeed follow symlinks.
+	- if chown() follows symlinks, we don't chown() symlinks during cpio
+	  unpacking and we don't verify the owner or group of symlinks
+	- added packager and url to default -qi output
+	- look for <sys/select.h> and use it if it's there (for AIX)
+
+2.3.10 -> 2.3.11:
+	- fixed newlines in --scripts output
+	- fix handling of source files with bad owners/groups
+
+2.3.9 -> 2.3.10:
+	- --allmatches handling in -e broke some cases
+	- new predefined macros: %SOURCEn %PATCHn %SOURCEURLn %PATCHURLn
+	- fix anomoly with %files -f <file> and %doc
+	- ignore config bit when it's set on directories (which allows
+	  users to replace directories with symlinks)
+	- don't set config bit on directories
+	- strip trailing slashes from files (during build)
+	- %tags are now case sensitive (macros too)
+
+2.3.8 -> 2.3.9:
+	- reworked %setup to allow multiple -a and -b options, which
+	  should noticeably ease the task of unapcking multiple tar files
+	- md5 sum's were calculated incorrectly on big endian machines
+	  from 2.3.2 through 2.3.8 -- this was fixed and some hacks were
+	  done to keep verification working
+	- updated README
+	- added --allmatches to allow erasing multiple versions/releases
+	  of a package
+	- changed ftp URL's to use \r\n, not just \n (this should let RPM
+	  work w/ some picky (but rfc compliant) ftp servers
+	- fix problem where parts at end of spec file were dropped
+	- added %config(noreplace missingok) (build-side)
+	- simple spec file macros
+	- should now process entire file list before failing
+	
+2.3.7 -> 2.3.8:
+	- added -t? options to build packages from tarballs which contain
+	  .spec files instead of from the .spec files directly
+	- fixed error in man page where ftp URLs are discussed
+	- don't strlen(NULL) in headerAddEntry()
+	- minor portability changes
+	- stopped building oldrpmdb.c as part of rpmlib
+	- added Makefile rule for building rpmconvert (which is almost
+	  never needed) -- this isolated gdbm dependence to this target
+	- fixed checking of popt stack overflow
+	- --requires shouldn't imply -q
+	- fixed error message issued when a groupname does not exist
+	- fixed but in changelog processing which made it hang on '*' in a
+	  changelog entry
+	- generate S_ISSOCK and S_ISLNK macros on systems w/o them
+	- "rpm --erase" wasn't returning proper error codes w/ package
+	  removal failed
+
+2.3.6 -> 2.3.7:
+	- fixed nasty memory link in -Va
+	- configure checks for -lnsl explicitly rather then linking it
+	  to -lsocket (for NCR SysVR4)
+	- configure checks for dirent.h
+	- modified glob.c to include config.h and use HAVE_DIRENT_H
+	- cleanup of LIBS/LIBPATH mess a bit more
+
+2.3.5 -> 2.3.6:
+	- -Vf uses realpath() now
+	- -Vp lets you use --ftpproxy, --ftpport
+	- changed popt format, breaking all popt alises :-(
+	- added ability to alias character arguments to popt 
+	- moved --requires, --info to /usr/lib/rpmpopt
+	- RPM is more forgiving of blank user names (dumb)
+	- popt searches for aliases in the correct order now
+	- cleanup query code to handle missing uid lists better
+	- cleanup up configure.in a tad
+
+2.3.4 -> 2.3.5:
+	- %{#TAG} in query format prints the array length
+	- cleanup up protoypes in rpmlib.h
+	- let -Vp work on URLs
+	- don't set umask(0) anymore -- that confused programs which
+	  link against rpmlib quite badly
+	- moved print out in "rpm -v -i" to occur after any warnings
+	  to pretty up the output a bit
+	- added default optflags for powerpc
+	- run shell for post/pre scripts in debug mode with -sx for
+	  some silly shells
+	- installing source packages with --root checked for the 
+	  sources/specs directory to exist outside of the root -- fixed
+	- modified toplevel Makefile to run dependency generation only
+	  against referenced sources
+	- array size mismatches in --qf should send error to stderr
+	- tried to make the locale stuff a bit more portable (again)
+	- reworked the owner/group setting on installs to be more generic
+	  (in preperation for getting rid of cpio)
+	- made verify verify owner and groups by name rather then by id -- if
+	  the symbolic names aren't available use the uids
+	- cleaned up relocateFilelist() and related code thanks to
+	  new header introduced in 2.3.3 -- this could break relocateable
+	  packages but they seem okay
+	- fixed a bug which could cause relocateable packages to not get
+	  relocated -- I think this bit some people during hard drive
+	  installs of all things (Jason Salopek pestered me consistently
+	  enough to keep this on the front burner for me)
+	- removed FILEUIDS and FILEGIDS from the header in the database --
+	  we never used it and it jsut wasted room
+	- convert uid/gid lists in v1 headers to symbolic names 
+
+2.3.3 -> 2.3.4:
+	- %changelog processing
+	- fixed broken requires/conflicts parsing for spec file
+	- vastly improved --rebuilddb's robustness
+	- fixed misplaced free() (only affected inconsistent databases)
+	- added conflicts documentation to docs/dependencies
+	- using multiple query formats has them all concatenated
+	- removed stdin based query and verify selectors
+	- installs rpmpopt in libdir
+	- moved --provides and --scripts to rpmpopt
+	- added --setperms, --setugids
+	- incorporated newer de.po from Karsten Weiss
+	- --resign/--addsign was broken in 2.3.3 from popt conversion
+
+2.3.2 -> 2.3.3:
+	- Ripped out header internals and redid them. Any compatibility 
+	  problems this causes are *bugs* as it should be completley 
+	  transparent. If this works the devil better buy some Prestone (TM).
+	- Use "cp -pr" instead of "cp -ar" for %doc expansion
+	- use <string.h> instead of (non standard) <strings.h> in some places
+	- look for non-POSIX (broken) chmod
+	- include local copies of glob/fnmatch
+	- removed getopt() check from configure.in
+	- fixed bug in ftp code which prevented proper logins to some sites
+	- switched to popt from getopt, which allows command line aliasing
+	- read initial aliases from /usr/lib/rpmpopt then /etc/popt and
+	  $HOME/.popt
+	- cleanup up rdev verification (only verifies device files, checks
+	  device related mode bits as well)
+	- fixed allocation of temporary paths (Eugene Kanter noticed this)
+	- made tools/dumpdb read the rpmrc so it can find the database
+	- added --nomd5 for -V and -K
+	- don't assume mkdir -p will succeed if the dir exists
+	- use RPMNLS* defines to avoid header file conflicts
+	- bunch of minor cleanups to avoid warnings on other OS's
+
+2.3.1 -> 2.3.2:
+	- fixed bug in new rpmVersionCompare() which made it worse then
+	  useless (thanks to Norbert Kiesel)
+	- fixed silly message
+
 2.3 -> 2.3.1:
 	- changed --help routing to have intelligent line wrapping
 	  to make i18n efforts easier
@@ -6,6 +988,12 @@
 	- renamed sweedish catalog from se to sv
 	- added german catalog
 	- treat RPM_CHAR_TYPE as RPM_INT8_TYPE for queries
+	- made rpmEnsureOlder() internal to lib/install.c
+	- added rpmVersionCompare() to compare version/release/serial numbers
+	  for packages -- returns like strcmp()
+	- stdout/stderr were getting closed after running a verify script
+	- relocting packages didn't work w/ the packages contained the
+	  directory which was it's prefix
 
 2.2.11 -> 2.3:
 	- replaced putenv/setenv which calls which malloc() buffer -- these
