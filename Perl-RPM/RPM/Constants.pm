@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.8 2000/08/17 09:22:10 rjray Exp $
+#   $Id: Constants.pm,v 1.9 2000/08/18 08:23:43 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -27,7 +27,7 @@ use RPM;
 @ISA = qw(Exporter);
 
 $VERSION = '0.28';
-$revision = do { my @r=(q$Revision: 1.8 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.9 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE
@@ -943,210 +943,229 @@ as possibly occuring:
 
 =item RPMERR_BADARG
 
-Not documented yet.
+This is the most common error type used within the Perl RPM bindings. It is
+used here to indicate bad or missing data in method calls.
 
 =item RPMERR_BADDEV
 
-Not documented yet.
+Signaled when a file in the contents list is a bad or unknown device type.
 
 =item RPMERR_BADFILENAME
 
-Not documented yet.
+This error signifies that RPM was unable to generate a filename, or that a
+filename that RPM tried to use led to an error.
 
 =item RPMERR_BADMAGIC
 
-Not documented yet.
+Signaled whenever an attempt to read the lead-in of the header (the "file magic"
+information) fails. May be due either to bad data in that part, or an I/O
+failure in reading the data itself.
 
 =item RPMERR_BADRELOCATE
 
-Not documented yet.
+An error with the relocation specifications in the spec file.
 
 =item RPMERR_BADSIGTYPE
 
-Not documented yet.
+Signals that an older, obsoleted style of signature was detected.
 
 =item RPMERR_BADSPEC
 
-Not documented yet.
+General errors in the parsing or processing of the spec file.
 
 =item RPMERR_CHOWN
 
-Not documented yet.
+An error occured in using the B<chown> system call.
 
 =item RPMERR_CPIO
 
-Not documented yet.
+Errors that may occur when using B<cpio> to either package or unpack the source.
 
 =item RPMERR_CREATE
 
-Not documented yet.
+This is signaled when RPM cannot create a directory or file.
 
 =item RPMERR_DBCORRUPT
 
-Not documented yet.
+Signaled for consistency errors found in the database.
 
 =item RPMERR_DBGETINDEX
 
-Not documented yet.
+This error represents a failure to read a requested header record from the
+database.
 
 =item RPMERR_DBOPEN
 
-Not documented yet.
+An error when opening some component of the database.
 
 =item RPMERR_DBPUTINDEX
 
-Not documented yet.
+This error signals a failure to either store or remove a specified entry into
+(or from) the database.
 
 =item RPMERR_EXEC
 
-Not documented yet.
+An error occured when executing a sub-command (such as B<pgp>).
 
 =item RPMERR_FILECONFLICT
 
-Not documented yet.
+A file conflict (not otherwise caught or handled by B<rpm> itself) was detected.
 
 =item RPMERR_FLOCK
 
-Not documented yet.
+A failure to obtain a lock on the database. When the RPM library opens the
+database it places an exclusive lock on it. As such, there cannot be two
+processes (or two B<RPM::Database> instances) accessing the database at one
+time.
 
 =item RPMERR_FORK
 
-Not documented yet.
+An error occured when RPM tried to fork a child process.
 
 =item RPMERR_GDBMOPEN
 
-Not documented yet.
+An error occured when trying to open a GDBM (GNU DBM) database.
 
 =item RPMERR_GDBMREAD
 
-Not documented yet.
+An error occured when trying to read from a GDBM database.
 
 =item RPMERR_GDBMWRITE
 
-Not documented yet.
+An error occured when trying to write to a GDBM database.
 
 =item RPMERR_GZIP
 
-Not documented yet.
+An error occured with the B<gzip> program.
 
 =item RPMERR_INTERNAL
 
-Not documented yet.
+This is used to signal internal errors from within the RPM library. Odds are,
+if your program sees this error, you should exit as cleanly and quickly as
+possible.
 
 =item RPMERR_LDD
 
-Not documented yet.
+An error occurred with the B<ldd> program.
 
 =item RPMERR_MKDIR
 
-Not documented yet.
+An error code was returned from the C<mkdir> system call.
 
 =item RPMERR_MTAB
 
-Not documented yet.
+An error occured when trying to determine file system information from the
+system C<mtab> file.
 
 =item RPMERR_NEWPACKAGE
 
-Not documented yet.
+An attempt was made to create a new package with a specification of an RPM
+version older (less) than 3.
 
 =item RPMERR_NOCREATEDB
 
-Not documented yet.
+An attempt was made to create the database when one already exists.
 
 =item RPMERR_NOGROUP
 
-Not documented yet.
+A group specified for file group-ownership was not found in the list of groups
+on the system. The group C<root> will be used instead.
 
 =item RPMERR_NORELOCATE
 
-Not documented yet.
+An attempt was made to relocate a package that is not relocatable.
 
 =item RPMERR_NOSPACE
 
-Not documented yet.
+An attempt to write a package file failed for lack of available disk space.
 
 =item RPMERR_NOSPEC
 
-Not documented yet.
+Am unpack operation on a source RPM failed to produce a spec file.
 
 =item RPMERR_NOTSRPM
 
-Not documented yet.
+An operation was requested that can only be performed on a source RPM, but the
+specified package was a binary (or C<noarch>) RPM.
 
 =item RPMERR_NOUSER
 
-Not documented yet.
+A specified user (for file ownership) does not exist, and C<root> will be used
+in its place. See B<RPMERR_NOGROUP>.
 
 =item RPMERR_OLDDB
 
-Not documented yet.
+An old-format database is present.
 
 =item RPMERR_OLDDBCORRUPT
 
-Not documented yet.
+An old-format database being read (for conversion) was found to be corrupt.
 
 =item RPMERR_OLDDBMISSING
 
-Not documented yet.
+A request to convert an old-format database found that there was no such
+database present.
 
 =item RPMERR_OLDPACKAGE
 
-Not documented yet.
+An old-format package was detected.
 
 =item RPMERR_PKGINSTALLED
 
-Not documented yet.
+A package requested for install is already installed on the system.
 
 =item RPMERR_READERROR
 
-Not documented yet.
+An error occurred while reading data.
 
 =item RPMERR_RENAME
 
-Not documented yet.
+An error occured while renaming a file.
 
 =item RPMERR_RMDIR
 
-Not documented yet.
+An attempted removal of a directory failed.
 
 =item RPMERR_RPMRC
 
-Not documented yet.
+A parsing or format error in an RC (options) file occurred.
 
 =item RPMERR_SCRIPT
 
-Not documented yet.
+An error occurred while executing a script.
 
 =item RPMERR_SIGGEN
 
-Not documented yet.
+Some type of error occurred when generating a signature on the package.
 
 =item RPMERR_STAT
 
-Not documented yet.
+There was a failure of some sort on a C<stat> system call.
 
 =item RPMERR_UNKNOWNARCH
 
-Not documented yet.
+A requested architecture is unknown to RPM.
 
 =item RPMERR_UNKNOWNOS
 
-Not documented yet.
+A requested operating system is unknown to RPM.
 
 =item RPMERR_UNLINK
 
-Not documented yet.
+An error occurred with the C<unlink> system call.
 
 =item RPMERR_UNMATCHEDIF
 
-Not documented yet.
+An C<%else> or C<%endif> directive was seen in the spec file, for which there
+is no corresponding C<%if>.
 
 =back
 
 =head2 File-Verification Flags
 
 The values in the B<RPMTAG_FILEVERIFYFLAGS> list defined in the header-tags
-section earlier represent various combinations of the following values.
+section earlier represent various combinations of the following values. These
+tags may be imported via B<:rpmverify>.
 
 =over
 
@@ -1214,7 +1233,62 @@ failed.
 
 =back
 
+=head2 File Specification Flags
+
+The following tags may be imported via the B<:rpmfile> specifier. They are
+used to express various characteristics of files in the archive, based on the
+value from B<RPMTAG_FILEFLAGS> that corresponds to a given file.
+
+=item RPMFILE_DONOTUSE
+
+Not documented yet.
+
+=item RPMFILE_GHOST
+
+Not documented yet.
+
+=item RPMFILE_LICENSE
+
+Not documented yet.
+
+=item RPMFILE_MISSINGOK
+
+Not documented yet.
+
+=item RPMFILE_NOREPLACE
+
+Not documented yet.
+
+=item RPMFILE_README
+
+Not documented yet.
+
+=item RPMFILE_SPECFILE
+
+Not documented yet.
+
+=item RPMFILE_STATE_NETSHARED
+
+Not documented yet.
+
+=item RPMFILE_STATE_NORMAL
+
+Not documented yet.
+
+=item RPMFILE_STATE_NOTINSTALLED
+
+Not documented yet.
+
+=item RPMFILE_STATE_REPLACED
+
+Not documented yet.
+
+=back
+
 =head2 Not Yet Defined
+
+The following have not yet been categorized. They may, after further research
+and development, be found to be un-needed by this package.
 
 =over
 
@@ -1283,50 +1357,6 @@ Not documented yet.
 Not documented yet.
 
 =item RPMFILE_DOC
-
-Not documented yet.
-
-=item RPMFILE_DONOTUSE
-
-Not documented yet.
-
-=item RPMFILE_GHOST
-
-Not documented yet.
-
-=item RPMFILE_LICENSE
-
-Not documented yet.
-
-=item RPMFILE_MISSINGOK
-
-Not documented yet.
-
-=item RPMFILE_NOREPLACE
-
-Not documented yet.
-
-=item RPMFILE_README
-
-Not documented yet.
-
-=item RPMFILE_SPECFILE
-
-Not documented yet.
-
-=item RPMFILE_STATE_NETSHARED
-
-Not documented yet.
-
-=item RPMFILE_STATE_NORMAL
-
-Not documented yet.
-
-=item RPMFILE_STATE_NOTINSTALLED
-
-Not documented yet.
-
-=item RPMFILE_STATE_REPLACED
 
 Not documented yet.
 
