@@ -787,6 +787,10 @@ static int addOrderedPack(rpmDependencies rpmdep,
 		/* let this package satisfy its own predependencies */
 		if (match == package) continue;
 
+		/* the package has already been selected */
+		if (selected[match - rpmdep->addedPackages.list] == SELECTED)
+		    continue;
+
 		if (addOrderedPack(rpmdep, match, ordering, orderNumPtr,
 				   selected, 1)) return 1;
 	    }
