@@ -21,7 +21,7 @@
 #include "rpmerr.h"
 #include "rpmlib.h"
 
-enum instActions { CREATE, BACKUP, KEEP, SAVE };
+enum instActions { CREATE, BACKUP, KEEP, SAVE, SKIP };
 enum fileTypes { DIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
 struct fileToInstall {
@@ -46,7 +46,7 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 				   char * release, int * recOffset, int flags);
 static int setFileOwnerships(char * prefix, char ** fileList, 
 			     char ** fileOwners, char ** fileGroups, 
-			     int fileCount);
+			     enum instActions * instActions, int fileCount);
 static int setFileOwner(char * prefix, char * file, char * owner, 
 			char * group);
 static int createDirectories(char * prefix, char ** fileList, int fileCount);
@@ -104,6 +104,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     int i;
     int archiveFileCount = 0;
     int installFile = 0;
+    int normalState = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
     int prefixLength = strlen(prefix);
@@ -235,6 +236,9 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		    instActions[i] = BACKUP;
 		}
 	    }
+
+	    if ((fileFlagsList[i] & RPMFILE_DOC) && (flags & INSTALL_NODOCS))
+		instActions[i] = SKIP;
 	}
 
 	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileModesList,
@@ -278,25 +282,36 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		 &fileCount);
 
 	files = alloca(sizeof(struct fileToInstall) * fileCount);
+	fileStatesList = malloc(sizeof(char) * fileCount);
 	for (i = 0; i < fileCount; i++) {
 	    switch (instActions[i]) {
 	      case BACKUP:
 		ext = ".rpmorig";
 		installFile = 1;
+		normalState = 1;
 		break;
 
 	      case SAVE:
 		ext = ".rpmsave";
 		installFile = 1;
+		normalState = 1;
 		break;
 
 	      case CREATE:
 		installFile = 1;
+		normalState = 1;
 		ext = NULL;
 		break;
 
 	      case KEEP:
 		installFile = 0;
+		normalState = 1;
+		ext = NULL;
+		break;
+
+	      case SKIP:
+		installFile = 0;
+		normalState = 0;
 		ext = NULL;
 		break;
 	    }
@@ -342,6 +357,11 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
 		archiveFileCount++;
 	    }
+
+	    if (normalState) 
+		fileStatesList[i] = RPMFILE_STATE_NORMAL;
+	    else
+		fileStatesList[i] = RPMFILE_STATE_NOTINSTALLED;
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
@@ -357,10 +377,11 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	    if (getEntry(h, RPMTAG_FILEGROUPNAME, &type, (void **) &fileGroups, 
 			 &fileCount)) {
 		if (setFileOwnerships(prefix, fileList, fileOwners, fileGroups, 
-				fileCount)) {
+				instActions, fileCount)) {
 		    free(fileOwners);
 		    free(fileGroups);
 		    free(fileList);
+		    free(fileStatesList);
 		    if (replacedList) free(replacedList);
 
 		    return 2;
@@ -371,9 +392,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	}
 	free(fileList);
 
-	fileStatesList = malloc(sizeof(char) * fileCount);
-	memset(fileStatesList, RPMFILE_STATE_NORMAL, fileCount);
 	addEntry(h, RPMTAG_FILESTATES, CHAR_TYPE, fileStatesList, fileCount);
+	free(fileStatesList);
 
 	installTime = time(NULL);
 	addEntry(h, RPMTAG_INSTALLTIME, INT32_TYPE, &installTime, 1);
@@ -629,15 +649,17 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 
 static int setFileOwnerships(char * prefix, char ** fileList, 
 			     char ** fileOwners, char ** fileGroups, 
-			     int fileCount) {
+			     enum instActions * instActions, int fileCount) {
     int i;
 
     message(MESS_DEBUG, "setting file owners and groups by name (not id)\n");
 
     for (i = 0; i < fileCount; i++) {
-	/* ignore errors here - setFileOwner handles them reasonable
-	   and we want to keep running */
-	setFileOwner(prefix, fileList[i], fileOwners[i], fileGroups[i]);
+	if (instActions[i] != SKIP) {
+	    /* ignore errors here - setFileOwner handles them reasonable
+	       and we want to keep running */
+	    setFileOwner(prefix, fileList[i], fileOwners[i], fileGroups[i]);
+	}
     }
 
     return 0;
@@ -1013,6 +1035,10 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	if (secFileStatesList[sharedList[i].secFileNumber] == 
 		RPMFILE_STATE_REPLACED) {
 	    message(MESS_DEBUG, "	old version already replaced\n");
+	    continue;
+	} else if (secFileStatesList[sharedList[i].secFileNumber] == 
+		RPMFILE_STATE_NOTINSTALLED) {
+	    message(MESS_DEBUG, "	other version never installed\n");
 	    continue;
 	}
 
