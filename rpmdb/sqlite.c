@@ -54,7 +54,6 @@
 static int _debug = 0;
 
 /* Define the things normally in a header... */
-struct _sql_mem_s;	typedef struct _sql_mem_s	SQL_MEM;
 struct _sql_db_s;	typedef struct _sql_db_s	SQL_DB;
 struct _sql_dbcursor_s;	typedef struct _sql_dbcursor_s *SCP_t; 
 
@@ -87,15 +86,12 @@ struct _sql_dbcursor_s {
     DBT ** keys;		/* array of package keys */
     int nkeys;
 
-    SQL_MEM * memory;
     int count;
 
-    int used;
-};
+    void * lkey;			/* Last key returned */
+    void * ldata;		/* Last data returned */
 
-struct _sql_mem_s {
-    void * mem_ptr;
-    SQL_MEM * next;
+    int used;
 };
 
 union _dbswap {
@@ -245,6 +241,9 @@ static SCP_t scpNew(DB * dbp)
     scp->dbp = dbp;
 
     scp->used = 0;
+
+    scp->lkey = NULL;
+    scp->ldata = NULL;
 
 if (_debug)
 fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
@@ -535,24 +534,6 @@ fprintf(stderr, "Commit %s SQL transaction(s) %s (%d)\n",
     return rc;
 }
 
-/**
- * Allocate a temporary buffer.
- */
-static void * allocTempBuffer(DBC * dbcursor, size_t len)
-	/*@*/
-{
-    SCP_t scp = (SCP_t)dbcursor;
-    SQL_MEM * item;
-
-    item = xmalloc(sizeof(*item));
-    item->mem_ptr = xmalloc(len);
-
-    item->next = scp->memory;
-    scp->memory = item;
-
-    return item->mem_ptr;
-}
-
 static int sql_busy_handler(void * dbi_void, int time)
 	/*@*/
 {
@@ -674,19 +655,11 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 if (_debug)
 fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
 
-    if (scp->memory) {
-	SQL_MEM * curr_mem = scp->memory;
-	SQL_MEM * next_mem;
-	int loc_count=0;
+    if (scp->lkey)
+	scp->lkey = _free(scp->lkey);
 
-	while (curr_mem) {
-	    next_mem = curr_mem->next;
-	    free ( curr_mem->mem_ptr );
-	    free ( curr_mem );
-	    curr_mem = next_mem;
-	    loc_count++;
-	}
-    }
+    if (scp->ldata)
+	scp->ldata = _free(scp->ldata);
 
     if (flags == DB_WRITECURSOR)
 	rc = sql_commitTransaction(dbi, 1);
@@ -1075,22 +1048,30 @@ assert(scp->nr < 2);
 /* To get this far there has to be _1_ key returned! (protect against dup keys) */
 assert(scp->nr == 1);
 
+	if ( scp->lkey ) {
+	    scp->lkey = _free(scp->lkey);
+	}
+
 	key->size = scp->keys[scp->rx]->size;
-	if (key->flags & DB_DBT_MALLOC)
-	    key->data = xmalloc(key->size);
-	else
-	    key->data = allocTempBuffer(dbcursor, key->size);
+	key->data = xmalloc(key->size);
+	if (! (key->flags & DB_DBT_MALLOC))
+	    scp->lkey = key->data;
+
 	(void) memcpy(key->data, scp->keys[scp->rx]->data, key->size);
     }
 
     /* Construct and return the data element (element 0 is "value", 1 is _THE_ value)*/
     switch (dbi->dbi_rpmtag) {
     default:
+	if ( scp->ldata ) {
+	    scp->ldata = _free(scp->ldata);
+	}
+
 	data->size = scp->avlen[1];
-	if (data->flags & DB_DBT_MALLOC)
-	    data->data = xmalloc(data->size);
-	else
-	    data->data = allocTempBuffer(dbcursor, data->size);
+        data->data = xmalloc(data->size);
+	if (! (data->flags & DB_DBT_MALLOC) )
+	    scp->ldata = data->data;
+
 	(void) memcpy(data->data, scp->av[1], data->size);
     }
 
