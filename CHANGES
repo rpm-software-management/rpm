@@ -31,7 +31,6 @@
 	- permit Obsoletes: /path/to/file.
 	- permit Conflicts: /path/to/file.
 	- free rpmrc when looping on --target arches (#127730).
-	- port to internal file-4.10 libmagic rather than libfmagic.
 	- fix: handle non-unique dirnames in rpmalAdd().
 	- integrate rpmgi "generic iterator" with query/verify.
 	- bump popt version to 1.10.
@@ -49,6 +48,7 @@
 	- python: bleeping keywords broke labelCompare.
 	- add support for automagic pubkey retrieval using HKP.
 	- detect and return errors from neon through Ferror.
+	- use package color as Obsoletes: color.
 
 4.3.2 -> 4.3.3:
 	- bump micro version.
@@ -57,6 +57,7 @@
 	- selinux: use rpm_execcon, not execv, to run scriptlets (#136848).
 	- fix: segfault on --verifydb (#138589).
 	- sparcv8: optflags changed to -mtune=ultrasparc (#140420).
+	- port to internal file-4.10 libmagic rather than libfmagic.
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.

@@ -1171,6 +1171,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     size_t slen;
     int fcolor;
     int xx;
+/*@observer@*/
     static const char * magicfile = "/usr/lib/rpm/magic";
     int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
     magic_t ms = NULL;

@@ -1699,7 +1699,7 @@ static int recurseDir(FileList fl, const char * diskURL)
     char * ftsSet[2];
     FTS * ftsp;
     FTSENT * fts;
-    int ftsOpts = (FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL);
+    int myFtsOpts = (FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL);
     int rc = RPMERR_BADSPEC;
 
     fl->inFtw = 1;  /* Flag to indicate file has buildRootURL prefixed */
@@ -1707,7 +1707,7 @@ static int recurseDir(FileList fl, const char * diskURL)
 
     ftsSet[0] = (char *) diskURL;
     ftsSet[1] = NULL;
-    ftsp = Fts_open(ftsSet, ftsOpts, NULL);
+    ftsp = Fts_open(ftsSet, myFtsOpts, NULL);
     while ((fts = Fts_read(ftsp)) != NULL) {
 	switch (fts->fts_info) {
 	case FTS_D:		/* preorder directory */

@@ -885,7 +885,9 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
 	    /* Permit libselinux to do the scriptlet exec. */
 	    if (rpmtsSELinuxEnabled(ts) == 1) {	
+/*@-moduncon@*/
 		xx = rpm_execcon(0, argv[0], argv, environ);
+/*@=moduncon@*/
 		if (xx != 0)
 		    break;
 	    }

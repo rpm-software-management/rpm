@@ -938,7 +938,7 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
     return 0;
 }
 
-int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
+int pgpPubkeyFingerprint(const byte * pkt, /*@unused@*/ unsigned int pktlen,
 		byte * keyid)
 {
     const byte *s = pkt;
@@ -958,11 +958,13 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
 	switch (v->pubkey_algo) {
 	case PGPPUBKEYALGO_RSA:
 	    s += (pgpMpiLen(s) - 8);
-	    memcpy(keyid, s, 8);
+/*@-boundswrite@*/
+	    memmove(keyid, s, 8);
+/*@=boundswrite@*/
 	    rc = 0;
-	    break;
+	    /*@innerbreak@*/ break;
 	default:	/* TODO: md5 of mpi bodies (i.e. no length) */
-	    break;
+	    /*@innerbreak@*/ break;
 	}
       }	break;
     case 4:
@@ -975,11 +977,11 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
 	case PGPPUBKEYALGO_RSA:
 	    for (i = 0; i < 2; i++)
 		s += pgpMpiLen(s);
-	    break;
+	    /*@innerbreak@*/ break;
 	case PGPPUBKEYALGO_DSA:
 	    for (i = 0; i < 4; i++)
 		s += pgpMpiLen(s);
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 
 	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -987,7 +989,9 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
 	(void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 0);
 
 	s = SHA1 + 12;
-	memcpy(keyid, s, 8);
+/*@-boundswrite@*/
+	memmove(keyid, s, 8);
+/*@=boundswrite@*/
 	rc = 0;
 
 	if (SHA1) free(SHA1);
@@ -1031,10 +1035,12 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
     case PGPTAG_PUBLIC_KEY:
 	/* Get the public key fingerprint. */
 	if (_digp) {
+/*@-mods@*/
 	    if (!pgpPubkeyFingerprint(pkt, pktlen, _digp->signid))
 		_digp->saved |= PGPDIG_SAVED_ID;
 	    else
 		memset(_digp->signid, 0, sizeof(_digp->signid));
+/*@=mods@*/
 	}
 	/*@fallthrough@*/
     case PGPTAG_PUBLIC_SUBKEY:

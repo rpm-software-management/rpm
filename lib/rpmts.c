@@ -391,6 +391,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	}
 	mi = rpmdbFreeIterator(mi);
 
+/*@-branchstate@*/
 	if (ix >= 0) {
 	    char hnum[32];
 	    sprintf(hnum, "h#%d", hx);
@@ -399,6 +400,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
 	}
+/*@=branchstate@*/
     }
 
     /* Try keyserver lookup. */
@@ -411,6 +413,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
 	}
 	fn = _free(fn);
+/*@-branchstate@*/
 	if (xx) {
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
@@ -418,6 +421,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    /* Save new pubkey in local ts keyring for delayed import. */
 	    pubkeysource = xstrdup("keyserver");
 	}
+/*@=branchstate@*/
     }
 
 #ifdef	NOTNOW
@@ -439,7 +443,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 #endif
 
     /* Was a matching pubkey found? */
-    if (ts->pkpkt == NULL || ts->pkpktlen <= 0)
+    if (ts->pkpkt == NULL || ts->pkpktlen == 0)
 	goto exit;
 
     /* Retrieve parameters from pubkey packet(s). */
@@ -965,6 +969,7 @@ const char * rpmtsRootDir(rpmts ts)
 {
     const char * rootDir = NULL;
 
+/*@-branchstate@*/
     if (ts != NULL && ts->rootDir != NULL) {
 	urltype ut = urlPath(ts->rootDir, &rootDir);
 	switch (ut) {
@@ -981,6 +986,7 @@ const char * rpmtsRootDir(rpmts ts)
 	    break;
 	}
     }
+/*@=branchstate@*/
     return rootDir;
 }
 

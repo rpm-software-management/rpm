@@ -588,10 +588,12 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
     checkout = ne_propset_value(set, &fetch_props[5]);
 /*@=boundsread@*/
     
+/*@-branchstate@*/
     if (clength == NULL)
 	status = ne_propset_status(set, &fetch_props[0]);
     if (modtime == NULL)
 	status = ne_propset_status(set, &fetch_props[1]);
+/*@=branchstate@*/
 
     if (newres->type == resr_normal && status != NULL) {
 	/* It's an error! */
@@ -1532,12 +1534,14 @@ DIR * davOpendir(const char * path)
 
     /* HACK: glob does not pass dirs with trailing '/' */
     nb = strlen(path)+1;
+/*@-branchstate@*/
     if (path[nb-1] != '/') {
-	char * t = alloca(nb+1);
-	*t = '\0';
-	(void) stpcpy( stpcpy(t, path), "/");
-	path = t;
+	char * npath = alloca(nb+1);
+	*npath = '\0';
+	(void) stpcpy( stpcpy(npath, path), "/");
+	path = npath;
     }
+/*@=branchstate@*/
 
 if (_dav_debug < 0)
 fprintf(stderr, "*** davOpendir(%s)\n", path);

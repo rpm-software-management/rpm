@@ -498,9 +498,11 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
  * @param ts		rpm transaction
  * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
  */
+/*@-exportlocal@*/
 rpmRC rpmtsFindPubkey(rpmts ts)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState */;
+/*@=exportlocal@*/
 
 /** \ingroup rpmts
  * Close the database used by the transaction to solve dependencies.

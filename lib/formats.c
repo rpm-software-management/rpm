@@ -451,7 +451,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 		t = stpcpy(t, "RSA");
 		break;
 	    default:
-		snprintf(t, nb - (t - val), "%d", sigp->pubkey_algo);
+		(void) snprintf(t, nb - (t - val), "%d", sigp->pubkey_algo);
 		t += strlen(t);
 		break;
 	    }
@@ -466,7 +466,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 		t = stpcpy(t, "SHA1");
 		break;
 	    default:
-		snprintf(t, nb - (t - val), "%d", sigp->hash_algo);
+		(void) snprintf(t, nb - (t - val), "%d", sigp->hash_algo);
 		t += strlen(t);
 		break;
 	    }

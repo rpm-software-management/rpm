@@ -699,7 +699,9 @@ int rpmdbCheckSignals(void)
 	rpmdb db;
 	rpmdbMatchIterator mi;
 
+/*@-abstract@*/ /* sigset_t is abstract type */
 	rpmMessage(RPMMESS_DEBUG, "Exiting on signal(0x%lx) ...\n", *((unsigned long *)&rpmsqCaught));
+/*@=abstract@*/
 
 /*@-branchstate@*/
 	while ((mi = rpmmiRock) != NULL) {

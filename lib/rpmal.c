@@ -78,7 +78,7 @@ typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
  * A file to be installed/removed.
  */
 struct fileIndexEntry_s {
-/*@dependent@*/ /*@null@*/
+/*@dependent@*/ /*@relnull@*/
     const char * baseName;	/*!< File basename. */
     int baseNameLen;
     alNum pkgNum;		/*!< Containing package index. */
@@ -92,7 +92,7 @@ typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
  * A directory to be installed/removed.
  */
 struct dirInfo_s {
-/*@owned@*/ /*@null@*/
+/*@owned@*/ /*@relnull@*/
     const char * dirName;	/*!< Directory path (+ trailing '/'). */
     int dirNameLen;		/*!< No. bytes in directory path. */
 /*@owned@*/
@@ -482,11 +482,12 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 	for (dx = 0; dx < dc; dx++) {
 	    (void) rpmfiSetDX(fi, dx);
 	    DN = rpmfiDN(fi);
+	    if (DN != NULL)
 	    for (i = 0; i < dx; i++) {
 		const char * iDN;
 		(void) rpmfiSetDX(fi, i);
 		iDN = rpmfiDN(fi);
-		if (!strcmp(DN, iDN))
+		if (iDN != NULL && !strcmp(DN, iDN))
 		    /*@innerbreak@*/ break;
 	    }
 	    dirUnique[dx] = i;

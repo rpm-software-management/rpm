@@ -590,6 +590,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      * This order matters - we'd prefer to CREATE the file if at all
      * possible in case something else (like the timestamp) has changed.
      */
+    memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
 	const unsigned char * omd5, * nmd5;
 	/* XXX avoid md5 on sparse /var/log/lastlog file. */
@@ -606,7 +607,6 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 /*@=nullpass@*/
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
-	memset(buffer, 0, sizeof(buffer));
 	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 	    return FA_CREATE;	/* assume file has been removed */
 	oFLink = rpmfiFLink(ofi);
