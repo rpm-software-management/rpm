@@ -25,7 +25,6 @@ static int initdb = 0;
 #endif
 
 #ifdef	IAM_RPMEIU
-#include "install.h"
 #define GETOPT_INSTALL		1014
 #define GETOPT_RELOCATE		1016
 #define GETOPT_EXCLUDEPATH	1019

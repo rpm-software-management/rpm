@@ -868,6 +868,56 @@ int rpmInstallSourcePackage(const char * root, FD_t fd,
  */
 int rpmVersionCompare(Header first, Header second);
 
+/**
+ * File disposition(s) during package install/erase transaction.
+ */
+typedef enum fileAction_e {
+    FA_UNKNOWN = 0,	/*!< initial action for file ... */
+    FA_CREATE,		/*!< ... to be replaced. */
+    FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
+    FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
+    FA_SKIP, 		/*!< ... already replaced, don't remove. */
+    FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
+    FA_ERASE,		/*!< ... to be removed. */
+    FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
+    FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
+    FA_SKIPMULTILIB,	/*!< ... untouched. @todo state "multilib" ???. */
+} fileAction;
+
+#define XFA_SKIPPING(_a)	\
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
+
+/**
+ * File types.
+ * These are the types of files used internally by rpm. The file
+ * type is determined by applying stat(2) macros like S_ISDIR to
+ * the file mode tag from a header. The values are arbitrary,
+ * but are identical to the linux stat(2) file types.
+ */
+typedef enum fileTypes_e {
+    PIPE	=  1,	/*!< pipe/fifo */
+    CDEV	=  2,	/*!< character device */
+    XDIR	=  4,	/*!< directory */
+    BDEV	=  6,	/*!< block device */
+    REG		=  8,	/*!< regular file */
+    LINK	= 10,	/*!< hard link */
+    SOCK	= 12,	/*!< socket */
+} fileTypes;
+
+/** \ingroup payload
+ * Iterator across package file info, forward on install, backward on erase.
+ */
+typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
+
+/** \ingroup payload
+ * File state machine data.
+ */
+typedef /*@abstract@*/ struct fsm_s * FSM_t;
+
+/** \ingroup rpmtrans
+ */
+typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
+
 /** \ingroup rpmtrans
  * The RPM Transaction Set.
  * Transaction sets are inherently unordered! RPM may reorder transaction

@@ -1,31 +1,10 @@
-#ifndef H_INSTALL
-#define H_INSTALL
+#ifndef H_SCRIPTLET
+#define H_SCRIPTLET
 
-/** \file lib/install.h
+/** \file lib/scriptlet.h
  */
 
 #include <rpmlib.h>
-
-/**
- */
-struct sharedFile {
-    int mainFileNumber;
-    int secRecOffset;
-    int secFileNumber;
-} ;
-
-/**
- */
-struct sharedFileInfo {
-    int pkgFileNum;
-    int otherFileNum;
-    int otherPkg;
-    int isRemoved;
-};
-
-/**
- */
-typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,25 +45,8 @@ int runTriggers(const rpmTransactionSet ts, int sense, Header h,
 int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
 		int countCorrection);
 
-/**
- * Install binary package (from transaction set).
- * @param ts		transaction set
- * @param fi		transaction element file info
- * @return		0 on success, 1 on bad magic, 2 on error
- */
-int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi);
-
-/**
- * Erase binary package (from transaction set).
- * @param ts		transaction set
- * @param fi		transaction element file info
- * @param pkgKey	package private data
- * @return		0 on success
- */
-int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi);
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* H_INSTALL */
+#endif	/* H_SCRIPTLET */

@@ -4,7 +4,6 @@
 #include <rpmurl.h>
 
 #include "build.h"
-#include "install.h"
 #include "debug.h"
 
 static int checkSpec(Header h)

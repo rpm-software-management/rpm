@@ -4,7 +4,6 @@
 #include <rpmurl.h>
 
 #include "build.h"
-#include "install.h"
 #include "signature.h"
 #include "debug.h"
 

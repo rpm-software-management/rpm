@@ -286,12 +286,12 @@ INPUT                  = \
 	./lib/fprint.c \
 	./lib/fprint.h \
 	./lib/fs.c \
+	./lib/fsm.c \
+	./lib/fsm.h \
 	./lib/hash.c \
 	./lib/hash.h \
 	./lib/header.c \
 	./lib/header.h \
-	./lib/install.c \
-	./lib/install.h \
 	./lib/md5.c \
 	./lib/md5.h \
 	./lib/md5sum.c \
@@ -301,8 +301,9 @@ INPUT                  = \
 	./lib/poptBT.c \
 	./lib/poptQV.c \
 	./lib/problems.c \
+	./lib/psm.c \
+	./lib/psm.h \
 	./lib/query.c \
-	./lib/rollback.c \
 	./lib/rpmchecksig.c \
 	./lib/rpmdb.c \
 	./lib/rpmdb.h \
@@ -320,7 +321,6 @@ INPUT                  = \
 	./lib/tagName.c \
 	./lib/tagtable.c \
 	./lib/transaction.c \
-	./lib/uninstall.c \
 	./lib/verify.c \
 	./rpmio/base64.c \
 	./rpmio/base64.h \

@@ -5,11 +5,9 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmbuild.h>
 #include <rpmurl.h>
 
-#include "depends.h"
-#include "install.h"
+#include "psm.h"
 #include "md5.h"
 #include "misc.h"
 #include "debug.h"

@@ -7,7 +7,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
-#include "rollback.h"
+#include "psm.h"
 #include "fprint.h"
 #include "hash.h"
 #include "md5.h"
@@ -242,7 +242,7 @@ void rpmProblemSetFree(rpmProblemSet probs)
     free(probs);
 }
 
-static /*@observer@*/ const char *const ftstring (enum fileTypes ft)
+static /*@observer@*/ const char *const ftstring (fileTypes ft)
 {
     switch (ft) {
     case XDIR:	return "directory";
@@ -257,7 +257,7 @@ static /*@observer@*/ const char *const ftstring (enum fileTypes ft)
     /*@notreached@*/
 }
 
-static enum fileTypes whatis(uint_16 mode)
+static fileTypes whatis(uint_16 mode)
 {
     if (S_ISDIR(mode))	return XDIR;
     if (S_ISCHR(mode))	return CDEV;
@@ -502,7 +502,7 @@ static Header relocateFileList(const rpmTransactionSet ts,
 
 	/* On install, a relocate to NULL means skip the path. */
 	if (relocations[j].newPath == NULL) {
-	    enum fileTypes ft = whatis(fModes[i]);
+	    fileTypes ft = whatis(fModes[i]);
 	    int k;
 	    if (ft == XDIR) {
 		/* Start with the parent, looking for directory to exclude. */
@@ -711,7 +711,7 @@ static fileAction decideFileFate(const char * dirName,
 {
     char buffer[1024];
     const char * dbAttr, * newAttr;
-    enum fileTypes dbWhat, newWhat, diskWhat;
+    fileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int i, rc;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
@@ -802,8 +802,8 @@ static fileAction decideFileFate(const char * dirName,
 static int filecmp(short mode1, const char * md51, const char * link1,
 	           short mode2, const char * md52, const char * link2)
 {
-    enum fileTypes what1 = whatis(mode1);
-    enum fileTypes what2 = whatis(mode2);
+    fileTypes what1 = whatis(mode1);
+    fileTypes what2 = whatis(mode2);
 
     if (what1 != what2) return 1;
 

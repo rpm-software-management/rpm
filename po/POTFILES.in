@@ -33,9 +33,9 @@ lib/falloc.c
 lib/formats.c
 lib/fprint.c
 lib/fs.c
+lib/fsm.c
 lib/hash.c
 lib/header.c
-lib/install.c
 lib/md5.c
 lib/md5sum.c
 lib/misc.c
@@ -43,8 +43,8 @@ lib/package.c
 lib/poptBT.c
 lib/poptQV.c
 lib/problems.c
+lib/psm.c
 lib/query.c
-lib/rollback.c
 lib/rpmchecksig.c
 lib/rpmdb.c
 lib/rpminstall.c
@@ -54,7 +54,6 @@ lib/scriptlet.c
 lib/signature.c
 lib/stringbuf.c
 lib/transaction.c
-lib/uninstall.c
 lib/verify.c
 rpmio/base64.c
 rpmio/digest.c
