@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-04 15:34-0400\n"
+"POT-Creation-Date: 2002-08-05 15:45-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1598,46 +1598,41 @@ msgstr "%s へ書き込めません"
 msgid "error creating temporary file %s\n"
 msgstr "一時ファイル %s の作成エラー"
 
-#: lib/package.c:442 lib/package.c:482 lib/package.c:701 lib/package.c:725
-#: lib/package.c:755 lib/rpmchecksig.c:767
+#: lib/package.c:442 lib/package.c:482 lib/package.c:693 lib/package.c:717
+#: lib/package.c:747 lib/rpmchecksig.c:767
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:584 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
-#, c-format
-msgid "%s: readLead failed\n"
-msgstr "%s: readLead に失敗しました\n"
-
-#: lib/package.c:599
+#: lib/package.c:591
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:607
+#: lib/package.c:599
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:616 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
+#: lib/package.c:608 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/package.c:620 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
+#: lib/package.c:612 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
 
-#: lib/package.c:667 lib/rpmchecksig.c:586
+#: lib/package.c:659 lib/rpmchecksig.c:586
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:767 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
+#: lib/package.c:759 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2344,7 +2339,7 @@ msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
 #: lib/query.c:609 lib/rpminstall.c:565
 #, fuzzy, c-format
-msgid "%s: not a package manifest: %s\n"
+msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
 #: lib/query.c:653
@@ -2441,6 +2436,11 @@ msgstr "makeTempFile に失敗しました\n"
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite に失敗しました: %s\n"
+
+#: lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
+#, fuzzy, c-format
+msgid "%s: not an rpm package\n"
+msgstr "引数は RPM パッケージではありません\n"
 
 #: lib/rpmchecksig.c:213
 #, fuzzy, c-format
@@ -3750,6 +3750,9 @@ msgstr "%s: fdOpen に失敗しました: %s\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
+
+#~ msgid "%s: readLead failed\n"
+#~ msgstr "%s: readLead に失敗しました\n"
 
 #, fuzzy
 #~ msgid "repackage about-to-be-erased packages\n"

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-04 15:34-0400\n"
+"POT-Creation-Date: 2002-08-05 15:45-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1580,46 +1580,41 @@ msgstr "nie mo¿na zapisaæ do %s"
 msgid "error creating temporary file %s\n"
 msgstr "b³±d w tworzeniu pliku tymczasowego %s"
 
-#: lib/package.c:442 lib/package.c:482 lib/package.c:701 lib/package.c:725
-#: lib/package.c:755 lib/rpmchecksig.c:767
+#: lib/package.c:442 lib/package.c:482 lib/package.c:693 lib/package.c:717
+#: lib/package.c:747 lib/rpmchecksig.c:767
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:584 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
-#, c-format
-msgid "%s: readLead failed\n"
-msgstr "%s: readLead nie powiod³o siê\n"
-
-#: lib/package.c:599
+#: lib/package.c:591
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "tylko pakiety z numerem g³ównym <= 3 s± obs³ugiwane przez t± wersjê RPM'a"
 
-#: lib/package.c:607
+#: lib/package.c:599
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "tylko pakiety z numerem g³ównym <= 3 s± obs³ugiwane przez t± wersjê RPM'a"
 
-#: lib/package.c:616 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
+#: lib/package.c:608 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature nie powiod³o siê\n"
 
-#: lib/package.c:620 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
+#: lib/package.c:612 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Sygnatura nie jest dostêpna\n"
 
-#: lib/package.c:667 lib/rpmchecksig.c:586
+#: lib/package.c:659 lib/rpmchecksig.c:586
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/package.c:767 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
+#: lib/package.c:759 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
@@ -2308,7 +2303,7 @@ msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
 #: lib/query.c:609 lib/rpminstall.c:565
 #, fuzzy, c-format
-msgid "%s: not a package manifest: %s\n"
+msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
 #: lib/query.c:653
@@ -2404,6 +2399,11 @@ msgstr "wykonanie nie powiod³o siê\n"
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
+
+#: lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
+#, fuzzy, c-format
+msgid "%s: not an rpm package\n"
+msgstr "argument nie jest pakietem RPM\n"
 
 #: lib/rpmchecksig.c:213
 #, fuzzy, c-format
@@ -3694,6 +3694,9 @@ msgstr "%s: Open nie powiod³o siê\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
+
+#~ msgid "%s: readLead failed\n"
+#~ msgstr "%s: readLead nie powiod³o siê\n"
 
 #, fuzzy
 #~ msgid "repackage about-to-be-erased packages\n"

@@ -219,6 +219,7 @@
 	- python: expose RPMTAG_SOURCEPACKAGE to identify source headers.
 	- python: eliminate headerFromPackage() tuple return, deprecated.
 	- python: add ts.hdrFromFdno(fdno) method.
+	- fix: check for lead magic, better error message on failure (#69751).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -205,7 +205,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	memset(l, 0, sizeof(*l));
 /*@=boundswrite@*/
 	if (readLead(fd, l)) {
-	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), rpm);
+	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), rpm);
 	    goto exit;
 	}
 	switch (l->major) {
@@ -669,7 +669,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	memset(l, 0, sizeof(*l));
 /*@=boundswrite@*/
 	if (readLead(fd, l)) {
-	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), fn);
+	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), fn);
 	    res++;
 	    goto exit;
 	}

@@ -15,6 +15,10 @@
 #include "rpmlead.h"
 #include "debug.h"
 
+static unsigned char lead_magic[] = {
+    RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3
+};
+
 /* The lead needs to be 8 byte aligned */
 
 int writeLead(FD_t fd, const struct rpmlead *lead)
@@ -25,11 +29,7 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
     memcpy(&l, lead, sizeof(*lead));
 /*@=boundswrite@*/
     
-    l.magic[0] = RPMLEAD_MAGIC0;
-    l.magic[1] = RPMLEAD_MAGIC1;
-    l.magic[2] = RPMLEAD_MAGIC2;
-    l.magic[3] = RPMLEAD_MAGIC3;
-
+    memcpy(&l.magic, lead_magic, sizeof(lead_magic));
     l.type = htons(l.type);
     l.archnum = htons(l.archnum);
     l.osnum = htons(l.osnum);
@@ -55,6 +55,9 @@ int readLead(FD_t fd, struct rpmlead *lead)
 	return 1;
     }
     /*@=type@*/
+
+    if (memcmp(lead->magic, lead_magic, sizeof(lead_magic)))
+	return 1;
 
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);

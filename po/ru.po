@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-04 15:34-0400\n"
+"POT-Creation-Date: 2002-08-05 15:45-0400\n"
 "PO-Revision-Date: 2002-04-09 16:44-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@bcl.bz>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1561,42 +1561,37 @@ msgstr "невозможно писать в %%%s %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "ошибка создания временного файла %s\n"
 
-#: lib/package.c:442 lib/package.c:482 lib/package.c:701 lib/package.c:725
-#: lib/package.c:755 lib/rpmchecksig.c:767
+#: lib/package.c:442 lib/package.c:482 lib/package.c:693 lib/package.c:717
+#: lib/package.c:747 lib/rpmchecksig.c:767
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:584 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
-#, c-format
-msgid "%s: readLead failed\n"
-msgstr "%s: ошибка readLead\n"
-
-#: lib/package.c:599
+#: lib/package.c:591
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "пакеты версии 1 не поддерживаются этой версией RPM\n"
 
-#: lib/package.c:607
+#: lib/package.c:599
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
 
-#: lib/package.c:616 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
+#: lib/package.c:608 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/package.c:620 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
+#: lib/package.c:612 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
 
-#: lib/package.c:667 lib/rpmchecksig.c:586
+#: lib/package.c:659 lib/rpmchecksig.c:586
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: ошибка readLead\n"
 
-#: lib/package.c:767 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
+#: lib/package.c:759 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
@@ -2254,7 +2249,7 @@ msgstr "запросы к исходным пакетам в старом формате не поддерживаются\n"
 
 #: lib/query.c:609 lib/rpminstall.c:565
 #, fuzzy, c-format
-msgid "%s: not a package manifest: %s\n"
+msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "ни один пакет не подходит к %s: %s\n"
 
 #: lib/query.c:653
@@ -2349,6 +2344,11 @@ msgstr "ошибка makeTempFile\n"
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: ошибка Fwrite: %s\n"
+
+#: lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
+#, fuzzy, c-format
+msgid "%s: not an rpm package\n"
+msgstr "заданный аргумент не является пакетом RPM\n"
 
 #: lib/rpmchecksig.c:213
 #, fuzzy, c-format
@@ -3630,6 +3630,9 @@ msgstr "%s: ошибка открытия: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: ошибка чтения списка файлов: %s\n"
+
+#~ msgid "%s: readLead failed\n"
+#~ msgstr "%s: ошибка readLead\n"
 
 #, fuzzy
 #~ msgid "rollback %d packages to %s"
