@@ -28,9 +28,6 @@
 #define _REENTRANT
 #endif
 
-#undef PACKAGE
-#undef VERSION
-
 #define AIX			0
 #define BEOS		0
 #define CYGWIN		0

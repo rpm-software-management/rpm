@@ -103,6 +103,7 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 STRIP = @STRIP@
 VERSION = @VERSION@
+ac_cv_have_gcj = @ac_cv_have_gcj@
 ac_cv_have_java = @ac_cv_have_java@
 ac_cv_have_javac = @ac_cv_have_javac@
 am__include = @am__include@

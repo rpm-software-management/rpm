@@ -63,13 +63,15 @@ beetest: all
 	make -C tests beetest
 	./tests/beetest
 
+# XXX don't bite into gcj java dependencies (yet)
 .PHONY: sources
 sources:
 	@echo $(libbeecrypt_la_SOURCES:%=beecrypt/%) | sed -e 's,beecrypt/javaglue.c,,'
 
+# XXX don't bite into javaglue.c (yet)
 .PHONY: lclint
 lclint:
-	lclint $(DEFS) $(INCLUDES) ${libbeecrypt_la_SOURCES} tests/beetest.c
+	lclint $(DEFS) $(INCLUDES) $(libbeecrypt_la_SOURCES:javaglue.c=) tests/beetest.c
 
 .PHONY: listobjs
 listobjs:
