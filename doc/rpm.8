@@ -321,8 +321,9 @@ The format of the output is a string of 8 characters, a possible "\fBc\fP"
 denoting a configuration file, and then the file name.  Each of the 8
 characters denotes the result of a comparison of one attribute of the file
 to the value of that attribute recorded in the RPM database.  A 
-single "\fB.\fP" (period) means the test passed.  The following characters 
-denote failure of certain tests:
+single "\fB.\fP" (period) means the test passed, while a single "\fB?\fP"
+indicates the test could not be performed (e.g. file permissions prevent
+reading).  The following characters denote failure of certain tests:
 
 .IP "\fB5\fP"
 MD5 sum
@@ -580,19 +581,18 @@ This option may also be specified by configuring the macro \fB_httpport\fP.
 /usr/lib/rpm/macros
 /etc/rpm/macros
 ~/.rpmmacros
-/var/lib/rpm/conflictsindex.rpm
-/var/lib/rpm/fileindex.rpm
-/var/lib/rpm/groupindex.rpm
-/var/lib/rpm/nameindex.rpm
-/var/lib/rpm/packages.rpm
-/var/lib/rpm/providesindex.rpm
-/var/lib/rpm/requiredby.rpm
-/var/lib/rpm/triggerindex.rpm
-/tmp/rpm*
+/var/lib/rpm/Conflictname
+/var/lib/rpm/Basenames
+/var/lib/rpm/Group
+/var/lib/rpm/Name
+/var/lib/rpm/Packages
+/var/lib/rpm/Providename
+/var/lib/rpm/Requirename
+/var/lib/rpm/Triggername
+/var/tmp/rpm*
 .fi
 .El
 .SH SEE ALSO
-.IR glint (8) ,
 .IR rpm2cpio (8) ,
 .B http://www.rpm.org/
 .nf
