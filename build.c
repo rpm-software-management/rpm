@@ -22,6 +22,8 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
     char buf[BUFSIZ];
     Spec spec = NULL;
 
+    rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
+
     if (fromTarball) {
 	specDir = alloca(BUFSIZ);
 	strcpy(specDir, "%{_specdir}");
