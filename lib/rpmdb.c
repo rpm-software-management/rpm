@@ -148,7 +148,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     if (!h) {
 	error(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
 	      offset);
-	return 0;
+	return 1;
     }
 
     if (!getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count)) {
@@ -181,7 +181,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	printf("faFree failed!\n");
     }
 
-    return 1;
+    return 0;
 }
 
 int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
@@ -239,6 +239,32 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     }
 
     if (count) free(fileList);
+
+    return 0;
+}
+
+int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
+    Header oldHeader;
+
+    oldHeader = rpmdbGetRecord(db, offset);
+    if (!oldHeader) {
+	error(RPMERR_DBCORRUPT, "cannot read header at %d for update",
+		offset);
+	return 1;
+    }
+
+    if (sizeofHeader(oldHeader) != sizeofHeader(newHeader)) {
+	message(MESS_DEBUG, "header changed size!");
+	if (rpmdbRemove(db, offset, 1))
+	    return 1;
+
+	if (rpmdbAdd(db, newHeader)) 
+	    return 1;
+    } else {
+	lseek(db->pkgs->fd, offset, SEEK_SET);
+
+	writeHeader(db->pkgs->fd, newHeader);
+    }
 
     return 0;
 }
