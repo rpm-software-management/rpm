@@ -1,6 +1,12 @@
 2.3.7 -> 2.3.8:
 	- added -t? options to build packages from tarballs which contain
 	  .spec files instead of from the .spec files directly
+	- fixed error in man page where ftp URLs are discussed
+	- don't strlen(NULL) in headerAddEntry()
+	- minor portability changes
+	- stopped building oldrpmdb.c as part of rpmlib
+	- added Makefile rule for building rpmconvert (which is almost
+	  never needed) -- this isolated gdbm dependence to this target
 
 2.3.6 -> 2.3.7:
 	- fixed nasty memory link in -Va
