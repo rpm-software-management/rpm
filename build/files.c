@@ -824,8 +824,9 @@ static void genCpioListAndHeader(struct FileList *fl,
       }
 	headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 			       &(flp->fl_ino), 1);
+
 	headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
-			       &(flp->langs), flp->nlangs);
+			       &(flp->langs), (flp->nlangs ? flp->nlangs : 1));
 	
 	/* We used to add these, but they should not be needed */
 	/* headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
