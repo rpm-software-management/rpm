@@ -536,7 +536,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
       case RPMTAG_POSTTRANSACTION:
 	if ((rc = rpmSyscall(field, 1)) != 0) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Invalid tag value: %s"),
+		     _("line %d: Invalid %s tag value: %s"),
 		     spec->lineNum, tagName(tag), spec->line);
 	    return RPMERR_BADSPEC;
 	}
