@@ -25,11 +25,9 @@ AUTOMAKE_OPTIONS = gnu no-dependencies
 INCLUDES = -I$(top_srcdir)
 LDADD = $(top_builddir)/libbeecrypt.la
 
-EXTRA_PROGRAMS = beetest openpgp base64bug
+EXTRA_PROGRAMS = beetest openpgp
  
 beetest_SOURCES = beetest.c
 beetest_LDFLAGS = -all-static
 
 openpgp_SOURCES = openpgp.c
-
-base64bug_SOURCES = base64bug.c
