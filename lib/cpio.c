@@ -775,7 +775,7 @@ static int writeLinkedFile(int fd, struct hardLink * hlink,
 	cb(&cbinfo, cbData);
     }
 
-    return i;
+    return 0;
 }
 
 int cpioBuildArchive(int fd, struct cpioFileMapping * mappings, 
