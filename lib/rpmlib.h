@@ -72,6 +72,7 @@
 #define INSTALL_REPLACEFILES	(1 << 1)
 #define INSTALL_TEST		(1 << 2)
 #define INSTALL_UPGRADE		(1 << 3)
+#define INSTALL_UPGRADETOOLD	(1 << 4)
 
 #define VERIFY_NONE             0
 #define VERIFY_MD5              (1 << 0)
