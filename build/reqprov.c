@@ -69,6 +69,9 @@ int addReqProv(struct PackageRec *p, int flags,
     if (flags & REQUIRE_PROVIDES) {
 	message(MESS_DEBUG, "Adding provide: %s\n", name);
 	p->numProv++;
+    } else if (flags & REQUIRE_CONFLICTS) {
+	message(MESS_DEBUG, "Adding conflict: %s\n", name);
+	p->numConflict++;
     } else {
 	message(MESS_DEBUG, "Adding require: %s\n", name);
 	p->numReq++;
@@ -295,6 +298,36 @@ int processReqProv(Header h, struct PackageRec *p)
 	free(nameArray);
     }
 
+    if (p->numConflict) {
+	rd = p->reqprov;
+	nameArray = namePtr = malloc(p->numConflict * sizeof(*nameArray));
+	versionArray = versionPtr =
+	    malloc(p->numConflict * sizeof(*versionArray));
+	flagArray = flagPtr = malloc(p->numConflict * sizeof(*flagArray));
+	message(MESS_VERBOSE, "Conflicts (%d):", p->numConflict);
+	while (rd) {
+	    if (rd->flags & REQUIRE_CONFLICTS) {
+		message(MESS_VERBOSE, " %s", rd->name);
+		*namePtr++ = rd->name;
+		*versionPtr++ = rd->version ? rd->version : "";
+		*flagPtr++ = rd->flags & REQUIRE_SENSEMASK;
+	    }
+	    rd = rd->next;
+	}
+	message(MESS_VERBOSE, "\n");
+
+	addEntry(h, RPMTAG_CONFLICTNAME, STRING_ARRAY_TYPE,
+		 nameArray, p->numConflict);
+	addEntry(h, RPMTAG_CONFLICTVERSION, STRING_ARRAY_TYPE,
+		 versionArray, p->numConflict);
+	addEntry(h, RPMTAG_CONFLICTFLAGS, INT32_TYPE,
+		 flagArray, p->numConflict);
+
+	free(nameArray);
+	free(versionArray);
+	free(flagArray);
+    }
+
     if (p->numReq) {
 	rd = p->reqprov;
 	nameArray = namePtr = malloc(p->numReq * sizeof(*nameArray));
@@ -306,7 +339,7 @@ int processReqProv(Header h, struct PackageRec *p)
 		message(MESS_VERBOSE, " %s", rd->name);
 		*namePtr++ = rd->name;
 		*versionPtr++ = rd->version ? rd->version : "";
-		*flagPtr++ = rd->flags;
+		*flagPtr++ = rd->flags & REQUIRE_SENSEMASK;
 	    }
 	    rd = rd->next;
 	}
