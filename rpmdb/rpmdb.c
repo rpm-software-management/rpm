@@ -3575,8 +3575,15 @@ static int rpmdbMoveDatabase(const char * prefix,
 		continue;
 	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
 	    (void)rpmCleanPath(nfilename);
-	    if (stat(ofilename, nst))
-		continue;
+
+	    /*
+	     * Get uid/gid/mode/mtime. If old doesn't exist, use new.
+	     * XXX Yes, the variable names are backwards.
+	     */
+	    if (stat(nfilename, nst) < 0)
+		if (stat(ofilename, nst) < 0)
+		    continue;
+
 	    if ((xx = rename(ofilename, nfilename)) != 0) {
 		rc = 1;
 		continue;

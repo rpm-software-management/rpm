@@ -237,6 +237,7 @@
 	- fix: rebuilddb stat'ed target, not source, for rename sanity.
 	- create /var/lib/rpm if non-existent in, say, a chroot.
 	- erased packages are now repackaged into /var/spool/repackage.
+	- fix: rebuilddb stat'ed target, not source, for rename sanity, take 2.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
