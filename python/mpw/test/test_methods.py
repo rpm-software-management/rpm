@@ -105,12 +105,49 @@ class BasicTestCase(unittest.TestCase):
 	pass
 
     #----------------------------------------
-    def test02_KnuthPoly(self):
+    def test02_CarryBorrow(self):
+        if verbose:
+            print '\n', '-=' * 30
+            print "Running %s.test02_CarryBorrow..." % \
+                  self.__class__.__name__
+	a = 0x7fffffff
+	wa = -rpm.mpw(a); wa = wa+wa
+	za = -long(a); za = za+za
+	wb = -rpm.mpw(1)
+	zb = -long(1)
+	wc = rpm.mpw(1)
+	zc = long(1)
+	wd = rpm.mpw(a); wd = wd+wd
+	zd = long(a); zd = zd+zd
+	print "add --:\t", (wa+wa), "\t",  (za+za)
+	print "add -+:\t", (wb+wd), "\t",  (zb+zd)
+	print "add +-:\t", (wc+wa), "\t",  (zc+za)
+	print "add ++:\t", (wd+wd), "\t",  (zd+zd)
+	print "sub --:\t", (wb-wa), "\t",  (zb-za)
+#	print "sub -+:\t", (wb-wd), "\t",  (zb-zd)
+#	print "sub +-:\t", (wc-wa), "\t",  (zc-za)
+	print "sub ++:\t", (wc-wd), "\t",  (zc-zd)
+	pass
+
+    #----------------------------------------
+    def test03_Signs(self):
+        if verbose:
+            print '\n', '-=' * 30
+            print "Running %s.test03_Signs..." % \
+                  self.__class__.__name__
+	a = 9876543210
+	wa = -rpm.mpw(a);
+	za = -long(a);
+	print "-9876543210:\t", wa, "\t",  za
+	pass
+
+    #----------------------------------------
+    def test04_KnuthPoly(self):
 	self.t = 8
 	tfmt = "%o"
         if verbose:
             print '\n', '-=' * 30
-            print "Running %s.test02_KnuthPoly..." % \
+            print "Running %s.test04_KnuthPoly..." % \
                   self.__class__.__name__
 	    print "\t(%d**m - 1) * (%d**n - 1), m,n in [%d,%d)" % (self.t,self.t,self.lo,self.hi)
 	tm1 = tfmt % (self.t - 1)
@@ -159,10 +196,10 @@ class BasicTestCase(unittest.TestCase):
 	pass
 
     #----------------------------------------
-    def test03_IterativePowers(self):
+    def test05_IterativePowers(self):
         if verbose:
             print '\n', '-=' * 30
-            print "Running %s.test03_IterativePowers..." % \
+            print "Running %s.test05_IterativePowers..." % \
                   self.__class__.__name__
 	    print "\t(m**n)/(m**(n-1)) == m for m,n in [%d,%d)" % (self.lo,self.hi)
 	for m in range(self.lo,self.hi):

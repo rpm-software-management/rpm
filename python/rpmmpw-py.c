@@ -323,12 +323,15 @@ static const struct {
 };
 
 static void prtmpw(const char * msg, mpwObject * x)
+	/*@global stderr, fileSystem @*/
+	/*@modifies stderr, fileSystem @*/
 {
 fprintf(stderr, "%5.5s %p[%d]:\t", msg, MPW_DATA(x), MPW_SIZE(x)), mpfprintln(stderr, MPW_SIZE(x), MPW_DATA(x));
 }
 
 static size_t
 mpsizeinbase(size_t xsize, mpw* xdata, size_t base)
+	/*@*/
 {
     size_t nbits;
     size_t res;
@@ -349,6 +352,7 @@ fprintf(stderr, "*** mpsizeinbase(%p[%d], %d) res %u\n", xdata, xsize, base, (un
     return res;
 }
 
+#ifdef	DYING
 /*@-boundswrite@*/
 static void myndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, register mpw* workspace)
 {
@@ -383,9 +387,11 @@ static void myndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize,
 	}
 }
 /*@=boundswrite@*/
+#endif
 
 static char *
 mpstr(char * t, size_t nt, size_t size, mpw* data, mpw base)
+	/*@modifies t @*/
 {
     static char bchars[] = "0123456789abcdefghijklmnopqrstuvwxyz";
     size_t asize = size + 1;
@@ -429,6 +435,7 @@ fprintf(stderr, "    z %p[%d]:\t", zdata, asize+1), mpfprintln(stderr, asize+1, 
 
 static PyObject *
 mpw_format(mpwObject * z, size_t base, int addL)
+	/*@modifies t @*/
 {
     size_t zsize = MPW_SIZE(z);
     mpw* zdata = MPW_DATA(z);
@@ -643,6 +650,7 @@ static byte mpslide_postsq[16] =
 /*@-boundsread@*/
 static void mpnpowsld_w(mpnumber* n, size_t size, const mpw* slide,
 		size_t psize, const mpw* pdata)
+	/*@modifies n @*/
 {
     size_t rsize = (n->size > size ? n->size : size);
     mpw* rdata = alloca(2 * rsize * sizeof(*rdata));
@@ -762,6 +770,7 @@ fprintf(stderr, "\tpost2:\t"), mpfprintln(stderr, n->size, n->data);
 /*@-boundsread@*/
 static void mpnpow_w(mpnumber* n, size_t xsize, const mpw* xdata,
 		size_t psize, const mpw* pdata)
+	/*@modifies n @*/
 {
     size_t xbits = MPBITCNT(xsize, xdata);
     size_t pbits = MPBITCNT(psize, pdata);
@@ -857,12 +866,11 @@ mpw_FromLong(long ival)
     if (z == NULL)
 	return NULL;
 
-    if (ival >= 0) {
-	z->data[0] = (mpw) ival;
-    } else {
+    if (ival < 0) {
 	z->ob_size = -z->ob_size;
-	z->data[0] = (mpw) -ival;
+	ival = -ival;
     }
+    z->data[0] = (mpw) ival;
 
     return z;
 }
@@ -875,6 +883,10 @@ mpw_FromDouble(double dval)
     if (z == NULL)
 	return NULL;
 
+    if (dval < 0) {
+	z->ob_size = -z->ob_size;
+	dval = -dval;
+    }
     z->data[0] = (mpw) dval;
 
     return z;
@@ -1019,9 +1031,12 @@ mpw_FromLongObject(PyLongObject *lo)
     unsigned char * zb;
     size_t nzb;
     int is_littleendian = 0;
-    int is_signed = 1;
+    int is_signed = 0;
 
-    z = mpw_New(zsize);
+    lsize = zsize;
+    if (lo->ob_size < 0)
+	lsize = -lsize;
+    z = mpw_New(lsize);
     if (z == NULL)
 	return NULL;
 
@@ -1029,7 +1044,7 @@ mpw_FromLongObject(PyLongObject *lo)
     zb = (unsigned char *) zdata;
     nzb = MP_WORDS_TO_BYTES(zsize);
 
-    /* Grab long as big-endian signed octets. */
+    /* Grab long as big-endian unsigned octets. */
     if (_PyLong_AsByteArray(lo, zb, nzb, is_littleendian, is_signed)) {
 	Py_DECREF(z);
 	return NULL;
@@ -1056,7 +1071,7 @@ mpw_FromLongObject(PyLongObject *lo)
 /* ---------- */
 
 static void
-mpw_dealloc(mpwObject * s)
+mpw_dealloc(/*@only@*/mpwObject * s)
 	/*@modifies s @*/
 {
 if (_mpw_debug < -1)
@@ -1246,9 +1261,10 @@ mpw_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	    return NULL;
 
 	if (x != NULL) {
+	    /* XXX make sure new instance, not old reference. */
 	    if (mpw_Check(x)) {
-		z = (mpwObject *)x;
-		z = mpw_FromMPW(MPW_SIZE(z), MPW_DATA(z), 1);
+		mpwObject *zo = (mpwObject *)x;
+		z = mpw_Copy(zo);
 	    } else
 		z = mpw_i2mpw(x);
 	} else
@@ -1274,11 +1290,17 @@ mpw_ops2(const char *fname, char op, mpwObject *x, mpwObject *m)
     size_t msize;
     mpw* mdata;
     size_t mnorm;
+    size_t asize;
+    mpw* adata;
+    size_t bsize;
+    mpw* bdata;
+    size_t shift;
     size_t zsize;
     mpw* zdata;
     mpw* wksp;
     mpbarrett b;
     int carry;
+    int zsign = 0;
 
     mpbzero(&b);
     if (x == NULL || m == NULL)
@@ -1288,7 +1310,11 @@ mpw_ops2(const char *fname, char op, mpwObject *x, mpwObject *m)
     xdata = MPW_DATA(x);
     msize = MPW_SIZE(m);
     mdata = MPW_DATA(m);
-    mnorm = mpsize(msize, mdata);
+    mnorm = msize - mpsize(msize, mdata);
+    if (mnorm > 0 && mnorm < msize) {
+	msize -= mnorm;
+	mdata += mnorm;
+    }
 
 if (_mpw_debug < 0) {
 prtmpw("a", x);
@@ -1300,34 +1326,111 @@ prtmpw("b", m);
 	goto exit;
 	/*@notreached@*/ break;
     case '+':
-	z = mpw_FromMPW(xsize, xdata, 0);
-	carry = mpaddx(MPW_SIZE(z), MPW_DATA(z), msize, mdata);
+	zsize = MAX(xsize, msize) + 1;
+	zdata = alloca(zsize * sizeof(*zdata));
+	mpsetx(zsize, zdata, xsize, xdata);
+	if (x->ob_size < 0) {
+	    zsign = 1;
+	    if (m->ob_size < 0) {
+		carry = mpaddx(zsize-1, zdata+1, msize, mdata);
+		if (carry) {
+if (_mpw_debug)
+fprintf(stderr, "add --: carry\n");
+		    *zdata = 1;
+		}
+	    } else {
+		carry = mpsubx(zsize-1, zdata+1, msize, mdata);
+		if (carry) {
+if (_mpw_debug)
+fprintf(stderr, "add -+: borrow\n");
+		    *zdata = MP_ALLMASK;
+		    mpneg(zsize, zdata);
+		    zsign = 0;
+		}
+	    }
+	} else {
+	    zsign = 0;
+	    if (m->ob_size < 0) {
+		carry = mpsubx(zsize-1, zdata+1, msize, mdata);
+		if (carry) {
+if (_mpw_debug)
+fprintf(stderr, "add +-: borrow\n");
+		    *zdata = MP_ALLMASK;
+		    mpneg(zsize, zdata);
+		    zsign = 1;
+		}
+	    } else {
+		carry = mpaddx(zsize-1, zdata+1, msize, mdata);
+		if (carry) {
+if (_mpw_debug)
+fprintf(stderr, "add ++: carry\n");
+		    *zdata = 1;
+		}
+	    }
+	}
+	z = mpw_FromMPW(zsize, zdata, 1);
+	if (zsign)
+	    z->ob_size = -z->ob_size;
 	break;
     case '-':
-	z = mpw_FromMPW(xsize, xdata, 0);
-	carry = mpsubx(MPW_SIZE(z), MPW_DATA(z), msize, mdata);
+	zsize = MAX(xsize, msize) + 1;
+	zdata = alloca(zsize * sizeof(*zdata));
+	mpsetx(zsize, zdata, xsize, xdata);
+	if (x->ob_size < 0) {
+	    zsign = 1;
+	    if (m->ob_size < 0) {
+		carry = mpsubx(zsize-1, zdata+1, msize, mdata);
+		if (carry) {
+if (_mpw_debug)
+fprintf(stderr, "sub --: borrow\n");
+		    *zdata = MP_ALLMASK;
+		    mpneg(zsize, zdata);
+		    zsign = 0;
+		}
+	    } else {
+		carry = mpaddx(zsize-1, zdata+1, msize, mdata);
+		if (carry) {
+if (_mpw_debug)
+fprintf(stderr, "sub -+: carry\n");
+		    *zdata = 1;
+		}
+	    }
+	} else {
+	    zsign = 0;
+	    if (m->ob_size < 0) {
+		carry = mpaddx(zsize-1, zdata+1, msize, mdata);
+		if (carry) {
+if (_mpw_debug)
+fprintf(stderr, "sub +-: carry\n");
+		    *zdata = 1;
+		}
+	    } else {
+		carry = mpsubx(zsize-1, zdata+1, msize, mdata);
+		if (carry) {
+if (_mpw_debug)
+fprintf(stderr, "sub ++: borrow\n");
+		    *zdata = MP_ALLMASK;
+		    mpneg(zsize, zdata);
+		    zsign = 1;
+		}
+	    }
+	}
+	z = mpw_FromMPW(zsize-1, zdata+1, 1);
+	if (zsign)
+	    z->ob_size = -z->ob_size;
 	break;
     case '*':
 	zsize = xsize + msize;
 	zdata = alloca(zsize * sizeof(*zdata));
-
 	mpmul(zdata, xsize, xdata, msize, mdata);
 	z = mpw_FromMPW(zsize, zdata, 1);
+	if (zsign)
+	    z->ob_size = -z->ob_size;
 	break;
     case '/':
-    {	size_t asize;
-	mpw* adata;
-	size_t bsize;
-	mpw* bdata;
-	size_t shift;
-
 	asize = xsize+1;
 	adata = alloca(asize * sizeof(*adata));
 	mpsetx(asize, adata, xsize, xdata);
-	if (mnorm < msize) {
-	    msize -= mnorm;
-	    mdata += mnorm;
-	}
 	bsize = msize;
 	bdata = alloca(bsize * sizeof(*bdata));
 	mpsetx(bsize, bdata, msize, mdata);
@@ -1343,47 +1446,44 @@ prtmpw("b", m);
 	zsize -= bsize;
 
 	z = mpw_FromMPW(zsize, zdata, 1);
-    }	break;
+	if (zsign)
+	    z->ob_size = -z->ob_size;
+	break;
     case '%':
-    {	size_t bsize = msize;
-	mpw* bdata = mdata;
-	size_t bnorm = mpsize(bsize, bdata);
+	asize = xsize+1;
+	adata = alloca(asize * sizeof(*adata));
+	mpsetx(asize, adata, xsize, xdata);
+	bsize = msize;
+	bdata = mdata;
 
-	if (bnorm < bsize) {
-	    bsize -= bnorm;
-	    bdata += bnorm;
-	}
-	zsize = xsize;
+	zsize = asize;
 	zdata = alloca(zsize * sizeof(*zdata));
 	wksp = alloca((bsize+1) * sizeof(*wksp));
 
-	mpnmod(zdata, xsize, xdata, bsize, bdata, wksp);
+	mpnmod(zdata, asize, adata, bsize, bdata, wksp);
 
 	z = mpw_FromMPW(zsize, zdata, 1);
-    }	break;
+	if (zsign)
+	    z->ob_size = -z->ob_size;
+	break;
     case '<':
-    {	size_t bnorm = msize - MP_ROUND_B2W(MPBITCNT(msize, mdata));
-	size_t bsize = msize - bnorm;
-	mpw* bdata = mdata + bnorm;
-	size_t count = 0;
-
-	if (bsize == 1)
-	    count = bdata[0];
+	/* XXX FIXME: enlarge? negative count? sign?. */
+	shift = (size_t) (msize == 1 ? mdata[0] : 0);
 	z = mpw_FromMPW(xsize, xdata, 0);
-	mplshift(MPW_SIZE(z), MPW_DATA(z), count);
-    }	break;
+	if (shift > 0)
+	    mplshift(MPW_SIZE(z), MPW_DATA(z), shift);
+	break;
     case '>':
-    {	size_t bnorm = msize - MP_ROUND_B2W(MPBITCNT(msize, mdata));
-	size_t bsize = msize - bnorm;
-	mpw* bdata = mdata + bnorm;
-	size_t count = 0;
-
-	if (bsize == 1)
-	    count = bdata[0];
+	/* XXX FIXME: enlarge? negative count? sign?. */
+	shift = (size_t) (msize == 1 ? mdata[0] : 0);
 	z = mpw_FromMPW(xsize, xdata, 0);
-	mprshift(MPW_SIZE(z), MPW_DATA(z), count);
-    }	break;
+	if (shift > 0)
+	    mprshift(MPW_SIZE(z), MPW_DATA(z), shift);
+	break;
     case '&':
+	/* XXX reset to original size for now. */
+	msize = MPW_SIZE(m);
+	mdata = MPW_DATA(m);
 	if (xsize <= msize) {
 	    z = mpw_FromMPW(xsize, xdata, 0);
 	    mpand(MPW_SIZE(z), MPW_DATA(z), mdata + (msize - xsize));
@@ -1393,6 +1493,9 @@ prtmpw("b", m);
 	}
 	break;
     case '|':
+	/* XXX reset to original size for now. */
+	msize = MPW_SIZE(m);
+	mdata = MPW_DATA(m);
 	if (xsize <= msize) {
 	    z = mpw_FromMPW(xsize, xdata, 0);
 	    mpor(MPW_SIZE(z), MPW_DATA(z), mdata + (msize - xsize));
@@ -1402,6 +1505,9 @@ prtmpw("b", m);
 	}
 	break;
     case '^':
+	/* XXX reset to original size for now. */
+	msize = MPW_SIZE(m);
+	mdata = MPW_DATA(m);
 	if (xsize <= msize) {
 	    z = mpw_FromMPW(xsize, xdata, 0);
 	    mpxor(MPW_SIZE(z), MPW_DATA(z), mdata + (msize - xsize));
@@ -1411,15 +1517,14 @@ prtmpw("b", m);
 	}
 	break;
     case 'P':
-    {	size_t bnorm = msize - MP_ROUND_B2W(MPBITCNT(msize, mdata));
-	size_t bsize = msize - bnorm;
-	mpw* bdata = mdata + bnorm;
-	mpnumber zn;
+    {	mpnumber zn;
 
 	mpnzero(&zn);
-	mpnpow_w(&zn, xsize, xdata, bsize, bdata);
+	mpnpow_w(&zn, xsize, xdata, msize, mdata);
 	z = mpw_FromMPW(zn.size, zn.data, 1);
 	mpnfree(&zn);
+	if (zsign)
+	    z->ob_size = -z->ob_size;
     }	break;
     case 'G':
 	wksp = alloca((xsize) * sizeof(*wksp));
@@ -1432,13 +1537,16 @@ prtmpw("b", m);
 	z = mpw_New(msize);
 	mpbinv_w(&b, xsize, xdata, MPW_DATA(z), wksp);
 	break;
+#ifdef	DYING
     case 'R':
     {	rngObject * r = ((rngObject *)x);
+
 	wksp = alloca(msize*sizeof(*wksp));
 	mpbset(&b, msize, mdata);
 	z = mpw_New(msize);
 	mpbrnd_w(&b, &r->rngc, MPW_DATA(z), wksp);
     }	break;
+#endif
     case 'S':
 	wksp = alloca((4*msize+2)*sizeof(*wksp));
 	mpbset(&b, msize, mdata);
@@ -1646,6 +1754,7 @@ mpw_Powm(mpwObject * s, PyObject * args)
 		mpw_i2mpw(xo), mpw_i2mpw(yo), mpw_i2mpw(mo));
 }
 
+#ifdef DYNING
 /** \ingroup py_c
  * Return random number 1 < r < b-1.
  */
@@ -1662,6 +1771,7 @@ mpw_Rndm(mpwObject * s, PyObject * args)
     }
     return mpw_ops2("Rndm", 'R', (mpwObject*)xo, mpw_i2mpw(mo));
 }
+#endif
 
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -1682,8 +1792,10 @@ static struct PyMethodDef mpw_methods[] = {
 	NULL},
  {"powm",	(PyCFunction)mpw_Powm,	METH_VARARGS,
 	NULL},
+#ifdef	DYING
  {"rndm",	(PyCFunction)mpw_Rndm,	METH_VARARGS,
 	NULL},
+#endif
  {NULL,		NULL}		/* sentinel */
 };
 /*@=fullinitblock@*/
@@ -1748,7 +1860,7 @@ mpw_classic_div(PyObject * a, PyObject * b)
 }
 
 static PyObject *
-mpw_remainder(PyObject * a, PyObject * b)
+mpw_mod(PyObject * a, PyObject * b)
 	/*@*/
 {
     return mpw_ops2("rem", '%', mpw_i2mpw(a), mpw_i2mpw(b));
@@ -2010,9 +2122,6 @@ mpw_int(mpwObject * a)
     if (a->ob_size < 0)
 	ival = -ival;
 
-if (_mpw_debug)
-fprintf(stderr, "*** mpw_int(%p):\t%08x\n", a, (int)ival);
-
     return Py_BuildValue("i", ival);
 }
 
@@ -2072,20 +2181,14 @@ static PyObject *
 mpw_oct(mpwObject * a)
 	/*@*/
 {
-    PyObject * so = mpw_format(a, 8, 1);
-if (_mpw_debug && so != NULL)
-fprintf(stderr, "*** mpw_oct(%p): \"%s\"\n", a, PyString_AS_STRING(so));
-    return so;
+    return mpw_format(a, 8, 1);
 }
 
 static PyObject *
 mpw_hex(mpwObject * a)
 	/*@*/
 {
-    PyObject * so = mpw_format(a, 16, 1);
-if (_mpw_debug && so != NULL)
-fprintf(stderr, "*** mpw_hex(%p): \"%s\"\n", a, PyString_AS_STRING(so));
-    return so;
+    return mpw_format(a, 16, 1);
 }
 
 static PyNumberMethods mpw_as_number = {
@@ -2093,7 +2196,7 @@ static PyNumberMethods mpw_as_number = {
 	(binaryfunc) mpw_sub,			/* nb_subtract */
 	(binaryfunc) mpw_mul,			/* nb_multiply */
 	(binaryfunc) mpw_classic_div,		/* nb_divide */
-	(binaryfunc) mpw_remainder,		/* nb_remainder */
+	(binaryfunc) mpw_mod,			/* nb_remainder */
 	(binaryfunc) mpw_divmod,		/* nb_divmod */
 	(ternaryfunc) mpw_pow,			/* nb_power */
 	(unaryfunc) mpw_neg,			/* nb_negative */
