@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
+EXTRA = tdigest.c tficl.c tkey.c trpmio.c
+
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib \
 	-I$(top_srcdir)/popt @INCPATH@
 

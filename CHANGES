@@ -186,6 +186,9 @@
 	- python: parameterize with PYVER to handle 1.5 and/or 2.1 builds.
 	- add build dependency on zlib-devel (#49575).
 	- enable rpm-perl subpackage.
+	- add pmac/ppciseries/ppcpseries varieties to ppc arch family.
+	- include tdigest.c tkey.c and trpmio.c to "make dist".
+	- re-enable dependency resolution source from package NVR.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
