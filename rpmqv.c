@@ -2,7 +2,7 @@
 
 #define	_AUTOHELP
 
-#if defined(IAM_RPM)
+#if defined(IAM_RPM) || defined(__LCLINT__)
 #define	IAM_RPMBT
 #define	IAM_RPMDB
 #define	IAM_RPMEIU
@@ -387,7 +387,8 @@ static struct poptOption optionsTable[] = {
 long _stksize = 64 * 1024L;
 #endif
 
-static void argerror(const char * desc) {
+/*@exits@*/ static void argerror(const char * desc)
+{
     fprintf(stderr, _("rpm: %s\n"), desc);
     exit(EXIT_FAILURE);
 }
@@ -697,7 +698,7 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMEIU
-    rpmRelocation * relocations = NULL;
+/*@only@*/ rpmRelocation * relocations = NULL;
     int numRelocations = 0;
 #endif
 
@@ -766,7 +767,7 @@ int main(int argc, const char ** argv)
     freeSpecVec = freeSpec;
 
     /* set up the correct locale */
-    setlocale(LC_ALL, "" );
+    (void) setlocale(LC_ALL, "" );
 
 #ifdef	__LCLINT__
 #define	LOCALEDIR	"/usr/share/locale"
@@ -1175,23 +1176,26 @@ int main(int argc, const char ** argv)
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD) {
-	    const char ** argv;
+	    const char ** av;
 	    struct stat sb;
 	    int errors = 0;
 
-	    if ((argv = poptGetArgs(optCon)) == NULL) {
+	    if ((av = poptGetArgs(optCon)) == NULL) {
 		fprintf(stderr, _("no files to sign\n"));
 		errors++;
 	    } else
-	    while (*argv) {
-		if (stat(*argv, &sb)) {
-		    fprintf(stderr, _("cannot access file %s\n"), *argv);
+	    while (*av) {
+		if (stat(*av, &sb)) {
+		    fprintf(stderr, _("cannot access file %s\n"), *av);
 		    errors++;
 		}
-		argv++;
+		av++;
 	    }
 
-	    if (errors) return errors;
+	    if (errors) {
+		ec = errors;
+		goto exit;
+	    }
 
             if (poptPeekArg(optCon)) {
 		int sigTag;
@@ -1202,13 +1206,15 @@ int main(int argc, const char ** argv)
 		    if ((sigTag == RPMSIGTAG_PGP || sigTag == RPMSIGTAG_PGP5) &&
 		        !rpmDetectPGPVersion(NULL)) {
 		        fprintf(stderr, _("pgp not found: "));
-			exit(EXIT_FAILURE);
+			ec = EXIT_FAILURE;
+			goto exit;
 		    }	/*@fallthrough@*/
 		  case RPMSIGTAG_GPG:
 		    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
 		    if (passPhrase == NULL) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
-			exit(EXIT_FAILURE);
+			ec = EXIT_FAILURE;
+			goto exit;
 		    }
 		    fprintf(stderr, _("Pass phrase is good.\n"));
 		    passPhrase = xstrdup(passPhrase);
@@ -1216,7 +1222,8 @@ int main(int argc, const char ** argv)
 		  default:
 		    fprintf(stderr,
 		            _("Invalid %%_signature spec in macro file.\n"));
-		    exit(EXIT_FAILURE);
+		    ec = EXIT_FAILURE;
+		    goto exit;
 		    /*@notreached@*/ break;
 		}
 	    }
@@ -1254,6 +1261,7 @@ int main(int argc, const char ** argv)
       case MODE_REBUILDDB:
 	ec = rpmdbRebuild(rootdir);
 	break;
+#if !defined(__LCLINT__)
       case MODE_QUERY:
       case MODE_VERIFY:
       case MODE_QUERYTAGS:
@@ -1267,6 +1275,7 @@ int main(int argc, const char ** argv)
       case MODE_RESIGN:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
+#endif
 #endif	/* IAM_RPMDB */
 
 #ifdef	IAM_RPMBT
@@ -1361,6 +1370,7 @@ int main(int argc, const char ** argv)
 	}
       }	break;
 
+#if !defined(__LCLINT__)
       case MODE_QUERY:
       case MODE_VERIFY:
       case MODE_QUERYTAGS:
@@ -1372,6 +1382,7 @@ int main(int argc, const char ** argv)
       case MODE_REBUILDDB:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
+#endif
 #endif	/* IAM_RPMBT */
 
 #ifdef	IAM_RPMEIU
@@ -1425,6 +1436,7 @@ int main(int argc, const char ** argv)
 			transFlags, installInterfaceFlags, probFilter,
 			relocations);
 	break;
+#if !defined(__LCLINT__)
       case MODE_QUERY:
       case MODE_VERIFY:
       case MODE_QUERYTAGS:
@@ -1438,6 +1450,7 @@ int main(int argc, const char ** argv)
       case MODE_REBUILDDB:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
+#endif
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
@@ -1486,6 +1499,7 @@ int main(int argc, const char ** argv)
 	rpmDisplayQueryTags(stdout);
 	break;
 
+#if !defined(__LCLINT__)
       case MODE_INSTALL:
       case MODE_UNINSTALL:
       case MODE_BUILD:
@@ -1498,6 +1512,7 @@ int main(int argc, const char ** argv)
       case MODE_REBUILDDB:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
+#endif
 #endif	/* IAM_RPMQV */
 
 #ifdef IAM_RPMK
@@ -1519,6 +1534,7 @@ int main(int argc, const char ** argv)
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	break;
+#if !defined(__LCLINT__)
       case MODE_QUERY:
       case MODE_VERIFY:
       case MODE_QUERYTAGS:
@@ -1532,6 +1548,7 @@ int main(int argc, const char ** argv)
       case MODE_REBUILDDB:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
+#endif
 #endif	/* IAM_RPMK */
 	
       case MODE_UNKNOWN:
@@ -1540,6 +1557,7 @@ int main(int argc, const char ** argv)
 
     }
 
+exit:
     poptFreeContext(optCon);
     rpmFreeMacros(NULL);
     rpmFreeMacros(&rpmCLIMacroContext);
@@ -1556,12 +1574,12 @@ int main(int argc, const char ** argv)
     urlFreeCache();
 
 #ifdef	IAM_RPMQV
-    if (qva->qva_queryFormat) free((void *)qva->qva_queryFormat);
+    qva->qva_queryFormat = _free(qva->qva_queryFormat);
 #endif
 
 #ifdef	IAM_RPMBT
-    if (ba->buildRootOverride) free((void *)ba->buildRootOverride);
-    if (ba->targets) free(ba->targets);
+    ba->buildRootOverride = _free(ba->buildRootOverride);
+    ba->targets = _free(ba->targets);
 #endif
 
 #if HAVE_MCHECK_H && HAVE_MTRACE

@@ -35,6 +35,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "debug.h"
 
+/*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdb@*/
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
@@ -52,7 +53,7 @@ static inline DBTYPE db3_to_dbtype(int dbitype)
     /*@notreached@*/ return DB_HASH;
 }
 
-static /*@observer@*/ const char * db_strerror(int error)
+static /*@observer@*/ char * db_strerror(int error)
 {
     if (error == 0)
 	return ("Successful return: 0");
@@ -69,8 +70,11 @@ static /*@observer@*/ const char * db_strerror(int error)
 	 * Note, however, we're no longer thread-safe if it does.
 	 */
 	static char ebuf[40];
+	char * t = ebuf;
 
-	(void)snprintf(ebuf, sizeof(ebuf), "Unknown error: %d", error);
+	*t = '\0';
+	t = stpcpy(t, "Unknown error: ");
+	sprintf(t, "%d", error);
 	return(ebuf);
       }
     }
@@ -190,7 +194,7 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
     compressFilelist(h);
 
 exit:
-    if (h) {
+    if (h != NULL) {
 	uh = headerUnload(h);
 	headerFree(h);
     }
@@ -392,10 +396,8 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     }
 
     db3Free(dbi);
-    if (base)
-	free((void *)base);
-    if (urlfn)
-	free((void *)urlfn);
+    base = _free(base);
+    urlfn = _free(urlfn);
     return rc;
 }
 
@@ -472,14 +474,8 @@ exit:
     } else
 	db1close(dbi, 0);
 
-    if (base) {
-	free((void *)base);
-	base = NULL;
-    }
-    if (urlfn) {
-	free((void *)urlfn);
-	urlfn = NULL;
-    }
+    base = _free(base);
+    urlfn = _free(urlfn);
 
     return rc;
 }

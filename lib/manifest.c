@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpmlib.h>
 #include <rpmio_internal.h>
 #include "stringbuf.h"
 #include "manifest.h"
@@ -11,16 +12,6 @@
 #include "debug.h"
 
 /*@access StringBuf @*/
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)   free((void *)this);
-    return NULL;
-}
 
 char * rpmPermsString(int mode)
 {
@@ -69,7 +60,8 @@ char * rpmPermsString(int mode)
 int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 {
     StringBuf sb = newStringBuf();
-    char * s, *se;
+    char * s = NULL;
+    char * se;
     int ac = 0;
     const char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);

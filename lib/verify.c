@@ -13,8 +13,10 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@ access TFI_t */
-/*@ access PSM_t */
+/*@access TFI_t*/
+/*@access PSM_t*/
+/*@access FD_t*/	/* XXX compared with NULL */
+/*@access rpmdb*/	/* XXX compared with NULL */
 
 static int _ie = 0x44332211;
 static union _vendian { int i; char b[4]; } *_endian = (union _vendian *)&_ie;
@@ -68,16 +70,6 @@ struct poptOption rpmVerifyPoptTable[] = {
         NULL },
     POPT_TABLEEND
 };
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)	free((void *)this);
-    return NULL;
-}
 
 /* ======================================================================== */
 int rpmVerifyFile(const char * prefix, Header h, int filenum,
@@ -298,7 +290,7 @@ int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd)
     PSM_t psm = &psmbuf;
     int rc;
 
-    if (scriptFd)
+    if (scriptFd != NULL)
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
     fi->magic = TFIMAGIC;
     loadFi(h, fi);
@@ -493,7 +485,7 @@ int rpmVerify(QVA_t *qva, rpmQVSources source, const char *arg)
 
     rc = rpmQueryVerify(qva, source, arg, rpmdb, showVerifyPackage);
 
-    if (rpmdb)
+    if (rpmdb != NULL)
 	rpmdbClose(rpmdb);
 
     return rc;

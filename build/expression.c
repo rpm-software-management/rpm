@@ -67,8 +67,9 @@ static Value valueMakeString(/*@only@*/ const char *s)
 static void valueFree( /*@only@*/ Value v)
 {
   if (v) {
-    if (v->type == VALUE_TYPE_STRING) free((void *)v->data.s);
-    free(v);
+    if (v->type == VALUE_TYPE_STRING)
+	v->data.s = _free(v->data.s);
+    v = _free(v);
   }
 }
 
@@ -182,7 +183,7 @@ static int rdToken(ParseState state)
   char *p = state->p;
 
   /* Skip whitespace before the next token. */
-  while (*p && isspace(*p)) p++;
+  while (*p && xisspace(*p)) p++;
 
   switch (*p) {
   case '\0':
@@ -257,10 +258,10 @@ static int rdToken(ParseState state)
     break;
 
   default:
-    if (isdigit(*p)) {
+    if (xisdigit(*p)) {
       char temp[EXPRBUFSIZ], *t = temp;
 
-      while (*p && isdigit(*p))
+      while (*p && xisdigit(*p))
 	*t++ = *p++;
       *t++ = '\0';
       p--;
@@ -268,10 +269,10 @@ static int rdToken(ParseState state)
       token = TOK_INTEGER;
       v = valueMakeInteger(atoi(temp));
 
-    } else if (isalpha(*p)) {
+    } else if (xisalpha(*p)) {
       char temp[EXPRBUFSIZ], *t = temp;
 
-      while (*p && (isalnum(*p) || *p == '_'))
+      while (*p && (xisalnum(*p) || *p == '_'))
 	*t++ = *p++;
       *t++ = '\0';
       p--;
@@ -649,14 +650,14 @@ int parseExpressionBoolean(Spec spec, const char *expr)
   /* Parse the expression. */
   v = doLogical(&state);
   if (!v) {
-    free(state.str);
+    state.str = _free(state.str);
     return -1;
   }
 
   /* If the next token is not TOK_EOF, we have a syntax error. */
   if (state.nextToken != TOK_EOF) {
     rpmError(RPMERR_BADSPEC, _("syntax error in expression\n"));
-    free(state.str);
+    state.str = _free(state.str);
     return -1;
   }
 
@@ -673,7 +674,7 @@ int parseExpressionBoolean(Spec spec, const char *expr)
     break;
   }
 
-  free(state.str);
+  state.str = _free(state.str);
   valueFree(v);
   return result;
 }
@@ -696,14 +697,14 @@ char * parseExpressionString(Spec spec, const char *expr)
   /* Parse the expression. */
   v = doLogical(&state);
   if (!v) {
-    free(state.str);
+    state.str = _free(state.str);
     return NULL;
   }
 
   /* If the next token is not TOK_EOF, we have a syntax error. */
   if (state.nextToken != TOK_EOF) {
     rpmError(RPMERR_BADSPEC, _("syntax error in expression\n"));
-    free(state.str);
+    state.str = _free(state.str);
     return NULL;
   }
 
@@ -722,7 +723,7 @@ char * parseExpressionString(Spec spec, const char *expr)
     break;
   }
 
-  free(state.str);
+  state.str = _free(state.str);
   valueFree(v);
   return result;
 }

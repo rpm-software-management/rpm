@@ -79,7 +79,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
     case POPT_TP:
     case POPT_TS:
 	if (rba->buildMode == ' ') {
-	    rba->buildMode = ((unsigned)(opt->val >> 8)) & 0xff;
+	    rba->buildMode = (((unsigned)opt->val) >> 8) & 0xff;
 	    rba->buildChar = (opt->val     ) & 0xff;
 	}
 	break;

@@ -57,7 +57,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * form
 	strcat(formatPrefix, "s");
 	buf = rpmPermsString(*((int_32 *) data));
 	sprintf(val, formatPrefix, buf);
-	free(buf);
+	buf = _free(buf);
     }
 
     return val;
@@ -180,17 +180,19 @@ static int instprefixTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ int * freeData)
 		/*@modifies h, *type, *data, *count, *freeData @*/
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    int ipt;
     char ** array;
 
-    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, type, (void **)data, count)) {
+    if (hge(h, RPMTAG_INSTALLPREFIX, type, (void **)data, count)) {
 	*freeData = 0;
 	return 0;
-    } else if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) &array, 
-			      count)) {
+    } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &array, count)) {
 	*data = xstrdup(array[0]);
 	*freeData = 1;
 	*type = RPM_STRING_TYPE;
-	free(array);
+	array = hfd(array, ipt);
 	return 0;
     } 
 
@@ -210,13 +212,13 @@ static int fssizesTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ int * freeData)
 		/*@modifies h, *type, *data, *count, *freeData @*/
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
     int_32 * filesizes;
     uint_32 * usages;
     int numFiles;
 
-    if (!headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, 
-		       &numFiles)) {
+    if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles)) {
 	filesizes = NULL;
 	numFiles = 0;
 	filenames = NULL;
@@ -243,7 +245,7 @@ static int fssizesTag(Header h, /*@out@*/ int_32 * type,
 
     *data = usages;
 
-    if (filenames) free(filenames);
+    filenames = _free(filenames);
 
     return 0;
 }
@@ -261,6 +263,9 @@ static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ int * freeData)
 		/*@modifies h, *type, *data, *count, *freeData @*/
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    int tnt, tvt, tst;
     int_32 * indices, * flags;
     char ** names, ** versions;
     int numNames, numScripts;
@@ -270,17 +275,16 @@ static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
     int i, j;
     char buf[5];
 
-    if (!headerGetEntry(h, RPMTAG_TRIGGERNAME, NULL, (void **) &names, 
-			&numNames)) {
+    if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, (void **) &names, &numNames)) {
 	*freeData = 0;
 	return 0;
     }
 
-    headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
-    headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    headerGetEntry(h, RPMTAG_TRIGGERVERSION, NULL, (void **) &versions, NULL);
-    headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, (void **) &s, &numScripts);
-    free(s);
+    hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
+    hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    hge(h, RPMTAG_TRIGGERVERSION, &tvt, (void **) &versions, NULL);
+    hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    s = hfd(s, tst);
 
     *freeData = 1;
     *data = conds = xmalloc(sizeof(char * ) * numScripts);
@@ -295,25 +299,24 @@ static int triggercondsTag(Header h, /*@out@*/ int_32 * type,
 	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
 	    if (flags[j] & RPMSENSE_SENSEMASK) {
 		buf[0] = '%', buf[1] = '\0';
-		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf,
-					  0, j);
+		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf, 0, j);
 		sprintf(item, "%s %s %s", names[j], flagsStr, versions[j]);
-		free(flagsStr);
+		flagsStr = _free(flagsStr);
 	    } else {
 		strcpy(item, names[j]);
 	    }
 
 	    chptr = xrealloc(chptr, strlen(chptr) + strlen(item) + 5);
-	    if (*chptr) strcat(chptr, ", ");
+	    if (*chptr != '\0') strcat(chptr, ", ");
 	    strcat(chptr, item);
-	    free(item);
+	    item = _free(item);
 	}
 
 	conds[i] = chptr;
     }
 
-    free(names);
-    free(versions);
+    names = hfd(names, tnt);
+    versions = hfd(versions, tvt);
 
     return 0;
 }
@@ -331,21 +334,23 @@ static int triggertypeTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ int * freeData)
 		/*@modifies h, *type, *data, *count, *freeData @*/
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    int tst;
     int_32 * indices, * flags;
-    char ** conds, ** s;
+    const char ** conds;
+    const char ** s;
     int i, j;
     int numScripts, numNames;
 
-    if (!headerGetEntry(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, 
-			&numNames)) {
+    if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, &numNames)) {
 	*freeData = 0;
 	return 1;
     }
 
-    headerGetEntry(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-
-    headerGetEntry(h, RPMTAG_TRIGGERSCRIPTS, NULL, (void **) &s, &numScripts);
-    free(s);
+    hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    s = hfd(s, tst);
 
     *freeData = 1;
     *data = conds = xmalloc(sizeof(char * ) * numScripts);
@@ -412,6 +417,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ int * freeData)
 		/*@modifies h, *type, *data, *count, *freeData @*/
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
 
@@ -461,15 +467,14 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	    *count = 1;
 	    *freeData = 1;
 	}
-	free(dstring); dstring = NULL;
-	if (*data) {
+	dstring = _free(dstring);
+	if (*data)
 	    return 0;
-	}
     }
 
-    if (dstring) free(dstring);
+    dstring = _free(dstring);
 
-    rc = headerGetEntry(h, tag, type, (void **)data, count);
+    rc = hge(h, tag, type, (void **)data, count);
 
     if (rc) {
 	*data = xstrdup(*data);

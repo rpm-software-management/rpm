@@ -16,16 +16,6 @@ static int _debug = 0;
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)   free((void *)this);
-    return NULL;
-}
-
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */
 
 char ** splitString(const char * str, int length, char sep)
@@ -125,8 +115,8 @@ int rpmvercmp(const char * a, const char * b)
 
     /* loop through each version segment of str1 and str2 and compare them */
     while (*one && *two) {
-	while (*one && !isalnum(*one)) one++;
-	while (*two && !isalnum(*two)) two++;
+	while (*one && !xisalnum(*one)) one++;
+	while (*two && !xisalnum(*two)) two++;
 
 	str1 = one;
 	str2 = two;
@@ -134,13 +124,13 @@ int rpmvercmp(const char * a, const char * b)
 	/* grab first completely alpha or completely numeric segment */
 	/* leave one and two pointing to the start of the alpha or numeric */
 	/* segment and walk str1 and str2 to end of segment */
-	if (isdigit(*str1)) {
-	    while (*str1 && isdigit(*str1)) str1++;
-	    while (*str2 && isdigit(*str2)) str2++;
+	if (xisdigit(*str1)) {
+	    while (*str1 && xisdigit(*str1)) str1++;
+	    while (*str2 && xisdigit(*str2)) str2++;
 	    isnum = 1;
 	} else {
-	    while (*str1 && isalpha(*str1)) str1++;
-	    while (*str2 && isalpha(*str2)) str2++;
+	    while (*str1 && xisalpha(*str1)) str1++;
+	    while (*str2 && xisalpha(*str2)) str2++;
 	    isnum = 0;
 	}
 
@@ -236,7 +226,7 @@ static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     d = alloca(strlen(path)+2);
     de = stpcpy(d, path);
     de[1] = '\0';
-    for (de = d; *de; de++) {
+    for (de = d; *de != '\0'; de++) {
 	struct stat st;
 	char savec;
 
@@ -802,7 +792,7 @@ void providePackageNVR(Header h)
     *p = '\0';
     if (headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
-	while (*p)
+	while (*p != '\0')
 	    p++;
     }
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);

@@ -114,15 +114,16 @@ static fingerPrint doLookup(fingerPrintCache cache,
 
 	/* as we're stating paths here, we want to follow symlinks */
 
-	if ((cacheHit = cacheContainsDirectory(cache, *buf ? buf : "/"))) {
+	cacheHit = cacheContainsDirectory(cache, (*buf != '\0' ? buf : "/"));
+	if (cacheHit != NULL) {
 	    fp.entry = cacheHit;
-	} else if (!stat(*buf ? buf : "/", &sb)) {
-	    size_t nb = sizeof(*fp.entry) + (*buf ? (end-buf) : 1) + 1;
+	} else if (!stat((*buf != '\0' ? buf : "/"), &sb)) {
+	    size_t nb = sizeof(*fp.entry) + (*buf != '\0' ? (end-buf) : 1) + 1;
 	    char * dn = xmalloc(nb);
 	    struct fprintCacheEntry_s * newEntry = (void *)dn;
 
 	    dn += sizeof(*newEntry);
-	    strcpy(dn, (*buf ? buf : "/"));
+	    strcpy(dn, (*buf != '\0' ? buf : "/"));
 	    newEntry->ino = sb.st_ino;
 	    newEntry->dev = sb.st_dev;
 	    newEntry->isFake = 0;
@@ -178,7 +179,7 @@ unsigned int fpHashFunction(const void * key)
 
     ch = 0;
     chptr = fp->baseName;
-    while (*chptr) ch ^= *chptr++;
+    while (*chptr != '\0') ch ^= *chptr++;
 
     hash |= ((unsigned)ch) << 24;
     hash |= (((((unsigned)fp->entry->dev) >> 8) ^ fp->entry->dev) & 0xFF) << 16;

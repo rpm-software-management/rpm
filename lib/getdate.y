@@ -743,7 +743,7 @@ LookupWord(buff)
     int			abbrev;
 
     /* Make it lowercase. */
-    for (p = buff; *p; p++)
+    for (p = buff; *p != '\0'; p++)
 	if (isupper(*p))
 	    *p = tolower(*p);
 
@@ -822,7 +822,7 @@ LookupWord(buff)
     }
 
     /* Drop out any periods and try the timezone table again. */
-    for (i = 0, p = q = buff; *q; q++)
+    for (i = 0, p = q = buff; *q != '\0'; q++)
 	if (*q != '.')
 	    *p++ = *q;
 	else

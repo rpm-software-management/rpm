@@ -9,15 +9,19 @@
 #include "debug.h"
 
 int addReqProv(/*@unused@*/ Spec spec, Header h,
-	       int depFlags, const char *depName, const char *depEVR, int index)
+	       rpmsenseFlags depFlags, const char *depName, const char *depEVR,
+		int index)
 {
-    const char **names;
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char ** names;
+    int dnt;
     int nametag = 0;
     int versiontag = 0;
     int flagtag = 0;
     int indextag = 0;
     int len;
-    int extra = 0;
+    rpmsenseFlags extra = RPMSENSE_ANY;
     
     if (depFlags & RPMSENSE_PROVIDES) {
 	nametag = RPMTAG_PROVIDENAME;
@@ -56,18 +60,19 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	depEVR = "";
     
     /* Check for duplicate dependencies. */
-    if (headerGetEntry(h, nametag, NULL, (void **) &names, &len)) {
-	const char **versions = NULL;
+    if (hge(h, nametag, &dnt, (void **) &names, &len)) {
+	const char ** versions = NULL;
+	int dvt;
 	int *flags = NULL;
 	int *indexes = NULL;
 	int duplicate = 0;
 
 	if (flagtag) {
-	    headerGetEntry(h, versiontag, NULL, (void **) &versions, NULL);
-	    headerGetEntry(h, flagtag, NULL, (void **) &flags, NULL);
+	    hge(h, versiontag, &dvt, (void **) &versions, NULL);
+	    hge(h, flagtag, NULL, (void **) &flags, NULL);
 	}
 	if (indextag)
-	    headerGetEntry(h, indextag, NULL, (void **) &indexes, NULL);
+	    hge(h, indextag, NULL, (void **) &indexes, NULL);
 
 	while (len > 0) {
 	    len--;
@@ -89,8 +94,8 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
 	    break;
 	}
-	FREE(names);
-	FREE(versions);
+	names = hfd(names, dnt);
+	versions = hfd(versions, dvt);
 	if (duplicate)
 	    return 0;
     }

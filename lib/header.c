@@ -157,6 +157,7 @@ struct sprintfToken {
  * @param onDisk	data is concatenated strings (with NUL's))?
  * @return		no. bytes in data
  */
+/*@mayexit@*/
 static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 	/*@*/
 {
@@ -1289,7 +1290,7 @@ headerFindI18NString(Header h, struct indexEntry *entry)
     if ((table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
 	return entry->data;
 
-    for (l = lang; *l; l = le) {
+    for (l = lang; *l != '\0'; l = le) {
 	const char *td;
 	char *ed;
 	int langNum;
@@ -1921,7 +1922,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 
     /* upper limit on number of individual formats */
     numTokens = 0;
-    for (chptr = str; *chptr; chptr++)
+    for (chptr = str; *chptr != '\0'; chptr++)
 	if (*chptr == '%') numTokens++;
     numTokens = numTokens * 2 + 1;
 
@@ -1931,7 +1932,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
     /*@-infloops@*/
     dst = start = str;
     currToken = -1;
-    while (*start) {
+    while (*start != '\0') {
 	switch (*start) {
 	case '%':
 	    /* handle %% */
@@ -1984,7 +1985,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    *chptr++ = '\0';
 
 	    while (start < chptr) {
-		if (isdigit(*start)) {
+		if (xisdigit(*start)) {
 		    i = strtoul(start, &start, 10);
 		    format[currToken].u.tag.pad += i;
 		} else {
@@ -2015,7 +2016,7 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 	    chptr = start;
 	    while (*chptr && *chptr != ':') chptr++;
 
-	    if (*chptr) {
+	    if (*chptr != '\0') {
 		*chptr++ = '\0';
 		if (!*chptr) {
 		    /*@-observertrans@*/
@@ -2707,7 +2708,7 @@ static char * shescapeFormat(int_32 type, const void * data,
 
 	result = dst = xmalloc(strlen(buf) * 4 + 3);
 	*dst++ = '\'';
-	for (src = buf; *src; src++) {
+	for (src = buf; *src != '\0'; src++) {
 	    if (*src == '\'') {
 		*dst++ = '\'';
 		*dst++ = '\\';

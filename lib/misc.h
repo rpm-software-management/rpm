@@ -30,7 +30,8 @@ void	freeSplitString( /*@only@*/ char ** list);
  * @param c		character to strip
  * @return 		string
  */
-/*@unused@*/ static inline char * stripTrailingChar(char * s, char c)
+/*@unused@*/ static inline
+/*@only@*/ char * stripTrailingChar(/*@only@*/ char * s, char c)
 	/*@modifies *s */
 {
     char * t;

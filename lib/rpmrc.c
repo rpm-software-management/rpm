@@ -144,7 +144,7 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
     int i;
     struct machCacheEntry * entry = NULL;
 
-    while (*name && isspace(*name)) name++;
+    while (*name && xisspace(*name)) name++;
 
     chptr = name;
     while (*chptr && *chptr != ':') chptr++;
@@ -157,10 +157,10 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	return 1;
     }
 
-    while (*chptr == ':' || isspace(*chptr)) chptr--;
+    while (*chptr == ':' || xisspace(*chptr)) chptr--;
     *(++chptr) = '\0';
     equivs = chptr + 1;
-    while (*equivs && isspace(*equivs)) equivs++;
+    while (*equivs && xisspace(*equivs)) equivs++;
     if (!*equivs) {
 	delEntry = 1;
     }
@@ -169,9 +169,8 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	entry = machCacheFindEntry(cache, name);
 	if (entry) {
 	    for (i = 0; i < entry->count; i++)
-		free((void *)entry->equivs[i]);
-	    free((void *)entry->equivs);
-	    entry->equivs = NULL;
+		entry->equivs[i] = _free(entry->equivs[i]);
+	    entry->equivs = _free(entry->equivs);
 	    entry->count = 0;
 	}
     }
@@ -266,12 +265,11 @@ static void machFindEquivs(struct machCache * cache,
 	cache->cache[i].visited = 0;
 
     while (table->count > 0) {
-	free((void *)table->list[--table->count].name);
-	table->list[table->count].name = NULL;
+	--table->count;
+	table->list[table->count].name = _free(table->list[table->count].name);
     }
     table->count = 0;
-    if (table->list) free((void *)table->list);
-    table->list = NULL;
+    table->list = _free(table->list);
 
     /*
      *	We have a general graph built using strings instead of pointers.
@@ -409,8 +407,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
     {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	rpmSetMachine(cpu, os);
-	free((void *)cpu);
-	free((void *)os);
+	cpu = _free(cpu);
+	os = _free(os);
     }
 
     return 0;
@@ -445,7 +443,7 @@ static void setPathDefault(int var, const char *macroname, const char *subdir)
 	strcat(fn, subdir);
 
 	rpmSetVar(var, fn);
-	if (topdir)	free((void *)topdir);
+	topdir = _free(topdir);
     }
 
     if (macroname != NULL) {
@@ -577,17 +575,17 @@ int rpmReadRC(const char * rcfiles)
 	}
  	if (rc) break;
     }
-    if (myrcfiles)	free(myrcfiles);
+    myrcfiles = _free(myrcfiles);
     if (rc)
 	return rc;
 
     rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
-    {	const char *macrofiles;
-	if ((macrofiles = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
-	    macrofiles = strdup(macrofiles);
-	    rpmInitMacros(NULL, macrofiles);
-	    free((void *)macrofiles);
+    {	const char *mfpath;
+	if ((mfpath = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
+	    mfpath = xstrdup(mfpath);
+	    rpmInitMacros(NULL, mfpath);
+	    mfpath = _free(mfpath);
 	}
     }
 
@@ -624,38 +622,38 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
     next[nb + 1] = '\0';
   }
 
-    while (*next) {
+    while (*next != '\0') {
 	linenum++;
 
 	s = se = next;
 
 	/* Find end-of-line. */
 	while (*se && *se != '\n') se++;
-	if (*se) *se++ = '\0';
+	if (*se != '\0') *se++ = '\0';
 	next = se;
 
 	/* Trim leading spaces */
-	while (*s && isspace(*s)) s++;
+	while (*s && xisspace(*s)) s++;
 
 	/* We used to allow comments to begin anywhere, but not anymore. */
 	if (*s == '#' || *s == '\0') continue;
 
 	/* Find end-of-keyword. */
 	se = (char *)s;
-	while (*se && !isspace(*se) && *se != ':') se++;
+	while (*se && !xisspace(*se) && *se != ':') se++;
 
-	if (isspace(*se)) {
+	if (xisspace(*se)) {
 	    *se++ = '\0';
-	    while (*se && isspace(*se) && *se != ':') se++;
+	    while (*se && xisspace(*se) && *se != ':') se++;
 	}
 
 	if (*se != ':') {
 	    rpmError(RPMERR_RPMRC, _("missing ':' (found 0x%02x) at %s:%d\n"),
-		     (0xff & *se), urlfn, linenum);
+		     (unsigned)(0xff & *se), urlfn, linenum);
 	    return 1;
 	}
 	*se++ = '\0';	/* terminate keyword or option, point to value */
-	while (*se && isspace(*se)) se++;
+	while (*se && xisspace(*se)) se++;
 
 	/* Find keyword in table */
 	searchOption.name = s;
@@ -677,8 +675,8 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 	      {	FD_t fdinc;
 
 		s = se;
-		while (*se && !isspace(*se)) se++;
-		if (*se) *se++ = '\0';
+		while (*se && !xisspace(*se)) se++;
+		if (*se != '\0') *se++ = '\0';
 
 		rpmRebuildTargetVars(NULL, NULL);
 
@@ -686,7 +684,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		if (fn == NULL || *fn == '\0') {
 		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\"\n"),
 			option->name, urlfn, linenum, s);
-		    if (fn) free((void *)fn);
+		    fn = _free(fn);
 		    return 1;
 		    /*@notreached@*/
 		}
@@ -699,7 +697,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		} else {
 		    rc = doReadRC(fdinc, fn);
 		}
-		if (fn) free((void *)fn);
+		fn = _free(fn);
 		if (rc) return rc;
 		continue;	/* XXX don't save include value as var/macro */
 	      }	/*@notreached@*/ break;
@@ -708,7 +706,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		if (fn == NULL || *fn == '\0') {
 		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\"\n"),
 			option->name, urlfn, linenum, fn);
-		    if (fn) free((void *)fn);
+		    fn = _free(fn);
 		    return 1;
 		}
 		se = (char *)fn;
@@ -718,9 +716,9 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		s = rpmGetVar(RPMVAR_PROVIDES);
 		if (s == NULL) s = "";
 		fn = t = xmalloc(strlen(s) + strlen(se) + 2);
-		while (*s) *t++ = *s++;
+		while (*s != '\0') *t++ = *s++;
 		*t++ = ' ';
-		while (*se) *t++ = *se++;
+		while (*se != '\0') *t++ = *se++;
 		*t++ = '\0';
 		se = (char *)fn;
 	      }	break;
@@ -730,7 +728,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 
 	    if (option->archSpecific) {
 		arch = se;
-		while (*se && !isspace(*se)) se++;
+		while (*se && !xisspace(*se)) se++;
 		if (*se == '\0') {
 		    rpmError(RPMERR_RPMRC,
 				_("missing architecture for %s at %s:%d\n"),
@@ -738,7 +736,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		    return 1;
 		}
 		*se++ = '\0';
-		while (*se && isspace(*se)) se++;
+		while (*se && xisspace(*se)) se++;
 		if (*se == '\0') {
 		    rpmError(RPMERR_RPMRC,
 				_("missing argument for %s at %s:%d\n"),
@@ -761,7 +759,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		free(name);
 	    }
 	    rpmSetVarArch(option->var, val, arch);
-	    if (fn) free((void *)fn);
+	    fn = _free(fn);
 
 	} else {	/* For arch/os compatibilty tables ... */
 	    int gotit;
@@ -975,7 +973,7 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 		for (fd = 0;
 		    (un.release[fd] != 0 && (fd < sizeof(un.release)));
 		    fd++) {
-		      if (!isdigit(un.release[fd]) && (un.release[fd] != '.')) {
+		      if (!xisdigit(un.release[fd]) && (un.release[fd] != '.')) {
 			un.release[fd] = 0;
 			break;
 		      }
@@ -1031,7 +1029,7 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 #endif	/* __linux__ */
 
 	/* get rid of the hyphens in the sysname */
-	for (chptr = un.machine; *chptr; chptr++)
+	for (chptr = un.machine; *chptr != '\0'; chptr++)
 	    if (*chptr == '/') *chptr = '-';
 
 #	if defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL)
@@ -1193,16 +1191,10 @@ static void freeRpmVar(struct rpmvarValue * orig) {
 
     while (var) {
 	next = var->next;
-	if (var->arch) {
-	    free((void *)var->arch);
-	    var->arch = NULL;
-	}
-	if (var->value) {
-	    free((void *)var->value);
-	    var->value = NULL;
-	}
+	var->arch = _free(var->arch);
+	var->value = _free(var->value);
 
-	if (var != orig) free(var);
+	if (var != orig) var = _free(var);
 	var = next;
     }
 }
@@ -1229,8 +1221,8 @@ static void rpmSetVarArch(int var, const char * val, const char * arch) {
 	}
 
 	if (next->arch && arch && !strcmp(next->arch, arch)) {
-	    if (next->value) free((void *)next->value);
-	    if (next->arch) free((void *)next->arch);
+	    next->value = _free(next->value);
+	    next->arch = _free(next->arch);
 	} else if (next->arch || arch) {
 	    next->next = xmalloc(sizeof(*next->next));
 	    next = next->next;
@@ -1296,14 +1288,14 @@ void rpmSetMachine(const char * arch, const char * os) {
     }
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
-	if (current[ARCH]) free((void *)current[ARCH]);
+	current[ARCH] = _free(current[ARCH]);
 	current[ARCH] = xstrdup(arch);
 	rebuildCompatTables(ARCH, host_cpu);
     }
 
     if (!current[OS] || strcmp(os, current[OS])) {
 	char * t = xstrdup(os);
-	if (current[OS]) free((void *)current[OS]);
+	current[OS] = _free(current[OS]);
 	/*
 	 * XXX Capitalizing the 'L' is needed to insure that old
 	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
@@ -1408,16 +1400,16 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	defaultMachine(&a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
     }
-    for (x = 0; ca[x]; x++)
-	ca[x] = tolower(ca[x]);
+    for (x = 0; ca[x] != '\0'; x++)
+	ca[x] = xtolower(ca[x]);
 
     if (co == NULL) {
 	const char *o = NULL;
 	defaultMachine(NULL, &o);
 	co = (o) ? xstrdup(o) : NULL;
     }
-    for (x = 0; co[x]; x++)
-	co[x] = tolower(co[x]);
+    for (x = 0; co[x] != '\0'; x++)
+	co[x] = xtolower(co[x]);
 
     /* XXX For now, set canonical target to arch-os */
     if (ct == NULL) {
@@ -1448,9 +1440,9 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
     if (canontarget)
 	*canontarget = ct;
     else
-	free(ct);
-    free(ca);
-    free(co);
+	ct = _free(ct);
+    ca = _free(ca);
+    co = _free(co);
 }
 
 void rpmFreeRpmrc(void)
@@ -1461,11 +1453,9 @@ void rpmFreeRpmrc(void)
 	struct tableType *t;
 	t = tables + i;
 	if (t->equiv.list) {
-	    for (j = 0; j < t->equiv.count; j++) {
-		if (t->equiv.list[j].name) free((void *)t->equiv.list[j].name);
-	    }
-	    free((void *)t->equiv.list);
-	    t->equiv.list = NULL;
+	    for (j = 0; j < t->equiv.count; j++)
+		t->equiv.list[j].name = _free(t->equiv.list[j].name);
+	    t->equiv.list = _free(t->equiv.list);
 	    t->equiv.count = 0;
 	}
 	if (t->cache.cache) {
@@ -1473,34 +1463,30 @@ void rpmFreeRpmrc(void)
 		struct machCacheEntry *e;
 		e = t->cache.cache + j;
 		if (e == NULL)	continue;
-		if (e->name)		free((void *)e->name);
+		e->name = _free(e->name);
 		if (e->equivs) {
-		    for (k = 0; k < e->count; k++) {
-			if (e->equivs[k])	free((void *)e->equivs[k]);
-		    }
-		    free((void *)e->equivs);
+		    for (k = 0; k < e->count; k++)
+			e->equivs[k] = _free(e->equivs[k]);
+		    e->equivs = _free(e->equivs);
 		}
 	    }
-	    free((void *)t->cache.cache);
-	    t->cache.cache = NULL;
+	    t->cache.cache = _free(t->cache.cache);
 	    t->cache.size = 0;
 	}
 	if (t->defaults) {
 	    for (j = 0; j < t->defaultsLength; j++) {
-		if (t->defaults[j].name) free((void *)t->defaults[j].name);
-		if (t->defaults[j].defName) free((void *)t->defaults[j].defName);
+		t->defaults[j].name = _free(t->defaults[j].name);
+		t->defaults[j].defName = _free(t->defaults[j].defName);
 	    }
-	    free((void *)t->defaults);
-	    t->defaults = NULL;
+	    t->defaults = _free(t->defaults);
 	    t->defaultsLength = 0;
 	}
 	if (t->canons) {
 	    for (j = 0; j < t->canonsLength; j++) {
-		if (t->canons[j].name)	free((void *)t->canons[j].name);
-		if (t->canons[j].short_name)	free((void *)t->canons[j].short_name);
+		t->canons[j].name = _free(t->canons[j].name);
+		t->canons[j].short_name = _free(t->canons[j].short_name);
 	    }
-	    free((void *)t->canons);
-	    t->canons = NULL;
+	    t->canons = _free(t->canons);
 	    t->canonsLength = 0;
 	}
     }
@@ -1509,23 +1495,15 @@ void rpmFreeRpmrc(void)
 	struct rpmvarValue *this;
 	while ((this = values[i].next) != NULL) {
 	    values[i].next = this->next;
-	    if (this->value)	free((void *)this->value);
-	    if (this->arch)	free((void *)this->arch);
-	    free((void *)this);
+	    this->value = _free(this->value);
+	    this->arch = _free(this->arch);
+	    this = _free(this);
 	}
-	if (values[i].value)
-	    free((void *)values[i].value);
-	values[i].value = NULL;
-	if (values[i].arch)
-	    free((void *)values[i].arch);
-	values[i].arch = NULL;
+	values[i].value = _free(values[i].value);
+	values[i].arch = _free(values[i].arch);
     }
-    if (current[OS])
-	free((void *)current[OS]);
-    current[OS] = NULL;
-    if (current[ARCH])
-	free((void *)current[ARCH]);
-    current[ARCH] = NULL;
+    current[OS] = _free(current[OS]);
+    current[ARCH] = _free(current[ARCH]);
     defaultsInitialized = 0;
     return;
 }

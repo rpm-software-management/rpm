@@ -12,8 +12,8 @@
 extern int specedit;
 extern MacroContext rpmGlobalMacroContext;
 
-#define SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
-#define SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
+#define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
+#define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
 /*@access Header @*/	/* compared with NULL */
 
@@ -26,10 +26,10 @@ static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
     while (q != NULL) {
 	o = q;
 	q = q->next;
-	FREE(o->fileName);
-	FREE(o->script);
-	FREE(o->prog);
-	free(o);
+	o->fileName = _free(o->fileName);
+	o->script = _free(o->script);
+	o->prog = _free(o->prog);
+	o = _free(o);
     }
 }
 
@@ -42,8 +42,8 @@ static inline void freeSources(/*@only@*/ struct Source *s)
     while (t != NULL) {
 	r = t;
 	t = t->next;
-	FREE(r->fullSource);
-	free(r);
+	r->fullSource = _free(r->fullSource);
+	r = _free(r);
     }
 }
 
@@ -138,21 +138,21 @@ void freePackage(/*@only@*/ Package p)
     if (p == NULL)
 	return;
     
-    FREE(p->preInFile);
-    FREE(p->postInFile);
-    FREE(p->preUnFile);
-    FREE(p->postUnFile);
-    FREE(p->verifyFile);
+    p->preInFile = _free(p->preInFile);
+    p->postInFile = _free(p->postInFile);
+    p->preUnFile = _free(p->preUnFile);
+    p->postUnFile = _free(p->postUnFile);
+    p->verifyFile = _free(p->verifyFile);
 
     headerFree(p->header);
     freeStringBuf(p->fileList);
-    FREE(p->fileFile);
+    p->fileFile = _free(p->fileFile);
     if (p->cpioList) {
 	TFI_t fi = p->cpioList;
+	p->cpioList = NULL;
 	freeFi(fi);
-	free((void *)fi);
+	fi = _free(fi);
     }
-    p->cpioList = NULL;
 
     freeStringBuf(p->specialDoc);
 
@@ -160,7 +160,7 @@ void freePackage(/*@only@*/ Package p)
 
     freeTriggerFiles(p->triggerFiles);
 
-    free(p);
+    p = _free(p);
 }
 
 void freePackages(Spec spec)
@@ -317,7 +317,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 	sprintf(buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
-	free((void *)body);
+	body = _free(body);
     }
     
     return 0;
@@ -345,9 +345,9 @@ static inline void freeSl(/*@only@*/struct speclines *sl)
     if (sl == NULL)
 	return;
     for (i = 0; i < sl->sl_nlines; i++)
-	FREE(sl->sl_lines[i]);
-    FREE(sl->sl_lines);
-    free(sl);
+	sl->sl_lines[i] = _free(sl->sl_lines[i]);
+    sl->sl_lines = _free(sl->sl_lines);
+    sl = _free(sl);
 }
 
 /**
@@ -373,18 +373,16 @@ static inline void freeSt(/*@only@*/struct spectags *st)
 	return;
     for (i = 0; i < st->st_ntags; i++) {
 	struct spectag *t = st->st_t + i;
-	FREE(t->t_lang);
-	FREE(t->t_msgid);
+	t->t_lang = _free(t->t_lang);
+	t->t_msgid = _free(t->t_msgid);
     }
-    FREE(st->st_t);
-    free(st);
+    st->st_t = _free(st->st_t);
+    st = _free(st);
 }
 
 Spec newSpec(void)
 {
-    Spec spec;
-
-    spec = (Spec)xmalloc(sizeof *spec);
+    Spec spec = xcalloc(1, sizeof(*spec));
     
     spec->specFile = NULL;
     spec->sourceRpmName = NULL;
@@ -398,7 +396,7 @@ Spec newSpec(void)
     spec->nextline = NULL;
     spec->nextpeekc = '\0';
     spec->lineNum = 0;
-    spec->readStack = xmalloc(sizeof(struct ReadLevelEntry));
+    spec->readStack = xcalloc(1, sizeof(*spec->readStack));
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
 
@@ -452,25 +450,25 @@ void freeSpec(/*@only@*/ Spec spec)
     freeStringBuf(spec->install); spec->install = NULL;
     freeStringBuf(spec->clean);	spec->clean = NULL;
 
-    FREE(spec->buildRootURL);
-    FREE(spec->buildSubdir);
-    FREE(spec->rootURL);
-    FREE(spec->specFile);
-    FREE(spec->sourceRpmName);
+    spec->buildRootURL = _free(spec->buildRootURL);
+    spec->buildSubdir = _free(spec->buildSubdir);
+    spec->rootURL = _free(spec->rootURL);
+    spec->specFile = _free(spec->specFile);
+    spec->sourceRpmName = _free(spec->sourceRpmName);
 
     while (spec->fileStack) {
 	ofi = spec->fileStack;
-	spec->fileStack = spec->fileStack->next;
+	spec->fileStack = ofi->next;
 	ofi->next = NULL;
-	FREE(ofi->fileName);
-	free(ofi);
+	ofi->fileName = _free(ofi->fileName);
+	ofi = _free(ofi);
     }
 
     while (spec->readStack) {
 	rl = spec->readStack;
-	spec->readStack = spec->readStack->next;
+	spec->readStack = rl->next;
 	rl->next = NULL;
-	free(rl);
+	rl = _free(rl);
     }
     
     if (spec->sourceHeader != NULL) {
@@ -480,10 +478,10 @@ void freeSpec(/*@only@*/ Spec spec)
 
     if (spec->sourceCpioList) {
 	TFI_t fi = spec->sourceCpioList;
+	spec->sourceCpioList = NULL;
 	freeFi(fi);
-	free((void *)fi);
+	fi = _free(fi);
     }
-    spec->sourceCpioList = NULL;
     
     headerFree(spec->buildRestrictions);
     spec->buildRestrictions = NULL;
@@ -493,18 +491,18 @@ void freeSpec(/*@only@*/ Spec spec)
 	    freeSpec(
 		spec->buildArchitectureSpecs[spec->buildArchitectureCount]);
 	}
-	FREE(spec->buildArchitectureSpecs);
+	spec->buildArchitectureSpecs = _free(spec->buildArchitectureSpecs);
     }
-    FREE(spec->buildArchitectures);
+    spec->buildArchitectures = _free(spec->buildArchitectures);
 
-    FREE(spec->passPhrase);
-    FREE(spec->cookie);
+    spec->passPhrase = _free(spec->passPhrase);
+    spec->cookie = _free(spec->cookie);
 
     freeSources(spec->sources);	spec->sources = NULL;
     freePackages(spec);
     closeSpec(spec);
     
-    free(spec);
+    spec = _free(spec);
 }
 
 /*@only@*/ struct OpenFileInfo * newOpenFileInfo(void)

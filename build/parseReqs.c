@@ -11,8 +11,8 @@
 /**
  */
 static struct ReqComp {
-    char *token;
-    int sense;
+    const char * token;
+    rpmsenseFlags sense;
 } ReqComparisons[] = {
     { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
     { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
@@ -28,16 +28,16 @@ static struct ReqComp {
     { NULL, 0 },
 };
 
-#define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
-#define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
 int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
-	       int index, int tagflags)
+	       int index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
-    char *req, *version;
+    char * req, * version;
     Header h;
-    int flags;
+    rpmsenseFlags flags;
 
     switch (tag) {
     case RPMTAG_PROVIDEFLAGS:
@@ -95,7 +95,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	flags = (tagflags & ~RPMSENSE_SENSEMASK);
 
 	/* Tokens must begin with alphanumeric, _, or / */
-	if (!(isalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
+	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
 		     spec->lineNum, spec->line);
@@ -183,8 +183,8 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 
 	addReqProv(spec, h, flags, req, version, index);
 
-	if (req) free(req);
-	if (version) free(version);
+	req = _free(req);
+	version = _free(version);
 
     }
 

@@ -84,12 +84,12 @@ struct fileIndexEntry {
 /** \ingroup rpmdep
  * A directory to be installed/removed.
  */
-struct dirInfo {
+typedef struct dirInfo_s {
 /*@owned@*/ const char * dirName;	/*!< Directory path (+ trailing '/'). */
     int dirNameLen;			/*!< No. bytes in directory path. */
 /*@owned@*/ struct fileIndexEntry * files; /*!< Array of files in directory. */
     int numFiles;			/*!< No. files in directory. */
-} ;
+} * dirInfo ;
 
 /** \ingroup rpmdep
  * Set of available packages, items, and directories.
@@ -101,7 +101,7 @@ struct availableList {
     int size;				/*!< No. of pkgs in list. */
     int alloced;			/*!< No. of pkgs allocated for list. */
     int numDirs;			/*!< No. of directories. */
-/*@owned@*/ struct dirInfo * dirs;	/*!< Set of directories. */
+/*@owned@*/ dirInfo dirs;		/*!< Set of directories. */
 } ;
 
 /** \ingroup rpmdep
@@ -144,7 +144,7 @@ struct rpmTransactionSet_s {
 				/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
-/*@shared@*/ TFI_t flList;	/*!< Transaction element(s) file info. */
+/*@only@*/ TFI_t flList;	/*!< Transaction element(s) file info. */
     int flEntries;		/*!< No. of transaction elements. */
     int chrootDone;		/*!< Has chroot(2) been been done? */
 /*@only@*/ const char * rootDir;/*!< Path to top of install tree. */

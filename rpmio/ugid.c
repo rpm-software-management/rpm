@@ -15,24 +15,24 @@
 
 int unameToUid(const char * thisUname, uid_t * uid)
 {
-    /*@only@*/ static char * lastUname = NULL;
-    static int lastUnameLen = 0;
-    static int lastUnameAlloced;
+/*@only@*/ static char * lastUname = NULL;
+    static size_t lastUnameLen = 0;
+    static size_t lastUnameAlloced;
     static uid_t lastUid;
     struct passwd * pwent;
-    int thisUnameLen;
+    size_t thisUnameLen;
 
     if (!thisUname) {
 	lastUnameLen = 0;
 	return -1;
-    } else if (!strcmp(thisUname, "root")) {
+    } else if (strcmp(thisUname, "root") == 0) {
 	*uid = 0;
 	return 0;
     }
 
     thisUnameLen = strlen(thisUname);
-    if (!lastUname || thisUnameLen != lastUnameLen ||
-	strcmp(thisUname, lastUname)) {
+    if (lastUname == NULL || thisUnameLen != lastUnameLen ||
+	strcmp(thisUname, lastUname) != 0) {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
 	    lastUname = xrealloc(lastUname, lastUnameAlloced);	/* XXX memory leak */
@@ -40,10 +40,10 @@ int unameToUid(const char * thisUname, uid_t * uid)
 	strcpy(lastUname, thisUname);
 
 	pwent = getpwnam(thisUname);
-	if (!pwent) {
+	if (pwent == NULL) {
 	    endpwent();
 	    pwent = getpwnam(thisUname);
-	    if (!pwent) return -1;
+	    if (pwent == NULL) return -1;
 	}
 
 	lastUid = pwent->pw_uid;
@@ -56,24 +56,25 @@ int unameToUid(const char * thisUname, uid_t * uid)
 
 int gnameToGid(const char * thisGname, gid_t * gid)
 {
-    /*@only@*/ static char * lastGname = NULL;
-    static int lastGnameLen = 0;
-    static int lastGnameAlloced;
-    static uid_t lastGid;
-    int thisGnameLen;
+/*@only@*/ static char * lastGname = NULL;
+    static size_t lastGnameLen = 0;
+    static size_t lastGnameAlloced;
+    static gid_t lastGid;
+    size_t thisGnameLen;
     struct group * grent;
 
-    if (!thisGname) {
+    if (thisGname == NULL) {
 	lastGnameLen = 0;
 	return -1;
-    } else if (!strcmp(thisGname, "root")) {
+    } else if (strcmp(thisGname, "root") == 0) {
 	*gid = 0;
 	return 0;
     }
 
     thisGnameLen = strlen(thisGname);
-    if (!lastGname || thisGnameLen != lastGnameLen ||
-	strcmp(thisGname, lastGname)) {
+    if (lastGname == NULL || thisGnameLen != lastGnameLen ||
+	strcmp(thisGname, lastGname) != 0)
+    {
 	if (lastGnameAlloced < thisGnameLen + 1) {
 	    lastGnameAlloced = thisGnameLen + 10;
 	    lastGname = xrealloc(lastGname, lastGnameAlloced);	/* XXX memory leak */
@@ -81,10 +82,10 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 	strcpy(lastGname, thisGname);
 
 	grent = getgrnam(thisGname);
-	if (!grent) {
+	if (grent == NULL) {
 	    endgrent();
 	    grent = getgrnam(thisGname);
-	    if (!grent) return -1;
+	    if (grent == NULL) return -1;
 	}
 	lastGid = grent->gr_gid;
     }
@@ -96,22 +97,22 @@ int gnameToGid(const char * thisGname, gid_t * gid)
 
 char * uidToUname(uid_t uid)
 {
-    static int lastUid = -1;
-    /*@only@*/ static char * lastUname = NULL;
-    static int lastUnameLen = 0;
-    struct passwd * pwent;
-    int len;
+    static uid_t lastUid = (uid_t) -1;
+/*@only@*/ static char * lastUname = NULL;
+    static size_t lastUnameLen = 0;
 
     if (uid == (uid_t) -1) {
-	lastUid = -1;
+	lastUid = (uid_t) -1;
 	return NULL;
-    } else if (!uid) {
+    } else if (uid == (uid_t) 0) {
 	return "root";
     } else if (uid == lastUid) {
 	return lastUname;
     } else {
-	pwent = getpwuid(uid);
-	if (!pwent) return NULL;
+	struct passwd * pwent = getpwuid(uid);
+	size_t len;
+
+	if (pwent == NULL) return NULL;
 
 	lastUid = uid;
 	len = strlen(pwent->pw_name);
@@ -127,22 +128,22 @@ char * uidToUname(uid_t uid)
 
 char * gidToGname(gid_t gid)
 {
-    static int lastGid = -1;
-    /*@only@*/ static char * lastGname = NULL;
-    static int lastGnameLen = 0;
-    struct group * grent;
-    int len;
+    static gid_t lastGid = (gid_t) -1;
+/*@only@*/ static char * lastGname = NULL;
+    static size_t lastGnameLen = 0;
 
     if (gid == (gid_t) -1) {
-	lastGid = -1;
+	lastGid = (gid_t) -1;
 	return NULL;
-    } else if (!gid) {
+    } else if (gid == (gid_t) 0) {
 	return "root";
     } else if (gid == lastGid) {
 	return lastGname;
     } else {
-	grent = getgrgid(gid);
-	if (!grent) return NULL;
+	struct group * grent = getgrgid(gid);
+	size_t len;
+
+	if (grent == NULL) return NULL;
 
 	lastGid = gid;
 	len = strlen(grent->gr_name);

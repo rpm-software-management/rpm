@@ -161,7 +161,7 @@ static int addChangelog(Header h, StringBuf sb)
 	/* name */
 	name = s;
 	while (*s) s++;
-	while (s > name && isspace(*s)) {
+	while (s > name && xisspace(*s)) {
 	    *s-- = '\0';
 	}
 	if (s == name) {
@@ -185,7 +185,7 @@ static int addChangelog(Header h, StringBuf sb)
 	s--;
 
 	/* backup to end of description */
-	while ((s > text) && isspace(*s)) {
+	while ((s > text) && xisspace(*s)) {
 	    *s-- = '\0';
 	}
 	

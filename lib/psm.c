@@ -25,16 +25,6 @@
 
 extern int _fsm_debug;
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)   free((void *)this);
-    return NULL;
-}
-
 int rpmVersionCompare(Header first, Header second)
 {
     const char * one, * two;
@@ -915,7 +905,7 @@ static int runScript(PSM_t psm, Header h,
 	    if (ipath && ipath[5] != '%')
 		path = ipath;
 	    doputenv(path);
-	    if (ipath)	free((void *)ipath);
+	    ipath = _free(ipath);
 	}
 
 	for (i = 0; i < numPrefixes; i++) {
@@ -971,7 +961,7 @@ static int runScript(PSM_t psm, Header h,
     
     if (script) {
 	if (!rpmIsDebug()) unlink(fn);
-	free((void *)fn);
+	fn = _free(fn);
     }
 
     return rc;
@@ -1025,7 +1015,7 @@ static rpmRC runInstScript(PSM_t psm)
  * @return
  */
 static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
-			int arg2, char * triggersAlreadyRun)
+			int arg2, unsigned char * triggersAlreadyRun)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -1096,11 +1086,14 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 	    } else {
 		arg1 += psm->countCorrection;
 		index = triggerIndices[i];
-		if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
+		if (triggersAlreadyRun == NULL ||
+		    triggersAlreadyRun[index] == 0)
+		{
 		    rc = runScript(psm, triggeredH, "%trigger", 1,
 			    triggerProgs + index, triggerScripts[index], 
 			    arg1, arg2);
-		    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
+		    if (triggersAlreadyRun != NULL)
+			triggersAlreadyRun[index] = 1;
 		}
 	    }
 	}
@@ -1172,7 +1165,7 @@ static int runImmedTriggers(PSM_t psm)
     int_32 * triggerIndices;
     int_32 tnt, tit;
     int numTriggerIndices;
-    char * triggersRun;
+    unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
 
     if (!hge(fi->h, RPMTAG_TRIGGERNAME, &tnt,
@@ -1190,7 +1183,7 @@ static int runImmedTriggers(PSM_t psm)
 	for (i = 0; i < numTriggers; i++) {
 	    rpmdbMatchIterator mi;
 
-	    if (triggersRun[triggerIndices[i]]) continue;
+	    if (triggersRun[triggerIndices[i]] != 0) continue;
 	
 	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, triggerNames[i], 0);
 

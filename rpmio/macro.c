@@ -378,7 +378,7 @@ printExpansion(MacroBuf *mb, const char *t, const char *te)
 
 #define	COPYNAME(_ne, _s, _c)	\
     {	SKIPBLANK(_s,_c);	\
-	while(((_c) = *(_s)) && (isalnum(_c) || (_c) == '_')) \
+	while(((_c) = *(_s)) && (xisalnum(_c) || (_c) == '_')) \
 		*(_ne)++ = *(_s)++; \
 	*(_ne) = '\0';		\
     }
@@ -578,7 +578,7 @@ doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
 	se = s;
 
 	/* Names must start with alphabetic or _ and be at least 3 chars */
-	if (!((c = *n) && (isalpha(c) || c == '_') && (ne - n) > 2)) {
+	if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
 		rpmError(RPMERR_BADSPEC,
 			_("Macro %%%s has illegal name (%%define)\n"), n);
 		return se;
@@ -627,7 +627,7 @@ doUndefine(MacroContext *mc, const char *se)
 	se = s;
 
 	/* Names must start with alphabetic or _ and be at least 3 chars */
-	if (!((c = *n) && (isalpha(c) || c == '_') && (ne - n) > 2)) {
+	if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
 		rpmError(RPMERR_BADSPEC,
 			_("Macro %%%s has illegal name (%%undefine)\n"), n);
 		return se;
@@ -947,7 +947,7 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 		}
 		b = be;
 	} else if (STREQ("S", f, fn)) {
-		for (b = buf; (c = *b) && isdigit(c);)
+		for (b = buf; (c = *b) && xisdigit(c);)
 			b++;
 		if (!c) {	/* digit index */
 			b++;
@@ -955,7 +955,7 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 		} else
 			b = buf;
 	} else if (STREQ("P", f, fn)) {
-		for (b = buf; (c = *b) && isdigit(c);)
+		for (b = buf; (c = *b) && xisdigit(c);)
 			b++;
 		if (!c) {	/* digit index */
 			b++;
@@ -1041,7 +1041,7 @@ expandMacro(MacroBuf *mb)
 		f = se = s;
 		if (*se == '-')
 			se++;
-		while((c = *se) && (isalnum(c) || c == '_'))
+		while((c = *se) && (xisalnum(c) || c == '_'))
 			se++;
 		/* Recognize non-alnum macros too */
 		switch (*se) {
@@ -1256,7 +1256,7 @@ expandMacro(MacroBuf *mb)
 
 	/* Setup args for "%name " macros with opts */
 	if (me && me->opts != NULL) {
-		if (grab) {
+		if (grab != '\0') {
 			se = grabArgs(mb, me, fe, grab);
 		} else {
 			addMacro(mb->mc, "**", NULL, "", mb->depth);
@@ -1407,7 +1407,7 @@ rpmInitMacros(MacroContext *mc, const char *macrofiles)
 	if (mc == NULL)
 		mc = &rpmGlobalMacroContext;
 
-	for (mfile = m = xstrdup(macrofiles); *mfile; mfile = me) {
+	for (mfile = m = xstrdup(macrofiles); *mfile != '\0'; mfile = me) {
 		FD_t fd;
 		char buf[BUFSIZ];
 
@@ -1595,7 +1595,7 @@ char *rpmCleanPath(char * path)
 
 /*fprintf(stderr, "*** RCP %s ->\n", path); */
     s = t = te = path;
-    while (*s) {
+    while (*s != '\0') {
 /*fprintf(stderr, "*** got \"%.*s\"\trest \"%s\"\n", (t-path), path, s); */
 	switch(*s) {
 	case ':':			/* handle url's */

@@ -60,7 +60,7 @@ int rpmLookupSignatureType(int action)
 	    rc = RPMSIGTAG_GPG;
 	else
 	    rc = -1;	/* Invalid %_signature spec in macro file */
-	free((void *)name);
+	name = _free(name);
       }	break;
     }
     return rc;
@@ -83,7 +83,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 	struct stat st;
 	
 	if (!(pgpbin && pgpbin[0] != '%')) {
-	  if (pgpbin) free((void *)pgpbin);
+	  pgpbin = _free(pgpbin);
 	  saved_pgp_version = -1;
 	  return NULL;
 	}
@@ -131,10 +131,10 @@ static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
 
     rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
 	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
-		sizeof(struct rpmlead)+siglen+pad+datalen,
-		sizeof(struct rpmlead), siglen, pad, datalen);
+		(int)sizeof(struct rpmlead)+siglen+pad+datalen,
+		(int)sizeof(struct rpmlead), siglen, pad, datalen);
     rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
-	_("  Actual size: %12d\n"), st.st_size);
+	_("  Actual size: %12d\n"), (int)st.st_size);
 
     return rc;
 }
@@ -525,7 +525,7 @@ verifyPGPSignature(const char * datafile, const void * sig, int count,
     /* Write out the signature */
   { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);
     sigfile = tempnam(tmppath, "rpmsig");
-    free((void *)tmppath);
+    tmppath = _free(tmppath);
   }
     sfd = Fopen(sigfile, "w.fdio");
     (void)Fwrite(sig, sizeof(char), count, sfd);
@@ -620,7 +620,7 @@ verifyGPGSignature(const char * datafile, const void * sig, int count,
     /* Write out the signature */
   { const char *tmppath = rpmGetPath("%{_tmppath}", NULL);
     sigfile = tempnam(tmppath, "rpmsig");
-    free((void *)tmppath);
+    tmppath = _free(tmppath);
   }
     sfd = Fopen(sigfile, "w.fdio");
     (void)Fwrite(sig, sizeof(char), count, sfd);
@@ -766,7 +766,7 @@ char *rpmGetPassPhrase(const char * prompt, const int sigTag)
     case RPMSIGTAG_GPG:
       { const char *name = rpmExpand("%{_gpg_name}", NULL);
 	aok = (name && *name != '%');
-	free((void *)name);
+	name = _free(name);
       }
 	if (!aok) {
 	    rpmError(RPMERR_SIGGEN,
@@ -778,7 +778,7 @@ char *rpmGetPassPhrase(const char * prompt, const int sigTag)
     case RPMSIGTAG_PGP: 
       { const char *name = rpmExpand("%{_pgp_name}", NULL);
 	aok = (name && *name != '%');
-	free((void *)name);
+	name = _free(name);
       }
 	if (!aok) {
 	    rpmError(RPMERR_SIGGEN,

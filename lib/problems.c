@@ -86,14 +86,14 @@ void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
     }
 }
 
-#if !defined(HAVE_VSNPRINTF)
+#if !defined(HAVE_VSNPRINTF) || defined(__LCLINT__)
 static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 	const char * fmt, va_list ap)
 {
     return vsprintf(buf, fmt, ap);
 }
 #endif
-#if !defined(HAVE_SNPRINTF)
+#if !defined(HAVE_SNPRINTF) || defined(__LCLINT__)
 static inline int snprintf(char * buf, int nb, const char * fmt, ...)
 {
     va_list ap;
@@ -182,7 +182,7 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
 {
     const char *msg = rpmProblemString(prob);
     fprintf(fp, "%s\n", msg);
-    free((void *)msg);
+    msg = _free(msg);
 }
 
 void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)

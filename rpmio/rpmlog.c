@@ -112,6 +112,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     int mask = RPMLOG_MASK(pri);
     /*@unused@*/ int fac = RPMLOG_FAC(code);
     char *msgbuf, *msg;
+    int freeMsgbuf = 1;
     int msgnb = BUFSIZ, nb;
     FILE * msgout = stderr;
     rpmlogRec rec;
@@ -125,10 +126,8 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     /* Allocate a sufficently large buffer for output. */
     while (1) {
 	va_list apc;
-	__va_copy(apc, ap);
-	/*@-unrecog@*/
-	nb = vsnprintf(msgbuf, msgnb, fmt, apc);
-	/*@=unrecog@*/
+	/*@-sysunrecog@*/ __va_copy(apc, ap); /*@=sysunrecog@*/
+	/*@-unrecog@*/ nb = vsnprintf(msgbuf, msgnb, fmt, apc); /*@=unrecog@*/
 	if (nb > -1 && nb < msgnb)
 	    break;
 	if (nb > -1)		/* glibc 2.1 */
@@ -154,12 +153,10 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 
 	rec->code = code;
 	rec->message = msgbuf;
-	msgbuf = NULL;
+	freeMsgbuf = 0;
 
 	if (_rpmlogCallback) {
 	    _rpmlogCallback();
-	    if (msgbuf)
-		free(msgbuf);
 	    return;	/* XXX Preserve legacy rpmError behavior. */
 	}
     }
@@ -181,15 +178,12 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	break;
     }
 
-    /* Silly FORTRAN-like carriage control. */
-    if (*msg == '+')
-	msg++;
-    else if (rpmlogMsgPrefix[pri] && *rpmlogMsgPrefix[pri])
+    if (rpmlogMsgPrefix[pri] && *rpmlogMsgPrefix[pri])
 	fputs(_(rpmlogMsgPrefix[pri]), msgout);
 
     fputs(msg, msgout);
     fflush(msgout);
-    if (msgbuf)
+    if (freeMsgbuf)
 	free(msgbuf);
     if (pri <= RPMLOG_CRIT)
 	exit(EXIT_FAILURE);

@@ -169,9 +169,11 @@ typedef void (*poptCallbackType) (poptContext con,
  * @param flags		or'd POPT_CONTEXT_* bits
  * @return		initialized popt context
  */
-/*@only@*/ poptContext poptGetContext(/*@keep@*/ const char * name,
-		int argc, /*@keep@*/ const char ** argv,
-		/*@keep@*/ const struct poptOption * options, int flags);
+/*@only@*/ poptContext poptGetContext(
+		/*@dependent@*/ /*@keep@*/ const char * name,
+		int argc, /*@dependent@*/ /*@keep@*/ const char ** argv,
+		/*@dependent@*/ /*@keep@*/ const struct poptOption * options,
+		int flags);
 
 /** \ingroup popt
  * Reinitialize popt context.

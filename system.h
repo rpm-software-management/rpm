@@ -194,7 +194,7 @@ char *alloca ();
 
 /*@only@*/ void * xmalloc (size_t size);
 /*@only@*/ void * xcalloc (size_t nmemb, size_t size);
-/*@only@*/ void * xrealloc (/*@only@*/ void *ptr, size_t size);
+/*@only@*/ void * xrealloc (/*@only@*/ /*@null@*/ void * ptr, size_t size);
 /*@only@*/ char * xstrdup (const char *str);
 /*@only@*/ void *vmefail(size_t size);
 

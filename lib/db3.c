@@ -586,8 +586,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 #endif	/* __USE_DB2 || __USE_DB3 */
     dbi->dbi_db = NULL;
 
-    if (urlfn)
-	free((void *)urlfn);
+    urlfn = _free(urlfn);
 
     db3Free(dbi);
 
@@ -829,8 +828,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     } else
 	db3close(dbi, 0);
 
-    if (urlfn)
-	free((void *)urlfn);
+    urlfn = _free(urlfn);
 
     return rc;
 }

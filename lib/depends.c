@@ -16,18 +16,10 @@ int _depends_debug = 0;
 /*@access dbiIndex@*/		/* XXX compared with NULL */
 /*@access dbiIndexSet@*/	/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
+/*@access FD_t@*/		/* XXX compared with NULL */
 /*@access rpmdb@*/		/* XXX compared with NULL */
+/*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)   free((void *)this);
-    return NULL;
-}
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
@@ -80,11 +72,11 @@ static /*@only@*/ char *printDepend(const char * depend, const char * key,
 
     t = tbuf = xmalloc(nb + 1);
     if (depend) {
-	while(*depend)	*t++ = *depend++;
+	while(*depend != '\0')	*t++ = *depend++;
 	*t++ = ' ';
     }
     if (key)
-	while(*key)	*t++ = *key++;
+	while(*key != '\0')	*t++ = *key++;
     if (keyFlags & RPMSENSE_SENSEMASK) {
 	if (t != tbuf)	*t++ = ' ';
 	if (keyFlags & RPMSENSE_LESS)	*t++ = '<';
@@ -93,7 +85,7 @@ static /*@only@*/ char *printDepend(const char * depend, const char * key,
     }
     if (keyEVR && *keyEVR) {
 	if (t != tbuf)	*t++ = ' ';
-	while(*keyEVR)	*t++ = *keyEVR++;
+	while(*keyEVR != '\0')	*t++ = *keyEVR++;
     }
     *t = '\0';
     return tbuf;
@@ -188,7 +180,7 @@ static void alFree(struct availableList * al)
 	    }
 	    p->relocs = _free(p->relocs);
 	}
-	if (p->fd)
+	if (p->fd != NULL)
 	    p->fd = fdFree(p->fd, "alAddPackage (alFree)");
     }
 
@@ -212,8 +204,8 @@ static void alFree(struct availableList * al)
  */
 static int dirInfoCompare(const void * one, const void * two)	/*@*/
 {
-    const struct dirInfo * a = one;
-    const struct dirInfo * b = two;
+    const dirInfo a = (const dirInfo) one;
+    const dirInfo b = (const dirInfo) two;
     int lenchk = a->dirNameLen - b->dirNameLen;
 
     if (lenchk)
@@ -246,8 +238,8 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     const char ** dirNames;
     int numDirs, dirNum;
     int * dirMapping;
-    struct dirInfo dirNeedle;
-    struct dirInfo * dirMatch;
+    struct dirInfo_s dirNeedle;
+    dirInfo dirMatch;
     int first, last, fileNum;
     int origNumDirs;
     int pkgNum;
@@ -388,7 +380,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     }
 
     p->key = key;
-    p->fd = (fd ? fdLink(fd, "alAddPackage") : NULL);
+    p->fd = (fd != NULL ? fdLink(fd, "alAddPackage") : NULL);
 
     if (relocs) {
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++);
@@ -500,7 +492,7 @@ static void parseEVR(char *evr,
     char *s, *se;
 
     s = evr;
-    while (*s && isdigit(*s)) s++;	/* s points to epoch terminator */
+    while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
     se = strrchr(s, '-');		/* se points to version terminator */
 
     if (*s == ':') {
@@ -680,7 +672,7 @@ int headerMatchesDepFlags(Header h,
     *p = '\0';
     if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
-	while (*p)
+	while (*p != '\0')
 	    p++;
     }
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
@@ -885,7 +877,7 @@ void rpmtransFree(rpmTransactionSet ts)
     ts->di = _free(ts->di);
     ts->removedPackages = _free(ts->removedPackages);
     ts->order = _free(ts->order);
-    if (ts->scriptFd)
+    if (ts->scriptFd != NULL)
 	ts->scriptFd = fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
     ts->rootDir = _free(ts->rootDir);
     ts->currDir = _free(ts->currDir);
@@ -924,8 +916,8 @@ alFileSatisfiesDepend(struct availableList * al,
     int i;
     const char * dirName;
     const char * baseName;
-    struct dirInfo dirNeedle;
-    struct dirInfo * dirMatch;
+    struct dirInfo_s dirNeedle;
+    dirInfo dirMatch;
 
     if (al->numDirs == 0)	/* Solaris 2.6 bsearch sucks down on this. */
 	return NULL;
@@ -1086,7 +1078,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	(rcProvidesString = rpmGetVar(RPMVAR_PROVIDES))) {
 	i = strlen(keyName);
 	while ((start = strstr(rcProvidesString, keyName))) {
-	    if (isspace(start[i]) || start[i] == '\0' || start[i] == ',') {
+	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmrc provides)\n"),
 			keyType, keyDepend+2);
 		goto exit;
@@ -1224,6 +1216,7 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
     if (!hge(h, RPMTAG_REQUIRENAME, &rnt, (void **) &requires, &requiresCount))
     {
 	requiresCount = 0;
+	rvt = RPM_STRING_ARRAY_TYPE;
     } else {
 	hge(h, RPMTAG_REQUIREFLAGS, &type, (void **) &requireFlags,
 		 &requiresCount);
@@ -1292,6 +1285,7 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
     if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **)&conflicts, &conflictsCount))
     {
 	conflictsCount = 0;
+	cvt = RPM_STRING_ARRAY_TYPE;
     } else {
 	hge(h, RPMTAG_CONFLICTFLAGS, &type,
 		(void **) &conflictFlags, &conflictsCount);
@@ -1585,7 +1579,7 @@ static inline int addRelation( const rpmTransactionSet ts,
     /* Avoid redundant relations. */
     /* XXX FIXME: add control bit. */
     matchNum = q - ts->addedPackages.list;
-    if (selected[matchNum])
+    if (selected[matchNum] != 0)
 	return 0;
     selected[matchNum] = 1;
 
@@ -1623,8 +1617,8 @@ static int orderListIndexCmp(const void * one, const void * two)
  * @retval rp		address of last element
  */
 static void addQ(/*@kept@*/ struct availablePackage * p,
-	/*@out@*/ struct availablePackage ** qp,
-	/*@out@*/ struct availablePackage ** rp)
+	struct availablePackage ** qp,
+	struct availablePackage ** rp)
 {
     struct availablePackage *q, *qprev;
 
@@ -1835,7 +1829,7 @@ rescan:
 		sprintf(buf, "%s-%s-%s", p->name, p->version, p->release);
 		rpmMessage(RPMMESS_WARNING, "    %-40s %s\n", buf, dp);
 
-		dp = _free((void *)dp);
+		dp = _free(dp);
 	    }
 
 	    /* Walk (and erase) linear part of predecessor chain as well. */
@@ -2058,7 +2052,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     rc = 0;
 
 exit:
-    if (mi)
+    if (mi != NULL)
 	rpmdbFreeIterator(mi);
     ps.problems = _free(ps.problems);
     return rc;

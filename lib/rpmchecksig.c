@@ -193,7 +193,7 @@ int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 
 	/* Clean up intermediate target */
 	unlink(sigtarget);
-	free((void *)sigtarget);	sigtarget = NULL;
+	sigtarget = _free(sigtarget);
 
 	/* Move final target into place. */
 	unlink(rpm);
@@ -212,8 +212,7 @@ exit:
     }
     if (sigtarget) {
 	unlink(sigtarget);
-	free((void *)sigtarget);
-	sigtarget = NULL;
+	sigtarget = _free(sigtarget);
     }
     if (tmprpm[0] != '\0') {
 	unlink(tmprpm);
@@ -413,7 +412,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 	headerFreeIterator(hi);
 	res += res2;
 	unlink(sigtarget);
-	free((void *)sigtarget);	sigtarget = NULL;
+	sigtarget = _free(sigtarget);
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
@@ -449,7 +448,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
 	if (ofd)	manageFile(&ofd, NULL, 0, 0);
 	if (sigtarget) {
 	    unlink(sigtarget);
-	    free((void *)sigtarget);	sigtarget = NULL;
+	    sigtarget = _free(sigtarget);
 	}
     }
 

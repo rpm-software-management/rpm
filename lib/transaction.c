@@ -62,17 +62,6 @@ struct diskspaceInfo {
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)	free((void *)this);
-    return NULL;
-}
-
 static void freeFl(rpmTransactionSet ts, TFI_t flList)
 {
     TFI_t fi;
@@ -1294,17 +1283,17 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	 */
 	if (fi->flangs && languages && *fi->flangs[i]) {
 	    const char **lang, *l, *le;
-	    for (lang = languages; *lang; lang++) {
+	    for (lang = languages; *lang != '\0'; lang++) {
 		if (!strcmp(*lang, "all"))
 		    break;
-		for (l = fi->flangs[i]; *l; l = le) {
-		    for (le = l; *le && *le != '|'; le++)
+		for (l = fi->flangs[i]; *l != '\0'; l = le) {
+		    for (le = l; *le != '\0' && *le != '|'; le++)
 			;
 		    if ((le-l) > 0 && !strncmp(*lang, l, (le-l)))
 			break;
 		    if (*le == '|') le++;	/* skip over | */
 		}
-		if (*l)	break;
+		if (*l != '\0')	break;
 	    }
 	    if (*lang == NULL) {
 		drc[ix]--;	dff[ix] = 1;

@@ -208,7 +208,7 @@ int rpmlogSetMask (int mask);
 /**
  * Generate a log message using FMT string and option arguments.
  */
-void rpmlog (int pri, const char *fmt, ...);
+/*@mayexit@*/ /*@printflike@*/ void rpmlog (int pri, const char *fmt, ...);
 
 /**
  * Set rpmlog callback function.

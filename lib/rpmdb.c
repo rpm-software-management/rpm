@@ -68,13 +68,12 @@ static void dbiTagsInit(void)
 
     dbiTagStr = rpmExpand("%{_dbi_tags}", NULL);
     if (!(dbiTagStr && *dbiTagStr && *dbiTagStr != '%')) {
-	free((void *)dbiTagStr);
+	dbiTagStr = _free(dbiTagStr);
 	dbiTagStr = xstrdup(_dbiTagStr_default);
     }
 
     if (dbiTagsMax || dbiTags) {
-	free(dbiTags);
-	dbiTags = NULL;
+	dbiTags = _free(dbiTags);
 	dbiTagsMax = 0;
     }
 
@@ -83,12 +82,12 @@ static void dbiTagsInit(void)
     dbiTags = xcalloc(1, dbiTagsMax * sizeof(*dbiTags));
 
     for (o = dbiTagStr; o && *o; o = oe) {
-	while (*o && isspace(*o))
+	while (*o && xisspace(*o))
 	    o++;
 	if (*o == '\0')
 	    break;
 	for (oe = o; oe && *oe; oe++) {
-	    if (isspace(*oe))
+	    if (xisspace(*oe))
 		break;
 	    if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
 		break;
@@ -108,8 +107,7 @@ static void dbiTagsInit(void)
 	dbiTags[dbiTagsMax++] = rpmtag;
     }
 
-    if (dbiTagStr)
-	free(dbiTagStr);
+    dbiTagStr = _free(dbiTagStr);
 }
 
 #if USE_DB1
@@ -358,11 +356,11 @@ union _dbswap {
  * @param dbcursor	index database cursor
  * @param keyp		search key
  * @param keylen	search key length (0 will use strlen(key))
- * @param setp		address of items retrieved from index database
+ * @retval setp		address of items retrieved from index database
  * @return		-1 error, 0 success, 1 not found
  */
 static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
-	const char * keyp, size_t keylen, dbiIndexSet * setp)
+	const char * keyp, size_t keylen, /*@out@*/ dbiIndexSet * setp)
 {
     void * datap = NULL;
     size_t datalen = 0;
@@ -464,6 +462,8 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
 	    for (i = 0; i < set->count; i++) {
 		union _dbswap hdrNum, tagNum;
 
+		memset(&hdrNum, 0, sizeof(hdrNum));
+		memset(&tagNum, 0, sizeof(tagNum));
 		hdrNum.ui = set->recs[i].hdrNum;
 		tagNum.ui = set->recs[i].tagNum;
 		if (_dbbyteswapped) {
@@ -482,6 +482,7 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
 	    for (i = 0; i < set->count; i++) {
 		union _dbswap hdrNum;
 
+		memset(&hdrNum, 0, sizeof(hdrNum));
 		hdrNum.ui = set->recs[i].hdrNum;
 		if (_dbbyteswapped) {
 		    _DBSWAP(hdrNum);
@@ -541,9 +542,11 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
     if (set == NULL || recs == NULL || nrecs <= 0 || recsize <= 0)
 	return 1;
 
-    set->recs = (set->count == 0)
-	? xmalloc(nrecs * sizeof(*(set->recs)))
-	: xrealloc(set->recs, (set->count + nrecs) * sizeof(*(set->recs)));
+    if (set->count == 0)
+	set->recs = xmalloc(nrecs * sizeof(*(set->recs)));
+    else
+	set->recs = xrealloc(set->recs,
+				(set->count + nrecs) * sizeof(*(set->recs)));
 
     memset(set->recs + set->count, 0, nrecs * sizeof(*(set->recs)));
 
@@ -682,23 +685,11 @@ int rpmdbClose (rpmdb rpmdb)
     	dbiClose(rpmdb->_dbi[dbix], 0);
     	rpmdb->_dbi[dbix] = NULL;
     }
-    if (rpmdb->db_errpfx) {
-	free((void *)rpmdb->db_errpfx);
-	rpmdb->db_errpfx = NULL;
-    }
-    if (rpmdb->db_root) {
-	free((void *)rpmdb->db_root);
-	rpmdb->db_root = NULL;
-    }
-    if (rpmdb->db_home) {
-	free((void *)rpmdb->db_home);
-	rpmdb->db_home = NULL;
-    }
-    if (rpmdb->_dbi) {
-	free((void *)rpmdb->_dbi);
-	rpmdb->_dbi = NULL;
-    }
-    free(rpmdb);
+    rpmdb->db_errpfx = _free(rpmdb->db_errpfx);
+    rpmdb->db_root = _free(rpmdb->db_root);
+    rpmdb->db_home = _free(rpmdb->db_home);
+    rpmdb->_dbi = _free(rpmdb->_dbi);
+    rpmdb = _free(rpmdb);
     return 0;
 }
 
@@ -882,8 +873,11 @@ int rpmdbInit (const char * prefix, int perms)
 static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 			/*@out@*/ dbiIndexSet * matches)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     const char * dirName;
     const char * baseName;
+    int bnt, dnt;
     fingerPrintCache fpc;
     fingerPrint fp1;
     dbiIndex dbi = NULL;
@@ -948,12 +942,9 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	    continue;
 	}
 
-	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
-				(const void **) &baseNames, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
-				(const void **) &dirNames, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
-				(const void **) &dirIndexes, NULL);
+	hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, NULL);
+	hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+	hge(h, RPMTAG_DIRINDEXES, NULL, (const void **) &dirIndexes, NULL);
 
 	do {
 	    fingerPrint fp2;
@@ -972,15 +963,12 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	} while (i < allMatches->count && 
 		(i == 0 || offset == prevoff));
 
-	free(baseNames);
-	free(dirNames);
+	baseNames = hfd(baseNames, bnt);
+	dirNames = hfd(dirNames, dnt);
 	headerFree(h);
     }
 
-    if (rec) {
-	free(rec);
-	rec = NULL;
-    }
+    rec = _free(rec);
     if (allMatches) {
 	dbiFreeIndexSet(allMatches);
 	allMatches = NULL;
@@ -1234,14 +1222,8 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	dbi->dbi_rmw = NULL;
     }
 
-    if (mi->mi_release) {
-	free((void *)mi->mi_release);
-	mi->mi_release = NULL;
-    }
-    if (mi->mi_version) {
-	free((void *)mi->mi_version);
-	mi->mi_version = NULL;
-    }
+    mi->mi_release = _free(mi->mi_release);
+    mi->mi_version = _free(mi->mi_version);
     if (mi->mi_dbc) {
 	xx = dbiCclose(dbi, mi->mi_dbc, 1);
 	mi->mi_dbc = NULL;
@@ -1250,11 +1232,8 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	dbiFreeIndexSet(mi->mi_set);
 	mi->mi_set = NULL;
     }
-    if (mi->mi_keyp) {
-	free((void *)mi->mi_keyp);
-	mi->mi_keyp = NULL;
-    }
-    free(mi);
+    mi->mi_keyp = _free(mi->mi_keyp);
+    mi = _free(mi);
 }
 
 rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi) {
@@ -1284,20 +1263,14 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
 void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release) {
     if (mi == NULL)
 	return;
-    if (mi->mi_release) {
-	free((void *)mi->mi_release);
-	mi->mi_release = NULL;
-    }
+    mi->mi_release = _free(mi->mi_release);
     mi->mi_release = (release ? xstrdup(release) : NULL);
 }
 
 void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version) {
     if (mi == NULL)
 	return;
-    if (mi->mi_version) {
-	free((void *)mi->mi_version);
-	mi->mi_version = NULL;
-    }
+    mi->mi_version = _free(mi->mi_version);
     mi->mi_version = (version ? xstrdup(version) : NULL);
 }
 
@@ -1619,6 +1592,8 @@ static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
 /* XXX install.c uninstall.c */
 int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     Header h;
     sigset_t signalMask;
 
@@ -1644,7 +1619,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 
     {	const char *n, *v, *r;
 	headerNVR(h, &n, &v, &r);
-	rpmMessage(RPMMESS_DEBUG, "  --- %10d %s-%s-%s\n", hdrNum, n, v, r);
+	rpmMessage(RPMMESS_DEBUG, "  --- %10u %s-%s-%s\n", hdrNum, n, v, r);
     }
 
     blockSignals(rpmdb, &signalMask);
@@ -1686,8 +1661,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 		/*@notreached@*/ break;
 	    }
 	
-	    if (!headerGetEntry(h, rpmtag, &rpmtype,
-			(void **) &rpmvals, &rpmcnt))
+	    if (!hge(h, rpmtag, &rpmtype, (void **) &rpmvals, &rpmcnt))
 		continue;
 
 	    dbi = dbiOpen(rpmdb, rpmtag, 0);
@@ -1759,7 +1733,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 
-	    rpmvals = headerFreeData(rpmvals, rpmtype);
+	    rpmvals = hfd(rpmvals, rpmtype);
 	    rpmtype = 0;
 	    rpmcnt = 0;
 	}
@@ -1817,10 +1791,12 @@ static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor,
 /* XXX install.c */
 int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     sigset_t signalMask;
     const char ** baseNames;
+    int bnt;
     int count = 0;
-    int type;
     dbiIndex dbi;
     int dbix;
     unsigned int hdrNum;
@@ -1839,7 +1815,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
      * being written to the package header database.
      */
 
-    headerGetEntry(h, RPMTAG_BASENAMES, &type, (void **) &baseNames, &count);
+    hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count);
 
     if (_noDirTokens)
 	expandFilelist(h);
@@ -1927,23 +1903,22 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		    xx = dbiSync(dbi, 0);
 		{   const char *n, *v, *r;
 		    headerNVR(h, &n, &v, &r);
-		    rpmMessage(RPMMESS_DEBUG, "  +++ %10d %s-%s-%s\n", hdrNum, n, v, r);
+		    rpmMessage(RPMMESS_DEBUG, "  +++ %10u %s-%s-%s\n", hdrNum, n, v, r);
 		}
 		continue;
 		/*@notreached@*/ break;
 	    /* XXX preserve legacy behavior */
 	    case RPMTAG_BASENAMES:
-		rpmtype = type;
+		rpmtype = bnt;
 		rpmvals = baseNames;
 		rpmcnt = count;
 		break;
 	    case RPMTAG_REQUIRENAME:
-		headerGetEntry(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
-		headerGetEntry(h, RPMTAG_REQUIREFLAGS, NULL,
-			(void **)&requireFlags, NULL);
+		hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
+		hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **)&requireFlags, NULL);
 		break;
 	    default:
-		headerGetEntry(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
+		hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
 		break;
 	    }
 
@@ -2046,7 +2021,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		xx = dbiSync(dbi, 0);
 
 	/*@-observertrans@*/
-	    rpmvals = headerFreeData(rpmvals, rpmtype);
+	    rpmvals = hfd(rpmvals, rpmtype);
 	/*@=observertrans@*/
 	    rpmtype = 0;
 	    rpmcnt = 0;
@@ -2068,6 +2043,8 @@ exit:
 int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList, 
 		    int numItems)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi;
     fingerPrintCache fpc;
     Header h;
@@ -2095,6 +2072,7 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 	const char ** dirNames;
 	const char ** baseNames;
 	const char ** fullBaseNames;
+	int bnt, dnt;
 	int_32 * dirIndexes;
 	int_32 * fullDirIndexes;
 	fingerPrint * fps;
@@ -2114,12 +2092,9 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 	num = end - start;
 
 	/* Compute fingerprints for this header's matches */
-	headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL, 
-			    (const void **) &fullBaseNames, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, 
-			    (const void **) &dirNames, NULL);
-	headerGetEntryMinMemory(h, RPMTAG_DIRINDEXES, NULL, 
-			    (const void **) &fullDirIndexes, NULL);
+	hge(h, RPMTAG_BASENAMES, &bnt, (void **) &fullBaseNames, NULL);
+	hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+	hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fullDirIndexes, NULL);
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
@@ -2137,11 +2112,11 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 		dbiAppendSet(matchList[im->fpNum], im, 1, sizeof(*im), 0);
 	}
 
-	free(fps);
-	free(dirNames);
-	free(fullBaseNames);
-	free(baseNames);
-	free(dirIndexes);
+	fps = _free(fps);
+	dirNames = hfd(dirNames, dnt);
+	fullBaseNames = hfd(fullBaseNames, bnt);
+	baseNames = _free(baseNames);
+	dirIndexes = _free(dirIndexes);
 
 	mi->mi_setx = end;
     }
@@ -2214,7 +2189,7 @@ static int rpmdbRemoveDatabase(const char * rootdir,
 	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
 	    (void)rpmCleanPath(filename);
 	    xx = unlink(filename);
-	    free((void *)base);
+	    base = _free(base);
 	}
 	break;
     }
@@ -2323,7 +2298,7 @@ static int rpmdbMoveDatabase(const char * rootdir,
 	    (void)rpmCleanPath(nfilename);
 	    if ((xx = Rename(ofilename, nfilename)) != 0)
 		rc = 1;
-	    free((void *)base);
+	    base = _free(base);
 	}
 	break;
     }
@@ -2372,7 +2347,7 @@ int rpmdbRebuild(const char * rootdir)
     dbpath = rootdbpath = rpmGetPath(rootdir, tfn, NULL);
     if (!(rootdir[0] == '/' && rootdir[1] == '\0'))
 	dbpath += strlen(rootdir);
-    free((void *)tfn);
+    tfn = _free(tfn);
 
     tfn = rpmGetPath("%{_dbpath_rebuild}", NULL);
     if (!(tfn && tfn[0] != '%' && strcmp(tfn, dbpath))) {
@@ -2381,14 +2356,14 @@ int rpmdbRebuild(const char * rootdir)
 	sprintf(pidbuf, "rebuilddb.%d", (int) getpid());
 	t = xmalloc(strlen(dbpath) + strlen(pidbuf) + 1);
 	(void)stpcpy(stpcpy(t, dbpath), pidbuf);
-	if (tfn) free((void *)tfn);
+	tfn = _free(tfn);
 	tfn = t;
 	nocleanup = 0;
     }
     newdbpath = newrootdbpath = rpmGetPath(rootdir, tfn, NULL);
     if (!(rootdir[0] == '/' && rootdir[1] == '\0'))
 	newdbpath += strlen(rootdir);
-    free((void *)tfn);
+    tfn = _free(tfn);
 
     rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
 	rootdbpath, newrootdbpath);
@@ -2443,7 +2418,7 @@ int rpmdbRebuild(const char * rootdir)
 		headerIsEntry(h, RPMTAG_BUILDTIME)))
 	    {
 		rpmError(RPMERR_INTERNAL,
-			_("record number %d in database is bad -- skipping.\n"),
+			_("record number %u in database is bad -- skipping.\n"),
 			_RECNUM);
 		continue;
 	    }
@@ -2482,7 +2457,7 @@ int rpmdbRebuild(const char * rootdir)
 
 	    if (rc) {
 		rpmError(RPMERR_INTERNAL,
-			_("cannot add record originally at %d\n"), _RECNUM);
+			_("cannot add record originally at %u\n"), _RECNUM);
 		failed = 1;
 		break;
 	    }
@@ -2525,8 +2500,8 @@ exit:
 	    rpmMessage(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }
-    if (newrootdbpath)	free((void *)newrootdbpath);
-    if (rootdbpath)	free((void *)rootdbpath);
+    newrootdbpath = _free(newrootdbpath);
+    rootdbpath = _free(rootdbpath);
 
     return rc;
 }

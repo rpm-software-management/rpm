@@ -19,16 +19,6 @@
 extern int _fsm_debug;
 
 /**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)	free((void *)this);
-    return NULL;
-}
-
-/**
  * Convert string to unsigned integer (with buffer size check).
  * @param		input string
  * @retval		address of 1st character not processed
@@ -47,7 +37,7 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     buf[num] = '\0';
 
     ret = strtoul(buf, &end, base);
-    if (*end)
+    if (*end != '\0')
 	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
     else
 	*endptr = ((char *)str) + strlen(buf);

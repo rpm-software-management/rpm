@@ -9,6 +9,8 @@
 typedef unsigned int uint32;
 typedef unsigned char byte;
 
+/*@access DIGEST_CTX@*/
+
 /**
  * MD5/SHA1 digest private data.
  */

@@ -11,18 +11,18 @@
 -unrecogcomments
 
 # don't-bother-me-yet parameters
--branchstate		# ~100 occurences, painful
+-branchstate		# ~142 occurences, painful
 #-immediatetrans
--mustfree		# alloca is painful
+-mustfree		# ~529 alloca is painful
 #-observertrans
 #-statictrans
 
 # not-yet normal parameters
 -boolops		# w->n
--fixedformalarray
+#-fixedformalarray	# md5 whines
 -null
 -predboolint		# w->n
--predboolothers		# w->n
+#-predboolothers		# w->n
 -retvalint		# w->n
 -type
 

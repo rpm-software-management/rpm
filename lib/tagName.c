@@ -41,8 +41,8 @@ const char *const tagName(int tag)
 	if (tag != rpmTagTable[i].val)
 	    continue;
 	strcpy(nameBuf, rpmTagTable[i].name + 7);
-	for (s = nameBuf+1; *s; s++)
-	    *s = tolower(*s);
+	for (s = nameBuf+1; *s != '\0'; s++)
+	    *s = xtolower(*s);
 	break;
     }
     return nameBuf;

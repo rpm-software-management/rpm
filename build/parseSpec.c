@@ -60,7 +60,7 @@ rpmParseState isPart(const char *line)
 	if (xstrncasecmp(line, p->token, p->len))
 	    continue;
 	c = *(line + p->len);
-	if (c == '\0' || isspace(c))
+	if (c == '\0' || xisspace(c))
 	    break;
     }
 
@@ -147,7 +147,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     ch = ' ';
     while (*spec->nextline && ch != '\n') {
 	ch = *spec->nextline++;
-	if (!isspace(ch))
+	if (!xisspace(ch))
 	    last = spec->nextline;
     }
 
@@ -203,8 +203,8 @@ retry:
 	    /* remove this file from the stack */
 	    spec->fileStack = ofi->next;
 	    Fclose(ofi->fd);
-	    FREE(ofi->fileName);
-	    free(ofi);
+	    ofi->fileName = _free(ofi->fileName);
+	    ofi = _free(ofi);
 
 	    /* only on last file do we signal EOF to caller */
 	    ofi = spec->fileStack;
@@ -247,22 +247,22 @@ retry:
 	const char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 7;
 	match = matchTok(arch, s);
-	free((void *)arch);
+	arch = _free(arch);
     } else if (! strncmp("%ifnarch", s, sizeof("%ifnarch")-1)) {
 	const char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 8;
 	match = !matchTok(arch, s);
-	free((void *)arch);
+	arch = _free(arch);
     } else if (! strncmp("%ifos", s, sizeof("%ifos")-1)) {
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	s += 5;
 	match = matchTok(os, s);
-	free((void *)os);
+	os = _free(os);
     } else if (! strncmp("%ifnos", s, sizeof("%ifnos")-1)) {
 	const char *os = rpmExpand("%{_target_os}", NULL);
 	s += 6;
 	match = !matchTok(os, s);
-	free((void *)os);
+	os = _free(os);
     } else if (! strncmp("%if", s, sizeof("%if")-1)) {
 	s += 3;
         match = parseExpressionBoolean(spec, s);
@@ -302,7 +302,7 @@ retry:
 
 	s += 8;
 	fileName = s;
-	if (! isspace(*fileName)) {
+	if (! xisspace(*fileName)) {
 	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement\n"));
 	    return RPMERR_BADSPEC;
 	}
@@ -346,8 +346,8 @@ void closeSpec(Spec spec)
 	ofi = spec->fileStack;
 	spec->fileStack = spec->fileStack->next;
 	if (ofi->fd) Fclose(ofi->fd);
-	FREE(ofi->fileName);
-	free(ofi);
+	ofi->fileName = _free(ofi->fileName);
+	ofi = _free(ofi);
     }
 }
 
@@ -482,7 +482,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 		    }
 #ifdef	DYING
 		    rpmSetMachine(saveArch, NULL);
-		    free((void *)saveArch);
+		    saveArch = _free(saveArch);
 #else
 		    delMacro(NULL, "_target_cpu");
 #endif
@@ -557,10 +557,10 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	headerAddEntry(pkg->header, RPMTAG_ARCH, RPM_STRING_TYPE, arch, 1);
       }
 #ifdef	DYING
-    FREE(myos);
+    myos = _free(myos);
 #else
-    free((void *)arch);
-    free((void *)os);
+    arch = _free(arch);
+    os = _free(os);
 #endif
   }
 

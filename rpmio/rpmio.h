@@ -430,6 +430,27 @@ int	timedRead(FD_t fd, /*@out@*/ void * bufptr, int length);
 /*@observer@*/ extern FDIO_t fadio;
 /*@}*/
 
+/*@unused@*/ static inline int xislower(int c) {return (c >= 'a' && c <= 'z');}
+/*@unused@*/ static inline int xisupper(int c) {return (c >= 'A' && c <= 'Z');}
+/*@unused@*/ static inline int xisalpha(int c) {
+    return (xislower(c) || xisupper(c));
+}
+/*@unused@*/ static inline int xisdigit(int c) {return (c >= '0' && c <= '9');}
+/*@unused@*/ static inline int xisalnum(int c) {
+    return (xisalpha(c) || xisdigit(c));
+}
+/*@unused@*/ static inline int xisblank(int c) {return (c == ' ' || c == '\t');}
+/*@unused@*/ static inline int xisspace(int c) {
+    return (xisblank(c) || c == '\n' || c == '\r' || c == '\f' || c == '\v');
+}
+
+/*@unused@*/ static inline int xtolower(int c) {
+    return ((xisupper(c)) ? (c | ('a' - 'A')) : c);
+}
+/*@unused@*/ static inline int xtoupper(int c) {
+    return ((xislower(c)) ? (c & ~('a' - 'A')) : c);
+}
+
 /** \ingroup rpmio
  * Locale insensitive strcasecmp(3).
  */

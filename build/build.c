@@ -23,14 +23,14 @@ static void doRmSource(Spec spec)
     Package pkg;
     
 #if 0
-    unlink(spec->specFile);
+    Unlink(spec->specFile);
 #endif
 
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	    unlink(fn);
-	    free((void *)fn);
+	    Unlink(fn);
+	    fn = _free(fn);
 	}
     }
 
@@ -38,8 +38,8 @@ static void doRmSource(Spec spec)
 	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-		unlink(fn);
-		free((void *)fn);
+		Unlink(fn);
+		fn = _free(fn);
 	    }
 	}
     }
@@ -218,7 +218,7 @@ exit:
     if (scriptName) {
 	if (!rc)
 	    Unlink(scriptName);
-	free((void *)scriptName);
+	scriptName = _free(scriptName);
     }
     if (u) {
 	switch (u->urltype) {
@@ -235,11 +235,11 @@ fprintf(stderr, "*** delMacros\n");
 	    break;
 	}
     }
-    FREE(argv);
-    FREE(buildCmd);
-    FREE(buildTemplate);
-    FREE(buildPost);
-    FREE(buildDirURL);
+    argv = _free(argv);
+    buildCmd = _free(buildCmd);
+    buildTemplate = _free(buildTemplate);
+    buildPost = _free(buildPost);
+    buildDirURL = _free(buildDirURL);
 
     return rc;
 }
@@ -303,7 +303,7 @@ int buildSpec(Spec spec, int what, int test)
 	doRmSource(spec);
 
     if (what & RPMBUILD_RMSPEC)
-	unlink(spec->specFile);
+	Unlink(spec->specFile);
 
 exit:
     if (rc && rpmlogGetNrecs() > 0) {

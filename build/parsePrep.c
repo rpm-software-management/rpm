@@ -14,8 +14,8 @@
 /* These have to be global to make up for stupid compilers */
     static int leaveDirs, skipDefaultAction;
     static int createDir, quietly;
-    /*@observer@*/ /*@null@*/ static const char * dirName = NULL;
-    static struct poptOption optionsTable[] = {
+/*@observer@*/ /*@null@*/ static const char * dirName = NULL;
+/*@observer@*/ static struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
 	    { NULL, 'c', 0, &createDir, 0,		NULL, NULL},
@@ -78,7 +78,7 @@ static int checkOwners(const char *urlfn)
 	return NULL;
     }
 
-    fn = urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     args[0] = '\0';
     if (db) {
@@ -97,10 +97,11 @@ static int checkOwners(const char *urlfn)
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	free((void *)urlfn);
+	urlfn = _free(urlfn);
 	return NULL;
     }
 
+    fn = NULL;
     urltype = urlPath(urlfn, &fn);
     switch (urltype) {
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
@@ -109,7 +110,7 @@ static int checkOwners(const char *urlfn)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
-	free((void *)urlfn);
+	urlfn = _free(urlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -126,10 +127,10 @@ static int checkOwners(const char *urlfn)
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
-		c, (const char *) basename(fn),
+		c, /*@-unrecog@*/ (const char *) basename(fn), /*@=unrecog@*/
 		zipper,
 		fn, strip, args);
-	free((void *)zipper);
+	zipper = _free(zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
@@ -137,7 +138,7 @@ static int checkOwners(const char *urlfn)
 		strip, args, fn);
     }
 
-    free((void *)urlfn);
+    urlfn = _free(urlfn);
     return buf;
 }
 
@@ -168,7 +169,7 @@ static int checkOwners(const char *urlfn)
 	return NULL;
     }
 
-    fn = urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
 
@@ -194,10 +195,11 @@ static int checkOwners(const char *urlfn)
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	free((void *)urlfn);
+	urlfn = _free(urlfn);
 	return NULL;
     }
 
+    fn = NULL;
     urltype = urlPath(urlfn, &fn);
     switch (urltype) {
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
@@ -206,7 +208,7 @@ static int checkOwners(const char *urlfn)
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
-	free((void *)urlfn);
+	urlfn = _free(urlfn);
 	return NULL;
 	/*@notreached@*/ break;
     }
@@ -231,7 +233,7 @@ static int checkOwners(const char *urlfn)
 	zipper = rpmGetPath(t, NULL);
 	buf[0] = '\0';
 	t = stpcpy(buf, zipper);
-	free((void *)zipper);
+	zipper = _free(zipper);
 	*t++ = ' ';
 	t = stpcpy(t, fn);
 	if (needtar)
@@ -249,7 +251,7 @@ static int checkOwners(const char *urlfn)
 	t = stpcpy(t, fn);
     }
 
-    free((void *)urlfn);
+    urlfn = _free(urlfn);
     return buf;
 }
 
@@ -295,10 +297,10 @@ static int doSetupMacro(Spec spec, char *line)
 	if (parseNum(optArg, &num)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%setup %c: %s\n"),
 		     spec->lineNum, num, optArg);
-	    free(argv);
 	    freeStringBuf(before);
 	    freeStringBuf(after);
 	    poptFreeContext(optCon);
+	    argv = _free(argv);
 	    return RPMERR_BADSPEC;
 	}
 
@@ -315,10 +317,10 @@ static int doSetupMacro(Spec spec, char *line)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 poptStrerror(arg));
-	free(argv);
 	freeStringBuf(before);
 	freeStringBuf(after);
 	poptFreeContext(optCon);
+	argv = _free(argv);
 	return RPMERR_BADSPEC;
     }
 
@@ -332,8 +334,8 @@ static int doSetupMacro(Spec spec, char *line)
     }
     addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
     
-    free(argv);
     poptFreeContext(optCon);
+    argv = _free(argv);
 
     /* cd to the build dir */
     {	const char * buildDirURL = rpmGenPath(spec->rootURL, "%{_builddir}", "");
@@ -342,7 +344,7 @@ static int doSetupMacro(Spec spec, char *line)
 	(void) urlPath(buildDirURL, &buildDir);
 	sprintf(buf, "cd %s", buildDir);
 	appendLineStringBuf(spec->prep, buf);
-	free((void *)buildDirURL);
+	buildDirURL = _free(buildDirURL);
     }
     
     /* delete any old sources */
@@ -395,7 +397,7 @@ static int doSetupMacro(Spec spec, char *line)
 	    const char *fix = rpmExpand(*fm, " .", NULL);
 	    if (fix && *fix != '%')
 		appendLineStringBuf(spec->prep, fix);
-	    free((void *)fix);
+	    fix = _free(fix);
 	}
     }
     
@@ -431,8 +433,8 @@ static int doPatchMacro(Spec spec, char *line)
     
     for (bp = buf; (s = strtok(bp, " \t\n")) != NULL;) {
 	if (bp) {	/* remove 1st token (%patch) */
-		bp = NULL;
-		continue;
+	    bp = NULL;
+	    continue;
 	}
 	if (!strcmp(s, "-P")) {
 	    opt_P = 1;
@@ -496,17 +498,15 @@ static int doPatchMacro(Spec spec, char *line)
 
     if (! opt_P) {
 	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E);
-	if (s == NULL) {
+	if (s == NULL)
 	    return RPMERR_BADSPEC;
-	}
 	appendLineStringBuf(spec->prep, s);
     }
 
     for (x = 0; x < patch_index; x++) {
 	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E);
-	if (s == NULL) {
+	if (s == NULL)
 	    return RPMERR_BADSPEC;
-	}
 	appendLineStringBuf(spec->prep, s);
     }
     
@@ -530,9 +530,8 @@ int parsePrep(Spec spec)
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	return PART_NONE;
     }
-    if (rc) {
+    if (rc)
 	return rc;
-    }
     
     buf = newStringBuf();
     
@@ -544,9 +543,8 @@ int parsePrep(Spec spec)
 	    nextPart = PART_NONE;
 	    break;
 	}
-	if (rc) {
+	if (rc)
 	    return rc;
-	}
     }
 
     saveLines = splitString(getStringBuf(buf), strlen(getStringBuf(buf)), '\n');

@@ -293,12 +293,8 @@ int parseScript(Spec spec, int parsePart)
 exit:
     if (sb)
 	freeStringBuf(sb);
-    if (progArgv) {
-	FREE(progArgv);
-    }
-    if (argv) {
-	FREE(argv);
-    }
+    progArgv = _free(progArgv);
+    argv = _free(argv);
     if (optCon)
 	poptFreeContext(optCon);
     

@@ -14,18 +14,10 @@
 #include "manifest.h"
 #include "debug.h"
 
-/*@access Header@*/			/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)   free((void *)this);
-    return NULL;
-}
+/*@access Header@*/			/* XXX compared with NULL */
+/*@access rpmdb@*/			/* XXX compared with NULL */
+/*@access FD_t@*/			/* XXX compared with NULL */
 
 /**
  */
@@ -38,7 +30,7 @@ static void printFileInfo(char * te, const char * name,
 {
     char sizefield[15];
     char ownerfield[9], groupfield[9];
-    char timefield[100] = "";
+    char timefield[100];
     time_t when = mtime;  /* important if sizeof(int_32) ! sizeof(time_t) */
     struct tm * tm;
     static time_t now;
@@ -192,7 +184,9 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 		t = xrealloc(t, BUFSIZ+sb);
 		te = t + tb;
 	    }
+	    /*@-usereleased@*/
 	    te = stpcpy(te, str);
+	    /*@=usereleased@*/
 	    str = _free(str);
 	}
     }
@@ -673,7 +667,7 @@ restart:
     {   const char * s;
 	char * fn;
 
-	for (s = arg; *s; s++)
+	for (s = arg; *s != '\0'; s++)
 	    if (!(*s == '.' || *s == '/')) break;
 
 	if (*s == '\0') {
@@ -709,7 +703,7 @@ restart:
     case RPMQV_DBOFFSET:
     {	int mybase = 10;
 	const char * myarg = arg;
-	int recOffset;
+	unsigned recOffset;
 
 	/* XXX should be in strtoul */
 	if (*myarg == '0') {
@@ -730,7 +724,7 @@ restart:
 	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (mi == NULL) {
 	    rpmError(RPMERR_QUERY,
-		_("record %d could not be read\n"), recOffset);
+		_("record %u could not be read\n"), recOffset);
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
@@ -769,7 +763,7 @@ int rpmQuery(QVA_t *qva, rpmQVSources source, const char * arg)
 
     rc = rpmQueryVerify(qva, source, arg, rpmdb, showQueryPackage);
 
-    if (rpmdb)
+    if (rpmdb != NULL)
 	rpmdbClose(rpmdb);
 
     return rc;

@@ -13,18 +13,9 @@
 #include "debug.h"
 
 /*@access rpmTransactionSet@*/	/* XXX compared with NULL */
+/*@access rpmProblemSet@*/	/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)   free((void *)this);
-    return NULL;
-}
 
 /* Define if you want percentage progress in the hash bars when
  * writing to a tty (ordinary hash bars otherwise) --claudio
@@ -228,9 +219,10 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	rc = rpmGlob(*fnp, &ac, &av);
 	if (rc || ac == 0) continue;
 
-	argv = (argc == 0)
-	    ? xmalloc((argc+2) * sizeof(*argv))
-	    : xrealloc(argv, (argc+2) * sizeof(*argv));
+	if (argv == NULL)
+	    argv = xmalloc((argc+ac+1) * sizeof(*argv));
+	else
+	    argv = xrealloc(argv, (argc+ac+1) * sizeof(*argv));
 	memcpy(argv+argc, av, ac * sizeof(*av));
 	argc += ac;
 	argv[argc] = NULL;
@@ -245,13 +237,15 @@ restart:
     /* Allocate sufficient storage for next set of args. */
     if (pkgx >= numPkgs) {
 	numPkgs = pkgx + argc;
-	pkgURL = (pkgURL == NULL)
-	    ? xmalloc( (numPkgs + 1) * sizeof(*pkgURL))
-	    : xrealloc(pkgURL, (numPkgs + 1) * sizeof(*pkgURL));
+	if (pkgURL == NULL)
+	    pkgURL = xmalloc( (numPkgs + 1) * sizeof(*pkgURL));
+	else
+	    pkgURL = xrealloc(pkgURL, (numPkgs + 1) * sizeof(*pkgURL));
 	memset(pkgURL + pkgx, 0, ((argc + 1) * sizeof(*pkgURL)));
-	pkgState = (pkgState == NULL)
-	    ? xmalloc( (numPkgs + 1) * sizeof(*pkgState))
-	    : xrealloc(pkgState, (numPkgs + 1) * sizeof(*pkgState));
+	if (pkgState == NULL)
+	    pkgState = xmalloc( (numPkgs + 1) * sizeof(*pkgState));
+	else
+	    pkgState = xrealloc(pkgState, (numPkgs + 1) * sizeof(*pkgState));
 	memset(pkgState + pkgx, 0, ((argc + 1) * sizeof(*pkgState)));
     }
 
@@ -333,10 +327,13 @@ restart:
 	if ((rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) && isSource) {
 	    rpmMessage(RPMMESS_DEBUG, "\tadded source package [%d]\n",
 		numSRPMS);
-	    sourceURL = (sourceURL == NULL)
-		    ? xmalloc( (numSRPMS + 2) * sizeof(*sourceURL))
-		    : xrealloc(sourceURL, (numSRPMS + 2) * sizeof(*sourceURL));
+	    if (sourceURL == NULL)
+		sourceURL = xmalloc((numSRPMS + 2) * sizeof(*sourceURL));
+	    else
+		sourceURL = xrealloc(sourceURL,
+				(numSRPMS + 2) * sizeof(*sourceURL));
 	    sourceURL[numSRPMS++] = *fnp;
+	    sourceURL[numSRPMS] = NULL;
 	    *fnp = NULL;
 	    continue;
 	}
@@ -400,7 +397,6 @@ restart:
 		if (count == 0) {
 		    headerFree(h);
 		    continue;
-		    break;	/* XXX out of switch */
 		}
 		/* Package is newer than those currently installed. */
 	    }
@@ -516,7 +512,7 @@ restart:
 	    rpmProblemSetPrint(stderr, probs);
 	}
 
-	if (probs) rpmProblemSetFree(probs);
+	if (probs != NULL) rpmProblemSetFree(probs);
     }
 
     if (numSRPMS && !stopInstall) {

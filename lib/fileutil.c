@@ -171,7 +171,6 @@ int rpmSyscall(const char * cmd, int noexec)
     }
 
 exit:
-    if (argv)
-	free((void *)argv);
+    argv = _free(argv);
     return rc;
 }

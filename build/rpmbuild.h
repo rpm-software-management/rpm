@@ -19,6 +19,7 @@
  * Bit(s) to control buildSpec() operation.
  */
 typedef enum rpmBuildFlags_e {
+    RPMBUILD_NONE	= 0,
     RPMBUILD_PREP	= (1 << 0),	/*!< Execute %%prep. */
     RPMBUILD_BUILD	= (1 << 1),	/*!< Execute %%build. */
     RPMBUILD_INSTALL	= (1 << 2),	/*!< Execute %%install. */
@@ -34,9 +35,8 @@ typedef enum rpmBuildFlags_e {
 
 #include <ctype.h>
 
-#define FREE(x) { if (x) free((void *)x); x = NULL; }
-#define SKIPSPACE(s) { while (*(s) && isspace(*(s))) (s)++; }
-#define SKIPNONSPACE(s) { while (*(s) && !isspace(*(s))) (s)++; }
+#define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
+#define SKIPNONSPACE(s) { while (*(s) && !xisspace(*(s))) (s)++; }
 
 #define PART_SUBNAME  0
 #define PART_NAME     1
@@ -222,7 +222,7 @@ int parsePrep(Spec spec);
  * @return		0 on success, RPMERR_BADSPEC on failure
  */
 int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index,
-	       int flags);
+	       rpmsenseFlags flags);
 
 /** \ingroup rpmbuild
  * Parse %%pre et al scriptlets from a spec file.
@@ -310,7 +310,8 @@ void freePackage(/*@only@*/ Package pkg);
  * @return		0 always
  */
 int addReqProv(/*@unused@*/Spec spec, Header h,
-		int flag, const char *depName, const char *depEVR, int index);
+		rpmsenseFlags flag, const char *depName, const char *depEVR,
+		int index);
 
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.

@@ -26,28 +26,32 @@
 /*@access TFI_t @*/
 /*@access FD_t @*/
 
-#define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
-#define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
 #define MAXDOCDIR 1024
 
 extern int _noDirTokens;
 
-#define SPECD_DEFFILEMODE	(1<<0)
-#define SPECD_DEFDIRMODE	(1<<1)
-#define SPECD_DEFUID		(1<<2)
-#define SPECD_DEFGID		(1<<3)
-#define SPECD_DEFVERIFY		(1<<4)
+/**
+ */
+typedef enum specdFlags_e {
+    SPECD_DEFFILEMODE	= (1 << 0),
+    SPECD_DEFDIRMODE	= (1 << 1),
+    SPECD_DEFUID	= (1 << 2),
+    SPECD_DEFGID	= (1 << 3),
+    SPECD_DEFVERIFY	= (1 << 4),
 
-#define SPECD_FILEMODE		(1<<8)
-#define SPECD_DIRMODE		(1<<9)
-#define SPECD_UID		(1<<10)
-#define SPECD_GID		(1<<11)
-#define SPECD_VERIFY		(1<<12)
+    SPECD_FILEMODE	= (1 << 8),
+    SPECD_DIRMODE	= (1 << 9),
+    SPECD_UID		= (1 << 10),
+    SPECD_GID		= (1 << 11),
+    SPECD_VERIFY	= (1 << 12)
+} specdFlags;
 
 /**
  */
-typedef struct {
+typedef struct FileListRec_s {
     struct stat fl_st;
 #define	fl_dev	fl_st.st_dev
 #define	fl_ino	fl_st.st_ino
@@ -59,26 +63,26 @@ typedef struct {
 #define	fl_size	fl_st.st_size
 #define	fl_mtime fl_st.st_mtime
 
-    const char *diskURL;	/* get file from here       */
-    const char *fileURL;	/* filename in cpio archive */
-    /*@observer@*/ const char *uname;
-    /*@observer@*/ const char *gname;
+/*@only@*/ const char * diskURL;	/* get file from here       */
+/*@only@*/ const char * fileURL;	/* filename in cpio archive */
+/*@observer@*/ const char * uname;
+/*@observer@*/ const char * gname;
     int		flags;
-    int		specdFlags;	/* which attributes have been explicitly specified. */
+    specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
     int		verifyFlags;
-    const char *langs;	/* XXX locales separated with | */
-} FileListRec;
+/*@only@*/ const char *langs;	/* XXX locales separated with | */
+} * FileListRec;
 
 /**
  */
-typedef struct {
-    const char *ar_fmodestr;
-    const char *ar_dmodestr;
-    const char *ar_user;
-    const char *ar_group;
+typedef struct AttrRec_s {
+    const char * ar_fmodestr;
+    const char * ar_dmodestr;
+    const char * ar_user;
+    const char * ar_group;
     mode_t	ar_fmode;
     mode_t	ar_dmode;
-} AttrRec;
+} * AttrRec;
 
 /**
  */
@@ -87,9 +91,9 @@ static int multiLib = 0;	/* MULTILIB */
 /**
  * Package file tree walk data.
  */
-struct FileList {
-    const char *buildRootURL;
-    const char *prefix;
+typedef struct FileList_s {
+/*@only@*/ const char * buildRootURL;
+/*@only@*/ const char * prefix;
 
     int fileCount;
     int totalFileSize;
@@ -101,28 +105,28 @@ struct FileList {
     int isDir;
     int inFtw;
     int currentFlags;
-    int currentSpecdFlags;
+    specdFlags currentSpecdFlags;
     int currentVerifyFlags;
-    AttrRec cur_ar;
-    AttrRec def_ar;
-    int defSpecdFlags;
+    struct AttrRec_s cur_ar;
+    struct AttrRec_s def_ar;
+    specdFlags defSpecdFlags;
     int defVerifyFlags;
     int nLangs;
-    /*@only@*/ const char **currentLangs;
+/*@only@*/ const char ** currentLangs;
 
     /* Hard coded limit of MAXDOCDIR docdirs.         */
     /* If you break it you are doing something wrong. */
-    const char *docDirs[MAXDOCDIR];
+    const char * docDirs[MAXDOCDIR];
     int docDirCount;
     
-    FileListRec *fileList;
+/*@only@*/ FileListRec fileList;
     int fileListRecsAlloced;
     int fileListRecsUsed;
-};
+} * FileList;
 
 /**
  */
-static void nullAttrRec(/*@out@*/AttrRec *ar)
+static void nullAttrRec(/*@out@*/ AttrRec ar)
 {
     ar->ar_fmodestr = NULL;
     ar->ar_dmodestr = NULL;
@@ -134,20 +138,20 @@ static void nullAttrRec(/*@out@*/AttrRec *ar)
 
 /**
  */
-static void freeAttrRec(AttrRec *ar)
+static void freeAttrRec(AttrRec ar)
 {
-    FREE(ar->ar_fmodestr);
-    FREE(ar->ar_dmodestr);
-    FREE(ar->ar_user);
-    FREE(ar->ar_group);
+    ar->ar_fmodestr = _free(ar->ar_fmodestr);
+    ar->ar_dmodestr = _free(ar->ar_dmodestr);
+    ar->ar_user = _free(ar->ar_user);
+    ar->ar_group = _free(ar->ar_group);
     /* XXX doesn't free ar (yet) */
 }
 
 /**
  */
-static void dupAttrRec(AttrRec *oar, /*@out@*/ AttrRec *nar)
+static void dupAttrRec(const AttrRec oar, /*@in@*/ /*@out@*/ AttrRec nar)
 {
-    if (oar == nar)	/* XXX pathological paranoia */
+    if (oar == nar)
 	return;
     freeAttrRec(nar);
     nar->ar_fmodestr = (oar->ar_fmodestr ? xstrdup(oar->ar_fmodestr) : NULL);
@@ -161,7 +165,7 @@ static void dupAttrRec(AttrRec *oar, /*@out@*/ AttrRec *nar)
 #if 0
 /**
  */
-static void dumpAttrRec(const char *msg, AttrRec *ar) {
+static void dumpAttrRec(const char *msg, AttrRec ar) {
     if (msg)
 	fprintf(stderr, "%s:\t", msg);
     fprintf(stderr, "(%s, %s, %s, %s)\n",
@@ -235,21 +239,22 @@ static char *strtokWithQuotes(char *s, char *delim)
  */
 static void timeCheck(int tc, Header h)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     int *mtime;
-    char **files;
-    int count, x, currentTime;
+    const char ** files;
+    int fnt;
+    int count, x;
+    time_t currentTime = time(NULL);
 
-    headerGetEntry(h, RPMTAG_OLDFILENAMES, NULL, (void **) &files, &count);
-    headerGetEntry(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
-
-    currentTime = time(NULL);
+    hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
+    hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
     
     for (x = 0; x < count; x++) {
-	if (currentTime - mtime[x] > tc) {
+	if ((currentTime - mtime[x]) > tc)
 	    rpmMessage(RPMMESS_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
-	}
     }
-    FREE(files);
+    files = hfd(files, fnt);
 }
 
 /**
@@ -276,14 +281,14 @@ VFA_t verifyAttrs[] = {
 /**
  * @param fl		package file tree walk data
  */
-static int parseForVerify(char *buf, struct FileList *fl)
+static int parseForVerify(char *buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
     int *resultVerify;
     int not;
     int verifyFlags;
-    int *specdFlags;
+    specdFlags * specdFlags;
 
     if ((p = strstr(buf, (name = "%verify"))) != NULL) {
 	resultVerify = &(fl->currentVerifyFlags);
@@ -366,13 +371,14 @@ static int parseForVerify(char *buf, struct FileList *fl)
 /**
  * @param fl		package file tree walk data
  */
-static int parseForAttr(char *buf, struct FileList *fl)
+static int parseForAttr(char *buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
     int x;
-    AttrRec arbuf, *ar = &arbuf, *ret_ar;
-    int *specdFlags = NULL;
+    struct AttrRec_s arbuf;
+    AttrRec ar = &arbuf, ret_ar;
+    specdFlags * specdFlags;
 
     if ((p = strstr(buf, (name = "%attr"))) != NULL) {
 	ret_ar = &(fl->cur_ar);
@@ -490,7 +496,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
 /**
  * @param fl		package file tree walk data
  */
-static int parseForConfig(char *buf, struct FileList *fl)
+static int parseForConfig(char *buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
@@ -555,7 +561,7 @@ static int langCmp(const void * ap, const void *bp) {
 /**
  * @param fl		package file tree walk data
  */
-static int parseForLang(char *buf, struct FileList *fl)
+static int parseForLang(char *buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
@@ -642,7 +648,7 @@ static int parseForLang(char *buf, struct FileList *fl)
 
 /**
  */
-static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
+static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 {
     static int initialized = 0;
     static int hasRegex = 0;
@@ -659,13 +665,14 @@ static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
 	    rc = 1;
 	else if (regcomp(&compiledPatt, patt, REG_EXTENDED))
 	    rc = -1;
-	free((void *)patt);
+	patt = _free(patt);
 	if (rc)
 	    return rc;
 	hasRegex = 1;
 	initialized = 1;
     }
     
+    memset(matches, 0, sizeof(matches));
     if (! hasRegex || regexec(&compiledPatt, fileName, 2, matches, REG_NOTEOL))
 	return 1;
 
@@ -699,7 +706,7 @@ static int parseForRegexMultiLib(const char *fileName)
 	    rc = 1;
 	else if (regcomp(&compiledPatt, patt, REG_EXTENDED | REG_NOSUB))
 	    rc = -1;
-	free((void *)patt);
+	patt = _free(patt);
 	if (rc)
 	    return rc;
 	hasRegex = 1;
@@ -737,7 +744,7 @@ VFA_t virtualFileAttributes[] = {
  * @param fl		package file tree walk data
  */
 static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
-			  struct FileList *fl, const char **fileName)
+			  FileList fl, const char ** fileName)
 {
     char *s, *t;
     int res, specialDoc = 0;
@@ -825,7 +832,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
 
 		ddir = rpmGetPath("%{_docdir}/", n, "-", v, NULL);
 		strcpy(buf, ddir);
-		free((void *)ddir);
+		ddir = _free(ddir);
 	    }
 
 	/* XXX FIXME: this is easy to do as macro expansion */
@@ -856,15 +863,15 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
  */
 static int compareFileListRecs(const void *ap, const void *bp)
 {
-    const char *a = ((FileListRec *)ap)->fileURL;
-    const char *b = ((FileListRec *)bp)->fileURL;
+    const char *a = ((FileListRec)ap)->fileURL;
+    const char *b = ((FileListRec)bp)->fileURL;
     return strcmp(a, b);
 }
 
 /**
  * @param fl		package file tree walk data
  */
-static int isDoc(struct FileList *fl, const char *fileName)
+static int isDoc(FileList fl, const char * fileName)
 {
     int x = fl->docDirCount;
 
@@ -880,10 +887,10 @@ static int isDoc(struct FileList *fl, const char *fileName)
  * @todo only %lang for now, finish other attributes later.
  * @param fl		package file tree walk data
  */
-static void checkHardLinks(struct FileList *fl)
+static void checkHardLinks(FileList fl)
 {
     char nlangs[BUFSIZ];
-    FileListRec *ilp, *jlp;
+    FileListRec ilp, jlp;
     int i, j;
 
     for (i = 0;  i < fl->fileListRecsUsed; i++) {
@@ -921,7 +928,7 @@ static void checkHardLinks(struct FileList *fl)
 	if (te == nlangs)
 	    continue;
 
-	free((void *)ilp->langs);
+	ilp->langs = _free(ilp->langs);
 	ilp->langs = xstrdup(nlangs);
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
@@ -934,7 +941,7 @@ static void checkHardLinks(struct FileList *fl)
 	    if (ilp->fl_dev != jlp->fl_dev)
 		continue;
 	    jlp->flags |= RPMFILE_SPECFILE;
-	    free((void *)jlp->langs);
+	    jlp->langs = _free(jlp->langs);
 	    jlp->langs = xstrdup(nlangs);
 	}
     }
@@ -950,15 +957,15 @@ static void checkHardLinks(struct FileList *fl)
  * @todo Remove RPMTAG_OLDFILENAMES, add dirname/basename instead.
  * @param fl		package file tree walk data
  */
-static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
-				 Header h, int isSrc)
+static void genCpioListAndHeader(/*@partial@*/ FileList fl,
+		TFI_t *cpioList, Header h, int isSrc)
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
     uint_32 multiLibMask = 0;
     int apathlen = 0;
     int dpathlen = 0;
     int skipLen = 0;
-    FileListRec *flp;
+    FileListRec flp;
     char buf[BUFSIZ];
     int i;
     
@@ -1043,7 +1050,7 @@ static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
 
 	if (flp->flags & RPMFILE_MULTILIB_MASK)
 	    multiLibMask |=
-		(1 << ((flp->flags & RPMFILE_MULTILIB_MASK))
+		(1u << ((flp->flags & RPMFILE_MULTILIB_MASK))
 		      >> RPMFILE_MULTILIB_SHIFT);
 
 	/*
@@ -1177,12 +1184,8 @@ static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
 
     fi->type = TR_ADDED;
     loadFi(h, fi);
-    if (fi->dnl) {
-	free((void *)fi->dnl); fi->dnl = NULL;
-    }
-    if (fi->bnl) {
-	free((void *)fi->bnl); fi->bnl = NULL;
-    }
+    fi->dnl = _free(fi->dnl);
+    fi->bnl = _free(fi->bnl);
 
     fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen);
     d = (char *)(fi->dnl + fi->fc);
@@ -1247,26 +1250,27 @@ static void genCpioListAndHeader(struct FileList *fl, TFI_t *cpioList,
     if (cpioList)
 	*cpioList = fi;
     else
-	free(fi);
+	fi = _free(fi);
   }
 }
 
 /**
  */
-static void freeFileList(FileListRec *fileList, int count)
+static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList, int count)
 {
     while (count--) {
-	FREE(fileList[count].diskURL);
-	FREE(fileList[count].fileURL);
-	FREE(fileList[count].langs);
+	fileList[count].diskURL = _free(fileList[count].diskURL);
+	fileList[count].fileURL = _free(fileList[count].fileURL);
+	fileList[count].langs = _free(fileList[count].langs);
     }
-    FREE(fileList);
+    fileList = _free(fileList);
+    return NULL;
 }
 
 /**
  * @param fl		package file tree walk data
  */
-static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp)
+static int addFile(FileList fl, const char * diskURL, struct stat *statp)
 {
     const char *fileURL = diskURL;
     struct stat statbuf;
@@ -1384,7 +1388,7 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
 			fl->fileListRecsAlloced * sizeof(*(fl->fileList)));
     }
 	    
-    {	FileListRec * flp = &fl->fileList[fl->fileListRecsUsed];
+    {	FileListRec flp = &fl->fileList[fl->fileListRecsUsed];
 
 	flp->fl_st = *statp;	/* structure assignment */
 	flp->fl_mode = fileMode;
@@ -1439,7 +1443,7 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
 /**
  * @param fl		package file tree walk data
  */
-static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
+static int processBinaryFile(/*@unused@*/Package pkg, FileList fl,
 	const char *fileURL)
 {
     int doGlob;
@@ -1478,9 +1482,9 @@ static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
 	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
-		free((void *)argv[i]);
+		argv[i] = _free(argv[i]);
 	    }
-	    free((void *)argv);
+	    argv = _free(argv);
 	} else {
 	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s\n"),
 			diskURL);
@@ -1491,8 +1495,7 @@ static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
     }
 
 exit:
-    if (diskURL)
-	free((void *)diskURL);
+    diskURL = _free(diskURL);
     if (rc)
 	fl->processingFailed = 1;
     return rc;
@@ -1503,11 +1506,13 @@ exit:
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
 {
-    struct FileList fl;
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    struct FileList_s fl;
     char *s, **files, **fp;
     const char *fileName;
     char buf[BUFSIZ];
-    AttrRec specialDocAttrRec;
+    struct AttrRec_s arbuf;
+    AttrRec specialDocAttrRec = &arbuf;
     char *specialDoc = NULL;
 
 #ifdef MULTILIB
@@ -1516,11 +1521,12 @@ static int processPackageFiles(Spec spec, Package pkg,
 	multiLib = RPMFILE_MULTILIB(multiLib);
 #endif /* MULTILIB */
     
-    nullAttrRec(&specialDocAttrRec);
+    nullAttrRec(specialDocAttrRec);
     pkg->cpioList = NULL;
 
     if (pkg->fileFile) {
 	const char *ffn;
+	FILE * f;
 	FD_t fd;
 
 	/* XXX W2DO? urlPath might be useful here. */
@@ -1540,9 +1546,10 @@ static int processPackageFiles(Spec spec, Package pkg,
 		ffn, Fstrerror(fd));
 	    return RPMERR_BADFILENAME;
 	}
-	free((void *)ffn);
+	ffn = _free(ffn);
 
-	while (fgets(buf, sizeof(buf), (FILE *)fdGetFp(fd))) {
+	/*@+voidabstract@*/ f = fdGetFp(fd); /*@=voidabstract@*/
+	while (fgets(buf, sizeof(buf), f)) {
 	    handleComments(buf);
 	    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 		rpmError(RPMERR_BADSPEC, _("line: %s\n"), buf);
@@ -1558,12 +1565,10 @@ static int processPackageFiles(Spec spec, Package pkg,
     /* XXX spec->buildRootURL == NULL, then xstrdup("") is returned */
     fl.buildRootURL = rpmGenPath(spec->rootURL, spec->buildRootURL, NULL);
 
-    if (headerGetEntry(pkg->header, RPMTAG_DEFAULTPREFIX,
-		       NULL, (void **)&fl.prefix, NULL)) {
+    if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, (void **)&fl.prefix, NULL))
 	fl.prefix = xstrdup(fl.prefix);
-    } else {
+    else
 	fl.prefix = NULL;
-    }
 
     fl.fileCount = 0;
     fl.totalFileSize = 0;
@@ -1619,7 +1624,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
 	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
-	fl.currentSpecdFlags = fl.defSpecdFlags>>8;
+	fl.currentSpecdFlags = ((unsigned)fl.defSpecdFlags) >> 8;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
 	fl.isSpecialDoc = 0;
 
@@ -1627,8 +1632,8 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fl.currentLangs) {
 	    int i;
 	    for (i = 0; i < fl.nLangs; i++)
-		free((void *)fl.currentLangs[i]);
-	    FREE(fl.currentLangs);
+		fl.currentLangs[i] = _free(fl.currentLangs[i]);
+	    fl.currentLangs = _free(fl.currentLangs);
 	}
   	fl.nLangs = 0;
 
@@ -1649,9 +1654,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
-	    FREE(specialDoc);
+	    specialDoc = _free(specialDoc);
 	    specialDoc = xstrdup(fileName);
-	    dupAttrRec(&fl.cur_ar, &specialDocAttrRec);
+	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	} else {
 	    processBinaryFile(pkg, &fl, fileName);
 	}
@@ -1673,17 +1678,17 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (fl.currentLangs) {
 	    int i;
 	    for (i = 0; i < fl.nLangs; i++)
-		free((void *)fl.currentLangs[i]);
-	    FREE(fl.currentLangs);
+		fl.currentLangs[i] = _free(fl.currentLangs[i]);
+	    fl.currentLangs = _free(fl.currentLangs);
 	}
   	fl.nLangs = 0;
 
-	dupAttrRec(&specialDocAttrRec, &fl.cur_ar);
-	freeAttrRec(&specialDocAttrRec);
+	dupAttrRec(specialDocAttrRec, &fl.cur_ar);
+	freeAttrRec(specialDocAttrRec);
 
 	processBinaryFile(pkg, &fl, specialDoc);
 
-	FREE(specialDoc);
+	specialDoc = _free(specialDoc);
     }
     
     freeSplitString(files);
@@ -1700,8 +1705,8 @@ static int processPackageFiles(Spec spec, Package pkg,
 	timeCheck(spec->timeCheck, pkg->header);
     
 exit:
-    FREE(fl.buildRootURL);
-    FREE(fl.prefix);
+    fl.buildRootURL = _free(fl.buildRootURL);
+    fl.prefix = _free(fl.prefix);
 
     freeAttrRec(&fl.cur_ar);
     freeAttrRec(&fl.def_ar);
@@ -1709,14 +1714,13 @@ exit:
     if (fl.currentLangs) {
 	int i;
 	for (i = 0; i < fl.nLangs; i++)
-	    free((void *)fl.currentLangs[i]);
-	FREE(fl.currentLangs);
+	    fl.currentLangs[i] = _free(fl.currentLangs[i]);
+	fl.currentLangs = _free(fl.currentLangs);
     }
 
-    freeFileList(fl.fileList, fl.fileListRecsUsed);
-    while (fl.docDirCount--) {
-	FREE(fl.docDirs[fl.docDirCount]);
-    }
+    fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
+    while (fl.docDirCount--)
+	fl.docDirs[fl.docDirCount] = _free(fl.docDirs[fl.docDirCount]);
     return fl.processingFailed;
 }
 
@@ -1782,7 +1786,7 @@ int processSourceFiles(Spec spec)
     struct Source *srcPtr;
     StringBuf sourceFiles;
     int x, isSpec = 1;
-    struct FileList fl;
+    struct FileList_s fl;
     char *s, **files, **fp;
     Package pkg;
 
@@ -1815,27 +1819,27 @@ int processSourceFiles(Spec spec)
 	    }
 	}
 
-      {	const char *s;
-	s = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
+      {	const char * sfn;
+	sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
-	appendLineStringBuf(sourceFiles, s);
-	free((void *)s);
+	appendLineStringBuf(sourceFiles, sfn);
+	sfn = _free(sfn);
       }
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
-	    const char *s;
-	    s = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
+	    const char * sfn;
+	    sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
-	    appendLineStringBuf(sourceFiles, s);
-	    free((void *)s);
+	    appendLineStringBuf(sourceFiles, sfn);
+	    sfn = _free(sfn);
 	}
     }
 
     spec->sourceCpioList = NULL;
 
-    fl.fileList = xmalloc((spec->numSources + 1) * sizeof(FileListRec));
+    fl.fileList = xmalloc((spec->numSources + 1) * sizeof(*fl.fileList));
     fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
     fl.totalFileSize = 0;
@@ -1848,7 +1852,7 @@ int processSourceFiles(Spec spec)
     x = 0;
     for (fp = files; *fp != NULL; fp++) {
 	const char * diskURL, *diskPath;
-	FileListRec *flp;
+	FileListRec flp;
 
 	diskURL = *fp;
 	SKIPSPACE(diskURL);
@@ -1864,7 +1868,7 @@ int processSourceFiles(Spec spec)
 	    diskURL++;
 	}
 
-	urlPath(diskURL, &diskPath);
+	(void) urlPath(diskURL, &diskPath);
 
 	flp->diskURL = xstrdup(diskURL);
 	diskPath = strrchr(diskPath, '/');
@@ -1904,7 +1908,7 @@ int processSourceFiles(Spec spec)
     }
 
     freeStringBuf(sourceFiles);
-    freeFileList(fl.fileList, fl.fileListRecsUsed);
+    fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     return fl.processingFailed;
 }
 
@@ -2159,7 +2163,7 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 	myargv[0] = (dm->argv[0] ? rpmExpand(dm->argv[0], NULL) : NULL);
 
 	if (!(myargv[0] && *myargv[0] != '%')) {
-	    free(myargv[0]);
+	    myargv[0] = _free(myargv[0]);
 	    continue;
 	}
 
@@ -2168,8 +2172,7 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 
 #if 0
 	if (*myargv[0] != '/') {	/* XXX FIXME: stat script here */
-	    free(myargv[0]);
-	    myargv[0] = NULL;
+	    myargv[0] = _free(myargv[0]);
 	    continue;
 	}
 #endif
@@ -2183,11 +2186,8 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 			getStringBuf(writeBuf), writeBytes, failnonzero);
 
 	/* Free expanded args */
-	for (i = 0; i < 4; i++) {
-	    if (myargv[i] == NULL) continue;
-	    free(myargv[i]);
-	    myargv[i] = NULL;
-	}
+	for (i = 0; i < 4; i++)
+	    myargv[i] = _free(myargv[i]);
 
 	if (readBuf == NULL) {
 	    rc = RPMERR_EXEC;
@@ -2259,34 +2259,38 @@ static void printDepMsg(DepMsg_t *dm, int count, const char **names,
  */
 static void printDeps(Header h)
 {
-    const char **names = NULL;
-    const char **versions = NULL;
-    int *flags = NULL;
-    DepMsg_t *dm;
-    int type, count;
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char ** names = NULL;
+    int dnt = -1;
+    const char ** versions = NULL;
+    int dvt = -1;
+    int * flags = NULL;
+    DepMsg_t * dm;
+    int count;
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {
 	switch (dm->ntag) {
 	case 0:
-	    FREE(names);
+	    names = hfd(names, dnt);
 	    break;
 	case -1:
 	    break;
 	default:
-	    FREE(names);
-	    if (!headerGetEntry(h, dm->ntag, &type, (void **) &names, &count))
+	    names = hfd(names, dnt);
+	    if (!hge(h, dm->ntag, &dnt, (void **) &names, &count))
 		continue;
 	    break;
 	}
 	switch (dm->vtag) {
 	case 0:
-	    FREE(versions);
+	    versions = hfd(versions, dvt);
 	    break;
 	case -1:
 	    break;
 	default:
-	    FREE(versions);
-	    headerGetEntry(h, dm->vtag, NULL, (void **) &versions, NULL);
+	    versions = hfd(versions, dvt);
+	    hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
 	    break;
 	}
 	switch (dm->ftag) {
@@ -2296,13 +2300,13 @@ static void printDeps(Header h)
 	case -1:
 	    break;
 	default:
-	    headerGetEntry(h, dm->ftag, NULL, (void **) &flags, NULL);
+	    hge(h, dm->ftag, NULL, (void **) &flags, NULL);
 	    break;
 	}
 	printDepMsg(dm, count, names, versions, flags);
     }
-    FREE(names);
-    FREE(versions);
+    names = hfd(names, dnt);
+    versions = hfd(versions, dvt);
 }
 
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
@@ -2327,13 +2331,12 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
      * XXX However, there is logic in files.c/depends.c that checks for
      * XXX existence (rather than value) that will need to change as well.
      */
-	if (headerGetEntry(pkg->header, RPMTAG_MULTILIBS, NULL, NULL, NULL)) {
+	if (headerIsEntry(pkg->header, RPMTAG_MULTILIBS)) {
 	    generateDepends(spec, pkg, pkg->cpioList, 1);
 	    generateDepends(spec, pkg, pkg->cpioList, 2);
 	} else
 	    generateDepends(spec, pkg, pkg->cpioList, 0);
 	printDeps(pkg->header);
-	
     }
 
     return res;

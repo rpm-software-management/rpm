@@ -22,9 +22,8 @@ void freeFilesystems(void)
     if (filesystems) {
 	int i;
 	for (i = 0; i < numFilesystems; i++)
-	    free((void *)filesystems[i].mntPoint);
-	free(filesystems);
-	filesystems = NULL;
+	    filesystems[i].mntPoint = _free(filesystems[i].mntPoint);
+	filesystems = _free(filesystems);
     }
     if (fsnames) {
 #if 0	/* XXX leak/segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" */
@@ -286,8 +285,8 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 		if (errno != ENOENT) {
 		    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), buf,
 				strerror(errno));
-		    free((void *)sourceDir);
-		    free(usages);
+		    sourceDir = _free(sourceDir);
+		    usages = _free(usages);
 		    return 1;
 		}
 
@@ -307,8 +306,8 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 		if (j == numFilesystems) {
 		    rpmError(RPMERR_BADDEV, 
 				_("file %s is on an unknown device\n"), buf);
-		    free((void *)sourceDir);
-		    free(usages);
+		    sourceDir = _free(sourceDir);
+		    usages = _free(usages);
 		    return 1;
 		}
 
@@ -321,9 +320,12 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	usages[lastfs] += fssizes[i];
     }
 
-    if (sourceDir) free((void *)sourceDir);
+    sourceDir = _free(sourceDir);
 
-    *usagesPtr = usages;
+    if (usagesPtr)
+	*usagesPtr = usages;
+    else
+	usages = _free(usages);
 
     return 0;
 }

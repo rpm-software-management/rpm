@@ -93,6 +93,16 @@ static int httpTimeoutSecs = TIMEOUT_SECS;
 int _ftp_debug = 0;
 int _rpmio_debug = 0;
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this != NULL)	free((void *)this);
+    return NULL;
+}
+
 /* =============================================================== */
 
 static /*@observer@*/ const char * fdbg(FD_t fd)
@@ -237,8 +247,8 @@ DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, FDNREFS(fd), msg, file
 DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
 	if (--fd->nrefs > 0)
 	    /*@-refcounttrans@*/ return fd; /*@=refcounttrans@*/
-	if (fd->stats) free(fd->stats);
-	if (fd->digest) free(fd->digest);
+	fd->stats = _free(fd->stats);
+	fd->digest = _free(fd->digest);
 	/*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
     }
     return NULL;
@@ -608,7 +618,7 @@ static int mygethostbyname(const char * host, struct in_addr * address)
 
 static int getHostAddress(const char * host, struct in_addr * address)
 {
-    if (isdigit(host[0])) {
+    if (xisdigit(host[0])) {
       if (! /*@-unrecog@*/ inet_aton(host, address) /*@=unrecog@*/ ) {
 	  return FTPERR_BAD_HOST_ADDR;
       }
@@ -798,7 +808,7 @@ fprintf(stderr, "<- %s\n", s);
 
 		/* FTP: look for "123-" and/or "123 " */
 		if (strchr("0123456789", *s)) {
-		    if (errorCode[0]) {
+		    if (errorCode[0] != '\0') {
 			if (!strncmp(s, errorCode, sizeof("123")-1) && s[3] == ' ')
 			    moretodo = 0;
 		    } else {
@@ -1027,7 +1037,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     }
 
     chptr = passReply;
-    while (*chptr++) {
+    while (*chptr++ != '\0') {
 	if (*chptr == ',') *chptr = '.';
     }
 
@@ -2407,9 +2417,9 @@ static inline void cvtfmode (const char *m,
     }
 
     *stdio = *other = '\0';
-    if (end)
-	*end = (*m ? m : NULL);
-    if (f)
+    if (end != NULL)
+	*end = (*m != '\0' ? m : NULL);
+    if (f != NULL)
 	*f = flags;
 }
 
@@ -2474,7 +2484,7 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", fp);
 		fdPush(fd, fpio, fp, fdno);	/* Push fpio onto stack */
 	    }
 	}
-    } else if (other[0]) {
+    } else if (other[0] != '\0') {
 	for (end = other; *end && strchr("0123456789fh", *end); end++)
 	    ;
 	if (*end == '\0') {

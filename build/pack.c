@@ -41,7 +41,8 @@ static inline int genSourceRpmName(Spec spec)
 /**
  * @todo Create transaction set *much* earlier.
  */
-static int cpio_doio(FD_t fdo, Header h, CSA_t * csa, const char * fmodeMacro)
+static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t * csa,
+		const char * fmodeMacro)
 {
     const char * rootDir = "/";
     rpmdb rpmdb = NULL;
@@ -68,9 +69,8 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t * csa, const char * fmodeMacro)
       rc = 1;
     }
 
-    if (failedFile)
-	free((void *)failedFile);
-    free((void *)fmode);
+    failedFile = _free(failedFile);
+    fmode = _free(fmode);
     rpmtransFree(ts);
 
     return rc;
@@ -111,7 +111,7 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
     fn = rpmGetPath("%{_builddir}/", spec->buildSubdir, "/", file, NULL);
 
     fd = Fopen(fn, "r.ufdio");
-    if (fn != buf) free((void *)fn);
+    if (fn != buf) fn = _free(fn);
     if (fd == NULL || Ferror(fd)) {
 	freeStringBuf(sb);
 	return NULL;
@@ -131,12 +131,13 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
 
 /**
  */
-static int addFileToTag(Spec spec, const char *file, Header h, int tag)
+static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
     char *s;
 
-    if (headerGetEntry(h, tag, NULL, (void **)&s, NULL)) {
+    if (hge(h, tag, NULL, (void **)&s, NULL)) {
 	appendLineStringBuf(sb, s);
 	headerRemoveEntry(h, tag);
     }
@@ -152,7 +153,7 @@ static int addFileToTag(Spec spec, const char *file, Header h, int tag)
 
 /**
  */
-static int addFileToArrayTag(Spec spec, char *file, Header h, int tag)
+static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 {
     StringBuf sb = newStringBuf();
     char *s;
@@ -351,7 +352,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	break;
     }
     if (!(rpmio_flags && *rpmio_flags)) {
-	if (rpmio_flags) free((void *)rpmio_flags);
+	rpmio_flags = _free(rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");
     }
     s = strchr(rpmio_flags, '.');
@@ -402,7 +403,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	    rc = RPMERR_BADARG;
 	}
     }
-    if (rpmio_flags) free((void *)rpmio_flags);
+    rpmio_flags = _free(rpmio_flags);
 
     if (rc)
 	goto exit;
@@ -416,8 +417,9 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
      * to memory not in the region. <shrug>
      */
     if (Fileno(csa->cpioFdIn) < 0) {
+	HGE_t hge = (HGE_t)headerGetEntryMinMemory;
 	int_32 * archiveSize;
-	if (headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL, (void *)&archiveSize, NULL))
+	if (hge(h, RPMTAG_ARCHIVESIZE, NULL, (void *)&archiveSize, NULL))
 	    *archiveSize = csa->cpioArchiveSize;
     }
 
@@ -564,7 +566,7 @@ exit:
     }
     if (sigtarget) {
 	Unlink(sigtarget);
-	free((void *)sigtarget);
+	sigtarget = _free(sigtarget);
     }
 
     if (rc == 0)
@@ -618,7 +620,7 @@ int packageBinaries(Spec spec)
     {	const char * optflags = rpmExpand("%{optflags}", NULL);
 	headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,
 			optflags, 1);
-	free((void *)optflags);
+	optflags = _free(optflags);
     }
 
 	genSourceRpmName(spec);
@@ -629,7 +631,7 @@ int packageBinaries(Spec spec)
 	    char *binRpm, *binDir;
 	    binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
 			       rpmHeaderFormats, &errorString);
-	    free((void *)binFormat);
+	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {
 		const char *name;
 		headerNVR(pkg->header, &name, NULL, NULL);
@@ -655,9 +657,9 @@ int packageBinaries(Spec spec)
 			break;
 		    }
 		}
-		free((void *)dn);
+		dn = _free(dn);
 	    }
-	    free((void *)binRpm);
+	    binRpm = _free(binRpm);
 	}
 
 	memset(csa, 0, sizeof(*csa));
@@ -668,7 +670,7 @@ int packageBinaries(Spec spec)
 	rc = writeRPM(&pkg->header, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
-	free((void *)fn);
+	fn = _free(fn);
 	if (rc)
 	    return rc;
     }
@@ -691,7 +693,7 @@ int packageSources(Spec spec)
 
     genSourceRpmName(spec);
 
-    FREE(spec->cookie);
+    spec->cookie = _free(spec->cookie);
     
     /* XXX this should be %_srpmdir */
     {	const char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
@@ -704,7 +706,7 @@ int packageSources(Spec spec)
 	rc = writeRPM(&spec->sourceHeader, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
-	free((void *)fn);
+	fn = _free(fn);
     }
     return rc;
 }

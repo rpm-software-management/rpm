@@ -97,7 +97,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
 
 static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptCallbackReason reason,
 			     const struct poptOption * opt, const char * arg, 
-			     const void * data)
+			     /*@unused@*/ const void * data)
 {
     QVA_t *qva = &rpmQVArgs;
 

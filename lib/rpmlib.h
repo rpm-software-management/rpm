@@ -32,6 +32,16 @@ extern "C" {
 #endif
 
 /**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this != NULL)	free((void *)this);
+    return NULL;
+}
+
+/**
  * Return package signatures and header from file handle.
  * @param fd		file handle
  * @retval signatures	address of signatures pointer (or NULL)
@@ -858,10 +868,14 @@ typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
 			/*@out@*/ void ** p, /*@out@*/int_32 * c)
 				/*@modifies *type, *p, *c @*/;
 
-/* we pass these around as an array with a sentinel */
+/**
+ * We pass these around as an array with a sentinel.
+ */
 typedef struct rpmRelocation_s {
-    const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
-    const char * newPath;	/*!< NULL means to omit the file completely! */
+/*@only@*/ /*@null@*/ const char * oldPath;
+				/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
+/*@only@*/ /*@null@*/ const char * newPath;
+				/*!< NULL means to omit the file completely! */
 } rpmRelocation;
 
 /**
@@ -878,7 +892,7 @@ rpmRC rpmInstallSourcePackage(const char * root, FD_t fd,
 			/*@out@*/ const char ** specFile,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
 			/*@out@*/ char ** cookie)
-	/*@modifies *specFile, *cookie @*/;
+	/*@modifies fd, *specFile, *cookie @*/;
 
 /**
  * Compare headers to determine which header is "newer".
@@ -1386,8 +1400,8 @@ typedef struct rpmQVArguments {
     int 	qva_sourceCount;/*!< Exclusive check (>1 is error). */
     int		qva_flags;	/*!< Bit(s) to control operation. */
     int		qva_verbose;	/*!< (unused) */
-    const char *qva_queryFormat;/*!< Format for headerSprintf(). */
-    const char *qva_prefix;	/*!< Path to top of install tree. */
+/*@only@*/ const char *qva_queryFormat;/*!< Format for headerSprintf(). */
+/*@dependent@*/ const char *qva_prefix;	/*!< Path to top of install tree. */
     char	qva_mode;	/*!< 'q' is query, 'v' is verify mode. */
     char	qva_char;	/*!< (unused) always ' ' */
 } QVA_t;

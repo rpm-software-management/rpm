@@ -192,15 +192,15 @@ static int dbSaveInt(const struct dbOption * opt, long aLong) {
 
 void db3Free(dbiIndex dbi) {
     if (dbi) {
-	if (dbi->dbi_root)	free((void *)dbi->dbi_root);
-	if (dbi->dbi_home)	free((void *)dbi->dbi_home);
-	if (dbi->dbi_file)	free((void *)dbi->dbi_file);
-	if (dbi->dbi_subfile)	free((void *)dbi->dbi_subfile);
-	if (dbi->dbi_errpfx)	free((void *)dbi->dbi_errpfx);
-	if (dbi->dbi_re_source)	free((void *)dbi->dbi_re_source);
-	if (dbi->dbi_dbenv)	free(dbi->dbi_dbenv);
-	if (dbi->dbi_dbinfo)	free(dbi->dbi_dbinfo);
-	free((void *)dbi);
+	dbi->dbi_root = _free(dbi->dbi_root);
+	dbi->dbi_home = _free(dbi->dbi_home);
+	dbi->dbi_file = _free(dbi->dbi_file);
+	dbi->dbi_subfile = _free(dbi->dbi_subfile);
+	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
+	dbi->dbi_re_source = _free(dbi->dbi_re_source);
+	dbi->dbi_dbenv = _free(dbi->dbi_dbenv);
+	dbi->dbi_dbinfo = _free(dbi->dbi_dbinfo);
+	dbi = _free(dbi);
     }
 }
 
@@ -232,10 +232,10 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	for (o = dbOpts; o && *o; o = oe) {
 	    struct dbOption *opt;
 
-	    while (*o && isspace(*o))
+	    while (*o && xisspace(*o))
 		o++;
 	    for (oe = o; oe && *oe; oe++) {
-		if (isspace(*oe))
+		if (xisspace(*oe))
 		    break;
 		if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
 		    break;
@@ -270,7 +270,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	    	break;
 	    case POPT_ARG_STRING:
 	    {	const char ** t = opt->arg;
-		if (*t) free((void *)*t);
+		*t = _free(*t);
 		*t = xstrdup( (p ? p : "") );
 	    }	break;
 

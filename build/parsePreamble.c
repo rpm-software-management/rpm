@@ -53,7 +53,7 @@ static void addOrAppendListEntry(Header h, int_32 tag, char *line)
     poptParseArgvString(line, &argc, &argv);
     if (argc)
 	headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
-    FREE(argv);
+    argv = _free(argv);
 }
 
 /* Parse a simple part line that only take -n <pkg> or <pkg> */
@@ -99,14 +99,14 @@ static inline int parseYesNo(const char *s)
 	    ? 0 : 1);
 }
 
-struct tokenBits {
+typedef struct tokenBits_s {
     const char * name;
-    int bits;
-};
+    rpmsenseFlags bits;
+} * tokenBits;
 
 /**
  */
-static struct tokenBits installScriptBits[] = {
+static struct tokenBits_s installScriptBits[] = {
     { "interp",		RPMSENSE_INTERP },
     { "prereq",		RPMSENSE_PREREQ },
     { "preun",		RPMSENSE_SCRIPT_PREUN },
@@ -120,7 +120,7 @@ static struct tokenBits installScriptBits[] = {
 
 /**
  */
-static struct tokenBits buildScriptBits[] = {
+static struct tokenBits_s buildScriptBits[] = {
     { "prep",		RPMSENSE_SCRIPT_PREP },
     { "build",		RPMSENSE_SCRIPT_BUILD },
     { "install",	RPMSENSE_SCRIPT_INSTALL },
@@ -130,18 +130,19 @@ static struct tokenBits buildScriptBits[] = {
 
 /**
  */
-static int parseBits(const char * s, struct tokenBits * tokbits, int * bp)
+static int parseBits(const char * s, const tokenBits tokbits,
+		/*@out@*/ rpmsenseFlags * bp)
 {
-    struct tokenBits *tb;
-    const char *se;
-    int bits = 0;
+    tokenBits tb;
+    const char * se;
+    rpmsenseFlags bits = RPMSENSE_ANY;
     int c = 0;
 
     if (s) {
 	while (*s) {
-	    while ((c = *s) && isspace(c)) s++;
+	    while ((c = *s) && xisspace(c)) s++;
 	    se = s;
-	    while ((c = *se) && isalpha(c)) se++;
+	    while ((c = *se) && xisalpha(c)) se++;
 	    if (s == se)
 		break;
 	    for (tb = tokbits; tb->name; tb++) {
@@ -151,7 +152,7 @@ static int parseBits(const char * s, struct tokenBits * tokbits, int * bp)
 	    if (tb->name == NULL)
 		break;
 	    bits |= tb->bits;
-	    while ((c = *se) && isspace(c)) se++;
+	    while ((c = *se) && xisspace(c)) se++;
 	    if (c != ',')
 		break;
 	    s = ++se;
@@ -168,7 +169,7 @@ static inline char * findLastChar(char * s)
     char *res = s;
 
     while (*s) {
-	if (! isspace(*s))
+	if (! xisspace(*s))
 	    res = s;
 	s++;
     }
@@ -180,16 +181,18 @@ static inline char * findLastChar(char * s)
  */
 static int isMemberInEntry(Header header, const char *name, int tag)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     const char ** names;
-    int count;
+    int type, count;
 
-    if (!headerGetEntry(header, tag, NULL, (void **)&names, &count))
+    if (!hge(header, tag, &type, (void **)&names, &count))
 	return -1;
     while (count--) {
 	if (!xstrcasecmp(names[count], name))
 	    break;
     }
-    FREE(names);
+    names = hfd(names, type);
     return (count >= 0 ? 1 : 0);
 }
 
@@ -302,7 +305,7 @@ static void fillOutMainPackage(Header h)
 	    const char *val = rpmExpand(ot->ot_mac, NULL);
 	    if (val && *val != '%')
 		headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
-	    free((void *)val);
+	    val = _free(val);
 	}
     }
 }
@@ -358,16 +361,17 @@ static int readIcon(Header h, const char *file)
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
-    free((void *)icon);
+    icon = _free(icon);
     
 exit:
-    FREE(fn);
+    fn = _free(fn);
     return rc;
 }
 
 struct spectag *
 stashSt(Spec spec, Header h, int tag, const char *lang)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     struct spectag *t = NULL;
 
     if (spec->st) {
@@ -384,7 +388,7 @@ stashSt(Spec spec, Header h, int tag, const char *lang)
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
 	    char *n;
-	    if (headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &n, NULL)) {
+	    if (hge(h, RPMTAG_NAME, NULL, (void **) &n, NULL)) {
 		char buf[1024];
 		sprintf(buf, "%s(%s)", n, tagName(tag));
 		t->t_msgid = xstrdup(buf);
@@ -408,11 +412,14 @@ extern int noLang;	/* XXX FIXME: pass as arg */
 static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 			     const char *lang)
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
     char *field = spec->line;
     char *end;
     char **array;
     int multiToken = 0;
-    int tagflags;
+    rpmsenseFlags tagflags;
+    int type;
     int len;
     int num;
     int rc;
@@ -499,7 +506,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	    } else {
 		const char * specURL = field;
 
-		free((void *)buildRootURL);
+		buildRootURL = _free(buildRootURL);
 		(void) urlPath(specURL, (const char **)&field);
 		if (*field == '\0') field = "/";
 		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
@@ -516,25 +523,25 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	if (!strcmp(buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("BuildRoot can not be \"/\": %s\n"), spec->buildRootURL);
-	    free((void *)buildRootURL);
+	    buildRootURL = _free(buildRootURL);
 	    return RPMERR_BADSPEC;
 	}
-	free((void *)buildRootURL);
+	buildRootURL = _free(buildRootURL);
       }	break;
       case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
-	headerGetEntry(pkg->header, tag, NULL, (void **)&array, &num);
+	hge(pkg->header, tag, &type, (void **)&array, &num);
 	while (num--) {
 	    len = strlen(array[num]);
 	    if (array[num][len - 1] == '/' && len > 1) {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
-		FREE(array);
+		array = hfd(array, type);
 		return RPMERR_BADSPEC;
 	    }
 	}
-	FREE(array);
+	array = hfd(array, type);
 	break;
       case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;
@@ -614,7 +621,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
       case RPMTAG_CONFLICTFLAGS:
       case RPMTAG_OBSOLETEFLAGS:
       case RPMTAG_PROVIDEFLAGS:
-	tagflags = 0;
+	tagflags = RPMSENSE_ANY;
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
@@ -634,7 +641,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	    return RPMERR_BADSPEC;
 	}
 	if (!spec->buildArchitectureCount)
-	    FREE(spec->buildArchitectures);
+	    spec->buildArchitectures = _free(spec->buildArchitectures);
 	break;
 
       default:
@@ -748,7 +755,7 @@ static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, 
 	if (*s != '(') return 1;
 	s++;
 	SKIPSPACE(s);
-	while (!isspace(*s) && *s != ')')
+	while (!xisspace(*s) && *s != ')')
 	    *lang++ = *s++;
 	*lang = '\0';
 	SKIPSPACE(s);

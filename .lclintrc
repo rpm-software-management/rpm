@@ -13,7 +13,7 @@
 # don't-bother-me-yet parameters
 #-branchstate
 #-immediatetrans
--mustfree
+-mustfree		# alloca is painful
 #-observertrans
 #-statictrans
 
@@ -27,7 +27,7 @@
 -type
 
 
-# -weak paramaters
+# not-yet -weak paramaters
 #+boolint
 #-boolops
 #+ignorequals

@@ -305,6 +305,7 @@ typedef const char * errmsg_t;
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
+/*@mayexit@*/
 int headerAddEntry(Header h, int_32 tag, int_32 type, const void *p, int_32 c)
 	/*@modifies h @*/;
 

@@ -53,7 +53,7 @@ int parseDescription(Spec spec)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
-	FREE(argv);
+	argv = _free(argv);
 	poptFreeContext(optCon);
 	return RPMERR_BADSPEC;
     }
@@ -65,7 +65,7 @@ int parseDescription(Spec spec)
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
-	    FREE(argv);
+	    argv = _free(argv);
 	    poptFreeContext(optCon);
 	    return RPMERR_BADSPEC;
 	}
@@ -74,7 +74,7 @@ int parseDescription(Spec spec)
     if (lookupPackage(spec, name, flag, &pkg)) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
-	FREE(argv);
+	argv = _free(argv);
 	poptFreeContext(optCon);
 	return RPMERR_BADSPEC;
     }
@@ -86,7 +86,7 @@ int parseDescription(Spec spec)
     if (headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Second description\n"),
 		spec->lineNum);
-	FREE(argv);
+	argv = _free(argv);
 	poptFreeContext(optCon);
 	return RPMERR_BADSPEC;
     }
@@ -124,7 +124,7 @@ int parseDescription(Spec spec)
     
     freeStringBuf(sb);
      
-    FREE(argv);
+    argv = _free(argv);
     poptFreeContext(optCon);
     
     return nextPart;

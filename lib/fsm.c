@@ -12,19 +12,10 @@
 /*@access FD_t @*/
 /*@access rpmTransactionSet @*/
 /*@access TFI_t @*/
+/*@access FSMI_t @*/
 /*@access FSM_t @*/
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
-
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)	free((void *)this);
-    return NULL;
-}
 
 int _fsm_debug = 0;
 
@@ -411,7 +402,7 @@ FSM_t newFSM(void) {
 FSM_t freeFSM(FSM_t fsm)
 {
     if (fsm) {
-	if (fsm->path)	free((void *)fsm->path);
+	fsm->path = _free(fsm->path);
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
@@ -1010,7 +1001,7 @@ static int fsmMkdirs(FSM_t fsm)
 	fsm->path = dn;
 
 	/* Assume '/' directory exists, otherwise "mkdir -p" if non-existent. */
-	for (i = 1, te = dn + 1; *te; te++, i++) {
+	for (i = 1, te = dn + 1; *te != '\0'; te++, i++) {
 	    if (*te != '/') continue;
 
 	    *te = '\0';
@@ -1042,7 +1033,7 @@ static int fsmMkdirs(FSM_t fsm)
 		if (!rc)
 		    rpmMessage(RPMMESS_WARNING,
 			_("%s directory created with perms %04o.\n"),
-			fsm->path, (st->st_mode & 07777));
+			fsm->path, (unsigned)(st->st_mode & 07777));
 		*te = '/';
 	    }
 	    if (rc) break;
@@ -1089,7 +1080,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (_fsm_debug && !(stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s %06o%3d (%4d,%4d)%10d %s %s\n",
 		cur,
-		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
+		(unsigned)st->st_mode, (int)st->st_nlink,
+		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
 		(fsm->path ? fsm->path : ""),
 		_fafilter(fsm->action));
     } else {
@@ -1097,7 +1089,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (_fsm_debug || !(stage & FSM_VERBOSE))
 	    rpmMessage(RPMMESS_DEBUG, "%-8s  %06o%3d (%4d,%4d)%10d %s %s\n",
 		cur,
-		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
+		(unsigned)st->st_mode, (int)st->st_nlink,
+		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
 		(fsm->path ? fsm->path + fsm->astriplen : ""),
 		_fafilter(fsm->action));
     }
@@ -1649,7 +1642,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	rc = Mkdir(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (st->st_mode & 07777),
+		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
 	break;
@@ -1664,7 +1657,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	rc = chown(fsm->path, st->st_uid, st->st_gid);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
-		fsm->path, st->st_uid, st->st_gid,
+		fsm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
 	break;
@@ -1673,7 +1666,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	rc = lchown(fsm->path, st->st_uid, st->st_gid);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
-		fsm->path, st->st_uid, st->st_gid,
+		fsm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
 #endif
@@ -1682,7 +1675,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	rc = chmod(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (st->st_mode & 07777),
+		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
 	break;
@@ -1716,7 +1709,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	rc = mkfifo(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (st->st_mode & 07777),
+		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
 	break;
@@ -1725,7 +1718,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	rc = mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,
-		fsm->path, (st->st_mode & ~07777), (unsigned)st->st_rdev,
+		fsm->path, (unsigned)(st->st_mode & ~07777),
+		(unsigned)st->st_rdev,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_MKNOD_FAILED;
 	/*@=unrecog@*/
@@ -1749,7 +1743,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	rc = Readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
-		fsm->path, fsm->rdlen, (rc < 0 ? strerror(errno) : ""));
+		fsm->path, (int)fsm->rdlen, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_READLINK_FAILED;
 	else {
 	    fsm->rdnb = rc;
@@ -1809,7 +1803,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\trdnb %d\n",
 		cur, (fsm->wrbuf == fsm->wrb ? "wrbuf" : "mmap"),
-		fsm->wrlen, fsm->rdnb);
+		(int)fsm->wrlen, (int)fsm->rdnb);
 if (fsm->rdnb != fsm->wrlen) fprintf(stderr, "*** short read, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrlen);
 #ifdef	NOTYET
 	if (Ferror(fsm->rfd))
@@ -1823,7 +1817,7 @@ if (fsm->rdnb != fsm->wrlen) fprintf(stderr, "*** short read, had %d, got %d\n",
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\twrnb %d\n",
 		cur, (fsm->rdbuf == fsm->rdb ? "rdbuf" : "mmap"),
-		fsm->rdnb, fsm->wrnb);
+		(int)fsm->rdnb, (int)fsm->wrnb);
 if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrnb);
 #ifdef	NOTYET
 	if (Ferror(fsm->wfd))
@@ -1849,7 +1843,7 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write, had %d, got %d\n",
 	fsm->rdnb = Fread(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdlen, fsm->rfd);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
-		cur, fsm->rdlen, fsm->rdnb);
+		cur, (int)fsm->rdlen, (int)fsm->rdnb);
 if (fsm->rdnb != fsm->rdlen) fprintf(stderr, "*** short read, had %d, got %d\n", (int)fsm->rdnb, (int)fsm->rdlen);
 #ifdef	NOTYET
 	if (Ferror(fsm->rfd))
@@ -1880,7 +1874,7 @@ if (fsm->rdnb != fsm->rdlen) fprintf(stderr, "*** short read, had %d, got %d\n",
 	fsm->wrnb = Fwrite(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->rdnb, fsm->wfd);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
-		cur, fsm->rdnb, fsm->wrnb);
+		cur, (int)fsm->rdnb, (int)fsm->wrnb);
 if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n", (int)fsm->rdnb, (int)fsm->wrnb);
 #ifdef	NOTYET
 	if (Ferror(fsm->wfd))

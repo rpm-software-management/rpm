@@ -105,8 +105,7 @@ int parseFiles(Spec spec)
     rc = nextPart;
 
 exit:
-    if (argv)
-	FREE(argv);
+    argv = _free(argv);
     if (optCon)
 	poptFreeContext(optCon);
 	

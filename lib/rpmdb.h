@@ -167,7 +167,7 @@ struct _dbiIndex {
     int			dbi_tflags;	/*!< dbenv->txn_begin flags */
 
     int			dbi_type;	/*!< db index type */
-    int			dbi_mode;	/*!< mode to use on open */
+    unsigned		dbi_mode;	/*!< mode to use on open */
     int			dbi_perms;	/*!< file permission to use on open */
     int			dbi_api;	/*!< Berkeley API type */
 
