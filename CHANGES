@@ -4,6 +4,9 @@
 	  during installation - the password will be prompted for
 	  if only the user is given, and anonymous ftp will be used
 	  it both user and password are omitted (as before)
+	- Remove Exclusive: Exclude:
+	  Replace with: ExclusiveArch: ExclusiveOs:
+		        ExcludeArch: ExcludeOs:
 
 2.1.2 -> 2.2:
 	- don't fail, and do report, if -K can't find a PGP key
