@@ -2538,6 +2538,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
 DBT * data = alloca(sizeof(*data));
+union _dbswap mi_offset;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     Header h;
@@ -2615,9 +2616,12 @@ memset(data, 0, sizeof(*data));
 		    continue;
 	      
 /*@-immediatetrans@*/
-		key->data = &hdrNum;
+mi_offset.ui = hdrNum;
+if (dbiByteSwapped(dbi) == 1)
+    _DBSWAP(mi_offset);
+		key->data = &mi_offset;
 /*@=immediatetrans@*/
-		key->size = sizeof(hdrNum);
+		key->size = sizeof(mi_offset.ui);
 
 		rc = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
@@ -2852,6 +2856,7 @@ DBT * data = alloca(sizeof(*data));
     int count = 0;
     dbiIndex dbi;
     int dbix;
+    union _dbswap mi_offset;
     unsigned int hdrNum = 0;
     int ret = 0;
     int rc;
@@ -2924,14 +2929,21 @@ memset(data, 0, sizeof(*data));
 
 /*@-bounds@*/
 	hdrNum = 0;
-	if (ret == 0 && datap)
-	    memcpy(&hdrNum, datap, sizeof(hdrNum));
-	++hdrNum;
 	if (ret == 0 && datap) {
-	    memcpy(datap, &hdrNum, sizeof(hdrNum));
+	    memcpy(&mi_offset, datap, sizeof(mi_offset.ui));
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    hdrNum = mi_offset.ui;
+	}
+	++hdrNum;
+	mi_offset.ui = hdrNum;
+	if (dbiByteSwapped(dbi) == 1)
+	    _DBSWAP(mi_offset);
+	if (ret == 0 && datap) {
+	    memcpy(datap, &mi_offset, sizeof(mi_offset.ui));
 	} else {
-	    datap = &hdrNum;
-	    datalen = sizeof(hdrNum);
+	    datap = &mi_offset;
+	    datalen = sizeof(mi_offset.ui);
 	}
 /*@=bounds@*/
 
@@ -3003,8 +3015,11 @@ memset(data, 0, sizeof(*data));
 		    continue;
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
-key->data = (void *) &hdrNum;
-key->size = sizeof(hdrNum);
+mi_offset.ui = hdrNum;
+if (dbiByteSwapped(dbi) == 1)
+    _DBSWAP(mi_offset);
+key->data = (void *) &mi_offset;
+key->size = sizeof(mi_offset.ui);
 data->data = headerUnload(h);
 data->size = headerSizeof(h, HEADER_MAGIC_NO);
 
@@ -3750,7 +3765,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	rpmdbMatchIterator mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
-	/* RPMDBI_PACKAGES */
 	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
 	if (ts && hdrchk)
 	    (void) rpmdbSetHdrChk(mi, ts, hdrchk);
