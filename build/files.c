@@ -327,6 +327,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fest->gname = getGname(fest->statbuf.st_gid);
 	    if (! (fest->uname && fest->gname)) {
 		rpmError(RPMERR_BADSPEC, "Bad owner/group: %s", filename);
+		fest->uname = "";
+		fest->gname = "";
 		processFileListFailed = 1;
 	    }
 	    strcpy(fest->file, filename);
@@ -693,6 +695,8 @@ static int add_file(struct file_entry **festack, const char *name,
     
     if (! (p->uname && p->gname)) {
 	rpmError(RPMERR_BADSPEC, "Bad owner/group: %s\n", fullname);
+	p->uname = "";
+	p->gname = "";
 	return 0;
     }
     
