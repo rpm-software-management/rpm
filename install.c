@@ -22,7 +22,8 @@ static void printHash(const unsigned long amount, const unsigned long total) {
     if (hashesPrinted != 50) {
 	hashesNeeded = 50 * (total ? (((float) amount) / total) : 1);
 	while (hashesNeeded > hashesPrinted) {
-	    fprintf(stdout, "#");
+	    printf("#");
+	    fflush(stdout);
 	    hashesPrinted++;
 	}
 	fflush(stdout);
@@ -44,9 +45,10 @@ static void showProgress(const Header h, const rpmNotifyType what,
       case RPMNOTIFY_INST_START:
 	hashesPrinted = 0;
 	if (flags & INSTALL_LABEL) {
-	    s = headerSprintf(h, "%s-%s-%s", rpmTagTable, rpmHeaderFormats, 
-			      NULL);
+	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
+			      rpmTagTable, rpmHeaderFormats, NULL);
 	    printf("%-28s", s);
+	    fflush(stdout);
 	    free(s);
 	}
 	break;
@@ -56,7 +58,7 @@ static void showProgress(const Header h, const rpmNotifyType what,
 	    fprintf(stdout, "%%%% %f\n", (total
 				? ((float) ((((float) amount) / total) * 100))
 				: 100.0));
-	} else if (flags & INSTALL_PERCENT) {
+	} else if (flags & INSTALL_HASH) {
 	    printHash(amount, total);
 	}
 	break;
@@ -70,7 +72,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     FD_t fd;
     int i;
     int mode, rc, major;
-    const char ** packages, ** tmpPackages;
+    char ** packages, ** tmpPackages;
     char ** filename;
     int numPackages;
     int numTmpPackages = 0, numBinaryPackages = 0, numSourcePackages = 0;
@@ -83,7 +85,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     int numConflicts;
     int stopInstall = 0;
     size_t nb;
-    int notifyFlags = interfaceFlags | (rpmIsVerbose ? INSTALL_HASH : 0 );
+    int notifyFlags = interfaceFlags | (rpmIsVerbose ? INSTALL_LABEL : 0 );
     int transFlags = 0;
     rpmProblemSet probs, finalProbs;
 
