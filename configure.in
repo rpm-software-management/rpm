@@ -364,6 +364,27 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 
+dnl DU 4.0 fiddles.
+AC_CHECK_HEADERS(glob.h)
+AC_MSG_CHECKING(for struct statfs)
+AC_EGREP_HEADER(struct statfs,sys/vfs.h,[
+  AC_MSG_RESULT(in sys/vfs.h)
+  AC_DEFINE(STATFS_IN_SYS_VFS)],
+[
+  AC_EGREP_HEADER(struct statfs,sys/mount.h,[
+    AC_MSG_RESULT(in sys/mount.h)
+    AC_DEFINE(STATFS_IN_SYS_MOUNT)],
+  [
+    AC_EGREP_HEADER(struct statfs,sys/statfs.h,[
+      AC_MSG_RESULT(in sys/statfs.h)
+      AC_DEFINE(STATFS_IN_SYS_STATFS)],
+    [
+      AC_MSG_RESULT(not found)
+    ])
+  ])
+])
+
+
 AC_C_INLINE
 
 dnl look for libc features

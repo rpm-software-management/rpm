@@ -11,7 +11,19 @@
 #include "misc.h"
 #include "rpmdb.h"
 
-#include <sys/vfs.h>
+/* XXX FIXME: merge with existing (broken?) tests in system.h */
+/* DU 4.0 fiddles */
+#if STATFS_IN_SYS_VFS
+# include <sys/vfs.h>
+#else
+# if STATFS_IN_SYS_MOUNT
+#  include <sys/mount.h>
+# else
+#  if STATFS_IN_SYS_STATFS
+#   include <sys/statfs.h>
+#  endif
+# endif
+#endif
 
 struct fileInfo {
   /* for all packages */

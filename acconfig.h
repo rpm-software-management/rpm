@@ -111,6 +111,15 @@
 /* Full path to macros configuration file (usually /usr/lib/rpm/macros) */
 #undef MACROFILES
 
+/* statfs in <sys/vfs.h> (for linux systems) */
+#undef STATFS_IN_SYS_VFS
+
+/* statfs in <sys/mount.h> (for Digital Unix 4.0D systems) */
+#undef STATFS_IN_SYS_MOUNT
+
+/* statfs in <sys/statfs.h> (for Irix 6.4 systems) */
+#undef STATFS_IN_SYS_STATFS
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:
