@@ -11,6 +11,10 @@
 
 #include "misc.h"
 
+static char *usrlibrpmrc = LIBRPMRC_FILENAME;
+static char *etcrpmrc = "/etc/rpmrc";
+static char *macrofiles = MACROFILES;
+
 struct MacroContext globalMacroContext;
 
 struct machCacheEntry {
@@ -104,6 +108,7 @@ static struct rpmOption optionTable[] = {
     { "include",		RPMVAR_INCLUDE,			0, 1,	1, 2 },
     { "instchangelog",		RPMVAR_INSTCHANGELOG,		0, 0,	0, 0 },
     { "langpatt",               RPMVAR_LANGPATT,                0, 0,	1, 0 },
+    { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	1, 1 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0, 0,	1, 0 },
     { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0, 0,	1, 0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
@@ -512,7 +517,7 @@ static void setPathDefault(int var, char *macroname, char *subdir) {
 static void setDefaults(void) {
 
     /* Read in all macro files (and also set maximum recursion depth) */
-    initMacros(&globalMacroContext, MACROFILES);
+    initMacros(&globalMacroContext, macrofiles);
 
     rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
     rpmSetVar(RPMVAR_SIGTYPE, "none");
@@ -533,21 +538,21 @@ int rpmReadRC(char * file) {
 	first = 0;
     }
 
-    fd = open(LIBRPMRC_FILENAME, O_RDONLY);
+    fd = open(usrlibrpmrc, O_RDONLY);
     if (fd >= 0) {
-	rc = doReadRC(fd, LIBRPMRC_FILENAME);
+	rc = doReadRC(fd, usrlibrpmrc);
 	close(fd);
  	if (rc) return rc;
     } else {
 	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
-		 LIBRPMRC_FILENAME, strerror(errno));
+		 usrlibrpmrc, strerror(errno));
 	return 1;
     }
 
     if (file)
 	fn = file;
     else
-	fn = "/etc/rpmrc";
+	fn = etcrpmrc;
 
     fd = open(fn, O_RDONLY);
     if (fd >= 0) {
@@ -582,6 +587,9 @@ int rpmReadRC(char * file) {
     setPathDefault(RPMVAR_SRPMDIR, "_srcrpmdir", "SRPMS");
     setPathDefault(RPMVAR_SOURCEDIR, "_sourcedir", "SOURCES");
     setPathDefault(RPMVAR_SPECDIR, "_specdir", "SPECS");
+
+    if ((fn = rpmGetVar(RPMVAR_MACROFILES)) != NULL)
+	initMacros(&globalMacroContext, fn);
 
     return 0;
 }
@@ -1305,11 +1313,12 @@ int rpmShowRC(FILE *f)
 	fprintf(f," %s", equivTable->list[i].name);
     fprintf(f, "\n");
 
-    fprintf(f, "RPMRC VALUES:\n");
+    fprintf(f, "\nRPMRC VALUES:\n");
     opt = optionTable;
     while (count < optionTableSize) {
 	s = rpmGetVar(opt->var);
-	fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
+	if (s != NULL || rpmGetVerbosity() < RPMMESS_NORMAL)
+	    fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
 	opt++;
 	count++;
     }

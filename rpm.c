@@ -580,6 +580,8 @@ int main(int argc, char ** argv) {
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
 
+    rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
+
     /* Make a first pass through the arguments, looking for --rcfile */
     /* as well as --arch and --os.  We need to handle that before    */
     /* dealing with the rest of the arguments.                       */
@@ -592,6 +594,10 @@ int main(int argc, char ** argv) {
 	optArg = poptGetOptArg(optCon);
 
 	switch(arg) {
+	case 'v':
+	    rpmIncreaseVerbosity();	/* XXX silly use by showrc */
+
+	    break;
 	case GETOPT_BUILDARCH:
 	    fprintf(stderr, "--buildarch has been obsoleted.  Use the --buildplatform option\n"); 
 	    fprintf(stderr, "with a platform specific rpmrc file with a Buildarch: tag set\n");
@@ -622,6 +628,8 @@ int main(int argc, char ** argv) {
 	rpmShowRC(stdout);
 	exit(0);
     }
+
+    rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 
     poptResetContext(optCon);
 

@@ -1,5 +1,7 @@
 2.5.5 -> 2.90
-	- add config.h defines for scripts like find-requires.
+	- augment --showrc with -v, only display set variables without -v.
+	- add macrofiles variable, permit second entry to initMacros().
+	- add config.h defines for paths to find-requires et. al.
 	- add readRPM to libbuild, headerGetLangs to librpm.
 	- permit rpm to be built in a sub-directory (--srcdir=DIR).
 	- configure using automake.

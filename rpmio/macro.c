@@ -1126,11 +1126,15 @@ void
 initMacros(MacroContext *mc, const char *macrofile)
 {
 	char *m, *mfile, *me;
+	static int first = 1;
 
-	mc->macroTable = NULL;
-	expandMacroTable(mc);
-
-	max_macro_depth = 2;	/* XXX Assume good ol' macro expansion */
+	/* XXX initialization should be per macro context, not per execution */
+	if (first) {
+		mc->macroTable = NULL;
+		expandMacroTable(mc);
+		max_macro_depth = 2;	/* XXX Assume good ol' macro expansion */
+		first = 0;
+	}
 
 	if (macrofile == NULL)
 		return;
