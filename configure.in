@@ -120,6 +120,10 @@ fi
 
 AC_MSG_CHECKING(/usr/ucblib...)
 if test -d /usr/ucblib ; then
+	if test "$build" = "mips-sni-sysv4" ; then
+		LIBS="$LIBS -L/usr/ccs/lib -lc"
+	fi
+
 	LIBS="$LIBS -L/usr/ucblib"
 	
 	AC_MSG_RESULT(yes)
