@@ -32,7 +32,7 @@ typedef struct MacroBuf {
 
 static int expandMacro(MacroBuf *mb);
 
-#define	MAX_MACRO_DEPTH	5
+#define	MAX_MACRO_DEPTH	16
 int max_macro_depth = MAX_MACRO_DEPTH;
 
 #ifdef	DEBUG_MACROS
