@@ -1,12 +1,20 @@
-#ifdef HAVE_MACHINE_TYPES_H
+#if HAVE_CONFIG_H
+# include "config.h"
+#else
+#define HAVE_MACHINE_TYPES_H 1
+#define HAVE_ALLOCA_H 1
+#define HAVE_NETINET_IN_SYSTM_H 1
+#endif
+
+#if HAVE_MACHINE_TYPES_H
 # include <machine/types.h>
 #endif
 
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
 
-#ifdef HAVE_NETINET_IN_SYSTM_H
+#if HAVE_NETINET_IN_SYSTM_H
 # include <sys/types.h>
 # include <netinet/in_systm.h>
 #endif

@@ -1,10 +1,12 @@
+#include "config.h"
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
 

@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -9,7 +11,7 @@
 #include <sys/param.h>
 #include <unistd.h>
 
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
 
