@@ -94,6 +94,23 @@ no installed packages will have their dependency conditions break due to
 the packages being removed. If you wish to turn off dependency checking for 
 a particular command, use the --nodeps flag.
 
+Conflicts
+---------
+
+While conflicts were implemented in earlier versions of RPM they never 
+worked properly until RPM 2.3.4 (well, we hope they work properly now
+anyway).
+
+Conflicts allow a package to say it won't work with another package (or
+virtual package) installed on the system. For example, qmail doesn't work
+(w/o custom setup) on machines with sendmail installed. The qmail spec file
+may codify this with a line like:
+
+Conflicts: sendmail
+
+The syntax of the "Conflicts" tag is identical to the syntax of the Requires
+tag and conflict checking may be overridden by using the --nodeps flag.
+
 Querying with Dependencies
 --------------------------
 
