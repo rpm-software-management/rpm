@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: /usr/lib/rpm/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.93 2002/01/10 19:16:54 jbj Exp $
+# $Id: macros.in,v 1.94 2002/01/30 22:19:56 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -498,18 +498,62 @@
 #
 #	The output binary package file name template used when building
 #	binary packages.
-# XXX Note escaped %% for use in headerSprintf
+#
+# XXX	Note: escaped %% for use in headerSprintf()
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
 #	The output binary package file name template used when repackaging
 #	erased packages.
-# XXX Note escaped %% for use in headerSprintf
+#
+# XXX	Note: escaped %% for use in headerSprintf()
 %_repackage_name_fmt	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
 #	The directory in which erased packages will be saved when using
 #	the --repackage option.
 %_repackage_dir		/var/spool/up2date
 %_repackage_root	%{nil}
+
+#	Relations between package names that cause dependency loops
+#	with legacy packages that cannot be fixed. Relations are
+#	specified as
+#		p>q
+#	where package p has a Requires: on something that package q Provides:
+#
+# XXX	Note: that there cannot be any whitespace within the string "p>q",
+#	and that both p and q are package names (i.e. no version/release).
+#
+#%_dependency_whiteout_5_2		\
+#	pam>pamconfig
+#%_dependency_whiteout_6_1		\
+#	pilot-link-devel>pilot-link
+#%_dependency_whiteout_6_2		\
+#	egcs-c++>libstdc++
+%_dependency_whiteout_7_0		\
+	pango-gtkbeta-devel>pango-gtkbeta\
+	XFree86>Mesa			\
+	compat-glibc>db2		\
+	compat-glibc>db1		\
+	pam>initscripts			\
+	initscripts>sysklogd
+%_dependency_whiteout_7_1		\
+	arts>kdelibs-sound
+%_dependency_whiteout_7_2		\
+	libgnomeprint15>gnome-print	\
+	nautilus>nautilus-mozilla	\
+	tcl>postgresql-tcl
+
+%_dependency_whiteout			\
+	libtermcap>bash			\
+	modutils>vixie-cron		\
+	ypbind>yp-tools			\
+	ghostscript-fonts>ghostscript	\
+	%{?_dependency_whiteout_7_2}	\
+	%{?_dependency_whiteout_7_1}	\
+	%{?_dependency_whiteout_7_0}	\
+	%{?_dependency_whiteout_6_2}	\
+	%{?_dependency_whiteout_6_1}	\
+	%{?_dependency_whiteout_5_2}	\
+	%{nil}
 
 #==============================================================================
 # ---- per-platform macros.

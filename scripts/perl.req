@@ -155,6 +155,16 @@ sub process_file {
       #      ($module =~ m/^\./) && next;
 
       # if the module ends with .pm strip it to leave only basename.
+      # starts with /, which means its an absolute path to a file
+      if ($module =~ m(^/)) {
+        print "$module\n";
+        next;
+      }
+
+      # sometimes people do use POSIX qw(foo), or use POSIX(qw(foo)) etc
+      # we can strip qw.*$, as well as (.*$:
+      $module =~ s/qw.*$//;
+      $module =~ s/\(*$//;
 
       $module =~ s/\.pm$//;
 

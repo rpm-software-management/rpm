@@ -109,6 +109,10 @@
 	- trap SIGILL for ppc64 inline asm voodoo fix from cross-dressed ppc32.
 	- fix: fancy hash fiddles if not a tty.
 	- fix: handle /.../ correctly in rpmCleanPath().
+	- transaction rollback code in rpmRollback().
+	- Red Hat 6.2 portability cruft.
+	- legacy: configurable whiteout for known Red Hat dependency loops.
+	- perl.req: don't mis-generate dependencies like perl(::path/to/foo.pl).
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

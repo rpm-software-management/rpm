@@ -881,14 +881,12 @@ static int checkDependentConflicts(rpmTransactionSet ts, const char * key)
     return rc;
 }
 
-/*
- * XXX Hack to remove known Red Hat dependency loops, will be removed
- * as soon as rpm's legacy permits.
- */
-#undef	DEPENDENCY_WHITEOUT
+struct badDeps_s {
+/*@observer@*/ /*@null@*/ const char * pname;
+/*@observer@*/ /*@null@*/ const char * qname;
+};
 
-#if defined(DEPENDENCY_WHITEOUT)
-/*@observer@*/ /*@unchecked@*/
+#ifdef	DYING
 static struct badDeps_s {
 /*@observer@*/ /*@null@*/ const char * pname;
 /*@observer@*/ /*@null@*/ const char * qname;
@@ -917,21 +915,63 @@ static struct badDeps_s {
     { "pam", "pamconfig" },
     { NULL, NULL }
 };
+#else
+static struct badDeps_s * badDeps = NULL;
+#endif
 
+/**
+ * Check for dependency relations to be ignored.
+ *
+ * @param p	successor element (i.e. with Requires: )
+ * @param q	predecessor element (i.e. with Provides: )
+ * @return	1 if dependency is to be ignored.
+ */
 static int ignoreDep(const transactionElement p,
 		const transactionElement q)
 	/*@*/
 {
-    struct badDeps_s * bdp = badDeps;
+    struct badDeps_s * bdp;
+    static int _initialized = 0;
+    const char ** av = NULL;
+    int ac = 0;
 
-    while (bdp->pname != NULL && bdp->qname != NULL) {
+    if (!_initialized) {
+	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
+	int i;
+
+	if (s != NULL && *s != '\0'
+	&& !(i = poptParseArgvString(s, &ac, (const char ***)&av))
+	&& ac > 0 && av != NULL)
+	{
+	    bdp = badDeps = xcalloc(ac+1, sizeof(*badDeps));
+	    for (i = 0; i < ac; i++, bdp++) {
+		char * p, * q;
+
+		if (av[i] == NULL)
+		    break;
+		p = xstrdup(av[i]);
+		if ((q = strchr(p, '>')) != NULL)
+		    *q++ = '\0';
+		bdp->pname = p;
+		bdp->qname = q;
+		rpmMessage(RPMMESS_DEBUG,
+			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
+			i, bdp->pname, bdp->qname);
+	    }
+	    bdp->pname = bdp->qname = NULL;
+	}
+	av = _free(av);
+	s = _free(s);
+	_initialized++;
+    }
+
+    if (badDeps != NULL)
+    for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++) {
 	if (!strcmp(teGetN(p), bdp->pname) && !strcmp(teGetN(q), bdp->qname))
 	    return 1;
-	bdp++;
     }
     return 0;
 }
-#endif
 
 /**
  * Recursively mark all nodes with their predecessors.
@@ -1115,11 +1155,9 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
     if (q == NULL || i == ts->orderCount)
 	return 0;
 
-#if defined(DEPENDENCY_WHITEOUT)
     /* Avoid certain dependency relations. */
     if (ignoreDep(p, q))
 	return 0;
-#endif
 
 /*@-nullpass -nullderef -formattype@*/
 if (_tso_debug)
