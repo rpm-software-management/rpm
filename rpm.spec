@@ -219,6 +219,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue Feb 29 2000 Jeff Johnson <jbj@redhat.com>
+- fix rpmmodule.so python bindings.
+
 * Sun Feb 27 2000 Jeff Johnson <jbj@redhat.com>
 - rpm-3.0.4 release candidate.
 
