@@ -1190,18 +1190,27 @@ freeMacros(MacroContext *mc)
 
 int isCompressed(char *file, int *compressed)
 {
-    int fd;
+    int fd, nb, rderrno;
     unsigned char magic[4];
 
     *compressed = COMPRESSED_NOT;
 
-    if (!(fd = open(file, O_RDONLY))) {
+    if ((fd = open(file, O_RDONLY)) < 0) {
+	rpmError(RPMERR_BADSPEC, "File %s: %s", file, strerror(errno));
 	return 1;
     }
-    if (! read(fd, magic, 4)) {
-	return 1;
-    }
+    nb = read(fd, magic, sizeof(magic));
+    rderrno = errno;
     close(fd);
+
+    if (nb < 0) {
+	rpmError(RPMERR_BADSPEC, "File %s: %s", file, strerror(rderrno));
+	return 1;
+    } else if (nb < sizeof(magic)) {
+	rpmError(RPMERR_BADSPEC, "File %s is smaller than %d bytes",
+		file, sizeof(magic));
+	return 0;
+    }
 
     if (((magic[0] == 0037) && (magic[1] == 0213)) ||  /* gzip */
 	((magic[0] == 0037) && (magic[1] == 0236)) ||  /* old gzip */
