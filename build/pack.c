@@ -193,6 +193,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     struct cpioFileMapping * cpioList;
     int status;
     void *oldhandler;
+    char savecwd[1024];
 
     gzipbin = rpmGetVar(RPMVAR_GZIPBIN);
 
@@ -239,6 +240,8 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 
     close(toGzip[0]);
 
+    getcwd(savecwd, 1024);
+    
     if (tempdir) {
 	chdir(tempdir);
     } else if (rpmGetVar(RPMVAR_ROOT)) {
@@ -257,6 +260,8 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 	    _exit(RPMERR_EXEC);
 	}
     }
+
+    chdir(savecwd);
 
     rc = cpioBuildArchive(toGzip[1], cpioList, numMappings, NULL, NULL, NULL);
 
