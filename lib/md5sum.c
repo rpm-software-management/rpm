@@ -19,7 +19,7 @@
 
 int mdfile(char *fn, unsigned char *digest) {
     unsigned char buf[1024];
-    char bindigest[16];
+    unsigned char bindigest[16];
     FILE * fp;
     MD5_CTX ctx;
     int n;
