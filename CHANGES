@@ -53,6 +53,7 @@
 	- new rpm-build package to isolate rpm dependencies on perl/bash2.
 	- always remove duplicate identical package entries on --rebuilddb.
 	- add scripts for autogenerating CPAN dependencies.
+	- add sl.po from Primoz Peterlin <peterlin@biofiz.mf.uni-lj.si>.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
