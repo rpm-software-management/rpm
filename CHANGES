@@ -1,5 +1,6 @@
 3.0.4 -> 3.1
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
+	- configure.in fiddles for BSD systems (Patrick Schoo).
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

@@ -149,7 +149,7 @@ if test "$cross_compiling" != "yes"; then
 dnl
 dnl Set search path for common programs
 dnl
-    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/opt/gnu/bin"
+    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
 
 dnl
 dnl Find some common programs
@@ -381,7 +381,7 @@ AC_CHECK_HEADERS(sys/mman.h sys/resource.h sys/utsname.h sys/wait.h)
 AC_CHECK_HEADERS(netinet/in_systm.h)
 AC_CHECK_HEADERS(machine/types.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
-AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
+AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
 
@@ -457,6 +457,9 @@ dnl ...next try including sys/mount.h
 AC_TRY_COMPILE([
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
 #endif
 #include <sys/mount.h> ],
 	[struct statfs sfs;],
