@@ -1,4 +1,6 @@
-#ifdef HAVE_ALLOCA_H
+#include "config.h"
+
+#if HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
 
@@ -157,7 +159,7 @@ int rpmVerifyScript(char * root, Header h, int err) {
     }
 
     fn = alloca(strlen(tmpdir) + 20);
-    sprintf(fn, "%s/rpm-%d.vscript", tmpdir, getpid());
+    sprintf(fn, "%s/rpm-%d.vscript", tmpdir, (int) getpid());
 
     rpmMessage(RPMMESS_DEBUG, "verify script found - "
 		"running from file %s\n", fn);
