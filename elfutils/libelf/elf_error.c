@@ -49,6 +49,7 @@ static void init (void)
 static void free_key_mem (void *mem)
 	/*@globals key @*/
 	/*@modifies key @*/;
+#endif        /* TLS */
 
 
 /*@-mods@*/

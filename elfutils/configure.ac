@@ -17,7 +17,7 @@ AC_INIT([elfutils],[0.76],[drepper@redhat.com],[elfutils])
 AM_INIT_AUTOMAKE([gnits 1.6.3 dist-bzip2])
 AC_COPYRIGHT([Copyright (C) 1996-2002, 2003 Red Hat, Inc.])
 AC_CONFIG_SRCDIR([src/readelf.c])
-AC_CONFIG_HEADERS([config.h])
+AM_CONFIG_HEADER([config.h])
 AC_PREREQ(2.54)			dnl Minimum Autoconf version required.
 AC_CANONICAL_HOST
 
@@ -167,9 +167,11 @@ AC_CONFIG_FILES([Makefile
 	   libdw/Makefile
 	   libcpu/Makefile
 	   libasm/Makefile
+	   src/Makefile
 	   libelf-po/Makefile.in
 	   libebl-po/Makefile.in
 	   libdwarf-po/Makefile.in
 	   libasm-po/Makefile.in
-	   po/Makefile.in])
+	   po/Makefile.in
+	   tests/Makefile])
 AC_OUTPUT

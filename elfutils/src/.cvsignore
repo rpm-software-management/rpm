@@ -3,9 +3,10 @@
 Makefile
 Makefile.in
 elflint
-i386_ld.lo
+*.la
+*.lo
+*.os
 ld
-libld_elf_i386.la
 nm
 readelf
 size

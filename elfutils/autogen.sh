@@ -3,8 +3,8 @@
 libtoolize --copy --force
 aclocal
 autoheader
-automake -a -c
 autoconf
+automake
 
 if [ "$1" = "--noconfigure" ]; then 
     exit 0;
