@@ -500,7 +500,8 @@ static void printHelp(void) {
 		  _("use <dir> as the top level directory"));
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char ** argv)
+{
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t *qva = &rpmQVArgs;
     enum rpmQVSources QVSource = RPMQV_PACKAGE;
@@ -1226,12 +1227,20 @@ int main(int argc, char ** argv) {
 	if (!noPgp) checksigFlags |= CHECKSIG_PGP;
 	if (!noGpg) checksigFlags |= CHECKSIG_GPG;
 	if (!noMd5) checksigFlags |= CHECKSIG_MD5;
-	exit(doCheckSig(checksigFlags, poptGetArgs(optCon)));
+	ec = doCheckSig(checksigFlags, poptGetArgs(optCon));
+	/* XXX don't overflow single byte exit status */
+	if (ec > 255) ec = 255;
+	exit(ec);
+	break;
 
       case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for signing"));
-	exit(doReSign(addSign, passPhrase, poptGetArgs(optCon)));
+	ec = doReSign(addSign, passPhrase, poptGetArgs(optCon));
+	/* XXX don't overflow single byte exit status */
+	if (ec > 255) ec = 255;
+	exit(ec);
+	break;
 	
       case MODE_REBUILD:
       case MODE_RECOMPILE:

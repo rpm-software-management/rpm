@@ -19,6 +19,7 @@
 	- fix: shared file not skipped when removed.
 	- fix: conversion script left off leading underscores.
 	- another strtok bites the dust.
+	- fix: prevent return code wrap during packagage checking/resigning.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.
