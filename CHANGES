@@ -41,6 +41,7 @@
 	- added build_arch to /etc/rpmrc
 	- support arch as string
 	- added --ignorearch option
+	- Prefix: in spec file to specify default installation prefix
 
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
