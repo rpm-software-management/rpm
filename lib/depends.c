@@ -135,7 +135,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     uint_32 ohcolor;
     int isSource;
     int duplicate = 0;
-    rpmtsi pi; rpmte p;
+    rpmtsi pi = NULL; rpmte p;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * arch;
     const char * os;
@@ -151,14 +151,22 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
      * Check for previously added versions with the same name and arch/os.
      * FIXME: only catches previously added, older packages.
      */
-    add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
     arch = NULL;
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
     hcolor = hGetColor(h);
-
     pkgKey = RPMAL_NOMATCH;
+
+    /* XXX Always add source headers. */
+    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+    if (isSource) {
+	oc = ts->orderCount;
+	goto addheader;
+    }
+
+    add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
+    /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	const char * parch;
 	const char * pos;
@@ -166,6 +174,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
 	/* XXX Only added packages need be checked for dupes. */
 	if (rpmteType(p) == TR_REMOVED)
+	    continue;
+
+	/* XXX Never check source headers. */
+	if (p->isSource)
 	    continue;
 
 	if (tscolor) {
@@ -184,10 +196,11 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if (rc != 0) {
 	    const char * pkgNEVR = rpmdsDNEVR(this);
 	    const char * addNEVR = rpmdsDNEVR(add);
-	    rpmMessage(RPMMESS_WARNING,
-		_("package %s was already added, replacing with %s\n"),
-		(pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
-		(addNEVR ? addNEVR + 2 : "?addNEVR?"));
+	    if (rpmIsVerbose())
+		rpmMessage(RPMMESS_WARNING,
+		    _("package %s was already added, replacing with %s\n"),
+		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
+		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
 	    duplicate = 1;
 	    pkgKey = rpmteAddedKey(p);
 	    break;
@@ -196,8 +209,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     pi = rpmtsiFree(pi);
     add = rpmdsFree(add);
 
-    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
-
+addheader:
     if (oc >= ts->orderAlloced) {
 	ts->orderAlloced += (oc - ts->orderAlloced) + ts->delta;
 /*@-type +voidabstract @*/

@@ -15,6 +15,8 @@
 
 #include "rpmdb.h"
 #include "rpmfi.h"
+
+#define	_RPMGI_INTERNAL	/* XXX for gi->flags */
 #include "rpmgi.h"
 #include "rpmts.h"
 
@@ -367,6 +369,10 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	Header h;
 	int rc;
 
+	/* XXX delayed spewage. */
+	if (gi->flags & RPMGI_TSADD)
+	    continue;
+
 	h = rpmgiHeader(gi);
 	if (h == NULL)		/* XXX perhaps stricter break instead? */
 	    continue;
@@ -687,7 +693,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	break;
     case RPMQV_RPM:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, NULL);
 	/*@=nullpass@*/
@@ -695,26 +701,26 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	break;
     case RPMQV_HDLIST:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_HDLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, NULL);
 	/*@=nullpass@*/
 	rpmtsEmpty(ts);
 	break;
     case RPMQV_FTSWALK:
-	qva->qva_gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
 	if (ftsOpts == 0)
 	    ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
+	qva->qva_gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, NULL);
 	/*@=nullpass@*/
 	rpmtsEmpty(ts);
 	break;
     default:
+	giFlags |= (RPMGI_NOGLOB|RPMGI_NOHEADER);
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0,
-				(RPMGI_NOGLOB|RPMGI_NOHEADER));
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0, giFlags);
 	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
 	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));
 	    rpmtsEmpty(ts);

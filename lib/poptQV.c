@@ -7,6 +7,7 @@
 
 #include <rpmcli.h>
 #include <rpmbuild.h>
+#include <rpmgi.h>	/* XXX for giFlags */
 
 #include "debug.h"
 
@@ -136,6 +137,18 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
  { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
+
+ { "transaction", 'T', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, (RPMGI_TSADD|RPMGI_TSORDER),
+	N_("create transaction set"), NULL},
+ { "noorder", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, RPMGI_TSORDER,
+	N_("do not order transaction set"), NULL},
+ { "noglob", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, RPMGI_NOGLOB,
+	N_("do not glob arguments"), NULL},
+ { "nomanifest", '\0', POPT_BIT_SET, &giFlags, RPMGI_NOMANIFEST,
+	N_("do not process non-package files as manifests"), NULL},
+ { "noheader", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, RPMGI_NOHEADER,
+	N_("do not read headers"), NULL},
+
 
    POPT_TABLEEND
 };

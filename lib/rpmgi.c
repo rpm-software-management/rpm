@@ -4,7 +4,11 @@
  */
 #include "system.h"
 
+#include <rpmlib.h>
+#include <rpmte.h>		/* XXX rpmElementType */
+
 #define	_RPMGI_INTERNAL
+#define	_RPMTS_INTERNAL
 #include <rpmgi.h>
 
 #include <rpmdb.h>
@@ -17,6 +21,9 @@
 
 /*@unchecked@*/
 int _rpmgi_debug = 0;
+
+/*@unchecked@*/
+rpmgiFlags giFlags = RPMGI_NONE;
 
 /*@unchecked@*/
 static int indent = 2;
@@ -556,15 +563,58 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 0, NULL);
+	/* XXX add header to rpmte */
     }
 
     return rpmrc;
 
 enditer:
     if (gi->flags & RPMGI_TSORDER) {
-	xx = rpmtsCheck(gi->ts);
-	xx = rpmtsOrder(gi->ts);
+	rpmts ts = gi->ts;
+	rpmps ps;
+	int i;
+
+	/* XXX installed database needs close here. */
+	xx = rpmtsCloseDB(ts);
+	ts->dbmode = -1;	/* XXX disable lazy opens */
+
+	xx = rpmtsCheck(ts);
+
+	/* XXX query/verify will need the glop added to a buffer instead. */
+	ps = rpmtsProblems(ts);
+	if (rpmpsNumProblems(ps) > 0) {
+	    /* XXX rpminstall will need RPMMESS_ERROR */
+	    rpmMessage(RPMMESS_VERBOSE, _("Failed dependencies:\n"));
+	    if (rpmIsVerbose())
+		rpmpsPrint(NULL, ps);
+
+/*@-branchstate@*/
+	    if (ts->suggests != NULL && ts->nsuggests > 0) {
+		rpmMessage(RPMMESS_VERBOSE, _("    Suggested resolutions:\n"));
+		for (i = 0; i < ts->nsuggests; i++) {
+		    const char * str = ts->suggests[i];
+
+		    if (str == NULL)
+			break;
+
+		    rpmMessage(RPMMESS_VERBOSE, "\t%s\n", str);
+		
+		    ts->suggests[i] = NULL;
+		    str = _free(str);
+		}
+		ts->suggests = _free(ts->suggests);
+	    }
+/*@=branchstate@*/
+
+	}
+	rpmpsFree(ps);
+	rpmpsFree(ts->probs);	/* XXX hackery */
+	ts->probs = NULL;
+
+	xx = rpmtsOrder(ts);
+
     }
+
     gi->h = headerFree(gi->h);
     gi->hdrPath = _free(gi->hdrPath);
     gi->i = -1;

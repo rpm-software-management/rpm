@@ -1484,6 +1484,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
     ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
     pi = rpmtsiInit(ts);
+    /* XXX Only added packages need be checked. */
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmdbMatchIterator mi;
 	int fc;

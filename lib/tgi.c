@@ -15,7 +15,9 @@
 static const char * gitagstr = "packages";
 static const char * gikeystr = NULL;
 static rpmtransFlags transFlags = 0;
-static rpmgiFlags giflags = 0;
+#ifdef	DYING
+static rpmgiFlags giFlags = 0;
+#endif
 
 static const char * queryFormat = NULL;
 static const char * defaultQueryFormat =
@@ -53,15 +55,15 @@ static struct poptOption optionsTable[] = {
  	&transFlags, RPMTRANS_FLAG_ANACONDA|RPMTRANS_FLAG_DEPLOOPS,
 	N_("use anaconda \"presentation order\""), NULL},
 
- { "transaction", 'T', POPT_BIT_SET, &giflags, (RPMGI_TSADD|RPMGI_TSORDER),
-	N_("do not create transaction set"), NULL},
- { "noorder", '\0', POPT_BIT_CLR, &giflags, RPMGI_TSORDER,
+ { "transaction", 'T', POPT_BIT_SET, &giFlags, (RPMGI_TSADD|RPMGI_TSORDER),
+	N_("create transaction set"), NULL},
+ { "noorder", '\0', POPT_BIT_CLR, &giFlags, RPMGI_TSORDER,
 	N_("do not order transaction set"), NULL},
- { "noglob", '\0', POPT_BIT_SET, &giflags, RPMGI_NOGLOB,
+ { "noglob", '\0', POPT_BIT_SET, &giFlags, RPMGI_NOGLOB,
 	N_("do not glob arguments"), NULL},
- { "nomanifest", '\0', POPT_BIT_SET, &giflags, RPMGI_NOMANIFEST,
-	N_("do not process arg manifests"), NULL},
- { "noheader", '\0', POPT_BIT_SET, &giflags, RPMGI_NOHEADER,
+ { "nomanifest", '\0', POPT_BIT_SET, &giFlags, RPMGI_NOMANIFEST,
+	N_("do not process non-package files as manifests"), NULL},
+ { "noheader", '\0', POPT_BIT_SET, &giFlags, RPMGI_NOHEADER,
 	N_("do not read headers"), NULL},
 
  { "qf", '\0', POPT_ARG_STRING, &queryFormat, 0,
@@ -130,11 +132,11 @@ main(int argc, char *const argv[])
     gi = rpmgiNew(ts, gitag, gikeystr, 0);
 
     av = poptGetArgs(optCon);
-    (void) rpmgiSetArgs(gi, av, ftsOpts, giflags);
+    (void) rpmgiSetArgs(gi, av, ftsOpts, giFlags);
 
     ac = 0;
     while (rpmgiNext(gi) == RPMRC_OK) {
-	if (!(giflags & RPMGI_TSADD)) {
+	if (!(giFlags & RPMGI_TSADD)) {
 	    const char * arg = rpmgiPathOrQF(gi);
 
 	    fprintf(stdout, "%5d %s\n", ac, arg);
@@ -143,7 +145,7 @@ main(int argc, char *const argv[])
 	ac++;
     }
 
-    if (giflags & RPMGI_TSORDER) {
+    if (giFlags & RPMGI_TSORDER) {
 	rpmtsi tsi;
 	rpmte q;
 	int i;

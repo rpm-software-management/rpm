@@ -28,6 +28,9 @@ typedef enum rpmgiFlags_e {
     RPMGI_NOHEADER	= (1 << 4)
 } rpmgiFlags;
 
+/*@unchecked@*/
+extern rpmgiFlags giFlags;
+
 #if defined(_RPMGI_INTERNAL)
 /** \ingroup rpmio
  */
