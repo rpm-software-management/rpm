@@ -1,7 +1,7 @@
 #: ../rpm.c:181 ../rpm.c:260
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-10-29 10:10-0500\n"
+"POT-Creation-Date: 1998-11-06 17:29-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1882,103 +1882,103 @@ msgstr "строка %d: Ошибка разбора %%files: %s"
 msgid "line %d: Second %%files list"
 msgstr "строка %d: Второй список %%files"
 
-#: ../build/parsePreamble.c:154
+#: ../build/parsePreamble.c:155
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Архитектура исключена: %s"
 
-#: ../build/parsePreamble.c:159
+#: ../build/parsePreamble.c:160
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Архитектура не включена: %s"
 
-#: ../build/parsePreamble.c:164
+#: ../build/parsePreamble.c:165
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "ОС исключена: %s"
 
-#: ../build/parsePreamble.c:169
+#: ../build/parsePreamble.c:170
 #, c-format
 msgid "OS is not included: %s"
 msgstr "ОС не включена: %s"
 
-#: ../build/parsePreamble.c:205
+#: ../build/parsePreamble.c:206
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "Поле %s обязано присутствовать в пакете: %s"
 
-#: ../build/parsePreamble.c:247
+#: ../build/parsePreamble.c:248
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Дублирующиеся записи %s в пакете: %s"
 
-#: ../build/parsePreamble.c:291 ../build/parsePreamble.c:298
+#: ../build/parsePreamble.c:292 ../build/parsePreamble.c:299
 #, c-format
 msgid "Unable to read icon: %s"
 msgstr "Не могу прочитать пиктограмму: %s"
 
-#: ../build/parsePreamble.c:308
+#: ../build/parsePreamble.c:309
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Неизвестный тип пиктограммы: %s"
 
-#: ../build/parsePreamble.c:339
+#: ../build/parsePreamble.c:340
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "строка %d: Неверный тэг: %s"
 
 #. Empty field
-#: ../build/parsePreamble.c:347
+#: ../build/parsePreamble.c:348
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "строка %d: Пустой тэг: %s"
 
-#: ../build/parsePreamble.c:398
+#: ../build/parsePreamble.c:399
 #, c-format
 msgid "line %d: BuildRoot can not be \"/\": %s"
 msgstr "строка %d: BuildRoot не может быть \"/\": %s"
 
-#: ../build/parsePreamble.c:411
+#: ../build/parsePreamble.c:412
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "строка %d: Префикс не может заканчиваться на \"/\": %s"
 
-#: ../build/parsePreamble.c:423
+#: ../build/parsePreamble.c:424
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "строка %d: Docdir должен начинаться с '/': %s"
 
-#: ../build/parsePreamble.c:434
-#, c-format
-msgid "line %d: Serial field must be a number: %s"
+#: ../build/parsePreamble.c:435
+#, fuzzy, c-format
+msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "строка %d: Поле Serial должно быть числом: %s"
 
-#: ../build/parsePreamble.c:498
+#: ../build/parsePreamble.c:499
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "строка %d: Неверный формат BuildArchitecture: %s"
 
-#: ../build/parsePreamble.c:508
+#: ../build/parsePreamble.c:509
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Внутренняя ошибка: \"Левый\" тэг %d"
 
-#: ../build/parsePreamble.c:651
+#: ../build/parsePreamble.c:653
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Неверная спецификация пакета: %s"
 
-#: ../build/parsePreamble.c:657
+#: ../build/parsePreamble.c:659
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Пакет уже существует: %s"
 
-#: ../build/parsePreamble.c:684
+#: ../build/parsePreamble.c:686
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "строка %d: Неизвестный тэг: %s"
 
-#: ../build/parsePreamble.c:709
+#: ../build/parsePreamble.c:711
 msgid "Spec file can't use BuildRoot"
 msgstr "Файл spec не может использовать BuildRoot"
 
@@ -3222,181 +3222,186 @@ msgstr "ошибка удаления каталога %s: %s"
 msgid "removal of %s failed: %s"
 msgstr "ошибка удаления %s: %s"
 
-#: ../lib/verify.c:170
+#: ../lib/verify.c:171
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr "в пакете нет ни имен пользователей, ни их ID (так не бывает)"
 
-#: ../lib/verify.c:188
+#: ../lib/verify.c:189
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr "в пакете нет ни имен групп, ни их ID (так не бывает)"
 
-msgid "one type of query may be performed at a time"
-msgstr "за один раз может быть исполнен только один тип запроса"
+#~ msgid "one type of query may be performed at a time"
+#~ msgstr "за один раз может быть исполнен только один тип запроса"
 
-msgid "--dump may only be used during queries"
-msgstr "опция --dump может быть использована только при запросах"
+#~ msgid "--dump may only be used during queries"
+#~ msgstr "опция --dump может быть использована только при запросах"
 
-msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr "опция --dump для запросов должна использоваться с -l, -c или -d"
+#~ msgid "--dump of queries must be used with -l, -c, or -d"
+#~ msgstr "опция --dump для запросов должна использоваться с -l, -c или -d"
 
-msgid "(none)"
-msgstr "(нет)"
-
-#, fuzzy
-msgid ""
-"                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--ftpproxy <host>] [--ftpport <port>]"
+#~ msgid "(none)"
+#~ msgstr "(нет)"
 
 #, fuzzy
-msgid ""
-"                        [--provides] [--dump] [--dbpath <dir>] [targets]"
-msgstr "                        [--changelog] [--dbpath <каталог>] [цели]"
+#~ msgid ""
+#~ "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
+#~ msgstr "                        [--ftpproxy <host>] [--ftpport <port>]"
 
 #, fuzzy
-msgid "   --help\t\t- print this message"
-msgstr "вывести это сообщение"
+#~ msgid ""
+#~ "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
+#~ msgstr "                        [--changelog] [--dbpath <каталог>] [цели]"
 
 #, fuzzy
-msgid "   --version\t- print the version of rpm being used"
-msgstr "вывести версию используемого rpm"
+#~ msgid "   --help\t\t- print this message"
+#~ msgstr "вывести это сообщение"
 
 #, fuzzy
-msgid "       -v\t\t      - be a little more verbose"
-msgstr "быть немного разговорчивее"
+#~ msgid "   --version\t- print the version of rpm being used"
+#~ msgstr "вывести версию используемого rpm"
 
 #, fuzzy
-msgid "       -vv\t              - be incredibly verbose (for debugging)"
-msgstr "быть ОЧЕНЬ разговорчивым (для отладки)"
+#~ msgid "       -v\t\t      - be a little more verbose"
+#~ msgstr "быть немного разговорчивее"
 
 #, fuzzy
-msgid "   -q                   - query mode"
-msgstr "                        [--nomd5] [цели]"
+#~ msgid "       -vv\t              - be incredibly verbose (for debugging)"
+#~ msgstr "быть ОЧЕНЬ разговорчивым (для отладки)"
 
 #, fuzzy
-msgid "      --queryformat <s>   - use s as the header format (implies -i)"
-msgstr "использовать <qfmt> как формат хедера (подразумевает -i)"
+#~ msgid "   -q                   - query mode"
+#~ msgstr "                        [--nomd5] [цели]"
 
 #, fuzzy
-msgid "        -a                - query all packages"
-msgstr "                           пакет1 ... пакетN"
+#~ msgid "      --queryformat <s>   - use s as the header format (implies -i)"
+#~ msgstr "использовать <qfmt> как формат хедера (подразумевает -i)"
 
 #, fuzzy
-msgid "        -f <file>+        - query package owning <file>"
-msgstr "найти пакет, которому принадлежит <файл>"
+#~ msgid "        -a                - query all packages"
+#~ msgstr "                           пакет1 ... пакетN"
 
 #, fuzzy
-msgid "        -F                - like -f, but read file names from stdin"
-msgstr ""
-"                        [--replacepkgs] [--replacefiles] [--root <каталог>]"
+#~ msgid "        -f <file>+        - query package owning <file>"
+#~ msgstr "найти пакет, которому принадлежит <файл>"
 
 #, fuzzy
-msgid "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-msgstr "запросить (неустановленный) пакет <файл пакета>"
+#~ msgid "        -F                - like -f, but read file names from stdin"
+#~ msgstr ""
+#~ "                        [--replacepkgs] [--replacefiles] [--root <каталог>]"
 
 #, fuzzy
-msgid "\t   --whatprovides <i> - query packages which provide <i> capability"
-msgstr "найти пакеты, предоставляющие сервис <cap>"
+#~ msgid ""
+#~ "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
+#~ msgstr "запросить (неустановленный) пакет <файл пакета>"
 
 #, fuzzy
-msgid "\t   --whatrequires <i> - query packages which require <i> capability"
-msgstr "найти пакеты, требующие сервиса <cap>"
+#~ msgid ""
+#~ "\t   --whatprovides <i> - query packages which provide <i> capability"
+#~ msgstr "найти пакеты, предоставляющие сервис <cap>"
 
 #, fuzzy
-msgid "        -i                - display package information"
-msgstr "                           пакет1 ... пакетN"
+#~ msgid ""
+#~ "\t   --whatrequires <i> - query packages which require <i> capability"
+#~ msgstr "найти пакеты, требующие сервиса <cap>"
 
 #, fuzzy
-msgid "        -l                - display package file list"
-msgstr "                           пакет1 ... пакетN"
+#~ msgid "        -i                - display package information"
+#~ msgstr "                           пакет1 ... пакетN"
 
 #, fuzzy
-msgid "        -s                - show file states (implies -l)"
-msgstr "показать состояние файлов (подразумевает -l)"
+#~ msgid "        -l                - display package file list"
+#~ msgstr "                           пакет1 ... пакетN"
 
 #, fuzzy
-msgid "        -d                - list only documentation files (implies -l)"
-msgstr "вывести только файлы документации (подразумевает -l)"
+#~ msgid "        -s                - show file states (implies -l)"
+#~ msgstr "показать состояние файлов (подразумевает -l)"
 
 #, fuzzy
-msgid "        -c                - list only configuration files (implies -l)"
-msgstr "вывести только конфигурационные файлы (подразумевает -l)"
+#~ msgid ""
+#~ "        -d                - list only documentation files (implies -l)"
+#~ msgstr "вывести только файлы документации (подразумевает -l)"
 
 #, fuzzy
-msgid "                            (must be used with -l, -c, or -d)"
-msgstr "опция --dump для запросов должна использоваться с -l, -c или -d"
+#~ msgid ""
+#~ "        -c                - list only configuration files (implies -l)"
+#~ msgstr "вывести только конфигурационные файлы (подразумевает -l)"
 
 #, fuzzy
-msgid "        --provides        - list capabilbities package provides"
-msgstr "показать сервисы, предоставляемые пакетом"
+#~ msgid "                            (must be used with -l, -c, or -d)"
+#~ msgstr "опция --dump для запросов должна использоваться с -l, -c или -d"
 
 #, fuzzy
-msgid "        -R                - list package dependencies"
-msgstr "                           пакет1 ... пакетN"
+#~ msgid "        --provides        - list capabilbities package provides"
+#~ msgstr "показать сервисы, предоставляемые пакетом"
 
 #, fuzzy
-msgid "        --scripts         - print the various [un]install scripts"
-msgstr "вывести разнообразные [де]инсталляционные скрипты"
+#~ msgid "        -R                - list package dependencies"
+#~ msgstr "                           пакет1 ... пакетN"
 
 #, fuzzy
-msgid ""
-"    --querytags         - list the tags that can be used in a query format"
-msgstr "вывести тэги, которые могут быть использованы в формате запроса"
+#~ msgid "        --scripts         - print the various [un]install scripts"
+#~ msgstr "вывести разнообразные [де]инсталляционные скрипты"
 
 #, fuzzy
-msgid "only one type of query may be performed at a time"
-msgstr "за один раз может быть исполнен только один тип запроса"
+#~ msgid ""
+#~ "    --querytags         - list the tags that can be used in a query format"
+#~ msgstr "вывести тэги, которые могут быть использованы в формате запроса"
 
 #, fuzzy
-msgid ""
-"--noscripts may only be specified during package installation and "
-"uninstallation"
-msgstr ""
-"опция --noscripts может быть указана только при установке, удалении и "
-"верификации пакета"
+#~ msgid "only one type of query may be performed at a time"
+#~ msgstr "за один раз может быть исполнен только один тип запроса"
 
 #, fuzzy
-msgid ""
-"--nodeps may only be specified during package installation, uninstallation, "
-"and verification"
-msgstr ""
-"опция --nodeps может быть указана только при установке, удалении и "
-"верификации пакета"
+#~ msgid ""
+#~ "--noscripts may only be specified during package installation and "
+#~ "uninstallation"
+#~ msgstr ""
+#~ "опция --noscripts может быть указана только при установке, удалении и "
+#~ "верификации пакета"
 
 #, fuzzy
-msgid ""
-"--test may only be specified during package installation, uninstallation, "
-"and building"
-msgstr ""
-"опция --test может быть указана только при установке, удалении и сборке "
-"пакета"
+#~ msgid ""
+#~ "--nodeps may only be specified during package installation, uninstallation, "
+#~ "and verification"
+#~ msgstr ""
+#~ "опция --nodeps может быть указана только при установке, удалении и "
+#~ "верификации пакета"
 
 #, fuzzy
-msgid ""
-"--root (-r) may only be specified during installation, uninstallation, "
-"querying, and database rebuilds"
-msgstr ""
-"опция --root (-r) может быть указана только при установке, удалении, "
-"запросах пакета и перестроении базы данных"
+#~ msgid ""
+#~ "--test may only be specified during package installation, uninstallation, "
+#~ "and building"
+#~ msgstr ""
+#~ "опция --test может быть указана только при установке, удалении и сборке "
+#~ "пакета"
 
 #, fuzzy
-msgid "--clean may only be used during package building"
-msgstr "опция --sign может быть использована только при сборке пакетов"
+#~ msgid ""
+#~ "--root (-r) may only be specified during installation, uninstallation, "
+#~ "querying, and database rebuilds"
+#~ msgstr ""
+#~ "опция --root (-r) может быть указана только при установке, удалении, "
+#~ "запросах пакета и перестроении базы данных"
 
 #, fuzzy
-msgid "--short-circuit may only be used with -bc or -bi"
-msgstr ""
-"опция --short-circuit может быть использована только с -bc, -bi, -bs, -tc "
-"-ti или -ts"
+#~ msgid "--clean may only be used during package building"
+#~ msgstr "опция --sign может быть использована только при сборке пакетов"
 
 #, fuzzy
-msgid "--dump may only be used during queryies"
-msgstr "опция --dump может быть использована только при запросах"
+#~ msgid "--short-circuit may only be used with -bc or -bi"
+#~ msgstr ""
+#~ "опция --short-circuit может быть использована только с -bc, -bi, -bs, -tc "
+#~ "-ti или -ts"
 
-msgid "build the packages for architecture <arch>"
-msgstr "собрать пакеты для архитектуры <arch>"
+#, fuzzy
+#~ msgid "--dump may only be used during queryies"
+#~ msgstr "опция --dump может быть использована только при запросах"
 
-msgid "build the packages for ositecture <os>"
-msgstr "собрать пакеты для операционной системы <os>"
+#~ msgid "build the packages for architecture <arch>"
+#~ msgstr "собрать пакеты для архитектуры <arch>"
+
+#~ msgid "build the packages for ositecture <os>"
+#~ msgstr "собрать пакеты для операционной системы <os>"
 
 #~ msgid "      --buildarch <arch>  "
 #~ msgstr "      --buildarch <arch>  "
