@@ -53,9 +53,9 @@ static fingerPrint doLookup(char * fullName, int scareMemory,
 	    if (!stripCount) {
 		chptr1 = fullName + cache->matchLength + 1;
 		if (scareMemory)
-		    fp.basename = strdup(chptr1);
-		else
 		    fp.basename = chptr1;
+		else
+		    fp.basename = strdup(chptr1);
 		fp.ino = cache->ino;
 		fp.dev = cache->dev;
 		return fp;
@@ -96,9 +96,9 @@ static fingerPrint doLookup(char * fullName, int scareMemory,
 	if (!stat(buf, &sb)) {
 	    chptr1 = fullName + (end - buf) + 1;
 	    if (scareMemory)
-		fp.basename = strdup(chptr1);
-	    else
 		fp.basename = chptr1;
+	    else
+		fp.basename = strdup(chptr1);
 	    fp.ino = sb.st_ino;
 	    fp.dev = sb.st_dev;
 
