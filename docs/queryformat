@@ -42,7 +42,8 @@ Query Formats
 A query format is passed to RPM after the --queryformat argument, and normally
 should be enclosed in single quotes. This query format is then used to print
 the information section of a query. This means that when both -i and 
---queryformat are used in a command, the -i is essentially ignored.
+--queryformat are used in a command, the -i is essentially ignored. 
+Additionally, using --queryformat implies -q, so you may omit the -q as well.
 
 The query format is similar to a C style printf string, which the printf(2)
 man page provides a good introduction to. However, as RPM already knows the
@@ -76,6 +77,32 @@ followed by their sizes, with one file per line, use this command:
 
 Note that since the trailing newline is inside of the square brackets, one
 newline is printed for each filename.
+
+A popular query format to try to construct is one that prints the
+name of a package and the name of a file it contains on one line, 
+repeated for every file in the package. This query can be very usefull
+for passing information to any program that's line oriented (such as
+grep or awk). If you try the obvious,
+
+    rpm --queryformat "[%{NAME} %{FILENAMES}\n]" cdp
+
+If you try this, you'll see RPM complain about a "parallel array size 
+mismatch". Internally, all items in RPM are actually arrays, so the NAME
+is a string array containing one element. When you tell RPM to iterate
+over the NAME and FILENAMES elements, RPM notices the two tags have 
+different numbers of elements and complains.
+
+To make this work properly, you need to tell RPM to always print the first
+item in the NAME element. You do this by placing a '=' before the tag
+name, like this:
+
+    rpm --queryformat "[%{=NAME} %{FILENAMES}\n]" cdp
+
+which will give you the expected output.
+
+    cdp /usr/bin/cdp
+    cdp /usr/bin/cdplay
+    cdp /usr/man/man1/cdp.1
 
 Formatting Tags
 ---------------
