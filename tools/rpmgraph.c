@@ -274,10 +274,6 @@ static struct poptOption optionsTable[] = {
 	N_("don't verify package dependencies"), NULL },
  { "nolegacy", '\0', POPT_BIT_CLR,	&vsflags, _RPMTS_VSF_VERIFY_LEGACY,
         N_("don't verify header+payload signature"), NULL },
- { "nodigest", '\0', POPT_BIT_SET,	&vsflags, _RPMTS_VSF_NODIGESTS,
-        N_("don't verify package digest"), NULL },
- { "nosignature", '\0', POPT_BIT_SET,	&vsflags, _RPMTS_VSF_NOSIGNATURES,
-        N_("don't verify package signature"), NULL },
 
  { "nochainsaw", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noChainsaw, 0,
 	NULL, NULL},
@@ -304,6 +300,12 @@ main(int argc, char *const argv[])
 	exit(EXIT_FAILURE);
 
     ts = rpmtsCreate();
+    if (rpmcliQueryFlags & VERIFY_DIGEST)
+	vsflags |= _RPMTS_VSF_NODIGESTS;
+    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
+	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+    if (rpmcliQueryFlags & VERIFY_HDRCHK)
+	vsflags |= _RPMTS_VSF_NOHDRCHK;
     (void) rpmtsSetVerifySigFlags(ts, vsflags);
 
     ec = rpmGraph(ts, ia, poptGetArgs(optCon));

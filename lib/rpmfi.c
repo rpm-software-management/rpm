@@ -357,10 +357,6 @@ rpmfi rpmfiInit(rpmfi fi, int fx)
 	    fi->i = fx - 1;
 	    fi->j = -1;
 	}
-#ifdef	DYING
-	else
-	    fi = NULL;
-#endif
     }
 
     /*@-refcounttrans@*/

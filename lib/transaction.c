@@ -7,6 +7,7 @@
 
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
+#include "fsm.h"
 #include "psm.h"
 
 #include "rpmdb.h"
@@ -111,9 +112,9 @@ static fileAction decideFileFate(const rpmts ts,
 	}
     }
 
-    diskWhat = whatis(sb.st_mode);
-    dbWhat = whatis(ofi->fmodes[ofi->i]);
-    newWhat = whatis(nfi->fmodes[nfi->i]);
+    diskWhat = whatis((int_16)sb.st_mode);
+    dbWhat = whatis(rpmfiFMode(ofi));
+    newWhat = whatis(rpmfiFMode(nfi));
 
     /*
      * RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
@@ -136,36 +137,25 @@ static fileAction decideFileFate(const rpmts ts,
      * possible in case something else (like the timestamp) has changed.
      */
     if (dbWhat == REG) {
-#ifdef	DYING
-	if (ofi->md5s != NULL && nfi->md5s != NULL) {
-#endif
-	    const unsigned char * omd5 = ofi->md5s + (16 * ofi->i);
-	    const unsigned char * nmd5 = nfi->md5s + (16 * nfi->i);
-	    if (domd5(fn, buffer, 0, NULL))
-		return FA_CREATE;	/* assume file has been removed */
-	    if (!memcmp(omd5, buffer, 16))
-		return FA_CREATE;	/* unmodified config file, replace. */
-	    if (!memcmp(omd5, nmd5, 16))
-		return FA_SKIP;		/* identical file, don't bother. */
-#ifdef	DYING
-	} else {
-	    const char * omd5 = ofi->fmd5s[ofi->i];
-	    const char * nmd5 = nfi->fmd5s[nfi->i];
-	    if (domd5(fn, buffer, 1, NULL))
-		return FA_CREATE;	/* assume file has been removed */
-	    if (!strcmp(omd5, buffer))
-		return FA_CREATE;	/* unmodified config file, replace. */
-	    if (!strcmp(omd5, nmd5))
-		return FA_SKIP;		/* identical file, don't bother. */
-	}
-#endif
+	const unsigned char * omd5, * nmd5;
+	if (domd5(fn, buffer, 0, NULL))
+	    return FA_CREATE;	/* assume file has been removed */
+	omd5 = rpmfiMD5(ofi);
+	if (!memcmp(omd5, buffer, 16))
+	    return FA_CREATE;	/* unmodified config file, replace. */
+	nmd5 = rpmfiMD5(nfi);
+	if (!memcmp(omd5, nmd5, 16))
+	    return FA_SKIP;	/* identical file, don't bother. */
     } else /* dbWhat == LINK */ {
+	const char * oFLink, * nFLink;
 	memset(buffer, 0, sizeof(buffer));
 	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 	    return FA_CREATE;	/* assume file has been removed */
-	if (!strcmp(ofi->flinks[ofi->i], buffer))
+	oFLink = rpmfiFLink(ofi);
+	if (!strcmp(oFLink, buffer))
 	    return FA_CREATE;	/* unmodified config file, replace. */
-	if (!strcmp(ofi->flinks[ofi->i], nfi->flinks[nfi->i]))
+	nFLink = rpmfiFLink(nfi);
+	if (!strcmp(oFLink, nFLink))
 	    return FA_SKIP;	/* identical file, don't bother. */
      }
 
@@ -185,29 +175,19 @@ static fileAction decideFileFate(const rpmts ts,
 static int filecmp(rpmfi afi, rpmfi bfi)
 	/*@*/
 {
-    fileTypes awhat = whatis(afi->fmodes[afi->i]);
-    fileTypes bwhat = whatis(bfi->fmodes[bfi->i]);
+    fileTypes awhat = whatis(rpmfiFMode(afi));
+    fileTypes bwhat = whatis(rpmfiFMode(bfi));
 
     if (awhat != bwhat) return 1;
 
     if (awhat == LINK) {
-	const char * alink = afi->flinks[afi->i];
-	const char * blink = bfi->flinks[bfi->i];
+	const char * alink = rpmfiFLink(afi);
+	const char * blink = rpmfiFLink(bfi);
 	return strcmp(alink, blink);
     } else if (awhat == REG) {
-#ifdef	DYING
-	if (afi->md5s != NULL && bfi->md5s != NULL) {
-#endif
-	    const unsigned char * amd5 = afi->md5s + (16 * afi->i);
-	    const unsigned char * bmd5 = bfi->md5s + (16 * bfi->i);
-	    return memcmp(amd5, bmd5, 16);
-#ifdef	DYING
-	} else {
-	    const char * amd5 = afi->fmd5s[afi->i];
-	    const char * bmd5 = bfi->fmd5s[bfi->i];
-	    return strcmp(amd5, bmd5);
-	}
-#endif
+	const unsigned char * amd5 = rpmfiMD5(afi);
+	const unsigned char * bmd5 = rpmfiMD5(bfi);
+	return memcmp(amd5, bmd5, 16);
     }
 
     return 0;
@@ -253,12 +233,15 @@ static int handleInstInstalledFiles(const rpmts ts,
     ps = rpmtsProblems(ts);
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
+	int isCfgFile;
 
 	otherFileNum = shared->otherFileNum;
 	(void) rpmfiSetFX(otherFi, otherFileNum);
 
 	fileNum = shared->pkgFileNum;
 	(void) rpmfiSetFX(fi, fileNum);
+
+	isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
 #ifdef	DYING
 	/* XXX another tedious segfault, assume file state normal. */
@@ -277,7 +260,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 			altNEVR,
 			0);
 	    }
-	    if (!(rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG) {
+	    if (!isCfgFile) {
 		/*@-assignexpose@*/ /* FIX: p->replaced, not fi */
 		if (!shared->isRemoved)
 		    fi->replaced[numReplaced++] = *shared;
@@ -285,13 +268,12 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    }
 	}
 
-	if ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG) {
+	if (isCfgFile) {
 	    fileAction action;
 	    action = decideFileFate(ts, otherFi, fi);
 	    fi->actions[fileNum] = action;
 	}
-	fi->replacedSizes[fileNum] = otherFi->fsizes[otherFi->i];
-
+	fi->replacedSizes[fileNum] = rpmfiFSize(otherFi);
     }
     ps = rpmpsFree(ps);
 
@@ -451,7 +433,7 @@ otherFps->baseName);
 if (otherFileNum == otherFc) {
 /*@-modfilesys@*/
 if (_fps_debug)
-fprintf(stderr, "*** NULL %s/%s%s\n",
+fprintf(stderr, "*** FP_EQUAL NULL %s/%s%s\n",
 ISROOT(fiFps->entry->dirName),
 (fiFps->subDir ? fiFps->subDir : ""),
 fiFps->baseName);
@@ -469,7 +451,8 @@ fiFps->baseName);
 /*@=boundswrite@*/
     if (bingoFps == NULL) {
 /*@-modfilesys@*/
-fprintf(stderr, "*** NULL %s/%s%s\n",
+if (_fps_debug)
+fprintf(stderr, "*** bingoFps NULL %s/%s%s\n",
 ISROOT(fiFps->entry->dirName),
 (fiFps->subDir ? fiFps->subDir : ""),
 fiFps->baseName);
@@ -481,6 +464,7 @@ fiFps->baseName);
     /*@-nullpass@*/	/* LCL: looks good to me */
     if (!(fiFps == bingoFps || FP_EQUAL((*fiFps), (*bingoFps)))) {
 /*@-modfilesys@*/
+if (_fps_debug)
 fprintf(stderr, "***  BAD %s/%s%s\n",
 ISROOT(bingoFps->entry->dirName),
 (bingoFps->subDir ? bingoFps->subDir : ""),
@@ -517,6 +501,8 @@ static void handleOverlappedFiles(const rpmts ts,
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
+	int_32 FFlags;
+	int_16 FMode;
 	const rpmfi * recs;
 	int numRecs;
 
@@ -525,6 +511,8 @@ static void handleOverlappedFiles(const rpmts ts,
 
 	fn = rpmfiFN(fi);
 	fiFps = fi->fps + i;
+	FFlags = rpmfiFFlags(fi);
+	FMode = rpmfiFMode(fi);
 
 	fixupSize = 0;
 
@@ -594,10 +582,9 @@ static void handleOverlappedFiles(const rpmts ts,
 		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
 		    /*@switchbreak@*/ break;
-		if ((rpmfiFFlags(fi) & RPMFILE_CONFIG) && 
-			!lstat(fn, &sb)) {
+		if ((FFlags & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
 		    /* Here is a non-overlapped pre-existing config file. */
-		    fi->actions[i] = (rpmfiFFlags(fi) & RPMFILE_NOREPLACE)
+		    fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
 		} else {
 		    fi->actions[i] = FA_CREATE;
@@ -618,11 +605,11 @@ assert(otherFi != NULL);
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
-	    fixupSize = otherFi->fsizes[otherFileNum];
+	    fixupSize = rpmfiFSize(otherFi);
 
-	    if ((rpmfiFFlags(fi) & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
+	    if ((FFlags & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
 		/* Here is an overlapped  pre-existing config file. */
-		fi->actions[i] = (rpmfiFFlags(fi) & RPMFILE_NOREPLACE)
+		fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
 	    } else {
 		fi->actions[i] = FA_CREATE;
@@ -643,16 +630,16 @@ assert(otherFi != NULL);
 	    }
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@switchbreak@*/ break;
-	    if (fi->fstates && fi->fstates[i] != RPMFILE_STATE_NORMAL)
+	    if (rpmfiFState(fi) != RPMFILE_STATE_NORMAL)
 		/*@switchbreak@*/ break;
-	    if (!(S_ISREG(fi->fmodes[i]) && (rpmfiFFlags(fi) & RPMFILE_CONFIG))) {
+	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG))) {
 		fi->actions[i] = FA_ERASE;
 		/*@switchbreak@*/ break;
 	    }
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char md5sum[50];
-		const unsigned char * MD5 = fi->md5s + (16 * i);
+		const unsigned char * MD5 = rpmfiMD5(fi);
 		if (!domd5(fn, md5sum, 0, NULL) && memcmp(MD5, md5sum, 16)) {
 		    fi->actions[i] = FA_BACKUP;
 		    /*@switchbreak@*/ break;
@@ -664,8 +651,8 @@ assert(otherFi != NULL);
 /*@=boundswrite@*/
 
 	/* Update disk space info for a file. */
-	rpmtsUpdateDSI(ts, fi->fps[i].entry->dev,
-                fi->fsizes[i], fi->replacedSizes[i], fixupSize, fi->actions[i]);
+	rpmtsUpdateDSI(ts, fiFps->entry->dev,
+                rpmfiFSize(fi), fi->replacedSizes[i], fixupSize, fi->actions[i]);
 
     }
     ps = rpmpsFree(ps);
@@ -892,20 +879,25 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	fi = rpmfiInit(fi, 0);
 	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
-	    const char * dir;
+	    const char * fdn, * fbn;
+	    int_16 fFMode;
 
 	    if (XFA_SKIPPING(fi->actions[i]))
 		/*@innercontinue@*/ continue;
-	    if (whatis(fi->fmodes[i]) != XDIR)
+
+	    fFMode = rpmfiFMode(fi);
+
+	    if (whatis(fFMode) != XDIR)
 		/*@innercontinue@*/ continue;
-	    dir = fi->dnl[fi->dil[i]];
-	    if (strlen(dir) != dnlen)
+	    fdn = rpmfiDN(fi);
+	    if (strlen(fdn) != dnlen)
 		/*@innercontinue@*/ continue;
-	    if (strncmp(dir, dn, dnlen))
+	    if (strncmp(fdn, dn, dnlen))
 		/*@innercontinue@*/ continue;
-	    if (strlen(fi->bnl[i]) != bnlen)
+	    fbn = rpmfiBN(fi);
+	    if (strlen(fbn) != bnlen)
 		/*@innercontinue@*/ continue;
-	    if (strncmp(fi->bnl[i], bn, bnlen))
+	    if (strncmp(fbn, bn, bnlen))
 		/*@innercontinue@*/ continue;
 	    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), dn);
 	    fi->actions[i] = FA_SKIPNSTATE;
@@ -1106,11 +1098,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
-
-#ifdef	DYING	/* XXX W2DO? this is now done in rpmtsiFi, okay ??? */
-	fi->magic = RPMFIMAGIC;
-	fi->te = p;
-#endif
 
 	/*@-branchstate@*/
 	switch (rpmteType(p)) {

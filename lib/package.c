@@ -26,7 +26,7 @@
 /*@access rpmts @*/
 /*@access Header @*/		/* XXX compared with NULL */
 /*@access entryInfo @*/		/* XXX headerCheck */
-/*@access indexEntry @*/		/* XXX headerCheck */
+/*@access indexEntry @*/	/* XXX headerCheck */
 /*@access FD_t @*/		/* XXX stealing digests */
 
 /*@unchecked@*/

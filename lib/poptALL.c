@@ -18,14 +18,22 @@
 /*@unchecked@*/
 static int _debug = 0;
 
+/*@-exportheadervar@*/
 /*@unchecked@*/
-/*@observer@*/ /*@null@*/
-static const char * pipeOutput = NULL;
+extern int noLibio;
+/*@=exportheadervar@*/
+
 /*@unchecked@*/
-/*@observer@*/ /*@null@*/
-static const char * rcfile = NULL;
-/*@unchecked@*/ /*@observer@*/
-static const char * rootdir = "/";
+const char * rpmcliPipeOutput = NULL;
+
+/*@unchecked@*/
+const char * rpmcliRcfile = NULL;
+
+/*@unchecked@*/
+const char * rpmcliRootDir = "/";
+
+/*@unchecked@*/
+rpmQueryFlags rpmcliQueryFlags;
 
 /*@-exportheadervar@*/
 /*@unchecked@*/
@@ -39,11 +47,11 @@ extern int _rpmio_debug;
 /**
  * Display rpm version.
  */
-static void printVersion(void)
+static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    fprintf(stdout, _("RPM version %s\n"), rpmEVR);
+    fprintf(fp, _("RPM version %s\n"), rpmEVR);
 }
 
 /**
@@ -51,7 +59,7 @@ static void printVersion(void)
  * @warning Options like --rcfile and --verbose must precede callers option.
  */
 /*@mayexit@*/
-static void rpmcliConfigured(void)
+void rpmcliConfigured(void)
 	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
@@ -60,7 +68,7 @@ static void rpmcliConfigured(void)
     static int initted = -1;
 
     if (initted < 0)
-	initted = rpmReadConfigFiles(rcfile, NULL);
+	initted = rpmReadConfigFiles(rpmcliRcfile, NULL);
     if (initted)
 	exit(EXIT_FAILURE);
 }
@@ -77,11 +85,6 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-#if 0
-/*@observer@*/
-static const char *cbreasonstr[] = { "PRE", "POST", "OPTION", "?WTFO?" };
-fprintf(stderr, "*** rpmcliALL: -%c,--%s %s %s opt %p arg %p val %d\n", opt->shortName, opt->longName, arg, cbreasonstr[reason&0x3], opt, opt->arg, opt->val);
-#endif
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     /*@-branchstate@*/
@@ -108,7 +111,7 @@ fprintf(stderr, "*** rpmcliALL: -%c,--%s %s %s opt %p arg %p val %d\n", opt->sho
 	}
 	break;
     case POPT_SHOWVERSION:
-	printVersion();
+	printVersion(stdout);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
     case POPT_SHOWRC:
@@ -120,6 +123,17 @@ fprintf(stderr, "*** rpmcliALL: -%c,--%s %s %s opt %p arg %p val %d\n", opt->sho
     case POPT_RCFILE:		/* XXX FIXME: noop for now */
 	break;
 #endif
+    case RPMCLI_POPT_NODIGEST:
+	rpmcliQueryFlags |= VERIFY_DIGEST;
+	break;
+
+    case RPMCLI_POPT_NOSIGNATURE:
+	rpmcliQueryFlags |= VERIFY_SIGNATURE;
+	break;
+
+    case RPMCLI_POPT_NOHDRCHK:
+	rpmcliQueryFlags |= VERIFY_HDRCHK;
+	break;
     }
     /*@=branchstate@*/
 }
@@ -128,18 +142,12 @@ fprintf(stderr, "*** rpmcliALL: -%c,--%s %s %s opt %p arg %p val %d\n", opt->sho
 /*@unchecked@*/
 struct poptOption rpmcliAllPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
         rpmcliAllArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
         NULL, NULL },
- { "quiet", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'q',
-	N_("provide less detailed output"), NULL},
- { "verbose", 'v', 0, 0, 'v',
-	N_("provide more detailed output"), NULL},
- { "version", '\0', 0, 0, POPT_SHOWVERSION,
-	N_("print the version of rpm being used"), NULL },
 
  { "define", 'D', POPT_ARG_STRING, 0, 'D',
 	N_("define MACRO with value EXPR"),
@@ -147,35 +155,58 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "eval", 'E', POPT_ARG_STRING, 0, 'E',
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
- { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &pipeOutput, 0,
-	N_("send stdout to <cmd>"),
-	N_("<cmd>") },
- { "root", 'r', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT | POPT_ARGFLAG_DOC_HIDDEN, &rootdir, 0,
-	N_("use <dir> as the top level directory"),
-	N_("<dir>") },
- { "macros", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &macrofiles, 0,
+ { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
-#if !defined(POPT_RCFILE)
- { "rcfile", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &rcfile, 0,
-	N_("read <FILE:...> instead of default file(s)"),
-	N_("<FILE:...>") },
-#else
- { "rcfile", '\0', 0, 0, POPT_RCFILE|POPT_ARGFLAG_DOC_HIDDEN,	
-	N_("read <FILE:...> instead of default file(s)"),
-	N_("<FILE:...>") },
-#endif
- { "showrc", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_SHOWRC,
-	N_("display final rpmrc and macro configuration"),
-	NULL },
 
+ { "nodigest", '\0', 0, 0, RPMCLI_POPT_NODIGEST,
+        N_("don't verify package digest(s)"), NULL },
+ { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
+        N_("don't verify database header(s) when retrieved"), NULL },
 #if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
 	N_("disable use of libio(3) API"), NULL},
 #endif
+ { "nosignature", '\0', 0, 0, RPMCLI_POPT_NOSIGNATURE,
+        N_("don't verify package signature(s)"), NULL },
+
+ { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &rpmcliPipeOutput, 0,
+	N_("send stdout to CMD"),
+	N_("CMD") },
+#if !defined(POPT_RCFILE)
+ { "rcfile", '\0', POPT_ARG_STRING, &rpmcliRcfile, 0,
+	N_("read <FILE:...> instead of default file(s)"),
+	N_("<FILE:...>") },
+#else
+ { "rcfile", '\0', 0, NULL, POPT_RCFILE,	
+	N_("read <FILE:...> instead of default file(s)"),
+	N_("<FILE:...>") },
+#endif
+ { "root", 'r', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &rpmcliRootDir, 0,
+	N_("use ROOT as top level directory"),
+	N_("ROOT") },
+
+ { "showrc", '\0', 0, NULL, POPT_SHOWRC,
+	N_("display final rpmrc and macro configuration"),
+	NULL },
+ { "quiet", '\0', 0, NULL, 'q',
+	N_("provide less detailed output"), NULL},
+ { "verbose", 'v', 0, NULL, 'v',
+	N_("provide more detailed output"), NULL},
+ { "version", '\0', 0, NULL, POPT_SHOWVERSION,
+	N_("print the version of rpm being used"), NULL },
+
+#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
+ { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
+       N_("disable use of libio(3) API"), NULL},
+#endif
 
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
+#ifdef	DYING
+ { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
+	N_("debug option/argument processing"), NULL},
+#endif
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,

@@ -17,11 +17,6 @@
 #include "rpmps.h"
 #include "rpmts.h"
 
-#define	POPT_NODEPS		1025
-#define	POPT_FORCE		1026
-#define	POPT_NOMD5		1027
-#define	POPT_NOSCRIPTS		1028
-
 #ifdef	IAM_RPMBT
 #include "build.h"
 #define GETOPT_REBUILD		1003
@@ -33,13 +28,6 @@
 #endif
 
 #include "debug.h"
-
-#define GETOPT_SHOWRC		1018
-#define	GETOPT_DEFINEMACRO	1020
-#define	GETOPT_EVALMACRO	1021
-#ifdef	NOTYET
-#define	GETOPT_RCFILE		1022
-#endif
 
 enum modes {
 
@@ -76,96 +64,13 @@ enum modes {
 #define	MODES_FOR_TEST		(MODES_BT | MODES_IE)
 #define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB | MODES_K)
 
-/*@-exportheadervar@*/
-/*@unchecked@*/
-extern int _ftp_debug;
-/*@unchecked@*/
-extern int noLibio;
-/*@unchecked@*/
-extern int _rpmio_debug;
-
-/*@=exportheadervar@*/
-
-/* options for all executables */
-
-/*@unchecked@*/
-static int help = 0;
-/*@unchecked@*/
-static int noUsageMsg = 0;
-/*@unchecked@*/
-/*@observer@*/ /*@null@*/
-static const char * pipeOutput = NULL;
-/*@unchecked@*/
-static int quiet = 0;
-/*@unchecked@*/
-/*@observer@*/ /*@null@*/
-static const char * rcfile = NULL;
-/*@unchecked@*/
-/*@observer@*/ /*@null@*/
-static char * rootdir = "/";
-/*@unchecked@*/
-static int showrc = 0;
-/*@unchecked@*/
-static int showVersion = 0;
-
-/*@unchecked@*/
-static struct poptOption rpmAllPoptTable[] = {
- { "version", '\0', 0, &showVersion, 0,
-	N_("print the version of rpm being used"),
-	NULL },
- { "quiet", '\0', 0, &quiet, 0,
-	N_("provide less detailed output"), NULL},
- { "verbose", 'v', 0, 0, 'v',
-	N_("provide more detailed output"), NULL},
- { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,
-	N_("define MACRO with value EXPR"), N_("'MACRO EXPR'") },
- { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO,
-	N_("print macro expansion of EXPR"), N_("'EXPR'") },
- { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &pipeOutput, 0,
-	N_("send stdout to <cmd>"), N_("<cmd>") },
- { "root", 'r', POPT_ARG_STRING | POPT_ARGFLAG_SHOW_DEFAULT, &rootdir, 0,
-	N_("use <dir> as the top level directory"), N_("<dir>") },
- { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
-	N_("read <file:...> instead of default macro file(s)"),
-	N_("<file:...>") },
-#if !defined(GETOPT_RCFILE)
- { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,
-	N_("read <file:...> instead of default rpmrc file(s)"),
-	N_("<file:...>") },
-#else
- { "rcfile", '\0', 0, 0, GETOPT_RCFILE,	
-	N_("read <file:...> instead of default rpmrc file(s)"),
-	N_("<file:...>") },
-#endif
- { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,
-	N_("display final rpmrc and macro configuration"),
-	NULL },
-
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
- { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
-	N_("disable use of libio(3) API"), NULL},
-#endif
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
-	N_("debug rpmio I/O"), NULL},
- { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
-	N_("debug URL cache handling"), NULL},
-
-   POPT_TABLEEND
-};
-
 /* the structure describing the options we take and the defaults */
 /*@unchecked@*/
 static struct poptOption optionsTable[] = {
 
  /* XXX colliding options */
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
  {  NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',			NULL, NULL},
- {  "nodeps", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NODEPS,	NULL, NULL},
- {  "noscripts", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NOSCRIPTS,	NULL, NULL},
- {  "nomd5", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NOMD5,		NULL, NULL},
- {  "force", 0, POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_FORCE,		NULL, NULL},
 #endif
 
 #ifdef	IAM_RPMQV
@@ -201,7 +106,7 @@ static struct poptOption optionsTable[] = {
 	NULL },
 #endif	/* IAM_RPMEIU */
 
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmAllPoptTable, 0,
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes:"),
 	NULL },
 
@@ -223,60 +128,33 @@ long _stksize = 64 * 1024L;
     exit(EXIT_FAILURE);
 }
 
-static void printVersion(void)
+static void printVersion(FILE * fp)
 	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    fprintf(stdout, _("RPM version %s\n"), rpmEVR);
+    fprintf(fp, _("RPM version %s\n"), rpmEVR);
 }
 
-static void printBanner(void)
+static void printBanner(FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    (void) puts(_("Copyright (C) 1998-2002 - Red Hat, Inc."));
-    (void) puts(_("This program may be freely redistributed under the terms of the GNU GPL"));
+    fprintf(fp, _("Copyright (C) 1998-2002 - Red Hat, Inc.\n"));
+    fprintf(fp, _("This program may be freely redistributed under the terms of the GNU GPL\n"));
 }
 
-static void printUsage(void)
+static void printUsage(poptContext con, FILE * fp, int flags)
 	/*@globals __assert_program_name, rpmEVR, fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    FILE * fp = stdout;
-    printVersion();
-    printBanner();
-    (void) puts("");
+    printVersion(fp);
+    printBanner(fp);
+    fprintf(fp, "\n");
 
-    fprintf(fp, _("Usage: %s {--help}\n"), __progname);
-    fprintf(fp,   "       %s {--version}\n" , __progname);
-
-#ifdef	IAM_RPMEIU
-#ifdef	DYING
---dbpath	all
---ftpproxy etc	all
---force		alias for --replacepkgs --replacefiles
---includedocs	handle as option in table
-		--erase forbids many options
-#endif	/* DYING */
-#endif	/* IAM_RPMEIU */
-
-#ifdef	IAM_RPMQV
-#ifdef	DYING	/* XXX popt glue needing --help doco. */
---dbpath	all
---ftpproxy etc	all
--i,--info	Q
--R,--requires	Q
--P,--provides	Q
---scripts	Q
---triggeredby	Q
---changelog	Q
---triggers	Q
---querytags	!V
---setperms	V
---setugids	V
-#endif	/* DYING */
-#endif	/* IAM_RPMQV */
-
+    if (rpmIsVerbose())
+	poptPrintHelp(con, fp, flags);
+    else
+	poptPrintUsage(con, fp, flags);
 }
 
 /*@-bounds@*/ /* LCL: segfault */
@@ -320,7 +198,6 @@ int main(int argc, const char ** argv)
 #endif
 
     int arg;
-    int gotDbpath = 0;
 
     const char * optArg;
     pid_t pipeChild = 0;
@@ -369,18 +246,7 @@ int main(int argc, const char ** argv)
 #endif
     /*@=nullpass@*/
 
-    /* set the defaults for the various command line options */
-    _ftp_debug = 0;
-
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
-    noLibio = 0;
-#else
-    noLibio = 1;
-#endif
-    _rpmio_debug = 0;
-
     /* XXX Eliminate query linkage loop */
-    specedit = 0;
     /*@-type@*/	/* FIX: casts? */
     parseSpecVec = parseSpec;
     freeSpecVec = freeSpec;
@@ -406,146 +272,14 @@ int main(int argc, const char ** argv)
     (void) poptReadDefaultConfig(optCon, 1);
     poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
-    /* reading rcfile early makes it easy to override */
-    /* XXX only --rcfile (and --showrc) need this pre-parse */
-
-    while ((arg = poptGetNextOpt(optCon)) > 0) {
-	switch(arg) {
-	case 'v':
-	    rpmIncreaseVerbosity();	/* XXX silly use by showrc */
-	    /*@switchbreak@*/ break;
-        default:
-	    /*@switchbreak@*/ break;
-      }
-    }
-
-    if (rpmReadConfigFiles(rcfile, NULL))  
-	exit(EXIT_FAILURE);
-
-    if (showrc) {
-	(void) rpmShowRC(stdout);
-	exit(EXIT_SUCCESS);
-    }
-
-    rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
-
-    poptResetContext(optCon);
-
-#ifdef	IAM_RPMQV
-    qva->qva_queryFormat = _free(qva->qva_queryFormat);
-    memset(qva, 0, sizeof(*qva));
-    qva->qva_source = RPMQV_PACKAGE;
-    qva->qva_fflags = RPMFILE_ALL;
-    qva->qva_mode = ' ';
-    qva->qva_char = ' ';
-#endif
-
-#ifdef	IAM_RPMBT
-    ba->buildRootOverride = _free(ba->buildRootOverride);
-    ba->targets = _free(ba->targets);
-    memset(ba, 0, sizeof(*ba));
-    ba->buildMode = ' ';
-    ba->buildChar = ' ';
-#endif
-
-#ifdef	IAM_RPMDB
-    memset(da, 0, sizeof(*da));
-#endif
-
-#ifdef	IAM_RPMK
-    ka->qva_queryFormat = _free(ka->qva_queryFormat);
-    memset(ka, 0, sizeof(*ka));
-    ka->qva_source = RPMQV_PACKAGE;
-    ka->qva_fflags = RPMFILE_ALL;
-    ka->qva_mode = ' ';
-    ka->qva_char = ' ';
-#endif
-
-#ifdef	IAM_RPMEIU
-    if (ia->relocations != NULL)
-    for (i = 0; i < ia->numRelocations; i++)
-	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
-    ia->relocations = _free(ia->relocations);
-    memset(ia, 0, sizeof(*ia));
-    ia->transFlags = RPMTRANS_FLAG_NONE;
-    ia->probFilter = RPMPROB_FILTER_NONE;
-    ia->installInterfaceFlags = INSTALL_NONE;
-    ia->eraseInterfaceFlags = UNINSTALL_NONE;
-#endif
-
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
 
 	switch (arg) {
 	    
-	case 'v':
-	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
-
 /* XXX options used in multiple rpm modes */
-#if defined(IAM_RPMQV) || defined(IAM_RPMK)
-	case POPT_NOMD5:
-#ifdef	IAM_RPMQV
-	    if (bigMode == MODE_VERIFY || qva->qva_mode == 'V')
-		qva->qva_flags |= VERIFY_MD5;
-	    else
-#endif
-#ifdef	IAM_RPMK
-	    if (bigMode & MODES_K)
-		ka->qva_flags |= VERIFY_MD5;
-	    else
-#endif
-#ifdef IAM_RPMEIU
-	    if (bigMode & MODES_IE)
-		ia->transFlags |= RPMTRANS_FLAG_NOMD5;
-	    else
-#endif
-		{};
-	    /*@switchbreak@*/ break;
-#endif	/* IAM_RPMQV || IAM_RPMK */
 
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
-	case POPT_NODEPS:
-#ifdef	IAM_RPMQV
-	    if (bigMode == MODE_VERIFY || qva->qva_mode == 'V')
-		qva->qva_flags |= VERIFY_DEPS;
-	    else
-#endif
-#ifdef	IAM_RPMEIU
-	    if ((bigMode & MODES_IE) ||
-		(ia->installInterfaceFlags &
-	    (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE)))
-		ia->noDeps = 1;
-	    else
-#endif
-#ifdef	IAM_RPMBT
-	    if ((bigMode & MODES_BT) || ba->buildMode != ' ')
-		ba->noDeps = 1;
-	    else
-#endif
-		/*@-ifempty@*/ ;
-	    /*@switchbreak@*/ break;
-
-	case POPT_FORCE:
-#ifdef	IAM_RPMEIU
-	    if ((bigMode & MODES_IE) ||
-		(ia->installInterfaceFlags &
-	    (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE)))
-		ia->probFilter |=
-			( RPMPROB_FILTER_REPLACEPKG
-			| RPMPROB_FILTER_REPLACEOLDFILES
-			| RPMPROB_FILTER_REPLACENEWFILES
-			| RPMPROB_FILTER_OLDPACKAGE);
-	    else
-#endif
-#ifdef	IAM_RPMBT
-	    if ((bigMode & MODES_BT) || ba->buildMode != ' ')
-		ba->force = 1;
-	    else
-#endif
-		/*@-ifempty@*/ ;
-	    /*@switchbreak@*/ break;
-
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
 	case 'i':
 #ifdef	IAM_RPMQV
 	    if (bigMode == MODE_QUERY || qva->qva_mode == 'q') {
@@ -569,49 +303,7 @@ int main(int argc, const char ** argv)
 #endif
 		/*@-ifempty@*/ ;
 	    /*@switchbreak@*/ break;
-
-	case POPT_NOSCRIPTS:
-#ifdef	IAM_RPMQV
-	    if (bigMode == MODE_VERIFY || qva->qva_mode == 'V')
-		qva->qva_flags |= VERIFY_SCRIPT;
-	    else
-#endif
-#ifdef	IAM_RPMEIU
-	    if ((bigMode & MODES_IE) ||
-		(ia->installInterfaceFlags &
-	    (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE)))
-		ia->transFlags |= (_noTransScripts | _noTransTriggers);
-	    else
-#endif
-		/*@-ifempty@*/ ;
-	    /*@switchbreak@*/ break;
-
-#endif	/* IAM_RPMQV || IAM_RPMEIU || IAM_RPMBT */
-
-	case GETOPT_DEFINEMACRO:
-	    if (optArg) {
-		(void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
-/*@i@*/		(void) rpmDefineMacro(rpmCLIMacroContext, optArg,RMIL_CMDLINE);
-	    }
-	    noUsageMsg = 1;
-	    /*@switchbreak@*/ break;
-
-	case GETOPT_EVALMACRO:
-	    if (optArg) {
-		const char *val = rpmExpand(optArg, NULL);
-		fprintf(stdout, "%s\n", val);
-		val = _free(val);
-	    }
-	    noUsageMsg = 1;
-	    /*@switchbreak@*/ break;
-
-#if defined(GETOPT_RCFILE)
-	case GETOPT_RCFILE:
-	    fprintf(stderr, _("The --rcfile option has been eliminated.\n"));
-	    fprintf(stderr, _("Use \"--macros <file:...>\" instead.\n"));
-	    exit(EXIT_FAILURE);
-	    /*@notreached@*/ break;
-#endif
+#endif	/* IAM_RPMQV || IAM_RPMEIU */
 
 	default:
 	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
@@ -619,17 +311,14 @@ int main(int argc, const char ** argv)
 	}
     }
 
-    if (quiet)
-	rpmSetVerbosity(RPMMESS_QUIET);
-
-    if (showVersion) printVersion();
-
     if (arg < -1) {
 	fprintf(stderr, "%s: %s\n", 
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		poptStrerror(arg));
 	exit(EXIT_FAILURE);
     }
+
+    rpmcliConfigured();
 
 #ifdef	IAM_RPMBT
     switch (ba->buildMode) {
@@ -733,11 +422,6 @@ int main(int argc, const char ** argv)
   }
 #endif	/* IAM_RPMK */
 
-    /* XXX TODO: never happens. */
-    if (gotDbpath && (bigMode & ~MODES_FOR_DBPATH))
-	argerror(_("--dbpath given for operation that does not use a "
-			"database"));
-
 #if defined(IAM_RPMEIU)
     if (!( bigMode == MODE_INSTALL ) &&
 (ia->probFilter & (RPMPROB_FILTER_REPLACEPKG | RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES | RPMPROB_FILTER_OLDPACKAGE)))
@@ -832,19 +516,19 @@ int main(int argc, const char ** argv)
 		 "erasure, and building"));
 #endif	/* IAM_RPMEIU */
 
-    if (rootdir && rootdir[1] && (bigMode & ~MODES_FOR_ROOT))
+    if (rpmcliRootDir && rpmcliRootDir[1] && (bigMode & ~MODES_FOR_ROOT))
 	argerror(_("--root (-r) may only be specified during "
 		 "installation, erasure, querying, and "
 		 "database rebuilds"));
 
-    if (rootdir) {
-	switch (urlIsURL(rootdir)) {
+    if (rpmcliRootDir) {
+	switch (urlIsURL(rpmcliRootDir)) {
 	default:
 	    if (bigMode & MODES_FOR_ROOT)
 		break;
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
-	    if (rootdir[0] != '/')
+	    if (rpmcliRootDir[0] != '/')
 		argerror(_("arguments to --root (-r) must begin with a /"));
 	    break;
 	}
@@ -925,14 +609,14 @@ int main(int argc, const char ** argv)
     /*@=branchstate@*/
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
-    if (pipeOutput) {
+    if (rpmcliPipeOutput) {
 	(void) pipe(p);
 
 	if (!(pipeChild = fork())) {
 	    (void) close(p[1]);
 	    (void) dup2(p[0], STDIN_FILENO);
 	    (void) close(p[0]);
-	    (void) execl("/bin/sh", "/bin/sh", "-c", pipeOutput, NULL);
+	    (void) execl("/bin/sh", "/bin/sh", "-c", rpmcliPipeOutput, NULL);
 	    fprintf(stderr, _("exec failed\n"));
 	}
 
@@ -942,7 +626,7 @@ int main(int argc, const char ** argv)
     }
 	
     ts = rpmtsCreate();
-    (void) rpmtsSetRootDir(ts, rootdir);
+    (void) rpmtsSetRootDir(ts, rpmcliRootDir);
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
@@ -985,9 +669,9 @@ int main(int argc, const char ** argv)
 	    ba->cookie = NULL;
 	    ec = rpmInstallSource(ts, pkg, &specFile, &ba->cookie);
 	    if (ec == 0) {
-		ba->rootdir = rootdir;
+		ba->rootdir = rpmcliRootDir;
 		ba->passPhrase = passPhrase;
-		ec = build(ts, specFile, ba, rcfile);
+		ec = build(ts, specFile, ba, rpmcliRcfile);
 	    }
 	    ba->cookie = _free(ba->cookie);
 	    specFile = _free(specFile);
@@ -1042,14 +726,14 @@ int main(int argc, const char ** argv)
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
-	    ba->rootdir = rootdir;
+	    ba->rootdir = rpmcliRootDir;
 	    ba->passPhrase = passPhrase;
 	    ba->cookie = NULL;
-	    ec = build(ts, pkg, ba, rcfile);
+	    ec = build(ts, pkg, ba, rpmcliRcfile);
 	    if (ec)
 		/*@loopbreak@*/ break;
 	    rpmFreeMacros(NULL);
-	    (void) rpmReadConfigFiles(rcfile, NULL);
+	    (void) rpmReadConfigFiles(rpmcliRcfile, NULL);
 	}
     }	break;
 #endif	/* IAM_RPMBT */
@@ -1071,7 +755,6 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 
     case MODE_INSTALL:
 
-	/* RPMTRANS_FLAG_BUILD_PROBS */
 	/* RPMTRANS_FLAG_KEEPOBSOLETE */
 
 	if (!ia->incldocs) {
@@ -1187,7 +870,8 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_ERASE:
 #endif
     case MODE_UNKNOWN:
-	if (!showVersion && !help && !noUsageMsg) printUsage();
+	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose())
+	    printUsage(optCon, stdout, 0);
 	break;
     }
 

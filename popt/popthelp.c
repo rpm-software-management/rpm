@@ -101,7 +101,11 @@ getArgDescrip(const struct poptOption * opt,
 
     switch (opt->argInfo & POPT_ARG_MASK) {
     case POPT_ARG_NONE:		return POPT_("NONE");
+#ifdef	DYING
     case POPT_ARG_VAL:		return POPT_("VAL");
+#else
+    case POPT_ARG_VAL:		return NULL;
+#endif
     case POPT_ARG_INT:		return POPT_("INT");
     case POPT_ARG_LONG:		return POPT_("LONG");
     case POPT_ARG_STRING:	return POPT_("STRING");
@@ -600,16 +604,29 @@ static int itemUsage(FILE * fp, int cursor, poptItem item, int nitems,
 }
 
 /**
+ * Keep track of option tables already processed.
+ */
+typedef struct poptDone_s {
+    int nopts;
+    int maxopts;
+/*@observer@*/
+    const void ** opts;
+} * poptDone;
+
+/**
  * Display usage text for a table of options.
  * @param con		context
  * @param fp		output file handle
  * @param cursor
  * @param opt		option(s)
  * @param translation_domain	translation domain
+ * @param done		tables already processed
+ * @return
  */
 static int singleTableUsage(poptContext con, FILE * fp,
 		int cursor, const struct poptOption * opt,
-		/*@null@*/ const char * translation_domain)
+		/*@null@*/ const char * translation_domain,
+		poptDone done)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
@@ -619,9 +636,21 @@ static int singleTableUsage(poptContext con, FILE * fp,
         if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INTL_DOMAIN) {
 	    translation_domain = (const char *)opt->arg;
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
-	    if (opt->arg)	/* XXX program error */
+	    int i = 0;
+	    if (done)
+	    for (i = 0; i < done->nopts; i++) {
+		const void * that = done->opts[i];
+		if (that == NULL || that != opt->arg)
+		    continue;
+		break;
+	    }
+	    /* Skip if this table has already been processed. */
+	    if (opt->arg == NULL || i < done->nopts)
+		continue;
+	    if (done->nopts < done->maxopts)
+		done->opts[done->nopts++] = (const void *) opt->arg;
 	    cursor = singleTableUsage(con, fp, cursor, opt->arg,
-			translation_domain);
+			translation_domain, done);
 	} else if ((opt->longName || opt->shortName) &&
 		 !(opt->argInfo & POPT_ARGFLAG_DOC_HIDDEN)) {
 	    cursor = singleOptionUsage(fp, cursor, opt, translation_domain);
@@ -634,6 +663,7 @@ static int singleTableUsage(poptContext con, FILE * fp,
 
 /**
  * Return concatenated short options for display.
+ * @todo Sub-tables should be recursed.
  * @param opt		option(s)
  * @param fp		output file handle
  * @retval str		concatenation of short options
@@ -674,13 +704,20 @@ static int showShortOptions(const struct poptOption * opt, FILE * fp,
 
 void poptPrintUsage(poptContext con, FILE * fp, /*@unused@*/ int flags)
 {
+    poptDone done = memset(alloca(sizeof(*done)), 0, sizeof(*done));
     int cursor;
+
+    done->nopts = 0;
+    done->maxopts = 64;
+    cursor = done->maxopts * sizeof(*done->opts);
+    done->opts = memset(alloca(cursor), 0, cursor);
+    done->opts[done->nopts++] = (const void *) con->options;
 
     cursor = showHelpIntro(con, fp);
     cursor += showShortOptions(con->options, fp, NULL);
-    (void) singleTableUsage(con, fp, cursor, con->options, NULL);
-    (void) itemUsage(fp, cursor, con->aliases, con->numAliases, NULL);
-    (void) itemUsage(fp, cursor, con->execs, con->numExecs, NULL);
+    cursor = singleTableUsage(con, fp, cursor, con->options, NULL, done);
+    cursor = itemUsage(fp, cursor, con->aliases, con->numAliases, NULL);
+    cursor = itemUsage(fp, cursor, con->execs, con->numExecs, NULL);
 
     if (con->otherHelp) {
 	cursor += strlen(con->otherHelp) + 1;

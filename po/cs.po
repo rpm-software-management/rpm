@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-25 18:54-0400\n"
+"POT-Creation-Date: 2002-07-27 20:39-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -74,255 +74,163 @@ msgstr "chyba pøi pøi ètení hlavièky balíèku\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "nemohu znovu otevøít payload: %s\n"
 
-#: rpmqv.c:114 lib/poptALL.c:142
-msgid "print the version of rpm being used"
-msgstr "vypsat pou¾ívanou verzi rpm"
-
-#: rpmqv.c:117 lib/poptALL.c:138
-msgid "provide less detailed output"
-msgstr "poskytnout výstu s ménì detaily"
-
-#: rpmqv.c:119 lib/poptALL.c:140
-msgid "provide more detailed output"
-msgstr "poskytnout detailnìj¹í výstup"
-
-#: rpmqv.c:121 lib/poptALL.c:145
-msgid "define MACRO with value EXPR"
-msgstr ""
-
-#: rpmqv.c:121 lib/poptALL.c:146
-msgid "'MACRO EXPR'"
-msgstr ""
-
-#: rpmqv.c:123 lib/poptALL.c:148
-#, fuzzy
-msgid "print macro expansion of EXPR"
-msgstr "vypsat expanzi makra <výraz>+"
-
-#: rpmqv.c:123 lib/poptALL.c:149
-msgid "'EXPR'"
-msgstr ""
-
-#: rpmqv.c:125 lib/poptALL.c:151
-msgid "send stdout to <cmd>"
-msgstr "odeslat stdout do <pøíkazu>"
-
-#: rpmqv.c:125 lib/poptALL.c:152
-msgid "<cmd>"
-msgstr "<pøík>"
-
-#: rpmqv.c:127 lib/poptALL.c:154
-msgid "use <dir> as the top level directory"
-msgstr "pou¾ít <adr> jako adresáø nejvy¹¹í úrovnì"
-
-#: rpmqv.c:127 lib/poptALL.c:155 lib/poptI.c:222
-msgid "<dir>"
-msgstr "<adresáø>"
-
-#: rpmqv.c:129
-msgid "read <file:...> instead of default macro file(s)"
-msgstr "èíst <soubor:...> místo implicitního makro souboru"
-
-#: rpmqv.c:130 rpmqv.c:134 rpmqv.c:138
-msgid "<file:...>"
-msgstr "<soubor:...>"
-
-#: rpmqv.c:133 rpmqv.c:137
-msgid "read <file:...> instead of default rpmrc file(s)"
-msgstr "èíst <soubor:...> místo implicitního rpmrc souboru"
-
-#: rpmqv.c:141 lib/poptALL.c:169
-msgid "display final rpmrc and macro configuration"
-msgstr "zobrazit finální konfiguraci rpmrc a maker"
-
-#: rpmqv.c:146 lib/poptALL.c:174
-msgid "disable use of libio(3) API"
-msgstr "zakázat pou¾ití libio(3) API"
-
-#: rpmqv.c:149 lib/poptALL.c:178
-msgid "debug protocol data stream"
-msgstr "ladit protokol datového toku"
-
-#: rpmqv.c:151 lib/poptALL.c:180
-msgid "debug rpmio I/O"
-msgstr "ladit rpmio I/O"
-
-#: rpmqv.c:153 lib/poptALL.c:182
-msgid "debug URL cache handling"
-msgstr "ladit manipulaci s URL cache"
-
-#: rpmqv.c:173
+#: rpmqv.c:78
 msgid "Query options (with -q or --query):"
 msgstr "Volby dotazù (s -q or --query):"
 
-#: rpmqv.c:176
+#: rpmqv.c:81
 msgid "Verify options (with -V or --verify):"
 msgstr "Vollby kontroly (s -V or --verify):"
 
-#: rpmqv.c:182
+#: rpmqv.c:87
 msgid "Signature options:"
 msgstr "Volby signatury:"
 
-#: rpmqv.c:188
+#: rpmqv.c:93
 msgid "Database options:"
 msgstr "Volby databáze:"
 
-#: rpmqv.c:194
+#: rpmqv.c:99
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "Sestavovací volby s [ <spec_soubor> | <tar_soubor> | <zdrojový_balíèek> ]:"
 
-#: rpmqv.c:200
+#: rpmqv.c:105
 msgid "Install/Upgrade/Erase options:"
 msgstr "Volby pro Instalaci/Aktualizaci/Mazání:"
 
-#: rpmqv.c:205
+#: rpmqv.c:110
 msgid "Common options for all rpm modes:"
 msgstr "Spoleèné volby pro v¹echny módy:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:222 lib/poptI.c:27
+#: rpmqv.c:127 lib/poptI.c:27
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:230 lib/poptALL.c:46
+#: rpmqv.c:135 lib/poptALL.c:54
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM verze %s\n"
 
-#: rpmqv.c:237
+#: rpmqv.c:142
 #, fuzzy
-msgid "Copyright (C) 1998-2002 - Red Hat, Inc."
+msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (c) 1998-2000 - Red Hat, Inc."
 
-#: rpmqv.c:238
-msgid "This program may be freely redistributed under the terms of the GNU GPL"
+#: rpmqv.c:143
+#, fuzzy
+msgid ""
+"This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Tento program lze volnì ¹íøit podle podmínek GNU GPL."
 
-#: rpmqv.c:250
-#, c-format
-msgid "Usage: %s {--help}\n"
-msgstr "Pou¾ití: %s {--help}\n"
-
-#: rpmqv.c:610
-msgid "The --rcfile option has been eliminated.\n"
-msgstr "Volba --rcfile byla odstranìna.\n"
-
-#: rpmqv.c:611
-msgid "Use \"--macros <file:...>\" instead.\n"
-msgstr "Pou¾ijte volbu \"--macros <soubor:...>\".\n"
-
-#: rpmqv.c:617
+#: rpmqv.c:309
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Interní chyba pøi zpracování parametrù (%d) :-(\n"
 
-#: rpmqv.c:658 rpmqv.c:664 rpmqv.c:670 rpmqv.c:708
+#: rpmqv.c:347 rpmqv.c:353 rpmqv.c:359 rpmqv.c:397
 msgid "only one major mode may be specified"
 msgstr "specifikovat lze jen jeden hlavní re¾im"
 
-#: rpmqv.c:687
+#: rpmqv.c:376
 msgid "one type of query/verify may be performed at a time"
 msgstr "najednou lze provést jen jeden typ dotazu èi ovìøení"
 
-#: rpmqv.c:691
+#: rpmqv.c:380
 msgid "unexpected query flags"
 msgstr "neoèekávaný pøíznak pro dotaz"
 
-#: rpmqv.c:694
+#: rpmqv.c:383
 msgid "unexpected query format"
 msgstr "neoèekávaný formát dotazu"
 
-#: rpmqv.c:697
+#: rpmqv.c:386
 msgid "unexpected query source"
 msgstr "neoèekávaný zdroj dotazu"
 
-#: rpmqv.c:738
-msgid "--dbpath given for operation that does not use a database"
-msgstr "--dbpath zadána pro operaci, která databázi nepou¾ívá"
-
-#: rpmqv.c:744
+#: rpmqv.c:428
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "vynucena mù¾e být jen instalace, aktualizace, smazání zdrojových kódù a spec "
 "souboru"
 
-#: rpmqv.c:746
+#: rpmqv.c:430
 msgid "files may only be relocated during package installation"
 msgstr "soubory mohou být pøemístìny jen pøi instalaci balíèkù"
 
-#: rpmqv.c:749
+#: rpmqv.c:433
 msgid "only one of --prefix or --relocate may be used"
 msgstr "pou¾ít lze jen jeden z parametrù --prefix nebo --relocate"
 
-#: rpmqv.c:752
+#: rpmqv.c:436
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate a --excludepath je mo¾no pou¾ít jen pøi instalaci nových balíèkù"
 
-#: rpmqv.c:755
+#: rpmqv.c:439
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix je mo¾no pou¾ít jen pøi instalaci nových balíèkù"
 
-#: rpmqv.c:758
+#: rpmqv.c:442
 msgid "arguments to --prefix must begin with a /"
 msgstr "parametry pro --prefix musejí zaèínat znakem /"
 
-#: rpmqv.c:761
+#: rpmqv.c:445
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:765
+#: rpmqv.c:449
 msgid "--percent may only be specified during package installation"
 msgstr "--percent mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:770
+#: rpmqv.c:454
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:774
+#: rpmqv.c:458
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:778
+#: rpmqv.c:462
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:782
+#: rpmqv.c:466
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:786
+#: rpmqv.c:470
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "pou¾ít lze jen jeden z parametrù --excludedocs a --includedocs"
 
-#: rpmqv.c:790
+#: rpmqv.c:474
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:794
+#: rpmqv.c:478
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:799
+#: rpmqv.c:483
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:803
+#: rpmqv.c:487
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:807
+#: rpmqv.c:491
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles mù¾e být pou¾it jen pøi instalaci balíèkù"
 
-#: rpmqv.c:812
+#: rpmqv.c:496
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb mù¾e být pou¾it jen pøi instalaci a odstraòování balíèkù"
 
-#: rpmqv.c:817
+#: rpmqv.c:501
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -330,7 +238,7 @@ msgstr ""
 "volba pro potlaèení skriptù mù¾e být pou¾ita jen pøi instalaci nebo pøi "
 "odstraòování balíèkù"
 
-#: rpmqv.c:822
+#: rpmqv.c:506
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -338,7 +246,7 @@ msgstr ""
 "volba pro potlaèení triggerù mù¾e být pou¾ita jen pøi instalaci nebo "
 "odstraòování balíèkù"
 
-#: rpmqv.c:826
+#: rpmqv.c:510
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -346,13 +254,13 @@ msgstr ""
 "--nodeps mù¾e být pou¾it jen pøi sestavování, rekompilaci, instalaci, "
 "odstraòování a kontrole"
 
-#: rpmqv.c:831
+#: rpmqv.c:515
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test mù¾e být pou¾it jen pøi instalaci, odstraòování a sestavování"
 
-#: rpmqv.c:836
+#: rpmqv.c:520
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -360,82 +268,82 @@ msgstr ""
 "--root (-r) mù¾e být pou¾it jen pøi instalaci, odstraòování, dotazech nebo "
 "znovuvytvoøení databáze"
 
-#: rpmqv.c:848
+#: rpmqv.c:532
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametry pro --root (-r) musejí zaèínat znakem /"
 
-#: rpmqv.c:872
+#: rpmqv.c:556
 msgid "no files to sign\n"
 msgstr "¾ádné soubory k podepsání\n"
 
-#: rpmqv.c:877
+#: rpmqv.c:561
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "pøístup k souboru %s se nezdaøil\n"
 
-#: rpmqv.c:896
+#: rpmqv.c:580
 msgid "pgp not found: "
 msgstr "pgp nenalezeno: "
 
-#: rpmqv.c:901
+#: rpmqv.c:585
 msgid "Enter pass phrase: "
 msgstr "Vlo¾te heslovou frázi: "
 
-#: rpmqv.c:903
+#: rpmqv.c:587
 msgid "Pass phrase check failed\n"
 msgstr "Chybná heslová fráze\n"
 
-#: rpmqv.c:907
+#: rpmqv.c:591
 msgid "Pass phrase is good.\n"
 msgstr "Heslová fráze je v poøádku.\n"
 
-#: rpmqv.c:912
+#: rpmqv.c:596
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "©patná %%_signature spec v souboru maker.\n"
 
-#: rpmqv.c:919
+#: rpmqv.c:603
 msgid "--sign may only be used during package building"
 msgstr "--sign mù¾e být pou¾it jen pøi sestavování balíèkù"
 
-#: rpmqv.c:936
+#: rpmqv.c:620
 msgid "exec failed\n"
 msgstr "spu¹tìní selhalo\n"
 
-#: rpmqv.c:971
+#: rpmqv.c:655
 msgid "no packages files given for rebuild"
 msgstr "ke znovusestavení nezadány ¾ádné balíèky"
 
-#: rpmqv.c:1039
+#: rpmqv.c:723
 msgid "no spec files given for build"
 msgstr "pro sestavení nezadány ¾ádné spec soubory"
 
-#: rpmqv.c:1041
+#: rpmqv.c:725
 msgid "no tar files given for build"
 msgstr "pro sestavení nezadány ¾ádné tar soubory"
 
-#: rpmqv.c:1063
+#: rpmqv.c:747
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: rpmqv.c:1104
+#: rpmqv.c:787
 msgid "no packages given for install"
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: rpmqv.c:1120
+#: rpmqv.c:803
 msgid "no arguments given for query"
 msgstr "k dotazu nezadány ¾ádné parametry"
 
-#: rpmqv.c:1133
+#: rpmqv.c:816
 msgid "no arguments given for verify"
 msgstr "pro kontrolu nezadány ¾ádné balíèky"
 
-#: rpmqv.c:1141
+#: rpmqv.c:824
 msgid "unexpected arguments to --querytags "
 msgstr "neoèekávané parametry pro --querytags "
 
-#: rpmqv.c:1157
+#: rpmqv.c:840
 #, fuzzy
 msgid "no arguments given"
 msgstr "k dotazu nezadány ¾ádné parametry"
@@ -1227,7 +1135,7 @@ msgstr "Nenalezeny ¾ádné kompatibilní architektury pro sestavení\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Balíèek nemá ¾ádné %%description: %s\n"
 
-#: build/poptBT.c:117
+#: build/poptBT.c:108
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "buildroot byl ji¾ nastaven, ignoruji %s\n"
@@ -1661,17 +1569,107 @@ msgstr "%s: readLead selhalo\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/poptALL.c:157 lib/poptALL.c:161 lib/poptALL.c:165
+#: lib/poptALL.c:153
+msgid "define MACRO with value EXPR"
+msgstr ""
+
+#: lib/poptALL.c:154
+msgid "'MACRO EXPR'"
+msgstr ""
+
+#: lib/poptALL.c:156
+#, fuzzy
+msgid "print macro expansion of EXPR"
+msgstr "vypsat expanzi makra <výraz>+"
+
+#: lib/poptALL.c:157
+msgid "'EXPR'"
+msgstr ""
+
+#: lib/poptALL.c:159 lib/poptALL.c:178 lib/poptALL.c:182
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "èíst <soubor:...> místo implicitního makro souboru"
 
-#: lib/poptALL.c:158 lib/poptALL.c:162 lib/poptALL.c:166
+#: lib/poptALL.c:160 lib/poptALL.c:179 lib/poptALL.c:183
 msgid "<FILE:...>"
 msgstr ""
 
+#: lib/poptALL.c:163 lib/poptI.c:245 lib/poptI.c:252 lib/poptQV.c:320
+#: lib/poptQV.c:329 lib/poptQV.c:368
+#, fuzzy
+msgid "don't verify package digest(s)"
+msgstr "nekontrolovat závislosti balíèkù"
+
+#: lib/poptALL.c:165 lib/poptI.c:247 lib/poptI.c:254 lib/poptQV.c:323
+#: lib/poptQV.c:331 lib/poptQV.c:371
+#, fuzzy
+msgid "don't verify database header(s) when retrieved"
+msgstr "nekontrolovat architekturu balíèku"
+
+#: lib/poptALL.c:168 lib/poptALL.c:201
+msgid "disable use of libio(3) API"
+msgstr "zakázat pou¾ití libio(3) API"
+
+#: lib/poptALL.c:171 lib/poptI.c:249 lib/poptI.c:256 lib/poptQV.c:326
+#: lib/poptQV.c:333 lib/poptQV.c:373
+#, fuzzy
+msgid "don't verify package signature(s)"
+msgstr "ovìøit podpis v balíèku"
+
+#: lib/poptALL.c:174
+#, fuzzy
+msgid "send stdout to CMD"
+msgstr "odeslat stdout do <pøíkazu>"
+
+#: lib/poptALL.c:175
+msgid "CMD"
+msgstr ""
+
+#: lib/poptALL.c:186
+#, fuzzy
+msgid "use ROOT as top level directory"
+msgstr "pou¾ít <adr> jako adresáø nejvy¹¹í úrovnì"
+
+#: lib/poptALL.c:187
+msgid "ROOT"
+msgstr ""
+
+#: lib/poptALL.c:190
+msgid "display final rpmrc and macro configuration"
+msgstr "zobrazit finální konfiguraci rpmrc a maker"
+
+#: lib/poptALL.c:193
+msgid "provide less detailed output"
+msgstr "poskytnout výstu s ménì detaily"
+
+#: lib/poptALL.c:195
+msgid "provide more detailed output"
+msgstr "poskytnout detailnìj¹í výstup"
+
+#: lib/poptALL.c:197
+msgid "print the version of rpm being used"
+msgstr "vypsat pou¾ívanou verzi rpm"
+
+#: lib/poptALL.c:205
+msgid "debug protocol data stream"
+msgstr "ladit protokol datového toku"
+
+#: lib/poptALL.c:208
+#, fuzzy
+msgid "debug option/argument processing"
+msgstr "Interní chyba pøi zpracování parametrù (%d) :-(\n"
+
+#: lib/poptALL.c:211
+msgid "debug rpmio I/O"
+msgstr "ladit rpmio I/O"
+
+#: lib/poptALL.c:213
+msgid "debug URL cache handling"
+msgstr "ladit manipulaci s URL cache"
+
 #. @-nullpass@
-#: lib/poptALL.c:253
+#: lib/poptALL.c:284
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -1692,21 +1690,21 @@ msgstr "pøemístìní musejí obsahovat ="
 msgid "relocations must have a / following the ="
 msgstr "pøemístìní musejí mít za znakem = znak /"
 
-#: lib/poptI.c:84
+#: lib/poptI.c:85
 msgid "rollback takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:91
+#: lib/poptI.c:92
 #, fuzzy
 msgid "malformed rollback time/date stamp argument"
 msgstr "poru¹ený rollback èas"
 
-#: lib/poptI.c:111
+#: lib/poptI.c:145
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "nainstalovat v¹echny soubory i konfigurace, které by se jinak mohly vynechat"
 
-#: lib/poptI.c:115
+#: lib/poptI.c:149
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1714,151 +1712,140 @@ msgstr ""
 "odstranit v¹echny balíèky odpovídající <balíèku> (obvykle se generuje chyba, "
 "specifikuje-li <balíèek> více balíèkù)"
 
-#: lib/poptI.c:121 lib/poptI.c:176
+#: lib/poptI.c:155 lib/poptI.c:225 lib/poptI.c:228
 msgid "do not execute package scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
-#: lib/poptI.c:125
+#: lib/poptI.c:159
 msgid "relocate files in non-relocateable package"
 msgstr "pøemístìní souborù v nepøemístitelném balíèku"
 
-#: lib/poptI.c:128
+#: lib/poptI.c:162
 msgid "save erased package files by renaming into sub-directory"
 msgstr "uchovat smazané soubory pøesunem do podadresáøe"
 
-#: lib/poptI.c:131
+#: lib/poptI.c:165
 msgid "erase (uninstall) package"
 msgstr "smazat (deinstalovat) balíèek"
 
-#: lib/poptI.c:131
+#: lib/poptI.c:165
 msgid "<package>+"
 msgstr "<balíèek>"
 
-#: lib/poptI.c:134
+#: lib/poptI.c:168
 msgid "do not install documentation"
 msgstr "neinstalovat dokumentaci"
 
-#: lib/poptI.c:136
+#: lib/poptI.c:170
 msgid "skip files with leading component <path> "
 msgstr "pøeskoèit soubory s úvodní cestou <cesta> "
 
-#: lib/poptI.c:137
+#: lib/poptI.c:171
 msgid "<path>"
 msgstr "<cesta>"
 
-#: lib/poptI.c:140
+#: lib/poptI.c:176 lib/poptI.c:179
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "zkratka pro --replacepkgs --replacefiles"
 
-#: lib/poptI.c:143
+#: lib/poptI.c:184
 msgid "upgrade package(s) if already installed"
 msgstr "aktualizace balíèku jestli¾e je ji¾ nainstalován"
 
-#: lib/poptI.c:144 lib/poptI.c:160 lib/poptI.c:243
+#: lib/poptI.c:185 lib/poptI.c:201 lib/poptI.c:304
 msgid "<packagefile>+"
 msgstr "<soubor_balíèku>+"
 
-#: lib/poptI.c:146
+#: lib/poptI.c:187
 msgid "print hash marks as package installs (good with -v)"
 msgstr "bìhem instalace balíèku zobrazit dvojité køí¾ky (dobré s -v)"
 
-#: lib/poptI.c:149
+#: lib/poptI.c:190
 msgid "don't verify package architecture"
 msgstr "nekontrolovat architekturu balíèku"
 
-#: lib/poptI.c:152
+#: lib/poptI.c:193
 msgid "don't verify package operating system"
 msgstr "nekontrolovat operaèní systém balíèku"
 
-#: lib/poptI.c:155
+#: lib/poptI.c:196
 msgid "don't check disk space before installing"
 msgstr "nekontrolovat volné místo na disku pøed instalací"
 
-#: lib/poptI.c:157
+#: lib/poptI.c:198
 msgid "install documentation"
 msgstr "nainstalovat dokumentaci"
 
-#: lib/poptI.c:160
+#: lib/poptI.c:201
 #, fuzzy
 msgid "install package(s)"
 msgstr "nainstalovat balíèek"
 
-#: lib/poptI.c:162
+#: lib/poptI.c:203
 msgid "update the database, but do not modify the filesystem"
 msgstr "upravit databázi, ale neupravovat systém souborovù"
 
-#: lib/poptI.c:164
+#: lib/poptI.c:206 lib/poptI.c:209
 msgid "do not verify package dependencies"
 msgstr "nekontrolovat závislosti balíèkù"
 
-#: lib/poptI.c:167
+#: lib/poptI.c:212 lib/poptQV.c:266 lib/poptQV.c:269
+msgid "don't verify MD5 digest of files"
+msgstr "nekontrolovat MD5 souborù v balíèku"
+
+#: lib/poptI.c:215
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "pro vyøe¹ení závislostí nemìnit poøadí instalace balíèkù"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:220
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:179
+#: lib/poptI.c:232
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:182
+#: lib/poptI.c:235
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:185
+#: lib/poptI.c:238
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:188
+#: lib/poptI.c:241
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:191 lib/poptQV.c:268 lib/poptQV.c:308
-#, fuzzy
-msgid "don't verify package digest(s)"
-msgstr "nekontrolovat závislosti balíèkù"
-
-#: lib/poptI.c:193 lib/poptQV.c:271 lib/poptQV.c:311
-#, fuzzy
-msgid "don't verify database header(s) when retrieved"
-msgstr "nekontrolovat architekturu balíèku"
-
-#: lib/poptI.c:195 lib/poptQV.c:274 lib/poptQV.c:313
-#, fuzzy
-msgid "don't verify package signature(s)"
-msgstr "ovìøit podpis v balíèku"
-
-#: lib/poptI.c:199
+#: lib/poptI.c:260
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "nespou¹tìt ¾ádné skripty aktivované tímto balíèkem"
 
-#: lib/poptI.c:202
+#: lib/poptI.c:263
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:266
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:269
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:211
+#: lib/poptI.c:272
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:215
+#: lib/poptI.c:276
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1866,48 +1853,52 @@ msgstr ""
 "aktualizovat na starou verzi balíèku (--force to dìlá pøi aktualizacích "
 "automaticky)"
 
-#: lib/poptI.c:219
+#: lib/poptI.c:280
 msgid "print percentages as package installs"
 msgstr "bìhem instalace balíèku zobrazit procenta"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:282
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "pøemístit soubory do <adr>, jsou-li pøemístitelné"
 
-#: lib/poptI.c:224
+#: lib/poptI.c:283
+msgid "<dir>"
+msgstr "<adresáø>"
+
+#: lib/poptI.c:285
 msgid "relocate files from path <old> to <new>"
 msgstr "pøemístit soubory ze <staré_cesty> do <nové_cesty>"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:286
 msgid "<old>=<new>"
 msgstr "<stará_cesta>=<nová_cesta>"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:289
 msgid "save erased package files by repackaging"
 msgstr "uchovat smazané soubory pomocí pøebalení"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:292
 msgid "install even if the package replaces installed files"
 msgstr "instalovat, i kdy¾ balíèek pøepí¹e existující soubory"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:295
 msgid "reinstall if the package is already present"
 msgstr "pøeinstalovat, i kdy¾ je ji¾ balíèek pøítomen"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:297
 #, fuzzy
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "odinstalovat nové balíèky, reinstalovat staré balíèky zpìt do data"
 
-#: lib/poptI.c:237
+#: lib/poptI.c:298
 msgid "<date>"
 msgstr "<datum>"
 
-#: lib/poptI.c:239
+#: lib/poptI.c:300
 msgid "don't install, but tell if it would work or not"
 msgstr "neinstalovat ale sdìlit, zda-li by to fungovalo èi nikoli"
 
-#: lib/poptI.c:242
+#: lib/poptI.c:303
 msgid "upgrade package(s)"
 msgstr "aktualizace balíèku"
 
@@ -1939,8 +1930,9 @@ msgid "query/verify package(s) with header identifier"
 msgstr "dotaz/ovìøení balíèkù vlastnícího soubor"
 
 #: lib/poptQV.c:107
-msgid "query/verify a package file (i.e. a binary *.rpm file)"
-msgstr "dotaz/ovìøení souboru s balíèkem (tj. binárního RPM souboru)"
+#, fuzzy
+msgid "query/verify a package file"
+msgstr "dotázat/ovìøit v¹echny balíèky"
 
 #: lib/poptQV.c:109
 #, fuzzy
@@ -1989,124 +1981,116 @@ msgstr "dotaz/ovìøení balíèkù vy¾adujících závislost"
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "dotaz/ovìøení balíèkù poskytujících závislost"
 
-#: lib/poptQV.c:189
+#: lib/poptQV.c:219
 msgid "list all configuration files"
 msgstr "vypsat v¹echny konfiguraèní soubory"
 
-#: lib/poptQV.c:191
+#: lib/poptQV.c:221
 msgid "list all documentation files"
 msgstr "vypsat v¹echny soubory s dokumentací"
 
-#: lib/poptQV.c:193
+#: lib/poptQV.c:223
 msgid "dump basic file information"
 msgstr "zobrazit základní informace o souborech"
 
-#: lib/poptQV.c:195
+#: lib/poptQV.c:225
 msgid "list files in package"
 msgstr "vypsat soubory v balíèku"
 
-#: lib/poptQV.c:200
+#: lib/poptQV.c:230
 #, c-format
 msgid "skip %%ghost files"
 msgstr "vynechat %%ghost soubory"
 
-#: lib/poptQV.c:204
+#: lib/poptQV.c:234
 #, c-format
 msgid "skip %%license files"
 msgstr "vynechat %%license soubory"
 
-#: lib/poptQV.c:207
+#: lib/poptQV.c:237
 #, c-format
 msgid "skip %%readme files"
 msgstr "vynechat %%readme soubory"
 
-#: lib/poptQV.c:213
+#: lib/poptQV.c:243
 msgid "use the following query format"
 msgstr "pou¾ij následující formát dotazù"
 
-#: lib/poptQV.c:215
+#: lib/poptQV.c:245
 msgid "substitute i18n sections into spec file"
 msgstr "nahradit i18n sekce do spec souboru"
 
-#: lib/poptQV.c:217
+#: lib/poptQV.c:247
 msgid "display the states of the listed files"
 msgstr "zobrazit stav vypsaných souborù"
 
-#: lib/poptQV.c:219
-msgid "display a verbose file listing"
-msgstr "zobrazit roz¹íøený výpis souborù"
-
-#: lib/poptQV.c:233
-msgid "don't verify MD5 digest of files"
-msgstr "nekontrolovat MD5 souborù v balíèku"
-
-#: lib/poptQV.c:236
+#: lib/poptQV.c:273
 msgid "don't verify size of files"
 msgstr "nekontrolovat velikost souborù"
 
-#: lib/poptQV.c:239
+#: lib/poptQV.c:276
 msgid "don't verify symlink path of files"
 msgstr "nekontrolovat cesty symbolických linek"
 
-#: lib/poptQV.c:242
+#: lib/poptQV.c:279
 msgid "don't verify owner of files"
 msgstr "nekontrolovat vlastníka souborù"
 
-#: lib/poptQV.c:245
+#: lib/poptQV.c:282
 msgid "don't verify group of files"
 msgstr "nekontrolovat skupinu souborù"
 
-#: lib/poptQV.c:248
+#: lib/poptQV.c:285
 msgid "don't verify modification time of files"
 msgstr "nekontrolovat èas zmìny souboru"
 
-#: lib/poptQV.c:251 lib/poptQV.c:254
+#: lib/poptQV.c:288 lib/poptQV.c:291
 msgid "don't verify mode of files"
 msgstr "nekontrolovat mód souborù"
 
-#: lib/poptQV.c:257
+#: lib/poptQV.c:294
 msgid "don't verify files in package"
 msgstr "nekontrolovat soubory v balíèku"
 
-#: lib/poptQV.c:259 tools/rpmgraph.c:274
+#: lib/poptQV.c:297 lib/poptQV.c:300 tools/rpmgraph.c:274
 msgid "don't verify package dependencies"
 msgstr "nekontrolovat závislosti balíèkù"
 
-#: lib/poptQV.c:261 lib/poptQV.c:265
+#: lib/poptQV.c:305 lib/poptQV.c:309 lib/poptQV.c:312 lib/poptQV.c:315
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "nespou¹tìt %verifyscript (pokud existuje)"
 
-#: lib/poptQV.c:279
+#: lib/poptQV.c:339
 #, fuzzy
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "nekontrolovat SHA1 digest v hlavièce"
 
-#: lib/poptQV.c:282
+#: lib/poptQV.c:342
 #, fuzzy
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "nekontrolovat MD5 souborù v balíèku"
 
-#: lib/poptQV.c:297
+#: lib/poptQV.c:357
 #, fuzzy
 msgid "sign package(s) (identical to --resign)"
 msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:359
 #, fuzzy
 msgid "verify package signature(s)"
 msgstr "ovìøit podpis v balíèku"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:361
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:363
 #, fuzzy
 msgid "sign package(s) (identical to --addsign)"
 msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:365
 msgid "generate signature"
 msgstr "generovat PGP/GPG podpis"
 
@@ -2450,37 +2434,37 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
 
-#: lib/rpmfi.c:607
+#: lib/rpmfi.c:603
 #, fuzzy
 msgid "========== relocations\n"
 msgstr "========== ukládání tsort relací\n"
 
-#: lib/rpmfi.c:611
+#: lib/rpmfi.c:607
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je vyøazen: %s\n"
 
-#: lib/rpmfi.c:614
+#: lib/rpmfi.c:610
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s vytvoøen jako %s\n"
 
-#: lib/rpmfi.c:684
+#: lib/rpmfi.c:680
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:750
+#: lib/rpmfi.c:746
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:760
+#: lib/rpmfi.c:756
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:839
+#: lib/rpmfi.c:835
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
@@ -2946,13 +2930,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:106
+#: lib/transaction.c:107
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:910
+#: lib/transaction.c:902
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
@@ -2965,7 +2949,7 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1020
+#: lib/transaction.c:1012
 #, c-format
 msgid "sanity checking %d elments\n"
 msgstr ""
@@ -2978,7 +2962,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1101
+#: lib/transaction.c:1093
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -2986,21 +2970,21 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1178
+#: lib/transaction.c:1165
 msgid "computing file dispositions\n"
 msgstr ""
 
 #. ===============================================
 #. * Save removed files before erasing.
 #.
-#: lib/transaction.c:1344
+#: lib/transaction.c:1331
 msgid "repackage about-to-be-erased packages\n"
 msgstr ""
 
 #. ===============================================
 #. * Install and remove packages.
 #.
-#: lib/transaction.c:1374
+#: lib/transaction.c:1361
 #, c-format
 msgid "install/erase %d elements\n"
 msgstr ""
@@ -3584,64 +3568,54 @@ msgstr "nemohu zjistit stav %s: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "ovìøit podpis v balíèku"
 
-#: tools/rpmcache.c:517 tools/rpmgraph.c:278
-#, fuzzy
-msgid "don't verify package digest"
-msgstr "nekontrolovat závislosti balíèkù"
-
-#: tools/rpmcache.c:519 tools/rpmgraph.c:280
-#, fuzzy
-msgid "don't verify package signature"
-msgstr "ovìøit podpis v balíèku"
-
-#: tools/rpmcache.c:522
+#: tools/rpmcache.c:518
 msgid "don't update cache database, only print package paths"
 msgstr ""
 
-#: tools/rpmcache.c:526
+#: tools/rpmcache.c:522
 msgid "follow command line symlinks"
 msgstr ""
 
-#: tools/rpmcache.c:529
+#: tools/rpmcache.c:525
 msgid "logical walk"
 msgstr ""
 
-#: tools/rpmcache.c:532
+#: tools/rpmcache.c:528
 #, fuzzy
 msgid "don't change directories"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: tools/rpmcache.c:535
+#: tools/rpmcache.c:531
 msgid "don't get stat info"
 msgstr ""
 
-#: tools/rpmcache.c:538
+#: tools/rpmcache.c:534
 msgid "physical walk"
 msgstr ""
 
-#: tools/rpmcache.c:541
+#: tools/rpmcache.c:537
 msgid "return dot and dot-dot"
 msgstr ""
 
-#: tools/rpmcache.c:544
+#: tools/rpmcache.c:540
 msgid "don't cross devices"
 msgstr ""
 
-#: tools/rpmcache.c:547
+#: tools/rpmcache.c:543
 msgid "return whiteout information"
 msgstr ""
 
-#: tools/rpmcache.c:550 tools/rpmgraph.c:286
+#: tools/rpmcache.c:546 tools/rpmgraph.c:282
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "Spoleèné volby pro v¹echny módy:"
 
-#: tools/rpmcache.c:582
+#: tools/rpmcache.c:578
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr ""
 
-#: tools/rpmcache.c:614
+#: tools/rpmcache.c:618
 #, fuzzy, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: otevøení selhalo: %s\n"
@@ -3650,6 +3624,44 @@ msgstr "%s: otevøení selhalo: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
+
+#~ msgid "<cmd>"
+#~ msgstr "<pøík>"
+
+#~ msgid "read <file:...> instead of default macro file(s)"
+#~ msgstr "èíst <soubor:...> místo implicitního makro souboru"
+
+#~ msgid "<file:...>"
+#~ msgstr "<soubor:...>"
+
+#~ msgid "read <file:...> instead of default rpmrc file(s)"
+#~ msgstr "èíst <soubor:...> místo implicitního rpmrc souboru"
+
+#~ msgid "Usage: %s {--help}\n"
+#~ msgstr "Pou¾ití: %s {--help}\n"
+
+#~ msgid "The --rcfile option has been eliminated.\n"
+#~ msgstr "Volba --rcfile byla odstranìna.\n"
+
+#~ msgid "Use \"--macros <file:...>\" instead.\n"
+#~ msgstr "Pou¾ijte volbu \"--macros <soubor:...>\".\n"
+
+#~ msgid "--dbpath given for operation that does not use a database"
+#~ msgstr "--dbpath zadána pro operaci, která databázi nepou¾ívá"
+
+#~ msgid "query/verify a package file (i.e. a binary *.rpm file)"
+#~ msgstr "dotaz/ovìøení souboru s balíèkem (tj. binárního RPM souboru)"
+
+#~ msgid "display a verbose file listing"
+#~ msgstr "zobrazit roz¹íøený výpis souborù"
+
+#, fuzzy
+#~ msgid "don't verify package digest"
+#~ msgstr "nekontrolovat závislosti balíèkù"
+
+#, fuzzy
+#~ msgid "don't verify package signature"
+#~ msgstr "ovìøit podpis v balíèku"
 
 #~ msgid "define macro <name> with value <body>"
 #~ msgstr "definování makra <jméno> s obsahem <tìlo>"

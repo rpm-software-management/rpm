@@ -78,6 +78,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 /*@=kepttrans =usereleased @*/
 	ia->numRelocations++;
       }	break;
+
     case POPT_ROLLBACK:
       {	time_t tid;
 	if (arg == NULL)
@@ -91,6 +92,39 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	    argerror(_("malformed rollback time/date stamp argument"));
 	ia->rbtid = tid;
       }	break;
+
+    case RPMCLI_POPT_NODIGEST:
+	ia->qva_flags |= VERIFY_DIGEST;
+	break;
+
+    case RPMCLI_POPT_NOSIGNATURE:
+	ia->qva_flags |= VERIFY_SIGNATURE;
+	break;
+
+    case RPMCLI_POPT_NOHDRCHK:
+	ia->qva_flags |= VERIFY_HDRCHK;
+	break;
+
+    case RPMCLI_POPT_NODEPS:
+	ia->noDeps = 1;
+	break;
+
+    case RPMCLI_POPT_NOMD5:
+	ia->transFlags |= RPMTRANS_FLAG_NOMD5;
+	break;
+
+    case RPMCLI_POPT_FORCE:
+	ia->probFilter |=
+		( RPMPROB_FILTER_REPLACEPKG
+		| RPMPROB_FILTER_REPLACEOLDFILES
+		| RPMPROB_FILTER_REPLACENEWFILES
+		| RPMPROB_FILTER_OLDPACKAGE );
+	break;
+
+    case RPMCLI_POPT_NOSCRIPTS:
+	ia->transFlags |= (_noTransScripts | _noTransTriggers);
+	break;
+
     }
     /*@=branchstate@*/
 }
@@ -102,7 +136,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 /*@unchecked@*/
 struct poptOption rpmInstallPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	installArgCallback, 0, NULL, NULL },
 /*@=type@*/
 
@@ -135,9 +169,16 @@ struct poptOption rpmInstallPoptTable[] = {
  { "excludepath", '\0', POPT_ARG_STRING, 0, POPT_EXCLUDEPATH,
 	N_("skip files with leading component <path> "),
 	N_("<path>") },
+
+#ifdef	DYING
  { "force", '\0', POPT_BIT_SET, &rpmIArgs.probFilter,
 	(RPMPROB_FILTER_REPLACEPKG | RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES | RPMPROB_FILTER_OLDPACKAGE),
 	N_("short hand for --replacepkgs --replacefiles"), NULL},
+#else
+ { "force", '\0', 0, NULL, RPMCLI_POPT_FORCE,
+	N_("short hand for --replacepkgs --replacefiles"), NULL},
+#endif
+
  { "freshen", 'F', POPT_BIT_SET, &rpmIArgs.installInterfaceFlags,
 	(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL),
 	N_("upgrade package(s) if already installed"),
@@ -160,8 +201,15 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("install package(s)"), N_("<packagefile>+") },
  { "justdb", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_JUSTDB,
 	N_("update the database, but do not modify the filesystem"), NULL},
+#ifdef	DYING
  { "nodeps", '\0', 0, &rpmIArgs.noDeps, 0,
 	N_("do not verify package dependencies"), NULL },
+#else
+ { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
+	N_("do not verify package dependencies"), NULL },
+#endif
+ { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
+	N_("don't verify MD5 digest of files"), NULL },
  { "noorder", '\0', POPT_BIT_SET,
 	&rpmIArgs.installInterfaceFlags, INSTALL_NOORDER,
 	N_("do not reorder package installation to satisfy dependencies"),
@@ -171,9 +219,14 @@ struct poptOption rpmInstallPoptTable[] = {
 	RPMTRANS_FLAG_NOSUGGEST,
 	N_("do not suggest missing dependency resolution(s)"), NULL},
 
+#ifdef	DYING
  { "noscripts", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
 	(_noTransScripts|_noTransTriggers),
 	N_("do not execute package scriptlet(s)"), NULL },
+#else
+ { "noscripts", '\0', 0, NULL, RPMCLI_POPT_NOSCRIPTS,
+	N_("do not execute package scriptlet(s)"), NULL },
+#endif
  { "nopre", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
 	RPMTRANS_FLAG_NOPRE,
 	N_("do not execute %%pre scriptlet (if any)"), NULL },
@@ -187,15 +240,23 @@ struct poptOption rpmInstallPoptTable[] = {
 	RPMTRANS_FLAG_NOPOSTUN,
 	N_("do not execute %%postun scriptlet (if any)"), NULL },
 
+#ifdef	DYING
  { "nodigest", '\0', POPT_BIT_SET, &rpmIArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.qva_flags, VERIFY_HDRCHK,
         N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_BIT_SET, &rpmIArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify package signature(s)"), NULL },
+#else
+ { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
+        N_("don't verify package digest(s)"), NULL },
+ { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
+        N_("don't verify database header(s) when retrieved"), NULL },
+ { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOSIGNATURE,
+        N_("don't verify package signature(s)"), NULL },
+#endif
 
- { "notriggers", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
-	_noTransTriggers,
+ { "notriggers", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, _noTransTriggers,
 	N_("do not execute any scriptlet(s) triggered by this package"), NULL},
  { "notriggerprein", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOTRIGGERPREIN,

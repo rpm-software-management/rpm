@@ -27,6 +27,15 @@ extern "C" {
 /*@unchecked@*/
 extern struct poptOption		rpmcliAllPoptTable[];
 
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+extern const char * rpmcliPipeOutput;
+
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+extern const char * rpmcliRcfile;
+
+/*@unchecked@*/ /*@observer@*/ /*@null@*/
+extern const char * rpmcliRootDir;
+
 /**
  * Initialize most everything needed by an rpm CLI executable context.
  * @param argc			no. of args
@@ -43,6 +52,17 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 		fileSystem, internalState @*/;
 
 /**
+ * Make sure that rpm configuration has been read.
+ * @warning Options like --rcfile and --verbose must precede callers option.
+ */
+/*@mayexit@*/
+void rpmcliConfigured(void)
+	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/**
  * Destroy most everything needed by an rpm CLI executable context.
  * @param optCon		popt context
  * @return			NULL always
@@ -50,6 +70,17 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 poptContext
 rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
 	/*@modifies optCon @*/;
+
+/**
+ * Common/global popt tokens used for command line option tables.
+ */
+#define	RPMCLI_POPT_NODEPS		-1025
+#define	RPMCLI_POPT_FORCE		-1026
+#define	RPMCLI_POPT_NOMD5		-1027
+#define	RPMCLI_POPT_NOSCRIPTS		-1028
+#define	RPMCLI_POPT_NOSIGNATURE		-1029
+#define	RPMCLI_POPT_NODIGEST		-1030
+#define	RPMCLI_POPT_NOHDRCHK		-1031
 
 /* ==================================================================== */
 /** \name RPMBT */
@@ -179,6 +210,12 @@ typedef enum rpmQueryFlags_e {
 #define	_QUERY_FOR_BITS	\
    (QUERY_FOR_LIST|QUERY_FOR_STATE|QUERY_FOR_DOCS|QUERY_FOR_CONFIG|\
     QUERY_FOR_DUMPFILES)
+
+/** \ingroup rpmcli
+ * Bit(s) from common command line options.
+ */
+/*@unchecked@*/
+extern rpmQueryFlags rpmcliQueryFlags;
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmVerify() operation, stored in qva_flags.
@@ -472,17 +509,17 @@ struct rpmInstallArguments_s {
     rpmprobFilterFlags probFilter;
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;
-/*@owned@*/ /*@null@*/
-    rpmRelocation * relocations;
+    rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
+    uint_32 rbtid;		/*!< from --rollback */
     int numRelocations;
     int noDeps;
     int incldocs;
-    rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
+/*@owned@*/ /*@null@*/
+    rpmRelocation * relocations;
 /*@null@*/
     const char * prefix;
 /*@observer@*/ /*@null@*/
     const char * rootdir;
-    uint_32 rbtid;		/*!< from --rollback */
 };
 
 /** \ingroup rpmcli

@@ -513,10 +513,6 @@ static int vsflags = _RPMTS_VSF_VERIFY_LEGACY;
 static struct poptOption optionsTable[] = {
  { "nolegacy", '\0', POPT_BIT_CLR,      &vsflags, _RPMTS_VSF_VERIFY_LEGACY,
 	N_("don't verify header+payload signature"), NULL },
- { "nodigest", '\0', POPT_BIT_SET,      &vsflags, _RPMTS_VSF_NODIGESTS,
-	N_("don't verify package digest"), NULL },
- { "nosignature", '\0', POPT_BIT_SET,   &vsflags, _RPMTS_VSF_NOSIGNATURES,
-	N_("don't verify package signature"), NULL },
 
  { "nocache", '\0', POPT_ARG_VAL,   &noCache, -1,
 	N_("don't update cache database, only print package paths"), NULL },
@@ -585,7 +581,15 @@ main(int argc, char *const argv[])
     }
 
     ts = rpmtsCreate();
+
+    if (rpmcliQueryFlags & VERIFY_DIGEST)
+	vsflags |= _RPMTS_VSF_NODIGESTS;
+    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
+	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+    if (rpmcliQueryFlags & VERIFY_HDRCHK)
+	vsflags |= _RPMTS_VSF_NOHDRCHK;
     (void) rpmtsSetVerifySigFlags(ts, vsflags);
+
     {   int_32 tid = (int_32) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }

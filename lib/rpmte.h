@@ -128,6 +128,7 @@ struct rpmtsi_s {
     rpmts ts;		/*!< transaction set. */
     int reverse;	/*!< reversed traversal? */
     int ocsave;		/*!< last returned iterator index. */
+    int ocmax;		/*!< iterator max index. */
     int oc;		/*!< iterator index. */
 };
 

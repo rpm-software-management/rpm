@@ -104,7 +104,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
  { "hdrid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYHDRID,
 	N_("query/verify package(s) with header identifier"), "SHA1" },
  { "package", 'p', 0, 0, 'p',
-	N_("query/verify a package file (i.e. a binary *.rpm file)"), NULL },
+	N_("query/verify a package file"), NULL },
  { "pkgid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYPKGID,
 	N_("query/verify package(s) with package identifier"), "MD5" },
  { "query", 'q', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'q',
@@ -147,11 +147,6 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 	break;
     case POPT_DUMP: qva->qva_flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST;
 	break;
-    case 'v':
-	/*@-internalglobs@*/ /* FIX: shrug */
-	rpmIncreaseVerbosity();
-	/*@=internalglobs@*/
-	break;
 
     case POPT_QUERYFORMAT:
 	if (arg) {
@@ -171,6 +166,41 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 	    qva->qva_queryFormat = qf;
 	}
 	break;
+
+    case RPMCLI_POPT_NODIGEST:
+	qva->qva_flags |= VERIFY_DIGEST;
+	break;
+
+    case RPMCLI_POPT_NOSIGNATURE:
+	qva->qva_flags |= VERIFY_SIGNATURE;
+	break;
+
+    case RPMCLI_POPT_NOHDRCHK:
+	qva->qva_flags |= VERIFY_HDRCHK;
+	break;
+
+    case RPMCLI_POPT_NODEPS:
+	qva->qva_flags |= VERIFY_DEPS;
+	break;
+
+    case RPMCLI_POPT_NOMD5:
+	qva->qva_flags |= VERIFY_MD5;
+	break;
+
+#ifdef	NOTYET
+    case RPMCLI_POPT_FORCE:
+	ia->probFilter |=
+		( RPMPROB_FILTER_REPLACEPKG
+		| RPMPROB_FILTER_REPLACEOLDFILES
+		| RPMPROB_FILTER_REPLACENEWFILES
+		| RPMPROB_FILTER_OLDPACKAGE );
+	break;
+#endif
+
+    case RPMCLI_POPT_NOSCRIPTS:
+	qva->qva_flags |= VERIFY_SCRIPT;
+	break;
+
     }
 }
 
@@ -180,7 +210,7 @@ static void queryArgCallback(/*@unused@*/poptContext con,
 /*@unchecked@*/
 struct poptOption rpmQueryPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
 	queryArgCallback, 0, NULL, NULL },
 /*@=type@*/
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
@@ -215,8 +245,6 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("substitute i18n sections into spec file"), NULL },
  { "state", 's', 0, 0, 's',
 	N_("display the states of the listed files"), NULL },
- { "verbose", 'v', 0, 0, 'v',
-	N_("display a verbose file listing"), NULL },
    POPT_TABLEEND
 };
 
@@ -224,13 +252,22 @@ struct poptOption rpmQueryPoptTable[] = {
  * Verify mode options.
  */
 struct poptOption rpmVerifyPoptTable[] = {
+/*@-type@*/ /* FIX: cast? */
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
+	queryArgCallback, 0, NULL, NULL },
+/*@=type@*/
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
 
  /* Duplicate file verify flags from packages into command line options. */
 /** @todo Add --nomd5 alias to rpmpopt, eliminate. */
+#ifdef	DYING
  { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
 	N_("don't verify MD5 digest of files"), NULL },
+#else
+ { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
+	N_("don't verify MD5 digest of files"), NULL },
+#endif
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SIZE,
         N_("don't verify size of files"), NULL },
@@ -255,16 +292,31 @@ struct poptOption rpmVerifyPoptTable[] = {
 
  { "nofiles", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FILES,
 	N_("don't verify files in package"), NULL},
+#ifdef	DYING
  { "nodeps", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DEPS,
 	N_("don't verify package dependencies"), NULL },
+#else
+ { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
+	N_("don't verify package dependencies"), NULL },
+#endif
+
+#ifdef	DYING
  { "noscript", '\0', POPT_BIT_SET,&rpmQVKArgs.qva_flags, VERIFY_SCRIPT,
         N_("don't execute verify script(s)"), NULL },
  /* XXX legacy had a trailing s on --noscript */
  { "noscripts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SCRIPT,
         N_("don't execute verify script(s)"), NULL },
- { "nodigest", '\0', POPT_BIT_SET,
-	&rpmQVKArgs.qva_flags, VERIFY_DIGEST,
+#else
+ { "noscript", '\0', 0, NULL, RPMCLI_POPT_NOSCRIPTS,
+        N_("don't execute verify script(s)"), NULL },
+ /* XXX legacy had a trailing s on --noscript */
+ { "noscripts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOSCRIPTS,
+        N_("don't execute verify script(s)"), NULL },
+#endif
+
+#ifdef	DYING
+ { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_HDRCHK,
@@ -272,6 +324,14 @@ struct poptOption rpmVerifyPoptTable[] = {
  { "nosignature", '\0', POPT_BIT_SET,
 	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify package signature(s)"), NULL },
+#else
+ { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
+        N_("don't verify package digest(s)"), NULL },
+ { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
+        N_("don't verify database header(s) when retrieved"), NULL },
+ { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOSIGNATURE,
+        N_("don't verify package signature(s)"), NULL },
+#endif
 
 /** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
  { "nogpg", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
@@ -290,7 +350,7 @@ struct poptOption rpmVerifyPoptTable[] = {
 /*@unchecked@*/
 struct poptOption rpmSignPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	rpmQVSourceArgCallback, 0, NULL, NULL },
 /*@=type@*/
  { "addsign", '\0', 0, NULL, 'A',
