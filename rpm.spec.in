@@ -601,3 +601,4 @@ fi
 - add buildarch lines for hppa (#57728).
 - sparc: make dbenv per-rpmdb, not per-dbi.
 - handle lazy db open's in chroot with absolute path, not prefix strip.
+- Depends should use CDB if configured.

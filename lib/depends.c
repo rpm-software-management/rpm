@@ -1698,7 +1698,6 @@ assert(newOrderCount == ts->orderCount);
     ts->orderAlloced = ts->orderCount;
     orderList = _free(orderList);
 
-#if defined(__LCLINT__)		/* XXX HACK rpmsort needs for graphviz */
     /* Clean up after dependency checks */
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
@@ -1707,7 +1706,6 @@ assert(newOrderCount == ts->orderCount);
     pi = teFreeIterator(pi);
 
     ts->addedPackages = alFree(ts->addedPackages);
-#endif
 
     return 0;
 }
