@@ -7,6 +7,7 @@
 #include "hash.h"
 #include "install.h"
 #include "misc.h"
+#include "rpmdb.h"
 
 struct fileFate {
     enum fileFate_e { CREATE, REMOVE } action;
@@ -21,6 +22,12 @@ struct fileInfo {
     int fc;
 };
 
+struct sharedFileInfo {
+    int pkgFileNum;
+    int otherFileNum;
+    int otherPkg;
+};
+
 static rpmProblemSet psCreate(void);
 static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key, 
 		     Header h, char * str1);
@@ -29,6 +36,7 @@ static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
 			       rpmProblemSet probs);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
+static int sharedCmp(const void * one, const void * two);
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
@@ -44,13 +52,13 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     rpmProblem prob;
     struct availablePackage * alp;
     rpmProblemSet probs;
-    dbiIndexSet dbi;
+    dbiIndexSet dbi, * matches;
     Header * hdrs;
     int fileCount;
     int totalFileCount = 0;
     hashTable ht, fates;
-    struct fileInfo * flList, * fi, * winner;
-    int winnerFileNum;
+    struct fileInfo * flList, * fi, * winner = NULL; /* init keeps gcc quiet */
+    int winnerFileNum = 0;			     /* see above */
     struct fileFate * fateList;
     int numFates;
     struct fileInfo ** recs;
@@ -58,6 +66,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     char ** othermd5s;
     Header h;
     int32_t * otherstates;
+    struct sharedFileInfo * shared, * sharedList;
+    int numShared;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -153,8 +163,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
 	    htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
 	    /* note that &recs[0] must equal fi! */
-	    for (j = numRecs - 1; j > 0 && (recs[j]->action != ADDED); 
-		 winner--);
+	    for (j = numRecs - 1; j > 0 && (recs[j]->action != ADDED); j--);
 	    winner = recs[j];
 
 	    for (winnerFileNum = 0; winnerFileNum < winner->fc; 
@@ -178,32 +187,65 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    fateList[numFates].winner = alp->h;
 	    htAddEntry(fates, fi->fps + i, fateList + numFates);
 	    numFates++;
+	}
 
-	    /* this is horrible inefficient :-( */
-	    if (ts->db && !rpmdbFindByFile(ts->db, fi->fl[i], &dbi)) {
-		for (j = 0; j < dbi.count; j++) {
-		    h = rpmdbGetRecord(ts->db, dbi.recs[j].recOffset);
-		    /* this shouldn't happen */
-		    if (!h) continue;
+	matches = malloc(sizeof(*matches) * fi->fc);
+	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
 
-		    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL,
-					    (void **) &othermd5s, NULL);
-		    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-					    (void **) &otherstates, NULL);
+	numShared = 0;
+	for (i = 0; i < fi->fc; i++)
+	    numShared += matches[i].count;
 
-		    if ((otherstates[dbi.recs[j].fileNumber] == 
-				RPMFILE_STATE_NORMAL) &&
-			strcmp(winner->fmd5s[winnerFileNum], 
-			       othermd5s[dbi.recs[j].fileNumber])) {	
-			/* FIXME: we need to pass the conflicting header */
-			psAppend(probs, RPMPROB_FILE_CONFLICT, alp->key, 
-				 alp->h, fi->fl[i]);
-		    }
-
-		    free(othermd5s);
-		}
+	shared = sharedList = malloc(sizeof(*sharedList) * (numShared + 1));
+	for (i = 0; i < fi->fc; i++) {
+	    for (j = 0; j < matches[i].count; j++) {
+		shared->pkgFileNum = i;
+		shared->otherPkg = matches[i].recs[j].recOffset;
+		shared->otherFileNum = matches[i].recs[j].fileNumber;
+		shared++;
 	    }
 	}
+	shared->otherPkg = -1;
+	free(matches);
+
+	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);
+
+	i = 0;
+	while (i < numShared) {
+	    h = rpmdbGetRecord(ts->db, sharedList[i].otherPkg);
+	    if (!h) {
+		i++;
+		continue;
+	    }
+
+	    /* FIXME: This is not a proper file comparison. */
+	    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL,
+				    (void **) &othermd5s, NULL);
+	    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
+				    (void **) &otherstates, NULL);
+
+	    j = i;
+	    shared = sharedList + i;
+	    while (sharedList[i].otherPkg == shared->otherPkg) {
+		if ((otherstates[shared->otherFileNum] == 
+			    RPMFILE_STATE_NORMAL) &&
+		    strcmp(winner->fmd5s[winnerFileNum], 
+			   othermd5s[shared->otherFileNum])) {
+		    /* FIXME: we need to pass the conflicting header */
+		    psAppend(probs, RPMPROB_FILE_CONFLICT, alp->key, 
+			     alp->h, fi->fl[shared->pkgFileNum]);
+		}
+
+		shared++;
+	    }
+
+	    free(othermd5s);
+	    headerFree(h);
+
+	    i = shared - sharedList;
+	}
+
+	free(sharedList);
 
 	numPackages++;
     }
@@ -213,8 +255,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
 	if (alp->h != flList[numPackages].h) continue;
 	fi = flList + numPackages;
+#if 0
 	free(fi->fl);
 	free(fi->fmd5s);
+#endif
     }
 
     if (probs->numProblems && (!okProbs || psTrim(okProbs, probs))) {
@@ -496,4 +540,16 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target) {
 	gotProblems = 1;
 
     return gotProblems;
+}
+
+static int sharedCmp(const void * one, const void * two) {
+    const struct sharedFileInfo * a = one;
+    const struct sharedFileInfo * b = two;
+
+    if (a->otherPkg < b->otherPkg)
+	return -1;
+    else if (a->otherPkg > b->otherPkg)
+	return 1;
+
+    return 0;
 }
