@@ -1,3 +1,19 @@
+2.0.10 -> 2.1:
+        - added --requiredby and --provides queries
+	- added --deps query
+	- added Provides: to default output of -qi
+	- using a string array tag in a queryformat results in every
+	  item in the string being printed out with spaces in between
+	  (though this behaviour will probably go away shortly)
+	- all packages are ftp'd before any are installed (required to
+	  do proper dependency checking)
+	- if only source packages are being installed, the database is
+	  never opened
+	- automatic shared library require/provides tags generated
+	- added --nodeps flag for install and uninstall
+	- added Nodeps to rpmrc
+	- added dependency checking for installs and uninstalls
+
 2.0.10 -> 2.0.11:
         - fixed chmod(symlink) bug (since 2.0.9)
 
