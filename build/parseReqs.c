@@ -51,6 +51,9 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 	} else if (tag == RPMTAG_PREREQ) {
 	    flags = RPMSENSE_PREREQ;
 	    name = "PreReq";
+	} else if (tag == RPMTAG_BUILDPREREQ) {
+	    flags = RPMSENSE_PREREQ;
+	    name = "BuildPreReq";
 	} else if (tag == RPMTAG_TRIGGERIN) {
 	    flags = RPMSENSE_TRIGGERIN;
 	    name = "%triggerin";
@@ -97,7 +100,7 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 	}
 
 	addReqProv(spec,
-	    (tag == RPMTAG_BUILDREQUIRES ? spec->buildRestrictions : pkg->header),
+	    (tag == RPMTAG_BUILDPREREQ ? spec->buildRestrictions : pkg->header),
 	    flags, req, (flags & RPMSENSE_SENSEMASK) ? version : NULL, index);
 
 	/* If there is no sense, we just read the next token */

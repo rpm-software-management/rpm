@@ -2,6 +2,8 @@
 	- create rpmbzio.c to avoid implicit dependence on libbz2 for installer.
 	- spec files can provide /filename now
 	- added rpmdbOpenForTraversal()
+	- proxy http (Alex deVries).
+	- add BuildPrereq: in spec file and src rpm.
 
 2.5.x -> 2.90
 	- added --excludepath
