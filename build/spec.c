@@ -53,47 +53,6 @@ char *chop_line(char *s);
 /*                                                                    */
 /**********************************************************************/
 
-void dumpSpec(Spec s, FILE *f)
-{
-    struct PackageRec *p;
-    
-    fprintf(f, "########################################################\n");
-    fprintf(f, "SPEC NAME = (%s)\n", s->name);
-    fprintf(f, "PREP =v\n");
-    fprintf(f, "%s", getStringBuf(s->prep));
-    fprintf(f, "PREP =^\n");
-    fprintf(f, "BUILD =v\n");
-    fprintf(f, "%s", getStringBuf(s->build));
-    fprintf(f, "BUILD =^\n");
-    fprintf(f, "INSTALL =v\n");
-    fprintf(f, "%s", getStringBuf(s->install));
-    fprintf(f, "INSTALL =^\n");
-    fprintf(f, "CLEAN =v\n");
-    fprintf(f, "%s", getStringBuf(s->clean));
-    fprintf(f, "CLEAN =^\n");
-
-    p = s->packages;
-    while (p) {
-	dumpPackage(p, f);
-	p = p->next;
-    }
-}
-
-static void dumpPackage(struct PackageRec *p, FILE *f)
-{
-    fprintf(f, "_________________________________________________________\n");
-    fprintf(f, "SUBNAME = (%s)\n", p->subname);
-    fprintf(f, "NEWNAME = (%s)\n", p->newname);
-    fprintf(f, "FILES = %d\n", p->files);
-    fprintf(f, "FILES =v\n");
-    fprintf(f, "%s", getStringBuf(p->filelist));
-    fprintf(f, "FILES =^\n");
-    fprintf(f, "HEADER =v\n");
-    dumpHeader(p->header, f, 1);
-    fprintf(f, "HEADER =^\n");
-
-}
-
 static struct PackageRec *new_packagerec(void)
 {
     struct PackageRec *p = malloc(sizeof(struct PackageRec));
@@ -386,7 +345,9 @@ char *chop_line(char *s)
 
 Spec parseSpec(FILE *f)
 {
-    char line[LINE_BUF_SIZE];
+    char buf[LINE_BUF_SIZE]; /* read buffer          */
+    char *line;              /* "parsed" read buffer */
+    
     int x, tag, cur_part, t1;
     int lookupopts;
     StringBuf sb;
@@ -406,7 +367,8 @@ Spec parseSpec(FILE *f)
     reset_spec();         /* Reset the parser */
     
     cur_part = PREAMBLE_PART;
-    while ((x = read_line(f, line)) > 0) {
+    while ((x = read_line(f, buf)) > 0) {
+	line = buf;
 	s = NULL;
         if ((tag = check_part(line, &s))) {
 	    printf("Switching to part: %d\n", tag);
@@ -438,14 +400,13 @@ Spec parseSpec(FILE *f)
 		  case INSTALL_PART:
 		  case CLEAN_PART:
 		    error(RPMERR_BADARG, "Tag takes no arguments: %s", s);
-		    fprintf(stderr, "Tag takes no arguments: %s\n", s);
-		    exit(RPMERR_BADARG);
+		    return NULL;
 	        }
 	    }
 
 	    if (! lookup_package(spec, &cur_package, s, lookupopts)) {
 		error(RPMERR_INTERNAL, "Package lookup failed!");
-		exit(RPMERR_INTERNAL);
+		return NULL;
 	    }
 
 	    printf("Switched to package: %s\n", s);
@@ -460,7 +421,7 @@ Spec parseSpec(FILE *f)
 	    }
 	    if (! lookup_package(spec, &cur_package, NULL, lookupopts)) {
 		error(RPMERR_INTERNAL, "Base package lookup failed!");
-		exit(RPMERR_INTERNAL);
+		return NULL;
 	    }
 	    printf("Switched to BASE package\n");
 	}
@@ -518,13 +479,11 @@ Spec parseSpec(FILE *f)
 	    break;
 	  default:
 	    error(RPMERR_INTERNAL, "Bad part");
-	    printf("%s\n", line);
-	    exit(RPMERR_INTERNAL);
+	    return NULL;
 	} /* switch */
     }
     if (x < 0) {
-        fprintf(stderr, "ERROR\n");
-	/* error */
+	error(RPMERR_READERROR, "Error reading specfile");
 	return NULL;
     }
 
@@ -566,4 +525,51 @@ static void reset_spec()
 
 	done = 1;
     }
+}
+
+/**********************************************************************/
+/*                                                                    */
+/* Spec struct dumping (for debugging)                                */
+/*                                                                    */
+/**********************************************************************/
+
+void dumpSpec(Spec s, FILE *f)
+{
+    struct PackageRec *p;
+    
+    fprintf(f, "########################################################\n");
+    fprintf(f, "SPEC NAME = (%s)\n", s->name);
+    fprintf(f, "PREP =v\n");
+    fprintf(f, "%s", getStringBuf(s->prep));
+    fprintf(f, "PREP =^\n");
+    fprintf(f, "BUILD =v\n");
+    fprintf(f, "%s", getStringBuf(s->build));
+    fprintf(f, "BUILD =^\n");
+    fprintf(f, "INSTALL =v\n");
+    fprintf(f, "%s", getStringBuf(s->install));
+    fprintf(f, "INSTALL =^\n");
+    fprintf(f, "CLEAN =v\n");
+    fprintf(f, "%s", getStringBuf(s->clean));
+    fprintf(f, "CLEAN =^\n");
+
+    p = s->packages;
+    while (p) {
+	dumpPackage(p, f);
+	p = p->next;
+    }
+}
+
+static void dumpPackage(struct PackageRec *p, FILE *f)
+{
+    fprintf(f, "_________________________________________________________\n");
+    fprintf(f, "SUBNAME = (%s)\n", p->subname);
+    fprintf(f, "NEWNAME = (%s)\n", p->newname);
+    fprintf(f, "FILES = %d\n", p->files);
+    fprintf(f, "FILES =v\n");
+    fprintf(f, "%s", getStringBuf(p->filelist));
+    fprintf(f, "FILES =^\n");
+    fprintf(f, "HEADER =v\n");
+    dumpHeader(p->header, f, 1);
+    fprintf(f, "HEADER =^\n");
+
 }
