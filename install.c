@@ -165,9 +165,10 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	    if (rpmIsVerbose()) {
 		printf(_("Retrieving %s\n"), *filename);
 	    }
-	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir));
-	    sprintf(packages[i], "%s/var/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
-		    tmpnum++, (int) getpid());
+	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir) +
+			         strlen(rpmGetVar(RPMVAR_TMPPATH)));
+	    sprintf(packages[i], "%s%s/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
+		    rpmGetVar(RPMVAR_TMPPATH), tmpnum++, (int) getpid());
 	    rpmMessage(RPMMESS_DEBUG, 
 			"getting %s as %s\n", *filename, packages[i]);
 	    fd = urlGetFile(*filename, packages[i]);
