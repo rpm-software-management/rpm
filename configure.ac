@@ -1239,7 +1239,6 @@ AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	python/rpmdb/Makefile
 	python/rpmdb/test/Makefile
   ], [	echo timestamp > popt/stamp-h.in
-	echo timestamp > beecrypt/stamp-h.in
 	echo timestamp > stamp-h.in
   ]
 )

@@ -321,13 +321,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     fi->astriplen = 0;
     fi->striplen = 0;
 
-    fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
-    fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
-    for (i = 0; i < fi->fc; i++) {
-	fi->fuids[i] = fi->uid;
-	fi->fgids[i] = fi->gid;
-    }
-
     for (i = 0; i < fi->fc; i++)
 	fi->actions[i] = FA_CREATE;
 
@@ -684,12 +677,12 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    if (ofdno != STDOUT_FILENO)
 		xx = dup2(ofdno, STDOUT_FILENO);
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (ofdno > STDERR_FILENO && ofdno != sfdno) {
+	    if (ofdno > STDERR_FILENO && ofdno != sfdno)
 		xx = Fclose (out);
-	    }
-	    if (sfdno > STDERR_FILENO) {
+	    if (sfdno > STDERR_FILENO)
 		xx = Fclose (scriptFd);
-	    }
+	    else
+		xx = Fclose(out);
 	}
 
 	{   const char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
@@ -854,11 +847,13 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     const char ** triggerProgs;
     int_32 * triggerIndices;
     const char * sourceName;
+    const char * triggerName;
     rpmRC rc = RPMRC_OK;
     int xx;
     int i;
 
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
+    xx = headerNVR(triggeredH, &triggerName, NULL, NULL);
 
     trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
     if (trigger == NULL)
@@ -897,7 +892,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	{   int arg1;
 	    int index;
 
-	    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), Name);
+	    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
 	    if (arg1 < 0) {
 		/* XXX W2DO? fails as "execution of script failed" */
 		rc = RPMRC_FAIL;
@@ -1263,10 +1258,6 @@ assert(psm->mi == NULL);
 	    if (fi->fgroup == NULL)
 		xx = hge(fi->h, RPMTAG_FILEGROUPNAME, NULL,
 				(void **) &fi->fgroup, NULL);
-	    if (fi->fuids == NULL)
-		fi->fuids = xcalloc(sizeof(*fi->fuids), fc);
-	    if (fi->fgids == NULL)
-		fi->fgids = xcalloc(sizeof(*fi->fgids), fc);
 	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
@@ -1471,34 +1462,6 @@ psm->te->h = headerLink(fi->h);
 		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_START, 0, 100);
 		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
 		break;
-	    }
-
-	    (void) rpmfiInit(fi, 0);
-	    while ((i = rpmfiNext(fi)) >= 0) {
-		uid_t uid;
-		gid_t gid;
-
-		uid = fi->uid;
-		gid = fi->gid;
-		if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
-		    rpmMessage(RPMMESS_WARNING,
-			_("user %s does not exist - using root\n"),
-			fi->fuser[i]);
-		    uid = 0;
-		    /* XXX this diddles header memory. */
-		    fi->fmodes[i] &= ~S_ISUID;	/* turn off the suid bit */
-		}
-
-		if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
-		    rpmMessage(RPMMESS_WARNING,
-			_("group %s does not exist - using root\n"),
-			fi->fgroup[i]);
-		    gid = 0;
-		    /* XXX this diddles header memory. */
-		    fi->fmodes[i] &= ~S_ISGID;	/* turn off the sgid bit */
-		}
-		if (fi->fuids) fi->fuids[i] = uid;
-		if (fi->fgids) fi->fgids[i] = gid;
 	    }
 
 	    /* Retrieve type of payload compression. */
@@ -1759,8 +1722,6 @@ psm->te->h = headerFree(psm->te->h);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->failedFile = _free(psm->failedFile);
 
-	fi->fgids = _free(fi->fgids);
-	fi->fuids = _free(fi->fuids);
 	fi->fgroup = hfd(fi->fgroup, -1);
 	fi->fuser = hfd(fi->fuser, -1);
 	fi->apath = _free(fi->apath);
@@ -1805,7 +1766,9 @@ psm->te->h = headerFree(psm->te->h);
     case PSM_CHROOT_IN:
     {	const char * rootDir = rpmtsRootDir(ts);
 	/* Change root directory if requested and not already done. */
-	if (rootDir != NULL && !rpmtsChrootDone(ts) && !psm->chrootDone) {
+	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')
+	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
+	{
 	    static int _loaded = 0;
 
 	    /*

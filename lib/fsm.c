@@ -753,18 +753,25 @@ int fsmMapAttrs(FSM_t fsm)
     int i = fsm->ix;
 
     if (fi && i >= 0 && i < fi->fc) {
-	mode_t perms =
-		(S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
-	mode_t finalMode =
-		(fi->fmodes ? fi->fmodes[i] : perms);
-	uid_t finalUid =
-		(fi->fuids ? fi->fuids[i] : fi->uid); /* XXX chmod u-s */
-	gid_t finalGid =
-		(fi->fgids ? fi->fgids[i] : fi->gid); /* XXX chmod g-s */
-	dev_t finalRdev =
-		(fi->frdevs ? fi->frdevs[i] : 0);
-	int_32 finalMtime =
-		(fi->fmtimes ? fi->fmtimes[i] : 0);
+	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
+	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
+	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
+	int_32 finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
+	uid_t uid = fi->uid;
+	gid_t gid = fi->gid;
+
+	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("user %s does not exist - using root\n"), fi->fuser[i]);
+	    uid = 0;
+	    finalMode &= ~S_ISUID;      /* turn off suid bit */
+	}
+
+	if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("group %s does not exist - using root\n"), fi->fgroup[i]);
+	    finalMode &= ~S_ISGID;	/* turn off sgid bit */
+	}
 
 	if (fsm->mapFlags & CPIO_MAP_MODE)
 	    st->st_mode = (st->st_mode & S_IFMT) | (finalMode & ~S_IFMT);
@@ -777,9 +784,9 @@ int fsmMapAttrs(FSM_t fsm)
 	    st->st_mtime = finalMtime;
 	}
 	if (fsm->mapFlags & CPIO_MAP_UID)
-	    st->st_uid = finalUid;
+	    st->st_uid = uid;
 	if (fsm->mapFlags & CPIO_MAP_GID)
-	    st->st_gid = finalGid;
+	    st->st_gid = gid;
 
 	{   rpmts ts = fsmGetTs(fsm);
 

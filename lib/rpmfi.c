@@ -1113,9 +1113,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->cdict = hfd(fi->cdict, -1);
 
 	fi->fuser = hfd(fi->fuser, -1);
-	fi->fuids = _free(fi->fuids);
 	fi->fgroup = hfd(fi->fgroup, -1);
-	fi->fgids = _free(fi->fgids);
 
 	fi->fstates = _free(fi->fstates);
 
@@ -1313,9 +1311,7 @@ if (fi->actions == NULL)
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
     xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fi->fuser, NULL);
-    fi->fuids = NULL;
     xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fi->fgroup, NULL);
-    fi->fgids = NULL;
 
     if (ts != NULL)
     if (fi != NULL)

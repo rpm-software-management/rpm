@@ -880,7 +880,7 @@ freeArgs(MacroBuf mb)
  */
 /*@-bounds@*/
 /*@dependent@*/ static const char *
-grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char lastc)
+grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char *lastc)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies mb, rpmGlobalMacroContext @*/
 {
@@ -901,7 +901,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
 
     /* Copy args into buf until lastc */
     *be++ = ' ';
-    while ((c = *se++) != '\0' && c != lastc) {
+    while ((c = *se++) != '\0' && (se-1) != lastc) {
 /*@-globs@*/
 	if (!isblank(c)) {
 	    *be++ = c;
@@ -969,6 +969,8 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se, char 
     /*@-mods@*/
     optind = 0;		/* XXX but posix != glibc */
     /*@=mods@*/
+#else
+    optind = 1;
 #endif
 
     opts = me->opts;
@@ -1174,7 +1176,7 @@ expandMacro(MacroBuf mb)
     int c;
     int rc = 0;
     int negate;
-    char grab;
+    char *grab;
     int chkexist;
 
     if (++mb->depth > max_macro_depth) {
@@ -1208,7 +1210,7 @@ expandMacro(MacroBuf mb)
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
 		t = mb->t;	/* save expansion pointer for printExpand */
 	negate = 0;
-	grab = '\0';
+	grab = NULL;
 	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
@@ -1243,7 +1245,8 @@ expandMacro(MacroBuf mb)
 		/* For "%name " macros ... */
 /*@-globs@*/
 		if ((c = *fe) && isblank(c))
-			grab = '\n';
+			if ((grab = strchr(fe,'\n')) == NULL)
+                grab = strchr(fe, '\0');
 /*@=globs@*/
 		/*@switchbreak@*/ break;
 	case '(':		/* %(...) shell escape */
@@ -1290,7 +1293,7 @@ expandMacro(MacroBuf mb)
 			ge = se - 1;
 			/*@innerbreak@*/ break;
 		case ' ':
-			grab = se[-1];
+			grab = se-1;
 			/*@innerbreak@*/ break;
 		default:
 			/*@innerbreak@*/ break;
@@ -1444,7 +1447,7 @@ expandMacro(MacroBuf mb)
 
 	/* Setup args for "%name " macros with opts */
 	if (me && me->opts != NULL) {
-		if (grab != '\0') {
+		if (grab != NULL) {
 			se = grabArgs(mb, me, fe, grab);
 		} else {
 			addMacro(mb->mc, "**", NULL, "", mb->depth);

@@ -1379,9 +1379,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	fi->astriplen = strlen(fl->buildRootURL);
     fi->striplen = 0;
     fi->fuser = NULL;
-    fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
     fi->fgroup = NULL;
-    fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
 
     /* Make the cpio list */
     if (fi->dil != NULL)	/* XXX can't happen */
@@ -1430,10 +1428,6 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    continue;
 	}
 	fi->actions[i] = FA_COPYOUT;
-	fi->fuids[i] = getUidS(flp->uname);
-	fi->fgids[i] = getGidS(flp->gname);
-	if (fi->fuids[i] == (uid_t)-1) fi->fuids[i] = 0;
-	if (fi->fgids[i] == (gid_t)-1) fi->fgids[i] = 0;
 	fi->fmapflags[i] = CPIO_MAP_PATH |
 		CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	if (isSrc)

@@ -70,10 +70,6 @@ struct rpmfi_s {
     const char ** fuser;	/*!< File owner(s) (from header) */
 /*@only@*/ /*@null@*/
     const char ** fgroup;	/*!< File group(s) (from header) */
-/*@only@*/ /*@null@*/
-    uid_t * fuids;		/*!< File uid(s) */
-/*@only@*/ /*@null@*/
-    gid_t * fgids;		/*!< File gid(s) */
 
 /*@only@*/ /*@null@*/
     char * fstates;		/*!< File state(s) (from header) */
