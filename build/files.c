@@ -321,6 +321,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fest->conf = 0;
 	    if (!strcmp(filename, specFile)) {
 		fest->isspecfile = 1;
+	    } else {
+		fest->isspecfile = 0;
 	    }
 	    fest->verify_flags = 0;  /* XXX - something else? */
 	    stat(filename, &fest->statbuf);
