@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-06-04 17:50-0400\n"
+"POT-Creation-Date: 2002-06-05 16:20-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2512,8 +2512,8 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
 #: lib/rpmps.c:250
-#, c-format
-msgid "installing package %s needs %ld%cb on the %s filesystem"
+#, fuzzy, c-format
+msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
 "니다"
@@ -2658,7 +2658,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:560
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

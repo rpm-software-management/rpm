@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-04 17:50-0400\n"
+"POT-Creation-Date: 2002-06-05 16:20-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2715,7 +2715,7 @@ msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
 #: lib/rpmps.c:250
 #, c-format
-msgid "installing package %s needs %ld%cb on the %s filesystem"
+msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
 #: lib/rpmps.c:260
@@ -2858,7 +2858,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:560
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

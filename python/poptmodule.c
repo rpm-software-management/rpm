@@ -6,7 +6,7 @@
 
 #define PY_POPT_VERSION "0.2"
 
-static const char *rcs_id = "$Id: poptmodule.c,v 1.6 2001/09/15 13:49:38 jbj Exp $";
+static const char *rcs_id = "$Id: poptmodule.c,v 1.7 2002/06/05 20:28:03 jbj Exp $";
 
 static char *module_doc = "Python bindings for the popt library\n\
 \n\
@@ -27,7 +27,7 @@ and is always available from ftp://ftp.rpm.org/pub/rpm/dist";
 
 /* Functins and datatypes needed for the context object */
 typedef struct poptContext_s {
-    PyObject_HEAD;
+    PyObject_HEAD
     struct poptOption *options;
     int optionsNo;
     poptContext ctx;

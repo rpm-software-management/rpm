@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-04 17:50-0400\n"
+"POT-Creation-Date: 2002-06-05 16:20-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2526,8 +2526,8 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "balíèek %s (který je novìj¹í, ne¾ %s) je ji¾ nainstalován"
 
 #: lib/rpmps.c:250
-#, c-format
-msgid "installing package %s needs %ld%cb on the %s filesystem"
+#, fuzzy, c-format
+msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld%cB na systému souborù %s"
 
 #: lib/rpmps.c:260
@@ -2666,7 +2666,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:560
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr "získávám seznam pøipojených systémù souborù\n"
 

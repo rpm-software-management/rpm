@@ -296,6 +296,7 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
     sugkey = rpmalAllSatisfiesDepend(ts->availablePackages, ds, NULL);
     if (sugkey == NULL)
 	return rc;
+
     /* XXX no alternatives yet */
     if (sugkey[0] != NULL) {
 	ts->suggests = xrealloc(ts->suggests,
@@ -681,11 +682,8 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     ps = rpmtsProblems(ts);
     for (i = 0; i < ts->filesystemCount; i++, dsi++) {
 
-	/* XXX Avoid FAT and other file systems that have not inodes. */
-	if (dsi->iavail <= 0)
-	     continue;
-
-	if (adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
+	/* XXX Avoid FAT and other file systems that have nvailot inodes. */
+	if (dsi->iavail > 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
 	    rpmpsAppend(ps, RPMPROB_DISKSPACE,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,

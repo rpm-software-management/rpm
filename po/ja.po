@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-04 17:50-0400\n"
+"POT-Creation-Date: 2002-06-05 16:20-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2631,7 +2631,7 @@ msgstr ""
 
 #: lib/rpmps.c:250
 #, fuzzy, c-format
-msgid "installing package %s needs %ld%cb on the %s filesystem"
+msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
@@ -2774,7 +2774,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:560
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 

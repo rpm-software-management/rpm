@@ -82,7 +82,7 @@
 /** \ingroup python
  */
 struct hdrObject_s {
-    PyObject_HEAD;
+    PyObject_HEAD
     Header h;
     char ** md5list;
     char ** fileList;

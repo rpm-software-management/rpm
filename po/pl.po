@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-04 17:50-0400\n"
+"POT-Creation-Date: 2002-06-05 16:20-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2588,7 +2588,7 @@ msgstr ""
 
 #: lib/rpmps.c:250
 #, fuzzy, c-format
-msgid "installing package %s needs %ld%cb on the %s filesystem"
+msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "instalacja pakietu %s-%s-%s wymaga %ld%c w systemie plików %s"
 
 #: lib/rpmps.c:260
@@ -2727,7 +2727,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ %s/packages.rpm\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:560
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 

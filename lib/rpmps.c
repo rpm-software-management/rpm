@@ -247,7 +247,7 @@ const char * rpmProblemString(const rpmProblem prob)
 	break;
     case RPMPROB_DISKSPACE:
 	rc = snprintf(buf, nb,
-	    _("installing package %s needs %ld%cb on the %s filesystem"),
+	    _("installing package %s needs %ld%cB on the %s filesystem"),
 		pkgNEVR,
 		prob->ulong1 > (1024*1024)
 		    ? (prob->ulong1 + 1024 * 1024 - 1) / (1024 * 1024)

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-06-04 17:50-0400\n"
+"POT-Creation-Date: 2002-06-05 16:20-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2542,8 +2542,8 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s paketi zaten yüklü (%s sürümünden daha yeni)"
 
 #: lib/rpmps.c:250
-#, c-format
-msgid "installing package %s needs %ld%cb on the %s filesystem"
+#, fuzzy, c-format
+msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "%s kurulumu %ld%cb gerektiriyor (%s dosya sisteminde)"
 
 #: lib/rpmps.c:260
@@ -2682,7 +2682,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabaný açýlamadý\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:560
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr "baðlý dosya sistemlerinin listesi alýnýyor\n"
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2002-06-04 17:50-0400\n"
+"POT-Creation-Date: 2002-06-05 16:20-0400\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -2457,7 +2457,7 @@ msgstr ""
 
 #: lib/rpmps.c:250
 #, c-format
-msgid "installing package %s needs %ld%cb on the %s filesystem"
+msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
 #: lib/rpmps.c:260
@@ -2594,7 +2594,7 @@ msgid "cannot open Packages database in %s\n"
 msgstr ""
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:560
+#: lib/rpmts.c:561
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
