@@ -56,7 +56,10 @@ extern int h_errno;
 # define IPPORT_FTP 21
 #endif
 
+#if defined(USE_ALT_DNS) && USE_ALT_DNS 
 #include "dns.h"
+#endif
+
 #include "ftp.h"
 
 static int ftpCheckResponse(int sock, char ** str);
@@ -193,6 +196,18 @@ int ftpCommand(int sock, char * command, ...) {
 
     return 0;
 }
+
+#if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
+static int mygethostbyname(const char * host, struct in_addr * address) {
+    struct hostent * hostinfo;
+
+    hostinfo = gethostbyname(host);
+    if (!hostinfo) return 1;
+
+    memcpy(address, hostinfo->h_addr_list[0], hostinfo->h_length);
+    return 0;
+}
+#endif
 
 static int getHostAddress(const char * host, struct in_addr * address) {
     if (isdigit(host[0])) {
