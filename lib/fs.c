@@ -191,12 +191,14 @@ static int getFilesystemList(void) {
 }
 #endif
 
-int rpmGetFilesystemList(char *** listptr) {
+int rpmGetFilesystemList(char *** listptr, int * num) {
     if (!fsnames) 
 	if (getFilesystemList())
 	    return 1;
 
-    *listptr = fsnames;
+    if (listptr) *listptr = fsnames;
+    if (num) *num = numFilesystems;
+
     return 0;
 }
 

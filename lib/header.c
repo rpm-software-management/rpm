@@ -1686,7 +1686,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 
 	if (numElements == -1) {
 	    val = malloc(20);
-	    strcpy(val, "(none)\n");
+	    strcpy(val, "(none)");
 	} else {
 	    alloced = numElements * token->u.array.numTokens * 20;
 	    val = malloc(alloced);

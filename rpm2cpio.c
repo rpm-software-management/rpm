@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	    gzclose(stream);
 	    return 1;
 	}
-        fprintf (stderr, "rpm2cpio: zlib: %s error\n", zlib_err [-zerror]);
+        fprintf (stderr, "rpm2cpio: zlib: %s error\n", zlib_err [-zerror - 1]);
     }
 
     gzclose(stream);

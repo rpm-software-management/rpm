@@ -164,15 +164,12 @@ static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
     char ** list;
     int i;
 
-    if (rpmGetFilesystemList(&list)) {
+    if (rpmGetFilesystemList(&list, count)) {
 	return 1;
     }
 
     *type = RPM_STRING_ARRAY_TYPE;
     *((char ***) data) = list;
-
-    for (i = 0; list[i]; i++) ;
-    *count = i;
 
     *freeData = 0;
 
@@ -185,15 +182,19 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
     int_32 * filesizes;
     uint_32 * usages;
     int numFiles;
+    int i;
 
     headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles);
+
+    if (rpmGetFilesystemList(NULL, count)) {
+	return 1;
+    }
 
     if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
 	return 1;
 
     *type = RPM_INT32_TYPE;
-    *count = 20;
     *freeData = 1;
     *data = usages;
 

@@ -458,7 +458,7 @@ void rpmFreeSignature(Header h);
 int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
 
-int rpmGetFilesystemList(char *** listptr);
+int rpmGetFilesystemList(char *** listptr, int * num);
 int rpmGetFilesystemUsage(char ** filelist, int_32 * fssizes, int numFiles,
 			  uint_32 ** usagesPtr, int flags);
 
