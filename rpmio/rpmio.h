@@ -35,6 +35,9 @@ extern "C" {
  * \name RPMIO Vectors.
  */
 /*@{*/
+
+/** \ingroup rpmio
+ */
 typedef ssize_t fdio_read_function_t (void *cookie, char *buf, size_t nbytes);
 
 /** \ingroup rpmio
@@ -98,6 +101,9 @@ typedef int fdio_fflush_function_t (FD_t fd);
  * \name RPMRPC Vectors.
  */
 /*@{*/
+
+/** \ingroup rpmio
+ */
 typedef int fdio_mkdir_function_t (const char * path, mode_t mode);
 
 /** \ingroup rpmrpc
@@ -163,19 +169,23 @@ struct FDIO_s {
 /*@{*/
 
 /** \ingroup rpmio
+ * strerror(3) clone.
  */
 /*@observer@*/ const char * Fstrerror(FD_t fd);
 
 /** \ingroup rpmio
+ * fread(3) clone.
  */
 size_t	Fread	(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd);
 
 /** \ingroup rpmio
+ * fwrite(3) clone.
  */
 size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
 
 
 /** \ingroup rpmio
+ * fseek(3) clone.
  */
 #ifdef USE_COOKIE_SEEK_POINTER
 int	Fseek	(FD_t fd, _IO_off64_t offset, int whence);
@@ -184,6 +194,7 @@ int	Fseek	(FD_t fd, off_t offset, int whence);
 #endif
 
 /** \ingroup rpmio
+ * fclose(3) clone.
  */
 int	Fclose	( /*@killref@*/ FD_t fd);
 
@@ -192,28 +203,34 @@ int	Fclose	( /*@killref@*/ FD_t fd);
 FD_t	Fdopen	(FD_t fd, const char * fmode);
 
 /** \ingroup rpmio
+ * fopen(3) clone.
  */
 FD_t	Fopen	(const char * path, const char * fmode);
 
 
 /** \ingroup rpmio
+ * fflush(3) clone.
  */
 int	Fflush	(FD_t fd);
 
 /** \ingroup rpmio
+ * ferror(3) clone.
  */
 int	Ferror	(FD_t fd);
 
 /** \ingroup rpmio
+ * fileno(3) clone.
  */
 int	Fileno	(FD_t fd);
 
 
 /** \ingroup rpmio
+ * fcntl(2) clone.
  */
-int	Fcntl	(FD_t, int op, void *lip);
+int	Fcntl	(FD_t fd, int op, void *lip);
 
 /** \ingroup rpmio
+ * pread(2) clone.
  */
 #ifdef USE_COOKIE_SEEK_POINTER
 ssize_t Pread(FD_t fd, void * buf, size_t count, _IO_off64_t offset);
@@ -222,6 +239,7 @@ ssize_t Pread(FD_t fd, void * buf, size_t count, off_t offset);
 #endif
 
 /** \ingroup rpmio
+ * pwrite(2) clone.
  */
 #ifdef USE_COOKIE_SEEK_POINTER
 ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _IO_off64_t offset);
@@ -234,65 +252,83 @@ ssize_t Pwrite(FD_t fd, const void * buf, size_t count, off_t offset);
  * \name RPMRPC Interface.
  */
 /*@{*/
+
+/** \ingroup rpmrpc
+ * mkdir(2) clone.
+ */
 int	Mkdir	(const char * path, mode_t mode);
 
 /** \ingroup rpmrpc
+ * chdir(2) clone.
  */
 int	Chdir	(const char * path);
 
 /** \ingroup rpmrpc
+ * rmdir(2) clone.
  */
 int	Rmdir	(const char * path);
 
 /** \ingroup rpmrpc
+ * rename(2) clone.
  */
 int	Rename	(const char * oldpath, const char * newpath);
 
 /** \ingroup rpmrpc
+ * link(2) clone.
  */
 int	Link	(const char * oldpath, const char * newpath);
 
 /** \ingroup rpmrpc
+ * unlink(2) clone.
  */
 int	Unlink	(const char * path);
 
 /** \ingroup rpmrpc
+ * readlink(2) clone.
  */
 int	Readlink(const char * path, char * buf, size_t bufsiz);
 
 
 /** \ingroup rpmrpc
+ * stat(2) clone.
  */
 int	Stat	(const char * path, /*@out@*/ struct stat * st);
 
 /** \ingroup rpmrpc
+ * lstat(2) clone.
  */
 int	Lstat	(const char * path, /*@out@*/ struct stat * st);
 
 /** \ingroup rpmrpc
+ * access(2) clone.
  */
 int	Access	(const char * path, int amode);
 
 
 /** \ingroup rpmrpc
+ * glob(3) clone.
  */
 int	Glob	(const char * pattern, int flags,
 		int errfunc(const char * epath, int eerrno), /*@out@*/ glob_t * pglob);
 
 /** \ingroup rpmrpc
+ * globfree(3) clone.
  */
 void	Globfree( /*@only@*/ glob_t * pglob);
 
 
 /** \ingroup rpmrpc
+ * opendir(3) clone.
  */
 DIR *	Opendir	(const char * name);
 
 /** \ingroup rpmrpc
+ * readdir(3) clone.
  */
 struct dirent *	Readdir	(DIR * dir);
 
 /** \ingroup rpmrpc
+ * closedir(3) clone.
  */
 int	Closedir(DIR * dir);
 /*@}*/
@@ -302,8 +338,10 @@ int	Closedir(DIR * dir);
  * \name RPMIO Utilities.
  */
 /*@{*/
-off_t	fdSize	(FD_t fd);
 
+/** \ingroup rpmio
+ */
+off_t	fdSize	(FD_t fd);
 
 /** \ingroup rpmio
  */
@@ -313,7 +351,6 @@ off_t	fdSize	(FD_t fd);
 #endif
 
 /* XXX Legacy interfaces needed by gnorpm, rpmfind et al */
-
 
 /** \ingroup rpmio
  */

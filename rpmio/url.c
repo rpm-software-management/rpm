@@ -221,9 +221,8 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	    prompt = alloca(strlen(u->host) + strlen(u->user) + 256);
 	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
 	    if (u->password)	xfree(u->password);
-	    /* XXX xstrdup has side effects. */
 	    u->password = /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/;
-	    u->password = xstrdup(u->password);
+	    u->password = xstrdup(u->password);	/* XXX xstrdup has side effects. */
 	}
 
 	if (u->proxyh == NULL) {

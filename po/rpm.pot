@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-09-26 10:31-0400\n"
+"POT-Creation-Date: 2000-09-29 14:55-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3799,84 +3799,84 @@ msgstr ""
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: rpmio/macro.c:169
+#: rpmio/macro.c:183
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: rpmio/macro.c:264
+#: rpmio/macro.c:297
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:299
+#: rpmio/macro.c:338
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:478
+#: rpmio/macro.c:551
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: rpmio/macro.c:504
+#: rpmio/macro.c:577
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: rpmio/macro.c:510
+#: rpmio/macro.c:583
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: rpmio/macro.c:515
+#: rpmio/macro.c:588
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: rpmio/macro.c:520
+#: rpmio/macro.c:593
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: rpmio/macro.c:545
+#: rpmio/macro.c:624
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: rpmio/macro.c:622
+#: rpmio/macro.c:717
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: rpmio/macro.c:706
+#: rpmio/macro.c:809
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: rpmio/macro.c:864
+#: rpmio/macro.c:985
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: rpmio/macro.c:930 rpmio/macro.c:946
+#: rpmio/macro.c:1051 rpmio/macro.c:1067
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: rpmio/macro.c:986
+#: rpmio/macro.c:1107
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: rpmio/macro.c:1112
+#: rpmio/macro.c:1233
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: rpmio/macro.c:1193
+#: rpmio/macro.c:1314
 msgid "Target buffer overflow"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1373 rpmio/macro.c:1379
+#: rpmio/macro.c:1493 rpmio/macro.c:1499
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: rpmio/macro.c:1382
+#: rpmio/macro.c:1502
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -3925,22 +3925,22 @@ msgstr ""
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: rpmio/url.c:247 rpmio/url.c:273
+#: rpmio/url.c:248 rpmio/url.c:274
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:409
+#: rpmio/url.c:410
 msgid "url port must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:449
+#: rpmio/url.c:450
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/url.c:466
+#: rpmio/url.c:467
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""

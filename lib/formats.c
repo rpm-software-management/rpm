@@ -514,7 +514,8 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	++_nl_msg_cat_cntr;
 
 	if (domain && msgid) {
-	    *data = xstrdup(/*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/);
+	    *data = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
+	    *data = xstrdup(*data);	/* XXX xstrdup has side effects. */
 	    *count = 1;
 	    *freeData = 1;
 	}

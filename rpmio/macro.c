@@ -56,7 +56,7 @@ struct MacroContext rpmGlobalMacroContext;
 struct MacroContext rpmCLIMacroContext;
 
 /**
- * Macro expansion data structure.
+ * Macro expansion state.
  */
 typedef struct MacroBuf {
 	const char *s;		/*!< Text to expand. */
@@ -88,6 +88,12 @@ int print_expand_trace = 0;
 
 /* =============================================================== */
 
+/**
+ * Compare macro entries by name (qsort/bsearch).
+ * @param ap		1st macro entry
+ * @param bp		2nd macro entry
+ * @return		result of comparison
+ */
 static int
 compareMacroName(const void *ap, const void *bp)
 {
@@ -103,6 +109,10 @@ compareMacroName(const void *ap, const void *bp)
 	return strcmp(ame->name, bme->name);
 }
 
+/**
+ * Enlarge macro table.
+ * @param mc		macro context
+ */
 static void
 expandMacroTable(MacroContext *mc)
 {
@@ -120,6 +130,10 @@ expandMacroTable(MacroContext *mc)
 	memset(&mc->macroTable[mc->firstFree], 0, MACRO_CHUNK_SIZE * sizeof(*(mc->macroTable)));
 }
 
+/**
+ * Sort entries in macro table.
+ * @param mc		macro context
+ */
 static void
 sortMacroTable(MacroContext *mc)
 {
@@ -170,6 +184,13 @@ rpmDumpMacroTable(MacroContext * mc, FILE * fp)
 		nactive, nempty);
 }
 
+/**
+ * Find entry in macro table.
+ * @param mc		macro context
+ * @param name		macro name
+ * @param namelen	no. of byes
+ * @return		address of slot in macro table with name (or NULL)
+ */
 static MacroEntry **
 findEntry(MacroContext *mc, const char *name, size_t namelen)
 {
@@ -198,8 +219,9 @@ findEntry(MacroContext *mc, const char *name, size_t namelen)
 
 /* =============================================================== */
 
-/* fgets analogue that reads \ continuations. Last newline always trimmed. */
-
+/**
+ * fgets(3) analogue that reads \ continuations. Last newline always trimmed.
+ */
 static char *
 rdcl(char *buf, size_t size, FD_t fd, int escapes)
 {
@@ -232,8 +254,13 @@ rdcl(char *buf, size_t size, FD_t fd, int escapes)
 	return (nread > 0 ? buf : NULL);
 }
 
-/* Return text between pl and matching pr */
-
+/**
+ * Return text between pl and matching pr.
+ * @param p		start of text
+ * @param pl		left char, i.e. '[', '(', '{', etc.
+ * @param pr		right char, i.e. ']', ')', '}', etc.
+ * @return		address of last char before pr (or NULL)
+ */
 static const char *
 matchchar(const char *p, char pl, char pr)
 {
@@ -253,6 +280,12 @@ matchchar(const char *p, char pl, char pr)
 	return (const char *)NULL;
 }
 
+/**
+ * Pre-print macro expression to be expanded.
+ * @param mb		macro expansion state
+ * @param s		current expansion string
+ * @param se		end of string
+ */
 static void
 printMacro(MacroBuf *mb, const char *s, const char *se)
 {
@@ -289,6 +322,12 @@ printMacro(MacroBuf *mb, const char *s, const char *se)
 	fprintf(stderr, "\n");
 }
 
+/**
+ * Post-print expanded macro expression.
+ * @param mb		macro expansion state
+ * @param t		current expansion string result
+ * @param te		end of string
+ */
 static void
 printExpansion(MacroBuf *mb, const char *t, const char *te)
 {
@@ -355,7 +394,13 @@ printExpansion(MacroBuf *mb, const char *t, const char *te)
 	*(_be) = '\0';		\
     }
 
-/* Save source and expand field into target */
+/**
+ * Save source and expand field into target.
+ * @param mb		macro expansion state
+ * @param f		field
+ * @param flen		no. bytes in field
+ * @return		result of expansion
+ */
 static int
 expandT(MacroBuf *mb, const char *f, size_t flen)
 {
@@ -375,7 +420,13 @@ expandT(MacroBuf *mb, const char *f, size_t flen)
 }
 
 #if 0
-/* Save target and expand sbuf into target */
+/**
+ * Save target and expand sbuf into target.
+ * @param mb		macro expansion state
+ * @param tbuf		target buffer
+ * @param tbuflen	no. bytes in target buffer
+ * @return		result of expansion
+ */
 static int
 expandS(MacroBuf *mb, char *tbuf, size_t tbuflen)
 {
@@ -392,6 +443,13 @@ expandS(MacroBuf *mb, char *tbuf, size_t tbuflen)
 }
 #endif
 
+/**
+ * Save source/target and expand macro in u.
+ * @param mb		macro expansion state
+ * @param u		input macro, output expansion
+ * @param ulen		no. bytes in u buffer
+ * @return		result of expansion
+ */
 static int
 expandU(MacroBuf *mb, char *u, size_t ulen)
 {
@@ -420,6 +478,13 @@ expandU(MacroBuf *mb, char *u, size_t ulen)
 	return rc;
 }
 
+/**
+ * Expand output of shell command into target buffer.
+ * @param mb		macro expansion state
+ * @param cmd		shell command
+ * @param clen		no. bytes in shell command
+ * @return		result of expansion
+ */
 static int
 doShellEscape(MacroBuf *mb, const char *cmd, size_t clen)
 {
@@ -448,6 +513,14 @@ doShellEscape(MacroBuf *mb, const char *cmd, size_t clen)
 	return 0;
 }
 
+/**
+ * Parse (and execute) new macro definition.
+ * @param mb		macro expansion state
+ * @param se		macro definition to parse
+ * @param level		macro recursion level
+ * @param expandbody	should body be expanded?
+ * @return		address to continue parsing
+ */
 static const char *
 doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
 {
@@ -526,6 +599,12 @@ doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
 	return se;
 }
 
+/**
+ * Parse (and execute) macro undefinition.
+ * @param mc		macro context
+ * @param se		macro name to undefine
+ * @return		address to continue parsing
+ */
 static const char *
 doUndefine(MacroContext *mc, const char *se)
 {
@@ -565,6 +644,14 @@ dumpME(const char *msg, MacroEntry *me)
 }
 #endif
 
+/**
+ * Push new macro definition onto macro entry stack.
+ * @param mep		address of macro entry slot
+ * @param n		macro name
+ * @param o		macro parameters (NULL if none)
+ * @param b		macro body (NULL becomes "")
+ * @param level		macro recursion level
+ */
 static void
 pushMacro(MacroEntry **mep, const char *n, const char *o, const char *b, int level)
 {
@@ -580,6 +667,10 @@ pushMacro(MacroEntry **mep, const char *n, const char *o, const char *b, int lev
 	*mep = me;
 }
 
+/**
+ * Pop macro definition from macro entry stack.
+ * @param mep		address of macro entry slot
+ */
 static void
 popMacro(MacroEntry **mep)
 {
@@ -595,6 +686,10 @@ popMacro(MacroEntry **mep)
 	}
 }
 
+/**
+ * Free parsed arguments for parameterized macro.
+ * @param mb		macro expansion state
+ */
 static void
 freeArgs(MacroBuf *mb)
 {
@@ -633,6 +728,14 @@ freeArgs(MacroBuf *mb)
 		sortMacroTable(mc);
 }
 
+/**
+ * Parse arguments (to next new line) for parameterized macro.
+ * @param mb		macro expansion state
+ * @param me		macro entry slot
+ * @param se		arguments to parse
+ * @param lastc		stop parsing at lastc
+ * @return		address to continue parsing
+ */
 static const char *
 grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
 {
@@ -742,6 +845,13 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
     return se;
 }
 
+/**
+ * Perform macro message output
+ * @param mb		macro expansion state
+ * @param waserror	use rpmError()?
+ * @param msg		message to ouput
+ * @param msglen	no. of bytes in message
+ */
 static void
 doOutput(MacroBuf *mb, int waserror, const char *msg, size_t msglen)
 {
@@ -756,6 +866,15 @@ doOutput(MacroBuf *mb, int waserror, const char *msg, size_t msglen)
 		fprintf(stderr, "%s", buf);
 }
 
+/**
+ * Execute macro primitives.
+ * @param mb		macro expansion state
+ * @param negate	should logic be inverted?
+ * @param f		beginning of field f
+ * @param fn		length of field f
+ * @param g		beginning of field g
+ * @param gn		length of field g
+ */
 static void
 doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t glen)
 {
@@ -841,8 +960,10 @@ doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t 
 }
 
 /**
- * The main recursion engine.
+ * The main macro recursion loop.
  * @todo Dynamically reallocate target buffer.
+ * @param mb		macro expansion state
+ * @return		0 on success, 1 on failure
  */
 static int
 expandMacro(MacroBuf *mb)
@@ -1248,7 +1369,6 @@ rpmDefineMacro(MacroContext *mc, const char *macro, int level)
 	return 0;
 }
 
-/* Load a macro context into rpmGlobalMacroContext */
 void
 rpmLoadMacros(MacroContext * mc, int level)
 {
@@ -1406,7 +1526,7 @@ int isCompressed(const char *file, int *compressed)
 }
 
 /* =============================================================== */
-/* Return concatenated and expanded macro list */
+
 char * 
 rpmExpand(const char *arg, ...)
 {
@@ -1455,7 +1575,7 @@ rpmExpandNumeric(const char *arg)
     return rc;
 }
 
-/* XXX FIXME: ../sbin/./../bin/ */
+/* @todo "../sbin/./../bin/" not correct. */
 char *rpmCleanPath(char * path)
 {
     const char *s;
@@ -1531,6 +1651,7 @@ char *rpmCleanPath(char * path)
 }
 
 /* Return concatenated and expanded canonical path. */
+
 const char *
 rpmGetPath(const char *path, ...)
 {
@@ -1554,7 +1675,8 @@ rpmGetPath(const char *path, ...)
     va_end(ap);
     expandMacros(NULL, NULL, buf, sizeof(buf));
 
-    return xstrdup( rpmCleanPath(buf) );
+    (void) rpmCleanPath(buf);
+    return xstrdup(buf);	/* XXX xstrdup has side effects. */
 }
 
 /* Merge 3 args into path, any or all of which may be a url. */

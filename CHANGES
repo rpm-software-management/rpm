@@ -11,6 +11,7 @@
 	- fix: avoid calling getpass twice as side effect of xstrdup macro
 		(katzj@linuxpower.org) (#17672).
 	- handle possible db3 dependency on -lpthread more gracefully.
+	- fix: more (possible) xstrdup side effects.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
