@@ -1,0 +1,47 @@
+.\" Jakub Bogusz <qboosh@pld.org.pl>, 2003
+.\" rpm 4.3-20030610
+.TH GENDIFF 1 "10 stycznia 2000"
+.UC 4
+.SH NAZWA
+gendiff \- narzêdzie pomagaj±ce przy generowaniu bezb³êdnych plików diff
+.SH SK£ADNIA
+\fBgendiff\fR <katalog> <rozszerzenie-diff>
+.SH OPIS
+\fBgendiff\fR jest do¶æ prostym skryptem pomagaj±cym przy generowaniu
+pliku diff z pojedynczego katalogu. Jako jedyne argumenty przyjmuje nazwê
+katalogu i "rozszerzenie-diff". Rozszerzenie diff powinno byæ unikaln±
+sekwencj± znaków dodan± na koñcu wszystkich oryginalnych, nie
+zmodyfikowanych plików. Wyj¶ciem programu jest plik diff, który mo¿na
+na³o¿yæ przy u¿yciu programu \fBpatch\fR, aby odtworzyæ zmiany.
+.PP
+Zwykle sekwencja czynno¶ci do stworzenia pliku diff to utworzenie dwóch
+identycznych katalogów, dokonanie zmian w jednym katalogu i u¿ycie
+narzêdzia \fBdiff\fR do utworzenia listy ró¿nic miêdzy nimi.
+U¿ycie gendiff eliminuje potrzebê dodatkowej kopii oryginalnego, nie
+zmodyfikowanego katalogu. Zamiast tego trzeba zachowaæ tylko pojedyncze
+pliki przed zmodyfikowaniem.
+.PP
+Przed edycj± pliku skopiuj go, do³±czaj±c do nazwy wybrane rozszerzenie.
+Tzn. je¶li zamierzasz zmodyfikowaæ plik somefile.cpp i wybra³e¶ rozszerzenie
+"fix", skopiuj go do somefile.cpp.fix przed edycj±. Nastêpnie modyfikuj
+pierwsz± kopiê (somefile.cpp).
+.PP
+Po edycji wszystkich potrzebnych plików w ten sposób wejd¼ do katalogu
+jeden poziom wy¿ej ni¿ jest obecny kod ¼ród³owy i napisz:
+.sp
+.nf
+    $ gendiff tenkatalog .fix > mydiff-fix.patch
+.fi
+.PP
+Powiniene¶ przekierowaæ wyj¶cie do pliku (jak na przyk³adzie), chyba ¿e
+chcesz zobaczyæ wynik na standardowym wyj¶ciu.
+
+.PD
+.SH "ZOBACZ TAK¯E"
+.BR diff (1),
+.BR patch (1)
+
+.SH AUTOR
+.nf
+Marc Ewing <marc@redhat.com>
+.fi

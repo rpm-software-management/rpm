@@ -1,0 +1,42 @@
+.\" Jakub Bogusz <qboosh@pld.org.pl>, 2003
+.\" rpm 4.3-20030610
+.TH "RPMGRAPH" "8" "30 czerwca 2002" "Red Hat, Inc." "Red Hat Linux"
+.SH NAZWA
+rpmgraph \- Wy¶wietlanie grafu zale¿no¶ci pakietu RPM
+.SH SK£ADNIA
+.PP
+
+\fBrpmgraph\fR \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
+
+.SH "OPIS"
+.PP
+\fBrpmgraph\fR u¿ywa argumentów \fIPLIK_PAKIETU\fR do wygenerowania
+grafu zale¿no¶ci pakietów. Ka¿dy argument \fIPLIK_PAKIETU\fR jest
+czytany i dodawany do zbioru transakcji rpm-a. Elementy zbioru
+transakcji s± czê¶ciowo porz±dkowane przy u¿yciu sortowania
+topologicznego. Nastêpnie czê¶ciowo uporz±dkowane elementy s±
+wypisywane na standardowe wyj¶cie.
+.PP
+Wierzcho³ki w grafie zale¿no¶ci to nazwy pakietów, krawêdzie w grafie
+skierowanym wskazuj± na rodzica ka¿dego wierzcho³ka. Rodzic jest
+zdefiniowany jako ostatni poprzednik pakietu w czê¶ciowym porz±dku
+przy u¿yciu gdzie zale¿no¶ci pakietu jako relacji. Oznacza to, ¿e
+rodzic danego pakietu jest ostatni± zale¿no¶ci± pakietu.
+.PP
+Wyj¶cie jest w formacie grafu skierowanego \fBdot\fR(1) i mo¿e byæ
+wy¶wietlone lub wydrukowane przy u¿yciu edytora grafów \fBdotty\fR
+z pakietu \fBgraphviz\fR.
+Nie ma opcji specyficznych dla programu \fBrpmgraph\fR, tylko wspólne
+opcje \fBrpm\fR-a. Aktualnie zaimplementowane opcje mo¿na zobaczyæ
+w komunikacie o sk³adni komendy \fBrpmgraph\fR.
+.SH "ZOBACZ TAK¯E"
+
+\fBdot\fR(1),
+
+\fBdotty\fR(1),
+
+\fB http://www.graphviz.org/ <URL:http://www.graphviz.org/>
+\fR
+.SH "AUTORZY"
+
+Jeff Johnson <jbj@redhat.com>

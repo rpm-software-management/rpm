@@ -1,0 +1,112 @@
+.\" Jakub Bogusz <qboosh@pld.org.pl>, 2003
+.\" rpm 4.3-20030610
+.TH "RPMCACHE" "8" "5 lipca 2002" "Red Hat, Inc." "Red Hat Linux"
+.SH NAZWA
+rpmcache \- Zapamiêtywanie nag³ówków pakietów RPM
+.SH SK£ADNIA
+.PP
+
+\fBrpmcache\fR [ \fB\fINAZWA_PAKIETU\fB\fR\fI ...\fR ]
+
+.SH "OPIS"
+.PP
+\fBrpmcache\fR chodzi po drzewie plików (byæ mo¿e tak¿e zdalnych
+przy u¿yciu \fBFTP\fR), filtruj±c ¶cie¿ki przy u¿yciu wyra¿eñ
+\fBglob\fR(7), czytaj±c nag³ówki pakietów rpm. Ostatnie (porównuj±c
+pola epoch/version/release pakietów w przypadku identycznych nazw
+i u¿ywaj±c czasu budowania w przypadkach nierozstrzygniêtych)
+nag³ówki pakietów, je¶li s± unikalne, s± zapamiêtywane w bazie danych
+rpm-a. Zapamiêtane w bazie nag³ówki mog± byæ u¿ywane do udostêpniania
+sugerowanych ¶cie¿ek do pakietów rozwi±zuj±cych nieznane zale¿no¶ci.
+.PP
+Nie ma opcji specyficznych dla \fBrpmcache\fR, tylko wspólne opcje
+\fBrpm\fR-a. Aktualnie zaimplementowane opcje mo¿na zobaczyæ w komunikacie
+o sk³adni komendy \fBrpmcache\fR.
+.PP
+¦cie¿ka drzewa plików do przeszukiwania jest konfigurowana przy u¿yciu
+makr rpm-a. Ostateczna ¶cie¿ka jest po³±czeniem 5 oddzielnych elementów.
+Oto nazwy makr u¿ywanych do skonfigurowania \fBrpmcache\fR w tej samej
+kolejno¶ci, w jakiej s± ³±czone w celu stworzenia ¶cie¿ki drzewa plików
+do przeszukania:
+.PP
+.TP
+\fB%_bhpath\fR
+Poziom "path" (¶cie¿ka) zawiera pocz±tkow± czê¶æ ¶cie¿ki drzewa plików
+(lub URL). Proszê tu nie u¿ywaæ wyra¿eñ \fBglob\fR(7).
+.TP
+\fB%_bhcoll\fR
+Poziom "collection" (kolekcja) zawiera ³añcuch (lub wyra¿enie
+\fBglob\fR(7)) okre¶laj±cy podkatalogi \fB%_bhpath\fR.
+.TP
+\fB%_bhN\fR
+Poziom "name" (nazwa) zawiera ³añcuch (lub wyra¿enie \fBglob\fR(7))
+okre¶laj±cy podkatalogi \fB%_bhcoll\fR.
+Argumenty \fINAZWA_PAKIETU\fR s± u¿ywane do stworzenia wyra¿enia
+\fBglob\fR(7), które bêdzie pasowa³o do okre¶lonych nazw pakietu
+w systemie budowania Red hata, i s± raczej bezu¿ytecznie poza Red
+Hatem.
+.TP
+\fB%_bhVR\fR
+Poziom "version-release" (wersja-wydanie) zawiera ³añcuch (lub wyra¿enie
+\fBglob\fR(7)) okre¶laj±cy podkatalogi \fB%_bhN\fR.
+.TP
+\fB%_bhA\fR
+Poziom "arch" (architektura) zawiera ³añcuch (lub wyra¿enie
+\fBglob\fR(7)) okre¶laj±cy podkatalogi \fB%_bhVR\fR.
+.PP
+Po³o¿enie bazy danych pamiêtaj±cej nag³ówki jest konfigurowalne poprzez
+makro rpm-a:
+.TP
+\fB%_cache_dbpath\fR
+Po³o¿enie bazy danych pamiêtaj±cej nag³ówki. Domy¶lna warto¶æ to
+\fI/var/spool/up2date/cache\fR.
+.PP
+Baza danych nag³ówków ma identyczny format do bazy danych rpm-a
+i mo¿e byæ u¿ywana z linii poleceñ \fBrpm\fR-a. Na przyk³ad aby
+u¿yæ bazy danych nag³ówków do udostêpnienia sugestii dla pakietów
+dostarczaj±cych zale¿no¶ci potrzebne do zainstalowania pakietu,
+nastêpuj±ce makro musi byæ skonfigurowane w
+\fI/etc/rpm/macros\fR lub
+\fI~/.rpmmacros\fR:
+.TP
+\fB%_solve_dbpath\fR
+Po³o¿enie bazy danych u¿ywanej do udostêpniania sugestii do
+rozwi±zywania zale¿no¶ci.
+.PP
+.SS "Przyk³adowa (minimalna) konfiguracja dla drzewa beehive Red Hata:"
+.PP
+.nf
+%_cache_dbpath  /var/spool/up2date/cache
+%_solve_dbpath  %{_cache_dbpath}
+%_bhpath        file://localhost/mnt/redhat/beehive/comps/dist
+%_bhcoll        7.3
+%_bhN           @(basesystem|bash|filesystem|glibc-common|glibc|ldconfig|libtermcap|mktemp|setup|termcap)
+%_bhVR          *
+%_bhA           @(i[3456]86|noarch)
+.fi
+.SS "Przyk³adowa (minimalna) konfiguracja dla drzewa FTP Red Hata:"
+.PP
+.nf
+%_cache_dbpath  /var/spool/up2date/cache
+%_solve_dbpath  %{_cache_dbpath}
+%_bhpath        ftp://localhost/mnt/dist
+%_bhcoll        @(7.3|7.2|7.1|7.0|6.2|6.1|6.0|5.2|5.1|5.0)
+%_bhN           @(%{_arch})
+%_bhVR          *
+%_bhA           @(i[3456]86|noarch)
+.fi
+.SH "B£ÊDY"
+.PP
+Uhm. Proszê wype³niaæ raporty o b³êdach i ¿yczeniach dla pakietu rpm-devel
+przy u¿yciu bugzilli (w jêzyku angielskim):
+http://bugzilla.redhat.com/ <URL:http://bugzilla.redhat.com/>
+.SH "ZOBACZ TAK¯E"
+
+\fBrpm\fR(8),
+\fBglob\fR(7),
+
+\fB http://www.rpm.org/ <URL:http://www.rpm.org/>
+\fR
+.SH "AUTORZY"
+
+Jeff Johnson <jbj@redhat.com>

@@ -1,0 +1,24 @@
+.\" Jakub Bogusz <qboosh@pld.org.pl>, 2003
+.\" rpm 4.3-20030610
+.TH "RPMDEPS" "8" "24 pa¼dziernika 2002" "Red Hat, Inc." "Red Hat Linux"
+.SH NAZWA
+rpmdeps \- Generowanie zale¿no¶ci pakietów RPM
+.SH SK£ADNIA
+.PP
+
+\fBrpmdeps\fR \fB{-P|--provides}\fR \fB{-R|--requires}\fR \fB\fIPLIK\fB\fR\fI ...\fR
+
+.SH "OPIS"
+.PP
+\fBrpmdeps\fR generuje zale¿no¶ci pakietu dla zbioru argumentów
+\fBPLIKOWYCH\fR. Ka¿dy argument \fBPLIKOWY\fR jest przeszukiwany pod
+k±tem Elf32/Elf64, interpretera skryptów lub zale¿no¶ci dla skryptu,
+a zale¿no¶ci s± wypisywane na standardowe wyj¶cie.
+.SH "ZOBACZ TAK¯E"
+
+\fBrpm\fR(8),
+
+\fBrpmbuild\fR(8),
+.SH "AUTORZY"
+
+Jeff Johnson <jbj@redhat.com>

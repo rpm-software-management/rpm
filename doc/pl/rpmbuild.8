@@ -1,0 +1,245 @@
+.\" Jakub Bogusz <qboosh@pld.org.pl>, 2003
+.\" (partially based on rpm.8 translation by Przemek Borys 1999)
+.\" rpm 4.3-20030610
+.TH "RPMBUILD" "8" "9 czerwca 2002" "Red Hat, Inc." "Red Hat Linux"
+.SH NAZWA
+rpmbuild \- Budowanie pakietów RPM
+.SH SK£ADNIA
+.SS "BUDOWANIE PAKIETÓW:"
+.PP
+
+\fBrpmbuild\fR {\fB-ba|-bb|-bp|-bc|-bi|-bl|-bs\fR} [\fBopcje-rpmbuild\fR] \fB\fIPLIK_SPEC\fB\fR\fI ...\fR
+
+\fBrpmbuild\fR {\fB-ta|-tb|-tp|-tc|-ti|-tl|-ts\fR} [\fBopcje-rpmbuild\fR] \fB\fITARBALL\fB\fR\fI ...\fR
+
+\fBrpmbuild\fR {\fB--rebuild|--recompile\fR} \fB\fIPAKIET_¬RÓD£OWY\fB\fR\fI ...\fR
+
+.SS "RÓ¯NE:"
+.PP
+
+\fBrpmbuild\fR \fB--showrc\fR
+
+.SS "opcje-rpmbuild"
+.PP
+
+ [\fB--buildroot \fIKATALOG\fB\fR] [\fB--clean\fR] [\fB--nobuild\fR]
+ [\fB--rmsource\fR] [\fB--rmspec\fR] [\fB--short-circuit\fR] [\fB--sign\fR]
+ [\fB--target \fIPLATFORMA\fB\fR]
+
+.SH "OPIS"
+.PP
+\fBrpmbuild\fR s³u¿y do budowania binarnych i ¼ród³owych pakietów
+oprogramowania. \fBPakiet\fR sk³ada siê z archiwum plików oraz metadanych
+u¿ywanych do instalowania i usuwania plików. Metadane zawieraj± pomocnicze
+skrypty, atrybuty plików oraz informacje opisuj±ce pakiet.
+\fBPakiety\fR wystêpuj± w dwóch wersjach: pakietach binarnych, s³u¿±cych do
+opakowania oprogramowania do instalacji oraz pakietach ¼ród³owych,
+zawieraj±cych kod ¼ród³owy i przepis na zbudowanie pakietów binarnych.
+.PP
+Trzeba wybraæ jeden z nastêpuj±cych podstawowych trybów:
+\fBBudowanie pakietu\fR,
+\fBBudowanie pakietu z tarballa\fR,
+\fBRekompilacja pakietu\fR,
+\fBWy¶wietlenie konfiguracji\fR.
+.SS "OPCJE OGÓLNE"
+.PP
+Opcje te mog± byæ u¿ywane we wszystkich trybach.
+.TP
+\fB-?\fR, \fB--help\fR
+Wypisuje informacjê o u¿yciu d³u¿sz± ni¿ zwykle.
+.TP
+\fB--version\fR
+Wypisuje pojedyncz± liniê, zawieraj±c± numer wersji u¿ywanego \fBrpm\fR-a.
+.TP
+\fB--quiet\fP
+Wypisuje jak najmniej - zazwyczaj tylko komunikaty o b³êdach.
+.TP
+\fB-v\fR
+Wypisuje szczegó³owe informacje - zwykle komunikaty o przebiegu procesu.
+.TP
+\fB-vv\fR
+Wypisuje du¿o brzydkich informacji diagnostycznych.
+.TP
+\fB--rcfile \fILISTA_PLIKÓW\fB\fR
+Ka¿dy z plików w oddzielonej dwukropkami \fILI¦CIE_PLIKÓW\fP jest
+odczytywany kolejno przez \fBrpm\fR-a w poszukiwaniu informacji o
+konfiguracji.
+Istnieæ musi tylko pierwszy plik z listy, a tyldy s± zamieniane na
+warto¶æ \fB$HOME\fR.
+Domy¶ln± \fILIST¡_PLIKÓW\fR jest 
+\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
+.TP
+\fB--pipe \fIKOMENDA\fB\fR
+Przekazuje potokiem wyj¶cie \fBrpm\fP-a do \fIKOMENDY\fR.
+.TP
+\fB--dbpath \fIKATALOG\fB\fR
+U¿ywa bazy danych z \fIKATALOGU\fR zamiast domy¶lnego \fI/var/lib/rpm\fR.
+.TP
+\fB--root \fIKATALOG\fB\fR
+U¿ywa do wszystkich operacji systemu zakorzenionego w \fIKATALOGU\fR.
+Zauwa¿, ¿e oznacza to, ¿e baza danych w \fIKATALOGU\fP
+bêdzie u¿ywana przy sprawdzaniu zale¿no¶ci, a wszystkie skrypty (np.
+\fB%post\fR przy instalacji pakietu lub
+\fB%prep\fR przy budowaniu pakietu)
+bêd± uruchamiane po chroot(2) na
+\fIKATALOG\fR.
+.SS "OPCJE BUDOWANIA"
+.PP
+Ogóln± postaci± komendy budowania rpm-a jest
+.PP
+
+\fBrpmbuild\fR \fB-b\fIETAP\fB|-t\fIETAP\fB\fR [ \fB     opcje-rpmbuild
+\fR ] \fB\fIPLIK\fB\fR\fI ...\fR
+
+.PP
+Je¶li do zbudowania pakietu u¿ywany jest plik spec, to argumentem powinno
+byæ \fB-b\fR, a je¶li \fBrpmbuild\fR powinien zajrzeæ wewn±trz (byæ mo¿e
+skompresowanego) pliku tar w poszukiwaniu speca, to powinna byæ u¿yta opcja
+\fB-t\fR. Po pierwszym argumencie, drugi znak (\fIETAP\fR) okre¶la etapy
+budowania i pakietowania, które nale¿y wykonaæ. Mo¿e byæ jednym z:
+.TP
+\fB-ba\fR
+Buduje pakiety binarny i ¼ród³owy (po wykonaniu etapów %prep, %build
+i %install).
+.TP
+\fB-bb\fR
+Buduje pakiet binarny (po wykonaniu etapów %prep, %build i %install).
+.TP
+\fB-bp\fR
+Wykonuje etap "%prep" z pliku spec. Zwykle obejmuje to rozpakowanie ¼róde³
+i zaaplikowanie wszelkich ³at.
+.TP
+\fB-bc\fR
+Wykonuje etap "%build" z pliku spec (po wykonaniu etapu %prep).
+Ogólnie obejmuje to odpowiednik "make".
+.TP
+\fB-bi\fR
+Wykonuje etap "%install" z pliku spec (po wykonaniu etapów %prep i %build).
+Ogólnie obejmuje to odpowiednik "make install".
+.TP
+\fB-bl\fR
+Dokonuje sprawdzenia listy. W sekcji "%files" pliku spec rozwijane s± makra
+i dokonywane s± sprawdzenia, by upewniæ siê, ¿e ka¿dy plik istnieje.
+.TP
+\fB-bs\fR
+Buduje tylko pakiet ¼ród³owy.
+.PP
+Mog± byæ te¿ u¿yte nastêpuj±ce opcje:
+.TP
+\fB--buildroot \fIKATALOG\fB\fR
+Na czas budowania pakietu zastêpuje warto¶æ BuildRoot \fIKATALOGIEM\fR.
+.TP
+\fB--clean\fR
+Usuwa drzewo budowania po stworzeniu pakietów.
+.TP
+\fB--nobuild\fR
+Nie wykonuje ¿adnych etapów budowania. Przydatne do testowania plików spec.
+.TP
+\fB--rmsource\fR
+Usuwa ¼ród³a po budowaniu (mo¿e byæ te¿ u¿ywane samodzielnie, np.
+"\fBrpmbuild\fR \fB--rmsource foo.spec\fR").
+.TP
+\fB--rmspec\fR
+Usuwa plik spec po budowaniu (mo¿e byæ te¿ u¿ywane samodzielnie, np.
+"\fBrpmbuild\fR \fB--rmspec foo.spec\fR").
+.TP
+\fB--short-circuit\fR
+Przechodzi wprost do podanego etapu (tzn. pomija wszystkie etapy
+prowadz±ce do podanego). Prawid³owe tylko z \fB-bc\fR i \fB-bi\fR.
+.TP
+\fB--sign\fR
+Osadza w pakiecie sygnaturê GPG. Sygnatura ta mo¿e byæ u¿ywana do
+weryfikowania integralno¶ci i pochodzenia pakietu. Zobacz sekcjê o
+SYGNATURACH GPG w
+\fBrpm\fR(8), gdzie znajduj± siê szczegó³y dotycz±ce konfiguracji.
+.TP
+\fB--target \fIPLATFORMA\fB\fR
+Podczas budowania pakietu interpretuje \fIPLATFORMÊ\fR jako
+\fBarch-vendor-os\fR i ustawia odpowiednio makra
+\fB%_target\fR, 
+\fB%_target_cpu\fR oraz
+\fB%_target_os\fP.
+.SS "OPCJE PRZEBUDOWYWANIA I REKOMPILACJI"
+.PP
+Istniej± dwa inne sposoby na wywo³anie budowania przy u¿yciu rpm-a:
+.PP
+
+\fBrpmbuild\fR \fB--rebuild|--recompile\fR \fB\fIPAKIET_¬RÓD£OWY\fB\fR\fI ...\fR
+
+.PP
+Po takim wywo³aniu, \fBrpmbuild\fR instaluje podany pakiet ¼ród³owy oraz
+wykonuje etapy prep, kompilacji i instalacji. Dodatkowo, \fB--rebuild\fR
+buduje nowy pakiet binarny. Po tym jak budowanie jest zakoñczone, katalog
+budowania jest usuwany (jak przy \fB--clean\fR), a potem ¼ród³a i plik spec
+dla pakietu s± usuwane.
+.SS "WY¦WIETLANIE KONFIGURACJI"
+.PP
+Polecenie
+.PP
+
+\fBrpmbuild\fR \fB--showrc\fR
+
+.PP
+pokazuje warto¶ci, których \fBrpmbuild\fR bêdzie u¿ywa³ dla wszystkich
+opcji, które s± aktualnie ustawione w plikach konfiguracyjnych
+\fIrpmrc\fR oraz
+\fImacros\fR.
+.SH "PLIKI"
+.SS "Konfiguracja rpmrc"
+.PP
+.nf
+\fI/usr/lib/rpm/rpmrc\fR
+\fI/usr/lib/rpm/redhat/rpmrc\fR
+\fI/etc/rpmrc\fR
+\fI~/.rpmrc\fR
+.fi
+.SS "Konfiguracja makr"
+.PP
+.nf
+\fI/usr/lib/rpm/macros\fR
+\fI/usr/lib/rpm/redhat/macros\fR
+\fI/etc/rpm/macros\fR
+\fI~/.rpmmacros\fR
+.fi
+.SS "Baza danych"
+.PP
+.nf
+\fI/var/lib/rpm/Basenames\fR
+\fI/var/lib/rpm/Conflictname\fR
+\fI/var/lib/rpm/Dirnames\fR
+\fI/var/lib/rpm/Filemd5s\fR
+\fI/var/lib/rpm/Group\fR
+\fI/var/lib/rpm/Installtid\fR
+\fI/var/lib/rpm/Name\fR
+\fI/var/lib/rpm/Packages\fR
+\fI/var/lib/rpm/Providename\fR
+\fI/var/lib/rpm/Provideversion\fR
+\fI/var/lib/rpm/Pubkeys\fR
+\fI/var/lib/rpm/Removed\fR
+\fI/var/lib/rpm/Requirename\fR
+\fI/var/lib/rpm/Requireversion\fR
+\fI/var/lib/rpm/Sha1header\fR
+\fI/var/lib/rpm/Sigmd5\fR
+\fI/var/lib/rpm/Triggername\fR
+.fi
+.SS "Tymczasowe"
+.PP
+\fI/var/tmp/rpm*\fR
+.SH "ZOBACZ TAK¯E"
+
+.nf
+\fBpopt\fR(3),
+\fBrpm2cpio\fR(8),
+\fBgendiff\fR(1),
+\fBrpm\fR(8),
+.fi
+
+\fBhttp://www.rpm.org/ <URL:http://www.rpm.org/>
+\fR
+.SH "AUTORZY"
+
+.nf
+Marc Ewing <marc@redhat.com>
+Jeff Johnson <jbj@redhat.com>
+Erik Troan <ewt@redhat.com>
+.fi
