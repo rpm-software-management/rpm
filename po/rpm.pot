@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-06 20:05-0400\n"
+"POT-Creation-Date: 1999-08-09 10:15-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2174,102 +2174,102 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: ../lib/install.c:118 ../lib/uninstall.c:159
+#: ../lib/install.c:129 ../lib/uninstall.c:159
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: ../lib/install.c:136
+#: ../lib/install.c:147
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:144
+#: ../lib/install.c:155
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:172
+#: ../lib/install.c:183
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:335
+#: ../lib/install.c:346
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:336
+#: ../lib/install.c:347
 msgid " on file "
 msgstr ""
 
-#: ../lib/install.c:377
+#: ../lib/install.c:388
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:388 ../lib/install.c:410
+#: ../lib/install.c:399 ../lib/install.c:421
 #, c-format
 msgid "cannot create %s"
 msgstr ""
 
-#: ../lib/install.c:395 ../lib/install.c:417
+#: ../lib/install.c:406 ../lib/install.c:428
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:399
+#: ../lib/install.c:410
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:421
+#: ../lib/install.c:432
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:454 ../lib/install.c:490
+#: ../lib/install.c:465 ../lib/install.c:501
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:511
+#: ../lib/install.c:522
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: ../lib/install.c:513 ../lib/install.c:800 ../lib/uninstall.c:26
+#: ../lib/install.c:524 ../lib/install.c:811 ../lib/uninstall.c:26
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:602
+#: ../lib/install.c:613
 msgid "source package expected, binary found"
 msgstr ""
 
-#: ../lib/install.c:662
+#: ../lib/install.c:673
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: ../lib/install.c:725
+#: ../lib/install.c:736
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:730
+#: ../lib/install.c:741
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:760
+#: ../lib/install.c:771
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:796
+#: ../lib/install.c:807
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:880
+#: ../lib/install.c:891
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
@@ -2481,179 +2481,175 @@ msgid "replaced      "
 msgstr ""
 
 #: ../lib/query.c:236
-msgid "net shared    "
-msgstr ""
-
-#: ../lib/query.c:238
 msgid "not installed "
 msgstr ""
 
-#: ../lib/query.c:240
+#: ../lib/query.c:238
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: ../lib/query.c:244
+#: ../lib/query.c:242
 msgid "(no state)    "
 msgstr ""
 
-#: ../lib/query.c:260 ../lib/query.c:290
+#: ../lib/query.c:258 ../lib/query.c:288
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../lib/query.c:395
+#: ../lib/query.c:393
 #, c-format
 msgid "record number %u\n"
 msgstr ""
 
-#: ../lib/query.c:399
+#: ../lib/query.c:397
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../lib/query.c:437
+#: ../lib/query.c:435
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: ../lib/query.c:450
+#: ../lib/query.c:448
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: ../lib/query.c:459 ../lib/rpminstall.c:204
+#: ../lib/query.c:457 ../lib/rpminstall.c:204
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../lib/query.c:462
+#: ../lib/query.c:460
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: ../lib/query.c:489
+#: ../lib/query.c:487
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: ../lib/query.c:514
+#: ../lib/query.c:512
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:525
+#: ../lib/query.c:523
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:535
+#: ../lib/query.c:533
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: ../lib/query.c:545
+#: ../lib/query.c:543
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: ../lib/query.c:555
+#: ../lib/query.c:553
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: ../lib/query.c:570
+#: ../lib/query.c:568
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: ../lib/query.c:573
+#: ../lib/query.c:571
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:586
+#: ../lib/query.c:584
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: ../lib/query.c:589
+#: ../lib/query.c:587
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: ../lib/query.c:592
+#: ../lib/query.c:590
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: ../lib/query.c:604 ../lib/rpminstall.c:385
+#: ../lib/query.c:602 ../lib/rpminstall.c:385
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../lib/query.c:607
+#: ../lib/query.c:605
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../lib/query.c:629
+#: ../lib/query.c:627
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: ../lib/query.c:686
+#: ../lib/query.c:684
 msgid "query package owning file"
 msgstr ""
 
-#: ../lib/query.c:688
+#: ../lib/query.c:686
 msgid "query packages in group"
 msgstr ""
 
-#: ../lib/query.c:690
+#: ../lib/query.c:688
 msgid "query a package file"
 msgstr ""
 
-#: ../lib/query.c:694
+#: ../lib/query.c:692
 msgid "query a spec file"
 msgstr ""
 
-#: ../lib/query.c:696
+#: ../lib/query.c:694
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: ../lib/query.c:698
+#: ../lib/query.c:696
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: ../lib/query.c:700
+#: ../lib/query.c:698
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: ../lib/query.c:737
+#: ../lib/query.c:735
 msgid "list all configuration files"
 msgstr ""
 
-#: ../lib/query.c:739
+#: ../lib/query.c:737
 msgid "list all documentation files"
 msgstr ""
 
-#: ../lib/query.c:741
+#: ../lib/query.c:739
 msgid "dump basic file information"
 msgstr ""
 
-#: ../lib/query.c:743
+#: ../lib/query.c:741
 msgid "list files in package"
 msgstr ""
 
-#: ../lib/query.c:747
+#: ../lib/query.c:745
 msgid "use the following query format"
 msgstr ""
 
-#: ../lib/query.c:749
+#: ../lib/query.c:747
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: ../lib/query.c:752
+#: ../lib/query.c:750
 msgid "display the states of the listed files"
 msgstr ""
 
-#: ../lib/query.c:754
+#: ../lib/query.c:752
 msgid "display a verbose file listing"
 msgstr ""
 

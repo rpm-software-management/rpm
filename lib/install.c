@@ -44,6 +44,9 @@ static struct tagMacro {
 	{ "name",	RPMTAG_NAME },
 	{ "version",	RPMTAG_VERSION },
 	{ "release",	RPMTAG_RELEASE },
+#if 0
+	{ "epoch",	RPMTAG_EPOCH },
+#endif
 	{ NULL, 0 }
 };
 
@@ -51,12 +54,20 @@ static int rpmInstallLoadMacros(Header h)
 {
     struct tagMacro *tagm;
     const char *body;
+    char numbuf[32];
     int type;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
-	if (headerGetEntry(h, tagm->tag, &type, (void **) &body, NULL) &&
-	    type == RPM_STRING_TYPE) {
-		addMacro(NULL, tagm->macroname, NULL, body, -1);
+	if (!headerGetEntry(h, tagm->tag, &type, (void **) &body, NULL))
+	    continue;
+	switch (type) {
+	case RPM_INT32_TYPE:
+	    sprintf(numbuf, "%d", ((int_32)body));
+	    body = numbuf;
+	    /* fall thru */
+	case RPM_STRING_TYPE:
+	    addMacro(NULL, tagm->macroname, NULL, body, -1);
+	    break;
 	}
     }
     return 0;
