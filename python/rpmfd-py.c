@@ -187,7 +187,7 @@ static PyObject * rpmfd_getattr(rpmfdObject * o, char * name)
 /** \ingroup python
  */
 static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
-	/*@*/
+	/*@modifies s @*/
 {
     char * path;
     char * mode = "r.ufdio";

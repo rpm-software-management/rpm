@@ -21,12 +21,7 @@
 /*@unchecked@*/
 static int _rpmfts_debug = 1;
 
-static char * ftsPaths[] = {
-    "/usr/share/doc",
-    NULL
-};
-
-static int ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+#define	infoBit(_ix)	(1 << (((unsigned)(_ix)) & 0x1f))
 
 static const char * ftsInfoStrings[] = {
     "UNKNOWN",
@@ -46,12 +41,45 @@ static const char * ftsInfoStrings[] = {
     "W",
 };
 
+/*@observer@*/
 static const char * ftsInfoStr(int fts_info)
 	/*@*/
 {
     if (!(fts_info >= 1 && fts_info <= 14))
 	fts_info = 0; 
     return ftsInfoStrings[ fts_info ];
+}
+
+static void
+rpmfts_initialize(rpmftsObject * s, const char * root, int options, int ignore)
+{
+    int ac = 1;
+    char * t;
+    size_t nb;
+
+    if (root == NULL)	root = "/";
+    if (options == -1)	options = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+    if (ignore == -1)	ignore = infoBit(FTS_DP);
+
+    nb = (ac + 1) * sizeof(*s->roots);
+    nb += strlen(root) + 1;
+    s->roots = malloc(nb);
+    t = (char *) &s->roots[ac + 1];
+    s->roots[0] = t;
+    s->roots[ac] = NULL;
+    (void) stpcpy(t, root);
+    
+    s->options = options;
+    s->ignore = ignore;
+    s->compare = NULL;
+
+    s->ftsp = NULL;
+    s->fts = NULL;
+    s->active = 0;
+
+if (_rpmfts_debug < 0)
+fprintf(stderr, "*** initialize: %p[0] %p %s %x %x\n", s->roots, s->roots[0], s->roots[0], s->options, s->ignore);
+
 }
 
 /** \ingroup python
@@ -61,58 +89,152 @@ static const char * ftsInfoStr(int fts_info)
  */
 
 static PyObject *
-rpmfts_Debug(rpmftsObject * s, PyObject * args)
+rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
     if (!PyArg_ParseTuple(args, "i:Debug", &_rpmfts_debug)) return NULL;
 
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject *
+rpmfts_iter(rpmftsObject * s)
+	/*@*/
+{
+    Py_INCREF(s);
+if (_rpmfts_debug < 0)
+fprintf(stderr, "*** rpmfts_iter(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
     return (PyObject *)s;
 }
 
 static PyObject *
-rpmfts_Open(rpmftsObject * s, PyObject * args)
-	/*@*/
+rpmfts_iternext(rpmftsObject * s)
+	/*@modifies s @*/
 {
-    if (!PyArg_ParseTuple(args, ":Open")) return NULL;
+    PyObject * result = NULL;
+    int xx;
+
+    /* Reset loop indices on 1st entry. */
+    if (!s->active) {
+	s->ftsp = Fts_open((char *const *)s->roots, s->options, (int (*)())s->compare);
+	s->fts = NULL;
+	s->active = 2;
+    }
+
+    if (s->ftsp != NULL)
+    do {
+	s->fts = Fts_read(s->ftsp);
+    } while (s->fts && (infoBit(s->fts->fts_info) & s->ignore));
+
+    if (s->fts != NULL) {
+	Py_INCREF(s);
+	result = (PyObject *)s;
+    } else {
+	if (s->active == 2) {
+	    xx = Fts_close(s->ftsp);
+	    s->ftsp = NULL;
+	    s->fts = NULL;
+	}
+	s->active = 0;
+    }
+
+if (_rpmfts_debug < 0)
+fprintf(stderr, "*** rpmfts_iternext(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
+
+    return result;
+}
+
+static PyObject *
+rpmfts_Next(rpmftsObject * s, PyObject *args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    PyObject * result;
 
 if (_rpmfts_debug)
-fprintf(stderr, "*** rpmfts_Open(%p) ftsp %p fts %p\n", s, s->ftsp, s->fts);
+fprintf(stderr, "*** rpmfts_Next(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
 
-    s->ftsp = Fts_open(ftsPaths, ftsOpts, NULL);
+    if (!PyArg_ParseTuple(args, ":Next"))
+	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    result = rpmfts_iternext(s);
+
+    if (result == NULL) {
+	Py_INCREF(Py_None);
+        return Py_None;
+    }
+    return result;
+}
+
+static PyObject *
+rpmfts_Open(rpmftsObject * s, PyObject * args)
+	/*@modifies s @*/
+{
+    char * root = NULL;
+    int options = -1;
+    int ignore = -1;
+
+if (_rpmfts_debug)
+fprintf(stderr, "*** rpmfts_Open(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
+
+    if (!PyArg_ParseTuple(args, "|sii:Open", &root, &options, &ignore))
+	return NULL;
+    rpmfts_initialize(s, root, options, ignore);
+
+    s->ftsp = Fts_open((char *const *)s->roots, s->options, (int (*)())s->compare);
+    s->active = 1;
+
+    return (PyObject *)s;
 }
 
 static PyObject *
 rpmfts_Read(rpmftsObject * s, PyObject * args)
-	/*@*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, ":Read")) return NULL;
+    PyObject * result = NULL;
+    int xx;
 
 if (_rpmfts_debug)
-fprintf(stderr, "*** rpmfts_Read(%p) ftsp %p fts %p\n", s, s->ftsp, s->fts);
+fprintf(stderr, "*** rpmfts_Read(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
 
-    if (!(s && s->ftsp))
-	return NULL;
+    if (!PyArg_ParseTuple(args, ":Read")) return NULL;
 
-    s->fts = Fts_read(s->ftsp);
+    if (s->ftsp != NULL)
+    do {
+	s->fts = Fts_read(s->ftsp);
+    } while (s->fts && (infoBit(s->fts->fts_info) & s->ignore));
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    if (s->fts != NULL) {
+	Py_INCREF(s);
+	result = (PyObject *)s;
+    } else {
+	if (s->active == 2) {
+	    xx = Fts_close(s->ftsp);
+	    s->ftsp = NULL;
+	    s->fts = NULL;
+	}
+	s->active = 0;
+	Py_INCREF(Py_None);
+	result = Py_None;
+    }
+
+    return result;
 }
 
 static PyObject *
 rpmfts_Children(rpmftsObject * s, PyObject * args)
-	/*@*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     int instr = 0;
 
-    if (!PyArg_ParseTuple(args, ":Children")) return NULL;
-
 if (_rpmfts_debug)
-fprintf(stderr, "*** rpmfts_Children(%p) ftsp %p fts %p\n", s, s->ftsp, s->fts);
+fprintf(stderr, "*** rpmfts_Children(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
+
+    if (!PyArg_ParseTuple(args, ":Children")) return NULL;
 
     if (!(s && s->ftsp))
 	return NULL;
@@ -125,9 +247,12 @@ fprintf(stderr, "*** rpmfts_Children(%p) ftsp %p fts %p\n", s, s->ftsp, s->fts);
 
 static PyObject *
 rpmfts_Close(rpmftsObject * s, PyObject * args)
-	/*@*/
+	/*@modifies s @*/
 {
     int rc = 0;
+
+if (_rpmfts_debug)
+fprintf(stderr, "*** rpmfts_Close(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
 
     if (!PyArg_ParseTuple(args, ":Close")) return NULL;
 
@@ -135,6 +260,7 @@ rpmfts_Close(rpmftsObject * s, PyObject * args)
 	rc = Fts_close(s->ftsp);
 	s->ftsp = NULL;
 	s->fts = NULL;
+	s->active = 0;
     }
 
     return Py_BuildValue("i", rc);
@@ -142,10 +268,13 @@ rpmfts_Close(rpmftsObject * s, PyObject * args)
 
 static PyObject *
 rpmfts_Set(rpmftsObject * s, PyObject * args)
-	/*@*/
+	/*@modifies s @*/
 {
     int instr = 0;
     int rc = 0;
+
+if (_rpmfts_debug)
+fprintf(stderr, "*** rpmfts_Set(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
 
     if (!PyArg_ParseTuple(args, ":Set")) return NULL;
 
@@ -161,6 +290,8 @@ rpmfts_Set(rpmftsObject * s, PyObject * args)
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmfts_methods[] = {
     {"Debug",	(PyCFunction)rpmfts_Debug,	METH_VARARGS,
+	NULL},
+    {"next",	(PyCFunction)rpmfts_Next,	METH_VARARGS,
 	NULL},
     {"open",	(PyCFunction)rpmfts_Open,	METH_VARARGS,
 	NULL},
@@ -185,11 +316,17 @@ rpmfts_dealloc(/*@only@*/ /*@null@*/ rpmftsObject * s)
 	/*@modifies s @*/
 {
     if (s) {
+
+if (_rpmfts_debug < 0)
+fprintf(stderr, "*** rpmfts_dealloc(%p) %d %d ftsp %p fts %p\n", s, s->ob_refcnt, s->active, s->ftsp, s->fts);
+
 	if (s->ftsp) {
 	    (void) Fts_close(s->ftsp);
 	    s->ftsp = NULL;
 	    s->fts = NULL;
+	    s->active = 0;
 	}
+	s->roots = _free(s->roots);
 	PyObject_Del(s);
     }
 }
@@ -198,9 +335,11 @@ rpmfts_dealloc(/*@only@*/ /*@null@*/ rpmftsObject * s)
  */
 static int
 rpmfts_print(rpmftsObject * s, FILE * fp, /*@unused@*/ int flags)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fp, fileSystem @*/
 {
-    int indent = 2;
+    static int indent = 2;
+
     if (!(s && s->ftsp && s->fts))
 	return -1;
     fprintf(fp, "FTS_%-7s %*s%s", ftsInfoStr(s->fts->fts_info),
@@ -223,14 +362,16 @@ static PyObject * rpmfts_getattr(rpmftsObject * o, char * name)
 static int rpmfts_init(rpmftsObject * s, PyObject *args, PyObject *kwds)
 	/*@*/
 {
-if (_rpmfts_debug)
+    char * root = NULL;
+    int options = -1;
+    int ignore = -1;
+
+if (_rpmfts_debug < 0)
 fprintf(stderr, "*** rpmfts_init(%p,%p,%p)\n", s, args, kwds);
 
-    if (!PyArg_ParseTuple(args, ":rpmfts_init"))
+    if (!PyArg_ParseTuple(args, "|sii:rpmfts_init", &root, &options, &ignore))
 	return -1;
-
-    s->ftsp = NULL;
-    s->fts = NULL;
+    rpmfts_initialize(s, root, options, ignore);
 
     return 0;
 }
@@ -240,7 +381,7 @@ fprintf(stderr, "*** rpmfts_init(%p,%p,%p)\n", s, args, kwds);
 static void rpmfts_free(/*@only@*/ rpmftsObject * s)
 	/*@modifies s @*/
 {
-if (_rpmfts_debug)
+if (_rpmfts_debug < 0)
 fprintf(stderr, "%p -- fts %p\n", s, s->ftsp);
 
     if (s->ftsp) {
@@ -248,6 +389,7 @@ fprintf(stderr, "%p -- fts %p\n", s, s->ftsp);
 	s->ftsp = NULL;
 	s->fts = NULL;
     }
+    s->roots = _free(s->roots);
 
     PyObject_Del((PyObject *)s);
 }
@@ -277,7 +419,7 @@ static rpmftsObject * rpmfts_new(PyTypeObject * subtype, PyObject *args, PyObjec
 	return NULL;
     }
 
-if (_rpmfts_debug)
+if (_rpmfts_debug < 0)
 fprintf(stderr, "%p ++ fts %p\n", s, s->ftsp);
 
     return s;
@@ -321,8 +463,8 @@ PyTypeObject rpmfts_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
+	(getiterfunc) rpmfts_iter,	/* tp_iter */
+	(iternextfunc) rpmfts_iternext,	/* tp_iternext */
 	rpmfts_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
@@ -339,11 +481,3 @@ PyTypeObject rpmfts_Type = {
 #endif
 };
 /*@=fullinitblock@*/
-
-rpmftsObject * rpmfts_Wrap(FTSENT * fts)
-{
-    rpmftsObject *s = PyObject_New(rpmftsObject, &rpmfts_Type);
-    if (s == NULL)
-	return NULL;
-    return s;
-}

@@ -280,7 +280,9 @@ rpmds_subscript(rpmdsObject * s, PyObject * key)
     }
 
     ix = (int) PyInt_AsLong(key);
-    rpmdsSetIx(s->ds, ix);
+    /* XXX make sure that DNEVR exists. */
+    rpmdsSetIx(s->ds, ix-1);
+    (void) rpmdsNext(s->ds);
     return Py_BuildValue("s", rpmdsDNEVR(s->ds));
 }
 
