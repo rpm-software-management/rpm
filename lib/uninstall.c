@@ -194,7 +194,6 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
     if (script) {
 	FD_t fd;
 	if (makeTempFile(root, &fn, &fd)) {
-	    free(argv);
 	    if (freePrefixes) free(prefixes);
 	    return 1;
 	}
