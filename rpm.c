@@ -56,10 +56,12 @@ void printUsage(void) {
     puts(_("       rpm {--version}"));
     puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--replacepkgs] [--replacefiles] [--search]"));
-    puts(_("                          [--root <dir>] file1.rpm ... filen.rpm"));
+    puts(_("                          [--root <dir>] [--excludedocs] [--includedocs]"));
+    puts(_("                          file1.rpm ... filen.rpm"));
     puts(_("       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--search] [--oldpackage] [--root <dir>]"));
-    puts(_("                          file1.rpm ... fileN.rpm"));
+    puts(_("                          [--excludedocs] [--includedocs]")); 
+    puts(_("                          file1.rpm ... filen.rpm"));
     puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "));
     puts(_("                        [--root <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"));
@@ -113,6 +115,8 @@ void printHelp(void) {
     puts(_("      --force           - short hand for --replacepkgs --replacefiles"));
     puts(_("      --test            - don't install, but tell if it would work or not"));
     puts(_("      --search          - search the paths listed in /etc/rpmrc for rpms"));
+    puts(_("      --excludedocs     - do not install documentation"));
+    puts(_("      --includedocs     - install documentation"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
     puts(_(""));
     puts(_("    --upgrade <packagefile>"));
@@ -216,6 +220,8 @@ int main(int argc, char ** argv) {
     int clean = 0;
     int signIt = 0;
     int badOption = 0;
+    int excldocs = 0;
+    int incldocs = 0;
     char * prefix = "/";
     char * specFile;
     char *passPhrase = "";
@@ -228,12 +234,14 @@ int main(int argc, char ** argv) {
 	    { "configfiles", 0, 0, 'c' },
 	    { "docfiles", 0, 0, 'd' },
 	    { "erase", 0, 0, 'e' },
+            { "excludedocs", 0, &excldocs, 0},
 	    { "file", 0, 0, 'f' },
 	    { "force", 0, &force, 0 },
 	    { "group", 0, 0, 'g' },
 	    { "hash", 0, &showHash, 'h' },
 	    { "help", 0, &help, 0 },
 	    { "info", 0, 0, 'i' },
+            { "includedocs", 0, &incldocs, 0},
 	    { "install", 0, 0, 'i' },
 	    { "list", 0, 0, 'l' },
 	    { "oldpackage", 0, &oldPackage, 0 },
@@ -523,6 +531,19 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_INSTALL && replacePackages)
 	argerror(_("--replacepkgs may only be specified during package "
 			"installation"));
+
+    if (bigMode != MODE_INSTALL && excldocs)
+	argerror(_("--exclude-docs may only be specified during package "
+		   "installation"));
+
+    if (bigMode != MODE_INSTALL && incldocs)
+	argerror(_("--include-docs may only be specified during package "
+		   "installation"));
+
+    if (excldocs && incldocs)
+	argerror(_("only one of --exclude-docs and --include-docs may be "
+		 "specified"));
+  
   
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && test)
 	argerror(_("--test may only be specified during package installation "
@@ -633,6 +654,13 @@ int main(int argc, char ** argv) {
 
 	if (showPercents) interfaceFlags |= RPMINSTALL_PERCENT;
 	if (showHash) interfaceFlags |= RPMINSTALL_HASH;
+
+	if (!incldocs) {
+	    if (excldocs)
+		installFlags |= INSTALL_NODOCS;
+	    else if (getBooleanVar(RPMVAR_EXCLUDEDOCS))
+		installFlags |= INSTALL_NODOCS;
+	}
 
 	if (optind == argc) 
 	    argerror(_("no packages given for install"));
