@@ -22,14 +22,23 @@
 #include "rpmio_internal.h"
 
 typedef unsigned int uint32;
+typedef unsigned char byte;
+
+/**
+ * The MD5 block size and message digest sizes, in bytes.
+ */
+#define MD5_DATASIZE    64
+#define MD5_DATALEN     16
+#define MD5_DIGESTSIZE  16
+#define MD5_DIGESTLEN    4
 
 /**
  * MD5 private data.
  */
 typedef struct MD5Context_s {
-    uint32 buf[4];
+    uint32 digest[MD5_DIGESTLEN];	/*!< Message digest. */
     uint32 bits[2];
-    unsigned char in[64];
+    byte in[MD5_DATASIZE];	/*!< Data buffer. */
     int doByteReverse;
 } * MD5Context;
 
@@ -61,10 +70,10 @@ MD5Transform(void * private)
 {
     MD5Context ctx = (MD5Context) private;
     register uint32 * in = (uint32 *)ctx->in;
-    register uint32 a = ctx->buf[0];
-    register uint32 b = ctx->buf[1];
-    register uint32 c = ctx->buf[2];
-    register uint32 d = ctx->buf[3];
+    register uint32 a = ctx->digest[0];
+    register uint32 b = ctx->digest[1];
+    register uint32 c = ctx->digest[2];
+    register uint32 d = ctx->digest[3];
 
     MD5STEP(F1, a, b, c, d, in[0] + 0xd76aa478, 7);
     MD5STEP(F1, d, a, b, c, in[1] + 0xe8c7b756, 12);
@@ -134,17 +143,17 @@ MD5Transform(void * private)
     MD5STEP(F4, c, d, a, b, in[2] + 0x2ad7d2bb, 15);
     MD5STEP(F4, b, c, d, a, in[9] + 0xeb86d391, 21);
 
-    ctx->buf[0] += a;
-    ctx->buf[1] += b;
-    ctx->buf[2] += c;
-    ctx->buf[3] += d;
+    ctx->digest[0] += a;
+    ctx->digest[1] += b;
+    ctx->digest[2] += c;
+    ctx->digest[3] += d;
 }
 
 /*
  * Note: this code is harmless on little-endian machines.
  */
 static void
-byteReverse(unsigned char *buf, unsigned longs)
+byteReverse(byte *buf, unsigned longs)
 {
     uint32 t;
     do {
@@ -166,10 +175,10 @@ MD5Init(int brokenEndian)
 {
     MD5Context ctx = xcalloc(1, sizeof(*ctx));
 
-    ctx->buf[0] = 0x67452301;
-    ctx->buf[1] = 0xefcdab89;
-    ctx->buf[2] = 0x98badcfe;
-    ctx->buf[3] = 0x10325476;
+    ctx->digest[0] = 0x67452301;
+    ctx->digest[1] = 0xefcdab89;
+    ctx->digest[2] = 0x98badcfe;
+    ctx->digest[3] = 0x10325476;
 
     ctx->bits[0] = 0;
     ctx->bits[1] = 0;
@@ -184,7 +193,7 @@ MD5Init(int brokenEndian)
 /**
  * Update context to reflect the concatenation of another buffer full
  * of bytes.
- * @param private	MD5 private data
+ * @param private	private data
  * @param data		next data buffer
  * @param len		no. bytes of data
  */
@@ -192,7 +201,7 @@ static void
 MD5Update(void * private, const void * data, size_t len)
 {
     MD5Context ctx = (MD5Context) private;
-    const unsigned char * buf = data;
+    const byte * buf = data;
     uint32 t;
 
     /* Update bitcount */
@@ -207,9 +216,9 @@ MD5Update(void * private, const void * data, size_t len)
     /* Handle any leading odd-sized chunks */
 
     if (t) {
-	unsigned char *p = (unsigned char *) ctx->in + t;
+	byte *p = (byte *) ctx->in + t;
 
-	t = 64 - t;
+	t = MD5_DATASIZE - t;	/* Bytes left in ctx->in */
 	if (len < t) {
 	    memcpy(p, buf, len);
 	    return;
@@ -222,10 +231,10 @@ MD5Update(void * private, const void * data, size_t len)
 	len -= t;
     }
 
-    /* Process data in 64-byte chunks */
+    /* Process data in MD5_DATASIZE chunks */
 
-    for (; len >= 64; buf += 64, len -= 64) {
-	memcpy(ctx->in, buf, 64);
+    for (; len >= MD5_DATASIZE; buf += MD5_DATASIZE, len -= MD5_DATASIZE) {
+	memcpy(ctx->in, buf, MD5_DATASIZE);
 	if (ctx->doByteReverse)
 	    byteReverse(ctx->in, 16);
 	MD5Transform(ctx);
@@ -240,17 +249,18 @@ MD5Update(void * private, const void * data, size_t len)
  * Final wrapup - pad to 64-byte boundary with the bit pattern 
  * 1 0* (64-bit count of bits processed, MSB-first)
  *
- * @param private	MD5 private data
- * @retval datap	address of returned MD5 sum
- * @retval lenp		address of MD5 sum length
- * @param asAscii	return md5sum as ascii string?
+ * @param private	private data
+ * @retval datap	address of returned digest
+ * @retval lenp		address of digest length
+ * @param asAscii	return digest as ascii string?
  */
 static void
-MD5Final(void * private, void ** datap, size_t *lenp, int asAscii)
+MD5Final(/*@only@*/ void * private, /*@out@*/ void ** datap,
+	/*@out@*/ size_t *lenp, int asAscii)
 {
     MD5Context ctx = (MD5Context) private;
     unsigned count;
-    unsigned char *p;
+    byte *p;
 
     /* Compute number of bytes mod 64 */
     count = (ctx->bits[0] >> 3) & 0x3F;
@@ -261,7 +271,7 @@ MD5Final(void * private, void ** datap, size_t *lenp, int asAscii)
     *p++ = 0x80;
 
     /* Bytes of padding needed to make 64 bytes */
-    count = 64 - 1 - count;
+    count = MD5_DATASIZE - 1 - count;
 
     /* Pad out to 56 mod 64 */
     if (count < 8) {
@@ -285,28 +295,29 @@ MD5Final(void * private, void ** datap, size_t *lenp, int asAscii)
     ((uint32 *) ctx->in)[15] = ctx->bits[1];
 
     MD5Transform(ctx);
+
     if (ctx->doByteReverse)
-	byteReverse((unsigned char *) ctx->buf, 4);
+	byteReverse((byte *) ctx->digest, MD5_DIGESTLEN);
 
     if (!asAscii) {
-	if (lenp) *lenp = 16;
+	if (lenp) *lenp = MD5_DIGESTSIZE;
 	if (datap) {
-	    *datap = xmalloc(16);
-	    memcpy(*datap, ctx->buf, 16);
+	    *datap = xmalloc(MD5_DIGESTSIZE);
+	    memcpy(*datap, ctx->digest, MD5_DIGESTSIZE);
 	}
     } else {
-	if (lenp) *lenp = 32+1;
+	if (lenp) *lenp = (2*MD5_DIGESTSIZE) + 1;
 	if (datap) {
-	    const unsigned char * s = (const unsigned char *) ctx->buf;
+	    const byte * s = (const byte *) ctx->digest;
 	    static const char hex[] = "0123456789abcdef";
 	    char * t;
 	    int i;
 
-	    *datap = t = xmalloc(32+1);
+	    *datap = t = xmalloc((2*MD5_DIGESTSIZE) + 1);
 
-	    for (i = 0 ; i < 16; i++) {
-		*t++ = hex[ ((*s >> 4) & 0x0f) ];
-		*t++ = hex[ ((*s++   ) & 0x0f) ];
+	    for (i = 0 ; i < MD5_DIGESTSIZE; i++) {
+		*t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
+		*t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
 	    }
 	    *t = '\0';
 	}
