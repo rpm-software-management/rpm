@@ -58,11 +58,12 @@ void printUsage(void) {
     puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--replacepkgs] [--replacefiles] [--root <dir>]"));
     puts(_("                          [--excludedocs] [--includedocs] [--noscripts]"));
-    puts(_("                          [--rcfile <file>] file1.rpm ... fileN.rpm"));
+    puts(_("                          [--rcfile <file>] [--ignorearch]"));
+    puts(_("                          file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                          [--excludedocs] [--includedocs] [--rcfile <file>]"));
-    puts(_("                          file1.rpm ... fileN.rpm"));
+    puts(_("                          [--ignorearch] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
@@ -134,6 +135,7 @@ void printHelp(void) {
     puts(_("      --noscripts       - don't execute any installation scripts"));
     puts(_("      --excludedocs     - do not install documentation"));
     puts(_("      --includedocs     - install documentation"));
+    puts(_("      --ignorearch      - don't verify package architecure"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
     puts(_(""));
     puts(_("    --upgrade <packagefile>"));
@@ -231,7 +233,7 @@ int main(int argc, char ** argv) {
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
-    int noPgp = 0, dump = 0, initdb = 0;
+    int noPgp = 0, dump = 0, initdb = 0, buildMode = 0, ignoreArch = 0;
     char * rcfile = NULL;
     char * queryFormat = NULL;
     char buildChar = ' ';
@@ -259,6 +261,7 @@ int main(int argc, char ** argv) {
 	    { "group", 0, 0, 'g' },
 	    { "hash", 0, &showHash, 'h' },
 	    { "help", 0, &help, 0 },
+	    { "ignorearch", 0, &ignoreArch, 0 },
 	    { "info", 0, 0, 'i' },
             { "includedocs", 0, &incldocs, 0},
 	    { "initdb", 0, &initdb, 0 },
@@ -322,12 +325,15 @@ int main(int argc, char ** argv) {
 	    arch = *(currarg + 1);
 	} else if (!strcmp(*currarg, "--os")) {
 	    os = *(currarg + 1);
-	}
+	} else if (!strncmp(*currarg, "-b", 2) || 
+		   !strcmp(*currarg, "--rebuild") ||
+		   !strcmp(*currarg, "--recompile"))
+	    buildMode = 1;
 	currarg++;
     } 
 
     /* reading this early makes it easy to override */
-    if (readConfigFiles(rcfile, arch, os))  
+    if (rpmReadConfigFiles(rcfile, arch, os, buildMode))  
 	exit(1);
 
     while (1) {
@@ -624,17 +630,21 @@ int main(int argc, char ** argv) {
 			"installation"));
 
     if (bigMode != MODE_INSTALL && excldocs)
-	argerror(_("--exclude-docs may only be specified during package "
+	argerror(_("--excludedocs may only be specified during package "
 		   "installation"));
 
     if (bigMode != MODE_INSTALL && incldocs)
-	argerror(_("--include-docs may only be specified during package "
+	argerror(_("--includedocs may only be specified during package "
 		   "installation"));
 
     if (excldocs && incldocs)
-	argerror(_("only one of --exclude-docs and --include-docs may be "
+	argerror(_("only one of --excludedocs and --includedocs may be "
 		 "specified"));
   
+    if (bigMode != MODE_INSTALL && ignoreArch)
+	argerror(_("--ignorearch may only be specified during package "
+		   "installation"));
+
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noScripts)
 	argerror(_("--noscripts may only be specified during package "
 		   "installation and uninstallation"));
@@ -803,6 +813,7 @@ int main(int argc, char ** argv) {
 	if (replacePackages) installFlags |= INSTALL_REPLACEPKG;
 	if (test) installFlags |= INSTALL_TEST;
 	if (noScripts) installFlags |= INSTALL_NOSCRIPTS;
+	if (ignoreArch) installFlags |= INSTALL_NOARCH;
 
 	if (showPercents) interfaceFlags |= RPMINSTALL_PERCENT;
 	if (showHash) interfaceFlags |= RPMINSTALL_HASH;
