@@ -1,7 +1,7 @@
 ### These are variables meant to be exported
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
-DEBUG = -g
+#DEBUG = -g
 OPTS = -O2
 CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib -Ibuild -I../lib -I../build
 LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
