@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.11 2000/10/08 10:08:58 rjray Exp $
+ * $Id: RPM.h,v 1.12 2000/10/10 08:37:20 rjray Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */
@@ -53,6 +53,7 @@
 
 #define RPM_PACKAGE_MASK       0xf0
 #define RPM_PACKAGE_READONLY   0x10
+#define RPM_PACKAGE_NOREAD     0x20
 
 /*
  *    Perl complement: RPM::Database
