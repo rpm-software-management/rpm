@@ -1,140 +1,9 @@
 #include "system.h"
 
 #include <rpmbuild.h>
+#include <argv.h>
 
 #include "debug.h"
-
-/**
- */
-static int argvFree(/*@only@*/ /*@null@*/ const char ** argv)
-	/*@modifies argv @*/
-{
-    const char ** av;
-    
-    if ((av = argv)) {
-	while (*av)
-	    *av = _free(*av);
-	argv = _free(argv);
-    }
-    return 0;
-}
-
-/**
- */
-static void argvPrint(const char * msg, const char ** argv, FILE * fp)
-	/*@*/
-{
-    const char ** av;
-    int ac;
-
-    if (fp == NULL) fp = stderr;
-
-    if (msg)
-	fprintf(fp, "===================================== %s\n", msg);
-
-    for (ac = 0, av = argv; *av; av++, ac++)
-	fprintf(fp, "%5d: %s\n", ac, *av);
-
-}
-
-/**
- */
-static int argvCount(/*@null@*/ const char ** argv)
-	/*@*/
-{
-    int argc = 0;
-    if (argv)
-    while (argv[argc] != NULL)
-	argc++;
-    return argc;
-}
-
-/**
- * Compare argv arrays (qsort/bsearch).
- * @param a		1st instance address
- * @param b		2nd instance address
- * @return		result of comparison
- */
-static int argvCmp(const void * a, const void * b)
-	/*@*/
-{
-/*@-boundsread@*/
-    const char * astr = *(const char **)a;
-    const char * bstr = *(const char **)b;
-/*@=boundsread@*/
-    return strcmp(astr, bstr);
-}
-
-/**
- */
-static int argvSort(const char ** argv,
-		int (*compar)(const void *, const void *))
-	/*@*/
-{
-    qsort(argv, argvCount(argv), sizeof(*argv), compar);
-    return 0;
-}
-
-/**
- */
-static const char ** argvSearch(const char ** argv, const char * s,
-		int (*compar)(const void *, const void *))
-	/*@*/
-{
-    return bsearch(&s, argv, argvCount(argv), sizeof(*argv), compar);
-}
-
-/**
- */
-static int argvAppend(/*@out@*/ const char *** argvp, const char ** av)
-	/*@*/
-{
-    const char ** argv = *argvp;
-    int argc = argvCount(argv);
-    int ac = argvCount(av);
-    int i;
-
-    argv = xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
-    for (i = 0; i < ac; i++)
-	argv[argc + i] = xstrdup(av[i]);
-    argv[argc + ac] = NULL;
-    *argvp = argv;
-    return 0;
-}
-
-/**
- */
-static int argvSplit(const char *** argvp, const char * str, const char * seps)
-	/*@*/
-{
-    char * dest = alloca(strlen(str) + 1);
-    const char ** argv;
-    int argc = 1;
-    const char * s;
-    char * t;
-    int c;
-
-    for (argc = 1, s = str, t = dest; (c = *s); s++, t++) {
-	if (strchr(seps, c)) {
-	    argc++;
-	    c = '\0';
-	}
-	*t = c;
-    }
-    *t = '\0';
-
-    argv = xmalloc( (argc + 1) * sizeof(*argv));
-
-    for (c = 0, s = dest; s < t; s+= strlen(s) + 1) {
-	if (*s == '\0')
-	    continue;
-	argv[c] = xstrdup(s);
-	c++;
-    }
-    argv[c] = NULL;
-    *argvp = argv;
-    return 0;
-}
 
 static struct poptOption optionsTable[] = {
 
@@ -152,10 +21,10 @@ main(int argc, char *const argv[])
 {
     poptContext optCon;
     StringBuf sb;
-    const char ** pav;
+    ARGV_t pav;
     int pac = 0;
-    const char ** xav;
-    const char ** av = NULL;
+    ARGV_t xav;
+    ARGV_t av = NULL;
     int ac = 0;
     const char * s;
     int ec = 1;

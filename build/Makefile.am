@@ -26,11 +26,11 @@ tfr_LDADD = \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
-noinst_HEADERS = buildio.h
+noinst_HEADERS = argv.h buildio.h
 
 lib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \
-	build.c expression.c files.c misc.c names.c pack.c \
+	argv.c build.c expression.c files.c misc.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c poptBT.c reqprov.c spec.c

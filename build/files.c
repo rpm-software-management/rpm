@@ -100,7 +100,7 @@ typedef struct AttrRec_s {
 /**
  */
 /*@unchecked@*/
-static int multiLibNo = 0;	/* MULTILIB */
+static unsigned multiLibNo = 0;	/* MULTILIB */
 
 /**
  */
@@ -1248,7 +1248,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	 * Create union bit mask of all files in the package.
 	 */
 	if (flp->flags & RPMFILE_MULTILIB_MASK) {
-	    int mlno;
+	    unsigned mlno;
 	    mlno = (flp->flags & RPMFILE_MULTILIB_MASK);
 	    mlno >>= RPMFILE_MULTILIB_SHIFT;
 	    multiLibMask |= (1u << mlno);
@@ -1722,8 +1722,8 @@ static int addFile(FileList fl, const char * diskURL,
 
 	/* If coloring and still white, apply regex to path. */
 	if (multiLibNo
-	    && !(flp->flags & RPMFILE_MULTILIB_MASK)
-	    && !parseForRegexMultiLib(fileURL)) {
+	 && !(flp->flags & RPMFILE_MULTILIB_MASK)
+	 && !parseForRegexMultiLib(fileURL)) {
 	    flp->flags |= RPMFILE_MULTILIB(multiLibNo);
 	}
 
@@ -2881,8 +2881,10 @@ exit:
 
 /*@-incondefs@*/
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
-	/*@globals check_fileList, check_fileListLen @*/
-	/*@modifies check_fileList, check_fileListLen @*/
+	/*@globals check_fileList, check_fileListLen,
+		multiLibNo, multiLib_oneshot @*/
+	/*@modifies check_fileList, check_fileListLen,
+		multiLibNo, multiLib_oneshot @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     Package pkg;
