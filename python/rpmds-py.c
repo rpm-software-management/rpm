@@ -505,6 +505,79 @@ static PyMappingMethods rpmds_as_mapping = {
         (objobjargproc)0,		/* mp_ass_subscript */
 };
 
+/** \ingroup py_c
+ */
+static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
+{
+    hdrObject * ho = NULL;
+    PyObject * to = NULL;
+    int tagN = RPMTAG_REQUIRENAME;
+    int flags = 0;
+
+if (_rpmds_debug < 0)
+fprintf(stderr, "*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
+
+    if (!PyArg_ParseTuple(args, "O!|Oi:rpmds_init", &hdr_Type, &ho, &to, &flags))
+	return -1;
+    if (to != NULL) {
+	tagN = tagNumFromPyObject(to);
+	if (tagN == -1) {
+	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	    return -1;
+	}
+    }
+    s->ds = rpmdsNew(hdrGetHeader(ho), tagN, flags);
+    s->active = 0;
+
+    return 0;
+}
+
+/** \ingroup py_c
+ */
+static void rpmds_free(/*@only@*/ rpmdsObject * s)
+	/*@modifies s @*/
+{
+if (_rpmds_debug)
+fprintf(stderr, "%p -- ds %p\n", s, s->ds);
+    s->ds = rpmdsFree(s->ds);
+
+    PyObject_Del((PyObject *)s);
+}
+
+/** \ingroup py_c
+ */
+static PyObject * rpmds_alloc(PyTypeObject * subtype, int nitems)
+	/*@*/
+{
+    PyObject * s = PyType_GenericAlloc(subtype, nitems);
+
+if (_rpmds_debug < 0)
+fprintf(stderr, "*** rpmds_alloc(%p,%d) ret %p\n", subtype, nitems, s);
+    return s;
+}
+
+/** \ingroup py_c
+ */
+static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
+{
+    rpmdsObject * s = (void *) PyObject_New(rpmdsObject, subtype);
+
+    /* Perform additional initialization. */
+    if (rpmds_init(s, args, kwds) < 0) {
+	rpmds_free(s);
+	return NULL;
+    }
+
+if (_rpmds_debug)
+fprintf(stderr, "%p ++ ds %p\n", s, s->ds);
+
+    return (PyObject *)s;
+}
+
 /**
  */
 /*@unchecked@*/ /*@observer@*/
@@ -552,10 +625,10 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
-	0,				/* tp_free */
+	(initproc) rpmds_init,		/* tp_init */
+	(allocfunc) rpmds_alloc,	/* tp_alloc */
+	(newfunc) rpmds_new,		/* tp_new */
+	rpmds_free,			/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };
@@ -609,9 +682,9 @@ hdr_dsFromHeader(PyObject * s, PyObject * args)
     hdrObject * ho = (hdrObject *)s;
     PyObject * to = NULL;
     rpmTag tagN = RPMTAG_REQUIRENAME;
-    int scareMem = 0;
+    int flags = 0;
 
-    if (!PyArg_ParseTuple(args, "|O:dsFromHeader", &to))
+    if (!PyArg_ParseTuple(args, "|Oi:dsFromHeader", &to, &flags))
 	return NULL;
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
@@ -620,7 +693,7 @@ hdr_dsFromHeader(PyObject * s, PyObject * args)
 	    return NULL;
 	}
     }
-    return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, scareMem) );
+    return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, flags) );
 }
 
 rpmdsObject *
