@@ -7,6 +7,7 @@
 	- missed a few unlink() when scripts failed
 	- freePrefixes wasn't initialized in runScript()
 	- fix typo in %triggerpostun generation
+	- include icons in source packages
 
 2.4.108 -> 2.4.109:
         - remove icons with --rmsource

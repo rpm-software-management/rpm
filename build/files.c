@@ -116,6 +116,7 @@ int processSourceFiles(Spec spec)
     struct stat sb;
     HeaderIterator hi;
     int tag, type, count;
+    Package pkg;
     void * ptr;
 
     sourceFiles = newStringBuf();
@@ -179,6 +180,19 @@ int processSourceFiles(Spec spec)
 		rpmGetVar(RPMVAR_SOURCEDIR), srcPtr->source);
 	appendLineStringBuf(sourceFiles, buf);
 	srcPtr = srcPtr->next;
+    }
+
+    pkg = spec->packages;
+    while (pkg) {
+	srcPtr = pkg->icon;
+	while (srcPtr) {
+	    sprintf(buf, "%s%s/%s",
+		    srcPtr->flags & RPMBUILD_ISNO ? "!" : "",
+		    rpmGetVar(RPMVAR_SOURCEDIR), srcPtr->source);
+	    appendLineStringBuf(sourceFiles, buf);
+	    srcPtr = srcPtr->next;
+	}
+	pkg = pkg->next;
     }
 
     spec->sourceCpioList = NULL;
