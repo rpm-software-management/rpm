@@ -23,15 +23,11 @@
 /*@access rpmTransactionSet@*/
 /*@access rpmDependencyConflict@*/
 
-/*@access availablePackage@*/
-/*@access availableIndexEntry@*/
-/*@access availableIndex@*/
-/*@access fileIndexEntry@*/
-/*@access dirInfo@*/
-/*@access availableList@*/
 /*@access problemsSet@*/
 /*@access orderListIndex@*/
 /*@access tsortInfo@*/
+
+/*@access availablePackage@*/
 
 /*@unchecked@*/
 static int _cacheDependsRC = 1;
@@ -544,9 +540,11 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
      * Check for previously added versions with the same name.
      */
     i = ts->orderCount;
-    if (ts->addedPackages->list != NULL)
     for (i = 0; i < ts->orderCount; i++) {
-	p = ts->addedPackages->list + i;
+
+	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
+	    break;
+
 	if (strcmp(p->name, name))
 	    continue;
 	rc = rpmVersionCompare(p->h, h);
@@ -576,14 +574,16 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
     ts->order[i].type = TR_ADDED;
-    if (ts->addedPackages->list == NULL)
-	goto exit;
 
     {	availablePackage this =
 		alAddPackage(ts->addedPackages, i, h, key, fd, relocs);
-    	alNum = this - ts->addedPackages->list;
+    	alNum = alGetPkgIndex(ts->addedPackages, this);
 	ts->order[i].u.addedIndex = alNum;
     }
+
+    /* XXX sanity check */
+    if (alGetPkg(ts->addedPackages, alNum) == NULL)
+	goto exit;
 
     if (i == ts->orderCount)
 	ts->orderCount++;
@@ -617,8 +617,11 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
 		    multiLibMask = *pp;
 		if (oldmultiLibMask && multiLibMask
-		    && !(oldmultiLibMask & multiLibMask)) {
-		    ts->addedPackages->list[alNum].multiLib = multiLibMask;
+		 && !(oldmultiLibMask & multiLibMask))
+		{
+		    availablePackage alp = alGetPkg(ts->addedPackages, alNum);
+		    if (alp != NULL)
+			alp->multiLib = multiLibMask;
 		}
 	    }
 	    /*@=branchstate@*/
@@ -1428,7 +1431,7 @@ static inline int addRelation( const rpmTransactionSet ts,
 
     /* Avoid redundant relations. */
     /* XXX TODO: add control bit. */
-    matchNum = q - ts->addedPackages->list;
+    matchNum = alGetPkgIndex(ts->addedPackages, q);
     if (selected[matchNum] != 0)
 	return 0;
     selected[matchNum] = 1;
@@ -1501,7 +1504,7 @@ static void addQ(availablePackage p,
 
 int rpmdepOrder(rpmTransactionSet ts)
 {
-    int npkgs = ts->addedPackages->size;
+    int npkgs = alGetSize(ts->addedPackages);
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
     availablePackage p;
     availablePackage q;
@@ -1528,9 +1531,11 @@ int rpmdepOrder(rpmTransactionSet ts)
 
     /* Record all relations. */
     rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
-    if ((p = ts->addedPackages->list) != NULL)
-    for (i = 0; i < npkgs; i++, p++) {
+    for (i = 0; i < npkgs; i++) {
 	int matchNum;
+
+	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
+	    break;
 
 	if (p->requiresCount <= 0)
 	    continue;
@@ -1538,7 +1543,7 @@ int rpmdepOrder(rpmTransactionSet ts)
 	memset(selected, 0, sizeof(*selected) * npkgs);
 
 	/* Avoid narcisstic relations. */
-	matchNum = p - ts->addedPackages->list;
+	matchNum = alGetPkgIndex(ts->addedPackages, p);
 	selected[matchNum] = 1;
 
 	/* T2. Next "q <- p" relation. */
@@ -1581,8 +1586,11 @@ int rpmdepOrder(rpmTransactionSet ts)
     }
 
     /* Save predecessor count. */
-    if ((p = ts->addedPackages->list) != NULL)
-    for (i = 0; i < npkgs; i++, p++) {
+    for (i = 0; i < npkgs; i++) {
+
+	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
+	    break;
+
 	p->npreds = p->tsi.tsi_count;
     }
 
@@ -1592,8 +1600,10 @@ int rpmdepOrder(rpmTransactionSet ts)
 rescan:
     q = r = NULL;
     qlen = 0;
-    if ((p = ts->addedPackages->list) != NULL)
-    for (i = 0; i < npkgs; i++, p++) {
+    for (i = 0; i < npkgs; i++) {
+
+	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
+	    break;
 
 	/* Prefer packages in presentation order. */
 	if (!chainsaw)
@@ -1613,7 +1623,7 @@ rescan:
 			orderingCount, q->npreds, q->tsi.tsi_qcnt, q->depth,
 			2*q->depth, "",
 			q->name, q->version, q->release);
-	ordering[orderingCount++] = q - ts->addedPackages->list;
+	ordering[orderingCount++] = alGetPkgIndex(ts->addedPackages, q);
 	qlen--;
 	loopcheck--;
 
@@ -1647,8 +1657,11 @@ rescan:
 
 	/* T9. Initialize predecessor chain. */
 	nzaps = 0;
-	if ((q = ts->addedPackages->list) != NULL)
-	for (i = 0; i < npkgs; i++, q++) {
+	for (i = 0; i < npkgs; i++) {
+
+	    if ((q = alGetPkg(ts->addedPackages, i)) == NULL)
+		break;
+
 	    q->tsi.tsi_pkg = NULL;
 	    q->tsi.tsi_reqx = 0;
 	    /* Mark packages already sorted. */
@@ -1657,8 +1670,11 @@ rescan:
 	}
 
 	/* T10. Mark all packages with their predecessors. */
-	if ((q = ts->addedPackages->list) != NULL)
-	for (i = 0; i < npkgs; i++, q++) {
+	for (i = 0; i < npkgs; i++) {
+
+	    if ((q = alGetPkg(ts->addedPackages, i)) == NULL)
+		break;
+
 	    if ((tsi = q->tsi.tsi_next) == NULL)
 		continue;
 	    q->tsi.tsi_next = NULL;
@@ -1667,10 +1683,12 @@ rescan:
 	}
 
 	/* T11. Print all dependency loops. */
-	if ((r = ts->addedPackages->list) != NULL)
 	/*@-branchstate@*/
-	for (i = 0; i < npkgs; i++, r++) {
+	for (i = 0; i < npkgs; i++) {
 	    int printed;
+
+	    if ((r = alGetPkg(ts->addedPackages, i)) == NULL)
+		break;
 
 	    printed = 0;
 
@@ -1839,7 +1857,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	closeatexit = 1;
     }
 
-    npkgs = ts->addedPackages->size;
+    npkgs = alGetSize(ts->addedPackages);
 
     ps = xcalloc(1, sizeof(*ps));
     ps->alloced = 5;
@@ -1856,9 +1874,10 @@ int rpmdepCheck(rpmTransactionSet ts,
      * Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
-    if ((p = ts->addedPackages->list) != NULL)
-    for (i = 0; i < npkgs; i++, p++)
+    for (i = 0; i < npkgs; i++)
     {
+	if ((p = alGetPkg(ts->addedPackages, i)) == NULL)
+	    break;
 
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s-%s-%s\n" ,
 		p->name, p->version, p->release);

@@ -208,7 +208,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		    /*@innerbreak@*/ break;
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions)
-		rpmProblemSetAppend(ts->probs, RPMPROB_BADRELOCATE, alp,
+		rpmProblemSetAppend(ts, ts->probs, RPMPROB_BADRELOCATE, alp,
 			 relocations[i].oldPath, NULL, NULL, 0);
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
@@ -1176,13 +1176,14 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     }
 
     (void) rpmtransAddPackage(ts, h, fd, NULL, 0, NULL);
-    if (ts->addedPackages->list == NULL) {	/* XXX can't happen */
+
+    /* XXX can't happen */
+    if ((fi->ap = alGetPkg(ts->addedPackages, 0)) == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     fi->type = TR_ADDED;
-    fi->ap = ts->addedPackages->list;
     loadFi(ts, fi, h, 1);
     hge = fi->hge;
     hfd = (fi->hfd ? fi->hfd : headerFreeData);

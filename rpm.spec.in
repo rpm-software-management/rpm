@@ -544,3 +544,4 @@ fi
 - no-brainer refcounts for fi object, debug the mess.
 - dump the header early in transaction, recreate fi before installing.
 - start hiding availablePackage data/methods in rpmal.c/rpmal.h.
+- add some dinky availablePackage methods.

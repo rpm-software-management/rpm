@@ -15,8 +15,6 @@
 /*@access FSMI_t @*/
 /*@access FSM_t @*/
 
-/*@access availablePackage@*/	/* XXX fi->ap->key on callbacks */
-
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 /*@unchecked@*/
@@ -495,7 +493,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	    /*@-type@*/ /* FIX: cast? */
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
-			rpmfiGetKey(fi->ap), ts->notifyData);
+			rpmfiGetKey(fi), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	    /*@=type@*/
 	}
@@ -867,7 +865,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	    /*@-type@*/ /* FIX: cast? */
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS, size, size,
-			rpmfiGetKey(fi->ap), ts->notifyData);
+			rpmfiGetKey(fi), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	    /*@=type@*/
 	}
@@ -1650,7 +1648,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
 			fdGetCpioPos(fsm->cfd), fi->archiveSize,
-			rpmfiGetKey(fi->ap), ts->notifyData);
+			rpmfiGetKey(fi), ts->notifyData);
 		/*@=noeffectuncon @*/
 		/*@=type@*/
 	    }

@@ -12,10 +12,14 @@
 #include "debug.h"
 
 /*@access Header@*/
-/*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
+/*@access rpmProblemSet@*/
 /*@access rpmDependencyConflict@*/
+/*@access rpmTransactionSet@*/	/* XXX ts->addedPackages */
+
+#if 0
 /*@access availablePackage@*/
+#endif
 
 rpmProblemSet rpmProblemSetCreate(void)
 {
@@ -34,7 +38,9 @@ void rpmProblemSetFree(rpmProblemSet tsprobs)
 
     for (i = 0; i < tsprobs->numProblems; i++) {
 	rpmProblem p = tsprobs->probs + i;
+#ifdef	DYING
 	p->h = headerFree(p->h);
+#endif
 	p->pkgNEVR = _free(p->pkgNEVR);
 	p->altNEVR = _free(p->altNEVR);
 	p->str1 = _free(p->str1);
@@ -42,7 +48,8 @@ void rpmProblemSetFree(rpmProblemSet tsprobs)
     tsprobs = _free(tsprobs);
 }
 
-void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
+void rpmProblemSetAppend(const rpmTransactionSet ts,
+		rpmProblemSet tsprobs, rpmProblemType type,
 		const availablePackage alp,
 		const char * dn, const char * bn,
 		Header altH, unsigned long ulong1)
@@ -63,13 +70,21 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
     tsprobs->numProblems++;
     memset(p, 0, sizeof(*p));
     p->type = type;
+
+#ifdef	DYING
     /*@-assignexpose@*/
     p->key = alp->key;
     /*@=assignexpose@*/
+#else
+    p->key = alGetKey(ts->addedPackages, alGetPkgIndex(ts->addedPackages, alp));
+#endif
+
     p->ulong1 = ulong1;
     p->ignoreProblem = 0;
     p->str1 = NULL;
+#ifdef	DYING
     p->h = NULL;
+#endif
     p->pkgNEVR = NULL;
     p->altNEVR = NULL;
 
@@ -82,7 +97,10 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
     }
 
     if (alp != NULL) {
+#ifdef	DYING
 	p->h = headerLink(alp->h);
+#endif
+#ifdef	DYING
 	t = xcalloc(1,	strlen(alp->name) +
 			strlen(alp->version) +
 			strlen(alp->release) + sizeof("--"));
@@ -92,6 +110,9 @@ void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
 	t = stpcpy(t, alp->version);
 	t = stpcpy(t, "-");
 	t = stpcpy(t, alp->release);
+#else
+	p->pkgNEVR = alGetPkgNVR(ts->addedPackages, alp);
+#endif
     }
 
     if (altH != NULL) {
@@ -132,8 +153,13 @@ int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
 	}
 	while ((t - tsprobs->probs) < tsprobs->numProblems) {
 	    /*@-nullpass@*/	/* LCL: looks good to me */
+#ifdef	DYING
 	    if (f->h == t->h && f->type == t->type && t->key == f->key &&
 		     XSTRCMP(f->str1, t->str1))
+#else
+	    if (f->type == t->type && t->key == f->key &&
+		     XSTRCMP(f->str1, t->str1))
+#endif
 		/*@innerbreak@*/ break;
 	    /*@=nullpass@*/
 	    t++;

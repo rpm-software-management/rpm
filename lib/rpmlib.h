@@ -50,6 +50,20 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
     return NULL;
 }
 
+/** \ingroup rpmtrans
+ * The RPM Transaction Set.
+ * Transaction sets are inherently unordered! RPM may reorder transaction
+ * sets to reduce errors. In general, installs/upgrades are done before
+ * strict removals, and prerequisite ordering is done on installs/upgrades.
+ */
+typedef /*@abstract@*/ /*@refcounted@*/
+struct rpmTransactionSet_s * rpmTransactionSet;
+
+/** \ingroup rpmtrans
+ * A package in a transaction set.
+ */
+typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
+
 /** \ingroup header
  * Return name, version, release strings from header.
  * @param h		header
@@ -902,11 +916,6 @@ int rpmdbRebuild(/*@null@*/ const char * prefix)
 /*@{*/
 
 /**
- * A package in a transaction set.
- */
-typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
-
-/**
  * Raw data for an element of a problem set.
  */
 typedef /*@abstract@*/ struct rpmProblem_s * rpmProblem;
@@ -945,7 +954,9 @@ struct rpmProblem_s {
 /*@only@*/ /*@null@*/ const char * pkgNEVR;
 /*@only@*/ /*@null@*/ const char * altNEVR;
 /*@kept@*/ /*@null@*/ const void * key;
+#ifdef	DYING
 /*@null@*/ Header h;
+#endif
     rpmProblemType type;
     int ignoreProblem;
 /*@only@*/ /*@null@*/ const char * str1;
@@ -1044,7 +1055,8 @@ void rpmProblemSetPrint(FILE *fp, rpmProblemSet tsprobs)
 /**
  * Append problem to set.
  */
-void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
+void rpmProblemSetAppend(const rpmTransactionSet ts,
+		rpmProblemSet tsprobs, rpmProblemType type,
 		const availablePackage alp,
 		const char * dn, const char * bn,
 		Header altH, unsigned long ulong1)
@@ -1220,14 +1232,6 @@ typedef /*@abstract@*/ struct psm_s * PSM_t;
 /** \ingroup rpmtrans
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct transactionFileInfo_s * TFI_t;
-
-/** \ingroup rpmtrans
- * The RPM Transaction Set.
- * Transaction sets are inherently unordered! RPM may reorder transaction
- * sets to reduce errors. In general, installs/upgrades are done before
- * strict removals, and prerequisite ordering is done on installs/upgrades.
- */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmTransactionSet_s * rpmTransactionSet;
 
 /**
  * Return package header from file handle.

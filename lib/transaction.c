@@ -57,7 +57,6 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access PSM_t@*/
 
 /*@access availablePackage@*/
-/*@access availableList@*/
 /*@access transactionElement@*/
 
 /**
@@ -119,13 +118,8 @@ int rpmtransGetKeys(const rpmTransactionSet ts, const void *** ep, int * nep)
 	for (oc = 0; oc < ts->orderCount; oc++, e++) {
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
-		if (ts->addedPackages->list) {
-		    availablePackage alp;
-		    alp = ts->addedPackages->list + ts->order[oc].u.addedIndex;
-		    *e = alp->key;
-		    /*@switchbreak@*/ break;
-		}
-		/*@fallthrough@*/
+		*e = alGetKey(ts->addedPackages, ts->order[oc].u.addedIndex);
+		/*@switchbreak@*/ break;
 	    default:
 	    case TR_REMOVED:
 		/*@-mods@*/	/* FIX: double indirection. */
@@ -391,7 +385,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
 	    if (reportConflicts)
-		rpmProblemSetAppend(ts->probs, RPMPROB_FILE_CONFLICT, fi->ap,
+		rpmProblemSetAppend(ts, ts->probs, RPMPROB_FILE_CONFLICT, fi->ap,
 			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum], h, 0);
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
@@ -596,8 +590,10 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 			fi->fmodes[i],
 			fi->fmd5s[i],
 			fi->flinks[i])) {
-		rpmProblemSetAppend(ts->probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap,
+		/*@-nullstate@*/ /* FIX: ts->di is possibly NULL */
+		rpmProblemSetAppend(ts, ts->probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap,
 				filespec, NULL, recs[otherPkgNum]->ap->h, 0);
+		/*@=nullstate@*/
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
@@ -692,7 +688,7 @@ static int ensureOlder(rpmTransactionSet ts, availablePackage alp, Header old)
 	rc = 0;
     else if (result > 0) {
 	rc = 1;
-	rpmProblemSetAppend(ts->probs, RPMPROB_OLDPACKAGE, alp,
+	rpmProblemSetAppend(ts, ts->probs, RPMPROB_OLDPACKAGE, alp,
 			NULL, NULL, old, 0);
     }
 
@@ -916,11 +912,13 @@ static /*@dependent@*/ availablePackage tsGetAlp(void * a)
     if (oc != -1) {
 	rpmTransactionSet ts = iter->ts;
 	TFI_t fi = ts->flList + oc;
-	if (ts->addedPackages->list && fi->type == TR_ADDED)
-	    alp = ts->addedPackages->list + ts->order[oc].u.addedIndex;
+	if (fi->type == TR_ADDED)
+	    alp = alGetPkg(ts->addedPackages, ts->order[oc].u.addedIndex);
     }
     /*@=branchstate@*/
+    /*@-nullret@*/ /* FIX: alp can be NULL */
     return alp;
+    /*@=nullret@*/
 }
 
 /**
@@ -1096,17 +1094,18 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * - count files.
      */
     /* The ordering doesn't matter here */
-    if (ts->addedPackages->list != NULL)
-    for (alp = ts->addedPackages->list;
-	(alp - ts->addedPackages->list) < ts->addedPackages->size;
-	alp++)
+    for (i = 0; i < alGetSize(ts->addedPackages); i++)
     {
+	alp = alGetPkg(ts->addedPackages, i);
+	if (alp == NULL)
+	    break;
+
 	if (!archOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
-	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH, alp,
+	    rpmProblemSetAppend(ts, ts->probs, RPMPROB_BADARCH, alp,
 			NULL, NULL, NULL, 0);
 
 	if (!osOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
-	    rpmProblemSetAppend(ts->probs, RPMPROB_BADOS, alp,
+	    rpmProblemSetAppend(ts, ts->probs, RPMPROB_BADOS, alp,
 			NULL, NULL, NULL, 0);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
@@ -1128,7 +1127,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 			RPMMIRE_DEFAULT, alp->release);
 
 	    while (rpmdbNextIterator(mi) != NULL) {
-		rpmProblemSetAppend(ts->probs, RPMPROB_PKG_INSTALLED, alp,
+		rpmProblemSetAppend(ts, ts->probs, RPMPROB_PKG_INSTALLED, alp,
 			NULL, NULL, NULL, 0);
 		/*@innerbreak@*/ break;
 	    }
@@ -1158,7 +1157,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     /* ===============================================
      * Initialize file list:
      */
-    ts->flEntries = ts->addedPackages->size + ts->numRemovedPackages;
+    ts->flEntries = alGetSize(ts->addedPackages) + ts->numRemovedPackages;
     ts->flList = xcalloc(ts->flEntries, sizeof(*ts->flList));
 
     /*
@@ -1368,12 +1367,12 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 		    /*@innercontinue@*/ continue;
 
 		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
-		    rpmProblemSetAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap,
+		    rpmProblemSetAppend(ts, ts->probs, RPMPROB_DISKSPACE, fi->ap,
 				ts->filesystems[i], NULL, NULL,
 	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
 
 		if (adj_fs_blocks(dip->ineeded) > dip->iavail)
-		    rpmProblemSetAppend(ts->probs, RPMPROB_DISKNODES, fi->ap,
+		    rpmProblemSetAppend(ts, ts->probs, RPMPROB_DISKNODES, fi->ap,
 				ts->filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
 	    }
@@ -1474,7 +1473,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	case TR_ADDED:
 	    alp = tsGetAlp(tsi);
 assert(alp == fi->ap);
-	    i = alp - ts->addedPackages->list;
+	    i = alGetPkgIndex(ts->addedPackages, alp);
 
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s-%s-%s\n",
 			fi->name, fi->version, fi->release);

@@ -13,14 +13,71 @@
 
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
-/*@access rpmDependencyConflict@*/
 
 /*@access availablePackage@*/
+
+typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
+typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
+typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
+typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
+
 /*@access availableIndexEntry@*/
 /*@access availableIndex@*/
 /*@access fileIndexEntry@*/
 /*@access dirInfo@*/
 /*@access availableList@*/
+
+/** \ingroup rpmdep
+ * A single available item (e.g. a Provides: dependency).
+ */
+struct availableIndexEntry_s {
+/*@dependent@*/ availablePackage package; /*!< Containing package. */
+/*@dependent@*/ const char * entry;	/*!< Available item name. */
+    size_t entryLen;			/*!< No. of bytes in name. */
+    enum indexEntryType {
+	IET_PROVIDES=1		/*!< A Provides: dependency. */
+    } type;				/*!< Type of available item. */
+};
+
+/** \ingroup rpmdep
+ * Index of all available items.
+ */
+struct availableIndex_s {
+/*@null@*/ availableIndexEntry index;	/*!< Array of available items. */
+    int size;				/*!< No. of available items. */
+};
+
+/** \ingroup rpmdep
+ * A file to be installed/removed.
+ */
+struct fileIndexEntry_s {
+    int pkgNum;				/*!< Containing package number. */
+    int fileFlags;	/* MULTILIB */
+/*@dependent@*/ /*@null@*/ const char * baseName;	/*!< File basename. */
+};
+
+/** \ingroup rpmdep
+ * A directory to be installed/removed.
+ */
+struct dirInfo_s {
+/*@owned@*/ const char * dirName;	/*!< Directory path (+ trailing '/'). */
+    int dirNameLen;			/*!< No. bytes in directory path. */
+/*@owned@*/ fileIndexEntry files;	/*!< Array of files in directory. */
+    int numFiles;			/*!< No. files in directory. */
+};
+
+/** \ingroup rpmdep
+ * Set of available packages, items, and directories.
+ */
+struct availableList_s {
+/*@owned@*/ /*@null@*/ availablePackage list;	/*!< Set of packages. */
+    struct availableIndex_s index;	/*!< Set of available items. */
+    int delta;				/*!< Delta for pkg list reallocation. */
+    int size;				/*!< No. of pkgs in list. */
+    int alloced;			/*!< No. of pkgs allocated for list. */
+    int numDirs;			/*!< No. of directories. */
+/*@owned@*/ /*@null@*/ dirInfo dirs;	/*!< Set of directories. */
+};
 
 /*@unchecked@*/
 static int _al_debug = 0;
@@ -36,6 +93,74 @@ static void alFreeIndex(availableList al)
 	al->index.index = _free(al->index.index);
 	al->index.size = 0;
     }
+}
+
+int alGetSize(availableList al)
+{
+    return al->size;
+}
+
+const void * alGetKey(availableList al, int pkgNum)
+{
+    const void * key = NULL;
+    if (al != NULL && pkgNum >= 0 && pkgNum < al->size) {
+	if (al->list != NULL) {
+	    availablePackage alp = al->list + pkgNum;
+	    key = alp->key;
+	}
+    }
+    return key;
+}
+
+availablePackage alGetPkg(availableList al, int pkgNum)
+{
+    availablePackage alp = NULL;
+    if (al != NULL && pkgNum >= 0 && pkgNum < al->size) {
+	if (al->list != NULL)
+	    alp = al->list + pkgNum;
+    }
+/*@-modfilesys@*/
+if (_al_debug)
+fprintf(stderr, "*** alp[%d] %p\n", pkgNum, alp);
+/*@=modfilesys@*/
+    return alp;
+}
+
+int alGetPkgIndex(availableList al, availablePackage alp)
+{
+    int pkgNum = -1;
+    if (al != NULL) {
+	if (al->list != NULL)
+	    if (alp != NULL && alp >= al->list && alp < (al->list + al->size))
+		pkgNum = alp - al->list;
+    }
+/*@-modfilesys@*/
+if (_al_debug)
+fprintf(stderr, "*** alp %p[%d]\n", alp, pkgNum);
+/*@=modfilesys@*/
+    return pkgNum;
+}
+
+const char * alGetPkgNVR(availableList al, availablePackage alp)
+{
+    const char * pkgNVR = NULL;
+
+    if (al != NULL) {
+	if (al->list != NULL)
+	    if (alp != NULL && alp >= al->list && alp < (al->list + al->size)) {
+		char * t;
+		t = xcalloc(1,	strlen(alp->name) +
+				strlen(alp->version) +
+				strlen(alp->release) + sizeof("--"));
+		pkgNVR = t;
+		t = stpcpy(t, alp->name);
+		t = stpcpy(t, "-");
+		t = stpcpy(t, alp->version);
+		t = stpcpy(t, "-");
+		t = stpcpy(t, alp->release);
+	    }
+    }
+    return pkgNVR;
 }
 
 availableList alCreate(int delta)

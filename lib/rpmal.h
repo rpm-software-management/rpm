@@ -6,10 +6,12 @@
  * Structures used for managing added/available package lists.
  */
 
+#if 0
 typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
 typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
 typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
 typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
+#endif
 
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 
@@ -30,7 +32,7 @@ struct tsortInfo_s {
     availablePackage tsi_pkg;
     int		tsi_reqx;
     int		tsi_qcnt;
-} ;
+};
 /*@=fielduse@*/
 
 /** \ingroup rpmdep
@@ -59,63 +61,58 @@ struct availablePackage_s {
 /*@kept@*//*@null@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
 /*@null@*/ rpmRelocation * relocs;
 /*@null@*/ FD_t fd;
-} ;
-
-/** \ingroup rpmdep
- * A single available item (e.g. a Provides: dependency).
- */
-struct availableIndexEntry_s {
-/*@dependent@*/ availablePackage package; /*!< Containing package. */
-/*@dependent@*/ const char * entry;	/*!< Available item name. */
-    size_t entryLen;			/*!< No. of bytes in name. */
-    enum indexEntryType {
-	IET_PROVIDES=1		/*!< A Provides: dependency. */
-    } type;				/*!< Type of available item. */
-} ;
-
-/** \ingroup rpmdep
- * Index of all available items.
- */
-struct availableIndex_s {
-/*@null@*/ availableIndexEntry index;	/*!< Array of available items. */
-    int size;				/*!< No. of available items. */
-} ;
-
-/** \ingroup rpmdep
- * A file to be installed/removed.
- */
-struct fileIndexEntry_s {
-    int pkgNum;				/*!< Containing package number. */
-    int fileFlags;	/* MULTILIB */
-/*@dependent@*/ /*@null@*/ const char * baseName;	/*!< File basename. */
-} ;
-
-/** \ingroup rpmdep
- * A directory to be installed/removed.
- */
-struct dirInfo_s {
-/*@owned@*/ const char * dirName;	/*!< Directory path (+ trailing '/'). */
-    int dirNameLen;			/*!< No. bytes in directory path. */
-/*@owned@*/ fileIndexEntry files;	/*!< Array of files in directory. */
-    int numFiles;			/*!< No. files in directory. */
-} ;
-
-/** \ingroup rpmdep
- * Set of available packages, items, and directories.
- */
-struct availableList_s {
-/*@owned@*/ /*@null@*/ availablePackage list;	/*!< Set of packages. */
-    struct availableIndex_s index;	/*!< Set of available items. */
-    int delta;				/*!< Delta for pkg list reallocation. */
-    int size;				/*!< No. of pkgs in list. */
-    int alloced;			/*!< No. of pkgs allocated for list. */
-    int numDirs;			/*!< No. of directories. */
-/*@owned@*/ /*@null@*/ dirInfo dirs;	/*!< Set of directories. */
-} ;
+};
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * Return number of packages in list.
+ * @param al		available list
+ * @return		no. of packages in list
+ */
+int alGetSize(availableList al)
+	/*@*/;
+
+/**
+ * Return available package key.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package key
+ */
+/*@kept@*/ /*@null@*/
+const void * alGetKey(/*@null@*/ availableList al, int pkgNum)
+	/*@*/;
+
+/**
+ * Return available package.
+ * @param al		available list
+ * @param pkgNum	available package index
+ * @return		available package pointer
+ */
+/*@dependent@*/ /*@null@*/
+availablePackage alGetPkg(/*@null@*/ availableList al, int pkgNum)
+	/*@*/;
+
+/**
+ * Return available package index.
+ * @param al		available list
+ * @param alp		available package pointer
+ * @return		available package index, -1 on failure
+ */
+int alGetPkgIndex(/*@null@*/ availableList al, availablePackage alp)
+	/*@*/;
+
+/**
+ * Return (malloc'd) available package name-version-release string.
+ * @param al		available list
+ * @param alp		available package pointer
+ * @return		
+ */
+/*@only@*/ /*@null@*/
+const char * alGetPkgNVR(/*@null@*/ availableList al, availablePackage alp)
+	/*@*/;
 
 /**
  * Initialize available packckages, items, and directory list.
