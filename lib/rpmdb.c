@@ -328,7 +328,11 @@ static int dbiSearch(dbiIndex dbi, const char * keyp, size_t keylen,
     size_t datalen;
     int rc;
 
-    if (setp) *setp = NULL;
+    if (setp) {
+	if (*setp)
+	    dbiFreeIndexSet(*setp);
+	*setp = NULL;
+    }
     if (keylen == 0) keylen = strlen(keyp);
 
     rc = dbiGet(dbi, (void **)&keyp, &keylen, &datap, &datalen, 0);
@@ -1062,19 +1066,21 @@ static int dbiFindMatches(dbiIndex dbi, const char * name, const char * version,
 	if (release && strcmp(release, pkgRelease)) goodRelease = 0;
 	if (version && strcmp(version, pkgVersion)) goodVersion = 0;
 
-	if (goodRelease && goodVersion) 
-	    gotMatches = 1;
-	else 
+	if (goodRelease && goodVersion) {
+	    /* structure assignment */
+	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
+	} else 
 	    (*matches)->recs[i].hdrNum = 0;
 
 	headerFree(h);
     }
 
-    if (!gotMatches) {
+    if (gotMatches) {
+	(*matches)->count = gotMatches;
+	rc = 0;
+    } else {
 	rc = 1;
-	goto exit;
     }
-    rc = 0;
 
 exit:
     if (rc && matches && *matches) {

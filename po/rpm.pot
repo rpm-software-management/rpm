@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-01 01:32-0400\n"
+"POT-Creation-Date: 2000-06-03 16:13-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3294,140 +3294,140 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:337
+#: lib/rpmdb.c:341
 #, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr ""
 
-#: lib/rpmdb.c:454
+#: lib/rpmdb.c:458
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: lib/rpmdb.c:463
+#: lib/rpmdb.c:467
 #, c-format
 msgid "error removing record %s from %s"
 msgstr ""
 
-#: lib/rpmdb.c:685 lib/rpmdb.c:2194
+#: lib/rpmdb.c:689 lib/rpmdb.c:2200
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:782
+#: lib/rpmdb.c:786
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:986
+#: lib/rpmdb.c:990
 #, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr ""
 
-#: lib/rpmdb.c:1052 lib/rpmdb.c:1568 lib/uninstall.c:90
+#: lib/rpmdb.c:1056 lib/rpmdb.c:1574 lib/uninstall.c:90
 #, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:1619
+#: lib/rpmdb.c:1625
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1630
+#: lib/rpmdb.c:1636
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1639
+#: lib/rpmdb.c:1645
 #, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1646 lib/rpmdb.c:1869
+#: lib/rpmdb.c:1652 lib/rpmdb.c:1875
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1782
+#: lib/rpmdb.c:1788
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:1837
+#: lib/rpmdb.c:1843
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1853
+#: lib/rpmdb.c:1859
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1862
+#: lib/rpmdb.c:1868
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2219
+#: lib/rpmdb.c:2225
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2229
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rpmdb.c:2229
+#: lib/rpmdb.c:2235
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2231
+#: lib/rpmdb.c:2237
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:2238
+#: lib/rpmdb.c:2244
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2247
+#: lib/rpmdb.c:2253
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2270
+#: lib/rpmdb.c:2276
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:2302
+#: lib/rpmdb.c:2308
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2326
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2334
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2330
+#: lib/rpmdb.c:2336
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2340
+#: lib/rpmdb.c:2346
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2342
+#: lib/rpmdb.c:2348
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
