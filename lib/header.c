@@ -882,6 +882,10 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
   }
 #endif
 
+    /* First try a complete match. */
+    if (strlen(td) == (le-l) && !strncmp(td, l, (le - l)))
+	return 1;
+
     /* Next, try stripping optional dialect and matching.  */
     for (fe = l; fe < le && *fe != '@'; fe++)
 	;
