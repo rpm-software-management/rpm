@@ -1,6 +1,6 @@
 The RPM TODO file.
 
-Aug 7, 1998, Version 0.05.
+Aug 7, 1998, Version 0.06.
 
 This list is maintained by Alex deVries <adevries@engsoc.carleton.ca>.
 
@@ -35,8 +35,6 @@ rg   Ralph Goers <Ralph_Goers@candle.com>
 
 2. Features that are of definite interest 
 -----------------------------------------
-
-- taking out old buildarch and buildos flags
 
 - getting rid of all the arch specific macros in lib/rpmrc.c
 
