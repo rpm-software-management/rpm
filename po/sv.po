@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-06 15:34-0400\n"
+"POT-Creation-Date: 2002-05-06 21:08-0400\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1462,23 +1462,23 @@ msgstr "%s: %-45s JA (db-tillhandahållande)\n"
 msgid "(db package)"
 msgstr "inga paket\n"
 
-#: lib/depends.c:789
+#: lib/depends.c:807
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:909
+#: lib/depends.c:927
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1177
+#: lib/depends.c:1195
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1283
+#: lib/depends.c:1301
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1486,20 +1486,20 @@ msgid ""
 msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, djup)\n"
 
-#: lib/depends.c:1376
+#: lib/depends.c:1394
 msgid "========== successors only (presentation order)\n"
 msgstr "========== endast efterföljare (presentationsordning)\n"
 
-#: lib/depends.c:1446
+#: lib/depends.c:1464
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1481
+#: lib/depends.c:1499
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1486
+#: lib/depends.c:1504
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2069,81 +2069,81 @@ msgid "generate signature"
 msgstr "generera signatur"
 
 #. @observer@
-#: lib/problems.c:210
+#: lib/problems.c:211
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:218
+#: lib/problems.c:219
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "paket %s är för en annan arkitektur"
 
-#: lib/problems.c:223
+#: lib/problems.c:224
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "paket %s är för ett annat operativsystem"
 
-#: lib/problems.c:228
+#: lib/problems.c:229
 #, c-format
 msgid "package %s is already installed"
 msgstr "paket %s är redan installerat"
 
-#: lib/problems.c:233
+#: lib/problems.c:234
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "sökväg %s i paket %s är inte relokerbar"
 
-#: lib/problems.c:238
+#: lib/problems.c:239
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "fil %s är en konflikt mellan installationsförsök av %s och %s"
 
-#: lib/problems.c:243
+#: lib/problems.c:244
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "fil %s från installation av %s står i konflikt med filen från paket %s"
 
-#: lib/problems.c:248
+#: lib/problems.c:249
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paket %s (som är nyare än %s) är redan installerat"
 
-#: lib/problems.c:253
+#: lib/problems.c:254
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "installation av paket %s kräver %ld%cB på filsystem %s"
 
-#: lib/problems.c:263
+#: lib/problems.c:264
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "installation av paket %s kräver %ld inoder på filsystem %s"
 
-#: lib/problems.c:268
+#: lib/problems.c:269
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "paket %s systemanrop före transaktion: %s misslyckades: %s"
 
-#: lib/problems.c:272
+#: lib/problems.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
-#: lib/problems.c:276
+#: lib/problems.c:277
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
-#: lib/problems.c:281
+#: lib/problems.c:282
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
 
-#: lib/problems.c:362
+#: lib/problems.c:363
 #, fuzzy
 msgid "conflicts with"
 msgstr " står i konflikt med %s-%s-%s\n"
 
-#: lib/problems.c:362
+#: lib/problems.c:363
 #, fuzzy
 msgid "is needed by"
 msgstr " behövs av %s-%s-%s\n"
@@ -2776,29 +2776,29 @@ msgstr ""
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1072
+#: lib/signature.c:1071
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "hoppa över eventuella MD5-signaturer"
 
-#: lib/signature.c:1182
+#: lib/signature.c:1181
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1183
+#: lib/signature.c:1182
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:1258
+#: lib/signature.c:1257
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1285
+#: lib/signature.c:1284
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1289
+#: lib/signature.c:1288
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-06 15:34-0400\n"
+"POT-Creation-Date: 2002-05-06 21:08-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -1487,42 +1487,42 @@ msgstr "datoteka %s ne pripada nijednom paketu\n"
 msgid "(db package)"
 msgstr "upit nad svim paketima"
 
-#: lib/depends.c:789
+#: lib/depends.c:807
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:909
+#: lib/depends.c:927
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
 #. Record all relations.
-#: lib/depends.c:1177
+#: lib/depends.c:1195
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1283
+#: lib/depends.c:1301
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1376
+#: lib/depends.c:1394
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1446
+#: lib/depends.c:1464
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1481
+#: lib/depends.c:1499
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1486
+#: lib/depends.c:1504
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2125,81 +2125,81 @@ msgid "generate signature"
 msgstr "napravi PGP potpis"
 
 #. @observer@
-#: lib/problems.c:210
+#: lib/problems.c:211
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:218
+#: lib/problems.c:219
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-#: lib/problems.c:223
+#: lib/problems.c:224
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-#: lib/problems.c:228
+#: lib/problems.c:229
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/problems.c:233
+#: lib/problems.c:234
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "paket %s nije instaliran\n"
 
-#: lib/problems.c:238
+#: lib/problems.c:239
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/problems.c:243
+#: lib/problems.c:244
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr " se sudara sa %s-%s-%s\n"
 
-#: lib/problems.c:248
+#: lib/problems.c:249
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-#: lib/problems.c:253
+#: lib/problems.c:254
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:263
+#: lib/problems.c:264
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:268
+#: lib/problems.c:269
 #, fuzzy, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-#: lib/problems.c:272
+#: lib/problems.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: lib/problems.c:276
+#: lib/problems.c:277
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "paket %s nije naveden u %s"
 
-#: lib/problems.c:281
+#: lib/problems.c:282
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/problems.c:362
+#: lib/problems.c:363
 #, fuzzy
 msgid "conflicts with"
 msgstr " se sudara sa %s-%s-%s\n"
 
-#: lib/problems.c:362
+#: lib/problems.c:363
 #, fuzzy
 msgid "is needed by"
 msgstr " je potreban paketu %s-%s-%s\n"
@@ -2842,29 +2842,29 @@ msgstr ""
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1072
+#: lib/signature.c:1071
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "preskoèi sve MD5 potpise"
 
-#: lib/signature.c:1182
+#: lib/signature.c:1181
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1183
+#: lib/signature.c:1182
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "%s: Potpis nije na raspolaganju\n"
 
-#: lib/signature.c:1258
+#: lib/signature.c:1257
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1285
+#: lib/signature.c:1284
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1289
+#: lib/signature.c:1288
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""

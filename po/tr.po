@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-06 15:34-0400\n"
+"POT-Creation-Date: 2002-05-06 21:08-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1482,23 +1482,23 @@ msgstr "%s: %-45s EVET (db saðlar)\n"
 msgid "(db package)"
 msgstr "paket yok\n"
 
-#: lib/depends.c:789
+#: lib/depends.c:807
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:909
+#: lib/depends.c:927
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1177
+#: lib/depends.c:1195
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1283
+#: lib/depends.c:1301
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1506,20 +1506,20 @@ msgid ""
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1376
+#: lib/depends.c:1394
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1446
+#: lib/depends.c:1464
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1481
+#: lib/depends.c:1499
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1486
+#: lib/depends.c:1504
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2093,81 +2093,81 @@ msgid "generate signature"
 msgstr "imza üretir"
 
 #. @observer@
-#: lib/problems.c:210
+#: lib/problems.c:211
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:218
+#: lib/problems.c:219
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "%s farklý bir mimari için"
 
-#: lib/problems.c:223
+#: lib/problems.c:224
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "%s farklý bir iþletim sistemi için"
 
-#: lib/problems.c:228
+#: lib/problems.c:229
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s zaten kurulu"
 
-#: lib/problems.c:233
+#: lib/problems.c:234
 #, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "%s dosya yolu %s paketinde yeniden konumlandýrýlamaz"
 
-#: lib/problems.c:238
+#: lib/problems.c:239
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%s dosyasý kalkýþýlan %s ve %s kurulumlarý arasýnda çeliþiyor"
 
-#: lib/problems.c:243
+#: lib/problems.c:244
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%s dosyasýnýn %s kurulumu %s kurulumundaki dosya ile çeliþiyor"
 
-#: lib/problems.c:248
+#: lib/problems.c:249
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s paketi zaten yüklü (%s sürümünden daha yeni)"
 
-#: lib/problems.c:253
+#: lib/problems.c:254
 #, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr "%s kurulumu %ld%cb gerektiriyor (%s dosya sisteminde)"
 
-#: lib/problems.c:263
+#: lib/problems.c:264
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "%s kurulumu %ld i-düðüm gerektiriyor (%s dosya sisteminde)"
 
-#: lib/problems.c:268
+#: lib/problems.c:269
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr "%s iþlem öncesi sistem çaðrý(sý/larý): %s baþarýsýz: %s"
 
-#: lib/problems.c:272
+#: lib/problems.c:273
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
-#: lib/problems.c:276
+#: lib/problems.c:277
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
-#: lib/problems.c:281
+#: lib/problems.c:282
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "anlaþýlamayan %d hatasý, %s paketi iþlenirken saptandý"
 
-#: lib/problems.c:362
+#: lib/problems.c:363
 #, fuzzy
 msgid "conflicts with"
 msgstr " %s-%s-%s ile çeliþiyor\n"
 
-#: lib/problems.c:362
+#: lib/problems.c:363
 #, fuzzy
 msgid "is needed by"
 msgstr " %s-%s-%s için gerekli\n"
@@ -2797,29 +2797,29 @@ msgstr ""
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1072
+#: lib/signature.c:1071
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "tüm MD5 imzalarýný atlar"
 
-#: lib/signature.c:1182
+#: lib/signature.c:1181
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1183
+#: lib/signature.c:1182
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Ýmza yok\n"
 
-#: lib/signature.c:1258
+#: lib/signature.c:1257
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1285
+#: lib/signature.c:1284
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1289
+#: lib/signature.c:1288
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
