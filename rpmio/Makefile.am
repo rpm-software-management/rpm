@@ -103,4 +103,4 @@ tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
 
 tficl: tficl.o
-	$(LINK) -o $@ tficl.o -lficl
+	$(LINK) -o $@ tficl.o -lficl -lm
