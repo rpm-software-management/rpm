@@ -67,6 +67,8 @@ static int installPackages(char * rootdir, char ** packages, char * location,
     for (i = 0, filename = packages; i < numPackages; i++, filename++) {
 	if (!*filename) continue;
 
+	hashesPrinted = 0;
+
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
 	    fprintf(stderr, "error: cannot open file %s\n", *filename);
@@ -97,7 +99,6 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 			"just testing\n");
 		rc = 0;
 	    } else {
-		hashesPrinted = 0;
 		rc = rpmInstallSourcePackage(rootdir, fd, NULL);
 	    }
 	} 
