@@ -446,6 +446,9 @@ fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi-
 	}
     }
 
+    sprintf(cmd, "PRAGMA synchronous = OFF;");
+    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &scp->pzErrmsg);
+
     if (rc)
 	rpmMessage(RPMMESS_WARNING, "Unable to initDB %s (%d)\n",
 		scp->pzErrmsg, rc);
