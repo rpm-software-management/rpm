@@ -16,6 +16,15 @@ typedef struct MacroContext {
 	int		firstFree;
 } MacroContext;
 
+/*
+ * Markers for types of macros added throughout rpm.
+ */
+#define	RMIL_MACROFILE	-9
+#define	RMIL_RPMRC	-7
+#define	RMIL_SPEC	-1
+#define	RMIL_OLDSPEC	-1
+#define	RMIL_GLOBAL	0
+
 #ifndef	__P
 #ifdef __STDC__
 #define	__P(protos)	protos

@@ -440,20 +440,20 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building) {
 	char buf[BUFSIZ];
 	int x;
 	rpmGetArchInfo(&canonarch, NULL);
-	addMacro(&globalMacroContext, "_buildarch", NULL, canonarch, -1);
+	addMacro(&globalMacroContext, "_buildarch", NULL, canonarch, RMIL_RPMRC);
 
 	/* XXX is this necessary? */
 	for (x = 0; canonarch[x]; x++)
 		buf[x] = tolower(canonarch[x]);
-	addMacro(&globalMacroContext, "_buildarch_lc", NULL, buf, -1);
+	addMacro(&globalMacroContext, "_buildarch_lc", NULL, buf, RMIL_RPMRC);
 
 	rpmGetOsInfo(&canonos, NULL);
-	addMacro(&globalMacroContext, "_buildos", NULL, canonos, -1);
+	addMacro(&globalMacroContext, "_buildos", NULL, canonos, RMIL_RPMRC);
 
 	/* XXX is this necessary? */
 	for (x = 0; canonos[x]; x++)
 		buf[x] = tolower(canonos[x]);
-	addMacro(&globalMacroContext, "_buildos_lc", NULL, buf, -1);
+	addMacro(&globalMacroContext, "_buildos_lc", NULL, buf, RMIL_RPMRC);
 
   }
 
@@ -482,7 +482,7 @@ static void setPathDefault(int var, char *macroname, char *subdir) {
 	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir) + 2);
 	strcpy(body, _TOPDIRMACRO);
 	strcat(body, subdir);
-	addMacro(&globalMacroContext, macroname, NULL, body, -1);
+	addMacro(&globalMacroContext, macroname, NULL, body, RMIL_RPMRC);
 #undef _TOPDIRMACRO
     }
 }
@@ -683,7 +683,7 @@ static int doReadRC(int fd, char * filename) {
 		    if (option->localize)
 			*s++ = '_';
 		    strcpy(s, option->name);
-		    addMacro(&globalMacroContext, buf, NULL, chptr, -1);
+		    addMacro(&globalMacroContext, buf, NULL, chptr, RMIL_RPMRC);
 		}
 	    } else {
 		start = NULL;	/* no arch */
@@ -693,7 +693,7 @@ static int doReadRC(int fd, char * filename) {
 		    if (option->localize)
 			*s++ = '_';
 		    strcpy(s, option->name);
-		    addMacro(&globalMacroContext, buf, NULL, chptr, -1);
+		    addMacro(&globalMacroContext, buf, NULL, chptr, RMIL_RPMRC);
 		}
 	    }
 	    rpmSetVarArch(option->var, chptr, start);

@@ -134,6 +134,7 @@ install: all
 	$(INSTALL_PROGRAM) -s -m 755 rpm2cpio $(installprefix)/$(BINDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
+	$(INSTALL_DATA) -m 644 $(topdir)/macros $(installprefix)/$(RPMCONFIGDIR)/macros
 	$(INSTALL_DATA) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(RPMCONFIGDIR)/rpmrc
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(RPMCONFIGDIR)/rpmpopt
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)

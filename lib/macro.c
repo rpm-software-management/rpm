@@ -884,7 +884,7 @@ expandMacro(MacroBuf *mb)
 
 	/* Expand builtin macros */
 	if (STREQ("global", f, fn)) {
-		s = doDefine(mb, se, 0, 1);
+		s = doDefine(mb, se, RMIL_GLOBAL, 1);
 		continue;
 	}
 	if (STREQ("define", f, fn)) {
@@ -1128,7 +1128,7 @@ initMacros(MacroContext *mc, const char *macrofile)
 				continue;
 			n++;
 			mb->mc = mc;	/* XXX just enough to get by */
-			doDefine(mb, n, 0, 0);
+			doDefine(mb, n, RMIL_MACROFILE, 0);
 		}
 		fclose(fp);
 	}

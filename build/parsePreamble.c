@@ -359,9 +359,9 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	SINGLE_TOKEN_ONLY;
 	/* These are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
-	    addMacro(spec->macros, "PACKAGE_VERSION", NULL, field, -1);
+	    addMacro(spec->macros, "PACKAGE_VERSION", NULL, field, RMIL_OLDSPEC);
 	} else if (tag == RPMTAG_RELEASE) {
-	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, -1);
+	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, RMIL_OLDSPEC-1);
 	}
 	/* fall through */
       case RPMTAG_GROUP:
@@ -503,7 +503,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
     }
 
     if (macro) {
-	addMacro(spec->macros, macro, NULL, field, -1);
+	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
     }
     
     return 0;

@@ -317,10 +317,10 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
 	sprintf(body, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), p->source);
 	sprintf(buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	addMacro(spec->macros, buf, NULL, body, -1);
+	addMacro(spec->macros, buf, NULL, body, RMIL_SPEC);
 	sprintf(buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
-	addMacro(spec->macros, buf, NULL, p->fullSource, -1);
+	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
     }
     
     return 0;

@@ -614,4 +614,4 @@ else
 fi
 
 AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile $NBMAKEFILE tools/Makefile po/Makefile misc/Makefile)
+AC_OUTPUT(Makefile Makefile.inc lib-rpmrc macros lib/Makefile build/Makefile $NBMAKEFILE tools/Makefile po/Makefile misc/Makefile)

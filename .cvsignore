@@ -2,6 +2,7 @@ rpm
 rpm.shared
 rpm2cpio
 lib-rpmrc
+macros
 config.h
 config.guess
 config.cache
