@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.8 2000/08/02 08:05:00 rjray Exp $
+#   $Id: Header.pm,v 1.9 2000/08/08 07:02:06 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -35,7 +35,7 @@ use RPM::Error;
 use RPM::Constants ':rpmerr';
 
 $VERSION = '0.27';
-$revision = do { my @r=(q$Revision: 1.8 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.9 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -115,13 +115,16 @@ them via C<keys> or C<each> returns the tags in the order in which they
 appear in the header. Keys may be requested without regard for letter case,
 but they are always returned as all upper-case.
 
-The return value corresponding to each key is a list reference (or C<undef>
-if the key is not valid). This is due to the fact that any of the tags may
-have more than one piece of data associated, and the C<FETCH> interface to
-hashes presumes scalar calling context and return value. Thus, rather than
-require developers to frequently test the return value as a reference or
-not, the value is simple always returned as a list ref, even if there is only
-one element.
+The return value corresponding to each key is a list reference or scalar
+(or C<undef> if the key is not valid), depending on the data-type of the
+key. Each of the header tags are noted with one of C<$> or C<@> in the
+B<RPM::Constants> documentation. The C<defined> keyword should be used
+for testing success versus failure, as empty tags are possible. See the
+C<scalar_tag> test, below.
+
+This is a significant change from versions prior to 0.27, in which the
+return value was always a list reference. This new approach brings
+B<RPM::Header> more in line with other interfaces to B<rpm> header information.
 
 B<RPM::Header> objects are also the native return value from keys retrieved
 in the B<RPM::Database> class (see L<RPM::Database>). In these cases, the
@@ -237,8 +240,6 @@ stored within the header.
 
 =back
 
-=back
-
 =item NVR
 
 The commonly-needed data triple of (B<name>, B<version>, B<release>) may be
@@ -256,6 +257,8 @@ established behavior of other comparison operators (C<cmp> and C<E<lt>=E<gt>>);
 passed argument. A value of 1 indicates that the calling object is greater,
 or newer, than the argument. A value of 0 indicates that they are equal.
 
+=back
+
 =head1 DIAGNOSTICS
 
 Direct binding to the internal error-management of B<rpm> is still under
@@ -269,7 +272,7 @@ subject to change in future releases.
 
 =head1 SEE ALSO
 
-L<RPM>, L<RPM::Database>, L<perl>, L<rpm>
+L<RPM>, L<RPM::Database>, L<RPM::Constants>, L<perl>, L<rpm>
 
 =head1 AUTHOR
 
