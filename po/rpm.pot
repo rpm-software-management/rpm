@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-12-03 11:36-0500\n"
+"POT-Creation-Date: 1998-12-05 14:31-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -303,7 +303,7 @@ msgstr ""
 msgid "counting packages to uninstall\n"
 msgstr ""
 
-#: ../install.c:330 ../lib/query.c:639 ../verify.c:242
+#: ../install.c:330 ../lib/query.c:639 ../verify.c:248
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -1326,78 +1326,78 @@ msgstr ""
 msgid "no arguments given for verify"
 msgstr ""
 
-#: ../url.c:82
+#: ../url.c:83
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: ../url.c:96 ../url.c:299
+#: ../url.c:97 ../url.c:301
 #, c-format
 msgid "getting %s via anonymous ftp\n"
 msgstr ""
 
-#: ../url.c:101
+#: ../url.c:102
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../url.c:119
+#: ../url.c:120
 msgid "error: ftpport must be a number\n"
 msgstr ""
 
-#: ../url.c:201
+#: ../url.c:202
 msgid "error: url port must be a number\n"
 msgstr ""
 
-#: ../url.c:305
+#: ../url.c:307
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""
 
-#: ../verify.c:31
+#: ../verify.c:29
 #, c-format
 msgid "missing    %s\n"
 msgstr ""
 
-#: ../verify.c:87
+#: ../verify.c:93
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: ../verify.c:133
+#: ../verify.c:139
 #, c-format
 msgid "verifying record number %u\n"
 msgstr ""
 
-#: ../lib/query.c:418 ../verify.c:138
+#: ../lib/query.c:418 ../verify.c:144
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../lib/query.c:528 ../verify.c:175
+#: ../lib/query.c:528 ../verify.c:181
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:458 ../verify.c:193
+#: ../lib/query.c:458 ../verify.c:199
 #, c-format
 msgid "open of %s failed\n"
 msgstr ""
 
-#: ../verify.c:209
+#: ../verify.c:215
 #, c-format
 msgid "%s is not an RPM\n"
 msgstr ""
 
-#: ../lib/query.c:539 ../verify.c:217
+#: ../lib/query.c:539 ../verify.c:223
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:608 ../verify.c:231
+#: ../lib/query.c:608 ../verify.c:237
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:642 ../verify.c:244
+#: ../lib/query.c:642 ../verify.c:250
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
@@ -2128,7 +2128,7 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:529
+#: ../lib/cpio.c:531
 #, c-format
 msgid "error %d reading header: %s\n"
 msgstr ""
@@ -2883,7 +2883,7 @@ msgstr ""
 
 #: ../lib/rebuilddb.c:96
 #, c-format
-msgid "failed to remove %s: %s\n"
+msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
 #: ../lib/rpmdb.c:115
@@ -3260,10 +3260,10 @@ msgstr ""
 msgid "removal of %s failed: %s"
 msgstr ""
 
-#: ../lib/verify.c:171
+#: ../lib/verify.c:179
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 
-#: ../lib/verify.c:189
+#: ../lib/verify.c:197
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""

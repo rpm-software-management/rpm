@@ -16,8 +16,6 @@ static int verifyHeader(char * prefix, Header h, int verifyFlags) {
     int count, type;
     int verifyResult;
     int i, ec, rc;
-    char * size, * md5, * link, * mtime, * mode;
-    char * group, * user, * rdev;
     int_32 * fileFlagsList;
     int omitMask = 0;
 
@@ -30,28 +28,36 @@ static int verifyHeader(char * prefix, Header h, int verifyFlags) {
 	    if ((rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask)) != 0) {
 		fprintf(stdout, _("missing    %s\n"), fileList[i]);
 	    } else {
-		size = md5 = link = mtime = mode = ".";
-		user = group = rdev = ".";
+		const char * size, * md5, * link, * mtime, * mode;
+		const char * group, * user, * rdev;
+		static const char * aok = ".";
+		static const char * unknown = "?";
 
 		if (!verifyResult) continue;
 	    
 		rc = 1;
-		if (verifyResult & RPMVERIFY_MD5)
-		    md5 = "5";
-		if (verifyResult & RPMVERIFY_FILESIZE)
-		    size = "S";
-		if (verifyResult & RPMVERIFY_LINKTO)
-		    link = "L";
-		if (verifyResult & RPMVERIFY_MTIME)
-		    mtime = "T";
-		if (verifyResult & RPMVERIFY_RDEV)
-		    rdev = "D";
-		if (verifyResult & RPMVERIFY_USER)
-		    user = "U";
-		if (verifyResult & RPMVERIFY_GROUP)
-		    group = "G";
-		if (verifyResult & RPMVERIFY_MODE)
-		    mode = "M";
+
+#define	_verify(_RPMVERIFY_F, _C)	\
+	((verifyResult & _RPMVERIFY_F) ? _C : aok)
+#define	_verifylink(_RPMVERIFY_F, _C)	\
+	((verifyResult & RPMVERIFY_READLINKFAIL) ? unknown : \
+	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
+#define	_verifyfile(_RPMVERIFY_F, _C)	\
+	((verifyResult & RPMVERIFY_READFAIL) ? unknown : \
+	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
+	
+		md5 = _verifyfile(RPMVERIFY_MD5, "5");
+		size = _verify(RPMVERIFY_FILESIZE, "S");
+		link = _verifylink(RPMVERIFY_LINKTO, "L");
+		mtime = _verify(RPMVERIFY_MTIME, "T");
+		rdev = _verify(RPMVERIFY_RDEV, "D");
+		user = _verify(RPMVERIFY_USER, "U");
+		group = _verify(RPMVERIFY_GROUP, "G");
+		mode = _verify(RPMVERIFY_MODE, "M");
+
+#undef _verify
+#undef _verifylink
+#undef _verifyfile
 
 		fprintf(stdout, "%s%s%s%s%s%s%s%s %c %s\n",
 		       size, mode, md5, rdev, link, user, group, mtime, 

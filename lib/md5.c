@@ -19,6 +19,11 @@
 
 #include "md5.h"
 
+static int _ie = 0x44332211;
+static union _endian { int i; char b[4]; } *_endian = (union _endian *)&_ie;;
+#define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
+#define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
+
 void byteReverse(unsigned char *buf, unsigned longs);
 
 /*
@@ -49,15 +54,15 @@ void MD5Init(struct MD5Context *ctx, int brokenEndian)
     ctx->bits[0] = 0;
     ctx->bits[1] = 0;
 
-#   ifdef WORDS_BIGENDIAN
+    if (IS_BIG_ENDIAN()) {	/* XXX was ifdef WORDS_BIGENDIAN */
 	if (brokenEndian) {
 	    ctx->doByteReverse = 0;
 	} else {
 	    ctx->doByteReverse = 1;
 	}
-#   else
+    } else {
 	ctx->doByteReverse = 0;
-#   endif
+    }
 }
 
 /*

@@ -167,33 +167,37 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMUNINSTALL_JUSTDB		(1 << 2)
 #define	RPMUNINSTALL_NOTRIGGERS		(1 << 3)
 
-#define	RPMVERIFY_NONE             0
-#define	RPMVERIFY_MD5              (1 << 0)
-#define	RPMVERIFY_FILESIZE         (1 << 1)
-#define	RPMVERIFY_LINKTO           (1 << 2)
-#define	RPMVERIFY_USER             (1 << 3)
-#define	RPMVERIFY_GROUP            (1 << 4)
-#define	RPMVERIFY_MTIME            (1 << 5)
-#define	RPMVERIFY_MODE             (1 << 6)
-#define	RPMVERIFY_RDEV             (1 << 7)
-#define	RPMVERIFY_ALL              ~(RPMVERIFY_NONE)
+#define RPMVERIFY_NONE		0
+#define RPMVERIFY_MD5		(1 << 0)
+#define RPMVERIFY_FILESIZE	(1 << 1)
+#define RPMVERIFY_LINKTO	(1 << 2)
+#define RPMVERIFY_USER		(1 << 3)
+#define RPMVERIFY_GROUP		(1 << 4)
+#define RPMVERIFY_MTIME		(1 << 5)
+#define RPMVERIFY_MODE		(1 << 6)
+#define RPMVERIFY_RDEV		(1 << 7)
+#define RPMVERIFY_READLINKFAIL	(1 << 28)
+#define RPMVERIFY_READFAIL	(1 << 29)
+#define RPMVERIFY_LSTATFAIL	(1 << 30)
 
-#define	RPMSENSE_ANY             0
-#define	RPMSENSE_SERIAL          (1 << 0)
-#define	RPMSENSE_LESS            (1 << 1)
-#define	RPMSENSE_GREATER         (1 << 2)
-#define	RPMSENSE_EQUAL           (1 << 3)
-#define	RPMSENSE_PROVIDES        (1 << 4) /* only used internally by builds */
-#define	RPMSENSE_CONFLICTS       (1 << 5) /* only used internally by builds */
-#define	RPMSENSE_PREREQ          (1 << 6)
-#define	RPMSENSE_OBSOLETES       (1 << 7) /* only used internally by builds */
-#define	RPMSENSE_SENSEMASK       15       /* Mask to get senses, ie serial, */
+#define RPMVERIFY_ALL		~(RPMVERIFY_NONE)
+
+#define	RPMSENSE_ANY		0
+#define	RPMSENSE_SERIAL		(1 << 0)
+#define	RPMSENSE_LESS		(1 << 1)
+#define	RPMSENSE_GREATER	(1 << 2)
+#define	RPMSENSE_EQUAL		(1 << 3)
+#define	RPMSENSE_PROVIDES	(1 << 4) /* only used internally by builds */
+#define	RPMSENSE_CONFLICTS	(1 << 5) /* only used internally by builds */
+#define	RPMSENSE_PREREQ		(1 << 6)
+#define	RPMSENSE_OBSOLETES	(1 << 7) /* only used internally by builds */
+#define	RPMSENSE_SENSEMASK	15       /* Mask to get senses, ie serial, */
                                           /* less, greater, equal.          */
 
-#define	RPMSENSE_TRIGGERIN       (1 << 16)
-#define	RPMSENSE_TRIGGERUN       (1 << 17)
-#define	RPMSENSE_TRIGGERPOSTUN   (1 << 18)
-#define	RPMSENSE_TRIGGER         (RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | \
+#define	RPMSENSE_TRIGGERIN	(1 << 16)
+#define	RPMSENSE_TRIGGERUN	(1 << 17)
+#define	RPMSENSE_TRIGGERPOSTUN	(1 << 18)
+#define	RPMSENSE_TRIGGER	(RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | \
                                   RPMSENSE_TRIGGERPOSTUN)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */

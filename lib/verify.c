@@ -6,6 +6,11 @@
 #include "misc.h"
 #include "install.h"
 
+static int _ie = 0x44332211;
+static union _endian { int i; char b[4]; } *_endian = (union _endian *)&_ie;;
+#define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
+#define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
+
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
 int rpmVerifyFile(char * prefix, Header h, int filenum, int * result, 
@@ -26,11 +31,9 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     int size;
     char ** unameList, ** gnameList;
     int_32 useBrokenMd5;
-#if WORDS_BIGENDIAN
-    int_32 * brokenPtr;
-#endif
 
-#if WORDS_BIGENDIAN
+  if (IS_BIG_ENDIAN()) {	/* XXX was ifdef WORDS_BIGENDIAN */
+    int_32 * brokenPtr;
     if (!headerGetEntry(h, RPMTAG_BROKENMD5, NULL, (void **) &brokenPtr, NULL)) {
 	char * rpmVersion;
 
@@ -45,9 +48,9 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
     } else {
 	useBrokenMd5 = *brokenPtr;
     }
-#else
+  } else {
     useBrokenMd5 = 0;
-#endif
+  }
 
     headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &modeList, &count);
 
@@ -75,8 +78,10 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 	    return 0;
     }
 
-    if (lstat(filespec, &sb)) 
+    if (lstat(filespec, &sb)) {
+	*result |= RPMVERIFY_LSTATFAIL;
 	return 1;
+    }
 
     if (S_ISDIR(sb.st_mode))
 	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | 
@@ -101,7 +106,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 	flags &= ~(RPMVERIFY_LINKTO);
 
     /* Don't verify any features in omitMask */
-    flags &= ~omitMask;
+    flags &= ~(omitMask | RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL);
 
     if (flags & RPMVERIFY_MD5) {
 	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &md5List, &count);
@@ -111,7 +116,9 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 	    rc = mdfile(filespec, md5sum);
 	}
 
-	if (rc || strcmp(md5sum, md5List[filenum]))
+	if (rc)
+	    *result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
+	else if (strcmp(md5sum, md5List[filenum]))
 	    *result |= RPMVERIFY_MD5;
 	free(md5List);
     } 
@@ -119,11 +126,12 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 	headerGetEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &linktoList, &count);
 	size = readlink(filespec, linkto, sizeof(linkto));
 	if (size == -1)
-	    *result |= RPMVERIFY_LINKTO;
-	else 
+	    *result |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
+	else  {
 	    linkto[size] = '\0';
 	    if (strcmp(linkto, linktoList[filenum]))
 		*result |= RPMVERIFY_LINKTO;
+	}
 	free(linktoList);
     } 
 

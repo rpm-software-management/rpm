@@ -356,7 +356,6 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
 AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 
-AC_C_BIGENDIAN
 AC_C_INLINE
 
 dnl look for libc features
