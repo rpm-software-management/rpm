@@ -705,6 +705,10 @@ restart:
 		fn = xstrdup(fn);
 	    else
 		fn = xstrdup(arg);
+	} else if (*arg != '/') {
+	    const char *curDir = currentDirectory();
+	    fn = rpmGetPath(curDir, "/", arg, NULL);
+	    _free(curDir);
 	} else
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);
