@@ -15,7 +15,7 @@ librpmbuild_la_SOURCES = \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c reqprov.c spec.c
-#librpmbuild_la_LIBADD = -lrpm -lpopt
+librpmbuild_la_LIBADD = -lrpm
 
 .PHONY:	lclint
 lclint:

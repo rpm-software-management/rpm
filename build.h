@@ -5,21 +5,6 @@
 extern "C" {
 #endif
 
-extern struct poptOption rpmBuildPoptTable[];
-
-struct rpmBuildArguments {
-    int buildAmount;
-    const char *buildRootOverride;
-    char *targets;
-    int useCatalog;
-    int noLang;
-    int noBuild;
-    int shortCircuit;
-    char buildMode;
-    char buildChar;
-    /*@dependent@*/ const char *rootdir;
-};
-
 int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
 	  int fromTarball, char *cookie, const char * rcfile, int force,
 	  int nodeps);

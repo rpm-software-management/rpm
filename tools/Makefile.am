@@ -10,15 +10,16 @@ EXTRA_DIST =	fstrcmp.c message.c str-list.c rpmchecksig.c
 
 EXTRA_PROGRAMS = rpmgettext rpmputtext rpminject
 
-myldflags= -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
+myLDFLAGS= -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
 # XXX should libtool generate dependent libs?
-myldadd= $(top_builddir)/build/librpmbuild.la \
-	$(top_builddir)/lib/librpm.la \
+myLDADD = \
 	$(top_builddir)/popt/libpopt.la \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/build/librpmbuild.la \
 	@INTLLIBS@ @LIBMISC@
 
-LDFLAGS = $(myldflags)
-LDADD = $(myldadd)
+LDFLAGS = $(myLDFLAGS)
+LDADD = $(myLDADD)
 
 noinst_PROGRAMS = \
 	dump dumpdb javadeps rpmarchive rpmheader rpmlead rpmsignature
@@ -30,4 +31,4 @@ rpmgettext_SOURCES =	rpmgettext.c
 
 rpmputtext_SOURCES =	rpmgettext.c
 
-$(PROGRAMS): $(myldadd)
+$(PROGRAMS): $(myLDADD)

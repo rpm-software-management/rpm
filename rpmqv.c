@@ -15,7 +15,6 @@
 #include "build.h"
 #define GETOPT_REBUILD		1003
 #define GETOPT_RECOMPILE	1004
-static struct rpmBuildArguments rpmBArgs;
 #endif
 
 #ifdef	IAM_RPMDB
@@ -53,10 +52,6 @@ static int noTriggers = 0;
 static int noGpg = 0;
 static int noPgp = 0;
 #endif	/* IAM_RPMK */
-
-#ifdef	IAM_RPMQV
-static struct rpmQVArguments rpmQVArgs;
-#endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
 #include "signature.h"
@@ -204,15 +199,6 @@ static struct poptOption optionsTable[] = {
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
-#ifdef	DYING
-#ifdef	IAM_RPMBT
- { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
- { "rebuild", '\0', 0, 0, GETOPT_REBUILD,	NULL, NULL},
- { "recompile", '\0', 0, 0, GETOPT_RECOMPILE,	NULL, NULL},
- { "tarbuild", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
-#endif	/* IAM_RPMBT */
-#endif	/* DYING */
-
 #ifdef	IAM_RPMDB
  { "initdb", '\0', 0, &initdb, 0,		NULL, NULL},
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
@@ -246,12 +232,6 @@ static struct poptOption optionsTable[] = {
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
-#ifdef	DYING
- { "query", 'q', 0, 0, 'q',			NULL, NULL},
- { "verify", 'V', 0, 0, 'V',			NULL, NULL},
- {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
- { "querytags", '\0', 0, 0, 0,			NULL, NULL},
-#endif
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmQVSourcePoptTable, 0,	(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
@@ -262,7 +242,7 @@ static struct poptOption optionsTable[] = {
 
 #ifdef	IAM_RPMBT
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmBuildPoptTable, 0,		(void *) &rpmBArgs, NULL },
+		rpmBuildPoptTable, 0,		(void *) &rpmBTArgs, NULL },
 #endif	/* IAM_RPMBT */
 
  { 0, 0, 0, 0, 0,	NULL, NULL }
@@ -662,7 +642,7 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMBT
-    struct rpmBuildArguments *ba = &rpmBArgs;
+    struct rpmBuildArguments *ba = &rpmBTArgs;
 #endif
 
 #ifdef	IAM_RPMEIU
@@ -820,22 +800,6 @@ int main(int argc, const char ** argv)
 	    break;
 #endif	/* IAM_RPMQV || IAM_RPMEIU || IAM_RPMBT */
 
-#ifdef	DYING
-#ifdef	IAM_RPMBT
-	  case GETOPT_REBUILD:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_REBUILD;
-	    break;
-
-	  case GETOPT_RECOMPILE:
-	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
-		argerror(_("only one major mode may be specified"));
-	    bigMode = MODE_RECOMPILE;
-	    break;
-#endif	/* IAM_RPMBT */
-#endif	/* DYING */
-	
 #ifdef	IAM_RPMEIU
 	  case 'u':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
@@ -1011,6 +975,10 @@ int main(int argc, const char ** argv)
     if ((ba->buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
 
+    if (ba->buildRootOverride && bigMode != MODE_BUILD &&
+	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
+	argerror("--buildroot may only be used during package builds");
+    }
 #endif	/* IAM_RPMBT */
     
 #ifdef	IAM_RPMDB
@@ -1029,35 +997,12 @@ int main(int argc, const char ** argv)
     case 'Q':	bigMode = MODE_QUERYTAGS;	break;
     }
 
-#ifdef	DYING
-    if (queryTags) {
-	if (bigMode != MODE_UNKNOWN) 
-	    argerror(_("only one major mode may be specified"));
-	else
-	    bigMode = MODE_QUERYTAGS;
-    }
-#endif
-
     if (qva->qva_sourceCount) {
 	if (QVSource != RPMQV_PACKAGE || qva->qva_sourceCount > 1)
 	    argerror(_("one type of query/verify may be performed at a "
 			"time"));
 	QVSource = qva->qva_source;
     }
-#endif
-
-#ifdef	IAM_RPMBT
-    if (ba->buildRootOverride && bigMode != MODE_BUILD &&
-	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
-	argerror("--buildroot may only be used during package builds");
-    }
-#endif
-
-    if (gotDbpath && (bigMode & ~MODES_FOR_DBPATH))
-	argerror(_("--dbpath given for operation that does not use a "
-			"database"));
-
-#ifdef	IAM_RPMQV
     if (qva->qva_flags && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query flags"));
 
@@ -1066,7 +1011,11 @@ int main(int argc, const char ** argv)
 
     if (QVSource != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query source"));
-#endif	/* IAM_RPMQV */
+#endif
+
+    if (gotDbpath && (bigMode & ~MODES_FOR_DBPATH))
+	argerror(_("--dbpath given for operation that does not use a "
+			"database"));
 
 #if defined(IAM_RPMEIU) || defined(IAM_RPMBT)
 

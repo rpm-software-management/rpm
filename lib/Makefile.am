@@ -22,12 +22,12 @@ librpm_la_SOURCES = \
 	cpio.c $(DBLIBOBJS) depends.c \
 	formats.c fprint.c fs.c hash.c header.c install.c \
 	macro.c md5.c md5sum.c \
-	messages.c misc.c oldheader.c package.c problems.c query.c \
+	messages.c misc.c oldheader.c package.c problems.c \
+	poptBT.c poptQV.c query.c \
 	rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \
 	rpmio.c rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
 	tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
-librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
-#librpm_la_LIBADD = -lpopt
+librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS)) -lpopt
 
 falloc.lo: falloc.c $(top_srcdir)/system.h rpmio.h falloc.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<

@@ -847,14 +847,33 @@ int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes,
 	int numFiles, /*@out@*/ uint_32 ** usagesPtr, int flags);
 
 /* ==================================================================== */
-/* --- query/verify */
+/* --- build mode options */
+
+struct rpmBuildArguments {
+    int buildAmount;
+    const char *buildRootOverride;
+    char *targets;
+    int useCatalog;
+    int noLang;
+    int noBuild;
+    int shortCircuit;
+    char buildMode;
+    char buildChar;
+    /*@dependent@*/ const char *rootdir;
+};
+typedef	struct rpmBuildArguments BTA_t;
+
+extern struct rpmBuildArguments         rpmBTArgs;
+
+extern struct poptOption		rpmBuildPoptTable[];
+
+/* ==================================================================== */
+/* --- query/verify mode options */
 
 /* XXX SPECFILE is not verify sources */
 enum rpmQVSources { RPMQV_PACKAGE = 0, RPMQV_PATH, RPMQV_ALL, RPMQV_RPM, 
 		       RPMQV_GROUP, RPMQV_WHATPROVIDES, RPMQV_WHATREQUIRES,
 		       RPMQV_TRIGGEREDBY, RPMQV_DBOFFSET, RPMQV_SPECFILE };
-
-extern struct poptOption rpmQVSourcePoptTable[];
 
 struct rpmQVArguments {
     enum rpmQVSources qva_source;
@@ -868,12 +887,21 @@ struct rpmQVArguments {
 };
 typedef	struct rpmQVArguments QVA_t;
 
+extern struct rpmQVArguments		rpmQVArgs;
+
+extern struct poptOption		rpmQVSourcePoptTable[];
+
 /**
+ * @param qva		parsed query/verify options
  * @param db		rpm database
+ * @param h		header to use for query/verify
  */
 typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
 
 /**
+ * @param qva		parsed query/verify options
+ * @param mi		rpm database iterator
+ * @param showPackage	query/verify routine
  */
 int showMatches(QVA_t *qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
 	QVF_t showPackage);
@@ -884,23 +912,48 @@ int showMatches(QVA_t *qva, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi,
 #define QUERY_FOR_CONFIG	(1 << 4)
 #define QUERY_FOR_DUMPFILES     (1 << 8)
 
+/**
+ * @param tag		tag value
+ * @return		name of tag
+ */
 /*@observer@*/ const char *const tagName(int tag);
+
+/**
+ * @param targstr	name of tag
+ * @return		tag value
+ */
 int tagValue(const char *tagstr);
 
 extern int specedit;
 extern struct poptOption rpmQueryPoptTable[];
 
-void rpmDisplayQueryTags(FILE * f);
 /**
+ * @param f	file handle to use for display
+ */
+void rpmDisplayQueryTags(FILE * f);
+
+/**
+ * @param qva		parsed query/verify options
+ * @param source	type of source to query/verify
+ * @param arg		name of source to query/verify
  * @param db		rpm database
+ * @param showPackage	query/verify routine
  */
 int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	rpmdb db, QVF_t showPackage);
 
 /**
- * @param db		rpm database
+ * @param qva		parsed query/verify options
+ * @param db		rpm database (unused for queries)
+ * @param h		header to use for query
  */
 int showQueryPackage(QVA_t *qva, rpmdb db, Header h);
+
+/**
+ * @param qva		parsed query/verify options
+ * @param source	type of source to query
+ * @param arg		name of source to query
+ */
 int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg);
 
 #define VERIFY_FILES		(1 <<  9)
@@ -911,16 +964,21 @@ int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg);
 extern struct poptOption rpmVerifyPoptTable[];
 
 /**
+ * @param qva		parsed query/verify options
  * @param db		rpm database
+ * @param h		header to use for verify
  */
 int showVerifyPackage(QVA_t *qva, /*@only@*/ rpmdb db, Header h);
 
 /**
+ * @param qva		parsed query/verify options
+ * @param source	type of source to verify
+ * @param arg		name of source to verify
  */
 int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 
 /* ==================================================================== */
-/* --- install/upgrade/erase */
+/* --- install/upgrade/erase modes */
 
 #define INSTALL_PERCENT		(1 << 0)
 #define INSTALL_HASH		(1 << 1)
@@ -954,7 +1012,6 @@ int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags,
 #define CHECKSIG_PGP (1 << 0)
 #define CHECKSIG_MD5 (1 << 1)
 #define CHECKSIG_GPG (1 << 2)
-
 
 /**
  */

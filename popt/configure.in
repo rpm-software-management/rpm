@@ -19,6 +19,9 @@ AC_PROG_INSTALL
 if test "X$CC" = Xgcc; then
     CFLAGS="-Wall $CFLAGS"
 fi
+
+dnl XXX lose rpm libs
+LIBS=
 addlib() {
   l=$1
   shift

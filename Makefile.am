@@ -13,7 +13,7 @@ EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL \
 EXTRA_PROGRAMS = rpmconvert
 
 # XXX TODO: python perl
-SUBDIRS = intl po popt build lib misc tools scripts tests doc .
+SUBDIRS = intl po popt lib build misc tools scripts tests doc .
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/popt \
 	@INCPATH@
@@ -23,12 +23,10 @@ myLDFLAGS = -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
 # XXX libtool can/should generate dependent libs.
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
 myLDADD = \
-	$(top_builddir)/build/.libs/librpmbuild.a \
-	$(top_builddir)/lib/.libs/librpm.a \
-	$(top_builddir)/popt/.libs/libpopt.a \
+	$(top_builddir)/popt/libpopt.la \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/build/librpmbuild.la \
 	@INTLLIBS@ @LIBMISC@
-
-newLDADD = -lrpmbuild -lrpm -lpopt @INTLLIBS@ @LIBMISC@
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
@@ -52,32 +50,27 @@ rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
 rpm_LDADD =		$(myLDADD)
 
 rpmb_SOURCES =		build.c
-rpmb_LDFLAGS =		$(myLDFLAGS)
-rpmb_LDADD =		rpmb.o $(newLDADD)
+rpmb_LDADD =		rpmb.o $(myLDADD)
 rpmb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c $<
 
 rpmdb_SOURCES =
-rpmdb_LDFLAGS =		$(myLDFLAGS)
-rpmdb_LDADD =		rpmdb.o $(newLDADD)
+rpmdb_LDADD =		rpmdb.o $(myLDADD)
 rpmdb.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c $<
 
 rpmi_SOURCES =
-rpmi_LDFLAGS =		$(myLDFLAGS)
-rpmi_LDADD =		rpmi.o $(newLDADD)
+rpmi_LDADD =		rpmi.o $(myLDADD)
 rpmi.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMEIU -o $@ -c $<
 
 rpmk_SOURCES =
-rpmk_LDFLAGS =		$(myLDFLAGS)
-rpmk_LDADD =		rpmk.o $(newLDADD)
+rpmk_LDADD =		rpmk.o $(myLDADD)
 rpmk.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMK -o $@ -c $<
 
 rpmq_SOURCES =
-rpmq_LDFLAGS =		$(myLDFLAGS)
-rpmq_LDADD =		rpmq.o $(newLDADD)
+rpmq_LDADD =		rpmq.o $(myLDADD)
 rpmq.o:	rpmqv.c
 	$(COMPILE) -DIAM_RPMQV -o $@ -c $<
 

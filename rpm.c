@@ -94,7 +94,7 @@ extern int rpmFLAGS;
 
 extern MacroContext rpmCLIMacroContext;
 
-static struct rpmQVArguments rpmQVArgs;
+extern struct rpmBuildArguments		rpmBTArgs;
 
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
@@ -175,6 +175,10 @@ static struct poptOption optionsTable[] = {
 		rpmQueryPoptTable, 0,		(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmVerifyPoptTable, 0,		(void *) &rpmQVArgs, NULL },
+
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE,
+		rpmBuildPoptTable, 0,           (void *) &rpmBTArgs, NULL },
+
  { 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
