@@ -45,6 +45,9 @@ int expandMacros(struct MacroContext *mc, char *buf)
 	return 0;
     }
 
+    first = buf;
+    SKIPSPACE(first);
+    
     copyFrom = buf;
     copyTo = bufA;
 
@@ -55,7 +58,7 @@ int expandMacros(struct MacroContext *mc, char *buf)
 	    if (parseMacro(copyFrom+1, &name, &rest)) {
 		return 1;
 	    }
-	    if (copyFrom == buf && !strcmp(name, "define")) {
+	    if (copyFrom == first && !strcmp(name, "define")) {
 		if (handleDefine(mc, rest)) {
 		    return 1;
 		}
