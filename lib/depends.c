@@ -1240,8 +1240,8 @@ static void addQ(/*@dependent@*/ transactionElement p,
 
 int rpmdepOrder(rpmTransactionSet ts)
 {
-	rpmDepSet requires;
-	int_32 Flags;
+    rpmDepSet requires;
+    int_32 Flags;
 
 #ifdef	DYING
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
@@ -1325,16 +1325,16 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 		/* Skip if not %preun/%postun requires or legacy prereq. */
 		if (isInstallPreReq(Flags)
 		 || !( isErasePreReq(Flags)
-		    || isLegacyPreReq(Flags)
-		    ))
+		    || isLegacyPreReq(Flags) )
+		    )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if not %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
 		 || !( isInstallPreReq(Flags)
-		    || isLegacyPreReq(Flags)
-		    ))
+		    || isLegacyPreReq(Flags) )
+		    )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1356,16 +1356,16 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 		/* Skip if %preun/%postun requires or legacy prereq. */
 		if (isInstallPreReq(Flags)
 		 ||  ( isErasePreReq(Flags)
-		    || isLegacyPreReq(Flags)
-		    ))
+		    || isLegacyPreReq(Flags) )
+		    )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
 		 ||  ( isInstallPreReq(Flags)
-		    || isLegacyPreReq(Flags)
-		    ))
+		    || isLegacyPreReq(Flags) )
+		    )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1674,6 +1674,7 @@ assert(newOrderCount == ts->orderCount);
     ts->orderAlloced = ts->orderCount;
     orderList = _free(orderList);
 
+#ifdef	HACK
     /* Clean up after dependency checks */
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
@@ -1682,6 +1683,7 @@ assert(newOrderCount == ts->orderCount);
     pi = teFreeIterator(pi);
 
     ts->addedPackages = alFree(ts->addedPackages);
+#endif
 
     return 0;
 }

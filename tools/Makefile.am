@@ -15,7 +15,7 @@ INCLUDES = \
 
 EXTRA_DIST =	rpmchecksig.c
 
-EXTRA_PROGRAMS = rpminject rpmsort
+EXTRA_PROGRAMS = rpminject
 
 #myLDFLAGS= -L$(top_builddir)/build -L$(top_builddir)/lib \
 #	-L$(top_builddir)/rpmio -L$(top_builddir)/popt
@@ -35,7 +35,7 @@ LIBS =
 LDADD = $(myLDADD)
 
 noinst_PROGRAMS = \
-	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
+	dump dumpdb rpmarchive rpmheader rpmlead rpmsignature rpmsort
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = javadeps

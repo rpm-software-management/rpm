@@ -4,28 +4,40 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
+#define	_NEED_TEITERATOR	1
 #include "depends.h"
 
 #include "manifest.h"
 #include "misc.h"
 #include "debug.h"
 
-extern int _depends_debug;
+static int _depends_debug;
 
-static int noAvailable = 0;
+static int noAvailable = 1;
 static const char * avdbpath =
 	"/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat";
 static int noChainsaw = 0;
 static int noDeps = 0;
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param this		memory to free
- * @retval		NULL always
- */
-static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
-    if (this)   free((void *)this);
-    return NULL;
+static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
+	/*@*/
+{
+    if (isLegacyPreReq(f))
+	return "PreReq:";
+    f = _notpre(f);
+    if (f & RPMSENSE_SCRIPT_PRE)
+	return "Requires(pre):";
+    if (f & RPMSENSE_SCRIPT_POST)
+	return "Requires(post):";
+    if (f & RPMSENSE_SCRIPT_PREUN)
+	return "Requires(preun):";
+    if (f & RPMSENSE_SCRIPT_POSTUN)
+	return "Requires(postun):";
+    if (f & RPMSENSE_SCRIPT_VERIFY)
+	return "Requires(verify):";
+    if (f & RPMSENSE_FIND_REQUIRES)
+	return "Requires(auto):";
+    return "Requires:";
 }
 
 static int
@@ -133,7 +145,6 @@ restart:
     /* Continue processing file arguments, building transaction set. */
     for (fnp = pkgURL+prevx; *fnp; fnp++, prevx++) {
 	const char * fileName;
-	int isSource;
 	FD_t fd;
 
 	(void) urlPath(*fnp, &fileName);
@@ -148,7 +159,7 @@ restart:
 	    continue;
 	}
 
-	rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	rc = rpmReadPackageFile(ts, fd, *fnp, &h);
 	Fclose(fd);
 
 	if (rc == 2) {
@@ -198,7 +209,7 @@ restart:
     if (numFailed) goto exit;
 
     if (!noDeps) {
-	struct rpmDependencyConflict * conflicts = NULL;
+	rpmProblem conflicts = NULL;
 	int numConflicts = 0;
 
 	rc = rpmdepCheck(ts, &conflicts, &numConflicts);
@@ -216,46 +227,107 @@ restart:
     if (rc)
 	goto exit;
 
-    {	int oc;
-	for (oc = 0; oc < ts->orderCount; oc++) {
-	    struct availablePackage *alp;
-	    rpmdbMatchIterator mi;
-	    const char * str;
-	    int i;
+    {	rpmDepSet requires;
+	teIterator pi; transactionElement p;
+	teIterator qi; transactionElement q;
+	unsigned char * selected =
+			alloca(sizeof(*selected) * (ts->orderCount + 1));
+	int oType = TR_ADDED;
 
-	    alp = NULL;
-	    str = "???";
-	    switch (ts->order[oc].type) {
-	    case TR_ADDED:
-		i = ts->order[oc].u.addedIndex;
-		alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
-		h = headerLink(alp->h, "TR_ADDED alp->h");
-		str = "+++";
-		break;
-	    case TR_REMOVED:
-		i = ts->order[oc].u.removed.dboffset;
-		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, &i, sizeof(i));
-		h = rpmdbNextIterator(mi);
-		if (h)
-		    h = headerLink(h, "TR_REMOVED mi->h");
-		rpmdbFreeIterator(mi);
-		str = "---";
-		break;
-	    }
+fprintf(stdout, "digraph XXX {\n");
 
-	    if (h) {
-		if (alp && alp->key) {
-		    const char * fn = alp->key;
-		    fprintf(stdout, "%s %s\n", str, fn);
-		} else {
-		    const char *n, *v, *r;
-		    headerNVR(h, &n, &v, &r);
-		    fprintf(stdout, "%s %s-%s-%s\n", str, n, v, r);
+fprintf(stdout, "//===== Packages:\n");
+	pi = teInitIterator(ts);
+	while ((p = teNext(pi, oType)) != NULL) {
+fprintf(stdout, "  \"%s\"\n", teGetN(p));
+	}
+	pi = teFreeIterator(pi);
+
+fprintf(stdout, "//===== Relations:\n");
+	pi = teInitIterator(ts);
+	while ((p = teNext(pi, oType)) != NULL) {
+	    int printed;
+
+	    if ((requires = teGetDS(p, RPMTAG_REQUIRENAME)) == NULL)
+		continue;
+
+	    memset(selected, 0, sizeof(*selected) * ts->orderCount);
+	    selected[teiGetOc(pi)] = 1;
+	    printed = 0;
+
+	    requires = dsiInit(requires);
+	    while (dsiNext(requires) >= 0) {
+		int_32 Flags;
+		const char * qName;
+		fnpyKey key;
+		alKey pkgKey;
+		int i;
+
+		Flags = dsiGetFlags(requires);
+
+		switch (teGetType(p)) {
+		case TR_REMOVED:
+		    /* Skip if not %preun/%postun requires or legacy prereq. */
+		    if (isInstallPreReq(Flags)
+#ifdef	NOTYET
+		     || !( isErasePreReq(Flags)
+		        || isLegacyPreReq(Flags) )
+#endif
+		        )
+		        /*@innercontinue@*/ continue;
+		    /*@switchbreak@*/ break;
+		case TR_ADDED:
+		    /* Skip if not %pre/%post requires or legacy prereq. */
+		    if (isErasePreReq(Flags)
+#ifdef	NOTYET
+		     || !( isInstallPreReq(Flags)
+		        || isLegacyPreReq(Flags) )
+#endif
+		        )
+		        /*@innercontinue@*/ continue;
+		    /*@switchbreak@*/ break;
 		}
-		headerFree(h, "do_tsort");
+
+		if ((qName = dsiGetN(requires)) == NULL)
+		    continue;	/* XXX can't happen */
+		if (!strncmp(qName, "rpmlib(", sizeof("rpmlib(")-1))
+		    continue;
+
+		pkgKey = RPMAL_NOMATCH;
+		key = alSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
+		if (pkgKey == RPMAL_NOMATCH)
+		    continue;
+
+		for (qi = teInitIterator(ts), i = 0;
+		     (q = teNextIterator(qi)) != NULL; i++)
+		{
+		    if (teGetType(q) == TR_REMOVED)
+			continue;
+		    if (pkgKey == teGetAddedKey(q))
+			break;
+		}
+		qi = teFreeIterator(qi);
+
+		if (q == NULL || i == ts->orderCount)
+		    continue;
+		if (selected[i] != 0)
+		    continue;
+		selected[i] = 1;
+
+if (!printed) {
+fprintf(stdout, "// %s\n", teGetN(p));
+printed = 1;
+}
+fprintf(stdout, "//\t%s (0x%x)\n", dsDNEVR(identifyDepend(Flags), requires), Flags);
+fprintf(stdout, "\t\"%s\" -> \"%s\"\n", teGetN(p), teGetN(q));
+
 	    }
 
 	}
+	pi = teFreeIterator(pi);
+
+fprintf(stdout, "}\n");
+
     }
 
     rc = 0;
@@ -312,7 +384,8 @@ main(int argc, const char *argv[])
 	    rpmIncreaseVerbosity();
 	    break;
 	default:
-	    errx(EXIT_FAILURE, _("unknown popt return (%d)"), arg);
+	    fprintf(stderr, _("unknown popt return (%d)"), arg);
+	    exit(EXIT_FAILURE);
 	    /*@notreached@*/ break;
 	}
     }
