@@ -413,7 +413,7 @@ Spec newSpec(void)
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
 
-    spec->rootdir = NULL;
+    spec->rootURL = NULL;
     spec->prep = NULL;
     spec->build = NULL;
     spec->install = NULL;
@@ -429,8 +429,8 @@ Spec newSpec(void)
     spec->sourceCpioCount = 0;
     spec->sourceCpioList = NULL;
     
-    spec->gotBuildRoot = 0;
-    spec->buildRoot = NULL;
+    spec->gotBuildURL = 0;
+    spec->buildURL = NULL;
     spec->buildSubdir = NULL;
 
     spec->passPhrase = NULL;
@@ -464,7 +464,7 @@ void freeSpec(/*@only@*/ Spec spec)
     freeStringBuf(spec->install); spec->install = NULL;
     freeStringBuf(spec->clean);	spec->clean = NULL;
 
-    FREE(spec->buildRoot);
+    FREE(spec->buildURL);
     FREE(spec->buildSubdir);
     FREE(spec->specFile);
     FREE(spec->sourceRpmName);

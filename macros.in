@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.37 1999/09/29 23:29:57 jbj Exp $
+# $Id: macros.in,v 1.38 1999/11/19 18:19:41 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -22,9 +22,9 @@
 %_var			@varprefix@
 
 #==============================================================================
-# ---- path macros
-#	XXX The use of which here is overly simple (read: dumb).
+# ---- Generally useful path macros.
 #
+%__awk			@AWK@
 %__bzip2		%{_bzip2bin}
 %__cat			@__CAT@
 %__chgrp		@__CHGRP@
@@ -34,17 +34,33 @@
 %__cpio			@__CPIO@
 %__gzip			%{_gzipbin}
 %__id			@__ID@
-%__install		%(which install)
+%__install		@__INSTALL@
+%__ln_s			@LN_S@
 %__make			@__MAKE@
 %__mkdir		@__MKDIR@
+%__mkdir_p		@MKDIR_P@
 %__mv			@__MV@
 %__patch		@__PATCH@
-%__ranlib		%(which ranlib)
+%__pgp			%{_pgpbin}
 %__rm			@__RM@
-%__strip		%(which strip)
+%__rsh			@__RSH@
+%__ssh			@__SSH@
 %__tar			@__TAR@
 
-# XXX avoid weird failures from which if tools are not installed
+#==============================================================================
+# ---- Build system path macros.
+#
+%__ar			@AR@
+%__cc			@CC@
+%__cpp			@CPP@
+%__ld			@LD@
+%__nm			@NM@
+%__objcopy		@__OBJCOPY@
+%__objdump		@__OBJDUMP@
+%__ranlib		@RANLIB@
+%__strip		@__STRIP@
+
+# XXX avoid failures if tools are not installed when rpm is built.
 %__libtoolize		libtoolize
 %__aclocal		aclocal
 %__autoheader		autoheader
@@ -90,11 +106,11 @@
 #
 #==============================================================================
 # ---- Optional rpmrc macros.
-#	Macros that used to be initialized as a side effect of rpmrc and/or
-#	spec file parsing but were not set in the distributed configuration 
-#	/usr/lib/rpm/rpmrc file.
+#	Macros that are initialized as a side effect of rpmrc and/or spec
+#	file parsing.
 #
 #%buildroot
+#%buildsubdir
 #%distribution
 #%_excludedocs
 #%_ftpport
@@ -127,25 +143,165 @@
 #%optflags		-O2
 
 #==============================================================================
-# ---- script environment macros.
-#	Macro(s) that establish the environment for running a script.
+# ---- Scriptlet template templates.
+#	Global defaults for building scriptlet templates.
 #
+# XXX legacy configuration.
 %_preScriptEnvironment	\
-	RPM_SOURCE_DIR=\"%{_sourcedir}\"\
-	RPM_BUILD_DIR=\"%{_builddir}\"\
-	RPM_OPT_FLAGS=\"%{optflags}\"\
-	RPM_ARCH=\"%{_arch}\"\
-	RPM_OS=\"%{_os}\"\
-	export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
-	RPM_DOC_DIR=\"%{_docdir}\"\
-	export RPM_DOC_DIR\
-	RPM_PACKAGE_NAME=\"%{name}\"\
-	RPM_PACKAGE_VERSION=\"%{version}\"\
-	RPM_PACKAGE_RELEASE=\"%{release}\"\
-	export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
-	%{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\
-	export RPM_BUILD_ROOT\
-	}
+RPM_SOURCE_DIR=\"%{_sourcedir}\"\
+RPM_BUILD_DIR=\"%{_builddir}\"\
+RPM_OPT_FLAGS=\"%{optflags}\"\
+RPM_ARCH=\"%{_arch}\"\
+RPM_OS=\"%{_os}\"\
+export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
+RPM_DOC_DIR=\"%{_docdir}\"\
+export RPM_DOC_DIR\
+RPM_PACKAGE_NAME=\"%{name}\"\
+RPM_PACKAGE_VERSION=\"%{version}\"\
+RPM_PACKAGE_RELEASE=\"%{release}\"\
+export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
+%{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\
+export RPM_BUILD_ROOT}
+
+%___build_shell		%{?_buildshell:%{_buildshell}}%{!?_buildshell:/bin/sh}
+%___build_args		-e
+%___build_cmd		%{?_sudo:%{_sudo} }%{?_remsh:%{_remsh} %{_build_hostname}}%{?_remsudo:%{_remsudo} }%{?_remchroot:%{_remchroot} }%{___build_shell} %{___build_args}
+%___build_pre	\
+RPM_SOURCE_DIR=\"%{u2p:%{_sourcedir}}\"\
+RPM_BUILD_DIR=\"%{u2p:%{_builddir}}\"\
+RPM_OPT_FLAGS=\"%{optflags}\"\
+RPM_ARCH=\"%{_arch}\"\
+RPM_OS=\"%{_os}\"\
+export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
+RPM_DOC_DIR=\"%{_docdir}\"\
+export RPM_DOC_DIR\
+RPM_PACKAGE_NAME=\"%{name}\"\
+RPM_PACKAGE_VERSION=\"%{version}\"\
+RPM_PACKAGE_RELEASE=\"%{release}\"\
+export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\
+%{?buildroot:RPM_BUILD_ROOT=\"%{u2p:%{buildroot}}\"\
+export RPM_BUILD_ROOT}\
+\
+%{verbose:set -x}%{!verbose:exec > /dev/null}\
+umask 022\
+cd %{u2p:%{_builddir}}\
+
+
+#%___build_body		%{nil}
+%___build_post		exit 0
+
+%___build_template	#!%{___build_shell}\
+%{___build_pre}\
+%{nil}
+
+#%{___build_body}\
+#%{___build_post}\
+#%{nil}
+
+#==============================================================================
+# ---- Scriptlet templates.
+#	Macro(s) that expand to a command and script that is executed.
+#	CAVEAT: All macro expansions must fit in a BUFSIZ (8192 byte) buffer.
+#
+%__spec_prep_shell	%{___build_shell}
+%__spec_prep_args	%{___build_args}
+%__spec_prep_cmd	%{___build_cmd}
+%__spec_prep_pre	%{___build_pre}
+%__spec_prep_body	%{___build_body}
+%__spec_prep_post	%{___build_post}
+%__spec_prep_template	#!%{__spec_prep_shell}\
+%{__spec_prep_pre}\
+%{nil}
+
+#%{__spec_prep_body}\
+#%{__spec_prep_post}\
+#%{nil}
+
+%__spec_build_shell	%{___build_shell}
+%__spec_build_args	%{___build_args}
+%__spec_build_cmd	%{___build_cmd}
+%__spec_build_pre	%{___build_pre}
+%__spec_build_body	%{___build_body}
+%__spec_build_post	%{___build_post}
+%__spec_build_template	#!%{__spec_build_shell}\
+%{__spec_build_pre}\
+%{nil}
+
+#%{__spec_build_body}\
+#%{__spec_build_post}\
+#%{nil}
+
+%__spec_install_shell	%{___build_shell}
+%__spec_install_args	%{___build_args}
+%__spec_install_cmd	%{___build_cmd}
+%__spec_install_pre	%{___build_pre}
+%__spec_install_body	%{___build_body}
+%__spec_install_post	%{___build_post}
+%__spec_install_template	#!%{__spec_install_shell}\
+%{__spec_install_pre}\
+%{nil}
+
+#%{__spec_install_body}\
+#%{__spec_install_post}\
+#%{nil}
+
+#%__spec_autodep_shell	%{___build_shell}
+#%__spec_autodep_args	%{___build_args}
+#%__spec_autodep_cmd	%{___build_cmd}
+#%__spec_autodep_pre	%{___build_pre}
+#%__spec_autodep_body	%{___build_body}
+#%__spec_autodep_post	%{___build_post}
+#%__spec_autodep_template	#!%{__spec_autodep_shell}\
+#%{__spec_autodep_pre}\
+#%{nil}
+
+#%{__spec_autodep_body}\
+#%{__spec_autodep_post}\
+#%{nil}
+
+%__spec_clean_shell	%{___build_shell}
+%__spec_clean_args	%{___build_args}
+%__spec_clean_cmd	%{___build_cmd}
+%__spec_clean_pre	%{___build_pre}
+%__spec_clean_body	%{___build_body}
+%__spec_clean_post	%{___build_post}
+%__spec_clean_template	#!%{__spec_clean_shell}\
+%{__spec_clean_pre}\
+%{nil}
+
+#%{__spec_clean_body}\
+#%{__spec_clean_post}\
+#%{nil}
+
+%__spec_rmbuild_shell	%{___build_shell}
+%__spec_rmbuild_args	%{___build_args}
+%__spec_rmbuild_cmd	%{___build_cmd}
+%__spec_rmbuild_pre	%{___build_pre}
+%__spec_rmbuild_body	%{___build_body}
+%__spec_rmbuild_post	%{___build_post}
+%__spec_rmbuild_template	#!%{__spec_rmbuild_shell}\
+%{__spec_rmbuild_pre}\
+%{nil}
+
+#%{__spec_rmbuild_body}\
+#%{__spec_rmbuild_post}\
+#%{nil}
+
+# XXX We don't expand pre/post install scriptlets (yet).
+#%__spec_pre_pre		%{nil}
+#%__spec_pre_post		%{nil}
+#%__spec_post_pre		%{nil}
+#%__spec_post_post		%{nil}
+#%__spec_preun_pre		%{nil}
+#%__spec_preun_post		%{nil}
+#%__spec_postun_pre		%{nil}
+#%__spec_postun_post		%{nil}
+#%__spec_triggerpostun_pre	%{nil}
+#%__spec_triggerpostun_post	%{nil}
+#%__spec_triggerun_pre		%{nil}
+#%__spec_triggerun_post		%{nil}
+#%__spec_triggerin_pre		%{nil}
+#%__spec_triggerin_post		%{nil}
 
 #==============================================================================
 # ---- configure macros.

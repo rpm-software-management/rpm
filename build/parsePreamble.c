@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmbuild.h>
+#include <rpmurl.h>
 
 static int_32 copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
@@ -229,9 +230,6 @@ static int readIcon(Header h, const char *file)
 {
     const char *fn = NULL;
     char *icon;
-#ifdef	DYING
-    struct stat statbuf;
-#endif
     FD_t fd;
     int rc = 0;
     off_t size;
@@ -239,14 +237,6 @@ static int readIcon(Header h, const char *file)
 
     /* XXX use rpmGenPath(rootdir, "%{_sourcedir}/", file) for icon path. */
     fn = rpmGetPath("%{_sourcedir}/", file, NULL);
-
-#ifdef	DYING
-    if (Stat(fn, &statbuf)) {
-	rpmError(RPMERR_BADSPEC, _("Unable to stat icon: %s"), fn);
-	rc = RPMERR_BADSPEC;
-	goto exit;
-    }
-#endif
 
     fd = Fopen(fn, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
@@ -330,8 +320,8 @@ if (multiToken) { \
 
 extern int noLang;	/* XXX FIXME: pass as arg */
 
-static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
-			     char *lang)
+static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
+			     const char *lang)
 {
     char *field = spec->line;
     char *end;
@@ -406,28 +396,38 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	break;
       case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
-	if (spec->buildRoot == NULL) {
-    /* XXX use rpmGenPath(rootdir, "%{buildroot}/", file) for buildroot path. */
-	    const char *buildroot = rpmGetPath("%{buildroot}", NULL);
-	    /* XXX FIXME make sure that buildroot has path, add urlbuildroot. */
-	    if (buildroot && *buildroot != '%') {
-		spec->buildRoot = xstrdup(cleanFileName(buildroot));
+      {	const char * buildRoot = NULL;
+	const char * buildURL = spec->buildURL;
+
+	if (buildURL == NULL) {
+
+	    buildURL = rpmGenPath(spec->rootURL, "%{?buildroot:%{buildroot}}", NULL);
+
+	    if (strcmp(spec->rootURL, buildURL)) {
+		spec->buildURL = buildURL;
 		macro = NULL;
 	    } else {
-		spec->buildRoot = xstrdup(cleanFileName(field));
+		const char * specURL = field;
+
+		(void) urlPath(specURL, (const char **)&field);
+
+		xfree(buildURL);
+		buildURL = rpmGenPath(NULL, specURL, NULL);
+		spec->buildURL = buildURL;
 	    }
-	    xfree(buildroot);
 	} else {
 	    macro = NULL;
 	}
-	if (!strcmp(spec->buildRoot, "/")) {
+	(void) urlPath(buildURL, &buildRoot);
+	if (*buildRoot == '\0') buildRoot = "/";
+	if (!strcmp(buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: BuildRoot can not be \"/\": %s"),
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	spec->gotBuildRoot = 1;
-	break;
+	spec->gotBuildURL = 1;
+      }	break;
       case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
 	headerGetEntry(pkg->header, tag, NULL, (void **)&array, &num);
@@ -735,7 +735,7 @@ int parsePreamble(Spec spec, int initialPackage)
 
     /* Do some final processing on the header */
     
-    if (!spec->gotBuildRoot && spec->buildRoot) {
+    if (!spec->gotBuildURL && spec->buildURL) {
 	rpmError(RPMERR_BADSPEC, _("Spec file can't use BuildRoot"));
 	return RPMERR_BADSPEC;
     }

@@ -785,7 +785,7 @@ doOutput(MacroBuf *mb, int waserror, const char *msg, size_t msglen)
 }
 
 static void
-doFoo(MacroBuf *mb, const char *f, size_t fn, const char *g, size_t glen)
+doFoo(MacroBuf *mb, int negate, const char *f, size_t fn, const char *g, size_t glen)
 {
 	char buf[BUFSIZ], *b = NULL, *be;
 	int c;
@@ -811,6 +811,14 @@ doFoo(MacroBuf *mb, const char *f, size_t fn, const char *g, size_t glen)
 			b++;
 	} else if (STREQ("expand", f, fn)) {
 		b = buf;
+	} else if (STREQ("verbose", f, fn)) {
+		if (negate)
+		    b = (rpmIsVerbose() ? NULL : buf);
+		else
+		    b = (rpmIsVerbose() ? buf : NULL);
+	} else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
+		(void)urlPath(buf, (const char **)&b);
+		if (*b == '\0') b = "/";
 	} else if (STREQ("uncompress", f, fn)) {
 		int compressed = 1;
 		for (b = buf; (c = *b) && isblank(c);)
@@ -1061,11 +1069,14 @@ expandMacro(MacroBuf *mb)
 	if (STREQ("basename", f, fn) ||
 	    STREQ("suffix", f, fn) ||
 	    STREQ("expand", f, fn) ||
+	    STREQ("verbose", f, fn) ||
 	    STREQ("uncompress", f, fn) ||
+	    STREQ("url2path", f, fn) ||
+	    STREQ("u2p", f, fn) ||
 	    STREQ("S", f, fn) ||
 	    STREQ("P", f, fn) ||
 	    STREQ("F", f, fn)) {
-		doFoo(mb, f, fn, g, gn);
+		doFoo(mb, negate, f, fn, g, gn);
 		s = se;
 		continue;
 	}

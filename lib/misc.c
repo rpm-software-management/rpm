@@ -53,6 +53,7 @@ int rpmfileexists(const char * urlfn) {
     int urltype = urlPath(urlfn, &fn);
     struct stat buf;
 
+    if (*fn == '\0') fn = "/";
     switch (urltype) {
     case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
@@ -355,15 +356,13 @@ char * gidToGname(gid_t gid) {
 }
 
 int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
-    const char * tempfn;
-    const char * tfn;
+    const char * tempfn = NULL;
+    const char * tfn = NULL;
     int temput;
     FD_t fd;
     int ran;
 
     if (!prefix) prefix = "";
-
-    tfn = NULL;
 
     /* XXX should probably use mktemp here */
     srand(time(NULL));
@@ -375,15 +374,17 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	char tfnbuf[64];
 #ifndef	NOTYET
 	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
-	if (tfn)	xfree(tfn);
+	if (tempfn)	xfree(tempfn);
 	tempfn = rpmGenPath(prefix, "%{_tmppath}/", tfnbuf);
 #else
 	strcpy(tfnbuf, "rpm-tmp.XXXXXX");
-	if (tfn)	xfree(tfn);
+	if (tempfn)	xfree(tempfn);
 	tempfn = rpmGenPath(prefix, "%{_tmppath}/", mktemp(tfnbuf));
 #endif
 
 	temput = urlPath(tempfn, &tfn);
+	if (*tfn == '\0') goto errxit;
+
 	switch (temput) {
 	case URL_IS_HTTP:
 	case URL_IS_DASH:
@@ -393,12 +394,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
 	    break;
 	}
 
-/* XXX FIXME: build/build.c Fdopen assertion failure, makeTempFile uses fdio */
-#ifdef	DYING
-	fd = fdio->open(tfn, (O_CREAT|O_RDWR|O_EXCL), 0700);
-#else
-	fd = Fopen(tfn, "w+x.ufdio");
-#endif
+	fd = Fopen(tempfn, "w+x.ufdio");
     } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
 
     switch(temput) {
@@ -427,15 +423,15 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
     }
 
     if (fnptr)
-	*fnptr = tfn;
-    else
+	*fnptr = tempfn;
+    else if (tempfn)
 	xfree(tempfn);
     *fdptr = fd;
 
     return 0;
 
 errxit:
-    xfree(tempfn);
+    if (tempfn) xfree(tempfn);
     return 1;
 }
 

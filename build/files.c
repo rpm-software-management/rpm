@@ -50,7 +50,7 @@ typedef struct {
 } AttrRec;
 
 struct FileList {
-    const char *buildRoot;
+    const char *buildURL;
     const char *prefix;
 
     int fileCount;
@@ -929,14 +929,14 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
     const char *fileGname;
     char *lang;
     
-    /* Path may have prepended buildroot, so locate the original filename. */
+    /* Path may have prepended buildURL, so locate the original filename. */
     {	const char *s;
 	char c;
 
-	if ((s = fl->buildRoot) != NULL) {
+	if ((s = fl->buildURL) != NULL) {
 	    c = '\0';
 	    while (*s) {
-		if (c == '/')
+		if (c == '/' && !(s[0] == '/' && s[1] == ':'))
 		    while(*s && *s == '/') s++;
 		if (*s) {
 		    fileName++;
@@ -977,7 +977,7 @@ static int addFile(struct FileList *fl, const char *diskName, struct stat *statp
 	/* instead of lstat(), which causes it to follow symlinks! */
 	/* It also has better callback support.                    */
 	
-	fl->inFtw = 1;  /* Flag to indicate file has buildRoot prefixed */
+	fl->inFtw = 1;  /* Flag to indicate file has buildURL prefixed */
 	fl->isDir = 1;  /* Keep it from following myftw() again         */
 	myftw(diskName, 16, (myftwFunc) addFile, fl);
 	fl->isDir = 0;
@@ -1100,16 +1100,16 @@ static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
     
     /* Copy file name or glob pattern removing multiple "/" chars. */
     {	const char *s;
-	char c, *t = alloca((fl->buildRoot ? strlen(fl->buildRoot) : 0) +
+	char c, *t = alloca((fl->buildURL ? strlen(fl->buildURL) : 0) +
 			strlen(fileName) + 1);
 
 	fn = t;
 	*t = c = '\0';
 
-	/* With a buildroot, prepend the buildroot now. */
-	if ((s = fl->buildRoot) != NULL) {
+	/* With a buildroot, prepend the buildURL now. */
+	if ((s = fl->buildURL) != NULL) {
 	    while (*s) {
-		if (c == '/')
+		if (c == '/' && !(s[0] == '/' && s[1] == ':'))
 		    while(*s && *s == '/') s++;
 		if (*s)
 		    *t++ = c = *s++;
@@ -1119,7 +1119,7 @@ static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
 	}
 	if ((s = fileName) != NULL) {
 	    while (*s) {
-		if (c == '/')
+		if (c == '/' && !(s[0] == '/' && s[1] == ':'))
 		    while(*s && *s == '/') s++;
 		if (*s)
 		    *t++ = c = *s++;
@@ -1198,8 +1198,8 @@ static int processPackageFiles(Spec spec, Package pkg,
     
     /* Init the file list structure */
     
-    /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
-    fl.buildRoot = rpmGetPath(spec->buildRoot, NULL);
+    /* XXX spec->buildURL == NULL, then xstrdup("") is returned */
+    fl.buildURL = rpmGenPath(spec->rootURL, spec->buildURL, NULL);
 
     if (headerGetEntry(pkg->header, RPMTAG_DEFAULTPREFIX,
 		       NULL, (void **)&fl.prefix, NULL)) {
@@ -1333,7 +1333,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     }
     
     /* Clean up */
-    FREE(fl.buildRoot);
+    FREE(fl.buildURL);
     FREE(fl.prefix);
 
     freeAttrRec(&fl.cur_ar);

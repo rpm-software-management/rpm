@@ -26,13 +26,13 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
 dbiIndex * dbiOpenIndex(const char * urlfn, int flags, int perms, DBTYPE type) {
     dbiIndex * dbi;
     const char * filename;
-    int urltype = urlPath(urlfn, &filename);
         
+    (void) urlPath(urlfn, &filename);
     dbi = xmalloc(sizeof(*dbi));
-    dbi->db = dbopen(filename, flags, perms, type, NULL);
-    if (!dbi->db) {
+    if (*filename == '\0' ||
+	(dbi->db = dbopen(filename, flags, perms, type, NULL)) == NULL) {
 	free(dbi);
-	rpmError(RPMERR_DBOPEN, _("cannot open file %s: %s"), filename, 
+	rpmError(RPMERR_DBOPEN, _("cannot open file %s: %s"), urlfn, 
 			      strerror(errno));
 	return NULL;
     }

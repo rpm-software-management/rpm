@@ -200,7 +200,6 @@ static int checkOwners(const char *file)
 
 static int doSetupMacro(Spec spec, char *line)
 {
-    char *version, *name;
     char buf[BUFSIZ];
     StringBuf before;
     StringBuf after;
@@ -264,19 +263,18 @@ static int doSetupMacro(Spec spec, char *line)
     if (dirName) {
 	spec->buildSubdir = xstrdup(dirName);
     } else {
-	headerGetEntry(spec->packages->header, RPMTAG_VERSION, NULL,
-		 (void **) &version, NULL);
-	headerGetEntry(spec->packages->header, RPMTAG_NAME, NULL,
-		 (void **) &name, NULL);
+	const char *name, *version;
+	headerNVR(spec->packages->header, &name, &version, NULL);
 	sprintf(buf, "%s-%s", name, version);
 	spec->buildSubdir = xstrdup(buf);
     }
+    addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
     
     free(argv);
     poptFreeContext(optCon);
 
     /* cd to the build dir */
-    {	const char * buildURL = rpmGenPath(spec->rootdir, "%{_builddir}", "");
+    {	const char * buildURL = rpmGenPath(spec->rootURL, "%{_builddir}", "");
 	const char *buildDir;
 
 	(void) urlPath(buildURL, &buildDir);

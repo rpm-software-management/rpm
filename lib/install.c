@@ -349,11 +349,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 	       notifyData);
 
     (void) Fflush(fd);
-#ifndef	DYING
     cfd = Fdopen(fdDup(Fileno(fd)), "r.gzdio");
-#else
-    cfd = Fdopen(fd, "r.gzdio");
-#endif
     rc = cpioInstallArchive(cfd, map, mappedFiles, 
 		    ((notify && archiveSize) || specFile) ? callback : NULL, 
 		    &info, &failedFile);

@@ -309,16 +309,11 @@ urltype urlIsURL(const char * url) {
     return URL_IS_UNKNOWN;
 }
 
+/* Return path portion of url (or pointer to NUL if url == NULL) */
 int urlPath(const char * url, const char ** pathp)
 {
     const char *path;
     int urltype;
-
-    if (url == NULL) {		/* XXX paranoia */
-	if (pathp)
-	    *pathp = xstrdup("/");
-	return URL_IS_UNKNOWN;
-    }
 
     path = url;
     urltype = urlIsURL(url);
@@ -338,8 +333,8 @@ int urlPath(const char * url, const char ** pathp)
 	path = "";
 	break;
     }
-    if (path == NULL)
-	path = "/";
+    if (path == NULL)		/* XXX gotta return something */
+	path = "";
     if (pathp)
 	*pathp = path;
     return urltype;
@@ -370,14 +365,6 @@ int urlSplit(const char * url, urlinfo *uret)
     while (1) {
 	/* Point to end of next item */
 	while (*se && *se != '/') se++;
-#ifdef	DYING
-	if (*se == '\0') {
-	    /* XXX can't find path */
-	    if (myurl) free(myurl);
-	    u = urlFree(u, "urlSplit (error #2)");
-	    return -1;
-	}
-#endif
 	/* Item was service. Save service and go for the rest ...*/
     	if (*se && (se != s) && se[-1] == ':' && se[0] == '/' && se[1] == '/') {
 		se[-1] = '\0';

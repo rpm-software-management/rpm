@@ -35,136 +35,232 @@ static void doRmSource(Spec spec)
  * The _preScript string is expanded to export values to a script environment.
  */
 
-static char *_preScriptEnvironment = "%{_preScriptEnvironment}";
-
-static char *_preScriptChdir = 
-	"umask 022\n"
-	"cd %{_builddir}\n"
-;
-
 int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 {
+    const char * rootURL = spec->rootURL;
+    const char * rootDir;
+    const char *scriptName = NULL;
+    const char * buildURL = rpmGenPath(rootURL, "%{_builddir}", "");
+#ifdef	DYING
+    const char * buildDir;
+    const char * buildSubdir;
+    const char * buildScript;
+    const char * remsh = rpmGetPath("%{?_remsh:%{_remsh}}", NULL);
+    const char * remchroot = rpmGetPath("%{?_remchroot:%{_remchroot}}", NULL);
+    const char * buildShell =
+	   rpmGetPath("%{?_buildshell:%{_buildshell}}%{!?_buildshell:/bin/sh}", NULL);
+    const char * buildEnv = rpmExpand("%{_preScriptEnvironment}", NULL);
+#else
+    const char * buildScript;
+    const char * buildCmd = NULL;
+    const char * buildTemplate = NULL;
+    const char * buildPost = NULL;
+    const char * mTemplate = NULL;
+    const char * mPost = NULL;
+    int argc = 0;
+    const char **argv = NULL;
+#endif
+    FILE * fp = NULL;
+    urlinfo u = NULL;
+
     FD_t fd;
     FD_t xfd;
-    const char *scriptName;
-    int pid;
+    int child;
     int status;
-    char buf[BUFSIZ];
-    FILE * fp = NULL;
+    int rc;
     
     switch (what) {
       case RPMBUILD_PREP:
 	name = "%prep";
 	sb = spec->prep;
+	mTemplate = "%{__spec_prep_template}";
+	mPost = "%{__spec_prep_post}";
 	break;
       case RPMBUILD_BUILD:
 	name = "%build";
 	sb = spec->build;
+	mTemplate = "%{__spec_build_template}";
+	mPost = "%{__spec_build_post}";
 	break;
       case RPMBUILD_INSTALL:
 	name = "%install";
 	sb = spec->install;
+	mTemplate = "%{__spec_install_template}";
+	mPost = "%{__spec_install_post}";
 	break;
       case RPMBUILD_CLEAN:
 	name = "%clean";
 	sb = spec->clean;
+	mTemplate = "%{__spec_clean_template}";
+	mPost = "%{__spec_clean_post}";
 	break;
       case RPMBUILD_RMBUILD:
 	name = "--clean";
+	mTemplate = "%{__spec_clean_template}";
+	mPost = "%{__spec_clean_post}";
 	break;
       case RPMBUILD_STRINGBUF:
+      default:
+	mTemplate = "%{___build_template}";
+	mPost = "%{___build_post}";
 	break;
     }
 
-    if ((what != RPMBUILD_RMBUILD) && sb == NULL)
-	return 0;
-    
-    if (makeTempFile(spec->rootdir, &scriptName, &fd)) {
-	    Fclose(fd);
-	    FREE(scriptName);
-	    rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
-	    return RPMERR_SCRIPT;
+    if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
+	rc = 0;
+	goto exit;
     }
+    
+    if (makeTempFile(rootURL, &scriptName, &fd)) {
+	Fclose(fd);
+	rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
+	rc = RPMERR_SCRIPT;
+	goto exit;
+    }
+
 #ifdef HAVE_FCHMOD
-    (void)fchmod(Fileno(fd), 0600);	/* XXX fubar on ufdio */
-#endif
-#ifdef DYING
-/* XXX FIXME: build/build.c Fdopen assertion failure, makeTempFile uses fdio */
-    xfd = Fdopen(fd, "w.fdio");
-#else
-    xfd = Fdopen(fd, "w.fpio");
-#endif
-    fp = fdGetFp(fd);
-    
-    strcpy(buf, _preScriptEnvironment);
-    expandMacros(spec, spec->macros, buf, sizeof(buf));
-    strcat(buf, "\n");
-    fputs(buf, fp);
-
-    fprintf(fp, rpmIsVerbose() ? "set -x\n\n" : "exec > /dev/null\n\n");
-
-/* XXX umask 022; cd %{_builddir} */
-    strcpy(buf, _preScriptChdir);
-    expandMacros(spec, spec->macros, buf, sizeof(buf));
-    fputs(buf, fp);
-
-    if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD) {
-	if (spec->buildSubdir)
-	    fprintf(fp, "cd %s\n", spec->buildSubdir);
+    switch (rootut) {
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	(void)fchmod(Fileno(fd), 0600);	/* XXX fubar on ufdio */
+	break;
+    default:
+	break;
     }
+#endif
+
+    if (fdGetFp(fd) == NULL)
+	xfd = Fdopen(fd, "w.fpio");
+    else
+	xfd = fd;
+    if ((fp = fdGetFp(xfd)) == NULL) {
+	rc = RPMERR_SCRIPT;
+	goto exit;
+    }
+    
+    (void) urlPath(rootURL, &rootDir);
+    if (*rootDir == '\0') rootDir = "/";
+#ifdef	DYING
+    (void) urlPath(buildURL, &buildDir);
+    (void) urlPath(spec->buildSubdir, &buildSubdir);
+#endif
+
+    (void) urlPath(scriptName, &buildScript);
+
+    buildTemplate = rpmExpand(mTemplate, NULL);
+    buildPost = rpmExpand(mPost, NULL);
+#ifdef	DYING
+    fprintf(fp, "#!%s\n", buildShell);
+    fputs(buildEnv, fp);
+    fputs("\n", fp);
+
+    fprintf(fp, rpmIsVerbose()
+		? "set -x\n\n"
+		: "exec > /dev/null\n\n");
+
+    fprintf(fp, "umask 022\ncd %s\n", buildDir);
+#else
+    fputs(buildTemplate, fp);
+#endif
+
+    if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD && spec->buildSubdir)
+	fprintf(fp, "cd %s\n", spec->buildSubdir);
+
     if (what == RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
 	    fprintf(fp, "rm -rf %s\n", spec->buildSubdir);
     } else
 	fprintf(fp, "%s", getStringBuf(sb));
+
+#ifdef	DYING
     fprintf(fp, "\nexit 0\n");
+#else
+    fputs(buildPost, fp);
+#endif
     
     Fclose(xfd);
 
     if (test) {
-	FREE(scriptName);
-	return 0;
+	rc = 0;
+	goto exit;
     }
     
-    rpmMessage(RPMMESS_NORMAL, _("Executing: %s\n"), name);
-    if (!(pid = fork())) {
-	const char *buildShell = rpmGetPath("%{_buildshell}", NULL);
+    if (buildURL && buildURL[0] != '/' && (urlSplit(buildURL, &u) != 0)) {
+	rc = RPMERR_SCRIPT;
+	goto exit;
+    }
+    if (u)
+	addMacro(spec->macros, "_build_hostname", NULL, u->path, RMIL_SPEC);
 
-	if (spec->rootdir)
-	    Chroot(spec->rootdir);
-	chdir("/");
+    buildCmd = rpmExpand("%{___build_cmd}", " ", buildScript, NULL);
+    poptParseArgvString(buildCmd, &argc, &argv);
 
-	switch (urlIsURL(scriptName)) {
-	case URL_IS_PATH:
-	    scriptName += sizeof("file://") - 1;
-	    scriptName = strchr(scriptName, '/');
-	    /*@fallthrough@*/
-	case URL_IS_UNKNOWN:
-	    execl(buildShell, buildShell, "-e", scriptName, scriptName, NULL);
-	    break;
-	default:
-	    break;
+    rpmMessage(RPMMESS_NORMAL, _("Executing(%s): %s\n"), name, buildCmd);
+    if (!(child = fork())) {
+
+#ifdef	DYING
+fprintf(stderr, "*** root %s buildDir %s script %s remsh %s \n", rootDir, buildDir, scriptName, remsh);
+
+	if (u == NULL || *remsh == '\0') {
+fprintf(stderr, "*** LOCAL %s %s -e %s %s\n", buildShell, buildShell, buildScript, buildScript);
+	    if (rootURL) {
+		if (!(rootDir[0] == '/' && rootDir[1] == '\0')) {
+		    chroot(rootDir);
+		    chdir("/");
+		}
+	    }
+	    errno = 0;
+	    execl(buildShell, buildShell, "-e", buildScript, buildScript, NULL);
+	} else {
+	    if (*remchroot == '\0') {
+fprintf(stderr, "*** REMSH %s %s %s -e %s %s\n", remsh, u->host, buildShell, buildScript, buildScript);
+		errno = 0;
+		execl(remsh, remsh, u->host, buildShell, "-e", buildScript, buildScript, NULL);
+	    } else {
+fprintf(stderr, "*** REMCHROOT %s %s %s %s -e %s %s\n", remsh, u->host, remchroot, buildShell, buildScript, buildScript);
+		errno = 0;
+		execl(remsh, remsh, u->host, remchroot, buildShell, "-e", buildScript, buildScript, NULL);
+	    }
 	}
+#else
+	execvp(argv[0], (char *const *)argv);
+#endif
 
-	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s)"), scriptName, name);
+	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s"), scriptName, name, strerror(errno));
+
 	_exit(-1);
     }
 
-    (void)wait(&status);
-    if (! WIFEXITED(status) || WEXITSTATUS(status)) {
+    rc = waitpid(child, &status, 0);
+
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SCRIPT, _("Bad exit status from %s (%s)"),
 		 scriptName, name);
-#if HACK
-	Unlink(scriptName);
-#endif
-	FREE(scriptName);
-	return RPMERR_SCRIPT;
-    }
+	rc = RPMERR_SCRIPT;
+    } else
+	rc = 0;
     
-    Unlink(scriptName);
-    FREE(scriptName);
+exit:
+    if (scriptName) {
+	if (!rc)
+	    Unlink(scriptName);
+	xfree(scriptName);
+    }
+#ifdef	DYING
+    FREE(buildShell);
+    FREE(buildEnv);
+    FREE(remsh);
+    FREE(remchroot);
+#else
+    if (u)
+	delMacro(spec->macros, "_build_hostname");
+    FREE(argv);
+    FREE(buildCmd);
+    FREE(buildTemplate);
+#endif
+    FREE(buildURL);
 
-    return 0;
+    return rc;
 }
 
 int buildSpec(Spec spec, int what, int test)

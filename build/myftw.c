@@ -1,4 +1,4 @@
-/* Modified ftw() -- uses lstat() instead of stat() */
+/* Modified ftw() -- uses Lstat() instead of stat() */
 
 /* Copyright (C) 1992, 1994, 1995 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
@@ -20,6 +20,8 @@ not, write to the Free Software Foundation, Inc., 675 Mass Ave,
 Cambridge, MA 02139, USA.  */
 
 #include "system.h"
+
+#include <rpmio.h>
 
 #ifndef NAMLEN
 #define NAMLEN(a) strlen((a)->d_name)
@@ -84,7 +86,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
       dir[len] = '/';
       memcpy ((void *) (dir + len + 1), (void *) entry->d_name, d_namlen);
 
-      if (lstat (dir, &s) < 0)
+      if (Lstat (dir, &s) < 0)
 	{
 	  /* Following POSIX.1 2.4 ENOENT is returned if the file cannot
 	   * be stat'ed.  This can happen for a file returned by readdir
@@ -182,7 +184,7 @@ int myftw (const char *dir,
   while (i-- > 0)
     dirs[i] = NULL;
 
-  if (lstat (dir, &s) < 0)
+  if (Lstat (dir, &s) < 0)
     {
       /* Following POSIX.1 2.4 ENOENT is returned if the file cannot
        * be stat'ed.  This can happen for a file returned by readdir

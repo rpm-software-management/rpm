@@ -245,9 +245,6 @@ int writeRPM(Header h, const char *fileName, int type,
     char buf[BUFSIZ];
     Header sig;
     struct rpmlead lead;
-#ifdef	DYING
-    int fdno;
-#endif
 
     if (Fileno(csa->cpioFdIn) < 0) {
 	csa->cpioArchiveSize = 0;
@@ -271,11 +268,6 @@ int writeRPM(Header h, const char *fileName, int type,
 	return RPMERR_CREATE;
     }
 
-#ifdef	DYING
-    fd = fdLink(fd, "persist");	/* XXX keep fd from being freed */
-    fdno = Fileno(fd);		/* XXX HACK HACK HACK to keep fdno open */
-#endif
-
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
     } else { /* Write the archive and get the size */
@@ -288,10 +280,6 @@ int writeRPM(Header h, const char *fileName, int type,
 	    rc = RPMERR_BADARG;
 	}
     }
-
-#ifdef DYING
-    fdSetFdno(fd, fdno);	/* XXX HACK HACK HACK to keep fdno open */
-#endif
 
     if (rc != 0) {
 	Fclose(fd);
@@ -434,11 +422,7 @@ static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmode)
     const char *failedFile = NULL;
 
     (void) Fflush(fdo);
-#ifndef	DYING
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
-#else
-    cfd = Fdopen(fdo, fmode);
-#endif
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {

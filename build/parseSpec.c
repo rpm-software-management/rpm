@@ -1,6 +1,7 @@
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
+#include <rpmurl.h>
 
 static struct PartRec {
     int part;
@@ -326,8 +327,8 @@ void closeSpec(Spec spec)
 
 int noLang = 0;		/* XXX FIXME: pass as arg */
 
-int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
-		const char *buildRoot, int inBuildArch, const char *passPhrase,
+int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
+		const char *buildURL, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force)
 {
     int parsePart = PART_PREAMBLE;
@@ -345,9 +346,11 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
     spec->fileStack->fileName = xstrdup(specFile);
 
     spec->specFile = xstrdup(specFile);
-    if (buildRoot) {
-	spec->gotBuildRoot = 1;
-	spec->buildRoot = xstrdup(buildRoot);
+    if (buildURL) {
+	const char * buildRoot;
+	spec->gotBuildURL = 1;
+	spec->buildURL = xstrdup(buildURL);
+	(void) urlPath(buildURL, &buildRoot);
 	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
@@ -355,8 +358,8 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
     spec->anyarch = anyarch;
     spec->force = force;
 
-    if (rootdir && strcmp(rootdir, "/"))
-	spec->rootdir = xstrdup(rootdir);
+    if (rootURL)
+	spec->rootURL = xstrdup(rootURL);
     if (passPhrase)
 	spec->passPhrase = xstrdup(passPhrase);
     if (cookie)
@@ -435,7 +438,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
 		    saveArch = xstrdup(saveArch);
 		    rpmSetMachine(spec->buildArchitectures[x], NULL);
 		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
-				  specFile, spec->rootdir, buildRoot, 1,
+				  specFile, spec->rootURL, buildURL, 1,
 				  passPhrase, cookie, anyarch, force)) {
 			spec->buildArchitectureCount = index;
 			freeSpec(spec);

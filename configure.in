@@ -155,21 +155,19 @@ dnl
 dnl Find some common programs
 dnl
     AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
-
     AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
     AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
     AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
     AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
     AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
     AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
-
     AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
 dnl Solaris prefers /usr/xpg4/bin/id
     AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
+    AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
     AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
     AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
     AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
-
     AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
     AC_MSG_CHECKING(old version of patch)
     PATCHVERSION=`patch --version 2>&1`
@@ -183,7 +181,13 @@ dnl Solaris prefers /usr/xpg4/bin/id
 
     AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
     AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
+    AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
+    AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
     AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
+
+    AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
+    AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
+    AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
 fi
 
 addlib() {

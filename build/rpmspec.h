@@ -97,8 +97,8 @@ struct SpecStruct {
     int force;
     int anyarch;
 
-    int gotBuildRoot;
-    /*@only@*/ const char *buildRoot;
+    int gotBuildURL;
+    /*@only@*/ const char *buildURL;
     /*@only@*/ const char *buildSubdir;
 
     char *passPhrase;
@@ -115,7 +115,7 @@ struct SpecStruct {
 
     /*@dependent@*/ struct MacroContext *macros;
 
-    /*@only@*/ const char *rootdir;
+    /*@only@*/ const char *rootURL;
     /*@only@*/ StringBuf prep;
     /*@only@*/ StringBuf build;
     /*@only@*/ StringBuf install;
