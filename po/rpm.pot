@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-03-24 07:35-0500\n"
+"POT-Creation-Date: 1999-03-26 20:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2194,17 +2194,17 @@ msgstr ""
 msgid "archive = %s, fs = %s\n"
 msgstr ""
 
-#: ../build/spec.c:230
+#: ../build/spec.c:232
 #, c-format
 msgid "line %d: Bad number: %s"
 msgstr ""
 
-#: ../build/spec.c:236
+#: ../build/spec.c:238
 #, c-format
 msgid "line %d: Bad no%s number: %d"
 msgstr ""
 
-#: ../build/spec.c:292
+#: ../build/spec.c:294
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""

@@ -112,9 +112,6 @@ struct SpecStruct {
 
     /*@dependent@*/ struct MacroContext *macros;
 
-    int autoReq;
-    int autoProv;
-
     /*@only@*/ StringBuf prep;
     /*@only@*/ StringBuf build;
     /*@only@*/ StringBuf install;
@@ -131,7 +128,8 @@ struct PackageStruct {
 
     /*@owned@*/ struct Source *icon;
 
-    int autoReqProv;
+    int autoReq;
+    int autoProv;
 
     char *preInFile;
     char *postInFile;

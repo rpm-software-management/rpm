@@ -472,14 +472,14 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
 	break;
       case RPMTAG_AUTOREQPROV:
-	spec->autoReq = parseYesNo(field);
-	spec->autoProv = spec->autoReq;
+	pkg->autoReq = parseYesNo(field);
+	pkg->autoProv = pkg->autoReq;
 	break;
       case RPMTAG_AUTOREQ:
-	spec->autoReq = parseYesNo(field);
+	pkg->autoReq = parseYesNo(field);
 	break;
       case RPMTAG_AUTOPROV:
-	spec->autoProv = parseYesNo(field);
+	pkg->autoProv = parseYesNo(field);
 	break;
       case RPMTAG_SOURCE:
       case RPMTAG_PATCH:

@@ -5,6 +5,7 @@
 	- fix: don't add header if signature generation failed (Carlo Wood).
 	- more DU 4.0D fiddles (Shing-Gene Yung).
 	- fix: segfault from unknown uid/gid -- use builder's uid/gid instead.
+	- autoReq/autoProv now per-package.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.

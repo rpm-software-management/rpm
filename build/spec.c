@@ -96,7 +96,9 @@ Package newPackage(Spec spec)
 
     p->header = headerNew();
     p->icon = NULL;
-    p->autoReqProv = 1;
+
+    p->autoProv = 1;
+    p->autoReq = 1;
     
 #if 0    
     p->reqProv = NULL;
@@ -436,9 +438,6 @@ Spec newSpec(void)
 
     spec->macros = &globalMacroContext;
     
-    spec->autoReq = 1;
-    spec->autoProv = 1;
-
     return spec;
 }
 

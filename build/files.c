@@ -1517,7 +1517,7 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 	return 0;
     }
 
-    if (! (spec->autoReq || spec->autoProv)) {
+    if (! (pkg->autoReq || pkg->autoProv)) {
 	return 0;
     }
     
@@ -1531,7 +1531,7 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 
     /*** Do Provides ***/
 
-    if (spec->autoProv) {
+    if (pkg->autoProv) {
 	rpmMessage(RPMMESS_NORMAL, _("Finding provides...\n"));
     
 	argv[0] = FINDPROVIDES;
@@ -1557,7 +1557,7 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 
     /*** Do Requires ***/
 
-    if (spec->autoReq) {
+    if (pkg->autoReq) {
 	rpmMessage(RPMMESS_NORMAL, _("Finding requires...\n"));
 
 	argv[0] = FINDREQUIRES;
