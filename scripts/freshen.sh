@@ -27,7 +27,7 @@ if [ $# = 0 ]; then
     exec $RPM $args
 fi
 
-origargs=$args
+origargs="$args"
 args="$args -- "
 shift
 
