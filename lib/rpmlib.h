@@ -319,7 +319,8 @@ int rpmdbFindByHeader(rpmdb db, Header h, dbiIndexSet * matches);
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
     char * oldPath;	/* NULL here evals to RPMTAG_DEFAULTPREFIX, this */
-    char * newPath;     /* odd behavior is only for backwards compatibility */
+			/* odd behavior is only for backwards compatibility */
+    char * newPath;	/* NULL means to omit the file completely! */
 } rpmRelocation;
 
 int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
