@@ -45,6 +45,10 @@ extern int _rpmdb_debug;
 /*@unchecked@*/
 extern int _rpmds_debug;
 
+/* XXX avoid -lrpmbuild linkage. */
+/*@unchecked@*/
+       int _rpmfc_debug;
+
 /*@unchecked@*/
 extern int _rpmfi_debug;
 
@@ -277,6 +281,8 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,
 	NULL, NULL},
  { "rpmdsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_debug, -1,
+	NULL, NULL},
+ { "rpmfcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfc_debug, -1,
 	NULL, NULL},
  { "rpmfidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfi_debug, -1,
 	NULL, NULL},

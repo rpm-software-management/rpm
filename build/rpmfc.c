@@ -19,9 +19,6 @@
 /*@access fmagic @*/
 /*@access rpmds @*/
 
-/*@unchecked@*/
-int _rpmfc_debug;
-
 /**
  */
 /*@-bounds@*/	/* LCL: internal error */
@@ -561,14 +558,20 @@ assert(fx < fc->fddictn->nvals);
 assert(depval != NULL);
 		/*@switchbreak@*/ break;
 	    case 'P':
+		if (nprovides > 0) {
 assert(ix < nprovides);
-		(void) rpmdsSetIx(fc->provides, ix);
-		depval = rpmdsDNEVR(fc->provides);
+		    (void) rpmdsSetIx(fc->provides, ix-1);
+		    if (rpmdsNext(fc->provides) >= 0)
+			depval = rpmdsDNEVR(fc->provides);
+		}
 		/*@switchbreak@*/ break;
 	    case 'R':
+		if (nrequires > 0) {
 assert(ix < nrequires);
-		(void) rpmdsSetIx(fc->requires, ix);
-		depval = rpmdsDNEVR(fc->requires);
+		    (void) rpmdsSetIx(fc->requires, ix-1);
+		    if (rpmdsNext(fc->requires) >= 0)
+			depval = rpmdsDNEVR(fc->requires);
+		}
 		/*@switchbreak@*/ break;
 	    }
 	    if (depval)
@@ -1403,7 +1406,7 @@ assert(ac == c);
 
     /* Add Provides: */
 /*@-branchstate@*/
-    if (fc->provides != NULL && (c = fc->provides->Count) > 0 && !fc->skipProv) {
+    if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
 	p = (const void **) fc->provides->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
 			p, c);
@@ -1416,7 +1419,7 @@ assert(ac == c);
     }
 
     /* Add Requires: */
-    if (fc->requires != NULL && (c = fc->requires->Count && !fc->skipReq) > 0) {
+    if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
 	p = (const void **) fc->requires->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
 			p, c);
@@ -1455,13 +1458,11 @@ assert(ac == c);
     printDeps(pkg->header);
 /*@=noeffect@*/
 
-#ifdef	NOTYET
-if (fc != NULL) {
+if (fc != NULL && _rpmfc_debug) {
 char buf[BUFSIZ];
 sprintf(buf, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
 rpmfcPrint(buf, fc, NULL);
 }
-#endif
 
     /* Clean up. */
     fc = rpmfcFree(fc);

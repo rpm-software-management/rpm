@@ -33,9 +33,6 @@ static struct poptOption optionsTable[] = {
 	N_("Common options for all rpm modes and executables:"),
 	NULL }, 
 
- { "rpmfcdebug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfc_debug, -1,
-        NULL, NULL },
-
  { "provides", 'P', POPT_ARG_VAL, &print_provides, -1,
         NULL, NULL },
  { "requires", 'R', POPT_ARG_VAL, &print_requires, -1,
