@@ -6,6 +6,7 @@
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.
 	- disable file contexts into package metadata during build.
+	- fix: "/path/foo.../bar" was losing a dot (#123844).
 
 4.3 -> 4.3.1:
 	- fix: don't add leading space to %* argv expansion (#119059).

@@ -2184,7 +2184,7 @@ char *rpmCleanPath(char * path)
 		/*@switchbreak@*/ break;
 	    }
 	    /* Trim embedded ./ , trailing /. */
-	    if ((t[-1] == '/' && s[1] == '\0') || (t != path && s[1] == '/')) {
+	    if ((t[-1] == '/' && s[1] == '\0') || (t > path && t[-1] == '/' && s[1] == '/')) {
 		s++;
 		continue;
 	    }
