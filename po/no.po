@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-28 12:11-0500\n"
+"POT-Creation-Date: 2003-01-29 14:03-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1346,73 +1346,73 @@ msgstr ""
 msgid " failed - "
 msgstr " feilet - "
 
-#: lib/depends.c:182
+#: lib/depends.c:188
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakke %s er allerede installert"
 
-#: lib/depends.c:380
+#: lib/depends.c:394
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:407
+#: lib/depends.c:421
 msgid "(rpmrc provides)"
 msgstr ""
 
-#: lib/depends.c:424
+#: lib/depends.c:438
 msgid "(rpmlib provides)"
 msgstr ""
 
-#: lib/depends.c:453
+#: lib/depends.c:467
 msgid "(db files)"
 msgstr ""
 
-#: lib/depends.c:466
+#: lib/depends.c:480
 msgid "(db provides)"
 msgstr ""
 
-#: lib/depends.c:479
+#: lib/depends.c:493
 #, fuzzy
 msgid "(db package)"
 msgstr "ingen pakker\n"
 
-#: lib/depends.c:833
+#: lib/depends.c:847
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:955
+#: lib/depends.c:969
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1186
+#: lib/depends.c:1200
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1278
+#: lib/depends.c:1292
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1363
+#: lib/depends.c:1377
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1433
+#: lib/depends.c:1447
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1468
+#: lib/depends.c:1482
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1473
+#: lib/depends.c:1487
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2496,31 +2496,31 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakke %s er i konflikt: %s\n"
 
-#: lib/rpmfi.c:658
+#: lib/rpmfi.c:659
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:662
+#: lib/rpmfi.c:663
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "eksluderer %s %s\n"
 
-#: lib/rpmfi.c:665
+#: lib/rpmfi.c:666
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d omplasser %s -> %s\n"
 
-#: lib/rpmfi.c:788
+#: lib/rpmfi.c:789
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "eksluderer %s %s\n"
 
-#: lib/rpmfi.c:798
+#: lib/rpmfi.c:799
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "relokerer %s til %s\n"
 
-#: lib/rpmfi.c:885
+#: lib/rpmfi.c:886
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "relokerer katalog %s til %s\n"

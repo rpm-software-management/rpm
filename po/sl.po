@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.370 2003/01/28 17:18:01 jbj Exp $
+# $Id: sl.po,v 1.371 2003/01/29 19:52:36 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-28 12:11-0500\n"
+"POT-Creation-Date: 2003-01-29 14:03-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1383,77 +1383,77 @@ msgstr ""
 msgid " failed - "
 msgstr " neuspe¹no - "
 
-#: lib/depends.c:182
+#: lib/depends.c:188
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s-%s-%s je ¾e name¹èen"
 
-#: lib/depends.c:380
+#: lib/depends.c:394
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:407
+#: lib/depends.c:421
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s DA (rpmrc ponudbe)\n"
 
-#: lib/depends.c:424
+#: lib/depends.c:438
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s DA (rpmlib ponudbe)\n"
 
-#: lib/depends.c:453
+#: lib/depends.c:467
 #, fuzzy
 msgid "(db files)"
 msgstr "po¹kodovana zbirka podatkov %s"
 
-#: lib/depends.c:466
+#: lib/depends.c:480
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s DA (db ponudbe)\n"
 
-#: lib/depends.c:479
+#: lib/depends.c:493
 #, fuzzy
 msgid "(db package)"
 msgstr "ni paketov\n"
 
-#: lib/depends.c:833
+#: lib/depends.c:847
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:955
+#: lib/depends.c:969
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1186
+#: lib/depends.c:1200
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1278
+#: lib/depends.c:1292
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1363
+#: lib/depends.c:1377
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1433
+#: lib/depends.c:1447
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1468
+#: lib/depends.c:1482
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1473
+#: lib/depends.c:1487
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2579,31 +2579,31 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"
 
-#: lib/rpmfi.c:658
+#: lib/rpmfi.c:659
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:662
+#: lib/rpmfi.c:663
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je izkljuèen: %s"
 
-#: lib/rpmfi.c:665
+#: lib/rpmfi.c:666
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/rpmfi.c:788
+#: lib/rpmfi.c:789
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/rpmfi.c:798
+#: lib/rpmfi.c:799
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/rpmfi.c:885
+#: lib/rpmfi.c:886
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "premiokanje imenika %s v %s\n"

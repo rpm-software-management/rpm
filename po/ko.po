@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2003-01-28 12:11-0500\n"
+"POT-Creation-Date: 2003-01-29 14:03-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1341,57 +1341,57 @@ msgstr "헤더에 아카이브 파일이 없습니다"
 msgid " failed - "
 msgstr " 실패함 - "
 
-#: lib/depends.c:182
+#: lib/depends.c:188
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:380
+#: lib/depends.c:394
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:407
+#: lib/depends.c:421
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:424
+#: lib/depends.c:438
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:453
+#: lib/depends.c:467
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/depends.c:466
+#: lib/depends.c:480
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:479
+#: lib/depends.c:493
 #, fuzzy
 msgid "(db package)"
 msgstr "패키지가 없습니다\n"
 
-#: lib/depends.c:833
+#: lib/depends.c:847
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:955
+#: lib/depends.c:969
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
 #. Record all relations.
-#: lib/depends.c:1186
+#: lib/depends.c:1200
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1278
+#: lib/depends.c:1292
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
@@ -1399,21 +1399,21 @@ msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 트리, 깊이"
 "[depth])\n"
 
-#: lib/depends.c:1363
+#: lib/depends.c:1377
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 후임자만 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1433
+#: lib/depends.c:1447
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1468
+#: lib/depends.c:1482
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1473
+#: lib/depends.c:1487
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2511,31 +2511,31 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"
 
-#: lib/rpmfi.c:658
+#: lib/rpmfi.c:659
 msgid "========== relocations\n"
 msgstr "========== 재배치\n"
 
-#: lib/rpmfi.c:662
+#: lib/rpmfi.c:663
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 제외  %s\n"
 
-#: lib/rpmfi.c:665
+#: lib/rpmfi.c:666
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 재배치 %s -> %s\n"
 
-#: lib/rpmfi.c:788
+#: lib/rpmfi.c:789
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s(을)를 제외시킵니다\n"
 
-#: lib/rpmfi.c:798
+#: lib/rpmfi.c:799
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s(을)를 %s(으)로 재배치 합니다\n"
 
-#: lib/rpmfi.c:885
+#: lib/rpmfi.c:886
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-28 12:11-0500\n"
+"POT-Creation-Date: 2003-01-29 14:03-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1356,52 +1356,52 @@ msgstr "Файл архива не найден в заголовке пакета"
 msgid " failed - "
 msgstr "не удалось - "
 
-#: lib/depends.c:182
+#: lib/depends.c:188
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакет %s уже был добавлен, заменяется %s\n"
 
-#: lib/depends.c:380
+#: lib/depends.c:394
 msgid "(cached)"
 msgstr "(кэширован)"
 
-#: lib/depends.c:407
+#: lib/depends.c:421
 msgid "(rpmrc provides)"
 msgstr "(rpmrc provides)"
 
-#: lib/depends.c:424
+#: lib/depends.c:438
 msgid "(rpmlib provides)"
 msgstr "(rpmlib provides)"
 
-#: lib/depends.c:453
+#: lib/depends.c:467
 msgid "(db files)"
 msgstr "(db files)"
 
-#: lib/depends.c:466
+#: lib/depends.c:480
 msgid "(db provides)"
 msgstr "(db provides)"
 
-#: lib/depends.c:479
+#: lib/depends.c:493
 msgid "(db package)"
 msgstr "(db package)"
 
-#: lib/depends.c:833
+#: lib/depends.c:847
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "игнорировать зависимост(и) имён пакета(ов) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:955
+#: lib/depends.c:969
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s \"%s\" из сортированных связей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1186
+#: lib/depends.c:1200
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1278
+#: lib/depends.c:1292
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
@@ -1409,21 +1409,21 @@ msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "дерево, глубина)\n"
 
-#: lib/depends.c:1363
+#: lib/depends.c:1377
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1433
+#: lib/depends.c:1447
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1468
+#: lib/depends.c:1482
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1473
+#: lib/depends.c:1487
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "ошибка rpmtsOrder, осталось %d элементов\n"
@@ -2492,31 +2492,31 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s содержит неудовлетворенные %s: %s\n"
 
-#: lib/rpmfi.c:658
+#: lib/rpmfi.c:659
 msgid "========== relocations\n"
 msgstr "========== перемещений\n"
 
-#: lib/rpmfi.c:662
+#: lib/rpmfi.c:663
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d исключен %s\n"
 
-#: lib/rpmfi.c:665
+#: lib/rpmfi.c:666
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d перемещение %s -> %s\n"
 
-#: lib/rpmfi.c:788
+#: lib/rpmfi.c:789
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "исключается %s %s\n"
 
-#: lib/rpmfi.c:798
+#: lib/rpmfi.c:799
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещается %s в %s\n"
 
-#: lib/rpmfi.c:885
+#: lib/rpmfi.c:886
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещается каталог %s в %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2003-01-28 12:11-0500\n"
+"POT-Creation-Date: 2003-01-29 14:03-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1356,78 +1356,78 @@ msgstr "Ficheiro de arquivo não está no cabeçalho"
 msgid " failed - "
 msgstr " falhou - "
 
-#: lib/depends.c:182
+#: lib/depends.c:188
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "o pacote %s já está instalado"
 
-#: lib/depends.c:380
+#: lib/depends.c:394
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:407
+#: lib/depends.c:421
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:424
+#: lib/depends.c:438
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:453
+#: lib/depends.c:467
 #, fuzzy
 msgid "(db files)"
 msgstr "ficheiro db inválido %s\n"
 
-#: lib/depends.c:466
+#: lib/depends.c:480
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:479
+#: lib/depends.c:493
 #, fuzzy
 msgid "(db package)"
 msgstr "nenhum pacote\n"
 
-#: lib/depends.c:833
+#: lib/depends.c:847
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorar relações entre o nome do pacote [%d]\t%s -> %s\n"
 
-#: lib/depends.c:955
+#: lib/depends.c:969
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1186
+#: lib/depends.c:1200
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1278
+#: lib/depends.c:1292
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 "========== ordenar pacotes (order, #predecessors, #succesors, tree, depth)\n"
 
-#: lib/depends.c:1363
+#: lib/depends.c:1377
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1433
+#: lib/depends.c:1447
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1468
+#: lib/depends.c:1482
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1473
+#: lib/depends.c:1487
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -2523,31 +2523,31 @@ msgstr "  %s     A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "o pacote %s tem requisitos não satisfeitos: %s\n"
 
-#: lib/rpmfi.c:658
+#: lib/rpmfi.c:659
 msgid "========== relocations\n"
 msgstr "========== mudanças de local\n"
 
-#: lib/rpmfi.c:662
+#: lib/rpmfi.c:663
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d excluir o %s\n"
 
-#: lib/rpmfi.c:665
+#: lib/rpmfi.c:666
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d mudar de local %s -> %s\n"
 
-#: lib/rpmfi.c:788
+#: lib/rpmfi.c:789
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "a excluir o %s %s\n"
 
-#: lib/rpmfi.c:798
+#: lib/rpmfi.c:799
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "a mudar o %s para %s\n"
 
-#: lib/rpmfi.c:885
+#: lib/rpmfi.c:886
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "a mudar a directoria %s para %s\n"
