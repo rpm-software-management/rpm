@@ -43,6 +43,7 @@
 	- if chown() follows symlinks, we don't chown() symlinks during cpio
 	  unpacking and we don't verify the owner or group of symlinks
 	- added packager and url to default -qi output
+	- look for <sys/select.h> and use it if it's there (for AIX)
 
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output
