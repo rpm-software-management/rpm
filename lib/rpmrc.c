@@ -589,6 +589,9 @@ static int readConfigFilesAux(char *file, int readWhat)
 	rc = readRpmrc(f, fn, readWhat);
 	fclose(f);
 	if (rc) return rc;
+    } else if (file) {
+	rpmError(RPMERR_RPMRC, "Unable to open %s for reading.", file);
+	return 1;
     }
 
     if (!file) {
