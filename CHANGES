@@ -32,6 +32,7 @@
 	- fine-grained Requires, remove install PreReq's from Requires db.
 	- fix: duplicate headerFree() on installBinaryPackage() error return.
 	- fix: segfault on exit of "rpm -qp --qf '%{#fsnames}' pkg" (#20595).
+	- hpux w/o -D_OPEN_SOURCE has not h_errno.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

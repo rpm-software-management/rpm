@@ -35,7 +35,7 @@ typedef	unsigned int		uint32_t;
 
 #endif	/* __LCLINT__ */
 
-#if HAVE_HERRNO && defined(__hpux) /* XXX HP-UX w/o -D_XOPEN_SOURCE needs */
+#if !defined(HAVE_HERRNO) && defined(__hpux) /* XXX HP-UX w/o -D_XOPEN_SOURCE needs */
 extern int h_errno;
 #endif
 
