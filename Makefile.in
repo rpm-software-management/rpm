@@ -75,10 +75,10 @@ install: all
 	fi
 	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
 	(cd po; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
-	install -m 755 -o 0 -g 0 -d $(PGPDIR)
-	install -m 600 pubring.pgp $(PGPDIR)
-	install -m 444 RPM-PGP-KEY $(PGPDIR)
-	touch $(PGPDIR)/config.txt
+	#install -m 755 -o 0 -g 0 -d $(PGPDIR)
+	#install -m 600 pubring.pgp $(PGPDIR)
+	#install -m 444 RPM-PGP-KEY $(PGPDIR)
+	#touch $(PGPDIR)/config.txt
 
 clean:
 	for d in $(SUBDIRS); do \
