@@ -49,8 +49,8 @@ static int domd5(char * fn, unsigned char * digest, int asAscii,
 		bindigest[8],  bindigest[9],  bindigest[10], bindigest[11],
 		bindigest[12], bindigest[13], bindigest[14], bindigest[15]);
 
-	fclose(fp);
     }
+    fclose(fp);
 
     return 0;
 }
