@@ -53,7 +53,7 @@ int convertDB(void) {
     unlink("/var/lib/rpm/packageindex.rpm");
     unlink("/var/lib/rpm/fileindex.rpm");
 
-    if (rpmdbOpen("", &db, O_RDWR | O_EXCL | O_CREAT, 0644)) {
+    if (rpmdbOpen("", &db, O_RDWR | O_CREAT, 0644)) {
 	rpmError(RPMERR_DBOPEN, "failed to create RPM database /var/lib/rpm");
 	return 0;
     }
@@ -204,6 +204,8 @@ int main(int argc, char ** argv) {
 	fprintf(stderr, "rpmconvert: no arguments expected");
 	exit(1);
     }
+
+    rpmReadConfigFiles(NULL, NULL, NULL, 0);
 
     printf("rpmconvert 1.0 - converting database in /var/lib/rpm\n");
     convertDB();
