@@ -87,7 +87,8 @@
 	- don't segfault with packages produced by rpm-2.93 (#80618).
 	- python: eliminate hash.[ch] and upgrade.[ch], methods too.
 	- fix :armor query extension, tgpg mktmp handling (#80684).
-	- use rpmfiClass() underneath --fileclass.
+	- use rpmfiFClass() underneath --fileclass.
+	- use rpmfiFDepends() underneath --fileprovide/--filerequire.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

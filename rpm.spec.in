@@ -463,7 +463,8 @@ exit 0
 - don't segfault with packages produced by rpm-2.93 (#80618).
 - python: eliminate hash.[ch] and upgrade.[ch], methods too.
 - fix :armor query extension, tgpg mktmp handling (#80684).
-- use rpmfiClass() underneath --fileclass.
+- use rpmfiFClass() underneath --fileclass.
+- use rpmfiFDepends() underneath --fileprovide/--filerequire.
 
 * Sat Dec 28 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.45
 - error if querying with iterator on different sized arrays.

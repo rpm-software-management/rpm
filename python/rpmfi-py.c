@@ -183,6 +183,26 @@ rpmfi_FGroup(rpmfiObject * s, PyObject * args)
     return Py_BuildValue("s", xstrdup(rpmfiFGroup(s->fi)));
 }
 
+static PyObject *
+rpmfi_FColor(rpmfiObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":FColor")) return NULL;
+    return Py_BuildValue("i", rpmfiFColor(s->fi));
+}
+
+static PyObject *
+rpmfi_FClass(rpmfiObject * s, PyObject * args)
+	/*@*/
+{
+    const char * FClass;
+
+    if (!PyArg_ParseTuple(args, ":FClass")) return NULL;
+    if ((FClass = rpmfiFClass(s->fi)) == NULL)
+	FClass = "";
+    return Py_BuildValue("s", xstrdup(FClass));
+}
+
 #if Py_TPFLAGS_HAVE_ITER
 static PyObject *
 rpmfi_iter(rpmfiObject * s, /*@unused@*/ PyObject * args)
@@ -352,6 +372,10 @@ static struct PyMethodDef rpmfi_methods[] = {
  {"FUser",	(PyCFunction)rpmfi_FUser,	METH_VARARGS,
 	NULL},
  {"FGroup",	(PyCFunction)rpmfi_FGroup,	METH_VARARGS,
+	NULL},
+ {"FColor",	(PyCFunction)rpmfi_FColor,	METH_VARARGS,
+	NULL},
+ {"FClass",	(PyCFunction)rpmfi_FClass,	METH_VARARGS,
 	NULL},
  {"next",	(PyCFunction)rpmfi_Next,	METH_VARARGS,
 "fi.next() -> (FN, FSize, FMode, FMtime, FFlags, FRdev, FInode, FNlink, FState, VFlags, FUser, FGroup, FMD5))\n\

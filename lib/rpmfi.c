@@ -1103,7 +1103,7 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
 
     xx = hge(h, RPMTAG_DEPENDSDICT, NULL, (void **) &fi->ddict, &fi->nddict);
     xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, (void **) &fi->fddictx, NULL);
-    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, (void **) &fi->fddictx, NULL);
+    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, (void **) &fi->fddictn, NULL);
 
     xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
     if (xx == 0 || fi->fstates == NULL)
@@ -1227,9 +1227,9 @@ void rpmfiBuildFClasses(Header h,
 {
     int scareMem = 1;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
-    int ac;
-    const char ** av;
     const char * FClass;
+    const char ** av;
+    int ac;
     size_t nb;
     char * t;
 
@@ -1281,105 +1281,92 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
 {
     int scareMem = 1;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    rpmds ds = NULL;
+    const char ** av;
+    int ac;
+    size_t nb;
+    char * t;
     char deptype = 'R';
     char mydt;
-    rpmds ds;
     const char * DNEVR;
     const int_32 * ddict;
-    const int_32 * fddictx;
-    const int_32 * fddictn;
-    int_32 nddict, nfddictx, nfddictn;
-    const char ** av;
-    int_32 ac = 0;
-    size_t nb;
-    rpmTagType ddt, fxt, fnt;
-    char * t;
     unsigned ix;
-    int dx, ndx, i, xx;
+    int ndx;
 
-    if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) NULL, &ac) || ac == 0) {
-	if (fdepsp) *fdepsp = NULL;
-	if (fcp) *fcp = 0;
-	return;		/* no file list */
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
     }
 
     if (tagN == RPMTAG_PROVIDENAME)
 	deptype = 'P';
     else if (tagN == RPMTAG_REQUIRENAME)
 	deptype = 'R';
+
     ds = rpmdsNew(h, tagN, scareMem);
 
-    fddictn = NULL;
-    nfddictn = 0;
-    xx = hge(h, RPMTAG_FILEDEPENDSN, &fnt, (void **) &fddictn, &nfddictn);
-    fddictx = NULL;
-    nfddictx = 0;
-    xx = hge(h, RPMTAG_FILEDEPENDSX, &fxt, (void **) &fddictx, &nfddictx);
-    ddict = NULL;
-    nddict = 0;
-    xx = hge(h, RPMTAG_DEPENDSDICT, &ddt, (void **) &ddict, &nddict);
-
+    /* Compute size of file depends argv array blob. */
     nb = (ac + 1) * sizeof(*av);
-    for (i = 0; i < ac; i++) {
-	if (fddictx != NULL && fddictn != NULL) {
-	    dx = fddictx[i];
-	    ndx = fddictn[i];
-	    if (ddict != NULL)
-	    while (ndx-- > 0) {
-		ix = ddict[dx++];
-		mydt = ((ix >> 24) & 0xff);
-		if (mydt != deptype)
-		    /*@innercontinue@*/ continue;
-		ix &= 0x00ffffff;
-		(void) rpmdsSetIx(ds, ix-1);
-		if (rpmdsNext(ds) < 0)
-		    /*@innercontinue@*/ continue;
-		DNEVR = rpmdsDNEVR(ds);
-		if (DNEVR != NULL)
-		    nb += strlen(DNEVR+2) + 1;
-	    }
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	ddict = NULL;
+	ndx = rpmfiFDepends(fi, &ddict);
+	if (ddict != NULL)
+	while (ndx-- > 0) {
+	    ix = *ddict++;
+	    mydt = ((ix >> 24) & 0xff);
+	    if (mydt != deptype)
+		/*@innercontinue@*/ continue;
+	    ix &= 0x00ffffff;
+	    (void) rpmdsSetIx(ds, ix-1);
+	    if (rpmdsNext(ds) < 0)
+		/*@innercontinue@*/ continue;
+	    DNEVR = rpmdsDNEVR(ds);
+	    if (DNEVR != NULL)
+		nb += strlen(DNEVR+2) + 1;
 	}
 	nb += 1;
     }
 
+    /* Create and load file depends argv array. */
     av = xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    ac = 0;
     /*@-branchstate@*/
-    for (i = 0; i < ac; i++) {
-	av[i] = t;
-	if (fddictx != NULL && fddictn != NULL) {
-	    dx = fddictx[i];
-	    ndx = fddictn[i];
-	    if (ddict != NULL)
-	    while (ndx-- > 0) {
-		ix = ddict[dx++];
-		mydt = ((ix >> 24) & 0xff);
-		if (mydt != deptype)
-		    /*@innercontinue@*/ continue;
-		ix &= 0x00ffffff;
-		(void) rpmdsSetIx(ds, ix-1);
-		if (rpmdsNext(ds) < 0)
-		    /*@innercontinue@*/ continue;
-		DNEVR = rpmdsDNEVR(ds);
-		if (DNEVR != NULL) {
-		    t = stpcpy(t, DNEVR+2);
-		    *t++ = ' ';
-		    *t = '\0';
-		}
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	av[ac++] = t;
+	ddict = NULL;
+	ndx = rpmfiFDepends(fi, &ddict);
+	if (ddict != NULL)
+	while (ndx-- > 0) {
+	    ix = *ddict++;
+	    mydt = ((ix >> 24) & 0xff);
+	    if (mydt != deptype)
+		/*@innercontinue@*/ continue;
+	    ix &= 0x00ffffff;
+	    (void) rpmdsSetIx(ds, ix-1);
+	    if (rpmdsNext(ds) < 0)
+		/*@innercontinue@*/ continue;
+	    DNEVR = rpmdsDNEVR(ds);
+	    if (DNEVR != NULL) {
+		t = stpcpy(t, DNEVR+2);
+		*t++ = ' ';
+		*t = '\0';
 	    }
 	}
 	*t++ = '\0';
     }
-    av[ac] = NULL;
     /*@=branchstate@*/
+    av[ac] = NULL;
 
-    ddict = hfd(ddict, ddt);
-    fddictx = hfd(fddictx, fxt);
-    fddictn = hfd(fddictn, fnt);
+exit:
+    fi = rpmfiFree(fi);
     ds = rpmdsFree(ds);
-
     /*@-branchstate@*/
     if (fdepsp)
 	*fdepsp = av;
