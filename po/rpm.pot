@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-29 17:08-0400\n"
+"POT-Creation-Date: 1999-04-30 11:00-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1745,60 +1745,60 @@ msgstr ""
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1391 ../build/parsePrep.c:31
+#: ../build/files.c:1394 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1445
+#: ../build/files.c:1448
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1449
+#: ../build/files.c:1452
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1499
+#: ../build/files.c:1502
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1503
+#: ../build/files.c:1506
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1537
+#: ../build/files.c:1540
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1544
+#: ../build/files.c:1547
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1563
+#: ../build/files.c:1566
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1570
+#: ../build/files.c:1573
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1604
+#: ../build/files.c:1607
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1619
+#: ../build/files.c:1622
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1631
+#: ../build/files.c:1634
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1655
+#: ../build/files.c:1658
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""

@@ -898,6 +898,9 @@ int main(int argc, char ** argv) {
 
     if ((buildArgs.buildAmount & RPMBUILD_RMSOURCE) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
+
+    if ((buildArgs.buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
+	bigMode = MODE_BUILD;
     
     if (initdb) {
 	if (bigMode != MODE_UNKNOWN) 
@@ -946,9 +949,10 @@ int main(int argc, char ** argv) {
 	argerror(_("unexpected query source"));
 
     if (!(bigMode == MODE_INSTALL ||
-         (bigMode == MODE_BUILD && (buildArgs.buildAmount & RPMBUILD_RMSOURCE)))
+	 (bigMode==MODE_BUILD && (buildArgs.buildAmount & RPMBUILD_RMSOURCE))||
+	 (bigMode==MODE_BUILD && (buildArgs.buildAmount & RPMBUILD_RMSPEC))) 
 	&& force)
-	argerror(_("only installation, upgrading and rmsource may be forced"));
+	argerror(_("only installation, upgrading, rmsource and rmspec may be forced"));
 
     if (bigMode != MODE_INSTALL && badReloc)
 	argerror(_("files may only be relocated during package installation"));
@@ -1237,6 +1241,7 @@ int main(int argc, char ** argv) {
 	if (bigMode == MODE_REBUILD) {
 	    buildArgs.buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    buildArgs.buildAmount |= RPMBUILD_RMSOURCE;
+	    buildArgs.buildAmount |= RPMBUILD_RMSPEC;
 	    buildArgs.buildAmount |= RPMBUILD_CLEAN;
 	    buildArgs.buildAmount |= RPMBUILD_RMBUILD;
 	}

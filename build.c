@@ -5,7 +5,6 @@
 #include "build.h"
 #include "install.h"
 
-
 static int checkSpec(Header h)
 {
     char *rootdir = NULL;
@@ -264,6 +263,7 @@ int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
 #define	POPT_TARGETPLATFORM	1007
 #define	POPT_NOBUILD		1008
 #define	POPT_SHORTCIRCUIT	1009
+#define	POPT_RMSPEC		1010
 
 extern int noLang;
 static int noBuild = 0;
@@ -279,6 +279,7 @@ static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
     case POPT_NOLANG: data->noLang = 1; break;
     case POPT_SHORTCIRCUIT: data->shortCircuit = 1; break;
     case POPT_RMSOURCE: data->buildAmount |= RPMBUILD_RMSOURCE; break;
+    case POPT_RMSPEC: data->buildAmount |= RPMBUILD_RMSPEC; break;
     case POPT_RMBUILD: data->buildAmount |= RPMBUILD_RMBUILD; break;
     case POPT_BUILDROOT:
 	if (data->buildRootOverride) {
@@ -325,7 +326,9 @@ struct poptOption rpmBuildPoptTable[] = {
 	{ "nolang", '\0', 0, &noLang, POPT_NOLANG,
 		N_("do not accept I18N msgstr's from specfile"), NULL},
 	{ "rmsource", '\0', 0, 0, POPT_RMSOURCE,
-		N_("remove sources and specfile when done"), NULL},
+		N_("remove sources when done"), NULL},
+	{ "rmspec", '\0', 0, 0, POPT_RMSPEC,
+		N_("remove specfile when done"), NULL},
 	{ "short-circuit", '\0', 0, 0,  POPT_SHORTCIRCUIT,
 		N_("skip straight to specified stage (only for c,i)"), NULL },
 	{ "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,

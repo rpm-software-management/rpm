@@ -9,6 +9,8 @@
 	- make sure that rpm-the-package auto-requires glibc.
 	- fix: non-apache servers need "GET ... HTTP/1.0" by the book.
 	- fix: %doc wrongly inherits lang from last entry in %files.
+	- resurrect toplevel tar target.
+	- spec file removal separate from source removal (Shing-Gene Yung).
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.

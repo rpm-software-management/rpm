@@ -7,7 +7,9 @@ static void doRmSource(Spec spec)
     struct Source *p;
     Package pkg;
     
+#if 0
     unlink(spec->specFile);
+#endif
 
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
@@ -217,6 +219,10 @@ int buildSpec(Spec spec, int what, int test)
 
     if (what & RPMBUILD_RMSOURCE) {
 	doRmSource(spec);
+    }
+
+    if (what & RPMBUILD_RMSPEC) {
+	unlink(spec->specFile);
     }
 
     return 0;

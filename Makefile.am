@@ -61,7 +61,7 @@ rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
 rpmconvert_LDADD =	$(mylibs) -lgdbm
 
 install-data-local:
-	@$(mkinstalldirs) $(DESTDIR)/var/lib/rpm
+	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
 	@rm -f $(DESTDIR)/$(libdir)/rpmrc
 	@ln -s rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
 	@rm -f $(DESTDIR)/$(libdir)/rpmpopt
@@ -78,23 +78,12 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SOURCES
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS
-	@$(mkinstalldirs) $(DESTDIR)/var/lib/rpm
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
-# FIXME: these should be checked
 .PHONY:                tar
 tar:
 	rm -rf /tmp/rpm-$(VERSION)
-	make installprefix=/tmp/rpm-$(VERSION)$(ROOT) install
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/SOURCES
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/SPECS
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/SRPMS
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/RPMS
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/BUILD
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)/var/local/lib/rpm
-	$(mkinstalldirs) /tmp/rpm-$(VERSION)/var/tmp
-#	Couldn't figure de ARCH value   
-#	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/RPMS/i386
+	$(MAKE) DESTDIR=/tmp/rpm-$(VERSION) install
 	cd /tmp/rpm-$(VERSION) ; tar cvf /tmp/rpm-$(VERSION).tar .
 
 .PHONY: noconfig
