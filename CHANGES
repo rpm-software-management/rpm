@@ -17,6 +17,7 @@
 	- fix: set fcontext from pkg when file_contexts doesn't exist (#114040).
 	- fix: set fcontext for "mkdir -p" directories not in packages.
 	- fix: setfiles (aka rpmsx.c) dinna handle patterns correctly.
+	- establish rpm_script_t before scriptlet exec, ignore errors for now.
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.

@@ -478,6 +478,74 @@ static pid_t psmWait(rpmpsm psm)
 }
 
 /**
+ * Change selinux type prior to exec.
+ * @param psm		package state machine data
+ * @param ntype		new selinux type
+ * @return		0 on success
+ */
+static int switchIdentity(rpmpsm psm, const char * ntype)
+	/*@*/
+{
+    security_context_t ocon = NULL;
+    security_context_t ncon = NULL;
+    int rc = -1;	/* assume failure */
+
+    if (psm == NULL || ntype == NULL)
+	goto exit;
+
+    rc = getexeccon(&ocon);
+    if (rc != 0)
+	goto exit;
+
+    if (ocon == NULL) {
+	rc = getcon(&ocon);
+	/* XXX ocon == NULL can't happen. */
+	if (rc != 0 || ocon == NULL)
+	    goto exit;
+    }
+
+    {	const char * s = (const char *) ocon;
+	const char * se;
+	size_t nb;
+	char * t = NULL;
+
+	if ((se = strrchr(s, ':')) == NULL) {
+	    rc = -1;
+	    goto exit;
+	}
+	se++;
+	nb = (se - s);
+
+	t = xmalloc( nb + strlen(ntype) + 1 );
+	(void) stpcpy( stpncpy(t, s, nb), ntype);
+
+	ncon = (security_context_t) t;
+    }
+
+    rc = setexeccon(ncon);
+
+    if (rc != 0)
+    switch (errno) {
+    case EINVAL:
+	/*
+	 * XXX HACK: rpm_script_t permitted only from sysadm_r, EINVAL returned.
+	 * Hack around that issue while "rpm_script_t" in policy is stabilizing.
+	 */
+	rc = 0;
+	break;
+    default:
+	rpmMessage(RPMMESS_DEBUG,
+		"%s: setexeccon() rc %d: %s\n", rc, strerror(errno));
+	break;
+    }
+
+exit:
+    if (ncon) freecon(ncon);
+    if (ocon) freecon(ocon);
+    return rc;
+}
+
+/**
  */
 /*@unchecked@*/
 static int ldconfig_done = 0;
@@ -730,7 +798,17 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"),
 			psm->stepName, sln, n, v, r,
 			argv[0], (unsigned)getpid());
+
+	    /* XXX Don't mtrace into children. */
 	    unsetenv("MALLOC_CHECK_");
+
+	    /* Set "rpm_script_t" identity for scriptlets under selinux. */
+	    if (rpmtsSELinuxEnabled(ts) == 1) {	
+		xx = switchIdentity(psm, "rpm_script_t");
+		if (xx != 0)
+		    break;
+	    }
+
 /*@-nullstate@*/
 	    xx = execv(argv[0], (char *const *)argv);
 /*@=nullstate@*/
