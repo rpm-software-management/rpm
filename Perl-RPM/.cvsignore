@@ -5,3 +5,7 @@ RPM.c
 RPM.bs
 *.html
 pod2html-*
+rpmrc
+rpmmacro
+Perl-RPM.spec
+Perl-RPM-*
