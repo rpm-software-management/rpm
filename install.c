@@ -16,8 +16,13 @@ void doInstall(char * prefix, char * arg, int test, int installFlags) {
 	mode = O_RDWR | O_EXCL;
 	
     if (!rpmdbOpen(prefix, &db, mode, 0644)) {
-	fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", prefix);
-	exit(1);
+	/* try opening it O_CREAT */
+	mode |= O_CREAT;
+	if (!rpmdbOpen(prefix, &db, mode, 0644)) {
+	    fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", 
+			prefix);
+	    exit(1);
+	}
     }
 
     message(MESS_DEBUG, "installing %s\n", arg);
