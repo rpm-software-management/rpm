@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Header.pm,v 1.4 2000/06/14 09:28:38 rjray Exp $
+#   $Id: Header.pm,v 1.5 2000/06/17 08:10:05 rjray Exp $
 #
 #   Description:    The RPM::Header class provides access to the RPM Header
 #                   structure as a tied hash, allowing direct access to the
@@ -35,7 +35,7 @@ use RPM::Error;
 use RPM::Constants ':rpmerr';
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 1;
 
@@ -46,61 +46,6 @@ sub new
 
     tie %hash, $class, @_;
     return (tied %hash);
-}
-
-###############################################################################
-#
-#   Sub Name:       cmpver
-#
-#   Description:    Try to reasonably compare two headers by examining their
-#                   version and release fields.
-#
-#   Arguments:      NAME      IN/OUT  TYPE      DESCRIPTION
-#                   $self     in      ref       Object of this class
-#                   $cmp_to   in      ref       Another object of this class
-#
-#   Globals:        None.
-#
-#   Environment:    None.
-#
-#   Returns:        Perl-style comparison operation
-#
-###############################################################################
-sub cmpver
-{
-    my ($self, $cmp_to) = @_;
-
-    # First off, arg 2 must be of or derived from this class
-    unless ($cmp_to->isa('RPM::Header'))
-    {
-        rpm_error(RPMERR_BADARG,
-                  "RPM::Header::cmpver: Argument 2 of wrong type");
-        return 0;
-    }
-    my @self = $self->NVR;
-    my @cmp_to = $cmp_to->NVR;
-    # Secondly, comparison is meaningless if these are not the same package
-    return 0 unless ($self[0] eq $cmp_to[0]);
-
-    # Now it gets more complicated
-    my @self_ver = split('.', $self[1]);
-    my @self_rel = split('.', $self[2]);
-    my @cmpto_ver = split('.', $cmp_to[1]);
-    my @cmpto_rel = split('.', $cmp_to[2]);
-
-    # If they do not have the same number of elements, pad the shorter one
-    if (@self_ver < @cmpto_ver)
-    {
-        push(@self_ver, 0) for (1 .. (@cmpto_ver - @self_ver));
-    }
-    elsif (@self_ver > @cmpto_ver)
-    {
-        push(@cmpto_ver, 0) for (1 .. (@self_ver - @cmpto_ver));
-    }
-    for (0 .. $#self_ver)
-    {
-        return;
-    }
 }
 
 __END__
@@ -187,13 +132,6 @@ Given a tag I<TAG>, return the type as a numerical value. The valid types
 can be imported from the B<RPM::Constants> package via the import-tag
 ":rpmtype", and are:
 
-=item NVR
-
-The commonly-needed data triple of (B<name>, B<version>, B<release>) may be
-accessed more directly by means of this method. It returns the three values
-on the stack, with no need to dereference list references, as would be the
-case when fetching the three tags via the usual means.
-
 =over
 
 =item RPM_NULL_TYPE
@@ -242,6 +180,23 @@ stored within the header.
 =back
 
 =back
+
+=item NVR
+
+The commonly-needed data triple of (B<name>, B<version>, B<release>) may be
+accessed more directly by means of this method. It returns the three values
+on the stack, with no need to dereference list references, as would be the
+case when fetching the three tags via the usual means.
+
+=item cmpver(OTHER)
+
+Compare the version of the current header against that in the header
+referenced by C<$other>. The argument should be an object reference, not
+a tied-hash representation of a header. Returns -1, 0 or 1, based on the
+established behavior of other comparison operators (C<cmp> and C<E<lt>=E<gt>>);
+-1 indicates that the calling object is considered less, or older, than the
+passed argument. A value of 1 indicates that the calling object is greater,
+or newer, than the argument. A value of 0 indicates that they are equal.
 
 =head1 DIAGNOSTICS
 
