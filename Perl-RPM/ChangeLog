@@ -1,87 +1,162 @@
 Revision history for Perl extension RPM.
 
-0.01  Thu May  4 12:04:34 2000
-	- original version; created by h2xs 1.19
+0.40	Fri May 10 01:09:13 PDT 2002
+	-alpha thirteen
 
-0.1   Mon May 22 00:59:54 PDT 2000
-	- first alpha release
+	RPM 3.0 line is no longer going to be supported. It's been long
+	enough since the 4.0 line came out, I feel. All #ifdef'd code relating
+	to 3.0 (and 4.0 line before about 4.0.2) has been removed. The code
+	once again will compile standing on its own within the rpm CVS
+	repository.
 
-	Classes for RPM::Header and RPM::Database are (more or less) done.
-	RPM::Constants appears to have everything that is expected to be
-	needed (i.e., any changes should result in shortening the list of
-	exported symbols, rather than lengthening it). A basic top-level
-	RPM namespace is present, but doesn't yet do anything useful. Some
-	basic test scripts are in place, but more are (always) needed.
+	Applied a patch to RPM/Database.xs from Gerald Teschl <gt@esi.ac.at>
+	so that when a header for a package that exists multiple times in
+	the db (such as kernel) is requested, the newest of the lot is
+	returned.
 
-0.2   Mon May 29 17:59:20 PDT 2000
-	- second alpha
+	In a related area, the list of potential control-case packages in
+	t/02_headers.t started with kernel, but if there were two such
+	packages installed when the tests ran, several of them would fail.
+	Now, rpm is the first choice.
 
-	Class for RPM::Error added. The code is in the RPM.xs file, but
-	the docs and accessors are done in RPM/Error.pm.
+	Applied a modified version of a patch from Anton Berezin
+	<tobez@FreeBSD.org> to RPM/Header.xs that catches cases where at
+	the start of key-iteration, the first run of headerNextIterator()
+	might yield a null (unknown) header key (in rpmhdr_FIRSTKEY).
 
-	All sub-classes moved to RPM/.
+	Applied a patch to RPM/Database.pm to allow options to be passed to
+	the new() method. Also added documentation for the new() method (!).
+	Patch was from viktor@vs.nexus.hu.
 
-	More documentation added, especially to RPM::Constants.
+	Applied a patch from Radu Greab <radu@netsoft.ro> that eliminated
+	a couple of compiler warnings and freed a pointer at destructor-time
+	that was previously overlooked (RPM/Header.xs and RPM/Error.xs).
 
-	RPM::Constants had about a dozen or so trimmed out.
+	Removed all the calls to safemalloc and safefree, replaced them with
+	the API-correct New (or Newz) and Safefree.
 
-	Found error in Database.xs where the FIRSTKEY/NEXTKEY pair would
-	have returned string-ified references instead of package names,
-	because of not taking the first array element. I really plan to
-	change the RPM::Header::FETCH interface.
+0.32	Tue May 15 00:54:20 PDT 2001
+	- alpha twelve
 
-	Added two utility functions under the RPM::* space for getting O/S
-	and architecture names.
+	Found and fixed a bug in RPM/Database.xs that was causing more of
+	the "Attempt to free unreferenced scalar" messages. In the process,
+	noticed that caching of values during iteration wasn't actually
+	working as designed. The resulting fix should improve database look-ups
+	fairly noticably.
 
-	Put in the start of thread-safing the module. But this part of the
-	API is still pretty black in the Lockheed Skunkworks sense of the
-	word, so it isn't at all complete.
+	Two more places found (one in RPM/Header.xs, one in RPM/Database.xs)
+	that were contributing to memory leakage.
 
-0.25	Mon Jun  5 00:54:59 PDT 2000
-	- third alpha
+	A lot of changes to RPM/Constants.xs in terms of reducing the number
+	and length of string-compares made in constant look-ups. This is most
+	noticable in the RPM* set of constants, where the breakdown is the
+	most granular. On the main dev box (a P-1/233MHz) this sped up the
+	full test suite by over 25%.
 
-	Fixes to the thread-safing code. When built against a 5.6.0 configured
-	for threading, several problems were found. All (current) tests now
-	pass on that configuration.
+0.31	Fri Apr 27 01:45:37 PDT 2001
+	- alpha eleven
 
-	Added a file, IMPORTANT.perl, to the distribution that explains the
-	nature of a condition that can prevent the extension from working on
-	any version of Perl not installed from an rpm.
+	Re-worked most of RPM/Constants.xs to accomodate the change from
+	#define to enum values in 4.0.2. This will be released as an
+	interim version, since Red Hat is shipping 7.1 with this version of
+	rpm.
 
-	Still more trimming of tokens out of Constants.pm that are not of use
-	by the interface being provided. Filled in a few more in terms of
-	documentation.
+0.30	Wed Mar  7 22:13:40 PST 2001
+	- tenth alpha
 
-	Found a case in RPM::Header that would cause core-dumps: Any tags found
-	by the iterator that were not exported for the API by the rpm lib
-	could cause a null pointer to be passed through to an entry point that
-	was several lines past where I had normally checked for the null. This
-	meant that source RPMs would almost certainly break, since the
-	offending tags only showed up when I started testing against SRPMS.
-	Now, the iterators skip over these internal tags. The normal FETCH
-	method already tested for this, but the interators were sneaking past
-	those tests.
+	Much of the leakage of RPM::Header objects is now gone, due mostly to
+	changing the prototype of rpmdb_FETCH to returning a SV* instead of
+	a RPM::Header reference. The various class DESTROY methods seem to be
+	getting called in the correct order, now.
 
-	Added a method to the RPM::Header class, is_source(), that returns a
-	true value (1) if the header is associated with a source RPM.
+	Caught a case in the RPM::Header class where attempting to reference
+	an element of a non-existent tag would trigger auto-vivification on
+	that key, which in turn was leading to some bad calls being made to
+	the rpmlib routines.
 
-0.26	Fri Jul 14 01:03:02 PDT 2000
-	- fourth alpha
+	Re-did the av-assignment in rpmhdr_create. This should save on SV*
+	creation, though it might not have been a leak. Still, this method
+	is more efficient overall.
 
-	Added NVR() method to RPM::Header for obvious reasons of convenience.
-	Also added cmpver method, which calls into the rpmCompareVersion() API
-	hook to compare two headers' version/release data with an internal
-	algorithm that handles numerical and alpha content in the tags.
+	Newer versions of rpm 4.0 tickled a bug in which a database offset
+	value might get sent in without being initialized first. This was
+	caught and fixed. Also related to the 3.0/4.0 rift, some variables
+	only used for 3.0.X are now declared within #ifdef's to defeat 'unused'
+	warnings.
 
-	Took out all remaining warn()'s and croak()'s, replacing them with
-	rpm_error() calls. Most notable in the error-return cases of
-	RPM::Database::init and ::rebuild.
+	The current state of the module will be released to allow for use by
+	other parties, without the wait for any ongoing development milestones
+	on my part.
 
-	More thread-safing, in particular the heretofore-ignored RPM::Constants
-	XS module.
+0.292	Mon Nov 13 22:40:15 PST 2000
+	- ninth alpha
 
-	Added a sample script in utils, called rpmprune. It has a --help
-	summary and a man page, see those for details.
+	Some unused variables were found in several places.
+
+	Moved away from the self-tie mechanism and instead handle the data
+	opacity in a completely different fashion. This simplified some code,
+	muddled some, but ultimately led to the removal of several #define
+	macros, more unused variable removal, and (hopefully) more stable
+	code.
+
+	Addressed a problem in both RPM::Database and RPM::Header XS code
+	wherein destructors were not getting called when objects were
+	implicitly or explicitly freed.
+
+	Added more tests to the test suite.
+
+	Changed the names of some of the find_* routines in RPM::Database.
+	See the manual page. The old names were confusing me, despite my
+	direct familiarity with the code!
+
+	The find_* functions in RPM::Database may now take a RPM::Header
+	object as their argument, and will use the package's name for the
+	searches.
+
+	It's still leaking RPM::Header objects in the RPM::Database routines.
+	The alternative is a nasty mix of "attempt to free unreferenced
+	scalar" errors and core dumps.
+
+0.291	Fri Oct 13 01:45:18 PDT 2000
+	- eighth alpha
+
+	The flags that are created from the rpm version are now passed for
+	3.0.X, as well.
+
+	A thread-safing bug was found and fixed in Header.xs. An unused
+	variable was removed.
+
+	Makefile.PL has some large-scale work, including the addition of a
+	template spec file following the __DATA__ token, code to expand this
+	file using the values that MakeMaker has derived for the package,
+	generation of make rules to construct *.rpm and *.srpm files, and
+	generation of "rpmrc" and "rpmmacro" files to use in invoking rpm
+	(to force all operation into the local dir area).
+
+0.29	Wed Oct  4 22:29:56 PDT 2000
+	- seventh alpha
+
+	The only change of note in this release is compatibility with version
+	4.0 of RPM. Additionally, some flags to the C compiler to work with
+	the gcc that is distributed with Red Hat Linux 7. This version has
+	been tested on both 6.2 and 7 systems.
+
+0.28	Fri Aug 18 01:29:35 PDT 2000
+	- sixth alpha
+
+	Considerable additions made to the documentation in RPM::Constants, as
+	well as a few corrections. The prototype of the constant() function
+	was changed, as well.
+
+	Several bugs were addressed in RPM::Header, most notably: Error returns
+	now correctly return a value of "undef"; A blocking issue surrounding
+	multiple RPM::Header objects from ftp:// sources is fixed; the mode
+	with which files are opened was also changed to allow for reading off
+	of STDIN. The error-return issue was also applied to RPM::Database.
+
+	RPM::Header now has a source_name() accessor method that returns the
+	file name (or URI) that the header was read from. This is null if the
+	header came from the database.
 
 0.27	Tue Aug  8 00:02:22 PDT 2000
 	- fifth alpha
@@ -115,125 +190,85 @@ Revision history for Perl extension RPM.
 
 	More tags/values documented in RPM::Constants.
 
-0.28	Fri Aug 18 01:29:35 PDT 2000
-	- sixth alpha
+0.26	Fri Jul 14 01:03:02 PDT 2000
+	- fourth alpha
 
-	Considerable additions made to the documentation in RPM::Constants, as
-	well as a few corrections. The prototype of the constant() function
-	was changed, as well.
+	Added NVR() method to RPM::Header for obvious reasons of convenience.
+	Also added cmpver method, which calls into the rpmCompareVersion() API
+	hook to compare two headers' version/release data with an internal
+	algorithm that handles numerical and alpha content in the tags.
 
-	Several bugs were addressed in RPM::Header, most notably: Error returns
-	now correctly return a value of "undef"; A blocking issue surrounding
-	multiple RPM::Header objects from ftp:// sources is fixed; the mode
-	with which files are opened was also changed to allow for reading off
-	of STDIN. The error-return issue was also applied to RPM::Database.
+	Took out all remaining warn()'s and croak()'s, replacing them with
+	rpm_error() calls. Most notable in the error-return cases of
+	RPM::Database::init and ::rebuild.
 
-	RPM::Header now has a source_name() accessor method that returns the
-	file name (or URI) that the header was read from. This is null if the
-	header came from the database.
+	More thread-safing, in particular the heretofore-ignored RPM::Constants
+	XS module.
 
-0.29	Wed Oct  4 22:29:56 PDT 2000
-	- seventh alpha
+	Added a sample script in utils, called rpmprune. It has a --help
+	summary and a man page, see those for details.
 
-	The only change of note in this release is compatibility with version
-	4.0 of RPM. Additionally, some flags to the C compiler to work with
-	the gcc that is distributed with Red Hat Linux 7. This version has
-	been tested on both 6.2 and 7 systems.
+0.25	Mon Jun  5 00:54:59 PDT 2000
+	- third alpha
 
-0.291	Fri Oct 13 01:45:18 PDT 2000
-	- eighth alpha
+	Fixes to the thread-safing code. When built against a 5.6.0 configured
+	for threading, several problems were found. All (current) tests now
+	pass on that configuration.
 
-	The flags that are created from the rpm version are now passed for
-	3.0.X, as well.
+	Added a file, IMPORTANT.perl, to the distribution that explains the
+	nature of a condition that can prevent the extension from working on
+	any version of Perl not installed from an rpm.
 
-	A thread-safing bug was found and fixed in Header.xs. An unused
-	variable was removed.
+	Still more trimming of tokens out of Constants.pm that are not of use
+	by the interface being provided. Filled in a few more in terms of
+	documentation.
 
-	Makefile.PL has some large-scale work, including the addition of a
-	template spec file following the __DATA__ token, code to expand this
-	file using the values that MakeMaker has derived for the package,
-	generation of make rules to construct *.rpm and *.srpm files, and
-	generation of "rpmrc" and "rpmmacro" files to use in invoking rpm
-	(to force all operation into the local dir area).
+	Found a case in RPM::Header that would cause core-dumps: Any tags found
+	by the iterator that were not exported for the API by the rpm lib
+	could cause a null pointer to be passed through to an entry point that
+	was several lines past where I had normally checked for the null. This
+	meant that source RPMs would almost certainly break, since the
+	offending tags only showed up when I started testing against SRPMS.
+	Now, the iterators skip over these internal tags. The normal FETCH
+	method already tested for this, but the interators were sneaking past
+	those tests.
 
-0.292	Mon Nov 13 22:40:15 PST 2000
-	- ninth alpha
+	Added a method to the RPM::Header class, is_source(), that returns a
+	true value (1) if the header is associated with a source RPM.
 
-	Some unused variables were found in several places.
+0.2   Mon May 29 17:59:20 PDT 2000
+	- second alpha
 
-	Moved away from the self-tie mechanism and instead handle the data
-	opacity in a completely different fashion. This simplified some code,
-	muddled some, but ultimately led to the removal of several #define
-	macros, more unused variable removal, and (hopefully) more stable
-	code.
+	Class for RPM::Error added. The code is in the RPM.xs file, but
+	the docs and accessors are done in RPM/Error.pm.
 
-	Addressed a problem in both RPM::Database and RPM::Header XS code
-	wherein destructors were not getting called when objects were
-	implicitly or explicitly freed.
+	All sub-classes moved to RPM/.
 
-	Added more tests to the test suite.
+	More documentation added, especially to RPM::Constants.
 
-	Changed the names of some of the find_* routines in RPM::Database.
-	See the manual page. The old names were confusing me, despite my
-	direct familiarity with the code!
+	RPM::Constants had about a dozen or so trimmed out.
 
-	The find_* functions in RPM::Database may now take a RPM::Header
-	object as their argument, and will use the package's name for the
-	searches.
+	Found error in Database.xs where the FIRSTKEY/NEXTKEY pair would
+	have returned string-ified references instead of package names,
+	because of not taking the first array element. I really plan to
+	change the RPM::Header::FETCH interface.
 
-	It's still leaking RPM::Header objects in the RPM::Database routines.
-	The alternative is a nasty mix of "attempt to free unreferenced
-	scalar" errors and core dumps.
+	Added two utility functions under the RPM::* space for getting O/S
+	and architecture names.
 
-0.30	Wed Mar  7 22:13:40 PST 2001
-	- tenth alpha
+	Put in the start of thread-safing the module. But this part of the
+	API is still pretty black in the Lockheed Skunkworks sense of the
+	word, so it isn't at all complete.
 
-	Much of the leakage of RPM::Header objects is now gone, due mostly to
-	changing the prototype of rpmdb_FETCH to returning a SV* instead of
-	a RPM::Header reference. The various class DESTROY methods seem to be
-	getting called in the correct order, now.
+0.1   Mon May 22 00:59:54 PDT 2000
+	- first alpha release
 
-	Caught a case in the RPM::Header class where attempting to reference
-	an element of a non-existent tag would trigger auto-vivification on
-	that key, which in turn was leading to some bad calls being made to
-	the rpmlib routines.
+	Classes for RPM::Header and RPM::Database are (more or less) done.
+	RPM::Constants appears to have everything that is expected to be
+	needed (i.e., any changes should result in shortening the list of
+	exported symbols, rather than lengthening it). A basic top-level
+	RPM namespace is present, but doesn't yet do anything useful. Some
+	basic test scripts are in place, but more are (always) needed.
 
-	Re-did the av-assignment in rpmhdr_create. This should save on SV*
-	creation, though it might not have been a leak. Still, this method
-	is more efficient overall.
-
-	Newer versions of rpm 4.0 tickled a bug in which a database offset
-	value might get sent in without being initialized first. This was
-	caught and fixed. Also related to the 3.0/4.0 rift, some variables
-	only used for 3.0.X are now declared within #ifdef's to defeat 'unused'
-	warnings.
-
-	The current state of the module will be released to allow for use by
-	other parties, without the wait for any ongoing development milestones
-	on my part.
-
-0.31	Fri Apr 27 01:45:37 PDT 2001
-	- alpha eleven
-
-	Re-worked most of RPM/Constants.xs to accomodate the change from
-	#define to enum values in 4.0.2. This will be released as an
-	interim version, since Red Hat is shipping 7.1 with this version of
-	rpm.
-
-0.32	Tue May 15 00:54:20 PDT 2001
-	- alpha twelve
-
-	Found and fixed a bug in RPM/Database.xs that was causing more of
-	the "Attempt to free unreferenced scalar" messages. In the process,
-	noticed that caching of values during iteration wasn't actually
-	working as designed. The resulting fix should improve database look-ups
-	fairly noticably.
-
-	Two more places found (one in RPM/Header.xs, one in RPM/Database.xs)
-	that were contributing to memory leakage.
-
-	A lot of changes to RPM/Constants.xs in terms of reducing the number
-	and length of string-compares made in constant look-ups. This is most
-	noticable in the RPM* set of constants, where the breakdown is the
-	most granular. On the main dev box (a P-1/233MHz) this sped up the
-	full test suite by over 25%.
+0.01  Thu May  4 12:04:34 2000
+	- original version; created by h2xs 1.19
