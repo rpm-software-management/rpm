@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.15 2000/11/11 09:24:32 rjray Exp $
+# $Id: Makefile.PL,v 1.16 2000/11/14 06:19:10 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -96,8 +96,9 @@ WriteMakefile(
               EXE_FILES    => [ @SAMPLES ],
               OBJECT       => $OBJECT,
               INC          => "-Wunused -I. -I$rpm_libdir",
+              XSOPT        => '-nolinenumbers',
               DIR          => [],
-	      XSOPT        => '-nolinenumbers',
+#             XSOPT        => '-nolinenumbers',
               dist         => { COMPRESS => 'gzip -9f' },
               clean        => { FILES => $CLEAN }
              );

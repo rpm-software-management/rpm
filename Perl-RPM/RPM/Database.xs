@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Database.xs,v 1.10 2000/11/11 09:24:32 rjray Exp $";
+static char * const rcsid = "$Id: Database.xs,v 1.11 2000/11/14 06:19:10 rjray Exp $";
 
 /*
   rpmdb_TIEHASH
@@ -114,8 +114,8 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
         svp = hv_fetch(dbstruct->storage, (char *)name, namelen, FALSE);
         if (svp && SvROK(*svp))
         {
-            FETCH = (RPM__Header)SvRV(*svp);
-            return FETCH;
+            FETCH = (RPM__Header)(*svp);
+            return (RPM__Header)SvREFCNT_inc((SV *)FETCH);
         }
 
 #if RPM_MAJOR < 4
@@ -196,7 +196,7 @@ RPM__Header rpmdb_FETCH(pTHX_ RPM__Database self, SV* key)
         if (name != NULL)
         {
             hv_store(dbstruct->storage, (char *)name, namelen,
-                     newRV((SV *)FETCH), FALSE);
+                     (SV *)FETCH, FALSE);
             SvREFCNT_inc((SV *)FETCH);
         }
     }
@@ -298,6 +298,7 @@ void rpmdb_DESTROY(pTHX_ RPM__Database self)
 {
     RPM_Database* dbstruct;  /* This is the struct used to hold C-level data */
 
+    /*fprintf(stderr, "rpmdb_DESTROY\n");*/
     struct_from_object(RPM_Database, dbstruct, self);
 
     rpmdbClose(dbstruct->dbp);
@@ -500,7 +501,7 @@ rpmdb_FIRSTKEY(self)
             value = newSVsv(&PL_sv_undef);
         }
         else
-            value = newRV((SV *)hvalue);
+            value = newRV_inc((SV *)hvalue);
 
         EXTEND(SP, 2);
         PUSHs(sv_2mortal(value));
@@ -524,7 +525,7 @@ rpmdb_NEXTKEY(self, key=NULL)
             nextvalue = newSVsv(&PL_sv_undef);
         }
         else
-            nextvalue = newRV((SV *)hvalue);
+            nextvalue = newRV_inc((SV *)hvalue);
 
         EXTEND(SP, 2);
         PUSHs(sv_2mortal(nextvalue));

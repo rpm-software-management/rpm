@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.20 2000/11/10 08:49:57 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.21 2000/11/14 06:19:10 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -335,6 +335,7 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ char* class, SV* source, int flags)
     sv_magic((SV *)RETVAL, Nullsv, 'P', Nullch, 0);
     sv_magic((SV *)RETVAL, t_magic, '~', Nullch, 0);
     SvREFCNT_dec(t_magic);
+    /*fprintf(stderr, "rpmhdr_TIEHASH (%s)\n", retvalp->name);*/
 
     return RETVAL;
 }
@@ -388,8 +389,6 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
         if (svp && SvOK(*svp))
         {
             FETCH = newSVsv(*svp);
-            if (SvROK(FETCH))
-                FETCH = SvRV(FETCH);
         }
         else if (data_in)
         {
@@ -398,12 +397,11 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
             SV* new_item = rpmhdr_create(aTHX_ data_in, type_in, size_in,
                                          scalar_tag(aTHX_ Nullsv, tag_by_num));
 
-            hv_store(hdr->storage, uc_name, namelen, newRV((SV *)new_item),
-                     FALSE);
+            hv_store(hdr->storage, uc_name, namelen, new_item, FALSE);
             hv_store(hdr->storage, strcat(uc_name, "_t"), (namelen + 2),
                      newSViv(type_in), FALSE);
 
-            FETCH = new_item;
+            FETCH = newSVsv(new_item);
         }
         else
         {
@@ -425,11 +423,10 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
             new_item = rpmhdr_create(aTHX_ new_item_p, new_item_type, size,
                                      scalar_tag(aTHX_ Nullsv, tag_by_num));
 
-            hv_store(hdr->storage, uc_name, namelen, newRV((SV *)new_item),
-                     FALSE);
+            hv_store(hdr->storage, uc_name, namelen, new_item, FALSE);
             hv_store(hdr->storage, strcat(uc_name, "_t"), (namelen + 2),
                      newSViv(new_item_type), FALSE);
-            FETCH = new_item;
+            FETCH = newSVsv(new_item);
         }
     }
 
@@ -946,6 +943,7 @@ void rpmhdr_DESTROY(pTHX_ RPM__Header self)
     struct_from_object(RPM_Header, hdr, self);
     if (! hdr) return;
 
+    /*fprintf(stderr, "rpmhdr_DESTROY (%s)\n", hdr->name);*/
     if (hdr->iterator)
         headerFreeIterator(hdr->iterator);
     if (hdr->hdr)
