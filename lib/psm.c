@@ -33,10 +33,12 @@
 /*@access alKey@*/
 /*@access rpmDepSet@*/
 
+#ifdef	DYING
 /*@-redecl -declundef -exportheadervar@*/
 /*@unchecked@*/
 extern const char * chroot_prefix;
 /*@=redecl =declundef =exportheadervar@*/
+#endif
 
 int rpmVersionCompare(Header first, Header second)
 {
@@ -1783,11 +1785,13 @@ assert(psm->mi == NULL);
 	    /*@=superuser@*/
 	    psm->chrootDone = ts->chrootDone = 1;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 1;
+#ifdef	DYING
 	    /*@-onlytrans@*/
 	    /*@-mods@*/
 	    chroot_prefix = ts->rootDir;
 	    /*@=mods@*/
 	    /*@=onlytrans@*/
+#endif
 	}
 	break;
     case PSM_CHROOT_OUT:
@@ -1798,9 +1802,11 @@ assert(psm->mi == NULL);
 	    /*@=superuser@*/
 	    psm->chrootDone = ts->chrootDone = 0;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 0;
+#ifdef	DYING
 	    /*@-mods@*/
 	    chroot_prefix = NULL;
 	    /*@=mods@*/
+#endif
 	    xx = chdir(ts->currDir);
 	}
 	break;

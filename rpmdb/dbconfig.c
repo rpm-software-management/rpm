@@ -323,8 +323,6 @@ dbiIndex db3Free(dbiIndex dbi)
 	dbi->dbi_host = _free(dbi->dbi_host);
 	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
-	dbi->dbi_dbenv = _free(dbi->dbi_dbenv);
-	dbi->dbi_dbinfo = _free(dbi->dbi_dbinfo);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi = _free(dbi);
     }

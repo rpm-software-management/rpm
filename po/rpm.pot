@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-01-05 21:18-0500\n"
+"POT-Creation-Date: 2002-01-06 16:41-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:603 lib/psm.c:1424
+#: build/pack.c:603 lib/psm.c:1426
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -846,7 +846,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:683 lib/psm.c:1698
+#: build/pack.c:683 lib/psm.c:1700
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2084,79 +2084,79 @@ msgid "is needed by"
 msgstr ""
 
 #. @-modfilesys@
-#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#: lib/psm.c:247 rpmdb/header.c:384 rpmdb/header_internal.c:161
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/psm.c:442
+#: lib/psm.c:444
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:448
+#: lib/psm.c:450
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:489
+#: lib/psm.c:491
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:605
+#: lib/psm.c:607
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:715
+#: lib/psm.c:717
 #, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr ""
 
-#: lib/psm.c:881
+#: lib/psm.c:883
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:888
+#: lib/psm.c:890
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1230
+#: lib/psm.c:1232
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1349
+#: lib/psm.c:1351
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1466
+#: lib/psm.c:1468
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1475
+#: lib/psm.c:1477
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1517
+#: lib/psm.c:1519
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1518
+#: lib/psm.c:1520
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1706
+#: lib/psm.c:1708
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1709
+#: lib/psm.c:1711
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2697,18 +2697,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
-#: lib/transaction.c:178
+#: lib/transaction.c:180
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:988
+#: lib/transaction.c:990
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:1083
+#: lib/transaction.c:1085
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2783,70 +2783,70 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1230
+#: rpmdb/db1.c:573 rpmdb/db3.c:1226
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1230
+#: rpmdb/db1.c:573 rpmdb/db3.c:1226
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:131
+#: rpmdb/db3.c:129
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:149
+#: rpmdb/db3.c:147
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:190
+#: rpmdb/db3.c:187
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:712
+#: rpmdb/db3.c:709
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:782
+#: rpmdb/db3.c:776
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1007
+#: rpmdb/db3.c:999
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1228
+#: rpmdb/db3.c:1224
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1234
+#: rpmdb/db3.c:1230
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:406
+#: rpmdb/dbconfig.c:404
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:444
+#: rpmdb/dbconfig.c:442
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:453
+#: rpmdb/dbconfig.c:451
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:462
+#: rpmdb/dbconfig.c:460
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""

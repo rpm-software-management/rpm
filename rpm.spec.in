@@ -598,3 +598,6 @@ fi
 - solaris: translate i86pc to i386 (#57182).
 - fix: %GNUconfigure breaks with single quotes (#57264).
 - simple automake wrapper for zlib.
+- add buildarch lines for hppa (#57728).
+- sparc: make dbenv per-rpmdb, not per-dbi.
+- handle lazy db open's in chroot with absolute path, not prefix strip.

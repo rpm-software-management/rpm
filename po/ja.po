@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-12-20 11:00-0500\n"
+"POT-Creation-Date: 2002-01-06 16:41-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -862,7 +862,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:603 lib/psm.c:1424
+#: build/pack.c:603 lib/psm.c:1426
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
@@ -892,7 +892,7 @@ msgstr "アイコンを読むことができません: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:683 lib/psm.c:1698
+#: build/pack.c:683 lib/psm.c:1700
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
@@ -929,7 +929,7 @@ msgstr "%%changelog 中の不正な日付: %s"
 
 #: build/parseChangelog.c:155
 #, fuzzy, c-format
-msgid "%%changelog not in decending chronological order\n"
+msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog は十進数の年代順になっていません"
 
 #: build/parseChangelog.c:163 build/parseChangelog.c:174
@@ -1541,30 +1541,31 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1301
+#: lib/depends.c:1303
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1395
+#: lib/depends.c:1409
 msgid ""
-"========== tsorting packages (order, #predecessors, #succesors, depth)\n"
+"========== tsorting packages (order, #predecessors, #succesors, tree, "
+"depth)\n"
 msgstr ""
 
-#: lib/depends.c:1478
+#: lib/depends.c:1502
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1548
+#: lib/depends.c:1572
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1583
+#: lib/depends.c:1607
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1588
+#: lib/depends.c:1612
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2240,82 +2241,82 @@ msgid "is needed by"
 msgstr "は %s-%s-%s に必要とされています\n"
 
 #. @-modfilesys@
-#: lib/psm.c:245 rpmdb/header.c:384 rpmdb/header_internal.c:161
+#: lib/psm.c:247 rpmdb/header.c:384 rpmdb/header_internal.c:161
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
 
-#: lib/psm.c:442
+#: lib/psm.c:444
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "%s を作成できません: %s\n"
 
-#: lib/psm.c:448
+#: lib/psm.c:450
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "%s へ書き込めません"
 
-#: lib/psm.c:489
+#: lib/psm.c:491
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/psm.c:605
+#: lib/psm.c:607
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/psm.c:715
+#: lib/psm.c:717
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/psm.c:881
+#: lib/psm.c:883
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:888
+#: lib/psm.c:890
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:1230
+#: lib/psm.c:1232
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/psm.c:1349
+#: lib/psm.c:1351
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1466
+#: lib/psm.c:1468
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1475
+#: lib/psm.c:1477
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します"
 
-#: lib/psm.c:1517
+#: lib/psm.c:1519
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/psm.c:1518
+#: lib/psm.c:1520
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/psm.c:1706
+#: lib/psm.c:1708
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/psm.c:1709
+#: lib/psm.c:1711
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
@@ -2879,18 +2880,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
 
-#: lib/transaction.c:178
+#: lib/transaction.c:180
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
 #. @innercontinue@
-#: lib/transaction.c:988
+#: lib/transaction.c:990
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:1083
+#: lib/transaction.c:1085
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 
@@ -2971,70 +2972,70 @@ msgstr "データベースモード 0x%x のオープン (%s)\n"
 msgid "cannot get %s lock on database\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1213
+#: rpmdb/db1.c:573 rpmdb/db3.c:1226
 msgid "exclusive"
 msgstr "除外"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1213
+#: rpmdb/db1.c:573 rpmdb/db3.c:1226
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/db3.c:131
+#: rpmdb/db3.c:129
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:149
+#: rpmdb/db3.c:147
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:190
+#: rpmdb/db3.c:187
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:712
+#: rpmdb/db3.c:709
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:777
+#: rpmdb/db3.c:776
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:990
+#: rpmdb/db3.c:999
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: rpmdb/db3.c:1211
+#: rpmdb/db3.c:1224
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db3.c:1217
+#: rpmdb/db3.c:1230
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/dbconfig.c:406
+#: rpmdb/dbconfig.c:404
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:444
+#: rpmdb/dbconfig.c:442
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:453
+#: rpmdb/dbconfig.c:451
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:462
+#: rpmdb/dbconfig.c:460
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3190,123 +3191,123 @@ msgstr "レコード %s を %s に削除でエラー"
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません"
 
-#: rpmdb/rpmdb.c:1050
+#: rpmdb/rpmdb.c:1054
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr ""
 
 #. error
-#: rpmdb/rpmdb.c:1315
+#: rpmdb/rpmdb.c:1319
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: rpmdb/rpmdb.c:2092 rpmdb/rpmdb.c:3345
+#: rpmdb/rpmdb.c:2096 rpmdb/rpmdb.c:3349
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: rpmdb/rpmdb.c:2145
+#: rpmdb/rpmdb.c:2149
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2415
+#: rpmdb/rpmdb.c:2419
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: rpmdb/rpmdb.c:2487
+#: rpmdb/rpmdb.c:2491
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: rpmdb/rpmdb.c:2496
+#: rpmdb/rpmdb.c:2500
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "name インデックス削除します\n"
 
-#: rpmdb/rpmdb.c:2697
+#: rpmdb/rpmdb.c:2701
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: rpmdb/rpmdb.c:2778
+#: rpmdb/rpmdb.c:2782
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: rpmdb/rpmdb.c:2789
+#: rpmdb/rpmdb.c:2793
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: rpmdb/rpmdb.c:3231
+#: rpmdb/rpmdb.c:3235
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:3268
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
-#: rpmdb/rpmdb.c:3291
+#: rpmdb/rpmdb.c:3295
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: rpmdb/rpmdb.c:3295
+#: rpmdb/rpmdb.c:3299
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: rpmdb/rpmdb.c:3301
+#: rpmdb/rpmdb.c:3305
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3303
+#: rpmdb/rpmdb.c:3307
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3310
+#: rpmdb/rpmdb.c:3314
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: rpmdb/rpmdb.c:3321
+#: rpmdb/rpmdb.c:3325
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: rpmdb/rpmdb.c:3385
+#: rpmdb/rpmdb.c:3389
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: rpmdb/rpmdb.c:3403
+#: rpmdb/rpmdb.c:3407
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: rpmdb/rpmdb.c:3411
+#: rpmdb/rpmdb.c:3415
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:3413
+#: rpmdb/rpmdb.c:3417
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: rpmdb/rpmdb.c:3423
+#: rpmdb/rpmdb.c:3427
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3425
+#: rpmdb/rpmdb.c:3429
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"

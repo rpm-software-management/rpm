@@ -294,8 +294,6 @@ struct _dbiIndex {
     unsigned int dbi_lastoffset;	/*!< db1 with falloc.c needs this */
 
 /*@only@*//*@null@*/ void * dbi_db;	/*!< Berkeley DB handle */
-/*@only@*//*@null@*/ void * dbi_dbenv;	/*!< Berkeley DB_ENV handle */
-/*@only@*//*@null@*/ void * dbi_dbinfo;	/*!< (unused) */
 /*@only@*//*@null@*/ void * dbi_rmw;	/*!< db cursor (with DB_WRITECURSOR) */
 /*@only@*//*@null@*/ void * dbi_stats;	/*!< Berkeley db statistics */
 

@@ -86,6 +86,7 @@
 	- tru64 compiler message cleanup.
 	- add buildarch lines for hppa (#57728).
 	- sparc: make dbenv per-rpmdb, not per-dbi.
+	- handle lazy db open's in chroot with absolute path, not prefix strip.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

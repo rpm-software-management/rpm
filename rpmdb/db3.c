@@ -113,16 +113,14 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile)
 	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
-    DB_ENV * dbenv = dbi->dbi_dbenv;
+    DB_ENV * dbenv = rpmdb->db_dbenv;
     int rc;
 
-    if (dbenv == NULL) {
-	dbi->dbi_dbenv = NULL;
+    if (dbenv == NULL)
 	return 0;
-    }
 
     rc = dbenv->close(dbenv, 0);
     rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
@@ -150,7 +148,6 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 			dbhome, dbfile);
 
     }
-    dbi->dbi_dbenv = NULL;
     return rc;
 }
 
@@ -692,7 +689,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	dbfile = NULL;
 	dbsubfile = NULL;
     } else {
-#ifdef	HACK
+#ifdef	HACK	/* XXX necessary to support dbsubfile */
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : db3basename);
 	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : tagName(dbi->dbi_rpmtag));
 #else
@@ -714,16 +711,13 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 
     }
 
-    dbi->dbi_dbinfo = _free(dbi->dbi_dbinfo);
-
-    if (dbi->dbi_use_dbenv) {
-	if (dbi->dbi_dbenv == rpmdb->db_dbenv && rpmdb->db_opens == 1) {
+    if (rpmdb->db_dbenv != NULL && dbi->dbi_use_dbenv) {
+	if (rpmdb->db_opens == 1) {
 	    /*@-nullstate@*/
 	    xx = db_fini(dbi, (dbhome ? dbhome : ""), dbfile, dbsubfile);
 	    /*@=nullstate@*/
 	    rpmdb->db_dbenv = NULL;
 	}
-	dbi->dbi_dbenv = NULL;
 	rpmdb->db_opens--;
     }
 
@@ -864,7 +858,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	dbfile = NULL;
 	dbsubfile = NULL;
     } else {
-#ifdef	HACK
+#ifdef	HACK	/* XXX necessary to support dbsubfile */
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : db3basename);
 	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : tagName(dbi->dbi_rpmtag));
 #else
@@ -986,8 +980,6 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
      */
     if (oflags & DB_RDONLY)
 	dbi->dbi_verify_on_close = 0;
-
-    dbi->dbi_dbinfo = NULL;
 
     if (dbi->dbi_use_dbenv) {
 	/*@-mods@*/
@@ -1137,7 +1129,6 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		    break;
 		}
 	    }
-	    dbi->dbi_dbinfo = NULL;
 
 	    if (rc == 0) {
 		const char * dbfullpath;
@@ -1152,8 +1143,13 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		t = stpcpy(t, dbhome);
 		if (dbfile)
 		    t = stpcpy( stpcpy( t, "/"), dbfile);
-		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
+#ifdef	HACK	/* XXX necessary to support dbsubfile */
+ 		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
+ 			? dbfullpath : dbfile;
+#else
+		dbpath = (!dbi->dbi_temporary)
 			? dbfullpath : dbfile;
+#endif
 
 		rc = db->open(db, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
@@ -1240,9 +1236,6 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     }
 
     dbi->dbi_db = db;
-    /*@-kepttrans@*/
-    dbi->dbi_dbenv = dbenv;
-    /*@=kepttrans@*/
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;

@@ -14,10 +14,12 @@
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
 #include "rpmdb.h"
 
+#ifdef	DYING
 /*@-redecl -exportheadervar@*/
 /*@unchecked@*/
 extern const char * chroot_prefix;
 /*@=redecl =exportheadervar@*/
+#endif
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
@@ -1256,11 +1258,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/*@=superuser =noeffect @*/
 	ts->chrootDone = 1;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
+#ifdef	DYING
 	/*@-onlytrans@*/
 	/*@-mods@*/
 	chroot_prefix = ts->rootDir;
 	/*@=mods@*/
 	/*@=onlytrans@*/
+#endif
     }
 
     ts->ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
@@ -1445,9 +1449,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/*@=superuser =noeffect @*/
 	ts->chrootDone = 0;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
+#ifdef	DYING
 	/*@-mods@*/
 	chroot_prefix = NULL;
 	/*@=mods@*/
+#endif
 	xx = chdir(ts->currDir);
     }
 
