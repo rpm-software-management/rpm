@@ -203,11 +203,11 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
 	close(0);
 	dup2(inpipe[0], 3);
 	close(inpipe[1]);
-	setenv("PGPPASSFD", "3", 1);
+	dosetenv("PGPPASSFD", "3", 1);
 	if (rpmGetVar(RPMVAR_PGP_PATH)) {
-	    setenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
+	    dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
 	}
-	/* setenv("PGPPASS", passPhrase, 1); */
+	/* dosetenv("PGPPASS", passPhrase, 1); */
 	execlp("pgp", "pgp",
 	       "+batchmode=on", "+verbose=0", "+armor=off",
 	       name, "-sb", file, sigfile,
@@ -377,7 +377,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
 	close(outpipe[0]);
 	dup2(outpipe[1], 1);
 	if (rpmGetVar(RPMVAR_PGP_PATH)) {
-	    setenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
+	    dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
 	}
 	execlp("pgp", "pgp",
 	       "+batchmode=on", "+verbose=0",
@@ -459,9 +459,9 @@ static int checkPassPhrase(char *passPhrase)
 	    dup2(fd, 1);
 	}
 	dup2(passPhrasePipe[0], 3);
-	setenv("PGPPASSFD", "3", 1);
+	dosetenv("PGPPASSFD", "3", 1);
 	if (rpmGetVar(RPMVAR_PGP_PATH)) {
-	    setenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
+	    dosetenv("PGPPATH", rpmGetVar(RPMVAR_PGP_PATH), 1);
 	}
 	execlp("pgp", "pgp",
 	       "+batchmode=on", "+verbose=0",

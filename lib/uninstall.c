@@ -344,7 +344,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	   shell as stdin */
 	if (!(child = fork())) {
 	    if (installPrefixEnv) {
-		putenv(installPrefixEnv);
+		doputenv(installPrefixEnv);
 	    }
 
 	    lseek(fd, 0, SEEK_SET);
