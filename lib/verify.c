@@ -16,6 +16,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
     int_32 * verifyFlags, flags;
     int_32 * sizeList, * mtimeList;
     unsigned short * modeList, * rdevList;
+    char * fileStatesList;
     char * filespec;
     int type, count, rc;
     struct stat sb;
@@ -47,10 +48,17 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 
     free(fileList);
     
+    *result = 0;
+
+    /* Check to see if the file was installed - if not pretend all is OK */
+    if (getEntry(h, RPMTAG_FILESTATES, &type, 
+		 (void **) &fileStatesList, &count) && fileStatesList) {
+	if (fileStatesList[filenum] == RPMFILE_STATE_NOTINSTALLED)
+	    return 0;
+    }
+
     if (lstat(filespec, &sb)) 
 	return 1;
-
-    *result = 0;
 
     if (S_ISDIR(sb.st_mode))
 	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
