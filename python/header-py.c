@@ -1,4 +1,4 @@
-/** \ingroup python
+/** \ingroup py_c
  * \file python/header-py.c
  */
 
@@ -26,13 +26,64 @@
 #include "debug.h"
 
 /** \ingroup python
+ * \class Rpm
+ * \brief START HERE / RPM base module for the Python API
+ *
+ * The rpm base module provides the main starting point for
+ * accessing RPM from Python. For most usage, call
+ * the TransactionSet method to get a transaction set (rpmts).
+ *
+ * For example:
+ * \code
+ *	import rpm
+ *
+ *	ts = rpm.TransactionSet()
+ * \endcode
+ *
+ * The transaction set will open the RPM database as needed, so
+ * in most cases, you do not need to explicitly open the
+ * database. The transaction set is the workhorse of RPM.
+ *
+ * You can open another RPM database, such as one that holds
+ * all packages for a given Linux distribution, to provide
+ * packages used to solve dependencies. To do this, use
+ * the following code:
+ *
+ * \code
+ * rpm.addMacro('_dbpath', '/path/to/alternate/database')
+ * solvets = rpm.TransactionSet()
+ * solvets.openDB()
+ * rpm.delMacro('_dbpath')
+ *
+ * # Open default database
+ * ts = rpm.TransactionSet()
+ * \endcode
+ *
+ * This code gives you access to two RPM databases through
+ * two transaction sets (rpmts): ts is a transaction set
+ * associated with the default RPM database and solvets
+ * is a transaction set tied to an alternate database, which
+ * is very useful for resolving dependencies.
+ *
+ * The rpm methods used here are:
+ *
+ * - addMacro(macro, value)
+ * @param macro   Name of macro to add
+ * @param value   Value for the macro
+ *
+ * - delMacro(macro)
+ * @param macro   Name of macro to delete
+ *
+ */
+
+/** \ingroup python
  * \class Rpmhdr
  * \brief A python header object represents an RPM package header.
- * 
+ *
  * All RPM packages have headers that provide metadata for the package.
  * Header objects can be returned by database queries or loaded from a
  * binary package on disk.
- * 
+ *
  * The ts.hdrFromFdno() function returns the package header from a
  * package on disk, verifying package signatures and digests of the
  * package while reading.
@@ -53,7 +104,7 @@
  *	else:
  *	   print "header is from a binary package"
  * \endcode
- * 
+ *
  * The Python interface to the header data is quite elegant.  It
  * presents the data in a dictionary form.  We'll take the header we
  * just loaded and access the data within it:
@@ -88,7 +139,7 @@
  */
 /*@{*/
 
-/** \ingroup python
+/** \ingroup py_c
  */
 struct hdrObject_s {
     PyObject_HEAD
@@ -110,7 +161,7 @@ struct hdrObject_s {
     return 0;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static PyObject * hdrKeyList(hdrObject * s, PyObject * args)
 	/*@*/
@@ -144,7 +195,7 @@ static PyObject * hdrKeyList(hdrObject * s, PyObject * args)
     return list;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 	/*@*/
@@ -156,7 +207,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     static char *kwlist[] = { "legacyHeader", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
-	return NULL; 
+	return NULL;
 
     h = headerLink(s->h);
     /* XXX this legacy switch is a hack, needs to be removed. */
@@ -179,7 +230,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     return rc;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args)
 	/*@*/
@@ -190,7 +241,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s, PyObject * args)
     return Py_None;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static PyObject * hdrCompressFilelist(hdrObject * s, PyObject * args)
 	/*@*/
@@ -202,7 +253,7 @@ static PyObject * hdrCompressFilelist(hdrObject * s, PyObject * args)
 }
 
 /* make a header with _all_ the tags we need */
-/** \ingroup python
+/** \ingroup py_c
  */
 static void mungeFilelist(Header h)
 	/*@*/
@@ -214,7 +265,7 @@ static void mungeFilelist(Header h)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
 	compressFilelist(h);
-    
+
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
 
     if (fileNames == NULL || count <= 0)
@@ -227,7 +278,7 @@ static void mungeFilelist(Header h)
     fileNames = _free(fileNames);
 }
 
-/** 
+/**
  */
 static PyObject * rhnUnload(hdrObject * s, PyObject * args)
 	/*@*/
@@ -289,7 +340,7 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args)
     return rc;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args)
 	/*@*/
@@ -303,7 +354,7 @@ static PyObject * hdrFullFilelist(hdrObject * s, PyObject * args)
     return Py_None;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static PyObject * hdrSprintf(hdrObject * s, PyObject * args)
 	/*@*/
@@ -341,7 +392,7 @@ static long hdr_hash(PyObject * h)
     return (long) h;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef hdr_methods[] = {
@@ -370,7 +421,7 @@ static struct PyMethodDef hdr_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static PyObject * hdr_getattr(hdrObject * s, char * name)
 	/*@*/
@@ -378,7 +429,7 @@ static PyObject * hdr_getattr(hdrObject * s, char * name)
     return Py_FindMethod(hdr_methods, (PyObject * ) s, name);
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static void hdr_dealloc(hdrObject * s)
 	/*@*/
@@ -390,7 +441,7 @@ static void hdr_dealloc(hdrObject * s)
     PyObject_Del(s);
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 long tagNumFromPyObject (PyObject *item)
 {
@@ -408,7 +459,7 @@ long tagNumFromPyObject (PyObject *item)
     return -1;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
@@ -447,7 +498,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }
-        
+
         if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
             Py_INCREF(Py_None);
             return Py_None;
@@ -567,7 +618,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     return o;
 }
 
-/** \ingroup python
+/** \ingroup py_c
  */
 /*@unchecked@*/ /*@observer@*/
 static PyMappingMethods hdr_as_mapping = {
@@ -581,7 +632,7 @@ static PyMappingMethods hdr_as_mapping = {
 static char hdr_doc[] =
 "";
 
-/** \ingroup python
+/** \ingroup py_c
  */
 /*@unchecked@*/ /*@observer@*/
 PyTypeObject hdr_Type = {
@@ -656,7 +707,7 @@ PyObject * hdrLoad(PyObject * self, PyObject * args)
     int len;
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
-    
+
     /* malloc is needed to avoid surprises from data swab in headerLoad(). */
     copy = malloc(len);
     if (copy == NULL) {
@@ -689,7 +740,7 @@ PyObject * rhnLoad(PyObject * self, PyObject * args)
     int len;
 
     if (!PyArg_ParseTuple(args, "s#", &obj, &len)) return NULL;
-    
+
     /* malloc is needed to avoid surprises from data swab in headerLoad(). */
     copy = malloc(len);
     if (copy == NULL) {

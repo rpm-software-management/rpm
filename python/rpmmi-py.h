@@ -1,15 +1,15 @@
 #ifndef H_RPMMI_PY
 #define H_RPMMI_PY
 
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmmi-py.h
  */
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 typedef struct rpmmiObject_s rpmmiObject;
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 struct rpmmiObject_s {
     PyObject_HEAD

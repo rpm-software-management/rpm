@@ -1,4 +1,4 @@
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmmi-py.c
  */
 
@@ -180,7 +180,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
     
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -199,7 +199,7 @@ static struct PyMethodDef rpmmi_methods[] = {
 };
 /*@=fullinitblock@*/
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
 	/*@globals rpmGlobalMacroContext @*/
@@ -211,7 +211,7 @@ static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
     }
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static PyObject * rpmmi_getattr (rpmmiObject *s, char *name)
 	/*@*/
@@ -225,7 +225,7 @@ static PyObject * rpmmi_getattr (rpmmiObject *s, char *name)
 static char rpmmi_doc[] =
 "";
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmmi_Type = {

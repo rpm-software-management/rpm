@@ -1,15 +1,15 @@
 #ifndef H_RPMRC_PY
 #define H_RPMRC_PY
 
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmrc-py.h
  */
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 typedef struct rpmrcObject_s rpmrcObject;
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 struct rpmrcObject_s {
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */

@@ -1,4 +1,4 @@
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmfts-py.c
  */
 
@@ -267,7 +267,7 @@ rpmfts_debug(__FUNCTION__, s);
     return Py_BuildValue("i", rc);
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -505,7 +505,7 @@ static int rpmfts_print(rpmftsObject * s,  FILE * fp, /*@unused@*/ int flags)
 static char rpmfts_doc[] =
 "";
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmfts_Type = {

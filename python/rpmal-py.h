@@ -3,7 +3,7 @@
 
 #include "rpmal.h"
 
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmal-py.h
  */
 

@@ -1,4 +1,4 @@
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmdb-py.c
  */
 

@@ -1,4 +1,4 @@
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmfd-py.c
  */
 
@@ -148,7 +148,7 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
     return PyFile_FromFile (node->f, path, mode, closeCallback);
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -163,7 +163,7 @@ static struct PyMethodDef rpmfd_methods[] = {
 
 /* ---------- */
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static void
 rpmfd_dealloc(/*@only@*/ /*@null@*/ rpmfdObject * s)
@@ -176,7 +176,7 @@ rpmfd_dealloc(/*@only@*/ /*@null@*/ rpmfdObject * s)
     }
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static PyObject * rpmfd_getattr(rpmfdObject * o, char * name)
 	/*@*/
@@ -184,7 +184,7 @@ static PyObject * rpmfd_getattr(rpmfdObject * o, char * name)
     return Py_FindMethod(rpmfd_methods, (PyObject *) o, name);
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
 	/*@modifies s @*/
@@ -216,7 +216,7 @@ fprintf(stderr, "*** rpmfd_init(%p,%p,%p)\n", s, args, kwds);
     return 0;
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static void rpmfd_free(/*@only@*/ rpmfdObject * s)
 	/*@modifies s @*/
@@ -229,7 +229,7 @@ fprintf(stderr, "%p -- fd %p\n", s, s->fd);
     PyObject_Del((PyObject *)s);
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static PyObject * rpmfd_alloc(PyTypeObject * subtype, int nitems)
 	/*@*/
@@ -241,7 +241,7 @@ fprintf(stderr, "*** rpmfd_alloc(%p,%d) ret %p\n", subtype, nitems, s);
     return s;
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static rpmfdObject * rpmfd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 	/*@*/
@@ -266,7 +266,7 @@ fprintf(stderr, "%p ++ fd %p\n", s, s->fd);
 static char rpmfd_doc[] =
 "";
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 /*@-fullinitblock@*/
 PyTypeObject rpmfd_Type = {

@@ -3,7 +3,7 @@
 
 #include "rpmfi.h"
 
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmfi-py.h
  */
 

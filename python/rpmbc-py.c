@@ -1,4 +1,4 @@
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmbc-py.c
  */
 
@@ -482,7 +482,7 @@ fprintf(stderr, "*** rpmbc_repr(%p): \"%s\"\n", a, PyString_AS_STRING(so));
     return so;
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static int rpmbc_init(rpmbcObject * z, PyObject *args, PyObject *kwds)
 	/*@modifies z @*/
@@ -537,7 +537,7 @@ fprintf(stderr, "*** rpmbc_init(%p[%s],%p[%s],%p[%s]):\t", z, lbl(z), args, lbl(
     return 0;
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static void rpmbc_free(/*@only@*/ rpmbcObject * s)
 	/*@modifies s @*/
@@ -548,7 +548,7 @@ fprintf(stderr, "*** rpmbc_free(%p[%s])\n", s, lbl(s));
     PyObject_Del(s);
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */
 static PyObject * rpmbc_alloc(PyTypeObject * subtype, int nitems)
 	/*@*/
@@ -607,7 +607,7 @@ rpmbc_i2bc(PyObject * o)
 
 /* ---------- */
 
-/** \ingroup python
+/** \ingroup py_c  
  */    
 static PyObject * 
 rpmbc_Debug(/*@unused@*/ rpmbcObject * s, PyObject * args)
@@ -623,7 +623,7 @@ fprintf(stderr, "*** rpmbc_Debug(%p)\n", s);
     return Py_None;
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */    
 static PyObject * 
 rpmbc_Gcd(/*@unused@*/ rpmbcObject * s, PyObject * args)
@@ -656,7 +656,7 @@ fprintf(stderr, "*** rpmbc_Gcd(%p)\n", s);
     return (PyObject *)z;
 }
 
-/** \ingroup python
+/** \ingroup py_c  
  */    
 static PyObject * 
 rpmbc_Sqrt(/*@unused@*/ rpmbcObject * s, PyObject * args)

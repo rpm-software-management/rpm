@@ -1,7 +1,7 @@
 #ifndef H_RPMFD_PY
 #define H_RPMFD_PY
 
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmfd-py.h
  */
 

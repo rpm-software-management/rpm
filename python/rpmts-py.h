@@ -3,7 +3,7 @@
 
 #include "rpmts.h"
 
-/** \ingroup python
+/** \ingroup py_c  
  * \file python/rpmts-py.h
  */
 
