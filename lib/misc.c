@@ -834,7 +834,10 @@ void providePackageNVR(Header h)
 
     (void) hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
 
+    if (provides && providesEVR && provideFlags)
     for (i = 0; i < providesCount; i++) {
+        if (!(provides[i] && providesEVR[i]))
+            continue;
 	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
 	    !strcmp(name, provides[i]) && !strcmp(pEVR, providesEVR[i])))
 	    continue;

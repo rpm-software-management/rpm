@@ -266,7 +266,10 @@ struct rpmdb_s {
 /*@owned@*/ const char *db_errpfx;
     void		(*db_errcall) (const char *db_errpfx, char *buffer);
 /*@shared@*/ FILE *	db_errfile;
-/*@observer@*/ void *	(*db_malloc) (size_t nbytes);
+/*@only@*/ void * 	(*db_malloc) (size_t nbytes);
+/*@only@*/ void *	(*db_realloc) (/*@only@*//*@null@*/ void * ptr,
+						size_t nbytes);
+    void 		(*db_free) (/*@only@*/ void * ptr);
     int			db_ndbi;
     dbiIndex		*_dbi;
 };
