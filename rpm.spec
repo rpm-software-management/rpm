@@ -1,6 +1,6 @@
-%define	with_python_subpackage	1%{nil}
+%define	with_python_subpackage	0%{nil}
 %define	with_python_version	2.2%{nil}
-%define with_perl_subpackage	1
+%define with_perl_subpackage	0
 %define	with_bzip2		1%{nil}
 %define	with_apidocs		0%{nil}
 %define with_internal_db	1%{nil}
@@ -20,7 +20,7 @@ Name: rpm
 %define version 4.1
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.01
+Release: 0.02
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -524,6 +524,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Mar 10 2002 Jeff Johnson <jbj@redhat.com>
+- make --addsign and --resign behave exactly the same.
+
 * Mon Sep 24 2001 Jeff Johnson <jbj@redhat.com>
 - Start rpm-4.1.
 - loosely wire beecrypt library into rpm.

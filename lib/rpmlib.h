@@ -216,20 +216,19 @@ typedef enum rpmTag_e {
 /* XXX 2nd underscore prevents tagTable generation */
     RPMTAG_SIG_BASE		= HEADER_SIGBASE,
     RPMTAG_SIGSIZE		= RPMTAG_SIG_BASE+1,
-    RPMTAG_SIGLEMD5_1		= RPMTAG_SIG_BASE+2,	/*!< internal */
+    RPMTAG_SIGLEMD5_1		= RPMTAG_SIG_BASE+2,	/*!< internal - obsolete */
     RPMTAG_SIGPGP		= RPMTAG_SIG_BASE+3,
-    RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,	/*!< internal */
+    RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,	/*!< internal - obsolete */
     RPMTAG_SIGMD5	        = RPMTAG_SIG_BASE+5,
     RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,
-    RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/*!< internal */
+    RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/*!< internal - obsolete */
 
-/*@-enummemuse@*/
-    RPMTAG_BADSHA1HEADER	= RPMTAG_SIG_BASE+8,	/*!< internal */
-/*@=enummemuse@*/
-    RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+9,
+    RPMTAG_BADSHA1_1		= RPMTAG_SIG_BASE+8,	/*!< internal - obsolete */
+    RPMTAG_BADSHA1_2		= RPMTAG_SIG_BASE+9,	/*!< internal - obsolete */
     RPMTAG_PUBKEYS		= RPMTAG_SIG_BASE+10,
     RPMTAG_DSAHEADER		= RPMTAG_SIG_BASE+11,
     RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,
+    RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+13,
 
     RPMTAG_NAME  		= 1000,
     RPMTAG_VERSION		= 1001,
@@ -1790,6 +1789,8 @@ enum rpmtagSignature {
     RPMSIGTAG_PGP5	= 1006,	/*!< PGP5 signature @deprecated legacy. */
     RPMSIGTAG_PAYLOADSIZE = 1007,
 				/*!< uncompressed payload size in bytes. */
+    RPMSIGTAG_BADSHA1_1	= RPMTAG_BADSHA1_1,	/*!< Broken SHA1, take 1. */
+    RPMSIGTAG_BADSHA1_2	= RPMTAG_BADSHA1_2,	/*!< Broken SHA1, take 2. */
     RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< sha1 header digest. */
     RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< DSA header signature. */
     RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< RSA header signature. */

@@ -139,7 +139,7 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
     FD_t fd = NULL;
     FD_t ofd = NULL;
     struct rpmlead lead, *l = &lead;
-    int sigtype;
+    int_32 sigtag;
     const char *rpm, *trpm;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
@@ -205,24 +205,33 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	    nh = headerFree(nh, NULL);
 	}
 
-	/* Toss the current signatures and recompute if not --addsign. */
-	if (qva->qva_mode != RPMSIGN_ADD_SIGNATURE) {
+	/* Eliminate broken digest values. */
+	(void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
+	(void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
+	(void) headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_1);
+	(void) headerRemoveEntry(sig, RPMSIGTAG_BADSHA1_2);
 
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_SHA1);
-	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
-
-	}
+	/* Toss and recalculate header+payload size and digests. */
+	(void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
+	(void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
+	(void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
+	(void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
+	(void) headerRemoveEntry(sig, RPMSIGTAG_SHA1);
+	(void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
 
 	/* If gpg/pgp is configured, replace the signature. */
-	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
-	    (void) headerRemoveEntry(sig, sigtype);
-	    (void) rpmAddSignature(sig, sigtarget, sigtype, qva->passPhrase);
+	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
+	    switch (sigtag) {
+	    case RPMSIGTAG_GPG:
+		(void) headerRemoveEntry(sig, RPMSIGTAG_DSA);
+		/*@fallthrough@*/
+	    case RPMSIGTAG_PGP5:
+	    case RPMSIGTAG_PGP:
+		(void) headerRemoveEntry(sig, RPMSIGTAG_RSA);
+		break;
+	    }
+	    (void) headerRemoveEntry(sig, sigtag);
+	    (void) rpmAddSignature(sig, sigtarget, sigtag, qva->passPhrase);
 	}
 
 	/* Reallocate the signature into one contiguous region. */

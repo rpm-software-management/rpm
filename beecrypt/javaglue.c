@@ -4,13 +4,14 @@
 
 #define BEECRYPT_DLL_EXPORT
 
-#if defined(__LCLINT__)
-#endif
 #define	JNIEXPORT /*@unused@*/
 #define	JNICALL
 
 #include "beecrypt.h"
 #include "blockmode.h"
+
+#undef	JAVAGLUE
+#define	JAVAGLUE	0	/* XXX disable for now */
 
 #if JAVAGLUE
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-08 17:22-0500\n"
+"POT-Creation-Date: 2002-03-09 14:38-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1681,7 +1681,7 @@ msgid ""
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:246 lib/rpmchecksig.c:164 lib/rpmchecksig.c:548
+#: lib/package.c:246 lib/rpmchecksig.c:164 lib/rpmchecksig.c:557
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead に失敗しました\n"
@@ -1691,27 +1691,27 @@ msgstr "%s: readLead に失敗しました\n"
 msgid "%s: bad magic\n"
 msgstr "不正なマジック"
 
-#: lib/package.c:277 lib/rpmchecksig.c:182 lib/rpmchecksig.c:564
+#: lib/package.c:277 lib/rpmchecksig.c:182 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/package.c:281 lib/rpmchecksig.c:186 lib/rpmchecksig.c:569
+#: lib/package.c:281 lib/rpmchecksig.c:186 lib/rpmchecksig.c:578
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
 
-#: lib/package.c:331 lib/rpmchecksig.c:467
+#: lib/package.c:331 lib/rpmchecksig.c:476
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:366 lib/package.c:393 lib/package.c:425 lib/rpmchecksig.c:642
+#: lib/package.c:366 lib/package.c:393 lib/package.c:425 lib/rpmchecksig.c:651
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:437 lib/rpmchecksig.c:113 lib/rpmchecksig.c:496
+#: lib/package.c:437 lib/rpmchecksig.c:113 lib/rpmchecksig.c:505
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2524,48 +2524,48 @@ msgstr "%s: v1.0 の RPM には署名できません\n"
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: v2.0 の RPM には再署名できません\n"
 
-#: lib/rpmchecksig.c:244
+#: lib/rpmchecksig.c:253
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writedLead に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:250
+#: lib/rpmchecksig.c:259
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:481
+#: lib/rpmchecksig.c:490
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/rpmchecksig.c:554
+#: lib/rpmchecksig.c:563
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 有効な署名はありません(v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:801
+#: lib/rpmchecksig.c:810
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:802 lib/rpmchecksig.c:816
+#: lib/rpmchecksig.c:811 lib/rpmchecksig.c:825
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (キーの紛失) "
 
-#: lib/rpmchecksig.c:804 lib/rpmchecksig.c:818
+#: lib/rpmchecksig.c:813 lib/rpmchecksig.c:827
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:805 lib/rpmchecksig.c:819
+#: lib/rpmchecksig.c:814 lib/rpmchecksig.c:828
 msgid " (UNTRUSTED KEYS:"
 msgstr " (信頼できない鍵:"
 
-#: lib/rpmchecksig.c:807 lib/rpmchecksig.c:821
+#: lib/rpmchecksig.c:816 lib/rpmchecksig.c:830
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:815
+#: lib/rpmchecksig.c:824
 msgid "OK"
 msgstr ""
 
