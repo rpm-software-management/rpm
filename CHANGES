@@ -1,7 +1,6 @@
 2.3.11 -> 2.4:
-	- changed LIBRPMRC_FILENAME, LIBRPMALIAS_FILENAME, RPMNLSDIR
-	  directories to @sysconfdir@, @sysconfdir@, and @datadir@ to
-	  better conform with autoconf
+	- changed RPMNLSDIR directories to and @datadir@ to better
+	  conform with autoconf
 	- set RPM_INSTALL_PREFIX environment variable when running 
 	  verify scripts
 	- beginnings of SCO support (though I suspect it will take one
