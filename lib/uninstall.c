@@ -26,7 +26,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 			     enum fileActions * fileActions);
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
 		      short mode, enum fileActions action, char * rmmess, 
-		      int test);
+		      int brokenMd5, int test);
 
 static int sharedFileCmp(const void * one, const void * two) {
     if (((struct sharedFile *) one)->secRecOffset <
@@ -264,7 +264,8 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
 	    removeFile(fnbuffer, fileStatesList[i], fileFlagsList[i],
 		       fileMd5List[i], fileModesList[i], fileActions[i], 
-		       rmmess, flags & UNINSTALL_TEST);
+		       rmmess, !isEntry(h, RPMTAG_RPMVERSION),
+		       flags & UNINSTALL_TEST);
 	}
 
 	free(fileList);
@@ -356,7 +357,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 
 static int removeFile(char * file, char state, unsigned int flags, char * md5, 
 		      short mode, enum fileActions action, char * rmmess, 
-		      int test) {
+		      int brokenMd5, int test) {
     char currentMd5[40];
     int rc = 0;
     char * newfile;
@@ -370,6 +371,11 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	if ((action == REMOVE) && (flags & RPMFILE_CONFIG)) {
 	    /* if it's a config file, we may not want to remove it */
 	    message(MESS_DEBUG, "finding md5sum of %s\n", file);
+	    if (brokenMd5)
+		rc = mdfileBroken(file, currentMd5);
+	    else
+		rc = mdfile(file, currentMd5);
+
 	    if (mdfile(file, currentMd5)) 
 		message(MESS_DEBUG, "    failed - assuming file removed\n");
 	    else {
