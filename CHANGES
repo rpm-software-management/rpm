@@ -13,6 +13,7 @@
 	- package file query (-q -p) accepts ftp:// style URL's
 	- if gzread returns 0 bytes (at EOF), don't call write w/ 0 byte
 	  argument as it's behviour isn't portable
+	- fixed -Vp behavior (doesn't seg fault w/ packages have dependencies)
 
 2.2.5 -> 2.2.6:
 	- added --rebuilddb to rebuild database, updated man page
