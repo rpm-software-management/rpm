@@ -439,6 +439,19 @@ void mp32clrlsb(register uint32 xsize, register uint32* xdata)
 }
 #endif
 
+#ifndef ASM_MP32AND
+void mp32and(register uint32 size, register uint32* xdata, register const uint32* ydata)
+{
+	do
+	{
+		--size;
+/*@-boundsread@*/
+		xdata[size] &= ydata[size];
+/*@=boundsread@*/
+	} while (size);
+}
+#endif
+
 #ifndef ASM_MP32XOR
 void mp32xor(register uint32 size, register uint32* xdata, register const uint32* ydata)
 {
@@ -447,6 +460,19 @@ void mp32xor(register uint32 size, register uint32* xdata, register const uint32
 		--size;
 /*@-boundsread@*/
 		xdata[size] ^= ydata[size];
+/*@=boundsread@*/
+	} while (size);
+}
+#endif
+
+#ifndef ASM_MP32OR
+void mp32or(register uint32 size, register uint32* xdata, register const uint32* ydata)
+{
+	do
+	{
+		--size;
+/*@-boundsread@*/
+		xdata[size] |= ydata[size];
 /*@=boundsread@*/
 	} while (size);
 }

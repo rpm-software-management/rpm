@@ -246,7 +246,19 @@ void mp32clrlsb(uint32 xsize, uint32* xdata)
 /**
  */
 BEECRYPTAPI /*@unused@*/
+void mp32and(uint32 size, uint32* xdata, const uint32* ydata)
+	/*@modifies xdata @*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
 void mp32xor(uint32 size, uint32* xdata, const uint32* ydata)
+	/*@modifies xdata @*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+void mp32or(uint32 size, uint32* xdata, const uint32* ydata)
 	/*@modifies xdata @*/;
 
 /**
