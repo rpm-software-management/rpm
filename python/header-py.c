@@ -525,6 +525,18 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPMTAG_ROOT:
     case RPMTAG_FILEUSERNAME:
     case RPMTAG_FILEGROUPNAME:
+    case RPMTAG_REQUIRENAME:
+    case RPMTAG_REQUIREFLAGS:
+    case RPMTAG_REQUIREVERSION:
+    case RPMTAG_PROVIDENAME:
+    case RPMTAG_PROVIDEFLAGS:
+    case RPMTAG_PROVIDEVERSION:
+    case RPMTAG_OBSOLETENAME:
+    case RPMTAG_OBSOLETEFLAGS:
+    case RPMTAG_OBSOLETEVERSION:
+    case RPMTAG_CONFLICTNAME:
+    case RPMTAG_CONFLICTFLAGS:
+    case RPMTAG_CONFLICTVERSION:
 	forceArray = 1;
 	break;
     case RPMTAG_SUMMARY:
