@@ -48,6 +48,7 @@ lib/messages.c
 lib/misc.c
 lib/oldheader.c
 lib/package.c
+lib/problems.c
 lib/query.c
 lib/rebuilddb.c
 lib/rpmbzio.c

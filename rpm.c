@@ -1151,7 +1151,7 @@ int main(int argc, char ** argv) {
 			/* Fall through to default: */
 		    }
 		    else if (!(passPhrase = 
-			    rpmGetPassPhrase("Enter pass phrase: ", sigTag))) {
+			    rpmGetPassPhrase(_("Enter pass phrase: "), sigTag))) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
 			exit(EXIT_FAILURE);
 		    } else {

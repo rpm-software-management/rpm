@@ -231,7 +231,7 @@ int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
 
     /* parse up the build operators */
 
-    printf("Building target platforms: %s\n", targets);
+    printf(_("Building target platforms: %s\n"), targets);
 
     for (t = targets; *t != '\0'; t = te) {
 	char *target;
@@ -240,7 +240,7 @@ int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
 	target = alloca(te-t+1);
 	strncpy(target, t, (te-t));
 	target[te-t] = '\0';
-	printf("Building for target %s\n", target);
+	printf(_("Building for target %s\n"), target);
 
 	rpmReadConfigFiles(rcfile, target);
 	rc = buildForTarget(arg, ba, passPhrase, fromTarball, cookie,

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-26 13:44-0400\n"
+"POT-Creation-Date: 1999-04-28 09:56-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,6 +52,17 @@ msgstr ""
 #: ../build.c:181
 #, c-format
 msgid "File contains non-printable characters(%c): %s\n"
+msgstr ""
+
+#. parse up the build operators
+#: ../build.c:234
+#, c-format
+msgid "Building target platforms: %s\n"
+msgstr ""
+
+#: ../build.c:243
+#, c-format
+msgid "Building for target %s\n"
 msgstr ""
 
 #: ../build.c:285
@@ -1404,6 +1415,10 @@ msgstr ""
 msgid "Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"
 msgstr ""
 
+#: ../rpm.c:1154
+msgid "Enter pass phrase: "
+msgstr ""
+
 #: ../rpm.c:1155
 msgid "Pass phrase check failed\n"
 msgstr ""
@@ -2676,6 +2691,52 @@ msgstr ""
 #: ../lib/package.c:105
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
+msgstr ""
+
+#: ../lib/problems.c:29
+#, c-format
+msgid "package %s-%s-%s is for a different operating system"
+msgstr ""
+
+#: ../lib/problems.c:34
+#, c-format
+msgid "package %s-%s-%s is for a different architecture"
+msgstr ""
+
+#: ../lib/problems.c:39
+#, c-format
+msgid "package %s-%s-%s is already installed"
+msgstr ""
+
+#: ../lib/problems.c:44
+#, c-format
+msgid "path %s is not relocateable for package %s-%s-%s"
+msgstr ""
+
+#: ../lib/problems.c:49
+#, c-format
+msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
+msgstr ""
+
+#: ../lib/problems.c:55
+#, c-format
+msgid ""
+"file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
+msgstr ""
+
+#: ../lib/problems.c:61
+#, c-format
+msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
+msgstr ""
+
+#: ../lib/problems.c:67
+#, c-format
+msgid "installing package %s-%s-%s needs %ld%c on the %s filesystem"
+msgstr ""
+
+#: ../lib/problems.c:77
+#, c-format
+msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""
 
 #: ../lib/query.c:36

@@ -1,8 +1,7 @@
-#: ../rpm.c:179 ../rpm.c:263
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 1999-04-08 17:06-0400\n"
+"POT-Creation-Date: 1999-04-28 09:56-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -10,86 +9,107 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: ../build.c:39 ../build.c:52
+#: ../build.c:25 ../install.c:221 ../install.c:377
+#, c-format
+msgid "cannot open %s/packages.rpm\n"
+msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
+
+#: ../build.c:35
+#, fuzzy
+msgid "failed build prerequisites:\n"
+msgstr "nevyrie¹ené závislosti:\n"
+
+#: ../build.c:84 ../build.c:97
 #, c-format
 msgid "Failed to open tar pipe: %s\n"
 msgstr "Otvorenie rúry pre tar zlyhalo: %s\n"
 
 #. Give up
-#: ../build.c:60
+#: ../build.c:105
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
 
-#: ../build.c:85
+#: ../build.c:130
 #, c-format
 msgid "Failed to rename %s to %s: %s\n"
 msgstr "Nie je mo¾né premenova» %s na %s: %s\n"
 
-#: ../build.c:123
+#: ../build.c:168
 #, c-format
 msgid "File is not a regular file: %s\n"
 msgstr "Súbor nie je obyèajný súbor: %s\n"
 
-#: ../build.c:128
+#: ../build.c:173
 #, c-format
 msgid "Unable to open spec file: %s\n"
 msgstr "Nie je mo¾né otvori» spec súbor: %s\n"
 
-#: ../build.c:136
+#: ../build.c:181
 #, c-format
 msgid "File contains non-printable characters(%c): %s\n"
 msgstr "Súbor obsahuje netlaèiteµné znaky(%c): %s\n"
 
-#: ../build.c:229
+#. parse up the build operators
+#: ../build.c:234
+#, fuzzy, c-format
+msgid "Building target platforms: %s\n"
+msgstr "predefinova» cieµovú platformu"
+
+#: ../build.c:243
+#, fuzzy, c-format
+msgid "Building for target %s\n"
+msgstr "vyhµadáva sa balík %s\n"
+
+#: ../build.c:285
 msgid "buildroot already specified"
 msgstr "buildroot u¾ bol zadaný"
 
-#: ../build.c:235
+#: ../build.c:291
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "Voµba --buildarch je zastaralá. Pou¾ite namiesto nej --target.\n"
 
-#: ../build.c:239
+#: ../build.c:295
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "Voµba --buildos je zastaralá. Pou¾ite namiesto nej --target.\n"
 
-#: ../build.c:260
+#: ../build.c:316
 msgid "override build architecture"
 msgstr "predefinova» architektúru balíka"
 
-#: ../build.c:262
+#: ../build.c:318
 msgid "override build operating system"
 msgstr "predefinova» operaèný systém balíka"
 
-#: ../build.c:264
+#: ../build.c:320
 msgid "override build root"
 msgstr "predefinova» adresár pre zostavenie balíka"
 
-#: ../build.c:266 ../rpm.c:454
+#: ../build.c:322 ../rpm.c:454
 msgid "remove build tree when done"
 msgstr "po ukonèení odstráni» adresár, v ktorom sa balík zostavoval"
 
-#: ../build.c:268
+#: ../build.c:324
 msgid "do not execute any stages of the build"
 msgstr "nevykona» ¾iadne etapy zostavenia"
 
-#: ../build.c:270
+#: ../build.c:326
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "neakceptova» lokalizované re»azce zo spec-súboru"
 
-#: ../build.c:272
+#: ../build.c:328
 msgid "remove sources and specfile when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: ../build.c:274 ../rpm.c:452
+#: ../build.c:330 ../rpm.c:452
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "preskoèi» priamo k urèenej etape (iba pre c, i)"
 
-#: ../build.c:276
+#: ../build.c:332
 msgid "override target platform"
 msgstr "predefinova» cieµovú platformu"
 
-#: ../build.c:278
+#: ../build.c:334
 msgid "lookup I18N strings in specfile catalog"
 msgstr "pre preklad re»azcov pou¾i» katalóg správ spec-súborov"
 
@@ -126,7 +146,7 @@ msgstr "Nie je mo¾né preèíta» hlavièku/archív"
 msgid "Couldn't write header/archive to temp file"
 msgstr "Nie je mo¾né zapísa» hlavièku/archív do doèasného súboru"
 
-#: ../build/pack.c:349 ../checksig.c:91
+#: ../build/pack.c:330 ../checksig.c:91
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
@@ -259,122 +279,117 @@ msgstr "Zru¹enie prebieha"
 msgid "Unknown or unexpected error"
 msgstr "Neznáma alebo neoèakávaná chyba"
 
-#: ../install.c:129
+#: ../install.c:127
 msgid "counting packages to install\n"
 msgstr "poèítajú sa balíky pre in¹taláciu\n"
 
-#: ../install.c:133
+#: ../install.c:131
 #, c-format
 msgid "found %d packages\n"
 msgstr "nájdených %d balíkov\n"
 
-#: ../install.c:142
+#: ../install.c:140
 msgid "looking for packages to download\n"
 msgstr "hµadajú sa balíky, ktoré treba prenies»\n"
 
-#: ../install.c:153
+#: ../install.c:151
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prená¹a sa %s\n"
 
-#: ../install.c:162
+#: ../install.c:160
 #, c-format
 msgid " ... as %s\n"
 msgstr "... ako %s\n"
 
-#: ../install.c:166
+#: ../install.c:164
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s vynechané - prenos zlyhal - %s\n"
 
-#: ../install.c:183
+#: ../install.c:181
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr "prenieslo sa %d balíkov\n"
 
-#: ../install.c:192 ../install.c:329
+#: ../install.c:190 ../install.c:327
 #, c-format
 msgid "cannot open file %s\n"
 msgstr "nie je mo¾né otvori» súbor %s\n"
 
-#: ../install.c:204 ../lib/query.c:540
+#: ../install.c:202 ../lib/query.c:540
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s zrejme nie je RPM balík\n"
 
-#: ../install.c:208 ../install.c:466
+#: ../install.c:206 ../install.c:464
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
 
-#: ../install.c:223 ../install.c:379
-#, c-format
-msgid "cannot open %s/packages.rpm\n"
-msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
-
-#: ../install.c:244
+#: ../install.c:242
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: ../install.c:256
+#: ../install.c:254
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: ../install.c:259
+#: ../install.c:257
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: ../install.c:274
+#: ../install.c:272
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: ../install.c:284
+#: ../install.c:282
 msgid "failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
 
-#: ../install.c:302
+#: ../install.c:300
 msgid "installing binary packages\n"
 msgstr "in¹talujú sa binárne balíky\n"
 
-#: ../install.c:390 ../lib/query.c:685 ../verify.c:243
+#: ../install.c:388 ../lib/query.c:685 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: ../install.c:394
+#: ../install.c:392
 #, c-format
 msgid "searching for package %s\n"
 msgstr "vyhµadáva sa balík %s\n"
 
-#: ../install.c:403
+#: ../install.c:401
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
-#: ../install.c:429
+#: ../install.c:427
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstránenie týchto balíkov by poru¹ilo závislosti:\n"
 
-#: ../install.c:456
+#: ../install.c:454
 #, c-format
 msgid "cannot open %s\n"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: ../install.c:461
+#: ../install.c:459
 #, c-format
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: ../install.c:505
+#: ../install.c:503
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr " je vy¾adované %s-%s-%s\n"
 
-#: ../install.c:508
+#: ../install.c:506
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr " koliduje s %s-%s-%s\n"
@@ -1368,19 +1383,20 @@ msgstr ""
 "--notriggers mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo "
 "overenia balíka"
 
-#: ../rpm.c:1031
+#: ../rpm.c:1032
+#, fuzzy
 msgid ""
-"--nodeps may only be specified during package installation, erasure, and "
-"verification"
+"--nodeps may only be specified during package building, installation, "
+"erasure, and verification"
 msgstr ""
 "--nodeps mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo overenia "
 "balíka"
 
-#: ../rpm.c:1035
+#: ../rpm.c:1036
 msgid "--nofiles may only be specified during package verification"
 msgstr "--nofiles mô¾e by» pou¾ité iba poèas overenia balíka"
 
-#: ../rpm.c:1040
+#: ../rpm.c:1041
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -1388,7 +1404,7 @@ msgstr ""
 "--test mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo zostavenia "
 "balíka"
 
-#: ../rpm.c:1045
+#: ../rpm.c:1046
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1396,112 +1412,116 @@ msgstr ""
 "--root (-r) mô¾e by» pou¾ité iba poèas in¹talácie a odstránenia balíka, "
 "otázky alebo znovuzostavenia databázy"
 
-#: ../rpm.c:1050
+#: ../rpm.c:1051
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty pre --root (-r) musia zaèína» znakom /"
 
-#: ../rpm.c:1054
+#: ../rpm.c:1055
 msgid "--clean may only be used with -b and -t"
 msgstr "--clean mô¾e by» pou¾ité iba s -b a -t"
 
-#: ../rpm.c:1057
+#: ../rpm.c:1058
 msgid "--rmsource may only be used with -b and -t"
 msgstr "--rmsource mô¾e by» pou¾ité iba s -b a -t"
 
-#: ../rpm.c:1060
+#: ../rpm.c:1061
 msgid "--short-circuit may only be used during package building"
 msgstr "--short-circuit mô¾e by» pou¾ité iba poèas zostavenia balíka"
 
-#: ../rpm.c:1064
+#: ../rpm.c:1065
 msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
 msgstr ""
 "--short-circuit mô¾e by» pou¾ité iba s -bc, -bi, -bs, -tc -ti alebo -ts"
 
-#: ../rpm.c:1070
+#: ../rpm.c:1071
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage mô¾e by» pou¾íté iba poèas aktualizácie"
 
-#: ../rpm.c:1075
+#: ../rpm.c:1076
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "ftp voµby mô¾e by» pou¾íté iba poèas otázok, in¹talácie alebo aktualizácie"
 
-#: ../rpm.c:1081
+#: ../rpm.c:1082
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
 msgstr ""
 "http voµby mô¾e by» pou¾íté iba poèas otázok, in¹talácie alebo aktualizácie"
 
-#: ../rpm.c:1085
+#: ../rpm.c:1086
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp mô¾e by» pou¾íté iba poèas overenia podpisu"
 
-#: ../rpm.c:1088
+#: ../rpm.c:1089
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg mô¾e by» pou¾íté iba poèas overenia podpisu"
 
-#: ../rpm.c:1091
+#: ../rpm.c:1092
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 mô¾e by» pou¾íté iba poèas overenia podpisu alebo balíka"
 
-#: ../rpm.c:1117
+#: ../rpm.c:1118
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "nie je mo¾né pracova» so súborom %s\n"
 
-#: ../rpm.c:1134
+#: ../rpm.c:1135
 msgid "pgp not found: "
 msgstr "pgp nebolo nájdené: "
 
-#: ../rpm.c:1137
+#: ../rpm.c:1138
 msgid "Use `%%_signature pgp5' instead of `%%_signature pgp' in macro file.\n"
 msgstr ""
 "Pou¾ite `%%_signature pgp5' namiesto `%%_signature pgp' v makro-súbore.\n"
 
-#: ../rpm.c:1144
+#: ../rpm.c:1145
 msgid "pgp version 5 not found: "
 msgstr "pgp verzie 5 nebolo nájdené: "
 
-#: ../rpm.c:1147
+#: ../rpm.c:1148
 msgid "Use `%%_signature pgp' instead of `%%_signature pgp5' in macro file.\n"
 msgstr ""
 "Pou¾ite `%%_signature pgp' namiesto `%%_signature pgp5' v makro-súbore.\n"
 
 #: ../rpm.c:1154
+msgid "Enter pass phrase: "
+msgstr ""
+
+#: ../rpm.c:1155
 msgid "Pass phrase check failed\n"
 msgstr "Kontrola hesla zlyhala\n"
 
-#: ../rpm.c:1157
+#: ../rpm.c:1158
 msgid "Pass phrase is good.\n"
 msgstr "Heslo je v poriadku.\n"
 
-#: ../rpm.c:1164
+#: ../rpm.c:1165
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Chybná ¹pecifikácia %%_signature v makro-súbore.\n"
 
-#: ../rpm.c:1169
+#: ../rpm.c:1170
 msgid "--sign may only be used during package building"
 msgstr "--sign mô¾e by» pou¾íté iba poèas zostavenia balíka"
 
-#: ../rpm.c:1186
+#: ../rpm.c:1187
 msgid "exec failed\n"
 msgstr "vykonanie zlyhalo\n"
 
-#: ../rpm.c:1205
+#: ../rpm.c:1206
 msgid "unexpected arguments to --querytags "
 msgstr "neoèakávané argumenty pre --querytags"
 
-#: ../rpm.c:1216
+#: ../rpm.c:1217
 msgid "no packages given for signature check"
 msgstr "neboli zadané ¾iadne balíky pre overenie podpisu"
 
-#: ../rpm.c:1224
+#: ../rpm.c:1225
 msgid "no packages given for signing"
 msgstr "neboli zadané ¾iadne balíky na podpis"
 
-#: ../rpm.c:1233
+#: ../rpm.c:1234
 msgid "no packages files given for rebuild"
 msgstr "neboli zadané ¾iadne balíky pre znovuzostavenie"
 
@@ -1513,23 +1533,23 @@ msgstr "neboli zadané ¾iadne spec-súbory pre zostavenie"
 msgid "no tar files given for build"
 msgstr "neboli zadané ¾iadne tar-súbory pre zostavenie"
 
-#: ../rpm.c:1305
+#: ../rpm.c:1304
 msgid "no packages given for uninstall"
 msgstr "neboli zadané ¾iadne balíky pre odin¹talovanie"
 
-#: ../rpm.c:1354
+#: ../rpm.c:1353
 msgid "no packages given for install"
 msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
 
-#: ../rpm.c:1376
+#: ../rpm.c:1375
 msgid "extra arguments given for query of all packages"
 msgstr "boli zadané nadbytoèné argumenty otázky pre v¹etky balíky"
 
-#: ../rpm.c:1382
+#: ../rpm.c:1381
 msgid "no arguments given for query"
 msgstr "neboli zadané ¾iadne argumenty pre otázku"
 
-#: ../rpm.c:1400
+#: ../rpm.c:1399
 msgid "no arguments given for verify"
 msgstr "neboli zadané ¾iadne argumenty pre overenie"
 
@@ -1619,7 +1639,7 @@ msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 msgid "error looking for package %s\n"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: ../build/build.c:81 ../build/pack.c:267
+#: ../build/build.c:81 ../build/pack.c:248
 msgid "Unable to open temp file"
 msgstr "Nie je mo¾né otvori» doèasný súbor"
 
@@ -1790,65 +1810,65 @@ msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 msgid "Could not open %%files file: %s"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: ../build/files.c:1097 ../build/pack.c:452
+#: ../build/files.c:1097 ../build/pack.c:433
 #, c-format
 msgid "line: %s"
 msgstr "riadok: %s"
 
-#: ../build/files.c:1365 ../build/parsePrep.c:31
+#: ../build/files.c:1391 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Chybný vlastník/skupina: %s"
 
-#: ../build/files.c:1419
+#: ../build/files.c:1445
 #, c-format
 msgid "Couldn't exec %s"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: ../build/files.c:1423
+#: ../build/files.c:1449
 #, c-format
 msgid "Couldn't fork %s"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: ../build/files.c:1473
+#: ../build/files.c:1499
 #, c-format
 msgid "%s failed"
 msgstr "%s zlyhalo"
 
-#: ../build/files.c:1477
+#: ../build/files.c:1503
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: ../build/files.c:1511
+#: ../build/files.c:1537
 msgid "Finding provides...\n"
 msgstr "Zis»ujú sa poskytované vlastnosti...\n"
 
-#: ../build/files.c:1518
+#: ../build/files.c:1544
 msgid "Failed to find provides"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: ../build/files.c:1537
+#: ../build/files.c:1563
 msgid "Finding requires...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: ../build/files.c:1544
+#: ../build/files.c:1570
 msgid "Failed to find requires"
 msgstr "Nepodarilo sa zisti» po¾adované vlastnosti"
 
-#: ../build/files.c:1578
+#: ../build/files.c:1604
 msgid "Provides:"
 msgstr "Poskytuje:"
 
-#: ../build/files.c:1593
+#: ../build/files.c:1619
 msgid "Prereqs:"
 msgstr "Predpoklady:"
 
-#: ../build/files.c:1605
+#: ../build/files.c:1631
 msgid "Requires:"
 msgstr "Po¾aduje:"
 
-#: ../build/files.c:1629
+#: ../build/files.c:1655
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
@@ -1866,96 +1886,96 @@ msgstr "RPMERR_INTERNAL: Dosiahnutý limit v getGname()\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Nie je mo¾né kanonizova» názov poèítaèa: %s\n"
 
-#: ../build/pack.c:153
+#: ../build/pack.c:134
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
 
-#: ../build/pack.c:186
+#: ../build/pack.c:167
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: otvorenie %s: %s\n"
 
-#: ../build/pack.c:196
+#: ../build/pack.c:177
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: èítanie %s: %s\n"
 
-#: ../build/pack.c:216
+#: ../build/pack.c:197
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s nie je RPM balík\n"
 
-#: ../build/pack.c:222
+#: ../build/pack.c:203
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: èítanie hlavièky %s\n"
 
-#: ../build/pack.c:278
+#: ../build/pack.c:259
 msgid "Bad CSA data"
 msgstr "Chybné CSA dáta"
 
-#: ../build/pack.c:301
+#: ../build/pack.c:282
 #, c-format
 msgid "Could not open %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: ../build/pack.c:333 ../build/pack.c:376
+#: ../build/pack.c:314 ../build/pack.c:357
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: ../build/pack.c:366
+#: ../build/pack.c:347
 #, c-format
 msgid "Unable to read sigtarget: %s"
 msgstr "Nie je preèíta» sigtarget: %s"
 
-#: ../build/pack.c:391
+#: ../build/pack.c:372
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
 
-#: ../build/pack.c:406
+#: ../build/pack.c:387
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
 
-#: ../build/pack.c:422
+#: ../build/pack.c:403
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "cpio_copy zápis zlyhal: %s"
 
-#: ../build/pack.c:429
+#: ../build/pack.c:410
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "cpio_copy èítanie zlyhalo: %s"
 
-#: ../build/pack.c:508
+#: ../build/pack.c:489
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Nie je mo¾né otvori» PreIn súbor: %s"
 
-#: ../build/pack.c:515
+#: ../build/pack.c:496
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Nie je mo¾né otvori» PreUn súbor: %s"
 
-#: ../build/pack.c:522
+#: ../build/pack.c:503
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Nie je mo¾né otvori» PostIn súbor: %s"
 
-#: ../build/pack.c:529
+#: ../build/pack.c:510
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Nie je mo¾né otvori» PostUn súbor: %s"
 
-#: ../build/pack.c:537
+#: ../build/pack.c:518
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Nie je mo¾né otvori» VerifyScript súbor: %s"
 
-#: ../build/pack.c:553
+#: ../build/pack.c:534
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Nie je mo¾né otvori» Trigger skriptový súbor: %s"
@@ -2511,101 +2531,101 @@ msgstr "neoèakávané }"
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
-#: ../lib/install.c:100
+#: ../lib/install.c:93
 msgid "source package expected, binary found"
 msgstr "oèakávaný zdrojový balík, nájdený binárny"
 
-#: ../lib/install.c:182 ../lib/uninstall.c:111
+#: ../lib/install.c:169 ../lib/uninstall.c:111
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   súbor: akcia %s: %s\n"
 
-#: ../lib/install.c:199
+#: ../lib/install.c:186
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr "pou¾ívateµ %s neexistuje - pou¾ije sa root"
 
-#: ../lib/install.c:207
+#: ../lib/install.c:194
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr "skupina %s neexistuje - pou¾ije sa root"
 
-#: ../lib/install.c:234
+#: ../lib/install.c:221
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr "hodnota %%instchangelog v makro-súbore by mala by» èíselná, ale nie je"
 
-#: ../lib/install.c:302
+#: ../lib/install.c:289
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "balík: %s-%s-%s test súborov = %d\n"
 
-#: ../lib/install.c:365
+#: ../lib/install.c:352
 msgid "stopping install as we're running --test\n"
 msgstr "in¹talácia zastavená kvôli re¾imu --test\n"
 
-#: ../lib/install.c:370
+#: ../lib/install.c:357
 msgid "running preinstall script (if any)\n"
 msgstr "vykonávajú sa predin¹talaèné skripty (ak existujú)\n"
 
-#: ../lib/install.c:400
+#: ../lib/install.c:387
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "varovanie: %s vytvorené ako %s"
 
-#: ../lib/install.c:436
+#: ../lib/install.c:423
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: ../lib/install.c:440 ../lib/install.c:808 ../lib/uninstall.c:337
+#: ../lib/install.c:427 ../lib/install.c:790 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "premenovanie %s na %s zlyhalo: %s"
 
-#: ../lib/install.c:523
+#: ../lib/install.c:507
 msgid "running postinstall script (if any)\n"
 msgstr "vykonávajú sa poin¹talaèné skripty (ak existujú)\n"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:631
+#: ../lib/install.c:613
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "rozbalenie archívu zlyhalo%s%s: %s"
 
-#: ../lib/install.c:632
+#: ../lib/install.c:614
 msgid " on file "
 msgstr " pre súbor "
 
-#: ../lib/install.c:672
+#: ../lib/install.c:654
 msgid "installing a source package\n"
 msgstr "in¹taluje sa zdrojový balík\n"
 
-#: ../lib/install.c:683 ../lib/install.c:705
+#: ../lib/install.c:665 ../lib/install.c:687
 #, fuzzy, c-format
 msgid "cannot create %s"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: ../lib/install.c:690 ../lib/install.c:712
+#: ../lib/install.c:672 ../lib/install.c:694
 #, c-format
 msgid "cannot write to %s"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: ../lib/install.c:694
+#: ../lib/install.c:676
 #, c-format
 msgid "sources in: %s\n"
 msgstr "zdroje v: %s\n"
 
-#: ../lib/install.c:716
+#: ../lib/install.c:698
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec-súbor v: %s\n"
 
-#: ../lib/install.c:749 ../lib/install.c:785
+#: ../lib/install.c:731 ../lib/install.c:767
 msgid "source package contains no .spec file"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: ../lib/install.c:806
+#: ../lib/install.c:788
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "premenováva sa %s na %s\n"
@@ -2615,83 +2635,83 @@ msgstr "premenováva sa %s na %s\n"
 msgid "cannot read header at %d for lookup"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: ../lib/macro.c:123
+#: ../lib/macro.c:129
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== aktívnych %d prázdnych %d\n"
 
 #. XXX just in case
-#: ../lib/macro.c:212
+#: ../lib/macro.c:218
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(prázdne)"
 
-#: ../lib/macro.c:247
+#: ../lib/macro.c:253
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(prázdne)\n"
 
-#: ../lib/macro.c:420
+#: ../lib/macro.c:426
 msgid "Macro %%%s has unterminated body"
 msgstr "Makro %%%s obsahuje neukonèené telo"
 
-#: ../lib/macro.c:446
+#: ../lib/macro.c:452
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr "Makro %%%s obsahuje chybný názov (%%define)"
 
-#: ../lib/macro.c:452
+#: ../lib/macro.c:458
 msgid "Macro %%%s has unterminated opts"
 msgstr "Makro %%%s obsahuje neukonèené voµby"
 
-#: ../lib/macro.c:457
+#: ../lib/macro.c:463
 msgid "Macro %%%s has empty body"
 msgstr "Makro %%%s obsahuje prázdne telo"
 
-#: ../lib/macro.c:462
+#: ../lib/macro.c:468
 msgid "Macro %%%s failed to expand"
 msgstr "Makro %%%s sa nepodarilo expandova»"
 
-#: ../lib/macro.c:487
+#: ../lib/macro.c:493
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr "Makro %%%s obsahuje chybný názov (%%undefine)"
 
-#: ../lib/macro.c:560
+#: ../lib/macro.c:566
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr "Makro %%%s (%s) nebolo pou¾ité pod úrovòou %d "
 
-#: ../lib/macro.c:642
+#: ../lib/macro.c:650
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr "Neznáma voµba %c v %s(%s)"
 
-#: ../lib/macro.c:804
+#: ../lib/macro.c:825
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr "Håbka rekurzie (%d) väè¹ia ako maximálna (%d)"
 
-#: ../lib/macro.c:860 ../lib/macro.c:876
+#: ../lib/macro.c:881 ../lib/macro.c:897
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr "Neukonèené %c: %s"
 
-#: ../lib/macro.c:905
+#: ../lib/macro.c:930
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: ../lib/macro.c:1027
+#: ../lib/macro.c:1053
 msgid "Macro %%%.*s not found, skipping"
 msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 
-#: ../lib/macro.c:1105
+#: ../lib/macro.c:1131
 msgid "Target buffer overflow"
 msgstr "Preplnenie cieµovej vyrovnávacej pamäti"
 
-#: ../lib/macro.c:1248 ../lib/macro.c:1256
+#: ../lib/macro.c:1274 ../lib/macro.c:1282
 #, c-format
 msgid "File %s: %s"
 msgstr "Súbor %s: %s"
 
-#: ../lib/macro.c:1259
+#: ../lib/macro.c:1285
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr "Súbor %s je men¹í ako %d bajtov"
@@ -2743,6 +2763,52 @@ msgstr "binárny balík v starom ¹týle\n"
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
+
+#: ../lib/problems.c:29
+#, c-format
+msgid "package %s-%s-%s is for a different operating system"
+msgstr ""
+
+#: ../lib/problems.c:34
+#, c-format
+msgid "package %s-%s-%s is for a different architecture"
+msgstr ""
+
+#: ../lib/problems.c:39
+#, fuzzy, c-format
+msgid "package %s-%s-%s is already installed"
+msgstr "balík %s nie je nain¹talovaný\n"
+
+#: ../lib/problems.c:44
+#, fuzzy, c-format
+msgid "path %s is not relocateable for package %s-%s-%s"
+msgstr "balík %s nie je nain¹talovaný\n"
+
+#: ../lib/problems.c:49
+#, c-format
+msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
+msgstr ""
+
+#: ../lib/problems.c:55
+#, c-format
+msgid ""
+"file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
+msgstr ""
+
+#: ../lib/problems.c:61
+#, c-format
+msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
+msgstr ""
+
+#: ../lib/problems.c:67
+#, c-format
+msgid "installing package %s-%s-%s needs %ld%c on the %s filesystem"
+msgstr ""
+
+#: ../lib/problems.c:77
+#, c-format
+msgid "unknown error %d encountered while manipulating package %s-%s-%s"
+msgstr ""
 
 #: ../lib/query.c:36
 msgid "query package owning file"
@@ -3274,17 +3340,17 @@ msgstr "Musíte nastavi» \"%%pgp_name\" vo va¹om makro-súbore"
 msgid "Invalid %%_signature spec in macro file"
 msgstr "Chybná ¹pecifikácia podpisu %%_signature v makro-súbore"
 
-#: ../lib/transaction.c:736
+#: ../lib/transaction.c:793
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: ../lib/transaction.c:742
+#: ../lib/transaction.c:799
 #, c-format
 msgid "excluding %s\n"
 msgstr "vynecháva sa %s\n"
 
-#: ../lib/transaction.c:830
+#: ../lib/transaction.c:887
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
@@ -3339,35 +3405,35 @@ msgstr ""
 "nikdy sta»)"
 
 #, fuzzy
-msgid "build the packages for architecture <arch>"
-msgstr "neoverova» architektúru balíka"
+#~ msgid "build the packages for architecture <arch>"
+#~ msgstr "neoverova» architektúru balíka"
 
-msgid "build the packages for ositecture <os>"
-msgstr "zostavi» balík pre OS/architektúru <os>"
-
-#, fuzzy
-msgid "one type of query may be performed at a time"
-msgstr "naraz mô¾e by» vykonaný jeden typ otázky alebo overenia"
+#~ msgid "build the packages for ositecture <os>"
+#~ msgstr "zostavi» balík pre OS/architektúru <os>"
 
 #, fuzzy
-msgid "--dump may only be used during queries"
-msgstr "--oldpackage mô¾e by» pou¾íté iba poèas aktualizácie"
+#~ msgid "one type of query may be performed at a time"
+#~ msgstr "naraz mô¾e by» vykonaný jeden typ otázky alebo overenia"
 
 #, fuzzy
-msgid "--dump of queries must be used with -l, -c, or -d"
-msgstr ""
-"zobrazi» v¹etky overiteµné údaje pre ka¾dý súbor (musí by» pou¾ité s -l, -c "
-"alebo -d)"
-
-msgid "maximum path length exceeded\n"
-msgstr "prekroèená maximálna då¾ka cesty\n"
+#~ msgid "--dump may only be used during queries"
+#~ msgstr "--oldpackage mô¾e by» pou¾íté iba poèas aktualizácie"
 
 #, fuzzy
-msgid "error: %s does not appear to be a RPM package\n"
-msgstr "%s zrejme nie je RPM balík\n"
+#~ msgid "--dump of queries must be used with -l, -c, or -d"
+#~ msgstr ""
+#~ "zobrazi» v¹etky overiteµné údaje pre ka¾dý súbor (musí by» pou¾ité s -l, -c "
+#~ "alebo -d)"
 
-msgid "(none)"
-msgstr "(¾iadne)"
+#~ msgid "maximum path length exceeded\n"
+#~ msgstr "prekroèená maximálna då¾ka cesty\n"
+
+#, fuzzy
+#~ msgid "error: %s does not appear to be a RPM package\n"
+#~ msgstr "%s zrejme nie je RPM balík\n"
+
+#~ msgid "(none)"
+#~ msgstr "(¾iadne)"
 
 #~ msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
 #~ msgstr ""
