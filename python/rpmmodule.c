@@ -802,6 +802,7 @@ static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
     return Py_BuildValue("i", where);
 }
 
+#ifdef	DYING
 static PyObject * handleDbResult(int rc, dbiIndexSet matches) {
     PyObject * list;
     int i;
@@ -822,43 +823,80 @@ static PyObject * handleDbResult(int rc, dbiIndexSet matches) {
 
     return list;
 }
+#else	/* DYING */
+static PyObject * handleDbResult(rpmdbMatchIterator mi) {
+    PyObject * list;
+
+    if (mi == NULL) {
+	PyErr_SetString(pyrpmError, "error reading from database");
+	return NULL;
+    }
+
+    list = PyList_New(0);
+
+    /* XXX FIXME: unnecessary header mallocs are side effect here */
+    while (rpmdbNextIterator(mi)) {
+	PyList_Append(list, PyInt_FromLong(rpmdbGetIteratorOffset(mi)));
+    }
+    rpmdbFreeIterator(mi);
+
+    return list;
+}
+#endif
 
 static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args) {
     char * str;
-    dbiIndexSet matches;
-    int rc;
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
 
-    rc = rpmdbFindPackage(s->db, str, &matches);
-    return handleDbResult(rc, matches);
+#ifdef	DYING
+    {	dbiIndexSet matches;
+	int rc;
+	rc = rpmdbFindPackage(s->db, str, &matches);
+	return handleDbResult(rc, matches);
+    }
+#else
+    return handleDbResult(rpmdbInitIterator(s->db, RPMDBI_NAME, str, 0));
+#endif
 }
 
 static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args) {
     char * str;
-    dbiIndexSet matches;
-    int rc;
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
 
-    rc = rpmdbFindByFile(s->db, str, &matches);
-    return handleDbResult(rc, matches);
+#ifdef	DYING
+    {	dbiIndexSet matches;
+	int rc;
+	rc = rpmdbFindByFile(s->db, str, &matches);
+	return handleDbResult(rc, matches);
+    }
+#else
+    return handleDbResult(rpmdbInitIterator(s->db, RPMDBI_FILE, str, 0));
+#endif
 }
 
 static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args) {
     char * str;
-    dbiIndexSet matches;
-    int rc;
 
     if (!PyArg_ParseTuple(args, "s", &str)) return NULL;
 
-    rc = rpmdbFindByProvides(s->db, str, &matches);
-    return handleDbResult(rc, matches);
+#ifdef	DYING
+    {	dbiIndexSet matches;
+	int rc;
+	rc = rpmdbFindByProvides(s->db, str, &matches);
+	return handleDbResult(rc, matches);
+    }
+#else
+    return handleDbResult(rpmdbInitIterator(s->db, RPMDBI_PROVIDES, str, 0));
+#endif
 }
 
 static int rpmdbLength(rpmdbObject * s) {
-    int first;
     int count = 0;
+
+#ifdef	DYING
+    int first;
 
     first = rpmdbFirstRecNum(s->db);
     if (!first) return 0;
@@ -867,6 +905,16 @@ static int rpmdbLength(rpmdbObject * s) {
     while ((first = rpmdbNextRecNum(s->db, first))) {
 	count++;
     }
+#else
+    {	rpmdbMatchIterator mi;
+
+	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
+	/* XXX FIXME: unnecessary header mallocs are side effect here */
+	while (rpmdbNextIterator(mi) != NULL)
+	    count++;
+	rpmdbFreeIterator(mi);
+    }
+#endif
 
     return count;
 }
