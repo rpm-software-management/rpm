@@ -223,7 +223,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		prefixedFileList[i] = fileList[i];
 
 	    instActions[i] = CREATE;
-	    if (fileFlagsList[i] & RPMFILE_CONFIG) {
+	    if ((fileFlagsList[i] & RPMFILE_CONFIG) &&
+		!S_ISDIR(fileModesList[i])) {
 		if (exists(prefixedFileList[i])) {
 		    message(MESS_DEBUG, "%s exists - backing up\n", 
 				prefixedFileList[i]);
