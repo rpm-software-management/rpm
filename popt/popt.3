@@ -356,8 +356,30 @@ All the leftover arguments are returned in a manner identical to
 .sp
 .SS "5. AUTOMATIC HELP MESSAGES"
 The \fBpopt\fR library can automatically generate help messages which
-describe the options a program accepts. 
-.PP 
+describe the options a program accepts. There are two types of help
+messages which can be generated. Usage messages are a short messages
+which lists valid options, but does not describe them. Help messages
+describe each option on one (or more) lines, resulting in a longer, but
+more useful, message. Whenever automatic help messages are used, the
+\fBdescrip\fR and \fBargDescrip\fR fields \fBstruct poptOption\fR members
+should be filled in for each option.
+.sp
+The \fBPOPT_AUTOHELP\fR macro makes it easy to add \fB--usage\fR and
+\fB--help\fR messages to your program, and is described in part 1
+of this man page. If more control is needed over your help messages,
+the following two functions are available:
+.sp
+.nf
+.B #include <popt.h>
+.BI "void poptPrintHelp(poptContext " con ", FILE * " f ", int " flags ");
+.BI "void poptPrintUsage(poptContext " con ", FILE * " f ", int " flags ");
+.fi
+.sp
+\fBpoptPrintHelp()\fR displays the standard help message to the stdio file
+descriptor f, while \fBpoptPrintUsage()\fR displays the shorter usage
+message. Both functions currently ignore the \fBflags\fR argument; it is
+there to allow future changes.
+.sp
 .SH "ERROR HANDLING"
 All of the popt functions that can return errors return integers. 
 When an error occurs, a negative error code is returned. The 
