@@ -755,7 +755,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	    int tlen;
 	    char *t;
 	    
-	    t = g_strdup (p_copy + column_ptr [idx++]);
+	    t = g_strdup (p_copy + column_ptr [idx]); idx++;
 	    tlen = strlen (t);
 	    /* g_strchomp(); */
 	    if (t [tlen-1] == '\r' || t [tlen-1] == '\n')

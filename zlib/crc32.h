@@ -52,7 +52,6 @@ static __inline__ uLong __partial_crc32(uLong crc, const Bytef *buf, uInt len, i
 #if 1	/* { */
 
 #define DOlong(p, d) do { \
-	int i; \
 	crc ^= *(p); \
 	if (copy) \
 		*(d) = *(p); \
@@ -76,7 +75,6 @@ static __inline__ uLong __partial_crc32(uLong crc, const Bytef *buf, uInt len, i
 	if (n) {
 		long *x = (long *)buf;
 		long *y;
-		int j = n / 8;
 
 		PREFETCH(x);
 		PREFETCH(x+8);

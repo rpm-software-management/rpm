@@ -2590,7 +2590,7 @@ void initrpm(void) {
     while (extensions->name) {
 	if (extensions->type == HEADER_EXT_TAG) {
             (const struct headerSprintfExtension *) ext = extensions;
-            PyDict_SetItemString(d, extensions->name, o=PyCObject_FromVoidPtr(ext, NULL));
+            PyDict_SetItemString(d, (char *) extensions->name, o=PyCObject_FromVoidPtr(ext, NULL));
 	    Py_DECREF(o);
             PyDict_SetItem(dict, tag, o=PyString_FromString(ext->name + 7));
 	    Py_DECREF(o);    

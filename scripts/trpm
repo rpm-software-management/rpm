@@ -54,6 +54,7 @@ chkconfig-
 db1-1
 db2-2
 db3-3
+db4-4
 dev-
 diffutils-
 e2fsprogs-1
@@ -124,11 +125,11 @@ bzip2-devel-
 db1-devel-
 db2-devel-
 db3-devel-
+db4-devel-
 gdbm-devel-
 glibc-devel-
 gmp-devel-
 kernel-headers-
-ncurses-devel-
 readline-devel-[24]
 tcl-
 zlib-devel-
@@ -143,6 +144,7 @@ binutils-
 cpp-
 cvs-
 db3-utils-
+db4-utils-
 egcs-1
 egcs-c++-1
 gcc-2
@@ -154,6 +156,7 @@ libstdc++-
 libtool-
 make-
 m4-
+ncurses-devel-
 openssl-0
 patch-
 perl-5
@@ -197,7 +200,6 @@ EOF
 %_rpmfilename	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 %_rpmdir	%{_topdir}/RPMS
 %_srcrpmdir	%{_topdir}/SRPMS
-%_tmppath	%{_topdir}/tmp
 EOF
 	;;
     manifest)

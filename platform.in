@@ -114,8 +114,10 @@
 @redhat@#---------------------------------------------------------------------
 @redhat@#	Always use %defattr(-,root,root) in %files (added in rpm-4.0.4)
 @redhat@#
-@redhat@%files(n:f:)	%%files%{?-f: -f %{-f*}}%{?-n: -n %{-n*}} %{?1}\
-@redhat@%defattr(-,root,root,-)
+@redhat@#%files(n:f:)	%%files%{?-f: -f %{-f*}}%{?-n: -n %{-n*}} %{?1}\
+@redhat@#%defattr(-,root,root,-)\
+@redhat@#%{nil}
+
 
 @mandrake@#---------------------------------------------------------------------
 @mandrake@#	Mandrake vendor specific macros

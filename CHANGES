@@ -79,6 +79,7 @@
 	- lclint-3.0.0.19 fiddles.
 	- simple automake wrapper for zlib.
 	- splint fiddles.
+	- make peace with gcc-3.1, remove compiler cruft.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

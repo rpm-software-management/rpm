@@ -3,8 +3,6 @@
  * \file rpmio/macro.c
  */
 
-/*@unused@*/ static int _debug = 0;
-
 #include "system.h"
 #include <stdarg.h>
 
