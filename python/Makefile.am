@@ -19,7 +19,7 @@ INCLUDES = -I. \
 	@INCPATH@
 
 noinst_HEADERS = hash.h header-py.h \
-	rpmal-py.h rpmbc-py.c rpmds-py.h rpmdb-py.h rpmfd-py.h \
+	rpmal-py.h rpmbc-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h \
 	rpmfi-py.h rpmmi-py.h rpmrc-py.h rpmte-py.h rpmts-py.h \
 	upgrade.h
 
