@@ -16,7 +16,7 @@
  * installs of a system w/o actually mounting filesystems.
  */
 struct fprintCacheEntry_s {
-    char * dirName;			/*!< path to existing directory */
+    const char * dirName;		/*!< path to existing directory */
     dev_t dev;				/*!< stat(2) device number */
     ino_t ino;				/*!< stat(2) inode number */
     int isFake;				/*!< (currently unused) */
@@ -90,14 +90,14 @@ fingerPrint	fpLookup(fingerPrintCache cache, const char * dirName,
 /**
  * Return hash value for a finger print.
  * Hash based on dev and inode only!
- * @param key   pointer to finger print entry
+ * @param key		pointer to finger print entry
  * @return hash value
  */
 unsigned int fpHashFunction(const void * key);
 
 /**
  * Compare two finger print entries.
- * exactly equivalent to FP_EQUAL.
+ * exactly equivalent to FP_EQUAL macro.
  * @param key1		finger print 1
  * @param key2		finger print 2
  * @return result of comparing key1 and key2

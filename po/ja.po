@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-07-05 16:33-0400\n"
+"POT-Creation-Date: 2000-07-09 00:38-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -127,7 +127,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.83 2000/07/05 20:39:16 jbj Exp $
+# $Id: ja.po,v 1.84 2000/07/09 04:42:13 jbj Exp $
 #: rpm.c:178 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -303,8 +303,7 @@ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr ""
 
 #: rpm.c:240 rpmqv.c:315
-msgid ""
-"                        [--justdb] [--notriggers] rpackage1 ... packageN"
+msgid "                        [--justdb] [--notriggers] package1 ... packageN"
 msgstr ""
 
 #: rpm.c:241
@@ -2049,113 +2048,118 @@ msgstr "%d 行目: %%files の解析エラー: %s"
 msgid "line %d: Second %%files list"
 msgstr "%d 行目: 2番目の %%files リスト"
 
-#: build/parsePreamble.c:144
+#: build/parsePreamble.c:142
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "アーキテクチャは除外されています: %s"
 
-#: build/parsePreamble.c:149
+#: build/parsePreamble.c:147
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "アーキテクチャは含まれていません: %s"
 
-#: build/parsePreamble.c:154
+#: build/parsePreamble.c:152
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS は除外されています: %s"
 
-#: build/parsePreamble.c:159
+#: build/parsePreamble.c:157
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS は含まれていません: %s"
 
-#: build/parsePreamble.c:173
+#: build/parsePreamble.c:171
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "%s フィールドはパッケージ中に必要です: %s"
 
-#: build/parsePreamble.c:198
+#: build/parsePreamble.c:196
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "パッケージ中の二重の %s エントリ: %s"
 
-#: build/parsePreamble.c:246
+#: build/parsePreamble.c:244
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/parsePreamble.c:264
+#: build/parsePreamble.c:262
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/parsePreamble.c:277
+#: build/parsePreamble.c:275
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "不明なアイコンタイプ: %s"
 
-#: build/parsePreamble.c:340
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "%d 行目: 不完全な形のタグ: %s"
 
 #. Empty field
-#: build/parsePreamble.c:348
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "%d 行目: 空のタグ: %s"
 
-#: build/parsePreamble.c:371 build/parsePreamble.c:378
+#: build/parsePreamble.c:368 build/parsePreamble.c:375
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:376
+#: build/parsePreamble.c:432 build/parseSpec.c:376
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
 
-#: build/parsePreamble.c:455
+#: build/parsePreamble.c:445
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "%d 行目: Prefixes は \"/\" で終わってはいけません: %s"
 
-#: build/parsePreamble.c:467
+#: build/parsePreamble.c:457
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "%d 行目: Docdir は '/' で始まらなくてはいけません: %s"
 
-#: build/parsePreamble.c:479
+#: build/parsePreamble.c:469
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "%d 行目: Epoch/Serial フィールドは番号でなければいけません: %s"
 
-#: build/parsePreamble.c:541
+#: build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "%d 行目: 不正な BuildArchitecture フォーマット: %s"
 
-#: build/parsePreamble.c:551
+#: build/parsePreamble.c:539
+#, fuzzy, c-format
+msgid "line %d: Invalid tag value: %s"
+msgstr "%d 行目: 不完全な形のタグ: %s"
+
+#: build/parsePreamble.c:549
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "内部エラー: にせのタグ %d"
 
-#: build/parsePreamble.c:691
+#: build/parsePreamble.c:692
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "不正なパッケージの指定: %s"
 
-#: build/parsePreamble.c:697
+#: build/parsePreamble.c:698
 #, c-format
 msgid "Package already exists: %s"
 msgstr "パッケージはすでに存在しています: %s"
 
-#: build/parsePreamble.c:724
+#: build/parsePreamble.c:725
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "%d 行目: 不明なタグ: %s"
 
-#: build/parsePreamble.c:749
+#: build/parsePreamble.c:750
 msgid "Spec file can't use BuildRoot"
 msgstr "スペックファイルは BuildRoot を使用できません"
 
@@ -2325,53 +2329,53 @@ msgstr "%d 行目: 不正な no%s 番号: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "%d 行目: 不正な %s 番号: %s\n"
 
-#: lib/cpio.c:359
+#: lib/cpio.c:358
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "%s を %s にする名前の変更ができません: %s\n"
 
-#: lib/cpio.c:365
+#: lib/cpio.c:364
 #, fuzzy, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/cpio.c:609
+#: lib/cpio.c:608
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "(エラー 0x%x)"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 msgid "Bad magic"
 msgstr "不正なマジック"
 
-#: lib/cpio.c:1074
+#: lib/cpio.c:1073
 msgid "Bad/unreadable  header"
 msgstr "不正な/不可読なヘッダ"
 
-#: lib/cpio.c:1092
+#: lib/cpio.c:1091
 msgid "Header size too big"
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/cpio.c:1093
+#: lib/cpio.c:1092
 #, fuzzy
 msgid "Unknown file type"
 msgstr "不明なファイルタイプ"
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1093
 msgid "Missing hard link"
 msgstr "ハードリンクが見つかりません"
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1094
 #, fuzzy
 msgid "Internal error"
 msgstr "内部エラー"
 
-#: lib/cpio.c:1104
+#: lib/cpio.c:1103
 #, fuzzy
 msgid " failed - "
 msgstr "失敗 - "
@@ -2468,51 +2472,51 @@ msgstr "%s と競合するパッケージがあります: %s\n"
 msgid "loop in prerequisite chain: %s"
 msgstr "prerequisite チェーンのループ: %s"
 
-#: lib/db1.c:95 lib/db3.c:433
+#: lib/db1.c:96 lib/db3.c:441
 #, c-format
 msgid "db%d error(%d)"
 msgstr ""
 
-#: lib/db1.c:97 lib/db3.c:435
+#: lib/db1.c:98 lib/db3.c:443
 #, c-format
 msgid " performing %s"
 msgstr ""
 
-#: lib/db1.c:382
+#: lib/db1.c:387
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:385
+#: lib/db1.c:390
 #, fuzzy, c-format
 msgid "removed db file        %s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: lib/db1.c:416
+#: lib/db1.c:421
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/db1.c:421
+#: lib/db1.c:426
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: lib/db1.c:430 rpmio/url.c:445
+#: lib/db1.c:435 rpmio/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
-#: lib/db1.c:446
+#: lib/db1.c:451
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "データベースの %s をロックできません"
 
-#: lib/db1.c:447 lib/db3.c:1080
+#: lib/db1.c:452 lib/db3.c:1097
 msgid "exclusive"
 msgstr "除外"
 
-#: lib/db1.c:447 lib/db3.c:1080
+#: lib/db1.c:452 lib/db3.c:1097
 msgid "shared"
 msgstr "共有"
 
@@ -2541,57 +2545,57 @@ msgstr ""
 msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
 msgstr ""
 
-#: lib/db3.c:249
+#: lib/db3.c:257
 #, c-format
 msgid "dbiSetConfig: unrecognized db option: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/db3.c:277
+#: lib/db3.c:285
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:285
+#: lib/db3.c:293
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:293
+#: lib/db3.c:301
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:460
+#: lib/db3.c:468
 #, fuzzy, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: lib/db3.c:476
+#: lib/db3.c:484
 #, fuzzy, c-format
 msgid "removed db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: lib/db3.c:513
+#: lib/db3.c:521
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:883
+#: lib/db3.c:900
 #, fuzzy, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: lib/db3.c:973
+#: lib/db3.c:990
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1095
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1102
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
@@ -3112,7 +3116,12 @@ msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s "
 "ファイルシステム上で)"
 
-#: lib/problems.c:116
+#: lib/problems.c:114
+#, c-format
+msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
+msgstr ""
+
+#: lib/problems.c:122
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
@@ -3400,7 +3409,7 @@ msgstr "レコード %s を %s にストアでエラー "
 msgid "error(%d) removing record %s from %s"
 msgstr "レコード %s を %s に削除でエラー"
 
-#: lib/rpmdb.c:785 lib/rpmdb.c:2291
+#: lib/rpmdb.c:785 lib/rpmdb.c:2305
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
@@ -3411,112 +3420,112 @@ msgid ""
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:1094
+#: lib/rpmdb.c:1096
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:91
+#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:91
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: lib/rpmdb.c:1717
+#: lib/rpmdb.c:1727
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "データベースエントリを削除します\n"
 
-#: lib/rpmdb.c:1728
+#: lib/rpmdb.c:1738
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: lib/rpmdb.c:1737
+#: lib/rpmdb.c:1747
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "name インデックス削除します\n"
 
-#: lib/rpmdb.c:1877
+#: lib/rpmdb.c:1889
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: lib/rpmdb.c:1933
+#: lib/rpmdb.c:1946
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1949
+#: lib/rpmdb.c:1962
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/rpmdb.c:1958
+#: lib/rpmdb.c:1971
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2316
+#: lib/rpmdb.c:2330
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2334
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: lib/rpmdb.c:2326
+#: lib/rpmdb.c:2340
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ディレクトリ %s の作成エラー: %s"
 
-#: lib/rpmdb.c:2335
+#: lib/rpmdb.c:2349
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2358
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2381
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rpmdb.c:2399
+#: lib/rpmdb.c:2413
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rpmdb.c:2417
+#: lib/rpmdb.c:2431
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rpmdb.c:2425
+#: lib/rpmdb.c:2439
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rpmdb.c:2427
+#: lib/rpmdb.c:2441
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rpmdb.c:2437
+#: lib/rpmdb.c:2451
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2439
+#: lib/rpmdb.c:2453
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -3663,53 +3672,58 @@ msgstr "%s:%d でデフォルト行は引数が多すぎます"
 msgid "Cannot expand %s"
 msgstr "伸張できません %s"
 
-#: lib/rpmrc.c:566
+#: lib/rpmrc.c:556
+#, c-format
+msgid "Cannot read %s, HOME is too large."
+msgstr ""
+
+#: lib/rpmrc.c:573
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "読み込むために %s をオープンできません: %s。"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:611
+#: lib/rpmrc.c:618
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr "%s を読むのに失敗: $s。"
 
-#: lib/rpmrc.c:648
+#: lib/rpmrc.c:655
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
 msgstr "%s:%d で ':' がありません"
 
-#: lib/rpmrc.c:665 lib/rpmrc.c:739
+#: lib/rpmrc.c:672 lib/rpmrc.c:746
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr "%s の引数がありません %s:%d"
 
-#: lib/rpmrc.c:682 lib/rpmrc.c:704
+#: lib/rpmrc.c:689 lib/rpmrc.c:711
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr "%s の伸張失敗 %s:%d \"%s\""
 
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:698
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s"
 msgstr "%s をオープンできません  %s:%d"
 
-#: lib/rpmrc.c:731
+#: lib/rpmrc.c:738
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr "%s 用のアーキテクチャが見つかりません %s:%d"
 
-#: lib/rpmrc.c:798
+#: lib/rpmrc.c:805
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr "'%s' の不正なオープン %s:%d"
 
-#: lib/rpmrc.c:1169
+#: lib/rpmrc.c:1176
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明なシステム: %s\n"
 
-#: lib/rpmrc.c:1170
+#: lib/rpmrc.c:1177
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com に連絡を下さい\n"
 
@@ -3863,30 +3877,35 @@ msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/transaction.c:412
+#: lib/transaction.c:413
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/transaction.c:438 lib/transaction.c:521
+#: lib/transaction.c:439 lib/transaction.c:522
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:443
+#: lib/transaction.c:444
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/transaction.c:514
+#: lib/transaction.c:515
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
-#: lib/transaction.c:666
+#: lib/transaction.c:667
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
+
+#: lib/transaction.c:1375
+#, c-format
+msgid "executing pre-transaction syscall: \"%s\"\n"
+msgstr ""
 
 #: lib/uninstall.c:39
 #, c-format

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.68 2000/07/05 20:39:18 jbj Exp $
+# $Id: sl.po,v 1.69 2000/07/09 04:42:14 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-05 16:33-0400\n"
+"POT-Creation-Date: 2000-07-09 00:38-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -302,8 +302,8 @@ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <imenik>] [--nodeps] [--allmatches]"
 
 #: rpm.c:240 rpmqv.c:315
-msgid ""
-"                        [--justdb] [--notriggers] rpackage1 ... packageN"
+#, fuzzy
+msgid "                        [--justdb] [--notriggers] package1 ... packageN"
 msgstr "                        [--justdb] [--notriggers] paket1 ... paketN"
 
 #: rpm.c:241
@@ -2051,113 +2051,118 @@ msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%Files: %s"
 msgid "line %d: Second %%files list"
 msgstr "vrstica %d: Drugi seznam %%Files"
 
-#: build/parsePreamble.c:144
+#: build/parsePreamble.c:142
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Arhitektura je izkljuèena: %s"
 
-#: build/parsePreamble.c:149
+#: build/parsePreamble.c:147
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Arhitektura ni vkljuèena: %s"
 
-#: build/parsePreamble.c:154
+#: build/parsePreamble.c:152
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS je izkljuèen: %s"
 
-#: build/parsePreamble.c:159
+#: build/parsePreamble.c:157
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS ni vkljuèen: %s"
 
-#: build/parsePreamble.c:173
+#: build/parsePreamble.c:171
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "polje %s mora obstojati v paketu: %s"
 
-#: build/parsePreamble.c:198
+#: build/parsePreamble.c:196
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Podvojeni vnosi %s v paketu: %s"
 
-#: build/parsePreamble.c:246
+#: build/parsePreamble.c:244
 #, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Ikone %s ni mo¾no odpreti: %s"
 
-#: build/parsePreamble.c:264
+#: build/parsePreamble.c:262
 #, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/parsePreamble.c:277
+#: build/parsePreamble.c:275
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Neznan tip ikone: %s"
 
-#: build/parsePreamble.c:340
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "vrstica %d: Deformirana znaèka: %s"
 
 #. Empty field
-#: build/parsePreamble.c:348
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "vrstica %d: Prazna znaèka: %s"
 
-#: build/parsePreamble.c:371 build/parsePreamble.c:378
+#: build/parsePreamble.c:368 build/parsePreamble.c:375
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:376
+#: build/parsePreamble.c:432 build/parseSpec.c:376
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot ne more biti \"/\": %s"
 
-#: build/parsePreamble.c:455
+#: build/parsePreamble.c:445
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "vrstica %d: Predpone se ne smejo konèati z /: %s"
 
-#: build/parsePreamble.c:467
+#: build/parsePreamble.c:457
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "vrstica %d: Docdir se mora zaèeti z \"/\": %s"
 
-#: build/parsePreamble.c:479
+#: build/parsePreamble.c:469
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "vrstica %d: polje Epoch/Serial mora biti ¹tevilo: %s"
 
-#: build/parsePreamble.c:541
+#: build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "vrstica %d: okvarjena oblika BuildArchitecture: %s"
 
-#: build/parsePreamble.c:551
+#: build/parsePreamble.c:539
+#, fuzzy, c-format
+msgid "line %d: Invalid tag value: %s"
+msgstr "vrstica %d: Deformirana znaèka: %s"
+
+#: build/parsePreamble.c:549
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Interna napaka: Neprava znaèka %d"
 
-#: build/parsePreamble.c:691
+#: build/parsePreamble.c:692
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Okvarjeno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:697
+#: build/parsePreamble.c:698
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Paket ¾e obstaja: %s"
 
-#: build/parsePreamble.c:724
+#: build/parsePreamble.c:725
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "vrstica %d: Neznana znaèka: %s"
 
-#: build/parsePreamble.c:749
+#: build/parsePreamble.c:750
 msgid "Spec file can't use BuildRoot"
 msgstr "Datoteka spec ne more uporabiti BuildRoot"
 
@@ -2326,51 +2331,51 @@ msgstr "vrstica %d: Okvarjeno ¹tevilo no%s: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "vrstica %d: Okvarjeno ¹tevilo %s: %s\n"
 
-#: lib/cpio.c:359
+#: lib/cpio.c:358
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "ni mo¾no preimenovati %s v %s: %s\n"
 
-#: lib/cpio.c:365
+#: lib/cpio.c:364
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "ni mo¾no zbrisati %s: %s\n"
 
-#: lib/cpio.c:609
+#: lib/cpio.c:608
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(napaka 0x%x)"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 msgid "Bad magic"
 msgstr "Okvarjeno magièno ¹tevilo"
 
-#: lib/cpio.c:1074
+#: lib/cpio.c:1073
 msgid "Bad/unreadable  header"
 msgstr "Okvarjena/neberljiva glava"
 
-#: lib/cpio.c:1092
+#: lib/cpio.c:1091
 msgid "Header size too big"
 msgstr "Glava predolga"
 
-#: lib/cpio.c:1093
+#: lib/cpio.c:1092
 msgid "Unknown file type"
 msgstr "Neznan tip datoteke"
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1093
 msgid "Missing hard link"
 msgstr "Trda povezava manjka"
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1094
 msgid "Internal error"
 msgstr "Interna napaka"
 
-#: lib/cpio.c:1104
+#: lib/cpio.c:1103
 msgid " failed - "
 msgstr " neuspe¹no - "
 
@@ -2466,51 +2471,51 @@ msgstr "paket %s v sporu: %s\n"
 msgid "loop in prerequisite chain: %s"
 msgstr "zanka v predpogojevani verigi: %s"
 
-#: lib/db1.c:95 lib/db3.c:433
+#: lib/db1.c:96 lib/db3.c:441
 #, c-format
 msgid "db%d error(%d)"
 msgstr ""
 
-#: lib/db1.c:97 lib/db3.c:435
+#: lib/db1.c:98 lib/db3.c:443
 #, c-format
 msgid " performing %s"
 msgstr ""
 
-#: lib/db1.c:382
+#: lib/db1.c:387
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:385
+#: lib/db1.c:390
 #, fuzzy, c-format
 msgid "removed db file        %s\n"
 msgstr "odstranjujemo seznam datotek za %s\n"
 
-#: lib/db1.c:416
+#: lib/db1.c:421
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "okvarjeno stanje datoteke: %s"
 
-#: lib/db1.c:421
+#: lib/db1.c:426
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "odpiramo datoteko z naèinom 0x%x v %s\n"
 
-#: lib/db1.c:430 rpmio/url.c:445
+#: lib/db1.c:435 rpmio/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspe¹no odpiranje %s: %s\n"
 
-#: lib/db1.c:446
+#: lib/db1.c:451
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: lib/db1.c:447 lib/db3.c:1080
+#: lib/db1.c:452 lib/db3.c:1097
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: lib/db1.c:447 lib/db3.c:1080
+#: lib/db1.c:452 lib/db3.c:1097
 msgid "shared"
 msgstr "deljeno"
 
@@ -2539,57 +2544,57 @@ msgstr ""
 msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
 msgstr ""
 
-#: lib/db3.c:249
+#: lib/db3.c:257
 #, c-format
 msgid "dbiSetConfig: unrecognized db option: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/db3.c:277
+#: lib/db3.c:285
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:285
+#: lib/db3.c:293
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:293
+#: lib/db3.c:301
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:460
+#: lib/db3.c:468
 #, fuzzy, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr "odstranjujemo seznam datotek za %s\n"
 
-#: lib/db3.c:476
+#: lib/db3.c:484
 #, fuzzy, c-format
 msgid "removed db environment %s/%s\n"
 msgstr "odstranjujemo seznam datotek za %s\n"
 
-#: lib/db3.c:513
+#: lib/db3.c:521
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:883
+#: lib/db3.c:900
 #, fuzzy, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "odstranjujemo seznam datotek za %s\n"
 
-#: lib/db3.c:973
+#: lib/db3.c:990
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiramo datoteko z naèinom 0x%x v %s\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1095
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1102
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "odstranjujemo seznam datotek za %s\n"
@@ -3083,7 +3088,12 @@ msgstr "paket %s-%s-%s (ki je novej¹i kot %s-%s-%s) je ¾e name¹èen"
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr "namestitev paketa %s-%s-%s zahteva %ld%cb na datoteènem sistemu %s"
 
-#: lib/problems.c:116
+#: lib/problems.c:114
+#, c-format
+msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
+msgstr ""
+
+#: lib/problems.c:122
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr "neznana napaka %d ob rokovanju s paketom %s-%s-%s"
@@ -3369,7 +3379,7 @@ msgstr "napaka pri pisanju zapisa %s v %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "napaka pri brisanju zapisa %s iz %s"
 
-#: lib/rpmdb.c:785 lib/rpmdb.c:2291
+#: lib/rpmdb.c:785 lib/rpmdb.c:2305
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
@@ -3380,112 +3390,112 @@ msgid ""
 msgstr "staro obliko podatkove zbirke pretvorite v novo z --rebuilddb"
 
 #. error
-#: lib/rpmdb.c:1094
+#: lib/rpmdb.c:1096
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "napaka pri iskanju paketa %s\n"
 
-#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:91
+#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:91
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "ni mo¾no prebrati glave pri %d za vpogled"
 
-#: lib/rpmdb.c:1717
+#: lib/rpmdb.c:1727
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstranjujemo vnose v podatkovni zbirki\n"
 
-#: lib/rpmdb.c:1728
+#: lib/rpmdb.c:1738
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
-#: lib/rpmdb.c:1737
+#: lib/rpmdb.c:1747
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "odstranjujemo seznam imen\n"
 
-#: lib/rpmdb.c:1877
+#: lib/rpmdb.c:1889
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "napaka pri iskanju paketa %s\n"
 
-#: lib/rpmdb.c:1933
+#: lib/rpmdb.c:1946
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1949
+#: lib/rpmdb.c:1962
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/rpmdb.c:1958
+#: lib/rpmdb.c:1971
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2316
+#: lib/rpmdb.c:2330
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2334
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "zaèasna podatkovna zbirka %s ¾e obstaja"
 
-#: lib/rpmdb.c:2326
+#: lib/rpmdb.c:2340
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ustvarjamo imenik: %s\n"
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "napaka pri ustvarjanju imenika %s: %s"
 
-#: lib/rpmdb.c:2335
+#: lib/rpmdb.c:2349
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "odpiramo staro podatkovno zbirko\n"
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2358
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "odpiramo novo podatkovno zbirko\n"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2381
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "zapis ¹t. %d v zbirki je okvarjen -- preskakujemo."
 
-#: lib/rpmdb.c:2399
+#: lib/rpmdb.c:2413
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: lib/rpmdb.c:2417
+#: lib/rpmdb.c:2431
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke neuspe¹na; stara ostaja na istem mestu\n"
 
-#: lib/rpmdb.c:2425
+#: lib/rpmdb.c:2439
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo neuspe¹na!\n"
 
-#: lib/rpmdb.c:2427
+#: lib/rpmdb.c:2441
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "posku¹amo povrniti z nadomestitvijo datotek v %s z datotekami iz %s"
 
-#: lib/rpmdb.c:2437
+#: lib/rpmdb.c:2451
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ustvarjamo imenik: %s\n"
 
-#: lib/rpmdb.c:2439
+#: lib/rpmdb.c:2453
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
@@ -3632,53 +3642,58 @@ msgstr "Preveè argumentov v privzeti vrstici v %s:%d"
 msgid "Cannot expand %s"
 msgstr "Ni mo¾no raz¹iriti %s"
 
-#: lib/rpmrc.c:566
+#: lib/rpmrc.c:556
+#, c-format
+msgid "Cannot read %s, HOME is too large."
+msgstr ""
+
+#: lib/rpmrc.c:573
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "Ni mo¾no odpreti %s za branje: %s."
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:611
+#: lib/rpmrc.c:618
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr "Neuspe¹no branje %s: %s."
 
-#: lib/rpmrc.c:648
+#: lib/rpmrc.c:655
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
 msgstr "manjkajoèi ,:` (najden 0x%02x) v %s:%d"
 
-#: lib/rpmrc.c:665 lib/rpmrc.c:739
+#: lib/rpmrc.c:672 lib/rpmrc.c:746
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr "manjkajoèi argument za %s v %s:%d"
 
-#: lib/rpmrc.c:682 lib/rpmrc.c:704
+#: lib/rpmrc.c:689 lib/rpmrc.c:711
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr "izraz %s neuspe¹en v %s:%d \"%s\""
 
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:698
 #, c-format
 msgid "cannot open %s at %s:%d: %s"
 msgstr "ni mo¾no odpreti %s v %s:%d: %s"
 
-#: lib/rpmrc.c:731
+#: lib/rpmrc.c:738
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr "manjkajoèa arhitekture za %s v %s:%d"
 
-#: lib/rpmrc.c:798
+#: lib/rpmrc.c:805
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr "okvarjena izbira ,%s` v %s:%d"
 
-#: lib/rpmrc.c:1169
+#: lib/rpmrc.c:1176
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznan sistem: %s\n"
 
-#: lib/rpmrc.c:1170
+#: lib/rpmrc.c:1177
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Prosimo, pi¹ite na rpm-list@redhat.com\n"
 
@@ -3819,30 +3834,35 @@ msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/transaction.c:412
+#: lib/transaction.c:413
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr "izkljuèujemo datoteko %s%s\n"
 
-#: lib/transaction.c:438 lib/transaction.c:521
+#: lib/transaction.c:439 lib/transaction.c:522
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "izkljuèujemo imenik %s\n"
 
-#: lib/transaction.c:443
+#: lib/transaction.c:444
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "prestavljamo %s v %s\n"
 
-#: lib/transaction.c:514
+#: lib/transaction.c:515
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "prestavljamo imenik %s v %s\n"
 
-#: lib/transaction.c:666
+#: lib/transaction.c:667
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
+
+#: lib/transaction.c:1375
+#, c-format
+msgid "executing pre-transaction syscall: \"%s\"\n"
+msgstr ""
 
 #: lib/uninstall.c:39
 #, c-format

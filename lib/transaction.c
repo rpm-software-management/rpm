@@ -1213,7 +1213,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     struct availablePackage * alp;
     rpmProblemSet probs;
     Header * hdrs;
-    int fileCount;
     int totalFileCount = 0;
     hashTable ht;
     TFI_t * flList, * fi;
@@ -1313,7 +1312,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    rpmdbFreeIterator(mi);
 	}
 
-	/* XXX why should multilib not display problems */
+	/* XXX multilib should not display "already installed" problems */
 	if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !alp->multiLib) {
 	    rpmdbMatchIterator mi;
 	    mi = rpmdbInitIterator(ts->db, RPMTAG_NAME, alp->name, 0);
@@ -1327,8 +1326,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    rpmdbFreeIterator(mi);
 	}
 
-	if (headerGetEntry(alp->h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
-	    totalFileCount += fileCount;
+	totalFileCount += alp->filesCount;
+
     }
 
     /* FIXME: it seems a bit silly to read in all of these headers twice */
@@ -1336,6 +1335,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     if (ts->numRemovedPackages > 0) {
 	rpmdbMatchIterator mi;
 	Header h;
+	int fileCount;
 
 	mi = rpmdbInitIterator(ts->db, RPMDBI_PACKAGES, NULL, 0);
 	rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
@@ -1356,12 +1356,31 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
        calling fpLookupList only once. I'm not sure that the speedup is
        worth the trouble though. */
     for (fi = flList, oc = 0; oc < ts->orderCount; fi++, oc++) {
+	const char **preTrans;
+	int preTransCount;
+
 	memset(fi, 0, sizeof(*fi));
+	preTrans = NULL;
+	preTransCount = 0;
 
 	switch (ts->order[oc].type) {
 	case TR_ADDED:
 	    i = ts->order[oc].u.addedIndex;
 	    alp = ts->addedPackages.list + ts->order[oc].u.addedIndex;
+
+	    if (!(transFlags & RPMTRANS_FLAG_TEST) &&
+		headerGetEntry(alp->h, RPMTAG_PRETRANSACTION, NULL,
+			(void **) &preTrans, &preTransCount)) {
+		for (j = 0; j < preTransCount; j++) {
+		    rpmMessage(RPMMESS_DEBUG, _("executing pre-transaction syscall: \"%s\"\n"), preTrans[j]);
+		    rc = rpmSyscall(preTrans[j], 0);
+		    if (rc != 0)
+			psAppend(probs, RPMPROB_BADPRETRANS, alp->key, alp->h,
+			    preTrans[j], NULL, rc);
+		}
+		xfree(preTrans);
+		preTrans = NULL;
+	    }
 
 	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_BASENAMES, NULL,
 					 NULL, &fi->fc)) {

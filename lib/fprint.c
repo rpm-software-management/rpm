@@ -132,9 +132,14 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    fp.subDir = cleanDirName + (end - buf);
 	    if (fp.subDir[0] == '/' && fp.subDir[1] != '\0')
 		fp.subDir++;
-	    if (fp.subDir[0] == '\0')
+	    if (fp.subDir[0] == '\0' ||
+	    /* XXX don't bother saving '/' as subdir */
+	       (fp.subDir[0] == '/' && fp.subDir[1] == '\0'))
 		fp.subDir = NULL;
 	    fp.baseName = baseName;
+fprintf(stderr, "*** found (%x,%x) %s %s %s\n",
+(unsigned) fp.entry->dev, (unsigned) fp.entry->ino,
+fp.entry->dirName, fp.subDir, fp.baseName);
 	    if (!scareMemory && fp.subDir != NULL)
 		fp.subDir = xstrdup(fp.subDir);
 	    return fp;

@@ -103,11 +103,17 @@ const char * rpmProblemString(rpmProblem prob)
       case RPMPROB_DISKSPACE:
 	sprintf(buf, _("installing package %s-%s-%s needs %ld%cb on the %s"
 		       " filesystem"), name, version, release, 
-		       prob.ulong1 > (1024*1024) ? 
-			(prob.ulong1 + 1024 * 1024 - 1) / (1024 * 1024) :
-				(prob.ulong1 + 1023) / 1024,
-		       prob.ulong1 > (1024*1024) ? 'M' : 'K',
-		       prob.str1);
+			prob.ulong1 > (1024*1024)
+			    ? (prob.ulong1 + 1024 * 1024 - 1) / (1024 * 1024)
+			    : (prob.ulong1 + 1023) / 1024,
+			prob.ulong1 > (1024*1024) ? 'M' : 'K',
+			prob.str1);
+	break;
+
+      case RPMPROB_BADPRETRANS:
+	sprintf(buf, _("package %s-%s-%s pre-transaction syscall(s): %s failed: %s"),
+			name, version, release, 
+			prob.str1, strerror(prob.ulong1));
 	break;
 
       case RPMPROB_REQUIRES:

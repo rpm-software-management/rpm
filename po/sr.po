@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-05 16:33-0400\n"
+"POT-Creation-Date: 2000-07-09 00:38-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -294,8 +294,7 @@ msgstr ""
 
 #: rpm.c:240 rpmqv.c:315
 #, fuzzy
-msgid ""
-"                        [--justdb] [--notriggers] rpackage1 ... packageN"
+msgid "                        [--justdb] [--notriggers] package1 ... packageN"
 msgstr "\t\t\t   paket1 ...paketN"
 
 #: rpm.c:241
@@ -2070,113 +2069,118 @@ msgstr ""
 msgid "line %d: Second %%files list"
 msgstr ""
 
-#: build/parsePreamble.c:144
+#: build/parsePreamble.c:142
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:149
+#: build/parsePreamble.c:147
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:154
+#: build/parsePreamble.c:152
 #, c-format
 msgid "OS is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:159
+#: build/parsePreamble.c:157
 #, c-format
 msgid "OS is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:173
+#: build/parsePreamble.c:171
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:198
+#: build/parsePreamble.c:196
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:246
+#: build/parsePreamble.c:244
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/parsePreamble.c:264
+#: build/parsePreamble.c:262
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/parsePreamble.c:277
+#: build/parsePreamble.c:275
 #, fuzzy, c-format
 msgid "Unknown icon type: %s"
 msgstr "(nepoznat tip)"
 
-#: build/parsePreamble.c:340
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:348
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:371 build/parsePreamble.c:378
+#: build/parsePreamble.c:368 build/parsePreamble.c:375
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:376
+#: build/parsePreamble.c:432 build/parseSpec.c:376
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:455
+#: build/parsePreamble.c:445
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:467
+#: build/parsePreamble.c:457
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/parsePreamble.c:479
+#: build/parsePreamble.c:469
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:541
+#: build/parsePreamble.c:527
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "nedostaje arhitektura za %s na %s:%d"
 
-#: build/parsePreamble.c:551
+#: build/parsePreamble.c:539
+#, fuzzy, c-format
+msgid "line %d: Invalid tag value: %s"
+msgstr "pogre¹an broj paketa: %s\n"
+
+#: build/parsePreamble.c:549
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:691
+#: build/parsePreamble.c:692
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Opcije odrednice paketa:"
 
-#: build/parsePreamble.c:697
+#: build/parsePreamble.c:698
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:724
+#: build/parsePreamble.c:725
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:749
+#: build/parsePreamble.c:750
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2345,53 +2349,53 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/cpio.c:359
+#: lib/cpio.c:358
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/cpio.c:365
+#: lib/cpio.c:364
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:609
+#: lib/cpio.c:608
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "gre¹ka: "
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1074
+#: lib/cpio.c:1073
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1092
+#: lib/cpio.c:1091
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1093
+#: lib/cpio.c:1092
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(nepoznat tip)"
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1093
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1094
 #, fuzzy
 msgid "Internal error"
 msgstr "fatalna gre¹ka: "
 
-#: lib/cpio.c:1104
+#: lib/cpio.c:1103
 #, fuzzy
 msgid " failed - "
 msgstr "PGP omanuo"
@@ -2486,51 +2490,51 @@ msgstr "paket %s nije naveden u %s"
 msgid "loop in prerequisite chain: %s"
 msgstr "petlja u lancu: %s"
 
-#: lib/db1.c:95 lib/db3.c:433
+#: lib/db1.c:96 lib/db3.c:441
 #, c-format
 msgid "db%d error(%d)"
 msgstr ""
 
-#: lib/db1.c:97 lib/db3.c:435
+#: lib/db1.c:98 lib/db3.c:443
 #, c-format
 msgid " performing %s"
 msgstr ""
 
-#: lib/db1.c:382
+#: lib/db1.c:387
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:385
+#: lib/db1.c:390
 #, c-format
 msgid "removed db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:416
+#: lib/db1.c:421
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/db1.c:421
+#: lib/db1.c:426
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/db1.c:430 rpmio/url.c:445
+#: lib/db1.c:435 rpmio/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/db1.c:446
+#: lib/db1.c:451
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
 
-#: lib/db1.c:447 lib/db3.c:1080
+#: lib/db1.c:452 lib/db3.c:1097
 msgid "exclusive"
 msgstr "ekskluzivno"
 
-#: lib/db1.c:447 lib/db3.c:1080
+#: lib/db1.c:452 lib/db3.c:1097
 msgid "shared"
 msgstr "deljeno"
 
@@ -2559,57 +2563,57 @@ msgstr ""
 msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
 msgstr ""
 
-#: lib/db3.c:249
+#: lib/db3.c:257
 #, c-format
 msgid "dbiSetConfig: unrecognized db option: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/db3.c:277
+#: lib/db3.c:285
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:285
+#: lib/db3.c:293
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:293
+#: lib/db3.c:301
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:460
+#: lib/db3.c:468
 #, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:476
+#: lib/db3.c:484
 #, c-format
 msgid "removed db environment %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:513
+#: lib/db3.c:521
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:883
+#: lib/db3.c:900
 #, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr ""
 
-#: lib/db3.c:973
+#: lib/db3.c:990
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1095
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1102
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""
@@ -3116,7 +3120,12 @@ msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:116
+#: lib/problems.c:114
+#, fuzzy, c-format
+msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
+msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
+
+#: lib/problems.c:122
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""
@@ -3405,7 +3414,7 @@ msgstr "gre¹ka zapisivanja sloga %s u %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:785 lib/rpmdb.c:2291
+#: lib/rpmdb.c:785 lib/rpmdb.c:2305
 msgid "no dbpath has been set"
 msgstr "dbpath nije odreðen"
 
@@ -3416,110 +3425,110 @@ msgid ""
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:1094
+#: lib/rpmdb.c:1096
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:91
+#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:91
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "ne mogu da proèitam zaglavlje na %d za proveru"
 
-#: lib/rpmdb.c:1717
+#: lib/rpmdb.c:1727
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1728
+#: lib/rpmdb.c:1738
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:1737
+#: lib/rpmdb.c:1747
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:1877
+#: lib/rpmdb.c:1889
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "gre¹ka kod potrage za paketom %s\n"
 
-#: lib/rpmdb.c:1933
+#: lib/rpmdb.c:1946
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1949
+#: lib/rpmdb.c:1962
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1958
+#: lib/rpmdb.c:1971
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2316
+#: lib/rpmdb.c:2330
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2334
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: lib/rpmdb.c:2326
+#: lib/rpmdb.c:2340
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:2335
+#: lib/rpmdb.c:2349
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2358
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2381
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "slog broj %d u bazi podataka je neispravan -- preskaèem ga"
 
-#: lib/rpmdb.c:2399
+#: lib/rpmdb.c:2413
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "ne mogu da dodam slog originalno na %d"
 
-#: lib/rpmdb.c:2417
+#: lib/rpmdb.c:2431
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2425
+#: lib/rpmdb.c:2439
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2427
+#: lib/rpmdb.c:2441
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2437
+#: lib/rpmdb.c:2451
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:2439
+#: lib/rpmdb.c:2453
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -3669,53 +3678,58 @@ msgstr "Premnogo argumenata u podrazumevanoj liniji na %s:%d"
 msgid "Cannot expand %s"
 msgstr ""
 
-#: lib/rpmrc.c:566
+#: lib/rpmrc.c:556
+#, c-format
+msgid "Cannot read %s, HOME is too large."
+msgstr ""
+
+#: lib/rpmrc.c:573
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:611
+#: lib/rpmrc.c:618
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/rpmrc.c:648
+#: lib/rpmrc.c:655
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
 msgstr "nedostaje ':' na %s:%d"
 
-#: lib/rpmrc.c:665 lib/rpmrc.c:739
+#: lib/rpmrc.c:672 lib/rpmrc.c:746
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr "nedostaje argument za %s na %s:%d"
 
-#: lib/rpmrc.c:682 lib/rpmrc.c:704
+#: lib/rpmrc.c:689 lib/rpmrc.c:711
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:698
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/rpmrc.c:731
+#: lib/rpmrc.c:738
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr "nedostaje arhitektura za %s na %s:%d"
 
-#: lib/rpmrc.c:798
+#: lib/rpmrc.c:805
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr "lo¹a opcija '%s' na %s:%d"
 
-#: lib/rpmrc.c:1169
+#: lib/rpmrc.c:1176
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1170
+#: lib/rpmrc.c:1177
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3868,29 +3882,34 @@ msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/transaction.c:412
+#: lib/transaction.c:413
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/transaction.c:438 lib/transaction.c:521
+#: lib/transaction.c:439 lib/transaction.c:522
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:443
+#: lib/transaction.c:444
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:514
+#: lib/transaction.c:515
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/transaction.c:666
+#: lib/transaction.c:667
 #, c-format
 msgid "%s skipped due to missingok flag\n"
+msgstr ""
+
+#: lib/transaction.c:1375
+#, c-format
+msgid "executing pre-transaction syscall: \"%s\"\n"
 msgstr ""
 
 #: lib/uninstall.c:39
@@ -4386,9 +4405,6 @@ msgstr "neuspelo kreiranje %s\n"
 #, fuzzy
 #~ msgid "package %s is now obsolete and will be removed\n"
 #~ msgstr "paket %s nije instaliran\n"
-
-#~ msgid "package %s-%s-%s contain shared files\n"
-#~ msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
 #, fuzzy
 #~ msgid "package %s contains no files"

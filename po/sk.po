@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-07-05 16:33-0400\n"
+"POT-Creation-Date: 2000-07-09 00:38-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -308,8 +308,8 @@ msgstr ""
 "                           [--dbpath <adresár>] [--nodeps] [--allmatches]"
 
 #: rpm.c:240 rpmqv.c:315
-msgid ""
-"                        [--justdb] [--notriggers] rpackage1 ... packageN"
+#, fuzzy
+msgid "                        [--justdb] [--notriggers] package1 ... packageN"
 msgstr "                           [--justdb] [--notriggers] balík1 ... balíkN"
 
 #: rpm.c:241
@@ -2070,113 +2070,118 @@ msgstr "riadok %d: Chyba pri analýze %%files: %s"
 msgid "line %d: Second %%files list"
 msgstr "riadok %d: Druhý %%files zoznam"
 
-#: build/parsePreamble.c:144
+#: build/parsePreamble.c:142
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Architektúra je vynechaná: %s"
 
-#: build/parsePreamble.c:149
+#: build/parsePreamble.c:147
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Architektúra nie je obsiahnutá: %s"
 
-#: build/parsePreamble.c:154
+#: build/parsePreamble.c:152
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS je vynechaný: %s"
 
-#: build/parsePreamble.c:159
+#: build/parsePreamble.c:157
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS nie je obsiahnutý: %s"
 
-#: build/parsePreamble.c:173
+#: build/parsePreamble.c:171
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "V balíku musí existova» pole %s: %s"
 
-#: build/parsePreamble.c:198
+#: build/parsePreamble.c:196
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Duplicitné záznamy %s v balíku: %s"
 
-#: build/parsePreamble.c:246
+#: build/parsePreamble.c:244
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/parsePreamble.c:264
+#: build/parsePreamble.c:262
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/parsePreamble.c:277
+#: build/parsePreamble.c:275
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Neznámy typ ikony: %s"
 
-#: build/parsePreamble.c:340
+#: build/parsePreamble.c:338
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "riadok %d: Znetvorený popis: %s"
 
 #. Empty field
-#: build/parsePreamble.c:348
+#: build/parsePreamble.c:346
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "riadok %d: Prázdny popis: %s"
 
-#: build/parsePreamble.c:371 build/parsePreamble.c:378
+#: build/parsePreamble.c:368 build/parsePreamble.c:375
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:442 build/parseSpec.c:376
+#: build/parsePreamble.c:432 build/parseSpec.c:376
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "riadok %d: BuildRoot nemô¾e by» \"/\": %s"
 
-#: build/parsePreamble.c:455
+#: build/parsePreamble.c:445
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "riadok %d: Prefixy nesmú konèi» \"/\": %s"
 
-#: build/parsePreamble.c:467
+#: build/parsePreamble.c:457
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "riadok %d: Docdir musí zaèína» '/': %s"
 
-#: build/parsePreamble.c:479
+#: build/parsePreamble.c:469
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "riadok %d: Epoch/Serial pole musí by» èíslo: %s"
 
-#: build/parsePreamble.c:541
+#: build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "riadok %d: Chybný formát BuildArchitecture: %s"
 
-#: build/parsePreamble.c:551
+#: build/parsePreamble.c:539
+#, fuzzy, c-format
+msgid "line %d: Invalid tag value: %s"
+msgstr "riadok %d: Znetvorený popis: %s"
+
+#: build/parsePreamble.c:549
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Interná chyba: Èudný popis %d "
 
-#: build/parsePreamble.c:691
+#: build/parsePreamble.c:692
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Chybná ¹pecifikácia balíka: %s"
 
-#: build/parsePreamble.c:697
+#: build/parsePreamble.c:698
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Balík u¾ existuje: %s"
 
-#: build/parsePreamble.c:724
+#: build/parsePreamble.c:725
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "riadok %d: Neznámy popis: %s"
 
-#: build/parsePreamble.c:749
+#: build/parsePreamble.c:750
 msgid "Spec file can't use BuildRoot"
 msgstr "Spec súbor nemô¾e pou¾i» BuildRoot"
 
@@ -2343,51 +2348,51 @@ msgstr "riadok %d: Chybné no%s èíslo: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
 
-#: lib/cpio.c:359
+#: lib/cpio.c:358
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "premenovanie %s na %s zlyhalo: %s\n"
 
-#: lib/cpio.c:365
+#: lib/cpio.c:364
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "zmazanie %s zlyhalo: %s\n"
 
-#: lib/cpio.c:609
+#: lib/cpio.c:608
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(chyba 0x%x)"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 msgid "Bad magic"
 msgstr "Chybné magické èíslo"
 
-#: lib/cpio.c:1074
+#: lib/cpio.c:1073
 msgid "Bad/unreadable  header"
 msgstr "Chybná/neèitateµná hlavièka"
 
-#: lib/cpio.c:1092
+#: lib/cpio.c:1091
 msgid "Header size too big"
 msgstr "Priveµká hlavièka"
 
-#: lib/cpio.c:1093
+#: lib/cpio.c:1092
 msgid "Unknown file type"
 msgstr "Neznámy typ súboru"
 
-#: lib/cpio.c:1094
+#: lib/cpio.c:1093
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1095
+#: lib/cpio.c:1094
 msgid "Internal error"
 msgstr "Interná chyba"
 
-#: lib/cpio.c:1104
+#: lib/cpio.c:1103
 msgid " failed - "
 msgstr " zlyhalo - "
 
@@ -2481,51 +2486,51 @@ msgstr "balík %s koliduje: %s\n"
 msgid "loop in prerequisite chain: %s"
 msgstr "sluèka v re»azi po¾iadaviek: %s"
 
-#: lib/db1.c:95 lib/db3.c:433
+#: lib/db1.c:96 lib/db3.c:441
 #, c-format
 msgid "db%d error(%d)"
 msgstr ""
 
-#: lib/db1.c:97 lib/db3.c:435
+#: lib/db1.c:98 lib/db3.c:443
 #, c-format
 msgid " performing %s"
 msgstr ""
 
-#: lib/db1.c:382
+#: lib/db1.c:387
 #, c-format
 msgid "closed  db file        %s\n"
 msgstr ""
 
-#: lib/db1.c:385
+#: lib/db1.c:390
 #, fuzzy, c-format
 msgid "removed db file        %s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/db1.c:416
+#: lib/db1.c:421
 #, fuzzy, c-format
 msgid "bad db file %s"
 msgstr "chybný stav súboru: %s"
 
-#: lib/db1.c:421
+#: lib/db1.c:426
 #, fuzzy, c-format
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/db1.c:430 rpmio/url.c:445
+#: lib/db1.c:435 rpmio/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/db1.c:446
+#: lib/db1.c:451
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: lib/db1.c:447 lib/db3.c:1080
+#: lib/db1.c:452 lib/db3.c:1097
 msgid "exclusive"
 msgstr "výhradný"
 
-#: lib/db1.c:447 lib/db3.c:1080
+#: lib/db1.c:452 lib/db3.c:1097
 msgid "shared"
 msgstr "zdieµaný"
 
@@ -2554,57 +2559,57 @@ msgstr ""
 msgid "opening db index       %s/%s(%s) %s mode=0x%x\n"
 msgstr ""
 
-#: lib/db3.c:249
+#: lib/db3.c:257
 #, c-format
 msgid "dbiSetConfig: unrecognized db option: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/db3.c:277
+#: lib/db3.c:285
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:285
+#: lib/db3.c:293
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:293
+#: lib/db3.c:301
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:460
+#: lib/db3.c:468
 #, fuzzy, c-format
 msgid "closed  db environment %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/db3.c:476
+#: lib/db3.c:484
 #, fuzzy, c-format
 msgid "removed db environment %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/db3.c:513
+#: lib/db3.c:521
 #, c-format
 msgid "opening db environment %s/%s %s\n"
 msgstr ""
 
-#: lib/db3.c:883
+#: lib/db3.c:900
 #, fuzzy, c-format
 msgid "closed  db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: lib/db3.c:973
+#: lib/db3.c:990
 #, fuzzy, c-format
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/db3.c:1078
+#: lib/db3.c:1095
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: lib/db3.c:1085
+#: lib/db3.c:1102
 #, fuzzy, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
@@ -3097,7 +3102,12 @@ msgstr "balík %s nie je nain¹talovaný\n"
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: lib/problems.c:116
+#: lib/problems.c:114
+#, c-format
+msgid "package %s-%s-%s pre-transaction syscall(s): %s failed: %s"
+msgstr ""
+
+#: lib/problems.c:122
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""
@@ -3384,7 +3394,7 @@ msgstr "chyba pri zápise záznamu %s do %s"
 msgid "error(%d) removing record %s from %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: lib/rpmdb.c:785 lib/rpmdb.c:2291
+#: lib/rpmdb.c:785 lib/rpmdb.c:2305
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
@@ -3397,111 +3407,111 @@ msgstr ""
 "databázy v novom formáte"
 
 #. error
-#: lib/rpmdb.c:1094
+#: lib/rpmdb.c:1096
 #, fuzzy, c-format
 msgid "error(%d) counting packages"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: lib/rpmdb.c:1152 lib/rpmdb.c:1665 lib/uninstall.c:91
+#: lib/rpmdb.c:1155 lib/rpmdb.c:1674 lib/uninstall.c:91
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: lib/rpmdb.c:1717
+#: lib/rpmdb.c:1727
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstraòuje sa záznam z databázy\n"
 
-#: lib/rpmdb.c:1728
+#: lib/rpmdb.c:1738
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:1737
+#: lib/rpmdb.c:1747
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:1877
+#: lib/rpmdb.c:1889
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: lib/rpmdb.c:1933
+#: lib/rpmdb.c:1946
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1949
+#: lib/rpmdb.c:1962
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:1958
+#: lib/rpmdb.c:1971
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2316
+#: lib/rpmdb.c:2330
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2334
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rpmdb.c:2326
+#: lib/rpmdb.c:2340
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rpmdb.c:2335
+#: lib/rpmdb.c:2349
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2358
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2381
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rpmdb.c:2399
+#: lib/rpmdb.c:2413
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rpmdb.c:2417
+#: lib/rpmdb.c:2431
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rpmdb.c:2425
+#: lib/rpmdb.c:2439
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rpmdb.c:2427
+#: lib/rpmdb.c:2441
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rpmdb.c:2437
+#: lib/rpmdb.c:2451
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:2439
+#: lib/rpmdb.c:2453
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
@@ -3648,53 +3658,58 @@ msgstr "Priveµa argumentov v implicitnom riadku na %s:%d"
 msgid "Cannot expand %s"
 msgstr "Nie je mo¾né expandova» %s"
 
-#: lib/rpmrc.c:566
+#: lib/rpmrc.c:556
+#, c-format
+msgid "Cannot read %s, HOME is too large."
+msgstr ""
+
+#: lib/rpmrc.c:573
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:611
+#: lib/rpmrc.c:618
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr "Nie je mo¾né preèíta» %s: %s."
 
-#: lib/rpmrc.c:648
+#: lib/rpmrc.c:655
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
 msgstr "chýbajúca ':' na %s:%d"
 
-#: lib/rpmrc.c:665 lib/rpmrc.c:739
+#: lib/rpmrc.c:672 lib/rpmrc.c:746
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr "chýbajúci argument pre %s na %s:%d"
 
-#: lib/rpmrc.c:682 lib/rpmrc.c:704
+#: lib/rpmrc.c:689 lib/rpmrc.c:711
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
 msgstr "expanzia %s zlyhala na %s:%d \"%s\""
 
-#: lib/rpmrc.c:691
+#: lib/rpmrc.c:698
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s"
 msgstr "nie je mo¾né otvori» %s na %s:%d"
 
-#: lib/rpmrc.c:731
+#: lib/rpmrc.c:738
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr "chýbajúca architektúra pre %s na %s:%d"
 
-#: lib/rpmrc.c:798
+#: lib/rpmrc.c:805
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr "chybná voµba '%s' na %s:%d"
 
-#: lib/rpmrc.c:1169
+#: lib/rpmrc.c:1176
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámy systém: %s\n"
 
-#: lib/rpmrc.c:1170
+#: lib/rpmrc.c:1177
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Kontaktujte prosím rpm-list@redhat.com\n"
 
@@ -3837,30 +3852,35 @@ msgstr "Musíte nastavi» \"%%gpg_name\" vo va¹om makro-súbore"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Musíte nastavi» \"%%pgp_name\" vo va¹om makro-súbore"
 
-#: lib/transaction.c:412
+#: lib/transaction.c:413
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "vynecháva sa %s\n"
 
-#: lib/transaction.c:438 lib/transaction.c:521
+#: lib/transaction.c:439 lib/transaction.c:522
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/transaction.c:443
+#: lib/transaction.c:444
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/transaction.c:514
+#: lib/transaction.c:515
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/transaction.c:666
+#: lib/transaction.c:667
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
+
+#: lib/transaction.c:1375
+#, c-format
+msgid "executing pre-transaction syscall: \"%s\"\n"
+msgstr ""
 
 #: lib/uninstall.c:39
 #, c-format

@@ -69,6 +69,8 @@
 	- put version on rpmpopt filename to avoid legacy filename collision.
 	- change optflags for i386.
 	- multilib patch, take 1.
+	- add pre-transaction syscall's to handle /etc/init.d change.
+	- don't bother saving '/' as fingerprint subdir.
 
 3.0.4 -> 3.0.5
 	- handle version 4 packaging as input.

@@ -4,8 +4,6 @@
 
 #include "system.h"
 
-static int _debug = 0;
-
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
 
@@ -343,7 +341,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     }
     field++;
     SKIPSPACE(field);
-    if (! *field) {
+    if (!*field) {
 	/* Empty field */
 	rpmError(RPMERR_BADSPEC, _("line %d: Empty tag: %s"),
 		 spec->lineNum, spec->line);
@@ -355,9 +353,8 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     /* See if this is multi-token */
     end = field;
     SKIPNONSPACE(end);
-    if (*end) {
+    if (*end)
 	multiToken = 1;
-    }
 
     switch (tag) {
       case RPMTAG_NAME:
@@ -391,11 +388,10 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
       case RPMTAG_VENDOR:
       case RPMTAG_LICENSE:
       case RPMTAG_PACKAGER:
-	if (! *lang) {
+	if (!*lang)
 	    headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
-	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
+	else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
 	    headerAddI18NString(pkg->header, tag, field, lang);
-	}
 	break;
       case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
@@ -413,8 +409,6 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	    buildRootURL = rpmGenPath(NULL, "%{?buildroot:%{buildroot}}", NULL);
 	    if (strcmp(buildRootURL, "/")) {
 		spec->buildRootURL = buildRootURL;
-if (_debug)
-fprintf(stderr, "*** PPA BuildRoot %s set from macro\n", buildRootURL);
 		macro = NULL;
 	    } else {
 		const char * specURL = field;
@@ -425,13 +419,9 @@ fprintf(stderr, "*** PPA BuildRoot %s set from macro\n", buildRootURL);
 		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
 		spec->buildRootURL = buildRootURL;
 		field = (char *) buildRootURL;
-if (_debug)
-fprintf(stderr, "*** PPA BuildRoot %s set from field\n", buildRootURL);
 	    }
 	    spec->gotBuildRootURL = 1;
 	} else {
-if (_debug)
-fprintf(stderr, "*** PPA BuildRoot %s already set, skipping field %s\n", buildRootURL, field);
 	    macro = NULL;
 	}
 	buildRootURL = rpmGenPath(NULL, spec->buildRootURL, NULL);
@@ -496,25 +486,21 @@ fprintf(stderr, "*** PPA BuildRoot %s already set, skipping field %s\n", buildRo
       case RPMTAG_PATCH:
 	SINGLE_TOKEN_ONLY;
 	macro = NULL;
-	if ((rc = addSource(spec, pkg, field, tag))) {
+	if ((rc = addSource(spec, pkg, field, tag)))
 	    return rc;
-	}
 	break;
       case RPMTAG_ICON:
 	SINGLE_TOKEN_ONLY;
-	if ((rc = addSource(spec, pkg, field, tag))) {
+	if ((rc = addSource(spec, pkg, field, tag)))
 	    return rc;
-	}
-	if ((rc = readIcon(pkg->header, field))) {
+	if ((rc = readIcon(pkg->header, field)))
 	    return RPMERR_BADSPEC;
-	}
 	break;
       case RPMTAG_NOSOURCE:
       case RPMTAG_NOPATCH:
 	spec->noSource = 1;
-	if ((rc = parseNoSource(spec, field, tag))) {
+	if ((rc = parseNoSource(spec, field, tag)))
 	    return rc;
-	}
 	break;
       case RPMTAG_OBSOLETES:
       case RPMTAG_PROVIDEFLAGS:
@@ -542,9 +528,21 @@ fprintf(stderr, "*** PPA BuildRoot %s already set, skipping field %s\n", buildRo
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	if (! spec->buildArchitectureCount) {
+	if (!spec->buildArchitectureCount)
 	    FREE(spec->buildArchitectures);
+	break;
+
+      case RPMTAG_PRETRANSACTION:
+      case RPMTAG_POSTTRANSACTION:
+	if ((rc = rpmSyscall(field, 1)) != 0) {
+	    rpmError(RPMERR_BADSPEC,
+		     _("line %d: Invalid tag value: %s"),
+		     spec->lineNum, tagName(tag), spec->line);
+	    return RPMERR_BADSPEC;
 	}
+	headerAddOrAppendEntry(pkg->header, tag, RPM_STRING_ARRAY_TYPE,
+			&field, 1);
+	macro = NULL;
 	break;
 
       default:
@@ -552,9 +550,8 @@ fprintf(stderr, "*** PPA BuildRoot %s already set, skipping field %s\n", buildRo
 	return RPMERR_INTERNAL;
     }
 
-    if (macro) {
+    if (macro)
 	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
-    }
     
     return 0;
 }
@@ -608,6 +605,10 @@ static struct PreambleRec {
     {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
     {RPMTAG_AUTOPROV,		0, 0, "autoprov"},
     {RPMTAG_DOCDIR,		0, 0, "docdir"},
+    {RPMTAG_PRETRANSACTION,	0, 0, "pretransaction"},
+#ifdef	NOTYET
+    {RPMTAG_POSTTRANSACTION,	0, 0, "posttransaction"},
+#endif
     {0, 0, 0, 0}
 };
 

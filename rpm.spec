@@ -254,6 +254,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sun Jul  9 2000 Jeff Johnson <jbj@redhat.com>
+- add pre-transaction syscall's to handle /etc/init.d change.
+- don't bother saving '/' as fingerprint subdir.
+
 * Wed Jul  5 2000 Jeff Johnson <jbj@redhat.com>
 - change optflags for i386.
 - multilib patch, take 1.
