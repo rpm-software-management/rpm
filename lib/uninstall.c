@@ -69,13 +69,20 @@ int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 		    itemsUsed++;
 		}
 	    }
+
+	    freeDBIndexRecord(matches);
 	}
     }
 
-    qsort(list, itemsUsed, sizeof(struct sharedFile), sharedFileCmp);
-
-    *listPtr = list;
-    *listCountPtr = itemsUsed;
+    if (itemsUsed) {
+	qsort(list, itemsUsed, sizeof(struct sharedFile), sharedFileCmp);
+	*listPtr = list;
+	*listCountPtr = itemsUsed;
+    } else {
+	free(list);
+	*listPtr = NULL;
+	*listCountPtr = 0;
+    }
 
     return 0;
 }
