@@ -11,8 +11,8 @@ noinst_PROGRAMS = test1
 test1_SOURCES = test1.c
 test1_LDADD = -lpopt
 
-noinst_HEADERS = popt.h
-noinst_LIBRARIES = libpopt.a
+include_HEADERS = popt.h
+lib_LIBRARIES = libpopt.a
 libpopt_a_SOURCES = popt.c findme.c poptparse.c poptconfig.c popthelp.c
 
 CVSTAG = $(PACKAGE)-$(subst .,_,$(VERSION))
