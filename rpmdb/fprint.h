@@ -123,7 +123,7 @@ unsigned int fpHashFunction(const void * key)
 
 /**
  * Compare two finger print entries.
- * exactly equivalent to FP_EQUAL macro.
+ * This routine is exactly equivalent to the FP_EQUAL macro.
  * @param key1		finger print 1
  * @param key2		finger print 2
  * @return result of comparing key1 and key2
