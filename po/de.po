@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -594,7 +594,7 @@ msgstr "Lesen von %s fehlgeschlagen: %s."
 msgid "File not found: %s\n"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
@@ -632,46 +632,46 @@ msgid "line: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/files.c:2236
+#: build/files.c:2246
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:2404
+#: build/files.c:2414
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:2728
+#: build/files.c:2738
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"

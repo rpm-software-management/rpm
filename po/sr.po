@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -526,7 +526,7 @@ msgstr "Neuspelo èitanje %s: %s."
 msgid "File not found: %s\n"
 msgstr "Datoteka nije pronaðena na serveru"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
@@ -561,43 +561,43 @@ msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 msgid "line: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:2236
+#: build/files.c:2246
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Ne mogu da izvr¹im PGP"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Ne mogu da proèitam 'sigtarget'"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "PGP omanuo"
 
-#: build/files.c:2404
+#: build/files.c:2414
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "neuspelo kreiranje %s\n"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "neuspelo otvaranje %s: %s"

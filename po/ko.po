@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -519,7 +519,7 @@ msgstr "파일이 prefix (%s)와 일치하지 않음: %s\n"
 msgid "File not found: %s\n"
 msgstr "파일을 찾을 수 없음: %s\n"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
@@ -554,43 +554,43 @@ msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
 msgid "line: %s\n"
 msgstr "행: %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s(을)를 실행할 수 없음: %s\n"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s(을)를 fork 할 수 없음: %s\n"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, c-format
 msgid "%s failed\n"
 msgstr "%s(이)가 실패했습니다\n"
 
-#: build/files.c:2404
+#: build/files.c:2414
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "%s에 모든 자료를 기록하는데 실패했습니다\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
 
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s(을)를 찾는데 실패함:\n"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "파일 처리 중: %s-%s-%s\n"

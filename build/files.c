@@ -1995,7 +1995,17 @@ static int processPackageFiles(Spec spec, Package pkg,
     /* Now process special doc, if there is one */
     if (specialDoc) {
 	if (installSpecialDoc) {
-	    (void) doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
+	    static int _missing_doc_files_terminate_build = 0;
+	    static int oneshot = 0;
+	    int rc;
+	    if (!oneshot) {
+	        _missing_doc_files_terminate_build =
+		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
+		oneshot = 1;
+	    }
+	    rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
+	    if (rc && _missing_doc_files_terminate_build)
+		fl.processingFailed = rc;
 	}
 
 	/* Reset for %doc */

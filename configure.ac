@@ -1187,7 +1187,9 @@ AC_CONFIG_SUBDIRS(popt beecrypt zlib libelf db3)
 
 AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
-	scripts/Makefile scripts/brp-redhat tools/Makefile
+	scripts/Makefile scripts/brp-redhat
+	scripts/macros.perl scripts/macros.php scripts/macros.python
+	tools/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile intl/Makefile po/Makefile.in
 	doc/Makefile

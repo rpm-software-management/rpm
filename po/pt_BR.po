@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 
 #: build.c:40
 #, fuzzy
@@ -573,7 +573,7 @@ msgstr "No consegui ler o arquivo spec de %s\n"
 msgid "File not found: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
@@ -613,47 +613,47 @@ msgid "line: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:2236
+#: build/files.c:2246
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:2316
+#: build/files.c:2326
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "Construo falhou.\n"
 
 # , c-format
-#: build/files.c:2404
+#: build/files.c:2414
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "No consegui abrir o pipe tar: %s\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "No consegui abrir o pipe tar: %s\n"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""

@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.293 2002/07/31 13:12:22 jbj Exp $
+# $Id: sl.po,v 1.294 2002/07/31 15:14:47 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -537,7 +537,7 @@ msgstr "Datoteka se ne ujema s predpono (%s): %s"
 msgid "File not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Neobstojeè lastnik/skupina: %s\n"
@@ -572,43 +572,43 @@ msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 msgid "line: %s\n"
 msgstr "vrstica: %s"
 
-#: build/files.c:2236
+#: build/files.c:2246
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Po¹kodovana datoteka: %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Ni mo¾no izvesti %s: %s"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Vejitev %s ni mo¾na: %s"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s neuspe¹en"
 
-#: build/files.c:2404
+#: build/files.c:2414
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "pisanje podatkov v %s je bilo neuspe¹no"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"

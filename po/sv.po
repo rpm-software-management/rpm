@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "PO-Revision-Date: 2002-07-11 22:49+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -520,7 +520,7 @@ msgstr "Filen matchar inte prefixet (%s): %s\n"
 msgid "File not found: %s\n"
 msgstr "Filen hittades inte: %s\n"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
@@ -555,43 +555,43 @@ msgstr "Kunde inte öppna %%files-fil %s: %s\n"
 msgid "line: %s\n"
 msgstr "rad: %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunde inte grena %s: %s\n"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, c-format
 msgid "%s failed\n"
 msgstr "%s misslyckades\n"
 
-#: build/files.c:2404
+#: build/files.c:2414
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "kunde inte skriva all data till %s\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Letar upp %s: (använder %s)...\n"
 
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Misslyckades med att hitta %s:\n"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"

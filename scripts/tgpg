@@ -1,0 +1,35 @@
+#!/bin/sh
+
+for pkg in $*
+do
+    if [ "$pkg" = "" -o ! -e "$pkg" ]; then
+	echo "no package supplied" 1>&2
+	exit 1
+    fi
+
+    plaintext=`mktemp $0-$$.XXXXXX`
+    detached=`mktemp $0-$$.XXXXXX`
+
+# --- Extract detached signature
+    rpm -qp -vv --qf '%{siggpg:armor}' $pkg > $detached
+
+# --- Figger the offset of header+payload in the package
+    leadsize=96
+    o=`expr $leadsize + 8`
+
+    set `od -j $o -N 8 -t u1 $pkg`
+    il=`expr 256 \* \( 256 \* \( 256 \* $2 + $3 \) + $4 \) + $5`
+    dl=`expr 256 \* \( 256 \* \( 256 \* $6 + $7 \) + $8 \) + $9`
+
+    sigsize=`expr 8 + 16 \* $il + $dl`
+    o=`expr $o + $sigsize + \( 8 - \( $sigsize \% 8 \) \) \% 8`
+
+# --- Extract header+payload
+    dd if=$pkg ibs=$o skip=1 2>/dev/null > $plaintext
+
+# --- Verify DSA signature using gpg
+    gpg --batch -vv --debug 0xfc02 --verify $detached $plaintext
+
+# --- Clean up
+    rm -f $detached $plaintext
+done

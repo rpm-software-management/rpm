@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -557,7 +557,7 @@ msgstr ""
 msgid "File not found: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
@@ -592,43 +592,43 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "line: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2246
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "La construction a chou.\n"
 
-#: build/files.c:2404
+#: build/files.c:2414
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -520,7 +520,7 @@ msgstr "Fil passer ikke til præfiks (%s): %s\n"
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
@@ -555,43 +555,43 @@ msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunne ikke udføre %s: %s\n"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, c-format
 msgid "%s failed\n"
 msgstr "%s mislykkedes\n"
 
-#: build/files.c:2404
+#: build/files.c:2414
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Finder %s: (benytter %s)...\n"
 
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Kunne ikke finde %s:\n"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"

@@ -1,0 +1,31 @@
+#!/bin/sh
+ulimit -c 0
+cd `rpm --eval %{_builddir}`
+
+filelist=`sed "s/['\"]/\\\&/g"`
+if [ -f __rpm_noautoreqfiles ] ; then
+	for i in `cat __rpm_noautoreqfiles`; do
+		filelist=`echo $filelist | sed "s![[:space:]]*$i[[:space:]]*!!g"`
+	done
+fi
+
+requires="`echo $filelist | /usr/lib/rpm/find-requires`"
+requires_php="`echo $filelist | xargs /usr/lib/rpm/php.req`"
+
+if [ -f __rpm_noautoreq ] ; then
+	for i in `cat __rpm_noautoreq`; do
+		requires_php=`echo $requires_php | sed "s!\<$i[[:space:]]*!!g"`
+	done
+fi
+
+requires_php_t="$requires_php"
+if [ -f __rpm_noautoreqdep ] ; then
+	for i in `cat __rpm_noautoreqdep`; do
+		requires_php_t=`echo $requires_php_t | sed "s!\<$i[[:space:]]*!!g"`
+	done
+fi
+
+requires_mod="`LC_ALL=C rpm -q --whatprovides --qf "%{NAME}\n"  $requires_php_t 2>/dev/null`"
+echo "$requires
+$requires_php
+$requires_mod"| grep -v "no package provides" | sort -u

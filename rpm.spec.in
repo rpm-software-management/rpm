@@ -518,6 +518,7 @@ fi
 * Wed Jul 31 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.60
 - make --querytags a common option, fix errant regex (#70135).
 - db3: increase mpool and cachesize, compile w/o --enable-debug.
+- configurable (default off) build failure if missing %%doc files (PLD).
 
 * Tue Jul 30 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.59
 - prevent stale locks in __db files by closing databases on signals.

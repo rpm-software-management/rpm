@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -530,7 +530,7 @@ msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
@@ -565,43 +565,43 @@ msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalý: %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s ayrýlamadý: %s\n"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, c-format
 msgid "%s failed\n"
 msgstr "%s baþarýsýz\n"
 
-#: build/files.c:2404
+#: build/files.c:2414
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "tüm veri %s içine yazýlamadý\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s aranýyor: (%s kullanarak)...\n"
 
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s bulunamadý:\n"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Ýþlenen dosyalar: %s-%s-%s\n"

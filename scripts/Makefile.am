@@ -11,8 +11,10 @@ EXTRA_DIST = \
 	find-requires.perl get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perl.prov perl.req rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	sql.prov sql.req tcl.req trpm u_pkg.sh \
-	vpkg-provides.sh vpkg-provides2.sh
+	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
+	vpkg-provides.sh vpkg-provides2.sh \
+	macros.perl* macros.python* \
+	macros.php* find-*.php find-php-*
 
 installprefix = $(DESTDIR)
 
@@ -28,5 +30,5 @@ config_SCRIPTS = \
 	find-requires.perl get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perl.prov perl.req rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	sql.prov sql.req tcl.req trpm u_pkg.sh \
+	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh

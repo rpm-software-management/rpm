@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 09:09-0400\n"
+"POT-Creation-Date: 2002-07-31 10:12-0400\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -519,7 +519,7 @@ msgstr ""
 msgid "File not found: %s\n"
 msgstr "Fil ikke funnet: %s\n"
 
-#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig eier/gruppe: %s\n"
@@ -554,43 +554,43 @@ msgstr "Kunne ikke åpne spec fil %s: %s\n"
 msgid "line: %s\n"
 msgstr "Installerer %s\n"
 
-#: build/files.c:2236
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2311
+#: build/files.c:2321
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunne ikke kjøre %s: %s\n"
 
-#: build/files.c:2316
+#: build/files.c:2326
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "klarte ikke å åpne %s: %s\n"
 
-#: build/files.c:2400
+#: build/files.c:2410
 #, c-format
 msgid "%s failed\n"
 msgstr "%s feilet\n"
 
-#: build/files.c:2404
+#: build/files.c:2414
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/files.c:2562
+#: build/files.c:2572
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2591 build/files.c:2605
+#: build/files.c:2601 build/files.c:2615
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Klarte ikke å finne %s:\n"
 
-#: build/files.c:2728
+#: build/files.c:2738
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
