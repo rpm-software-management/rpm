@@ -467,7 +467,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		if (((di[i].needed * 20) / 19)> di[i].avail) {
 		    psAppend(probs, RPMPROB_DISKSPACE, fi->ap->key, fi->ap->h,
 			     filesystems[i], NULL, 
-			     (di[i].needed - di[i].avail) * di[i].block);
+			     (((di[i].needed * 20) / 19) - di[i].avail) *
+				di[i].block);
 		}
 	    }
 	}
