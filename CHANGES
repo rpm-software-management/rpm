@@ -93,6 +93,7 @@
 	- remove almost all explicit uses of stderr in rpmlib using rpmError().
 	- fix: pass scriptlet args, as in %post -p "/sbin/ldconfig -n /lib".
 		(Rodrigo Barbosa)
+	- fix: 3 packages from Red Hat 5.2 had bogus %verifyscript tag.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

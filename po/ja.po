@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-03 21:22-0500\n"
+"POT-Creation-Date: 2001-01-05 16:03-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.141 2001/01/04 02:24:19 jbj Exp $
+# $Id: ja.po,v 1.142 2001/01/05 21:04:47 jbj Exp $
 #: rpm.c:185 rpmqv.c:386
 #, c-format
 msgid "rpm: %s\n"
@@ -2693,7 +2693,7 @@ msgstr ""
 "詳細な情報が取得できます。\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2519 lib/header.c:2536 lib/header.c:2556
+#: lib/header.c:2530 lib/header.c:2547 lib/header.c:2567
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -2727,88 +2727,88 @@ msgstr "ファイル %s は不明なデバイスです"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
-#: lib/header.c:207 lib/header.c:1004 lib/install.c:365
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
 
-#: lib/header.c:1427
+#: lib/header.c:1438
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "headerAddEntry() の不正なカウント: %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1872
+#: lib/header.c:1883
 #, c-format
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
 #. @-observertrans@
-#: lib/header.c:1902
+#: lib/header.c:1913
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
 #. @-observertrans@
-#: lib/header.c:1916
+#: lib/header.c:1927
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
 #. @-observertrans@
-#: lib/header.c:1928
+#: lib/header.c:1939
 msgid "empty tag name"
 msgstr "空のタグ名"
 
 #. @-observertrans@
-#: lib/header.c:1945
+#: lib/header.c:1956
 msgid "unknown tag"
 msgstr "不明なタグ"
 
 #. @-observertrans@
-#: lib/header.c:1972
+#: lib/header.c:1983
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:1990
+#: lib/header.c:2001
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
 #. @-observertrans@
-#: lib/header.c:1994
+#: lib/header.c:2005
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
 #. @-observertrans@
-#: lib/header.c:2054
+#: lib/header.c:2065
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:2063
+#: lib/header.c:2074
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:2076 lib/header.c:2117
+#: lib/header.c:2087 lib/header.c:2128
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:2086
+#: lib/header.c:2097
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:2102
+#: lib/header.c:2113
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
 #. @-observertrans@
-#: lib/header.c:2127
+#: lib/header.c:2138
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
-#: lib/header.c:2298
+#: lib/header.c:2309
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
@@ -3614,37 +3614,37 @@ msgstr "古いデータベースのオープン\n"
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rpmdb.c:2446
+#: lib/rpmdb.c:2449
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rpmdb.c:2483
+#: lib/rpmdb.c:2484
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rpmdb.c:2501
+#: lib/rpmdb.c:2502
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rpmdb.c:2509
+#: lib/rpmdb.c:2510
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rpmdb.c:2511
+#: lib/rpmdb.c:2512
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rpmdb.c:2521
+#: lib/rpmdb.c:2522
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2524
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"

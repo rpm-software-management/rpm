@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-03 21:22-0500\n"
+"POT-Creation-Date: 2001-01-05 16:03-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2611,7 +2611,7 @@ msgstr ""
 "na http://www.rpm.org nebo v diskuzním listu rpm-list@redhat.com.\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2519 lib/header.c:2536 lib/header.c:2556
+#: lib/header.c:2530 lib/header.c:2547 lib/header.c:2567
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
@@ -2645,88 +2645,88 @@ msgstr "soubor %s je na neznámém zaøízení"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "Poèet RPM_STRING_TYPE pro grabData() musí být 1.\n"
 
-#: lib/header.c:207 lib/header.c:1004 lib/install.c:365
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datový typ %d není podporován\n"
 
-#: lib/header.c:1427
+#: lib/header.c:1438
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Chybný poèet pro headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1872
+#: lib/header.c:1883
 #, c-format
 msgid "missing { after %"
 msgstr "chybí { po %"
 
 #. @-observertrans@
-#: lib/header.c:1902
+#: lib/header.c:1913
 msgid "missing } after %{"
 msgstr "po %{ chybí }"
 
 #. @-observertrans@
-#: lib/header.c:1916
+#: lib/header.c:1927
 msgid "empty tag format"
 msgstr "prázdný formát znaèky"
 
 #. @-observertrans@
-#: lib/header.c:1928
+#: lib/header.c:1939
 msgid "empty tag name"
 msgstr "prázdné jméno znaèky"
 
 #. @-observertrans@
-#: lib/header.c:1945
+#: lib/header.c:1956
 msgid "unknown tag"
 msgstr "neznámá znaèka"
 
 #. @-observertrans@
-#: lib/header.c:1972
+#: lib/header.c:1983
 msgid "] expected at end of array"
 msgstr "na konci pole oèekáváno ]"
 
 #. @-observertrans@
-#: lib/header.c:1990
+#: lib/header.c:2001
 msgid "unexpected ]"
 msgstr "neoèekávaná ]"
 
 #. @-observertrans@
-#: lib/header.c:1994
+#: lib/header.c:2005
 msgid "unexpected }"
 msgstr "neoèekávaná }"
 
 #. @-observertrans@
-#: lib/header.c:2054
+#: lib/header.c:2065
 msgid "? expected in expression"
 msgstr "ve výrazu oèekáván ?"
 
 #. @-observertrans@
-#: lib/header.c:2063
+#: lib/header.c:2074
 msgid "{ expected after ? in expression"
 msgstr "ve výrazu je po ? oèekávána {"
 
 #. @-observertrans@
-#: lib/header.c:2076 lib/header.c:2117
+#: lib/header.c:2087 lib/header.c:2128
 msgid "} expected in expression"
 msgstr "ve výrazu je oèekávána }"
 
 #. @-observertrans@
-#: lib/header.c:2086
+#: lib/header.c:2097
 msgid ": expected following ? subexpression"
 msgstr "v podvýrazu je po ? oèekávána :"
 
 #. @-observertrans@
-#: lib/header.c:2102
+#: lib/header.c:2113
 msgid "{ expected after : in expression"
 msgstr "ve výrazu je po : oèekávána {"
 
 #. @-observertrans@
-#: lib/header.c:2127
+#: lib/header.c:2138
 msgid "| expected at end of expression"
 msgstr "na konci výrazu je oèekáváno |"
 
-#: lib/header.c:2298
+#: lib/header.c:2309
 msgid "(unknown type)"
 msgstr "(neznámý typ)"
 
@@ -3527,36 +3527,36 @@ msgstr "otevírám starou databázi s dbapi %d\n"
 msgid "opening new database with dbapi %d\n"
 msgstr "otevírám novou databázi s dbapi %d\n"
 
-#: lib/rpmdb.c:2446
+#: lib/rpmdb.c:2449
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databázi je chybný -- vynechávám."
 
-#: lib/rpmdb.c:2483
+#: lib/rpmdb.c:2484
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nemohu pøidat záznam - pùvodnì u %d"
 
-#: lib/rpmdb.c:2501
+#: lib/rpmdb.c:2502
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "databázi nelze zvovu vytvoøit; pùvodní databáze zùstává na svém místì\n"
 
-#: lib/rpmdb.c:2509
+#: lib/rpmdb.c:2510
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: lib/rpmdb.c:2511
+#: lib/rpmdb.c:2512
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "pro obnovení nahraïte soubory v %s soubory z %s"
 
-#: lib/rpmdb.c:2521
+#: lib/rpmdb.c:2522
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ma¾u adresáø %s\n"
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2524
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nemohu odstranit adresáø %s: %s\n"

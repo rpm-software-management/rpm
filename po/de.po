@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-03 21:22-0500\n"
+"POT-Creation-Date: 2001-01-05 16:03-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2804,7 +2804,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2519 lib/header.c:2536 lib/header.c:2556
+#: lib/header.c:2530 lib/header.c:2547 lib/header.c:2567
 msgid "(not a number)"
 msgstr "(keine Zahl)"
 
@@ -2839,91 +2839,91 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1004 lib/install.c:365
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1427
+#: lib/header.c:1438
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1872
+#: lib/header.c:1883
 #, c-format
 msgid "missing { after %"
 msgstr "fehlende { nach %{"
 
 #. @-observertrans@
-#: lib/header.c:1902
+#: lib/header.c:1913
 msgid "missing } after %{"
 msgstr "fehlende } nach %{"
 
 # »Tag« übersetzen??? -ke-
 #. @-observertrans@
-#: lib/header.c:1916
+#: lib/header.c:1927
 msgid "empty tag format"
 msgstr "leeres »Tag«-Format"
 
 #. @-observertrans@
-#: lib/header.c:1928
+#: lib/header.c:1939
 msgid "empty tag name"
 msgstr "leerer »Tag«-Name"
 
 #. @-observertrans@
-#: lib/header.c:1945
+#: lib/header.c:1956
 msgid "unknown tag"
 msgstr "unbekannter »Tag«"
 
 #. @-observertrans@
-#: lib/header.c:1972
+#: lib/header.c:1983
 msgid "] expected at end of array"
 msgstr "] am Ende des Arrays erwartet"
 
 #. @-observertrans@
-#: lib/header.c:1990
+#: lib/header.c:2001
 msgid "unexpected ]"
 msgstr "unerwartete ]"
 
 #. @-observertrans@
-#: lib/header.c:1994
+#: lib/header.c:2005
 msgid "unexpected }"
 msgstr "unerwartete }"
 
 #. @-observertrans@
-#: lib/header.c:2054
+#: lib/header.c:2065
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
 #. @-observertrans@
-#: lib/header.c:2063
+#: lib/header.c:2074
 #, fuzzy
 msgid "{ expected after ? in expression"
 msgstr "{ nach ? im Ausdruck erwartet"
 
 #. @-observertrans@
-#: lib/header.c:2076 lib/header.c:2117
+#: lib/header.c:2087 lib/header.c:2128
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
 #. @-observertrans@
-#: lib/header.c:2086
+#: lib/header.c:2097
 msgid ": expected following ? subexpression"
 msgstr ": nach ? Unterausdruck erwartet"
 
 #. @-observertrans@
-#: lib/header.c:2102
+#: lib/header.c:2113
 #, fuzzy
 msgid "{ expected after : in expression"
 msgstr "{ nach : im Ausdruck erwartet"
 
 #. @-observertrans@
-#: lib/header.c:2127
+#: lib/header.c:2138
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
-#: lib/header.c:2298
+#: lib/header.c:2309
 msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
@@ -3733,37 +3733,37 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "opening new database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rpmdb.c:2446
+#: lib/rpmdb.c:2449
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: lib/rpmdb.c:2483
+#: lib/rpmdb.c:2484
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: lib/rpmdb.c:2501
+#: lib/rpmdb.c:2502
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2509
+#: lib/rpmdb.c:2510
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2511
+#: lib/rpmdb.c:2512
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2521
+#: lib/rpmdb.c:2522
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
 # , c-format
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2524
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"

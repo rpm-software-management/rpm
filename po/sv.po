@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-03 21:22-0500\n"
+"POT-Creation-Date: 2001-01-05 16:03-0500\n"
 "PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2602,7 +2602,7 @@ msgstr ""
 "problemet.\n"
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2519 lib/header.c:2536 lib/header.c:2556
+#: lib/header.c:2530 lib/header.c:2547 lib/header.c:2567
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -2636,88 +2636,88 @@ msgstr "filen %s är på en okänd enhet"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
 
-#: lib/header.c:207 lib/header.c:1004 lib/install.c:365
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatyp %d stöds inte\n"
 
-#: lib/header.c:1427
+#: lib/header.c:1438
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr "Felaktigt antal till headerAddEntry(): %d\n"
 
 #. @-observertrans@
-#: lib/header.c:1872
+#: lib/header.c:1883
 #, c-format
 msgid "missing { after %"
 msgstr "{ fattas efter %"
 
 #. @-observertrans@
-#: lib/header.c:1902
+#: lib/header.c:1913
 msgid "missing } after %{"
 msgstr "} fattas efter %{"
 
 #. @-observertrans@
-#: lib/header.c:1916
+#: lib/header.c:1927
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
 #. @-observertrans@
-#: lib/header.c:1928
+#: lib/header.c:1939
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
 #. @-observertrans@
-#: lib/header.c:1945
+#: lib/header.c:1956
 msgid "unknown tag"
 msgstr "okänd tagg"
 
 #. @-observertrans@
-#: lib/header.c:1972
+#: lib/header.c:1983
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
 #. @-observertrans@
-#: lib/header.c:1990
+#: lib/header.c:2001
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
 #. @-observertrans@
-#: lib/header.c:1994
+#: lib/header.c:2005
 msgid "unexpected }"
 msgstr "oväntad }"
 
 #. @-observertrans@
-#: lib/header.c:2054
+#: lib/header.c:2065
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:2063
+#: lib/header.c:2074
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:2076 lib/header.c:2117
+#: lib/header.c:2087 lib/header.c:2128
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:2086
+#: lib/header.c:2097
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
 #. @-observertrans@
-#: lib/header.c:2102
+#: lib/header.c:2113
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
 #. @-observertrans@
-#: lib/header.c:2127
+#: lib/header.c:2138
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: lib/header.c:2298
+#: lib/header.c:2309
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
@@ -3522,35 +3522,35 @@ msgstr "öppnar gammal databas med dbapi %d\n"
 msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas med dbapi %d\n"
 
-#: lib/rpmdb.c:2446
+#: lib/rpmdb.c:2449
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "post nummer %d i databasen är felaktig -- hoppar över den."
 
-#: lib/rpmdb.c:2483
+#: lib/rpmdb.c:2484
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "kan inte lägga till post ursprungligen vid %d"
 
-#: lib/rpmdb.c:2501
+#: lib/rpmdb.c:2502
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
 
-#: lib/rpmdb.c:2509
+#: lib/rpmdb.c:2510
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: lib/rpmdb.c:2511
+#: lib/rpmdb.c:2512
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: lib/rpmdb.c:2521
+#: lib/rpmdb.c:2522
 #, c-format
 msgid "removing directory %s\n"
 msgstr "tar bort katalog %s\n"
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2524
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"
