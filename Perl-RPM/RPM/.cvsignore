@@ -1,6 +1,3 @@
-Header.c
-Error.c
-Database.c
-Constants.c
+*.c
 *.html
 pod2html-*
