@@ -17,5 +17,6 @@ int verifyList(Spec s);
 #define RPMBUILD_SOURCE     (1 << 4)
 #define RPMBUILD_SWEEP      (1 << 5)
 #define RPMBUILD_LIST       (1 << 6)
+#define RPMBUILD_RMSOURCE   (1 << 7)
 
 #endif _BUILD_H_
