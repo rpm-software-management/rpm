@@ -1892,7 +1892,7 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	    (void) rpmLoadMacroFile(mc, av[i]);
 	av = _free(av);
     }
-    m = _free(m);
+    mfiles = _free(mfiles);
 
     /* Reload cmdline macros */
     /*@-mods@*/
